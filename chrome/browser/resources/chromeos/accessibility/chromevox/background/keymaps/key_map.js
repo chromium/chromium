@@ -79,22 +79,6 @@ KeyMap = class {
   }
 
   /**
-   * This method is called when KeyMap instances are stringified via
-   * JSON.stringify.
-   * @return {string} The JSON representation of this instance.
-   */
-  toJSON() {
-    return JSON.stringify({bindings: this.bindings_});
-  }
-
-  /**
-   * Writes to local storage.
-   */
-  toLocalStorage() {
-    localStorage['keyBindings'] = this.toJSON();
-  }
-
-  /**
    * Checks if this key map has a given binding.
    * @param {string} command The command.
    * @param {KeySequence} sequence The key sequence.
@@ -188,189 +172,28 @@ KeyMap = class {
   }
 
   /**
-   * Merges an input map with this one. The merge preserves this instance's
-   * mappings. It only adds new bindings if there isn't one already.
-   * If either the incoming binding's command or key exist in this, it will be
-   * ignored.
-   * @param {!KeyMap} inputMap The map to merge with this.
-   * @return {boolean} True if there were no merge conflicts.
+   * Convenience method for getting the ChromeVox key map.
+   * @return {!KeyMap} The resulting object.
    */
-  merge(inputMap) {
-    const keys = inputMap.keys();
-    let cleanMerge = true;
-    for (let i = 0; i < keys.length; ++i) {
-      const key = keys[i];
-      const command = inputMap.commandForKey(key);
-      if (command === 'toggleStickyMode') {
-        // TODO(dtseng): More uglyness because of sticky key.
-        continue;
-      } else if (
-          key && command && !this.hasKey(key) && !this.hasCommand(command)) {
-        this.bind_(command, key);
-      } else {
-        cleanMerge = false;
-      }
-    }
-    return cleanMerge;
-  }
-
-  /**
-   * Changes an existing key binding to a new key. If the key is already bound
-   * to a command, the rebind will fail.
-   * @param {string} command The command to set.
-   * @param {KeySequence} newKey The new key to assign it to.
-   * @return {boolean} Whether the rebinding succeeds.
-   */
-  rebind(command, newKey) {
-    if (this.hasCommand(command) && !this.hasKey(newKey)) {
-      this.bind_(command, newKey);
-      return true;
-    }
-    return false;
-  }
-
-  /**
-   * Changes a key binding. Any existing bindings to the given key will be
-   * deleted. Use this.rebind to have non-overwrite behavior.
-   * @param {string} command The command to set.
-   * @param {KeySequence} newKey The new key to assign it to.
-   * @private
-   */
-  bind_(command, newKey) {
-    // TODO(dtseng): Need unit test to ensure command is valid for every *.json
-    // keymap.
-    let bound = false;
-    for (let i = 0; i < this.bindings_.length; i++) {
-      const binding = this.bindings_[i];
-      if (binding.command === command) {
-        // Replace the key with the new key.
-        delete binding.sequence;
-        binding.sequence = newKey;
-        if (this.commandToKey_ != null) {
-          this.commandToKey_[binding.command] = newKey;
-        }
-        bound = true;
-      }
-    }
-    if (!bound) {
-      const binding = {command, 'sequence': newKey};
-      this.bindings_.push(binding);
-      this.commandToKey_[binding.command] = binding.sequence;
-    }
-  }
-
-  /**
-   * Convenience method for getting a default key map.
-   * @return {!Promise<!KeyMap>} The default key map.
-   */
-  static async fromDefaults() {
-    const map = await KeyMap.fromPath(
-        KeyMap.KEYMAP_PATH + KeyMap.AVAILABLE_MAP_INFO['keymap_default'].file);
-
-    if (!map) {
-      throw new Error('Expected valid default key map.');
-    }
-
-    return map;
-  }
-
-  /**
-   * Convenience method for creating a key map based on a JSON (key, value)
-   * Object where the key is a literal keyboard string and value is a command
-   * string.
-   * @param {!Object} json The JSON.
-   * @return {KeyMap} The resulting object; null if unable to parse.
-   */
-  static fromJSON(json) {
-    let commandsAndKeySequences = null;
-    commandsAndKeySequences =
+  static get() {
+    const commandsAndKeySequences =
         /**
          * @type {Array<Object<{command: string,
          *                       sequence: KeySequence}>>}
          */
-        (json.bindings);
+        (KeyMap.BINDINGS_);
 
     // Validate the type of the commandsAndKeySequences array.
-    if (typeof (commandsAndKeySequences) !== 'object') {
-      return null;
-    }
     for (let i = 0; i < commandsAndKeySequences.length; i++) {
       if (commandsAndKeySequences[i].command === undefined ||
           commandsAndKeySequences[i].sequence === undefined) {
-        return null;
+        throw new Error('Invalid key map.');
       } else {
         commandsAndKeySequences[i].sequence = /** @type {KeySequence} */
             (KeySequence.deserialize(commandsAndKeySequences[i].sequence));
       }
     }
     return new KeyMap(commandsAndKeySequences);
-  }
-
-  /**
-   * Convenience method for creating a map local storage.
-   * @return {KeyMap} A map that reads from local storage.
-   */
-  static fromLocalStorage() {
-    if (localStorage['keyBindings']) {
-      return KeyMap.fromJSON(localStorage['keyBindings']);
-    }
-    return null;
-  }
-
-  /**
-   * Convenience method for creating a KeyMap based on a path.
-   * Warning: you should only call this within a background page context.
-   * @param {string} path A valid path of the form
-   * chromevox/background/keymaps/*.json.
-   * @return {!Promise<KeyMap>} A valid KeyMap object; null on error.
-   */
-  static async fromPath(path) {
-    const json = await KeyMap.readJSON_(path);
-    return KeyMap.fromJSON(json);
-  }
-
-  /**
-   * Convenience method for getting a currently selected key map.
-   * @return {!Promise<!KeyMap>} The currently selected key map.
-   */
-  static async fromCurrentKeyMap() {
-    const map = localStorage['currentKeyMap'];
-    if (map && KeyMap.AVAILABLE_MAP_INFO[map]) {
-      const keyMapObject = await KeyMap.fromPath(
-          KeyMap.KEYMAP_PATH + KeyMap.AVAILABLE_MAP_INFO[map].file);
-      if (!keyMapObject) {
-        throw new Error('Expected valid key map.');
-      }
-
-      return keyMapObject;
-    } else {
-      return KeyMap.fromDefaults();
-    }
-  }
-
-  /**
-   * Takes a path to a JSON file and returns a JSON Object.
-   * @param {string} path Contains the path to a JSON file.
-   * @return {!Promise<!Object>} JSON.
-   * @private
-   * @suppress {missingProperties}
-   */
-  static async readJSON_(path) {
-    const url = chrome.extension.getURL(path);
-    if (!url) {
-      throw 'Invalid path: ' + path;
-    }
-
-    const response = await fetch(url, {method: 'GET'});
-    return response.json();
-  }
-
-  /**
-   * Resets the default modifier keys.
-   * TODO(dtseng): Move elsewhere when we figure out our localStorage story.
-   */
-  resetModifier() {
-    localStorage['cvoxKey'] = ChromeVox.modKeyStr;
   }
 
   /**
@@ -392,32 +215,555 @@ KeyMap = class {
   }
 };
 
-
-/**
- * Path to dir containing ChromeVox keymap json definitions.
- * @type {string}
- * @const
- */
-KeyMap.KEYMAP_PATH = 'chromevox/background/keymaps/';
-
-
-/**
- * An array of available key maps sorted by priority.
- * (The first map is the default, the last is the least important).
- * TODO(dtseng): Not really sure this belongs here, but it doesn't seem to be
- * user configurable, so it doesn't make sense to json-stringify it.
- * Should have class to siwtch among and manage multiple key maps.
- * @type {Object<Object<string>>}
- * @const
- */
-KeyMap.AVAILABLE_MAP_INFO = {
-  'keymap_default': {'file': 'default_keymap.json'}
-};
-
-
-/**
- * The index of the default key map info in KeyMap.AVAIABLE_KEYMAP_INFO.
- * @type {number}
- * @const
- */
-KeyMap.DEFAULT_KEYMAP = 0;
+// This is intentionally not type-checked, as it is a serialized set of
+// KeySequence objects.
+/** @private {!Object} */
+KeyMap.BINDINGS_ = [
+  {
+    'command': 'previousObject',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [37]}}
+  },
+  {
+    'command': 'previousLine',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [38]}}
+  },
+  {
+    'command': 'nextObject',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [39]}}
+  },
+  {
+    'command': 'nextLine',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [40]}}
+  },
+  {
+    'command': 'nextCharacter',
+    'sequence':
+        {'cvoxModifier': true, 'keys': {'keyCode': [39], 'shiftKey': [true]}}
+  },
+  {
+    'command': 'previousCharacter',
+    'sequence':
+        {'cvoxModifier': true, 'keys': {'keyCode': [37], 'shiftKey': [true]}}
+  },
+  {
+    'command': 'nextWord',
+    'sequence': {
+      'cvoxModifier': true,
+      'keys': {'keyCode': [39], 'ctrlKey': [true], 'shiftKey': [true]}
+    }
+  },
+  {
+    'command': 'previousWord',
+    'sequence': {
+      'cvoxModifier': true,
+      'keys': {'keyCode': [37], 'ctrlKey': [true], 'shiftKey': [true]}
+    }
+  },
+  {
+    'command': 'nextButton',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [66]}}
+  },
+  {
+    'command': 'previousButton',
+    'sequence':
+        {'cvoxModifier': true, 'keys': {'keyCode': [66], 'shiftKey': [true]}}
+  },
+  {
+    'command': 'nextCheckbox',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [88]}}
+  },
+  {
+    'command': 'previousCheckbox',
+    'sequence':
+        {'cvoxModifier': true, 'keys': {'keyCode': [88], 'shiftKey': [true]}}
+  },
+  {
+    'command': 'nextComboBox',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [67]}}
+  },
+  {
+    'command': 'previousComboBox',
+    'sequence':
+        {'cvoxModifier': true, 'keys': {'keyCode': [67], 'shiftKey': [true]}}
+  },
+  {
+    'command': 'nextEditText',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [69]}}
+  },
+  {
+    'command': 'previousEditText',
+    'sequence':
+        {'cvoxModifier': true, 'keys': {'keyCode': [69], 'shiftKey': [true]}}
+  },
+  {
+    'command': 'nextFormField',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [70]}}
+  },
+  {
+    'command': 'previousFormField',
+    'sequence':
+        {'cvoxModifier': true, 'keys': {'keyCode': [70], 'shiftKey': [true]}}
+  },
+  {
+    'command': 'previousGraphic',
+    'sequence':
+        {'cvoxModifier': true, 'keys': {'keyCode': [71], 'shiftKey': [true]}}
+  },
+  {
+    'command': 'nextGraphic',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [71]}}
+  },
+  {
+    'command': 'nextHeading',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [72]}}
+  },
+  {
+    'command': 'nextHeading1',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [49]}}
+  },
+  {
+    'command': 'nextHeading2',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [50]}}
+  },
+  {
+    'command': 'nextHeading3',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [51]}}
+  },
+  {
+    'command': 'nextHeading4',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [52]}}
+  },
+  {
+    'command': 'nextHeading5',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [53]}}
+  },
+  {
+    'command': 'nextHeading6',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [54]}}
+  },
+  {
+    'command': 'previousHeading',
+    'sequence':
+        {'cvoxModifier': true, 'keys': {'keyCode': [72], 'shiftKey': [true]}}
+  },
+  {
+    'command': 'previousHeading1',
+    'sequence':
+        {'cvoxModifier': true, 'keys': {'keyCode': [49], 'shiftKey': [true]}}
+  },
+  {
+    'command': 'previousHeading2',
+    'sequence':
+        {'cvoxModifier': true, 'keys': {'keyCode': [50], 'shiftKey': [true]}}
+  },
+  {
+    'command': 'previousHeading3',
+    'sequence':
+        {'cvoxModifier': true, 'keys': {'keyCode': [51], 'shiftKey': [true]}}
+  },
+  {
+    'command': 'previousHeading4',
+    'sequence':
+        {'cvoxModifier': true, 'keys': {'keyCode': [52], 'shiftKey': [true]}}
+  },
+  {
+    'command': 'previousHeading5',
+    'sequence':
+        {'cvoxModifier': true, 'keys': {'keyCode': [53], 'shiftKey': [true]}}
+  },
+  {
+    'command': 'previousHeading6',
+    'sequence':
+        {'cvoxModifier': true, 'keys': {'keyCode': [54], 'shiftKey': [true]}}
+  },
+  {
+    'command': 'nextLink',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [76]}}
+  },
+  {
+    'command': 'previousLink',
+    'sequence':
+        {'cvoxModifier': true, 'keys': {'keyCode': [76], 'shiftKey': [true]}}
+  },
+  {
+    'command': 'nextTable',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [84]}}
+  },
+  {
+    'command': 'previousTable',
+    'sequence':
+        {'cvoxModifier': true, 'keys': {'keyCode': [84], 'shiftKey': [true]}}
+  },
+  {
+    'command': 'nextVisitedLink',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [86]}}
+  },
+  {
+    'command': 'previousVisitedLink',
+    'sequence':
+        {'cvoxModifier': true, 'keys': {'keyCode': [86], 'shiftKey': [true]}}
+  },
+  {
+    'command': 'nextLandmark',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [186]}}
+  },
+  {
+    'command': 'previousLandmark',
+    'sequence':
+        {'cvoxModifier': true, 'keys': {'keyCode': [186], 'shiftKey': [true]}}
+  },
+  {
+    'command': 'jumpToBottom',
+    'sequence':
+        {'cvoxModifier': true, 'keys': {'keyCode': [39], 'ctrlKey': [true]}}
+  },
+  {
+    'command': 'jumpToTop',
+    'sequence':
+        {'cvoxModifier': true, 'keys': {'keyCode': [37], 'ctrlKey': [true]}}
+  },
+  {
+    'command': 'forceClickOnCurrentItem',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [32]}}
+  },
+  {
+    'command': 'contextMenu',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [77]}}
+  },
+  {
+    'command': 'readFromHere',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [82]}}
+  },
+  {
+    'command': 'toggleStickyMode',
+    'sequence':
+        {'skipStripping': false, 'doubleTap': true, 'keys': {'keyCode': [91]}}
+  },
+  {
+    'command': 'passThroughMode',
+    'sequence':
+        {'cvoxModifier': true, 'keys': {'keyCode': [27], 'shiftKey': [true]}}
+  },
+  {
+    'command': 'toggleKeyboardHelp',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [190]}}
+  },
+  {
+    'command': 'stopSpeech',
+    'sequence':
+        {'cvoxModifier': false, 'keys': {'ctrlKey': [true], 'keyCode': [17]}}
+  },
+  {
+    'command': 'decreaseTtsRate',
+    'sequence':
+        {'cvoxModifier': true, 'keys': {'keyCode': [219], 'shiftKey': [true]}}
+  },
+  {
+    'command': 'increaseTtsRate',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [219]}}
+  },
+  {
+    'command': 'decreaseTtsPitch',
+    'sequence':
+        {'cvoxModifier': true, 'keys': {'keyCode': [221], 'shiftKey': [true]}}
+  },
+  {
+    'command': 'increaseTtsPitch',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [221]}}
+  },
+  {
+    'command': 'stopSpeech',
+    'sequence': {'keys': {'ctrlKey': [true], 'keyCode': [17]}}
+  },
+  {
+    'command': 'cyclePunctuationEcho',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [65, 80]}}
+  },
+  {
+    'command': 'showKbExplorerPage',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [79, 75]}}
+  },
+  {
+    'command': 'cycleTypingEcho',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [65, 84]}}
+  },
+  {
+    'command': 'showOptionsPage',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [79, 79]}}
+  },
+  {
+    'command': 'showLogPage',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [79, 87]}}
+  },
+  {
+    'command': 'enableLogging',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [79, 69]}}
+  },
+  {
+    'command': 'disableLogging',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [79, 68]}}
+  },
+  {
+    'command': 'dumpTree',
+    'sequence':
+        {'cvoxModifier': true, 'keys': {'keyCode': [68, 84], 'ctrlKey': [true]}}
+  },
+  {
+    'command': 'help',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [79, 84]}}
+  },
+  {
+    'command': 'showNextUpdatePage',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [79, 78]}}
+  },
+  {
+    'command': 'toggleEarcons',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [65, 69]}}
+  },
+  {
+    'command': 'speakTimeAndDate',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [65, 68]}}
+  },
+  {
+    'command': 'readCurrentTitle',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [65, 87]}}
+  },
+  {
+    'command': 'readCurrentURL',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [65, 85]}}
+  },
+  {
+    'command': 'reportIssue',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [65, 73]}}
+  },
+  {
+    'command': 'toggleSearchWidget',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [191]}}
+  },
+  {
+    'command': 'showHeadingsList',
+    'sequence':
+        {'cvoxModifier': true, 'keys': {'keyCode': [72], 'ctrlKey': [true]}}
+  },
+  {
+    'command': 'showFormsList',
+    'sequence':
+        {'cvoxModifier': true, 'keys': {'keyCode': [70], 'ctrlKey': [true]}}
+  },
+  {
+    'command': 'showLandmarksList',
+    'sequence':
+        {'cvoxModifier': true, 'keys': {'keyCode': [186], 'ctrlKey': [true]}}
+  },
+  {
+    'command': 'showLinksList',
+    'sequence':
+        {'cvoxModifier': true, 'keys': {'keyCode': [76], 'ctrlKey': [true]}}
+  },
+  {
+    'command': 'showTablesList',
+    'sequence':
+        {'cvoxModifier': true, 'keys': {'keyCode': [84], 'ctrlKey': [true]}}
+  },
+  {
+    'command': 'toggleBrailleCaptions',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [65, 66]}}
+  },
+  {
+    'command': 'toggleBrailleTable',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [65, 71]}}
+  },
+  {
+    'command': 'viewGraphicAsBraille',
+    'sequence':
+        {'cvoxModifier': true, 'keys': {'keyCode': [71], 'altKey': [true]}}
+  },
+  {
+    'command': 'toggleSelection',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [83]}}
+  },
+  {
+    'command': 'fullyDescribe',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [75]}}
+  },
+  {
+    'command': 'previousRow',
+    'sequence': {
+      'cvoxModifier': true,
+      'keys': {'keyCode': [38], 'ctrlKey': [true], 'altKey': [true]}
+    }
+  },
+  {
+    'command': 'nextRow',
+    'sequence': {
+      'cvoxModifier': true,
+      'keys': {'keyCode': [40], 'ctrlKey': [true], 'altKey': [true]}
+    }
+  },
+  {
+    'command': 'nextCol',
+    'sequence': {
+      'cvoxModifier': true,
+      'keys': {'keyCode': [39], 'ctrlKey': [true], 'altKey': [true]}
+    }
+  },
+  {
+    'command': 'previousCol',
+    'sequence': {
+      'cvoxModifier': true,
+      'keys': {'keyCode': [37], 'ctrlKey': [true], 'altKey': [true]}
+    }
+  },
+  {
+    'command': 'goToRowFirstCell',
+    'sequence': {
+      'cvoxModifier': true,
+      'keys': {
+        'keyCode': [37],
+        'ctrlKey': [true],
+        'altKey': [true],
+        'shiftKey': [true]
+      }
+    }
+  },
+  {
+    'command': 'goToColFirstCell',
+    'sequence': {
+      'cvoxModifier': true,
+      'keys': {
+        'keyCode': [38],
+        'ctrlKey': [true],
+        'altKey': [true],
+        'shiftKey': [true]
+      }
+    }
+  },
+  {
+    'command': 'goToColLastCell',
+    'sequence': {
+      'cvoxModifier': true,
+      'keys': {
+        'keyCode': [40],
+        'ctrlKey': [true],
+        'altKey': [true],
+        'shiftKey': [true]
+      }
+    }
+  },
+  {
+    'command': 'goToFirstCell',
+    'sequence': {
+      'cvoxModifier': true,
+      'keys': {'keyCode': [37], 'altKey': [true], 'shiftKey': [true]}
+    }
+  },
+  {
+    'command': 'goToLastCell',
+    'sequence': {
+      'cvoxModifier': true,
+      'keys': {'keyCode': [39], 'altKey': [true], 'shiftKey': [true]}
+    }
+  },
+  {
+    'command': 'goToRowLastCell',
+    'sequence': {
+      'cvoxModifier': true,
+      'keys': {
+        'keyCode': [39],
+        'ctrlKey': [true],
+        'altKey': [true],
+        'shiftKey': [true]
+      }
+    }
+  },
+  {
+    'command': 'previousGroup',
+    'sequence':
+        {'cvoxModifier': true, 'keys': {'keyCode': [38], 'ctrlKey': [true]}}
+  },
+  {
+    'command': 'nextGroup',
+    'sequence':
+        {'cvoxModifier': true, 'keys': {'keyCode': [40], 'ctrlKey': [true]}}
+  },
+  {
+    'command': 'previousSimilarItem',
+    'sequence':
+        {'cvoxModifier': true, 'keys': {'keyCode': [73], 'shiftKey': [true]}}
+  },
+  {
+    'command': 'nextSimilarItem',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [73]}}
+  },
+  {
+    'command': 'jumpToDetails',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [65, 74]}}
+  },
+  {
+    'command': 'toggleDarkScreen',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [217]}}
+  },
+  {
+    'command': 'toggleSpeechOnOrOff',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [173]}}
+  },
+  {
+    'command': 'enableChromeVoxArcSupportForCurrentApp',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [65, 219]}}
+  },
+  {
+    'command': 'disableChromeVoxArcSupportForCurrentApp',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [65, 221]}}
+  },
+  {
+    'command': 'forceClickOnCurrentItem',
+    'sequence':
+        {'cvoxModifier': true, 'keys': {'keyCode': [32]}, 'doubleTap': true}
+  },
+  {
+    'command': 'showTtsSettings',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [79, 83]}}
+  },
+  {
+    'command': 'announceBatteryDescription',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [79, 66]}}
+  },
+  {
+    'command': 'announceRichTextDescription',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [65, 70]}}
+  },
+  {
+    'command': 'readPhoneticPronunciation',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [65, 67]}}
+  },
+  {
+    'command': 'readLinkURL',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [65, 76]}}
+  },
+  {
+    'command': 'nextList',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [74, 76]}}
+  },
+  {
+    'command': 'previousList',
+    'sequence': {
+      'cvoxModifier': true,
+      'keys': {'keyCode': [74, 76], 'shiftKey': [true]}
+    }
+  },
+  {
+    'command': 'resetTextToSpeechSettings',
+    'sequence': {
+      'cvoxModifier': true,
+      'keys': {'keyCode': [220], 'ctrlKey': [true], 'shiftKey': [true]}
+    }
+  },
+  {
+    'command': 'toggleAnnotationsWidget',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [65, 79]}}
+  },
+  {
+    'command': 'logLanguageInformationForCurrentNode',
+    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [80, 76]}}
+  }
+];

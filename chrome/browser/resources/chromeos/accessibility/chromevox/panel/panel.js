@@ -328,11 +328,7 @@ Panel = class {
 
     Panel.setMode(Panel.Mode.FULLSCREEN_MENUS);
 
-    const bkgnd = chrome.extension.getBackgroundPage();
-    const range = bkgnd.ChromeVoxState.instance.getCurrentRange();
-    const node = range ? range.start.node : null;
-
-    const onFocusDo = async () => {
+    const onFocusDo = () => {
       window.removeEventListener('focus', onFocusDo);
       // Clear any existing menus and clear the callback.
       Panel.clearMenus();
@@ -377,7 +373,8 @@ Panel = class {
       // commands for touch).
 
       // Get the key map from the background page.
-      const keymap = await bkgnd['KeyMap']['fromCurrentKeyMap']();
+      const bkgnd = chrome.extension.getBackgroundPage();
+      const keymap = bkgnd['KeyMap']['get']();
 
       // Make a copy of the key bindings, get the localized title of each
       // command, and then sort them.
@@ -495,6 +492,8 @@ Panel = class {
         {menuTitle: 'role_table', predicate: AutomationPredicate.table}
       ];
 
+      const range = bkgnd.ChromeVoxState.instance.getCurrentRange();
+      const node = range ? range.start.node : null;
       for (let i = 0; i < roleListMenuMapping.length; ++i) {
         const menuTitle = roleListMenuMapping[i].menuTitle;
         const predicate = roleListMenuMapping[i].predicate;

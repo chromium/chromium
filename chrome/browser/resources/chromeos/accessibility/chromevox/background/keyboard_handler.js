@@ -50,7 +50,6 @@ BackgroundKeyboardHandler = class {
 
     chrome.accessibilityPrivate.setKeyboardListener(
         true, ChromeVox.isStickyPrefOn);
-    window['prefs'].switchToKeyMap('keymap_default');
   }
 
   /**

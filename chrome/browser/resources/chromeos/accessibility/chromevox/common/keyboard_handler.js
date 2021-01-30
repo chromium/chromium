@@ -19,9 +19,9 @@ ChromeVoxKbHandler = {};
 /**
  * The key map
  *
- * @type {KeyMap}
+ * @type {!KeyMap}
  */
-ChromeVoxKbHandler.handlerKeyMap;
+ChromeVoxKbHandler.handlerKeyMap = KeyMap.get();
 
 /**
  * Handler for ChromeVox commands. Returns undefined if the command does not

@@ -183,7 +183,6 @@ run_jsbundler("chromevox_copied_files") {
     "background/earcons/skim.wav",
     "background/earcons/small_room_2.wav",
     "background/earcons/static.wav",
-    "background/keymaps/default_keymap.json",
     "background/logging/log.css",
     "background/logging/log.html",
     "i_tutorial/components/constants.js",

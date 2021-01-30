@@ -43,4 +43,8 @@ ChromeVoxE2ETest = class extends E2ETestBase {
         'kChromeVoxExtensionId', ChromeVoxE2ETest.prototype.failOnConsoleError);
   }
 };
-ChromeVoxE2ETest.prototype.failOnConsoleError = true;
+
+// TODO: wasm logs errors if it takes too long to load (e.g. liblouis wasm).
+// Separately, LibLouis also logs errors.
+// See https://crbug.com/1170991.
+ChromeVoxE2ETest.prototype.failOnConsoleError = false;

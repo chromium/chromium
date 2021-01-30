@@ -48,9 +48,7 @@ KbExplorer = class {
     window.backgroundWindow['BrailleCommandHandler']['setEnabled'](false);
     window.backgroundWindow['GestureCommandHandler']['setEnabled'](false);
 
-    (async () => {
-      ChromeVoxKbHandler.handlerKeyMap = await KeyMap.fromDefaults();
-    })();
+    ChromeVoxKbHandler.handlerKeyMap = KeyMap.get();
 
     /** @type {LibLouis.Translator} */
     KbExplorer.currentBrailleTranslator_ =
