@@ -18,7 +18,7 @@
     void transform(unrestricted double a, unrestricted double b, unrestricted double c, unrestricted double d, unrestricted double e, unrestricted double f);
     void setTransform(unrestricted double a, unrestricted double b, unrestricted double c, unrestricted double d, unrestricted double e, unrestricted double f);
     void resetTransform();
-    [RaisesException] void setTransform(optional DOMMatrix2DInit transform = {});
+    [RaisesException] void setTransform(optional DOMMatrixInit transform = {});
     DOMMatrix getTransform();
 
 

@@ -564,10 +564,75 @@ void BaseRenderingContext2D::translate(double tx, double ty) {
 
 void BaseRenderingContext2D::transform(double m11,
                                        double m12,
+                                       double m13,
+                                       double m14,
+                                       double m21,
+                                       double m22,
+                                       double m23,
+                                       double m24,
+                                       double m31,
+                                       double m32,
+                                       double m33,
+                                       double m34,
+                                       double m41,
+                                       double m42,
+                                       double m43,
+                                       double m44) {
+  cc::PaintCanvas* c = GetOrCreatePaintCanvas();
+  if (!c)
+    return;
+
+  if (!std::isfinite(m11) || !std::isfinite(m12) || !std::isfinite(m13) ||
+      !std::isfinite(m14) || !std::isfinite(m21) || !std::isfinite(m22) ||
+      !std::isfinite(m23) || !std::isfinite(m24) || !std::isfinite(m31) ||
+      !std::isfinite(m32) || !std::isfinite(m33) || !std::isfinite(m34) ||
+      !std::isfinite(m41) || !std::isfinite(m42) || !std::isfinite(m43) ||
+      !std::isfinite(m44))
+    return;
+
+  // clamp to float to avoid float cast overflow when used as SkScalar
+  float fm11 = clampTo<float>(m11);
+  float fm12 = clampTo<float>(m12);
+  float fm13 = clampTo<float>(m13);
+  float fm14 = clampTo<float>(m14);
+  float fm21 = clampTo<float>(m21);
+  float fm22 = clampTo<float>(m22);
+  float fm23 = clampTo<float>(m23);
+  float fm24 = clampTo<float>(m24);
+  float fm31 = clampTo<float>(m31);
+  float fm32 = clampTo<float>(m32);
+  float fm33 = clampTo<float>(m33);
+  float fm34 = clampTo<float>(m34);
+  float fm41 = clampTo<float>(m41);
+  float fm42 = clampTo<float>(m42);
+  float fm43 = clampTo<float>(m43);
+  float fm44 = clampTo<float>(m44);
+
+  TransformationMatrix transform(fm11, fm12, fm13, fm14, fm21, fm22, fm23, fm24,
+                                 fm31, fm32, fm33, fm34, fm41, fm42, fm43,
+                                 fm44);
+  TransformationMatrix new_transform = GetState().GetTransform() * transform;
+  if (GetState().GetTransform() == new_transform)
+    return;
+
+  ModifiableState().SetTransform(new_transform);
+  if (!GetState().IsTransformInvertible())
+    return;
+
+  c->concat(TransformationMatrix::ToSkM44(transform));
+  path_.Transform(transform.Inverse());
+}
+
+void BaseRenderingContext2D::transform(double m11,
+                                       double m12,
                                        double m21,
                                        double m22,
                                        double dx,
                                        double dy) {
+  // TODO(crbug.com/1140535) Investigate the performance implications of simply
+  // calling the 3d version above with:
+  // transform(m11, m12, 0, 0, m21, m22, 0, 0, 0, 0, 1, 0, dx, dy, 0, 1);
+
   cc::PaintCanvas* c = GetOrCreatePaintCanvas();
   if (!c)
     return;
@@ -636,26 +701,74 @@ void BaseRenderingContext2D::setTransform(double m11,
   transform(m11, m12, m21, m22, dx, dy);
 }
 
-void BaseRenderingContext2D::setTransform(DOMMatrix2DInit* transform,
+void BaseRenderingContext2D::setTransform(double m11,
+                                          double m12,
+                                          double m13,
+                                          double m14,
+                                          double m21,
+                                          double m22,
+                                          double m23,
+                                          double m24,
+                                          double m31,
+                                          double m32,
+                                          double m33,
+                                          double m34,
+                                          double m41,
+                                          double m42,
+                                          double m43,
+                                          double m44) {
+  if (!std::isfinite(m11) || !std::isfinite(m12) || !std::isfinite(m13) ||
+      !std::isfinite(m14) || !std::isfinite(m21) || !std::isfinite(m22) ||
+      !std::isfinite(m23) || !std::isfinite(m24) || !std::isfinite(m31) ||
+      !std::isfinite(m32) || !std::isfinite(m33) || !std::isfinite(m34) ||
+      !std::isfinite(m41) || !std::isfinite(m42) || !std::isfinite(m43) ||
+      !std::isfinite(m44))
+    return;
+
+  resetTransform();
+  transform(m11, m12, m13, m14, m21, m22, m23, m24, m31, m32, m33, m34, m41,
+            m42, m43, m44);
+}
+
+void BaseRenderingContext2D::setTransform(DOMMatrixInit* transform,
                                           ExceptionState& exception_state) {
   DOMMatrixReadOnly* m =
-      DOMMatrixReadOnly::fromMatrix2D(transform, exception_state);
+      DOMMatrixReadOnly::fromMatrix(transform, exception_state);
 
   if (!m)
     return;
 
-  setTransform(m->m11(), m->m12(), m->m21(), m->m22(), m->m41(), m->m42());
+  // The new canvas 2d API supports 3d transforms.
+  // https://github.com/fserb/canvas2D/blob/master/spec/perspective-transforms.md
+  // If it is not enabled, throw 3d information away.
+  if (RuntimeEnabledFeatures::NewCanvas2DAPIEnabled()) {
+    setTransform(m->m11(), m->m12(), m->m13(), m->m14(), m->m21(), m->m22(),
+                 m->m23(), m->m24(), m->m31(), m->m32(), m->m33(), m->m34(),
+                 m->m41(), m->m42(), m->m43(), m->m44());
+  } else {
+    setTransform(m->m11(), m->m12(), m->m21(), m->m22(), m->m41(), m->m42());
+  }
 }
 
 DOMMatrix* BaseRenderingContext2D::getTransform() {
   const TransformationMatrix& t = GetState().GetTransform();
   DOMMatrix* m = DOMMatrix::Create();
-  m->setA(t.A());
-  m->setB(t.B());
-  m->setC(t.C());
-  m->setD(t.D());
-  m->setE(t.E());
-  m->setF(t.F());
+  m->setM11(t.M11());
+  m->setM12(t.M12());
+  m->setM13(t.M13());
+  m->setM14(t.M14());
+  m->setM21(t.M21());
+  m->setM22(t.M22());
+  m->setM23(t.M23());
+  m->setM24(t.M24());
+  m->setM31(t.M31());
+  m->setM32(t.M32());
+  m->setM33(t.M33());
+  m->setM34(t.M34());
+  m->setM41(t.M41());
+  m->setM42(t.M42());
+  m->setM43(t.M43());
+  m->setM44(t.M44());
   return m;
 }
 
