@@ -93,15 +93,17 @@ public class SearchEngineLogoUtils {
      * @return True if the search engine logo is enabled, regardless of visibility.
      */
     public boolean isSearchEngineLogoEnabled() {
-        // Note: LocaleManager#needToCheckForSearchEnginePromo() checks several system features
-        // which risk throwing a security exception. Catching that here to prevent it from
-        // crashing the app.
+        // LocaleManager#needToCheckForSearchEnginePromo() checks several system features which
+        // risk throwing exceptions. See the exception cases below for details.
         try {
             return !LocaleManager.getInstance().needToCheckForSearchEnginePromo()
                     && ChromeFeatureList.isInitialized()
                     && ChromeFeatureList.isEnabled(ChromeFeatureList.OMNIBOX_SEARCH_ENGINE_LOGO);
         } catch (SecurityException e) {
-            Log.e(TAG, "Security exception thrown by failed IPC, see crbug.com/1027709");
+            Log.e(TAG, "Can thrown by failed IPC, see crbug.com/1027709");
+            return false;
+        } catch (RuntimeException e) {
+            Log.e(TAG, "Can be thrown if underlying services are dead, see crbug.com/1121602");
             return false;
         }
     }

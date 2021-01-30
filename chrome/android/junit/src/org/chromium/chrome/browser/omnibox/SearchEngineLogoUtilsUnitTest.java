@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
@@ -20,6 +21,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -226,6 +228,28 @@ public class SearchEngineLogoUtilsUnitTest {
         int color = Color.BLUE;
         Bitmap bitmap = createSolidImageWithSlighlyLargerEdgeCoverage(100, 100, color, Color.RED);
         assertEquals(color, mSearchEngineLogoUtils.getMostCommonEdgeColor(bitmap));
+    }
+
+    @Test
+    public void isSearchEngineLogoEnabled_SecurityExceptionThrown() {
+        doThrow(SecurityException.class).when(mLocaleManager).needToCheckForSearchEnginePromo();
+
+        try {
+            mSearchEngineLogoUtils.isSearchEngineLogoEnabled();
+        } catch (Exception e) {
+            Assert.fail("No exception should be thrown.");
+        }
+    }
+
+    @Test
+    public void isSearchEngineLogoEnabled_DeadObjectRuntimeExceptionThrown() {
+        doThrow(RuntimeException.class).when(mLocaleManager).needToCheckForSearchEnginePromo();
+
+        try {
+            mSearchEngineLogoUtils.isSearchEngineLogoEnabled();
+        } catch (Exception e) {
+            Assert.fail("No exception should be thrown.");
+        }
     }
 
     private static Bitmap createSolidImage(int width, int height, int color) {
