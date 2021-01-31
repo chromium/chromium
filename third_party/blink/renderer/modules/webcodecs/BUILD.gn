@@ -82,6 +82,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "audio_decoder_broker_test.cc",
+    "audio_frame_test.cc",
     "decoder_selector_test.cc",
     "encoded_video_chunk_test.cc",
     "image_decoder_external_test.cc",

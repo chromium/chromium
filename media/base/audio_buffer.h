@@ -131,6 +131,14 @@ class MEDIA_EXPORT AudioBuffer
                   int dest_frame_offset,
                   AudioBus* dest) const;
 
+  // Copy all |adjusted_frame_count_| frames into |dest|. Each of |dest|'s
+  // elements correspond to a different channel. It's the caller's
+  // responsibility to make sure enough memory per channel was allocated.
+  // The frames are converted and clipped from their source format into planar
+  // float32 data.
+  // Note: Bitstream formats are not supported.
+  void ReadAllFrames(const std::vector<float*>& dest) const;
+
   // Trim an AudioBuffer by removing |frames_to_trim| frames from the start.
   // Timestamp and duration are adjusted to reflect the fewer frames.
   // Note that repeated calls to TrimStart() may result in timestamp() and

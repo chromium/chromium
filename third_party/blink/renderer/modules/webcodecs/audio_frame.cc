@@ -30,27 +30,14 @@ AudioFrame::AudioFrame(scoped_refptr<media::AudioBuffer> buffer)
   auto converted_data =
       media::AudioBus::Create(buffer->channel_count(), buffer->frame_count());
 
+  std::vector<float*> wrapped_channels(buffer_->numberOfChannels());
+  for (size_t ch = 0; ch < wrapped_channels.size(); ++ch)
+    wrapped_channels[ch] = buffer_->getChannelData(ch)->Data();
+
   // Copy the frames, converting from |buffer|'s internal format to float.
-  // TODO(https://crbug.com/1171840): Add a version of
-  // media::AudioBus::ReadFrame that can directly read into |buffer_|'s data.
   // TODO(chcunningham): Avoid this copy by refactoring blink::AudioBuffer to
   // ref a media::AudioBuffer and only copy for calls to copyToChannel().
-  buffer->ReadFrames(converted_data->frames(), 0 /* source_frame_offset */,
-                     0 /* dest_frame_offset */, converted_data.get());
-
-  CopyDataToInternalBuffer(converted_data.get());
-}
-
-void AudioFrame::CopyDataToInternalBuffer(media::AudioBus* data) {
-  DCHECK_EQ(static_cast<int>(buffer_->numberOfChannels()), data->channels());
-  DCHECK_EQ(static_cast<int>(buffer_->length()), data->frames());
-
-  for (int i = 0; i < data->channels(); ++i) {
-    size_t byte_length = buffer_->getChannelData(i)->byteLength();
-    DCHECK_EQ(byte_length, data->frames() * sizeof(float));
-    float* buffer_data_dest = buffer_->getChannelData(i)->Data();
-    memcpy(data->channel(i), buffer_data_dest, byte_length);
-  }
+  buffer->ReadAllFrames(wrapped_channels);
 }
 
 std::unique_ptr<AudioFrameSerializationData>
@@ -69,7 +56,7 @@ AudioFrame::GetSerializationData() {
     size_t byte_length = buffer_->getChannelData(i)->byteLength();
     DCHECK_EQ(byte_length, data_copy->frames() * sizeof(float));
     float* buffer_data_src = buffer_->getChannelData(i)->Data();
-    memcpy(buffer_data_src, data_copy->channel(i), byte_length);
+    memcpy(data_copy->channel(i), buffer_data_src, byte_length);
   }
 
   return AudioFrameSerializationData::Wrap(
@@ -87,7 +74,16 @@ AudioFrame::AudioFrame(std::unique_ptr<AudioFrameSerializationData> data)
   // Copy the frames.
   // TODO(https://crbug.com/1168418): Avoid this copy by refactoring
   // blink::AudioBuffer accept a serializable audio data backing object.
-  CopyDataToInternalBuffer(data_bus);
+  DCHECK_EQ(static_cast<int>(buffer_->numberOfChannels()),
+            data_bus->channels());
+  DCHECK_EQ(static_cast<int>(buffer_->length()), data_bus->frames());
+
+  for (int i = 0; i < data_bus->channels(); ++i) {
+    size_t byte_length = buffer_->getChannelData(i)->byteLength();
+    DCHECK_EQ(byte_length, data_bus->frames() * sizeof(float));
+    float* buffer_data_dest = buffer_->getChannelData(i)->Data();
+    memcpy(buffer_data_dest, data_bus->channel(i), byte_length);
+  }
 }
 
 void AudioFrame::close() {
