@@ -2267,7 +2267,7 @@ void NavigationRequest::OnResponseStarted(
 
   // MHTML document can't be framed into non-MHTML document (and vice versa).
   // The full page must load from the MHTML archive or none of it.
-  if (is_mhtml_archive && !IsInMainFrame()) {
+  if (is_mhtml_archive && !IsInMainFrame() && response_should_be_rendered_) {
     OnRequestFailedInternal(
         network::URLLoaderCompletionStatus(net::ERR_BLOCKED_BY_RESPONSE),
         false /* skip_throttles */, base::nullopt /* error_page_contnet */,
@@ -2285,6 +2285,8 @@ void NavigationRequest::OnResponseStarted(
           response_head_.get(), url::Origin::Create(common_params_->url),
           common_params_->url, common_params_->referrer->url);
   if (coop_requires_blocking) {
+    // TODO(https://crbug.com/1172169): Investigate what must be done in case of
+    // a download.
     OnRequestFailedInternal(
         network::URLLoaderCompletionStatus(*coop_requires_blocking),
         false /* skip_throttles */, base::nullopt /* error_page_content */,
@@ -2297,6 +2299,8 @@ void NavigationRequest::OnResponseStarted(
   const base::Optional<network::mojom::BlockedByResponseReason>
       coep_requires_blocking = EnforceCOEP();
   if (coep_requires_blocking) {
+    // TODO(https://crbug.com/1172169): Investigate what must be done in case of
+    // a download.
     OnRequestFailedInternal(
         network::URLLoaderCompletionStatus(*coep_requires_blocking),
         false /* skip_throttles */, base::nullopt /* error_page_content */,
@@ -2349,6 +2353,8 @@ void NavigationRequest::OnResponseStarted(
             coep_reporter->QueueNavigationReport(redirect_chain_[0],
                                                  /*report_only=*/false);
           }
+          // TODO(https://crbug.com/1172169): Investigate what must be done in
+          // case of a download.
           OnRequestFailedInternal(network::URLLoaderCompletionStatus(
                                       network::mojom::BlockedByResponseReason::
                                           kCoepFrameResourceNeedsCoepHeader),
