@@ -1324,7 +1324,7 @@ void ServiceWorkerRegistry::DidDeleteRegistration(
     uint64_t call_id,
     storage::mojom::ServiceWorkerDatabaseStatus database_status,
     uint64_t deleted_resources_size,
-    ServiceWorkerStorage::OriginState origin_state) {
+    storage::mojom::ServiceWorkerStorageOriginState origin_state) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   FinishRemoteCall(call_id);
   blink::ServiceWorkerStatusCode status =
@@ -1349,7 +1349,8 @@ void ServiceWorkerRegistry::DidDeleteRegistration(
   if (registration)
     registration->UnsetStored();
 
-  if (origin_state == ServiceWorkerStorage::OriginState::kDelete) {
+  if (origin_state ==
+      storage::mojom::ServiceWorkerStorageOriginState::kDelete) {
     context_->NotifyAllRegistrationsDeletedForOrigin(
         url::Origin::Create(origin));
     if (special_storage_policy_) {

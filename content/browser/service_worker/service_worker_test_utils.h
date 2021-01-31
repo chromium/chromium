@@ -15,7 +15,6 @@
 #include "base/task/post_task.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
 #include "content/browser/service_worker/service_worker_cache_writer.h"
-#include "content/browser/service_worker/service_worker_database.h"
 #include "content/browser/service_worker/service_worker_host.h"
 #include "content/browser/service_worker/service_worker_single_script_update_checker.h"
 #include "content/common/navigation_client.mojom.h"

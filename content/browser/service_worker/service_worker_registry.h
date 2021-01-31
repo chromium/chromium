@@ -11,9 +11,8 @@
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/sequence_bound.h"
-#include "content/browser/service_worker/service_worker_database.h"
+#include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
 #include "content/browser/service_worker/service_worker_registration.h"
-#include "content/browser/service_worker/service_worker_storage.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -52,8 +51,10 @@ FORWARD_DECLARE_TEST(ServiceWorkerRegistryTest, StoragePolicyChange);
 // connection should be closed before shutdown.
 class CONTENT_EXPORT ServiceWorkerRegistry {
  public:
-  using ResourceList = ServiceWorkerStorage::ResourceList;
-  using RegistrationList = ServiceWorkerStorage::RegistrationList;
+  using ResourceList =
+      std::vector<storage::mojom::ServiceWorkerResourceRecordPtr>;
+  using RegistrationList =
+      std::vector<storage::mojom::ServiceWorkerRegistrationDataPtr>;
   using FindRegistrationCallback = base::OnceCallback<void(
       blink::ServiceWorkerStatusCode status,
       scoped_refptr<ServiceWorkerRegistration> registration)>;
@@ -347,7 +348,7 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
       uint64_t call_id,
       storage::mojom::ServiceWorkerDatabaseStatus database_status,
       uint64_t deleted_resources_size,
-      ServiceWorkerStorage::OriginState origin_state);
+      storage::mojom::ServiceWorkerStorageOriginState origin_state);
 
   void DidUpdateRegistration(
       StatusCallback callback,

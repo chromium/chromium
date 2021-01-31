@@ -510,9 +510,10 @@ class ServiceWorkerRegistryTest : public testing::Test {
     base::RunLoop loop;
     storage_control()->GetPurgeableResourceIdsForTest(
         base::BindLambdaForTesting(
-            [&](ServiceWorkerDatabase::Status status,
+            [&](storage::mojom::ServiceWorkerDatabaseStatus status,
                 const std::vector<int64_t>& resource_ids) {
-              EXPECT_EQ(status, ServiceWorkerDatabase::Status::kOk);
+              EXPECT_EQ(status,
+                        storage::mojom::ServiceWorkerDatabaseStatus::kOk);
               ids = resource_ids;
               loop.Quit();
             }));
@@ -524,9 +525,9 @@ class ServiceWorkerRegistryTest : public testing::Test {
     std::vector<int64_t> ids;
     base::RunLoop loop;
     storage_control()->GetPurgingResourceIdsForTest(base::BindLambdaForTesting(
-        [&](ServiceWorkerDatabase::Status status,
+        [&](storage::mojom::ServiceWorkerDatabaseStatus status,
             const std::vector<int64_t>& resource_ids) {
-          EXPECT_EQ(status, ServiceWorkerDatabase::Status::kOk);
+          EXPECT_EQ(status, storage::mojom::ServiceWorkerDatabaseStatus::kOk);
           ids = resource_ids;
           loop.Quit();
         }));
@@ -2157,9 +2158,10 @@ class ServiceWorkerRegistryResourceTest : public ServiceWorkerRegistryTest {
     base::RunLoop loop;
     storage_control()->GetUncommittedResourceIdsForTest(
         base::BindLambdaForTesting(
-            [&](ServiceWorkerDatabase::Status status,
+            [&](storage::mojom::ServiceWorkerDatabaseStatus status,
                 const std::vector<int64_t>& resource_ids) {
-              EXPECT_EQ(status, ServiceWorkerDatabase::Status::kOk);
+              EXPECT_EQ(status,
+                        storage::mojom::ServiceWorkerDatabaseStatus::kOk);
               ids = resource_ids;
               loop.Quit();
             }));
