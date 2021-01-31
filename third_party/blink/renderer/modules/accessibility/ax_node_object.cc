@@ -1365,6 +1365,9 @@ bool AXNodeObject::IsNonNativeTextControl() const {
 }
 
 bool AXNodeObject::IsOffScreen() const {
+  if (IsDetached())
+    return false;
+  DCHECK(GetNode());
   return DisplayLockUtilities::NearestLockedExclusiveAncestor(*GetNode());
 }
 
