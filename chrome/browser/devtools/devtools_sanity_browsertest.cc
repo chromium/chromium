@@ -1658,8 +1658,13 @@ bool InterceptURLLoad(content::URLLoaderInterceptor::RequestParams* params) {
     load_timing.push_end = base::TimeTicks::Now();
 
   params->client->OnReceiveResponse(std::move(response));
-  mojo::DataPipe pipe;  // The response's body is empty. The pipe is not filled.
-  params->client->OnStartLoadingResponseBody(std::move(pipe.consumer_handle));
+
+  // The response's body is empty. The pipe is not filled.
+  mojo::ScopedDataPipeProducerHandle producer_handle;
+  mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  EXPECT_EQ(mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle),
+            MOJO_RESULT_OK);
+  params->client->OnStartLoadingResponseBody(std::move(consumer_handle));
   params->client->OnComplete(network::URLLoaderCompletionStatus());
   return true;
 }

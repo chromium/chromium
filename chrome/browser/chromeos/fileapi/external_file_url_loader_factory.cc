@@ -274,17 +274,19 @@ class ExternalFileURLLoader : public network::mojom::URLLoader {
     head_.content_length = size;
     isolated_file_system_scope_ = std::move(isolated_file_system_scope);
 
-    mojo::DataPipe pipe(kDefaultPipeSize);
-    if (!pipe.consumer_handle.is_valid() || !pipe.producer_handle.is_valid()) {
+    mojo::ScopedDataPipeProducerHandle producer_handle;
+    mojo::ScopedDataPipeConsumerHandle consumer_handle;
+    if (mojo::CreateDataPipe(kDefaultPipeSize, producer_handle,
+                             consumer_handle) != MOJO_RESULT_OK) {
       CompleteWithError(net::ERR_FAILED);
       return;
     }
     head_.response_start = base::TimeTicks::Now();
     client_->OnReceiveResponse(head_.Clone());
-    client_->OnStartLoadingResponseBody(std::move(pipe.consumer_handle));
+    client_->OnStartLoadingResponseBody(std::move(consumer_handle));
 
     data_producer_ = std::make_unique<FileSystemReaderDataPipeProducer>(
-        std::move(pipe.producer_handle), std::move(stream_reader), size,
+        std::move(producer_handle), std::move(stream_reader), size,
         base::BindOnce(&ExternalFileURLLoader::OnFileWritten,
                        weak_ptr_factory_.GetWeakPtr()));
     data_producer_->Write();

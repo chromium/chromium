@@ -27,7 +27,7 @@ namespace offline_pages {
 
 namespace {
 
-constexpr size_t kBufferSize = 4096;
+constexpr uint32_t kBufferSize = 4096;
 
 content::WebContents* GetWebContents(int frame_tree_node_id) {
   return content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
@@ -254,8 +254,9 @@ void OfflinePageURLLoader::OnReceiveResponse(
       &OfflinePageURLLoader::OnMojoDisconnect, weak_ptr_factory_.GetWeakPtr()));
   client_.Bind(std::move(client));
 
-  mojo::DataPipe pipe(kBufferSize);
-  if (!pipe.consumer_handle.is_valid()) {
+  mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  if (mojo::CreateDataPipe(kBufferSize, producer_handle_, consumer_handle) !=
+      MOJO_RESULT_OK) {
     Finish(net::ERR_FAILED);
     return;
   }
@@ -283,9 +284,7 @@ void OfflinePageURLLoader::OnReceiveResponse(
   response_head->content_length = file_size;
 
   client_->OnReceiveResponse(std::move(response_head));
-  client_->OnStartLoadingResponseBody(std::move(pipe.consumer_handle));
-
-  producer_handle_ = std::move(pipe.producer_handle);
+  client_->OnStartLoadingResponseBody(std::move(consumer_handle));
 
   handle_watcher_ = std::make_unique<mojo::SimpleWatcher>(
       FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL,

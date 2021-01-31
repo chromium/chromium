@@ -221,15 +221,19 @@ class SlowDownloadInterceptor {
 
   static void SendBody(content::URLLoaderInterceptor::RequestParams* params,
                        std::string data) {
-    mojo::DataPipe pipe(data.size());
-    ASSERT_TRUE(pipe.producer_handle.is_valid());
+    mojo::ScopedDataPipeProducerHandle producer_handle;
+    mojo::ScopedDataPipeConsumerHandle consumer_handle;
+    ASSERT_EQ(
+        mojo::CreateDataPipe(data.size(), producer_handle, consumer_handle),
+        MOJO_RESULT_OK);
+
     uint32_t write_size = data.size();
-    MojoResult result = pipe.producer_handle->WriteData(
-        data.c_str(), &write_size, MOJO_WRITE_DATA_FLAG_NONE);
+    MojoResult result = producer_handle->WriteData(data.c_str(), &write_size,
+                                                   MOJO_WRITE_DATA_FLAG_NONE);
     ASSERT_EQ(MOJO_RESULT_OK, result);
     ASSERT_EQ(data.size(), write_size);
-    ASSERT_TRUE(pipe.consumer_handle.is_valid());
-    params->client->OnStartLoadingResponseBody(std::move(pipe.consumer_handle));
+    ASSERT_TRUE(consumer_handle.is_valid());
+    params->client->OnStartLoadingResponseBody(std::move(consumer_handle));
   }
 
   const std::map<std::string, Handler> handlers_;

@@ -89,13 +89,18 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
               &PluginResponseInterceptorURLLoaderThrottle::ResumeLoad,
               weak_factory_.GetWeakPtr()));
 
-  mojo::DataPipe data_pipe(data_pipe_size);
+  mojo::ScopedDataPipeProducerHandle producer_handle;
+  mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  CHECK_EQ(
+      mojo::CreateDataPipe(data_pipe_size, producer_handle, consumer_handle),
+      MOJO_RESULT_OK);
+
   uint32_t len = static_cast<uint32_t>(payload.size());
   CHECK_EQ(MOJO_RESULT_OK,
-           data_pipe.producer_handle->WriteData(
-               payload.c_str(), &len, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));
+           producer_handle->WriteData(payload.c_str(), &len,
+                                      MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));
 
-  new_client->OnStartLoadingResponseBody(std::move(data_pipe.consumer_handle));
+  new_client->OnStartLoadingResponseBody(std::move(consumer_handle));
 
   network::URLLoaderCompletionStatus status(net::OK);
   status.decoded_body_length = len;

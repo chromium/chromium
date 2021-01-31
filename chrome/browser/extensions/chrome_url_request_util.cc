@@ -163,8 +163,10 @@ class ResourceBundleFileLoader : public network::mojom::URLLoader {
     head->content_length = data->size();
     head->mime_type = *read_mime_type;
     DetermineCharset(head->mime_type, data.get(), &head->charset);
-    mojo::DataPipe pipe(data->size());
-    if (!pipe.consumer_handle.is_valid()) {
+    mojo::ScopedDataPipeProducerHandle producer_handle;
+    mojo::ScopedDataPipeConsumerHandle consumer_handle;
+    if (mojo::CreateDataPipe(data->size(), producer_handle, consumer_handle) !=
+        MOJO_RESULT_OK) {
       client_->OnComplete(network::URLLoaderCompletionStatus(net::ERR_FAILED));
       client_.reset();
       MaybeDeleteSelf();
@@ -178,11 +180,11 @@ class ResourceBundleFileLoader : public network::mojom::URLLoader {
                                head->mime_type.c_str());
     }
     client_->OnReceiveResponse(std::move(head));
-    client_->OnStartLoadingResponseBody(std::move(pipe.consumer_handle));
+    client_->OnStartLoadingResponseBody(std::move(consumer_handle));
 
     uint32_t write_size = data->size();
-    MojoResult result = pipe.producer_handle->WriteData(
-        data->front(), &write_size, MOJO_WRITE_DATA_FLAG_NONE);
+    MojoResult result = producer_handle->WriteData(data->front(), &write_size,
+                                                   MOJO_WRITE_DATA_FLAG_NONE);
     OnFileWritten(result);
   }
 
