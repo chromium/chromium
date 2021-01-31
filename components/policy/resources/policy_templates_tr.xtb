@@ -747,7 +747,7 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
       Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. <ph name="WILDCARD_VALUE" />, bu politikada kabul edilen bir değer değildir.</translation>
 <translation id="2043749682619281558">Giriş ekranında imleç vurgulamayı etkinleştir</translation>
 <translation id="2043770014371753404">Devre dışı bırakılmış kurumsal yazıcılar</translation>
-<translation id="2057317273526988987">URL listesine erişimi engelle</translation>
+<translation id="2057317273526988987">URL listesine erişime izin ver</translation>
 <translation id="2061810934846663491">Uzaktan erişim ana makineleri için gereken alan adlarını yapılandır</translation>
 <translation id="2069350366303315077">Politika, Etkin değerine ayarlanırsa <ph name="PRODUCT_NAME" />, misafir oturumunu zorunlu kılıp profil ile oturum açma işlemlerini engeller. Misafir oturumları, tüm pencerelerin gizli modda olduğu <ph name="PRODUCT_NAME" /> profilleridir.
 
