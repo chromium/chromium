@@ -294,7 +294,7 @@ void InterfaceFactoryImpl::CreateMediaFoundationRendererOnTaskRunner(
         FROM_HERE,
         base::BindOnce(
             &InterfaceFactoryImpl::CreateMediaFoundationRendererOnTaskRunner,
-            base::Unretained(this), std::move(task_runner), std::move(receiver),
+            base::Unretained(this), task_runner, std::move(receiver),
             std::move(renderer_extension_receiver)));
     return;
   }
