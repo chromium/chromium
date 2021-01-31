@@ -391,7 +391,8 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
   subtitleLabel.font = BodyFont();
   subtitleLabel.textColor = bodyTextColor;
   subtitleLabel.numberOfLines = 0;
-  subtitleLabel.text = l10n_util::GetNSString(IDS_NEW_TAB_OTR_SUBTITLE);
+  subtitleLabel.text =
+      l10n_util::GetNSString(IDS_NEW_TAB_OTR_SUBTITLE_WITH_READING_LIST);
   subtitleLabel.adjustsFontForContentSizeCategory = YES;
 
   UIButton* learnMoreButton = [UIButton buttonWithType:UIButtonTypeCustom];

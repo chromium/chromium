@@ -44,6 +44,7 @@
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/reading_list/features/reading_list_switches.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
@@ -306,7 +307,9 @@ void NTPResourceCache::CreateNewTabIncognitoHTML() {
           profile_->GetAllOffTheRecordProfiles()[0]);
 
   replacements["incognitoTabDescription"] =
-      l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_SUBTITLE);
+      l10n_util::GetStringUTF8(reading_list::switches::IsReadingListEnabled()
+                                   ? IDS_NEW_TAB_OTR_SUBTITLE_WITH_READING_LIST
+                                   : IDS_NEW_TAB_OTR_SUBTITLE);
   replacements["incognitoTabHeading"] =
       l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_TITLE);
   replacements["incognitoTabWarning"] =
