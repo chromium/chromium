@@ -59094,6 +59094,18 @@ Called by update_net_trust_anchors.py.-->
   <int value="9" label="SetLocalAnswerResolved"/>
 </enum>
 
+<enum name="PeerConnectionBundleUsage">
+  <int value="0" label="There are no m-lines"/>
+  <int value="1" label="No BUNDLE, datachannel-only"/>
+  <int value="2" label="No BUNDLE, at most one audio/video m-line"/>
+  <int value="3" label="No BUNDLE, more than one audio/video m-line"/>
+  <int value="4" label="Using BUNDLE, datachannel-only"/>
+  <int value="5" label="Using BUNDLE, at most one audio/video m-line"/>
+  <int value="6" label="Using BUNDLE, more than one audio/video m-line"/>
+  <int value="7" label="No BUNDLE, legacy plan-b"/>
+  <int value="8" label="Using BUNDLE, legacy plan-b"/>
+</enum>
+
 <enum name="PeerConnectionCallSetupState">
   <int value="0" label="NotStarted"/>
   <int value="1" label="Started"/>

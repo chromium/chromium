@@ -1188,6 +1188,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.PeerConnection.BundleUsage"
+    enum="PeerConnectionBundleUsage" expires_after="2022-01-01">
+  <owner>hta@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    Determines whether BUNDLE is used in remote offers or answers. Recorded
+    during setRemoteDescription calls. Distinguishes between simple, complex,
+    datachannel-only and legacy plan-b usage.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.PeerConnection.CandidatePairType{IPProtocolType}"
     enum="IceCandidatePairTypes" expires_after="2020-04-05">
   <owner>qingsi@google.com</owner>
