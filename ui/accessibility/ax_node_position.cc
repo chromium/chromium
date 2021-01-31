@@ -49,6 +49,124 @@ AXNodePosition::AXPositionInstance AXNodePosition::Clone() const {
   return AXPositionInstance(new AXNodePosition(*this));
 }
 
+base::string16 AXNodePosition::GetText() const {
+  if (IsNullPosition())
+    return base::string16();
+
+  // Special case, if a node has only ignored descendants, i.e., it appears to
+  // be empty to assistive software, on some platforms we need to still treat it
+  // as a character and a word boundary. We achieve this by adding an embedded
+  // object character in the text representation used by this class, but we
+  // don't expose that character to assistive software that tries to retrieve
+  // the node's inner text.
+  if (IsEmptyObjectReplacedByCharacter())
+    return AXNode::kEmbeddedCharacter;
+
+  const AXNode* anchor = GetAnchor();
+  DCHECK(anchor);
+  switch (g_ax_embedded_object_behavior) {
+    case AXEmbeddedObjectBehavior::kSuppressCharacter:
+      return base::UTF8ToUTF16(anchor->GetInnerText());
+    case AXEmbeddedObjectBehavior::kExposeCharacter:
+      return anchor->GetHypertext();
+  }
+}
+
+bool AXNodePosition::IsInLineBreak() const {
+  if (IsNullPosition())
+    return false;
+  DCHECK(GetAnchor());
+  return GetAnchor()->IsLineBreak();
+}
+
+bool AXNodePosition::IsInTextObject() const {
+  if (IsNullPosition())
+    return false;
+  DCHECK(GetAnchor());
+  return GetAnchor()->IsText();
+}
+
+bool AXNodePosition::IsInWhiteSpace() const {
+  if (IsNullPosition())
+    return false;
+  DCHECK(GetAnchor());
+  return GetAnchor()->IsLineBreak() ||
+         base::ContainsOnlyChars(GetText(), base::kWhitespaceUTF16);
+}
+
+// This override is an optimized version AXPosition::MaxTextOffset. Instead of
+// concatenating the strings in GetText() to then get their text length, we sum
+// the lengths of the individual strings. This is faster than concatenating the
+// strings first and then taking their length, especially when the process
+// is recursive.
+int AXNodePosition::MaxTextOffset() const {
+  if (IsNullPosition())
+    return INVALID_OFFSET;
+
+  if (IsEmptyObjectReplacedByCharacter())
+    return 1;
+
+  const AXNode* anchor = GetAnchor();
+  DCHECK(anchor);
+  // TODO(nektar): Replace with PlatformChildCount when AXNodePosition and
+  // BrowserAccessibilityPosition will be merged.
+  if (!AnchorChildCount() || anchor->IsText())
+    return base::UTF8ToUTF16(anchor->GetInnerText()).length();
+
+  int text_length = 0;
+  // This is an optimization over retrieving the text of the whole subtree and
+  // then finding its length. It saves time by adding lengths instead of
+  // concatenating strings.
+  for (int i = 0; i < AnchorChildCount(); ++i)
+    text_length += CreateChildPositionAt(i)->MaxTextOffset();
+
+  return text_length;
+}
+
+bool AXNodePosition::IsEmbeddedObjectInParent() const {
+  switch (g_ax_embedded_object_behavior) {
+    case AXEmbeddedObjectBehavior::kSuppressCharacter:
+      return false;
+    case AXEmbeddedObjectBehavior::kExposeCharacter:
+      // We expose an "object replacement character" for all nodes except
+      // textual nodes as well as nodes that are invisible to platform APIs, AKA
+      // nodes that are descendants of platform leaves. In the former case,
+      // textual nodes are represented by their actual text in the text of their
+      // parent nodes, in order to maintain compatibility with how Firefox
+      // exposes text in IAccessibleText. For the latter case, an example of a
+      // platform leaf is a plain text field because all of the accessibility
+      // subtree inside the text field is not visible to platform APIs.
+      //
+      // Please note that for navigational purposes, we need to expose an
+      // "object replacement character" in empty controls, such as in an empty
+      // text field. The presence or the absence of accessible content inside a
+      // control might alter whether an "object replacement character" would be
+      // exposed in that control, in contrast to ordinary text such as in the
+      // case of a non-empty simple text field which should only have textual
+      // nodes inside it. This is because empty controls need to act as a word
+      // and character boundary. See
+      // "AXPosition::IsEmptyObjectReplacedByCharacter()" for more information.
+      return !IsNullPosition() && !GetAnchor()->IsText() &&
+             !GetAnchor()->IsChildOfLeaf();
+  }
+}
+
+bool AXNodePosition::IsInLineBreakingObject() const {
+  if (IsNullPosition())
+    return false;
+  DCHECK(GetAnchor());
+  return GetAnchor()->data().GetBoolAttribute(
+             ax::mojom::BoolAttribute::kIsLineBreakingObject) &&
+         !GetAnchor()->IsInListMarker();
+}
+
+ax::mojom::Role AXNodePosition::GetAnchorRole() const {
+  if (IsNullPosition())
+    return ax::mojom::Role::kNone;
+  DCHECK(GetAnchor());
+  return GetRole(GetAnchor());
+}
+
 void AXNodePosition::AnchorChild(int child_index,
                                  AXTreeID* tree_id,
                                  AXNodeID* child_id) const {
@@ -176,124 +294,6 @@ AXNodeID AXNodePosition::GetAnchorID(AXNode* node) const {
 
 AXTreeID AXNodePosition::GetTreeID(AXNode* node) const {
   return node->tree()->GetAXTreeID();
-}
-
-base::string16 AXNodePosition::GetText() const {
-  if (IsNullPosition())
-    return base::string16();
-
-  // Special case, if a node has only ignored descendants, i.e., it appears to
-  // be empty to assistive software, on some platforms we need to still treat it
-  // as a character and a word boundary. We achieve this by adding an embedded
-  // object character in the text representation used by this class, but we
-  // don't expose that character to assistive software that tries to retrieve
-  // the node's inner text.
-  if (IsEmptyObjectReplacedByCharacter())
-    return AXNode::kEmbeddedCharacter;
-
-  const AXNode* anchor = GetAnchor();
-  DCHECK(anchor);
-  switch (g_ax_embedded_object_behavior) {
-    case AXEmbeddedObjectBehavior::kSuppressCharacter:
-      return base::UTF8ToUTF16(anchor->GetInnerText());
-    case AXEmbeddedObjectBehavior::kExposeCharacter:
-      return anchor->GetHypertext();
-  }
-}
-
-bool AXNodePosition::IsInLineBreak() const {
-  if (IsNullPosition())
-    return false;
-  DCHECK(GetAnchor());
-  return GetAnchor()->IsLineBreak();
-}
-
-bool AXNodePosition::IsInTextObject() const {
-  if (IsNullPosition())
-    return false;
-  DCHECK(GetAnchor());
-  return GetAnchor()->IsText();
-}
-
-bool AXNodePosition::IsInWhiteSpace() const {
-  if (IsNullPosition())
-    return false;
-  DCHECK(GetAnchor());
-  return GetAnchor()->IsLineBreak() ||
-         base::ContainsOnlyChars(GetText(), base::kWhitespaceUTF16);
-}
-
-// This override is an optimized version AXPosition::MaxTextOffset. Instead of
-// concatenating the strings in GetText() to then get their text length, we sum
-// the lengths of the individual strings. This is faster than concatenating the
-// strings first and then taking their length, especially when the process
-// is recursive.
-int AXNodePosition::MaxTextOffset() const {
-  if (IsNullPosition())
-    return INVALID_OFFSET;
-
-  if (IsEmptyObjectReplacedByCharacter())
-    return 1;
-
-  const AXNode* anchor = GetAnchor();
-  DCHECK(anchor);
-  // TODO(nektar): Replace with PlatformChildCount when AXNodePosition and
-  // BrowserAccessibilityPosition will be merged.
-  if (!AnchorChildCount() || anchor->IsText())
-    return base::UTF8ToUTF16(anchor->GetInnerText()).length();
-
-  int text_length = 0;
-  // This is an optimization over retrieving the text of the whole subtree and
-  // then finding its length. It saves time by adding lengths instead of
-  // concatenating strings.
-  for (int i = 0; i < AnchorChildCount(); ++i)
-    text_length += CreateChildPositionAt(i)->MaxTextOffset();
-
-  return text_length;
-}
-
-bool AXNodePosition::IsEmbeddedObjectInParent() const {
-  switch (g_ax_embedded_object_behavior) {
-    case AXEmbeddedObjectBehavior::kSuppressCharacter:
-      return false;
-    case AXEmbeddedObjectBehavior::kExposeCharacter:
-      // We expose an "object replacement character" for all nodes except
-      // textual nodes as well as nodes that are invisible to platform APIs, AKA
-      // nodes that are descendants of platform leaves. In the former case,
-      // textual nodes are represented by their actual text in the text of their
-      // parent nodes, in order to maintain compatibility with how Firefox
-      // exposes text in IAccessibleText. For the latter case, an example of a
-      // platform leaf is a plain text field because all of the accessibility
-      // subtree inside the text field is not visible to platform APIs.
-      //
-      // Please note that for navigational purposes, we need to expose an
-      // "object replacement character" in empty controls, such as in an empty
-      // text field. The presence or the absence of accessible content inside a
-      // control might alter whether an "object replacement character" would be
-      // exposed in that control, in contrast to ordinary text such as in the
-      // case of a non-empty simple text field which should only have textual
-      // nodes inside it. This is because empty controls need to act as a word
-      // and character boundary. See
-      // "AXPosition::IsEmptyObjectReplacedByCharacter()" for more information.
-      return !IsNullPosition() && !GetAnchor()->IsText() &&
-             !GetAnchor()->IsChildOfLeaf();
-  }
-}
-
-bool AXNodePosition::IsInLineBreakingObject() const {
-  if (IsNullPosition())
-    return false;
-  DCHECK(GetAnchor());
-  return GetAnchor()->data().GetBoolAttribute(
-             ax::mojom::BoolAttribute::kIsLineBreakingObject) &&
-         !GetAnchor()->IsInListMarker();
-}
-
-ax::mojom::Role AXNodePosition::GetAnchorRole() const {
-  if (IsNullPosition())
-    return ax::mojom::Role::kNone;
-  DCHECK(GetAnchor());
-  return GetRole(GetAnchor());
 }
 
 ax::mojom::Role AXNodePosition::GetRole(AXNode* node) const {
