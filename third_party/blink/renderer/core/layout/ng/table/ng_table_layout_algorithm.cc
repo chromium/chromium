@@ -533,11 +533,12 @@ void NGTableLayoutAlgorithm::ComputeRows(
   const bool is_table_block_size_specified = !Style().LogicalHeight().IsAuto();
   LayoutUnit total_table_block_size;
   wtf_size_t section_index = 0;
-  for (const NGBlockNode& section : grouped_children) {
+  for (auto it = grouped_children.begin(); it != grouped_children.end(); ++it) {
     NGTableAlgorithmUtils::ComputeSectionMinimumRowBlockSizes(
-        section, table_grid_inline_size, is_table_block_size_specified,
+        *it, table_grid_inline_size, is_table_block_size_specified,
         column_locations, table_borders, border_spacing.block_size,
-        section_index++, sections, rows, cell_block_constraints);
+        section_index++, it.TreatAsTBody(), sections, rows,
+        cell_block_constraints);
     total_table_block_size += sections->back().block_size;
   }
 

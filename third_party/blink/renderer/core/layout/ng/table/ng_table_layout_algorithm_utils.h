@@ -61,6 +61,7 @@ class NGTableAlgorithmUtils {
       const NGTableBorders& table_borders,
       const LayoutUnit block_border_spacing,
       wtf_size_t section_index,
+      bool treat_section_as_tbody,
       NGTableTypes::Sections* sections,
       NGTableTypes::Rows* rows,
       NGTableTypes::CellBlockConstraints* cell_block_constraints);

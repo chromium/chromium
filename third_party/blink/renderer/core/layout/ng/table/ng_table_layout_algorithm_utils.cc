@@ -465,6 +465,7 @@ void NGTableAlgorithmUtils::ComputeSectionMinimumRowBlockSizes(
     const NGTableBorders& table_borders,
     const LayoutUnit block_border_spacing,
     wtf_size_t section_index,
+    bool treat_section_as_tbody,
     NGTableTypes::Sections* sections,
     NGTableTypes::Rows* rows,
     NGTableTypes::CellBlockConstraints* cell_block_constraints) {
@@ -528,8 +529,9 @@ void NGTableAlgorithmUtils::ComputeSectionMinimumRowBlockSizes(
       section_block_size = section_fixed_block_size;
     }
   }
-  sections->push_back(NGTableTypes::CreateSection(
-      section, start_row, current_row - start_row, section_block_size));
+  sections->push_back(
+      NGTableTypes::CreateSection(section, start_row, current_row - start_row,
+                                  section_block_size, treat_section_as_tbody));
 }
 
 void NGColspanCellTabulator::StartRow() {

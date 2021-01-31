@@ -205,7 +205,8 @@ NGTableTypes::Section NGTableTypes::CreateSection(
     const NGLayoutInputNode& section,
     wtf_size_t start_row,
     wtf_size_t rows,
-    LayoutUnit block_size) {
+    LayoutUnit block_size,
+    bool treat_as_tbody) {
   const Length& section_css_block_size = section.Style().LogicalHeight();
   // TODO(crbug.com/1105272): Decide what to do with |Length::IsCalculated()|.
   bool is_constrained =
@@ -213,14 +214,12 @@ NGTableTypes::Section NGTableTypes::CreateSection(
   base::Optional<float> percent;
   if (section_css_block_size.IsPercent())
     percent = section_css_block_size.Percent();
-  bool is_tbody =
-      section.GetDOMNode()->HasTagName(html_names::kTbodyTag);
   return Section{start_row,
                  rows,
                  block_size,
                  percent,
                  is_constrained,
-                 is_tbody,
+                 treat_as_tbody,
                  /* needs_redistribution */ false};
 }
 
@@ -316,7 +315,8 @@ void NGTableTypes::Column::Encompass(
   is_constrained |= cell->is_constrained;
 }
 
-NGTableGroupedChildren::NGTableGroupedChildren(const NGBlockNode& table) {
+NGTableGroupedChildren::NGTableGroupedChildren(const NGBlockNode& table)
+    : header(NGBlockNode(nullptr)), footer(NGBlockNode(nullptr)) {
   for (NGLayoutInputNode child = table.FirstChild(); child;
        child = child.NextSibling()) {
     NGBlockNode block_child = To<NGBlockNode>(child);
@@ -329,14 +329,19 @@ NGTableGroupedChildren::NGTableGroupedChildren(const NGBlockNode& table) {
           columns.push_back(block_child);
           break;
         case EDisplay::kTableHeaderGroup:
-          headers.push_back(block_child);
+          if (!header)
+            header = block_child;
+          else
+            bodies.push_back(block_child);
           break;
         case EDisplay::kTableRowGroup:
           bodies.push_back(block_child);
           break;
         case EDisplay::kTableFooterGroup:
-          // Footers are displayed in reverse order: first footer at the bottom.
-          footers.push_front(block_child);
+          if (!footer)
+            footer = block_child;
+          else
+            bodies.push_back(block_child);
           break;
         default:
           NOTREACHED() << "unexpected table child";
@@ -356,30 +361,57 @@ NGTableGroupedChildrenIterator NGTableGroupedChildren::end() const {
 NGTableGroupedChildrenIterator::NGTableGroupedChildrenIterator(
     const NGTableGroupedChildren& grouped_children,
     bool is_end)
-    : grouped_children_(grouped_children), current_vector_(nullptr) {
+    : grouped_children_(grouped_children) {
   if (is_end) {
-    current_vector_ = &grouped_children_.footers;
-    current_iterator_ = current_vector_->end();
+    current_section_ = kEnd;
     return;
   }
+  current_section_ = kNone;
   AdvanceToNonEmptySection();
 }
 
 NGTableGroupedChildrenIterator& NGTableGroupedChildrenIterator::operator++() {
-  ++current_iterator_;
-  if (current_iterator_ == current_vector_->end())
-    AdvanceToNonEmptySection();
+  switch (current_section_) {
+    case kHead:
+    case kFoot:
+      AdvanceToNonEmptySection();
+      break;
+    case kBody:
+      ++body_iterator_;
+      if (body_iterator_ == grouped_children_.bodies.end())
+        AdvanceToNonEmptySection();
+      break;
+    case kEnd:
+      break;
+    case kNone:
+      NOTREACHED();
+      break;
+  }
   return *this;
 }
 
 NGBlockNode NGTableGroupedChildrenIterator::operator*() const {
-  return *current_iterator_;
+  switch (current_section_) {
+    case kHead:
+      return grouped_children_.header;
+    case kFoot:
+      return grouped_children_.footer;
+    case kBody:
+      return *body_iterator_;
+    case kEnd:
+    case kNone:
+      NOTREACHED();
+      return NGBlockNode(nullptr);
+  }
 }
 
 bool NGTableGroupedChildrenIterator::operator==(
     const NGTableGroupedChildrenIterator& rhs) const {
-  return rhs.current_vector_ == current_vector_ &&
-         rhs.current_iterator_ == current_iterator_;
+  if (current_section_ != rhs.current_section_)
+    return false;
+  if (current_section_ == kBody)
+    return rhs.body_iterator_ == body_iterator_;
+  return true;
 }
 
 bool NGTableGroupedChildrenIterator::operator!=(
@@ -388,19 +420,29 @@ bool NGTableGroupedChildrenIterator::operator!=(
 }
 
 void NGTableGroupedChildrenIterator::AdvanceToNonEmptySection() {
-  if (current_vector_ == &grouped_children_.footers)
-    return;
-  if (!current_vector_) {
-    current_vector_ = &grouped_children_.headers;
-  } else if (current_vector_ == &grouped_children_.headers) {
-    current_vector_ = &grouped_children_.bodies;
-  } else if (current_vector_ == &grouped_children_.bodies) {
-    current_vector_ = &grouped_children_.footers;
-  }
-  current_iterator_ = current_vector_->begin();
-  // If new group is empty, recursively advance.
-  if (current_iterator_ == current_vector_->end()) {
-    AdvanceToNonEmptySection();
+  switch (current_section_) {
+    case kNone:
+      current_section_ = kHead;
+      if (!grouped_children_.header)
+        AdvanceToNonEmptySection();
+      break;
+    case kHead:
+      current_section_ = kBody;
+      body_iterator_ = grouped_children_.bodies.begin();
+      if (body_iterator_ == grouped_children_.bodies.end())
+        AdvanceToNonEmptySection();
+      break;
+    case kBody:
+      current_section_ = kFoot;
+      if (!grouped_children_.footer)
+        AdvanceToNonEmptySection();
+      break;
+    case kFoot:
+      current_section_ = kEnd;
+      break;
+    case kEnd:
+      NOTREACHED();
+      break;
   }
 }
 
