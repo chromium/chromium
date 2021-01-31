@@ -667,11 +667,6 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
     return false;
 
   if (layout_object_->IsText()) {
-    if (CanIgnoreTextAsEmpty()) {
-      if (ignored_reasons)
-        ignored_reasons->push_back(IgnoredReason(kAXEmptyText));
-      return true;
-    }
     // Ignore TextAlternative of the list marker for SUMMARY because:
     //  - TextAlternatives for disclosure-* are triangle symbol characters used
     //    to visually indicate the expansion state.
@@ -753,114 +748,6 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
   if (ignored_reasons)
     ignored_reasons->push_back(IgnoredReason(kAXUninteresting));
   return true;
-}
-
-bool AXLayoutObject::HasAriaCellRole(Element* elem) const {
-  DCHECK(elem);
-  const AtomicString& aria_role_str =
-      elem->FastGetAttribute(html_names::kRoleAttr);
-  if (aria_role_str.IsEmpty())
-    return false;
-
-  ax::mojom::blink::Role aria_role = AriaRoleToWebCoreRole(aria_role_str);
-  return aria_role == ax::mojom::blink::Role::kCell ||
-         aria_role == ax::mojom::blink::Role::kColumnHeader ||
-         aria_role == ax::mojom::blink::Role::kRowHeader;
-}
-
-// Return true if whitespace is not necessary to keep adjacent_node separate
-// in screen reader output from surrounding nodes.
-bool AXLayoutObject::CanIgnoreSpaceNextTo(LayoutObject* layout,
-                                          bool is_after) const {
-  if (!layout)
-    return true;
-
-  // If adjacent to a whitespace character, the current space can be ignored.
-  if (layout->IsText()) {
-    auto* layout_text = To<LayoutText>(layout);
-    if (layout_text->HasEmptyText())
-      return false;
-    if (layout_text->GetText().Impl()->ContainsOnlyWhitespaceOrEmpty())
-      return true;
-    auto adjacent_char =
-        is_after ? layout_text->FirstCharacterAfterWhitespaceCollapsing()
-                 : layout_text->LastCharacterAfterWhitespaceCollapsing();
-    return adjacent_char == ' ' || adjacent_char == '\n' ||
-           adjacent_char == '\t';
-  }
-
-  // Keep spaces between images and other visible content.
-  if (layout->IsLayoutImage())
-    return false;
-
-  // Do not keep spaces between blocks.
-  if (!layout->IsLayoutInline())
-    return true;
-
-  // If next to an element that a screen reader will always read separately,
-  // the the space can be ignored.
-  // Elements that are naturally focusable even without a tabindex tend
-  // to be rendered separately even if there is no space between them.
-  // Some ARIA roles act like table cells and don't need adjacent whitespace to
-  // indicate separation.
-  // False negatives are acceptable in that they merely lead to extra whitespace
-  // static text nodes.
-  // TODO(aleventhal) Do we want this? Is it too hard/complex for Braille/Cvox?
-  auto* elem = DynamicTo<Element>(layout->GetNode());
-  if (elem && HasAriaCellRole(elem)) {
-    return true;
-  }
-
-  // Test against the appropriate child text node.
-  auto* layout_inline = To<LayoutInline>(layout);
-  LayoutObject* child =
-      is_after ? layout_inline->FirstChild() : layout_inline->LastChild();
-  return CanIgnoreSpaceNextTo(child, is_after);
-}
-
-bool AXLayoutObject::CanIgnoreTextAsEmpty() const {
-  if (!layout_object_ || !layout_object_->IsText() || !layout_object_->Parent())
-    return false;
-
-  auto* layout_text = To<LayoutText>(layout_object_);
-
-  // Ignore empty text
-  if (layout_text->HasEmptyText()) {
-    return true;
-  }
-
-  // Don't ignore node-less text (e.g. list bullets)
-  Node* node = GetNode();
-  if (!node)
-    return false;
-
-  // Always keep if anything other than collapsible whitespace.
-  if (!layout_text->IsAllCollapsibleWhitespace())
-    return false;
-
-  // Will now look at sibling nodes. We need the closest element to the
-  // whitespace markup-wise, e.g. tag1 in these examples:
-  // [whitespace] <tag1><tag2>x</tag2></tag1>
-  // <span>[whitespace]</span> <tag1><tag2>x</tag2></tag1>
-  Node* prev_node = FlatTreeTraversal::PreviousAbsoluteSibling(*node);
-  if (!prev_node)
-    return true;
-
-  Node* next_node = FlatTreeTraversal::NextSkippingChildren(*node);
-  if (!next_node)
-    return true;
-
-  // Ignore extra whitespace-only text if a sibling will be presented
-  // separately by screen readers whether whitespace is there or not.
-  if (CanIgnoreSpaceNextTo(prev_node->GetLayoutObject(), false) ||
-      CanIgnoreSpaceNextTo(next_node->GetLayoutObject(), true))
-    return true;
-
-  // Text elements with empty whitespace are returned, because of cases
-  // such as <span>Hello</span><span> </span><span>World</span>. Keeping
-  // the whitespace-only node means we now correctly expose "Hello World".
-  // See crbug.com/435765.
-  return false;
 }
 
 //
@@ -1198,6 +1085,10 @@ AXObject* AXLayoutObject::NextOnLine() const {
 
   // For consistency between the forward and backward directions, try to always
   // return leaf nodes.
+  // TODO(accessibility) It doesn't make sense to return aria-owned nodes here,
+  // as they could be anywhere in the tree, and not on this line.
+  // Should probably only use children from LayoutTreeBuilderTraversal() like
+  // AXNodeObject::TextFromDescendants() does.
   if (result && result->ChildCountIncludingIgnored())
     return result->DeepestFirstChildIncludingIgnored();
   return result;
@@ -1313,6 +1204,10 @@ AXObject* AXLayoutObject::PreviousOnLine() const {
 
   // For consistency between the forward and backward directions, try to always
   // return leaf nodes.
+  // TODO(accessibility) It doesn't make sense to return aria-owned nodes here,
+  // as they could be anywhere in the tree, and not on this line.
+  // Should probably only use children from LayoutTreeBuilderTraversal() like
+  // AXNodeObject::TextFromDescendants() does.
   if (result && result->ChildCountIncludingIgnored())
     return result->DeepestLastChildIncludingIgnored();
   return result;

@@ -281,6 +281,11 @@ INSTANTIATE_TEST_SUITE_P(
                      DumpAccessibilityTestHelper::TestPasses().size()),
     DumpAccessibilityTreeTestPassToString());
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityCSSBeforeAfterBlock) {
+  RunCSSTest(FILE_PATH_LITERAL("before-after-block.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCSSColor) {
   RunCSSTest(FILE_PATH_LITERAL("color.html"));
 }
@@ -293,6 +298,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityCSSContentVisibilityHiddenCheckFailure) {
   RunCSSTest(FILE_PATH_LITERAL("content-visibility-hidden-check-failure.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityCSSContentVisibilityToHidden) {
+  RunCSSTest(FILE_PATH_LITERAL("content-visibility-to-hidden.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCSSFontStyle) {

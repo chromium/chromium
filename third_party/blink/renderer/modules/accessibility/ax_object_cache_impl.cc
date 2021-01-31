@@ -67,6 +67,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_api_shim.h"
+#include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_progress.h"
 #include "third_party/blink/renderer/core/layout/layout_table.h"
 #include "third_party/blink/renderer/core/layout/layout_table_cell.h"
@@ -142,6 +143,101 @@ bool IsPseudoElementDescendant(const LayoutObject& layout_object) {
   }
 }
 
+bool HasAriaCellRole(Element* elem) {
+  DCHECK(elem);
+  const AtomicString& role_str = elem->FastGetAttribute(html_names::kRoleAttr);
+  if (role_str.IsEmpty())
+    return false;
+
+  return ui::IsCellOrTableHeader(AXObject::AriaRoleToWebCoreRole(role_str));
+}
+
+// Return true if whitespace is not necessary to keep adjacent_node separate
+// in screen reader output from surrounding nodes.
+bool CanIgnoreSpaceNextTo(LayoutObject* layout_object, bool is_after) {
+  if (!layout_object)
+    return true;
+
+  // If adjacent to a whitespace character, the current space can be ignored.
+  if (layout_object->IsText()) {
+    auto* layout_text = To<LayoutText>(layout_object);
+    if (layout_text->HasEmptyText())
+      return false;
+    if (layout_text->GetText().Impl()->ContainsOnlyWhitespaceOrEmpty())
+      return true;
+    auto adjacent_char =
+        is_after ? layout_text->FirstCharacterAfterWhitespaceCollapsing()
+                 : layout_text->LastCharacterAfterWhitespaceCollapsing();
+    return adjacent_char == ' ' || adjacent_char == '\n' ||
+           adjacent_char == '\t';
+  }
+
+  // Keep spaces between images and other visible content.
+  if (layout_object->IsLayoutImage())
+    return false;
+
+  // Do not keep spaces between blocks.
+  if (!layout_object->IsLayoutInline())
+    return true;
+
+  // If next to an element that a screen reader will always read separately,
+  // the the space can be ignored.
+  // Elements that are naturally focusable even without a tabindex tend
+  // to be rendered separately even if there is no space between them.
+  // Some ARIA roles act like table cells and don't need adjacent whitespace to
+  // indicate separation.
+  // False negatives are acceptable in that they merely lead to extra whitespace
+  // static text nodes.
+  auto* elem = DynamicTo<Element>(layout_object->GetNode());
+  if (elem && HasAriaCellRole(elem))
+    return true;
+
+  // Test against the appropriate child text node.
+  auto* layout_inline = To<LayoutInline>(layout_object);
+  LayoutObject* child =
+      is_after ? layout_inline->FirstChild() : layout_inline->LastChild();
+  return CanIgnoreSpaceNextTo(child, is_after);
+}
+
+bool IsTextRelevantForAccessibility(const LayoutText& layout_text) {
+  DCHECK(layout_text.Parent());
+  Node* node = layout_text.GetNode();
+  DCHECK(node);  // Anonymous text is processed earlier, doesn't reach here.
+
+  // Ignore empty text.
+  if (layout_text.HasEmptyText())
+    return false;
+
+  // Always keep if anything other than collapsible whitespace.
+  if (!layout_text.IsAllCollapsibleWhitespace() || layout_text.IsBR())
+    return true;
+
+  // Will now look at sibling nodes. We need the closest element to the
+  // whitespace markup-wise, e.g. tag1 in these examples:
+  // [whitespace] <tag1><tag2>x</tag2></tag1>
+  // <span>[whitespace]</span> <tag1><tag2>x</tag2></tag1>
+  Node* prev_node = FlatTreeTraversal::PreviousAbsoluteSibling(*node);
+  if (!prev_node)
+    return false;
+
+  Node* next_node = FlatTreeTraversal::NextSkippingChildren(*node);
+  if (!next_node)
+    return false;
+
+  // Ignore extra whitespace-only text if a sibling will be presented
+  // separately by screen readers whether whitespace is there or not.
+  if (CanIgnoreSpaceNextTo(prev_node->GetLayoutObject(), false) ||
+      CanIgnoreSpaceNextTo(next_node->GetLayoutObject(), true)) {
+    return false;
+  }
+
+  // Text elements with empty whitespace are returned, because of cases
+  // such as <span>Hello</span><span> </span><span>World</span>. Keeping
+  // the whitespace-only node means we now correctly expose "Hello World".
+  // See crbug.com/435765.
+  return true;
+}
+
 bool IsLayoutObjectRelevantForAccessibility(const LayoutObject& layout_object) {
   if (layout_object.IsAnonymous()) {
     // Anonymous means there is no DOM node, and it's been inserted by the
@@ -149,8 +245,11 @@ bool IsLayoutObjectRelevantForAccessibility(const LayoutObject& layout_object) {
     // inserted as a parent of an inline where there are block siblings.
 
     // Visible anonymous content (text, image, layout quotes) is relevant.
-    if (!layout_object.CanHaveChildren())
+    if (!layout_object.CanHaveChildren()) {
+      if (layout_object.IsText())
+        return !To<LayoutText>(layout_object).HasEmptyText();
       return true;
+    }
 
     // Anonymous containers are not relevant, unless inside a pseudo element.
     // Allowing anonymous pseudo elements ensures that all visible descendant
@@ -158,6 +257,9 @@ bool IsLayoutObjectRelevantForAccessibility(const LayoutObject& layout_object) {
     // inside of pseudo content.
     return IsPseudoElementDescendant(layout_object);
   }
+
+  if (layout_object.IsText())
+    return IsTextRelevantForAccessibility(To<LayoutText>(layout_object));
 
   Node* node = layout_object.GetNode();
   DCHECK(node) << "Non-anonymous layout objects always have a node";
@@ -172,11 +274,46 @@ bool IsLayoutObjectRelevantForAccessibility(const LayoutObject& layout_object) {
   return true;
 }
 
-bool IsNodeRelevantForAccessibility(const Node* node, bool parent_ax_known) {
+bool IsNodeRelevantForAccessibility(const Node* node,
+                                    bool parent_ax_known,
+                                    bool is_layout_object_relevant) {
   if (!node || !node->isConnected())
     return false;
 
-  if (!node->IsElementNode() && !node->IsTextNode() && !node->IsDocumentNode())
+  if (node->IsDocumentNode())
+    return true;
+
+  if (node->IsTextNode()) {
+    // Layout has more info available to determine if whitespace is relevant.
+    // If display-locked, layout object may be missing or stale:
+    // Assume that all display-locked text nodes are relevant.
+    if (DisplayLockUtilities::NearestLockedInclusiveAncestor(*node))
+      return true;
+
+    // If rendered, decision is from IsLayoutObjectRelevantForAccessibility().
+    if (node->GetLayoutObject())
+      return is_layout_object_relevant;
+
+    // If unrendered + no parent, it is in a shadow tree. Consider irrelevant.
+    if (!node->parentElement()) {
+      DCHECK(node->IsInShadowTree());
+      return false;
+    }
+
+    // If unrendered and in <canvas>, consider even whitespace relevant.
+    // TODO(aleventhal) Consider including all text, even unrendered whitespace,
+    // whether or not in <canvas>. For now this matches previous behavior.
+    // Including all text would allow simply returning true at this point.
+    if (node->parentElement()->IsInCanvasSubtree())
+      return true;
+
+    // Must be unrendered because of CSS. Consider relevant if non-whitespace.
+    // Allowing rendered non-whitespace to be considered relevant will allow
+    // use for accessible relations such as labelledby and describedby.
+    return !To<Text>(node)->ContainsOnlyWhitespaceOrEmpty();
+  }
+
+  if (!node->IsElementNode())
     return false;  // Only documents, elements and text nodes get ax objects.
 
   if (IsA<HTMLAreaElement>(node) &&
@@ -255,6 +392,11 @@ AXObjectCacheImpl::~AXObjectCacheImpl() {
 }
 
 void AXObjectCacheImpl::Dispose() {
+#if DCHECK_IS_ON()
+  DCHECK(!has_been_disposed_) << "Something is wrong, trying to dispose twice.";
+  has_been_disposed_ = true;
+#endif
+
   for (auto& entry : objects_) {
     AXObject* obj = entry.value;
     obj->Detach();
@@ -263,9 +405,6 @@ void AXObjectCacheImpl::Dispose() {
 
   permission_observer_receiver_.reset();
 
-#if DCHECK_IS_ON()
-  has_been_disposed_ = true;
-#endif
 }
 
 AXObject* AXObjectCacheImpl::Root() {
@@ -395,7 +534,16 @@ AXObject* AXObjectCacheImpl::Get(const LayoutObject* layout_object) {
     Invalidate(ax_id);
   }
 
-  return objects_.at(ax_id);
+  AXObject* result = objects_.at(ax_id);
+#if DCHECK_IS_ON()
+  DCHECK(result) << "Had AXID for Node but no entry in objects_";
+  DCHECK(result->IsAXNodeObject());
+  // Do not allow detached objects except when disposing entire tree.
+  DCHECK(!result->IsDetached() || has_been_disposed_)
+      << "Detached AXNodeObject in map: "
+      << "AXID#" << ax_id << " Node=" << node;
+#endif
+  return result;
 }
 
 AXObject* AXObjectCacheImpl::Get(const Node* node) {
@@ -431,13 +579,31 @@ AXObject* AXObjectCacheImpl::Get(const Node* node) {
     Invalidate(node_id);
   }
 
-  if (layout_id)
-    return objects_.at(layout_id);
-
+  if (layout_id) {
+    AXObject* result = objects_.at(layout_id);
+#if DCHECK_IS_ON()
+    DCHECK(result) << "Had AXID for LayoutObject but no entry in objects_";
+    DCHECK(result->IsAXLayoutObject());
+    // Do not allow detached objects except when disposing entire tree.
+    DCHECK(!result->IsDetached() || has_been_disposed_)
+        << "Detached AXLayoutObject in map: "
+        << "AXID#" << layout_id << " LayoutObject=" << layout_object;
+#endif
+    return result;
+  }
   if (!node_id)
     return nullptr;
 
-  return objects_.at(node_id);
+  AXObject* result = objects_.at(node_id);
+#if DCHECK_IS_ON()
+  DCHECK(result) << "Had AXID for Node but no entry in objects_";
+  DCHECK(result->IsAXNodeObject());
+  // Do not allow detached objects except when disposing entire tree.
+  DCHECK(!result->IsDetached() || has_been_disposed_)
+      << "Detached AXNodeObject in map: "
+      << "AXID#" << node_id << " Node=" << node;
+#endif
+  return result;
 }
 
 AXObject* AXObjectCacheImpl::Get(AbstractInlineTextBox* inline_text_box) {
@@ -449,7 +615,16 @@ AXObject* AXObjectCacheImpl::Get(AbstractInlineTextBox* inline_text_box) {
   if (!ax_id)
     return nullptr;
 
-  return objects_.at(ax_id);
+  AXObject* result = objects_.at(ax_id);
+#if DCHECK_IS_ON()
+  DCHECK(result) << "Had AXID for inline text box but no entry in objects_";
+  DCHECK(result->IsAXInlineTextBox());
+  // Do not allow detached objects except when disposing entire tree.
+  DCHECK(!result->IsDetached() || has_been_disposed_)
+      << "Detached AXInlineTextBox in map: "
+      << "AXID#" << ax_id << " Node=" << inline_text_box->GetText();
+#endif
+  return result;
 }
 
 void AXObjectCacheImpl::Invalidate(AXID ax_id) {
@@ -480,7 +655,16 @@ AXObject* AXObjectCacheImpl::Get(AccessibleNode* accessible_node) {
   if (!ax_id)
     return nullptr;
 
-  return objects_.at(ax_id);
+  AXObject* result = objects_.at(ax_id);
+#if DCHECK_IS_ON()
+  DCHECK(result) << "Had AXID for accessible_node but no entry in objects_";
+  DCHECK(result->IsVirtualObject());
+  // Do not allow detached objects except when disposing entire tree.
+  DCHECK(!result->IsDetached() || has_been_disposed_)
+      << "Detached AXVirtualObject in map: "
+      << "AXID#" << ax_id << " Node=" << accessible_node->element();
+#endif
+  return result;
 }
 
 AXObject* AXObjectCacheImpl::CreateFromRenderer(LayoutObject* layout_object) {
@@ -593,7 +777,17 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
                                            AXObject* parent_if_known,
                                            AXID use_axid) {
   DCHECK(node);
-  if (!IsNodeRelevantForAccessibility(node, parent_if_known))
+
+  // If the node has a layout object, prefer using that as the primary key for
+  // the AXObject, with the exception of the HTMLAreaElement and nodes within
+  // a locked subtree, which are created based on its node.
+  LayoutObject* layout_object = node->GetLayoutObject();
+  if (layout_object && IsLayoutObjectRelevantForAccessibility(*layout_object) &&
+      !DisplayLockUtilities::NearestLockedExclusiveAncestor(*node)) {
+    return CreateAndInit(layout_object, parent_if_known, use_axid);
+  }
+
+  if (!IsNodeRelevantForAccessibility(node, parent_if_known, false))
     return nullptr;
 
 #if DCHECK_IS_ON()
@@ -605,15 +799,6 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
          DocumentLifecycle::kAfterPerformLayout)
       << "Unclean document at lifecycle " << document->Lifecycle().ToString();
 #endif  // DCHECK_IS_ON()
-
-  // If the node has a layout object, prefer using that as the primary key for
-  // the AXObject, with the exception of the HTMLAreaElement and nodes within
-  // a locked subtree, which are created based on its node.
-  LayoutObject* layout_object = node->GetLayoutObject();
-  if (layout_object && IsLayoutObjectRelevantForAccessibility(*layout_object) &&
-      !DisplayLockUtilities::NearestLockedExclusiveAncestor(*node)) {
-    return CreateAndInit(layout_object, parent_if_known, use_axid);
-  }
 
   // Return null if inside a shadow tree of something that can't have children,
   // for example, an <img> has a user agent shadow root containing a <span> for
@@ -672,7 +857,7 @@ AXObject* AXObjectCacheImpl::CreateAndInit(LayoutObject* layout_object,
 
   Node* node = layout_object->GetNode();
 
-  if (node && !IsNodeRelevantForAccessibility(node, parent_if_known))
+  if (node && !IsNodeRelevantForAccessibility(node, parent_if_known, true))
     return nullptr;
 
   // Return null if inside a shadow tree of something that can't have children,

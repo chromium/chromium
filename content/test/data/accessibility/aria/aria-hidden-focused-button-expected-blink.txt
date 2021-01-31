@@ -4,7 +4,5 @@ rootWebArea
 ++++++genericContainer ignored invisible
 ++++++++button invisible name='Button 1'
 ++++++++++staticText ignored invisible name='Button 1'
-++++++++staticText ignored invisible name=' '
 ++++++++button invisible name='Button 2'
 ++++++++++staticText ignored invisible name='Button 2'
-++++++++staticText ignored invisible

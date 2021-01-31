@@ -551,14 +551,6 @@ bool AXNodeObject::ComputeAccessibilityIsIgnored(
   return true;
 }
 
-bool AXNodeObject::CanIgnoreTextAsEmpty() const {
-  // Note: it's safe to call AXNodeObject::ComputeAccessibilityIsIgnored,
-  // since that has just the logic we need - but note that
-  // AXLayoutObject::ComputeAccessibilityIsIgnored calls CanIgnoreTextAsEmpty
-  // so that'd create a loop.
-  return ComputeAccessibilityIsIgnored();
-}
-
 static bool IsListElement(Node* node) {
   return IsA<HTMLUListElement>(*node) || IsA<HTMLOListElement>(*node) ||
          IsA<HTMLDListElement>(*node);
@@ -1193,6 +1185,9 @@ void AXNodeObject::Init(AXObject* parent_if_known) {
 }
 
 void AXNodeObject::Detach() {
+#if DCHECK_IS_ON()
+  DCHECK(!is_adding_children_) << "Cannot Detach |this| during AddChildren()";
+#endif
   AXObject::Detach();
   node_ = nullptr;
 }
@@ -3264,8 +3259,12 @@ void AXNodeObject::AddChildren() {
       << "\nParent is " << ToString(true, true) << "\nFirst child is "
       << children_[0]->ToString(true, true);
 #endif
-#define CHECK_ATTACHED() \
-  DCHECK(!IsDetached()) << "Detached adding children: " << ToString(true, true)
+// TODO(aleventhal) Nothing should become detached in the while adding children.
+#define CHECK_ATTACHED()                                                  \
+  if (IsDetached()) {                                                     \
+    NOTREACHED() << "Detached adding children: " << ToString(true, true); \
+    return;                                                               \
+  }
 
   DCHECK(children_dirty_);
   children_dirty_ = false;
@@ -3322,15 +3321,6 @@ void AXNodeObject::AddNodeChild(Node* node) {
 
   AXObject* child_obj = AXObjectCache().GetOrCreate(node, this);
   if (!child_obj)
-    return;
-
-  // TODO(aleventhal) Move to Is[Layout|Node]ObjectRelevantForAccessibility(),
-  // which is where we decide whether an AXObject can be created at all,
-  // otherwise are create these AXObjects and they use up memory.
-  if (RuntimeEnabledFeatures::AccessibilityExposeIgnoredNodesEnabled() &&
-      child_obj &&
-      child_obj->RoleValue() == ax::mojom::blink::Role::kStaticText &&
-      child_obj->CanIgnoreTextAsEmpty())
     return;
 
   // <area> children should only be added via AddImageMapChildren(), as the

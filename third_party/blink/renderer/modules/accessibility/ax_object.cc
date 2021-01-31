@@ -3319,6 +3319,7 @@ AXObject* AXObject::ChildAtIncludingIgnored(int index) const {
 }
 
 const AXObject::AXObjectVector& AXObject::ChildrenIncludingIgnored() const {
+  DCHECK(!IsDetached());
   return const_cast<AXObject*>(this)->ChildrenIncludingIgnored();
 }
 
@@ -3385,11 +3386,16 @@ AXObject* AXObject::FirstChildIncludingIgnored() const {
 }
 
 AXObject* AXObject::LastChildIncludingIgnored() const {
+  DCHECK(!IsDetached());
   return ChildCountIncludingIgnored() ? *(ChildrenIncludingIgnored().end() - 1)
                                       : nullptr;
 }
 
 AXObject* AXObject::DeepestFirstChildIncludingIgnored() const {
+  if (IsDetached()) {
+    NOTREACHED();
+    return nullptr;
+  }
   if (!ChildCountIncludingIgnored())
     return nullptr;
 
@@ -5081,7 +5087,8 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
     if (IsAXLayoutObject() && !GetLayoutObject())
       string_builder = string_builder + " missingLayout";
 
-    string_builder = string_builder + " name=";
+    if (!cached_values_only)
+      string_builder = string_builder + " name=";
   } else {
     string_builder = string_builder + ": ";
   }

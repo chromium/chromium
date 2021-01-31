@@ -25,33 +25,37 @@
 </div>
 
 <script>
-function testChildren(parent, expected_unignored_child_indices) {
+function expectUnignoredChildren(parent, expected_unignored_child_indices) {
     for (let i = 0; i < parent.childrenCount; i++) {
-      if (expected_unignored_child_indices.includes(i))
-        assert_false(parent.childAtIndex(i).isIgnored);
-      else
-        assert_true(parent.childAtIndex(i).isIgnored);
+      let child = parent.childAtIndex(i);
+      if (expected_unignored_child_indices.includes(i)) {
+        assert_false(child.isIgnored,
+                    'Child#' + i + ' (' + child.role + ') ignored state: ');
+      }
+      else {
+        assert_true(child.isIgnored,
+                    'Child#' + i + ' (' + child.role + ') ignored state: ');
+      }
     }
 }
 
 test(function(t) {
     var content = accessibilityController.accessibleElementById("main");
-    assert_equals(content.childrenCount, 17);
+    assert_equals(content.childrenCount, 9);
     assert_true(content.isIgnored);
-    testChildren(content, [0, 2, 4, 6, 11]);
-    document.getElementById("ul").tabIndex = -1;
+    expectUnignoredChildren(content, [0, 1, 2, 3, 6]);
 
-    assert_equals(content.childrenCount, 17,
-                      "Making list focusable should not impact if it's hidden");
+    document.getElementById("ul").tabIndex = -1;
+    assert_equals(content.childrenCount, 9,
+                      "Making list focusable should make it unignored");
     assert_true(content.isIgnored);
-    testChildren(content, [0, 2, 4, 6, 10, 11]);
+    expectUnignoredChildren(content, [0, 1, 2, 3, 5, 6]);
 
     document.getElementById("ul").removeAttribute("tabindex");
-
-    assert_equals(content.childrenCount, 17,
-                          "Making list unfocusable should make it hidden again");
+    assert_equals(content.childrenCount, 9,
+                          "Making list unfocusable should make it ignored again");
     assert_true(content.isIgnored);
-    testChildren(content, [0, 2, 4, 6, 11]);
+    expectUnignoredChildren(content, [0, 1, 2, 3, 6]);
 });
 </script>
 
