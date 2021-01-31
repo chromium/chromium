@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 3732 tests; 3709 PASS, 23 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 3738 tests; 3709 PASS, 29 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -3619,6 +3619,9 @@ PASS HTMLMarqueeElement interface: attribute scrollDelay
 PASS HTMLMarqueeElement interface: attribute trueSpeed
 PASS HTMLMarqueeElement interface: attribute vspace
 PASS HTMLMarqueeElement interface: attribute width
+FAIL HTMLMarqueeElement interface: attribute onbounce assert_true: The prototype object must have a property "onbounce" expected true got false
+FAIL HTMLMarqueeElement interface: attribute onfinish assert_true: The prototype object must have a property "onfinish" expected true got false
+FAIL HTMLMarqueeElement interface: attribute onstart assert_true: The prototype object must have a property "onstart" expected true got false
 PASS HTMLMarqueeElement interface: operation start()
 PASS HTMLMarqueeElement interface: operation stop()
 PASS HTMLMarqueeElement must be primary interface of document.createElement("marquee")
@@ -3634,6 +3637,9 @@ PASS HTMLMarqueeElement interface: document.createElement("marquee") must inheri
 PASS HTMLMarqueeElement interface: document.createElement("marquee") must inherit property "trueSpeed" with the proper type
 PASS HTMLMarqueeElement interface: document.createElement("marquee") must inherit property "vspace" with the proper type
 PASS HTMLMarqueeElement interface: document.createElement("marquee") must inherit property "width" with the proper type
+FAIL HTMLMarqueeElement interface: document.createElement("marquee") must inherit property "onbounce" with the proper type assert_inherits: property "onbounce" not found in prototype chain
+FAIL HTMLMarqueeElement interface: document.createElement("marquee") must inherit property "onfinish" with the proper type assert_inherits: property "onfinish" not found in prototype chain
+FAIL HTMLMarqueeElement interface: document.createElement("marquee") must inherit property "onstart" with the proper type assert_inherits: property "onstart" not found in prototype chain
 PASS HTMLMarqueeElement interface: document.createElement("marquee") must inherit property "start()" with the proper type
 PASS HTMLMarqueeElement interface: document.createElement("marquee") must inherit property "stop()" with the proper type
 PASS HTMLFrameSetElement interface: existence and properties of interface object

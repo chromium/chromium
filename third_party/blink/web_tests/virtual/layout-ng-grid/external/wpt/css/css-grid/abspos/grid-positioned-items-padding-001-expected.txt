@@ -1,0 +1,163 @@
+This is a testharness.js-based test.
+FAIL .grid 1 assert_equals: 
+<div class="grid">
+  <div class="absolute" style="grid-column: auto / 1; grid-row: auto / 1;" data-offset-x="0" data-offset-y="0" data-expected-width="15" data-expected-height="15">
+  </div>
+  <div class="absolute" style="grid-column: 1 / 2; grid-row: auto / 1;" data-offset-x="15" data-offset-y="0" data-expected-width="100" data-expected-height="15">
+  </div>
+  <div class="absolute" style="grid-column: auto / 1; grid-row: 1 / 2;" data-offset-x="0" data-offset-y="15" data-expected-width="15" data-expected-height="50">
+  </div>
+  <div class="absolute" style="grid-column: 3 / auto; grid-row: 3 / auto;" data-offset-x="315" data-offset-y="215" data-expected-width="215" data-expected-height="115">
+  </div>
+  <div class="absolute" style="grid-column: 2 / 3; grid-row: 3 / auto;" data-offset-x="115" data-offset-y="215" data-expected-width="200" data-expected-height="115">
+  </div>
+  <div class="absolute" style="grid-column: 3 / auto; grid-row: 2 / 3;" data-offset-x="315" data-offset-y="65" data-expected-width="215" data-expected-height="150">
+  </div>
+</div>
+width expected 15 but got 530
+FAIL .grid 2 assert_equals: 
+<div class="grid">
+  <div class="absolute" style="grid-column: -5 / 1; grid-row: -5 / 1;" data-offset-x="0" data-offset-y="0" data-expected-width="15" data-expected-height="15">
+  </div>
+  <div class="absolute" style="grid-column: 1 / 2; grid-row: -5 / 1;" data-offset-x="15" data-offset-y="0" data-expected-width="100" data-expected-height="15">
+  </div>
+  <div class="absolute" style="grid-column: -5 / 1; grid-row: 1 / 2;" data-offset-x="0" data-offset-y="15" data-expected-width="15" data-expected-height="50">
+  </div>
+  <div class="absolute" style="grid-column: 3 / 5; grid-row: 3 / 5;" data-offset-x="315" data-offset-y="215" data-expected-width="215" data-expected-height="115">
+  </div>
+  <div class="absolute" style="grid-column: 2 / 3; grid-row: 3 / 5;" data-offset-x="115" data-offset-y="215" data-expected-width="200" data-expected-height="115">
+  </div>
+  <div class="absolute" style="grid-column: 3 / 5; grid-row: 2 / 3;" data-offset-x="315" data-offset-y="65" data-expected-width="215" data-expected-height="150">
+  </div>
+</div>
+width expected 15 but got 530
+FAIL .grid 3 assert_equals: 
+<div class="grid">
+  <div class="absolute" style="grid-column: span 2 / 1; grid-row: span 2 / 1;" data-offset-x="0" data-offset-y="0" data-expected-width="15" data-expected-height="15">
+  </div>
+  <div class="absolute" style="grid-column: 1 / 2; grid-row: span 2 / 1;" data-offset-x="15" data-offset-y="0" data-expected-width="100" data-expected-height="15">
+  </div>
+  <div class="absolute" style="grid-column: span 2 / 1; grid-row: 1 / 2;" data-offset-x="0" data-offset-y="15" data-expected-width="15" data-expected-height="50">
+  </div>
+  <div class="absolute" style="grid-column: 3 / span 2; grid-row: 3 / span 2;" data-offset-x="315" data-offset-y="215" data-expected-width="215" data-expected-height="115">
+  </div>
+  <div class="absolute" style="grid-column: 2 / 3; grid-row: 3 / span 2;" data-offset-x="115" data-offset-y="215" data-expected-width="200" data-expected-height="115">
+  </div>
+  <div class="absolute" style="grid-column: 3 / span 2; grid-row: 2 / 3;" data-offset-x="315" data-offset-y="65" data-expected-width="215" data-expected-height="150">
+  </div>
+</div>
+width expected 15 but got 530
+FAIL .grid 4 assert_equals: 
+<div class="grid">
+  <div class="absolute" style="grid-column: foo / 1; grid-row: foo / 1;" data-offset-x="15" data-offset-y="15" data-expected-width="515" data-expected-height="315">
+  </div>
+  <div class="absolute" style="grid-column: 1 / 2; grid-row: foo / 1;" data-offset-x="15" data-offset-y="15" data-expected-width="100" data-expected-height="315">
+  </div>
+  <div class="absolute" style="grid-column: foo / 1; grid-row: 1 / 2;" data-offset-x="15" data-offset-y="15" data-expected-width="515" data-expected-height="50">
+  </div>
+  <div class="absolute" style="grid-column: 3 / foo; grid-row: 3 / foo;" data-offset-x="315" data-offset-y="215" data-expected-width="215" data-expected-height="115">
+  </div>
+  <div class="absolute" style="grid-column: 2 / 3; grid-row: 3 / foo;" data-offset-x="115" data-offset-y="215" data-expected-width="200" data-expected-height="115">
+  </div>
+  <div class="absolute" style="grid-column: 3 / foo; grid-row: 2 / 3;" data-offset-x="315" data-offset-y="65" data-expected-width="215" data-expected-height="150">
+  </div>
+</div>
+width expected 215 but got 530
+FAIL .grid 5 assert_equals: 
+<div class="grid directionRTL">
+  <div class="absolute" style="grid-column: auto / 1; grid-row: auto / 1;" data-offset-x="515" data-offset-y="0" data-expected-width="15" data-expected-height="15">
+  </div>
+  <div class="absolute" style="grid-column: 1 / 2; grid-row: auto / 1;" data-offset-x="415" data-offset-y="0" data-expected-width="100" data-expected-height="15">
+  </div>
+  <div class="absolute" style="grid-column: auto / 1; grid-row: 1 / 2;" data-offset-x="515" data-offset-y="15" data-expected-width="15" data-expected-height="50">
+  </div>
+  <div class="absolute" style="grid-column: 3 / auto; grid-row: 3 / auto;" data-offset-x="0" data-offset-y="215" data-expected-width="215" data-expected-height="115">
+  </div>
+  <div class="absolute" style="grid-column: 2 / 3; grid-row: 3 / auto;" data-offset-x="215" data-offset-y="215" data-expected-width="200" data-expected-height="115">
+  </div>
+  <div class="absolute" style="grid-column: 3 / auto; grid-row: 2 / 3;" data-offset-x="0" data-offset-y="65" data-expected-width="215" data-expected-height="150">
+  </div>
+</div>
+width expected 15 but got 530
+FAIL .grid 6 assert_equals: 
+<div class="grid directionRTL">
+  <div class="absolute" style="grid-column: -5 / 1; grid-row: -5 / 1;" data-offset-x="515" data-offset-y="0" data-expected-width="15" data-expected-height="15">
+  </div>
+  <div class="absolute" style="grid-column: 1 / 2; grid-row: -5 / 1;" data-offset-x="415" data-offset-y="0" data-expected-width="100" data-expected-height="15">
+  </div>
+  <div class="absolute" style="grid-column: -5 / 1; grid-row: 1 / 2;" data-offset-x="515" data-offset-y="15" data-expected-width="15" data-expected-height="50">
+  </div>
+  <div class="absolute" style="grid-column: 3 / 5; grid-row: 3 / 5;" data-offset-x="0" data-offset-y="215" data-expected-width="215" data-expected-height="115">
+  </div>
+  <div class="absolute" style="grid-column: 2 / 3; grid-row: 3 / 5;" data-offset-x="215" data-offset-y="215" data-expected-width="200" data-expected-height="115">
+  </div>
+  <div class="absolute" style="grid-column: 3 / 5; grid-row: 2 / 3;" data-offset-x="0" data-offset-y="65" data-expected-width="215" data-expected-height="150">
+  </div>
+</div>
+width expected 15 but got 530
+FAIL .grid 7 assert_equals: 
+<div class="grid directionRTL">
+  <div class="absolute" style="grid-column: span 2 / 1; grid-row: span 2 / 1;" data-offset-x="515" data-offset-y="0" data-expected-width="15" data-expected-height="15">
+  </div>
+  <div class="absolute" style="grid-column: 1 / 2; grid-row: span 2 / 1;" data-offset-x="415" data-offset-y="0" data-expected-width="100" data-expected-height="15">
+  </div>
+  <div class="absolute" style="grid-column: span 2 / 1; grid-row: 1 / 2;" data-offset-x="515" data-offset-y="15" data-expected-width="15" data-expected-height="50">
+  </div>
+  <div class="absolute" style="grid-column: 3 / span 2; grid-row: 3 / span 2;" data-offset-x="0" data-offset-y="215" data-expected-width="215" data-expected-height="115">
+  </div>
+  <div class="absolute" style="grid-column: 2 / 3; grid-row: 3 / span 2;" data-offset-x="215" data-offset-y="215" data-expected-width="200" data-expected-height="115">
+  </div>
+  <div class="absolute" style="grid-column: 3 / span 2; grid-row: 2 / 3;" data-offset-x="0" data-offset-y="65" data-expected-width="215" data-expected-height="150">
+  </div>
+</div>
+width expected 15 but got 530
+FAIL .grid 8 assert_equals: 
+<div class="grid directionRTL">
+  <div class="absolute" style="grid-column: foo / 1; grid-row: foo / 1;" data-offset-x="0" data-offset-y="15" data-expected-width="515" data-expected-height="315">
+  </div>
+  <div class="absolute" style="grid-column: 1 / 2; grid-row: foo / 1;" data-offset-x="415" data-offset-y="15" data-expected-width="100" data-expected-height="315">
+  </div>
+  <div class="absolute" style="grid-column: foo / 1; grid-row: 1 / 2;" data-offset-x="0" data-offset-y="15" data-expected-width="515" data-expected-height="50">
+  </div>
+  <div class="absolute" style="grid-column: 3 / foo; grid-row: 3 / foo;" data-offset-x="0" data-offset-y="215" data-expected-width="215" data-expected-height="115">
+  </div>
+  <div class="absolute" style="grid-column: 2 / 3; grid-row: 3 / foo;" data-offset-x="215" data-offset-y="215" data-expected-width="200" data-expected-height="115">
+  </div>
+  <div class="absolute" style="grid-column: 3 / foo; grid-row: 2 / 3;" data-offset-x="0" data-offset-y="65" data-expected-width="215" data-expected-height="150">
+  </div>
+</div>
+width expected 215 but got 530
+FAIL .grid 9 assert_equals: 
+<div class="grid autoFit gap">
+  <div class="absolute" style="grid-column: auto / 1; grid-row: auto / 1;" data-offset-x="0" data-offset-y="0" data-expected-width="15" data-expected-height="15">
+  </div>
+  <div class="absolute" style="grid-column: -1 / auto; grid-row: -1 / auto;" data-offset-x="15" data-offset-y="15" data-expected-width="515" data-expected-height="315">
+  </div>
+</div>
+width expected 15 but got 530
+FAIL .grid 10 assert_equals: 
+<div class="grid autoFit gap">
+  <div class="absolute" style="grid-column: auto / 2; grid-row: auto / 2;" data-offset-x="0" data-offset-y="0" data-expected-width="15" data-expected-height="15">
+  </div>
+  <div class="absolute" style="grid-column: -2 / auto; grid-row: -2 / auto;" data-offset-x="15" data-offset-y="15" data-expected-width="515" data-expected-height="315">
+  </div>
+</div>
+width expected 15 but got 45
+FAIL .grid 11 assert_equals: 
+<div class="grid autoFit directionRTL gap">
+  <div class="absolute" style="grid-column: auto / 1; grid-row: auto / 1;" data-offset-x="515" data-offset-y="0" data-expected-width="15" data-expected-height="15">
+  </div>
+  <div class="absolute" style="grid-column: -1 / auto; grid-row: -1 / auto;" data-offset-x="0" data-offset-y="15" data-expected-width="515" data-expected-height="315">
+  </div>
+</div>
+width expected 15 but got 530
+FAIL .grid 12 assert_equals: 
+<div class="grid autoFit directionRTL gap">
+  <div class="absolute" style="grid-column: auto / 2; grid-row: auto / 2;" data-offset-x="515" data-offset-y="0" data-expected-width="15" data-expected-height="15">
+  </div>
+  <div class="absolute" style="grid-column: -2 / auto; grid-row: -2 / auto;" data-offset-x="0" data-offset-y="15" data-expected-width="515" data-expected-height="315">
+  </div>
+</div>
+width expected 15 but got 45
+Harness: the test ran to completion.
+

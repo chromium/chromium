@@ -1529,13 +1529,6 @@
    },
    "clipboard-apis": {
     "events": {
-     "copy-event-manual.html": [
-      "9f9f1950e7cad11da8cc9e8984f130e182d64d64",
-      [
-       null,
-       {}
-      ]
-     ],
      "cut-event-manual.html": [
       "72c11ec3b98a7839ba6ba22b0340664dcc9782c2",
       [
@@ -175290,7 +175283,7 @@
      []
     ],
     "clipboard-item.https-expected.txt": [
-     "ad40535728dfb53f4cf848ff76abb21ea293977a",
+     "1b3edb5c2a64b1ef4a865aed18259d0a16491b4a",
      []
     ],
     "feature-policy": {
@@ -212863,7 +212856,7 @@
       []
      ],
      "idlharness-expected.txt": [
-      "185f987311fa7012cb2845c1f662923286e9f66f",
+      "ecd26b905f4377d88478fac04e1920ffeacaae6f",
       []
      ],
      "insertRule-from-script-ref.html": [
@@ -225774,7 +225767,7 @@
          []
         ],
         "transformations.yaml": [
-         "eca6b16b089b322792c0c0cab5ff48febe9ffcd8",
+         "ffb1e85ec041d5516d133a04edfa597710ff57ef",
          []
         ],
         "video.yaml": [
@@ -226803,7 +226796,7 @@
       []
      ],
      "idlharness.https_include=HTML._-expected.txt": [
-      "bab3797c65d51f33aa9fdfffd34ef383a70d447a",
+      "2116f87b1ef53f45f30d7e2d4098775d491b5ce4",
       []
      ],
      "idlharness.worker-expected.txt": [
@@ -231043,7 +231036,7 @@
         []
        ],
        "legend-display-expected.txt": [
-        "d13c68baee91d0acb8c72d68bb94b2cd3dae8e0e",
+        "69bb94fef61c6ce28d49dbe285f1d8b263204a0d",
         []
        ],
        "legend-display-none-rendering-ref.html": [
@@ -237336,7 +237329,7 @@
      []
     ],
     "html.idl": [
-     "bb44c1327471ec25b7fefac25758335ea0ae7c51",
+     "7f2eba2c7aee694e788e9c3f52cdb4f23315730d",
      []
     ],
     "idle-detection.tentative.idl": [
@@ -244504,7 +244497,7 @@
      ]
     },
     "idlharness.js": [
-     "994a0d82ef444bf4566dc27a81487e70d9e284ea",
+     "5a97b273f2bed196d6ddd85c5596decff1bf87ae",
      []
     ],
     "idlharness.js.headers": [
@@ -275419,7 +275412,7 @@
      ]
     ],
     "async-navigator-clipboard-basics.https.html": [
-     "8fbcd11e7e963240f41e2e1ce6c9a0ae26979d3a",
+     "61808a52ceb9b6272a6ce495d328a8feaaf9411a",
      [
       null,
       {}
@@ -275496,7 +275489,7 @@
      ]
     ],
     "clipboard-item.https.html": [
-     "afec778eb99e8605a4c5a1001a2576e1e246b27c",
+     "50af54ccb670979ab86089f10edbc732e8eb1eed",
      [
       null,
       {}
@@ -275539,6 +275532,17 @@
      ],
      "writeText-readText-on-detached-iframe.https.html": [
       "9cd8900aab0f9ee9399b5fdb1c175563a06884ea",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ]
+    },
+    "events": {
+     "copy-event.html": [
+      "c8c0593a988066decebb1420c7994ee224d5587c",
       [
        null,
        {
@@ -290616,6 +290620,20 @@
       ],
       "grid-auto-repeat-min-size-002.html": [
        "4c73da77730536c4e107978e2b52bfc5559659cf",
+       [
+        null,
+        {}
+       ]
+      ],
+      "grid-auto-repeat-min-size-003.html": [
+       "ffaaab33aef998f35a543392b2f3fa99e473b9ed",
+       [
+        null,
+        {}
+       ]
+      ],
+      "grid-auto-repeat-min-size-004.html": [
+       "8d2eda79023adab581e70dd4ef3bdd80ccca9e12",
        [
         null,
         {}
@@ -307705,7 +307723,7 @@
       ]
      ],
      "DOMMatrix2DInit-validate-fixup.html": [
-      "480d67a481d30965a734cdf76c60646a464823b8",
+      "a7257aa2882cf1d88fa4a15314efe071b30a8f4e",
       [
        null,
        {}
@@ -347771,6 +347789,13 @@
          {}
         ]
        ],
+       "2d.transformation.setTransform.3d.html": [
+        "bcafbd15990880b00a5e93f07dba4b07108edbf6",
+        [
+         null,
+         {}
+        ]
+       ],
        "2d.transformation.setTransform.multiple.html": [
         "7e90537113eea070fa5213554e101870aa6f5541",
         [
@@ -363170,7 +363195,7 @@
         ]
        ],
        "legend-display.html": [
-        "914547fc6cdde3e464b28eb7cc9737d17305f9af",
+        "b6c57a67baf06b4fc9043b8140a97e593f80a83f",
         [
          null,
          {}
