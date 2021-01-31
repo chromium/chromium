@@ -10,7 +10,7 @@
 #include "base/bind_post_task.h"
 #include "base/callback_helpers.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue_configuration.h"
-#include "record_constants.pb.h"
+#include "components/reporting/proto/record_constants.pb.h"
 
 namespace chromeos {
 namespace cfm {
