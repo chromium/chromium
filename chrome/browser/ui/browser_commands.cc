@@ -447,6 +447,10 @@ void NewEmptyWindow(Profile* profile) {
 }
 
 Browser* OpenEmptyWindow(Profile* profile) {
+  if (Browser::GetCreationStatusForProfile(profile) !=
+      Browser::CreationStatus::kOk) {
+    return nullptr;
+  }
   Browser* browser = Browser::Create(
       Browser::CreateParams(Browser::TYPE_NORMAL, profile, true));
   AddTabAt(browser, GURL(), -1, true);

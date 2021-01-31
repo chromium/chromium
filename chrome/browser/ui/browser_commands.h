@@ -52,6 +52,7 @@ void NewEmptyWindow(Profile* profile);
 
 // Opens a new window with the default blank tab. This bypasses metrics and
 // various internal bookkeeping; NewEmptyWindow (above) is preferred.
+// Returns nullptr if browser creation is not possible.
 Browser* OpenEmptyWindow(Profile* profile);
 
 // Opens a new window with the tabs from |profile|'s TabRestoreService.
