@@ -36,6 +36,10 @@
 namespace chromeos {
 namespace {
 
+// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
+// source migration is finished.
+namespace reset = ::ash::reset;
+
 constexpr const char kUserActionCancelReset[] = "cancel-reset";
 constexpr const char kUserActionResetRestartPressed[] = "restart-pressed";
 constexpr const char kUserActionResetPowerwashPressed[] = "powerwash-pressed";

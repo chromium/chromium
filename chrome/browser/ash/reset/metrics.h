@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_RESET_METRICS_H_
 #define CHROME_BROWSER_ASH_RESET_METRICS_H_
 
-namespace chromeos {
+namespace ash {
 namespace reset {
 
 enum class DialogViewType {
@@ -33,6 +33,6 @@ enum class DialogViewType {
 };
 
 }  // namespace reset
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_RESET_METRICS_H_
