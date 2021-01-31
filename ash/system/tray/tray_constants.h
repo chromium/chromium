@@ -136,6 +136,7 @@ constexpr int kUnifiedTopShortcutSpacing = 16;
 constexpr int kUnifiedNotificationHiddenLineHeight = 20;
 constexpr int kUnifiedTopShortcutContainerTopPadding = 12;
 constexpr int kUnifiedNotificationMinimumHeight = 40;
+constexpr int kUnifiedBackButtonLeftPadding = 16;
 constexpr gfx::Insets kUnifiedTopShortcutPadding(0, 16);
 constexpr gfx::Insets kUnifiedNotificationHiddenPadding(6, 16);
 constexpr gfx::Insets kUnifiedCircularButtonFocusPadding(4);

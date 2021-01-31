@@ -85,7 +85,7 @@ class ASH_EXPORT ZeroStateDefaultDeskButton : public DeskButtonBase {
  public:
   ZeroStateDefaultDeskButton(DesksBarView* bar_view);
   ZeroStateDefaultDeskButton(const ZeroStateDefaultDeskButton&) = delete;
-  ZeroStateDefaultDeskButton operator=(const ZeroStateDefaultDeskButton&) =
+  ZeroStateDefaultDeskButton& operator=(const ZeroStateDefaultDeskButton&) =
       delete;
   ~ZeroStateDefaultDeskButton() override = default;
 
@@ -110,7 +110,7 @@ class ASH_EXPORT ZeroStateNewDeskButton : public DeskButtonBase {
  public:
   ZeroStateNewDeskButton();
   ZeroStateNewDeskButton(const ZeroStateNewDeskButton&) = delete;
-  ZeroStateNewDeskButton operator=(const ZeroStateNewDeskButton&) = delete;
+  ZeroStateNewDeskButton& operator=(const ZeroStateNewDeskButton&) = delete;
   ~ZeroStateNewDeskButton() override = default;
 
   // DeskButtonBase:

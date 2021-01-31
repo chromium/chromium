@@ -316,7 +316,6 @@ aggregate_vector_icons("ash_vector_icons") {
     "tray_action_new_lock_screen_note.icon",
     "two_files.icon",
     "unified_menu_accessibility.icon",
-    "unified_menu_arrow_back.icon",
     "unified_menu_battery_alert.icon",
     "unified_menu_battery_alert_outline.icon",
     "unified_menu_battery_bolt.icon",
