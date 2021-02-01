@@ -37,6 +37,8 @@ class RemoteObject : public gin::Wrappable<RemoteObject>,
   std::vector<std::string> EnumerateNamedProperties(
       v8::Isolate* isolate) override;
 
+  int32_t object_id() const { return object_id_; }
+
  private:
   static void RemoteObjectInvokeCallback(
       const v8::FunctionCallbackInfo<v8::Value>& info);

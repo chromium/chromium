@@ -766,6 +766,75 @@ public final class RemoteObjectImplTest {
     }
 
     @Test
+    public void testArgumentConversionObjectId() {
+        Object foo = new Object();
+        Object target = new Object() {
+            @TestJavascriptInterface
+            public Object getFoo() {
+                return foo;
+            }
+            @TestJavascriptInterface
+            public boolean isFoo(Object object) {
+                return foo == object;
+            }
+            @TestJavascriptInterface
+            public int isNotFoo(int number) {
+                return number;
+            }
+        };
+        when(mIdAllocator.getObjectId(foo, TestJavascriptInterface.class)).thenReturn(42);
+        when(mIdAllocator.getObjectById(42)).thenReturn(foo);
+
+        RemoteObject remoteObject = newRemoteObjectImpl(target, TestJavascriptInterface.class);
+        RemoteObject.InvokeMethodResponse response = mock(RemoteObject.InvokeMethodResponse.class);
+        remoteObject.invokeMethod("getFoo", new RemoteInvocationArgument[] {}, response);
+        remoteObject.invokeMethod(
+                "isFoo", new RemoteInvocationArgument[] {objectIdArgument(42)}, response);
+        remoteObject.invokeMethod(
+                "isFoo", new RemoteInvocationArgument[] {objectIdArgument(100)}, response);
+        remoteObject.invokeMethod(
+                "isNotFoo", new RemoteInvocationArgument[] {objectIdArgument(42)}, response);
+
+        verify(response).call(resultIsObject(42));
+        verify(response).call(resultIsBoolean(true));
+        verify(response).call(resultIsBoolean(false));
+        verify(response).call(resultIsNumber(0));
+    }
+
+    @Test
+    public void testObjectNonAssignableType() {
+        class CustomType {}
+        Object foo = new Object();
+        Object target = new Object() {
+            @TestJavascriptInterface
+            public Object getFoo() {
+                return foo;
+            }
+            @TestJavascriptInterface
+            public boolean exposedNonAssignableTypeMethodWithBooleanObject(Boolean value) {
+                return true;
+            }
+            @TestJavascriptInterface
+            public boolean exposedNonAssignableTypeMethodWithCustomObject(CustomType custom) {
+                return true;
+            }
+        };
+        when(mIdAllocator.getObjectId(foo, TestJavascriptInterface.class)).thenReturn(42);
+        when(mIdAllocator.getObjectById(42)).thenReturn(foo);
+
+        RemoteObject remoteObject = newRemoteObjectImpl(target, TestJavascriptInterface.class);
+        RemoteObject.InvokeMethodResponse response = mock(RemoteObject.InvokeMethodResponse.class);
+        remoteObject.invokeMethod("getFoo", new RemoteInvocationArgument[] {}, response);
+        remoteObject.invokeMethod("exposedNonAssignableTypeMethodWithBooleanObject",
+                new RemoteInvocationArgument[] {objectIdArgument(42)}, response);
+        remoteObject.invokeMethod("exposedNonAssignableTypeMethodWithCustomObject",
+                new RemoteInvocationArgument[] {objectIdArgument(42)}, response);
+
+        verify(response).call(resultIsObject(42));
+        verify(response, times(2)).call(resultHasError(RemoteInvocationError.NON_ASSIGNABLE_TYPES));
+    }
+
+    @Test
     public void testResultConversionVoid() {
         Object target = new Object() {
             @TestJavascriptInterface
@@ -983,6 +1052,12 @@ public final class RemoteObjectImplTest {
     private RemoteInvocationArgument undefinedArgument() {
         RemoteInvocationArgument argument = new RemoteInvocationArgument();
         argument.setSingletonValue(SingletonJavaScriptValue.UNDEFINED);
+        return argument;
+    }
+
+    private RemoteInvocationArgument objectIdArgument(int objectId) {
+        RemoteInvocationArgument argument = new RemoteInvocationArgument();
+        argument.setObjectIdValue(objectId);
         return argument;
     }
 

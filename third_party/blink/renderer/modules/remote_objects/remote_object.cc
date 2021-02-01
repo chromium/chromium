@@ -31,6 +31,8 @@ String RemoteInvocationErrorToString(
       return "invoking Object.getClass() is not permitted";
     case mojom::blink::RemoteInvocationError::EXCEPTION_THROWN:
       return "an exception was thrown";
+    case mojom::blink::RemoteInvocationError::NON_ASSIGNABLE_TYPES:
+      return "an incompatible object type passed to method parameter";
     default:
       return String::Format("unknown RemoteInvocationError value: %d", value);
   }
@@ -165,8 +167,22 @@ mojom::blink::RemoteInvocationArgumentPtr JSValueToMojom(
         std::move(remote_typed_array));
   }
 
+  if (js_value->IsArrayBuffer() || js_value->IsArrayBufferView()) {
+    // If ArrayBuffer or ArrayBufferView is not a TypedArray, we should treat it
+    // as undefined.
+    return mojom::blink::RemoteInvocationArgument::NewSingletonValue(
+        mojom::blink::SingletonJavaScriptValue::kUndefined);
+  }
+
   if (js_value->IsObject()) {
     v8::Local<v8::Object> object_val = js_value.As<v8::Object>();
+
+    RemoteObject* remote_object = nullptr;
+    if (gin::ConvertFromV8(isolate, object_val, &remote_object)) {
+      return mojom::blink::RemoteInvocationArgument::NewObjectIdValue(
+          remote_object->object_id());
+    }
+
     v8::Local<v8::Value> length_value;
     v8::TryCatch try_catch(isolate);
     v8::MaybeLocal<v8::Value> maybe_length_value = object_val->Get(

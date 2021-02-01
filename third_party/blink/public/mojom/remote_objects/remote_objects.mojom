@@ -89,6 +89,7 @@ union RemoteInvocationArgument {
   SingletonJavaScriptValue singleton_value;
   array<RemoteInvocationArgument> array_value;
   RemoteTypedArray typed_array_value;
+  int32 object_id_value;
 };
 
 enum RemoteInvocationError {
@@ -96,6 +97,7 @@ enum RemoteInvocationError {
   METHOD_NOT_FOUND,
   OBJECT_GET_CLASS_BLOCKED,
   EXCEPTION_THROWN,
+  NON_ASSIGNABLE_TYPES,
 };
 
 union RemoteInvocationResultValue {

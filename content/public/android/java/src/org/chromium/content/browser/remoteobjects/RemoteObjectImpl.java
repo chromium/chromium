@@ -201,7 +201,13 @@ class RemoteObjectImpl implements RemoteObject {
         Class<?>[] parameterTypes = method.getParameterTypes();
         Object[] args = new Object[numArguments];
         for (int i = 0; i < numArguments; i++) {
-            args[i] = convertArgument(arguments[i], parameterTypes[i], StringCoercionMode.COERCE);
+            try {
+                args[i] = convertArgument(arguments[i], parameterTypes[i],
+                        StringCoercionMode.COERCE, objectIdAllocator);
+            } catch (IllegalArgumentException e) {
+                callback.call(makeErrorResult(RemoteInvocationError.NON_ASSIGNABLE_TYPES));
+                return;
+            }
         }
 
         Object result = null;
@@ -482,7 +488,7 @@ class RemoteObjectImpl implements RemoteObject {
     }
 
     private static Object convertArgument(RemoteInvocationArgument argument, Class<?> parameterType,
-            @StringCoercionMode int stringCoercionMode) {
+            @StringCoercionMode int stringCoercionMode, ObjectIdAllocator objectIdAllocator) {
         switch (argument.which()) {
             case RemoteInvocationArgument.Tag.NumberValue:
                 // See http://jdk6.java.net/plugin2/liveconnect/#JS_NUMBER_VALUES.
@@ -599,8 +605,8 @@ class RemoteObjectImpl implements RemoteObject {
 
                     Object result = Array.newInstance(componentType, arrayValue.length);
                     for (int i = 0; i < arrayValue.length; i++) {
-                        Object element = convertArgument(
-                                arrayValue[i], componentType, StringCoercionMode.DO_NOT_COERCE);
+                        Object element = convertArgument(arrayValue[i], componentType,
+                                StringCoercionMode.DO_NOT_COERCE, objectIdAllocator);
                         Array.set(result, i, element);
                     }
                     return result;
@@ -670,6 +676,28 @@ class RemoteObjectImpl implements RemoteObject {
                     // raising a JavaScript exception.
                     return null;
                 }
+            case RemoteInvocationArgument.Tag.ObjectIdValue:
+                if (parameterType == String.class) {
+                    return stringCoercionMode == StringCoercionMode.COERCE ? "undefined" : null;
+                } else if (parameterType.isPrimitive()) {
+                    return getPrimitiveZero(parameterType);
+                } else if (parameterType.isArray()) {
+                    // LIVECONNECT_COMPLIANCE: Existing behavior is to convert to null. Spec
+                    // requires raising a JavaScript exception.
+                    return null;
+                }
+
+                Object object = objectIdAllocator.getObjectById(argument.getObjectIdValue());
+                if (object == null) {
+                    // LIVECONNECT_COMPLIANCE: Existing behavior is to pass null. Spec
+                    // requires converting if the target type is
+                    // netscape.javascript.JSObject, otherwise raising a JavaScript
+                    // exception.
+                    return null;
+                }
+                if (parameterType.isInstance(object)) return object;
+
+                throw new IllegalArgumentException("incompatible argument type with object id");
             default:
                 throw new RuntimeException("invalid wire argument type");
         }

@@ -621,7 +621,7 @@ public class JavaBridgeCoercionTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void testPassJavaObject(boolean useMojo) throws Throwable {
         mActivityTestRule.executeJavaScript(
                 "testObject.setObjectValue(testObject.getObjectInstance());");
@@ -701,7 +701,7 @@ public class JavaBridgeCoercionTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void testPassJavaObjectFromCustomClassLoader(boolean useMojo) throws Throwable {
         // Compiled bytecode (dex) for the following class:
         //
