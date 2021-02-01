@@ -84,7 +84,7 @@ void AddStrings(content::WebUIDataSource* html_source) {
       {"profileCardButtonLabel", IDS_PROFILE_PICKER_PROFILE_CARD_LABEL},
       {"menu", IDS_MENU},
       {"cancel", IDS_CANCEL},
-      {"profileMenuName", IDS_PROFILE_PICKER_PROFILE_MENU_BUTTON_NAME},
+      {"profileMenuName", IDS_SETTINGS_MORE_ACTIONS},
       {"profileMenuRemoveText", IDS_PROFILE_PICKER_PROFILE_MENU_REMOVE_TEXT},
       {"profileMenuCustomizeText",
        IDS_PROFILE_PICKER_PROFILE_MENU_CUSTOMIZE_TEXT},
