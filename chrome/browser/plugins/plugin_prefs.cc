@@ -176,8 +176,8 @@ void PluginPrefs::SetPrefs(PrefService* prefs) {
   UpdatePdfPolicy(prefs::kPluginsAlwaysOpenPdfExternally);
   registrar_.Init(prefs_);
   registrar_.Add(prefs::kPluginsAlwaysOpenPdfExternally,
-                 base::Bind(&PluginPrefs::UpdatePdfPolicy,
-                 base::Unretained(this)));
+                 base::BindRepeating(&PluginPrefs::UpdatePdfPolicy,
+                                     base::Unretained(this)));
 }
 
 void PluginPrefs::ShutdownOnUIThread() {

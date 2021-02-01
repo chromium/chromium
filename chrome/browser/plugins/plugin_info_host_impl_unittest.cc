@@ -32,9 +32,9 @@ using testing::Eq;
 
 namespace {
 
-void PluginsLoaded(const base::Closure& callback,
+void PluginsLoaded(base::OnceClosure callback,
                    const std::vector<content::WebPluginInfo>& plugins) {
-  callback.Run();
+  std::move(callback).Run();
 }
 
 class FakePluginServiceFilter : public content::PluginServiceFilter {

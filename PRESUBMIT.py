@@ -340,7 +340,6 @@ _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
   '^chrome/browser/ntp_tiles/ntp_tiles_browsertest.cc',
   '^chrome/browser/page_load_metrics/observers/data_saver_site_breakdown_metrics_observer_browsertest.cc', # pylint: disable=line-too-long
   '^chrome/browser/payments/payment_manifest_parser_browsertest.cc',
-  '^chrome/browser/plugins/',
   '^chrome/browser/portal/portal_browsertest.cc',
   '^chrome/browser/profiling_host/profiling_process_host.cc',
   '^chrome/browser/recovery/recovery_install_global_error.cc',

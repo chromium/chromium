@@ -152,8 +152,8 @@ PluginInfoHostImpl::PluginInfoHostImpl(int render_process_id, Profile* profile)
   shutdown_subscription_ =
       PluginInfoHostImplShutdownNotifierFactory::GetInstance()
           ->Get(profile)
-          ->Subscribe(base::Bind(&PluginInfoHostImpl::ShutdownOnUIThread,
-                                 base::Unretained(this)));
+          ->Subscribe(base::BindRepeating(
+              &PluginInfoHostImpl::ShutdownOnUIThread, base::Unretained(this)));
 }
 
 void PluginInfoHostImpl::ShutdownOnUIThread() {
