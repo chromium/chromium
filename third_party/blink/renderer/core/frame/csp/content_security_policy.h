@@ -203,14 +203,10 @@ class CORE_EXPORT ContentSecurityPolicy final
   void DidReceiveHeader(const String&,
                         network::mojom::ContentSecurityPolicyType,
                         network::mojom::ContentSecurityPolicySource);
-  void AddPolicyFromHeaderValue(const String&,
-                                network::mojom::ContentSecurityPolicyType,
-                                network::mojom::ContentSecurityPolicySource);
   void ReportAccumulatedHeaders() const;
 
   void AddPolicies(
       Vector<network::mojom::blink::ContentSecurityPolicyPtr> policies);
-  void AddPolicy(network::mojom::blink::ContentSecurityPolicyPtr policy);
 
   // Returns whether or not the Javascript code generation should call back the
   // CSP checker before any script evaluation from a string attempts.
@@ -495,11 +491,6 @@ class CORE_EXPORT ContentSecurityPolicy final
   void LogToConsole(
       const String& message,
       mojom::ConsoleMessageLevel = mojom::ConsoleMessageLevel::kError);
-
-  void AddAndReportPolicyFromHeaderValue(
-      const String&,
-      network::mojom::ContentSecurityPolicyType,
-      network::mojom::ContentSecurityPolicySource);
 
   bool ShouldSendViolationReport(const String&) const;
   void DidSendViolationReport(const String&);

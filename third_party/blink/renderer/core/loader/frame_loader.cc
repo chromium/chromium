@@ -1036,7 +1036,7 @@ void FrameLoader::CommitNavigation(
   DCHECK(content_security_policy);
 
   for (auto& csp : navigation_params->forced_content_security_policies) {
-    content_security_policy->AddPolicyFromHeaderValue(
+    content_security_policy->DidReceiveHeader(
         csp, network::mojom::ContentSecurityPolicyType::kEnforce,
         network::mojom::ContentSecurityPolicySource::kHTTP);
   }

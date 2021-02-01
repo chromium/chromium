@@ -319,9 +319,8 @@ void ContentSecurityPolicy::CopyPluginTypesFrom(
     const ContentSecurityPolicy* other) {
   for (const auto& policy : other->policies_) {
     if (policy->plugin_types) {
-      AddAndReportPolicyFromHeaderValue(
-          CSPDirectiveListPluginTypesText(*policy), policy->header->type,
-          policy->header->source);
+      DidReceiveHeader(CSPDirectiveListPluginTypesText(*policy),
+                       policy->header->type, policy->header->source);
     }
   }
 }
@@ -330,16 +329,22 @@ void ContentSecurityPolicy::DidReceiveHeaders(
     const ContentSecurityPolicyResponseHeaders& headers) {
   if (headers.ShouldParseWasmEval())
     supports_wasm_eval_ = true;
+
+  Vector<network::mojom::blink::ContentSecurityPolicyPtr> parsed_policies;
   if (!headers.ContentSecurityPolicy().IsEmpty()) {
-    AddAndReportPolicyFromHeaderValue(headers.ContentSecurityPolicy(),
-                                      ContentSecurityPolicyType::kEnforce,
-                                      ContentSecurityPolicySource::kHTTP);
+    parsed_policies = Parse(headers.ContentSecurityPolicy(),
+                            ContentSecurityPolicyType::kEnforce,
+                            ContentSecurityPolicySource::kHTTP);
   }
   if (!headers.ContentSecurityPolicyReportOnly().IsEmpty()) {
-    AddAndReportPolicyFromHeaderValue(headers.ContentSecurityPolicyReportOnly(),
-                                      ContentSecurityPolicyType::kReport,
-                                      ContentSecurityPolicySource::kHTTP);
+    for (auto& policy : Parse(headers.ContentSecurityPolicyReportOnly(),
+                              ContentSecurityPolicyType::kReport,
+                              ContentSecurityPolicySource::kHTTP)) {
+      parsed_policies.push_back(std::move(policy));
+    }
   }
+
+  AddPolicies(std::move(parsed_policies));
 }
 
 // static
@@ -355,34 +360,38 @@ void ContentSecurityPolicy::DidReceiveHeader(
     const String& header,
     ContentSecurityPolicyType type,
     ContentSecurityPolicySource source) {
-  AddAndReportPolicyFromHeaderValue(header, type, source);
-
-  // This might be called after we've been bound to a delegate. For example, a
-  // <meta> element might be injected after page load.
-  if (delegate_)
-    ApplyPolicySideEffectsToDelegate();
-}
-
-void ContentSecurityPolicy::AddPolicyFromHeaderValue(
-    const String& header,
-    ContentSecurityPolicyType type,
-    ContentSecurityPolicySource source) {
-  for (network::mojom::blink::ContentSecurityPolicyPtr& policy :
-       Parse(header, type, source)) {
-    AddPolicy(std::move(policy));
-  }
+  AddPolicies(Parse(header, type, source));
 }
 
 void ContentSecurityPolicy::AddPolicies(
     Vector<network::mojom::blink::ContentSecurityPolicyPtr> policies) {
-  for (network::mojom::blink::ContentSecurityPolicyPtr& policy : policies)
-    AddPolicy(std::move(policy));
-}
+  Vector<network::mojom::blink::ContentSecurityPolicyPtr> policies_to_report;
+  if (delegate_) {
+    for (const auto& policy : policies) {
+      policies_to_report.push_back(FillInSelf(policy));
+    }
+  }
 
-void ContentSecurityPolicy::AddPolicy(
-    network::mojom::blink::ContentSecurityPolicyPtr policy) {
-  ComputeInternalStateForParsedPolicy(*policy);
-  policies_.push_back(std::move(policy));
+  for (network::mojom::blink::ContentSecurityPolicyPtr& policy : policies) {
+    ComputeInternalStateForParsedPolicy(*policy);
+    policies_.push_back(std::move(policy));
+  }
+
+  if (!delegate_)
+    return;
+
+  ApplyPolicySideEffectsToDelegate();
+
+  // Notify about the new header, so that it can be reported back to the
+  // browser process. This is needed in order to:
+  // 1) replicate CSP directives (i.e. frame-src) to OOPIFs (only for now /
+  // short-term).
+  // 2) enforce CSP in the browser process (long-term - see
+  // https://crbug.com/376522).
+  // TODO(arthursonzogni): policies are actually replicated (1) and some of
+  // them are enforced on the browser process (2). Stop doing (1) when (2) is
+  // finished.
+  delegate_->DidAddContentSecurityPolicies(std::move(policies_to_report));
 }
 
 Vector<network::mojom::blink::ContentSecurityPolicyPtr>
@@ -480,31 +489,6 @@ void ContentSecurityPolicy::ReportAccumulatedHeaders() const {
 
   DCHECK(delegate_);
   delegate_->DidAddContentSecurityPolicies(std::move(policies));
-}
-
-void ContentSecurityPolicy::AddAndReportPolicyFromHeaderValue(
-    const String& header,
-    ContentSecurityPolicyType type,
-    ContentSecurityPolicySource source) {
-  wtf_size_t previous_policy_count = policies_.size();
-  AddPolicyFromHeaderValue(header, type, source);
-  // Notify about the new header, so that it can be reported back to the
-  // browser process.  This is needed in order to:
-  // 1) replicate CSP directives (i.e. frame-src) to OOPIFs (only for now /
-  // short-term).
-  // 2) enforce CSP in the browser process (long-term - see
-  // https://crbug.com/376522).
-  // TODO(arthursonzogni): policies are actually replicated (1) and some of
-  // them are enforced on the browser process (2). Stop doing (1) when (2) is
-  // finished.
-  WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr> policies(
-      policies_.size() - previous_policy_count);
-  for (wtf_size_t i = previous_policy_count; i < policies_.size(); ++i) {
-    policies[i - previous_policy_count] = FillInSelf(policies_[i]);
-  }
-
-  if (delegate_)
-    delegate_->DidAddContentSecurityPolicies(std::move(policies));
 }
 
 void ContentSecurityPolicy::SetOverrideAllowInlineStyle(bool value) {
