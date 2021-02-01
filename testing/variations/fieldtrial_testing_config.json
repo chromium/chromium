@@ -5051,7 +5051,7 @@
             ]
         }
     ],
-    "PasswordChangeInSettings": [
+    "PasswordChangeAndroid": [
         {
             "platforms": [
                 "android"
@@ -5060,7 +5060,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "PasswordChangeInSettings"
+                        "PasswordChangeInSettings",
+                        "PasswordScriptsFetching"
                     ]
                 }
             ]
@@ -5095,21 +5096,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EditPasswordsInSettings"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PasswordScriptsFetching": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PasswordScriptsFetching"
                     ]
                 }
             ]
