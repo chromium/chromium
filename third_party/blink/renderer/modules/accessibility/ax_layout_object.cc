@@ -1405,10 +1405,9 @@ AXObject* AXLayoutObject::AccessibilityHitTest(const IntPoint& point) const {
   }
 
   LayoutObject* obj = node->GetLayoutObject();
-  if (!obj)
-    return nullptr;
-
   AXObject* result = AXObjectCache().GetOrCreate(obj);
+  if (!result)
+    return nullptr;
   result->UpdateChildrenIfNecessary();
 
   // Allow the element to perform any hit-testing it might need to do to reach

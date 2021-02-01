@@ -860,7 +860,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   }
   // Called on the AX object after the layout tree determines which is the right
   // AXLayoutObject.
-  virtual AXObject* ElementAccessibilityHitTest(const IntPoint&) const;
+  AXObject* ElementAccessibilityHitTest(const IntPoint&) const;
 
   //
   // High-level accessibility tree access. Other modules should only use these
