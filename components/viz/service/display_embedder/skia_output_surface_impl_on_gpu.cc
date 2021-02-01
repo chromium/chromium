@@ -57,14 +57,19 @@
 #endif
 #endif
 
-#if (BUILDFLAG(ENABLE_VULKAN) || BUILDFLAG(SKIA_USE_DAWN)) && defined(USE_X11)
-#include "components/viz/service/display_embedder/skia_output_device_x11.h"
-#endif
-
 #if defined(USE_OZONE)
+#include "ui/ozone/buildflags.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/platform_window_surface.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
+#if BUILDFLAG(OZONE_PLATFORM_X11)
+#define USE_OZONE_PLATFORM_X11
+#endif
+#endif
+
+#if (BUILDFLAG(ENABLE_VULKAN) || BUILDFLAG(SKIA_USE_DAWN)) && \
+    (defined(USE_X11) || defined(USE_OZONE_PLATFORM_X11))
+#include "components/viz/service/display_embedder/skia_output_device_x11.h"
 #endif
 
 #if BUILDFLAG(SKIA_USE_DAWN)
@@ -227,6 +232,23 @@ void OnRGBAReadbackDone(
       std::make_unique<CopyOutputSkBitmapResult>(context->result_rect, bitmap);
   context->request->SendResult(std::move(result));
 }
+
+#if BUILDFLAG(ENABLE_VULKAN)
+bool MayFallBackToSkiaOutputDeviceX11() {
+#if defined(USE_OZNE)
+  if (IsUsingOzonePlatform()) {
+    return ui::OzonePlatform::GetInstance()
+        ->GetPlatformProperties()
+        .skia_can_fall_back_to_x11;
+  }
+#endif
+#if defined(USE_X11)
+  return true;
+#else
+  return false;
+#endif  // defined(USE_X11)
+}
+#endif  // BUILDFLAG(ENABLE_VULKAN)
 
 }  // namespace
 
@@ -1272,15 +1294,18 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForVulkan() {
   }
 #endif
 
-#if defined(USE_X11)
-  if (!features::IsUsingOzonePlatform()) {
-    if (!gpu_preferences_.disable_vulkan_surface) {
-      output_device_ = SkiaOutputDeviceVulkan::Create(
-          vulkan_context_provider_, dependency_->GetSurfaceHandle(),
-          shared_gpu_deps_->memory_tracker(),
-          GetDidSwapBuffersCompleteCallback());
-    }
-    if (!output_device_) {
+  std::unique_ptr<SkiaOutputDeviceVulkan> output_device;
+  if (!gpu_preferences_.disable_vulkan_surface) {
+    output_device = SkiaOutputDeviceVulkan::Create(
+        vulkan_context_provider_, dependency_->GetSurfaceHandle(),
+        shared_gpu_deps_->memory_tracker(),
+        GetDidSwapBuffersCompleteCallback());
+  }
+  if (MayFallBackToSkiaOutputDeviceX11()) {
+#if defined(USE_X11) || defined(USE_OZONE_PLATFORM_X11)
+    if (output_device) {
+      output_device_ = std::move(output_device);
+    } else {
       output_device_ = SkiaOutputDeviceX11::Create(
           context_state_, dependency_->GetSurfaceHandle(),
           shared_gpu_deps_->memory_tracker(),
@@ -1288,12 +1313,8 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForVulkan() {
     }
     if (output_device_)
       return true;
+#endif  // defined(USE_X11) || BUILDFLAG(OZONE_PLATFORM_X11)
   }
-#endif  // defined(USE_X11)
-
-  auto output_device = SkiaOutputDeviceVulkan::Create(
-      vulkan_context_provider_, dependency_->GetSurfaceHandle(),
-      shared_gpu_deps_->memory_tracker(), GetDidSwapBuffersCompleteCallback());
   if (!output_device)
     return false;
 
