@@ -7,11 +7,17 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desk_mini_view.h"
+#include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/wm_highlight_item_border.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/font_list.h"
+#include "ui/gfx/text_constants.h"
+#include "ui/gfx/text_elider.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/controls/highlight_path_generator.h"
 
@@ -26,6 +32,8 @@ constexpr int kZeroStateButtonHeight = 28;
 constexpr int kZeroStateDefaultButtonHorizontalPadding = 16;
 
 constexpr int kZeroStateNewDeskButtonWidth = 36;
+
+constexpr int kZeroStateDefaultDeskButtonMinWidth = 56;
 
 }  // namespace
 
@@ -137,12 +145,10 @@ void DeskButtonBase::UpdateBorderState() {
 // -----------------------------------------------------------------------------
 // ZeroStateDefaultDeskButton:
 
-// TODO(minch): Show the first desk's current name instead of the default name.
 ZeroStateDefaultDeskButton::ZeroStateDefaultDeskButton(DesksBarView* bar_view)
-    : DeskButtonBase(
-          l10n_util::GetStringUTF16(IDS_ASH_DESKS_DESK_1_MINI_VIEW_TITLE),
-          kCornerRadius,
-          kCornerRadius),
+    : DeskButtonBase(DesksController::Get()->desks()[0]->name(),
+                     kCornerRadius,
+                     kCornerRadius),
       bar_view_(bar_view) {}
 
 const char* ZeroStateDefaultDeskButton::GetClassName() const {
@@ -156,15 +162,31 @@ void ZeroStateDefaultDeskButton::OnThemeChanged() {
 }
 
 gfx::Size ZeroStateDefaultDeskButton::CalculatePreferredSize() const {
-  const gfx::Size label_size = label()->GetPreferredSize();
-  return gfx::Size(
-      label_size.width() + 2 * kZeroStateDefaultButtonHorizontalPadding,
-      kZeroStateButtonHeight);
+  auto* root_window =
+      bar_view_->GetWidget()->GetNativeWindow()->GetRootWindow();
+  const int preview_width = DeskMiniView::GetPreviewWidth(
+      root_window->bounds().size(),
+      DeskPreviewView::GetHeight(root_window, /*compact=*/false));
+  int label_width = 0, label_height = 0;
+  gfx::Canvas::SizeStringInt(DesksController::Get()->desks()[0]->name(),
+                             gfx::FontList(), &label_width, &label_height, 0,
+                             gfx::Canvas::NO_ELLIPSIS);
+  const int width = base::ClampToRange(
+      label_width + 2 * kZeroStateDefaultButtonHorizontalPadding,
+      kZeroStateDefaultDeskButtonMinWidth, preview_width);
+  return gfx::Size(width, kZeroStateButtonHeight);
 }
 
 void ZeroStateDefaultDeskButton::OnButtonPressed() {
   bar_view_->UpdateNewMiniViews(/*initializing_bar_view=*/false,
                                 /*expanding_bar_view=*/true);
+}
+
+void ZeroStateDefaultDeskButton::UpdateLabelText() {
+  SetText(gfx::ElideText(
+      DesksController::Get()->desks()[0]->name(), gfx::FontList(),
+      bounds().width() - 2 * kZeroStateDefaultButtonHorizontalPadding,
+      gfx::ELIDE_TAIL));
 }
 
 // -----------------------------------------------------------------------------

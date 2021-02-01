@@ -44,6 +44,10 @@ class ASH_EXPORT DeskButtonBase
 
   virtual void UpdateButtonState() {}
 
+  // Updates the label's text of the button. E.g, ZeroStateDefaultDeskButton
+  // showing the desk's name, which should be updated on desk name changes.
+  virtual void UpdateLabelText() {}
+
   SkColor GetBackgroundColorForTesting() const { return background_color_; }
 
  protected:
@@ -90,6 +94,7 @@ class ASH_EXPORT ZeroStateDefaultDeskButton : public DeskButtonBase {
   void OnThemeChanged() override;
   gfx::Size CalculatePreferredSize() const override;
   void OnButtonPressed() override;
+  void UpdateLabelText() override;
 
  private:
   DesksBarView* bar_view_;

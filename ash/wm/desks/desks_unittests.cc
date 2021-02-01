@@ -4296,6 +4296,83 @@ TEST_F(DesksBentoTest, NewDeskButton) {
   EXPECT_TRUE(new_desk_button->GetEnabled());
 }
 
+TEST_F(DesksBentoTest, ZeroStateDeskButtonText) {
+  UpdateDisplay("1600x1200");
+  auto* overview_controller = Shell::Get()->overview_controller();
+  overview_controller->StartOverview();
+
+  auto* root_window = Shell::GetPrimaryRootWindow();
+  auto* desks_bar_view = GetOverviewGridForRoot(root_window)->desks_bar_view();
+  ASSERT_TRUE(desks_bar_view->IsZeroState());
+  // Show the default name "Desk 1" while initializing the desks bar at the
+  // first time.
+  EXPECT_EQ(base::UTF8ToUTF16("Desk 1"),
+            desks_bar_view->zero_state_default_desk_button()->GetText());
+
+  auto* event_generator = GetEventGenerator();
+  ClickOnView(desks_bar_view->zero_state_default_desk_button(),
+              event_generator);
+  EXPECT_TRUE(desks_bar_view->mini_views()[0]->desk_name_view()->HasFocus());
+
+  auto send_key = [this](ui::KeyboardCode key_code, int flags = 0) {
+    auto* generator = GetEventGenerator();
+    generator->PressKey(key_code, flags);
+    generator->ReleaseKey(key_code, flags);
+  };
+
+  // Change the desk name to "test".
+  send_key(ui::VKEY_T);
+  send_key(ui::VKEY_E);
+  send_key(ui::VKEY_S);
+  send_key(ui::VKEY_T);
+  send_key(ui::VKEY_RETURN);
+  overview_controller->EndOverview();
+  overview_controller->StartOverview();
+
+  desks_bar_view = GetOverviewGridForRoot(root_window)->desks_bar_view();
+  EXPECT_TRUE(desks_bar_view->IsZeroState());
+  // Should show the desk's current name "test" instead of the default name.
+  EXPECT_EQ(base::UTF8ToUTF16("test"),
+            desks_bar_view->zero_state_default_desk_button()->GetText());
+
+  // Create 'Desk 2'.
+  ClickOnView(desks_bar_view->zero_state_new_desk_button(), event_generator);
+  EXPECT_FALSE(desks_bar_view->IsZeroState());
+  send_key(ui::VKEY_RETURN);
+  EXPECT_EQ(base::UTF8ToUTF16("Desk 2"),
+            DesksController::Get()->desks()[1].get()->name());
+
+  // Close desk 'test' should return to zero state and the zero state default
+  // desk button should show current desk's name, which is 'Desk 1'.
+  CloseDeskFromMiniView(desks_bar_view->mini_views()[0], event_generator);
+  EXPECT_TRUE(desks_bar_view->IsZeroState());
+  EXPECT_EQ(base::UTF8ToUTF16("Desk 1"),
+            desks_bar_view->zero_state_default_desk_button()->GetText());
+
+  // Set a super long desk name.
+  ClickOnView(desks_bar_view->zero_state_default_desk_button(),
+              event_generator);
+  for (size_t i = 0; i < DeskNameView::kMaxLength + 5; i++)
+    send_key(ui::VKEY_A);
+  send_key(ui::VKEY_RETURN);
+  overview_controller->EndOverview();
+  overview_controller->StartOverview();
+
+  desks_bar_view = GetOverviewGridForRoot(root_window)->desks_bar_view();
+  auto* zero_state_default_desk_button =
+      desks_bar_view->zero_state_default_desk_button();
+  base::string16 desk_button_text = zero_state_default_desk_button->GetText();
+  base::string16 expected_desk_name(DeskNameView::kMaxLength, L'a');
+  // Zero state desk button should show the elided name as the DeskNameView.
+  EXPECT_EQ(expected_desk_name,
+            DesksController::Get()->desks()[0].get()->name());
+  EXPECT_NE(expected_desk_name, desk_button_text);
+  EXPECT_TRUE(base::StartsWith(base::UTF16ToUTF8(desk_button_text), "aaa",
+                               base::CompareCase::SENSITIVE));
+  EXPECT_FALSE(base::EndsWith(base::UTF16ToUTF8(desk_button_text), "aaa",
+                              base::CompareCase::SENSITIVE));
+}
+
 TEST_F(DesksBentoTest, ReorderDesksByMouse) {
   auto* desks_controller = DesksController::Get();
 

@@ -147,8 +147,9 @@ class RemovedMiniViewAnimation : public ui::ImplicitAnimationObserver {
     removed_mini_view_->parent()->RemoveChildViewT(removed_mini_view_);
     if (to_zero_state_) {
       DCHECK(bar_view_);
-      bar_view_->zero_state_default_desk_button()->SetVisible(true);
-      bar_view_->zero_state_new_desk_button()->SetVisible(true);
+      // Layout the desks bar to make sure the buttons visibilities and button's
+      // text can be updated correctly while going back to zero state.
+      bar_view_->Layout();
     }
   }
 

@@ -34,6 +34,16 @@ class ASH_EXPORT DeskMiniView
       public views::TextfieldController,
       public views::ViewObserver {
  public:
+  // Returns the width of the desk preview based on its |preview_height| and the
+  // aspect ratio of the root window taken from |root_window_size|.
+  static int GetPreviewWidth(const gfx::Size& root_window_size,
+                             int preview_height);
+
+  // The desk preview bounds are proportional to the bounds of the display on
+  // which it resides, and whether the |compact| layout is used.
+  static gfx::Rect GetDeskPreviewBounds(aura::Window* root_window,
+                                        bool compact);
+
   DeskMiniView(DesksBarView* owner_bar, aura::Window* root_window, Desk* desk);
   ~DeskMiniView() override;
 
