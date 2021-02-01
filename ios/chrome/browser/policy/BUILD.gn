@@ -77,6 +77,20 @@ source_set("policy") {
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
+source_set("policy_util") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "policy_util.h",
+    "policy_util.mm",
+  ]
+  deps = [
+    ":feature_flags",
+    "//base",
+    "//components/prefs",
+    "//ios/chrome/browser:pref_names",
+  ]
+}
+
 source_set("feature_flags") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [

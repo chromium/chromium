@@ -32,7 +32,7 @@
 #import "ios/chrome/browser/overlays/public/web_content_area/http_auth_overlay.h"
 #include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 #include "ios/chrome/browser/policy/policy_features.h"
-#import "ios/chrome/browser/prefs/prefs_util.h"
+#import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/search_engines/search_engines_util.h"
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/ui/activity_services/canonical_url_retriever.h"

@@ -60,6 +60,7 @@
 #import "ios/chrome/browser/memory/memory_debugger_manager.h"
 #import "ios/chrome/browser/metrics/ios_chrome_metrics_service_client.h"
 #include "ios/chrome/browser/notification_promo.h"
+#import "ios/chrome/browser/policy/policy_util.h"
 #include "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/prerender/prerender_pref.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
