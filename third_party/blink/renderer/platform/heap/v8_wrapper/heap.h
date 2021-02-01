@@ -41,6 +41,18 @@ T* MakeGarbageCollected(AdditionalBytes additional_bytes, Args&&... args) {
       std::forward<Args>(args)...);
 }
 
+// TODO(1056170): Implement.
+class PLATFORM_EXPORT HeapAllocHooks {
+  STATIC_ONLY(HeapAllocHooks);
+
+ public:
+  typedef void AllocationHook(Address, size_t, const char*);
+  typedef void FreeHook(Address);
+
+  static void SetAllocationHook(AllocationHook* hook) {}
+  static void SetFreeHook(FreeHook* hook) {}
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_V8_WRAPPER_HEAP_H_
