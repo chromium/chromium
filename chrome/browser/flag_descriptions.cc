@@ -1276,12 +1276,6 @@ const char kHideShelfControlsInTabletModeDescription[] =
     "Hides home, back, and overview button from the shelf while the device is "
     "in tablet mode. Predicated on shelf-hotseat feature being enabled.";
 
-const char kHorizontalTabSwitcherAndroidName[] =
-    "Enable horizontal tab switcher";
-const char kHorizontalTabSwitcherAndroidDescription[] =
-    "Changes the layout of the Android tab switcher so tabs scroll "
-    "horizontally instead of vertically.";
-
 const char kTabSwitcherOnReturnName[] = "Tab switcher on return";
 const char kTabSwitcherOnReturnDescription[] =
     "Enable tab switcher on return after specified time has elapsed";

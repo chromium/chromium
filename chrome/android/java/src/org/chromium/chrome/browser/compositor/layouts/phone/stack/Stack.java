@@ -21,8 +21,6 @@ import org.chromium.chrome.browser.compositor.layouts.Layout.Orientation;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.layouts.phone.StackLayoutBase;
 import org.chromium.chrome.browser.compositor.layouts.phone.stack.StackAnimation.OverviewAnimationType;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.animation.FloatProperty;
 import org.chromium.chrome.browser.tab.Tab;
@@ -359,10 +357,6 @@ public abstract class Stack {
      *              we should put it on the left. This method already accounts for RTL flipping.
      */
     private boolean isCloseButtonOnRight() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.HORIZONTAL_TAB_SWITCHER_ANDROID)) {
-            return !LocalizationUtils.isLayoutRtl();
-        }
-
         return mCurrentMode == Orientation.PORTRAIT ^ LocalizationUtils.isLayoutRtl();
     }
 
@@ -2031,11 +2025,7 @@ public abstract class Stack {
     }
 
     protected void updateCurrentMode(@Orientation int orientation) {
-        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.HORIZONTAL_TAB_SWITCHER_ANDROID)) {
-            mCurrentMode = Orientation.LANDSCAPE;
-        } else {
-            mCurrentMode = orientation;
-        }
+        mCurrentMode = orientation;
 
         mDiscardDirection = getDefaultDiscardDirection();
         final float opaqueTopPadding = mBorderTopPadding - mBorderTransparentTop;

@@ -34,13 +34,10 @@ import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.GestureEventFilter;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.GestureHandler;
-import org.chromium.chrome.browser.compositor.layouts.phone.stack.NonOverlappingStack;
 import org.chromium.chrome.browser.compositor.layouts.phone.stack.OverlappingStack;
 import org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack;
 import org.chromium.chrome.browser.compositor.layouts.phone.stack.StackTab;
 import org.chromium.chrome.browser.compositor.scene_layer.TabListSceneLayer;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -450,19 +447,11 @@ public abstract class StackLayoutBase extends Layout {
     }
 
     /**
-     * Whether or not the HorizontalTabSwitcherAndroid flag (which enables the new horizontal tab
-     * switcher in both portrait and landscape mode) is enabled.
-     */
-    protected boolean isHorizontalTabSwitcherFlagEnabled() {
-        return CachedFeatureFlags.isEnabled(ChromeFeatureList.HORIZONTAL_TAB_SWITCHER_ANDROID);
-    }
-
-    /**
      * Whether or not we're currently having the tabs scroll horizontally (as opposed to
      * vertically).
      */
     private boolean isUsingHorizontalLayout() {
-        return getOrientation() == Orientation.LANDSCAPE || isHorizontalTabSwitcherFlagEnabled();
+        return getOrientation() == Orientation.LANDSCAPE;
     }
 
     /**
@@ -475,12 +464,7 @@ public abstract class StackLayoutBase extends Layout {
             mStacks.subList(lists.size(), mStacks.size()).clear();
         }
         while (mStacks.size() < lists.size()) {
-            Stack stack;
-            if (isHorizontalTabSwitcherFlagEnabled()) {
-                stack = new NonOverlappingStack(getContext(), this);
-            } else {
-                stack = new OverlappingStack(getContext(), this);
-            }
+            Stack stack = new OverlappingStack(getContext(), this);
             stack.notifySizeChanged(mWidth, mHeight, mOrientation);
             mStacks.add(stack);
         }
@@ -768,18 +752,6 @@ public abstract class StackLayoutBase extends Layout {
     }
 
     /**
-     * Called by a NonOverlappingStack that's had switchAwayEffect() called on it, once the
-     * animation has finished.
-     */
-    public void onSwitchAwayFinished() {}
-
-    /**
-     * Called by a NonOverlappingStack that's had switchToEffect() called on it, once the
-     * animation has finished.
-     */
-    public void onSwitchToFinished() {}
-
-    /**
      * Called when layout-specific actions are needed after the animation finishes.
      */
     protected void onAnimationStarted() {
@@ -868,7 +840,7 @@ public abstract class StackLayoutBase extends Layout {
         // Tabs don't overlap in the horizontal tab switcher experiment, so the order comparator
         // already does what we want (the visibility comparator's logic actually doesn't compute
         // visibility properly in this case).
-        if (!isHorizontalTabSwitcherFlagEnabled()) mSortingComparator = mVisibilityComparator;
+        mSortingComparator = mVisibilityComparator;
         doneShowing();
     }
 
@@ -1168,10 +1140,6 @@ public abstract class StackLayoutBase extends Layout {
 
         @Override
         float getInnerMargin() {
-            // If we're using the new horizontal tab switcher, don't show the edge of the other
-            // stack (normal if in incognito mode and incognito if in normal mode) on-screen.
-            if (isHorizontalTabSwitcherFlagEnabled()) return 0;
-
             float margin = mInnerMarginPercent
                     * Math.max(mMinMaxInnerMargin, mWidth * INNER_MARGIN_PERCENT_PERCENT);
             return margin;
@@ -1229,7 +1197,6 @@ public abstract class StackLayoutBase extends Layout {
             // Need getHeight() for this case instead of getHeightMinusBrowserControls() so the
             // normal stack goes up high enough to clear the status bar when the incognito stack is
             // active.
-            if (isHorizontalTabSwitcherFlagEnabled()) return StackLayoutBase.this.getHeight();
             return Math.round(mWidth - getInnerMargin());
         }
     }
@@ -1383,8 +1350,7 @@ public abstract class StackLayoutBase extends Layout {
             // If the non-overlapping horizontal tab switcher experiment is enabled, we pass -1 so
             // NonOverlappingStack can use the scroll position to keep the index used for visibility
             // prioritization up-to-date.
-            final boolean useFixedIndex =
-                    mSortingComparator == mOrderComparator && !isHorizontalTabSwitcherFlagEnabled();
+            final boolean useFixedIndex = mSortingComparator == mOrderComparator;
             mStacks.get(i).setStackFocusInfo(
                     stackFocus, useFixedIndex ? mStacks.get(i).getTabList().index() : -1);
         }
@@ -1457,11 +1423,6 @@ public abstract class StackLayoutBase extends Layout {
      * @return The distance between two neighboring tab stacks.
      */
     private float getFullScrollDistance() {
-        // For the horizontal tab switcher experiment, we use getHeight() instead of
-        // getHeightMinusBrowserControls() to make sure the normal stack goes up enough to clear the
-        // status bar when switching to incognito mode.
-        if (isHorizontalTabSwitcherFlagEnabled()) return getHeight();
-
         float distance = isUsingHorizontalLayout() ? getHeightMinusContentOffsetsDp() : getWidth();
         if (mStacks.size() > 2) {
             return distance - getViewportParameters().getInnerMargin();

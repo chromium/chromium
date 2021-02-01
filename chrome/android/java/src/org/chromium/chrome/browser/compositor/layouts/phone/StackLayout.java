@@ -12,7 +12,6 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
-import org.chromium.chrome.browser.compositor.layouts.phone.stack.NonOverlappingStack;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabList;
@@ -133,38 +132,8 @@ public class StackLayout extends StackLayoutBase {
 
     @Override
     public void onTabModelSwitched(boolean toIncognitoTabModel) {
-        if (isHorizontalTabSwitcherFlagEnabled()) {
-            // Don't allow switching between normal and incognito again until the animations finish.
-            mAnimatingStackSwitch = true;
-
-            // Make sure we update the tab switcher's background color even if no tabs are open and
-            // therefore neither the switch away nor switch to animations run.
-            requestUpdate();
-
-            NonOverlappingStack oldStack = (NonOverlappingStack) mStacks.get(
-                    toIncognitoTabModel ? NORMAL_STACK_INDEX : INCOGNITO_STACK_INDEX);
-            oldStack.runSwitchAwayAnimation(toIncognitoTabModel
-                            ? NonOverlappingStack.SwitchDirection.LEFT
-                            : NonOverlappingStack.SwitchDirection.RIGHT);
-        } else {
-            flingStacks(toIncognitoTabModel ? INCOGNITO_STACK_INDEX : NORMAL_STACK_INDEX);
-            mFlingFromModelChange = true;
-        }
-    }
-
-    @Override
-    public void onSwitchAwayFinished() {
-        int newStackIndex = getTabStackIndex(Tab.INVALID_TAB_ID);
-        mRenderedScrollOffset = -newStackIndex;
-        NonOverlappingStack newStack = (NonOverlappingStack) mStacks.get(newStackIndex);
-        newStack.runSwitchToAnimation(newStackIndex == INCOGNITO_STACK_INDEX
-                        ? NonOverlappingStack.SwitchDirection.LEFT
-                        : NonOverlappingStack.SwitchDirection.RIGHT);
-    }
-
-    @Override
-    public void onSwitchToFinished() {
-        mAnimatingStackSwitch = false;
+        flingStacks(toIncognitoTabModel ? INCOGNITO_STACK_INDEX : NORMAL_STACK_INDEX);
+        mFlingFromModelChange = true;
     }
 
     @Override
@@ -179,10 +148,6 @@ public class StackLayout extends StackLayoutBase {
 
     @Override
     protected int getMinRenderedScrollOffset() {
-        // If the horizontal tab switcher flag is enabled, we let the user tap the incognito button
-        // to switch to incognito mode, even if no incognito tabs are open.
-        if (isHorizontalTabSwitcherFlagEnabled()) return -1;
-
         // If there's at least one incognito tab open, or we're in the process of switching back
         // from incognito to normal mode, return -1 so we don't cause any clamping. Otherwise,
         // return 0 to prevent scrolling.
@@ -206,10 +171,6 @@ public class StackLayout extends StackLayoutBase {
 
     @Override
     protected @SwipeMode int computeInputMode(long time, float x, float y, float dx, float dy) {
-        // If this experiment flag is enabled, we add an incognito toggle button to the toolbar, and
-        // disable swiping between the stacks.
-        if (isHorizontalTabSwitcherFlagEnabled()) return SwipeMode.SEND_TO_STACK;
-
         if (mStacks.size() == 2 && !mStacks.get(1).isDisplayable()) return SwipeMode.SEND_TO_STACK;
         return super.computeInputMode(time, x, y, dx, dy);
     }

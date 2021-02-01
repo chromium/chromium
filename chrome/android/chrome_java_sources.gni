@@ -323,7 +323,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/compositor/layouts/phone/SimpleAnimationLayout.java",
   "java/src/org/chromium/chrome/browser/compositor/layouts/phone/StackLayout.java",
   "java/src/org/chromium/chrome/browser/compositor/layouts/phone/StackLayoutBase.java",
-  "java/src/org/chromium/chrome/browser/compositor/layouts/phone/stack/NonOverlappingStack.java",
   "java/src/org/chromium/chrome/browser/compositor/layouts/phone/stack/OverlappingStack.java",
   "java/src/org/chromium/chrome/browser/compositor/layouts/phone/stack/Stack.java",
   "java/src/org/chromium/chrome/browser/compositor/layouts/phone/stack/StackAnimation.java",

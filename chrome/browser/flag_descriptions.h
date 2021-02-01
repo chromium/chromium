@@ -750,9 +750,6 @@ extern const char kHeavyAdPrivacyMitigationsDescription[];
 extern const char kHeavyAdInterventionName[];
 extern const char kHeavyAdInterventionDescription[];
 
-extern const char kHorizontalTabSwitcherAndroidName[];
-extern const char kHorizontalTabSwitcherAndroidDescription[];
-
 extern const char kTabSwitcherOnReturnName[];
 extern const char kTabSwitcherOnReturnDescription[];
 

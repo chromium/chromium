@@ -18,7 +18,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.device.DeviceClassManager;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -242,11 +241,6 @@ public class TabSwitcherModeTTPhone extends OptimizedFrameLayout
     void onAccessibilityStatusChanged(boolean enabled) {
         if (mNewTabImageButton != null) mNewTabImageButton.onAccessibilityStatusChanged();
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.HORIZONTAL_TAB_SWITCHER_ANDROID)
-                && IncognitoUtils.isIncognitoModeEnabled()) {
-            updateTabSwitchingElements(!enabled);
-        }
-
         updatePrimaryColorAndTint();
     }
 
@@ -297,8 +291,7 @@ public class TabSwitcherModeTTPhone extends OptimizedFrameLayout
             // the tab switcher, which is the standard mode background. Note that horizontal tab
             // switcher is an exception, which uses the correspond background color for standard
             // and incognito mode.
-            int backgroundColor = ChromeColors.getPrimaryBackgroundColor(
-                    getResources(), usingHorizontalTabSwitcher() && mIsIncognito);
+            int backgroundColor = ChromeColors.getPrimaryBackgroundColor(getResources(), false);
             useLightIcons = ColorUtils.shouldUseLightForegroundOnBackground(backgroundColor);
         } else {
             useLightIcons = ColorUtils.shouldUseLightForegroundOnBackground(primaryColor);
@@ -327,14 +320,6 @@ public class TabSwitcherModeTTPhone extends OptimizedFrameLayout
         }
 
         return Color.TRANSPARENT;
-    }
-
-    private boolean usingHorizontalTabSwitcher() {
-        // The horizontal tab switcher flag does not affect the accessibility switcher. We do the
-        // enableAccessibilityLayout() check first here to avoid logging an experiment exposure for
-        // these users.
-        return !DeviceClassManager.enableAccessibilityLayout()
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.HORIZONTAL_TAB_SWITCHER_ANDROID);
     }
 
     private void inflateIncognitoToggle() {
@@ -373,7 +358,6 @@ public class TabSwitcherModeTTPhone extends OptimizedFrameLayout
      *         and incognito status.
      */
     private boolean shouldShowIncognitoToggle() {
-        return (usingHorizontalTabSwitcher() || mIsGridTabSwitcherEnabled)
-                && IncognitoUtils.isIncognitoModeEnabled();
+        return mIsGridTabSwitcherEnabled && IncognitoUtils.isIncognitoModeEnabled();
     }
 }

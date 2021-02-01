@@ -188,7 +188,6 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kFocusOmniboxInIncognitoTabIntents,
     &kHandleMediaIntents,
     &kHomepagePromoCard,
-    &kHorizontalTabSwitcherAndroid,
     &kImmersiveUiMode,
     &kIncognitoScreenshot,
     &kInlineUpdateFlow,
@@ -522,9 +521,6 @@ const base::Feature kHandleMediaIntents{"HandleMediaIntents",
 
 const base::Feature kHomepagePromoCard{"HomepagePromoCard",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kHorizontalTabSwitcherAndroid{
-    "HorizontalTabSwitcherAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kImmersiveUiMode{"ImmersiveUiMode",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
