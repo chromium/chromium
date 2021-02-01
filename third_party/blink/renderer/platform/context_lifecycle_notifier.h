@@ -20,6 +20,8 @@ class PLATFORM_EXPORT ContextLifecycleNotifier : public GarbageCollectedMixin {
   virtual void AddContextLifecycleObserver(ContextLifecycleObserver*);
   virtual void RemoveContextLifecycleObserver(ContextLifecycleObserver*);
 
+  void Trace(Visitor* visitor) const override;
+
  protected:
   // Should be called by implementers to notify observers when the context is
   // destroyed.
@@ -29,8 +31,6 @@ class PLATFORM_EXPORT ContextLifecycleNotifier : public GarbageCollectedMixin {
     return observers_;
   }
   HeapObserverSet<ContextLifecycleObserver>& observers() { return observers_; }
-
-  void Trace(Visitor* visitor) const override;
 
  private:
   HeapObserverSet<ContextLifecycleObserver> observers_;
