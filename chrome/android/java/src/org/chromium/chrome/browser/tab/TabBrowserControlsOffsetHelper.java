@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.tab;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.base.UserData;
+import org.chromium.ui.base.WindowAndroid;
 
 /**
  * Helper that coordinates the browser controls offsets from the perspective of a particular Tab.
@@ -16,7 +18,7 @@ public class TabBrowserControlsOffsetHelper extends EmptyTabObserver implements 
     private static final Class<TabBrowserControlsOffsetHelper> USER_DATA_KEY =
             TabBrowserControlsOffsetHelper.class;
 
-    private final TabImpl mTab;
+    private TabImpl mTab;
 
     private int mTopControlsOffset;
     private int mBottomControlsOffset;
@@ -45,6 +47,12 @@ public class TabBrowserControlsOffsetHelper extends EmptyTabObserver implements 
     private TabBrowserControlsOffsetHelper(Tab tab) {
         mTab = (TabImpl) tab;
         tab.addObserver(this);
+    }
+
+    @Override
+    public void destroy() {
+        mTab.removeObserver(this);
+        mTab = null;
     }
 
     /**
@@ -101,6 +109,11 @@ public class TabBrowserControlsOffsetHelper extends EmptyTabObserver implements 
         mBottomControlsOffset = 0;
         mContentOffset = 0;
         mOffsetInitialized = false;
+    }
+
+    @Override
+    public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
+        // Intentionally do nothing to prevent automatic observer removal on detachment.
     }
 
     /** @return Top control offset */

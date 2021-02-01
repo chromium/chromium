@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.browser.tab;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.UserData;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.WindowAndroid;
 
 /**
  * UserData for a {@link Tab}. Used for a {@link WebContents} while it stays
@@ -27,6 +30,11 @@ public abstract class TabWebContentsUserData implements UserData {
             @Override
             public void onDestroyed(Tab tab) {
                 tab.removeObserver(this);
+            }
+
+            @Override
+            public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
+                // Intentionally do nothing to prevent automatic observer removal on detachment.
             }
         });
     }
