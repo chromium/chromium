@@ -247,12 +247,13 @@ gfx::ImageSkia GhostImageView::GetIconOutline(
     SkIPoint thick_inner_blur_offset;
     preview.extractAlpha(&thick_inner_blur, &paint, &thick_inner_blur_offset);
 
+    SkSamplingOptions sampling;
     // Mask out the inner blur.
     paint.setMaskFilter(nullptr);
     paint.setBlendMode(SkBlendMode::kDstOut);
     canvas = std::make_unique<SkCanvas>(thick_inner_blur);
-    canvas->drawBitmap(preview, -thick_inner_blur_offset.fX,
-                       -thick_inner_blur_offset.fY, &paint);
+    canvas->drawImage(preview.asImage(), -thick_inner_blur_offset.fX,
+                      -thick_inner_blur_offset.fY, sampling, &paint);
     canvas->drawRect(
         SkRect{0, 0, -thick_inner_blur_offset.fX, thick_inner_blur.height()},
         paint);
@@ -264,14 +265,14 @@ gfx::ImageSkia GhostImageView::GetIconOutline(
     paint.setBlendMode(SkBlendMode::kPlus);
     canvas = std::make_unique<SkCanvas>(preview);
     canvas->drawColor(0, SkBlendMode::kClear);
-    canvas->drawBitmap(thick_inner_blur, thick_inner_blur_offset.fX,
-                       thick_inner_blur_offset.fY, &paint);
-    canvas->drawBitmap(thick_outer_blur, outer_blur_offset.fX,
-                       outer_blur_offset.fY, &paint);
+    canvas->drawImage(thick_inner_blur.asImage(), thick_inner_blur_offset.fX,
+                      thick_inner_blur_offset.fY, sampling, &paint);
+    canvas->drawImage(thick_outer_blur.asImage(), outer_blur_offset.fX,
+                      outer_blur_offset.fY, sampling, &paint);
 
     // Draw the bright outline.
-    canvas->drawBitmap(bright_outline, bright_outline_offset.fX,
-                       bright_outline_offset.fY, &paint);
+    canvas->drawImage(bright_outline.asImage(), bright_outline_offset.fX,
+                      bright_outline_offset.fY, sampling, &paint);
 
     // Cleanup bitmaps.
     canvas.reset();

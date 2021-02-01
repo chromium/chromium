@@ -73,7 +73,7 @@ void DrawContents(SkImage* background_grid_image,
   // Draw background grid.
   SkPaint paint;
   paint.setBlendMode(SkBlendMode::kSrc);
-  canvas->drawImage(background_grid_image, 0, 0, &paint);
+  canvas->drawImage(background_grid_image, 0, 0, SkSamplingOptions(), &paint);
 
   // Draw rotated rectangles.
   SkScalar rect_size =
@@ -172,8 +172,8 @@ void Blur::Run(double sigma_x,
                         size.height() / content_surfaces.back()->height());
           SkPaint paint;
           paint.setBlendMode(SkBlendMode::kSrc);
-          paint.setFilterQuality(SkFilterQuality::kLow_SkFilterQuality);
-          content_surfaces.back()->draw(canvas, 0, 0, &paint);
+          content_surfaces.back()->draw(
+              canvas, 0, 0, SkSamplingOptions(SkFilterMode::kLinear), &paint);
         }
 
         canvas->restore();
@@ -194,12 +194,12 @@ void Blur::Run(double sigma_x,
                     size.height() / blur_image->height());
       SkPaint paint;
       paint.setBlendMode(SkBlendMode::kSrc);
-      paint.setFilterQuality(SkFilterQuality::kLow_SkFilterQuality);
+      SkSamplingOptions sampling(SkFilterMode::kLinear);
       // Simulate multi-texturing by adding foreground opacity.
       int alpha = (1.0 - kForegroundOpacity) * 255.0 + 0.5;
       paint.setColor(SkColorSetA(SK_ColorBLACK, alpha));
       canvas->drawImage(blurred_image, offset.x() - subset.x(),
-                        offset.y() - subset.y(), &paint);
+                        offset.y() - subset.y(), sampling, &paint);
       canvas->restore();
 
       // Restore blur surfaces for next frame.

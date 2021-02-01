@@ -92,7 +92,7 @@ void SetOverlayIcon(HWND hwnd,
     // it in the paintable region instead, rounding up to the closest pixel to
     // avoid smearing.
     const int y_offset = std::ceilf((kOverlayIconSize - resized_height) / 2.0f);
-    offscreen_canvas.drawBitmap(sk_icon, 0, y_offset);
+    offscreen_canvas.drawImage(sk_icon.asImage(), 0, y_offset);
 
     icon = IconUtil::CreateHICONFromSkBitmap(offscreen_bitmap);
     if (!icon.is_valid())

@@ -1147,7 +1147,8 @@ sk_sp<SkImage> GLRenderer::ApplyBackdropFilters(
   // will be rastered over the top. So we need to paint it here, unfiltered.
   if (backdrop_filter_bounds.has_value() || quad->ShouldDrawWithBlending()) {
     surface->getCanvas()->drawImageRect(
-        src_image, RectFToSkRect(src_image_rect), dest_rect, nullptr);
+        src_image, RectFToSkRect(src_image_rect), dest_rect,
+        SkSamplingOptions(), nullptr, SkCanvas::kStrict_SrcRectConstraint);
   }
 
   if (backdrop_filter_bounds.has_value()) {
@@ -1195,8 +1196,9 @@ sk_sp<SkImage> GLRenderer::ApplyBackdropFilters(
   }
   // Now paint the pre-filtered image onto the canvas (possibly with mask
   // applied).
-  surface->getCanvas()->drawImageRect(filtered_image, subset, dest_rect,
-                                      &paint);
+  surface->getCanvas()->drawImageRect(filtered_image, SkRect::Make(subset),
+                                      dest_rect, SkSamplingOptions(), &paint,
+                                      SkCanvas::kStrict_SrcRectConstraint);
 
   if (backdrop_filter_bounds.has_value()) {
     surface->getCanvas()->restore();

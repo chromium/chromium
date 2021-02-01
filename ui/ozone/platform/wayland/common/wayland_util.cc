@@ -135,7 +135,7 @@ bool DrawBitmap(const SkBitmap& bitmap, ui::WaylandShmBuffer* out_buffer) {
   // Clear to transparent in case |bitmap| is smaller than the canvas.
   auto* canvas = sk_surface->getCanvas();
   canvas->clear(SK_ColorTRANSPARENT);
-  canvas->drawBitmapRect(bitmap, damage, nullptr);
+  canvas->drawImageRect(bitmap.asImage(), damage, SkSamplingOptions());
   return true;
 }
 

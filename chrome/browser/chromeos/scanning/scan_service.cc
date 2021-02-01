@@ -125,7 +125,7 @@ bool AddPdfPage(sk_sp<SkDocument> pdf_doc, PngImageData& image_data) {
     LOG(ERROR) << "Unable to access PDF page canvas.";
     return false;
   }
-  page_canvas->drawBitmap(img_bitmap, /*left=*/0, /*top=*/0);
+  page_canvas->drawImage(img_bitmap.asImage(), /*left=*/0, /*top=*/0);
   pdf_doc->endPage();
   return true;
 }

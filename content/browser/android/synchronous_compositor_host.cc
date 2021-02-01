@@ -407,7 +407,7 @@ bool SynchronousCompositorHost::DemandDrawSw(SkCanvas* canvas) {
     TRACE_EVENT0("browser", "DrawBitmap");
     canvas->save();
     canvas->resetMatrix();
-    canvas->drawBitmap(bitmap, 0, 0);
+    canvas->drawImage(bitmap.asImage(), 0, 0);
     canvas->restore();
   }
 

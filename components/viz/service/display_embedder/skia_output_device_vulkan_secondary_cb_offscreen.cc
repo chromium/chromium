@@ -70,7 +70,7 @@ void SkiaOutputDeviceVulkanSecondaryCBOffscreen::SwapBuffers(
     context_state_->vk_context_provider()
         ->GetGrSecondaryCBDrawContext()
         ->getCanvas()
-        ->drawImage(sk_image, 0, 0, &paint);
+        ->drawImage(sk_image, 0, 0, SkSamplingOptions(), &paint);
     context_state_->vk_context_provider()
         ->GetGrSecondaryCBDrawContext()
         ->flush();

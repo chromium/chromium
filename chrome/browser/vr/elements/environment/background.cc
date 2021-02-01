@@ -120,7 +120,7 @@ GLuint UploadImage(std::unique_ptr<SkBitmap> bitmap,
   DCHECK(surface->get());
   SkCanvas* canvas = (*surface)->getCanvas();
   if (bitmap) {
-    canvas->drawBitmap(*bitmap, 0, 0);
+    canvas->drawImage(bitmap->asImage(), 0, 0);
   } else {
     // If we are missing a gradient image, blending with channels at .5 will
     // have no effect -- it will be as if there is no gradient image.

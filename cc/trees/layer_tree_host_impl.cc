@@ -4409,7 +4409,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
     // fully filled by drawBitmap(), so we ensure they start empty. (See
     // crbug.com/642011 for an example.)
     scaled_canvas->clear(SK_ColorTRANSPARENT);
-    scaled_canvas->drawBitmap(source_bitmap, 0, 0);
+    scaled_canvas->drawImage(source_bitmap.asImage(), 0, 0);
 
     if (layer_tree_frame_sink_->context_provider()) {
       SkPixmap pixmap;

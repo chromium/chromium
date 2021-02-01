@@ -104,8 +104,9 @@ bool SkiaGraphics::Flush(ResultCallback callback) {
 
 void SkiaGraphics::PaintImage(const Image& image, const gfx::Rect& src_rect) {
   SkRect skia_rect = RectToSkRect(src_rect);
-  skia_graphics_->getCanvas()->drawBitmapRect(image.skia_image(), skia_rect,
-                                              skia_rect, nullptr);
+  skia_graphics_->getCanvas()->drawImageRect(
+      image.skia_image().asImage(), skia_rect, skia_rect, SkSamplingOptions(),
+      nullptr, SkCanvas::kStrict_SrcRectConstraint);
 }
 
 void SkiaGraphics::Scroll(const gfx::Rect& clip, const gfx::Vector2d& amount) {

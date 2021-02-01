@@ -10,6 +10,7 @@
 #include "base/task_runner_util.h"
 #include "services/image_annotation/image_annotation_metrics.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 
 namespace image_annotation {
@@ -28,7 +29,7 @@ SkBitmap ScaleImage(const SkBitmap& source, const float scale) {
   // Use a canvas to scale the source image onto the new bitmap.
   SkCanvas canvas(dest, SkSurfaceProps{});
   canvas.scale(scale, scale);
-  canvas.drawBitmap(source, 0, 0, nullptr /* paint */);
+  canvas.drawImage(source.asImage(), 0, 0);
 
   return dest;
 }

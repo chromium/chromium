@@ -16,6 +16,7 @@
 #include "base/trace_event/trace_event.h"
 #include "third_party/libdrm/src/include/drm/drm_fourcc.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_fence.h"
@@ -59,7 +60,7 @@ void DrawCursor(DrmDumbBuffer* cursor, const SkBitmap& image) {
   // Clear to transparent in case |image| is smaller than the canvas.
   SkCanvas* canvas = cursor->GetCanvas();
   canvas->clear(SK_ColorTRANSPARENT);
-  canvas->drawBitmapRect(image, damage, nullptr);
+  canvas->drawImageRect(image.asImage(), damage, SkSamplingOptions());
 }
 
 }  // namespace

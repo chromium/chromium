@@ -428,7 +428,7 @@ SkBitmap CursorWindowController::GetAdjustedBitmap(
   recolored.allocN32Pixels(bitmap.width(), bitmap.height());
   recolored.eraseARGB(0, 0, 0, 0);
   SkCanvas canvas(recolored);
-  canvas.drawBitmap(bitmap, 0, 0);
+  canvas.drawImage(bitmap.asImage(), 0, 0);
   color_utils::HSL cursor_hsl;
   color_utils::SkColorToHSL(cursor_color_, &cursor_hsl);
   for (int y = 0; y < bitmap.height(); ++y) {

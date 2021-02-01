@@ -192,8 +192,9 @@ bool IsIconCircleShaped(const gfx::ImageSkia& image) {
 
     preview.eraseColor(SK_ColorTRANSPARENT);
     SkCanvas canvas1(preview);
-    canvas1.drawBitmap(scaled_preview, -visible_preview_bounds.x() * scale,
-                       -visible_preview_bounds.y() * scale);
+    canvas1.drawImage(scaled_preview.asImage(),
+                      -visible_preview_bounds.x() * scale,
+                      -visible_preview_bounds.y() * scale);
 
     // Use a canvas to perform XOR and DST_OUT operations, which should
     // generate a transparent bitmap for |preview| if the original icon is
@@ -267,8 +268,8 @@ gfx::ImageSkia StandardizeSize(const gfx::ImageSkia& image) {
     final_bitmap.eraseColor(SK_ColorTRANSPARENT);
 
     SkCanvas canvas(final_bitmap);
-    canvas.drawBitmap(unscaled_bitmap, (longest_side - width) / 2,
-                      (longest_side - height) / 2);
+    canvas.drawImage(unscaled_bitmap.asImage(), (longest_side - width) / 2,
+                     (longest_side - height) / 2);
 
     final_image.AddRepresentation(gfx::ImageSkiaRep(final_bitmap, rep.scale()));
   }
@@ -316,7 +317,8 @@ gfx::ImageSkia CreateStandardIconImage(const gfx::ImageSkia& image) {
         int target_top = (height - scaled_icon_size.height()) / 2;
 
         // Draw the scaled down bitmap and add that to the final image.
-        canvas.drawBitmap(scaled_bitmap, target_left, target_top, &paint_icon);
+        canvas.drawImage(scaled_bitmap.asImage(), target_left, target_top,
+                         SkSamplingOptions(), &paint_icon);
         final_image.AddRepresentation(
             gfx::ImageSkiaRep(final_bitmap, rep.scale()));
       } else {
@@ -368,7 +370,8 @@ gfx::ImageSkia CreateStandardIconImage(const gfx::ImageSkia& image) {
 
     if (icon_scale == 1.0f) {
       // Draw the unscaled icon on top of the background.
-      canvas.drawBitmap(unscaled_bitmap, 0, 0, &paint_icon);
+      canvas.drawImage(unscaled_bitmap.asImage(), 0, 0, SkSamplingOptions(),
+                       &paint_icon);
     } else {
       gfx::Size scaled_icon_size =
           gfx::ScaleToRoundedSize(rep.pixel_size(), icon_scale);
@@ -380,7 +383,8 @@ gfx::ImageSkia CreateStandardIconImage(const gfx::ImageSkia& image) {
       int target_top = (height - scaled_icon_size.height()) / 2;
 
       // Draw the scaled icon on top of the background.
-      canvas.drawBitmap(scaled_bitmap, target_left, target_top, &paint_icon);
+      canvas.drawImage(scaled_bitmap.asImage(), target_left, target_top,
+                       SkSamplingOptions(), &paint_icon);
     }
 
     final_image.AddRepresentation(gfx::ImageSkiaRep(final_bitmap, rep.scale()));

@@ -118,12 +118,12 @@ SkBitmap CropImage(const SkBitmap& original_bitmap) {
   SkBitmap container_bitmap;
   container_bitmap.allocN32Pixels(container_size.width(),
                                   container_size.height());
-  SkPaint paint;
-  paint.setFilterQuality(kHigh_SkFilterQuality);
+  SkSamplingOptions sampling({1.0f / 3, 1.0f / 3});
   SkCanvas container_image(container_bitmap);
   container_image.drawColor(kImageBackgroundColor);
-  container_image.drawBitmapRect(
-      original_bitmap, source_rect, SkRect::MakeSize(container_size), &paint);
+  container_image.drawImageRect(original_bitmap.asImage(), source_rect,
+                                SkRect::MakeSize(container_size), sampling,
+                                nullptr, SkCanvas::kStrict_SrcRectConstraint);
 
   return container_bitmap;
 }

@@ -132,7 +132,9 @@ bool YUVGrBackendTexturesToSkSurface(
                          visible_rect.width(), visible_rect.height());
     const SkRect dst_rect =
         SkRect::MakeWH(visible_rect.width(), visible_rect.height());
-    surface->getCanvas()->drawImageRect(image, src_rect, dst_rect, nullptr);
+    surface->getCanvas()->drawImageRect(image, src_rect, dst_rect,
+                                        SkSamplingOptions(), nullptr,
+                                        SkCanvas::kStrict_SrcRectConstraint);
   }
 
   surface->flushAndSubmit();

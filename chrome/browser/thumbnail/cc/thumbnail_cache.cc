@@ -28,6 +28,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkData.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkMallocPixelRef.h"
 #include "third_party/skia/include/core/SkPixelRef.h"
 #include "ui/android/resources/ui_resource_provider.h"
@@ -995,7 +996,7 @@ void ThumbnailCache::DecompressionTask(
       raw_data_small.allocPixels(SkImageInfo::MakeN32(
           content_size.width(), content_size.height(), kOpaque_SkAlphaType));
       SkCanvas small_canvas(raw_data_small);
-      small_canvas.drawBitmap(raw_data, 0, 0);
+      small_canvas.drawImage(raw_data.asImage(), 0, 0);
       raw_data_small.setImmutable();
     }
   }
@@ -1026,7 +1027,7 @@ std::pair<SkBitmap, float> ThumbnailCache::CreateApproximation(
   dst_bitmap.eraseColor(0);
   SkCanvas canvas(dst_bitmap);
   canvas.scale(new_scale, new_scale);
-  canvas.drawBitmap(bitmap, 0, 0, nullptr);
+  canvas.drawImage(bitmap.asImage(), 0, 0);
   dst_bitmap.setImmutable();
 
   return std::make_pair(dst_bitmap, new_scale * scale);

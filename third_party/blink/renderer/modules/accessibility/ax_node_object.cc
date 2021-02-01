@@ -2099,7 +2099,8 @@ String AXNodeObject::ImageDataUrl(const IntSize& max_size) const {
         SkImageInfo::MakeN32(width, height, kPremul_SkAlphaType));
     SkCanvas canvas(bitmap, SkSurfaceProps{});
     canvas.clear(SK_ColorTRANSPARENT);
-    canvas.drawImageRect(image, SkRect::MakeIWH(width, height), nullptr);
+    canvas.drawImageRect(image, SkRect::MakeIWH(width, height),
+                         SkSamplingOptions());
   }
 
   // Copy the bits into a buffer in RGBA_8888 unpremultiplied format

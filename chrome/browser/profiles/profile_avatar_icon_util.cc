@@ -812,7 +812,7 @@ SkBitmap GetBadgedWinIconBitmapForAvatar(const SkBitmap& app_icon_bitmap,
                                app_icon_bitmap.height());
   SkCanvas offscreen_canvas(badged_bitmap, SkSurfaceProps{});
   offscreen_canvas.clear(SK_ColorTRANSPARENT);
-  offscreen_canvas.drawBitmap(app_icon_bitmap, 0, 0);
+  offscreen_canvas.drawImage(app_icon_bitmap.asImage(), 0, 0);
 
   // Render the avatar in a cutout circle. If the avatar is not square, center
   // it in the circle but favor pushing it further down.
@@ -826,7 +826,7 @@ SkBitmap GetBadgedWinIconBitmapForAvatar(const SkBitmap& app_icon_bitmap,
       SkRect::MakeXYWH(cutout_left, cutout_top, cutout_size, cutout_size));
 
   offscreen_canvas.clipRRect(clip_circle, true);
-  offscreen_canvas.drawBitmap(sk_icon, icon_left, icon_top);
+  offscreen_canvas.drawImage(sk_icon.asImage(), icon_left, icon_top);
   return badged_bitmap;
 }
 #endif  // OS_WIN

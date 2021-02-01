@@ -322,8 +322,8 @@ void VulkanGLInterop::DrawVk(sk_sp<GrVkSecondaryCBDrawContext> draw_context,
   // Draw the SkImage.
   SkPaint paint;
   paint.setBlendMode(SkBlendMode::kSrcOver);
-  pending_draw->draw_context->getCanvas()->drawImage(pending_draw->ahb_skimage,
-                                                     0, 0, &paint);
+  pending_draw->draw_context->getCanvas()->drawImage(
+      pending_draw->ahb_skimage, 0, 0, SkSamplingOptions(), &paint);
   pending_draw->draw_context->flush();
 
   // Transfer |pending_draw| to |pending_draw_| for handling in

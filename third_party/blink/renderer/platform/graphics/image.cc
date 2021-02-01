@@ -145,13 +145,13 @@ PaintImage Image::ResizeAndOrientImage(
   DCHECK_GE(opacity, 0);
   DCHECK_LE(opacity, 1);
   paint.setAlpha(opacity * 255);
-  paint.setFilterQuality(interpolation_quality == kInterpolationNone
-                             ? kNone_SkFilterQuality
-                             : kHigh_SkFilterQuality);
+  SkSamplingOptions sampling;
+  if (interpolation_quality != kInterpolationNone)
+    sampling = SkSamplingOptions({1.0f / 3, 1.0f / 3});
 
   SkCanvas* canvas = surface->getCanvas();
   canvas->concat(AffineTransformToSkMatrix(transform));
-  canvas->drawImage(image.GetSwSkImage(), 0, 0, &paint);
+  canvas->drawImage(image.GetSwSkImage(), 0, 0, sampling, &paint);
 
   return PaintImageBuilder::WithProperties(std::move(image))
       .set_image(surface->makeImageSnapshot(), PaintImage::GetNextContentId())

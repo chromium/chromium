@@ -114,7 +114,9 @@ void QRCodeGeneratorServiceImpl::DrawDino(SkCanvas* canvas,
   dest_rect.offset(delta_x, delta_y);
   SkRect dino_bounds;
   dino_bitmap_.getBounds(&dino_bounds);
-  canvas->drawBitmapRect(dino_bitmap_, dino_bounds, dest_rect, nullptr);
+  canvas->drawImageRect(dino_bitmap_.asImage(), dino_bounds, dest_rect,
+                        SkSamplingOptions(), nullptr,
+                        SkCanvas::kStrict_SrcRectConstraint);
 }
 
 // Draws QR locators at three corners of |canvas|.

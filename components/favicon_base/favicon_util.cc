@@ -16,6 +16,7 @@
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "ui/base/layout.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/favicon_size.h"
@@ -128,8 +129,9 @@ SkBitmap ResizeBitmapByDownsamplingIfPossible(
       bitmap.eraseARGB(0, 0, 0, 0);
 
     SkCanvas canvas(bitmap, SkSurfaceProps{});
-    canvas.drawBitmapRect(best_bitmap,
-                          SkRect::MakeIWH(desired_size, desired_size), nullptr);
+    canvas.drawImageRect(best_bitmap.asImage(),
+                         SkRect::MakeIWH(desired_size, desired_size),
+                         SkSamplingOptions());
     return bitmap;
   }
   return skia::ImageOperations::Resize(best_bitmap,

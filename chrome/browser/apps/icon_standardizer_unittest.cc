@@ -65,7 +65,7 @@ TEST_F(CreateStandardIconTest, SquareIconToStandardIcon) {
 
   const SkBitmap scaled_bitmap = skia::ImageOperations::Resize(
       square_icon_bitmap, skia::ImageOperations::RESIZE_BEST, 36, 36);
-  canvas.drawBitmap(scaled_bitmap, 14, 14);
+  canvas.drawImage(scaled_bitmap.asImage(), 14, 14);
 
   EXPECT_TRUE(AreBitmapsEqual(*standard_icon.bitmap(), test_standard_bitmap));
 }
@@ -100,7 +100,7 @@ TEST_F(CreateStandardIconTest, CircularIconToStandardIcon) {
   manually_scaled_bitmap.allocN32Pixels(kIconSize, kIconSize);
   manually_scaled_bitmap.eraseColor(SK_ColorTRANSPARENT);
   SkCanvas canvas2(manually_scaled_bitmap);
-  canvas2.drawBitmap(scaled_bitmap, 3, 3);
+  canvas2.drawImage(scaled_bitmap.asImage(), 3, 3);
 
   EXPECT_TRUE(AreBitmapsEqual(*generated_standard_icon.bitmap(),
                               manually_scaled_bitmap));

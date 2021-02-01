@@ -77,7 +77,7 @@ bool FillModesetBuffer(const scoped_refptr<DrmDevice>& drm,
   // Copy the source buffer. Do not perform any blending.
   paint.setBlendMode(SkBlendMode::kSrc);
   surface->getCanvas()->drawImage(saved_buffer.surface()->makeImageSnapshot(),
-                                  0, 0, &paint);
+                                  0, 0, SkSamplingOptions(), &paint);
   return true;
 }
 

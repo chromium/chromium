@@ -226,7 +226,9 @@ void DevToolsEyeDropper::UpdateCursor() {
                                      last_cursor_y_ - pixel_count / 2,
                                      pixel_count, pixel_count);
   SkRect dst_rect = SkRect::MakeXYWH(padding, padding, kDiameter, kDiameter);
-  canvas.drawBitmapRect(frame_, src_rect, dst_rect, NULL);
+  canvas.drawImageRect(frame_.asImage(), src_rect, dst_rect,
+                       SkSamplingOptions(), nullptr,
+                       SkCanvas::kStrict_SrcRectConstraint);
 
   // Paint grid.
   paint.setStrokeWidth(1);

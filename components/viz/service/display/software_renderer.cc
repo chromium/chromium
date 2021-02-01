@@ -468,9 +468,11 @@ void SoftwareRenderer::DrawTextureQuad(const TextureDrawQuad* quad) {
     background_paint.setColor(quad->background_color);
     current_canvas_->drawRect(quad_rect, background_paint);
   }
-  current_paint_.setFilterQuality(
-      quad->nearest_neighbor ? kNone_SkFilterQuality : kLow_SkFilterQuality);
-  current_canvas_->drawImageRect(image, sk_uv_rect, quad_rect, &current_paint_);
+  SkSamplingOptions sampling(quad->nearest_neighbor ? SkFilterMode::kNearest
+                                                    : SkFilterMode::kLinear);
+  current_canvas_->drawImageRect(image, sk_uv_rect, quad_rect, sampling,
+                                 &current_paint_,
+                                 SkCanvas::kStrict_SrcRectConstraint);
   if (needs_layer)
     current_canvas_->restore();
 }
@@ -493,11 +495,11 @@ void SoftwareRenderer::DrawTileQuad(const TileDrawQuad* quad) {
       QuadVertexRect(), gfx::RectF(quad->rect), gfx::RectF(quad->visible_rect));
 
   SkRect uv_rect = gfx::RectFToSkRect(visible_tex_coord_rect);
-  current_paint_.setFilterQuality(
-      quad->nearest_neighbor ? kNone_SkFilterQuality : kLow_SkFilterQuality);
-  current_canvas_->drawImageRect(lock.sk_image(), uv_rect,
-                                 gfx::RectFToSkRect(visible_quad_vertex_rect),
-                                 &current_paint_);
+  SkSamplingOptions sampling(quad->nearest_neighbor ? SkFilterMode::kNearest
+                                                    : SkFilterMode::kLinear);
+  current_canvas_->drawImageRect(
+      lock.sk_image(), uv_rect, gfx::RectFToSkRect(visible_quad_vertex_rect),
+      sampling, &current_paint_, SkCanvas::kStrict_SrcRectConstraint);
 }
 
 void SoftwareRenderer::DrawRenderPassQuad(
@@ -726,8 +728,8 @@ sk_sp<SkImage> SoftwareRenderer::ApplyImageFilter(
   cc::ScopedSubnormalFloatDisabler disabler;
   paint.setImageFilter(filter->makeWithLocalMatrix(local_matrix));
   surface->getCanvas()->translate(-canvas_offset.x(), -canvas_offset.y());
-  surface->getCanvas()->drawBitmap(to_filter, quad->rect.x(), quad->rect.y(),
-                                   &paint);
+  surface->getCanvas()->drawImage(to_filter.asImage(), quad->rect.x(),
+                                  quad->rect.y(), SkSamplingOptions(), &paint);
   return surface->makeImageSnapshot();
 }
 
@@ -892,7 +894,8 @@ sk_sp<SkShader> SoftwareRenderer::GetBackdropFilterShader(
   SkRect src_rect =
       SkRect::MakeXYWH(0, 0, backdrop_bitmap.width(), backdrop_bitmap.height());
   SkRect dst_rect = src_rect.makeOffset(image_offset.x(), image_offset.y());
-  canvas.drawImageRect(filtered_image, src_rect, dst_rect, &paint);
+  canvas.drawImageRect(filtered_image, src_rect, dst_rect, SkSamplingOptions(),
+                       &paint, SkCanvas::kStrict_SrcRectConstraint);
 
   return SkImage::MakeFromBitmap(bitmap)->makeShader(
       content_tile_mode, content_tile_mode, SkSamplingOptions(),

@@ -588,8 +588,8 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
       sk_sp<SkColorFilter> colorFilter = SkiaHelper::MakeOverdrawColorFilter();
       paint.setColorFilter(colorFilter);
       // TODO(xing.xu): move below to the thread where skia record happens.
-      scoped_output_device_paint_->GetCanvas()->drawImage(overdraw_image.get(),
-                                                          0, 0, &paint);
+      scoped_output_device_paint_->GetCanvas()->drawImage(
+          overdraw_image.get(), 0, 0, SkSamplingOptions(), &paint);
     }
 
     auto end_paint_semaphores =
@@ -901,13 +901,13 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
                              request->scale_from().y());
     }
 
-    SkPaint paint;
-    paint.setFilterQuality(is_downscale_or_identity_in_both_dimensions
-                               ? kMedium_SkFilterQuality
-                               : kHigh_SkFilterQuality);
     dest_canvas->clipRect(
         SkRect::MakeXYWH(0, 0, src_rect.width(), src_rect.height()));
-    surface->draw(dest_canvas, -src_rect.x(), -src_rect.y(), &paint);
+    auto sampling =
+        is_downscale_or_identity_in_both_dimensions
+            ? SkSamplingOptions(SkFilterMode::kLinear, SkMipmapMode::kLinear)
+            : SkSamplingOptions({1.0f / 3, 1.0f / 3});
+    surface->draw(dest_canvas, -src_rect.x(), -src_rect.y(), sampling, nullptr);
 
     GrFlushInfo flush_info;
     flush_info.fNumSemaphores = end_semaphores.size();

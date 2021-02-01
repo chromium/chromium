@@ -2374,7 +2374,8 @@ void RasterDecoderImpl::DoCopySubTextureINTERNALSkia(
     }
     paint.setBlendMode(SkBlendMode::kSrc);
     canvas->drawImageRect(source_image, gfx::RectToSkRect(source_rect),
-                          gfx::RectToSkRect(dest_rect), &paint);
+                          gfx::RectToSkRect(dest_rect), SkSamplingOptions(),
+                          &paint, SkCanvas::kStrict_SrcRectConstraint);
   }
 
   FlushAndSubmitIfNecessary(dest_scoped_access->surface(),
