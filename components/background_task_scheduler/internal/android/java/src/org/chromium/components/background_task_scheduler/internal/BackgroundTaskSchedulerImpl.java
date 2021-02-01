@@ -148,6 +148,16 @@ class BackgroundTaskSchedulerImpl implements BackgroundTaskScheduler {
     }
 
     @Override
+    public boolean isScheduled(Context context, int taskId) {
+        try (TraceEvent te = TraceEvent.scoped(
+                     "BackgroundTaskScheduler.isScheduled", Integer.toString(taskId))) {
+            ThreadUtils.assertOnUiThread();
+
+            return (BackgroundTaskSchedulerPrefs.getScheduledTask(taskId) != null);
+        }
+    }
+
+    @Override
     public void checkForOSUpgrade(Context context) {
         try (TraceEvent te = TraceEvent.scoped("BackgroundTaskScheduler.checkForOSUpgrade")) {
             ThreadUtils.assertOnUiThread();

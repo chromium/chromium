@@ -149,9 +149,23 @@ public class BackgroundTaskSchedulerImplTest {
 
     @Test
     @Feature({"BackgroundTaskScheduler"})
+    public void testIsScheduled() {
+        BackgroundTaskSchedulerPrefs.addScheduledTask(mTask);
+        assertTrue(BackgroundTaskSchedulerFactoryInternal.getScheduler().isScheduled(
+                RuntimeEnvironment.application, TaskIds.TEST));
+
+        doNothing().when(mDelegate).cancel(eq(RuntimeEnvironment.application), eq(TaskIds.TEST));
+        BackgroundTaskSchedulerFactoryInternal.getScheduler().cancel(
+                RuntimeEnvironment.application, TaskIds.TEST);
+        verify(mDelegate, times(1)).cancel(eq(RuntimeEnvironment.application), eq(TaskIds.TEST));
+        assertFalse(BackgroundTaskSchedulerFactoryInternal.getScheduler().isScheduled(
+                RuntimeEnvironment.application, TaskIds.TEST));
+    }
+
+    @Test
+    @Feature({"BackgroundTaskScheduler"})
     public void testCancelExactTask() {
         BackgroundTaskSchedulerPrefs.addScheduledTask(mExactTask);
-
         doNothing()
                 .when(mAlarmManagerDelegate)
                 .cancel(eq(RuntimeEnvironment.application), eq(TaskIds.TEST));

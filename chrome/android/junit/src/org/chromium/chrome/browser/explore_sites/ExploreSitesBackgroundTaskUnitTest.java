@@ -98,6 +98,11 @@ public class ExploreSitesBackgroundTaskUnitTest {
         }
 
         @Override
+        public boolean isScheduled(Context context, int taskId) {
+            return (mTaskInfos.get(taskId) != null);
+        }
+
+        @Override
         public void checkForOSUpgrade(Context context) {}
 
         @Override
