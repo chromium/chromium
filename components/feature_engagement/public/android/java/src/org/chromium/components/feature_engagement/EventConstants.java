@@ -221,6 +221,9 @@ public final class EventConstants {
     /** Permission events. */
     public static final String PERMISSION_REQUEST_SHOWN = "permission_request_shown";
 
+    /** Screenshot events */
+    public static final String SHARE_SCREENSHOT_SELECTED = "share_screenshot_clicked";
+
     /**
      * Do not instantiate.
      */

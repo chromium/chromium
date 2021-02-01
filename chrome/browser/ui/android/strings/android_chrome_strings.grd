@@ -4229,6 +4229,10 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
         Can't create link to text. Share link to page.
       </message>
 
+      <message name="IDS_NEW_BADGE" desc="Notification displayed to indicate that there is a new sharing feature.">
+        New
+      </message>
+
       <!-- Share Screenshot strings -->
       <message name="IDS_SCREENSHOT_EDIT_TITLE" desc="The text shown on the share option for screenshots.">
         Edit

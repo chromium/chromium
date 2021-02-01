@@ -30,6 +30,7 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowAndroid.ActivityStateObserver;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -64,6 +65,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
     private WindowAndroid mWindowAndroid;
     private final BottomSheetObserver mBottomSheetObserver;
     private final LargeIconBridge mIconBridge;
+    private final Tracker mFeatureEngagementTracker;
 
     /**
      * Constructs a new ShareSheetCoordinator.
@@ -80,7 +82,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
             ActivityLifecycleDispatcher lifecycleDispatcher, Supplier<Tab> tabProvider,
             ShareSheetPropertyModelBuilder modelBuilder, Callback<Tab> printTab,
             LargeIconBridge iconBridge, SettingsLauncher settingsLauncher, boolean isSyncEnabled,
-            ImageEditorModuleProvider imageEditorModuleProvider) {
+            ImageEditorModuleProvider imageEditorModuleProvider, Tracker featureEngagementTracker) {
         mBottomSheetController = controller;
         mLifecycleDispatcher = lifecycleDispatcher;
         mLifecycleDispatcher.register(this);
@@ -105,6 +107,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         };
         mBottomSheetController.addObserver(mBottomSheetObserver);
         mIconBridge = iconBridge;
+        mFeatureEngagementTracker = featureEngagementTracker;
     }
 
     protected void destroy() {
@@ -174,7 +177,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         mChromeProvidedSharingOptionsProvider = new ChromeProvidedSharingOptionsProvider(activity,
                 mTabProvider, mBottomSheetController, mBottomSheet, shareParams, chromeShareExtras,
                 mPrintTabCallback, mSettingsLauncher, mIsSyncEnabled, mShareStartTime, this,
-                mImageEditorModuleProvider);
+                mImageEditorModuleProvider, mFeatureEngagementTracker);
         mIsMultiWindow = ApiCompatibilityUtils.isInMultiWindowMode(activity);
 
         return mChromeProvidedSharingOptionsProvider.getPropertyModels(
@@ -191,11 +194,13 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         PropertyModel morePropertyModel = ShareSheetPropertyModelBuilder.createPropertyModel(
                 AppCompatResources.getDrawable(activity, R.drawable.sharing_more),
                 activity.getResources().getString(R.string.sharing_more_icon_label),
-                (shareParams) -> {
+                (shareParams)
+                        -> {
                     RecordUserAction.record("SharingHubAndroid.MoreSelected");
                     mBottomSheetController.hideContent(mBottomSheet, true);
                     ShareHelper.showDefaultShareUi(params, saveLastUsed);
-                });
+                },
+                /*displayNew*/ false);
         models.add(morePropertyModel);
 
         return models;

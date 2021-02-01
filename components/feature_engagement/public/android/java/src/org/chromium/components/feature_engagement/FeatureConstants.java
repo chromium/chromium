@@ -45,7 +45,8 @@ import java.lang.annotation.RetentionPolicy;
         FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE,
         FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE,
         FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE,
-        FeatureConstants.PWA_INSTALL_AVAILABLE_FEATURE, FeatureConstants.PAGE_INFO_FEATURE})
+        FeatureConstants.PWA_INSTALL_AVAILABLE_FEATURE, FeatureConstants.PAGE_INFO_FEATURE,
+        FeatureConstants.IPH_SHARE_SCREENSHOT_FEATURE})
 @Retention(RetentionPolicy.SOURCE)
 public @interface FeatureConstants {
     String DOWNLOAD_PAGE_FEATURE = "IPH_DownloadPage";
@@ -222,4 +223,9 @@ public @interface FeatureConstants {
      * An IPH feature to inform about changing permissions in PageInfo.
      */
     String PAGE_INFO_FEATURE = "IPH_PageInfo";
+
+    /**
+     * An IPH feature to inform users about the screenshot sharing feature.
+     */
+    String IPH_SHARE_SCREENSHOT_FEATURE = "IPH_ShareScreenshot";
 }
