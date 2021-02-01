@@ -1062,6 +1062,8 @@ void AXNodeObject::AccessibilityChildrenFromAOMProperty(
   for (const auto& element : elements) {
     if (AXObject* child = cache.GetOrCreate(element)) {
       // Only aria-labelledby and aria-describedby can target hidden elements.
+      if (!child)
+        continue;
       if (child->AccessibilityIsIgnored() &&
           property != AOMRelationListProperty::kLabeledBy &&
           property != AOMRelationListProperty::kDescribedBy) {

@@ -49,6 +49,8 @@ void SetObjectAttribute(ax::mojom::blink::IntAttribute attribute,
     return;
 
   AXObject* ax_target = object->AXObjectCache().GetOrCreate(target);
+  if (!ax_target)
+    return;
   if (attribute == ax::mojom::blink::IntAttribute::kActivedescendantId &&
       !ax_target->IsVisible()) {
     return;
@@ -208,7 +210,7 @@ void AXNodeDataAOMPropertyClient::AddRelationProperty(
 
   Element* target = value.element();
   AXObject* ax_target = ax_object_cache_->GetOrCreate(target);
-  if (!target)
+  if (!ax_target)
     return;
 
   node_data_.AddIntAttribute(attribute, ax_target->AXObjectID());

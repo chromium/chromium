@@ -2656,6 +2656,8 @@ AXObject* AXObjectCacheImpl::AncestorAriaModalDialog(Node* node) {
     }
 
     AXObject* ancestor_ax_object = GetOrCreate(ancestor);
+    if (!ancestor_ax_object)
+      return nullptr;
     ax::mojom::blink::Role ancestor_role = ancestor_ax_object->RoleValue();
 
     if (!ui::IsDialog(ancestor_role))
