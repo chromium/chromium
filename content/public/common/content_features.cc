@@ -68,17 +68,8 @@ const base::Feature kBackgroundFetch{"BackgroundFetch",
                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable using the BackForwardCache.
-// BackForwardCache is enabled only on Android for the moment, as some
-// desktop-specific features (including extensions) are not compatible with
-// bfcache yet. Tracking bug for enabling bfcache on desktop:
-// https://crbug.com/1171298.
-#if defined(OS_ANDROID)
-const base::Feature kBackForwardCache{"BackForwardCache",
-                                      base::FEATURE_ENABLED_BY_DEFAULT};
-#else
 const base::Feature kBackForwardCache{"BackForwardCache",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
-#endif
 
 // BackForwardCache is disabled on low memory devices. The threshold is defined
 // via a field trial param: "memory_threshold_for_back_forward_cache_in_mb"
@@ -87,16 +78,8 @@ const base::Feature kBackForwardCache{"BackForwardCache",
 // "BackForwardCacheMemoryControls" is checked before "BackForwardCache". It
 // means the low memory devices will activate neither the control group nor the
 // experimental group of the BackForwardCache field trial.
-
-// BackForwardCacheMemoryControls is enabled only on Android to disable
-// BackForwardCache for lower memory devices due to memory limiations.
-#if defined(OS_ANDROID)
-const base::Feature kBackForwardCacheMemoryControl{
-    "BackForwardCacheMemoryControls", base::FEATURE_ENABLED_BY_DEFAULT};
-#else
 const base::Feature kBackForwardCacheMemoryControl{
     "BackForwardCacheMemoryControls", base::FEATURE_DISABLED_BY_DEFAULT};
-#endif
 
 // Block subresource requests whose URLs contain embedded credentials (e.g.
 // `https://user:pass@example.com/resource`).

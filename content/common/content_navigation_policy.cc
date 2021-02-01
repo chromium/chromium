@@ -9,7 +9,6 @@
 #include "base/command_line.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/system/sys_info.h"
-#include "build/build_config.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 
@@ -22,21 +21,9 @@ bool DeviceHasEnoughMemoryForBackForwardCache() {
   // It is important to check the base::FeatureList to avoid activating any
   // field trial groups if BFCache is disabled due to memory threshold.
   if (base::FeatureList::IsEnabled(features::kBackForwardCacheMemoryControl)) {
-    // On Android, BackForwardCache is only enabled for 2GB+ high memory
-    // devices. The default threshold value is set to 1700 MB to account for all
-    // 2GB devices which report lower RAM due to carveouts.
-    int default_memory_threshold_mb =
-#if defined(OS_ANDROID)
-        1700;
-#else
-        // Desktop has lower memory limitations compared to Android allowing us
-        // to enable BackForwardCache for all devices.
-        0;
-#endif
     int memory_threshold_mb = base::GetFieldTrialParamByFeatureAsInt(
         features::kBackForwardCacheMemoryControl,
-        "memory_threshold_for_back_forward_cache_in_mb",
-        default_memory_threshold_mb);
+        "memory_threshold_for_back_forward_cache_in_mb", 0);
     return base::SysInfo::AmountOfPhysicalMemoryMB() > memory_threshold_mb;
   }
 
