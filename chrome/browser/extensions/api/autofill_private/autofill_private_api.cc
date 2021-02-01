@@ -208,6 +208,7 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveAddressFunction::Run() {
     profile.set_origin(kSettingsOrigin);
     personal_data->UpdateProfile(profile);
   } else {
+    profile.FinalizeAfterImport();
     personal_data->AddProfile(profile);
   }
 
