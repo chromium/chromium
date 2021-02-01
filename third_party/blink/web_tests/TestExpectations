@@ -1470,6 +1470,7 @@ crbug.com/552494 virtual/prefer_compositing_to_lcd_text/scrollbars/overflow-scro
 crbug.com/1146486 [ Fuchsia ] virtual/text-antialias/international/bidi-neutral-directionality-paragraph-start.html [ Skip ]
 crbug.com/1146486 [ Fuchsia ] virtual/text-antialias/international/bidi-LDB-2-formatting-characters.html [ Skip ]
 crbug.com/1057339 [ Fuchsia ] virtual/text-antialias/international/rtl-mark.html [ Skip ]
+crbug.com/1156220 [ Fuchsia ] virtual/text-antialias/international/003.html [ Skip ]
 crbug.com/1056027 [ Fuchsia ] virtual/text-antialias/small-caps-aat.html [ Skip ]
 crbug.com/1146486 [ Fuchsia ] virtual/text-antialias/stroking-decorations.html [ Skip ]
 crbug.com/1146486 [ Fuchsia ] virtual/text-antialias/whitespace/whitespace-and-margin-wrap-after-list-marker-crash.html [ Skip ]
