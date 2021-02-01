@@ -37,7 +37,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
@@ -477,7 +476,6 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Features.EnableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
-    @DisabledTest(message = "Flaky, see crbug.com/1169667")
     public void testResetPermissionsOnSubpage() throws Exception {
         sActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSiteDataHtml));
         String url = mTestServerRule.getServer().getURL("/");
@@ -489,7 +487,7 @@ public class PageInfoViewTest {
         openPageInfo();
         onView(withId(R.id.page_info_permissions_row)).perform(click());
         // Clear permissions in page info.
-        onView(withText("Reset permissions")).perform(click());
+        onViewWaiting(allOf(withText("Reset permissions"), isDisplayed())).perform(click());
         onView(withText("Reset")).perform(click());
         // Wait until the UI navigates back and check permissions are reset.
         onViewWaiting(allOf(withId(R.id.page_info_row_wrapper), isDisplayed()));
