@@ -175337,6 +175337,10 @@
       ]
      }
     },
+    "idlharness.https.window-expected.txt": [
+     "f84b5a18f8a33d0d43efce1e78c0cbc4ecd57f1d",
+     []
+    ],
     "resources": {
      "greenbox.png": [
       "6e555e3b197ce2f448f59d61e1488a0175490145",
@@ -244514,7 +244518,7 @@
      ]
     },
     "idlharness.js": [
-     "5a97b273f2bed196d6ddd85c5596decff1bf87ae",
+     "76131e7c9602b94f9543d1f49658b304535691d3",
      []
     ],
     "idlharness.js.headers": [
@@ -257535,6 +257539,14 @@
     ],
     "audio-worklet-credentials.https-expected.txt": [
      "3263689c5601185bd2232bdb2ed6dacbe342f345",
+     []
+    ],
+    "idlharness.https.any-expected.txt": [
+     "5ae5361d00ca8b11eac4498deb5a35a86b059d52",
+     []
+    ],
+    "idlharness.https.any.worker-expected.txt": [
+     "5ae5361d00ca8b11eac4498deb5a35a86b059d52",
      []
     ],
     "idlharness.worker-expected.txt": [
@@ -275419,15 +275431,6 @@
       }
      ]
     ],
-    "async-idlharness.https.html": [
-     "a1a51c98690f1c83679c3ae71f3bafe99824f025",
-     [
-      null,
-      {
-       "timeout": "long"
-      }
-     ]
-    ],
     "async-navigator-clipboard-basics.https.html": [
      "61808a52ceb9b6272a6ce495d328a8feaaf9411a",
      [
@@ -275682,6 +275685,29 @@
       ]
      }
     },
+    "idlharness.https.window.js": [
+     "c22ee245442570af52087f22335b83d986ecb358",
+     [
+      "clipboard-apis/idlharness.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "timeout",
+         "long"
+        ],
+        [
+         "script",
+         "/resources/WebIDLParser.js"
+        ],
+        [
+         "script",
+         "/resources/idlharness.js"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ]
+    ],
     "permissions": {
      "readText-denied.https.html": [
       "935f520e7de2dd15e0019c798dd0966c454235cd",
@@ -443118,11 +443144,37 @@
       {}
      ]
     ],
-    "idlharness.worker.js": [
-     "827dd02c4c53292b534677454c11264f415678a5",
+    "idlharness.https.any.js": [
+     "2900b3812496ca430b15b327165ad4884e1f90e4",
      [
-      "worklets/idlharness.worker.html",
-      {}
+      "worklets/idlharness.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/WebIDLParser.js"
+        ],
+        [
+         "script",
+         "/resources/idlharness.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "worklets/idlharness.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/WebIDLParser.js"
+        ],
+        [
+         "script",
+         "/resources/idlharness.js"
+        ]
+       ]
+      }
      ]
     ],
     "layout-worklet-credentials.https.html": [
