@@ -543,6 +543,8 @@ WorkerGlobalScope::WorkerGlobalScope(
       user_agent_(creation_params->user_agent),
       ua_metadata_(creation_params->ua_metadata),
       thread_(thread),
+      agent_group_scheduler_compositor_task_runner_(std::move(
+          creation_params->agent_group_scheduler_compositor_task_runner)),
       time_origin_(time_origin),
       font_selector_(MakeGarbageCollected<OffscreenFontSelector>(this)),
       script_eval_state_(ScriptEvalState::kPauseAfterFetch),

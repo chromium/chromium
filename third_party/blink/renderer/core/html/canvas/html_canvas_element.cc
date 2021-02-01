@@ -381,7 +381,12 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContextInternal(
     CreateLayer();
     SetNeedsUnbufferedInputEvents(true);
     frame_dispatcher_ = std::make_unique<CanvasResourceDispatcher>(
-        nullptr, surface_layer_bridge_->GetFrameSinkId().client_id(),
+        nullptr,
+        GetPage()
+            ->GetPageScheduler()
+            ->GetAgentGroupScheduler()
+            .CompositorTaskRunner(),
+        surface_layer_bridge_->GetFrameSinkId().client_id(),
         surface_layer_bridge_->GetFrameSinkId().sink_id(),
         CanvasResourceDispatcher::kInvalidPlaceholderCanvasId, size_);
     // We don't actually need the begin frame signal when in low latency mode,

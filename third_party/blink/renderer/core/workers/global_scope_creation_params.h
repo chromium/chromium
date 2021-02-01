@@ -70,7 +70,9 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
       ukm::SourceId ukm_source_id = ukm::kInvalidSourceId,
       const base::Optional<ExecutionContextToken>& parent_context_token =
           base::nullopt,
-      bool parent_cross_origin_isolated_capability = false);
+      bool parent_cross_origin_isolated_capability = false,
+      scoped_refptr<base::SingleThreadTaskRunner>
+          agent_group_scheduler_compositor_task_runner = nullptr);
 
   ~GlobalScopeCreationParams() = default;
 
@@ -179,6 +181,11 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
   // https://html.spec.whatwg.org/C/#concept-settings-object-cross-origin-isolated-capability
   // Used by dedicated workers, and set to false when there is no parent.
   const bool parent_cross_origin_isolated_capability;
+
+  // The compositor task runner associated with the |AgentGroupScheduler| this
+  // worker belongs to.
+  scoped_refptr<base::SingleThreadTaskRunner>
+      agent_group_scheduler_compositor_task_runner;
 
   DISALLOW_COPY_AND_ASSIGN(GlobalScopeCreationParams);
 };

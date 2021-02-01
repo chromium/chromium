@@ -409,18 +409,31 @@ DedicatedWorker::CreateGlobalScopeCreationParams(
     base::Optional<network::mojom::IPAddressSpace> response_address_space) {
   base::UnguessableToken parent_devtools_token;
   std::unique_ptr<WorkerSettings> settings;
+  scoped_refptr<base::SingleThreadTaskRunner>
+      agent_group_scheduler_compositor_task_runner;
   if (auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext())) {
+    // When the main thread creates a new DedicatedWorker.
     auto* frame = window->GetFrame();
     if (frame)
       parent_devtools_token = frame->GetDevToolsFrameToken();
     settings = std::make_unique<WorkerSettings>(frame->GetSettings());
+    agent_group_scheduler_compositor_task_runner =
+        GetExecutionContext()
+            ->GetScheduler()
+            ->ToFrameScheduler()
+            ->GetAgentGroupScheduler()
+            ->CompositorTaskRunner();
   } else {
+    // When a DedicatedWorker creates another DedicatedWorker (nested worker).
     WorkerGlobalScope* worker_global_scope =
         To<WorkerGlobalScope>(GetExecutionContext());
     parent_devtools_token =
         worker_global_scope->GetThread()->GetDevToolsWorkerToken();
     settings = WorkerSettings::Copy(worker_global_scope->GetWorkerSettings());
+    agent_group_scheduler_compositor_task_runner =
+        worker_global_scope->GetAgentGroupSchedulerCompositorTaskRunner();
   }
+  DCHECK(agent_group_scheduler_compositor_task_runner);
 
   mojom::blink::ScriptType script_type =
       (options_->type() == "classic") ? mojom::blink::ScriptType::kClassic
@@ -446,7 +459,8 @@ DedicatedWorker::CreateGlobalScopeCreationParams(
       GetExecutionContext()->GetAgentClusterID(),
       GetExecutionContext()->UkmSourceID(),
       GetExecutionContext()->GetExecutionContextToken(),
-      GetExecutionContext()->CrossOriginIsolatedCapability());
+      GetExecutionContext()->CrossOriginIsolatedCapability(),
+      std::move(agent_group_scheduler_compositor_task_runner));
 }
 
 scoped_refptr<WebWorkerFetchContext>

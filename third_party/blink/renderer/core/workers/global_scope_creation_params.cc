@@ -41,7 +41,9 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
     base::UnguessableToken agent_cluster_id,
     ukm::SourceId ukm_source_id,
     const base::Optional<ExecutionContextToken>& parent_context_token,
-    bool parent_cross_origin_isolated_capability)
+    bool parent_cross_origin_isolated_capability,
+    scoped_refptr<base::SingleThreadTaskRunner>
+        agent_group_scheduler_compositor_task_runner)
     : script_url(script_url.Copy()),
       script_type(script_type),
       global_scope_name(global_scope_name.IsolatedCopy()),
@@ -73,7 +75,9 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
       ukm_source_id(ukm_source_id),
       parent_context_token(parent_context_token),
       parent_cross_origin_isolated_capability(
-          parent_cross_origin_isolated_capability) {
+          parent_cross_origin_isolated_capability),
+      agent_group_scheduler_compositor_task_runner(
+          std::move(agent_group_scheduler_compositor_task_runner)) {
   this->origin_trial_tokens = std::make_unique<Vector<String>>();
   if (origin_trial_tokens) {
     for (const String& token : *origin_trial_tokens)

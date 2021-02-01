@@ -226,6 +226,11 @@ class CORE_EXPORT WorkerGlobalScope
   // successful and not successful) by the worker.
   FontMatchingMetrics* GetFontMatchingMetrics();
 
+  scoped_refptr<base::SingleThreadTaskRunner>
+  GetAgentGroupSchedulerCompositorTaskRunner() {
+    return agent_group_scheduler_compositor_task_runner_;
+  }
+
  protected:
   WorkerGlobalScope(std::unique_ptr<GlobalScopeCreationParams>,
                     WorkerThread*,
@@ -279,6 +284,11 @@ class CORE_EXPORT WorkerGlobalScope
   mutable Member<TrustedTypePolicyFactory> trusted_types_;
 
   WorkerThread* thread_;
+
+  // The compositor task runner associated with the |AgentGroupScheduler| this
+  // worker belongs to.
+  scoped_refptr<base::SingleThreadTaskRunner>
+      agent_group_scheduler_compositor_task_runner_;
 
   bool closing_ = false;
 
