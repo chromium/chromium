@@ -29,6 +29,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/notifications/notification_resources.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
+#include "third_party/leveldatabase/leveldb_chrome.h"
 #include "url/gurl.h"
 
 using ::testing::Return;
@@ -226,6 +227,11 @@ class PlatformNotificationContextTest : public ::testing::Test {
         .WillByDefault(Return(permission_status));
   }
 
+  // Returns the file path to the leveldb database for |context|.
+  base::FilePath GetDatabaseFilePath(PlatformNotificationContextImpl* context) {
+    return context->GetDatabasePath();
+  }
+
   // Returns the testing browsing context that can be used for this test.
   BrowserContext* browser_context() { return &browser_context_; }
 
@@ -288,11 +294,12 @@ TEST_F(PlatformNotificationContextTest, InitializeIsLazy) {
 
   // Make sure that if the database does not exist yet it won't be created.
   auto context = CreatePlatformNotificationContext(database_path);
-  EXPECT_FALSE(base::PathExists(context->GetDatabasePath()));
+  base::FilePath db_path = GetDatabaseFilePath(context.get());
+  EXPECT_FALSE(base::PathExists(db_path));
 
   // Make some database request to force initialization.
   GetStoredNotificationsSync(context.get(), origin);
-  EXPECT_TRUE(base::PathExists(context->GetDatabasePath()));
+  EXPECT_TRUE(base::PathExists(db_path));
 }
 
 TEST_F(PlatformNotificationContextTest, WriteReadNotification) {
@@ -691,6 +698,41 @@ TEST_F(PlatformNotificationContextTest, DestroyOnDiskDatabase) {
 
   // The database's directory should be empty at this point.
   EXPECT_TRUE(IsDirectoryEmpty(database_dir.GetPath()));
+}
+
+TEST_F(PlatformNotificationContextTest, DestroyCorruptedDatabase) {
+  NotificationBrowserClient notification_browser_client(browser_context());
+  SetBrowserClientForTesting(&notification_browser_client);
+  base::ScopedTempDir database_dir;
+  ASSERT_TRUE(database_dir.CreateUniqueTempDir());
+
+  GURL origin("https://example.com");
+  NotificationDatabaseData data;
+  data.origin = origin;
+  data.service_worker_registration_id = kFakeServiceWorkerRegistrationId;
+
+  // Create, initialize and close a new database with one notification in it.
+  auto context = CreatePlatformNotificationContext(database_dir.GetPath());
+  base::FilePath db_path = GetDatabaseFilePath(context.get());
+  WriteNotificationDataSync(context.get(), origin, data);
+  EXPECT_FALSE(IsDirectoryEmpty(db_path));
+  EXPECT_EQ(1u, GetStoredNotificationsSync(context.get(), origin).size());
+  context.reset();
+
+  // Make sure we can open and read the database successfully again.
+  context = CreatePlatformNotificationContext(database_dir.GetPath());
+  EXPECT_EQ(1u, GetStoredNotificationsSync(context.get(), origin).size());
+  context.reset();
+
+  // Corrupt database and try to open it again. This should detect the
+  // corruption and wipe the database directory.
+  EXPECT_TRUE(leveldb_chrome::CorruptClosedDBForTesting(db_path));
+  context = CreatePlatformNotificationContext(database_dir.GetPath());
+  EXPECT_TRUE(IsDirectoryEmpty(db_path));
+
+  // Reading from the reopened database should reinitialize a new one.
+  EXPECT_EQ(0u, GetStoredNotificationsSync(context.get(), origin).size());
+  EXPECT_FALSE(IsDirectoryEmpty(db_path));
 }
 
 TEST_F(PlatformNotificationContextTest, ReadAllServiceWorkerDataEmpty) {

@@ -125,7 +125,6 @@ class CONTENT_EXPORT PlatformNotificationContextImpl
   void OnStorageWiped() override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(PlatformNotificationContextTest, InitializeIsLazy);
   friend class PlatformNotificationContextTest;
   friend class PlatformNotificationContextTriggerTest;
 

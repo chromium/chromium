@@ -1150,36 +1150,39 @@ void PlatformNotificationContextImpl::OpenDatabase(
     return;
   }
 
+  // Remember the database so we don't need to open it again.
+  database_ = std::move(database);
   UMA_HISTOGRAM_ENUMERATION("Notifications.Database.OpenResult", status,
                             NotificationDatabase::STATUS_COUNT);
 
   // When the database could not be opened due to corruption, destroy it, blow
   // away the contents of the directory and try re-opening the database.
   if (status == NotificationDatabase::STATUS_ERROR_CORRUPTED) {
-    if (DestroyDatabase()) {
-      // Bail if we just destroyed the database and don't need a new one.
-      if (!create_if_missing) {
-        std::move(callback).Run(/* initialized= */ false);
-        return;
-      }
-
-      database = std::make_unique<NotificationDatabase>(GetDatabasePath(),
-                                                        ukm_callback_);
-      status = database->Open(create_if_missing);
-
-      UMA_HISTOGRAM_ENUMERATION(
-          "Notifications.Database.OpenAfterCorruptionResult", status,
-          NotificationDatabase::STATUS_COUNT);
+    // Bail if we couldn't destroy the corrupted database or if we don't need
+    // to create a new one.
+    if (!DestroyDatabase() || !create_if_missing) {
+      std::move(callback).Run(/* initialized= */ false);
+      return;
     }
+
+    // We've destroyed the corrupted database, now try to create a new one.
+    database_ = std::make_unique<NotificationDatabase>(GetDatabasePath(),
+                                                       ukm_callback_);
+    status = database_->Open(create_if_missing);
+
+    UMA_HISTOGRAM_ENUMERATION(
+        "Notifications.Database.OpenAfterCorruptionResult", status,
+        NotificationDatabase::STATUS_COUNT);
   }
 
+  // Failed to open a valid database. Clear it and try again next time.
   if (status != NotificationDatabase::STATUS_OK) {
+    database_.reset();
     std::move(callback).Run(/* initialized= */ false);
     return;
   }
 
-  // Success! Keep the database so we don't need to open it again.
-  database_ = std::move(database);
+  // All good!
   std::move(callback).Run(/* initialized= */ true);
 }
 
