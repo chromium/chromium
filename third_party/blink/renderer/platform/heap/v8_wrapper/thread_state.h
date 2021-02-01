@@ -81,6 +81,7 @@ class PLATFORM_EXPORT BlinkGCObserver {
 
 class ThreadState final {
  public:
+  class HeapPointersOnStackScope;
   class NoAllocationScope;
 
   static ALWAYS_INLINE ThreadState* Current() {
