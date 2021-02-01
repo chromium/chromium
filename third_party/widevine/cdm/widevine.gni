@@ -47,11 +47,6 @@ enable_widevine_cdm_component =
 # Widevine CDM is bundled as part of Google Chrome builds.
 bundle_widevine_cdm = enable_library_widevine_cdm && is_chrome_branded
 
-# TODO(crbug.com/1111381): Remove this when MacOS ARM64 CDM is checked in.
-if (is_mac && target_cpu == "arm64") {
-  bundle_widevine_cdm = false
-}
-
 # Enable Widevine CDM host verification, which will sign additional binaries
 # with Widevine certs and copy signature files as needed.
 enable_widevine_cdm_host_verification =
