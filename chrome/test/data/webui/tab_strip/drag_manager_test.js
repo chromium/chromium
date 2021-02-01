@@ -715,6 +715,25 @@ suite('DragManager', () => {
     assertEquals(dragDetails.clientY, clientY);
   });
 
+  test('DropPlaceholderWithoutMovingDoesNotShowContextMenu', () => {
+    const externalTabId = 1000;
+    const mockDataTransfer = new MockDataTransfer();
+    mockDataTransfer.setData(strings.tabIdDataType, `${externalTabId}`);
+    const dragEnterEvent = new DragEvent('dragenter', {
+      bubbles: true,
+      composed: true,
+      dataTransfer: mockDataTransfer,
+    });
+    delegate.dispatchEvent(dragEnterEvent);
+    delegate.dispatchEvent(new DragEvent('drop', {
+      bubbles: true,
+      composed: true,
+      dataTransfer: mockDataTransfer,
+    }));
+    assertEquals(
+        0, testTabStripEmbedderProxy.getCallCount('showTabContextMenu'));
+  });
+
   test('DragEndWithDropEffectMoveDoesNotRemoveDraggedOutAttribute', () => {
     const draggedTab = delegate.children[0];
     const dataTransfer = new MockDataTransfer();

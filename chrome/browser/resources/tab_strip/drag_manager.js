@@ -286,7 +286,8 @@ class DragSession {
 
   /** @param {!DragEvent} event */
   finish(event) {
-    if (this.isDraggingPlaceholderTab_()) {
+    const wasDraggingPlaceholder = this.isDraggingPlaceholderTab_();
+    if (wasDraggingPlaceholder) {
       const id = Number(event.dataTransfer.getData(getTabIdDataType()));
       this.element_.tab = Object.assign({}, this.element_.tab, {id});
     } else if (this.isDraggingPlaceholderGroup_()) {
@@ -311,7 +312,9 @@ class DragSession {
     this.element_.setDragging(false);
     this.element_.setDraggedOut(false);
 
-    this.maybeShowTabContextMenu_();
+    if (!wasDraggingPlaceholder) {
+      this.maybeShowTabContextMenu_();
+    }
   }
 
   /** @private */
