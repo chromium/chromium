@@ -522,7 +522,7 @@ public class PageInfoViewTest {
                     PageInfoController.OpenedFromSource.MENU, pageInfoControllerDelegate,
                     new ChromePermissionParamsListBuilderDelegate());
         });
-        onView(withText(R.string.page_info_connection_paint_preview)).check(matches(isDisplayed()));
+        onViewWaiting(allOf(withText(R.string.page_info_connection_paint_preview), isDisplayed()));
     }
 
     // TODO(1071762): Add tests for preview pages, offline pages, offline state and other states.
