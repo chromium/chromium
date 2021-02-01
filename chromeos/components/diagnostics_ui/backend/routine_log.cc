@@ -16,6 +16,7 @@ namespace chromeos {
 namespace diagnostics {
 namespace {
 
+const char kCancelledDescription[] = "Inflight Routine Cancelled";
 const char kNewline[] = "\n";
 const char kSeparator[] = " - ";
 const char kStartedDescription[] = "Started";
@@ -50,6 +51,15 @@ void RoutineLog::LogRoutineCompleted(mojom::RoutineType type,
   std::stringstream log_line;
   log_line << GetCurrentTimeAsString() << kSeparator << type << kSeparator
            << result << kNewline;
+  AppendToLog(log_line.str());
+}
+
+void RoutineLog::LogRoutineCancelled() {
+  DCHECK(base::PathExists(routine_log_file_path_));
+
+  std::stringstream log_line;
+  log_line << GetCurrentTimeAsString() << kSeparator << kCancelledDescription
+           << kNewline;
   AppendToLog(log_line.str());
 }
 

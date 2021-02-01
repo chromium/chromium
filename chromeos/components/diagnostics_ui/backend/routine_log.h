@@ -29,6 +29,7 @@ class RoutineLog {
   void LogRoutineStarted(mojom::RoutineType type);
   void LogRoutineCompleted(mojom::RoutineType type,
                            mojom::StandardRoutineResult result);
+  void LogRoutineCancelled();
 
   // Returns the current RoutineLog as a string.
   std::string GetContents() const;

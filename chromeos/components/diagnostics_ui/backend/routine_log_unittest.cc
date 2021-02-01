@@ -21,7 +21,7 @@ namespace diagnostics {
 namespace {
 
 const char kLogFileName[] = "diagnostic_routine_log";
-const char kSeparator[] = " - ";
+const char kSeparator[] = "-";
 const char kNewline[] = "\n";
 
 // Returns the lines of the log as a vector of strings.
@@ -37,7 +37,6 @@ std::vector<std::string> GetLogLineContents(const std::string& log_line) {
   const std::vector<std::string> result = base::SplitString(
       log_line, kSeparator, base::WhitespaceHandling::TRIM_WHITESPACE,
       base::SplitResult::SPLIT_WANT_NONEMPTY);
-  DCHECK_EQ(3u, result.size());
   return result;
 }
 
@@ -110,6 +109,26 @@ TEST_F(RoutineLogTest, TwoLine) {
   ASSERT_EQ(3u, second_line_contents.size());
   EXPECT_EQ("RoutineType::kMemory", second_line_contents[1]);
   EXPECT_EQ("StandardRoutineResult::kTestPassed", second_line_contents[2]);
+}
+
+TEST_F(RoutineLogTest, Cancelled) {
+  RoutineLog log(log_path_);
+
+  log.LogRoutineStarted(mojom::RoutineType::kMemory);
+  log.LogRoutineCancelled();
+  EXPECT_TRUE(base::PathExists(log_path_));
+
+  const std::string contents = log.GetContents();
+  LOG(ERROR) << contents;
+  const std::vector<std::string> log_lines = GetLogLines(contents);
+
+  ASSERT_EQ(2u, log_lines.size());
+  const std::string second_line = log_lines[1];
+  const std::vector<std::string> second_line_contents =
+      GetLogLineContents(second_line);
+
+  ASSERT_EQ(2u, second_line_contents.size());
+  EXPECT_EQ("Inflight Routine Cancelled", second_line_contents[1]);
 }
 
 }  // namespace diagnostics
