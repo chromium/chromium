@@ -214,8 +214,7 @@ class PCScan<thread_safe>::PCScanTask final {
         PA_DCHECK(!(super_page_base % kSuperPageAlignment));
         PA_DCHECK(IsManagedByPartitionAllocNormalBuckets(
             reinterpret_cast<char*>(super_page_base)));
-        bitset_.Set((super_page_base - normal_bucket_pool_base_) >>
-                    kSuperPageShift);
+        bitset_.Set(NormalBucketPoolOffset(super_page_base));
       }
     }
 
@@ -224,21 +223,26 @@ class PCScan<thread_safe>::PCScanTask final {
       PA_DCHECK(IsManagedByPartitionAllocNormalBuckets(
           reinterpret_cast<char*>(maybe_ptr)));
 #endif
-      return bitset_.Test(static_cast<size_t>(
-          (maybe_ptr - normal_bucket_pool_base_) >> kSuperPageShift));
+      return bitset_.Test(NormalBucketPoolOffset(maybe_ptr));
     }
 
    private:
     static constexpr size_t kBitmapSize =
         AddressPoolManager::kNormalBucketMaxSize >> kSuperPageShift;
 
-    SimpleBitset<kBitmapSize> bitset_;
-    const uintptr_t normal_bucket_pool_base_ =
+    ALWAYS_INLINE static constexpr size_t NormalBucketPoolOffset(
+        uintptr_t ptr) {
+      constexpr uintptr_t kNormalBucketPoolMask =
 #if defined(PA_HAS_64_BITS_POINTERS)
-        PartitionAddressSpace::NormalBucketPoolBase();
+          PartitionAddressSpace::NormalBucketPoolBaseMask();
 #else
-        0;
+          0;
 #endif
+      return static_cast<size_t>((ptr & ~kNormalBucketPoolMask) >>
+                                 kSuperPageShift);
+    }
+
+    SimpleBitset<kBitmapSize> bitset_;
   };
 
   struct BitmapLookupPolicy {
