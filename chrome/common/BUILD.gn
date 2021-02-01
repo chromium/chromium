@@ -180,6 +180,7 @@ static_library("common") {
     "//components/favicon_base",
     "//components/flags_ui:switches",
     "//components/gcm_driver/common",
+    "//components/memories/common",
     "//components/metrics",
     "//components/metrics:net",
     "//components/nacl/common:buildflags",

@@ -2086,6 +2086,7 @@ static_library("browser") {
     "//components/leveldb_proto",
     "//components/lookalikes/core",
     "//components/lookalikes/core:features",
+    "//components/memories/browser",
     "//components/metrics:call_stack_profile_collector",
     "//components/metrics:call_stack_profile_params",
     "//components/metrics:component_metrics",
