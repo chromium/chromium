@@ -62,14 +62,14 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
 
     @Override
     public void onManagePasswordsSelected() {
-        assert mNativeView != 0 : "The native side is already dismissed";
-        TouchToFillBridgeJni.get().onManagePasswordsSelected(mNativeView);
+        if (mNativeView != 0) TouchToFillBridgeJni.get().onManagePasswordsSelected(mNativeView);
     }
 
     @Override
     public void onCredentialSelected(Credential credential) {
-        assert mNativeView != 0 : "The native side is already dismissed";
-        TouchToFillBridgeJni.get().onCredentialSelected(mNativeView, credential);
+        if (mNativeView != 0) {
+            TouchToFillBridgeJni.get().onCredentialSelected(mNativeView, credential);
+        }
     }
 
     @NativeMethods
