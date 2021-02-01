@@ -27,19 +27,20 @@ namespace extensions {
 
 bool IsComponentExtensionAllowlisted(const std::string& extension_id) {
   const char* const kAllowed[] = {
-    extension_misc::kInAppPaymentsSupportAppId,
     extension_misc::kCastExtensionIdRelease,
+    extension_misc::kInAppPaymentsSupportAppId,
     extension_misc::kPdfExtensionId,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    extension_misc::kAssessmentAssistantExtensionId,
     extension_misc::kAccessibilityCommonExtensionId,
+    extension_misc::kAssessmentAssistantExtensionId,
+    extension_misc::kCameraAppId,
     extension_misc::kChromeVoxExtensionId,
     extension_misc::kEspeakSpeechSynthesisExtensionId,
     extension_misc::kGoogleSpeechSynthesisExtensionId,
+    extension_misc::kGuestModeTestExtensionId,
     extension_misc::kSelectToSpeakExtensionId,
     extension_misc::kSwitchAccessExtensionId,
     extension_misc::kZipArchiverExtensionId,
-    extension_misc::kCameraAppId,
 #endif
   };
 

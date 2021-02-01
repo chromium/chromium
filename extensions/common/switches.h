@@ -28,6 +28,7 @@ extern const char kLoadApps[];
 extern const char kLoadExtension[];
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kLoadSigninProfileTestExtension[];
+extern const char kLoadGuestModeTestExtension[];
 #endif
 extern const char kSetExtensionThrottleTestParams[];
 extern const char kShowComponentExtensionOptions[];

@@ -267,6 +267,9 @@ extern const char kScreensaverKukuiAppId[];
 // The id of the testing extension allowed in the signin profile.
 extern const char kSigninProfileTestExtensionId[];
 
+// The id of the testing extension allowed in guest mode.
+extern const char kGuestModeTestExtensionId[];
+
 // Returns true if this app is part of the "system UI". Generally this is UI
 // that that on other operating systems would be considered part of the OS,
 // for example the file manager.

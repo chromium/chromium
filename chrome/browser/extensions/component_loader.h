@@ -190,6 +190,7 @@ class ComponentLoader {
   void AddAudioPlayerExtension();
   void AddGalleryExtension();
   void AddImageLoaderExtension();
+  void AddGuestModeTestExtension(const base::FilePath& path);
   void AddKeyboardApp();
   void AddChromeCameraApp();
   void AddZipArchiverExtension();
