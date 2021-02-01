@@ -246,28 +246,33 @@ message ClientSettingsProto {
     optional bool enable_slow_connection_warnings = 1;
     // Whether to show warnings related to a slow website to the user.
     optional bool enable_slow_website_warnings = 2;
-    // If true, the slow connection or website warning will be only shown once.
-    optional bool show_only_once = 3;
+    // If true, only one warning will be shown to the user, i.e. either the slow
+    // connection or website, depending on which one triggers first.
+    optional bool only_show_warning_once = 3;
+    // If true, the slow connection warning will be shown only once.
+    optional bool only_show_connection_warning_once = 4;
+    // If true, the website warning will be shown only once.
+    optional bool only_show_website_warning_once = 5;
     // Defines the maximum wait on a dom find element operation before showing
     // the slow website warning.
-    optional int32 warning_delay_ms = 4;
+    optional int32 warning_delay_ms = 6;
     // Defines the threshold above which a roundtrip is considered too slow.
-    optional int32 slow_roundtrip_threshold_ms = 5;
+    optional int32 slow_roundtrip_threshold_ms = 7;
     // Defines the number of consecutive slow roundtrips allowed before showing
     // the slow connection warning.
-    optional int32 max_consecutive_slow_roundtrips = 6;
+    optional int32 max_consecutive_slow_roundtrips = 8;
     // The message to show as a warning to inform the user of a slow connection.
     // If this is not set, no warning will be shown in case of slow connection.
-    optional string slow_connection_message = 7;
+    optional string slow_connection_message = 9;
     // The message to show as a warning to inform the user of a slow website.
     // If this is not set, no warning will be shown in case of a slow website.
-    optional string slow_website_message = 8;
+    optional string slow_website_message = 10;
     // The minimum duration that the message will be shown for (only applies to
     // the slow connection messages).
-    optional int32 minimum_warning_message_duration_ms = 9;
+    optional int32 minimum_warning_message_duration_ms = 11;
     // Whether the warning message should replace the current status message or
     // should be concatenated.
-    optional MessageMode message_mode = 10;
+    optional MessageMode message_mode = 12;
   }
   optional SlowWarningSettings slow_warning_settings = 21;
 
@@ -461,6 +466,9 @@ message NextScriptActionsRequestProto {
   repeated ProcessedActionProto processed_actions = 1;
   // Contains all roundtrip level (as opposed to action level) timing stats.
   optional RoundtripTimingStats timing_stats = 2;
+  // Tracks whether the last roundtrip triggered a slow connection warning and
+  // whether it was shown to the user.
+  optional SlowWarningStatus slow_connection_warning = 34;
 }
 
 // Response of a script's actions.
@@ -770,6 +778,17 @@ message ActionTimingStats {
   optional int64 wait_time_ms = 3;
 }
 
+// Enum used to track the slow warnings that can trigger due to slow connection
+// or long running wait for dom actions.
+enum SlowWarningStatus {
+  // The warning wasn't triggered.
+  NO_WARNING = 0;
+  // The warning was triggered but not shown to the user.
+  WARNING_TRIGGERED = 1;
+  // The warning was triggered and shown to the user.
+  WARNING_SHOWN = 2;
+}
+
 message ProcessedActionProto {
   // The action that was processed.
   optional ActionProto action = 1;
@@ -812,6 +831,10 @@ message ProcessedActionProto {
   // action, such as a prompt choice, through a direct action instead of
   // selecting a chip on the UI. This is meant for monitoring and debugging.
   optional bool direct_action = 24;
+
+  // Tracks whether the action triggered a slow website warning and whether it
+  // was shown to the user.
+  optional SlowWarningStatus slow_warning_status = 34;
 
   reserved 3, 4, 6 to 14, 16, 18, 26, 27, 29, 30;
 }

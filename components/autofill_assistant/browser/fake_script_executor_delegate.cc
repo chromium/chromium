@@ -78,7 +78,6 @@ void FakeScriptExecutorDelegate::SetTouchableElementArea(
     const ElementAreaProto& element) {}
 
 void FakeScriptExecutorDelegate::SetStatusMessage(const std::string& message) {
-  LOG(ERROR) << "SETTING STATUS MESSAGE TO: " << message;
   status_message_ = message;
 }
 

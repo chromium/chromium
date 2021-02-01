@@ -114,8 +114,17 @@ void ClientSettings::UpdateFromProto(const ClientSettingsProto& proto) {
       enable_slow_website_warnings =
           proto.slow_warning_settings().enable_slow_website_warnings();
     }
-    if (proto.slow_warning_settings().has_show_only_once()) {
-      only_show_warning_once = proto.slow_warning_settings().show_only_once();
+    if (proto.slow_warning_settings().has_only_show_warning_once()) {
+      only_show_warning_once =
+          proto.slow_warning_settings().only_show_warning_once();
+    }
+    if (proto.slow_warning_settings().has_only_show_connection_warning_once()) {
+      only_show_connection_warning_once =
+          proto.slow_warning_settings().only_show_connection_warning_once();
+    }
+    if (proto.slow_warning_settings().has_only_show_website_warning_once()) {
+      only_show_website_warning_once =
+          proto.slow_warning_settings().only_show_website_warning_once();
     }
     if (proto.slow_warning_settings().has_warning_delay_ms()) {
       warning_delay = base::TimeDelta::FromMilliseconds(

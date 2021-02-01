@@ -836,19 +836,38 @@ void ScriptExecutor::SetOverlayBehavior(
   delegate_->SetOverlayBehavior(overlay_behavior);
 }
 
-void ScriptExecutor::MaybeShowSlowWebsiteWarning() {
-  MaybeShowSlowWarning(delegate_->GetSettings().slow_website_message,
-                       delegate_->GetSettings().enable_slow_website_warnings);
+void ScriptExecutor::MaybeShowSlowWebsiteWarning(
+    base::OnceCallback<void(bool)> callback) {
+  bool should_show_warning =
+      !delegate_->GetSettings().only_show_website_warning_once ||
+      !website_warning_already_shown_;
+  // MaybeShowSlowWarning is only called if should_sown_warning is true.
+  bool warning_was_shown =
+      should_show_warning &&
+      MaybeShowSlowWarning(
+          delegate_->GetSettings().slow_website_message,
+          delegate_->GetSettings().enable_slow_website_warnings);
+  website_warning_already_shown_ |= warning_was_shown;
+  if (callback) {
+    std::move(callback).Run(warning_was_shown);
+  }
 }
 
 void ScriptExecutor::MaybeShowSlowConnectionWarning() {
+  bool should_show_warning =
+      !delegate_->GetSettings().only_show_connection_warning_once ||
+      !connection_warning_already_shown_;
   base::TimeDelta delay = base::TimeDelta::FromMilliseconds(0);
-  bool warning_was_shown = MaybeShowSlowWarning(
-      delegate_->GetSettings().slow_connection_message,
-      delegate_->GetSettings().enable_slow_connection_warnings);
+  // MaybeShowSlowWarning is only called if should_sown_warning is true.
+  bool warning_was_shown =
+      should_show_warning &&
+      MaybeShowSlowWarning(
+          delegate_->GetSettings().slow_connection_message,
+          delegate_->GetSettings().enable_slow_connection_warnings);
   if (warning_was_shown) {
     delay = delegate_->GetSettings().minimum_warning_duration;
   }
+  connection_warning_already_shown_ |= warning_was_shown;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ScriptExecutor::ProcessNextAction,
@@ -863,22 +882,18 @@ bool ScriptExecutor::MaybeShowSlowWarning(const std::string& message,
   }
 
   if (delegate_->GetSettings().only_show_warning_once &&
-      warning_callout_already_shown_) {
+      (connection_warning_already_shown_ || website_warning_already_shown_)) {
     return false;
   }
 
-  warning_callout_already_shown_ = true;
   const std::string& previous_message = GetStatusMessage();
   switch (delegate_->GetSettings().message_mode) {
     case ClientSettingsProto::SlowWarningSettings::CONCATENATE:
-      LOG(ERROR) << "CHECKING IF SHOULD CONCATENATE WARNING";
       if (previous_message.find(message) == std::string::npos) {
-        LOG(ERROR) << "CONCATENATING WARNING";
         SetStatusMessage(previous_message + message);
       }
       break;
     case ClientSettingsProto::SlowWarningSettings::REPLACE:
-      LOG(ERROR) << "REPLACING WARNING";
       SetStatusMessage(message);
       break;
     case ClientSettingsProto::SlowWarningSettings::UNKNOWN:
@@ -919,25 +934,16 @@ void ScriptExecutor::OnGetActions(base::TimeTicks start_time,
 
   if (roundtrip_duration < delegate_->GetSettings().slow_roundtrip_threshold) {
     consecutive_slow_roundtrip_counter_ = 0;
-    LOG(ERROR) << "RESETTING COUNTER";
   } else {
     consecutive_slow_roundtrip_counter_++;
-    LOG(ERROR) << "COUNTER INCREASED TO "
-               << consecutive_slow_roundtrip_counter_;
   }
 
   if (!actions_.empty()) {
     if (consecutive_slow_roundtrip_counter_ >=
         delegate_->GetSettings().max_consecutive_slow_roundtrips) {
-      LOG(ERROR) << "SHOWING WARNING";
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(&ScriptExecutor::MaybeShowSlowConnectionWarning,
-                         weak_ptr_factory_.GetWeakPtr()),
-          delegate_->GetSettings().minimum_warning_duration);
+      consecutive_slow_roundtrip_counter_ = 0;
+      MaybeShowSlowConnectionWarning();
     } else {
-      LOG(ERROR) << "NOT SHOWING WARNING";
-
       ProcessNextAction();
     }
     return;
@@ -1159,7 +1165,7 @@ ScriptExecutor::WaitForDomOperation::WaitForDomOperation(
       allow_interrupt_(allow_interrupt),
       check_elements_(std::move(check_elements)),
       callback_(std::move(callback)),
-      timeout_warning_period_(
+      timeout_warning_delay_(
           main_script->delegate_->GetSettings().warning_delay),
       retry_timer_(main_script->delegate_->GetSettings()
                        .periodic_element_check_interval) {}
@@ -1175,8 +1181,8 @@ void ScriptExecutor::WaitForDomOperation::Run() {
 }
 
 void ScriptExecutor::WaitForDomOperation::SetTimeoutWarningCallback(
-    base::OnceCallback<void()> timeout_warning) {
-  timeout_warning_callback_ = std::move(timeout_warning);
+    WarningCallback warning_callback) {
+  warning_callback_ = std::move(warning_callback);
 }
 
 void ScriptExecutor::WaitForDomOperation::Start() {
@@ -1227,8 +1233,19 @@ void ScriptExecutor::WaitForDomOperation::OnScriptListChanged(
 }
 
 void ScriptExecutor::WaitForDomOperation::TimeoutWarning() {
-  if (timeout_warning_callback_) {
-    std::move(timeout_warning_callback_).Run();
+  if (warning_callback_) {
+    std::move(warning_callback_)
+        .Run(base::BindOnce(
+            &ScriptExecutor::WaitForDomOperation::SetSlowWarningStatus,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void ScriptExecutor::WaitForDomOperation::SetSlowWarningStatus(bool was_shown) {
+  if (was_shown) {
+    warning_status_ = WARNING_SHOWN;
+  } else {
+    warning_status_ = WARNING_TRIGGERED;
   }
 }
 
@@ -1236,7 +1253,7 @@ void ScriptExecutor::WaitForDomOperation::RunChecks(
     base::OnceCallback<void(const ClientStatus&)> report_attempt_result) {
   warning_timer_ = std::make_unique<base::OneShotTimer>();
   warning_timer_->Start(
-      FROM_HERE, timeout_warning_period_,
+      FROM_HERE, timeout_warning_delay_,
       base::BindOnce(&ScriptExecutor::WaitForDomOperation::TimeoutWarning,
                      weak_ptr_factory_.GetWeakPtr()));
   wait_time_total_ =
@@ -1366,10 +1383,15 @@ void ScriptExecutor::WaitForDomOperation::RunCallbackWithResult(
   // stop element checking if one is still in progress
   batch_element_checker_.reset();
   retry_timer_.Cancel();
+  warning_timer_->Stop();
+
   if (!callback_)
     return;
 
-  std::move(callback_).Run(element_status, result, wait_time_total_);
+  ClientStatus status(element_status);
+  status.set_slow_warning_status(warning_status_);
+
+  std::move(callback_).Run(status, result, wait_time_total_);
 }
 
 void ScriptExecutor::WaitForDomOperation::SavePreInterruptState() {

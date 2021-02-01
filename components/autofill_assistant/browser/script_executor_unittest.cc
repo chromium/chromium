@@ -296,8 +296,6 @@ TEST_F(ScriptExecutorTest, ShowsSlowConnectionWarningReplace) {
   EXPECT_CALL(executor_callback_,
               Run(Field(&ScriptExecutor::Result::success, true)));
   executor_->Run(&user_data_, executor_callback_.Get());
-  task_environment_.FastForwardBy(
-      task_environment_.NextMainThreadPendingTaskDelay());
   EXPECT_EQ(delegate_.GetStatusMessage(), "slow");
   task_environment_.FastForwardBy(
       task_environment_.NextMainThreadPendingTaskDelay());
@@ -333,11 +331,80 @@ TEST_F(ScriptExecutorTest, ShowsSlowConnectionWarningConcatenate) {
               Run(Field(&ScriptExecutor::Result::success, true)));
   executor_->Run(&user_data_, executor_callback_.Get());
 
-  task_environment_.FastForwardBy(
-      task_environment_.NextMainThreadPendingTaskDelay());
   EXPECT_EQ(delegate_.GetStatusMessage(), "1... slow");
   task_environment_.FastForwardBy(
       task_environment_.NextMainThreadPendingTaskDelay());
+  EXPECT_EQ(delegate_.GetStatusMessage(), "2");
+}
+
+TEST_F(ScriptExecutorTest, SlowConnectionWarningTriggersOnlyOnce) {
+  ClientSettings* client_settings = delegate_.GetMutableSettings();
+  client_settings->slow_connection_message = "slow";
+  client_settings->enable_slow_connection_warnings = true;
+  client_settings->only_show_connection_warning_once = true;
+  client_settings->max_consecutive_slow_roundtrips = 1;
+  client_settings->slow_roundtrip_threshold =
+      base::TimeDelta::FromMilliseconds(100);
+  client_settings->minimum_warning_duration =
+      base::TimeDelta::FromMilliseconds(100);
+  client_settings->message_mode =
+      ClientSettingsProto::SlowWarningSettings::REPLACE;
+  ActionsResponseProto initial_actions_response;
+  initial_actions_response.add_actions()->mutable_tell()->set_message("1");
+  EXPECT_CALL(mock_service_, OnGetActions(StrEq(kScriptPath), _, _, _, _, _))
+      .WillOnce(DoAll(Delay(&task_environment_, 600),
+                      RunOnceCallback<5>(net::HTTP_OK,
+                                         Serialize(initial_actions_response))));
+
+  ActionsResponseProto next_actions_response;
+  next_actions_response.add_actions()->mutable_tell()->set_message("2");
+  EXPECT_CALL(mock_service_, OnGetNextActions(_, _, _, _, _, _))
+      .WillOnce(DoAll(
+          Delay(&task_environment_, 600),
+          RunOnceCallback<5>(net::HTTP_OK, Serialize(next_actions_response))))
+      .WillOnce(RunOnceCallback<5>(net::HTTP_OK, ""));
+  EXPECT_CALL(executor_callback_,
+              Run(Field(&ScriptExecutor::Result::success, true)));
+  executor_->Run(&user_data_, executor_callback_.Get());
+  EXPECT_EQ(delegate_.GetStatusMessage(), "slow");
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  EXPECT_EQ(delegate_.GetStatusMessage(), "2");
+}
+
+TEST_F(ScriptExecutorTest, SlowConnectionWarningTriggersMultipleTimes) {
+  ClientSettings* client_settings = delegate_.GetMutableSettings();
+  client_settings->slow_connection_message = "slow";
+  client_settings->enable_slow_connection_warnings = true;
+  client_settings->only_show_connection_warning_once = false;
+  client_settings->only_show_warning_once = false;
+  client_settings->max_consecutive_slow_roundtrips = 1;
+  client_settings->slow_roundtrip_threshold =
+      base::TimeDelta::FromMilliseconds(100);
+  client_settings->minimum_warning_duration =
+      base::TimeDelta::FromMilliseconds(100);
+  client_settings->message_mode =
+      ClientSettingsProto::SlowWarningSettings::REPLACE;
+  ActionsResponseProto initial_actions_response;
+  initial_actions_response.add_actions()->mutable_tell()->set_message("1");
+  EXPECT_CALL(mock_service_, OnGetActions(StrEq(kScriptPath), _, _, _, _, _))
+      .WillOnce(DoAll(Delay(&task_environment_, 600),
+                      RunOnceCallback<5>(net::HTTP_OK,
+                                         Serialize(initial_actions_response))));
+
+  ActionsResponseProto next_actions_response;
+  next_actions_response.add_actions()->mutable_tell()->set_message("2");
+  EXPECT_CALL(mock_service_, OnGetNextActions(_, _, _, _, _, _))
+      .WillOnce(DoAll(
+          Delay(&task_environment_, 600),
+          RunOnceCallback<5>(net::HTTP_OK, Serialize(next_actions_response))))
+      .WillOnce(RunOnceCallback<5>(net::HTTP_OK, ""));
+  EXPECT_CALL(executor_callback_,
+              Run(Field(&ScriptExecutor::Result::success, true)));
+  executor_->Run(&user_data_, executor_callback_.Get());
+  EXPECT_EQ(delegate_.GetStatusMessage(), "slow");
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  EXPECT_EQ(delegate_.GetStatusMessage(), "slow");
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(100));
   EXPECT_EQ(delegate_.GetStatusMessage(), "2");
 }
 
@@ -391,6 +458,268 @@ TEST_F(ScriptExecutorTest, SlowConnectionWarningNotShowingIfOnCompleted) {
   executor_->Run(&user_data_, executor_callback_.Get());
 
   EXPECT_NE(delegate_.GetStatusMessage(), "slow");
+}
+
+TEST_F(ScriptExecutorTest, SlowConnectionWarningNotShownIfSlowWebsiteFirst) {
+  ClientSettings* client_settings = delegate_.GetMutableSettings();
+  client_settings->slow_connection_message = "slow connection";
+  client_settings->slow_website_message = "slow website";
+  client_settings->enable_slow_website_warnings = true;
+  client_settings->warning_delay = base::TimeDelta::FromMilliseconds(1500);
+  client_settings->enable_slow_connection_warnings = true;
+  client_settings->only_show_warning_once = true;
+  client_settings->max_consecutive_slow_roundtrips = 2;
+  client_settings->slow_roundtrip_threshold =
+      base::TimeDelta::FromMilliseconds(100);
+  client_settings->minimum_warning_duration =
+      base::TimeDelta::FromMilliseconds(100);
+  client_settings->message_mode =
+      ClientSettingsProto::SlowWarningSettings::REPLACE;
+  ActionsResponseProto tell1_waitfordom;
+  tell1_waitfordom.add_actions()->mutable_tell()->set_message("1");
+  auto* wait_for_dom = tell1_waitfordom.add_actions()->mutable_wait_for_dom();
+  *wait_for_dom->mutable_wait_condition()->mutable_match() =
+      ToSelectorProto("element");
+
+  EXPECT_CALL(mock_service_, OnGetActions(StrEq(kScriptPath), _, _, _, _, _))
+      .WillOnce(
+          DoAll(Delay(&task_environment_, 600),
+                RunOnceCallback<5>(net::HTTP_OK, Serialize(tell1_waitfordom))));
+
+  // Active check takes longer than warning timeout.
+  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"element"}), _))
+      .WillOnce(DoAll(
+          Delay(&task_environment_, 2000),
+          RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr)))
+      .WillOnce(WithArgs<1>([](auto&& callback) {
+        std::move(callback).Run(OkClientStatus(),
+                                std::make_unique<ElementFinder::Result>());
+      }));
+  ActionsResponseProto tell2;
+  tell2.add_actions()->mutable_tell()->set_message("2");
+  ActionsResponseProto tell3;
+  tell3.add_actions()->mutable_tell()->set_message("3");
+  EXPECT_CALL(mock_service_, OnGetNextActions(_, _, _, _, _, _))
+      .WillOnce(DoAll(Delay(&task_environment_, 600),
+                      RunOnceCallback<5>(net::HTTP_OK, Serialize(tell2))))
+      .WillOnce(DoAll(Delay(&task_environment_, 600),
+                      RunOnceCallback<5>(net::HTTP_OK, Serialize(tell3))))
+      .WillOnce(RunOnceCallback<5>(net::HTTP_OK, ""));
+  EXPECT_CALL(executor_callback_,
+              Run(Field(&ScriptExecutor::Result::success, true)));
+  executor_->Run(&user_data_, executor_callback_.Get());
+  EXPECT_EQ(delegate_.GetStatusMessage(), "slow website");
+  task_environment_.FastForwardBy(
+      task_environment_.NextMainThreadPendingTaskDelay());
+  EXPECT_EQ(delegate_.GetStatusMessage(), "3");
+}
+
+TEST_F(ScriptExecutorTest, SlowWebsiteWarningReplace) {
+  ClientSettings* client_settings = delegate_.GetMutableSettings();
+  client_settings->slow_website_message = "slow";
+  client_settings->enable_slow_website_warnings = true;
+  client_settings->warning_delay = base::TimeDelta::FromMilliseconds(1500);
+  ActionsResponseProto actions_response;
+  actions_response.add_actions()->mutable_tell()->set_message("1");
+  auto* wait_for_dom = actions_response.add_actions()->mutable_wait_for_dom();
+  *wait_for_dom->mutable_wait_condition()->mutable_match() =
+      ToSelectorProto("element");
+
+  EXPECT_CALL(mock_service_, OnGetActions(_, _, _, _, _, _))
+      .WillOnce(RunOnceCallback<5>(net::HTTP_OK, Serialize(actions_response)));
+
+  // Active check takes longer than warning timeout.
+  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"element"}), _))
+      .WillOnce(Delay(&task_environment_, 2000));
+  executor_->Run(&user_data_, executor_callback_.Get());
+
+  EXPECT_EQ(delegate_.GetStatusMessage(), "slow");
+}
+
+TEST_F(ScriptExecutorTest, SlowWebsiteWarningConcatenate) {
+  ClientSettings* client_settings = delegate_.GetMutableSettings();
+  client_settings->slow_website_message = "... slow";
+  client_settings->enable_slow_website_warnings = true;
+  client_settings->message_mode =
+      ClientSettingsProto::SlowWarningSettings::CONCATENATE;
+  ActionsResponseProto actions_response;
+  actions_response.add_actions()->mutable_tell()->set_message("1");
+  auto* wait_for_dom = actions_response.add_actions()->mutable_wait_for_dom();
+  *wait_for_dom->mutable_wait_condition()->mutable_match() =
+      ToSelectorProto("element");
+
+  EXPECT_CALL(mock_service_, OnGetActions(_, _, _, _, _, _))
+      .WillOnce(RunOnceCallback<5>(net::HTTP_OK, Serialize(actions_response)));
+
+  // Active check takes longer than warning timeout.
+  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"element"}), _))
+      .WillOnce(Delay(&task_environment_, 2000));
+  executor_->Run(&user_data_, executor_callback_.Get());
+
+  EXPECT_EQ(delegate_.GetStatusMessage(), "1... slow");
+}
+
+TEST_F(ScriptExecutorTest, SlowWebsiteWarningTriggersOnlyOnce) {
+  ClientSettings* client_settings = delegate_.GetMutableSettings();
+  client_settings->slow_website_message = "slow";
+  client_settings->enable_slow_website_warnings = true;
+  client_settings->only_show_website_warning_once = true;
+  client_settings->message_mode =
+      ClientSettingsProto::SlowWarningSettings::REPLACE;
+  ActionsResponseProto actions_response;
+  actions_response.add_actions()->mutable_tell()->set_message("1");
+  auto* wait_for_dom = actions_response.add_actions()->mutable_wait_for_dom();
+  *wait_for_dom->mutable_wait_condition()->mutable_match() =
+      ToSelectorProto("element");
+  ActionsResponseProto next_actions_response;
+  next_actions_response.add_actions()->mutable_tell()->set_message("2");
+  auto* second_wait_for_dom =
+      next_actions_response.add_actions()->mutable_wait_for_dom();
+  *second_wait_for_dom->mutable_wait_condition()->mutable_match() =
+      ToSelectorProto("element2");
+
+  EXPECT_CALL(mock_service_, OnGetActions(_, _, _, _, _, _))
+      .WillOnce(RunOnceCallback<5>(net::HTTP_OK, Serialize(actions_response)));
+
+  // Active check takes longer than warning timeout.
+  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"element"}), _))
+      .WillOnce(DoAll(
+          Delay(&task_environment_, 2000),
+          RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr)))
+      .WillOnce(WithArgs<1>([](auto&& callback) {
+        std::move(callback).Run(OkClientStatus(),
+                                std::make_unique<ElementFinder::Result>());
+      }));
+  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"element2"}), _))
+      .WillOnce(DoAll(Delay(&task_environment_, 2000),
+                      RunOnceCallback<1>(
+                          ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr)));
+  EXPECT_CALL(mock_service_, OnGetNextActions(_, _, _, _, _, _))
+      .WillOnce(
+          RunOnceCallback<5>(net::HTTP_OK, Serialize(next_actions_response)));
+  executor_->Run(&user_data_, executor_callback_.Get());
+
+  EXPECT_EQ(delegate_.GetStatusMessage(), "slow");
+  task_environment_.FastForwardBy(
+      task_environment_.NextMainThreadPendingTaskDelay());
+  EXPECT_EQ(delegate_.GetStatusMessage(), "2");
+}
+
+TEST_F(ScriptExecutorTest, SlowWebsiteWarningNotShownIfSlowConnectionFirst) {
+  ClientSettings* client_settings = delegate_.GetMutableSettings();
+  client_settings->slow_connection_message = "slow connection";
+  client_settings->slow_website_message = "slow website";
+  client_settings->enable_slow_website_warnings = true;
+  client_settings->warning_delay = base::TimeDelta::FromMilliseconds(1500);
+  client_settings->enable_slow_connection_warnings = true;
+  client_settings->only_show_warning_once = true;
+  client_settings->max_consecutive_slow_roundtrips = 1;
+  client_settings->slow_roundtrip_threshold =
+      base::TimeDelta::FromMilliseconds(100);
+  client_settings->minimum_warning_duration =
+      base::TimeDelta::FromMilliseconds(100);
+  client_settings->message_mode =
+      ClientSettingsProto::SlowWarningSettings::REPLACE;
+  ActionsResponseProto tell1;
+  tell1.add_actions()->mutable_tell()->set_message("1");
+  ActionsResponseProto tell2_waitfordom;
+  tell2_waitfordom.add_actions()->mutable_tell()->set_message("2");
+  auto* wait_for_dom = tell2_waitfordom.add_actions()->mutable_wait_for_dom();
+  *wait_for_dom->mutable_wait_condition()->mutable_match() =
+      ToSelectorProto("element");
+  ActionsResponseProto tell3;
+  tell3.add_actions()->mutable_tell()->set_message("3");
+
+  EXPECT_CALL(mock_service_, OnGetActions(StrEq(kScriptPath), _, _, _, _, _))
+      .WillOnce(DoAll(Delay(&task_environment_, 600),
+                      RunOnceCallback<5>(net::HTTP_OK, Serialize(tell1))));
+
+  // Active check takes longer than warning timeout.
+  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"element"}), _))
+      .WillOnce(DoAll(
+          Delay(&task_environment_, 2000),
+          RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr)))
+      .WillOnce(WithArgs<1>([](auto&& callback) {
+        std::move(callback).Run(OkClientStatus(),
+                                std::make_unique<ElementFinder::Result>());
+      }));
+  EXPECT_CALL(mock_service_, OnGetNextActions(_, _, _, _, _, _))
+      .WillOnce(
+          DoAll(Delay(&task_environment_, 600),
+                RunOnceCallback<5>(net::HTTP_OK, Serialize(tell2_waitfordom))))
+      .WillOnce(DoAll(Delay(&task_environment_, 600),
+                      RunOnceCallback<5>(net::HTTP_OK, Serialize(tell3))))
+      .WillOnce(RunOnceCallback<5>(net::HTTP_OK, ""));
+  EXPECT_CALL(executor_callback_,
+              Run(Field(&ScriptExecutor::Result::success, true)));
+  executor_->Run(&user_data_, executor_callback_.Get());
+  EXPECT_EQ(delegate_.GetStatusMessage(), "slow connection");
+  task_environment_.FastForwardBy(
+      task_environment_.NextMainThreadPendingTaskDelay());
+  EXPECT_EQ(delegate_.GetStatusMessage(), "2");
+  task_environment_.FastForwardBy(
+      task_environment_.NextMainThreadPendingTaskDelay());
+  EXPECT_EQ(delegate_.GetStatusMessage(), "3");
+}
+
+TEST_F(ScriptExecutorTest, SlowWarningsBothShownIfConfigured) {
+  ClientSettings* client_settings = delegate_.GetMutableSettings();
+  client_settings->slow_connection_message = "slow connection";
+  client_settings->slow_website_message = "slow website";
+  client_settings->enable_slow_website_warnings = true;
+  client_settings->warning_delay = base::TimeDelta::FromMilliseconds(1500);
+  client_settings->enable_slow_connection_warnings = true;
+  client_settings->only_show_warning_once = false;
+  client_settings->max_consecutive_slow_roundtrips = 1;
+  client_settings->slow_roundtrip_threshold =
+      base::TimeDelta::FromMilliseconds(100);
+  client_settings->minimum_warning_duration =
+      base::TimeDelta::FromMilliseconds(100);
+  client_settings->message_mode =
+      ClientSettingsProto::SlowWarningSettings::REPLACE;
+  ActionsResponseProto tell1;
+  tell1.add_actions()->mutable_tell()->set_message("1");
+  ActionsResponseProto tell2_and_waitfordom;
+  tell2_and_waitfordom.add_actions()->mutable_tell()->set_message("2");
+  auto* wait_for_dom =
+      tell2_and_waitfordom.add_actions()->mutable_wait_for_dom();
+  *wait_for_dom->mutable_wait_condition()->mutable_match() =
+      ToSelectorProto("element");
+  ActionsResponseProto tell3;
+  tell3.add_actions()->mutable_tell()->set_message("3");
+
+  EXPECT_CALL(mock_service_, OnGetActions(StrEq(kScriptPath), _, _, _, _, _))
+      .WillOnce(DoAll(Delay(&task_environment_, 600),
+                      RunOnceCallback<5>(net::HTTP_OK, Serialize(tell1))));
+
+  // Active check takes longer than warning timeout.
+  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"element"}), _))
+      .WillOnce(DoAll(
+          Delay(&task_environment_, 2000),
+          RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr)))
+      .WillOnce(WithArgs<1>([](auto&& callback) {
+        std::move(callback).Run(OkClientStatus(),
+                                std::make_unique<ElementFinder::Result>());
+      }));
+  EXPECT_CALL(mock_service_, OnGetNextActions(_, _, _, _, _, _))
+      .WillOnce(DoAll(
+          Delay(&task_environment_, 600),
+          RunOnceCallback<5>(net::HTTP_OK, Serialize(tell2_and_waitfordom))))
+      .WillOnce(DoAll(Delay(&task_environment_, 600),
+                      RunOnceCallback<5>(net::HTTP_OK, Serialize(tell3))))
+      .WillOnce(RunOnceCallback<5>(net::HTTP_OK, ""));
+  EXPECT_CALL(executor_callback_,
+              Run(Field(&ScriptExecutor::Result::success, true)));
+  executor_->Run(&user_data_, executor_callback_.Get());
+  EXPECT_EQ(delegate_.GetStatusMessage(), "slow connection");
+  task_environment_.FastForwardBy(
+      task_environment_.NextMainThreadPendingTaskDelay());
+  EXPECT_EQ(delegate_.GetStatusMessage(), "slow website");
+  //  task_environment_.DescribeCurrentTasks();
+  ////  EXPECT_EQ(delegate_.GetStatusMessage(), "2");
+  task_environment_.FastForwardBy(
+      task_environment_.NextMainThreadPendingTaskDelay());
+  EXPECT_EQ(delegate_.GetStatusMessage(), "3");
 }
 
 TEST_F(ScriptExecutorTest, UnsupportedAction) {
@@ -666,52 +995,6 @@ TEST_F(ScriptExecutorTest, WaitForDomWaitUntil) {
 
   ASSERT_EQ(1u, processed_actions_capture.size());
   EXPECT_EQ(ACTION_APPLIED, processed_actions_capture[0].status());
-}
-
-TEST_F(ScriptExecutorTest, WaitForDomSlowWarningReplace) {
-  ClientSettings* client_settings = delegate_.GetMutableSettings();
-  client_settings->slow_website_message = "slow";
-  client_settings->enable_slow_website_warnings = true;
-  ActionsResponseProto actions_response;
-  actions_response.add_actions()->mutable_tell()->set_message("1");
-  auto* wait_for_dom = actions_response.add_actions()->mutable_wait_for_dom();
-  *wait_for_dom->mutable_wait_condition()->mutable_match() =
-      ToSelectorProto("element");
-
-  EXPECT_CALL(mock_service_, OnGetActions(_, _, _, _, _, _))
-      .WillOnce(RunOnceCallback<5>(net::HTTP_OK, Serialize(actions_response)));
-
-  // First check does not find the element, wait for dom waits 1s, then the
-  // element is found, and the action succeeds.
-  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"element"}), _))
-      .WillOnce(Delay(&task_environment_, 2000));
-  executor_->Run(&user_data_, executor_callback_.Get());
-
-  EXPECT_EQ(delegate_.GetStatusMessage(), "slow");
-}
-
-TEST_F(ScriptExecutorTest, WaitForDomSlowWarningConcatenate) {
-  ClientSettings* client_settings = delegate_.GetMutableSettings();
-  client_settings->slow_website_message = "... slow";
-  client_settings->enable_slow_website_warnings = true;
-  client_settings->message_mode =
-      ClientSettingsProto::SlowWarningSettings::CONCATENATE;
-  ActionsResponseProto actions_response;
-  actions_response.add_actions()->mutable_tell()->set_message("1");
-  auto* wait_for_dom = actions_response.add_actions()->mutable_wait_for_dom();
-  *wait_for_dom->mutable_wait_condition()->mutable_match() =
-      ToSelectorProto("element");
-
-  EXPECT_CALL(mock_service_, OnGetActions(_, _, _, _, _, _))
-      .WillOnce(RunOnceCallback<5>(net::HTTP_OK, Serialize(actions_response)));
-
-  // First check does not find the element, wait for dom waits 1s, then the
-  // element is found, and the action succeeds.
-  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"element"}), _))
-      .WillOnce(Delay(&task_environment_, 2000));
-  executor_->Run(&user_data_, executor_callback_.Get());
-
-  EXPECT_EQ(delegate_.GetStatusMessage(), "1... slow");
 }
 
 TEST_F(ScriptExecutorTest, RunInterrupt) {
