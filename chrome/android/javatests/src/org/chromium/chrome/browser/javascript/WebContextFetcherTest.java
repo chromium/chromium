@@ -10,9 +10,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.chrome.browser.javascript.WebContextFetcher.WebContextFetchResponse;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-
-import java.util.Map;
 
 /**
  * Unit tests for web context fetching java code.
@@ -24,40 +23,61 @@ public class WebContextFetcherTest {
      */
     @Test
     @SmallTest
-    public void testConvertJsonToMap_Successful() throws Exception {
-        Map emptyMap = WebContextFetcher.convertJsonToMap("{}");
-        Assert.assertTrue("Empty json dictionary does not return empty map.", emptyMap.isEmpty());
+    public void testConvertJsonToResponse_Successful() {
+        WebContextFetchResponse emptyResponse = WebContextFetcher.convertJsonToResponse("{}");
+        Assert.assertTrue("Empty json dictionary does not return empty map.",
+                emptyResponse.context.isEmpty());
 
-        Map mapWithSingleKey = WebContextFetcher.convertJsonToMap("{\"testing\": \"onetwothree\"}");
+        WebContextFetchResponse response =
+                WebContextFetcher.convertJsonToResponse("{\"testing\": \"onetwothree\"}");
         Assert.assertEquals("Map with single key did not have correct key/val pair.", "onetwothree",
-                mapWithSingleKey.get("testing"));
+                response.context.get("testing"));
         Assert.assertEquals(
-                "Map with single key had more than one key.", 1, mapWithSingleKey.size());
+                "Map with single key had more than one key.", 1, response.context.size());
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     @SmallTest
-    public void testConvertJsonToMap_AssertionErrorMalformed() {
-        Map unused = WebContextFetcher.convertJsonToMap("14324asdfasc132434");
+    public void testConvertJsonToResponse_AssertionErrorMalformed() {
+        WebContextFetchResponse response =
+                WebContextFetcher.convertJsonToResponse("14324asdfasc132434");
+
+        Assert.assertEquals("Response with error key did not have correct value pair.",
+                "Use JsonReader.setLenient(true) to accept malformed JSON at line 1 column 19",
+                response.error);
+        Assert.assertTrue("Response with error had filled context.", response.context.isEmpty());
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     @SmallTest
-    public void testConvertJsonToMap_AssertionErrorNestedObject() {
-        Map unused = WebContextFetcher.convertJsonToMap(
+    public void testConvertJsonToResponse_AssertionErrorNestedObject() {
+        WebContextFetchResponse response = WebContextFetcher.convertJsonToResponse(
                 "{\"nestedObject\": {\"nestedKey\": \"nestedVal\"}}");
+
+        Assert.assertEquals("Response with error did not have correct message.",
+                "Error reading JSON string value.", response.error);
+        Assert.assertTrue("Response with error had filled context.", response.context.isEmpty());
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     @SmallTest
-    public void testConvertJsonToMap_AssertionErrorNonStringVal() {
-        Map unused = WebContextFetcher.convertJsonToMap("{\"integer\": 123}");
+    public void testConvertJsonToResponse_AssertionErrorNonStringVal() {
+        WebContextFetchResponse response =
+                WebContextFetcher.convertJsonToResponse("{\"integer\": 123}");
+
+        Assert.assertEquals("Response with error  did not have correct message.",
+                "Error reading JSON string value.", response.error);
+        Assert.assertTrue("Response with error had filled context.", response.context.isEmpty());
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     @SmallTest
-    public void testConvertJsonToMap_AssertionErrorArray() {
-        Map unused = WebContextFetcher.convertJsonToMap(
+    public void testConvertJsonToResponse_AssertionErrorArray() {
+        WebContextFetchResponse response = WebContextFetcher.convertJsonToResponse(
                 "{\"nestedArray\":[\"arrayVal1\", \"arrayVal2\"]}");
+
+        Assert.assertEquals("Response with error key did not have correct message.",
+                "Error reading JSON string value.", response.error);
+        Assert.assertTrue("Response with error had filled context.", response.context.isEmpty());
     }
 }

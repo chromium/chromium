@@ -2749,8 +2749,6 @@ static_library("browser") {
       "android/intent_helper.cc",
       "android/intent_helper.h",
       "android/javascript/web_context_fetcher.cc",
-      "android/javascript/web_context_fetcher_util.cc",
-      "android/javascript/web_context_fetcher_util.h",
       "android/locale/locale_manager.cc",
       "android/locale/locale_manager.h",
       "android/locale/locale_template_url_loader.cc",

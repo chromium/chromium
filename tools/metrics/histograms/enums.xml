@@ -41802,6 +41802,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="7" label="Error: invalid image uri"/>
   <int value="8" label="Error: early terminated"/>
   <int value="9" label="Disabled"/>
+  <int value="10" label="Error: additional web context malformed (nonfatal)"/>
 </enum>
 
 <enum name="LensSdkError">
