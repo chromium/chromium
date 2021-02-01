@@ -4272,6 +4272,11 @@ const char kExperimentalAccessibilityChromeVoxAnnotationsName[] =
 const char kExperimentalAccessibilityChromeVoxAnnotationsDescription[] =
     "Allows users to create custom annotations for elements using ChromeVox.";
 
+const char kExperimentalAccessibilityDictationExtensionName[] =
+    "Experimental accessibility dictation extension.";
+const char kExperimentalAccessibilityDictationExtensionDescription[] =
+    "Enables the JavaScript dictation extension.";
+
 const char kExperimentalAccessibilitySwitchAccessTextName[] =
     "Enable enhanced Switch Access text input.";
 const char kExperimentalAccessibilitySwitchAccessTextDescription[] =

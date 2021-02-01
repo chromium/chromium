@@ -2496,6 +2496,9 @@ extern const char kExperimentalAccessibilityChromeVoxAnnotationsDescription[];
 extern const char kExperimentalAccessibilityChromeVoxTutorialName[];
 extern const char kExperimentalAccessibilityChromeVoxTutorialDescription[];
 
+extern const char kExperimentalAccessibilityDictationExtensionName[];
+extern const char kExperimentalAccessibilityDictationExtensionDescription[];
+
 extern const char kExperimentalAccessibilitySwitchAccessTextName[];
 extern const char kExperimentalAccessibilitySwitchAccessTextDescription[];
 

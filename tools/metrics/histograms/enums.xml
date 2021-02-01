@@ -46113,6 +46113,8 @@ from previous Chrome versions.
   <int value="1033597574" label="disable-layer-squashing"/>
   <int value="1036068554" label="enable-android-pay-integration-v2"/>
   <int value="1036565901" label="AssistPersonalInfo:enabled"/>
+  <int value="1036958177"
+      label="enable-experimental-accessibility-dictation-extension"/>
   <int value="1037961753" label="CCTIncognito:disabled"/>
   <int value="1038264914" label="PerDeskShelf:enabled"/>
   <int value="1042202617" label="RemoteCopyReceiver:enabled"/>

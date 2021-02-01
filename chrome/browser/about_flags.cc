@@ -3777,6 +3777,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kVirtualKeyboardBorderedKeyName,
      flag_descriptions::kVirtualKeyboardBorderedKeyDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kVirtualKeyboardBorderedKey)},
+    {"enable-experimental-accessibility-dictation-extension",
+     flag_descriptions::kExperimentalAccessibilityDictationExtensionName,
+     flag_descriptions::kExperimentalAccessibilityDictationExtensionDescription,
+     kOsAll,
+     SINGLE_VALUE_TYPE(
+         ::switches::kEnableExperimentalAccessibilityDictationExtension)},
     {"enable-experimental-accessibility-switch-access-text",
      flag_descriptions::kExperimentalAccessibilitySwitchAccessTextName,
      flag_descriptions::kExperimentalAccessibilitySwitchAccessTextDescription,

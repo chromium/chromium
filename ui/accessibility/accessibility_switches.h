@@ -13,6 +13,8 @@ namespace switches {
 
 AX_BASE_EXPORT extern const char kEnableExperimentalAccessibilityAutoclick[];
 AX_BASE_EXPORT extern const char
+    kEnableExperimentalAccessibilityDictationExtension[];
+AX_BASE_EXPORT extern const char
     kEnableExperimentalAccessibilityLabelsDebugging[];
 AX_BASE_EXPORT extern const char
     kEnableExperimentalAccessibilityLanguageDetection[];
@@ -23,6 +25,9 @@ AX_BASE_EXPORT extern const char
 AX_BASE_EXPORT extern const char
     kEnableExperimentalAccessibilityChromeVoxAnnotations[];
 AX_BASE_EXPORT extern const char kEnableSwitchAccessPointScanning[];
+
+// Returns true if experimental accessibility dictation extension is enabled.
+AX_BASE_EXPORT bool IsExperimentalAccessibilityDictationExtensionEnabled();
 
 // Returns true if experimental accessibility language detection is enabled.
 AX_BASE_EXPORT bool IsExperimentalAccessibilityLanguageDetectionEnabled();
