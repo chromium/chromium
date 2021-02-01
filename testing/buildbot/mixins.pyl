@@ -533,6 +533,13 @@
       },
     },
   },
+  'mac_10.13_or_10.15': {
+    'swarming': {
+      'dimensions': {
+        'os': 'Mac-10.13.6|Mac-10.15',
+      },
+    },
+  },
   'mac_10.14': {
     'swarming': {
       'dimensions': {
