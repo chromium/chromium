@@ -7932,8 +7932,11 @@ void RenderFrameHostImpl::BindPrerenderProcessor(
 
 void RenderFrameHostImpl::CancelPrerendering() {
   DCHECK(base::FeatureList::IsEnabled(blink::features::kPrerender2));
-  // TODO(https://crbug.com/1172065): Handle the case where the page was already
-  // activated.
+  // This function is called from MojoBinderPolicyApplier, which should only be
+  // active during prerendering. It would be an error to call this while not
+  // prerendering, as it could mean an interface request is never resolved for
+  // an active page.
+  DCHECK(is_prerendering_);
   auto* storage_partition_impl =
       static_cast<StoragePartitionImpl*>(GetStoragePartition());
   PrerenderHostRegistry* prerender_host_registry =
