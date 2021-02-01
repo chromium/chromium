@@ -60,8 +60,7 @@ class KeyboardAccessoryModernViewBinder {
             int iconId = item.getSuggestion().getIconId();
             if (item.getFeatureForIPH() != null) {
                 if (item.getFeatureForIPH().equals(
-                            FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE)
-                        && iconId != 0) {
+                            FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE)) {
                     if (iconId != 0) {
                         showHelpBubble(item.getFeatureForIPH(), chipView.getStartIconViewRect(),
                                 mRootViewForIPH, item.getSuggestion().getItemTag());
@@ -74,6 +73,10 @@ class KeyboardAccessoryModernViewBinder {
                 }
             }
             chipView.getPrimaryTextView().setText(item.getSuggestion().getLabel());
+            if (!item.getSuggestion().getItemTag().isEmpty()) {
+                chipView.getPrimaryTextView().setContentDescription(
+                        item.getSuggestion().getLabel() + " " + item.getSuggestion().getItemTag());
+            }
             chipView.getSecondaryTextView().setText(item.getSuggestion().getSublabel());
             chipView.getSecondaryTextView().setVisibility(
                     item.getSuggestion().getSublabel().isEmpty() ? View.GONE : View.VISIBLE);
