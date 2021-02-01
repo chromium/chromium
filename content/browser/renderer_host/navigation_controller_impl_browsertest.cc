@@ -5928,17 +5928,10 @@ IN_PROC_BROWSER_TEST_P(
   }
 }
 
-#if defined(OS_ANDROID)
-#define MAYBE_FrameNavigationEntry_MainFrameRedirectChain_NormalThenCrossSiteNavigations \
-  DISABLED_FrameNavigationEntry_MainFrameRedirectChain_NormalThenCrossSiteNavigations
-#else
-#define MAYBE_FrameNavigationEntry_MainFrameRedirectChain_NormalThenCrossSiteNavigations \
-  FrameNavigationEntry_MainFrameRedirectChain_NormalThenCrossSiteNavigations
-#endif
 // Checks the contents of the redirect chain after cross-site navigations.
 IN_PROC_BROWSER_TEST_P(
     NavigationControllerBrowserTest,
-    MAYBE_FrameNavigationEntry_MainFrameRedirectChain_NormalThenCrossSiteNavigations) {
+    FrameNavigationEntry_MainFrameRedirectChain_NormalThenCrossSiteNavigations) {
   NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
       shell()->web_contents()->GetController());
 
@@ -5973,7 +5966,8 @@ IN_PROC_BROWSER_TEST_P(
     // navigations are always classified as client redirects. So, they start
     // with the previous page's URL in the redirect chain.
     EXPECT_EQ(entry->GetRedirectChain().size(), 2u);
-    if (AreAllSitesIsolatedForTesting()) {
+    if (AreAllSitesIsolatedForTesting() ||
+        CanCrossSiteNavigationsProactivelySwapBrowsingInstances()) {
       // If we change RenderFrameHosts, the previous page's URL can't be
       // obtained from the new renderer's DocumentLoader - we will incorrectly
       // get an empty URL in its place, which will be rewritten by the URL
