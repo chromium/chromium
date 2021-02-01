@@ -5,12 +5,14 @@ rootWebArea
 ++++++++staticText name='This is '
 ++++++++++inlineTextBox name='This is '
 ++++++++genericContainer ignored
-++++++++++staticText name='"'
-++++++++++++inlineTextBox name='"'
+++++++++++genericContainer ignored
+++++++++++++staticText name='"'
+++++++++++++++inlineTextBox name='"'
 ++++++++staticText name='Chromium Blink'
 ++++++++++inlineTextBox name='Chromium Blink'
 ++++++++genericContainer ignored
-++++++++++staticText name='"'
-++++++++++++inlineTextBox name='"'
+++++++++++genericContainer ignored
+++++++++++++staticText name='"'
+++++++++++++++inlineTextBox name='"'
 ++++++++staticText name=' based browser.'
 ++++++++++inlineTextBox name=' based browser.'

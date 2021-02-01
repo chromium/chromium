@@ -2134,6 +2134,11 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
     return true;
   }
 
+  // Include all pseudo element content. Any anonymous subtree is included
+  // from above, in the condition where there is no node.
+  if (GetNode()->IsPseudoElement())
+    return true;
+
   // Use a flag to control whether or not the <html> element is included
   // in the accessibility tree. Either way it's always marked as "ignored",
   // but eventually we want to always include it in the tree to simplify
@@ -2185,7 +2190,7 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
     return true;
 
   // Preserve SVG grouping elements.
-  if (GetNode() && IsA<SVGGElement>(GetNode()))
+  if (IsA<SVGGElement>(GetNode()))
     return true;
 
   // Preserve nodes with language attributes.

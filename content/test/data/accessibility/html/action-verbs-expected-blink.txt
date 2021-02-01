@@ -26,7 +26,8 @@ rootWebArea name='Action verbs'
 ++++++switch name='ARIA Switch' defaultActionVerb=check checkedState=false
 ++++++details
 ++++++++disclosureTriangle collapsed name='Summary' defaultActionVerb=press
-++++++++++staticText ignored name='▸ '
+++++++++++listMarker ignored name='▸ '
+++++++++++++staticText ignored name='▸ '
 ++++++++++staticText name='Summary'
 ++++++++++++inlineTextBox name='Summary'
 ++++++popUpButton collapsed value='Pop-up button' defaultActionVerb=open haspopup=menu

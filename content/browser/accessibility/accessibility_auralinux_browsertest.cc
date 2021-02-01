@@ -1507,18 +1507,15 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
       shell()->web_contents(), ui::kAXModeComplete,
       ax::mojom::Event::kTextSelectionChanged);
 
-  int length = atk_text_get_character_count(ATK_TEXT(heading));
-  for (int i = 0; i < length; i++) {
-    atk_text_set_caret_offset(ATK_TEXT(heading), i);
-
-    // We aren't getting kTextSelectionChanged or kDocumentSelectionChanged for
-    // the following offsets in the generated content. Recheck this after the
-    // crasher bug is fixed.
-    if (i == 1 || i == 6)
-      continue;
-
+  // Caret can't be set inside generated content, it will go to the closest
+  // allowed place. Ordered the targets so that the caret will always actually
+  // move somewhere between steps, and thus the waiter will always be satisfied.
+  std::vector<int> target_offset = {0, 3, 1, 4, 2, 4, 5, 4, 6};
+  std::vector<int> expect_offset = {2, 3, 2, 4, 2, 4, 2, 4, 2};
+  for (size_t i = 0; i < target_offset.size(); i++) {
+    atk_text_set_caret_offset(ATK_TEXT(heading), target_offset[i]);
     waiter.WaitForNotification();
-    ASSERT_EQ(i, atk_text_get_caret_offset(ATK_TEXT(heading)));
+    ASSERT_EQ(expect_offset[i], atk_text_get_caret_offset(ATK_TEXT(heading)));
   }
 
   g_object_unref(heading);

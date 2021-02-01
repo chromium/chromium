@@ -1,0 +1,107 @@
+<style>
+#controlparent::before {
+  content:  "item1" "item2" url(bullet.png);
+}
+</style>
+
+<div id="controlparent">
+  <span id="controlchild">Some Text</span>
+</div>
+
+<style>
+#parent::before {
+  content:  "\25BA" / "code";
+}
+</style>
+<div id="parent">
+  <span id="child">Some Text</span>
+</div>
+
+<style>
+#parentempty::before {
+  content:  "\25BA" / "";
+}
+</style>
+
+<div id="parentempty">
+  <span id="childempty">Some Text</span>
+</div>
+
+<style>
+#imgparent::before {
+  content: url(bullet.png) / "star";
+}
+</style>
+
+<div id="imgparent"class="title">
+  <span id="imgchild">Some Text</span>
+</div>
+
+<style>
+#imgparentempty::before {
+  content: url(bullet.png) / "";
+}
+</style>
+
+<div id="imgparentempty"class="title">
+  <span id="imgchildempty">Some Text</span>
+</div>
+
+<style>
+#divlistparent::before {
+  content: "item1" "item2" url(bullet.png) / "a list of items";
+}
+</style>
+
+<div id="divlistparent" class="title">
+  <span id="divlistchild">Some Text</span>
+</div>
+
+<style>
+#emptylistparent::before {
+  content: url(bullet.png) "item1" "item2" url(bullet.png) / "";
+}
+</style>
+
+<div id="emptylistparent" class="title">
+  <span id="emptylistchild">Some Text</span>
+</div>
+
+<style>
+#firstletterchild::first-letter {
+  color: red;
+  content: "Foo" / "Bar";
+}
+</style>
+
+<div id="firstletterparent">
+  <p id="firstletterchild">Some Text</p>
+</div>
+
+<style>
+#divcontent {
+  content: url(bullet.png) / "alt";
+}
+</style>
+
+<div id="divcontent">Div text content</div>
+
+<!--- The following test cases are merely here to test that the addition of alt
+text support has not altered the default behaviour if the content property is
+incorrectly supplied -->
+
+<style>
+#divdoubleimage {
+  content: url(bullet.png) url(bullet.png) / "alt";
+}
+</style>
+
+<div id="divdoubleimage">DOM Text</div>
+
+<style>
+#divtextcontent {
+  content: "text content replacement" / "alt";
+}
+</style>
+
+<div id="divtextcontent">DOM Text</div>
