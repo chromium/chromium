@@ -24,6 +24,9 @@ const base::FeatureParam<base::TimeDelta>
         "PolicyBlocklistThrottlePolicyLoadTimeout",
         base::TimeDelta::FromSeconds(20)};
 
+const base::Feature kUploadBrowserDeviceIdentifier{
+    "UploadBrowserDeviceIdentifier", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 
 }  // namespace policy

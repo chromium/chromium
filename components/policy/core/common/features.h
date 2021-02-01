@@ -30,6 +30,9 @@ POLICY_EXPORT extern const base::Feature
 POLICY_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kPolicyBlocklistThrottlePolicyLoadTimeout;
 
+// Update browser device identifier during enrollment and fetching policies.
+POLICY_EXPORT extern const base::Feature kUploadBrowserDeviceIdentifier;
+
 }  // namespace features
 }  // namespace policy
 
