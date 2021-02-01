@@ -46,6 +46,11 @@ class VirtualMemoryBlock {
   ~VirtualMemoryBlock() = default;
 
   template <typename T>
+  const T& As() const {
+    return *reinterpret_cast<const T*>(storage_.data());
+  }
+
+  template <typename T>
   T GetFieldValue(std::string field_name) const {
     unsigned long field_type_id;
     unsigned long field_offset;
@@ -89,6 +94,17 @@ class VirtualMemoryBlock {
   unsigned long type_id_ = 0;
 };
 
+template <typename T>
+std::vector<T> ReadVirtualVector(IDebugDataSpaces* data,
+                                 const std::vector<T>& vector) {
+  size_t size = vector.size();
+  std::vector<T> values(size);
+  values.reserve(vector.capacity());
+  data->ReadVirtual(reinterpret_cast<uint64_t>(vector.data()), values.data(),
+                    sizeof(T) * size, nullptr);
+  return values;
+}
+
 }  // namespace
 
 ViewCommand::ViewCommand() = default;
@@ -112,14 +128,30 @@ HRESULT ViewCommand::Execute() {
 
   VirtualMemoryBlock view_block(GetDebugClientAs<IDebugClient>().Get(),
                                 "views!views::View", address);
-  VirtualMemoryBlock bounds_block = view_block.GetFieldMemoryBlock("bounds_");
-  VirtualMemoryBlock origin_block = bounds_block.GetFieldMemoryBlock("origin_");
-  VirtualMemoryBlock size_block = bounds_block.GetFieldMemoryBlock("size_");
-  Printf("Bounds: %d,%d (%dx%d)\n", origin_block.GetFieldValue<int>("x_"),
-         origin_block.GetFieldValue<int>("y_"),
-         size_block.GetFieldValue<int>("width_"),
-         size_block.GetFieldValue<int>("height_"));
-  Printf("Parent: 0x%08x\n", view_block.GetFieldValue<intptr_t>("parent_"));
+
+  if (command_line().HasSwitch("children")) {
+    auto children_block = view_block.GetFieldMemoryBlock("children_");
+    auto& children = children_block.As<std::vector<intptr_t>>();
+
+    Printf("Child Count: %d\n", children.size());
+    std::vector<intptr_t> children_ptrs =
+        ReadVirtualVector(GetDebugClientAs<IDebugDataSpaces>().Get(), children);
+
+    for (auto val : children_ptrs) {
+      Printf("%x ", val);
+    }
+    Printf("\n");
+  } else {
+    VirtualMemoryBlock bounds_block = view_block.GetFieldMemoryBlock("bounds_");
+    VirtualMemoryBlock origin_block =
+        bounds_block.GetFieldMemoryBlock("origin_");
+    VirtualMemoryBlock size_block = bounds_block.GetFieldMemoryBlock("size_");
+    Printf("Bounds: %d,%d (%dx%d)\n", origin_block.GetFieldValue<int>("x_"),
+           origin_block.GetFieldValue<int>("y_"),
+           size_block.GetFieldValue<int>("width_"),
+           size_block.GetFieldValue<int>("height_"));
+    Printf("Parent: 0x%08x\n", view_block.GetFieldValue<intptr_t>("parent_"));
+  }
 
   return S_OK;
 }
