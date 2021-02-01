@@ -254,6 +254,10 @@ SK_API void SkDebugf_FileLine(const char* file,
 #define SK_SUPPORT_LEGACY_CONVEXITY_DIRECTION_CHANGE
 #endif
 
+#ifndef SK_USE_LEGACY_VK_ALLOCATOR_USAGE_NAMES
+#define SK_USE_LEGACY_VK_ALLOCATOR_USAGE_NAMES
+#endif
+
 ///////////////////////// Imported from BUILD.gn and skia_common.gypi
 
 /* In some places Skia can use static initializers for global initialization,
