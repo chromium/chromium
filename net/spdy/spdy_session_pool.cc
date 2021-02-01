@@ -32,7 +32,6 @@
 #include "net/socket/client_socket_handle.h"
 #include "net/spdy/spdy_session.h"
 #include "net/third_party/quiche/src/spdy/core/hpack/hpack_constants.h"
-#include "net/third_party/quiche/src/spdy/core/hpack/hpack_huffman_table.h"
 #include "net/third_party/quiche/src/spdy/core/hpack/hpack_static_table.h"
 
 namespace net {
@@ -538,7 +537,6 @@ void SpdySessionPool::DumpMemoryStats(
       num_active_sessions++;
   }
   total_size +=
-      base::trace_event::EstimateMemoryUsage(spdy::ObtainHpackHuffmanTable()) +
       base::trace_event::EstimateMemoryUsage(spdy::ObtainHpackStaticTable()) +
       base::trace_event::EstimateMemoryUsage(push_promise_index_);
   base::trace_event::MemoryAllocatorDump* dump =

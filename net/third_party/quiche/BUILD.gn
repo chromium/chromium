@@ -29,6 +29,7 @@ source_set("quiche_public_deps") {
 
 source_set("quiche") {
   sources = [
+    "overrides/quiche_platform_impl/quiche_export_impl.h",
     "src/quic/core/quic_error_codes.cc",
     "src/quic/core/quic_error_codes.h",
   ]
@@ -589,8 +590,6 @@ source_set("quiche") {
       "src/spdy/core/hpack/hpack_entry.h",
       "src/spdy/core/hpack/hpack_header_table.cc",
       "src/spdy/core/hpack/hpack_header_table.h",
-      "src/spdy/core/hpack/hpack_huffman_table.cc",
-      "src/spdy/core/hpack/hpack_huffman_table.h",
       "src/spdy/core/hpack/hpack_output_stream.cc",
       "src/spdy/core/hpack/hpack_output_stream.h",
       "src/spdy/core/hpack/hpack_static_table.cc",
@@ -1427,7 +1426,6 @@ source_set("quiche_tests") {
     "src/spdy/core/hpack/hpack_encoder_test.cc",
     "src/spdy/core/hpack/hpack_entry_test.cc",
     "src/spdy/core/hpack/hpack_header_table_test.cc",
-    "src/spdy/core/hpack/hpack_huffman_table_test.cc",
     "src/spdy/core/hpack/hpack_output_stream_test.cc",
     "src/spdy/core/hpack/hpack_round_trip_test.cc",
     "src/spdy/core/hpack/hpack_static_table_test.cc",

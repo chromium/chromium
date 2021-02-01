@@ -77,6 +77,22 @@
 
 #define QUICHE_PLOG_IMPL(severity) DVLOG(1)
 
+#define QUICHE_CHECK_IMPL(condition) CHECK(condition)
+#define QUICHE_CHECK_EQ_IMPL(val1, val2) CHECK_EQ(val1, val2)
+#define QUICHE_CHECK_NE_IMPL(val1, val2) CHECK_NE(val1, val2)
+#define QUICHE_CHECK_LE_IMPL(val1, val2) CHECK_LE(val1, val2)
+#define QUICHE_CHECK_LT_IMPL(val1, val2) CHECK_LT(val1, val2)
+#define QUICHE_CHECK_GE_IMPL(val1, val2) CHECK_GE(val1, val2)
+#define QUICHE_CHECK_GT_IMPL(val1, val2) CHECK_GT(val1, val2)
+
+#define QUICHE_DCHECK_IMPL(condition) DCHECK(condition)
+#define QUICHE_DCHECK_EQ_IMPL(val1, val2) DCHECK_EQ(val1, val2)
+#define QUICHE_DCHECK_NE_IMPL(val1, val2) DCHECK_NE(val1, val2)
+#define QUICHE_DCHECK_LE_IMPL(val1, val2) DCHECK_LE(val1, val2)
+#define QUICHE_DCHECK_LT_IMPL(val1, val2) DCHECK_LT(val1, val2)
+#define QUICHE_DCHECK_GE_IMPL(val1, val2) DCHECK_GE(val1, val2)
+#define QUICHE_DCHECK_GT_IMPL(val1, val2) DCHECK_GT(val1, val2)
+
 namespace quic {
 template <typename T>
 NET_EXPORT_PRIVATE inline std::ostream& operator<<(std::ostream& out,
