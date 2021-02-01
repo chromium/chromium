@@ -308,6 +308,12 @@ const char kPredictionTypeDefaultFramesRatio[] = "0.5";
 const base::Feature kSwipeToMoveCursor{"SwipeToMoveCursor",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
+#if defined(OS_WIN) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || \
+    defined(OS_MAC)
+const base::Feature kUIDebugTools{"ui-debug-tools",
+                                  base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 bool IsSwipeToMoveCursorEnabled() {
   static const bool enabled =
       base::FeatureList::IsEnabled(kSwipeToMoveCursor)

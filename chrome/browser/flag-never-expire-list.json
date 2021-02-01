@@ -93,6 +93,7 @@
   "show-touch-hud",
   "tint-composited-content",
   "top-chrome-touch-ui",
+  "ui-debug-tools",
   "ui-disable-partial-swap",
   "ui-slow-animations",
   "unsafely-treat-insecure-origin-as-secure",

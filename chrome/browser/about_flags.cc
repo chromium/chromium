@@ -7028,6 +7028,17 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(media::kVaapiAV1Decoder)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if defined(OS_WIN) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || \
+    defined(OS_MAC)
+    {
+        "ui-debug-tools",
+        flag_descriptions::kUIDebugToolsName,
+        flag_descriptions::kUIDebugToolsDescription,
+        kOsWin | kOsLinux | kOsMac,
+        FEATURE_VALUE_TYPE(features::kUIDebugTools),
+    },
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

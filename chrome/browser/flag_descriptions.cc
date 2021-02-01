@@ -4989,6 +4989,13 @@ const char kSendWebUIJavaScriptErrorReportsDescription[] =
     "will be sent to Google.";
 #endif
 
+#if defined(OS_WIN) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || \
+    defined(OS_MAC)
+const char kUIDebugToolsName[] = "Debugging tools for UI";
+const char kUIDebugToolsDescription[] =
+    "Enables additional keyboard shortcuts to help debugging.";
+#endif
+
 #if defined(WEBRTC_USE_PIPEWIRE)
 const char kWebrtcPipeWireCapturerName[] = "WebRTC PipeWire support";
 const char kWebrtcPipeWireCapturerDescription[] =

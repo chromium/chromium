@@ -4861,6 +4861,11 @@
     "expiry_milestone": 89
   },
   {
+    "name": "ui-debug-tools",
+    "owners": [ "//ui/views/OWNERS" ],
+    "expiry_milestone": -1
+  },
+  {
     "name": "ui-disable-partial-swap",
     "owners": [ "//components/viz/OWNERS" ],
     // This flag is used for in-the-field debugging of rendering issues,
