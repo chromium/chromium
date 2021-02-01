@@ -298,6 +298,17 @@ def CreateLLDBInitFile(root_dir, out_dir, settings):
             '/google/src/cloud/%s/%s/google3/%s' % (
                 username, workspace_name, shortname)))
 
+    # Append the content of //ios/build/tools/lldbinit.defaults if it exists.
+    tools_dir = os.path.join(root_dir, 'ios', 'build', 'tools')
+    defaults_lldbinit_path = os.path.join(tools_dir, 'lldbinit.defaults')
+    if os.path.isfile(defaults_lldbinit_path):
+      with open(defaults_lldbinit_path) as defaults_lldbinit:
+        for line in defaults_lldbinit:
+          lldbinit.write(line)
+
+    # Append the content of ~/.lldbinit if it exists. Line that look like they
+    # are trying to configure source mapping are skipped as they probably date
+    # back from when setup-gn.py was not generating an .lldbinit file.
     global_lldbinit_path = os.path.join(os.environ['HOME'], '.lldbinit')
     if os.path.isfile(global_lldbinit_path):
       with open(global_lldbinit_path) as global_lldbinit:
