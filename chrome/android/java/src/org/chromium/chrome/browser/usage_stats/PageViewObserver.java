@@ -12,6 +12,8 @@ import android.content.Context;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Log;
+import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
@@ -44,18 +46,21 @@ public class PageViewObserver {
     private final EventTracker mEventTracker;
     private final TokenTracker mTokenTracker;
     private final SuspensionTracker mSuspensionTracker;
+    private final Supplier<TabContentManager> mTabContentManagerSupplier;
 
     private Tab mCurrentTab;
     private String mLastFqdn;
 
     public PageViewObserver(Activity activity, TabModelSelector tabModelSelector,
             EventTracker eventTracker, TokenTracker tokenTracker,
-            SuspensionTracker suspensionTracker) {
+            SuspensionTracker suspensionTracker,
+            Supplier<TabContentManager> tabContentManagerSupplier) {
         mActivity = activity;
         mTabModelSelector = tabModelSelector;
         mEventTracker = eventTracker;
         mTokenTracker = tokenTracker;
         mSuspensionTracker = suspensionTracker;
+        mTabContentManagerSupplier = tabContentManagerSupplier;
         mTabObserver = new EmptyTabObserver() {
             @Override
             public void onShown(Tab tab, @TabSelectionType int type) {
@@ -130,7 +135,7 @@ public class PageViewObserver {
     /** Notify PageViewObserver that {@code fqdn} was just suspended or un-suspended. */
     public void notifySiteSuspensionChanged(String fqdn, boolean isSuspended) {
         if (mCurrentTab == null || !mCurrentTab.isInitialized()) return;
-        SuspendedTab suspendedTab = SuspendedTab.from(mCurrentTab);
+        SuspendedTab suspendedTab = SuspendedTab.from(mCurrentTab, mTabContentManagerSupplier);
         if (fqdn.equals(mLastFqdn) || fqdn.equals(suspendedTab.getFqdn())) {
             if (checkSuspendedTabState(isSuspended, fqdn)) {
                 reportStop();
@@ -174,7 +179,7 @@ public class PageViewObserver {
      * hidden, or it's hidden and should be shown.
      */
     private boolean checkSuspendedTabState(boolean isNewlySuspended, String fqdn) {
-        SuspendedTab suspendedTab = SuspendedTab.from(mCurrentTab);
+        SuspendedTab suspendedTab = SuspendedTab.from(mCurrentTab, mTabContentManagerSupplier);
         // We don't need to do anything in situations where the current state matches the desired;
         // i.e. either the suspended tab is already showing with the correct fqdn, or the suspended
         // tab is hidden and should be hidden.
