@@ -133,17 +133,15 @@ std::ostream& operator<<(std::ostream& out,
 base::android::ScopedJavaLocalRef<jobject>
 Profile::OTRProfileID::ConvertToJavaOTRProfileID(JNIEnv* env) const {
   return Java_OTRProfileID_Constructor(
-      env, base::android::ConvertUTF16ToJavaString(
-               env, base::ASCIIToUTF16(profile_id_)));
+      env, base::android::ConvertUTF8ToJavaString(env, profile_id_));
 }
 
 // static
 Profile::OTRProfileID Profile::OTRProfileID::ConvertFromJavaOTRProfileID(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_otr_profile_id) {
-  return OTRProfileID(
-      base::UTF16ToASCII(base::android::ConvertJavaStringToUTF16(
-          env, Java_OTRProfileID_getProfileID(env, j_otr_profile_id))));
+  return OTRProfileID(base::android::ConvertJavaStringToUTF8(
+      env, Java_OTRProfileID_getProfileID(env, j_otr_profile_id)));
 }
 
 // static
@@ -151,9 +149,8 @@ base::android::ScopedJavaLocalRef<jobject>
 JNI_OTRProfileID_CreateUniqueOTRProfileID(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& j_profile_id_prefix) {
-  Profile::OTRProfileID profile_id =
-      Profile::OTRProfileID::CreateUnique(base::UTF16ToASCII(
-          base::android::ConvertJavaStringToUTF16(env, j_profile_id_prefix)));
+  Profile::OTRProfileID profile_id = Profile::OTRProfileID::CreateUnique(
+      base::android::ConvertJavaStringToUTF8(env, j_profile_id_prefix));
   return profile_id.ConvertToJavaOTRProfileID(env);
 }
 
@@ -165,7 +162,7 @@ base::android::ScopedJavaLocalRef<jobject> JNI_OTRProfileID_GetPrimaryID(
 
 std::string Profile::OTRProfileID::Serialize() const {
   JNIEnv* env = base::android::AttachCurrentThread();
-  return ConvertJavaStringToUTF8(
+  return base::android::ConvertJavaStringToUTF8(
       env, Java_OTRProfileID_serialize(env, ConvertToJavaOTRProfileID(env)));
 }
 #endif
