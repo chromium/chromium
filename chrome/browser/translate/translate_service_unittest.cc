@@ -41,14 +41,16 @@ TEST(TranslateServiceTest, CheckTranslatableURL) {
   GURL chrome_native_url = GURL(chrome_native);
   EXPECT_FALSE(TranslateService::IsTranslatableURL(chrome_native_url));
 
-  // kContentScheme and kFileScheme are Android-specific.
-  std::string content = std::string(url::kContentScheme) + "://";
-  GURL content_url = GURL(content);
-  EXPECT_FALSE(TranslateService::IsTranslatableURL(content_url));
-
   std::string file = std::string(url::kFileScheme) + "://";
   GURL file_url = GURL(file);
-  EXPECT_FALSE(TranslateService::IsTranslatableURL(file_url));
+  EXPECT_TRUE(TranslateService::IsTranslatableURL(file_url));
+
+  // kContentScheme is only used on Android.
+#if defined(OS_ANDROID)
+  std::string content = std::string(url::kContentScheme) + "://";
+  GURL content_url = GURL(content);
+  EXPECT_TRUE(TranslateService::IsTranslatableURL(content_url));
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::string filemanager = std::string(extensions::kExtensionScheme) +
