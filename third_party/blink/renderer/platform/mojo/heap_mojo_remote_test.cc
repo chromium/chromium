@@ -15,39 +15,11 @@
 #include "third_party/blink/renderer/platform/mojo/features.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/mojo_binding_context.h"
+#include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
 
 namespace blink {
 
 namespace {
-
-class MockContext final : public GarbageCollected<MockContext>,
-                          public ContextLifecycleNotifier {
- public:
-  MockContext() = default;
-
-  void AddContextLifecycleObserver(
-      ContextLifecycleObserver* observer) override {
-    observers_.AddObserver(observer);
-  }
-  void RemoveContextLifecycleObserver(
-      ContextLifecycleObserver* observer) override {
-    observers_.RemoveObserver(observer);
-  }
-
-  void NotifyContextDestroyed() {
-    observers_.ForEachObserver([](ContextLifecycleObserver* observer) {
-      observer->NotifyContextDestroyed();
-    });
-  }
-
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(observers_);
-    ContextLifecycleNotifier::Trace(visitor);
-  }
-
- private:
-  HeapObserverSet<ContextLifecycleObserver> observers_;
-};
 
 class ServiceImpl : public sample::blink::Service {
  public:
@@ -69,7 +41,8 @@ class ServiceImpl : public sample::blink::Service {
 template <HeapMojoWrapperMode Mode>
 class RemoteOwner : public GarbageCollected<RemoteOwner<Mode>> {
  public:
-  explicit RemoteOwner(MockContext* context) : remote_(context) {}
+  explicit RemoteOwner(MockContextLifecycleNotifier* context)
+      : remote_(context) {}
   explicit RemoteOwner(HeapMojoRemote<sample::blink::Service, Mode> remote)
       : remote_(std::move(remote)) {}
 
@@ -84,7 +57,7 @@ template <HeapMojoWrapperMode Mode>
 class HeapMojoRemoteDestroyContextBaseTest : public TestSupportingGC {
  protected:
   void SetUp() override {
-    context_ = MakeGarbageCollected<MockContext>();
+    context_ = MakeGarbageCollected<MockContextLifecycleNotifier>();
     owner_ = MakeGarbageCollected<RemoteOwner<Mode>>(context_);
     scoped_refptr<base::NullTaskRunner> null_task_runner =
         base::MakeRefCounted<base::NullTaskRunner>();
@@ -93,7 +66,7 @@ class HeapMojoRemoteDestroyContextBaseTest : public TestSupportingGC {
   }
 
   ServiceImpl impl_;
-  Persistent<MockContext> context_;
+  Persistent<MockContextLifecycleNotifier> context_;
   Persistent<RemoteOwner<Mode>> owner_;
 };
 
@@ -107,7 +80,7 @@ class HeapMojoRemoteDisconnectWithReasonHandlerBaseTest
  protected:
   void SetUp() override {
     CHECK(!disconnected_with_reason_);
-    context_ = MakeGarbageCollected<MockContext>();
+    context_ = MakeGarbageCollected<MockContextLifecycleNotifier>();
     owner_ = MakeGarbageCollected<RemoteOwner<Mode>>(context_);
     scoped_refptr<base::NullTaskRunner> null_task_runner =
         base::MakeRefCounted<base::NullTaskRunner>();
@@ -123,7 +96,7 @@ class HeapMojoRemoteDisconnectWithReasonHandlerBaseTest
   }
 
   ServiceImpl impl_;
-  Persistent<MockContext> context_;
+  Persistent<MockContextLifecycleNotifier> context_;
   Persistent<RemoteOwner<Mode>> owner_;
   base::RunLoop run_loop_;
   bool disconnected_with_reason_ = false;
@@ -133,7 +106,7 @@ template <HeapMojoWrapperMode Mode>
 class HeapMojoRemoteMoveBaseTest : public TestSupportingGC {
  protected:
   void SetUp() override {
-    context_ = MakeGarbageCollected<MockContext>();
+    context_ = MakeGarbageCollected<MockContextLifecycleNotifier>();
     HeapMojoRemote<sample::blink::Service, Mode> remote(context_);
     owner_ = MakeGarbageCollected<RemoteOwner<Mode>>(std::move(remote));
     scoped_refptr<base::NullTaskRunner> null_task_runner =
@@ -143,7 +116,7 @@ class HeapMojoRemoteMoveBaseTest : public TestSupportingGC {
   }
 
   ServiceImpl impl_;
-  Persistent<MockContext> context_;
+  Persistent<MockContextLifecycleNotifier> context_;
   Persistent<RemoteOwner<Mode>> owner_;
 };
 

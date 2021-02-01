@@ -484,6 +484,7 @@ component("platform") {
     "bindings/wrapper_type_info.cc",
     "bindings/wrapper_type_info.h",
     "content_decryption_module_result.h",
+    "context_lifecycle_notifier.cc",
     "context_lifecycle_notifier.h",
     "context_lifecycle_observer.cc",
     "context_lifecycle_observer.h",

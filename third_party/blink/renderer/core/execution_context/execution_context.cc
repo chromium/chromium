@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
+#include "third_party/blink/renderer/platform/context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
@@ -126,7 +127,7 @@ void ExecutionContext::SetLifecycleState(mojom::FrameLifecycleState state) {
   if (lifecycle_state_ == state)
     return;
   lifecycle_state_ = state;
-  context_lifecycle_observer_set_.ForEachObserver(
+  ContextLifecycleNotifier::observers().ForEachObserver(
       [&](ContextLifecycleObserver* observer) {
         if (!observer->IsExecutionContextLifecycleObserver())
           return;
@@ -148,29 +149,14 @@ void ExecutionContext::SetLifecycleState(mojom::FrameLifecycleState state) {
 
 void ExecutionContext::NotifyContextDestroyed() {
   is_context_destroyed_ = true;
-  context_lifecycle_observer_set_.ForEachObserver(
-      [](ContextLifecycleObserver* observer) {
-        observer->NotifyContextDestroyed();
-      });
-  context_lifecycle_observer_set_.Clear();
-}
-
-void ExecutionContext::AddContextLifecycleObserver(
-    ContextLifecycleObserver* observer) {
-  context_lifecycle_observer_set_.AddObserver(observer);
-}
-
-void ExecutionContext::RemoveContextLifecycleObserver(
-    ContextLifecycleObserver* observer) {
-  DCHECK(context_lifecycle_observer_set_.HasObserver(observer));
-  context_lifecycle_observer_set_.RemoveObserver(observer);
+  ContextLifecycleNotifier::NotifyContextDestroyed();
 }
 
 unsigned ExecutionContext::ContextLifecycleStateObserverCountForTesting()
     const {
-  DCHECK(!context_lifecycle_observer_set_.IsIteratingOverObservers());
+  DCHECK(!ContextLifecycleNotifier::observers().IsIteratingOverObservers());
   unsigned lifecycle_state_observers = 0;
-  context_lifecycle_observer_set_.ForEachObserver(
+  ContextLifecycleNotifier::observers().ForEachObserver(
       [&](ContextLifecycleObserver* observer) {
         if (!observer->IsExecutionContextLifecycleObserver())
           return;
@@ -475,7 +461,6 @@ void ExecutionContext::Trace(Visitor* visitor) const {
   visitor->Trace(pending_exceptions_);
   visitor->Trace(csp_delegate_);
   visitor->Trace(timers_);
-  visitor->Trace(context_lifecycle_observer_set_);
   visitor->Trace(origin_trial_context_);
   ContextLifecycleNotifier::Trace(visitor);
   ConsoleLogger::Trace(visitor);

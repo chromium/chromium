@@ -357,10 +357,8 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   }
   network::mojom::IPAddressSpace AddressSpace() const { return address_space_; }
 
-  void AddContextLifecycleObserver(ContextLifecycleObserver*) override;
-  void RemoveContextLifecycleObserver(ContextLifecycleObserver*) override;
   HeapObserverSet<ContextLifecycleObserver>& ContextLifecycleObserverSet() {
-    return context_lifecycle_observer_set_;
+    return ContextLifecycleNotifier::observers();
   }
   unsigned ContextLifecycleStateObserverCountForTesting() const;
 
@@ -454,8 +452,6 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   const Member<ContentSecurityPolicyDelegate> csp_delegate_;
 
   DOMTimerCoordinator timers_;
-
-  HeapObserverSet<ContextLifecycleObserver> context_lifecycle_observer_set_;
 
   // Counter that keeps track of how many window interaction calls are allowed
   // for this ExecutionContext. Callers are expected to call
