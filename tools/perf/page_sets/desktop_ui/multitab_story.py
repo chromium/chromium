@@ -46,4 +46,4 @@ class MultiTabStory(page.Page):
     chrome_trace_config.category_filter.AddIncludedCategory('blink.user_timing')
 
   def GetExtraTracingMetrics(self):
-    return []
+    return ['customMetric']

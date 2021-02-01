@@ -2,7 +2,7 @@
 
 ## Overview
 
-Desktop UI Benchmark is used to measure and monitor Desktop UI performance.
+Desktop UI Benchmark is used to measure and monitor Desktop UI performance based on the [Telemetry](https://chromium.googlesource.com/catapult/+/HEAD/telemetry/README.md) framework.
 It captures important metrics such as
 
 * Initial load time
@@ -43,13 +43,15 @@ tools/perf/run_benchmark run desktop_ui --browser-executable=out/Default/chrome 
 There are 3 ways to add metrics to the benchmarking code
 
 1. Add UMA metrics to your code and include them in the [story definition](../../../../tools/perf/page_sets/desktop_ui/tab_search_story.py). The listed UMA metrics will show up on the result page automatically.
-2. Add C++ trace with name starts with "webui_metric:". Make sure your trace has category "browser" or add other categories that you use to the story definition. For example:
+2. Add C++ trace with name starts with "custom_metric:". For example:
    ```c++
    void Foo::DoWork() {
-     TRACE_EVENT0("browser", "webui_metric:Foo:DoWork");
+     TRACE_EVENT0("browser", "custom_metric:Foo:DoWork");
      ...
    }
    ```
+   This method requires 'customMetric' added to your story definition. If your story extends from [MultiTabStory](../../../../tools/perf/page_sets/desktop_ui/multitab_story.py) it's already been taken care of. Also make sure to enable the trace categories you want to add in your story definition.
+
 3. Add Javascript performance.mark() with names end with ":benchmark_begin" and ":benchmark_end". Time between performance.mark('<YOUR_METRIC_NAME>:benchmark_begin') and performance.mark('<YOUR_METRIC_NAME>:benchmark') will show up as YOUR_METRIC_NAME on the result page. For example:
    ```javascript
    function calc() {
@@ -67,11 +69,21 @@ There are 3 ways to add metrics to the benchmarking code
      });
    }
    ```
+   This method requires 'customMetric' added to your story definition and enable the trace category 'blink.user_timing'. If your story extends from [MultiTabStory](../../../../tools/perf/page_sets/desktop_ui/multitab_story.py) it's already been taken care of.
 
-## Record new stories
+
+## Add new stories
 
 Add new stories to [here](../../../../tools/perf/page_sets/desktop_ui/desktop_ui_stories.py).
 Generally we want to put most of the user journeys in the main story so we only need to run 1 story to verify a CL in most cases. However, if the user journey may affect metrics of other user journeys, you should make it a separate story.
+
+- If your new stories don't need external network requests, you are done now.
+- If your new stories need external network requests and extend from MultiTabStory or other existing stories, add an item to [here](../../../../tools/perf/page_sets/data/desktop_ui.json) to reuse some of the existing recorded stories
+- If your new stories need external network requests that can't be reused from existing stories, follow the next section to record your own stories.
+
+Finally, run the new stories locally to make sure they work, then upload the CL and run a pinpoint job to make sure they work before starting code review.
+
+## Record new stories
 
 Use the following command to record a story
 ```
