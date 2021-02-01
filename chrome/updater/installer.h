@@ -14,6 +14,7 @@
 #include "base/sequence_checker.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "build/build_config.h"
 #include "chrome/updater/persisted_data.h"
 #include "components/update_client/update_client.h"
 
@@ -85,9 +86,17 @@ class Installer final : public update_client::CrxInstaller {
   // creating processes, mounting images, running scripts, and collecting
   // exit codes. The install progress, if it can be collected, is reported by
   // invoking the |progress_callback|.
+#if defined(OS_WIN)
+  Result RunApplicationInstaller(const base::FilePath& app_installer,
+                                 const std::string& arguments,
+                                 ProgressCallback progress_callback);
+#else
+  // TODO(crbug.com/1014630) -  consider changing the function to return
+  // an Installer::Result.
   int RunApplicationInstaller(const base::FilePath& app_installer,
                               const std::string& arguments,
                               ProgressCallback progress_callback);
+#endif  // OS_WIN
 
   // Deletes recursively the install paths not matching the |pv_| version.
   void DeleteOlderInstallPaths();

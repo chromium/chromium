@@ -170,10 +170,12 @@ class CrxInstaller : public base::RefCountedThreadSafe<CrxInstaller> {
  public:
   // Contains the result of the Install operation.
   struct Result {
+    Result() = default;
     explicit Result(int error, int extended_error = 0)
         : error(error), extended_error(extended_error) {}
     explicit Result(InstallError error, int extended_error = 0)
         : error(static_cast<int>(error)), extended_error(extended_error) {}
+
     int error = 0;  // 0 indicates that install has been successful.
     int extended_error = 0;
 

@@ -82,6 +82,7 @@ source_set("lib") {
     "group_policy_manager.cc",
     "group_policy_manager.h",
     "installer.cc",
+    "installer.h",
     "net/net_util.cc",
     "net/net_util.h",
     "net/network.h",
@@ -202,6 +203,7 @@ source_set("updater_tests") {
 
   sources = [
     "group_policy_manager_unittest.cc",
+    "installer_unittest.cc",
     "net/network_unittest.cc",
     "net/proxy_configuration_unittest.cc",
     "net/proxy_info_unittest.cc",

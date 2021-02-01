@@ -236,10 +236,10 @@ int Setup(bool is_machine) {
     install_list->AddCreateRegKeyWorkItem(key, key_path,
                                           WorkItem::kWow64Default);
     install_list->AddSetRegValueWorkItem(
-        key, key_path, WorkItem::kWow64Default, kRegistryValuePV,
+        key, key_path, WorkItem::kWow64Default, kRegValuePV,
         base::ASCIIToUTF16(UPDATER_VERSION_STRING), true);
     install_list->AddSetRegValueWorkItem(
-        key, key_path, WorkItem::kWow64Default, kRegistryValueName,
+        key, key_path, WorkItem::kWow64Default, kRegValueName,
         base::ASCIIToUTF16(PRODUCT_FULLNAME_STRING), true);
   }
 

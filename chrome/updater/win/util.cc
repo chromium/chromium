@@ -25,7 +25,6 @@
 #include "chrome/updater/win/user_info.h"
 
 namespace updater {
-
 namespace {
 
 // The number of iterations to poll if a process is stopped correctly.
@@ -322,42 +321,6 @@ int GetDownloadProgress(int64_t downloaded_bytes, int64_t total_bytes) {
   DCHECK_LE(downloaded_bytes, total_bytes);
   return 100 *
          base::ClampToRange(double{downloaded_bytes} / total_bytes, 0.0, 1.0);
-}
-
-// Reads the installer progress from the registry value at:
-// {HKLM|HKCU}\Software\Google\Update\ClientState\<appid>\InstallerProgress.
-int GetInstallerProgress(const std::string& app_id) {
-  base::string16 subkey;
-  if (!base::UTF8ToUTF16(app_id.c_str(), app_id.size(), &subkey)) {
-    return -1;
-  }
-  constexpr REGSAM kRegSam = KEY_READ | KEY_WOW64_32KEY;
-  base::win::RegKey key(HKEY_CURRENT_USER,
-                        base::ASCIIToUTF16(CLIENT_STATE_KEY).c_str(), kRegSam);
-  if (key.OpenKey(subkey.c_str(), kRegSam) != ERROR_SUCCESS) {
-    return -1;
-  }
-  DWORD progress = 0;
-  if (key.ReadValueDW(kRegistryValueInstallerProgress, &progress) !=
-      ERROR_SUCCESS) {
-    return -1;
-  }
-  return base::ClampToRange(progress, DWORD{0}, DWORD{100});
-}
-
-bool DeleteInstallerProgress(const std::string& app_id) {
-  base::string16 subkey;
-  if (!base::UTF8ToUTF16(app_id.c_str(), app_id.size(), &subkey)) {
-    return false;
-  }
-  constexpr REGSAM kRegSam = KEY_SET_VALUE | KEY_WOW64_32KEY;
-  base::win::RegKey key(HKEY_CURRENT_USER,
-                        base::ASCIIToUTF16(CLIENT_STATE_KEY).c_str(), kRegSam);
-  if (key.OpenKey(subkey.c_str(), kRegSam) != ERROR_SUCCESS) {
-    return false;
-  }
-
-  return key.DeleteValue(kRegistryValueInstallerProgress) == ERROR_SUCCESS;
 }
 
 base::win::ScopedHandle GetUserTokenFromCurrentSessionId() {

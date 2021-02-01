@@ -105,12 +105,6 @@ base::string16 GetRegistryKeyClientStateUpdater();
 // be computed.
 int GetDownloadProgress(int64_t downloaded_bytes, int64_t total_bytes);
 
-// Reads installer progress for |app_id| from registry. The installer progress
-// is written by the application installer. Returns a value in the [0, 100]
-// range or -1 if the install progress is not available.
-int GetInstallerProgress(const std::string& app_id);
-
-bool DeleteInstallerProgress(const std::string& app_id);
 
 // Returns a logged on user token handle from the current session.
 base::win::ScopedHandle GetUserTokenFromCurrentSessionId();

@@ -21,6 +21,7 @@ extern const base::char16 kPrefsAccessMutex[];
 
 // Registry keys and value names.
 #define COMPANY_KEY "Software\\" COMPANY_SHORTNAME_STRING "\\"
+
 // Use |Update| instead of PRODUCT_FULLNAME_STRING for the registry key name
 // to be backward compatible with Google Update / Omaha.
 #define UPDATER_KEY COMPANY_KEY "Update\\"
@@ -32,9 +33,16 @@ extern const base::char16 kPrefsAccessMutex[];
   L"Software\\Policies\\" COMPANY_SHORTNAME_STRING L"\\"
 #define UPDATER_POLICIES_KEY COMPANY_POLICIES_KEY UPDATER_KEY L"\\"
 
-extern const base::char16 kRegistryValuePV[];
-extern const base::char16 kRegistryValueName[];
-extern const base::char16 kRegistryValueInstallerProgress[];
+extern const base::char16 kRegValuePV[];
+extern const base::char16 kRegValueName[];
+
+// Installer API registry names.
+extern const base::char16 kRegValueInstallerError[];
+extern const base::char16 kRegValueInstallerExtraCode1[];
+extern const base::char16 kRegValueInstallerProgress[];
+extern const base::char16 kRegValueInstallerResult[];
+extern const base::char16 kRegValueInstallerResultUIString[];
+extern const base::char16 kRegValueInstallerSuccessLaunchCmdLine[];
 
 extern const base::char16 kWindowsServiceName[];
 

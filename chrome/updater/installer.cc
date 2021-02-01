@@ -179,6 +179,11 @@ Installer::Result Installer::InstallHelper(
     return Result(kErrorMissingRunableFile);
 
   // TODO(crbug.com/1014630): handle the installer API.
+#if defined(OS_WIN)
+  return RunApplicationInstaller(application_installer,
+                                 install_params->arguments,
+                                 std::move(progress_callback));
+#else
   const int exit_code =
       RunApplicationInstaller(application_installer, install_params->arguments,
                               std::move(progress_callback));
@@ -189,6 +194,7 @@ Installer::Result Installer::InstallHelper(
   // time another CrxDataCallback is invoked, which needs updated values.
   return exit_code == 0 ? Result(update_client::InstallError::NONE)
                         : Result(kErrorApplicationInstallerFailed, exit_code);
+#endif  // OS_WIN
 }
 
 void Installer::InstallWithSyncPrimitives(
