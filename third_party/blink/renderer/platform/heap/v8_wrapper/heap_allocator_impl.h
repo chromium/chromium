@@ -92,8 +92,9 @@ class PLATFORM_EXPORT HeapAllocator {
   }
 
   static bool IsIncrementalMarking() {
-    // TODO(1056170): Implement.
-    return false;
+    auto& heap_handle = ThreadState::Current()->cpp_heap().GetHeapHandle();
+    return cppgc::subtle::HeapState::IsMarking(heap_handle) &&
+           !cppgc::subtle::HeapState::IsInAtomicPause(heap_handle);
   }
 
   static void EnterGCForbiddenScope() {

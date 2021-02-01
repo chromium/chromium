@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 #include "v8-profiler.h"
+#include "v8/include/cppgc/heap-consistency.h"
 #include "v8/include/cppgc/prefinalizer.h"
 #include "v8/include/v8-cppgc.h"
 #include "v8/include/v8.h"
@@ -137,6 +138,12 @@ class ThreadState final {
 
   size_t GcAge() const { return gc_age_; }
 
+  bool InAtomicSweepingPause() const {
+    auto& heap_handle = cpp_heap().GetHeapHandle();
+    return cppgc::subtle::HeapState::IsInAtomicPause(heap_handle) &&
+           cppgc::subtle::HeapState::IsSweeping(heap_handle);
+  }
+
  private:
   // Main-thread ThreadState avoids TLS completely by using a regular global.
   // The object is manually managed and should not rely on global ctor/dtor.
@@ -146,7 +153,7 @@ class ThreadState final {
   static base::LazyInstance<WTF::ThreadSpecific<ThreadState*>>::Leaky
       thread_specific_;
 
-  explicit ThreadState(v8::CppHeap&);
+  explicit ThreadState();
   ~ThreadState();
 
   // Handle is the most frequently accessed field as it is required for
