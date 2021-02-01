@@ -59,7 +59,8 @@ void SaveAddressProfileViewTest::CreateViewAndShow() {
   anchor_widget_->Show();
 
   view_ = new SaveAddressProfileView(anchor_widget_->GetContentsView(),
-                                     test_web_contents_.get());
+                                     test_web_contents_.get(),
+                                     /*controller=*/nullptr);
   views::BubbleDialogDelegateView::CreateBubble(view_)->Show();
 }
 

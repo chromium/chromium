@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/autofill/test/test_autofill_bubble_handler.h"
 
+#include "base/notreached.h"
+
 namespace autofill {
 
 TestAutofillBubbleHandler::TestAutofillBubbleHandler() = default;
@@ -35,6 +37,14 @@ SaveUPIBubble* TestAutofillBubbleHandler::ShowSaveUPIBubble(
   if (!save_upi_bubble_)
     save_upi_bubble_ = std::make_unique<TestSaveUPIBubble>();
   return save_upi_bubble_.get();
+}
+
+AutofillBubbleBase* TestAutofillBubbleHandler::ShowSaveAddressProfileBubble(
+    content::WebContents* contents,
+    SaveAddressProfileBubbleController* controller,
+    bool is_user_gesture) {
+  NOTIMPLEMENTED();
+  return nullptr;
 }
 
 void TestAutofillBubbleHandler::OnPasswordSaved() {}

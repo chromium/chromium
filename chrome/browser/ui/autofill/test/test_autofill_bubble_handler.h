@@ -39,6 +39,10 @@ class TestAutofillBubbleHandler : public AutofillBubbleHandler {
   SaveUPIBubble* ShowSaveUPIBubble(
       content::WebContents* contents,
       SaveUPIBubbleController* controller) override;
+  AutofillBubbleBase* ShowSaveAddressProfileBubble(
+      content::WebContents* contents,
+      SaveAddressProfileBubbleController* controller,
+      bool is_user_gesture) override;
   void OnPasswordSaved() override;
 
  private:

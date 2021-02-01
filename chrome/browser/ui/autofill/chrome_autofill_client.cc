@@ -28,6 +28,7 @@
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
+#include "chrome/browser/ui/autofill/address_profiles/save_address_profile_bubble_controller.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/create_card_unmask_prompt_view.h"
 #include "chrome/browser/ui/autofill/payments/credit_card_scanner_controller.h"
@@ -522,7 +523,10 @@ void ChromeAutofillClient::ConfirmSaveAddressProfile(
 #if defined(OS_ANDROID)
   // TODO(crbug.com/1167061): Implement.
 #else
-  // TODO(crbug.com/1167060): Implement.
+  SaveAddressProfileBubbleController::CreateForWebContents(web_contents());
+  SaveAddressProfileBubbleController* controller =
+      SaveAddressProfileBubbleController::FromWebContents(web_contents());
+  controller->OfferSave(profile, std::move(callback));
 #endif
 }
 

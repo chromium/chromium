@@ -45,6 +45,10 @@ class AutofillBubbleHandlerImpl : public AutofillBubbleHandler,
   SaveUPIBubble* ShowSaveUPIBubble(
       content::WebContents* web_contents,
       SaveUPIBubbleController* controller) override;
+  AutofillBubbleBase* ShowSaveAddressProfileBubble(
+      content::WebContents* web_contents,
+      SaveAddressProfileBubbleController* controller,
+      bool is_user_gesture) override;
   void OnPasswordSaved() override;
 
   // PersonalDataManagerObserver:

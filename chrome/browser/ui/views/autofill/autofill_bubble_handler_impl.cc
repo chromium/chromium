@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
 #include "chrome/browser/ui/autofill/payments/save_upi_bubble.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/views/autofill/address_profiles/save_address_profile_view.h"
 #include "chrome/browser/ui/views/autofill/payments/local_card_migration_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/local_card_migration_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/save_card_bubble_views.h"
@@ -119,6 +120,20 @@ SaveUPIBubble* AutofillBubbleHandlerImpl::ShowSaveUPIBubble(
       new SaveUPIOfferBubbleViews(anchor_view, web_contents, controller);
   views::BubbleDialogDelegateView::CreateBubble(bubble);
   bubble->Show();
+  return bubble;
+}
+
+AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveAddressProfileBubble(
+    content::WebContents* web_contents,
+    SaveAddressProfileBubbleController* controller,
+    bool is_user_gesture) {
+  views::View* anchor_view =
+      toolbar_button_provider_->GetAnchorView(PageActionIconType::kSaveCard);
+  SaveAddressProfileView* bubble =
+      new SaveAddressProfileView(anchor_view, web_contents, controller);
+  views::BubbleDialogDelegateView::CreateBubble(bubble);
+  bubble->Show(is_user_gesture ? LocationBarBubbleDelegateView::USER_GESTURE
+                               : LocationBarBubbleDelegateView::AUTOMATIC);
   return bubble;
 }
 

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_ADDRESS_PROFILES_SAVE_ADDRESS_PROFILE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_ADDRESS_PROFILES_SAVE_ADDRESS_PROFILE_VIEW_H_
 
+#include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 
 namespace content {
@@ -16,17 +17,29 @@ class View;
 }
 
 namespace autofill {
+class SaveAddressProfileBubbleController;
 
 // This is the bubble views that is part of the flow for when the user submits a
 // form with an address profile that Autofill has not previously saved.
-class SaveAddressProfileView : public LocationBarBubbleDelegateView {
+class SaveAddressProfileView : public AutofillBubbleBase,
+                               public LocationBarBubbleDelegateView {
  public:
   SaveAddressProfileView(views::View* anchor_view,
-                         content::WebContents* web_contents);
+                         content::WebContents* web_contents,
+                         SaveAddressProfileBubbleController* controller);
 
   // views::WidgetDelegate:
   bool ShouldShowCloseButton() const override;
   base::string16 GetWindowTitle() const override;
+  void WindowClosing() override;
+
+  void Show(DisplayReason reason);
+
+  // AutofillBubbleBase:
+  void Hide() override;
+
+ private:
+  SaveAddressProfileBubbleController* controller_;
 };
 
 }  // namespace autofill
