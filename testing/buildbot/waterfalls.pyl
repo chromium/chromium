@@ -1626,6 +1626,11 @@
         },
         'os_type': 'chromeos',
       },
+      'lacros-amd64-generic-binary-size-rel': {
+        'additional_compile_targets': [
+          'chrome',
+        ],
+      },
       'lacros-amd64-generic-rel': {
         'additional_compile_targets': [
           'chrome',

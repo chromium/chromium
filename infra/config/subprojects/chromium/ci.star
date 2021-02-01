@@ -1656,12 +1656,10 @@ ci.chromiumos_builder(
 )
 
 ci.chromiumos_builder(
-    name = "lacros-amd64-generic-rel",
+    name = "lacros-amd64-generic-binary-size-rel",
     console_view_entry = consoles.console_view_entry(
-        category = "lacros|x64",
-        short_name = "rel",
+        category = "lacros|size",
     ),
-    cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
     properties = {
         # The format of these properties is defined at archive/properties.proto
@@ -1690,6 +1688,16 @@ ci.chromiumos_builder(
             ],
         },
     },
+)
+
+ci.chromiumos_builder(
+    name = "lacros-amd64-generic-rel",
+    console_view_entry = consoles.console_view_entry(
+        category = "lacros|x64",
+        short_name = "rel",
+    ),
+    cq_mirrors_console_view = "mirrors",
+    main_console_view = "main",
 )
 
 ci.chromiumos_builder(
