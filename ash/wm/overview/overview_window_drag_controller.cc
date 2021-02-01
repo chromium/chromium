@@ -760,8 +760,7 @@ void OverviewWindowDragController::SnapWindow(
   DCHECK(!SplitViewController::Get(Shell::GetPrimaryRootWindow())
               ->IsDividerAnimating());
   aura::Window* window = item_->GetWindow();
-  split_view_controller->SnapWindow(window, snap_position,
-                                    /*use_divider_spawn_animation=*/true);
+  split_view_controller->SnapWindow(window, snap_position);
   item_ = nullptr;
   wm::ActivateWindow(window);
 }

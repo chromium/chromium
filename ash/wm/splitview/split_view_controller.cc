@@ -620,8 +620,7 @@ bool SplitViewController::CanSnapWindow(aura::Window* window) const {
 }
 
 void SplitViewController::SnapWindow(aura::Window* window,
-                                     SnapPosition snap_position,
-                                     bool use_divider_spawn_animation) {
+                                     SnapPosition snap_position) {
   DCHECK(window && CanSnapWindow(window));
   DCHECK_NE(snap_position, NONE);
   DCHECK(!is_resizing_);
@@ -664,8 +663,8 @@ void SplitViewController::SnapWindow(aura::Window* window,
       // |window| is currently minimized then it will undergo the unminimizing
       // animation instead. Therefore skip the divider spawn animation if
       // |window| is minimized.
-      if (use_divider_spawn_animation &&
-          !WindowState::Get(window)->IsMinimized()) {
+      if (!WindowState::Get(window)->IsMinimized() &&
+          !window->transform().IsIdentity()) {
         // For the divider spawn animation, at the end of the delay, the divider
         // shall be visually aligned with an edge of |window|. This effect will
         // be more easily achieved after |window| has been snapped and the
@@ -2122,8 +2121,7 @@ void SplitViewController::EndWindowDragImpl(
         window->GetProperty(kTabDraggingSourceWindowKey);
     // Note SnapWindow() might put the previous window that was snapped at the
     // |desired_snap_position| in overview.
-    SnapWindow(window, desired_snap_position,
-               /*use_divider_spawn_animation=*/!initiator_window);
+    SnapWindow(window, desired_snap_position);
     wm::ActivateWindow(window);
 
     if (!was_splitview_active) {
