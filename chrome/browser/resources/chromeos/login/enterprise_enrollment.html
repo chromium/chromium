@@ -19,12 +19,6 @@
         padding: 0;
       }
 
-      #authView {
-        display: block;
-        overflow: hidden;
-        position: static;
-      }
-
       #learnMoreLink {
         display: inline;
       }
@@ -36,79 +30,19 @@
         vertical-align: top;
       }
 
-      #samlNoticeContainer {
-        align-items: center;
-        background: rgb(241, 243, 244); /* #F1F3F4 */
-        box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.17);
-        display: flex;
-        height: 44px;
-        min-height: 0;
-      }
-
-      #samlNoticeMessage {
-        color: rgb(106, 106, 106);
-        font-size: 13px;
-      }
-
       #attributePromptMessage {
         color: black;
       }
-
-      #navigation {
-        color: rgba(0, 0, 0, .54);
-        left: 0;
-        position: absolute;
-        right: 0;
-        top: 0;
-        z-index: 1;
-      }
-
-      #signinFrameContainer {
-        z-index: 10;
-      }
-
-      #samlCloseButton {
-        --cr-icon-button-margin-end: 0;
-        --cr-icon-button-margin-start: 0;
-      }
-
-      /* WebviewScrollShadowsHelper */
-      #authView.can-scroll:not(.is-scrolled):not(.scrolled-to-bottom)::before {
-        @apply --oobe-scroll-shadow-bottom;
-      }
-      #authView.can-scroll.is-scrolled:not(.scrolled-to-bottom)::before {
-        @apply --oobe-scroll-shadow-top-and-bottom;
-      }
-      #authView.is-scrolled.scrolled-to-bottom::before {
-        @apply --oobe-scroll-shadow-top;
-      }
-
     </style>
-    <link rel="stylesheet" href="oobe_popup_overlay.css">
-
     <!-- OAUTH GAIA DIALOG -->
-    <oobe-dialog class="gaia-dialog" role="dialog" for-step="signin"
-        id="step-signin" no-header has-buttons="[[!isSamlSsoVisible_]]"
-        no-footer-padding footer-shrinkable>
-      <div slot="footer" id="signinFrameContainer"
-          class="flex layout vertical">
-        <div id="samlNoticeContainer" class="layout horizontal"
-            hidden="[[!isSamlSsoVisible_]]">
-          <div class="flex layout horizontal center-justified">
-            <span id="samlNoticeMessage"></span>
-          </div>
-          <cr-icon-button id="samlCloseButton" iron-icon="cr:close"
-              on-click="cancel">
-          </cr-icon-button>
-        </div>
-        <webview id="authView" class="flex" name="authView"></webview>
-      </div>
-      <div slot="back-navigation">
-        <oobe-back-button id="signinBackButton"
-            disabled="[[authenticatorDialogDisplayed_]]"
-            on-click="onBackButtonClicked_"></oobe-back-button>
-      </div>
-    </oobe-dialog>
+    <gaia-dialog id="step-signin" class="flex" for-step="signin"
+        auth-flow="{{authFlow_}}"
+        is-saml-sso-visible="[[isSaml_(authFlow_)]]"
+        webview-name="authView"
+        on-backcancel="cancel"
+        on-closesaml="cancel"
+        on-ready="onReady">
+    </gaia-dialog>
 
     <!-- ENROLLMENT IN PROGRESS (SPINNER) DIALOG -->
     <oobe-dialog id="step-working" for-step="working"
@@ -262,10 +196,5 @@
             on-click="submitAttributes_"></oobe-next-button>
       </div>
     </oobe-dialog>
-
-    <div class="popup-overlay"
-        hidden="[[!showPopupOverlay_(authenticatorDialogDisplayed_,
-                                     isSamlSsoVisible_)]]">
-    </div>
   </template>
 </dom-module>

@@ -59,6 +59,9 @@ namespace chromeos {
 
 namespace {
 
+constexpr test::UIPath kEnterprisePrimaryButton = {
+    "enterprise-enrollment", "step-signin", "primary-action-button"};
+
 std::string GetDmTokenFromPolicy(const std::string& blob) {
   enterprise_management::PolicyFetchResponse policy;
   CHECK(policy.ParseFromString(blob));
@@ -128,10 +131,10 @@ class EnrollmentLocalPolicyServerBase : public OobeBaseTest {
     WaitForGaiaPageBackButtonUpdate();
 
     SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserEmail, {"identifier"});
-    SigninFrameJS().TapOn("nextButton");
+    test::OobeJS().ClickOnPath(kEnterprisePrimaryButton);
     SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserPassword,
                                  {"password"});
-    SigninFrameJS().TapOn("nextButton");
+    test::OobeJS().ClickOnPath(kEnterprisePrimaryButton);
   }
 
   std::unique_ptr<content::WindowedNotificationObserver>

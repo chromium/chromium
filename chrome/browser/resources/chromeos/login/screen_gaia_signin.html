@@ -16,13 +16,14 @@
     <style include="oobe-dialog-host"></style>
     <link rel="stylesheet" href="screen_gaia_signin.css">
     <gaia-dialog id="signin-frame-dialog"
-        transparent$="[[isLoadingUiShown_]]" class="flex gaia-dialog"
+        transparent$="[[isLoadingUiShown_]]" class="flex"
         for-step="online-gaia, gaia-loading"
         is-saml-sso-visible="[[isSamlSsoVisible_]]"
         video-enabled="{{videoEnabled_}}"
         auth-flow="{{authFlow}}"
         navigation-enabled="{{navigationEnabled_}}"
         navigation-hidden="[[navigationButtonsHidden_]]"
+        webview-name="signin-frame"
         can-go-back="{{canGaiaGoBack_}}"
         on-backcancel="onBackButtonCancel_"
         on-closesaml="cancel"

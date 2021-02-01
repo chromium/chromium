@@ -93,9 +93,10 @@ constexpr char kAdDomainJoinUnlockedConfig[] = R"!!!(
 constexpr char kEnrollmentUI[] = "enterprise-enrollment";
 constexpr char kAdDialog[] = "step-ad-join";
 
-const test::UIPath kBackButton = {kEnrollmentUI, "signinBackButton"};
+const test::UIPath kBackButton = {kEnrollmentUI, "step-signin",
+                                  "signin-back-button"};
 const test::UIPath kAdRetryButton = {kEnrollmentUI, "adRetryButton"};
-const test::UIPath kWebview = {kEnrollmentUI, "authView"};
+const test::UIPath kWebview = {kEnrollmentUI, "step-signin", "signin-frame"};
 
 const test::UIPath kAdUnlockConfigurationStep = {kEnrollmentUI, kAdDialog,
                                                  "unlockStep"};

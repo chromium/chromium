@@ -69,6 +69,7 @@ Polymer({
     'showAllowlistCheckFailedError',
     'showPinDialog',
     'closePinDialog',
+    'clickPrimaryButtonForTesting',
   ],
 
   properties: {
@@ -568,7 +569,7 @@ Polymer({
         !(data.enterpriseManagedDevice || data.hasDeviceOwner);
     params.isFirstUser = !(data.enterpriseManagedDevice || data.hasDeviceOwner);
     params.obfuscatedOwnerId = data.obfuscatedOwnerId;
-    params.enableGaiaActionButtons = data.enableGaiaActionButtons;
+    params.enableGaiaActionButtons = true;
 
     this.authenticatorParams_ = params;
 

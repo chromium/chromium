@@ -407,7 +407,7 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTest, Basic) {
   ExpectIdentifierPage();
 
   SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserEmail, {"identifier"});
-  SigninFrameJS().TapOn("nextButton");
+  test::OobeJS().ClickOnPath(kPrimaryButton);
   WaitForGaiaPageBackButtonUpdate();
   ExpectPasswordPage();
 
@@ -416,7 +416,7 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTest, Basic) {
 
   SigninFrameJS().TypeIntoPath("[]", {"services"});
   SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserPassword, {"password"});
-  SigninFrameJS().TapOn("nextButton");
+  test::OobeJS().ClickOnPath(kPrimaryButton);
 
   // The login view should be destroyed after the browser window opens.
   ui_test_utils::WaitForBrowserToOpen();
@@ -493,7 +493,7 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTestWithSyncTrustedVaultEnabled,
   ExpectIdentifierPage();
 
   SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserEmail, {"identifier"});
-  SigninFrameJS().TapOn("nextButton");
+  test::OobeJS().ClickOnPath(kPrimaryButton);
   WaitForGaiaPageBackButtonUpdate();
   ExpectPasswordPage();
 
@@ -501,7 +501,7 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTestWithSyncTrustedVaultEnabled,
 
   SigninFrameJS().TypeIntoPath("[]", {"services"});
   SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserPassword, {"password"});
-  SigninFrameJS().TapOn("nextButton");
+  test::OobeJS().ClickOnPath(kPrimaryButton);
 
   Browser* browser = ui_test_utils::WaitForBrowserToOpen();
   test::WaitForPrimaryUserSessionStart();

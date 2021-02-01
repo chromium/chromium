@@ -67,14 +67,6 @@ Polymer({
   properties: {
 
     /**
-     * Indicates if authenticator have shown internal dialog.
-     */
-    authenticatorDialogDisplayed_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
      * Manager of the enrolled domain. Either a domain (foo.com) or an email
      * address (admin@foo.com).
      */
@@ -149,12 +141,11 @@ Polymer({
     },
 
     /**
-     * Whether the SAML SSO page is visible.
+     * Bound to gaia-dialog::authFlow.
      * @private
      */
-    isSamlSsoVisible_: {
-      type: Boolean,
-      value: false,
+    authFlow_: {
+      type: Number,
     },
   },
 
@@ -163,11 +154,6 @@ Polymer({
   },
 
   UI_STEPS: ENROLLMENT_STEP,
-
-  /**
-   * Authenticator object that wraps GAIA webview.
-   */
-  authenticator_: null,
 
   /**
    * We block esc, back button and cancel button until gaia is loaded to
@@ -184,26 +170,28 @@ Polymer({
 
   isManualEnrollment_: undefined,
 
-  /**
-   * Value contained in the last received 'backButton' event.
-   * @type {boolean}
-   * @private
-   */
-  lastBackMessageValue_: false,
+  get authenticator_() {
+    return this.$['step-signin'].getAuthenticator();
+  },
+
+  get authView_() {
+    return this.$['step-signin'].getFrame();
+  },
 
   ready() {
     this.initializeLoginScreen('OAuthEnrollmentScreen', {
       resetAllowed: true,
     });
 
-    let authView = this.$.authView;
-    this.authenticator_ = new cr.login.Authenticator(authView);
-
     // Establish an initial messaging between content script and
     // host script so that content script can message back.
-    authView.addEventListener('loadstop', function(e) {
-      e.target.contentWindow.postMessage('initialMessage', authView.src);
-    });
+    this.authView_.addEventListener('loadstop', function(e) {
+      // Could be null in tests.
+      if (e.target && e.target.contentWindow) {
+        e.target.contentWindow.postMessage(
+            'initialMessage', this.authView_.src);
+      }
+    }.bind(this));
 
     // When we get the advancing focus command message from injected content
     // script, we can execute it on host script context.
@@ -213,14 +201,6 @@ Polymer({
       else if (e.data == 'backwardFocus')
         keyboard.onAdvanceFocus(true);
     });
-
-    this.authenticator_.addEventListener(
-        'ready', (function() {
-                   if (this.uiStep != ENROLLMENT_STEP.SIGNIN)
-                     return;
-                   this.isCancelDisabled = false;
-                   chrome.send('frameLoadingCompleted');
-                 }).bind(this));
 
     this.authenticator_.addEventListener(
         'authCompleted',
@@ -248,37 +228,7 @@ Polymer({
           'oauthEnrollAdUnlockConfiguration', [e.detail.unlock_password]);
     }.bind(this));
 
-    this.authenticator_.addEventListener(
-        'authFlowChange', (function(e) {
-                            var isSAML = this.authenticator_.authFlow ==
-                                cr.login.Authenticator.AuthFlow.SAML;
-                            if (isSAML) {
-                              this.$.samlNoticeMessage.textContent =
-                                  loadTimeData.getStringF(
-                                      'samlNotice',
-                                      this.authenticator_.authDomain);
-                            }
-                            this.isSamlSsoVisible_ = isSAML;
-                            if (Oobe.getInstance().currentScreen == this)
-                              Oobe.getInstance().updateScreenSize(this);
-                            this.lastBackMessageValue_ = false;
-                          }).bind(this));
 
-    this.authenticator_.addEventListener(
-        'backButton', (function(e) {
-                        this.lastBackMessageValue_ = !!e.detail;
-                        this.$.authView.focus();
-                      }).bind(this));
-
-    this.authenticator_.addEventListener(
-        'dialogShown', (function(e) {
-                         this.authenticatorDialogDisplayed_ = true;
-                       }).bind(this));
-
-    this.authenticator_.addEventListener(
-        'dialogHidden', (function(e) {
-                          this.authenticatorDialogDisplayed_ = false;
-                        }).bind(this));
 
     this.authenticator_.insecureContentBlockedCallback =
         (function(url) {
@@ -305,7 +255,7 @@ Polymer({
       // simulated tab events will use the webview tab-stops. Simulated tab
       // events created from the webui treat the entire webview as one tab
       // stop. Real tab events do not do this. See crbug.com/543865.
-      this.$.authView.addContentScripts([{
+      this.authView_.addContentScripts([{
         name: 'injectedTabHandler',
         matches: ['http://*/*', 'https://*/*'],
         js: {code: INJECTED_WEBVIEW_SCRIPT},
@@ -314,8 +264,6 @@ Polymer({
     }
 
     this.authenticator_.setWebviewPartition(data.webviewPartitionName);
-
-    this.isSamlSsoVisible_ = false;
 
     var gaiaParams = {};
     gaiaParams.gaiaUrl = data.gaiaUrl;
@@ -327,6 +275,7 @@ Polymer({
       gaiaParams.emailDomain = data.management_domain;
     }
     gaiaParams.flow = data.flow;
+    gaiaParams.enableGaiaActionButtons = true;
     this.authenticator_.load(
         cr.login.Authenticator.AuthMode.DEFAULT, gaiaParams);
 
@@ -334,7 +283,6 @@ Polymer({
     this.isForced_ = data.is_enrollment_enforced;
     this.isAutoEnroll_ = data.attestationBased;
 
-    this.authenticatorDialogDisplayed_ = false;
     cr.ui.login.invokePolymerMethod(this.$["step-ad-join"], 'onBeforeShow');
     if (!this.uiStep) {
       this.showStep(data.attestationBased ?
@@ -349,14 +297,6 @@ Polymer({
     return OOBE_UI_STATE.ENROLLMENT;
   },
 
-
-  /*
-   * Executed on language change.
-   */
-  updateLocalizedContent: function() {
-    this.$["step-ad-join"].i18nUpdateLocale();
-    this.i18nUpdateLocale();
-  },
 
   /**
    * Shows attribute-prompt step with pre-filled asset ID and
@@ -406,12 +346,9 @@ Polymer({
     this.isCancelDisabled =
         (step === ENROLLMENT_STEP.SIGNIN && !this.isManualEnrollment_) ||
         step === ENROLLMENT_STEP.AD_JOIN || step === ENROLLMENT_STEP.WORKING;
-    this.lastBackMessageValue_ = false;
   },
 
   doReload() {
-    this.lastBackMessageValue_ = false;
-    this.authenticatorDialogDisplayed_ = false;
     this.authenticator_.reload();
   },
 
@@ -463,21 +400,6 @@ Polymer({
   },
 
   /**
-   * Skips the device attribute update,
-   * shows the successful enrollment step.
-   */
-  onBackButtonClicked_() {
-    if (this.uiStep === ENROLLMENT_STEP.SIGNIN) {
-      if (this.lastBackMessageValue_) {
-        this.lastBackMessageValue_ = false;
-        this.$.authView.back();
-      } else {
-        this.cancel();
-      }
-    }
-  },
-
-  /**
    * Shows the learn more dialog.
    */
   onLearnMore_() {
@@ -505,6 +427,13 @@ Polymer({
 
   isEmpty_(str) {
     return !str;
+  },
+
+  onReady() {
+    if (this.uiStep != ENROLLMENT_STEP.SIGNIN)
+      return;
+    this.isCancelDisabled = false;
+    chrome.send('frameLoadingCompleted');
   },
 
   /**
@@ -597,15 +526,11 @@ Polymer({
     this.showStep(ENROLLMENT_STEP.AD_JOIN);
   },
 
-  /**
-   * Whether to show popup overlay under the dialog
-   * @param {boolean} authenticatorDialogDisplayed
-   * @param {boolean} isSamlSsoVisible
-   * @return {boolean} True iff overlay popup should be displayed
-   * @private
+  /*
+   * Whether authFlow is the SAML.
    */
-  showPopupOverlay_(authenticatorDialogDisplayed, isSamlSsoVisible) {
-    return authenticatorDialogDisplayed || isSamlSsoVisible;
+  isSaml_(authFlow) {
+    return authFlow === cr.login.Authenticator.AuthFlow.SAML;
   },
 });
 })();

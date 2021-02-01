@@ -152,6 +152,8 @@ const test::UIPath kSamlNoticeContainer = {"gaia-signin", "signin-frame-dialog",
                                            "saml-notice-container"};
 constexpr test::UIPath kBackButton = {"gaia-signin", "signin-frame-dialog",
                                       "signin-back-button"};
+constexpr test::UIPath kEnterprisePrimaryButton = {
+    "enterprise-enrollment", "step-signin", "primary-action-button"};
 constexpr test::UIPath kSamlCloseButton = {"gaia-signin", "signin-frame-dialog",
                                            "saml-close-button"};
 
@@ -1246,7 +1248,7 @@ void SAMLEnrollmentTest::StartSamlAndWaitForIdpPageLoad(
   auto flow_change_waiter =
       OobeBaseTest::CreateGaiaPageEventWaiter("authFlowChange");
   SigninFrameJS().TypeIntoPath(gaia_email, {"identifier"});
-  SigninFrameJS().TapOn("nextButton");
+  test::OobeJS().ClickOnPath(kEnterprisePrimaryButton);
   flow_change_waiter->Wait();
 }
 

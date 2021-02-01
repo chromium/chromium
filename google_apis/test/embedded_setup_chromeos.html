@@ -12,6 +12,7 @@ gaia.chromeOSLogin.initialized_ = false;
 
 const urlParams = new URLSearchParams(window.location.search);
 const syncTrustedVaultKeysRequestedByClient = !!urlParams.get('szkr');
+const useNativeNavigation = !!urlParams.get('use_native_navigation');
 
 function goFirstPage() {
 console.error('On first page');
@@ -151,6 +152,9 @@ function goNext() {
 }
 
 function onLoad() {
+  if (useNativeNavigation) {
+    document.getElementById("nextButton").remove();
+  }
   gaia.chromeOSLogin.registerHtml5Listener();
 }
 

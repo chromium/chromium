@@ -54,7 +54,7 @@ Polymer({
      */
     navigationEnabled: {
       type: Boolean,
-      value: false,
+      value: true,
       notify: true,
     },
 
@@ -64,6 +64,13 @@ Polymer({
     navigationHidden: {
       type: Boolean,
       value: false,
+    },
+
+    /* Defines name of the webview. Useful for tests. To find Guestview for the
+     * JSChecker.
+     */
+    webviewName: {
+      type: String,
     },
 
     /**
