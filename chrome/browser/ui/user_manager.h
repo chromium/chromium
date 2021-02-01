@@ -10,7 +10,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "components/signin/public/base/signin_metrics.h"
-#include "content/public/browser/web_contents_delegate.h"
 
 namespace base {
 class FilePath;
@@ -90,23 +89,6 @@ class UserManagerProfileDialog {
 
   // Hides the dialog if it is showing.
   static void HideDialog();
-
-  // Abstract base class for performing online reauthentication of profiles in
-  // the User Manager. It is concretely implemented in UserManagerMac and
-  // UserManagerView to specialize the closing of the UI's dialog widgets.
-  class BaseDialogDelegate : public content::WebContentsDelegate {
-   public:
-    BaseDialogDelegate();
-    BaseDialogDelegate(const BaseDialogDelegate&) = delete;
-    BaseDialogDelegate& operator=(const BaseDialogDelegate&) = delete;
-
-    // content::WebContentsDelegate:
-    bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
-                           const content::ContextMenuParams& params) override;
-
-   protected:
-    virtual void CloseDialog() = 0;
-  };
 };
 
 #endif  // CHROME_BROWSER_UI_USER_MANAGER_H_

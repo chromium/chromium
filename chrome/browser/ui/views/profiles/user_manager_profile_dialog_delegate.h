@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "chrome/browser/ui/user_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -31,7 +32,7 @@ class ModalDialogHostObserver;
 
 class UserManagerProfileDialogDelegate
     : public views::DialogDelegateView,
-      public UserManagerProfileDialog::BaseDialogDelegate,
+      public content::WebContentsDelegate,
       public ChromeWebModalDialogManagerDelegate,
       public web_modal::WebContentsModalDialogHost {
  public:
@@ -45,11 +46,14 @@ class UserManagerProfileDialogDelegate
   UserManagerProfileDialogDelegate& operator=(
       const UserManagerProfileDialogDelegate&) = delete;
 
-  // UserManagerProfileDialog::BaseDialogDelegate
-  void CloseDialog() override;
+  void CloseDialog();
 
   // Display the local error message inside login window.
   void DisplayErrorMessage();
+
+  // content::WebContentsDelegate
+  bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
+                         const content::ContextMenuParams& params) override;
 
   // ChromeWebModalDialogManagerDelegate
   web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()

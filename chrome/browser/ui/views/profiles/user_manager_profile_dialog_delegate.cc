@@ -60,6 +60,17 @@ void UserManagerProfileDialogDelegate::DisplayErrorMessage() {
   web_view_->LoadInitialURL(GURL(chrome::kChromeUISigninErrorURL));
 }
 
+bool UserManagerProfileDialogDelegate::HandleContextMenu(
+    content::RenderFrameHost* render_frame_host,
+    const content::ContextMenuParams& params) {
+  // Prevents the context menu from being shown. While the signin page could do
+  // this just with JS, there could be a brief moment before a context menu
+  // handler could be registered when the user could still open a context menu,
+  // so we block the attempt here. Note that the signin page is responsible for
+  // preventing context menus in any <webview> contents it creates.
+  return true;
+}
+
 web_modal::WebContentsModalDialogHost*
 UserManagerProfileDialogDelegate::GetWebContentsModalDialogHost() {
   return this;
