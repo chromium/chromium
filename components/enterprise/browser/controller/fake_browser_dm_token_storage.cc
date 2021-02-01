@@ -25,7 +25,9 @@ FakeBrowserDMTokenStorage::FakeBrowserDMTokenStorage(
                                              dm_token, enrollment_error_option);
 }
 
-FakeBrowserDMTokenStorage::~FakeBrowserDMTokenStorage() = default;
+FakeBrowserDMTokenStorage::~FakeBrowserDMTokenStorage() {
+  BrowserDMTokenStorage::SetForTesting(nullptr);
+}
 
 void FakeBrowserDMTokenStorage::SetClientId(const std::string& client_id) {
   static_cast<MockDelegate*>(delegate_.get())->SetClientId(client_id);
