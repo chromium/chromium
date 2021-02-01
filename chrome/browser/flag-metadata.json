@@ -1074,17 +1074,17 @@
   {
     "name": "download-auto-resumption-native",
     "owners": [ "shaktisahu", "qinmin" ],
-    "expiry_milestone": 89
+    "expiry_milestone": 90
   },
   {
     "name": "download-later",
     "owners": [ "xingliu", "dtrainor" ],
-    "expiry_milestone": 89
+    "expiry_milestone": 92
   },
   {
     "name": "download-later-debug-on-wifi",
     "owners": [ "xingliu", "dtrainor" ],
-    "expiry_milestone": 89
+    "expiry_milestone": 92
   },
   {
     "name": "drive-fs-bidirectional-native-messaging",
@@ -1990,7 +1990,7 @@
   {
     "name": "enable-new-download-backend",
     "owners": [ "shaktisahu", "dtrainor" ],
-    "expiry_milestone": 89
+    "expiry_milestone": 92
   },
   {
     "name": "enable-new-mac-notification-api",
