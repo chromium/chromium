@@ -234,9 +234,10 @@ void OnRGBAReadbackDone(
 }
 
 #if BUILDFLAG(ENABLE_VULKAN)
+// Returns whether SkiaOutputDeviceX11 can be instantiated on this platform.
 bool MayFallBackToSkiaOutputDeviceX11() {
-#if defined(USE_OZNE)
-  if (IsUsingOzonePlatform()) {
+#if defined(USE_OZONE)
+  if (features::IsUsingOzonePlatform()) {
     return ui::OzonePlatform::GetInstance()
         ->GetPlatformProperties()
         .skia_can_fall_back_to_x11;
@@ -1343,10 +1344,10 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
         shared_gpu_deps_->memory_tracker(),
         GetDidSwapBuffersCompleteCallback());
   } else {
-#if defined(USE_X11)
+#if defined(USE_X11) || defined(USE_OZONE_PLATFORM_X11)
     // TODO(sgilhuly): Set up a Vulkan swapchain so that Linux can also use
     // SkiaOutputDeviceDawn.
-    if (!features::IsUsingOzonePlatform()) {
+    if (MayFallBackToSkiaOutputDeviceX11()) {
       output_device_ = SkiaOutputDeviceX11::Create(
           context_state_, dependency_->GetSurfaceHandle(),
           shared_gpu_deps_->memory_tracker(),
