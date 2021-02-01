@@ -51,9 +51,9 @@ void DoProcessMacNotificationResponse(
 
   profileManager->LoadProfile(
       profileId, incognito,
-      base::Bind(&NotificationDisplayServiceImpl::ProfileLoadedCallback,
-                 operation, type, origin, notificationId, actionIndex, reply,
-                 byUser));
+      base::BindOnce(&NotificationDisplayServiceImpl::ProfileLoadedCallback,
+                     operation, type, origin, notificationId, actionIndex,
+                     reply, byUser));
 }
 
 // Implements the version check to determine if alerts are supported. Do not

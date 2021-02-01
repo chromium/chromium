@@ -295,7 +295,7 @@ TEST_F(NotificationPlatformBridgeMacTest, TestGetDisplayed) {
 
   int notification_count = -1;
   bridge->GetDisplayed(
-      profile(), base::Bind(&StoreNotificationCount, &notification_count));
+      profile(), base::BindOnce(&StoreNotificationCount, &notification_count));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, notification_count);
 }

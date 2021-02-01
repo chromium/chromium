@@ -523,13 +523,14 @@ class NotificationPlatformBridgeLinuxImpl
                           this, ConnectionInitializationStatusCode::SUCCESS));
     notification_proxy_->ConnectToSignal(
         kFreedesktopNotificationsName, kSignalActionInvoked,
-        base::Bind(&NotificationPlatformBridgeLinuxImpl::OnActionInvoked, this),
+        base::BindRepeating(
+            &NotificationPlatformBridgeLinuxImpl::OnActionInvoked, this),
         base::BindOnce(&NotificationPlatformBridgeLinuxImpl::OnSignalConnected,
                        this));
     notification_proxy_->ConnectToSignal(
         kFreedesktopNotificationsName, kSignalNotificationClosed,
-        base::Bind(&NotificationPlatformBridgeLinuxImpl::OnNotificationClosed,
-                   this),
+        base::BindRepeating(
+            &NotificationPlatformBridgeLinuxImpl::OnNotificationClosed, this),
         base::BindOnce(&NotificationPlatformBridgeLinuxImpl::OnSignalConnected,
                        this));
   }
@@ -1020,7 +1021,7 @@ class NotificationPlatformBridgeLinuxImpl
     if (!product_logo_file_watcher_->Watch(
             product_logo_file_->file_path(),
             base::FilePathWatcher::Type::kNonRecursive,
-            base::Bind(
+            base::BindRepeating(
                 &NotificationPlatformBridgeLinuxImpl::OnProductLogoFileChanged,
                 this))) {
       product_logo_file_.reset();
