@@ -55,6 +55,7 @@ using testing::NiceMock;
 using testing::StrictMock;
 using CommunicationErrorType = AssistantManagerService::CommunicationErrorType;
 using UserInfo = AssistantManagerService::UserInfo;
+using libassistant::mojom::ServiceState;
 
 namespace {
 
@@ -283,8 +284,7 @@ class AssistantManagerServiceImplTest : public testing::Test {
   void StartAndWaitForRunning() {
     Start();
     WaitForState(AssistantManagerService::STARTED);
-
-    fake_assistant_manager()->device_state_listener()->OnStartFinished();
+    mojom_service_controller().SetState(ServiceState::kRunning);
     WaitForState(AssistantManagerService::RUNNING);
   }
 
@@ -410,11 +410,11 @@ TEST_F(AssistantManagerServiceImplTest,
 }
 
 TEST_F(AssistantManagerServiceImplTest,
-       StateShouldBecomeRunningAfterLibassistantSignalsOnStartFinished) {
+       StateShouldBecomeRunningAfterLibassistantSignalsRunningState) {
   Start();
   WaitForState(AssistantManagerService::STARTED);
 
-  fake_assistant_manager()->device_state_listener()->OnStartFinished();
+  mojom_service_controller().SetState(ServiceState::kRunning);
 
   WaitForState(AssistantManagerService::RUNNING);
 }
@@ -623,7 +623,7 @@ TEST_F(AssistantManagerServiceImplTest, ShouldFireStateObserverWhenStarted) {
 }
 
 TEST_F(AssistantManagerServiceImplTest,
-       ShouldFireStateObserverWhenLibAssistantSignalsOnStartFinished) {
+       ShouldFireStateObserverWhenLibAssistantServiceIsRunning) {
   Start();
   WaitForState(AssistantManagerService::STARTED);
 
@@ -632,7 +632,8 @@ TEST_F(AssistantManagerServiceImplTest,
   EXPECT_CALL(observer,
               OnStateChanged(AssistantManagerService::State::RUNNING));
 
-  fake_assistant_manager()->device_state_listener()->OnStartFinished();
+  mojom_service_controller().SetState(ServiceState::kRunning);
+  WaitForState(AssistantManagerService::RUNNING);
 
   assistant_manager_service()->RemoveStateObserver(&observer);
 }
@@ -679,9 +680,7 @@ TEST_F(AssistantManagerServiceImplTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(features::kAssistantTimersV2);
 
-  Start();
-  WaitForState(AssistantManagerService::STARTED);
-  assistant_manager_service()->OnStartFinished();
+  StartAndWaitForRunning();
 
   EXPECT_CALL(alarm_timer_controller_mock(), OnTimerStateChanged)
       .WillOnce(Invoke([](auto timers) {
@@ -714,9 +713,7 @@ TEST_F(AssistantManagerServiceImplTest,
   // We expect OnTimerStateChanged() to be invoked when starting LibAssistant.
   EXPECT_CALL(alarm_timer_controller_mock(), OnTimerStateChanged).Times(1);
 
-  Start();
-  WaitForState(AssistantManagerService::STARTED);
-  assistant_manager_service()->OnStartFinished();
+  StartAndWaitForRunning();
 
   testing::Mock::VerifyAndClearExpectations(&alarm_timer_controller_mock());
 
@@ -764,9 +761,7 @@ TEST_F(AssistantManagerServiceImplTest,
       }));
 
   // Start LibAssistant.
-  Start();
-  WaitForState(AssistantManagerService::STARTED);
-  assistant_manager_service()->OnStartFinished();
+  StartAndWaitForRunning();
 }
 
 class AssistantManagerMock : public FakeAssistantManager {

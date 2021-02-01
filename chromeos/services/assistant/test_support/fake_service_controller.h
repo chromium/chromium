@@ -8,6 +8,7 @@
 #include <mutex>
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "chromeos/services/libassistant/public/mojom/service_controller.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -74,6 +75,7 @@ class FakeServiceController : public libassistant::mojom::ServiceController {
   // |kNoValue| if an empty vector was passed in.
   std::string gaia_id();
 
+ private:
   // mojom::ServiceController implementation:
   void Initialize(libassistant::mojom::BootupConfigPtr config,
                   mojo::PendingRemote<network::mojom::URLLoaderFactory>
@@ -89,7 +91,6 @@ class FakeServiceController : public libassistant::mojom::ServiceController {
   void SetAuthenticationTokens(
       std::vector<libassistant::mojom::AuthenticationTokenPtr> tokens) override;
 
- private:
   // Mutex taken in |Start| to allow the calls to block if |BlockStartCalls| was
   // called.
   std::mutex start_mutex_;
@@ -106,6 +107,9 @@ class FakeServiceController : public libassistant::mojom::ServiceController {
   State state_ = State::kStopped;
   mojo::Receiver<libassistant::mojom::ServiceController> receiver_;
   mojo::RemoteSet<libassistant::mojom::StateObserver> state_observers_;
+  scoped_refptr<base::SequencedTaskRunner> mojom_task_runner_;
+
+  base::WeakPtrFactory<FakeServiceController> weak_factory_{this};
 };
 }  // namespace assistant
 }  // namespace chromeos

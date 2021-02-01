@@ -288,6 +288,8 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
   assistant_proxy_->Initialize(libassistant_service_host_.get(),
                                std::move(pending_url_loader_factory));
 
+  assistant_proxy_->service_controller().AddAndFireStateObserver(
+      state_observer_receiver_.BindNewPipeAndPassRemote());
   assistant_proxy_->AddSpeechRecognitionObserver(
       speech_recognition_observer_->BindNewPipeAndPassRemote());
 
@@ -443,13 +445,13 @@ void AssistantManagerServiceImpl::RemoveCommunicationErrorObserver(
 }
 
 void AssistantManagerServiceImpl::AddAndFireStateObserver(
-    StateObserver* observer) {
+    AssistantManagerService::StateObserver* observer) {
   state_observers_.AddObserver(observer);
   observer->OnStateChanged(GetState());
 }
 
 void AssistantManagerServiceImpl::RemoveStateObserver(
-    const StateObserver* observer) {
+    const AssistantManagerService::StateObserver* observer) {
   state_observers_.RemoveObserver(observer);
 }
 
@@ -902,6 +904,23 @@ void AssistantManagerServiceImpl::OnCommunicationError(int error_code) {
     observer.OnCommunicationError(type);
 }
 
+void AssistantManagerServiceImpl::OnStateChanged(
+    libassistant::mojom::ServiceState new_state) {
+  using libassistant::mojom::ServiceState;
+
+  DVLOG(1) << "Libassistant service state changed to " << new_state;
+  switch (new_state) {
+    case ServiceState::kStarted:
+      OnServiceStarted();
+      break;
+    case ServiceState::kRunning:
+      OnServiceRunning();
+      break;
+    case ServiceState::kStopped:
+      break;
+  }
+}
+
 void AssistantManagerServiceImpl::InitAssistant(
     const base::Optional<UserInfo>& user,
     const std::string& locale) {
@@ -910,23 +929,17 @@ void AssistantManagerServiceImpl::InitAssistant(
   service_controller().Start(
       action_module_.get(),
       /*assistant_manager_delegate=*/this,
-      /*conversation_state_listener=*/this,
-      /*device_state_listener=*/this, bootup_config_.Clone(), locale,
+      /*conversation_state_listener=*/this, bootup_config_.Clone(), locale,
       GetLocaleOrDefault(assistant_state()->locale().value()),
-      spoken_feedback_enabled_, ToAuthTokensOrEmpty(user),
-      base::BindOnce(&AssistantManagerServiceImpl::PostInitAssistant,
-                     weak_factory_.GetWeakPtr()));
+      spoken_feedback_enabled_, ToAuthTokensOrEmpty(user));
 }
 
 base::Thread& AssistantManagerServiceImpl::GetBackgroundThreadForTesting() {
   return background_thread();
 }
 
-void AssistantManagerServiceImpl::PostInitAssistant() {
-  DCHECK(main_task_runner()->RunsTasksInCurrentSequence());
+void AssistantManagerServiceImpl::OnServiceStarted() {
   DCHECK_EQ(GetState(), State::STARTING);
-
-  DCHECK(IsServiceStarted());
 
   const base::TimeDelta time_since_started =
       base::TimeTicks::Now() - started_time_;
@@ -941,14 +954,17 @@ void AssistantManagerServiceImpl::PostInitAssistant() {
 }
 
 bool AssistantManagerServiceImpl::IsServiceStarted() const {
-  return service_controller().IsStarted();
+  switch (state_) {
+    case State::STOPPED:
+    case State::STARTING:
+      return false;
+    case State::STARTED:
+    case State::RUNNING:
+      return true;
+  }
 }
 
-// This method runs on the LibAssistant thread.
-// This method is triggered as the callback of libassistant bootup checkin.
-void AssistantManagerServiceImpl::OnStartFinished() {
-  ENSURE_MAIN_THREAD(&AssistantManagerServiceImpl::OnStartFinished);
-
+void AssistantManagerServiceImpl::OnServiceRunning() {
   // It is possible the |assistant_manager()| was destructed before the
   // rescheduled main thread task got a chance to run. We check this and also
   // try to avoid double run by checking |GetState()|.

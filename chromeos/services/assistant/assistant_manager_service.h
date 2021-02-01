@@ -36,6 +36,9 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerService
     STOPPED = 0,
     // Start has been called but libassistant creation is still in progress.
     // Calling |assistant_manager()| will still return a nullptr.
+    // TODO(b/171748795): I think we no longer need this state once
+    // Libassistant has migrated to a mojom service (in fact, we should be able
+    // to remove this enum and use chromeos::libassistant::mojom::ServiceState).
     STARTING = 1,
     // The service is started, libassistant has been created, but libassistant
     // is not ready yet to take requests.

@@ -103,8 +103,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
       public ::chromeos::assistant::action::AssistantActionObserver,
       public assistant_client::ConversationStateListener,
       public assistant_client::AssistantManagerDelegate,
-      public assistant_client::DeviceStateListener,
-      public AppListEventSubscriber {
+      public AppListEventSubscriber,
+      private libassistant::mojom::StateObserver {
  public:
   // |service| owns this class and must outlive this class.
   AssistantManagerServiceImpl(
@@ -136,8 +136,10 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
       CommunicationErrorObserver* observer) override;
   void RemoveCommunicationErrorObserver(
       const CommunicationErrorObserver* observer) override;
-  void AddAndFireStateObserver(StateObserver* observer) override;
-  void RemoveStateObserver(const StateObserver* observer) override;
+  void AddAndFireStateObserver(
+      AssistantManagerService::StateObserver* observer) override;
+  void RemoveStateObserver(
+      const AssistantManagerService::StateObserver* observer) override;
   void SyncDeviceAppsStatus() override;
   void UpdateInternalMediaPlayerStatus(
       media_session::mojom::MediaSessionAction action) override;
@@ -201,9 +203,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   // Last search source will be cleared after it is retrieved.
   std::string GetLastSearchSource() override;
 
-  // assistant_client::DeviceStateListener overrides:
-  void OnStartFinished() override;
-
   // AppListEventSubscriber overrides:
   void OnAndroidAppListRefreshed(
       const std::vector<AndroidAppInfo>& apps_info) override;
@@ -220,9 +219,13 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   base::Thread& GetBackgroundThreadForTesting();
 
  private:
+  // libassistant::mojom::StateObserver implementation:
+  void OnStateChanged(libassistant::mojom::ServiceState new_state) override;
+
   void InitAssistant(const base::Optional<UserInfo>& user,
                      const std::string& locale);
-  void PostInitAssistant();
+  void OnServiceStarted();
+  void OnServiceRunning();
   bool IsServiceStarted() const;
 
   void OnAlarmTimerStateChanged();
@@ -292,6 +295,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   std::unique_ptr<MediaHost> media_host_;
   std::unique_ptr<SpeechRecognitionObserverWrapper>
       speech_recognition_observer_;
+  mojo::Receiver<chromeos::libassistant::mojom::StateObserver>
+      state_observer_receiver_{this};
 
   bool spoken_feedback_enabled_ = false;
 
@@ -320,7 +325,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
                           &DeviceActions::RemoveAppListEventSubscriber>
       scoped_app_list_event_subscriber_{this};
   base::ObserverList<CommunicationErrorObserver> error_observers_;
-  base::ObserverList<StateObserver> state_observers_;
+  base::ObserverList<AssistantManagerService::StateObserver> state_observers_;
 
   base::WeakPtrFactory<AssistantManagerServiceImpl> weak_factory_;
 

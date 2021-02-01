@@ -46,7 +46,6 @@ struct StartArguments {
   assistant_client::ActionModule* action_module;
   assistant_client::AssistantManagerDelegate* assistant_manager_delegate;
   assistant_client::ConversationStateListener* conversation_state_listener;
-  assistant_client::DeviceStateListener* device_state_listener;
 };
 
 void FillServerExperimentIds(std::vector<std::string>* server_experiment_ids) {
@@ -84,7 +83,6 @@ void InitializeAssistantManager(
       arguments.assistant_manager_delegate);
   assistant_manager->AddConversationStateListener(
       arguments.conversation_state_listener);
-  assistant_manager->AddDeviceStateListener(arguments.device_state_listener);
   SetServerExperiments(assistant_manager_internal);
 }
 
@@ -112,11 +110,7 @@ ServiceControllerProxy::ServiceControllerProxy(
     : host_(host),
       url_loader_factory_(network::SharedURLLoaderFactory::Create(
           std::move(pending_url_loader_factory))),
-      service_controller_remote_(std::move(client)),
-      state_observer_receiver_(this) {
-  service_controller_remote_->AddAndFireStateObserver(
-      state_observer_receiver_.BindNewPipeAndPassRemote());
-}
+      service_controller_remote_(std::move(client)) {}
 
 ServiceControllerProxy::~ServiceControllerProxy() = default;
 
@@ -124,24 +118,17 @@ void ServiceControllerProxy::Start(
     assistant_client::ActionModule* action_module,
     assistant_client::AssistantManagerDelegate* assistant_manager_delegate,
     assistant_client::ConversationStateListener* conversation_state_listener,
-    assistant_client::DeviceStateListener* device_state_listener,
     BootupConfigPtr bootup_config,
     const std::string& locale,
     const std::string& locale_override,
     bool spoken_feedback_enabled,
-    const AuthTokens& auth_tokens,
-    base::OnceClosure done_callback) {
-  // Start can only be called once (unless Stop() was called).
-  DCHECK_EQ(state_, State::kStopped);
-  state_ = State::kStarting;
-
+    const AuthTokens& auth_tokens) {
   // We need to initialize the |AssistantManager| once it's created and before
   // it's started, so we register a callback to do just that.
   StartArguments arguments;
   arguments.action_module = action_module;
   arguments.assistant_manager_delegate = assistant_manager_delegate;
   arguments.conversation_state_listener = conversation_state_listener;
-  arguments.device_state_listener = device_state_listener;
   host_->SetInitializeCallback(
       base::BindOnce(InitializeAssistantManager, std::move(arguments)));
 
@@ -152,19 +139,10 @@ void ServiceControllerProxy::Start(
   UpdateInternalOptions(locale, spoken_feedback_enabled);
   SetAuthTokens(auth_tokens);
   service_controller_remote_->Start();
-
-  on_start_done_callback_ = std::move(done_callback);
 }
 
 void ServiceControllerProxy::Stop() {
-  // We can not cleanly stop if we're still starting.
-  DCHECK_NE(state_, State::kStarting);
-  state_ = State::kStopped;
-
   service_controller_remote_->Stop();
-  // display_connection_ is used by the assistant manager and can only be
-  // deleted once we have confirmation the assistant manager is gone.
-  // so we do not reset it here but in |OnStateChanged| instead.
 }
 
 void ServiceControllerProxy::UpdateInternalOptions(
@@ -179,51 +157,9 @@ void ServiceControllerProxy::SetAuthTokens(const AuthTokens& tokens) {
       ToMojomAuthenticationTokens(tokens));
 }
 
-bool ServiceControllerProxy::IsStarted() const {
-  return state_ == State::kStarted;
-}
-
-void ServiceControllerProxy::OnStateChanged(ServiceState new_state) {
-  DVLOG(1) << "Libassistant service state changed to " << new_state;
-
-  switch (new_state) {
-    case ServiceState::kStarted:
-      FinishCreatingAssistant();
-      break;
-    case ServiceState::kRunning:
-      NOTIMPLEMENTED();
-      break;
-    case ServiceState::kStopped:
-      break;
-  }
-}
-
-assistant_client::AssistantManager*
-ServiceControllerProxy::assistant_manager() {
-  auto* api = assistant::LibassistantV1Api::Get();
-  return api ? api->assistant_manager() : nullptr;
-}
-
-assistant_client::AssistantManagerInternal*
-ServiceControllerProxy::assistant_manager_internal() {
-  auto* api = assistant::LibassistantV1Api::Get();
-  return api ? api->assistant_manager_internal() : nullptr;
-}
-
-void ServiceControllerProxy::FinishCreatingAssistant() {
-  if (state_ == State::kStopped) {
-    // We can come here if the system went into shutdown while the mojom
-    // service was busy starting Libassistant.
-    // This means the |AssistantManager| could be destroyed at any second,
-    // so we simply clean up and bail out.
-    on_start_done_callback_.reset();
-    return;
-  }
-
-  DCHECK(on_start_done_callback_.has_value());
-
-  state_ = State::kStarted;
-  std::move(on_start_done_callback_.value()).Run();
+void ServiceControllerProxy::AddAndFireStateObserver(
+    ::mojo::PendingRemote<libassistant::mojom::StateObserver> observer) {
+  service_controller_remote_->AddAndFireStateObserver(std::move(observer));
 }
 
 mojo::PendingRemote<network::mojom::URLLoaderFactory>
