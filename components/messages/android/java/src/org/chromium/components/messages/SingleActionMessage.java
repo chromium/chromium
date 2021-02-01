@@ -22,7 +22,7 @@ import org.chromium.ui.util.AccessibilityUtil;
  */
 public class SingleActionMessage implements MessageStateHandler {
     private static final long DURATION = 10 * DateUtils.SECOND_IN_MILLIS;
-    private static final long DURATION_ON_A11Y = 20 * DateUtils.SECOND_IN_MILLIS;
+    private static final long DURATION_ON_A11Y = 30 * DateUtils.SECOND_IN_MILLIS;
 
     private MessageBannerCoordinator mMessageBanner;
     private MessageBannerView mView;
