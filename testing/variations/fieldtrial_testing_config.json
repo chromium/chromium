@@ -7724,6 +7724,21 @@
             ]
         }
     ],
+    "WebRtcThermalResource-ChromeOS": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebRtcThermalResource"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebSocketReassembleShortMessages": [
         {
             "platforms": [
