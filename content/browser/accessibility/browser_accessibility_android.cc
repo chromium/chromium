@@ -560,23 +560,7 @@ base::string16 BrowserAccessibilityAndroid::GetInnerText() const {
 
   // This is called from IsLeaf, so don't call PlatformChildCount
   // from within this!
-  // Plain text fields wrap their static text and inline text boxes in
-  // generic containers, and some, like input type=search, wrap the wrapper as
-  // well. Structure is like this:
-  // Text field
-  // -- Generic container
-  // ---- Generic container  (optional, only occurs in some controls)
-  // ------ Static text   <-- (optional, does not exist if field is empty)
-  // -------- Inline text box children (can be multiple)
-  // ------ Line Break (optional,  a placeholder break element if the text data
-  //                    ends with '\n' or '\r')
-  // |kGenericContainer| is a generic container for flow content that by itself
-  // does not represent anything, so we should query their child nodes instead.
-  // TODO(https://crbug.com/1171541) We still can't |GetInnerText| from
-  // <input type=date/time> which should be available.
-  if (text.empty() && ((GetRole() == ax::mojom::Role::kGenericContainer &&
-                        BrowserAccessibility::IsChildOfLeaf()) ||
-                       HasOnlyTextChildren() ||
+  if (text.empty() && (HasOnlyTextChildren() ||
                        (IsFocusable() && HasOnlyTextAndImageChildren()))) {
     for (auto it = InternalChildrenBegin(); it != InternalChildrenEnd(); ++it) {
       text +=

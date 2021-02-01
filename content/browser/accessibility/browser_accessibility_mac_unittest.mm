@@ -103,7 +103,7 @@ class BrowserAccessibilityMacTest : public ui::CocoaTest {
     child2.role = ax::mojom::Role::kHeading;
 
     manager_.reset(new BrowserAccessibilityManagerMac(
-        MakeAXTreeUpdate({root_, child1, child2}), nullptr));
+        MakeAXTreeUpdate(root_, child1, child2), nullptr));
     accessibility_.reset(
         [ToBrowserAccessibilityCocoa(manager_->GetRoot()) retain]);
   }
@@ -176,7 +176,7 @@ TEST_F(BrowserAccessibilityMacTest, TestComputeTextEdit) {
   root_.id = 1;
   root_.role = ax::mojom::Role::kTextField;
   manager_.reset(
-      new BrowserAccessibilityManagerMac(MakeAXTreeUpdate({root_}), nullptr));
+      new BrowserAccessibilityManagerMac(MakeAXTreeUpdate(root_), nullptr));
   accessibility_.reset(
       [ToBrowserAccessibilityCocoa(manager_->GetRoot()) retain]);
 

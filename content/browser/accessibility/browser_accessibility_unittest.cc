@@ -56,7 +56,7 @@ TEST_F(BrowserAccessibilityTest, TestCanFireEvents) {
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate({root, para1, text1}),
+          MakeAXTreeUpdate(root, para1, text1),
           test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibility* root_obj = manager->GetRoot();
@@ -321,7 +321,7 @@ TEST_F(BrowserAccessibilityTest, GetInnerTextRangeBoundsRect) {
 
   std::unique_ptr<BrowserAccessibilityManager> browser_accessibility_manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate({root, static_text, inline_text1, inline_text2}),
+          MakeAXTreeUpdate(root, static_text, inline_text1, inline_text2),
           test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibility* root_accessible =
@@ -392,267 +392,6 @@ TEST_F(BrowserAccessibilityTest, GetInnerTextRangeBoundsRect) {
 #endif
 }
 
-TEST_F(BrowserAccessibilityTest, GetInnerTextRangeBoundsRectDate) {
-  // <input type="date" value="2017-01-01">
-  // rootWebArea
-  // ++date "2017-01-01"
-  // ++++genericContainer
-  // ++++++genericContainer
-  // ++++++++spinButton "01"
-  // ++++++++++staticText "01"
-  // ++++++++++++inlineTextBox "01"
-  // ++++++++staticText "/"
-  // ++++++++++inlineTextBox "/"
-  // ++++++++spinButton "01"
-  // ++++++++++staticText "01"
-  // ++++++++++++inlineTextBox "01"
-  // ++++++++staticText "/"
-  // ++++++++++inlineTextBox "/"
-  // ++++++++spinButton "2017"
-  // ++++++++++staticText "2017"
-  // ++++++++++++inlineTextBox "2017"
-  // ++++popupButton
-  ui::AXNodeData root;
-  root.id = 1;
-  root.role = ax::mojom::Role::kRootWebArea;
-  root.relative_bounds.bounds = gfx::RectF(0, 0, 800, 600);
-
-  ui::AXNodeData date;
-  date.id = 2;
-  date.role = ax::mojom::Role::kDate;
-  date.SetValue("2017-01-01");
-  date.relative_bounds.bounds = gfx::RectF(100, 100, 300, 20);
-  root.child_ids = {date.id};
-
-  ui::AXNodeData container1;
-  container1.id = 3;
-  container1.role = ax::mojom::Role::kGenericContainer;
-  container1.relative_bounds.bounds = date.relative_bounds.bounds;
-
-  ui::AXNodeData popup_button;
-  popup_button.id = 20;
-  popup_button.role = ax::mojom::Role::kPopUpButton;
-  popup_button.relative_bounds.bounds = gfx::RectF(200, 100, 10, 20);
-  date.child_ids = {container1.id, popup_button.id};
-
-  ui::AXNodeData container2;
-  container2.id = 4;
-  container2.role = ax::mojom::Role::kGenericContainer;
-  container2.relative_bounds.bounds = container1.relative_bounds.bounds;
-  container1.child_ids = {container2.id};
-
-  ui::AXNodeData spin_button_month;
-  spin_button_month.id = 5;
-  spin_button_month.role = ax::mojom::Role::kSpinButton;
-  spin_button_month.SetValue("01");
-  spin_button_month.relative_bounds.bounds = gfx::RectF(100, 100, 20, 20);
-
-  ui::AXNodeData static_text_slash1;
-  static_text_slash1.id = 8;
-  static_text_slash1.role = ax::mojom::Role::kStaticText;
-  static_text_slash1.SetName("/");
-  static_text_slash1.relative_bounds.bounds = gfx::RectF(120, 100, 10, 20);
-
-  ui::AXNodeData spin_button_day;
-  spin_button_day.id = 10;
-  spin_button_day.role = ax::mojom::Role::kSpinButton;
-  spin_button_day.SetValue("01");
-  spin_button_day.relative_bounds.bounds = gfx::RectF(130, 100, 20, 20);
-
-  ui::AXNodeData static_text_slash2;
-  static_text_slash2.id = 13;
-  static_text_slash2.role = ax::mojom::Role::kStaticText;
-  static_text_slash2.SetName("/");
-  static_text_slash2.relative_bounds.bounds = gfx::RectF(150, 100, 10, 20);
-
-  ui::AXNodeData spin_button_year;
-  spin_button_year.id = 15;
-  spin_button_year.role = ax::mojom::Role::kSpinButton;
-  spin_button_year.SetValue("2017");
-  spin_button_year.relative_bounds.bounds = gfx::RectF(160, 100, 40, 20);
-  container2.child_ids = {spin_button_month.id, static_text_slash1.id,
-                          spin_button_day.id, static_text_slash2.id,
-                          spin_button_year.id};
-
-  ui::AXNodeData static_text_month;
-  static_text_month.id = 6;
-  static_text_month.role = ax::mojom::Role::kStaticText;
-  static_text_month.SetName("01");
-  static_text_month.relative_bounds.bounds = gfx::RectF(100, 100, 20, 20);
-  spin_button_month.child_ids = {static_text_month.id};
-
-  ui::AXNodeData inline_text_month;
-  inline_text_month.id = 7;
-  inline_text_month.role = ax::mojom::Role::kInlineTextBox;
-  inline_text_month.SetName("01");
-  inline_text_month.relative_bounds.bounds =
-      static_text_month.relative_bounds.bounds;
-  inline_text_month.AddIntListAttribute(
-      ax::mojom::IntListAttribute::kCharacterOffsets, {10, 20});
-  inline_text_month.SetTextDirection(ax::mojom::WritingDirection::kLtr);
-  static_text_month.child_ids = {inline_text_month.id};
-
-  ui::AXNodeData inline_text_slash1;
-  inline_text_slash1.id = 9;
-  inline_text_slash1.role = ax::mojom::Role::kInlineTextBox;
-  inline_text_slash1.SetName("/");
-  inline_text_slash1.relative_bounds.bounds =
-      static_text_slash1.relative_bounds.bounds;
-  inline_text_slash1.SetTextDirection(ax::mojom::WritingDirection::kLtr);
-  inline_text_slash1.AddIntListAttribute(
-      ax::mojom::IntListAttribute::kCharacterOffsets, {10});
-  static_text_slash1.child_ids = {inline_text_slash1.id};
-
-  ui::AXNodeData static_text_day;
-  static_text_day.id = 11;
-  static_text_day.role = ax::mojom::Role::kStaticText;
-  static_text_day.SetName("01");
-  static_text_day.relative_bounds.bounds =
-      spin_button_day.relative_bounds.bounds;
-  spin_button_day.child_ids = {static_text_day.id};
-
-  ui::AXNodeData inline_text_day;
-  inline_text_day.id = 12;
-  inline_text_day.role = ax::mojom::Role::kInlineTextBox;
-  inline_text_day.SetName("01");
-  inline_text_day.relative_bounds.bounds =
-      static_text_day.relative_bounds.bounds;
-  inline_text_day.SetTextDirection(ax::mojom::WritingDirection::kLtr);
-  inline_text_day.AddIntListAttribute(
-      ax::mojom::IntListAttribute::kCharacterOffsets, {10, 20});
-  static_text_day.child_ids = {inline_text_day.id};
-
-  ui::AXNodeData inline_text_slash2;
-  inline_text_slash2.id = 14;
-  inline_text_slash2.role = ax::mojom::Role::kInlineTextBox;
-  inline_text_slash2.SetName("/");
-  inline_text_slash2.relative_bounds.bounds =
-      static_text_slash2.relative_bounds.bounds;
-  inline_text_slash2.SetTextDirection(ax::mojom::WritingDirection::kLtr);
-  inline_text_slash2.AddIntListAttribute(
-      ax::mojom::IntListAttribute::kCharacterOffsets, {10});
-  static_text_slash2.child_ids = {inline_text_slash2.id};
-
-  ui::AXNodeData static_text_year;
-  static_text_year.id = 16;
-  static_text_year.role = ax::mojom::Role::kStaticText;
-  static_text_year.SetName("2017");
-  static_text_year.relative_bounds.bounds =
-      spin_button_year.relative_bounds.bounds;
-  spin_button_year.child_ids = {static_text_year.id};
-
-  ui::AXNodeData inline_text_year;
-  inline_text_year.id = 17;
-  inline_text_year.role = ax::mojom::Role::kInlineTextBox;
-  inline_text_year.SetName("2017");
-  inline_text_year.relative_bounds.bounds =
-      static_text_year.relative_bounds.bounds;
-  inline_text_year.SetTextDirection(ax::mojom::WritingDirection::kLtr);
-  inline_text_year.AddIntListAttribute(
-      ax::mojom::IntListAttribute::kCharacterOffsets, {10, 20, 30, 40});
-  static_text_year.child_ids = {inline_text_year.id};
-
-  std::unique_ptr<BrowserAccessibilityManager> browser_accessibility_manager(
-      BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(
-              {root, date, container1, container2, spin_button_month,
-               static_text_month, inline_text_month, static_text_slash1,
-               inline_text_slash1, spin_button_day, static_text_day,
-               inline_text_day, static_text_slash2, inline_text_slash2,
-               spin_button_year, static_text_year, inline_text_year,
-               popup_button}),
-          test_browser_accessibility_delegate_.get()));
-
-  BrowserAccessibility* root_accessible =
-      browser_accessibility_manager->GetRoot();
-  ASSERT_NE(nullptr, root_accessible);
-  BrowserAccessibility* textarea_accessible =
-      root_accessible->PlatformGetChild(0);
-  ASSERT_NE(nullptr, textarea_accessible);
-
-#ifdef OS_ANDROID
-  // Android disallows getting inner text from input time/date nodes.
-  EXPECT_EQ(gfx::Rect(),
-            textarea_accessible->GetUnclippedRootFrameInnerTextRangeBoundsRect(
-                0, 10));
-#else
-  // Validate the bounds of '01/01/2017'.
-  EXPECT_EQ(gfx::Rect(100, 100, 100, 20),
-            textarea_accessible->GetUnclippedRootFrameInnerTextRangeBoundsRect(
-                0, 10));
-#endif
-}
-
-TEST_F(BrowserAccessibilityTest, GetInnerTextRangeBoundsRectSearchBox) {
-  // <input type="search" value="Hello">
-  // rootWebArea
-  // ++searchBox "Hello"
-  // ++++genericContainer
-  // ++++++genericContainer
-  // ++++++++staticText "Hello"
-  // ++++++++++inlineTextBox "Hello"
-  ui::AXNodeData root;
-  root.id = 1;
-  root.role = ax::mojom::Role::kRootWebArea;
-  root.relative_bounds.bounds = gfx::RectF(0, 0, 800, 600);
-
-  ui::AXNodeData search_box;
-  search_box.id = 2;
-  search_box.role = ax::mojom::Role::kSearchBox;
-  search_box.SetValue("Hello");
-  search_box.relative_bounds.bounds = gfx::RectF(100, 100, 150, 20);
-  search_box.AddBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot, true);
-  search_box.AddState(ax::mojom::State::kEditable);
-  root.child_ids = {search_box.id};
-
-  ui::AXNodeData container1;
-  container1.id = 3;
-  container1.role = ax::mojom::Role::kGenericContainer;
-  container1.relative_bounds.bounds = search_box.relative_bounds.bounds;
-  search_box.child_ids = {container1.id};
-
-  ui::AXNodeData container2;
-  container2.id = 4;
-  container2.role = ax::mojom::Role::kGenericContainer;
-  container2.relative_bounds.bounds = container1.relative_bounds.bounds;
-  container1.child_ids = {container2.id};
-
-  ui::AXNodeData static_text;
-  static_text.id = 5;
-  static_text.role = ax::mojom::Role::kStaticText;
-  static_text.SetName("Hello");
-  static_text.relative_bounds.bounds = gfx::RectF(100, 100, 50, 10);
-  container2.child_ids = {static_text.id};
-
-  ui::AXNodeData inline_text1;
-  inline_text1.id = 6;
-  inline_text1.role = ax::mojom::Role::kInlineTextBox;
-  inline_text1.SetName("Hello");
-  inline_text1.relative_bounds.bounds = gfx::RectF(100, 100, 50, 10);
-  inline_text1.AddIntListAttribute(
-      ax::mojom::IntListAttribute::kCharacterOffsets, {10, 20, 30, 40, 50});
-  inline_text1.SetTextDirection(ax::mojom::WritingDirection::kLtr);
-  static_text.child_ids = {inline_text1.id};
-
-  std::unique_ptr<BrowserAccessibilityManager> browser_accessibility_manager(
-      BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate({root, search_box, container1, container2,
-                            static_text, inline_text1}),
-          test_browser_accessibility_delegate_.get()));
-
-  BrowserAccessibility* root_accessible =
-      browser_accessibility_manager->GetRoot();
-  ASSERT_NE(nullptr, root_accessible);
-  BrowserAccessibility* textarea_accessible =
-      root_accessible->PlatformGetChild(0);
-  ASSERT_NE(nullptr, textarea_accessible);
-
-  // Validate the bounds of 'ell'.
-  EXPECT_EQ(
-      gfx::Rect(110, 100, 30, 10),
-      textarea_accessible->GetUnclippedRootFrameInnerTextRangeBoundsRect(1, 4));
-}
-
 TEST_F(BrowserAccessibilityTest, GetInnerTextRangeBoundsRectPlainTextField) {
   // Text area with 'Hello' text
   // rootWebArea
@@ -698,8 +437,8 @@ TEST_F(BrowserAccessibilityTest, GetInnerTextRangeBoundsRectPlainTextField) {
 
   std::unique_ptr<BrowserAccessibilityManager> browser_accessibility_manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(
-              {root, textarea, container, static_text, inline_text1}),
+          MakeAXTreeUpdate(root, textarea, container, static_text,
+                           inline_text1),
           test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibility* root_accessible =
@@ -759,8 +498,8 @@ TEST_F(BrowserAccessibilityTest, GetInnerTextRangeBoundsRectMultiElement) {
 
   std::unique_ptr<BrowserAccessibilityManager> browser_accessibility_manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(
-              {root, static_text, inline_text1, static_text2, inline_text2}),
+          MakeAXTreeUpdate(root, static_text, inline_text1, static_text2,
+                           inline_text2),
           test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibility* root_accessible =
@@ -886,7 +625,7 @@ TEST_F(BrowserAccessibilityTest, GetInnerTextRangeBoundsRectBiDi) {
 
   std::unique_ptr<BrowserAccessibilityManager> browser_accessibility_manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate({root, static_text, inline_text1, inline_text2}),
+          MakeAXTreeUpdate(root, static_text, inline_text1, inline_text2),
           test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibility* root_accessible =
@@ -972,7 +711,7 @@ TEST_F(BrowserAccessibilityTest, GetInnerTextRangeBoundsRectScrolledWindow) {
 
   std::unique_ptr<BrowserAccessibilityManager> browser_accessibility_manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate({root, static_text, inline_text}),
+          MakeAXTreeUpdate(root, static_text, inline_text),
           test_browser_accessibility_delegate_.get()));
 
   browser_accessibility_manager
@@ -1011,8 +750,7 @@ TEST_F(BrowserAccessibilityTest, GetAuthorUniqueId) {
 
   std::unique_ptr<BrowserAccessibilityManager> browser_accessibility_manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate({root}),
-          test_browser_accessibility_delegate_.get()));
+          MakeAXTreeUpdate(root), test_browser_accessibility_delegate_.get()));
   ASSERT_NE(nullptr, browser_accessibility_manager.get());
 
   BrowserAccessibility* root_accessible =
@@ -1053,7 +791,7 @@ TEST_F(BrowserAccessibilityTest, NextWordPositionWithHypertext) {
 
   std::unique_ptr<BrowserAccessibilityManager> browser_accessibility_manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate({root, input, static_text, inline_text}),
+          MakeAXTreeUpdate(root, input, static_text, inline_text),
           test_browser_accessibility_delegate_.get()));
   ASSERT_NE(nullptr, browser_accessibility_manager.get());
 
@@ -1166,7 +904,7 @@ TEST_F(BrowserAccessibilityTest, GetIndexInParent) {
 
   std::unique_ptr<BrowserAccessibilityManager> browser_accessibility_manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate({root, static_text}),
+          MakeAXTreeUpdate(root, static_text),
           test_browser_accessibility_delegate_.get()));
   ASSERT_NE(nullptr, browser_accessibility_manager.get());
 

@@ -62,7 +62,18 @@ typedef base::RepeatingCallback<
 
 // For testing.
 CONTENT_EXPORT ui::AXTreeUpdate MakeAXTreeUpdate(
-    const std::vector<ui::AXNodeData>& nodes);
+    const ui::AXNodeData& node,
+    const ui::AXNodeData& node2 = ui::AXNodeData(),
+    const ui::AXNodeData& node3 = ui::AXNodeData(),
+    const ui::AXNodeData& node4 = ui::AXNodeData(),
+    const ui::AXNodeData& node5 = ui::AXNodeData(),
+    const ui::AXNodeData& node6 = ui::AXNodeData(),
+    const ui::AXNodeData& node7 = ui::AXNodeData(),
+    const ui::AXNodeData& node8 = ui::AXNodeData(),
+    const ui::AXNodeData& node9 = ui::AXNodeData(),
+    const ui::AXNodeData& node10 = ui::AXNodeData(),
+    const ui::AXNodeData& node11 = ui::AXNodeData(),
+    const ui::AXNodeData& node12 = ui::AXNodeData());
 
 // Class that can perform actions on behalf of the BrowserAccessibilityManager.
 // Note: BrowserAccessibilityManager should never cache any of the return

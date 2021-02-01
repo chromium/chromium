@@ -75,17 +75,52 @@ bool MergeTreeUpdates(const std::vector<ui::AXTreeUpdate>& src,
 
 }  // namespace
 
-ui::AXTreeUpdate MakeAXTreeUpdate(const std::vector<ui::AXNodeData>& nodes) {
+ui::AXTreeUpdate MakeAXTreeUpdate(
+    const ui::AXNodeData& node1,
+    const ui::AXNodeData& node2 /* = ui::AXNodeData() */,
+    const ui::AXNodeData& node3 /* = ui::AXNodeData() */,
+    const ui::AXNodeData& node4 /* = ui::AXNodeData() */,
+    const ui::AXNodeData& node5 /* = ui::AXNodeData() */,
+    const ui::AXNodeData& node6 /* = ui::AXNodeData() */,
+    const ui::AXNodeData& node7 /* = ui::AXNodeData() */,
+    const ui::AXNodeData& node8 /* = ui::AXNodeData() */,
+    const ui::AXNodeData& node9 /* = ui::AXNodeData() */,
+    const ui::AXNodeData& node10 /* = ui::AXNodeData() */,
+    const ui::AXNodeData& node11 /* = ui::AXNodeData() */,
+    const ui::AXNodeData& node12 /* = ui::AXNodeData() */) {
+  static base::NoDestructor<ui::AXNodeData> empty_data;
+  int32_t no_id = empty_data->id;
+
   ui::AXTreeUpdate update;
   ui::AXTreeData tree_data;
   tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
   tree_data.focused_tree_id = tree_data.tree_id;
   update.tree_data = tree_data;
   update.has_tree_data = true;
-  if (!nodes.empty()) {
-    update.root_id = nodes[0].id;
-    update.nodes = nodes;
-  }
+  update.root_id = node1.id;
+  update.nodes.push_back(node1);
+  if (node2.id != no_id)
+    update.nodes.push_back(node2);
+  if (node3.id != no_id)
+    update.nodes.push_back(node3);
+  if (node4.id != no_id)
+    update.nodes.push_back(node4);
+  if (node5.id != no_id)
+    update.nodes.push_back(node5);
+  if (node6.id != no_id)
+    update.nodes.push_back(node6);
+  if (node7.id != no_id)
+    update.nodes.push_back(node7);
+  if (node8.id != no_id)
+    update.nodes.push_back(node8);
+  if (node9.id != no_id)
+    update.nodes.push_back(node9);
+  if (node10.id != no_id)
+    update.nodes.push_back(node10);
+  if (node11.id != no_id)
+    update.nodes.push_back(node11);
+  if (node12.id != no_id)
+    update.nodes.push_back(node12);
   return update;
 }
 
