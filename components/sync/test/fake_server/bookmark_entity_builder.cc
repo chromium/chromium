@@ -12,7 +12,7 @@
 #include "components/sync/base/hash_util.h"
 #include "components/sync/base/time.h"
 #include "components/sync/base/unique_position.h"
-#include "components/sync/engine_impl/loopback_server/persistent_bookmark_entity.h"
+#include "components/sync/engine/loopback_server/persistent_bookmark_entity.h"
 #include "components/sync/protocol/sync.pb.h"
 
 using std::string;

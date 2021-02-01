@@ -7,9 +7,9 @@
 #include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/sharing/features.h"
+#include "components/sync/model/dummy_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/mutable_data_batch.h"
-#include "components/sync/model_impl/dummy_metadata_change_list.h"
 #include "net/base/network_change_notifier.h"
 
 namespace {

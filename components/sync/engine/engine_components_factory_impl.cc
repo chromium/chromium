@@ -7,10 +7,10 @@
 #include <map>
 #include <utility>
 
-#include "components/sync/engine_impl/backoff_delay_provider.h"
-#include "components/sync/engine_impl/cycle/sync_cycle_context.h"
-#include "components/sync/engine_impl/sync_scheduler_impl.h"
-#include "components/sync/engine_impl/syncer.h"
+#include "components/sync/engine/backoff_delay_provider.h"
+#include "components/sync/engine/cycle/sync_cycle_context.h"
+#include "components/sync/engine/sync_scheduler_impl.h"
+#include "components/sync/engine/syncer.h"
 
 namespace syncer {
 

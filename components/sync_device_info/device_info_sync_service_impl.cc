@@ -9,7 +9,7 @@
 #include "base/callback_helpers.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
-#include "components/sync/model_impl/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_prefs.h"
 #include "components/sync_device_info/device_info_sync_bridge.h"

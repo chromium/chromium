@@ -10,7 +10,7 @@ API] (aka Directory), which as of mid-2019 is still used by several legacy model
 types, but "wrapped into" USS (see [SyncableServiceBasedBridge]).
 
 [SyncableService API]: https://www.chromium.org/developers/design-documents/sync/syncable-service-api
-[SyncableServiceBasedBridge]: https://cs.chromium.org/chromium/src/components/sync/model_impl/syncable_service_based_bridge.h
+[SyncableServiceBasedBridge]: https://cs.chromium.org/chromium/src/components/sync/model/syncable_service_based_bridge.h
 
 [TOC]
 

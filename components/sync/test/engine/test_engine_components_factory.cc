@@ -4,7 +4,7 @@
 
 #include "components/sync/test/engine/test_engine_components_factory.h"
 
-#include "components/sync/engine_impl/cycle/sync_cycle_context.h"
+#include "components/sync/engine/cycle/sync_cycle_context.h"
 #include "components/sync/test/engine/fake_sync_scheduler.h"
 
 namespace syncer {

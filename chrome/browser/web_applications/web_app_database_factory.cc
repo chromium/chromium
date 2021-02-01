@@ -8,7 +8,7 @@
 #include "chrome/browser/sync/model_type_store_service_factory.h"
 #include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
-#include "components/sync/model_impl/model_type_store_service_impl.h"
+#include "components/sync/model/model_type_store_service_impl.h"
 
 namespace web_app {
 

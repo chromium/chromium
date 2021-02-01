@@ -29,7 +29,7 @@
 #include "components/sync/driver/profile_sync_service.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
-#include "components/sync/engine_impl/loopback_server/persistent_permanent_entity.h"
+#include "components/sync/engine/loopback_server/persistent_permanent_entity.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

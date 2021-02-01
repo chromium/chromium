@@ -18,7 +18,7 @@
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/entity_data.h"
 #include "components/sync/engine/model_type_processor.h"
-#include "components/sync/model_impl/in_memory_metadata_change_list.h"
+#include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_store.h"

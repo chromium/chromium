@@ -6,6 +6,7 @@ include_rules = [
   "+components/prefs",
   "+components/sync/protocol",
   "+third_party/zlib",  # For UniquePosition compression
-  "+net",
+  "+net/base/net_errors.h",
+  "+net/http/http_status_code.h",
   "+ui/base",
 ]

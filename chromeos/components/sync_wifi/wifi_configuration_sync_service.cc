@@ -19,8 +19,8 @@
 #include "chromeos/network/network_metadata_store.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/sync/base/report_unrecoverable_error.h"
+#include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/model_type_store.h"
-#include "components/sync/model_impl/client_tag_based_model_type_processor.h"
 
 namespace chromeos {
 

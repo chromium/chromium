@@ -8,7 +8,7 @@
 #include <map>
 #include <memory>
 
-#include "components/sync/engine_impl/sync_scheduler.h"
+#include "components/sync/engine/sync_scheduler.h"
 
 namespace syncer {
 

@@ -11,9 +11,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/model_impl/blocking_model_type_store_impl.h"
-#include "components/sync/model_impl/model_type_store_backend.h"
-#include "components/sync/model_impl/model_type_store_impl.h"
+#include "components/sync/model/blocking_model_type_store_impl.h"
+#include "components/sync/model/model_type_store_backend.h"
+#include "components/sync/model/model_type_store_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {

@@ -28,7 +28,7 @@
 #include "components/sync/engine/sync_manager.h"
 #include "components/sync/engine/sync_manager_factory.h"
 #include "components/sync/invalidations/switches.h"
-#include "components/sync/model_impl/forwarding_model_type_controller_delegate.h"
+#include "components/sync/model/forwarding_model_type_controller_delegate.h"
 #include "components/sync/nigori/nigori_model_type_processor.h"
 #include "components/sync/nigori/nigori_storage_impl.h"
 #include "components/sync/nigori/nigori_sync_bridge_impl.h"

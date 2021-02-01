@@ -8,7 +8,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/engine_impl/nudge_handler.h"
+#include "components/sync/engine/nudge_handler.h"
 
 namespace syncer {
 

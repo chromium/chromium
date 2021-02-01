@@ -75,6 +75,7 @@ class SyncerError {
         http_status_code_(http_status_code) {}
 
   Value value_ = UNSET;
+  // TODO(crbug.com/947443): Consider storing the actual enums.
   int net_error_code_ = 0;
   int http_status_code_ = 0;
 };

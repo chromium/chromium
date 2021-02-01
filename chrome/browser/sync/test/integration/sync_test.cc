@@ -66,7 +66,7 @@
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "components/sync/engine/sync_engine_switches.h"
-#include "components/sync/engine_impl/sync_scheduler_impl.h"
+#include "components/sync/engine/sync_scheduler_impl.h"
 #include "components/sync/invalidations/switches.h"
 #include "components/sync/invalidations/sync_invalidations_service_impl.h"
 #include "components/sync/protocol/sync.pb.h"

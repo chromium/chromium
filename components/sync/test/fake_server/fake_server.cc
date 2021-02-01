@@ -23,7 +23,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "components/sync/engine_impl/net/server_connection_manager.h"
+#include "components/sync/engine/net/server_connection_manager.h"
 #include "components/sync/protocol/proto_value_conversions.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
