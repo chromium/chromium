@@ -3502,6 +3502,21 @@
             ]
         }
     ],
+    "IOSRestoreGaiaCookiesOnUserAction": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RestoreGAIACookiesOnUserAction"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSScreenTimeIntegration": [
         {
             "platforms": [
