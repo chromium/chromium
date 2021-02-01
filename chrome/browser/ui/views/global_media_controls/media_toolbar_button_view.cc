@@ -5,8 +5,10 @@
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_view.h"
 
 #include "base/feature_list.h"
+#include "base/strings/pattern.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service_factory.h"
@@ -17,6 +19,8 @@
 #include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/language/core/browser/language_model.h"
+#include "components/language/core/browser/language_model_manager.h"
 #include "components/vector_icons/vector_icons.h"
 #include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -85,9 +89,21 @@ void MediaToolbarButtonView::Hide() {
 void MediaToolbarButtonView::Enable() {
   SetEnabled(true);
 
-  if (base::FeatureList::IsEnabled(media::kLiveCaption)) {
-    feature_promo_controller_->MaybeShowPromo(
-        feature_engagement::kIPHLiveCaptionFeature);
+  // Live Caption only works for English-language speech for now, so we only
+  // show the promo to users whose fluent languages include english. Fluent
+  // languages are set in chrome://settings/languages.
+  // TODO(crbug.com/1161569): Remove this when Live Caption supports additional
+  // languages.
+  language::LanguageModel* language_model =
+      LanguageModelManagerFactory::GetForBrowserContext(browser_->profile())
+          ->GetPrimaryModel();
+  for (const auto& lang : language_model->GetLanguages()) {
+    if (base::MatchPattern(lang.lang_code, "en*") &&
+        base::FeatureList::IsEnabled(media::kLiveCaption)) {
+      feature_promo_controller_->MaybeShowPromo(
+          feature_engagement::kIPHLiveCaptionFeature);
+      break;
+    }
   }
 
   for (auto& observer : observers_)
