@@ -214,7 +214,7 @@ TEST_F(BulkLeakCheckTest, CheckCredentialsAccessDoesNetworkRequest) {
               LookupSingleLeak(
                   _, kAccessToken,
                   AllOf(Field(&LookupSingleLeakPayload::username_hash_prefix,
-                              ElementsAre(0xBD, 0x74, 0xA9, 0x20)),
+                              ElementsAre(0xBD, 0x74, 0xA9, 0x00)),
                         Field(&LookupSingleLeakPayload::encrypted_payload,
                               testing::Ne(""))),
                   _));
