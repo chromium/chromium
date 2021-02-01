@@ -46,7 +46,9 @@
       whereas the other groups are created from the emoji metadata.
     -->
     <div id="group-history">
-      <emoji-group data="[[history]]"></emoji-group>
+      <template is="dom-if" if="[[history.emoji.length]]">
+        <emoji-group data="[[history]]"></emoji-group>
+      </template>
     </div>
     <template is="dom-repeat" items="[[emojiData]]">
       <div id="group-[[index]]">

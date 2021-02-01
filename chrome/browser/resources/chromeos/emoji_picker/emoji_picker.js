@@ -5,14 +5,14 @@
 import './icons.js';
 import './emoji_group.js';
 import './emoji_group_button.js';
-
 import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {createCustomEvent, DATA_LOADED_EVENT, EMOJI_BUTTON_EVENT, GROUP_BUTTON_EVENT} from './events.js';
-import {EmojiData, EmojiGroup} from './types.js';
+import {RecentEmojiStore} from './store.js';
+import {Codepoints, Emoji, EmojiData, EmojiGroup} from './types.js';
 
 const EMOJI_ORDERING_JSON = '/emoji_13_1_ordering.json';
 
@@ -28,6 +28,17 @@ const GROUP_TABS = [
   {icon: 'emoji_picker:emoji_symbols', group: '7', active: false},
   {icon: 'emoji_picker:flag', group: '8', active: false},
 ];
+
+/**
+ * Constructs the emoji group data structure from a given list of emoji
+ * strings. Note: returned emoji have no variants.
+ *
+ * @param {!Array<Codepoints>} recentEmoji list of recently used emoji strings.
+ * @return {!Array<!Emoji>} list of emoji data structures
+ */
+function makeRecentlyUsed(recentEmoji) {
+  return recentEmoji.map(emoji => ({base: emoji, alternates: []}));
+}
 
 export class EmojiPicker extends PolymerElement {
   static get is() {
@@ -56,22 +67,13 @@ export class EmojiPicker extends PolymerElement {
   constructor() {
     super();
 
+    this.recentEmojiStore = new RecentEmojiStore();
+
     this.groups = GROUP_TABS;
     this.emojiData = [];
-    // TODO(https://crbug.com/1164828): replace placeholder frequently used
-    // data.
     this.history = {
       'group': 'Recently Used',
-      'emoji': [
-        {
-          'base': [128512],
-          'alternates': [],
-        },
-        {
-          'base': [128513],
-          'alternates': [],
-        },
-      ],
+      'emoji': makeRecentlyUsed(this.recentEmojiStore.data),
     };
     this.search = '';
   }
@@ -114,6 +116,9 @@ export class EmojiPicker extends PolymerElement {
    */
   insertEmoji(emoji) {
     chrome.send('insertEmoji', [emoji]);
+    this.recentEmojiStore.bumpEmoji(emoji);
+    this.set(
+        ['history', 'emoji'], makeRecentlyUsed(this.recentEmojiStore.data));
   }
 
   _formatEmojiData(emojiData) {

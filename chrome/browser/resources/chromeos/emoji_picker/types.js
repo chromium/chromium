@@ -3,7 +3,12 @@
 // found in the LICENSE file.
 
 /**
- * @typedef {{base: number, alternates: Array<Array<number>>}}
+ * @typedef {!Array<!number>}
+ */
+export let Codepoints;
+
+/**
+ * @typedef {{base: Codepoints, alternates: !Array<Codepoints>}}
  */
 export let Emoji;
 

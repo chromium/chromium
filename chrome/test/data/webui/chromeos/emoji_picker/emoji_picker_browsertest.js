@@ -13,6 +13,7 @@ GEN_INCLUDE([
 GEN('#include "content/public/test/browser_test.h"');
 GEN('#include "chromeos/constants/chromeos_features.h"');
 
+// This file bootstraps the other tests written in Javascript.
 class EmojiPickerBrowserTest extends PolymerTest {
   /** @override */
   get browsePreload() {
@@ -25,8 +26,7 @@ class EmojiPickerBrowserTest extends PolymerTest {
   }
 }
 
-// this browser test bootstraps the other tests written in javascript.
-
+// Tests behaviour of <emoji-picker> component.
 var EmojiPickerMainTest = class extends EmojiPickerBrowserTest {
   /** @override */
   get browsePreload() {
@@ -35,7 +35,19 @@ var EmojiPickerMainTest = class extends EmojiPickerBrowserTest {
   }
 };
 
-
 TEST_F('EmojiPickerMainTest', 'All', function() {
+  mocha.run();
+});
+
+// Tests functionality of recently used storage.
+var EmojiPickerStoreTest = class extends EmojiPickerBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://emoji-picker/test_loader.html?module=' +
+        'chromeos/emoji_picker/emoji_picker_store_test.js';
+  }
+};
+
+TEST_F('EmojiPickerStoreTest', 'All', function() {
   mocha.run();
 });

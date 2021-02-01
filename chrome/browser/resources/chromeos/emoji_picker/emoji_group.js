@@ -5,7 +5,7 @@
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {createCustomEvent, EMOJI_BUTTON_EVENT} from './events.js';
-import {EmojiGroup} from './types.js';
+import {Codepoints, EmojiGroup} from './types.js';
 
 class EmojiGroupComponent extends PolymerElement {
   static get is() {
@@ -32,6 +32,9 @@ class EmojiGroupComponent extends PolymerElement {
         EMOJI_BUTTON_EVENT, {emoji: ev.path[0].textContent.trim()}));
   }
 
+  /**
+   * @param {Codepoints} codepoints
+   */
   _renderEmoji(codepoints) {
     return String.fromCodePoint(...codepoints);
   }

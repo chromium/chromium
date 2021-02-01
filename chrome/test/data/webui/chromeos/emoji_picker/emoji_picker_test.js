@@ -8,7 +8,7 @@ import {DATA_LOADED_EVENT} from 'chrome://emoji-picker/events.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {deepQuerySelector} from './emoji_picker_test_util.js';
+import {deepQuerySelector, timeout, waitForCondition} from './emoji_picker_test_util.js';
 
 const ACTIVE_CLASS = 'emoji-group-active';
 
@@ -21,6 +21,7 @@ function isGroupButtonActive(element) {
   return element ? element.classList.contains(ACTIVE_CLASS) : false;
 }
 
+
 suite('<emoji-picker>', () => {
   /** @type {!EmojiPicker} */
   let emojiPicker;
@@ -30,6 +31,8 @@ suite('<emoji-picker>', () => {
   setup(() => {
     // Reset DOM state.
     document.body.innerHTML = '';
+    window.localStorage.clear();
+
     emojiPicker =
         /** @type {!EmojiPicker} */ (document.createElement('emoji-picker'));
     emojiPicker.emojiDataUrl = '/emoji_test_ordering.json';
@@ -67,5 +70,26 @@ suite('<emoji-picker>', () => {
     secondButton.click();
     assert(isGroupButtonActive(secondButton));
     assert(!isGroupButtonActive(firstButton));
+  });
+
+  test('recently used should be hidden when empty', () => {
+    const recentlyUsed = findInEmojiPicker(['#group-history > emoji-group']);
+    assert(!recentlyUsed);
+  });
+
+  test('recently used should be populated after emoji is clicked', async () => {
+    // yield to allow emoji-group and emoji buttons to render.
+    const emojiButton = await waitForCondition(
+        () => findInEmojiPicker(
+            ['#group-0 > emoji-group', '.emoji-group-emoji', 'button']));
+    emojiButton.click();
+
+    // wait until emoji exists in recently used section.
+    const recentlyUsed = await waitForCondition(
+        () => findInEmojiPicker(['#group-history > emoji-group', 'button']));
+
+    // check text is correct.
+    const recentText = recentlyUsed.innerText;
+    assert(recentText.includes(String.fromCodePoint(128512)));
   });
 });
