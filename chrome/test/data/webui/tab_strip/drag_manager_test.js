@@ -751,7 +751,7 @@ suite('DragManager', () => {
     assertFalse(draggedTab.isDraggedOut());
   });
 
-  test('DragIsPrevented', () => {
+  test('DragIsPrevented', async () => {
     // Mock the delegate to return true for shouldPreventDrag.
     delegate.shouldPreventDrag = () => true;
 
@@ -771,5 +771,12 @@ suite('DragManager', () => {
       dataTransfer,
     }));
     assertTrue(isDefaultPrevented);
+
+    // The tab's context menu should be opened instead.
+    const [tabId, x, y] =
+        await testTabStripEmbedderProxy.whenCalled('showTabContextMenu');
+    assertEquals(draggedTab.tab.id, tabId);
+    assertEquals(100, x);
+    assertEquals(150, y);
   });
 });
