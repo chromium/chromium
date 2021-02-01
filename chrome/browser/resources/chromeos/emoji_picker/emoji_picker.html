@@ -1,11 +1,18 @@
 <style>
+  :host {
+    /* These should match the dialog size in EmojiPickerDialog. */
+    --emoji-picker-height: 343px;
+    --emoji-picker-width: 280px;
+  }
+
   .emoji-picker {
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 20px);
+    font-family: 'Roboto', sans-serif;
+    height: calc(var(--emoji-picker-height) - 10px);
     margin: 10px;
     margin-top: 0;
-    width: calc(100vw - 20px);
+    width: calc(var(--emoji-picker-width) - 20px);
   }
 
   #search {
@@ -16,42 +23,44 @@
     display: flex;
     flex-shrink: 0;
     overflow-x: scroll;
+    /* scroll-behavior: smooth; */
     width: 100%;
   }
 
   .emoji-groups {
     flex-grow: 1;
     overflow-y: scroll;
-    scroll-behavior: smooth;
+    /* scroll-behavior: smooth; */
   }
 </style>
 
 <div class="emoji-picker">
 
-  <input
-    id="search" class="w-100"
-    type="text" value="{{search::input}}"
-  ></input>
+  <input id="search" class="w-100"
+         type="text" value="{{search::input}}">
+  </input>
 
   <div class="emoji-tabs">
-    <template is="dom-repeat" items="[[groups]]">
-      <emoji-group-button group="[[item.group]]" active="[[item.active]]"
-        icon="[[item.icon]]"></emoji-group-button>
+    <template is="dom-repeat" items="[[emojiGroups]]">
+      <emoji-group-button
+          data-group$="[[item.group]]" group="[[item.group]]"
+          active="[[item.active]]" icon="[[item.icon]]">
+      </emoji-group-button>
     </template>
   </div>
 
-  <div class="emoji-groups w-100">
+  <div class="emoji-groups w-100" on-scroll="onEmojiScroll">
     <!--
       group-history is the "frequently used" group and is populated in code,
       whereas the other groups are created from the emoji metadata.
     -->
-    <div id="group-history">
+    <div data-group="history">
       <template is="dom-if" if="[[history.emoji.length]]">
         <emoji-group data="[[history]]"></emoji-group>
       </template>
     </div>
     <template is="dom-repeat" items="[[emojiData]]">
-      <div id="group-[[index]]">
+      <div data-group$="[[index]]">
         <emoji-group data="[[item]]"></emoji-group>
       </div>
     </template>

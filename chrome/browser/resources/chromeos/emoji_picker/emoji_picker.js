@@ -52,7 +52,7 @@ export class EmojiPicker extends PolymerElement {
   static get properties() {
     return {
       emojiDataUrl: {type: String, value: EMOJI_ORDERING_JSON},
-      groups: {type: Array},
+      emojiGroups: {type: Array},
       /** @type {?EmojiData} */
       emojiData: {
         type: Object,
@@ -69,13 +69,16 @@ export class EmojiPicker extends PolymerElement {
 
     this.recentEmojiStore = new RecentEmojiStore();
 
-    this.groups = GROUP_TABS;
+    this.emojiGroups = GROUP_TABS;
     this.emojiData = [];
     this.history = {
       'group': 'Recently Used',
       'emoji': makeRecentlyUsed(this.recentEmojiStore.data),
     };
     this.search = '';
+
+    /** @type {?number} */
+    this.scrollTimeout = null;
   }
 
   ready() {
@@ -93,26 +96,7 @@ export class EmojiPicker extends PolymerElement {
   }
 
   /**
-   * @param {string} newGroup
-   */
-  selectGroup(newGroup) {
-    let activeGroup = null;
-    // set active to true for selected group and false for others.
-    this.groups.forEach((g, i) => {
-      const isActive = g.group === newGroup;
-      this.set(['groups', i, 'active'], isActive);
-      if (isActive) {
-        activeGroup = g;
-      }
-    });
-    assert(activeGroup, 'no group button was activated');
-    // scroll to selected group's element.
-    this.shadowRoot.getElementById(`group-${activeGroup.group}`)
-        .scrollIntoView();
-  }
-
-  /**
-   * @param {string} emoji
+   * @param {!string} emoji
    */
   insertEmoji(emoji) {
     chrome.send('insertEmoji', [emoji]);
@@ -121,9 +105,55 @@ export class EmojiPicker extends PolymerElement {
         ['history', 'emoji'], makeRecentlyUsed(this.recentEmojiStore.data));
   }
 
-  _formatEmojiData(emojiData) {
-    return JSON.stringify(emojiData);
+  /**
+   * @param {string} newGroup
+   */
+  selectGroup(newGroup) {
+    // scroll to selected group's element.
+    const group =
+        this.shadowRoot.querySelector(`div[data-group="${newGroup}"]`);
+    group.scrollIntoView();
   }
+
+  onEmojiScroll(ev) {
+    // the scroll event is fired very frequently while scrolling.
+    // only update active tab 100ms after last scroll event by setting
+    // a timeout.
+    if (this.scrollTimeout) {
+      clearTimeout(this.scrollTimeout);
+    }
+    this.scrollTimeout = setTimeout(this.updateActiveGroup.bind(this), 100);
+  }
+
+  updateActiveGroup() {
+    // get bounding rect of scrollable emoji region.
+    const thisRect =
+        this.shadowRoot.querySelector('.emoji-groups').getBoundingClientRect();
+
+    const groupElements = Array.from(
+        this.shadowRoot.querySelectorAll('.emoji-groups [data-group]'));
+
+    // activate the first group which is visible for at least 10 pixels,
+    // i.e. whose bottom edge is at least 10px below the top edge of the
+    // scrollable region.
+    const activeGroup = groupElements.find(
+        el => el.getBoundingClientRect().bottom - thisRect.top >= 10);
+
+    assert(activeGroup, 'no group element was activated');
+    const activeGroupId = activeGroup.dataset.group;
+
+    // set active to true for selected group and false for others.
+    this.emojiGroups.forEach((g, i) => {
+      const isActive = g.group === activeGroupId;
+      this.set(['emojiGroups', i, 'active'], isActive);
+    });
+
+    // scroll the active group button into view on the tab bar.
+    this.shadowRoot
+        .querySelector(`emoji-group-button[data-group="${activeGroupId}"]`)
+        .scrollIntoView();
+  }
+
 
   onEmojiDataLoaded(data) {
     this.emojiData = /** @type {!EmojiData} */ (JSON.parse(data));
