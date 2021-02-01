@@ -85,8 +85,8 @@ void ManifestUpdateManager::MaybeUpdate(const GURL& url,
   tasks_.insert_or_assign(
       app_id, std::make_unique<ManifestUpdateTask>(
                   url, app_id, web_contents,
-                  base::Bind(&ManifestUpdateManager::OnUpdateStopped,
-                             base::Unretained(this)),
+                  base::BindOnce(&ManifestUpdateManager::OnUpdateStopped,
+                                 base::Unretained(this)),
                   hang_update_checks_for_testing_, *registrar_, *icon_manager_,
                   ui_manager_, install_manager_));
 }

@@ -497,8 +497,8 @@ void SystemWebAppManager::Start() {
             policy::policy_prefs::kSystemFeaturesDisableList)) {
       local_state_pref_change_registrar_.Add(
           policy::policy_prefs::kSystemFeaturesDisableList,
-          base::Bind(&SystemWebAppManager::OnAppsPolicyChanged,
-                     base::Unretained(this)));
+          base::BindRepeating(&SystemWebAppManager::OnAppsPolicyChanged,
+                              base::Unretained(this)));
     }
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
