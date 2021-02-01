@@ -262,4 +262,37 @@ TEST_F(ExtensionHooksDelegateTest, GetURL) {
           GURL(extension()->url().spec() + "https://www.google.com"));
 }
 
+class ExtensionHooksDelegateMV3Test : public ExtensionHooksDelegateTest {
+ public:
+  ExtensionHooksDelegateMV3Test() = default;
+  ~ExtensionHooksDelegateMV3Test() override = default;
+
+  scoped_refptr<const Extension> BuildExtension() override {
+    return ExtensionBuilder("foo")
+        .SetManifestKey("manifest_version", 3)
+        .Build();
+  }
+};
+
+TEST_F(ExtensionHooksDelegateMV3Test, AliasesArentAvailableInMV3) {
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+
+  auto script_to_value = [context](base::StringPiece source) {
+    return V8ToString(V8ValueFromScriptSource(context, source), context);
+  };
+
+  EXPECT_EQ("undefined", script_to_value("chrome.extension.connect"));
+  EXPECT_EQ("undefined", script_to_value("chrome.extension.connectNative"));
+  EXPECT_EQ("undefined", script_to_value("chrome.extension.onConnect"));
+  EXPECT_EQ("undefined", script_to_value("chrome.extension.onConnectExternal"));
+  EXPECT_EQ("undefined", script_to_value("chrome.extension.onMessage"));
+  EXPECT_EQ("undefined", script_to_value("chrome.extension.onMessageExternal"));
+  EXPECT_EQ("undefined", script_to_value("chrome.extension.onRequest"));
+  EXPECT_EQ("undefined", script_to_value("chrome.extension.onRequestExternal"));
+  EXPECT_EQ("undefined", script_to_value("chrome.extension.sendNativeMessage"));
+  EXPECT_EQ("undefined", script_to_value("chrome.extension.sendMessage"));
+  EXPECT_EQ("undefined", script_to_value("chrome.extension.sendRequest"));
+}
+
 }  // namespace extensions

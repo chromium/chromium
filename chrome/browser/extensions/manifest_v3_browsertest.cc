@@ -151,4 +151,46 @@ IN_PROC_BROWSER_TEST_F(ManifestV3BrowserTest, ActionAPI) {
   EXPECT_TRUE(action->HasIcon(ExtensionAction::kDefaultTabId));
 }
 
+IN_PROC_BROWSER_TEST_F(ManifestV3BrowserTest,
+                       DeprecatedExtensionNamespaceAPIs) {
+  constexpr char kManifest[] =
+      R"({
+           "name": "Deprecated Extension Namespace APIs",
+           "manifest_version": 3,
+           "version": "0.1",
+           "background": { "service_worker": "worker.js" }
+         })";
+  constexpr char kWorker[] =
+      R"(chrome.test.runTests([
+           function deprecatedMethods() {
+             chrome.test.assertEq(undefined, chrome.extension.connect);
+             chrome.test.assertEq(undefined, chrome.extension.connectNative);
+             chrome.test.assertEq(undefined, chrome.extension.onConnect);
+             chrome.test.assertEq(undefined,
+                                  chrome.extension.onConnectExternal);
+             chrome.test.assertEq(undefined, chrome.extension.onMessage);
+             chrome.test.assertEq(undefined,
+                                  chrome.extension.onMessageExternal);
+             chrome.test.assertEq(undefined, chrome.extension.onRequest);
+             chrome.test.assertEq(undefined,
+                                  chrome.extension.onRequestExternal);
+             chrome.test.assertEq(undefined,
+                                  chrome.extension.sendNativeMessage);
+             chrome.test.assertEq(undefined, chrome.extension.sendMessage);
+             chrome.test.assertEq(undefined, chrome.extension.sendRequest);
+
+             chrome.test.succeed();
+           },
+         ]);)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("worker.js"), kWorker);
+
+  ResultCatcher catcher;
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
+}
+
 }  // namespace extensions
