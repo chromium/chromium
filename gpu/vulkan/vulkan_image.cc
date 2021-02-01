@@ -271,9 +271,12 @@ bool VulkanImage::Initialize(VulkanDeviceQueue* device_queue,
     return false;
   }
 
-  // If the |image_tiling_| is VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT,
-  // The InitializeWithExternalMemoryAndModifiers() will get the layout.
-  if (image_tiling_ == VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT)
+  // Get subresource layout for images with VK_IMAGE_TILING_LINEAR.
+  // For images with VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT, the layout is
+  // initialized in InitializeWithExternalMemoryAndModifiers(). For
+  // VK_IMAGE_TILING_OPTIMAL the layout is not usable and
+  // vkGetImageSubresourceLayout() is illegal.
+  if (image_tiling_ != VK_IMAGE_TILING_LINEAR)
     return true;
 
   plane_count_ = 1;
