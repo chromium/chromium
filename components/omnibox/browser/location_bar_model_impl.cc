@@ -169,8 +169,6 @@ LocationBarModelImpl::GetPageClassification(OmniboxFocusSource focus_source) {
   if (!delegate_->GetURL(&gurl))
     return OmniboxEventProto::OTHER;
 
-  if (focus_source == OmniboxFocusSource::SEARCH_BUTTON)
-    return OmniboxEventProto::SEARCH_BUTTON_AS_STARTING_FOCUS;
   if (delegate_->IsNewTabPage()) {
     // Note that we treat OMNIBOX as the source if focus_source_ is INVALID,
     // i.e., if input isn't actually in progress.
