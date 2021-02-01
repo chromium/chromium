@@ -63373,6 +63373,19 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="189" label="QUIC_QPACK_DECODER_STREAM_IMPOSSIBLE_INSERT_COUNT"/>
   <int value="190" label="QUIC_QPACK_DECODER_STREAM_INCORRECT_ACKNOWLEDGEMENT"/>
   <int value="191" label="QUIC_MAX_AGE_TIMEOUT"/>
+  <int value="192" label="QUIC_INVALID_0RTT_PACKET_NUMBER_OUT_OF_ORDER"/>
+  <int value="193" label="QUIC_INVALID_PRIORITY_UPDATE"/>
+  <int value="194" label="QUIC_PEER_PORT_CHANGE_HANDSHAKE_UNCONFIRMED"/>
+  <int value="195" label="QUIC_TLS_BAD_CERTIFICATE"/>
+  <int value="196" label="QUIC_TLS_UNSUPPORTED_CERTIFICATE"/>
+  <int value="197" label="QUIC_TLS_CERTIFICATE_REVOKED"/>
+  <int value="198" label="QUIC_TLS_CERTIFICATE_EXPIRED"/>
+  <int value="199" label="QUIC_TLS_CERTIFICATE_UNKNOWN"/>
+  <int value="200" label="QUIC_TLS_INTERNAL_ERROR"/>
+  <int value="201" label="QUIC_TLS_UNRECOGNIZED_NAME"/>
+  <int value="202" label="QUIC_TLS_CERTIFICATE_REQUIRED"/>
+  <int value="203" label="QUIC_CONNECTION_ID_LIMIT_ERROR"/>
+  <int value="204" label="QUIC_TOO_MANY_CONNECTION_ID_WAITING_TO_RETIRE"/>
 </enum>
 
 <enum name="QuicFailToSerializePacketLocation">
