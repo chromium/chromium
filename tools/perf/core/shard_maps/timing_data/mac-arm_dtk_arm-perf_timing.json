@@ -900,14 +900,6 @@
         "name": "blink_perf.owp_storage/idb-load-docs.html"
     },
     {
-        "duration": "56.0",
-        "name": "blink_perf.owp_storage/idb-put-all.html"
-    },
-    {
-        "duration": "59.0",
-        "name": "blink_perf.owp_storage/idb-put.html"
-    },
-    {
         "duration": "14.0",
         "name": "blink_perf.paint/appending-text.html"
     },
