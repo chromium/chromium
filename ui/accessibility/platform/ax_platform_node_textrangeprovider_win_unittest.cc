@@ -2727,6 +2727,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 // Verify that the endpoint can move past an empty text field.
 TEST_F(AXPlatformNodeTextRangeProviderTest,
        TestITextRangeProviderMoveEndpointByUnitTextField) {
+  // An empty text field should also be a character, word, and line boundary.
   ui::AXNodeData root_data;
   root_data.id = 1;
   root_data.role = ax::mojom::Role::kRootWebArea;
@@ -2806,33 +2807,63 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"some text");
 
   int count;
-  // Tests for TextUnit_Character
+  // Tests for TextUnit_Character.
   ASSERT_HRESULT_SUCCEEDED(text_range_provider->MoveEndpointByUnit(
       TextPatternRangeEndpoint_End, TextUnit_Character, /*count*/ 1, &count));
   ASSERT_EQ(1, count);
-  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"some textm");
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"some text\xFFFc");
+
+  ASSERT_HRESULT_SUCCEEDED(text_range_provider->MoveEndpointByUnit(
+      TextPatternRangeEndpoint_End, TextUnit_Character, /*count*/ 1, &count));
+  ASSERT_EQ(1, count);
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"some text\xFFFcm");
+
+  ASSERT_HRESULT_SUCCEEDED(text_range_provider->MoveEndpointByUnit(
+      TextPatternRangeEndpoint_End, TextUnit_Character, /*count*/ -1, &count));
+  ASSERT_EQ(-1, count);
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"some text\xFFFC");
 
   ASSERT_HRESULT_SUCCEEDED(text_range_provider->MoveEndpointByUnit(
       TextPatternRangeEndpoint_End, TextUnit_Character, /*count*/ -1, &count));
   ASSERT_EQ(-1, count);
   EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"some text");
 
-  // Tests for TextUnit_Word
+  // Tests for TextUnit_Word.
   ASSERT_HRESULT_SUCCEEDED(text_range_provider->MoveEndpointByUnit(
       TextPatternRangeEndpoint_End, TextUnit_Word, /*count*/ 1, &count));
   ASSERT_EQ(1, count);
-  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"some textmore ");
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"some text\xFFFC");
+
+  ASSERT_HRESULT_SUCCEEDED(text_range_provider->MoveEndpointByUnit(
+      TextPatternRangeEndpoint_End, TextUnit_Word, /*count*/ 1, &count));
+  ASSERT_EQ(1, count);
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"some text\xFFFCmore ");
+
+  ASSERT_HRESULT_SUCCEEDED(text_range_provider->MoveEndpointByUnit(
+      TextPatternRangeEndpoint_End, TextUnit_Word, /*count*/ -1, &count));
+  ASSERT_EQ(-1, count);
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"some text\xFFFC");
 
   ASSERT_HRESULT_SUCCEEDED(text_range_provider->MoveEndpointByUnit(
       TextPatternRangeEndpoint_End, TextUnit_Word, /*count*/ -1, &count));
   ASSERT_EQ(-1, count);
   EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"some text");
 
-  // Tests for TextUnit_Line
+  // Tests for TextUnit_Line.
   ASSERT_HRESULT_SUCCEEDED(text_range_provider->MoveEndpointByUnit(
       TextPatternRangeEndpoint_End, TextUnit_Line, /*count*/ 1, &count));
   ASSERT_EQ(1, count);
-  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"some textmore text");
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"some text\xFFFC");
+
+  ASSERT_HRESULT_SUCCEEDED(text_range_provider->MoveEndpointByUnit(
+      TextPatternRangeEndpoint_End, TextUnit_Line, /*count*/ 1, &count));
+  ASSERT_EQ(1, count);
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"some text\xFFFCmore text");
+
+  ASSERT_HRESULT_SUCCEEDED(text_range_provider->MoveEndpointByUnit(
+      TextPatternRangeEndpoint_End, TextUnit_Line, /*count*/ -1, &count));
+  ASSERT_EQ(-1, count);
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"some text\xFFFC");
 
   ASSERT_HRESULT_SUCCEEDED(text_range_provider->MoveEndpointByUnit(
       TextPatternRangeEndpoint_End, TextUnit_Line, /*count*/ -1, &count));
@@ -4324,22 +4355,22 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
       AXPlatformNodeFromNode(GetNodeFromTree(tree_id, 2)));
 
   // start: TextPosition, anchor_id=4, text_offset=0, annotated_text=<s>ome text
-  // end  : TextPosition, anchor_id=2, text_offset=17,
-  //        annotated_text=some textmore tex<t>
+  // end  : TextPosition, anchor_id=5, text_offset=8,
+  //        annotated_text=more tex<t>
   ComPtr<AXPlatformNodeTextRangeProviderWin> text_range_provider_win;
   CreateTextRangeProviderWin(
       text_range_provider_win, owner, tree_id,
       /*start_anchor_id=*/4, /*start_offset=*/0,
       /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
-      /*end_anchor_id=*/2, /*end_offset=*/17,
+      /*end_anchor_id=*/5, /*end_offset=*/8,
       /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
 
   ASSERT_TRUE(GetStart(text_range_provider_win.Get())->IsTextPosition());
   ASSERT_EQ(4, GetStart(text_range_provider_win.Get())->anchor_id());
   ASSERT_EQ(0, GetStart(text_range_provider_win.Get())->text_offset());
   ASSERT_TRUE(GetEnd(text_range_provider_win.Get())->IsTextPosition());
-  ASSERT_EQ(2, GetEnd(text_range_provider_win.Get())->anchor_id());
-  ASSERT_EQ(17, GetEnd(text_range_provider_win.Get())->text_offset());
+  ASSERT_EQ(5, GetEnd(text_range_provider_win.Get())->anchor_id());
+  ASSERT_EQ(8, GetEnd(text_range_provider_win.Get())->text_offset());
 
   base::win::ScopedVariant expected_variant;
   // SkColor is ARGB, COLORREF is 0BGR
@@ -5465,9 +5496,9 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   ComPtr<AXPlatformNodeTextRangeProviderWin> ignored_range_win;
   CreateTextRangeProviderWin(
       ignored_range_win, owner, tree_id,
-      /*start_anchor_id=*/3, /*start_offset=*/1,
+      /*start_anchor_id=*/3, /*start_offset=*/0,
       /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
-      /*end_anchor_id=*/3, /*end_offset=*/6,
+      /*end_anchor_id=*/3, /*end_offset=*/0,
       /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
 
   EXPECT_TRUE(GetStart(ignored_range_win.Get())->IsIgnored());

@@ -3555,7 +3555,7 @@ class AXPosition {
   // a collapsed popup menu. The presence or the absence of accessible content
   // inside a control might alter whether an "object replacement character"
   // would be exposed in that control, in contrast to ordinary text such as in
-  // the case of a non-empty simple text field which should only have textual
+  // the case of a non-empty plain text field which should only have textual
   // nodes inside it. This is because empty controls need to act as a word and
   // character boundary.
   bool IsEmptyObjectReplacedByCharacter() const {
@@ -3571,28 +3571,35 @@ class AXPosition {
     if (GetAnchor()->IsCollapsedMenuListPopUpButton())
       return true;
 
-    // All other elements that have unignored descendants should not be treated
-    // as empty objects.
-    if (AnchorUnignoredChildCount())
+    // All anchor nodes that are empty leaf nodes or have only ignored
+    // descendants should be treated as empty objects. Empty leaf nodes do not
+    // expose their descendants to platform accessibility APIs, but may have
+    // unignored descendants. They do not have any inner text, however, hence
+    // they are still empty from our perspective. For example, an empty text
+    // field may still have an unignored generic container inside it.
+    if (AnchorUnignoredChildCount() && !GetAnchor()->IsEmptyLeaf())
       return false;
 
-    // Embed elements with non empty children should not be treated as empty
-    // objects.
-    if (GetAnchorRole() == ax::mojom::Role::kEmbeddedObject &&
+    // <embed> and <object> elements with non empty children should not be
+    // treated as empty objects.
+    if ((GetAnchorRole() == ax::mojom::Role::kEmbeddedObject ||
+         GetAnchorRole() == ax::mojom::Role::kPluginObject) &&
         AnchorChildCount() > 0) {
       return false;
     }
 
-    // All unignored leaf nodes in the AXTree should be replaced by the embedded
-    // object character - unless the object is a web area, a text node or is
-    // skipped during text navigation. Also, nodes that only have ignored
-    // children (e.g., a button that contains only an empty div) need to be
-    // treated as leaf nodes.
+    // All unignored leaf nodes in the accessibility tree except kRootWebArea,
+    // kPdfRoot, text nodes and nodes that are skipped during text navigation,
+    // should be replaced by the embedded object character. (See
+    // `AXNode::IsIgnoredForTextNavigation()`.) Also, nodes that only have
+    // ignored children (e.g., a button that contains only an empty div) need to
+    // be treated as leaf nodes.
     //
     // Calling AXPosition::IsIgnored here is not possible as it would create an
     // infinite loop. However, GetAnchor()->IsIgnored() is sufficient here
     // because we know that the anchor at this position doesn't have an
-    // unignored child, making this a leaf tree or text position.
+    // unignored child, making this a leaf tree or text position, or a leaf's
+    // descendant.
     return !GetAnchor()->IsIgnored() &&
            !GetAnchor()->IsIgnoredForTextNavigation() &&
            !IsPlatformDocument(GetAnchorRole()) && !IsInTextObject() &&
@@ -3606,9 +3613,13 @@ class AXPosition {
       return false;
     }
 
-    // Empty objects are only possible on a collapsed popup button parent of a
-    // menu list popup or a node that only has ignored descendants. If it has no
-    // empty object ancestor, it can't be inside of an empty object.
+    // Empty objects are only possible on:
+    // 1. A collapsed popup button that is parent of a menu list popup,
+    // 2. The generic container that is sometimes found inside empty text
+    // fields,
+    // 3. A node that only has ignored descendants.
+    // If our anchor node doesn't have an empty object ancestor, it can't be
+    // inside of an empty object.
     return GetEmptyObjectAncestorNode();
   }
 
@@ -3620,13 +3631,20 @@ class AXPosition {
     }
 
     if (!GetAnchor()->IsIgnored()) {
-      // The only case where a descendant of an empty object can be unignored is
-      // when we are inside of a collapsed popup button parent of a menu list
-      // popup.
+      // The only cases where a descendant of an empty object can be unignored
+      // is when we are inside of a collapsed popup button which is the parent
+      // of a menu list popup, or inside a generic container that is the child
+      // of an empty text field.
       if (AXNodeType* popup_button =
               GetAnchor()->GetCollapsedMenuListPopUpButtonAncestor()) {
         return popup_button;
       }
+
+      if (GetAnchorRole() == ax::mojom::Role::kGenericContainer &&
+          !AnchorUnignoredChildCount()) {
+        return GetAnchor()->GetTextFieldAncestor();
+      }
+
       return nullptr;
     }
 
@@ -3721,19 +3739,23 @@ class AXPosition {
     // calculating the corresponding text offset in the parent anchor on
     // platforms that do not use an "object replacement character" to represent
     // child nodes.
+    //
+    // Ignored positions are not visible to platform APIs. As a result, their
+    // inner text or hypertext does not appear in their parent node, but the
+    // text of their unignored children does. (See `AXNode::GetHypertext()` for
+    // the meaning of "hypertext" in this context.
     AXPositionInstance tree_position =
         CreatePositionAtStartOfAnchor()->AsTreePosition();
-    DCHECK(tree_position);
+    DCHECK(!tree_position->IsNullPosition());
     AXPositionInstance parent_position = tree_position->CreateParentPosition(
         ax::mojom::MoveDirection::kBackward);
-    DCHECK(parent_position);
     if (parent_position->IsNullPosition())
-      return 0;
+      return 0;  // There is only a single root node.
 
     int offset_in_parent = 0;
     for (int i = 0; i < parent_position->child_index(); ++i) {
       AXPositionInstance child = parent_position->CreateChildPositionAt(i);
-      DCHECK(child);
+      DCHECK(!child->IsNullPosition());
       offset_in_parent += child->MaxTextOffsetInParent();
     }
     return offset_in_parent;
@@ -3747,7 +3769,7 @@ class AXPosition {
   // to move by grapheme boundaries on non-leaf nodes and computing plus caching
   // the inner text for all nodes is costly.
   std::unique_ptr<base::i18n::BreakIterator> GetGraphemeIterator() const {
-    if (!IsTextPosition() || !IsLeaf())
+    if (!IsLeafTextPosition())
       return {};
 
     name_ = GetText();
@@ -3802,19 +3824,34 @@ class AXPosition {
   virtual AXNodeType* GetLowestUnignoredAncestor() const = 0;
   virtual void AnchorParent(AXTreeID* tree_id, int32_t* parent_id) const = 0;
   virtual AXNodeType* GetNodeInTree(AXTreeID tree_id,
-                                    int32_t node_id) const = 0;
-  virtual int32_t GetAnchorID(AXNodeType* node) const = 0;
+                                    AXNodeData::AXID node_id) const = 0;
+  virtual AXNodeData::AXID GetAnchorID(AXNodeType* node) const = 0;
   virtual AXTreeID GetTreeID(AXNodeType* node) const = 0;
 
-  // Returns the length of text that this anchor node takes up in its parent.
+  // Returns the length of text (in UTF16 code points) that this anchor node
+  // takes up in its parent.
+  //
   // On some platforms, embedded objects are represented in their parent with a
-  // single embedded object character.
+  // single "embedded object character".
   int MaxTextOffsetInParent() const {
-    return IsEmbeddedObjectInParent() ? 1 : MaxTextOffset();
+    // Ignored anchors are not visible to platform APIs. As a result, their
+    // inner text or hypertext does not appear in their parent node, but the
+    // text of their unignored children does, if any. (See
+    // `AXNode::GetHypertext()` for the meaning of "hypertext" in this context.
+    if (!GetAnchor()->IsIgnored()) {
+      if (IsEmbeddedObjectInParent())
+        return AXNode::kEmbeddedCharacterLength;
+    } else {
+      // Ignored leaf (text) nodes might contain inner text or hypertext, but it
+      // should not be exposed in their parent.
+      if (!AnchorUnignoredChildCount())
+        return 0;
+    }
+    return MaxTextOffset();
   }
 
   // Returns whether or not this anchor is represented in their parent with a
-  // single embedded object character.
+  // single "object replacement character".
   virtual bool IsEmbeddedObjectInParent() const = 0;
 
   // Determines if the anchor containing this position produces a hard line

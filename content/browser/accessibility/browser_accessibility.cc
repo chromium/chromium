@@ -1496,6 +1496,10 @@ bool BrowserAccessibility::IsChildOfLeaf() const {
   return node()->IsChildOfLeaf();
 }
 
+bool BrowserAccessibility::IsEmptyLeaf() const {
+  return node()->IsEmptyLeaf();
+}
+
 bool BrowserAccessibility::IsLeaf() const {
   // According to the ARIA and Core-AAM specs:
   // https://w3c.github.io/aria/#button,

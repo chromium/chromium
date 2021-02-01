@@ -97,7 +97,10 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
 
   bool IsLineBreakObject() const;
 
-  // See AXNode::IsLeaf().
+  // See `AXNode::IsEmptyLeaf()`.
+  bool IsEmptyLeaf() const;
+
+  // See `AXNode::IsLeaf()`.
   bool PlatformIsLeaf() const;
 
   // Returns true if this object can fire events.
