@@ -10,6 +10,7 @@
 
 #include "base/auto_reset.h"
 #include "base/scoped_observation.h"
+#include "base/strings/string16.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
@@ -62,6 +63,9 @@ class ExtensionsMenuView : public views::BubbleDialogDelegateView,
   static std::vector<ExtensionsMenuItemView*>
   GetSortedItemsForSectionForTesting(
       ToolbarActionViewController::PageInteractionStatus status);
+
+  // WidgetDelegate:
+  base::string16 GetAccessibleWindowTitle() const override;
 
   // TabStripModelObserver:
   void TabChangedAt(content::WebContents* contents,
