@@ -72,7 +72,8 @@ void RemoteApps::Connect(
   for (const auto& entry : delegate_->GetApps()) {
     apps.push_back(Convert(entry.second));
   }
-  subscriber->OnApps(std::move(apps));
+  subscriber->OnApps(std::move(apps), apps::mojom::AppType::kRemote,
+                     true /* should_notify_initialized */);
 
   subscribers_.Add(std::move(subscriber));
 }

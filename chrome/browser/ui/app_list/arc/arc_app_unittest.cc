@@ -1106,7 +1106,8 @@ class ArcAppModelIconTest : public ArcAppModelBuilderRecreate,
 
     apps::AppServiceProxyFactory::GetForProfile(profile())
         ->AppRegistryCache()
-        .OnApps(std::move(apps));
+        .OnApps(std::move(apps), apps::mojom::AppType::kArc,
+                false /* should_notify_initialized */);
   }
 
   // Set FakeArcAppIconFactory to use FakeArcAppIcon for Arc app icon loading to

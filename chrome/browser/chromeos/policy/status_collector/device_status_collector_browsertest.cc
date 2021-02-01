@@ -3522,7 +3522,9 @@ TEST_F(DeviceStatusCollectorTest, GenerateAppInfo) {
   std::vector<apps::mojom::AppPtr> apps;
   apps.push_back(std::move(app1));
   apps.push_back(std::move(app2));
-  app_proxy->AppRegistryCache().OnApps(std::move(apps));
+  app_proxy->AppRegistryCache().OnApps(std::move(apps),
+                                       apps::mojom::AppType::kUnknown,
+                                       false /* should_notify_initialized */);
 
   // Start app instance
   base::Time start_time;

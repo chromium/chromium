@@ -141,7 +141,8 @@ class AppInfoGeneratorTest : public ::testing::Test {
     app->version = version;
     app->app_type = app_type;
     deltas.push_back(std::move(app));
-    GetCache().OnApps(std::move(deltas));
+    GetCache().OnApps(std::move(deltas), app_type,
+                      false /* should_notify_initialized */);
   }
 
   class Instance {

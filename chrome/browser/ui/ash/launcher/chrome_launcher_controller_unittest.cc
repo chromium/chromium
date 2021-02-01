@@ -320,7 +320,8 @@ void UpdateAppRegistryCache(Profile* profile,
 
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->AppRegistryCache()
-      .OnApps(std::move(apps));
+      .OnApps(std::move(apps), apps::mojom::AppType::kExtension,
+              false /* should_notify_initialized */);
 }
 
 }  // namespace
@@ -4962,7 +4963,8 @@ TEST_F(ChromeLauncherControllerTest, DoNotShowInShelf) {
   apps.push_back(std::move(app));
   apps::AppServiceProxyFactory::GetForProfile(profile())
       ->AppRegistryCache()
-      .OnApps(std::move(apps));
+      .OnApps(std::move(apps), apps::mojom::AppType::kExtension,
+              false /* should_notify_initialized */);
 
   InitLauncherController();
   EXPECT_EQ("Chrome, App2", GetPinnedAppStatus());

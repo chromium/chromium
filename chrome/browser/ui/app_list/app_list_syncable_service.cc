@@ -113,7 +113,8 @@ void SetAppIsDefaultForTest(Profile* profile, const std::string& id) {
 
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->AppRegistryCache()
-      .OnApps(std::move(deltas));
+      .OnApps(std::move(deltas), apps::mojom::AppType::kExtension,
+              false /* should_notify_initialized */);
 }
 
 bool IsUnRemovableDefaultApp(const std::string& id) {

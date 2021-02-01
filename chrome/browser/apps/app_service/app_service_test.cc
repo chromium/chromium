@@ -42,7 +42,9 @@ void AppServiceTest::UninstallAllApps(Profile* profile) {
         app->readiness = apps::mojom::Readiness::kUninstalledByUser;
         apps.push_back(app.Clone());
       });
-  app_service_proxy_->AppRegistryCache().OnApps(std::move(apps));
+  app_service_proxy_->AppRegistryCache().OnApps(
+      std::move(apps), apps::mojom::AppType::kUnknown,
+      false /* should_notify_initialized */);
 
   // Allow async callbacks to run.
   WaitForAppService();

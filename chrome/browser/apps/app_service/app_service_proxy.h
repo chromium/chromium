@@ -339,7 +339,9 @@ class AppServiceProxy : public KeyedService,
   void Shutdown() override;
 
   // apps::mojom::Subscriber overrides.
-  void OnApps(std::vector<apps::mojom::AppPtr> deltas) override;
+  void OnApps(std::vector<apps::mojom::AppPtr> deltas,
+              apps::mojom::AppType app_type,
+              bool should_notify_initialized) override;
   void Clone(mojo::PendingReceiver<apps::mojom::Subscriber> receiver) override;
   void OnPreferredAppSet(const std::string& app_id,
                          apps::mojom::IntentFilterPtr intent_filter) override;

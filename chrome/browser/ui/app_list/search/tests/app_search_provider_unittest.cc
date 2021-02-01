@@ -117,7 +117,9 @@ void UpdateIconKey(apps::AppServiceProxy& proxy, const std::string& app_id) {
 
   std::vector<apps::mojom::AppPtr> apps;
   apps.push_back(app.Clone());
-  proxy.AppRegistryCache().OnApps(std::move(apps));
+  proxy.AppRegistryCache().OnApps(std::move(apps),
+                                  apps::mojom::AppType::kUnknown,
+                                  false /* should_notify_initialized */);
   proxy.FlushMojoCallsForTesting();
 }
 

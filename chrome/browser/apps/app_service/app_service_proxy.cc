@@ -633,8 +633,10 @@ void AppServiceProxy::Shutdown() {
 #endif
 }
 
-void AppServiceProxy::OnApps(std::vector<apps::mojom::AppPtr> deltas) {
-  cache_.OnApps(std::move(deltas));
+void AppServiceProxy::OnApps(std::vector<apps::mojom::AppPtr> deltas,
+                             apps::mojom::AppType app_type,
+                             bool should_notify_initialized) {
+  cache_.OnApps(std::move(deltas), app_type, should_notify_initialized);
 }
 
 void AppServiceProxy::Clone(

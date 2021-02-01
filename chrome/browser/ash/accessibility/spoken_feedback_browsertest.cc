@@ -530,7 +530,8 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
   apps::AppServiceProxyFactory::GetForProfile(
       AccessibilityManager::Get()->profile())
       ->AppRegistryCache()
-      .OnApps(std::move(apps));
+      .OnApps(std::move(apps), apps::mojom::AppType::kBuiltIn,
+              false /* should_notify_initialized */);
 
   // Create and add a test app to the shelf model.
   ash::ShelfItem item;
@@ -578,7 +579,8 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
   apps::AppServiceProxyFactory::GetForProfile(
       AccessibilityManager::Get()->profile())
       ->AppRegistryCache()
-      .OnApps(std::move(apps));
+      .OnApps(std::move(apps), apps::mojom::AppType::kBuiltIn,
+              false /* should_notify_initialized */);
 
   // Create and add a test app to the shelf model.
   ash::ShelfItem item;

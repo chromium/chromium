@@ -97,7 +97,8 @@ class FakePublisher : public apps::PublisherBase {
       }
       apps.push_back(std::move(app));
     }
-    subscriber->OnApps(std::move(apps));
+    subscriber->OnApps(std::move(apps), app_type_,
+                       false /* should_notify_initialized */);
   }
 
   apps::mojom::AppType app_type_;
@@ -125,7 +126,9 @@ class FakeSubscriber : public apps::mojom::Subscriber {
   PreferredAppsList& PreferredApps() { return preferred_apps_; }
 
  private:
-  void OnApps(std::vector<apps::mojom::AppPtr> deltas) override {
+  void OnApps(std::vector<apps::mojom::AppPtr> deltas,
+              apps::mojom::AppType app_type,
+              bool should_notify_initialized) override {
     for (const auto& delta : deltas) {
       app_ids_seen_.insert(delta->app_id);
       if (delta->readiness == apps::mojom::Readiness::kUninstalledByUser) {

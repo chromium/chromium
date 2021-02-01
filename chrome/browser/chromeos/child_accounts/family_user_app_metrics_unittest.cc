@@ -165,7 +165,8 @@ class FamilyUserAppMetricsTest
         /*app_id=*/"h", /*app_name=*/"huckleberry",
         /*last_launch_time=*/base::Time::Now() - 28 * kOneDay,
         apps::mojom::InstallSource::kUser, apps::mojom::AppType::kLacros));
-    cache.OnApps(std::move(deltas));
+    cache.OnApps(std::move(deltas), apps::mojom::AppType::kUnknown,
+                 false /* should_notify_initialized */);
   }
 
   void ConstructFamilyUserMetricsService() {

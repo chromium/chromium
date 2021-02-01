@@ -71,7 +71,9 @@ class AppServiceFileTasksTest : public testing::Test {
             : apps_util::CreateIntentFilterForSend(mime_type, activity_label);
     app->intent_filters.push_back(std::move(intent_filter));
     apps.push_back(std::move(app));
-    app_service_proxy_->AppRegistryCache().OnApps(std::move(apps));
+    app_service_proxy_->AppRegistryCache().OnApps(
+        std::move(apps), apps::mojom::AppType::kArc,
+        false /* should_notify_initialized */);
     app_service_test_.WaitForAppService();
   }
 

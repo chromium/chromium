@@ -61,7 +61,8 @@ void PublisherBase::Publish(
   for (auto& subscriber : subscribers) {
     std::vector<apps::mojom::AppPtr> apps;
     apps.push_back(app.Clone());
-    subscriber->OnApps(std::move(apps));
+    subscriber->OnApps(std::move(apps), apps::mojom::AppType::kUnknown,
+                       false /* should_notify_initialized */);
   }
 }
 

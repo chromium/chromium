@@ -122,7 +122,8 @@ void CrostiniApps::Connect(
 
   mojo::Remote<apps::mojom::Subscriber> subscriber(
       std::move(subscriber_remote));
-  subscriber->OnApps(std::move(apps));
+  subscriber->OnApps(std::move(apps), apps::mojom::AppType::kCrostini,
+                     true /* should_notify_initialized */);
   subscribers_.Add(std::move(subscriber));
 }
 
