@@ -53,37 +53,50 @@ util.iconSetToCSSBackgroundImageValue = iconSet => {
 };
 
 /**
- * Mapping table of file error name to i18n localized error name.
- *
- * @const @enum {string}
- */
-util.FileErrorLocalizedName = {
-  'InvalidModificationError': 'FILE_ERROR_INVALID_MODIFICATION',
-  'InvalidStateError': 'FILE_ERROR_INVALID_STATE',
-  'NoModificationAllowedError': 'FILE_ERROR_NO_MODIFICATION_ALLOWED',
-  'NotFoundError': 'FILE_ERROR_NOT_FOUND',
-  'NotReadableError': 'FILE_ERROR_NOT_READABLE',
-  'PathExistsError': 'FILE_ERROR_PATH_EXISTS',
-  'QuotaExceededError': 'FILE_ERROR_QUOTA_EXCEEDED',
-  'SecurityError': 'FILE_ERROR_SECURITY',
-};
-Object.freeze(util.FileErrorLocalizedName);
-
-/**
- * Returns i18n localized error name for file error |name|.
- *
  * @param {?string|undefined} name File error name.
  * @return {string} Translated file error string.
  */
 util.getFileErrorString = name => {
-  const error = util.FileErrorLocalizedName[name] || 'FILE_ERROR_GENERIC';
-  return loadTimeData.getString(error);
+  let errorString;
+
+  switch (name) {
+    case 'NotFoundError':
+      errorString = 'FILE_ERROR_NOT_FOUND';
+      break;
+    case 'SecurityError':
+      errorString = 'FILE_ERROR_SECURITY';
+      break;
+    case 'NotReadableError':
+      errorString = 'FILE_ERROR_NOT_READABLE';
+      break;
+    case 'NoModificationAllowedError':
+      errorString = 'FILE_ERROR_NO_MODIFICATION_ALLOWED';
+      break;
+    case 'InvalidStateError':
+      errorString = 'FILE_ERROR_INVALID_STATE';
+      break;
+    case 'InvalidModificationError':
+      errorString = 'FILE_ERROR_INVALID_MODIFICATION';
+      break;
+    case 'PathExistsError':
+      errorString = 'FILE_ERROR_PATH_EXISTS';
+      break;
+    case 'QuotaExceededError':
+      errorString = 'FILE_ERROR_QUOTA_EXCEEDED';
+      break;
+    default:
+      errorString = 'FILE_ERROR_GENERIC';
+      break;
+  }
+
+  return loadTimeData.getString(errorString);
 };
 
 /**
  * Mapping table for FileError.code style enum to DOMError.name string.
  *
- * @const @enum {string}
+ * @enum {string}
+ * @const
  */
 util.FileError = {
   ABORT_ERR: 'AbortError',
