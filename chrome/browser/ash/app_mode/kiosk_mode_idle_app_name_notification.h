@@ -10,15 +10,17 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/timer/timer.h"
+// TODO(https://crbug.com/1164001): move to forward declaration when migrated to
+// chrome/browser/ash/.
+#include "chrome/browser/chromeos/ui/idle_app_name_notification_view.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "ui/base/user_activity/user_activity_observer.h"
 
-namespace chromeos {
+namespace ash {
 
-class IdleAppNameNotificationView;
-
-class KioskModeIdleAppNameNotification : public ui::UserActivityObserver,
-                                         public PowerManagerClient::Observer {
+class KioskModeIdleAppNameNotification
+    : public ui::UserActivityObserver,
+      public chromeos::PowerManagerClient::Observer {
  public:
   static void Initialize();
 
@@ -57,6 +59,12 @@ class KioskModeIdleAppNameNotification : public ui::UserActivityObserver,
   DISALLOW_COPY_AND_ASSIGN(KioskModeIdleAppNameNotification);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration of
+// //chrome/browser/chromeos is finished.
+namespace chromeos {
+using ::ash::KioskModeIdleAppNameNotification;
+}
 
 #endif  // CHROME_BROWSER_ASH_APP_MODE_KIOSK_MODE_IDLE_APP_NAME_NOTIFICATION_H_

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 
-namespace chromeos {
+namespace ash {
 
 KioskAppId::KioskAppId() = default;
 KioskAppId::~KioskAppId() = default;
@@ -30,4 +30,4 @@ KioskAppId KioskAppId::ForWebApp(const AccountId& account_id) {
   return KioskAppId(KioskAppType::WEB_APP, account_id);
 }
 
-}  // namespace chromeos
+}  // namespace ash

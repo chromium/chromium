@@ -20,7 +20,7 @@ namespace content {
 class WebContents;
 }
 
-namespace chromeos {
+namespace ash {
 
 class KioskSessionPluginHandlerDelegate;
 
@@ -72,6 +72,6 @@ class KioskSessionPluginHandler {
   DISALLOW_COPY_AND_ASSIGN(KioskSessionPluginHandler);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_APP_MODE_KIOSK_SESSION_PLUGIN_HANDLER_H_

@@ -14,7 +14,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/browser_thread.h"
 
-namespace chromeos {
+namespace ash {
 
 ArcKioskAppData::ArcKioskAppData(const std::string& app_id,
                                  const std::string& package_name,
@@ -77,4 +77,4 @@ void ArcKioskAppData::OnIconLoadFailure() {
   // Do nothing
 }
 
-}  // namespace chromeos
+}  // namespace ash

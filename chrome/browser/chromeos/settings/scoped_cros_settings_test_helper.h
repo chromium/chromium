@@ -100,4 +100,9 @@ class ScopedCrosSettingsTestHelper {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to chrome/browser/ash/.
+namespace ash {
+using ::chromeos::ScopedCrosSettingsTestHelper;
+}
+
 #endif  // CHROME_BROWSER_CHROMEOS_SETTINGS_SCOPED_CROS_SETTINGS_TEST_HELPER_H_

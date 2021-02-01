@@ -1060,7 +1060,7 @@ void ProfileImpl::OnLocaleReady() {
   // If this is a kiosk profile, reset some of its prefs which should not
   // persist between sessions.
   if (chrome::IsRunningInForcedAppMode()) {
-    chromeos::ResetEphemeralKioskPreferences(prefs_.get());
+    ash::ResetEphemeralKioskPreferences(prefs_.get());
   }
 #endif
 

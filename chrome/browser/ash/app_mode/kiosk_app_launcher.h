@@ -6,7 +6,8 @@
 
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 
-namespace chromeos {
+namespace ash {
+
 // Abstract class responsible for the launch different type of kiosk apps.
 //
 //
@@ -69,6 +70,13 @@ class KioskAppLauncher {
  protected:
   Delegate* delegate_ = nullptr;  // Not owned, owns us.
 };
-}  // namespace chromeos
+
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::KioskAppLauncher;
+}
 
 #endif  // CHROME_BROWSER_ASH_APP_MODE_KIOSK_APP_LAUNCHER_H_

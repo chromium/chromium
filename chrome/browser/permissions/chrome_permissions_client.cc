@@ -273,9 +273,9 @@ base::Optional<url::Origin> ChromePermissionsClient::GetAutoApprovalOrigin() {
       user_manager::UserManager::Get()->IsLoggedInAsWebKioskApp()) {
     const AccountId& account_id =
         user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId();
-    DCHECK(chromeos::WebKioskAppManager::IsInitialized());
-    const chromeos::WebKioskAppData* app_data =
-        chromeos::WebKioskAppManager::Get()->GetAppByAccountId(account_id);
+    DCHECK(ash::WebKioskAppManager::IsInitialized());
+    const ash::WebKioskAppData* app_data =
+        ash::WebKioskAppManager::Get()->GetAppByAccountId(account_id);
     DCHECK(app_data);
     return url::Origin::Create(app_data->install_url());
   }

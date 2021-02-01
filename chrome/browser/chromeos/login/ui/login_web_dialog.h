@@ -96,4 +96,9 @@ class LoginWebDialog : public ui::WebDialogDelegate {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to chrome/browser/ash/.
+namespace ash {
+using ::chromeos::LoginWebDialog;
+}
+
 #endif  // CHROME_BROWSER_CHROMEOS_LOGIN_UI_LOGIN_WEB_DIALOG_H_

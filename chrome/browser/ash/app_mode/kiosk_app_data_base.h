@@ -18,7 +18,7 @@ namespace base {
 class DictionaryValue;
 }
 
-namespace chromeos {
+namespace ash {
 
 class KioskAppDataBase : public KioskAppIconLoader::Delegate {
  public:
@@ -81,6 +81,6 @@ class KioskAppDataBase : public KioskAppIconLoader::Delegate {
   DISALLOW_COPY_AND_ASSIGN(KioskAppDataBase);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_APP_MODE_KIOSK_APP_DATA_BASE_H_

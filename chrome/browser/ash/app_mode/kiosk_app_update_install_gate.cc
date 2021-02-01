@@ -10,7 +10,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 
-namespace chromeos {
+namespace ash {
 
 KioskAppUpdateInstallGate::KioskAppUpdateInstallGate(Profile* profile)
     : profile_(profile),
@@ -39,4 +39,4 @@ extensions::InstallGate::Action KioskAppUpdateInstallGate::ShouldDelay(
   return DELAY;
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -38,7 +38,7 @@ constexpr em::DeviceLocalAccountInfoProto_AccountType kWebKioskAccountType =
 constexpr em::DeviceLocalAccountInfoProto_AccountType kKioskAccountType =
     em::DeviceLocalAccountInfoProto_AccountType_ACCOUNT_TYPE_KIOSK_APP;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -87,7 +87,7 @@ class KioskCrashRestoreTest : public InProcessBrowserTest {
                                     cryptohome_id.account_id());
     command_line->AppendSwitchASCII(
         switches::kLoginProfile,
-        CryptohomeClient::GetStubSanitizedUsername(cryptohome_id));
+        chromeos::CryptohomeClient::GetStubSanitizedUsername(cryptohome_id));
 
     fake_cws_->Init(embedded_test_server());
     fake_cws_->SetUpdateCrx(kTestKioskApp, std::string(kTestKioskApp) + ".crx",
@@ -184,4 +184,4 @@ IN_PROC_BROWSER_TEST_F(WebKioskCrashRestoreTest, WebKioskLaunches) {
   KioskSessionInitializedWaiter().Wait();
 }
 
-}  // namespace chromeos
+}  // namespace ash

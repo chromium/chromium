@@ -11,7 +11,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 KioskAppExternalLoader::KioskAppExternalLoader(AppClass app_class)
     : app_class_(app_class) {}
@@ -75,4 +75,4 @@ void KioskAppExternalLoader::SendPrefsIfAvailable() {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

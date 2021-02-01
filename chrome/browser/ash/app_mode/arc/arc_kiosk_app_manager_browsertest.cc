@@ -24,7 +24,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -285,4 +285,4 @@ IN_PROC_BROWSER_TEST_F(ArcKioskAppManagerTest, UpdateNameAndIcon) {
   ASSERT_TRUE(app->icon().BackedBySameObjectAs(new_icon));
 }
 
-}  // namespace chromeos
+}  // namespace ash

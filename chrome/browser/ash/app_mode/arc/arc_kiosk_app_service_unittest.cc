@@ -26,7 +26,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/test/test_screen.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -259,4 +259,4 @@ TEST_F(ArcKioskAppServiceTest, AppLaunches) {
   controller.WaitUntilWindowCreated();
 }
 
-}  // namespace chromeos
+}  // namespace ash

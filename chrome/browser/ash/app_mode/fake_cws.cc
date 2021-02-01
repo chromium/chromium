@@ -28,7 +28,7 @@ using net::test_server::BasicHttpResponse;
 using net::test_server::HttpRequest;
 using net::test_server::HttpResponse;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -331,4 +331,4 @@ std::unique_ptr<HttpResponse> FakeCWS::HandleRequest(
   return std::unique_ptr<HttpResponse>();
 }
 
-}  // namespace chromeos
+}  // namespace ash

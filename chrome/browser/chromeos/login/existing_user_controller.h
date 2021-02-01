@@ -22,6 +22,8 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+// TODO(https://crbug.com/1164001): move KioskAppId to forward declaration
+// when moved to chrome/browser/ash/.
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/chromeos/login/saml/password_sync_token_checkers_collection.h"
 #include "chrome/browser/chromeos/login/screens/encryption_migration_mode.h"
@@ -51,7 +53,6 @@ namespace chromeos {
 class CrosSettings;
 class LoginDisplay;
 class OAuth2TokenInitializer;
-class KioskAppId;
 
 namespace login {
 class NetworkStateHelper;

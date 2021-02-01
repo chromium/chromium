@@ -53,4 +53,9 @@ class IdleAppNameNotificationView {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to chrome/browser/ash/.
+namespace ash {
+using ::chromeos::IdleAppNameNotificationView;
+}
+
 #endif  // CHROME_BROWSER_CHROMEOS_UI_IDLE_APP_NAME_NOTIFICATION_VIEW_H_

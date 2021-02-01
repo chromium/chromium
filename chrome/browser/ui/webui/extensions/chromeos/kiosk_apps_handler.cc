@@ -175,7 +175,7 @@ void KioskAppsHandler::OnKioskExtensionDownloadFailed(
 
 void KioskAppsHandler::OnGetConsumerKioskAutoLaunchStatus(
     const std::string& callback_id,
-    chromeos::KioskAppManager::ConsumerKioskAutoLaunchStatus status) {
+    ash::KioskAppManager::ConsumerKioskAutoLaunchStatus status) {
   initialized_ = true;
   if (KioskAppManager::IsConsumerKioskEnabled()) {
     if (!base::SysInfo::IsRunningOnChromeOS()) {
@@ -200,7 +200,6 @@ void KioskAppsHandler::OnGetConsumerKioskAutoLaunchStatus(
   kiosk_params.SetBoolean("autoLaunchEnabled", is_auto_launch_enabled_);
   ResolveJavascriptCallback(base::Value(callback_id), kiosk_params);
 }
-
 
 void KioskAppsHandler::OnKioskAppsSettingsChanged() {
   FireWebUIListener("kiosk-app-settings-changed", *GetSettingsDictionary());

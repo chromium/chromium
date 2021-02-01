@@ -24,7 +24,7 @@
 #include "ui/base/page_transition_types.h"
 #include "url/origin.h"
 
-namespace chromeos {
+namespace ash {
 
 WebKioskAppLauncher::WebKioskAppLauncher(
     Profile* profile,
@@ -145,4 +145,4 @@ void WebKioskAppLauncher::SetUrlLoaderForTesting(
   url_loader_ = std::move(url_loader);
 }
 
-}  // namespace chromeos
+}  // namespace ash

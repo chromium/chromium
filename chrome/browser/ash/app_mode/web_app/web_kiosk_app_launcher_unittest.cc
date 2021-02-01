@@ -28,7 +28,7 @@
 using ::base::test::RunClosure;
 using ::testing::Return;
 
-namespace chromeos {
+namespace ash {
 
 class MockAppLauncherDelegate : public WebKioskAppLauncher::Delegate {
  public:
@@ -353,4 +353,4 @@ TEST_F(WebKioskAppLauncherTest, SkipInstallation) {
   CloseAppWindow();
 }
 
-}  // namespace chromeos
+}  // namespace ash

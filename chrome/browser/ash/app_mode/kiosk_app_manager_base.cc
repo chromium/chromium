@@ -18,7 +18,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/settings/cros_settings_names.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 // Sub directory under DIR_USER_DATA to store cached icon files.
@@ -113,4 +113,4 @@ void KioskAppManagerBase::ClearRemovedApps(
       account_ids_to_remove);
 }
 
-}  // namespace chromeos
+}  // namespace ash

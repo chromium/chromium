@@ -29,7 +29,7 @@ class WebAppUrlLoader;
 class WebAppDataRetriever;
 }  // namespace web_app
 
-namespace chromeos {
+namespace ash {
 
 class WebKioskAppData;
 
@@ -85,6 +85,13 @@ class WebKioskAppLauncher : public KioskAppLauncher {
   base::WeakPtrFactory<WebKioskAppLauncher> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(WebKioskAppLauncher);
 };
-}  // namespace chromeos
+
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the //chrome/browser/chromeos
+// migration is finished.
+namespace chromeos {
+using ::ash::WebKioskAppLauncher;
+}
 
 #endif  // CHROME_BROWSER_ASH_APP_MODE_WEB_APP_WEB_KIOSK_APP_LAUNCHER_H_

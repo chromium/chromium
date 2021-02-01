@@ -190,4 +190,11 @@ class AutomaticRebootManager : public PowerManagerClient::Observer,
 }  // namespace system
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to chrome/browser/ash/.
+namespace ash {
+namespace system {
+using ::chromeos::system::AutomaticRebootManager;
+}
+}  // namespace ash
+
 #endif  // CHROME_BROWSER_CHROMEOS_SYSTEM_AUTOMATIC_REBOOT_MANAGER_H_

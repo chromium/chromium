@@ -11,7 +11,7 @@ namespace base {
 class FilePath;
 }
 
-namespace chromeos {
+namespace ash {
 
 class KioskAppDataDelegate {
  public:
@@ -32,6 +32,6 @@ class KioskAppDataDelegate {
   virtual ~KioskAppDataDelegate() {}
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_APP_MODE_KIOSK_APP_DATA_DELEGATE_H_

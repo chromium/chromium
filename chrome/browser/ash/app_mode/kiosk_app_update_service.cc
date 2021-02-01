@@ -20,7 +20,7 @@
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/extension.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -175,4 +175,4 @@ KeyedService* KioskAppUpdateServiceFactory::BuildServiceInstanceFor(
       g_browser_process->platform_part()->automatic_reboot_manager());
 }
 
-}  // namespace chromeos
+}  // namespace ash

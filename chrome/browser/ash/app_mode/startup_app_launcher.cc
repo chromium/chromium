@@ -41,7 +41,7 @@
 
 using extensions::Extension;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -557,4 +557,4 @@ void StartupAppLauncher::MaybeUpdateAppData() {
   KioskAppManager::Get()->UpdateAppDataFromProfile(app_id_, profile_, NULL);
 }
 
-}   // namespace chromeos
+}  // namespace ash

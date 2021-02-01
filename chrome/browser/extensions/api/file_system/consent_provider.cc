@@ -240,8 +240,8 @@ void ConsentProviderDelegate::ShowNotification(
 }
 
 bool ConsentProviderDelegate::IsAutoLaunched(const Extension& extension) {
-  chromeos::KioskAppManager::App app_info;
-  return chromeos::KioskAppManager::Get()->GetApp(extension.id(), &app_info) &&
+  ash::KioskAppManager::App app_info;
+  return ash::KioskAppManager::Get()->GetApp(extension.id(), &app_info) &&
          app_info.was_auto_launched_with_zero_delay;
 }
 

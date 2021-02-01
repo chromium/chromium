@@ -10,7 +10,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 
-namespace chromeos {
+namespace ash {
 
 // Starts Android app in kiosk mode.
 // Keeps track of start progress and pins app window
@@ -68,6 +68,6 @@ class ArcKioskAppLauncher : public ArcAppListPrefs::Observer,
   DISALLOW_COPY_AND_ASSIGN(ArcKioskAppLauncher);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_APP_MODE_ARC_ARC_KIOSK_APP_LAUNCHER_H_

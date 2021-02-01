@@ -20,7 +20,7 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "skia/ext/image_operations.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 constexpr int kIconSize = 128;  // size of the icon in px.
@@ -311,4 +311,4 @@ void WebKioskAppData::OnIconLoadFailure() {
   // Do nothing
 }
 
-}  // namespace chromeos
+}  // namespace ash

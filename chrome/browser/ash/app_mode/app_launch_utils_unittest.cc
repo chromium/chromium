@@ -18,6 +18,8 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace ash {
+
 namespace {
 
 const char kEmptyPrefsFile[] = "{}";
@@ -27,10 +29,10 @@ class ScopedKioskPreferencesListForTesting {
   explicit ScopedKioskPreferencesListForTesting(
       const std::vector<std::string>& prefs_to_reset)
       : prefs_(prefs_to_reset) {
-    chromeos::SetEphemeralKioskPreferencesListForTesting(&prefs_);
+    SetEphemeralKioskPreferencesListForTesting(&prefs_);
   }
   ~ScopedKioskPreferencesListForTesting() {
-    chromeos::SetEphemeralKioskPreferencesListForTesting(nullptr);
+    SetEphemeralKioskPreferencesListForTesting(nullptr);
   }
 
  private:
@@ -92,7 +94,7 @@ TEST_F(AppLaunchUtilsTest, ClearUserPrefs) {
   ScopedKioskPreferencesListForTesting prefs({pref_name});
   pref_service->SetBoolean(pref_name, true);
   pref_service->SetBoolean(pref2_name, true);
-  chromeos::ResetEphemeralKioskPreferences(pref_service.get());
+  ResetEphemeralKioskPreferences(pref_service.get());
   EXPECT_FALSE(pref_service->GetBoolean(pref_name));
   EXPECT_TRUE(pref_service->GetBoolean(pref2_name));
 }
@@ -110,7 +112,9 @@ TEST_F(AppLaunchUtilsTest, ClearSubPrefs) {
   pref_service->SetBoolean(pref_a, true);
   pref_service->SetBoolean(pref_b, true);
 
-  chromeos::ResetEphemeralKioskPreferences(pref_service.get());
+  ResetEphemeralKioskPreferences(pref_service.get());
   EXPECT_FALSE(pref_service->GetBoolean(pref_a));
   EXPECT_FALSE(pref_service->GetBoolean(pref_b));
 }
+
+}  // namespace ash

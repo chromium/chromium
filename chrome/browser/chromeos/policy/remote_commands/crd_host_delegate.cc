@@ -116,17 +116,17 @@ bool CRDHostDelegate::IsRunningKiosk() const {
     return false;
 
   if (user_manager->IsLoggedInAsKioskApp()) {
-    chromeos::KioskAppManager* manager = chromeos::KioskAppManager::Get();
+    ash::KioskAppManager* manager = ash::KioskAppManager::Get();
     if (manager->GetAutoLaunchApp().empty())
       return false;
-    chromeos::KioskAppManager::App app;
+    ash::KioskAppManager::App app;
     CHECK(manager->GetApp(manager->GetAutoLaunchApp(), &app));
     return app.was_auto_launched_with_zero_delay;
   } else if (user_manager->IsLoggedInAsArcKioskApp()) {
     return chromeos::ArcKioskAppManager::Get()
         ->current_app_was_auto_launched_with_zero_delay();
   } else if (user_manager->IsLoggedInAsWebKioskApp()) {
-    return chromeos::WebKioskAppManager::Get()
+    return ash::WebKioskAppManager::Get()
         ->current_app_was_auto_launched_with_zero_delay();
   }
   NOTREACHED();

@@ -4,11 +4,11 @@
 
 #include <chrome/browser/ash/app_mode/web_app/mock_web_kiosk_app_launcher.h>
 
-namespace chromeos {
+namespace ash {
 
 MockWebKioskAppLauncher::MockWebKioskAppLauncher()
     : WebKioskAppLauncher(nullptr, nullptr, EmptyAccountId()) {}
 
 MockWebKioskAppLauncher::~MockWebKioskAppLauncher() = default;
 
-}  // namespace chromeos
+}  // namespace ash

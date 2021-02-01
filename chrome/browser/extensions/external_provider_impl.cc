@@ -681,8 +681,8 @@ void ExternalProviderImpl::CreateExternalProviders(
 
       auto kiosk_app_provider = std::make_unique<ExternalProviderImpl>(
           service,
-          base::MakeRefCounted<chromeos::KioskAppExternalLoader>(
-              chromeos::KioskAppExternalLoader::AppClass::kPrimary),
+          base::MakeRefCounted<ash::KioskAppExternalLoader>(
+              ash::KioskAppExternalLoader::AppClass::kPrimary),
           profile, location, Manifest::INVALID_LOCATION, Extension::NO_FLAGS);
       kiosk_app_provider->set_auto_acknowledge(true);
       kiosk_app_provider->set_install_immediately(true);
@@ -693,8 +693,8 @@ void ExternalProviderImpl::CreateExternalProviders(
       auto secondary_kiosk_app_provider =
           std::make_unique<ExternalProviderImpl>(
               service,
-              base::MakeRefCounted<chromeos::KioskAppExternalLoader>(
-                  chromeos::KioskAppExternalLoader::AppClass::kSecondary),
+              base::MakeRefCounted<ash::KioskAppExternalLoader>(
+                  ash::KioskAppExternalLoader::AppClass::kSecondary),
               profile, Manifest::EXTERNAL_PREF,
               Manifest::EXTERNAL_PREF_DOWNLOAD, Extension::NO_FLAGS);
       secondary_kiosk_app_provider->set_auto_acknowledge(true);

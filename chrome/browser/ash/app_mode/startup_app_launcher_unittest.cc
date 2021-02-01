@@ -57,7 +57,7 @@ using ::testing::AssertionFailure;
 using ::testing::AssertionResult;
 using ::testing::AssertionSuccess;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -386,11 +386,11 @@ class StartupAppLauncherTest : public extensions::ExtensionServiceTestBase,
   }
 
   // KioskAppManager::Overrides:
-  std::unique_ptr<ExternalCache> CreateExternalCache(
-      ExternalCacheDelegate* delegate,
+  std::unique_ptr<chromeos::ExternalCache> CreateExternalCache(
+      chromeos::ExternalCacheDelegate* delegate,
       bool always_check_updates) override {
-    auto cache =
-        std::make_unique<TestExternalCache>(delegate, always_check_updates);
+    auto cache = std::make_unique<chromeos::TestExternalCache>(
+        delegate, always_check_updates);
     external_cache_ = cache.get();
     return cache;
   }
@@ -575,7 +575,7 @@ class StartupAppLauncherTest : public extensions::ExtensionServiceTestBase,
   std::unique_ptr<AppLaunchTracker> app_launch_tracker_;
   std::unique_ptr<TestKioskLoaderVisitor> external_apps_loader_handler_;
 
-  TestExternalCache* external_cache_ = nullptr;
+  chromeos::TestExternalCache* external_cache_ = nullptr;
 
   bool kiosk_app_session_initialized_ = false;
   session_manager::SessionManager session_manager_;
@@ -1282,4 +1282,4 @@ TEST_F(StartupAppLauncherTest, SecondaryExtensionStateOnSessionRestore) {
   EXPECT_TRUE(registry()->enabled_extensions().Contains(kExtraSecondaryAppId));
 }
 
-}  // namespace chromeos
+}  // namespace ash

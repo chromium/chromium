@@ -15,7 +15,7 @@ class ExtensionRegistry;
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 
 class KioskAppUpdateInstallGate : public extensions::InstallGate {
  public:
@@ -33,6 +33,6 @@ class KioskAppUpdateInstallGate : public extensions::InstallGate {
   DISALLOW_COPY_AND_ASSIGN(KioskAppUpdateInstallGate);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_APP_MODE_KIOSK_APP_UPDATE_INSTALL_GATE_H_

@@ -42,7 +42,7 @@
 
 using content::BrowserThread;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -582,4 +582,4 @@ void KioskAppData::OnCrxLoadFinished(const CrxLoader* crx_loader) {
   SetStatus(Status::kLoaded);
 }
 
-}  // namespace chromeos
+}  // namespace ash

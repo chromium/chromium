@@ -15,7 +15,7 @@
 #include "content/public/browser/notification_service.h"
 #include "extensions/browser/extension_system.h"
 
-namespace chromeos {
+namespace ash {
 
 StartupAppLauncherUpdateChecker::StartupAppLauncherUpdateChecker(
     Profile* profile)
@@ -74,4 +74,4 @@ void StartupAppLauncherUpdateChecker::OnExtensionUpdaterDone() {
   std::move(callback_).Run(update_found_);
 }
 
-}  // namespace chromeos
+}  // namespace ash

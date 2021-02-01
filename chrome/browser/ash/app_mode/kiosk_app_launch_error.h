@@ -8,10 +8,11 @@
 #include <string>
 
 #include "base/macros.h"
+// TODO(https://crbug.com/1164001): forward declare AuthFailure when migrated
+// to ash/components/.
+#include "chromeos/login/auth/auth_status_consumer.h"
 
-namespace chromeos {
-
-class AuthFailure;
+namespace ash {
 
 class KioskAppLaunchError {
  public:
@@ -60,6 +61,12 @@ class KioskAppLaunchError {
   DISALLOW_IMPLICIT_CONSTRUCTORS(KioskAppLaunchError);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::KioskAppLaunchError;
+}
 
 #endif  // CHROME_BROWSER_ASH_APP_MODE_KIOSK_APP_LAUNCH_ERROR_H_

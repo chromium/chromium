@@ -17,7 +17,7 @@ using extensions::DictionaryBuilder;
 using extensions::ListBuilder;
 using extensions::ExtensionBuilder;
 
-namespace chromeos {
+namespace ash {
 
 TestKioskExtensionBuilder::TestKioskExtensionBuilder(
     extensions::Manifest::Type type,
@@ -90,4 +90,4 @@ scoped_refptr<const extensions::Extension> TestKioskExtensionBuilder::Build()
       .Build();
 }
 
-}  // namespace chromeos
+}  // namespace ash

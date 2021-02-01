@@ -12,6 +12,9 @@
 #include "base/memory/singleton.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
+// TODO(https://crbug.com/1164001): forward declare when moved to
+// chrome/browser/ash/.
+#include "chrome/browser/chromeos/system/automatic_reboot_manager.h"
 #include "chrome/browser/chromeos/system/automatic_reboot_manager_observer.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -23,11 +26,7 @@ namespace extensions {
 class Extension;
 }
 
-namespace chromeos {
-
-namespace system {
-class AutomaticRebootManager;
-}
+namespace ash {
 
 // This class enforces automatic restart on app and Chrome updates in app mode.
 class KioskAppUpdateService : public KeyedService,
@@ -97,6 +96,6 @@ class KioskAppUpdateServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* profile) const override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_APP_MODE_KIOSK_APP_UPDATE_SERVICE_H_

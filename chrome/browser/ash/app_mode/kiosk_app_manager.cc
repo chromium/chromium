@@ -58,9 +58,11 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/cros_system_api/switches/chrome_switches.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
+
+using ::chromeos::InstallAttributes;
 
 // Domain that is used for kiosk-app account IDs.
 constexpr char kKioskAppAccountDomain[] = "kiosk-apps";
@@ -106,14 +108,14 @@ scoped_refptr<base::SequencedTaskRunner> GetBackgroundTaskRunner() {
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 }
 
-std::unique_ptr<ExternalCache> CreateExternalCache(
-    ExternalCacheDelegate* delegate) {
+std::unique_ptr<chromeos::ExternalCache> CreateExternalCache(
+    chromeos::ExternalCacheDelegate* delegate) {
   if (g_test_overrides)
     return g_test_overrides->CreateExternalCache(delegate, true);
 
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory =
       g_browser_process->shared_url_loader_factory();
-  auto cache = std::make_unique<ExternalCacheImpl>(
+  auto cache = std::make_unique<chromeos::ExternalCacheImpl>(
       GetCrxCacheDir(), shared_url_loader_factory, GetBackgroundTaskRunner(),
       delegate, true /* always_check_updates */,
       false /* wait_for_cache_initialization */);
@@ -645,7 +647,7 @@ void KioskAppManager::PutValidatedExternalExtension(
     const std::string& app_id,
     const base::FilePath& crx_path,
     const std::string& version,
-    ExternalCache::PutExternalExtensionCallback callback) {
+    chromeos::ExternalCache::PutExternalExtensionCallback callback) {
   external_cache_->PutExternalExtension(app_id, crx_path, version,
                                         std::move(callback));
 }
@@ -862,4 +864,4 @@ base::TimeDelta KioskAppManager::GetAutoLaunchDelay() const {
   return base::TimeDelta::FromMilliseconds(delay);
 }
 
-}  // namespace chromeos
+}  // namespace ash

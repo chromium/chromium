@@ -9,6 +9,12 @@
 
 #include "base/macros.h"
 #include "base/task/cancelable_task_tracker.h"
+// TODO(https://crbug.com/1164001): forward declare when moved to
+// chrome/browser/ash/.
+#include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
+// TODO(https://crbug.com/1164001): forward declare when moved to
+// chrome/browser/ash/.
+#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/chrome_browser_main_linux.h"
 #include "chrome/browser/chromeos/external_metrics.h"
 #include "chrome/browser/memory/memory_kills_monitor.h"
@@ -47,7 +53,6 @@ class LockToSingleUserManager;
 
 namespace chromeos {
 
-class ArcKioskAppManager;
 class BulkPrintersCalculatorFactory;
 class CrosUsbDetector;
 class DemoModeResourcesRemover;
@@ -66,7 +71,6 @@ class RendererFreezer;
 class SessionTerminationManager;
 class ShutdownPolicyForwarder;
 class SystemTokenCertDBInitializer;
-class WebKioskAppManager;
 class WilcoDtcSupportdManager;
 
 namespace default_app_order {

@@ -79,4 +79,9 @@ class ChromeLoginPerformer : public LoginPerformer {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to chrome/browser/ash/.
+namespace ash {
+using ::chromeos::ChromeLoginPerformer;
+}
+
 #endif  // CHROME_BROWSER_CHROMEOS_LOGIN_AUTH_CHROME_LOGIN_PERFORMER_H_

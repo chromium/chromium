@@ -51,6 +51,8 @@ using extensions::api::braille_display_private::KeyEvent;
 using extensions::api::braille_display_private::MockBrailleController;
 using testing::WithParamInterface;
 
+namespace ash {
+
 namespace {
 
 // Use a real domain to avoid policy loading problems.
@@ -784,3 +786,5 @@ IN_PROC_BROWSER_TEST_P(AccessibilityManagerUserTypeTest, BrailleWhenLoggedIn) {
   EXPECT_TRUE(IsSpokenFeedbackEnabled());
   EXPECT_TRUE(IsBrailleImeActive());
 }
+
+}  // namespace ash

@@ -152,7 +152,7 @@ class ActiveTabTest : public ChromeRenderViewHostTestHarness {
 
   void TearDown() override {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    chromeos::KioskAppManager::Shutdown();
+    ash::KioskAppManager::Shutdown();
 #endif
     ChromeRenderViewHostTestHarness::TearDown();
   }

@@ -176,8 +176,8 @@ void ExtensionSystemImpl::Shared::InitInstallGates() {
       extension_service_->shared_module_service());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (chrome::IsRunningInForcedAppMode()) {
-    kiosk_app_update_install_gate_.reset(
-        new chromeos::KioskAppUpdateInstallGate(profile_));
+    kiosk_app_update_install_gate_ =
+        std::make_unique<ash::KioskAppUpdateInstallGate>(profile_);
     extension_service_->RegisterInstallGate(
         ExtensionPrefs::DELAY_REASON_WAIT_FOR_OS_UPDATE,
         kiosk_app_update_install_gate_.get());

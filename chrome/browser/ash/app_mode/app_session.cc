@@ -51,7 +51,7 @@
 using extensions::AppWindow;
 using extensions::AppWindowRegistry;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -63,13 +63,13 @@ bool IsPepperPlugin(const base::FilePath& plugin_path) {
 }
 
 void RebootDevice() {
-  PowerManagerClient::Get()->RequestRestart(
+  chromeos::PowerManagerClient::Get()->RequestRestart(
       power_manager::REQUEST_RESTART_OTHER, "kiosk app session");
 }
 
 void StartFloatingAccessibilityMenu() {
-  ash::AccessibilityController* accessibility_controller =
-      ash::AccessibilityController::Get();
+  AccessibilityController* accessibility_controller =
+      AccessibilityController::Get();
   if (accessibility_controller)
     accessibility_controller->ShowFloatingMenuIfEnabled();
 }
@@ -358,4 +358,4 @@ void AppSession::OnPluginHung(const std::set<int>& hung_plugins) {
       FROM_HERE, base::BindOnce(&DumpPluginProcessOnIOThread, hung_plugins));
 }
 
-}  // namespace chromeos
+}  // namespace ash

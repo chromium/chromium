@@ -12,7 +12,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -134,4 +134,4 @@ void KioskAppLaunchError::RecordMetricAndClear() {
   dict_update->Remove(kKeyCryptohomeFailure, NULL);
 }
 
-}  // namespace chromeos
+}  // namespace ash

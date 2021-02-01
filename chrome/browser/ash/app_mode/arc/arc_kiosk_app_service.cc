@@ -20,7 +20,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -264,4 +264,4 @@ void ArcKioskAppService::ContinueWithNetworkReady() {}
 void ArcKioskAppService::RestartLauncher() {}
 void ArcKioskAppService::LaunchApp() {}
 
-}  // namespace chromeos
+}  // namespace ash

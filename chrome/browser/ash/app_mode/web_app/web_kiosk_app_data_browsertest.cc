@@ -18,7 +18,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -215,4 +215,4 @@ IN_PROC_BROWSER_TEST_F(WebKioskAppDataTest, AlreadyInstalled) {
   EXPECT_EQ(app_data.name(), kAppTitle);
 }
 
-}  // namespace chromeos
+}  // namespace ash

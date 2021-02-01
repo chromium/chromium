@@ -23,9 +23,13 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
+
+namespace disks = ::chromeos::disks;
+using ::chromeos::MountError;
+using ::chromeos::MountType;
 
 constexpr base::FilePath::CharType kExternalUpdateManifest[] =
     "external_update.json";
@@ -111,8 +115,8 @@ void KioskExternalUpdater::OnMountEvent(
     const disks::DiskMountManager::MountPointInfo& mount_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (mount_info.mount_type != MOUNT_TYPE_DEVICE ||
-      error_code != MOUNT_ERROR_NONE) {
+  if (mount_info.mount_type != MountType::MOUNT_TYPE_DEVICE ||
+      error_code != MountError::MOUNT_ERROR_NONE) {
     return;
   }
 
@@ -486,4 +490,4 @@ base::string16 KioskExternalUpdater::GetUpdateReportMessage() const {
   return message;
 }
 
-}  // namespace chromeos
+}  // namespace ash

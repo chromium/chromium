@@ -17,7 +17,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -129,4 +129,4 @@ void KioskModeIdleAppNameNotification::OnTimeout() {
   show_notification_upon_next_user_activity_ = true;
 }
 
-}  // namespace chromeos
+}  // namespace ash

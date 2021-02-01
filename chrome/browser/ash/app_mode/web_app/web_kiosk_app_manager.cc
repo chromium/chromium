@@ -16,7 +16,7 @@
 #include "chromeos/settings/cros_settings_names.h"
 #include "components/prefs/pref_registry_simple.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 // This class is owned by ChromeBrowserMainPartsChromeos.
@@ -167,4 +167,4 @@ void WebKioskAppManager::UpdateAppsFromPolicy() {
   NotifyKioskAppsChanged();
 }
 
-}  // namespace chromeos
+}  // namespace ash

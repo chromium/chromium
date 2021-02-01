@@ -16,9 +16,11 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
+
+using ::chromeos::FakePowerManagerClient;
 
 constexpr char kPepperPluginName1[] = "pepper_plugin_name1";
 constexpr char kPepperPluginName2[] = "pepper_plugin_name2";
@@ -147,4 +149,4 @@ TEST_F(AppSessionTest, OnPluginHung) {
   delegate->OnPluginHung(std::set<int>());
 }
 
-}  // namespace chromeos
+}  // namespace ash

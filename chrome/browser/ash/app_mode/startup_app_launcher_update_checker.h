@@ -13,7 +13,7 @@
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 
 // Used by StartupAppLauncher to check for available extension updates for
 // extensions other than the primary kiosk app - in particular for the secondary
@@ -56,6 +56,6 @@ class StartupAppLauncherUpdateChecker : public content::NotificationObserver {
   DISALLOW_COPY_AND_ASSIGN(StartupAppLauncherUpdateChecker);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_APP_MODE_STARTUP_APP_LAUNCHER_UPDATE_CHECKER_H_

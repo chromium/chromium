@@ -2302,8 +2302,7 @@ bool DeviceStatusCollector::GetOsUpdateStatus(
     return false;
 
   const std::string required_platform_version_string =
-      chromeos::KioskAppManager::Get()
-          ->GetAutoLaunchAppRequiredPlatformVersion();
+      ash::KioskAppManager::Get()->GetAutoLaunchAppRequiredPlatformVersion();
   em::OsUpdateStatus* os_update_status = status->mutable_os_update_status();
 
   const update_engine::StatusResult update_engine_status =
@@ -2400,9 +2399,8 @@ bool DeviceStatusCollector::GetRunningKioskApp(
       running_kiosk_app->set_extension_version(app_version);
     }
 
-    chromeos::KioskAppManager::App app_info;
-    if (chromeos::KioskAppManager::Get()->GetApp(account->kiosk_app_id,
-                                                 &app_info)) {
+    ash::KioskAppManager::App app_info;
+    if (ash::KioskAppManager::Get()->GetApp(account->kiosk_app_id, &app_info)) {
       running_kiosk_app->set_required_platform_version(
           app_info.required_platform_version);
     }

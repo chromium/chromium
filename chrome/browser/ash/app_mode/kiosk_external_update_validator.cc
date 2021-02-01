@@ -11,7 +11,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 KioskExternalUpdateValidator::KioskExternalUpdateValidator(
     const scoped_refptr<base::SequencedTaskRunner>& backend_task_runner,
@@ -77,4 +77,4 @@ void KioskExternalUpdateValidator::OnUnpackSuccess(
           minimum_browser_version, temp_dir));
 }
 
-}  // namespace chromeos
+}  // namespace ash

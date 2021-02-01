@@ -16,7 +16,7 @@ namespace extensions {
 class Extension;
 }
 
-namespace chromeos {
+namespace ash {
 
 // Wrapper around extensions::ExtensionBuilder for creating extension::Extension
 // instances for usage in kiosk app tests.
@@ -51,6 +51,6 @@ class TestKioskExtensionBuilder {
   DISALLOW_COPY_AND_ASSIGN(TestKioskExtensionBuilder);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_APP_MODE_TEST_KIOSK_EXTENSION_BUILDER_H_

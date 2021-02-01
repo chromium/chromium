@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/app_mode/pref_names.h"
 
-namespace chromeos {
+namespace ash {
 namespace prefs {
 
 // Dictionary of kiosk cryptohomes scheduled to removed upon next startup.
@@ -24,4 +24,4 @@ const char kRegularKioskUsersToRemove[] = "kiosk-users-to-remove";
 const char kArcKioskUsersToRemove[] = "arc-kiosk-users-to-remove";
 
 }  // namespace prefs
-}  // namespace chromeos
+}  // namespace ash

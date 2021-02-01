@@ -200,4 +200,9 @@ class OwnerSettingsServiceChromeOS : public ownership::OwnerSettingsService,
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to chrome/browser/ash/.
+namespace ash {
+using ::chromeos::OwnerSettingsServiceChromeOS;
+}
+
 #endif  // CHROME_BROWSER_CHROMEOS_OWNERSHIP_OWNER_SETTINGS_SERVICE_CHROMEOS_H_

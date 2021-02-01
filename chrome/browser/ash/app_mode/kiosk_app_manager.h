@@ -18,6 +18,9 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/chromeos/extensions/external_cache.h"
 #include "chrome/browser/chromeos/extensions/external_cache_delegate.h"
+// TODO(https://crbug.com/1164001): use forward declaration when moved to
+// chrome/browser/ash/.
+#include "chrome/browser/chromeos/ownership/owner_settings_service_chromeos.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "components/account_id/account_id.h"
@@ -31,20 +34,23 @@ namespace base {
 class CommandLine;
 }
 
+namespace chromeos {
+class KioskAutoLaunchViewsTest;
+class KioskTest;
+}  // namespace chromeos
+
 namespace extensions {
 class Extension;
 }
 
-namespace chromeos {
+namespace ash {
 
-class ExternalCache;
 class KioskAppData;
 class KioskExternalUpdater;
-class OwnerSettingsServiceChromeOS;
 
 // KioskAppManager manages cached app data.
 class KioskAppManager : public KioskAppManagerBase,
-                        public ExternalCacheDelegate {
+                        public chromeos::ExternalCacheDelegate {
  public:
   enum class ConsumerKioskAutoLaunchStatus {
     // Consumer kiosk mode auto-launch feature can be enabled on this machine.
@@ -71,8 +77,8 @@ class KioskAppManager : public KioskAppManagerBase,
 
     // Creates the external cache that should be used by the
     // KioskAppManager. It should always return a valid object.
-    virtual std::unique_ptr<ExternalCache> CreateExternalCache(
-        ExternalCacheDelegate* delegate,
+    virtual std::unique_ptr<chromeos::ExternalCache> CreateExternalCache(
+        chromeos::ExternalCacheDelegate* delegate,
         bool always_check_updates) = 0;
 
     // Creates an AppSession object that will mantain a started kiosk app
@@ -221,7 +227,7 @@ class KioskAppManager : public KioskAppManagerBase,
       const std::string& app_id,
       const base::FilePath& crx_path,
       const std::string& version,
-      ExternalCache::PutExternalExtensionCallback callback);
+      chromeos::ExternalCache::PutExternalExtensionCallback callback);
 
   // Whether the current platform is compliant with the given required
   // platform version.
@@ -250,9 +256,8 @@ class KioskAppManager : public KioskAppManagerBase,
   friend struct base::LazyInstanceTraitsBase<KioskAppManager>;
   friend std::default_delete<KioskAppManager>;
   friend class KioskAppManagerTest;
-  friend class KioskAutoLaunchViewsTest;
-  friend class KioskTest;
-  friend class KioskUpdateTest;
+  friend class chromeos::KioskAutoLaunchViewsTest;
+  friend class chromeos::KioskTest;
 
   enum class AutoLoginState {
     kNone = 0,
@@ -278,16 +283,16 @@ class KioskAppManager : public KioskAppManagerBase,
   // Updates the prefs of |external_cache_| from |apps_|.
   void UpdateExternalCachePrefs();
 
-  // ExternalCacheDelegate:
+  // chromeos::ExternalCacheDelegate:
   void OnExtensionLoadedInCache(const extensions::ExtensionId& id) override;
   void OnExtensionDownloadFailed(const extensions::ExtensionId& id) override;
 
-  // Callback for InstallAttributes::LockDevice() during
+  // Callback for chromeos::InstallAttributes::LockDevice() during
   // EnableConsumerModeKiosk() call.
   void OnLockDevice(EnableKioskAutoLaunchCallback callback,
-                    InstallAttributes::LockResult result);
+                    chromeos::InstallAttributes::LockResult result);
 
-  // Callback for InstallAttributes::ReadImmutableAttributes() during
+  // Callback for chromeos::InstallAttributes::ReadImmutableAttributes() during
   // GetConsumerKioskModeStatus() call.
   void OnReadImmutableAttributes(
       GetConsumerKioskAutoLaunchStatusCallback callback);
@@ -325,7 +330,7 @@ class KioskAppManager : public KioskAppManagerBase,
   std::string auto_launch_app_id_;
   std::string currently_auto_launched_with_zero_delay_app_;
 
-  std::unique_ptr<ExternalCache> external_cache_;
+  std::unique_ptr<chromeos::ExternalCache> external_cache_;
 
   std::unique_ptr<KioskExternalUpdater> usb_stick_updater_;
 
@@ -344,6 +349,12 @@ class KioskAppManager : public KioskAppManagerBase,
   DISALLOW_COPY_AND_ASSIGN(KioskAppManager);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the //chrome/browser/chromeos
+// source code migration is finished.
+namespace chromeos {
+using ::ash::KioskAppManager;
+}
 
 #endif  // CHROME_BROWSER_ASH_APP_MODE_KIOSK_APP_MANAGER_H_

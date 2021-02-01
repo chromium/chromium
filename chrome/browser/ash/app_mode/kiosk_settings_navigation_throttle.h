@@ -9,7 +9,7 @@
 
 #include "content/public/browser/navigation_throttle.h"
 
-namespace chromeos {
+namespace ash {
 
 // Throttle that is applied on WebContents which are opening settings pages
 // opened in kiosk mode. It restricts the navigationgs inside of these
@@ -40,6 +40,11 @@ class KioskSettingsNavigationThrottle : public content::NavigationThrottle {
   ThrottleCheckResult WillStartOrRedirectRequest();
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when moved to chrome/browser/ash/.
+namespace chromeos {
+using ::ash::KioskSettingsNavigationThrottle;
+}
 
 #endif  // CHROME_BROWSER_ASH_APP_MODE_KIOSK_SETTINGS_NAVIGATION_THROTTLE_H_

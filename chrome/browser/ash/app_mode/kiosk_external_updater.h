@@ -15,15 +15,16 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "chrome/browser/ash/app_mode/kiosk_external_update_validator.h"
+// TODO(https://crbug.com/1164001): use forward declaration when moved to
+// chrome/browser/ash/.
+#include "chrome/browser/chromeos/ui/kiosk_external_update_notification.h"
 #include "chromeos/disks/disk_mount_manager.h"
 
-namespace chromeos {
-
-class KioskExternalUpdateNotification;
+namespace ash {
 
 // Observes the disk mount/unmount events, scans the usb stick for external
 // kiosk app updates, validates the external crx, and updates the cache.
-class KioskExternalUpdater : public disks::DiskMountManager::Observer,
+class KioskExternalUpdater : public chromeos::disks::DiskMountManager::Observer,
                              public KioskExternalUpdateValidatorDelegate {
  public:
   enum class ErrorCode {
@@ -56,11 +57,11 @@ class KioskExternalUpdater : public disks::DiskMountManager::Observer,
     base::string16 error;
   };
 
-  // disks::DiskMountManager::Observer overrides.
-  void OnMountEvent(
-      disks::DiskMountManager::MountEvent event,
-      MountError error_code,
-      const disks::DiskMountManager::MountPointInfo& mount_info) override;
+  // chromeos::disks::DiskMountManager::Observer overrides.
+  void OnMountEvent(chromeos::disks::DiskMountManager::MountEvent event,
+                    chromeos::MountError error_code,
+                    const chromeos::disks::DiskMountManager::MountPointInfo&
+                        mount_info) override;
 
   // KioskExternalUpdateValidatorDelegate overrides:
   void OnExternalUpdateUnpackSuccess(const std::string& app_id,
@@ -146,6 +147,6 @@ class KioskExternalUpdater : public disks::DiskMountManager::Observer,
   DISALLOW_COPY_AND_ASSIGN(KioskExternalUpdater);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_APP_MODE_KIOSK_EXTERNAL_UPDATER_H_

@@ -641,6 +641,9 @@ class UserSessionManager
 
 // TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
 // source migration is finished.
-using chromeos::UserSessionManager;
+namespace ash {
+using ::chromeos::UserSessionManager;
+using ::chromeos::UserSessionManagerDelegate;
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_CHROMEOS_LOGIN_SESSION_USER_SESSION_MANAGER_H_

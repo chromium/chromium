@@ -280,4 +280,19 @@ COMPONENT_EXPORT(CHROMEOS_SETTINGS)
 extern const char kDeviceShowLowDiskSpaceNotification[];
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when migrated to ash/components/.
+namespace ash {
+using ::chromeos::kAccountsPrefDeviceLocalAccountAutoLoginBailoutEnabled;
+using ::chromeos::kAccountsPrefDeviceLocalAccountAutoLoginDelay;
+using ::chromeos::kAccountsPrefDeviceLocalAccountAutoLoginId;
+using ::chromeos::kAccountsPrefDeviceLocalAccounts;
+using ::chromeos::kAccountsPrefDeviceLocalAccountsKeyArcKioskAction;
+using ::chromeos::kAccountsPrefDeviceLocalAccountsKeyArcKioskClass;
+using ::chromeos::kAccountsPrefDeviceLocalAccountsKeyArcKioskDisplayName;
+using ::chromeos::kAccountsPrefDeviceLocalAccountsKeyArcKioskPackage;
+using ::chromeos::kAccountsPrefDeviceLocalAccountsKeyId;
+using ::chromeos::kAccountsPrefDeviceLocalAccountsKeyKioskAppId;
+using ::chromeos::kAccountsPrefDeviceLocalAccountsKeyType;
+}  // namespace ash
+
 #endif  // CHROMEOS_SETTINGS_CROS_SETTINGS_NAMES_H_

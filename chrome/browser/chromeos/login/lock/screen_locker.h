@@ -38,7 +38,6 @@ namespace chromeos {
 
 class Authenticator;
 class ExtendedAuthenticator;
-class AuthFailure;
 class ViewsScreenLocker;
 
 // ScreenLocker displays the lock UI and takes care of authenticating the user

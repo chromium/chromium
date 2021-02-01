@@ -23,7 +23,7 @@ namespace extensions {
 class AppWindow;
 }
 
-namespace chromeos {
+namespace ash {
 
 class KioskSessionPluginHandler;
 
@@ -86,6 +86,12 @@ class AppSession : public KioskSessionPluginHandlerDelegate {
   DISALLOW_COPY_AND_ASSIGN(AppSession);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration of
+// //chrome/browser/chromeos is finished.
+namespace chromeos {
+using ::ash::AppSession;
+}
 
 #endif  // CHROME_BROWSER_ASH_APP_MODE_APP_SESSION_H_

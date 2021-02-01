@@ -20,7 +20,6 @@ class ListValue;
 
 namespace chromeos {
 
-class KioskAppManager;
 class OwnerSettingsServiceChromeOS;
 
 class KioskAppsHandler : public content::WebUIMessageHandler,
@@ -61,7 +60,7 @@ class KioskAppsHandler : public content::WebUIMessageHandler,
   // Callback for KioskAppManager::GetConsumerKioskModeStatus().
   void OnGetConsumerKioskAutoLaunchStatus(
       const std::string& callback_id,
-      chromeos::KioskAppManager::ConsumerKioskAutoLaunchStatus status);
+      KioskAppManager::ConsumerKioskAutoLaunchStatus status);
 
   KioskAppManager* kiosk_app_manager_;  // not owned.
   bool initialized_;

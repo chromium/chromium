@@ -14,11 +14,13 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/chromeos/login/session/user_session_manager.h"
 #include "chromeos/login/auth/login_performer.h"
+// TODO(https://crbug.com/1164001): remove when migrated to ash/components/.
+#include "chromeos/login/auth/user_context.h"
 #include "components/account_id/account_id.h"
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 
 enum class KioskAppType;
 
@@ -76,6 +78,12 @@ class KioskProfileLoader : public LoginPerformer::Delegate,
   DISALLOW_COPY_AND_ASSIGN(KioskProfileLoader);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the //chrome/browser/chromeos
+// source code migration is finished.
+namespace chromeos {
+using ::ash::KioskProfileLoader;
+}
 
 #endif  // CHROME_BROWSER_ASH_APP_MODE_KIOSK_PROFILE_LOADER_H_

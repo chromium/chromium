@@ -64,9 +64,7 @@ class BluetoothLowEnergyApiTestChromeOs : public PlatformAppBrowserTest {
     manager()->SetAppWasAutoLaunchedWithZeroDelay(kTestingAppId);
   }
 
-  chromeos::KioskAppManager* manager() const {
-    return chromeos::KioskAppManager::Get();
-  }
+  ash::KioskAppManager* manager() const { return ash::KioskAppManager::Get(); }
 
   chromeos::FakeChromeUserManager* fake_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;

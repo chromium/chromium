@@ -13,7 +13,7 @@
 #include "components/account_id/account_id.h"
 #include "ui/gfx/image/image_skia.h"
 
-namespace chromeos {
+namespace ash {
 
 // Fetches from Android side and caches ARC kiosk app data such as name and
 // icon.
@@ -52,6 +52,12 @@ class ArcKioskAppData : public KioskAppDataBase {
   DISALLOW_COPY_AND_ASSIGN(ArcKioskAppData);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the //chrome/browser/chromeos
+// migration is finished.
+namespace chromeos {
+using ::ash::ArcKioskAppData;
+}
 
 #endif  // CHROME_BROWSER_ASH_APP_MODE_ARC_ARC_KIOSK_APP_DATA_H_

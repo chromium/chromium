@@ -9,7 +9,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 // static
 ArcKioskAppService* ArcKioskAppServiceFactory::GetForBrowserContext(
@@ -40,4 +40,4 @@ KeyedService* ArcKioskAppServiceFactory::BuildServiceInstanceFor(
   return ArcKioskAppService::Create(profile);
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_MODE_PREF_NAMES_H_
 #define CHROME_BROWSER_ASH_APP_MODE_PREF_NAMES_H_
 
-namespace chromeos {
+namespace ash {
 namespace prefs {
 
 // ---------------------------------------------------------------------------
@@ -16,5 +16,5 @@ extern const char kRegularKioskUsersToRemove[];
 extern const char kArcKioskUsersToRemove[];
 
 }  // namespace prefs
-}  // namespace chromeos
+}  // namespace ash
 #endif  // CHROME_BROWSER_ASH_APP_MODE_PREF_NAMES_H_

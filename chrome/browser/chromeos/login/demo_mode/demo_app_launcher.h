@@ -50,4 +50,9 @@ class DemoAppLauncher : public KioskProfileLoader::Delegate {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to chrome/browser/ash/.
+namespace ash {
+using ::chromeos::DemoAppLauncher;
+}
+
 #endif  // CHROME_BROWSER_CHROMEOS_LOGIN_DEMO_MODE_DEMO_APP_LAUNCHER_H_

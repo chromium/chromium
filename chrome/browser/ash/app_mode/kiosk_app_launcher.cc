@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 
-namespace chromeos {
+namespace ash {
 
 KioskAppLauncher::KioskAppLauncher() = default;
 
@@ -15,4 +15,4 @@ void KioskAppLauncher::SetDelegate(Delegate* delegate) {
   delegate_ = delegate;
 }
 
-}  // namespace chromeos
+}  // namespace ash

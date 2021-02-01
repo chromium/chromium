@@ -32,4 +32,10 @@ class KioskExternalUpdateNotification {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when migrated to
+// chrome/browser/ash/.
+namespace ash {
+using ::chromeos::KioskExternalUpdateNotification;
+}
+
 #endif  // CHROME_BROWSER_CHROMEOS_UI_KIOSK_EXTERNAL_UPDATE_NOTIFICATION_H_

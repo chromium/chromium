@@ -34,8 +34,7 @@ void ChromeGuestViewManagerDelegate::OnGuestAdded(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Notifies kiosk session about the added guest.
-  chromeos::AppSession* app_session =
-      chromeos::KioskAppManager::Get()->app_session();
+  ash::AppSession* app_session = ash::KioskAppManager::Get()->app_session();
   if (app_session)
     app_session->OnGuestAdded(guest_web_contents);
 #endif

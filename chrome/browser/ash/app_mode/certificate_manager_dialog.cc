@@ -24,7 +24,7 @@ const int kDefaultHeight = 480;
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 CertificateManagerDialog::CertificateManagerDialog(
     Profile* profile,
@@ -46,4 +46,4 @@ void CertificateManagerDialog::GetDialogSize(gfx::Size* size) const {
   size->SetSize(kDefaultWidth, kDefaultHeight);
 }
 
-}  // namespace chromeos
+}  // namespace ash

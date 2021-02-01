@@ -131,7 +131,7 @@ class ChromePermissionRequestManagerTest
     user_manager->AddWebKioskAppUser(account_id);
     user_manager->LoginUser(account_id);
 
-    auto kiosk_app_manager = std::make_unique<chromeos::WebKioskAppManager>();
+    auto kiosk_app_manager = std::make_unique<ash::WebKioskAppManager>();
     kiosk_app_manager->AddAppForTesting(account_id, app_url);
 
     NavigateAndCommit(url);

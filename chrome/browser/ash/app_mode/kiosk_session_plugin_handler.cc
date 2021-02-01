@@ -13,7 +13,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/app_mode/kiosk_session_plugin_handler_delegate.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -118,4 +118,4 @@ void KioskSessionPluginHandler::OnWebContentsDestroyed(Observer* observer) {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

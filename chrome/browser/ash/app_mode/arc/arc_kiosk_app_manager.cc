@@ -27,7 +27,7 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -192,4 +192,5 @@ void ArcKioskAppManager::UpdateAppsFromPolicy() {
 
   NotifyKioskAppsChanged();
 }
-}  // namespace chromeos
+
+}  // namespace ash

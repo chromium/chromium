@@ -16,7 +16,7 @@ namespace base {
 class FilePath;
 }
 
-namespace chromeos {
+namespace ash {
 
 // Loads locally stored icon data and decodes it.
 class KioskAppIconLoader {
@@ -52,6 +52,6 @@ class KioskAppIconLoader {
   DISALLOW_COPY_AND_ASSIGN(KioskAppIconLoader);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_APP_MODE_KIOSK_APP_ICON_LOADER_H_

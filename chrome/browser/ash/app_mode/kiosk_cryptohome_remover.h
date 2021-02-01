@@ -12,7 +12,7 @@
 class AccountId;
 class PrefRegistrySimple;
 
-namespace chromeos {
+namespace ash {
 
 // Helper functions to remove cryptohomes of no longer existing kiosk apps.
 class KioskCryptohomeRemover {
@@ -31,6 +31,12 @@ class KioskCryptohomeRemover {
   DISALLOW_IMPLICIT_CONSTRUCTORS(KioskCryptohomeRemover);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the //chrome/browser/chromeos
+// migration is finished.
+namespace chromeos {
+using ::ash::KioskCryptohomeRemover;
+}
 
 #endif  // CHROME_BROWSER_ASH_APP_MODE_KIOSK_CRYPTOHOME_REMOVER_H_

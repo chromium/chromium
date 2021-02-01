@@ -23,9 +23,11 @@
 #include "components/user_manager/user_manager.h"
 #include "third_party/cros_system_api/dbus/cryptohome/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
+
+using ::chromeos::CryptohomeClient;
 
 void ScheduleDelayedCryptohomeRemoval(const AccountId& account_id) {
   PrefService* const local_state = g_browser_process->local_state();
@@ -136,7 +138,7 @@ void KioskCryptohomeRemover::RegisterPrefs(PrefRegistrySimple* registry) {
 }
 
 void KioskCryptohomeRemover::RemoveObsoleteCryptohomes() {
-  chromeos::CryptohomeClient* client = chromeos::CryptohomeClient::Get();
+  auto* client = CryptohomeClient::Get();
   client->WaitForServiceToBeAvailable(
       base::BindOnce(&PerformDelayedCryptohomeRemovals));
 }
@@ -177,4 +179,4 @@ void KioskCryptohomeRemover::RemoveCryptohomesAndExitIfNeeded(
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

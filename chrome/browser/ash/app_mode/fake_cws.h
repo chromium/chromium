@@ -18,7 +18,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 
 // Simple fake CWS update check request handler that returns a fixed update
 // check response. The response is created either from SetUpdateCrx() or
@@ -92,6 +92,12 @@ class FakeCWS {
   DISALLOW_COPY_AND_ASSIGN(FakeCWS);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the //chrome/browser/chromeos
+// source code migration is finished.
+namespace chromeos {
+using ::ash::FakeCWS;
+}
 
 #endif  // CHROME_BROWSER_ASH_APP_MODE_FAKE_CWS_H_

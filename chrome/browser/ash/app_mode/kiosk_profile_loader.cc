@@ -31,11 +31,12 @@
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
-using content::BrowserThread;
-
-namespace chromeos {
+namespace ash {
 
 namespace {
+
+using ::chromeos::CryptohomeClient;
+using ::content::BrowserThread;
 
 KioskAppLaunchError::Error LoginFailureToKioskAppLaunchError(
     const AuthFailure& error) {
@@ -242,4 +243,4 @@ void KioskProfileLoader::OnProfilePrepared(Profile* profile,
   ReportLaunchResult(KioskAppLaunchError::Error::kNone);
 }
 
-}  // namespace chromeos
+}  // namespace ash

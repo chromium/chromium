@@ -14,7 +14,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -109,4 +109,4 @@ void SetEphemeralKioskPreferencesListForTesting(
   test_prefs_to_reset = prefs;
 }
 
-}  // namespace chromeos
+}  // namespace ash

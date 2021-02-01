@@ -10,7 +10,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 // List of pages, which along with their subpages are considered whitelisted in
@@ -113,4 +113,4 @@ KioskSettingsNavigationThrottle::WillStartOrRedirectRequest() {
                                                               : CANCEL;
 }
 
-}  // namespace chromeos
+}  // namespace ash

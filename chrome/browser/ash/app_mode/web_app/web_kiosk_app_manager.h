@@ -17,7 +17,7 @@ class Browser;
 class PrefRegistrySimple;
 struct WebApplicationInfo;
 
-namespace chromeos {
+namespace ash {
 
 // Does the management of web kiosk apps.
 class WebKioskAppManager : public KioskAppManagerBase {
@@ -68,6 +68,12 @@ class WebKioskAppManager : public KioskAppManagerBase {
   DISALLOW_COPY_AND_ASSIGN(WebKioskAppManager);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::WebKioskAppManager;
+}
 
 #endif  // CHROME_BROWSER_ASH_APP_MODE_WEB_APP_WEB_KIOSK_APP_MANAGER_H_

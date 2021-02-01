@@ -186,4 +186,10 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) UserContext {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when the //chrome/browser/chromeos
+// source code migration is finished.
+namespace ash {
+using ::chromeos::UserContext;
+}
+
 #endif  // CHROMEOS_LOGIN_AUTH_USER_CONTEXT_H_

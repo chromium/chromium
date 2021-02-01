@@ -14,8 +14,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
-using chromeos::AuthFailure;
-using chromeos::KioskAppLaunchError;
+namespace ash {
+
+using ::chromeos::AuthFailure;
+using ::chromeos::KioskAppLaunchError;
 
 namespace {
 
@@ -28,7 +30,7 @@ constexpr char kKeyCryptohomeFailure[] = "cryptohome_failure";
 // Get Kiosk dictionary value. It is replaced after each update.
 const base::DictionaryValue* GetKioskDictionary() {
   return g_browser_process->local_state()->GetDictionary(
-      chromeos::KioskAppManager::kKioskDictionaryName);
+      KioskAppManager::kKioskDictionaryName);
 }
 
 }  // namespace
@@ -128,3 +130,5 @@ TEST_F(KioskAppLaunchErrorTest, SaveCryptohomeFailure) {
   KioskAppLaunchError::RecordMetricAndClear();
   EXPECT_FALSE(GetKioskDictionary()->HasKey(kKeyCryptohomeFailure));
 }
+
+}  // namespace ash

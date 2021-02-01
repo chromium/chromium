@@ -20,7 +20,7 @@
 
 using content::BrowserThread;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -147,4 +147,4 @@ void KioskAppDataBase::ClearCache() {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

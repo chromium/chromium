@@ -34,7 +34,7 @@ class ArcKioskBridgeFactory
   friend base::DefaultSingletonTraits<ArcKioskBridgeFactory>;
 
   ArcKioskBridgeFactory() {
-    DependsOn(chromeos::ArcKioskAppServiceFactory::GetInstance());
+    DependsOn(ash::ArcKioskAppServiceFactory::GetInstance());
   }
   ~ArcKioskBridgeFactory() override = default;
 
@@ -67,8 +67,7 @@ std::unique_ptr<ArcKioskBridge> ArcKioskBridge::CreateForTesting(
 
 ArcKioskBridge::ArcKioskBridge(content::BrowserContext* context,
                                ArcBridgeService* bridge_service)
-    : ArcKioskBridge(bridge_service,
-                     chromeos::ArcKioskAppService::Get(context)) {}
+    : ArcKioskBridge(bridge_service, ash::ArcKioskAppService::Get(context)) {}
 
 ArcKioskBridge::ArcKioskBridge(ArcBridgeService* bridge_service,
                                Delegate* delegate)

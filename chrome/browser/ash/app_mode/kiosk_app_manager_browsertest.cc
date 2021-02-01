@@ -49,9 +49,11 @@
 
 using content::BrowserThread;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
+
+using ::chromeos::InstallAttributes;
 
 // An app to test local fs data persistence across app update. V1 app writes
 // data into local fs. V2 app reads and verifies the data.
@@ -1059,4 +1061,4 @@ IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, IsPlatformCompliantWithApp) {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

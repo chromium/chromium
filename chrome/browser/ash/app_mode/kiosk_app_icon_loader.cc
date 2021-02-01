@@ -18,7 +18,7 @@
 
 using content::BrowserThread;
 
-namespace chromeos {
+namespace ash {
 
 class IconImageRequest : public ImageDecoder::ImageRequest {
  public:
@@ -98,4 +98,4 @@ void KioskAppIconLoader::OnImageDecodingFinished(
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

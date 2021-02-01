@@ -119,17 +119,17 @@ StatusCollector::GetAutoLaunchedKioskSessionInfo() {
     return nullptr;
   }
 
-  chromeos::KioskAppManager::App current_app;
+  ash::KioskAppManager::App current_app;
   bool regular_app_auto_launched_with_zero_delay =
-      chromeos::KioskAppManager::Get()->GetApp(account->kiosk_app_id,
-                                               &current_app) &&
+      ash::KioskAppManager::Get()->GetApp(account->kiosk_app_id,
+                                          &current_app) &&
       current_app.was_auto_launched_with_zero_delay;
   bool arc_app_auto_launched_with_zero_delay =
       chromeos::ArcKioskAppManager::Get()
           ->current_app_was_auto_launched_with_zero_delay();
 
   bool web_app_auto_launched_with_zero_delay =
-      chromeos::WebKioskAppManager::Get()
+      ash::WebKioskAppManager::Get()
           ->current_app_was_auto_launched_with_zero_delay();
 
   return regular_app_auto_launched_with_zero_delay ||

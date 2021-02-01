@@ -14,7 +14,7 @@
 using content::WebContents;
 using content::WebContentsObserver;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -149,4 +149,4 @@ TEST_F(KioskSessionPluginHandlerTest, PluginHungStatusChanged) {
   EXPECT_EQ(observer->GetHungPluginsForTesting().size(), 1U);
 }
 
-}  // namespace chromeos
+}  // namespace ash

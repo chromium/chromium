@@ -42,7 +42,7 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -223,4 +223,4 @@ IN_PROC_BROWSER_TEST_F(KioskAppUpdateServiceTest, StartAfterPeriodic) {
   EXPECT_TRUE(listener.WaitUntilSatisfied());
 }
 
-}  // namespace chromeos
+}  // namespace ash

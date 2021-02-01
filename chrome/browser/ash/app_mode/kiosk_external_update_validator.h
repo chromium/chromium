@@ -18,7 +18,7 @@ namespace extensions {
 class Extension;
 }
 
-namespace chromeos {
+namespace ash {
 
 // Delegate class for KioskExternalUpdateValidator, derived class must support
 // WeakPtr.
@@ -75,6 +75,6 @@ class KioskExternalUpdateValidator
   DISALLOW_COPY_AND_ASSIGN(KioskExternalUpdateValidator);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_APP_MODE_KIOSK_EXTERNAL_UPDATE_VALIDATOR_H_

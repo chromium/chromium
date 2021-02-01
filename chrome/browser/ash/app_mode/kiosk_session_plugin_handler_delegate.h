@@ -9,7 +9,7 @@
 
 #include "base/files/file_path.h"
 
-namespace chromeos {
+namespace ash {
 
 class KioskSessionPluginHandlerDelegate {
  public:
@@ -26,6 +26,6 @@ class KioskSessionPluginHandlerDelegate {
   virtual ~KioskSessionPluginHandlerDelegate() {}
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_APP_MODE_KIOSK_SESSION_PLUGIN_HANDLER_DELEGATE_H_

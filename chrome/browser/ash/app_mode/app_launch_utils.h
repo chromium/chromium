@@ -10,7 +10,7 @@
 class PrefService;
 class Profile;
 
-namespace chromeos {
+namespace ash {
 
 class KioskAppId;
 
@@ -25,6 +25,12 @@ void ResetEphemeralKioskPreferences(PrefService* prefs);
 // Replace the list of preferences which are reset in tests.
 void SetEphemeralKioskPreferencesListForTesting(std::vector<std::string>*);
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration of
+// //chrome/browser/ash is finished.
+namespace chromeos {
+using ::ash::LaunchAppOrDie;
+}
 
 #endif  // CHROME_BROWSER_ASH_APP_MODE_APP_LAUNCH_UTILS_H_
