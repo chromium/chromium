@@ -137,7 +137,13 @@ class FormControlsBrowserTest : public ContentBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Checkbox) {
+// Disabled due to https://crbug.com/1172370
+#if defined(OS_ANDROID)
+#define MAYBE_Checkbox DISABLED_Checkbox
+#else
+#define MAYBE_Checkbox Checkbox
+#endif
+IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, MAYBE_Checkbox) {
   RunTest("form_controls_browsertest_checkbox",
           "<input type=checkbox>"
           "<input type=checkbox checked>"
@@ -151,7 +157,13 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Checkbox) {
           /* screenshot_height */ 40);
 }
 
-IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Radio) {
+// Disabled due to https://crbug.com/1172370
+#if defined(OS_ANDROID)
+#define MAYBE_Radio DISABLED_Radio
+#else
+#define MAYBE_Radio Radio
+#endif
+IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, MAYBE_Radio) {
   RunTest("form_controls_browsertest_radio",
           "<input type=radio>"
           "<input type=radio checked>"
