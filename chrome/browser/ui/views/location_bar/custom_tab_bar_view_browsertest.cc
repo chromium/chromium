@@ -246,7 +246,7 @@ class CustomTabBarViewBrowserTest
 IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
                        IsNotCreatedInTabbedBrowser) {
   EXPECT_TRUE(browser()->is_type_normal());
-  EXPECT_TRUE(browser_view_->IsBrowserTypeNormal());
+  EXPECT_TRUE(browser_view_->GetIsNormalType());
   EXPECT_FALSE(custom_tab_bar_);
 }
 
@@ -262,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest, IsNotCreatedInPopup) {
   EXPECT_NE(browser_view_, popup_view);
 
   // Popups are not the normal browser view.
-  EXPECT_FALSE(popup_view->IsBrowserTypeNormal());
+  EXPECT_FALSE(popup_view->GetIsNormalType());
   EXPECT_TRUE(popup->is_type_popup());
   // Popups should not have a custom tab bar view.
   EXPECT_FALSE(popup_view->toolbar()->custom_tab_bar());
@@ -305,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest, IsUsedForDesktopPWA) {
   BrowserView* app_view = BrowserView::GetBrowserViewForBrowser(app_browser_);
   EXPECT_NE(app_view, browser_view_);
 
-  EXPECT_FALSE(app_view->IsBrowserTypeNormal());
+  EXPECT_FALSE(app_view->GetIsNormalType());
   EXPECT_TRUE(app_browser_->is_type_app());
 
   // Custom tab bar should be created.

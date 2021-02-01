@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
@@ -16,6 +15,7 @@
 #include "chrome/browser/ui/views/tab_icon_view_model.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/linux_ui/linux_ui.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/caption_button_types.h"
 #include "ui/views/window/non_client_view.h"
 
@@ -42,12 +42,13 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
                                public TabIconViewModel,
                                public OpaqueBrowserFrameViewLayoutDelegate {
  public:
-  static const char kClassName[];
-
+  METADATA_HEADER(OpaqueBrowserFrameView);
   // Constructs a non-client view for an BrowserFrame.
   OpaqueBrowserFrameView(BrowserFrame* frame,
                          BrowserView* browser_view,
                          OpaqueBrowserFrameViewLayout* layout);
+  OpaqueBrowserFrameView(const OpaqueBrowserFrameView&) = delete;
+  OpaqueBrowserFrameView& operator=(const OpaqueBrowserFrameView&) = delete;
   ~OpaqueBrowserFrameView() override;
 
   // Creates and adds child views.  Should be called after
@@ -75,7 +76,6 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
   void SizeConstraintsChanged() override;
 
   // views::View:
-  const char* GetClassName() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // TabIconViewModel:
@@ -169,12 +169,12 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
 
   // Returns the bounds of the titlebar icon (or where the icon would be if
   // there was one).
-  gfx::Rect IconBounds() const;
+  gfx::Rect GetIconBounds() const;
 
   void WindowIconPressed();
 
   // Returns true if the view should draw its own custom title bar.
-  bool ShouldShowWindowTitleBar() const;
+  bool GetShowWindowTitleBar() const;
 
   // Paint various sub-components of this view.  The *FrameBorder() functions
   // also paint the background of the titlebar area, since the top frame border
@@ -201,8 +201,6 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
 
   // Observer that handles platform dependent configuration.
   std::unique_ptr<OpaqueBrowserFrameViewPlatformSpecific> platform_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(OpaqueBrowserFrameView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_OPAQUE_BROWSER_FRAME_VIEW_H_

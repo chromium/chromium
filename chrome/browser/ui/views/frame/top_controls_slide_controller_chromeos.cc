@@ -268,7 +268,7 @@ TopControlsSlideControllerChromeOS::TopControlsSlideControllerChromeOS(
   DCHECK(browser_view);
   DCHECK(browser_view->frame());
   DCHECK(browser_view->browser());
-  DCHECK(browser_view->IsBrowserTypeNormal());
+  DCHECK(browser_view->GetIsNormalType());
   DCHECK(browser_view->browser()->tab_strip_model());
   DCHECK(browser_view->GetLocationBarView());
   DCHECK(browser_view->GetLocationBarView()->omnibox_view());

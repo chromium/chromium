@@ -39,6 +39,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/gfx/scoped_canvas.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "content/public/browser/plugin_service.h"
@@ -110,9 +111,6 @@ BrowserRootView::DropInfo::~DropInfo() {
     target->HandleDragExited();
 }
 
-// static
-const char BrowserRootView::kViewClassName[] = "BrowserRootView";
-
 BrowserRootView::BrowserRootView(BrowserView* browser_view,
                                  views::Widget* widget)
     : views::internal::RootView(widget), browser_view_(browser_view) {}
@@ -142,7 +140,7 @@ bool BrowserRootView::AreDropTypesRequired() {
 
 bool BrowserRootView::CanDrop(const ui::OSExchangeData& data) {
   // If it's not tabbed browser, we don't have to support drag and drops.
-  if (!browser_view_->IsBrowserTypeNormal())
+  if (!browser_view_->GetIsNormalType())
     return false;
 
   if (!tabstrip()->GetVisible() && !toolbar()->GetVisible())
@@ -253,10 +251,6 @@ int BrowserRootView::OnPerformDrop(const ui::DropTargetEvent& event) {
   Navigate(&params);
 
   return GetDropEffect(event, url);
-}
-
-const char* BrowserRootView::GetClassName() const {
-  return kViewClassName;
 }
 
 bool BrowserRootView::OnMouseWheel(const ui::MouseWheelEvent& event) {
@@ -441,3 +435,6 @@ bool BrowserRootView::GetPasteAndGoURL(const ui::OSExchangeData& data,
     *url = match.destination_url;
   return true;
 }
+
+BEGIN_METADATA(BrowserRootView, views::internal::RootView)
+END_METADATA

@@ -447,7 +447,7 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
   ~BrowserViewLayoutDelegateImpl() override = default;
 
   bool IsTabStripVisible() const override {
-    return browser_view_->IsTabStripVisible();
+    return browser_view_->GetTabStripVisible();
   }
 
   gfx::Rect GetBoundsForTabStripRegionInBrowserView() const override {
@@ -492,7 +492,7 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
   }
 
   bool IsTopControlsSlideBehaviorEnabled() const override {
-    return browser_view_->IsTopControlsSlideBehaviorEnabled();
+    return browser_view_->GetTopControlsSlideBehaviorEnabled();
   }
 
   float GetTopControlsSlideBehaviorShownRatio() const override {
@@ -552,9 +552,6 @@ class BrowserView::AccessibilityModeObserver : public ui::AXModeObserver {
 
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserView, public:
-
-// static
-const char BrowserView::kViewClassName[] = "BrowserView";
 
 BrowserView::BrowserView(std::unique_ptr<Browser> browser)
     : views::ClientView(nullptr, nullptr),
@@ -747,14 +744,14 @@ int BrowserView::GetTabStripHeight() const {
   // We want to return tabstrip_->height(), but we might be called in the midst
   // of layout, when that hasn't yet been updated to reflect the current state.
   // So return what the tabstrip height _ought_ to be right now.
-  return IsTabStripVisible() ? tabstrip_->GetPreferredSize().height() : 0;
+  return GetTabStripVisible() ? tabstrip_->GetPreferredSize().height() : 0;
 }
 
 TabSearchButton* BrowserView::GetTabSearchButton() {
   return tab_strip_region_view_->tab_search_button();
 }
 
-bool BrowserView::IsTabStripVisible() const {
+bool BrowserView::GetTabStripVisible() const {
   // Return false if this window does not normally display a tabstrip or if the
   // tabstrip is currently hidden, e.g. because we're in fullscreen.
   if (!browser_->SupportsWindowFeature(Browser::FEATURE_TABSTRIP))
@@ -772,16 +769,16 @@ bool BrowserView::IsTabStripVisible() const {
   return tabstrip_ != nullptr;
 }
 
-bool BrowserView::IsIncognito() const {
+bool BrowserView::GetIncognito() const {
   return browser_->profile()->IsIncognitoProfile();
 }
 
-bool BrowserView::IsGuestSession() const {
+bool BrowserView::GetGuestSession() const {
   return browser_->profile()->IsGuestSession() ||
          browser_->profile()->IsEphemeralGuestProfile();
 }
 
-bool BrowserView::IsRegularOrGuestSession() const {
+bool BrowserView::GetRegularOrGuestSession() const {
   return profiles::IsRegularOrGuestSession(browser_.get());
 }
 
@@ -821,15 +818,19 @@ WebContents* BrowserView::GetActiveWebContents() const {
   return browser_->tab_strip_model()->GetActiveWebContents();
 }
 
-bool BrowserView::CanSupportTabStrip() const {
+bool BrowserView::GetSupportsTabStrip() const {
   return browser_->CanSupportWindowFeature(Browser::FEATURE_TABSTRIP);
 }
 
-bool BrowserView::IsBrowserTypeWebApp() const {
+bool BrowserView::GetIsNormalType() const {
+  return browser_->is_type_normal();
+}
+
+bool BrowserView::GetIsWebAppType() const {
   return web_app::AppBrowserController::IsWebApp(browser_.get());
 }
 
-bool BrowserView::IsTopControlsSlideBehaviorEnabled() const {
+bool BrowserView::GetTopControlsSlideBehaviorEnabled() const {
   return top_controls_slide_controller_ &&
          top_controls_slide_controller_->IsEnabled();
 }
@@ -1708,10 +1709,6 @@ bool BrowserView::IsToolbarShowing() const {
   return IsToolbarVisible();
 }
 
-bool BrowserView::IsInfoBarVisible() const {
-  return GetBrowserViewLayout()->IsInfobarVisible();
-}
-
 void BrowserView::ShowUpdateChromeDialog() {
   UpdateRecommendedMessageBox::Show(GetNativeWindow());
 }
@@ -1883,7 +1880,7 @@ void BrowserView::UserChangedTheme(BrowserThemeChangeType theme_change_type) {
   // When the browser theme changes, the NativeTheme may also change.
   // In Incognito, the usage of dark or normal hinges on the browser theme.
   if (theme_change_type == BrowserThemeChangeType::kBrowserTheme &&
-      !IsRegularOrGuestSession()) {
+      !GetRegularOrGuestSession()) {
     ui::NativeTheme::GetInstanceForDarkUI()->NotifyObservers();
     ui::NativeTheme::GetInstanceForNativeUi()->NotifyObservers();
 
@@ -2428,12 +2425,12 @@ views::View* BrowserView::GetInitiallyFocusedView() {
 }
 
 #if defined(OS_WIN)
-bool BrowserView::CanShowWindowTitle() const {
+bool BrowserView::GetSupportsTitle() const {
   return browser_->SupportsWindowFeature(Browser::FEATURE_TITLEBAR) ||
          WebUITabStripContainerView::SupportsTouchableTabStrip(browser());
 }
 
-bool BrowserView::CanShowWindowIcon() const {
+bool BrowserView::GetSupportsIcon() const {
   return browser_->SupportsWindowFeature(Browser::FEATURE_TITLEBAR);
 }
 #endif
@@ -2808,10 +2805,6 @@ gfx::Size BrowserView::GetMinimumSize() const {
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserView, views::View overrides:
 
-const char* BrowserView::GetClassName() const {
-  return kViewClassName;
-}
-
 void BrowserView::Layout() {
   TRACE_EVENT0("ui", "BrowserView::Layout");
   if (!initialized_ || in_process_fullscreen_)
@@ -2897,7 +2890,7 @@ void BrowserView::AddedToWidget() {
   // rather than Init() as it depends on the browser frame being ready.
   // It also needs to be after the |toolbar_| had been initialized since it uses
   // the omnibox.
-  if (IsBrowserTypeNormal()) {
+  if (GetIsNormalType()) {
     DCHECK(frame_);
     DCHECK(toolbar_);
     top_controls_slide_controller_ =
@@ -3071,7 +3064,7 @@ void BrowserView::MaybeInitializeWebUITabStrip() {
 }
 
 void BrowserView::LoadingAnimationCallback() {
-  if (CanSupportTabStrip()) {
+  if (GetSupportsTabStrip()) {
     // Loading animations are shown in the tab for tabbed windows. Update them
     // even if the tabstrip isn't currently visible so they're in the right
     // state when it returns.
@@ -3684,3 +3677,21 @@ void BrowserView::OnImmersiveModeControllerDestroyed() {
 void BrowserView::OnInstallableWebAppStatusUpdated() {
   UpdatePageActionIcon(PageActionIconType::kPwaInstall);
 }
+
+BEGIN_METADATA(BrowserView, views::ClientView)
+ADD_READONLY_PROPERTY_METADATA(gfx::Rect, FindBarBoundingBox)
+ADD_READONLY_PROPERTY_METADATA(int, TabStripHeight)
+ADD_READONLY_PROPERTY_METADATA(bool, TabStripVisible)
+ADD_READONLY_PROPERTY_METADATA(bool, Incognito)
+ADD_READONLY_PROPERTY_METADATA(bool, GuestSession)
+ADD_READONLY_PROPERTY_METADATA(bool, RegularOrGuestSession)
+ADD_READONLY_PROPERTY_METADATA(bool, SupportsTabStrip)
+ADD_READONLY_PROPERTY_METADATA(bool, IsNormalType)
+ADD_READONLY_PROPERTY_METADATA(bool, IsWebAppType)
+ADD_READONLY_PROPERTY_METADATA(bool, TopControlsSlideBehaviorEnabled)
+#if defined(OS_WIN)
+ADD_READONLY_PROPERTY_METADATA(bool, SupportsTitle)
+ADD_READONLY_PROPERTY_METADATA(bool, SupportsIcon)
+#endif
+ADD_READONLY_PROPERTY_METADATA(float, TopControlsSlideBehaviorShownRatio)
+END_METADATA

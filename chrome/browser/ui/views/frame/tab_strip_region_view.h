@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/views/accessible_pane_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace views {
 class FlexLayout;
@@ -22,7 +23,10 @@ class TipMarqueeView;
 class TabStripRegionView final : public views::AccessiblePaneView,
                                  views::ViewObserver {
  public:
+  METADATA_HEADER(TabStripRegionView);
   explicit TabStripRegionView(std::unique_ptr<TabStrip> tab_strip);
+  TabStripRegionView(const TabStripRegionView&) = delete;
+  TabStripRegionView& operator=(const TabStripRegionView&) = delete;
   ~TabStripRegionView() override;
 
   // Returns true if the specified rect intersects the window caption area of
@@ -49,7 +53,6 @@ class TabStripRegionView final : public views::AccessiblePaneView,
   }
 
   // views::AccessiblePaneView:
-  const char* GetClassName() const override;
   void ChildPreferredSizeChanged(views::View* child) override;
   gfx::Size GetMinimumSize() const override;
   void OnThemeChanged() override;
@@ -64,9 +67,7 @@ class TabStripRegionView final : public views::AccessiblePaneView,
   // TODO(958173): Override OnBoundsChanged to cancel tabstrip animations.
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(TabStripRegionView);
-
-  int CalculateTabStripAvailableWidth();
+  int GetTabStripAvailableWidth() const;
 
   // Scrolls the tabstrip towards the first tab in the tabstrip.
   void ScrollTowardsLeadingTab();
