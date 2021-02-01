@@ -43,7 +43,8 @@ class MockPage : public read_later::mojom::Page {
   }
   mojo::Receiver<read_later::mojom::Page> receiver_{this};
 
-  MOCK_METHOD0(ItemsChanged, void());
+  MOCK_METHOD1(ItemsChanged,
+               void(read_later::mojom::ReadLaterEntriesByStatusPtr));
 };
 
 void ExpectNewReadLaterEntry(const read_later::mojom::ReadLaterEntry* entry,
@@ -160,7 +161,7 @@ TEST_F(TestReadLaterPageHandlerTest, OpenSavedEntry) {
 
 TEST_F(TestReadLaterPageHandlerTest, UpdateReadStatus) {
   handler()->UpdateReadStatus(GURL(kTabUrl3), true);
-  EXPECT_CALL(page_, ItemsChanged()).Times(1);
+  EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(1);
 
   // Get Read later entries.
   read_later::mojom::PageHandler::GetReadLaterEntriesCallback callback1 =
@@ -182,7 +183,7 @@ TEST_F(TestReadLaterPageHandlerTest, UpdateReadStatus) {
 
 TEST_F(TestReadLaterPageHandlerTest, RemoveEntry) {
   handler()->RemoveEntry(GURL(kTabUrl3));
-  EXPECT_CALL(page_, ItemsChanged()).Times(1);
+  EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(1);
 
   // Get Read later entries.
   read_later::mojom::PageHandler::GetReadLaterEntriesCallback callback1 =

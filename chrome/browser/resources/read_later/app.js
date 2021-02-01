@@ -65,15 +65,23 @@ export class ReadLaterAppElement extends PolymerElement {
             Math.round(window.performance.now()));
       }, 0);
     });
-    this.updateItems_();
+
+    // Fetch the latest read later entry data.
+    const getEntriesStartTimestamp = Date.now();
+    this.apiProxy_.getReadLaterEntries().then(({entries}) => {
+      chrome.metricsPrivate.recordTime(
+          'ReadingList.WebUI.ReadingListDataReceived',
+          Math.round(Date.now() - getEntriesStartTimestamp));
+      this.updateItems_(entries);
+    });
   }
 
   /** @override */
   connectedCallback() {
     super.connectedCallback();
     const callbackRouter = this.apiProxy_.getCallbackRouter();
-    this.listenerId_ =
-        callbackRouter.itemsChanged.addListener(() => this.updateItems_());
+    this.listenerId_ = callbackRouter.itemsChanged.addListener(
+        entries => this.updateItems_(entries));
   }
 
   /** @override */
@@ -84,17 +92,13 @@ export class ReadLaterAppElement extends PolymerElement {
     this.listenerId_ = null;
   }
 
-  /** @private */
-  updateItems_() {
-    const getEntriesStartTimestamp = Date.now();
-    this.apiProxy_.getReadLaterEntries().then(({entries}) => {
-      chrome.metricsPrivate.recordTime(
-          'ReadingList.WebUI.ReadingListDataReceived',
-          Math.round(Date.now() - getEntriesStartTimestamp));
-
-      this.unreadItems_ = entries.unreadEntries;
-      this.readItems_ = entries.readEntries;
-    });
+  /**
+   * @param {!readLater.mojom.ReadLaterEntriesByStatus} entries
+   * @private
+   */
+  updateItems_(entries) {
+    this.unreadItems_ = entries.unreadEntries;
+    this.readItems_ = entries.readEntries;
   }
 
   /**

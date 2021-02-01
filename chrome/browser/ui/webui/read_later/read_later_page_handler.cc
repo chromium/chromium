@@ -58,24 +58,7 @@ ReadLaterPageHandler::~ReadLaterPageHandler() = default;
 
 void ReadLaterPageHandler::GetReadLaterEntries(
     GetReadLaterEntriesCallback callback) {
-  auto entries = read_later::mojom::ReadLaterEntriesByStatus::New();
-
-  for (const auto& url : reading_list_model_->Keys()) {
-    const ReadingListEntry* entry = reading_list_model_->GetEntryByURL(url);
-    DCHECK(entry);
-    if (entry->IsRead()) {
-      entries->read_entries.push_back(GetEntryData(entry));
-    } else {
-      entries->unread_entries.push_back(GetEntryData(entry));
-    }
-  }
-
-  std::sort(entries->read_entries.begin(), entries->read_entries.end(),
-            EntrySorter);
-  std::sort(entries->unread_entries.begin(), entries->unread_entries.end(),
-            EntrySorter);
-
-  std::move(callback).Run(std::move(entries));
+  std::move(callback).Run(CreateReadLaterEntriesByStatusData());
 }
 
 void ReadLaterPageHandler::OpenSavedEntry(const GURL& url) {
@@ -88,12 +71,12 @@ void ReadLaterPageHandler::OpenSavedEntry(const GURL& url) {
 
 void ReadLaterPageHandler::UpdateReadStatus(const GURL& url, bool read) {
   reading_list_model_->SetReadStatus(url, read);
-  page_->ItemsChanged();
+  page_->ItemsChanged(CreateReadLaterEntriesByStatusData());
 }
 
 void ReadLaterPageHandler::RemoveEntry(const GURL& url) {
   reading_list_model_->RemoveEntryByURL(url);
-  page_->ItemsChanged();
+  page_->ItemsChanged(CreateReadLaterEntriesByStatusData());
 }
 
 void ReadLaterPageHandler::ShowUI() {
@@ -127,6 +110,28 @@ read_later::mojom::ReadLaterEntryPtr ReadLaterPageHandler::GetEntryData(
       GetTimeSinceLastUpdate(entry->UpdateTime());
 
   return entry_data;
+}
+
+read_later::mojom::ReadLaterEntriesByStatusPtr
+ReadLaterPageHandler::CreateReadLaterEntriesByStatusData() {
+  auto entries = read_later::mojom::ReadLaterEntriesByStatus::New();
+
+  for (const auto& url : reading_list_model_->Keys()) {
+    const ReadingListEntry* entry = reading_list_model_->GetEntryByURL(url);
+    DCHECK(entry);
+    if (entry->IsRead()) {
+      entries->read_entries.push_back(GetEntryData(entry));
+    } else {
+      entries->unread_entries.push_back(GetEntryData(entry));
+    }
+  }
+
+  std::sort(entries->read_entries.begin(), entries->read_entries.end(),
+            EntrySorter);
+  std::sort(entries->unread_entries.begin(), entries->unread_entries.end(),
+            EntrySorter);
+
+  return entries;
 }
 
 std::string ReadLaterPageHandler::GetTimeSinceLastUpdate(

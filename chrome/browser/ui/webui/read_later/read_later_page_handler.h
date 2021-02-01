@@ -47,6 +47,10 @@ class ReadLaterPageHandler : public read_later::mojom::PageHandler {
   read_later::mojom::ReadLaterEntryPtr GetEntryData(
       const ReadingListEntry* entry);
 
+  // Returns the lists for the read/unread entries.
+  read_later::mojom::ReadLaterEntriesByStatusPtr
+  CreateReadLaterEntriesByStatusData();
+
   // Converts |last_update_time| from microseconds since epoch in Unix-like
   // system (Jan 1, 1970), since this is how ReadingListEntry's |update_time| is
   // stored, to a localized representation as a delay (e.g. "5 minutes ago").
