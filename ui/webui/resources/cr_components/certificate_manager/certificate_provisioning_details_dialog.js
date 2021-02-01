@@ -36,6 +36,10 @@ Polymer({
     advancedExpanded_: Boolean,
   },
 
+  close() {
+    /** @type {!CrDialogElement} */ (this.$.dialog).close();
+  },
+
   /** @private */
   onRefresh_() {
     CertificateProvisioningBrowserProxyImpl.getInstance()

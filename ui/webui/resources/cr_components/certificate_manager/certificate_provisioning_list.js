@@ -83,6 +83,10 @@ Polymer({
     });
     if (newDialogModel) {
       this.provisioningDetailsDialogModel_ = newDialogModel;
+    } else {
+      // Close cert provisioning process details dialog if the process is no
+      // longer in the list eg. when process completed successfully.
+      this.$$('certificate-provisioning-details-dialog').close();
     }
   },
 
