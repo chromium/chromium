@@ -436,6 +436,7 @@ component("views") {
     "view_targeter.cc",
     "view_targeter_delegate.cc",
     "view_tracker.cc",
+    "view_utils.cc",
     "views_delegate.cc",
     "views_features.cc",
     "views_switches.cc",
@@ -502,6 +503,7 @@ component("views") {
     "//ui/native_theme:native_theme_browser",
     "//ui/resources",
     "//ui/strings",
+    "//ui/views/debug:views_debug",
     "//ui/views/resources",
     "//url",
   ]

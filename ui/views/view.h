@@ -1607,6 +1607,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   friend class internal::RootView;
   friend class internal::ScopedChildrenLock;
   friend class FocusManager;
+  friend class ViewDebugWrapperImpl;
   friend class ViewLayerTest;
   friend class ViewLayerPixelCanvasTest;
   friend class ViewTestApi;
