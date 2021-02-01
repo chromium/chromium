@@ -284,6 +284,23 @@ Possible solutions (in no particular order):
 - Avoid accessing `S` from the destructor of `Bar`
   (and in general, avoid doing significant work from destructors).
 
+#### Non-PA allocation address space reuse
+
+An address goes from the "outside GigaCage" state to "inside GigaCage" while a `CheckedPtr` is pointing at it.
+
+```cpp
+  CheckedPtr<void> checked_ptr = mmap([...]);
+  munmap(checked_ptr); // must be safe to keep checked_ptr alive since it's not going to be dereferenced
+  void* ptr = allocator.root()->Alloc(16, ""); // PA creates a new superpage, which is by coincidence around the address checked_ptr points to
+  checked_ptr = nullptr;
+```
+
+When this happens, it is like we skipped an `AddRef()` and `Release()` may decrement a non-existent ref count field. There is not enough address space to avoid the reuse on 32-bit platforms. In theory, we could store whether `CheckedPtr` pointed to a non-PA allocation during initialization and, therefore, should act like a no-op pointer, but we don't have a single spare bit in 32-bit pointers.
+
+#### Past-the-end pointers with non-PA allocations
+
+If we increment a `CheckedPtr` pointing at a non-PA allocation until it points past the end of the allocation, that pointer may happen to be pointing at the beginning of a PA superpage. Advancing the pointer through `operator+=()` assumes that the pointer stays within an allocation. So when this happens, it is as if we skipped an `AddRef()`, and `Release()` may decrement a non-existent ref count field.
+
 #### Other
 
 TODO(bartekn): Document runtime errors encountered by BackupRefPtr

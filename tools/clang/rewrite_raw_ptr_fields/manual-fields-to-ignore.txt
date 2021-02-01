@@ -120,6 +120,24 @@ courgette::LabelManagerTest_SimpleIndexAssigner_Test::TestBody()::TestCase::expe
 courgette::LabelManagerTest_SimpleIndexAssigner_Test::TestBody()::TestCase::expect_backward
 courgette::LabelManagerTest_SimpleIndexAssigner_Test::TestBody()::TestCase::expect_in
 
+# Populated manually - uninitialized memory reinterpret_cast to CheckedPtr
+# causing AddRef/Deref mismatch.
+sandbox::(anonymous namespace)::_HEAP_32::Heap
+sandbox::(anonymous namespace)::_HEAP_64::Heap
+sql::SandboxedVfsFileSqliteBridge::sandboxed_vfs_file
+sandbox::SharedMemIPCServer::client_control_
+sandbox::SharedMemIPCServer::thread_provider_
+sandbox::SharedMemIPCServer::call_dispatcher_
+
+# Populated manually - pointing past the end of a non-PA allocation might point
+# to PA memory
+cc::PaintOpWriter::memory_ # https://crbug.com/1169579
+
+# Populated manually - pointer to stale non-PA allocation could be confused as a
+# pointer to PA memory when that address space is reused
+base::PersistentMemoryAllocator::mem_base_ # https://crbug.com/1169582
+base::SharedMemoryMapping::memory_ # https://crbug.com/1169581
+
 # Populated manually - other compile-time reasons
 iovec::iov_base  # requires adding .get() in another repository, used e.g. in
                  # reinterpret_cast in quic_stream_sequencer_buffer.cc
