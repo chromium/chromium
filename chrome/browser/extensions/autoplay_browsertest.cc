@@ -40,7 +40,8 @@ IN_PROC_BROWSER_TEST_F(AutoplayExtensionBrowserTest, AutoplayAllowed) {
 #else
 #define MAYBE_AutoplayAllowedInIframe AutoplayAllowedInIframe
 #endif  // defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-IN_PROC_BROWSER_TEST_F(AutoplayExtensionBrowserTest, AutoplayAllowedInIframe) {
+IN_PROC_BROWSER_TEST_F(AutoplayExtensionBrowserTest,
+                       MAYBE_AutoplayAllowedInIframe) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   const extensions::Extension* extension =
