@@ -151,8 +151,8 @@ DiceResponseHandler::DiceTokenFetcher::DiceTokenFetcher(
       delegate_(std::move(delegate)),
       dice_response_handler_(dice_response_handler),
       timeout_closure_(
-          base::Bind(&DiceResponseHandler::DiceTokenFetcher::OnTimeout,
-                     base::Unretained(this))),
+          base::BindOnce(&DiceResponseHandler::DiceTokenFetcher::OnTimeout,
+                         base::Unretained(this))),
       should_enable_sync_(false) {
   DCHECK(dice_response_handler_);
   account_reconcilor_lock_ =

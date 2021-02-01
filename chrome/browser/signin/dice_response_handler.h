@@ -126,7 +126,7 @@ class DiceResponseHandler : public KeyedService {
     std::string authorization_code_;
     std::unique_ptr<ProcessDiceHeaderDelegate> delegate_;
     DiceResponseHandler* dice_response_handler_;
-    base::CancelableClosure timeout_closure_;
+    base::CancelableOnceClosure timeout_closure_;
     bool should_enable_sync_;
     std::unique_ptr<GaiaAuthFetcher> gaia_auth_fetcher_;
 
