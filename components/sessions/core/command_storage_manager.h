@@ -14,11 +14,8 @@
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequenced_task_runner.h"
 #include "components/sessions/core/sessions_export.h"
-
-namespace base {
-class SequencedTaskRunner;
-}
 
 namespace sessions {
 class CommandStorageManagerDelegate;
@@ -59,15 +56,20 @@ class SESSIONS_EXPORT CommandStorageManager {
   // standardize on that of `kOther`.
   //
   // See CommandStorageBackend for details on `use_marker`.
-  CommandStorageManager(SessionType type,
-                        const base::FilePath& path,
-                        CommandStorageManagerDelegate* delegate,
-                        bool use_marker = false,
-                        bool enable_crypto = false,
-                        const std::vector<uint8_t>& decryption_key = {});
+  CommandStorageManager(
+      SessionType type,
+      const base::FilePath& path,
+      CommandStorageManagerDelegate* delegate,
+      bool use_marker = false,
+      bool enable_crypto = false,
+      const std::vector<uint8_t>& decryption_key = {},
+      scoped_refptr<base::SequencedTaskRunner> backend_task_runner = nullptr);
   CommandStorageManager(const CommandStorageManager&) = delete;
   CommandStorageManager& operator=(const CommandStorageManager&) = delete;
   virtual ~CommandStorageManager();
+
+  static scoped_refptr<base::SequencedTaskRunner>
+  CreateDefaultBackendTaskRunner();
 
   // Helper to generate a new key.
   static std::vector<uint8_t> CreateCryptoKey();

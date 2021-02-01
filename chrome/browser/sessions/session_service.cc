@@ -73,8 +73,53 @@ using content::WebContents;
 using sessions::ContentSerializedNavigationBuilder;
 using sessions::SerializedNavigationEntry;
 
+namespace {
+
 // Every kWritesPerReset commands triggers recreating the file.
-static const int kWritesPerReset = 250;
+const int kWritesPerReset = 250;
+
+// User data key for BrowserContextData.
+const void* const kProfileTaskRunnerKey = &kProfileTaskRunnerKey;
+
+// Tracks the SequencedTaskRunner that SessionService uses for a particular
+// profile. At certain points SessionService may be destroyed, and then
+// recreated. This class ensures that when this happens, the same
+// SequencedTaskRunner is used. Without this, each instance would have its
+// own SequencedTaskRunner, which is problematic as it might then be possible
+// for the newly created SessionService to attempt to read from a file the
+// previous SessionService was still writing to. No two instances of
+// SessionService for a particular profile exist at the same time, but the
+// backend (CommandStorageBackend) is destroyed on the SequencedTaskRunner,
+// meaning without this, it might be possible for two CommandStorageBackends
+// to exist at the same time and attempt to use the same file.
+class TaskRunnerData : public base::SupportsUserData::Data {
+ public:
+  TaskRunnerData()
+      : task_runner_(
+            sessions::CommandStorageManager::CreateDefaultBackendTaskRunner()) {
+  }
+  TaskRunnerData(const TaskRunnerData&) = delete;
+  TaskRunnerData& operator=(const TaskRunnerData&) = delete;
+  ~TaskRunnerData() override = default;
+
+  static scoped_refptr<base::SequencedTaskRunner>
+  GetBackendTaskRunnerForProfile(Profile* profile) {
+    TaskRunnerData* data = static_cast<TaskRunnerData*>(
+        profile->GetUserData(kProfileTaskRunnerKey));
+    if (!data) {
+      profile->SetUserData(kProfileTaskRunnerKey,
+                           std::make_unique<TaskRunnerData>());
+      data = static_cast<TaskRunnerData*>(
+          profile->GetUserData(kProfileTaskRunnerKey));
+    }
+    return data->task_runner_;
+  }
+
+ private:
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+};
+
+}  // namespace
 
 // SessionService -------------------------------------------------------------
 
@@ -85,7 +130,10 @@ SessionService::SessionService(Profile* profile)
               sessions::CommandStorageManager::kSessionRestore,
               profile->GetPath(),
               this,
-              /* use_marker */ true)) {
+              /* use_marker */ true,
+              /* enable_crypto */ false,
+              std::vector<uint8_t>(),
+              TaskRunnerData::GetBackendTaskRunnerForProfile(profile))) {
   // We should never be created when incognito.
   DCHECK(!profile->IsOffTheRecord());
   BrowserList::AddObserver(this);

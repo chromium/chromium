@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
@@ -25,11 +24,6 @@ namespace {
 // backend.
 constexpr base::TimeDelta kSaveDelay = base::TimeDelta::FromMilliseconds(2500);
 
-scoped_refptr<base::SequencedTaskRunner> CreateDefaultBackendTaskRunner() {
-  return base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
-}
-
 void AdaptGetLastSessionCommands(
     CommandStorageManager::GetCommandsCallback callback,
     CommandStorageBackend::ReadCommandsResult result) {
@@ -44,9 +38,11 @@ CommandStorageManager::CommandStorageManager(
     CommandStorageManagerDelegate* delegate,
     bool use_marker,
     bool enable_crypto,
-    const std::vector<uint8_t>& decryption_key)
+    const std::vector<uint8_t>& decryption_key,
+    scoped_refptr<base::SequencedTaskRunner> backend_task_runner)
     : backend_(base::MakeRefCounted<CommandStorageBackend>(
-          CreateDefaultBackendTaskRunner(),
+          backend_task_runner ? backend_task_runner
+                              : CreateDefaultBackendTaskRunner(),
           path,
           type,
           use_marker,
@@ -57,6 +53,13 @@ CommandStorageManager::CommandStorageManager(
       backend_task_runner_(backend_->owning_task_runner()) {}
 
 CommandStorageManager::~CommandStorageManager() = default;
+
+// static
+scoped_refptr<base::SequencedTaskRunner>
+CommandStorageManager::CreateDefaultBackendTaskRunner() {
+  return base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
+}
 
 // static
 std::vector<uint8_t> CommandStorageManager::CreateCryptoKey() {

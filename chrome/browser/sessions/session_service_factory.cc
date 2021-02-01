@@ -60,7 +60,7 @@ void SessionServiceFactory::ShutdownForProfile(Profile* profile) {
   // with an explicit NULL to prevent it being recreated on the next access.
   factory->BrowserContextShutdown(profile);
   factory->BrowserContextDestroyed(profile);
-  factory->Associate(profile, NULL);
+  factory->Associate(profile, nullptr);
 }
 
 SessionServiceFactory* SessionServiceFactory::GetInstance() {
@@ -73,8 +73,7 @@ SessionServiceFactory::SessionServiceFactory()
         BrowserContextDependencyManager::GetInstance()) {
 }
 
-SessionServiceFactory::~SessionServiceFactory() {
-}
+SessionServiceFactory::~SessionServiceFactory() = default;
 
 KeyedService* SessionServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* profile) const {

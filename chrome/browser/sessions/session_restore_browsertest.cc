@@ -536,22 +536,10 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, NormalAndPopup) {
   Browser* popup = CreateBrowserForPopup(browser()->profile());
   ASSERT_EQ(2u, active_browser_list_->size());
 
-  SessionService* session_service =
-      SessionServiceFactory::GetForProfile(browser()->profile());
-  SessionServiceTestHelper test_helper(session_service);
-  auto backend_task_runner = test_helper.GetBackendTaskRunner();
-
   // Simulate an exit by shutting down the session service. If we don't do this
   // the first window close is treated as though the user closed the window
   // and won't be restored.
   SessionServiceFactory::ShutdownForProfile(browser()->profile());
-
-  // Ensure the session service finishes writing. This is necessary as the
-  // code following this creates a new SessionService, which will use a
-  // different task runner for reading/writing to the same files.
-  base::RunLoop run_loop;
-  backend_task_runner->PostNonNestableTask(FROM_HERE, run_loop.QuitClosure());
-  run_loop.Run();
 
   // Restart and make sure we have two windows.
   CloseBrowserSynchronously(popup);
@@ -1955,10 +1943,7 @@ class MultiBrowserObserver : public BrowserListObserver {
 
 // Test that when closing a profile with multiple browsers, all browsers are
 // restored when the profile is reopened.
-// Flaky:
-//  - Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
-//  - Disabled for all platforms: https://crbug.com/1158715
-IN_PROC_BROWSER_TEST_F(SessionRestoreTest, DISABLED_RestoreAllBrowsers) {
+IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreAllBrowsers) {
   // Create two profiles with two browsers each.
   Browser* first_profile_browser_one = browser();
   chrome::NewWindow(first_profile_browser_one);
