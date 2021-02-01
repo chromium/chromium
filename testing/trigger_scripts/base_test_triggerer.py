@@ -36,25 +36,16 @@ SWARMING_GO = os.path.join(SRC_DIR, 'tools', 'luci-go',
 
 def _convert_to_go_swarming_args(args):
   go_args = []
-  map_flags = {'--dimension', '--env', '--env-prefix', '--named-cache'}
   i = 0
   while i < len(args):
     current_arg = args[i]
     if current_arg == '--swarming':
       current_arg = '--server'
-    elif current_arg == '--resultdb':
-      current_arg = '--enable-resultdb'
     go_args.append(current_arg)
     i += 1
-    if current_arg in map_flags:
+    if current_arg == '--dimension':
       go_args.append('{}={}'.format(args[i], args[i + 1]))
       i += 2
-    elif current_arg == '--cipd-package':
-      # https://source.chromium.org/chromium/infra/infra/+/master:luci/client/swarming.py;l=1175-1177;drc=67e502dbf7a2a863c95e0d54fa486413d24d57a5
-      path, name, version = args[i].split(':', 2)
-      # https://source.chromium.org/chromium/infra/infra/+/master:go/src/go.chromium.org/luci/client/cmd/swarming/lib/trigger.go;l=458-465;drc=ef40d3f3503c2cc7bb0f3f6807b14a39bafb6ce4
-      go_args.append('{}:{}={}'.format(path, name, version))
-      i += 1
   return go_args
 
 
@@ -94,7 +85,7 @@ class BaseTestTriggerer(object):
         respectively.
 
     The arguments are structured like this:
-    <args to swarming.py trigger> -- <args to bot running isolate>
+    <args to swarming trigger> -- <args to bot running isolate>
     This means we have to add arguments to specific locations in the argument
     list, to either affect the trigger command, or what the bot runs.
 
@@ -102,11 +93,9 @@ class BaseTestTriggerer(object):
     bot_args = ['--dump-json', temp_file]
     if total_shards > 1:
       bot_args.append('--env')
-      bot_args.append('GTEST_SHARD_INDEX')
-      bot_args.append(str(shard_index))
+      bot_args.append('GTEST_SHARD_INDEX=%s'%shard_index)
       bot_args.append('--env')
-      bot_args.append('GTEST_TOTAL_SHARDS')
-      bot_args.append(str(total_shards))
+      bot_args.append('GTEST_TOTAL_SHARDS=%s'%total_shards)
     if self._bot_configs:
       for key, val in sorted(self._bot_configs[bot_index].iteritems()):
         bot_args.append('--dimension')
