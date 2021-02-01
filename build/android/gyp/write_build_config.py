@@ -1479,6 +1479,12 @@ def main(argv):
       ]
       config['deps_info']['includes_recursive_resources'] = True
 
+    if options.type in ('dist_aar', 'java_library'):
+      r_text_files = [
+          c['r_text_path'] for c in all_resources_deps if 'r_text_path' in c
+      ]
+      deps_info['dependency_r_txt_files'] = r_text_files
+
     # For feature modules, remove any resources that already exist in the base
     # module.
     if base_module_build_config:
@@ -1527,13 +1533,6 @@ def main(argv):
     # Make a copy of |proguard_configs| since it's mutated below.
     deps_info['proguard_configs'] = list(proguard_configs)
 
-  if options.type == 'dist_aar':
-    # dist_aar combines all dependency R.txt files into one for the aar.
-    r_text_files = [
-        c['r_text_path'] for c in all_resources_deps + all_library_deps
-        if 'r_text_path' in c
-    ]
-    deps_info['dependency_r_txt_files'] = r_text_files
 
   if is_java_target:
     # The classpath used to compile this target when annotation processors are

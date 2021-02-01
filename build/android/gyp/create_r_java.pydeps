@@ -26,4 +26,3 @@ create_r_java.py
 util/__init__.py
 util/build_utils.py
 util/resource_utils.py
-util/resources_parser.py

@@ -505,7 +505,8 @@ def CreateRJavaFiles(srcjar_dir,
                      srcjar_out,
                      custom_root_package_name=None,
                      grandparent_custom_package_name=None,
-                     extra_main_r_text_files=None):
+                     extra_main_r_text_files=None,
+                     ignore_mismatched_values=False):
   """Create all R.java files for a set of packages and R.txt files.
 
   Args:
@@ -526,6 +527,9 @@ def CreateRJavaFiles(srcjar_dir,
       is identical to custom_root_package_name.
       (eg. for vr grandparent_custom_package_name would be "base")
     extra_main_r_text_files: R.txt files to be added to the root R.java file.
+    ignore_mismatched_values: If True, ignores if a resource appears multiple
+      times with different entry values (useful when all the values are
+      dummy anyways).
   Raises:
     Exception if a package name appears several times in |extra_res_packages|
   """
@@ -550,10 +554,11 @@ def CreateRJavaFiles(srcjar_dir,
     for entry in _ParseTextSymbolsFile(r_txt_file, fix_package_ids=True):
       entry_key = (entry.resource_type, entry.name)
       if entry_key in all_resources:
-        assert entry == all_resources[entry_key], (
-            'Input R.txt %s provided a duplicate resource with a different '
-            'entry value. Got %s, expected %s.' % (r_txt_file, entry,
-                                                   all_resources[entry_key]))
+        if not ignore_mismatched_values:
+          assert entry == all_resources[entry_key], (
+              'Input R.txt %s provided a duplicate resource with a different '
+              'entry value. Got %s, expected %s.' %
+              (r_txt_file, entry, all_resources[entry_key]))
       else:
         all_resources[entry_key] = entry
         all_resources_by_type[entry.resource_type].append(entry)
@@ -847,11 +852,10 @@ class _ResourceBuildContext(object):
     # The top-level temporary directory.
     if temp_dir:
       self.temp_dir = temp_dir
-      self.remove_on_exit = not keep_files
       os.makedirs(temp_dir)
     else:
       self.temp_dir = tempfile.mkdtemp()
-      self.remove_on_exit = True
+    self.remove_on_exit = not keep_files
 
     # A location to store resources extracted form dependency zip files.
     self.deps_dir = os.path.join(self.temp_dir, 'deps')

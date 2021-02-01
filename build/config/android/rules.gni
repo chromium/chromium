@@ -765,7 +765,7 @@ if (enable_java_templates) {
   #
   # Variables:
   #   generated_resources_zip: Generated zip archive path.
-  #   generating_target_name: Name of the target generating
+  #   generating_target: Name of the target generating
   #     generated_resources_zip. This rule will check that it is part
   #     of its outputs.
   #   deps: Specifies the dependencies of this target. Any Android resources
@@ -792,14 +792,13 @@ if (enable_java_templates) {
   #
   #   android_generated_resources("my_resources") {
   #      generated_resources_zip = _zip_archive
-  #      generating_target_name = ":my_resources__create_zip"
+  #      generating_target = ":my_resources__create_zip"
   #   }
   #
   template("android_generated_resources") {
-    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-
+    forward_variables_from(invoker, [ "testonly" ])
     _build_config = "$target_gen_dir/${target_name}.build_config"
-
+    _rtxt_out_path = "$target_gen_dir/${target_name}.R.txt"
     write_build_config("$target_name$build_config_target_suffix") {
       forward_variables_from(invoker, [ "resource_overlay" ])
 
@@ -809,12 +808,22 @@ if (enable_java_templates) {
       if (defined(invoker.deps)) {
         possible_config_deps = invoker.deps
       }
+      r_text = _rtxt_out_path
     }
-
-    group(target_name) {
+    action_with_pydeps(target_name) {
+      forward_variables_from(invoker, [ "visibility" ])
       public_deps = [
         ":$target_name$build_config_target_suffix",
-        invoker.generating_target_name,
+        invoker.generating_target,
+      ]
+      inputs = [ invoker.generated_resources_zip ]
+      outputs = [ _rtxt_out_path ]
+      script = "//build/android/gyp/create_r_txt.py"
+      args = [
+        "--resources-zip-path",
+        rebase_path(invoker.generated_resources_zip, root_build_dir),
+        "--rtxt-path",
+        rebase_path(_rtxt_out_path, root_build_dir),
       ]
     }
   }
@@ -875,7 +884,7 @@ if (enable_java_templates) {
                                    "deps",
                                    "resource_overlay",
                                  ])
-      generating_target_name = ":$_generating_target_name"
+      generating_target = ":$_generating_target_name"
       generated_resources_zip = _resources_zip
     }
   }
@@ -1058,11 +1067,7 @@ if (enable_java_templates) {
                                "recursive_resource_deps",
                              ])
 
-      # No package means resources override their deps.
-      if (defined(custom_package) || defined(android_manifest)) {
-        r_text = _r_text_out_path
-      }
-
+      r_text = _r_text_out_path
       possible_config_deps = _deps
 
       # Always merge manifests from resources.
@@ -1076,16 +1081,11 @@ if (enable_java_templates) {
     prepare_resources(target_name) {
       forward_variables_from(invoker,
                              [
-                               "android_manifest",
-                               "custom_package",
                                "strip_drawables",
                                "visibility",
                              ])
       deps = _deps
       deps += [ ":$_build_config_target_name" ]
-      if (defined(invoker.android_manifest_dep)) {
-        deps += [ invoker.android_manifest_dep ]
-      }
 
       res_sources_path = _res_sources_path
       sources = _resource_files
@@ -4299,8 +4299,8 @@ if (enable_java_templates) {
       android_resources(_res_target_name) {
         forward_variables_from(invoker,
                                [
-                                 "custom_package",
                                  "create_srcjar",
+                                 "custom_package",
                                  "resource_overlay",
                                  "testonly",
                                  "strip_drawables",
@@ -5212,7 +5212,7 @@ template("generate_ui_locale_resources") {
   }
 
   android_generated_resources(target_name) {
-    generating_target_name = ":$_generating_target_name"
+    generating_target = ":$_generating_target_name"
     generated_resources_zip = _output_zip
   }
 }

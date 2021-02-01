@@ -661,10 +661,7 @@ template("generate_r_java") {
     }
     depfile = "$target_gen_dir/${invoker.target_name}.d"
     inputs = [ invoker.build_config ]
-    outputs = [
-      invoker.srcjar_path,
-      invoker.r_text_path,
-    ]
+    outputs = [ invoker.srcjar_path ]
     _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
     script = "//build/android/gyp/create_r_java.py"
     args = [
@@ -672,9 +669,7 @@ template("generate_r_java") {
       rebase_path(depfile, root_build_dir),
       "--srcjar-out",
       rebase_path(invoker.srcjar_path, root_build_dir),
-      "--rtxt-out",
-      rebase_path(invoker.r_text_path, root_build_dir),
-      "--resource-zips=@FileArg($_rebased_build_config:deps_info:dependency_zips)",
+      "--deps-rtxts=@FileArg($_rebased_build_config:deps_info:dependency_r_txt_files)",
       "--r-package=${invoker.package}",
     ]
   }
@@ -2270,9 +2265,6 @@ if (enable_java_templates) {
       args = [
         "--depfile",
         rebase_path(depfile, root_build_dir),
-        "--include-resources=@FileArg($_rebased_build_config:android:sdk_jars)",
-        "--dependencies-res-zips=@FileArg($_rebased_build_config:deps_info:dependency_zips)",
-        "--extra-res-packages=@FileArg($_rebased_build_config:deps_info:extra_package_names)",
         "--res-sources-path=$_rebased_res_sources_path",
         "--resource-zip-out",
         rebase_path(invoker.resources_zip, root_build_dir),
@@ -2280,30 +2272,12 @@ if (enable_java_templates) {
         rebase_path(invoker.r_text_out_path, root_build_dir),
       ]
 
-      if (defined(invoker.android_manifest)) {
-        if (defined(invoker.android_manifest_dep)) {
-          deps += [ invoker.android_manifest_dep ]
-        }
-        inputs += [ invoker.android_manifest ]
-        args += [
-          "--android-manifest",
-          rebase_path(invoker.android_manifest, root_build_dir),
-        ]
-      }
-
       if (defined(invoker.r_text_in_path)) {
         _r_text_in_path = invoker.r_text_in_path
         inputs += [ _r_text_in_path ]
         args += [
           "--r-text-in",
           rebase_path(_r_text_in_path, root_build_dir),
-        ]
-      }
-
-      if (defined(invoker.custom_package)) {
-        args += [
-          "--custom-package",
-          invoker.custom_package,
         ]
       }
 
@@ -3520,7 +3494,6 @@ if (enable_java_templates) {
 
     if (defined(invoker.resources_package)) {
       _resources_package = invoker.resources_package
-      _fake_r_text = "$target_gen_dir/${target_name}.R.txt"
     }
 
     _java_files = []
@@ -3802,7 +3775,6 @@ if (enable_java_templates) {
 
       if (defined(_resources_package)) {
         custom_package = _resources_package
-        r_text = _fake_r_text
       }
       if (_is_prebuilt || _has_sources) {
         ijar_path = _final_ijar_path
@@ -3873,7 +3845,6 @@ if (enable_java_templates) {
           # Filepath has to be exactly this because compile_java looks for the
           # srcjar of srcjar_deps at this location $gen_dir/$target_name.srcjar
           srcjar_path = "$target_gen_dir/$target_name.srcjar"
-          r_text_path = _fake_r_text
           package = _resources_package
         }
         _srcjar_deps += [ ":$_fake_rjava_target" ]
