@@ -323,14 +323,6 @@ const OFFLINE_INFO_BANNER_COUNTER_LIMIT = 3;
       style.href = constants.HOLDING_SPACE_WELCOME_CSS;
       style.setAttribute('holding-space-welcome-style', '');
       this.document_.head.appendChild(style);
-
-      // The holding space welcome banner has inline styles to prevent it from
-      // being made visible to the user before its dynamically added styles have
-      // fully loaded. Once dynamically added styles have loaded, inline styles
-      // must be removed so that the banner can be made visible.
-      style.onload = () => {
-        this.holdingSpaceWelcomeBanner_.removeAttribute('style');
-      };
     }
 
     const wrapper = util.createChild(
