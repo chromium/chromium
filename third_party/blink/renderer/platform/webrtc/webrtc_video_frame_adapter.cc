@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_frame_adapter.h"
 
 #include "base/callback_helpers.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "media/base/video_util.h"
@@ -168,34 +169,6 @@ rtc::scoped_refptr<webrtc::VideoFrameBuffer> MakeFrameAdapter(
   }
 }
 
-void IsValidFrame(const media::VideoFrame& frame) {
-  // Paranoia checks.
-  DCHECK(media::VideoFrame::IsValidConfig(
-      frame.format(), frame.storage_type(), frame.coded_size(),
-      frame.visible_rect(), frame.natural_size()));
-  DCHECK(media::PIXEL_FORMAT_I420 == frame.format() ||
-         media::PIXEL_FORMAT_I420A == frame.format() ||
-         media::PIXEL_FORMAT_NV12 == frame.format());
-  if (media::PIXEL_FORMAT_NV12 == frame.format()) {
-    CHECK(
-        reinterpret_cast<const void*>(frame.data(media::VideoFrame::kYPlane)));
-    CHECK(
-        reinterpret_cast<const void*>(frame.data(media::VideoFrame::kUVPlane)));
-    CHECK(frame.stride(media::VideoFrame::kYPlane));
-    CHECK(frame.stride(media::VideoFrame::kUVPlane));
-  } else {
-    CHECK(
-        reinterpret_cast<const void*>(frame.data(media::VideoFrame::kYPlane)));
-    CHECK(
-        reinterpret_cast<const void*>(frame.data(media::VideoFrame::kUPlane)));
-    CHECK(
-        reinterpret_cast<const void*>(frame.data(media::VideoFrame::kVPlane)));
-    CHECK(frame.stride(media::VideoFrame::kYPlane));
-    CHECK(frame.stride(media::VideoFrame::kUPlane));
-    CHECK(frame.stride(media::VideoFrame::kVPlane));
-  }
-}
-
 scoped_refptr<media::VideoFrame> MakeScaledI420VideoFrame(
     scoped_refptr<media::VideoFrame> source_frame,
     scoped_refptr<blink::WebRtcVideoFrameAdapter::BufferPoolOwner>
@@ -325,8 +298,33 @@ int WebRtcVideoFrameAdapter::height() const {
   return frame_->natural_size().height();
 }
 
+// static
+bool WebRtcVideoFrameAdapter::IsFrameAdaptable(const media::VideoFrame* frame) {
+  // Currently accept I420, I420A, NV12 formats in a mapped frame,
+  // or a texture or GPU memory buffer frame.
+  return (frame->IsMappable() &&
+          base::Contains(AdaptableMappablePixelFormats(), frame->format())) ||
+         frame->storage_type() ==
+             media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER ||
+         frame->HasTextures();
+}
+
+// static
+const base::span<const media::VideoPixelFormat>
+WebRtcVideoFrameAdapter::AdaptableMappablePixelFormats() {
+  static constexpr const media::VideoPixelFormat
+      kAdaptableMappablePixelFormats[] = {media::PIXEL_FORMAT_I420,
+                                          media::PIXEL_FORMAT_I420A,
+                                          media::PIXEL_FORMAT_NV12};
+  return base::make_span(kAdaptableMappablePixelFormats);
+}
+
 rtc::scoped_refptr<webrtc::VideoFrameBuffer>
 WebRtcVideoFrameAdapter::CreateFrameAdapter() const {
+  DCHECK(IsFrameAdaptable(frame_.get()))
+      << "Can not create WebRTC frame adapter for frame "
+      << frame_->AsHumanReadableString();
+
   if (frame_->storage_type() ==
       media::VideoFrame::StorageType::STORAGE_GPU_MEMORY_BUFFER) {
     auto video_frame = ConstructVideoFrameFromGpu(frame_, scaled_frame_pool_);
@@ -339,8 +337,6 @@ WebRtcVideoFrameAdapter::CreateFrameAdapter() const {
         ConvertToBaseOnceCallback(CrossThreadBindOnce(
             base::DoNothing::Once<scoped_refptr<media::VideoFrame>>(),
             frame_)));
-
-    IsValidFrame(*video_frame);
     return MakeFrameAdapter(std::move(video_frame));
   } else if (frame_->HasTextures()) {
     // We cant convert texture synchronously due to threading issues, see
@@ -350,16 +346,6 @@ WebRtcVideoFrameAdapter::CreateFrameAdapter() const {
     return MakeFrameAdapter(media::VideoFrame::CreateColorFrame(
         frame_->natural_size(), 0u, 0x80, 0x80, frame_->timestamp()));
   }
-  IsValidFrame(*frame_);
-
-  // If the frame is a software frame then it can be in I420, I420A or NV12.
-  // TODO(https://crbug.com/1169727): Move this check to somewhere else, and add
-  // tests for all pixel formats.
-  DCHECK(frame_->format() == media::PIXEL_FORMAT_NV12 ||
-         frame_->format() == media::PIXEL_FORMAT_I420 ||
-         frame_->format() == media::PIXEL_FORMAT_I420A)
-      << "Can not scale software frame of format "
-      << media::VideoPixelFormatToString(frame_->format());
 
   // Since scaling is required, hard-apply both the cropping and scaling
   // before we hand the frame over to WebRTC.

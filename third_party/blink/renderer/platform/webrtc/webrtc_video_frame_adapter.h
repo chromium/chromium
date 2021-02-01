@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 
+#include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
-
 #include "base/optional.h"
 #include "base/synchronization/lock.h"
 #include "media/base/video_frame.h"
@@ -22,6 +22,13 @@ namespace blink {
 // implementation is read-only and will return null if trying to get a
 // non-const pointer to the pixel data. This object will be accessed from
 // different threads, but that's safe since it's read-only.
+//
+// 3 types of frames can be adapted, either,
+// - The frame is mappable in either I420, I420A or NV12 pixel formats.
+// - Or, the frame is on a GPU Memory Buffer in NV12.
+// - Or, the frame has textures.
+// Creators of WebRtcVideoFrameAdapter can ensure the frame is convertible by
+// calling |IsFrameAdaptable| before constructing this object.
 class PLATFORM_EXPORT WebRtcVideoFrameAdapter
     : public webrtc::VideoFrameBuffer {
  public:
@@ -42,6 +49,11 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
 
     media::VideoFramePool pool_;
   };
+
+  // Returns true if |frame| is adaptable to a webrtc::VideoFrameBuffer.
+  static bool IsFrameAdaptable(const media::VideoFrame* frame);
+  static const base::span<const media::VideoPixelFormat>
+  AdaptableMappablePixelFormats();
 
   explicit WebRtcVideoFrameAdapter(scoped_refptr<media::VideoFrame> frame);
   WebRtcVideoFrameAdapter(scoped_refptr<media::VideoFrame> frame,

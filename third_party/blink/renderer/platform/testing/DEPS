@@ -62,6 +62,7 @@ specific_include_rules = {
     ],
     "video_frame_utils\.cc": [
         "+media/video/fake_gpu_memory_buffer.h",
+        "+media/base/format_utils.h",
     ],
     "video_frame_utils\.h": [
         "+media/base/video_frame.h",
