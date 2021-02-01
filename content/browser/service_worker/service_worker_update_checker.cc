@@ -28,58 +28,6 @@
 
 namespace content {
 
-namespace {
-
-void SetUpOnUI(
-    base::WeakPtr<ServiceWorkerProcessManager> process_manager,
-    void* trace_id,
-    base::OnceCallback<void(
-        net::HttpRequestHeaders,
-        ServiceWorkerUpdatedScriptLoader::BrowserContextGetter)> callback) {
-  TRACE_EVENT_WITH_FLOW0(
-      "ServiceWorker", "ServiceWorkerUpdateChecker::anonymous::SetUpOnUI",
-      trace_id, TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
-
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!process_manager || process_manager->IsShutdown()) {
-    // If it's being shut down, ServiceWorkerUpdateChecker is going to be
-    // destroyed after this task. We do nothing here.
-    return;
-  }
-
-  net::HttpRequestHeaders headers;
-
-  // Set the accept header to '*/*'.
-  // https://fetch.spec.whatwg.org/#concept-fetch
-  headers.SetHeader(net::HttpRequestHeaders::kAccept,
-                    network::kDefaultAcceptHeaderValue);
-
-  BrowserContext* browser_context = process_manager->browser_context();
-  blink::RendererPreferences renderer_preferences;
-  GetContentClient()->browser()->UpdateRendererPreferencesForWorker(
-      browser_context, &renderer_preferences);
-  UpdateAdditionalHeadersForBrowserInitiatedRequest(
-      &headers, browser_context, /*should_update_existing_headers=*/false,
-      renderer_preferences);
-
-  ServiceWorkerUpdatedScriptLoader::BrowserContextGetter
-      browser_context_getter = base::BindRepeating(
-          [](base::WeakPtr<ServiceWorkerProcessManager> process_manager)
-              -> BrowserContext* {
-            DCHECK_CURRENTLY_ON(BrowserThread::UI);
-            if (process_manager)
-              return process_manager->browser_context();
-            return nullptr;
-          },
-          process_manager);
-
-  RunOrPostTaskOnThread(FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-                        base::BindOnce(std::move(callback), std::move(headers),
-                                       browser_context_getter));
-}
-
-}  // namespace
-
 ServiceWorkerUpdateChecker::ServiceWorkerUpdateChecker(
     std::vector<storage::mojom::ServiceWorkerResourceRecordPtr>
         scripts_to_compare,
@@ -117,20 +65,38 @@ void ServiceWorkerUpdateChecker::Start(UpdateStatusCallback callback) {
   DCHECK(!scripts_to_compare_.empty());
   callback_ = std::move(callback);
 
-  RunOrPostTaskOnThread(
-      FROM_HERE, BrowserThread::UI,
-      base::BindOnce(&SetUpOnUI, context_->process_manager()->AsWeakPtr(),
-                     base::Unretained(this),
-                     base::BindOnce(&ServiceWorkerUpdateChecker::DidSetUpOnUI,
-                                    weak_factory_.GetWeakPtr())));
-}
+  if (context_->process_manager()->IsShutdown()) {
+    // If it's being shut down, ServiceWorkerUpdateChecker is going to be
+    // destroyed after this task. We do nothing here.
+    return;
+  }
 
-void ServiceWorkerUpdateChecker::DidSetUpOnUI(
-    net::HttpRequestHeaders header,
-    ServiceWorkerUpdatedScriptLoader::BrowserContextGetter
-        browser_context_getter) {
-  default_headers_ = std::move(header);
-  browser_context_getter_ = std::move(browser_context_getter);
+  // Set the accept header to '*/*'.
+  // https://fetch.spec.whatwg.org/#concept-fetch
+  default_headers_.SetHeader(net::HttpRequestHeaders::kAccept,
+                             network::kDefaultAcceptHeaderValue);
+
+  BrowserContext* browser_context =
+      context_->process_manager()->browser_context();
+  blink::RendererPreferences renderer_preferences;
+  GetContentClient()->browser()->UpdateRendererPreferencesForWorker(
+      browser_context, &renderer_preferences);
+  UpdateAdditionalHeadersForBrowserInitiatedRequest(
+      &default_headers_, browser_context,
+      /*should_update_existing_headers=*/false, renderer_preferences);
+
+  // TODO(https://crbug.com/1138155): Remove this together with
+  // ThrottlingURLLoaderCoreWrapper.
+  browser_context_getter_ = base::BindRepeating(
+      [](base::WeakPtr<ServiceWorkerProcessManager> process_manager)
+          -> BrowserContext* {
+        DCHECK_CURRENTLY_ON(BrowserThread::UI);
+        if (process_manager)
+          return process_manager->browser_context();
+        return nullptr;
+      },
+      context_->process_manager()->AsWeakPtr());
+
   CheckOneScript(main_script_url_, main_script_resource_id_);
 }
 
