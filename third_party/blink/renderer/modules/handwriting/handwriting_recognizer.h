@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
 
@@ -15,7 +16,6 @@ class ExecutionContext;
 class HandwritingDrawing;
 class HandwritingHints;
 class ScriptState;
-class Visitor;
 
 class HandwritingRecognizer final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();

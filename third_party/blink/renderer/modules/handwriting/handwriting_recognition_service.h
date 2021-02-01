@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
@@ -14,7 +15,6 @@ namespace blink {
 class HandwritingModelConstraint;
 class HandwritingFeatureQuery;
 class ScriptState;
-class Visitor;
 
 class HandwritingRecognitionService final
     : public GarbageCollected<HandwritingRecognitionService>,

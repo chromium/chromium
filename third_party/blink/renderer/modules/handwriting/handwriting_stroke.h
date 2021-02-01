@@ -9,12 +9,12 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
 
 class ExecutionContext;
 class HandwritingPoint;
-class Visitor;
 
 class HandwritingStroke final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
