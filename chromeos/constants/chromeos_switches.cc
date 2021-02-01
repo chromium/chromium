@@ -110,6 +110,10 @@ const char kArcForceShowOptInUi[] = "arc-force-show-optin-ui";
 // Install roster. Used manually by developers.
 const char kArcGeneratePlayAutoInstall[] = "arc-generate-play-auto-install";
 
+// Write ARC++ install events to chrome log for integration test.
+const char kArcInstallEventChromeLogForTests[] =
+    "arc-install-event-chrome-log-for-tests";
+
 // Used in autotest to specifies how to handle packages cache. Can be
 // copy - copy resulting packages.xml to the temporary directory.
 // skip-copy - skip initial packages cache setup and copy resulting packages.xml

@@ -47,6 +47,8 @@ extern const char kArcEnableNativeBridge64BitSupportExperiment[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kArcForceShowOptInUi[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kArcGeneratePlayAutoInstall[];
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const char kArcInstallEventChromeLogForTests[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kArcPackagesCacheMode[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kArcPlayStoreAutoUpdate[];
