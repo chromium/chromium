@@ -14,7 +14,7 @@ const OobeScrollableBehavior = {
    * Init observers to keep track of the scrollable element size changes.
    */
   initScrollableObservers(scrollableElement, ...sizeChangeObservableElemenets) {
-    if (!scrollableElement) {
+    if (!scrollableElement || this.scrollableElement_) {
       return;
     }
     this.scrollableElement_ = scrollableElement;
@@ -38,6 +38,13 @@ const OobeScrollableBehavior = {
     el.classList.toggle(
         'scrolled-to-bottom',
         el.scrollTop + el.clientHeight >= el.scrollHeight);
+  },
+
+  /**
+   * Scroll to the bottom of scrollalbe element.
+   */
+  scrollToBottom() {
+    this.scrollableElement_.scrollTop = this.scrollableElement_.scrollHeight;
   },
 };
 

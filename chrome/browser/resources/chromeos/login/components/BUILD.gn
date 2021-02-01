@@ -10,6 +10,7 @@ group("closure_compile") {
     ":closure_compile_local",
     "hd_iron_icon:closure_compile",
     "oobe_carousel:closure_compile",
+    "oobe_content_dialog:closure_compile",
     "oobe_focus_behavior:closure_compile",
     "oobe_i18n_behavior:closure_compile",
     "oobe_scrollable_behavior:closure_compile",

@@ -171,6 +171,8 @@ constexpr char kHDIronIconJS[] = "components/hd_iron_icon.js";
 constexpr char kOobeAdaptiveDialogHTML[] =
     "components/oobe_adaptive_dialog.html";
 constexpr char kOobeAdaptvieDialogJS[] = "components/oobe_adaptive_dialog.js";
+constexpr char kOobeContentDialogHTML[] = "components/oobe_content_dialog.html";
+constexpr char kOobeContentDialogJS[] = "components/oobe_content_dialog.js";
 constexpr char kOobeDialogHTML[] = "components/oobe_dialog.html";
 constexpr char kOobeDialogJS[] = "components/oobe_dialog.js";
 constexpr char kOobeCarouselHTML[] = "components/oobe_carousel.html";
@@ -706,6 +708,10 @@ void OobeUI::AddOobeComponents(content::WebUIDataSource* source,
                             IDR_OOBE_COMPONENTS_OOBE_ADAPTIVE_DIALOG_HTML);
     source->AddResourcePath(kOobeAdaptvieDialogJS,
                             IDR_OOBE_COMPONENTS_OOBE_ADAPTIVE_DIALOG_JS);
+    source->AddResourcePath(kOobeContentDialogHTML,
+                            IDR_OOBE_COMPONENTS_OOBE_CONTENT_DIALOG_HTML);
+    source->AddResourcePath(kOobeContentDialogJS,
+                            IDR_OOBE_COMPONENTS_OOBE_CONTENT_DIALOG_JS);
   } else {
     source->AddResourcePath(
         kOobeCustomVarsCssHTML,
@@ -714,6 +720,10 @@ void OobeUI::AddOobeComponents(content::WebUIDataSource* source,
                             IDR_OOBE_COMPONENTS_OOBE_ADAPTIVE_DIALOG_OLD_HTML);
     source->AddResourcePath(kOobeAdaptvieDialogJS,
                             IDR_OOBE_COMPONENTS_OOBE_ADAPTIVE_DIALOG_OLD_JS);
+    source->AddResourcePath(kOobeContentDialogHTML,
+                            IDR_OOBE_COMPONENTS_OOBE_CONTENT_DIALOG_OLD_HTML);
+    source->AddResourcePath(kOobeContentDialogJS,
+                            IDR_OOBE_COMPONENTS_OOBE_CONTENT_DIALOG_OLD_JS);
   }
 
   source->AddResourcePath(kOobeCarouselHTML,
