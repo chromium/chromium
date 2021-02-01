@@ -204,12 +204,15 @@ CanvasAsyncBlobCreator::CanvasAsyncBlobCreator(
   }
 
   // For kHTMLCanvasToBlobCallback and kOffscreenCanvasConvertToBlobPromise
-  // to-blob function types, we color convert to sRGB and do not tag the image
-  // with any color space info.
+  // to-blob function types, we keep the color space of the image and save
+  // it in the info if color management is enabled; otherwise, we color convert
+  // to sRGB and do not tag the image with any color space info.
   // For kHTMLCanvasConvertToBlobPromise to-blob function type, we color
   // covnert to the requested color space and pixel format.
   if (function_type_ != kHTMLCanvasConvertToBlobPromise) {
-    if (skia_image->colorSpace()) {
+    bool isColorManagementEnabled =
+        RuntimeEnabledFeatures::CanvasColorManagementEnabled();
+    if (skia_image->colorSpace() && !isColorManagementEnabled) {
       image_ = image_->ConvertToColorSpace(
           SkColorSpace::MakeSRGB(),
           GetColorTypeForConversion(skia_image->colorType()));
@@ -217,10 +220,10 @@ CanvasAsyncBlobCreator::CanvasAsyncBlobCreator(
     }
 
     if (skia_image->peekPixels(&src_data_)) {
-      src_data_.setColorSpace(nullptr);
       static_bitmap_image_loaded_ = true;
+      if (!isColorManagementEnabled)
+        src_data_.setColorSpace(nullptr);
     }
-    DCHECK(!src_data_.colorSpace());
   } else {
     sk_sp<SkColorSpace> blob_color_space =
         BlobColorSpaceToSkColorSpace(encode_options_->colorSpace());

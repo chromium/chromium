@@ -171,19 +171,21 @@ String ImageDataBuffer::ToDataURL(const ImageEncodingMimeType mime_type,
                                   const double& quality) const {
   DCHECK(is_valid_);
 
-  // toDataURL always encodes in sRGB and does not include the color space
-  // information.
-  sk_sp<SkImage> skia_image = nullptr;
   SkPixmap pixmap = pixmap_;
-  if (pixmap.colorSpace()) {
-    if (!pixmap.colorSpace()->isSRGB()) {
-      skia_image = SkImage::MakeFromRaster(pixmap, nullptr, nullptr);
-      skia_image = skia_image->makeColorSpace(SkColorSpace::MakeSRGB());
-      if (!skia_image->peekPixels(&pixmap))
-        return "data:,";
-      MSAN_CHECK_MEM_IS_INITIALIZED(pixmap.addr(), pixmap.computeByteSize());
+  if (!RuntimeEnabledFeatures::CanvasColorManagementEnabled()) {
+    // toDataURL always encodes in sRGB and does not include the color space
+    // information.
+    sk_sp<SkImage> skia_image = nullptr;
+    if (pixmap.colorSpace()) {
+      if (!pixmap.colorSpace()->isSRGB()) {
+        skia_image = SkImage::MakeFromRaster(pixmap, nullptr, nullptr);
+        skia_image = skia_image->makeColorSpace(SkColorSpace::MakeSRGB());
+        if (!skia_image->peekPixels(&pixmap))
+          return "data:,";
+        MSAN_CHECK_MEM_IS_INITIALIZED(pixmap.addr(), pixmap.computeByteSize());
+      }
+      pixmap.setColorSpace(nullptr);
     }
-    pixmap.setColorSpace(nullptr);
   }
 
   Vector<unsigned char> result;
