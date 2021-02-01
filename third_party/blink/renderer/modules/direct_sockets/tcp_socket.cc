@@ -71,6 +71,7 @@ void TCPSocket::Init(int32_t result,
   } else {
     resolver_->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotAllowedError, "Permission denied"));
+    socket_observer_receiver_.reset();
   }
   resolver_ = nullptr;
 }
