@@ -7696,6 +7696,8 @@
                         "level_estimator_speech_frames_threshold": "6",
                         "max_gain_change_db_per_second": "3",
                         "max_output_noise_level_dbfs": "-55",
+                        "neon_allowed": "true",
+                        "sse2_allowed": "true",
                         "use_peaks_not_rms": "false",
                         "vad_probability_attack": "0.3"
                     },
