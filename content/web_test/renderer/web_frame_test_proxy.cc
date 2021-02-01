@@ -235,7 +235,8 @@ WebFrameTestProxy::WebFrameTestProxy(RenderFrameImpl::CreateParams params,
     : RenderFrameImpl(std::move(params)),
       web_view_test_proxy_(static_cast<WebViewTestProxy*>(render_view())),
       test_runner_(test_runner),
-      text_input_controller_(web_view_test_proxy_) {}
+      text_input_controller_(web_view_test_proxy_),
+      accessibility_controller_(web_view_test_proxy_) {}
 
 WebFrameTestProxy::~WebFrameTestProxy() {
   if (IsMainFrame())
@@ -282,13 +283,15 @@ void WebFrameTestProxy::Reset() {
     blink::WebView* web_view = GetWebFrame()->View();
     web_view->SetWebPreferences(web_view->GetWebPreferences());
 
-    web_view_test_proxy_->Reset();
+    // Resets things on the WebView that TestRunnerBindings can modify.
+    test_runner()->ResetWebView(web_view);
   }
   if (IsLocalRoot()) {
     test_runner()->ResetWebFrameWidget(GetLocalRootWebFrameWidget());
     GetLocalRootFrameWidgetTestHelper()->Reset();
   }
 
+  accessibility_controller_.Reset();
   spell_check_->Reset();
 }
 
@@ -671,13 +674,10 @@ void WebFrameTestProxy::HandleWebAccessibilityEvent(
   if (!test_runner()->TestIsRunning())
     return;
 
-  AccessibilityController* accessibility_controller =
-      web_view_test_proxy_->accessibility_controller();
-
-  accessibility_controller->NotificationReceived(GetWebFrame(), object,
+  accessibility_controller_.NotificationReceived(GetWebFrame(), object,
                                                  event_name, event_intents);
 
-  if (accessibility_controller->ShouldLogAccessibilityEvents()) {
+  if (accessibility_controller_.ShouldLogAccessibilityEvents()) {
     std::string message("AccessibilityNotification - ");
     message += event_name;
 
@@ -714,15 +714,15 @@ void WebFrameTestProxy::DidClearWindowObject() {
   // especially problematic for web platform tests that would inject javascript
   // into the page when installing bindings.
   if (test_runner()->TestIsRunning()) {
+    blink::WebLocalFrame* frame = GetWebFrame();
     // These calls will install the various JS bindings for web tests into the
     // frame before JS has a chance to run.
-    GCController::Install(GetWebFrame());
+    GCController::Install(frame);
     test_runner()->Install(this, spell_check_.get());
-    text_input_controller_.Install(GetWebFrame());
-    web_view_test_proxy_->Install(GetWebFrame());
-    GetLocalRootFrameWidgetTestHelper()->GetEventSender()->Install(
-        GetWebFrame());
-    blink::WebTestingSupport::InjectInternalsObject(GetWebFrame());
+    accessibility_controller_.Install(frame);
+    text_input_controller_.Install(frame);
+    GetLocalRootFrameWidgetTestHelper()->GetEventSender()->Install(frame);
+    blink::WebTestingSupport::InjectInternalsObject(frame);
   }
   RenderFrameImpl::DidClearWindowObject();
 }

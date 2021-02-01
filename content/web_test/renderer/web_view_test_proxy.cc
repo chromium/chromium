@@ -31,16 +31,6 @@ WebViewTestProxy::WebViewTestProxy(AgentSchedulingGroup& agent_scheduling_group,
 
 WebViewTestProxy::~WebViewTestProxy() = default;
 
-void WebViewTestProxy::Reset() {
-  accessibility_controller_.Reset();
-  // Resets things on the WebView that TestRunnerBindings can modify.
-  test_runner_->ResetWebView(this);
-}
-
-void WebViewTestProxy::Install(blink::WebLocalFrame* frame) {
-  accessibility_controller_.Install(frame);
-}
-
 blink::WebString WebViewTestProxy::GetAbsoluteWebStringFromUTF8Path(
     const std::string& utf8_path) {
   base::FilePath path = base::FilePath::FromUTF8Unsafe(utf8_path);

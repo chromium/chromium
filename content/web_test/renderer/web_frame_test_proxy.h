@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "content/renderer/render_frame_impl.h"
 #include "content/web_test/common/web_test.mojom.h"
+#include "content/web_test/renderer/accessibility_controller.h"
 #include "content/web_test/renderer/text_input_controller.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -110,6 +111,8 @@ class WebFrameTestProxy : public RenderFrameImpl,
   std::unique_ptr<SpellCheckClient> spell_check_;
 
   TextInputController text_input_controller_;
+
+  AccessibilityController accessibility_controller_;
 
   mojo::AssociatedReceiver<mojom::WebTestRenderFrame>
       web_test_render_frame_receiver_{this};

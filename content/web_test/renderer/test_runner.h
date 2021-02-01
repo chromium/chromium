@@ -82,8 +82,8 @@ class TestRunner {
   // Resets global TestRunner state for the next test.
   void Reset();
 
-  // Resets state on the |web_view_test_proxy| for the next test.
-  void ResetWebView(WebViewTestProxy* web_view_test_proxy);
+  // Resets state on the |web_view| for the next test.
+  void ResetWebView(blink::WebView* web_view);
   // Resets state on the |web_frame_widget| for the next test.
   void ResetWebFrameWidget(blink::WebFrameWidget* web_frame_widget);
 

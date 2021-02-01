@@ -15,7 +15,6 @@
 #include "content/renderer/agent_scheduling_group.h"
 #include "content/renderer/render_view_impl.h"
 #include "content/web_test/common/web_test.mojom.h"
-#include "content/web_test/renderer/accessibility_controller.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -25,12 +24,10 @@
 #include "third_party/blink/public/web/web_view_client.h"
 
 namespace blink {
-class WebLocalFrame;
 class WebString;
 }  // namespace blink
 
 namespace content {
-class AccessibilityController;
 class TestRunner;
 
 // WebViewTestProxy is used to run web tests. This class is a partial fake
@@ -56,13 +53,6 @@ class WebViewTestProxy : public RenderViewImpl {
                             CompositorDependencies* compositor_deps,
                             const mojom::CreateViewParams& params,
                             TestRunner* test_runner);
-
-  AccessibilityController* accessibility_controller() {
-    return &accessibility_controller_;
-  }
-
-  void Reset();
-  void Install(blink::WebLocalFrame* frame);
 
   // Convert the provided relative path into an absolute path.
   blink::WebString GetAbsoluteWebStringFromUTF8Path(const std::string& path);
@@ -90,8 +80,6 @@ class WebViewTestProxy : public RenderViewImpl {
   // web test harness' main window.
   bool is_main_window_ = false;
   mojom::WebTestRunTestConfiguration test_config_;
-
-  AccessibilityController accessibility_controller_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WebViewTestProxy);
 };

@@ -2326,9 +2326,7 @@ void TestRunner::Reset() {
   work_queue_.Reset();
 }
 
-void TestRunner::ResetWebView(WebViewTestProxy* web_view_test_proxy) {
-  blink::WebView* web_view = web_view_test_proxy->GetWebView();
-
+void TestRunner::ResetWebView(blink::WebView* web_view) {
   web_view->SetTabKeyCyclesThroughElements(true);
   web_view->GetSettings()->SetHighlightAds(false);
   web_view->GetSettings()->SetCaretBrowsingEnabled(false);
