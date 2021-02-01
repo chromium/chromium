@@ -62,4 +62,13 @@ blink::OriginTrialPolicy* ContentClientImpl::GetOriginTrialPolicy() {
   return origin_trial_policy_.get();
 }
 
+void ContentClientImpl::AddAdditionalSchemes(Schemes* schemes) {
+#if defined(OS_ANDROID)
+  // TODO(sky): refactor. This comes from chrome/common/url_constants.cc's
+  // kAndroidAppScheme.
+  schemes->standard_schemes.push_back("android-app");
+  schemes->referrer_schemes.push_back("android-app");
+#endif
+}
+
 }  // namespace weblayer
