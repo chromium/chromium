@@ -4926,7 +4926,7 @@
   {
     "name": "use-chime-android-sdk",
     "owners": [ "xingliu" ],
-    "expiry_milestone": 89
+    "expiry_milestone": 95
   },
   {
     "name": "use-custom-messages-domain",
