@@ -205,9 +205,9 @@ those tasks.
 
 `base::SequencedTaskRunner` (which extends `base::TaskRunner`) is a commonly
 used abstraction which handles running tasks (which are instances
-of `base::Closure`) in sequential order. These tasks are not guaranteed to run
-on the same thread. The preferred way of posting to the current (virtual) thread
-is `base::SequencedTaskRunnerHandle::Get()`.
+of `base::OnceClosure`) in sequential order. These tasks are not guaranteed to
+run on the same thread. The preferred way of posting to the current (virtual)
+thread is `base::SequencedTaskRunnerHandle::Get()`.
 
 A task that can run on any thread and doesn’t have ordering or mutual exclusion
 requirements with other tasks should be posted using one of the

@@ -18,7 +18,7 @@ to find out how to schedule this type of work.
 
 ## Tasks
 
-The main scheduling unit in Blink is a task. A task is a base::Closure posted via
+The main scheduling unit in Blink is a task. A task is a base::OnceClosure posted via
 TaskRunner::PostTask or TaskRunner::PostDelayedTask interface. The regular method of
 creating closures (base::BindOnce/Repeating) [is banned](#binding-tasks).
 Blink should use WTF::Bind (for tasks which are posted to the same thread) and
@@ -175,4 +175,3 @@ on a different thread.
 
 
 ## TODO(altimin): Document idle tasks
-

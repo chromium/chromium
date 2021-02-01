@@ -492,7 +492,7 @@ TEST_F(SecurityKeyIpcServerTest, CleanupPendingConnection) {
   base::RunLoop().RunUntilIdle();
 
   // Create a fake client and connect to the IPC server channel.
-  FakeSecurityKeyIpcClient fake_ipc_client(base::Bind(
+  FakeSecurityKeyIpcClient fake_ipc_client(base::BindRepeating(
       &SecurityKeyIpcServerTest::OperationComplete, base::Unretained(this)));
   ASSERT_TRUE(fake_ipc_client.ConnectViaIpc(server_name));
   WaitForOperationComplete();

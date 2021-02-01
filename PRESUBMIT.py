@@ -332,15 +332,19 @@ _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
   '^base/callback.h',  # Intentional.
   '^base/cancelable_callback.h',  # Intentional.
   '^chrome/browser/apps/guest_view/web_view_browsertest.cc',
+  "^chrome/browser/ash/accessibility/",
   '^chrome/browser/captive_portal/captive_portal_browsertest.cc',
   '^chrome/browser/device_identity/chromeos/device_oauth2_token_store_chromeos.cc', # pylint: disable=line-too-long
   '^chrome/browser/history/android/android_history_provider_service_unittest.cc', # pylint: disable=line-too-long
   '^chrome/browser/media_galleries/',
+  "^chrome/browser/metrics/",
   '^chrome/browser/net/websocket_browsertest.cc',
   '^chrome/browser/ntp_tiles/ntp_tiles_browsertest.cc',
   '^chrome/browser/page_load_metrics/observers/data_saver_site_breakdown_metrics_observer_browsertest.cc', # pylint: disable=line-too-long
   '^chrome/browser/payments/payment_manifest_parser_browsertest.cc',
   '^chrome/browser/portal/portal_browsertest.cc',
+  "^chrome/browser/prefetch/no_state_prefetch/",
+  '^chrome/browser/previews/',
   '^chrome/browser/profiling_host/profiling_process_host.cc',
   '^chrome/browser/recovery/recovery_install_global_error.cc',
   '^chrome/browser/resources/chromeos/accessibility/',
@@ -350,11 +354,22 @@ _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
   '^chrome/browser/site_isolation/site_per_process_text_input_browsertest.cc',
   '^chrome/browser/sync_file_system/',
   '^chrome/browser/web_applications/',
+  "^components/browsing_data/content/",
+  "^components/enterprise/browser/controller/chrome_browser_cloud_management_controller\\.cc", # pylint: disable=line-too-long
+  "^components/feature_engagement/internal/",
+  "^docs/callback\\.md",  # Intentional
+  "^docs/webui_explainer\\.md",
+  "^docs/process/lsc/large_scale_changes\\.md",  # Intentional
+  "^docs/security/mojo\\.md",
+  "^docs/threading_and_tasks\\.md",
+  "^docs/ui/learn/bestpractices/layout\\.md",
   '^extensions/browser/',
   '^extensions/renderer/',
   '^media/blink/webmediaplayer_impl.cc',
   '^media/blink/webmediaplayer_impl.h',
   '^ppapi/proxy/',
+  '^third_party/blink/PRESUBMIT_test.py', # Intentional.
+  '^third_party/blink/tools/blinkpy/presubmit/audit_non_blink_usage.py' # Intentional pylint: disable=line-too-long
   '^tools/clang/base_bind_rewriters/',  # Intentional.
   '^tools/gdb/gdb_chrome.py',  # Intentional.
 ))

@@ -549,7 +549,7 @@ TEST_F(ServiceConnectionTest, FakeHandWritingRecognizer) {
   bool infer_callback_done = false;
   recognizer->Recognize(
       std::move(query),
-      base::Bind(
+      base::BindOnce(
           [](bool* infer_callback_done,
              mojom::HandwritingRecognizerResultPtr result) {
             *infer_callback_done = true;

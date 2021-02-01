@@ -49,7 +49,7 @@ class FakeContentAnalysisDelegate : public ContentAnalysisDelegate {
 
   // Use with ContentAnalysisDelegate::SetFactoryForTesting() to create
   // fake instances of this class.  Note that all but the last three arguments
-  // will need to be bound at base::Bind() time.
+  // will need to be bound at base::BindRepeating() time.
   static std::unique_ptr<ContentAnalysisDelegate> Create(
       base::RepeatingClosure delete_closure,
       StatusCallback status_callback,
