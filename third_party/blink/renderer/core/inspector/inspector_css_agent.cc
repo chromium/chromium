@@ -77,6 +77,7 @@
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/inspected_frames.h"
+#include "third_party/blink/renderer/core/inspector/inspector_contrast.h"
 #include "third_party/blink/renderer/core/inspector/inspector_history.h"
 #include "third_party/blink/renderer/core/inspector/inspector_network_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_resource_container.h"
@@ -157,168 +158,6 @@ HeapVector<Member<CSSStyleRule>> FilterDuplicateRules(
   }
   uniq_rules.Reverse();
   return uniq_rules;
-}
-
-// Get the elements which overlap the given rectangle.
-HeapVector<Member<Element>> ElementsFromRect(const PhysicalRect& rect,
-                                             Document& document) {
-  HitTestRequest request(HitTestRequest::kReadOnly | HitTestRequest::kActive |
-                         HitTestRequest::kListBased |
-                         HitTestRequest::kPenetratingList |
-                         HitTestRequest::kIgnoreClipping);
-
-  HitTestLocation location(rect);
-  HitTestResult result(request, location);
-  document.GetFrame()->ContentLayoutObject()->HitTest(location, result);
-  HeapVector<Member<Element>> elements;
-  Node* previous_node = nullptr;
-  for (const auto& hit_test_result_node : result.ListBasedTestResult()) {
-    Node* node = hit_test_result_node.Get();
-    if (!node || node->IsDocumentNode())
-      continue;
-    if (node->IsPseudoElement() || node->IsTextNode())
-      node = node->ParentOrShadowHostNode();
-    auto* element = DynamicTo<Element>(node);
-    if (!node || node == previous_node || !element)
-      continue;
-    elements.push_back(element);
-    previous_node = node;
-  }
-  return elements;
-}
-
-// Blends the colors from the given gradient with the existing colors.
-void BlendWithColorsFromGradient(cssvalue::CSSGradientValue* gradient,
-                                 Vector<Color>& colors,
-                                 bool& found_non_transparent_color,
-                                 bool& found_opaque_color,
-                                 const LayoutObject& layout_object) {
-  const Document& document = layout_object.GetDocument();
-  const ComputedStyle& style = layout_object.StyleRef();
-
-  Vector<Color> stop_colors = gradient->GetStopColors(document, style);
-  if (colors.IsEmpty()) {
-    colors.AppendRange(stop_colors.begin(), stop_colors.end());
-  } else {
-    if (colors.size() > 1) {
-      // Gradient on gradient is too complicated, bail out.
-      colors.clear();
-      return;
-    }
-
-    Color existing_color = colors.front();
-    colors.clear();
-    for (auto stop_color : stop_colors) {
-      found_non_transparent_color =
-          found_non_transparent_color || (stop_color.Alpha() != 0);
-      colors.push_back(existing_color.Blend(stop_color));
-    }
-  }
-  found_opaque_color =
-      found_opaque_color || gradient->KnownToBeOpaque(document, style);
-}
-
-// Gets the colors from an image style, if one exists and it is a gradient.
-void AddColorsFromImageStyle(const ComputedStyle& style,
-                             Vector<Color>& colors,
-                             bool& found_opaque_color,
-                             bool& found_non_transparent_color,
-                             const LayoutObject& layout_object) {
-  const FillLayer& background_layers = style.BackgroundLayers();
-  if (!background_layers.AnyLayerHasImage())
-    return;
-
-  StyleImage* style_image = background_layers.GetImage();
-  // hasImage() does not always indicate that this is non-null
-  if (!style_image)
-    return;
-
-  if (!style_image->IsGeneratedImage()) {
-    // Make no assertions about the colors in non-generated images
-    colors.clear();
-    found_opaque_color = false;
-    return;
-  }
-
-  StyleGeneratedImage* gen_image = To<StyleGeneratedImage>(style_image);
-  CSSValue* image_css = gen_image->CssValue();
-  if (auto* gradient = DynamicTo<cssvalue::CSSGradientValue>(image_css)) {
-    BlendWithColorsFromGradient(gradient, colors, found_non_transparent_color,
-                                found_opaque_color, layout_object);
-  }
-}
-
-// Get the background colors behind the given rect in the given document, by
-// walking up all the elements returned by a hit test (but not going beyond
-// |topElement|) covering the area of the rect, and blending their background
-// colors.
-bool GetColorsFromRect(PhysicalRect rect,
-                       Document& document,
-                       Element* top_element,
-                       Vector<Color>& colors) {
-  HeapVector<Member<Element>> elements_under_rect =
-      ElementsFromRect(rect, document);
-
-  bool found_opaque_color = false;
-  bool found_top_element = false;
-
-  for (auto e = elements_under_rect.rbegin();
-       !found_top_element && e != elements_under_rect.rend(); ++e) {
-    const Element* element = *e;
-    if (element == top_element)
-      found_top_element = true;
-
-    const LayoutObject* layout_object = element->GetLayoutObject();
-    if (!layout_object)
-      continue;
-
-    if (IsA<HTMLCanvasElement>(element) || IsA<HTMLEmbedElement>(element) ||
-        IsA<HTMLImageElement>(element) || IsA<HTMLObjectElement>(element) ||
-        IsA<HTMLPictureElement>(element) || element->IsSVGElement() ||
-        IsA<HTMLVideoElement>(element)) {
-      colors.clear();
-      found_opaque_color = false;
-      continue;
-    }
-
-    const ComputedStyle* style = layout_object->Style();
-    if (!style)
-      continue;
-
-    Color background_color =
-        style->VisitedDependentColor(GetCSSPropertyBackgroundColor());
-    bool found_non_transparent_color = false;
-    if (background_color.Alpha() != 0) {
-      found_non_transparent_color = true;
-      if (colors.IsEmpty()) {
-        if (!background_color.HasAlpha())
-          found_opaque_color = true;
-        colors.push_back(background_color);
-      } else {
-        if (!background_color.HasAlpha()) {
-          colors.clear();
-          colors.push_back(background_color);
-          found_opaque_color = true;
-        } else {
-          for (wtf_size_t i = 0; i < colors.size(); i++)
-            colors[i] = colors[i].Blend(background_color);
-          found_opaque_color =
-              found_opaque_color || background_color.HasAlpha();
-        }
-      }
-    }
-
-    AddColorsFromImageStyle(*style, colors, found_opaque_color,
-                            found_non_transparent_color, *layout_object);
-
-    bool contains = found_top_element || element->BoundingBox().Contains(rect);
-    if (!contains && found_non_transparent_color) {
-      // Only return colors if some opaque element covers up this one.
-      colors.clear();
-      found_opaque_color = false;
-    }
-  }
-  return found_opaque_color;
 }
 
 void CollectPlatformFontsFromRunFontDataList(
@@ -2492,50 +2331,11 @@ void InspectorCSSAgent::GetBackgroundColors(Element* element,
                                             Vector<Color>* colors,
                                             String* computed_font_size,
                                             String* computed_font_weight) {
-  // TODO: only support the single text child node here.
-  // Follow up with a larger fix post-merge.
-  auto* text_node = DynamicTo<Text>(element->firstChild());
-  if (!text_node || element->firstChild()->nextSibling()) {
-    return;
-  }
-
-  PhysicalRect content_bounds = text_node->BoundingBox();
-  LocalFrameView* view = text_node->GetDocument().View();
-  if (!view)
-    return;
-
-  Document& document = text_node->GetDocument();
-  bool is_main_frame = document.IsInMainFrame();
-  bool found_opaque_color = false;
-  if (is_main_frame) {
-    // Start with the "default" page color (typically white).
-    Color base_background_color = view->BaseBackgroundColor();
-    colors->push_back(view->BaseBackgroundColor());
-    found_opaque_color = !base_background_color.HasAlpha();
-  }
-
-  found_opaque_color = GetColorsFromRect(
-      content_bounds, text_node->GetDocument(), element, *colors);
-
-  if (!found_opaque_color && !is_main_frame) {
-    for (HTMLFrameOwnerElement* owner_element = document.LocalOwner();
-         !found_opaque_color && owner_element;
-         owner_element = owner_element->GetDocument().LocalOwner()) {
-      found_opaque_color = GetColorsFromRect(
-          content_bounds, owner_element->GetDocument(), nullptr, *colors);
-    }
-  }
-
-  auto* computed_style_info =
-      MakeGarbageCollected<CSSComputedStyleDeclaration>(element, true);
-  const CSSValue* font_size =
-      computed_style_info->GetPropertyCSSValue(CSSPropertyID::kFontSize);
-  if (font_size)
-    *computed_font_size = font_size->CssText();
-  const CSSValue* font_weight =
-      computed_style_info->GetPropertyCSSValue(CSSPropertyID::kFontWeight);
-  if (font_weight)
-    *computed_font_weight = font_weight->CssText();
+  InspectorContrast contrast(&element->GetDocument());
+  *colors = contrast.GetBackgroundColors(element);
+  auto text_info = contrast.GetTextInfo(element);
+  *computed_font_size = text_info.font_size;
+  *computed_font_weight = text_info.font_weight;
 }
 
 void InspectorCSSAgent::SetCoverageEnabled(bool enabled) {

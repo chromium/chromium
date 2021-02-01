@@ -87,6 +87,8 @@ blink_core_sources_inspector = [
   "inspector_session_state.h",
   "inspector_style_resolver.cc",
   "inspector_style_resolver.h",
+  "inspector_contrast.cc",
+  "inspector_contrast.h",
   "inspector_style_sheet.cc",
   "inspector_style_sheet.h",
   "inspector_task_runner.cc",

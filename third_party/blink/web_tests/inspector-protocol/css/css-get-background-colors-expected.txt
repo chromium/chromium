@@ -1,8 +1,8 @@
 Test css.getBackgroundColors method
 
 Running test: testNoText
-No text (and not a positioned element): should be null
-{}
+No text (and not a positioned element): should be undefined
+{"computedFontSize":"16px","computedFontWeight":"400"}
 
 Running test: testNoBgColor
 No background color: should be white
@@ -45,15 +45,15 @@ Semi-transparent gradient and solid color on same element: should be dark red an
 {"backgroundColors":["rgb(128, 0, 0)","rgb(128, 128, 128)"],"computedFontSize":"16px","computedFontWeight":"400"}
 
 Running test: testTwoPartiallyTransparentGradientBackgrounds
-Layered semi-transparent gradients: should be empty array
+Layered semi-transparent gradients: should be undefined
 {"computedFontSize":"16px","computedFontWeight":"400"}
 
 Running test: testPartiallyOverlappingBackground
-Partially overlapping background: should be empty array
+Partially overlapping background: should be undefined
 {"computedFontSize":"16px","computedFontWeight":"400"}
 
 Running test: smallerBackground
-Background smaller than text: should be empty array
+Background smaller than text: should be undefined
 {"computedFontSize":"16px","computedFontWeight":"400"}
 
 Running test: testObscuredPartiallyOverlappingBackground
@@ -61,11 +61,11 @@ Red background obscuring partially overlapping blue background: should be red on
 {"backgroundColors":["rgb(255, 0, 0)"],"computedFontSize":"16px","computedFontWeight":"400"}
 
 Running test: testBackgroundImage
-Background image: should be empty array
+Background image: should be undefined
 {"computedFontSize":"16px","computedFontWeight":"400"}
 
 Running test: testBackgroundImageAndBgColor
-Background image with background color: should be empty array
+Background image with background color: should be undefined
 {"computedFontSize":"16px","computedFontWeight":"400"}
 
 Running test: testBackgroundImageBehindScrim
@@ -73,7 +73,7 @@ Background image behind scrim: should be semi-transparent white
 {"backgroundColors":["rgba(255, 255, 255, 0.5)"],"computedFontSize":"16px","computedFontWeight":"400"}
 
 Running test: testForegroundImage
-Image behind text: should be empty array
+Image behind text: should be undefined
 {"computedFontSize":"16px","computedFontWeight":"400"}
 
 Running test: testForegroundImageBehindScrim
@@ -81,27 +81,27 @@ Image behind scrim: should be semi-transparent white
 {"backgroundColors":["rgba(255, 255, 255, 0.5)"],"computedFontSize":"16px","computedFontWeight":"400"}
 
 Running test: testForegroundCanvas
-Canvas behind text: should be empty array
+Canvas behind text: should be undefined
 {"computedFontSize":"16px","computedFontWeight":"400"}
 
 Running test: testForegroundEmbed
-Embed behind text: should be empty array
+Embed behind text: should be undefined
 {"computedFontSize":"16px","computedFontWeight":"400"}
 
 Running test: testForegroundObject
-Object behind text: should be empty array
+Object behind text: should be undefined
 {"computedFontSize":"16px","computedFontWeight":"400"}
 
 Running test: testForegroundPicture
-Picture behind text: should be empty array
+Picture behind text: should be undefined
 {"computedFontSize":"16px","computedFontWeight":"400"}
 
 Running test: testForegroundSVG
-SVG behind text: should be empty array
+SVG behind text: should be undefined
 {"computedFontSize":"16px","computedFontWeight":"400"}
 
 Running test: testForegroundVideo
-Video behind text: should be empty array
+Video behind text: should be undefined
 {"computedFontSize":"16px","computedFontWeight":"400"}
 
 Running test: testShadowDOM

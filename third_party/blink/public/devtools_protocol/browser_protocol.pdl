@@ -695,6 +695,16 @@ experimental domain Audits
       # used when violation type is kDigitalAssetLinks.
       optional string signature
 
+  type LowTextContrastIssueDetails extends object
+    properties
+      DOM.BackendNodeId violatingNodeId
+      string violatingNodeSelector
+      number contrastRatio
+      number thresholdAA
+      number thresholdAAA
+      string fontSize
+      string fontWeight
+
   # A unique identifier for the type of issue. Each type may use one of the
   # optional fields in InspectorIssueDetails to convey more specific
   # information about the kind of issue.
@@ -707,6 +717,7 @@ experimental domain Audits
       ContentSecurityPolicyIssue
       SharedArrayBufferIssue
       TrustedWebActivityIssue
+      LowTextContrastIssue
 
   # This struct holds a list of optional fields with additional information
   # specific to the kind of issue. When adding a new issue code, please also
@@ -720,6 +731,7 @@ experimental domain Audits
       optional ContentSecurityPolicyIssueDetails contentSecurityPolicyIssueDetails
       optional SharedArrayBufferIssueDetails sharedArrayBufferIssueDetails
       optional TrustedWebActivityIssueDetails twaQualityEnforcementDetails
+      optional LowTextContrastIssueDetails lowTextContrastIssueDetails
 
   # An inspector issue reported from the back-end.
   type InspectorIssue extends object
@@ -756,6 +768,10 @@ experimental domain Audits
   # Enables issues domain, sends the issues collected so far to the client by means of the
   # `issueAdded` event.
   command enable
+
+  # Runs the contrast check for the target page. Found issues are reported
+  # using Audits.issueAdded event.
+  command checkContrast
 
   event issueAdded
     parameters

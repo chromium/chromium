@@ -125,7 +125,7 @@ void WorkerInspectorController::AttachSession(DevToolsSession* session,
     session->Append(network_agent);
     session->Append(MakeGarbageCollected<InspectorEmulationAgent>(nullptr));
     session->Append(MakeGarbageCollected<InspectorAuditsAgent>(
-        network_agent, thread_->GetInspectorIssueStorage()));
+        network_agent, thread_->GetInspectorIssueStorage(), nullptr));
   }
   ++session_count_;
 }

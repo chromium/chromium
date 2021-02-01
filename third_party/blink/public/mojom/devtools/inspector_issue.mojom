@@ -19,6 +19,7 @@ enum InspectorIssueCode {
   kSharedArrayBufferIssue,
   kTrustedWebActivityIssue,
   kHeavyAdIssue,
+  kLowTextContrastIssue,
 };
 
 // Information about a cookie that is affected by an issue.
@@ -161,6 +162,16 @@ struct TrustedWebActivityIssueDetails {
   string? signature;
 };
 
+struct LowTextContrastIssue {
+  int32 violating_node_id;
+  string violating_node_selector;
+  float contrast_ratio;
+  float threshold_aa;
+  float threshold_aaa;
+  string font_size;
+  string font_weight;
+};
+
 // A collection of optional fields that may store additional data depending
 // on the issue code.
 struct InspectorIssueDetails {
@@ -171,6 +182,7 @@ struct InspectorIssueDetails {
   SharedArrayBufferIssueDetails? sab_issue_details;
   TrustedWebActivityIssueDetails? twa_issue_details;
   HeavyAdIssueDetails? heavy_ad_issue_details;
+  LowTextContrastIssue? low_text_contrast_details;
 };
 
 struct InspectorIssueInfo {

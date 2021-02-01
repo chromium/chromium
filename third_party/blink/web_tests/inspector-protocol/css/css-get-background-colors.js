@@ -17,7 +17,7 @@
 
   testRunner.runTestSuite([
     async function testNoText() {
-      testRunner.log('No text (and not a positioned element): should be null');
+      testRunner.log('No text (and not a positioned element): should be undefined');
       await testGetBgColors('.noText p');
     },
     async function testNoBgColor() {
@@ -61,15 +61,15 @@
       await testGetBgColors('.semitransparentGradientAndColorBg p');
     },
     async function testTwoPartiallyTransparentGradientBackgrounds() {
-      testRunner.log('Layered semi-transparent gradients: should be empty array');
+      testRunner.log('Layered semi-transparent gradients: should be undefined');
       await testGetBgColors('.twoSemitransparentGradientBgs p');
     },
     async function testPartiallyOverlappingBackground() {
-      testRunner.log('Partially overlapping background: should be empty array');
+      testRunner.log('Partially overlapping background: should be undefined');
       await testGetBgColors('.partiallyOverlappingBackground p');
     },
     async function smallerBackground() {
-      testRunner.log('Background smaller than text: should be empty array');
+      testRunner.log('Background smaller than text: should be undefined');
       await testGetBgColors('.smallerBackground p');
     },
     async function testObscuredPartiallyOverlappingBackground() {
@@ -77,11 +77,11 @@
       await testGetBgColors('.obscuredPartiallyOverlappingBackground p');
     },
     async function testBackgroundImage() {
-      testRunner.log('Background image: should be empty array');
+      testRunner.log('Background image: should be undefined');
       await testGetBgColors('.backgroundImage p');
     },
     async function testBackgroundImageAndBgColor() {
-      testRunner.log('Background image with background color: should be empty array');
+      testRunner.log('Background image with background color: should be undefined');
       await testGetBgColors('.backgroundImageAndBgColor p');
     },
 
@@ -90,7 +90,7 @@
       await testGetBgColors('.backgroundImageBehindScrim p');
     },
     async function testForegroundImage() {
-      testRunner.log('Image behind text: should be empty array');
+      testRunner.log('Image behind text: should be undefined');
       await testGetBgColors('.foregroundImage p');
     },
     async function testForegroundImageBehindScrim() {
@@ -98,27 +98,27 @@
       await testGetBgColors('.foregroundImageBehindScrim p');
     },
     async function testForegroundCanvas() {
-      testRunner.log('Canvas behind text: should be empty array');
+      testRunner.log('Canvas behind text: should be undefined');
       await testGetBgColors('.canvas p');
     },
     async function testForegroundEmbed() {
-      testRunner.log('Embed behind text: should be empty array');
+      testRunner.log('Embed behind text: should be undefined');
       await testGetBgColors('.embed p');
     },
     async function testForegroundObject() {
-      testRunner.log('Object behind text: should be empty array');
+      testRunner.log('Object behind text: should be undefined');
       await testGetBgColors('.object p');
     },
     async function testForegroundPicture() {
-      testRunner.log('Picture behind text: should be empty array');
+      testRunner.log('Picture behind text: should be undefined');
       await testGetBgColors('.picture p');
     },
     async function testForegroundSVG() {
-      testRunner.log('SVG behind text: should be empty array');
+      testRunner.log('SVG behind text: should be undefined');
       await testGetBgColors('.svg p');
     },
     async function testForegroundVideo() {
-      testRunner.log('Video behind text: should be empty array');
+      testRunner.log('Video behind text: should be undefined');
       await testGetBgColors('.video p');
     },
     async function testShadowDOM() {

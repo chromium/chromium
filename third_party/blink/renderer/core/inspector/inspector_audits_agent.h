@@ -7,7 +7,10 @@
 
 #include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/inspector/inspected_frames.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
+#include "third_party/blink/renderer/core/inspector/inspector_contrast.h"
 #include "third_party/blink/renderer/core/inspector/protocol/Audits.h"
 
 namespace blink {
@@ -18,7 +21,9 @@ class InspectorIssueStorage;
 class CORE_EXPORT InspectorAuditsAgent final
     : public InspectorBaseAgent<protocol::Audits::Metainfo> {
  public:
-  explicit InspectorAuditsAgent(InspectorNetworkAgent*, InspectorIssueStorage*);
+  explicit InspectorAuditsAgent(InspectorNetworkAgent*,
+                                InspectorIssueStorage*,
+                                InspectedFrames*);
   ~InspectorAuditsAgent() override;
 
   void Trace(Visitor*) const override;
@@ -28,6 +33,7 @@ class CORE_EXPORT InspectorAuditsAgent final
   // Protocol methods.
   protocol::Response enable() override;
   protocol::Response disable() override;
+  protocol::Response checkContrast() override;
 
   void Restore() override;
 
@@ -42,9 +48,12 @@ class CORE_EXPORT InspectorAuditsAgent final
 
  private:
   void InnerEnable();
+  void CheckContrastForDocument(Document* document);
+
   Member<InspectorIssueStorage> inspector_issue_storage_;
   InspectorAgentState::Boolean enabled_;
   Member<InspectorNetworkAgent> network_agent_;
+  Member<InspectedFrames> inspected_frames_;
 
   DISALLOW_COPY_AND_ASSIGN(InspectorAuditsAgent);
 };

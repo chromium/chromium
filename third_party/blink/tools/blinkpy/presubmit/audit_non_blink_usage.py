@@ -772,6 +772,16 @@ _CONFIG = [
         ],
     },
     {
+        'paths': [
+            'third_party/blink/renderer/core/inspector/inspector_contrast.cc',
+            'third_party/blink/renderer/core/inspector/inspector_contrast.h'
+        ],
+        'allowed': [
+            'color_utils::GetContrastRatio',
+            'cc::RTree',
+        ],
+    },
+    {
         'paths':
         ['third_party/blink/renderer/core/inspector/locale_controller.cc'],
         'allowed': [
