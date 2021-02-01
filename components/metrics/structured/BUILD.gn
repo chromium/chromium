@@ -4,6 +4,7 @@
 
 import("//build/config/python.gni")
 import("//testing/test.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 # Structured metrics is subcomponent of UMA that gathers and reports structured
 # events with several attached metrics.
@@ -24,12 +25,29 @@ static_library("structured") {
   public_deps = [ "//third_party/metrics_proto" ]
 
   deps = [
+    ":storage",
     ":structured_events",
     "//base",
     "//components/metrics",
     "//components/prefs",
     "//crypto",
   ]
+}
+
+proto_library("storage") {
+  # These protos are only used internally, so make them visible only to
+  # subdirectories.
+  visibility = [ "./*" ]
+  proto_in_dir = "//"
+  generate_python = false
+  sources = [ "storage.proto" ]
+
+  # This is required because metrics_proto/BUILD.gn sets proto_in_dir as ".",
+  # which means protos can't be referred to by absolute paths from within other
+  # protos.
+  import_dirs = [ "//third_party/metrics_proto" ]
+  proto_deps = [ "//third_party/metrics_proto" ]
+  link_deps = [ "//third_party/metrics_proto" ]
 }
 
 action("gen_structured_events") {
