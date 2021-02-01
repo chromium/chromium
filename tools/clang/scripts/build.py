@@ -22,6 +22,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 
 from update import (CDS_URL, CHROMIUM_DIR, CLANG_REVISION, LLVM_BUILD_DIR,
                     FORCE_HEAD_REVISION_FILE, PACKAGE_VERSION, RELEASE_VERSION,
@@ -45,10 +46,12 @@ ANDROID_NDK_DIR = os.path.join(
     CHROMIUM_DIR, 'third_party', 'android_ndk')
 FUCHSIA_SDK_DIR = os.path.join(CHROMIUM_DIR, 'third_party', 'fuchsia-sdk',
                                'sdk')
+HOST_CLANG_DIR = os.path.join(LLVM_BUILD_TOOLS_DIR, 'pinned-clang')
 
 BUG_REPORT_URL = ('https://crbug.com and run'
                   ' tools/clang/scripts/process_crashreports.py'
                   ' (only works inside Google) which will upload a report')
+UPDATE_PY_URL = 'https://raw.githubusercontent.com/chromium/chromium/master/tools/clang/scripts/update.py'
 
 
 win_sdk_dir = None
@@ -322,6 +325,22 @@ def MaybeDownloadHostGcc(args):
   if not os.path.exists(gcc_dir):
     DownloadAndUnpack(CDS_URL + '/tools/gcc-10.2.0-trusty.tgz', gcc_dir)
   args.gcc_toolchain = gcc_dir
+
+
+def DownloadHostClang():
+  """Download update.py and run it."""
+  if not os.path.exists(HOST_CLANG_DIR):
+    tempfile_name = ""
+    with tempfile.NamedTemporaryFile(delete=False) as f:
+      DownloadUrl(UPDATE_PY_URL, f)
+      tempfile_name = f.name
+    print("Running update.py")
+    code = subprocess.call(
+        [sys.executable, tempfile_name, '--output-dir=' + HOST_CLANG_DIR])
+    os.remove(tempfile_name)
+    if code != 0:
+      print("update.py failed.")
+      sys.exit(1)
 
 
 def VerifyVersionOfBuiltClangMatchesVERSION():
@@ -708,6 +727,8 @@ def main():
       cxxflags.append('--gcc-toolchain=' + args.gcc_toolchain)
 
     print('Bootstrap compiler installed.')
+  else:
+    DownloadHostClang()
 
   if args.pgo:
     print('Building instrumented compiler')
@@ -992,6 +1013,7 @@ def main():
       android_args = base_cmake_args + [
         '-DCMAKE_C_COMPILER=' + os.path.join(LLVM_BUILD_DIR, 'bin/clang'),
         '-DCMAKE_CXX_COMPILER=' + os.path.join(LLVM_BUILD_DIR, 'bin/clang++'),
+        '-DLLVM_USE_LINKER=' + os.path.join(HOST_CLANG_DIR, 'bin/ld.lld'), 
         '-DLLVM_CONFIG_PATH=' + os.path.join(LLVM_BUILD_DIR, 'bin/llvm-config'),
         '-DCMAKE_C_FLAGS=' + ' '.join(cflags),
         '-DCMAKE_CXX_FLAGS=' + ' '.join(cflags),
