@@ -71,6 +71,9 @@ void InitializeTimeout(const char* switch_name,
   // A number of tests on ChromeOS run very close to the base limit, so ChromeOS
   // gets 3x.
   constexpr int kTimeoutMultiplier = 3;
+#elif !defined(NDEBUG) && defined(OS_MAC)
+  // A lot of browser_tests on Mac debug time out.
+  constexpr int kTimeoutMultiplier = 2;
 #else
   constexpr int kTimeoutMultiplier = 1;
 #endif
