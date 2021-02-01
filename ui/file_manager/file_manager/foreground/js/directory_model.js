@@ -71,6 +71,13 @@ const SHORT_RESCAN_INTERVAL = 100;
     this.ignoreCurrentDirectoryDeletion_ = false;
 
     this.directoryChangeQueue_ = new AsyncUtil.Queue();
+
+    /**
+     * Number of running directory change trackers.
+     * @private {number}
+     */
+    this.numChangeTrackerRunning_ = 0;
+
     this.rescanAggregator_ =
         new AsyncUtil.Aggregator(this.rescanSoon.bind(this, true), 500);
 
@@ -1166,6 +1173,7 @@ const SHORT_RESCAN_INTERVAL = 100;
 
       start: function() {
         if (!this.active_) {
+          this.dm_.numChangeTrackerRunning_++;
           this.dm_.addEventListener(
               'directory-changed', this.onDirectoryChange_);
           this.active_ = true;
@@ -1175,6 +1183,7 @@ const SHORT_RESCAN_INTERVAL = 100;
 
       stop: function() {
         if (this.active_) {
+          this.dm_.numChangeTrackerRunning_--;
           this.dm_.removeEventListener(
               'directory-changed', this.onDirectoryChange_);
           this.active_ = false;
@@ -1292,8 +1301,11 @@ const SHORT_RESCAN_INTERVAL = 100;
       // asynchronous call.
       event.added[0].resolveDisplayRoot().then((displayRoot) => {
         // Only change directory if "currentDir" hasn't changed during the
-        // display root resolution.
-        if (currentDir === this.getCurrentDirEntry()) {
+        // display root resolution and if there isn't a directory change in
+        // progress, because other part of the system will eventually change the
+        // directory.
+        if (currentDir === this.getCurrentDirEntry() &&
+            this.numChangeTrackerRunning_ === 0) {
           this.changeDirectoryEntry(event.added[0].displayRoot);
         }
       });
