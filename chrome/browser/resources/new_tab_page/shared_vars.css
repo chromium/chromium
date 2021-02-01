@@ -25,6 +25,8 @@ html {
   --ntp-chip-text-color: white;
   --ntp-icon-button-color-active: var(--google-grey-refresh-700);
   --ntp-icon-button-color: var(--google-grey-600);
+  --ntp-module-scroll-button-color: var(--google-grey-refresh-100);
+  --ntp-module-scroll-button-hover-color: var(--google-grey-refresh-300);
 
   /* Other: */
   --ntp-focus-shadow: 0 0 0 2px var(--ntp-focus-shadow-color);
@@ -47,5 +49,7 @@ html {
     --ntp-chip-text-color: var(--google-grey-900);
     --ntp-icon-button-color-active: var(--google-grey-refresh-300);
     --ntp-icon-button-color: white;
+    --ntp-module-scroll-button-color: var(--google-grey-refresh-700);
+    --ntp-module-scroll-button-hover-color: var(--google-grey-600);
   }
 }
