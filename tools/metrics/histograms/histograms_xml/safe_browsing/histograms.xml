@@ -757,6 +757,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SafeBrowsing.NavigationObserver.NavigationEventCleanUpCount"
     units="NavigationEvents" expires_after="2021-01-27">
+  <obsolete>
+    Removed 01-29-2021 due to lack of use.
+  </obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
