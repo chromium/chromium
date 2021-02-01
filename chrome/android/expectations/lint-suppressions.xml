@@ -274,10 +274,19 @@ https://chromium.googlesource.com/chromium/src/+/master/build/android/docs/lint.
     <ignore regexp="The resource `R.string.ntp_article_suggestions_section_empty` appears to be unused"/>
     <!-- 1: TODO(crbug.com/1137985) resource is used in downstream image editor. -->
     <ignore regexp="The resource `R.string.clear` appears to be unused"/>
-    <!-- 3: Temporarily suppressed until impelmentation is ready, see https://crbug.com/1148020 -->
-    <ignore regexp="The resource `R.string.price_drop_spotted_title` appears to be unused"/>
-    <ignore regexp="The resource `R.string.price_drop_spotted_content` appears to be unused"/>
-    <ignore regexp="The resource `R.string.price_drop_spotted_show_me` appears to be unused"/>
+    <!-- 1: Temporarily suppressed until impelmentation is ready, see https://crbug.com/1166704. -->
+    <ignore regexp="The resource `R.string.price_drop_spotted_lower_price` appears to be unused"/>
+    <!-- 4: Temporarily suppressed until impelmentation is ready, see https://crbug.com/1166702 -->
+    <ignore regexp="The resource `R.string.price_drop_alerts_card_title` appears to be unused"/>
+    <ignore regexp="The resource `R.string.price_drop_alerts_card_content` appears to be unused"/>
+    <ignore regexp="The resource `R.string.price_drop_alerts_card_settings` appears to be unused"/>
+    <ignore regexp="The resource `R.string.price_drop_alerts_card_get_notified` appears to be unused"/>
+    <!-- 5: Temporarily suppressed until impelmentation is ready, see https://crbug.com/1163136 -->
+    <ignore regexp="The resource `R.string.price_tracking_settings` appears to be unused"/>
+    <ignore regexp="The resource `R.string.track_prices_on_tabs` appears to be unused"/>
+    <ignore regexp="The resource `R.string.track_prices_on_tabs_description` appears to be unused"/>
+    <ignore regexp="The resource `R.string.price_drop_alerts` appears to be unused"/>
+    <ignore regexp="The resource `R.string.price_drop_alerts_description` appears to be unused"/>
     <!-- Endnote: Please specify number of suppressions when adding more -->
   </issue>
   <issue id="VectorPath" severity="ignore"/>
