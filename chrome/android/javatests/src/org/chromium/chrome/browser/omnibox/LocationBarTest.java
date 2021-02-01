@@ -267,6 +267,7 @@ public class LocationBarTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1172927")
     public void testTemplateUrlServiceChange() throws InterruptedException {
         doReturn(false).when(mLocaleManager).needToCheckForSearchEnginePromo();
         setupSearchEngineLogo(GOOGLE_URL);
