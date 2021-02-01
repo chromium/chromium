@@ -220604,8 +220604,16 @@
       "script-with-0x00-in-header.py": [
        "39f58d8270e7671bf74e40ac84e05a7558df4f68",
        []
+      ],
+      "status-code.py": [
+       "d368718f62f8a92ca8f730892bee6f08bd93a664",
+       []
       ]
-     }
+     },
+     "status-code.window-expected.txt": [
+      "8fb8560464d2664b037cc29b624fa88b657cffc5",
+      []
+     ]
     },
     "http-cache": {
      "README.md": [
@@ -335478,6 +335486,13 @@
        "fetch/h1-parsing/resources-with-0x00-in-header.window.html",
        {}
       ]
+     ],
+     "status-code.window.js": [
+      "5776cf4050f01e838c42f7e845a2e033e2604f41",
+      [
+       "fetch/h1-parsing/status-code.window.html",
+       {}
+      ]
      ]
     },
     "http-cache": {
@@ -380565,6 +380580,13 @@
     ],
     "toJSON.html": [
      "711cd238431a7bdc1e0c0a955c9effd7acd771a5",
+     [
+      null,
+      {}
+     ]
+    ],
+    "transform-above-filter-dynamic.html": [
+     "1d7ed51a91652790d6f980af362a15fa546cc1de",
      [
       null,
       {}
