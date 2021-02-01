@@ -216,6 +216,12 @@ struct SignificantFields {
     return password || new_password;
   }
 
+  // Returns whether a new password fields without a corresponding confirmation
+  // password field was found.
+  bool MissesConfirmationPassword() const {
+    return new_password && !confirmation_password;
+  }
+
   void ClearAllPasswordFields() {
     password = nullptr;
     new_password = nullptr;
@@ -247,6 +253,34 @@ ProcessedField* FindField(std::vector<ProcessedField>* processed_fields,
       return &processed_field;
   }
   return nullptr;
+}
+
+// Given a `new_password` field tries to find a matching confirmation_password
+// field in `processed_fields` that succeeds `new_password` and has matching
+// interactability and value.
+// Returns that field or nullptr if no such field could be found.
+const FormFieldData* FindConfirmationPasswordField(
+    const std::vector<ProcessedField>& processed_fields,
+    const FormFieldData& new_password) {
+  auto new_password_field = base::ranges::find(processed_fields, &new_password,
+                                               &ProcessedField::field);
+  if (new_password_field == processed_fields.end())
+    return nullptr;
+
+  // Find a processed field following `new_password_field` with matching
+  // interactability and value.
+  auto MatchesNewPasswordField = [new_password_field](
+                                     const ProcessedField& field) {
+    return MatchesInteractability(field, new_password_field->interactability) &&
+           GetFieldValue(*new_password_field->field) ==
+               GetFieldValue(*field.field);
+  };
+  auto confirmation_password_field =
+      std::find_if(std::next(new_password_field), processed_fields.end(),
+                   MatchesNewPasswordField);
+  return confirmation_password_field != processed_fields.end()
+             ? confirmation_password_field->field
+             : nullptr;
 }
 
 // Tries to parse |processed_fields| based on server |predictions|. Uses |mode|
@@ -1004,6 +1038,22 @@ std::unique_ptr<PasswordForm> FormDataParser::Parse(const FormData& form_data,
           method = UsernameDetectionMethod::kHtmlBasedClassifier;
         }
       }
+    }
+
+    // If we're in saving mode and have found a new password but not a
+    // confirmation password field, try to infer the confirmation password field
+    // by trying to find a field that succeeds the new password field and has
+    // matching interactability and value. This should only have an effect if
+    // the new password field was found using server predictions or autocomplete
+    // attributes. In the case of local heuristics we already made use of the
+    // field's value to find a confirmation password field, and thus won't find
+    // it now if we didn't find it already.
+    if (mode == Mode::kSaving &&
+        significant_fields.MissesConfirmationPassword() &&
+        base::FeatureList::IsEnabled(
+            features::kInferConfirmationPasswordField)) {
+      significant_fields.confirmation_password = FindConfirmationPasswordField(
+          processed_fields, *significant_fields.new_password);
     }
   }
 

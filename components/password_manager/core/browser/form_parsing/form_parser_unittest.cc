@@ -1227,6 +1227,92 @@ TEST(FormParserTest, ServerPredictionsForClearTextPasswordFields) {
   });
 }
 
+TEST(FormParserTest, InferConfirmationPasswordField) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kInferConfirmationPasswordField);
+  CheckTestData({
+      {
+          .description_for_logging = "Infer confirmation password during "
+                                     "saving with server prediction.",
+          .fields =
+              {
+                  {
+                      .role = ElementRole::NEW_PASSWORD,
+                      .value = "pw",
+                      .form_control_type = "password",
+                      .prediction = {.type =
+                                         autofill::ACCOUNT_CREATION_PASSWORD},
+                  },
+                  {
+                      .role_saving = ElementRole::CONFIRMATION_PASSWORD,
+                      .value = "pw",
+                      .form_control_type = "password",
+                  },
+              },
+      },
+      {
+          .description_for_logging = "Infer confirmation password during "
+                                     "saving with auto-complete attribute.",
+          .fields =
+              {
+                  {
+                      .role = ElementRole::NEW_PASSWORD,
+                      .autocomplete_attribute = "new-password",
+                      .value = "pw",
+                      .form_control_type = "password",
+                  },
+                  {
+                      .role_filling = ElementRole::NONE,
+                      .role_saving = ElementRole::CONFIRMATION_PASSWORD,
+                      .autocomplete_attribute = "off",
+                      .value = "pw",
+                      .form_control_type = "password",
+                  },
+              },
+      },
+      {
+          .description_for_logging =
+              "Don't infer confirmation password during saving with "
+              "predictions and different passwords.",
+          .fields =
+              {
+                  {
+                      .role_filling = ElementRole::NEW_PASSWORD,
+                      .role_saving = ElementRole::CURRENT_PASSWORD,
+                      .value = "pw1",
+                      .form_control_type = "password",
+                      .prediction = {.type =
+                                         autofill::ACCOUNT_CREATION_PASSWORD},
+                  },
+                  {
+                      .role_saving = ElementRole::NEW_PASSWORD,
+                      .value = "pw2",
+                      .form_control_type = "password",
+                  },
+              },
+      },
+      {
+          .description_for_logging =
+              "Don't infer confirmation password during saving with "
+              "autocomplete attribute and different passwords.",
+          .fields =
+              {
+                  {
+                      .role = ElementRole::NEW_PASSWORD,
+                      .autocomplete_attribute = "new-password",
+                      .value = "pw1",
+                      .form_control_type = "password",
+                  },
+                  {
+                      .role = ElementRole::NONE,
+                      .value = "pw2",
+                      .form_control_type = "password",
+                  },
+              },
+      },
+  });
+}
+
 TEST(FormParserTest, ServerHints) {
   CheckTestData({
       {

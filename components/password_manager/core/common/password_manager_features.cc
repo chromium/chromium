@@ -65,6 +65,12 @@ const base::Feature kFillingPasswordsFromAnyOrigin{
 const base::Feature kFillOnAccountSelect = {"fill-on-account-select",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables finding a confirmation password field during saving by inspecting the
+// values of the fields. Used as a kill switch.
+// TODO(crbug.com/1164861): Remove once confirmed to be safe (around M92 or so).
+const base::Feature kInferConfirmationPasswordField = {
+    "InferConfirmationPasswordField", base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Enables password change flow from leaked password dialog.
 const base::Feature kPasswordChange = {"PasswordChange",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
