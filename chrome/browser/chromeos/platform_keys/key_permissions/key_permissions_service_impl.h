@@ -15,13 +15,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
-#include "extensions/browser/state_store.h"
 
 class PrefService;
-
-namespace extensions {
-class StateStore;
-}
 
 namespace chromeos {
 namespace platform_keys {
@@ -33,15 +28,13 @@ class PlatformKeysService;
 // classes.
 class KeyPermissionsServiceImpl : public KeyPermissionsService {
  public:
-  // |profile_prefs| and |extensions_state_store| must not be null and must
-  // outlive this object.
+  // |profile_prefs| must not be null and must outlive this object.
   // |profile_is_managed| determines the default usage and permissions for
   // keys without explicitly assigned usage.
   KeyPermissionsServiceImpl(
       bool is_regular_user_profile,
       bool profile_is_managed,
       PrefService* profile_prefs,
-      extensions::StateStore* extensions_state_store,
       PlatformKeysService* platform_keys_service,
       KeyPermissionsManager* profile_key_permissions_manager);
 
@@ -95,7 +88,6 @@ class KeyPermissionsServiceImpl : public KeyPermissionsService {
   const bool is_regular_user_profile_;
   const bool profile_is_managed_;
   PrefService* const profile_prefs_;
-  extensions::StateStore* const extensions_state_store_;
   PlatformKeysService* const platform_keys_service_;
   KeyPermissionsManager* const profile_key_permissions_manager_;
   base::WeakPtrFactory<KeyPermissionsServiceImpl> weak_factory_{this};

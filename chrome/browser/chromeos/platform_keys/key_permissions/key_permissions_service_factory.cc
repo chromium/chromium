@@ -10,13 +10,11 @@
 #include "chrome/browser/chromeos/platform_keys/key_permissions/user_private_token_kpm_service_factory.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service_factory.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
-#include "chrome/browser/extensions/extension_system_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
-#include "extensions/browser/extension_system.h"
 
 namespace chromeos {
 namespace platform_keys {
@@ -38,7 +36,6 @@ KeyPermissionsServiceFactory::KeyPermissionsServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "KeyPermissionsService",
           BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(extensions::ExtensionSystemFactory::GetInstance());
   DependsOn(PlatformKeysServiceFactory::GetInstance());
   DependsOn(UserPrivateTokenKeyPermissionsManagerServiceFactory::GetInstance());
 }
@@ -53,7 +50,6 @@ KeyedService* KeyPermissionsServiceFactory::BuildServiceInstanceFor(
   return new KeyPermissionsServiceImpl(
       ProfileHelper::IsRegularProfile(profile),
       profile->GetProfilePolicyConnector()->IsManaged(), profile->GetPrefs(),
-      extensions::ExtensionSystem::Get(profile)->state_store(),
       PlatformKeysServiceFactory::GetForBrowserContext(profile),
       KeyPermissionsManagerImpl::GetUserPrivateTokenKeyPermissionsManager(
           profile));
