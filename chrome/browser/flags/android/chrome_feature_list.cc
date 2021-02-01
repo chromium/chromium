@@ -197,6 +197,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kOfflineIndicatorV2,
     &kOfflineMeasurementsBackgroundTask,
     &kOmniboxSpareRenderer,
+    &kPageAnnotationsService,
     &kProbabilisticCryptidRenderer,
     &kReachedCodeProfiler,
     &kReaderModeInCCT,
@@ -556,6 +557,9 @@ const base::Feature kOfflineMeasurementsBackgroundTask{
 
 const base::Feature kOmniboxSpareRenderer{"OmniboxSpareRenderer",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kPageAnnotationsService{"PageAnnotationsService",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kProbabilisticCryptidRenderer{
     "ProbabilisticCryptidRenderer", base::FEATURE_DISABLED_BY_DEFAULT};
