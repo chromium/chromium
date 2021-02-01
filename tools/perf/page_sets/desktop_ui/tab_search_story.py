@@ -254,6 +254,31 @@ class TabSearchStoryMeasureMemoryMultiwindow(TabSearchStoryMeasureMemory):
     action_runner.MeasureMemory(deterministic_mode=True)
 
 
+class TabSearchStoryMeasureMemory2TabSearch(TabSearchStoryMeasureMemory):
+  NAME = 'tab_search:measure_memory:2tab_search'
+
+  def RunNavigateSteps(self, action_runner):
+    tabs = action_runner.tab.browser.tabs
+    new_tab = tabs.New()
+    new_tab.Navigate(TAB_SEARCH_URL)
+
+  def InteractWithPage(self, action_runner):
+    action_runner.MeasureMemory(deterministic_mode=True)
+
+
+class TabSearchStoryMeasureMemory3TabSearch(TabSearchStoryMeasureMemory):
+  NAME = 'tab_search:measure_memory:3tab_search'
+
+  def RunNavigateSteps(self, action_runner):
+    tabs = action_runner.tab.browser.tabs
+    for _ in range(2):
+      new_tab = tabs.New()
+      new_tab.Navigate(TAB_SEARCH_URL)
+
+  def InteractWithPage(self, action_runner):
+    action_runner.MeasureMemory(deterministic_mode=True)
+
+
 SCROLL_ELEMENT_FUNCTION = '''
 document.querySelector('tab-search-app').shadowRoot.getElementById('tabsList')
 '''

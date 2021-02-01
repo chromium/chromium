@@ -21,6 +21,8 @@ class DesktopUIStorySet(story.StorySet):
       tab_search_story.TabSearchStoryMeasureMemoryBefore,
       tab_search_story.TabSearchStoryMeasureMemoryAfter,
       tab_search_story.TabSearchStoryMeasureMemoryMultiwindow,
+      tab_search_story.TabSearchStoryMeasureMemory2TabSearch,
+      tab_search_story.TabSearchStoryMeasureMemory3TabSearch,
   ]
 
   def __init__(self):
