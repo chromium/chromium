@@ -360,8 +360,8 @@ class NotificationSchedulerImpl : public NotificationScheduler,
     auto client_action_data = action_data;
 
     // Attach custom data if the impression is not expired.
-    const auto* impression =
-        context_->impression_tracker()->GetImpression(action_data.guid);
+    const auto* impression = context_->impression_tracker()->GetImpression(
+        action_data.client_type, action_data.guid);
     if (impression) {
       client_action_data.custom_data = impression->custom_data;
     }

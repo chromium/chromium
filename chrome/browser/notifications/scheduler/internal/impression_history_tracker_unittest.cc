@@ -266,7 +266,8 @@ TEST_F(ImpressionHistoryTrackerTest, AddImpression) {
   test_case.expected.back().impressions.emplace_back(expected_impression);
   test_case.expected.back().last_shown_ts = clock()->Now();
   VerifyClientStates(test_case);
-  EXPECT_EQ(*tracker()->GetImpression(kGuid1), expected_impression);
+  EXPECT_EQ(*tracker()->GetImpression(SchedulerClientType::kTest1, kGuid1),
+            expected_impression);
 }
 
 // Verifies that impression loaded from the database can be retrieved correctly.
@@ -276,7 +277,8 @@ TEST_F(ImpressionHistoryTrackerTest, GetImpressionLoadedFromDb) {
   test_case.input.front().impressions.emplace_back(impression);
   CreateTracker(test_case);
   InitTrackerWithData(test_case);
-  EXPECT_EQ(*tracker()->GetImpression(kGuid1), impression);
+  EXPECT_EQ(*tracker()->GetImpression(SchedulerClientType::kTest1, kGuid1),
+            impression);
 }
 
 // If impression has been deleted, click should have no result.
