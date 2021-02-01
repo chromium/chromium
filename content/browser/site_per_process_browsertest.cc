@@ -16435,7 +16435,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 // Set up the frame tree to be A(B1(C1),B2(C2)). Send IPC's with different
 // ViewportIntersection information to B1 and B2, and then check that the
 // information they propagate to C1 and C2 is different.
-IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, MainFrameScrollOffset) {
+// Disabled because of https://crbug.com/1136263
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
+                       DISABLED_MainFrameScrollOffset) {
   GURL a_url = embedded_test_server()->GetURL(
       "a.com", "/frame_tree/scrollable_page_with_two_frames.html");
   GURL b_url = embedded_test_server()->GetURL(
