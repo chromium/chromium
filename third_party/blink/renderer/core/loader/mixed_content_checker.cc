@@ -247,6 +247,16 @@ void CreateMixedContentIssue(
 
 }  // namespace
 
+static bool IsInsecureUrl(const KURL& url) {
+  // |url| is mixed content if it is not a potentially trustworthy URL.
+  // See https://w3c.github.io/webappsec-mixed-content/#should-block-response
+  // blob: and filesystem: are never blocked, for consistency with the function
+  // IsUrlPotentiallySecure() from mixed_content_navigation_throttle.cc
+  bool is_allowed = url.ProtocolIs("blob") || url.ProtocolIs("filesystem") ||
+                    network::IsUrlPotentiallyTrustworthy(url);
+  return !is_allowed;
+}
+
 static void MeasureStricterVersionOfIsMixedContent(Frame& frame,
                                                    const KURL& url,
                                                    const LocalFrame* source) {
@@ -262,7 +272,7 @@ static void MeasureStricterVersionOfIsMixedContent(Frame& frame,
           source->GetDocument(),
           WebFeature::kMixedContentInNonHTTPSFrameThatRestrictsMixedContent);
     }
-  } else if (!SecurityOrigin::IsSecure(url) &&
+  } else if (network::IsUrlPotentiallyTrustworthy(url) &&
              base::Contains(url::GetSecureSchemes(),
                             origin->Protocol().Ascii())) {
     UseCounter::Count(
@@ -273,19 +283,6 @@ static void MeasureStricterVersionOfIsMixedContent(Frame& frame,
 
 bool RequestIsSubframeSubresource(Frame* frame) {
   return frame && frame != frame->Tree().Top();
-}
-
-static bool IsInsecureUrl(const KURL& url) {
-  // |url| is mixed content if its origin is not potentially trustworthy nor
-  // secure. We do a quick check against `SecurityOrigin::IsSecure` to catch
-  // things like `about:blank`, which cannot be sanely passed into
-  // `SecurityOrigin::Create` (as their origin depends on their context).
-  // blob: and filesystem: URLs never hit the network, and access is restricted
-  // to same-origin contexts, so they are not blocked either.
-  bool is_allowed = url.ProtocolIs("blob") || url.ProtocolIs("filesystem") ||
-                    SecurityOrigin::IsSecure(url) ||
-                    SecurityOrigin::Create(url)->IsPotentiallyTrustworthy();
-  return !is_allowed;
 }
 
 // static
