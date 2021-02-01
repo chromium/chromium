@@ -3430,7 +3430,7 @@
 <translation id="4887424188275796356">Системийн харагчаар нээх</translation>
 <translation id="488785315393301722">Дэлгэрэнгүй мэдээллийг харуул</translation>
 <translation id="4890773143211625964">Нарийвчилсан хэвлэгчийн сонголтыг харуулах</translation>
-<translation id="4891089016822695758">Бэта форум</translation>
+<translation id="4891089016822695758">Бета форум</translation>
 <translation id="4892229439761351791">Сайт Bluetooth ашиглах боломжтой</translation>
 <translation id="489258173289528622">Батарейгаар ажиллах үед идэвхгүй төлөвт хийх үйлдэл</translation>
 <translation id="4892811427319351753"><ph name="EXTENSION_TYPE_PARAMETER" />-г идэвхжүүлэх боломжгүй байна</translation>
@@ -5506,7 +5506,7 @@
 <translation id="7310598146671372464">Нэвтэрч чадсангүй. Сервер нь Kerberos-н тодорхой шифрлэлтийн төрлийг дэмждэггүй. Админтайгаа холбогдоно уу.</translation>
 <translation id="7320213904474460808">Сүлжээг өгөгдмөл болгох</translation>
 <translation id="7321545336522791733">Серверт холбогдох боломжгүй</translation>
-<translation id="7324297612904500502">Бэта Форум</translation>
+<translation id="7324297612904500502">Бета Форум</translation>
 <translation id="7325209047678309347">Цаас гацсан</translation>
 <translation id="7326004502692201767">Энэ <ph name="DEVICE_TYPE" />-г хүүхдэд зориулж тохируулах</translation>
 <translation id="7327989755579928735"><ph name="MANAGER" /> ADB дебагийг идэвхгүй болгосон. Та <ph name="DEVICE_TYPE" />-г дахин эхлүүлсний дараа аппуудыг хөндлөнгөөс ачаалах боломжгүй болно.</translation>
@@ -5947,7 +5947,7 @@
 <translation id="7805768142964895445">Байр байдал</translation>
 <translation id="7807067443225230855">Хайлт болон Туслах</translation>
 <translation id="7807711621188256451"><ph name="HOST" />-д таны камерт нэвтрэх зөвшөөрөл олгох</translation>
-<translation id="7809278638132552546">Linux-н хөгжүүлэлтийн орчин (Бэта)</translation>
+<translation id="7809278638132552546">Linux-н хөгжүүлэлтийн орчин (Бета)</translation>
 <translation id="7810202088502699111">Зар сурталчилгааг энэ хуудсанд хориглосон байна.</translation>
 <translation id="781167124805380294"><ph name="FILE_NAME" />-г дамжуулах</translation>
 <translation id="7814277578404816512"><ph name="DEVICE_TYPE" /> дээрээ шинэ зүйл юу байгааг харах</translation>
@@ -6156,7 +6156,7 @@
 <translation id="8032244173881942855">Табыг дамжуулах боломжгүй.</translation>
 <translation id="8033827949643255796">Сонгогдсон</translation>
 <translation id="8033958968890501070">Хугацаа хэтэрсэн</translation>
-<translation id="8036049989879571495">Linux-н хөгжүүлэлтийн орчныг тохируулах (Бэта)</translation>
+<translation id="8036049989879571495">Linux-н хөгжүүлэлтийн орчныг тохируулах (Бета)</translation>
 <translation id="8037117027592400564">Нэгтгэсэн яриаг ашиглан яригдсан бүх текстийг унш</translation>
 <translation id="8037357227543935929">Асуух (өгөгдмөл)</translation>
 <translation id="803771048473350947">Файл</translation>

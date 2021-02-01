@@ -15,7 +15,7 @@
 <translation id="123620459398936149">Chrome OS нь таны өгөгдлийг sync хийж чадсангүй. Sync-ийн нэвтрэх хэллэгээ шинэчилнэ үү.</translation>
 <translation id="1293325835983155583"><ph name="MANAGER" /> танаас энэ төхөөрөмжийг ашиглахаасаа өмнө дараах Үйлчилгээний нөхцөлийг уншиж, зөвшөөрөхийг шаардаж байна. Эдгээр нөхцөл нь Google Chrome үйлдлийн системийн нөхцөлийг өргөтгөх, өөрчлөх эсвэл хязгаарлахгүй.</translation>
 <translation id="1302523850133262269">Chrome-оос хамгийн сүүлийн үеийн системийн шинэчлэлтүүдийг суулгаж байгаа тул түр хүлээнэ үү.</translation>
-<translation id="137466361146087520">Google Chrome Бэта</translation>
+<translation id="137466361146087520">Google Chrome Бета</translation>
 <translation id="1399397803214730675">Google Chrome-ийн сүүлийн үеийн хувилбар аль хэдийн энэ компьютерт байна. Хэрэв программ хангамж ажиллахгүй байгаа бол Google Chrome-ийг устгаад, дахин оролдож үзнэ үү.</translation>
 <translation id="1434626383986940139">Chrome Canary програмууд</translation>
 <translation id="147727933880789532">Энэ өргөтгөл нь одоогоор Сайжруулсан аюулгүй хөтчийн стандартад нийцэхгүй байгаа тул Chrome үүнийг идэвхгүй болгохыг зөвлөж байна.</translation>
@@ -41,7 +41,7 @@
 <translation id="1812689907177901597">Үүнийг унтрааснаар та Gmail зэрэг Google-н сайтуудад Chrome-д нэвтрэлгүйгээр нэвтэрч болно</translation>
 <translation id="1860536484129686729">Энэ сайтыг ашиглахын тулд Chrome-д зөвшөөрөл шаардлагатай</translation>
 <translation id="1873233029667955273">Google Chrome таны өгөгдмөл хөтөч биш юм</translation>
-<translation id="1874309113135274312">Google Chrome Бэта (mDNS-In)</translation>
+<translation id="1874309113135274312">Google Chrome Бета (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome хуучирсан байна.</translation>
 <translation id="1919130412786645364">Chromium-д нэвтрэхийг зөвшөөрөх</translation>
 <translation id="2018528049276128029">Профайл тус бүр Chrome-н өөрийн мэдээллийг агуулах бөгөөд үүнд хавчуурга, түүх, нууц үг болон бусад мэдээлэл багтана</translation>
@@ -58,7 +58,7 @@
 <translation id="234869673307233423">Chrome таны нууц үгсийг шалгах боломжгүй байна. Дараа дахин оролдоно уу.</translation>
 <translation id="235650106824528204">Энэ профайлыг ашиглах үед үүссэн Chrome-н аливаа өгөгдлийг (хавчуурга, түүх, нууц үг болон бусад тохиргоог үүсгэх зэрэг) ажлын профайлын админ хасах боломжтой. <ph name="LEARN_MORE" /></translation>
 <translation id="2429317896000329049">Таны домэйнд sync хийх боломжгүй учраас Google Chrome нь таны өгөгдлийг sync хийж чадсангүй.</translation>
-<translation id="245659736593643560">Chrome үйлдлийн системийг <ph name="BEGIN_LINK_LINUX_OSS" />Linux-н хөгжүүлэлтийн орчин (Бэта)<ph name="END_LINK_LINUX_OSS" /> болох нэмэлт <ph name="BEGIN_LINK_CROS_OSS" />нээлттэй эх кодын программ хангамж<ph name="END_LINK_CROS_OSS" />-аар боломжтой болгосон.</translation>
+<translation id="245659736593643560">Chrome үйлдлийн системийг <ph name="BEGIN_LINK_LINUX_OSS" />Linux-н хөгжүүлэлтийн орчин (Бета)<ph name="END_LINK_LINUX_OSS" /> болох нэмэлт <ph name="BEGIN_LINK_CROS_OSS" />нээлттэй эх кодын программ хангамж<ph name="END_LINK_CROS_OSS" />-аар боломжтой болгосон.</translation>
 <translation id="2467438592969358367">Google Chrome таны нууц үгийг экспортлох хүсэлтэй байна. Үүнийг зөвшөөрч байгаа бол Windows-н нууц үгээ оруулна уу.</translation>
 <translation id="2485422356828889247">Устгах</translation>
 <translation id="2534507159460261402">Google Pay (Chrome-д хуулсан)</translation>
@@ -217,9 +217,9 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="6755885556185485672">Chrome үйлдлийн системийг зөв унтраагаагүй байна.</translation>
 <translation id="677276454032249905">Chrome-с ямар ч үед гарах уу?</translation>
 <translation id="683440813066116847">mDNS-ийг зөвшөөрөх Google Chrome Canary-ийн гадаад дүрэм.</translation>
-<translation id="6885412569789873916">Chrome Бэта Апп</translation>
+<translation id="6885412569789873916">Chrome Бета Апп</translation>
 <translation id="6943584222992551122">Энэ хэрэглэгчийн хөтчийн өгөгдлийг энэ төхөөрөмжөөс устгана. Өгөгдлийг сэргээхийн тулд Chrome-д <ph name="USER_EMAIL" />-р нэвтэрнэ үү.</translation>
-<translation id="6967962315388095737">mDNS урсгалыг зөвшөөрөх Google Chrome Бэта-н дотоод дүрэм.</translation>
+<translation id="6967962315388095737">mDNS урсгалыг зөвшөөрөх Google Chrome Бета-н дотоод дүрэм.</translation>
 <translation id="6989339256997917931">Google Chrome шинэчлэгдсэн байна, гэхдээ та үүнийг ядаж 30 хоног ч ашиглаагүй байна.</translation>
 <translation id="7054640471403081847">Энэ компьютерийн хатуу диск дэмжигдэхээ больсон учир удахгүй Google Chrome-ийн шинэчлэлтийг хүлээн авахаа болино.</translation>
 <translation id="7062128746136194023">Таны эцэг эх Chrome-н "Сайтууд, аппууд болон өргөтгөлүүдийн зөвшөөрөл"-ийг унтраасан байна. Энэ <ph name="EXTENSION_TYPE_PARAMETER" />-г нэмэхийг зөвшөөрдөггүй.</translation>
