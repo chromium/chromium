@@ -7197,7 +7197,7 @@ bool RenderFrameHostImpl::CreateWebUI(const GURL& dest_url,
 
   // Since this is new WebUI instance, this RenderFrameHostImpl should not
   // have had any bindings. Verify that and grant the required bindings.
-  DCHECK_EQ(0, GetEnabledBindings());
+  DCHECK_EQ(BINDINGS_POLICY_NONE, GetEnabledBindings());
   AllowBindings(web_ui_->GetBindings());
 
   return true;

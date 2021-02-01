@@ -13,6 +13,7 @@
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "content/public/common/bindings_policy.h"
 #include "content/public/common/user_agent.h"
 #include "net/base/load_flags.h"
 
@@ -62,7 +63,7 @@ bool DevToolsUI::IsFrontendResourceURL(const GURL& url) {
 
 DevToolsUI::DevToolsUI(content::WebUI* web_ui)
     : WebUIController(web_ui), bindings_(web_ui->GetWebContents()) {
-  web_ui->SetBindings(0);
+  web_ui->SetBindings(content::BINDINGS_POLICY_NONE);
   auto factory = content::BrowserContext::GetDefaultStoragePartition(
                      web_ui->GetWebContents()->GetBrowserContext())
                      ->GetURLLoaderFactoryForBrowserProcess();

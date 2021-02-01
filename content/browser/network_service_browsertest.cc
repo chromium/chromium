@@ -17,6 +17,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_controller_factory.h"
+#include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/network_service_util.h"
@@ -59,7 +60,7 @@ class WebUITestWebUIControllerFactory : public WebUIControllerFactory {
       const GURL& url) override {
     std::string foo(url.path());
     if (url.path() == "/nobinding/")
-      web_ui->SetBindings(0);
+      web_ui->SetBindings(BINDINGS_POLICY_NONE);
     return HasWebUIScheme(url) ? std::make_unique<WebUIController>(web_ui)
                                : nullptr;
   }
