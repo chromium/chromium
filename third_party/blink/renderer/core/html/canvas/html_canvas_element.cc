@@ -378,7 +378,8 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContextInternal(
   }
 
   if (context_->CreationAttributes().desynchronized) {
-    CreateLayer();
+    if (!CreateLayer())
+      return nullptr;
     SetNeedsUnbufferedInputEvents(true);
     frame_dispatcher_ = std::make_unique<CanvasResourceDispatcher>(
         nullptr,
@@ -1522,20 +1523,23 @@ String HTMLCanvasElement::GetIdFromControl(const Element* element) {
   return String();
 }
 
-void HTMLCanvasElement::CreateLayer() {
+bool HTMLCanvasElement::CreateLayer() {
   DCHECK(!surface_layer_bridge_);
   LocalFrame* frame = GetDocument().GetFrame();
   // We do not design transferControlToOffscreen() for frame-less HTML canvas.
-  if (frame) {
-    surface_layer_bridge_ = std::make_unique<::blink::SurfaceLayerBridge>(
-        frame->GetPage()->GetChromeClient().GetFrameSinkId(frame),
-        ::blink::SurfaceLayerBridge::ContainsVideo::kNo, this,
-        base::NullCallback());
-    // Creates a placeholder layer first before Surface is created.
-    surface_layer_bridge_->CreateSolidColorLayer();
-    // This may cause the canvas to be composited.
-    SetNeedsCompositingUpdate();
-  }
+  if (!frame)
+    return false;
+
+  surface_layer_bridge_ = std::make_unique<::blink::SurfaceLayerBridge>(
+      frame->GetPage()->GetChromeClient().GetFrameSinkId(frame),
+      ::blink::SurfaceLayerBridge::ContainsVideo::kNo, this,
+      base::NullCallback());
+  // Creates a placeholder layer first before Surface is created.
+  surface_layer_bridge_->CreateSolidColorLayer();
+  // This may cause the canvas to be composited.
+  SetNeedsCompositingUpdate();
+
+  return true;
 }
 
 void HTMLCanvasElement::OnWebLayerUpdated() {

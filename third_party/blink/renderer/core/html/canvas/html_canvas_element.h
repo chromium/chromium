@@ -266,7 +266,7 @@ class CORE_EXPORT HTMLCanvasElement final
   ::blink::SurfaceLayerBridge* SurfaceLayerBridge() const {
     return surface_layer_bridge_.get();
   }
-  void CreateLayer();
+  bool CreateLayer();
 
   void DetachContext() override { context_ = nullptr; }
 
