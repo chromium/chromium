@@ -653,6 +653,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Profile.ValidateMenuItemInvalidIndex.IsGuest" enum="Boolean"
     expires_after="M85">
+  <obsolete>
+    Removed in M90.
+  </obsolete>
   <owner>anthonyvd@chromium.org</owner>
   <summary>
     Whether the active profile is a guest profile when -validateMenuItem in the
@@ -662,6 +665,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Profile.ValidateMenuItemInvalidIndex.ProfileCount"
     units="units" expires_after="M85">
+  <obsolete>
+    Removed in M90.
+  </obsolete>
   <owner>anthonyvd@chromium.org</owner>
   <summary>
     The count of profiles in the avatar menu when -validateMenuItem in the
@@ -671,6 +677,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Profile.ValidateMenuItemInvalidIndex.Selector"
     enum="ValidateMenuItemSelectorType" expires_after="M85">
+  <obsolete>
+    Removed in M90.
+  </obsolete>
   <owner>anthonyvd@chromium.org</owner>
   <summary>
     The selector associated with the menu item when -validateMenuItem in the

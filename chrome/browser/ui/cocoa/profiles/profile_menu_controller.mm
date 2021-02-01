@@ -179,48 +179,14 @@ class Observer : public BrowserListObserver, public AvatarMenuObserver {
   // available, so disallow creating or editing a profile.
   Profile* activeProfile = ProfileManager::GetLastUsedProfileIfLoaded();
   if (!activeProfile || activeProfile->IsGuestSession()) {
-    return [menuItem action] != @selector(newProfile:) &&
-           [menuItem action] != @selector(editProfile:);
+    if ([menuItem action] == @selector(newProfile:) ||
+        [menuItem action] == @selector(editProfile:)) {
+      return NO;
+    }
   }
 
-  if (!IsAddPersonEnabled())
-    return [menuItem action] != @selector(newProfile:);
-
-  size_t index = _avatarMenu->GetActiveProfileIndex();
-  if (_avatarMenu->GetNumberOfItems() <= index) {
-    ValidateMenuItemSelector currentSelector = UNKNOWN_SELECTOR;
-    if ([menuItem action] == @selector(newProfile:))
-      currentSelector = NEW_PROFILE;
-    else if ([menuItem action] == @selector(editProfile:))
-      currentSelector = EDIT_PROFILE;
-    else if ([menuItem action] == @selector(switchToProfileFromMenu:))
-      currentSelector = SWITCH_PROFILE_MENU;
-    else if ([menuItem action] == @selector(switchToProfileFromDock:))
-      currentSelector = SWITCH_PROFILE_DOCK;
-    UMA_HISTOGRAM_BOOLEAN("Profile.ValidateMenuItemInvalidIndex.IsGuest",
-                          false);
-    UMA_HISTOGRAM_CUSTOM_COUNTS(
-        "Profile.ValidateMenuItemInvalidIndex.ProfileCount",
-        _avatarMenu->GetNumberOfItems(),
-        1, 20, 20);
-    UMA_HISTOGRAM_ENUMERATION("Profile.ValidateMenuItemInvalidIndex.Selector",
-                              currentSelector,
-                              MAX_VALIDATE_MENU_SELECTOR);
-
+  if (!IsAddPersonEnabled() && [menuItem action] == @selector(newProfile:))
     return NO;
-  }
-
-  const AvatarMenu::Item& itemData = _avatarMenu->GetItemAt(index);
-  if ([menuItem action] == @selector(switchToProfileFromDock:) ||
-      [menuItem action] == @selector(switchToProfileFromMenu:)) {
-    if (!itemData.legacy_supervised)
-      return YES;
-
-    return [menuItem tag] == static_cast<NSInteger>(itemData.menu_index);
-  }
-
-  if ([menuItem action] == @selector(newProfile:))
-    return !itemData.legacy_supervised;
 
   return YES;
 }
