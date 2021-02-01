@@ -83,8 +83,9 @@ class MediaStreamAudioTrackUnderlyingSinkTest : public testing::Test {
   PushableMediaStreamAudioSource* pushable_audio_source_;
 };
 
+// TODO(1172981): Flakes, likely due to invalid use of EXPECT_CALL().
 TEST_F(MediaStreamAudioTrackUnderlyingSinkTest,
-       WriteToStreamForwardsToMediaStreamSink) {
+       DISABLED_WriteToStreamForwardsToMediaStreamSink) {
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
   auto* underlying_sink = CreateUnderlyingSink(script_state);
