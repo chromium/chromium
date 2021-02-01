@@ -549,7 +549,7 @@ TEST_F(WebContentsViewAuraTest, DragDropUrlData) {
   std::vector<ui::FileInfo> file_infos;
   EXPECT_TRUE(data->GetVirtualFilenames(&file_infos));
   ASSERT_EQ(1ULL, file_infos.size());
-  EXPECT_EQ(base::FilePath(url_title + base::ASCIIToUTF16(".url")),
+  EXPECT_EQ(base::FilePath(base::UTF16ToWide(url_title) + L".url"),
             file_infos[0].display_name);
 
   ui::DropTargetEvent event(*data.get(), kClientPt, kScreenPt,

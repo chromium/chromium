@@ -226,7 +226,7 @@ TEST_F(BrowserAccessibilityWinTest, TestChildrenChange) {
   base::win::ScopedBstr name;
   hr = text_accessible->get_accName(childid_self, name.Receive());
   ASSERT_EQ(S_OK, hr);
-  EXPECT_EQ(L"old text", base::string16(name.Get()));
+  EXPECT_EQ(L"old text", std::wstring(name.Get()));
   name.Reset();
 
   text_dispatch.Reset();
@@ -254,7 +254,7 @@ TEST_F(BrowserAccessibilityWinTest, TestChildrenChange) {
 
   hr = text_accessible->get_accName(childid_self, name.Receive());
   ASSERT_EQ(S_OK, hr);
-  EXPECT_EQ(L"new text", base::string16(name.Get()));
+  EXPECT_EQ(L"new text", std::wstring(name.Get()));
 
   text_dispatch.Reset();
   text_accessible.Reset();
@@ -436,7 +436,7 @@ TEST_F(BrowserAccessibilityWinTest, TestTextBoundaries) {
 
   base::win::ScopedBstr text;
   EXPECT_EQ(S_OK, text_field_obj->get_text(0, text_len, text.Receive()));
-  EXPECT_EQ(text_value, base::UTF16ToUTF8(base::string16(text.Get())));
+  EXPECT_EQ(text_value, base::WideToUTF8(std::wstring(text.Get())));
   text.Reset();
 
   EXPECT_EQ(S_OK, text_field_obj->get_text(0, 4, text.Receive()));
@@ -592,7 +592,7 @@ TEST_F(BrowserAccessibilityWinTest, TestTextBoundaries) {
 
   EXPECT_EQ(S_OK, text_field_obj->get_text(0, IA2_TEXT_OFFSET_LENGTH,
                                            text.Receive()));
-  EXPECT_EQ(text_value, base::UTF16ToUTF8(base::string16(text.Get())));
+  EXPECT_EQ(text_value, base::WideToUTF8(std::wstring(text.Get())));
 
   // Delete the manager and test that all BrowserAccessibility instances are
   // deleted.
@@ -635,7 +635,7 @@ TEST_F(BrowserAccessibilityWinTest, TestSimpleHypertext) {
   base::win::ScopedBstr text;
   EXPECT_EQ(S_OK, root_obj->get_text(0, text_name_len, text.Receive()));
   EXPECT_EQ(text1_name + text2_name,
-            base::UTF16ToUTF8(base::string16(text.Get())));
+            base::WideToUTF8(std::wstring(text.Get())));
 
   LONG hyperlink_count;
   EXPECT_EQ(S_OK, root_obj->get_nHyperlinks(&hyperlink_count));
@@ -666,14 +666,14 @@ TEST_F(BrowserAccessibilityWinTest, TestSimpleHypertext) {
 }
 
 TEST_F(BrowserAccessibilityWinTest, TestComplexHypertext) {
-  const base::string16 text1_name = L"One two three.";
-  const base::string16 combo_box_name = L"City:";
-  const base::string16 combo_box_value = L"Happyland";
-  const base::string16 text2_name = L" Four five six.";
-  const base::string16 check_box_name = L"I agree";
-  const base::string16 check_box_value = L"Checked";
-  const base::string16 button_text_name = L"Red";
-  const base::string16 link_text_name = L"Blue";
+  const base::string16 text1_name = STRING16_LITERAL("One two three.");
+  const base::string16 combo_box_name = STRING16_LITERAL("City:");
+  const base::string16 combo_box_value = STRING16_LITERAL("Happyland");
+  const base::string16 text2_name = STRING16_LITERAL(" Four five six.");
+  const base::string16 check_box_name = STRING16_LITERAL("I agree");
+  const base::string16 check_box_value = STRING16_LITERAL("Checked");
+  const base::string16 button_text_name = STRING16_LITERAL("Red");
+  const base::string16 link_text_name = STRING16_LITERAL("Blue");
   // Each control (combo / check box, button and link) will be represented by an
   // embedded object character.
   const base::string16 embed(1, BrowserAccessibilityComWin::kEmbeddedCharacter);
@@ -770,7 +770,7 @@ TEST_F(BrowserAccessibilityWinTest, TestComplexHypertext) {
   EXPECT_EQ(S_OK, hyperlink.As(&hypertext));
   EXPECT_EQ(S_OK,
             hypertext->get_text(0, IA2_TEXT_OFFSET_LENGTH, text.Receive()));
-  EXPECT_STREQ(combo_box_value.c_str(), text.Get());
+  EXPECT_EQ(combo_box_value, base::WideToUTF16(text.Get()));
   text.Reset();
   hyperlink.Reset();
   hypertext.Reset();
@@ -781,7 +781,7 @@ TEST_F(BrowserAccessibilityWinTest, TestComplexHypertext) {
   EXPECT_EQ(S_OK, hyperlink.As(&hypertext));
   EXPECT_EQ(S_OK,
             hypertext->get_text(0, IA2_TEXT_OFFSET_LENGTH, text.Receive()));
-  EXPECT_STREQ(check_box_name.c_str(), text.Get());
+  EXPECT_EQ(check_box_name, base::WideToUTF16(text.Get()));
   text.Reset();
   hyperlink.Reset();
   hypertext.Reset();
@@ -791,7 +791,7 @@ TEST_F(BrowserAccessibilityWinTest, TestComplexHypertext) {
   EXPECT_EQ(S_OK, hyperlink.As(&hypertext));
   EXPECT_EQ(S_OK,
             hypertext->get_text(0, IA2_TEXT_OFFSET_LENGTH, text.Receive()));
-  EXPECT_STREQ(button_text_name.c_str(), text.Get());
+  EXPECT_EQ(button_text_name, base::WideToUTF16(text.Get()));
   text.Reset();
   hyperlink.Reset();
   hypertext.Reset();
@@ -800,7 +800,7 @@ TEST_F(BrowserAccessibilityWinTest, TestComplexHypertext) {
   EXPECT_EQ(S_OK, root_obj->get_hyperlink(3, &hyperlink));
   EXPECT_EQ(S_OK, hyperlink.As(&hypertext));
   EXPECT_EQ(S_OK, hypertext->get_text(0, 4, text.Receive()));
-  EXPECT_STREQ(link_text_name.c_str(), text.Get());
+  EXPECT_EQ(link_text_name, base::WideToUTF16(text.Get()));
   text.Reset();
   hyperlink.Reset();
   hypertext.Reset();
@@ -1268,9 +1268,9 @@ TEST_F(BrowserAccessibilityWinTest, TestValueAttributeInTextControls) {
 }
 
 TEST_F(BrowserAccessibilityWinTest, TestWordBoundariesInTextControls) {
-  const base::string16 line1(L"This is a very LONG line of text that ");
-  const base::string16 line2(L"should wrap on more than one lines ");
-  const base::string16 text(line1 + line2);
+  const std::string line1("This is a very LONG line of text that ");
+  const std::string line2("should wrap on more than one lines ");
+  const std::string text(line1 + line2);
 
   std::vector<int32_t> line1_word_starts;
   line1_word_starts.push_back(0);
@@ -1309,8 +1309,8 @@ TEST_F(BrowserAccessibilityWinTest, TestWordBoundariesInTextControls) {
   textarea.AddState(ax::mojom::State::kMultiline);
   textarea_div.AddState(ax::mojom::State::kEditable);
   textarea_text.AddState(ax::mojom::State::kEditable);
-  textarea.SetValue(base::UTF16ToUTF8(text));
-  textarea_text.SetName(base::UTF16ToUTF8(text));
+  textarea.SetValue(text);
+  textarea_text.SetName(text);
   textarea.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "textarea");
   textarea.child_ids.push_back(textarea_div.id);
   textarea_div.child_ids.push_back(textarea_text.id);
@@ -1322,8 +1322,8 @@ TEST_F(BrowserAccessibilityWinTest, TestWordBoundariesInTextControls) {
   textarea_line2.role = ax::mojom::Role::kInlineTextBox;
   textarea_line1.AddState(ax::mojom::State::kEditable);
   textarea_line2.AddState(ax::mojom::State::kEditable);
-  textarea_line1.SetName(base::UTF16ToUTF8(line1));
-  textarea_line2.SetName(base::UTF16ToUTF8(line2));
+  textarea_line1.SetName(line1);
+  textarea_line2.SetName(line2);
   textarea_line1.AddIntListAttribute(ax::mojom::IntListAttribute::kWordStarts,
                                      line1_word_starts);
   textarea_line2.AddIntListAttribute(ax::mojom::IntListAttribute::kWordStarts,
@@ -1342,8 +1342,8 @@ TEST_F(BrowserAccessibilityWinTest, TestWordBoundariesInTextControls) {
   text_field.AddState(ax::mojom::State::kFocusable);
   text_field_div.AddState(ax::mojom::State::kEditable);
   text_field_text.AddState(ax::mojom::State::kEditable);
-  text_field.SetValue(base::UTF16ToUTF8(line1));
-  text_field_text.SetName(base::UTF16ToUTF8(line1));
+  text_field.SetValue(line1);
+  text_field_text.SetName(line1);
   text_field.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "input");
   text_field.html_attributes.push_back(std::make_pair("type", "text"));
   text_field.child_ids.push_back(text_field_div.id);
@@ -1353,7 +1353,7 @@ TEST_F(BrowserAccessibilityWinTest, TestWordBoundariesInTextControls) {
   text_field_line.id = 10;
   text_field_line.role = ax::mojom::Role::kInlineTextBox;
   text_field_line.AddState(ax::mojom::State::kEditable);
-  text_field_line.SetName(base::UTF16ToUTF8(line1));
+  text_field_line.SetName(line1);
   text_field_line.AddIntListAttribute(ax::mojom::IntListAttribute::kWordStarts,
                                       line1_word_starts);
   text_field_text.child_ids.push_back(text_field_line.id);
@@ -1400,7 +1400,7 @@ TEST_F(BrowserAccessibilityWinTest, TestWordBoundariesInTextControls) {
     LONG space_offset = static_cast<LONG>(text.find(' ', offset));
     EXPECT_EQ(space_offset + 1, end);
     LONG length = end - start;
-    EXPECT_STREQ(text.substr(start, length).c_str(), word.Get());
+    EXPECT_EQ(base::ASCIIToWide(text.substr(start, length)), word.Get());
     word.Reset();
     offset = end;
   }
@@ -1417,7 +1417,7 @@ TEST_F(BrowserAccessibilityWinTest, TestWordBoundariesInTextControls) {
     LONG space_offset = static_cast<LONG>(line1.find(' ', offset));
     EXPECT_EQ(space_offset + 1, end);
     LONG length = end - start;
-    EXPECT_STREQ(text.substr(start, length).c_str(), word.Get());
+    EXPECT_EQ(base::ASCIIToWide(text.substr(start, length)), word.Get());
     word.Reset();
     offset = end;
   }
@@ -2484,9 +2484,8 @@ TEST_F(BrowserAccessibilityWinTest, TestTextAttributesInContentEditables) {
   EXPECT_EQ(S_OK, hr);
   EXPECT_EQ(0, start_offset);
   EXPECT_EQ(1, end_offset);
-  EXPECT_NE(
-      base::string16::npos,
-      base::string16(text_attributes.Get()).find(L"font-family:Helvetica"));
+  EXPECT_NE(std::wstring::npos,
+            std::wstring(text_attributes.Get()).find(L"font-family:Helvetica"));
   text_attributes.Reset();
 
   // Test the style of text_before.
@@ -2496,10 +2495,10 @@ TEST_F(BrowserAccessibilityWinTest, TestTextAttributesInContentEditables) {
     EXPECT_EQ(S_OK, hr);
     EXPECT_EQ(0, start_offset);
     EXPECT_EQ(7, end_offset);
-    base::string16 attributes(text_attributes.Get());
-    EXPECT_NE(base::string16::npos, attributes.find(L"font-family:Helvetica"));
-    EXPECT_NE(base::string16::npos, attributes.find(L"font-weight:bold"));
-    EXPECT_NE(base::string16::npos, attributes.find(L"font-style:italic"));
+    std::wstring attributes(text_attributes.Get());
+    EXPECT_NE(std::wstring::npos, attributes.find(L"font-family:Helvetica"));
+    EXPECT_NE(std::wstring::npos, attributes.find(L"font-weight:bold"));
+    EXPECT_NE(std::wstring::npos, attributes.find(L"font-style:italic"));
     text_attributes.Reset();
   }
 
@@ -2509,22 +2508,21 @@ TEST_F(BrowserAccessibilityWinTest, TestTextAttributesInContentEditables) {
   EXPECT_EQ(S_OK, hr);
   EXPECT_EQ(0, start_offset);
   EXPECT_EQ(3, end_offset);
+  EXPECT_NE(std::wstring::npos,
+            std::wstring(text_attributes.Get()).find(L"font-family:Helvetica"));
+  EXPECT_EQ(std::wstring::npos,
+            std::wstring(text_attributes.Get()).find(L"font-weight:"));
+  EXPECT_EQ(std::wstring::npos,
+            std::wstring(text_attributes.Get()).find(L"font-style:"));
   EXPECT_NE(
-      base::string16::npos,
-      base::string16(text_attributes.Get()).find(L"font-family:Helvetica"));
-  EXPECT_EQ(base::string16::npos,
-            base::string16(text_attributes.Get()).find(L"font-weight:"));
-  EXPECT_EQ(base::string16::npos,
-            base::string16(text_attributes.Get()).find(L"font-style:"));
-  EXPECT_NE(base::string16::npos, base::string16(text_attributes.Get())
-                                      .find(L"text-underline-style:solid"));
-  EXPECT_EQ(
-      base::string16::npos,
-      base::string16(text_attributes.Get()).find(L"text-underline-type:"));
+      std::wstring::npos,
+      std::wstring(text_attributes.Get()).find(L"text-underline-style:solid"));
+  EXPECT_EQ(std::wstring::npos,
+            std::wstring(text_attributes.Get()).find(L"text-underline-type:"));
   // For compatibility with Firefox, spelling attributes should also be
   // propagated to the parent of static text leaves.
-  EXPECT_NE(base::string16::npos,
-            base::string16(text_attributes.Get()).find(L"invalid:spelling"));
+  EXPECT_NE(std::wstring::npos,
+            std::wstring(text_attributes.Get()).find(L"invalid:spelling"));
   text_attributes.Reset();
 
   hr = ax_link_text->GetCOM()->get_attributes(2, &start_offset, &end_offset,
@@ -2532,20 +2530,19 @@ TEST_F(BrowserAccessibilityWinTest, TestTextAttributesInContentEditables) {
   EXPECT_EQ(S_OK, hr);
   EXPECT_EQ(0, start_offset);
   EXPECT_EQ(3, end_offset);
+  EXPECT_NE(std::wstring::npos,
+            std::wstring(text_attributes.Get()).find(L"font-family:Helvetica"));
+  EXPECT_EQ(std::wstring::npos,
+            std::wstring(text_attributes.Get()).find(L"font-weight:"));
+  EXPECT_EQ(std::wstring::npos,
+            std::wstring(text_attributes.Get()).find(L"font-style:"));
   EXPECT_NE(
-      base::string16::npos,
-      base::string16(text_attributes.Get()).find(L"font-family:Helvetica"));
-  EXPECT_EQ(base::string16::npos,
-            base::string16(text_attributes.Get()).find(L"font-weight:"));
-  EXPECT_EQ(base::string16::npos,
-            base::string16(text_attributes.Get()).find(L"font-style:"));
-  EXPECT_NE(base::string16::npos, base::string16(text_attributes.Get())
-                                      .find(L"text-underline-style:solid"));
-  EXPECT_EQ(
-      base::string16::npos,
-      base::string16(text_attributes.Get()).find(L"text-underline-type:"));
-  EXPECT_NE(base::string16::npos,
-            base::string16(text_attributes.Get()).find(L"invalid:spelling"));
+      std::wstring::npos,
+      std::wstring(text_attributes.Get()).find(L"text-underline-style:solid"));
+  EXPECT_EQ(std::wstring::npos,
+            std::wstring(text_attributes.Get()).find(L"text-underline-type:"));
+  EXPECT_NE(std::wstring::npos,
+            std::wstring(text_attributes.Get()).find(L"invalid:spelling"));
   text_attributes.Reset();
 
   // Test the style of text_after.
@@ -2555,16 +2552,16 @@ TEST_F(BrowserAccessibilityWinTest, TestTextAttributesInContentEditables) {
     EXPECT_EQ(S_OK, hr);
     EXPECT_EQ(8, start_offset);
     EXPECT_EQ(15, end_offset);
-    base::string16 attributes(text_attributes.Get());
-    EXPECT_NE(base::string16::npos, attributes.find(L"font-family:Helvetica"));
-    EXPECT_EQ(base::string16::npos, attributes.find(L"font-weight:"));
-    EXPECT_EQ(base::string16::npos, attributes.find(L"font-style:"));
-    EXPECT_EQ(base::string16::npos, base::string16(text_attributes.Get())
-                                        .find(L"text-underline-style:solid"));
+    std::wstring attributes(text_attributes.Get());
+    EXPECT_NE(std::wstring::npos, attributes.find(L"font-family:Helvetica"));
+    EXPECT_EQ(std::wstring::npos, attributes.find(L"font-weight:"));
+    EXPECT_EQ(std::wstring::npos, attributes.find(L"font-style:"));
+    EXPECT_EQ(std::wstring::npos, std::wstring(text_attributes.Get())
+                                      .find(L"text-underline-style:solid"));
     EXPECT_EQ(
-        base::string16::npos,
-        base::string16(text_attributes.Get()).find(L"text-underline-type:"));
-    EXPECT_EQ(base::string16::npos, attributes.find(L"invalid:spelling"));
+        std::wstring::npos,
+        std::wstring(text_attributes.Get()).find(L"text-underline-type:"));
+    EXPECT_EQ(std::wstring::npos, attributes.find(L"invalid:spelling"));
     text_attributes.Reset();
   }
 
@@ -2574,15 +2571,14 @@ TEST_F(BrowserAccessibilityWinTest, TestTextAttributesInContentEditables) {
   EXPECT_EQ(S_OK, hr);
   EXPECT_EQ(0, start_offset);
   EXPECT_EQ(7, end_offset);
-  EXPECT_NE(
-      base::string16::npos,
-      base::string16(text_attributes.Get()).find(L"font-family:Helvetica"));
-  EXPECT_NE(base::string16::npos,
-            base::string16(text_attributes.Get()).find(L"font-weight:bold"));
-  EXPECT_NE(base::string16::npos,
-            base::string16(text_attributes.Get()).find(L"font-style:italic"));
-  EXPECT_EQ(base::string16::npos,
-            base::string16(text_attributes.Get()).find(L"invalid:spelling"));
+  EXPECT_NE(std::wstring::npos,
+            std::wstring(text_attributes.Get()).find(L"font-family:Helvetica"));
+  EXPECT_NE(std::wstring::npos,
+            std::wstring(text_attributes.Get()).find(L"font-weight:bold"));
+  EXPECT_NE(std::wstring::npos,
+            std::wstring(text_attributes.Get()).find(L"font-style:italic"));
+  EXPECT_EQ(std::wstring::npos,
+            std::wstring(text_attributes.Get()).find(L"invalid:spelling"));
   text_attributes.Reset();
 
   hr = ax_after->GetCOM()->get_attributes(6, &start_offset, &end_offset,
@@ -2590,21 +2586,18 @@ TEST_F(BrowserAccessibilityWinTest, TestTextAttributesInContentEditables) {
   EXPECT_EQ(S_OK, hr);
   EXPECT_EQ(0, start_offset);
   EXPECT_EQ(7, end_offset);
-  EXPECT_NE(
-      base::string16::npos,
-      base::string16(text_attributes.Get()).find(L"font-family:Helvetica"));
-  EXPECT_EQ(base::string16::npos,
-            base::string16(text_attributes.Get()).find(L"font-weight:"));
-  EXPECT_EQ(base::string16::npos,
-            base::string16(text_attributes.Get()).find(L"font-style:"));
-  EXPECT_EQ(
-      base::string16::npos,
-      base::string16(text_attributes.Get()).find(L"text-underline-style:"));
-  EXPECT_EQ(
-      base::string16::npos,
-      base::string16(text_attributes.Get()).find(L"text-underline-type:"));
-  EXPECT_EQ(base::string16::npos,
-            base::string16(text_attributes.Get()).find(L"invalid:spelling"));
+  EXPECT_NE(std::wstring::npos,
+            std::wstring(text_attributes.Get()).find(L"font-family:Helvetica"));
+  EXPECT_EQ(std::wstring::npos,
+            std::wstring(text_attributes.Get()).find(L"font-weight:"));
+  EXPECT_EQ(std::wstring::npos,
+            std::wstring(text_attributes.Get()).find(L"font-style:"));
+  EXPECT_EQ(std::wstring::npos,
+            std::wstring(text_attributes.Get()).find(L"text-underline-style:"));
+  EXPECT_EQ(std::wstring::npos,
+            std::wstring(text_attributes.Get()).find(L"text-underline-type:"));
+  EXPECT_EQ(std::wstring::npos,
+            std::wstring(text_attributes.Get()).find(L"invalid:spelling"));
   text_attributes.Reset();
 
   manager.reset();
@@ -2692,7 +2685,7 @@ TEST_F(BrowserAccessibilityWinTest,
   for (LONG offset = 0; offset < value1_length; ++offset) {
     hr = ax_combo_box->GetCOM()->get_attributes(
         offset, &start_offset, &end_offset, text_attributes.Receive());
-    EXPECT_TRUE(base::string16(text_attributes.Get()).empty());
+    EXPECT_TRUE(std::wstring(text_attributes.Get()).empty());
     EXPECT_EQ(0, start_offset);
     EXPECT_EQ(value1_length, end_offset);
     text_attributes.Reset();
@@ -2705,8 +2698,8 @@ TEST_F(BrowserAccessibilityWinTest,
     EXPECT_EQ(S_OK, hr);
     EXPECT_EQ(value1_length, start_offset);
     EXPECT_EQ(value1_length + 4, end_offset);
-    EXPECT_NE(base::string16::npos,
-              base::string16(text_attributes.Get()).find(L"invalid:spelling"));
+    EXPECT_NE(std::wstring::npos,
+              std::wstring(text_attributes.Get()).find(L"invalid:spelling"));
     text_attributes.Reset();
   }
 
@@ -2715,7 +2708,7 @@ TEST_F(BrowserAccessibilityWinTest,
        ++offset) {
     hr = ax_combo_box->GetCOM()->get_attributes(
         offset, &start_offset, &end_offset, text_attributes.Receive());
-    EXPECT_TRUE(base::string16(text_attributes.Get()).empty());
+    EXPECT_TRUE(std::wstring(text_attributes.Get()).empty());
     EXPECT_EQ(value1_length + 4, start_offset);
     EXPECT_EQ(combo_box_value_length, end_offset);
     text_attributes.Reset();
@@ -2791,7 +2784,7 @@ TEST_F(BrowserAccessibilityWinTest, TestNewMisspellingsInSimpleTextFields) {
   for (LONG offset = 0; offset < combo_box_value_length; ++offset) {
     hr = ax_combo_box->GetCOM()->get_attributes(
         offset, &start_offset, &end_offset, text_attributes.Receive());
-    EXPECT_TRUE(base::string16(text_attributes.Get()).empty());
+    EXPECT_TRUE(std::wstring(text_attributes.Get()).empty());
     EXPECT_EQ(0, start_offset);
     EXPECT_EQ(combo_box_value_length, end_offset);
     text_attributes.Reset();
@@ -2816,7 +2809,7 @@ TEST_F(BrowserAccessibilityWinTest, TestNewMisspellingsInSimpleTextFields) {
   for (LONG offset = 0; offset < value1_length; ++offset) {
     hr = ax_combo_box->GetCOM()->get_attributes(
         offset, &start_offset, &end_offset, text_attributes.Receive());
-    EXPECT_TRUE(base::string16(text_attributes.Get()).empty());
+    EXPECT_TRUE(std::wstring(text_attributes.Get()).empty());
     EXPECT_EQ(0, start_offset);
     EXPECT_EQ(value1_length, end_offset);
     text_attributes.Reset();
@@ -2829,8 +2822,8 @@ TEST_F(BrowserAccessibilityWinTest, TestNewMisspellingsInSimpleTextFields) {
     EXPECT_EQ(S_OK, hr);
     EXPECT_EQ(value1_length, start_offset);
     EXPECT_EQ(value1_length + 4, end_offset);
-    EXPECT_NE(base::string16::npos,
-              base::string16(text_attributes.Get()).find(L"invalid:spelling"));
+    EXPECT_NE(std::wstring::npos,
+              std::wstring(text_attributes.Get()).find(L"invalid:spelling"));
     text_attributes.Reset();
   }
 
@@ -2839,7 +2832,7 @@ TEST_F(BrowserAccessibilityWinTest, TestNewMisspellingsInSimpleTextFields) {
        ++offset) {
     hr = ax_combo_box->GetCOM()->get_attributes(
         offset, &start_offset, &end_offset, text_attributes.Receive());
-    EXPECT_TRUE(base::string16(text_attributes.Get()).empty());
+    EXPECT_TRUE(std::wstring(text_attributes.Get()).empty());
     EXPECT_EQ(value1_length + 4, start_offset);
     EXPECT_EQ(combo_box_value_length, end_offset);
     text_attributes.Reset();
@@ -3146,7 +3139,7 @@ TEST_F(BrowserAccessibilityWinTest, DISABLED_TestIAccessible2Relations) {
       ax_root->GetCOM()->get_relation(0, &describedby_relation));
   EXPECT_HRESULT_SUCCEEDED(
       describedby_relation->get_relationType(relation_type.Receive()));
-  EXPECT_EQ(L"describedBy", base::string16(relation_type.Get()));
+  EXPECT_EQ(L"describedBy", std::wstring(relation_type.Get()));
   relation_type.Reset();
 
   EXPECT_HRESULT_SUCCEEDED(describedby_relation->get_nTargets(&n_targets));
@@ -3175,7 +3168,7 @@ TEST_F(BrowserAccessibilityWinTest, DISABLED_TestIAccessible2Relations) {
       ax_child1->GetCOM()->get_relation(0, &description_for_relation));
   EXPECT_HRESULT_SUCCEEDED(
       description_for_relation->get_relationType(relation_type.Receive()));
-  EXPECT_EQ(L"descriptionFor", base::string16(relation_type.Get()));
+  EXPECT_EQ(L"descriptionFor", std::wstring(relation_type.Get()));
   relation_type.Reset();
 
   EXPECT_HRESULT_SUCCEEDED(description_for_relation->get_nTargets(&n_targets));
@@ -3196,7 +3189,7 @@ TEST_F(BrowserAccessibilityWinTest, DISABLED_TestIAccessible2Relations) {
       ax_child2->GetCOM()->get_relation(0, &description_for_relation));
   EXPECT_HRESULT_SUCCEEDED(
       description_for_relation->get_relationType(relation_type.Receive()));
-  EXPECT_EQ(L"descriptionFor", base::string16(relation_type.Get()));
+  EXPECT_EQ(L"descriptionFor", std::wstring(relation_type.Get()));
   relation_type.Reset();
 
   EXPECT_HRESULT_SUCCEEDED(description_for_relation->get_nTargets(&n_targets));

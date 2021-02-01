@@ -34,16 +34,17 @@ class FontFallbackUnitTest : public testing::Test {
                                        L"en-us", true /* ignoreUserOverride */,
                                        &number_substitution_);
 
-    std::vector<base::char16> font_path;
+    std::vector<wchar_t> font_path;
     font_path.resize(MAX_PATH);
     SHGetSpecialFolderPath(nullptr /* hwndOwner - reserved */, font_path.data(),
                            CSIDL_FONTS, FALSE /* fCreate*/);
-    base::FilePath segoe_path = base::FilePath(base::string16(font_path.data()))
+    base::FilePath segoe_path = base::FilePath(std::wstring(font_path.data()))
                                     .Append(L"\\seguisym.ttf");
 
     fake_collection_ = std::make_unique<FakeFontCollection>();
-    fake_collection_->AddFont(L"Segoe UI Symbol")
-        .AddFamilyName(L"en-us", L"Segoe UI Symbol")
+    fake_collection_->AddFont(STRING16_LITERAL("Segoe UI Symbol"))
+        .AddFamilyName(STRING16_LITERAL("en-us"),
+                       STRING16_LITERAL("Segoe UI Symbol"))
         .AddFilePath(segoe_path);
 
     DWriteFontCollectionProxy::Create(&collection_, factory_.Get(),
