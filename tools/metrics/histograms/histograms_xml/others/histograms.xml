@@ -7788,8 +7788,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
-    The actions taken on languages settings, recorded every time they happen.
-    This histogram will record every single event that happens separately.
+    The actions on the languages settings page that result in a preference
+    change. This histogram will record every single event that happens
+    separately. See LanguageSettings.PageImpressions for how often language
+    settings sections are seen.
   </summary>
 </histogram>
 
@@ -7797,7 +7799,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     enum="LanguageSettingsPageType" expires_after="2021-07-11">
   <owner>googleo@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
-  <summary>The type of panes which language settings loads.</summary>
+  <summary>
+    Impressions of pages, sections, or dialogs viewed from language settings.
+    Page impressions do not result in preferences changes. See
+    LanguageSettings.Actions for preference change counts.
+  </summary>
 </histogram>
 
 <histogram name="LanguageUsage.AcceptLanguage" enum="LanguageCode"

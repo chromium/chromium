@@ -153,8 +153,6 @@ public class LanguageListPreference extends Preference {
                 null, null, null);
         mAddLanguageButton.setOnClickListener(view -> {
             mLauncher.launchAddLanguage();
-            LanguagesManager.recordAction(
-                    LanguagesManager.LanguageSettingsActionType.CLICK_ON_ADD_LANGUAGE);
         });
 
         mRecyclerView = (RecyclerView) holder.findViewById(R.id.language_list);

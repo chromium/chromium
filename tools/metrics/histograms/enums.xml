@@ -41226,7 +41226,9 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
 
 <enum name="LanguageSettingsActionType">
   <int value="0" label="Unknown"/>
-  <int value="1" label="Click on the 'Add Language' button"/>
+  <int value="1" label="Click on the 'Add Language' button">
+    Removed for Android in M89. Still in Desktop and iOS.
+  </int>
   <int value="2" label="Language added"/>
   <int value="3" label="Language removed"/>
   <int value="4" label="Disable global 'Offer to translate' by switch"/>
@@ -41234,12 +41236,17 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="6" label="Disable 'Offer to translate' for single language"/>
   <int value="7" label="Enable 'Offer to translate' for single language"/>
   <int value="8" label="Language list reordered"/>
+  <int value="9" label="Change Chrome Language">Windows and Android only</int>
+  <int value="10" label="Change Target Language"/>
 </enum>
 
 <enum name="LanguageSettingsPageType">
   <int value="0" label="Main"/>
   <int value="1" label="Add Language"/>
   <int value="2" label="Language Details">iOS only.</int>
+  <int value="3" label="Chrome Language">Windows and Android only</int>
+  <int value="4" label="Advanced Language Settings"/>
+  <int value="5" label="Target Language"/>
 </enum>
 
 <enum name="LargestContentfulPaint.TerminationState">
