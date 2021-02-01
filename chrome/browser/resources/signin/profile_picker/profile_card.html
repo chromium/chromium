@@ -146,6 +146,7 @@
   </cr-button>
   <div id="profileNameInputWrapper">
     <cr-input class="profile-card-info prominent-text" id="nameInput"
+        aria-label="$i18n{profileCardInputLabel}"
         value="[[profileState.localProfileName]]"
         on-change="onProfileNameChanged_" on-keydown="onProfileNameKeydown_"
         on-blur="onProfileNameInputBlur_" pattern="[[pattern_]]"
