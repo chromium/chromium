@@ -135,8 +135,8 @@ class HTMLDocumentParserState
         end_if_delayed_forbidden_(0),
         should_complete_(0),
         should_attempt_to_end_on_eof_(0),
-        needs_viewport_update_(false),
-        needs_link_header_dispatch_(true) {}
+        needs_link_header_dispatch_(true),
+        have_seen_first_byte_(false) {}
 
   void Trace(Visitor* v) const {}
 
@@ -161,13 +161,10 @@ class HTMLDocumentParserState
   bool NeedsLinkHeaderPreloadsDispatch() const {
     return needs_link_header_dispatch_;
   }
-  bool NeedsViewportUpdate() const { return needs_viewport_update_; }
-  void SetNeedsViewportUpdate() { needs_viewport_update_ = true; }
   void DispatchedLinkHeaderPreloads() { needs_link_header_dispatch_ = false; }
-  void UpdatedViewport() {
-    needs_viewport_update_ = false;
-    needs_link_header_dispatch_ = true;
-  }
+
+  bool HaveSeenFirstByte() const { return have_seen_first_byte_; }
+  void SetHaveSeenFirstByte() { have_seen_first_byte_ = true; }
 
   // Keeps track of whether Document::Finish has been called whilst parsing
   // asynchronously. ShouldAttemptToEndOnEOF() means that the parser should
@@ -233,8 +230,8 @@ class HTMLDocumentParserState
   // Set to non-zero if Document::Finish has been called and we're operating
   // asynchronously.
   int should_attempt_to_end_on_eof_;
-  bool needs_viewport_update_;
   bool needs_link_header_dispatch_;
+  bool have_seen_first_byte_;
 };
 
 class EndIfDelayedForbiddenScope {
@@ -1316,15 +1313,17 @@ void HTMLDocumentParser::Append(const String& input_source) {
   }
   if (preload_scanner_ && preloader_) {
     preload_scanner_->AppendToEnd(source);
-    if (!task_runner_state_->IsSynchronous() || IsPaused()) {
-      // Should scan and preload if the parser's paused and operating
-      // synchronously, or if the parser's operating in an asynchronous
-      // mode.
+    if (task_runner_state_->GetMode() == kAllowDeferredParsing &&
+        (IsPaused() || !task_runner_state_->HaveSeenFirstByte())) {
+      // Should scan and preload if the parser's paused waiting for a resource,
+      // or if we're starting a document for the first time (we want to at least
+      // prefetch anything that's in the <head> section).
       ScanAndPreload(preload_scanner_.get());
     }
   }
 
   input_.AppendToEnd(source);
+  task_runner_state_->SetHaveSeenFirstByte();
 
   if (InPumpSession()) {
     // We've gotten data off the network in a nested write. We don't want to
@@ -1755,16 +1754,12 @@ void HTMLDocumentParser::ScanAndPreload(HTMLPreloadScanner* scanner) {
   PreloadRequestStream requests =
       scanner->Scan(GetDocument()->ValidBaseElementURL(), &viewport_description,
                     seen_csp_meta_tag);
-  if (viewport_description.has_value()) {
-    task_runner_state_->SetNeedsViewportUpdate();
-  }
   // Make sure that the viewport is up-to-date, so that the correct viewport
   // dimensions will be fed to the background parser and preload scanner.
   if (GetDocument()->Loader() &&
       task_runner_state_->GetMode() == kAllowDeferredParsing) {
-    if (task_runner_state_->NeedsViewportUpdate()) {
+    if (viewport_description.has_value()) {
       GetDocument()->GetStyleEngine().UpdateViewport();
-      task_runner_state_->UpdatedViewport();
     }
     if (task_runner_state_->NeedsLinkHeaderPreloadsDispatch()) {
       if (GetDocument()->Loader()->GetPrefetchedSignedExchangeManager()) {
