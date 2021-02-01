@@ -101,6 +101,7 @@ os_settings_auto_imports = settings_auto_imports +
                              "chrome/browser/resources/settings/chromeos/internet_page/internet_page_browser_proxy.html|InternetPageBrowserProxy,InternetPageBrowserProxyImpl",
                              "chrome/browser/resources/settings/chromeos/deep_linking_behavior.html|DeepLinkingBehavior",
                              "chrome/browser/resources/settings/chromeos/google_assistant_page/google_assistant_browser_proxy.html|GoogleAssistantBrowserProxy,GoogleAssistantBrowserProxyImpl",
+                             "chrome/browser/resources/settings/chromeos/guest_os/guest_os_browser_proxy.html|GuestOsBrowserProxy, GuestOsBrowserProxyImpl, GuestOsSharedUsbDevice, CROSTINI_TYPE, PLUGIN_VM_TYPE",
                              "chrome/browser/resources/settings/chromeos/metrics_recorder.html|recordSettingChange",
                              "chrome/browser/resources/settings/chromeos/multidevice_page/multidevice_browser_proxy.html|MultiDeviceBrowserProxy,MultiDeviceBrowserProxyImpl",
                              "chrome/browser/resources/settings/chromeos/multidevice_page/multidevice_constants.html|MultiDeviceSettingsMode,MultiDeviceFeature,MultiDeviceFeatureState,MultiDevicePageContentData,PhoneHubNotificationAccessStatus,SmartLockSignInEnabledState",

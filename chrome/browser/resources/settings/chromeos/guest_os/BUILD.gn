@@ -23,6 +23,7 @@ js_library("guest_os_shared_paths") {
   deps = [
     ":guest_os_browser_proxy",
     "..:metrics_recorder",
+    "//ui/webui/resources/js:i18n_behavior",
   ]
 }
 
@@ -30,12 +31,18 @@ js_library("guest_os_shared_usb_devices") {
   deps = [
     ":guest_os_browser_proxy",
     "..:metrics_recorder",
+    "//ui/webui/resources/js:i18n_behavior",
+    "//ui/webui/resources/js:web_ui_listener_behavior",
   ]
 }
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
-  deps = [ ":guest_os_browser_proxy.m" ]
+  deps = [
+    ":guest_os_browser_proxy.m",
+    ":guest_os_shared_paths.m",
+    ":guest_os_shared_usb_devices.m",
+  ]
 }
 
 js_library("guest_os_browser_proxy.m") {
@@ -50,7 +57,11 @@ js_library("guest_os_browser_proxy.m") {
 js_library("guest_os_shared_usb_devices.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/guest_os/guest_os_shared_usb_devices.m.js" ]
   deps = [
-    # TODO: Fill those in.
+    ":guest_os_browser_proxy.m",
+    "..:metrics_recorder.m",
+    "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
   extra_deps = [ ":guest_os_shared_usb_devices_module" ]
 }
@@ -58,7 +69,11 @@ js_library("guest_os_shared_usb_devices.m") {
 js_library("guest_os_shared_paths.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/guest_os/guest_os_shared_paths.m.js" ]
   deps = [
-    # TODO: Fill those in.
+    ":guest_os_browser_proxy.m",
+    "..:metrics_recorder.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
   ]
   extra_deps = [ ":guest_os_shared_paths_module" ]
 }
@@ -75,12 +90,16 @@ polymer_modulizer("guest_os_shared_paths") {
   js_file = "guest_os_shared_paths.js"
   html_file = "guest_os_shared_paths.html"
   html_type = "dom-module"
+  auto_imports = os_settings_auto_imports
+  namespace_rewrites = os_settings_namespace_rewrites
 }
 
 polymer_modulizer("guest_os_shared_usb_devices") {
   js_file = "guest_os_shared_usb_devices.js"
   html_file = "guest_os_shared_usb_devices.html"
   html_type = "dom-module"
+  auto_imports = os_settings_auto_imports
+  namespace_rewrites = os_settings_namespace_rewrites
 }
 
 js_modulizer("modulize") {

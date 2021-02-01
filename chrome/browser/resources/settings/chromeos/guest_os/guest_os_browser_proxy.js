@@ -12,7 +12,10 @@
  *            sharedWith: ?string,
  *            promptBeforeSharing: boolean}}
  */
-let GuestOsSharedUsbDevice;
+/* #export */ let GuestOsSharedUsbDevice;
+
+/* #export */ const CROSTINI_TYPE = 'crostini';
+/* #export */ const PLUGIN_VM_TYPE = 'pluginVm';
 
 /**
  * @fileoverview A helper object used by the both the Crostini and Plugin VM

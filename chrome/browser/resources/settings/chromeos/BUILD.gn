@@ -323,6 +323,8 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/google_assistant_page/google_assistant_browser_proxy.m.js",
     "chromeos/google_assistant_page/google_assistant_page.m.js",
     "chromeos/guest_os/guest_os_browser_proxy.m.js",
+    "chromeos/guest_os/guest_os_shared_paths.m.js",
+    "chromeos/guest_os/guest_os_shared_usb_devices.m.js",
     "chromeos/internet_page/esim_remove_profile_dialog.m.js",
     "chromeos/internet_page/esim_rename_dialog.m.js",
     "chromeos/internet_page/cellular_networks_list.m.js",

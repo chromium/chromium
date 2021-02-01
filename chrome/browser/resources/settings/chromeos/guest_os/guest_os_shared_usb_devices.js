@@ -8,9 +8,6 @@
  * guest OSes.
  */
 
-const CROSTINI_TYPE = 'crostini';
-const PLUGIN_VM_TYPE = 'pluginVm';
-
 Polymer({
   is: 'settings-guest-os-shared-usb-devices',
 

@@ -208,6 +208,8 @@ TEST_F(
  ['EsimRenameDialog', 'esim_rename_dialog_test.m.js'],
  ['FilesPage', 'os_files_page_test.m.js'],
  ['GoogleAssistantPage', 'google_assistant_page_test.m.js'],
+ ['GuestOsSharedPaths', 'guest_os_shared_paths_test.m.js'],
+ ['GuestOsSharedUsbDevices', 'guest_os_shared_usb_devices_test.m.js'],
  ['InputMethodOptionPage', 'input_method_options_page_test.m.js'],
  ['InputPage', 'input_page_test.m.js'],
  ['InternetConfig', 'internet_config_test.m.js'],

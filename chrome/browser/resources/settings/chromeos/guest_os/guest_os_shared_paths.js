@@ -7,11 +7,6 @@
  * 'guest-os-shared-paths' is the settings shared paths subpage for guest OSes.
  */
 
-(function() {
-
-const CROSTINI_TYPE = 'crostini';
-const PLUGIN_VM_TYPE = 'pluginVm';
-
 Polymer({
   is: 'settings-guest-os-shared-paths',
 
@@ -140,4 +135,3 @@ Polymer({
     return 'path-display-text-' + index;
   },
 });
-})();
