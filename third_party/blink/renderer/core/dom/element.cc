@@ -96,6 +96,7 @@
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
+#include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/editing/set_selection_options.h"
@@ -3266,6 +3267,31 @@ ShadowRoot& Element::CreateAndAttachShadowRoot(ShadowRootType type) {
 
 ShadowRoot* Element::GetShadowRoot() const {
   return HasRareData() ? GetElementRareData()->GetShadowRoot() : nullptr;
+}
+
+EditContext* Element::editContext() const {
+  return HasRareData() ? GetElementRareData()->GetEditContext() : nullptr;
+}
+
+void Element::setEditContext(EditContext* edit_context) {
+  EnsureElementRareData().SetEditContext(edit_context);
+
+  // An element is considered editable if there is an active EditContext
+  // associated with the element.
+  if (GetDocument()
+          .GetFrame()
+          ->GetInputMethodController()
+          .GetActiveEditContext()) {
+    MutableCSSPropertyValueSet& style = EnsureMutableInlineStyle();
+    if (edit_context) {
+      AddPropertyToPresentationAttributeStyle(
+          &style, CSSPropertyID::kWebkitUserModify, CSSValueID::kReadWrite);
+    } else {
+      AddPropertyToPresentationAttributeStyle(
+          &style, CSSPropertyID::kWebkitUserModify, CSSValueID::kReadOnly);
+    }
+    InlineStyleChanged();
+  }
 }
 
 void Element::PseudoStateChanged(CSSSelector::PseudoType pseudo) {

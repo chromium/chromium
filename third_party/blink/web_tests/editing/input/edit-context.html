@@ -45,6 +45,17 @@ test(function() {
   const editContext = new EditContext();
   assert_not_equals(editContext, null);
   const test = document.getElementById('test');
+  assert_equals(test.editContext, null);
+  test.editContext = editContext;
+  assert_equals(test.editContext, editContext);
+  test.editContext = null;
+  assert_equals(test.editContext, null);
+}, 'Testing Element.editContext');
+
+test(function() {
+  const editContext = new EditContext();
+  assert_not_equals(editContext, null);
+  const test = document.getElementById('test');
   test.innerHTML = "";
   // Add EditContext event listeners
   editContext.addEventListener("textupdate", e => {

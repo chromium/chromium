@@ -417,7 +417,7 @@ bool EditContext::SetComposition(
   selection_end_ = composition_range_start_ + selection_end;
   DispatchTextUpdateEvent(update_text, update_range_start, update_range_end,
                           selection_start_, selection_end_);
-  composition_range_end_ = composition_range_start_ + selection_end;
+  composition_range_end_ = composition_range_start_ + text.length();
   DispatchTextFormatEvent(ime_text_spans);
   return true;
 }
@@ -610,7 +610,8 @@ int EditContext::TextInputFlags() const {
 }
 
 WebRange EditContext::CompositionRange() {
-  return WebRange(composition_range_start_, composition_range_end_);
+  return WebRange(composition_range_start_,
+                  composition_range_end_ - composition_range_start_);
 }
 
 bool EditContext::GetCompositionCharacterBounds(WebVector<gfx::Rect>& bounds) {
@@ -619,7 +620,7 @@ bool EditContext::GetCompositionCharacterBounds(WebVector<gfx::Rect>& bounds) {
 }
 
 WebRange EditContext::GetSelectionOffsets() const {
-  return WebRange(selection_start_, selection_end_);
+  return WebRange(selection_start_, selection_end_ - selection_start_);
 }
 
 void EditContext::Trace(Visitor* visitor) const {

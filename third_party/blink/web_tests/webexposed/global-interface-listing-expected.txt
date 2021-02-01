@@ -2115,6 +2115,7 @@ interface Element : Node
     getter clientWidth
     getter computedName
     getter computedRole
+    getter editContext
     getter elementTiming
     getter firstElementChild
     getter id
@@ -2246,6 +2247,7 @@ interface Element : Node
     setter ariaValueText
     setter classList
     setter className
+    setter editContext
     setter elementTiming
     setter id
     setter innerHTML

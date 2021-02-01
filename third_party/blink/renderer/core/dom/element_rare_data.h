@@ -80,6 +80,11 @@ class ElementRareData : public NodeRareData {
     shadow_root_ = &shadow_root;
   }
 
+  EditContext* GetEditContext() const { return edit_context_.Get(); }
+  void SetEditContext(EditContext* edit_context) {
+    edit_context_ = edit_context;
+  }
+
   NamedNodeMap* AttributeMap() const { return attribute_map_.Get(); }
   void SetAttributeMap(NamedNodeMap* attribute_map) {
     attribute_map_ = attribute_map;
@@ -208,6 +213,7 @@ class ElementRareData : public NodeRareData {
 
   Member<DatasetDOMStringMap> dataset_;
   Member<ShadowRoot> shadow_root_;
+  Member<EditContext> edit_context_;
   Member<DOMTokenList> class_list_;
   Member<DOMTokenList> part_;
   std::unique_ptr<NamesMap> part_names_map_;

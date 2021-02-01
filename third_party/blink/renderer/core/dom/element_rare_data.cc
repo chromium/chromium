@@ -32,6 +32,7 @@
 
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/cssom/inline_style_property_map.h"
+#include "third_party/blink/renderer/core/editing/ime/edit_context.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observation.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
@@ -43,7 +44,7 @@ namespace blink {
 struct SameSizeAsElementRareData : NodeRareData {
   IntSize scroll_offset;
   void* pointers_or_strings[3];
-  Member<void*> members[16];
+  Member<void*> members[17];
   bool flags[1];
 };
 
@@ -99,6 +100,7 @@ void ElementRareData::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(class_list_);
   visitor->Trace(part_);
   visitor->Trace(shadow_root_);
+  visitor->Trace(edit_context_);
   visitor->Trace(attribute_map_);
   visitor->Trace(attr_node_list_);
   visitor->Trace(element_animations_);

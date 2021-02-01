@@ -108,6 +108,7 @@ namespace http://www.w3.org/1999/xhtml
     property dir
     property dispatchEvent
     property draggable
+    property editContext
     property elementTiming
     property enterKeyHint
     property firstChild
@@ -1305,6 +1306,7 @@ namespace http://www.w3.org/2000/svg
     property contains
     property dataset
     property dispatchEvent
+    property editContext
     property elementTiming
     property firstChild
     property firstElementChild
