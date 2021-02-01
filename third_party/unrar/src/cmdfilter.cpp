@@ -128,16 +128,22 @@ void CommandData::SetTimeFilters(const wchar *Mod,bool Before,bool Age)
 {
   bool ModeOR=false,TimeMods=false;
   const wchar *S=Mod;
-  for (;wcschr(L"MCAOmcao",*S)!=NULL;S++)
+  // Check if any 'mca' modifiers are present, set OR mode if 'o' is present,
+  // skip modifiers and set S to beginning of time string. Be sure to check
+  // *S!=0, because termination 0 is a part of string for wcschr.
+  for (;*S!=0 && wcschr(L"MCAOmcao",*S)!=NULL;S++)
     if (*S=='o' || *S=='O')
       ModeOR=true;
     else
       TimeMods=true;
 
-  if (!TimeMods)
+  if (!TimeMods) // Assume 'm' if no modifiers are specified.
     Mod=L"m";
 
-  for (;wcschr(L"MCAOmcao",*Mod)!=NULL;Mod++)
+  // Set the specified time for every modifier. Be sure to check *Mod!=0,
+  // because termination 0 is a part of string for wcschr. This check is
+  // important when we set Mod to "m" above.
+  for (;*Mod!=0 && wcschr(L"MCAOmcao",*Mod)!=NULL;Mod++)
     switch(toupperw(*Mod))
     {
       case 'M': 
@@ -279,7 +285,10 @@ int CommandData::IsProcessFile(FileHeader &FileHead,bool *ExactMatch,int MatchTy
 #ifndef SFX_MODULE
   if (TimeCheck(FileHead.mtime,FileHead.ctime,FileHead.atime))
     return 0;
-  if ((FileHead.FileAttr & ExclFileAttr)!=0 || InclAttrSet && (FileHead.FileAttr & InclFileAttr)==0)
+  if ((FileHead.FileAttr & ExclFileAttr)!=0 || FileHead.Dir && ExclDir)
+    return 0;
+  if (InclAttrSet && (!FileHead.Dir && (FileHead.FileAttr & InclFileAttr)==0 ||
+      FileHead.Dir && !InclDir))
     return 0;
   if (!Dir && SizeCheck(FileHead.UnpSize))
     return 0;
@@ -297,3 +306,47 @@ int CommandData::IsProcessFile(FileHeader &FileHead,bool *ExactMatch,int MatchTy
     }
   return 0;
 }
+
+
+#if !defined(SFX_MODULE)
+void CommandData::SetStoreTimeMode(const wchar *S)
+{
+  if (*S==0 || IsDigit(*S) || *S=='-' || *S=='+')
+  {
+    // Apply -ts, -ts1, -ts-, -ts+ to all 3 times.
+    // Handle obsolete -ts[2,3,4] as ts+.
+    EXTTIME_MODE Mode=EXTTIME_MAX;
+    if (*S=='-')
+      Mode=EXTTIME_NONE;
+    if (*S=='1')
+      Mode=EXTTIME_1S;
+    xmtime=xctime=xatime=Mode;
+    S++;
+  }
+
+  while (*S!=0)
+  {
+    EXTTIME_MODE Mode=EXTTIME_MAX;
+    if (S[1]=='-')
+      Mode=EXTTIME_NONE;
+    if (S[1]=='1')
+      Mode=EXTTIME_1S;
+    switch(toupperw(*S))
+    {
+      case 'M':
+        xmtime=Mode;
+        break;
+      case 'C':
+        xctime=Mode;
+        break;
+      case 'A':
+        xatime=Mode;
+        break;
+      case 'P':
+        PreserveAtime=true;
+        break;
+    }
+    S++;
+  }
+}
+#endif

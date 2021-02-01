@@ -63,12 +63,12 @@ bool FindFile::Next(FindData *fd,bool GetSymLink)
   }
   while (1)
   {
+    wchar Name[NM];
     struct dirent *ent=readdir(dirp);
     if (ent==NULL)
       return false;
     if (strcmp(ent->d_name,".")==0 || strcmp(ent->d_name,"..")==0)
       continue;
-    wchar Name[NM];
     if (!CharToWide(ent->d_name,Name,ASIZE(Name)))
       uiMsg(UIERROR_INVALIDNAME,UINULL,Name);
 

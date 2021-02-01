@@ -360,7 +360,7 @@ wchar *MkTemp(wchar *Name,size_t MaxSize)
 #if !defined(SFX_MODULE)
 void CalcFileSum(File *SrcFile,uint *CRC32,byte *Blake2,uint Threads,int64 Size,uint Flags)
 {
-  SaveFilePos SavePos(*SrcFile);
+  int64 SavePos=SrcFile->Tell();
 #ifndef SILENT
   int64 FileLength=Size==INT64NDF ? SrcFile->FileLength() : Size;
 #endif
@@ -415,6 +415,8 @@ void CalcFileSum(File *SrcFile,uint *CRC32,byte *Blake2,uint Threads,int64 Size,
     if (Size!=INT64NDF)
       Size-=ReadSize;
   }
+  SrcFile->Seek(SavePos,SEEK_SET);
+
   if ((Flags & CALCFSUM_SHOWPERCENT)!=0)
     uiMsg(UIEVENT_FILESUMEND);
 
