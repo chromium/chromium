@@ -1813,44 +1813,35 @@ component("ash") {
     "//cc/debug",
     "//cc/paint:paint",
     "//chromeos/assistant:buildflags",
+    "//chromeos/audio",
+    "//chromeos/components/multidevice/logging",
     "//chromeos/components/phonehub",
     "//chromeos/components/quick_answers",
     "//chromeos/components/quick_answers/public/cpp:prefs",
-    "//chromeos/services/nearby/public/cpp",
-    "//chromeos/ui/base",
-    "//chromeos/ui/frame",
-    "//services/viz/public/mojom",
-
-    # TODO(https://crbug.com/644336): Make CrasAudioHandler Chrome or Ash only.
-    "//chromeos/audio",
-    "//chromeos/components/multidevice/logging",
     "//chromeos/components/sensors:buildflags",
     "//chromeos/constants",
     "//chromeos/dbus",
-
-    # TODO(https://crbug.com/644336): Remove dependencies on CrasAudioClient.
     "//chromeos/dbus/audio",
     "//chromeos/dbus/constants",
     "//chromeos/dbus/hammerd",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/dbus/services:services",
-
-    # TODO(https://crbug.com/644355): Remove Shill dependencies.
     "//chromeos/dbus/shill",
     "//chromeos/dbus/system_clock",
     "//chromeos/login/login_state",
-
-    # TODO(https://crbug.com/644355): Remove Shill dependencies.
     "//chromeos/network",
     "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/assistant/public/mojom",
     "//chromeos/services/multidevice_setup/public/mojom",
+    "//chromeos/services/nearby/public/cpp",
     "//chromeos/services/network_config/public/cpp",
     "//chromeos/services/network_config/public/mojom",
     "//chromeos/settings",
     "//chromeos/strings",
     "//chromeos/system",
+    "//chromeos/ui/base",
+    "//chromeos/ui/frame",
     "//components/account_id",
     "//components/country_codes",
     "//components/device_event_log",
@@ -1880,6 +1871,7 @@ component("ash") {
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/cpp:cpp",
     "//services/preferences/public/cpp",
+    "//services/viz/public/mojom",
 
     # TODO(msw): Remove this; ash should not depend on blink/webkit.
     "//third_party/blink/public:blink_headers",
@@ -2446,12 +2438,6 @@ test("ash_unittests") {
     "//base/util/values:values_util",
     "//build:branding_buildflags",
     "//chromeos:test_support",
-    "//chromeos/strings:strings_grit",
-    "//chromeos/ui/base",
-    "//chromeos/ui/frame",
-    "//chromeos/ui/vector_icons",
-
-    # TODO(https://crbug.com/644336): Make CrasAudioHandler Chrome or Ash only.
     "//chromeos/audio",
     "//chromeos/components/phonehub:test_support",
     "//chromeos/components/quick_answers:quick_answers",
@@ -2464,8 +2450,6 @@ test("ash_unittests") {
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/dbus/services:test_support",
-
-    # TODO(https://crbug.com/644355): Remove Shill dependencies.
     "//chromeos/network:test_support",
     "//chromeos/services/assistant:test_support",
     "//chromeos/services/assistant/public/cpp",
@@ -2474,8 +2458,12 @@ test("ash_unittests") {
     "//chromeos/services/multidevice_setup/public/mojom",
     "//chromeos/services/nearby/public/cpp",
     "//chromeos/services/network_config/public/mojom",
+    "//chromeos/strings:strings_grit",
     "//chromeos/system",
+    "//chromeos/ui/base",
+    "//chromeos/ui/frame",
     "//chromeos/ui/frame:test_support",
+    "//chromeos/ui/vector_icons",
     "//components/account_id",
     "//components/arc:notification_test_support",
     "//components/media_message_center",
@@ -2785,6 +2773,8 @@ static_library("test_support") {
     "//ash/app_menu",
     "//ash/assistant/model:model",
     "//ash/assistant/ui:ui",
+    "//ash/keyboard/ui",
+    "//ash/keyboard/ui:test_support",
     "//ash/public/cpp",
     "//ash/public/cpp:test_support",
     "//ash/services/recording/public/mojom",
@@ -2792,28 +2782,18 @@ static_library("test_support") {
     "//base:i18n",
     "//base/test:test_support",
     "//cc:test_support",
-    "//chromeos/services/assistant/public/cpp",
-    "//chromeos/ui/frame",
-    "//ui/accessibility/mojom",
-    "//ui/platform_window/common",
-
-    # TODO(https://crbug.com/644336): Make CrasAudioHandler Chrome or Ash only.
     "//chromeos/audio",
     "//chromeos/constants",
     "//chromeos/dbus:test_support",
-
-    # TODO(https://crbug.com/644336): Remove dependencies on CrasAudioClient.
     "//chromeos/dbus/audio",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/dbus/system_clock",
     "//chromeos/login/login_state",
-
-    # TODO(https://crbug.com/644355): Remove Shill dependencies.
-    "//ash/keyboard/ui",
-    "//ash/keyboard/ui:test_support",
     "//chromeos/network:test_support",
+    "//chromeos/services/assistant/public/cpp",
     "//chromeos/system",
+    "//chromeos/ui/frame",
     "//components/account_id",
     "//components/prefs:test_support",
     "//components/user_manager:user_manager",
@@ -2824,6 +2804,7 @@ static_library("test_support") {
     "//skia",
     "//testing/gtest",
     "//ui/accessibility",
+    "//ui/accessibility/mojom",
     "//ui/aura",
     "//ui/aura:test_support",
     "//ui/base:test_support",
@@ -2839,6 +2820,7 @@ static_library("test_support") {
     "//ui/gl:test_support",
     "//ui/message_center",
     "//ui/message_center/public/cpp",
+    "//ui/platform_window/common",
     "//ui/views",
     "//ui/views:test_support",
     "//ui/wm",

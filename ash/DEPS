@@ -58,18 +58,14 @@ include_rules = [
   "+chromeos/components/security_token_pin",
   "+chromeos/components/sensors",
   "+chromeos/constants",
-  # TODO(https://crbug.com/940810): Eliminate this.
   "+chromeos/dbus/initialize_dbus_client.h",
   "+chromeos/dbus/audio",
   "+chromeos/dbus/hammerd",
-  # TODO(https://crbug.com/644348): Eliminate this.
   "+chromeos/dbus/power",
   "+chromeos/dbus/power_manager",
-  # TODO(https://crbug.com/644355): Eliminate this.
   "+chromeos/dbus/shill",
   "+chromeos/dbus/system_clock",
   "+chromeos/dbus/usb",
-  # TODO(https://crbug.com/644355): Eliminate this.
   "+chromeos/network",
   "+chromeos/services/assistant/public" ,
   "+chromeos/services/assistant/test_support",
@@ -78,7 +74,6 @@ include_rules = [
   "+chromeos/services/nearby/public",
   "+chromeos/services/network_config/public",
   "+chromeos/services/power/public",
-  # TODO(https://crbug.com/644361): Eliminate this.
   "+chromeos/settings/timezone_settings.h",
   "+chromeos/strings",
   "+chromeos/system",
