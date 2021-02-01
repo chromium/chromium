@@ -6,11 +6,13 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/guid.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/autofill/personal_data_manager_factory.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
@@ -25,8 +27,18 @@
 
 namespace {
 
+const char kTestHonorificPrefix[] = "";
 const char kTestFullName[] = "That Guy John";
+const char kTestCompany[] = "Awesome Inc.";
 const char kTestAddressLine1[] = "Some person's garage";
+const char kTestAddressLine2[] = "Near the lake";
+const char kTestCity[] = "Springfield";
+const char kTestState[] = "IL";
+const char kTestZip[] = "55123";
+const char kTestCountryCode[] = "US";
+const char kTestCountry[] = "United States";
+const char kTestPhone[] = "16502530000";
+const char kTestEmail[] = "test@email.com";
 
 static NSArray* FindTextFieldDescendants(UIView* root) {
   NSMutableArray* textFields = [NSMutableArray array];
@@ -63,11 +75,28 @@ class AutofillProfileEditTableViewControllerTest : public PlatformTest {
     autofill::AutofillProfile autofill_profile;
     autofill_profile =
         autofill::AutofillProfile(guid, "https://www.example.com/");
+    autofill_profile.SetRawInfo(autofill::NAME_HONORIFIC_PREFIX,
+                                base::UTF8ToUTF16(kTestHonorificPrefix));
     autofill_profile.SetRawInfo(autofill::NAME_FULL,
                                 base::UTF8ToUTF16(kTestFullName));
+    autofill_profile.SetRawInfo(autofill::COMPANY_NAME,
+                                base::UTF8ToUTF16(kTestCompany));
     autofill_profile.SetRawInfo(autofill::ADDRESS_HOME_LINE1,
                                 base::UTF8ToUTF16(kTestAddressLine1));
-
+    autofill_profile.SetRawInfo(autofill::ADDRESS_HOME_LINE2,
+                                base::UTF8ToUTF16(kTestAddressLine2));
+    autofill_profile.SetRawInfo(autofill::ADDRESS_HOME_CITY,
+                                base::UTF8ToUTF16(kTestCity));
+    autofill_profile.SetRawInfo(autofill::ADDRESS_HOME_STATE,
+                                base::UTF8ToUTF16(kTestState));
+    autofill_profile.SetRawInfo(autofill::ADDRESS_HOME_ZIP,
+                                base::UTF8ToUTF16(kTestZip));
+    autofill_profile.SetRawInfo(autofill::ADDRESS_HOME_COUNTRY,
+                                base::UTF8ToUTF16(kTestCountryCode));
+    autofill_profile.SetRawInfo(autofill::PHONE_HOME_WHOLE_NUMBER,
+                                base::UTF8ToUTF16(kTestPhone));
+    autofill_profile.SetRawInfo(autofill::EMAIL_ADDRESS,
+                                base::UTF8ToUTF16(kTestEmail));
     personal_data_manager_->SaveImportedProfile(autofill_profile);
     waiter.Wait();  // Wait for the completion of the asynchronous operation.
 
@@ -88,9 +117,14 @@ class AutofillProfileEditTableViewControllerTest : public PlatformTest {
 // Default test case of no addresses or credit cards.
 TEST_F(AutofillProfileEditTableViewControllerTest, TestInitialization) {
   TableViewModel* model = [autofill_profile_edit_controller_ tableViewModel];
+  int rowCnt =
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableUIForHonorificPrefixesInSettings)
+          ? 11
+          : 10;
 
   EXPECT_EQ(1, [model numberOfSections]);
-  EXPECT_EQ(10, [model numberOfItemsInSection:0]);
+  EXPECT_EQ(rowCnt, [model numberOfItemsInSection:0]);
 }
 
 // Adding a single address results in an address section.
@@ -98,30 +132,30 @@ TEST_F(AutofillProfileEditTableViewControllerTest, TestOneProfile) {
   TableViewModel* model = [autofill_profile_edit_controller_ tableViewModel];
   UITableView* tableView = [autofill_profile_edit_controller_ tableView];
 
+  std::vector<const char*> expected_values = {
+      kTestFullName, kTestCompany, kTestAddressLine1, kTestAddressLine2,
+      kTestCity,     kTestState,   kTestZip,          kTestCountry,
+      kTestPhone,    kTestEmail};
+  if (base::FeatureList::IsEnabled(
+          autofill::features::
+              kAutofillEnableUIForHonorificPrefixesInSettings)) {
+    expected_values.insert(expected_values.begin(), kTestHonorificPrefix);
+  }
+
   EXPECT_EQ(1, [model numberOfSections]);
-  EXPECT_EQ(10, [model numberOfItemsInSection:0]);
+  EXPECT_EQ(expected_values.size(), (size_t)[model numberOfItemsInSection:0]);
 
-  NSIndexPath* path = [NSIndexPath indexPathForRow:0 inSection:0];
-
-  UIView* cell = [autofill_profile_edit_controller_ tableView:tableView
-                                        cellForRowAtIndexPath:path];
-
-  NSArray* textFields = FindTextFieldDescendants(cell);
-  EXPECT_TRUE([textFields count] > 0);
-  UITextField* field = [textFields objectAtIndex:0];
-  EXPECT_TRUE([field isKindOfClass:[UITextField class]]);
-  EXPECT_TRUE(
-      [[field text] isEqualToString:base::SysUTF8ToNSString(kTestFullName)]);
-
-  path = [NSIndexPath indexPathForRow:2 inSection:0];
-  cell = [autofill_profile_edit_controller_ tableView:tableView
-                                cellForRowAtIndexPath:path];
-  textFields = FindTextFieldDescendants(cell);
-  EXPECT_TRUE([textFields count] > 0);
-  field = [textFields objectAtIndex:0];
-  EXPECT_TRUE([field isKindOfClass:[UITextField class]]);
-  EXPECT_TRUE([[field text]
-      isEqualToString:base::SysUTF8ToNSString(kTestAddressLine1)]);
+  for (size_t row = 0; row < expected_values.size(); row++) {
+    NSIndexPath* path = [NSIndexPath indexPathForRow:row inSection:0];
+    UIView* cell = [autofill_profile_edit_controller_ tableView:tableView
+                                          cellForRowAtIndexPath:path];
+    NSArray* textFields = FindTextFieldDescendants(cell);
+    EXPECT_TRUE([textFields count] > 0);
+    UITextField* field = [textFields objectAtIndex:0];
+    EXPECT_TRUE([field isKindOfClass:[UITextField class]]);
+    EXPECT_TRUE([[field text]
+        isEqualToString:base::SysUTF8ToNSString(expected_values[row])]);
+  }
 }
 
 }  // namespace
