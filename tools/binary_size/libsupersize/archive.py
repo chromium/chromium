@@ -1061,11 +1061,13 @@ def _ComputePakFileSymbols(
       k: id_map[id(v)]
       for k, v in contents.resources.items() if id_map[id(v)] != k
   }
-  # Longest locale pak is: es-419.pak.
-  # Only non-translated .pak files are: resources.pak, chrome_100_percent.pak.
-  if len(posixpath.basename(file_name)) <= 10:
+  name = posixpath.basename(file_name)
+  # Hyphens used for language regions. E.g.: en-GB.pak, sr-Latn.pak, ...
+  # Longest translated .pak file without hyphen: fil.pak
+  if '-' in name or len(name) <= 7:
     section_name = models.SECTION_PAK_TRANSLATIONS
   else:
+    # E.g.: resources.pak, chrome_100_percent.pak.
     section_name = models.SECTION_PAK_NONTRANSLATED
   overhead = (12 + 6) * compression_ratio  # Header size plus extra offset
   # Key just needs to be unique from other IDs and pak overhead symbols.
