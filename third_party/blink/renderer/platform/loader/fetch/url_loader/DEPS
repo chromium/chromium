@@ -9,4 +9,8 @@ specific_include_rules = {
     "request_conversion.cc" : [
         "+media/media_buildflags.h"
     ],
+    "sync_load_context_unittest.cc": [
+        "+base/threading/thread.h",
+        "+services/network/test/test_url_loader_factory.h"
+    ]
 }

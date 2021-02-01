@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/renderer/loader/sync_load_context.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/sync_load_context.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/task_environment.h"
@@ -16,8 +16,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/sync_load_response.h"
+#include "third_party/blink/public/platform/web_resource_request_sender.h"
 
-namespace content {
+namespace blink {
 
 namespace {
 
@@ -69,24 +70,19 @@ class MockPendingSharedURLLoaderFactory
   scoped_refptr<TestSharedURLLoaderFactory> factory_;
 };
 
-class MockResourceDispatcher : public ResourceDispatcher {
+class MockResourceRequestSender : public WebResourceRequestSender {
  public:
-  int CreatePendingRequest(std::unique_ptr<blink::WebRequestPeer> peer) {
-    peers_.push_back(std::move(peer));
-    return peers_.size() - 1;
+  void CreatePendingRequest(scoped_refptr<WebRequestPeer> peer) {
+    peer_ = std::move(peer);
   }
 
-  bool RemovePendingRequest(
-      int request_id,
-      scoped_refptr<base::SingleThreadTaskRunner>) override {
-    if (request_id < 0 || static_cast<int>(peers_.size()) <= request_id)
-      return false;
-    peers_[request_id].reset();
-    return true;
+  void DeletePendingRequest(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner) override {
+    peer_.reset();
   }
 
  private:
-  std::vector<std::unique_ptr<blink::WebRequestPeer>> peers_;
+  scoped_refptr<WebRequestPeer> peer_;
 };
 
 }  // namespace
@@ -102,7 +98,7 @@ class SyncLoadContextTest : public testing::Test {
   void StartAsyncWithWaitableEventOnLoadingThread(
       std::unique_ptr<network::ResourceRequest> request,
       std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory,
-      blink::SyncLoadResponse* out_response,
+      SyncLoadResponse* out_response,
       SyncLoadContext** context_for_redirect,
       base::WaitableEvent* redirect_or_response_event) {
     loading_thread_.task_runner()->PostTask(
@@ -112,20 +108,20 @@ class SyncLoadContextTest : public testing::Test {
             MSG_ROUTING_NONE, loading_thread_.task_runner(),
             TRAFFIC_ANNOTATION_FOR_TESTS, 0 /* loader_options */,
             std::move(pending_factory),
-            std::vector<std::unique_ptr<blink::URLLoaderThrottle>>(),
-            out_response, context_for_redirect, redirect_or_response_event,
+            std::vector<std::unique_ptr<URLLoaderThrottle>>(), out_response,
+            context_for_redirect, redirect_or_response_event,
             nullptr /* terminate_sync_load_event */,
             base::TimeDelta::FromSeconds(60) /* timeout */,
             mojo::NullRemote() /* download_to_blob_registry */,
             std::vector<std::string>() /* cors_exempt_header_list */,
-            std::make_unique<blink::ResourceLoadInfoNotifierWrapper>(
+            std::make_unique<ResourceLoadInfoNotifierWrapper>(
                 /*resource_load_info_notifier=*/nullptr,
                 task_environment_.GetMainThreadTaskRunner())));
   }
 
   static void RunSyncLoadContextViaDataPipe(
       network::ResourceRequest* request,
-      blink::SyncLoadResponse* response,
+      SyncLoadResponse* response,
       SyncLoadContext** context_for_redirect,
       std::string expected_data,
       base::WaitableEvent* redirect_or_response_event,
@@ -136,14 +132,13 @@ class SyncLoadContextTest : public testing::Test {
         response, context_for_redirect, redirect_or_response_event,
         nullptr /* terminate_sync_load_event */,
         base::TimeDelta::FromSeconds(60) /* timeout */,
-        mojo::NullRemote() /* download_to_blob_registry */, task_runner,
-        std::vector<std::string>() /* cors_exempt_header_list */);
+        mojo::NullRemote() /* download_to_blob_registry */, task_runner);
 
-    // Override |resource_dispatcher_| for testing.
-    auto dispatcher = std::make_unique<MockResourceDispatcher>();
-    context->request_id_ =
-        dispatcher->CreatePendingRequest(base::WrapUnique(context));
-    context->resource_dispatcher_ = std::move(dispatcher);
+    auto mock_resource_request_sender =
+        std::make_unique<MockResourceRequestSender>();
+    mock_resource_request_sender->CreatePendingRequest(
+        base::WrapRefCounted(context));
+    context->resource_request_sender_ = std::move(mock_resource_request_sender);
 
     // Simulate the response.
     context->OnReceivedResponse(network::mojom::URLResponseHead::New());
@@ -172,7 +167,7 @@ TEST_F(SyncLoadContextTest, StartAsyncWithWaitableEvent) {
   request->url = expected_url;
   auto pending_factory = std::make_unique<MockPendingSharedURLLoaderFactory>();
   pending_factory->factory()->AddResponse(expected_url.spec(), expected_data);
-  blink::SyncLoadResponse response;
+  SyncLoadResponse response;
   SyncLoadContext* context_for_redirect = nullptr;
   base::WaitableEvent redirect_or_response_event(
       base::WaitableEvent::ResetPolicy::MANUAL,
@@ -198,7 +193,7 @@ TEST_F(SyncLoadContextTest, ResponseBodyViaDataPipe) {
   // Create and exercise SyncLoadContext on the |loading_thread_|.
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = expected_url;
-  blink::SyncLoadResponse response;
+  SyncLoadResponse response;
   base::WaitableEvent redirect_or_response_event(
       base::WaitableEvent::ResetPolicy::MANUAL,
       base::WaitableEvent::InitialState::NOT_SIGNALED);
@@ -220,4 +215,4 @@ TEST_F(SyncLoadContextTest, ResponseBodyViaDataPipe) {
   EXPECT_EQ(expected_data, std::string(response_data, size));
 }
 
-}  // namespace content
+}  // namespace blink

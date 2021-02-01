@@ -143,7 +143,7 @@ class BLINK_PLATFORM_EXPORT WebResourceRequestSender
   void DidChangePriority(net::RequestPriority new_priority,
                          int intra_priority_value);
 
-  void DeletePendingRequest(
+  virtual void DeletePendingRequest(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
  private:

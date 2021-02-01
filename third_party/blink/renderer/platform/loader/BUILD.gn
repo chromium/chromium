@@ -195,6 +195,7 @@ source_set("unit_tests") {
     "fetch/response_body_loader_test.cc",
     "fetch/shared_buffer_bytes_consumer_test.cc",
     "fetch/source_keyed_cached_metadata_handler_test.cc",
+    "fetch/url_loader/sync_load_context_unittest.cc",
     "fetch/url_loader/web_resource_request_sender_unittest.cc",
     "fetch/url_loader/worker_main_script_loader_unittest.cc",
     "ftp_directory_listing_test.cc",
