@@ -218,3 +218,26 @@ gpu::gles2::PassthroughProgramCache::ProgramCacheValue::program_cache_
 #######
 # End of BackupRefPtr-specific sections
 #######
+
+#######
+# Performance-related exclusions
+#######
+
+# Populated manually - on-stack pointer + a large number of non-PA pointees
+base::AutoReset::scoped_variable_
+
+# Populated manually - on-stack pointee
+base::StackAllocator::source_
+
+# Populated manually - on-stack pointer + a large number of non-PA pointees
+mojo::core::ports::PortLocker::port_refs_
+
+# Populated manually - static pointee
+mojo::core::RequestContext::tls_context_
+
+# Populated manually - on-stack pointee
+mojo::internal::ValidationContext::ScopedDepthTracker::ctx_
+
+#######
+# End of performance-related exclusions
+#######
