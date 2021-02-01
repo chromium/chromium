@@ -146,6 +146,8 @@ void LayoutSVGModelObject::StyleDidChange(StyleDifference diff,
       SetNeedsTransformUpdate();
   }
 
+  SetHasTransformRelatedProperty(StyleRef().HasTransformRelatedProperty());
+
   SVGResources::UpdateClipPathFilterMask(*GetElement(), old_style, StyleRef());
 
   if (!Parent())

@@ -327,9 +327,8 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
       CreateLayerAfterStyleChange();
     }
   } else if (Layer() && Layer()->Parent()) {
-    // Either a transform wasn't specified or the object doesn't support
-    // transforms, so just null out the bit.
-    SetHasTransformRelatedProperty(false);
+    // Either reflection wasn't specified or the object doesn't support
+    // reflection, so just null out the bit.
     SetHasReflection(false);
     Layer()->UpdateFilters(old_style, StyleRef());
     Layer()->UpdateBackdropFilters(old_style, StyleRef());

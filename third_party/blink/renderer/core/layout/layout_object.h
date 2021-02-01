@@ -1628,7 +1628,7 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   }
 
   // Not returning StyleRef().HasTransformRelatedProperty() because some objects
-  // ignore the transform-related styles (e.g. LayoutInline, LayoutSVGBlock).
+  // ignore the transform-related styles (e.g., LayoutInline).
   bool HasTransformRelatedProperty() const {
     NOT_DESTROYED();
     return bitfields_.HasTransformRelatedProperty();

@@ -201,7 +201,29 @@ CompositingReasonFinder::DirectReasonsForSVGChildPaintProperties(
   reasons &= ~CompositingReason::kWillChangeOther;
   if (style.HasBackdropFilter())
     reasons |= CompositingReason::kBackdropFilter;
+  // Though SVG doesn't support 3D transforms, they are frequently used as a
+  // compositing trigger for historical reasons.
+  reasons |= CompositingReasonsFor3DTransform(object);
   return reasons;
+}
+
+CompositingReasons
+CompositingReasonFinder::PotentialCompositingReasonsFor3DTransform(
+    const ComputedStyle& style) {
+  // Don't composite "trivial" 3D transforms such as translateZ(0).
+  if (Platform::Current()->IsLowEndDevice()) {
+    return style.HasNonTrivial3DTransformOperation()
+               ? CompositingReason::k3DTransform
+               : CompositingReason::kNone;
+  }
+
+  if (style.Has3DTransformOperation()) {
+    return style.HasNonTrivial3DTransformOperation()
+               ? CompositingReason::k3DTransform
+               : CompositingReason::kTrivial3DTransform;
+  }
+
+  return CompositingReason::kNone;
 }
 
 CompositingReasons CompositingReasonFinder::CompositingReasonsFor3DTransform(
@@ -211,21 +233,7 @@ CompositingReasons CompositingReasonFinder::CompositingReasonsFor3DTransform(
   // doesn't support them.
   if (!layout_object.HasTransformRelatedProperty())
     return CompositingReason::kNone;
-
-  // Don't composite "trivial" 3D transforms such as translateZ(0).
-  if (Platform::Current()->IsLowEndDevice()) {
-    return layout_object.StyleRef().HasNonTrivial3DTransformOperation()
-               ? CompositingReason::k3DTransform
-               : CompositingReason::kNone;
-  }
-
-  if (layout_object.StyleRef().Has3DTransformOperation()) {
-    return layout_object.StyleRef().HasNonTrivial3DTransformOperation()
-               ? CompositingReason::k3DTransform
-               : CompositingReason::kTrivial3DTransform;
-  }
-
-  return CompositingReason::kNone;
+  return PotentialCompositingReasonsFor3DTransform(layout_object.StyleRef());
 }
 
 CompositingReasons CompositingReasonFinder::NonStyleDeterminedDirectReasons(

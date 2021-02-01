@@ -86,6 +86,10 @@ class CompositingTest : public PaintTestConfigurations, public testing::Test {
     return frame->GetFrame()->GetDocument()->getElementById(id);
   }
 
+  LayoutObject* GetLayoutObjectById(const AtomicString& id) {
+    return GetElementById(id)->GetLayoutObject();
+  }
+
   void UpdateAllLifecyclePhases() {
     WebView()->MainFrameWidget()->UpdateAllLifecyclePhases(
         DocumentUpdateReason::kTest);
@@ -261,6 +265,117 @@ TEST_P(CompositingTest, WillChangeTransformHintInSVG) {
   auto* layer = CcLayerByDOMElementId("willChange");
   auto* transform_node = GetTransformNode(layer);
   EXPECT_TRUE(transform_node->will_change_transform);
+}
+
+TEST_P(CompositingTest, Compositing3DTransformOnSVGModelObject) {
+  ScopedCompositeSVGForTest enable_feature(true);
+  InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
+    <!doctype html>
+    <svg width="200" height="200">
+      <rect id="target" fill="blue" width="100" height="100"></rect>
+    </svg>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(CcLayerByDOMElementId("target"));
+
+  // Adding a 3D transform should trigger compositing.
+  auto* target_element = GetElementById("target");
+  target_element->setAttribute(html_names::kStyleAttr,
+                               "transform: translate3d(0, 0, 1px)");
+  UpdateAllLifecyclePhases();
+  // |HasTransformRelatedProperty| is used in |CompositingReasonsFor3DTransform|
+  // and must be set correctly.
+  ASSERT_TRUE(GetLayoutObjectById("target")->HasTransformRelatedProperty());
+  EXPECT_TRUE(CcLayerByDOMElementId("target"));
+
+  // Removing a 3D transform removes the compositing trigger.
+  target_element->setAttribute(html_names::kStyleAttr, "transform: none");
+  UpdateAllLifecyclePhases();
+  // |HasTransformRelatedProperty| is used in |CompositingReasonsFor3DTransform|
+  // and must be set correctly.
+  ASSERT_FALSE(GetLayoutObjectById("target")->HasTransformRelatedProperty());
+  EXPECT_FALSE(CcLayerByDOMElementId("target"));
+
+  // Adding a 2D transform should not trigger compositing.
+  target_element->setAttribute(html_names::kStyleAttr,
+                               "transform: translate(1px, 0)");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(CcLayerByDOMElementId("target"));
+
+  // Switching from a 2D to a 3D transform should trigger compositing.
+  target_element->setAttribute(html_names::kStyleAttr,
+                               "transform: translate3d(0, 0, 1px)");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(CcLayerByDOMElementId("target"));
+}
+
+TEST_P(CompositingTest, Compositing3DTransformOnSVGBlock) {
+  ScopedCompositeSVGForTest enable_feature(true);
+  InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
+    <!doctype html>
+    <svg width="200" height="200">
+      <text id="target" x="50" y="50">text</text>
+    </svg>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(CcLayerByDOMElementId("target"));
+
+  // Adding a 3D transform should trigger compositing.
+  auto* target_element = GetElementById("target");
+  target_element->setAttribute(html_names::kStyleAttr,
+                               "transform: translate3d(0, 0, 1px)");
+  UpdateAllLifecyclePhases();
+  // |HasTransformRelatedProperty| is used in |CompositingReasonsFor3DTransform|
+  // and must be set correctly.
+  ASSERT_TRUE(GetLayoutObjectById("target")->HasTransformRelatedProperty());
+  EXPECT_TRUE(CcLayerByDOMElementId("target"));
+
+  // Removing a 3D transform removes the compositing trigger.
+  target_element->setAttribute(html_names::kStyleAttr, "transform: none");
+  UpdateAllLifecyclePhases();
+  // |HasTransformRelatedProperty| is used in |CompositingReasonsFor3DTransform|
+  // and must be set correctly.
+  ASSERT_FALSE(GetLayoutObjectById("target")->HasTransformRelatedProperty());
+  EXPECT_FALSE(CcLayerByDOMElementId("target"));
+
+  // Adding a 2D transform should not trigger compositing.
+  target_element->setAttribute(html_names::kStyleAttr,
+                               "transform: translate(1px, 0)");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(CcLayerByDOMElementId("target"));
+
+  // Switching from a 2D to a 3D transform should trigger compositing.
+  target_element->setAttribute(html_names::kStyleAttr,
+                               "transform: translate3d(0, 0, 1px)");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(CcLayerByDOMElementId("target"));
+}
+
+// Inlines do not support the transform property and should not be composited
+// due to 3D transforms.
+TEST_P(CompositingTest, NotCompositing3DTransformOnSVGInline) {
+  ScopedCompositeSVGForTest enable_feature(true);
+  InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
+    <!doctype html>
+    <svg width="200" height="200">
+      <text x="50" y="50">
+        text
+        <tspan id="inline">tspan</tspan>
+      </text>
+    </svg>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(CcLayerByDOMElementId("inline"));
+
+  // Adding a 3D transform to an inline should not trigger compositing.
+  auto* inline_element = GetElementById("inline");
+  inline_element->setAttribute(html_names::kStyleAttr,
+                               "transform: translate3d(0, 0, 1px)");
+  UpdateAllLifecyclePhases();
+  // |HasTransformRelatedProperty| is used in |CompositingReasonsFor3DTransform|
+  // and must be set correctly.
+  ASSERT_FALSE(GetLayoutObjectById("inline")->HasTransformRelatedProperty());
+  EXPECT_FALSE(CcLayerByDOMElementId("inline"));
 }
 
 TEST_P(CompositingTest, PaintPropertiesWhenCompositingSVG) {

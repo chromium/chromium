@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/ng/custom/layout_worklet.h"
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
+#include "third_party/blink/renderer/core/paint/compositing/compositing_reason_finder.h"
 #include "third_party/blink/renderer/core/style/applied_text_decoration.h"
 #include "third_party/blink/renderer/core/style/border_edge.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
@@ -909,6 +910,17 @@ bool ComputedStyle::DiffNeedsVisualRectUpdate(
   return ComputedStyleBase::DiffNeedsVisualRectUpdate(*this, other);
 }
 
+bool ComputedStyle::PotentialCompositingReasonsFor3DTransformChanged(
+    const ComputedStyle& other) const {
+  // Compositing reasons for 3D transforms depend on the LayoutObject type (see:
+  // |LayoutObject::HasTransformRelatedProperty|)) This will return true for
+  // some LayoutObjects that end up not supporting transforms.
+  return CompositingReasonFinder::PotentialCompositingReasonsFor3DTransform(
+             *this) !=
+         CompositingReasonFinder::PotentialCompositingReasonsFor3DTransform(
+             other);
+}
+
 void ComputedStyle::UpdatePropertySpecificDifferences(
     const ComputedStyle& other,
     StyleDifference& diff) const {
@@ -959,7 +971,8 @@ void ComputedStyle::UpdatePropertySpecificDifferences(
       IsOverflowVisibleAlongBothAxes() !=
           other.IsOverflowVisibleAlongBothAxes() ||
       WillChangeProperties() != other.WillChangeProperties() ||
-      !BackdropFilterDataEquivalent(other)) {
+      !BackdropFilterDataEquivalent(other) ||
+      PotentialCompositingReasonsFor3DTransformChanged(other)) {
     diff.SetCompositingReasonsChanged();
   }
 }

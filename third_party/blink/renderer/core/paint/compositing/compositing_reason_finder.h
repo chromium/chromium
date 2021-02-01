@@ -39,6 +39,11 @@ class CORE_EXPORT CompositingReasonFinder {
   static CompositingReasons CompositingReasonsForAnimation(const LayoutObject&);
   static CompositingReasons CompositingReasonsForWillChange(
       const ComputedStyle&);
+  // Some LayoutObject types do not support transforms (see:
+  // |LayoutObject::HasTransformRelatedProperty|) so this can return reasons
+  // that the LayoutObject does not end up using.
+  static CompositingReasons PotentialCompositingReasonsFor3DTransform(
+      const ComputedStyle&);
   static CompositingReasons CompositingReasonsFor3DTransform(
       const LayoutObject&);
   static bool RequiresCompositingForRootScroller(const PaintLayer&);
