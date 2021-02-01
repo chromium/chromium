@@ -845,5 +845,17 @@ TEST_F(VisibleUnitsTest, MostForwardCaretPositionWithInvisibleFirstLetter) {
   EXPECT_EQ(Position(foo, 1), MostForwardCaretPosition(position));
 }
 
+// Regression test for crbug.com/1172091
+TEST_F(VisibleUnitsTest, MostBackwardOrForwardCaretPositionWithBrInOptgroup) {
+  SetBodyContent("<optgroup><br></optgroup>");
+  Node* br = GetDocument().QuerySelector("br");
+  const Position& before = Position::BeforeNode(*br);
+  EXPECT_EQ(before, MostBackwardCaretPosition(before));
+  EXPECT_EQ(before, MostForwardCaretPosition(before));
+  const Position& after = Position::AfterNode(*br);
+  EXPECT_EQ(after, MostBackwardCaretPosition(after));
+  EXPECT_EQ(after, MostForwardCaretPosition(after));
+}
+
 }  // namespace visible_units_test
 }  // namespace blink

@@ -630,7 +630,7 @@ static Position MostBackwardOrForwardCaretPosition(
       AlgorithmInFlatTree(ToPositionInFlatTree(position), rule));
   Node* candidate_anchor = candidate.AnchorNode();
   if (!candidate_anchor)
-    return candidate;
+    return position;
 
   // Fast path for common cases when there is no shadow involved.
   if (!position_anchor->IsInShadowTree() && !IsShadowHost(position_anchor) &&
