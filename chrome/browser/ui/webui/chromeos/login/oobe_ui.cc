@@ -160,6 +160,10 @@ constexpr char kOobeCustomVarsCssHTML[] =
 constexpr char kCommonStylesHTML[] = "components/common_styles.html";
 constexpr char kI18nBehaviorHTML[] = "components/oobe_i18n_behavior.html";
 constexpr char kI18nBehaviorJS[] = "components/oobe_i18n_behavior.js";
+constexpr char kDialogHostBehaviorHTML[] =
+    "components/oobe_dialog_host_behavior.html";
+constexpr char kDialogHostBehaviorJS[] =
+    "components/oobe_dialog_host_behavior.js";
 constexpr char kFocusBehaviorHTML[] = "components/oobe_focus_behavior.html";
 constexpr char kFocusBehaviorJS[] = "components/oobe_focus_behavior.js";
 constexpr char kScrollableBehaviorHTML[] =
@@ -679,6 +683,10 @@ void OobeUI::AddOobeComponents(content::WebUIDataSource* source,
                           IDR_OOBE_COMPONENTS_I18N_BEHAVIOR_HTML);
   source->AddResourcePath(kI18nBehaviorJS,
                           IDR_OOBE_COMPONENTS_I18N_BEHAVIOR_JS);
+  source->AddResourcePath(kDialogHostBehaviorHTML,
+                          IDR_OOBE_COMPONENTS_DIALOG_HOST_BEHAVIOR_HTML);
+  source->AddResourcePath(kDialogHostBehaviorJS,
+                          IDR_OOBE_COMPONENTS_DIALOG_HOST_BEHAVIOR_JS);
   source->AddResourcePath(kFocusBehaviorHTML,
                           IDR_OOBE_COMPONENTS_FOCUS_BEHAVIOR_HTML);
   source->AddResourcePath(kFocusBehaviorJS,

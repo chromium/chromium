@@ -11,6 +11,7 @@ group("closure_compile") {
     "hd_iron_icon:closure_compile",
     "oobe_carousel:closure_compile",
     "oobe_content_dialog:closure_compile",
+    "oobe_dialog_host_behavior:closure_compile",
     "oobe_focus_behavior:closure_compile",
     "oobe_i18n_behavior:closure_compile",
     "oobe_scrollable_behavior:closure_compile",
@@ -27,7 +28,6 @@ js_type_check("closure_compile_local") {
     ":login_screen_behavior",
     ":multi_step_behavior",
     ":oobe_buttons",
-    ":oobe_dialog_host_behavior",
     ":oobe_modal_dialog",
     ":oobe_types",
   ]
@@ -62,9 +62,6 @@ js_library("multi_step_behavior") {
 
 js_library("oobe_buttons") {
   deps = [ "oobe_i18n_behavior:oobe_i18n_behavior" ]
-}
-
-js_library("oobe_dialog_host_behavior") {
 }
 
 js_library("oobe_modal_dialog") {
