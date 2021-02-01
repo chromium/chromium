@@ -717,6 +717,14 @@ class TabSwitcherMediator
     @Override
     public boolean onBackPressed() {
         if (!mContainerViewModel.get(IS_VISIBLE)) return false;
+
+        // The carousel tab switcher is only shown on the Start surface. When the Start surface is
+        // showing, we only check if the tab group dialog is showing, and delegates to
+        // mTabGridDialogController to close the dialog. See https://crbug.com/1171799.
+        if (mMode == TabListCoordinator.TabListMode.CAROUSEL) {
+            return mTabGridDialogController != null && mTabGridDialogController.handleBackPressed();
+        }
+
         if (mTabSelectionEditorController != null
                 && mTabSelectionEditorController.handleBackPressed()) {
             return true;
