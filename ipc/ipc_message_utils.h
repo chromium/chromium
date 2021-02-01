@@ -348,7 +348,7 @@ struct ParamTraits<base::string16> {
 
 #if defined(OS_WIN) && defined(BASE_STRING16_IS_STD_U16STRING)
 template <>
-struct ParamTraits<std::wstring> {
+struct COMPONENT_EXPORT(IPC) ParamTraits<std::wstring> {
   typedef std::wstring param_type;
   static void Write(base::Pickle* m, const param_type& p) {
     m->WriteString16(base::AsStringPiece16(p));
@@ -356,7 +356,7 @@ struct ParamTraits<std::wstring> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  COMPONENT_EXPORT(IPC) static void Log(const param_type& p, std::string* l);
+  static void Log(const param_type& p, std::string* l);
 };
 #endif
 

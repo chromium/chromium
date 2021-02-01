@@ -31,7 +31,7 @@ using ExecuteSelectFileCallback = base::RepeatingCallback<void(
     const base::FilePath& default_path,
     const std::vector<FileFilterSpec>& filter,
     int file_type_index,
-    const base::string16& default_extension,
+    const std::wstring& default_extension,
     HWND owner,
     OnSelectFileExecutedCallback on_select_file_executed_callback)>;
 

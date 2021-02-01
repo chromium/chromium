@@ -223,7 +223,7 @@ void IndexedDBInternalsUI::OnForcedClose(const base::FilePath& partition_path,
                                          const Origin& origin,
                                          uint64_t connection_count) {
   web_ui()->CallJavascriptFunctionUnsafe(
-      "indexeddb.onForcedClose", base::Value(partition_path.value()),
+      "indexeddb.onForcedClose", base::Value(partition_path.AsUTF8Unsafe()),
       base::Value(origin.Serialize()),
       base::Value(static_cast<double>(connection_count)));
 }

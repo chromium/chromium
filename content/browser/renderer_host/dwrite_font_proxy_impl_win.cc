@@ -295,7 +295,7 @@ void DWriteFontProxyImpl::MapCharacters(
   callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback),
       blink::mojom::MapCharactersResult::New(
-          UINT32_MAX, L"", text.length(), 0.0,
+          UINT32_MAX, STRING16_LITERAL(""), text.length(), 0.0,
           blink::mojom::DWriteFontStyle::New(DWRITE_FONT_STYLE_NORMAL,
                                              DWRITE_FONT_STRETCH_NORMAL,
                                              DWRITE_FONT_WEIGHT_NORMAL)));
@@ -326,7 +326,7 @@ void DWriteFontProxyImpl::MapCharacters(
   }
 
   auto result = blink::mojom::MapCharactersResult::New(
-      UINT32_MAX, L"", text.length(), 0.0,
+      UINT32_MAX, STRING16_LITERAL(""), text.length(), 0.0,
       blink::mojom::DWriteFontStyle::New(DWRITE_FONT_STYLE_NORMAL,
                                          DWRITE_FONT_STRETCH_NORMAL,
                                          DWRITE_FONT_WEIGHT_NORMAL));
@@ -380,7 +380,7 @@ void DWriteFontProxyImpl::MapCharacters(
 
     // Found a matching family!
     result->family_index = index;
-    result->family_name = name.data();
+    result->family_name = base::as_u16cstr(name.data());
     std::move(callback).Run(std::move(result));
     return;
   }
@@ -470,14 +470,14 @@ void DWriteFontProxyImpl::MatchUniqueFont(
   if (FAILED(hr))
     return;
 
-  base::string16 font_file_pathname;
+  std::wstring font_file_pathname;
   uint32_t ttc_index;
   if (FAILED(FontFilePathAndTtcIndex(first_font_face.Get(), font_file_pathname,
                                      ttc_index))) {
     return;
   }
 
-  base::FilePath path(base::UTF16ToWide(font_file_pathname));
+  base::FilePath path(font_file_pathname);
   std::move(callback).Run(path, ttc_index);
 }
 

@@ -35,7 +35,7 @@ class MIDI_EXPORT MidiManagerWinrt final : public MidiManager {
   template <typename InterfaceType,
             typename RuntimeType,
             typename StaticsInterfaceType,
-            base::char16 const* runtime_class_id>
+            wchar_t const* runtime_class_id>
   class MidiPortManager;
 
   // Callbacks on kComTaskRunner.

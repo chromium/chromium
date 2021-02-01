@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/win/win_util.h"
 #include "chrome/browser/win/util_win_service.h"
 #include "chrome/services/util_win/public/mojom/util_win.mojom.h"
@@ -32,7 +33,7 @@ class UtilWinHelper {
       const base::FilePath& default_path,
       const std::vector<ui::FileFilterSpec>& filter,
       int file_type_index,
-      const base::string16& default_extension,
+      const std::wstring& default_extension,
       HWND owner,
       ui::OnSelectFileExecutedCallback on_select_file_executed_callback);
 
@@ -43,7 +44,7 @@ class UtilWinHelper {
       const base::FilePath& default_path,
       const std::vector<ui::FileFilterSpec>& filter,
       int file_type_index,
-      const base::string16& default_extension,
+      const std::wstring& default_extension,
       HWND owner,
       ui::OnSelectFileExecutedCallback on_select_file_executed_callback);
 
@@ -74,7 +75,7 @@ void UtilWinHelper::ExecuteSelectFile(
     const base::FilePath& default_path,
     const std::vector<ui::FileFilterSpec>& filter,
     int file_type_index,
-    const base::string16& default_extension,
+    const std::wstring& default_extension,
     HWND owner,
     ui::OnSelectFileExecutedCallback on_select_file_executed_callback) {
   // Self-deleting when the select file operation completes.
@@ -89,7 +90,7 @@ UtilWinHelper::UtilWinHelper(
     const base::FilePath& default_path,
     const std::vector<ui::FileFilterSpec>& filter,
     int file_type_index,
-    const base::string16& default_extension,
+    const std::wstring& default_extension,
     HWND owner,
     ui::OnSelectFileExecutedCallback on_select_file_executed_callback)
     : on_select_file_executed_callback_(
@@ -103,7 +104,7 @@ UtilWinHelper::UtilWinHelper(
 
   remote_util_win_->CallExecuteSelectFile(
       type, base::win::HandleToUint32(owner), title, default_path, filter,
-      file_type_index, default_extension,
+      file_type_index, base::WideToUTF16(default_extension),
       base::BindOnce(&UtilWinHelper::OnSelectFileExecuted,
                      base::Unretained(this)));
 }
@@ -134,7 +135,7 @@ void ExecuteSelectFileImpl(
     const base::FilePath& default_path,
     const std::vector<ui::FileFilterSpec>& filter,
     int file_type_index,
-    const base::string16& default_extension,
+    const std::wstring& default_extension,
     HWND owner,
     ui::OnSelectFileExecutedCallback on_select_file_executed_callback) {
   UtilWinHelper::ExecuteSelectFile(type, title, default_path, filter,

@@ -173,7 +173,7 @@ bool FontFallback::GetCachedFont(const base::string16& text,
                                  DWRITE_FONT_STRETCH base_stretch,
                                  IDWriteFont** font,
                                  uint32_t* mapped_length) {
-  std::map<base::string16, std::list<mswr::ComPtr<IDWriteFontFamily>>>::iterator
+  std::map<std::wstring, std::list<mswr::ComPtr<IDWriteFontFamily>>>::iterator
       it = fallback_family_cache_.find(MakeCacheKey(base_family_name, locale));
   if (it == fallback_family_cache_.end())
     return false;

@@ -253,7 +253,7 @@ void DidGetRegistrations(
   args.push_back(GetVersionListValue(live_versions));
   args.push_back(GetRegistrationListValue(stored_registrations));
   args.push_back(std::make_unique<Value>(partition_id));
-  args.push_back(std::make_unique<Value>(context_path.value()));
+  args.push_back(std::make_unique<Value>(context_path.AsUTF8Unsafe()));
   internals->web_ui()->CallJavascriptFunctionUnsafe(
       "serviceworker.onPartitionData", ConvertToRawPtrVector(args));
 }

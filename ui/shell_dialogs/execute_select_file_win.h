@@ -21,10 +21,10 @@ class FilePath;
 namespace ui {
 
 // Implementation detail exported for unit tests.
-SHELL_DIALOGS_EXPORT base::string16 AppendExtensionIfNeeded(
-    const base::string16& filename,
-    const base::string16& filter_selected,
-    const base::string16& suggested_ext);
+SHELL_DIALOGS_EXPORT std::wstring AppendExtensionIfNeeded(
+    const std::wstring& filename,
+    const std::wstring& filter_selected,
+    const std::wstring& suggested_ext);
 
 // Describes a filter for a file dialog.
 struct FileFilterSpec {
@@ -49,7 +49,7 @@ void ExecuteSelectFile(
     const base::FilePath& default_path,
     const std::vector<FileFilterSpec>& filter,
     int file_type_index,
-    const base::string16& default_extension,
+    const std::wstring& default_extension,
     HWND owner,
     OnSelectFileExecutedCallback on_select_file_executed_callback);
 

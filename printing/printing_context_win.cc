@@ -384,7 +384,8 @@ PrintingContext::Result PrintingContextWin::InitializeSettings(
     return OnError();
 
   ReleaseContext();
-  context_ = CreateDC(L"WINSPOOL", device_name.c_str(), nullptr, dev_mode);
+  context_ =
+      CreateDC(L"WINSPOOL", base::as_wcstr(device_name), nullptr, dev_mode);
   if (!context_)
     return OnError();
 

@@ -100,16 +100,16 @@ base::Optional<std::vector<std::wstring>> GetDeviceStringListProperty(
   if (property_type != DEVPROP_TYPE_STRING_LIST)
     return base::nullopt;
 
-  base::string16 buffer16;
+  std::wstring bufferw;
   if (!SetupDiGetDeviceProperty(
           device_info_set, &device_info_data, &property_key, &property_type,
-          reinterpret_cast<PBYTE>(base::WriteInto(&buffer16, required_size)),
+          reinterpret_cast<PBYTE>(base::WriteInto(&bufferw, required_size)),
           required_size, /*RequiredSize=*/nullptr, /*Flags=*/0)) {
     HID_PLOG(DEBUG) << "SetupDiGetDeviceProperty failed";
     return base::nullopt;
   }
 
-  return base::SplitString(buffer16, base::WStringPiece(L"\0", 1),
+  return base::SplitString(bufferw, base::WStringPiece(L"\0", 1),
                            base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 }
 

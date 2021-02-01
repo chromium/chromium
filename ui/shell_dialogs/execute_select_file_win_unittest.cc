@@ -46,7 +46,7 @@ TEST(ShellDialogsWin, AppendExtensionIfNeeded) {
   for (size_t i = 0; i < base::size(test_cases); ++i) {
     SCOPED_TRACE(base::StringPrintf("i=%zu", i));
 
-    EXPECT_EQ(base::string16(test_cases[i].expected_filename),
+    EXPECT_EQ(std::wstring(test_cases[i].expected_filename),
               ui::AppendExtensionIfNeeded(test_cases[i].filename,
                                           test_cases[i].filter_selected,
                                           test_cases[i].suggested_ext));

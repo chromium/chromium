@@ -144,7 +144,7 @@ HRESULT DWriteFontCollectionProxy::FindFamilyName(const WCHAR* family_name,
   }
 
   uint32_t family_index = 0;
-  if (!GetFontProxy().FindFamily(name, &family_index)) {
+  if (!GetFontProxy().FindFamily(base::WideToUTF16(name), &family_index)) {
     LogFontProxyError(FIND_FAMILY_SEND_FAILED);
     return E_FAIL;
   }
@@ -362,9 +362,10 @@ bool DWriteFontCollectionProxy::LoadFamilyNames(
   if (!GetFontProxy().GetFamilyNames(family_index, &pairs)) {
     return false;
   }
-  std::vector<std::pair<base::string16, base::string16>> strings;
+  std::vector<std::pair<std::wstring, std::wstring>> strings;
   for (auto& pair : pairs) {
-    strings.emplace_back(std::move(pair->first), std::move(pair->second));
+    strings.emplace_back(base::UTF16ToWide(pair->first),
+                         base::UTF16ToWide(pair->second));
   }
 
   HRESULT hr = mswr::MakeAndInitialize<DWriteLocalizedStrings>(

@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
+#include "base/strings/string_util.h"
 #include "base/win/com_init_util.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_co_mem.h"
@@ -30,7 +31,7 @@ bool IsDirectory(const base::FilePath& path) {
 }
 
 // Given |extension|, if it's not empty, then remove the leading dot.
-base::string16 GetExtensionWithoutLeadingDot(const base::string16& extension) {
+std::wstring GetExtensionWithoutLeadingDot(const std::wstring& extension) {
   DCHECK(extension.empty() || extension[0] == L'.');
   return extension.empty() ? extension : extension.substr(1);
 }
@@ -76,8 +77,8 @@ bool SetFilters(IFileDialog* file_dialog,
   std::vector<COMDLG_FILTERSPEC> comdlg_filterspec(filter.size());
 
   for (size_t i = 0; i < filter.size(); ++i) {
-    comdlg_filterspec[i].pszName = filter[i].description.c_str();
-    comdlg_filterspec[i].pszSpec = filter[i].extension_spec.c_str();
+    comdlg_filterspec[i].pszName = base::as_wcstr(filter[i].description);
+    comdlg_filterspec[i].pszSpec = base::as_wcstr(filter[i].extension_spec);
   }
 
   return SUCCEEDED(file_dialog->SetFileTypes(comdlg_filterspec.size(),
@@ -108,12 +109,12 @@ bool ConfigureDialog(IFileDialog* file_dialog,
                      DWORD dialog_options) {
   // Set title.
   if (!title.empty()) {
-    if (FAILED(file_dialog->SetTitle(title.c_str())))
+    if (FAILED(file_dialog->SetTitle(base::as_wcstr(title))))
       return false;
   }
 
   if (!ok_button_label.empty()) {
-    if (FAILED(file_dialog->SetOkButtonLabel(ok_button_label.c_str())))
+    if (FAILED(file_dialog->SetOkButtonLabel(base::as_wcstr(ok_button_label))))
       return false;
   }
 
@@ -137,7 +138,7 @@ bool RunSaveFileDialog(HWND owner,
                        const base::FilePath& default_path,
                        const std::vector<FileFilterSpec>& filter,
                        DWORD dialog_options,
-                       const base::string16& def_ext,
+                       const std::wstring& def_ext,
                        int* filter_index,
                        base::FilePath* path) {
   Microsoft::WRL::ComPtr<IFileSaveDialog> file_save_dialog;
@@ -312,7 +313,7 @@ bool ExecuteSelectMultipleFile(HWND owner,
 bool ExecuteSaveFile(HWND owner,
                      const base::FilePath& default_path,
                      const std::vector<FileFilterSpec>& filter,
-                     const base::string16& def_ext,
+                     const std::wstring& def_ext,
                      int* filter_index,
                      base::FilePath* path) {
   DCHECK(path);
@@ -340,20 +341,20 @@ bool ExecuteSaveFile(HWND owner,
 // '*.something', for example '*.*' or it can be blank (which is treated as
 // *.*). |suggested_ext| should contain the extension without the dot (.) in
 // front, for example 'jpg'.
-base::string16 AppendExtensionIfNeeded(const base::string16& filename,
-                                       const base::string16& filter_selected,
-                                       const base::string16& suggested_ext) {
+std::wstring AppendExtensionIfNeeded(const std::wstring& filename,
+                                     const std::wstring& filter_selected,
+                                     const std::wstring& suggested_ext) {
   DCHECK(!filename.empty());
-  base::string16 return_value = filename;
+  std::wstring return_value = filename;
 
   // If we wanted a specific extension, but the user's filename deleted it or
   // changed it to something that the system doesn't understand, re-append.
   // Careful: Checking net::GetMimeTypeFromExtension() will only find
   // extensions with a known MIME type, which many "known" extensions on Windows
   // don't have.  So we check directly for the "known extension" registry key.
-  base::string16 file_extension(
+  std::wstring file_extension(
       GetExtensionWithoutLeadingDot(base::FilePath(filename).Extension()));
-  base::string16 key(L"." + file_extension);
+  std::wstring key(L"." + file_extension);
   if (!(filter_selected.empty() || filter_selected == L"*.*") &&
       !base::win::RegKey(HKEY_CLASSES_ROOT, key.c_str(), KEY_READ).Valid() &&
       file_extension != suggested_ext) {
@@ -376,7 +377,7 @@ void ExecuteSelectFile(
     const base::FilePath& default_path,
     const std::vector<FileFilterSpec>& filter,
     int file_type_index,
-    const base::string16& default_extension,
+    const std::wstring& default_extension,
     HWND owner,
     OnSelectFileExecutedCallback on_select_file_executed_callback) {
   base::win::AssertComInitialized();

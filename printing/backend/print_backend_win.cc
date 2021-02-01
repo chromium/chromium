@@ -259,7 +259,7 @@ bool PrintBackendWin::GetPrinterSemanticCapsAndDefaults(
     return false;
   const wchar_t* name = info_5.get()->pPrinterName;
   const wchar_t* port = info_5.get()->pPortName;
-  DCHECK_EQ(name, base::UTF8ToUTF16(printer_name));
+  DCHECK_EQ(name, base::UTF8ToWide(printer_name));
 
   PrinterSemanticCapsAndDefaults caps;
 

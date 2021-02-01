@@ -84,7 +84,7 @@ void WriteRegistryTree(const RegistryKeyData& data, base::win::RegKey* dest) {
   }
 
   // Next write values recursively.
-  for (std::map<base::string16, RegistryKeyData>::const_iterator iter =
+  for (std::map<std::wstring, RegistryKeyData>::const_iterator iter =
            data.keys.begin();
        iter != data.keys.end(); ++iter) {
     base::win::RegKey key(dest->Handle(), iter->first.c_str(), KEY_ALL_ACCESS);

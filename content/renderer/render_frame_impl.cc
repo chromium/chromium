@@ -939,7 +939,11 @@ void ApplyFilePathAlias(blink::WebURLRequest* request) {
 
   base::ReplaceFirstSubstringAfterOffset(&path, 0, alias_mapping[0],
                                          alias_mapping[1]);
+#if defined(OS_WIN)
+  request->SetUrl(blink::WebURL(GURL(base::WideToUTF8(path))));
+#else
   request->SetUrl(blink::WebURL(GURL(path)));
+#endif
 }
 
 // Packs all navigation timings sent by the browser to a blink understandable

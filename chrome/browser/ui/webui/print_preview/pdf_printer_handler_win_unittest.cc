@@ -32,7 +32,7 @@ void ExecuteCancelledSelectFileDialog(
     const base::FilePath& default_path,
     const std::vector<ui::FileFilterSpec>& filter,
     int file_type_index,
-    const base::string16& default_extension,
+    const std::wstring& default_extension,
     HWND owner,
     ui::OnSelectFileExecutedCallback on_select_file_executed_callback) {
   // Send an empty result to simulate a cancelled dialog.
