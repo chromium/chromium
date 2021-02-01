@@ -66,3 +66,12 @@ struct AssistantFeedback {
   // Raw data (non-encoded binary octets)
   array<uint8> screenshot_png;
 };
+
+// Models a device setting.
+struct DeviceSetting {
+  // Unique id to identify a specific setting.
+  string setting_id;
+
+  // True if the specific setting is supported.
+  bool is_supported;
+};

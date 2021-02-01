@@ -6,7 +6,10 @@
 #define CHROMEOS_SERVICES_LIBASSISTANT_UTIL_H_
 
 #include <string>
+
 #include "base/optional.h"
+#include "chromeos/services/libassistant/public/mojom/android_app_info.mojom.h"
+#include "chromeos/services/libassistant/public/mojom/conversation_controller.mojom.h"
 
 namespace base {
 class FilePath;
@@ -23,6 +26,14 @@ std::string CreateLibAssistantConfig(
 
 // Returns the path where all downloaded LibAssistant resources are stored.
 base::FilePath GetBaseAssistantDir();
+
+std::string CreateVerifyProviderResponseInteraction(
+    const int interaction_id,
+    const std::vector<libassistant::mojom::AndroidAppInfoPtr>& apps_info);
+
+std::string CreateGetDeviceSettingInteraction(
+    int interaction_id,
+    const std::vector<libassistant::mojom::DeviceSettingPtr>& device_settings);
 
 }  // namespace libassistant
 }  // namespace chromeos

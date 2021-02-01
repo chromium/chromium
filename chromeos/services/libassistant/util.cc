@@ -12,8 +12,19 @@
 #include "base/values.h"
 #include "build/util/webkit_version.h"
 #include "chromeos/assistant/internal/internal_constants.h"
+#include "chromeos/assistant/internal/util_headers.h"
 #include "chromeos/dbus/util/version_loader.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
+
+using chromeos::assistant::shared::ClientInteraction;
+using chromeos::assistant::shared::ClientOpResult;
+using chromeos::assistant::shared::GetDeviceSettingsResult;
+using chromeos::assistant::shared::Interaction;
+using chromeos::assistant::shared::Protobuf;
+using chromeos::assistant::shared::ProviderVerificationResult;
+using chromeos::assistant::shared::ResponseCode;
+using chromeos::assistant::shared::SettingInfo;
+using chromeos::assistant::shared::VerifyProviderClientOpResult;
 
 namespace chromeos {
 namespace libassistant {
@@ -43,6 +54,97 @@ base::FilePath GetRootPath() {
   CHECK_NE(base::GetHomeDir(), home_dir);
   return home_dir;
 }
+
+ProviderVerificationResult::VerificationStatus GetProviderVerificationStatus(
+    libassistant::mojom::AndroidAppStatus status) {
+  switch (status) {
+    case libassistant::mojom::AndroidAppStatus::kUnknown:
+      return ProviderVerificationResult::UNKNOWN;
+    case libassistant::mojom::AndroidAppStatus::kAvailable:
+      return ProviderVerificationResult::AVAILABLE;
+    case libassistant::mojom::AndroidAppStatus::kUnavailable:
+      return ProviderVerificationResult::UNAVAILABLE;
+    case libassistant::mojom::AndroidAppStatus::kVersionMismatch:
+      return ProviderVerificationResult::VERSION_MISMATCH;
+    case libassistant::mojom::AndroidAppStatus::kDisabled:
+      return ProviderVerificationResult::DISABLED;
+  }
+}
+
+SettingInfo ToSettingInfo(bool is_supported) {
+  SettingInfo result;
+  result.set_available(is_supported);
+  result.set_setting_status(is_supported
+                                ? SettingInfo::AVAILABLE_AND_MODIFY_SUPPORTED
+                                : SettingInfo::UNAVAILABLE);
+  return result;
+}
+
+// Helper class used for constructing V1 interaction proto messages.
+class V1InteractionBuilder {
+ public:
+  V1InteractionBuilder() = default;
+  V1InteractionBuilder(V1InteractionBuilder&) = delete;
+  V1InteractionBuilder& operator=(V1InteractionBuilder&) = delete;
+  ~V1InteractionBuilder() = default;
+
+  V1InteractionBuilder& SetInResponseTo(int interaction_id) {
+    interaction_.set_in_response_to(interaction_id);
+    return *this;
+  }
+
+  V1InteractionBuilder& AddResult(
+      const std::string& key,
+      const google::protobuf::MessageLite& result_proto) {
+    auto* result = client_op_result()->mutable_results()->add_result();
+    result->set_key(key);
+    result->mutable_value()->set_protobuf_type(result_proto.GetTypeName());
+    result->mutable_value()->set_protobuf_data(
+        result_proto.SerializeAsString());
+    return *this;
+  }
+
+  V1InteractionBuilder& SetStatusCode(ResponseCode::Status status_code) {
+    ResponseCode* response_code = client_op_result()->mutable_response_code();
+    response_code->set_status_code(status_code);
+    return *this;
+  }
+
+  // Set the status code to |OK| (if true) or |NOT_FOUND| (if false).
+  V1InteractionBuilder& SetStatusCodeFromEntityFound(bool found) {
+    SetStatusCode(found ? ResponseCode::OK : ResponseCode::NOT_FOUND);
+    return *this;
+  }
+
+  V1InteractionBuilder& SetClientInputName(const std::string& name) {
+    auto* client_input = client_interaction()->mutable_client_input();
+    client_input->set_client_input_name(name);
+    return *this;
+  }
+
+  V1InteractionBuilder& AddClientInputParams(
+      const std::string& key,
+      const google::protobuf::MessageLite& params_proto) {
+    auto* client_input = client_interaction()->mutable_client_input();
+    Protobuf& value = (*client_input->mutable_params())[key];
+    value.set_protobuf_type(params_proto.GetTypeName());
+    value.set_protobuf_data(params_proto.SerializeAsString());
+    return *this;
+  }
+
+  std::string SerializeAsString() { return interaction_.SerializeAsString(); }
+
+ private:
+  ClientInteraction* client_interaction() {
+    return interaction_.mutable_from_client();
+  }
+
+  ClientOpResult* client_op_result() {
+    return client_interaction()->mutable_client_op_result();
+  }
+
+  Interaction interaction_;
+};
 
 }  // namespace
 
@@ -157,6 +259,53 @@ std::string CreateLibAssistantConfig(
   std::string json;
   base::JSONWriter::Write(config, &json);
   return json;
+}
+
+std::string CreateVerifyProviderResponseInteraction(
+    const int interaction_id,
+    const std::vector<libassistant::mojom::AndroidAppInfoPtr>& apps_info) {
+  // Construct verify provider result proto.
+  VerifyProviderClientOpResult result_proto;
+  bool any_provider_available = false;
+  for (const auto& android_app_info : apps_info) {
+    auto* provider_status = result_proto.add_provider_status();
+    provider_status->set_status(
+        GetProviderVerificationStatus(android_app_info->status));
+    auto* app_info =
+        provider_status->mutable_provider_info()->mutable_android_app_info();
+    app_info->set_package_name(android_app_info->package_name);
+    app_info->set_app_version(android_app_info->version);
+    app_info->set_localized_app_name(android_app_info->localized_app_name);
+    app_info->set_android_intent(android_app_info->intent);
+
+    if (android_app_info->status ==
+        libassistant::mojom::AndroidAppStatus::kAvailable)
+      any_provider_available = true;
+  }
+
+  // Construct response interaction.
+  return V1InteractionBuilder()
+      .SetInResponseTo(interaction_id)
+      .SetStatusCodeFromEntityFound(any_provider_available)
+      .AddResult(assistant::kResultKeyVerifyProvider, result_proto)
+      .SerializeAsString();
+}
+
+std::string CreateGetDeviceSettingInteraction(
+    int interaction_id,
+    const std::vector<libassistant::mojom::DeviceSettingPtr>& device_settings) {
+  GetDeviceSettingsResult result_proto;
+  for (const auto& setting : device_settings) {
+    (*result_proto.mutable_settings_info())[setting->setting_id] =
+        ToSettingInfo(setting->is_supported);
+  }
+
+  // Construct response interaction.
+  return V1InteractionBuilder()
+      .SetInResponseTo(interaction_id)
+      .SetStatusCode(ResponseCode::OK)
+      .AddResult(/*key=*/assistant::kResultKeyGetDeviceSettings, result_proto)
+      .SerializeAsString();
 }
 
 }  // namespace libassistant

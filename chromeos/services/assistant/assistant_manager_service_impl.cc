@@ -151,6 +151,21 @@ bool ShouldPutLogsInHomeDirectory() {
   return !redirect_logging;
 }
 
+libassistant::mojom::AndroidAppStatus ToMojomEnum(const AppStatus& app_status) {
+  switch (app_status) {
+    case AppStatus::kAvailable:
+      return libassistant::mojom::AndroidAppStatus::kAvailable;
+    case AppStatus::kUnavailable:
+      return libassistant::mojom::AndroidAppStatus::kUnavailable;
+    case AppStatus::kDisabled:
+      return libassistant::mojom::AndroidAppStatus::kDisabled;
+    case AppStatus::kUnknown:
+      return libassistant::mojom::AndroidAppStatus::kUnknown;
+    case AppStatus::kVersionMismatch:
+      return libassistant::mojom::AndroidAppStatus::kVersionMismatch;
+  }
+}
+
 libassistant::mojom::AndroidAppInfoPtr ToAndroidAppInfoPtr(
     const AndroidAppInfo& app_info) {
   auto result = libassistant::mojom::AndroidAppInfo::New();
@@ -158,6 +173,9 @@ libassistant::mojom::AndroidAppInfoPtr ToAndroidAppInfoPtr(
   result->package_name = app_info.package_name;
   result->version = app_info.version;
   result->localized_app_name = app_info.localized_app_name;
+  result->intent = app_info.intent;
+  result->status = ToMojomEnum(app_info.status);
+  result->action = app_info.action;
 
   return result;
 }
