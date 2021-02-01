@@ -144,6 +144,10 @@ class PLATFORM_EXPORT VideoCaptureImpl
     // context was lost.
     bool BindVideoFrameOnMediaThread(
         media::GpuVideoAcceleratorFactories* gpu_factories);
+    // Adds destruction observers and finalizes the color spaces.
+    // Called from OnVideoFrameReady() prior to frame delivery after deciding to
+    // use the media::VideoFrame.
+    void Finalize();
 
    private:
     // Set by constructor.
@@ -163,17 +167,21 @@ class PLATFORM_EXPORT VideoCaptureImpl
 
   using BufferFinishedCallback = base::OnceClosure;
 
-  // TODO(https://crbug.com/1157072): Take multiple frame preparers as argument
-  // in order to prepare scaled video frames as well (if necessary).
   static void BindVideoFramesOnMediaThread(
       media::GpuVideoAcceleratorFactories* gpu_factories,
       std::unique_ptr<VideoFrameBufferPreparer> frame_preparer,
-      base::OnceCallback<void(std::unique_ptr<VideoFrameBufferPreparer>)>
+      std::vector<std::unique_ptr<VideoFrameBufferPreparer>>
+          scaled_frame_preparers,
+      base::OnceCallback<
+          void(std::unique_ptr<VideoFrameBufferPreparer>,
+               std::vector<std::unique_ptr<VideoFrameBufferPreparer>>)>
           on_frame_ready_callback,
       base::OnceCallback<void()> on_gpu_context_lost);
   void OnVideoFrameReady(
       base::TimeTicks reference_time,
-      std::unique_ptr<VideoFrameBufferPreparer> frame_preparer);
+      std::unique_ptr<VideoFrameBufferPreparer> frame_preparer,
+      std::vector<std::unique_ptr<VideoFrameBufferPreparer>>
+          scaled_frame_preparers);
 
   void OnAllClientsFinishedConsumingFrame(
       int buffer_id,
