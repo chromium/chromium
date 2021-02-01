@@ -81,6 +81,7 @@ cast_source_set("unittests") {
   if (!is_android) {
     sources += [
       "backend/proxy/audio_decoder_pipeline_node_unittest.cc",
+      "backend/proxy/buffer_id_manager_unittest.cc",
       "backend/proxy/cma_backend_proxy_unittest.cc",
       "backend/proxy/proxy_call_translator_unittest.cc",
       "backend/proxy/push_buffer_queue_unittest.cc",
