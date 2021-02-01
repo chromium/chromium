@@ -31257,6 +31257,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3790" label="WindowScreenChange"/>
   <int value="3791" label="XRWebGLDepthInformationTextureAttribute"/>
   <int value="3792" label="XRWebGLBindingGetDepthInformation"/>
+  <int value="3793" label="SessionStorageFirstUsedBeforeFcp"/>
+  <int value="3794" label="SessionStorageFirstUsedAfterFcp"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

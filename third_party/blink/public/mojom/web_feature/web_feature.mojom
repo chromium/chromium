@@ -3113,6 +3113,8 @@ enum WebFeature {
   kWindowScreenChange = 3790,
   kXRWebGLDepthInformationTextureAttribute = 3791,
   kXRWebGLBindingGetDepthInformation = 3792,
+  kSessionStorageFirstUsedBeforeFcp = 3793,
+  kSessionStorageFirstUsedAfterFcp = 3794,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
