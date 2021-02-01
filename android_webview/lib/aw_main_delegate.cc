@@ -64,6 +64,7 @@
 #include "ui/base/ui_base_paths.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
+#include "ui/gl/gl_switches.h"
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)
 #include "components/spellcheck/common/spellcheck_features.h"
@@ -202,6 +203,10 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
       // When draw functor uses vulkan, assume that it is safe to enable viz
       // which depends on shared images.
       features.EnableIfNotSet(::features::kEnableSharedImageForWebview);
+    } else {
+      // Not use ANGLE's Vulkan backend, if the draw functor is not using
+      // Vulkan.
+      features.DisableIfNotSet(::features::kDefaultANGLEVulkan);
     }
 
     // WebView uses kWebViewVulkan to control vulkan. Pre-emptively disable
