@@ -103,4 +103,35 @@ TEST_F(ApplyStyleCommandTest, FontSizeDeltaWithSpanElement) {
   EXPECT_EQ("<div contenteditable><div></div><span>^a|</span></div>",
             GetSelectionTextFromBody());
 }
+
+// This is a regression test for https://crbug.com/1172007
+TEST_F(ApplyStyleCommandTest, JustifyRightWithSVGForeignObject) {
+  GetDocument().setDesignMode("on");
+  Selection().SetSelection(
+      SetSelectionTextToBody("<svg>"
+                             "<foreignObject>1</foreignObject>"
+                             "<foreignObject>&#x20;2^<b></b>|</foreignObject>"
+                             "</svg>"),
+      SetSelectionOptions());
+
+  auto* style = MakeGarbageCollected<MutableCSSPropertyValueSet>(kUASheetMode);
+  style->SetProperty(CSSPropertyID::kTextAlign, "right",
+                     /* important */ false,
+                     GetFrame().DomWindow()->GetSecureContextMode());
+  MakeGarbageCollected<ApplyStyleCommand>(
+      GetDocument(), MakeGarbageCollected<EditingStyle>(style),
+      InputEvent::InputType::kFormatJustifyRight,
+      ApplyStyleCommand::kForceBlockProperties)
+      ->Apply();
+  EXPECT_EQ(
+      "<svg>"
+      "<foreignObject>"
+      "<div style=\"text-align: right;\">|1</div>"
+      "</foreignObject>"
+      "<foreignObject>"
+      "<div style=\"text-align: right;\">2</div><b></b>"
+      "</foreignObject>"
+      "</svg>",
+      GetSelectionTextFromBody());
+}
 }  // namespace blink

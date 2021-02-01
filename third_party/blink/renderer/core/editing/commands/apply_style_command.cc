@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator.h"
 #include "third_party/blink/renderer/core/editing/plain_text_range.h"
+#include "third_party/blink/renderer/core/editing/relocatable_position.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/serializers/html_interchange.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
@@ -289,16 +290,22 @@ void ApplyStyleCommand::ApplyBlockStyle(EditingStyle* style,
   const int end_index = TextIterator::RangeLength(end_range, behavior);
 
   VisiblePosition paragraph_start(StartOfParagraph(visible_start));
-  VisiblePosition next_paragraph_start(
-      NextPositionOf(EndOfParagraph(paragraph_start)));
   Position beyond_end =
       NextPositionOf(EndOfParagraph(visible_end)).DeepEquivalent();
-  // TODO(editing-dev): Use a saner approach (e.g., temporary Ranges) to keep
-  // these positions in document instead of iteratively performing orphan checks
-  // and recalculating them when they become orphans.
-  while (paragraph_start.IsNotNull() &&
-         paragraph_start.DeepEquivalent() != beyond_end) {
-    DCHECK(!paragraph_start.IsOrphan()) << paragraph_start;
+  while (
+      paragraph_start.IsNotNull() &&
+      (beyond_end.IsNull() || paragraph_start.DeepEquivalent() < beyond_end)) {
+    DCHECK(paragraph_start.IsValidFor(GetDocument())) << paragraph_start;
+    RelocatablePosition next_paragraph_start(
+        NextPositionOf(EndOfParagraph(paragraph_start)).DeepEquivalent());
+    // RelocatablePosition turns the position into ParentAnchoredEquivalent(),
+    // which can affect the result of CreateVisiblePosition().
+    // To avoid an infinite loop, reconvert into a VisiblePosition and check
+    // that it's after the current paragraph_start.
+    bool will_advance =
+        next_paragraph_start.GetPosition().IsNull() ||
+        CreateVisiblePosition(next_paragraph_start.GetPosition())
+                .DeepEquivalent() > paragraph_start.DeepEquivalent();
     StyleChange style_change(style, paragraph_start.DeepEquivalent());
     if (style_change.CssStyle().length() || remove_only_) {
       Element* block =
@@ -310,47 +317,23 @@ void ApplyStyleCommand::ApplyBlockStyle(EditingStyle* style,
             paragraph_start_to_move, editing_state);
         if (editing_state->IsAborted())
           return;
-        if (new_block) {
+        if (new_block)
           block = new_block;
-          if (paragraph_start.IsOrphan()) {
-            GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
-            paragraph_start = CreateVisiblePosition(
-                Position::FirstPositionInNode(*new_block));
-          }
-        }
-        DCHECK(!paragraph_start.IsOrphan()) << paragraph_start;
       }
       if (auto* html_element = DynamicTo<HTMLElement>(block)) {
         RemoveCSSStyle(style, html_element, editing_state);
         if (editing_state->IsAborted())
           return;
-        DCHECK(!paragraph_start.IsOrphan()) << paragraph_start;
-        if (!remove_only_) {
+        if (!remove_only_)
           AddBlockStyle(style_change, html_element);
-          DCHECK(!paragraph_start.IsOrphan()) << paragraph_start;
-        }
       }
 
       GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
-
-      // Make the VisiblePositions valid again after style changes.
-      // TODO(editing-dev): We shouldn't store VisiblePositions and inspect
-      // their properties after they have been invalidated by mutations. See
-      // crbug.com/648949 for details.
-      DCHECK(!paragraph_start.IsOrphan()) << paragraph_start;
-      paragraph_start =
-          CreateVisiblePosition(paragraph_start.ToPositionWithAffinity());
-      if (next_paragraph_start.IsOrphan()) {
-        next_paragraph_start = NextPositionOf(EndOfParagraph(paragraph_start));
-      } else {
-        next_paragraph_start = CreateVisiblePosition(
-            next_paragraph_start.ToPositionWithAffinity());
-      }
     }
 
-    DCHECK(!next_paragraph_start.IsOrphan()) << next_paragraph_start;
-    paragraph_start = next_paragraph_start;
-    next_paragraph_start = NextPositionOf(EndOfParagraph(paragraph_start));
+    if (!will_advance)
+      break;
+    paragraph_start = CreateVisiblePosition(next_paragraph_start.GetPosition());
   }
 
   // Update style and layout again, since added or removed styles could have
