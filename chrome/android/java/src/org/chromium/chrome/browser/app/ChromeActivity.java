@@ -282,7 +282,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     private CompositorViewHolder mCompositorViewHolder;
     private ObservableSupplierImpl<LayoutManagerImpl> mLayoutManagerSupplier =
             new ObservableSupplierImpl<>();
-    private UnownedUserDataSupplier<ShareDelegate> mShareDelegateSupplier;
     private InsetObserverView mInsetObserverView;
     private ContextualSearchManager mContextualSearchManager;
     private SnackbarManager mSnackbarManager;
@@ -342,6 +341,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     private List<MenuOrKeyboardActionController.MenuOrKeyboardActionHandler> mMenuActionHandlers =
             new ArrayList<>();
 
+    // UnownedUserDataSuppliers
+    /** Allows accessing {@link ShareDelegate} from classes created from native. */
+    private UnownedUserDataSupplier<ShareDelegate> mShareDelegateSupplier =
+            new ShareDelegateSupplier();
+
     protected ChromeActivity() {
         mIntentHandler = new IntentHandler(this, createIntentHandlerDelegate());
     }
@@ -355,10 +359,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     @Override
     public void performPreInflationStartup() {
         // Setup UnownedUserData suppliers before they're used.
-        mShareDelegateSupplier = new ShareDelegateSupplier(getWindowAndroid());
+        mShareDelegateSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
 
-        // Make sure the root coordinator is created prior to calling super to ensure all the
-        // activity lifecycle events are called.
+        // Make sure the root coordinator is created prior to calling super to ensure all
+        // the activity lifecycle events are called.
         mRootUiCoordinator = createRootUiCoordinator();
 
         // Create component before calling super to give its members a chance to catch

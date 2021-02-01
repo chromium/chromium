@@ -26,8 +26,8 @@ public class ShareDelegateSupplier extends UnownedUserDataSupplier<ShareDelegate
     }
 
     /** Constructs a ShareDelegateSupplier and attaches it to the {@link WindowAndroid} */
-    public ShareDelegateSupplier(WindowAndroid windowAndroid) {
-        super(KEY, windowAndroid.getUnownedUserDataHost());
+    public ShareDelegateSupplier() {
+        super(KEY);
     }
 
     static void setInstanceForTesting(ShareDelegateSupplier instanceForTesting) {

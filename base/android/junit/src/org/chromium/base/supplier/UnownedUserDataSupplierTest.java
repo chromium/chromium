@@ -45,8 +45,8 @@ public class UnownedUserDataSupplierTest {
          * Constructs a {@link TestUnownedUserDataSupplier} with the given host. Real
          * implementations should use {@link WindowAndroid} instead.
          */
-        public TestUnownedUserDataSupplier(UnownedUserDataHost host) {
-            super(KEY, host);
+        public TestUnownedUserDataSupplier() {
+            super(KEY);
         }
 
         static UnownedUserDataKey<TestUnownedUserDataSupplier> getUnownedUserDataKeyForTesting() {
@@ -62,13 +62,14 @@ public class UnownedUserDataSupplierTest {
     static final String TEST_STRING_2 = "testString2";
 
     private final UnownedUserDataHost mHost = new UnownedUserDataHost();
-    private final TestUnownedUserDataSupplier mSupplier = new TestUnownedUserDataSupplier(mHost);
+    private final TestUnownedUserDataSupplier mSupplier = new TestUnownedUserDataSupplier();
 
     private boolean mIsDestroyed;
 
     @Before
     public void setUp() {
         mIsDestroyed = false;
+        mSupplier.attach(mHost);
     }
 
     @After
@@ -98,22 +99,59 @@ public class UnownedUserDataSupplierTest {
 
     @Test
     public void testAttachMultipleSuppliersToSameHost() {
-        TestUnownedUserDataSupplier secondarySupplier = new TestUnownedUserDataSupplier(mHost);
+        TestUnownedUserDataSupplier secondarySupplier = new TestUnownedUserDataSupplier();
+        secondarySupplier.attach(mHost);
         Assert.assertFalse(
                 TestUnownedUserDataSupplier.getUnownedUserDataKeyForTesting().isAttachedToAnyHost(
                         mSupplier));
         Assert.assertTrue(
                 TestUnownedUserDataSupplier.getUnownedUserDataKeyForTesting().isAttachedToAnyHost(
                         secondarySupplier));
+        secondarySupplier.destroy();
+    }
+
+    @Test
+    public void testAttachSupplierToMultipleHosts() {
+        UnownedUserDataHost secondaryHost = new UnownedUserDataHost();
+        mSupplier.attach(secondaryHost);
+        Assert.assertTrue(
+                TestUnownedUserDataSupplier.getUnownedUserDataKeyForTesting().isAttachedToAnyHost(
+                        mSupplier));
+        mSupplier.destroy();
+        mIsDestroyed = true;
+        Assert.assertFalse(
+                TestUnownedUserDataSupplier.getUnownedUserDataKeyForTesting().isAttachedToAnyHost(
+                        mSupplier));
     }
 
     @Test
     public void testDestroy() {
+        Assert.assertTrue(
+                TestUnownedUserDataSupplier.getUnownedUserDataKeyForTesting().isAttachedToAnyHost(
+                        mSupplier));
+
         mSupplier.destroy();
         Assert.assertNull(TestUnownedUserDataSupplier.from(mHost));
         Assert.assertFalse(
                 TestUnownedUserDataSupplier.getUnownedUserDataKeyForTesting().isAttachedToAnyHost(
                         mSupplier));
+        mIsDestroyed = true;
+    }
+
+    @Test
+    public void testDestroy_unattached() {
+        // Destroy the primary supplier that's attached automatically.
+        mSupplier.destroy();
+
+        TestUnownedUserDataSupplier secondarySupplier = new TestUnownedUserDataSupplier();
+        Assert.assertFalse(
+                TestUnownedUserDataSupplier.getUnownedUserDataKeyForTesting().isAttachedToHost(
+                        mHost));
+
+        secondarySupplier.destroy();
+        Assert.assertFalse(
+                TestUnownedUserDataSupplier.getUnownedUserDataKeyForTesting().isAttachedToHost(
+                        mHost));
         mIsDestroyed = true;
     }
 
