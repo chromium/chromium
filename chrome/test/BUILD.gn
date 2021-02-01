@@ -5544,10 +5544,6 @@ test("unit_tests") {
         "../browser/media_galleries/win/mtp_device_object_enumerator_unittest.cc",
       ]
     }
-    if (is_mac) {
-      sources +=
-          [ "../browser/ui/startup/mac_system_infobar_delegate_unittest.cc" ]
-    }
     if (is_chromeos_ash) {
       sources += [
         "../browser/chromeos/extensions/extensions_permissions_tracker_unittest.cc",

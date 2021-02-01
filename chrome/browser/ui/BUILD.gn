@@ -3150,8 +3150,6 @@ static_library("ui") {
       "content_settings/media_authorization_wrapper_test.h",
       "content_settings/media_authorization_wrapper_test.mm",
       "find_bar/find_bar_platform_helper_mac.mm",
-      "startup/mac_system_infobar_delegate.cc",
-      "startup/mac_system_infobar_delegate.h",
       "views/apps/chrome_app_window_client_views_mac.mm",
       "views/certificate_viewer_mac_views.mm",
       "views/dropdown_bar_host_mac.mm",

@@ -66,7 +66,6 @@
 #if defined(OS_MAC)
 #include "chrome/browser/ui/cocoa/keystone_infobar_delegate.h"
 #include "chrome/browser/ui/cocoa/rosetta_required_infobar_delegate.h"
-#include "chrome/browser/ui/startup/mac_system_infobar_delegate.h"
 #endif
 
 #if !defined(USE_AURA)
@@ -194,7 +193,6 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
       {"plugin_observer", IBD::PLUGIN_OBSERVER_INFOBAR_DELEGATE},
       {"file_access_disabled", IBD::FILE_ACCESS_DISABLED_INFOBAR_DELEGATE},
       {"keystone_promotion", IBD::KEYSTONE_PROMOTION_INFOBAR_DELEGATE_MAC},
-      {"mac_system", IBD::SYSTEM_INFOBAR_DELEGATE_MAC},
       {"collected_cookies", IBD::COLLECTED_COOKIES_INFOBAR_DELEGATE},
       {"installation_error", IBD::INSTALLATION_ERROR_INFOBAR_DELEGATE},
       {"bad_flags", IBD::BAD_FLAGS_INFOBAR_DELEGATE},
@@ -296,14 +294,6 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
     case IBD::KEYSTONE_PROMOTION_INFOBAR_DELEGATE_MAC:
 #if defined(OS_MAC)
       KeystonePromotionInfoBarDelegate::Create(GetWebContents());
-#else
-      ADD_FAILURE() << "This infobar is not supported on this OS.";
-#endif
-      break;
-
-    case IBD::SYSTEM_INFOBAR_DELEGATE_MAC:
-#if defined(OS_MAC)
-      MacSystemInfoBarDelegate::Create(GetInfoBarService());
 #else
       ADD_FAILURE() << "This infobar is not supported on this OS.";
 #endif
