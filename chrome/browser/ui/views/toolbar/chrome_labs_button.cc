@@ -23,7 +23,10 @@ ChromeLabsButton::ChromeLabsButton()
 ChromeLabsButton::~ChromeLabsButton() = default;
 
 void ChromeLabsButton::UpdateIcon() {
-  UpdateIconsWithStandardColors(kChromeLabsIcon);
+  const gfx::VectorIcon& chrome_labs_image =
+      ui::TouchUiController::Get()->touch_ui() ? kChromeLabsTouchIcon
+                                               : kChromeLabsIcon;
+  UpdateIconsWithStandardColors(chrome_labs_image);
 }
 
 void ChromeLabsButton::SetLabInfoForTesting(
