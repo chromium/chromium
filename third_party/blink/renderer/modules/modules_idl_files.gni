@@ -81,6 +81,7 @@ _idl_imports = [
   "//third_party/blink/renderer/modules/font_access/idls.gni",
   "//third_party/blink/renderer/modules/gamepad/idls.gni",
   "//third_party/blink/renderer/modules/geolocation/idls.gni",
+  "//third_party/blink/renderer/modules/handwriting/idls.gni",
   "//third_party/blink/renderer/modules/hid/idls.gni",
   "//third_party/blink/renderer/modules/idle/idls.gni",
   "//third_party/blink/renderer/modules/imagecapture/idls.gni",

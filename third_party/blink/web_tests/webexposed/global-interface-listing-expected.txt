@@ -4322,6 +4322,12 @@ interface HTMLVideoElement : HTMLMediaElement
     setter playsInline
     setter poster
     setter width
+interface HandwritingStroke
+    attribute @@toStringTag
+    method addPoint
+    method clear
+    method constructor
+    method getPoints
 interface HashChangeEvent : Event
     attribute @@toStringTag
     getter newURL
@@ -5535,6 +5541,7 @@ interface Navigator
     method canShare
     method clearAppBadge
     method constructor
+    method createHandwritingRecognizer
     method getBattery
     method getGamepads
     method getInstalledRelatedApps
@@ -5542,6 +5549,7 @@ interface Navigator
     method javaEnabled
     method openTCPSocket
     method openUDPSocket
+    method queryHandwritingRecognizerSupport
     method registerProtocolHandler
     method requestMIDIAccess
     method requestMediaKeySystemAccess
