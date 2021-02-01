@@ -4,6 +4,7 @@
 
 #import "components/autofill/ios/browser/autofill_agent.h"
 
+#include "base/mac/bundle_locations.h"
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -18,11 +19,15 @@
 #import "components/autofill/ios/browser/js_autofill_manager.h"
 #include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #include "components/prefs/pref_service.h"
+#include "ios/web/public/js_messaging/web_frame_util.h"
 #include "ios/web/public/test/fakes/fake_browser_state.h"
+#include "ios/web/public/test/fakes/fake_web_client.h"
 #include "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
+#import "ios/web/public/test/web_test_with_web_state.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -38,8 +43,13 @@
 using autofill::POPUP_ITEM_ID_CLEAR_FORM;
 using autofill::POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS;
 using autofill::FormRendererId;
+using autofill::FieldDataManager;
 using autofill::FieldRendererId;
 using base::test::ios::WaitUntilCondition;
+
+@interface AutofillAgent (Testing)
+- (void)updateFieldManagerWithFillingResults:(NSString*)jsonString;
+@end
 
 // Subclass of web::FakeWebFrame that allow to set a callback before any
 // JavaScript call. This callback can be used to check the state of the page.
@@ -645,4 +655,24 @@ TEST_F(AutofillAgentTests, FrameInitializationOrderFrames) {
   EXPECT_TRUE(iframe_driver->is_processed());
   RemoveWebFrame(main_frame->GetFrameId());
   RemoveWebFrame(iframe->GetFrameId());
+}
+
+TEST_F(AutofillAgentTests, UpdateFieldManagerWithFillingResults) {
+  auto test_recorder = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+
+  [autofill_agent_ updateFieldManagerWithFillingResults:@"{\"1\":\"Val1\"}"];
+
+  // Check recorded FieldDataManager data.
+  UniqueIDDataTabHelper* uniqueIDDataTabHelper =
+      UniqueIDDataTabHelper::FromWebState(&fake_web_state_);
+  scoped_refptr<FieldDataManager> fieldDataManager =
+      uniqueIDDataTabHelper->GetFieldDataManager();
+  EXPECT_TRUE(fieldDataManager->WasAutofilledOnUserTrigger(FieldRendererId(1)));
+
+  // Check recorded UKM.
+  auto entries = test_recorder->GetEntriesByName(
+      ukm::builders::Autofill_FormFillSuccessIOS::kEntryName);
+  // Expect one recorded metric.
+  ASSERT_EQ(1u, entries.size());
+  test_recorder->ExpectEntryMetric(entries[0], "FormFillSuccess", true);
 }

@@ -1265,6 +1265,20 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Autofill.FormFillSuccessIOS">
+  <owner>kazinova@chromium.org</owner>
+  <summary>
+    Records whether the the form was successfully filled by Autofill on iOS. The
+    metric is used to measure silent renderer fails when the filling request is
+    executed successfully but the results reported in a callback are empty.
+  </summary>
+  <metric name="FormFillSuccess" enum="Boolean">
+    <summary>
+      A boolean indicating success or failure.
+    </summary>
+  </metric>
+</event>
+
 <event name="Autofill.FormSubmitted">
   <owner>jiahuiguo@google.com</owner>
   <summary>
