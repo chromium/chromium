@@ -134,7 +134,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
                 mLocationBarLayout, locationBarDataProvider, profileObservableSupplier,
                 PrivacyPreferencesManagerImpl.getInstance(), overrideUrlLoadingDelegate,
                 LocaleManager.getInstance(), mTemplateUrlServiceSupplier, backKeyBehavior,
-                windowAndroid, isTablet(), searchEngineLogoUtils);
+                windowAndroid, isTablet() && isTabletLayout(), searchEngineLogoUtils);
         mUrlCoordinator =
                 new UrlBarCoordinator((UrlBar) mUrlBar, windowDelegate, actionModeCallback,
                         mCallbackController.makeCancelable(mLocationBarMediator::onUrlFocusChange),
@@ -172,13 +172,15 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
         mLocationBarLayout.initialize(mAutocompleteCoordinator, mUrlCoordinator, mStatusCoordinator,
                 locationBarDataProvider, searchEngineLogoUtils);
 
-        if (locationBarLayout instanceof LocationBarPhone) {
+        if (isPhoneLayout()) {
             mSubCoordinator = new LocationBarCoordinatorPhone(
                     (LocationBarPhone) locationBarLayout, mStatusCoordinator);
-        } else if (locationBarLayout instanceof LocationBarTablet) {
+        } else if (isTabletLayout()) {
             mSubCoordinator =
                     new LocationBarCoordinatorTablet((LocationBarTablet) locationBarLayout);
         }
+        // There is a third possibility: SearchActivityLocationBarLayout extends LocationBarLayout
+        // and can be instantiated on phones *or* tablets.
     }
 
     @Override
@@ -556,6 +558,14 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
 
     public void onUrlChangedForTesting() {
         mLocationBarMediator.onUrlChanged();
+    }
+
+    private boolean isPhoneLayout() {
+        return mLocationBarLayout instanceof LocationBarPhone;
+    }
+
+    private boolean isTabletLayout() {
+        return mLocationBarLayout instanceof LocationBarTablet;
     }
 
     /* package */ LocationBarMediator getMediatorForTesting() {
