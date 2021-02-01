@@ -522,6 +522,7 @@ android_library("browser_java") {
     ":common_platform_services_java",
     ":common_variations_java",
     ":resources",
+    "//android_webview:common_platform_services_java",
     "//android_webview/nonembedded:system_webview_manifest",
     "//android_webview/proto:metrics_bridge_records_proto_java",
     "//base:base_java",
@@ -598,6 +599,7 @@ android_library("common_platform_services_java") {
   deps = [
     "//base:base_java",
     "//components/embedder_support/android/metrics:java",
+    "//content/public/android:content_full_java",
     "//third_party/android_deps:androidx_annotation_annotation_java",
   ]
 
