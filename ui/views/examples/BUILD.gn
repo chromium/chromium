@@ -209,7 +209,6 @@ component("views_examples_with_content_lib") {
   defines = [ "VIEWS_EXAMPLES_WITH_CONTENT_IMPLEMENTATION" ]
 
   deps = [
-    ":views_examples_lib",
     ":views_examples_resources_grd",
     ":views_examples_resources_pak",
     "//base",
@@ -220,6 +219,7 @@ component("views_examples_with_content_lib") {
     "//ui/views/controls/webview",
     "//url",
   ]
+  public_deps = [ ":views_examples_lib" ]
 }
 
 executable("views_examples_with_content") {

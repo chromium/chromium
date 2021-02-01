@@ -5,6 +5,7 @@
 #include "ui/views/examples/examples_window.h"
 
 #include <algorithm>
+#include <iostream>
 #include <iterator>
 #include <memory>
 #include <string>
@@ -32,10 +33,20 @@ namespace views {
 namespace examples {
 
 const char kExamplesWidgetName[] = "ExamplesWidget";
+static const char kEnableExamples[] = "enable-examples";
+
+bool CheckCommandLineUsage() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch("help")) {
+    // Print the program usage.
+    std::cout << "Usage: " << command_line->GetProgram() << " [--"
+              << kEnableExamples << "=<example1,[example2...]>]\n";
+    return true;
+  }
+  return false;
+}
 
 namespace {
-
-const char kEnableExamples[] = "enable-examples";
 
 ExampleVector GetExamplesToShow(ExampleVector examples) {
   using StringVector = std::vector<std::string>;
@@ -47,7 +58,9 @@ ExampleVector GetExamplesToShow(ExampleVector examples) {
 
   std::string enable_examples =
       command_line->GetSwitchValueASCII(kEnableExamples);
+
   if (!enable_examples.empty()) {
+    // Filter examples to show based on the command line switch.
     StringVector enabled =
         base::SplitString(enable_examples, ";,", base::TRIM_WHITESPACE,
                           base::SPLIT_WANT_NONEMPTY);
@@ -73,6 +86,16 @@ ExampleVector GetExamplesToShow(ExampleVector examples) {
                          example->example_title()) == valid_examples.end();
       });
     }
+  } else if (command_line->HasSwitch(kEnableExamples)) {
+    std::string titles;
+    for (auto& example : examples) {
+      titles += "\n\t";
+      titles += example->example_title();
+    }
+    titles += "\n";
+    std::cout << "By default, all examples will be shown.";
+    std::cout << "You may want to specify the example(s) you want to run:"
+              << titles;
   }
 
   for (auto& example : examples)
