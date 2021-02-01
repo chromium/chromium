@@ -43,6 +43,8 @@ android_library("junit_test_support") {
     "//url:origin_java",
   ]
   sources = [
+    "java/src/org/chromium/chrome/browser/payments/test_support/LegacyShadowPaymentFeatureList.java",
+    "java/src/org/chromium/chrome/browser/payments/test_support/LegacyShadowWebContentsStatics.java",
     "java/src/org/chromium/chrome/browser/payments/test_support/MockPaymentUiServiceBuilder.java",
     "java/src/org/chromium/chrome/browser/payments/test_support/PaymentRequestParamsBuilder.java",
     "java/src/org/chromium/chrome/browser/payments/test_support/ShadowPaymentFeatureList.java",
@@ -64,6 +66,7 @@ java_library("junit") {
     "//chrome/android:chrome_java",
     "//chrome/browser/profiles/android:java",
     "//components/payments/content/android:java",
+    "//components/payments/content/android:junit_test_support",
     "//components/payments/content/android:service_java",
     "//components/payments/mojom:mojom_java",
     "//components/security_state/core:security_state_enums_java",

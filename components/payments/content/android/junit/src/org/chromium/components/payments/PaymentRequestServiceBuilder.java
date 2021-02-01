@@ -57,7 +57,7 @@ public class PaymentRequestServiceBuilder implements PaymentRequestService.Deleg
                 onClosedListener, client, appService, browserPaymentRequest, journeyLogger);
     }
 
-    private PaymentRequestServiceBuilder(Runnable onClosedListener, PaymentRequestClient client,
+    public PaymentRequestServiceBuilder(Runnable onClosedListener, PaymentRequestClient client,
             PaymentAppService appService, BrowserPaymentRequest browserPaymentRequest,
             JourneyLogger journeyLogger) {
         mDelegate = this;
