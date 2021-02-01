@@ -98,21 +98,22 @@ void PlatformNotificationServiceProxy::DisplayNotification(
               weak_ptr_factory_io_.GetWeakPtr(), data, std::move(callback))));
 }
 
-void PlatformNotificationServiceProxy::CloseNotification(
-    const std::string& notification_id) {
+void PlatformNotificationServiceProxy::CloseNotifications(
+    const std::set<std::string>& notification_ids) {
   if (!notification_service_)
     return;
   GetUIThreadTaskRunner({base::TaskPriority::USER_VISIBLE})
-      ->PostTask(
-          FROM_HERE,
-          base::BindOnce(&PlatformNotificationServiceProxy::DoCloseNotification,
-                         AsWeakPtr(), notification_id));
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(
+                     &PlatformNotificationServiceProxy::DoCloseNotifications,
+                     AsWeakPtr(), notification_ids));
 }
 
-void PlatformNotificationServiceProxy::DoCloseNotification(
-    const std::string& notification_id) {
+void PlatformNotificationServiceProxy::DoCloseNotifications(
+    const std::set<std::string>& notification_ids) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  notification_service_->ClosePersistentNotification(notification_id);
+  for (const std::string& notification_id : notification_ids)
+    notification_service_->ClosePersistentNotification(notification_id);
 }
 
 void PlatformNotificationServiceProxy::ScheduleTrigger(base::Time timestamp) {

@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_NOTIFICATIONS_PLATFORM_NOTIFICATION_SERVICE_PROXY_H_
 
 #include <memory>
+#include <set>
 #include <string>
 
 #include "base/callback_forward.h"
@@ -52,8 +53,8 @@ class CONTENT_EXPORT PlatformNotificationServiceProxy {
   void DisplayNotification(const NotificationDatabaseData& data,
                            DisplayResultCallback callback);
 
-  // Closes the notification with |notification_id|.
-  void CloseNotification(const std::string& notification_id);
+  // Closes the notifications with |notification_ids|.
+  void CloseNotifications(const std::set<std::string>& notification_ids);
 
   // Schedules a notification trigger for |timestamp|.
   void ScheduleTrigger(base::Time timestamp);
@@ -82,9 +83,9 @@ class CONTENT_EXPORT PlatformNotificationServiceProxy {
                              const GURL& service_worker_scope,
                              DisplayResultCallback callback);
 
-  // Actually closes the notification with |notification_id|. Must be called on
-  // the UI thread.
-  void DoCloseNotification(const std::string& notification_id);
+  // Actually closes the notifications with |notification_ids|. Must be called
+  // on the UI thread.
+  void DoCloseNotifications(const std::set<std::string>& notification_ids);
 
   // Actually calls |notification_service_| to schedule a trigger. Must be
   // called on the UI thread.
