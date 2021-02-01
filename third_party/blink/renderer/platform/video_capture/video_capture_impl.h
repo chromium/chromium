@@ -10,6 +10,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/thread_annotations.h"
 #include "base/threading/thread_checker.h"
 #include "media/base/video_frame.h"
 #include "media/capture/mojom/video_capture.mojom-blink.h"
@@ -121,6 +122,40 @@ class PLATFORM_EXPORT VideoCaptureImpl
 
   struct BufferContext;
 
+  // Responsible for constructing a media::VideoFrame from a
+  // media::mojom::blink::ReadyBufferPtr. If a gfx::GpuMemoryBuffer is involved,
+  // this requires a round-trip to the media thread.
+  class VideoFrameBufferPreparer {
+   public:
+    VideoFrameBufferPreparer(VideoCaptureImpl& video_capture_impl,
+                             media::mojom::blink::ReadyBufferPtr ready_buffer);
+
+    int32_t buffer_id() const;
+    const media::mojom::blink::VideoFrameInfoPtr& frame_info() const;
+    scoped_refptr<media::VideoFrame> frame() const;
+    scoped_refptr<BufferContext> buffer_context() const;
+
+    // If initialization is successful, the video frame is either already bound
+    // or it needs to be bound on the media thread, see IsVideoFrameBound() and
+    // BindVideoFrameOnMediaThread().
+    bool Initialize();
+    bool IsVideoFrameBound() const;
+    // Returns false if the video frame could not be bound because the GPU
+    // context was lost.
+    bool BindVideoFrameOnMediaThread(
+        media::GpuVideoAcceleratorFactories* gpu_factories);
+
+   private:
+    // Set by constructor.
+    VideoCaptureImpl& video_capture_impl_;
+    int32_t buffer_id_;
+    media::mojom::blink::VideoFrameInfoPtr frame_info_;
+    // Set by Initialize().
+    scoped_refptr<BufferContext> buffer_context_;
+    scoped_refptr<media::VideoFrame> frame_;
+    std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer_;
+  };
+
   // Contains information about a video capture client, including capture
   // parameters callbacks to the client.
   struct ClientInfo;
@@ -128,11 +163,17 @@ class PLATFORM_EXPORT VideoCaptureImpl
 
   using BufferFinishedCallback = base::OnceClosure;
 
-  void OnVideoFrameReady(int32_t buffer_id,
-                         base::TimeTicks reference_time,
-                         media::mojom::blink::VideoFrameInfoPtr info,
-                         scoped_refptr<media::VideoFrame> frame,
-                         scoped_refptr<BufferContext> buffer_context);
+  // TODO(https://crbug.com/1157072): Take multiple frame preparers as argument
+  // in order to prepare scaled video frames as well (if necessary).
+  static void BindVideoFramesOnMediaThread(
+      media::GpuVideoAcceleratorFactories* gpu_factories,
+      std::unique_ptr<VideoFrameBufferPreparer> frame_preparer,
+      base::OnceCallback<void(std::unique_ptr<VideoFrameBufferPreparer>)>
+          on_frame_ready_callback,
+      base::OnceCallback<void()> on_gpu_context_lost);
+  void OnVideoFrameReady(
+      base::TimeTicks reference_time,
+      std::unique_ptr<VideoFrameBufferPreparer> frame_preparer);
 
   void OnAllClientsFinishedConsumingFrame(
       int buffer_id,
