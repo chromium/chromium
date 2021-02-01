@@ -21,22 +21,14 @@
 namespace chromeos {
 
 namespace {
-constexpr char kGeneratedPath[] =
-    "@out_folder@/gen/chromeos/components/connectivity_diagnostics/"
-    "resources/preprocessed/";
 
 // TODO(crbug/1051793): Replace with webui::SetUpWebUIDataSource() once it no
 // longer requires a dependency on //chrome/browser.
 void SetUpWebUIDataSource(content::WebUIDataSource* source,
                           base::span<const GritResourceMap> resources,
-                          const std::string& generated_path,
                           int default_resource) {
   for (const auto& resource : resources) {
-    std::string path = resource.name;
-    if (path.rfind(generated_path, 0) == 0)
-      path = path.substr(generated_path.size());
-
-    source->AddResourcePath(path, resource.value);
+    source->AddResourcePath(resource.name, resource.value);
   }
 
   source->SetDefaultResource(default_resource);
@@ -76,7 +68,7 @@ ConnectivityDiagnosticsUI::ConnectivityDiagnosticsUI(
 
   const auto resources = base::make_span(kConnectivityDiagnosticsResources,
                                          kConnectivityDiagnosticsResourcesSize);
-  SetUpWebUIDataSource(source, resources, kGeneratedPath,
+  SetUpWebUIDataSource(source, resources,
                        IDR_CONNECTIVITY_DIAGNOSTICS_INDEX_HTML);
   source->AddLocalizedString("appTitle", IDS_CONNECTIVITY_DIAGNOSTICS_TITLE);
   source->AddLocalizedString("networkDevicesLabel",
