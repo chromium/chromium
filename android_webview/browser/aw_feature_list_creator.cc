@@ -110,7 +110,7 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
   // default.
   if (command_line.HasSwitch(switches::kWebViewEnableModernCookieSameSite)) {
     feature_overrides.push_back(
-        std::make_pair(net::features::kSchemefulSameSite,
+        std::make_pair(std::cref(net::features::kSchemefulSameSite),
                        base::FeatureList::OVERRIDE_ENABLE_FEATURE));
   }
 
