@@ -260,9 +260,7 @@ void MoveToAccountStoreBubbleView::MovingBannerView::UpdateFavicon(
   to_view->UpdateBadge(favicon);
 }
 
-BEGIN_NESTED_METADATA(MoveToAccountStoreBubbleView,
-                      MovingBannerView,
-                      views::View)
+BEGIN_METADATA(MoveToAccountStoreBubbleView, MovingBannerView, views::View)
 END_METADATA
 
 MoveToAccountStoreBubbleView::MoveToAccountStoreBubbleView(

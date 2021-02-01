@@ -415,7 +415,7 @@ class AppMenu::CutCopyPasteView : public AppMenuView {
   }
 };
 
-BEGIN_NESTED_METADATA(AppMenu, CutCopyPasteView, AppMenuView)
+BEGIN_METADATA(AppMenu, CutCopyPasteView, AppMenuView)
 ADD_READONLY_PROPERTY_METADATA(int, MaxChildViewPreferredWidth)
 END_METADATA
 
@@ -671,7 +671,7 @@ class AppMenu::ZoomView : public AppMenuView {
   mutable bool zoom_label_max_width_valid_;
 };
 
-BEGIN_NESTED_METADATA(AppMenu, ZoomView, AppMenuView)
+BEGIN_METADATA(AppMenu, ZoomView, AppMenuView)
 ADD_READONLY_PROPERTY_METADATA(int, ZoomLabelMaxWidth)
 END_METADATA
 

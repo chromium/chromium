@@ -364,9 +364,7 @@ void ContentSettingBubbleContents::ListItemContainer::UpdateScrollHeight(
   }
 }
 
-BEGIN_NESTED_METADATA(ContentSettingBubbleContents,
-                      ListItemContainer,
-                      views::View)
+BEGIN_METADATA(ContentSettingBubbleContents, ListItemContainer, views::View)
 END_METADATA
 
 // ContentSettingBubbleContents -----------------------------------------------

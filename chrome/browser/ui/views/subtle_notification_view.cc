@@ -146,7 +146,7 @@ void SubtleNotificationView::InstructionView::AddTextSegment(
   AddChildView(key);
 }
 
-BEGIN_NESTED_METADATA(SubtleNotificationView, InstructionView, views::View)
+BEGIN_METADATA(SubtleNotificationView, InstructionView, views::View)
 ADD_PROPERTY_METADATA(base::string16, Text)
 END_METADATA
 

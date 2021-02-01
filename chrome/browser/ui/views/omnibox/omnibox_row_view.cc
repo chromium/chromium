@@ -313,7 +313,7 @@ views::metadata::TypeConverter<OmniboxPopupModel::Selection>::FromString(
              : base::nullopt;
 }
 
-BEGIN_NESTED_METADATA(OmniboxRowView, HeaderView, views::View)
+BEGIN_METADATA(OmniboxRowView, HeaderView, views::View)
 ADD_READONLY_PROPERTY_METADATA(OmniboxPopupModel::Selection, HeaderSelection)
 END_METADATA
 

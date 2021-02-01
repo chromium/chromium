@@ -158,9 +158,9 @@ void PasswordGenerationPopupViewViews::GeneratedPasswordBox::BuildColumnSet(
                         views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
 }
 
-BEGIN_NESTED_METADATA(PasswordGenerationPopupViewViews,
-                      GeneratedPasswordBox,
-                      views::View)
+BEGIN_METADATA(PasswordGenerationPopupViewViews,
+               GeneratedPasswordBox,
+               views::View)
 END_METADATA
 
 PasswordGenerationPopupViewViews::PasswordGenerationPopupViewViews(

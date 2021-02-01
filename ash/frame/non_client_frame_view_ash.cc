@@ -209,7 +209,7 @@ bool NonClientFrameViewAsh::OverlayView::DoesIntersectRect(
   return header_view_->HitTestRect(rect);
 }
 
-BEGIN_NESTED_METADATA(NonClientFrameViewAsh, OverlayView, views::View)
+BEGIN_METADATA(NonClientFrameViewAsh, OverlayView, views::View)
 END_METADATA
 
 NonClientFrameViewAsh::NonClientFrameViewAsh(views::Widget* frame)

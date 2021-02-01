@@ -15,7 +15,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 
-BEGIN_NESTED_METADATA(DesktopMediaListController, ListView, views::View)
+BEGIN_METADATA(DesktopMediaListController, ListView, views::View)
 END_METADATA
 
 DesktopMediaListController::DesktopMediaListController(
