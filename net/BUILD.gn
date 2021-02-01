@@ -5032,6 +5032,18 @@ fuzzer_test("net_lookup_string_in_fixed_set_fuzzer") {
   dict = "data/fuzzer_dictionaries/net_get_domain_and_registry_fuzzer.dict"
 }
 
+fuzzer_test("net_base_schemeful_site_fuzzer") {
+  sources = [ "base/schemeful_site_fuzzer.cc" ]
+  deps = [
+    ":net_fuzzer_test_support",
+    "//base",
+    "//net",
+    "//testing/libfuzzer/proto:url_proto",
+    "//testing/libfuzzer/proto:url_proto_converter",
+    "//third_party/libprotobuf-mutator",
+  ]
+}
+
 fuzzer_test("net_cert_ct_decode_signed_certificate_timestamp_fuzzer") {
   sources = [ "cert/decode_signed_certificate_timestamp_fuzzer.cc" ]
   deps = [

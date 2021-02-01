@@ -107,6 +107,12 @@ class NET_EXPORT SchemefulSite {
   // `site_as_origin_` in order to verify behavior.
   const url::Origin& GetInternalOriginForTesting() const;
 
+  // Testing-only function which allows access to the private
+  // `registrable_domain_or_host` method.
+  std::string registrable_domain_or_host_for_testing() const {
+    return registrable_domain_or_host();
+  }
+
   bool operator==(const SchemefulSite& other) const;
 
   bool operator!=(const SchemefulSite& other) const;
