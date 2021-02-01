@@ -385,6 +385,13 @@ class MEDIA_GPU_EXPORT H264Decoder : public AcceleratedVideoDecoder {
   std::unique_ptr<H264NALU> curr_nalu_;
   std::unique_ptr<H264SliceHeader> curr_slice_hdr_;
 
+  // These are base::nullopt unless get recovery point SEI message after Reset.
+  // A frame_num of the frame at output order that is correct in content.
+  base::Optional<int> recovery_frame_num_;
+  // A value in the recovery point SEI message to compute |recovery_frame_num_|
+  // later.
+  base::Optional<int> recovery_frame_cnt_;
+
   // Output picture size.
   gfx::Size pic_size_;
   // Output visible cropping rect.
