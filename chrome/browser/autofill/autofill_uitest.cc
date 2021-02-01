@@ -35,17 +35,23 @@ AutofillManagerTestDelegateImpl::~AutofillManagerTestDelegateImpl() {}
 
 void AutofillManagerTestDelegateImpl::DidPreviewFormData() {
   DCHECK(event_waiter_);
-  event_waiter_->OnEvent(ObservedUiEvents::kPreviewFormData);
+  if (event_waiter_) {
+    event_waiter_->OnEvent(ObservedUiEvents::kPreviewFormData);
+  }
 }
 
 void AutofillManagerTestDelegateImpl::DidFillFormData() {
   DCHECK(event_waiter_);
-  event_waiter_->OnEvent(ObservedUiEvents::kFormDataFilled);
+  if (event_waiter_) {
+    event_waiter_->OnEvent(ObservedUiEvents::kFormDataFilled);
+  }
 }
 
 void AutofillManagerTestDelegateImpl::DidShowSuggestions() {
   DCHECK(event_waiter_);
-  event_waiter_->OnEvent(ObservedUiEvents::kSuggestionShown);
+  if (event_waiter_) {
+    event_waiter_->OnEvent(ObservedUiEvents::kSuggestionShown);
+  }
 }
 
 void AutofillManagerTestDelegateImpl::OnTextFieldChanged() {}
