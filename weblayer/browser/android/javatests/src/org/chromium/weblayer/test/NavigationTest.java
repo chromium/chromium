@@ -30,6 +30,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.weblayer.Browser;
@@ -1303,6 +1304,7 @@ public class NavigationTest {
     @Test
     @SmallTest
     @CommandLineFlags.Add("enable-features=BackForwardCache")
+    @DisabledTest(message = "https://crbug.com/1172938")
     public void testServedFromBackForwardCache() throws Exception {
         TestWebServer testServer = TestWebServer.start();
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(null);
