@@ -315,7 +315,8 @@ void TestRenderFrameHost::SendRendererInitiatedNavigationRequest(
           base::nullopt /* devtools_initiator_info */,
           nullptr /* trust_token_params */, base::nullopt /* impression */,
           base::TimeTicks() /* renderer_before_unload_start */,
-          base::TimeTicks() /* renderer_before_unload_end */);
+          base::TimeTicks() /* renderer_before_unload_end */,
+          base::nullopt /* web_bundle_token */);
   auto common_params = CreateCommonNavigationParams();
   common_params->url = url;
   common_params->initiator_origin = GetLastCommittedOrigin();

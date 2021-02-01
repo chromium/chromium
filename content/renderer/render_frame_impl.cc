@@ -5972,7 +5972,8 @@ void RenderFrameImpl::BeginNavigationInternal(
               ? base::make_optional<blink::Impression>(
                     blink::ConvertWebImpressionToImpression(*info->impression))
               : base::nullopt,
-          renderer_before_unload_start, renderer_before_unload_end);
+          renderer_before_unload_start, renderer_before_unload_end,
+          info->url_request.WebBundleToken());
 
   mojo::PendingAssociatedRemote<mojom::NavigationClient>
       navigation_client_remote;

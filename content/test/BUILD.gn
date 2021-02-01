@@ -1184,6 +1184,7 @@ test("content_browsertests") {
     "../browser/web_contents/web_contents_observer_browsertest.cc",
     "../browser/web_contents/web_contents_view_aura_browsertest.cc",
     "../browser/web_contents_receiver_set_browsertest.cc",
+    "../browser/web_package/link_web_bundle_browsertest.cc",
     "../browser/web_package/save_page_as_web_bundle_browsertest.cc",
     "../browser/web_package/signed_exchange_request_handler_browsertest.cc",
     "../browser/web_package/signed_exchange_subresource_prefetch_browsertest.cc",

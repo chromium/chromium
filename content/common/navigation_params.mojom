@@ -156,6 +156,10 @@ struct BeginNavigationParams {
   // in preparation for navigating. Used for metrics.
   mojo_base.mojom.TimeTicks before_unload_start;
   mojo_base.mojom.TimeTicks before_unload_end;
+
+  // Token to identify a WebBundle. Set on navigation to a resource in a
+  // WebBundle.
+  mojo_base.mojom.UnguessableToken? web_bundle_token;
 };
 
 // Provided by the browser or the renderer -------------------------------------

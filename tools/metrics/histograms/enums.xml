@@ -6817,6 +6817,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="239" label="SYNC_COMPOSITOR_NO_LOCAL_SURFACE_ID"/>
   <int value="240" label="WCI_INVALID_FULLSCREEN_OPTIONS"/>
   <int value="241" label="PAYMENTS_WITHOUT_PERMISSION"/>
+  <int value="242" label="WEB_BUNDLE_INVALID_NAVIGATION_URL"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">

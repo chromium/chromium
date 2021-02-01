@@ -878,6 +878,7 @@ void WebURLLoaderImpl::PopulateURLResponse(
   response->SetWasInPrefetchCache(head.was_in_prefetch_cache);
   response->SetWasCookieInRequest(head.was_cookie_in_request);
   response->SetRecursivePrefetchToken(head.recursive_prefetch_token);
+  response->SetWebBundleURL(head.web_bundle_url);
 
   SetSecurityStyleAndDetails(url, head, response, report_security_info);
 

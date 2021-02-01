@@ -794,6 +794,10 @@ class CONTENT_EXPORT NavigationRequest
   // proceeding.
   bool IsWaitingForBeforeUnload();
 
+  // If the response is loaded from a WebBundle, returns the URL of the
+  // WebBundle. Otherwise, returns an empty URL.
+  GURL GetWebBundleURL();
+
  private:
   friend class NavigationRequestTest;
 

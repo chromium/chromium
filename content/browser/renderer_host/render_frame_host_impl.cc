@@ -5741,6 +5741,14 @@ void RenderFrameHostImpl::BeginNavigation(
     }
   }
 
+  // Only urn: URL is allowed for navigation to a resource in
+  // <link rel="webbundle">.
+  if (begin_params->web_bundle_token && !common_params->url.SchemeIs("urn")) {
+    bad_message::ReceivedBadMessage(
+        GetProcess(), bad_message::WEB_BUNDLE_INVALID_NAVIGATION_URL);
+    return;
+  }
+
   GetProcess()->FilterURL(true, &begin_params->searchable_form_url);
 
   // If the request was for a blob URL, but the validated URL is no longer a
@@ -5959,7 +5967,7 @@ CanCommitStatus RenderFrameHostImpl::CanCommitOriginAndUrl(
   // URL which is not allowed in a WebUI process. As we are at the commit stage,
   // set |origin_requests_isolation| = false.
   if (!Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
-          this, UrlInfo(url, false /* origin_requests_isolation */),
+          this, UrlInfo(url, false /* origin_requests_isolation */, origin),
           /* is_renderer_initiated_check */ true)) {
     return CanCommitStatus::CANNOT_COMMIT_URL;
   }
@@ -5997,7 +6005,7 @@ CanCommitStatus RenderFrameHostImpl::CanCommitOriginAndUrl(
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   const CanCommitStatus can_commit_status = policy->CanCommitOriginAndUrl(
       GetProcess()->GetID(), GetSiteInstance()->GetIsolationContext(), origin,
-      UrlInfo(url, false /* origin_requests_isolation */),
+      UrlInfo(url, false /* origin_requests_isolation */, origin),
       GetSiteInstance()->GetCoopCoepCrossOriginIsolatedInfo());
   if (can_commit_status != CanCommitStatus::CAN_COMMIT_ORIGIN_AND_URL) {
     LogCanCommitOriginAndUrlFailureReason("cpspi_disallowed_commit");

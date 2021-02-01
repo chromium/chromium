@@ -517,6 +517,14 @@ void WebURLResponse::SetDnsAliases(const WebVector<WebString>& aliases) {
   resource_response_->SetDnsAliases(std::move(dns_aliases));
 }
 
+WebURL WebURLResponse::WebBundleURL() const {
+  return resource_response_->WebBundleURL();
+}
+
+void WebURLResponse::SetWebBundleURL(const WebURL& url) {
+  resource_response_->SetWebBundleURL(url);
+}
+
 WebURLResponse::WebURLResponse(ResourceResponse& r) : resource_response_(&r) {}
 
 }  // namespace blink

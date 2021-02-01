@@ -215,6 +215,15 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
   new_request->headers.AddHeadersFromString(
       request_info->begin_params->headers);
   new_request->cors_exempt_headers = request_info->cors_exempt_headers;
+  if (request_info->begin_params->web_bundle_token) {
+    FrameTreeNode* frame_tree_node =
+        FrameTreeNode::GloballyFindByID(frame_tree_node_id);
+    DCHECK(frame_tree_node->parent());
+    int render_process_id = frame_tree_node->parent()->GetProcess()->GetID();
+    new_request->web_bundle_token_params =
+        network::ResourceRequest::WebBundleTokenParams(
+            *request_info->begin_params->web_bundle_token, render_process_id);
+  }
 
   new_request->resource_type = static_cast<int>(
       request_info->is_main_frame ? blink::mojom::ResourceType::kMainFrame
@@ -597,8 +606,12 @@ NavigationURLLoaderImpl::PrepareForNonInterceptedRequest(
   // further refactor the factory getters to avoid this.
   scoped_refptr<network::SharedURLLoaderFactory> factory;
 
-  if (!blink::network_utils::IsURLHandledByNetworkService(
-          resource_request_->url)) {
+  const bool should_be_handled_by_network_service =
+      blink::network_utils::IsURLHandledByNetworkService(
+          resource_request_->url) ||
+      resource_request_->web_bundle_token_params.has_value();
+
+  if (!should_be_handled_by_network_service) {
     if (known_schemes_.find(resource_request_->url.scheme()) ==
         known_schemes_.end()) {
       mojo::PendingRemote<network::mojom::URLLoaderFactory> loader_factory;

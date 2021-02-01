@@ -332,6 +332,9 @@ class WebURLResponse {
   // through to query name.
   BLINK_PLATFORM_EXPORT void SetDnsAliases(const WebVector<WebString>&);
 
+  BLINK_PLATFORM_EXPORT WebURL WebBundleURL() const;
+  BLINK_PLATFORM_EXPORT void SetWebBundleURL(const WebURL&);
+
 #if INSIDE_BLINK
  protected:
   // Permit subclasses to set arbitrary ResourceResponse pointer as

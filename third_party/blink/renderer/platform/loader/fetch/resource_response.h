@@ -321,6 +321,9 @@ class PLATFORM_EXPORT ResourceResponse final {
     app_cache_manifest_url_ = url;
   }
 
+  const KURL& WebBundleURL() const { return web_bundle_url_; }
+  void SetWebBundleURL(const KURL& url) { web_bundle_url_ = url; }
+
   bool WasFetchedViaSPDY() const { return was_fetched_via_spdy_; }
   void SetWasFetchedViaSPDY(bool value) { was_fetched_via_spdy_ = value; }
 
@@ -677,6 +680,10 @@ class PLATFORM_EXPORT ResourceResponse final {
   // The alias chain order is preserved in reverse, from canonical name (i.e.
   // address record name) through to query name.
   Vector<String> dns_aliases_;
+
+  // The URL of WebBundle this response was loaded from. This value is only
+  // populated for resources loaded from a WebBundle.
+  KURL web_bundle_url_;
 };
 
 }  // namespace blink

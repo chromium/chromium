@@ -222,7 +222,15 @@ struct CONTENT_EXPORT UrlInfo {
  public:
   UrlInfo() = default;  // Needed for inclusion in SiteInstanceDescriptor.
   UrlInfo(const GURL& url_in, bool origin_requests_isolation_in)
-      : url(url_in), origin_requests_isolation(origin_requests_isolation_in) {}
+      : url(url_in),
+        origin_requests_isolation(origin_requests_isolation_in),
+        origin(url::Origin::Create(url_in)) {}
+  UrlInfo(const GURL& url_in,
+          bool origin_requests_isolation_in,
+          const url::Origin& origin_in)
+      : url(url_in),
+        origin_requests_isolation(origin_requests_isolation_in),
+        origin(origin_in) {}
   static inline UrlInfo CreateForTesting(const GURL& url_in) {
     // Used to convert GURL to UrlInfo in tests where opt-in isolation is not
     // being tested.
@@ -235,6 +243,10 @@ struct CONTENT_EXPORT UrlInfo {
   // opt-in isolation status of the origin. Other than these cases, this should
   // be set to false.
   bool origin_requests_isolation;
+  // If |url| represents a resource inside another resource (e.g. a resource
+  // with a urn: URL in WebBundle), origin of the original resource. Otherwise,
+  // this is just the origin of |url|.
+  url::Origin origin;
 };
 
 class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,

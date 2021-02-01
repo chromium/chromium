@@ -1161,7 +1161,8 @@ bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
           base::nullopt /* detools_initiator_info */,
           nullptr /* trust_token_params */, impression_,
           base::TimeTicks() /* renderer_before_unload_start */,
-          base::TimeTicks() /* renderer_before_unload_end */);
+          base::TimeTicks() /* renderer_before_unload_end */,
+          base::nullopt /* web_bundle_token */);
   auto common_params = CreateCommonNavigationParams();
   common_params->navigation_start = base::TimeTicks::Now();
   common_params->url = navigation_url_;

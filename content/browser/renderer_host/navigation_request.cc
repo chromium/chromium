@@ -708,6 +708,15 @@ url::Origin GetOriginForURLLoaderFactoryUnchecked(
     return parent ? parent->GetLastCommittedOrigin() : url::Origin();
   }
 
+  // urn: subframes from WebBundles have opaque origins derived from the
+  // Bundle's origin.
+  if (common_params.url.SchemeIs("urn") &&
+      navigation_request->GetWebBundleURL().is_valid()) {
+    return url::Origin::Resolve(
+        common_params.url,
+        url::Origin::Create(navigation_request->GetWebBundleURL()));
+  }
+
   // In cases not covered above, URLLoaderFactory should be associated with the
   // origin of |common_params.url| and/or |common_params.initiator_origin|.
   return url::Origin::Resolve(
@@ -751,7 +760,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
       base::nullopt /* devtools_initiator_info */,
       nullptr /* trust_token_params */, impression,
       base::TimeTicks() /* renderer_before_unload_start */,
-      base::TimeTicks() /* renderer_before_unload_end */);
+      base::TimeTicks() /* renderer_before_unload_end */,
+      base::nullopt /* web_bundle_token */);
 
   // Shift-Reload forces bypassing caches and service workers.
   if (common_params->navigation_type ==
@@ -2222,7 +2232,20 @@ void NavigationRequest::ProcessOriginAgentClusterEndResult() {
 }
 
 UrlInfo NavigationRequest::GetUrlInfo() {
-  return UrlInfo(GetURL(), IsOptInIsolationRequested());
+  // TODO(crbug.com/1172042): Remove WebBundle-specific code here.
+  if (GetWebBundleURL().is_valid()) {
+    return UrlInfo(
+        GetURL(), IsOptInIsolationRequested(),
+        url::Origin::Resolve(GetURL(), url::Origin::Create(GetWebBundleURL())));
+  } else {
+    return UrlInfo(GetURL(), IsOptInIsolationRequested());
+  }
+}
+
+GURL NavigationRequest::GetWebBundleURL() {
+  if (!response())
+    return GURL();
+  return response()->web_bundle_url;
 }
 
 void NavigationRequest::OnResponseStarted(

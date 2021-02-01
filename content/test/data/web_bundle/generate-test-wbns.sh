@@ -66,3 +66,10 @@ gen-bundle \
   -har same_origin.har \
   -primaryURL http://foo.com/web_bundle/resource.json \
   -o same_origin.wbn
+
+# Generate a WBN which includes urn:uuid resources.
+gen-bundle \
+  -version b1 \
+  -har urn-uuid.har \
+  -primaryURL urn:uuid:429fcc4e-0696-4bad-b099-ee9175f023ae \
+  -o urn-uuid.wbn

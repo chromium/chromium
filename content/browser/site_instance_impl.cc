@@ -1373,7 +1373,27 @@ GURL SiteInstanceImpl::GetSiteForURLInternal(
                            .ToBrowserContext(),
                        real_url)
                  : real_url;
-  url::Origin origin = url::Origin::Create(url);
+
+  // Navigations to urn: URLs served from Web Bundles [1] require special care
+  // to use the origin of the bundle rather than the urn: URL, which lacks any
+  // origin information.
+  // [1] bit.ly/subresource-web-bundles-doc
+  // TODO(acolwell): Update this so we can use url::Origin::Resolve() for all
+  // cases.
+  url::Origin origin;
+  if (url.SchemeIs("urn") && real_url_info.origin.opaque()) {
+    auto precursor = real_url_info.origin.GetTupleOrPrecursorTupleIfOpaque();
+    if (precursor.IsValid()) {
+      // Use the precursor as the origin. This should be the origin of the
+      // bundle.
+      origin = url::Origin::CreateFromNormalizedTuple(
+          precursor.scheme(), precursor.host(), precursor.port());
+    } else {
+      origin = url::Origin::Resolve(url, real_url_info.origin);
+    }
+  } else {
+    origin = url::Origin::Create(url);
+  }
 
   // If the url has a host, then determine the site.  Skip file URLs to avoid a
   // situation where site URL of file://localhost/ would mismatch Blink's origin

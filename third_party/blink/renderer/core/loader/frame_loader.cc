@@ -822,6 +822,18 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
           request.JavascriptWorld().get())
           ? CSPDisposition::DO_NOT_CHECK
           : CSPDisposition::CHECK;
+
+  // If this is a subframe load to a urn: URL, allow loading from a Web Bundle
+  // attached to the parent document.
+  if (url.Protocol() == "urn") {
+    auto* parent_local_frame = DynamicTo<LocalFrame>(frame_->Tree().Parent());
+    if (parent_local_frame &&
+        parent_local_frame->DomWindow() == origin_window &&
+        origin_window->Fetcher()) {
+      origin_window->Fetcher()->AttachWebBundleTokenIfNeeded(resource_request);
+    }
+  }
+
   Client()->BeginNavigation(
       resource_request, request.GetFrameType(), origin_window,
       nullptr /* document_loader */, navigation_type,

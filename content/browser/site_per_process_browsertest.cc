@@ -933,6 +933,18 @@ class SitePerProcessProgrammaticScrollTest : public SitePerProcessBrowserTest {
   DISALLOW_COPY_AND_ASSIGN(SitePerProcessProgrammaticScrollTest);
 };
 
+// SitePerProcessWebBundleBrowserTest.
+
+class SitePerProcessWebBundleBrowserTest : public SitePerProcessBrowserTest {
+ public:
+  SitePerProcessWebBundleBrowserTest() {
+    feature_list_.InitAndEnableFeature(features::kSubresourceWebBundles);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 IN_PROC_BROWSER_TEST_P(SitePerProcessHighDPIBrowserTest,
                        SubframeLoadsWithCorrectDeviceScaleFactor) {
   GURL main_url(embedded_test_server()->GetURL(
@@ -16651,6 +16663,52 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_NE(js_process, web_contents()->GetMainFrame()->GetProcess());
 }
 
+// Check that a urn:uuid subframe instantiated from a same-origin WebBundle
+// reuses its parent's process.
+IN_PROC_BROWSER_TEST_P(SitePerProcessWebBundleBrowserTest, SameSiteBundle) {
+  GURL bundle_url(
+      embedded_test_server()->GetURL("a.com", "/web_bundle/urn-uuid.wbn"));
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/web_bundle/frame_parent.html?wbn=" + bundle_url.spec()));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  base::string16 expected_title(base::UTF8ToUTF16("OK"));
+  TitleWatcher title_watcher(shell()->web_contents(), expected_title);
+  EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
+
+  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  ASSERT_EQ(1U, root->child_count());
+  FrameTreeNode* child_node = root->child_at(0);
+  EXPECT_EQ(child_node->current_url(),
+            GURL("urn:uuid:429fcc4e-0696-4bad-b099-ee9175f023ae"));
+  EXPECT_EQ(shell()->web_contents()->GetSiteInstance(),
+            child_node->current_frame_host()->GetSiteInstance());
+}
+
+// Check that a urn:uuid subframe instantiated from a WebBundle gets a process
+// for the Bundle's origin.
+IN_PROC_BROWSER_TEST_P(SitePerProcessWebBundleBrowserTest, CrossSiteBundle) {
+  GURL bundle_url(
+      embedded_test_server()->GetURL("foo.com", "/web_bundle/urn-uuid.wbn"));
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/web_bundle/frame_parent.html?wbn=" + bundle_url.spec()));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  base::string16 expected_title(base::UTF8ToUTF16("OK"));
+  TitleWatcher title_watcher(shell()->web_contents(), expected_title);
+  EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
+
+  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  ASSERT_EQ(1U, root->child_count());
+  FrameTreeNode* child_node = root->child_at(0);
+  EXPECT_EQ(child_node->current_url(),
+            GURL("urn:uuid:429fcc4e-0696-4bad-b099-ee9175f023ae"));
+  EXPECT_EQ(
+      " Site A ------------ proxies for B\n"
+      "   +--Site B ------- proxies for A\n"
+      "Where A = http://a.com/\n"
+      "      B = http://foo.com/",
+      DepictFrameTree(root));
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          RequestDelayingSitePerProcessBrowserTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
@@ -16695,6 +16753,9 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
 INSTANTIATE_TEST_SUITE_P(All,
                          SitePerProcessScrollAnchorTest,
+                         testing::ValuesIn(RenderDocumentFeatureLevelValues()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         SitePerProcessWebBundleBrowserTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
 #if defined(OS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(All,
