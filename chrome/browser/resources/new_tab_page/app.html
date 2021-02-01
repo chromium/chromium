@@ -108,12 +108,18 @@
   }
 
   #customizeButtonContainer {
-    align-self: flex-end;
     background-color: var(--ntp-background-override-color);
     border-radius: calc(.5 * var(--cr-button-height));
     bottom: 16px;
-    margin-inline-end: 16px;
     position: fixed;
+  }
+
+  :host-context([dir='ltr']) #customizeButtonContainer {
+    right: 16px;
+  }
+
+  :host-context([dir='rtl']) #customizeButtonContainer {
+    left: 16px;
   }
 
   :host([show-background-image_]) #customizeButtonContainer {
