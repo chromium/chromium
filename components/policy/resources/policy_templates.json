@@ -22084,7 +22084,11 @@
       'id': 601,
       'caption': '''List of names that will bypass the HSTS policy check''',
       'tags': ['system-security'],
-      'desc': '''Setting the policy specifies a list of hostnames that are exempt from the HSTS policy check that could upgrade requests from http to https. Only single-label hostnames are allowed in this policy. Hostnames must be canonicalized: Any IDNs must be converted to their A-label format, and all ASCII letters must be lowercase. This policy only applies to the specific hostnames specified, not to subdomains of those names.''',
+      'desc': '''Setting the policy specifies a list of hostnames that bypass preloaded HSTS upgrades from http to https.
+
+      Only single-label hostnames are allowed in this policy, and this policy only applies to "static" HSTS-preloaded entries (for instance, <ph name="EXAMPLE_HSTS_PRELOAD_TLDS">"app", "new", "search", "play"</ph>). This policy does not prevent HSTS upgrades for servers that have "dynamically" requested HSTS upgrades using a <ph name="HSTS_HEADER_NAME">Strict-Transport-Security</ph> response header.
+
+      Supplied hostnames must be canonicalized: Any IDNs must be converted to their A-label format, and all ASCII letters must be lowercase. This policy only applies to the specific single-label hostnames specified, not to subdomains of those names.''',
     },
     {
       'name': 'AllowSyncXHRInPageDismissal',
