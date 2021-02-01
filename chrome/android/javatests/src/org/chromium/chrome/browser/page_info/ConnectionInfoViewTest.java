@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.page_info;
 
-import static org.chromium.base.test.util.Batch.PER_CLASS;
-
 import androidx.test.filters.MediumTest;
 
 import org.junit.ClassRule;
@@ -31,8 +29,10 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Batch(PER_CLASS)
+@Batch(ConnectionInfoViewTest.PAGE_INFO_BATCH_NAME)
 public class ConnectionInfoViewTest {
+    public static final String PAGE_INFO_BATCH_NAME = "page_info";
+
     @ClassRule
     public static final ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();

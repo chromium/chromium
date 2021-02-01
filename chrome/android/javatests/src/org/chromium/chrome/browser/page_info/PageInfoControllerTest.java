@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.page_info;
 
-import static org.chromium.base.test.util.Batch.PER_CLASS;
-
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -42,7 +40,7 @@ import org.chromium.ui.base.PageTransition;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
-@Batch(PER_CLASS)
+@Batch(ConnectionInfoViewTest.PAGE_INFO_BATCH_NAME)
 @Batch.SplitByFeature
 public class PageInfoControllerTest {
     @ClassRule
