@@ -16,6 +16,10 @@
 #include "components/arc/mojom/accessibility_helper.mojom-forward.h"
 #include "ui/accessibility/ax_enum_util.h"
 
+namespace aura {
+class Window;
+}
+
 namespace arc {
 
 class AccessibilityInfoDataWrapper;
@@ -96,6 +100,8 @@ bool HasNonEmptyStringProperty(InfoDataType* node, PropType prop) {
 
   return !it->second.empty();
 }
+
+aura::Window* FindArcWindow(aura::Window* child);
 
 }  // namespace arc
 

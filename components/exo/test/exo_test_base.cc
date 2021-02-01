@@ -35,7 +35,6 @@ class TestPropertyResolver : public WMHelper::AppPropertyResolver {
       const std::string& startup_id,
       bool for_creation,
       ui::PropertyHandler& out_properties_container) override {
-    LOG(ERROR) << "AppId=" << app_id;
     if (app_id == "arc")
       out_properties_container.SetProperty(aura::client::kAppType,
                                            (int)ash::AppType::ARC_APP);

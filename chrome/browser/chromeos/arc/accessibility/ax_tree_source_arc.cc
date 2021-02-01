@@ -164,7 +164,7 @@ aura::Window* AXTreeSourceArc::GetWindow() const {
     return input_method_surface->host_window();
   } else if (exo::WMHelper::HasInstance()) {
     // TODO(b/173658482): Support non-active windows.
-    return exo::WMHelper::GetInstance()->GetActiveWindow();
+    return FindArcWindow(exo::WMHelper::GetInstance()->GetFocusedWindow());
   }
   return nullptr;
 }

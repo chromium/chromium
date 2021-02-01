@@ -119,7 +119,10 @@ class ArcAccessibilityHelperBridgeTest : public ChromeViewsTestBase {
     std::unique_ptr<extensions::Event> last_event;
 
    private:
-    aura::Window* GetActiveWindow() override { return window_.get(); }
+    aura::Window* GetFocusedArcWindow() const override {
+      DCHECK(!window_ || ash::IsArcWindow(window_.get()));
+      return window_.get();
+    }
     extensions::EventRouter* GetEventRouter() const override {
       return event_router_;
     }
@@ -568,18 +571,16 @@ TEST_F(ArcAccessibilityHelperBridgeTest, ToggleTalkBack) {
   non_arc_window->Init(ui::LAYER_NOT_DRAWN);
 
   // Switch to non-ARC window.
-  helper_bridge->OnWindowActivated(
-      wm::ActivationChangeObserver::ActivationReason::INPUT_EVENT,
-      non_arc_window.get(), helper_bridge->window_.get());
+  helper_bridge->OnWindowFocused(non_arc_window.get(),
+                                 helper_bridge->window_.get());
 
   ASSERT_EQ(2, helper_bridge->GetEventCount(event_name));
   ASSERT_EQ(event_name, helper_bridge->last_event->event_name);
   ASSERT_FALSE(helper_bridge->last_event->event_args->GetList()[0].GetBool());
 
   // Switch back to ARC.
-  helper_bridge->OnWindowActivated(
-      wm::ActivationChangeObserver::ActivationReason::INPUT_EVENT,
-      helper_bridge->window_.get(), non_arc_window.get());
+  helper_bridge->OnWindowFocused(helper_bridge->window_.get(),
+                                 non_arc_window.get());
 
   ASSERT_EQ(3, helper_bridge->GetEventCount(event_name));
   ASSERT_EQ(event_name, helper_bridge->last_event->event_name);
