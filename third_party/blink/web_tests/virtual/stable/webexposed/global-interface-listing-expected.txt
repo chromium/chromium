@@ -926,6 +926,19 @@ interface CustomEvent : Event
     getter detail
     method constructor
     method initCustomEvent
+interface CustomStateSet
+    attribute @@toStringTag
+    getter size
+    method @@iterator
+    method add
+    method clear
+    method constructor
+    method delete
+    method entries
+    method forEach
+    method has
+    method keys
+    method values
 interface DOMError
     attribute @@toStringTag
     getter message
@@ -1865,6 +1878,7 @@ interface ElementInternals
     getter form
     getter labels
     getter shadowRoot
+    getter states
     getter validationMessage
     getter validity
     getter willValidate
