@@ -62,11 +62,6 @@ const CGFloat kOffsetToPinOmnibox = 100;
 @property(nonatomic, strong)
     NSLayoutConstraint* contentSuggestionsHeightConstraint;
 
-// Constraint to determine the Y position of the contained ContentSuggestions
-// view.
-@property(nonatomic, strong)
-    NSLayoutConstraint* contentSuggestionsTopConstraint;
-
 // Array of constraints used to pin the fake Omnibox header into the top of the
 // view.
 @property(nonatomic, strong)
@@ -125,11 +120,8 @@ const CGFloat kOffsetToPinOmnibox = 100;
                                          .discoverFeed];
   [self.discoverFeedWrapperViewController.discoverFeed
       addChildViewController:self.contentSuggestionsViewController];
-  // Add contentSuggestionsView to
-  // discoverFeedWrapperViewController.discoverFeed.view so its width is not
-  // restrained by the width of
-  // discoverFeedWrapperViewController.discoverFeed.feedCollectionView.
-  [containerView addSubview:contentSuggestionsView];
+  [self.discoverFeedWrapperViewController.feedCollectionView
+      addSubview:contentSuggestionsView];
   [self.contentSuggestionsViewController
       didMoveToParentViewController:self.discoverFeedWrapperViewController
                                         .discoverFeed];
@@ -137,12 +129,10 @@ const CGFloat kOffsetToPinOmnibox = 100;
   self.contentSuggestionsHeightConstraint = [contentSuggestionsView.heightAnchor
       constraintEqualToConstant:self.contentSuggestionsViewController
                                     .collectionView.contentSize.height];
-  self.contentSuggestionsTopConstraint =
-      [containerView.safeAreaLayoutGuide.topAnchor
-          constraintEqualToAnchor:contentSuggestionsView.topAnchor];
 
   [NSLayoutConstraint activateConstraints:@[
-    self.contentSuggestionsTopConstraint,
+    [self.discoverFeedWrapperViewController.feedCollectionView.topAnchor
+        constraintEqualToAnchor:contentSuggestionsView.bottomAnchor],
     [containerView.safeAreaLayoutGuide.leadingAnchor
         constraintEqualToAnchor:contentSuggestionsView.leadingAnchor],
     [containerView.safeAreaLayoutGuide.trailingAnchor
@@ -281,10 +271,6 @@ const CGFloat kOffsetToPinOmnibox = 100;
            .height) {
     return;
   }
-
-  // Scroll up the contentSuggestions view along the scrolling of the feed.
-  self.contentSuggestionsTopConstraint.constant =
-      scrollView.contentOffset.y + [self adjustedContentSuggestionsHeight];
 
   [self.overscrollActionsController scrollViewDidScroll:scrollView];
   [self.headerSynchronizer updateFakeOmniboxOnCollectionScroll];
