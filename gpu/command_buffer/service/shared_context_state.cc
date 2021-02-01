@@ -13,12 +13,14 @@
 #include "gpu/command_buffer/common/activity_flags.h"
 #include "gpu/command_buffer/service/context_state.h"
 #include "gpu/command_buffer/service/gl_context_virtual.h"
+#include "gpu/command_buffer/service/gr_shader_cache.h"
 #include "gpu/command_buffer/service/service_transfer_cache.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/skia_limits.h"
+#include "gpu/ipc/common/gpu_client_ids.h"
 #include "gpu/vulkan/buildflags.h"
 #include "skia/buildflags.h"
 #include "ui/gl/gl_bindings.h"
@@ -251,10 +253,11 @@ SharedContextState::~SharedContextState() {
 bool SharedContextState::InitializeGrContext(
     const GpuPreferences& gpu_preferences,
     const GpuDriverBugWorkarounds& workarounds,
-    GrContextOptions::PersistentCache* cache,
+    gpu::raster::GrShaderCache* cache,
     GpuProcessActivityFlags* activity_flags,
     gl::ProgressReporter* progress_reporter) {
   progress_reporter_ = progress_reporter;
+  gr_shader_cache_ = cache;
 
 #if defined(OS_MAC)
   if (metal_context_provider_)
@@ -657,6 +660,14 @@ void SharedContextState::PessimisticallyResetGrContext() const {
   // performance becomes an issue.
   if (gr_context_ && GrContextIsGL())
     gr_context_->resetContext();
+}
+
+void SharedContextState::StoreVkPipelineCacheIfNeeded() {
+  if (gr_context_ && GrContextIsVulkan()) {
+    gpu::raster::GrShaderCache::ScopedCacheUse use(gr_shader_cache_,
+                                                   kDisplayCompositorClientId);
+    gr_shader_cache_->StoreVkPipelineCacheIfNeeded(gr_context_);
+  }
 }
 
 bool SharedContextState::initialized() const {

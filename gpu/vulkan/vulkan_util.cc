@@ -113,6 +113,25 @@ VkResult QueueSubmitHook(VkQueue queue,
   return vkQueueSubmit(queue, submitCount, pSubmits, fence);
 }
 
+VkResult CreateGraphicsPipelinesHook(
+    VkDevice device,
+    VkPipelineCache pipelineCache,
+    uint32_t createInfoCount,
+    const VkGraphicsPipelineCreateInfo* pCreateInfos,
+    const VkAllocationCallbacks* pAllocator,
+    VkPipeline* pPipelines) {
+  base::ScopedClosureRunner uma_runner(base::BindOnce(
+      [](base::Time time) {
+        UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+            "GPU.Vulkan.PipelineCache.vkCreateGraphicsPipelines",
+            base::Time::Now() - time, base::TimeDelta::FromMicroseconds(100),
+            base::TimeDelta::FromMicroseconds(50000), 50);
+      },
+      base::Time::Now()));
+  return vkCreateGraphicsPipelines(device, pipelineCache, createInfoCount,
+                                   pCreateInfos, pAllocator, pPipelines);
+}
+
 void RecordImportingVKSemaphoreIntoGL() {
   g_import_semaphore_into_gl_count++;
 }

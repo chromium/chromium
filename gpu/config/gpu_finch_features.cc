@@ -178,6 +178,10 @@ const base::Feature kEnableSharedImageForWebview{
 const base::Feature kEnableGrShaderCacheForVulkan{
     "EnableGrShaderCacheForVulkan", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enable persistent storage of VkPipelineCache data.
+const base::Feature kEnableVkPipelineCache{"EnableVkPipelineCache",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsUsingVulkan() {
 #if defined(OS_ANDROID)
   // Force on if Vulkan feature is enabled from command line.

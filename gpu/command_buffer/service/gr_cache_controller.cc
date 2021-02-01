@@ -77,6 +77,10 @@ void GrCacheController::PurgeGrCache(uint64_t idle_id) {
     auto* api = gl::g_current_gl_context;
     api->glFlushFn();
   }
+
+  // Skia store VkPipeline cache only on demand. We do it when we're idle idle
+  // as it might take time.
+  context_state_->StoreVkPipelineCacheIfNeeded();
 }
 
 }  // namespace raster

@@ -531,6 +531,14 @@ bool VulkanFunctionPointers::BindDeviceFunctionPointers(
     return false;
   }
 
+  vkCreateGraphicsPipelines = reinterpret_cast<PFN_vkCreateGraphicsPipelines>(
+      vkGetDeviceProcAddr(vk_device, "vkCreateGraphicsPipelines"));
+  if (!vkCreateGraphicsPipelines) {
+    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
+                  << "vkCreateGraphicsPipelines";
+    return false;
+  }
+
   vkCreateImage = reinterpret_cast<PFN_vkCreateImage>(
       vkGetDeviceProcAddr(vk_device, "vkCreateImage"));
   if (!vkCreateImage) {

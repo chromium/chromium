@@ -188,6 +188,7 @@ struct COMPONENT_EXPORT(VULKAN) VulkanFunctionPointers {
   VulkanFunction<PFN_vkCreateDescriptorSetLayout> vkCreateDescriptorSetLayout;
   VulkanFunction<PFN_vkCreateFence> vkCreateFence;
   VulkanFunction<PFN_vkCreateFramebuffer> vkCreateFramebuffer;
+  VulkanFunction<PFN_vkCreateGraphicsPipelines> vkCreateGraphicsPipelines;
   VulkanFunction<PFN_vkCreateImage> vkCreateImage;
   VulkanFunction<PFN_vkCreateImageView> vkCreateImageView;
   VulkanFunction<PFN_vkCreateRenderPass> vkCreateRenderPass;
@@ -699,6 +700,17 @@ vkCreateFramebuffer(VkDevice device,
                     VkFramebuffer* pFramebuffer) {
   return gpu::GetVulkanFunctionPointers()->vkCreateFramebuffer(
       device, pCreateInfo, pAllocator, pFramebuffer);
+}
+ALWAYS_INLINE VkResult
+vkCreateGraphicsPipelines(VkDevice device,
+                          VkPipelineCache pipelineCache,
+                          uint32_t createInfoCount,
+                          const VkGraphicsPipelineCreateInfo* pCreateInfos,
+                          const VkAllocationCallbacks* pAllocator,
+                          VkPipeline* pPipelines) {
+  return gpu::GetVulkanFunctionPointers()->vkCreateGraphicsPipelines(
+      device, pipelineCache, createInfoCount, pCreateInfos, pAllocator,
+      pPipelines);
 }
 ALWAYS_INLINE VkResult vkCreateImage(VkDevice device,
                                      const VkImageCreateInfo* pCreateInfo,

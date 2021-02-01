@@ -85,6 +85,15 @@ VKAPI_ATTR VkResult VKAPI_CALL QueueSubmitHook(VkQueue queue,
                                                VkFence fence);
 
 COMPONENT_EXPORT(VULKAN)
+VKAPI_ATTR VkResult VKAPI_CALL
+CreateGraphicsPipelinesHook(VkDevice device,
+                            VkPipelineCache pipelineCache,
+                            uint32_t createInfoCount,
+                            const VkGraphicsPipelineCreateInfo* pCreateInfos,
+                            const VkAllocationCallbacks* pAllocator,
+                            VkPipeline* pPipelines);
+
+COMPONENT_EXPORT(VULKAN)
 VKAPI_ATTR void RecordImportingVKSemaphoreIntoGL();
 
 COMPONENT_EXPORT(VULKAN) void ReportUMAPerSwapBuffers();

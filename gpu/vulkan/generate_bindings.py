@@ -129,6 +129,7 @@ VULKAN_DEVICE_FUNCTIONS = [
       'vkCreateDescriptorSetLayout',
       'vkCreateFence',
       'vkCreateFramebuffer',
+      'vkCreateGraphicsPipelines',
       'vkCreateImage',
       'vkCreateImageView',
       'vkCreateRenderPass',

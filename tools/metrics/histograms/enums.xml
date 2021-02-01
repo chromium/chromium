@@ -78022,6 +78022,14 @@ Full version information for the fingerprint enum values:
   <int value="3" label="HitTestData outdated"/>
 </enum>
 
+<enum name="VkPipelinePopulatedCacheEntryUsage">
+  <int value="0" label="Used"/>
+  <int value="1" label="Overwritten"/>
+  <int value="2" label="Discarded: too large"/>
+  <int value="3" label="Discarded: have newer data"/>
+  <int value="4" label="Evicted"/>
+</enum>
+
 <enum name="VoiceInteractionEventSource">
 <!-- This must be kept in sync with VoiceInteraction.AssistantActionPerformed in
 others/histograms.xml -->

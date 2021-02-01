@@ -1223,6 +1223,65 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="GPU.Vulkan.PipelineCache.LoadCacheHit" enum="BooleanCacheHit"
+    expires_after="2021-06-25">
+  <owner>backer@chromium.org</owner>
+  <owner>penghuang@chromium.org</owner>
+  <owner>vasilyt@chromium.org</owner>
+  <summary>
+    Shows if we had a vkPipelineCache entry in cache when skia requested it.
+    Recorded each time skia loads vkPipelineCache entry from the GrShaderCache.
+  </summary>
+</histogram>
+
+<histogram name="GPU.Vulkan.PipelineCache.PopulatedCacheUsage"
+    enum="VkPipelinePopulatedCacheEntryUsage" expires_after="2021-06-25">
+  <owner>backer@chromium.org</owner>
+  <owner>penghuang@chromium.org</owner>
+  <owner>vasilyt@chromium.org</owner>
+  <summary>
+    Shows if the populated from disk cache entry was used by skia or discarded
+    and why. Recorded when cache entry that was read from disk is either loaded
+    by skia, overwriten by skia or discarded by GrShaderCache.
+  </summary>
+</histogram>
+
+<histogram name="GPU.Vulkan.PipelineCache.Size" units="KB"
+    expires_after="2021-06-25">
+  <owner>backer@chromium.org</owner>
+  <owner>penghuang@chromium.org</owner>
+  <owner>vasilyt@chromium.org</owner>
+  <summary>
+    Size of stored VkPipelineCache in kb. Recorded every time we store a
+    pipeline cache item. Currently happens when gpu goes idle after we stored or
+    loaded new shader.
+  </summary>
+</histogram>
+
+<histogram name="GPU.Vulkan.PipelineCache.StoreDuration" units="microseconds"
+    expires_after="2021-06-25">
+  <owner>backer@chromium.org</owner>
+  <owner>penghuang@chromium.org</owner>
+  <owner>vasilyt@chromium.org</owner>
+  <summary>
+    Duration of storeVkPipelineCacheData in Skia, this includes chromium side
+    GrShaderCache::store. Recorded even if data didn't fit into the cache. Only
+    reported for platforms supporting high resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="GPU.Vulkan.PipelineCache.vkCreateGraphicsPipelines"
+    units="microseconds" expires_after="2021-06-25">
+  <owner>backer@chromium.org</owner>
+  <owner>penghuang@chromium.org</owner>
+  <owner>vasilyt@chromium.org</owner>
+  <summary>
+    Duration of vkCreateGraphicsPipelines call. Recorded every time Skia creates
+    graphics pipeline. Only reported for platforms supporting high resolution
+    clocks.
+  </summary>
+</histogram>
+
 <histogram name="GPU.Vulkan.QueueSubmitPerSwapBuffers" units="units"
     expires_after="2021-04-04">
   <owner>backer@chromium.org</owner>
