@@ -59,12 +59,12 @@ constexpr char kKeyData[] = R"({
   }
 })";
 
-// The name hash of "TestEventOne".
-constexpr uint64_t kEventOneHash = UINT64_C(15619026293081468407);
-// The name hash of "TestEventTwo".
-constexpr uint64_t kEventTwoHash = UINT64_C(15791833939776536363);
-// The name hash of "TestEventThree".
-constexpr uint64_t kEventThreeHash = UINT64_C(16464330721839207086);
+// The name hash of "chrome::TestProjectOne::TestEventOne".
+constexpr uint64_t kEventOneHash = UINT64_C(13593049295042080097);
+// The name hash of "chrome::TestProjectTwo::TestEventTwo".
+constexpr uint64_t kEventTwoHash = UINT64_C(8995967733561999410);
+// The name hash of "chrome::TestProjectTwo::TestEventThree".
+constexpr uint64_t kEventThreeHash = UINT64_C(5848687377041124372);
 
 // The name hash of "TestMetricOne".
 constexpr uint64_t kMetricOneHash = UINT64_C(637929385654885975);

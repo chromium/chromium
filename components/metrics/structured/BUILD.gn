@@ -32,16 +32,16 @@ static_library("structured") {
   ]
 }
 
-# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-python2_action("gen_structured_events") {
+action("gen_structured_events") {
   script = "//tools/metrics/structured/gen_events.py"
 
   # Re-generate the outputs if the codegen code changes:
   inputs = [
     "//tools/metrics/structured/codegen.py",
-    "//tools/metrics/structured/compile_time_validation.py",
-    "//tools/metrics/structured/events_template.py",
     "//tools/metrics/structured/gen_events.py",
+    "//tools/metrics/structured/model.py",
+    "//tools/metrics/structured/model_util.py",
+    "//tools/metrics/structured/templates.py",
   ]
   sources = [ "//tools/metrics/structured/structured.xml" ]
 

@@ -1,14 +1,8 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# -*- coding: utf-8 -*-
+# Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Templates for generating event classes for structured metrics."""
-
-import codegen
-
-########
-# HEADER
-########
 
 HEADER_FILE_TEMPLATE = """\
 // Generated from gen_events.py. DO NOT EDIT!
@@ -26,7 +20,7 @@ namespace metrics {{
 namespace structured {{
 namespace events {{
 
-constexpr uint64_t kProjectNameHashes[] = {project_name_hashes};
+constexpr uint64_t kProjectNameHashes[] = {project_hashes};
 
 {project_code}
 
@@ -66,21 +60,12 @@ HEADER_METRIC_TEMPLATE = """\
 
 """
 
-HEADER = codegen.Template(basename="structured_events.h",
-                          file_template=HEADER_FILE_TEMPLATE,
-                          project_template=HEADER_PROJECT_TEMPLATE,
-                          event_template=HEADER_EVENT_TEMPLATE,
-                          metric_template=HEADER_METRIC_TEMPLATE)
-
-######
-# IMPL
-######
-
 IMPL_FILE_TEMPLATE = """\
 // Generated from gen_events.py. DO NOT EDIT!
 // source: structured.xml
 
-#include "{file.dir_path}/structured_events.h"
+// #include "{file.dirname}/structured_events.h"
+#include "components/metrics/structured/structured_events.h"
 
 namespace metrics {{
 namespace structured {{
@@ -113,14 +98,3 @@ IMPL_METRIC_TEMPLATE = """\
 }}
 
 """
-
-IMPL = codegen.Template(basename="structured_events.cc",
-                        file_template=IMPL_FILE_TEMPLATE,
-                        project_template=IMPL_PROJECT_TEMPLATE,
-                        event_template=IMPL_EVENT_TEMPLATE,
-                        metric_template=IMPL_METRIC_TEMPLATE)
-
-
-def WriteFiles(outdir, relpath, data):
-  HEADER.WriteFile(outdir, relpath, data)
-  IMPL.WriteFile(outdir, relpath, data)
