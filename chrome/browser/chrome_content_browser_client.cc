@@ -195,6 +195,7 @@
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/installer/util/google_update_settings.h"
+#include "chromeos/components/camera_app_ui/url_constants.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/blocked_content/popup_blocker.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
@@ -4657,6 +4658,11 @@ bool IsSystemFeatureURLDisabled(const GURL& url) {
 
   if (url.DomainIs(chromeos::kChromeUIScanningAppHost) &&
       IsSystemFeatureDisabled(policy::SystemFeature::kScanning)) {
+    return true;
+  }
+
+  if (url.DomainIs(chromeos::kChromeUICameraAppHost) &&
+      IsSystemFeatureDisabled(policy::SystemFeature::kCamera)) {
     return true;
   }
 
