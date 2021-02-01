@@ -21,6 +21,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_clock.h"
 #include "base/third_party/dynamic_annotations/dynamic_annotations.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_restrictions.h"
@@ -5405,4 +5406,37 @@ TEST_F(DiskCacheBackendTest, BlockFileInsertAliasing) {
   itEntry2->Close();
   if (itEntry3)
     itEntry3->Close();
+}
+
+TEST_F(DiskCacheBackendTest, MemCacheBackwardsClock) {
+  // Test to make sure that wall clock going backwards is tolerated.
+
+  base::SimpleTestClock clock;
+  clock.SetNow(base::Time::Now());
+
+  SetMemoryOnlyMode();
+  InitCache();
+  mem_cache_->SetClockForTesting(&clock);
+
+  const int kBufSize = 4 * 1024;
+  scoped_refptr<net::IOBuffer> buffer =
+      base::MakeRefCounted<net::IOBuffer>(kBufSize);
+  CacheTestFillBuffer(buffer->data(), kBufSize, true);
+
+  disk_cache::Entry* entry = nullptr;
+  ASSERT_THAT(CreateEntry("key1", &entry), IsOk());
+  EXPECT_EQ(kBufSize, WriteData(entry, 0, 0, buffer.get(), kBufSize, false));
+  entry->Close();
+
+  clock.Advance(-base::TimeDelta::FromHours(1));
+
+  ASSERT_THAT(CreateEntry("key2", &entry), IsOk());
+  EXPECT_EQ(kBufSize, WriteData(entry, 0, 0, buffer.get(), kBufSize, false));
+  entry->Close();
+
+  EXPECT_LE(2 * kBufSize,
+            CalculateSizeOfEntriesBetween(base::Time(), base::Time::Max()));
+  EXPECT_EQ(net::OK, DoomEntriesBetween(base::Time(), base::Time::Max()));
+  EXPECT_EQ(0, CalculateSizeOfEntriesBetween(base::Time(), base::Time::Max()));
+  EXPECT_EQ(0, CalculateSizeOfAllEntries());
 }
