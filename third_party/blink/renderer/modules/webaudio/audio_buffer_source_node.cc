@@ -33,9 +33,10 @@
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/fdlibm/ieee754.h"
 
 namespace blink {
 
@@ -630,7 +631,7 @@ double AudioBufferSourceHandler::ComputePlaybackRate() {
   double final_playback_rate = sample_rate_factor * base_playback_rate;
 
   // Take the detune value into account for the final playback rate.
-  final_playback_rate *= pow(2, detune_->FinalValue() / 1200);
+  final_playback_rate *= fdlibm::pow(2, detune_->FinalValue() / 1200);
 
   // Sanity check the total rate.  It's very important that the resampler not
   // get any bad rate values.

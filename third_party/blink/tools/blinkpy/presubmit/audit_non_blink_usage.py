@@ -1267,6 +1267,13 @@ _CONFIG = [
             'net::registry_controlled_domains::.+',
         ],
     },
+    {
+        'paths': [
+            'third_party/blink/renderer/platform/audio/',
+            'third_party/blink/renderer/modules/webaudio/',
+        ],
+        'allowed': ['fdlibm::.+'],
+    },
 ]
 
 

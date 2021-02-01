@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/fdlibm/ieee754.h"
 
 namespace blink {
 
@@ -137,7 +138,7 @@ void IIRFilter::GetFrequencyResponse(int n_frequencies,
       // zRecip = 1/z = exp(-j*frequency)
       double omega = -kPiDouble * frequency[k];
       std::complex<double> z_recip =
-          std::complex<double>(cos(omega), sin(omega));
+          std::complex<double>(fdlibm::cos(omega), fdlibm::sin(omega));
 
       std::complex<double> numerator = EvaluatePolynomial(
           feedforward_->Data(), z_recip, feedforward_->size() - 1);
@@ -146,7 +147,7 @@ void IIRFilter::GetFrequencyResponse(int n_frequencies,
       std::complex<double> response = numerator / denominator;
       mag_response[k] = static_cast<float>(abs(response));
       phase_response[k] =
-          static_cast<float>(atan2(imag(response), real(response)));
+          static_cast<float>(fdlibm::atan2(imag(response), real(response)));
     }
   }
 }

@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/fdlibm/ieee754.h"
 
 namespace blink {
 
@@ -55,8 +56,8 @@ void StereoPanner::PanWithSampleAccurateValues(const AudioBus* input_bus,
       double pan = clampTo(*pan_values++, -1.0, 1.0);
       // Pan from left to right [-1; 1] will be normalized as [0; 1].
       pan_radian = (pan * 0.5 + 0.5) * kPiOverTwoDouble;
-      gain_l = std::cos(pan_radian);
-      gain_r = std::sin(pan_radian);
+      gain_l = fdlibm::cos(pan_radian);
+      gain_r = fdlibm::sin(pan_radian);
       *destination_l++ = static_cast<float>(input_l * gain_l);
       *destination_r++ = static_cast<float>(input_l * gain_r);
     }
@@ -67,8 +68,8 @@ void StereoPanner::PanWithSampleAccurateValues(const AudioBus* input_bus,
       double pan = clampTo(*pan_values++, -1.0, 1.0);
       // Normalize [-1; 0] to [0; 1]. Do nothing when [0; 1].
       pan_radian = (pan <= 0 ? pan + 1 : pan) * kPiOverTwoDouble;
-      gain_l = std::cos(pan_radian);
-      gain_r = std::sin(pan_radian);
+      gain_l = fdlibm::cos(pan_radian);
+      gain_r = fdlibm::sin(pan_radian);
       if (pan <= 0) {
         *destination_l++ = static_cast<float>(input_l + input_r * gain_l);
         *destination_r++ = static_cast<float>(input_r * gain_r);
@@ -114,8 +115,8 @@ void StereoPanner::PanToTargetValue(const AudioBus* input_bus,
     // Pan from left to right [-1; 1] will be normalized as [0; 1].
     double pan_radian = (target_pan * 0.5 + 0.5) * kPiOverTwoDouble;
 
-    double gain_l = std::cos(pan_radian);
-    double gain_r = std::sin(pan_radian);
+    double gain_l = fdlibm::cos(pan_radian);
+    double gain_r = fdlibm::sin(pan_radian);
 
     // TODO(rtoy): This can be vectorized using vector_math::Vsmul
     while (n--) {
@@ -129,8 +130,8 @@ void StereoPanner::PanToTargetValue(const AudioBus* input_bus,
     double pan_radian =
         (target_pan <= 0 ? target_pan + 1 : target_pan) * kPiOverTwoDouble;
 
-    double gain_l = std::cos(pan_radian);
-    double gain_r = std::sin(pan_radian);
+    double gain_l = fdlibm::cos(pan_radian);
+    double gain_r = fdlibm::sin(pan_radian);
 
     // TODO(rtoy): Consider moving the if statement outside the loop
     // since |target_pan| is constant inside the loop.

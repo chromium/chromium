@@ -32,10 +32,11 @@
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/audio/denormal_disabler.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/fdlibm/ieee754.h"
 
+#include <stdio.h>
 #include <algorithm>
 #include <complex>
-#include <stdio.h>
 #if defined(OS_MAC)
 #include <Accelerate/Accelerate.h>
 #endif
@@ -48,7 +49,7 @@ const int kBiquadBufferSize = 1024;
 
 // Compute 10^x = exp(x*log(10))
 static double pow10(double x) {
-  return expf(x * 2.30258509299404568402);
+  return fdlibm::expf(x * 2.30258509299404568402);
 }
 
 Biquad::Biquad() : has_sample_accurate_values_(false) {
@@ -277,8 +278,8 @@ void Biquad::SetLowpassParams(int index, double cutoff, double resonance) {
     resonance = pow10(resonance / 20);
 
     double theta = kPiDouble * cutoff;
-    double alpha = sin(theta) / (2 * resonance);
-    double cosw = cos(theta);
+    double alpha = fdlibm::sin(theta) / (2 * resonance);
+    double cosw = fdlibm::cos(theta);
     double beta = (1 - cosw) / 2;
 
     double b0 = beta;
@@ -309,8 +310,8 @@ void Biquad::SetHighpassParams(int index, double cutoff, double resonance) {
 
     resonance = pow10(resonance / 20);
     double theta = kPiDouble * cutoff;
-    double alpha = sin(theta) / (2 * resonance);
-    double cosw = cos(theta);
+    double alpha = fdlibm::sin(theta) / (2 * resonance);
+    double cosw = fdlibm::cos(theta);
     double beta = (1 + cosw) / 2;
 
     double b0 = beta;
@@ -359,8 +360,8 @@ void Biquad::SetLowShelfParams(int index, double frequency, double db_gain) {
   } else if (frequency > 0) {
     double w0 = kPiDouble * frequency;
     double s = 1;  // filter slope (1 is max value)
-    double alpha = 0.5 * sin(w0) * sqrt((a + 1 / a) * (1 / s - 1) + 2);
-    double k = cos(w0);
+    double alpha = 0.5 * fdlibm::sin(w0) * sqrt((a + 1 / a) * (1 / s - 1) + 2);
+    double k = fdlibm::cos(w0);
     double k2 = 2 * sqrt(a) * alpha;
     double a_plus_one = a + 1;
     double a_minus_one = a - 1;
@@ -391,8 +392,8 @@ void Biquad::SetHighShelfParams(int index, double frequency, double db_gain) {
   } else if (frequency > 0) {
     double w0 = kPiDouble * frequency;
     double s = 1;  // filter slope (1 is max value)
-    double alpha = 0.5 * sin(w0) * sqrt((a + 1 / a) * (1 / s - 1) + 2);
-    double k = cos(w0);
+    double alpha = 0.5 * fdlibm::sin(w0) * sqrt((a + 1 / a) * (1 / s - 1) + 2);
+    double k = fdlibm::cos(w0);
     double k2 = 2 * sqrt(a) * alpha;
     double a_plus_one = a + 1;
     double a_minus_one = a - 1;
@@ -426,8 +427,8 @@ void Biquad::SetPeakingParams(int index,
   if (frequency > 0 && frequency < 1) {
     if (q > 0) {
       double w0 = kPiDouble * frequency;
-      double alpha = sin(w0) / (2 * q);
-      double k = cos(w0);
+      double alpha = fdlibm::sin(w0) / (2 * q);
+      double k = fdlibm::cos(w0);
 
       double b0 = 1 + alpha * a;
       double b1 = -2 * k;
@@ -459,8 +460,8 @@ void Biquad::SetAllpassParams(int index, double frequency, double q) {
   if (frequency > 0 && frequency < 1) {
     if (q > 0) {
       double w0 = kPiDouble * frequency;
-      double alpha = sin(w0) / (2 * q);
-      double k = cos(w0);
+      double alpha = fdlibm::sin(w0) / (2 * q);
+      double k = fdlibm::cos(w0);
 
       double b0 = 1 - alpha;
       double b1 = -2 * k;
@@ -492,8 +493,8 @@ void Biquad::SetNotchParams(int index, double frequency, double q) {
   if (frequency > 0 && frequency < 1) {
     if (q > 0) {
       double w0 = kPiDouble * frequency;
-      double alpha = sin(w0) / (2 * q);
-      double k = cos(w0);
+      double alpha = fdlibm::sin(w0) / (2 * q);
+      double k = fdlibm::cos(w0);
 
       double b0 = 1;
       double b1 = -2 * k;
@@ -525,8 +526,8 @@ void Biquad::SetBandpassParams(int index, double frequency, double q) {
   if (frequency > 0 && frequency < 1) {
     double w0 = kPiDouble * frequency;
     if (q > 0) {
-      double alpha = sin(w0) / (2 * q);
-      double k = cos(w0);
+      double alpha = fdlibm::sin(w0) / (2 * q);
+      double k = fdlibm::cos(w0);
 
       double b0 = alpha;
       double b1 = 0;
@@ -586,14 +587,15 @@ void Biquad::GetFrequencyResponse(int n_frequencies,
       phase_response[k] = std::nanf("");
     } else {
       double omega = -kPiDouble * frequency[k];
-      std::complex<double> z = std::complex<double>(cos(omega), sin(omega));
+      std::complex<double> z =
+          std::complex<double>(fdlibm::cos(omega), fdlibm::sin(omega));
       std::complex<double> numerator = b0 + (b1 + b2 * z) * z;
       std::complex<double> denominator =
           std::complex<double>(1, 0) + (a1 + a2 * z) * z;
       std::complex<double> response = numerator / denominator;
       mag_response[k] = static_cast<float>(abs(response));
       phase_response[k] =
-          static_cast<float>(atan2(imag(response), real(response)));
+          static_cast<float>(fdlibm::atan2(imag(response), real(response)));
     }
   }
 }
@@ -612,7 +614,8 @@ static double RepeatedRootResponse(double n,
   // This helps with finding a nuemrical solution because this
   // approximately linearizes the response for large n.
 
-  return (n - 2) * log(r) + log(fabs(c1 * (n + 1) * r * r + c2)) - log_eps;
+  return (n - 2) * fdlibm::log(r) +
+         fdlibm::log(fabs(c1 * (n + 1) * r * r + c2)) - log_eps;
 }
 
 // Regula Falsi root finder, Illinois variant
@@ -817,8 +820,10 @@ double Biquad::TailFrame(int coef_index, double max_frame) {
     // It's possible for kMaxTailAmplitude to be greater than c1 + c2.
     // This may produce a negative tail frame.  Just clamp the tail
     // frame to 0.
-    tail_frame = clampTo(
-        1 + log(kMaxTailAmplitude / (fabs(c1) + fabs(c2))) / log(fabs(r1)), 0);
+    tail_frame =
+        clampTo(1 + fdlibm::log(kMaxTailAmplitude / (fabs(c1) + fabs(c2))) /
+                        fdlibm::log(fabs(r1)),
+                0);
 
     DCHECK(std::isfinite(tail_frame));
   } else if (discrim < 0) {
@@ -842,7 +847,8 @@ double Biquad::TailFrame(int coef_index, double max_frame) {
       DCHECK(std::isfinite(c1));
       DCHECK(std::isfinite(c2));
 
-      tail_frame = 1 + log(kMaxTailAmplitude / (c1 + c2)) / log(r);
+      tail_frame =
+          1 + fdlibm::log(kMaxTailAmplitude / (c1 + c2)) / fdlibm::log(r);
       if (c1 == 0 && c2 == 0) {
         // If c1 = c2 = 0, then H(z) = b0.  Hence, there's no tail
         // because this is just a wire from input to output.
@@ -883,14 +889,15 @@ double Biquad::TailFrame(int coef_index, double max_frame) {
         // -(1+log(r))/log(r). so we can start our search from that
         // point to max_frames.
 
-        double low = clampTo(-(1 + log(r)) / log(r), 1.0,
+        double low = clampTo(-(1 + fdlibm::log(r)) / fdlibm::log(r), 1.0,
                              static_cast<double>(max_frame - 1));
         double high = max_frame;
 
         DCHECK(std::isfinite(low));
         DCHECK(std::isfinite(high));
 
-        tail_frame = RootFinder(low, high, log(kMaxTailAmplitude), c1, c2, r);
+        tail_frame =
+            RootFinder(low, high, fdlibm::log(kMaxTailAmplitude), c1, c2, r);
       }
     }
   }

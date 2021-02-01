@@ -27,19 +27,20 @@
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/fdlibm/ieee754.h"
 
 namespace blink {
 
 namespace audio_utilities {
 
 float DecibelsToLinear(float decibels) {
-  return powf(10, 0.05f * decibels);
+  return fdlibm::powf(10, 0.05f * decibels);
 }
 
 float LinearToDecibels(float linear) {
   DCHECK_GE(linear, 0);
 
-  return 20 * log10f(linear);
+  return 20 * fdlibm::log10f(linear);
 }
 
 double DiscreteTimeConstantForSampleRate(double time_constant,
@@ -64,7 +65,7 @@ double DiscreteTimeConstantForSampleRate(double time_constant,
   // discrete time constant is
   //
   //   1 - exp(-1/(Fs*tau)
-  return 1 - exp(-1 / (sample_rate * time_constant));
+  return 1 - fdlibm::exp(-1 / (sample_rate * time_constant));
 }
 
 size_t TimeToSampleFrame(double time,

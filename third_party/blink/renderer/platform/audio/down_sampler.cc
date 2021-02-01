@@ -33,6 +33,7 @@
 #include <memory>
 
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/fdlibm/ieee754.h"
 
 namespace blink {
 
@@ -61,13 +62,13 @@ std::unique_ptr<AudioFloatArray> MakeReducedKernel(size_t size) {
   for (int i = 1; i < n; i += 2) {
     // Compute the sinc() with offset.
     double s = sinc_scale_factor * kPiDouble * (i - half_size);
-    double sinc = !s ? 1.0 : sin(s) / s;
+    double sinc = !s ? 1.0 : fdlibm::sin(s) / s;
     sinc *= sinc_scale_factor;
 
     // Compute Blackman window, matching the offset of the sinc().
     double x = static_cast<double>(i) / n;
-    double window =
-        a0 - a1 * cos(kTwoPiDouble * x) + a2 * cos(kTwoPiDouble * 2.0 * x);
+    double window = a0 - a1 * fdlibm::cos(kTwoPiDouble * x) +
+                    a2 * fdlibm::cos(kTwoPiDouble * 2.0 * x);
 
     // Window the sinc() function.
     // Then store only the odd terms in the kernel.

@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/fdlibm/ieee754.h"
 
 namespace blink {
 
@@ -72,7 +73,7 @@ static float CalculateNormalizationScale(AudioBus* response) {
 
   float scale = 1 / power;
 
-  scale *= powf(
+  scale *= fdlibm::powf(
       10, kGainCalibration *
               0.05f);  // calibrate to make perceived volume same as unprocessed
 
