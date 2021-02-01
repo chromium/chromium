@@ -190,9 +190,6 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
       StoragePartitionImpl* partition);
 
  private:
-  // TODO(kinuko): This can be a file-local private anonymous function.
-  static uint32_t GetURLLoaderOptions(bool is_main_frame);
-
   void BindNonNetworkURLLoaderFactoryReceiver(
       const GURL& url,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver);
