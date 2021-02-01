@@ -46,7 +46,7 @@
     </picture>
     <div id="generalControls">
       <h2>$i18n{cookiePageGeneralControls}</h2>
-      <settings-radio-group id="primarySettingGroup"
+      <settings-radio-group id="primarySettingGroup" no-set-pref
           pref="{{prefs.generated.cookie_primary_setting}}"
           selectable-elements="cr-radio-button, settings-collapse-radio-button"
           on-change="onCookiePrimarySettingChanged_">
@@ -165,3 +165,13 @@
         read-only-list="[[exceptionListsReadOnly_]]"
         search-filter="[[searchTerm]]">
     </site-list>
+    <cr-toast id="toast">
+      <div>$i18n{privacySandboxTitle}</div>
+      <cr-button on-click="onPrivacySandboxClick_">
+        $i18n{privacySandboxTitle}
+      </cr-button>
+      <a id="privacySandboxLink" href="privacySandbox"
+          target="_blank" tabindex="-1" aria-disabled="true"
+          role="none"></a>
+    </cr-toast>
+

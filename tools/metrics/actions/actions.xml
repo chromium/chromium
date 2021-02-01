@@ -21172,6 +21172,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.PrivacySandbox.OpenedFromCookiesPageToast">
+  <owner>rainhard@chromium.org</owner>
+  <owner>sauski@google.com</owner>
+  <owner>msramek@chromium.org</owner>
+  <description>
+    User clicks the toast shown on the cookies page after blocking 3P cookies to
+    open the privacy sandbox page.
+  </description>
+</action>
+
 <action name="Settings.PrivacySandbox.OpenedFromSettingsParent">
   <owner>rainhard@chromium.org</owner>
   <owner>sauski@google.com</owner>
