@@ -65,7 +65,7 @@ public class DownloadInfoBarControllerTest {
         private DownloadProgressInfoBarData mInfo;
 
         public TestDownloadInfoBarController() {
-            super(false);
+            super(/*otrProfileID=*/null);
         }
 
         @Override

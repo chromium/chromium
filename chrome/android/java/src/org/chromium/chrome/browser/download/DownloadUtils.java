@@ -348,18 +348,18 @@ public class DownloadUtils {
      * @param source The location from which the download was opened.
      */
     public static void openItem(
-            ContentId contentId, boolean isOffTheRecord, @DownloadOpenSource int source) {
+            ContentId contentId, OTRProfileID otrProfileID, @DownloadOpenSource int source) {
         if (LegacyHelpers.isLegacyAndroidDownload(contentId)) {
             ContextUtils.getApplicationContext().startActivity(
                     new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS)
                             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         } else if (LegacyHelpers.isLegacyOfflinePage(contentId)) {
             OpenParams openParams = new OpenParams(LaunchLocation.PROGRESS_BAR);
-            openParams.openInIncognito = isOffTheRecord;
+            openParams.openInIncognito = OTRProfileID.isOffTheRecord(otrProfileID);
             OfflineContentAggregatorFactory.get().openItem(openParams, contentId);
         } else {
             DownloadManagerService.getDownloadManagerService().openDownload(
-                    contentId, isOffTheRecord, source);
+                    contentId, otrProfileID, source);
         }
     }
 

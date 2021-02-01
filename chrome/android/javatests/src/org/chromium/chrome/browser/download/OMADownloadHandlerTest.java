@@ -78,7 +78,7 @@ public class OMADownloadHandlerTest {
         public OfflineItem mLastUpdatedItem;
 
         public TestInfoBarController() {
-            super(false);
+            super(/*otrProfileID=*/null);
         }
 
         @Override

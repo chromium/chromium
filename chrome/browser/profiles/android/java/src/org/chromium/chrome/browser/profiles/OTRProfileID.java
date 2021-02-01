@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.profiles;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 
@@ -79,6 +81,37 @@ public class OTRProfileID {
     public boolean isPrimaryOTRId() {
         OTRProfileID primaryId = OTRProfileIDJni.get().getPrimaryID();
         return this.equals(primaryId);
+    }
+
+    /**
+     * @return The OTRProfileID of the primary off-the-record profile.
+     */
+    public static OTRProfileID getPrimaryOTRProfileID() {
+        return OTRProfileIDJni.get().getPrimaryID();
+    }
+
+    /**
+     * Returns true for id of primary and non-primary off-the-record profiles. Otherwise returns
+     * false.
+     * @param profileID The OTRProfileID
+     * @return Whether given OTRProfileID belongs to a off-the-record profile.
+     */
+    public static boolean isOffTheRecord(@Nullable OTRProfileID profileID) {
+        return profileID != null;
+    }
+
+    /**
+     * Checks whether the given OTRProfileIDs belong to the same profile.
+     * @param otrProfileID1 The first OTRProfileID
+     * @param otrProfileID2 The first OTRProfileID
+     * @return Whether the given OTRProfileIDs are equals.
+     */
+    public static boolean areEqual(
+            @Nullable OTRProfileID otrProfileID1, @Nullable OTRProfileID otrProfileID2) {
+        // If both OTRProfileIDs null, then both belong to the regular profile.
+        if (otrProfileID1 == null) return otrProfileID2 == null;
+
+        return otrProfileID1.equals(otrProfileID2);
     }
 
     @Override

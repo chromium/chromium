@@ -124,8 +124,8 @@ class LegacyDownloadProviderImpl implements DownloadObserver, LegacyDownloadProv
     @Override
     public void openItem(OfflineItem item) {
         // TODO(shaktisahu): May be pass metrics as a param.
-        DownloadManagerService.getDownloadManagerService().openDownload(
-                item.id, item.isOffTheRecord, DownloadOpenSource.DOWNLOAD_HOME);
+        DownloadManagerService.getDownloadManagerService().openDownload(item.id,
+                OTRProfileID.deserialize(item.otrProfileId), DownloadOpenSource.DOWNLOAD_HOME);
     }
 
     @Override
@@ -209,7 +209,7 @@ class LegacyDownloadProviderImpl implements DownloadObserver, LegacyDownloadProv
     @Override
     public void changeSchedule(final OfflineItem item, final OfflineItemSchedule schedule) {
         DownloadManagerService.getDownloadManagerService().changeSchedule(
-                item.id, schedule, item.isOffTheRecord);
+                item.id, schedule, OTRProfileID.deserialize(item.otrProfileId));
     }
 
     /**

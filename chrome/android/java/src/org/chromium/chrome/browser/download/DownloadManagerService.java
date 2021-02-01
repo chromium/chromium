@@ -140,7 +140,8 @@ public class DownloadManagerService implements DownloadController.Observer,
     private OMADownloadHandler mOMADownloadHandler;
     private DownloadSnackbarController mDownloadSnackbarController;
     private DownloadInfoBarController mInfoBarController;
-    private DownloadInfoBarController mIncognitoInfoBarController;
+    private HashMap<OTRProfileID, DownloadInfoBarController> mIncognitoInfoBarControllerMap =
+            new HashMap<>();
     private long mNativeDownloadManagerService;
     private NetworkChangeNotifierAutoDetect mNetworkChangeNotifier;
     // Flag to track if we need to post a task to update download notifications.
@@ -287,8 +288,20 @@ public class DownloadManagerService implements DownloadController.Observer,
     }
 
     /** @return The {@link DownloadInfoBarController} controller associated with the profile. */
-    public DownloadInfoBarController getInfoBarController(boolean isIncognito) {
-        return isIncognito ? mIncognitoInfoBarController : mInfoBarController;
+    public DownloadInfoBarController getInfoBarController(OTRProfileID otrProfileID) {
+        if (!OTRProfileID.isOffTheRecord(otrProfileID)) return mInfoBarController;
+
+        // If the OTR profile does not exist, we should not create regarding info bar controller.
+        if (!Profile.getLastUsedRegularProfile().hasOffTheRecordProfile(otrProfileID)) {
+            return null;
+        }
+
+        DownloadInfoBarController controller = mIncognitoInfoBarControllerMap.get(otrProfileID);
+        if (controller == null) {
+            controller = new DownloadInfoBarController(otrProfileID);
+            mIncognitoInfoBarControllerMap.put(otrProfileID, controller);
+        }
+        return controller;
     }
 
     /** For testing only. */
@@ -398,8 +411,12 @@ public class DownloadManagerService implements DownloadController.Observer,
      */
     public void onActivityLaunched() {
         if (!mActivityLaunched) {
-            mInfoBarController = new DownloadInfoBarController(false);
-            mIncognitoInfoBarController = new DownloadInfoBarController(true);
+            // The info bar controller for regular and primary OTR profile should be created when
+            // activity is launched.
+            mInfoBarController = new DownloadInfoBarController(/*otrProfileID=*/null);
+            OTRProfileID primaryOTRProfileID = OTRProfileID.getPrimaryOTRProfileID();
+            mIncognitoInfoBarControllerMap.put(
+                    primaryOTRProfileID, new DownloadInfoBarController(primaryOTRProfileID));
 
             DownloadNotificationService.clearResumptionAttemptLeft();
 
@@ -411,7 +428,7 @@ public class DownloadManagerService implements DownloadController.Observer,
 
     private void updateDownloadInfoBar(DownloadItem item) {
         DownloadInfoBarController infobarController =
-                getInfoBarController(item.getDownloadInfo().isOffTheRecord());
+                getInfoBarController(item.getDownloadInfo().getOTRProfileId());
         if (infobarController != null) infobarController.onDownloadItemUpdated(item);
     }
 
@@ -732,7 +749,7 @@ public class DownloadManagerService implements DownloadController.Observer,
             return;
         }
 
-        getInfoBarController(downloadItem.getDownloadInfo().isOffTheRecord()).onDownloadStarted();
+        getInfoBarController(downloadItem.getDownloadInfo().getOTRProfileId()).onDownloadStarted();
     }
 
     @Nullable
@@ -900,7 +917,7 @@ public class DownloadManagerService implements DownloadController.Observer,
         if (mDownloadSnackbarController.getSnackbarManager() != null) {
             mDownloadSnackbarController.onDownloadFailed(failureMessage,
                     reason == DownloadManager.ERROR_FILE_ALREADY_EXISTS,
-                    item.getDownloadInfo().isOffTheRecord());
+                    item.getDownloadInfo().getOTRProfileId());
         } else {
             Toast.makeText(ContextUtils.getApplicationContext(), failureMessage, Toast.LENGTH_SHORT)
                     .show();
@@ -1016,8 +1033,7 @@ public class DownloadManagerService implements DownloadController.Observer,
             removeDownloadProgress(id.id);
         } else {
             mDownloadNotifier.notifyDownloadCanceled(id);
-            DownloadInfoBarController infoBarController =
-                    getInfoBarController(otrProfileID != null);
+            DownloadInfoBarController infoBarController = getInfoBarController(otrProfileID);
             if (infoBarController != null) infoBarController.onDownloadItemRemoved(id);
         }
     }
@@ -1116,7 +1132,9 @@ public class DownloadManagerService implements DownloadController.Observer,
     }
 
     @Override
-    public void onProfileDestroyed(Profile profile) {}
+    public void onProfileDestroyed(Profile profile) {
+        mIncognitoInfoBarControllerMap.remove(profile.getOTRProfileID());
+    }
 
     @CalledByNative
     void onResumptionFailed(String downloadGuid) {
@@ -1146,14 +1164,14 @@ public class DownloadManagerService implements DownloadController.Observer,
                 handleAutoOpenAfterDownload(item);
             } else {
                 DownloadInfoBarController infobarController =
-                        getInfoBarController(info.isOffTheRecord());
+                        getInfoBarController(info.getOTRProfileId());
                 if (infobarController != null) {
                     infobarController.onNotificationShown(info.getContentId(), notificationId);
                 }
             }
         } else {
-            if (getInfoBarController(info.isOffTheRecord()) != null) {
-                getInfoBarController(info.isOffTheRecord())
+            if (getInfoBarController(info.getOTRProfileId()) != null) {
+                getInfoBarController(info.getOTRProfileId())
                         .onNotificationShown(info.getContentId(), notificationId);
             }
         }
@@ -1213,7 +1231,7 @@ public class DownloadManagerService implements DownloadController.Observer,
                                     && item.getDownloadInfo().hasUserGesture() && canResolve) {
                                 handleAutoOpenAfterDownload(item);
                             } else {
-                                getInfoBarController(item.getDownloadInfo().isOffTheRecord())
+                                getInfoBarController(item.getDownloadInfo().getOTRProfileId())
                                         .onItemUpdated(DownloadItem.createOfflineItem(item), null);
                             }
                         }
@@ -1386,16 +1404,16 @@ public class DownloadManagerService implements DownloadController.Observer,
      * Change the download schedule to start the download in a different condition.
      * @param id The id of the {@link OfflineItem} that requests the change.
      * @param schedule The download schedule that defines when to start the download.
-     * @param isOffTheRecord Whether the download is for off the record profile.
+     * @param otrProfileID The {@link OTRProfileID} of the download. Null if in regular mode.
      */
     // Deprecated after new download backend.
     public void changeSchedule(
-            final ContentId id, final OfflineItemSchedule schedule, boolean isOffTheRecord) {
+            final ContentId id, final OfflineItemSchedule schedule, OTRProfileID otrProfileID) {
         boolean onlyOnWifi = (schedule == null) ? false : schedule.onlyOnWifi;
         long startTimeMs = (schedule == null) ? -1 : schedule.startTimeMs;
         DownloadManagerServiceJni.get().changeSchedule(getNativeDownloadManagerService(),
                 DownloadManagerService.this, id.id, onlyOnWifi, startTimeMs,
-                getProfileKey(isOffTheRecord));
+                IncognitoUtils.getProfileKeyFromOTRProfileID(otrProfileID));
     }
 
     /**
@@ -1548,15 +1566,16 @@ public class DownloadManagerService implements DownloadController.Observer,
 
     // Deprecated after new download backend.
     @CalledByNative
-    private void onDownloadItemRemoved(String guid, boolean isOffTheRecord) {
-        DownloadInfoBarController infobarController = getInfoBarController(isOffTheRecord);
+    private void onDownloadItemRemoved(String guid, OTRProfileID otrProfileID) {
+        DownloadInfoBarController infobarController = getInfoBarController(otrProfileID);
         if (infobarController != null) {
             infobarController.onDownloadItemRemoved(
                     LegacyHelpers.buildLegacyContentId(false, guid));
         }
 
         for (DownloadObserver adapter : mDownloadObservers) {
-            adapter.onDownloadItemRemoved(guid, isOffTheRecord);
+            // TODO(crbug.com/1099577): Pass OTRProfileID to support non-primary OTR profiles.
+            adapter.onDownloadItemRemoved(guid, OTRProfileID.isOffTheRecord(otrProfileID));
         }
     }
 
@@ -1576,12 +1595,15 @@ public class DownloadManagerService implements DownloadController.Observer,
     /**
      * Opens a download. If the download cannot be opened, download home will be opened instead.
      * @param id The {@link ContentId} of the download to be opened.
+     * @param otrProfileID The {@link OTRProfileID} of the download. Null if in regular mode.
      * @param source The source where the user opened this download.
      */
     // Deprecated after new download backend.
-    public void openDownload(ContentId id, boolean isOffTheRecord, @DownloadOpenSource int source) {
+    public void openDownload(
+            ContentId id, OTRProfileID otrProfileID, @DownloadOpenSource int source) {
         DownloadManagerServiceJni.get().openDownload(getNativeDownloadManagerService(),
-                DownloadManagerService.this, id.id, getProfileKey(isOffTheRecord), source);
+                DownloadManagerService.this, id.id,
+                IncognitoUtils.getProfileKeyFromOTRProfileID(otrProfileID), source);
     }
 
     /**

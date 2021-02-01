@@ -111,7 +111,7 @@ import java.util.List;
 
     static class TestDownloadInfoBarController extends DownloadInfoBarController {
         public TestDownloadInfoBarController() {
-            super(false);
+            super(/*otrProfileID=*/null);
         }
 
         @Override
