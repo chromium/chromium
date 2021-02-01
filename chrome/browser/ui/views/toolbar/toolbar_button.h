@@ -220,6 +220,8 @@ class ToolbarButton : public views::LabelButton,
     gfx::SlideAnimation highlight_color_animation_;
   };
 
+  void TouchUiChanged();
+
   // Clears the current highlight, i.e. it sets the label to an empty string and
   // clears the highlight color. If there was a non-empty highlight, previously,
   // it hides the current highlight using an animation. Otherwise, it is a
@@ -295,7 +297,7 @@ class ToolbarButton : public views::LabelButton,
 
   base::CallbackListSubscription subscription_ =
       ui::TouchUiController::Get()->RegisterCallback(
-          base::BindRepeating(&ToolbarButton::UpdateIcon,
+          base::BindRepeating(&ToolbarButton::TouchUiChanged,
                               base::Unretained(this)));
 
   // A factory for tasks that show the dropdown context menu for the button.

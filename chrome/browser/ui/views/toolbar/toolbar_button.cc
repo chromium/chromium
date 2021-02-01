@@ -207,21 +207,42 @@ void ToolbarButton::SetText(const base::string16& text) {
   UpdateColorsAndInsets();
 }
 
+void ToolbarButton::TouchUiChanged() {
+  UpdateIcon();
+  UpdateColorsAndInsets();
+  PreferredSizeChanged();
+}
+
 void ToolbarButton::ClearHighlight() {
   highlight_color_animation_.Hide();
   ShrinkDownThenClearText();
 }
 
 void ToolbarButton::UpdateColorsAndInsets() {
+  // First, calculate new border insets assuming CalculatePreferredSize()
+  // accurately reflects the desired content size.
+
+  const gfx::Size current_preferred_size = CalculatePreferredSize();
+  const gfx::Insets current_insets = GetInsets();
+  const gfx::Size target_contents_size =
+      current_preferred_size - current_insets.size();
+
+  const gfx::Insets target_insets =
+      layout_insets_.value_or(::GetLayoutInsets(TOOLBAR_BUTTON)) +
+      layout_inset_delta_ + *GetProperty(views::kInternalPaddingKey);
+
+  const gfx::Size target_size = target_contents_size + target_insets.size();
+
   const int highlight_radius =
       ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
-          views::EMPHASIS_MAXIMUM, size());
+          views::EMPHASIS_MAXIMUM, target_size);
 
   SetEnabledTextColors(highlight_color_animation_.GetTextColor());
 
   // ToolbarButtons are always the height the location bar.
   const gfx::Insets paint_insets =
-      gfx::Insets((height() - GetLayoutConstant(LOCATION_BAR_HEIGHT)) / 2) +
+      gfx::Insets(
+          (target_size.height() - GetLayoutConstant(LOCATION_BAR_HEIGHT)) / 2) +
       *GetProperty(views::kInternalPaddingKey);
 
   base::Optional<SkColor> background_color =
@@ -234,12 +255,11 @@ void ToolbarButton::UpdateColorsAndInsets() {
     SetBackground(nullptr);
   }
 
-  gfx::Insets target_insets =
-      layout_insets_.value_or(::GetLayoutInsets(TOOLBAR_BUTTON)) +
-      layout_inset_delta_ + *GetProperty(views::kInternalPaddingKey);
+  // Apply new border with target insets.
+
   base::Optional<SkColor> border_color =
       highlight_color_animation_.GetBorderColor();
-  if (!border() || target_insets != border()->GetInsets() ||
+  if (!border() || target_insets != current_insets ||
       last_border_color_ != border_color ||
       last_paint_insets_ != paint_insets) {
     if (border_color) {
