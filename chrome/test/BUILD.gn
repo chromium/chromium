@@ -3953,7 +3953,6 @@ test("unit_tests") {
       "../browser/policy/browser_dm_token_storage_mac_unittest.cc",
       "../browser/renderer_host/chrome_render_widget_host_view_mac_history_swiper_unit_test.mm",
       "../browser/service_process/service_process_control_mac_unittest.mm",
-      "../browser/upgrade_detector/directory_monitor_unittest.cc",
       "../common/mac/mock_launchd.h",
       "../common/mac/mock_launchd.mm",
     ]
