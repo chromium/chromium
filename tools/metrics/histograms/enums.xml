@@ -9977,6 +9977,7 @@ histogram as enum -->
   <int value="0" label="User selected an unspecified lab"/>
   <int value="1" label="User selected the Read Later lab"/>
   <int value="2" label="User selected the Tab Search lab"/>
+  <int value="3" label="User selected the Tab Scrolling lab"/>
 </enum>
 
 <enum name="ChromeMLServiceDecisionTreePredictionResult">

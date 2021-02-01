@@ -2046,6 +2046,7 @@ const char kScreenCaptureTestDescription[] =
     "quick settings. Select the capture type and selection default from the "
     "capture mode UI bar. Try out new screen recording functionality.";
 
+const char kScrollableTabStripFlagId[] = "scrollable-tabstrip";
 const char kScrollableTabStripName[] = "Scrollable TabStrip";
 const char kScrollableTabStripDescription[] =
     "Allows users to access tabs by scrolling when they no longer fit in the "

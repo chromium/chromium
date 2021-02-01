@@ -49,6 +49,14 @@ void ChromeLabsBubbleViewModel::SetUpLabs() {
                          "list. Access from the Bookmarks bar."),
       version_info::Channel::BETA));
 
+  // Tab Scrolling.
+  lab_info_.emplace_back(
+      LabInfo(flag_descriptions::kScrollableTabStripFlagId,
+              base::ASCIIToUTF16("Tab Scrolling"),
+              base::ASCIIToUTF16(
+                  "Enables tab strip to scroll left and right when full."),
+              version_info::Channel::BETA));
+
   // Tab Search.
   lab_info_.emplace_back(
       LabInfo(flag_descriptions::kEnableTabSearchFlagId,

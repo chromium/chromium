@@ -1193,6 +1193,7 @@ extern const char kSchemefulSameSiteDescription[];
 extern const char kScreenCaptureTestName[];
 extern const char kScreenCaptureTestDescription[];
 
+extern const char kScrollableTabStripFlagId[];
 extern const char kScrollableTabStripName[];
 extern const char kScrollableTabStripDescription[];
 

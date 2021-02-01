@@ -32,7 +32,8 @@ enum class ChromeLabsSelectedLab {
   kUnspecifiedSelected = 0,
   kReadLaterSelected = 1,
   kTabSearchSelected = 2,
-  kMaxValue = kTabSearchSelected,
+  kTabScrollingSelected = 3,
+  kMaxValue = kTabScrollingSelected,
 };
 
 void EmitToHistogram(const base::string16& selected_lab_state,
@@ -59,6 +60,8 @@ void EmitToHistogram(const base::string16& selected_lab_state,
       return ChromeLabsSelectedLab::kReadLaterSelected;
     } else if (internal_name == flag_descriptions::kEnableTabSearchFlagId) {
       return ChromeLabsSelectedLab::kTabSearchSelected;
+    } else if (internal_name == flag_descriptions::kScrollableTabStripFlagId) {
+      return ChromeLabsSelectedLab::kTabScrollingSelected;
     } else {
       return ChromeLabsSelectedLab::kUnspecifiedSelected;
     }
