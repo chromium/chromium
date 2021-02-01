@@ -78,12 +78,6 @@ class PersonalDataManagerCleaner {
   void ClearCreditCardNonSettingsOriginsForTesting() {
     ClearCreditCardNonSettingsOrigins();
   }
-
-  // Setter method for |is_autofill_profile_cleanup_pending_| used for testing
-  // purposes.
-  void set_is_autofill_profile_cleanup_pending(bool value) {
-    is_autofill_profile_cleanup_pending_ = value;
-  }
 #endif  // defined(UNIT_TEST)
 
  private:

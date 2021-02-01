@@ -370,11 +370,6 @@ class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
     return PersonalDataManagerTestBase::TurnOnSyncFeature(personal_data_.get());
   }
 
-  void EnableAutofillProfileCleanup() {
-    personal_data_->personal_data_manager_cleaner_for_testing()
-        ->set_is_autofill_profile_cleanup_pending(true);
-  }
-
   void SetUpReferenceProfile(const AutofillProfile& profile) {
     ASSERT_EQ(0U, personal_data_->GetProfiles().size());
 
@@ -607,8 +602,6 @@ class PersonalDataManagerMockTest : public PersonalDataManagerTestBase,
     personal_data_->pref_service_->SetInteger(
         prefs::kAutofillLastVersionValidated,
         atoi(version_info::GetVersionNumber().c_str()));
-    personal_data_->personal_data_manager_cleaner_for_testing()
-        ->set_is_autofill_profile_cleanup_pending(true);
   }
 
   void TearDown() override {
@@ -4608,9 +4601,6 @@ TEST_F(PersonalDataManagerTest, DedupeProfiles_ProfilesToDelete) {
   existing_profiles.push_back(std::unique_ptr<AutofillProfile>(profile4));
   existing_profiles.push_back(std::unique_ptr<AutofillProfile>(profile5));
 
-  // Enable the profile cleanup.
-  EnableAutofillProfileCleanup();
-
   base::HistogramTester histogram_tester;
   std::unordered_map<std::string, std::string> guids_merge_map;
   std::unordered_set<std::string> profiles_to_delete;
@@ -4693,9 +4683,6 @@ TEST_F(PersonalDataManagerTest, DedupeProfiles_GuidsMergeMap) {
   existing_profiles.push_back(std::unique_ptr<AutofillProfile>(profile3));
   existing_profiles.push_back(std::unique_ptr<AutofillProfile>(profile4));
   existing_profiles.push_back(std::unique_ptr<AutofillProfile>(profile5));
-
-  // Enable the profile cleanup.
-  EnableAutofillProfileCleanup();
 
   std::unordered_map<std::string, std::string> guids_merge_map;
   std::unordered_set<std::string> profiles_to_delete;
@@ -4876,10 +4863,6 @@ TEST_F(PersonalDataManagerTest,
   EXPECT_EQ(6U, personal_data_->GetProfiles().size());
   EXPECT_EQ(3U, personal_data_->GetCreditCards().size());
 
-  // Enable the profile cleanup now. Otherwise it would be triggered by the
-  // calls to AddProfile.
-  EnableAutofillProfileCleanup();
-
   EXPECT_TRUE(personal_data_->personal_data_manager_cleaner_for_testing()
                   ->ApplyDedupingRoutineForTesting());
   WaitForOnPersonalDataChanged();
@@ -4946,10 +4929,6 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MergedProfileValues) {
 
   // Make sure the 3 profiles were saved;
   EXPECT_EQ(3U, personal_data_->GetProfiles().size());
-
-  // Enable the profile cleanup now. Otherwise it would be triggered by the
-  // calls to AddProfile.
-  EnableAutofillProfileCleanup();
 
   base::HistogramTester histogram_tester;
 
@@ -5036,10 +5015,6 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_VerifiedProfileFirst) {
   // Make sure the 3 profiles were saved.
   EXPECT_EQ(3U, personal_data_->GetProfiles().size());
 
-  // Enable the profile cleanup now. Otherwise it would be triggered by the
-  // calls to AddProfile.
-  EnableAutofillProfileCleanup();
-
   base::HistogramTester histogram_tester;
 
   EXPECT_TRUE(personal_data_->personal_data_manager_cleaner_for_testing()
@@ -5101,10 +5076,6 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_VerifiedProfileLast) {
   // Make sure the 3 profiles were saved.
   EXPECT_EQ(3U, personal_data_->GetProfiles().size());
 
-  // Enable the profile cleanup now. Otherwise it would be triggered by the
-  // calls to AddProfile.
-  EnableAutofillProfileCleanup();
-
   base::HistogramTester histogram_tester;
 
   EXPECT_TRUE(personal_data_->personal_data_manager_cleaner_for_testing()
@@ -5164,10 +5135,6 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MultipleVerifiedProfiles) {
 
   // Make sure the 3 profiles were saved.
   EXPECT_EQ(3U, personal_data_->GetProfiles().size());
-
-  // Enable the profile cleanup now. Otherwise it would be triggered by the
-  // calls to AddProfile.
-  EnableAutofillProfileCleanup();
 
   base::HistogramTester histogram_tester;
 
@@ -5281,10 +5248,6 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MultipleDedupes) {
   // Make sure the 7 profiles were saved;
   EXPECT_EQ(7U, personal_data_->GetProfiles().size());
 
-  // Enable the profile cleanup now. Otherwise it would be triggered by the
-  // calls to AddProfile.
-  EnableAutofillProfileCleanup();
-
   base::HistogramTester histogram_tester;
 
   // |Homer1| should get merged into |Homer2| which should then be merged into
@@ -5346,37 +5309,8 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MultipleDedupes) {
   EXPECT_TRUE(Barney == *profiles[3]);
 }
 
-// Tests that ApplyDedupingRoutine is not run if the feature is disabled.
-TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_FeatureDisabled) {
-  // Create a profile to dedupe.
-  AutofillProfile profile1(base::GenerateGUID(), test::kEmptyOrigin);
-  test::SetProfileInfo(&profile1, "Homer", "J", "Simpson",
-                       "homer.simpson@abc.com", "", "742. Evergreen Terrace",
-                       "", "Springfield", "IL", "91601", "US", "");
-
-  // Create a similar profile.
-  AutofillProfile profile2(base::GenerateGUID(), test::kEmptyOrigin);
-  test::SetProfileInfo(&profile2, "Homer", "J", "Simpson",
-                       "homer.simpson@abc.com", "Fox", "742 Evergreen Terrace.",
-                       "", "Springfield", "IL", "91601", "", "");
-
-  AddProfileToPersonalDataManager(profile1);
-  AddProfileToPersonalDataManager(profile2);
-
-  // Make sure both profiles were saved.
-  EXPECT_EQ(2U, personal_data_->GetProfiles().size());
-
-  // The deduping routine should not be run.
-  EXPECT_FALSE(personal_data_->personal_data_manager_cleaner_for_testing()
-                   ->ApplyDedupingRoutineForTesting());
-
-  // Both profiles should still be present.
-  EXPECT_EQ(2U, personal_data_->GetProfiles().size());
-}
-
 TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_NopIfZeroProfiles) {
   EXPECT_TRUE(personal_data_->GetProfiles().empty());
-  EnableAutofillProfileCleanup();
   EXPECT_FALSE(personal_data_->personal_data_manager_cleaner_for_testing()
                    ->ApplyDedupingRoutineForTesting());
 }
@@ -5391,10 +5325,6 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_NopIfOneProfile) {
   AddProfileToPersonalDataManager(profile);
 
   EXPECT_EQ(1U, personal_data_->GetProfiles().size());
-
-  // Enable the profile cleanup now. Otherwise it would be triggered by the
-  // calls to AddProfile.
-  EnableAutofillProfileCleanup();
   EXPECT_FALSE(personal_data_->personal_data_manager_cleaner_for_testing()
                    ->ApplyDedupingRoutineForTesting());
 }
@@ -5419,10 +5349,6 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_OncePerVersion) {
 
   EXPECT_EQ(2U, personal_data_->GetProfiles().size());
 
-  // Enable the profile cleanup now. Otherwise it would be triggered by the
-  // calls to AddProfile.
-  EnableAutofillProfileCleanup();
-
   // The deduping routine should be run a first time.
   EXPECT_TRUE(personal_data_->personal_data_manager_cleaner_for_testing()
                   ->ApplyDedupingRoutineForTesting());
@@ -5443,9 +5369,6 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_OncePerVersion) {
 
   // Make sure |profile3| was saved.
   EXPECT_EQ(2U, personal_data_->GetProfiles().size());
-
-  // Re-enable the profile cleanup now that the profile was added.
-  EnableAutofillProfileCleanup();
 
   // The deduping routine should not be run.
   EXPECT_FALSE(personal_data_->personal_data_manager_cleaner_for_testing()
