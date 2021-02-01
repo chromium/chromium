@@ -112,18 +112,11 @@ const size_t kTheRcHeaderSize = base::size(kTheRcHeader);''', output)
          </includes>
         </release>''', run_gatherers=True)
 
-    formatter = resource_map.GetFormatter('resource_file_map_source')
-    output = util.StripBlankLinesAndComments(''.join(formatter(grd, 'en', '.')))
-    expected = '''\
-#include "resource_map_header.h"
-#include <stddef.h>
-#include "base/stl_util.h"
-#include "the_rc_header.h"
-const GritResourceMap kTheRcHeader[] = {
-  {"@out_folder@/gen/foo/bar/baz.js", IDR_FOO_BAR_BAZ_JS},
-};
-const size_t kTheRcHeaderSize = base::size(kTheRcHeader);'''
-    self.assertEqual(expected, output)
+    with self.assertRaises(AssertionError) as assertion_error:
+      formatter = resource_map.GetFormatter('resource_file_map_source')
+      util.StripBlankLinesAndComments(''.join(formatter(grd, 'en', '.')))
+    self.assertTrue(str(assertion_error.exception). \
+        startswith('resource_path attribute missing for IDR_FOO_BAR_BAZ_JS'))
 
   def testFormatResourceMapWithOutputAllEqualsFalseForStructures(self):
     grd = util.ParseGrdForUnittest('''
