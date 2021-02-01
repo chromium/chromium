@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -231,8 +231,7 @@ chrome.accessibilityPrivate.FocusRingStackingOrder = {
  *   color: string,
  *   secondaryColor: (string|undefined),
  *   backgroundColor: (string|undefined),
- *   stackingOrder:
- * (!chrome.accessibilityPrivate.FocusRingStackingOrder|undefined),
+ *   stackingOrder: (!chrome.accessibilityPrivate.FocusRingStackingOrder|undefined),
  *   id: (string|undefined)
  * }}
  */
@@ -266,6 +265,12 @@ chrome.accessibilityPrivate.SelectToSpeakPanelAction = {
   EXIT: 'exit',
   CHANGE_SPEED: 'changeSpeed',
 };
+
+/**
+ * Property to indicate whether event source should default to touch.
+ * @type {number}
+ */
+chrome.accessibilityPrivate.IS_DEFAULT_EVENT_SOURCE_TOUCH;
 
 /**
  * Called to translate localeCodeToTranslate into human-readable string in the

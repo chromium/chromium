@@ -234,6 +234,13 @@
         "description": "Actions that can be performed in the Select-to-speak panel."
       }
     ],
+    "properties": {
+      "IS_DEFAULT_EVENT_SOURCE_TOUCH": {
+        "type": "integer",
+        "value": 0,
+        "description": "Property to indicate whether event source should default to touch."
+      }
+    },
     "functions": [
       {
         "name": "getDisplayNameForLocale",
