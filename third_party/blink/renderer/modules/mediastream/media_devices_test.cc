@@ -27,11 +27,14 @@ namespace blink {
 
 const char kFakeAudioInputDeviceId1[] = "fake_audio_input 1";
 const char kFakeAudioInputDeviceId2[] = "fake_audio_input 2";
+const char kFakeAudioInputDeviceId3[] = "fake_audio_input 3";
 const char kFakeVideoInputDeviceId1[] = "fake_video_input 1";
 const char kFakeVideoInputDeviceId2[] = "fake_video_input 2";
 const char kFakeCommonGroupId1[] = "fake_group 1";
+const char kFakeCommonGroupId2[] = "fake_group 2";
 const char kFakeVideoInputGroupId2[] = "fake_video_input_group 2";
 const char kFakeAudioOutputDeviceId1[] = "fake_audio_output 1";
+const char kFakeAudioOutputDeviceId2[] = "fake_audio_output 2";
 
 class MockMediaDevicesDispatcherHost
     : public mojom::blink::MediaDevicesDispatcherHost {
@@ -60,8 +63,15 @@ class MockMediaDevicesDispatcherHost
           .push_back(device_info);
 
       device_info.device_id = kFakeAudioInputDeviceId2;
-      device_info.label = "Fake Audio Input 2";
-      device_info.group_id = "fake_group 2";
+      device_info.label = "X's AirPods";
+      device_info.group_id = kFakeCommonGroupId2;
+      enumeration[static_cast<size_t>(
+                      blink::mojom::blink::MediaDeviceType::MEDIA_AUDIO_INPUT)]
+          .push_back(device_info);
+
+      device_info.device_id = kFakeAudioInputDeviceId3;
+      device_info.label = "Fake Audio Input 3";
+      device_info.group_id = "fake_group 3";
       enumeration[static_cast<size_t>(
                       blink::mojom::blink::MediaDeviceType::MEDIA_AUDIO_INPUT)]
           .push_back(device_info);
@@ -103,6 +113,13 @@ class MockMediaDevicesDispatcherHost
       device_info.device_id = kFakeAudioOutputDeviceId1;
       device_info.label = "Fake Audio Input 1";
       device_info.group_id = kFakeCommonGroupId1;
+      enumeration[static_cast<size_t>(
+                      blink::mojom::blink::MediaDeviceType::MEDIA_AUDIO_OUTPUT)]
+          .push_back(device_info);
+
+      device_info.device_id = kFakeAudioOutputDeviceId2;
+      device_info.label = "X's AirPods";
+      device_info.group_id = kFakeCommonGroupId2;
       enumeration[static_cast<size_t>(
                       blink::mojom::blink::MediaDeviceType::MEDIA_AUDIO_OUTPUT)]
           .push_back(device_info);
@@ -261,7 +278,7 @@ TEST_F(MediaDevicesTest, EnumerateDevices) {
   ASSERT_FALSE(promise.IsEmpty());
 
   EXPECT_TRUE(devices_enumerated());
-  EXPECT_EQ(5u, device_infos().size());
+  EXPECT_EQ(7u, device_infos().size());
 
   // Audio input device with matched output ID.
   Member<MediaDeviceInfo> device = device_infos()[0];
@@ -270,37 +287,59 @@ TEST_F(MediaDevicesTest, EnumerateDevices) {
   EXPECT_FALSE(device->label().IsEmpty());
   EXPECT_FALSE(device->groupId().IsEmpty());
 
-  // Audio input device without matched output ID.
+  // Audio input device with Airpods label.
   device = device_infos()[1];
   EXPECT_FALSE(device->deviceId().IsEmpty());
   EXPECT_EQ("audioinput", device->kind());
   EXPECT_FALSE(device->label().IsEmpty());
   EXPECT_FALSE(device->groupId().IsEmpty());
 
-  // Video input devices.
+  // Audio input device without matched output ID.
   device = device_infos()[2];
   EXPECT_FALSE(device->deviceId().IsEmpty());
-  EXPECT_EQ("videoinput", device->kind());
+  EXPECT_EQ("audioinput", device->kind());
   EXPECT_FALSE(device->label().IsEmpty());
   EXPECT_FALSE(device->groupId().IsEmpty());
 
+  // Video input devices.
   device = device_infos()[3];
   EXPECT_FALSE(device->deviceId().IsEmpty());
   EXPECT_EQ("videoinput", device->kind());
   EXPECT_FALSE(device->label().IsEmpty());
   EXPECT_FALSE(device->groupId().IsEmpty());
 
-  // Audio output device.
   device = device_infos()[4];
+  EXPECT_FALSE(device->deviceId().IsEmpty());
+  EXPECT_EQ("videoinput", device->kind());
+  EXPECT_FALSE(device->label().IsEmpty());
+  EXPECT_FALSE(device->groupId().IsEmpty());
+
+  // Audio output device.
+  device = device_infos()[5];
+  EXPECT_FALSE(device->deviceId().IsEmpty());
+  EXPECT_EQ("audiooutput", device->kind());
+  EXPECT_FALSE(device->label().IsEmpty());
+  EXPECT_FALSE(device->groupId().IsEmpty());
+
+  // Audio output device with Airpods label.
+  device = device_infos()[6];
   EXPECT_FALSE(device->deviceId().IsEmpty());
   EXPECT_EQ("audiooutput", device->kind());
   EXPECT_FALSE(device->label().IsEmpty());
   EXPECT_FALSE(device->groupId().IsEmpty());
 
   // Verify group IDs.
-  EXPECT_EQ(device_infos()[0]->groupId(), device_infos()[2]->groupId());
-  EXPECT_EQ(device_infos()[0]->groupId(), device_infos()[4]->groupId());
-  EXPECT_NE(device_infos()[1]->groupId(), device_infos()[4]->groupId());
+  EXPECT_EQ(device_infos()[0]->groupId(), device_infos()[3]->groupId());
+  EXPECT_EQ(device_infos()[0]->groupId(), device_infos()[5]->groupId());
+  EXPECT_NE(device_infos()[2]->groupId(), device_infos()[5]->groupId());
+
+  // Verify device labels do not expose user's information.
+  EXPECT_EQ(device_infos()[1]->label(), "AirPods");
+  EXPECT_EQ(device_infos()[6]->label(), "AirPods");
+
+  // Verify the code does not change non-sensitive device labels.
+  EXPECT_EQ(device_infos()[0]->label(), "Fake Audio Input 1");
+  EXPECT_EQ(device_infos()[3]->label(), "Fake Video Input 1");
 }
 
 TEST_F(MediaDevicesTest, EnumerateDevicesAfterConnectionError) {

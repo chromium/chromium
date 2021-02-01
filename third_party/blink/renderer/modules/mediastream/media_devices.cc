@@ -381,12 +381,15 @@ void MediaDevices::DevicesEnumerated(
       mojom::blink::MediaDeviceType device_type =
           static_cast<mojom::blink::MediaDeviceType>(i);
       WebMediaDeviceInfo device_info = enumeration[i][j];
+      String device_label = String::FromUTF8(device_info.label);
+      if (device_label.Contains("AirPods")) {
+        device_label = "AirPods";
+      }
       if (device_type == mojom::blink::MediaDeviceType::MEDIA_AUDIO_INPUT ||
           device_type == mojom::blink::MediaDeviceType::MEDIA_VIDEO_INPUT) {
         InputDeviceInfo* input_device_info =
             MakeGarbageCollected<InputDeviceInfo>(
-                String::FromUTF8(device_info.device_id),
-                String::FromUTF8(device_info.label),
+                String::FromUTF8(device_info.device_id), device_label,
                 String::FromUTF8(device_info.group_id), device_type);
         if (device_type == mojom::blink::MediaDeviceType::MEDIA_VIDEO_INPUT &&
             !video_input_capabilities.IsEmpty()) {
@@ -401,8 +404,7 @@ void MediaDevices::DevicesEnumerated(
         media_devices.push_back(input_device_info);
       } else {
         media_devices.push_back(MakeGarbageCollected<MediaDeviceInfo>(
-            String::FromUTF8(device_info.device_id),
-            String::FromUTF8(device_info.label),
+            String::FromUTF8(device_info.device_id), device_label,
             String::FromUTF8(device_info.group_id), device_type));
       }
     }
