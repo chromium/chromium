@@ -50,6 +50,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/views/widget/widget_delegate.h"
 #include "url/gurl.h"
 
 namespace {
@@ -272,12 +273,29 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
           base::flat_set<policy::EnterpriseManagementAuthority>());
 };
 
+IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, ShowPicker) {
+  ProfilePicker::Show(ProfilePicker::EntryPoint::kOnStartup);
+  WaitForLayoutWithoutToolbar();
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+  // Check that non-default accessible title is provided both before the page
+  // loads and after it loads.
+  views::WidgetDelegate* delegate = widget()->widget_delegate();
+  EXPECT_NE(delegate->GetWindowTitle(), delegate->GetAccessibleWindowTitle());
+  WaitForFirstPaint(web_contents(), GURL("chrome://profile-picker"));
+  EXPECT_NE(delegate->GetWindowTitle(), delegate->GetAccessibleWindowTitle());
+}
+
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, ShowChoice) {
   ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuAddNewProfile);
   WaitForLayoutWithoutToolbar();
   EXPECT_TRUE(ProfilePicker::IsOpen());
+  // Check that non-default accessible title is provided both before the page
+  // loads and after it loads.
+  views::WidgetDelegate* delegate = widget()->widget_delegate();
+  EXPECT_NE(delegate->GetWindowTitle(), delegate->GetAccessibleWindowTitle());
   WaitForFirstPaint(web_contents(),
                     GURL("chrome://profile-picker/new-profile"));
+  EXPECT_NE(delegate->GetWindowTitle(), delegate->GetAccessibleWindowTitle());
 }
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
