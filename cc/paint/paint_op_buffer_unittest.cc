@@ -1470,9 +1470,7 @@ void PushDrawImageOps(PaintOpBuffer* buffer) {
   for (size_t i = 0; i < len; ++i) {
     buffer->push<DrawImageOp>(
         test_images[i], test_floats[i], test_floats[i + 1],
-        SkSamplingOptions(test_flags[i].getFilterQuality(),
-                          SkSamplingOptions::kMedium_asMipmapLinear),
-        &test_flags[i]);
+        SkSamplingOptions(test_flags[i].getFilterQuality()), &test_flags[i]);
   }
 
   // Test optional flags
@@ -1490,9 +1488,8 @@ void PushDrawImageRectOps(PaintOpBuffer* buffer) {
               : SkCanvas::kFast_SrcRectConstraint;
     buffer->push<DrawImageRectOp>(
         test_images[i], test_rects[i], test_rects[i + 1],
-        SkSamplingOptions(test_flags[i].getFilterQuality(),
-                          SkSamplingOptions::kMedium_asMipmapLinear),
-        &test_flags[i], constraint);
+        SkSamplingOptions(test_flags[i].getFilterQuality()), &test_flags[i],
+        constraint);
   }
 
   // Test optional flags.

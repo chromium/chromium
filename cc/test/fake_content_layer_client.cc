@@ -71,9 +71,7 @@ FakeContentLayerClient::PaintContentsToDisplayList() {
     display_list->push<DrawImageOp>(
         it->image, static_cast<float>(it->point.x()),
         static_cast<float>(it->point.y()),
-        SkSamplingOptions(it->flags.getFilterQuality(),
-                          SkSamplingOptions::kMedium_asMipmapLinear),
-        &it->flags);
+        SkSamplingOptions(it->flags.getFilterQuality()), &it->flags);
     display_list->push<RestoreOp>();
     display_list->EndPaintOfUnpaired(PaintableRegion());
 

@@ -1478,11 +1478,8 @@ void DrawImageOp::RasterWithFlags(const DrawImageOp* op,
     canvas->scale(1.f / scale_adjustment.width(),
                   1.f / scale_adjustment.height());
   }
-  canvas->drawImage(
-      decoded_image.image().get(), op->left, op->top,
-      SkSamplingOptions(decoded_image.filter_quality(),
-                        SkSamplingOptions::kMedium_asMipmapLinear),
-      &paint);
+  canvas->drawImage(decoded_image.image().get(), op->left, op->top,
+                    SkSamplingOptions(decoded_image.filter_quality()), &paint);
 }
 
 void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
