@@ -4503,7 +4503,7 @@
       'id': 30,
       'caption': '''Kerberos delegation server whitelist''',
       'tags': [],
-      'desc': '''This policy is deprecated, please use the '<ph name="AUTH_NEGOCIATE_DELEGATE_ALLOWLIST_POLICY_NAME">AuthNegotiateDelegateAllowlist</ph>' policy instead.
+      'desc': '''This policy is deprecated, please use the '<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME">AuthNegotiateDelegateAllowlist</ph>' policy instead.
 
       Setting the policy assigns servers that <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> may delegate to. Separate multiple server names with commas. Wildcards, <ph name="WILDCARD_VALUE">*</ph>, are allowed.
 
