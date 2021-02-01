@@ -447,6 +447,7 @@ component("platform") {
     "bindings/string_resource.cc",
     "bindings/string_resource.h",
     "bindings/to_v8.h",
+    "bindings/to_v8_traits.h",
     "bindings/trace_wrapper_v8_reference.h",
     "bindings/trace_wrapper_v8_string.cc",
     "bindings/trace_wrapper_v8_string.h",
