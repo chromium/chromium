@@ -9,6 +9,9 @@ class PrefRegistrySimple;
 
 namespace enterprise_connectors {
 
+// Pref that maps to the "SendDownloadToCloudEnterpriseConnector" policy.
+extern const char kSendDownloadToCloudPref[];
+
 // Pref that maps to the "OnFileAttachedEnterpriseConnector" policy.
 extern const char kOnFileAttachedPref[];
 

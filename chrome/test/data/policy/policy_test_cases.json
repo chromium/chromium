@@ -7792,6 +7792,64 @@
     ]
   },
 
+  "SendDownloadToCloudEnterpriseConnector": {
+    "os": [ "win", "linux", "mac", "chromeos" ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "SendDownloadToCloudEnterpriseConnector": [
+            {
+              "service_provider": "Google",
+              "enterprise_id": "1234567890",
+              "enable": [
+                {
+                  "url_list": [ "*" ],
+                  "mime_types": [ "text/plain" ]
+                },
+                {
+                  "url_list": [ "*.them.com", "*.others.com" ],
+                  "mime_types": [ "image/png" ]
+                }
+              ],
+              "disable": [
+                {
+                  "url_list": [ "*.us.com" ],
+                  "mime_types": [ "application/zip" ]
+                }
+              ]
+            }
+          ]
+        },
+        "prefs": {
+          "enterprise_connectors.send_download_to_cloud": {
+             "value":  [
+              {
+                "service_provider": "Google",
+                "enterprise_id": "1234567890",
+                "enable": [
+                  {
+                    "url_list": [ "*" ],
+                    "mime_types": [ "text/plain" ]
+                  },
+                  {
+                    "url_list": [ "*.them.com", "*.others.com" ],
+                    "mime_types": [ "image/png" ]
+                  }
+                ],
+                "disable": [
+                  {
+                    "url_list": [ "*.us.com" ],
+                    "mime_types": [ "application/zip" ]
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+
   "OnFileAttachedEnterpriseConnector": {
     "os": ["win", "linux", "mac", "chromeos"],
     "policy_pref_mapping_tests": [

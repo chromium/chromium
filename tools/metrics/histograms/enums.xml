@@ -23433,6 +23433,7 @@ Called by update_document_policy_enum.py.-->
   <int value="819" label="SSLErrorOverrideAllowedForUrls"/>
   <int value="820" label="WebXRImmersiveArEnabled"/>
   <int value="821" label="GaiaOfflineSigninTimeLimitDays"/>
+  <int value="822" label="FileSystemEnterpriseConnector"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

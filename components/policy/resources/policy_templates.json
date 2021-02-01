@@ -21697,7 +21697,7 @@
 
       The <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD">custom_messages</ph>, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD">message</ph>, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD">learn_more_url</ph>, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD">language</ph> and <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD">tag</ph> fields are used to configure a message to show the user when a warning is shown after a scan had a non-clean verdict. The message field contains the text to show the user and should have at most 200 characters. The learn_more_url field contains an admin-provided URL that will be clickable by the user to get more customer-provided information about why the action was blocked. The language field is optional and contains the language of the message. An empty language field or a value of 'default' indicates a message to be used when the user's language doesn't have a message. The tag field specifies for which type of scans the message is displayed. The custom_messages list can have zero or more entries, where each entry is required to have non-empty message and tag fields.
 
-      This policy can only be set from the Google Admin console.'''
+      This policy can only be set from the <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME">Google Admin console</ph>.'''
     },
     {
       'name': 'OnFileAttachedEnterpriseConnector',
@@ -21832,7 +21832,7 @@
 
       The <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD">custom_messages</ph>, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD">message</ph>, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD">learn_more_url</ph>, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD">language</ph> and <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD">tag</ph> fields are used to configure a message to show the user when a warning is shown after a scan had a non-clean verdict. The message field contains the text to show the user and should have at most 200 characters. The learn_more_url field contains an admin-provided URL that will be clickable by the user to get more customer-provided information about why the action was blocked. The language field is optional and contains the language of the message. An empty language field or a value of 'default' indicates a message to be used when the user's language doesn't have a message. The tag field specifies for which type of scans the message is displayed. The custom_messages list can have zero or more entries, where each entry is required to have non-empty message and tag fields.
 
-      This policy can only be set from the Google Admin console.'''
+      This policy can only be set from the <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME">Google Admin console</ph>.'''
     },
     {
       'name': 'OnBulkDataEntryEnterpriseConnector',
@@ -21963,7 +21963,7 @@
 
       The <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD">custom_messages</ph>, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD">message</ph>, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD">learn_more_url</ph>, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD">language</ph> and <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD">tag</ph> fields are used to configure a message to show the user when a warning is shown after a scan had a non-clean verdict. The message field contains the text to show the user and should have at most 200 characters. The learn_more_url field contains an admin-provided URL that will be clickable by the user to get more customer-provided information about why the action was blocked. The language field is optional and contains the language of the message. An empty language field or a value of 'default' indicates a message to be used when the user's language doesn't have a message. The tag field specifies for which type of scans the message is displayed. The custom_messages list can have zero or more entries, where each entry is required to have non-empty message and tag fields.
 
-      This policy can only be set from the Google Admin console.'''
+      This policy can only be set from the <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME">Google Admin console</ph>.'''
     },
     {
       'name': 'OnSecurityEventEnterpriseConnector',
@@ -22000,7 +22000,7 @@
 
       The <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD">service_provider</ph> field identifies which reporting service provider the settings correspond to and the <ph name="ENTERPRISE_CONNECTOR_ENABLED_EVENT_NAMES_FIELD">enabled_event_names</ph> field identifies which events are enabled for this provider.
 
-      This policy can only be set from the Google Admin console.'''
+      This policy can only be set from the <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME">Google Admin console</ph>.'''
     },
     {
       'name': 'EnterpriseRealTimeUrlCheckMode',
@@ -22042,7 +22042,7 @@
 
       If this policy is set to ‘Enabled’, URLs will be sent to be scanned in real time under enterprise ToS. It will result in Chrome sending URLs to Google Cloud or third parties of your choosing to check them in real time. The consumer version of Safe Browsing real time lookup will be switched off.
 
-      This policy can only be set from the Google Admin console.''',
+      This policy can only be set from the <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME">Google Admin console</ph>.'''
     },
     {
       'name': 'RendererCodeIntegrityEnabled',
@@ -24463,7 +24463,92 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       When this policy is disabled, the <ph name="WEBXR_API_NAME">WebXR Device API</ph> will reject requests to create sessions with mode set to <ph name="WEBXR_AR_SESSION_ENUM_VALUE">"immersive-ar"</ph>. The existing <ph name="WEBXR_AR_SESSION_ENUM_VALUE">"immersive-ar"</ph> sessions (if any) will not be terminated.
 
       For more details about <ph name="WEBXR_AR_SESSION_ENUM_VALUE">"immersive-ar"</ph> sessions, please see <ph name="WEBXR_AR_MODULE_API_NAME">WebXR Augmented Reality Module</ph> specfication.'''
-    }
+    },
+    {
+      'name': 'SendDownloadToCloudEnterpriseConnector',
+      'owners': ['rogerta@chromium.org', 'mad@chromium.org', 'alicego@google.com'],
+      'type': 'dict',
+      'schema': {
+        'type': 'array',
+        'items': {
+          'type': 'object',
+          'properties': {
+            'service_provider': { 'type': 'string' },
+            'enterprise_id': { 'type': 'string' },
+            'enable': {
+              'type': 'array',
+              'items': {
+                'type': 'object',
+                'properties': {
+                  'url_list': {
+                    'type': 'array',
+                    'items': { 'type': 'string' },
+                  },
+                  'mime_types': {
+                    'type': 'array',
+                    'items': { 'type': 'string' },
+                  }
+                },
+              }
+            },
+            'disable': {
+              'type': 'array',
+              'items': {
+                'type': 'object',
+                'properties': {
+                  'url_list': {
+                    'type': 'array',
+                    'items': { 'type': 'string' },
+                  },
+                  'mime_types': {
+                    'type': 'array',
+                    'items': { 'type': 'string' },
+                  }
+                },
+              },
+            },
+          },
+        },
+      },
+      'example_value': [{
+        'service_provider': 'Google',
+        'enterprise_id': '1234567890',
+        'enable': [
+          {
+            'url_list': ['*'],
+            'mime_types': ['text/plain']
+          },
+          {
+            'url_list': ['*.them.com', '*.others.com'],
+            'mime_types': ['image/png']
+          },
+        ],
+        'disable': [
+          {
+            'url_list': ['*.us.com'],
+            'mime_types': ['application/zip']
+          },
+        ],
+      }],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+        'cloud_only': True,
+      },
+      'id': 822,
+      'future_on': ['chrome.*', 'chrome_os'],
+      'caption': '''Configuration policy for the <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR">File System Enterprise Connector</ph> handling of downloaded files''',
+      'tags': [],
+      'desc': '''List of settings to be applied to the <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR">File System Enterprise Connector</ph>, which triggers when a file is downloaded.
+
+      The <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD">url_list</ph>, <ph name="ENTERPRISE_CONNECTOR_MIME_TYPES_FIELD">mime_types</ph>, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD">enable</ph> and <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD">disable</ph> fields are used to determine if the connector should send a file to the service provider when downloading from a web page. The web page URL must match a pattern associated to an 'enable' pattern and not associated to a 'disable' pattern.  The file's MIME type must also match a pattern associated to an 'enable' pattern and not associated to a 'disable' pattern.
+
+      The <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD">service_provider</ph> field identifies which analysis service provider the settings correspond to.
+
+      The <ph name="ENTERPRISE_CONNECTOR_ENTERPRISE_ID_FIELD">enterprise_id</ph> field identifies the enterprise with the service provider.  When the user is asked to sign in as part of setting up the <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR">File System Enterprise Connector</ph>, only user accounts associated with this enterprise are permitted.
+
+      This policy can only be set from the <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME">Google Admin console</ph>.'''
+    },
   ],
 
   'messages': {
@@ -25389,6 +25474,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 821,
+  'highest_id_currently_used': 822,
   'highest_atomic_group_id_currently_used': 40
 }

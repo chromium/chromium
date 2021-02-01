@@ -8,6 +8,9 @@
 
 namespace enterprise_connectors {
 
+const char kSendDownloadToCloudPref[] =
+    "enterprise_connectors.send_download_to_cloud";
+
 const char kOnFileAttachedPref[] = "enterprise_connectors.on_file_attached";
 
 const char kOnFileDownloadedPref[] = "enterprise_connectors.on_file_downloaded";
@@ -32,6 +35,7 @@ const char kFileSystemBoxRefreshTokenPref[] =
     "enterprise_connectors.file_system.box.refresh_token";
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterListPref(kSendDownloadToCloudPref);
   registry->RegisterListPref(kOnFileAttachedPref);
   registry->RegisterListPref(kOnFileDownloadedPref);
   registry->RegisterListPref(kOnBulkDataEntryPref);
