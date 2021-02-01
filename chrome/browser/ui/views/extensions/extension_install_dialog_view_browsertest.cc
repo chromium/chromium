@@ -413,8 +413,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
   ShowAndVerifyUi();
 }
 
+// TODO(https://crbug.com/1126736): Flaky on Win10.
+#if defined(OS_WIN)
+#define MAYBE_InvokeUi_DetailedPermission DISABLED_InvokeUi_DetailedPermission
+#else
+#define MAYBE_InvokeUi_DetailedPermission InvokeUi_DetailedPermission
+#endif
 IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
-                       InvokeUi_DetailedPermission) {
+                       MAYBE_InvokeUi_DetailedPermission) {
   AddPermissionWithDetails(
       "Example header permission",
       {base::ASCIIToUTF16("Detailed permission 1"),
@@ -445,8 +451,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
   ShowAndVerifyUi();
 }
 
+// TODO(https://crbug.com/1126741): Flaky on Win10.
+#if defined(OS_WIN)
+#define MAYBE_InvokeUi_WithWithholdingOption \
+  DISABLED_InvokeUi_WithWithholdingOption
+#else
+#define MAYBE_InvokeUi_WithWithholdingOption InvokeUi_WithWithholdingOption
+#endif
 IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
-                       InvokeUi_WithWithholdingOption) {
+                       MAYBE_InvokeUi_WithWithholdingOption) {
   // The permissions withholding UI requires a proper permission set to be used,
   // as it checks for host permissions to determine if it should be shown.
   auto permissions = std::make_unique<PermissionSet>(
