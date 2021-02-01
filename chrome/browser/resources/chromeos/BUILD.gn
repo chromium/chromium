@@ -8,19 +8,6 @@ import("//tools/grit/grit_rule.gni")
 
 assert(is_chromeos, "Only Chrome OS resources in //c/b/resources//chromeos.")
 
-grit("cellular_setup_resources") {
-  source = "cellular_setup/cellular_setup_resources.grd"
-
-  defines = chrome_grit_defines
-  outputs = [
-    "grit/cellular_setup_resources.h",
-    "grit/cellular_setup_resources_map.cc",
-    "grit/cellular_setup_resources_map.h",
-    "cellular_setup_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/chrome"
-}
-
 grit("multidevice_setup_resources") {
   source = "multidevice_setup/multidevice_setup_resources.grd"
 

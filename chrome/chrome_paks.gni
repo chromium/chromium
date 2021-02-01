@@ -197,8 +197,8 @@ template("chrome_extra_paks") {
       deps += [
         "//ash/public/cpp/resources:ash_public_unscaled_resources",
         "//chrome/browser/resources:bluetooth_pairing_dialog_resources",
-        "//chrome/browser/resources/chromeos:cellular_setup_resources",
         "//chrome/browser/resources/chromeos:multidevice_setup_resources",
+        "//chrome/browser/resources/chromeos/cellular_setup:resources",
         "//chrome/browser/resources/chromeos/emoji_picker:resources",
         "//chrome/browser/resources/chromeos/multidevice_internals:resources",
         "//chrome/browser/resources/nearby_internals:resources",
