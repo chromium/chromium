@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
@@ -75,8 +76,14 @@ class SystemWebAppLinkCaptureBrowserTest
   const SystemAppType kInitiatingAppType = SystemAppType::SETTINGS;
 };
 
+// This test is flaky on linux. https://crbug.com/1172891
+#if defined(OS_LINUX)
+#define MAYBE_OmniboxTypeURLAndNavigate DISABLED_OmniboxTypeURLAndNavigate
+#else
+#define MAYBE_OmniboxTypeURLAndNavigate OmniboxTypeURLAndNavigate
+#endif
 IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
-                       OmniboxTypeURLAndNavigate) {
+                       MAYBE_OmniboxTypeURLAndNavigate) {
   WaitForTestSystemAppInstall();
 
   content::TestNavigationObserver observer(maybe_installation_->GetAppUrl());
@@ -94,7 +101,14 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
   EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
 }
 
-IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest, OmniboxPasteAndGo) {
+// This test is flaky on linux. https://crbug.com/1172891
+#if defined(OS_LINUX)
+#define MAYBE_OmniboxPasteAndGo DISABLED_OmniboxPasteAndGo
+#else
+#define MAYBE_OmniboxPasteAndGo OmniboxPasteAndGo
+#endif
+IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
+                       MAYBE_OmniboxPasteAndGo) {
   WaitForTestSystemAppInstall();
   OmniboxEditModel* model =
       browser()->window()->GetLocationBar()->GetOmniboxView()->model();

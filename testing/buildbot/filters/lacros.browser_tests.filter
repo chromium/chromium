@@ -207,7 +207,6 @@
 -WebViewTest.Shim_TestDisplayNoneWebviewRemoveChild
 -WelcomeA11y.WelcomeFlow_listitem
 -WorkerTaskProviderBrowserTest.CreateTasksForMultiProfiles
-
 # crbug.com/1121486
 # Following tests were flaky. We disable them first until we have time to investigate.
 -DevToolsExtensionTest.HttpIframeInDevToolsExtensionDevtools
