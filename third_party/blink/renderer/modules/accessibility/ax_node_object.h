@@ -115,7 +115,12 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
 
   // Check object state.
   bool IsClickable() const final;
+  bool IsFocused() const override;
+  // aria-grabbed is deprecated in WAI-ARIA 1.1.
+  AccessibilityGrabbedState IsGrabbed() const override;
   AccessibilityExpanded IsExpanded() const override;
+  AccessibilitySelectedState IsSelected() const override;
+  bool IsSelectedFromFocus() const override;
   bool IsRequired() const final;
   bool IsControl() const override;
   AXRestriction Restriction() const override;
@@ -289,6 +294,8 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   String PlaceholderFromNativeAttribute() const;
   String GetValueContributionToName() const;
   bool UseNameFromSelectedOption() const;
+  bool SelectionShouldFollowFocus() const;
+  virtual bool IsTabItemSelected() const;
 
   void AddNodeChildren();
   void AddLayoutChildren();

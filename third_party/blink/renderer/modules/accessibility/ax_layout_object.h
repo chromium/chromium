@@ -89,11 +89,6 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
   bool IsVisited() const override;
 
   // Check object state.
-  bool IsFocused() const override;
-  // aria-grabbed is deprecated in WAI-ARIA 1.1.
-  AccessibilityGrabbedState IsGrabbed() const override;
-  AccessibilitySelectedState IsSelected() const override;
-  bool IsSelectedFromFocus() const override;
   bool IsNotUserSelectable() const override;
 
   // Whether objects are ignored, i.e. not included in the tree.
@@ -171,14 +166,12 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
       ax::mojom::blink::Role dom_role) const override;
 
  private:
-  bool IsTabItemSelected() const;
   AXObject* AccessibilityImageMapHitTest(HTMLAreaElement*,
                                          const IntPoint&) const;
   bool FindAllTableCellsWithRole(ax::mojom::blink::Role, AXObjectVector&) const;
 
   LayoutRect ComputeElementRect() const;
   bool IsPlaceholder() const;
-  bool SelectionShouldFollowFocus() const;
 
   static ax::mojom::blink::TextDecorationStyle
   TextDecorationStyleToAXTextDecorationStyle(

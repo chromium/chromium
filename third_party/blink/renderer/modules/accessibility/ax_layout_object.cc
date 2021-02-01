@@ -434,82 +434,6 @@ bool AXLayoutObject::IsVisited() const {
 // Check object state.
 //
 
-bool AXLayoutObject::IsFocused() const {
-  if (!GetDocument())
-    return false;
-
-  // A web area is represented by the Document node in the DOM tree, which isn't
-  // focusable.  Check instead if the frame's selection controller is focused.
-  if (IsWebArea() &&
-      GetDocument()->GetFrame()->Selection().FrameIsFocusedAndActive()) {
-    return true;
-  }
-
-  Element* focused_element = GetDocument()->FocusedElement();
-  return focused_element && focused_element == GetElement();
-}
-
-// aria-grabbed is deprecated in WAI-ARIA 1.1.
-AccessibilityGrabbedState AXLayoutObject::IsGrabbed() const {
-  if (!SupportsARIADragging())
-    return kGrabbedStateUndefined;
-
-  const AtomicString& grabbed = GetAttribute(html_names::kAriaGrabbedAttr);
-  return EqualIgnoringASCIICase(grabbed, "true") ? kGrabbedStateTrue
-                                                 : kGrabbedStateFalse;
-}
-
-AccessibilitySelectedState AXLayoutObject::IsSelected() const {
-  if (!GetLayoutObject() || !GetNode() || !IsSubWidget())
-    return kSelectedStateUndefined;
-
-  // The aria-selected attribute overrides automatic behaviors.
-  bool is_selected;
-  if (HasAOMPropertyOrARIAAttribute(AOMBooleanProperty::kSelected, is_selected))
-    return is_selected ? kSelectedStateTrue : kSelectedStateFalse;
-
-  // The selection should only follow the focus when the aria-selected attribute
-  // is marked as required or implied for this element in the ARIA specs.
-  // If this object can't follow the focus, then we can't say that it's selected
-  // nor that it's not.
-  if (!SelectionShouldFollowFocus())
-    return kSelectedStateUndefined;
-
-  // Selection follows focus, but ONLY in single selection containers, and only
-  // if aria-selected was not present to override.
-  return IsSelectedFromFocus() ? kSelectedStateTrue : kSelectedStateFalse;
-}
-
-// In single selection containers, selection follows focus unless aria_selected
-// is set to false. This is only valid for a subset of elements.
-bool AXLayoutObject::IsSelectedFromFocus() const {
-  if (!SelectionShouldFollowFocus())
-    return false;
-
-  // A tab item can also be selected if it is associated to a focused tabpanel
-  // via the aria-labelledby attribute.
-  if (IsTabItem() && IsTabItemSelected())
-    return kSelectedStateTrue;
-
-  // If not a single selection container, selection does not follow focus.
-  AXObject* container = ContainerWidget();
-  if (!container || container->IsMultiSelectable())
-    return false;
-
-  // If this object is not accessibility focused, then it is not selected from
-  // focus.
-  AXObject* focused_object = AXObjectCache().FocusedObject();
-  if (focused_object != this &&
-      (!focused_object || focused_object->ActiveDescendant() != this))
-    return false;
-
-  // In single selection container and accessibility focused => true if
-  // aria-selected wasn't used as an override.
-  bool is_selected;
-  return !HasAOMPropertyOrARIAAttribute(AOMBooleanProperty::kSelected,
-                                        is_selected);
-}
-
 // Returns true if the object is marked user-select:none
 bool AXLayoutObject::IsNotUserSelectable() const {
   if (!GetLayoutObject())
@@ -520,20 +444,6 @@ bool AXLayoutObject::IsNotUserSelectable() const {
     return false;
 
   return (style->UserSelect() == EUserSelect::kNone);
-}
-
-// Returns true if the node's aria-selected attribute should be set to true
-// when the node is focused. This is true for only a subset of roles.
-bool AXLayoutObject::SelectionShouldFollowFocus() const {
-  switch (RoleValue()) {
-    case ax::mojom::blink::Role::kListBoxOption:
-    case ax::mojom::blink::Role::kMenuListOption:
-    case ax::mojom::blink::Role::kTab:
-      return true;
-    default:
-      break;
-  }
-  return false;
 }
 
 //
@@ -2098,48 +2008,6 @@ AXObject* AXLayoutObject::HeaderObject() const {
 //
 // Private.
 //
-
-bool AXLayoutObject::IsTabItemSelected() const {
-  if (!IsTabItem() || !GetLayoutObject())
-    return false;
-
-  Node* node = GetNode();
-  if (!node || !node->IsElementNode())
-    return false;
-
-  // The ARIA spec says a tab item can also be selected if it is aria-labeled by
-  // a tabpanel that has keyboard focus inside of it, or if a tabpanel in its
-  // aria-controls list has KB focus inside of it.
-  AXObject* focused_element = AXObjectCache().FocusedObject();
-  if (!focused_element)
-    return false;
-
-  HeapVector<Member<Element>> elements;
-  if (!HasAOMPropertyOrARIAAttribute(AOMRelationListProperty::kControls,
-                                     elements))
-    return false;
-
-  for (const auto& element : elements) {
-    AXObject* tab_panel = AXObjectCache().GetOrCreate(element);
-
-    // A tab item should only control tab panels.
-    if (!tab_panel ||
-        tab_panel->RoleValue() != ax::mojom::blink::Role::kTabPanel) {
-      continue;
-    }
-
-    AXObject* check_focus_element = focused_element;
-    // Check if the focused element is a descendant of the element controlled by
-    // the tab item.
-    while (check_focus_element) {
-      if (tab_panel == check_focus_element)
-        return true;
-      check_focus_element = check_focus_element->ParentObject();
-    }
-  }
-
-  return false;
-}
 
 AXObject* AXLayoutObject::AccessibilityImageMapHitTest(
     HTMLAreaElement* area,
