@@ -150,30 +150,6 @@
         width: var(--oobe-adaptive-dialog-content-width);
       }
 
-      #scrollContainer.can-scroll:not(.is-scrolled):not(.scrolled-to-bottom) {
-        background: linear-gradient(
-          0deg,
-          rgba(var(--google-grey-refresh-100-rgb), 1) 0,
-          rgba(var(--google-grey-refresh-100-rgb), 0) 8px);
-
-      }
-      #scrollContainer.can-scroll.is-scrolled:not(.scrolled-to-bottom) {
-        background: linear-gradient(
-          0deg,
-          rgba(var(--google-grey-refresh-100-rgb), 1) 0,
-          rgba(var(--google-grey-refresh-100-rgb), 0) 8px),
-                    linear-gradient(
-          180deg,
-          rgba(var(--google-grey-refresh-100-rgb), 1) 0,
-          rgba(var(--google-grey-refresh-100-rgb), 0) 8px);
-      }
-      #scrollContainer.is-scrolled.scrolled-to-bottom {
-        background: linear-gradient(
-          180deg,
-          rgba(var(--google-grey-refresh-100-rgb), 1) 0,
-          rgba(var(--google-grey-refresh-100-rgb), 0) 8px);
-      }
-
       .vertical-mode-centering {
         align-items: var(--oobe-adaptive-dialog-item-alignment);
         display: flex;
@@ -219,7 +195,7 @@
               <slot name="subtitle"></slot>
             </div>
           </div>
-          <div id="scrollContainer" class="layout vertical flex"
+          <div id="scrollContainer" class="layout vertical flex scrollable"
               on-scroll="applyScrollClassTags_">
             <div id="contentContainer" class="layout vertical flex">
               <slot name="content"></slot>
