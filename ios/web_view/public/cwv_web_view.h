@@ -16,7 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class CWVBackForwardList;
 @class CWVBackForwardListItem;
 @class CWVScriptCommand;
-@class CWVScrollView;
 @class CWVTranslationController;
 @class CWVWebViewConfiguration;
 @protocol CWVNavigationDelegate;
@@ -114,14 +113,6 @@ CWV_EXPORT
 //
 // It is reset on state restoration.
 @property(nonatomic, readonly) UIScrollView* scrollView;
-
-// DEPRECATED: Use |scrollView| instead.
-//
-// The old implementation of the scroll view associated with the web view.
-//
-// TODO(crbug.com/1023250): Delete this once clients migrate to the new
-// |scrollView|.
-@property(nonatomic, readonly) CWVScrollView* legacyScrollView;
 
 // A Boolean value indicating whether horizontal swipe gestures will trigger
 // back-forward list navigations.
