@@ -31,12 +31,8 @@ class WebString;
 // consumable by a human. For example: "Select All", "Text to Speech", "Find in
 // page", and other user-visible surfaces must not use this API.
 //
-// This utility is resource-intensive, consuming significant memory and CPU
-// during a text capture. Only one instance of this class should exist per
-// process, which should only be called when it is truly needed.
-//
-// TODO(crbug/1163244): Remove the static qualifier and make this an
-// instantiable class.
+// Also note that this utility is resource-intensive, consuming significant
+// memory and CPU during a text capture.
 class WebFrameContentDumper {
  public:
   // Returns the contents of this frame's local subtree as a string.  If the
