@@ -143,15 +143,11 @@ void URLLoaderFactory::CreateLoaderAndStart(
           std::move(client), traffic_annotation);
       return;
     }
-    // Fails if the token is missing in the WebBundleManager. This can happen
-    // when the network process crashes. In normal cases, our assumption is this
-    // shouldn't happen as long as requests from a renderer are ordered.
-    //
-    // TODO(crbug.com/1082020): Re-visit this case to be more robust.
-    URLLoaderCompletionStatus status;
-    status.error_code = net::ERR_INVALID_WEB_BUNDLE;  // Tentative.
-    status.completion_time = base::TimeTicks::Now();
-    mojo::Remote<mojom::URLLoaderClient>(std::move(client))->OnComplete(status);
+    // A request for subresource arrives earlier than a request for a webbundle.
+    context_->GetWebBundleManager().AddPendingSubresouceRequest(
+        url_request.web_bundle_token_params->token, params_->process_id,
+        std::move(receiver), routing_id, request_id, options, url_request,
+        std::move(client), traffic_annotation);
     return;
   }
 
