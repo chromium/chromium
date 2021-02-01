@@ -30,7 +30,8 @@ class CC_EXPORT LatencyUkmReporter {
       CompositorFrameReporter::FrameReportType report_type,
       const std::vector<CompositorFrameReporter::StageData>& stage_history,
       const CompositorFrameReporter::ActiveTrackers& active_trackers,
-      const viz::FrameTimingDetails& viz_breakdown);
+      const CompositorFrameReporter::ProcessedVizBreakdown&
+          processed_viz_breakdown);
 
   void ReportEventLatencyUkm(
       const EventMetrics::List& events_metrics,

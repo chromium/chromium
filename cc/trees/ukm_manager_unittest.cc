@@ -72,6 +72,16 @@ const char kVizBreakdownStartDrawToSwapStart[] =
     "SubmitCompositorFrameToPresentationCompositorFrame.StartDrawToSwapStart";
 const char kVizBreakdownSwapStartToSwapEnd[] =
     "SubmitCompositorFrameToPresentationCompositorFrame.SwapStartToSwapEnd";
+const char kVizBreakdownSwapStartToBufferAvailable[] =
+    "SubmitCompositorFrameToPresentationCompositorFrame."
+    "SwapStartToBufferAvailable";
+const char kVizBreakdownBufferAvailableToBufferReady[] =
+    "SubmitCompositorFrameToPresentationCompositorFrame."
+    "BufferAvailableToBufferReady";
+const char kVizBreakdownBufferReadyToLatch[] =
+    "SubmitCompositorFrameToPresentationCompositorFrame.BufferReadyToLatch";
+const char kVizBreakdownLatchToSwapEnd[] =
+    "SubmitCompositorFrameToPresentationCompositorFrame.LatchToSwapEnd";
 const char kVizBreakdownSwapEndToPresentationCompositorFrame[] =
     "SubmitCompositorFrameToPresentationCompositorFrame."
     "SwapEndToPresentationCompositorFrame";
@@ -271,7 +281,10 @@ TEST_P(UkmManagerCompositorLatencyTest, CompositorLatency) {
   viz_breakdown.received_compositor_frame_timestamp = AdvanceNowByMs(1);
   viz_breakdown.draw_start_timestamp = AdvanceNowByMs(2);
   viz_breakdown.swap_timings.swap_start = AdvanceNowByMs(3);
-  viz_breakdown.swap_timings.swap_end = AdvanceNowByMs(4);
+  viz_breakdown.presentation_feedback.available_timestamp = AdvanceNowByMs(1);
+  viz_breakdown.presentation_feedback.ready_timestamp = AdvanceNowByMs(1);
+  viz_breakdown.presentation_feedback.latch_timestamp = AdvanceNowByMs(1);
+  viz_breakdown.swap_timings.swap_end = AdvanceNowByMs(1);
   viz_breakdown.presentation_feedback.timestamp = AdvanceNowByMs(5);
 
   std::vector<CompositorFrameReporter::StageData> stage_history = {
@@ -328,8 +341,10 @@ TEST_P(UkmManagerCompositorLatencyTest, CompositorLatency) {
   active_trackers.set(
       static_cast<size_t>(FrameSequenceTrackerType::kCompositorAnimation));
 
-  manager_->RecordCompositorLatencyUKM(report_type(), stage_history,
-                                       active_trackers, viz_breakdown);
+  CompositorFrameReporter::ProcessedVizBreakdown processed_viz_breakdown(
+      submit_time, viz_breakdown);
+  manager_->RecordCompositorLatencyUKM(
+      report_type(), stage_history, active_trackers, processed_viz_breakdown);
 
   const auto& entries =
       test_ukm_recorder_->GetEntriesByName(kCompositorLatency);
@@ -385,6 +400,26 @@ TEST_P(UkmManagerCompositorLatencyTest, CompositorLatency) {
                                         (viz_breakdown.swap_timings.swap_end -
                                          viz_breakdown.swap_timings.swap_start)
                                             .InMicroseconds());
+  test_ukm_recorder_->ExpectEntryMetric(
+      entry, kVizBreakdownSwapStartToBufferAvailable,
+      (viz_breakdown.presentation_feedback.available_timestamp -
+       viz_breakdown.swap_timings.swap_start)
+          .InMicroseconds());
+  test_ukm_recorder_->ExpectEntryMetric(
+      entry, kVizBreakdownBufferAvailableToBufferReady,
+      (viz_breakdown.presentation_feedback.ready_timestamp -
+       viz_breakdown.presentation_feedback.available_timestamp)
+          .InMicroseconds());
+  test_ukm_recorder_->ExpectEntryMetric(
+      entry, kVizBreakdownBufferReadyToLatch,
+      (viz_breakdown.presentation_feedback.latch_timestamp -
+       viz_breakdown.presentation_feedback.ready_timestamp)
+          .InMicroseconds());
+  test_ukm_recorder_->ExpectEntryMetric(
+      entry, kVizBreakdownLatchToSwapEnd,
+      (viz_breakdown.swap_timings.swap_end -
+       viz_breakdown.presentation_feedback.latch_timestamp)
+          .InMicroseconds());
   test_ukm_recorder_->ExpectEntryMetric(
       entry, kVizBreakdownSwapEndToPresentationCompositorFrame,
       (viz_breakdown.presentation_feedback.timestamp -

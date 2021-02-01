@@ -140,6 +140,50 @@ class CC_EXPORT CompositorFrameReporter {
     kSmoothBoth
   };
 
+  // Holds a processed list of Viz breakdowns with an `Iterator` class to easily
+  // iterate over them.
+  class CC_EXPORT ProcessedVizBreakdown {
+   public:
+    class Iterator {
+     public:
+      Iterator(const ProcessedVizBreakdown* owner,
+               bool skip_swap_start_to_swap_end);
+      ~Iterator();
+
+      bool IsValid() const;
+      void Advance();
+      VizBreakdown GetBreakdown() const;
+      base::TimeTicks GetStartTime() const;
+      base::TimeTicks GetEndTime() const;
+      base::TimeDelta GetDuration() const;
+
+     private:
+      const ProcessedVizBreakdown* owner_;
+      const bool skip_swap_start_to_swap_end_;
+
+      size_t index_ = 0;
+    };
+
+    ProcessedVizBreakdown(base::TimeTicks viz_start_time,
+                          const viz::FrameTimingDetails& viz_breakdown);
+    ~ProcessedVizBreakdown();
+
+    ProcessedVizBreakdown(const ProcessedVizBreakdown&) = delete;
+    ProcessedVizBreakdown& operator=(const ProcessedVizBreakdown&) = delete;
+
+    // Returns a new iterator for the Viz breakdowns. If buffer ready breakdowns
+    // are available, `skip_swap_start_to_swap_end_if_breakdown_available` can
+    // be used to skip `kSwapStartToSwapEnd` breakdown.
+    Iterator CreateIterator(
+        bool skip_swap_start_to_swap_end_if_breakdown_available) const;
+
+   private:
+    base::Optional<std::pair<base::TimeTicks, base::TimeTicks>>
+        list_[static_cast<int>(VizBreakdown::kBreakdownCount)];
+
+    bool buffer_ready_available_ = false;
+  };
+
   using ActiveTrackers =
       std::bitset<static_cast<size_t>(FrameSequenceTrackerType::kMaxType)>;
 
@@ -272,7 +316,6 @@ class CC_EXPORT CompositorFrameReporter {
   }
 
   void PopulateBlinkBreakdownList();
-  void PopulateVizBreakdownList();
 
   // This method is only used for DCheck
   base::TimeDelta SumOfStageHistory() const;
@@ -293,8 +336,7 @@ class CC_EXPORT CompositorFrameReporter {
 
   viz::FrameTimingDetails viz_breakdown_;
   base::TimeTicks viz_start_time_;
-  base::Optional<std::pair<base::TimeTicks, base::TimeTicks>>
-      viz_breakdown_list_[static_cast<int>(VizBreakdown::kBreakdownCount)];
+  std::unique_ptr<ProcessedVizBreakdown> processed_viz_breakdown_;
 
   // Stage data is recorded here. On destruction these stages will be reported
   // to UMA if the termination status is |kPresentedFrame|. Reported data will

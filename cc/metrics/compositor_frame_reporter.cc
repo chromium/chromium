@@ -337,36 +337,6 @@ base::TimeTicks ComputeSafeDeadlineForFrame(const viz::BeginFrameArgs& args) {
   return args.frame_time + (args.interval * 1.5);
 }
 
-#define REPORT_VIZ_TRACE_EVENT(start_time, end_time, index, trace_func) \
-  if (start_time <= end_time) {                                         \
-    const char* substage_name =                                         \
-        GetVizBreakdownName(static_cast<VizBreakdown>(index));          \
-    trace_func(start_time, end_time, substage_name);                    \
-  }
-
-#define REPORT_VIZ_BREAKDOWN_TRACES(trace_func)                                \
-  size_t start_to_buffer_available =                                           \
-      static_cast<size_t>(VizBreakdown::kSwapStartToBufferAvailable);          \
-  bool has_ready_timings = !!viz_breakdown_list_[start_to_buffer_available];   \
-  for (size_t i = 0; i < start_to_buffer_available; i++) {                     \
-    if (!viz_breakdown_list_[i]) {                                             \
-      break;                                                                   \
-    }                                                                          \
-    if (i == static_cast<size_t>(VizBreakdown::kSwapStartToSwapEnd) &&         \
-        has_ready_timings) {                                                   \
-      size_t latch_to_swap_end =                                               \
-          static_cast<size_t>(VizBreakdown::kLatchToSwapEnd);                  \
-      for (size_t j = start_to_buffer_available; j <= latch_to_swap_end;       \
-           j++) {                                                              \
-        REPORT_VIZ_TRACE_EVENT(viz_breakdown_list_[j]->first,                  \
-                               viz_breakdown_list_[j]->second, j, trace_func); \
-      }                                                                        \
-    } else {                                                                   \
-      REPORT_VIZ_TRACE_EVENT(viz_breakdown_list_[i]->first,                    \
-                             viz_breakdown_list_[i]->second, i, trace_func);   \
-    }                                                                          \
-  }
-
 bool IsScrollActive(const CompositorFrameReporter::ActiveTrackers& trackers) {
   return trackers.test(
              static_cast<size_t>(FrameSequenceTrackerType::kWheelScroll)) ||
@@ -377,6 +347,122 @@ bool IsScrollActive(const CompositorFrameReporter::ActiveTrackers& trackers) {
 }
 
 }  // namespace
+
+// CompositorFrameReporter::ProcessedVizBreakdown::Iterator ====================
+
+CompositorFrameReporter::ProcessedVizBreakdown::Iterator::Iterator(
+    const ProcessedVizBreakdown* owner,
+    bool skip_swap_start_to_swap_end)
+    : owner_(owner), skip_swap_start_to_swap_end_(skip_swap_start_to_swap_end) {
+  DCHECK(owner_);
+}
+
+CompositorFrameReporter::ProcessedVizBreakdown::Iterator::~Iterator() = default;
+
+bool CompositorFrameReporter::ProcessedVizBreakdown::Iterator::IsValid() const {
+  return index_ < base::size(owner_->list_) && owner_->list_[index_];
+}
+
+void CompositorFrameReporter::ProcessedVizBreakdown::Iterator::Advance() {
+  DCHECK(IsValid());
+  index_++;
+  if (static_cast<VizBreakdown>(index_) == VizBreakdown::kSwapStartToSwapEnd &&
+      skip_swap_start_to_swap_end_) {
+    index_++;
+  }
+}
+
+VizBreakdown
+CompositorFrameReporter::ProcessedVizBreakdown::Iterator::GetBreakdown() const {
+  DCHECK(IsValid());
+  return static_cast<VizBreakdown>(index_);
+}
+
+base::TimeTicks
+CompositorFrameReporter::ProcessedVizBreakdown::Iterator::GetStartTime() const {
+  DCHECK(IsValid());
+  return owner_->list_[index_]->first;
+}
+
+base::TimeTicks
+CompositorFrameReporter::ProcessedVizBreakdown::Iterator::GetEndTime() const {
+  DCHECK(IsValid());
+  return owner_->list_[index_]->second;
+}
+
+base::TimeDelta
+CompositorFrameReporter::ProcessedVizBreakdown::Iterator::GetDuration() const {
+  DCHECK(IsValid());
+  return owner_->list_[index_]->second - owner_->list_[index_]->first;
+}
+
+// CompositorFrameReporter::ProcessedVizBreakdown ==============================
+
+CompositorFrameReporter::ProcessedVizBreakdown::ProcessedVizBreakdown(
+    base::TimeTicks viz_start_time,
+    const viz::FrameTimingDetails& viz_breakdown) {
+  if (viz_start_time.is_null())
+    return;
+
+  // Check if `viz_breakdown` is set. Testing indicates that sometimes the
+  // received_compositor_frame_timestamp can be earlier than the given
+  // `viz_start_time`. Avoid reporting negative times.
+  if (viz_breakdown.received_compositor_frame_timestamp.is_null() ||
+      viz_breakdown.received_compositor_frame_timestamp < viz_start_time) {
+    return;
+  }
+  list_[static_cast<int>(VizBreakdown::kSubmitToReceiveCompositorFrame)] =
+      std::make_pair(viz_start_time,
+                     viz_breakdown.received_compositor_frame_timestamp);
+
+  if (viz_breakdown.draw_start_timestamp.is_null())
+    return;
+  list_[static_cast<int>(VizBreakdown::kReceivedCompositorFrameToStartDraw)] =
+      std::make_pair(viz_breakdown.received_compositor_frame_timestamp,
+                     viz_breakdown.draw_start_timestamp);
+
+  if (viz_breakdown.swap_timings.is_null())
+    return;
+  list_[static_cast<int>(VizBreakdown::kStartDrawToSwapStart)] =
+      std::make_pair(viz_breakdown.draw_start_timestamp,
+                     viz_breakdown.swap_timings.swap_start);
+
+  list_[static_cast<int>(VizBreakdown::kSwapStartToSwapEnd)] =
+      std::make_pair(viz_breakdown.swap_timings.swap_start,
+                     viz_breakdown.swap_timings.swap_end);
+
+  list_[static_cast<int>(VizBreakdown::kSwapEndToPresentationCompositorFrame)] =
+      std::make_pair(viz_breakdown.swap_timings.swap_end,
+                     viz_breakdown.presentation_feedback.timestamp);
+
+  if (viz_breakdown.presentation_feedback.ready_timestamp.is_null())
+    return;
+  buffer_ready_available_ = true;
+  list_[static_cast<int>(VizBreakdown::kSwapStartToBufferAvailable)] =
+      std::make_pair(viz_breakdown.swap_timings.swap_start,
+                     viz_breakdown.presentation_feedback.available_timestamp);
+  list_[static_cast<int>(VizBreakdown::kBufferAvailableToBufferReady)] =
+      std::make_pair(viz_breakdown.presentation_feedback.available_timestamp,
+                     viz_breakdown.presentation_feedback.ready_timestamp);
+  list_[static_cast<int>(VizBreakdown::kBufferReadyToLatch)] =
+      std::make_pair(viz_breakdown.presentation_feedback.ready_timestamp,
+                     viz_breakdown.presentation_feedback.latch_timestamp);
+  list_[static_cast<int>(VizBreakdown::kLatchToSwapEnd)] =
+      std::make_pair(viz_breakdown.presentation_feedback.latch_timestamp,
+                     viz_breakdown.swap_timings.swap_end);
+}
+
+CompositorFrameReporter::ProcessedVizBreakdown::~ProcessedVizBreakdown() =
+    default;
+
+CompositorFrameReporter::ProcessedVizBreakdown::Iterator
+CompositorFrameReporter::ProcessedVizBreakdown::CreateIterator(
+    bool skip_swap_start_to_swap_end_if_breakdown_available) const {
+  return Iterator(this, skip_swap_start_to_swap_end_if_breakdown_available &&
+                            buffer_ready_available_);
+}
+
+// CompositorFrameReporter =====================================================
 
 CompositorFrameReporter::CompositorFrameReporter(
     const ActiveTrackers& active_trackers,
@@ -528,7 +614,8 @@ void CompositorFrameReporter::TerminateReporter() {
     TerminateFrame(FrameTerminationStatus::kUnknown, Now());
 
   PopulateBlinkBreakdownList();
-  PopulateVizBreakdownList();
+  processed_viz_breakdown_ =
+      std::make_unique<ProcessedVizBreakdown>(viz_start_time_, viz_breakdown_);
 
   DCHECK_EQ(current_stage_.start_time, base::TimeTicks());
   switch (frame_termination_status_) {
@@ -624,7 +711,8 @@ void CompositorFrameReporter::ReportCompositorLatencyHistograms() const {
     UMA_HISTOGRAM_ENUMERATION("CompositorLatency.Type", report_type);
     if (latency_ukm_reporter_) {
       latency_ukm_reporter_->ReportCompositorLatencyUkm(
-          report_type, stage_history_, active_trackers_, viz_breakdown_);
+          report_type, stage_history_, active_trackers_,
+          *processed_viz_breakdown_);
     }
     bool any_active_interaction = false;
     for (size_t fst_type = 0; fst_type < active_trackers_.size(); ++fst_type) {
@@ -721,20 +809,13 @@ void CompositorFrameReporter::ReportCompositorLatencyBlinkBreakdowns(
 
 void CompositorFrameReporter::ReportCompositorLatencyVizBreakdowns(
     FrameSequenceTrackerType frame_sequence_tracker_type) const {
-  for (size_t i = 0; i < base::size(viz_breakdown_list_); i++) {
-    if (!viz_breakdown_list_[i]) {
-#if DCHECK_IS_ON()
-      // Remaining breakdowns should be unset.
-      for (; i < base::size(viz_breakdown_list_); i++)
-        DCHECK(!viz_breakdown_list_[i]);
-#endif
-      break;
-    }
-    const base::TimeTicks start_time = viz_breakdown_list_[i]->first;
-    const base::TimeTicks end_time = viz_breakdown_list_[i]->second;
-    ReportCompositorLatencyHistogram(frame_sequence_tracker_type,
-                                     kVizBreakdownInitialIndex + i,
-                                     end_time - start_time);
+  DCHECK(processed_viz_breakdown_);
+  for (auto it = processed_viz_breakdown_->CreateIterator(false); it.IsValid();
+       it.Advance()) {
+    ReportCompositorLatencyHistogram(
+        frame_sequence_tracker_type,
+        kVizBreakdownInitialIndex + static_cast<size_t>(it.GetBreakdown()),
+        it.GetDuration());
   }
 }
 
@@ -905,20 +986,13 @@ void CompositorFrameReporter::ReportEventLatencyBlinkBreakdowns(
 void CompositorFrameReporter::ReportEventLatencyVizBreakdowns(
     int histogram_base_index,
     const std::string& histogram_base_name) const {
-  for (size_t i = 0; i < base::size(viz_breakdown_list_); i++) {
-    if (!viz_breakdown_list_[i]) {
-#if DCHECK_IS_ON()
-      // Remaining breakdowns should be unset.
-      for (; i < base::size(viz_breakdown_list_); i++)
-        DCHECK(!viz_breakdown_list_[i]);
-#endif
-      break;
-    }
-    const base::TimeTicks start_time = viz_breakdown_list_[i]->first;
-    const base::TimeTicks end_time = viz_breakdown_list_[i]->second;
-    ReportEventLatencyHistogram(histogram_base_index, histogram_base_name,
-                                kVizBreakdownInitialIndex + i,
-                                end_time - start_time);
+  DCHECK(processed_viz_breakdown_);
+  for (auto it = processed_viz_breakdown_->CreateIterator(false); it.IsValid();
+       it.Advance()) {
+    ReportEventLatencyHistogram(
+        histogram_base_index, histogram_base_name,
+        kVizBreakdownInitialIndex + static_cast<size_t>(it.GetBreakdown()),
+        it.GetDuration());
   }
 }
 
@@ -1000,14 +1074,19 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents() const {
                         trace_track, stage.start_time);
       if (stage.stage_type ==
           StageType::kSubmitCompositorFrameToPresentationCompositorFrame) {
-        REPORT_VIZ_BREAKDOWN_TRACES([&](base::TimeTicks start_time,
-                                        base::TimeTicks end_time,
-                                        const char* substage_name) {
+        DCHECK(processed_viz_breakdown_);
+        for (auto it = processed_viz_breakdown_->CreateIterator(true);
+             it.IsValid(); it.Advance()) {
+          base::TimeTicks start_time = it.GetStartTime();
+          base::TimeTicks end_time = it.GetEndTime();
+          if (start_time >= end_time)
+            continue;
+          const char* breakdown_name = GetVizBreakdownName(it.GetBreakdown());
           TRACE_EVENT_BEGIN("cc,benchmark",
-                            perfetto::StaticString{substage_name}, trace_track,
+                            perfetto::StaticString{breakdown_name}, trace_track,
                             start_time);
           TRACE_EVENT_END("cc,benchmark", trace_track, end_time);
-        });
+        }
       }
       TRACE_EVENT_END("cc,benchmark", trace_track, stage.end_time);
     }
@@ -1110,14 +1189,19 @@ void CompositorFrameReporter::ReportEventLatencyTraceEvents() const {
 
       if (stage_it->stage_type ==
           StageType::kSubmitCompositorFrameToPresentationCompositorFrame) {
-        REPORT_VIZ_BREAKDOWN_TRACES([&](base::TimeTicks start_time,
-                                        base::TimeTicks end_time,
-                                        const char* substage_name) {
+        DCHECK(processed_viz_breakdown_);
+        for (auto it = processed_viz_breakdown_->CreateIterator(true);
+             it.IsValid(); it.Advance()) {
+          base::TimeTicks start_time = it.GetStartTime();
+          base::TimeTicks end_time = it.GetEndTime();
+          if (start_time >= end_time)
+            continue;
+          const char* breakdown_name = GetVizBreakdownName(it.GetBreakdown());
           TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-              "cc,input", substage_name, trace_id, start_time);
+              "cc,input", breakdown_name, trace_id, start_time);
           TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-              "cc,input", substage_name, trace_id, end_time);
-        });
+              "cc,input", breakdown_name, trace_id, end_time);
+        }
       }
 
       TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
@@ -1156,62 +1240,6 @@ void CompositorFrameReporter::PopulateBlinkBreakdownList() {
   blink_breakdown_list_[static_cast<int>(
       BlinkBreakdown::kBeginMainSentToStarted)] =
       begin_main_frame_start_ - blink_start_time_;
-}
-
-void CompositorFrameReporter::PopulateVizBreakdownList() {
-  if (viz_start_time_.is_null())
-    return;
-
-  // Check if viz_breakdown is set. Testing indicates that sometimes the
-  // received_compositor_frame_timestamp can be earlier than the given
-  // |start_time|. Avoid reporting negative times.
-  if (viz_breakdown_.received_compositor_frame_timestamp.is_null() ||
-      viz_breakdown_.received_compositor_frame_timestamp < viz_start_time_) {
-    return;
-  }
-  viz_breakdown_list_[static_cast<int>(
-      VizBreakdown::kSubmitToReceiveCompositorFrame)] =
-      std::make_pair(viz_start_time_,
-                     viz_breakdown_.received_compositor_frame_timestamp);
-
-  if (viz_breakdown_.draw_start_timestamp.is_null())
-    return;
-  viz_breakdown_list_[static_cast<int>(
-      VizBreakdown::kReceivedCompositorFrameToStartDraw)] =
-      std::make_pair(viz_breakdown_.received_compositor_frame_timestamp,
-                     viz_breakdown_.draw_start_timestamp);
-
-  if (viz_breakdown_.swap_timings.is_null())
-    return;
-  viz_breakdown_list_[static_cast<int>(VizBreakdown::kStartDrawToSwapStart)] =
-      std::make_pair(viz_breakdown_.draw_start_timestamp,
-                     viz_breakdown_.swap_timings.swap_start);
-
-  viz_breakdown_list_[static_cast<int>(VizBreakdown::kSwapStartToSwapEnd)] =
-      std::make_pair(viz_breakdown_.swap_timings.swap_start,
-                     viz_breakdown_.swap_timings.swap_end);
-
-  viz_breakdown_list_[static_cast<int>(
-      VizBreakdown::kSwapEndToPresentationCompositorFrame)] =
-      std::make_pair(viz_breakdown_.swap_timings.swap_end,
-                     viz_breakdown_.presentation_feedback.timestamp);
-
-  if (viz_breakdown_.presentation_feedback.ready_timestamp.is_null())
-    return;
-  viz_breakdown_list_[static_cast<int>(
-      VizBreakdown::kSwapStartToBufferAvailable)] =
-      std::make_pair(viz_breakdown_.swap_timings.swap_start,
-                     viz_breakdown_.presentation_feedback.available_timestamp);
-  viz_breakdown_list_[static_cast<int>(
-      VizBreakdown::kBufferAvailableToBufferReady)] =
-      std::make_pair(viz_breakdown_.presentation_feedback.available_timestamp,
-                     viz_breakdown_.presentation_feedback.ready_timestamp);
-  viz_breakdown_list_[static_cast<int>(VizBreakdown::kBufferReadyToLatch)] =
-      std::make_pair(viz_breakdown_.presentation_feedback.ready_timestamp,
-                     viz_breakdown_.presentation_feedback.latch_timestamp);
-  viz_breakdown_list_[static_cast<int>(VizBreakdown::kLatchToSwapEnd)] =
-      std::make_pair(viz_breakdown_.presentation_feedback.latch_timestamp,
-                     viz_breakdown_.swap_timings.swap_end);
 }
 
 base::TimeDelta CompositorFrameReporter::SumOfStageHistory() const {

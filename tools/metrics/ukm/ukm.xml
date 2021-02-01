@@ -5276,7 +5276,7 @@ be describing additional metrics about the same event.
   </summary>
   <metric name="Activation">
     <summary>
-      The duration of the activation stage.
+      The duration of the activation stage, in microseconds.
     </summary>
     <aggregation>
       <history>
@@ -5290,7 +5290,7 @@ be describing additional metrics about the same event.
   <metric name="BeginImplFrameToSendBeginMainFrame">
     <summary>
       The time from when the Impl frame is started to when BeginMainFrame is
-      sent.
+      sent, in microseconds.
     </summary>
     <aggregation>
       <history>
@@ -5308,7 +5308,7 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="Commit">
     <summary>
-      The duration of the commit stage.&quot;
+      The duration of the commit stage, in microseconds.
     </summary>
     <aggregation>
       <history>
@@ -5327,7 +5327,7 @@ be describing additional metrics about the same event.
   <metric name="EndActivateToSubmitCompositorFrame">
     <summary>
       The time from when an activation is complete to the next
-      SubmitCompositorFrame.
+      SubmitCompositorFrame, in microseconds.
     </summary>
     <aggregation>
       <history>
@@ -5341,7 +5341,7 @@ be describing additional metrics about the same event.
   <metric name="EndCommitToActivation">
     <summary>
       The time from when a commit is complete to the beginning of the next
-      activation.
+      activation, in microseconds.
     </summary>
     <aggregation>
       <history>
@@ -5392,7 +5392,7 @@ be describing additional metrics about the same event.
   <metric name="SendBeginMainFrameToCommit">
     <summary>
       The time from when the BeginMainFrame is sent to the beginning of the
-      commit.
+      commit, in microseconds.
     </summary>
     <aggregation>
       <history>
@@ -5406,7 +5406,52 @@ be describing additional metrics about the same event.
   <metric name="SubmitCompositorFrameToPresentationCompositorFrame">
     <summary>
       The time from when the a compositor frame is submitted to the display
-      compositor to when it is presented.
+      compositor to when it is presented, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="SubmitCompositorFrameToPresentationCompositorFrame.BufferAvailableToBufferReady">
+    <summary>
+      The time from when the target framebuffer is available to when the GPU has
+      finished drawing to it, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="SubmitCompositorFrameToPresentationCompositorFrame.BufferReadyToLatch">
+    <summary>
+      The time from when the target framebuffer is ready to be displayed to when
+      the buffer is latched on for presentation, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="SubmitCompositorFrameToPresentationCompositorFrame.LatchToSwapEnd">
+    <summary>
+      The time from when the target framebuffer is latched on to when the swap
+      ends, in microseconds.
     </summary>
     <aggregation>
       <history>
@@ -5421,7 +5466,7 @@ be describing additional metrics about the same event.
       name="SubmitCompositorFrameToPresentationCompositorFrame.ReceivedCompositorFrameToStartDraw">
     <summary>
       The time from when a compositor frame is received to when it starts to
-      draw.
+      draw, in microseconds.
     </summary>
     <aggregation>
       <history>
@@ -5441,7 +5486,7 @@ be describing additional metrics about the same event.
     </obsolete>
     <summary>
       The time from when the a compositor frame is started to draw to when it
-      ends swap.
+      ends swap, in microseconds.
     </summary>
     <aggregation>
       <history>
@@ -5456,7 +5501,7 @@ be describing additional metrics about the same event.
       name="SubmitCompositorFrameToPresentationCompositorFrame.StartDrawToSwapStart">
     <summary>
       The time from when a compositor frame is started to draw to when it starts
-      swap.
+      swap, in microseconds.
     </summary>
     <aggregation>
       <history>
@@ -5470,8 +5515,8 @@ be describing additional metrics about the same event.
   <metric
       name="SubmitCompositorFrameToPresentationCompositorFrame.SubmitToReceiveCompositorFrame">
     <summary>
-      The time from when the a compositor frame is submitted to when it is
-      received.
+      The time from when a compositor frame is submitted to when it is received,
+      in microseconds.
     </summary>
     <aggregation>
       <history>
@@ -5486,7 +5531,22 @@ be describing additional metrics about the same event.
       name="SubmitCompositorFrameToPresentationCompositorFrame.SwapEndToPresentationCompositorFrame">
     <summary>
       The time from when the a compositor frame ends swap to when it is
-      presented.
+      presented, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="SubmitCompositorFrameToPresentationCompositorFrame.SwapStartToBufferAvailable">
+    <summary>
+      The time from when the compositor frame starts to swap to when the target
+      framebuffer becomes available, in microseconds.
     </summary>
     <aggregation>
       <history>
@@ -5500,7 +5560,8 @@ be describing additional metrics about the same event.
   <metric
       name="SubmitCompositorFrameToPresentationCompositorFrame.SwapStartToSwapEnd">
     <summary>
-      The time from when a compositor frame starts swap to when it ends swap.
+      The time from when a compositor frame starts swap to when it ends swap, in
+      microseconds.
     </summary>
     <aggregation>
       <history>
@@ -5516,7 +5577,7 @@ be describing additional metrics about the same event.
       The total time starting from BeginImplFrame to when
       CompositorFramePresentation is done with updates from the MainThread (i.e.
       the time it takes for BeginImplFrame, BeginMainFrame, Commit, Activate,
-      SubmitCompositorFrame and PresentCompositorFrame).
+      SubmitCompositorFrame and PresentCompositorFrame), in microseconds.
     </summary>
     <aggregation>
       <history>
@@ -5534,7 +5595,7 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="Unknown">
     <summary>
-      The time within a stage not attributed to any system.
+      The time within a stage not attributed to any system, in microseconds.
     </summary>
     <aggregation>
       <history>
