@@ -621,7 +621,7 @@ TEST_P(CombineSpellCheckResultsTest, ShouldCorrectlyCombineHybridResults) {
 
   int check_id = provider_.AddCompletionForTest(
       std::make_unique<FakeTextCheckingCompletion>(&completion), request_info);
-  provider_.OnRespondTextCheck(check_id, test_case.text,
+  provider_.OnRespondTextCheck(check_id, base::WideToUTF16(test_case.text),
                                test_case.browser_results);
 
   // Should have called the completion callback without cancellation, and should

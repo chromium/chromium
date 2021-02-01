@@ -75,13 +75,12 @@ bool IsEmptySalt(std::wstring const& salt) {
   return true;
 }
 
-base::string16 ReadAndDecryptValue(const RegKey& key,
-                                   const wchar_t* value_name) {
+std::wstring ReadAndDecryptValue(const RegKey& key, const wchar_t* value_name) {
   DWORD data_type = REG_BINARY;
   DWORD data_size = 0;
   LONG result = key.ReadValue(value_name, nullptr, &data_size, &data_type);
   if ((result != ERROR_SUCCESS) || !data_size || data_type != REG_BINARY)
-    return base::string16();
+    return std::wstring();
   std::string data;
   data.resize(data_size);
   result = key.ReadValue(value_name, &(data[0]), &data_size, &data_type);
@@ -91,12 +90,11 @@ base::string16 ReadAndDecryptValue(const RegKey& key,
       // The actual data is in UTF16 already.
       if (!(out_data.size() & 1) && (out_data.size() > 2) &&
           !out_data[out_data.size() - 1] && !out_data[out_data.size() - 2]) {
-        return base::string16(
-            reinterpret_cast<const wchar_t *>(out_data.c_str()));
+        return reinterpret_cast<const wchar_t*>(out_data.c_str());
       }
     }
   }
-  return base::string16();
+  return std::wstring();
 }
 
 struct {
@@ -157,16 +155,18 @@ bool ImportSingleFormGroup(const RegKey& key,
     if (it == reg_to_field.end())
       continue;  // This field is not imported.
 
-    base::string16 field_value = ReadAndDecryptValue(key, value_name.c_str());
+    std::wstring field_value = ReadAndDecryptValue(key, value_name.c_str());
     if (!field_value.empty()) {
       if (it->second == CREDIT_CARD_NUMBER)
         field_value = DecryptCCNumber(field_value);
 
       // Phone numbers are stored piece-by-piece, and then reconstructed from
       // the pieces.  The rest of the fields are set "as is".
-      if (!phone || !phone->SetInfo(AutofillType(it->second), field_value)) {
+      if (!phone || !phone->SetInfo(AutofillType(it->second),
+                                    base::WideToUTF16(field_value))) {
         has_non_empty_fields = true;
-        form_group->SetInfo(AutofillType(it->second), field_value, app_locale);
+        form_group->SetInfo(AutofillType(it->second),
+                            base::WideToUTF16(field_value), app_locale);
       }
     }
   }
@@ -265,8 +265,8 @@ bool ImportCurrentUserProfiles(const std::string& app_locale,
       profiles->push_back(profile);
     }
   }
-  base::string16 password_hash;
-  base::string16 salt;
+  std::wstring password_hash;
+  std::wstring salt;
   RegKey cc_key(HKEY_CURRENT_USER, kCreditCardKey, KEY_READ);
   if (cc_key.Valid()) {
     password_hash = ReadAndDecryptValue(cc_key, kPasswordHashValue);

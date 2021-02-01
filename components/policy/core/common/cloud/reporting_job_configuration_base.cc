@@ -119,7 +119,7 @@ ReportingJobConfigurationBase::BrowserDictionaryBuilder::BuildBrowserDictionary(
 
   base::FilePath browser_id;
   if (base::PathService::Get(base::DIR_EXE, &browser_id)) {
-    browser_dictionary.SetStringKey(kBrowserId, browser_id.value());
+    browser_dictionary.SetStringKey(kBrowserId, browser_id.AsUTF8Unsafe());
   }
 
   if (include_device_info)

@@ -87,7 +87,7 @@ std::string ReportGenerator::GetOSUserName() {
 
 std::string ReportGenerator::GetSerialNumber() {
 #if defined(OS_WIN)
-  return base::UTF16ToUTF8(
+  return base::WideToUTF8(
       base::win::WmiComputerSystemInfo::Get().serial_number());
 #else
   return std::string();

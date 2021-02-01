@@ -35,7 +35,8 @@ void GetPlatformCrashpadAnnotations(
   CHECK(::GetModuleFileName(nullptr, exe_file, base::size(exe_file)));
   base::string16 product_name, version, special_build, channel_name;
   crash_reporter_client->GetProductNameAndVersion(
-      exe_file, &product_name, &version, &special_build, &channel_name);
+      base::WideToUTF16(exe_file), &product_name, &version, &special_build,
+      &channel_name);
   (*annotations)["prod"] = base::UTF16ToUTF8(product_name);
   (*annotations)["ver"] = base::UTF16ToUTF8(version);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -74,11 +75,11 @@ base::FilePath PlatformCrashpadInitialization(
   if (initial_client) {
     base::string16 database_path_str;
     if (crash_reporter_client->GetCrashDumpLocation(&database_path_str))
-      database_path = base::FilePath(database_path_str);
+      database_path = base::FilePath::FromUTF16Unsafe(database_path_str);
 
     base::string16 metrics_path_str;
     if (crash_reporter_client->GetCrashMetricsLocation(&metrics_path_str)) {
-      metrics_path = base::FilePath(metrics_path_str);
+      metrics_path = base::FilePath::FromUTF16Unsafe(metrics_path_str);
       CHECK(base::CreateDirectoryAndGetError(metrics_path, nullptr));
     }
 
@@ -144,11 +145,11 @@ base::FilePath PlatformCrashpadInitialization(
     // processes can connect to it. If we inherited another crashpad_handler's
     // pipe name, we'll overwrite it here.
     env->SetVar(kPipeNameVar,
-                base::UTF16ToUTF8(GetCrashpadClient().GetHandlerIPCPipe()));
+                base::WideToUTF8(GetCrashpadClient().GetHandlerIPCPipe()));
   } else {
     std::string pipe_name_utf8;
     if (env->GetVar(kPipeNameVar, &pipe_name_utf8)) {
-      GetCrashpadClient().SetHandlerIPCPipe(base::UTF8ToUTF16(pipe_name_utf8));
+      GetCrashpadClient().SetHandlerIPCPipe(base::UTF8ToWide(pipe_name_utf8));
     }
   }
 

@@ -37,13 +37,13 @@ class POLICY_EXPORT PolicyLoaderWin
       public base::win::ObjectWatcher::Delegate {
  public:
   PolicyLoaderWin(scoped_refptr<base::SequencedTaskRunner> task_runner,
-                  const base::string16& chrome_policy_key);
+                  const std::wstring& chrome_policy_key);
   ~PolicyLoaderWin() override;
 
   // Creates a policy loader that uses the Registry to access GPO.
   static std::unique_ptr<PolicyLoaderWin> Create(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
-      const base::string16& chrome_policy_key);
+      const std::wstring& chrome_policy_key);
 
   // AsyncPolicyLoader implementation.
   void InitOnBackgroundThread() override;
@@ -69,7 +69,7 @@ class POLICY_EXPORT PolicyLoaderWin
   void OnObjectSignaled(HANDLE object) override;
 
   bool is_initialized_;
-  const base::string16 chrome_policy_key_;
+  const std::wstring chrome_policy_key_;
 
   base::WaitableEvent user_policy_changed_event_;
   base::WaitableEvent machine_policy_changed_event_;

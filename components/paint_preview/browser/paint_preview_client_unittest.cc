@@ -207,7 +207,7 @@ TEST_P(PaintPreviewClientRenderViewHostTest, CaptureMainFrameMock) {
             base::ScopedAllowBlockingForTesting scope;
 #if defined(OS_WIN)
             base::FilePath path = base::FilePath(
-                base::UTF8ToUTF16(result->proto.root_frame().file_path()));
+                base::UTF8ToWide(result->proto.root_frame().file_path()));
 #else
             base::FilePath path =
                 base::FilePath(result->proto.root_frame().file_path());

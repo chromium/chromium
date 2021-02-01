@@ -80,7 +80,7 @@ class POLICY_EXPORT RegistryDict {
 
 #if defined(OS_WIN)
   // Read a Windows registry subtree into this registry dictionary object.
-  void ReadRegistry(HKEY hive, const base::string16& root);
+  void ReadRegistry(HKEY hive, const std::wstring& root);
 
   // Converts the dictionary to base::Value representation. For key/value name
   // collisions, the key wins. |schema| is used to determine the expected type

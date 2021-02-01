@@ -83,8 +83,8 @@ bool RulesetConverter::Convert() {
 bool RulesetConverter::SetInputFiles(
     const base::CommandLine::StringType& comma_separated_paths) {
 #if defined(OS_WIN)
-  base::string16 separator16 = base::ASCIIToUTF16(",");
-  base::StringPiece16 separator(separator16);
+  std::wstring separatorw = L",";
+  base::WStringPiece separator(separatorw);
 #else
   base::StringPiece separator(",");
 #endif

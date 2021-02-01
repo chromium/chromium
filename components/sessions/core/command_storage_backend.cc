@@ -352,7 +352,7 @@ base::FilePath::StringType TimestampToString(const base::Time time) {
 #if defined(OS_POSIX) || defined(OS_FUCHSIA)
   return base::NumberToString(time.ToDeltaSinceWindowsEpoch().InMicroseconds());
 #elif defined(OS_WIN)
-  return base::NumberToString16(
+  return base::NumberToWString(
       time.ToDeltaSinceWindowsEpoch().InMicroseconds());
 #endif
 }

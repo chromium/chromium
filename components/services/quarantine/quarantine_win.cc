@@ -242,7 +242,7 @@ QuarantineFileResult QuarantineFile(const base::FilePath& file,
   std::string braces_guid = "{" + client_guid + "}";
   GUID guid = GUID_NULL;
   if (base::IsValidGUID(client_guid)) {
-    HRESULT hr = CLSIDFromString(base::UTF8ToUTF16(braces_guid).c_str(), &guid);
+    HRESULT hr = CLSIDFromString(base::UTF8ToWide(braces_guid).c_str(), &guid);
     if (FAILED(hr))
       guid = GUID_NULL;
   }

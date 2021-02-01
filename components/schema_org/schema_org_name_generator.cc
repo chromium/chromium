@@ -43,7 +43,7 @@ int main(int argc, char* argv[]) {
   std::vector<std::string> args;
   base::CommandLine::StringVector wide_args = command_line.GetArgs();
   for (const auto& arg : wide_args) {
-    args.push_back(base::UTF16ToUTF8(arg));
+    args.push_back(base::WideToUTF8(arg));
   }
 #else
   base::CommandLine::StringVector args = command_line.GetArgs();

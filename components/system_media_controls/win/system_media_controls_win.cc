@@ -10,6 +10,7 @@
 #include <wrl/event.h>
 
 #include "base/strings/string_piece.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/scoped_hstring.h"
 #include "components/system_media_controls/system_media_controls_observer.h"
@@ -181,7 +182,8 @@ void SystemMediaControlsWin::SetPlaybackStatus(PlaybackStatus status) {
 void SystemMediaControlsWin::SetTitle(const base::string16& title) {
   DCHECK(initialized_);
   DCHECK(display_properties_);
-  base::win::ScopedHString h_title = base::win::ScopedHString::Create(title);
+  base::win::ScopedHString h_title =
+      base::win::ScopedHString::Create(base::UTF16ToWide(title));
   HRESULT hr = display_properties_->put_Title(h_title.get());
   DCHECK(SUCCEEDED(hr));
 }
@@ -189,7 +191,8 @@ void SystemMediaControlsWin::SetTitle(const base::string16& title) {
 void SystemMediaControlsWin::SetArtist(const base::string16& artist) {
   DCHECK(initialized_);
   DCHECK(display_properties_);
-  base::win::ScopedHString h_artist = base::win::ScopedHString::Create(artist);
+  base::win::ScopedHString h_artist =
+      base::win::ScopedHString::Create(base::UTF16ToWide(artist));
   HRESULT hr = display_properties_->put_Artist(h_artist.get());
   DCHECK(SUCCEEDED(hr));
 }
