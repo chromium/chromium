@@ -459,7 +459,7 @@ class ScriptExecutor : public ActionDelegate,
 
   // Maybe shows the message specified in a callout, depending on the current
   // state and client settings.
-  void MaybeShowSlowWarning(const std::string& message, bool enabled);
+  bool MaybeShowSlowWarning(const std::string& message, bool enabled);
 
   const std::string script_path_;
   std::unique_ptr<TriggerContext> additional_context_;

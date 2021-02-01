@@ -10,8 +10,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.autofill_assistant.metrics.DropOutReason;
-import org.chromium.chrome.browser.autofill_assistant.metrics.OnBoarding;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayModel;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayState;
@@ -54,7 +52,7 @@ class BottomSheetOnboardingCoordinator extends BaseOnboardingCoordinator {
     }
 
     @Override
-    void initViewImpl(Callback<Boolean> callback) {
+    void initViewImpl(Callback<Integer> callback) {
         // If there's a tab, cover it with an overlay.
         AssistantOverlayModel overlayModel = new AssistantOverlayModel();
         mOverlayCoordinator = new AssistantOverlayCoordinator(getContext(), mBrowserControls,
@@ -83,8 +81,7 @@ class BottomSheetOnboardingCoordinator extends BaseOnboardingCoordinator {
             @Override
             public boolean onBackButtonPressed() {
                 onUserAction(
-                        /* accept= */ false, callback, OnBoarding.OB_NO_ANSWER,
-                        DropOutReason.ONBOARDING_BACK_BUTTON_CLICKED);
+                        /* result= */ AssistantOnboardingResult.DISMISSED, callback);
                 return true;
             }
 

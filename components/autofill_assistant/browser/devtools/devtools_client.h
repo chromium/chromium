@@ -126,7 +126,7 @@ class DevtoolsClient : public MessageDispatcher,
   template <typename CallbackType>
   void SendMessageWithParams(const char* method,
                              std::unique_ptr<base::Value> params,
-                             const std::string& optional_node_frame_id,
+                             const std::string& optional_session_id,
                              CallbackType callback);
   bool DispatchMessageReply(std::unique_ptr<base::Value> owning_message,
                             const base::DictionaryValue& message_dict);
@@ -156,7 +156,6 @@ class DevtoolsClient : public MessageDispatcher,
   target::ExperimentalDomain target_domain_;
   std::unordered_map<int, Callback> pending_messages_;
   EventHandlerMap event_handlers_;
-  bool renderer_crashed_;
   int next_message_id_;
   FrameTracker frame_tracker_;
 

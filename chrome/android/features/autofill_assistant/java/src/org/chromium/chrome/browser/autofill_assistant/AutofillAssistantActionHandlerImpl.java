@@ -85,9 +85,9 @@ class AutofillAssistantActionHandlerImpl implements AutofillAssistantActionHandl
         BottomSheetOnboardingCoordinator coordinator =
                 new BottomSheetOnboardingCoordinator(experimentIds, parameters, mContext,
                         mBottomSheetController, mBrowserControls, mCompositorViewHolder, mScrim);
-        coordinator.show(accepted -> {
+        coordinator.show(result -> {
             coordinator.hide();
-            callback.onResult(accepted);
+            callback.onResult(result == AssistantOnboardingResult.ACCEPTED);
         });
     }
 
@@ -110,8 +110,8 @@ class AutofillAssistantActionHandlerImpl implements AutofillAssistantActionHandl
             BottomSheetOnboardingCoordinator coordinator = new BottomSheetOnboardingCoordinator(
                     experimentIds, argumentMap, mContext, mBottomSheetController, mBrowserControls,
                     mCompositorViewHolder, mScrim);
-            coordinator.show(accepted -> {
-                if (!accepted) {
+            coordinator.show(result -> {
+                if (result != AssistantOnboardingResult.ACCEPTED) {
                     coordinator.hide();
                     callback.onResult(false);
                     return;

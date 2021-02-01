@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "components/autofill_assistant/browser/client.h"
 #include "components/autofill_assistant/browser/metrics.h"
+#include "components/autofill_assistant/browser/onboarding_result.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/service/service_request_sender.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
@@ -103,7 +104,7 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   void RemoveObserver(const Observer* observer);
 
   // Called when onboarding for trigger script is finished.
-  void OnOnboardingFinished(bool onboardingShown, bool accepted);
+  void OnOnboardingFinished(bool onboardingShown, OnboardingResult result);
 
  private:
   friend class TriggerScriptCoordinatorTest;

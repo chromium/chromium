@@ -313,9 +313,9 @@ void ScriptExecutor::WaitForDom(
       this, delegate_, max_wait_time, allow_interrupt, check_elements,
       base::BindOnce(&ScriptExecutor::OnWaitForElementVisibleWithInterrupts,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  current_action_data_.wait_for_dom->SetTimeoutWarningCallback(base::BindOnce(
-      &ScriptExecutor::SetBubbleMessage, weak_ptr_factory_.GetWeakPtr(),
-      delegate_->GetSettings().slow_website_message));
+  current_action_data_.wait_for_dom->SetTimeoutWarningCallback(
+      base::BindOnce(&ScriptExecutor::MaybeShowSlowWebsiteWarning,
+                     weak_ptr_factory_.GetWeakPtr()));
   current_action_data_.wait_for_dom->Run();
 }
 
@@ -841,24 +841,50 @@ void ScriptExecutor::MaybeShowSlowWebsiteWarning() {
 }
 
 void ScriptExecutor::MaybeShowSlowConnectionWarning() {
-  MaybeShowSlowWarning(
+  base::TimeDelta delay = base::TimeDelta::FromMilliseconds(0);
+  bool warning_was_shown = MaybeShowSlowWarning(
       delegate_->GetSettings().slow_connection_message,
       delegate_->GetSettings().enable_slow_connection_warnings);
+  if (warning_was_shown) {
+    delay = delegate_->GetSettings().minimum_warning_duration;
+  }
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&ScriptExecutor::ProcessNextAction,
+                     weak_ptr_factory_.GetWeakPtr()),
+      delay);
 }
 
-void ScriptExecutor::MaybeShowSlowWarning(const std::string& message,
+bool ScriptExecutor::MaybeShowSlowWarning(const std::string& message,
                                           bool enabled) {
   if (message.empty() || !enabled || !delegate_->ShouldShowWarning()) {
-    return;
+    return false;
   }
 
   if (delegate_->GetSettings().only_show_warning_once &&
       warning_callout_already_shown_) {
-    return;
+    return false;
   }
 
   warning_callout_already_shown_ = true;
-  SetBubbleMessage(message);
+  const std::string& previous_message = GetStatusMessage();
+  switch (delegate_->GetSettings().message_mode) {
+    case ClientSettingsProto::SlowWarningSettings::CONCATENATE:
+      LOG(ERROR) << "CHECKING IF SHOULD CONCATENATE WARNING";
+      if (previous_message.find(message) == std::string::npos) {
+        LOG(ERROR) << "CONCATENATING WARNING";
+        SetStatusMessage(previous_message + message);
+      }
+      break;
+    case ClientSettingsProto::SlowWarningSettings::REPLACE:
+      LOG(ERROR) << "REPLACING WARNING";
+      SetStatusMessage(message);
+      break;
+    case ClientSettingsProto::SlowWarningSettings::UNKNOWN:
+      return false;
+  }
+
+  return true;
 }
 
 base::WeakPtr<ActionDelegate> ScriptExecutor::GetWeakPtr() const {
@@ -890,18 +916,29 @@ void ScriptExecutor::OnGetActions(base::TimeTicks start_time,
     return;
   }
 
+  if (roundtrip_duration < delegate_->GetSettings().slow_roundtrip_threshold) {
+    consecutive_slow_roundtrip_counter_ = 0;
+    LOG(ERROR) << "RESETTING COUNTER";
+  } else {
+    consecutive_slow_roundtrip_counter_++;
+    LOG(ERROR) << "COUNTER INCREASED TO "
+               << consecutive_slow_roundtrip_counter_;
+  }
+
   if (!actions_.empty()) {
-    if (roundtrip_duration >
-        delegate_->GetSettings().slow_roundtrip_threshold) {
-      consecutive_slow_roundtrip_counter_++;
-      if (consecutive_slow_roundtrip_counter_ >=
-          delegate_->GetSettings().max_consecutive_slow_roundtrips) {
-        MaybeShowSlowConnectionWarning();
-      }
+    if (consecutive_slow_roundtrip_counter_ >=
+        delegate_->GetSettings().max_consecutive_slow_roundtrips) {
+      LOG(ERROR) << "SHOWING WARNING";
+      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&ScriptExecutor::MaybeShowSlowConnectionWarning,
+                         weak_ptr_factory_.GetWeakPtr()),
+          delegate_->GetSettings().minimum_warning_duration);
     } else {
-      consecutive_slow_roundtrip_counter_ = 0;
+      LOG(ERROR) << "NOT SHOWING WARNING";
+
+      ProcessNextAction();
     }
-    ProcessNextAction();
     return;
   }
 
@@ -1122,7 +1159,7 @@ ScriptExecutor::WaitForDomOperation::WaitForDomOperation(
       check_elements_(std::move(check_elements)),
       callback_(std::move(callback)),
       timeout_warning_period_(
-          main_script->delegate_->GetSettings().timeout_warning_delay),
+          main_script->delegate_->GetSettings().warning_delay),
       retry_timer_(main_script->delegate_->GetSettings()
                        .periodic_element_check_interval) {}
 

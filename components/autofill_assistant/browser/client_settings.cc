@@ -118,7 +118,7 @@ void ClientSettings::UpdateFromProto(const ClientSettingsProto& proto) {
       only_show_warning_once = proto.slow_warning_settings().show_only_once();
     }
     if (proto.slow_warning_settings().has_warning_delay_ms()) {
-      timeout_warning_delay = base::TimeDelta::FromMilliseconds(
+      warning_delay = base::TimeDelta::FromMilliseconds(
           proto.slow_warning_settings().warning_delay_ms());
     }
     if (proto.slow_warning_settings().has_slow_roundtrip_threshold_ms()) {
@@ -136,6 +136,15 @@ void ClientSettings::UpdateFromProto(const ClientSettingsProto& proto) {
     if (proto.slow_warning_settings().has_slow_website_message()) {
       slow_website_message =
           proto.slow_warning_settings().slow_website_message();
+    }
+    if (proto.slow_warning_settings()
+            .has_minimum_warning_message_duration_ms()) {
+      minimum_warning_duration = base::TimeDelta::FromMilliseconds(
+          proto.slow_warning_settings().minimum_warning_message_duration_ms());
+    }
+    if (proto.slow_warning_settings().message_mode() !=
+        ClientSettingsProto::SlowWarningSettings::UNKNOWN) {
+      message_mode = proto.slow_warning_settings().message_mode();
     }
   }
   // Test only settings.

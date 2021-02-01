@@ -12,6 +12,7 @@
 #include "chrome/browser/android/autofill_assistant/ui_controller_android_utils.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/common/channel_info.h"
+#include "components/autofill_assistant/browser/onboarding_result.h"
 #include "components/autofill_assistant/browser/service/api_key_fetcher.h"
 #include "components/autofill_assistant/browser/service/server_url_fetcher.h"
 #include "components/autofill_assistant/browser/service/service_request_sender_impl.h"
@@ -281,12 +282,12 @@ void TriggerScriptBridgeAndroid::OnOnboardingFinished(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,
     jboolean jonboarding_shown,
-    jboolean jaccepted) {
+    jint jresult) {
   if (!trigger_script_coordinator_) {
     return;
   }
-  trigger_script_coordinator_->OnOnboardingFinished(jonboarding_shown,
-                                                    jaccepted);
+  trigger_script_coordinator_->OnOnboardingFinished(
+      jonboarding_shown, static_cast<OnboardingResult>(jresult));
 }
 
 }  // namespace autofill_assistant
