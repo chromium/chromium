@@ -560,10 +560,23 @@ void VideoCaptureImpl::OnNewBuffer(
 }
 
 void VideoCaptureImpl::OnBufferReady(
-    int32_t buffer_id,
-    media::mojom::blink::VideoFrameInfoPtr info) {
+    media::mojom::blink::ReadyBufferPtr buffer,
+    Vector<media::mojom::blink::ReadyBufferPtr> scaled_buffers) {
+  int32_t buffer_id = buffer->buffer_id;
+  media::mojom::blink::VideoFrameInfoPtr info = std::move(buffer->info);
+
   DVLOG(1) << __func__ << " buffer_id: " << buffer_id;
   DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
+
+  // We currently do not support passing along scaled buffers, so we release all
+  // of them here.
+  // TODO(https://crbug.com/1157072): Update VideoCaptureImpl to pass along
+  // scaled buffers.
+  for (media::mojom::blink::ReadyBufferPtr& scaled_buffer : scaled_buffers) {
+    GetVideoCaptureHost()->ReleaseBuffer(device_id_, scaled_buffer->buffer_id,
+                                         media::VideoFrameFeedback());
+  }
+  scaled_buffers.clear();
 
   bool consume_buffer = state_ == VIDEO_CAPTURE_STATE_STARTED;
   if (!consume_buffer) {

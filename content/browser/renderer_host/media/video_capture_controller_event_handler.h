@@ -20,6 +20,16 @@ namespace content {
 
 typedef base::UnguessableToken VideoCaptureControllerID;
 
+// Represents a buffer that is ready for consumption. Mirrors ReadyBuffer in
+// video_capture_types.mojom.
+struct ReadyBuffer {
+  ReadyBuffer(int buffer_id, media::mojom::VideoFrameInfoPtr frame_info);
+  ~ReadyBuffer();
+
+  int buffer_id;
+  media::mojom::VideoFrameInfoPtr frame_info;
+};
+
 // VideoCaptureControllerEventHandler is the interface for
 // VideoCaptureController to notify clients about the events such as
 // BufferReady, FrameInfo, Error, etc.
@@ -43,11 +53,12 @@ class CONTENT_EXPORT VideoCaptureControllerEventHandler {
   virtual void OnBufferDestroyed(const VideoCaptureControllerID& id,
                                  int buffer_id) = 0;
 
-  // A buffer has been filled with a captured VideoFrame.
+  // A buffer (and optionally scaled versions of it) has been filled with a
+  // captured VideoFrame.
   virtual void OnBufferReady(
       const VideoCaptureControllerID& id,
-      int buffer_id,
-      const media::mojom::VideoFrameInfoPtr& frame_info) = 0;
+      const ReadyBuffer& buffer,
+      const std::vector<ReadyBuffer>& scaled_buffers) = 0;
 
   // The capture session has ended and no more frames will be sent.
   virtual void OnEnded(const VideoCaptureControllerID& id) = 0;

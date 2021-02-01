@@ -217,7 +217,9 @@ void SingleClientVideoCaptureHost::OnFrameReadyInBuffer(
       buffer_context_id,
       std::make_pair(frame_feedback_id, std::move(buffer_read_permission))));
   DCHECK(insert_result.second);
-  observer_->OnBufferReady(buffer_context_id, std::move(frame_info));
+  observer_->OnBufferReady(
+      media::mojom::ReadyBuffer::New(buffer_context_id, std::move(frame_info)),
+      {});
 }
 
 void SingleClientVideoCaptureHost::OnBufferRetired(int buffer_id) {

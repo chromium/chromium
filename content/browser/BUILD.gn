@@ -1438,6 +1438,7 @@ source_set("browser") {
     "renderer_host/media/service_video_capture_provider.h",
     "renderer_host/media/video_capture_controller.cc",
     "renderer_host/media/video_capture_controller.h",
+    "renderer_host/media/video_capture_controller_event_handler.cc",
     "renderer_host/media/video_capture_controller_event_handler.h",
     "renderer_host/media/video_capture_device_launch_observer.h",
     "renderer_host/media/video_capture_host.cc",

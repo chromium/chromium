@@ -324,6 +324,13 @@ struct VideoFrameInfo{
   PlaneStrides? strides;
 };
 
+// Represents a buffer that is ready for consumption. |buffer_id| has video
+// capture data and |info| contains the associated VideoFrame constituent parts.
+struct ReadyBuffer {
+  int32 buffer_id;
+  VideoFrameInfo info;
+};
+
 // Represents information about a capture device.
 // |device_id| represents a unique id of a physical device. Since the same
 // physical device may be accessible through different APIs |capture_api|

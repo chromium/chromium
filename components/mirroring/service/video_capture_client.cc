@@ -131,25 +131,33 @@ void VideoCaptureClient::OnNewBuffer(
   DCHECK(insert_result.second);
 }
 
-void VideoCaptureClient::OnBufferReady(int32_t buffer_id,
-                                       media::mojom::VideoFrameInfoPtr info) {
+void VideoCaptureClient::OnBufferReady(
+    media::mojom::ReadyBufferPtr buffer,
+    std::vector<media::mojom::ReadyBufferPtr> scaled_buffers) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DVLOG(3) << __func__ << ": buffer_id=" << buffer_id;
+  DVLOG(3) << __func__ << ": buffer_id=" << buffer->buffer_id;
+
+  // Scaled buffers are currently ignored by VideoCaptureClient.
+  for (media::mojom::ReadyBufferPtr& scaled_buffer : scaled_buffers) {
+    video_capture_host_->ReleaseBuffer(DeviceId(), scaled_buffer->buffer_id,
+                                       media::VideoFrameFeedback());
+  }
+  scaled_buffers.clear();
 
   bool consume_buffer = !frame_deliver_callback_.is_null();
-  if (info->pixel_format != media::PIXEL_FORMAT_I420 &&
-      info->pixel_format != media::PIXEL_FORMAT_Y16) {
+  if (buffer->info->pixel_format != media::PIXEL_FORMAT_I420 &&
+      buffer->info->pixel_format != media::PIXEL_FORMAT_Y16) {
     consume_buffer = false;
     LOG(DFATAL) << "Wrong pixel format, got pixel format:"
-                << VideoPixelFormatToString(info->pixel_format);
+                << VideoPixelFormatToString(buffer->info->pixel_format);
   }
   if (!consume_buffer) {
-    video_capture_host_->ReleaseBuffer(DeviceId(), buffer_id,
+    video_capture_host_->ReleaseBuffer(DeviceId(), buffer->buffer_id,
                                        media::VideoFrameFeedback());
     return;
   }
 
-  base::TimeTicks reference_time = *info->metadata.reference_time;
+  base::TimeTicks reference_time = *buffer->info->metadata.reference_time;
 
   if (first_frame_ref_time_.is_null())
     first_frame_ref_time_ = reference_time;
@@ -158,16 +166,16 @@ void VideoCaptureClient::OnBufferReady(int32_t buffer_id,
   // estimate. e.g. ThreadSafeCaptureOracle::DidCaptureFrame().
   // TODO(crbug.com/618407): Fix upstream capturers to always set timestamp and
   // reference time.
-  if (info->timestamp.is_zero())
-    info->timestamp = reference_time - first_frame_ref_time_;
+  if (buffer->info->timestamp.is_zero())
+    buffer->info->timestamp = reference_time - first_frame_ref_time_;
 
   // Used by chrome/browser/media/cast_mirroring_performance_browsertest.cc
   TRACE_EVENT_INSTANT2("cast_perf_test", "OnBufferReceived",
                        TRACE_EVENT_SCOPE_THREAD, "timestamp",
                        (reference_time - base::TimeTicks()).InMicroseconds(),
-                       "time_delta", info->timestamp.InMicroseconds());
+                       "time_delta", buffer->info->timestamp.InMicroseconds());
 
-  const auto& buffer_iter = client_buffers_.find(buffer_id);
+  const auto& buffer_iter = client_buffers_.find(buffer->buffer_id);
   if (buffer_iter == client_buffers_.end()) {
     LOG(DFATAL) << "Ignoring OnBufferReady() for unknown buffer.";
     return;
@@ -177,9 +185,9 @@ void VideoCaptureClient::OnBufferReady(int32_t buffer_id,
   if (buffer_iter->second->is_shared_buffer_handle()) {
     // TODO(crbug.com/843117): Remove this case after migrating
     // media::VideoCaptureDeviceClient to the new shared memory API.
-    auto mapping_iter = mapped_buffers_.find(buffer_id);
-    const size_t buffer_size =
-        media::VideoFrame::AllocationSize(info->pixel_format, info->coded_size);
+    auto mapping_iter = mapped_buffers_.find(buffer->buffer_id);
+    const size_t buffer_size = media::VideoFrame::AllocationSize(
+        buffer->info->pixel_format, buffer->info->coded_size);
     if (mapping_iter != mapped_buffers_.end() &&
         buffer_size > mapping_iter->second.second) {
       // Unmaps shared memory for too-small region.
@@ -190,45 +198,45 @@ void VideoCaptureClient::OnBufferReady(int32_t buffer_id,
       mojo::ScopedSharedBufferMapping mapping =
           buffer_iter->second->get_shared_buffer_handle()->Map(buffer_size);
       if (!mapping) {
-        video_capture_host_->ReleaseBuffer(DeviceId(), buffer_id,
+        video_capture_host_->ReleaseBuffer(DeviceId(), buffer->buffer_id,
                                            media::VideoFrameFeedback());
         return;
       }
-      mapping_iter =
-          mapped_buffers_
-              .emplace(std::make_pair(
-                  buffer_id, MappingAndSize(std::move(mapping), buffer_size)))
-              .first;
+      mapping_iter = mapped_buffers_
+                         .emplace(std::make_pair(
+                             buffer->buffer_id,
+                             MappingAndSize(std::move(mapping), buffer_size)))
+                         .first;
     }
-    const auto& buffer = mapping_iter->second;
+    const auto& buffer_it = mapping_iter->second;
     frame = media::VideoFrame::WrapExternalData(
-        info->pixel_format, info->coded_size, info->visible_rect,
-        info->visible_rect.size(),
-        reinterpret_cast<uint8_t*>(buffer.first.get()), buffer.second,
-        info->timestamp);
+        buffer->info->pixel_format, buffer->info->coded_size,
+        buffer->info->visible_rect, buffer->info->visible_rect.size(),
+        reinterpret_cast<uint8_t*>(buffer_it.first.get()), buffer_it.second,
+        buffer->info->timestamp);
     buffer_finished_callback = media::BindToCurrentLoop(base::BindOnce(
         &VideoCaptureClient::OnClientBufferFinished, weak_factory_.GetWeakPtr(),
-        buffer_id, base::ReadOnlySharedMemoryMapping()));
+        buffer->buffer_id, base::ReadOnlySharedMemoryMapping()));
   } else {
     base::ReadOnlySharedMemoryMapping mapping =
         buffer_iter->second->get_read_only_shmem_region().Map();
-    const size_t frame_allocation_size =
-        media::VideoFrame::AllocationSize(info->pixel_format, info->coded_size);
+    const size_t frame_allocation_size = media::VideoFrame::AllocationSize(
+        buffer->info->pixel_format, buffer->info->coded_size);
     if (mapping.IsValid() && mapping.size() >= frame_allocation_size) {
       frame = media::VideoFrame::WrapExternalData(
-          info->pixel_format, info->coded_size, info->visible_rect,
-          info->visible_rect.size(),
+          buffer->info->pixel_format, buffer->info->coded_size,
+          buffer->info->visible_rect, buffer->info->visible_rect.size(),
           const_cast<uint8_t*>(static_cast<const uint8_t*>(mapping.memory())),
-          frame_allocation_size, info->timestamp);
+          frame_allocation_size, buffer->info->timestamp);
     }
     buffer_finished_callback = media::BindToCurrentLoop(base::BindOnce(
         &VideoCaptureClient::OnClientBufferFinished, weak_factory_.GetWeakPtr(),
-        buffer_id, std::move(mapping)));
+        buffer->buffer_id, std::move(mapping)));
   }
 
   if (!frame) {
     LOG(DFATAL) << "Unable to wrap shared memory mapping.";
-    video_capture_host_->ReleaseBuffer(DeviceId(), buffer_id,
+    video_capture_host_->ReleaseBuffer(DeviceId(), buffer->buffer_id,
                                        media::VideoFrameFeedback());
     OnStateChanged(media::mojom::VideoCaptureState::FAILED);
     return;
@@ -237,9 +245,9 @@ void VideoCaptureClient::OnBufferReady(int32_t buffer_id,
       base::BindOnce(&VideoCaptureClient::DidFinishConsumingFrame,
                      std::move(buffer_finished_callback)));
 
-  frame->set_metadata(info->metadata);
-  if (info->color_space.has_value())
-    frame->set_color_space(info->color_space.value());
+  frame->set_metadata(buffer->info->metadata);
+  if (buffer->info->color_space.has_value())
+    frame->set_color_space(buffer->info->color_space.value());
 
   frame_deliver_callback_.Run(frame);
 }

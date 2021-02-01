@@ -105,8 +105,9 @@ class PLATFORM_EXPORT VideoCaptureImpl
   void OnNewBuffer(
       int32_t buffer_id,
       media::mojom::blink::VideoBufferHandlePtr buffer_handle) override;
-  void OnBufferReady(int32_t buffer_id,
-                     media::mojom::blink::VideoFrameInfoPtr info) override;
+  void OnBufferReady(
+      media::mojom::blink::ReadyBufferPtr buffer,
+      Vector<media::mojom::blink::ReadyBufferPtr> scaled_buffers) override;
   void OnBufferDestroyed(int32_t buffer_id) override;
 
   void ProcessFeedback(const media::VideoFrameFeedback& feedback);

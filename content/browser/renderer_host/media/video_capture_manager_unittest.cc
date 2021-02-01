@@ -183,10 +183,9 @@ class MockFrameObserver : public VideoCaptureControllerEventHandler {
                    int buffer_id) override {}
   void OnBufferDestroyed(const VideoCaptureControllerID& id,
                          int buffer_id) override {}
-  void OnBufferReady(
-      const VideoCaptureControllerID& id,
-      int buffer_id,
-      const media::mojom::VideoFrameInfoPtr& frame_info) override {}
+  void OnBufferReady(const VideoCaptureControllerID& id,
+                     const ReadyBuffer& buffer,
+                     const std::vector<ReadyBuffer>& scaled_buffers) override {}
   void OnEnded(const VideoCaptureControllerID& id) override {}
 
   void OnGotControllerCallback(const VideoCaptureControllerID&) {}

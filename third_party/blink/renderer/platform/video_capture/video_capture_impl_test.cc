@@ -212,7 +212,9 @@ class VideoCaptureImplTest : public ::testing::Test {
     info->color_space = gfx::ColorSpace();
     info->metadata = metadata;
 
-    video_capture_impl_->OnBufferReady(buffer_id, std::move(info));
+    video_capture_impl_->OnBufferReady(
+        media::mojom::blink::ReadyBuffer::New(buffer_id, std::move(info)),
+        Vector<media::mojom::blink::ReadyBufferPtr>());
   }
 
   void SimulateBufferDestroyed(int buffer_id) {

@@ -103,19 +103,18 @@ class MockVideoCaptureControllerEventHandler
                          int buffer_id) override {
     DoBufferDestroyed(id, buffer_id);
   }
-  void OnBufferReady(
-      const VideoCaptureControllerID& id,
-      int buffer_id,
-      const media::mojom::VideoFrameInfoPtr& frame_info) override {
-    EXPECT_EQ(expected_pixel_format_, frame_info->pixel_format);
-    EXPECT_EQ(expected_color_space_, frame_info->color_space);
-    EXPECT_TRUE(frame_info->metadata.reference_time.has_value());
-    DoBufferReady(id, frame_info->coded_size);
+  void OnBufferReady(const VideoCaptureControllerID& id,
+                     const ReadyBuffer& buffer,
+                     const std::vector<ReadyBuffer>& scaled_buffers) override {
+    EXPECT_EQ(expected_pixel_format_, buffer.frame_info->pixel_format);
+    EXPECT_EQ(expected_color_space_, buffer.frame_info->color_space);
+    EXPECT_TRUE(buffer.frame_info->metadata.reference_time.has_value());
+    DoBufferReady(id, buffer.frame_info->coded_size);
     if (enable_auto_return_buffer_on_buffer_ready_) {
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE, base::BindOnce(&VideoCaptureController::ReturnBuffer,
                                     base::Unretained(controller_), id, this,
-                                    buffer_id, feedback_));
+                                    buffer.buffer_id, feedback_));
     }
   }
   void OnEnded(const VideoCaptureControllerID& id) override {

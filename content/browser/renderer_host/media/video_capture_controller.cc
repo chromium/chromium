@@ -510,9 +510,10 @@ void VideoCaptureController::OnFrameReadyInBuffer(
   DCHECK(buffer_context_iter != buffer_contexts_.end());
   buffer_context_iter->set_frame_feedback_id(frame_feedback_id);
   DCHECK(!buffer_context_iter->HasConsumers());
+  const int buffer_context_id = buffer_context_iter->buffer_context_id();
+  ReadyBuffer frame_ready_buffer(buffer_context_id, std::move(frame_info));
 
   if (state_ != blink::VIDEO_CAPTURE_STATE_ERROR) {
-    const int buffer_context_id = buffer_context_iter->buffer_context_id();
     for (const auto& client : controller_clients_) {
       if (client->session_closed || client->paused)
         continue;
@@ -533,8 +534,10 @@ void VideoCaptureController::OnFrameReadyInBuffer(
         NOTREACHED() << "Unexpected duplicate buffer: " << buffer_context_id;
 
       buffer_context_iter->IncreaseConsumerCount();
+      // TODO(https://crbug.com/1157072): When the Browser process gets scaled
+      // video frames from the Capture process, pass them along here.
       client->event_handler->OnBufferReady(client->controller_id,
-                                           buffer_context_id, frame_info);
+                                           frame_ready_buffer, {});
     }
     if (buffer_context_iter->HasConsumers()) {
       buffer_context_iter->set_read_permission(
@@ -544,15 +547,16 @@ void VideoCaptureController::OnFrameReadyInBuffer(
 
   if (!has_received_frames_) {
     UMA_HISTOGRAM_COUNTS_1M("Media.VideoCapture.Width",
-                            frame_info->coded_size.width());
+                            frame_ready_buffer.frame_info->coded_size.width());
     UMA_HISTOGRAM_COUNTS_1M("Media.VideoCapture.Height",
-                            frame_info->coded_size.height());
-    UMA_HISTOGRAM_ASPECT_RATIO("Media.VideoCapture.AspectRatio",
-                               frame_info->coded_size.width(),
-                               frame_info->coded_size.height());
+                            frame_ready_buffer.frame_info->coded_size.height());
+    UMA_HISTOGRAM_ASPECT_RATIO(
+        "Media.VideoCapture.AspectRatio",
+        frame_ready_buffer.frame_info->coded_size.width(),
+        frame_ready_buffer.frame_info->coded_size.height());
     double frame_rate = 0.0f;
     if (video_capture_format_) {
-      frame_rate = frame_info->metadata.frame_rate.value_or(
+      frame_rate = frame_ready_buffer.frame_info->metadata.frame_rate.value_or(
           video_capture_format_->frame_rate);
     }
     UMA_HISTOGRAM_COUNTS_1M("Media.VideoCapture.FrameRate", frame_rate);
