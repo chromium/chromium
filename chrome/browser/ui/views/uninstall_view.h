@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -44,10 +43,10 @@ class UninstallView : public views::DialogDelegateView,
   void OnDialogAccepted();
   void OnDialogCancelled();
 
-  CheckedPtr<views::Label> confirm_label_;
-  CheckedPtr<views::Checkbox> delete_profile_;
-  CheckedPtr<views::Checkbox> change_default_browser_;
-  CheckedPtr<views::Combobox> browsers_combo_;
+  views::Label* confirm_label_;
+  views::Checkbox* delete_profile_;
+  views::Checkbox* change_default_browser_;
+  views::Combobox* browsers_combo_;
   std::unique_ptr<BrowsersMap> browsers_;
   int& user_selection_;
   base::RepeatingClosure quit_closure_;

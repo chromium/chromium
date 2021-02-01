@@ -13,7 +13,6 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observer.h"
 #include "base/timer/timer.h"
@@ -160,7 +159,7 @@ class ProfileNetworkContextService
   void OnThirdPartyCookieBlockingChanged(
       bool block_third_party_cookies) override;
 
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
 
   ProxyConfigMonitor proxy_config_monitor_;
 

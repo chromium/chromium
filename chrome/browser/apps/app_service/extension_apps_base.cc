@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/apps/app_service/extension_apps.h"
 
 #include <utility>
@@ -180,7 +179,7 @@ class ExtensionAppsEnableFlow : public ExtensionEnableFlowDelegate {
     flow_.reset();
   }
 
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
   const std::string app_id_;
   base::OnceClosure callback_;
   std::unique_ptr<ExtensionEnableFlow> flow_;

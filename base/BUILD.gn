@@ -73,8 +73,8 @@ declare_args() {
 
   # Set to true to use BackupRefPtr as the implementation of CheckedPtr.
   # Optionally can be controlled (partially disabled) at run-time.
-  use_backup_ref_ptr = true
-  enable_runtime_backup_ref_ptr_control = true
+  use_backup_ref_ptr = false
+  enable_runtime_backup_ref_ptr_control = false
 }
 
 # Mutex priority inheritance is disabled by default due to security

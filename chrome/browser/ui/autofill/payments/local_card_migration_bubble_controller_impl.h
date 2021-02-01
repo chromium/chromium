@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"

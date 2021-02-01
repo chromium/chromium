@@ -13,7 +13,6 @@
 
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -154,7 +153,7 @@ class ShortcutsBackend : public RefcountedKeyedService,
   // Deletes all of the shortcuts.
   bool DeleteAllShortcuts();
 
-  CheckedPtr<TemplateURLService> template_url_service_;
+  TemplateURLService* template_url_service_;
   std::unique_ptr<SearchTermsData> search_terms_data_;
 
   CurrentState current_state_;

@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/memory/checked_ptr.h"
 #include "net/base/net_export.h"
 #include "net/dns/host_cache.h"
 #include "net/dns/public/dns_query_type.h"
@@ -67,7 +66,7 @@ class NET_EXPORT_PRIVATE DnsResponseResultExtractor {
   static HostCache::Entry CreateEmptyResult(DnsQueryType query_type);
 
  private:
-  const CheckedPtr<const DnsResponse> response_;
+  const DnsResponse* const response_;
 };
 
 }  // namespace net

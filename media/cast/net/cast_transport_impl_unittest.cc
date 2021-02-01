@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/values.h"
@@ -123,7 +122,7 @@ class CastTransportImplTest : public ::testing::Test {
   base::SimpleTestTickClock testing_clock_;
   scoped_refptr<FakeSingleThreadTaskRunner> task_runner_;
   std::unique_ptr<CastTransportImpl> transport_sender_;
-  CheckedPtr<FakePacketSender> transport_;  // Owned by CastTransport.
+  FakePacketSender* transport_;  // Owned by CastTransport.
   int num_times_logging_callback_called_;
 };
 
@@ -145,7 +144,7 @@ class TransportClient : public CastTransport::Client {
   void ProcessRtpPacket(std::unique_ptr<Packet> packet) final {}
 
  private:
-  const CheckedPtr<CastTransportImplTest> cast_transport_sender_impl_test_;
+  CastTransportImplTest* const cast_transport_sender_impl_test_;
 
   DISALLOW_COPY_AND_ASSIGN(TransportClient);
 };
@@ -157,7 +156,7 @@ void CastTransportImplTest::InitWithoutLogging() {
   transport_sender_.reset(
       new CastTransportImpl(&testing_clock_, base::TimeDelta(),
                             std::make_unique<TransportClient>(nullptr),
-                            base::WrapUnique(transport_.get()), task_runner_));
+                            base::WrapUnique(transport_), task_runner_));
   task_runner_->RunTasks();
 }
 
@@ -171,7 +170,7 @@ void CastTransportImplTest::InitWithOptions() {
   transport_sender_.reset(
       new CastTransportImpl(&testing_clock_, base::TimeDelta(),
                             std::make_unique<TransportClient>(nullptr),
-                            base::WrapUnique(transport_.get()), task_runner_));
+                            base::WrapUnique(transport_), task_runner_));
   transport_sender_->SetOptions(*options);
   task_runner_->RunTasks();
 }
@@ -180,8 +179,8 @@ void CastTransportImplTest::InitWithLogging() {
   transport_ = new FakePacketSender();
   transport_sender_.reset(new CastTransportImpl(
       &testing_clock_, base::TimeDelta::FromMilliseconds(10),
-      std::make_unique<TransportClient>(this),
-      base::WrapUnique(transport_.get()), task_runner_));
+      std::make_unique<TransportClient>(this), base::WrapUnique(transport_),
+      task_runner_));
   task_runner_->RunTasks();
 }
 

@@ -13,7 +13,6 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observer.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -204,10 +203,10 @@ class AvatarMenu :
   base::WeakPtr<ProfileAttributesStorage> profile_storage_;
 
   // The observer of this model, which is notified of changes. Weak.
-  CheckedPtr<AvatarMenuObserver> observer_;
+  AvatarMenuObserver* observer_;
 
   // Browser in which this avatar menu resides. Weak.
-  CheckedPtr<Browser> browser_;
+  Browser* browser_;
 
   DISALLOW_COPY_AND_ASSIGN(AvatarMenu);
 };

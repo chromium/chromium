@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_VIEW_VIEWS_H_
 
 #include "base/compiler_specific.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/extensions/extension_view.h"
 #include "content/public/browser/native_web_keyboard_event.h"
@@ -68,7 +67,7 @@ class ExtensionViewViews : public views::WebView,
   void PreferredSizeChanged() override;
   void OnWebContentsAttached() override;
 
-  CheckedPtr<extensions::ExtensionViewHost> host_;
+  extensions::ExtensionViewHost* host_;
 
   // What we should set the preferred width to once the ExtensionViewViews has
   // loaded.
@@ -78,7 +77,7 @@ class ExtensionViewViews : public views::WebView,
 
   // The container this view is in (not necessarily its direct superview).
   // Note: the view does not own its container.
-  CheckedPtr<Container> container_ = nullptr;
+  Container* container_ = nullptr;
 
   // A handler to handle unhandled keyboard messages coming back from the
   // renderer process.

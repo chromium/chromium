@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_EVENTS_LAZY_EVENT_DISPATCH_UTIL_H_
 #define EXTENSIONS_BROWSER_EVENTS_LAZY_EVENT_DISPATCH_UTIL_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observer.h"
 #include "extensions/browser/extension_registry.h"
@@ -63,7 +62,7 @@ class LazyEventDispatchUtil : public ExtensionRegistryObserver {
   void RemovePendingOnInstallInfoFromPref(const ExtensionId& extension_id);
   void StorePendingOnInstallInfoToPref(const Extension* extension);
 
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
   base::ObserverList<Observer>::Unchecked observers_;
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observer_{this};

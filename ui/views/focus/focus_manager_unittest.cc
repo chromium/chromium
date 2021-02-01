@@ -12,7 +12,6 @@
 
 #include "base/command_line.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
 #include "build/build_config.h"
@@ -75,7 +74,7 @@ class SimpleTestView : public View {
   }
 
  private:
-  CheckedPtr<std::vector<FocusTestEvent>> event_list_;
+  std::vector<FocusTestEvent>* event_list_;
 };
 
 // Tests that the appropriate Focus related methods are called when a View
@@ -394,7 +393,7 @@ class SelfUnregisteringAcceleratorTarget : public ui::TestAcceleratorTarget {
 
  private:
   ui::Accelerator accelerator_;
-  CheckedPtr<FocusManager> focus_manager_;
+  FocusManager* focus_manager_;
 };
 
 TEST_F(FocusManagerTest, CallsSelfDeletingAcceleratorTarget) {
@@ -451,7 +450,7 @@ class FocusInAboutToRequestFocusFromTabTraversalView : public View {
   }
 
  private:
-  CheckedPtr<views::View> view_to_focus_ = nullptr;
+  views::View* view_to_focus_ = nullptr;
 };
 }  // namespace
 
@@ -802,7 +801,7 @@ class AdvanceFocusWidgetDelegate : public WidgetDelegate {
   const Widget* GetWidget() const override { return widget_; }
 
  private:
-  CheckedPtr<Widget> widget_;
+  Widget* widget_;
 };
 
 class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
@@ -1154,10 +1153,10 @@ class RedirectToParentFocusManagerTest : public FocusManagerTest {
   }
 
  protected:
-  CheckedPtr<FocusManager> parent_focus_manager_ = nullptr;
-  CheckedPtr<FocusManager> bubble_focus_manager_ = nullptr;
+  FocusManager* parent_focus_manager_ = nullptr;
+  FocusManager* bubble_focus_manager_ = nullptr;
 
-  CheckedPtr<BubbleDialogDelegateView> bubble_ = nullptr;
+  BubbleDialogDelegateView* bubble_ = nullptr;
 };
 
 // Test that when an accelerator is sent to a bubble that isn't registered,

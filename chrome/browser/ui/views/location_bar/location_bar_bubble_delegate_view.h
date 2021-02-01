@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_LOCATION_BAR_BUBBLE_DELEGATE_VIEW_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
@@ -89,8 +88,8 @@ class LocationBarBubbleDelegateView : public views::BubbleDialogDelegateView,
     void OnEvent(const ui::Event& event) override;
 
    private:
-    CheckedPtr<LocationBarBubbleDelegateView> bubble_;
-    CheckedPtr<content::WebContents> web_contents_;
+    LocationBarBubbleDelegateView* bubble_;
+    content::WebContents* web_contents_;
     std::unique_ptr<views::EventMonitor> event_monitor_;
 
     DISALLOW_COPY_AND_ASSIGN(WebContentMouseHandler);

@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -105,7 +104,7 @@ class VectorConsoleMessagesDelegate : public ConsoleMessagesDelegate {
   }
 
  private:
-  CheckedPtr<std::vector<Message>> message_buffer_;
+  std::vector<Message>* message_buffer_;
 };
 
 // A ConsoleDelegate that outputs messages to a string |output_buffer| owned

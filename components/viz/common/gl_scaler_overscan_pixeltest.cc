@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/checked_ptr.h"
 #include "components/viz/common/gl_scaler.h"
 
 #include "build/build_config.h"
@@ -186,7 +185,7 @@ class GLScalerOverscanPixelTest : public cc::PixelTest,
   }
 
   std::unique_ptr<GLScaler> scaler_;
-  CheckedPtr<gpu::gles2::GLES2Interface> gl_ = nullptr;
+  gpu::gles2::GLES2Interface* gl_ = nullptr;
   std::unique_ptr<GLScalerTestTextureHelper> texture_helper_;
 };
 

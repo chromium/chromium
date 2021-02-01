@@ -12,7 +12,6 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -104,8 +103,8 @@ class SQLiteCursorTest : public testing::Test,
   TestingProfileManager profile_manager_;
   std::unique_ptr<AndroidHistoryProviderService> service_;
   base::CancelableTaskTracker cancelable_tracker_;
-  CheckedPtr<TestingProfile> testing_profile_;
-  CheckedPtr<history::HistoryService> hs_;
+  TestingProfile* testing_profile_;
+  history::HistoryService* hs_;
   std::unique_ptr<base::RunLoop> run_loop_;
 
  private:
@@ -141,7 +140,7 @@ class CallbackHelper : public base::RefCountedThreadSafe<CallbackHelper> {
   }
 
   bool success_;
-  CheckedPtr<AndroidStatement> statement_;
+  AndroidStatement* statement_;
 
   DISALLOW_COPY_AND_ASSIGN(CallbackHelper);
 };

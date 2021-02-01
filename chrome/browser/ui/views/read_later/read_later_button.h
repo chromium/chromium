@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_READ_LATER_READ_LATER_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_READ_LATER_READ_LATER_BUTTON_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
 #include "chrome/browser/ui/webui/read_later/read_later_ui.h"
 #include "ui/views/controls/button/label_button.h"
@@ -43,10 +42,10 @@ class ReadLaterButton : public views::LabelButton,
 
   void ButtonPressed();
 
-  const CheckedPtr<Browser> browser_;
+  Browser* const browser_;
 
   // TODO(pbos): Figure out a better way to handle this.
-  CheckedPtr<WebUIBubbleDialogView> read_later_side_panel_bubble_ = nullptr;
+  WebUIBubbleDialogView* read_later_side_panel_bubble_ = nullptr;
 
   std::unique_ptr<WebUIBubbleManager<ReadLaterUI>> webui_bubble_manager_;
 

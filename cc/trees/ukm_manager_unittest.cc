@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "cc/metrics/compositor_frame_reporter.h"
@@ -170,7 +169,7 @@ class UkmManagerTest : public testing::Test {
     return event_times;
   }
 
-  CheckedPtr<ukm::TestUkmRecorder> test_ukm_recorder_;
+  ukm::TestUkmRecorder* test_ukm_recorder_;
   std::unique_ptr<UkmManager> manager_;
   base::SimpleTestTickClock test_tick_clock_;
 };

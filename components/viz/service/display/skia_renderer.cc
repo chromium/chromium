@@ -12,7 +12,6 @@
 #include "base/bits.h"
 #include "base/command_line.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/trace_event/trace_event.h"
@@ -572,7 +571,7 @@ class SkiaRenderer::ScopedSkImageBuilder {
   const SkImage* sk_image() const { return sk_image_; }
 
  private:
-  CheckedPtr<const SkImage> sk_image_ = nullptr;
+  const SkImage* sk_image_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedSkImageBuilder);
 };
@@ -586,7 +585,7 @@ SkiaRenderer::ScopedSkImageBuilder::ScopedSkImageBuilder(
     bool use_target_color_space) {
   if (!resource_id)
     return;
-  auto* resource_provider = skia_renderer->resource_provider_.get();
+  auto* resource_provider = skia_renderer->resource_provider_;
   DCHECK(IsTextureResource(resource_provider, resource_id));
 
   gfx::ColorSpace color_space;
@@ -2556,7 +2555,7 @@ void SkiaRenderer::CopyDrawnRenderPass(
 
   // Root framebuffer uses id 0 in SkiaOutputSurface.
   AggregatedRenderPassId render_pass_id;
-  const auto* const render_pass = current_frame()->current_render_pass.get();
+  const auto* const render_pass = current_frame()->current_render_pass;
   if (render_pass != current_frame()->root_render_pass) {
     render_pass_id = render_pass->id;
   }

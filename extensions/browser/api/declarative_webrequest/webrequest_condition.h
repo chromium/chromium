@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/url_matcher/url_matcher.h"
 #include "extensions/browser/api/declarative/declarative_rule.h"
 #include "extensions/browser/api/declarative_webrequest/webrequest_condition_attribute.h"
@@ -30,10 +29,10 @@ struct WebRequestData {
   ~WebRequestData();
 
   // The network request that is currently being processed.
-  CheckedPtr<const WebRequestInfo> request;
+  const WebRequestInfo* request;
   // The stage (progress) of the network request.
   RequestStage stage;
-  CheckedPtr<const net::HttpResponseHeaders> original_response_headers;
+  const net::HttpResponseHeaders* original_response_headers;
 };
 
 // Adds information about URL matches to WebRequestData.
@@ -41,7 +40,7 @@ struct WebRequestDataWithMatchIds {
   explicit WebRequestDataWithMatchIds(const WebRequestData* request_data);
   ~WebRequestDataWithMatchIds();
 
-  CheckedPtr<const WebRequestData> data;
+  const WebRequestData* data;
   std::set<url_matcher::URLMatcherConditionSet::ID> url_match_ids;
 };
 

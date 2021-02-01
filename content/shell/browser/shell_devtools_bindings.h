@@ -12,7 +12,6 @@
 #include "base/containers/span.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
@@ -81,8 +80,8 @@ class ShellDevToolsBindings : public WebContentsObserver,
   void SendMessageAck(int request_id, const base::Value arg);
   void AttachInternal();
 
-  CheckedPtr<WebContents> inspected_contents_;
-  CheckedPtr<ShellDevToolsDelegate> delegate_;
+  WebContents* inspected_contents_;
+  ShellDevToolsDelegate* delegate_;
   scoped_refptr<DevToolsAgentHost> agent_host_;
   int inspect_element_at_x_;
   int inspect_element_at_y_;

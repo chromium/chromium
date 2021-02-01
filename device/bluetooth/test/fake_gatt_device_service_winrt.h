@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_piece_forward.h"
 
 namespace device {
@@ -119,7 +118,7 @@ class FakeGattDeviceServiceWinrt
   void SimulateGattCharacteristic(base::StringPiece uuid, int proporties);
 
  private:
-  const CheckedPtr<BluetoothTestWinrt> bluetooth_test_winrt_;
+  BluetoothTestWinrt* const bluetooth_test_winrt_;
   const Microsoft::WRL::ComPtr<FakeBluetoothLEDeviceWinrt> fake_device_;
   const GUID uuid_;
   const uint16_t attribute_handle_;

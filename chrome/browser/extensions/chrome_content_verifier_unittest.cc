@@ -6,7 +6,6 @@
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "chrome/browser/extensions/chrome_content_verifier_delegate.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
@@ -128,7 +127,7 @@ class ChromeContentVerifierTest : public ExtensionServiceTestWithInstall {
   scoped_refptr<const Extension> extension_;
 
   // Owned by |content_verifier_|.
-  CheckedPtr<ChromeContentVerifierDelegate> delegate_raw_ = nullptr;
+  ChromeContentVerifierDelegate* delegate_raw_ = nullptr;
 
   scoped_refptr<ContentVerifier> content_verifier_;
   std::unique_ptr<TestingProfile> testing_profile_;

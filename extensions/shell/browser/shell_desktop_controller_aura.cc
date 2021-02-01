@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/check_op.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "build/chromeos_buildflags.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
@@ -115,7 +114,7 @@ class ShellNativeCursorManager : public wm::NativeCursorManager {
       window->GetHost()->SetCursor(cursor);
   }
 
-  CheckedPtr<ShellDesktopControllerAura> desktop_controller_;  // Not owned.
+  ShellDesktopControllerAura* desktop_controller_;  // Not owned.
 
   std::unique_ptr<ui::CursorLoader> cursor_loader_ =
       ui::CursorLoader::Create(/*use_platform_cursors=*/false);

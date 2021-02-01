@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include "base/memory/checked_ptr.h"
 #include "ui/accessibility/ax_node.h"
 
 namespace ui {
@@ -62,7 +61,7 @@ class AX_EXPORT AXTreeSourceAdapter
   }
 
  private:
-  CheckedPtr<AXTree> tree_;
+  AXTree* tree_;
 };
 
 AXSerializableTree::AXSerializableTree()

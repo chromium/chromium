@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_ZOOM_CHROME_ZOOM_LEVEL_OTR_DELEGATE_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/host_zoom_map.h"
@@ -35,7 +34,7 @@ class ChromeZoomLevelOTRDelegate : public content::ZoomLevelDelegate {
   void OnZoomLevelChanged(const content::HostZoomMap::ZoomLevelChange& change);
 
   base::WeakPtr<zoom::ZoomEventManager> zoom_event_manager_;
-  CheckedPtr<content::HostZoomMap> host_zoom_map_;
+  content::HostZoomMap* host_zoom_map_;
   base::CallbackListSubscription zoom_subscription_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeZoomLevelOTRDelegate);

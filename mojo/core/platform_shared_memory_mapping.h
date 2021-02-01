@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "mojo/core/system_impl_export.h"

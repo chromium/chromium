@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
@@ -154,17 +153,17 @@ class DropdownBarHost : public ui::AcceleratorTarget,
   void SetHostViewNative(views::View* host_view);
 
   // The BrowserView that created us.
-  CheckedPtr<BrowserView> browser_view_;
+  BrowserView* browser_view_;
 
   // Our view, which is responsible for drawing the UI.
-  CheckedPtr<views::View> view_ = nullptr;
-  CheckedPtr<DropdownBarHostDelegate> delegate_ = nullptr;
+  views::View* view_ = nullptr;
+  DropdownBarHostDelegate* delegate_ = nullptr;
 
   // The animation class to use when opening the Dropdown widget.
   std::unique_ptr<gfx::SlideAnimation> animation_;
 
   // The focus manager we register with to keep track of focus changes.
-  CheckedPtr<views::FocusManager> focus_manager_ = nullptr;
+  views::FocusManager* focus_manager_ = nullptr;
 
   // True if the accelerator target for Esc key is registered.
   bool esc_accel_target_registered_ = false;

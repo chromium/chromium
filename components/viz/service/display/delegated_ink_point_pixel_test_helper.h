@@ -8,7 +8,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "components/viz/common/delegated_ink_metadata.h"
 
 namespace viz {
@@ -60,7 +59,7 @@ class DelegatedInkPointPixelTestHelper {
   const DelegatedInkMetadata& metadata() { return metadata_; }
 
  private:
-  CheckedPtr<DirectRenderer> renderer_ = nullptr;
+  DirectRenderer* renderer_ = nullptr;
   std::unordered_map<int32_t, std::vector<DelegatedInkPoint>> ink_points_;
   DelegatedInkMetadata metadata_;
 };

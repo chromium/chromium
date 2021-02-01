@@ -915,22 +915,19 @@ class SchemaNodesGenerator:
         f.write('  %s,\n' % self.GetString(possible_values))
       f.write('};\n\n')
 
-    f.write('const internal::SchemaData* GetChromeSchemaData() {\n')
-    f.write('  static const internal::SchemaData kChromeSchemaData = {\n'
-            '    kSchemas,\n')
-    f.write('    kPropertyNodes,\n' if self.property_nodes else '  nullptr,\n')
-    f.write('    kProperties,\n' if self.properties_nodes else '  nullptr,\n')
-    f.write('    kRestrictionNodes,\n' if self.
-            restriction_nodes else '  nullptr,\n')
-    f.write('    kRequiredProperties,\n' if self.
-            required_properties else '  nullptr,\n')
-    f.write('    kIntegerEnumerations,\n' if self.int_enums else '  nullptr,\n')
+    f.write('const internal::SchemaData kChromeSchemaData = {\n'
+            '  kSchemas,\n')
+    f.write('  kPropertyNodes,\n' if self.property_nodes else '  nullptr,\n')
+    f.write('  kProperties,\n' if self.properties_nodes else '  nullptr,\n')
     f.write(
-        '    kStringEnumerations,\n' if self.string_enums else '  nullptr,\n')
-    f.write('    %d,  // validation_schema root index\n' %
+        '  kRestrictionNodes,\n' if self.restriction_nodes else '  nullptr,\n')
+    f.write('  kRequiredProperties,\n' if self.
+            required_properties else '  nullptr,\n')
+    f.write('  kIntegerEnumerations,\n' if self.int_enums else '  nullptr,\n')
+    f.write('  kStringEnumerations,\n' if self.string_enums else '  nullptr,\n')
+    f.write('  %d,  // validation_schema root index\n' %
             self.validation_schema_root_index)
-    f.write('  };\n\n')
-    f.write('  return &kChromeSchemaData;\n' '}\n\n')
+    f.write('};\n\n')
 
   def GetByID(self, id_str):
     if not isinstance(id_str, string_type):
@@ -1126,6 +1123,10 @@ namespace policy {
             'const wchar_t kRegistryChromePolicyKey[] = '
             'L"' + CHROMIUM_POLICY_KEY + '";\n'
             '#endif\n\n')
+
+  f.write('const internal::SchemaData* GetChromeSchemaData() {\n'
+          '  return &kChromeSchemaData;\n'
+          '}\n\n')
 
   f.write('#if BUILDFLAG(IS_CHROMEOS_ASH)\n'
           'void SetEnterpriseUsersDefaults(PolicyMap* policy_map) {\n')

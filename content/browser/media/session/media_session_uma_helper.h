@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/time/clock.h"
 #include "content/common/content_export.h"
 
@@ -72,7 +71,7 @@ class CONTENT_EXPORT MediaSessionUmaHelper {
  private:
   base::TimeDelta total_active_time_;
   base::TimeTicks current_active_time_;
-  CheckedPtr<const base::TickClock> clock_;
+  const base::TickClock* clock_;
 };
 
 }  // namespace content

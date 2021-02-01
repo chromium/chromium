@@ -16,7 +16,6 @@
 #include "base/containers/queue.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/navigator_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_manager.h"
@@ -75,8 +74,8 @@ class CONTENT_EXPORT FrameTree {
     NodeIterator(FrameTreeNode* starting_node,
                  FrameTreeNode* root_of_subtree_to_skip);
 
-    CheckedPtr<FrameTreeNode> current_node_;
-    const CheckedPtr<FrameTreeNode> root_of_subtree_to_skip_;
+    FrameTreeNode* current_node_;
+    FrameTreeNode* const root_of_subtree_to_skip_;
     base::queue<FrameTreeNode*> queue_;
   };
 
@@ -325,10 +324,10 @@ class CONTENT_EXPORT FrameTree {
 
   // These delegates are installed into all the RenderViewHosts and
   // RenderFrameHosts that we create.
-  CheckedPtr<RenderFrameHostDelegate> render_frame_delegate_;
-  CheckedPtr<RenderViewHostDelegate> render_view_delegate_;
-  CheckedPtr<RenderWidgetHostDelegate> render_widget_delegate_;
-  CheckedPtr<RenderFrameHostManager::Delegate> manager_delegate_;
+  RenderFrameHostDelegate* render_frame_delegate_;
+  RenderViewHostDelegate* render_view_delegate_;
+  RenderWidgetHostDelegate* render_widget_delegate_;
+  RenderFrameHostManager::Delegate* manager_delegate_;
 
   // The Navigator object responsible for managing navigations on this frame
   // tree. Each FrameTreeNode will default to using it for navigation tasks in
@@ -346,7 +345,7 @@ class CONTENT_EXPORT FrameTree {
   // the lifetime of the FrameTree. It is not a scoped_ptr because we need the
   // pointer to remain valid even while the FrameTreeNode is being destroyed,
   // since it's common for a node to test whether it's the root node.
-  CheckedPtr<FrameTreeNode> root_;
+  FrameTreeNode* root_;
 
   int focused_frame_tree_node_id_;
 

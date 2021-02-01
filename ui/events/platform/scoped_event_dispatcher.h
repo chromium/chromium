@@ -7,7 +7,6 @@
 
 #include "base/auto_reset.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/events/events_export.h"
 
 namespace ui {
@@ -30,7 +29,7 @@ class EVENTS_EXPORT ScopedEventDispatcher {
   operator PlatformEventDispatcher*() const { return original_; }
 
  private:
-  CheckedPtr<PlatformEventDispatcher> original_;
+  PlatformEventDispatcher* original_;
   base::AutoReset<PlatformEventDispatcher*> restore_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedEventDispatcher);

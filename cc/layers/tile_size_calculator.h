@@ -5,7 +5,6 @@
 #ifndef CC_LAYERS_TILE_SIZE_CALCULATOR_H_
 #define CC_LAYERS_TILE_SIZE_CALCULATOR_H_
 
-#include "base/memory/checked_ptr.h"
 #include "cc/cc_export.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -40,7 +39,7 @@ class CC_EXPORT TileSizeCalculator {
   AffectingParams GetAffectingParams();
   bool IsAffectingParamsChanged();
 
-  CheckedPtr<PictureLayerImpl> layer_impl_;
+  PictureLayerImpl* layer_impl_;
 
   AffectingParams affecting_params_;
 

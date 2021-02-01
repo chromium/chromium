@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "net/ssl/client_cert_identity.h"
 #include "ui/views/controls/table/table_view_observer.h"
@@ -98,10 +97,10 @@ class CertificateSelector : public views::DialogDelegateView,
   bool show_provider_column_ = false;
   std::unique_ptr<CertificateTableModel> model_;
 
-  const CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* const web_contents_;
 
-  CheckedPtr<views::TableView> table_ = nullptr;
-  CheckedPtr<views::LabelButton> view_cert_button_ = nullptr;
+  views::TableView* table_ = nullptr;
+  views::LabelButton* view_cert_button_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(CertificateSelector);
 };

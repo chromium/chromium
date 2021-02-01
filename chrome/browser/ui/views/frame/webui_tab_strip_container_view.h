@@ -8,7 +8,6 @@
 #include <memory>
 #include <set>
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/time/time.h"
@@ -135,10 +134,10 @@ class WebUITabStripContainerView : public TabStripUIEmbedder,
   // views::AccessiblePaneView
   bool SetPaneFocusAndFocusDefault() override;
 
-  const CheckedPtr<BrowserView> browser_view_;
-  const CheckedPtr<views::WebView> web_view_;
-  const CheckedPtr<views::View> top_container_;
-  CheckedPtr<views::View> tab_contents_container_;
+  BrowserView* const browser_view_;
+  views::WebView* const web_view_;
+  views::View* const top_container_;
+  views::View* tab_contents_container_;
   views::View* tab_counter_ = nullptr;
 
 #if defined(OS_WIN)

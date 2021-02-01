@@ -11,7 +11,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observer.h"
 #include "components/sync_device_info/device_info_tracker.h"
 #include "content/public/browser/notification_registrar.h"
@@ -53,7 +52,7 @@ class SignedInDevicesChangeObserver
 
  private:
   std::string extension_id_;
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
   content::NotificationRegistrar registrar_;
 
   DISALLOW_COPY_AND_ASSIGN(SignedInDevicesChangeObserver);
@@ -93,7 +92,7 @@ class SignedInDevicesManager : public BrowserContextKeyedAPI,
 
   void RemoveChangeObserverForExtension(const std::string& extension_id);
 
-  const CheckedPtr<Profile> profile_ = nullptr;
+  Profile* const profile_ = nullptr;
   std::vector<std::unique_ptr<SignedInDevicesChangeObserver>> change_observers_;
 
   // Listen to extension unloaded notification.

@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
@@ -182,7 +181,7 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeChannel
 
   void WriteChannelMessage(Channel::MessagePtr message);
 
-  const CheckedPtr<Delegate> delegate_;
+  Delegate* const delegate_;
   const ProcessErrorCallback process_error_callback_;
 
   base::Lock channel_lock_;

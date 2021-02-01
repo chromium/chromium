@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/cart/cart_handler.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/cart/cart_service.h"
 #include "chrome/browser/cart/cart_service_factory.h"
@@ -119,7 +118,7 @@ class CartHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   std::unique_ptr<CartHandler> handler_;
-  CheckedPtr<CartService> service_;
+  CartService* service_;
 };
 
 // Verifies the hide status is flipped by hiding and restoring.

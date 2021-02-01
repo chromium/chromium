@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_MEDIA_FAKE_VIDEO_CAPTURE_DEVICE_LAUNCHER_H_
 #define CONTENT_BROWSER_RENDERER_HOST_MEDIA_FAKE_VIDEO_CAPTURE_DEVICE_LAUNCHER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "content/public/browser/video_capture_device_launcher.h"
 #include "media/capture/video/video_capture_system.h"
 
@@ -27,7 +26,7 @@ class FakeVideoCaptureDeviceLauncher
   void AbortLaunch() override;
 
  private:
-  CheckedPtr<media::VideoCaptureSystem> system_;
+  media::VideoCaptureSystem* system_;
 };
 
 }  // namespace content

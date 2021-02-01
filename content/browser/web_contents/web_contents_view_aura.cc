@@ -17,7 +17,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
@@ -151,8 +150,8 @@ class WebDragSourceAura : public NotificationObserver {
   aura::Window* window() const { return window_; }
 
  private:
-  CheckedPtr<aura::Window> window_;
-  CheckedPtr<WebContentsImpl> contents_;
+  aura::Window* window_;
+  WebContentsImpl* contents_;
   NotificationRegistrar registrar_;
 
   DISALLOW_COPY_AND_ASSIGN(WebDragSourceAura);
@@ -671,11 +670,11 @@ class WebContentsViewAura::WindowObserver
 
   void SendScreenRects() { view_->web_contents_->SendScreenRects(); }
 
-  CheckedPtr<WebContentsViewAura> view_;
+  WebContentsViewAura* view_;
 
   // The parent window that hosts the constrained windows. We cache the old host
   // view so that we can unregister when it's not the parent anymore.
-  CheckedPtr<aura::Window> host_window_ = nullptr;
+  aura::Window* host_window_ = nullptr;
 
   std::unique_ptr<PendingWindowChanges> pending_window_changes_;
 

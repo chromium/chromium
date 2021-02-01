@@ -10,7 +10,6 @@
 
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "services/device/public/cpp/hid/hid_report_descriptor_item.h"
 #include "services/device/public/mojom/hid.mojom.h"
 
@@ -67,7 +66,7 @@ class HidItemStateTable {
   void SetItemValue(HidReportDescriptorItem::Tag tag, uint32_t value);
 
   // The collection that will be modified when main items are encountered.
-  CheckedPtr<HidCollection> collection = nullptr;
+  HidCollection* collection = nullptr;
 
   // The report ID is part of the global item state but is not affected by push
   // or pop items.

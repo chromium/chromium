@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/profiles/profile_list.h"
 
 class ProfileAttributesStorage;
@@ -37,7 +36,7 @@ class ProfileListDesktop : public ProfileList {
       const base::FilePath& active_profile_path) override;
 
   // The storage that provides the profile attributes. Not owned.
-  CheckedPtr<ProfileAttributesStorage> profile_storage_;
+  ProfileAttributesStorage* profile_storage_;
 
   // The path of the currently active profile.
   base::FilePath active_profile_path_;

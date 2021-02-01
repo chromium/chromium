@@ -8,7 +8,6 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/sync/base/fake_encryptor.h"
@@ -371,8 +370,8 @@ class NigoriSyncBridgeImplTest : public testing::Test {
   const FakeEncryptor encryptor_;
   std::unique_ptr<NigoriSyncBridgeImpl> bridge_;
   // Ownership transferred to |bridge_|.
-  CheckedPtr<testing::NiceMock<MockNigoriLocalChangeProcessor>> processor_;
-  CheckedPtr<testing::NiceMock<MockNigoriStorage>> storage_;
+  testing::NiceMock<MockNigoriLocalChangeProcessor>* processor_;
+  testing::NiceMock<MockNigoriStorage>* storage_;
   testing::NiceMock<MockObserver> observer_;
 };
 

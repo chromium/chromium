@@ -9,7 +9,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -56,7 +55,7 @@ class ZeroCopyGpuBacking : public ResourcePool::GpuBacking {
   }
 
   // The SharedImageInterface used to clean up the shared image.
-  CheckedPtr<gpu::SharedImageInterface> shared_image_interface = nullptr;
+  gpu::SharedImageInterface* shared_image_interface = nullptr;
   // The backing for zero-copy gpu resources. The |texture_id| is bound to
   // this.
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer;
@@ -153,10 +152,10 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
 
  private:
   // This field may only be used on the compositor thread.
-  CheckedPtr<ZeroCopyGpuBacking> backing_;
+  ZeroCopyGpuBacking* backing_;
 
   // These fields are for use on the worker thread.
-  CheckedPtr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager_;
+  gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager_;
   gfx::Size resource_size_;
   viz::ResourceFormat resource_format_;
   gfx::ColorSpace resource_color_space_;

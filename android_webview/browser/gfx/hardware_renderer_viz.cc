@@ -24,7 +24,6 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
@@ -60,7 +59,7 @@ class ContextReleaser {
   ~ContextReleaser() { state_->ReleaseCurrent(nullptr); }
 
  private:
-  const CheckedPtr<gpu::SharedContextState> state_;
+  gpu::SharedContextState* const state_;
 };
 
 }  // namespace

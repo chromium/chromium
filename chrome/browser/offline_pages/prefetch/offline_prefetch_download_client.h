@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/download/public/background_service/client.h"
 
 class SimpleFactoryKey;
@@ -47,7 +46,7 @@ class OfflinePrefetchDownloadClient : public download::Client {
 
   PrefetchDownloader* GetPrefetchDownloader() const;
 
-  CheckedPtr<SimpleFactoryKey> simple_factory_key_;
+  SimpleFactoryKey* simple_factory_key_;
 
   DISALLOW_COPY_AND_ASSIGN(OfflinePrefetchDownloadClient);
 };

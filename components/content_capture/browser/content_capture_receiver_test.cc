@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/test/scoped_feature_list.h"
@@ -150,7 +149,7 @@ class ContentCaptureReceiverManagerHelper
   ContentCaptureFrame updated_data_;
   std::vector<int64_t> removed_ids_;
   std::vector<ContentCaptureSession> removed_sessions_;
-  CheckedPtr<SessionRemovedTestHelper> session_removed_test_helper_;
+  SessionRemovedTestHelper* session_removed_test_helper_;
 };
 
 }  // namespace
@@ -258,8 +257,8 @@ class ContentCaptureReceiverTest : public content::RenderViewHostTestHarness,
   ContentCaptureFrame GetExpectedTestData(bool main_frame) const {
     ContentCaptureFrame expected(test_data_);
     // Replaces the id with expected id.
-    expected.id = ContentCaptureReceiver::GetIdFrom(
-        main_frame ? main_frame_.get() : child_frame_.get());
+    expected.id = ContentCaptureReceiver::GetIdFrom(main_frame ? main_frame_
+                                                               : child_frame_);
     return expected;
   }
 
@@ -273,16 +272,16 @@ class ContentCaptureReceiverTest : public content::RenderViewHostTestHarness,
   ContentCaptureFrame GetExpectedTestData2(bool main_frame) const {
     ContentCaptureFrame expected(test_data2_);
     // Replaces the id with expected id.
-    expected.id = ContentCaptureReceiver::GetIdFrom(
-        main_frame ? main_frame_.get() : child_frame_.get());
+    expected.id = ContentCaptureReceiver::GetIdFrom(main_frame ? main_frame_
+                                                               : child_frame_);
     return expected;
   }
 
   ContentCaptureFrame GetExpectedTestDataUpdate(bool main_frame) const {
     ContentCaptureFrame expected(test_data_update_);
     // Replaces the id with expected id.
-    expected.id = ContentCaptureReceiver::GetIdFrom(
-        main_frame ? main_frame_.get() : child_frame_.get());
+    expected.id = ContentCaptureReceiver::GetIdFrom(main_frame ? main_frame_
+                                                               : child_frame_);
     return expected;
   }
 
@@ -346,7 +345,7 @@ class ContentCaptureReceiverTest : public content::RenderViewHostTestHarness,
   }
 
  protected:
-  CheckedPtr<ContentCaptureReceiverManagerHelper>
+  ContentCaptureReceiverManagerHelper*
       content_capture_receiver_manager_helper_ = nullptr;
 
  private:
@@ -354,8 +353,8 @@ class ContentCaptureReceiverTest : public content::RenderViewHostTestHarness,
   std::unique_ptr<FakeContentCaptureSender> content_capture_sender_;
   // The sender for child frame.
   std::unique_ptr<FakeContentCaptureSender> child_content_capture_sender_;
-  CheckedPtr<content::RenderFrameHost> main_frame_ = nullptr;
-  CheckedPtr<content::RenderFrameHost> child_frame_ = nullptr;
+  content::RenderFrameHost* main_frame_ = nullptr;
+  content::RenderFrameHost* child_frame_ = nullptr;
   ContentCaptureData test_data_;
   ContentCaptureData test_data_change_;
   ContentCaptureData test_data2_;

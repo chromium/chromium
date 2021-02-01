@@ -16,7 +16,6 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -353,8 +352,8 @@ class AsyncServiceRequest : protected BlockingUIThreadAsyncRequest {
   }
 
  private:
-  CheckedPtr<Service> service_;
-  CheckedPtr<base::CancelableTaskTracker> cancelable_tracker_;
+  Service* service_;
+  base::CancelableTaskTracker* cancelable_tracker_;
 
   DISALLOW_COPY_AND_ASSIGN(AsyncServiceRequest);
 };
@@ -432,7 +431,7 @@ class QueryBookmarksFromAPITask : public HistoryProviderTask {
     RequestCompleted();
   }
 
-  CheckedPtr<history::AndroidStatement> result_;
+  history::AndroidStatement* result_;
 
   DISALLOW_COPY_AND_ASSIGN(QueryBookmarksFromAPITask);
 };
@@ -558,7 +557,7 @@ class SearchTermTask : public HistoryProviderTask {
   }
 
  private:
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   DISALLOW_COPY_AND_ASSIGN(SearchTermTask);
 };
@@ -633,7 +632,7 @@ class QuerySearchTermsFromAPITask : public SearchTermTask {
     RequestCompleted();
   }
 
-  CheckedPtr<history::AndroidStatement> result_;
+  history::AndroidStatement* result_;
 
   DISALLOW_COPY_AND_ASSIGN(QuerySearchTermsFromAPITask);
 };

@@ -9,7 +9,6 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
@@ -256,7 +255,7 @@ class ChildProcessSecurityPolicyTest : public testing::Test {
   BrowserTaskEnvironment task_environment_;
   TestBrowserContext browser_context_;
   ChildProcessSecurityPolicyTestBrowserClient test_browser_client_;
-  CheckedPtr<ContentBrowserClient> old_browser_client_;
+  ContentBrowserClient* old_browser_client_;
 };
 
 

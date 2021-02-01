@@ -14,7 +14,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/strings/utf_string_conversions.h"
@@ -262,7 +261,7 @@ class SessionRestoreTest : public InProcessBrowserTest {
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-  CheckedPtr<const BrowserList> active_browser_list_ = nullptr;
+  const BrowserList* active_browser_list_ = nullptr;
 
  private:
   util::test::FakeMemoryPressureMonitor fake_memory_pressure_monitor_;

@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "gpu/command_buffer/client/gpu_control_client.h"
 #include "gpu/command_buffer/client/implementation_base.h"
 #include "gpu/command_buffer/client/logging.h"
@@ -137,7 +136,7 @@ class WEBGPU_EXPORT WebGPUImplementation final : public WebGPUInterface,
   DawnRequestAdapterSerial NextRequestAdapterSerial();
   DawnDeviceClientID NextDeviceClientID();
 
-  CheckedPtr<WebGPUCmdHelper> helper_;
+  WebGPUCmdHelper* helper_;
 #if BUILDFLAG(USE_DAWN)
   std::unique_ptr<DawnClientMemoryTransferService> memory_transfer_service_;
 

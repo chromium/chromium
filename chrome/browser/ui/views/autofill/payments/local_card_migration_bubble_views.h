@@ -7,7 +7,6 @@
 
 #include "base/macros.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "components/autofill/core/browser/ui/payments/local_card_migration_bubble_controller.h"
 #include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
@@ -55,7 +54,7 @@ class LocalCardMigrationBubbleViews : public AutofillBubbleBase,
   PaymentsBubbleClosedReason closed_reason_ =
       PaymentsBubbleClosedReason::kUnknown;
 
-  CheckedPtr<LocalCardMigrationBubbleController> controller_;
+  LocalCardMigrationBubbleController* controller_;
 
   DISALLOW_COPY_AND_ASSIGN(LocalCardMigrationBubbleViews);
 };

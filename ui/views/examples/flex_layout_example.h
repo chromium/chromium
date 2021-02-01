@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_EXAMPLES_FLEX_LAYOUT_EXAMPLE_H_
 #define UI_VIEWS_EXAMPLES_FLEX_LAYOUT_EXAMPLE_H_
 
-#include "base/memory/checked_ptr.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
@@ -40,14 +39,14 @@ class VIEWS_EXAMPLES_EXPORT FlexLayoutExample : public LayoutExampleBase {
   void MainAxisAlignmentChanged();
   void CrossAxisAlignmentChanged();
 
-  CheckedPtr<FlexLayout> layout_ = nullptr;
-  CheckedPtr<Combobox> orientation_ = nullptr;
-  CheckedPtr<Combobox> main_axis_alignment_ = nullptr;
-  CheckedPtr<Combobox> cross_axis_alignment_ = nullptr;
-  CheckedPtr<Checkbox> collapse_margins_ = nullptr;
+  FlexLayout* layout_ = nullptr;
+  Combobox* orientation_ = nullptr;
+  Combobox* main_axis_alignment_ = nullptr;
+  Combobox* cross_axis_alignment_ = nullptr;
+  Checkbox* collapse_margins_ = nullptr;
   InsetTextfields interior_margin_;
   InsetTextfields default_child_margins_;
-  CheckedPtr<Checkbox> ignore_default_main_axis_margins_ = nullptr;
+  Checkbox* ignore_default_main_axis_margins_ = nullptr;
 };
 
 }  // namespace examples

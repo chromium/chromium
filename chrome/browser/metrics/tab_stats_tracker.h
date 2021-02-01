@@ -14,7 +14,6 @@
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/sequence_checker.h"
@@ -91,10 +90,10 @@ class TabStatsTracker : public TabStripModelObserver,
 
    private:
     // The delegate used to report the metrics.
-    CheckedPtr<UmaStatsReportingDelegate> reporting_delegate_;
+    UmaStatsReportingDelegate* reporting_delegate_;
 
     // The data store that houses the metrics.
-    CheckedPtr<TabStatsDataStore> data_store_;
+    TabStatsDataStore* data_store_;
 
     DISALLOW_COPY_AND_ASSIGN(TabStatsDailyObserver);
   };

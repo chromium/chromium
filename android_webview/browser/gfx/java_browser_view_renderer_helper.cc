@@ -10,7 +10,6 @@
 #include "android_webview/browser_jni_headers/JavaBrowserViewRendererHelper_jni.h"
 #include "android_webview/public/browser/draw_sw.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/memory/checked_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -36,7 +35,7 @@ class JavaCanvasHolder : public SoftwareCanvasHolder {
   SkCanvas* GetCanvas() override;
 
  private:
-  CheckedPtr<AwPixelInfo> pixels_;
+  AwPixelInfo* pixels_;
   std::unique_ptr<SkCanvas> canvas_;
   DISALLOW_COPY_AND_ASSIGN(JavaCanvasHolder);
 };

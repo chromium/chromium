@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "components/sync/driver/sync_user_settings.h"
 
@@ -72,7 +71,7 @@ class TestSyncUserSettings : public SyncUserSettings {
   void SetIsUsingSecondaryPassphrase(bool enabled);
 
  private:
-  CheckedPtr<TestSyncService> service_;
+  TestSyncService* service_;
 
   bool first_setup_complete_ = true;
   bool sync_everything_enabled_ = true;

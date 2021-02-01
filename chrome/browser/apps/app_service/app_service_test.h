@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -48,9 +47,9 @@ class AppServiceTest {
   void FlushMojoCalls();
 
  private:
-  CheckedPtr<AppServiceProxy> app_service_proxy_ = nullptr;
+  AppServiceProxy* app_service_proxy_ = nullptr;
 
-  CheckedPtr<Profile> profile_ = nullptr;
+  Profile* profile_ = nullptr;
 };
 
 }  // namespace apps

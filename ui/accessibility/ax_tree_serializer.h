@@ -16,7 +16,6 @@
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "ui/accessibility/ax_common.h"
@@ -199,13 +198,13 @@ class AXTreeSerializer {
   ClientTreeNode* GetClientTreeNodeParent(ClientTreeNode* obj);
 
   // The tree source.
-  CheckedPtr<AXTreeSource<AXSourceNode, AXNodeData, AXTreeData>> tree_;
+  AXTreeSource<AXSourceNode, AXNodeData, AXTreeData>* tree_;
 
   // The tree data most recently sent to the client.
   AXTreeData client_tree_data_;
 
   // Our representation of the client tree.
-  CheckedPtr<ClientTreeNode> client_root_ = nullptr;
+  ClientTreeNode* client_root_ = nullptr;
 
   // A map from IDs to nodes in the client tree.
   std::unordered_map<int32_t, ClientTreeNode*> client_id_map_;
@@ -232,7 +231,7 @@ struct AX_EXPORT ClientTreeNode {
   ClientTreeNode();
   virtual ~ClientTreeNode();
   int32_t id;
-  CheckedPtr<ClientTreeNode> parent;
+  ClientTreeNode* parent;
   std::vector<ClientTreeNode*> children;
   bool ignored;
   bool invalid;

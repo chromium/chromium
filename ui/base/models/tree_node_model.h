@@ -13,7 +13,6 @@
 
 #include "base/check_op.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/strings/string16.h"
 #include "ui/base/models/tree_model.h"
@@ -167,7 +166,7 @@ class TreeNode : public TreeModelNode {
   base::string16 title_;
 
   // This node's parent.
-  CheckedPtr<NodeType> parent_;
+  NodeType* parent_;
 
   // This node's children.
   TreeNodes children_;

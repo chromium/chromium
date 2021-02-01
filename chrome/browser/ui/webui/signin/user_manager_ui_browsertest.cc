@@ -4,7 +4,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -136,11 +135,11 @@ class UserManagerUIAuthenticatedUserBrowserTest
     std::string launch_js = base::StringPrintf(
         "chrome.send('authenticatedLaunchUser', ['%s', '%s', ''])",
         profile_path.c_str(), email.c_str());
-    EXPECT_TRUE(content::ExecuteScript(web_contents_.get(), launch_js));
+    EXPECT_TRUE(content::ExecuteScript(web_contents_, launch_js));
   }
 
-  CheckedPtr<content::WebContents> web_contents_;
-  CheckedPtr<Profile> profile_;
+  content::WebContents* web_contents_;
+  Profile* profile_;
   ProfileAttributesEntry* entry_;
   base::HistogramTester histogram_tester_;
 };

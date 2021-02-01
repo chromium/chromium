@@ -7,7 +7,6 @@
 
 #include "base/check.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
 
@@ -39,7 +38,7 @@ class CONTENT_EXPORT SpeechRecognizer
   int session_id() const { return session_id_; }
 
  private:
-  CheckedPtr<SpeechRecognitionEventListener> listener_;
+  SpeechRecognitionEventListener* listener_;
   int session_id_;
 
   DISALLOW_COPY_AND_ASSIGN(SpeechRecognizer);

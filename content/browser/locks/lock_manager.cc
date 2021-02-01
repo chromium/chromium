@@ -13,7 +13,6 @@
 
 #include "base/bind.h"
 #include "base/guid.h"
-#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -302,7 +301,7 @@ class LockManager::OriginState {
 
   // Any OriginState is owned by a LockManager so a raw pointer back to an
   // OriginState's owning LockManager is safe.
-  const CheckedPtr<LockManager> lock_manager_;
+  LockManager* const lock_manager_;
 };
 
 void LockManager::BindReceiver(

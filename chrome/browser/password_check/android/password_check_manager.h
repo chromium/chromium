@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PASSWORD_CHECK_ANDROID_PASSWORD_CHECK_MANAGER_H_
 #define CHROME_BROWSER_PASSWORD_CHECK_ANDROID_PASSWORD_CHECK_MANAGER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "base/scoped_observer.h"
@@ -205,10 +204,10 @@ class PasswordCheckManager
 
   // Obsever being notified of UI-relevant events.
   // It must outlive `this`.
-  CheckedPtr<Observer> observer_ = nullptr;
+  Observer* observer_ = nullptr;
 
   // The profile for which the passwords are checked.
-  CheckedPtr<Profile> profile_ = nullptr;
+  Profile* profile_ = nullptr;
 
   // Object storing the progress of a running password check.
   std::unique_ptr<PasswordCheckProgress> progress_;
@@ -221,10 +220,9 @@ class PasswordCheckManager
 
   // Used to check whether autofill assistant scripts are available for
   // the specified domain.
-  CheckedPtr<password_manager::PasswordScriptsFetcher>
-      password_script_fetcher_ =
-          PasswordScriptsFetcherFactory::GetInstance()->GetForBrowserContext(
-              profile_);
+  password_manager::PasswordScriptsFetcher* password_script_fetcher_ =
+      PasswordScriptsFetcherFactory::GetInstance()->GetForBrowserContext(
+          profile_);
 
   // Used by `insecure_credentials_manager_` to obtain the list of saved
   // passwords.

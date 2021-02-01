@@ -9,7 +9,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/service/frame_sinks/external_begin_frame_source_android.h"
 
@@ -49,15 +48,15 @@ class BeginFrameSourceWebView : public viz::ExternalBeginFrameSource {
     void OnNeedsBeginFrames(bool needs_begin_frames) override;
 
    private:
-    const CheckedPtr<BeginFrameSourceWebView> owner_;
+    BeginFrameSourceWebView* const owner_;
   };
 
   void SendBeginFrame(const viz::BeginFrameArgs& args);
   void OnNeedsBeginFrames(bool needs_begin_frames);
 
   BeginFrameSourceClient bfs_client_;
-  CheckedPtr<viz::BeginFrameSource> observed_begin_frame_source_ = nullptr;
-  CheckedPtr<BeginFrameSourceWebView> parent_ = nullptr;
+  viz::BeginFrameSource* observed_begin_frame_source_ = nullptr;
+  BeginFrameSourceWebView* parent_ = nullptr;
   std::unique_ptr<BeginFrameObserver> parent_observer_;
   bool inside_begin_frame_ = false;
 };

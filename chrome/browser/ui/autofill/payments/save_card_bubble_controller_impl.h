@@ -9,7 +9,6 @@
 
 #include "base/macros.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller.h"
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
 #include "chrome/browser/ui/autofill/payments/save_payment_icon_controller.h"
@@ -167,7 +166,7 @@ class SaveCardBubbleControllerImpl
   }
 
   // Should outlive this object.
-  CheckedPtr<PersonalDataManager> personal_data_manager_;
+  PersonalDataManager* personal_data_manager_;
 
   // Is true only if the [Card saved] label animation should be shown.
   bool should_show_card_saved_label_animation_ = false;
@@ -177,7 +176,7 @@ class SaveCardBubbleControllerImpl
   BubbleType current_bubble_type_ = BubbleType::INACTIVE;
 
   // Weak reference to read & write |kAutofillAcceptSaveCreditCardPromptState|.
-  CheckedPtr<PrefService> pref_service_;
+  PrefService* pref_service_;
 
   // Callback to run once the user makes a decision with respect to the credit
   // card upload offer-to-save prompt. Will return the cardholder name
@@ -222,7 +221,7 @@ class SaveCardBubbleControllerImpl
   security_state::SecurityLevel security_level_;
 
   // Observer for when a bubble is created. Initialized only during tests.
-  CheckedPtr<ObserverForTest> observer_for_testing_ = nullptr;
+  ObserverForTest* observer_for_testing_ = nullptr;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

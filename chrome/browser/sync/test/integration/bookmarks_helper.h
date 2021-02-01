@@ -13,7 +13,6 @@
 
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/utf_string_conversions.h"
@@ -437,7 +436,7 @@ class SingleBookmarkModelStatusChangeChecker
 
  private:
   const int profile_index_;
-  CheckedPtr<bookmarks::BookmarkModel> bookmark_model_;
+  bookmarks::BookmarkModel* bookmark_model_;
 };
 
 // Checker used to block until bookmarks match the verifier bookmark model.
@@ -497,7 +496,7 @@ class BookmarkFaviconLoadedChecker
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
  private:
-  const CheckedPtr<const bookmarks::BookmarkNode> bookmark_node_;
+  const bookmarks::BookmarkNode* const bookmark_node_;
 };
 
 // Checker used to block until the bookmarks on the server match a given set of
@@ -525,8 +524,8 @@ class ServerBookmarksEqualityChecker : public SingleClientStatusChangeChecker {
   ~ServerBookmarksEqualityChecker() override;
 
  private:
-  CheckedPtr<fake_server::FakeServer> fake_server_;
-  CheckedPtr<syncer::Cryptographer> cryptographer_;
+  fake_server::FakeServer* fake_server_;
+  syncer::Cryptographer* cryptographer_;
   const std::vector<ExpectedBookmark> expected_bookmarks_;
 
   DISALLOW_COPY_AND_ASSIGN(ServerBookmarksEqualityChecker);

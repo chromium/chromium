@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_RENDERER_HOST_DELEGATED_FRAME_HOST_CLIENT_ANDROID_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/viz/common/frame_timing_details_map.h"
 #include "content/common/content_export.h"
 #include "ui/android/delegated_frame_host_android.h"
@@ -27,7 +26,7 @@ class CONTENT_EXPORT DelegatedFrameHostClientAndroid
   void OnFrameTokenChanged(uint32_t frame_token) override;
   void WasEvicted() override;
 
-  CheckedPtr<RenderWidgetHostViewAndroid> render_widget_host_view_;
+  RenderWidgetHostViewAndroid* render_widget_host_view_;
 
   DISALLOW_COPY_AND_ASSIGN(DelegatedFrameHostClientAndroid);
 };

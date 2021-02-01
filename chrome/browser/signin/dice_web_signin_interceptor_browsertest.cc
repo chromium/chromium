@@ -7,7 +7,6 @@
 #include <map>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observer.h"
@@ -145,7 +144,7 @@ class ProfileWaiter : public ProfileManagerObserver {
     run_loop_.Quit();
   }
 
-  CheckedPtr<Profile> profile_ = nullptr;
+  Profile* profile_ = nullptr;
   ScopedObserver<ProfileManager, ProfileManagerObserver>
       profile_manager_observer_{this};
   base::RunLoop run_loop_;

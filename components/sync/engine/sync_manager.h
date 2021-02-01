@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task_runner.h"
@@ -109,7 +108,7 @@ class SyncManager {
     std::unique_ptr<SyncEncryptionHandler::Observer> encryption_observer_proxy;
 
     // Must outlive SyncManager.
-    CheckedPtr<ExtensionsActivity> extensions_activity;
+    ExtensionsActivity* extensions_activity;
 
     CoreAccountId authenticated_account_id;
 
@@ -119,13 +118,13 @@ class SyncManager {
     std::unique_ptr<EngineComponentsFactory> engine_components_factory;
 
     // Must outlive SyncManager.
-    CheckedPtr<SyncEncryptionHandler> encryption_handler;
+    SyncEncryptionHandler* encryption_handler;
 
     // Carries shutdown requests across threads and will be used to cut short
     // any network I/O and tell the syncer to exit early.
     //
     // Must outlive SyncManager.
-    CheckedPtr<CancelationSignal> cancelation_signal;
+    CancelationSignal* cancelation_signal;
 
     // Define the polling interval. Must not be zero.
     base::TimeDelta poll_interval;

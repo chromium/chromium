@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string16.h"
 #include "components/component_updater/component_updater_service.h"
@@ -52,8 +51,7 @@ class ComponentsHandler : public content::WebUIMessageHandler,
   void OnDemandUpdate(const std::string& component_id);
 
   // Weak pointer; injected for testing.
-  const CheckedPtr<component_updater::ComponentUpdateService>
-      component_updater_;
+  component_updater::ComponentUpdateService* const component_updater_;
 
   base::ScopedObservation<component_updater::ComponentUpdateService,
                           component_updater::ComponentUpdateService::Observer>

@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/memory/checked_ptr.h"
 #include "base/notreached.h"
 #include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/sampler_manager.h"
@@ -422,8 +421,8 @@ struct GPU_GLES2_EXPORT ContextState {
   // vector<[x,y,w,h]>. Always has space for MAX_WINDOW_RECTANGLES rectangles.
   std::vector<GLint> window_rectangles_;
 
-  CheckedPtr<gl::GLApi> api_ = nullptr;
-  CheckedPtr<FeatureInfo> feature_info_;
+  gl::GLApi* api_ = nullptr;
+  FeatureInfo* feature_info_;
 
   bool context_lost_ = false;
 };

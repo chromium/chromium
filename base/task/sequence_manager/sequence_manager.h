@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/message_loop/timer_slack.h"
 #include "base/sequenced_task_runner.h"
@@ -91,7 +90,7 @@ class BASE_EXPORT SequenceManager {
 
     MessagePumpType message_loop_type = MessagePumpType::DEFAULT;
     bool randomised_sampling_enabled = false;
-    CheckedPtr<const TickClock> clock = DefaultTickClock::GetInstance();
+    const TickClock* clock = DefaultTickClock::GetInstance();
 
     // If true, add the timestamp the task got queued to the task.
     bool add_queue_time_to_tasks = false;
