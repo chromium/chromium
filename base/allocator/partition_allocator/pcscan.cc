@@ -144,6 +144,16 @@ uintptr_t GetObjectStartInSuperPage(uintptr_t maybe_ptr,
       root.AdjustPointerForExtrasAdd(allocation_start));
 }
 
+#if DCHECK_IS_ON()
+bool IsScannerQuarantineBitmapEmpty(char* super_page, size_t epoch) {
+  auto* bitmap = QuarantineBitmapFromPointer(QuarantineBitmapType::kScanner,
+                                             epoch, super_page);
+  size_t visited = 0;
+  bitmap->Iterate([&visited](auto) { ++visited; });
+  return !visited;
+}
+#endif
+
 namespace scopes {
 constexpr char kPCScan[] = "PCScan";
 constexpr char kClear[] = "PCScan.Clear";
@@ -651,7 +661,8 @@ PCScan<thread_safe>::PCScanTask::PCScanTask(PCScan& pcscan) : pcscan_(pcscan) {
            super_page != super_page_extent->super_pages_end;
            super_page += kSuperPageSize) {
         // TODO(bikineev): Consider following freelists instead of slot spans.
-        IterateActiveAndFullSlotSpans<thread_safe>(
+        const size_t visited_slot_spans = IterateActiveAndFullSlotSpans<
+            thread_safe>(
             super_page, true /*with pcscan*/, [this](SlotSpan* slot_span) {
               auto* payload_begin = static_cast<uintptr_t*>(
                   SlotSpan::ToSlotSpanStartPtr(slot_span));
@@ -667,7 +678,17 @@ PCScan<thread_safe>::PCScanTask::PCScanTask(PCScan& pcscan) : pcscan_(pcscan) {
                 scan_areas_.push_back({payload_begin, payload_end});
               }
             });
-        super_pages_.insert(reinterpret_cast<uintptr_t>(super_page));
+        // If we haven't visited any slot spans, all the slot spans in the
+        // super-page are either empty or decommitted. This means that all the
+        // objects are freed and there are no quarantined objects.
+        if (LIKELY(visited_slot_spans)) {
+          super_pages_.insert(reinterpret_cast<uintptr_t>(super_page));
+        } else {
+#if DCHECK_IS_ON()
+          PA_CHECK(IsScannerQuarantineBitmapEmpty(
+              super_page, pcscan_.quarantine_data_.epoch()));
+#endif
+        }
       }
     }
   }

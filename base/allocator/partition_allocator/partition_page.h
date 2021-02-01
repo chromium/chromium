@@ -560,10 +560,12 @@ ALWAYS_INLINE QuarantineBitmap* QuarantineBitmapFromPointer(
   return (pcscan_epoch & 1) ? second_bitmap : first_bitmap;
 }
 
+// Iterates over all active and full slot spans in a super-page. Returns number
+// of the visited slot spans.
 template <bool thread_safe, typename Callback>
-void IterateActiveAndFullSlotSpans(char* super_page_base,
-                                   bool with_pcscan,
-                                   Callback callback) {
+size_t IterateActiveAndFullSlotSpans(char* super_page_base,
+                                     bool with_pcscan,
+                                     Callback callback) {
   PA_DCHECK(
       !(reinterpret_cast<uintptr_t>(super_page_base) % kSuperPageAlignment));
 #if DCHECK_IS_ON()
@@ -581,6 +583,7 @@ void IterateActiveAndFullSlotSpans(char* super_page_base,
   // start.
   auto* const last_page = Page::FromSlotInnerPtr(
       SuperPagePayloadEnd(super_page_base) - PartitionPageSize());
+  size_t visited = 0;
   for (auto* page = first_page;
        page <= last_page && page->slot_span_metadata.bucket;
        page += page->slot_span_metadata.bucket->get_pages_per_slot_span()) {
@@ -589,7 +592,9 @@ void IterateActiveAndFullSlotSpans(char* super_page_base,
       continue;
     }
     callback(slot_span);
+    ++visited;
   }
+  return visited;
 }
 
 }  // namespace internal
