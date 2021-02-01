@@ -4348,7 +4348,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.RestrictedCookieManager.SiteForCookiesOK" enum="Boolean"
-    expires_after="M87">
+    expires_after="M95">
   <owner>morlovich@chromium.org</owner>
   <owner>chlily@chromium.org</owner>
   <summary>
@@ -4358,7 +4358,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.RestrictedCookieManager.TopFrameOriginOK" enum="Boolean"
-    expires_after="M87">
+    expires_after="M95">
   <owner>morlovich@chromium.org</owner>
   <owner>chlily@chromium.org</owner>
   <summary>
