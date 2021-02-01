@@ -155,6 +155,7 @@ class Controller : public ScriptExecutorDelegate,
   void ClearGenericUi() override;
   void SetBrowseModeInvisible(bool invisible) override;
   bool ShouldShowWarning() override;
+  void SetShowFeedbackChip(bool show_feedback_chip) override;
 
   // Show the UI if it's not already shown. This is only meaningful while in
   // states where showing the UI is optional, such as RUNNING, in tracking mode.
@@ -571,6 +572,7 @@ class Controller : public ScriptExecutorDelegate,
   std::vector<std::string> browse_domains_allowlist_;
   bool browse_mode_invisible_ = false;
   bool is_keyboard_showing_ = false;
+  bool show_feedback_chip_on_graceful_shutdown_ = false;
 
   // Only set during a ShowGenericUiAction.
   std::unique_ptr<GenericUserInterfaceProto> generic_user_interface_;

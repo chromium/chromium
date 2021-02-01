@@ -587,6 +587,30 @@ TEST_F(ControllerTest, CloseCustomTab) {
   EXPECT_TRUE(controller_->PerformUserAction(0));
 }
 
+TEST_F(ControllerTest, StopWithFeedbackChip) {
+  SupportsScriptResponseProto script_response;
+  AddRunnableScript(&script_response, "stop");
+  SetNextScriptResponse(script_response);
+
+  ActionsResponseProto actions_response;
+  actions_response.add_actions()->mutable_tell()->set_message("I give up");
+  actions_response.add_actions()->mutable_stop()->set_show_feedback_chip(true);
+  std::string actions_response_str;
+  actions_response.SerializeToString(&actions_response_str);
+  EXPECT_CALL(*mock_service_, OnGetActions(StrEq("stop"), _, _, _, _, _))
+      .WillOnce(RunOnceCallback<5>(net::HTTP_OK, actions_response_str));
+
+  Start();
+  ASSERT_THAT(controller_->GetUserActions(), SizeIs(1));
+
+  testing::InSequence seq;
+  EXPECT_CALL(mock_client_,
+              RecordDropOut(Metrics::DropOutReason::SCRIPT_SHUTDOWN));
+  EXPECT_TRUE(controller_->PerformUserAction(0));
+  ASSERT_THAT(controller_->GetUserActions(), SizeIs(1));
+  EXPECT_EQ(FEEDBACK_ACTION, controller_->GetUserActions().at(0).chip().type);
+}
+
 TEST_F(ControllerTest, RefreshScriptWhenDomainChanges) {
   SupportsScriptResponseProto script_response;
   AddRunnableScript(&script_response, "script");

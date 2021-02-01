@@ -2297,6 +2297,13 @@ message StopProto {
   // Assistant.
   optional bool close_cct = 2;
 
+  // Whether to show the feedback chip once Autofill Assistant has stopped.
+  // Note that this is only relevant if the UI is still being shown after the
+  // stop, which happens only if:
+  // - close_cct is false.
+  // - The action preceding this one is a Tell action.
+  optional bool show_feedback_chip = 3;
+
   reserved 1;  // stop_action_type
 }
 
