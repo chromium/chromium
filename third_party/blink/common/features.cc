@@ -811,14 +811,8 @@ const base::Feature kWebAppEnableProtocolHandlers{
 
 // When enabled NV12 frames on a GPU will be forwarded to libvpx encoders
 // without conversion to I420.
-const base::Feature kWebRtcLibvpxEncodeNV12 {
-  "WebRtcLibvpxEncodeNV12",
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      base::FEATURE_DISABLED_BY_DEFAULT
-#else
-      base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-};
+const base::Feature kWebRtcLibvpxEncodeNV12{"WebRtcLibvpxEncodeNV12",
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Makes network loading tasks unfreezable so that they can be processed while
 // the page is frozen.
