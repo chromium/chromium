@@ -1,0 +1,34 @@
+<!DOCTYPE HTML>
+<html>
+<body>
+<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="file:///gen/third_party/blink/public/mojom/choosers/file_chooser.mojom.js"></script>
+<script src="../wpt_internal/forms/resources/mock-file-chooser.js"></script>
+<script src="../resources/js-test.js"></script>
+
+<input id="filetype" type="file">
+
+<div id="description"></div>
+<div id="console"></div>
+
+<script>
+
+description("This tests that when AXPress is used DOMActivate will be handled by the input file type.")
+
+if (window.testRunner && window.accessibilityController) {
+    testRunner.waitUntilDone();
+    
+    var inputFile = document.getElementById("filetype");
+
+    inputFile.addEventListener("DOMActivate", function() { 
+        debug("DOMActivate was called"); 
+    });
+    mockFileChooserFactory.addEventListener('open', e => testRunner.notifyDone());
+
+    accessibilityController.accessibleElementById("filetype").press();
+}
+
+</script>
+
+</body>
+</html>

@@ -3,12 +3,14 @@
 <title>Test webkitRelativePath IDL attribute</title>
 </head>
 <body>
+<script src="/gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="/gen/third_party/blink/public/mojom/choosers/file_chooser.mojom.js"></script>
+<script src="../resources/mock-file-chooser.js"></script>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<input type="file" webkitdirectory>
-<script type="module">
-import {mockFileChooserFactory} from '../resources/mock-file-chooser.js';
 
+<input type="file" webkitdirectory>
+<script>
 // This is an automated-version of external/wpt/entries-api/file-webkitRelativePath-manual.html
 
 function clickElement(e) {

@@ -1,0 +1,10 @@
+CONSOLE MESSAGE: line 5: FileChooser: opened; mode=kOpen
+This tests that when AXPress is used DOMActivate will be handled by the input file type.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+DOMActivate was called
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

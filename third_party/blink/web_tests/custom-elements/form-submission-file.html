@@ -1,12 +1,13 @@
 <!DOCTYPE html>
-<script src="/forms-test-resources/common.js"></script>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
+<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="file:///gen/third_party/blink/public/mojom/choosers/file_chooser.mojom.js"></script>
+<script src="../wpt_internal/forms/resources/mock-file-chooser.js"></script>
+<script src="../fast/forms/resources/common.js"></script>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
 <div id="container"></div>
 <input type=file multiple>
-<script type="module">
-import {mockFileChooserFactory} from '/wpt_internal/forms/resources/mock-file-chooser.js';
-
+<script>
 class MyControl extends HTMLElement {
   static get formAssociated() { return true; }
 
