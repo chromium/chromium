@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "content/common/content_export.h"
@@ -55,10 +56,10 @@ class CONTENT_EXPORT ServiceWorkerDiskCacheEntry {
 
  private:
   // The disk_cache::Entry is owned by this entry and closed on destruction.
-  disk_cache::Entry* disk_cache_entry_;
+  CheckedPtr<disk_cache::Entry> disk_cache_entry_;
 
   // The cache that this entry belongs to.
-  ServiceWorkerDiskCache* const cache_;
+  const CheckedPtr<ServiceWorkerDiskCache> cache_;
 };
 
 // net::DiskCache wrapper for the cache used by service worker resources.

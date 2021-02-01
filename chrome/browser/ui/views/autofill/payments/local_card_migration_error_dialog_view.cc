@@ -38,7 +38,7 @@ LocalCardMigrationErrorDialogView::LocalCardMigrationErrorDialogView(
   SetButtons(ui::DIALOG_BUTTON_CANCEL);
   SetCancelCallback(
       base::BindOnce(&LocalCardMigrationDialogController::OnDoneButtonClicked,
-                     base::Unretained(controller_)));
+                     base::Unretained(controller_.get())));
 
   // The error dialog should be a modal dialog blocking the whole browser
   // which is consistent with other dialogs. It should make sure that the

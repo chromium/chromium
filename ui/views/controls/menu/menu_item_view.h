@@ -11,6 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
@@ -509,7 +510,7 @@ class VIEWS_EXPORT MenuItemView : public View {
   // The delegate. This is only valid for the root menu item. You shouldn't
   // use this directly, instead use GetDelegate() which walks the tree as
   // as necessary.
-  MenuDelegate* delegate_ = nullptr;
+  CheckedPtr<MenuDelegate> delegate_ = nullptr;
 
   // The controller for the run operation, or NULL if the menu isn't showing.
   base::WeakPtr<MenuController> controller_;
@@ -518,7 +519,7 @@ class VIEWS_EXPORT MenuItemView : public View {
   bool canceled_ = false;
 
   // Our parent.
-  MenuItemView* parent_menu_item_ = nullptr;
+  CheckedPtr<MenuItemView> parent_menu_item_ = nullptr;
 
   // Type of menu. NOTE: MenuItemView doesn't itself represent SEPARATOR,
   // that is handled by an entirely different view class.
@@ -541,7 +542,7 @@ class VIEWS_EXPORT MenuItemView : public View {
   bool may_have_mnemonics_ = true;
 
   // Submenu, created via CreateSubmenu.
-  SubmenuView* submenu_ = nullptr;
+  CheckedPtr<SubmenuView> submenu_ = nullptr;
 
   base::string16 title_;
   base::string16 secondary_title_;
@@ -563,7 +564,7 @@ class VIEWS_EXPORT MenuItemView : public View {
   bool has_icons_ = false;
 
   // Pointer to a view with a menu icon.
-  ImageView* icon_view_ = nullptr;
+  CheckedPtr<ImageView> icon_view_ = nullptr;
 
   // The tooltip to show on hover for this menu item.
   base::string16 tooltip_;
@@ -610,17 +611,17 @@ class VIEWS_EXPORT MenuItemView : public View {
   bool use_right_margin_ = true;
 
   // Contains an image for the checkbox or radio icon.
-  ImageView* radio_check_image_view_ = nullptr;
+  CheckedPtr<ImageView> radio_check_image_view_ = nullptr;
 
   // The submenu indicator arrow icon in case the menu item has a Submenu.
-  ImageView* submenu_arrow_image_view_ = nullptr;
+  CheckedPtr<ImageView> submenu_arrow_image_view_ = nullptr;
 
   // The forced visual selection state of this item, if any.
   base::Optional<bool> forced_visual_selection_;
 
   // The vertical separator that separates the actionable and submenu regions of
   // an ACTIONABLE_SUBMENU.
-  Separator* vertical_separator_ = nullptr;
+  CheckedPtr<Separator> vertical_separator_ = nullptr;
 
   // Whether this menu item is rendered differently to draw attention to it.
   bool is_alerted_ = false;

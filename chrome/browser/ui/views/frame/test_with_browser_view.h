@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 
 class BrowserView;
@@ -32,7 +33,7 @@ class TestWithBrowserView : public BrowserWithTestWindowTest {
   BrowserView* browser_view() { return browser_view_; }
 
  private:
-  BrowserView* browser_view_;  // Not owned.
+  CheckedPtr<BrowserView> browser_view_;  // Not owned.
 
   DISALLOW_COPY_AND_ASSIGN(TestWithBrowserView);
 };

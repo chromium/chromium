@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 
 namespace javascript_dialogs {
@@ -113,14 +114,14 @@ class AppModalDialogController {
 
   // The toolkit-specific implementation of the app modal dialog box. When
   // non-null, |view_| owns |this|.
-  AppModalDialogView* view_;
+  CheckedPtr<AppModalDialogView> view_;
 
   // The WebContents that opened this dialog.
-  content::WebContents* web_contents_;
+  CheckedPtr<content::WebContents> web_contents_;
 
   // A map of extra Chrome-only data associated with the delegate_. Can be
   // inspected via |extra_data_map_[web_contents_]|.
-  ExtraDataMap* extra_data_map_;
+  CheckedPtr<ExtraDataMap> extra_data_map_;
 
   // Information about the message box is held in the following variables.
   const content::JavaScriptDialogType javascript_dialog_type_;

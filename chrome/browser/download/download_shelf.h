@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_DOWNLOAD_DOWNLOAD_SHELF_H_
 #define CHROME_BROWSER_DOWNLOAD_DOWNLOAD_SHELF_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/download/download_ui_model.h"
 
@@ -96,8 +97,8 @@ class DownloadShelf {
   void OnGetDownloadDoneForOfflineItem(
       const base::Optional<offline_items_collection::OfflineItem>& item);
 
-  Browser* const browser_;
-  Profile* const profile_;
+  const CheckedPtr<Browser> browser_;
+  const CheckedPtr<Profile> profile_;
   bool should_show_on_unhide_ = false;
   bool is_hidden_ = false;
   base::WeakPtrFactory<DownloadShelf> weak_ptr_factory_{this};

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/aura/aura_export.h"
 #include "ui/events/event_targeter.h"
 #include "ui/gfx/geometry/insets.h"
@@ -149,7 +150,7 @@ class AURA_EXPORT WindowTargeter : public ui::EventTargeter {
 
   // The Window this WindowTargeter is installed on. Null if not attached to a
   // Window.
-  aura::Window* window_ = nullptr;
+  CheckedPtr<aura::Window> window_ = nullptr;
 
   gfx::Insets mouse_extend_;
   gfx::Insets touch_extend_;

@@ -114,7 +114,7 @@ void CloudServicesDialogView::Init() {
                 browser, GURL(chrome::kCastCloudServicesHelpURL),
                 ui::PAGE_TRANSITION_LINK);
           },
-          base::Unretained(browser_)));
+          base::Unretained(browser_.get())));
   link_style.disable_line_wrapping = false;
 
   views::StyledLabel* body_text =

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LOGIN_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_LOGIN_VIEW_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "components/password_manager/core/browser/http_auth_observer.h"
@@ -49,12 +50,12 @@ class LoginView : public views::View,
 
  private:
   // Non-owning refs to the input text fields.
-  views::Textfield* username_field_;
-  views::Textfield* password_field_;
+  CheckedPtr<views::Textfield> username_field_;
+  CheckedPtr<views::Textfield> password_field_;
 
   // If not null, points to a model we need to notify of our own destruction
   // so it doesn't try and access this when its too late.
-  password_manager::HttpAuthManager* http_auth_manager_;
+  CheckedPtr<password_manager::HttpAuthManager> http_auth_manager_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOGIN_VIEW_H_

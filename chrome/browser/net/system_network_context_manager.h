@@ -11,6 +11,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "chrome/browser/net/proxy_config_monitor.h"
@@ -179,7 +180,7 @@ class SystemNetworkContextManager {
   network::mojom::NetworkContextParamsPtr CreateNetworkContextParams();
 
   // The PrefService to retrieve all the pref values.
-  PrefService* local_state_;
+  CheckedPtr<PrefService> local_state_;
 
   // This is an instance of the default SSLConfigServiceManager for the current
   // platform and it gets SSL preferences from the BrowserProcess's local_state

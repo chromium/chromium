@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -397,7 +398,7 @@ class TabLifecycleUnitSourceTest : public ChromeRenderViewHostTestHarness {
                     .GetPendingEntry());
   }
 
-  TabLifecycleUnitSource* source_ = nullptr;
+  CheckedPtr<TabLifecycleUnitSource> source_ = nullptr;
   ::testing::StrictMock<MockLifecycleUnitSourceObserver> source_observer_;
   ::testing::StrictMock<MockTabLifecycleObserver> tab_observer_;
   std::unique_ptr<TabStripModel> tab_strip_model_;

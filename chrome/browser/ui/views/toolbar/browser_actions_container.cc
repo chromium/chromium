@@ -96,13 +96,13 @@ BrowserActionsContainer::BrowserActionsContainer(
   if (!ShownInsideMenu()) {
     if (interactive_) {
       resize_area_ = new views::ResizeArea(this);
-      AddChildView(resize_area_);
+      AddChildView(resize_area_.get());
     }
     resize_animation_ = std::make_unique<gfx::SlideAnimation>(this);
 
     if (GetSeparatorAreaWidth() > 0) {
       separator_ = new views::Separator();
-      AddChildView(separator_);
+      AddChildView(separator_.get());
     }
   } else {
     DCHECK(!base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu));

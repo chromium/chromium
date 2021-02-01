@@ -13,6 +13,7 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -338,7 +339,7 @@ class ContentSubresourceFilterThrottleManagerTest
  private:
   testing::TestRulesetCreator test_ruleset_creator_;
   testing::TestRulesetPair test_ruleset_pair_;
-  TestSubresourceFilterClient* client_;
+  CheckedPtr<TestSubresourceFilterClient> client_;
 
   std::unique_ptr<VerifiedRulesetDealer::Handle> dealer_handle_;
 

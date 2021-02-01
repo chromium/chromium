@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -292,8 +293,8 @@ class BrowserSideFlingBrowserTest : public ContentBrowserTest {
   }
 
   std::unique_ptr<base::RunLoop> run_loop_;
-  RenderWidgetHostViewBase* child_view_ = nullptr;
-  RenderWidgetHostViewBase* root_view_ = nullptr;
+  CheckedPtr<RenderWidgetHostViewBase> child_view_ = nullptr;
+  CheckedPtr<RenderWidgetHostViewBase> root_view_ = nullptr;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(BrowserSideFlingBrowserTest);

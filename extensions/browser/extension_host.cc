@@ -97,7 +97,7 @@ ExtensionHost::~ExtensionHost() {
 
   content::NotificationService::current()->Notify(
       extensions::NOTIFICATION_EXTENSION_HOST_DESTROYED,
-      content::Source<BrowserContext>(browser_context_),
+      content::Source<BrowserContext>(browser_context_.get()),
       content::Details<ExtensionHost>(this));
   for (auto& observer : observer_list_)
     observer.OnExtensionHostDestroyed(this);
@@ -158,7 +158,7 @@ void ExtensionHost::CreateRenderViewNow() {
 void ExtensionHost::Close() {
   content::NotificationService::current()->Notify(
       extensions::NOTIFICATION_EXTENSION_HOST_VIEW_SHOULD_CLOSE,
-      content::Source<BrowserContext>(browser_context_),
+      content::Source<BrowserContext>(browser_context_.get()),
       content::Details<ExtensionHost>(this));
 }
 
@@ -245,7 +245,7 @@ void ExtensionHost::RenderProcessGone(base::TerminationStatus status) {
   // more central, like EPM maybe.
   content::NotificationService::current()->Notify(
       extensions::NOTIFICATION_EXTENSION_PROCESS_TERMINATED,
-      content::Source<BrowserContext>(browser_context_),
+      content::Source<BrowserContext>(browser_context_.get()),
       content::Details<ExtensionHost>(this));
 }
 
@@ -259,7 +259,7 @@ void ExtensionHost::DidStopLoading() {
     OnDidStopFirstLoad();
     content::NotificationService::current()->Notify(
         extensions::NOTIFICATION_EXTENSION_HOST_DID_STOP_FIRST_LOAD,
-        content::Source<BrowserContext>(browser_context_),
+        content::Source<BrowserContext>(browser_context_.get()),
         content::Details<ExtensionHost>(this));
     for (auto& observer : observer_list_)
       observer.OnExtensionHostDidStopFirstLoad(this);
@@ -284,7 +284,7 @@ void ExtensionHost::DocumentAvailableInMainFrame() {
         ->SetBackgroundPageReady(extension_->id(), true);
     content::NotificationService::current()->Notify(
         extensions::NOTIFICATION_EXTENSION_BACKGROUND_PAGE_READY,
-        content::Source<const Extension>(extension_),
+        content::Source<const Extension>(extension_.get()),
         content::NotificationService::NoDetails());
   }
 }
@@ -423,7 +423,7 @@ void ExtensionHost::RenderViewReady() {
 
   content::NotificationService::current()->Notify(
       extensions::NOTIFICATION_EXTENSION_HOST_CREATED,
-      content::Source<BrowserContext>(browser_context_),
+      content::Source<BrowserContext>(browser_context_.get()),
       content::Details<ExtensionHost>(this));
 }
 

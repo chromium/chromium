@@ -56,7 +56,7 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
   }
 
   CaptionBubble* GetBubble() {
-    return controller_ ? controller_->caption_bubble_ : nullptr;
+    return controller_ ? controller_->caption_bubble_.get() : nullptr;
   }
 
   views::Label* GetLabel() {
@@ -65,7 +65,7 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
   }
 
   views::Label* GetTitle() {
-    return controller_ ? controller_->caption_bubble_->title_ : nullptr;
+    return controller_ ? controller_->caption_bubble_->title_.get() : nullptr;
   }
 
   std::string GetAccessibleWindowTitle() {
@@ -76,28 +76,33 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
   }
 
   views::Button* GetCloseButton() {
-    return controller_ ? controller_->caption_bubble_->close_button_ : nullptr;
+    return controller_ ? controller_->caption_bubble_->close_button_.get()
+                       : nullptr;
   }
 
   views::Button* GetExpandButton() {
-    return controller_ ? controller_->caption_bubble_->expand_button_ : nullptr;
+    return controller_ ? controller_->caption_bubble_->expand_button_.get()
+                       : nullptr;
   }
 
   views::Button* GetCollapseButton() {
-    return controller_ ? controller_->caption_bubble_->collapse_button_
+    return controller_ ? controller_->caption_bubble_->collapse_button_.get()
                        : nullptr;
   }
 
   views::View* GetErrorMessage() {
-    return controller_ ? controller_->caption_bubble_->error_message_ : nullptr;
+    return controller_ ? controller_->caption_bubble_->error_message_.get()
+                       : nullptr;
   }
 
   views::Label* GetErrorText() {
-    return controller_ ? controller_->caption_bubble_->error_text_ : nullptr;
+    return controller_ ? controller_->caption_bubble_->error_text_.get()
+                       : nullptr;
   }
 
   views::ImageView* GetErrorIcon() {
-    return controller_ ? controller_->caption_bubble_->error_icon_ : nullptr;
+    return controller_ ? controller_->caption_bubble_->error_icon_.get()
+                       : nullptr;
   }
 
   std::string GetLabelText() {
@@ -109,7 +114,7 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
   }
 
   views::Widget* GetCaptionWidget() {
-    return controller_ ? controller_->caption_widget_ : nullptr;
+    return controller_ ? controller_->caption_widget_.get() : nullptr;
   }
 
   bool IsWidgetVisible() {

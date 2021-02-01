@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observer.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/window_controller_list.h"
@@ -81,12 +82,12 @@ class WindowsEventRouter : public AppWindowRegistry::Observer,
   content::NotificationRegistrar registrar_;
 
   // The main profile that owns this event router.
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   // The profile the currently focused window belongs to; either the main or
   // incognito profile or NULL (none of the above). We remember this in order
   // to correctly handle focus changes between non-OTR and OTR windows.
-  Profile* focused_profile_;
+  CheckedPtr<Profile> focused_profile_;
 
   // The currently focused window. We keep this so as to avoid sending multiple
   // windows.onFocusChanged events with the same windowId.

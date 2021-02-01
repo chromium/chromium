@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -90,9 +91,9 @@ class BookmarkEventRouter : public bookmarks::BookmarkModelObserver {
                      const std::string& event_name,
                      std::unique_ptr<base::ListValue> event_args);
 
-  content::BrowserContext* browser_context_;
-  bookmarks::BookmarkModel* model_;
-  bookmarks::ManagedBookmarkService* managed_;
+  CheckedPtr<content::BrowserContext> browser_context_;
+  CheckedPtr<bookmarks::BookmarkModel> model_;
+  CheckedPtr<bookmarks::ManagedBookmarkService> managed_;
 };
 
 class BookmarksAPI : public BrowserContextKeyedAPI,
@@ -113,7 +114,7 @@ class BookmarksAPI : public BrowserContextKeyedAPI,
  private:
   friend class BrowserContextKeyedAPIFactory<BookmarksAPI>;
 
-  content::BrowserContext* browser_context_;
+  CheckedPtr<content::BrowserContext> browser_context_;
 
   // BrowserContextKeyedAPI implementation.
   static const char* service_name() {

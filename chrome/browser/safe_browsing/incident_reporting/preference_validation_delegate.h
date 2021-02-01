@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/values.h"
 #include "services/preferences/public/mojom/tracked_preference_validation_delegate.mojom.h"
@@ -48,7 +49,7 @@ class PreferenceValidationDelegate
           external_validation_value_state,
       bool is_personal) override;
 
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
   std::unique_ptr<IncidentReceiver> incident_receiver_;
 
   DISALLOW_COPY_AND_ASSIGN(PreferenceValidationDelegate);

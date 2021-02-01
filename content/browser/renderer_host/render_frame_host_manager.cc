@@ -2219,7 +2219,7 @@ scoped_refptr<SiteInstance> RenderFrameHostManager::ConvertToSiteInstance(
   // be set to |descriptor.existing_site_instance|.
   if (descriptor.existing_site_instance) {
     DCHECK_EQ(descriptor.relation, SiteInstanceRelation::PREEXISTING);
-    return descriptor.existing_site_instance;
+    return descriptor.existing_site_instance.get();
   } else {
     DCHECK_NE(descriptor.relation, SiteInstanceRelation::PREEXISTING);
   }

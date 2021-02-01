@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_GENERATION_POPUP_VIEW_TESTER_VIEWS_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_view_tester.h"
 
 class PasswordGenerationPopupViewViews;
@@ -21,7 +22,7 @@ class PasswordGenerationPopupViewTesterViews
 
  private:
   // Weak reference
-  PasswordGenerationPopupViewViews* view_;
+  CheckedPtr<PasswordGenerationPopupViewViews> view_;
 
   DISALLOW_COPY_AND_ASSIGN(PasswordGenerationPopupViewTesterViews);
 };

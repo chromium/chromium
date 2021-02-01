@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -93,13 +94,13 @@ class SigninGlobalErrorTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
-  TestingProfile* profile_;
+  CheckedPtr<TestingProfile> profile_;
 
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
 
-  SigninGlobalError* global_error_;
-  SigninErrorController* error_controller_;
+  CheckedPtr<SigninGlobalError> global_error_;
+  CheckedPtr<SigninErrorController> error_controller_;
 };
 
 TEST_F(SigninGlobalErrorTest, Basic) {

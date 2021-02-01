@@ -14,6 +14,7 @@
 
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "base/time/time.h"
@@ -333,7 +334,7 @@ class ProfileImpl : public Profile {
   // components/keyed_service/core/keyed_service.h
   // components/keyed_service/content/browser_context_keyed_service_factory.*
 
-  Profile::Delegate* delegate_;
+  CheckedPtr<Profile::Delegate> delegate_;
 
   scoped_refptr<content::SharedCorsOriginAccessList>
       shared_cors_origin_access_list_;

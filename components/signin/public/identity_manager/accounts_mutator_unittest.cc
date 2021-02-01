@@ -5,6 +5,7 @@
 #include "components/signin/internal/identity_manager/accounts_mutator_impl.h"
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
@@ -73,7 +74,7 @@ class TestIdentityManagerDiagnosticsObserver
     token_remover_source_ = source;
   }
 
-  signin::IdentityManager* identity_manager_;
+  CheckedPtr<signin::IdentityManager> identity_manager_;
   CoreAccountId token_updator_account_id_;
   std::string token_updator_source_;
   CoreAccountId token_remover_account_id_;

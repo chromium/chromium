@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_HEADER_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_HEADER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/views/context_menu_controller.h"
@@ -73,13 +74,13 @@ class TabGroupHeader : public TabSlotView,
   // collapsed.
   void LogCollapseTime();
 
-  TabStrip* const tab_strip_;
+  const CheckedPtr<TabStrip> tab_strip_;
 
-  views::View* title_chip_;
-  views::Label* title_;
+  CheckedPtr<views::View> title_chip_;
+  CheckedPtr<views::Label> title_;
 
   // Focus ring for accessibility.
-  views::FocusRing* focus_ring_ = nullptr;
+  CheckedPtr<views::FocusRing> focus_ring_ = nullptr;
 
   // Time used for logging the last time the group was collapsed or expanded.
   base::TimeTicks last_modified_expansion_;
@@ -100,7 +101,7 @@ class TabGroupHeader : public TabSlotView,
 
    private:
     bool is_open_ = false;
-    views::Widget* widget_;
+    CheckedPtr<views::Widget> widget_;
   };
 
   EditorBubbleTracker editor_bubble_tracker_;

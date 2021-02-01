@@ -6,6 +6,7 @@
 #define GPU_COMMAND_BUFFER_SERVICE_GPU_COMMAND_BUFFER_MEMORY_TRACKER_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/single_thread_task_runner.h"
 #include "base/timer/timer.h"
@@ -40,7 +41,7 @@ class GPU_GLES2_EXPORT GpuCommandBufferMemoryTracker : public MemoryTracker {
   const CommandBufferId command_buffer_id_;
   const uint64_t client_tracing_id_;
 
-  MemoryTracker::Observer* const observer_;
+  const CheckedPtr<MemoryTracker::Observer> observer_;
 
   DISALLOW_COPY_AND_ASSIGN(GpuCommandBufferMemoryTracker);
 };

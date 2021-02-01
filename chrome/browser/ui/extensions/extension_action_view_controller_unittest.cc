@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
@@ -68,8 +69,8 @@ class LegacyToolbarTestHelper {
  private:
   std::unique_ptr<ExtensionActionTestHelper> test_util_;
   std::unique_ptr<ExtensionActionTestHelper> overflow_test_util_;
-  ToolbarActionsBar* main_bar_ = nullptr;
-  ToolbarActionsBar* overflow_bar_ = nullptr;
+  CheckedPtr<ToolbarActionsBar> main_bar_ = nullptr;
+  CheckedPtr<ToolbarActionsBar> overflow_bar_ = nullptr;
 };
 
 enum class ToolbarType {
@@ -175,10 +176,10 @@ class ExtensionActionViewControllerUnitTest
   base::test::ScopedFeatureList scoped_feature_list_;
 
   // The ExtensionService associated with the primary profile.
-  extensions::ExtensionService* extension_service_ = nullptr;
+  CheckedPtr<extensions::ExtensionService> extension_service_ = nullptr;
 
   // ToolbarActionsModel associated with the main profile.
-  ToolbarActionsModel* toolbar_model_ = nullptr;
+  CheckedPtr<ToolbarActionsModel> toolbar_model_ = nullptr;
 
   std::unique_ptr<ExtensionActionTestHelper> test_util_;
 

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/web_test/browser/web_test_background_fetch_delegate.h"
+#include "base/memory/checked_ptr.h"
 
 #include <memory>
 #include <utility>
@@ -53,7 +54,7 @@ class TestBlobContextGetterFactory : public download::BlobContextGetterFactory {
     std::move(callback).Run(blob_context_getter);
   }
 
-  content::BrowserContext* browser_context_;
+  CheckedPtr<content::BrowserContext> browser_context_;
   DISALLOW_COPY_AND_ASSIGN(TestBlobContextGetterFactory);
 };
 

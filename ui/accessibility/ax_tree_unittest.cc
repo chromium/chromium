@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/containers/contains.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -274,7 +275,7 @@ class TestAXTreeObserver : public AXTreeObserver {
   }
 
  private:
-  AXTree* tree_;
+  CheckedPtr<AXTree> tree_;
   bool tree_data_changed_;
   bool root_changed_;
   std::vector<int32_t> deleted_ids_;

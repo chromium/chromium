@@ -6,6 +6,7 @@
 #define COMPONENTS_POWER_SCHEDULER_POWER_MODE_VOTER_H_
 
 #include "base/component_export.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "components/power_scheduler/power_mode.h"
 
@@ -44,7 +45,7 @@ class COMPONENT_EXPORT(POWER_SCHEDULER) PowerModeVoter {
   friend class PowerModeArbiter;
   explicit PowerModeVoter(Delegate* delegate);
 
-  Delegate* delegate_;
+  CheckedPtr<Delegate> delegate_;
 };
 
 }  // namespace power_scheduler

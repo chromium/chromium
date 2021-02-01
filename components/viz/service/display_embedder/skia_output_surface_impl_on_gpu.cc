@@ -7,6 +7,7 @@
 #include "base/atomic_sequence_num.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -359,8 +360,8 @@ class SkiaOutputSurfaceImplOnGpu::DisplayContext : public gpu::DisplayContext {
   }
 
  private:
-  SkiaOutputSurfaceDependency* const dependency_;
-  SkiaOutputSurfaceImplOnGpu* const owner_;
+  const CheckedPtr<SkiaOutputSurfaceDependency> dependency_;
+  const CheckedPtr<SkiaOutputSurfaceImplOnGpu> owner_;
 };
 
 // static

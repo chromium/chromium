@@ -12,6 +12,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_native_library.h"
 #include "base/stl_util.h"
@@ -34,7 +35,7 @@ struct Export {
     return addr < other.addr;
   }
 
-  void* addr;
+  CheckedPtr<void> addr;
   std::string name;
 };
 

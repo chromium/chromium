@@ -8,6 +8,7 @@
 
 #include "android_webview/browser/gfx/root_frame_sink.h"
 #include "android_webview/browser/gfx/viz_compositor_thread_runner_webview.h"
+#include "base/memory/checked_ptr.h"
 
 namespace android_webview {
 
@@ -29,7 +30,7 @@ class RootFrameSinkProxy::RootFrameSinkClientImpl : public RootFrameSinkClient {
   }
 
  private:
-  RootFrameSinkProxy* const owner_;
+  const CheckedPtr<RootFrameSinkProxy> owner_;
 };
 
 // static

@@ -13,6 +13,7 @@
 #include "base/component_export.h"
 #include "base/containers/stack_container.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "mojo/public/cpp/bindings/connection_group.h"
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
 #include "mojo/public/cpp/bindings/lib/pending_receiver_state.h"
@@ -94,7 +95,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) SerializationContext {
  private:
   // The ConnectionGroup to which deserialized PendingReceivers should be added,
   // if any.
-  const ConnectionGroup::Ref* receiver_connection_group_ = nullptr;
+  CheckedPtr<const ConnectionGroup::Ref> receiver_connection_group_ = nullptr;
 
   // Handles owned by this object. Used during serialization to hold onto
   // handles accumulated during pre-serialization, and used during

@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
@@ -158,7 +159,7 @@ class HeartbeatSenderTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  MockHeartbeatClient* mock_client_;
+  CheckedPtr<MockHeartbeatClient> mock_client_;
   std::unique_ptr<MockObserver> mock_observer_;
 
   std::unique_ptr<FakeSignalStrategy> signal_strategy_;

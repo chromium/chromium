@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "components/offline_items_collection/core/offline_content_provider.h"
 #include "components/offline_items_collection/core/offline_item.h"
@@ -48,7 +49,7 @@ class FilteredOfflineItemObserver : public OfflineContentProvider::Observer {
   void OnItemUpdated(const OfflineItem& item,
                      const base::Optional<UpdateDelta>& update_delta) override;
 
-  OfflineContentProvider* provider_;
+  CheckedPtr<OfflineContentProvider> provider_;
   ObserversMap observers_;
 
   DISALLOW_COPY_AND_ASSIGN(FilteredOfflineItemObserver);

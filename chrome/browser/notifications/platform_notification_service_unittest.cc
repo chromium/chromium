@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
+#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -121,7 +122,7 @@ class PlatformNotificationServiceTest : public testing::Test {
   std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
 
   // Owned by the |profile_| as a keyed service.
-  MockNotificationMetricsLogger* mock_logger_;
+  CheckedPtr<MockNotificationMetricsLogger> mock_logger_;
 
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> recorder_;
 };

@@ -11,6 +11,7 @@
 
 #include "base/containers/mru_cache.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/single_thread_task_runner.h"
@@ -93,7 +94,7 @@ class PreviewsService : public KeyedService {
       previews_https_notification_infobar_decider_;
 
   // Guaranteed to outlive |this|.
-  content::BrowserContext* browser_context_;
+  CheckedPtr<content::BrowserContext> browser_context_;
 
   // Stores history of URL redirects. Key is the starting URL and value is the
   // URL that the starting URL redirected to. Populated only when DeferAllScript

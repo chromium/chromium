@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/atomic_sequence_num.h"
+#include "base/memory/checked_ptr.h"
 #include "base/numerics/safe_math.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
@@ -72,7 +73,7 @@ class ScopedSetActiveTexture {
   }
 
  private:
-  GLES2Interface* gl_;
+  CheckedPtr<GLES2Interface> gl_;
   GLenum unit_;
 };
 

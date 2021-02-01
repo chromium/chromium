@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/util/type_safety/id_type.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/v2/proto_util.h"
@@ -128,8 +129,8 @@ class FeatureTree {
   void RemoveFromParent(ContentTag node_id);
   bool RemoveFromParent(StreamNode* parent, ContentTag node_id);
 
-  const FeatureTree* base_ = nullptr;  // Unowned.
-  ContentMap* content_map_;            // Unowned.
+  CheckedPtr<const FeatureTree> base_ = nullptr;  // Unowned.
+  CheckedPtr<ContentMap> content_map_;            // Unowned.
   // Finding the root:
   // We pick the root node as the last STREAM node which has no parent.
   // In most cases, we can identify the root as the tree is built.

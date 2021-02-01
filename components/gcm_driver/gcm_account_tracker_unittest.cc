@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/test/task_environment.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -97,8 +98,8 @@ class CustomFakeGCMDriver : public FakeGCMDriver {
   bool connected_;
   std::vector<GCMClient::AccountTokenInfo> accounts_;
   bool update_accounts_called_;
-  GCMConnectionObserver* last_connection_observer_;
-  GCMConnectionObserver* removed_connection_observer_;
+  CheckedPtr<GCMConnectionObserver> last_connection_observer_;
+  CheckedPtr<GCMConnectionObserver> removed_connection_observer_;
   net::IPEndPoint ip_endpoint_;
   base::Time last_token_fetch_time_;
 

@@ -17,6 +17,7 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string16.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
@@ -253,7 +254,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
   std::map<url::Origin, int64_t> origin_size_map_;
   // The set of origins whose storage should be cleared on shutdown.
   std::set<url::Origin> origins_to_purge_on_shutdown_;
-  base::Clock* const clock_;
+  const CheckedPtr<base::Clock> clock_;
 
   mojo::ReceiverSet<storage::mojom::IndexedDBControl> receivers_;
   mojo::ReceiverSet<storage::mojom::IndexedDBControlTest> test_receivers_;

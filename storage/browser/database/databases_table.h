@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 
 namespace sql {
@@ -49,7 +50,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) DatabasesTable {
       std::vector<DatabaseDetails>* details);
   bool DeleteOriginIdentifier(const std::string& origin_identifier);
  private:
-  sql::Database* db_;
+  CheckedPtr<sql::Database> db_;
 };
 
 }  // namespace storage

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_ROW_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_ROW_VIEW_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "ui/views/metadata/metadata_header_macros.h"
@@ -55,19 +56,19 @@ class OmniboxRowView : public views::View {
   const size_t line_;
 
   // Non-owning pointer to the backing popup model.
-  OmniboxPopupModel* const popup_model_;
+  const CheckedPtr<OmniboxPopupModel> popup_model_;
 
   // Non-owning pointer to the header view for this row. This is initially
   // nullptr, and lazily created when a header is first set for this row.
   // Lazily creating these speeds up browser startup: https://crbug.com/1021323
-  HeaderView* header_view_ = nullptr;
+  CheckedPtr<HeaderView> header_view_ = nullptr;
 
   // Non-owning pointer to the result view for this row. This is never nullptr.
-  OmniboxResultView* result_view_;
+  CheckedPtr<OmniboxResultView> result_view_;
 
   // Non-owning pointer to the preference service used for toggling headers.
   // May be nullptr in tests.
-  PrefService* const pref_service_;
+  const CheckedPtr<PrefService> pref_service_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_ROW_VIEW_H_

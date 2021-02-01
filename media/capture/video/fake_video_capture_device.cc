@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/ranges.h"
 #include "base/single_thread_task_runner.h"
@@ -199,7 +200,7 @@ class FrameDeliverer {
 
  private:
   const std::unique_ptr<PacmanFramePainter> frame_painter_;
-  const FakeDeviceState* device_state_ = nullptr;
+  CheckedPtr<const FakeDeviceState> device_state_ = nullptr;
   std::unique_ptr<VideoCaptureDevice::Client> client_;
   base::TimeTicks first_ref_time_;
 };
@@ -257,7 +258,7 @@ class GpuMemoryBufferFrameDeliverer : public FrameDeliverer {
   void PaintAndDeliverNextFrame(base::TimeDelta timestamp_to_paint) override;
 
  private:
-  gpu::GpuMemoryBufferSupport* gmb_support_;
+  CheckedPtr<gpu::GpuMemoryBufferSupport> gmb_support_;
 };
 
 FrameDelivererFactory::FrameDelivererFactory(

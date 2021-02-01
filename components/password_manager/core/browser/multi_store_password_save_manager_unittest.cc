@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/multi_store_password_save_manager.h"
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/autofill/core/common/renderer_id.h"
@@ -222,8 +223,8 @@ class MultiStorePasswordSaveManagerTest : public testing::Test {
   // needs to outlive the latter.
   std::unique_ptr<FakeFormFetcher> fetcher_;
   std::unique_ptr<MultiStorePasswordSaveManager> password_save_manager_;
-  NiceMock<MockFormSaver>* mock_account_form_saver_;
-  NiceMock<MockFormSaver>* mock_profile_form_saver_;
+  CheckedPtr<NiceMock<MockFormSaver>> mock_account_form_saver_;
+  CheckedPtr<NiceMock<MockFormSaver>> mock_profile_form_saver_;
 
   DISALLOW_COPY_AND_ASSIGN(MultiStorePasswordSaveManagerTest);
 };

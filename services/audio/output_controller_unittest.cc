@@ -16,6 +16,7 @@
 #include "base/environment.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
 #include "base/optional.h"
@@ -132,7 +133,7 @@ class MockAudioOutputStream : public AudioOutputStream,
   }
 
   void Start(AudioOutputStream::AudioSourceCallback* cb) override {
-    EXPECT_EQ(nullptr, callback_);
+    EXPECT_EQ(nullptr, callback_.get());
     callback_ = cb;
     if (impl_) {
       impl_->Start(this);
@@ -214,10 +215,10 @@ class MockAudioOutputStream : public AudioOutputStream,
     NOTREACHED();
   }
 
-  AudioOutputStream* impl_;
+  CheckedPtr<AudioOutputStream> impl_;
   const AudioParameters::Format format_;
   base::OnceClosure close_callback_;
-  AudioOutputStream::AudioSourceCallback* callback_ = nullptr;
+  CheckedPtr<AudioOutputStream::AudioSourceCallback> callback_ = nullptr;
   double volume_ = 1.0;
   std::unique_ptr<base::Thread> data_thread_;
 
@@ -303,8 +304,8 @@ class AudioManagerForControllerTest : public media::FakeAudioManager {
   }
 
   media::FakeAudioLogFactory fake_audio_log_factory_;
-  MockAudioOutputStream* last_created_stream_ = nullptr;
-  MockAudioOutputStream* last_closed_stream_ = nullptr;
+  CheckedPtr<MockAudioOutputStream> last_created_stream_ = nullptr;
+  CheckedPtr<MockAudioOutputStream> last_closed_stream_ = nullptr;
 };
 
 ACTION(PopulateBuffer) {

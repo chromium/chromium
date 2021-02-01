@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
 
 namespace network {
@@ -113,8 +114,8 @@ class TestPaymentsClient : public payments::PaymentsClient {
   // useful to control whether or not GetUnmaskDetails() is responded to.
   bool should_return_unmask_details_ = true;
   payments::PaymentsClient::UnmaskDetails unmask_details_;
-  const payments::PaymentsClient::UnmaskRequestDetails* unmask_request_ =
-      nullptr;
+  CheckedPtr<const payments::PaymentsClient::UnmaskRequestDetails>
+      unmask_request_ = nullptr;
   std::vector<std::pair<int, int>> supported_card_bin_ranges_;
   std::vector<AutofillProfile> upload_details_addresses_;
   std::vector<AutofillProfile> upload_card_addresses_;

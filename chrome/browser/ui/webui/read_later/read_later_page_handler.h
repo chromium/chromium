@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/webui/read_later/read_later.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -54,14 +55,14 @@ class ReadLaterPageHandler : public read_later::mojom::PageHandler {
 
   mojo::Receiver<read_later::mojom::PageHandler> receiver_;
   mojo::Remote<read_later::mojom::Page> page_;
-  Browser* const browser_;
+  const CheckedPtr<Browser> browser_;
   // ReadLaterPageHandler is owned by |read_later_ui_| and so we expect
   // |read_later_ui_| to remain valid for the lifetime of |this|.
-  ReadLaterUI* const read_later_ui_;
+  const CheckedPtr<ReadLaterUI> read_later_ui_;
 
-  base::Clock* clock_;
+  CheckedPtr<base::Clock> clock_;
 
-  ReadingListModel* reading_list_model_ = nullptr;
+  CheckedPtr<ReadingListModel> reading_list_model_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_READ_LATER_READ_LATER_PAGE_HANDLER_H_

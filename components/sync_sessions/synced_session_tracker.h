@@ -15,6 +15,7 @@
 
 #include "base/feature_list.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/session_types.h"
 #include "components/sync_sessions/synced_session.h"
@@ -278,7 +279,7 @@ class SyncedSessionTracker {
           is_tab_node_unsynced_cb);
 
   // The client of the sync sessions datatype.
-  SyncSessionsClient* const sessions_client_;
+  const CheckedPtr<SyncSessionsClient> sessions_client_;
 
   // Map: session tag -> TrackedSession.
   std::map<std::string, TrackedSession> session_map_;

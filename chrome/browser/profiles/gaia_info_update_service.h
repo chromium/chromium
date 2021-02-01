@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_downloader.h"
@@ -54,8 +55,8 @@ class GAIAInfoUpdateService : public KeyedService,
       const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
       const GoogleServiceAuthError& error) override;
 
-  signin::IdentityManager* identity_manager_;
-  ProfileAttributesStorage* profile_attributes_storage_;
+  CheckedPtr<signin::IdentityManager> identity_manager_;
+  CheckedPtr<ProfileAttributesStorage> profile_attributes_storage_;
   const base::FilePath profile_path_;
   // TODO(msalama): remove when |SigninProfileAttributesUpdater| is folded into
   // |GAIAInfoUpdateService|.

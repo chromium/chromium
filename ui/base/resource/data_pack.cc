@@ -16,6 +16,7 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece.h"
@@ -158,7 +159,8 @@ class ScopedFileWriter {
 
  private:
   bool valid_ = false;
-  FILE* file_ = nullptr;  // base::ScopedFILE doesn't check errors on close.
+  CheckedPtr<FILE> file_ =
+      nullptr;  // base::ScopedFILE doesn't check errors on close.
 
   DISALLOW_COPY_AND_ASSIGN(ScopedFileWriter);
 };

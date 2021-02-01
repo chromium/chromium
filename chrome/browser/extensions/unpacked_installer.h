@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -145,7 +146,7 @@ class UnpackedInstaller
   base::WeakPtr<ExtensionService> service_weak_;
 
   // The Profile the extension is being installed in.
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   // The pathname of the directory to load from, which is an absolute path
   // after GetAbsolutePath has been called.

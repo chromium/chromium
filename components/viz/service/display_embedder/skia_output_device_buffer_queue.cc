@@ -222,7 +222,8 @@ void SkiaOutputDeviceBufferQueue::SchedulePrimaryPlane(
   if (plane) {
     // If the current_image_ is nullptr, it means there is no change on the
     // primary plane. So we just need to schedule the last submitted image.
-    auto* image = current_image_ ? current_image_ : submitted_image_;
+    auto* image =
+        current_image_ ? current_image_.get() : submitted_image_.get();
     DCHECK(image);
 
     image->BeginPresent();

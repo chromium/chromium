@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_PAGE_FREEZING_POLICY_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_PAGE_FREEZING_POLICY_H_
 
+#include "base/memory/checked_ptr.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/freezing/freezing.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -120,11 +121,11 @@ class PageFreezingPolicy : public GraphOwned,
 
   NegativeVotesForPagesMap negative_vote_for_pages_;
 
-  Graph* graph_ = nullptr;
+  CheckedPtr<Graph> graph_ = nullptr;
 
   // The page node being removed, used to avoid freezing/unfreezing a page node
   // while it's being removed.
-  const PageNode* page_node_being_removed_ = nullptr;
+  CheckedPtr<const PageNode> page_node_being_removed_ = nullptr;
 
   // The freezing mechanism used to do the actual freezing.
   std::unique_ptr<mechanism::PageFreezer> page_freezer_;

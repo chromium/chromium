@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -459,7 +460,7 @@ class ClientTagBasedModelTypeProcessorTest : public ::testing::Test {
   std::unique_ptr<base::RunLoop> run_loop_;
 
   // The current mock queue, which is owned by |type_processor()|.
-  MockModelTypeWorker* worker_;
+  CheckedPtr<MockModelTypeWorker> worker_;
 
   // Whether to expect an error from the processor (and from which site).
   base::Optional<ClientTagBasedModelTypeProcessor::ErrorSite> expect_error_;
