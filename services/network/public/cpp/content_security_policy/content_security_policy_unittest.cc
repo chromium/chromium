@@ -376,9 +376,13 @@ TEST(ContentSecurityPolicy, ParseDirectives) {
     EXPECT_EQ(1U, policies[0]->parsing_errors.size());
     EXPECT_EQ(
         "The value for the Content-Security-Policy directive 'frame-ancestors' "
-        "contains one or more invalid characters. Non-whitespace characters "
-        "outside ASCII 0x21-0x7E must be percent-encoded, as described in RFC "
-        "3986, section 2.1: http://tools.ietf.org/html/rfc3986#section-2.1.",
+        "contains one or more invalid characters. In a source expression, "
+        "non-whitespace characters outside ASCII 0x21-0x7E must be "
+        "Punycode-encoded, as described in RFC 3492 "
+        "(https://tools.ietf.org/html/rfc3492), if part of the hostname and "
+        "percent-encoded, as described in RFC 3986, section 2.1 "
+        "(http://tools.ietf.org/html/rfc3986#section-2.1), if part of the "
+        "path.",
         policies[0]->parsing_errors[0]);
   }
 
