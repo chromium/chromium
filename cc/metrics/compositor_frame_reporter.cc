@@ -434,6 +434,7 @@ CompositorFrameReporter::ProcessedVizBreakdown::ProcessedVizBreakdown(
   list_[static_cast<int>(VizBreakdown::kSwapEndToPresentationCompositorFrame)] =
       std::make_pair(viz_breakdown.swap_timings.swap_end,
                      viz_breakdown.presentation_feedback.timestamp);
+  swap_start_ = viz_breakdown.swap_timings.swap_start;
 
   if (viz_breakdown.presentation_feedback.ready_timestamp.is_null())
     return;
@@ -969,7 +970,7 @@ void CompositorFrameReporter::ReportEventLatencyHistograms() const {
 
   if (latency_ukm_reporter_) {
     latency_ukm_reporter_->ReportEventLatencyUkm(
-        events_metrics_, stage_history_, viz_breakdown_);
+        events_metrics_, stage_history_, *processed_viz_breakdown_);
   }
 }
 

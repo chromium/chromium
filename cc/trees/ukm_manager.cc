@@ -268,7 +268,8 @@ void UkmManager::RecordCompositorLatencyUKM(
 void UkmManager::RecordEventLatencyUKM(
     const EventMetrics::List& events_metrics,
     const std::vector<CompositorFrameReporter::StageData>& stage_history,
-    const viz::FrameTimingDetails& viz_breakdown) const {
+    const CompositorFrameReporter::ProcessedVizBreakdown&
+        processed_viz_breakdown) const {
   using StageType = CompositorFrameReporter::StageType;
 
   for (const auto& event_metrics : events_metrics) {
@@ -284,9 +285,9 @@ void UkmManager::RecordEventLatencyUKM(
       builder.SetScrollInputType(
           static_cast<int64_t>(*event_metrics->scroll_type()));
 
-      if (!viz_breakdown.swap_timings.is_null()) {
+      if (!processed_viz_breakdown.swap_start().is_null()) {
         builder.SetTotalLatencyToSwapBegin(
-            (viz_breakdown.swap_timings.swap_start - generated_timestamp)
+            (processed_viz_breakdown.swap_start() - generated_timestamp)
                 .InMicroseconds());
       }
     }
@@ -447,6 +448,31 @@ void UkmManager::RecordEventLatencyUKM(
         CASE_FOR_STAGE(SubmitCompositorFrameToPresentationCompositorFrame);
         CASE_FOR_STAGE(TotalLatency);
 #undef CASE_FOR_STAGE
+        default:
+          NOTREACHED();
+          break;
+      }
+    }
+
+    // Record Viz breakdowns.
+    for (auto it = processed_viz_breakdown.CreateIterator(false); it.IsValid();
+         it.Advance()) {
+      switch (it.GetBreakdown()) {
+#define CASE_FOR_VIZ_BREAKDOWN(name)                                      \
+  case CompositorFrameReporter::VizBreakdown::k##name:                    \
+    builder.SetSubmitCompositorFrameToPresentationCompositorFrame_##name( \
+        it.GetDuration().InMicroseconds());                               \
+    break;
+        CASE_FOR_VIZ_BREAKDOWN(SubmitToReceiveCompositorFrame);
+        CASE_FOR_VIZ_BREAKDOWN(ReceivedCompositorFrameToStartDraw);
+        CASE_FOR_VIZ_BREAKDOWN(StartDrawToSwapStart);
+        CASE_FOR_VIZ_BREAKDOWN(SwapStartToSwapEnd);
+        CASE_FOR_VIZ_BREAKDOWN(SwapEndToPresentationCompositorFrame);
+        CASE_FOR_VIZ_BREAKDOWN(SwapStartToBufferAvailable);
+        CASE_FOR_VIZ_BREAKDOWN(BufferAvailableToBufferReady);
+        CASE_FOR_VIZ_BREAKDOWN(BufferReadyToLatch);
+        CASE_FOR_VIZ_BREAKDOWN(LatchToSwapEnd);
+#undef CASE_FOR_VIZ_BREAKDOWN
         default:
           NOTREACHED();
           break;

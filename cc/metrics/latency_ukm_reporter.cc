@@ -101,11 +101,12 @@ void LatencyUkmReporter::ReportCompositorLatencyUkm(
 void LatencyUkmReporter::ReportEventLatencyUkm(
     const EventMetrics::List& events_metrics,
     const std::vector<CompositorFrameReporter::StageData>& stage_history,
-    const viz::FrameTimingDetails& viz_breakdown) {
+    const CompositorFrameReporter::ProcessedVizBreakdown&
+        processed_viz_breakdown) {
   if (ukm_manager_ &&
       event_latency_sampling_controller_->ShouldRecordNextEvent()) {
     ukm_manager_->RecordEventLatencyUKM(events_metrics, stage_history,
-                                        viz_breakdown);
+                                        processed_viz_breakdown);
   }
 }
 

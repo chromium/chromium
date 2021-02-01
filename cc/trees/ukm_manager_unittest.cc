@@ -466,7 +466,10 @@ TEST_F(UkmManagerTest, EventLatency) {
   viz_breakdown.received_compositor_frame_timestamp = AdvanceNowByMs(1);
   viz_breakdown.draw_start_timestamp = AdvanceNowByMs(2);
   viz_breakdown.swap_timings.swap_start = AdvanceNowByMs(3);
-  viz_breakdown.swap_timings.swap_end = AdvanceNowByMs(4);
+  viz_breakdown.presentation_feedback.available_timestamp = AdvanceNowByMs(1);
+  viz_breakdown.presentation_feedback.ready_timestamp = AdvanceNowByMs(1);
+  viz_breakdown.presentation_feedback.latch_timestamp = AdvanceNowByMs(1);
+  viz_breakdown.swap_timings.swap_end = AdvanceNowByMs(1);
   viz_breakdown.presentation_feedback.timestamp = AdvanceNowByMs(5);
 
   const base::TimeTicks swap_start_time = viz_breakdown.swap_timings.swap_start;
@@ -499,7 +502,10 @@ TEST_F(UkmManagerTest, EventLatency) {
       },
   };
 
-  manager_->RecordEventLatencyUKM(events_metrics, stage_history, viz_breakdown);
+  CompositorFrameReporter::ProcessedVizBreakdown processed_viz_breakdown(
+      submit_time, viz_breakdown);
+  manager_->RecordEventLatencyUKM(events_metrics, stage_history,
+                                  processed_viz_breakdown);
 
   const auto& entries = test_ukm_recorder_->GetEntriesByName(kEventLatency);
   EXPECT_EQ(3u, entries.size());
@@ -560,6 +566,50 @@ TEST_F(UkmManagerTest, EventLatency) {
     test_ukm_recorder_->ExpectEntryMetric(
         entry, kSubmitCompositorFrameToPresentationCompositorFrame,
         (present_time - submit_time).InMicroseconds());
+    test_ukm_recorder_->ExpectEntryMetric(
+        entry, kVizBreakdownSubmitToReceiveCompositorFrame,
+        (viz_breakdown.received_compositor_frame_timestamp - submit_time)
+            .InMicroseconds());
+    test_ukm_recorder_->ExpectEntryMetric(
+        entry, kVizBreakdownReceivedCompositorFrameToStartDraw,
+        (viz_breakdown.draw_start_timestamp -
+         viz_breakdown.received_compositor_frame_timestamp)
+            .InMicroseconds());
+    test_ukm_recorder_->ExpectEntryMetric(
+        entry, kVizBreakdownStartDrawToSwapStart,
+        (viz_breakdown.swap_timings.swap_start -
+         viz_breakdown.draw_start_timestamp)
+            .InMicroseconds());
+    test_ukm_recorder_->ExpectEntryMetric(
+        entry, kVizBreakdownSwapStartToSwapEnd,
+        (viz_breakdown.swap_timings.swap_end -
+         viz_breakdown.swap_timings.swap_start)
+            .InMicroseconds());
+    test_ukm_recorder_->ExpectEntryMetric(
+        entry, kVizBreakdownSwapStartToBufferAvailable,
+        (viz_breakdown.presentation_feedback.available_timestamp -
+         viz_breakdown.swap_timings.swap_start)
+            .InMicroseconds());
+    test_ukm_recorder_->ExpectEntryMetric(
+        entry, kVizBreakdownBufferAvailableToBufferReady,
+        (viz_breakdown.presentation_feedback.ready_timestamp -
+         viz_breakdown.presentation_feedback.available_timestamp)
+            .InMicroseconds());
+    test_ukm_recorder_->ExpectEntryMetric(
+        entry, kVizBreakdownBufferReadyToLatch,
+        (viz_breakdown.presentation_feedback.latch_timestamp -
+         viz_breakdown.presentation_feedback.ready_timestamp)
+            .InMicroseconds());
+    test_ukm_recorder_->ExpectEntryMetric(
+        entry, kVizBreakdownLatchToSwapEnd,
+        (viz_breakdown.swap_timings.swap_end -
+         viz_breakdown.presentation_feedback.latch_timestamp)
+            .InMicroseconds());
+    test_ukm_recorder_->ExpectEntryMetric(
+        entry, kVizBreakdownSwapEndToPresentationCompositorFrame,
+        (viz_breakdown.presentation_feedback.timestamp -
+         viz_breakdown.swap_timings.swap_end)
+            .InMicroseconds());
     test_ukm_recorder_->ExpectEntryMetric(
         entry, kTotalLatencyToSwapBegin,
         (swap_start_time - event_dispatch_times[i].generated).InMicroseconds());

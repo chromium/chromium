@@ -177,11 +177,14 @@ class CC_EXPORT CompositorFrameReporter {
     Iterator CreateIterator(
         bool skip_swap_start_to_swap_end_if_breakdown_available) const;
 
+    base::TimeTicks swap_start() const { return swap_start_; }
+
    private:
     base::Optional<std::pair<base::TimeTicks, base::TimeTicks>>
         list_[static_cast<int>(VizBreakdown::kBreakdownCount)];
 
     bool buffer_ready_available_ = false;
+    base::TimeTicks swap_start_;
   };
 
   using ActiveTrackers =

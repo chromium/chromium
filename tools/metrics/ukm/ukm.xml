@@ -4798,7 +4798,7 @@ be describing additional metrics about the same event.
   </summary>
   <metric name="Activation">
     <summary>
-      The duration of the activation stage.
+      The duration of the activation stage, in microseconds.
     </summary>
     <aggregation>
       <history>
@@ -4812,7 +4812,7 @@ be describing additional metrics about the same event.
   <metric name="BeginImplFrameToSendBeginMainFrame">
     <summary>
       The time from when the Impl frame is started to when BeginMainFrame is
-      sent.
+      sent, in microseconds.
     </summary>
     <aggregation>
       <history>
@@ -4829,12 +4829,12 @@ be describing additional metrics about the same event.
     </obsolete>
     <summary>
       The time from when the event is created in the browser until the first
-      compositor stage after the event arrives in the renderer.
+      compositor stage after the event arrives in the renderer, in microseconds.
     </summary>
   </metric>
   <metric name="Commit">
     <summary>
-      The duration of the commit stage.
+      The duration of the commit stage, in microseconds.
     </summary>
     <aggregation>
       <history>
@@ -4848,7 +4848,7 @@ be describing additional metrics about the same event.
   <metric name="EndActivateToSubmitCompositorFrame">
     <summary>
       The time from when an activation is complete to the next
-      SubmitCompositorFrame.
+      SubmitCompositorFrame, in microseconds.
     </summary>
     <aggregation>
       <history>
@@ -4862,7 +4862,7 @@ be describing additional metrics about the same event.
   <metric name="EndCommitToActivation">
     <summary>
       The time from when a commit is complete to the beginning of the next
-      activation.
+      activation, in microseconds.
     </summary>
     <aggregation>
       <history>
@@ -4889,7 +4889,7 @@ be describing additional metrics about the same event.
   <metric name="GenerationToRendererCompositor">
     <summary>
       The time from when the event is created until it arrives in the renderer
-      compositor.
+      compositor, in microseconds.
     </summary>
     <aggregation>
       <history>
@@ -4903,9 +4903,10 @@ be describing additional metrics about the same event.
   <metric name="RendererCompositorFinishedToActivation">
     <summary>
       The time from when the event processing is finished on the renderer
-      compositor until the beginning of the activation. This metric is only
-      reported if the event is handled on the renderer compositor and the first
-      compositor step after that is the beginning of the activation.
+      compositor until the beginning of the activation, in microseconds. This
+      metric is only reported if the event is handled on the renderer compositor
+      and the first compositor step after that is the beginning of the
+      activation.
     </summary>
     <aggregation>
       <history>
@@ -4919,9 +4920,9 @@ be describing additional metrics about the same event.
   <metric name="RendererCompositorFinishedToBeginImplFrame">
     <summary>
       The time from when the event processing is finished on the renderer
-      compositor until the compositor frame is started. This metric is only
-      reported if the event is handled on the renderer compositor and compositor
-      frame is started after that.
+      compositor until the compositor frame is started, in microseconds. This
+      metric is only reported if the event is handled on the renderer compositor
+      and compositor frame is started after that.
     </summary>
     <aggregation>
       <history>
@@ -4935,9 +4936,9 @@ be describing additional metrics about the same event.
   <metric name="RendererCompositorFinishedToCommit">
     <summary>
       The time from when the event processing is finished on the renderer
-      compositor until the beginning of the commit. This metric is only reported
-      if the event is handled on the renderer compositor and the first
-      compositor step after that is the beginning of the commit.
+      compositor until the beginning of the commit, in microseconds. This metric
+      is only reported if the event is handled on the renderer compositor and
+      the first compositor step after that is the beginning of the commit.
     </summary>
     <aggregation>
       <history>
@@ -4951,9 +4952,9 @@ be describing additional metrics about the same event.
   <metric name="RendererCompositorFinishedToEndActivate">
     <summary>
       The time from when the event processing is finished on the renderer
-      compositor until the end of the activation. This metric is only reported
-      if the event is handled on the renderer compositor and the first
-      compositor step after that is the end of the activation.
+      compositor until the end of the activation, in microseconds. This metric
+      is only reported if the event is handled on the renderer compositor and
+      the first compositor step after that is the end of the activation.
     </summary>
     <aggregation>
       <history>
@@ -4967,9 +4968,9 @@ be describing additional metrics about the same event.
   <metric name="RendererCompositorFinishedToEndCommit">
     <summary>
       The time from when the event processing is finished on the renderer
-      compositor until the end of the commit. This metric is only reported if
-      the event is handled on the renderer compositor and the first compositor
-      step after that is the end of the commit.
+      compositor until the end of the commit, in microseconds. This metric is
+      only reported if the event is handled on the renderer compositor and the
+      first compositor step after that is the end of the commit.
     </summary>
     <aggregation>
       <history>
@@ -4983,9 +4984,9 @@ be describing additional metrics about the same event.
   <metric name="RendererCompositorFinishedToSendBeginMainFrame">
     <summary>
       The time from when the event processing is finished on the renderer
-      compositor until BeginMainFrame is sent. This metric is only reported if
-      the event is handled on the renderer compositor and the first compositor
-      step after that is SendBeginMainFrame.
+      compositor until BeginMainFrame is sent, in microseconds. This metric is
+      only reported if the event is handled on the renderer compositor and the
+      first compositor step after that is SendBeginMainFrame.
     </summary>
     <aggregation>
       <history>
@@ -4999,9 +5000,10 @@ be describing additional metrics about the same event.
   <metric name="RendererCompositorFinishedToSubmitCompositorFrame">
     <summary>
       The time from when the event processing is finished on the renderer
-      compositor until the compositor frame is submitted. This metric is only
-      reported if the event is handled on the renderer compositor and the first
-      compositor step after that is the submission of the compositor frame.
+      compositor until the compositor frame is submitted, in microseconds. This
+      metric is only reported if the event is handled on the renderer compositor
+      and the first compositor step after that is the submission of the
+      compositor frame.
     </summary>
     <aggregation>
       <history>
@@ -5014,9 +5016,9 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="RendererCompositorProcessing">
     <summary>
-      The time spent in the renderer compositor to process the event. This
-      metric won't be reported if the renderer compositor does not have a
-      dedicated thread.
+      The time spent in the renderer compositor to process the event, in
+      microseconds. This metric won't be reported if the renderer compositor
+      does not have a dedicated thread.
     </summary>
     <aggregation>
       <history>
@@ -5030,8 +5032,8 @@ be describing additional metrics about the same event.
   <metric name="RendererCompositorQueueingDelay">
     <summary>
       The time from when the event arrives in the renderer compositor until the
-      compositor starts processing it. This metric won't be reported if the
-      renderer compositor does not have a dedicated thread.
+      compositor starts processing it, in microseconds. This metric won't be
+      reported if the renderer compositor does not have a dedicated thread.
     </summary>
     <aggregation>
       <history>
@@ -5045,11 +5047,12 @@ be describing additional metrics about the same event.
   <metric name="RendererCompositorToMain">
     <summary>
       The time from when the processing of the event on the renderer compositor
-      is finished until the main thread starts processing the event. If the
-      renderer compositor does not have a dedicated thread, the processing of
-      the event on the renderer compositor is considered finished as soon as the
-      event arrives in the renderer compositor. This metric won't be reported if
-      the event is handled on the renderer compositor.
+      is finished until the main thread starts processing the event, in
+      microseconds. If the renderer compositor does not have a dedicated thread,
+      the processing of the event on the renderer compositor is considered
+      finished as soon as the event arrives in the renderer compositor. This
+      metric won't be reported if the event is handled on the renderer
+      compositor.
     </summary>
     <aggregation>
       <history>
@@ -5063,9 +5066,9 @@ be describing additional metrics about the same event.
   <metric name="RendererMainFinishedToActivation">
     <summary>
       The time from when the event processing is finished on the renderer main
-      until the beginning of the activation. This metric is only reported if the
-      event is handled on the renderer main and the first compositor step after
-      that is the beginning of the activation.
+      until the beginning of the activation, in microseconds. This metric is
+      only reported if the event is handled on the renderer main and the first
+      compositor step after that is the beginning of the activation.
     </summary>
     <aggregation>
       <history>
@@ -5079,9 +5082,9 @@ be describing additional metrics about the same event.
   <metric name="RendererMainFinishedToBeginImplFrame">
     <summary>
       The time from when the event processing is finished on the renderer main
-      until the compositor frame is started. This metric is only reported if the
-      event is handled on the renderer main and compositor frame is started
-      after that.
+      until the compositor frame is started, in microseconds. This metric is
+      only reported if the event is handled on the renderer main and compositor
+      frame is started after that.
     </summary>
     <aggregation>
       <history>
@@ -5095,9 +5098,9 @@ be describing additional metrics about the same event.
   <metric name="RendererMainFinishedToCommit">
     <summary>
       The time from when the event processing is finished on the renderer main
-      until the beginning of the commit. This metric is only reported if the
-      event is handled on the renderer main and the first compositor step after
-      that is the beginning of the commit.
+      until the beginning of the commit, in microseconds. This metric is only
+      reported if the event is handled on the renderer main and the first
+      compositor step after that is the beginning of the commit.
     </summary>
     <aggregation>
       <history>
@@ -5111,9 +5114,9 @@ be describing additional metrics about the same event.
   <metric name="RendererMainFinishedToEndActivate">
     <summary>
       The time from when the event processing is finished on the renderer main
-      until the end of the activation. This metric is only reported if the event
-      is handled on the renderer main and the first compositor step after that
-      is the end of the activation.
+      until the end of the activation, in microseconds. This metric is only
+      reported if the event is handled on the renderer main and the first
+      compositor step after that is the end of the activation.
     </summary>
     <aggregation>
       <history>
@@ -5127,9 +5130,9 @@ be describing additional metrics about the same event.
   <metric name="RendererMainFinishedToEndCommit">
     <summary>
       The time from when the event processing is finished on the renderer main
-      until the end of the commit. This metric is only reported if the event is
-      handled on the renderer main and the first compositor step after that is
-      the end of the commit.
+      until the end of the commit, in microseconds. This metric is only reported
+      if the event is handled on the renderer main and the first compositor step
+      after that is the end of the commit.
     </summary>
     <aggregation>
       <history>
@@ -5143,9 +5146,9 @@ be describing additional metrics about the same event.
   <metric name="RendererMainFinishedToSendBeginMainFrame">
     <summary>
       The time from when the event processing is finished on the renderer main
-      until BeginMainFrame is sent. This metric is only reported if the event is
-      handled on the renderer main and the first compositor step after that is
-      SendBeginMainFrame.
+      until BeginMainFrame is sent, in microseconds. This metric is only
+      reported if the event is handled on the renderer main and the first
+      compositor step after that is SendBeginMainFrame.
     </summary>
     <aggregation>
       <history>
@@ -5159,9 +5162,9 @@ be describing additional metrics about the same event.
   <metric name="RendererMainFinishedToSubmitCompositorFrame">
     <summary>
       The time from when the event processing is finished on the renderer main
-      until the compositor frame is submitted. This metric is only reported if
-      the event is handled on the renderer main and the first compositor step
-      after that is the submission of the compositor frame.
+      until the compositor frame is submitted, in microseconds. This metric is
+      only reported if the event is handled on the renderer main and the first
+      compositor step after that is the submission of the compositor frame.
     </summary>
     <aggregation>
       <history>
@@ -5174,8 +5177,9 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="RendererMainProcessing">
     <summary>
-      The time spent in the main thread to process the event. This metric won't
-      be reported if the renderer compositor handles the event.
+      The time spent in the main thread to process the event, in microseconds.
+      This metric won't be reported if the renderer compositor handles the
+      event.
     </summary>
     <aggregation>
       <history>
@@ -5201,7 +5205,7 @@ be describing additional metrics about the same event.
   <metric name="SendBeginMainFrameToCommit">
     <summary>
       The time from when the BeginMainFrame is sent to the beginning of the
-      commit.
+      commit, in microseconds.
     </summary>
     <aggregation>
       <history>
@@ -5215,7 +5219,162 @@ be describing additional metrics about the same event.
   <metric name="SubmitCompositorFrameToPresentationCompositorFrame">
     <summary>
       The time from when a compositor frame is submitted to the display
-      compositor to when it is presented.
+      compositor to when it is presented, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="SubmitCompositorFrameToPresentationCompositorFrame.BufferAvailableToBufferReady">
+    <summary>
+      The time from when the target framebuffer is available to when the GPU has
+      finished drawing to it, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="SubmitCompositorFrameToPresentationCompositorFrame.BufferReadyToLatch">
+    <summary>
+      The time from when the target framebuffer is ready to be displayed to when
+      the buffer is latched on for presentation, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="SubmitCompositorFrameToPresentationCompositorFrame.LatchToSwapEnd">
+    <summary>
+      The time from when the target framebuffer is latched on to when the swap
+      ends, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="SubmitCompositorFrameToPresentationCompositorFrame.ReceivedCompositorFrameToStartDraw">
+    <summary>
+      The time from when a compositor frame is received to when it starts to
+      draw, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="SubmitCompositorFrameToPresentationCompositorFrame.StartDrawToSwapEnd">
+    <obsolete>
+      Deprecated 02/2020. Split into
+      SubmitCompositorFrameToPresentationCompositorFrame.StartDrawToSwapStart
+      and SubmitCompositorFrameToPresentationCompositorFrame.SwapStartToSwapEnd.
+    </obsolete>
+    <summary>
+      The time from when the a compositor frame is started to draw to when it
+      ends swap, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="SubmitCompositorFrameToPresentationCompositorFrame.StartDrawToSwapStart">
+    <summary>
+      The time from when a compositor frame is started to draw to when it starts
+      swap, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="SubmitCompositorFrameToPresentationCompositorFrame.SubmitToReceiveCompositorFrame">
+    <summary>
+      The time from when a compositor frame is submitted to when it is received,
+      in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="SubmitCompositorFrameToPresentationCompositorFrame.SwapEndToPresentationCompositorFrame">
+    <summary>
+      The time from when a compositor frame ends swap to when it is presented,
+      in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="SubmitCompositorFrameToPresentationCompositorFrame.SwapStartToBufferAvailable">
+    <summary>
+      The time from when the compositor frame starts to swap to when the target
+      framebuffer becomes available, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="SubmitCompositorFrameToPresentationCompositorFrame.SwapStartToSwapEnd">
+    <summary>
+      The time from when a compositor frame starts swap to when it ends swap, in
+      microseconds.
     </summary>
     <aggregation>
       <history>
@@ -5229,7 +5388,7 @@ be describing additional metrics about the same event.
   <metric name="TotalLatency">
     <summary>
       The total time from when the event is created in the browser to when the
-      frame is presented.
+      frame is presented, in microseconds.
     </summary>
     <aggregation>
       <history>
@@ -5243,7 +5402,7 @@ be describing additional metrics about the same event.
   <metric name="TotalLatencyToSwapBegin">
     <summary>
       The time from when the event is created in the browser to when the
-      gpu-swap is started, for scroll events.
+      gpu-swap is started, for scroll events, in microseconds.
     </summary>
     <aggregation>
       <history>
@@ -5261,7 +5420,7 @@ be describing additional metrics about the same event.
     </obsolete>
     <summary>
       The time from when the event is created in the browser to when the
-      gpu-swap is completed, for scroll events.
+      gpu-swap is completed, for scroll events, in microseconds.
     </summary>
   </metric>
 </event>
