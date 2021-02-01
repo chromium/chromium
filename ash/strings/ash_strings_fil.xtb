@@ -577,6 +577,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="5992218262414051481">Na-enable ang High Contrast Mode. Pinduting muli ang Ctrl+Search+H upang i-off ito.</translation>
 <translation id="6018164090099858612">Lumalabas sa mirror mode</translation>
 <translation id="602001110135236999">Mag-scroll pakaliwa</translation>
+<translation id="602472752137106327">Ipakita ang mga window mula sa lahat ng desk at piniling radio button</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />, Pinapamahalaan ng iyong Administrator</translation>
 <translation id="6030495522958826102">Inilipat ang menu sa kaliwang sulok sa ibaba ng screen.</translation>
 <translation id="6032620807120418574">Mag-click kahit saan para i-record ang full screen</translation>
@@ -675,6 +676,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Isang digit na lang ang natitira}one{# digit na lang ang natitira}other{# na digit na lang ang natitira}}</translation>
 <translation id="6878400149835617132">Naka-off ang shortcut</translation>
 <translation id="6886172995547742638">Posibleng makaranas ang iyong <ph name="DEVICE_TYPE" /> ng hindi mahusay na performance. Gumamit ng certified na <ph name="PREFERRED_MINIMUM_POWER" />W o mas mataas na USB-C power adapter.</translation>
+<translation id="688631446150864480">Pindutin ang Pababang arrow key para lumipat ng mga window</translation>
 <translation id="6896758677409633944">Copy</translation>
 <translation id="6910714959251846841">Kinakailangang i-powerwash ang iyong device para sa update na ito. Matuto pa tungkol sa pinakabagong update sa <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Hindi makilala ang iyong smart card. Subukan ulit.</translation>
@@ -840,6 +842,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="8297006494302853456">Mahina</translation>
 <translation id="8308637677604853869">Nakaraang menu</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="8345019317483336363">Napili ang window ng <ph name="WINDOW_TITLE" /></translation>
 <translation id="8351131234907093545">Gumawa ng tala</translation>
 <translation id="8371779926711439835">Sumulong nang paisa-isang titik</translation>
 <translation id="8375916635258623388">Awtomatikong kokonekta ang <ph name="DEVICE_NAME" /> na ito at ang iyong telepono</translation>
@@ -863,6 +866,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="8477270416194247200">Pindutin ang Alt+Search o Shift upang kanselahin.</translation>
 <translation id="8492573885090281069">Hindi sinusuportahan ng <ph name="DISPLAY_NAME" /> ang <ph name="SPECIFIED_RESOLUTION" />. Ginawang <ph name="FALLBACK_RESOLUTION" /> ang resolution. I-click ang kumpirmahin para panatilihin ang mga pagbabago. Ire-restore ang mga dating setting pagkalipas ng <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8513108775083588393">I-auto rotate</translation>
+<translation id="851458219935658693">Ipakita ang mga window mula sa kasalukuyang desk at piniling radio button</translation>
 <translation id="8517041960877371778">Maaaring hindi mag-charge ang iyong <ph name="DEVICE_TYPE" /> habang naka-on ito.</translation>
 <translation id="8553395910833293175">Naitalaga na sa lahat ng desk.</translation>
 <translation id="8563862697512465947">Mga Setting sa Abiso</translation>

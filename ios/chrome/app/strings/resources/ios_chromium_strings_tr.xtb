@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="tr">
 <translation id="102360288709523007">Kullanıcı istatistiklerini ve kilitlenme raporlarını Google'a göndererek Chromium'u iyileştirmemize yardımcı olun.</translation>
+<translation id="1130979953299110755">Oturumu kapattığınızda; yer işaretleri, geçmiş, şifreler ve diğer Chrome verileriniz artık Google Hesabınız ile senkronize edilmeyecektir.</translation>
 <translation id="1185134272377778587">Chromium hakkında</translation>
 <translation id="1257458525759135959">Resimleri kaydetmek için Ayarlar'a dokunup Chromium'un resimlerinize eklemesine izin verin</translation>
 <translation id="1361748954329991663">Chromium sürümü eski. <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />'da güncelleme yoksa cihazınız artık Chromium'un yeni sürümlerini desteklemiyor olabilir.</translation>

@@ -62,6 +62,7 @@
 <translation id="2338501278241028356">I-on ang Bluetooth upang tuklasin ang mga kalapit na device</translation>
 <translation id="2364498172489649528">Nakapasa</translation>
 <translation id="2391082728065870591">Magpadala ng Ulat ng Feedback</translation>
+<translation id="2418150275289244458">Buksan sa mga setting</translation>
 <translation id="2446553403094072641">Katumpakan ng floating point</translation>
 <translation id="2448312741937722512">Uri</translation>
 <translation id="2461822463642141190">Kasalukuyan</translation>
@@ -273,6 +274,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="7177485034254901881">Pinapamahalaan ng <ph name="MANAGER" /> ang <ph name="DEVICE_TYPE" /> na ito. Puwedeng i-configure ng mga administrator ang device sa remote na paraan.</translation>
 <translation id="7216409898977639127">Cellular provider</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7343649194310845056">Mga Device sa Network</translation>
 <translation id="7359657277149375382">Uri ng file</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -282,6 +284,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="7490813197707563893">MAC address</translation>
 <translation id="7497215489070763236">CA certificate ng server</translation>
 <translation id="7502658306369382406">IPv6 address</translation>
+<translation id="7550715992156305117">Mga Diagnostic na Routine</translation>
 <translation id="7561454561030345039">Pinapamahalaan ng iyong administrator ang pagkilos na ito.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> pa</translation>

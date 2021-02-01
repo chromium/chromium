@@ -62,6 +62,7 @@
 <translation id="2338501278241028356">Yaqin-atrofdagi qurilmalarni aniqlash uchun Bluetooth adapterini yoqing</translation>
 <translation id="2364498172489649528">Tugadi</translation>
 <translation id="2391082728065870591">Fikr va mulohaza hisobotini yuborish</translation>
+<translation id="2418150275289244458">Sozlamalar orqali ochish</translation>
 <translation id="2446553403094072641">Erkin harakatlanish nuqtasi aniqligi</translation>
 <translation id="2448312741937722512">Turi</translation>
 <translation id="2461822463642141190">Ayni vaqtda</translation>
@@ -273,6 +274,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="7177485034254901881">Bu <ph name="DEVICE_TYPE" /> qurilmasi <ph name="MANAGER" /> domenida boshqariladi. Administratorlar qurilmani masofadan sozlashi mumkin.</translation>
 <translation id="7216409898977639127">Mobil tarmoq</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7343649194310845056">Tarmoq qurilmalari</translation>
 <translation id="7359657277149375382">Fayl turi</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -282,6 +284,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="7490813197707563893">MAC manzil</translation>
 <translation id="7497215489070763236">Server CA sertifikati</translation>
 <translation id="7502658306369382406">IPv6 manzil</translation>
+<translation id="7550715992156305117">Diagnostika dasturlari</translation>
 <translation id="7561454561030345039">Bu sozlama administrator tomonidan boshqariladi</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> qoldi</translation>

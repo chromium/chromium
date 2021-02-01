@@ -425,6 +425,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1465827627707997754">Hiwa ng pizza</translation>
 <translation id="1468571364034902819">Hindi magagamit ang profile na ito</translation>
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{Magdagdag ng Tab sa Bagong Grupo}one{Magdagdag ng Mga Tab sa Bagong Grupo}other{Magdagdag ng Mga Tab sa Bagong Grupo}}</translation>
+<translation id="1470350905258700113">Gamitin ang device na ito</translation>
 <translation id="1470946456740188591">Para i-on o i-off ang caret browsing, gamitin ang shortcut na Ctrl+Search+7</translation>
 <translation id="1472675084647422956">Magpakita ng higit pa</translation>
 <translation id="1474785664565228650">Hinihingi ng pagbabago sa setting ng mikropono na ilunsad ulit ang Parallels Desktop. Ilunsad ulit ang Parallels Desktop para magpatuloy.</translation>
@@ -1400,6 +1401,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2541002089857695151">I-optimize ang fullscreen na pag-cast?</translation>
 <translation id="2541706104884128042">Naitakda ang bagong oras ng pagtulog</translation>
 <translation id="2542050502251273923">Itinatakda ang antas ng pag-debug ng manager ng koneksyon ng network at iba pang serbisyong gumagamit ng ff_debug.</translation>
+<translation id="2544292303401268586">Hinihiling ng iyong administrator na i-restart ang device mo para ma-update ang mga app. Puwede itong abutin nang ilang minuto bago matapos.</translation>
 <translation id="2544853746127077729">Tinanggihan ng network ang certificate sa pagpapatunay</translation>
 <translation id="2546283357679194313">Cookies at data ng site</translation>
 <translation id="2548347166720081527">Pinayagan ang <ph name="PERMISSION" /></translation>
@@ -2782,6 +2784,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="409579654357498729">Idagdag sa Cloud Print</translation>
 <translation id="4096508467498758490">I-disable ang mga extension ng developer mode</translation>
 <translation id="4097406557126260163">Mga App at extension</translation>
+<translation id="409742781329613461">Mga Tip para sa Chrome</translation>
 <translation id="4097560579602855702">Maghanap sa Google</translation>
 <translation id="4098667039111970300">Mga tool ng stylus sa toolbar</translation>
 <translation id="4099060993766194518">I-restore ang default na search engine?</translation>
@@ -4096,6 +4099,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="5678550637669481956">Ipinagkaloob na sa <ph name="VOLUME_NAME" /> ang access sa pagbasa at pagsulat.</translation>
 <translation id="5678955352098267522">Basahin ang iyong data sa <ph name="WEBSITE_1" /></translation>
 <translation id="5680050361008726776">Alisin ang "<ph name="ESIM_PROFILE_NAME" />"?</translation>
+<translation id="5683806393796685434">Pakilagay ang iyong code sa pag-activate</translation>
 <translation id="5684181005476681636">Mga detalye ng Wi-Fi</translation>
 <translation id="5684661240348539843">Identifier ng Asset</translation>
 <translation id="5687326903064479980">Timezone</translation>
@@ -4348,6 +4352,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="5978277834170881274">&amp;Gumamit ng basic na pang-check ng pagbabaybay</translation>
 <translation id="5979084224081478209">Suriin ang mga password</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Na-on mo ulit ang 1 posibleng mapaminsalang extension}one{Na-on mo ulit ang {NUM_EXTENSIONS} posibleng mapaminsalang extension}other{Na-on mo ulit ang {NUM_EXTENSIONS} na posibleng mapaminsalang extension}}</translation>
+<translation id="5979353814339191480">Nalalapat ang opsyong ito sa mga Chromebook na may data plan o dongle ng mobile network, o kapag nagte-tether sa isang portable hotspot</translation>
 <translation id="5979421442488174909">&amp;Isalin sa <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">Upang mag-bookmark ng mga page, i-click ang star sa address bar</translation>
 <translation id="5984222099446776634">Kamakailang Binisita</translation>
@@ -4828,6 +4833,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="653659894138286600">Mag-scan ng mga dokumento at larawan</translation>
 <translation id="6537613839935722475">Puwedeng gumamit ng mga titik, numero, at hyphen (-) ang pangalan</translation>
 <translation id="6537880577641744343">Commander</translation>
+<translation id="6538098297809675636">Error sa pag-detect ng code</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Tandaan:<ph name="END_BOLD" /> I-enable lang kung alam mo kung ano ang iyong ginagawa o kung hiniling kang gawin ito, dahil maaaring mabawasan ng pagkolekta ng data ang pagganap.</translation>
 <translation id="6541638731489116978">Na-block ang site na ito sa pag-access sa iyong mga sensor ng paggalaw.</translation>
 <translation id="6545665334409411530">Rate ng pag-uulit</translation>
@@ -6026,6 +6032,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7904526211178107182">Gawing available ang mga port ng Linux sa iba pang device na nasa iyong network.</translation>
 <translation id="7907837847548254634">Magpakita ng mabilisang highlight sa naka-focus na object</translation>
 <translation id="7908378463497120834">Paumanhin, hindi mai-mount ang hindi bababa sa isang bahagi ng iyong device sa storage.</translation>
+<translation id="7909324225945368569">I-rename ang iyong profile</translation>
 <translation id="7909969815743704077">Na-download sa Incognito</translation>
 <translation id="7910768399700579500">&amp;Bagong folder</translation>
 <translation id="7911118814695487383">Linux</translation>
@@ -6646,6 +6653,7 @@ Pumindot ng nakatalagang switch para alisin ang pagtatalaga.</translation>
 <translation id="8642900771896232685">2 segundo</translation>
 <translation id="8642947597466641025">Gawing Mas Malaki Ang Teksto</translation>
 <translation id="8643443571868262066">Posibleng mapanganib ang <ph name="FILE_NAME" />. Ipadala sa Advanced na Proteksyon ng Google para ma-scan?</translation>
+<translation id="8644047503904673749">{COUNT,plural, =0{Walang cookie}=1{Naka-block ang 1 cookie}one{Naka-block ang # cookie}other{Naka-block ang # na cookie}}</translation>
 <translation id="8644655801811752511">Hindi puwedeng i-reset ang security key na ito. Subukang i-reset kaagad ang key pagkatapos itong ipasok.</translation>
 <translation id="8645354835496065562">Patuloy na payagan ang access sa sensor</translation>
 <translation id="8645920082661222035">Hinuhulaan ang mga mapanganib na event at binabalaan ka tungkol sa mga ito bago mangyari ang mga ito</translation>

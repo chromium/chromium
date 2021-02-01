@@ -425,6 +425,7 @@ xizmatlarini sizga moslashtirish maqsadlarida foydalanishi mumkin. Bu ruxsatni m
 <translation id="1465827627707997754">Pitsa bo‘lagi</translation>
 <translation id="1468571364034902819">Bu profilni ishlatib bo‘lmaydi</translation>
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{Varaqni yangi guruhga kiritish}other{Varaqlarni yangi guruhga kiritish}}</translation>
+<translation id="1470350905258700113">Bu qurilma ishlatilsin</translation>
 <translation id="1470946456740188591">Faol kursor rejimini yoqish yoki oʻchirish uchun Ctrl+Search+F7 tugmalaridan foydalaning</translation>
 <translation id="1472675084647422956">Yana</translation>
 <translation id="1474785664565228650">Mikrofon sozlamasi oʻzgarishi uchun Parallels Desktopni qaytadan ishga tushiring Davom etish uchun Parallels Desktopni qayta ishga tushiring.</translation>
@@ -1397,6 +1398,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2541002089857695151">Butun ekran rejimidagi translatsiya takomillashtirilsinmi?</translation>
 <translation id="2541706104884128042">Yangi uyqu vaqti belgilandi</translation>
 <translation id="2542050502251273923">Tarmoq ulanishlari menejeri va boshqa xizmatlar uchun ff_debug orqali xatolarni aniqlash darajasini belgilaydi.</translation>
+<translation id="2544292303401268586">Ilovalarni yangilash uchun Administrator qurilmani oʻchirib yoqish talabini yubordi. Bunga bir necha daqiqa ketishi mumkin.</translation>
 <translation id="2544853746127077729">Haqiqiylikni tekshirish sertifikati tarmoq tomonidan rad etildi</translation>
 <translation id="2546283357679194313">Cookie fayllari va sayt ma’lumotlari</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> ruxsati berildi</translation>
@@ -2779,6 +2781,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="409579654357498729">Virtual printerga qo‘shish</translation>
 <translation id="4096508467498758490">Dasturchi rejimidagi kengaytmalarni o‘chirib qo‘yish</translation>
 <translation id="4097406557126260163">Ilova va kengaytmalar</translation>
+<translation id="409742781329613461">Chrome maslahati</translation>
 <translation id="4097560579602855702">Google orqali qidirish</translation>
 <translation id="4098667039111970300">Asboblar panelida stilus vositalari</translation>
 <translation id="4099060993766194518">Standart qidiruv tizimi tiklansinmi?</translation>
@@ -4092,6 +4095,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="5678550637669481956"><ph name="VOLUME_NAME" />’ga o‘qish va yozish uchun ruxsat berildi.</translation>
 <translation id="5678955352098267522">Ma’lumotlarni <ph name="WEBSITE_1" /> saytida ko‘rish</translation>
 <translation id="5680050361008726776"><ph name="ESIM_PROFILE_NAME" /> olib tashlansinmi?</translation>
+<translation id="5683806393796685434">Aktivatsiya kodini kiriting</translation>
 <translation id="5684181005476681636">Wi-Fi axboroti</translation>
 <translation id="5684661240348539843">Obyekt identifikatori</translation>
 <translation id="5687326903064479980">Vaqt mintaqasi</translation>
@@ -4344,6 +4348,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="5978277834170881274">&amp;Oddiy imlo tekshiruvini ishlatish</translation>
 <translation id="5979084224081478209">Parollarni tekshiring</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{1 ta ehtimoliy zararli kengaytmani qayta yoqdingiz}other{{NUM_EXTENSIONS} ta ehtimoliy zararli kengaytmani qayta yoqdingiz}}</translation>
+<translation id="5979353814339191480">Bu sozlama internet paketi bor yoki mobil internet yoki mobil hotspotga rejimidagi Chromebooklarda tatbiq qilinadi</translation>
 <translation id="5979421442488174909"><ph name="LANGUAGE" /> tiliga &amp;tarjima qilish</translation>
 <translation id="5979469435153841984">Sahifalarni xatcho‘plarga qo‘shish uchun manzillar qatoridagi yulduzchani bosing</translation>
 <translation id="5984222099446776634">So‘nggi ochilgan sahifalar</translation>
@@ -4824,6 +4829,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="653659894138286600">Hujjat va rasmlarni skanerlash</translation>
 <translation id="6537613839935722475">Nomda harflar, raqamlar va tirelar (-) ishlatish mumkin</translation>
 <translation id="6537880577641744343">Commander</translation>
+<translation id="6538098297809675636">Kod aniqlanmadi</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Eslatma:<ph name="END_BOLD" /> Ushbu funksiya faqat zarurligida yoqilsin, chunki ma’lumotlarni yig‘ish jarayoni unumdorlikni pasaytirishi mumkin.</translation>
 <translation id="6541638731489116978">Bu sayt uchun harakat sensorlaridan foydalanish taqiqlandi</translation>
 <translation id="6545665334409411530">Takrorlash tezligi</translation>
@@ -6021,6 +6027,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="7904526211178107182">Tarmoqdagi boshqa qurilmalarga Linux portlariga ulanish imkoniyatini bering</translation>
 <translation id="7907837847548254634">Fokusdagi obyektni tez belgilab chiqarish</translation>
 <translation id="7908378463497120834">Tashqi xotira qurilmasining bir yoki bir nechta bo‘limini ulab bo‘lmadi.</translation>
+<translation id="7909324225945368569">Profilni qayta nomlang</translation>
 <translation id="7909969815743704077">Inkognito rejimida yuklab olindi</translation>
 <translation id="7910768399700579500">&amp;Yangi jild</translation>
 <translation id="7911118814695487383">Linux</translation>
@@ -6639,6 +6646,7 @@ Tayinlovni bekor qilish uchun belgilangan tugmani bosing.</translation>
 <translation id="8642900771896232685">2 soniya</translation>
 <translation id="8642947597466641025">Matnni yiriklashtirish</translation>
 <translation id="8643443571868262066"><ph name="FILE_NAME" /> fayli xavfli boʻlishi mumkin. Tekshirish uchun Google kengaytirilgan himoya tizimiga yuborilsinmi?</translation>
+<translation id="8644047503904673749">{COUNT,plural, =0{Cookie fayllar yoʻq}=1{1 ta cookie fayl bloklandi}other{# ta cookie fayl bloklandi}}</translation>
 <translation id="8644655801811752511">Bu elektron kalit sozlamalari qayta tiklanmaydi Elektron kalit ulanishi bilan, uning sozlamalarini qayta tiklash mumkin</translation>
 <translation id="8645354835496065562">Sensordan foydalanishga ruxsat berilsin</translation>
 <translation id="8645920082661222035">Xavfli tahdidlarni aniqlaydi va sizni ulardan himoya qiladi</translation>

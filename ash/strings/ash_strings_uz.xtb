@@ -577,6 +577,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="5992218262414051481">Yuqori kontrastli rejim yoniq. O‘chirib qo‘yish uchun Ctrl+Qidiruv+H tugmalarini bosing.</translation>
 <translation id="6018164090099858612">Translatsiya rejimidan chiqish</translation>
 <translation id="602001110135236999">Chapga aylantirish</translation>
+<translation id="602472752137106327">Barcha ish stollari oynalarini chiqarish, radio tugma tanlandi</translation>
 <translation id="6025324406281560198">Himoya: <ph name="SECURITY_STATUS" />, Ulanish: <ph name="CONNECTION_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />, Administrator boshqaruvida</translation>
 <translation id="6030495522958826102">Menyu ekranning quyi chap burchagiga surildi.</translation>
 <translation id="6032620807120418574">Butun ekranni yozib olish uchun istalgan joyga bosing</translation>
@@ -675,6 +676,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Bitta raqam kiritilmadi}other{# ta raqam kiritilmadi}}</translation>
 <translation id="6878400149835617132">Yorliq yoqilmagan</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> ishlashi sekinlashishi mumkin. <ph name="PREFERRED_MINIMUM_POWER" />W sertifikatiga ega yoki kuchliroq USB-C quvvat adapteridan foydalaning.</translation>
+<translation id="688631446150864480">Oynalarni almashtirish uchun pastga strelkani bosing</translation>
 <translation id="6896758677409633944">Nusxa olish</translation>
 <translation id="6910714959251846841">Ushbu yangilanish o‘rnatilishi uchun qurilmani zavod sozlamalariga qaytarish zarur. <ph name="SYSTEM_APP_NAME" /> oxirgi yangilanishi haqida batafsil axborot.</translation>
 <translation id="6919251195245069855">Smart kartangiz aniqlanmadi. Qayta urining.</translation>
@@ -840,6 +842,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="8297006494302853456">Zaif</translation>
 <translation id="8308637677604853869">Avvalgi menyu</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> oynasi tanlandi</translation>
 <translation id="8351131234907093545">Qayd yaratish</translation>
 <translation id="8371779926711439835">Bitta harf oldinga</translation>
 <translation id="8375916635258623388">Bu <ph name="DEVICE_NAME" /> telefonga avtomatik ulanadi</translation>
@@ -863,6 +866,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="8477270416194247200">Bekor qilish uchun Alt+Qidiruv yoki Shift tugmasini bosing.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> aniqlik darajasida ishlamaydi. Aniqlik darajasi <ph name="FALLBACK_RESOLUTION" /> ga qaytarildi. Tasdiqlash uchun bosing. Eski sozlamalar <ph name="TIMEOUT_SECONDS" /> dan keyin tiklanadi.</translation>
 <translation id="8513108775083588393">Avto-burilish</translation>
+<translation id="851458219935658693">Joriy ish stoli oynalarini chiqarish, radio tugma tanlandi</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> qurilmasi yoniqligida uni quvvatlab bo‘lmaydi.</translation>
 <translation id="8553395910833293175">Allaqachon barcha ish stollarida mavjud</translation>
 <translation id="8563862697512465947">Bildirishnoma sozlamalari</translation>
