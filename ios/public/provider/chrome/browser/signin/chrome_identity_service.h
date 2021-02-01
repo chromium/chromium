@@ -161,42 +161,18 @@ class ChromeIdentityService {
 
   // Returns the chrome identity having the gaia ID equal to |gaia_id| or |nil|
   // if no matching identity is found.
-  // Before calling this method, the identity cache need to be populated.
-  // See RunAfterCacheIsPopulated() or WaitUntilCacheIsPopulated().
   virtual ChromeIdentity* GetIdentityWithGaiaID(const std::string& gaia_id);
 
   // Returns true if there is at least one identity.
-  // Before calling this method, the identity cache need to be populated.
-  // See RunAfterCacheIsPopulated() or WaitUntilCacheIsPopulated().
   virtual bool HasIdentities();
 
   // Returns all ChromeIdentity objects in an array.
-  // Before calling this method, the identity cache need to be populated.
-  // See RunAfterCacheIsPopulated() or WaitUntilCacheIsPopulated().
   virtual NSArray* GetAllIdentities();
 
   // Returns all ChromeIdentity objects sorted by the ordering used in the
   // account manager, which is typically based on the keychain ordering of
   // accounts.
-  // Before calling this method, the identity cache need to be populated.
-  // See RunAfterCacheIsPopulated() or WaitUntilCacheIsPopulated().
   virtual NSArray* GetAllIdentitiesSortedForDisplay();
-
-  // Invokes |callback| after the cache of identities is populated:
-  // * if cache is already populated, then |callback| is called on the next run
-  //   loop.
-  // * if cache is not populated, then |callback| is called once the cache of
-  //   identities is populated.
-  // If this method is call multiple times, the callbacks will be invoked in the
-  // same order.
-  virtual void RunAfterCacheIsPopulated(base::OnceClosure callback);
-
-  // Waits until the identity cache is populated. Does nothing if the cache is
-  // already populated.
-  // Note: This method blocks the main thread until the cache of identities if
-  // populated. RunAfterCacheIsPopulated() is highly suggested instead of this
-  // method.
-  virtual void WaitUntilCacheIsPopulated();
 
   // Forgets the given identity on the device. This method logs the user out.
   // It is asynchronous because it needs to contact the server to revoke the

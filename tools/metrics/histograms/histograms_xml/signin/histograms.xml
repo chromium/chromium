@@ -1077,6 +1077,9 @@ kept as long as profile signout is possible -->
 <histogram
     name="Signin.SSOIdentityListRequest.RunAfterCacheIsPopulated.CacheState"
     enum="SigninSSOIdentityListRequestCacheState" expires_after="2021-04-19">
+  <obsolete>
+    Removed 2021-01.
+  </obsolete>
   <owner>jlebel@chromium.org</owner>
   <owner>fernandex@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -1090,6 +1093,9 @@ kept as long as profile signout is possible -->
 <histogram
     name="Signin.SSOIdentityListRequest.RunAfterCacheIsPopulated.Duration"
     units="ms" expires_after="2021-04-19">
+  <obsolete>
+    Removed 2021-01.
+  </obsolete>
   <owner>jlebel@chromium.org</owner>
   <owner>fernandex@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -1103,6 +1109,9 @@ kept as long as profile signout is possible -->
 <histogram
     name="Signin.SSOIdentityListRequest.WaitUntilCacheIsPopulated.CacheState"
     enum="SigninSSOIdentityListRequestCacheState" expires_after="2021-06-20">
+  <obsolete>
+    Removed 2021-01.
+  </obsolete>
   <owner>jlebel@chromium.org</owner>
   <owner>fernandex@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -1116,6 +1125,9 @@ kept as long as profile signout is possible -->
 <histogram
     name="Signin.SSOIdentityListRequest.WaitUntilCacheIsPopulated.Duration"
     units="ms" expires_after="2021-06-20">
+  <obsolete>
+    Removed 2021-01.
+  </obsolete>
   <owner>jlebel@chromium.org</owner>
   <owner>fernandex@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
