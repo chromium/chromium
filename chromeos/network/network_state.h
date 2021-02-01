@@ -136,6 +136,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
 
   // Cellular property accessors
   const std::string& eid() const { return eid_; }
+  const std::string& iccid() const { return iccid_; }
   const std::string& network_technology() const { return network_technology_; }
   const std::string& activation_type() const { return activation_type_; }
   const std::string& activation_state() const { return activation_state_; }
@@ -327,6 +328,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
 
   // Cellular properties, used for icons, Connect, and Activation.
   std::string eid_;
+  std::string iccid_;
   std::string network_technology_;
   std::string activation_type_;
   std::string activation_state_;

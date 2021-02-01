@@ -142,6 +142,8 @@ bool NetworkState::PropertyChanged(const std::string& key,
     return GetIntegerValue(key, value, &priority_);
   } else if (key == shill::kOutOfCreditsProperty) {
     return GetBooleanValue(key, value, &cellular_out_of_credits_);
+  } else if (key == shill::kIccidProperty) {
+    return GetStringValue(key, value, &iccid_);
   } else if (key == kCellularEidProperty) {
     return GetStringValue(key, value, &eid_);
   } else if (key == shill::kProxyConfigProperty) {
