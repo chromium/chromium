@@ -839,13 +839,10 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* ptr) {
     // This is a crash to detect imperfect symbol interception. However, we can
     // forward allocations we don't own to the system malloc() implementation in
     // these rare cases, assuming that some remain.
-    //
-    // TODO(lizeb): Make this a PA_CHECK() at least temporarily to detect
-    // potential issues in the wild as well.
 #if defined(OS_ANDROID) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     !BUILDFLAG(USE_BACKUP_REF_PTR)
-  PA_DCHECK(IsManagedByPartitionAllocNormalBuckets(ptr) ||
-            IsManagedByPartitionAllocDirectMap(ptr));
+  PA_CHECK(IsManagedByPartitionAllocNormalBuckets(ptr) ||
+           IsManagedByPartitionAllocDirectMap(ptr));
 #endif
 
   // Call FromSlotInnerPtr instead of FromSlotStartPtr because the pointer
