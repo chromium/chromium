@@ -333,35 +333,10 @@ source_set("web_view_sources") {
   ]
 }
 
-# Two umbrella headers may be generated:
-# - One that matches ios_web_view_output_name, e.g. CronetChromeWebView.h
-# - Another that is hardcoded as ChromeWebView.h
-#
-# This is needed to fix the issue where the generated .modulemap points to a
-# non-existent umbrella header.
-#
-# TODO(crbug.com/1084855): Remove :web_view_umbrella_header_old after all
-# clients migrate off of it.
-if (ios_web_view_generate_extra_umbrella_header) {
-  action("web_view_umbrella_header") {
-    script = "//build/config/ios/generate_umbrella_header.py"
-
-    full_header_path = target_gen_dir + "/" + ios_web_view_output_name + ".h"
-    outputs = [ full_header_path ]
-
-    args = [
-      "--output-path",
-      rebase_path(full_header_path, root_build_dir),
-    ]
-
-    args += rebase_path(ios_web_view_public_headers, root_build_dir)
-  }
-}
-
-action("web_view_umbrella_header_old") {
+action("web_view_umbrella_header") {
   script = "//build/config/ios/generate_umbrella_header.py"
 
-  full_header_path = target_gen_dir + "/ChromeWebView.h"
+  full_header_path = target_gen_dir + "/" + ios_web_view_output_name + ".h"
   outputs = [ full_header_path ]
 
   args = [
@@ -380,10 +355,7 @@ ios_framework_bundle("web_view") {
   output_name = ios_web_view_output_name
   info_plist_target = ":info_plist"
 
-  public_headers = get_target_outputs(":web_view_umbrella_header_old")
-  if (ios_web_view_generate_extra_umbrella_header) {
-    public_headers += get_target_outputs(":web_view_umbrella_header")
-  }
+  public_headers = get_target_outputs(":web_view_umbrella_header")
   public_headers += ios_web_view_public_headers
   if (ios_web_view_include_cronet) {
     public_headers += [ "//components/cronet/ios/Cronet.h" ]
@@ -403,10 +375,7 @@ ios_framework_bundle("web_view") {
     "//ios/web/public/init",
     "//testing/gtest:ios_coverage_utils",
   ]
-  deps += [ ":web_view_umbrella_header_old" ]
-  if (ios_web_view_generate_extra_umbrella_header) {
-    deps += [ ":web_view_umbrella_header" ]
-  }
+  deps += [ ":web_view_umbrella_header" ]
   if (ios_web_view_include_cronet) {
     deps += [ "//components/cronet/ios:cronet_sources" ]
   }
