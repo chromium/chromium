@@ -1,4 +1,4 @@
-monorail: {
+monorail:  {
   component:  "UI>Browser>ContinuousSearch"
 }
 team_email: "csn-dev@google.com"

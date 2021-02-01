@@ -136,6 +136,9 @@ const base::Feature kContentSettingsRedesign{"ContentSettingsRedesign",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
 #if defined(OS_ANDROID)
+const base::Feature kContinuousSearch{"ContinuousSearch",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Restricts all of Chrome's threads to use only LITTLE cores on big.LITTLE
 // architectures.
 const base::Feature kCpuAffinityRestrictToLittleCores{

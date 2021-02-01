@@ -22,9 +22,11 @@ public class SearchResultProducerFactory {
     }
 
     static SearchResultProducer create(Tab tab, SearchResultListener listener) {
-        if (sFactoryImpl == null) return null;
+        if (sFactoryImpl != null) {
+            return sFactoryImpl.create(tab, listener);
+        }
 
-        return sFactoryImpl.create(tab, listener);
+        return new SearchResultExtractorProducer(tab, listener);
     }
 
     @VisibleForTesting
