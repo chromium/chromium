@@ -26,6 +26,7 @@ import org.junit.runner.RunWith;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.test.util.AwTestTouchUtils;
 import org.chromium.android_webview.test.util.CommonResources;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageCommitVisibleHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -399,6 +400,7 @@ public class WebKitHitTestTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "WebKitHitTest"})
+    @DisabledTest(message = "https://crbug.com/1172381")
     public void testUnknownTypeUnrecognizedNode() throws Throwable {
         // Since UNKNOWN_TYPE is the default, hit test another type first for
         // this test to be valid.
