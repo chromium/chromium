@@ -381,7 +381,7 @@ struct BASE_EXPORT PartitionRoot {
     // limit before calling. This also guards against integer overflow in the
     // calculation here.
     PA_DCHECK(raw_size <= MaxDirectMapped());
-    return bits::Align(raw_size, SystemPageSize());
+    return bits::AlignUp(raw_size, SystemPageSize());
   }
 
   ALWAYS_INLINE size_t GetDirectMapReservedSize(size_t raw_size) {
@@ -397,8 +397,8 @@ struct BASE_EXPORT PartitionRoot {
       alignment = kSuperPageSize;
     }
 #endif
-    return bits::Align(raw_size + GetDirectMapMetadataAndGuardPagesSize(),
-                       alignment);
+    return bits::AlignUp(raw_size + GetDirectMapMetadataAndGuardPagesSize(),
+                         alignment);
   }
 
   ALWAYS_INLINE size_t AdjustSizeForExtrasAdd(size_t size) const {

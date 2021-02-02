@@ -378,9 +378,9 @@ ALWAYS_INLINE char* PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
   // an uncommitted page. If the latter, it must be at the start of that page.
   char* return_slot = base + (size * slot_span->num_allocated_slots);
   char* next_slot = return_slot + size;
-  char* commit_start = bits::Align(return_slot, SystemPageSize());
+  char* commit_start = bits::AlignUp(return_slot, SystemPageSize());
   PA_DCHECK(next_slot > commit_start);
-  char* commit_end = bits::Align(next_slot, SystemPageSize());
+  char* commit_end = bits::AlignUp(next_slot, SystemPageSize());
   // If the slot was partially committed, |return_slot| and |next_slot| fall
   // in different pages. If the slot was fully uncommitted, |return_slot| points
   // to the page start and |next_slot| doesn't, thus only the latter gets

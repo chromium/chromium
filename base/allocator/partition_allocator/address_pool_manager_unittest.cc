@@ -182,8 +182,8 @@ TEST_F(AddressPoolManagerTest, IsManagedByDirectMapPool) {
   }
   for (size_t i = 0; i < kAllocCount; ++i) {
     const char* ptr = reinterpret_cast<const char*>(addrs[i]);
-    size_t num_pages = bits::Align(kNumPages[i] * PageAllocationGranularity(),
-                                   kSuperPageSize) /
+    size_t num_pages = bits::AlignUp(kNumPages[i] * PageAllocationGranularity(),
+                                     kSuperPageSize) /
                        PageAllocationGranularity();
     for (size_t j = 0; j < num_pages; ++j) {
       if (j < kNumPages[i]) {

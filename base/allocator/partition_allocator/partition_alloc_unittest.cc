@@ -1736,7 +1736,7 @@ TEST_F(PartitionAllocDeathTest, DirectMapGuardPages) {
   const size_t kSizes[] = {
       kMaxBucketed + kExtraAllocSize + 1, kMaxBucketed + SystemPageSize(),
       kMaxBucketed + PartitionPageSize(),
-      bits::Align(kMaxBucketed + kSuperPageSize, kSuperPageSize) -
+      bits::AlignUp(kMaxBucketed + kSuperPageSize, kSuperPageSize) -
           PartitionRoot<ThreadSafe>::GetDirectMapMetadataAndGuardPagesSize()};
   for (size_t size : kSizes) {
     size -= kExtraAllocSize;
@@ -1748,7 +1748,7 @@ TEST_F(PartitionAllocDeathTest, DirectMapGuardPages) {
     char* char_ptr = reinterpret_cast<char*>(ptr) - kPointerOffset;
 
     EXPECT_DEATH(*(char_ptr - 1) = 'A', "");
-    EXPECT_DEATH(*(char_ptr + bits::Align(size, SystemPageSize())) = 'A', "");
+    EXPECT_DEATH(*(char_ptr + bits::AlignUp(size, SystemPageSize())) = 'A', "");
 
     allocator.root()->Free(ptr);
   }
@@ -2828,7 +2828,7 @@ TEST_F(PartitionAllocTest, MAYBE_Bookkeeping) {
   };
   for (size_t huge_size : huge_sizes) {
     // For direct map, we commit only as many pages as needed.
-    size_t aligned_size = bits::Align(huge_size, SystemPageSize());
+    size_t aligned_size = bits::AlignUp(huge_size, SystemPageSize());
     ptr = root.Alloc(huge_size - kExtraAllocSize, type_name);
     expected_committed_size += aligned_size;
     size_t surrounding_pages_size = PartitionPageSize();
@@ -2841,7 +2841,7 @@ TEST_F(PartitionAllocTest, MAYBE_Bookkeeping) {
       alignment = kSuperPageSize;
 #endif
     size_t expected_direct_map_size =
-        bits::Align(aligned_size + surrounding_pages_size, alignment);
+        bits::AlignUp(aligned_size + surrounding_pages_size, alignment);
     EXPECT_EQ(expected_committed_size, root.total_size_of_committed_pages);
     EXPECT_EQ(expected_super_pages_size, root.total_size_of_super_pages);
     EXPECT_EQ(expected_direct_map_size, root.total_size_of_direct_mapped_pages);

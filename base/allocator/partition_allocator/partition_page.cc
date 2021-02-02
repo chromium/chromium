@@ -175,7 +175,7 @@ void SlotSpanMetadata<thread_safe>::Decommit(PartitionRoot<thread_safe>* root) {
   size_t size_to_decommit =
 #if defined(OS_WIN)
       // Windows uses lazy commit, thus only provisioned slots are committed.
-      bits::Align(GetProvisionedSize(), SystemPageSize());
+      bits::AlignUp(GetProvisionedSize(), SystemPageSize());
 #else
       bucket->get_bytes_per_span();
 #endif
