@@ -52,7 +52,7 @@ constexpr char kIntentActionView[] = "android.intent.action.VIEW";
 // |MediaHost::UpdateMediaState| (which will sync them to
 // Libassistant).
 class MediaHost::ChromeosMediaStateObserver
-    : public media_session::mojom::MediaControllerObserver {
+    : private media_session::mojom::MediaControllerObserver {
  public:
   explicit ChromeosMediaStateObserver(MediaHost* parent) : parent_(parent) {
     DCHECK(parent_);
@@ -320,7 +320,9 @@ void MediaHost::Start(
 }
 
 void MediaHost::Stop() {
-  libassistant_media_state_observer_ = nullptr;
+  // Note we do not reset |libassistant_media_state_observer_| here,
+  // as there is no API to unregister it from Libassistant and the
+  // Libassistant process might still be running right now.
   StopObservingMediaController();
 }
 
