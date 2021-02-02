@@ -47,6 +47,26 @@ class MockDlpClipboardNotificationHelper
   MOCK_METHOD1(ShowClipboardBlockBubble, void(const base::string16& text));
   MOCK_METHOD2(ShowClipboardBlockToast,
                void(const std::string& id, const base::string16& text));
+  MOCK_METHOD2(ShowClipboardWarnBubble,
+               void(const base::string16& text,
+                    const ui::DataTransferEndpoint* const data_dst));
+  void ProceedOnWarn(views::Widget* widget,
+                     const ui::DataTransferEndpoint& data_dst) {
+    DlpClipboardNotificationHelper::ProceedOnWarn(widget, data_dst);
+  }
+
+  void ResetUserWarnSelection() {
+    DlpClipboardNotificationHelper::ResetUserWarnSelection();
+  }
+
+ private:
+  void InitWidget() override {}
+
+  void ResizeAndShowWidget(const gfx::Size& bubble_size,
+                           int timeout_duration_ms) override {}
+
+  void CloseWidget(views::Widget* widget,
+                   views::Widget::ClosedReason reason) override {}
 };
 
 class DlpClipboardBubbleTest
@@ -75,6 +95,46 @@ TEST_P(DlpClipboardBubbleTest, BlockBubble) {
                                          base::OptionalOrNullptr(data_dst));
 }
 
+TEST_P(DlpClipboardBubbleTest, WarnBubble) {
+  ::testing::StrictMock<MockDlpClipboardNotificationHelper> notification_helper;
+  url::Origin origin = url::Origin::Create(GURL(kUrl));
+  ui::DataTransferEndpoint data_src(origin);
+  base::Optional<ui::DataTransferEndpoint> data_dst;
+  auto param = GetParam();
+  if (param.has_value()) {
+    if (param.value() == ui::EndpointType::kUrl)
+      data_dst.emplace(url::Origin::Create(GURL(kUrl)));
+    else
+      data_dst.emplace(param.value());
+  }
+
+  base::string16 expected_bubble_str = l10n_util::GetStringFUTF16(
+      IDS_POLICY_DLP_CLIPBOARD_WARN_ON_PASTE, base::UTF8ToUTF16(origin.host()));
+  const ui::DataTransferEndpoint* dst_ptr = base::OptionalOrNullptr(data_dst);
+  EXPECT_CALL(notification_helper,
+              ShowClipboardWarnBubble(expected_bubble_str, dst_ptr));
+
+  notification_helper.WarnOnPaste(&data_src, dst_ptr);
+}
+
+TEST_P(DlpClipboardBubbleTest, ProceedOnWarn) {
+  ::testing::StrictMock<MockDlpClipboardNotificationHelper> notification_helper;
+  base::Optional<ui::DataTransferEndpoint> data_dst;
+  auto param = GetParam();
+  // ProceedOnWarn gets called with const reference to DataTransferEndpoint.
+  if (!param.has_value())
+    return;
+
+  if (param.value() == ui::EndpointType::kUrl)
+    data_dst.emplace(url::Origin::Create(GURL(kUrl)));
+  else
+    data_dst.emplace(param.value());
+
+  const ui::DataTransferEndpoint* dst_ptr = base::OptionalOrNullptr(data_dst);
+  notification_helper.ProceedOnWarn(nullptr, *dst_ptr);
+  EXPECT_TRUE(notification_helper.DidUserProceedOnWarn(dst_ptr));
+}
+
 INSTANTIATE_TEST_SUITE_P(DlpClipboard,
                          DlpClipboardBubbleTest,
                          ::testing::Values(base::nullopt,
@@ -82,6 +142,31 @@ INSTANTIATE_TEST_SUITE_P(DlpClipboard,
                                            ui::EndpointType::kUnknownVm,
                                            ui::EndpointType::kBorealis,
                                            ui::EndpointType::kUrl));
+
+TEST_F(DlpClipboardBubbleTest, ProceedSavedHistory) {
+  ::testing::StrictMock<MockDlpClipboardNotificationHelper> notification_helper;
+  const ui::DataTransferEndpoint url_dst(url::Origin::Create(GURL(kUrl)));
+  const ui::DataTransferEndpoint default_dst(ui::EndpointType::kDefault);
+  const ui::DataTransferEndpoint arc_dst(ui::EndpointType::kArc);
+  const ui::DataTransferEndpoint crostini_dst(ui::EndpointType::kCrostini);
+
+  notification_helper.ProceedOnWarn(nullptr, url_dst);
+  notification_helper.ProceedOnWarn(nullptr, default_dst);
+  notification_helper.ProceedOnWarn(nullptr, arc_dst);
+  notification_helper.ProceedOnWarn(nullptr, crostini_dst);
+
+  EXPECT_TRUE(notification_helper.DidUserProceedOnWarn(&url_dst));
+  EXPECT_TRUE(notification_helper.DidUserProceedOnWarn(&default_dst));
+  EXPECT_TRUE(notification_helper.DidUserProceedOnWarn(&arc_dst));
+  EXPECT_TRUE(notification_helper.DidUserProceedOnWarn(&crostini_dst));
+
+  notification_helper.ResetUserWarnSelection();
+
+  EXPECT_FALSE(notification_helper.DidUserProceedOnWarn(&url_dst));
+  EXPECT_FALSE(notification_helper.DidUserProceedOnWarn(&default_dst));
+  EXPECT_FALSE(notification_helper.DidUserProceedOnWarn(&arc_dst));
+  EXPECT_FALSE(notification_helper.DidUserProceedOnWarn(&crostini_dst));
+}
 
 class DlpClipboardToastTest : public ::testing::TestWithParam<ToastTest> {};
 

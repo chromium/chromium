@@ -360,6 +360,8 @@ void SynthesizePaste() {
   ui::KeyEvent control_press(/*type=*/ui::ET_KEY_PRESSED, ui::VKEY_CONTROL,
                              /*code=*/static_cast<ui::DomCode>(0),
                              /*flags=*/0);
+  if (!display::Screen::GetScreen())  // Doesn't exist in unittests.
+    return;
   auto* host = ash::GetWindowTreeHostForDisplay(
       display::Screen::GetScreen()->GetDisplayForNewWindows().id());
   DCHECK(host);
@@ -484,6 +486,18 @@ bool DlpClipboardNotificationHelper::DidUserProceedOnWarn(
   return false;
 }
 
+void DlpClipboardNotificationHelper::ProceedOnWarn(
+    views::Widget* widget,
+    const ui::DataTransferEndpoint& data_dst) {
+  CloseWidget(widget, views::Widget::ClosedReason::kAcceptButtonClicked);
+  approved_dsts_.push_back(data_dst);
+  SynthesizePaste();
+}
+
+void DlpClipboardNotificationHelper::ResetUserWarnSelection() {
+  approved_dsts_.clear();
+}
+
 void DlpClipboardNotificationHelper::ShowClipboardBlockBubble(
     const base::string16& text) {
   InitWidget();
@@ -582,18 +596,6 @@ void DlpClipboardNotificationHelper::CloseWidget(
     views::Widget::ClosedReason reason) {
   if (widget == widget_.get())
     widget->CloseWithReason(reason);
-}
-
-void DlpClipboardNotificationHelper::ProceedOnWarn(
-    views::Widget* widget,
-    const ui::DataTransferEndpoint& data_dst) {
-  CloseWidget(widget, views::Widget::ClosedReason::kAcceptButtonClicked);
-  approved_dsts_.push_back(data_dst);
-  SynthesizePaste();
-}
-
-void DlpClipboardNotificationHelper::ResetUserWarnSelection() {
-  approved_dsts_.clear();
 }
 
 }  // namespace policy

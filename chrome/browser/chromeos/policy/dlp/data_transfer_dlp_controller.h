@@ -52,7 +52,8 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
   virtual void WarnOnPaste(const ui::DataTransferEndpoint* const data_src,
                            const ui::DataTransferEndpoint* const data_dst);
 
-  bool ShouldProceedOnWarn(const ui::DataTransferEndpoint* const data_dst);
+  virtual bool ShouldProceedOnWarn(
+      const ui::DataTransferEndpoint* const data_dst);
 
   const DlpRulesManager& dlp_rules_manager_;
   DlpClipboardNotificationHelper helper_;

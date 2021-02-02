@@ -45,6 +45,13 @@ class DlpClipboardNotificationHelper : public views::WidgetObserver,
   // |data_dst| before.
   bool DidUserProceedOnWarn(const ui::DataTransferEndpoint* const data_dst);
 
+  // Needed for testing.
+ protected:
+  void ProceedOnWarn(views::Widget* widget,
+                     const ui::DataTransferEndpoint& data_dst);
+
+  void ResetUserWarnSelection();
+
  private:
   virtual void ShowClipboardBlockBubble(const base::string16& text);
   virtual void ShowClipboardBlockToast(const std::string& id,
@@ -61,17 +68,13 @@ class DlpClipboardNotificationHelper : public views::WidgetObserver,
   // ui::ClipboardObserver
   void OnClipboardDataChanged() override;
 
-  void InitWidget();
+  virtual void InitWidget();
 
-  void ResizeAndShowWidget(const gfx::Size& bubble_size,
-                           int timeout_duration_ms);
+  virtual void ResizeAndShowWidget(const gfx::Size& bubble_size,
+                                   int timeout_duration_ms);
 
-  void CloseWidget(views::Widget* widget, views::Widget::ClosedReason reason);
-
-  void ProceedOnWarn(views::Widget* widget,
-                     const ui::DataTransferEndpoint& data_dst);
-
-  void ResetUserWarnSelection();
+  virtual void CloseWidget(views::Widget* widget,
+                           views::Widget::ClosedReason reason);
 
   // Vector of destinations approved by the user on warning for copy/paste. It
   // gets reset when the clipboard data changes.
