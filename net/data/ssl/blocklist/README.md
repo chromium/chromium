@@ -26,6 +26,21 @@ google.com.bd certificates from Comodo.
 
   * [487afc8d0d411b2a05561a2a6f35918f4040e5570c4c73ee323cc50583bcfbb7.pem](487afc8d0d411b2a05561a2a6f35918f4040e5570c4c73ee323cc50583bcfbb7.pem)
 
+### Camerfirma
+
+For details, see <https://groups.google.com/g/mozilla.dev.security.policy/c/dSeD3dgnpzk/m/iAUwcFioAQAJ>
+
+As a result of a long-standing pattern of misissuances and incomplete or
+insufficient remediations, trust in TLS server certificates from Camerfirma
+was fully removed.
+
+  * [04f1bec36951bc1454a904ce32890c5da3cde1356b7900f6e62dfa2041ebad51.pem](04f1bec36951bc1454a904ce32890c5da3cde1356b7900f6e62dfa2041ebad51.pem)
+  * [063e4afac491dfd332f3089b8542e94617d893d7fe944e10a7937ee29d9693c0.pem](063e4afac491dfd332f3089b8542e94617d893d7fe944e10a7937ee29d9693c0.pem)
+  * [0c258a12a5674aef25f28ba7dcfaeceea348e541e6f5cc4ee63b71b361606ac3.pem](0c258a12a5674aef25f28ba7dcfaeceea348e541e6f5cc4ee63b71b361606ac3.pem)
+  * [136335439334a7698016a0d324de72284e079d7b5220bb8fbd747816eebebaca.pem](136335439334a7698016a0d324de72284e079d7b5220bb8fbd747816eebebaca.pem)
+  * [c1d80ce474a51128b77e794a98aa2d62a0225da3f419e5c7ed73dfbf660e7109.pem](c1d80ce474a51128b77e794a98aa2d62a0225da3f419e5c7ed73dfbf660e7109.pem)
+  * [ef3cb417fc8ebf6f97876c9e4ece39de1ea5fe649141d1028b7d11c0b2298ced.pem](ef3cb417fc8ebf6f97876c9e4ece39de1ea5fe649141d1028b7d11c0b2298ced.pem)
+
 ### China Internet Network Information Center (CNNIC)
 
 For details, see <https://security.googleblog.com/2015/03/maintaining-digital-certificate-security.html>
