@@ -23,6 +23,7 @@
 #include "base/task/thread_pool.h"
 #include "base/task_runner_util.h"
 #include "base/time/default_clock.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/browser_process.h"
@@ -388,7 +389,18 @@ class DriveIntegrationService::PreferenceWatcher
   }
 
   void AddNetworkPortalDetectorObserver() {
-    chromeos::network_portal_detector::GetInstance()->AddAndFireObserver(this);
+    if (chromeos::network_portal_detector::IsInitialized()) {
+      chromeos::network_portal_detector::GetInstance()->AddAndFireObserver(
+          this);
+    } else {
+      // The NetworkPortalDetector instance still not ready. Postpone even more.
+      base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&DriveIntegrationService::PreferenceWatcher::
+                             AddNetworkPortalDetectorObserver,
+                         weak_ptr_factory_.GetWeakPtr()),
+          base::TimeDelta::FromSeconds(5));
+    }
   }
 
   // chromeos::NetworkPortalDetector::Observer
