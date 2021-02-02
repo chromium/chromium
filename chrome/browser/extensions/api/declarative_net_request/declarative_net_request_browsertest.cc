@@ -283,25 +283,27 @@ class DeclarativeNetRequestBrowserTest
   void LoadExtensionWithRulesets(const std::vector<TestRulesetInfo>& rulesets,
                                  const std::string& directory,
                                  const std::vector<std::string>& hosts) {
-    size_t expected_extension_ruleset_count_change = rulesets.empty() ? 0 : 1;
-    LoadExtensionInternal(
-        rulesets, directory, hosts, expected_extension_ruleset_count_change,
-        false /* has_dynamic_ruleset */, false /* is_extension_update */);
+    size_t expected_extensions_with_rulesets_count_change =
+        rulesets.empty() ? 0 : 1;
+    LoadExtensionInternal(rulesets, directory, hosts,
+                          expected_extensions_with_rulesets_count_change,
+                          false /* has_dynamic_ruleset */,
+                          false /* is_extension_update */);
   }
 
   // Similar to LoadExtensionWithRulesets above but updates the last loaded
-  // extension instead. |expected_extension_ruleset_count_change| corresponds to
-  // the expected change in the number of extensions with rulesets after
-  // extension update. |has_dynamic_ruleset| should be true if the installed
-  // extension has a dynamic ruleset.
+  // extension instead. |expected_extensions_with_rulesets_count_change|
+  // corresponds to the expected change in the number of extensions with
+  // rulesets after extension update. |has_dynamic_ruleset| should be true if
+  // the installed extension has a dynamic ruleset.
   void UpdateLastLoadedExtension(
       const std::vector<TestRulesetInfo>& new_rulesets,
       const std::string& new_directory,
       const std::vector<std::string>& new_hosts,
-      int expected_extension_ruleset_count_change,
+      int expected_extensions_with_rulesets_count_change,
       bool has_dynamic_ruleset) {
     LoadExtensionInternal(new_rulesets, new_directory, new_hosts,
-                          expected_extension_ruleset_count_change,
+                          expected_extensions_with_rulesets_count_change,
                           has_dynamic_ruleset, true /* is_extension_update */);
   }
 
@@ -608,7 +610,7 @@ class DeclarativeNetRequestBrowserTest
   void LoadExtensionInternal(const std::vector<TestRulesetInfo>& rulesets,
                              const std::string& directory,
                              const std::vector<std::string>& hosts,
-                             int expected_extension_ruleset_count_change,
+                             int expected_extensions_with_rulesets_count_change,
                              bool has_dynamic_ruleset,
                              bool is_extension_update) {
     CHECK(!is_extension_update || GetParam() == ExtensionLoadType::PACKED);
@@ -667,8 +669,8 @@ class DeclarativeNetRequestBrowserTest
 
     ASSERT_TRUE(extension);
 
-    WaitForExtensionsWithRulesetsCount(current_ruleset_count +
-                                       expected_extension_ruleset_count_change);
+    WaitForExtensionsWithRulesetsCount(
+        current_ruleset_count + expected_extensions_with_rulesets_count_change);
 
     size_t expected_enabled_rulesets_count = has_dynamic_ruleset ? 1 : 0;
     size_t expected_manifest_rules_count = 0;
@@ -4340,10 +4342,10 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
       create_single_rule_ruleset("new_id2", false, "msn")};
 
   const char* kDirectory2 = "dir2";
-  ASSERT_NO_FATAL_FAILURE(
-      UpdateLastLoadedExtension(new_rulesets, kDirectory2, {} /* hosts */,
-                                0 /* expected_extension_ruleset_count_change */,
-                                true /* has_dynamic_ruleset */));
+  ASSERT_NO_FATAL_FAILURE(UpdateLastLoadedExtension(
+      new_rulesets, kDirectory2, {} /* hosts */,
+      0 /* expected_extensions_with_rulesets_count_change */,
+      true /* has_dynamic_ruleset */));
   extension = extension_registry()->GetExtensionById(
       extension_id, extensions::ExtensionRegistry::ENABLED);
 
@@ -4413,7 +4415,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
   const char* kDirectory2 = "dir2";
   ASSERT_NO_FATAL_FAILURE(UpdateLastLoadedExtension(
       {} /* new_rulesets */, kDirectory2, {} /* hosts */,
-      -1 /* expected_extension_ruleset_count_change */,
+      -1 /* expected_extensions_with_rulesets_count_change */,
       false /* has_dynamic_ruleset */));
   extension = extension_registry()->GetExtensionById(
       extension_id, extensions::ExtensionRegistry::ENABLED);
@@ -4579,6 +4581,48 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, AllowAllRequests) {
               requests[5]},
              {});
   }
+}
+
+// Tests that when an extension is updated but loses the declarativeNetRequest
+// permission, its dynamic ruleset is not enabled.
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
+                       UpdateRespectsPermission) {
+  set_config_flags(ConfigFlag::kConfig_HasBackgroundScript);
+
+  // Load an extension with no rulesets and add a dynamic rule.
+  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRulesets(
+      {} /* rulesets */, "ext" /* directory */, {} /* hosts */));
+  ExtensionId extension_id = last_loaded_extension_id();
+  AddDynamicRules(extension_id, {CreateGenericRule()});
+
+  VerifyPublicRulesetIds(last_loaded_extension(),
+                         {dnr_api::DYNAMIC_RULESET_ID});
+
+  // Now update the extension such that it loses the declarativeNetRequest
+  // permission and manifest key.
+  set_config_flags(ConfigFlag::kConfig_HasBackgroundScript |
+                   ConfigFlag::kConfig_OmitDeclarativeNetRequestPermission |
+                   ConfigFlag::kConfig_OmitDeclarativeNetRequestKey);
+
+  ASSERT_NO_FATAL_FAILURE(UpdateLastLoadedExtension(
+      {} /* new_rulesets */, "new_dir" /* new_directory */, {} /* new_hosts */,
+      -1 /* expected_extensions_with_rulesets_count_change */,
+      false /* has_dynamic_ruleset */));
+
+  // Verify that the extension doesn't have any enabled rulesets since it lacks
+  // the declarativeNetRequest permission.
+  EXPECT_FALSE(ruleset_manager()->GetMatcherForExtension(extension_id));
+
+  // Now update the extension again but this time with the declarativeNetRequest
+  // permission. With the permission added back, its pre-update dynamic ruleset
+  // should be enabled again.
+  set_config_flags(ConfigFlag::kConfig_HasBackgroundScript);
+  ASSERT_NO_FATAL_FAILURE(UpdateLastLoadedExtension(
+      {} /* new_rulesets */, "new_dir2" /* new_directory */, {} /* new_hosts */,
+      1 /* expected_extensions_with_rulesets_count_change */,
+      true /* has_dynamic_ruleset */));
+  VerifyPublicRulesetIds(last_loaded_extension(),
+                         {dnr_api::DYNAMIC_RULESET_ID});
 }
 
 class DeclarativeNetRequestIdentifiabilityTest
@@ -5335,9 +5379,10 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestGlobalRulesBrowserTest_Packed,
 
   // Update the extension. This should keep the allocated rule count in prefs
   // but not the set of enabled rulesets.
-  UpdateLastLoadedExtension(rulesets, "test_extension2", {} /* hosts */,
-                            0 /* expected_extension_ruleset_count_change */,
-                            false /* has_dynamic_ruleset */);
+  UpdateLastLoadedExtension(
+      rulesets, "test_extension2", {} /* hosts */,
+      0 /* expected_extensions_with_rulesets_count_change */,
+      false /* has_dynamic_ruleset */);
 
   VerifyPublicRulesetIds(last_loaded_extension(), {"ruleset_1"});
   VerifyExtensionAllocationInPrefs(last_loaded_extension_id(), 2);
@@ -5388,9 +5433,10 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestGlobalRulesBrowserTest_Packed,
 
   // Update the extension. This should keep the allocated rule count in prefs
   // but not the set of enabled rulesets.
-  UpdateLastLoadedExtension(rulesets, "test_extension2", {} /* hosts */,
-                            0 /* expected_extension_ruleset_count_change */,
-                            false /* has_dynamic_ruleset */);
+  UpdateLastLoadedExtension(
+      rulesets, "test_extension2", {} /* hosts */,
+      0 /* expected_extensions_with_rulesets_count_change */,
+      false /* has_dynamic_ruleset */);
 
   VerifyPublicRulesetIds(last_loaded_extension(), {"ruleset_1"});
   VerifyExtensionAllocationInPrefs(last_loaded_extension_id(), 1);
@@ -5465,9 +5511,10 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestGlobalRulesBrowserTest_Packed,
 
   // Update the extension. This should keep the allocated rule count in prefs
   // but not the set of enabled rulesets.
-  UpdateLastLoadedExtension(rulesets, "test_extension2", {} /* hosts */,
-                            0 /* expected_extension_ruleset_count_change */,
-                            false /* has_dynamic_ruleset */);
+  UpdateLastLoadedExtension(
+      rulesets, "test_extension2", {} /* hosts */,
+      0 /* expected_extensions_with_rulesets_count_change */,
+      false /* has_dynamic_ruleset */);
 
   VerifyPublicRulesetIds(last_loaded_extension(), {"ruleset_1", "ruleset_2"});
   VerifyExtensionAllocationInPrefs(last_loaded_extension_id(), 2);

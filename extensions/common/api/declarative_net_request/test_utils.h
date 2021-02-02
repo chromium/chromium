@@ -170,6 +170,9 @@ enum ConfigFlag {
 
   // Whether the "declarative_net_request" manifest key should be omitted.
   kConfig_OmitDeclarativeNetRequestKey = 1 << 3,
+
+  // Whether the "declarativeNetRequest" permission should be omitted.
+  kConfig_OmitDeclarativeNetRequestPermission = 1 << 4,
 };
 
 // Describes a single extension ruleset.

@@ -243,7 +243,9 @@ std::unique_ptr<base::DictionaryValue> CreateManifest(
     unsigned flags,
     const std::string& extension_name) {
   std::vector<std::string> permissions = hosts;
-  permissions.push_back(kAPIPermission);
+
+  if (!(flags & kConfig_OmitDeclarativeNetRequestPermission))
+    permissions.push_back(kAPIPermission);
 
   // These permissions are needed for some tests. TODO(karandeepb): Add a
   // ConfigFlag for these.
