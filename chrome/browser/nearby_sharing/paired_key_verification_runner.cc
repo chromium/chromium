@@ -16,6 +16,11 @@
 
 namespace {
 
+// The size of the random byte array used for the encryption frame's signed data
+// if a valid signature cannot be generated. This size is consistent with the
+// GmsCore implementation.
+const size_t kNearbyShareNumBytesRandomSignature = 72;
+
 std::ostream& operator<<(
     std::ostream& out,
     const PairedKeyVerificationRunner::PairedKeyVerificationResult& obj) {
@@ -232,31 +237,31 @@ void PairedKeyVerificationRunner::SendCertificateInfo() {
 }
 
 void PairedKeyVerificationRunner::SendPairedKeyEncryptionFrame() {
+  base::Optional<std::vector<uint8_t>> signature =
+      certificate_manager_->SignWithPrivateCertificate(
+          visibility_, PadPrefix(local_prefix_, raw_token_));
+  if (!signature || signature->empty()) {
+    signature = GenerateRandomBytes(kNearbyShareNumBytesRandomSignature);
+  }
+
+  std::vector<uint8_t> certificate_id_hash;
+  if (certificate_) {
+    certificate_id_hash = certificate_->HashAuthenticationToken(raw_token_);
+  }
+  if (certificate_id_hash.empty()) {
+    certificate_id_hash =
+        GenerateRandomBytes(kNearbyShareNumBytesAuthenticationTokenHash);
+  }
+
   sharing::nearby::Frame frame;
   frame.set_version(sharing::nearby::Frame::V1);
   sharing::nearby::V1Frame* v1_frame = frame.mutable_v1();
   v1_frame->set_type(sharing::nearby::V1Frame::PAIRED_KEY_ENCRYPTION);
   sharing::nearby::PairedKeyEncryptionFrame* encryption_frame =
       v1_frame->mutable_paired_key_encryption();
-
-  base::Optional<std::vector<uint8_t>> signature =
-      certificate_manager_->SignWithPrivateCertificate(
-          visibility_, PadPrefix(local_prefix_, raw_token_));
-  if (signature) {
-    std::vector<uint8_t> certificate_id_hash;
-    if (certificate_)
-      certificate_id_hash = certificate_->HashAuthenticationToken(raw_token_);
-
-    if (certificate_id_hash.empty()) {
-      certificate_id_hash =
-          GenerateRandomBytes(kNearbyShareNumBytesAuthenticationTokenHash);
-    }
-
-    encryption_frame->set_signed_data(signature->data(), signature->size());
-    encryption_frame->set_secret_id_hash(certificate_id_hash.data(),
-                                         certificate_id_hash.size());
-  }
-
+  encryption_frame->set_signed_data(signature->data(), signature->size());
+  encryption_frame->set_secret_id_hash(certificate_id_hash.data(),
+                                       certificate_id_hash.size());
   std::vector<uint8_t> data(frame.ByteSize());
   frame.SerializeToArray(data.data(), frame.ByteSize());
 
