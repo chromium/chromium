@@ -2,40 +2,6 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-oobe-text-button {
-  display: none;
-}
-
-.error oobe-text-button {
-  display: block;
-}
-
-#loading-container,
-#error-container {
-  visibility: hidden;
-}
-
-.loading-animation #loading-container,
-.error #error-container {
-  visibility: visible;
-}
-
-.loading oobe-text-button {
-  pointer-events: none;
-}
-
-#loading-container {
-  display: flex;
-  flex-direction: column;
-}
-
-#loading-content {
-  left: 50%;
-  position: relative;
-  top: 50%;
-  transform: translate(-50%, -50%);
-}
-
 #retry-button {
   margin-inline-end: 0;
 }

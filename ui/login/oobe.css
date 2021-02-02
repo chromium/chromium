@@ -58,6 +58,7 @@ html {
   --oobe-dialog-footer-padding: 32px;
   --oobe-dialog-content-padding: 64px;
   --oobe-dialog-content-padding-top: 20px;
+  --oobe-dialog-header-padding-top: 64px;
 
   /* This size fits 675px screen with docked magnifier and shelf. Basically this
    * is calc(675px * (1 - 1 / 3) - 10px - var(--shelf-area-height-base)) where
@@ -89,6 +90,7 @@ html[screen=gaia-signin] {
     --oobe-dialog-footer-height: 80px;
     --oobe-dialog-footer-padding: 24px;
     --oobe-dialog-content-padding: 32px;
+    --oobe-dialog-header-padding-top: 32px;
   }
 }
 
@@ -111,6 +113,7 @@ html[screen=gaia-signin][dialog-padding=narrow] {
   --oobe-dialog-footer-height: 80px;
   --oobe-dialog-footer-padding: 24px;
   --oobe-dialog-content-padding: 32px;
+  --oobe-dialog-header-padding-top: 32px;
 }
 
 body.solid {

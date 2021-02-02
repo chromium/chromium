@@ -2,53 +2,22 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-#value-prop-view {
-  display: block;
-  height: 232px;
-  margin: auto;
+@media screen and (orientation: portrait) {
+  oobe-adaptive-dialog {
+    --oobe-adaptive-dialog-content-top-padding: 0;
+  }
+}
+
+:host-context(html:not([new-layout])) #animation-container {
+  display: none;
 }
 
 #intro-text {
   padding: 0 8px 16px 0;
 }
 
-#column-container {
-  flex-direction: column;
-}
-
-#consents-container {
-  padding-inline-start: 24px;
-}
-
-@media screen and (min-width: 600px) {
-  #column-container {
-    flex-direction: row;
-  }
-
-  #value-prop-container {
-    align-items: center;
-    border-inline-end: 1px solid rgb(218, 220, 224);
-    width: 50%;
-  }
-
-  #consents-container {
-    width: 50%;
-  }
-}
-
-#user-name {
-  color: #757575;
-  padding-inline-start: 8px;
-}
-
 #footer-text {
-  color: #757575;
   padding-top: 16px;
-}
-
-#user-image {
-  border-radius: 50%;
-  height: 20px;
 }
 
 #overlay-text {

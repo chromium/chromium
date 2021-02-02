@@ -6,8 +6,9 @@
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_lottie/cr_lottie.html">
 
+<link rel="import" href="/components/hd_iron_icon.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
-<link rel="import" href="/components/oobe_dialog.html">
+<link rel="import" href="/components/oobe_adaptive_dialog.html">
 <link rel="import" href="/components/oobe_dialog_host_behavior.html">
 
 <dom-module id="assistant-voice-match">
@@ -15,98 +16,106 @@
     <style include="oobe-dialog-host"></style>
     <link rel="stylesheet" href="assistant_shared_styles.css">
     <link rel="stylesheet" href="assistant_voice_match.css">
-    <oobe-dialog id="voice-match-dialog" role="dialog" has-buttons hide-shadow
-        no-footer-padding no-header class="intro"
-        aria-label$="[[i18nDynamic(locale, 'assistantVoiceMatchTitle')]]">
-      <div slot="footer">
-        <div class="container">
-          <img id="logo" src="assistant_logo.png"
-              aria-label$="[[i18nDynamic(locale, 'assistantLogo')]]">
-          <div id="intro-container">
-            <div class="title">
-              [[i18nDynamic(locale, 'assistantVoiceMatchTitle')]]
-            </div>
-            <div class="content"
-                i18n-values=".innerHTML:assistantVoiceMatchMessage">
-            </div>
-            <div class="content" id="no-dsp-message">
-              [[i18nDynamic(locale, 'assistantVoiceMatchNoDspMessage')]]
-            </div>
-            <div id="voice-match-animation-container">
-              <div id="voice-match-animation" class="centering">
-                <cr-lottie id="voice-match-lottie"
-                    animation-url="voice_match_animation.json">
-                </cr-lottie>
-              </div>
-            </div>
-          </div>
-          <div id="recording-container">
-            <div class="title" id="title-recording">
-              [[i18nDynamic(locale, 'assistantVoiceMatchRecording')]]
-            </div>
-            <div class="title" id="title-completed">
-              [[i18nDynamic(locale, 'assistantVoiceMatchCompleted')]]
-            </div>
-            <div id="voice-match-entries">
-              <voice-match-entry id="voice-entry-0">
-                <div slot="entry-content">
-                  [[i18nDynamic(locale, 'assistantVoiceMatchInstruction0')]]
-                </div>
-              </voice-match-entry>
-              <voice-match-entry id="voice-entry-1">
-                <div slot="entry-content">
-                  [[i18nDynamic(locale, 'assistantVoiceMatchInstruction1')]]
-                </div>
-              </voice-match-entry>
-              <voice-match-entry id="voice-entry-2">
-                <div slot="entry-content">
-                  [[i18nDynamic(locale, 'assistantVoiceMatchInstruction2')]]
-                </div>
-              </voice-match-entry>
-              <voice-match-entry id="voice-entry-3">
-                <div slot="entry-content">
-                  [[i18nDynamic(locale, 'assistantVoiceMatchInstruction3')]]
-                </div>
-              </voice-match-entry>
-            </div>
-            <div id="loading-animation" hidden>
-              <paper-spinner-lite id="loading-spinner" active>
-              </paper-spinner-lite>
-            </div>
-            <div class="content" id="footer-text">
-              [[i18nDynamic(locale, 'assistantVoiceMatchFooter')]]
-            </div>
-          </div>
-          <div id="already-setup-container">
-            <div class="title" id="title-already-setup">
-              [[i18nDynamic(locale, 'assistantVoiceMatchAlreadySetupTitle')]]
-            </div>
-            <div class="content">
-              [[i18nDynamic(locale, 'assistantVoiceMatchAlreadySetupMessage')]]
-            </div>
-            <div id="already-setup-animation-container">
-              <div id="already-setup-animation" class="centering">
-                <cr-lottie id="already-setup-lottie"
-                    animation-url="voice_match_already_setup_animation.json">
-                </cr-lottie>
-              </div>
-            </div>
-          </div>
+    <oobe-adaptive-dialog id="voiceMatchIntroDialog" role="dialog"
+        aria-label$="[[i18nDynamic(locale, 'assistantVoiceMatchTitle')]]"
+        hide-shadow for-step="intro">
+      <hd-iron-icon slot="icon"
+          icon1x="assistant-32:assistant" icon2x="assistant-64:assistant"
+          aria-label$="[[i18nDynamic(locale, 'assistantLogo')]]">
+      </hd-iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'assistantVoiceMatchTitle')]]
+      </h1>
+      <div slot="subtitle"
+          inner-h-t-m-l="[[i18nAdvanced('assistantVoiceMatchMessage')]]">
+      </div>
+      <div slot="content" class="flex layout vertical center center-justified">
+        <div id="voice-match-animation">
+          <cr-lottie id="voice-match-lottie"
+              animation-url="voice_match_animation.json">
+          </cr-lottie>
         </div>
       </div>
-      <div slot="bottom-buttons" class="flex layout horizontal">
-        <div class="flex"></div>
+      <div slot="bottom-buttons">
         <oobe-text-button id="skip-button" on-click="onSkipTap_"
             disabled="[[buttonsDisabled]]"
             text-key="assistantOptinNoThanksButton">
-        </oobe-text-button>
-        <oobe-text-button id="later-button" on-click="onSkipTap_"
-            disabled="[[buttonsDisabled]]" text-key="assistantOptinLaterButton">
         </oobe-text-button>
         <oobe-text-button id="agree-button" inverse on-click="onAgreeTap_"
             disabled="[[buttonsDisabled]]" text-key="assistantOptinAgreeButton">
         </oobe-text-button>
       </div>
-    </oobe-dialog>
+    </oobe-adaptive-dialog>
+
+    <oobe-adaptive-dialog id="voiceMatchRecordingDialog" role="dialog"
+        aria-label$="[[i18nDynamic(locale, 'assistantVoiceMatchRecording')]]"
+        hide-shadow for-step="recording, completed">
+      <hd-iron-icon slot="icon"
+          icon1x="assistant-32:assistant" icon2x="assistant-64:assistant"
+          aria-label$="[[i18nDynamic(locale, 'assistantLogo')]]">
+      </hd-iron-icon>
+      <h1 slot="title" for-step="recording">
+        [[i18nDynamic(locale, 'assistantVoiceMatchRecording')]]
+      </h1>
+      <h1 slot="title" for-step="completed">
+        [[i18nDynamic(locale, 'assistantVoiceMatchCompleted')]]
+      </h1>
+      <div slot="subtitle">
+        [[i18nDynamic(locale, 'assistantVoiceMatchFooter')]]
+      </div>
+      <div slot="content" class="container">
+        <div id="voice-match-entries">
+          <voice-match-entry id="voice-entry-0">
+            <div slot="entry-content">
+              [[i18nDynamic(locale, 'assistantVoiceMatchInstruction0')]]
+            </div>
+          </voice-match-entry>
+          <voice-match-entry id="voice-entry-1">
+            <div slot="entry-content">
+              [[i18nDynamic(locale, 'assistantVoiceMatchInstruction1')]]
+            </div>
+          </voice-match-entry>
+          <voice-match-entry id="voice-entry-2">
+            <div slot="entry-content">
+              [[i18nDynamic(locale, 'assistantVoiceMatchInstruction2')]]
+            </div>
+          </voice-match-entry>
+          <voice-match-entry id="voice-entry-3">
+            <div slot="entry-content">
+              [[i18nDynamic(locale, 'assistantVoiceMatchInstruction3')]]
+            </div>
+          </voice-match-entry>
+        </div>
+        <div id="loading-animation" hidden>
+          <paper-spinner-lite id="loading-spinner" active>
+          </paper-spinner-lite>
+        </div>
+      </div>
+      <div slot="bottom-buttons">
+        <oobe-text-button id="later-button" on-click="onSkipTap_"
+            disabled="[[buttonsDisabled]]" text-key="assistantOptinLaterButton">
+        </oobe-text-button>
+      </div>
+    </oobe-adaptive-dialog>
+
+    <oobe-adaptive-dialog id="voiceMatchAlreadySetupDialog" role="dialog"
+        aria-label$=
+            "[[i18nDynamic(locale, 'assistantVoiceMatchAlreadySetupTitle')]]"
+        hide-shadow for-step="already-setup">
+      <hd-iron-icon slot="icon"
+          icon1x="assistant-32:assistant" icon2x="assistant-64:assistant"
+          aria-label$="[[i18nDynamic(locale, 'assistantLogo')]]">
+      </hd-iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'assistantVoiceMatchAlreadySetupTitle')]]
+      </h1>
+      <div slot="subtitle">
+        [[i18nDynamic(locale, 'assistantVoiceMatchAlreadySetupMessage')]]
+      </div>
+      <div slot="content" class="flex layout vertical center center-justified">
+        <img srcset="assistant_ready_1x.svg 1x, assistant_ready_2x.svg 2x"
+            class="oobe-illustration" aria-hidden="true">
+      </div>
+    </oobe-adaptive-dialog>
   </template>
 </dom-module>

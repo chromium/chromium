@@ -18,20 +18,28 @@ cr-dialog::part(dialog)  {
   width: calc(100% - var(--oobe-dialog-content-padding) * 2);
 }
 
+oobe-adaptive-dialog {
+  --oobe-adaptive-dialog-header-top-padding:
+      calc(var(--oobe-adaptive-dialog-content-padding) -
+           var(--caption-bar-height));
+  --oobe-dialog-header-padding-top: calc(var(--oobe-dialog-content-padding) -
+           var(--caption-bar-height));
+}
+
 webview {
   user-select: none;
 }
 
-.container {
-  box-sizing: border-box;
-  height: 100%;
-  padding-bottom: 0;
-  padding-inline-end: var(--oobe-dialog-content-padding);
-  padding-inline-start: var(--oobe-dialog-content-padding);
-  padding-top: calc(var(--oobe-dialog-content-padding) -
-                    var(--caption-bar-height));
-  position: absolute;
-  width: 100%;
+@media screen and (orientation: landscape) {
+  oobe-adaptive-dialog {
+    --oobe-adaptive-dialog-content-top-padding:
+        calc(var(--oobe-adaptive-dialog-content-padding) -
+             var(--caption-bar-height));
+  }
+
+  :host-context(html[new-layout]) .container {
+    padding-top: 72px;
+  }
 }
 
 .line {
@@ -40,30 +48,10 @@ webview {
   margin: 8px 0 8px 0;
 }
 
-.title {
-  color: var(--google-grey-900);
-  font-family: 'Google Sans', Roboto, sans-serif;
-  font-size: 28px;
-  line-height: 32px;
-  padding: 20px 0 16px 0;
-}
-
-.sub-title {
-  color: var(--google-grey-900);
-  font: 13px Roboto, sans-serif;
-  line-height: 16px;
-}
-
 .content {
   color: var(--google-grey-700);
   font: 13px Roboto, sans-serif;
   line-height: 16px;
-}
-
-#logo {
-  height: 32px;
-  margin: 0;
-  width: 32px;
 }
 
 #next-button {

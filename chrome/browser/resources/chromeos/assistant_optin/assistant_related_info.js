@@ -39,12 +39,12 @@ Polymer({
     },
 
     /**
-     * Content key of the screen.
+     * Whether activity control consent is skipped.
      */
-    contentKey: {
-      type: String,
-      value: 'assistantRelatedInfoMessage',
-    },
+    skipActivityControl_: {
+      type: Boolean,
+      value: false,
+    }
   },
 
   /**
@@ -110,9 +110,14 @@ Polymer({
     this.titleKey = data['activityControlNeeded'] ?
         'assistantRelatedInfoTitle' :
         'assistantRelatedInfoReturnedUserTitle';
-    this.contentKey = data['activityControlNeeded'] ?
-        'assistantRelatedInfoMessage' :
-        'assistantRelatedInfoReturnedUserMessage';
+    this.skipActivityControl_ = !data['activityControlNeeded'];
+    this.$.zippy.setAttribute(
+        'icon-src',
+        'data:text/html;charset=utf-8,' +
+            encodeURIComponent(this.$.zippy.getWrappedIcon(
+                'https://www.gstatic.com/images/icons/material/system/2x/' +
+                    'info_outline_grey600_24dp.png',
+                this.i18n('assistantScreenContextTitle'))));
     this.consentStringLoaded_ = true;
     this.onPageLoaded();
   },

@@ -86,9 +86,10 @@ void AssistantOptInFlowScreenHandler::DeclareLocalizedValues(
                IDS_ASSISTANT_SCREEN_CONTEXT_TITLE);
   builder->Add("assistantScreenContextDesc", IDS_ASSISTANT_SCREEN_CONTEXT_DESC);
   builder->Add("assistantVoiceMatchTitle", IDS_ASSISTANT_VOICE_MATCH_TITLE);
-  builder->Add("assistantVoiceMatchMessage", IDS_ASSISTANT_VOICE_MATCH_MESSAGE);
-  builder->Add("assistantVoiceMatchNoDspMessage",
-               IDS_ASSISTANT_VOICE_MATCH_NO_DSP_MESSAGE);
+  builder->Add("assistantVoiceMatchMessage",
+               chromeos::IsHotwordDspAvailable() && !DeviceHasBattery()
+                   ? IDS_ASSISTANT_VOICE_MATCH_MESSAGE
+                   : IDS_ASSISTANT_VOICE_MATCH_NO_DSP_MESSAGE);
   builder->Add("assistantVoiceMatchRecording",
                IDS_ASSISTANT_VOICE_MATCH_RECORDING);
   builder->Add("assistantVoiceMatchCompleted",
@@ -163,8 +164,6 @@ void AssistantOptInFlowScreenHandler::RegisterMessages() {
 
 void AssistantOptInFlowScreenHandler::GetAdditionalParameters(
     base::DictionaryValue* dict) {
-  dict->SetBoolean("hotwordDspAvailable", chromeos::IsHotwordDspAvailable());
-  dict->SetBoolean("deviceHasNoBattery", !DeviceHasBattery());
   dict->SetBoolean("voiceMatchDisabled",
                    chromeos::assistant::features::IsVoiceMatchDisabled());
   dict->SetBoolean("betterAssistantEnabled",

@@ -9,10 +9,16 @@
  * Event 'reload' will be fired when the user click the retry button.
  */
 
+const UIState = {
+  LOADING: 'loading',
+  LOADED: 'loaded',
+  ERROR: 'error',
+};
+
 Polymer({
   is: 'assistant-loading',
 
-  behaviors: [OobeI18nBehavior, OobeDialogHostBehavior],
+  behaviors: [OobeI18nBehavior, MultiStepBehavior],
 
   properties: {
     /**
@@ -48,6 +54,12 @@ Polymer({
   /** @private {?assistant.BrowserProxy} */
   browserProxy_: null,
 
+  defaultUIStep() {
+    return UIState.LOADED;
+  },
+
+  UI_STEPS: UIState,
+
   /**
    * On-tap event handler for retry button.
    *
@@ -70,26 +82,6 @@ Polymer({
     this.browserProxy_.flowFinished();
   },
 
-  /**
-   * Add class to the list of classes of root elements.
-   * @param {string} className class to add
-   *
-   * @private
-   */
-  addClass_(className) {
-    this.$['loading-dialog'].classList.add(className);
-  },
-
-  /**
-   * Remove class to the list of classes of root elements.
-   * @param {string} className class to remove
-   *
-   * @private
-   */
-  removeClass_(className) {
-    this.$['loading-dialog'].classList.remove(className);
-  },
-
   /** @override */
   created() {
     this.browserProxy_ = assistant.BrowserProxyImpl.getInstance();
@@ -101,13 +93,10 @@ Polymer({
   reloadPage() {
     window.clearTimeout(this.animationTimeout_);
     window.clearTimeout(this.loadingTimeout_);
-    this.removeClass_('loaded');
-    this.removeClass_('error');
-    this.addClass_('loading');
+    this.setUIStep(UIState.LOADED);
     this.buttonsDisabled = true;
-
     this.animationTimeout_ = window.setTimeout(function() {
-      this.addClass_('loading-animation');
+      this.setUIStep(UIState.LOADING);
     }.bind(this), 500);
     this.loadingTimeout_ = window.setTimeout(function() {
       this.onLoadingTimeout();
@@ -121,10 +110,7 @@ Polymer({
     this.loadingError_ = true;
     window.clearTimeout(this.animationTimeout_);
     window.clearTimeout(this.loadingTimeout_);
-    this.removeClass_('loading-animation');
-    this.removeClass_('loading');
-    this.removeClass_('loaded');
-    this.addClass_('error');
+    this.setUIStep(UIState.ERROR);
 
     this.buttonsDisabled = false;
     this.$['retry-button'].focus();
@@ -136,10 +122,7 @@ Polymer({
   onPageLoaded() {
     window.clearTimeout(this.animationTimeout_);
     window.clearTimeout(this.loadingTimeout_);
-    this.removeClass_('loading-animation');
-    this.removeClass_('loading');
-    this.removeClass_('error');
-    this.addClass_('loaded');
+    this.setUIStep(UIState.LOADED);
   },
 
   /**

@@ -3981,7 +3981,7 @@
     Related info
   </message>
   <message name="IDS_ASSISTANT_SCREEN_CONTEXT_DESC" desc="Description for assistant screen context optin. This is also used as the sub label for context-enable toggle in Assistant settings page.">
-    Let your Assistant proactively show info related to what's on your screen
+    Allow Assistant to use information on screen to provide quick answers such as translation, definition, unit conversion and more
   </message>
   <message name="IDS_ASSISTANT_READY_SCREEN_TITLE" desc="Title for assistant ready screen.">
     Your Assistant is ready
@@ -3990,16 +3990,18 @@
     When your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> is set up, press the Assistant button or say "Ok Google" to get help anytime. Go to Assistant settings to make changes.
   </message>
   <message name="IDS_ASSISTANT_RELATED_INFO_SCREEN_TITLE" desc="Title for assistant related info screen.">
-    Just say or type what you need
+    Let your Assistant use information on your screen to help
   </message>
   <message name="IDS_ASSISTANT_RELATED_INFO_SCREEN_MESSAGE" desc="Message for assistant related info screen.">
-    Get better, quicker answers with Assistant
+    Allow Assistant to use information on screen to provide quick answers such as translation, definition, unit conversion and more.
+    <ph name="BR">&lt;br&gt;&lt;br&gt;</ph>
+    <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Keep in mind:<ph name="END_BOLD">&lt;/b&gt;</ph> You can always change this later in Google Assistant Settings > Related info.
   </message>
   <message name="IDS_ASSISTANT_RELATED_INFO_SCREEN_RETURNED_USER_TITLE" desc="Title for assistant related info screen for returned users.">
     Your Google Assistant works here too
   </message>
   <message name="IDS_ASSISTANT_RELATED_INFO_SCREEN_RETURNED_USER_MESSAGE" desc="Message for assistant related info screen for returned users.">
-    Looks like you've already set up Assistant on a different device. Get even more out of your Assistant by turning on the following setting.
+    Looks like you've already set up personalized Assistant on a different device. Get even more out of your Assistant by turning on the following setting.
   </message>
   <message name="IDS_ASSISTANT_CONTINUE_BUTTON" desc="Continue button for asssitant optin flow.">
     Continue
@@ -4011,15 +4013,17 @@
     Learn more
   </message>
   <message name="IDS_ASSISTANT_VOICE_MATCH_TITLE" desc="Title for assistant voice match screen.">
-    Access your Assistant with Voice Match
+    Access your Assistant with "Hey Google"
   </message>
   <message name="IDS_ASSISTANT_VOICE_MATCH_MESSAGE" desc="Message for Assistant voice match screen.">
-    Voice Match lets you access your Assistant directly by using your voice.
-    <ph name="BR">&lt;br&gt;</ph>
-    <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Keep in mind:<ph name="END_BOLD">&lt;/b&gt;</ph> A similar voice or recording might be able to access your Assistant, too. You can remove Voice Match permission later by turning it off in Assistant Settings.
+    Voice Match helps your Google Assistant identify your voice on your Chromebook and tell you apart from others.
+    <ph name="BR">&lt;br&gt;&lt;br&gt;</ph>
+    <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Keep in mind:<ph name="END_BOLD">&lt;/b&gt;</ph> A similar voice or recording might be able to access your personal results, too. You can remove Voice Match permission later by turning it off in Assistant Settings.
   </message>
   <message name="IDS_ASSISTANT_VOICE_MATCH_NO_DSP_MESSAGE" desc="Message without DSP support for Assistant voice match screen.">
-    To save battery, “Ok Google” is on only when your device is connected to a power source. To make changes, go to Settings.
+    Voice Match helps your Google Assistant identify your voice on your Chromebook and tell you apart from others. To save battery, "Hey Google" is only on when your device is connected to a power source. To make changes, go to Settings.
+    <ph name="BR">&lt;br&gt;&lt;br&gt;</ph>
+    <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Keep in mind:<ph name="END_BOLD">&lt;/b&gt;</ph> A similar voice or recording might be able to access your personal results, too. You can remove Voice Match permission later by turning it off in Assistant Settings.
   </message>
   <message name="IDS_ASSISTANT_VOICE_MATCH_RECORDING" desc="Title for recording in assistant voice match screen. This is also used as the sub label for the Assistant voice settings.">
     Teach your Assistant to recognize your voice
@@ -4052,10 +4056,10 @@
     Please consider using headphones while training your voice
   </message>
   <message name="IDS_ASSISTANT_VOICE_MATCH_ALREADY_SETUP_TITLE" desc="Title for assistant voice match already setup.">
-    Your Assistant can already recognize your voice
+    Voice Match is ready
   </message>
   <message name="IDS_ASSISTANT_VOICE_MATCH_ALREADY_SETUP_MESSAGE" desc="Message for assistant voice match already setup.">
-    It looks like you've already set up Voice Match with your Google Assistant on another device. These previous recordings can be used to make a voice model on this device. This should take less than a minute.
+    It looks like you've already set up Voice Match with your Assistant on another device. These previous recordings were used to make a voice model on this device.
   </message>
   <message name="IDS_ASSISTANT_NO_THANKS_BUTTON" desc="No thanks button for asssitant optin flow.">
     No thanks

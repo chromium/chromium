@@ -5,8 +5,9 @@
 <link rel="import" href="chrome://resources/cr_elements/cr_expand_button/cr_expand_button.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-collapse/iron-collapse.html">
 
+<link rel="import" href="/components/hd_iron_icon.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
-<link rel="import" href="/components/oobe_dialog.html">
+<link rel="import" href="/components/oobe_adaptive_dialog.html">
 <link rel="import" href="/components/oobe_dialog_host_behavior.html">
 
 <dom-module id="assistant-value-prop">
@@ -14,30 +15,24 @@
     <style include="oobe-dialog-host"></style>
     <link rel="stylesheet" href="assistant_shared_styles.css">
     <link rel="stylesheet" href="assistant_value_prop.css">
-    <oobe-dialog id="value-prop-dialog" class="value-prop-loading"
-        role="dialog" has-buttons no-footer-padding no-header>
-      <div slot="footer">
-        <div class="container">
-          <img id="logo" src="assistant_logo.png"
-              aria-label$="[[i18nDynamic(locale, 'assistantLogo')]]">
-          <div class="title" id="title-text"></div>
-          <div class="content" id="intro-text"></div>
-          <div id="column-container" class="flex layout horizontal">
-            <div id="value-prop-container">
-              <div class="flex layout horizontal center">
-                <img id="user-image"
-                    aria-label$="[[i18nDynamic(locale, 'assistantUserImage')]]">
-                <div class="content" id="user-name"></div>
-              </div>
-              <webview id="value-prop-view" tabindex="-1"></webview>
-            </div>
-            <div id="consents-container"></div>
-          </div>
-          <div class="content" id="footer-text"></div>
+    <oobe-adaptive-dialog id="value-prop-dialog" role="dialog">
+      <hd-iron-icon slot="icon"
+          icon1x="assistant-32:assistant" icon2x="assistant-64:assistant"
+          aria-label$="[[i18nDynamic(locale, 'assistantLogo')]]">
+      </hd-iron-icon>
+      <h1 slot="title" id="title-text"></h1>
+      <div slot="subtitle">
+        <div id="animation-container">
+          <webview id="value-prop-view" tabindex="-1"></webview>
         </div>
       </div>
-      <div slot="bottom-buttons" class="flex layout horizontal">
-        <div class="flex"></div>
+      <div slot="content" class="flex layout vertical center-justified">
+        <div class="content" id="intro-text"></div>
+        <div class="line"></div>
+        <div id="consents-container"></div>
+        <div class="content" id="footer-text"></div>
+      </div>
+      <div slot="bottom-buttons">
         <oobe-text-button id="skip-button" on-click="onSkipTap_"
             disabled="[[buttonsDisabled]]">
           <div id="skip-button-text" slot="text"></div>
@@ -47,7 +42,7 @@
           <div id="next-button-text" slot="text"></div>
         </oobe-text-button>
       </div>
-    </oobe-dialog>
+    </oobe-adaptive-dialog>
 
     <cr-dialog id="learn-more-overlay">
       <div slot="body">

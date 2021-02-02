@@ -1,8 +1,10 @@
 <!-- Copyright 2018 The Chromium Authors. All rights reserved.
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
+
+<link rel="import" href="/components/hd_iron_icon.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
-<link rel="import" href="/components/oobe_dialog.html">
+<link rel="import" href="/components/oobe_adaptive_dialog.html">
 <link rel="import" href="/components/oobe_dialog_host_behavior.html">
 
 <dom-module id="assistant-get-more">
@@ -10,36 +12,34 @@
     <style include="oobe-dialog-host"></style>
     <link rel="stylesheet" href="assistant_get_more.css">
     <link rel="stylesheet" href="assistant_shared_styles.css">
-    <oobe-dialog id="get-more-dialog" role="dialog" has-buttons hide-shadow
-        no-footer-padding no-header
+    <oobe-adaptive-dialog id="get-more-dialog" role="dialog" hide-shadow
         aria-label$="[[i18nDynamic(locale, 'assistantReadyTitle')]]">
-      <div slot="footer">
-        <div class="container">
-          <img id="logo" src="assistant_logo.png"
-              aria-label$="[[i18nDynamic(locale, 'assistantLogo')]]">
-          <div class="title">
-            [[i18nDynamic(locale, 'assistantReadyTitle')]]
+      <hd-iron-icon slot="icon"
+          icon1x="assistant-32:assistant" icon2x="assistant-64:assistant"
+          aria-label$="[[i18nDynamic(locale, 'assistantLogo')]]">
+      </hd-iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'assistantReadyTitle')]]
+      </h1>
+      <div slot="subtitle">
+        [[i18nDynamic(locale, 'assistantReadyMessage')]]
+      </div>
+      <div slot="content" class="container">
+        <div class="flex layout horizontal center">
+          <div id="ready-image-container">
+            <img id="ready-img" class="oobe-illustration" aria-hidden="true"
+                src="assistant_ready.svg">
           </div>
-          <div class="content" id="intro-text">
-            [[i18nDynamic(locale, 'assistantReadyMessage')]]
-          </div>
-          <div class="flex layout horizontal center">
-            <div id="ready-image-container">
-              <img id="ready-img" class="oobe-illustration" aria-hidden="true"
-                  src="assistant_ready.svg">
-            </div>
-            <div class="vertical-line"></div>
-            <div id="toggles-container"></div>
-          </div>
+          <div class="vertical-line"></div>
+          <div id="toggles-container"></div>
         </div>
       </div>
-      <div slot="bottom-buttons" class="flex layout horizontal">
-        <div class="flex"></div>
+      <div slot="bottom-buttons">
         <oobe-text-button id="next-button" inverse on-click="onNextTap_"
             disabled="[[buttonsDisabled]]" hidden="[[moreContents]]"
             text-key="assistantReadyButton">
         </oobe-text-button>
       </div>
-    </oobe-dialog>
+    </oobe-adaptive-dialog>
   </template>
 </dom-module>

@@ -261,10 +261,8 @@ Polymer({
   reloadContent(data) {
     this.$['value-prop-dialog'].setAttribute(
         'aria-label', data['valuePropTitle']);
-    this.$['user-image'].src = data['valuePropUserImage'];
     this.$['title-text'].textContent = data['valuePropTitle'];
     this.$['intro-text'].textContent = data['valuePropIntro'];
-    this.$['user-name'].textContent = data['valuePropIdentity'];
     this.$['next-button'].labelForAria = data['valuePropNextButton'];
     this.$['next-button-text'].textContent = data['valuePropNextButton'];
     this.$['skip-button'].labelForAria = data['valuePropSkipButton'];
@@ -297,8 +295,6 @@ Polymer({
           'data:text/html;charset=utf-8,' +
               encodeURIComponent(
                   zippy.getWrappedIcon(data['iconUri'], data['title'])));
-      zippy.setAttribute('hide-line', true);
-      zippy.setAttribute('popup-style', true);
 
       var title = document.createElement('div');
       title.slot = 'title';
