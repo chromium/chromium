@@ -1346,6 +1346,7 @@ source_set("unit_tests") {
     "layout/line/abstract_inline_text_box_test.cc",
     "layout/line/inline_text_box_test.cc",
     "layout/line/line_orientation_utils_test.cc",
+    "layout/list_marker_test.cc",
     "layout/map_coordinates_test.cc",
     "layout/min_max_size_test.cc",
     "layout/multi_column_fragmentainer_group_test.cc",

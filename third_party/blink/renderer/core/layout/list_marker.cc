@@ -93,8 +93,7 @@ int ListMarker::ListItemValue(const LayoutObject& list_item) const {
   return 0;
 }
 
-// If the value of ListStyleType changed, we need to the marker text has been
-// updated.
+// If the value of ListStyleType changed, we need to update the marker text.
 void ListMarker::ListStyleTypeChanged(LayoutObject& marker) {
   DCHECK_EQ(Get(&marker), this);
   if (marker_text_type_ == kNotText || marker_text_type_ == kUnresolved)
@@ -103,6 +102,17 @@ void ListMarker::ListStyleTypeChanged(LayoutObject& marker) {
   marker_text_type_ = kUnresolved;
   marker.SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
       layout_invalidation_reason::kListStyleTypeChange);
+}
+
+// If the @counter-style in use has changed, we need to update the marker text.
+void ListMarker::CounterStyleChanged(LayoutObject& marker) {
+  DCHECK_EQ(Get(&marker), this);
+  if (marker_text_type_ == kNotText || marker_text_type_ == kUnresolved)
+    return;
+
+  marker_text_type_ = kUnresolved;
+  marker.SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
+      layout_invalidation_reason::kCounterStyleChange);
 }
 
 void ListMarker::OrdinalValueChanged(LayoutObject& marker) {
@@ -420,9 +430,7 @@ const CounterStyle& ListMarker::GetCounterStyle(Document& document,
   DCHECK(RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled());
   DCHECK(style.GetListStyleType());
   DCHECK(style.GetListStyleType()->IsCounterStyle());
-  const ListStyleTypeData& list_style_data = *style.GetListStyleType();
-  return document.GetStyleEngine().FindCounterStyleAcrossScopes(
-      list_style_data.GetCounterStyleName(), list_style_data.GetTreeScope());
+  return style.GetListStyleType()->GetCounterStyle(document);
 }
 
 ListMarker::ListStyleCategory ListMarker::GetListStyleCategory(

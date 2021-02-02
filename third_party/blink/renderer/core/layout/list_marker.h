@@ -94,6 +94,7 @@ class CORE_EXPORT ListMarker {
 
   void ListStyleTypeChanged(LayoutObject&);
   void OrdinalValueChanged(LayoutObject&);
+  void CounterStyleChanged(LayoutObject&);
 
   int ListItemValue(const LayoutObject&) const;
 

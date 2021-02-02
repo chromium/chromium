@@ -246,11 +246,12 @@ class CORE_EXPORT LayoutView final : public LayoutBlockFlow {
   // FIXME: This is a work around because the current implementation of counters
   // requires walking the entire tree repeatedly and most pages don't actually
   // use either feature so we shouldn't take the performance hit when not
-  // needed. Long term we should rewrite the counter and quotes code.
+  // needed. Long term we should rewrite the counter code.
+  // TODO(xiaochengh): Or do we keep it as is?
   void AddLayoutCounter() {
     NOT_DESTROYED();
     layout_counter_count_++;
-    SetNeedsCounterUpdate();
+    SetNeedsMarkerOrCounterUpdate();
   }
   void RemoveLayoutCounter() {
     NOT_DESTROYED();
@@ -261,11 +262,26 @@ class CORE_EXPORT LayoutView final : public LayoutBlockFlow {
     NOT_DESTROYED();
     return layout_counter_count_;
   }
-  void SetNeedsCounterUpdate() {
+  void AddLayoutListItem() {
     NOT_DESTROYED();
-    needs_counter_update_ = true;
+    layout_list_item_count_++;
+    // No need to traverse and update markers at this point. We need it only
+    // when @counter-style rules are changed.
   }
-  void UpdateCounters();
+  void RemoveLayoutListItem() {
+    NOT_DESTROYED();
+    DCHECK_GT(layout_list_item_count_, 0u);
+    layout_list_item_count_--;
+  }
+  bool HasLayoutListItems() {
+    NOT_DESTROYED();
+    return layout_list_item_count_;
+  }
+  void SetNeedsMarkerOrCounterUpdate() {
+    NOT_DESTROYED();
+    needs_marker_counter_update_ = true;
+  }
+  void UpdateMarkersAndCountersAfterStyleChange();
 
   bool BackgroundIsKnownToBeOpaqueInRect(
       const PhysicalRect& local_rect) const override;
@@ -378,8 +394,9 @@ class CORE_EXPORT LayoutView final : public LayoutBlockFlow {
   scoped_refptr<IntervalArena> interval_arena_;
 
   LayoutQuote* layout_quote_head_;
-  unsigned layout_counter_count_;
-  bool needs_counter_update_ = false;
+  unsigned layout_counter_count_ = 0;
+  unsigned layout_list_item_count_ = 0;
+  bool needs_marker_counter_update_ = false;
 
   unsigned hit_test_count_;
   unsigned hit_test_cache_hits_;

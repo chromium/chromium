@@ -26,6 +26,7 @@ class CORE_EXPORT LayoutNGListItem final : public LayoutNGBlockFlow {
   }
 
   void UpdateMarkerTextIfNeeded();
+  void UpdateCounterStyle();
 
   void OrdinalValueChanged();
   void WillCollectInlines() override;
@@ -41,6 +42,7 @@ class CORE_EXPORT LayoutNGListItem final : public LayoutNGBlockFlow {
   void WillBeRemovedFromTree() override;
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
   void SubtreeDidChange() final;
+  void WillBeDestroyed() override;
 
   ListItemOrdinal ordinal_;
 };

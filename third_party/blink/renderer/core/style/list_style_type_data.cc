@@ -4,7 +4,10 @@
 
 #include "third_party/blink/renderer/core/style/list_style_type_data.h"
 
+#include "third_party/blink/renderer/core/css/counter_style.h"
 #include "third_party/blink/renderer/core/css/css_value_id_mappings.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/style/content_data.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -44,6 +47,7 @@ EListStyleType CounterStyleNameToDeprecatedEnum(const AtomicString& name) {
 
 void ListStyleTypeData::Trace(Visitor* visitor) const {
   visitor->Trace(tree_scope_);
+  visitor->Trace(counter_style_);
 }
 
 // static
@@ -71,6 +75,33 @@ EListStyleType CounterContentData::ToDeprecatedListStyleTypeEnum() const {
   if (ListStyle() == "none")
     return EListStyleType::kNone;
   return CounterStyleNameToDeprecatedEnum(ListStyle());
+}
+
+bool ListStyleTypeData::IsCounterStyleReferenceValid(Document& document) const {
+  if (!IsCounterStyle()) {
+    DCHECK(!counter_style_);
+    return true;
+  }
+
+  if (!counter_style_ || counter_style_->IsDirty())
+    return false;
+
+  // Even if the referenced counter style is clean, it may still be stale if new
+  // counter styles have been inserted, in which case the same (scope, name) now
+  // refers to a different counter style. So we make an extra lookup to verify.
+  return counter_style_ ==
+         &document.GetStyleEngine().FindCounterStyleAcrossScopes(
+             GetCounterStyleName(), GetTreeScope());
+}
+
+const CounterStyle& ListStyleTypeData::GetCounterStyle(
+    Document& document) const {
+  DCHECK(IsCounterStyle());
+  if (!IsCounterStyleReferenceValid(document)) {
+    counter_style_ = document.GetStyleEngine().FindCounterStyleAcrossScopes(
+        GetCounterStyleName(), GetTreeScope());
+  }
+  return *counter_style_;
 }
 
 }  // namespace blink

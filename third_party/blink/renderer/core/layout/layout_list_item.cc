@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/html/html_olist_element.h"
 #include "third_party/blink/renderer/core/layout/layout_list_marker.h"
 #include "third_party/blink/renderer/core/layout/layout_outside_list_marker.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/list_marker.h"
 #include "third_party/blink/renderer/core/paint/list_item_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -43,6 +44,14 @@ LayoutListItem::LayoutListItem(Element* element)
 
   SetConsumesSubtreeChangeNotification();
   RegisterSubtreeChangeListenerOnDescendants(true);
+  View()->AddLayoutListItem();
+}
+
+void LayoutListItem::WillBeDestroyed() {
+  NOT_DESTROYED();
+  if (View())
+    View()->RemoveLayoutListItem();
+  LayoutBlockFlow::WillBeDestroyed();
 }
 
 void LayoutListItem::StyleDidChange(StyleDifference diff,
@@ -83,6 +92,27 @@ void LayoutListItem::StyleDidChange(StyleDifference diff,
         list_marker->ListStyleTypeChanged(*marker);
     }
   }
+}
+
+void LayoutListItem::UpdateCounterStyle() {
+  NOT_DESTROYED();
+
+  if (!StyleRef().GetListStyleType() ||
+      StyleRef().GetListStyleType()->IsCounterStyleReferenceValid(
+          GetDocument())) {
+    return;
+  }
+
+  LayoutObject* marker = Marker();
+  if (!marker)
+    return;
+
+  if (auto* legacy_marker = DynamicTo<LayoutListMarker>(marker)) {
+    legacy_marker->CounterStyleChanged();
+    return;
+  }
+
+  ListMarker::Get(marker)->CounterStyleChanged(*marker);
 }
 
 void LayoutListItem::InsertedIntoTree() {
