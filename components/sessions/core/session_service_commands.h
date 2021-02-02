@@ -89,6 +89,10 @@ SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateSetWindowWorkspaceCommand(
     const SessionID& window_id,
     const std::string& workspace);
 
+SESSIONS_EXPORT std::unique_ptr<SessionCommand>
+CreateSetWindowVisibleOnAllWorkspacesCommand(const SessionID& window_id,
+                                             bool visible_on_all_workspaces);
+
 SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateSetTabGuidCommand(
     const SessionID& tab_id,
     const std::string& guid);

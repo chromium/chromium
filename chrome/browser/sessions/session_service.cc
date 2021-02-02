@@ -226,6 +226,16 @@ void SessionService::SetWindowWorkspace(const SessionID& window_id,
       sessions::CreateSetWindowWorkspaceCommand(window_id, workspace));
 }
 
+void SessionService::SetWindowVisibleOnAllWorkspaces(
+    const SessionID& window_id,
+    bool visible_on_all_workspaces) {
+  if (!ShouldTrackChangesToWindow(window_id))
+    return;
+
+  ScheduleCommand(sessions::CreateSetWindowVisibleOnAllWorkspacesCommand(
+      window_id, visible_on_all_workspaces));
+}
+
 void SessionService::SetTabIndexInWindow(const SessionID& window_id,
                                          const SessionID& tab_id,
                                          int new_index) {
@@ -321,6 +331,8 @@ void SessionService::WindowOpened(Browser* browser) {
   // Bento desks restore feature in ash requires this line to restore correctly
   // after creating a new browser window in a particular desk.
   SetWindowWorkspace(browser->session_id(), browser->window()->GetWorkspace());
+  SetWindowVisibleOnAllWorkspaces(
+      browser->session_id(), browser->window()->IsVisibleOnAllWorkspaces());
 }
 
 void SessionService::WindowClosing(const SessionID& window_id) {
@@ -852,6 +864,11 @@ void SessionService::BuildCommandsForBrowser(
   command_storage_manager_->AppendRebuildCommand(
       sessions::CreateSetWindowWorkspaceCommand(
           browser->session_id(), browser->window()->GetWorkspace()));
+
+  command_storage_manager_->AppendRebuildCommand(
+      sessions::CreateSetWindowVisibleOnAllWorkspacesCommand(
+          browser->session_id(),
+          browser->window()->IsVisibleOnAllWorkspaces()));
 
   windows_to_track->insert(browser->session_id());
   TabStripModel* tab_strip = browser->tab_strip_model();

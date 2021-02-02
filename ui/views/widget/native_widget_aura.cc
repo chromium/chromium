@@ -178,9 +178,14 @@ void NativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
   int desk_index;
   // Set workspace property of this window created with a specified workspace
   // in InitParams. The desk index can be kActiveWorkspace=-1, representing
-  // an active desk.
-  if (base::StringToInt(params.workspace, &desk_index))
+  // an active desk. If the window is visible on all workspaces, it belongs on
+  // the active desk.
+  if (params.visible_on_all_workspaces) {
+    window_->SetProperty(aura::client::kWindowWorkspaceKey,
+                         aura::client::kUnassignedWorkspace);
+  } else if (base::StringToInt(params.workspace, &desk_index)) {
     window_->SetProperty(aura::client::kWindowWorkspaceKey, desk_index);
+  }
 
   if (params.type == Widget::InitParams::TYPE_BUBBLE)
     wm::SetHideOnDeactivate(window_, true);
@@ -974,8 +979,10 @@ void NativeWidgetAura::OnWindowPropertyChanged(aura::Window* window,
   if (key == aura::client::kShowStateKey)
     delegate_->OnNativeWidgetWindowShowStateChanged();
 
-  if (key == aura::client::kWindowWorkspaceKey)
+  if (key == aura::client::kWindowWorkspaceKey ||
+      key == aura::client::kVisibleOnAllWorkspacesKey) {
     delegate_->OnNativeWidgetWorkspaceChanged();
+  }
 }
 
 void NativeWidgetAura::OnResizeLoopStarted(aura::Window* window) {

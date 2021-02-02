@@ -52,6 +52,9 @@ void SaveWindowPlacement(const Browser* browser,
 
 void SaveWindowWorkspace(const Browser* browser, const std::string& workspace);
 
+void SaveWindowVisibleOnAllWorkspaces(const Browser* browser,
+                                      bool visible_on_all_workspaces);
+
 // Return the |bounds| for the browser window to be used upon creation.
 // The |show_state| variable will receive the desired initial show state for
 // the window.

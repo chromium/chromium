@@ -242,6 +242,10 @@ class Browser : public TabStripModelObserver,
     // The workspace the window should open in, if the platform supports it.
     std::string initial_workspace;
 
+    // Whether the window is visible on all workspaces initially, if the
+    // platform supports it.
+    bool initial_visible_on_all_workspaces_state = false;
+
     ui::WindowShowState initial_show_state = ui::SHOW_STATE_DEFAULT;
 
     bool is_session_restore = false;
@@ -346,6 +350,9 @@ class Browser : public TabStripModelObserver,
   Profile* profile() const { return profile_; }
   gfx::Rect override_bounds() const { return override_bounds_; }
   const std::string& initial_workspace() const { return initial_workspace_; }
+  bool initial_visible_on_all_workspaces_state() const {
+    return initial_visible_on_all_workspaces_state_;
+  }
 
   // |window()| will return NULL if called before |CreateBrowserWindow()|
   // is done.
@@ -1183,6 +1190,7 @@ class Browser : public TabStripModelObserver,
   gfx::Rect override_bounds_;
   ui::WindowShowState initial_show_state_;
   const std::string initial_workspace_;
+  bool initial_visible_on_all_workspaces_state_;
 
   // Tracks when this browser is being created by session restore.
   bool is_session_restore_;

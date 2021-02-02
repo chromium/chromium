@@ -105,6 +105,8 @@ void BrowserFrame::InitBrowserFrame() {
                                              &params.show_state);
 
     params.workspace = browser_view_->browser()->initial_workspace();
+    params.visible_on_all_workspaces =
+        browser_view_->browser()->initial_visible_on_all_workspaces_state();
     const base::CommandLine& parsed_command_line =
         *base::CommandLine::ForCurrentProcess();
 
@@ -220,6 +222,8 @@ const ui::NativeTheme* BrowserFrame::GetNativeTheme() const {
 
 void BrowserFrame::OnNativeWidgetWorkspaceChanged() {
   chrome::SaveWindowWorkspace(browser_view_->browser(), GetWorkspace());
+  chrome::SaveWindowVisibleOnAllWorkspaces(browser_view_->browser(),
+                                           IsVisibleOnAllWorkspaces());
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
