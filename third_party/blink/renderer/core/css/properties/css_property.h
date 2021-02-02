@@ -59,9 +59,6 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
   bool AffectsFont() const { return flags_ & kAffectsFont; }
   bool IsBackground() const { return flags_ & kBackground; }
   bool IsBorder() const { return flags_ & kBorder; }
-  bool IsComputedValueComparable() const {
-    return flags_ & kComputedValueComparable;
-  }
   bool TakesTreeScopedValue() const { return flags_ & kTreeScopedValue; }
   bool IsInLogicalPropertyGroup() const {
     return flags_ & kInLogicalPropertyGroup;
@@ -76,13 +73,6 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
   virtual bool IsLayoutDependentProperty() const { return false; }
   virtual bool IsLayoutDependent(const ComputedStyle* style,
                                  LayoutObject* layout_object) const {
-    return false;
-  }
-
-  virtual bool ComputedValuesEqual(const ComputedStyle&,
-                                   const ComputedStyle&) const {
-    // May only be called if IsComputedValueComparable() is true.
-    NOTREACHED();
     return false;
   }
 
@@ -153,14 +143,12 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
     // element, the native appearance must be disabled.
     kBackground = 1 << 15,
     kBorder = 1 << 16,
-    // Set if ComputedValuesEqual is implemented for the given CSSProperty.
-    kComputedValueComparable = 1 << 17,
     // Set if the property values are tree-scoped references.
-    kTreeScopedValue = 1 << 18,
+    kTreeScopedValue = 1 << 17,
     // https://drafts.csswg.org/css-pseudo-4/#highlight-styling
-    kValidForHighlight = 1 << 19,
+    kValidForHighlight = 1 << 18,
     // https://drafts.csswg.org/css-logical/#logical-property-group
-    kInLogicalPropertyGroup = 1 << 20,
+    kInLogicalPropertyGroup = 1 << 19,
   };
 
   constexpr CSSProperty(CSSPropertyID property_id,

@@ -292,8 +292,6 @@ extern const char
     kSkipTouchEventFilterFilteringProcessParamValueBrowserAndRenderer[];
 
 BLINK_COMMON_EXPORT extern const base::Feature kWebXrMultiGpu;
-BLINK_COMMON_EXPORT extern const base::Feature
-    kCSSMatchedPropertiesCacheDependencies;
 
 BLINK_COMMON_EXPORT extern const base::Feature kCompressParkableStrings;
 BLINK_COMMON_EXPORT extern const base::Feature kParkableStringsToDisk;

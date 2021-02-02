@@ -336,11 +336,6 @@ void StyleCascade::ApplyCascadeAffecting(CascadeResolver& resolver) {
   LookupAndApply(GetCSSPropertyWritingMode(), resolver);
 
   if (depends_on_cascade_affecting_property_) {
-    // We could avoid marking these if this cascade provided a value, but
-    // marking them unconditionally keeps it simple. See also note about
-    // over-marking in StyleResolverState::Dependencies.
-    MarkDependency(GetCSSPropertyDirection());
-    MarkDependency(GetCSSPropertyWritingMode());
     if (direction != state_.Style()->Direction() ||
         writing_mode != state_.Style()->GetWritingMode()) {
       Reanalyze();
@@ -947,11 +942,6 @@ bool StyleCascade::ValidateFallback(const CustomProperty& property,
 
 void StyleCascade::MarkIsReferenced(const CSSProperty& referencer,
                                     const CustomProperty& referenced) {
-  // For simplicity, we mark all inherited custom property references as
-  // dependencies, even though it might not be a dependency if this cascade
-  // defines a value for that property.
-  if (!referencer.IsInherited() && referenced.IsInherited())
-    MarkDependency(referenced);
   if (!referenced.IsRegistered())
     return;
   const AtomicString& name = referenced.GetPropertyNameAtomicString();
@@ -962,10 +952,6 @@ void StyleCascade::MarkHasVariableReference(const CSSProperty& property) {
   if (!property.IsInherited())
     state_.Style()->SetHasVariableReferenceFromNonInheritedProperty();
   state_.Style()->SetHasVariableReference();
-}
-
-void StyleCascade::MarkDependency(const CSSProperty& property) {
-  state_.MarkDependency(property);
 }
 
 const Document& StyleCascade::GetDocument() const {

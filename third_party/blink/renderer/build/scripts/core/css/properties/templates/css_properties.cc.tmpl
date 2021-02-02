@@ -88,19 +88,6 @@ const CSSProperty* {{class_name}}::SurrogateFor(TextDirection direction,
   return &GetCSSProperty{{property.surrogate_for.name.to_upper_camel_case()}}();
 }
   {% endif %}
-  {% if property.computed_value_comparable %}
-bool {{class_name}}::ComputedValuesEqual(const ComputedStyle& a, const ComputedStyle& b) const {
-    {% if property.computed_value_compare_fields %}
-      {% for field in property.computed_value_compare_fields %}
-  if (!(a.{{field}}() == b.{{field}}()))
-    return false;
-      {% endfor %}
-  return true;
-    {% else %}
-  return a.{{property.getter}}() == b.{{property.getter}}();
-    {% endif %}
-}
-  {% endif %}
   {% if property.logical_property_group %}
     {% set group = property.logical_property_group %}
     {% set group_name = group.name.to_upper_camel_case() %}

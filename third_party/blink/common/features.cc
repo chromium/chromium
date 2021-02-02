@@ -717,11 +717,6 @@ const char kSkipTouchEventFilterFilteringProcessParamValueBrowserAndRenderer[] =
 const base::Feature kWebXrMultiGpu{"WebXRMultiGpu",
                                    base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables dependency support in blink::MatchedPropertiesCache, which allows
-// caching of previously uncachable objects.
-const base::Feature kCSSMatchedPropertiesCacheDependencies{
-    "CSSMatchedPropertiesCacheDependencies", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Disabling this will cause parkable strings to never be compressed.
 // This is useful for headless mode + virtual time. Since virtual time advances
 // quickly, strings may be parked too eagerly in that mode.

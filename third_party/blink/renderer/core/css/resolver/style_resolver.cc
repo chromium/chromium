@@ -1455,7 +1455,7 @@ void StyleResolver::MaybeAddToMatchedPropertiesCache(
     INCREMENT_STYLE_STATS_COUNTER(GetDocument().GetStyleEngine(),
                                   matched_property_cache_added, 1);
     matched_properties_cache_.Add(cache_success.key, *state.Style(),
-                                  *state.ParentStyle(), state.Dependencies());
+                                  *state.ParentStyle());
   }
 }
 

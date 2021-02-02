@@ -292,13 +292,8 @@ class TestCascadeAutoLock {
   CascadeResolver::AutoLock lock_;
 };
 
-class StyleCascadeTest
-    : public PageTestBase,
-      private ScopedCSSMatchedPropertiesCacheDependenciesForTest {
+class StyleCascadeTest : public PageTestBase {
  public:
-  StyleCascadeTest()
-      : ScopedCSSMatchedPropertiesCacheDependenciesForTest(true) {}
-
   CSSStyleSheet* CreateSheet(const String& css_text) {
     auto* init = MakeGarbageCollected<CSSStyleSheetInit>();
     DummyExceptionStateForTesting exception_state;
@@ -3238,77 +3233,6 @@ TEST_F(StyleCascadeTest, GetImportantSetMany) {
   EXPECT_EQ(CSSBitset({CSSPropertyID::kWidth, CSSPropertyID::kHeight,
                        CSSPropertyID::kTop}),
             *cascade.GetImportantSet());
-}
-
-TEST_F(StyleCascadeTest, NoDependenciesPresent) {
-  TestCascade cascade(GetDocument());
-  cascade.Add("left:2px");
-  cascade.Add("top:initial");
-  cascade.Add("border:1px solid black");
-  cascade.Add("--x:bar");
-  cascade.Add("direction:rtl");
-  cascade.Apply();
-  const auto& state = cascade.State();
-  EXPECT_TRUE(state.Dependencies().IsEmpty());
-  EXPECT_FALSE(state.HasIncomparableDependency());
-}
-
-TEST_F(StyleCascadeTest, ExplicitInheritanceDependencyIsDetected) {
-  TestCascade cascade(GetDocument());
-  cascade.Add("left:inherit");
-  cascade.Add("right:inherit");
-  cascade.Apply();
-  const auto& state = cascade.State();
-  EXPECT_EQ(2u, state.Dependencies().size());
-  EXPECT_TRUE(state.Dependencies().Contains(PropertyName("left")));
-  EXPECT_TRUE(state.Dependencies().Contains(PropertyName("right")));
-  EXPECT_FALSE(state.HasIncomparableDependency());
-}
-
-TEST_F(StyleCascadeTest, IncomparableDependencyDetected) {
-  ASSERT_FALSE(
-      GetCSSPropertyInternalEmptyLineHeight().IsComputedValueComparable());
-
-  TestCascade cascade(GetDocument());
-  cascade.Add("-internal-empty-line-height:inherit", CascadeOrigin::kUserAgent);
-  cascade.Apply();
-  const auto& state = cascade.State();
-  EXPECT_EQ(1u, state.Dependencies().size());
-  EXPECT_TRUE(state.Dependencies().Contains(
-      CSSPropertyName(CSSPropertyID::kInternalEmptyLineHeight)));
-  EXPECT_TRUE(state.HasIncomparableDependency());
-}
-
-TEST_F(StyleCascadeTest, CustomPropertyDependencyIsDetected) {
-  TestCascade cascade(GetDocument());
-  cascade.Add("left:var(--x,1px)");
-  cascade.Add("right:var(--x,2px)");
-  cascade.Apply();
-  const auto& state = cascade.State();
-  EXPECT_EQ(1u, state.Dependencies().size());
-  EXPECT_TRUE(state.Dependencies().Contains(PropertyName("--x")));
-  EXPECT_FALSE(state.HasIncomparableDependency());
-}
-
-TEST_F(StyleCascadeTest, NonInheritedCustomPropertyIsNoDependency) {
-  RegisterProperty(GetDocument(), "--x", "<length>", "0px", false);
-  TestCascade cascade(GetDocument());
-  cascade.Add("left:var(--x,1px)");
-  cascade.Add("right:var(--x,2px)");
-  cascade.Apply();
-  const auto& state = cascade.State();
-  EXPECT_EQ(0u, state.Dependencies().size());
-}
-
-TEST_F(StyleCascadeTest, DirectionAndWritingModeDependenciesAreDetected) {
-  TestCascade cascade(GetDocument());
-  cascade.Add("margin-inline-start: 2px");
-  cascade.Apply();
-  const auto& state = cascade.State();
-  EXPECT_EQ(2u, state.Dependencies().size());
-  EXPECT_TRUE(state.Dependencies().Contains(PropertyName("direction")));
-  EXPECT_TRUE(state.Dependencies().Contains(PropertyName("writing-mode")));
-  EXPECT_FALSE(state.HasIncomparableDependency());
 }
 
 TEST_F(StyleCascadeTest, RootColorNotModifiedByEmptyCascade) {

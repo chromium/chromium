@@ -41,9 +41,6 @@ class CORE_EXPORT CustomProperty : public Variable {
                                    const CSSParserContext&,
                                    const CSSParserLocalContext&) const override;
 
-  bool ComputedValuesEqual(const ComputedStyle&,
-                           const ComputedStyle&) const override;
-
   const CSSValue* CSSValueFromComputedStyleInternal(
       const ComputedStyle&,
       const SVGComputedStyle&,

@@ -155,28 +155,6 @@
       valid_type: "bool",
     },
 
-    // - computed_value_comparable
-    //
-    // If true, a CSSProperty::ComputedValuesEqual function is generated.
-    computed_value_comparable: {
-      default: false,
-      valid_type: "bool",
-    },
-
-    // - computed_value_compare_fields
-    //
-    // If present, the ComputedStyle fields listed will be used in the
-    // generated ComputedvaluesEqual function. This is useful if the value
-    // of a property is stored in multiple fields. For example, for
-    // vertical-align:
-    //
-    // computed_value_compare_fields: ['VerticalAlign', 'GetVerticalAlignLength']
-    //
-    // Has no effect unless computed_value_comparable is true.
-    computed_value_compare_fields: {
-      default: [],
-    },
-
     // - runtime_flag
     // The name of the flag on RuntimeEnabledFeatures
     // (e.g. "CSSOverscrollBehavior") that conditionally enables the
@@ -742,7 +720,6 @@
       style_builder_custom_functions: ["value"],
       priority: "High",
       valid_for_marker: true,
-      computed_value_comparable: true,
     },
     {
       name: "font-family",
@@ -1039,7 +1016,6 @@
       type_name: "WritingMode",
       style_builder_custom_functions: ["initial", "inherit", "value"],
       priority: "High",
-      computed_value_comparable: true,
     },
     {
       name: "-webkit-writing-mode",
@@ -1049,7 +1025,6 @@
       style_builder_custom_functions: ["initial", "inherit", "value"],
       priority: "High",
       surrogate_for: "writing-mode",
-      computed_value_comparable: true,
     },
     {
       name: "text-rendering",
@@ -1081,7 +1056,6 @@
       default_value: "StyleContentAlignmentData(ContentPosition::kNormal, ContentDistributionType::kDefault, OverflowAlignment::kDefault)",
       type_name: "StyleContentAlignmentData",
       converter: "ConvertContentAlignmentData",
-      computed_value_comparable: true,
     },
     {
       name: "align-items",
@@ -1092,7 +1066,6 @@
       default_value: "StyleSelfAlignmentData(ItemPosition::kNormal, OverflowAlignment::kDefault)",
       type_name: "StyleSelfAlignmentData",
       converter: "ConvertSelfOrDefaultAlignmentData",
-      computed_value_comparable: true,
     },
     {
       name: "alignment-baseline",
@@ -1110,7 +1083,6 @@
       default_value: "StyleSelfAlignmentData(ItemPosition::kAuto, OverflowAlignment::kDefault)",
       type_name: "StyleSelfAlignmentData",
       converter: "ConvertSelfOrDefaultAlignmentData",
-      computed_value_comparable: true,
     },
     {
       name: "aspect-ratio",
@@ -1331,7 +1303,6 @@
       style_builder_template: "color",
       valid_for_first_letter: true,
       is_border: true,
-      computed_value_comparable: true,
       logical_property_group: {
         name: "border-color",
         resolver: "bottom",
@@ -1350,7 +1321,6 @@
       typedom_types: ["Length", "Percentage"],
       valid_for_first_letter: true,
       is_border: true,
-      computed_value_comparable: true,
       logical_property_group: {
         name: "border-radius",
         resolver: "bottom-left",
@@ -1369,7 +1339,6 @@
       typedom_types: ["Length", "Percentage"],
       valid_for_first_letter: true,
       is_border: true,
-      computed_value_comparable: true,
       logical_property_group: {
         name: "border-radius",
         resolver: "bottom-right",
@@ -1389,7 +1358,6 @@
       type_name: "EBorderStyle",
       valid_for_first_letter: true,
       is_border: true,
-      computed_value_comparable: true,
       logical_property_group: {
         name: "border-style",
         resolver: "bottom",
@@ -1410,7 +1378,6 @@
       converter: "ConvertBorderWidth",
       valid_for_first_letter: true,
       is_border: true,
-      computed_value_comparable: true,
       logical_property_group: {
         name: "border-width",
         resolver: "bottom",
@@ -1501,7 +1468,6 @@
       style_builder_template: "color",
       valid_for_first_letter: true,
       is_border: true,
-      computed_value_comparable: true,
       logical_property_group: {
         name: "border-color",
         resolver: "left",
@@ -1521,7 +1487,6 @@
       type_name: "EBorderStyle",
       valid_for_first_letter: true,
       is_border: true,
-      computed_value_comparable: true,
       logical_property_group: {
         name: "border-style",
         resolver: "left",
@@ -1542,7 +1507,6 @@
       converter: "ConvertBorderWidth",
       valid_for_first_letter: true,
       is_border: true,
-      computed_value_comparable: true,
       logical_property_group: {
         name: "border-width",
         resolver: "left",
@@ -1564,7 +1528,6 @@
       style_builder_template: "color",
       valid_for_first_letter: true,
       is_border: true,
-      computed_value_comparable: true,
       logical_property_group: {
         name: "border-color",
         resolver: "right",
@@ -1584,7 +1547,6 @@
       type_name: "EBorderStyle",
       valid_for_first_letter: true,
       is_border: true,
-      computed_value_comparable: true,
       logical_property_group: {
         name: "border-style",
         resolver: "right",
@@ -1605,7 +1567,6 @@
       converter: "ConvertBorderWidth",
       valid_for_first_letter: true,
       is_border: true,
-      computed_value_comparable: true,
       logical_property_group: {
         name: "border-width",
         resolver: "right",
@@ -1627,7 +1588,6 @@
       style_builder_template: "color",
       valid_for_first_letter: true,
       is_border: true,
-      computed_value_comparable: true,
       logical_property_group: {
         name: "border-color",
         resolver: "top",
@@ -1646,7 +1606,6 @@
       typedom_types: ["Length", "Percentage"],
       valid_for_first_letter: true,
       is_border: true,
-      computed_value_comparable: true,
       logical_property_group: {
         name: "border-radius",
         resolver: "top-left",
@@ -1665,7 +1624,6 @@
       typedom_types: ["Length", "Percentage"],
       valid_for_first_letter: true,
       is_border: true,
-      computed_value_comparable: true,
       logical_property_group: {
         name: "border-radius",
         resolver: "top-right",
@@ -1685,7 +1643,6 @@
       type_name: "EBorderStyle",
       valid_for_first_letter: true,
       is_border: true,
-      computed_value_comparable: true,
       logical_property_group: {
         name: "border-style",
         resolver: "top",
@@ -1706,7 +1663,6 @@
       converter: "ConvertBorderWidth",
       valid_for_first_letter: true,
       is_border: true,
-      computed_value_comparable: true,
       logical_property_group: {
         name: "border-width",
         resolver: "top",
@@ -1723,7 +1679,6 @@
       default_value: "Length()",
       typedom_types: ["Keyword", "Length", "Percentage"],
       converter: "ConvertLengthOrAuto",
-      computed_value_comparable: true,
       logical_property_group: {
         name: "inset",
         resolver: "bottom",
@@ -2115,7 +2070,6 @@
       converter: "ConvertLengthOrAuto",
       typedom_types: ["Keyword", "Length", "Percentage"],
       keywords: ["auto"],
-      computed_value_comparable: true,
     },
     {
       name: "flex-direction",
@@ -2125,7 +2079,6 @@
       typedom_types: ["Keyword"],
       keywords: ["row", "row-reverse", "column", "column-reverse"],
       default_value: "row",
-      computed_value_comparable: true,
     },
     {
       name: "flex-grow",
@@ -2136,7 +2089,6 @@
       default_value: "0.0f",
       type_name: "float",
       typedom_types: ["Number"],
-      computed_value_comparable: true,
     },
     {
       name: "flex-shrink",
@@ -2147,7 +2099,6 @@
       default_value: "1.0f",
       type_name: "float",
       typedom_types: ["Number"],
-      computed_value_comparable: true,
     },
     {
       name: "flex-wrap",
@@ -2157,7 +2108,6 @@
       typedom_types: ["Keyword"],
       keywords: ["nowrap", "wrap", "wrap-reverse"],
       default_value: "nowrap",
-      computed_value_comparable: true,
     },
     {
       name: "float",
@@ -2326,7 +2276,6 @@
       default_value: "Length()",
       typedom_types: ["Keyword", "Length", "Percentage"],
       converter: "ConvertLengthSizing",
-      computed_value_comparable: true,
       logical_property_group: {
         name: "size",
         resolver: "vertical",
@@ -2386,7 +2335,6 @@
       default_value: "StyleContentAlignmentData(ContentPosition::kNormal, ContentDistributionType::kDefault, OverflowAlignment::kDefault)",
       type_name: "StyleContentAlignmentData",
       converter: "ConvertContentAlignmentData",
-      computed_value_comparable: true,
     },
     {
       name: "justify-items",
@@ -2397,7 +2345,6 @@
       default_value: "StyleSelfAlignmentData(ItemPosition::kLegacy, OverflowAlignment::kDefault)",
       type_name: "StyleSelfAlignmentData",
       converter: "ConvertSelfOrDefaultAlignmentData",
-      computed_value_comparable: true,
     },
     {
       name: "justify-self",
@@ -2408,7 +2355,6 @@
       default_value: "StyleSelfAlignmentData(ItemPosition::kAuto, OverflowAlignment::kDefault)",
       type_name: "StyleSelfAlignmentData",
       converter: "ConvertSelfOrDefaultAlignmentData",
-      computed_value_comparable: true,
     },
     {
       name: "left",
@@ -2421,7 +2367,6 @@
       default_value: "Length()",
       typedom_types: ["Keyword", "Length", "Percentage"],
       converter: "ConvertLengthOrAuto",
-      computed_value_comparable: true,
       logical_property_group: {
         name: "inset",
         resolver: "left",
@@ -2545,7 +2490,6 @@
       keywords: ["auto"],
       typedom_types: ["Keyword", "Length", "Percentage"],
       valid_for_first_letter: true,
-      computed_value_comparable: true,
       logical_property_group: {
         name: "margin",
         resolver: "bottom",
@@ -2564,7 +2508,6 @@
       keywords: ["auto"],
       typedom_types: ["Keyword", "Length", "Percentage"],
       valid_for_first_letter: true,
-      computed_value_comparable: true,
       logical_property_group: {
         name: "margin",
         resolver: "left",
@@ -2583,7 +2526,6 @@
       keywords: ["auto"],
       typedom_types: ["Keyword", "Length", "Percentage"],
       valid_for_first_letter: true,
-      computed_value_comparable: true,
       logical_property_group: {
         name: "margin",
         resolver: "right",
@@ -2602,7 +2544,6 @@
       keywords: ["auto"],
       typedom_types: ["Keyword", "Length", "Percentage"],
       valid_for_first_letter: true,
-      computed_value_comparable: true,
       logical_property_group: {
         name: "margin",
         resolver: "top",
@@ -2683,7 +2624,6 @@
       converter: "ConvertLengthMaxSizing",
       keywords: ["none"],
       typedom_types: ["Keyword", "Length", "Percentage"],
-      computed_value_comparable: true,
       logical_property_group: {
         name: "max-size",
         resolver: "vertical",
@@ -2700,7 +2640,6 @@
       converter: "ConvertLengthMaxSizing",
       keywords: ["none"],
       typedom_types: ["Keyword", "Length", "Percentage"],
-      computed_value_comparable: true,
       logical_property_group: {
         name: "max-size",
         resolver: "horizontal",
@@ -2716,7 +2655,6 @@
       default_value: "Length()",
       converter: "ConvertLengthSizing",
       typedom_types: ["Length", "Percentage"],
-      computed_value_comparable: true,
       logical_property_group: {
         name: "min-size",
         resolver: "vertical",
@@ -2732,7 +2670,6 @@
       default_value: "Length()",
       converter: "ConvertLengthSizing",
       typedom_types: ["Length", "Percentage"],
-      computed_value_comparable: true,
       logical_property_group: {
         name: "min-size",
         resolver: "horizontal",
@@ -3079,7 +3016,6 @@
       computed_style_custom_functions: ["setter"],
       typedom_types: ["Keyword", "Length", "Percentage"],
       valid_for_first_letter: true,
-      computed_value_comparable: true,
       logical_property_group: {
         name: "padding",
         resolver: "bottom",
@@ -3097,7 +3033,6 @@
       computed_style_custom_functions: ["setter"],
       typedom_types: ["Keyword", "Length", "Percentage"],
       valid_for_first_letter: true,
-      computed_value_comparable: true,
       logical_property_group: {
         name: "padding",
         resolver: "left",
@@ -3115,7 +3050,6 @@
       computed_style_custom_functions: ["setter"],
       typedom_types: ["Keyword", "Length", "Percentage"],
       valid_for_first_letter: true,
-      computed_value_comparable: true,
       logical_property_group: {
         name: "padding",
         resolver: "right",
@@ -3133,7 +3067,6 @@
       computed_style_custom_functions: ["setter"],
       typedom_types: ["Keyword", "Length", "Percentage"],
       valid_for_first_letter: true,
-      computed_value_comparable: true,
       logical_property_group: {
         name: "padding",
         resolver: "top",
@@ -3266,7 +3199,6 @@
       default_value: "Length()",
       typedom_types: ["Keyword", "Length", "Percentage"],
       converter: "ConvertLengthOrAuto",
-      computed_value_comparable: true,
       logical_property_group: {
         name: "inset",
         resolver: "right",
@@ -3831,7 +3763,6 @@
       valid_for_first_letter: true,
       valid_for_cue: true,
       valid_for_highlight: true,
-      computed_value_comparable: true,
     },
     {
       name: "text-decoration-line",
@@ -3847,7 +3778,6 @@
       valid_for_first_letter: true,
       valid_for_cue: true,
       valid_for_highlight: true,
-      computed_value_comparable: true,
     },
     {
       name: "text-decoration-skip-ink",
@@ -3862,7 +3792,6 @@
       valid_for_cue: true,
       valid_for_marker: true,
       valid_for_highlight: true,
-      computed_value_comparable: true,
     },
     {
       name: "text-decoration-style",
@@ -3875,7 +3804,6 @@
       valid_for_first_letter: true,
       valid_for_cue: true,
       valid_for_highlight: true,
-      computed_value_comparable: true,
     },
     {
       name: "text-decoration-thickness",
@@ -3892,7 +3820,6 @@
       typedom_types: ["Keyword", "Length", "Percentage"],
       valid_for_first_letter: true,
       valid_for_highlight: true,
-      computed_value_comparable: true,
     },
     {
       name: "text-indent",
@@ -4015,7 +3942,6 @@
       default_value: "Length()",
       typedom_types: ["Keyword", "Length", "Percentage"],
       converter: "ConvertLengthOrAuto",
-      computed_value_comparable: true,
       logical_property_group: {
         name: "inset",
         resolver: "top",
@@ -4153,8 +4079,6 @@
       typedom_types: ["Keyword", "Length", "Percentage"],
       keywords: ["baseline", "sub", "super", "text-top", "text-bottom", "middle"],
       valid_for_first_letter: true,
-      computed_value_comparable: true,
-      computed_value_compare_fields: ['VerticalAlign', 'GetVerticalAlignLength']
     },
     {
       name: "visibility",
@@ -4818,7 +4742,6 @@
       default_value: "Length()",
       typedom_types: ["Keyword", "Length", "Percentage"],
       converter: "ConvertLengthSizing",
-      computed_value_comparable: true,
       logical_property_group: {
         name: "size",
         resolver: "horizontal",

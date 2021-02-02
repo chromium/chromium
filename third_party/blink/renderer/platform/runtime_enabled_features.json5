@@ -566,10 +566,6 @@
       name: "CSSMarkerNestedPseudoElement",
       status: "experimental",
     },
-    // Enables dependency support for the MatchedPropertiesCache.
-    {
-      name: "CSSMatchedPropertiesCacheDependencies",
-    },
     {
       name: "CSSMathDepth",
       status: "experimental",

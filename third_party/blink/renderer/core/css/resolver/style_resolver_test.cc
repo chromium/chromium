@@ -241,34 +241,6 @@ TEST_F(StyleResolverTest, AnimationMaskedByImportant) {
   EXPECT_FALSE(StyleResolver::CanReuseBaseComputedStyle(state));
 }
 
-TEST_F(StyleResolverTest, CachedExplicitInheritanceFlags) {
-  ScopedCSSMatchedPropertiesCacheDependenciesForTest scoped_feature(true);
-
-  GetDocument().documentElement()->setInnerHTML(R"HTML(
-    <style>
-      #outer { height: 10px; }
-      #inner { height: inherit; }
-    </style>
-    <div id=outer>
-      <div id=inner></div>
-    </div>
-  )HTML");
-  UpdateAllLifecyclePhasesForTest();
-
-  Element* outer = GetDocument().getElementById("outer");
-  ASSERT_TRUE(outer);
-  EXPECT_TRUE(outer->ComputedStyleRef().ChildHasExplicitInheritance());
-
-  auto recalc_reason = StyleChangeReasonForTracing::Create("test");
-
-  // This will hit the MatchedPropertiesCache for both #outer/#inner,
-  // which means special care must be taken for the ChildHasExplicit-
-  // Inheritance flag to persist.
-  GetStyleEngine().MarkAllElementsForStyleRecalc(recalc_reason);
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(outer->ComputedStyleRef().ChildHasExplicitInheritance());
-}
-
 TEST_F(StyleResolverTest,
        TransitionRetargetRelativeFontSizeOnParentlessElement) {
   GetDocument().documentElement()->setInnerHTML(R"HTML(
@@ -717,8 +689,6 @@ TEST_F(StyleResolverTest, CSSMarkerPseudoElement) {
 }
 
 TEST_F(StyleResolverTest, ApplyInheritedOnlyCustomPropertyChange) {
-  ScopedCSSMatchedPropertiesCacheDependenciesForTest scoped_feature(true);
-
   // This test verifies that when we get a "apply inherited only"-type
   // hit in the MatchesPropertiesCache, we're able to detect that custom
   // properties changed, and that we therefore need to apply the non-inherited

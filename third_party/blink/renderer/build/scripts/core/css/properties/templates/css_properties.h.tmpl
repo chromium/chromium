@@ -49,7 +49,6 @@ namespace {{namespace}} {
   (property.font and 'kAffectsFont' or ''),
   (property.is_background and 'kBackground' or ''),
   (property.is_border and 'kBorder' or ''),
-  (property.computed_value_comparable and 'kComputedValueComparable' or ''),
   (property.tree_scoped_value and 'kTreeScopedValue' or ''),
   (property.valid_for_highlight and 'kValidForHighlight' or ''),
   (property.logical_property_group and 'kInLogicalPropertyGroup' or ''),
@@ -88,9 +87,6 @@ class {{class_name}} final : public {{property.superclass}} {
   {% for property_method in property.property_methods %}
   {{property_method.return_type}} {{property_method.name}}{{property_method.parameters}} const override;
   {% endfor %}
-  {% if property.computed_value_comparable %}
-  bool ComputedValuesEqual(const ComputedStyle& a, const ComputedStyle& b) const override;
-  {% endif %}
   {% if property.logical_property_group %}
   bool IsInSameLogicalPropertyGroupWithDifferentMappingLogic(CSSPropertyID) const override;
     {% if property.logical_property_group.is_logical %}

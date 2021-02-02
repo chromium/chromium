@@ -222,14 +222,4 @@ const CSSValue& StyleResolverState::ResolveLightDarkPair(
   return value;
 }
 
-void StyleResolverState::MarkDependency(const CSSProperty& property) {
-  if (!RuntimeEnabledFeatures::CSSMatchedPropertiesCacheDependenciesEnabled())
-    return;
-  if (!HasValidDependencies())
-    return;
-
-  has_incomparable_dependency_ |= !property.IsComputedValueComparable();
-  dependencies_.insert(property.GetCSSPropertyName());
-}
-
 }  // namespace blink

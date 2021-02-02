@@ -697,7 +697,6 @@ blink_core_tests_css = [
   "resolver/style_adjuster_test.cc",
   "resolver/style_builder_test.cc",
   "resolver/style_cascade_test.cc",
-  "resolver/style_resolver_state_test.cc",
   "resolver/style_resolver_test.cc",
   "rule_feature_set_test.cc",
   "rule_set_test.cc",

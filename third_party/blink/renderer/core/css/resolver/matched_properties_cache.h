@@ -48,21 +48,11 @@ class CORE_EXPORT CachedMatchedProperties final
   scoped_refptr<ComputedStyle> computed_style;
   scoped_refptr<ComputedStyle> parent_computed_style;
 
-  // g_null_atom-terminated array of property names.
-  //
-  // Note that this stores AtomicString for both standard and custom
-  // properties, for memory saving purposes. (CSSPropertyName is twice as
-  // big).
-  std::unique_ptr<AtomicString[]> dependencies;
-
   void Set(const ComputedStyle&,
            const ComputedStyle& parent_style,
-           const MatchedPropertiesVector&,
-           const HashSet<CSSPropertyName>& new_dependencies);
+           const MatchedPropertiesVector&);
   void Clear();
 
-  // True if the computed value for each dependency is equal for the
-  // cached parent style vs. the incoming parent style.
   bool DependenciesEqual(const StyleResolverState&);
 
   void Trace(Visitor*) const {}
@@ -104,10 +94,7 @@ class CORE_EXPORT MatchedPropertiesCache {
   };
 
   const CachedMatchedProperties* Find(const Key&, const StyleResolverState&);
-  void Add(const Key&,
-           const ComputedStyle&,
-           const ComputedStyle& parent_style,
-           const HashSet<CSSPropertyName>& dependencies);
+  void Add(const Key&, const ComputedStyle&, const ComputedStyle& parent_style);
 
   void Clear();
   void ClearViewportDependent();
