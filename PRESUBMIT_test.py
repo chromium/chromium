@@ -2368,14 +2368,8 @@ class BannedTypeCheckTest(unittest.TestCase):
   def testBannedMojoFunctions(self):
     input_api = MockInputApi()
     input_api.files = [
-      MockFile('some/cpp/problematic/file.cc',
-               ['mojo::DataPipe();']),
       MockFile('some/cpp/problematic/file2.cc',
                ['mojo::ConvertTo<>']),
-      MockFile('some/cpp/ok/file.cc',
-               ['CreateDataPipe();']),
-      MockFile('some/cpp/ok/file2.cc',
-               ['mojo::DataPipeDrainer();']),
       MockFile('third_party/blink/ok/file3.cc',
                ['mojo::ConvertTo<>']),
       MockFile('content/renderer/ok/file3.cc',
@@ -2385,11 +2379,8 @@ class BannedTypeCheckTest(unittest.TestCase):
     results = PRESUBMIT.CheckNoBannedFunctions(input_api, MockOutputApi())
 
     # warnings are results[0], errors are results[1]
-    self.assertEqual(2, len(results))
-    self.assertTrue('some/cpp/problematic/file.cc' in results[1].message)
+    self.assertEqual(1, len(results))
     self.assertTrue('some/cpp/problematic/file2.cc' in results[0].message)
-    self.assertTrue('some/cpp/ok/file.cc' not in results[1].message)
-    self.assertTrue('some/cpp/ok/file2.cc' not in results[1].message)
     self.assertTrue('third_party/blink/ok/file3.cc' not in results[0].message)
     self.assertTrue('content/renderer/ok/file3.cc' not in results[0].message)
 

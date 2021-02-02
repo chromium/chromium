@@ -972,14 +972,6 @@ _BANNED_CPP_FUNCTIONS = (
       (),
     ),
     (
-      r'/\bmojo::DataPipe\b',
-      (
-        'mojo::DataPipe is deprecated. Use mojo::CreateDataPipe instead.',
-      ),
-      True,
-      (),
-    ),
-    (
       'SHFileOperation',
       (
         'SHFileOperation was deprecated in Windows Vista, and there are less ',

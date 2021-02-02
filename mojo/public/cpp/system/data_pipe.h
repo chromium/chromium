@@ -153,23 +153,6 @@ inline MojoResult CreateDataPipe(
   return CreateDataPipe(options, *data_pipe_producer, *data_pipe_consumer);
 }
 
-// DEPRECATED: use |CreateDataPipe| instead.
-//
-// This class is not safe to use in production code as there is no way for it to
-// report failure while creating the pipe and it will CHECK in case of failures.
-//
-// A wrapper class that automatically creates a data pipe and owns both handles.
-class MOJO_CPP_SYSTEM_EXPORT DataPipe {
- public:
-  DataPipe();
-  explicit DataPipe(uint32_t capacity_num_bytes);
-  explicit DataPipe(const MojoCreateDataPipeOptions& options);
-  ~DataPipe();
-
-  ScopedDataPipeProducerHandle producer_handle;
-  ScopedDataPipeConsumerHandle consumer_handle;
-};
-
 }  // namespace mojo
 
 #endif  // MOJO_PUBLIC_CPP_SYSTEM_DATA_PIPE_H_
