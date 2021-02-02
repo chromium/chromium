@@ -165,10 +165,6 @@ class InstallableManager
   // Sets the icon matching |usage| as fetched.
   void SetIconFetched(const IconUsage usage);
 
-  // Returns true if all the screenshots listed in the manifest have been
-  // downloaded.
-  bool IsScreenshotsFetchComplete() const;
-
   // Returns a vector with all errors encountered for the resources requested in
   // |params|, or an empty vector if there is no error.
   std::vector<InstallableStatusCode> GetErrors(const InstallableParams& params);
@@ -269,6 +265,9 @@ class InstallableManager
 
   // The number of screenshots currently being downloaded.
   int screenshots_downloading_ = 0;
+
+  // Whether all screenshots have been fetched.
+  bool is_screenshots_fetch_complete_ = false;
 
   // Owned by the storage partition attached to the content::WebContents which
   // this object is scoped to.
