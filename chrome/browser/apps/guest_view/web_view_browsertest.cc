@@ -2771,7 +2771,7 @@ class DownloadManagerWaiter : public content::DownloadManager::Observer {
   }
 
  private:
-  base::Closure quit_closure_;
+  base::OnceClosure quit_closure_;
   bool initialized_;
   content::DownloadManager* download_manager_;
 };
