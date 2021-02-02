@@ -479,14 +479,6 @@
       ]
     },
     {
-      "id": 88,
-      "description": "Always rewrite vec/mat constructors to be consistent",
-      "cr_bugs": [398694],
-      "features": [
-        "scalarize_vec_and_mat_constructor_args"
-      ]
-    },
-    {
       "id": 89,
       "description": "Mac drivers handle struct scopes incorrectly",
       "cr_bugs": [403957],
