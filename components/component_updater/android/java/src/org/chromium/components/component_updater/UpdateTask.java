@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.component_updater;
+package org.chromium.components.component_updater;
 
 import android.content.Context;
 

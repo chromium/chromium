@@ -152,9 +152,9 @@
 #endif
 
 #if defined(OS_ANDROID)
-#include "chrome/browser/android/component_updater/background_task_update_scheduler.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/ssl/chrome_security_state_client.h"
+#include "components/component_updater/android/background_task_update_scheduler.h"
 #else
 #include "chrome/browser/devtools/devtools_auto_opener.h"
 #include "chrome/browser/gcm/gcm_product_util.h"

@@ -32,6 +32,7 @@ include_rules = [
   "+components/browser_ui/settings/android",
   "+components/browser_ui/styles/android",
   "+components/browser_ui/widget/android",
+  "+components/component_updater/android/java/src/org/chromium/components/component_updater",
   "+components/crash/android/java",
   "+components/dom_distiller/content/browser/android/java/src/org/chromium/components/dom_distiller/content",
   "+components/dom_distiller/core/android/java/src/org/chromium/components/dom_distiller/core",

@@ -1,0 +1,40 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+import("//build/config/android/rules.gni")
+
+android_library("background_task_update_scheduler_java") {
+  sources = [
+    "java/src/org/chromium/components/component_updater/UpdateScheduler.java",
+    "java/src/org/chromium/components/component_updater/UpdateTask.java",
+  ]
+  deps = [
+    ":background_task_update_scheduler_jni_headers",
+    "//base:base_java",
+    "//base:jni_java",
+    "//components/background_task_scheduler:background_task_scheduler_java",
+    "//components/background_task_scheduler:background_task_scheduler_task_ids_java",
+    "//third_party/android_deps:chromium_play_services_availability_java",
+  ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}
+
+generate_jni("background_task_update_scheduler_jni_headers") {
+  sources = [
+    "java/src/org/chromium/components/component_updater/UpdateScheduler.java",
+  ]
+}
+
+static_library("native_background_task_update_scheduler") {
+  sources = [
+    "background_task_update_scheduler.cc",
+    "background_task_update_scheduler.h",
+  ]
+  deps = [
+    ":background_task_update_scheduler_jni_headers",
+    "//base",
+    "//components/component_updater",
+  ]
+}
