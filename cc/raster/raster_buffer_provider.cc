@@ -128,7 +128,7 @@ void RasterBufferProvider::PlaybackToMemory(
       SkPaint paint;
       paint.setDither(true);
       paint.setBlendMode(SkBlendMode::kSrc);
-      surface->draw(dst_canvas.get(), 0, 0, &paint);
+      surface->draw(dst_canvas.get(), 0, 0, SkSamplingOptions(), &paint);
       return;
     }
     case viz::ETC1:
