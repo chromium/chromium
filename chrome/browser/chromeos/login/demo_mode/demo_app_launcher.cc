@@ -54,7 +54,7 @@ void DemoAppLauncher::StartDemoAppLaunch() {
   DVLOG(1) << "Launching demo app...";
   // user_id = DemoAppUserId, force_emphemeral = true, delegate = this.
   kiosk_profile_loader_.reset(new KioskProfileLoader(
-      user_manager::DemoAccountId(), KioskAppType::CHROME_APP, true, this));
+      user_manager::DemoAccountId(), KioskAppType::kChromeApp, true, this));
   kiosk_profile_loader_->Start();
 }
 

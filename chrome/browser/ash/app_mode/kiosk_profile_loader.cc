@@ -156,15 +156,15 @@ void KioskProfileLoader::Start() {
 void KioskProfileLoader::LoginAsKioskAccount() {
   login_performer_.reset(new ChromeLoginPerformer(this));
   switch (app_type_) {
-    case KioskAppType::ARC_APP:
+    case KioskAppType::kArcApp:
       // Arc kiosks do not support ephemeral mount.
       DCHECK(!use_guest_mount_);
       login_performer_->LoginAsArcKioskAccount(account_id_);
       return;
-    case KioskAppType::CHROME_APP:
+    case KioskAppType::kChromeApp:
       login_performer_->LoginAsKioskAccount(account_id_, use_guest_mount_);
       return;
-    case KioskAppType::WEB_APP:
+    case KioskAppType::kWebApp:
       // Web kiosks do not support ephemeral mount.
       DCHECK(!use_guest_mount_);
       login_performer_->LoginAsWebKioskAccount(account_id_);

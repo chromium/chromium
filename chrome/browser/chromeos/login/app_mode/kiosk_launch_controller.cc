@@ -173,7 +173,7 @@ void KioskLaunchController::Start(const KioskAppId& kiosk_app_id,
   if (host_)
     host_->GetLoginDisplay()->SetUIEnabled(true);
 
-  if (kiosk_app_id.type == KioskAppType::CHROME_APP) {
+  if (kiosk_app_id.type == KioskAppType::kChromeApp) {
     KioskAppManager::App app;
     CHECK(KioskAppManager::Get());
     CHECK(KioskAppManager::Get()->GetApp(*kiosk_app_id.app_id, &app));
@@ -212,17 +212,17 @@ void KioskLaunchController::OnProfileLoaded(Profile* profile) {
   // Do not set update `app_launcher_` if has been set.
   if (!app_launcher_) {
     switch (kiosk_app_id_.type) {
-      case KioskAppType::ARC_APP:
+      case KioskAppType::kArcApp:
         // ArcKioskAppService lifetime is bound to the profile, therefore
         // wrap it into a separate object.
         app_launcher_ = std::make_unique<ArcKioskAppServiceWrapper>(
             ArcKioskAppService::Get(profile_), this);
         break;
-      case KioskAppType::CHROME_APP:
+      case KioskAppType::kChromeApp:
         app_launcher_ = std::make_unique<StartupAppLauncher>(
             profile_, *kiosk_app_id_.app_id, this);
         break;
-      case KioskAppType::WEB_APP:
+      case KioskAppType::kWebApp:
         // Make keyboard config sync with the `VirtualKeyboardFeatures` policy.
         ChromeKeyboardControllerClient::Get()->SetKeyboardConfigFromPref(true);
         app_launcher_ = std::make_unique<WebKioskAppLauncher>(
@@ -273,21 +273,21 @@ void KioskLaunchController::OnDeletingSplashScreenView() {
 KioskAppManagerBase::App KioskLaunchController::GetAppData() {
   DCHECK(kiosk_app_id_.account_id.has_value());
   switch (kiosk_app_id_.type) {
-    case KioskAppType::CHROME_APP: {
+    case KioskAppType::kChromeApp: {
       KioskAppManagerBase::App app;
       bool app_found =
           KioskAppManager::Get()->GetApp(*kiosk_app_id_.app_id, &app);
       DCHECK(app_found);
       return app;
     }
-    case KioskAppType::ARC_APP: {
+    case KioskAppType::kArcApp: {
       const ArcKioskAppData* arc_app =
           ArcKioskAppManager::Get()->GetAppByAccountId(
               *kiosk_app_id_.account_id);
       DCHECK(arc_app);
       return KioskAppManagerBase::App(*arc_app);
     }
-    case KioskAppType::WEB_APP: {
+    case KioskAppType::kWebApp: {
       const WebKioskAppData* app = WebKioskAppManager::Get()->GetAppByAccountId(
           *kiosk_app_id_.account_id);
       DCHECK(app);
@@ -441,7 +441,7 @@ void KioskLaunchController::OnLaunchFailed(KioskAppLaunchError::Error error) {
   DCHECK_NE(KioskAppLaunchError::Error::kNone, error);
   SYSLOG(ERROR) << "Kiosk launch failed, error=" << static_cast<int>(error);
 
-  if (kiosk_app_id_.type == KioskAppType::WEB_APP) {
+  if (kiosk_app_id_.type == KioskAppType::kWebApp) {
     HandleWebAppInstallFailed();
     return;
   }
@@ -515,7 +515,7 @@ void KioskLaunchController::OnProfileLoadFailed(
 
 void KioskLaunchController::OnOldEncryptionDetected(
     const UserContext& user_context) {
-  if (kiosk_app_id_.type != KioskAppType::ARC_APP) {
+  if (kiosk_app_id_.type != KioskAppType::kArcApp) {
     NOTREACHED();
     return;
   }

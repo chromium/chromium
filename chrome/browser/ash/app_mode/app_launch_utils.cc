@@ -35,9 +35,9 @@ std::vector<std::string>* test_prefs_to_reset = nullptr;
 class AppLaunchManager : public StartupAppLauncher::Delegate {
  public:
   AppLaunchManager(Profile* profile, const KioskAppId& kiosk_app_id) {
-    CHECK(kiosk_app_id.type != KioskAppType::ARC_APP);
+    CHECK(kiosk_app_id.type != KioskAppType::kArcApp);
 
-    if (kiosk_app_id.type == KioskAppType::CHROME_APP)
+    if (kiosk_app_id.type == KioskAppType::kChromeApp)
       app_launcher_ = std::make_unique<StartupAppLauncher>(
           profile, *kiosk_app_id.app_id, this);
     else

@@ -1297,11 +1297,11 @@ void WizardController::OnEnrollmentDone() {
   VLOG(1) << "Enrollment done";
 
   if (KioskAppManager::Get()->IsAutoLaunchEnabled()) {
-    AutoLaunchKioskApp(KioskAppType::CHROME_APP);
+    AutoLaunchKioskApp(KioskAppType::kChromeApp);
   } else if (WebKioskAppManager::Get()->GetAutoLaunchAccountId().is_valid()) {
-    AutoLaunchKioskApp(KioskAppType::WEB_APP);
+    AutoLaunchKioskApp(KioskAppType::kWebApp);
   } else if (ArcKioskAppManager::Get()->GetAutoLaunchAccountId().is_valid()) {
-    AutoLaunchKioskApp(KioskAppType::ARC_APP);
+    AutoLaunchKioskApp(KioskAppType::kArcApp);
   } else if (g_browser_process->platform_part()
                  ->browser_policy_connector_chromeos()
                  ->IsEnterpriseManaged()) {
@@ -1340,7 +1340,7 @@ void WizardController::OnKioskAutolaunchScreenExit(
   switch (result) {
     case KioskAutolaunchScreen::Result::COMPLETED:
       DCHECK(KioskAppManager::Get()->IsAutoLaunchEnabled());
-      AutoLaunchKioskApp(KioskAppType::CHROME_APP);
+      AutoLaunchKioskApp(KioskAppType::kChromeApp);
       break;
     case KioskAutolaunchScreen::Result::CANCELED:
       ShowLoginScreen();
@@ -1859,7 +1859,7 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
   } else if (screen_id == AutoEnrollmentCheckScreenView::kScreenId) {
     ShowAutoEnrollmentCheckScreen();
   } else if (screen_id == AppLaunchSplashScreenView::kScreenId) {
-    AutoLaunchKioskApp(KioskAppType::CHROME_APP);
+    AutoLaunchKioskApp(KioskAppType::kChromeApp);
   } else if (screen_id == HIDDetectionView::kScreenId) {
     ShowHIDDetectionScreen();
   } else if (screen_id == DeviceDisabledScreenView::kScreenId) {
@@ -1952,20 +1952,20 @@ void WizardController::OnAccessibilityStatusChanged(
 void WizardController::AutoLaunchKioskApp(KioskAppType app_type) {
   KioskAppId kiosk_app_id;
   switch (app_type) {
-    case KioskAppType::CHROME_APP: {
+    case KioskAppType::kChromeApp: {
       KioskAppManagerBase::App app_data;
       std::string app_id = KioskAppManager::Get()->GetAutoLaunchApp();
       CHECK(KioskAppManager::Get()->GetApp(app_id, &app_data));
       kiosk_app_id = KioskAppId::ForChromeApp(app_id);
       break;
     }
-    case KioskAppType::WEB_APP: {
+    case KioskAppType::kWebApp: {
       const AccountId account_id =
           WebKioskAppManager::Get()->GetAutoLaunchAccountId();
       kiosk_app_id = KioskAppId::ForWebApp(account_id);
       break;
     }
-    case KioskAppType::ARC_APP:
+    case KioskAppType::kArcApp:
       const AccountId account_id =
           ArcKioskAppManager::Get()->GetAutoLaunchAccountId();
       kiosk_app_id = KioskAppId::ForArcApp(account_id);

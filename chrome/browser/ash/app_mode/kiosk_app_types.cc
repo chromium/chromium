@@ -17,17 +17,17 @@ KioskAppId::KioskAppId(KioskAppType type, const AccountId& account_id)
 
 // static
 KioskAppId KioskAppId::ForChromeApp(const std::string& app_id) {
-  return KioskAppId(KioskAppType::CHROME_APP, app_id);
+  return KioskAppId(KioskAppType::kChromeApp, app_id);
 }
 
 // static
 KioskAppId KioskAppId::ForArcApp(const AccountId& account_id) {
-  return KioskAppId(KioskAppType::ARC_APP, account_id);
+  return KioskAppId(KioskAppType::kArcApp, account_id);
 }
 
 // static
 KioskAppId KioskAppId::ForWebApp(const AccountId& account_id) {
-  return KioskAppId(KioskAppType::WEB_APP, account_id);
+  return KioskAppId(KioskAppType::kWebApp, account_id);
 }
 
 }  // namespace ash

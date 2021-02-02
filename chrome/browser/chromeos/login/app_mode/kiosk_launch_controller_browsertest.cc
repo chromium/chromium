@@ -67,15 +67,15 @@ class KioskLaunchControllerTest
         view_.get(), std::move(app_launcher));
 
     switch (GetParam()) {
-      case KioskAppType::ARC_APP:
+      case KioskAppType::kArcApp:
         kiosk_app_id_ = KioskAppId::ForArcApp(EmptyAccountId());
         break;
-      case KioskAppType::CHROME_APP:
+      case KioskAppType::kChromeApp:
         kiosk_app_id_ = KioskAppId::ForChromeApp(std::string());
         KioskAppManager::Get()->AddAppForTest(std::string(), EmptyAccountId(),
                                               GURL(), std::string());
         break;
-      case KioskAppType::WEB_APP:
+      case KioskAppType::kWebApp:
         kiosk_app_id_ = KioskAppId::ForWebApp(EmptyAccountId());
         break;
     }
@@ -329,9 +329,9 @@ IN_PROC_BROWSER_TEST_P(KioskLaunchControllerTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          KioskLaunchControllerTest,
-                         testing::Values(KioskAppType::ARC_APP,
-                                         KioskAppType::CHROME_APP,
-                                         KioskAppType::WEB_APP));
+                         testing::Values(KioskAppType::kArcApp,
+                                         KioskAppType::kChromeApp,
+                                         KioskAppType::kWebApp));
 
 class KioskLaunchControllerWithExtensionTest
     : public KioskLaunchControllerTest {
@@ -452,9 +452,9 @@ IN_PROC_BROWSER_TEST_P(KioskLaunchControllerWithExtensionTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          KioskLaunchControllerWithExtensionTest,
-                         testing::Values(KioskAppType::ARC_APP,
-                                         KioskAppType::CHROME_APP,
-                                         KioskAppType::WEB_APP));
+                         testing::Values(KioskAppType::kArcApp,
+                                         KioskAppType::kChromeApp,
+                                         KioskAppType::kWebApp));
 
 class KioskLaunchControllerWithInvalidExtensionTest
     : public KioskLaunchControllerWithExtensionTest {
@@ -493,7 +493,7 @@ IN_PROC_BROWSER_TEST_P(KioskLaunchControllerWithInvalidExtensionTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          KioskLaunchControllerWithInvalidExtensionTest,
-                         testing::Values(KioskAppType::ARC_APP,
-                                         KioskAppType::CHROME_APP,
-                                         KioskAppType::WEB_APP));
+                         testing::Values(KioskAppType::kArcApp,
+                                         KioskAppType::kChromeApp,
+                                         KioskAppType::kWebApp));
 }  // namespace chromeos

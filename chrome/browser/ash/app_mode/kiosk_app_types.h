@@ -13,7 +13,7 @@
 namespace ash {
 
 // Type of different kiosk apps to be launched.
-enum class KioskAppType { ARC_APP, CHROME_APP, WEB_APP };
+enum class KioskAppType { kArcApp, kChromeApp, kWebApp };
 
 // Universal identifier for all kiosk apps.
 class KioskAppId {
