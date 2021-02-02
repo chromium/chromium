@@ -101,7 +101,6 @@ class COMPONENT_EXPORT(HERMES_CLIENT) FakeHermesEuiccClient
                                          std::string activation_code);
   void CreateCellularService(const dbus::ObjectPath& euicc_path,
                              const dbus::ObjectPath& carrier_profile_path);
-  void RemoveCellularService(const dbus::ObjectPath& carrier_profile_path);
   void CallNotifyPropertyChanged(const dbus::ObjectPath& object_path,
                                  const std::string& property_name);
   void NotifyPropertyChanged(const dbus::ObjectPath& object_path,

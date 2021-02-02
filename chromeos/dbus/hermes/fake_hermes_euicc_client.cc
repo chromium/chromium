@@ -417,7 +417,6 @@ void FakeHermesEuiccClient::DoUninstallProfile(
     return;
   }
 
-  RemoveCellularService(carrier_profile_path);
   installed_profiles.erase(it);
   euicc_properties->installed_carrier_profiles().ReplaceValue(
       installed_profiles);
@@ -465,14 +464,6 @@ void FakeHermesEuiccClient::CreateCellularService(
                            service_path);
 }
 
-void FakeHermesEuiccClient::RemoveCellularService(
-    const dbus::ObjectPath& carrier_profile_path) {
-  ShillServiceClient::TestInterface* service_test =
-      ShillServiceClient::Get()->GetTestInterface();
-  service_test->RemoveService(profile_service_path_map_[carrier_profile_path]);
-  profile_service_path_map_.erase(carrier_profile_path);
-}
-
 void FakeHermesEuiccClient::CallNotifyPropertyChanged(
     const dbus::ObjectPath& object_path,
     const std::string& property_name) {
@@ -498,6 +489,7 @@ void FakeHermesEuiccClient::QueueInstalledProfile(
   auto iter = installed_profile_queue_map_.find(euicc_path);
   if (iter != installed_profile_queue_map_.end()) {
     iter->second->push(profile_path);
+    return;
   }
 
   std::unique_ptr<InstalledProfileQueue> installed_profile_queue =

@@ -19,6 +19,7 @@ namespace chromeos {
 class AutoConnectHandler;
 class CellularESimProfileHandler;
 class CellularInhibitor;
+class CellularESimUninstallHandler;
 class CellularMetricsLogger;
 class ClientCertResolver;
 class GeolocationHandler;
@@ -79,6 +80,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
   // NetworkHandler.
   AutoConnectHandler* auto_connect_handler();
   CellularESimProfileHandler* cellular_esim_profile_handler();
+  CellularESimUninstallHandler* cellular_esim_uninstall_handler();
   CellularInhibitor* cellular_inhibitor();
   NetworkStateHandler* network_state_handler();
   NetworkDeviceHandler* network_device_handler();
@@ -126,6 +128,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
       prohibited_technologies_handler_;
   std::unique_ptr<UIProxyConfigService> ui_proxy_config_service_;
   std::unique_ptr<CellularMetricsLogger> cellular_metrics_logger_;
+  std::unique_ptr<CellularESimUninstallHandler>
+      cellular_esim_uninstall_handler_;
 
   // True when the device is managed by policy.
   bool is_enterprise_managed_ = false;

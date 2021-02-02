@@ -8,6 +8,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/network/auto_connect_handler.h"
 #include "chromeos/network/cellular_esim_profile_handler_impl.h"
+#include "chromeos/network/cellular_esim_uninstall_handler.h"
 #include "chromeos/network/cellular_inhibitor.h"
 #include "chromeos/network/cellular_metrics_logger.h"
 #include "chromeos/network/client_cert_resolver.h"
@@ -39,6 +40,7 @@ NetworkHandler::NetworkHandler()
   network_device_handler_.reset(new NetworkDeviceHandlerImpl());
   if (features::IsCellularActivationUiEnabled()) {
     cellular_esim_profile_handler_.reset(new CellularESimProfileHandlerImpl());
+    cellular_esim_uninstall_handler_.reset(new CellularESimUninstallHandler());
     cellular_inhibitor_.reset(new CellularInhibitor());
   }
   network_profile_handler_.reset(new NetworkProfileHandler());
@@ -66,11 +68,6 @@ NetworkHandler::~NetworkHandler() {
 void NetworkHandler::Init() {
   network_state_handler_->InitShillPropertyHandler();
   network_device_handler_->Init(network_state_handler_.get());
-  if (features::IsCellularActivationUiEnabled()) {
-    cellular_esim_profile_handler_->Init();
-    cellular_inhibitor_->Init(network_state_handler_.get(),
-                              network_device_handler_.get());
-  }
   network_profile_handler_->Init();
   network_configuration_handler_->Init(network_state_handler_.get(),
                                        network_device_handler_.get());
@@ -81,6 +78,14 @@ void NetworkHandler::Init() {
   network_connection_handler_->Init(
       network_state_handler_.get(), network_configuration_handler_.get(),
       managed_network_configuration_handler_.get());
+  if (features::IsCellularActivationUiEnabled()) {
+    cellular_esim_profile_handler_->Init();
+    cellular_inhibitor_->Init(network_state_handler_.get(),
+                              network_device_handler_.get());
+    cellular_esim_uninstall_handler_->Init(
+        cellular_inhibitor_.get(), network_configuration_handler_.get(),
+        network_connection_handler_.get(), network_state_handler_.get());
+  }
   cellular_metrics_logger_->Init(network_state_handler_.get(),
                                  network_connection_handler_.get());
   if (network_cert_migrator_)
@@ -166,6 +171,11 @@ NetworkStateHandler* NetworkHandler::network_state_handler() {
 
 AutoConnectHandler* NetworkHandler::auto_connect_handler() {
   return auto_connect_handler_.get();
+}
+
+CellularESimUninstallHandler*
+NetworkHandler::cellular_esim_uninstall_handler() {
+  return cellular_esim_uninstall_handler_.get();
 }
 
 CellularInhibitor* NetworkHandler::cellular_inhibitor() {
