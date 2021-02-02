@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include "base/component_export.h"
+#include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "ui/base/clipboard/clipboard.h"
 
@@ -45,6 +46,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardNonBacked
  private:
   friend class Clipboard;
   friend class ClipboardNonBackedTest;
+  FRIEND_TEST_ALL_PREFIXES(ClipboardNonBackedTest, TextURIList);
   ClipboardNonBacked();
   ~ClipboardNonBacked() override;
 

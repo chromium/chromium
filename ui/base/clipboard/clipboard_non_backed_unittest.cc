@@ -5,12 +5,25 @@
 #include "ui/base/clipboard/clipboard_non_backed.h"
 
 #include <memory>
+#include <vector>
 
+#include "base/strings/string16.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard_data.h"
 
 namespace ui {
+namespace {
+
+std::vector<std::string> UTF8Types(std::vector<base::string16> types) {
+  std::vector<std::string> result;
+  for (const base::string16& type : types)
+    result.push_back(base::UTF16ToUTF8(type));
+  return result;
+}
+
+}  // namespace
 
 class ClipboardNonBackedTest : public testing::Test {
  public:
@@ -72,6 +85,30 @@ TEST_F(ClipboardNonBackedTest, AdminWriteDoesNotRecordHistograms) {
 
   histogram_tester.ExpectTotalCount("Clipboard.Read", 0);
   histogram_tester.ExpectTotalCount("Clipboard.Write", 0);
+}
+
+// Tests that site bookmark URLs are accessed as text, and
+// IsFormatAvailable('text/uri-list') is only true for files.
+TEST_F(ClipboardNonBackedTest, TextURIList) {
+  auto data = std::make_unique<ClipboardData>();
+  data->set_bookmark_url("http://example.com");
+  clipboard()->WriteClipboardData(std::move(data));
+  std::vector<base::string16> types;
+  clipboard()->ReadAvailableTypes(ClipboardBuffer::kCopyPaste,
+                                  /*data_dst=*/nullptr, &types);
+
+  // With bookmark data, available types should be only 'text/plain'.
+  EXPECT_EQ(std::vector<std::string>({"text/plain"}), UTF8Types(types));
+  EXPECT_TRUE(clipboard()->IsFormatAvailable(ClipboardFormatType::GetUrlType(),
+                                             ClipboardBuffer::kCopyPaste,
+                                             /*data_dst=*/nullptr));
+  EXPECT_FALSE(clipboard()->IsFormatAvailable(
+      ClipboardFormatType::GetType("text/uri-list"),
+      ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr));
+
+  // TODO(crbug.com/487266): Ensure 'text/uri-list' is available when clipboard
+  // has file support with files available on the clipboard.
 }
 
 }  // namespace ui

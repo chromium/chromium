@@ -51,7 +51,7 @@ ClipboardFormatType ClipboardFormatType::GetType(
 
 // static
 const ClipboardFormatType& ClipboardFormatType::GetUrlType() {
-  static base::NoDestructor<ClipboardFormatType> type(kMimeTypeURIList);
+  static base::NoDestructor<ClipboardFormatType> type(kMimeTypeMozillaURL);
   return *type;
 }
 

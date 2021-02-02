@@ -8,7 +8,9 @@ namespace ui {
 
 const char kMimeTypeText[] = "text/plain";
 const char kMimeTypeTextUtf8[] = "text/plain;charset=utf-8";
+// Used for file:// URLs.
 const char kMimeTypeURIList[] = "text/uri-list";
+// Used for site URL bookmarks.
 const char kMimeTypeMozillaURL[] = "text/x-moz-url";
 const char kMimeTypeDownloadURL[] = "downloadurl";
 const char kMimeTypeHTML[] = "text/html";
