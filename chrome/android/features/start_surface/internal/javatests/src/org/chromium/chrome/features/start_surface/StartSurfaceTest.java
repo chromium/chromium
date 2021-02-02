@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.features.start_surface;
 
+import static android.os.Build.VERSION_CODES.N;
 import static android.os.Build.VERSION_CODES.P;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -1879,6 +1880,7 @@ public class StartSurfaceTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
+    @DisableIf.Build(sdk_is_less_than = N, message = "https://crbug.com/1173576")
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/single/show_stack_tab_switcher/true"
             + "/open_ntp_instead_of_start/true"})
