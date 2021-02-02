@@ -14,6 +14,8 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/i18n/rtl.h"
 #include "base/json/json_writer.h"
 #include "base/location.h"
@@ -25,6 +27,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -1530,6 +1533,46 @@ PrintRenderFrameHelper::CreatePreviewDocument() {
       ConvertUnit(print_params.printable_area.y(), dpi, kPointsPerInch),
       ConvertUnit(print_params.printable_area.width(), dpi, kPointsPerInch),
       ConvertUnit(print_params.printable_area.height(), dpi, kPointsPerInch));
+
+  // TODO(crbug.com/1172868): Remove this crash key logging once we get the
+  // information about |default_page_layout| and |printable_area_in_points|.
+  // The purpose of this is to know if the renderer passes invalid params to
+  // the browser for DidGetDefaultPageLayout() and which value is invalid.
+  if (default_page_layout->margin_top < 0 ||
+      default_page_layout->margin_left < 0 ||
+      default_page_layout->margin_bottom < 0 ||
+      default_page_layout->margin_right < 0 ||
+      default_page_layout->content_width < 0 ||
+      default_page_layout->content_height < 0 ||
+      printable_area_in_points.width() <= 0 ||
+      printable_area_in_points.height() <= 0) {
+    static auto* margins_key = base::debug::AllocateCrashKeyString(
+        "print_margins", base::debug::CrashKeySize::Size256);
+    static auto* content_size_key = base::debug::AllocateCrashKeyString(
+        "print_content_size", base::debug::CrashKeySize::Size64);
+    static auto* printable_area_key = base::debug::AllocateCrashKeyString(
+        "printable_area_in_points", base::debug::CrashKeySize::Size64);
+
+    std::string margins = base::StringPrintf(
+        "margin_top:%.2f, margin_left:%.2f, margin_bottom:%.2f, "
+        "margin_right:%.2f",
+        default_page_layout->margin_top, default_page_layout->margin_left,
+        default_page_layout->margin_bottom, default_page_layout->margin_right);
+    base::debug::ScopedCrashKeyString scoped_margins(margins_key, margins);
+    std::string content_size = base::StringPrintf(
+        "content_width:%.2f, content_height:%.2f, scale:%.2f",
+        default_page_layout->content_width, default_page_layout->content_height,
+        scale_factor);
+    base::debug::ScopedCrashKeyString scoped_content_size(content_size_key,
+                                                          content_size);
+    base::debug::ScopedCrashKeyString scoped_printable_area(
+        printable_area_key, printable_area_in_points.ToString());
+    static auto* url_key = base::debug::AllocateCrashKeyString(
+        "print_url", base::debug::CrashKeySize::Size256);
+    base::debug::ScopedCrashKeyString scoped_url(
+        url_key, base::UTF16ToUTF8(print_params.url));
+    base::debug::DumpWithoutCrashing();
+  }
 
   // Margins: Send default page layout to browser process.
   preview_ui_->DidGetDefaultPageLayout(
