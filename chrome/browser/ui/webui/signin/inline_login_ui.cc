@@ -105,6 +105,7 @@ void AddEduStrings(content::WebUIDataSource* source,
                              IDS_EDU_COEXISTENCE_ERROR_HEADING);
   source->AddLocalizedString("eduCoexistenceErrorDescription",
                              IDS_EDU_COEXISTENCE_ERROR_DESCRIPTION);
+  source->AddLocalizedString("loadingMessage", IDS_LOGIN_GAIA_LOADING_MESSAGE);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
