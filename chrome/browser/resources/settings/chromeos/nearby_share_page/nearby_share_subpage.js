@@ -93,6 +93,8 @@ Polymer({
     },
   },
 
+  listeners: {'onboarding-cancelled': 'onOnboardingCancelled_'},
+
   /** @private {?nearbyShare.mojom.ReceiveObserverReceiver} */
   receiveObserver_: null,
 
@@ -394,5 +396,11 @@ Polymer({
    */
   getAccountRowLabel(profileName, profileLabel) {
     return this.i18n('nearbyShareAccountRowLabel', profileName, profileLabel);
+  },
+
+  /** @private */
+  onOnboardingCancelled_() {
+    // Return to main settings page multidevice section
+    settings.Router.getInstance().navigateTo(settings.routes.MULTIDEVICE);
   },
 });

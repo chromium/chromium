@@ -27,6 +27,7 @@ Polymer({
 
   listeners: {
     'next': 'onNext_',
+    'close': 'onClose_',
     'view-enter-start': 'onViewEnterStart_',
   },
 
@@ -44,6 +45,11 @@ Polymer({
             this.fire('change-page', {page: 'visibility'});
           }
         });
+  },
+
+  /** @private */
+  onClose_() {
+    this.fire('onboarding-cancelled');
   },
 
   /** @private */

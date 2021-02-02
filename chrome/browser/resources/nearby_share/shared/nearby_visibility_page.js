@@ -30,14 +30,24 @@ Polymer({
     },
   },
 
-  listeners: {'next': 'onNext_', 'manage-contacts': 'onManageContacts_'},
+  listeners: {
+    'next': 'onNext_',
+    'manage-contacts': 'onManageContacts_',
+    'close': 'onClose_'
+  },
 
+  /** @private */
   onNext_() {
     const contactVisibility = /** @type {NearbyContactVisibilityElement} */
         (this.$.contactVisibility);
     contactVisibility.saveVisibilityAndAllowedContacts();
     this.set('settings.enabled', true);
     this.fire('onboarding-complete');
+  },
+
+  /** @private */
+  onClose_() {
+    this.fire('onboarding-cancelled');
   },
 
   /** @private */

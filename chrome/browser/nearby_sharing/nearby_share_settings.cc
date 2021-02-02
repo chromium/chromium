@@ -8,6 +8,7 @@
 #include "base/values.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_enums.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
+#include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
@@ -104,6 +105,12 @@ void NearbyShareSettings::SetEnabled(bool enabled) {
     // first time, that onboarding was run.
     pref_service_->SetBoolean(prefs::kNearbySharingOnboardingCompletePrefName,
                               true);
+
+    if (GetVisibility() == Visibility::kUnknown) {
+      NS_LOG(ERROR) << "Nearby Share enabled with visibility unset. Setting "
+                       "visibility to kNoOne.";
+      SetVisibility(Visibility::kNoOne);
+    }
   }
 }
 
@@ -129,7 +136,7 @@ void NearbyShareSettings::SetDeviceName(
     const std::string& device_name,
     base::OnceCallback<void(nearby_share::mojom::DeviceNameValidationResult)>
         callback) {
-  return std::move(callback).Run(
+  std::move(callback).Run(
       local_device_data_manager_->SetDeviceName(device_name));
 }
 
