@@ -96,16 +96,20 @@ preprocess_if_expr("preprocess_generated") {
 
   if (!is_android) {
     in_files += [
+      "command.m.js",
+      "context_menu_handler.m.js",
       "focus_row_behavior.m.js",
       "focus_without_ink.m.js",
+      "menu_button.m.js",
+      "menu_item.m.js",
+      "menu.m.js",
+      "position_util.m.js",
     ]
   }
 
   if (is_chromeos_ash) {
     in_files += [
       "array_data_model.m.js",
-      "command.m.js",
-      "context_menu_handler.m.js",
       "dialogs.m.js",
       "grid.m.js",
       "list_item.m.js",
@@ -113,10 +117,6 @@ preprocess_if_expr("preprocess_generated") {
       "list_selection_controller.m.js",
       "list_selection_model.m.js",
       "list_single_selection_model.m.js",
-      "menu_button.m.js",
-      "menu_item.m.js",
-      "menu.m.js",
-      "position_util.m.js",
       "splitter.m.js",
     ]
   }

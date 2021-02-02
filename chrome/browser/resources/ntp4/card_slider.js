@@ -2,6 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
+import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
+import {isRTL} from 'chrome://resources/js/util.m.js';
+
+import {TouchHandler} from './touch_handler.js';
+
 /**
  * @fileoverview Card slider implementation. Allows you to create interactions
  * that have items that can slide left to right to reveal additional items.
@@ -23,9 +29,6 @@
 
 // Use an anonymous function to enable strict mode just for this file (which
 // will be concatenated with other files when embedded in Chrome
-cr.define('ntp', function() {
-  'use strict';
-
   /**
    * @constructor
    * @param {!Element} frame The bounding rectangle that cards are visible in.
@@ -33,7 +36,7 @@ cr.define('ntp', function() {
    *     listeners attached to it.
    * @param {number} cardWidth The width of each card should have.
    */
-  function CardSlider(frame, container, cardWidth) {
+  export function CardSlider(frame, container, cardWidth) {
     /**
      * @type {!Element}
      * @private
@@ -67,10 +70,10 @@ cr.define('ntp', function() {
     this.cardWidth_ = cardWidth;
 
     /**
-     * @type {!ntp.TouchHandler}
+     * @type {!TouchHandler}
      * @private
      */
-    this.touchHandler_ = new ntp.TouchHandler(this.container_);
+    this.touchHandler_ = new TouchHandler(this.container_);
   }
 
 
@@ -146,7 +149,6 @@ cr.define('ntp', function() {
       // available.  Note that this has minimal impact in the common case of
       // no touch events (eg. we're mainly just adding listeners for events that
       // will never trigger).
-      const TouchHandler = ntp.TouchHandler;
       this.container_.addEventListener(
           TouchHandler.EventType.TOUCH_START, this.onTouchStart_.bind(this));
       this.container_.addEventListener(
@@ -529,9 +531,9 @@ cr.define('ntp', function() {
 
         // We also dispatch an event on the cards themselves.
         if (previousCard) {
-          cr.dispatchSimpleEvent(previousCard, 'carddeselected', true, true);
+          dispatchSimpleEvent(previousCard, 'carddeselected', true, true);
         }
-        cr.dispatchSimpleEvent(
+        dispatchSimpleEvent(
             this.currentCardValue, 'cardselected', true, true);
       }
 
@@ -611,7 +613,7 @@ cr.define('ntp', function() {
      * @private
      */
     onTouchStart_(e) {
-      e = /** @type {!ntp.TouchHandler.Event} */ (e);
+      e = /** @type {!TouchHandler.Event} */ (e);
       this.container_.style.transition = '';
       e.enableDrag = true;
     },
@@ -623,7 +625,7 @@ cr.define('ntp', function() {
      * @private
      */
     onDragStart_(e) {
-      e = /** @type {!ntp.TouchHandler.Event} */ (e);
+      e = /** @type {!TouchHandler.Event} */ (e);
       e.enableDrag =
           this.cardCount > 1 && Math.abs(e.dragDeltaX) > Math.abs(e.dragDeltaY);
     },
@@ -635,7 +637,7 @@ cr.define('ntp', function() {
      * @private
      */
     onDragMove_(e) {
-      e = /** @type {!ntp.TouchHandler.Event} */ (e);
+      e = /** @type {!TouchHandler.Event} */ (e);
       let deltaX = e.dragDeltaX;
       // If dragging beyond the first or last card then apply a backoff so the
       // dragging feels stickier than usual.
@@ -653,7 +655,7 @@ cr.define('ntp', function() {
      * @private
      */
     onDragEnd_(e) {
-      e = /** @type {!ntp.TouchHandler.Event} */ (e);
+      e = /** @type {!TouchHandler.Event} */ (e);
       const deltaX = e.dragDeltaX;
       const velocity = this.touchHandler_.getEndVelocity().x;
       const newX = this.currentLeft_ + deltaX;
@@ -688,6 +690,3 @@ cr.define('ntp', function() {
       this.transformToCurrentCard_(true);
     },
   };
-
-  return {CardSlider: CardSlider};
-});

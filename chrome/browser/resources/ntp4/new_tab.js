@@ -2,6 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './strings.m.js';
+
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
+import {getUrlForCss} from 'chrome://resources/js/icon.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {parseHtmlSubset} from 'chrome://resources/js/parse_html_subset.m.js';
+import {$, appendParam, getRequiredElement} from 'chrome://resources/js/util.m.js';
+
+import {AppInfo} from './app_info.js';
+import {APP_LAUNCH, AppsPage} from './apps_page.js';
+import {PageListView} from './page_list_view.js';
+
 /**
  * @fileoverview New tab page 4
  * This is the main code for a previous version of the Chrome NTP ("NTP4").
@@ -10,13 +23,8 @@
 
 // Use an anonymous function to enable strict mode just for this file (which
 // will be concatenated with other files when embedded in Chrome
-cr.define('ntp', function() {
-  'use strict';
 
-  /**
-   * NewTabView instance.
-   * @type {!Object|undefined}
-   */
+  /** @type {!NewTabView|undefined} */
   let newTabView;
 
   /**
@@ -45,12 +53,12 @@ cr.define('ntp', function() {
    * Creates a NewTabView object. NewTabView extends PageListView with
    * new tab UI specific logics.
    * @constructor
-   * @extends {ntp.PageListView}
+   * @extends {PageListView}
    */
   function NewTabView() {
-    const pageSwitcherStart = /** @type {!ntp.PageSwitcher} */ (
+    const pageSwitcherStart = /** @type {!Element} */ (
         getRequiredElement('page-switcher-start'));
-    const pageSwitcherEnd = /** @type {!ntp.PageSwitcher} */ (
+    const pageSwitcherEnd = /** @type {!Element} */ (
         getRequiredElement('page-switcher-end'));
     this.initialize(
         getRequiredElement('page-list'), getRequiredElement('dot-list'),
@@ -60,7 +68,7 @@ cr.define('ntp', function() {
 
   // TODO(dbeam): NewTabView is now the only extender of PageListView; these
   // classes should be merged.
-  NewTabView.prototype = {__proto__: ntp.PageListView.prototype};
+  NewTabView.prototype = {__proto__: PageListView.prototype};
 
   /**
    * Invoked at startup once the DOM is available to initialize the app.
@@ -108,7 +116,7 @@ cr.define('ntp', function() {
 
       startTime = Date.now();
 
-      cr.addWebUIListener('theme-changed', () => {
+      addWebUIListener('theme-changed', () => {
         $('themecss').href =
             'chrome://theme/css/new_tab_theme.css?' + Date.now();
       });
@@ -119,7 +127,7 @@ cr.define('ntp', function() {
   /**
    * Launches the chrome web store app with the chrome-ntp-launcher
    * source.
-   * @param {Event} e The click/auxclick event.
+   * @param {!Event} e The click/auxclick event.
    */
   function onChromeWebStoreButtonClick(e) {
     if (e.button > 1) {
@@ -127,7 +135,7 @@ cr.define('ntp', function() {
     }  // Ignore buttons other than left and middle.
     chrome.send(
         'recordAppLaunchByURL',
-        [this.href, ntp.APP_LAUNCH.NTP_WEBSTORE_FOOTER]);
+        [e.currentTarget.href, APP_LAUNCH.NTP_WEBSTORE_FOOTER]);
   }
 
   /**
@@ -258,7 +266,7 @@ cr.define('ntp', function() {
       const headerContainer = $('login-status-header-container');
       headerContainer.classList.toggle('login-status-icon', !!iconURL);
       headerContainer.style.backgroundImage =
-          iconURL ? cr.icon.getUrlForCss(iconURL) : 'none';
+          iconURL ? getUrlForCss(iconURL) : 'none';
     }
   }
 
@@ -279,7 +287,7 @@ cr.define('ntp', function() {
   /**
    * Called by chrome when a new app has been added to chrome or has been
    * enabled if previously disabled.
-   * @param {Object} appData A data structure full of relevant information for
+   * @param {AppInfo} appData A data structure full of relevant information for
    *     the app.
    * @param {boolean=} opt_highlight Whether the app about to be added should
    *     be highlighted.
@@ -290,7 +298,7 @@ cr.define('ntp', function() {
 
   /**
    * Called by chrome when an app has changed positions.
-   * @param {Object} appData The data for the app. This contains page and
+   * @param {AppInfo} appData The data for the app. This contains page and
    *     position indices.
    */
   function appMoved(appData) {
@@ -300,7 +308,7 @@ cr.define('ntp', function() {
   /**
    * Called by chrome when an existing app has been disabled or
    * removed/uninstalled from chrome.
-   * @param {Object} appData A data structure full of relevant information for
+   * @param {AppInfo} appData A data structure full of relevant information for
    *     the app.
    * @param {boolean} isUninstall True if the app is being uninstalled;
    *     false if the app is being disabled.
@@ -323,7 +331,7 @@ cr.define('ntp', function() {
    * Called whenever tiles should be re-arranging themselves out of the way
    * of a moving or insert tile.
    */
-  function enterRearrangeMode() {
+  export function enterRearrangeMode() {
     newTabView.enterRearrangeMode();
   }
 
@@ -333,8 +341,8 @@ cr.define('ntp', function() {
    * Note that calls to this function can occur at any time, not just in
    * response to a getApps request. For example, when a user
    * installs/uninstalls an app on another synchronized devices.
-   * @param {Object} data An object with all the data on available
-   *        applications.
+   * @param {{apps: Array<AppInfo>, appPageNames: Array<string>}} data
+   *     An object with all the data on available applications.
    */
   function getAppsCallback(data) {
     newTabView.getAppsCallback(data);
@@ -342,31 +350,31 @@ cr.define('ntp', function() {
 
   /**
    * Return the index of the given apps page.
-   * @param {ntp.AppsPage} page The AppsPage we wish to find.
+   * @param {AppsPage} page The AppsPage we wish to find.
    * @return {number} The index of |page| or -1 if it is not in the collection.
    */
-  function getAppsPageIndex(page) {
+  export function getAppsPageIndex(page) {
     return newTabView.getAppsPageIndex(page);
   }
 
-  function getCardSlider() {
+  export function getCardSlider() {
     return newTabView.cardSlider;
   }
 
   /**
    * Invoked whenever some app is released
    */
-  function leaveRearrangeMode() {
+  export function leaveRearrangeMode() {
     newTabView.leaveRearrangeMode();
   }
 
   /**
    * Save the name of an apps page.
    * Store the apps page name into the preferences store.
-   * @param {ntp.AppsPage} appPage The app page for which we wish to save.
+   * @param {AppsPage} appPage The app page for which we wish to save.
    * @param {string} name The name of the page.
    */
-  function saveAppPageName(appPage, name) {
+  export function saveAppPageName(appPage, name) {
     newTabView.saveAppPageName(appPage, name);
   }
 
@@ -375,25 +383,21 @@ cr.define('ntp', function() {
   }
 
   // Return an object with all the exports
-  return {
-    appAdded: appAdded,
-    appMoved: appMoved,
-    appRemoved: appRemoved,
-    appsPrefChangeCallback: appsPrefChangeCallback,
-    enterRearrangeMode: enterRearrangeMode,
-    getAppsCallback: getAppsCallback,
-    getAppsPageIndex: getAppsPageIndex,
-    getCardSlider: getCardSlider,
-    onLoad: onLoad,
-    leaveRearrangeMode: leaveRearrangeMode,
-    saveAppPageName: saveAppPageName,
-    setAppToBeHighlighted: setAppToBeHighlighted,
-    setBookmarkBarAttached: setBookmarkBarAttached,
-    setFaviconDominantColor: setFaviconDominantColor,
-    updateLogin: updateLogin
+  const exports = {
+    appAdded,
+    appMoved,
+    appRemoved,
+    appsPrefChangeCallback,
+    getAppsCallback,
+    setAppToBeHighlighted,
+    setBookmarkBarAttached,
+    setFaviconDominantColor,
+    updateLogin,
   };
-});
 
-document.addEventListener('DOMContentLoaded', ntp.onLoad);
+window['ntp'] = window['ntp'] || {};
+for (const key of Object.keys(exports)) {
+  window['ntp'][key] = exports[key];
+}
 
-const toCssPx = cr.ui.toCssPx;
+document.addEventListener('DOMContentLoaded', onLoad);

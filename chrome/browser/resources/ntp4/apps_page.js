@@ -2,10 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-cr.define('ntp', function() {
-  'use strict';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
+import {decorate, toCssPx} from 'chrome://resources/js/cr/ui.m.js';
+import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.m.js';
+import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
+import {MenuItem} from 'chrome://resources/js/cr/ui/menu_item.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {$, appendParam, findAncestorByClass} from 'chrome://resources/js/util.m.js';
 
-  const APP_LAUNCH = {
+import {AppInfo} from './app_info.js';
+import {getAppsPageIndex, getCardSlider} from './new_tab.js';
+import {getCurrentlyDraggingTile, setCurrentDropEffect, TilePage} from './tile_page.js';
+
+
+
+  export const APP_LAUNCH = {
     // The histogram buckets (keep in sync with extension_constants.h).
     NTP_APPS_MAXIMIZED: 0,
     NTP_APPS_COLLAPSED: 1,
@@ -56,19 +68,19 @@ cr.define('ntp', function() {
     this.__proto__ = AppContextMenu.prototype;
     this.initialize();
   }
-  cr.addSingletonGetter(AppContextMenu);
+  addSingletonGetter(AppContextMenu);
 
   AppContextMenu.prototype = {
     initialize() {
-      const menu = new cr.ui.Menu;
-      cr.ui.decorate(menu, cr.ui.Menu);
+      const menu = new Menu;
+      decorate(menu, Menu);
       menu.classList.add('app-context-menu');
       this.menu = menu;
 
       this.launch_ = this.appendMenuItem_();
       this.launch_.addEventListener('activate', this.onActivate_.bind(this));
 
-      menu.appendChild(cr.ui.MenuItem.createSeparator());
+      menu.appendChild(MenuItem.createSeparator());
       this.launchRegularTab_ = this.appendMenuItem_('applaunchtyperegular');
       this.launchPinnedTab_ = this.appendMenuItem_('applaunchtypepinned');
       this.launchNewWindow_ = this.appendMenuItem_('applaunchtypewindow');
@@ -84,7 +96,7 @@ cr.define('ntp', function() {
       this.runOnOsLogin_.addEventListener(
           'activate', this.onRunOnOsLoginModeChanged_.bind(this));
 
-      this.launchTypeMenuSeparator_ = cr.ui.MenuItem.createSeparator();
+      this.launchTypeMenuSeparator_ = MenuItem.createSeparator();
       menu.appendChild(this.launchTypeMenuSeparator_);
       this.options_ = this.appendMenuItem_('appoptions');
       this.uninstall_ = this.appendMenuItem_('appuninstall');
@@ -105,13 +117,13 @@ cr.define('ntp', function() {
           'activate', this.onUninstall_.bind(this));
 
       this.createShortcutSeparator_ =
-          menu.appendChild(cr.ui.MenuItem.createSeparator());
+          menu.appendChild(MenuItem.createSeparator());
       this.createShortcut_ = this.appendMenuItem_('appcreateshortcut');
       this.createShortcut_.addEventListener(
           'activate', this.onCreateShortcut_.bind(this));
 
       this.installLocallySeparator_ =
-          menu.appendChild(cr.ui.MenuItem.createSeparator());
+          menu.appendChild(MenuItem.createSeparator());
       this.installLocally_ = this.appendMenuItem_('appinstalllocally');
       this.installLocally_.addEventListener(
           'activate', this.onInstallLocally_.bind(this));
@@ -129,7 +141,7 @@ cr.define('ntp', function() {
       const button =
           /** @type {!HTMLButtonElement} */ (document.createElement('button'));
       this.menu.appendChild(button);
-      cr.ui.decorate(button, cr.ui.MenuItem);
+      decorate(button, MenuItem);
       if (opt_textId) {
         button.textContent = loadTimeData.getString(opt_textId);
       }
@@ -138,7 +150,7 @@ cr.define('ntp', function() {
 
     /**
      * Iterates over all the launch type menu items.
-     * @param {function(cr.ui.MenuItem, number)} f The function to call for each
+     * @param {function(MenuItem, number)} f The function to call for each
      *     menu item. The parameters to the function include the menu item and
      *     the associated launch ID.
      * @private
@@ -161,7 +173,7 @@ cr.define('ntp', function() {
 
     /**
      * Does all the necessary setup to show the menu for the given app.
-     * @param {ntp.App} app The App object that will be showing a context menu.
+     * @param {App} app The App object that will be showing a context menu.
      */
     setupForApp(app) {
       this.app_ = app;
@@ -290,7 +302,7 @@ cr.define('ntp', function() {
    * @constructor
    * @extends {HTMLDivElement}
    */
-  function App(appData) {
+  export function App(appData) {
     const el = /** @type {!App} */ (document.createElement('div'));
     el.__proto__ = App.prototype;
     el.initialize(appData);
@@ -351,8 +363,8 @@ cr.define('ntp', function() {
       appSpan.title = this.appData_.full_name;
       this.addLaunchClickTarget_(appSpan);
 
-      this.addEventListener('keydown', cr.ui.contextMenuHandler);
-      this.addEventListener('keyup', cr.ui.contextMenuHandler);
+      this.addEventListener('keydown', contextMenuHandler);
+      this.addEventListener('keyup', contextMenuHandler);
 
       // This hack is here so that appContents.contextMenu will be the same as
       // this.contextMenu.
@@ -367,7 +379,7 @@ cr.define('ntp', function() {
 
       if (!this.appData_.kioskMode) {
         this.appContents_.addEventListener(
-            'contextmenu', cr.ui.contextMenuHandler);
+            'contextmenu', contextMenuHandler);
       }
 
       this.addEventListener('mousedown', this.onMousedown_, true);
@@ -574,7 +586,7 @@ cr.define('ntp', function() {
      * Returns a pointer to the context menu for this app. All apps share the
      * singleton AppContextMenu. This function is called by the
      * ContextMenuHandler in response to the 'contextmenu' event.
-     * @type {cr.ui.Menu}
+     * @type {Menu}
      */
     get contextMenu() {
       const menu = AppContextMenu.getInstance();
@@ -609,8 +621,6 @@ cr.define('ntp', function() {
     },
   };
 
-  const TilePage = ntp.TilePage;
-
   const appsPageGridValues = {
     // The fewest tiles we will show in a row.
     minColCount: 3,
@@ -630,9 +640,9 @@ cr.define('ntp', function() {
   /**
    * Creates a new AppsPage object.
    * @constructor
-   * @extends {ntp.TilePage}
+   * @extends {TilePage}
    */
-  function AppsPage() {
+  export function AppsPage() {
     const el = new TilePage(appsPageGridValues);
     el.__proto__ = AppsPage.prototype;
     el.initialize();
@@ -658,7 +668,7 @@ cr.define('ntp', function() {
      * @param {AppInfo} appData The data object that describes the app.
      */
     insertAndHighlightApp(appData) {
-      ntp.getCardSlider().selectCardByValue(this);
+      getCardSlider().selectCardByValue(this);
       this.content_.scrollTop = this.content_.scrollHeight;
       this.insertApp(appData, true);
     },
@@ -688,7 +698,7 @@ cr.define('ntp', function() {
      * @private
      */
     onCardSelected_() {
-      const apps = /** @type {NodeList<ntp.App>} */ (
+      const apps = /** @type {NodeList<App>} */ (
           this.querySelectorAll('.app.icon-loading'));
       for (let i = 0; i < apps.length; i++) {
         apps[i].loadIcon();
@@ -726,7 +736,7 @@ cr.define('ntp', function() {
     /** @override */
     doDragOver(e) {
       // Only animatedly re-arrange if the user is currently dragging an app.
-      const tile = ntp.getCurrentlyDraggingTile();
+      const tile = getCurrentlyDraggingTile();
       if (tile && tile.querySelector('.app')) {
         TilePage.prototype.doDragOver.call(this, e);
       } else {
@@ -737,7 +747,7 @@ cr.define('ntp', function() {
 
     /** @override */
     shouldAcceptDrag(e) {
-      if (ntp.getCurrentlyDraggingTile()) {
+      if (getCurrentlyDraggingTile()) {
         return true;
       }
       if (!e.dataTransfer || !e.dataTransfer.types) {
@@ -750,7 +760,7 @@ cr.define('ntp', function() {
     /** @override */
     addDragData(dataTransfer, index) {
       let sourceId = -1;
-      const currentlyDraggingTile = ntp.getCurrentlyDraggingTile();
+      const currentlyDraggingTile = getCurrentlyDraggingTile();
       if (currentlyDraggingTile) {
         const tileContents = currentlyDraggingTile.firstChild;
         if (tileContents.classList.contains('app')) {
@@ -820,7 +830,7 @@ cr.define('ntp', function() {
     generateAppForLink(data) {
       assert(data.url != undefined);
       assert(data.title != undefined);
-      const pageIndex = ntp.getAppsPageIndex(this);
+      const pageIndex = getAppsPageIndex(this);
       chrome.send('generateAppForLink', [data.url, data.title, pageIndex]);
     },
 
@@ -830,7 +840,7 @@ cr.define('ntp', function() {
         return;
       }
 
-      const pageIndex = ntp.getAppsPageIndex(this);
+      const pageIndex = getAppsPageIndex(this);
       chrome.send('setPageIndex', [draggedTile.firstChild.appId, pageIndex]);
 
       const appIds = [];
@@ -846,11 +856,11 @@ cr.define('ntp', function() {
 
     /** @override */
     setDropEffect(dataTransfer) {
-      const tile = ntp.getCurrentlyDraggingTile();
+      const tile = getCurrentlyDraggingTile();
       if (tile && tile.querySelector('.app')) {
-        ntp.setCurrentDropEffect(dataTransfer, 'move');
+        setCurrentDropEffect(dataTransfer, 'move');
       } else {
-        ntp.setCurrentDropEffect(dataTransfer, 'copy');
+        setCurrentDropEffect(dataTransfer, 'copy');
       }
     },
   };
@@ -863,11 +873,5 @@ cr.define('ntp', function() {
   function launchAppAfterEnable(appId) {
     chrome.send('launchApp', [appId, APP_LAUNCH.NTP_APP_RE_ENABLE]);
   }
-
-  return {
-    APP_LAUNCH: APP_LAUNCH,
-    App: App,
-    AppsPage: AppsPage,
-    launchAppAfterEnable: launchAppAfterEnable,
-  };
-});
+  window['ntp'] = window['ntp'] || {};
+  window['ntp']['launchAppAfterEnable'] = launchAppAfterEnable;

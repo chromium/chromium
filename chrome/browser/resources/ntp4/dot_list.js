@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {define as crUiDefine} from 'chrome://resources/js/cr/ui.m.js';
+import {hasKeyModifiers} from 'chrome://resources/js/util.m.js';
+
 /**
  * @fileoverview DotList implementation
  */
-
-cr.define('ntp', function() {
-  'use strict';
 
   /**
    * Live list of the navigation dots.
@@ -20,7 +20,7 @@ cr.define('ntp', function() {
    * @constructor
    * @extends {HTMLUListElement}
    */
-  const DotList = cr.ui.define('ul');
+  export const DotList = crUiDefine('ul');
 
   DotList.prototype = {
     __proto__: HTMLUListElement.prototype,
@@ -76,6 +76,3 @@ cr.define('ntp', function() {
       e.preventDefault();
     }
   };
-
-  return {DotList: DotList};
-});

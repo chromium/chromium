@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
+
 /**
  * @fileoverview Touch Handler. Class that handles all touch events and
  * uses them to interpret higher level gestures and behaviors. TouchEvent is a
@@ -29,10 +32,6 @@
  *     LONG_PRESS event will fire.
  */
 
-// Use an anonymous function to enable strict mode just for this file (which
-// will be concatenated with other files when embedded in Chrome)
-cr.define('ntp', function() {
-  'use strict';
 
   /**
    * A TouchHandler attaches to an Element, listents for low-level touch (or
@@ -41,7 +40,7 @@ cr.define('ntp', function() {
    * for.
    * @constructor
    */
-  function TouchHandler(element) {
+  export function TouchHandler(element) {
     /**
      * @type {!Element}
      * @private
@@ -94,6 +93,7 @@ cr.define('ntp', function() {
 
   /**
    * DOM Events that may be fired by the TouchHandler at the element
+   * @enum {string}
    */
   TouchHandler.EventType = {
     // Fired whenever the element is touched as the only touch to the device.
@@ -131,7 +131,7 @@ cr.define('ntp', function() {
    * The type of event sent by TouchHandler
    * @constructor
    * @extends {Event}
-   * @param {string} type The type of event (one of cr.ui.Grabber.EventType).
+   * @param {!TouchHandler.EventType} type The type of event.
    * @param {boolean} bubbles Whether or not the event should bubble.
    * @param {number} clientX The X location of the touch.
    * @param {number} clientY The Y location of the touch.
@@ -814,7 +814,7 @@ cr.define('ntp', function() {
 
     /**
      * Dispatch a TouchHandler event to the element
-     * @param {string} eventType The event to dispatch.
+     * @param {!TouchHandler.EventType} eventType The event to dispatch.
      * @param {Touch} touch The touch triggering this event.
      * @return {boolean|undefined} The value of enableDrag after dispatching
      *         the event.
@@ -842,7 +842,7 @@ cr.define('ntp', function() {
 
     /**
      * Dispatch a TouchHandler event to the element
-     * @param {string} eventType The event to dispatch.
+     * @param {!TouchHandler.EventType} eventType The event to dispatch.
      * @param {!Element} touchedElement
      * @param {number} clientX The X location for the event.
      * @param {number} clientY The Y location for the event.
@@ -879,6 +879,3 @@ cr.define('ntp', function() {
       return event.enableDrag;
     }
   };
-
-  return {TouchHandler: TouchHandler};
-});

@@ -2,6 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
+import {decorate} from 'chrome://resources/js/cr/ui.m.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {$, isRTL} from 'chrome://resources/js/util.m.js';
+
+import {AppInfo} from './app_info.js';
+import {App, AppsPage} from './apps_page.js';
+import {CardSlider} from './card_slider.js';
+import {DotList} from './dot_list.js';
+import {NavDot} from './nav_dot.js';
+import {initializePageSwitcher, PageSwitcher} from './page_switcher.js';
+import {getCurrentlyDraggingTile, TilePage} from './tile_page.js';
+import {Trash} from './trash.js';
+
 /**
  * @fileoverview PageListView implementation.
  * PageListView manages page list, dot list, switcher buttons and handles apps
@@ -10,59 +26,17 @@
  * Note that you need to have AppLauncherHandler in your WebUI to use this code.
  */
 
-/**
- * @typedef {{app_launch_ordinal: string,
- *            description: string,
- *            detailsUrl: string,
- *            direction: string,
- *            enabled: boolean,
- *            full_name: string,
- *            full_name_direction: string,
- *            homepageUrl: string,
- *            icon_big: string,
- *            icon_big_exists: boolean,
- *            icon_small: string,
- *            icon_small_exists: boolean,
- *            id: string,
- *            is_component: boolean,
- *            is_webstore: boolean,
- *            isLocallyInstalled: boolean,
- *            kioskEnabled: boolean,
- *            kioskMode: boolean,
- *            kioskOnly: boolean,
- *            launch_container: number,
- *            launch_type: number,
- *            mayChangeLaunchType: boolean,
- *            mayShowRunOnOsLoginMode: boolean,
- *            mayCreateShortcuts: boolean,
- *            mayDisable: boolean,
- *            name: string,
- *            offlineEnabled: boolean,
- *            optionsUrl: string,
- *            packagedApp: boolean,
- *            page_index: number,
- *            runOnOsLoginMode: string,
- *            title: string,
- *            url: string,
- *            version: string}}
- * @see chrome/browser/ui/webui/ntp/app_launcher_handler.cc
- */
-let AppInfo;
-
-cr.define('ntp', function() {
-  'use strict';
-
   /**
    * Creates a PageListView object.
    * @constructor
    * @extends {Object}
    */
-  function PageListView() {}
+  export function PageListView() {}
 
   PageListView.prototype = {
     /**
      * The CardSlider object to use for changing app pages.
-     * @type {ntp.CardSlider|undefined}
+     * @type {CardSlider|undefined}
      */
     cardSlider: undefined,
 
@@ -80,25 +54,25 @@ cr.define('ntp', function() {
 
     /**
      * A list of all 'tile-page' elements.
-     * @type {!HTMLCollection<!ntp.TilePage>|undefined}
+     * @type {!HTMLCollection<!TilePage>|undefined}
      */
     tilePages: undefined,
 
     /**
      * A list of all 'apps-page' elements.
-     * @type {!HTMLCollection<!ntp.AppsPage>|undefined}
+     * @type {!HTMLCollection<!AppsPage>|undefined}
      */
     appsPages: undefined,
 
     /**
      * The 'dots-list' element.
-     * @type {!ntp.DotList|undefined}
+     * @type {!DotList|undefined}
      */
     dotList: undefined,
 
     /**
      * The left and right paging buttons.
-     * @type {!ntp.PageSwitcher|undefined}
+     * @type {!PageSwitcher|undefined}
      */
     pageSwitcherStart: undefined,
     pageSwitcherEnd: undefined,
@@ -140,9 +114,9 @@ cr.define('ntp', function() {
      * @param {!Element} cardSliderFrame The card slider frame that hosts
      *     pageList and switcher buttons.
      * @param {!Element|undefined} opt_trash Optional trash element.
-     * @param {!ntp.PageSwitcher|undefined} opt_pageSwitcherStart Optional start
+     * @param {!Element|undefined} opt_pageSwitcherStart Optional start
      *     page switcher button.
-     * @param {!ntp.PageSwitcher|undefined} opt_pageSwitcherEnd Optional end
+     * @param {!Element|undefined} opt_pageSwitcherEnd Optional end
      *     page switcher button.
      */
     initialize(
@@ -150,22 +124,23 @@ cr.define('ntp', function() {
         opt_pageSwitcherEnd) {
       this.pageList = pageList;
 
-      this.dotList = /** @type {!ntp.DotList} */ (dotList);
-      cr.ui.decorate(this.dotList, ntp.DotList);
+      this.dotList = /** @type {!DotList} */ (dotList);
+      decorate(this.dotList, DotList);
 
       this.trash = opt_trash;
       if (this.trash) {
-        new ntp.Trash(this.trash);
+        new Trash(this.trash);
       }
 
-      this.pageSwitcherStart = opt_pageSwitcherStart;
+      this.pageSwitcherStart = /** @type {!PageSwitcher} */ (
+          opt_pageSwitcherStart);
       if (this.pageSwitcherStart) {
-        ntp.initializePageSwitcher(this.pageSwitcherStart);
+        initializePageSwitcher(this.pageSwitcherStart);
       }
 
-      this.pageSwitcherEnd = opt_pageSwitcherEnd;
+      this.pageSwitcherEnd = /** @type {!PageSwitcher} */ (opt_pageSwitcherEnd);
       if (this.pageSwitcherEnd) {
-        ntp.initializePageSwitcher(this.pageSwitcherEnd);
+        initializePageSwitcher(this.pageSwitcherEnd);
       }
 
       this.shownPageIndex = loadTimeData.getInteger('shown_page_index');
@@ -177,14 +152,14 @@ cr.define('ntp', function() {
 
       document.addEventListener('keydown', this.onDocKeyDown_.bind(this));
 
-      this.tilePages = /** @type {!HTMLCollection<!ntp.TilePage>} */ (
+      this.tilePages = /** @type {!HTMLCollection<!TilePage>} */ (
           this.pageList.getElementsByClassName('tile-page'));
-      this.appsPages = /** @type {!HTMLCollection<!ntp.AppsPage>} */ (
+      this.appsPages = /** @type {!HTMLCollection<!AppsPage>} */ (
           this.pageList.getElementsByClassName('apps-page'));
 
       // Initialize the cardSlider without any cards at the moment.
       this.sliderFrame = cardSliderFrame;
-      this.cardSlider = new ntp.CardSlider(
+      this.cardSlider = new CardSlider(
           this.sliderFrame, this.pageList, this.sliderFrame.offsetWidth);
 
       // Prevent touch events from triggering any sort of native scrolling if
@@ -202,7 +177,7 @@ cr.define('ntp', function() {
       // This listener must be added before the card slider is initialized,
       // because it needs to be called before the card slider's handler.
       cardSliderFrame.addEventListener('mousewheel', function(e) {
-        if (/** @type {!ntp.TilePage} */ (cardSlider.currentCardValue)
+        if (/** @type {!TilePage} */ (cardSlider.currentCardValue)
                 .handleMouseWheel(e)) {
           e.preventDefault();            // Prevent default scroll behavior.
           e.stopImmediatePropagation();  // Prevent horizontal card flipping.
@@ -233,10 +208,10 @@ cr.define('ntp', function() {
     /**
      * Appends a tile page.
      *
-     * @param {!ntp.TilePage} page The page element.
+     * @param {!TilePage} page The page element.
      * @param {string} title The title of the tile page.
      * @param {boolean} titleIsEditable If true, the title can be changed.
-     * @param {ntp.TilePage=} opt_refNode Optional reference node to insert in
+     * @param {TilePage=} opt_refNode Optional reference node to insert in
      *     front of.
      * When opt_refNode is falsey, |page| will just be appended to the end of
      * the page list.
@@ -251,9 +226,9 @@ cr.define('ntp', function() {
 
       // If we're appending an AppsPage and it's a temporary page, animate it.
       const animate =
-          page instanceof ntp.AppsPage && page.classList.contains('temporary');
+          page instanceof AppsPage && page.classList.contains('temporary');
       // Make a deep copy of the dot template to add a new one.
-      const newDot = new ntp.NavDot(page, title, titleIsEditable, animate);
+      const newDot = new NavDot(page, title, titleIsEditable, animate);
       page.navigationDot = newDot;
       this.dotList.insertBefore(
           newDot, opt_refNode ? opt_refNode.navigationDot : null);
@@ -271,7 +246,7 @@ cr.define('ntp', function() {
      *     position indices.
      */
     appMoved(appData) {
-      const app = /** @type {ntp.App} */ ($(appData.id));
+      const app = /** @type {App} */ ($(appData.id));
       assert(app, 'trying to move an app that doesn\'t exist');
       app.remove(false);
 
@@ -288,7 +263,7 @@ cr.define('ntp', function() {
      * @param {boolean} fromPage True if the removal was from the current page.
      */
     appRemoved(appData, isUninstall, fromPage) {
-      const app = /** @type {ntp.App} */ ($(appData.id));
+      const app = /** @type {App} */ ($(appData.id));
       assert(app, 'trying to remove an app that doesn\'t exist');
 
       if (!isUninstall) {
@@ -389,7 +364,7 @@ cr.define('ntp', function() {
 
           const origPageCount = this.appsPages.length;
           this.appendTilePage(
-              new ntp.AppsPage(), pageName, true, nextPageAfterApps);
+              new AppsPage(), pageName, true, nextPageAfterApps);
           // Confirm that appsPages is a live object, updated when a new page is
           // added (otherwise we'd have an infinite loop)
           assert(
@@ -415,7 +390,7 @@ cr.define('ntp', function() {
 
       if (!this.appsLoaded_) {
         this.appsLoaded_ = true;
-        cr.dispatchSimpleEvent(document, 'sectionready', true, true);
+        dispatchSimpleEvent(document, 'sectionready', true, true);
       }
     },
 
@@ -438,14 +413,14 @@ cr.define('ntp', function() {
       if (pageIndex >= this.appsPages.length) {
         while (pageIndex >= this.appsPages.length) {
           this.appendTilePage(
-              new ntp.AppsPage(), loadTimeData.getString('appDefaultPageName'),
+              new AppsPage(), loadTimeData.getString('appDefaultPageName'),
               true);
         }
         this.updateSliderCards();
       }
 
       const page = this.appsPages[pageIndex];
-      const app = /** @type {?ntp.App} */ ($(appData.id));
+      const app = /** @type {?App} */ ($(appData.id));
       if (app) {
         app.replaceAppData(appData);
       } else if (opt_highlight) {
@@ -491,12 +466,12 @@ cr.define('ntp', function() {
      * of a moving or insert tile.
      */
     enterRearrangeMode() {
-      const tempPage = new ntp.AppsPage();
+      const tempPage = new AppsPage();
       tempPage.classList.add('temporary');
       const pageName = loadTimeData.getString('appDefaultPageName');
       this.appendTilePage(tempPage, pageName, true);
 
-      if (ntp.getCurrentlyDraggingTile().firstChild.canBeRemoved()) {
+      if (getCurrentlyDraggingTile().firstChild.canBeRemoved()) {
         $('footer').classList.add('showing-trash-mode');
         $('footer-menu-container').style.minWidth = $('trash').offsetWidth -
             $('chrome-web-store-link').offsetWidth + 'px';
@@ -509,7 +484,7 @@ cr.define('ntp', function() {
      * Invoked whenever some app is released
      */
     leaveRearrangeMode() {
-      const tempPage = /** @type {ntp.AppsPage} */ (
+      const tempPage = /** @type {AppsPage} */ (
           document.querySelector('.tile-page.temporary'));
       if (tempPage) {
         const dot = tempPage.navigationDot;
@@ -552,7 +527,7 @@ cr.define('ntp', function() {
       }
 
       const page =
-          /** @type {?ntp.TilePage} */ (this.cardSlider.currentCardValue);
+          /** @type {?TilePage} */ (this.cardSlider.currentCardValue);
 
       this.pageSwitcherStart.hidden =
           !page || (this.cardSlider.currentCard == 0);
@@ -588,7 +563,7 @@ cr.define('ntp', function() {
 
     /**
      * Returns the index of the given apps page.
-     * @param {ntp.AppsPage} page The AppsPage we wish to find.
+     * @param {AppsPage} page The AppsPage we wish to find.
      * @return {number} The index of |page| or -1 if it is not in the
      *    collection.
      */
@@ -674,7 +649,7 @@ cr.define('ntp', function() {
     /**
      * Save the name of an apps page.
      * Store the apps page name into the preferences store.
-     * @param {ntp.AppsPage} appPage The app page for which we wish to save.
+     * @param {AppsPage} appPage The app page for which we wish to save.
      * @param {string} name The name of the page.
      */
     saveAppPageName(appPage, name) {
@@ -698,7 +673,7 @@ cr.define('ntp', function() {
      * @private
      */
     updateOfflineEnabledApps_() {
-      const apps = /** @type {!NodeList<!ntp.App>} */ (
+      const apps = /** @type {!NodeList<!App>} */ (
           document.querySelectorAll('.app'));
       for (let i = 0; i < apps.length; ++i) {
         if (apps[i].appData.enabled && !apps[i].appData.offlineEnabled) {
@@ -738,7 +713,7 @@ cr.define('ntp', function() {
 
     /**
      * Returns the index of a given tile page.
-     * @param {ntp.TilePage} page The TilePage we wish to find.
+     * @param {TilePage} page The TilePage we wish to find.
      * @return {number} The index of |page| or -1 if it is not in the
      *    collection.
      */
@@ -748,7 +723,7 @@ cr.define('ntp', function() {
 
     /**
      * Removes a page and navigation dot (if the navdot exists).
-     * @param {ntp.TilePage} page The page to be removed.
+     * @param {TilePage} page The page to be removed.
      * @param {boolean=} opt_animate If the removal should be animated.
      */
     removeTilePageAndDot_(page, opt_animate) {
@@ -758,6 +733,3 @@ cr.define('ntp', function() {
       this.cardSlider.removeCard(page);
     },
   };
-
-  return {PageListView: PageListView};
-});

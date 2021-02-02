@@ -2,21 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-cr.define('ntp', function() {
-  'use strict';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {dispatchSimpleEvent, isMac} from 'chrome://resources/js/cr.m.js';
+import {toCssPx} from 'chrome://resources/js/cr/ui.m.js';
+import {DragWrapper, DragWrapperDelegate} from 'chrome://resources/js/cr/ui/drag_wrapper.m.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {$, findAncestorByClass, isRTL} from 'chrome://resources/js/util.m.js';
+
+import {App} from './apps_page.js';
+import {enterRearrangeMode, getCardSlider, leaveRearrangeMode} from './new_tab.js';
 
   // We can't pass the currently dragging tile via dataTransfer because of
   // http://crbug.com/31037
   let currentlyDraggingTile = null;
-  function getCurrentlyDraggingTile() {
+  export function getCurrentlyDraggingTile() {
     return currentlyDraggingTile;
   }
+
   function setCurrentlyDraggingTile(tile) {
     currentlyDraggingTile = tile;
     if (tile) {
-      ntp.enterRearrangeMode();
+      enterRearrangeMode();
     } else {
-      ntp.leaveRearrangeMode();
+      leaveRearrangeMode();
     }
   }
 
@@ -27,7 +36,7 @@ cr.define('ntp', function() {
    * @param {DataTransfer} dataTransfer A dataTransfer object from a drag event.
    * @param {string} effect A drop effect to change to (i.e. copy, move, none).
    */
-  function setCurrentDropEffect(dataTransfer, effect) {
+  export function setCurrentDropEffect(dataTransfer, effect) {
     dataTransfer.dropEffect = effect;
     if (currentlyDraggingTile) {
       currentlyDraggingTile.lastDropEffect = dataTransfer.dropEffect;
@@ -114,7 +123,7 @@ cr.define('ntp', function() {
       setCurrentlyDraggingTile(this);
 
       e.dataTransfer.effectAllowed = 'copyMove';
-      /** @type {!ntp.App} */ (this.firstChild).setDragData(e.dataTransfer);
+      /** @type {!App} */ (this.firstChild).setDragData(e.dataTransfer);
 
       // The drag clone is the node we use as a representation during the drag.
       // It's attached to the top level document element so that it floats above
@@ -369,9 +378,9 @@ cr.define('ntp', function() {
    *     of the tile grid.
    * @constructor
    * @extends {HTMLDivElement}
-   * @implements {cr.ui.DragWrapperDelegate}
+   * @implements {DragWrapperDelegate}
    */
-  function TilePage(gridValues) {
+  export function TilePage(gridValues) {
     const el = /** @type {!TilePage} */ (document.createElement('div'));
     el.gridValues_ = gridValues;
     el.__proto__ = TilePage.prototype;
@@ -381,9 +390,20 @@ cr.define('ntp', function() {
   }
 
   /**
+   * @typedef {{
+   *   minColCount: number,
+   *   maxColCount: number,
+   *   minTileWidth: number,
+   *   maxTileWidth: number,
+   *   tileSpacingFraction: number
+   * }}
+   */
+  let GridValues;
+
+  /**
    * Takes a collection of grid layout pixel values and updates them with
    * additional tiling values that are calculated from TilePage constants.
-   * @param {Object} grid The grid layout pixel values to update.
+   * @param {!GridValues} grid The grid layout pixel values to update.
    */
   TilePage.initGridValues = function(grid) {
     // The amount of space we need to display a narrow grid (all narrow grids
@@ -464,7 +484,7 @@ cr.define('ntp', function() {
 
       this.content_.addEventListener('scroll', this.onScroll.bind(this));
 
-      this.dragWrapper_ = new cr.ui.DragWrapper(this.tileGrid_, this);
+      this.dragWrapper_ = new DragWrapper(this.tileGrid_, this);
 
       this.addEventListener('cardselected', this.handleCardSelection_);
       this.addEventListener('carddeselected', this.handleCardDeselection_);
@@ -485,7 +505,7 @@ cr.define('ntp', function() {
 
     get selected() {
       return Array.prototype.indexOf.call(this.parentNode.children, this) ==
-          ntp.getCardSlider().currentCard;
+          getCardSlider().currentCard;
     },
 
     /**
@@ -591,7 +611,7 @@ cr.define('ntp', function() {
     /**
      * Notify interested subscribers that a tile has been removed from this
      * page.
-     * @param {ntp.Tile} tile The newly added tile.
+     * @param {Tile} tile The newly added tile.
      * @param {number} index The index of the tile that was added.
      * @param {boolean} wasAnimated Whether the removal was animated.
      */
@@ -629,7 +649,7 @@ cr.define('ntp', function() {
     /**
      * Notify interested subscribers that a tile has been removed from this
      * page.
-     * @param {ntp.Tile} tile The tile that was removed.
+     * @param {Tile} tile The tile that was removed.
      * @param {number} oldIndex Where the tile was positioned before removal.
      * @param {boolean} wasAnimated Whether the removal was animated.
      */
@@ -851,7 +871,7 @@ cr.define('ntp', function() {
      * @private
      */
     firePageLayoutEvent_() {
-      cr.dispatchSimpleEvent(this, 'pagelayout', true, true);
+      dispatchSimpleEvent(this, 'pagelayout', true, true);
     },
 
     /**
@@ -993,7 +1013,7 @@ cr.define('ntp', function() {
       fadeDistance = Math.min(leftMargin, fadeDistance);
       // On Skia we don't use any fade because it works very poorly. See
       // http://crbug.com/99373
-      if (!cr.isMac) {
+      if (!isMac) {
         fadeDistance = 1;
       }
       const gradient = '-webkit-linear-gradient(left,' +
@@ -1340,12 +1360,3 @@ cr.define('ntp', function() {
       assertNotReached();
     },
   };
-
-  return {
-    getCurrentlyDraggingTile: getCurrentlyDraggingTile,
-    setCurrentDropEffect: setCurrentDropEffect,
-    // Not used outside, just for usage in JSDoc inside this file.
-    Tile: Tile,
-    TilePage: TilePage,
-  };
-});
