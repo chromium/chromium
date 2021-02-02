@@ -275,9 +275,10 @@ class RTCVideoDecoderStreamAdapterTest : public ::testing::Test {
 };
 
 TEST_F(RTCVideoDecoderStreamAdapterTest, Create_UnknownFormat) {
-  auto adapter = RTCVideoDecoderAdapter::Create(
-      &gpu_factories_, webrtc::SdpVideoFormat(webrtc::CodecTypeToPayloadString(
-                           webrtc::kVideoCodecGeneric)));
+  auto adapter = RTCVideoDecoderStreamAdapter::Create(
+      &gpu_factories_, decoder_factory_.get(),
+      webrtc::SdpVideoFormat(
+          webrtc::CodecTypeToPayloadString(webrtc::kVideoCodecGeneric)));
   ASSERT_FALSE(adapter);
 }
 

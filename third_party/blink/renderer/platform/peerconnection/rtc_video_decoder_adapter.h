@@ -54,6 +54,15 @@ namespace blink {
 // way to synchronize this correctly.
 class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
  public:
+  // Minimum vertical resolution that we'll consider "not low resolution" for
+  // the purpose of falling back to software.
+  static constexpr int32_t kMinHeight = 320;
+
+  // Maximum number of decoder instances we'll allow before fallback to software
+  // if the resolution is too low.  We'll allow more than this for high
+  // resolution streams, but they'll fall back if they adapt below the limit.
+  static constexpr int32_t kMaxDecoderInstances = 8;
+
   // Lists which implementations can be queried, this can vary based on platform
   // and enabled features.
   static std::vector<media::VideoDecoderImplementation>
@@ -84,6 +93,11 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
   int32_t Release() override;
   // Called on the worker thread and on the DecodingThread.
   DecoderInfo GetDecoderInfo() const override;
+
+  // Gets / adjusts the current decoder count.
+  static int GetCurrentDecoderCountForTesting();
+  static void IncrementCurrentDecoderCountForTesting();
+  static void DecrementCurrentDecoderCountForTesting();
 
  private:
   using CreateVideoDecoderCB =
