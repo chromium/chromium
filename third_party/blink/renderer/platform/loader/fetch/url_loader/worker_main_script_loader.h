@@ -36,9 +36,10 @@ class SingleCachedMetadataHandler;
 class WorkerMainScriptLoaderClient;
 struct ResourceLoaderOptions;
 
-// For dedicated workers (PlzDedicatedWorker) and shared workers, the main
-// script is pre-requested by the browser process. This class is used for
-// receiving the response in the renderer process.
+// For dedicated workers (PlzDedicatedWorker), service workers
+// (PlzServiceWorker), and shared workers, the main script is pre-requested by
+// the browser process. This class is used for receiving the response in the
+// renderer process.
 class PLATFORM_EXPORT WorkerMainScriptLoader final
     : public GarbageCollected<WorkerMainScriptLoader>,
       public network::mojom::URLLoaderClient {

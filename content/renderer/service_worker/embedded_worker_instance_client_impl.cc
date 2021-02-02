@@ -17,6 +17,7 @@
 #include "content/renderer/worker/fetch_client_settings_object_helpers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/loader/worker_main_script_load_parameters.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -67,8 +68,23 @@ void EmbeddedWorkerInstanceClientImpl::StartWorker(
                "EmbeddedWorkerInstanceClientImpl::StartWorker");
   auto start_timing = blink::mojom::EmbeddedWorkerStartTiming::New();
   start_timing->start_worker_received_time = base::TimeTicks::Now();
+
   std::unique_ptr<blink::WebEmbeddedWorkerStartData> start_data =
       BuildStartData(*params);
+  if (params->main_script_load_params) {
+    start_data->main_script_load_params =
+        std::make_unique<blink::WorkerMainScriptLoadParameters>();
+    start_data->main_script_load_params->response_head =
+        std::move(params->main_script_load_params->response_head);
+    start_data->main_script_load_params->response_body =
+        std::move(params->main_script_load_params->response_body);
+    start_data->main_script_load_params->redirect_responses =
+        std::move(params->main_script_load_params->redirect_response_heads);
+    start_data->main_script_load_params->redirect_infos =
+        params->main_script_load_params->redirect_infos;
+    start_data->main_script_load_params->url_loader_client_endpoints =
+        std::move(params->main_script_load_params->url_loader_client_endpoints);
+  }
 
   DCHECK(!params->provider_info->cache_storage ||
          base::FeatureList::IsEnabled(
@@ -178,7 +194,6 @@ EmbeddedWorkerInstanceClientImpl::BuildStartData(
   start_data->devtools_worker_token = params.devtools_worker_token;
   start_data->service_worker_token = params.service_worker_token;
   start_data->ukm_source_id = params.ukm_source_id;
-
   return start_data;
 }
 

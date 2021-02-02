@@ -15,8 +15,9 @@
 
 namespace blink {
 
-// Used to load the main script for dedicated workers (PlzDedicatedWorker) and
-// shared workers, which is pre-requested by browser process.
+// Used to load the main script for dedicated workers (PlzDedicatedWorker),
+// service workers (PlzServiceWorker), and shared workers, which is
+// pre-requested by browser process.
 struct BLINK_COMMON_EXPORT WorkerMainScriptLoadParameters {
  public:
   WorkerMainScriptLoadParameters() = default;
