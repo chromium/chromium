@@ -55,8 +55,6 @@ HTMLObjectElement::HTMLObjectElement(Document& document,
   EnsureUserAgentShadowRoot();
 }
 
-inline HTMLObjectElement::~HTMLObjectElement() = default;
-
 void HTMLObjectElement::Trace(Visitor* visitor) const {
   ListedElement::Trace(visitor);
   HTMLPlugInElement::Trace(visitor);

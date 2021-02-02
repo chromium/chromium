@@ -79,7 +79,7 @@ class PLATFORM_EXPORT BlinkGCObserver {
   ThreadState* thread_state_;
 };
 
-class ThreadState final {
+class PLATFORM_EXPORT ThreadState final {
  public:
   class HeapPointersOnStackScope;
   class NoAllocationScope;
@@ -122,20 +122,16 @@ class ThreadState final {
   // Collects garbage as long as live memory decreases (capped at 5).
   void CollectAllGarbageForTesting(
       BlinkGC::StackState stack_state =
-          BlinkGC::StackState::kNoHeapPointersOnStack) {
-    // TODO(1056170): Implement.
-  }
+          BlinkGC::StackState::kNoHeapPointersOnStack);
 
   void RunTerminationGC();
 
-  void SafePoint(BlinkGC::StackState) {
-    // TODO(1056170): Implement, if necessary for testing.
-  }
+  void SafePoint(BlinkGC::StackState);
 
   bool IsMainThread() const { return this == MainThreadState(); }
   bool IsCreationThread() const { return thread_id_ == CurrentThread(); }
 
-  void NotifyGarbageCollection();
+  void NotifyGarbageCollection(v8::GCType, v8::GCCallbackFlags);
 
   size_t GcAge() const { return gc_age_; }
 
@@ -165,6 +161,7 @@ class ThreadState final {
   base::PlatformThreadId thread_id_;
   size_t gc_age_ = 0;
   WTF::HashSet<BlinkGCObserver*> observers_;
+  bool forced_scheduled_gc_for_testing_ = false;
 
   friend class BlinkGCObserver;
 };

@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
+#include "third_party/blink/renderer/platform/wtf/buildflags.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -75,23 +76,25 @@ Node* V8GCController::OpaqueRootForGC(v8::Isolate*, Node* node) {
   return node;
 }
 
+#if !BUILDFLAG(USE_V8_OILPAN)
 namespace {
-
 bool IsNestedInV8GC(ThreadState* thread_state, v8::GCType type) {
   return thread_state && (type == v8::kGCTypeMarkSweepCompact ||
                           type == v8::kGCTypeIncrementalMarking);
 }
-
 }  // namespace
+#endif  // !USE_V8_OILPAN
 
 void V8GCController::GcPrologue(v8::Isolate* isolate,
                                 v8::GCType type,
                                 v8::GCCallbackFlags flags) {
   RUNTIME_CALL_TIMER_SCOPE(isolate, RuntimeCallStats::CounterId::kGcPrologue);
+#if !BUILDFLAG(USE_V8_OILPAN)
   ThreadHeapStatsCollector::BlinkGCInV8Scope nested_scope(
       IsNestedInV8GC(ThreadState::Current(), type)
           ? ThreadState::Current()->Heap().stats_collector()
           : nullptr);
+#endif  // !USE_V8_OILPAN
 
   auto* per_isolate_data = V8PerIsolateData::From(isolate);
   per_isolate_data->EnterGC();
@@ -127,10 +130,12 @@ void V8GCController::GcEpilogue(v8::Isolate* isolate,
                                 v8::GCType type,
                                 v8::GCCallbackFlags flags) {
   RUNTIME_CALL_TIMER_SCOPE(isolate, RuntimeCallStats::CounterId::kGcEpilogue);
+#if !BUILDFLAG(USE_V8_OILPAN)
   ThreadHeapStatsCollector::BlinkGCInV8Scope nested_scope(
       IsNestedInV8GC(ThreadState::Current(), type)
           ? ThreadState::Current()->Heap().stats_collector()
           : nullptr);
+#endif  // !USE_V8_OILPAN
 
   V8PerIsolateData::From(isolate)->LeaveGC();
 
@@ -142,18 +147,7 @@ void V8GCController::GcEpilogue(v8::Isolate* isolate,
 
   ThreadState* current_thread_state = ThreadState::Current();
   if (current_thread_state) {
-    current_thread_state->NotifyGarbageCollection();
-    if (!current_thread_state->IsGCForbidden() &&
-        (flags & v8::kGCCallbackFlagForced)) {
-      // Forces a precise GC at the end of the current event loop. This is
-      // required for testing code that cannot use GC internals but rather has
-      // to rely on window.gc(). Only schedule additional GCs if the last GC was
-      // using conservative stack scanning.
-      if (type == v8::kGCTypeScavenge ||
-          current_thread_state->RequiresForcedGCForTesting()) {
-        current_thread_state->ScheduleForcedGCForTesting();
-      }
-    }
+    current_thread_state->NotifyGarbageCollection(type, flags);
   }
 
   TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),

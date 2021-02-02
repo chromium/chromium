@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "v8.h"
 #include "v8/include/v8-cppgc.h"
 
 namespace blink {
@@ -46,13 +47,42 @@ void ThreadState::RunTerminationGC() {
   cpp_heap_->Terminate();
 }
 
-void ThreadState::NotifyGarbageCollection() {
+void ThreadState::SafePoint(BlinkGC::StackState stack_state) {
+  DCHECK(IsCreationThread());
+  if (stack_state != BlinkGC::kNoHeapPointersOnStack)
+    return;
+
+  if (forced_scheduled_gc_for_testing_) {
+    CollectAllGarbageForTesting(stack_state);
+    forced_scheduled_gc_for_testing_ = false;
+  }
+}
+
+void ThreadState::NotifyGarbageCollection(v8::GCType type,
+                                          v8::GCCallbackFlags flags) {
   gc_age_++;
   WTF::Vector<BlinkGCObserver*> observers_to_notify;
   CopyToVector(observers_, observers_to_notify);
   for (auto* const observer : observers_to_notify) {
     observer->OnGarbageCollection();
   }
+  if (flags & v8::kGCCallbackFlagForced) {
+    // Forces a precise GC at the end of the current event loop. This is
+    // required for testing code that cannot use GC internals but rather has
+    // to rely on window.gc(). Only schedule additional GCs if the last GC was
+    // using conservative stack scanning.
+    if (type == v8::kGCTypeScavenge) {
+      forced_scheduled_gc_for_testing_ = true;
+    } else if (type == v8::kGCTypeMarkSweepCompact) {
+      // TODO(1056170): Only need to schedule a forced GC if stack was scanned
+      // conservatively in previous GC.
+      forced_scheduled_gc_for_testing_ = true;
+    }
+  }
+}
+
+void ThreadState::CollectAllGarbageForTesting(BlinkGC::StackState stack_state) {
+  // TODO(1056170): Implement.
 }
 
 BlinkGCObserver::BlinkGCObserver(ThreadState* thread_state)

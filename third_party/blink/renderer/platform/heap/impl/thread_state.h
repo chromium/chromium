@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 #include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "v8/include/v8.h"
 
 namespace v8 {
 class EmbedderGraph;
@@ -412,9 +413,7 @@ class PLATFORM_EXPORT ThreadState final {
     --disable_heap_verification_scope_;
   }
 
-  void NotifyGarbageCollection() {
-    // Only used for v8_wrapper version.
-  }
+  void NotifyGarbageCollection(v8::GCType, v8::GCCallbackFlags);
 
  private:
   class IncrementalMarkingScheduler;
