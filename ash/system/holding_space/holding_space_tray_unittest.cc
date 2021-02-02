@@ -22,7 +22,9 @@
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
+#include "ash/system/tray/tray_constants.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/files/file_path.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
@@ -484,6 +486,95 @@ TEST_P(HoldingSpaceTrayTest, TrayButtonNotShownForPartialItemsOnly) {
 
   // Remove the finalized item - the shelf button should get hidden.
   model()->RemoveItem(item_2->id());
+  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
+  EXPECT_FALSE(test_api()->IsShowingInShelf());
+}
+
+// Tests that the tray icon size changes on in-app shelf.
+TEST_P(HoldingSpaceTrayTest, UpdateTrayIconSizeForInAppShelf) {
+  MarkTimeOfFirstPin();
+  StartSession();
+
+  // The tray button should be hidden if the user has previously pinned an item,
+  // and the holding space is empty.
+  EXPECT_FALSE(test_api()->IsShowingInShelf());
+
+  // Add a download item - the button should be shown.
+  AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake_1"));
+  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
+
+  EXPECT_TRUE(test_api()->IsShowingInShelf());
+  if (IsPreviewsFeatureEnabled()) {
+    ASSERT_TRUE(IsViewVisible(test_api()->GetPreviewsTrayIcon()));
+    EXPECT_EQ(gfx::Size(kHoldingSpaceTrayIconDefaultPreviewSize, kTrayItemSize),
+              test_api()->GetPreviewsTrayIcon()->size());
+  } else {
+    ASSERT_TRUE(IsViewVisible(test_api()->GetDefaultTrayIcon()));
+    EXPECT_EQ(gfx::Size(kHoldingSpaceTrayIconDefaultPreviewSize, kTrayItemSize),
+              test_api()->GetDefaultTrayIcon()->size());
+  }
+
+  TabletModeControllerTestApi().EnterTabletMode();
+
+  // Create a test widget to force in-app shelf.
+  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  ASSERT_TRUE(widget);
+
+  EXPECT_TRUE(test_api()->IsShowingInShelf());
+  if (IsPreviewsFeatureEnabled()) {
+    ASSERT_TRUE(IsViewVisible(test_api()->GetPreviewsTrayIcon()));
+    EXPECT_EQ(gfx::Size(kHoldingSpaceTrayIconSmallPreviewSize, kTrayItemSize),
+              test_api()->GetPreviewsTrayIcon()->size());
+  } else {
+    ASSERT_TRUE(IsViewVisible(test_api()->GetDefaultTrayIcon()));
+    EXPECT_EQ(gfx::Size(kHoldingSpaceTrayIconDefaultPreviewSize, kTrayItemSize),
+              test_api()->GetDefaultTrayIcon()->size());
+  }
+
+  // Transition to home screen.
+  widget->Minimize();
+
+  if (IsPreviewsFeatureEnabled()) {
+    ASSERT_TRUE(IsViewVisible(test_api()->GetPreviewsTrayIcon()));
+    EXPECT_EQ(gfx::Size(kHoldingSpaceTrayIconDefaultPreviewSize, kTrayItemSize),
+              test_api()->GetPreviewsTrayIcon()->size());
+  } else {
+    ASSERT_TRUE(IsViewVisible(test_api()->GetDefaultTrayIcon()));
+    EXPECT_EQ(gfx::Size(kHoldingSpaceTrayIconDefaultPreviewSize, kTrayItemSize),
+              test_api()->GetDefaultTrayIcon()->size());
+  }
+}
+
+// Tests that a shelf config change just after an item has been removed does
+// not cause a crash.
+TEST_P(HoldingSpaceTrayTest, ShelfConfigChangeWithDelayedItemRemoval) {
+  MarkTimeOfFirstPin();
+  StartSession();
+
+  // Create a test widget to force in-app shelf in tablet mode.
+  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  ASSERT_TRUE(widget);
+
+  // The tray button should be hidden if the user has previously pinned an item,
+  // and the holding space is empty.
+  EXPECT_FALSE(test_api()->IsShowingInShelf());
+
+  HoldingSpaceItem* item_1 =
+      AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake_1"));
+  HoldingSpaceItem* item_2 =
+      AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake_2"));
+  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
+
+  EXPECT_TRUE(test_api()->IsShowingInShelf());
+
+  model()->RemoveItem(item_1->id());
+  TabletModeControllerTestApi().EnterTabletMode();
+  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
+
+  EXPECT_TRUE(test_api()->IsShowingInShelf());
+
+  model()->RemoveItem(item_2->id());
+  TabletModeControllerTestApi().LeaveTabletMode();
   GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
   EXPECT_FALSE(test_api()->IsShowingInShelf());
 }

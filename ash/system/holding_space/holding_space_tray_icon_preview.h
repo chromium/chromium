@@ -99,6 +99,9 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
   // representation gets updated.
   void OnHoldingSpaceItemImageChanged();
 
+  // Subscription callback for `item_` deletion.
+  void OnHoldingSpaceItemDeleted();
+
   // Creates a layer for this preview. The layer will be owned by
   // `layer_owner_`. Note that a layer may be created multiple times throughout
   // this preview's lifetime as the preview will only have a layer while in the
@@ -133,7 +136,8 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
   // icon.
   views::View* const container_;
 
-  // The holding space item this preview represents.
+  // The holding space item this preview represents - may be null if the item
+  // gets deleted before the preview.
   const HoldingSpaceItem* item_;
 
   // Whether or not this preview is currently using small dimensions. This is
@@ -172,6 +176,9 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
   // Subscription for changes to the holding space image backing
   // `contents_image_`.
   base::CallbackListSubscription image_subscription_;
+
+  // Subscription for the associated holding space item deletion.
+  base::CallbackListSubscription item_deletion_subscription_;
 
   // The `layer()` for this preview is parented by `container_`'s layer. It is
   // necessary to observe and react to bounds changes in `container_` to keep

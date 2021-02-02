@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/callback_forward.h"
+#include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/strings/string16.h"
 #include "url/gurl.h"
@@ -73,6 +74,10 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // Serializes from `HoldingSpaceItem` to `base::DictionaryValue`.
   base::DictionaryValue Serialize() const;
 
+  // Adds `callback` to be notified when `this` gets deleted.
+  base::CallbackListSubscription AddDeletionCallback(
+      base::RepeatingClosureList::CallbackType callback) const;
+
   // Indicates whether the item has been finalized. This will be false for items
   // created using `Deserialize()` for which `Finalize()` has not yet been
   // called.
@@ -129,6 +134,9 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
 
   // The image representation of the item.
   std::unique_ptr<HoldingSpaceImage> image_;
+
+  // Mutable to allow const access from `AddDeletionCallback()`.
+  mutable base::RepeatingClosureList deletion_callback_list_;
 };
 
 }  // namespace ash

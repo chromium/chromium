@@ -78,6 +78,21 @@ HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf) : TrayBackgroundView(shelf) {
     previews_tray_icon_ = tray_container()->AddChildView(
         std::make_unique<HoldingSpaceTrayIcon>(shelf));
     previews_tray_icon_->SetVisible(false);
+
+    // Enable context menu, which supports an action to toggle item previews.
+    set_context_menu_controller(this);
+  }
+
+  set_use_bounce_in_animation(true);
+}
+
+HoldingSpaceTray::~HoldingSpaceTray() = default;
+
+void HoldingSpaceTray::Initialize() {
+  TrayBackgroundView::Initialize();
+
+  if (features::IsTemporaryHoldingSpacePreviewsEnabled()) {
+    DCHECK(previews_tray_icon_);
     UpdatePreviewsVisibility();
 
     // If previews feature is enabled, the preview icon is displayed
@@ -86,9 +101,6 @@ HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf) : TrayBackgroundView(shelf) {
     auto* prefs = Shell::Get()->session_controller()->GetActivePrefService();
     if (prefs)
       ObservePrefService(prefs);
-
-    // Enable context menu, which supports an action to toggle item previews.
-    set_context_menu_controller(this);
   }
 
   // It's possible that this holding space tray was created after login, such as
@@ -96,11 +108,7 @@ HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf) : TrayBackgroundView(shelf) {
   // the holding space model will already have been attached.
   if (HoldingSpaceController::Get()->model())
     OnHoldingSpaceModelAttached(HoldingSpaceController::Get()->model());
-
-  set_use_bounce_in_animation(true);
 }
-
-HoldingSpaceTray::~HoldingSpaceTray() = default;
 
 void HoldingSpaceTray::ClickedOutsideBubble() {
   CloseBubble();
