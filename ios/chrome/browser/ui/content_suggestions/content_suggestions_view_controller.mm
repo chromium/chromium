@@ -312,7 +312,7 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
       updateFakeOmniboxOnNewWidth:self.collectionView.bounds.size.width];
   [self.collectionView.collectionViewLayout invalidateLayout];
   // Ensure initial fake omnibox layout.
-  [self.headerSynchronizer updateFakeOmniboxOnCollectionScroll];
+  [self.headerSynchronizer updateFakeOmniboxForScrollPosition];
   // TODO(crbug.com/1114792): Plumb the collection view.
   self.layout.parentCollectionView =
       static_cast<UICollectionView*>(self.view.superview);
@@ -378,7 +378,7 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
   if (previousTraitCollection.preferredContentSizeCategory !=
       self.traitCollection.preferredContentSizeCategory) {
     [self.collectionViewLayout invalidateLayout];
-    [self.headerSynchronizer updateFakeOmniboxOnCollectionScroll];
+    [self.headerSynchronizer updateFakeOmniboxForScrollPosition];
   }
   [self.headerSynchronizer updateConstraints];
   [self updateOverscrollActionsState];
@@ -727,7 +727,7 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
   [super scrollViewDidScroll:scrollView];
   [self.panGestureHandler scrollViewDidScroll:scrollView];
   [self.overscrollActionsController scrollViewDidScroll:scrollView];
-  [self.headerSynchronizer updateFakeOmniboxOnCollectionScroll];
+  [self.headerSynchronizer updateFakeOmniboxForScrollPosition];
   self.scrolledToTop =
       scrollView.contentOffset.y >= [self.headerSynchronizer pinnedOffsetY];
 

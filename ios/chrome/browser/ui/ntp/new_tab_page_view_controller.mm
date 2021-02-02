@@ -194,6 +194,25 @@ const CGFloat kOffsetToPinOmnibox = 100;
   [super viewWillAppear:animated];
 
   [self updateContentSuggestionForCurrentLayout];
+
+  // If fake omnibox should be stuck to top of NTP, lays out the content
+  // suggestions. This ensures that the sticky omnibox is present when
+  // navigating back to the NTP.
+  // TODO(crbug.com/1173610): This should only be called if needed. Should be
+  // fixed by Mulder allowing us to add a custom header to the feed.
+  if (self.discoverFeedWrapperViewController.feedCollectionView.contentOffset
+          .y > -kOffsetToPinOmnibox) {
+    [self.contentSuggestionsViewController.view setNeedsLayout];
+    [self.contentSuggestionsViewController.view layoutIfNeeded];
+  }
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+
+  // Updates omnibox to ensure that the dimensions are correct when navigating
+  // back to the NTP.
+  [self.headerSynchronizer updateFakeOmniboxForScrollPosition];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -242,7 +261,7 @@ const CGFloat kOffsetToPinOmnibox = 100;
       self.traitCollection.preferredContentSizeCategory) {
     [self.contentSuggestionsViewController.collectionView
             .collectionViewLayout invalidateLayout];
-    [self.headerSynchronizer updateFakeOmniboxOnCollectionScroll];
+    [self.headerSynchronizer updateFakeOmniboxForScrollPosition];
   }
   [self.headerSynchronizer updateConstraints];
   [self updateOverscrollActionsState];
@@ -273,7 +292,7 @@ const CGFloat kOffsetToPinOmnibox = 100;
   }
 
   [self.overscrollActionsController scrollViewDidScroll:scrollView];
-  [self.headerSynchronizer updateFakeOmniboxOnCollectionScroll];
+  [self.headerSynchronizer updateFakeOmniboxForScrollPosition];
   self.scrolledToTop =
       scrollView.contentOffset.y >= [self.headerSynchronizer pinnedOffsetY];
   // Fixes the content suggestions collection view layout so that the header
@@ -450,7 +469,7 @@ const CGFloat kOffsetToPinOmnibox = 100;
   [self.contentSuggestionsViewController.collectionView
           .collectionViewLayout invalidateLayout];
   // Ensure initial fake omnibox layout.
-  [self.headerSynchronizer updateFakeOmniboxOnCollectionScroll];
+  [self.headerSynchronizer updateFakeOmniboxForScrollPosition];
 }
 
 // Sets an inset to the Discover feed equal to the content suggestions height,
