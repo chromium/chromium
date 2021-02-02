@@ -21,6 +21,7 @@
 #include "components/viz/common/surfaces/surface_info.h"
 #include "components/viz/common/surfaces/surface_range.h"
 #include "components/viz/service/frame_sinks/begin_frame_tracker.h"
+#include "components/viz/service/frame_sinks/surface_animation_manager.h"
 #include "components/viz/service/frame_sinks/surface_resource_holder.h"
 #include "components/viz/service/frame_sinks/surface_resource_holder_client.h"
 #include "components/viz/service/frame_sinks/video_capture/capturable_frame_sink.h"
@@ -355,6 +356,11 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   base::TimeDelta preferred_frame_interval_ = BeginFrameArgs::MinInterval();
   mojom::CompositorFrameSinkType frame_sink_type_ =
       mojom::CompositorFrameSinkType::kUnspecified;
+
+  // This is responsible for transitioning between two frames of the same
+  // surface. In part implements "Shared Element Transition" feature for
+  // single-page-app transitions.
+  SurfaceAnimationManager surface_animation_manager_;
 
   base::WeakPtrFactory<CompositorFrameSinkSupport> weak_factory_{this};
 

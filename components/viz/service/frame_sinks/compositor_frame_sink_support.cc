@@ -20,6 +20,7 @@
 #include "components/viz/service/display/display.h"
 #include "components/viz/service/display/shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
+#include "components/viz/service/frame_sinks/surface_animation_manager.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_reference.h"
 #include "mojo/public/cpp/system/platform_handle.h"
@@ -139,6 +140,18 @@ void CompositorFrameSinkSupport::OnSurfaceActivated(Surface* surface) {
 
   pending_surfaces_.erase(surface);
   if (pending_surfaces_.empty())
+    UpdateNeedsBeginFramesInternal();
+
+  // Let the animation manager process any new directives on the surface.
+  surface_animation_manager_.ProcessTransitionDirectives(
+      last_frame_time_,
+      surface->GetActiveFrame().metadata.transition_directives,
+      surface->GetSurfaceSavedFrameStorage());
+
+  // The above call can cause us to start an animation, meaning we need begin
+  // frames. If that's the case, make sure to update the begin frame
+  // observation.
+  if (surface_animation_manager_.NeedsBeginFrame())
     UpdateNeedsBeginFramesInternal();
 
   if (surface->surface_id() == last_activated_surface_id_)
@@ -704,6 +717,16 @@ void CompositorFrameSinkSupport::OnBeginFrame(const BeginFrameArgs& args) {
     frame_timing_details_.clear();
     UpdateNeedsBeginFramesInternal();
   }
+
+  // Notify surface animation manager if it needs a begin frame.
+  if (surface_animation_manager_.NeedsBeginFrame()) {
+    surface_animation_manager_.NotifyFrameAdvanced(args.frame_time);
+
+    // If notifying causes us to stop needing frames, then update needs begin
+    // frames, in case we no longer are interested in receiving begin frames.
+    if (!surface_animation_manager_.NeedsBeginFrame())
+      UpdateNeedsBeginFramesInternal();
+  }
 }
 
 const BeginFrameArgs& CompositorFrameSinkSupport::LastUsedBeginFrameArgs()
@@ -725,7 +748,8 @@ void CompositorFrameSinkSupport::UpdateNeedsBeginFramesInternal() {
   bool needs_begin_frame =
       client_needs_begin_frame_ || !frame_timing_details_.empty() ||
       !pending_surfaces_.empty() ||
-      (compositor_frame_callback_ && !callback_received_begin_frame_);
+      (compositor_frame_callback_ && !callback_received_begin_frame_) ||
+      surface_animation_manager_.NeedsBeginFrame();
 
   if (needs_begin_frame == added_frame_observer_)
     return;
