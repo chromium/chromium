@@ -10,6 +10,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static junit.framework.Assert.assertFalse;
+
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
@@ -62,6 +64,7 @@ import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
+import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.Arrays;
@@ -99,11 +102,12 @@ public class LocationBarTest {
     @Mock
     private SearchEngineLogoUtils mSearchEngineLogoUtils;
 
-    ChromeTabbedActivity mActivity;
-    UrlBar mUrlBar;
-    LocationBarCoordinator mLocationBarCoordinator;
-    LocationBarMediator mLocationBarMediator;
-    String mSearchUrl;
+    private ChromeTabbedActivity mActivity;
+    private UrlBar mUrlBar;
+    private LocationBarCoordinator mLocationBarCoordinator;
+    private LocationBarMediator mLocationBarMediator;
+    private String mSearchUrl;
+    private ActivityKeyboardVisibilityDelegate mKeyboardDelegate;
 
     @Before
     public void setUp() throws InterruptedException {
@@ -164,6 +168,7 @@ public class LocationBarTest {
         mLocationBarMediator = mLocationBarCoordinator.getMediatorForTesting();
         mSearchUrl = mActivityTestRule.getEmbeddedTestServerRule().getServer().getURL("/search");
         mLocationBarCoordinator.setVoiceRecognitionHandlerForTesting(mVoiceRecognitionHandler);
+        mKeyboardDelegate = mActivity.getWindowAndroid().getKeyboardDelegate();
     }
 
     private void setupSearchEngineLogo(String url) {
@@ -199,7 +204,8 @@ public class LocationBarTest {
             Assert.assertTrue(mLocationBarMediator.isUrlBarFocused());
         });
 
-        OmniboxTestUtils.waitForFocusAndKeyboardActive(mUrlBar, true);
+        CriteriaHelper.pollUiThread(
+                () -> mKeyboardDelegate.isKeyboardShowing(mUrlBar.getContext(), mUrlBar));
     }
 
     @Test
@@ -216,7 +222,8 @@ public class LocationBarTest {
             Assert.assertTrue(mLocationBarMediator.isUrlBarFocused());
         });
 
-        OmniboxTestUtils.waitForFocusAndKeyboardActive(mUrlBar, true);
+        CriteriaHelper.pollUiThread(
+                () -> mKeyboardDelegate.isKeyboardShowing(mUrlBar.getContext(), mUrlBar));
     }
 
     @Test
@@ -411,16 +418,19 @@ public class LocationBarTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "Flaky test: https://crbug.com/1169250")
     public void testFocusLogic_keyboardVisibility() {
         startActivityNormally();
-        OmniboxTestUtils.waitForFocusAndKeyboardActive(mUrlBar, false);
+        assertFalse(mKeyboardDelegate.isKeyboardShowing(mUrlBar.getContext(), mUrlBar));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mUrlBar.requestFocus(); });
-        OmniboxTestUtils.waitForFocusAndKeyboardActive(mUrlBar, true);
+        OmniboxTestUtils.toggleUrlBarFocus(mUrlBar, true);
+        CriteriaHelper.pollUiThread(() -> mUrlBar.hasFocus());
+        CriteriaHelper.pollUiThread(
+                () -> mKeyboardDelegate.isKeyboardShowing(mUrlBar.getContext(), mUrlBar));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mUrlBar.clearFocus(); });
-        OmniboxTestUtils.waitForFocusAndKeyboardActive(mUrlBar, false);
+        OmniboxTestUtils.toggleUrlBarFocus(mUrlBar, false);
+        CriteriaHelper.pollUiThread(() -> !mUrlBar.hasFocus());
+        CriteriaHelper.pollUiThread(
+                () -> !mKeyboardDelegate.isKeyboardShowing(mUrlBar.getContext(), mUrlBar));
     }
 
     @Test
