@@ -140,6 +140,41 @@ class CC_EXPORT CompositorFrameReporter {
     kSmoothBoth
   };
 
+  // Holds a processed list of Blink breakdowns with an `Iterator` class to
+  // easily iterator over them.
+  class CC_EXPORT ProcessedBlinkBreakdown {
+   public:
+    class Iterator {
+     public:
+      explicit Iterator(const ProcessedBlinkBreakdown* owner);
+      ~Iterator();
+
+      bool IsValid() const;
+      void Advance();
+      BlinkBreakdown GetBreakdown() const;
+      base::TimeDelta GetLatency() const;
+
+     private:
+      const ProcessedBlinkBreakdown* owner_;
+
+      size_t index_ = 0;
+    };
+
+    ProcessedBlinkBreakdown(base::TimeTicks blink_start_time,
+                            base::TimeTicks begin_main_frame_start,
+                            const BeginMainFrameMetrics& blink_breakdown);
+    ~ProcessedBlinkBreakdown();
+
+    ProcessedBlinkBreakdown(const ProcessedBlinkBreakdown&) = delete;
+    ProcessedBlinkBreakdown& operator=(const ProcessedBlinkBreakdown&) = delete;
+
+    // Returns a new iterator for the Blink breakdowns.
+    Iterator CreateIterator() const;
+
+   private:
+    base::TimeDelta list_[static_cast<int>(BlinkBreakdown::kBreakdownCount)];
+  };
+
   // Holds a processed list of Viz breakdowns with an `Iterator` class to easily
   // iterate over them.
   class CC_EXPORT ProcessedVizBreakdown {
@@ -318,8 +353,6 @@ class CC_EXPORT CompositorFrameReporter {
     return report_types_.test(static_cast<size_t>(report_type));
   }
 
-  void PopulateBlinkBreakdownList();
-
   // This method is only used for DCheck
   base::TimeDelta SumOfStageHistory() const;
 
@@ -334,8 +367,7 @@ class CC_EXPORT CompositorFrameReporter {
 
   BeginMainFrameMetrics blink_breakdown_;
   base::TimeTicks blink_start_time_;
-  base::TimeDelta
-      blink_breakdown_list_[static_cast<int>(BlinkBreakdown::kBreakdownCount)];
+  std::unique_ptr<ProcessedBlinkBreakdown> processed_blink_breakdown_;
 
   viz::FrameTimingDetails viz_breakdown_;
   base::TimeTicks viz_start_time_;

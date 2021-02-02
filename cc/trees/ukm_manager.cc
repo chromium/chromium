@@ -177,6 +177,8 @@ void UkmManager::RecordCompositorLatencyUKM(
     CompositorFrameReporter::FrameReportType report_type,
     const std::vector<CompositorFrameReporter::StageData>& stage_history,
     const CompositorFrameReporter::ActiveTrackers& active_trackers,
+    const CompositorFrameReporter::ProcessedBlinkBreakdown&
+        processed_blink_breakdown,
     const CompositorFrameReporter::ProcessedVizBreakdown&
         processed_viz_breakdown) const {
   using StageType = CompositorFrameReporter::StageType;
@@ -203,6 +205,33 @@ void UkmManager::RecordCompositorLatencyUKM(
       CASE_FOR_STAGE(SubmitCompositorFrameToPresentationCompositorFrame);
       CASE_FOR_STAGE(TotalLatency);
 #undef CASE_FOR_STAGE
+      default:
+        NOTREACHED();
+        break;
+    }
+  }
+
+  // Record Blink breakdowns.
+  for (auto it = processed_blink_breakdown.CreateIterator(); it.IsValid();
+       it.Advance()) {
+    switch (it.GetBreakdown()) {
+#define CASE_FOR_BLINK_BREAKDOWN(name)                   \
+  case CompositorFrameReporter::BlinkBreakdown::k##name: \
+    builder.SetSendBeginMainFrameToCommit_##name(        \
+        it.GetLatency().InMicroseconds());               \
+    break;
+      CASE_FOR_BLINK_BREAKDOWN(HandleInputEvents);
+      CASE_FOR_BLINK_BREAKDOWN(Animate);
+      CASE_FOR_BLINK_BREAKDOWN(StyleUpdate);
+      CASE_FOR_BLINK_BREAKDOWN(LayoutUpdate);
+      CASE_FOR_BLINK_BREAKDOWN(Prepaint);
+      CASE_FOR_BLINK_BREAKDOWN(CompositingInputs);
+      CASE_FOR_BLINK_BREAKDOWN(CompositingAssignments);
+      CASE_FOR_BLINK_BREAKDOWN(Paint);
+      CASE_FOR_BLINK_BREAKDOWN(CompositeCommit);
+      CASE_FOR_BLINK_BREAKDOWN(UpdateLayers);
+      CASE_FOR_BLINK_BREAKDOWN(BeginMainSentToStarted);
+#undef CASE_FOR_BLINK_BREAKDOWN
       default:
         NOTREACHED();
         break;
@@ -268,6 +297,8 @@ void UkmManager::RecordCompositorLatencyUKM(
 void UkmManager::RecordEventLatencyUKM(
     const EventMetrics::List& events_metrics,
     const std::vector<CompositorFrameReporter::StageData>& stage_history,
+    const CompositorFrameReporter::ProcessedBlinkBreakdown&
+        processed_blink_breakdown,
     const CompositorFrameReporter::ProcessedVizBreakdown&
         processed_viz_breakdown) const {
   using StageType = CompositorFrameReporter::StageType;
@@ -448,6 +479,33 @@ void UkmManager::RecordEventLatencyUKM(
         CASE_FOR_STAGE(SubmitCompositorFrameToPresentationCompositorFrame);
         CASE_FOR_STAGE(TotalLatency);
 #undef CASE_FOR_STAGE
+        default:
+          NOTREACHED();
+          break;
+      }
+    }
+
+    // Record Blink breakdowns.
+    for (auto it = processed_blink_breakdown.CreateIterator(); it.IsValid();
+         it.Advance()) {
+      switch (it.GetBreakdown()) {
+#define CASE_FOR_BLINK_BREAKDOWN(name)                   \
+  case CompositorFrameReporter::BlinkBreakdown::k##name: \
+    builder.SetSendBeginMainFrameToCommit_##name(        \
+        it.GetLatency().InMicroseconds());               \
+    break;
+        CASE_FOR_BLINK_BREAKDOWN(HandleInputEvents);
+        CASE_FOR_BLINK_BREAKDOWN(Animate);
+        CASE_FOR_BLINK_BREAKDOWN(StyleUpdate);
+        CASE_FOR_BLINK_BREAKDOWN(LayoutUpdate);
+        CASE_FOR_BLINK_BREAKDOWN(Prepaint);
+        CASE_FOR_BLINK_BREAKDOWN(CompositingInputs);
+        CASE_FOR_BLINK_BREAKDOWN(CompositingAssignments);
+        CASE_FOR_BLINK_BREAKDOWN(Paint);
+        CASE_FOR_BLINK_BREAKDOWN(CompositeCommit);
+        CASE_FOR_BLINK_BREAKDOWN(UpdateLayers);
+        CASE_FOR_BLINK_BREAKDOWN(BeginMainSentToStarted);
+#undef CASE_FOR_BLINK_BREAKDOWN
         default:
           NOTREACHED();
           break;

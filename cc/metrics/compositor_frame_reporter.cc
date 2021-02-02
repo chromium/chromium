@@ -348,6 +348,76 @@ bool IsScrollActive(const CompositorFrameReporter::ActiveTrackers& trackers) {
 
 }  // namespace
 
+// CompositorFrameReporter::ProcessedBlinkBreakdown::Iterator ==================
+
+CompositorFrameReporter::ProcessedBlinkBreakdown::Iterator::Iterator(
+    const ProcessedBlinkBreakdown* owner)
+    : owner_(owner) {}
+
+CompositorFrameReporter::ProcessedBlinkBreakdown::Iterator::~Iterator() =
+    default;
+
+bool CompositorFrameReporter::ProcessedBlinkBreakdown::Iterator::IsValid()
+    const {
+  return index_ < base::size(owner_->list_);
+}
+
+void CompositorFrameReporter::ProcessedBlinkBreakdown::Iterator::Advance() {
+  DCHECK(IsValid());
+  index_++;
+}
+
+BlinkBreakdown
+CompositorFrameReporter::ProcessedBlinkBreakdown::Iterator::GetBreakdown()
+    const {
+  DCHECK(IsValid());
+  return static_cast<BlinkBreakdown>(index_);
+}
+
+base::TimeDelta
+CompositorFrameReporter::ProcessedBlinkBreakdown::Iterator::GetLatency() const {
+  DCHECK(IsValid());
+  return owner_->list_[index_];
+}
+
+// CompositorFrameReporter::ProcessedBlinkBreakdown ============================
+
+CompositorFrameReporter::ProcessedBlinkBreakdown::ProcessedBlinkBreakdown(
+    base::TimeTicks blink_start_time,
+    base::TimeTicks begin_main_frame_start,
+    const BeginMainFrameMetrics& blink_breakdown) {
+  if (blink_start_time.is_null())
+    return;
+
+  list_[static_cast<int>(BlinkBreakdown::kHandleInputEvents)] =
+      blink_breakdown.handle_input_events;
+  list_[static_cast<int>(BlinkBreakdown::kAnimate)] = blink_breakdown.animate;
+  list_[static_cast<int>(BlinkBreakdown::kStyleUpdate)] =
+      blink_breakdown.style_update;
+  list_[static_cast<int>(BlinkBreakdown::kLayoutUpdate)] =
+      blink_breakdown.layout_update;
+  list_[static_cast<int>(BlinkBreakdown::kPrepaint)] = blink_breakdown.prepaint;
+  list_[static_cast<int>(BlinkBreakdown::kCompositingInputs)] =
+      blink_breakdown.compositing_inputs;
+  list_[static_cast<int>(BlinkBreakdown::kCompositingAssignments)] =
+      blink_breakdown.compositing_assignments;
+  list_[static_cast<int>(BlinkBreakdown::kPaint)] = blink_breakdown.paint;
+  list_[static_cast<int>(BlinkBreakdown::kCompositeCommit)] =
+      blink_breakdown.composite_commit;
+  list_[static_cast<int>(BlinkBreakdown::kUpdateLayers)] =
+      blink_breakdown.update_layers;
+  list_[static_cast<int>(BlinkBreakdown::kBeginMainSentToStarted)] =
+      begin_main_frame_start - blink_start_time;
+}
+
+CompositorFrameReporter::ProcessedBlinkBreakdown::~ProcessedBlinkBreakdown() =
+    default;
+
+CompositorFrameReporter::ProcessedBlinkBreakdown::Iterator
+CompositorFrameReporter::ProcessedBlinkBreakdown::CreateIterator() const {
+  return Iterator(this);
+}
+
 // CompositorFrameReporter::ProcessedVizBreakdown::Iterator ====================
 
 CompositorFrameReporter::ProcessedVizBreakdown::Iterator::Iterator(
@@ -614,7 +684,8 @@ void CompositorFrameReporter::TerminateReporter() {
   if (frame_termination_status_ == FrameTerminationStatus::kUnknown)
     TerminateFrame(FrameTerminationStatus::kUnknown, Now());
 
-  PopulateBlinkBreakdownList();
+  processed_blink_breakdown_ = std::make_unique<ProcessedBlinkBreakdown>(
+      blink_start_time_, begin_main_frame_start_, blink_breakdown_);
   processed_viz_breakdown_ =
       std::make_unique<ProcessedVizBreakdown>(viz_start_time_, viz_breakdown_);
 
@@ -713,7 +784,7 @@ void CompositorFrameReporter::ReportCompositorLatencyHistograms() const {
     if (latency_ukm_reporter_) {
       latency_ukm_reporter_->ReportCompositorLatencyUkm(
           report_type, stage_history_, active_trackers_,
-          *processed_viz_breakdown_);
+          *processed_blink_breakdown_, *processed_viz_breakdown_);
     }
     bool any_active_interaction = false;
     for (size_t fst_type = 0; fst_type < active_trackers_.size(); ++fst_type) {
@@ -801,10 +872,13 @@ void CompositorFrameReporter::ReportStageHistogramWithBreakdown(
 
 void CompositorFrameReporter::ReportCompositorLatencyBlinkBreakdowns(
     FrameSequenceTrackerType frame_sequence_tracker_type) const {
-  for (size_t i = 0; i < base::size(blink_breakdown_list_); i++) {
-    ReportCompositorLatencyHistogram(frame_sequence_tracker_type,
-                                     kBlinkBreakdownInitialIndex + i,
-                                     blink_breakdown_list_[i]);
+  DCHECK(processed_blink_breakdown_);
+  for (auto it = processed_blink_breakdown_->CreateIterator(); it.IsValid();
+       it.Advance()) {
+    ReportCompositorLatencyHistogram(
+        frame_sequence_tracker_type,
+        kBlinkBreakdownInitialIndex + static_cast<size_t>(it.GetBreakdown()),
+        it.GetLatency());
   }
 }
 
@@ -970,17 +1044,21 @@ void CompositorFrameReporter::ReportEventLatencyHistograms() const {
 
   if (latency_ukm_reporter_) {
     latency_ukm_reporter_->ReportEventLatencyUkm(
-        events_metrics_, stage_history_, *processed_viz_breakdown_);
+        events_metrics_, stage_history_, *processed_blink_breakdown_,
+        *processed_viz_breakdown_);
   }
 }
 
 void CompositorFrameReporter::ReportEventLatencyBlinkBreakdowns(
     int histogram_base_index,
     const std::string& histogram_base_name) const {
-  for (size_t i = 0; i < base::size(blink_breakdown_list_); i++) {
-    ReportEventLatencyHistogram(histogram_base_index, histogram_base_name,
-                                kBlinkBreakdownInitialIndex + i,
-                                blink_breakdown_list_[i]);
+  DCHECK(processed_blink_breakdown_);
+  for (auto it = processed_blink_breakdown_->CreateIterator(); it.IsValid();
+       it.Advance()) {
+    ReportEventLatencyHistogram(
+        histogram_base_index, histogram_base_name,
+        kBlinkBreakdownInitialIndex + static_cast<size_t>(it.GetBreakdown()),
+        it.GetLatency());
   }
 }
 
@@ -1211,36 +1289,6 @@ void CompositorFrameReporter::ReportEventLatencyTraceEvents() const {
     TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
         "cc,input", "EventLatency", trace_id, frame_termination_time_);
   }
-}
-
-void CompositorFrameReporter::PopulateBlinkBreakdownList() {
-  if (blink_start_time_.is_null())
-    return;
-
-  blink_breakdown_list_[static_cast<int>(BlinkBreakdown::kHandleInputEvents)] =
-      blink_breakdown_.handle_input_events;
-  blink_breakdown_list_[static_cast<int>(BlinkBreakdown::kAnimate)] =
-      blink_breakdown_.animate;
-  blink_breakdown_list_[static_cast<int>(BlinkBreakdown::kStyleUpdate)] =
-      blink_breakdown_.style_update;
-  blink_breakdown_list_[static_cast<int>(BlinkBreakdown::kLayoutUpdate)] =
-      blink_breakdown_.layout_update;
-  blink_breakdown_list_[static_cast<int>(BlinkBreakdown::kPrepaint)] =
-      blink_breakdown_.prepaint;
-  blink_breakdown_list_[static_cast<int>(BlinkBreakdown::kCompositingInputs)] =
-      blink_breakdown_.compositing_inputs;
-  blink_breakdown_list_[static_cast<int>(
-      BlinkBreakdown::kCompositingAssignments)] =
-      blink_breakdown_.compositing_assignments;
-  blink_breakdown_list_[static_cast<int>(BlinkBreakdown::kPaint)] =
-      blink_breakdown_.paint;
-  blink_breakdown_list_[static_cast<int>(BlinkBreakdown::kCompositeCommit)] =
-      blink_breakdown_.composite_commit;
-  blink_breakdown_list_[static_cast<int>(BlinkBreakdown::kUpdateLayers)] =
-      blink_breakdown_.update_layers;
-  blink_breakdown_list_[static_cast<int>(
-      BlinkBreakdown::kBeginMainSentToStarted)] =
-      begin_main_frame_start_ - blink_start_time_;
 }
 
 base::TimeDelta CompositorFrameReporter::SumOfStageHistory() const {

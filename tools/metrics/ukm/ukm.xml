@@ -5216,6 +5216,160 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="SendBeginMainFrameToCommit.Animate">
+    <summary>
+      The time portion of SendBeginMainFrameToCommit spent on animations, in
+      microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SendBeginMainFrameToCommit.BeginMainSentToStarted">
+    <summary>
+      The time portion of SendBeginMainFrameToCommit spent before starting main
+      thread work, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SendBeginMainFrameToCommit.CompositeCommit">
+    <summary>
+      The time portion of SendBeginMainFrameToCommit spent on composite commit,
+      in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SendBeginMainFrameToCommit.CompositingAssignments">
+    <summary>
+      The time portion of SendBeginMainFrameToCommit spent on updating
+      compositing assignments, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SendBeginMainFrameToCommit.CompositingInputs">
+    <summary>
+      The time portion of SendBeginMainFrameToCommit spent on updating
+      compositing inputs, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SendBeginMainFrameToCommit.HandleInputEvents">
+    <summary>
+      The time portion of SendBeginMainFrameToCommit spent on handling input
+      events, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SendBeginMainFrameToCommit.LayoutUpdate">
+    <summary>
+      The time portion of SendBeginMainFrameToCommit spent on layout update, in
+      microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SendBeginMainFrameToCommit.Paint">
+    <summary>
+      The time portion of SendBeginMainFrameToCommit spent on paint, in
+      microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SendBeginMainFrameToCommit.Prepaint">
+    <summary>
+      The time portion of SendBeginMainFrameToCommit spent on prepaint, in
+      microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SendBeginMainFrameToCommit.StyleUpdate">
+    <summary>
+      The time portion of SendBeginMainFrameToCommit spent on style update, in
+      microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SendBeginMainFrameToCommit.UpdateLayers">
+    <summary>
+      The time portion of SendBeginMainFrameToCommit spent on updating layers,
+      in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="SubmitCompositorFrameToPresentationCompositorFrame">
     <summary>
       The time from when a compositor frame is submitted to the display
@@ -5552,6 +5706,160 @@ be describing additional metrics about the same event.
     <summary>
       The time from when the BeginMainFrame is sent to the beginning of the
       commit, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SendBeginMainFrameToCommit.Animate">
+    <summary>
+      The time portion of SendBeginMainFrameToCommit spent on animations, in
+      microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SendBeginMainFrameToCommit.BeginMainSentToStarted">
+    <summary>
+      The time portion of SendBeginMainFrameToCommit spent before starting main
+      thread work, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SendBeginMainFrameToCommit.CompositeCommit">
+    <summary>
+      The time portion of SendBeginMainFrameToCommit spent on composite commit,
+      in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SendBeginMainFrameToCommit.CompositingAssignments">
+    <summary>
+      The time portion of SendBeginMainFrameToCommit spent on updating
+      compositing assignments, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SendBeginMainFrameToCommit.CompositingInputs">
+    <summary>
+      The time portion of SendBeginMainFrameToCommit spent on updating
+      compositing inputs, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SendBeginMainFrameToCommit.HandleInputEvents">
+    <summary>
+      The time portion of SendBeginMainFrameToCommit spent on handling input
+      events, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SendBeginMainFrameToCommit.LayoutUpdate">
+    <summary>
+      The time portion of SendBeginMainFrameToCommit spent on layout update, in
+      microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SendBeginMainFrameToCommit.Paint">
+    <summary>
+      The time portion of SendBeginMainFrameToCommit spent on paint, in
+      microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SendBeginMainFrameToCommit.Prepaint">
+    <summary>
+      The time portion of SendBeginMainFrameToCommit spent on prepaint, in
+      microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SendBeginMainFrameToCommit.StyleUpdate">
+    <summary>
+      The time portion of SendBeginMainFrameToCommit spent on style update, in
+      microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SendBeginMainFrameToCommit.UpdateLayers">
+    <summary>
+      The time portion of SendBeginMainFrameToCommit spent on updating layers,
+      in microseconds.
     </summary>
     <aggregation>
       <history>
