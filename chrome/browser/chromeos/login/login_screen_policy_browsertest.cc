@@ -232,18 +232,21 @@ IN_PROC_BROWSER_TEST_F(LoginScreenButtonsLocalePolicy, UnifiedTrayLabelsText) {
     // Actual text on UnifiedManagedDeviceView text.
     actual_text = unified_tray_test_api->GetBubbleViewText(
         ash::VIEW_ID_TRAY_ENTERPRISE_LABEL);
+    // Text on EnterpriseManagedView tooltip in current locale.
+    base::string16 expected_text = l10n_util::GetStringFUTF16(
+        IDS_ASH_SHORT_MANAGED_BY, base::UTF8ToUTF16(kDomain));
+    EXPECT_EQ(expected_text, actual_text);
+
   } else {
     // Actual text on EnterpriseManagedView tooltip.
     actual_text = unified_tray_test_api->GetBubbleViewTooltip(
         ash::VIEW_ID_TRAY_ENTERPRISE);
+    // Text on EnterpriseManagedView tooltip in current locale.
+    base::string16 expected_text = l10n_util::GetStringFUTF16(
+        IDS_ASH_ENTERPRISE_DEVICE_MANAGED_BY, ui::GetChromeOSDeviceName(),
+        base::UTF8ToUTF16(kDomain));
+    EXPECT_EQ(expected_text, actual_text);
   }
-
-  // Text on EnterpriseManagedView tooltip in current locale.
-  base::string16 expected_text = l10n_util::GetStringFUTF16(
-      IDS_ASH_ENTERPRISE_DEVICE_MANAGED_BY, ui::GetChromeOSDeviceName(),
-      base::UTF8ToUTF16(kDomain));
-
-  EXPECT_EQ(expected_text, actual_text);
 }
 
 }  // namespace chromeos

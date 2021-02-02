@@ -51,8 +51,7 @@ IN_PROC_BROWSER_TEST_F(SystemTrayClientEnterpriseTest, TrayEnterprise) {
 
   if (ash::features::IsManagedDeviceUIRedesignEnabled()) {
     // The text shows the domain.
-    EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_ENTERPRISE_DEVICE_MANAGED_BY,
-                                         ui::GetChromeOSDeviceName(),
+    EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_SHORT_MANAGED_BY,
                                          base::UTF8ToUTF16("example.com")),
               test_api->GetBubbleViewText(ash::VIEW_ID_TRAY_ENTERPRISE_LABEL));
   } else {

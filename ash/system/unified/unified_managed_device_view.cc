@@ -100,8 +100,7 @@ void UnifiedManagedDeviceView::Update() {
             ? l10n_util::GetStringFUTF16(IDS_ASH_ENTERPRISE_DEVICE_MANAGED,
                                          ui::GetChromeOSDeviceName())
             : l10n_util::GetStringFUTF16(
-                  IDS_ASH_ENTERPRISE_DEVICE_MANAGED_BY,
-                  ui::GetChromeOSDeviceName(),
+                  IDS_ASH_SHORT_MANAGED_BY,
                   base::UTF8ToUTF16(enterprise_domain_manager));
     label_->SetText(managed_string);
     SetAccessibleName(managed_string);
