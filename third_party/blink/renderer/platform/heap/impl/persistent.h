@@ -220,7 +220,7 @@ class PersistentBase {
                            weaknessConfiguration,
                            crossThreadnessConfiguration>& other) {
     PersistentMutexTraits<crossThreadnessConfiguration>::AssertAcquired();
-    AssignUnsafe(other);
+    AssignUnsafe(static_cast<T*>(other.Get()));
     return *this;
   }
 
@@ -837,6 +837,26 @@ inline bool operator==(const Persistent<T>& a, const Member<U>& b) {
 template <typename T, typename U>
 inline bool operator!=(const Persistent<T>& a, const Member<U>& b) {
   return a.Get() != b.Get();
+}
+
+template <typename U, typename T>
+Persistent<U> DownCast(const Persistent<T>& p) {
+  return Persistent<U>(p);
+}
+
+template <typename U, typename T>
+WeakPersistent<U> DownCast(const WeakPersistent<T>& p) {
+  return WeakPersistent<U>(p);
+}
+
+template <typename U, typename T>
+CrossThreadPersistent<U> DownCast(const CrossThreadPersistent<T>& p) {
+  return CrossThreadPersistent<U>(p);
+}
+
+template <typename U, typename T>
+CrossThreadWeakPersistent<U> DownCast(const CrossThreadWeakPersistent<T>& p) {
+  return CrossThreadWeakPersistent<U>(p);
 }
 
 }  // namespace blink

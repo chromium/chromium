@@ -62,6 +62,18 @@ CrossThreadWeakPersistent<T> WrapCrossThreadWeakPersistent(
 #define PERSISTENT_FROM_HERE PersistentLocation()
 #endif  // BUILDFLAG(RAW_HEAP_SNAPSHOTS)
 
+template <typename U, typename T, typename weakness>
+cppgc::internal::BasicPersistent<U, weakness> DownCast(
+    const cppgc::internal::BasicPersistent<T, weakness>& p) {
+  return p.template To<U>();
+}
+
+template <typename U, typename T, typename weakness>
+cppgc::internal::BasicCrossThreadPersistent<U, weakness> DownCast(
+    const cppgc::internal::BasicCrossThreadPersistent<T, weakness>& p) {
+  return p.template To<U>();
+}
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_V8_WRAPPER_PERSISTENT_H_
