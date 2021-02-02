@@ -2217,11 +2217,11 @@ external/wpt/font-access/font_access-enumeration.tentative.https.window.html [ S
 external/wpt/font-access/font_access-chooser.tentative.manual.https.html [ Skip ]
 external/wpt/font-access/font_access-chooser-multiple.tentative.manual.https.html [ Skip ]
 external/wpt/font-access/font_access-chooser-selection.tentative.manual.https.html [ Skip ]
-virtual/font-access/external/wpt/font-access/font_access-blob.tentative.https.window.html [ Pass ]
-virtual/font-access/external/wpt/font-access/font_access-chooser.tentative.manual.https.html [ Skip ]
-virtual/font-access/external/wpt/font-access/font_access-chooser-multiple.tentative.manual.https.html [ Skip ]
-virtual/font-access/external/wpt/font-access/font_access-chooser-selection.tentative.manual.https.html [ Skip ]
-virtual/font-access/external/wpt/font-access/font_access-enumeration.tentative.https.window.html [ Pass ]
+virtual/font-access-persistent/external/wpt/font-access/font_access-blob.tentative.https.window.html [ Pass ]
+virtual/font-access-persistent/external/wpt/font-access/font_access-chooser.tentative.manual.https.html [ Skip ]
+virtual/font-access-persistent/external/wpt/font-access/font_access-chooser-multiple.tentative.manual.https.html [ Skip ]
+virtual/font-access-persistent/external/wpt/font-access/font_access-chooser-selection.tentative.manual.https.html [ Skip ]
+virtual/font-access-persistent/external/wpt/font-access/font_access-enumeration.tentative.https.window.html [ Pass ]
 
 # text-orientation:upright
 crbug.com/1005518 external/wpt/css/css-writing-modes/table-progression-vlr-003.html [ Skip ]

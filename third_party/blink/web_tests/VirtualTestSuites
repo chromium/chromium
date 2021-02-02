@@ -216,9 +216,9 @@
     "args": ["--enable-blink-features=FractionalScrollOffsets"]
   },
   {
-    "prefix": "font-access",
+    "prefix": "font-access-persistent",
     "bases": ["external/wpt/font-access"],
-    "args": ["--enable-features=FontAccess"]
+    "args": ["--enable-features=FontAccess,FontAccessPersistent"]
   },
   {
     "prefix": "highdpi-threaded",

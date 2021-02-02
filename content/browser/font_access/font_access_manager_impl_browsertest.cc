@@ -67,7 +67,12 @@ class FontAccessManagerImplBrowserTest
     : public FontAccessManagerImplBrowserBase {
  public:
   FontAccessManagerImplBrowserTest() {
-    scoped_feature_list_->InitAndEnableFeature(blink::features::kFontAccess);
+    std::vector<base::Feature> enabled_features({
+        blink::features::kFontAccess,
+        blink::features::kFontAccessPersistent,
+    });
+    scoped_feature_list_->InitWithFeatures(std::move(enabled_features),
+                                           /*disabled_features=*/{});
   }
 };
 

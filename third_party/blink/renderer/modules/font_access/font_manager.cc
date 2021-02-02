@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/font_access/font_metadata.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -42,7 +43,8 @@ ScriptPromise FontManager::query(ScriptState* script_state,
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  if (options->persistentAccess()) {
+  if (options->persistentAccess() &&
+      RuntimeEnabledFeatures::FontAccessPersistentEnabled()) {
     remote_manager_->EnumerateLocalFonts(WTF::Bind(
         &FontManager::DidGetEnumerationResponse, WrapWeakPersistent(this),
         WrapPersistent(resolver), options->select()));
