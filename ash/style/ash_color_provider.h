@@ -57,7 +57,6 @@ class ASH_EXPORT AshColorProvider : public SessionObserver,
 
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* prefs) override;
-  void OnSessionStateChanged(session_manager::SessionState state) override;
 
   // ColorProvider:
   SkColor GetShieldLayerColor(ShieldLayerType type) const override;

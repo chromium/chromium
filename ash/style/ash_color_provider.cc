@@ -161,14 +161,6 @@ void AshColorProvider::OnActiveUserPrefServiceChanged(PrefService* prefs) {
   NotifyColorModeThemedPrefChange();
 }
 
-void AshColorProvider::OnSessionStateChanged(
-    session_manager::SessionState state) {
-  if (!features::IsDarkLightModeEnabled())
-    return;
-  ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(
-      IsDarkModeEnabled());
-}
-
 SkColor AshColorProvider::GetShieldLayerColor(ShieldLayerType type) const {
   constexpr int kAlphas[] = {kAlpha20, kAlpha40, kAlpha60, kAlpha80, kAlpha90};
   DCHECK_LT(static_cast<size_t>(type), base::size(kAlphas));
@@ -383,9 +375,6 @@ void AshColorProvider::ToggleColorMode() {
   active_user_pref_service_->SetBoolean(prefs::kDarkModeEnabled,
                                         !IsDarkModeEnabled());
   active_user_pref_service_->CommitPendingWrite();
-
-  ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(
-      IsDarkModeEnabled());
 }
 
 void AshColorProvider::UpdateColorModeThemed(bool is_themed) {
