@@ -160,18 +160,7 @@ std::string BaseBlockingPage::GetMetricPrefix(
     case BaseSafeBrowsingErrorUI::SB_REASON_BILLING:
       return primary_subresource ? "billing_subresource" : "billing";
     case BaseSafeBrowsingErrorUI::SB_REASON_PHISHING:
-      ThreatPatternType threat_pattern_type =
-          unsafe_resources[0].threat_metadata.threat_pattern_type;
-      if (threat_pattern_type == ThreatPatternType::PHISHING ||
-          threat_pattern_type == ThreatPatternType::NONE)
-        return primary_subresource ? "phishing_subresource" : "phishing";
-      else if (threat_pattern_type == ThreatPatternType::SOCIAL_ENGINEERING_ADS)
-        return primary_subresource ? "social_engineering_ads_subresource"
-                                   : "social_engineering_ads";
-      else if (threat_pattern_type ==
-               ThreatPatternType::SOCIAL_ENGINEERING_LANDING)
-        return primary_subresource ? "social_engineering_landing_subresource"
-                                   : "social_engineering_landing";
+      return primary_subresource ? "phishing_subresource" : "phishing";
   }
   NOTREACHED();
   return "unkown_metric_prefix";

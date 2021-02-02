@@ -37,7 +37,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     User decision when presented with a security interstitial. As of M44,
     subresource interstitials were split into their own entries. As of M52,
     social_engineering_ads* and social_engineering_landing* interstitial reasons
-    are split into their own entries from phishing*.
+    are split into their own entries from phishing*. As of M90,
+    social_engineering_ads* and social_engineering_landing* interstitial reasons
+    have been removed because they don't trigger interstitials.
   </summary>
 </histogram>
 
@@ -50,7 +52,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     the user had previously visited. As of M44, subresource interstitials were
     split into their own entries. As of M52, social_engineering_ads* and
     social_engineering_landing* interstitial reasons are split into their own
-    entries from phishing*.
+    entries from phishing*. As of M90, social_engineering_ads* and
+    social_engineering_landing* interstitial reasons have been removed because
+    they don't trigger interstitials.
   </summary>
 </histogram>
 
@@ -62,7 +66,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     User interactions with a security interstitial. As of M44, subresource
     interstitials were split into their own entries. As of M52,
     social_engineering_ads* and social_engineering_landing* interstitial reasons
-    are split into their own entries from phishing*.
+    are split into their own entries from phishing*. As of M90,
+    social_engineering_ads* and social_engineering_landing* interstitial reasons
+    have been removed because they don't trigger interstitials.
   </summary>
 </histogram>
 

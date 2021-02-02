@@ -16579,10 +16579,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="origin_policy" label=""/>
   <suffix name="phishing" label=""/>
   <suffix name="phishing_subresource" label=""/>
-  <suffix name="social_engineering_ads" label=""/>
-  <suffix name="social_engineering_ads_subresource" label=""/>
-  <suffix name="social_engineering_landing" label=""/>
-  <suffix name="social_engineering_landing_subresource" label=""/>
+  <suffix name="social_engineering_ads" label="">
+    <obsolete>
+      Removed as of 2021-1. Doesn't trigger interstitials.
+    </obsolete>
+  </suffix>
+  <suffix name="social_engineering_ads_subresource" label="">
+    <obsolete>
+      Removed as of 2021-1. Doesn't trigger interstitials.
+    </obsolete>
+  </suffix>
+  <suffix name="social_engineering_landing" label="">
+    <obsolete>
+      Removed as of 2021-1. Doesn't trigger interstitials.
+    </obsolete>
+  </suffix>
+  <suffix name="social_engineering_landing_subresource" label="">
+    <obsolete>
+      Removed as of 2021-1. Doesn't trigger interstitials.
+    </obsolete>
+  </suffix>
   <affected-histogram name="interstitial.decision"/>
   <affected-histogram name="interstitial.decision.repeat_visit"/>
   <affected-histogram name="interstitial.interaction"/>
@@ -16634,27 +16650,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram
       name="interstitial.phishing_subresource.decision.repeat_visit"/>
   <affected-histogram name="interstitial.phishing_subresource.interaction"/>
-  <affected-histogram name="interstitial.social_engineering_ads.decision"/>
-  <affected-histogram
-      name="interstitial.social_engineering_ads.decision.repeat_visit"/>
-  <affected-histogram name="interstitial.social_engineering_ads.interaction"/>
-  <affected-histogram
-      name="interstitial.social_engineering_ads_subresource.decision"/>
-  <affected-histogram
-      name="interstitial.social_engineering_ads_subresource.decision.repeat_visit"/>
-  <affected-histogram
-      name="interstitial.social_engineering_ads_subresource.interaction"/>
-  <affected-histogram name="interstitial.social_engineering_landing.decision"/>
-  <affected-histogram
-      name="interstitial.social_engineering_landing.decision.repeat_visit"/>
-  <affected-histogram
-      name="interstitial.social_engineering_landing.interaction"/>
-  <affected-histogram
-      name="interstitial.social_engineering_landing_subresource.decision"/>
-  <affected-histogram
-      name="interstitial.social_engineering_landing_subresource.decision.repeat_visit"/>
-  <affected-histogram
-      name="interstitial.social_engineering_landing_subresource.interaction"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="SecurityInterstitialSSLType" separator="."
