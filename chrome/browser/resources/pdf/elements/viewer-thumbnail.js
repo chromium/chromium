@@ -59,6 +59,11 @@ export class ViewerThumbnailElement extends PolymerElement {
     let canvas = this.getCanvas_();
     if (!canvas) {
       canvas = document.createElement('canvas');
+
+      // Prevent copying or saving of the thumbnail image in case the document
+      // has restricted access rights.
+      canvas.oncontextmenu = e => e.preventDefault();
+
       this.shadowRoot.querySelector('#thumbnail').appendChild(canvas);
     }
 
