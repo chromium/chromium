@@ -9,6 +9,7 @@
 #include "content/public/browser/mojo_binder_policy_map.h"
 #include "content/public/common/content_client.h"
 #include "device/gamepad/public/mojom/gamepad.mojom.h"
+#include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
 
 namespace content {
 
@@ -16,9 +17,12 @@ namespace {
 
 // Register mojo binder policies for prerendering for content/ interfaces.
 void RegisterContentBinderPoliciesForPrerendering(MojoBinderPolicyMap& map) {
-  map.SetPolicy<device::mojom::GamepadMonitor>(MojoBinderPolicy::kCancel);
   map.SetPolicy<device::mojom::GamepadHapticsManager>(
       MojoBinderPolicy::kCancel);
+  map.SetPolicy<device::mojom::GamepadMonitor>(MojoBinderPolicy::kCancel);
+
+  map.SetPolicy<network::mojom::RestrictedCookieManager>(
+      MojoBinderPolicy::kGrant);
 }
 
 // A singleton class that stores the `MojoBinderPolicyMap` of interfaces which

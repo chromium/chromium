@@ -497,6 +497,32 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, PrerenderBlankIframe) {
   TestRenderFrameHostPrerenderingState(GetUrl("/page_with_blank_iframe.html"));
 }
 
+// Tests that prerendering pages can access cookies.
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, RestrictedCookieAccess) {
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html");
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  // Set a cookie to the origin.
+  const std::string prerender_cookie = "prerender_cookie=exist";
+  EvalJsResult result =
+      EvalJs(shell()->web_contents(),
+             "document.cookie='" + prerender_cookie + "; path=/'");
+  EXPECT_TRUE(result.error.empty()) << result.error;
+
+  // Make a prerendered page.
+  AddPrerender(kPrerenderingUrl);
+  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
+  PrerenderHost* prerender_host =
+      registry.FindHostByUrlForTesting(kPrerenderingUrl);
+  ASSERT_TRUE(prerender_host);
+  WebContents* prerender_contents = WebContents::FromRenderFrameHost(
+      prerender_host->GetPrerenderedMainFrameHostForTesting());
+
+  // Verify the prerendered page can access the cookie.
+  EXPECT_EQ(prerender_cookie, EvalJs(prerender_contents, "document.cookie"));
+}
+
 class MojoCapabilityControlTestContentBrowserClient
     : public TestContentBrowserClient,
       mojom::TestInterfaceForDefer,
