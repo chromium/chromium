@@ -48,6 +48,8 @@ class CartService : public history::HistoryServiceObserver,
                const cart_db::ChromeCartContentProto& proto);
   // Delete the cart from certain domain in the cart service.
   void DeleteCart(const std::string& domain);
+  // Only load carts with fake data in the database.
+  void LoadCartsWithFakeData(CartDB::LoadCallback callback);
   // history::HistoryServiceObserver:
   void OnURLsDeleted(history::HistoryService* history_service,
                      const history::DeletionInfo& deletion_info) override;
@@ -62,6 +64,10 @@ class CartService : public history::HistoryServiceObserver,
   explicit CartService(Profile* profile);
   // Callback when a database operation (e.g. insert or delete) is finished.
   void OnOperationFinished(bool success);
+  // Add carts with fake data to database.
+  void AddCartsWithFakeData();
+  // Delete carts with fake data from database.
+  void DeleteCartsWithFakeData();
 
   Profile* profile_;
   std::unique_ptr<CartDB> cart_db_;

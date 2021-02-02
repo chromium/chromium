@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/cart/cart_handler.h"
+#include "chrome/browser/cart/cart_db_content.pb.h"
+#include "chrome/browser/cart/cart_service.h"
 #include "chrome/browser/cart/cart_service_factory.h"
 #include "components/search/ntp_features.h"
 
@@ -15,36 +17,18 @@ CartHandler::CartHandler(
 CartHandler::~CartHandler() = default;
 
 void CartHandler::GetMerchantCarts(GetMerchantCartsCallback callback) {
-  std::vector<chrome_cart::mojom::MerchantCartPtr> carts;
-  // TODO(https://crbug.com/1157892): Replace this with a feature parameter for
-  // fake data when real data is available.
-  if (base::FeatureList::IsEnabled(ntp_features::kNtpChromeCartModule)) {
-    auto dummy_cart1 = chrome_cart::mojom::MerchantCart::New();
-    dummy_cart1->merchant = "Cart Foo";
-    dummy_cart1->cart_url = GURL("https://www.google.com/");
-    dummy_cart1->product_image_urls.emplace_back(
-        "https://encrypted-tbn3.gstatic.com/"
-        "shopping?q=tbn:ANd9GcQpn38jB2_BANnHUFa7kHJsf6SyubcgeU1lNYO_"
-        "ZxM1Q2ju_ZMjv2EwNh0Zx_zbqYy_mFg_aiIhWYnD5PQ7t-uFzLM5cN77s_2_"
-        "DFNeumI-LMPJMYjW-BOSaA&usqp=CAY");
-    dummy_cart1->product_image_urls.emplace_back(
-        "https://encrypted-tbn0.gstatic.com/"
-        "shopping?q=tbn:ANd9GcQyMRYWeM2Yq095nOXTL0-"
-        "EUUnm79kh6hnw8yctJUNrAuse607KEr1CVxEa24r-"
-        "8XHBuhTwcuC4GXeN94h9Kn19DhdBGsXG0qrD74veYSDJNLrUP-sru0jH&usqp=CAY");
-    dummy_cart1->product_image_urls.emplace_back(
-        "https://encrypted-tbn1.gstatic.com/"
-        "shopping?q=tbn:ANd9GcT2ew6Aydzu5VzRV756ORGha6fyjKp_On7iTlr_"
-        "tL9vODnlNtFo_xsxj6_lCop-3J0Vk44lHfk-AxoBJDABVHPVFN-"
-        "EiWLcZvzkdpHFqcurm7fBVmWtYKo2rg&usqp=CAY");
-    carts.push_back(std::move(dummy_cart1));
-
-    auto dummy_cart2 = chrome_cart::mojom::MerchantCart::New();
-    dummy_cart2->merchant = "Cart Bar";
-    dummy_cart2->cart_url = GURL("https://www.google.com/");
-    carts.push_back(std::move(dummy_cart2));
+  DCHECK(base::FeatureList::IsEnabled(ntp_features::kNtpChromeCartModule));
+  if (base::GetFieldTrialParamValueByFeature(
+          ntp_features::kNtpChromeCartModule,
+          ntp_features::kNtpChromeCartModuleDataParam) == "fake") {
+    cart_service_->LoadCartsWithFakeData(
+        base::BindOnce(&CartHandler::GetCartDataCallback,
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
+  } else {
+    cart_service_->LoadAllCarts(
+        base::BindOnce(&CartHandler::GetCartDataCallback,
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
   }
-  std::move(callback).Run(std::move(carts));
 }
 
 void CartHandler::HideCartModule() {
@@ -61,4 +45,21 @@ void CartHandler::RemoveCartModule() {
 
 void CartHandler::RestoreRemovedCartModule() {
   cart_service_->RestoreRemoved();
+}
+
+void CartHandler::GetCartDataCallback(GetMerchantCartsCallback callback,
+                                      bool success,
+                                      std::vector<CartDB::KeyAndValue> res) {
+  std::vector<chrome_cart::mojom::MerchantCartPtr> carts;
+  for (CartDB::KeyAndValue proto_pair : res) {
+    auto cart = chrome_cart::mojom::MerchantCart::New();
+    cart->merchant = std::move(proto_pair.second.merchant());
+    cart->cart_url = GURL(std::move(proto_pair.second.merchant_cart_url()));
+    std::vector<std::string> image_urls;
+    for (std::string image_url : proto_pair.second.product_image_urls()) {
+      cart->product_image_urls.emplace_back(std::move(image_url));
+    }
+    carts.push_back(std::move(cart));
+  }
+  std::move(callback).Run(std::move(carts));
 }

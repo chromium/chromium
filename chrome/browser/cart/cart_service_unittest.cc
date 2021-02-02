@@ -9,6 +9,7 @@
 #include "chrome/browser/persisted_state_db/profile_proto_db.h"
 #include "chrome/browser/persisted_state_db/profile_proto_db_factory.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/search/ntp_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,6 +22,7 @@ cart_db::ChromeCartContentProto BuildProto(const char* domain,
   return proto;
 }
 
+constexpr char kFakeDataPrefix[] = "Fake:";
 const char kMockMerchantA[] = "A_merchant";
 const char kMockMerchantURLA[] = "www.foo.com";
 const char kMockMerchantB[] = "B_merchant";
@@ -59,7 +61,7 @@ class CartServiceTest : public testing::Test {
     std::move(closure).Run();
   }
 
-  void GetEvaluationPersistedStateDB(
+  void GetEvaluationLoadCarts(
       base::OnceClosure closure,
       std::vector<ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
           expected,
@@ -71,6 +73,18 @@ class CartServiceTest : public testing::Test {
       EXPECT_EQ(found[i].first, expected[i].first);
       EXPECT_EQ(found[i].second.merchant_cart_url(),
                 expected[i].second.merchant_cart_url());
+    }
+    std::move(closure).Run();
+  }
+
+  void GetEvaluationFakeDataDB(
+      base::OnceClosure closure,
+      bool result,
+      std::vector<ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
+          found) {
+    EXPECT_EQ(found.size(), 6U);
+    for (CartDB::KeyAndValue proto_pair : found) {
+      EXPECT_EQ(proto_pair.second.key().rfind(kFakeDataPrefix, 0), 0U);
     }
     std::move(closure).Run();
   }
@@ -111,21 +125,21 @@ TEST_F(CartServiceTest, TestAddCart) {
   CartDB* cart_db_ = service_->GetDB();
   base::RunLoop run_loop[3];
   cart_db_->LoadAllCarts(base::BindOnce(
-      &CartServiceTest::GetEvaluationPersistedStateDB, base::Unretained(this),
+      &CartServiceTest::GetEvaluationLoadCarts, base::Unretained(this),
       run_loop[0].QuitClosure(), kEmptyExpected));
   run_loop[0].Run();
 
   service_->AddCart(kMockMerchantA, kMockProtoA);
 
   cart_db_->LoadAllCarts(base::BindOnce(
-      &CartServiceTest::GetEvaluationPersistedStateDB, base::Unretained(this),
+      &CartServiceTest::GetEvaluationLoadCarts, base::Unretained(this),
       run_loop[1].QuitClosure(), kExpectedA));
   run_loop[1].Run();
 
   service_->AddCart(kMockMerchantA, kMockProtoB);
 
   cart_db_->LoadAllCarts(base::BindOnce(
-      &CartServiceTest::GetEvaluationPersistedStateDB, base::Unretained(this),
+      &CartServiceTest::GetEvaluationLoadCarts, base::Unretained(this),
       run_loop[2].QuitClosure(), kExpectedB));
   run_loop[2].Run();
 }
@@ -141,14 +155,14 @@ TEST_F(CartServiceTest, TestDeleteCart) {
   run_loop[0].Run();
 
   cart_db_->LoadAllCarts(base::BindOnce(
-      &CartServiceTest::GetEvaluationPersistedStateDB, base::Unretained(this),
+      &CartServiceTest::GetEvaluationLoadCarts, base::Unretained(this),
       run_loop[1].QuitClosure(), kExpectedA));
   run_loop[1].Run();
 
   service_->DeleteCart(kMockMerchantA);
 
   cart_db_->LoadAllCarts(base::BindOnce(
-      &CartServiceTest::GetEvaluationPersistedStateDB, base::Unretained(this),
+      &CartServiceTest::GetEvaluationLoadCarts, base::Unretained(this),
       run_loop[2].QuitClosure(), kEmptyExpected));
   run_loop[2].Run();
 }
@@ -163,18 +177,16 @@ TEST_F(CartServiceTest, TestLoadCart) {
                      base::Unretained(this), run_loop[0].QuitClosure(), true));
   run_loop[0].Run();
 
-  service_->LoadCart(
-      kMockMerchantB,
-      base::BindOnce(&CartServiceTest::GetEvaluationPersistedStateDB,
-                     base::Unretained(this), run_loop[1].QuitClosure(),
-                     kEmptyExpected));
+  service_->LoadCart(kMockMerchantB,
+                     base::BindOnce(&CartServiceTest::GetEvaluationLoadCarts,
+                                    base::Unretained(this),
+                                    run_loop[1].QuitClosure(), kEmptyExpected));
   run_loop[1].Run();
 
-  service_->LoadCart(
-      kMockMerchantA,
-      base::BindOnce(&CartServiceTest::GetEvaluationPersistedStateDB,
-                     base::Unretained(this), run_loop[2].QuitClosure(),
-                     kExpectedA));
+  service_->LoadCart(kMockMerchantA,
+                     base::BindOnce(&CartServiceTest::GetEvaluationLoadCarts,
+                                    base::Unretained(this),
+                                    run_loop[2].QuitClosure(), kExpectedA));
   run_loop[2].Run();
 }
 
@@ -189,7 +201,7 @@ TEST_F(CartServiceTest, TestLoadAllCarts) {
   run_loop[0].Run();
 
   service_->LoadAllCarts(base::BindOnce(
-      &CartServiceTest::GetEvaluationPersistedStateDB, base::Unretained(this),
+      &CartServiceTest::GetEvaluationLoadCarts, base::Unretained(this),
       run_loop[1].QuitClosure(), kExpectedA));
   run_loop[1].Run();
 
@@ -200,7 +212,7 @@ TEST_F(CartServiceTest, TestLoadAllCarts) {
   run_loop[2].Run();
 
   service_->LoadAllCarts(base::BindOnce(
-      &CartServiceTest::GetEvaluationPersistedStateDB, base::Unretained(this),
+      &CartServiceTest::GetEvaluationLoadCarts, base::Unretained(this),
       run_loop[3].QuitClosure(), kExpectedAB));
   run_loop[3].Run();
 }
@@ -217,7 +229,7 @@ TEST_F(CartServiceTest, TestOnHistoryDeletion) {
   run_loop[0].Run();
 
   cart_db_->LoadAllCarts(base::BindOnce(
-      &CartServiceTest::GetEvaluationPersistedStateDB, base::Unretained(this),
+      &CartServiceTest::GetEvaluationLoadCarts, base::Unretained(this),
       run_loop[1].QuitClosure(), kExpectedA));
   task_environment_.RunUntilIdle();
   run_loop[1].Run();
@@ -230,8 +242,31 @@ TEST_F(CartServiceTest, TestOnHistoryDeletion) {
                             base::nullopt));
 
   cart_db_->LoadAllCarts(base::BindOnce(
-      &CartServiceTest::GetEvaluationPersistedStateDB, base::Unretained(this),
+      &CartServiceTest::GetEvaluationLoadCarts, base::Unretained(this),
       run_loop[2].QuitClosure(), kEmptyExpected));
   task_environment_.RunUntilIdle();
   run_loop[2].Run();
+}
+
+TEST_F(CartServiceTest, TestFakeData) {
+  base::RunLoop run_loop[2];
+  TestingProfile fake_profile;
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      ntp_features::kNtpChromeCartModule,
+      {{"NtpChromeCartModuleDataParam", "fake"}});
+  CartService* fake_service = CartServiceFactory::GetForProfile(&fake_profile);
+  CartDB* fake_db = fake_service->GetDB();
+
+  fake_service->LoadCartsWithFakeData(
+      base::BindOnce(&CartServiceTest::GetEvaluationFakeDataDB,
+                     base::Unretained(this), run_loop[0].QuitClosure()));
+  run_loop[0].Run();
+
+  fake_service->Shutdown();
+
+  fake_db->LoadAllCarts(base::BindOnce(
+      &CartServiceTest::GetEvaluationLoadCarts, base::Unretained(this),
+      run_loop[1].QuitClosure(), kEmptyExpected));
+  run_loop[1].Run();
 }
