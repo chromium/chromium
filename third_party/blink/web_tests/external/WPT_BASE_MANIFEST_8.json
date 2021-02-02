@@ -174116,44 +174116,16 @@
     []
    ],
    "accelerometer": {
-    "Accelerometer-disabled-by-feature-policy.https-expected.txt": [
-     "624881c24bbcdba5a6e3ba753472e40e07925a1d",
-     []
-    ],
     "Accelerometer-disabled-by-feature-policy.https.html.headers": [
      "beea0422d925567f8e9cab38ea56d17315d3b2fd",
-     []
-    ],
-    "Accelerometer-enabled-by-feature-policy-attribute-redirect-on-load.https-expected.txt": [
-     "935bdbb7d658af2601643850958d049b4242b1f0",
-     []
-    ],
-    "Accelerometer-enabled-by-feature-policy-attribute.https-expected.txt": [
-     "801f9f4b5e040938bca8ef0233c42a50decc6deb",
-     []
-    ],
-    "Accelerometer-enabled-by-feature-policy.https-expected.txt": [
-     "54d817149410827b0e02a743466a485cceb4fe2a",
      []
     ],
     "Accelerometer-enabled-by-feature-policy.https.html.headers": [
      "5df2754abf5d4119175074fd8e6334eb069c4e97",
      []
     ],
-    "Accelerometer-enabled-on-self-origin-by-feature-policy.https-expected.txt": [
-     "6c850f2b65d2a4d825bc3871e340360a97c0fac2",
-     []
-    ],
     "Accelerometer-enabled-on-self-origin-by-feature-policy.https.html.headers": [
      "cdefed843e31b2accdb425e42fe051dcae790e96",
-     []
-    ],
-    "Accelerometer-iframe-access.https-expected.txt": [
-     "ed8f1c3f5a1723f6ad69f3f1fc1937336344f4fe",
-     []
-    ],
-    "Accelerometer.https-expected.txt": [
-     "89a15a3d8b9a92eea02fbc667b97dee4a5eca6fa",
      []
     ],
     "META.yml": [
@@ -174162,10 +174134,6 @@
     ],
     "OWNERS": [
      "614fe922a78ff13495733a48ce10b06d008416d4",
-     []
-    ],
-    "idlharness.https.window-expected.txt": [
-     "d35d083be6b08d5a323cebfbc019e9af31ddb6ee",
      []
     ]
    },
@@ -220657,12 +220625,12 @@
        []
       ],
       "status-code.py": [
-       "d368718f62f8a92ca8f730892bee6f08bd93a664",
+       "5421893b26732e3c479731c322e4022980235d03",
        []
       ]
      },
      "status-code.window-expected.txt": [
-      "8fb8560464d2664b037cc29b624fa88b657cffc5",
+      "9427e2a9f0202bbdd7889c6dad257957423fc294",
       []
      ]
     },
@@ -244484,7 +244452,7 @@
       []
      ],
      "generic_sensor_mocks.js": [
-      "85891c6ef129d31794404476d25878c7eb8c5bd7",
+      "56438824518225a9b1e5c89f1f6b73aa7f4e57c0",
       []
      ],
      "generic_sensor_mocks.js.headers": [
