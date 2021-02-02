@@ -7556,26 +7556,6 @@
             ]
         }
     ],
-    "WebRTC-CongestionWindow": [
-        {
-            "platforms": [
-                "windows",
-                "mac",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "ios",
-                "android",
-                "android_weblayer",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "QueueSize:800,MinBitrate:30000"
-                }
-            ]
-        }
-    ],
     "WebRTC-TaskQueuePacer": [
         {
             "platforms": [
