@@ -268,7 +268,11 @@ TEST_F(ContextProviderImplTest, CreateValidatesDataDirectory) {
   base::RunLoop run_loop;
   context.set_error_handler([&run_loop](zx_status_t status) {
     run_loop.Quit();
-    EXPECT_EQ(status, ZX_ERR_INVALID_ARGS);
+    // This test expects one of two error codes because of a migration,
+    // but it will eventually expect just ZX_ERR_PEER_CLOSED.
+    // TODO(fxbug.dev/68779) Remove ZX_ERR_INVALID_ARGS case.
+    EXPECT_TRUE((status == ZX_ERR_INVALID_ARGS) ||
+                (status == ZX_ERR_PEER_CLOSED));
   });
   run_loop.Run();
 }
