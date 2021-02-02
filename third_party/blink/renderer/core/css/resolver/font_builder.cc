@@ -417,7 +417,13 @@ void FontBuilder::UpdateFontDescription(FontDescription& description,
 
 FontSelector* FontBuilder::FontSelectorFromTreeScope(
     const TreeScope* tree_scope) {
-  DCHECK(!tree_scope || tree_scope->GetDocument() == document_);
+  // TODO(crbug.com/437837): The tree_scope may be from a different Document in
+  // the case where we are resolving style for elements in a <svg:use> shadow
+  // tree.
+  DCHECK(!tree_scope || tree_scope->GetDocument() == document_ ||
+         tree_scope->GetDocument().IsSVGDocument());
+  // TODO(crbug.com/336876): Font selector should be based on tree_scope for
+  // tree-scoped references.
   return document_->GetStyleEngine().GetFontSelector();
 }
 
