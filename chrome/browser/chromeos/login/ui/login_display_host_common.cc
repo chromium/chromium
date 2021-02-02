@@ -130,6 +130,7 @@ void LoginDisplayHostCommon::BeforeSessionStart() {
 }
 
 void LoginDisplayHostCommon::Finalize(base::OnceClosure completion_callback) {
+  VLOG(4) << "Finalize";
   // If finalize is called twice the LoginDisplayHost instance will be deleted
   // multiple times.
   CHECK(!is_finalizing_);
@@ -388,6 +389,7 @@ void LoginDisplayHostCommon::StartEncryptionMigration(
 }
 
 void LoginDisplayHostCommon::OnBrowserAdded(Browser* browser) {
+  VLOG(4) << "OnBrowserAdded " << session_starting_;
   // Browsers created before session start (windows opened by extensions, for
   // example) are ignored.
   if (session_starting_) {

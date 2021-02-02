@@ -460,6 +460,7 @@ LoginDisplayHostWebUI::LoginDisplayHostWebUI()
 }
 
 LoginDisplayHostWebUI::~LoginDisplayHostWebUI() {
+  VLOG(4) << "~LoginDisplayWebUI";
   if (GetOobeUI())
     GetOobeUI()->signin_screen_handler()->SetDelegate(nullptr);
 
@@ -706,6 +707,7 @@ void LoginDisplayHostWebUI::OnStartAppLaunch() {
 // LoginDisplayHostWebUI, public
 
 void LoginDisplayHostWebUI::OnBrowserCreated() {
+  VLOG(4) << "OnBrowserCreated";
   // Close lock window now so that the launched browser can receive focus.
   ResetLoginWindowAndView();
 }
@@ -940,6 +942,7 @@ void LoginDisplayHostWebUI::InitLoginWindowAndView() {
 }
 
 void LoginDisplayHostWebUI::ResetLoginWindowAndView() {
+  VLOG(4) << "ResetLoginWindowAndView";
   // Notify any oobe dialog state observers (e.g. login shelf) that the UI is
   // hidden (so they can reset any cached OOBE dialog state.)
   ash::LoginScreen::Get()->GetModel()->NotifyOobeDialogState(

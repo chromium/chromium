@@ -673,6 +673,7 @@ OobeUI::OobeUI(content::WebUI* web_ui, const GURL& url)
 OobeUI::~OobeUI() {
   for (Observer& observer : observer_list_)
     observer.OnDestroyingOobeUI();
+  VLOG(4) << "~OobeUI";
 }
 
 // static
