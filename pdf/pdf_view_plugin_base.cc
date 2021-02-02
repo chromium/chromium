@@ -109,12 +109,15 @@ void PdfViewPluginBase::LoadUrl(const std::string& url, bool is_print_preview) {
                      GetWeakPtr(), std::move(loader)));
 }
 
-void PdfViewPluginBase::InvalidateAfterPaintDone(
-    int32_t /*unused_but_required*/) {
-  DCHECK(!in_paint_);
-  for (const gfx::Rect& rect : deferred_invalidates_)
-    Invalidate(rect);
-  deferred_invalidates_.clear();
+void PdfViewPluginBase::InvalidateAfterPaintDone() {
+  if (deferred_invalidates_.empty())
+    return;
+
+  ScheduleTaskOnMainThread(
+      base::TimeDelta(),
+      base::BindOnce(&PdfViewPluginBase::ClearDeferredInvalidates,
+                     GetWeakPtr()),
+      0);
 }
 
 Image PdfViewPluginBase::GetPluginImageData() const {
@@ -213,6 +216,14 @@ void PdfViewPluginBase::HandleSetReadOnlyMessage(const base::Value& message) {
 
 void PdfViewPluginBase::HandleSetTwoUpViewMessage(const base::Value& message) {
   engine()->SetTwoUpView(message.FindBoolKey("enableTwoUpView").value());
+}
+
+void PdfViewPluginBase::ClearDeferredInvalidates(
+    int32_t /*unused_but_required*/) {
+  DCHECK(!in_paint_);
+  for (const gfx::Rect& rect : deferred_invalidates_)
+    Invalidate(rect);
+  deferred_invalidates_.clear();
 }
 
 }  // namespace chrome_pdf

@@ -34,6 +34,8 @@ class UrlLoader;
 class PdfViewPluginBase : public PDFEngine::Client,
                           public PaintManager::Client {
  public:
+  using PDFEngine::Client::ScheduleTaskOnMainThread;
+
   PdfViewPluginBase(const PdfViewPluginBase& other) = delete;
   PdfViewPluginBase& operator=(const PdfViewPluginBase& other) = delete;
 
@@ -96,8 +98,8 @@ class PdfViewPluginBase : public PDFEngine::Client,
                        std::vector<PaintReadyRect>* ready,
                        std::vector<gfx::Rect>* pending) = 0;
 
-  // Callback to do invalidation after painting finishes.
-  void InvalidateAfterPaintDone(int32_t /*unused_but_required*/);
+  // Schedules invalidation tasks after painting finishes.
+  void InvalidateAfterPaintDone();
 
   // Updates the available area and the background parts, notifies the PDF
   // engine, and updates the accessibility information.
@@ -121,10 +123,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   const std::vector<BackgroundPart>& background_parts() const {
     return background_parts_;
-  }
-
-  const std::vector<gfx::Rect>& deferred_invalidates() const {
-    return deferred_invalidates_;
   }
 
   const SkBitmap& image_data() const { return image_data_; }
@@ -183,6 +181,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void HandleSetBackgroundColorMessage(const base::Value& message);
   void HandleSetReadOnlyMessage(const base::Value& message);
   void HandleSetTwoUpViewMessage(const base::Value& message);
+
+  // Callback to clear deferred invalidates after painting finishes.
+  void ClearDeferredInvalidates(int32_t /*unused_but_required*/);
 
   std::unique_ptr<PDFiumEngine> engine_;
   PaintManager paint_manager_{this};

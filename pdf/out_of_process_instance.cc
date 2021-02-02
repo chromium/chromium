@@ -1221,13 +1221,7 @@ void OutOfProcessInstance::DoPaint(const std::vector<gfx::Rect>& paint_rects,
 
   engine()->PostPaint();
 
-  if (!deferred_invalidates().empty()) {
-    ScheduleTaskOnMainThread(
-        base::TimeDelta(),
-        base::BindOnce(&OutOfProcessInstance::InvalidateAfterPaintDone,
-                       weak_factory_.GetWeakPtr()),
-        0);
-  }
+  InvalidateAfterPaintDone();
 }
 
 pp::VarArray OutOfProcessInstance::GetDocumentAttachments() {
