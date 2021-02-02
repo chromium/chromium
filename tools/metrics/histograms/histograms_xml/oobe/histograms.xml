@@ -136,7 +136,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OOBE.MarketingOptInScreen.BackendConnector"
-    enum="MarketingOptInBackendConnectorEvent" expires_after="2021-05-30">
+    enum="MarketingOptInBackendConnectorEvent" expires_after="2021-08-01">
   <owner>rrsilva@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -148,7 +148,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OOBE.MarketingOptInScreen.Event"
-    enum="MarketingOptInScreenEvent" expires_after="2021-05-30">
+    enum="MarketingOptInScreenEvent" expires_after="2021-08-01">
   <owner>rrsilva@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -158,7 +158,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OOBE.MarketingOptInScreen.GeolocationResolve"
-    enum="MarketingOptInGeolocationEvent" expires_after="2021-05-30">
+    enum="MarketingOptInGeolocationEvent" expires_after="2021-08-01">
   <owner>rrsilva@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>

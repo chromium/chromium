@@ -101,7 +101,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Printing.CUPS.HighestIppVersion" enum="IppVersion"
-    expires_after="2021-05-30">
+    expires_after="2021-08-01">
   <owner>skau@chromium.org</owner>
   <owner>pawliczek@chromium.org</owner>
   <summary>
@@ -213,7 +213,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Printing.CUPS.PrintDocumentSize" units="KB"
-    expires_after="2021-06-01">
+    expires_after="2021-08-01">
   <owner>jschettler@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -317,7 +317,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Printing.CUPS.TotalNetworkPrintersCount" units="printers"
-    expires_after="2021-05-16">
+    expires_after="2021-08-01">
   <owner>skau@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>

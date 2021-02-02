@@ -1217,7 +1217,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.DNS.SecureDnsMode.Secure.ResolveTime" units="ms"
-    expires_after="2021-05-09">
+    expires_after="2021-08-01">
   <owner>ericorth@chromium.org</owner>
   <owner>doh-core@google.com</owner>
   <summary>
@@ -1464,7 +1464,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.ErrorPageCounts" enum="NetErrorPageEvents"
-    expires_after="2021-06-01">
+    expires_after="2021-08-01">
   <owner>edwardjung@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -1476,7 +1476,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.ErrorPageCounts.SuggestionClicked"
-    enum="NetErrorOfflineSuggestionType" expires_after="2021-05-31">
+    enum="NetErrorOfflineSuggestionType" expires_after="2021-08-01">
   <owner>sclittle@chromium.org</owner>
   <owner>offline-dev@chromium.org</owner>
   <summary>
@@ -1486,7 +1486,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.ErrorPageCounts.SuggestionPresented"
-    enum="NetErrorOfflineSuggestionType" expires_after="2021-05-31">
+    enum="NetErrorOfflineSuggestionType" expires_after="2021-08-01">
   <owner>sclittle@chromium.org</owner>
   <owner>offline-dev@chromium.org</owner>
   <summary>
@@ -1576,7 +1576,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.HasBrokenNEON" enum="BooleanBroken"
-    expires_after="2021-06-01">
+    expires_after="2021-08-01">
   <owner>davidben@chromium.org</owner>
   <summary>
     Records, on startup, for ARM devices running Android, whether the CPU is
@@ -1897,7 +1897,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.NetworkChangeNotifier.NewConnectionType"
-    enum="NetworkConnectionType" expires_after="2021-05-30">
+    enum="NetworkConnectionType" expires_after="2021-08-01">
   <owner>rockot@google.com</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -2118,7 +2118,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Net.QuicConnectivityMonitor.NumActiveQuicSessionsAtNetworkChange"
-    units="sessions" expires_after="2021-05-11">
+    units="sessions" expires_after="2021-08-01">
   <owner>zhongyi@chromium.org</owner>
   <owner>rockot@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
@@ -2153,7 +2153,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Net.QuicConnectivityMonitor.NumAllSessionsDegradedAtNetworkChange"
-    units="sessions" expires_after="2021-05-11">
+    units="sessions" expires_after="2021-08-01">
   <owner>zhongyi@chromium.org</owner>
   <owner>rockot@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
@@ -2171,7 +2171,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Net.QuicConnectivityMonitor.NumSessionsTrackedSinceSpeculativeError"
-    units="sessions" expires_after="2021-05-11">
+    units="sessions" expires_after="2021-08-01">
   <owner>zhongyi@chromium.org</owner>
   <owner>rockot@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
@@ -2764,7 +2764,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.ConnectionDuration" units="ms"
-    expires_after="2021-05-11">
+    expires_after="2021-08-01">
   <owner>renjietang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3929,7 +3929,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.TimeFromResolveHostToConfirmConnection"
-    units="Milliseconds" expires_after="2021-05-11">
+    units="Milliseconds" expires_after="2021-08-01">
   <owner>renjietang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4655,7 +4655,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.SSLHandshakeDetails" enum="SSLHandshakeDetails"
-    expires_after="2021-06-01">
+    expires_after="2021-08-01">
   <owner>davidben@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -4705,7 +4705,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.SSLNegotiatedAlpnProtocol"
-    enum="SSLNegotiatedAlpnProtocol" expires_after="2021-05-11">
+    enum="SSLNegotiatedAlpnProtocol" expires_after="2021-08-01">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -4897,7 +4897,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Net.TrustTokens.NetErrorForFetchFailure"
-    enum="NetErrorCodes" expires_after="2021-05-30">
+    enum="NetErrorCodes" expires_after="2021-08-01">
 <!-- Name completed by histogram_suffixes name="TrustTokenOperationType" -->
 
   <owner>davidvc@chromium.org</owner>
@@ -4912,7 +4912,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Net.TrustTokens.NetErrorForTrustTokenOperation"
-    enum="NetErrorCodes" expires_after="2021-05-30">
+    enum="NetErrorCodes" expires_after="2021-08-01">
 <!-- Name completed by histogram_suffixes name="TrustTokenOperationType" -->
 
   <owner>davidvc@chromium.org</owner>
@@ -4965,7 +4965,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Net.TrustTokens.RequestHelperFactoryOutcome"
-    enum="TrustTokenRequestHelperFactoryOutcome" expires_after="2021-05-30">
+    enum="TrustTokenRequestHelperFactoryOutcome" expires_after="2021-08-01">
 <!-- Name completed by histogram_suffixes name="TrustTokenOperationType" -->
 
   <owner>davidvc@chromium.org</owner>

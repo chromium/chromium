@@ -82,7 +82,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true"
     name="Memory.BackgroundTask.Browser.PrivateMemoryFootprint" units="MiB"
-    expires_after="2021-05-30">
+    expires_after="2021-08-01">
 <!-- Name completed by histogram_suffixes name="BrowserRunningMode" -->
 
   <owner>hanxi@chromium.org</owner>
@@ -111,7 +111,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Memory.BackgroundTask.Browser.ResidentSet"
-    units="MiB" expires_after="2021-05-30">
+    units="MiB" expires_after="2021-08-01">
 <!-- Name completed by histogram_suffixes name="BrowserRunningMode" -->
 
   <owner>hanxi@chromium.org</owner>
@@ -399,7 +399,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.Discardable.FreelistSize.Foreground" units="KiB"
-    expires_after="2021-05-30">
+    expires_after="2021-08-01">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
@@ -429,7 +429,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.Discardable.Size.Foreground" units="KiB"
-    expires_after="2021-05-30">
+    expires_after="2021-08-01">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
@@ -439,7 +439,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.Discardable.VirtualSize.Foreground" units="KiB"
-    expires_after="2021-05-30">
+    expires_after="2021-08-01">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
@@ -1471,7 +1471,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.NativeLibrary.NotResidentOrderedCodeMemoryFootprint"
-    units="KB" expires_after="2021-05-30">
+    units="KB" expires_after="2021-08-01">
   <owner>lizeb@chromium.org</owner>
   <summary>
     The size of the native library code which was ordered, yet is not resident
@@ -1646,7 +1646,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.OOMKill.Extensions.MemShmemMB" units="MB"
-    expires_after="2021-05-02">
+    expires_after="2021-08-01">
   <owner>oshima@chromium.org</owner>
   <owner>alemate@chromium.org</owner>
   <summary>

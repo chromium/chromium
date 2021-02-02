@@ -220,7 +220,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cryptohome.EvkkEncryptionType" enum="EvkkEncryptionType"
-    expires_after="2021-06-01">
+    expires_after="2021-08-01">
   <owner>enlightened@chromium.org</owner>
   <owner>tnagel@chromium.org</owner>
   <summary>
