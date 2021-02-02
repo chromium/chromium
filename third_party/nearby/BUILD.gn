@@ -129,6 +129,7 @@ source_set("platform_base") {
     "src/cpp/platform/base/byte_array.h",
     "src/cpp/platform/base/callable.h",
     "src/cpp/platform/base/exception.h",
+    "src/cpp/platform/base/feature_flags.h",
     "src/cpp/platform/base/input_stream.h",
     "src/cpp/platform/base/listeners.h",
     "src/cpp/platform/base/output_stream.h",
