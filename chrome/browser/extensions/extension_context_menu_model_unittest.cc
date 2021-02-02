@@ -107,6 +107,9 @@ scoped_refptr<const Extension> BuildExtensionWithActionType(
       break;
   }
 
+  builder.SetManifestKey("manifest_version",
+                         GetManifestVersionForActionType(type));
+
   return builder.Build();
 }
 

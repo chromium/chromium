@@ -1076,7 +1076,7 @@ IN_PROC_BROWSER_TEST_P(ActionCommandsApiTest,
   constexpr char kManifestTemplate[] = R"(
     {
       "name": "Extension Action Listener Test",
-      "manifest_version": 2,
+      "manifest_version": %d,
       "version": "0.1",
       "commands": {
         "%s": {
@@ -1086,25 +1086,33 @@ IN_PROC_BROWSER_TEST_P(ActionCommandsApiTest,
         }
       },
       "%s": {},
-      "background": {"scripts": ["background.js"]}
+      "background": { %s }
     }
   )";
   constexpr char kBackgroundScriptTemplate[] = R"(
       chrome.%s.onClicked.addListener(() => {
         chrome.test.sendMessage('clicked');
       });
+      chrome.test.sendMessage('ready');
   )";
+  const char* background_specification =
+      action_type == ActionInfo::TYPE_ACTION
+          ? R"("service_worker": "background.js")"
+          : R"("scripts": ["background.js"])";
 
   TestExtensionDir test_dir;
   test_dir.WriteManifest(base::StringPrintf(
-      kManifestTemplate, GetCommandKeyForActionType(action_type),
-      GetManifestKeyForActionType(action_type)));
+      kManifestTemplate, GetManifestVersionForActionType(action_type),
+      GetCommandKeyForActionType(action_type),
+      GetManifestKeyForActionType(action_type), background_specification));
   test_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
                      base::StringPrintf(kBackgroundScriptTemplate,
                                         GetAPINameForActionType(action_type)));
 
+  ExtensionTestMessageListener listener("ready", /*will_reply=*/false);
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
   ASSERT_TRUE(HasActiveActionCommand(extension->id(), action_type));
 
   const int tab_id = NavigateToTestURLAndReturnTabId();
@@ -1115,12 +1123,10 @@ IN_PROC_BROWSER_TEST_P(ActionCommandsApiTest,
     ASSERT_TRUE(WaitForPageActionVisibilityChangeTo(1));
   }
 
-  bool expect_dispatch = true;
-  std::string event_name =
-      base::StrCat({GetAPINameForActionType(action_type), ".onClicked"});
-  // Send a keypress, and expect the action to be invoked.
-  SendKeyPressToAction(browser(), *extension, ui::VKEY_U, event_name.c_str(),
-                       expect_dispatch);
+  ExtensionTestMessageListener click_listener("clicked", /*will_reply=*/false);
+  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_U, false,
+                                              true, true, false));
+  EXPECT_TRUE(click_listener.WaitUntilSatisfied());
 }
 
 // Tests that triggering a command associated with an action opens an
@@ -1135,7 +1141,7 @@ IN_PROC_BROWSER_TEST_P(ActionCommandsApiTest, TriggeringCommandTriggersPopup) {
   constexpr char kManifestTemplate[] = R"(
     {
       "name": "Extension Action Listener Test",
-      "manifest_version": 2,
+      "manifest_version": %d,
       "version": "0.1",
       "commands": {
         "%s": {
@@ -1157,7 +1163,8 @@ IN_PROC_BROWSER_TEST_P(ActionCommandsApiTest, TriggeringCommandTriggersPopup) {
 
   TestExtensionDir test_dir;
   test_dir.WriteManifest(base::StringPrintf(
-      kManifestTemplate, GetCommandKeyForActionType(action_type),
+      kManifestTemplate, GetManifestVersionForActionType(action_type),
+      GetCommandKeyForActionType(action_type),
       GetManifestKeyForActionType(action_type)));
   test_dir.WriteFile(FILE_PATH_LITERAL("popup.html"), kPopupHtml);
   test_dir.WriteFile(FILE_PATH_LITERAL("popup.js"), kPopupJs);

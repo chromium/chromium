@@ -24,6 +24,11 @@ const char* GetAPINameForActionType(ActionInfo::Type action_type);
 const ActionInfo* GetActionInfoOfType(const Extension& extension,
                                       ActionInfo::Type type);
 
+// Retrieves the appropriate manifest version for the given |type|; necessary
+// because the chrome.action API is restricted to MV3, while browser and page
+// actions are restricted to MV2.
+int GetManifestVersionForActionType(ActionInfo::Type type);
+
 }  // namespace extensions
 
 #endif  // EXTENSIONS_COMMON_API_EXTENSION_ACTION_ACTION_INFO_TEST_UTIL_H_
