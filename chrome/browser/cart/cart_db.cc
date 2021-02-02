@@ -12,3 +12,25 @@ CartDB::CartDB(content::BrowserContext* browser_context)
           ProfileProtoDBFactory<cart_db::ChromeCartContentProto>::GetInstance()
               ->GetForProfile(browser_context)) {}
 CartDB::~CartDB() = default;
+
+void CartDB::LoadCart(const std::string& domain, LoadCallback callback) {
+  proto_db_->LoadOneEntry(domain, std::move(callback));
+}
+
+void CartDB::LoadAllCarts(LoadCallback callback) {
+  proto_db_->LoadAllEntries(std::move(callback));
+}
+
+void CartDB::AddCart(const std::string& domain,
+                     const cart_db::ChromeCartContentProto& proto,
+                     OperationCallback callback) {
+  proto_db_->InsertContent(domain, proto, std::move(callback));
+}
+
+void CartDB::DeleteCart(const std::string& domain, OperationCallback callback) {
+  proto_db_->DeleteOneEntry(domain, std::move(callback));
+}
+
+void CartDB::DeleteAllCarts(OperationCallback callback) {
+  proto_db_->DeleteAllContent(std::move(callback));
+}
