@@ -324,7 +324,8 @@ class ScopedStoreTransaction {
 PasswordSyncBridge::PasswordSyncBridge(
     std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
     PasswordStoreSync* password_store_sync,
-    const base::RepeatingClosure& sync_enabled_or_disabled_cb)
+    const base::RepeatingClosure& sync_enabled_or_disabled_cb,
+    ForceInitialSyncCycle force_initial_sync)
     : ModelTypeSyncBridge(std::move(change_processor)),
       password_store_sync_(password_store_sync),
       sync_enabled_or_disabled_cb_(sync_enabled_or_disabled_cb) {
@@ -339,13 +340,17 @@ PasswordSyncBridge::PasswordSyncBridge(
         {FROM_HERE, "Password metadata store isn't available."});
     sync_metadata_read_error = SyncMetadataReadError::kDbNotAvailable;
   } else {
-    batch = password_store_sync_->GetMetadataStore()->GetAllSyncMetadata();
+    if (!force_initial_sync) {
+      batch = password_store_sync_->GetMetadataStore()->GetAllSyncMetadata();
+    }
     if (!batch) {
-      // If the metadata cannot be read, it's mostly a persistent error, and
-      // hence we should drop the metadata to go throw the initial sync flow.
+      // If the metadata cannot be read, it's either a persistent error or force
+      // initial sync has been requested. In both cases, we drop the metadata to
+      // go through the initial sync flow.
       password_store_sync_->GetMetadataStore()->DeleteAllSyncMetadata();
       batch = std::make_unique<syncer::MetadataBatch>();
-      sync_metadata_read_error = SyncMetadataReadError::kReadFailed;
+      if (!force_initial_sync)
+        sync_metadata_read_error = SyncMetadataReadError::kReadFailed;
     }
   }
   base::UmaHistogramEnumeration("PasswordManager.SyncMetadataReadError",
@@ -485,11 +490,11 @@ base::Optional<syncer::ModelError> PasswordSyncBridge::MergeSyncData(
     for (const auto& pair : key_to_local_form_map) {
       const int primary_key = pair.first;
       const PasswordForm& local_password_form = *pair.second;
-      const std::vector<CompromisedCredentials> compromised_credentials =
+      const std::vector<CompromisedCredentials> local_compromised_credentials =
           password_store_sync_->ReadSecurityIssues(FormPrimaryKey(primary_key));
 
       std::unique_ptr<syncer::EntityData> local_form_entity_data =
-          CreateEntityData(local_password_form, compromised_credentials);
+          CreateEntityData(local_password_form, local_compromised_credentials);
       const std::string client_tag_of_local_password =
           GetClientTag(*local_form_entity_data);
       client_tags_of_local_passwords.insert(client_tag_of_local_password);
@@ -519,32 +524,32 @@ base::Optional<syncer::ModelError> PasswordSyncBridge::MergeSyncData(
                                            metadata_change_list.get());
 
       std::vector<CompromisedCredentials> remote_compromised_credentials;
-      std::vector<CompromisedCredentials> local_compromised_credentials;
       bool remote_and_local_compromised_credentials_equal = true;
+      bool remote_and_local_passwords_equal = AreLocalAndRemotePasswordsEqual(
+          remote_password_specifics, local_password_form);
 
       if (base::FeatureList::IsEnabled(
               password_manager::features::kSyncingCompromisedCredentials)) {
         remote_compromised_credentials =
             CompromisedCredentialsFromEntityChange(remote_entity_change);
-        local_compromised_credentials =
-            password_store_sync_->ReadSecurityIssues(
-                FormPrimaryKey(primary_key));
         remote_and_local_compromised_credentials_equal =
             base::ranges::is_permutation(remote_compromised_credentials,
                                          local_compromised_credentials);
       }
 
-      if (AreLocalAndRemotePasswordsEqual(remote_password_specifics,
-                                          local_password_form) &&
+      if (remote_and_local_passwords_equal &&
           remote_and_local_compromised_credentials_equal) {
         // Passwords are identical, nothing else to do.
         continue;
       }
 
-      // Passwords aren't identical, pick the most recently created one.
+      // Passwords or compromised credentials aren't identical.
       if (ConvertToBaseTime(remote_password_specifics.date_created()) <
-          local_password_form.date_created) {
-        // The local password is more recent, update the processor.
+              local_password_form.date_created ||
+          (remote_and_local_passwords_equal &&
+           !remote_password_specifics.has_password_issues())) {
+        // Either the local password is more recent, or they are equal but local
+        // password has security issues - update the processor.
         change_processor()->Put(
             /*storage_key=*/base::NumberToString(primary_key),
             std::move(local_form_entity_data), metadata_change_list.get());

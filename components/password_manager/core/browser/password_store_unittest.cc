@@ -129,6 +129,76 @@ class MockPasswordStoreSigninNotifier : public PasswordStoreSigninNotifier {
   MOCK_METHOD(void, UnsubscribeFromSigninEvents, (), (override));
 };
 
+class MockMetadataStore : public PasswordStoreSync::MetadataStore {
+ public:
+  MOCK_METHOD(void, DeleteAllSyncMetadata, (), (override));
+  MOCK_METHOD(void,
+              SetDeletionsHaveSyncedCallback,
+              (base::RepeatingCallback<void(bool)> callback),
+              (override));
+  MOCK_METHOD(bool, HasUnsyncedDeletions, (), (override));
+
+  std::unique_ptr<syncer::MetadataBatch> GetAllSyncMetadata() override {
+    return std::make_unique<syncer::MetadataBatch>();
+  }
+
+  bool UpdateSyncMetadata(syncer::ModelType model_type,
+                          const std::string& storage_key,
+                          const sync_pb::EntityMetadata& metadata) override {
+    return true;
+  }
+
+  bool ClearSyncMetadata(syncer::ModelType model_type,
+                         const std::string& storage_key) override {
+    return true;
+  }
+
+  bool UpdateModelTypeState(
+      syncer::ModelType model_type,
+      const sync_pb::ModelTypeState& model_type_state) override {
+    return true;
+  }
+
+  bool ClearModelTypeState(syncer::ModelType model_type) override {
+    return true;
+  }
+};
+
+class PasswordStoreWithMockedMetadataStore : public PasswordStoreImpl {
+ public:
+  using PasswordStoreImpl::PasswordStoreImpl;
+
+  PasswordStoreSync::MetadataStore* GetMetadataStore() override {
+    return &metadata_store_;
+  }
+
+  MockMetadataStore& GetMockedMetadataStore() { return metadata_store_; }
+
+ private:
+  ~PasswordStoreWithMockedMetadataStore() override = default;
+  MockMetadataStore metadata_store_;
+};
+
+PasswordStoreChangeList AddChangeForForm(const PasswordForm& form) {
+  return {PasswordStoreChange(PasswordStoreChange::ADD, form)};
+}
+
+PasswordForm MakePasswordForm(const std::string& signon_realm) {
+  PasswordForm form;
+  form.url = GURL("http://www.origin.com");
+  form.username_element = base::UTF8ToUTF16("username_element");
+  form.username_value = base::UTF8ToUTF16("username_value");
+  form.password_element = base::UTF8ToUTF16("password_element");
+  form.signon_realm = signon_realm;
+  return form;
+}
+
+CompromisedCredentials MakeCompromisedCredentials(const PasswordForm& form,
+                                                  const CompromiseType& type) {
+  return CompromisedCredentials(form.signon_realm, form.username_value,
+                                base::Time(), type, IsMuted(false));
+}
+
 }  // namespace
 
 class PasswordStoreTest : public testing::Test {
@@ -141,8 +211,9 @@ class PasswordStoreTest : public testing::Test {
     // PasswordReuseDetector, so it should be mocked.
     OSCryptMocker::SetUp();
 
-    feature_list_.InitAndEnableFeature(
-        features::kPasswordReuseDetectionEnabled);
+    feature_list_.InitWithFeatures({features::kPasswordReuseDetectionEnabled,
+                                    features::kSyncingCompromisedCredentials},
+                                   {});
   }
 
   void TearDown() override { OSCryptMocker::TearDown(); }
@@ -156,6 +227,14 @@ class PasswordStoreTest : public testing::Test {
   scoped_refptr<PasswordStoreImpl> CreatePasswordStore() {
     return new PasswordStoreImpl(std::make_unique<LoginDatabase>(
         test_login_db_file_path(), password_manager::IsAccountStore(false)));
+  }
+
+  scoped_refptr<PasswordStoreWithMockedMetadataStore>
+  CreatePasswordStoreWithMockedMetaData() {
+    return base::MakeRefCounted<PasswordStoreWithMockedMetadataStore>(
+        std::make_unique<LoginDatabase>(
+            test_login_db_file_path(),
+            password_manager::IsAccountStore(false)));
   }
 
  private:
@@ -1227,6 +1306,10 @@ TEST_F(PasswordStoreTest, SavingClearingProtectedPassword) {
   TestingPrefServiceSimple prefs;
   prefs.registry()->RegisterListPref(prefs::kPasswordHashDataList,
                                      PrefRegistry::NO_REGISTRATION_FLAGS);
+  // Set the pref to true to simulate a user in steady state who went through
+  // the one time upload already.
+  prefs.registry()->RegisterBooleanPref(
+      password_manager::prefs::kWasPhishedCredentialsUploadedToSync, true);
   ASSERT_FALSE(prefs.HasPrefPath(prefs::kSyncPasswordHash));
   store->Init(&prefs);
 
@@ -1385,6 +1468,10 @@ TEST_F(PasswordStoreTest, ReportMetricsForAdvancedProtection) {
   TestingPrefServiceSimple prefs;
   prefs.registry()->RegisterListPref(prefs::kPasswordHashDataList,
                                      PrefRegistry::NO_REGISTRATION_FLAGS);
+  // Set the pref to true to simulate a user in steady state who went through
+  // the one time upload already.
+  prefs.registry()->RegisterBooleanPref(
+      password_manager::prefs::kWasPhishedCredentialsUploadedToSync, true);
   ASSERT_FALSE(prefs.HasPrefPath(prefs::kSyncPasswordHash));
   store->Init(&prefs);
 
@@ -1419,6 +1506,10 @@ TEST_F(PasswordStoreTest, ReportMetricsForNonSyncPassword) {
   TestingPrefServiceSimple prefs;
   prefs.registry()->RegisterListPref(prefs::kPasswordHashDataList,
                                      PrefRegistry::NO_REGISTRATION_FLAGS);
+  // Set the pref to true to simulate a user in steady state who went through
+  // the one time upload already.
+  prefs.registry()->RegisterBooleanPref(
+      password_manager::prefs::kWasPhishedCredentialsUploadedToSync, true);
   ASSERT_FALSE(prefs.HasPrefPath(prefs::kSyncPasswordHash));
   store->Init(&prefs);
 
@@ -1806,6 +1897,90 @@ TEST_F(PasswordStoreTest, UpdateCompromisedCredentialsSync) {
   store->GetAllCompromisedCredentials(&consumer);
   WaitForPasswordStore();
 
+  store->ShutdownOnUIThread();
+}
+
+TEST_F(PasswordStoreTest, TestSyncMetaDataDroppedToSyncPhishedCredentials) {
+  {
+    auto db = std::make_unique<LoginDatabase>(
+        test_login_db_file_path(), password_manager::IsAccountStore(false));
+    db->Init();
+
+    const PasswordForm form = MakePasswordForm(kTestWebRealm1);
+    ASSERT_EQ(AddChangeForForm(form), db->AddLogin(form, nullptr));
+    db->insecure_credentials_table().AddRow(
+        MakeCompromisedCredentials(form, CompromiseType::kPhished));
+  }
+  // The LoginDatabase gets destroyed here, later it will be initialized with
+  // data.
+  WaitForPasswordStore();
+
+  scoped_refptr<PasswordStoreWithMockedMetadataStore> store =
+      CreatePasswordStoreWithMockedMetaData();
+  EXPECT_CALL(store->GetMockedMetadataStore(), DeleteAllSyncMetadata())
+      .Times(1);
+  TestingPrefServiceSimple pref_service;
+  pref_service.registry()->RegisterBooleanPref(
+      password_manager::prefs::kWasPhishedCredentialsUploadedToSync, false);
+  store->Init(&pref_service);
+  WaitForPasswordStore();
+  store->ShutdownOnUIThread();
+}
+
+TEST_F(PasswordStoreTest, TestDoNotDropMetaDataWhenNoPhishedCredentials) {
+  {
+    auto db = std::make_unique<LoginDatabase>(
+        test_login_db_file_path(), password_manager::IsAccountStore(false));
+    db->Init();
+
+    const PasswordForm form = MakePasswordForm(kTestWebRealm1);
+    ASSERT_EQ(AddChangeForForm(form), db->AddLogin(form, nullptr));
+    db->insecure_credentials_table().AddRow(
+        MakeCompromisedCredentials(form, CompromiseType::kLeaked));
+    db->insecure_credentials_table().AddRow(
+        MakeCompromisedCredentials(form, CompromiseType::kReused));
+  }
+  // The LoginDatabase gets destroyed here, later it will be initialized with
+  // data.
+  WaitForPasswordStore();
+
+  scoped_refptr<PasswordStoreWithMockedMetadataStore> store =
+      CreatePasswordStoreWithMockedMetaData();
+  EXPECT_CALL(store->GetMockedMetadataStore(), DeleteAllSyncMetadata())
+      .Times(0);
+  TestingPrefServiceSimple pref_service;
+  pref_service.registry()->RegisterBooleanPref(
+      password_manager::prefs::kWasPhishedCredentialsUploadedToSync, false);
+  store->Init(&pref_service);
+  WaitForPasswordStore();
+  store->ShutdownOnUIThread();
+}
+
+TEST_F(PasswordStoreTest, TestDoNotDropMetaDataWhenAlreadyUploaded) {
+  {
+    auto db = std::make_unique<LoginDatabase>(
+        test_login_db_file_path(), password_manager::IsAccountStore(false));
+    db->Init();
+
+    const PasswordForm form = MakePasswordForm(kTestWebRealm1);
+    ASSERT_EQ(AddChangeForForm(form), db->AddLogin(form, nullptr));
+    db->insecure_credentials_table().AddRow(
+        MakeCompromisedCredentials(form, CompromiseType::kPhished));
+  }
+  // The LoginDatabase gets destroyed here, later it will be initialized with
+  // data.
+  WaitForPasswordStore();
+
+  scoped_refptr<PasswordStoreWithMockedMetadataStore> store =
+      CreatePasswordStoreWithMockedMetaData();
+  EXPECT_CALL(store->GetMockedMetadataStore(), DeleteAllSyncMetadata())
+      .Times(0);
+  TestingPrefServiceSimple pref_service;
+  pref_service.registry()->RegisterBooleanPref(
+      password_manager::prefs::kWasPhishedCredentialsUploadedToSync, false);
+  pref_service.SetBoolean(prefs::kWasPhishedCredentialsUploadedToSync, true);
+  store->Init(&pref_service);
+  WaitForPasswordStore();
   store->ShutdownOnUIThread();
 }
 

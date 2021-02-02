@@ -468,8 +468,12 @@ class PasswordStore : protected PasswordStoreSync,
 
   // Creates PasswordSyncBridge and PasswordReuseDetector instances on the
   // background sequence. Subclasses can add more logic. Returns true on
-  // success.
-  virtual bool InitOnBackgroundSequence();
+  // success. If |upload_phished_credentials_to_sync| is true, metadata will be
+  // dropped to force syncing, if local phished credentials information exist.
+  // Dropping metadata clears all of the information about previous syncing and
+  // force uploading all the local passwords with security issues again.
+  virtual bool InitOnBackgroundSequence(
+      bool upload_phished_credentials_to_sync);
 
   // Methods below will be run in PasswordStore's own sequence.
   // Synchronous implementation that reports usage metrics.
