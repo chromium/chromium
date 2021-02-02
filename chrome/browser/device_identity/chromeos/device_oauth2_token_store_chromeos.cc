@@ -22,9 +22,9 @@ DeviceOAuth2TokenStoreChromeOS::DeviceOAuth2TokenStoreChromeOS(
       service_account_identity_subscription_(
           CrosSettings::Get()->AddSettingsObserver(
               kServiceAccountIdentity,
-              base::Bind(&DeviceOAuth2TokenStoreChromeOS::
-                             OnServiceAccountIdentityChanged,
-                         base::Unretained(this)))) {}
+              base::BindRepeating(&DeviceOAuth2TokenStoreChromeOS::
+                                      OnServiceAccountIdentityChanged,
+                                  base::Unretained(this)))) {}
 
 DeviceOAuth2TokenStoreChromeOS::~DeviceOAuth2TokenStoreChromeOS() {
   FlushTokenSaveCallbacks(false);
