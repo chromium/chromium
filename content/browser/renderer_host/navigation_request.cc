@@ -2423,6 +2423,14 @@ void NavigationRequest::OnResponseStarted(
     render_frame_host_ =
         frame_tree_node_->render_manager()->GetFrameHostForNavigation(this);
 
+    // Update the associated SiteInstance type, which could have changed
+    // due to redirects during navigation.
+    set_associated_site_instance_type(
+        render_frame_host_ ==
+                frame_tree_node_->render_manager()->current_frame_host()
+            ? AssociatedSiteInstanceType::CURRENT
+            : AssociatedSiteInstanceType::SPECULATIVE);
+
     if (!Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
             render_frame_host_, GetUrlInfo(),
             /* is_renderer_initiated_check */ false)) {
@@ -2682,6 +2690,13 @@ void NavigationRequest::OnRequestFailedInternal(
   // checks.
   CHECK(!render_frame_host_ || render_frame_host_ == render_frame_host);
   render_frame_host_ = render_frame_host;
+
+  // Update the associated SiteInstance type.
+  set_associated_site_instance_type(
+      render_frame_host_ ==
+              frame_tree_node_->render_manager()->current_frame_host()
+          ? AssociatedSiteInstanceType::CURRENT
+          : AssociatedSiteInstanceType::SPECULATIVE);
 
   // The check for WebUI should be performed only if error page isolation is
   // enabled for this failed navigation. It is possible for subframe error page
@@ -3810,7 +3825,7 @@ void NavigationRequest::OnRendererAbortedNavigation() {
     // Changing it to no longer early return breaks a bunch of other code that
     // runs in `CommitPendingIfNecessary()` that expects `DidStopLoading()`
     // won't be called if `FrameTreeNode::navigation_request()` is null...
-    frame_tree_node->render_manager()->CleanUpNavigation();
+    frame_tree_node->render_manager()->MaybeCleanUpNavigation();
   } else {
     frame_tree_node_->navigator().CancelNavigation(frame_tree_node_);
   }

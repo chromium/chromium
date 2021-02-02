@@ -341,6 +341,10 @@ class CONTENT_EXPORT RenderFrameHostManager
   // Clean up any state for any ongoing navigation.
   void CleanUpNavigation();
 
+  // Determines whether any active navigations are associated with
+  // |speculative_render_frame_host_| and if not, discards it.
+  void MaybeCleanUpNavigation();
+
   // Clears the speculative members, returning the RenderFrameHost to the caller
   // for disposal.
   std::unique_ptr<RenderFrameHostImpl> UnsetSpeculativeRenderFrameHost();

@@ -324,6 +324,8 @@ static_library("test_support") {
     "stub_render_view_host_delegate_view.h",
     "stub_render_widget_host_owner_delegate.cc",
     "stub_render_widget_host_owner_delegate.h",
+    "task_runner_deferring_throttle.cc",
+    "task_runner_deferring_throttle.h",
     "test_background_sync_context.cc",
     "test_background_sync_context.h",
     "test_background_sync_manager.cc",

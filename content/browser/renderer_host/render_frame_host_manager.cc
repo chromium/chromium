@@ -1003,6 +1003,28 @@ RenderFrameHostImpl* RenderFrameHostManager::GetFrameHostForNavigation(
   return navigation_rfh;
 }
 
+void RenderFrameHostManager::MaybeCleanUpNavigation() {
+  // This is called when a renderer aborts a NavigationRequest
+  // that was in the READY_TO_COMMIT state. The caller has already
+  // disassociated the NavigationRequest from the RenderFrameHost,
+  // which may or may not have been the speculative one. Either way,
+  // if there are no remaining NavigationRequests associated with
+  // |speculative_render_frame_host_|, then it is safe to call
+  // CleanUpNavigation() to discard |speculative_render_frame_host_|.
+  if (!speculative_render_frame_host_ ||
+      speculative_render_frame_host_->HasPendingCommitNavigation()) {
+    return;
+  }
+  NavigationRequest* navigation_request =
+      frame_tree_node_->navigation_request();
+  if (navigation_request &&
+      navigation_request->associated_site_instance_type() ==
+          NavigationRequest::AssociatedSiteInstanceType::SPECULATIVE) {
+    return;
+  }
+  CleanUpNavigation();
+}
+
 void RenderFrameHostManager::CleanUpNavigation() {
   if (speculative_render_frame_host_) {
     bool was_loading = speculative_render_frame_host_->is_loading();

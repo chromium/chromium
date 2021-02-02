@@ -315,7 +315,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   bool history_list_was_cleared_ = false;
   bool should_replace_current_entry_ = false;
   base::Optional<bool> did_create_new_entry_;
-  bool was_aborted_ = false;
+  bool was_aborted_prior_to_ready_to_commit_ = false;
 
   // These are used to sanity check the content/public/ API calls emitted as
   // part of the navigation.
