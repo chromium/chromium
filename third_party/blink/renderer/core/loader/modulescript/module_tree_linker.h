@@ -32,7 +32,8 @@ class CORE_EXPORT ModuleTreeLinker final : public SingleModuleClient {
   // https://html.spec.whatwg.org/C/#fetch-a-module-script-tree
   // https://html.spec.whatwg.org/C/#fetch-a-module-worker-script-tree
   // https://html.spec.whatwg.org/C/#fetch-an-import()-module-script-graph
-  static void Fetch(const KURL&,
+  static void Fetch(const KURL& url,
+                    const ModuleType&,
                     ResourceFetcher* fetch_client_settings_object_fetcher,
                     mojom::blink::RequestContextType context_type,
                     network::mojom::RequestDestination destination,
@@ -84,7 +85,7 @@ class CORE_EXPORT ModuleTreeLinker final : public SingleModuleClient {
 #endif
   void AdvanceState(State);
 
-  void FetchRoot(const KURL&, const ScriptFetchOptions&);
+  void FetchRoot(const KURL&, ModuleType, const ScriptFetchOptions&);
   void FetchRootInline(ModuleScript*);
 
   void NotifyModuleLoadFinished(ModuleScript*) override;
@@ -123,8 +124,10 @@ class CORE_EXPORT ModuleTreeLinker final : public SingleModuleClient {
 #if DCHECK_IS_ON()
   KURL original_url_;
   KURL url_;
+  ModuleType module_type_;
   bool root_is_inline_;
 
+  friend CORE_EXPORT std::ostream& operator<<(std::ostream&, ModuleType);
   friend CORE_EXPORT std::ostream& operator<<(std::ostream&,
                                               const ModuleTreeLinker&);
 #endif

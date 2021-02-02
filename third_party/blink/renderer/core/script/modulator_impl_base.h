@@ -54,6 +54,7 @@ class ModulatorImplBase : public Modulator {
   }
 
   void FetchTree(const KURL&,
+                 ModuleType,
                  ResourceFetcher* fetch_client_settings_object_fetcher,
                  mojom::blink::RequestContextType context_type,
                  network::mojom::RequestDestination destination,
@@ -76,7 +77,7 @@ class ModulatorImplBase : public Modulator {
   KURL ResolveModuleSpecifier(const String& module_request,
                               const KURL& base_url,
                               String* failure_reason) final;
-  void ResolveDynamically(const String& specifier,
+  void ResolveDynamically(const ModuleRequest& module_request,
                           const KURL&,
                           const ReferrerScriptInfo&,
                           ScriptPromiseResolver*) override;

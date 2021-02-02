@@ -990,7 +990,8 @@ void ScriptLoader::FetchModuleScriptTree(
   // options.</spec>
   auto* module_tree_client =
       MakeGarbageCollected<ModulePendingScriptTreeClient>();
-  modulator->FetchTree(url, fetch_client_settings_object_fetcher,
+  modulator->FetchTree(url, ModuleType::kJavaScript,
+                       fetch_client_settings_object_fetcher,
                        mojom::blink::RequestContextType::SCRIPT,
                        network::mojom::RequestDestination::kScript, options,
                        ModuleScriptCustomFetchType::kNone, module_tree_client);

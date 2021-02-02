@@ -40,6 +40,7 @@ class DummyModulator : public Modulator {
   bool ImportMapsEnabled() const override;
 
   void FetchTree(const KURL&,
+                 ModuleType,
                  ResourceFetcher*,
                  mojom::blink::RequestContextType context_type,
                  network::mojom::RequestDestination destination,
@@ -60,7 +61,7 @@ class DummyModulator : public Modulator {
   ModuleScript* GetFetchedModuleScript(const KURL&, ModuleType) override;
   KURL ResolveModuleSpecifier(const String&, const KURL&, String*) override;
   bool HasValidContext() override;
-  void ResolveDynamically(const String& specifier,
+  void ResolveDynamically(const ModuleRequest& module_request,
                           const KURL&,
                           const ReferrerScriptInfo&,
                           ScriptPromiseResolver*) override;

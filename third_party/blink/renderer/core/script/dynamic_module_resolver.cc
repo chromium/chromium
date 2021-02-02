@@ -259,7 +259,7 @@ void DynamicModuleResolver::Trace(Visitor* visitor) const {
 // <specdef
 // href="https://html.spec.whatwg.org/C/#hostimportmoduledynamically(referencingscriptormodule,-specifier,-promisecapability)">
 void DynamicModuleResolver::ResolveDynamically(
-    const String& specifier,
+    const ModuleRequest& module_request,
     const KURL& referrer_resource_url,
     const ReferrerScriptInfo& referrer_info,
     ScriptPromiseResolver* promise_resolver) {
@@ -301,19 +301,30 @@ void DynamicModuleResolver::ResolveDynamically(
 
   // <spec label="fetch-an-import()-module-script-graph" step="1">Let url be the
   // result of resolving a module specifier given base URL and specifier.</spec>
-  KURL url = modulator_->ResolveModuleSpecifier(specifier, base_url);
+  KURL url =
+      modulator_->ResolveModuleSpecifier(module_request.specifier, base_url);
+
+  ModuleType module_type = modulator_->ModuleTypeFromRequest(module_request);
 
   // <spec label="fetch-an-import()-module-script-graph" step="2">If url is
   // failure, then asynchronously complete this algorithm with null, and abort
   // these steps.</spec>
-  if (!url.IsValid()) {
+  if (!url.IsValid() || module_type == ModuleType::kInvalid) {
     // <spec step="6">If result is null, then:</spec>
-    //
+    String error_message;
+    if (!url.IsValid()) {
+      error_message = "Failed to resolve module specifier '" +
+                      module_request.specifier + "'";
+    } else {
+      error_message = "\"" + module_request.GetModuleTypeString() +
+                      "\" is not a valid module type.";
+    }
+
     // <spec step="6.1">Let completion be Completion { [[Type]]: throw,
     // [[Value]]: a new TypeError, [[Target]]: empty }.</spec>
     v8::Isolate* isolate = modulator_->GetScriptState()->GetIsolate();
-    v8::Local<v8::Value> error = V8ThrowException::CreateTypeError(
-        isolate, "Failed to resolve module specifier '" + specifier + "'");
+    v8::Local<v8::Value> error =
+        V8ThrowException::CreateTypeError(isolate, error_message);
 
     // <spec step="6.2">Perform FinishDynamicImport(referencingScriptOrModule,
     // specifier, promiseCapability, completion).</spec>
@@ -331,7 +342,8 @@ void DynamicModuleResolver::ResolveDynamically(
 
   switch (referrer_info.GetBaseUrlSource()) {
     case ReferrerScriptInfo::BaseUrlSource::kClassicScriptCORSSameOrigin:
-      if (!modulator_->ResolveModuleSpecifier(specifier, BlankURL())
+      if (!modulator_
+               ->ResolveModuleSpecifier(module_request.specifier, BlankURL())
                .IsValid()) {
         UseCounter::Count(
             ExecutionContext::From(modulator_->GetScriptState()),
@@ -339,7 +351,8 @@ void DynamicModuleResolver::ResolveDynamically(
       }
       break;
     case ReferrerScriptInfo::BaseUrlSource::kClassicScriptCORSCrossOrigin:
-      if (!modulator_->ResolveModuleSpecifier(specifier, BlankURL())
+      if (!modulator_
+               ->ResolveModuleSpecifier(module_request.specifier, BlankURL())
                .IsValid()) {
         UseCounter::Count(
             ExecutionContext::From(modulator_->GetScriptState()),
@@ -385,7 +398,7 @@ void DynamicModuleResolver::ResolveDynamically(
       ExecutionContext::From(modulator_->GetScriptState());
   if (auto* scope = DynamicTo<WorkerGlobalScope>(*execution_context))
     scope->EnsureFetcher();
-  modulator_->FetchTree(url, execution_context->Fetcher(),
+  modulator_->FetchTree(url, module_type, execution_context->Fetcher(),
                         mojom::blink::RequestContextType::SCRIPT,
                         network::mojom::RequestDestination::kScript, options,
                         ModuleScriptCustomFetchType::kNone, tree_client);

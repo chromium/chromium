@@ -130,6 +130,7 @@ class CORE_EXPORT Modulator : public GarbageCollected<Modulator>,
   // ResourceFetcher represents "fetch client settings object"
   // used in the "fetch a module worker script graph" algorithm.
   virtual void FetchTree(const KURL&,
+                         ModuleType,
                          ResourceFetcher* fetch_client_settings_object_fetcher,
                          mojom::blink::RequestContextType context_type,
                          network::mojom::RequestDestination destination,
@@ -174,7 +175,7 @@ class CORE_EXPORT Modulator : public GarbageCollected<Modulator>,
                                       String* failure_reason = nullptr) = 0;
 
   // https://tc39.github.io/proposal-dynamic-import/#sec-hostimportmoduledynamically
-  virtual void ResolveDynamically(const String& specifier,
+  virtual void ResolveDynamically(const ModuleRequest& module_request,
                                   const KURL&,
                                   const ReferrerScriptInfo&,
                                   ScriptPromiseResolver*) = 0;

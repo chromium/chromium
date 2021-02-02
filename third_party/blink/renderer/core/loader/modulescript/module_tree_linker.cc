@@ -35,6 +35,7 @@ namespace blink {
 
 void ModuleTreeLinker::Fetch(
     const KURL& url,
+    const ModuleType& module_type,
     ResourceFetcher* fetch_client_settings_object_fetcher,
     mojom::blink::RequestContextType context_type,
     network::mojom::RequestDestination destination,
@@ -47,7 +48,7 @@ void ModuleTreeLinker::Fetch(
       fetch_client_settings_object_fetcher, context_type, destination,
       modulator, custom_fetch_type, registry, client);
   registry->AddFetcher(fetcher);
-  fetcher->FetchRoot(url, options);
+  fetcher->FetchRoot(url, module_type, options);
   DCHECK(fetcher->IsFetching());
 }
 
@@ -171,9 +172,11 @@ void ModuleTreeLinker::AdvanceState(State new_state) {
 // #fetch-a-module-script-tree, #fetch-an-import()-module-script-graph, and
 // #fetch-a-module-worker-script-tree.
 void ModuleTreeLinker::FetchRoot(const KURL& original_url,
+                                 ModuleType module_type,
                                  const ScriptFetchOptions& options) {
 #if DCHECK_IS_ON()
   original_url_ = original_url;
+  module_type_ = module_type;
   root_is_inline_ = false;
 #endif
 
@@ -209,6 +212,8 @@ void ModuleTreeLinker::FetchRoot(const KURL& original_url,
     return;
   }
 
+  CHECK_NE(module_type, ModuleType::kInvalid);
+
   // <spec label="fetch-a-module-script-tree" step="3">Let visited set be « url
   // ».</spec>
   //
@@ -217,6 +222,7 @@ void ModuleTreeLinker::FetchRoot(const KURL& original_url,
   //
   // <spec label="fetch-a-module-worker-script-tree" step="4">Let visited set be
   // « url ».</spec>
+  // TODO(crbug.com/1132413) Include module_type in visited_set_.
   visited_set_.insert(url);
 
   // <spec label="fetch-a-module-script-tree" step="1">Fetch a single module
@@ -231,6 +237,8 @@ void ModuleTreeLinker::FetchRoot(const KURL& original_url,
   // module script given url, fetch client settings object, destination,
   // options, module map settings object, "client", and with the top-level
   // module fetch flag set. ...</spec>
+
+  // TODO(crbug.com/1132413) Include module_type ModuleScriptFetchRequest.
   ModuleScriptFetchRequest request(url, context_type_, destination_, options,
                                    Referrer::ClientReferrerString(),
                                    TextPosition::MinimumPosition());
@@ -247,6 +255,7 @@ void ModuleTreeLinker::FetchRootInline(ModuleScript* module_script) {
 #if DCHECK_IS_ON()
   original_url_ = module_script->BaseURL();
   url_ = original_url_;
+  module_type_ = ModuleType::kJavaScript;
   root_is_inline_ = true;
 #endif
 
@@ -635,10 +644,29 @@ ScriptValue ModuleTreeLinker::FindFirstParseError(
 }
 
 #if DCHECK_IS_ON()
+std::ostream& operator<<(std::ostream& stream, ModuleType module_type) {
+  switch (module_type) {
+    case ModuleType::kInvalid:
+      stream << "Invalid";
+      break;
+    case ModuleType::kJavaScript:
+      stream << "JavaScript";
+      break;
+    case ModuleType::kJSON:
+      stream << "JSON";
+      break;
+    case ModuleType::kCSS:
+      stream << "CSS";
+      break;
+  }
+  return stream;
+}
+
 std::ostream& operator<<(std::ostream& stream, const ModuleTreeLinker& linker) {
   stream << "ModuleTreeLinker[" << &linker
          << ", original_url=" << linker.original_url_.GetString()
          << ", url=" << linker.url_.GetString()
+         << ", module_type=" << linker.module_type_
          << ", inline=" << linker.root_is_inline_ << "]";
   return stream;
 }

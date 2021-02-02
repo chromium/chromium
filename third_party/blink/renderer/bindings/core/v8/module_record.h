@@ -83,12 +83,20 @@ class CORE_EXPORT ModuleRecord final {
 
   static v8::Local<v8::Value> V8Namespace(v8::Local<v8::Module> record);
 
- private:
+  // ToBlinkImportAssertions deserializes v8::FixedArray encoded import
+  // assertions to blink::ImportAssertion. When
+  // |v8_import_assertions_has_positions| is set to true, it expects [key1,
+  // value1, position1, key2, value2, position2, ...] encoding used in
+  // v8::ModuleRequest::GetImportAssertions(). When it is set to false, it
+  // expects [key1, value1, key2, value2, ...] encoding used in the
+  // |HostImportModuleDynamically| callback.
   static Vector<ImportAssertion> ToBlinkImportAssertions(
       v8::Local<v8::Context> context,
       v8::Local<v8::Module> record,
-      v8::Local<v8::FixedArray> v8_import_assertions);
+      v8::Local<v8::FixedArray> v8_import_assertions,
+      bool v8_import_assertions_has_positions);
 
+ private:
   static v8::MaybeLocal<v8::Module> ResolveModuleCallback(
       v8::Local<v8::Context>,
       v8::Local<v8::String> specifier,

@@ -68,15 +68,17 @@ mojom::blink::V8CacheOptions ModulatorImplBase::GetV8CacheOptions() const {
 // href="https://html.spec.whatwg.org/C/#fetch-a-module-worker-script-tree">
 void ModulatorImplBase::FetchTree(
     const KURL& url,
+    ModuleType module_type,
     ResourceFetcher* fetch_client_settings_object_fetcher,
     mojom::blink::RequestContextType context_type,
     network::mojom::RequestDestination destination,
     const ScriptFetchOptions& options,
     ModuleScriptCustomFetchType custom_fetch_type,
     ModuleTreeClient* client) {
-  ModuleTreeLinker::Fetch(url, fetch_client_settings_object_fetcher,
-                          context_type, destination, options, this,
-                          custom_fetch_type, tree_linker_registry_, client);
+  ModuleTreeLinker::Fetch(url, module_type,
+                          fetch_client_settings_object_fetcher, context_type,
+                          destination, options, this, custom_fetch_type,
+                          tree_linker_registry_, client);
 }
 
 void ModulatorImplBase::FetchDescendantsForInlineScript(
@@ -225,7 +227,7 @@ bool ModulatorImplBase::HasValidContext() {
 }
 
 void ModulatorImplBase::ResolveDynamically(
-    const String& specifier,
+    const ModuleRequest& module_request,
     const KURL& referrer_url,
     const ReferrerScriptInfo& referrer_info,
     ScriptPromiseResolver* resolver) {
@@ -237,7 +239,7 @@ void ModulatorImplBase::ResolveDynamically(
   }
   UseCounter::Count(GetExecutionContext(),
                     WebFeature::kDynamicImportModuleScript);
-  dynamic_module_resolver_->ResolveDynamically(specifier, referrer_url,
+  dynamic_module_resolver_->ResolveDynamically(module_request, referrer_url,
                                                referrer_info, resolver);
 }
 

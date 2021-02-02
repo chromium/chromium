@@ -75,6 +75,7 @@ base::SingleThreadTaskRunner* DummyModulator::TaskRunner() {
 }
 
 void DummyModulator::FetchTree(const KURL&,
+                               ModuleType,
                                ResourceFetcher*,
                                mojom::blink::RequestContextType,
                                network::mojom::RequestDestination,
@@ -117,7 +118,7 @@ bool DummyModulator::HasValidContext() {
   return true;
 }
 
-void DummyModulator::ResolveDynamically(const String&,
+void DummyModulator::ResolveDynamically(const ModuleRequest& module_request,
                                         const KURL&,
                                         const ReferrerScriptInfo&,
                                         ScriptPromiseResolver*) {
@@ -173,7 +174,25 @@ Vector<ModuleRequest> DummyModulator::ModuleRequestsFromModuleRecord(
 
 ModuleType DummyModulator::ModuleTypeFromRequest(
     const ModuleRequest& module_request) const {
-  return ModuleType::kJavaScript;
+  String module_type_string = module_request.GetModuleTypeString();
+  if (module_type_string.IsNull()) {
+    // Per https://github.com/whatwg/html/pull/5883, if no type assertion is
+    // provided then the import should be treated as a JavaScript module.
+    return ModuleType::kJavaScript;
+  } else if (module_type_string == "json") {
+    // Per https://github.com/whatwg/html/pull/5658, a "json" type assertion
+    // indicates that the import should be treated as a JSON module script.
+    return ModuleType::kJSON;
+  } else if (module_type_string == "css") {
+    // Per https://github.com/whatwg/html/pull/4898, a "css" type assertion
+    // indicates that the import should be treated as a CSS module script.
+    return ModuleType::kCSS;
+  } else {
+    // Per https://github.com/whatwg/html/pull/5883, if an unsupported type
+    // assertion is provided then the import should be treated as an error
+    // similar to an invalid module specifier.
+    return ModuleType::kInvalid;
+  }
 }
 
 ModuleScriptFetcher* DummyModulator::CreateModuleScriptFetcher(

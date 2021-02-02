@@ -553,7 +553,8 @@ static bool WasmInstanceOverride(
 static v8::MaybeLocal<v8::Promise> HostImportModuleDynamically(
     v8::Local<v8::Context> context,
     v8::Local<v8::ScriptOrModule> v8_referrer,
-    v8::Local<v8::String> v8_specifier) {
+    v8::Local<v8::String> v8_specifier,
+    v8::Local<v8::FixedArray> v8_import_assertions) {
   ScriptState* script_state = ScriptState::From(context);
 
   Modulator* modulator = Modulator::From(script_state);
@@ -598,14 +599,20 @@ static v8::MaybeLocal<v8::Promise> HostImportModuleDynamically(
       referrer_resource_url = KURL(NullURL(), referrer_resource_url_str);
   }
 
+  ModuleRequest module_request(
+      specifier, TextPosition(),
+      ModuleRecord::ToBlinkImportAssertions(
+          script_state->GetContext(), v8::Local<v8::Module>(),
+          v8_import_assertions, /*v8_import_assertions_has_positions=*/false));
+
   ReferrerScriptInfo referrer_info =
       ReferrerScriptInfo::FromV8HostDefinedOptions(
           context, v8_referrer->GetHostDefinedOptions());
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
-  modulator->ResolveDynamically(specifier, referrer_resource_url, referrer_info,
-                                resolver);
+  modulator->ResolveDynamically(module_request, referrer_resource_url,
+                                referrer_info, resolver);
   return v8::Local<v8::Promise>::Cast(promise.V8Value());
 }
 

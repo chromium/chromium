@@ -16,6 +16,7 @@ namespace blink {
 class Modulator;
 class ReferrerScriptInfo;
 class ScriptPromiseResolver;
+struct ModuleRequest;
 
 // DynamicModuleResolver implements "Runtime Semantics:
 // HostImportModuleDynamically" per spec.
@@ -30,7 +31,7 @@ class CORE_EXPORT DynamicModuleResolver final
 
   // Implements "HostImportModuleDynamically" semantics.
   // Should be called w/ a valid V8 context.
-  void ResolveDynamically(const String& specifier,
+  void ResolveDynamically(const ModuleRequest& module_request,
                           const KURL& referrer_resource_url,
                           const ReferrerScriptInfo& referrer_info,
                           ScriptPromiseResolver*);
