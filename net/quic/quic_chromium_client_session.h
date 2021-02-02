@@ -459,6 +459,25 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     QuicChromiumClientSession* session_;
   };
 
+  // This class implements Chrome logic for path validation events associated
+  // with port migration.
+  class NET_EXPORT_PRIVATE PortMigrationValidationResultDelegate
+      : public quic::QuicPathValidator::ResultDelegate {
+   public:
+    explicit PortMigrationValidationResultDelegate(
+        QuicChromiumClientSession* session);
+
+    void OnPathValidationSuccess(
+        std::unique_ptr<quic::QuicPathValidationContext> context) override;
+
+    void OnPathValidationFailure(
+        std::unique_ptr<quic::QuicPathValidationContext> context) override;
+
+   private:
+    // |session_| owns |this| and should out live |this|.
+    QuicChromiumClientSession* session_;
+  };
+
   // This class is used to handle writer events that occur on the probing path.
   class NET_EXPORT_PRIVATE QuicChromiumPathValidationWriterDelegate
       : public QuicChromiumPacketWriter::Delegate {

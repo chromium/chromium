@@ -825,6 +825,32 @@ void QuicChromiumClientSession::ConnectionMigrationValidationResultDelegate::
                           chrome_context->peer_address());
 }
 
+QuicChromiumClientSession::PortMigrationValidationResultDelegate::
+    PortMigrationValidationResultDelegate(QuicChromiumClientSession* session)
+    : session_(session) {}
+
+void QuicChromiumClientSession::PortMigrationValidationResultDelegate::
+    OnPathValidationSuccess(
+        std::unique_ptr<quic::QuicPathValidationContext> context) {
+  auto* chrome_context =
+      static_cast<QuicChromiumPathValidationContext*>(context.get());
+  session_->OnPortMigrationProbeSucceeded(
+      chrome_context->network(), chrome_context->peer_address(),
+      chrome_context->self_address(), chrome_context->ReleaseSocket(),
+      chrome_context->ReleaseWriter(), chrome_context->ReleaseReader());
+}
+
+void QuicChromiumClientSession::PortMigrationValidationResultDelegate::
+    OnPathValidationFailure(
+        std::unique_ptr<quic::QuicPathValidationContext> context) {
+  // Note that socket, packet writer, and packet reader in |context| will be
+  // discarded.
+  auto* chrome_context =
+      static_cast<QuicChromiumPathValidationContext*>(context.get());
+  session_->OnProbeFailed(chrome_context->network(),
+                          chrome_context->peer_address());
+}
+
 QuicChromiumClientSession::QuicChromiumPathValidationWriterDelegate::
     QuicChromiumPathValidationWriterDelegate(
         QuicChromiumClientSession* session,
@@ -2330,7 +2356,7 @@ void QuicChromiumClientSession::OnPortMigrationProbeSucceeded(
                       return NetLogProbingResultParams(network, &peer_address,
                                                        /*is_success=*/true);
                     });
-  // TODO(crbug.com/1151419): Use the name Port migration in histogram.
+
   LogProbeResultToHistogram(current_migration_cause_, true);
 
   // Remove |this| as the old packet writer's delegate. Write error on old
@@ -3055,8 +3081,7 @@ ProbingResult QuicChromiumClientSession::StartProbing(
     rtt_ms = kDefaultRTTMilliSecs;
   int timeout_ms = rtt_ms * 2;
 
-  if (version().HasIetfQuicFrames() &&
-      current_migration_cause_ != CHANGE_PORT_ON_PATH_DEGRADING) {
+  if (connection()->use_path_validator() && version().HasIetfQuicFrames()) {
     probing_reader->StartReading();
     path_validation_writer_delegate_.set_network(network);
     path_validation_writer_delegate_.set_peer_address(peer_address);
@@ -3067,9 +3092,14 @@ ProbingResult QuicChromiumClientSession::StartProbing(
         ToQuicSocketAddress(local_address), peer_address, network,
         std::move(probing_socket), std::move(probing_writer),
         std::move(probing_reader));
-    ValidatePath(
-        std::move(context),
-        std::make_unique<ConnectionMigrationValidationResultDelegate>(this));
+    if (current_migration_cause_ != CHANGE_PORT_ON_PATH_DEGRADING) {
+      ValidatePath(
+          std::move(context),
+          std::make_unique<ConnectionMigrationValidationResultDelegate>(this));
+      return ProbingResult::PENDING;
+    }
+    ValidatePath(std::move(context),
+                 std::make_unique<PortMigrationValidationResultDelegate>(this));
     return ProbingResult::PENDING;
   }
 
