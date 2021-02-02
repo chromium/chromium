@@ -93,6 +93,36 @@ void ChromeOSAuthenticator::MakeCredential(CtapMakeCredentialRequest request,
           ? u2f::VERIFICATION_USER_PRESENCE
           : u2f::VERIFICATION_USER_VERIFICATION);
   req.set_rp_id(request.rp.id);
+  req.set_client_data_hash(std::string(request.client_data_hash.begin(),
+                                       request.client_data_hash.end()));
+
+  // The ChromeOS platform authenticator supports attestation only for
+  // credentials created through the legacy, enterprise-policy-controlled power
+  // button authenticator. It has two modes, regular U2F attestation and and
+  // individually identifying mode called G2F that needs to be explicitly
+  // configured in the enterprise policy.
+  switch (request.attestation_preference) {
+    case AttestationConveyancePreference::kNone:
+    case AttestationConveyancePreference::kIndirect:
+      req.set_attestation_conveyance_preference(
+          u2f::MakeCredentialRequest_AttestationConveyancePreference_NONE);
+      break;
+    case AttestationConveyancePreference::kDirect:
+      req.set_attestation_conveyance_preference(
+          u2f::MakeCredentialRequest_AttestationConveyancePreference_U2F);
+      break;
+    case AttestationConveyancePreference::kEnterpriseIfRPListedOnAuthenticator:
+      // There is no separate mechanism for allowing individual RPs to use
+      // individual G2F attestation. (Same as with regular U2F authenticators.)
+      req.set_attestation_conveyance_preference(
+          u2f::MakeCredentialRequest_AttestationConveyancePreference_U2F);
+      break;
+    case AttestationConveyancePreference::kEnterpriseApprovedByBrowser:
+      req.set_attestation_conveyance_preference(
+          u2f::MakeCredentialRequest_AttestationConveyancePreference_G2F);
+      break;
+  }
+
   req.set_user_id(std::string(request.user.id.begin(), request.user.id.end()));
   if (request.user.display_name.has_value())
     req.set_user_display_name(request.user.display_name.value());
