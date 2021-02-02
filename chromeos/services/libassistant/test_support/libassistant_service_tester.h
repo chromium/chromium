@@ -64,8 +64,7 @@ class LibassistantServiceTester {
   void BindControllers();
 
   mojo::Remote<mojom::AudioInputController> audio_input_controller_;
-  mojo::PendingReceiver<mojom::AudioStreamFactoryDelegate>
-      pending_audio_stream_factory_delegate_;
+  mojo::PendingReceiver<mojom::PlatformDelegate> pending_platform_delegate_;
   mojo::Remote<mojom::ConversationController> conversation_controller_;
   mojo::Remote<mojom::DisplayController> display_controller_;
   mojo::Remote<mojom::ServiceController> service_controller_;

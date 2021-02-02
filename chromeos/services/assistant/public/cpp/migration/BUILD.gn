@@ -20,7 +20,11 @@ component("migration") {
 
   public_deps = [ "//libassistant/shared/public" ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//chromeos/services/libassistant/public/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
 }
 
 component("test_support") {
@@ -41,7 +45,6 @@ component("test_support") {
     "//base",
     "//chromeos/assistant/internal:test_support",
     "//chromeos/assistant/internal/proto/google3",
-    "//chromeos/services/assistant/proxy:audio_input_bindings",
     "//libassistant/shared/public",
   ]
 }

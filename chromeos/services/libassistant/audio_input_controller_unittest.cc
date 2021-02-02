@@ -13,7 +13,6 @@
 #include "media/audio/audio_device_description.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/audio/public/cpp/fake_stream_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -37,53 +36,33 @@ class FakeAudioInputObserver : public assistant_client::AudioInput::Observer {
   void OnAudioStopped() override {}
 };
 
-class FakeAudioStreamFactoryDelegate
-    : public mojom::AudioStreamFactoryDelegate {
+class FakePlatformDelegate : public mojom::PlatformDelegate {
  public:
-  FakeAudioStreamFactoryDelegate() = default;
-  FakeAudioStreamFactoryDelegate(FakeAudioStreamFactoryDelegate&) = delete;
-  FakeAudioStreamFactoryDelegate& operator=(FakeAudioStreamFactoryDelegate&) =
-      delete;
-  ~FakeAudioStreamFactoryDelegate() override = default;
+  FakePlatformDelegate() = default;
+  FakePlatformDelegate(FakePlatformDelegate&) = delete;
+  FakePlatformDelegate& operator=(FakePlatformDelegate&) = delete;
+  ~FakePlatformDelegate() override = default;
 
-  // mojom::AudioStreamFactoryDelegate implementation:
-  void GetAudioStreamFactory(GetAudioStreamFactoryCallback callback) override {
-    if (return_null_) {
-      // A null pending remote is simply an unbound pending remote.
-      std::move(callback).Run(
-          mojo::PendingRemote<audio::mojom::StreamFactory>());
-    } else {
-      std::move(callback).Run(stream_factory_.MakeRemote());
-      // Without resetting the receiver the test will abort because the code
-      // calls AudioStreamFactory::CreateInputStream() and expects an answer,
-      // but the |FakeStreamFactory| simply drops the call and never calls the
-      // callback.
-      // By resetting the callback the code is happy.
-      stream_factory_.ResetReceiver();
-    }
+  // mojom::PlatformDelegate implementation:
+  void BindAudioStreamFactory(
+      mojo::PendingReceiver<::audio::mojom::StreamFactory> receiver) override {
+    stream_factory_receiver_ = std::move(receiver);
   }
 
-  mojo::PendingRemote<mojom::AudioStreamFactoryDelegate>
-  BindNewPipeAndPassRemote() {
-    return delegate_.BindNewPipeAndPassRemote();
+  // Return the pending receiver passed to the last BindAudioStreamFactory call.
+  mojo::PendingReceiver<::audio::mojom::StreamFactory>
+  stream_factory_receiver() {
+    return std::move(stream_factory_receiver_);
   }
-
-  void StartReturningNull() { return_null_ = true; }
 
  private:
-  mojo::Receiver<mojom::AudioStreamFactoryDelegate> delegate_{this};
-  audio::FakeStreamFactory stream_factory_;
-
-  // Causes |GetAudioStreamFactory| to return null to the callback instead of
-  // a valid stream factory.
-  bool return_null_ = false;
+  mojo::PendingReceiver<::audio::mojom::StreamFactory> stream_factory_receiver_;
 };
 
 class AssistantAudioInputControllerTest : public testing::Test {
  public:
   AssistantAudioInputControllerTest() : controller_() {
-    controller_.Bind(client_.BindNewPipeAndPassReceiver(),
-                     audio_stream_factory_delegate_.BindNewPipeAndPassRemote());
+    controller_.Bind(client_.BindNewPipeAndPassReceiver(), &platform_delegate_);
 
     // Enable DSP feature flag.
     scoped_feature_list_.InitAndEnableFeature(
@@ -126,10 +105,6 @@ class AssistantAudioInputControllerTest : public testing::Test {
 
   AudioInputImpl& audio_input() {
     return controller().audio_input_provider().GetAudioInput();
-  }
-
-  FakeAudioStreamFactoryDelegate& audio_stream_factory_delegate() {
-    return audio_stream_factory_delegate_;
   }
 
   bool IsRecordingAudio() { return audio_input().IsRecordingForTesting(); }
@@ -183,7 +158,7 @@ class AssistantAudioInputControllerTest : public testing::Test {
   mojo::Remote<mojom::AudioInputController> client_;
   AudioInputController controller_;
   FakeAudioInputObserver audio_input_observer_;
-  FakeAudioStreamFactoryDelegate audio_stream_factory_delegate_;
+  FakePlatformDelegate platform_delegate_;
 };
 
 }  // namespace
@@ -299,16 +274,6 @@ TEST_F(AssistantAudioInputControllerTest,
 
   SetHotwordDeviceId("fake-hotword-device");
   EXPECT_FALSE(IsUsingDeadStreamDetection());
-}
-
-TEST_F(AssistantAudioInputControllerTest,
-       ShouldNotCrashWhenDelegateReturnsNull) {
-  InitializeForTestOfType(kDeviceIdTest);
-  audio_stream_factory_delegate().StartReturningNull();
-
-  SetDeviceId("device-id");
-
-  EXPECT_TRUE(IsRecordingAudio());
 }
 
 TEST_F(AssistantAudioInputControllerTest,

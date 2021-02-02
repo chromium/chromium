@@ -29,14 +29,14 @@ void FakeLibassistantService::Unbind() {
 void FakeLibassistantService::Bind(
     mojo::PendingReceiver<libassistant::mojom::AudioInputController>
         audio_input_controller,
-    mojo::PendingRemote<libassistant::mojom::AudioStreamFactoryDelegate>
-        audio_stream_factory_delegate,
     mojo::PendingReceiver<libassistant::mojom::ConversationController>
         conversation_controller,
     mojo::PendingReceiver<libassistant::mojom::DisplayController>
         display_controller,
     mojo::PendingReceiver<libassistant::mojom::ServiceController>
-        service_controller) {
+        service_controller,
+    mojo::PendingRemote<libassistant::mojom::PlatformDelegate>
+        platform_delegate) {
   service_controller_.Bind(std::move(service_controller));
 }
 

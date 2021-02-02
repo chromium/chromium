@@ -5,7 +5,7 @@
 #include "chromeos/services/assistant/platform/audio_stream.h"
 #include "base/notreached.h"
 #include "chromeos/services/assistant/buildflags.h"
-#include "chromeos/services/assistant/platform/audio_stream_factory_delegate.h"
+#include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom.h"
 
 #if BUILDFLAG(ENABLE_FAKE_ASSISTANT_MICROPHONE)
 #include "chromeos/services/assistant/platform/fake_input_device.h"
@@ -32,7 +32,7 @@ media::ChannelLayout GetChannelLayout(
 }  // namespace
 
 AudioStream::AudioStream(
-    AudioStreamFactoryDelegate* delegate,
+    chromeos::libassistant::mojom::PlatformDelegate* platform_delegate,
     const std::string& device_id,
     bool detect_dead_stream,
     assistant_client::BufferFormat buffer_format,
@@ -40,7 +40,7 @@ AudioStream::AudioStream(
     : device_id_(device_id),
       detect_dead_stream_(detect_dead_stream),
       buffer_format_(buffer_format),
-      delegate_(delegate),
+      platform_delegate_(platform_delegate),
       capture_callback_(capture_callback) {
   Start();
 }
@@ -58,12 +58,11 @@ bool AudioStream::has_dead_stream_detection() const {
 }
 
 void AudioStream::Start() {
-  delegate_->RequestAudioStreamFactory(base::BindOnce(
-      &AudioStream::OnAudioSteamFactoryReady, weak_ptr_factory_.GetWeakPtr()));
-}
+  mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory;
 
-void AudioStream::OnAudioSteamFactoryReady(
-    mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory) {
+  platform_delegate_->BindAudioStreamFactory(
+      audio_stream_factory.InitWithNewPipeAndPassReceiver());
+
 #if BUILDFLAG(ENABLE_FAKE_ASSISTANT_MICROPHONE)
   source_ = CreateFakeInputDevice();
 #else

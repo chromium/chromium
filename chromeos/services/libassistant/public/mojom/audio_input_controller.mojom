@@ -4,8 +4,6 @@
 
 module chromeos.libassistant.mojom;
 
-import "services/audio/public/mojom/stream_factory.mojom";
-
 // Interface managing Libassistant audio input, allowing Libassistant to open
 // the microphone both for hotword detection ('ok google') as well for the
 // actual voice queries.
@@ -52,15 +50,4 @@ interface AudioInputController {
 enum LidState {
   kOpen,
   kClosed,
-};
-
-// Interface that exposes a method to create a |StreamFactory|.
-// This interface is passed to the Libassistant mojom service so it can open
-// audio streams.
-interface AudioStreamFactoryDelegate  {
-
-  // Must return a stream factory that Libassistant can use,
-  // or null if no stream factory can be bound for any reason.
-  GetAudioStreamFactory() => (pending_remote<audio.mojom.StreamFactory>? result);
-
 };

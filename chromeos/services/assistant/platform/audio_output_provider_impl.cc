@@ -10,10 +10,10 @@
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/assistant/media_session/assistant_media_session.h"
-#include "chromeos/services/assistant/platform/audio_stream_factory_delegate.h"
 #include "chromeos/services/assistant/platform/audio_stream_handler.h"
 #include "chromeos/services/assistant/public/cpp/assistant_client.h"
 #include "chromeos/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"
+#include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom.h"
 #include "libassistant/shared/public/platform_audio_buffer.h"
 #include "media/audio/audio_device_description.h"
 
@@ -145,17 +145,17 @@ class AudioOutputImpl : public assistant_client::AudioOutput {
 
 AudioOutputProviderImpl::AudioOutputProviderImpl(
     AssistantMediaSession* media_session,
+    chromeos::libassistant::mojom::PlatformDelegate* platform_delegate,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
     const std::string& device_id)
-    : audio_stream_factory_delegate_(
-          std::make_unique<DefaultAudioStreamFactoryDelegate>()),
-      loop_back_input_(audio_stream_factory_delegate_.get(),
+    : platform_delegate_(platform_delegate),
+      media_session_(media_session),
+      loop_back_input_(platform_delegate_,
                        media::AudioDeviceDescription::kLoopbackInputDeviceId),
       volume_control_impl_(media_session),
       main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
       background_task_runner_(background_task_runner),
-      device_id_(device_id),
-      media_session_(media_session) {
+      device_id_(device_id) {
   AssistantClient::Get()->RequestAudioDecoderFactory(
       audio_decoder_factory_remote_.BindNewPipeAndPassReceiver());
   audio_decoder_factory_ = audio_decoder_factory_remote_.get();
@@ -210,7 +210,7 @@ void AudioOutputProviderImpl::RegisterAudioEmittingStateCallback(
 
 void AudioOutputProviderImpl::BindStreamFactory(
     mojo::PendingReceiver<audio::mojom::StreamFactory> receiver) {
-  AssistantClient::Get()->RequestAudioStreamFactory(std::move(receiver));
+  platform_delegate_->BindAudioStreamFactory(std::move(receiver));
 }
 
 }  // namespace assistant

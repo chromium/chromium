@@ -59,10 +59,12 @@ namespace assistant {
 
 class AssistantDeviceSettingsDelegate;
 class AssistantManagerServiceDelegate;
+class AssistantMediaSession;
 class AssistantProxy;
 class AudioInputHost;
 class CrosPlatformApi;
 class MediaHost;
+class PlatformDelegateImpl;
 class ServiceContext;
 class ServiceControllerProxy;
 class SpeechRecognitionObserverWrapper;
@@ -282,6 +284,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   std::unique_ptr<AssistantSettingsImpl> assistant_settings_;
 
   std::unique_ptr<AssistantProxy> assistant_proxy_;
+  std::unique_ptr<PlatformDelegateImpl> platform_delegate_;
   std::unique_ptr<AudioInputHost> audio_input_host_;
 
   base::ObserverList<AssistantInteractionSubscriber> interaction_subscribers_;

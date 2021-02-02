@@ -5,11 +5,14 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
+  disable_variants = true
+
   sources = [
     "android_app_info.mojom",
     "audio_input_controller.mojom",
     "conversation_controller.mojom",
     "display_controller.mojom",
+    "platform_delegate.mojom",
     "service.mojom",
     "service_controller.mojom",
     "speech_recognition_observer.mojom",

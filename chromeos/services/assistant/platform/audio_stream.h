@@ -9,16 +9,13 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom-forward.h"
 #include "libassistant/shared/public/platform_audio_buffer.h"
 #include "media/base/audio_capturer_source.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/audio/public/cpp/device_factory.h"
-#include "services/audio/public/mojom/stream_factory.mojom.h"
 
 namespace chromeos {
 namespace assistant {
-
-class AudioStreamFactoryDelegate;
 
 // A single audio stream. All captured packets will be sent to the given
 // capture callback.
@@ -26,11 +23,12 @@ class AudioStreamFactoryDelegate;
 // will be closed in the destructor.
 class AudioStream {
  public:
-  AudioStream(AudioStreamFactoryDelegate* delegate,
-              const std::string& device_id,
-              bool detect_dead_stream,
-              assistant_client::BufferFormat buffer_format,
-              media::AudioCapturerSource::CaptureCallback* capture_callback);
+  AudioStream(
+      chromeos::libassistant::mojom::PlatformDelegate* platform_delegate,
+      const std::string& device_id,
+      bool detect_dead_stream,
+      assistant_client::BufferFormat buffer_format,
+      media::AudioCapturerSource::CaptureCallback* capture_callback);
   AudioStream(const AudioStream&) = delete;
   AudioStream& operator=(const AudioStream&) = delete;
   ~AudioStream();
@@ -42,9 +40,6 @@ class AudioStream {
  private:
   void Start();
 
-  void OnAudioSteamFactoryReady(
-      mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory);
-
   void Stop();
 
   audio::DeadStreamDetection DeadStreamDetection() const;
@@ -55,7 +50,7 @@ class AudioStream {
   std::string device_id_;
   bool detect_dead_stream_;
   assistant_client::BufferFormat buffer_format_;
-  AudioStreamFactoryDelegate* const delegate_;
+  chromeos::libassistant::mojom::PlatformDelegate* const platform_delegate_;
   media::AudioCapturerSource::CaptureCallback* const capture_callback_;
   scoped_refptr<media::AudioCapturerSource> source_;
   base::WeakPtrFactory<AudioStream> weak_ptr_factory_{this};

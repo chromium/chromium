@@ -36,6 +36,7 @@
 #include "chromeos/services/assistant/assistant_device_settings_delegate.h"
 #include "chromeos/services/assistant/libassistant_service_host_impl.h"
 #include "chromeos/services/assistant/media_host.h"
+#include "chromeos/services/assistant/platform/platform_delegate_impl.h"
 #include "chromeos/services/assistant/platform_api_impl.h"
 #include "chromeos/services/assistant/proxy/conversation_controller_proxy.h"
 #include "chromeos/services/assistant/proxy/service_controller_proxy.h"
@@ -240,6 +241,7 @@ class SpeechRecognitionObserverWrapper
   mojo::Receiver<chromeos::libassistant::mojom::SpeechRecognitionObserver>
       receiver_{this};
 };
+
 AssistantManagerServiceImpl::AssistantManagerServiceImpl(
     ServiceContext* context,
     std::unique_ptr<AssistantManagerServiceDelegate> delegate,
@@ -255,6 +257,7 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
       assistant_settings_(
           std::make_unique<AssistantSettingsImpl>(context, this)),
       assistant_proxy_(std::make_unique<AssistantProxy>()),
+      platform_delegate_(std::make_unique<PlatformDelegateImpl>()),
       context_(context),
       delegate_(std::move(delegate)),
       media_host_(std::make_unique<MediaHost>(AssistantClient::Get(),
@@ -268,7 +271,7 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
           ShouldPutLogsInHomeDirectory())),
       weak_factory_(this) {
   platform_api_ = delegate_->CreatePlatformApi(
-      &media_host_->media_session(),
+      &media_host_->media_session(), platform_delegate_.get(),
       assistant_proxy_->background_thread().task_runner());
 
   if (libassistant_service_host) {
@@ -293,8 +296,10 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
   assistant_proxy_->AddSpeechRecognitionObserver(
       speech_recognition_observer_->BindNewPipeAndPassRemote());
 
+  platform_delegate_->Bind(assistant_proxy_->ExtractPlatformDelegate());
+
   audio_input_host_ = delegate_->CreateAudioInputHost(
-      assistant_proxy_->ExtractAudioInputBindings());
+      assistant_proxy_->ExtractAudioInputController());
 
   settings_delegate_ =
       std::make_unique<AssistantDeviceSettingsDelegate>(context);

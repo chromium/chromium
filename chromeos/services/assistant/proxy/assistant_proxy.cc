@@ -80,23 +80,20 @@ void AssistantProxy::BindControllers(
         pending_url_loader_factory) {
   mojo::PendingRemote<AudioInputControllerMojom>
       pending_audio_input_controller_remote;
-  mojo::PendingRemote<AudioStreamFactoryDelegateMojom>
-      pending_audio_stream_factory_delegate_remote;
+  mojo::PendingRemote<PlatformDelegateMojom> pending_platform_delegate_remote;
   mojo::PendingRemote<ServiceControllerMojom> pending_service_controller_remote;
   mojo::PendingRemote<ConversationControllerMojom>
       pending_conversation_controller_remote;
 
-  mojo::PendingReceiver<AudioStreamFactoryDelegateMojom>
-      pending_audio_stream_factory_delegate_receiver =
-          pending_audio_stream_factory_delegate_remote
-              .InitWithNewPipeAndPassReceiver();
+  mojo::PendingReceiver<PlatformDelegateMojom> pending_platform_delegate =
+      pending_platform_delegate_remote.InitWithNewPipeAndPassReceiver();
 
   libassistant_service_remote_->Bind(
       pending_audio_input_controller_remote.InitWithNewPipeAndPassReceiver(),
-      std::move(pending_audio_stream_factory_delegate_remote),
       pending_conversation_controller_remote.InitWithNewPipeAndPassReceiver(),
       display_controller_remote_.BindNewPipeAndPassReceiver(),
-      pending_service_controller_remote.InitWithNewPipeAndPassReceiver());
+      pending_service_controller_remote.InitWithNewPipeAndPassReceiver(),
+      std::move(pending_platform_delegate_remote));
 
   conversation_controller_proxy_ =
       std::make_unique<ConversationControllerProxy>(
@@ -105,9 +102,8 @@ void AssistantProxy::BindControllers(
       host, std::move(pending_url_loader_factory),
       std::move(pending_service_controller_remote));
 
-  audio_input_bindings_ = AudioInputBindings(
-      std::move(pending_audio_input_controller_remote),
-      std::move(pending_audio_stream_factory_delegate_receiver));
+  audio_input_controller_ = std::move(pending_audio_input_controller_remote);
+  platform_delegate_ = std::move(pending_platform_delegate);
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
@@ -120,9 +116,16 @@ ServiceControllerProxy& AssistantProxy::service_controller() {
   return *service_controller_proxy_;
 }
 
-AudioInputBindings AssistantProxy::ExtractAudioInputBindings() {
-  DCHECK(audio_input_bindings_.has_value());
-  return std::move(audio_input_bindings_.value());
+mojo::PendingRemote<chromeos::libassistant::mojom::AudioInputController>
+AssistantProxy::ExtractAudioInputController() {
+  DCHECK(audio_input_controller_.is_valid());
+  return std::move(audio_input_controller_);
+}
+
+mojo::PendingReceiver<chromeos::libassistant::mojom::PlatformDelegate>
+AssistantProxy::ExtractPlatformDelegate() {
+  DCHECK(platform_delegate_.is_valid());
+  return std::move(platform_delegate_);
 }
 
 ConversationControllerProxy& AssistantProxy::conversation_controller_proxy() {

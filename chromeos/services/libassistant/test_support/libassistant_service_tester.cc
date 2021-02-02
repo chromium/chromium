@@ -36,17 +36,15 @@ void LibassistantServiceTester::Start() {
 }
 
 void LibassistantServiceTester::BindControllers() {
-  mojo::PendingRemote<mojom::AudioStreamFactoryDelegate>
-      pending_audio_stream_factory_delegate_remote;
-  pending_audio_stream_factory_delegate_ =
-      pending_audio_stream_factory_delegate_remote
-          .InitWithNewPipeAndPassReceiver();
+  mojo::PendingRemote<mojom::PlatformDelegate> pending_platform_delegate_remote;
+  pending_platform_delegate_ =
+      pending_platform_delegate_remote.InitWithNewPipeAndPassReceiver();
 
   service_.Bind(audio_input_controller_.BindNewPipeAndPassReceiver(),
-                std::move(pending_audio_stream_factory_delegate_remote),
                 conversation_controller_.BindNewPipeAndPassReceiver(),
                 display_controller_.BindNewPipeAndPassReceiver(),
-                service_controller_.BindNewPipeAndPassReceiver());
+                service_controller_.BindNewPipeAndPassReceiver(),
+                std::move(pending_platform_delegate_remote));
 }
 
 }  // namespace libassistant

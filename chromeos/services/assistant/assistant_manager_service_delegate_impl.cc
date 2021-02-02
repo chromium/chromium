@@ -29,9 +29,10 @@ AssistantManagerServiceDelegateImpl::~AssistantManagerServiceDelegateImpl() =
 
 std::unique_ptr<AudioInputHost>
 AssistantManagerServiceDelegateImpl::CreateAudioInputHost(
-    AudioInputBindings bindings) {
+    mojo::PendingRemote<chromeos::libassistant::mojom::AudioInputController>
+        pending_remote) {
   return std::make_unique<AudioInputHostImpl>(
-      std::move(bindings), context_->cras_audio_handler(),
+      std::move(pending_remote), context_->cras_audio_handler(),
       context_->power_manager_client(),
       context_->assistant_state()->locale().value());
 }
@@ -39,9 +40,10 @@ AssistantManagerServiceDelegateImpl::CreateAudioInputHost(
 std::unique_ptr<CrosPlatformApi>
 AssistantManagerServiceDelegateImpl::CreatePlatformApi(
     AssistantMediaSession* media_session,
+    chromeos::libassistant::mojom::PlatformDelegate* platform_delegate,
     scoped_refptr<base::SingleThreadTaskRunner> background_thread_task_runner) {
   return std::make_unique<PlatformApiImpl>(
-      media_session, context_->power_manager_client(),
+      media_session, platform_delegate, context_->power_manager_client(),
       std::move(battery_monitor_), context_->main_task_runner(),
       background_thread_task_runner);
 }

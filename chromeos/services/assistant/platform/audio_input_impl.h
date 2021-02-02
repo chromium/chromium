@@ -17,6 +17,7 @@
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom-forward.h"
 #include "libassistant/shared/public/platform_audio_input.h"
 #include "media/base/audio_capturer_source.h"
 
@@ -24,7 +25,6 @@ namespace chromeos {
 namespace assistant {
 
 class AudioStream;
-class AudioStreamFactoryDelegate;
 
 class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioInputImpl
     : public assistant_client::AudioInput,
@@ -36,7 +36,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioInputImpl
   };
 
   explicit AudioInputImpl(
-      AudioStreamFactoryDelegate* audio_stream_factory_delegate,
+      chromeos::libassistant::mojom::PlatformDelegate* platform_delegate,
       const std::string& device_id);
   ~AudioInputImpl() override;
 
@@ -136,9 +136,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioInputImpl
 
   std::unique_ptr<HotwordStateManager> state_manager_;
 
-  // It is the responsibility of the classes that own |this| to ensure
-  // |audio_stream_factory_deletate| outlives |this|.
-  AudioStreamFactoryDelegate* const audio_stream_factory_delegate_;
+  // Owned by |AssistantManagerServiceImpl|.
+  chromeos::libassistant::mojom::PlatformDelegate* const platform_delegate_;
 
   // Preferred audio input device which will be used for capture.
   std::string preferred_device_id_;

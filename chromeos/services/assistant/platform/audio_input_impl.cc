@@ -15,7 +15,6 @@
 #include "base/strings/string_util.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/assistant/platform/audio_stream.h"
-#include "chromeos/services/assistant/platform/audio_stream_factory_delegate.h"
 #include "chromeos/services/assistant/public/cpp/assistant_client.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/assistant/utils.h"
@@ -170,15 +169,15 @@ void AudioInputImpl::HotwordStateManager::RecreateAudioInputStream() {
 }
 
 AudioInputImpl::AudioInputImpl(
-    AudioStreamFactoryDelegate* audio_stream_factory_delegate,
+    chromeos::libassistant::mojom::PlatformDelegate* platform_delegate,
     const std::string& device_id)
     : task_runner_(base::SequencedTaskRunnerHandle::Get()),
-      audio_stream_factory_delegate_(audio_stream_factory_delegate),
+      platform_delegate_(platform_delegate),
       preferred_device_id_(device_id),
       weak_factory_(this) {
   DETACH_FROM_SEQUENCE(observer_sequence_checker_);
 
-  DCHECK(audio_stream_factory_delegate_);
+  DCHECK(platform_delegate);
 
   RecreateStateManager();
   if (features::IsStereoAudioInputEnabled())
@@ -367,7 +366,7 @@ void AudioInputImpl::RecreateAudioInputStream(bool use_dsp) {
   StopRecording();
 
   open_audio_stream_ = std::make_unique<AudioStream>(
-      audio_stream_factory_delegate_, GetDeviceId(use_dsp),
+      platform_delegate_, GetDeviceId(use_dsp),
       ShouldEnableDeadStreamDetection(use_dsp), GetFormat(),
       /*capture_callback=*/this);
 

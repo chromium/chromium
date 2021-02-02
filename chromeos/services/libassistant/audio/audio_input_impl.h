@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/libassistant/public/mojom/audio_input_controller.mojom.h"
+#include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom.h"
 #include "libassistant/shared/public/platform_audio_input.h"
 #include "media/base/audio_capturer_source.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -54,7 +55,7 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) AudioInputImpl
 
   void RecreateStateManager();
 
-  void Bind(mojo::PendingRemote<mojom::AudioStreamFactoryDelegate> delegate);
+  void Initialize(mojom::PlatformDelegate* platform_delegate);
 
   // media::AudioCapturerSource::CaptureCallback overrides:
   void Capture(const media::AudioBus* audio_source,
@@ -134,8 +135,8 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) AudioInputImpl
 
   std::unique_ptr<HotwordStateManager> state_manager_;
 
-  mojo::Remote<mojom::AudioStreamFactoryDelegate>
-      audio_stream_factory_delegate_;
+  // Owned by |LibassistantService|.
+  mojom::PlatformDelegate* platform_delegate_ = nullptr;
 
   // Preferred audio input device which will be used for capture.
   base::Optional<std::string> preferred_device_id_;

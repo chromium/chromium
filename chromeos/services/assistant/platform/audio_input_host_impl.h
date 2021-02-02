@@ -22,9 +22,6 @@
 namespace chromeos {
 namespace assistant {
 
-class AudioStreamFactoryDelegateImpl;
-struct AudioInputBindings;
-
 // Class that provides the bridge between the ChromeOS Browser thread and the
 // Libassistant audio input mojom service.
 class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioInputHostImpl
@@ -32,10 +29,12 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioInputHostImpl
       private chromeos::PowerManagerClient::Observer,
       private AudioDevices::Observer {
  public:
-  AudioInputHostImpl(AudioInputBindings bindings,
-                     CrasAudioHandler* cras_audio_handler,
-                     chromeos::PowerManagerClient* power_manager_client,
-                     const std::string& locale);
+  AudioInputHostImpl(
+      mojo::PendingRemote<chromeos::libassistant::mojom::AudioInputController>
+          pending_remote,
+      CrasAudioHandler* cras_audio_handler,
+      chromeos::PowerManagerClient* power_manager_client,
+      const std::string& locale);
   AudioInputHostImpl(const AudioInputHost&) = delete;
   AudioInputHostImpl& operator=(const AudioInputHostImpl&) = delete;
   ~AudioInputHostImpl() override;
@@ -69,9 +68,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioInputHostImpl
   // accordingly.
   AudioDevices audio_devices_;
   AudioDevices::ScopedObservation audio_devices_observation_{this};
-
-  std::unique_ptr<AudioStreamFactoryDelegateImpl>
-      audio_stream_factory_delegate_;
 
   base::WeakPtrFactory<AudioInputHostImpl> weak_factory_{this};
 };

@@ -65,14 +65,14 @@ LibassistantService::~LibassistantService() {
 
 void LibassistantService::Bind(
     mojo::PendingReceiver<mojom::AudioInputController> audio_input_controller,
-    mojo::PendingRemote<mojom::AudioStreamFactoryDelegate>
-        audio_stream_factory_delegate,
     mojo::PendingReceiver<mojom::ConversationController>
         conversation_controller,
     mojo::PendingReceiver<mojom::DisplayController> display_controller,
-    mojo::PendingReceiver<mojom::ServiceController> service_controller) {
+    mojo::PendingReceiver<mojom::ServiceController> service_controller,
+    mojo::PendingRemote<mojom::PlatformDelegate> platform_delegate) {
+  platform_delegate_.Bind(std::move(platform_delegate));
   audio_input_controller_->Bind(std::move(audio_input_controller),
-                                std::move(audio_stream_factory_delegate));
+                                platform_delegate_.get());
   conversation_controller_->Bind(std::move(conversation_controller));
   display_controller_->Bind(std::move(display_controller));
   service_controller_->Bind(std::move(service_controller));

@@ -11,7 +11,6 @@
 #include "base/test/task_environment.h"
 #include "chromeos/audio/cras_audio_handler.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
-#include "chromeos/services/assistant/proxy/audio_input_bindings.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/assistant/test_support/scoped_assistant_client.h"
 #include "chromeos/services/libassistant/public/mojom/audio_input_controller.mojom.h"
@@ -27,8 +26,6 @@ using LidState = chromeos::PowerManagerClient::LidState;
 using MojomLidState = chromeos::libassistant::mojom::LidState;
 using MojomAudioInputController =
     chromeos::libassistant::mojom::AudioInputController;
-using MojomAudioStreamFactoryDelegate =
-    chromeos::libassistant::mojom::AudioStreamFactoryDelegate;
 using ::testing::_;
 using ::testing::NiceMock;
 
@@ -110,25 +107,16 @@ class AssistantAudioInputHostTest : public testing::Test {
     return audio_input_controller_;
   }
 
-  mojo::Remote<MojomAudioStreamFactoryDelegate>&
-  audio_stream_factory_delegate() {
-    return audio_stream_factory_delegate_;
-  }
-
   AudioInputHostImpl& audio_input_host() {
     CHECK(audio_input_host_);
     return *audio_input_host_;
   }
 
   void CreateNewAudioInputHost() {
-    audio_stream_factory_delegate_.reset();
-    auto bindings = AudioInputBindings(
-        audio_input_controller_.BindNewPipeAndPassRemote(),
-        audio_stream_factory_delegate_.BindNewPipeAndPassReceiver());
-
     audio_input_host_ = std::make_unique<AudioInputHostImpl>(
-        std::move(bindings), cras_audio_handler_.Get(),
-        FakePowerManagerClient::Get(), "default-locale");
+        audio_input_controller_.BindNewPipeAndPassRemote(),
+        cras_audio_handler_.Get(), FakePowerManagerClient::Get(),
+        "default-locale");
 
     FlushPendingMojomCalls();
   }
@@ -181,7 +169,6 @@ class AssistantAudioInputHostTest : public testing::Test {
   ScopedFakeAssistantClient assistant_client_;
   ScopedCrasAudioHandler cras_audio_handler_;
   NiceMock<AudioInputControllerMock> audio_input_controller_;
-  mojo::Remote<MojomAudioStreamFactoryDelegate> audio_stream_factory_delegate_;
   std::unique_ptr<AudioInputHostImpl> audio_input_host_;
 };
 
@@ -277,36 +264,6 @@ TEST_F(AssistantAudioInputHostTest,
        ShouldSendOnConversationTurnFinishedToMojom) {
   EXPECT_CALL(mojom_audio_input_controller(), OnConversationTurnFinished);
   OnConversationTurnFinished();
-}
-
-TEST_F(AssistantAudioInputHostTest,
-       ShouldSendAudioStreamFactoryFromAssistantClientToCallbackWhenRequested) {
-  auto& delegate = audio_stream_factory_delegate();
-  ASSERT_TRUE(delegate.is_bound()) << "Initialize() was not called";
-
-  base::MockCallback<
-      MojomAudioStreamFactoryDelegate::GetAudioStreamFactoryCallback>
-      callback;
-
-  EXPECT_CALL(callback, Run(_));
-
-  delegate->GetAudioStreamFactory(callback.Get());
-  FlushPendingMojomCalls();
-}
-
-TEST_F(
-    AssistantAudioInputHostTest,
-    ShouldNotCrashWhenRequestingAudioStreamFactoryAfterAudioInputHostIsGone) {
-  auto& delegate = audio_stream_factory_delegate();
-  ASSERT_TRUE(delegate.is_bound()) << "Initialize() was not called";
-
-  DestroyAudioInputHost();
-
-  base::MockCallback<
-      MojomAudioStreamFactoryDelegate::GetAudioStreamFactoryCallback>
-      callback;
-  delegate->GetAudioStreamFactory(callback.Get());
-  FlushPendingMojomCalls();
 }
 
 }  // namespace assistant

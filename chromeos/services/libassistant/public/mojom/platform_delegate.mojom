@@ -1,0 +1,33 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromeos.libassistant.mojom;
+
+import "services/audio/public/mojom/stream_factory.mojom";
+
+// Delegate that exposes methods to bind platform related functionality.
+interface PlatformDelegate {
+
+  // Requests an Audio Service StreamFactory from the browser.
+  BindAudioStreamFactory(pending_receiver<audio.mojom.StreamFactory> receiver);
+
+  // Requests an audio decoder interface from the Assistant Audio Decoder
+  // service, via the browser.
+  // RequestAudioDecoderFactory(pending_receiver<chromeos.assistant.mojom.AssistantAudioDecoderFactory> receiver);
+
+  // Requests a connection to the CrosNetworkConfig service interface via the
+  // browser.
+  // BindNetworkConfig(pending_receiver<chromeos.network_config.mojom.CrosNetworkConfig> receiver);
+
+  // // Requests an audio decoder interface from the Assistant Audio Decoder
+  // // service, via the browser.
+  // BindAudioDecoderFactory(pending_receiver<chromeos.assistant.mojom.AssistantAudioDecoderFactory> receiver);
+
+  // // Requests a connection to the Device service's WakeLockProvider interface
+  // // from the browser.
+  // BindWakeLockProvider(pending_receiver<device.mojom.WakeLockProvider> receiver);
+
+  // // Requests Ash's AssistantVolumeControl interface from the browser.
+  // RequestAssistantVolumeControl(pending_receiver<ash.mojom.AssistantVolumeControl> receiver);
+};

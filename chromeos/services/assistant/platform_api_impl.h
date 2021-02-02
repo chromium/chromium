@@ -16,6 +16,7 @@
 #include "chromeos/services/assistant/platform/system_provider_impl.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/assistant/public/cpp/migration/cros_platform_api.h"
+#include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom-forward.h"
 #include "libassistant/shared/public/platform_auth.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/public/mojom/battery_monitor.mojom.h"
@@ -32,6 +33,7 @@ class PlatformApiImpl : public CrosPlatformApi {
  public:
   PlatformApiImpl(
       AssistantMediaSession* media_session,
+      chromeos::libassistant::mojom::PlatformDelegate* platform_delegate,
       PowerManagerClient* power_manager_client,
       mojo::PendingRemote<device::mojom::BatteryMonitor> battery_monitor,
       scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner,

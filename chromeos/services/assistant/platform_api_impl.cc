@@ -34,11 +34,13 @@ namespace assistant {
 
 PlatformApiImpl::PlatformApiImpl(
     AssistantMediaSession* media_session,
+    chromeos::libassistant::mojom::PlatformDelegate* platform_delegate,
     PowerManagerClient* power_manager_client,
     mojo::PendingRemote<device::mojom::BatteryMonitor> battery_monitor,
     scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> background_task_runner)
     : audio_output_provider_(media_session,
+                             platform_delegate,
                              background_task_runner,
                              media::AudioDeviceDescription::kDefaultDeviceId) {
   // Only enable native power features if they are supported by the UI.

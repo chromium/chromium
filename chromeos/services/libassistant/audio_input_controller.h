@@ -24,7 +24,7 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) AudioInputController
   ~AudioInputController() override;
 
   void Bind(mojo::PendingReceiver<mojom::AudioInputController> receiver,
-            mojo::PendingRemote<mojom::AudioStreamFactoryDelegate> delegate);
+            mojom::PlatformDelegate* platform_delegate);
 
   // mojom::AudioInputController implementation:
   void SetMicOpen(bool mic_open) override;

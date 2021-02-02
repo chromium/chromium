@@ -8,8 +8,8 @@
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
 #include "chromeos/services/libassistant/public/mojom/audio_input_controller.mojom-forward.h"
+#include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom-forward.h"
 #include "libassistant/shared/public/platform_audio_buffer.h"
 #include "media/base/audio_capturer_source.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -26,7 +26,7 @@ namespace libassistant {
 class AudioInputStream {
  public:
   AudioInputStream(
-      mojom::AudioStreamFactoryDelegate* delegate,
+      mojom::PlatformDelegate* delegate,
       const std::string& device_id,
       bool detect_dead_stream,
       assistant_client::BufferFormat buffer_format,
@@ -41,10 +41,6 @@ class AudioInputStream {
 
  private:
   void Start();
-
-  void OnAudioSteamFactoryReady(
-      mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory);
-
   void Stop();
 
   media::AudioParameters GetAudioParameters() const;
@@ -53,10 +49,9 @@ class AudioInputStream {
   std::string device_id_;
   bool detect_dead_stream_;
   assistant_client::BufferFormat buffer_format_;
-  mojom::AudioStreamFactoryDelegate* const delegate_;
+  mojom::PlatformDelegate* const delegate_;
   media::AudioCapturerSource::CaptureCallback* const capture_callback_;
   scoped_refptr<media::AudioCapturerSource> source_;
-  base::WeakPtrFactory<AudioInputStream> weak_ptr_factory_{this};
 };
 
 }  // namespace libassistant

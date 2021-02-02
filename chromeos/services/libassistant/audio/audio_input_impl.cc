@@ -196,9 +196,9 @@ void AudioInputImpl::RecreateStateManager() {
   }
 }
 
-void AudioInputImpl::Bind(
-    mojo::PendingRemote<mojom::AudioStreamFactoryDelegate> delegate) {
-  audio_stream_factory_delegate_.Bind(std::move(delegate));
+void AudioInputImpl::Initialize(mojom::PlatformDelegate* platform_delegate) {
+  platform_delegate_ = platform_delegate;
+  DCHECK(platform_delegate_);
   UpdateRecordingState();
 }
 
@@ -367,7 +367,7 @@ void AudioInputImpl::RecreateAudioInputStream(bool use_dsp) {
   StopRecording();
 
   open_audio_stream_ = std::make_unique<AudioInputStream>(
-      audio_stream_factory_delegate_.get(), GetDeviceId(use_dsp),
+      platform_delegate_, GetDeviceId(use_dsp),
       ShouldEnableDeadStreamDetection(use_dsp), GetFormat(),
       /*capture_callback=*/this);
 
@@ -430,7 +430,7 @@ void AudioInputImpl::UpdateRecordingState() {
   bool is_lid_closed = (lid_state_ == mojom::LidState::kClosed);
   bool should_enable_hotword =
       hotword_enabled_ && preferred_device_id_.has_value();
-  bool has_delegate = audio_stream_factory_delegate_.is_bound();
+  bool has_delegate = (platform_delegate_ != nullptr);
   bool should_start = !is_lid_closed && (should_enable_hotword || mic_open_) &&
                       has_observers && has_delegate;
 

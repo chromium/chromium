@@ -9,7 +9,6 @@
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
 #include "chromeos/services/assistant//public/cpp/migration/fake_platform_api.h"
-#include "chromeos/services/assistant/proxy/audio_input_bindings.h"
 #include "chromeos/services/assistant/public/cpp/migration/audio_input_host.h"
 
 namespace chromeos {
@@ -45,13 +44,15 @@ FakeAssistantManagerServiceDelegate::~FakeAssistantManagerServiceDelegate() =
 
 std::unique_ptr<AudioInputHost>
 FakeAssistantManagerServiceDelegate::CreateAudioInputHost(
-    AudioInputBindings bindings) {
+    mojo::PendingRemote<chromeos::libassistant::mojom::AudioInputController>
+        pending_remote) {
   return std::make_unique<FakeAudioInputHost>();
 }
 
 std::unique_ptr<CrosPlatformApi>
 FakeAssistantManagerServiceDelegate::CreatePlatformApi(
     AssistantMediaSession* media_session,
+    chromeos::libassistant::mojom::PlatformDelegate* platform_delegate,
     scoped_refptr<base::SingleThreadTaskRunner> background_thread_task_runner) {
   return std::make_unique<FakePlatformApi>();
 }

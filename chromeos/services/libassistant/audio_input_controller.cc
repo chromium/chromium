@@ -15,9 +15,9 @@ AudioInputController::~AudioInputController() = default;
 
 void AudioInputController::Bind(
     mojo::PendingReceiver<mojom::AudioInputController> receiver,
-    mojo::PendingRemote<mojom::AudioStreamFactoryDelegate> delegate) {
+    mojom::PlatformDelegate* platform_delegate) {
   receiver_.Bind(std::move(receiver));
-  audio_input().Bind(std::move(delegate));
+  audio_input().Initialize(platform_delegate);
 }
 
 void AudioInputController::SetMicOpen(bool mic_open) {

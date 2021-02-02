@@ -7,7 +7,6 @@
 #include "base/check.h"
 #include "base/optional.h"
 #include "chromeos/services/assistant/platform/audio_devices.h"
-#include "chromeos/services/assistant/proxy/audio_input_bindings.h"
 #include "chromeos/services/assistant/public/cpp/assistant_client.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 
@@ -32,46 +31,16 @@ MojomLidState ConvertLidState(chromeos::PowerManagerClient::LidState state) {
 
 }  // namespace
 
-// Delegate that will fetch an audio stream factory from the |AssistantClient|.
-class AudioStreamFactoryDelegateImpl
-    : public chromeos::libassistant::mojom::AudioStreamFactoryDelegate {
- public:
-  explicit AudioStreamFactoryDelegateImpl(
-      mojo::PendingReceiver<
-          chromeos::libassistant::mojom::AudioStreamFactoryDelegate>
-          pending_receiver)
-      : receiver_(this, std::move(pending_receiver)) {}
-
-  AudioStreamFactoryDelegateImpl(const AudioStreamFactoryDelegateImpl&) =
-      delete;
-  AudioStreamFactoryDelegateImpl& operator=(
-      const AudioStreamFactoryDelegateImpl&) = delete;
-  ~AudioStreamFactoryDelegateImpl() override = default;
-
-  void GetAudioStreamFactory(GetAudioStreamFactoryCallback callback) override {
-    mojo::PendingRemote<audio::mojom::StreamFactory> result;
-    AssistantClient::Get()->RequestAudioStreamFactory(
-        result.InitWithNewPipeAndPassReceiver());
-    std::move(callback).Run(std::move(result));
-  }
-
- private:
-  mojo::Receiver<chromeos::libassistant::mojom::AudioStreamFactoryDelegate>
-      receiver_;
-};
-
 chromeos::assistant::AudioInputHostImpl::AudioInputHostImpl(
-    AudioInputBindings bindings,
+    mojo::PendingRemote<chromeos::libassistant::mojom::AudioInputController>
+        pending_remote,
     CrasAudioHandler* cras_audio_handler,
     chromeos::PowerManagerClient* power_manager_client,
     const std::string& locale)
-    : remote_(std::move(bindings.pending_audio_input_controller_remote)),
+    : remote_(std::move(pending_remote)),
       power_manager_client_(power_manager_client),
       power_manager_client_observer_(this),
-      audio_devices_(cras_audio_handler, locale),
-      audio_stream_factory_delegate_(
-          std::make_unique<AudioStreamFactoryDelegateImpl>(std::move(
-              bindings.pending_audio_stream_factory_delegate_receiver))) {
+      audio_devices_(cras_audio_handler, locale) {
   DCHECK(power_manager_client_);
 
   audio_devices_observation_.Observe(&audio_devices_);
