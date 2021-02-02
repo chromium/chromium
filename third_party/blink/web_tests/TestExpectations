@@ -760,9 +760,6 @@ crbug.com/1066577 external/wpt/css/css-lists/li-value-reversed-005.html [ Failur
 crbug.com/1066577 external/wpt/css/css-lists/li-value-reversed-004.html [ Failure ]
 
 # [css-counter-styles-3]
-# Need to implement as custom counter styles:
-# 'ethiopic-halehame', 'ethiopic-halehame-ti-er', 'ethiopic-halehame-ti-et',
-# 'hangul-consonant', 'hangul', 'urdu'
 # Implemented as custom counter styles, but not exactly match existing behavior:
 # - Complex CJK styles should fallback to 'cjk-decimal', not 'decimal'
 # - 'armenian', 'upper-armenian', 'hebrew', and CJK styles should support
@@ -773,9 +770,7 @@ crbug.com/687225 fast/lists/css3-counter-styles-054.html [ Failure ]
 crbug.com/687225 fast/lists/css3-counter-styles-059.html [ Failure ]
 crbug.com/687225 fast/lists/css3-counter-styles-064.html [ Failure ]
 crbug.com/687225 fast/lists/decimal-leading-zero.html [ Failure ]
-crbug.com/687225 fast/lists/w3-css3-list-styles-alphabetic.html [ Failure ]
 crbug.com/687225 fast/lists/w3-css3-list-styles-fallback-style.html [ Failure ]
-crbug.com/687225 fast/lists/w3-css3-list-styles-numeric.html [ Failure ]
 crbug.com/687225 fast/lists/w3-list-styles.html [ Failure ]
 
 # [css-overflow]

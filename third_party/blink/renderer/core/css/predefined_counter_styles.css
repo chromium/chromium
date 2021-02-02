@@ -391,3 +391,43 @@
  * - https://drafts.csswg.org/css-counter-styles-3/#ethiopic-numeric-counter-style
  * - https://w3c.github.io/predefined-counter-styles/
  */
+
+/* Non-standard counter styles that we've been supporting */
+
+@counter-style ethiopic-halehame {
+  system: alphabetic;
+  symbols: '\1200' '\1208' '\1210' '\1218' '\1220' '\1228' '\1230' '\1240' '\1260' '\1270' '\1280' '\1290' '\12A0' '\12A8' '\12C8' '\12D0' '\12D8' '\12E8' '\12F0' '\1308' '\1320' '\1330' '\1338' '\1340' '\1348' '\1350';
+  suffix: '\1366 ';
+}
+
+@counter-style ethiopic-halehame-am {
+  system: alphabetic;
+  symbols: '\1200' '\1208' '\1210' '\1218' '\1220' '\1228' '\1230' '\1238' '\1240' '\1260' '\1270' '\1278' '\1280' '\1290' '\1298' '\12A0' '\12A8' '\12B8' '\12C8' '\12D0' '\12D8' '\12E0' '\12E8' '\12F0' '\1300' '\1308' '\1320' '\1328' '\1330' '\1338' '\1340' '\1348' '\1350';
+  suffix: '\1366 ';
+}
+
+@counter-style ethiopic-halehame-ti-er {
+  system: alphabetic;
+  symbols: '\1200' '\1208' '\1210' '\1218' '\1228' '\1230' '\1238' '\1240' '\1250' '\1260' '\1270' '\1278' '\1290' '\1298' '\12A0' '\12A8' '\12B8' '\12C8' '\12D0' '\12D8' '\12E0' '\12E8' '\12F0' '\1300' '\1308' '\1320' '\1328' '\1330' '\1338' '\1348' '\1350';
+  suffix: '\1366 ';
+}
+
+@counter-style ethiopic-halehame-ti-et {
+  system: alphabetic;
+  symbols: '\1200' '\1208' '\1210' '\1218' '\1220' '\1228' '\1230' '\1238' '\1240' '\1250' '\1260' '\1270' '\1278' '\1280' '\1290' '\1298' '\12A0' '\12A8' '\12B8' '\12C8' '\12D0' '\12D8' '\12E0' '\12E8' '\12F0' '\1300' '\1308' '\1320' '\1328' '\1330' '\1338' '\1340' '\1348' '\1350';
+  suffix: '\1366 ';
+}
+
+@counter-style hangul {
+  system: alphabetic;
+  symbols: '\AC00' '\B098' '\B2E4' '\B77C' '\B9C8' '\BC14' '\C0AC' '\C544' '\C790' '\CC28' '\CE74' '\D0C0' '\D30C' '\D558';
+}
+
+@counter-style hangul-consonant {
+  system: alphabetic;
+  symbols: '\3131' '\3134' '\3137' '\3139' '\3141' '\3142' '\3145' '\3147' '\3148' '\314A' '\314B' '\314C' '\314D' '\314E';
+}
+
+@counter-style urdu {
+  system: extends persian;
+}
