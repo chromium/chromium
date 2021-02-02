@@ -495,6 +495,13 @@ def _FixManifest(options, temp_dir, extra_manifest=None):
     uses_split.set('{%s}name' % manifest_utils.ANDROID_NAMESPACE,
                    options.uses_split)
 
+  # Make sure the min-sdk condition is not less than the min-sdk of the bundle.
+  for min_sdk_node in manifest_node.iter('{%s}min-sdk' %
+                                         manifest_utils.DIST_NAMESPACE):
+    dist_value = '{%s}value' % manifest_utils.DIST_NAMESPACE
+    if int(min_sdk_node.get(dist_value)) < int(options.min_sdk_version):
+      min_sdk_node.set(dist_value, options.min_sdk_version)
+
   manifest_utils.SaveManifest(doc, debug_manifest_path)
   return debug_manifest_path, orig_package
 

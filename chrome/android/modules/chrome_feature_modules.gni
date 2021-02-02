@@ -60,6 +60,9 @@ monochrome_module_descs = chrome_modern_module_descs
 if (false) {  # AR DFM is currently disabled
   monochrome_module_descs += [ ar_module_desc ]
 }
+if (!disable_autofill_assistant_dfm) {
+  monochrome_module_descs += [ autofill_assistant_module_desc ]
+}
 if (!disable_tab_ui_dfm) {
   monochrome_module_descs += [ tab_ui_module_desc ]
 }
@@ -72,11 +75,4 @@ trichrome_module_descs = monochrome_module_descs
 # part of Monochrome.
 if (enable_chrome_module && webview_includes_weblayer) {
   monochrome_module_descs += [ weblayer_module_desc ]
-}
-
-# Add a slightly different autofill_assistant module desc for trichrome compared
-# to monochrome.
-if (!disable_autofill_assistant_dfm) {
-  monochrome_module_descs += [ autofill_assistant_module_desc ]
-  trichrome_module_descs += [ autofill_assistant_module_trichrome_desc ]
 }
