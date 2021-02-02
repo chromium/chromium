@@ -215,6 +215,9 @@ public final class EventConstants {
     /** PWA install events. */
     public static final String PWA_INSTALL_MENU_SELECTED = "pwa_install_menu_clicked";
 
+    /** Screenshot events */
+    public static final String SHARE_SCREENSHOT_SELECTED = "share_screenshot_clicked";
+
     /**
      * Do not instantiate.
      */

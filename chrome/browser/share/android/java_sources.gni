@@ -65,4 +65,7 @@ share_java_sources = [
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetPropertyModelBuilder.java",
 ]
 
-share_java_deps = [ "//components/paint_preview/common/proto:proto_java" ]
+share_java_deps = [
+  "//components/feature_engagement/public:public_java",
+  "//components/paint_preview/common/proto:proto_java",
+]
