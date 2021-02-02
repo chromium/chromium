@@ -21,6 +21,7 @@ from xml.etree import ElementTree
 
 from util import build_utils
 from util import manifest_utils
+from util import server_utils
 
 _LINT_MD_URL = 'https://chromium.googlesource.com/chromium/src/+/master/build/android/docs/lint.md'  # pylint: disable=line-too-long
 
@@ -356,6 +357,7 @@ def _RunLint(lint_binary_path,
 def _ParseArgs(argv):
   parser = argparse.ArgumentParser()
   build_utils.AddDepfileOption(parser)
+  parser.add_argument('--target-name', help='Fully qualified GN target name.')
   parser.add_argument('--lint-binary-path',
                       required=True,
                       help='Path to lint executable.')
@@ -384,6 +386,9 @@ def _ParseArgs(argv):
                       help='If set, some checks like UnusedResources will be '
                       'disabled since they are not helpful for test '
                       'targets.')
+  parser.add_argument('--create-cache',
+                      action='store_true',
+                      help='Whether this invocation is just warming the cache.')
   parser.add_argument('--warnings-as-errors',
                       action='store_true',
                       help='Treat all warnings as errors.')
@@ -427,6 +432,14 @@ def _ParseArgs(argv):
 def main():
   build_utils.InitLogging('LINT_DEBUG')
   args = _ParseArgs(sys.argv[1:])
+
+  # TODO(wnwen): Consider removing lint cache now that there are only two lint
+  #              invocations.
+  # Avoid parallelizing cache creation since lint runs without the cache defeat
+  # the purpose of creating the cache in the first place.
+  if (not args.create_cache
+      and server_utils.MaybeRunCommand(args.target_name, sys.argv)):
+    return
 
   sources = []
   for java_sources_file in args.java_sources:

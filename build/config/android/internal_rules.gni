@@ -1029,7 +1029,10 @@ if (enable_java_templates) {
         _backported_methods,
       ]
 
+      _target_label = get_label_info(target_name, "dir")
+
       args = [
+        "--target-name=${_target_label}",
         "--depfile",
         rebase_path(depfile, root_build_dir),
         "--lint-binary-path",
@@ -1088,6 +1091,7 @@ if (enable_java_templates) {
         # Putting the stamp file in the cache dir allows us to depend on ninja
         # to create the cache dir for us.
         _stamp_path = "$_cache_dir/build.lint.stamp"
+        args += [ "--create-cache" ]
       } else {
         _stamp_path = "$target_out_dir/$target_name/build.lint.stamp"
         deps += [
@@ -3268,7 +3272,9 @@ if (enable_java_templates) {
         _dep_name = get_label_info(_errorprone_dep, "name")
         _rebased_errorprone_buildconfig =
             rebase_path("$_dep_gen_dir/$_dep_name.build_config", root_build_dir)
+        _target_label = get_label_info(target_name, "dir")
         args += [
+          "--target-name=${_target_label}",
           "--processorpath=@FileArg($_rebased_errorprone_buildconfig:deps_info:host_classpath)",
           "--enable-errorprone",
         ]

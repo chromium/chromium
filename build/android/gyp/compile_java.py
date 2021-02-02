@@ -17,6 +17,7 @@ import zipfile
 from util import build_utils
 from util import md5_check
 from util import jar_info_utils
+from util import server_utils
 
 sys.path.insert(
     0,
@@ -523,6 +524,7 @@ def _ParseOptions(argv):
   parser = optparse.OptionParser()
   build_utils.AddDepfileOption(parser)
 
+  parser.add_option('--target-name', help='Fully qualified GN target name.')
   parser.add_option(
       '--java-srcjars',
       action='append',
@@ -629,11 +631,15 @@ def _ParseOptions(argv):
 
 def main(argv):
   build_utils.InitLogging('JAVAC_DEBUG')
-  colorama.init()
-
   argv = build_utils.ExpandFileArgs(argv)
   options, java_files = _ParseOptions(argv)
 
+  # Only use the build server for errorprone runs.
+  if (options.enable_errorprone
+      and server_utils.MaybeRunCommand(options.target_name, sys.argv)):
+    return
+
+  colorama.init()
   javac_cmd = []
   if options.gomacc_path:
     javac_cmd.append(options.gomacc_path)
