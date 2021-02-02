@@ -90,6 +90,7 @@ GL_EXPORT extern const int kGLSwitchesCopiedFromGpuProcessHostNumSwitches;
 }  // namespace switches
 
 namespace features {
+
 GL_EXPORT extern const base::Feature kDCompTripleBufferRootSwapChain;
 GL_EXPORT extern const base::Feature kDCompTripleBufferVideoSwapChain;
 GL_EXPORT extern const base::Feature kDirectCompositionForceFullDamage;
@@ -100,6 +101,9 @@ GL_EXPORT extern const base::Feature kDefaultANGLEOpenGL;
 GL_EXPORT extern const base::Feature kDefaultANGLEMetal;
 GL_EXPORT extern const base::Feature kDefaultANGLEVulkan;
 GL_EXPORT extern const base::Feature kTrackCurrentShaders;
+
+GL_EXPORT bool IsDefaultANGLEVulkan();
+
 }  // namespace features
 
 #endif  // UI_GL_GL_SWITCHES_H_

@@ -9,10 +9,12 @@
 
 #include <map>
 #include <memory>
+#include <sstream>
 #include <vector>
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/debug/crash_logging.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/macros.h"
@@ -826,7 +828,7 @@ void GetEGLInitDisplays(bool supports_angle_d3d,
   }
 
   if (supports_angle_vulkan && use_angle_default &&
-      base::FeatureList::IsEnabled(features::kDefaultANGLEVulkan)) {
+      features::IsDefaultANGLEVulkan()) {
     AddInitDisplay(init_displays, ANGLE_VULKAN);
   }
 
@@ -1343,12 +1345,25 @@ EGLDisplay GLSurfaceEGL::InitializeDisplay(EGLDisplayPlatform native_display) {
       LOG(ERROR) << "eglInitialize " << DisplayTypeString(display_type)
                  << " failed with error " << GetLastEGLErrorString()
                  << (is_last ? "" : ", trying next display type");
-    } else {
-      UMA_HISTOGRAM_ENUMERATION("GPU.EGLDisplayType", display_type,
-                                DISPLAY_TYPE_MAX);
-      g_egl_display = display;
-      break;
+      continue;
     }
+
+    std::ostringstream display_type_string;
+    auto gl_implementation = GetGLImplementation();
+    display_type_string << GetGLImplementationName(gl_implementation);
+    if (gl_implementation == kGLImplementationEGLANGLE) {
+      display_type_string << ":" << DisplayTypeString(display_type);
+    }
+
+    static auto* egl_display_type_key = base::debug::AllocateCrashKeyString(
+        "egl-display-type", base::debug::CrashKeySize::Size32);
+    base::debug::SetCrashKeyString(egl_display_type_key,
+                                   display_type_string.str());
+
+    UMA_HISTOGRAM_ENUMERATION("GPU.EGLDisplayType", display_type,
+                              DISPLAY_TYPE_MAX);
+    g_egl_display = display;
+    break;
   }
 
   return g_egl_display;

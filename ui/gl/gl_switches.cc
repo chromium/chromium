@@ -5,6 +5,11 @@
 #include "ui/gl/gl_switches.h"
 
 #include "base/stl_util.h"
+#include "build/build_config.h"
+
+#if defined(OS_ANDROID)
+#include "base/android/build_info.h"
+#endif
 
 namespace gl {
 
@@ -233,5 +238,16 @@ const base::Feature kDefaultANGLEVulkan{"DefaultANGLEVulkan",
 // be reliably retrieved with ANGLE backend.
 const base::Feature kTrackCurrentShaders{"TrackCurrentShaders",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsDefaultANGLEVulkan() {
+#if defined(OS_ANDROID)
+  // No support for devices before Q -- exit before checking feature flags
+  // so that devices are not counted in finch trials.
+  if (base::android::BuildInfo::GetInstance()->sdk_int() <
+      base::android::SDK_VERSION_Q)
+    return false;
+#endif  // defined(OS_ANDROID)
+  return base::FeatureList::IsEnabled(kDefaultANGLEVulkan);
+}
 
 }  // namespace features
