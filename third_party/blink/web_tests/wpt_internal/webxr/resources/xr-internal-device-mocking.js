@@ -47,7 +47,7 @@ ChromeXRTest.prototype.getService = function() {
   return this.mockVRService_;
 };
 
-MockVRService.prototype.setFramesThrottled = function(throttled) {
+MockVRService.prototype.setFramesThrottledImpl = function(throttled) {
   return this.frames_throttled_ = throttled;
 };
 

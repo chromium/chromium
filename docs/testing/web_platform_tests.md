@@ -74,13 +74,13 @@ allowed in WPT for this purpose. Please reach out to
 ecosystem-infra@chromium.org before following the process below for adding a new
 test-only API:
 
- 1. Create a full list of `*.mojom.js` files that you need, including all
-    dependencies. `mojo_bindings.js` loads dependencies recursively by default,
+ 1. Create a full list of `*.mojom.m.js` files that you need, including all
+    dependencies. Generated modules load dependencies recursively by default,
     so you can check the network panel of DevTools to see the full list of
     dependencies it loads.
  2. Check [FILES.cfg](../../chrome/tools/build/linux/FILES.cfg) and add any
-    missing `*.mojom.js` files to the `mojojs.zip` archive. Globs are supported
-    in `filename`. Do not copy Mojom bindings into WPT.
+    missing `*.mojom.m.js` files to the `mojojs.zip` archive. Globs are
+    supported in `filename`. Do not copy Mojom bindings into WPT.
  3. Meanwhile in Chromium, you can create a helper for your WPT tests to do
     browser-specific setup using
     [test-only-api.js](../../third_party/blink/web_tests/external/wpt/resources/test-only-api.js).
