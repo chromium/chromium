@@ -85,7 +85,8 @@ class RemoteAppsManager : public KeyedService,
   // added to the folder with the given ID. The icon of the app is an image
   // retrieved from |icon_url| and is retrieved asynchronously. If the icon has
   // not been downloaded, or there is an error in downloading the icon, a
-  // placeholder icon will be used.
+  // placeholder icon will be used. If |add_to_front| is true and the app has
+  // no parent folder, the app will be added to the front of the app item list.
   // The callback will be run with the ID of the added app, or an error if
   // there is one.
   // Adding to a non-existent folder will result in an error.
@@ -93,20 +94,26 @@ class RemoteAppsManager : public KeyedService,
   void AddApp(const std::string& name,
               const std::string& folder_id,
               const GURL& icon_url,
+              bool add_to_front,
               AddAppCallback callback);
 
   // Deletes the app with id |id|.
   // Deleting a non-existent app will result in an error.
   RemoteAppsError DeleteApp(const std::string& id);
 
-  // Adds a folder with |folder_name|. Note that empty folders are not
-  // shown in the launcher. Returns the ID for the added folder.
-  std::string AddFolder(const std::string& folder_name);
+  // Adds a folder with |folder_name|. Note that empty folders are not shown in
+  // the launcher. Returns the ID for the added folder. If |add_to_front| is
+  // true, the folder will be added to the front of the app item list.
+  std::string AddFolder(const std::string& folder_name, bool add_to_front);
 
   // Deletes the folder with id |folder_id|. All items in the folder are moved
   // to the top-level in the launcher.
   // Deleting a non-existent folder will result in an error.
   RemoteAppsError DeleteFolder(const std::string& folder_id);
+
+  // Returns true if the app or folder with |id| should be added to the front
+  // of the app item list.
+  bool ShouldAddToFront(const std::string& id) const;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

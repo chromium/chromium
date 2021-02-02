@@ -27,11 +27,13 @@ class RemoteAppsAdapter {
    * Adds a folder to the launcher. Note that empty folders are not shown in
    * the launcher.
    * @param {string} name name of the added folder
+   * @param {boolean} [add_to_front=false] true if the folder should be added
+   *     to the front of the app list. Defaults to false.
    * @return {!Promise<!{folderId: string, error: string}>} ID for the added
    *     folder
    */
-  addFolder(name) {
-    return this.remoteApps_.addFolder(name);
+  addFolder(name, add_to_front = false) {
+    return this.remoteApps_.addFolder(name, add_to_front);
   }
 
   /**
@@ -40,11 +42,15 @@ class RemoteAppsAdapter {
    * @param {string} folderId Id of the parent folder. An empty string
    *     indicates the app does not have a parent folder.
    * @param {string} iconUrl URL to an image representing the app's icon
+   * @param {boolean} [add_to_front=false] true if the app should be added to
+   *     the front of the app list. Defaults to false. Has no effect if the app
+   *     has a parent folder.
    * @return {!Promise<!{appId: string, error: string}>} ID for the
    *     added app.
    */
-  addApp(name, folderId, iconUrl) {
-    return this.remoteApps_.addApp(name, folderId, {url: iconUrl});
+  addApp(name, folderId, iconUrl, add_to_front = false) {
+    return this.remoteApps_.addApp(
+        name, folderId, {url: iconUrl}, add_to_front);
   }
 
   /**
