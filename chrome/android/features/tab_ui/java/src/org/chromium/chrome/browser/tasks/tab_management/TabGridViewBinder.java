@@ -241,6 +241,14 @@ class TabGridViewBinder {
                 // TODO(crbug.com/1157578): Update the model in mediator.
                 model.set(TabProperties.PRICE_DROP, null);
             }
+        } else if (TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP == propertyKey) {
+            if (model.get(TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP)) {
+                PriceCardView priceCardView =
+                        (PriceCardView) view.fastFindViewById(R.id.price_info_box_outer);
+                assert priceCardView.getVisibility() == View.VISIBLE;
+                PriceWelcomeMessageCardView.showPriceDropTooltip(
+                        priceCardView.findViewById(R.id.current_price));
+            }
         } else if (TabProperties.PAGE_INFO_LISTENER == propertyKey) {
             TabListMediator.TabActionListener listener =
                     model.get(TabProperties.PAGE_INFO_LISTENER);

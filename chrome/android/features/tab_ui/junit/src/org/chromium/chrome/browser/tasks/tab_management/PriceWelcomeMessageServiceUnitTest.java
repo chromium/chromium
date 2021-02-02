@@ -154,6 +154,7 @@ public class PriceWelcomeMessageServiceUnitTest {
         mMessageService.preparePriceMessage();
         mMessageService.review();
         verify(mReviewActionProvider).scrollToBindingTab(index);
+        verify(mMessageProvider).showPriceDropTooltip(index);
         assertTrue(PriceTrackingUtilities.isPriceWelcomeMessageCardDisabled());
     }
 

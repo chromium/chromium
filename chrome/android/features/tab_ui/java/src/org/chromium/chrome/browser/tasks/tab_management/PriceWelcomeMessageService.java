@@ -60,6 +60,14 @@ public class PriceWelcomeMessageService extends MessageService {
          * @return the index within the {@link TabListModel}.
          */
         int getTabIndexFromTabId(int tabId);
+
+        /**
+         * This method updates {@link TabProperties#SHOULD_SHOW_PRICE_DROP_TOOLTIP} of the binding
+         * tab.
+         *
+         * @param index The binding tab index in {@link TabListModel}.
+         */
+        void showPriceDropTooltip(int index);
     }
 
     /**
@@ -170,8 +178,10 @@ public class PriceWelcomeMessageService extends MessageService {
     @VisibleForTesting
     public void review() {
         assert mPriceTabData != null;
-        mPriceWelcomeMessageReviewActionProvider.scrollToBindingTab(
-                mPriceWelcomeMessageProvider.getTabIndexFromTabId(mPriceTabData.bindingTabId));
+        int bindingTabIndex =
+                mPriceWelcomeMessageProvider.getTabIndexFromTabId(mPriceTabData.bindingTabId);
+        mPriceWelcomeMessageReviewActionProvider.scrollToBindingTab(bindingTabIndex);
+        mPriceWelcomeMessageProvider.showPriceDropTooltip(bindingTabIndex);
         PriceTrackingUtilities.disablePriceWelcomeMessageCard();
     }
 
