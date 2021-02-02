@@ -35,6 +35,13 @@ def run(args, cwd=None):
     subprocess.check_call(args, cwd=cwd)
 
 
+def run_node(args):
+    root = get_chromium_root()
+    node = os.path.join(root, 'third_party/node/linux/node-linux-x64/bin/node')
+    binary = os.path.join(root, 'third_party/node/node_modules', args[0])
+    run([node, binary] + args[1:])
+
+
 def build_locale_strings():
     grit_cmd = [
         os.path.join(get_chromium_root(), 'tools/grit/grit.py'),
@@ -302,11 +309,17 @@ def test(args):
 
 
 def lint(args):
-    root = get_chromium_root()
-    node = os.path.join(root, 'third_party/node/linux/node-linux-x64/bin/node')
-    eslint = os.path.join(
-        root, 'third_party/node/node_modules/eslint/bin/eslint.js')
-    subprocess.call([node, eslint, 'js'])
+    try:
+        run_node(['eslint/bin/eslint.js', 'js'])
+    except subprocess.CalledProcessError as e:
+        print('ESLint check failed, return code =', e.returncode)
+
+
+def tsc(args):
+    try:
+        run_node(['typescript/bin/tsc'])
+    except subprocess.CalledProcessError as e:
+        print('TypeScript check failed, return code =', e.returncode)
 
 
 def parse_args(args):
@@ -341,10 +354,17 @@ def parse_args(args):
                              help='test patterns. (default: camera.CCAUI*)')
     test_parser.set_defaults(func=test)
 
-    lint_parser = subparsers.add_parser('lint',
-                                        help='check code',
-                                        description='Check coding styles.')
+    lint_parser = subparsers.add_parser(
+        'lint',
+        help='check code with eslint',
+        description='Check coding styles with eslint.')
     lint_parser.set_defaults(func=lint)
+
+    tsc_parser = subparsers.add_parser('tsc',
+                                       help='check code with tsc',
+                                       description='Check types with tsc.')
+    tsc_parser.set_defaults(func=tsc)
+
     parser.set_defaults(func=lambda _args: parser.print_help())
 
     return parser.parse_args(args)
