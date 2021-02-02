@@ -71,7 +71,7 @@ InlineLoginDialogChromeOSOnboarding* InlineLoginDialogChromeOSOnboarding::Show(
   DCHECK(base::FeatureList::IsEnabled(supervised_users::kEduCoexistenceFlowV2));
 
   base::UmaHistogramEnumeration(
-      InlineLoginDialogChromeOS::kAccountAdditionSource,
+      account_manager::AccountManagerFacade::kAccountAdditionSource,
       ::account_manager::AccountManagerFacade::AccountAdditionSource::
           kOnboarding);
 

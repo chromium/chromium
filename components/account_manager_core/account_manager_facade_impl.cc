@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
 #include "components/account_manager_core/account_addition_result.h"
 #include "components/account_manager_core/account_manager_util.h"
@@ -106,7 +107,7 @@ void AccountManagerFacadeImpl::ShowAddAccountDialog(
     return;
   }
 
-  // TODO(crbug.com/1140469): send UMA stats.
+  base::UmaHistogramEnumeration(kAccountAdditionSource, source);
 
   account_manager_remote_->ShowAddAccountDialog(
       base::BindOnce(&AccountManagerFacadeImpl::OnShowAddAccountDialogFinished,
@@ -122,7 +123,7 @@ void AccountManagerFacadeImpl::ShowReauthAccountDialog(
                  << " for ShowReauthAccountDialog.";
   }
 
-  // TODO(crbug.com/1140469): send UMA stats.
+  base::UmaHistogramEnumeration(kAccountAdditionSource, source);
 
   account_manager_remote_->ShowReauthAccountDialog(email, base::DoNothing());
 }

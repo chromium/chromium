@@ -22,6 +22,9 @@ namespace account_manager {
 // Use |GetAccountManagerFacade()| to get an instance of this class.
 class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacade {
  public:
+  // UMA histogram name.
+  static const char kAccountAdditionSource[];
+
   // Observer interface to get notifications about changes in the account list.
   class Observer : public base::CheckedObserver {
    public:

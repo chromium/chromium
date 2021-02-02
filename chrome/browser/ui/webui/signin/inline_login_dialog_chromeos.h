@@ -29,8 +29,6 @@ namespace chromeos {
 class InlineLoginDialogChromeOS : public SystemWebDialogDelegate,
                                   public web_modal::WebContentsModalDialogHost {
  public:
-  static const char kAccountAdditionSource[];
-
   // Represents the last reached step in the flow.
   // Keep in sync with
   // chrome/browser/resources/chromeos/edu_login/edu_login_util.js

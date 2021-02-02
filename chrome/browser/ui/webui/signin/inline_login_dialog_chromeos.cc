@@ -93,10 +93,6 @@ GURL GetInlineLoginUrl(const std::string& email, bool is_arc_source) {
 }  // namespace
 
 // static
-const char InlineLoginDialogChromeOS::kAccountAdditionSource[] =
-    "AccountManager.AccountAdditionSource";
-
-// static
 bool InlineLoginDialogChromeOS::IsShown() {
   return dialog != nullptr;
 }
@@ -106,7 +102,8 @@ void InlineLoginDialogChromeOS::ShowDeprecated(
     const std::string& email,
     const ::account_manager::AccountManagerFacade::AccountAdditionSource&
         source) {
-  base::UmaHistogramEnumeration(kAccountAdditionSource, source);
+  base::UmaHistogramEnumeration(
+      account_manager::AccountManagerFacade::kAccountAdditionSource, source);
   const bool is_arc_source =
       source ==
       ::account_manager::AccountManagerFacade::AccountAdditionSource::kArc;
