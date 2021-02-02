@@ -235,8 +235,8 @@ void AddToHomescreenMediator::RecordEventForAppMenu(
           base::Time::Now());
       break;
     case AddToHomescreenInstaller::Event::INSTALL_REQUEST_FINISHED: {
-      AppBannerManagerAndroid* app_banner_manager =
-          AppBannerManagerAndroid::FromWebContents(web_contents);
+      AppBannerManager* app_banner_manager =
+          AppBannerManager::FromWebContents(web_contents);
       // Fire the appinstalled event and do install time logging.
       if (app_banner_manager)
         app_banner_manager->OnInstall(a2hs_params.shortcut_info->display);

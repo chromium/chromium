@@ -21,7 +21,6 @@
 #include "chrome/android/chrome_jni_headers/TabWebContentsDelegateAndroidImpl_jni.h"
 #include "chrome/browser/android/hung_renderer_infobar_delegate.h"
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/banners/app_banner_manager_android.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/sound_content_setting_observer.h"

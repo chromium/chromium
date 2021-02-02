@@ -2941,6 +2941,8 @@ static_library("browser") {
       "autofill/manual_filling_utils.cc",
       "autofill/manual_filling_utils.h",
       "autofill/manual_filling_view_interface.h",
+      "banners/android/chrome_app_banner_manager_android.cc",
+      "banners/android/chrome_app_banner_manager_android.h",
       "banners/app_banner_manager_android.cc",
       "banners/app_banner_manager_android.h",
       "browser_process_platform_part_android.cc",

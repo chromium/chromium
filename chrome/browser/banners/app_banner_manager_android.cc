@@ -13,22 +13,17 @@
 #include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/android/webapk/webapk_metrics.h"
-#include "chrome/browser/android/webapk/webapk_ukm_recorder.h"
 #include "chrome/browser/android/webapps/add_to_homescreen_coordinator.h"
-#include "chrome/browser/banners/android/jni_headers/AppBannerInProductHelpControllerProvider_jni.h"
 #include "chrome/browser/banners/android/jni_headers/AppBannerManager_jni.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/webapps/android/features.h"
-#include "chrome/browser/webapps/android/pwa_bottom_sheet_controller.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
-#include "components/site_engagement/content/site_engagement_service.h"
 #include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
 #include "components/webapps/browser/android/add_to_homescreen_params.h"
@@ -43,6 +38,7 @@
 #include "content/public/browser/manifest_icon_downloader.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 
 using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertJavaStringToUTF8;
@@ -54,14 +50,6 @@ namespace webapps {
 namespace {
 
 constexpr char kPlatformPlay[] = "play";
-
-// The key to look up what the minimum engagement score is for showing the
-// in-product help.
-constexpr char kMinEngagementForIphKey[] = "x_min_engagement_for_iph";
-
-// The key to look up whether the in-product help should replace the toolbar or
-// complement it.
-constexpr char kIphReplacesToolbar[] = "x_iph_replaces_toolbar";
 
 // Whether to ignore the Chrome channel in QueryNativeApp() for testing.
 bool gIgnoreChromeChannelForTesting = false;
@@ -159,10 +147,6 @@ AppBannerManagerAndroid::ParamsToPerformInstallableWebAppCheck() {
       AppBannerManager::ParamsToPerformInstallableWebAppCheck();
   params.prefer_maskable_icon =
       WebappsIconUtils::DoesAndroidSupportMaskableIcons();
-  if (base::FeatureList::IsEnabled(
-          webapps::features::kPwaInstallUseBottomSheet))
-    params.fetch_screenshots = true;
-
   return params;
 }
 
@@ -179,15 +163,6 @@ void AppBannerManagerAndroid::PerformInstallableWebAppCheck() {
     return;
   }
   AppBannerManager::PerformInstallableWebAppCheck();
-}
-
-void AppBannerManagerAndroid::OnDidPerformInstallableWebAppCheck(
-    const InstallableData& data) {
-  if (data.NoBlockingErrors())
-    WebApkUkmRecorder::RecordWebApkableVisit(data.manifest_url);
-  screenshots_ = data.screenshots;
-
-  AppBannerManager::OnDidPerformInstallableWebAppCheck(data);
 }
 
 void AppBannerManagerAndroid::ResetCurrentPageData() {
@@ -223,7 +198,7 @@ void AppBannerManagerAndroid::ShowBannerUi(WebappInstallSource install_source) {
 
   bool was_shown = AddToHomescreenCoordinator::ShowForAppBanner(
       weak_factory_.GetWeakPtr(), std::move(a2hs_params),
-      base::BindRepeating(&AppBannerManagerAndroid::RecordEventForAppBanner,
+      base::BindRepeating(&AppBannerManagerAndroid::OnInstallEvent,
                           weak_factory_.GetWeakPtr()));
 
   // If we are installing from the ambient badge, it will remove itself.
@@ -243,9 +218,11 @@ void AppBannerManagerAndroid::ShowBannerUi(WebappInstallSource install_source) {
   }
 }
 
-void AppBannerManagerAndroid::RecordEventForAppBanner(
+void AppBannerManagerAndroid::OnInstallEvent(
     AddToHomescreenInstaller::Event event,
     const AddToHomescreenParams& a2hs_params) {
+  RecordExtraMetricsForInstallEvent(event, a2hs_params);
+
   switch (event) {
     case AddToHomescreenInstaller::Event::INSTALL_STARTED:
       TrackDismissEvent(DISMISS_EVENT_DISMISSED);
@@ -292,14 +269,12 @@ void AppBannerManagerAndroid::RecordEventForAppBanner(
       break;
 
     case AddToHomescreenInstaller::Event::UI_SHOWN:
-      if (a2hs_params.app_type == AddToHomescreenParams::AppType::NATIVE) {
         RecordDidShowBanner();
-        TrackDisplayEvent(DISPLAY_EVENT_NATIVE_APP_BANNER_CREATED);
-      } else {
-        RecordDidShowBanner();
-        TrackDisplayEvent(DISPLAY_EVENT_WEB_APP_BANNER_CREATED);
-      }
-      break;
+        TrackDisplayEvent(a2hs_params.app_type ==
+                                  AddToHomescreenParams::AppType::NATIVE
+                              ? DISPLAY_EVENT_NATIVE_APP_BANNER_CREATED
+                              : DISPLAY_EVENT_WEB_APP_BANNER_CREATED);
+        break;
 
     case AddToHomescreenInstaller::Event::UI_CANCELLED:
       TrackDismissEvent(DISMISS_EVENT_DISMISSED);
@@ -311,9 +286,6 @@ void AppBannerManagerAndroid::RecordEventForAppBanner(
         AppBannerSettingsHelper::RecordBannerDismissEvent(
             web_contents(), a2hs_params.native_app_package_name);
       } else {
-        if (a2hs_params.app_type == AddToHomescreenParams::AppType::WEBAPK)
-          webapk::TrackInstallEvent(
-              webapk::ADD_TO_HOMESCREEN_DIALOG_DISMISSED_BEFORE_INSTALLATION);
         TrackUserResponse(USER_RESPONSE_WEB_APP_DISMISSED);
         AppBannerSettingsHelper::RecordBannerDismissEvent(
             web_contents(), a2hs_params.shortcut_info->url.spec());
@@ -457,61 +429,17 @@ base::string16 AppBannerManagerAndroid::GetAppName() const {
   return native_app_title_;
 }
 
-bool AppBannerManagerAndroid::MaybeShowInProductHelp() const {
-  if (!base::FeatureList::IsEnabled(
-          feature_engagement::kIPHPwaInstallAvailableFeature)) {
-    DVLOG(2) << "Feature not enabled";
-    return false;
-  }
-
-  if (!web_contents()) {
-    DVLOG(2) << "IPH for PWA aborted: null WebContents";
-    return false;
-  }
-
-  double last_engagement_score =
-      GetSiteEngagementService()->GetScore(validated_url_);
-  int min_engagement = base::GetFieldTrialParamByFeatureAsInt(
-      feature_engagement::kIPHPwaInstallAvailableFeature,
-      kMinEngagementForIphKey, 0);
-  if (last_engagement_score < min_engagement) {
-    DVLOG(2) << "IPH for PWA aborted: Engagement score too low: "
-             << last_engagement_score << " < " << min_engagement;
-    return false;
-  }
-
-  JNIEnv* env = base::android::AttachCurrentThread();
-  std::string error_message = base::android::ConvertJavaStringToUTF8(
-      Java_AppBannerInProductHelpControllerProvider_showInProductHelp(
-          env, web_contents()->GetJavaWebContents()));
-  if (!error_message.empty()) {
-    DVLOG(2) << "IPH for PWA showing aborted. " << error_message;
-    return false;
-  }
-
-  DVLOG(2) << "Showing IPH.";
-  return true;
-}
-
 void AppBannerManagerAndroid::Install() {
   WebappInstallSource install_source = InstallableMetrics::GetInstallSource(
       web_contents(), InstallTrigger::AMBIENT_BADGE);
   auto params = CreateAddToHomescreenParams(install_source);
   AddToHomescreenInstaller::Install(
       web_contents(), *params,
-      base::BindRepeating(&AppBannerManagerAndroid::RecordEventForAppBanner,
+      base::BindRepeating(&AppBannerManagerAndroid::OnInstallEvent,
                           weak_factory_.GetWeakPtr()));
 }
 
 void AppBannerManagerAndroid::MaybeShowAmbientBadge() {
-  if (MaybeShowInProductHelp() &&
-      base::GetFieldTrialParamByFeatureAsBool(
-          feature_engagement::kIPHPwaInstallAvailableFeature,
-          kIphReplacesToolbar, false)) {
-    DVLOG(2) << "Install infobar overridden by IPH, as per experiment.";
-    return;
-  }
-
   if (!base::FeatureList::IsEnabled(
           ::features::kInstallableAmbientBadgeInfoBar))
     return;
@@ -530,13 +458,8 @@ void AppBannerManagerAndroid::MaybeShowAmbientBadge() {
       InstallableAmbientBadgeInfoBarDelegate::GetVisibleAmbientBadgeInfoBar(
           infobar_service);
 
-  if (!infobar_visible) {
-    PwaBottomSheetController::MaybeCreateAndShow(
-        weak_factory_.GetWeakPtr(), web_contents(), GetAppName(), primary_icon_,
-        has_maskable_primary_icon_, manifest_.start_url, screenshots_,
-        manifest_.description.value_or(base::string16()),
-        /* show_expaned= */ false);
-  }
+  if (!infobar_visible)
+    ShowAmbientBadge();
 }
 
 void AppBannerManagerAndroid::HideAmbientBadge() {
@@ -575,6 +498,16 @@ bool AppBannerManagerAndroid::IsWebAppConsideredInstalled() const {
                                                         manifest_url_);
 }
 
+void AppBannerManagerAndroid::ShowAmbientBadge() {
+  InstallableAmbientBadgeInfoBarDelegate::Create(
+      web_contents(), weak_factory_.GetWeakPtr(), GetAppName(), primary_icon_,
+      has_maskable_primary_icon_, manifest_.start_url);
+}
+
+void AppBannerManagerAndroid::RecordExtraMetricsForInstallEvent(
+    AddToHomescreenInstaller::Event event,
+    const AddToHomescreenParams& a2hs_params) {}
+
 base::WeakPtr<AppBannerManager> AppBannerManagerAndroid::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
@@ -588,8 +521,9 @@ base::android::ScopedJavaLocalRef<jobject>
 JNI_AppBannerManager_GetJavaBannerManagerForWebContents(
     JNIEnv* env,
     const JavaParamRef<jobject>& java_web_contents) {
-  AppBannerManagerAndroid* manager = AppBannerManagerAndroid::FromWebContents(
-      content::WebContents::FromJavaWebContents(java_web_contents));
+  auto* manager =
+      static_cast<AppBannerManagerAndroid*>(AppBannerManager::FromWebContents(
+          content::WebContents::FromJavaWebContents(java_web_contents)));
   return manager ? manager->GetJavaBannerManager()
                  : base::android::ScopedJavaLocalRef<jobject>();
 }
@@ -628,7 +562,5 @@ void JNI_AppBannerManager_SetTotalEngagementToTrigger(JNIEnv* env,
                                                       jdouble engagement) {
   AppBannerSettingsHelper::SetTotalEngagementToTrigger(engagement);
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(AppBannerManagerAndroid)
 
 }  // namespace webapps

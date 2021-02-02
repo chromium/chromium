@@ -15,7 +15,7 @@
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_web_contents_delegate_android.h"
 #include "chrome/browser/android/webapk/webapk_install_service.h"
-#include "chrome/browser/banners/app_banner_manager_android.h"
+#include "chrome/browser/banners/android/chrome_app_banner_manager_android.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/tracker.h"
@@ -81,7 +81,7 @@ WebappInstallSource ChromeWebappsClient::GetInstallSource(
 AppBannerManager* ChromeWebappsClient::GetAppBannerManager(
     content::WebContents* web_contents) {
 #if defined(OS_ANDROID)
-  return AppBannerManagerAndroid::FromWebContents(web_contents);
+  return ChromeAppBannerManagerAndroid::FromWebContents(web_contents);
 #else
   return AppBannerManagerDesktop::FromWebContents(web_contents);
 #endif

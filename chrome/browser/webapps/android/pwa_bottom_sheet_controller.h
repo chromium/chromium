@@ -5,12 +5,11 @@
 #ifndef CHROME_BROWSER_WEBAPPS_ANDROID_PWA_BOTTOM_SHEET_CONTROLLER_H_
 #define CHROME_BROWSER_WEBAPPS_ANDROID_PWA_BOTTOM_SHEET_CONTROLLER_H_
 
-#include <map>
+#include <vector>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "components/webapps/browser/android/installable/installable_ambient_badge_infobar_delegate.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
 
@@ -29,18 +28,16 @@ namespace webapps {
 // install of a PWA.
 class PwaBottomSheetController {
  public:
-  // If possible, shows the PWA Bottom Sheet installer. Otherwise it attempts to
-  // delegate to the install infobar UI.
-  static void MaybeCreateAndShow(
-      base::WeakPtr<InstallableAmbientBadgeInfoBarDelegate::Client> weak_client,
-      content::WebContents* web_contents,
-      const base::string16& app_name,
-      const SkBitmap& primary_icon,
-      const bool is_primary_icon_maskable,
-      const GURL& start_url,
-      const std::vector<SkBitmap>& screenshots,
-      const base::string16& description,
-      bool show_expanded);
+  // If possible, shows the PWA Bottom Sheet installer and returns true.
+  // Otherwise does nothing and returns false.
+  static bool MaybeCreateAndShow(content::WebContents* web_contents,
+                                 const base::string16& app_name,
+                                 const SkBitmap& primary_icon,
+                                 const bool is_primary_icon_maskable,
+                                 const GURL& start_url,
+                                 const std::vector<SkBitmap>& screenshots,
+                                 const base::string16& description,
+                                 bool show_expanded);
 
   virtual ~PwaBottomSheetController();
 

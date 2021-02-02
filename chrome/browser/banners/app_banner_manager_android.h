@@ -10,19 +10,18 @@
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
 #include "components/webapps/browser/android/add_to_homescreen_installer.h"
 #include "components/webapps/browser/android/installable/installable_ambient_badge_infobar_delegate.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
-#include "content/public/browser/web_contents_user_data.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
 
-struct AddToHomescreenParams;
+class SkBitmap;
 
 namespace webapps {
+
+struct AddToHomescreenParams;
 
 // Extends the AppBannerManager to support native Android apps. This class owns
 // a Java-side AppBannerManager which interfaces with the Java runtime to fetch
@@ -43,15 +42,17 @@ namespace webapps {
 // OnDidPerformInstallableCheck(). Each of these methods then calls
 // SendBannerPromptRequest(), which combines the forked code paths back
 // together.
+//
+// TODO(crbug.com/1147268): remove remaining Chrome-specific functionality and
+// move to //components/webapps.
 class AppBannerManagerAndroid
     : public AppBannerManager,
-      public InstallableAmbientBadgeInfoBarDelegate::Client,
-      public content::WebContentsUserData<AppBannerManagerAndroid> {
+      public InstallableAmbientBadgeInfoBarDelegate::Client {
  public:
   explicit AppBannerManagerAndroid(content::WebContents* web_contents);
+  AppBannerManagerAndroid(const AppBannerManagerAndroid&) = delete;
+  AppBannerManagerAndroid& operator=(const AppBannerManagerAndroid&) = delete;
   ~AppBannerManagerAndroid() override;
-
-  using content::WebContentsUserData<AppBannerManagerAndroid>::FromWebContents;
 
   // Returns a reference to the Java-side AppBannerManager owned by this object.
   const base::android::ScopedJavaLocalRef<jobject> GetJavaBannerManager() const;
@@ -89,9 +90,6 @@ class AppBannerManagerAndroid
   // Returns the appropriate app name based on whether we have a native/web app.
   base::string16 GetAppName() const override;
 
-  // Simple accessors:
-  const std::vector<SkBitmap>& screenshots() { return screenshots_; }
-
  protected:
   // AppBannerManager overrides.
   std::string GetAppIdentifier() override;
@@ -99,8 +97,6 @@ class AppBannerManagerAndroid
   void PerformInstallableChecks() override;
   InstallableParams ParamsToPerformInstallableWebAppCheck() override;
   void PerformInstallableWebAppCheck() override;
-  void OnDidPerformInstallableWebAppCheck(
-      const InstallableData& result) override;
   void ResetCurrentPageData() override;
   void ShowBannerUi(WebappInstallSource install_source) override;
   void MaybeShowAmbientBadge() override;
@@ -112,9 +108,18 @@ class AppBannerManagerAndroid
       const blink::Manifest::RelatedApplication& related_app) const override;
   bool IsWebAppConsideredInstalled() const override;
 
- private:
-  friend class content::WebContentsUserData<AppBannerManagerAndroid>;
+  // Called to show UI that promotes installation of a PWA. This is normally the
+  // mini-infobar ("banner") but clients can override it by providing a
+  // specialization of this class.
+  virtual void ShowAmbientBadge();
 
+  // Called when an install event occurs, allowing specializations to record
+  // additional metrics.
+  virtual void RecordExtraMetricsForInstallEvent(
+      AddToHomescreenInstaller::Event event,
+      const AddToHomescreenParams& a2hs_params);
+
+ private:
   // Creates the Java-side AppBannerManager.
   void CreateJavaBannerManager(content::WebContents* web_contents);
 
@@ -148,9 +153,10 @@ class AppBannerManagerAndroid
   // Hides the ambient badge if it is showing.
   void HideAmbientBadge();
 
-  // Called for recording metrics.
-  void RecordEventForAppBanner(AddToHomescreenInstaller::Event event,
-                               const AddToHomescreenParams& a2hs_params);
+  // Use as a callback to notify |this| after an install event such as a dialog
+  // being cancelled or an app being installed has occurred.
+  void OnInstallEvent(AddToHomescreenInstaller::Event event,
+                      const AddToHomescreenParams& a2hs_params);
 
   // Creates the AddToHomescreenParams for a given install source.
   std::unique_ptr<AddToHomescreenParams> CreateAddToHomescreenParams(
@@ -168,14 +174,7 @@ class AppBannerManagerAndroid
   // Title to display in the banner for native app.
   base::string16 native_app_title_;
 
-  // The screenshots to show in the install UI.
-  std::vector<SkBitmap> screenshots_;
-
   base::WeakPtrFactory<AppBannerManagerAndroid> weak_factory_{this};
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(AppBannerManagerAndroid);
 };
 
 }  // namespace webapps

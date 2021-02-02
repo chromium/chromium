@@ -8,11 +8,12 @@
 #include "base/android/jni_string.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/banners/app_banner_manager_android.h"
+#include "chrome/browser/banners/android/chrome_app_banner_manager_android.h"
 #include "chrome/browser/webapps/android/features.h"
 #include "chrome/browser/webapps/android/jni_headers/PwaBottomSheetControllerProvider_jni.h"
 #include "chrome/browser/webapps/android/jni_headers/PwaBottomSheetController_jni.h"
 #include "components/url_formatter/elide_url.h"
+#include "components/webapps/browser/banners/app_banner_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/android/java_bitmap.h"
 
@@ -50,12 +51,12 @@ void JNI_PwaBottomSheetController_CreateAndShowBottomSheetInstaller(
     const JavaParamRef<jobject>& jweb_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
-  AppBannerManagerAndroid* app_banner_manager =
-      AppBannerManagerAndroid::FromWebContents(web_contents);
+  auto* app_banner_manager =
+      ChromeAppBannerManagerAndroid::FromWebContents(web_contents);
 
   const blink::Manifest& manifest = app_banner_manager->manifest();
   PwaBottomSheetController::MaybeCreateAndShow(
-      nullptr, web_contents, app_banner_manager->GetAppName(),
+      web_contents, app_banner_manager->GetAppName(),
       app_banner_manager->primary_icon(),
       app_banner_manager->has_maskable_primary_icon(),
       app_banner_manager->validated_url(), app_banner_manager->screenshots(),
@@ -64,8 +65,7 @@ void JNI_PwaBottomSheetController_CreateAndShowBottomSheetInstaller(
 }
 
 // static
-void PwaBottomSheetController::MaybeCreateAndShow(
-    base::WeakPtr<InstallableAmbientBadgeInfoBarDelegate::Client> weak_client,
+bool PwaBottomSheetController::MaybeCreateAndShow(
     content::WebContents* web_contents,
     const base::string16& app_name,
     const SkBitmap& primary_icon,
@@ -82,12 +82,10 @@ void PwaBottomSheetController::MaybeCreateAndShow(
         app_name, primary_icon, is_primary_icon_maskable, start_url,
         screenshots, description, show_expanded);
     controller->ShowBottomSheetInstaller(web_contents);
-    return;
+    return true;
   }
 
-  InstallableAmbientBadgeInfoBarDelegate::Create(
-      web_contents, weak_client, app_name, primary_icon,
-      is_primary_icon_maskable, start_url);
+  return false;
 }
 
 PwaBottomSheetController::PwaBottomSheetController(
@@ -117,8 +115,8 @@ void PwaBottomSheetController::OnAddToHomescreen(
       content::WebContents::FromJavaWebContents(jweb_contents);
   if (!web_contents)
     return;
-  AppBannerManagerAndroid* app_banner_manager =
-      AppBannerManagerAndroid::FromWebContents(web_contents);
+  auto* app_banner_manager =
+      ChromeAppBannerManagerAndroid::FromWebContents(web_contents);
   if (!app_banner_manager)
     return;
 
