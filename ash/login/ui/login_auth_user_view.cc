@@ -1585,6 +1585,11 @@ void LoginAuthUserView::OnUserViewTap() {
 }
 
 void LoginAuthUserView::OnOnlineSignInMessageTap() {
+  // Do not show on secondary login screen as there is no OOBE there.
+  if (Shell::Get()->session_controller()->GetSessionState() ==
+      session_manager::SessionState::LOGIN_SECONDARY) {
+    return;
+  }
   Shell::Get()->login_screen_controller()->ShowGaiaSignin(
       current_user().basic_user_info.account_id);
 }
