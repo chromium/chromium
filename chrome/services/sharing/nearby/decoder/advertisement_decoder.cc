@@ -12,6 +12,16 @@
 
 namespace {
 
+// v1 advertisements:
+//   - ParseVersion() --> 0
+//
+// v2 advertisements:
+//   - ParseVersion() --> 1
+//   - Backwards compatible; no changes in advertisement data--aside from the
+//     version number--or parsing logic compared to v1.
+//   - Only used by GmsCore at the moment.
+constexpr int kMaxSupportedAdvertisementParsedVersionNumber = 1;
+
 // The bit mask for parsing and writing Version.
 constexpr uint8_t kVersionBitmask = 0b111;
 
@@ -61,9 +71,9 @@ std::unique_ptr<sharing::Advertisement> AdvertisementDecoder::FromEndpointInfo(
   uint8_t first_byte = *iter++;
 
   int version = ParseVersion(first_byte);
-  if (version != 0) {
-    LOG(ERROR) << "Failed to parse advertisement because we failed to parse "
-                  "the version number";
+  if (version < 0 || version > kMaxSupportedAdvertisementParsedVersionNumber) {
+    LOG(ERROR) << "Failed to parse advertisement; unsupported version number "
+               << version;
     return nullptr;
   }
 
