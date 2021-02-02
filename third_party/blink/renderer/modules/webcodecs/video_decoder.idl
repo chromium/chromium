@@ -78,5 +78,5 @@
 
   // Call prior to configure() to determine whether config will be supported.
   [CallWith=ScriptState, RaisesException]
-  static Promise<boolean> isConfigSupported(VideoDecoderConfig config);
+  static Promise<VideoDecoderSupport> isConfigSupported(VideoDecoderConfig config);
 };
