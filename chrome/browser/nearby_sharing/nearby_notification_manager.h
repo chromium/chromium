@@ -135,6 +135,10 @@ class NearbyNotificationManager : public TransferUpdateCallback,
   // ShareTarget of the current transfer.
   base::Optional<ShareTarget> share_target_;
 
+  // Last transfer status reported to OnTransferUpdate(). Null when no transfer
+  // is in progress.
+  base::Optional<TransferMetadata::Status> last_transfer_status_;
+
   base::OnceCallback<void(SuccessNotificationAction)>
       success_action_test_callback_;
 

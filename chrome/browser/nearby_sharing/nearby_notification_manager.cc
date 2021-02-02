@@ -604,6 +604,14 @@ void NearbyNotificationManager::OnTransferUpdate(
     share_target_ = share_target;
   DCHECK_EQ(share_target_->id, share_target.id);
 
+  if (!last_transfer_status_ ||
+      *last_transfer_status_ != transfer_metadata.status()) {
+    // Close any previous notifications, to allow subsequent high-priority
+    // notifications to pop up.
+    CloseTransfer();
+  }
+  last_transfer_status_ = transfer_metadata.status();
+
   switch (transfer_metadata.status()) {
     case TransferMetadata::Status::kInProgress:
       ShowProgress(share_target, transfer_metadata);
@@ -612,7 +620,9 @@ void NearbyNotificationManager::OnTransferUpdate(
     case TransferMetadata::Status::kAwaitingRemoteAcceptanceFailed:
     case TransferMetadata::Status::kExternalProviderLaunched:
     case TransferMetadata::Status::kCancelled:
-      CloseTransfer();
+      // Any previous notifications have been closed with the status change
+      // check above that called CloseTransfer(). No notification is currently
+      // shown for these statuses, so break.
       break;
     case TransferMetadata::Status::kAwaitingLocalConfirmation:
     case TransferMetadata::Status::kAwaitingRemoteAcceptance:
@@ -635,8 +645,10 @@ void NearbyNotificationManager::OnTransferUpdate(
       break;
   }
 
-  if (transfer_metadata.is_final_status())
+  if (transfer_metadata.is_final_status()) {
     share_target_.reset();
+    last_transfer_status_.reset();
+  }
 }
 
 void NearbyNotificationManager::OnShareTargetDiscovered(
@@ -658,6 +670,7 @@ void NearbyNotificationManager::ShowProgress(
   notification.set_type(message_center::NOTIFICATION_TYPE_PROGRESS);
   notification.set_title(GetProgressNotificationTitle(share_target));
   notification.set_never_timeout(true);
+  notification.set_priority(message_center::NotificationPriority::MAX_PRIORITY);
 
   // Show indeterminate progress while waiting for remote device to accept.
   if (transfer_metadata.status() == TransferMetadata::Status::kInProgress)
@@ -681,10 +694,6 @@ void NearbyNotificationManager::ShowConnectionRequest(
     const ShareTarget& share_target,
     const TransferMetadata& transfer_metadata) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  // If there is an existing notification, close it first otherwise we won't
-  // get a heads-up pop-up.
-  CloseTransfer();
 
   message_center::Notification notification =
       CreateNearbyNotification(kNearbyNotificationId);
@@ -740,10 +749,6 @@ void NearbyNotificationManager::ShowOnboarding() {
 
 void NearbyNotificationManager::ShowSuccess(const ShareTarget& share_target) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  // If there is an existing notification, close it first otherwise we won't
-  // get a heads-up pop-up.
-  CloseTransfer();
 
   if (!share_target.is_incoming) {
     message_center::Notification notification =
@@ -841,10 +846,6 @@ void NearbyNotificationManager::ShowFailure(
     const ShareTarget& share_target,
     const TransferMetadata& transfer_metadata) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  // If there is an existing notification, close it first otherwise we won't
-  // get a heads-up pop-up.
-  CloseTransfer();
 
   message_center::Notification notification =
       CreateNearbyNotification(kNearbyNotificationId);
