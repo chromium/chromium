@@ -32,7 +32,58 @@ class ChromeCartModuleElement extends PolymerElement {
     return {
       /** @type {!Array<!chromeCart.mojom.MerchantCart>} */
       cartItems: Array,
+
+      /** @private {boolean} */
+      showLeftScrollButton_: Boolean,
+
+      /** @private {boolean} */
+      showRightScrollButton_: Boolean,
     };
+  }
+
+  constructor() {
+    super();
+
+    /** @private {IntersectionObserver} */
+    this.intersectionObserver_ = null;
+
+    /** @type {string} */
+    this.scrollBehavior = 'smooth';
+  }
+
+  /** @override */
+  connectedCallback() {
+    super.connectedCallback();
+    const leftProbe = this.$.cartCarousel.querySelector('#leftProbe');
+    const rightProbe = this.$.cartCarousel.querySelector('#rightProbe');
+    this.intersectionObserver_ = new IntersectionObserver(entries => {
+      entries.forEach(({target, intersectionRatio}) => {
+        const show = intersectionRatio === 0;
+        if (target === leftProbe) {
+          this.showLeftScrollButton_ = show;
+          if (show) {
+            this.dispatchEvent(new Event('left-scroll-show'));
+          } else {
+            this.dispatchEvent(new Event('left-scroll-hide'));
+          }
+        } else if (target === rightProbe) {
+          this.showRightScrollButton_ = show;
+          if (show) {
+            this.dispatchEvent(new Event('right-scroll-show'));
+          } else {
+            this.dispatchEvent(new Event('right-scroll-hide'));
+          }
+        }
+      });
+    }, {root: this.$.cartCarousel});
+    this.shadowRoot.querySelectorAll('.probe').forEach(
+        el => this.intersectionObserver_.observe(el));
+  }
+
+  /** @override */
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this.intersectionObserver_.disconnect();
   }
 
   /**
@@ -85,6 +136,72 @@ class ChromeCartModuleElement extends PolymerElement {
     const index = this.$.cartItemRepeat.indexForElement(
         e.target.parentElement.parentElement);
     this.$.actionMenu.showAt(e.target);
+  }
+
+  /**
+   * Gets called when the right scroll button is clicked to show the next items
+   * on the right.
+   * @private
+   */
+  onRightScrollClick_() {
+    const carts = this.$.cartCarousel.querySelectorAll('.cart-item');
+    let lastVisibleIndex = 0;
+    for (let i = 0; i < carts.length; i++) {
+      if (this.getVisibilityForIndex_(i)) {
+        lastVisibleIndex = i;
+      }
+    }
+    this.scrollToIndex_(lastVisibleIndex + 1);
+  }
+
+  /**
+   * Gets called when the left scroll button is clicked to show the previous
+   * items on the left.
+   * @private
+   */
+  onLeftScrollClick_() {
+    const carts = this.$.cartCarousel.querySelectorAll('.cart-item');
+    let visibleRange = 0, firstVisibleIndex = 0;
+    for (let i = carts.length - 1; i >= 0; i--) {
+      if (this.getVisibilityForIndex_(i)) {
+        visibleRange += 1;
+        firstVisibleIndex = i;
+      }
+    }
+    this.scrollToIndex_(Math.max(0, firstVisibleIndex - visibleRange));
+  }
+
+  /**
+   * @param {!number} index The target index to scroll to.
+   * @private
+   */
+  scrollToIndex_(index) {
+    const carts = this.$.cartCarousel.querySelectorAll('.cart-item');
+    // Calculate scroll shadow width as scroll offset.
+    const leftScrollShadow = this.shadowRoot.getElementById('leftScrollShadow');
+    const rightScrollShadow =
+        this.shadowRoot.getElementById('rightScrollShadow');
+    const scrollOffset = Math.max(
+        leftScrollShadow ? leftScrollShadow.offsetWidth : 0,
+        rightScrollShadow ? rightScrollShadow.offsetWidth : 0);
+    this.$.cartCarousel.scrollTo({
+      top: 0,
+      left: carts[index].offsetLeft - scrollOffset,
+      behavior: this.scrollBehavior,
+    });
+  }
+
+  /**
+   * @param {!number} index
+   * @return {!boolean} True if the item at index is completely visible.
+   * @private
+   */
+  getVisibilityForIndex_(index) {
+    const cartCarousel = this.$.cartCarousel;
+    const cart = cartCarousel.querySelectorAll('.cart-item')[index];
+    return cart && (cart.offsetLeft > cartCarousel.scrollLeft) &&
+        (cartCarousel.scrollLeft + cartCarousel.clientWidth) >
+        (cart.offsetLeft + cart.offsetWidth);
   }
 }
 
