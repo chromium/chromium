@@ -132,7 +132,8 @@ TEST_F(QuickAnswersControllerTest, ShouldNotShowWhenClosed) {
   // The UI is closed and session is inactive, nothing should be shown.
   EXPECT_FALSE(ui_controller()->is_showing_user_notice_view());
   EXPECT_FALSE(ui_controller()->is_showing_quick_answers_view());
-  EXPECT_EQ(controller()->visibility(), QuickAnswersVisibility::kClosed);
+  EXPECT_EQ(controller()->GetVisibilityForTesting(),
+            QuickAnswersVisibility::kClosed);
 }
 
 TEST_F(QuickAnswersControllerTest,
@@ -148,7 +149,8 @@ TEST_F(QuickAnswersControllerTest,
   // quick answer query should show.
   EXPECT_FALSE(ui_controller()->is_showing_user_notice_view());
   EXPECT_TRUE(ui_controller()->is_showing_quick_answers_view());
-  EXPECT_EQ(controller()->visibility(), QuickAnswersVisibility::kVisible);
+  EXPECT_EQ(controller()->GetVisibilityForTesting(),
+            QuickAnswersVisibility::kVisible);
 }
 
 TEST_F(QuickAnswersControllerTest, UserNoticeAlreadyAccepted) {
@@ -159,7 +161,8 @@ TEST_F(QuickAnswersControllerTest, UserNoticeAlreadyAccepted) {
   // show.
   EXPECT_FALSE(ui_controller()->is_showing_user_notice_view());
   EXPECT_TRUE(ui_controller()->is_showing_quick_answers_view());
-  EXPECT_EQ(controller()->visibility(), QuickAnswersVisibility::kVisible);
+  EXPECT_EQ(controller()->GetVisibilityForTesting(),
+            QuickAnswersVisibility::kVisible);
 }
 
 TEST_F(QuickAnswersControllerTest,
@@ -186,7 +189,8 @@ TEST_F(QuickAnswersControllerTest, DismissUserNoticeView) {
   DismissQuickAnswers();
 
   EXPECT_FALSE(ui_controller()->is_showing_user_notice_view());
-  EXPECT_EQ(controller()->visibility(), QuickAnswersVisibility::kClosed);
+  EXPECT_EQ(controller()->GetVisibilityForTesting(),
+            QuickAnswersVisibility::kClosed);
 }
 
 TEST_F(QuickAnswersControllerTest, DismissQuickAnswersView) {
@@ -195,7 +199,8 @@ TEST_F(QuickAnswersControllerTest, DismissQuickAnswersView) {
 
   controller()->DismissQuickAnswers(true);
   EXPECT_FALSE(ui_controller()->is_showing_quick_answers_view());
-  EXPECT_EQ(controller()->visibility(), QuickAnswersVisibility::kClosed);
+  EXPECT_EQ(controller()->GetVisibilityForTesting(),
+            QuickAnswersVisibility::kClosed);
 }
 
 TEST_F(QuickAnswersControllerTest,

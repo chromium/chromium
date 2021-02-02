@@ -44,6 +44,11 @@ class QuickAnswersMenuObserver
   void OnEligibilityChanged(bool eligible) override;
   void OnNetworkError() override {}
 
+  void SetQuickAnswerControllerForTesting(
+      ash::QuickAnswersController* controller) {
+    quick_answers_controller_ = controller;
+  }
+
  private:
   std::string GetDeviceLanguage();
   void OnTextSurroundingSelectionAvailable(

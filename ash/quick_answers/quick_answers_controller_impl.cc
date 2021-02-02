@@ -130,6 +130,11 @@ QuickAnswersControllerImpl::GetQuickAnswersDelegate() {
   return this;
 }
 
+QuickAnswersVisibility QuickAnswersControllerImpl::GetVisibilityForTesting()
+    const {
+  return visibility_;
+}
+
 void QuickAnswersControllerImpl::OnQuickAnswerReceived(
     std::unique_ptr<QuickAnswer> quick_answer) {
   if (visibility_ != QuickAnswersVisibility::kVisible)
