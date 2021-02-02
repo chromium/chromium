@@ -36,6 +36,10 @@ source_set("password_protection") {
     "//third_party/protobuf:protobuf_lite",
     "//ui/gfx/geometry",
   ]
+
+  if (is_ios) {
+    deps += [ "//ios/web/public" ]
+  }
 }
 
 source_set("password_protection_metrics_util") {

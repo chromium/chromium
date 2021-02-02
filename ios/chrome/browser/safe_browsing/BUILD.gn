@@ -7,6 +7,8 @@ import("//ios/features.gni")
 
 source_set("safe_browsing") {
   sources = [
+    "chrome_password_protection_service.h",
+    "chrome_password_protection_service.mm",
     "pending_unsafe_resource_storage.h",
     "pending_unsafe_resource_storage.mm",
     "real_time_url_lookup_service_factory.h",
@@ -49,6 +51,7 @@ source_set("safe_browsing") {
     "//components/safe_browsing/core/db:v4_protocol_manager_util",
     "//components/safe_browsing/core/realtime:url_lookup_service",
     "//components/safe_browsing/ios/browser:allow_list",
+    "//components/safe_browsing/ios/password_protection",
     "//components/security_interstitials/core",
     "//components/security_interstitials/core:unsafe_resource",
     "//ios/chrome/browser",

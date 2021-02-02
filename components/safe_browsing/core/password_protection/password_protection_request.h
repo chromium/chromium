@@ -21,7 +21,7 @@
 #include "components/safe_browsing/core/password_protection/request_canceler.h"
 
 #if defined(OS_IOS)
-// TODO(crbug.com/1147967): Enable in iOS once this file is moved to /core.
+#include "ios/web/public/thread/web_thread.h"
 #else
 #include "content/public/browser/browser_thread.h"
 #endif  // defined(OS_IOS)
