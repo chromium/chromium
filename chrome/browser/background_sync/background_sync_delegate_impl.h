@@ -8,12 +8,19 @@
 #include <set>
 
 #include "build/build_config.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "components/background_sync/background_sync_delegate.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/site_engagement/content/site_engagement_observer.h"
+#include "content/public/browser/background_sync_controller.h"
+#include "content/public/browser/browser_thread.h"
 #include "url/origin.h"
 
 class Profile;
 class HostContentSettingsMap;
+class ScopedKeepAlive;
+class ScopedProfileKeepAlive;
 
 namespace ukm {
 class UkmBackgroundRecorderService;
@@ -31,6 +38,26 @@ class BackgroundSyncDelegateImpl
 
   explicit BackgroundSyncDelegateImpl(Profile* profile);
   ~BackgroundSyncDelegateImpl() override;
+
+#if !defined(OS_ANDROID)
+  class BackgroundSyncEventKeepAliveImpl
+      : public content::BackgroundSyncController::BackgroundSyncEventKeepAlive {
+   public:
+    ~BackgroundSyncEventKeepAliveImpl() override;
+    explicit BackgroundSyncEventKeepAliveImpl(Profile* profile);
+
+   private:
+    std::unique_ptr<ScopedKeepAlive, content::BrowserThread::DeleteOnUIThread>
+        keepalive_ = nullptr;
+    std::unique_ptr<ScopedProfileKeepAlive,
+                    content::BrowserThread::DeleteOnUIThread>
+        profile_keepalive_ = nullptr;
+  };
+
+  std::unique_ptr<
+      content::BackgroundSyncController::BackgroundSyncEventKeepAlive>
+  CreateBackgroundSyncEventKeepAlive() override;
+#endif
 
   void GetUkmSourceId(const url::Origin& origin,
                       base::OnceCallback<void(base::Optional<ukm::SourceId>)>

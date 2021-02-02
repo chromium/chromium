@@ -48,7 +48,10 @@ enum class ProfileKeepAliveOrigin {
   // An app (Chrome app, web app, etc.) has a window open.
   kAppWindow = 7,
 
-  kMaxValue = kAppWindow,
+  // Background sync in progress.
+  kBackgroundSync = 8,
+
+  kMaxValue = kBackgroundSync,
 };
 
 std::ostream& operator<<(std::ostream& out,
