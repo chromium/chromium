@@ -451,6 +451,13 @@ void Label::SetMaximumWidth(int max_width) {
   OnPropertyChanged(&max_width_, kPropertyEffectsPreferredSizeChanged);
 }
 
+void Label::SetMaximumWidthSingleLine(int max_width) {
+  DCHECK(!GetMultiLine());
+  max_width_single_line_ = max_width;
+  OnPropertyChanged(&max_width_single_line_,
+                    kPropertyEffectsPreferredSizeChanged);
+}
+
 bool Label::GetCollapseWhenHidden() const {
   return collapse_when_hidden_;
 }
@@ -1102,6 +1109,17 @@ gfx::Size Label::GetTextSize() const {
   gfx::Size size;
   if (GetText().empty()) {
     size = gfx::Size(0, GetLineHeight());
+  } else if (max_width_single_line_ > 0) {
+    DCHECK(!GetMultiLine());
+    // Enable eliding during text width calculation. This allows the RenderText
+    // to report an accurate width given the constraints and how it determines
+    // to elide the text. If we simply clamp the width to the max after the
+    // fact, then there may be some empty space left over *after* an ellipsis.
+    full_text_->SetElideBehavior(elide_behavior_);
+    full_text_->SetDisplayRect(
+        gfx::Rect(0, 0, max_width_single_line_ - GetInsets().width(), 0));
+    size = full_text_->GetStringSize();
+    full_text_->SetElideBehavior(gfx::NO_ELIDE);
   } else {
     // Cancel the display rect of |full_text_|. The display rect may be
     // specified in GetHeightForWidth(), and specifying empty Rect cancels

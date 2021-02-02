@@ -187,6 +187,10 @@ class VIEWS_EXPORT Label : public View,
   int GetMaxLines() const;
   void SetMaxLines(int max_lines);
 
+  // If single-line, a non-zero value will help determine the amount of space
+  // needed *after* elision, which may be less than the passed |max_width|.
+  void SetMaximumWidthSingleLine(int max_width);
+
   // Returns the number of lines required to render all text. The actual number
   // of rendered lines might be limited by |max_lines_| which elides the rest.
   size_t GetRequiredLines() const;
@@ -460,7 +464,10 @@ class VIEWS_EXPORT Label : public View,
   // Whether to collapse the label when it's not visible.
   bool collapse_when_hidden_ = false;
   int fixed_width_ = 0;
+  // This is used only for multi-line mode.
   int max_width_ = 0;
+  // This is used in single-line mode.
+  int max_width_single_line_ = 0;
 
   std::unique_ptr<SelectionController> selection_controller_;
 

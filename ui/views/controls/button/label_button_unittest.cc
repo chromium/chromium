@@ -5,6 +5,7 @@
 #include "ui/views/controls/button/label_button.h"
 
 #include <algorithm>
+#include <string>
 #include <utility>
 
 #include "base/command_line.h"
@@ -193,7 +194,9 @@ TEST_F(LabelButtonTest, Label) {
   // Clamp the size to a maximum value.
   button_->SetText(long_text);
   button_->SetMaxSize(gfx::Size(short_text_width, 1));
-  EXPECT_EQ(button_->GetPreferredSize(), gfx::Size(short_text_width, 1));
+  const gfx::Size preferred_size = button_->GetPreferredSize();
+  EXPECT_LE(preferred_size.width(), short_text_width);
+  EXPECT_EQ(1, preferred_size.height());
 
   // Clamp the size to a minimum value.
   button_->SetText(short_text);
@@ -201,6 +204,48 @@ TEST_F(LabelButtonTest, Label) {
   button_->SetMinSize(gfx::Size(long_text_width, font_list.GetHeight() * 2));
   EXPECT_EQ(button_->GetPreferredSize(),
             gfx::Size(long_text_width, font_list.GetHeight() * 2));
+}
+
+// Tests LabelButton's usage of SetMaximumWidthSingleLine.
+TEST_F(LabelButtonTest, LabelPreferredSizeWithMaxWidth) {
+  const std::string text_cases[] = {
+      {"The"},
+      {"The quick"},
+      {"The quick brown"},
+      {"The quick brown fox"},
+      {"The quick brown fox jumps"},
+      {"The quick brown fox jumps over"},
+      {"The quick brown fox jumps over the"},
+      {"The quick brown fox jumps over the lazy"},
+      {"The quick brown fox jumps over the lazy dog"},
+  };
+
+  const int width_cases[] = {
+      10, 30, 50, 70, 90, 110, 130, 170, 200, 500,
+  };
+
+  for (bool set_image = false; button_->GetImage(Button::STATE_NORMAL).isNull();
+       set_image = true) {
+    if (set_image)
+      button_->SetImage(Button::STATE_NORMAL, CreateTestImage(16, 16));
+
+    bool preferred_size_is_sometimes_narrower_than_max = false;
+
+    for (size_t i = 0; i < base::size(text_cases); ++i) {
+      for (size_t j = 0; j < base::size(width_cases); ++j) {
+        button_->SetText(ASCIIToUTF16(text_cases[i]));
+        button_->SetMaxSize(gfx::Size(width_cases[j], 30));
+
+        const gfx::Size preferred_size = button_->GetPreferredSize();
+        EXPECT_LE(preferred_size.width(), width_cases[j]);
+
+        if (preferred_size.width() < width_cases[j])
+          preferred_size_is_sometimes_narrower_than_max = true;
+      }
+    }
+
+    EXPECT_TRUE(preferred_size_is_sometimes_narrower_than_max);
+  }
 }
 
 TEST_F(LabelButtonTest, LabelShrinkDown) {

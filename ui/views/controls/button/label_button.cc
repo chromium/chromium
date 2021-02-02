@@ -246,6 +246,9 @@ gfx::Size LabelButton::CalculatePreferredSize() const {
   // Account for the label only when the button is not shrinking down to hide
   // the label entirely.
   if (!shrinking_down_label_) {
+    if (!label_->GetMultiLine() && max_size_.width() > 0)
+      label_->SetMaximumWidthSingleLine(max_size_.width() - size.width());
+
     const gfx::Size preferred_label_size = label_->GetPreferredSize();
     size.Enlarge(preferred_label_size.width(), 0);
     size.SetToMax(
