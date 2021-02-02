@@ -6281,7 +6281,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'lacros_tast_tests_amd64_generic',
-          'skylab_tests': 'cros_skylab_chrome_critical_x86_64',
+          'skylab_tests': 'lacros_skylab_x86_64',
         },
         'swarming': {
           'dimension_sets': [

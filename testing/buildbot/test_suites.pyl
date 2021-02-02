@@ -1244,15 +1244,6 @@
       },
     },
 
-    'cros_skylab_chrome_critical': {
-      'tast.critical-chrome': {
-        # TODO(crbug/1139516): Update this once LaCrOS tast test is ready.
-        # A Tast suite, e.g. tast.informational-chrome.
-        'suite': 'tast.critical-chrome',
-        'timeout': 10800,
-      },
-    },
-
     'desktop_chromium_isolated_scripts': {
       'blink_python_tests': {
         'resultdb': {
@@ -3779,6 +3770,16 @@
         ],
         'test': 'browser_tests',
       }
+    },
+
+    'lacros_skylab_poc': {
+      'lacros.Basic': {
+        # TODO(linxinan@): remove 'suite' field once the recipe
+        # change(crrev.com/c/2645627) is propagated.
+        'suite': 'tast.lacros',
+        'tast_expr': 'lacros.Basic',
+        'timeout_sec': 10800,
+      },
     },
 
     'lacros_tast_tests_amd64_generic': {
@@ -6474,15 +6475,6 @@
       }
     },
 
-    'cros_skylab_chrome_critical_x86_64': {
-      'cros_skylab_chrome_critical': {
-        'variants': [
-          'CROS_OCTOPUS_TOT',
-          'CROS_OCTOPUS_TOT-1',
-        ]
-      },
-    },
-
     'gpu_angle_ios_gtests': {
       'gpu_angle_end2end_gtests': {
         'variants': [
@@ -6781,6 +6773,16 @@
         'variants': [
           'SIM_IPHONE_X_13_5',
           'SIM_IPAD_AIR_2_13_5',
+        ]
+      },
+    },
+
+    # Check go/lacros-on-skylab for details of Skylab configurations.
+    'lacros_skylab_x86_64': {
+      'lacros_skylab_poc': {
+        'variants': [
+          'CROS_OCTOPUS_TOT',
+          'CROS_OCTOPUS_TOT-1',
         ]
       },
     },
