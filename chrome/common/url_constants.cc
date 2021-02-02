@@ -32,6 +32,12 @@ const char kCastNoDestinationFoundURL[] =
 const char kChooserBluetoothOverviewURL[] =
     "https://support.google.com/chrome?p=bluetooth";
 
+const char kChooserHidOverviewUrl[] =
+    "https://support.google.com/chrome?p=webhid";
+
+const char kChooserSerialOverviewUrl[] =
+    "https://support.google.com/chrome?p=webserial";
+
 const char kChooserUsbOverviewURL[] =
     "https://support.google.com/chrome?p=webusb";
 

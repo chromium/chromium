@@ -62,6 +62,7 @@ class SerialChooserController final
   content::SerialChooser::Callback callback_;
   url::Origin requesting_origin_;
   url::Origin embedding_origin_;
+  const int frame_tree_node_id_;
 
   base::WeakPtr<SerialChooserContext> chooser_context_;
   ScopedObserver<SerialChooserContext,

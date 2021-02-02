@@ -83,6 +83,7 @@ class HidChooserController : public ChooserController,
   content::HidChooser::Callback callback_;
   const url::Origin requesting_origin_;
   const url::Origin embedding_origin_;
+  const int frame_tree_node_id_;
 
   // The lifetime of the chooser context is tied to the browser context used to
   // create it, and may be destroyed while the chooser is still active.

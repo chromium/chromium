@@ -12,6 +12,7 @@
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
 #include "chrome/browser/hid/web_hid_histograms.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "services/device/public/cpp/hid/hid_blocklist.h"
@@ -47,7 +48,8 @@ HidChooserController::HidChooserController(
       embedding_origin_(
           content::WebContents::FromRenderFrameHost(render_frame_host)
               ->GetMainFrame()
-              ->GetLastCommittedOrigin()) {
+              ->GetLastCommittedOrigin()),
+      frame_tree_node_id_(render_frame_host->GetFrameTreeNodeId()) {
   auto* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
   auto* profile =
@@ -66,7 +68,7 @@ HidChooserController::~HidChooserController() {
 }
 
 bool HidChooserController::ShouldShowHelpButton() const {
-  return false;
+  return true;
 }
 
 base::string16 HidChooserController::GetNoOptionsText() const {
@@ -159,7 +161,12 @@ void HidChooserController::Close() {
 }
 
 void HidChooserController::OpenHelpCenterUrl() const {
-  NOTIMPLEMENTED();
+  auto* web_contents =
+      content::WebContents::FromFrameTreeNodeId(frame_tree_node_id_);
+  web_contents->OpenURL(content::OpenURLParams(
+      GURL(chrome::kChooserHidOverviewUrl), content::Referrer(),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui::PAGE_TRANSITION_AUTO_TOPLEVEL, /*is_renderer_initiated=*/false));
 }
 
 void HidChooserController::OnDeviceAdded(

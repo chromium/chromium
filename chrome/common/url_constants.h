@@ -51,6 +51,12 @@ extern const char kCastNoDestinationFoundURL[];
 // Chooser.
 extern const char kChooserBluetoothOverviewURL[];
 
+// The URL for the WebHID API help center article.
+extern const char kChooserHidOverviewUrl[];
+
+// The URL for the Web Serial API help center article.
+extern const char kChooserSerialOverviewUrl[];
+
 // The URL for the WebUsb help center article.
 extern const char kChooserUsbOverviewURL[];
 

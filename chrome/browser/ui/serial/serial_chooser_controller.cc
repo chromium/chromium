@@ -15,6 +15,7 @@
 #include "chrome/browser/serial/serial_blocklist.h"
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
 #include "chrome/browser/serial/serial_chooser_histograms.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -27,7 +28,8 @@ SerialChooserController::SerialChooserController(
                         IDS_SERIAL_PORT_CHOOSER_PROMPT_ORIGIN,
                         IDS_SERIAL_PORT_CHOOSER_PROMPT_EXTENSION_NAME),
       filters_(std::move(filters)),
-      callback_(std::move(callback)) {
+      callback_(std::move(callback)),
+      frame_tree_node_id_(render_frame_host->GetFrameTreeNodeId()) {
   auto* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
   requesting_origin_ = render_frame_host->GetLastCommittedOrigin();
@@ -50,7 +52,7 @@ SerialChooserController::~SerialChooserController() {
 }
 
 bool SerialChooserController::ShouldShowHelpButton() const {
-  return false;
+  return true;
 }
 
 base::string16 SerialChooserController::GetNoOptionsText() const {
@@ -121,7 +123,12 @@ void SerialChooserController::Cancel() {}
 void SerialChooserController::Close() {}
 
 void SerialChooserController::OpenHelpCenterUrl() const {
-  NOTIMPLEMENTED();
+  auto* web_contents =
+      content::WebContents::FromFrameTreeNodeId(frame_tree_node_id_);
+  web_contents->OpenURL(content::OpenURLParams(
+      GURL(chrome::kChooserSerialOverviewUrl), content::Referrer(),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui::PAGE_TRANSITION_AUTO_TOPLEVEL, /*is_renderer_initiated=*/false));
 }
 
 void SerialChooserController::OnPortAdded(
