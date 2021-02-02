@@ -334,7 +334,6 @@ _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
   '^chrome/browser/apps/guest_view/web_view_browsertest.cc',
   "^chrome/browser/ash/accessibility/",
   '^chrome/browser/captive_portal/captive_portal_browsertest.cc',
-  '^chrome/browser/history/android/android_history_provider_service_unittest.cc', # pylint: disable=line-too-long
   '^chrome/browser/media_galleries/',
   "^chrome/browser/metrics/",
   '^chrome/browser/ntp_tiles/ntp_tiles_browsertest.cc',

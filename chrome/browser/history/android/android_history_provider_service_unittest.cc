@@ -30,7 +30,7 @@
 
 namespace {
 
-using base::Bind;
+using base::BindOnce;
 using base::Time;
 using history::AndroidStatement;
 using history::HistoryAndBookmarkRow;
@@ -98,36 +98,36 @@ class CallbackHelper : public base::RefCountedThreadSafe<CallbackHelper> {
     return count_;
   }
 
-  void set_quit_when_idle_closure(const base::Closure& quit_when_idle_closure) {
-    quit_when_idle_closure_ = quit_when_idle_closure;
+  void set_quit_when_idle_closure(base::OnceClosure quit_when_idle_closure) {
+    quit_when_idle_closure_ = std::move(quit_when_idle_closure);
   }
 
   void OnInserted(int64_t id) {
     success_ = id != 0;
-    quit_when_idle_closure_.Run();
+    std::move(quit_when_idle_closure_).Run();
   }
 
   void OnQueryResult(AndroidStatement* statement) {
     success_ = statement != nullptr;
     statement_ = statement;
-    quit_when_idle_closure_.Run();
+    std::move(quit_when_idle_closure_).Run();
   }
 
   void OnUpdated(int count) {
     success_ = count != 0;
     count_ = count;
-    quit_when_idle_closure_.Run();
+    std::move(quit_when_idle_closure_).Run();
   }
 
   void OnDeleted(int count) {
     success_ = count != 0;
     count_ = count;
-    quit_when_idle_closure_.Run();
+    std::move(quit_when_idle_closure_).Run();
   }
 
   void OnStatementMoved(int cursor_position) {
     cursor_position_ = cursor_position;
-    quit_when_idle_closure_.Run();
+    std::move(quit_when_idle_closure_).Run();
   }
 
  private:
@@ -139,7 +139,7 @@ class CallbackHelper : public base::RefCountedThreadSafe<CallbackHelper> {
   AndroidStatement* statement_;
   int cursor_position_;
   int count_;
-  base::Closure quit_when_idle_closure_;
+  base::OnceClosure quit_when_idle_closure_;
 
   DISALLOW_COPY_AND_ASSIGN(CallbackHelper);
 };
@@ -149,7 +149,6 @@ void RunMessageLoop(CallbackHelper* callback_helper) {
   base::RunLoop run_loop;
   callback_helper->set_quit_when_idle_closure(run_loop.QuitWhenIdleClosure());
   run_loop.Run();
-  callback_helper->set_quit_when_idle_closure(base::Closure());
 }
 
 TEST_F(AndroidHistoryProviderServiceTest, TestHistoryAndBookmark) {
@@ -161,8 +160,7 @@ TEST_F(AndroidHistoryProviderServiceTest, TestHistoryAndBookmark) {
 
   // Insert a row and verify it succeeded.
   service_->InsertHistoryAndBookmark(
-      row,
-      Bind(&CallbackHelper::OnInserted, callback.get()),
+      row, BindOnce(&CallbackHelper::OnInserted, callback.get()),
       &cancelable_tracker_);
 
   RunMessageLoop(callback.get());
@@ -173,11 +171,8 @@ TEST_F(AndroidHistoryProviderServiceTest, TestHistoryAndBookmark) {
 
   // Query the inserted row.
   service_->QueryHistoryAndBookmarks(
-      projections,
-      std::string(),
-      std::vector<base::string16>(),
-      std::string(),
-      Bind(&CallbackHelper::OnQueryResult, callback.get()),
+      projections, std::string(), std::vector<base::string16>(), std::string(),
+      BindOnce(&CallbackHelper::OnQueryResult, callback.get()),
       &cancelable_tracker_);
   RunMessageLoop(callback.get());
   ASSERT_TRUE(callback->success());
@@ -186,10 +181,8 @@ TEST_F(AndroidHistoryProviderServiceTest, TestHistoryAndBookmark) {
   // the same result.
   AndroidStatement* statement = callback->statement();
   service_->MoveStatement(
-      statement,
-      0,
-      -1,
-      Bind(&CallbackHelper::OnStatementMoved, callback.get()),
+      statement, 0, -1,
+      BindOnce(&CallbackHelper::OnStatementMoved, callback.get()),
       &cancelable_tracker_);
   RunMessageLoop(callback.get());
   EXPECT_EQ(-1, callback->cursor_position());
@@ -201,10 +194,8 @@ TEST_F(AndroidHistoryProviderServiceTest, TestHistoryAndBookmark) {
   HistoryAndBookmarkRow update_row;
   update_row.set_visit_count(3);
   service_->UpdateHistoryAndBookmarks(
-      update_row,
-      std::string(),
-      std::vector<base::string16>(),
-      Bind(&CallbackHelper::OnUpdated, callback.get()),
+      update_row, std::string(), std::vector<base::string16>(),
+      BindOnce(&CallbackHelper::OnUpdated, callback.get()),
       &cancelable_tracker_);
   RunMessageLoop(callback.get());
   EXPECT_TRUE(callback->success());
@@ -212,9 +203,8 @@ TEST_F(AndroidHistoryProviderServiceTest, TestHistoryAndBookmark) {
 
   // Delete the row.
   service_->DeleteHistoryAndBookmarks(
-      std::string(),
-      std::vector<base::string16>(),
-      Bind(&CallbackHelper::OnDeleted, callback.get()),
+      std::string(), std::vector<base::string16>(),
+      BindOnce(&CallbackHelper::OnDeleted, callback.get()),
       &cancelable_tracker_);
   RunMessageLoop(callback.get());
   EXPECT_TRUE(callback->success());
@@ -231,9 +221,9 @@ TEST_F(AndroidHistoryProviderServiceTest, TestSearchTerm) {
   scoped_refptr<CallbackHelper> callback(new CallbackHelper());
 
   // Insert a row and verify it succeeded.
-  service_->InsertSearchTerm(search_row,
-                             Bind(&CallbackHelper::OnInserted, callback.get()),
-                             &cancelable_tracker_);
+  service_->InsertSearchTerm(
+      search_row, BindOnce(&CallbackHelper::OnInserted, callback.get()),
+      &cancelable_tracker_);
 
   RunMessageLoop(callback.get());
   EXPECT_TRUE(callback->success());
@@ -243,11 +233,8 @@ TEST_F(AndroidHistoryProviderServiceTest, TestSearchTerm) {
 
   // Query the inserted row.
   service_->QuerySearchTerms(
-      projections,
-      std::string(),
-      std::vector<base::string16>(),
-      std::string(),
-      Bind(&CallbackHelper::OnQueryResult, callback.get()),
+      projections, std::string(), std::vector<base::string16>(), std::string(),
+      BindOnce(&CallbackHelper::OnQueryResult, callback.get()),
       &cancelable_tracker_);
   RunMessageLoop(callback.get());
   ASSERT_TRUE(callback->success());
@@ -256,10 +243,8 @@ TEST_F(AndroidHistoryProviderServiceTest, TestSearchTerm) {
   // the same result.
   AndroidStatement* statement = callback->statement();
   service_->MoveStatement(
-      statement,
-      0,
-      -1,
-      Bind(&CallbackHelper::OnStatementMoved, callback.get()),
+      statement, 0, -1,
+      BindOnce(&CallbackHelper::OnStatementMoved, callback.get()),
       &cancelable_tracker_);
   RunMessageLoop(callback.get());
   EXPECT_EQ(-1, callback->cursor_position());
@@ -270,20 +255,19 @@ TEST_F(AndroidHistoryProviderServiceTest, TestSearchTerm) {
   // Update the row.
   SearchRow update_row;
   update_row.set_search_time(Time::Now());
-  service_->UpdateSearchTerms(update_row,
-                              std::string(),
-                              std::vector<base::string16>(),
-                              Bind(&CallbackHelper::OnUpdated, callback.get()),
-                              &cancelable_tracker_);
+  service_->UpdateSearchTerms(
+      update_row, std::string(), std::vector<base::string16>(),
+      BindOnce(&CallbackHelper::OnUpdated, callback.get()),
+      &cancelable_tracker_);
   RunMessageLoop(callback.get());
   EXPECT_TRUE(callback->success());
   EXPECT_EQ(1, callback->count());
 
   // Delete the row.
-  service_->DeleteSearchTerms(std::string(),
-                              std::vector<base::string16>(),
-                              Bind(&CallbackHelper::OnDeleted, callback.get()),
-                              &cancelable_tracker_);
+  service_->DeleteSearchTerms(
+      std::string(), std::vector<base::string16>(),
+      BindOnce(&CallbackHelper::OnDeleted, callback.get()),
+      &cancelable_tracker_);
   RunMessageLoop(callback.get());
   EXPECT_TRUE(callback->success());
   EXPECT_EQ(1, callback->count());
