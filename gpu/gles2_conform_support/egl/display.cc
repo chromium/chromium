@@ -63,7 +63,7 @@ const char* Display::QueryString(ThreadState* ts, EGLint name) {
     case EGL_EXTENSIONS:
       return ts->ReturnSuccess("");
     case EGL_VENDOR:
-      return ts->ReturnSuccess("Google Inc.");
+      return ts->ReturnSuccess("Google LLC");
     case EGL_VERSION:
       return ts->ReturnSuccess("1.4");
     default:
