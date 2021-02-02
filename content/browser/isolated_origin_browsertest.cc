@@ -10,11 +10,13 @@
 #include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/child_process_security_policy_impl.h"
+#include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
@@ -47,6 +49,8 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/public/cpp/features.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom-test-utils.h"
 #include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom.h"
@@ -376,6 +380,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderCommandLineTest,
 // This tests that header-based opt-in causes the origin to end up in the
 // isolated origins list.
 IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest, Basic) {
+  base::HistogramTester histograms;
   SetHeaderValue("?1");
 
   GURL url(https_server()->GetURL("isolated.foo.com", "/isolate_origin"));
@@ -384,6 +389,13 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest, Basic) {
   EXPECT_FALSE(ShouldOriginGetOptInIsolation(origin));
   EXPECT_TRUE(NavigateToURL(shell(), url));
   EXPECT_TRUE(ShouldOriginGetOptInIsolation(origin));
+
+  EXPECT_THAT(
+      histograms.GetAllSamples("Navigation.OriginAgentCluster.Result"),
+      testing::ElementsAre(base::Bucket(
+          static_cast<int>(NavigationRequest::OptInOriginIsolationEndResult::
+                               kRequestedAndIsolated),
+          1)));
 }
 
 // These tests ensure that non-HTTPS secure contexts (see
@@ -423,6 +435,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHttpServerHeaderTest,
 // will have a different site instance than the main frame.
 IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
                        SimpleSubOriginIsolationTest) {
+  base::HistogramTester histograms;
   SetHeaderValue("?1");
   // Start off with an a(a) page, then navigate the subframe to an isolated sub
   // origin.
@@ -461,12 +474,25 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
                 ->GetProcessLock(),
             ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(
                 child_frame_node->current_frame_host()->GetProcess()->GetID()));
+
+  EXPECT_THAT(
+      histograms.GetAllSamples("Navigation.OriginAgentCluster.Result"),
+      testing::ElementsAre(
+          base::Bucket(static_cast<int>(
+                           NavigationRequest::OptInOriginIsolationEndResult::
+                               kNotRequestedAndNotIsolated),
+                       2),
+          base::Bucket(static_cast<int>(
+                           NavigationRequest::OptInOriginIsolationEndResult::
+                               kRequestedAndIsolated),
+                       1)));
 }
 
 // In this test the sub-origin isn't isolated because no header is set. It will
 // have the same site instance as the main frame.
 IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
                        SimpleSubOriginNonIsolationTest) {
+  base::HistogramTester histograms;
   // Start off with an a(a) page, then navigate the subframe to an isolated sub
   // origin.
   GURL test_url(https_server()->GetURL("foo.com",
@@ -483,6 +509,12 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
       NavigateToURLFromRenderer(child_frame_node, isolated_suborigin_url));
   EXPECT_EQ(root->current_frame_host()->GetSiteInstance(),
             child_frame_node->current_frame_host()->GetSiteInstance());
+  EXPECT_THAT(
+      histograms.GetAllSamples("Navigation.OriginAgentCluster.Result"),
+      testing::ElementsAre(base::Bucket(
+          static_cast<int>(NavigationRequest::OptInOriginIsolationEndResult::
+                               kNotRequestedAndNotIsolated),
+          3)));
 }
 
 // This test verifies that renderer-initiated navigations to/from isolated
@@ -614,6 +646,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest, MainFrameNavigation) {
 // if a new policy is received that removes the opt-in request.
 IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
                        OriginIsolationStateRetainedForBrowsingInstance) {
+  base::HistogramTester histograms;
   SetHeaderValue("?1");
   // Start off with an a(a,a) page, then navigate the subframe to an isolated
   // sub origin.
@@ -659,6 +692,25 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
   EXPECT_TRUE(policy->HasOriginEverRequestedOptInIsolation(
       web_contents()->GetBrowserContext(),
       url::Origin::Create(isolated_suborigin_url)));
+
+  EXPECT_THAT(
+      histograms.GetAllSamples("Navigation.OriginAgentCluster.Result"),
+      testing::ElementsAre(
+          // Original loads of a(a,a) go here.
+          base::Bucket(static_cast<int>(
+                           NavigationRequest::OptInOriginIsolationEndResult::
+                               kNotRequestedAndNotIsolated),
+                       3),
+          // Second isolated subframe load goes here.
+          base::Bucket(static_cast<int>(
+                           NavigationRequest::OptInOriginIsolationEndResult::
+                               kNotRequestedButIsolated),
+                       1),
+          // First isolated subframe load goes here.
+          base::Bucket(static_cast<int>(
+                           NavigationRequest::OptInOriginIsolationEndResult::
+                               kRequestedAndIsolated),
+                       1)));
 }
 
 // This test ensures that if an origin starts off not being isolated in a
@@ -667,6 +719,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
 // Case #1 where the non-opted-in origin is currently in the frame tree.
 IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
                        OriginNonIsolationStateRetainedForBrowsingInstance1) {
+  base::HistogramTester histograms;
   SetHeaderValue("?0");
   // Start off with an a(a,a) page, then navigate the subframe to an isolated
   // sub origin.
@@ -708,6 +761,19 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
   EXPECT_TRUE(policy->HasOriginEverRequestedOptInIsolation(
       web_contents()->GetBrowserContext(),
       url::Origin::Create(isolated_suborigin_url)));
+
+  EXPECT_THAT(
+      histograms.GetAllSamples("Navigation.OriginAgentCluster.Result"),
+      testing::ElementsAre(
+          // Original loads of a(a,a) go here.
+          base::Bucket(static_cast<int>(
+                           NavigationRequest::OptInOriginIsolationEndResult::
+                               kNotRequestedAndNotIsolated),
+                       4),
+          base::Bucket(static_cast<int>(
+                           NavigationRequest::OptInOriginIsolationEndResult::
+                               kRequestedButNotIsolated),
+                       1)));
 }
 
 // This test ensures that if an origin starts off not being isolated in a
@@ -998,6 +1064,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
 // neither the isolated base origin nor the non-isolated sub-origin has a port
 // value.
 IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest, IsolatedBaseOrigin) {
+  base::HistogramTester histograms;
   SetHeaderValue("?1");
   // Start off with an isolated base-origin in an a(a) configuration, then
   // navigate the subframe to a sub-origin no requesting isolation.
@@ -1068,6 +1135,18 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest, IsolatedBaseOrigin) {
       browser_context, url::Origin::Create(non_isolated_sub_origin1)));
   EXPECT_FALSE(policy->HasOriginEverRequestedOptInIsolation(
       browser_context, url::Origin::Create(non_isolated_sub_origin2)));
+
+  EXPECT_THAT(
+      histograms.GetAllSamples("Navigation.OriginAgentCluster.Result"),
+      testing::ElementsAre(
+          base::Bucket(static_cast<int>(
+                           NavigationRequest::OptInOriginIsolationEndResult::
+                               kNotRequestedAndNotIsolated),
+                       2),
+          base::Bucket(static_cast<int>(
+                           NavigationRequest::OptInOriginIsolationEndResult::
+                               kRequestedAndIsolated),
+                       1)));
 }
 
 // This test is the same as OriginIsolationOptInHeaderTest

@@ -906,6 +906,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Navigation.OriginAgentCluster.Result"
+    enum="OriginAgentClusterEndResult" expires_after="2022-01-26">
+  <owner>alexmos@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <owner>wjmaclean@chromium.org</owner>
+  <summary>
+    For every successful cross-document commit, this logs whether or how
+    OriginAgentCluster was involved. It tracks whether it was requested, as well
+    as whether the isolation was granted, which can be affected by other
+    documents in the same browsing context group.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.PolicyBlocklistNavigationThrottle.PolicyLoadDelay"
     units="ms" expires_after="2021-11-01">
   <owner>ydago@chromium.org</owner>

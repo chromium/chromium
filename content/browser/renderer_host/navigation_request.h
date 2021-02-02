@@ -248,11 +248,14 @@ class CONTENT_EXPORT NavigationRequest
   // The origin isolation end result is determined early in the lifecycle of a
   // NavigationRequest, but used late. In particular, we want to trigger use
   // counters and console warnings once navigation has committed.
+  // This enum is used in UMA histograms, so existing values should neither be
+  // reordered or removed.
   enum class OptInOriginIsolationEndResult {
     kNotRequestedAndNotIsolated,
     kNotRequestedButIsolated,
     kRequestedButNotIsolated,
-    kRequestedAndIsolated
+    kRequestedAndIsolated,
+    kMaxValue = kRequestedAndIsolated
   };
   void DetermineOriginIsolationEndResult(bool is_requested);
   void ProcessOriginIsolationEndResult();
