@@ -126,10 +126,6 @@ bool IsDesktopPlatform() {
 #endif
 }
 
-bool ShouldSkipField(const FormFieldData& field) {
-  return IsCheckable(field.check_status);
-}
-
 bool IsCheckable(const FormFieldData::CheckStatus& check_status) {
   return check_status != FormFieldData::CheckStatus::kNotCheckable;
 }

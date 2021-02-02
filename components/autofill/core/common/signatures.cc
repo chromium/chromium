@@ -74,6 +74,10 @@ FormSignature CalculateFormSignature(const FormData& form_data) {
 
   std::string form_signature_field_names;
 
+  auto ShouldSkipField = [](const FormFieldData& field) {
+    return IsCheckable(field.check_status);
+  };
+
   for (const FormFieldData& field : form_data.fields) {
     if (!ShouldSkipField(field)) {
       // Add all supported form fields (including with empty names) to the

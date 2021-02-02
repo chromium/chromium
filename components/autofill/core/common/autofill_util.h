@@ -67,8 +67,6 @@ size_t GetTextSelectionStart(const base::string16& suggestion,
 // Android or iOS is considered desktop.
 bool IsDesktopPlatform();
 
-bool ShouldSkipField(const FormFieldData& field);
-
 bool IsCheckable(const FormFieldData::CheckStatus& check_status);
 bool IsChecked(const FormFieldData::CheckStatus& check_status);
 void SetCheckStatus(FormFieldData* form_field_data,
