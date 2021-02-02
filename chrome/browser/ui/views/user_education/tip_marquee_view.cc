@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/command_line.h"
+#include "base/dcheck_is_on.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/resources_util.h"
 #include "chrome/grit/theme_resources.h"
@@ -18,6 +20,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -40,6 +43,121 @@ constexpr char kTipMarqueeViewGotIt[] = "Got it";
 constexpr char kTipMarqueeViewClickToHideTip[] = "Click to hide tip";
 constexpr char kTipMarqueeViewClickToShowTip[] = "Click to show tip";
 constexpr char kTipMarqueeViewClickToLearnMore[] = "Click to learn more";
+
+// ------------------------------------------------------------------
+// TODO(crbug.com/1171654): remove the entire section below before this code
+// ships, once the UX demo is over.
+//
+// This section provides the ability to show a demo tip marquee on startup with
+// placeholder text, for UX evaluation only. This code should be removed before
+// beta roll.
+//
+// Valid command-line arguments are:
+//  --tip-marquee-view-test=simple
+//      Displays a tip with no "learn more" link
+//  --tip-marquee-view-test=learn-more
+//      Displays a tip with a "learn more" link that displays a sample bubble
+//
+#define TIP_MARQUEE_VIEW_DEMO_ENABLED() DCHECK_IS_ON()
+
+#if TIP_MARQUEE_VIEW_DEMO_ENABLED()
+
+constexpr char kTipMarqueeViewTestSwitch[] = "tip-marquee-view-test";
+constexpr char kTipMarqueeViewTestTypeSimple[] = "simple";
+constexpr char kTipMarqueeViewTestTypeLearnMore[] = "learn-more";
+constexpr char kTipMarqueeViewTestTitleText[] = "Lorem Ipsum";
+constexpr char kTipMarqueeViewTestText[] =
+    "Lorem ipsum dolor sit amet consectetur";
+constexpr char kTipMarqueeViewTestBodyText[] =
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod "
+    "tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim "
+    "veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea "
+    "commodo consequat.";
+
+class TestTipMarqueeViewLearnMoreBubble
+    : public views::BubbleDialogDelegateView {
+ public:
+  explicit TestTipMarqueeViewLearnMoreBubble(TipMarqueeView* marquee)
+      : BubbleDialogDelegateView(marquee, views::BubbleBorder::TOP_LEFT),
+        marquee_(marquee) {
+    SetButtons(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
+    SetButtonLabel(ui::DIALOG_BUTTON_OK,
+                   base::ASCIIToUTF16(kTipMarqueeViewGotIt));
+    SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+                   l10n_util::GetStringUTF16(IDS_CLOSE));
+    SetAcceptCallback(base::BindOnce(
+        &TestTipMarqueeViewLearnMoreBubble::OnAccept, base::Unretained(this)));
+    set_close_on_deactivate(true);
+    SetOwnedByWidget(true);
+
+    auto* const layout =
+        SetLayoutManager(std::make_unique<views::FlexLayout>());
+    layout->SetOrientation(views::LayoutOrientation::kHorizontal);
+    layout->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
+    layout->SetInteriorMargin(gfx::Insets(10, 0, 0, 0));
+    views::View* const placeholder_image =
+        AddChildView(std::make_unique<views::View>());
+    placeholder_image->SetPreferredSize(gfx::Size(150, 175));
+    placeholder_image->SetBackground(
+        views::CreateSolidBackground(SK_ColorLTGRAY));
+
+    views::View* const rhs_view = AddChildView(std::make_unique<views::View>());
+    auto* const rhs_layout =
+        rhs_view->SetLayoutManager(std::make_unique<views::FlexLayout>());
+    rhs_layout->SetOrientation(views::LayoutOrientation::kVertical);
+    rhs_layout->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
+    rhs_layout->SetInteriorMargin(gfx::Insets(0, 16, 0, 0));
+
+    auto* const title_text =
+        rhs_view->AddChildView(std::make_unique<views::Label>(
+            base::ASCIIToUTF16(kTipMarqueeViewTestTitleText),
+            views::style::CONTEXT_DIALOG_TITLE));
+    title_text->SetProperty(views::kMarginsKey, gfx::Insets(6, 0, 10, 0));
+
+    auto* const body_text =
+        rhs_view->AddChildView(std::make_unique<views::Label>(
+            base::ASCIIToUTF16(kTipMarqueeViewTestBodyText),
+            views::style::CONTEXT_DIALOG_BODY_TEXT));
+    body_text->SetMultiLine(true);
+    body_text->SetMaximumWidth(250);
+    body_text->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+  }
+
+ private:
+  void OnAccept() { marquee_->ClearTip(); }
+
+  TipMarqueeView* const marquee_;
+};
+
+void ShowTestTipMarqueeViewLearnMoreBubble(TipMarqueeView* marquee) {
+  views::BubbleDialogDelegateView::CreateBubble(
+      std::make_unique<TestTipMarqueeViewLearnMoreBubble>(marquee))
+      ->Show();
+}
+
+void MaybeShowTestTipMarqueeView(TipMarqueeView* marquee) {
+  base::CommandLine* const command_line =
+      base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(kTipMarqueeViewTestSwitch)) {
+    const std::string test_type =
+        command_line->GetSwitchValueASCII(kTipMarqueeViewTestSwitch);
+    if (test_type == kTipMarqueeViewTestTypeSimple) {
+      marquee->SetTip(base::ASCIIToUTF16(kTipMarqueeViewTestText));
+    } else if (test_type == kTipMarqueeViewTestTypeLearnMore) {
+      marquee->SetTip(
+          base::ASCIIToUTF16(kTipMarqueeViewTestText),
+          base::BindRepeating(&ShowTestTipMarqueeViewLearnMoreBubble));
+    } else {
+      LOG(WARNING) << "Invalid switch value: --" << kTipMarqueeViewTestSwitch
+                   << "=" << test_type;
+    }
+  }
+}
+
+#endif  // TIP_MARQUEE_VIEW_DEMO_ENABLED()
+// TODO(crbug.com/1171654): remove the entire section above before this code
+// ships, once the UX demo is over.
+// ------------------------------------------------------------------
 
 // The width of the multiline text display in the overflow bubble.
 constexpr int kTipMarqueeViewOverflowTextWidth = 250;
@@ -97,6 +215,10 @@ TipMarqueeView::TipMarqueeView(int text_context, int text_style) {
       gfx::Insets(0, kTipMarqueeIconTotalWidth, 0, 0)));
 
   SetVisible(false);
+
+#if TIP_MARQUEE_VIEW_DEMO_ENABLED()
+  MaybeShowTestTipMarqueeView(this);
+#endif
 }
 
 TipMarqueeView::~TipMarqueeView() = default;
