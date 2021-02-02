@@ -37,8 +37,8 @@ class TestBinarySizes(unittest.TestCase):
     self.assertEqual(commit_position, 819458)
 
   def testCompressedSize(self):
-    """Verifies that the compressed file size can be extracted from the zstd
-    stderr output."""
+    """Verifies that the compressed file size can be extracted from the
+    blobfs-compression output."""
 
     uncompressed_file = tempfile.NamedTemporaryFile(delete=False)
     for line in range(200):
@@ -46,16 +46,13 @@ class TestBinarySizes(unittest.TestCase):
           'Lorem ipsum dolor sit amet, consectetur adipiscing elit. '
           'Sed eleifend')
     uncompressed_file.close()
-    compressed_path = uncompressed_file.name + '.zst'
-    devnull = open(os.devnull)
-    zstd_path = os.path.join(DIR_SOURCE_ROOT, 'third_party', 'zstd', 'bin',
-                             'zstd')
-    subprocess.call(
-        [zstd_path, '-14', uncompressed_file.name, '-o', compressed_path],
-        stderr=devnull)
-    self.assertEqual(
-        binary_sizes.CompressedSize(uncompressed_file.name, ['-14']),
-        os.path.getsize(compressed_path))
+    compressed_path = uncompressed_file.name + '.compressed'
+    compressor_path = os.path.join(DIR_SOURCE_ROOT, 'third_party',
+                                   'fuchsia-sdk', 'sdk', 'tools', 'x64',
+                                   'blobfs-compression')
+    subprocess.call([compressor_path, uncompressed_file.name, compressed_path])
+    self.assertEqual(binary_sizes.CompressedSize(uncompressed_file.name),
+                     os.path.getsize(compressed_path))
     os.remove(uncompressed_file.name)
     os.remove(compressed_path)
 

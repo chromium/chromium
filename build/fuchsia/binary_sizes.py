@@ -171,41 +171,31 @@ def WriteTestResults(results_path, test_completed, test_status, timestamp):
     json.dump(test_results, results_file)
 
 
-def GetZstdPathFromPlatform():
-  """Returns path to zstd compression utility based on the current platform."""
+def GetCompressedSize(file_path):
+  """Measures file size after blobfs compression."""
 
-  arch = GetHostArchFromPlatform()
-  if arch == 'arm64':
-    zstd_arch_dir = 'zstd-linux-arm64'
-  elif arch == 'x64':
-    zstd_arch_dir = 'zstd-linux-x64'
-  else:
-    raise Exception('zstd path unknown for architecture "%s"' % arch)
+  compressor_path = GetHostToolPathFromPlatform('blobfs-compression')
+  try:
+    temp_dir = tempfile.mkdtemp()
+    compressed_file_path = os.path.join(temp_dir, os.path.basename(file_path))
+    proc = subprocess.Popen([compressor_path, file_path, compressed_file_path],
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.STDOUT)
+    proc.wait()
+    compressor_output = proc.stdout.read()
+    if proc.returncode != 0:
+      print(compressor_output, file=sys.stderr)
+      raise Exception('Error while running %s' % compressor_path)
+  finally:
+    shutil.rmtree(temp_dir)
 
-  return os.path.join(DIR_SOURCE_ROOT, 'third_party', zstd_arch_dir, 'bin',
-                      'zstd')
+  # Match a compressed bytes total from blobfs-compression output like
+  # Wrote 360830 bytes (40% compression)
+  blobfs_compressed_bytes_re = r'Wrote\s+(?P<bytes>\d+)\s+bytes'
 
-
-def CompressedSize(file_path, compression_args):
-  """Calculates size file after zstd compression.  Uses non-chunked compression
-  (Fuchsia uses chunked compression which is not available in the zstd command
-  line tool).  The compression level can be set using compression_args."""
-
-  zstd_path = GetZstdPathFromPlatform()
-  devnull = open(os.devnull)
-  proc = subprocess.Popen([zstd_path, '-f', file_path, '-c'] + compression_args,
-                          stdout=open(os.devnull, 'w'),
-                          stderr=subprocess.PIPE)
-  proc.wait()
-  zstd_stats = proc.stderr.readline()
-
-  # Match a compressed bytes total from zstd stderr output like
-  # test                 : 14.04%   (  3890 =>    546 bytes, test.zst)
-  zstd_compressed_bytes_re = r'\d+\s+=>\s+(?P<bytes>\d+) bytes,'
-
-  match = re.search(zstd_compressed_bytes_re, zstd_stats)
+  match = re.search(blobfs_compressed_bytes_re, compressor_output)
   if not match:
-    print(zstd_stats)
+    print(compressor_output, file=sys.stderr)
     raise Exception('Could not get compressed bytes for %s' % file_path)
 
   return int(match.group('bytes'))
@@ -291,7 +281,7 @@ def FarBaseName(name):
   return name
 
 
-def GetBlobSizes(far_file, build_out_dir, extract_dir, compression_args):
+def GetBlobSizes(far_file, build_out_dir, extract_dir):
   """Calculates compressed and uncompressed blob sizes for specified FAR file.
   Does not count blobs from SDK libraries."""
 
@@ -320,15 +310,14 @@ def GetBlobSizes(far_file, build_out_dir, extract_dir, compression_args):
   for blob_name in blob_name_hashes:
     if os.path.basename(blob_name) not in excluded_files:
       blob_path = os.path.join(far_extract_dir, blob_name_hashes[blob_name])
-      compressed_size = CompressedSize(blob_path, compression_args)
+      compressed_size = GetCompressedSize(blob_path)
       uncompressed_size = os.path.getsize(blob_path)
       blob_sizes[blob_name] = PackageSizes(compressed_size, uncompressed_size)
 
   return blob_sizes
 
 
-def GetPackageSizes(far_files, build_out_dir, extract_dir, compression_args,
-                    print_sizes):
+def GetPackageSizes(far_files, build_out_dir, extract_dir, print_sizes):
   """Calculates compressed and uncompressed package sizes from blob sizes.
   Does not count blobs from SDK libraries."""
 
@@ -340,8 +329,7 @@ def GetPackageSizes(far_files, build_out_dir, extract_dir, compression_args,
   for far_file in far_files:
     package_name = FarBaseName(far_file)
     package_blob_sizes[package_name] = GetBlobSizes(far_file, build_out_dir,
-                                                    extract_dir,
-                                                    compression_args)
+                                                    extract_dir)
 
   # Optionally print package blob sizes (does not count sharing).
   if print_sizes:
@@ -383,8 +371,7 @@ def GetBinarySizes(args, sizes_config):
   # Calculate compressed and uncompressed package sizes.
   extract_dir = args.extract_dir if args.extract_dir else tempfile.mkdtemp()
   package_sizes = GetPackageSizes(sizes_config['far_files'], args.build_out_dir,
-                                  extract_dir, sizes_config['zstd_args'],
-                                  args.verbose)
+                                  extract_dir, args.verbose)
   if not args.extract_dir:
     shutil.rmtree(extract_dir)
 
@@ -472,11 +459,6 @@ def main():
   if args.verbose:
     print('Sizes Config:')
     print(json.dumps(sizes_config))
-
-  # If the zstd compression level is not specified, use Fuchsia's default level.
-  sizes_config.setdefault('zstd_args', [])
-  if not any(re.match(r'-\d+$', arg) for arg in sizes_config['zstd_args']):
-    sizes_config['zstd_args'].append('-14')
 
   for far_rel_path in sizes_config['far_files']:
     far_abs_path = os.path.join(args.build_out_dir, far_rel_path)
