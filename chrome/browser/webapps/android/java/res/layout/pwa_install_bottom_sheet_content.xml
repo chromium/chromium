@@ -31,6 +31,7 @@
         android:layout_height="match_parent"
         android:layout_marginTop="22dp"
         android:layout_marginBottom="22dp"
+        android:minHeight="320dp"
         android:orientation="horizontal"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 </LinearLayout>

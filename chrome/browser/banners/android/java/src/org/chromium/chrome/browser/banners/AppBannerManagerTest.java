@@ -758,7 +758,7 @@ public class AppBannerManagerTest {
             TouchCommon.singleClickView(dragHandle);
         });
 
-        waitUntilBottomSheetStatus(mTabbedActivityTestRule, BottomSheetController.SheetState.HALF);
+        waitUntilBottomSheetStatus(mTabbedActivityTestRule, BottomSheetController.SheetState.FULL);
 
         TextView appName =
                 toolbar.findViewById(PwaInstallBottomSheetView.getAppNameViewIdForTesting());

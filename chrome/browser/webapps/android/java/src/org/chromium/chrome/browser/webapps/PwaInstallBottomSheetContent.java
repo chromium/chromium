@@ -43,6 +43,11 @@ public class PwaInstallBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
+    public float getFullHeightRatio() {
+        return BottomSheetContent.HeightMode.WRAP_CONTENT;
+    }
+
+    @Override
     public int getVerticalScrollOffset() {
         // TODO(finnur): Handle this correctly for small screens.
         return 0;
