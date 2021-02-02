@@ -308,9 +308,12 @@ bool DedicatedWorker::HasPendingActivity() const {
 
 void DedicatedWorker::OnWorkerHostCreated(
     CrossVariantMojoRemote<mojom::blink::BrowserInterfaceBrokerInterfaceBase>
-        browser_interface_broker) {
+        browser_interface_broker,
+    CrossVariantMojoRemote<mojom::blink::DedicatedWorkerHostInterfaceBase>
+        dedicated_worker_host) {
   DCHECK(!browser_interface_broker_);
   browser_interface_broker_ = std::move(browser_interface_broker);
+  pending_dedicated_worker_host_ = std::move(dedicated_worker_host);
 }
 
 void DedicatedWorker::OnScriptLoadStarted(
@@ -399,7 +402,8 @@ void DedicatedWorker::ContinueStart(
                                       response_address_space),
       std::move(worker_main_script_load_params), options_, script_url,
       *outside_fetch_client_settings_object_, v8_stack_trace_id_, source_code,
-      reject_coep_unsafe_none, token_);
+      reject_coep_unsafe_none, token_,
+      std::move(pending_dedicated_worker_host_));
 }
 
 std::unique_ptr<GlobalScopeCreationParams>

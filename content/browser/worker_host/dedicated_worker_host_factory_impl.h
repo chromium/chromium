@@ -53,9 +53,7 @@ class CONTENT_EXPORT DedicatedWorkerHostFactoryImpl
           outside_fetch_client_settings_object,
       mojo::PendingRemote<blink::mojom::BlobURLToken> blob_url_token,
       mojo::PendingRemote<blink::mojom::DedicatedWorkerHostFactoryClient>
-          client,
-      mojo::PendingReceiver<blink::mojom::DedicatedWorkerHost> host_receiver)
-      override;
+          client) override;
 
  private:
   // The ID of the RenderProcessHost where the worker will live.

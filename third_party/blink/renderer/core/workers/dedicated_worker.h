@@ -12,6 +12,7 @@
 #include "third_party/blink/public/common/loader/worker_main_script_load_parameters.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/worker/dedicated_worker_host.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_dedicated_worker.h"
 #include "third_party/blink/public/platform/web_dedicated_worker_host_factory_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
@@ -85,10 +86,11 @@ class CORE_EXPORT DedicatedWorker final
   bool HasPendingActivity() const final;
 
   // Implements WebDedicatedWorker.
-  // Called only when PlzDedicatedWorker is enabled.
   void OnWorkerHostCreated(
       CrossVariantMojoRemote<mojom::blink::BrowserInterfaceBrokerInterfaceBase>
-          browser_interface_broker) override;
+          browser_interface_broker,
+      CrossVariantMojoRemote<mojom::blink::DedicatedWorkerHostInterfaceBase>
+          dedicated_worker_host) override;
   void OnScriptLoadStarted(std::unique_ptr<WorkerMainScriptLoadParameters>
                                worker_main_script_load_params) override;
   void OnScriptLoadStartFailed() override;
@@ -158,6 +160,10 @@ class CORE_EXPORT DedicatedWorker final
 
   mojo::PendingRemote<mojom::blink::BrowserInterfaceBroker>
       browser_interface_broker_;
+
+  // Passed to DedicatedWorkerMessagingProxy on worker thread start.
+  mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>
+      pending_dedicated_worker_host_;
 
   // Whether the worker is frozen due to a call from this context.
   bool requested_frozen_ = false;

@@ -10,6 +10,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
+#include "third_party/blink/public/mojom/worker/dedicated_worker_host.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
@@ -36,7 +37,10 @@ class DedicatedWorkerThreadForTest final : public DedicatedWorkerThread {
  public:
   DedicatedWorkerThreadForTest(ExecutionContext* parent_execution_context,
                                DedicatedWorkerObjectProxy& worker_object_proxy)
-      : DedicatedWorkerThread(parent_execution_context, worker_object_proxy) {
+      : DedicatedWorkerThread(
+            parent_execution_context,
+            worker_object_proxy,
+            mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>()) {
     worker_backing_thread_ = std::make_unique<WorkerBackingThread>(
         ThreadCreationParams(ThreadType::kTestThread));
   }
@@ -49,7 +53,8 @@ class DedicatedWorkerThreadForTest final : public DedicatedWorkerThread {
           .InitWithNewPipeAndPassReceiver();
     }
     auto* global_scope = DedicatedWorkerGlobalScope::Create(
-        std::move(creation_params), this, time_origin_);
+        std::move(creation_params), this, time_origin_,
+        mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>());
     // Initializing a global scope with a dummy creation params may emit warning
     // messages (e.g., invalid CSP directives). Clear them here for tests that
     // check console messages (i.e., UseCounter tests).

@@ -31,7 +31,9 @@ interface DedicatedWorkerHostFactoryClient {
   OnWorkerHostCreated(
       // Used for accessing services from the worker.
       pending_remote<blink.mojom.BrowserInterfaceBroker>
-          browser_interface_broker);
+          browser_interface_broker,
+      // Used for updating its state from the worker.
+      pending_remote<DedicatedWorkerHost> host);
 
   // Called when the worker host started loading the main worker script. This
   // is called after OnWorkerHostCreated(). This is never called when
@@ -99,6 +101,5 @@ interface DedicatedWorkerHostFactory {
       blink.mojom.FetchClientSettingsObject
           outside_fetch_client_settings_object,
       pending_remote<blink.mojom.BlobURLToken>? blob_url_token,
-      pending_remote<DedicatedWorkerHostFactoryClient> client,
-      pending_receiver<DedicatedWorkerHost> host);
+      pending_remote<DedicatedWorkerHostFactoryClient> client);
 };

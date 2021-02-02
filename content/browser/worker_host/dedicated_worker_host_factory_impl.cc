@@ -111,8 +111,8 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad(
     blink::mojom::FetchClientSettingsObjectPtr
         outside_fetch_client_settings_object,
     mojo::PendingRemote<blink::mojom::BlobURLToken> blob_url_token,
-    mojo::PendingRemote<blink::mojom::DedicatedWorkerHostFactoryClient> client,
-    mojo::PendingReceiver<blink::mojom::DedicatedWorkerHost> host_receiver) {
+    mojo::PendingRemote<blink::mojom::DedicatedWorkerHostFactoryClient>
+        client) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker)) {
     mojo::ReportBadMessage("DWH_BROWSER_SCRIPT_FETCH_DISABLED");
@@ -138,17 +138,19 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad(
       coep_reporter;
   coep_reporter_->Clone(coep_reporter.InitWithNewPipeAndPassReceiver());
 
+  mojo::PendingRemote<blink::mojom::DedicatedWorkerHost> pending_remote_host;
   auto* host = new DedicatedWorkerHost(
       service, token, worker_process_host, creator_render_frame_host_id_,
       creator_worker_token_, ancestor_render_frame_host_id_, creator_origin_,
       isolation_info_, cross_origin_embedder_policy_, std::move(coep_reporter),
-      std::move(host_receiver));
+      pending_remote_host.InitWithNewPipeAndPassReceiver());
   mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker;
   host->BindBrowserInterfaceBrokerReceiver(
       broker.InitWithNewPipeAndPassReceiver());
   mojo::Remote<blink::mojom::DedicatedWorkerHostFactoryClient> remote_client(
       std::move(client));
-  remote_client->OnWorkerHostCreated(std::move(broker));
+  remote_client->OnWorkerHostCreated(std::move(broker),
+                                     std::move(pending_remote_host));
   host->StartScriptLoad(script_url, credentials_mode,
                         std::move(outside_fetch_client_settings_object),
                         std::move(blob_url_token), std::move(remote_client));

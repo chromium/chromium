@@ -70,7 +70,9 @@ class DedicatedWorkerHostFactoryClient final
   // Implements blink::mojom::DedicatedWorkerHostFactoryClient.
   void OnWorkerHostCreated(
       mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
-          browser_interface_broker) override;
+          browser_interface_broker,
+      mojo::PendingRemote<blink::mojom::DedicatedWorkerHost>
+          dedicated_worker_host) override;
   void OnScriptLoadStarted(
       blink::mojom::ServiceWorkerContainerInfoForClientPtr
           service_worker_container_info,
@@ -95,7 +97,6 @@ class DedicatedWorkerHostFactoryClient final
   mojo::Remote<blink::mojom::DedicatedWorkerHostFactory> factory_;
   mojo::Receiver<blink::mojom::DedicatedWorkerHostFactoryClient> receiver_{
       this};
-  mojo::Remote<blink::mojom::DedicatedWorkerHost> remote_host_;
 };
 
 }  // namespace content

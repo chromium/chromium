@@ -64,7 +64,9 @@ namespace blink {
 DedicatedWorkerGlobalScope* DedicatedWorkerGlobalScope::Create(
     std::unique_ptr<GlobalScopeCreationParams> creation_params,
     DedicatedWorkerThread* thread,
-    base::TimeTicks time_origin) {
+    base::TimeTicks time_origin,
+    mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>
+        dedicated_worker_host) {
   std::unique_ptr<Vector<String>> outside_origin_trial_tokens =
       std::move(creation_params->origin_trial_tokens);
   BeginFrameProviderParams begin_frame_provider_params =
@@ -81,7 +83,8 @@ DedicatedWorkerGlobalScope* DedicatedWorkerGlobalScope::Create(
   auto* global_scope = MakeGarbageCollected<DedicatedWorkerGlobalScope>(
       std::move(creation_params), thread, time_origin,
       std::move(outside_origin_trial_tokens), begin_frame_provider_params,
-      parent_cross_origin_isolated_capability);
+      parent_cross_origin_isolated_capability,
+      std::move(dedicated_worker_host));
 
   if (global_scope->IsOffMainThreadScriptFetchDisabled()) {
     // Legacy on-the-main-thread worker script fetch (to be removed):
@@ -126,14 +129,17 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
     base::TimeTicks time_origin,
     std::unique_ptr<Vector<String>> outside_origin_trial_tokens,
     const BeginFrameProviderParams& begin_frame_provider_params,
-    bool parent_cross_origin_isolated_capability)
+    bool parent_cross_origin_isolated_capability,
+    mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>
+        dedicated_worker_host)
     : DedicatedWorkerGlobalScope(
           ParseCreationParams(std::move(creation_params)),
           thread,
           time_origin,
           std::move(outside_origin_trial_tokens),
           begin_frame_provider_params,
-          parent_cross_origin_isolated_capability) {}
+          parent_cross_origin_isolated_capability,
+          std::move(dedicated_worker_host)) {}
 
 DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
     ParsedCreationParams parsed_creation_params,
@@ -141,7 +147,9 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
     base::TimeTicks time_origin,
     std::unique_ptr<Vector<String>> outside_origin_trial_tokens,
     const BeginFrameProviderParams& begin_frame_provider_params,
-    bool parent_cross_origin_isolated_capability)
+    bool parent_cross_origin_isolated_capability,
+    mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>
+        dedicated_worker_host)
     : WorkerGlobalScope(std::move(parsed_creation_params.creation_params),
                         thread,
                         time_origin),
@@ -163,6 +171,9 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
   ReadyToRunWorkerScript();
   // Inherit the outside's origin trial tokens.
   OriginTrialContext::AddTokens(this, outside_origin_trial_tokens.get());
+
+  dedicated_worker_host_.Bind(std::move(dedicated_worker_host),
+                              GetTaskRunner(TaskType::kInternalDefault));
 }
 
 DedicatedWorkerGlobalScope::~DedicatedWorkerGlobalScope() = default;
@@ -434,6 +445,7 @@ DedicatedWorkerObjectProxy& DedicatedWorkerGlobalScope::WorkerObjectProxy()
 }
 
 void DedicatedWorkerGlobalScope::Trace(Visitor* visitor) const {
+  visitor->Trace(dedicated_worker_host_);
   visitor->Trace(animation_frame_provider_);
   WorkerGlobalScope::Trace(visitor);
 }
