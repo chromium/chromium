@@ -2772,8 +2772,6 @@ crbug.com/626703 external/wpt/html/semantics/forms/the-fieldset-element/accessib
 crbug.com/626703 external/wpt/html/semantics/forms/the-fieldset-element/accessibility/legend-display-none-manual.html [ Skip ]
 crbug.com/626703 external/wpt/webrtc/RTCPeerConnection-setRemoteDescription-tracks.https.html [ Timeout ]
 crbug.com/626703 external/wpt/webrtc/RTCPeerConnection-remote-track-mute.https.html [ Timeout ]
-crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/system-cyclic-invalid.html [ Pass Failure Timeout ]
-crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/system-alphabetic-invalid.html [ Pass Failure Timeout ]
 crbug.com/626703 external/wpt/css/css-values/ch-unit-011.html [ Failure ]
 crbug.com/626703 [ Mac ] external/wpt/html/browsers/the-window-object/apis-for-creating-and-navigating-browsing-contexts-by-name/open-features-tokenization-width-height.html [ Crash Timeout ]
 crbug.com/626703 external/wpt/css/css-values/ic-unit-010.html [ Failure ]
@@ -4539,13 +4537,6 @@ crbug.com/933880 http/tests/misc/redirect-to-about-blank.html [ Failure Timeout 
 # Sheriff 2019-02-22
 crbug.com/934636 http/tests/security/cross-origin-indexeddb-allowed.html [ Crash Pass ]
 crbug.com/934818 http/tests/devtools/tracing/decode-resize.js [ Failure Pass ]
-
-# Sheriff 2019-02-25
-crbug.com/935689 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/symbols-function-invalid.html [ Failure Pass ]
-crbug.com/935689 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/system-additive-invalid.html [ Failure Pass ]
-crbug.com/935689 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/system-fixed-invalid.html [ Failure Pass ]
-crbug.com/935689 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/system-numeric-invalid.html [ Failure Pass ]
-crbug.com/935689 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/system-symbolic-invalid.html [ Failure Pass ]
 
 # Sheriff 2019-02-26
 crbug.com/936165 media/autoplay-muted.html [ Timeout Pass ]
