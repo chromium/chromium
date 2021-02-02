@@ -614,14 +614,9 @@ void Surface::TakeCopyOutputRequestsFromClient() {
   }
 }
 
-bool Surface::HasCopyOutputRequests() {
-  if (!active_frame_data_)
-    return false;
-  for (const auto& render_pass : active_frame_data_->frame.render_pass_list) {
-    if (!render_pass->copy_requests.empty())
-      return true;
-  }
-  return false;
+bool Surface::HasCopyOutputRequests() const {
+  return active_frame_data_ &&
+         active_frame_data_->frame.HasCopyOutputRequests();
 }
 
 const CompositorFrame& Surface::GetActiveFrame() const {

@@ -162,9 +162,8 @@ class VIZ_SERVICE_EXPORT Surface final {
   // Surface.
   void TakeCopyOutputRequestsFromClient();
 
-  // Returns whether there is a CopyOutputRequest inside the active frame or at
-  // the client level.
-  bool HasCopyOutputRequests();
+  // Returns whether there is a CopyOutputRequest inside the active frame.
+  bool HasCopyOutputRequests() const;
 
   // Returns the most recent frame that is eligible to be rendered.
   // You must check whether HasActiveFrame() returns true before calling this
