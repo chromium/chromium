@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_PERSISTENT_NOTIFICATION_HANDLER_H_
 #define CHROME_BROWSER_NOTIFICATIONS_PERSISTENT_NOTIFICATION_HANDLER_H_
 
+#include <map>
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
@@ -12,6 +13,7 @@
 #include "chrome/common/buildflags.h"
 
 class ScopedKeepAlive;
+class ScopedProfileKeepAlive;
 
 namespace content {
 enum class PersistentNotificationStatus;
@@ -57,8 +59,17 @@ class PersistentNotificationHandler : public NotificationHandler {
   // the last KeepAlive. (see https://crbug.com/612815)
   std::unique_ptr<ScopedKeepAlive> click_dispatch_keep_alive_;
 
+  // Same as |click_dispatch_keep_alive_|, but prevents Profile* deletion
+  // instead of BrowserProcess teardown.
+  std::map<Profile*, std::unique_ptr<ScopedProfileKeepAlive>>
+      click_dispatch_profile_keep_alives_;
+
   // Number of in-flight notification click events.
   int pending_click_dispatch_events_ = 0;
+
+  // Number of in-flight notification click events per Profile, for
+  // |click_dispatch_profile_keep_alives_|.
+  std::map<Profile*, int> profile_pending_click_dispatch_events_;
 #endif
 
   base::WeakPtrFactory<PersistentNotificationHandler> weak_ptr_factory_{this};

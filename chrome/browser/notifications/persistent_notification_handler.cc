@@ -26,6 +26,8 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #endif
@@ -92,12 +94,17 @@ void PersistentNotificationHandler::OnClick(
       NotificationMetricsLoggerFactory::GetForBrowserContext(profile);
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
-  // Ensure the browser stays alive while the event is processed. The keep alive
-  // will be reset when all click events have been acknowledged.
+  // Ensure the browser and Profile stay alive while the event is processed. The
+  // keep alives will be reset when all click events have been acknowledged.
   if (pending_click_dispatch_events_++ == 0) {
     click_dispatch_keep_alive_ = std::make_unique<ScopedKeepAlive>(
         KeepAliveOrigin::PENDING_NOTIFICATION_CLICK_EVENT,
         KeepAliveRestartOption::DISABLED);
+  }
+  if (profile_pending_click_dispatch_events_[profile]++ == 0) {
+    click_dispatch_profile_keep_alives_[profile] =
+        std::make_unique<ScopedProfileKeepAlive>(
+            profile, ProfileKeepAliveOrigin::kPendingNotificationClickEvent);
   }
 #endif
 
@@ -165,6 +172,8 @@ void PersistentNotificationHandler::OnClickCompleted(
   // Reset the keep alive if all in-flight events have been processed.
   if (--pending_click_dispatch_events_ == 0)
     click_dispatch_keep_alive_.reset();
+  if (--profile_pending_click_dispatch_events_[profile] == 0)
+    click_dispatch_profile_keep_alives_[profile].reset();
 #endif
 
   std::move(completed_closure).Run();

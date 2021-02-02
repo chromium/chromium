@@ -27,6 +27,10 @@ std::ostream& operator<<(std::ostream& out,
       return out << "kAppWindow";
     case ProfileKeepAliveOrigin::kBackgroundSync:
       return out << "kBackgroundSync";
+    case ProfileKeepAliveOrigin::kNotification:
+      return out << "kNotification";
+    case ProfileKeepAliveOrigin::kPendingNotificationClickEvent:
+      return out << "kPendingNotificationClickEvent";
   }
   NOTREACHED();
   return out << static_cast<int>(origin);

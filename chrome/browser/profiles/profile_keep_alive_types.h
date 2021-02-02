@@ -51,7 +51,14 @@ enum class ProfileKeepAliveOrigin {
   // Background sync in progress.
   kBackgroundSync = 8,
 
-  kMaxValue = kBackgroundSync,
+  // A notification is active in the system tray.
+  kNotification = 9,
+
+  // The user just clicked on a notification. This might cause e.g. a new
+  // browser window to open, so wait for the event to finish processing.
+  kPendingNotificationClickEvent = 10,
+
+  kMaxValue = kPendingNotificationClickEvent,
 };
 
 std::ostream& operator<<(std::ostream& out,

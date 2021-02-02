@@ -12,6 +12,7 @@
 #include "ui/message_center/public/cpp/notification.h"
 
 class ScopedKeepAlive;
+class ScopedProfileKeepAlive;
 
 // This class keeps a Notification object and its corresponding Profile. It
 // permutes the notification's ID to include a profile identifier so that two
@@ -59,6 +60,7 @@ class ProfileNotification {
   NotificationHandler::Type type_;
 
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
+  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_PROFILE_NOTIFICATION_H_
