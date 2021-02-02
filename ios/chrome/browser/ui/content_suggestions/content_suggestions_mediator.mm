@@ -162,10 +162,10 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   if (self) {
     _contentSuggestionsEnabled =
         prefService->FindPreference(prefs::kArticlesForYouEnabled);
-    // TODO(crbug.com/1085419): Stop observing this Service once DiscoverFeed is
-    // launched.
-    _suggestionBridge =
-        std::make_unique<ContentSuggestionsServiceBridge>(self, contentService);
+    if (!IsDiscoverFeedEnabled()) {
+      _suggestionBridge = std::make_unique<ContentSuggestionsServiceBridge>(
+          self, contentService);
+    }
     _contentService = contentService;
     _sectionInformationByCategory = [[NSMutableDictionary alloc] init];
 
@@ -447,10 +447,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 - (void)contentSuggestionsService:
             (ntp_snippets::ContentSuggestionsService*)suggestionsService
          newSuggestionsInCategory:(ntp_snippets::Category)category {
-  // Ignore newSuggestionsInCategory if the DiscoverFeed is enabled, if not
-  // these might cause some unecessary section updates and crashes.
-  if (IsDiscoverFeedEnabled())
-    return;
+  DCHECK(!IsDiscoverFeedEnabled());
 
   ContentSuggestionsCategoryWrapper* wrapper =
       [ContentSuggestionsCategoryWrapper wrapperWithCategory:category];
@@ -474,10 +471,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
             (ntp_snippets::ContentSuggestionsService*)suggestionsService
                          category:(ntp_snippets::Category)category
                   statusChangedTo:(ntp_snippets::CategoryStatus)status {
-  // Ignore all ContentSuggestionsService if the DiscoverFeed is enabled, if not
-  // these might cause some unecessary section updates and crashes.
-  if (IsDiscoverFeedEnabled())
-    return;
+  DCHECK(!IsDiscoverFeedEnabled());
 
   ContentSuggestionsCategoryWrapper* wrapper =
       [[ContentSuggestionsCategoryWrapper alloc] initWithCategory:category];
@@ -510,6 +504,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
             (ntp_snippets::ContentSuggestionsService*)suggestionsService
             suggestionInvalidated:
                 (const ntp_snippets::ContentSuggestion::ID&)suggestion_id {
+  DCHECK(!IsDiscoverFeedEnabled());
   ContentSuggestionsCategoryWrapper* wrapper =
       [[ContentSuggestionsCategoryWrapper alloc]
           initWithCategory:suggestion_id.category()];
@@ -523,6 +518,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 
 - (void)contentSuggestionsServiceFullRefreshRequired:
     (ntp_snippets::ContentSuggestionsService*)suggestionsService {
+  DCHECK(!IsDiscoverFeedEnabled());
   // The UICollectionView -reloadData method is a no-op if it is called at the
   // same time as other collection updates. This full refresh command can come
   // at the same time as other collection update commands. To make sure that it
@@ -537,6 +533,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 
 - (void)contentSuggestionsServiceShutdown:
     (ntp_snippets::ContentSuggestionsService*)suggestionsService {
+  DCHECK(!IsDiscoverFeedEnabled());
   // Update dataSink.
 }
 
