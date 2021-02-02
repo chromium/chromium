@@ -645,3 +645,14 @@ if (proprietary_codecs && enable_platform_hevc) {
     ]
   }
 }
+
+if ((is_chromeos_ash && use_vaapi) || is_win) {
+  fuzzer_test("media_av1_decoder_fuzzer") {
+    sources = [ "av1_decoder_fuzzertest.cc" ]
+    deps = [
+      ":common",
+      "//base",
+      "//media",
+    ]
+  }
+}
