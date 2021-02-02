@@ -23,6 +23,7 @@ import org.robolectric.annotation.Resetter;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.components.payments.test_support.PaymentRequestServiceBuilder;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.mojo.system.MojoException;
 import org.chromium.payments.mojom.PayerDetail;

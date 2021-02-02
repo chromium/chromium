@@ -4,6 +4,7 @@
 
 package org.chromium.components.payments;
 
+import org.chromium.components.payments.test_support.PaymentRequestServiceBuilder;
 import org.chromium.payments.mojom.PaymentRequestClient;
 
 /**

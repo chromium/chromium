@@ -2,13 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.payments;
+package org.chromium.components.payments.test_support;
 
 import androidx.annotation.Nullable;
 
 import org.mockito.Mockito;
 
+import org.chromium.components.payments.BrowserPaymentRequest;
+import org.chromium.components.payments.JourneyLogger;
+import org.chromium.components.payments.PaymentAppService;
+import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.components.payments.PaymentRequestService.Delegate;
+import org.chromium.components.payments.PaymentRequestSpec;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PaymentCurrencyAmount;
@@ -26,7 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** A builder of PaymentRequestService for testing. */
-public class PaymentRequestServiceBuilder implements PaymentRequestService.Delegate {
+public class PaymentRequestServiceBuilder implements Delegate {
     private static final String TWA_PACKAGE_NAME = "twa.package.name";
     private final Delegate mDelegate;
     private final RenderFrameHost mRenderFrameHost;
@@ -50,7 +55,7 @@ public class PaymentRequestServiceBuilder implements PaymentRequestService.Deleg
     private boolean mIsPaymentDetailsValid = true;
     private PaymentRequestSpec mSpec;
 
-    /* package */ static PaymentRequestServiceBuilder defaultBuilder(Runnable onClosedListener,
+    public static PaymentRequestServiceBuilder defaultBuilder(Runnable onClosedListener,
             PaymentRequestClient client, PaymentAppService appService,
             BrowserPaymentRequest browserPaymentRequest, JourneyLogger journeyLogger) {
         return new PaymentRequestServiceBuilder(
@@ -165,106 +170,103 @@ public class PaymentRequestServiceBuilder implements PaymentRequestService.Deleg
         return mPaymentAppService;
     }
 
-    /* package */ PaymentRequestServiceBuilder setRenderFrameHostLastCommittedOrigin(
-            Origin origin) {
+    public PaymentRequestServiceBuilder setRenderFrameHostLastCommittedOrigin(Origin origin) {
         Mockito.doReturn(origin).when(mRenderFrameHost).getLastCommittedOrigin();
         return this;
     }
 
-    /* package */ PaymentRequestServiceBuilder setRenderFrameHostLastCommittedURL(String url) {
+    public PaymentRequestServiceBuilder setRenderFrameHostLastCommittedURL(String url) {
         Mockito.doReturn(url).when(mRenderFrameHost).getLastCommittedURL();
         return this;
     }
 
-    /* package */ PaymentRequestServiceBuilder setOffTheRecord(boolean isOffTheRecord) {
+    public PaymentRequestServiceBuilder setOffTheRecord(boolean isOffTheRecord) {
         mIsOffTheRecord = isOffTheRecord;
         return this;
     }
 
-    /* package */ PaymentRequestServiceBuilder setOriginSecure(boolean isSecure) {
+    public PaymentRequestServiceBuilder setOriginSecure(boolean isSecure) {
         mIsOriginSecure = isSecure;
         return this;
     }
 
-    /* package */ PaymentRequestServiceBuilder setJourneyLogger(JourneyLogger journeyLogger) {
+    public PaymentRequestServiceBuilder setJourneyLogger(JourneyLogger journeyLogger) {
         mJourneyLogger = journeyLogger;
         return this;
     }
 
-    /* package */ PaymentRequestServiceBuilder setPaymentRequestClient(
-            PaymentRequestClient client) {
+    public PaymentRequestServiceBuilder setPaymentRequestClient(PaymentRequestClient client) {
         mClient = client;
         return this;
     }
 
-    /* package */ PaymentRequestServiceBuilder setMethodData(PaymentMethodData[] methodData) {
+    public PaymentRequestServiceBuilder setMethodData(PaymentMethodData[] methodData) {
         mMethodData = methodData;
         return this;
     }
 
-    /* package */ PaymentRequestServiceBuilder setPaymentDetailsInit(PaymentDetails details) {
+    public PaymentRequestServiceBuilder setPaymentDetailsInit(PaymentDetails details) {
         mDetails = details;
         return this;
     }
 
-    /* package */ PaymentRequestServiceBuilder setPaymentDetailsInitId(String id) {
+    public PaymentRequestServiceBuilder setPaymentDetailsInitId(String id) {
         mDetails.id = id;
         return this;
     }
 
-    /* package */ PaymentRequestServiceBuilder setPaymentDetailsInitTotal(PaymentItem total) {
+    public PaymentRequestServiceBuilder setPaymentDetailsInitTotal(PaymentItem total) {
         mDetails.total = total;
         return this;
     }
 
-    /* package */ PaymentRequestServiceBuilder setOptions(PaymentOptions options) {
+    public PaymentRequestServiceBuilder setOptions(PaymentOptions options) {
         mOptions = options;
         return this;
     }
 
-    /* package */ PaymentRequestServiceBuilder setGooglePayBridgeEligible(boolean eligible) {
+    public PaymentRequestServiceBuilder setGooglePayBridgeEligible(boolean eligible) {
         mGooglePayBridgeEligible = eligible;
         return this;
     }
 
-    /* package */ PaymentRequestServiceBuilder setWebContents(WebContents webContents) {
+    public PaymentRequestServiceBuilder setWebContents(WebContents webContents) {
         mWebContents = webContents;
         return this;
     }
 
-    /* package */ PaymentRequestServiceBuilder setTopLevelOrigin(GURL topLevelOrigin) {
+    public PaymentRequestServiceBuilder setTopLevelOrigin(GURL topLevelOrigin) {
         Mockito.doReturn(topLevelOrigin).when(mWebContents).getLastCommittedUrl();
         return this;
     }
 
-    /* package */ PaymentRequestServiceBuilder setFrameOrigin(String frameOrigin) {
+    public PaymentRequestServiceBuilder setFrameOrigin(String frameOrigin) {
         Mockito.doReturn(frameOrigin).when(mRenderFrameHost).getLastCommittedURL();
         return this;
     }
 
-    /* package */ PaymentRequestServiceBuilder setInvalidSslCertificateErrorMessage(
+    public PaymentRequestServiceBuilder setInvalidSslCertificateErrorMessage(
             String invalidSslCertificateErrorMessage) {
         mInvalidSslCertificateErrorMessage = invalidSslCertificateErrorMessage;
         return this;
     }
 
-    /* package */ PaymentRequestServiceBuilder setOriginAllowedToUseWebPaymentApis(
-            boolean isAllowed) {
+    public PaymentRequestServiceBuilder setOriginAllowedToUseWebPaymentApis(boolean isAllowed) {
         mIsOriginAllowedToUseWebPaymentApis = isAllowed;
         return this;
     }
 
-    /* package */ PaymentRequestServiceBuilder setIsPaymentDetailsValid(boolean isValid) {
+    public PaymentRequestServiceBuilder setIsPaymentDetailsValid(boolean isValid) {
         mIsPaymentDetailsValid = isValid;
         return this;
     }
 
-    /* package */ PaymentRequestServiceBuilder setPaymentRequestSpec(PaymentRequestSpec spec) {
+    public PaymentRequestServiceBuilder setPaymentRequestSpec(PaymentRequestSpec spec) {
         mSpec = spec;
         return this;
     }
 
-    /* package */ PaymentRequestService build() {
+    public PaymentRequestService build() {
         PaymentRequestService service =
                 new PaymentRequestService(mRenderFrameHost, mClient, mOnClosedListener, mDelegate);
         boolean success = service.init(mMethodData, mDetails, mOptions, mGooglePayBridgeEligible);

@@ -28,6 +28,7 @@ android_library("junit_test_support") {
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tabmodel:java",
     "//components/payments/content/android:java",
+    "//components/payments/content/android:junit_test_support",
     "//components/payments/content/android:service_java",
     "//components/payments/mojom:mojom_java",
     "//content/public/android:content_java",
@@ -47,9 +48,7 @@ android_library("junit_test_support") {
     "java/src/org/chromium/chrome/browser/payments/test_support/LegacyShadowWebContentsStatics.java",
     "java/src/org/chromium/chrome/browser/payments/test_support/MockPaymentUiServiceBuilder.java",
     "java/src/org/chromium/chrome/browser/payments/test_support/PaymentRequestParamsBuilder.java",
-    "java/src/org/chromium/chrome/browser/payments/test_support/ShadowPaymentFeatureList.java",
     "java/src/org/chromium/chrome/browser/payments/test_support/ShadowProfile.java",
-    "java/src/org/chromium/chrome/browser/payments/test_support/ShadowWebContentsStatics.java",
   ]
 }
 

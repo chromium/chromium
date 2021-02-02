@@ -18,12 +18,12 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.payments.test_support.ShadowPaymentFeatureList;
 import org.chromium.chrome.browser.payments.test_support.ShadowProfile;
-import org.chromium.chrome.browser.payments.test_support.ShadowWebContentsStatics;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.payments.InvalidPaymentRequest;
 import org.chromium.components.payments.PaymentFeatureList;
+import org.chromium.components.payments.test_support.ShadowPaymentFeatureList;
+import org.chromium.components.payments.test_support.ShadowWebContentsStatics;
 import org.chromium.content_public.browser.FeaturePolicyFeature;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;

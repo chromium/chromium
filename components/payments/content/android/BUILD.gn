@@ -263,10 +263,28 @@ java_cpp_enum("payments_journey_logger_enum_javagen") {
 }
 
 java_library("junit_test_support") {
+  # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
+  bypass_platform_checks = true
+  testonly = true
   sources = [
-    # TODO(crbug.com/1170916): Used to suppress the target non-emptiness
-    # assertion.
-    "junit/src/org/chromium/components/payments/EmptyTargetPlaceHolder.java",
+    "junit/src/org/chromium/components/payments/test_support/PaymentRequestServiceBuilder.java",
+    "junit/src/org/chromium/components/payments/test_support/ShadowPaymentFeatureList.java",
+    "junit/src/org/chromium/components/payments/test_support/ShadowWebContentsStatics.java",
+  ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//components/payments/content/android:service_java",
+    "//components/payments/mojom:mojom_java",
+    "//content/public/android:content_java",
+    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/android_deps:androidx_collection_collection_java",
+    "//third_party/android_deps:robolectric_all_java",
+    "//third_party/blink/public/mojom:android_mojo_bindings_java",
+    "//third_party/mockito:mockito_java",
+    "//url:gurl_java",
+    "//url:gurl_junit_test_support",
+    "//url:origin_java",
   ]
 }
 
@@ -276,7 +294,6 @@ java_library("junit") {
   testonly = true
   sources = [
     "junit/src/org/chromium/components/payments/LegacyPaymentRequestServiceBuilder.java",
-    "junit/src/org/chromium/components/payments/PaymentRequestServiceBuilder.java",
     "junit/src/org/chromium/components/payments/PaymentRequestServiceTest.java",
   ]
   deps = [
