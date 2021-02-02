@@ -9,6 +9,7 @@ assert(is_chromeos, "Only ChromeOS components belong here.")
 
 js_type_check("closure_compile") {
   deps = [
+    ":cellular_utils",
     ":cr_policy_network_behavior_mojo",
     ":cr_policy_network_indicator_mojo",
     ":mojo_interface_provider",
@@ -250,9 +251,14 @@ js_library("onc_mojo") {
   ]
 }
 
+js_library("cellular_utils") {
+  deps = [ ":mojo_interface_provider" ]
+}
+
 js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
+    ":cellular_utils.m",
     ":cr_policy_network_behavior_mojo.m",
     ":cr_policy_network_indicator_mojo.m",
     ":mojo_interface_provider.m",
@@ -613,6 +619,12 @@ js_library("onc_mojo.m") {
   extra_deps = [ ":modulize" ]
 }
 
+js_library("cellular_utils.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/network/cellular_utils.m.js" ]
+  deps = [ ":mojo_interface_provider.m" ]
+  extra_deps = [ ":modulize" ]
+}
+
 import("//tools/polymer/polymer.gni")
 
 group("polymer3_elements") {
@@ -809,6 +821,7 @@ js_modulizer("modulize") {
     "cr_policy_network_behavior_mojo.js",
     "mojo_interface_provider.js",
     "network_config_element_behavior.js",
+    "cellular_utils.js",
     "network_listener_behavior.js",
     "network_list_types.js",
     "onc_mojo.js",
