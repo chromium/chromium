@@ -1281,12 +1281,20 @@ std::string GetUserAgent() {
   return content::BuildUserAgentFromProduct(product);
 }
 
+std::string GetPlatformForUAMetadata() {
+#if defined(OS_MAC)
+  return "macOS";
+#else
+  return version_info::GetOSType();
+#endif
+}
+
 blink::UserAgentMetadata GetUserAgentMetadata() {
   blink::UserAgentMetadata metadata;
 
   metadata.brand_version_list = GetBrandVersionList();
   metadata.full_version = version_info::GetVersionNumber();
-  metadata.platform = version_info::GetOSType();
+  metadata.platform = GetPlatformForUAMetadata();
   metadata.platform_version =
       content::GetOSVersion(content::IncludeAndroidBuildNumber::Exclude,
                             content::IncludeAndroidModel::Exclude);
