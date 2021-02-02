@@ -11,7 +11,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/assistant/media_session/assistant_media_session.h"
 #include "chromeos/services/assistant/platform/audio_stream_handler.h"
-#include "chromeos/services/assistant/public/cpp/assistant_client.h"
 #include "chromeos/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom.h"
 #include "libassistant/shared/public/platform_audio_buffer.h"
@@ -156,9 +155,8 @@ AudioOutputProviderImpl::AudioOutputProviderImpl(
       main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
       background_task_runner_(background_task_runner),
       device_id_(device_id) {
-  AssistantClient::Get()->RequestAudioDecoderFactory(
-      audio_decoder_factory_remote_.BindNewPipeAndPassReceiver());
-  audio_decoder_factory_ = audio_decoder_factory_remote_.get();
+  platform_delegate_->BindAudioDecoderFactory(
+      audio_decoder_factory_.BindNewPipeAndPassReceiver());
 }
 
 AudioOutputProviderImpl::~AudioOutputProviderImpl() = default;
@@ -175,8 +173,9 @@ assistant_client::AudioOutput* AudioOutputProviderImpl::CreateAudioOutput(
   // Owned by one arbitrary thread inside libassistant. It will be destroyed
   // once assistant_client::AudioOutput::Delegate::OnStopped() is called.
   return new AudioOutputImpl(std::move(stream_factory), main_task_runner_,
-                             background_task_runner_, audio_decoder_factory_,
-                             media_session_, type, stream_format, device_id_);
+                             background_task_runner_,
+                             audio_decoder_factory_.get(), media_session_, type,
+                             stream_format, device_id_);
 }
 
 std::vector<assistant_client::OutputStreamEncoding>

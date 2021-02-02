@@ -48,6 +48,10 @@ class FakePlatformDelegate : public mojom::PlatformDelegate {
       mojo::PendingReceiver<::audio::mojom::StreamFactory> receiver) override {
     stream_factory_receiver_ = std::move(receiver);
   }
+  void BindAudioDecoderFactory(
+      mojo::PendingReceiver<
+          ::chromeos::assistant::mojom::AssistantAudioDecoderFactory> receiver)
+      override {}
 
   // Return the pending receiver passed to the last BindAudioStreamFactory call.
   mojo::PendingReceiver<::audio::mojom::StreamFactory>

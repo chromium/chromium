@@ -19,6 +19,7 @@ mojom("mojom") {
   ]
 
   deps = [
+    "//chromeos/services/assistant/public/mojom",
     "//services/audio/public/mojom",
     "//services/network/public/mojom",
   ]

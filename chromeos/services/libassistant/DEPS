@@ -1,4 +1,5 @@
 include_rules = [
+  "+chromeos/services/assistant/public",
   "+libassistant",
   "+media/audio",
   "+media/base",

@@ -21,5 +21,11 @@ void PlatformDelegateImpl::BindAudioStreamFactory(
   AssistantClient::Get()->RequestAudioStreamFactory(std::move(receiver));
 }
 
+void PlatformDelegateImpl::BindAudioDecoderFactory(
+    mojo::PendingReceiver<
+        ::chromeos::assistant::mojom::AssistantAudioDecoderFactory> receiver) {
+  AssistantClient::Get()->RequestAudioDecoderFactory(std::move(receiver));
+}
+
 }  // namespace assistant
 }  // namespace chromeos

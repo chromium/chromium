@@ -22,8 +22,13 @@ class PlatformDelegateImpl
 
   void Bind(mojo::PendingReceiver<PlatformDelegate> pending_receiver);
 
+  // chromeos::libassistant::mojom::PlatformDelegate implementation:
   void BindAudioStreamFactory(
       mojo::PendingReceiver<audio::mojom::StreamFactory> receiver) override;
+  void BindAudioDecoderFactory(
+      mojo::PendingReceiver<
+          ::chromeos::assistant::mojom::AssistantAudioDecoderFactory> receiver)
+      override;
 
  private:
   mojo::Receiver<PlatformDelegate> receiver_{this};

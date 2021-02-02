@@ -69,9 +69,7 @@ class AudioOutputProviderImpl : public assistant_client::AudioOutputProvider {
   VolumeControlImpl volume_control_impl_;
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
-  mojo::Remote<mojom::AssistantAudioDecoderFactory>
-      audio_decoder_factory_remote_;
-  mojom::AssistantAudioDecoderFactory* audio_decoder_factory_;
+  mojo::Remote<mojom::AssistantAudioDecoderFactory> audio_decoder_factory_;
   std::string device_id_;
   base::WeakPtrFactory<AudioOutputProviderImpl> weak_ptr_factory_{this};
 
