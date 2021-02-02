@@ -323,7 +323,7 @@ export class App {
     await this.cameraView_.start();
     windowController.disable();
     this.backgroundOps_.notifySuspension();
-    nav.open(ViewName.WARNING, WarningType.CAMERA_BEING_USED);
+    nav.open(ViewName.WARNING, WarningType.CAMERA_PAUSED);
   }
 
   /**
@@ -333,7 +333,7 @@ export class App {
     state.set(state.State.SUSPEND, false);
     windowController.enable();
     this.backgroundOps_.notifyActivation();
-    nav.close(ViewName.WARNING, WarningType.CAMERA_BEING_USED);
+    nav.close(ViewName.WARNING, WarningType.CAMERA_PAUSED);
   }
 }
 

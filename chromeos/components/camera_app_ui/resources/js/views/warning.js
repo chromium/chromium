@@ -13,9 +13,9 @@ import {View} from './view.js';
  * @enum {string}
  */
 export const WarningType = {
-  NO_CAMERA: 'error_msg_no_camera',
+  CAMERA_PAUSED: 'error_msg_camera_paused',
   FILESYSTEM_FAILURE: 'error_msg_file_system_failed',
-  CAMERA_BEING_USED: 'error_msg_camera_being_used',
+  NO_CAMERA: 'error_msg_no_camera',
 };
 
 /**
