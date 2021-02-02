@@ -34,6 +34,7 @@
 #include "base/macros.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
+#include "third_party/blink/renderer/platform/bindings/exception_context.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -49,23 +50,36 @@ class PLATFORM_EXPORT ExceptionState {
   STACK_ALLOCATED();
 
  public:
-  enum ContextType {
-    kConstructionContext,
-    kExecutionContext,
-    kDeletionContext,
-    kGetterContext,
-    kSetterContext,
-    kEnumerationContext,
-    kQueryContext,
-    kIndexedGetterContext,
-    kIndexedSetterContext,
-    kIndexedDeletionContext,
-    kNamedGetterContext,
-    kNamedSetterContext,
-    kNamedDeletionContext,
-    kUnknownContext,  // FIXME: Remove this once we've flipped over to the new
-                      // API.
-  };
+  // TODO(peria): Replace following enum aliases.
+  using ContextType = ExceptionContext::Context;
+  static constexpr ContextType kConstructionContext =
+      ExceptionContext::Context::kConstructorOperationInvoke;
+  static constexpr ContextType kExecutionContext =
+      ExceptionContext::Context::kOperationInvoke;
+  static constexpr ContextType kDeletionContext =
+      ExceptionContext::Context::kNamedPropertyDelete;
+  static constexpr ContextType kGetterContext =
+      ExceptionContext::Context::kAttributeGet;
+  static constexpr ContextType kSetterContext =
+      ExceptionContext::Context::kAttributeSet;
+  static constexpr ContextType kEnumerationContext =
+      ExceptionContext::Context::kNamedPropertyEnumerate;
+  static constexpr ContextType kQueryContext =
+      ExceptionContext::Context::kNamedPropertyQuery;
+  static constexpr ContextType kIndexedGetterContext =
+      ExceptionContext::Context::kIndexedPropertyGet;
+  static constexpr ContextType kIndexedSetterContext =
+      ExceptionContext::Context::kIndexedPropertySet;
+  static constexpr ContextType kIndexedDeletionContext =
+      ExceptionContext::Context::kIndexedPropertyDelete;
+  static constexpr ContextType kNamedGetterContext =
+      ExceptionContext::Context::kNamedPropertyGet;
+  static constexpr ContextType kNamedSetterContext =
+      ExceptionContext::Context::kNamedPropertySet;
+  static constexpr ContextType kNamedDeletionContext =
+      ExceptionContext::Context::kNamedPropertyDelete;
+  static constexpr ContextType kUnknownContext =
+      ExceptionContext::Context::kUnknown;
 
   // A function pointer type that creates a DOMException.
   using CreateDOMExceptionFunction =
@@ -77,36 +91,22 @@ class PLATFORM_EXPORT ExceptionState {
   // Sets the function to create a DOMException. Must be called only once.
   static void SetCreateDOMExceptionFunction(CreateDOMExceptionFunction);
 
+  ExceptionState(v8::Isolate* isolate, const ExceptionContext& context)
+      : isolate_(isolate), context_(context) {}
+
   ExceptionState(v8::Isolate* isolate,
                  ContextType context_type,
                  const char* interface_name,
                  const char* property_name)
-      : code_(0),
-        context_(context_type),
-        property_name_(property_name),
-        interface_name_(interface_name),
-        isolate_(isolate) {}
+      : ExceptionState(
+            isolate,
+            ExceptionContext(context_type, interface_name, property_name)) {}
 
   ExceptionState(v8::Isolate* isolate,
                  ContextType context_type,
                  const char* interface_name)
-      : ExceptionState(isolate, context_type, interface_name, nullptr) {
-#if DCHECK_IS_ON()
-    switch (context_) {
-      case kConstructionContext:
-      case kEnumerationContext:
-      case kIndexedGetterContext:
-      case kIndexedSetterContext:
-      case kIndexedDeletionContext:
-      case kNamedGetterContext:
-      case kNamedSetterContext:
-      case kNamedDeletionContext:
-        break;
-      default:
-        NOTREACHED();
-    }
-#endif  // DCHECK_IS_ON()
-  }
+      : ExceptionState(isolate,
+                       ExceptionContext(context_type, interface_name)) {}
 
   ~ExceptionState() {
     if (!exception_.IsEmpty()) {
@@ -169,9 +169,9 @@ class PLATFORM_EXPORT ExceptionState {
     return exception_.NewLocal(isolate_);
   }
 
-  ContextType Context() const { return context_; }
-  const char* PropertyName() const { return property_name_; }
-  const char* InterfaceName() const { return interface_name_; }
+  ContextType Context() const { return context_.GetContext(); }
+  const char* PropertyName() const { return context_.GetPropertyName(); }
+  const char* InterfaceName() const { return context_.GetClassName(); }
 
  protected:
   void SetException(ExceptionCode, const String&, v8::Local<v8::Value>);
@@ -183,15 +183,13 @@ class PLATFORM_EXPORT ExceptionState {
   // order to create a DOMException in platform/.
   static CreateDOMExceptionFunction s_create_dom_exception_func_;
 
-  ExceptionCode code_;
-  ContextType context_;
+  v8::Isolate* isolate_;
+  ExceptionCode code_ = 0;
+  ExceptionContext context_;
   String message_;
-  const char* property_name_;
-  const char* interface_name_;
   // The exception is empty when it was thrown through
   // DummyExceptionStateForTesting.
   TraceWrapperV8Reference<v8::Value> exception_;
-  v8::Isolate* isolate_;
 
   DISALLOW_COPY_AND_ASSIGN(ExceptionState);
 };

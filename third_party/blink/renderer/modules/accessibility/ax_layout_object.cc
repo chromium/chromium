@@ -1437,7 +1437,7 @@ bool AXLayoutObject::OnNativeSetValueAction(const String& string) {
 
   if (HasContentEditableAttributeSet()) {
     ExceptionState exception_state(v8::Isolate::GetCurrent(),
-                                   ExceptionState::kExecutionContext, nullptr,
+                                   ExceptionState::kUnknownContext, nullptr,
                                    nullptr);
     To<HTMLElement>(GetNode())->setInnerText(string, exception_state);
     if (exception_state.HadException()) {

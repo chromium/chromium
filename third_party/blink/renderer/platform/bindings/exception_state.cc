@@ -190,13 +190,11 @@ String ExceptionState::AddExceptionContext(const String& message) const {
   const auto& m = message;
 
   if (i && p) {
-    switch (context_) {
+    switch (Context()) {
       case kConstructionContext:
         return ExceptionMessages::FailedToConstruct(i, m);
       case kExecutionContext:
         return ExceptionMessages::FailedToExecute(p, i, m);
-      case kDeletionContext:
-        return ExceptionMessages::FailedToDelete(p, i, m);
       case kGetterContext:
         return ExceptionMessages::FailedToGet(p, i, m);
       case kSetterContext:
@@ -219,16 +217,17 @@ String ExceptionState::AddExceptionContext(const String& message) const {
         return ExceptionMessages::FailedToDeleteNamed(i, m);
       case kUnknownContext:
         break;
+      default:
+        NOTREACHED();
+        break;
     }
   }
 
   if (i) {
-    switch (context_) {
+    switch (Context()) {
       case kConstructionContext:
         return ExceptionMessages::FailedToConstruct(i, m);
       case kExecutionContext:
-        break;
-      case kDeletionContext:
         break;
       case kGetterContext:
         break;
@@ -251,6 +250,9 @@ String ExceptionState::AddExceptionContext(const String& message) const {
       case kNamedDeletionContext:
         return ExceptionMessages::FailedToDeleteNamed(i, m);
       case kUnknownContext:
+        break;
+      default:
+        NOTREACHED();
         break;
     }
   }
