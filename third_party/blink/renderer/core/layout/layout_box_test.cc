@@ -1694,4 +1694,33 @@ TEST_P(LayoutBoxTest, PartialInvalidationRect) {
   EXPECT_EQ(IntRect(), display_item_client->PartialInvalidationVisualRect());
 }
 
+TEST_P(LayoutBoxTest, HasReflection) {
+  SetBodyInnerHTML(R"HTML(
+    <style>* { -webkit-box-reflect: above; }</style>
+    <table id="table">
+      <colgroup id="colgroup">
+        <col id="col">
+      </colgroup>
+      <tr id="tr"><td id="td">TD</td></tr>
+    </table>
+    <svg id="svg">
+      <text id="svg-text">SVG text</text>
+    </svg>
+  )HTML");
+
+  auto check_has_layer_and_reflection = [&](const char* element_id,
+                                            bool expected) {
+    auto* object = GetLayoutObjectByElementId(element_id);
+    EXPECT_EQ(expected, object->HasLayer()) << element_id;
+    EXPECT_EQ(expected, object->HasReflection()) << element_id;
+  };
+  check_has_layer_and_reflection("table", true);
+  check_has_layer_and_reflection("tr", true);
+  check_has_layer_and_reflection("colgroup", false);
+  check_has_layer_and_reflection("col", false);
+  check_has_layer_and_reflection("td", true);
+  check_has_layer_and_reflection("svg", true);
+  check_has_layer_and_reflection("svg-text", false);
+}
+
 }  // namespace blink

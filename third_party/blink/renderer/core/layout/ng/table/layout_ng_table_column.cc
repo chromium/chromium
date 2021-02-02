@@ -36,7 +36,7 @@ void LayoutNGTableColumn::StyleDidChange(StyleDifference diff,
       }
     }
   }
-  LayoutBoxModelObject::StyleDidChange(diff, old_style);
+  LayoutBox::StyleDidChange(diff, old_style);
 }
 
 void LayoutNGTableColumn::ImageChanged(WrappedImagePtr, CanDeferInvalidation) {
