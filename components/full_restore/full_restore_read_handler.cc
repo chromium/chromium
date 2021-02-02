@@ -4,6 +4,7 @@
 
 #include "components/full_restore/full_restore_read_handler.h"
 
+#include <cstdint>
 #include <utility>
 
 #include "base/bind.h"
@@ -51,14 +52,8 @@ void FullRestoreReadHandler::RemoveApp(const base::FilePath& profile_path,
 }
 
 std::unique_ptr<WindowInfo> FullRestoreReadHandler::GetWindowInfo(
-    aura::Window* window) {
-  if (!window)
-    return nullptr;
-
+    int32_t restore_window_id) {
   // TODO(crbug.com/1146900): Handle ARC app windows.
-
-  int32_t restore_window_id =
-      window->GetProperty(::full_restore::kRestoreWindowIdKey);
 
   if (!SessionID::IsValidValue(restore_window_id))
     return nullptr;
@@ -69,6 +64,16 @@ std::unique_ptr<WindowInfo> FullRestoreReadHandler::GetWindowInfo(
 
   return profile_path_to_restore_data_[it->second.first]->GetWindowInfo(
       it->second.second, restore_window_id);
+}
+
+std::unique_ptr<WindowInfo> FullRestoreReadHandler::GetWindowInfo(
+    aura::Window* window) {
+  if (!window)
+    return nullptr;
+
+  const int32_t restore_window_id =
+      window->GetProperty(::full_restore::kRestoreWindowIdKey);
+  return GetWindowInfo(restore_window_id);
 }
 
 void FullRestoreReadHandler::OnGetRestoreData(

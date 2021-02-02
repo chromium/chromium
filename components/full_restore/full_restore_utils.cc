@@ -35,6 +35,14 @@ void SaveWindowInfo(const WindowInfo& window_info) {
   FullRestoreSaveHandler::GetInstance()->SaveWindowInfo(window_info);
 }
 
+std::unique_ptr<WindowInfo> GetWindowInfo(int32_t restore_window_id) {
+  if (!ash::features::IsFullRestoreEnabled())
+    return nullptr;
+
+  return FullRestoreReadHandler::GetInstance()->GetWindowInfo(
+      restore_window_id);
+}
+
 std::unique_ptr<WindowInfo> GetWindowInfo(aura::Window* window) {
   if (!ash::features::IsFullRestoreEnabled())
     return nullptr;

@@ -38,6 +38,8 @@ struct COMPONENT_EXPORT(FULL_RESTORE) WindowInfo {
 
   // Window state, minimized, maximized, inactive, etc.
   base::Optional<chromeos::WindowStateType> window_state_type;
+
+  std::string ToString() const;
 };
 
 }  // namespace full_restore

@@ -48,6 +48,8 @@ void SaveWindowInfo(const WindowInfo& window_info);
 
 // Gets the window information from the full restore file.
 COMPONENT_EXPORT(FULL_RESTORE)
+std::unique_ptr<WindowInfo> GetWindowInfo(int32_t restore_window_id);
+COMPONENT_EXPORT(FULL_RESTORE)
 std::unique_ptr<WindowInfo> GetWindowInfo(aura::Window* window);
 
 // Returns true if we should restore apps and pages based on the restore setting

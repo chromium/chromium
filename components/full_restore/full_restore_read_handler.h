@@ -52,7 +52,8 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreReadHandler {
   // from |profile_path_to_restore_data_| for |profile_path| .
   void RemoveApp(const base::FilePath& profile_path, const std::string& app_id);
 
-  // Gets the window information for |window|.
+  // Gets the window information for |restore_window_id| or |window|.
+  std::unique_ptr<WindowInfo> GetWindowInfo(int32_t restore_window_id);
   std::unique_ptr<WindowInfo> GetWindowInfo(aura::Window* window);
 
  private:
