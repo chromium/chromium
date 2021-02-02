@@ -386,10 +386,7 @@ void AutoscrollController::StartMiddleClickAutoscroll(
   LayoutObject* layout_object = scrollable->GetNode()->GetLayoutObject();
 
   while (layout_object && !(can_scroll_horizontally && can_scroll_vertically)) {
-    LayoutBox* layout_box;
-
-    if (layout_object->IsBox()) {
-      layout_box = To<LayoutBox>(layout_object);
+    if (LayoutBox* layout_box = DynamicTo<LayoutBox>(layout_object)) {
       // Check whether the layout box can be scrolled and has horizontal
       // scrollable area.
       if (can_propagate_vertically &&
@@ -408,12 +405,12 @@ void AutoscrollController::StartMiddleClickAutoscroll(
         horizontal_autoscroll_layout_box_ = layout_box;
         can_scroll_horizontally = true;
       }
-    }
 
-    can_propagate_vertically = ScrollManager::CanPropagate(
-        layout_box, ScrollPropagationDirection::kVertical);
-    can_propagate_horizontally = ScrollManager::CanPropagate(
-        layout_box, ScrollPropagationDirection::kHorizontal);
+      can_propagate_vertically = ScrollManager::CanPropagate(
+          layout_box, ScrollPropagationDirection::kVertical);
+      can_propagate_horizontally = ScrollManager::CanPropagate(
+          layout_box, ScrollPropagationDirection::kHorizontal);
+    }
 
     // Exit loop if we can't propagate to the parent in any direction or if
     // layout boxes have been found for both directions.
