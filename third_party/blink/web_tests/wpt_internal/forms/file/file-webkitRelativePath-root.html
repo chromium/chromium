@@ -18,22 +18,18 @@ promise_test(async () => {
   const simulatedDirectorySelectionChange = new Promise(
       resolve => file.addEventListener('change', resolve, {once: true}));
 
-  const chosenDir = '/tmp/web_tests/external/wpt/entries-api/support/a';
   mockFileChooserFactory.setPathsToBeChosen(
-      [`${chosenDir}/b/c/d/1.txt`, `${chosenDir}/b/c/d/2.txt`,
-       `${chosenDir}/b/c/3.txt`],
-      chosenDir);
+      ['/Users/tkent/1.txt', '/Users/tkent/tmp/2.txt'], '/');
 
   test_driver.click(file);
   await simulatedDirectorySelectionChange;
 
   const files = Array.from(file.files).sort(
       (a, b) => a.name < b.name ? -1 : b.name < a.name ? 1 : 0);
-  assert_equals(files.length, 3);
-  assert_equals(files[0].webkitRelativePath, 'a/b/c/d/1.txt');
-  assert_equals(files[1].webkitRelativePath, 'a/b/c/d/2.txt');
-  assert_equals(files[2].webkitRelativePath, 'a/b/c/3.txt');
-}, 'webkitRelativePath is relative from the to the parent of the chosen non-root directory');
+  assert_equals(files.length, 2);
+  assert_equals(files[0].webkitRelativePath, '/Users/tkent/1.txt');
+  assert_equals(files[1].webkitRelativePath, '/Users/tkent/tmp/2.txt');
+}, 'webkitRelativePath is relative to the selected root directory');
 
 </script>
 </body>

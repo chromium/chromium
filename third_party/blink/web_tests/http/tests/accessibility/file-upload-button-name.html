@@ -1,17 +1,16 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
-<script src="file:///gen/third_party/blink/public/mojom/choosers/file_chooser.mojom.js"></script>
-<script src="../wpt_internal/forms/resources/mock-file-chooser.js"></script>
-<script src="../resources/testharness.js"></script>
-<script src="../resources/testharnessreport.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
 </head>
 <body>
 
 <input id="filetype" type="file">
 
-<script>
+<script type="module">
+import  '/wpt_internal/forms/resources/mock-file-chooser.js';
+
 async_test((t) => {
     testRunner.waitUntilDone();
 
