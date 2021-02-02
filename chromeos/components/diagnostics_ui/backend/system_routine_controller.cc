@@ -664,6 +664,10 @@ void SystemRoutineController::OnInflightRoutineRunnerDisconnected() {
   // already disconnected.
   inflight_routine_runner_.reset();
 
+  // Reset `inflight_routine_timer_` so that we do not attempt to fetch the
+  // status of a cancelled routine.
+  inflight_routine_timer_.reset();
+
   // Make a best effort attempt to remove the routine.
   BindCrosHealthdDiagnosticsServiceIfNeccessary();
   diagnostics_service_->GetRoutineUpdate(
