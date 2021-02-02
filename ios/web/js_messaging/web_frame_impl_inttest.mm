@@ -275,8 +275,7 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionMainFramePageContentWorld) {
   __block bool called = false;
 
   if (@available(ios 14, *)) {
-    JavaScriptContentWorld world([[WKUserContentController alloc] init],
-                                 WKContentWorld.pageWorld);
+    JavaScriptContentWorld world(GetBrowserState(), WKContentWorld.pageWorld);
 
     std::vector<base::Value> function_params;
     EXPECT_TRUE(main_frame_impl->CallJavaScriptFunction(
@@ -321,7 +320,7 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionMainFrameIsolatedWorld) {
   __block bool called = false;
 
   if (@available(ios 14, *)) {
-    JavaScriptContentWorld world([[WKUserContentController alloc] init],
+    JavaScriptContentWorld world(GetBrowserState(),
                                  WKContentWorld.defaultClientWorld);
 
     std::vector<base::Value> function_params;

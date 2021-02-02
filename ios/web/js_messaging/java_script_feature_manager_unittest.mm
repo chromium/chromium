@@ -88,7 +88,7 @@ TEST_F(JavaScriptFeatureManagerTest, AllFramesStartFeature) {
 }
 
 // Tests that JavaScriptFeatureManager adds a JavaScriptFeature for all frames
-// at document start time for any content world.
+// at document end time for any content world.
 TEST_F(JavaScriptFeatureManagerTest, MainFrameEndFeature) {
   ASSERT_TRUE(GetJavaScriptFeatureManager());
 

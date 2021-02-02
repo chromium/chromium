@@ -10,7 +10,6 @@
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 #include "ios/web/public/js_messaging/java_script_feature_util.h"
-#import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -61,22 +60,14 @@ JavaScriptFeatureManager* JavaScriptFeatureManager::FromBrowserState(
 
 void JavaScriptFeatureManager::ConfigureFeatures(
     std::vector<JavaScriptFeature*> features) {
-  WKWebViewConfigurationProvider& configuration_provider =
-      WKWebViewConfigurationProvider::FromBrowserState(browser_state_);
-  // Fetch the WKUserContentController each time features are configured as it
-  // is not guarentted to remain constant. (For example, clearing Browsing Data
-  // changes the user content controller instance.)
-  WKUserContentController* user_content_controller =
-      configuration_provider.GetWebViewConfiguration().userContentController;
-
   page_content_world_ =
-      std::make_unique<JavaScriptContentWorld>(user_content_controller);
+      std::make_unique<JavaScriptContentWorld>(browser_state_);
   AddSharedCommonFeatures(page_content_world_.get());
 
 #if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
   if (@available(iOS 14, *)) {
     isolated_world_ = std::make_unique<JavaScriptContentWorld>(
-        user_content_controller, WKContentWorld.defaultClientWorld);
+        browser_state_, WKContentWorld.defaultClientWorld);
     AddSharedCommonFeatures(isolated_world_.get());
   }
 #endif  // defined(__IPHONE14_0)

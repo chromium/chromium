@@ -67,12 +67,14 @@ NSString* JavaScriptFeature::FeatureScript::GetScriptString() const {
 #pragma mark - JavaScriptFeature
 
 JavaScriptFeature::JavaScriptFeature(ContentWorld supported_world)
-    : supported_world_(supported_world) {}
+    : supported_world_(supported_world), weak_factory_(this) {}
 
 JavaScriptFeature::JavaScriptFeature(
     ContentWorld supported_world,
     std::vector<const FeatureScript> feature_scripts)
-    : supported_world_(supported_world), scripts_(feature_scripts) {}
+    : supported_world_(supported_world),
+      scripts_(feature_scripts),
+      weak_factory_(this) {}
 
 JavaScriptFeature::JavaScriptFeature(
     ContentWorld supported_world,
@@ -80,7 +82,8 @@ JavaScriptFeature::JavaScriptFeature(
     std::vector<const JavaScriptFeature*> dependent_features)
     : supported_world_(supported_world),
       scripts_(feature_scripts),
-      dependent_features_(dependent_features) {}
+      dependent_features_(dependent_features),
+      weak_factory_(this) {}
 
 JavaScriptFeature::~JavaScriptFeature() = default;
 
@@ -98,6 +101,26 @@ const std::vector<const JavaScriptFeature*>
 JavaScriptFeature::GetDependentFeatures() const {
   return dependent_features_;
 }
+
+std::vector<std::string> JavaScriptFeature::GetScriptMessageHandlerNames()
+    const {
+  return {};
+}
+
+std::map<std::string, JavaScriptFeature::ScriptMessageHandler>
+JavaScriptFeature::GetScriptMessageHandlers() const {
+  auto handler = base::BindRepeating(&JavaScriptFeature::ScriptMessageReceived,
+                                     weak_factory_.GetWeakPtr());
+  auto handlers =
+      std::map<std::string, JavaScriptFeature::ScriptMessageHandler>();
+  for (auto handler_name : GetScriptMessageHandlerNames()) {
+    handlers[handler_name] = handler;
+  }
+  return handlers;
+}
+
+void JavaScriptFeature::ScriptMessageReceived(BrowserState* browser_state,
+                                              WKScriptMessage* message) {}
 
 bool JavaScriptFeature::CallJavaScriptFunction(
     WebFrame* web_frame,

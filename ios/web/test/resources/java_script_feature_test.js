@@ -22,6 +22,10 @@ __gCrWeb.javaScriptFeatureTest.replaceDivContents = function() {
   document.getElementById('div').innerHTML = 'updated';
 };
 
+__gCrWeb.javaScriptFeatureTest.replyWithPostMessage = function(messageBody) {
+  window.webkit.messageHandlers['FakeHandlerName'].postMessage(messageBody);
+};
+
 document.getElementsByTagName("body")[0].appendChild(
   document.createTextNode("injected_script_loaded")
 );

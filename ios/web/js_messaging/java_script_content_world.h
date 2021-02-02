@@ -5,18 +5,27 @@
 #ifndef IOS_WEB_JS_MESSAGING_JAVA_SCRIPT_CONTENT_WORLD_H_
 #define IOS_WEB_JS_MESSAGING_JAVA_SCRIPT_CONTENT_WORLD_H_
 
+#include <map>
+#include <memory>
 #include <set>
 
 #import <WebKit/WebKit.h>
 
+#import "ios/web/js_messaging/scoped_wk_script_message_handler.h"
+
 namespace web {
 
+class BrowserState;
 class JavaScriptFeature;
 
 // Represents a content world which can be configured with a given set of
 // JavaScriptFeatures. An isolated world prevents the loaded web page’s
 // JavaScript from interacting with the browser's feature JavaScript. This can
-// improve the security and robustness of the feature JavaScript.
+// improve the security and robustness of a feature's JavaScript.
+// NOTE: Destruction of a JavaScriptContentWorld can not completely clean up
+// the state added to the WKUserContentController associated with
+// |browser_state| because WKUserContentController does not expose API to remove
+// specific WKUserScript instances.
 class JavaScriptContentWorld {
  public:
   ~JavaScriptContentWorld();
@@ -24,13 +33,12 @@ class JavaScriptContentWorld {
 
   // Creates a content world for features which will interact with the page
   // content world shared by the webpage's JavaScript.
-  explicit JavaScriptContentWorld(
-      WKUserContentController* user_content_controller);
+  explicit JavaScriptContentWorld(BrowserState* browser_state);
 
 #if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
   // Creates a content world for features which will interact with the given
   // |content_world|.
-  JavaScriptContentWorld(WKUserContentController* user_content_controller,
+  JavaScriptContentWorld(BrowserState* browser_state,
                          WKContentWorld* content_world)
       API_AVAILABLE(ios(14.0));
 
@@ -49,9 +57,17 @@ class JavaScriptContentWorld {
   // The features which have already been configured for |content_world_|.
   std::set<const JavaScriptFeature*> features_;
 
-  // The associated user content controller for configuring injected scripts and
+  // The associated browser state for configuring injected scripts and
   // communication.
-  WKUserContentController* user_content_controller_ = nil;
+  BrowserState* browser_state_;
+
+  // The associated user content controller for configuring injected scripts and
+  // script message handler JavaScript->native communication.
+  WKUserContentController* user_content_controller_;
+
+  std::map<const JavaScriptFeature*,
+           std::unique_ptr<ScopedWKScriptMessageHandler>>
+      script_message_handlers_;
 
 #if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
   // The associated WKContentWorld. May be null which represents the main world

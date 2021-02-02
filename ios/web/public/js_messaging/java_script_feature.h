@@ -5,10 +5,15 @@
 #ifndef IOS_WEB_PUBLIC_JS_MESSAGING_JAVA_SCRIPT_FEATURE_H_
 #define IOS_WEB_PUBLIC_JS_MESSAGING_JAVA_SCRIPT_FEATURE_H_
 
+#include <map>
 #include <string>
 #include <vector>
 
+#include "base/callback.h"
+#include "base/memory/weak_ptr.h"
+
 @class NSString;
+@class WKScriptMessage;
 
 namespace base {
 class Value;
@@ -16,6 +21,7 @@ class Value;
 
 namespace web {
 
+class BrowserState;
 class WebFrame;
 
 // Describes a feature implemented in Javascript and native<->JS communication
@@ -95,6 +101,18 @@ class JavaScriptFeature {
   virtual const std::vector<const JavaScriptFeature*> GetDependentFeatures()
       const;
 
+  // Returns the script message handler names which this feature will receive
+  // messages from JavaScript. Returning an empty vector will not register any
+  // handlers.
+  virtual std::vector<std::string> GetScriptMessageHandlerNames() const;
+
+  using ScriptMessageHandler =
+      base::RepeatingCallback<void(BrowserState* browser_state,
+                                   WKScriptMessage* message)>;
+  // Returns the names from |GetScriptMessageHandlerNames| mapped to handler
+  // callbacks.
+  std::map<std::string, ScriptMessageHandler> GetScriptMessageHandlers() const;
+
   JavaScriptFeature(const JavaScriptFeature&) = delete;
 
  protected:
@@ -104,10 +122,16 @@ class JavaScriptFeature {
                               const std::string& function_name,
                               const std::vector<base::Value>& parameters);
 
+  // Callback for script messages registered through |GetScriptMessageHandlers|.
+  // Called when a web view associated with |browser_state| sent |message|.
+  virtual void ScriptMessageReceived(BrowserState* browser_state,
+                                     WKScriptMessage* message);
+
  private:
   ContentWorld supported_world_;
   std::vector<const FeatureScript> scripts_;
   std::vector<const JavaScriptFeature*> dependent_features_;
+  base::WeakPtrFactory<JavaScriptFeature> weak_factory_;
 };
 
 }  // namespace web

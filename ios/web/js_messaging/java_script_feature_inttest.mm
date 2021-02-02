@@ -5,17 +5,22 @@
 #include "base/test/ios/wait_util.h"
 
 #include "base/bind.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
-#import "ios/web/public/js_messaging/java_script_feature.h"
 #include "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #import "ios/web/public/test/web_view_content_test_util.h"
+#import "ios/web/test/fakes/fake_java_script_feature.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+using base::test::ios::kWaitForJSCompletionTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 static NSString* kPageHTML =
     @"<html><body>"
@@ -23,44 +28,6 @@ static NSString* kPageHTML =
      "</body></html>";
 
 namespace web {
-
-namespace {
-
-// Filename of the Javascript injected by FakeJavaScriptFeature which creates
-// a text node on document load with the text
-// |kJavaScriptFeatureTestScriptLoadedText| and exposes
-// the function |kJavaScriptFeatureTestScriptReplaceDivContents|.
-const char kJavaScriptFeatureTestScript[] = "java_script_feature_test_js";
-
-// The text added to the page by |kJavaScriptFeatureTestScript| on document
-// load.
-const char kJavaScriptFeatureTestScriptLoadedText[] = "injected_script_loaded";
-
-// The function exposed by kJavaScriptFeatureTestScript which replaces the
-// contents of the div with |id="div"| with the text "updated".
-const char kJavaScriptFeatureTestScriptReplaceDivContents[] =
-    "javaScriptFeatureTest.replaceDivContents";
-
-// A JavaScriptFeature which exposes a function to call the
-// |__gCrWeb.replaceDiv1Contents| JavaScript function.
-class FakeJavaScriptFeature : public JavaScriptFeature {
- public:
-  FakeJavaScriptFeature(JavaScriptFeature::ContentWorld content_world)
-      : JavaScriptFeature(content_world,
-                          {FeatureScript::CreateWithFilename(
-                              kJavaScriptFeatureTestScript,
-                              FeatureScript::InjectionTime::kDocumentEnd,
-                              FeatureScript::TargetFrames::kMainFrame)},
-                          {}) {}
-  ~FakeJavaScriptFeature() override = default;
-
-  void ReplaceDivContents(WebFrame* web_frame) {
-    CallJavaScriptFunction(web_frame,
-                           kJavaScriptFeatureTestScriptReplaceDivContents, {});
-  }
-};
-
-}  // namespace
 
 typedef WebTestWithWebState JavaScriptFeatureTest;
 
@@ -76,7 +43,7 @@ TEST_F(JavaScriptFeatureTest, JavaScriptFeatureInjectJavaScript) {
   LoadHtml(kPageHTML);
   ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "contents1"));
   EXPECT_TRUE(test::WaitForWebViewContainingText(
-      web_state(), kJavaScriptFeatureTestScriptLoadedText));
+      web_state(), kFakeJavaScriptFeatureLoadedText));
 }
 
 // Tests that a JavaScriptFeature executes its injected JavaScript when
@@ -91,7 +58,7 @@ TEST_F(JavaScriptFeatureTest, JavaScriptFeatureInjectJavaScriptIsolatedWorld) {
   LoadHtml(kPageHTML);
   ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "contents1"));
   EXPECT_TRUE(test::WaitForWebViewContainingText(
-      web_state(), kJavaScriptFeatureTestScriptLoadedText));
+      web_state(), kFakeJavaScriptFeatureLoadedText));
 }
 
 // Tests that a JavaScriptFeature correctly calls JavaScript functions when
@@ -131,6 +98,72 @@ TEST_F(JavaScriptFeatureTest,
 
   EXPECT_TRUE(test::WaitForWebViewContainingText(web_state(), "updated"));
   EXPECT_TRUE(test::WaitForWebViewContainingText(web_state(), "contents2"));
+}
+
+// Tests that a JavaScriptFeature receives post messages from JavaScript for
+// registered names in the page content world.
+TEST_F(JavaScriptFeatureTest, MessageHandlerInPageContentWorld) {
+  FakeJavaScriptFeature feature(
+      JavaScriptFeature::ContentWorld::kPageContentWorld);
+
+  web::JavaScriptFeatureManager::FromBrowserState(GetBrowserState())
+      ->ConfigureFeatures({&feature});
+
+  LoadHtml(kPageHTML);
+
+  ASSERT_FALSE(feature.last_received_browser_state());
+  ASSERT_FALSE(feature.last_received_message());
+
+  std::vector<base::Value> parameters;
+  parameters.push_back(
+      base::Value(kFakeJavaScriptFeaturePostMessageReplyValue));
+  feature.ReplyWithPostMessage(GetMainFrame(web_state()), parameters);
+
+  FakeJavaScriptFeature* feature_ptr = &feature;
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    return feature_ptr->last_received_browser_state();
+  }));
+
+  EXPECT_EQ(GetBrowserState(), feature.last_received_browser_state());
+
+  ASSERT_TRUE(feature.last_received_message());
+  EXPECT_EQ(kFakeJavaScriptFeatureScriptHandlerName,
+            base::SysNSStringToUTF8(feature.last_received_message().name));
+  EXPECT_EQ(kFakeJavaScriptFeaturePostMessageReplyValue,
+            base::SysNSStringToUTF8(feature.last_received_message().body));
+}
+
+// Tests that a JavaScriptFeature receives post messages from JavaScript for
+// registered names in an isolated world.
+TEST_F(JavaScriptFeatureTest, MessageHandlerInIsolatedWorld) {
+  FakeJavaScriptFeature feature(
+      JavaScriptFeature::ContentWorld::kAnyContentWorld);
+
+  web::JavaScriptFeatureManager::FromBrowserState(GetBrowserState())
+      ->ConfigureFeatures({&feature});
+
+  LoadHtml(kPageHTML);
+
+  ASSERT_FALSE(feature.last_received_browser_state());
+  ASSERT_FALSE(feature.last_received_message());
+
+  std::vector<base::Value> parameters;
+  parameters.push_back(
+      base::Value(kFakeJavaScriptFeaturePostMessageReplyValue));
+  feature.ReplyWithPostMessage(GetMainFrame(web_state()), parameters);
+
+  FakeJavaScriptFeature* feature_ptr = &feature;
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    return feature_ptr->last_received_browser_state();
+  }));
+
+  EXPECT_EQ(GetBrowserState(), feature.last_received_browser_state());
+
+  ASSERT_TRUE(feature.last_received_message());
+  EXPECT_EQ(kFakeJavaScriptFeatureScriptHandlerName,
+            base::SysNSStringToUTF8(feature.last_received_message().name));
+  EXPECT_EQ(kFakeJavaScriptFeaturePostMessageReplyValue,
+            base::SysNSStringToUTF8(feature.last_received_message().body));
 }
 
 }  // namespace web
