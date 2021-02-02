@@ -4,8 +4,40 @@
 
 package org.chromium.chrome.browser.payments.test_support;
 
+import androidx.annotation.Nullable;
+
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
+import org.robolectric.annotation.Resetter;
+
+import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsStatics;
+
 /**
  * TODO(crbug.com/1170916): Removed soon. This class is a temporary replacement of
  * LegacyShadowWebContentsStatics, used to transition downstream dependencies.
  */
-public class LegacyShadowWebContentsStatics extends ShadowWebContentsStatics {}
+@Implements(WebContentsStatics.class)
+public class LegacyShadowWebContentsStatics {
+    private static WebContents sWebContents;
+
+    /**
+     * Sets the WebContents to be returned from {@link #fromRenderFrameHost}.
+     * @param webContents The WebContents to be returned.
+     */
+    public static void setWebContents(WebContents webContents) {
+        sWebContents = webContents;
+    }
+
+    @Resetter
+    public static void reset() {
+        sWebContents = null;
+    }
+
+    @Implementation
+    @Nullable
+    public static WebContents fromRenderFrameHost(RenderFrameHost rfh) {
+        return sWebContents;
+    }
+}
