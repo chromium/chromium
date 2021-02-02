@@ -18,6 +18,11 @@ enum Destination {
   // |MEET_DEVICE_TELEMETRY| handler is for telemetry data sent by Meet
   // Devices. For more information, see go/reliable-meet-device-telemetry.
   MEET_DEVICE_TELEMETRY = 2;
+
+  // |DEVICE_TRUST_REPORTS| handler is for reporting data updates related to the
+  // Device Trust connector, sent by Chrome browsers for Chrome Browser Cloud
+  // Management (CBCM).
+  DEVICE_TRUST_REPORTS = 3;
 }
 
 // |Priority| is used to determine when items from the queue should be rate
