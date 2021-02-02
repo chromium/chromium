@@ -7,7 +7,10 @@
 
 #include "chromeos/services/multidevice_setup/multidevice_setup_impl.h"
 
+#include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_clock.h"
 #include "chromeos/components/multidevice/logging/logging.h"
@@ -194,13 +197,31 @@ void MultiDeviceSetupImpl::GetEligibleHostDevices(
 
 void MultiDeviceSetupImpl::GetEligibleActiveHostDevices(
     GetEligibleActiveHostDevicesCallback callback) {
+  // For metrics.
+  bool has_duplicate_host_name = false;
+  base::flat_set<std::string> name_set;
+
   std::vector<mojom::HostDevicePtr> eligible_active_hosts;
   for (const auto& host_device :
        eligible_host_devices_provider_->GetEligibleActiveHostDevices()) {
+    // For metrics.
+    if (base::Contains(name_set, host_device.remote_device.name())) {
+      has_duplicate_host_name = true;
+      PA_LOG(WARNING) << "MultiDeviceSetupImpl::GetEligibleActiveHostDevices: "
+                      << "Detected duplicate eligible host device name \""
+                      << host_device.remote_device.name() << "\"";
+    } else {
+      name_set.insert(host_device.remote_device.name());
+    }
+
     eligible_active_hosts.push_back(
         mojom::HostDevice::New(host_device.remote_device.GetRemoteDevice(),
                                host_device.connectivity_status));
   }
+
+  base::UmaHistogramBoolean(
+      "MultiDevice.Setup.HasDuplicateEligibleHostDeviceNames",
+      has_duplicate_host_name);
 
   std::move(callback).Run(std::move(eligible_active_hosts));
 }

@@ -362,6 +362,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="MultiDevice.Setup.HasDuplicateEligibleHostDeviceNames"
+    enum="BooleanDuplicate" expires_after="2021-06-06">
+  <owner>nohle@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether or not the list of eligible host phones has duplicate
+    devices names. This list is shown to users during multi-device setup, and
+    duplicate device names can cause confusion. Metric emitted when the user
+    starts multi-device setup.
+  </summary>
+</histogram>
+
 <histogram name="MultiDevice.Setup.HostStatus"
     enum="MultiDevice_Setup_HostStatus" expires_after="2021-06-06">
   <owner>vecore@google.com</owner>
