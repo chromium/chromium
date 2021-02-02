@@ -181,7 +181,7 @@ TEST_F(UrlsSQLHandlerTest, Update) {
   HistoryAndBookmarkRow update_row;
   update_row.set_last_visit_time(Time::Now());
   update_row.set_visit_count(1);
-  update_row.set_title(base::UTF8ToUTF16("Google Inc"));
+  update_row.set_title(base::UTF8ToUTF16("Google LLC"));
   TableIDRow id;
   id.url_id = url_row.id();
   TableIDRows ids;

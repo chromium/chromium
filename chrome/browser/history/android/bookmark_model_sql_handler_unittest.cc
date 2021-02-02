@@ -183,7 +183,7 @@ TEST_F(BookmarkModelSQLHandlerTest, UpdateHistoryToBookmark) {
   EXPECT_EQ(row.parent_id(), parent1->id());
 
   // Only update the title.
-  url_row.set_title(base::UTF8ToUTF16("Google Inc."));
+  url_row.set_title(base::UTF8ToUTF16("Google LLC"));
   history_db_.UpdateURLRow(url_id, url_row);
   HistoryAndBookmarkRow update_title;
   update_title.set_title(url_row.title());
