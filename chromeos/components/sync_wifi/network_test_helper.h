@@ -45,6 +45,10 @@ class NetworkTestHelper : public network_config::CrosNetworkConfigTestHelper {
 
   NetworkStateTestHelper* network_state_test_helper();
 
+  sync_preferences::TestingPrefServiceSyncable* user_prefs() {
+    return &user_prefs_;
+  }
+
  private:
   void LoginUser(const user_manager::User* user);
 
