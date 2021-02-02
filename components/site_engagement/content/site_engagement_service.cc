@@ -172,6 +172,7 @@ void SiteEngagementService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 // static
 SiteEngagementService* SiteEngagementService::Get(
     content::BrowserContext* context) {
+  DCHECK(g_service_provider);
   return g_service_provider->GetSiteEngagementService(context);
 }
 

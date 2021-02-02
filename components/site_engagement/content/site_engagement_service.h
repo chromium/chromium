@@ -181,9 +181,6 @@ class SiteEngagementService : public KeyedService,
   void SetLastShortcutLaunchTime(content::WebContents* web_contents,
                                  const GURL& url);
 
-  void HelperCreated(SiteEngagementService::Helper* helper);
-  void HelperDeleted(SiteEngagementService::Helper* helper);
-
   // Returns the site engagement details for the specified |url|.
   mojom::SiteEngagementDetails GetDetails(const GURL& url) const;
 
@@ -194,7 +191,7 @@ class SiteEngagementService : public KeyedService,
   // Just forwards calls AddPoints.
   void AddPointsForTesting(const GURL& url, double points);
 
-  void set_clock_for_test(base::Clock* clock) { clock_ = clock; }
+  void SetClockForTesting(base::Clock* clock) { clock_ = clock; }
 
  protected:
   // Retrieves the SiteEngagementScore object for |origin|.
@@ -216,23 +213,13 @@ class SiteEngagementService : public KeyedService,
                            CleanupMovesScoreBackToRebase);
   FRIEND_TEST_ALL_PREFIXES(SiteEngagementServiceTest,
                            CleanupEngagementScoresProportional);
-  FRIEND_TEST_ALL_PREFIXES(SiteEngagementServiceTest, GetMedianEngagement);
   FRIEND_TEST_ALL_PREFIXES(SiteEngagementServiceTest, GetTotalNavigationPoints);
   FRIEND_TEST_ALL_PREFIXES(SiteEngagementServiceTest, GetTotalUserInputPoints);
-  FRIEND_TEST_ALL_PREFIXES(SiteEngagementServiceTest,
-                           GetTotalNotificationPoints);
   FRIEND_TEST_ALL_PREFIXES(SiteEngagementServiceTest, RestrictedToHTTPAndHTTPS);
-  FRIEND_TEST_ALL_PREFIXES(SiteEngagementServiceTest, LastShortcutLaunch);
-  FRIEND_TEST_ALL_PREFIXES(SiteEngagementServiceTest,
-                           CleanupOriginsOnHistoryDeletion);
-  FRIEND_TEST_ALL_PREFIXES(SiteEngagementServiceTest, IsBootstrapped);
-  FRIEND_TEST_ALL_PREFIXES(SiteEngagementServiceTest, EngagementLevel);
   FRIEND_TEST_ALL_PREFIXES(SiteEngagementServiceTest, Observers);
-  FRIEND_TEST_ALL_PREFIXES(SiteEngagementServiceTest, ScoreDecayHistograms);
   FRIEND_TEST_ALL_PREFIXES(SiteEngagementServiceTest, LastEngagementTime);
   FRIEND_TEST_ALL_PREFIXES(SiteEngagementServiceTest,
                            IncognitoEngagementService);
-  FRIEND_TEST_ALL_PREFIXES(SiteEngagementServiceTest, GetScoreFromSettings);
   FRIEND_TEST_ALL_PREFIXES(webapps::AppBannerManagerBrowserTest,
                            WebAppBannerNeedsEngagement);
   FRIEND_TEST_ALL_PREFIXES(AppBannerSettingsHelperTest, SiteEngagementTrigger);
