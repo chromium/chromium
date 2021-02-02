@@ -13,39 +13,13 @@
 #include "mojo/public/cpp/system/data_pipe_producer.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/cross_origin_read_blocking.h"
+#include "services/network/web_bundle_chunked_buffer.h"
 
 namespace network {
 
 namespace {
 
 constexpr size_t kBlockedBodyAllocationSize = 1;
-
-class PipeDataSource : public mojo::DataPipeProducer::DataSource {
- public:
-  explicit PipeDataSource(std::vector<uint8_t> data) : data_(std::move(data)) {}
-  uint64_t GetLength() const override { return data_.size(); }
-
-  ReadResult Read(uint64_t uint64_offset, base::span<char> buffer) override {
-    ReadResult result;
-    if (uint64_offset > data_.size()) {
-      result.result = MOJO_RESULT_OUT_OF_RANGE;
-      return result;
-    }
-    size_t offset = base::checked_cast<size_t>(uint64_offset);
-    size_t len = std::min(data_.size() - offset, buffer.size());
-    if (len > 0) {
-      DCHECK_LT(offset, data_.size());
-      memcpy(buffer.data(), &data_[offset], len);
-    }
-    result.bytes_read = len;
-    return result;
-  }
-
- private:
-  // Since mojo::DataPipeProducer runs in its own sequence, we can't just have
-  // a reference to the buffer in BundleDataSource.
-  std::vector<uint8_t> data_;
-};
 
 void DeleteProducerAndRunCallback(
     std::unique_ptr<mojo::DataPipeProducer> producer,
@@ -275,7 +249,7 @@ class WebBundleURLLoaderFactory::BundleDataSource
                       uint64_t length,
                       ReadToDataPipeCallback callback) {
     TRACE_EVENT0("loading", "BundleDataSource::ReadToDataPipe");
-    if (!finished_loading_ && offset + length > data_.size()) {
+    if (!finished_loading_ && !buffer_.ContainsAll(offset, length)) {
       // Current implementation does not support progressive loading of inner
       // response body.
       PendingReadToDataPipe pending;
@@ -287,9 +261,17 @@ class WebBundleURLLoaderFactory::BundleDataSource
       return;
     }
 
+    auto data_source = buffer_.CreateDataSource(offset, length);
+    if (!data_source) {
+      // When there is no body to send, returns OK here without creating a
+      // DataPipeProducer.
+      std::move(callback).Run(MOJO_RESULT_OK);
+      return;
+    }
+
     auto writer = std::make_unique<mojo::DataPipeProducer>(std::move(producer));
     mojo::DataPipeProducer* raw_writer = writer.get();
-    raw_writer->Write(std::make_unique<PipeDataSource>(GetData(offset, length)),
+    raw_writer->Write(std::move(data_source),
                       base::BindOnce(&DeleteProducerAndRunCallback,
                                      std::move(writer), std::move(callback)));
   }
@@ -297,7 +279,7 @@ class WebBundleURLLoaderFactory::BundleDataSource
   // mojom::BundleDataSource
   void Read(uint64_t offset, uint64_t length, ReadCallback callback) override {
     TRACE_EVENT0("loading", "BundleDataSource::Read");
-    if (!finished_loading_ && offset + length > data_.size()) {
+    if (!finished_loading_ && !buffer_.ContainsAll(offset, length)) {
       PendingRead pending;
       pending.offset = offset;
       pending.length = length;
@@ -305,16 +287,19 @@ class WebBundleURLLoaderFactory::BundleDataSource
       pending_reads_.push_back(std::move(pending));
       return;
     }
-    std::move(callback).Run(GetData(offset, length));
+
+    uint64_t out_len = buffer_.GetAvailableLength(offset, length);
+    std::vector<uint8_t> output(base::checked_cast<size_t>(out_len));
+    buffer_.ReadData(offset, out_len, output.data());
+    std::move(callback).Run(std::move(output));
   }
 
   // mojo::DataPipeDrainer::Client
   void OnDataAvailable(const void* data, size_t num_bytes) override {
     DCHECK(!finished_loading_);
-    const uint8_t* data_uint8 = reinterpret_cast<const uint8_t*>(data);
     // TODO(crbug.com/1082020): Set a threshold for buffer size, so that Network
     // Service does not use memory indefinitely.
-    data_.insert(data_.end(), data_uint8, data_uint8 + num_bytes);
+    buffer_.Append(reinterpret_cast<const uint8_t*>(data), num_bytes);
     ProcessPendingReads();
   }
 
@@ -339,18 +324,6 @@ class WebBundleURLLoaderFactory::BundleDataSource
     }
   }
 
-  std::vector<uint8_t> GetData(uint64_t uint64_offset, uint64_t uint64_length) {
-    size_t offset = base::checked_cast<size_t>(uint64_offset);
-    size_t length = base::checked_cast<size_t>(uint64_length);
-    if (offset >= data_.size())
-      return {};
-    if (length > data_.size() - offset)
-      length = data_.size() - offset;
-
-    std::vector<uint8_t> output(length);
-    memcpy(output.data(), data_.data() + offset, length);
-    return output;
-  }
 
   struct PendingRead {
     uint64_t offset;
@@ -365,7 +338,7 @@ class WebBundleURLLoaderFactory::BundleDataSource
   };
 
   mojo::Receiver<web_package::mojom::BundleDataSource> data_source_receiver_;
-  std::vector<uint8_t> data_;
+  WebBundleChunkedBuffer buffer_;
   std::vector<PendingRead> pending_reads_;
   std::vector<PendingReadToDataPipe> pending_reads_to_data_pipe_;
   bool finished_loading_ = false;
