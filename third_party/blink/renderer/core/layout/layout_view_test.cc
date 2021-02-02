@@ -150,9 +150,9 @@ class LayoutViewHitTestTest : public testing::WithParamInterface<HitTestConfig>,
         GetParam().editing_behavior);
   }
 
-  PositionWithAffinity HitTest(const PhysicalOffset offset) {
+  PositionWithAffinity HitTest(int left, int top) {
     const HitTestRequest hit_request(HitTestRequest::kActive);
-    const HitTestLocation hit_location(offset);
+    const HitTestLocation hit_location(PhysicalOffset(left, top));
     HitTestResult hit_result(hit_request, hit_location);
     if (!GetLayoutView().HitTest(hit_location, hit_result))
       return PositionWithAffinity();
@@ -640,11 +640,11 @@ TEST_P(LayoutViewHitTestTest, PseudoElementAfterBlock) {
           ? TextAffinity::kUpstream
           : TextAffinity::kDownstream);
 
-  EXPECT_EQ(expected, HitTest(PhysicalOffset(20, 5))) << "after ab";
-  EXPECT_EQ(expected, HitTest(PhysicalOffset(25, 5))) << "at X";
-  EXPECT_EQ(expected, HitTest(PhysicalOffset(35, 5))) << "at Y";
-  EXPECT_EQ(expected, HitTest(PhysicalOffset(40, 5))) << "after Y";
-  EXPECT_EQ(expected, HitTest(PhysicalOffset(50, 5))) << "after XY";
+  EXPECT_EQ(expected, HitTest(20, 5)) << "after ab";
+  EXPECT_EQ(expected, HitTest(25, 5)) << "at X";
+  EXPECT_EQ(expected, HitTest(35, 5)) << "at Y";
+  EXPECT_EQ(expected, HitTest(40, 5)) << "after Y";
+  EXPECT_EQ(expected, HitTest(50, 5)) << "after XY";
 }
 
 // http://crbug.com/1043471
@@ -657,34 +657,32 @@ TEST_P(LayoutViewHitTestTest, PseudoElementAfterInline) {
   const auto& text_ab = *To<Text>(GetElementById("ab")->firstChild());
   const auto& text_cd = *To<Text>(GetElementById("cd")->lastChild());
 
-  EXPECT_EQ(PositionWithAffinity(Position(text_ab, 0)),
-            HitTest(PhysicalOffset(5, 5)));
+  EXPECT_EQ(PositionWithAffinity(Position(text_ab, 0)), HitTest(5, 5));
   // Because of hit testing at "b", position should be |kDownstream|.
   EXPECT_EQ(PositionWithAffinity(Position(text_ab, 1),
                                  LayoutNG() ? TextAffinity::kDownstream
                                             : TextAffinity::kUpstream),
-            HitTest(PhysicalOffset(15, 5)));
-  EXPECT_EQ(PositionWithAffinity(Position(text_cd, 0)),
-            HitTest(PhysicalOffset(25, 5)));
+            HitTest(15, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(text_cd, 0)), HitTest(25, 5));
   // Because of hit testing at "d", position should be |kDownstream|.
   EXPECT_EQ(PositionWithAffinity(Position(text_cd, 1),
                                  LayoutNG() ? TextAffinity::kDownstream
                                             : TextAffinity::kUpstream),
-            HitTest(PhysicalOffset(35, 5)));
+            HitTest(35, 5));
   // Because of hit testing at right of <span cd>, result position should be
   // |kUpstream|.
   EXPECT_EQ(PositionWithAffinity(Position(text_cd, 2),
                                  LayoutNG() ? TextAffinity::kUpstream
                                             : TextAffinity::kDownstream),
-            HitTest(PhysicalOffset(45, 5)));
+            HitTest(45, 5));
   EXPECT_EQ(PositionWithAffinity(Position(text_cd, 2),
                                  LayoutNG() ? TextAffinity::kUpstream
                                             : TextAffinity::kDownstream),
-            HitTest(PhysicalOffset(55, 5)));
+            HitTest(55, 5));
   EXPECT_EQ(PositionWithAffinity(Position(text_cd, 2),
                                  LayoutNG() ? TextAffinity::kUpstream
                                             : TextAffinity::kDownstream),
-            HitTest(PhysicalOffset(65, 5)));
+            HitTest(65, 5));
 }
 
 TEST_P(LayoutViewHitTestTest, PseudoElementAfterBlockWithMargin) {
@@ -703,13 +701,13 @@ TEST_P(LayoutViewHitTestTest, PseudoElementAfterBlockWithMargin) {
           ? TextAffinity::kUpstream
           : TextAffinity::kDownstream);
 
-  EXPECT_EQ(expected, HitTest(PhysicalOffset(20, 5))) << "after ab";
-  EXPECT_EQ(expected, HitTest(PhysicalOffset(25, 5))) << "at margin-left";
-  EXPECT_EQ(expected, HitTest(PhysicalOffset(30, 5))) << "before X";
-  EXPECT_EQ(expected, HitTest(PhysicalOffset(35, 5))) << "at X";
-  EXPECT_EQ(expected, HitTest(PhysicalOffset(45, 5))) << "at Y";
-  EXPECT_EQ(expected, HitTest(PhysicalOffset(50, 5))) << "after Y";
-  EXPECT_EQ(expected, HitTest(PhysicalOffset(55, 5))) << "after XY";
+  EXPECT_EQ(expected, HitTest(20, 5)) << "after ab";
+  EXPECT_EQ(expected, HitTest(25, 5)) << "at margin-left";
+  EXPECT_EQ(expected, HitTest(30, 5)) << "before X";
+  EXPECT_EQ(expected, HitTest(35, 5)) << "at X";
+  EXPECT_EQ(expected, HitTest(45, 5)) << "at Y";
+  EXPECT_EQ(expected, HitTest(50, 5)) << "after Y";
+  EXPECT_EQ(expected, HitTest(55, 5)) << "after XY";
 }
 
 }  // namespace blink
