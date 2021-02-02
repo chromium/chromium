@@ -17,7 +17,8 @@ SharedImageRepresentationGLTexturePassthroughAndroid::
         scoped_refptr<gles2::TexturePassthrough> texture)
     : SharedImageRepresentationGLTexturePassthrough(manager, backing, tracker),
       texture_(std::move(texture)) {
-  DCHECK(texture_);
+  // TODO(https://crbug.com/1172769): Remove this CHECK.
+  CHECK(texture_);
 }
 
 SharedImageRepresentationGLTexturePassthroughAndroid::

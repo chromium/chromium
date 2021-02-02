@@ -101,7 +101,10 @@ SharedImageRepresentationGLTexturePassthroughImpl::
         scoped_refptr<gles2::TexturePassthrough> texture_passthrough)
     : SharedImageRepresentationGLTexturePassthrough(manager, backing, tracker),
       client_(client),
-      texture_passthrough_(std::move(texture_passthrough)) {}
+      texture_passthrough_(std::move(texture_passthrough)) {
+  // TODO(https://crbug.com/1172769): Remove this CHECK.
+  CHECK(texture_passthrough_);
+}
 
 SharedImageRepresentationGLTexturePassthroughImpl::
     ~SharedImageRepresentationGLTexturePassthroughImpl() {

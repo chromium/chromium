@@ -223,7 +223,8 @@ class SharedImageRepresentationGLTexturePassthroughScopedHardwareBufferFenceSync
                                                       backing,
                                                       tracker),
         texture_(std::move(texture)) {
-    DCHECK(texture_);
+    // TODO(https://crbug.com/1172769): Remove this CHECK.
+    CHECK(texture_);
   }
 
   ~SharedImageRepresentationGLTexturePassthroughScopedHardwareBufferFenceSync()

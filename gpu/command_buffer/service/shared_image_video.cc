@@ -187,7 +187,10 @@ class SharedImageRepresentationGLTexturePassthroughVideo
       : SharedImageRepresentationGLTexturePassthrough(manager,
                                                       backing,
                                                       tracker),
-        texture_(std::move(texture)) {}
+        texture_(std::move(texture)) {
+    // TODO(https://crbug.com/1172769): Remove this CHECK.
+    CHECK(texture_);
+  }
 
   const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough()
       override {

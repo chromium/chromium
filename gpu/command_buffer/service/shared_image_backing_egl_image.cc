@@ -155,6 +155,8 @@ class SharedImageBackingEglImage::RepresentationGLTexturePassthrough
 
   const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough()
       override {
+    // TODO(https://crbug.com/1172769): Remove this CHECK.
+    CHECK(shared_.texture_holder()->texture_passthrough());
     return shared_.texture_holder()->texture_passthrough();
   }
 
