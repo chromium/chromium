@@ -733,22 +733,6 @@ config("compiler") {
     }
   }
 
-  # Pin to LLVM's legacy pass manager so we can switch independently of a Clang roll.
-  # TODO(https://crbug.com/1173188): remove once we've rolled a Clang with the new PM as the default PM.
-  if (is_clang && !is_nacl && !use_xcode_clang) {
-    cflags += [
-      "-Xclang",
-      "-fno-experimental-new-pass-manager",
-    ]
-  }
-  if (use_thin_lto) {
-    if (is_win) {
-      ldflags += [ "-opt:noltonewpassmanager" ]
-    } else if (!is_mac) {
-      ldflags += [ "-Wl,--lto-legacy-pass-manager" ]
-    }
-  }
-
   # This flag enforces that member pointer base types are complete. It helps
   # prevent us from running into problems in the Microsoft C++ ABI (see
   # https://crbug.com/847724).
