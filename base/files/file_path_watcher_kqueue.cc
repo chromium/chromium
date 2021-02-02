@@ -318,10 +318,6 @@ void FilePathWatcherKQueue::Cancel() {
   if (!is_cancelled()) {
     set_cancelled();
     kqueue_watch_controller_.reset();
-    // There may be pending tasks on this sequence to handle previously-observed
-    // changes on the queue's file descriptor. Invalidate them so that they
-    // never run.
-    weak_factory_.InvalidateWeakPtrs();
     if (IGNORE_EINTR(close(kqueue_)) != 0) {
       DPLOG(ERROR) << "close kqueue";
     }
