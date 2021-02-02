@@ -6,6 +6,14 @@
 
 #include "base/metrics/histogram_macros.h"
 
+namespace {
+
+void RecordAuthResultSuccess(bool success) {
+  UMA_HISTOGRAM_BOOLEAN("SmartLock.AuthResult", success);
+}
+
+}  // namespace
+
 SmartLockMetricsRecorder::SmartLockMetricsRecorder() = default;
 
 SmartLockMetricsRecorder::~SmartLockMetricsRecorder() {}
@@ -23,6 +31,7 @@ void SmartLockMetricsRecorder::RecordSmartLockSignInAuthMethodChoice(
 }
 
 void SmartLockMetricsRecorder::RecordAuthResultUnlockSuccess(bool success) {
+  RecordAuthResultSuccess(success);
   UMA_HISTOGRAM_BOOLEAN("SmartLock.AuthResult.Unlock", success);
 }
 
@@ -34,6 +43,7 @@ void SmartLockMetricsRecorder::RecordAuthResultUnlockFailure(
 }
 
 void SmartLockMetricsRecorder::RecordAuthResultSignInSuccess(bool success) {
+  RecordAuthResultSuccess(success);
   UMA_HISTOGRAM_BOOLEAN("SmartLock.AuthResult.SignIn", success);
 }
 

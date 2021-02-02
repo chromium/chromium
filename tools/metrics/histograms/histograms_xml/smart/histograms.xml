@@ -55,6 +55,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="SmartLock.AuthResult" enum="BooleanSuccess"
+    expires_after="2022-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Count of successful and failed attempts to unlock or sign in the Chromebook,
+    after the user selects their profile photo.
+  </summary>
+</histogram>
+
 <histogram name="SmartLock.AuthResult.SignIn" enum="BooleanSuccess"
     expires_after="2022-02-01">
   <owner>hansberry@chromium.org</owner>
