@@ -10,8 +10,8 @@
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
-#include "components/safe_browsing/content/password_protection/password_protection_service_base.h"
 #include "components/safe_browsing/core/password_protection/metrics_util.h"
+#include "components/safe_browsing/core/password_protection/password_protection_service_base.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

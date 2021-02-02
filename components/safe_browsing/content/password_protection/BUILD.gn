@@ -10,14 +10,10 @@ source_set("password_protection") {
     sources = [
       "password_protection_navigation_throttle.cc",
       "password_protection_navigation_throttle.h",
-      "password_protection_request.cc",
-      "password_protection_request.h",
       "password_protection_request_content.cc",
       "password_protection_request_content.h",
       "password_protection_service.cc",
       "password_protection_service.h",
-      "password_protection_service_base.cc",
-      "password_protection_service_base.h",
       "request_canceler_content.cc",
       "request_canceler_content.h",
     ]
@@ -81,6 +77,7 @@ source_set("password_protection_unittest") {
       "//components/safe_browsing/core:features",
       "//components/safe_browsing/core:verdict_cache_manager",
       "//components/safe_browsing/core/db:test_database_manager",
+      "//components/safe_browsing/core/password_protection",
       "//components/safe_browsing/core/password_protection:password_protection_metrics_util",
       "//components/signin/public/base",
       "//components/signin/public/identity_manager",

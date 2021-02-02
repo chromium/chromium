@@ -2,23 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/content/password_protection/password_protection_request.h"
+#include "components/safe_browsing/core/password_protection/password_protection_request.h"
 
 #include <cstddef>
 
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/safe_browsing/content/password_protection/password_protection_service.h"
 #include "components/safe_browsing/core/common/thread_utils.h"
 #include "components/safe_browsing/core/db/allowlist_checker_client.h"
 #include "components/safe_browsing/core/db/database_manager.h"
 #include "components/safe_browsing/core/features.h"
+#include "components/safe_browsing/core/password_protection/password_protection_service_base.h"
 #include "components/url_formatter/url_formatter.h"
 #include "net/base/escape.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
 namespace safe_browsing {
