@@ -12,8 +12,6 @@ import android.content.Intent;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
-import org.junit.Assert;
-
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
@@ -145,7 +143,7 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
         ThreadUtils.runOnUiThreadBlocking(() -> {
             synchronized (mAccounts) {
                 boolean added = mAccounts.add(accountHolder);
-                Assert.assertTrue("Account already added", added);
+                assert added : "Account already added";
                 for (AccountsChangeObserver observer : mObservers) {
                     observer.onAccountsChanged();
                 }
@@ -165,7 +163,7 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
         ThreadUtils.runOnUiThreadBlocking(() -> {
             synchronized (mAccounts) {
                 boolean removed = mAccounts.remove(accountHolder);
-                Assert.assertTrue("Can't find account", removed);
+                assert removed : "Can't find account";
                 for (AccountsChangeObserver observer : mObservers) {
                     observer.onAccountsChanged();
                 }

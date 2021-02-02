@@ -74,13 +74,8 @@ android_library("signin_java_test_support") {
     ":java",
     ":signin_test_resources",
     "//base:base_java",
-    "//base:base_java_test_support",
     "//third_party/android_deps:androidx_annotation_annotation_java",
-    "//third_party/android_deps:androidx_test_runner_java",
-    "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
-    "//third_party/junit",
   ]
-
   sources = [
     "javatests/src/org/chromium/components/signin/test/util/AccountHolder.java",
     "javatests/src/org/chromium/components/signin/test/util/FakeAccountManagerDelegate.java",
