@@ -622,6 +622,7 @@
           bssid: '',
           frequency: 0,
           hexSsid: opt_name || '',
+          hiddenSsid: false,
           security: mojom.SecurityType.kNone,
           signalStrength: 0,
           ssid: '',
@@ -794,7 +795,14 @@
       case mojom.NetworkType.kWiFi:
         // Note: wifi.security can not be changed, so |security| will be ignored
         // for existing configurations.
-        return {typeConfig: {wifi: {security: mojom.SecurityType.kNone}}};
+        return {
+          typeConfig: {
+            wifi: {
+              security: mojom.SecurityType.kNone,
+              hiddenSsid: mojom.HiddenSsidMode.kAutomatic
+            }
+          }
+        };
         break;
     }
     assertNotReached('Unexpected type: ' + type.toString());
