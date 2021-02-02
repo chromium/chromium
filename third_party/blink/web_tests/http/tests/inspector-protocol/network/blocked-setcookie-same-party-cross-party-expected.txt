@@ -1,0 +1,9 @@
+Verifies that making cross-party requests which set SameParty cookies send us Network.ResponseReceivedExtraInfo events with corresponding blocked set-cookies.
+
+Javascript initiated subresource blocked set-cookies:[
+]
+Javascript initiated navigation blocked set-cookies:[
+]
+Browser initiated navigation blocked set-cookies:[
+]
+
