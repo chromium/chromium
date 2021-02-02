@@ -7,20 +7,15 @@
  * interactive tutorial engine.
  */
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.m.js';
-import 'chrome://resources/cr_elements/shared_style_css.m.js';
-import 'chrome://resources/cr_elements/shared_vars_css.m.js';
-
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Curriculum, InteractionMedium, LessonData, Screen} from './constants.js';
+import {Curriculum, InteractionMedium, LessonData, MainMenuButtonData, Screen} from './constants.js';
 import {LessonContainer} from './lesson_container.js';
 import {LessonMenu} from './lesson_menu.js';
+import {Localization} from './localization.js';
 import {MainMenu} from './main_menu.js';
 import {NavigationButtons} from './navigation_buttons.js';
-import {TutorialCommon} from './tutorial_common.js';
+import {TutorialBehavior} from './tutorial_behavior.js';
 import {TutorialLesson} from './tutorial_lesson.js';
 
 /**
@@ -43,55 +38,29 @@ Polymer({
 
   _template: html`{__html_template__}`,
 
-  behaviors: [TutorialCommon],
+  behaviors: [Localization, TutorialBehavior],
 
   properties: {
-    curriculum: {
-      type: String,
-      value: Curriculum.NONE,
-      observer: 'updateIncludedLessons'
-    },
+    /** @private {boolean} */
+    interactiveMode_: {type: Boolean, value: false},
 
-    medium: {
-      type: String,
-      value: InteractionMedium.KEYBOARD,
-      observer: 'updateIncludedLessons'
-    },
+    /** @private {number} */
+    nudgeIntervalId_: {type: Number},
 
-    // Bookkeeping variables.
+    /**
+     * @const {number}
+     * @private
+     */
+    NUDGE_INTERVAL_TIME_MS_: {type: Number, value: 45 * 1000},
 
-    // Not all lessons are included, some are filtered out based on the chosen
-    // medium and curriculum.
-    includedLessons: {type: Array},
+    /** @private {number} */
+    nudgeCounter_: {type: Number, value: 0},
 
-    // An index into |includedLessons|.
-    activeLessonIndex: {type: Number, value: -1},
+    /** @private {Array<function(): void>} */
+    nudgeArray_: {type: Array},
 
-    /** @type {number} */
-    activeLessonId: {type: Number, value: -1},
-
-    numLessons: {type: Number, value: 0},
-
-    numLoadedLessons: {type: Number, value: 0},
-
-    activeScreen: {type: String, observer: 'onActiveScreenChanged'},
-
-    interactiveMode: {type: Boolean, value: false},
-
-    nudgeIntervalId: {type: Number},
-
-    /** @const */
-    NUDGE_INTERVAL_TIME_MS: {type: Number, value: 45 * 1000},
-
-    nudgeCounter: {type: Number, value: 0},
-
-    /** @type {Array<function(): void>} */
-    nudgeArray: {type: Array},
-
-    isPracticeAreaActive: {type: Boolean, value: false},
-
-    /** @private {Array<!{title: string, curriculum: Curriculum}>} */
-    mainMenuButtonData_: {
+    /** @type {Array<!MainMenuButtonData>} */
+    mainMenuButtonData: {
       type: Array,
       value: [
         {
@@ -350,92 +319,29 @@ Polymer({
     this.buildEarconLesson();
     this.buildLearnMoreLesson();
     this.dispatchEvent(new CustomEvent('readyfortesting', {composed: true}));
-    this.show_();
+    this.show();
   },
 
   /** @private */
-  show_() {
-    if (this.curriculum === Curriculum.QUICK_ORIENTATION) {
-      // If opening the tutorial from the OOBE, automatically show the first
-      // lesson.
-      this.updateIncludedLessons();
-      this.showLesson(0);
+  onTutorialVisibilityChanged_() {
+    if (this.isVisible) {
+      this.startNudges(NudgeType.GENERAL);
     } else {
-      this.showMainMenu();
+      this.stopNudges();
+      this.dispatchEvent(new CustomEvent('closetutorial', {}));
     }
-    this.startNudges(NudgeType.GENERAL);
-  },
-
-  /**
-   * @param {!MouseEvent} evt
-   * @private
-   */
-  onMainMenuButtonClicked_(evt) {
-    const detail =
-        /** @type {!{title: string, curriculum: Curriculum}} */ (evt.detail);
-    this.curriculum = detail.curriculum;
-    this.showLessonMenu();
-  },
-
-  /**
-   * @param {!MouseEvent} evt
-   * @private
-   */
-  onLessonMenuButtonClicked_(evt) {
-    const detail =
-        /**
-           @type {!{title: string, curriculums: Array<Curriculum>, lessonId:
-               number}}
-         */
-        (evt.detail);
-    this.showLessonFromId_(detail.lessonId);
-  },
-
-  showNextLesson() {
-    this.showLesson(this.activeLessonIndex + 1);
   },
 
   /** @private */
-  showPreviousLesson() {
-    this.showLesson(this.activeLessonIndex - 1);
-  },
-
-  /** @private */
-  showFirstLesson() {
-    this.showLesson(0);
-  },
-
-  /**
-   * @param {number} lessonId
-   * @private
-   */
-  showLessonFromId_(lessonId) {
-    for (let i = 0; i < this.includedLessons.length; ++i) {
-      const lesson = this.includedLessons[i];
-      if (lessonId === lesson.lessonId) {
-        this.showLesson(i);
-      }
-    }
-  },
-
-  /**
-   * @param {number} index An index into |this.includedLessons|.
-   * @private
-   */
-  showLesson(index) {
-    this.showLessonContainer();
-    if (this.interactiveMode) {
-      this.stopInteractiveMode();
-    }
-    if (index < 0 || index >= this.numLessons) {
+  onActiveLessonIdChanged_() {
+    if (this.activeLessonId < 0 ||
+        this.activeLessonId >= this.lessonData.length) {
       return;
     }
 
-    this.activeLessonIndex = index;
-
-    // Lessons observe activeLessonId. When updated, lessons automatically
-    // update their visibility.
-    this.activeLessonId = this.includedLessons[index].lessonId;
+    if (this.interactiveMode_) {
+      this.stopInteractiveMode();
+    }
 
     const lesson = this.getCurrentLesson();
     if (lesson.autoInteractive) {
@@ -446,88 +352,11 @@ Polymer({
     }
   },
 
-  // Methods for hiding and showing screens.
-
   /** @private */
-  hideAllScreens() {
-    this.activeScreen = Screen.NONE;
-  },
-
-  /** @private */
-  showMainMenu() {
-    this.activeScreen = Screen.MAIN_MENU;
-  },
-
-  /** @private */
-  showLessonMenu() {
-    if (this.includedLessons.length === 1) {
-      // If there's only one lesson, immediately show it.
-      this.showLesson(0);
-      this.activeScreen = Screen.LESSON;
-    } else {
-      this.activeScreen = Screen.LESSON_MENU;
-    }
-  },
-
-  /** @private */
-  showLessonContainer() {
-    this.activeScreen = Screen.LESSON;
-  },
-
-  /** @private */
-  updateIncludedLessons() {
-    this.includedLessons = [];
-    this.activeLessonId = -1;
-    this.activeLessonIndex = -1;
-    this.numLessons = 0;
-    const lessons = this.$.lessonContainer.getLessonsFromDom();
-    for (const lesson of lessons) {
-      if (lesson.shouldInclude(this.medium, this.curriculum)) {
-        this.includedLessons.push(lesson);
-      }
-    }
-    this.numLessons = this.includedLessons.length;
-  },
-
-  /** @private */
-  onActiveScreenChanged() {
-    if (this.interactiveMode) {
+  onActiveScreenChanged_() {
+    if (this.interactiveMode_) {
       this.stopInteractiveMode();
     }
-  },
-
-  // Methods for computing attributes and properties.
-
-  /**
-   * @return {Array<!{title: string, curriculums: !Array<!Curriculum>, lessonId:
-   *     number}>}
-   * @private
-   */
-  computeLessonMenuButtonData_() {
-    const data = [];
-    for (let i = 0; i < this.lessonData.length; ++i) {
-      data.push({
-        title: this.lessonData[i].title,
-        curriculums: this.lessonData[i].curriculums,
-        lessonId: i
-      });
-    }
-    return data;
-  },
-
-  /**
-   * @param {Screen} activeScreen
-   * @return {boolean}
-   * @private
-   */
-  shouldHideLessonContainer(activeScreen) {
-    return activeScreen !== Screen.LESSON;
-  },
-
-  /** @private */
-  exit() {
-    this.stopNudges();
-    this.dispatchEvent(new CustomEvent('closetutorial', {}));
   },
 
   // Interactive mode.
@@ -541,14 +370,14 @@ Polymer({
    * @private
    */
   startInteractiveMode(actions) {
-    this.interactiveMode = true;
+    this.interactiveMode_ = true;
     this.dispatchEvent(new CustomEvent(
         'startinteractivemode', {composed: true, detail: {actions}}));
   },
 
   /** @private */
   stopInteractiveMode() {
-    this.interactiveMode = false;
+    this.interactiveMode_ = false;
     this.dispatchEvent(
         new CustomEvent('stopinteractivemode', {composed: true}));
   },
@@ -571,7 +400,7 @@ Polymer({
       window.BackgroundKeyboardHandler.onKeyDown(evt);
     }
 
-    if (key === 'Tab' && this.interactiveMode) {
+    if (key === 'Tab' && this.interactiveMode_) {
       // Prevent Tab from being used in interactive mode. This ensures the user
       // can only navigate if they press the expected sequence of keys.
       evt.preventDefault();
@@ -593,8 +422,8 @@ Polymer({
 
   /** @private */
   setNudgeInterval() {
-    this.nudgeIntervalId =
-        setInterval(this.giveNudge.bind(this), this.NUDGE_INTERVAL_TIME_MS);
+    this.nudgeIntervalId_ =
+        setInterval(this.giveNudge.bind(this), this.NUDGE_INTERVAL_TIME_MS_);
   },
 
   /**
@@ -605,7 +434,7 @@ Polymer({
    */
   initializeNudges(type) {
     const maybeGiveNudge = (msg) => {
-      if (this.interactiveMode) {
+      if (this.interactiveMode_) {
         // Do not announce message since ChromeVox blocks actions in interactive
         // mode.
         return;
@@ -614,17 +443,17 @@ Polymer({
       this.requestSpeech(msg, QueueMode.INTERJECT);
     };
 
-    this.nudgeArray = [];
+    this.nudgeArray_ = [];
     if (type === NudgeType.PRACTICE_AREA) {
       // Convert hint strings into functions that will request speech for those
       // strings.
       const hints = this.lessonData[this.activeLessonId].hints || [];
       for (const hint of hints) {
-        this.nudgeArray.push(
+        this.nudgeArray_.push(
             this.requestSpeech.bind(this, hint, QueueMode.INTERJECT));
       }
     } else if (type === NudgeType.GENERAL) {
-      this.nudgeArray = [
+      this.nudgeArray_ = [
         this.requestFullyDescribe.bind(this),
         this.requestFullyDescribe.bind(this),
         this.requestFullyDescribe.bind(this),
@@ -640,12 +469,13 @@ Polymer({
 
   /** @private */
   stopNudges() {
-    this.nudgeCounter = 0;
-    if (this.nudgeIntervalId) {
-      clearInterval(this.nudgeIntervalId);
+    this.nudgeCounter_ = 0;
+    if (this.nudgeIntervalId_) {
+      clearInterval(this.nudgeIntervalId_);
     }
   },
 
+  /** Restarts nudges. */
   restartNudges() {
     this.stopNudges();
     this.setNudgeInterval();
@@ -653,13 +483,14 @@ Polymer({
 
   /** @private */
   giveNudge() {
-    if (this.nudgeCounter < 0 || this.nudgeCounter >= this.nudgeArray.length) {
+    if (this.nudgeCounter_ < 0 ||
+        this.nudgeCounter_ >= this.nudgeArray_.length) {
       this.stopNudges();
       return;
     }
 
-    this.nudgeArray[this.nudgeCounter]();
-    this.nudgeCounter += 1;
+    this.nudgeArray_[this.nudgeCounter_]();
+    this.nudgeCounter_ += 1;
   },
 
   /**
@@ -680,11 +511,6 @@ Polymer({
   requestFullyDescribe() {
     this.dispatchEvent(
         new CustomEvent('requestfullydescribe', {composed: true}));
-  },
-
-  /** @return {!TutorialLesson} */
-  getCurrentLesson() {
-    return this.includedLessons[this.activeLessonIndex];
   },
 
   /**
@@ -782,20 +608,4 @@ Polymer({
       learnMoreLesson.contentDiv.appendChild(br);
     }
   },
-
-  /**
-   * Find and return a lesson with the given title message id.
-   * @param {string} titleMsgId The message id of the lesson's title
-   * @return {Element}
-   * @private
-   */
-  getLessonWithTitle(titleMsgId) {
-    const lessons = this.$.lessonContainer.getLessonsFromDom();
-    for (const lesson of lessons) {
-      if (lesson.title === titleMsgId) {
-        return lesson;
-      }
-    }
-    return null;
-  }
 });

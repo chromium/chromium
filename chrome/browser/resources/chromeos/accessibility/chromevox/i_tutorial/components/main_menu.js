@@ -14,22 +14,22 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Curriculum, Screen} from './constants.js';
-import {TutorialCommon} from './tutorial_common.js';
+import {Curriculum, MainMenuButtonData, Screen} from './constants.js';
+import {Localization} from './localization.js';
 
 export const MainMenu = Polymer({
   is: 'main-menu',
 
   _template: html`{__html_template__}`,
 
-  behaviors: [TutorialCommon],
+  behaviors: [Localization],
 
   properties: {
     /** @private {string} */
     header_: {type: String},
     /** @private {string} */
     headerDescription_: {type: String},
-    /** @private  {Array<!{title: string, curriculum: Curriculum}>} */
+    /** @private  {Array<!MainMenuButtonData>} */
     buttonData_: {type: Array},
 
     // Observed properties.

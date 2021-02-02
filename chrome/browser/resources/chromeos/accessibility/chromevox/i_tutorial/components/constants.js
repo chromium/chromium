@@ -50,6 +50,18 @@ export const InteractionMedium = {
 export let LessonData;
 
 /**
+ * Defines a type for data used to generate main menu buttons.
+ * @typedef {{
+ *    title: string,
+ *    curriculum: Curriculum
+ * }}
+ */
+export let MainMenuButtonData;
+
+/** @const {number} */
+export const NO_ACTIVE_LESSON = -1;
+
+/**
  * The various screens within the tutorial.
  * @enum {string}
  */

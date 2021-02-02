@@ -122,7 +122,7 @@ TEST_F('ChromeVoxTutorialTest', 'LessonSetTest', function() {
         .call(() => {
           // Call from the tutorial directly, instead of navigating to and
           // clicking on the main menu button.
-          tutorial.showMainMenu();
+          tutorial.showMainMenu_();
         })
         .expectSpeech('ChromeVox tutorial')
         .call(doCmd('nextObject'))
@@ -151,7 +151,7 @@ TEST_F('ChromeVoxTutorialTest', 'NoPracticeAreaTest', function() {
         .call(doCmd('forceClickOnCurrentItem'))
         .expectSpeech(/Essential Keys Tutorial, [0-9]+ Lessons/)
         .call(() => {
-          tutorial.showLesson(0);
+          tutorial.showLesson_(0);
         })
         .expectSpeech(
             'On, Off, and Stop', 'Heading 1',
@@ -179,7 +179,7 @@ TEST_F('ChromeVoxTutorialTest', 'HasPracticeAreaTest', function() {
         .call(doCmd('forceClickOnCurrentItem'))
         .expectSpeech(/Navigation Tutorial, [0-9]+ Lessons/)
         .call(() => {
-          tutorial.showLesson(1);
+          tutorial.showLesson_(1);
         })
         .expectSpeech('Jump Commands', 'Heading 1')
         .call(doCmd('nextButton'))
@@ -238,7 +238,7 @@ TEST_F('ChromeVoxTutorialTest', 'DISABLED_PracticeAreaNudgesTest', function() {
         .call(doCmd('forceClickOnCurrentItem'))
         .expectSpeech(/Navigation Tutorial, [0-9]+ Lessons/)
         .call(() => {
-          tutorial.showLesson(0);
+          tutorial.showLesson_(0);
         })
         .expectSpeech('Basic Navigation', 'Heading 1')
         .call(doCmd('nextButton'))
@@ -357,7 +357,7 @@ TEST_F('ChromeVoxTutorialTest', 'NextPreviousButtons', function() {
     mockFeedback.expectSpeech('ChromeVox tutorial')
         .call(() => {
           tutorial.curriculum = 'essential_keys';
-          tutorial.showLesson(0);
+          tutorial.showLesson_(0);
           this.assertActiveLessonIndex(0);
           this.assertActiveScreen('lesson');
         })
@@ -415,7 +415,7 @@ TEST_F('ChromeVoxTutorialTest', 'LessonHint', function() {
         .call(doCmd('forceClickOnCurrentItem'))
         .expectSpeech(/Essential Keys Tutorial, [0-9]+ Lessons/)
         .call(() => {
-          tutorial.showLesson(0);
+          tutorial.showLesson_(0);
         })
         .expectSpeech('On, Off, and Stop', 'Heading 1')
         .expectSpeech(
@@ -440,7 +440,7 @@ TEST_F('ChromeVoxTutorialTest', 'EarconLesson', function() {
         .call(() => {
           // Show the lesson.
           tutorial.curriculum = 'sounds_and_settings';
-          tutorial.showLesson(0);
+          tutorial.showLesson_(0);
         })
         .expectSpeech('Sounds')
         .call(doCmd('nextObject'))
@@ -554,7 +554,7 @@ TEST_F('ChromeVoxTutorialTest', 'RestartNudges', function() {
     await waitForRestartNudges();
     // Show a lesson.
     tutorial.curriculum = 'essential_keys';
-    tutorial.showLesson(0);
+    tutorial.showLesson_(0);
     restart = false;
     CommandHandler.onCommand('nextObject');
     await waitForRestartNudges();
@@ -573,7 +573,7 @@ TEST_F('ChromeVoxTutorialTest', 'ResourcesTest', function() {
     mockFeedback.expectSpeech('ChromeVox tutorial')
         .call(() => {
           tutorial.curriculum = 'resources';
-          tutorial.showLesson(0);
+          tutorial.showLesson_(0);
         })
         .expectSpeech('Learn More')
         .call(doCmd('nextObject'))
@@ -648,7 +648,7 @@ TEST_F('ChromeVoxTutorialTest', 'StartStopInteractiveMode', function() {
       assertEquals(expectedVars.createdCount, userActionMonitorCreatedCount);
       assertEquals(
           expectedVars.destroyedCount, userActionMonitorDestroyedCount);
-      assertEquals(expectedVars.interactiveMode, tutorial.interactiveMode);
+      assertEquals(expectedVars.interactiveMode, tutorial.interactiveMode_);
       // Note: Interactive mode and UserActionMonitor should always be in
       // sync in the context of the tutorial.
       assertEquals(expectedVars.interactiveMode, isUserActionMonitorActive);
@@ -658,7 +658,7 @@ TEST_F('ChromeVoxTutorialTest', 'StartStopInteractiveMode', function() {
         {createdCount: 0, destroyedCount: 0, interactiveMode: false});
     // Show the first lesson of the quick orientation, which is interactive.
     tutorial.curriculum = 'quick_orientation';
-    tutorial.showLesson(0);
+    tutorial.showLesson_(0);
     makeAssertions({createdCount: 1, destroyedCount: 0, interactiveMode: true});
 
     // Move to the next lesson in the quick orientation. This lesson is also
@@ -668,7 +668,7 @@ TEST_F('ChromeVoxTutorialTest', 'StartStopInteractiveMode', function() {
 
     // Leave the quick orientation by navigating to the lesson menu. This should
     // stop interactive mode and destroy UserActionMonitor.
-    tutorial.showLessonMenu();
+    tutorial.showLessonMenu_();
     makeAssertions(
         {createdCount: 2, destroyedCount: 2, interactiveMode: false});
   });

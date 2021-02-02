@@ -1,7 +1,7 @@
 <!-- Copyright 2020 The Chromium Authors. All rights reserved.
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
-<style include="cr-shared-style">
+<style>
 
 #tutorial {
   background: #FFF;
@@ -21,7 +21,7 @@
 <main-menu
     header_="tutorial_main_menu_header"
     header-description_="tutorial_main_menu_header_description"
-    button-data_="[[ mainMenuButtonData_ ]]"
+    button-data_="[[ mainMenuButtonData ]]"
     active-screen="[[ activeScreen ]]"
     on-button-clicked="onMainMenuButtonClicked_">
 </main-menu>
@@ -49,10 +49,10 @@
     curriculum="[[ curriculum ]]"
     num-lessons="[[ numLessons ]]"
     on-next-lesson-button-clicked="showNextLesson"
-    on-previous-lesson-button-clicked="showPreviousLesson"
-    on-restart-quick-orientation-button-clicked="showFirstLesson"
-    on-lesson-menu-button-clicked="showLessonMenu"
-    on-main-menu-button-clicked="showMainMenu"
+    on-previous-lesson-button-clicked="showPreviousLesson_"
+    on-restart-quick-orientation-button-clicked="showFirstLesson_"
+    on-lesson-menu-button-clicked="showLessonMenu_"
+    on-main-menu-button-clicked="showMainMenu_"
     on-exit-button-clicked="exit">
 </navigation-buttons>
 

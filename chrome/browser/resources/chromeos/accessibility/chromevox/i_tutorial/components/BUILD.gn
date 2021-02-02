@@ -23,9 +23,10 @@ js_type_check("closure_compile") {
     ":i_tutorial",
     ":lesson_container",
     ":lesson_menu",
+    ":localization",
     ":main_menu",
     ":navigation_buttons",
-    ":tutorial_common",
+    ":tutorial_behavior",
     ":tutorial_lesson",
   ]
 }
@@ -69,5 +70,14 @@ js_library("i_tutorial") {
   ]
 }
 
-js_library("tutorial_common") {
+js_library("localization") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("tutorial_behavior") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
 }
