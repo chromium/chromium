@@ -607,6 +607,8 @@ TEST_F(PeopleHandlerTest, AcquireSyncBlockerWhenLoadingSyncSettingsSubpage) {
   handler_->InitializeSyncBlocker();
 
   EXPECT_TRUE(handler_->sync_blocker_);
+  content::WebUIControllerFactory::UnregisterFactoryForTesting(
+      test_factory_.get());
 }
 
 TEST_F(PeopleHandlerTest, UnrecoverableErrorInitializingSync) {
