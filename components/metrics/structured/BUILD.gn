@@ -16,6 +16,8 @@ static_library("structured") {
     "histogram_util.h",
     "key_data.cc",
     "key_data.h",
+    "persistent_proto.cc",
+    "persistent_proto.h",
     "recorder.cc",
     "recorder.h",
     "structured_metrics_provider.cc",
@@ -91,10 +93,12 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "key_data_unittest.cc",
+    "persistent_proto_unittest.cc",
     "structured_metrics_provider_unittest.cc",
   ]
 
   deps = [
+    ":storage",
     ":structured",
     ":structured_events",
     "//base",
