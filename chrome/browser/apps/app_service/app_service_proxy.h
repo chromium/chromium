@@ -409,7 +409,7 @@ class AppServiceProxy : public KeyedService,
   std::unique_ptr<apps::AppServiceImpl> app_service_impl_;
 
   mojo::Remote<apps::mojom::AppService> app_service_;
-  apps::AppRegistryCache cache_;
+  apps::AppRegistryCache app_registry_cache_;
 
   mojo::ReceiverSet<apps::mojom::Subscriber> receivers_;
 

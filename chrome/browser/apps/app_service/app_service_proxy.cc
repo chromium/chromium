@@ -61,9 +61,10 @@ apps::mojom::IconKeyPtr AppServiceProxy::InnerIconLoader::GetIconKey(
 
   apps::mojom::IconKeyPtr icon_key;
   if (host_->app_service_.is_connected()) {
-    host_->cache_.ForOneApp(app_id, [&icon_key](const apps::AppUpdate& update) {
-      icon_key = update.IconKey();
-    });
+    host_->app_registry_cache_.ForOneApp(
+        app_id, [&icon_key](const apps::AppUpdate& update) {
+          icon_key = update.IconKey();
+        });
   }
   return icon_key;
 }
@@ -110,7 +111,7 @@ AppServiceProxy::AppServiceProxy(Profile* profile)
 
 AppServiceProxy::~AppServiceProxy() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  AppRegistryCacheWrapper::Get().RemoveAppRegistryCache(&cache_);
+  AppRegistryCacheWrapper::Get().RemoveAppRegistryCache(&app_registry_cache_);
 #endif
 }
 
@@ -140,9 +141,9 @@ void AppServiceProxy::Initialize() {
   const user_manager::User* user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
   if (user) {
-    cache_.SetAccountId(user->GetAccountId());
+    app_registry_cache_.SetAccountId(user->GetAccountId());
     AppRegistryCacheWrapper::Get().AddAppRegistryCache(user->GetAccountId(),
-                                                       &cache_);
+                                                       &app_registry_cache_);
   }
 #endif
 
@@ -200,7 +201,7 @@ void AppServiceProxy::Initialize() {
                                   weak_ptr_factory_.GetWeakPtr(), profile_));
   }
 
-  Observe(&cache_);
+  Observe(&app_registry_cache_);
 }
 
 mojo::Remote<apps::mojom::AppService>& AppServiceProxy::AppService() {
@@ -208,7 +209,7 @@ mojo::Remote<apps::mojom::AppService>& AppServiceProxy::AppService() {
 }
 
 apps::AppRegistryCache& AppServiceProxy::AppRegistryCache() {
-  return cache_;
+  return app_registry_cache_;
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -248,8 +249,9 @@ void AppServiceProxy::Launch(const std::string& app_id,
                              apps::mojom::LaunchSource launch_source,
                              int64_t display_id) {
   if (app_service_.is_connected()) {
-    cache_.ForOneApp(app_id, [this, event_flags, launch_source,
-                              display_id](const apps::AppUpdate& update) {
+    app_registry_cache_.ForOneApp(app_id, [this, event_flags, launch_source,
+                                           display_id](
+                                              const apps::AppUpdate& update) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       if (MaybeShowLaunchPreventionDialog(update)) {
         return;
@@ -270,8 +272,9 @@ void AppServiceProxy::LaunchAppWithFiles(
     apps::mojom::LaunchSource launch_source,
     apps::mojom::FilePathsPtr file_paths) {
   if (app_service_.is_connected()) {
-    cache_.ForOneApp(app_id, [this, container, event_flags, launch_source,
-                              &file_paths](const apps::AppUpdate& update) {
+    app_registry_cache_.ForOneApp(app_id, [this, container, event_flags,
+                                           launch_source, &file_paths](
+                                              const apps::AppUpdate& update) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       if (MaybeShowLaunchPreventionDialog(update)) {
         return;
@@ -308,8 +311,9 @@ void AppServiceProxy::LaunchAppWithIntent(
     apps::mojom::LaunchSource launch_source,
     int64_t display_id) {
   if (app_service_.is_connected()) {
-    cache_.ForOneApp(app_id, [this, event_flags, &intent, launch_source,
-                              display_id](const apps::AppUpdate& update) {
+    app_registry_cache_.ForOneApp(app_id, [this, event_flags, &intent,
+                                           launch_source, display_id](
+                                              const apps::AppUpdate& update) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       if (MaybeShowLaunchPreventionDialog(update)) {
         return;
@@ -335,7 +339,7 @@ void AppServiceProxy::LaunchAppWithUrl(const std::string& app_id,
 void AppServiceProxy::SetPermission(const std::string& app_id,
                                     apps::mojom::PermissionPtr permission) {
   if (app_service_.is_connected()) {
-    cache_.ForOneApp(
+    app_registry_cache_.ForOneApp(
         app_id, [this, &permission](const apps::AppUpdate& update) {
           app_service_->SetPermission(update.AppType(), update.AppId(),
                                       std::move(permission));
@@ -349,7 +353,7 @@ void AppServiceProxy::Uninstall(const std::string& app_id,
   UninstallImpl(app_id, parent_window, base::DoNothing());
 #else
   // On non-ChromeOS, publishers run the remove dialog.
-  apps::mojom::AppType app_type = cache_.GetAppType(app_id);
+  apps::mojom::AppType app_type = app_registry_cache_.GetAppType(app_id);
   if (app_type == apps::mojom::AppType::kWeb) {
     WebApps::UninstallImpl(profile_, app_id, parent_window);
   }
@@ -360,7 +364,8 @@ void AppServiceProxy::UninstallSilently(
     const std::string& app_id,
     apps::mojom::UninstallSource uninstall_source) {
   if (app_service_.is_connected()) {
-    app_service_->Uninstall(cache_.GetAppType(app_id), app_id, uninstall_source,
+    app_service_->Uninstall(app_registry_cache_.GetAppType(app_id), app_id,
+                            uninstall_source,
                             /*clear_site_data=*/false, /*report_abuse=*/false);
   }
 }
@@ -373,16 +378,17 @@ void AppServiceProxy::PauseApps(
   }
 
   for (auto& data : pause_data) {
-    apps::mojom::AppType app_type = cache_.GetAppType(data.first);
+    apps::mojom::AppType app_type = app_registry_cache_.GetAppType(data.first);
     if (app_type == apps::mojom::AppType::kUnknown) {
       continue;
     }
 
-    cache_.ForOneApp(data.first, [this](const apps::AppUpdate& update) {
-      if (update.Paused() != apps::mojom::OptionalBool::kTrue) {
-        pending_pause_requests_.MaybeAddApp(update.AppId());
-      }
-    });
+    app_registry_cache_.ForOneApp(
+        data.first, [this](const apps::AppUpdate& update) {
+          if (update.Paused() != apps::mojom::OptionalBool::kTrue) {
+            pending_pause_requests_.MaybeAddApp(update.AppId());
+          }
+        });
 
     // The app pause dialog can't be loaded for unit tests.
     if (!data.second.should_show_pause_dialog || is_using_testing_profile_) {
@@ -390,13 +396,14 @@ void AppServiceProxy::PauseApps(
       continue;
     }
 
-    cache_.ForOneApp(data.first, [this, &data](const apps::AppUpdate& update) {
-      LoadIconForDialog(
-          update,
-          base::BindOnce(&AppServiceProxy::OnLoadIconForPauseDialog,
-                         weak_ptr_factory_.GetWeakPtr(), update.AppType(),
-                         update.AppId(), update.Name(), data.second));
-    });
+    app_registry_cache_.ForOneApp(
+        data.first, [this, &data](const apps::AppUpdate& update) {
+          LoadIconForDialog(
+              update,
+              base::BindOnce(&AppServiceProxy::OnLoadIconForPauseDialog,
+                             weak_ptr_factory_.GetWeakPtr(), update.AppType(),
+                             update.AppId(), update.Name(), data.second));
+        });
   }
 }
 
@@ -406,7 +413,7 @@ void AppServiceProxy::UnpauseApps(const std::set<std::string>& app_ids) {
   }
 
   for (auto& app_id : app_ids) {
-    apps::mojom::AppType app_type = cache_.GetAppType(app_id);
+    apps::mojom::AppType app_type = app_registry_cache_.GetAppType(app_id);
     if (app_type == apps::mojom::AppType::kUnknown) {
       continue;
     }
@@ -421,7 +428,7 @@ void AppServiceProxy::StopApp(const std::string& app_id) {
   if (!app_service_.is_connected()) {
     return;
   }
-  apps::mojom::AppType app_type = cache_.GetAppType(app_id);
+  apps::mojom::AppType app_type = app_registry_cache_.GetAppType(app_id);
   app_service_->StopApp(app_type, app_id);
 }
 
@@ -434,7 +441,7 @@ void AppServiceProxy::GetMenuModel(
     return;
   }
 
-  apps::mojom::AppType app_type = cache_.GetAppType(app_id);
+  apps::mojom::AppType app_type = app_registry_cache_.GetAppType(app_id);
   app_service_->GetMenuModel(app_type, app_id, menu_type, display_id,
                              std::move(callback));
 }
@@ -447,16 +454,17 @@ void AppServiceProxy::ExecuteContextMenuCommand(const std::string& app_id,
     return;
   }
 
-  apps::mojom::AppType app_type = cache_.GetAppType(app_id);
+  apps::mojom::AppType app_type = app_registry_cache_.GetAppType(app_id);
   app_service_->ExecuteContextMenuCommand(app_type, app_id, command_id,
                                           shortcut_id, display_id);
 }
 
 void AppServiceProxy::OpenNativeSettings(const std::string& app_id) {
   if (app_service_.is_connected()) {
-    cache_.ForOneApp(app_id, [this](const apps::AppUpdate& update) {
-      app_service_->OpenNativeSettings(update.AppType(), update.AppId());
-    });
+    app_registry_cache_.ForOneApp(
+        app_id, [this](const apps::AppUpdate& update) {
+          app_service_->OpenNativeSettings(update.AppType(), update.AppId());
+        });
   }
 }
 
@@ -532,8 +540,9 @@ std::vector<IntentLaunchInfo> AppServiceProxy::GetAppsForIntent(
   }
 
   if (app_service_.is_bound()) {
-    cache_.ForEachApp([&intent_launch_info, &intent,
-                       &exclude_browsers](const apps::AppUpdate& update) {
+    app_registry_cache_.ForEachApp([&intent_launch_info, &intent,
+                                    &exclude_browsers](
+                                       const apps::AppUpdate& update) {
       if (update.Readiness() == apps::mojom::Readiness::kUninstalledByUser) {
         return;
       }
@@ -607,9 +616,9 @@ void AppServiceProxy::AddPreferredApp(const std::string& app_id,
   preferred_apps_.AddPreferredApp(app_id, intent_filter);
   if (app_service_.is_connected()) {
     constexpr bool kFromPublisher = false;
-    app_service_->AddPreferredApp(cache_.GetAppType(app_id), app_id,
-                                  std::move(intent_filter), intent->Clone(),
-                                  kFromPublisher);
+    app_service_->AddPreferredApp(app_registry_cache_.GetAppType(app_id),
+                                  app_id, std::move(intent_filter),
+                                  intent->Clone(), kFromPublisher);
   }
 }
 
@@ -636,7 +645,8 @@ void AppServiceProxy::Shutdown() {
 void AppServiceProxy::OnApps(std::vector<apps::mojom::AppPtr> deltas,
                              apps::mojom::AppType app_type,
                              bool should_notify_initialized) {
-  cache_.OnApps(std::move(deltas), app_type, should_notify_initialized);
+  app_registry_cache_.OnApps(std::move(deltas), app_type,
+                             should_notify_initialized);
 }
 
 void AppServiceProxy::Clone(
@@ -669,8 +679,8 @@ void AppServiceProxy::UninstallImpl(const std::string& app_id,
     return;
   }
 
-  cache_.ForOneApp(app_id, [this, parent_window,
-                            &callback](const apps::AppUpdate& update) {
+  app_registry_cache_.ForOneApp(app_id, [this, parent_window, &callback](
+                                            const apps::AppUpdate& update) {
     apps::mojom::IconKeyPtr icon_key = update.IconKey();
     auto uninstall_dialog = std::make_unique<UninstallDialog>(
         profile_, update.AppType(), update.AppId(), update.Name(),
@@ -691,7 +701,7 @@ void AppServiceProxy::OnUninstallDialogClosed(
     bool report_abuse,
     UninstallDialog* uninstall_dialog) {
   if (uninstall) {
-    cache_.ForOneApp(app_id, RecordAppBounce);
+    app_registry_cache_.ForOneApp(app_id, RecordAppBounce);
 
     app_service_->Uninstall(app_type, app_id,
                             apps::mojom::UninstallSource::kUser,
@@ -826,7 +836,7 @@ void AppServiceProxy::OnPauseDialogClosed(apps::mojom::AppType app_type,
                                           const std::string& app_id) {
   bool should_pause_app = pending_pause_requests_.IsPaused(app_id);
   if (!should_pause_app) {
-    cache_.ForOneApp(
+    app_registry_cache_.ForOneApp(
         app_id, [&should_pause_app](const apps::AppUpdate& update) {
           if (update.Paused() == apps::mojom::OptionalBool::kTrue) {
             should_pause_app = true;
@@ -869,20 +879,21 @@ apps::mojom::IntentFilterPtr AppServiceProxy::FindBestMatchingFilter(
   }
 
   int best_match_level = apps_util::IntentFilterMatchLevel::kNone;
-  cache_.ForEachApp([&intent, &best_match_level, &best_matching_intent_filter](
-                        const apps::AppUpdate& update) {
-    for (const auto& filter : update.IntentFilters()) {
-      if (!apps_util::IntentMatchesFilter(intent, filter)) {
-        continue;
-      }
-      auto match_level = apps_util::GetFilterMatchLevel(filter);
-      if (match_level <= best_match_level) {
-        continue;
-      }
-      best_matching_intent_filter = filter->Clone();
-      best_match_level = match_level;
-    }
-  });
+  app_registry_cache_.ForEachApp(
+      [&intent, &best_match_level,
+       &best_matching_intent_filter](const apps::AppUpdate& update) {
+        for (const auto& filter : update.IntentFilters()) {
+          if (!apps_util::IntentMatchesFilter(intent, filter)) {
+            continue;
+          }
+          auto match_level = apps_util::GetFilterMatchLevel(filter);
+          if (match_level <= best_match_level) {
+            continue;
+          }
+          best_matching_intent_filter = filter->Clone();
+          best_match_level = match_level;
+        }
+      });
   return best_matching_intent_filter;
 }
 
