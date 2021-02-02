@@ -16,6 +16,7 @@
 #include "pdf/pdf_engine.h"
 #include "pdf/pdfium/pdfium_form_filler.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace base {
@@ -38,7 +39,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   // PDFEngine::Client:
   void Invalidate(const gfx::Rect& rect) override;
-  uint32_t GetBackgroundColor() override;
+  SkColor GetBackgroundColor() override;
 
   // PaintManager::Client
   void OnPaint(const std::vector<gfx::Rect>& paint_rects,
@@ -143,7 +144,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
   const gfx::Point& plugin_offset() const { return plugin_offset_; }
   void set_plugin_offset(const gfx::Point& offset) { plugin_offset_ = offset; }
 
-  void SetBackgroundColor(uint32_t background_color) {
+  void SetBackgroundColor(SkColor background_color) {
     background_color_ = background_color;
   }
 
@@ -211,7 +212,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
   gfx::Point plugin_offset_;
 
   // The background color of the PDF viewer.
-  uint32_t background_color_ = 0;
+  SkColor background_color_ = SK_ColorTRANSPARENT;
 
   // The blank space above the first page of the document reserved for the
   // toolbar.

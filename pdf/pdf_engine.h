@@ -27,6 +27,7 @@
 #include "ppapi/cpp/completion_callback.h"
 #include "ppapi/cpp/private/pdf.h"
 #include "ppapi/cpp/url_loader.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
@@ -269,7 +270,7 @@ class PDFEngine {
     virtual bool IsPrintPreview() = 0;
 
     // Get the background color of the PDF.
-    virtual uint32_t GetBackgroundColor() = 0;
+    virtual SkColor GetBackgroundColor() = 0;
 
     // Sets selection status.
     virtual void IsSelectingChanged(bool is_selecting) {}

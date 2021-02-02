@@ -145,6 +145,8 @@ if (enable_pdf) {
 
     configs += [ ":pdf_common_config" ]
 
+    public_deps = [ "//skia" ]
+
     deps = [
       ":accessibility_structs",
       ":features",
@@ -158,7 +160,6 @@ if (enable_pdf) {
       "//ppapi/cpp:objects",
       "//ppapi/cpp/private:internal_module",
       "//printing",
-      "//skia",
       "//third_party/pdfium",
       "//ui/base",
       "//ui/gfx/range",

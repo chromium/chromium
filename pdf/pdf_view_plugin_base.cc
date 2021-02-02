@@ -24,6 +24,7 @@
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/ppapi_migration/image.h"
 #include "pdf/ppapi_migration/url_loader.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace chrome_pdf {
@@ -45,7 +46,7 @@ void PdfViewPluginBase::Invalidate(const gfx::Rect& rect) {
   paint_manager_.InvalidateRect(offset_rect);
 }
 
-uint32_t PdfViewPluginBase::GetBackgroundColor() {
+SkColor PdfViewPluginBase::GetBackgroundColor() {
   return background_color_;
 }
 

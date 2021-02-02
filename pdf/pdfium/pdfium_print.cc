@@ -23,6 +23,7 @@
 #include "third_party/pdfium/public/fpdf_flatten.h"
 #include "third_party/pdfium/public/fpdf_ppo.h"
 #include "third_party/pdfium/public/fpdf_transformpage.h"
+#include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"

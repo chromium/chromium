@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "pdf/document_layout.h"
 #include "pdf/ppapi_migration/url_loader.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 namespace chrome_pdf {
 
@@ -57,8 +58,8 @@ bool TestClient::IsPrintPreview() {
   return false;
 }
 
-uint32_t TestClient::GetBackgroundColor() {
-  return 0;
+SkColor TestClient::GetBackgroundColor() {
+  return SK_ColorTRANSPARENT;
 }
 
 float TestClient::GetToolbarHeightInScreenCoords() {
