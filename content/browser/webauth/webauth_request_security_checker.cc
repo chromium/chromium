@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "components/payments/core/features.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/render_frame_host.h"
 #include "device/fido/features.h"
@@ -135,16 +134,12 @@ WebAuthRequestSecurityChecker::ValidateAncestorOrigins(
     RequestType type,
     bool* is_cross_origin) {
   *is_cross_origin = !IsSameOriginWithAncestors(origin);
-  if ((type != RequestType::kGetAssertion ||
+  if ((type == RequestType::kMakeCredential ||
        !base::FeatureList::IsEnabled(
            device::kWebAuthGetAssertionFeaturePolicy) ||
-       !render_frame_host_->IsFeatureEnabled(
-           blink::mojom::FeaturePolicyFeature::kPublicKeyCredentialsGet)) &&
-      (type != RequestType::kMakePaymentCredential ||
-       !base::FeatureList::IsEnabled(
-           payments::features::kSecurePaymentConfirmation) ||
-       !render_frame_host_->IsFeatureEnabled(
-           blink::mojom::FeaturePolicyFeature::kPayment)) &&
+       !static_cast<RenderFrameHostImpl*>(render_frame_host_)
+            ->IsFeatureEnabled(blink::mojom::FeaturePolicyFeature::
+                                   kPublicKeyCredentialsGet)) &&
       *is_cross_origin) {
     return blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR;
   }
