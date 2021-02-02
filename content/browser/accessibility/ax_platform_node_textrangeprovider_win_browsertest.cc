@@ -455,7 +455,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   GetTextRangeProviderFromTextNode(*input_text_node, &text_range_provider);
   ASSERT_NE(nullptr, text_range_provider.Get());
   EXPECT_UIA_TEXTRANGE_EQ(text_range_provider,
-                          kEmbeddedCharacterAsString.c_str());
+                          base::as_wcstr(kEmbeddedCharacterAsString));
 
   base::win::ScopedVariant value;
   EXPECT_HRESULT_SUCCEEDED(text_range_provider->GetAttributeValue(
@@ -474,7 +474,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   GetTextRangeProviderFromTextNode(*input_search_node, &text_range_provider);
   ASSERT_NE(nullptr, text_range_provider.Get());
   EXPECT_UIA_TEXTRANGE_EQ(text_range_provider,
-                          kEmbeddedCharacterAsString.c_str());
+                          base::as_wcstr(kEmbeddedCharacterAsString));
 
   EXPECT_HRESULT_SUCCEEDED(text_range_provider->GetAttributeValue(
       UIA_IsReadOnlyAttributeId, value.Receive()));
@@ -1874,9 +1874,9 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   ASSERT_NE(nullptr, end_node);
 
   std::vector<base::string16> paragraphs = {
-      L"start",
+      STRING16_LITERAL("start"),
       kEmbeddedCharacterAsString,
-      L"end",
+      STRING16_LITERAL("end"),
   };
 
   // FORWARD NAVIGATION
@@ -1888,7 +1888,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ paragraphs[0].c_str(),
+      /*expected_text*/ base::as_wcstr(paragraphs[0]),
       /*expected_count*/ 0);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
@@ -1898,32 +1898,32 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ 1,
-      /*expected_text*/ paragraphs[0].c_str(),
+      /*expected_text*/ base::as_wcstr(paragraphs[0]),
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ 1,
-      /*expected_text*/ (paragraphs[0] + paragraphs[1]).c_str(),
+      /*expected_text*/ base::as_wcstr(paragraphs[0] + paragraphs[1]),
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ 1,
-      /*expected_text*/ paragraphs[1].c_str(),
+      /*expected_text*/ base::as_wcstr(paragraphs[1]),
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ 1,
-      /*expected_text*/ (paragraphs[1] + paragraphs[2]).c_str(),
+      /*expected_text*/ base::as_wcstr(paragraphs[1] + paragraphs[2]),
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ 1,
-      /*expected_text*/ paragraphs[2].c_str(),
+      /*expected_text*/ base::as_wcstr(paragraphs[2]),
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ 1,
-      /*expected_text*/ paragraphs[2].c_str(),
+      /*expected_text*/ base::as_wcstr(paragraphs[2]),
       /*expected_count*/ 0);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
@@ -1939,7 +1939,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ 1,
-      /*expected_text*/ paragraphs[2].c_str(),
+      /*expected_text*/ base::as_wcstr(paragraphs[2]),
       /*expected_count*/ 0);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
@@ -1949,32 +1949,32 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ paragraphs[2].c_str(),
+      /*expected_text*/ base::as_wcstr(paragraphs[2]),
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ (paragraphs[1] + paragraphs[2]).c_str(),
+      /*expected_text*/ base::as_wcstr(paragraphs[1] + paragraphs[2]),
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ paragraphs[1].c_str(),
+      /*expected_text*/ base::as_wcstr(paragraphs[1]),
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ (paragraphs[0] + paragraphs[1]).c_str(),
+      /*expected_text*/ base::as_wcstr(paragraphs[0] + paragraphs[1]),
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ paragraphs[0].c_str(),
+      /*expected_text*/ base::as_wcstr(paragraphs[0]),
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ -1,
-      /*expected_text*/ paragraphs[0].c_str(),
+      /*expected_text*/ base::as_wcstr(paragraphs[0]),
       /*expected_count*/ 0);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
@@ -2363,7 +2363,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
 
   AssertMoveByUnitForMarkup(
       TextUnit_Format, "before <img src='test'> after",
-      {L"before ", kEmbeddedCharacterAsString.c_str(), L" after"});
+      {L"before ", base::as_wcstr(kEmbeddedCharacterAsString), L" after"});
 
   AssertMoveByUnitForMarkup(TextUnit_Format,
                             "before <a href='test'>link</a> after",
@@ -2452,7 +2452,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
 
   const std::vector<const wchar_t*> characters = {
       L"S", L"o", L"m", L"e", L" ",
-      L"t", L"e", L"x", L"t", kEmbeddedCharacterAsString.c_str(),
+      L"t", L"e", L"x", L"t", base::as_wcstr(kEmbeddedCharacterAsString),
       L"a", L"f", L"t", L"e", L"r"};
 
   AssertMoveByUnitForMarkup(TextUnit_Character, html_markup, characters);
@@ -2473,8 +2473,8 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   </html>)HTML";
 
   const std::vector<const wchar_t*> words = {
-      L"Some ",  L"text ", kEmbeddedCharacterAsString.c_str(),
-      L"after ", L"input", kEmbeddedCharacterAsString.c_str()};
+      L"Some ",  L"text ", base::as_wcstr(kEmbeddedCharacterAsString),
+      L"after ", L"input", base::as_wcstr(kEmbeddedCharacterAsString)};
 
   AssertMoveByUnitForMarkup(TextUnit_Word, html_markup, words);
 }

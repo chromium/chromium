@@ -460,7 +460,7 @@ void AccessibilityTreeFormatterUia::RecursiveBuildTree(
     if (SUCCEEDED(children->GetElement(i, &child))) {
       RecursiveBuildTree(child.Get(), root_x, root_y, child_dict.get());
     } else {
-      child_dict->SetString("error", L"[Error retrieving child]");
+      child_dict->SetString("error", "[Error retrieving child]");
     }
     child_list->Append(std::move(child_dict));
   }
@@ -510,19 +510,19 @@ void AccessibilityTreeFormatterUia::AddExpandCollapseProperties(
     ExpandCollapseState current_state;
     if (SUCCEEDED(expand_collapse_pattern->get_CachedExpandCollapseState(
             &current_state))) {
-      base::string16 state;
+      std::string state;
       switch (current_state) {
         case ExpandCollapseState_Collapsed:
-          state = L"Collapsed";
+          state = "Collapsed";
           break;
         case ExpandCollapseState_Expanded:
-          state = L"Expanded";
+          state = "Expanded";
           break;
         case ExpandCollapseState_PartiallyExpanded:
-          state = L"PartiallyExpanded";
+          state = "PartiallyExpanded";
           break;
         case ExpandCollapseState_LeafNode:
-          state = L"LeafNode";
+          state = "LeafNode";
           break;
       }
       dict->SetString("ExpandCollapse.ExpandCollapseState", state);
@@ -705,16 +705,16 @@ void AccessibilityTreeFormatterUia::AddTableProperties(
     RowOrColumnMajor row_or_column_major;
     if (SUCCEEDED(
             table_pattern->get_CachedRowOrColumnMajor(&row_or_column_major))) {
-      base::string16 row_or_column_string;
+      std::string row_or_column_string;
       switch (row_or_column_major) {
         case RowOrColumnMajor_RowMajor:
-          row_or_column_string = L"RowMajor";
+          row_or_column_string = "RowMajor";
           break;
         case RowOrColumnMajor_ColumnMajor:
-          row_or_column_string = L"ColumnMajor";
+          row_or_column_string = "ColumnMajor";
           break;
         case RowOrColumnMajor_Indeterminate:
-          row_or_column_string = L"Indeterminate";
+          row_or_column_string = "Indeterminate";
           break;
       }
       dict->SetString("Table.RowOrColumnMajor", row_or_column_string);
@@ -731,16 +731,16 @@ void AccessibilityTreeFormatterUia::AddToggleProperties(
       toggle_pattern) {
     ToggleState toggle_state;
     if (SUCCEEDED(toggle_pattern->get_CachedToggleState(&toggle_state))) {
-      base::string16 toggle_state_string;
+      std::string toggle_state_string;
       switch (toggle_state) {
         case ToggleState_Off:
-          toggle_state_string = L"Off";
+          toggle_state_string = "Off";
           break;
         case ToggleState_On:
-          toggle_state_string = L"On";
+          toggle_state_string = "On";
           break;
         case ToggleState_Indeterminate:
-          toggle_state_string = L"Indeterminate";
+          toggle_state_string = "Indeterminate";
           break;
       }
       dict->SetString("Toggle.ToggleState", toggle_state_string);
@@ -924,14 +924,15 @@ void AccessibilityTreeFormatterUia::WriteElementArray(
   for (int i = 0; i < count; i++) {
     Microsoft::WRL::ComPtr<IUIAutomationElement> element;
     if (SUCCEEDED(array->GetElement(i, &element))) {
-      if (element_list != L"") {
-        element_list += L", ";
+      if (element_list != STRING16_LITERAL("")) {
+        element_list += STRING16_LITERAL(", ");
       }
       auto name = GetNodeName(element.Get());
       if (name.empty()) {
         base::win::ScopedBstr role;
         element->get_CurrentAriaRole(role.Receive());
-        name = L"{" + base::string16(role.Get()) + L"}";
+        name = STRING16_LITERAL("{") + base::WideToUTF16(role.Get()) +
+               STRING16_LITERAL("}");
       }
       element_list += name;
     }
@@ -952,11 +953,11 @@ base::string16 AccessibilityTreeFormatterUia::GetNodeName(
     if (SUCCEEDED(node->GetCachedPropertyValue(UIA_NamePropertyId,
                                                variant.Receive())) &&
         variant.type() == VT_BSTR) {
-      return base::string16(variant.ptr()->bstrVal,
-                            SysStringLen(variant.ptr()->bstrVal));
+      return base::WideToUTF16(
+          {variant.ptr()->bstrVal, SysStringLen(variant.ptr()->bstrVal)});
     }
   }
-  return L"";
+  return base::string16();
 }
 
 void AccessibilityTreeFormatterUia::BuildCacheRequests() {

@@ -272,9 +272,8 @@ TEST_F(AXPlatformNodeTextChildProviderTest,
   EXPECT_HRESULT_SUCCEEDED(
       text_range_provider->GetText(-1, text_content.Receive()));
   EXPECT_EQ(
-      0,
-      wcscmp(text_content.Get(),
-             (kEmbeddedCharacterAsString + L"text child of nontext.").c_str()));
+      base::WideToUTF16(text_content.Get()),
+      kEmbeddedCharacterAsString + STRING16_LITERAL("text child of nontext."));
 
   ComPtr<IRawElementProviderSimple> enclosing_element;
   text_range_provider->GetEnclosingElement(&enclosing_element);
@@ -311,7 +310,7 @@ TEST_F(AXPlatformNodeTextChildProviderTest,
   base::win::ScopedBstr text_content;
   EXPECT_HRESULT_SUCCEEDED(
       text_range_provider->GetText(-1, text_content.Receive()));
-  EXPECT_EQ(0, wcscmp(text_content.Get(), kEmbeddedCharacterAsString.c_str()));
+  EXPECT_EQ(base::WideToUTF16(text_content.Get()), kEmbeddedCharacterAsString);
 
   ComPtr<IRawElementProviderSimple> enclosing_element;
   text_range_provider->GetEnclosingElement(&enclosing_element);

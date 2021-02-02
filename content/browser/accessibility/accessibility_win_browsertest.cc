@@ -3917,8 +3917,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
                        TestStaticTextAtOffsetWithBoundaryWord) {
   Microsoft::WRL::ComPtr<IAccessibleText> paragraph_text;
   SetUpSampleParagraph(&paragraph_text);
-  base::string16 embedded_character(
-      1, BrowserAccessibilityComWin::kEmbeddedCharacter);
+  std::wstring embedded_character = base::UTF16ToWide(
+      base::string16(1, BrowserAccessibilityComWin::kEmbeddedCharacter));
   std::vector<std::wstring> words = {
       L"Game ",    L"theory ",      L"is ",       L"\"",
       L"the ",     L"study ",       L"of ",       embedded_character,

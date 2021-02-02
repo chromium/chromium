@@ -32,8 +32,8 @@ std::string RoleVariantToString(const base::win::ScopedVariant& role) {
   if (role.type() == VT_I4) {
     return base::UTF16ToUTF8(IAccessibleRoleToString(V_I4(role.ptr())));
   } else if (role.type() == VT_BSTR) {
-    return base::UTF16ToUTF8(
-        base::string16(V_BSTR(role.ptr()), SysStringLen(V_BSTR(role.ptr()))));
+    return base::WideToUTF8(
+        std::wstring(V_BSTR(role.ptr()), SysStringLen(V_BSTR(role.ptr()))));
   }
   return std::string();
 }
@@ -56,17 +56,17 @@ HRESULT QueryIAccessibleText(IAccessible* accessible,
 }
 
 std::string BstrToPrettyUTF8(BSTR bstr) {
-  base::string16 str16(bstr, SysStringLen(bstr));
+  std::wstring wstr(bstr, SysStringLen(bstr));
 
   // IAccessibleText returns the text you get by appending all static text
   // children, with an "embedded object character" for each non-text child.
   // Pretty-print the embedded object character as <obj> so that test output
   // is human-readable.
-  base::StringPiece16 embedded_character(
-      &BrowserAccessibilityComWin::kEmbeddedCharacter, 1);
-  base::ReplaceChars(str16, embedded_character, L"<obj>", &str16);
+  std::wstring embedded_character = base::UTF16ToWide(
+      base::string16(1, BrowserAccessibilityComWin::kEmbeddedCharacter));
+  base::ReplaceChars(wstr, embedded_character, L"<obj>", &wstr);
 
-  return base::UTF16ToUTF8(str16);
+  return base::WideToUTF8(wstr);
 }
 
 std::string AccessibilityEventToStringUTF8(int32_t event_id) {
@@ -193,7 +193,7 @@ void AccessibilityEventRecorderWin::OnWinEventHook(HWINEVENTHOOK handle,
   base::win::ScopedVariant state;
   iaccessible->get_accState(childid_self, state.Receive());
   int ia_state = V_I4(state.ptr());
-  std::string hwnd_class_name = base::UTF16ToUTF8(gfx::GetClassName(hwnd));
+  std::string hwnd_class_name = base::WideToUTF8(gfx::GetClassName(hwnd));
 
   // Caret is special:
   // Log all caret events  that occur, with their window class, so that we can
@@ -202,7 +202,7 @@ void AccessibilityEventRecorderWin::OnWinEventHook(HWINEVENTHOOK handle,
     base::string16 state_str = IAccessibleStateToString(ia_state);
     std::string log = base::StringPrintf(
         "%s role=ROLE_SYSTEM_CARET %ls window_class=%s", event_str.c_str(),
-        state_str.c_str(), hwnd_class_name.c_str());
+        base::as_wcstr(state_str), hwnd_class_name.c_str());
     OnEvent(log);
     return;
   }
@@ -249,22 +249,22 @@ void AccessibilityEventRecorderWin::OnWinEventHook(HWINEVENTHOOK handle,
   hr = QueryIAccessible2(iaccessible.Get(), &iaccessible2);
   bool has_ia2 = SUCCEEDED(hr) && iaccessible2;
 
-  base::string16 html_tag;
-  base::string16 obj_class;
-  base::string16 html_id;
+  std::wstring html_tag;
+  std::wstring obj_class;
+  std::wstring html_id;
 
   if (has_ia2) {
     iaccessible2->get_states(&ia2_state);
     base::win::ScopedBstr attributes_bstr;
     if (S_OK == iaccessible2->get_attributes(attributes_bstr.Receive())) {
-      std::vector<base::string16> ia2_attributes = base::SplitString(
-          base::string16(attributes_bstr.Get(), attributes_bstr.Length()),
-          base::string16(1, ';'), base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-      for (base::string16& attr : ia2_attributes) {
+      std::vector<std::wstring> ia2_attributes = base::SplitString(
+          std::wstring(attributes_bstr.Get(), attributes_bstr.Length()),
+          std::wstring(1, ';'), base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+      for (std::wstring& attr : ia2_attributes) {
         if (base::StartsWith(attr, L"class:"))
           obj_class = attr.substr(6);  // HTML or view class
         if (base::StartsWith(attr, L"id:")) {
-          html_id = base::string16(L"#");
+          html_id = std::wstring(L"#");
           html_id += attr.substr(3);
         }
         if (base::StartsWith(attr, L"tag:")) {
@@ -277,14 +277,13 @@ void AccessibilityEventRecorderWin::OnWinEventHook(HWINEVENTHOOK handle,
   std::string log = base::StringPrintf("%s on", event_str.c_str());
   if (!html_tag.empty()) {
     // HTML node with tag
-    log += base::StringPrintf(
-        " <%s%s%s%s>", base::UTF16ToUTF8(html_tag).c_str(),
-        base::UTF16ToUTF8(html_id).c_str(), obj_class.empty() ? "" : ".",
-        base::UTF16ToUTF8(obj_class).c_str());
+    log += base::StringPrintf(" <%s%s%s%s>", base::WideToUTF8(html_tag).c_str(),
+                              base::WideToUTF8(html_id).c_str(),
+                              obj_class.empty() ? "" : ".",
+                              base::WideToUTF8(obj_class).c_str());
   } else if (!obj_class.empty()) {
     // Non-HTML node with class
-    log +=
-        base::StringPrintf(" class=%s", base::UTF16ToUTF8(obj_class).c_str());
+    log += base::StringPrintf(" class=%s", base::WideToUTF8(obj_class).c_str());
   }
 
   log += base::StringPrintf(" role=%s", RoleVariantToString(role).c_str());

@@ -224,11 +224,11 @@ TEST_F(AXPlatformNodeTextProviderTest,
   base::win::ScopedBstr text_content;
   EXPECT_HRESULT_SUCCEEDED(
       text_range_provider->GetText(-1, text_content.Receive()));
-  EXPECT_EQ(0, wcscmp(text_content.Get(), (L"Dialog label.Dialog description." +
-                                           kEmbeddedCharacterAsString +
-                                           "ok.Some more detail "
-                                           L"about dialog.")
-                                              .c_str()));
+  EXPECT_EQ(base::WideToUTF16(text_content.Get()),
+            STRING16_LITERAL("Dialog label.Dialog description.") +
+                kEmbeddedCharacterAsString +
+                STRING16_LITERAL("ok.Some more detail ") +
+                STRING16_LITERAL("about dialog."));
 
   // Check the reverse relationship that GetEnclosingElement on the text range
   // gives back the dialog.

@@ -32,7 +32,7 @@ base::string16 GetNameForPlatformConstant(
     if (entry.value == value)
       return base::ASCIIToUTF16(entry.name);
   }
-  return L"";
+  return base::string16();
 }
 
 struct HwndWithProcId {
@@ -677,8 +677,8 @@ CONTENT_EXPORT base::string16 UiaLiveSettingToString(int32_t identifier) {
 }
 
 CONTENT_EXPORT std::string BstrToUTF8(BSTR bstr) {
-  base::string16 str16(bstr, SysStringLen(bstr));
-  return base::UTF16ToUTF8(str16);
+  std::wstring str(bstr, SysStringLen(bstr));
+  return base::WideToUTF8(str);
 }
 
 CONTENT_EXPORT std::string UiaIdentifierToStringUTF8(int32_t id) {

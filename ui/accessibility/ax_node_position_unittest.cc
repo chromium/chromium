@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -9580,10 +9581,10 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
       ax::mojom::TextAffinity::kDownstream);
 
   base::string16 expected_text =
-      base::WideToUTF16(L"Hello ") + AXNode::kEmbeddedCharacter +
-      base::WideToUTF16(L" world") + AXNode::kEmbeddedCharacter +
-      AXNode::kEmbeddedCharacter + base::WideToUTF16(L"hey") +
-      AXNode::kEmbeddedCharacter + AXNode::kEmbeddedCharacter;
+      base::StrCat({STRING16_LITERAL("Hello "), AXNode::kEmbeddedCharacter,
+                    STRING16_LITERAL(" world"), AXNode::kEmbeddedCharacter,
+                    AXNode::kEmbeddedCharacter, STRING16_LITERAL("hey"),
+                    AXNode::kEmbeddedCharacter, AXNode::kEmbeddedCharacter});
   EXPECT_EQ(expected_text, position->GetText());
 
   // A position on an empty object that has been replaced by an "object

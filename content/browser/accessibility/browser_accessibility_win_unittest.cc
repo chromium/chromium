@@ -752,7 +752,7 @@ TEST_F(BrowserAccessibilityWinTest, TestComplexHypertext) {
 
   base::win::ScopedBstr text;
   EXPECT_EQ(S_OK, root_obj->get_text(0, root_hypertext_len, text.Receive()));
-  EXPECT_STREQ(root_hypertext.c_str(), text.Get());
+  EXPECT_EQ(root_hypertext, base::WideToUTF16(text.Get()));
   text.Reset();
 
   LONG hyperlink_count;
@@ -1487,7 +1487,7 @@ TEST_F(BrowserAccessibilityWinTest, TextBoundariesOnlyEmbeddedObjectsNoCrash) {
     const base::string16 expect(pieces.cbegin(), pieces.cend());
     EXPECT_IA2_TEXT_AT_OFFSET(menu_accessible_com, 0, IA2_TEXT_BOUNDARY_CHAR,
                               /*expected_hr=*/S_OK, /*start=*/0, /*end=*/2,
-                              /*text=*/expect.c_str());
+                              /*text=*/base::as_wcstr(expect));
   }
 }
 
@@ -1664,7 +1664,7 @@ TEST_F(BrowserAccessibilityWinTest, TestTextBoundariesEmbeddedCharacterText) {
     EXPECT_IA2_TEXT_AT_OFFSET(body_accessible_com, 6, IA2_TEXT_BOUNDARY_CHAR,
                               /*expected_hr=*/S_OK, /*start=*/6, /*end=*/9,
                               /*text=*/
-                              expect.c_str());
+                              base::as_wcstr(expect));
   }
 
   // L"before" [obj] <[obj]> L"after" L"tail"
@@ -1676,7 +1676,7 @@ TEST_F(BrowserAccessibilityWinTest, TestTextBoundariesEmbeddedCharacterText) {
     EXPECT_IA2_TEXT_AT_OFFSET(body_accessible_com, 7, IA2_TEXT_BOUNDARY_CHAR,
                               /*expected_hr=*/S_OK, /*start=*/7, /*end=*/9,
                               /*text=*/
-                              expect.c_str());
+                              base::as_wcstr(expect));
   }
 
   // L"before" [obj] [obj] L"<a>fter" L"tail"
@@ -1732,11 +1732,11 @@ TEST_F(BrowserAccessibilityWinTest, TestTextBoundariesEmbeddedCharacterText) {
                             /*text=*/nullptr);
 
   // <[obj]>
-  EXPECT_IA2_TEXT_AT_OFFSET(
-      menu_1_accessible_com, 0, IA2_TEXT_BOUNDARY_CHAR,
-      /*expected_hr=*/S_OK, /*start=*/0, /*end=*/1,
-      /*text=*/
-      base::string16{ui::AXPlatformNodeBase::kEmbeddedCharacter}.c_str());
+  EXPECT_IA2_TEXT_AT_OFFSET(menu_1_accessible_com, 0, IA2_TEXT_BOUNDARY_CHAR,
+                            /*expected_hr=*/S_OK, /*start=*/0, /*end=*/1,
+                            /*text=*/
+                            base::as_wcstr(base::string16{
+                                ui::AXPlatformNodeBase::kEmbeddedCharacter}));
 
   // [obj]<>
   EXPECT_IA2_TEXT_AT_OFFSET(menu_1_accessible_com, 1, IA2_TEXT_BOUNDARY_CHAR,
@@ -1787,7 +1787,8 @@ TEST_F(BrowserAccessibilityWinTest, TestTextBoundariesEmbeddedCharacterText) {
       body_accessible_com, 7, IA2_TEXT_BOUNDARY_CHAR,
       /*expected_hr=*/S_OK, /*start=*/6, /*end=*/7,
       /*text=*/
-      base::string16{ui::AXPlatformNodeBase::kEmbeddedCharacter}.c_str());
+      base::as_wcstr(
+          base::string16{ui::AXPlatformNodeBase::kEmbeddedCharacter}));
 
   // L"before" <[obj]> [obj] L"after" L"tail"
   EXPECT_IA2_TEXT_BEFORE_OFFSET(body_accessible_com, 6, IA2_TEXT_BOUNDARY_CHAR,
@@ -1816,7 +1817,7 @@ TEST_F(BrowserAccessibilityWinTest, TestTextBoundariesEmbeddedCharacterText) {
     const base::string16 expect(pieces.cbegin(), pieces.cend());
     EXPECT_IA2_TEXT_AFTER_OFFSET(body_accessible_com, 5, IA2_TEXT_BOUNDARY_CHAR,
                                  /*expected_hr=*/S_OK, /*start=*/6, /*end=*/9,
-                                 /*text=*/expect.c_str());
+                                 /*text=*/base::as_wcstr(expect));
   }
 
   // L"before" <[obj]> [obj] L"after" L"tail"
@@ -2271,7 +2272,7 @@ TEST_F(BrowserAccessibilityWinTest, TestIAccessibleHyperlink) {
   base::win::ScopedVariant anchor_target;
   base::win::ScopedBstr bstr;
 
-  base::string16 div_hypertext(L"Click ");
+  base::string16 div_hypertext(STRING16_LITERAL("Click "));
   div_hypertext.push_back(BrowserAccessibilityComWin::kEmbeddedCharacter);
 
   // div_accessible and link_accessible are the only IA2 hyperlinks.
@@ -2304,7 +2305,7 @@ TEST_F(BrowserAccessibilityWinTest, TestIAccessibleHyperlink) {
   EXPECT_EQ(S_OK, hr);
   EXPECT_EQ(VT_BSTR, anchor.type());
   bstr.Reset(V_BSTR(anchor.ptr()));
-  EXPECT_STREQ(div_hypertext.c_str(), bstr.Get());
+  EXPECT_EQ(div_hypertext, base::WideToUTF16(bstr.Get()));
   bstr.Reset();
   anchor.Reset();
   EXPECT_HRESULT_FAILED(
