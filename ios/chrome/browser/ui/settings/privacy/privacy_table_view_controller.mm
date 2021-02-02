@@ -342,32 +342,35 @@ const char kGoogleServicesSettingsURL[] = "settings://open_google_services";
 
 #pragma mark - private
 
+// Called from the reauthentication setting's UIControlEventTouchUpInside.
+// When this is called, |switchView| already has the updated value:
+// If the switch was off, and user taps it, when this method is called,
+// switchView.on is YES.
 - (void)switchTapped:(UISwitch*)switchView {
-  if (switchView.isOn) {
-    if (![self.reauthModule canAttemptReauth]) {
-      // TODO(crbug.com/1148818): add error message here or maybe even disable
-      // the switch?
-      switchView.on = false;
-    } else {
-      __weak PrivacyTableViewController* weakSelf = self;
-      [self.reauthModule
-          attemptReauthWithLocalizedReason:
-              l10n_util::GetNSString(
-                  IDS_IOS_INCOGNITO_REAUTH_SET_UP_SYSTEM_DIALOG_REASON)
-                      canReusePreviousAuth:false
-                                   handler:^(ReauthenticationResult result) {
-                                     BOOL success =
-                                         (result ==
-                                          ReauthenticationResult::kSuccess);
-                                     [switchView setOn:success animated:YES];
-                                     weakSelf.incognitoReauthPref.value =
-                                         success;
-                                   }];
-    }
-  } else {
-    // No need to authenticate, just update pref.
-    self.incognitoReauthPref.value = false;
+  if (switchView.isOn && ![self.reauthModule canAttemptReauth]) {
+    // TODO(crbug.com/1148818): add error message here or maybe even disable
+    // the switch?
+    switchView.on = false;
+    return;
   }
+
+  __weak PrivacyTableViewController* weakSelf = self;
+  [self.reauthModule
+      attemptReauthWithLocalizedReason:
+          l10n_util::GetNSString(
+              IDS_IOS_INCOGNITO_REAUTH_SET_UP_SYSTEM_DIALOG_REASON)
+                  canReusePreviousAuth:false
+                               handler:^(ReauthenticationResult result) {
+                                 BOOL enabled = switchView.on;
+                                 if (result !=
+                                     ReauthenticationResult::kSuccess) {
+                                   // Revert the switch if authentication wasn't
+                                   // successful.
+                                   enabled = !enabled;
+                                 }
+                                 [switchView setOn:enabled animated:YES];
+                                 weakSelf.incognitoReauthPref.value = enabled;
+                               }];
 }
 
 @end
