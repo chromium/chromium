@@ -29,6 +29,10 @@ struct CharTraits {
   // Returns the length of |s|, assuming null termination (and not including the
   // terminating null).
   static constexpr size_t length(const T* s) noexcept;
+
+  // Searches for character |c| within the first |n| characters of the sequence
+  // pointed to by |s|.
+  static constexpr const T* find(const T* s, size_t n, T c);
 };
 
 template <typename T>
@@ -56,6 +60,15 @@ constexpr size_t CharTraits<T>::length(const T* s) noexcept {
   return i;
 }
 
+template <typename T>
+constexpr const T* CharTraits<T>::find(const T* s, size_t n, T c) {
+  for (; n; --n, ++s) {
+    if (std::char_traits<T>::eq(*s, c))
+      return s;
+  }
+  return nullptr;
+}
+
 // char and wchar_t specialization of CharTraits that can use clang's constexpr
 // instrinsics, where available.
 #if HAS_FEATURE(cxx_constexpr_string_builtins)
@@ -70,6 +83,10 @@ struct CharTraits<char> {
   static constexpr size_t length(const char* s) noexcept {
     return __builtin_strlen(s);
   }
+
+  static constexpr const char* find(const char* s, size_t n, char c) {
+    return __builtin_char_memchr(s, c, n);
+  }
 };
 
 template <>
@@ -82,6 +99,10 @@ struct CharTraits<wchar_t> {
 
   static constexpr size_t length(const wchar_t* s) noexcept {
     return __builtin_wcslen(s);
+  }
+
+  static constexpr const wchar_t* find(const wchar_t* s, size_t n, wchar_t c) {
+    return __builtin_wmemchr(s, c, n);
   }
 };
 #endif

@@ -51,13 +51,9 @@ namespace internal {
 
 BASE_EXPORT size_t find(StringPiece self, StringPiece s, size_t pos);
 BASE_EXPORT size_t find(StringPiece16 self, StringPiece16 s, size_t pos);
-BASE_EXPORT size_t find(StringPiece self, char c, size_t pos);
-BASE_EXPORT size_t find(StringPiece16 self, char16 c, size_t pos);
 
 BASE_EXPORT size_t rfind(StringPiece self, StringPiece s, size_t pos);
 BASE_EXPORT size_t rfind(StringPiece16 self, StringPiece16 s, size_t pos);
-BASE_EXPORT size_t rfind(StringPiece self, char c, size_t pos);
-BASE_EXPORT size_t rfind(StringPiece16 self, char16 c, size_t pos);
 
 BASE_EXPORT size_t find_first_of(StringPiece self, StringPiece s, size_t pos);
 BASE_EXPORT size_t find_first_of(StringPiece16 self,
@@ -70,15 +66,11 @@ BASE_EXPORT size_t find_first_not_of(StringPiece self,
 BASE_EXPORT size_t find_first_not_of(StringPiece16 self,
                                      StringPiece16 s,
                                      size_t pos);
-BASE_EXPORT size_t find_first_not_of(StringPiece self, char c, size_t pos);
-BASE_EXPORT size_t find_first_not_of(StringPiece16 self, char16 c, size_t pos);
 
 BASE_EXPORT size_t find_last_of(StringPiece self, StringPiece s, size_t pos);
 BASE_EXPORT size_t find_last_of(StringPiece16 self,
                                 StringPiece16 s,
                                 size_t pos);
-BASE_EXPORT size_t find_last_of(StringPiece self, char c, size_t pos);
-BASE_EXPORT size_t find_last_of(StringPiece16 self, char16 c, size_t pos);
 
 BASE_EXPORT size_t find_last_not_of(StringPiece self,
                                     StringPiece s,
@@ -86,8 +78,20 @@ BASE_EXPORT size_t find_last_not_of(StringPiece self,
 BASE_EXPORT size_t find_last_not_of(StringPiece16 self,
                                     StringPiece16 s,
                                     size_t pos);
-BASE_EXPORT size_t find_last_not_of(StringPiece16 self, char16 c, size_t pos);
-BASE_EXPORT size_t find_last_not_of(StringPiece self, char c, size_t pos);
+
+// Overloads for WStringPiece in case it is not the same type as StringPiece16.
+#if !defined(WCHAR_T_IS_UTF16)
+BASE_EXPORT size_t find(WStringPiece self, WStringPiece s, size_t pos);
+BASE_EXPORT size_t rfind(WStringPiece self, WStringPiece s, size_t pos);
+BASE_EXPORT size_t find_first_of(WStringPiece self, WStringPiece s, size_t pos);
+BASE_EXPORT size_t find_first_not_of(WStringPiece self,
+                                     WStringPiece s,
+                                     size_t pos);
+BASE_EXPORT size_t find_last_of(WStringPiece self, WStringPiece s, size_t pos);
+BASE_EXPORT size_t find_last_not_of(WStringPiece self,
+                                    WStringPiece s,
+                                    size_t pos);
+#endif
 
 }  // namespace internal
 
@@ -264,7 +268,12 @@ template <typename STRING_TYPE> class BasicStringPiece {
   }
 
   constexpr size_type find(value_type c, size_type pos = 0) const noexcept {
-    return internal::find(*this, c, pos);
+    if (pos >= size())
+      return npos;
+
+    const value_type* result =
+        base::CharTraits<value_type>::find(data() + pos, size() - pos, c);
+    return result ? static_cast<size_type>(result - data()) : npos;
   }
 
   constexpr size_type find(const value_type* s,
@@ -284,7 +293,17 @@ template <typename STRING_TYPE> class BasicStringPiece {
   }
 
   constexpr size_type rfind(value_type c, size_type pos = npos) const noexcept {
-    return internal::rfind(*this, c, pos);
+    if (empty())
+      return npos;
+
+    for (size_t i = std::min(pos, size() - 1);; --i) {
+      if (data()[i] == c)
+        return i;
+
+      if (i == 0)
+        break;
+    }
+    return npos;
   }
 
   constexpr size_type rfind(const value_type* s,
@@ -349,7 +368,14 @@ template <typename STRING_TYPE> class BasicStringPiece {
 
   constexpr size_type find_first_not_of(value_type c,
                                         size_type pos = 0) const noexcept {
-    return internal::find_first_not_of(*this, c, pos);
+    if (empty())
+      return npos;
+
+    for (; pos < size(); ++pos) {
+      if (data()[pos] != c)
+        return pos;
+    }
+    return npos;
   }
 
   constexpr size_type find_first_not_of(const value_type* s,
@@ -371,7 +397,16 @@ template <typename STRING_TYPE> class BasicStringPiece {
 
   constexpr size_type find_last_not_of(value_type c,
                                        size_type pos = npos) const noexcept {
-    return internal::find_last_not_of(*this, c, pos);
+    if (empty())
+      return npos;
+
+    for (size_t i = std::min(pos, size() - 1);; --i) {
+      if (data()[i] != c)
+        return i;
+      if (i == 0)
+        break;
+    }
+    return npos;
   }
 
   constexpr size_type find_last_not_of(const value_type* s,
