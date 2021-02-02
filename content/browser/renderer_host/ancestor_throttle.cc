@@ -98,9 +98,11 @@ bool HeadersContainFrameAncestorsCSP(
 class FrameAncestorCSPContext : public network::CSPContext {
  public:
   FrameAncestorCSPContext(
-      RenderFrameHostImpl* navigated_frame,
+      network::CSPContext* csp_context,
       const std::vector<network::mojom::ContentSecurityPolicyPtr>& policies)
-      : navigated_frame_(navigated_frame) {
+      : csp_context_(csp_context) {
+    DCHECK(csp_context);
+
     // TODO(arthursonzogni): Refactor CSPContext to its original state, it
     // shouldn't own any ContentSecurityPolicies on its own. This should be
     // defined by the implementation instead. Copies could be avoided here.
@@ -108,15 +110,32 @@ class FrameAncestorCSPContext : public network::CSPContext {
       AddContentSecurityPolicy(mojo::Clone(policy));
   }
 
+  void SetAncestor(RenderFrameHostImpl* ancestor_of_navigated_frame) {
+    DCHECK(ancestor_of_navigated_frame);
+    ancestor_of_navigated_frame_ = ancestor_of_navigated_frame;
+  }
+
+  // Copy constructor and copy assignment are unsupported.
+  FrameAncestorCSPContext(const FrameAncestorCSPContext&) = delete;
+  FrameAncestorCSPContext& operator=(const FrameAncestorCSPContext&) = delete;
+
  private:
   void ReportContentSecurityPolicyViolation(
       network::mojom::CSPViolationPtr violation_params) override {
-    return navigated_frame_->ReportContentSecurityPolicyViolation(
+    // frame-ancestors should only be violated if there actually is an ancestor.
+    DCHECK(ancestor_of_navigated_frame_);
+
+    // CSP violations (if any) are reported via the disallowed ancestor of the
+    // navigated frame (because while the throttle runs the navigation hasn't
+    // committed yet and the target frame might not yet have a URLLoaderFactory
+    // that could be used to report the violation).  See also
+    // https://crbug.com/1111049.
+    return ancestor_of_navigated_frame_->ReportContentSecurityPolicyViolation(
         std::move(violation_params));
   }
 
   bool SchemeShouldBypassCSP(const base::StringPiece& scheme) override {
-    return navigated_frame_->SchemeShouldBypassCSP(scheme);
+    return csp_context_->SchemeShouldBypassCSP(scheme);
   }
 
   void SanitizeDataForUseInCspViolation(
@@ -124,11 +143,12 @@ class FrameAncestorCSPContext : public network::CSPContext {
       network::mojom::CSPDirectiveName directive,
       GURL* blocked_url,
       network::mojom::SourceLocation* source_location) const override {
-    return navigated_frame_->SanitizeDataForUseInCspViolation(
+    return csp_context_->SanitizeDataForUseInCspViolation(
         is_redirect, directive, blocked_url, source_location);
   }
 
-  RenderFrameHostImpl* navigated_frame_;
+  network::CSPContext* const csp_context_;
+  RenderFrameHostImpl* ancestor_of_navigated_frame_;
 };
 
 // Returns the parent, including outer delegates in the case of portals.
@@ -439,8 +459,7 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateFrameAncestors(
   // navigation_request().common_params().source_location here instead.
   auto empty_source_location = network::mojom::SourceLocation::New();
 
-  // CSP frame-ancestors are checked against the URL of every parent and are
-  // reported to the navigating frame.
+  // CSP frame-ancestors are checked against the URL of every parent.
   FrameAncestorCSPContext csp_context(
       NavigationRequest::From(navigation_handle())->GetRenderFrameHost(),
       content_security_policy);
@@ -452,6 +471,8 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateFrameAncestors(
       ParentOrOuterDelegate(static_cast<RenderFrameHostImpl*>(
           navigation_handle()->GetRenderFrameHost()));
   while (parent) {
+    csp_context.SetAncestor(parent);
+
     if (!csp_context.IsAllowedByCsp(
             network::mojom::CSPDirectiveName::FrameAncestors,
             parent->GetLastCommittedOrigin().GetURL(),

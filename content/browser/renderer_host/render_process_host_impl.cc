@@ -2457,6 +2457,10 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
   associated_registry->AddInterface(base::BindRepeating(
       &RenderProcessHostImpl::CreateRendererHost, base::Unretained(this)));
 
+  // TODO(https://crbug.com/1114822):
+  // RenderProcessHostImpl::CreateURLLoaderFactoryForRendererProcess is unused
+  // at this point and can be removed.  (It is probably prudent to wait with the
+  // removal until M90 reaches the Stable channel.)
   AddUIThreadInterface(
       registry.get(),
       base::BindRepeating(

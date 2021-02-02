@@ -79,10 +79,9 @@ class URLLoaderFactoryParamsHelper {
           coep_reporter,
       base::StringPiece debug_tag);
 
-  // TODO(kinuko, lukasza): https://crbug.com/1114822: Remove, once all
-  // URLLoaderFactories vended to a renderer process are associated with a
-  // specific origin and an execution context (e.g. a frame, a service worker or
-  // any other kind of worker).
+  // TODO(https://crbug.com/1114822): CreateForRendererProcess is unused and can
+  // be removed.  (It is probably prudent to wait with the removal until M90
+  // reaches the Stable channel.)
   static network::mojom::URLLoaderFactoryParamsPtr CreateForRendererProcess(
       RenderProcessHost* process);
 
