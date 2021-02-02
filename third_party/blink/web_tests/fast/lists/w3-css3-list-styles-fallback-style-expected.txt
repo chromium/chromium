@@ -37,14 +37,14 @@ PASS list marker is 1000000.
 PASS list marker is 1000001.
 
 japanese-formal
-PASS list marker is -1.
-PASS list marker is 0.
-PASS list marker is 1.
+PASS list marker is マイナス壱.
+PASS list marker is 零.
+PASS list marker is 壱.
 
 japanese-informal
-PASS list marker is -1.
-PASS list marker is 0.
-PASS list marker is 1.
+PASS list marker is マイナス一.
+PASS list marker is 〇.
+PASS list marker is 一.
 
 lower-armenian
 PASS list marker is -1.
