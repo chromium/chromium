@@ -38,7 +38,9 @@ public abstract class UserIdentityCallback {
      *         size avatar is returned, WebLayer will scale the returned image.
      * @param avatarLoadedCallback to be called with the avatar when it is available (synchronously
      *         or asynchronously). Until such time that it's called, WebLayer will fall back to a
-     *         monogram based on {@link getFullName()}, e.g. encircled "JD" for "Jill Doe".
+     *         monogram based on {@link getFullName()}, e.g. encircled "JD" for "Jill Doe". This
+     *         will no-op if the associated {@link Profile} object is destroyed before this is
+     *         called.
      */
     public void getAvatar(int desiredSize, @NonNull ValueCallback<Bitmap> avatarLoadedCallback) {}
 }
