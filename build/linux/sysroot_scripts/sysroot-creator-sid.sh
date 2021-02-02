@@ -18,12 +18,9 @@ DIST=sid
 # libgnome-keyring-dev which has since been deprecated and removed from sid.
 # It will be needed until gnome keyring is removed (http://crbug.com/466975 and
 # http://crbug.com/355223).
-# Finally, keep "buster" before "sid".  For now, it's needed to bring back
-# libpipewire2, which was removed from sid.
 ARCHIVE_URL="https://snapshot.debian.org/archive/debian"
 ARCHIVE_TIMESTAMP=20210115T203459Z
 APT_SOURCES_LIST="${ARCHIVE_URL}/${ARCHIVE_TIMESTAMP}/ stretch main
-${ARCHIVE_URL}/${ARCHIVE_TIMESTAMP}/ buster main
 ${ARCHIVE_URL}/${ARCHIVE_TIMESTAMP}/ experimental main
 ${ARCHIVE_URL}/${ARCHIVE_TIMESTAMP}/ sid main"
 
@@ -246,8 +243,6 @@ DEBIAN_PACKAGES="\
   libpcre3-dev
   libpcre32-3
   libpcrecpp0v5
-  libpipewire-0.2-1
-  libpipewire-0.2-dev
   libpipewire-0.3-0
   libpipewire-0.3-dev
   libpixman-1-0
