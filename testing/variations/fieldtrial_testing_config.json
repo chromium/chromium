@@ -1501,6 +1501,51 @@
             ]
         }
     ],
+    "ChromeOSLowMemoryNotificationPSI": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "PSIThreshold_10_Percent_20210201",
+                    "params": {
+                        "CrOSLowMemoryPSIThreshold": "10"
+                    },
+                    "enable_features": [
+                        "CrOSLowMemoryNotificationPSI"
+                    ]
+                },
+                {
+                    "name": "PSIThreshold_20_Percent_20210201",
+                    "params": {
+                        "CrOSLowMemoryPSIThreshold": "20"
+                    },
+                    "enable_features": [
+                        "CrOSLowMemoryNotificationPSI"
+                    ]
+                },
+                {
+                    "name": "PSIThreshold_30_Percent_20210201",
+                    "params": {
+                        "CrOSLowMemoryPSIThreshold": "30"
+                    },
+                    "enable_features": [
+                        "CrOSLowMemoryNotificationPSI"
+                    ]
+                },
+                {
+                    "name": "PSIThreshold_40_Percent_20210201",
+                    "params": {
+                        "CrOSLowMemoryPSIThreshold": "40"
+                    },
+                    "enable_features": [
+                        "CrOSLowMemoryNotificationPSI"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeOSNeuralPalm": [
         {
             "platforms": [
@@ -1930,51 +1975,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "CopyLinkToText"
-                    ]
-                }
-            ]
-        }
-    ],
-    "CrOSLowMemoryNotificationPSI": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "PSIThreshold_10_Percent",
-                    "params": {
-                        "CrOSLowMemoryPSIThreshold": "10"
-                    },
-                    "enable_features": [
-                        "CrOSLowMemoryNotificationPSI"
-                    ]
-                },
-                {
-                    "name": "PSIThreshold_20_Percent",
-                    "params": {
-                        "CrOSLowMemoryPSIThreshold": "20"
-                    },
-                    "enable_features": [
-                        "CrOSLowMemoryNotificationPSI"
-                    ]
-                },
-                {
-                    "name": "PSIThreshold_30_Percent",
-                    "params": {
-                        "CrOSLowMemoryPSIThreshold": "30"
-                    },
-                    "enable_features": [
-                        "CrOSLowMemoryNotificationPSI"
-                    ]
-                },
-                {
-                    "name": "PSIThreshold_40_Percent",
-                    "params": {
-                        "CrOSLowMemoryPSIThreshold": "40"
-                    },
-                    "enable_features": [
-                        "CrOSLowMemoryNotificationPSI"
                     ]
                 }
             ]
