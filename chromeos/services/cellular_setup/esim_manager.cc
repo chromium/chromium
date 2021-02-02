@@ -5,6 +5,7 @@
 #include "chromeos/services/cellular_setup/esim_manager.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/network/network_handler.h"
 #include "chromeos/services/cellular_setup/esim_profile.h"
 #include "chromeos/services/cellular_setup/euicc.h"
 #include "chromeos/services/cellular_setup/public/mojom/esim_manager.mojom.h"
@@ -15,7 +16,12 @@
 namespace chromeos {
 namespace cellular_setup {
 
-ESimManager::ESimManager() {
+ESimManager::ESimManager()
+    : ESimManager(NetworkHandler::Get()->cellular_esim_uninstall_handler()) {}
+
+ESimManager::ESimManager(
+    CellularESimUninstallHandler* cellular_esim_uninstall_handler)
+    : cellular_esim_uninstall_handler_(cellular_esim_uninstall_handler) {
   HermesManagerClient::Get()->AddObserver(this);
   HermesEuiccClient::Get()->AddObserver(this);
   HermesProfileClient::Get()->AddObserver(this);

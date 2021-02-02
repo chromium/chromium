@@ -11,6 +11,12 @@
 #include "chromeos/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
+#include "chromeos/network/cellular_esim_uninstall_handler.h"
+#include "chromeos/network/cellular_inhibitor.h"
+#include "chromeos/network/fake_network_connection_handler.h"
+#include "chromeos/network/network_configuration_handler.h"
+#include "chromeos/network/network_device_handler.h"
+#include "chromeos/network/network_state_handler.h"
 #include "chromeos/services/cellular_setup/esim_manager.h"
 #include "chromeos/services/cellular_setup/esim_test_utils.h"
 #include "chromeos/services/cellular_setup/public/mojom/esim_manager.mojom-forward.h"
@@ -34,7 +40,26 @@ void ESimTestBase::SetUp() {
   HermesManagerClient::Get()->GetTestInterface()->ClearEuiccs();
   HermesEuiccClient::Get()->GetTestInterface()->SetInteractiveDelay(
       base::TimeDelta::FromSeconds(0));
-  esim_manager_ = std::make_unique<ESimManager>();
+
+  network_state_handler_ = NetworkStateHandler::InitializeForTest();
+  network_device_handler_ =
+      NetworkDeviceHandler::InitializeForTesting(network_state_handler_.get());
+  network_configuration_handler_ =
+      base::WrapUnique(NetworkConfigurationHandler::InitializeForTest(
+          network_state_handler_.get(), network_device_handler_.get()));
+  network_connection_handler_ =
+      std::make_unique<FakeNetworkConnectionHandler>();
+  cellular_inhibitor_ = std::make_unique<CellularInhibitor>();
+  cellular_inhibitor_->Init(network_state_handler_.get(),
+                            network_device_handler_.get());
+  cellular_esim_uninstall_handler_ =
+      std::make_unique<CellularESimUninstallHandler>();
+  cellular_esim_uninstall_handler_->Init(
+      cellular_inhibitor_.get(), network_configuration_handler_.get(),
+      network_connection_handler_.get(), network_state_handler_.get());
+
+  esim_manager_ =
+      std::make_unique<ESimManager>(cellular_esim_uninstall_handler_.get());
   observer_ = std::make_unique<ESimManagerTestObserver>();
   esim_manager_->AddObserver(observer_->GenerateRemote());
 }

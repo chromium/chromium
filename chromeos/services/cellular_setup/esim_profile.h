@@ -45,6 +45,9 @@ class ESimProfile : public mojom::ESimProfile {
   // Update properties for this ESimProfile from D-Bus.
   void UpdateProperties();
 
+  // Called before profile is removed from the euicc.
+  void OnProfileRemove();
+
   // Returns a new pending remote attached to this instance.
   mojo::PendingRemote<mojom::ESimProfile> CreateRemote();
 
@@ -66,6 +69,7 @@ class ESimProfile : public mojom::ESimProfile {
                               const std::string& eid,
                               HermesResponseStatus status,
                               const dbus::ObjectPath* object_path);
+  void OnProfileUninstallResult(bool success);
   void OnESimOperationResult(ESimOperationResultCallback callback,
                              HermesResponseStatus status);
   void OnProfilePropertySet(ESimOperationResultCallback callback, bool success);
@@ -74,6 +78,7 @@ class ESimProfile : public mojom::ESimProfile {
   Euicc* euicc_;
   // Reference to ESimManager that owns Euicc of this profile.
   ESimManager* esim_manager_;
+  UninstallProfileCallback uninstall_callback_;
   mojo::ReceiverSet<mojom::ESimProfile> receiver_set_;
   mojom::ESimProfilePropertiesPtr properties_;
   dbus::ObjectPath path_;

@@ -218,7 +218,9 @@ ESimProfile* Euicc::GetOrCreateESimProfile(
 void Euicc::RemoveUntrackedProfiles(
     const std::set<dbus::ObjectPath>& new_profile_paths) {
   for (auto it = esim_profiles_.begin(); it != esim_profiles_.end();) {
-    if (new_profile_paths.find((*it)->path()) == new_profile_paths.end()) {
+    ESimProfile* profile = (*it).get();
+    if (new_profile_paths.find(profile->path()) == new_profile_paths.end()) {
+      profile->OnProfileRemove();
       it = esim_profiles_.erase(it);
     } else {
       it++;

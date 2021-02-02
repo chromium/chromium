@@ -41,6 +41,7 @@ static_library("esim_manager") {
   deps = [
     "//base",
     "//chromeos/dbus/hermes",
+    "//chromeos/network",
     "//chromeos/services/cellular_setup/public/mojom",
     "//components/device_event_log",
     "//components/qr_code_generator",

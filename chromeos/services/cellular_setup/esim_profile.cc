@@ -6,6 +6,8 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
+#include "chromeos/network/cellular_esim_uninstall_handler.h"
+#include "chromeos/network/network_handler.h"
 #include "chromeos/services/cellular_setup/esim_manager.h"
 #include "chromeos/services/cellular_setup/esim_mojo_utils.h"
 #include "chromeos/services/cellular_setup/euicc.h"
@@ -27,7 +29,11 @@ ESimProfile::ESimProfile(const dbus::ObjectPath& path,
   properties_->eid = euicc->properties()->eid;
 }
 
-ESimProfile::~ESimProfile() = default;
+ESimProfile::~ESimProfile() {
+  if (uninstall_callback_) {
+    NET_LOG(ERROR) << "Profile destroyed with unfulfilled uninstall callback";
+  }
+}
 
 void ESimProfile::GetProperties(GetPropertiesCallback callback) {
   std::move(callback).Run(properties_->Clone());
@@ -59,10 +65,11 @@ void ESimProfile::UninstallProfile(UninstallProfileCallback callback) {
     return;
   }
 
-  HermesEuiccClient::Get()->UninstallProfile(
-      euicc_->path(), path_,
-      base::BindOnce(&ESimProfile::OnESimOperationResult,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  uninstall_callback_ = std::move(callback);
+  esim_manager_->cellular_esim_uninstall_handler()->UninstallESim(
+      properties_->iccid, path_, euicc_->path(),
+      base::BindOnce(&ESimProfile::OnProfileUninstallResult,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ESimProfile::EnableProfile(EnableProfileCallback callback) {
@@ -124,6 +131,13 @@ void ESimProfile::UpdateProperties() {
   properties_->activation_code = properties->activation_code().value();
 }
 
+void ESimProfile::OnProfileRemove() {
+  if (uninstall_callback_) {
+    // Run pending uninstall callback before profile is removed.
+    std::move(uninstall_callback_).Run(mojom::ESimOperationResult::kSuccess);
+  }
+}
+
 mojo::PendingRemote<mojom::ESimProfile> ESimProfile::CreateRemote() {
   mojo::PendingRemote<mojom::ESimProfile> esim_profile_remote;
   receiver_set_.Add(this, esim_profile_remote.InitWithNewPipeAndPassReceiver());
@@ -143,6 +157,12 @@ void ESimProfile::OnPendingProfileInstallResult(
   }
 
   std::move(callback).Run(mojom::ProfileInstallResult::kSuccess);
+}
+
+void ESimProfile::OnProfileUninstallResult(bool success) {
+  std::move(uninstall_callback_)
+      .Run(success ? mojom::ESimOperationResult::kSuccess
+                   : mojom::ESimOperationResult::kFailure);
 }
 
 void ESimProfile::OnESimOperationResult(ESimOperationResultCallback callback,

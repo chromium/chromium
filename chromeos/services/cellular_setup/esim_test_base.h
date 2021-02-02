@@ -18,6 +18,14 @@ class SingleThreadTaskEnvironment;
 }  // namespace base
 
 namespace chromeos {
+
+class CellularInhibitor;
+class NetworkStateHandler;
+class NetworkDeviceHandler;
+class NetworkConfigurationHandler;
+class FakeNetworkConnectionHandler;
+class CellularESimUninstallHandler;
+
 namespace cellular_setup {
 
 class ESimManager;
@@ -49,6 +57,14 @@ class ESimTestBase : public testing::Test {
   ESimManagerTestObserver* observer() { return observer_.get(); }
 
  private:
+  std::unique_ptr<CellularInhibitor> cellular_inhibitor_;
+  std::unique_ptr<NetworkStateHandler> network_state_handler_;
+  std::unique_ptr<NetworkDeviceHandler> network_device_handler_;
+  std::unique_ptr<NetworkConfigurationHandler> network_configuration_handler_;
+  std::unique_ptr<FakeNetworkConnectionHandler> network_connection_handler_;
+  std::unique_ptr<CellularESimUninstallHandler>
+      cellular_esim_uninstall_handler_;
+
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<ESimManager> esim_manager_;
   std::unique_ptr<ESimManagerTestObserver> observer_;
