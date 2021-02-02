@@ -42,6 +42,6 @@ class WebIdSigninWindow {
   // hierarchy. Once modal is deleted, this gets deleted as well.
   ~WebIdSigninWindow();
 
-  views::Widget* modal_;
+  views::Widget* dialog_;
 };
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBID_WEBID_SIGNIN_WINDOW_H_
