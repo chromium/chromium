@@ -160,12 +160,6 @@ class AppElement extends PolymerElement {
             backgroundSelection_)`,
       },
 
-      /** @private */
-      doodleAllowed_: {
-        computed: 'computeDoodleAllowed_(showBackgroundImage_, theme_)',
-        type: Boolean,
-      },
-
       /** @private {SkColor} */
       backgroundColor_: {
         computed: 'computeBackgroundColor_(showBackgroundImage_, theme_)',
@@ -695,16 +689,6 @@ class AppElement extends PolymerElement {
     if (backgroundImage) {
       this.backgroundManager_.setBackgroundImage(backgroundImage);
     }
-  }
-
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeDoodleAllowed_() {
-    return loadTimeData.getBoolean('themeModeDoodlesEnabled') ||
-        !this.showBackgroundImage_ && this.theme_ && this.theme_.isDefault &&
-        !this.theme_.isDark;
   }
 
   /**

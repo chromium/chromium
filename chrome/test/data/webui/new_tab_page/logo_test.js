@@ -4,7 +4,6 @@
 
 import {$$, BrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {hexColorToSkColor, skColorToRgba} from 'chrome://resources/js/color_utils.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {assertNotStyle, assertStyle, createTestProxy, keydown} from 'chrome://test/new_tab_page/test_support.js';
 import {eventToPromise, flushTasks} from 'chrome://test/test_util.m.js';
@@ -80,7 +79,7 @@ function createImageDoodle(width, height) {
   };
 }
 
-function createSuite(themeModeDoodlesEnabled) {
+suite('NewTabPageLogoTest', () => {
   /**
    * @implements {BrowserProxy}
    * @extends {TestBrowserProxy}
@@ -97,10 +96,6 @@ function createSuite(themeModeDoodlesEnabled) {
     await flushTasks();
     return logo;
   }
-
-  suiteSetup(() => {
-    loadTimeData.overrideValues({themeModeDoodlesEnabled});
-  });
 
   setup(() => {
     PolymerTest.clearBody();
@@ -284,19 +279,14 @@ function createSuite(themeModeDoodlesEnabled) {
     assertStyle($$(logo, '#iframe'), 'width', '200px');
     assertStyle($$(logo, '#iframe'), 'height', '100px');
     assertStyle($$(logo, '#imageDoodle'), 'display', 'none');
-    if (themeModeDoodlesEnabled) {
-      assertEquals(
-          $$(logo, '#iframe').src, 'https://foo.com/?theme_messages=0');
-      assertEquals(1, testProxy.getCallCount('postMessage'));
-      const [iframe, {cmd, dark}, origin] =
-          await testProxy.whenCalled('postMessage');
-      assertEquals($$($$(logo, '#iframe'), '#iframe'), iframe);
-      assertEquals('changeMode', cmd);
-      assertEquals(false, dark);
-      assertEquals('https://foo.com', origin);
-    } else {
-      assertEquals($$(logo, '#iframe').src, 'https://foo.com/');
-    }
+    assertEquals($$(logo, '#iframe').src, 'https://foo.com/?theme_messages=0');
+    assertEquals(1, testProxy.getCallCount('postMessage'));
+    const [iframe, {cmd, dark}, origin] =
+        await testProxy.whenCalled('postMessage');
+    assertEquals($$($$(logo, '#iframe'), '#iframe'), iframe);
+    assertEquals('changeMode', cmd);
+    assertEquals(false, dark);
+    assertEquals('https://foo.com', origin);
   });
 
   test('message only after mode has been set', async () => {
@@ -316,30 +306,13 @@ function createSuite(themeModeDoodlesEnabled) {
     logo.dark = true;
 
     // Assert (setting mode).
-    if (themeModeDoodlesEnabled) {
-      assertEquals(1, testProxy.getCallCount('postMessage'));
-      const [iframe, {cmd, dark}, origin] =
-          await testProxy.whenCalled('postMessage');
-      assertEquals($$($$(logo, '#iframe'), '#iframe'), iframe);
-      assertEquals('changeMode', cmd);
-      assertEquals(true, dark);
-      assertEquals('https://foo.com', origin);
-    } else {
-      assertEquals(0, testProxy.getCallCount('postMessage'));
-    }
-  });
-
-  test('disallowing doodle shows logo', async () => {
-    // Act.
-    const logo = await createLogo(createImageDoodle());
-    logo.doodleAllowed = false;
-    Array.from(logo.shadowRoot.querySelectorAll('dom-if')).forEach((domIf) => {
-      domIf.render();
-    });
-
-    // Assert.
-    assertNotStyle($$(logo, '#logo'), 'display', 'none');
-    assertEquals($$(logo, '#doodle'), null);
+    assertEquals(1, testProxy.getCallCount('postMessage'));
+    const [iframe, {cmd, dark}, origin] =
+        await testProxy.whenCalled('postMessage');
+    assertEquals($$($$(logo, '#iframe'), '#iframe'), iframe);
+    assertEquals('changeMode', cmd);
+    assertEquals(true, dark);
+    assertEquals('https://foo.com', origin);
   });
 
   test('before doodle loaded shows nothing', () => {
@@ -497,16 +470,11 @@ function createSuite(themeModeDoodlesEnabled) {
     await flushTasks();
 
     // Assert.
-    if (themeModeDoodlesEnabled) {
-      assertEquals(1, testProxy.getCallCount('postMessage'));
-      const [_, {cmd, dark}, origin] =
-          await testProxy.whenCalled('postMessage');
-      assertEquals('changeMode', cmd);
-      assertEquals(false, dark);
-      assertEquals('https://foo.com', origin);
-    } else {
-      assertEquals(0, testProxy.getCallCount('postMessage'));
-    }
+    assertEquals(1, testProxy.getCallCount('postMessage'));
+    const [_, {cmd, dark}, origin] = await testProxy.whenCalled('postMessage');
+    assertEquals('changeMode', cmd);
+    assertEquals(false, dark);
+    assertEquals('https://foo.com', origin);
   });
 
   test('clicking simple doodle opens link', async () => {
@@ -753,15 +721,6 @@ function createSuite(themeModeDoodlesEnabled) {
       assertEquals(newTabPage.mojom.DoodleShareChannel.kTwitter, channel);
       assertEquals('supi', doodleId);
       assertEquals('123', shareId);
-    });
-  });
-}
-
-suite('NewTabPageLogoTest', () => {
-  [true, false].forEach(themeModeDoodlesEnabled => {
-    const enabled = themeModeDoodlesEnabled ? 'enabled' : 'disabled';
-    suite(`theme mode doodles ${enabled}`, () => {
-      createSuite(themeModeDoodlesEnabled);
     });
   });
 });

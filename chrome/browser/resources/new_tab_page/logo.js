@@ -10,7 +10,6 @@ import './doodle_share_dialog.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {skColorToRgba} from 'chrome://resources/js/color_utils.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
@@ -31,16 +30,6 @@ class LogoElement extends PolymerElement {
 
   static get properties() {
     return {
-      /**
-       * If true displays doodle if one is available instead of Google logo.
-       * @type {boolean}
-       */
-      doodleAllowed: {
-        reflectToAttribute: true,
-        type: Boolean,
-        value: true,
-      },
-
       /**
        * If true displays the Google logo single-colored.
        * @type {boolean}
@@ -81,20 +70,14 @@ class LogoElement extends PolymerElement {
       },
 
       /** @private */
-      canShowDoodle_: {
-        computed: 'computeCanShowDoodle_(doodle_, imageDoodle_)',
-        type: Boolean,
-      },
-
-      /** @private */
       showLogo_: {
-        computed: 'computeShowLogo_(doodleAllowed, loaded_, canShowDoodle_)',
+        computed: 'computeShowLogo_(loaded_, showDoodle_)',
         type: Boolean,
       },
 
       /** @private */
       showDoodle_: {
-        computed: 'computeShowDoodle_(doodleAllowed, loaded_, canShowDoodle_)',
+        computed: 'computeShowDoodle_(doodle_, imageDoodle_)',
         type: Boolean,
       },
 
@@ -264,19 +247,8 @@ class LogoElement extends PolymerElement {
    * @return {boolean}
    * @private
    */
-  computeCanShowDoodle_() {
-    return !!this.imageDoodle_ ||
-        /* We hide interactive doodles when offline. Otherwise, the iframe
-           would show an ugly error page. */
-        !!this.doodle_ && !!this.doodle_.interactive && window.navigator.onLine;
-  }
-
-  /**
-   * @return {boolean}
-   * @private
-   */
   computeShowLogo_() {
-    return !this.doodleAllowed || (!!this.loaded_ && !this.canShowDoodle_);
+    return !!this.loaded_ && !this.showDoodle_;
   }
 
   /**
@@ -284,7 +256,10 @@ class LogoElement extends PolymerElement {
    * @private
    */
   computeShowDoodle_() {
-    return !!this.doodleAllowed && this.canShowDoodle_;
+    return !!this.imageDoodle_ ||
+        /* We hide interactive doodles when offline. Otherwise, the iframe
+           would show an ugly error page. */
+        !!this.doodle_ && !!this.doodle_.interactive && window.navigator.onLine;
   }
 
   /**
@@ -395,8 +370,7 @@ class LogoElement extends PolymerElement {
    */
   sendMode_() {
     const iframe = $$(this, '#iframe');
-    if (!loadTimeData.getBoolean('themeModeDoodlesEnabled') ||
-        this.dark === undefined || !iframe) {
+    if (this.dark === undefined || !iframe) {
       return;
     }
     iframe.postMessage({cmd: 'changeMode', dark: this.dark});
@@ -433,9 +407,7 @@ class LogoElement extends PolymerElement {
   computeIframeUrl_() {
     if (this.doodle_ && this.doodle_.interactive) {
       const url = new URL(this.doodle_.interactive.url.url);
-      if (loadTimeData.getBoolean('themeModeDoodlesEnabled')) {
-        url.searchParams.append('theme_messages', '0');
-      }
+      url.searchParams.append('theme_messages', '0');
       return url.href;
     } else {
       return '';

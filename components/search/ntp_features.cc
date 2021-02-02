@@ -71,10 +71,6 @@ extern const base::Feature kNtpHandleMostVisitedNavigationExplicitly{
 // instead of the local NTP.
 const base::Feature kWebUI{"NtpWebUI", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// If enabled, the Doodle will be shown on themed and dark mode NTPs.
-const base::Feature kWebUIThemeModeDoodles{"WebUIThemeModeDoodles",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
-
 // If enabled, logo will be shown.
 const base::Feature kNtpLogo{"NtpLogo", base::FEATURE_ENABLED_BY_DEFAULT};
 

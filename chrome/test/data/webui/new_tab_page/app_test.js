@@ -116,7 +116,6 @@ suite('NewTabPageAppTest', () => {
     assertFalse(await backgroundManager.whenCalled('setShowBackgroundImage'));
     assertStyle($$(app, '#backgroundImageAttribution'), 'display', 'none');
     assertStyle($$(app, '#backgroundImageAttribution2'), 'display', 'none');
-    assertTrue($$(app, '#logo').doodleAllowed);
     assertFalse($$(app, '#logo').singleColored);
     assertFalse($$(app, '#logo').dark);
     assertEquals(0xffff0000, $$(app, '#logo').backgroundColor.value);
@@ -206,52 +205,26 @@ suite('NewTabPageAppTest', () => {
     });
   }
 
-  [true, false].forEach(themeModeDoodlesEnabled => {
-    const allows = themeModeDoodlesEnabled ? 'allows' : 'disallows';
-    test(`setting background image shows image, ${allows} doodle`, async () => {
-      // Arrange.
-      loadTimeData.overrideValues({themeModeDoodlesEnabled});
-      const theme = createTheme();
-      theme.backgroundImage = {url: {url: 'https://img.png'}};
+  test('setting background image shows image', async () => {
+    // Arrange.
+    const theme = createTheme();
+    theme.backgroundImage = {url: {url: 'https://img.png'}};
 
-      // Act.
-      backgroundManager.resetResolver('setShowBackgroundImage');
-      testProxy.callbackRouterRemote.setTheme(theme);
-      await testProxy.callbackRouterRemote.$.flushForTesting();
+    // Act.
+    backgroundManager.resetResolver('setShowBackgroundImage');
+    testProxy.callbackRouterRemote.setTheme(theme);
+    await testProxy.callbackRouterRemote.$.flushForTesting();
 
-      // Assert.
-      assertEquals(1, backgroundManager.getCallCount('setShowBackgroundImage'));
-      assertTrue(await backgroundManager.whenCalled('setShowBackgroundImage'));
-      assertNotStyle(
-          $$(app, '#backgroundImageAttribution'), 'text-shadow', 'none');
-      assertEquals(1, backgroundManager.getCallCount('setBackgroundImage'));
-      assertEquals(
-          'https://img.png',
-          (await backgroundManager.whenCalled('setBackgroundImage')).url.url);
-      assertEquals(null, $$(app, '#logo').backgroundColor);
-      if (themeModeDoodlesEnabled) {
-        assertTrue($$(app, '#logo').doodleAllowed);
-      } else {
-        assertFalse($$(app, '#logo').doodleAllowed);
-      }
-    });
-
-    test(`setting non-default theme ${allows} doodle`, async function() {
-      // Arrange.
-      const theme = createTheme();
-      theme.isDefault = false;
-
-      // Act.
-      testProxy.callbackRouterRemote.setTheme(theme);
-      await testProxy.callbackRouterRemote.$.flushForTesting();
-
-      // Assert.
-      if (themeModeDoodlesEnabled) {
-        assertTrue($$(app, '#logo').doodleAllowed);
-      } else {
-        assertFalse($$(app, '#logo').doodleAllowed);
-      }
-    });
+    // Assert.
+    assertEquals(1, backgroundManager.getCallCount('setShowBackgroundImage'));
+    assertTrue(await backgroundManager.whenCalled('setShowBackgroundImage'));
+    assertNotStyle(
+        $$(app, '#backgroundImageAttribution'), 'text-shadow', 'none');
+    assertEquals(1, backgroundManager.getCallCount('setBackgroundImage'));
+    assertEquals(
+        'https://img.png',
+        (await backgroundManager.whenCalled('setBackgroundImage')).url.url);
+    assertEquals(null, $$(app, '#logo').backgroundColor);
   });
 
   test('setting attributions shows attributions', async function() {

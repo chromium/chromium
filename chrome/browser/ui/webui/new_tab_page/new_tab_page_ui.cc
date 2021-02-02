@@ -95,9 +95,6 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
       "oneGoogleBarModalOverlaysEnabled",
       base::FeatureList::IsEnabled(ntp_features::kOneGoogleBarModalOverlays));
 
-  source->AddBoolean(
-      "themeModeDoodlesEnabled",
-      base::FeatureList::IsEnabled(ntp_features::kWebUIThemeModeDoodles));
   source->AddBoolean("shortcutsEnabled",
                      base::FeatureList::IsEnabled(ntp_features::kNtpShortcuts));
   source->AddBoolean("logoEnabled",
