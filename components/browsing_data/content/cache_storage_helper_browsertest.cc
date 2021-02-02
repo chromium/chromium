@@ -45,8 +45,8 @@ IN_PROC_BROWSER_TEST_F(CacheStorageHelperTest, CannedAddCacheStorage) {
   helper->Add(url::Origin::Create(origin2));
 
   TestCompletionCallback callback;
-  helper->StartFetching(base::Bind(&TestCompletionCallback::callback,
-                                   base::Unretained(&callback)));
+  helper->StartFetching(base::BindOnce(&TestCompletionCallback::callback,
+                                       base::Unretained(&callback)));
 
   std::list<content::StorageUsageInfo> result = callback.result();
 
@@ -65,8 +65,8 @@ IN_PROC_BROWSER_TEST_F(CacheStorageHelperTest, CannedUnique) {
   helper->Add(url::Origin::Create(origin));
 
   TestCompletionCallback callback;
-  helper->StartFetching(base::Bind(&TestCompletionCallback::callback,
-                                   base::Unretained(&callback)));
+  helper->StartFetching(base::BindOnce(&TestCompletionCallback::callback,
+                                       base::Unretained(&callback)));
 
   std::list<content::StorageUsageInfo> result = callback.result();
 

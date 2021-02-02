@@ -102,8 +102,8 @@ IN_PROC_BROWSER_TEST_F(DatabaseHelperTest, CannedAddDatabase) {
   helper->Add(origin2);
 
   TestCompletionCallback callback;
-  helper->StartFetching(base::Bind(&TestCompletionCallback::callback,
-                                   base::Unretained(&callback)));
+  helper->StartFetching(base::BindOnce(&TestCompletionCallback::callback,
+                                       base::Unretained(&callback)));
 
   std::list<content::StorageUsageInfo> result = callback.result();
 
@@ -123,8 +123,8 @@ IN_PROC_BROWSER_TEST_F(DatabaseHelperTest, CannedUnique) {
   helper->Add(origin);
 
   TestCompletionCallback callback;
-  helper->StartFetching(base::Bind(&TestCompletionCallback::callback,
-                                   base::Unretained(&callback)));
+  helper->StartFetching(base::BindOnce(&TestCompletionCallback::callback,
+                                       base::Unretained(&callback)));
 
   std::list<content::StorageUsageInfo> result = callback.result();
 
