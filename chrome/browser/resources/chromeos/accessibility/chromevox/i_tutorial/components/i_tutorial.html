@@ -14,12 +14,6 @@
   top: 0;
 }
 
-#lessonContainer {
-  margin: auto;
-  text-align: start;
-  width: 800px;
-}
-
 </style>
 
 <div id="tutorial">
@@ -41,29 +35,13 @@
     on-button-clicked="onLessonMenuButtonClicked_">
 </lesson-menu>
 
-<div id="lessonContainer"
-    hidden$="[[ shouldHideLessonContainer(activeScreen) ]]">
-
-  <!-- Use lessonData object to create all lessons -->
-  <template id="lessonTemplate" is="dom-repeat" items="[[ lessonData ]]"
-      as="lesson" index-as="index">
-    <tutorial-lesson
-    lesson-id="[[ index ]]"
-    title="[[ lesson.title ]]"
-    content="[[ lesson.content ]]"
-    medium="[[ lesson.medium ]]"
-    curriculums="[[ lesson.curriculums ]]"
-    practice-title="[[ lesson.practiceTitle ]]"
-    practice-instructions="[[ lesson.practiceInstructions ]]"
-    practice-file="[[ lesson.practiceFile ]]"
-    practice-state="[[ lesson.practiceState ]]"
-    events="[[ lesson.events ]]"
-    actions="[[ lesson.actions ]]"
-    auto-interactive="[[ lesson.autoInteractive ]]"
-    active-lesson-id="[[ activeLessonId ]]">
-    </tutorial-lesson>
-  </template>
-</div>
+<lesson-container
+    id="lessonContainer"
+    active-screen="[[ activeScreen ]]"
+    active-lesson-id="[[ activeLessonId ]]"
+    lesson-data="[[ lessonData ]]"
+    on-lessons-loaded="onLessonsLoaded_">
+</lesson-container>
 
 <navigation-buttons
     active-screen="[[ activeScreen ]]"

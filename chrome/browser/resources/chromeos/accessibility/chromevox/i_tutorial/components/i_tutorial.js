@@ -15,7 +15,8 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Curriculum, InteractionMedium, Screen} from './constants.js';
+import {Curriculum, InteractionMedium, LessonData, Screen} from './constants.js';
+import {LessonContainer} from './lesson_container.js';
 import {LessonMenu} from './lesson_menu.js';
 import {MainMenu} from './main_menu.js';
 import {NavigationButtons} from './navigation_buttons.js';
@@ -120,6 +121,7 @@ Polymer({
       ]
     },
 
+    /** @type {Array<!LessonData>} */
     lessonData: {
       type: Array,
       value: [
@@ -329,21 +331,10 @@ Polymer({
 
   /** @override */
   ready() {
+    // Hide screens for now; the tutorial will show when all lessons have
+    // finished loading.
     this.hideAllScreens();
     document.addEventListener('keydown', this.onKeyDown.bind(this));
-    this.addEventListener('lessonready', () => {
-      this.numLoadedLessons += 1;
-      if (this.numLoadedLessons === this.lessonData.length) {
-        this.buildEarconLesson();
-        this.buildLearnMoreLesson();
-        this.dispatchEvent(
-            new CustomEvent('readyfortesting', {composed: true}));
-      }
-    });
-    this.$.lessonTemplate.addEventListener('dom-change', (evt) => {
-      // Executes once all lessons have been added to the dom.
-      this.show();
-    });
     this.addEventListener('startpractice', (evt) => {
       this.isPracticeAreaActive = true;
       this.startNudges(NudgeType.PRACTICE_AREA);
@@ -354,8 +345,16 @@ Polymer({
     });
   },
 
-  /** Shows the tutorial */
-  show() {
+  /** @private */
+  onLessonsLoaded_() {
+    this.buildEarconLesson();
+    this.buildLearnMoreLesson();
+    this.dispatchEvent(new CustomEvent('readyfortesting', {composed: true}));
+    this.show_();
+  },
+
+  /** @private */
+  show_() {
     if (this.curriculum === Curriculum.QUICK_ORIENTATION) {
       // If opening the tutorial from the OOBE, automatically show the first
       // lesson.
@@ -481,14 +480,8 @@ Polymer({
     this.activeLessonId = -1;
     this.activeLessonIndex = -1;
     this.numLessons = 0;
-    const lessons = this.$.lessonContainer.children;
-    for (let i = 0; i < lessons.length; ++i) {
-      const element = lessons[i];
-      if (element.is !== 'tutorial-lesson') {
-        continue;
-      }
-
-      const lesson = element;
+    const lessons = this.$.lessonContainer.getLessonsFromDom();
+    for (const lesson of lessons) {
       if (lesson.shouldInclude(this.medium, this.curriculum)) {
         this.includedLessons.push(lesson);
       }
@@ -625,7 +618,7 @@ Polymer({
     if (type === NudgeType.PRACTICE_AREA) {
       // Convert hint strings into functions that will request speech for those
       // strings.
-      const hints = this.lessonData[this.activeLessonId].hints;
+      const hints = this.lessonData[this.activeLessonId].hints || [];
       for (const hint of hints) {
         this.nudgeArray.push(
             this.requestSpeech.bind(this, hint, QueueMode.INTERJECT));
@@ -797,10 +790,10 @@ Polymer({
    * @private
    */
   getLessonWithTitle(titleMsgId) {
-    const elements = this.$.lessonContainer.children;
-    for (const element of elements) {
-      if (element.is === 'tutorial-lesson' && element.title === titleMsgId) {
-        return element;
+    const lessons = this.$.lessonContainer.getLessonsFromDom();
+    for (const lesson of lessons) {
+      if (lesson.title === titleMsgId) {
+        return lesson;
       }
     }
     return null;

@@ -31,6 +31,25 @@ export const InteractionMedium = {
 };
 
 /**
+ * Defines a type for data used to generate lessons.
+ * @typedef {{
+ *    title: string,
+ *    content: Array<string>,
+ *    medium: InteractionMedium,
+ *    curriculums: Array<Curriculum>,
+ *    actions: (Array<Object>|undefined),
+ *    autoInteractive: (boolean|undefined),
+ *    practiceTitle: (string|undefined),
+ *    practiceInstructions: (string|undefined),
+ *    practiceFile: (string|undefined),
+ *    practiceState: (Object|undefined),
+ *    hints: (Array|undefined),
+ *    events: (Array|undefined)
+ * }}
+ */
+export let LessonData;
+
+/**
  * The various screens within the tutorial.
  * @enum {string}
  */

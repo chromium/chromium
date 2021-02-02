@@ -162,6 +162,7 @@ group("build") {
     ":chromevox_phonetic_dictionaries_js",
     ":i_tutorial",
     ":tutorial_lesson",
+    ":tutorial_lesson_container",
     ":tutorial_lesson_menu",
     ":tutorial_main_menu",
     ":tutorial_navigation_buttons",
@@ -471,6 +472,16 @@ if (is_chromeos_ash) {
 copy("tutorial_lesson") {
   sources = [ "$chromevox_gen_dir/i_tutorial/components/tutorial_lesson.js" ]
   outputs = [ "$chromevox_out_dir/i_tutorial/components/tutorial_lesson.js" ]
+  deps = [
+    "i_tutorial/components:closure_compile",
+    "i_tutorial/components:components",
+  ]
+}
+
+copy("tutorial_lesson_container") {
+  sources = [ "$chromevox_gen_dir/i_tutorial/components/lesson_container.js" ]
+  outputs = [ "$chromevox_out_dir/i_tutorial/components/lesson_container.js" ]
+
   deps = [
     "i_tutorial/components:closure_compile",
     "i_tutorial/components:components",
