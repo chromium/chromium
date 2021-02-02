@@ -7,29 +7,39 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-Polymer({
-  is: 'viewer-form-warning',
+class ViewerFormWarningElement extends PolymerElement {
+  static get is() {
+    return 'viewer-form-warning';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  /** @private {PromiseResolver} */
-  resolver_: null,
+  constructor() {
+    super();
+
+    /** @private {?PromiseResolver} */
+    this.resolver_ = null;
+  }
 
   show() {
     this.resolver_ = new PromiseResolver();
     /** @type {!CrDialogElement} */ (this.$.dialog).showModal();
     return this.resolver_.promise;
-  },
+  }
 
   onCancel() {
     this.resolver_.reject();
     this.$.dialog.cancel();
-  },
+  }
 
   onAction() {
     this.resolver_.resolve();
     this.$.dialog.close();
-  },
-});
+  }
+}
+
+customElements.define(ViewerFormWarningElement.is, ViewerFormWarningElement);

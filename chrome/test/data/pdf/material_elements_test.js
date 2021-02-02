@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {ViewerPageSelectorElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {isChromeOS} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -66,7 +66,8 @@ const tests = [
         document.createElement('viewer-page-selector'));
     selector.docLength = 1234;
     document.body.appendChild(selector);
-    chrome.test.assertEq('1234', selector.$$('#pagelength').textContent);
+    chrome.test.assertEq(
+        '1234', selector.shadowRoot.querySelector('#pagelength').textContent);
     chrome.test.assertEq(
         '4', selector.style.getPropertyValue('--page-length-digits'));
     chrome.test.succeed();

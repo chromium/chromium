@@ -289,6 +289,7 @@ js_library("pdf_viewer_base") {
     ":pdf_viewer_utils",
     ":viewport",
     ":viewport_scroller",
+    "elements:viewer-error-screen",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:event_tracker.m",

@@ -16,6 +16,7 @@ import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.
 import {BrowserApi} from './browser_api.js';
 import {FittingType} from './constants.js';
 import {MessageData, PluginController, PrintPreviewParams} from './controller.js';
+import {ViewerErrorScreenElement} from './elements/viewer-error-screen.js';
 import {DeserializeKeyEvent, LoadState, SerializeKeyEvent} from './pdf_scripting_api.js';
 import {PDFViewerBaseElement} from './pdf_viewer_base.js';
 import {DestinationMessageData, DocumentDimensionsMessageData, MessageObject, shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {eventToPromise} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/_test_resources/webui/test_util.m.js';
-import {PDFViewerElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {PDFViewerElement, ViewerPasswordDialogElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 
 const viewer = /** @type {!PDFViewerElement} */ (
     document.body.querySelector('pdf-viewer'));

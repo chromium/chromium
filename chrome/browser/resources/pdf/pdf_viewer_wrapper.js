@@ -7,6 +7,8 @@ export {FittingType, SaveRequestType} from './constants.js';
 export {PluginController} from './controller.js';
 export {ViewerDocumentOutlineElement} from './elements/viewer-document-outline.js';
 export {ViewerDownloadControlsElement} from './elements/viewer-download-controls.js';
+export {ViewerPageSelectorElement} from './elements/viewer-page-selector.js';
+export {ViewerPasswordDialogElement} from './elements/viewer-password-dialog.js';
 export {ViewerPdfSidenavElement} from './elements/viewer-pdf-sidenav.js';
 export {ViewerPdfToolbarNewElement} from './elements/viewer-pdf-toolbar-new.js';
 export {ViewerPropertiesDialogElement} from './elements/viewer-properties-dialog.js';

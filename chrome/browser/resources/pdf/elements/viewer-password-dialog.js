@@ -8,20 +8,26 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-Polymer({
-  is: 'viewer-password-dialog',
+export class ViewerPasswordDialogElement extends PolymerElement {
+  static get is() {
+    return 'viewer-password-dialog';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    invalid: Boolean,
-  },
+  static get properties() {
+    return {
+      invalid: Boolean,
+    };
+  }
 
   close() {
     this.$.dialog.close();
-  },
+  }
 
   deny() {
     const password = /** @type {!CrInputElement} */ (this.$.password);
@@ -30,8 +36,8 @@ Polymer({
     this.invalid = true;
     password.select();
 
-    this.fire('password-denied-for-testing');
-  },
+    this.dispatchEvent(new CustomEvent('password-denied-for-testing'));
+  }
 
   submit() {
     const password = /** @type {!CrInputElement} */ (this.$.password);
@@ -40,6 +46,11 @@ Polymer({
     }
     password.disabled = true;
     this.$.submit.disabled = true;
-    this.fire('password-submitted', {password: password.value});
-  },
-});
+    this.dispatchEvent(new CustomEvent('password-submitted', {
+      detail: {password: password.value},
+    }));
+  }
+}
+
+customElements.define(
+    ViewerPasswordDialogElement.is, ViewerPasswordDialogElement);
