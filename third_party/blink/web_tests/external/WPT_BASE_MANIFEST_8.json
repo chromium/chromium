@@ -8613,7 +8613,7 @@
        ]
       ],
       "print-manual.html": [
-       "3afef1d4fef99b589d060ea6742331f454325be7",
+       "67cbd0dd4819d716f0c3c43056010f9b979d8c1f",
        [
         null,
         {}
@@ -223905,7 +223905,7 @@
        []
       ],
       "sandbox-new-execution-context-iframe.html": [
-       "dc15d57c6a352e045ef59d6103ac1540ebc3ad82",
+       "801e78f9c033bf70c6f8a9e5d4d51cd1fe8f7d6a",
        []
       ],
       "sandbox-parse-noscript-ref.html": [
@@ -225807,7 +225807,7 @@
          []
         ],
         "the-canvas-element.yaml": [
-         "229451cdad1c5ea0650f71d907e4d8260bbe5a45",
+         "ec4c4e6d07bf605dea1820d3ebdce98aa8605676",
          []
         ],
         "the-canvas-state.yaml": [
@@ -237621,7 +237621,7 @@
      []
     ],
     "scroll-animations.idl": [
-     "efa986d93e351bcb6b4816b51f587c4ed6efa1ba",
+     "872c1dde607d22e6ac267613b55da088394eb91c",
      []
     ],
     "scroll-to-text-fragment.idl": [
@@ -246897,7 +246897,7 @@
        []
       ],
       "immutable-prototype-serviceworker.js": [
-       "346b998ceac004b93a3fc505828a2614fbef1560",
+       "d8a94ad46befb085791d13f21e6870e09284abe0",
        []
       ],
       "import-echo-cookie-worker.js": [
@@ -262248,7 +262248,7 @@
      ]
     ],
     "structured-clone.any.js": [
-     "de633e63b680652e3bfb6ef60026e659d54959b8",
+     "bb469a94eac0a40135af0269c256998d123cb8c8",
      [
       "IndexedDB/structured-clone.any.html?1-20",
       {
@@ -301915,6 +301915,13 @@
         {}
        ]
       ],
+      "cssUnparsedValue-empty.html": [
+       "34f77d922a3a387fd2e8a850c99b8eb18b24f81f",
+       [
+        null,
+        {}
+       ]
+      ],
       "cssUnparsedValue-indexed-getter-setter.html": [
        "65a65ac0dfe681d1d9155f8565b52eba0b1baf80",
        [
@@ -309928,7 +309935,7 @@
      ]
     },
     "upgrading.html": [
-     "ac0fdff7a2111507632ac2c36fd5c60a6f832b20",
+     "9a28fcbe12f26eeabe89a5d4cefb40e82dadfb6f",
      [
       null,
       {}
@@ -313737,7 +313744,7 @@
       ]
      ],
      "typing-around-link-element-at-collapsed-selection.tentative.html": [
-      "92fa2df233f327083f989c7a8abdf855f5005e61",
+      "9f688c63e34c1b5406cd29bf7c82ce8f641228c8",
       [
        "editing/other/typing-around-link-element-at-collapsed-selection.tentative.html?target=ContentEditable",
        {
@@ -340935,7 +340942,7 @@
        ]
       ],
       "sandbox-new-execution-context.html": [
-       "653729384feccd527e40cbe7b5ba514c09bed8ba",
+       "dc1953aee68e6cd94405d59b94834ca0dcf74fab",
        [
         null,
         {}
@@ -365982,7 +365989,7 @@
       },
       "the-canvas-element": {
        "2d.canvas.context.html": [
-        "1d231c4dfaa8eca9ded7ae240094667afdb7f667",
+        "b9d26011e283e7cf07470e51d6f0857a32e7af65",
         [
          null,
          {}
@@ -367524,7 +367531,7 @@
         ]
        ],
        "Image-constructor.html": [
-        "4c1cf2dcd13fa8b197ddc43071375e64a21995d2",
+        "3cfef5f4f9b28b255f8d73f37e271ea1a98c1e1d",
         [
          null,
          {}
@@ -369031,7 +369038,7 @@
         ]
        ],
        "form-requestsubmit.html": [
-        "62ab12c8dfdd9bbd91df15f76cbdc2a5c8832198",
+        "65f4b2187dc78ebeb7f1307b5b8c5580e3fcc390",
         [
          null,
          {}
@@ -388438,7 +388445,7 @@
       ]
      ],
      "create-event.https.html": [
-      "7efcf40155b15c3e2821918df191359f789f9997",
+      "e8a2c469b11bba722d0ac0a285c60b2d7af73113",
       [
        null,
        {}
@@ -388508,7 +388515,7 @@
       ]
      ],
      "create-event.https.html": [
-      "f1e5c0f8ad25ab907473906d6eb782fc178200ab",
+      "a21f95655ed7789b956fb8cdd573e213c7e987c5",
       [
        null,
        {}
@@ -393172,7 +393179,7 @@
    },
    "quirks": {
     "blocks-ignore-line-height.html": [
-     "608a7c15c7996b5ed3cf534379417c3c077c4e82",
+     "c07f6cf49b803ab3d8f625e45356989516f7de5d",
      [
       null,
       {}
@@ -393215,14 +393222,14 @@
      ]
     },
     "line-height-calculation.html": [
-     "7e7f03a99b9c2e399383a715f522346a37094835",
+     "cc5254ae1be2a738e8daba4474bfe551877b789a",
      [
       null,
       {}
      ]
     ],
     "percentage-height-calculation.html": [
-     "e56a03b4b41b72edca91ff261e766fc9d2cc5426",
+     "a40b8b7d3fccb139a2850f2a92e1b0cb15e0ebf8",
      [
       null,
       {}
@@ -393236,7 +393243,7 @@
      ]
     ],
     "table-cell-nowrap-minimum-width-calculation.html": [
-     "2ff00b9ee794c07309c05f2500b4be1b326afd7e",
+     "25590c64a31cb43b500e128f886e4933802a5d2e",
      [
       null,
       {}
@@ -393250,7 +393257,7 @@
      ]
     ],
     "table-cell-width-calculation.html": [
-     "eeb726627b78fdcbf81d3c29b9205f771bd0aca8",
+     "7d76a9194b377d5bd6a51ededc0308ffb291b463",
      [
       null,
       {}
@@ -408793,7 +408800,7 @@
        ]
       ],
       "fetch-on-the-right-interface.https.any.js": [
-       "e98a04b6a0935743b9919608c6b1488ca57f8837",
+       "5ca5f65680c9754c8f2ed8361f6c94bc13e65a0d",
        [
         "service-workers/service-worker/ServiceWorkerGlobalScope/fetch-on-the-right-interface.https.any.serviceworker.html",
         {
@@ -410520,7 +410527,7 @@
      ]
     ],
     "HTMLSlotElement-interface.html": [
-     "4327e5d03e0356b94514d41f9994a5aa0e982bd0",
+     "e22de32167090f7dd4db630931495d84150d52b1",
      [
       null,
       {}
@@ -410548,7 +410555,7 @@
      ]
     ],
     "ShadowRoot-interface.html": [
-     "e95b1d9542e2e3b502693e0063de0980f5a32789",
+     "de7ac91f250306409327ab89eae6a70f105dd630",
      [
       null,
       {}
@@ -418782,7 +418789,7 @@
      },
      "interfaces": {
       "foreignObject-graphics.svg": [
-       "000c107b53b70e4548ee320331c2ab33be967a9c",
+       "7745e91f0a3b0308898e13e451b3871e084ae144",
        [
         null,
         {}
@@ -419629,7 +419636,7 @@
      },
      "interfaces": {
       "SVGAnimatedPathData-removed.svg": [
-       "c8d187cd3d263aaeb7054782fc0a904d4fdd6400",
+       "b9e62177cb99e561654a32c6707aed7d2d4b9ef9",
        [
         null,
         {}
@@ -419852,7 +419859,7 @@
     "struct": {
      "UnknownElement": {
       "interface.svg": [
-       "862e5fde273a5b8ad467f8e062b3bb9ec16e5242",
+       "987f20c5e4c0589e159f044c57b6e552d2ef987e",
        [
         null,
         {}
@@ -420590,7 +420597,7 @@
      ]
     ],
     "Node-multiple-arguments.tentative.html": [
-     "f6b9798f5021795da85615252e38b983f53ecc36",
+     "64b04656d35ba922c528581975682fbd61b5e5a1",
      [
       null,
       {}
@@ -420753,7 +420760,7 @@
      ]
     ],
     "block-Node-multiple-arguments.tentative.html": [
-     "f76b3587512d88ba249c7730176df5b1744fea62",
+     "c3e7671534e70b959b30c8ed9cc16429ee23c45d",
      [
       null,
       {}
@@ -423604,7 +423611,7 @@
      ]
     ],
     "urlsearchparams-constructor.any.js": [
-     "f9878373e5e067598054df4682652a0e9ced270a",
+     "d482911350ba0fabeb127d0fb78cbd1dd71d4d45",
      [
       "url/urlsearchparams-constructor.any.html",
       {}
@@ -440390,7 +440397,7 @@
    },
    "workers": {
     "SharedWorker-MessageEvent-source.any.js": [
-     "faf48cf9386bfd64030c94041f35f0823aaef79c",
+     "e47fd0653550168b514f86eda7347cd722718591",
      [
       "workers/SharedWorker-MessageEvent-source.any.sharedworker.html",
       {
@@ -440524,7 +440531,7 @@
      ]
     ],
     "Worker-constructor-proto.any.js": [
-     "5a4a6aa11377a2fd79435854bb177c912f9d34bc",
+     "297fe6c58b47af6ff4ee206b8268f439b4c09f4b",
      [
       "workers/Worker-constructor-proto.any.serviceworker.html",
       {
@@ -445577,7 +445584,7 @@
      ]
     ],
     "responsexml-document-properties.htm": [
-     "c27a4482cd20765ede2f2f8c2f9c7bd2b7c0ff7b",
+     "cb2edb777ddb9cc24cdf8706e4e80bb3d3276bff",
      [
       null,
       {}
