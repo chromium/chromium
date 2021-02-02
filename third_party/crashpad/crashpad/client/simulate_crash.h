@@ -17,8 +17,10 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
 #include "client/simulate_crash_mac.h"
+#elif defined(OS_IOS)
+#include "client/simulate_crash_ios.h"
 #elif defined(OS_WIN)
 #include "client/simulate_crash_win.h"
 #elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)

@@ -210,7 +210,10 @@ CrashpadClient::CrashpadClient() {}
 
 CrashpadClient::~CrashpadClient() {}
 
-void CrashpadClient::StartCrashpadInProcessHandler() {
+void CrashpadClient::StartCrashpadInProcessHandler(
+    const base::FilePath& database,
+    const std::string& url,
+    const std::map<std::string, std::string>& annotations) {
   InstallObjcExceptionPreprocessor();
 
   CrashHandler* crash_handler = CrashHandler::Get();

@@ -47,6 +47,7 @@ crashpad_static_library("client") {
     sources += [
       "crash_report_database_mac.mm",
       "crashpad_client_ios.cc",
+      "simulate_crash_ios.h",
     ]
   }
 
