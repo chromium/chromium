@@ -17,6 +17,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/services/app_service/public/cpp/app_capability_access_cache.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/icon_cache.h"
 #include "components/services/app_service/public/cpp/icon_coalescer.h"
@@ -342,6 +343,8 @@ class AppServiceProxy : public KeyedService,
   void OnApps(std::vector<apps::mojom::AppPtr> deltas,
               apps::mojom::AppType app_type,
               bool should_notify_initialized) override;
+  void OnCapabilityAccesses(
+      std::vector<apps::mojom::CapabilityAccessPtr> deltas) override;
   void Clone(mojo::PendingReceiver<apps::mojom::Subscriber> receiver) override;
   void OnPreferredAppSet(const std::string& app_id,
                          apps::mojom::IntentFilterPtr intent_filter) override;
@@ -410,6 +413,7 @@ class AppServiceProxy : public KeyedService,
 
   mojo::Remote<apps::mojom::AppService> app_service_;
   apps::AppRegistryCache app_registry_cache_;
+  apps::AppCapabilityAccessCache app_capability_access_cache_;
 
   mojo::ReceiverSet<apps::mojom::Subscriber> receivers_;
 

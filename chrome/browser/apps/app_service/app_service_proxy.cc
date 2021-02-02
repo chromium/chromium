@@ -22,7 +22,6 @@
 #include "chrome/common/chrome_features.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/app_service_impl.h"
-#include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -37,6 +36,8 @@
 #include "chrome/browser/chromeos/crosapi/browser_util.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/supervised_user/grit/supervised_user_unscaled_resources.h"
+#include "components/services/app_service/public/cpp/app_capability_access_cache_wrapper.h"
+#include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/user_manager/user.h"
 #include "extensions/common/constants.h"
 #endif
@@ -111,6 +112,8 @@ AppServiceProxy::AppServiceProxy(Profile* profile)
 
 AppServiceProxy::~AppServiceProxy() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  AppCapabilityAccessCacheWrapper::Get().RemoveAppCapabilityAccessCache(
+      &app_capability_access_cache_);
   AppRegistryCacheWrapper::Get().RemoveAppRegistryCache(&app_registry_cache_);
 #endif
 }
@@ -141,9 +144,13 @@ void AppServiceProxy::Initialize() {
   const user_manager::User* user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
   if (user) {
-    app_registry_cache_.SetAccountId(user->GetAccountId());
-    AppRegistryCacheWrapper::Get().AddAppRegistryCache(user->GetAccountId(),
+    const AccountId& account_id = user->GetAccountId();
+    app_registry_cache_.SetAccountId(account_id);
+    AppRegistryCacheWrapper::Get().AddAppRegistryCache(account_id,
                                                        &app_registry_cache_);
+    app_capability_access_cache_.SetAccountId(account_id);
+    AppCapabilityAccessCacheWrapper::Get().AddAppCapabilityAccessCache(
+        account_id, &app_capability_access_cache_);
   }
 #endif
 
@@ -647,6 +654,11 @@ void AppServiceProxy::OnApps(std::vector<apps::mojom::AppPtr> deltas,
                              bool should_notify_initialized) {
   app_registry_cache_.OnApps(std::move(deltas), app_type,
                              should_notify_initialized);
+}
+
+void AppServiceProxy::OnCapabilityAccesses(
+    std::vector<apps::mojom::CapabilityAccessPtr> deltas) {
+  app_capability_access_cache_.OnCapabilityAccesses(std::move(deltas));
 }
 
 void AppServiceProxy::Clone(

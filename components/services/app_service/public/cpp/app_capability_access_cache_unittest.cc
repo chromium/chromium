@@ -63,8 +63,8 @@ class AppCapabilityAccessCacheTest
 
 // Responds to a app_capability_access's OnCapabilityAccessUpdate to call back
 // into AppCapabilityAccessCache, checking that AppCapabilityAccessCache
-// presents a self-consistent snapshot. For example, the is_accessing_camera
-// should match for the outer and inner CapabilityAccessUpdate.
+// presents a self-consistent snapshot. For example, the camera should match for
+// the outer and inner CapabilityAccessUpdate.
 //
 // In the tests below, just "recursive" means that
 // app_capability_access.OnCapabilityAccesses calls
