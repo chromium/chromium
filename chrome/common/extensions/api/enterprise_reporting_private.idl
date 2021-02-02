@@ -80,7 +80,7 @@ namespace enterprise.reportingPrivate {
 
     // Gets the device information (including disk encryption status,
     // screen lock status, serial number, model).
-    static void getDeviceInfo(optional GetDeviceInfoCallback callback);
+    static void getDeviceInfo(GetDeviceInfoCallback callback);
 
     // Gets the context information (including management status of the browser,
     // state of key security policies, browser version).
