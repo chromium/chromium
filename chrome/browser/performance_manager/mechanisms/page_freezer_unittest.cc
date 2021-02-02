@@ -92,6 +92,8 @@ TEST_F(PageFreezerTest, FreezeAndUnfreezePage) {
   EXPECT_TRUE(web_contents_tester);
   web_contents_tester->NavigateAndCommit(GURL(kUrl));
 
+  web_contents()->WasHidden();
+
   MaybeFreezePageNode(web_contents());
   EXPECT_TRUE(web_contents_tester->IsPageFrozen());
 

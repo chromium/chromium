@@ -4,15 +4,18 @@
 
 #include "chrome/browser/ui/views/tabs/tab_group_editor_bubble_view.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/test/browser_test.h"
@@ -168,4 +171,39 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
   EXPECT_EQ(
       1u,
       active_browser->tab_strip_model()->group_model()->ListTabGroups().size());
+}
+
+class TabGroupEditorBubbleViewDialogBrowserTestWithFreezingEnabled
+    : public TabGroupEditorBubbleViewDialogBrowserTest {
+ public:
+  TabGroupEditorBubbleViewDialogBrowserTestWithFreezingEnabled() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kTabGroupsCollapse, features::kTabGroupsCollapseFreezing},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    TabGroupEditorBubbleViewDialogBrowserTestWithFreezingEnabled,
+    CollapsingGroupFreezesAllTabs) {
+  BrowserView* browser_view = static_cast<BrowserView*>(browser()->window());
+  InProcessBrowserTest::AddBlankTabAndShow(browser());
+  InProcessBrowserTest::AddBlankTabAndShow(browser());
+
+  TabStripModel* tsm = browser()->tab_strip_model();
+  ASSERT_EQ(3, tsm->count());
+  tab_groups::TabGroupId group = tsm->AddToNewGroup({0, 1});
+
+  ASSERT_FALSE(browser_view->tabstrip()->tab_at(0)->HasFreezingVoteToken());
+  ASSERT_FALSE(browser_view->tabstrip()->tab_at(1)->HasFreezingVoteToken());
+  ASSERT_FALSE(browser_view->tabstrip()->tab_at(2)->HasFreezingVoteToken());
+  ASSERT_TRUE(
+      browser_view->tabstrip()->controller()->ToggleTabGroupCollapsedState(
+          group));
+  EXPECT_TRUE(browser_view->tabstrip()->tab_at(0)->HasFreezingVoteToken());
+  EXPECT_TRUE(browser_view->tabstrip()->tab_at(1)->HasFreezingVoteToken());
+  EXPECT_FALSE(browser_view->tabstrip()->tab_at(2)->HasFreezingVoteToken());
 }

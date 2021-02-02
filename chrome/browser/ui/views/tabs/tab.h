@@ -14,6 +14,7 @@
 #include "base/optional.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
+#include "components/performance_manager/public/freezing/freezing.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/base/layout.h"
 #include "ui/gfx/animation/animation_delegate.h"
@@ -145,6 +146,11 @@ class Tab : public gfx::AnimationDelegate,
   // Sets the visibility of the indicator shown when the tab needs to indicate
   // to the user that it needs their attention.
   void SetTabNeedsAttention(bool attention);
+
+  void SetFreezingVoteToken(
+      std::unique_ptr<performance_manager::freezing::FreezingVoteToken> token);
+  void ReleaseFreezingVoteToken();
+  bool HasFreezingVoteToken() const { return freezing_token_ ? true : false; }
 
   // Returns true if this tab became the active tab selected in
   // response to the last ui::ET_TAP_DOWN gesture dispatched to
@@ -279,6 +285,10 @@ class Tab : public gfx::AnimationDelegate,
 
   // Focus ring for accessibility.
   views::FocusRing* focus_ring_;
+
+  // Freezing token held while the tab is collapsed.
+  std::unique_ptr<performance_manager::freezing::FreezingVoteToken>
+      freezing_token_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_H_
