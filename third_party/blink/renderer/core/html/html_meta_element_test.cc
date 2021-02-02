@@ -251,7 +251,7 @@ TEST_F(HTMLMetaElementTest, ReferrerPolicyWithoutContent) {
   MockPolicyContainerHost policy_container_host;
   GetFrame().SetPolicyContainer(std::make_unique<PolicyContainer>(
       policy_container_host.BindNewEndpointAndPassDedicatedRemote(),
-      mojom::blink::PolicyContainerDocumentPolicies::New()));
+      mojom::blink::PolicyContainerPolicies::New()));
   EXPECT_CALL(policy_container_host,
               SetReferrerPolicy(network::mojom::ReferrerPolicy::kStrictOrigin));
 
@@ -272,7 +272,7 @@ TEST_F(HTMLMetaElementTest, ReferrerPolicyUpdatesPolicyContainer) {
           policy_container_host.BindNewEndpointAndPassDedicatedRemote();
   auto policy_container = std::make_unique<PolicyContainer>(
       std::move(stub_policy_container_remote),
-      mojom::blink::PolicyContainerDocumentPolicies::New());
+      mojom::blink::PolicyContainerPolicies::New());
 
   GetFrame().SetPolicyContainer(std::move(policy_container));
   EXPECT_CALL(policy_container_host,

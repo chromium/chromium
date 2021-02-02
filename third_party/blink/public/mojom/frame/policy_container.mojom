@@ -7,7 +7,7 @@ module blink.mojom;
 import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/referrer_policy.mojom";
 
-struct PolicyContainerDocumentPolicies {
+struct PolicyContainerPolicies {
   network.mojom.ReferrerPolicy referrer_policy = network.mojom.ReferrerPolicy.kDefault;
   network.mojom.IPAddressSpace ip_address_space = network.mojom.IPAddressSpace.kUnknown;
 };
@@ -36,7 +36,7 @@ interface PolicyContainerHostKeepAliveHandle {
 // Blink when the LocalFrame corresponding to a RenderFrameHostImpl is created.
 struct PolicyContainer {
   // The document policies that need to be passed down to Blink.
-  PolicyContainerDocumentPolicies policies;
+  PolicyContainerPolicies policies;
 
   // A mojo handle to the PolicyContainerHost, used for policies parsed in Blink
   // that need to trigger updates in the browser's policy container.

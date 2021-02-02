@@ -616,12 +616,12 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // pending NavigationEntry.
   void PendingEntryRefDeleted(PendingEntryRef* ref);
 
-  // Compute the document policies to be stored in the FrameNavigationEntry by
-  // RendererDidNavigate.
-  std::unique_ptr<PolicyContainerHost::DocumentPolicies>
-  ComputeDocumentPoliciesForFrameEntry(RenderFrameHostImpl* rfh,
-                                       bool is_same_document,
-                                       NavigationRequest* request);
+  // Computes the policy container policies to be stored in the
+  // FrameNavigationEntry by RendererDidNavigate.
+  std::unique_ptr<PolicyContainerPolicies>
+  ComputePolicyContainerPoliciesForFrameEntry(RenderFrameHostImpl* rfh,
+                                              bool is_same_document,
+                                              NavigationRequest* request);
 
   // Sets the history to |history_length| entries, with an offset of
   // |history_offset|. This notifies all renderers involved in rendering the

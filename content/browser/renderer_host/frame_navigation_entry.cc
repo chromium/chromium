@@ -32,7 +32,7 @@ FrameNavigationEntry::FrameNavigationEntry(
     int64_t post_id,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
     std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info,
-    std::unique_ptr<PolicyContainerHost::DocumentPolicies> document_policies)
+    std::unique_ptr<PolicyContainerPolicies> policy_container_policies)
     : frame_unique_name_(frame_unique_name),
       item_sequence_number_(item_sequence_number),
       document_sequence_number_(document_sequence_number),
@@ -48,7 +48,7 @@ FrameNavigationEntry::FrameNavigationEntry(
       post_id_(post_id),
       blob_url_loader_factory_(std::move(blob_url_loader_factory)),
       web_bundle_navigation_info_(std::move(web_bundle_navigation_info)),
-      document_policies_(std::move(document_policies)) {
+      policy_container_policies_(std::move(policy_container_policies)) {
   if (origin)
     committed_origin_ = *origin;
 }
@@ -65,10 +65,9 @@ scoped_refptr<FrameNavigationEntry> FrameNavigationEntry::Clone() const {
       initiator_origin_, redirect_chain_, page_state_, method_, post_id_,
       nullptr /* blob_url_loader_factory */,
       nullptr /* web_bundle_navigation_info */,
-      document_policies_
-          ? std::make_unique<PolicyContainerHost::DocumentPolicies>(
-                *document_policies_)
-          : nullptr);
+      policy_container_policies_ ? std::make_unique<PolicyContainerPolicies>(
+                                       *policy_container_policies_)
+                                 : nullptr);
   // |bindings_| gets only updated through the SetBindings API, not through
   // UpdateEntry, so make a copy of it explicitly here as part of cloning.
   copy->bindings_ = bindings_;
@@ -91,7 +90,7 @@ void FrameNavigationEntry::UpdateEntry(
     int64_t post_id,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
     std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info,
-    std::unique_ptr<PolicyContainerHost::DocumentPolicies> document_policies) {
+    std::unique_ptr<PolicyContainerPolicies> policy_container_policies) {
   frame_unique_name_ = frame_unique_name;
   item_sequence_number_ = item_sequence_number;
   document_sequence_number_ = document_sequence_number;
@@ -107,7 +106,7 @@ void FrameNavigationEntry::UpdateEntry(
   post_id_ = post_id;
   blob_url_loader_factory_ = std::move(blob_url_loader_factory);
   web_bundle_navigation_info_ = std::move(web_bundle_navigation_info);
-  document_policies_ = std::move(document_policies);
+  policy_container_policies_ = std::move(policy_container_policies);
 }
 
 void FrameNavigationEntry::set_item_sequence_number(

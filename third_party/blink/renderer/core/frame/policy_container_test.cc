@@ -10,7 +10,7 @@ namespace blink {
 
 TEST(PolicyContainerTest, MembersAreSetDuringConstruction) {
   MockPolicyContainerHost host;
-  auto policies = mojom::blink::PolicyContainerDocumentPolicies::New(
+  auto policies = mojom::blink::PolicyContainerPolicies::New(
       network::mojom::blink::ReferrerPolicy::kNever,
       network::mojom::blink::IPAddressSpace::kPrivate);
   PolicyContainer policy_container(host.BindNewEndpointAndPassDedicatedRemote(),
@@ -24,7 +24,7 @@ TEST(PolicyContainerTest, MembersAreSetDuringConstruction) {
 
 TEST(PolicyContainerTest, UpdateReferrerPolicyIsPropagated) {
   MockPolicyContainerHost host;
-  auto policies = mojom::blink::PolicyContainerDocumentPolicies::New(
+  auto policies = mojom::blink::PolicyContainerPolicies::New(
       network::mojom::blink::ReferrerPolicy::kAlways,
       network::mojom::blink::IPAddressSpace::kPublic);
   PolicyContainer policy_container(host.BindNewEndpointAndPassDedicatedRemote(),

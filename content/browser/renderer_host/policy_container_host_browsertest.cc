@@ -368,10 +368,10 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest, HistoryForMainFrame) {
 
   // Check that RendererDidNavigateToNewEntry stored the correct policy
   // container in the FrameNavigationEntry.
-  ASSERT_EQ(network::mojom::ReferrerPolicy::kNever, entry2->root_node()
-                                                        ->frame_entry.get()
-                                                        ->document_policies()
-                                                        ->referrer_policy);
+  ASSERT_EQ(network::mojom::ReferrerPolicy::kNever,
+            entry2->root_node()
+                ->frame_entry->policy_container_policies()
+                ->referrer_policy);
 
   // Same document navigation.
   ASSERT_TRUE(ExecJs(current_frame_host(), "window.location.href = '#top'"));
@@ -381,10 +381,10 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest, HistoryForMainFrame) {
 
   ASSERT_EQ(3, controller.GetEntryCount());
   NavigationEntryImpl* entry3 = controller.GetEntryAtIndex(2);
-  ASSERT_EQ(network::mojom::ReferrerPolicy::kNever, entry3->root_node()
-                                                        ->frame_entry.get()
-                                                        ->document_policies()
-                                                        ->referrer_policy);
+  ASSERT_EQ(network::mojom::ReferrerPolicy::kNever,
+            entry3->root_node()
+                ->frame_entry->policy_container_policies()
+                ->referrer_policy);
 
   // Navigate to a third page.
   ASSERT_TRUE(NavigateToURL(shell(), always_referrer_url));
@@ -402,10 +402,10 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest, HistoryForMainFrame) {
 
   // The function RendererDidNavigateToExistingEntry should not have changed
   // anything.
-  ASSERT_EQ(network::mojom::ReferrerPolicy::kNever, entry3->root_node()
-                                                        ->frame_entry.get()
-                                                        ->document_policies()
-                                                        ->referrer_policy);
+  ASSERT_EQ(network::mojom::ReferrerPolicy::kNever,
+            entry3->root_node()
+                ->frame_entry->policy_container_policies()
+                ->referrer_policy);
 
   // Go back to "about:blank".
   controller.GoBack();
@@ -417,10 +417,10 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest, HistoryForMainFrame) {
 
   // The function RendererDidNavigateToExistingEntry should not have changed
   // anything.
-  ASSERT_EQ(network::mojom::ReferrerPolicy::kNever, entry2->root_node()
-                                                        ->frame_entry.get()
-                                                        ->document_policies()
-                                                        ->referrer_policy);
+  ASSERT_EQ(network::mojom::ReferrerPolicy::kNever,
+            entry2->root_node()
+                ->frame_entry->policy_container_policies()
+                ->referrer_policy);
 
   // Same URL navigation, which gets converted to a reload.
   ASSERT_TRUE(NavigateFrameToURL(current_frame_host()->frame_tree_node(),
@@ -432,10 +432,10 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest, HistoryForMainFrame) {
 
   // Check that after RendererDidNavigateToExistingEntry the policy container in
   // the FrameNavigationEntry is still correct.
-  ASSERT_EQ(network::mojom::ReferrerPolicy::kNever, entry2->root_node()
-                                                        ->frame_entry.get()
-                                                        ->document_policies()
-                                                        ->referrer_policy);
+  ASSERT_EQ(network::mojom::ReferrerPolicy::kNever,
+            entry2->root_node()
+                ->frame_entry->policy_container_policies()
+                ->referrer_policy);
 }
 
 IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest, HistoryForChildFrame) {
@@ -461,7 +461,9 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest, HistoryForChildFrame) {
       child->current_frame_host()->policy_container_host()->referrer_policy());
   NavigationEntryImpl* entry1 = controller.GetEntryAtIndex(0);
   ASSERT_EQ(network::mojom::ReferrerPolicy::kDefault,
-            entry1->GetFrameEntry(child)->document_policies()->referrer_policy);
+            entry1->GetFrameEntry(child)
+                ->policy_container_policies()
+                ->referrer_policy);
 
   // Change referrer policy of the main frame.
   ASSERT_TRUE(ExecJs(current_frame_host(),
@@ -490,7 +492,9 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest, HistoryForChildFrame) {
   // updated. Test that the function RendererDidNavigateAutoSubframe updates the
   // FrameNavigationEntry properly.
   ASSERT_EQ(network::mojom::ReferrerPolicy::kSameOrigin,
-            entry1->GetFrameEntry(child)->document_policies()->referrer_policy);
+            entry1->GetFrameEntry(child)
+                ->policy_container_policies()
+                ->referrer_policy);
 
   // 2) Same document navigation.
   ASSERT_TRUE(
@@ -504,7 +508,9 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest, HistoryForChildFrame) {
   ASSERT_EQ(2, controller.GetEntryCount());
   NavigationEntryImpl* entry2 = controller.GetEntryAtIndex(1);
   ASSERT_EQ(network::mojom::ReferrerPolicy::kSameOrigin,
-            entry2->GetFrameEntry(child)->document_policies()->referrer_policy);
+            entry2->GetFrameEntry(child)
+                ->policy_container_policies()
+                ->referrer_policy);
 
   // 3) Navigate the child frame to a network scheme url.
   ASSERT_TRUE(NavigateFrameToURL(child, always_referrer_url));
@@ -529,7 +535,9 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest, HistoryForChildFrame) {
   ASSERT_EQ(4, controller.GetEntryCount());
   NavigationEntryImpl* entry4 = controller.GetEntryAtIndex(3);
   ASSERT_EQ(network::mojom::ReferrerPolicy::kAlways,
-            entry4->GetFrameEntry(child)->document_policies()->referrer_policy);
+            entry4->GetFrameEntry(child)
+                ->policy_container_policies()
+                ->referrer_policy);
 
   // 5) Navigate the child frame to another network scheme url.
   ASSERT_TRUE(
@@ -563,7 +571,9 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest, HistoryForChildFrame) {
 
   // The frame entry should not have changed.
   ASSERT_EQ(network::mojom::ReferrerPolicy::kAlways,
-            entry4->GetFrameEntry(child)->document_policies()->referrer_policy);
+            entry4->GetFrameEntry(child)
+                ->policy_container_policies()
+                ->referrer_policy);
 
   controller.GoBack();
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
@@ -578,7 +588,9 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest, HistoryForChildFrame) {
 
   // The frame entry should not have changed.
   ASSERT_EQ(network::mojom::ReferrerPolicy::kSameOrigin,
-            entry2->GetFrameEntry(child)->document_policies()->referrer_policy);
+            entry2->GetFrameEntry(child)
+                ->policy_container_policies()
+                ->referrer_policy);
 
   controller.GoBack();
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
@@ -590,7 +602,9 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest, HistoryForChildFrame) {
 
   // The frame entry should not have changed.
   ASSERT_EQ(network::mojom::ReferrerPolicy::kSameOrigin,
-            entry1->GetFrameEntry(child)->document_policies()->referrer_policy);
+            entry1->GetFrameEntry(child)
+                ->policy_container_policies()
+                ->referrer_policy);
 }
 
 // Check that the FrameNavigationEntry for the initial empty document is
@@ -622,9 +636,10 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest,
     NavigationControllerImpl& controller = web_contents()->GetController();
     ASSERT_EQ(1, controller.GetEntryCount());
     NavigationEntryImpl* entry1 = controller.GetEntryAtIndex(0);
-    ASSERT_EQ(
-        network::mojom::ReferrerPolicy::kOrigin,
-        entry1->GetFrameEntry(child)->document_policies()->referrer_policy);
+    ASSERT_EQ(network::mojom::ReferrerPolicy::kOrigin,
+              entry1->GetFrameEntry(child)
+                  ->policy_container_policies()
+                  ->referrer_policy);
   }
 
   {
@@ -643,10 +658,10 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest,
     // The right policy is stored in the FrameNavigationEntry.
     NavigationEntryImpl* entry1 =
         popup_webcontents->GetController().GetEntryAtIndex(0);
-    ASSERT_EQ(network::mojom::ReferrerPolicy::kOrigin, entry1->root_node()
-                                                           ->frame_entry.get()
-                                                           ->document_policies()
-                                                           ->referrer_policy);
+    ASSERT_EQ(network::mojom::ReferrerPolicy::kOrigin,
+              entry1->root_node()
+                  ->frame_entry->policy_container_policies()
+                  ->referrer_policy);
   }
 }
 
@@ -686,7 +701,9 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest,
   // Policies should be stored in the FrameNavigationEntry before any
   // modification coming from blink.
   ASSERT_EQ(network::mojom::ReferrerPolicy::kAlways,
-            entry1->GetFrameEntry(child)->document_policies()->referrer_policy);
+            entry1->GetFrameEntry(child)
+                ->policy_container_policies()
+                ->referrer_policy);
 }
 
 // The following tests shows the behavior of the policy container during the

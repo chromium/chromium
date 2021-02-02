@@ -133,15 +133,14 @@ TEST_F(FrameLoaderTest, PolicyContainerIsStoredInLocalFrameOnCommitNavigation) {
       WebNavigationParams::CreateWithHTMLBufferForTesting(
           SharedBuffer::Create(), url);
   params->policy_container = std::make_unique<WebPolicyContainer>(
-      WebPolicyContainerDocumentPolicies{
-          network::mojom::ReferrerPolicy::kAlways,
-          network::mojom::IPAddressSpace::kPublic},
+      WebPolicyContainerPolicies{network::mojom::ReferrerPolicy::kAlways,
+                                 network::mojom::IPAddressSpace::kPublic},
       mojo::NullAssociatedRemote());
   LocalFrame* local_frame =
       To<LocalFrame>(web_view_impl->GetPage()->MainFrame());
   local_frame->Loader().CommitNavigation(std::move(params), nullptr);
 
-  EXPECT_EQ(mojom::blink::PolicyContainerDocumentPolicies::New(
+  EXPECT_EQ(mojom::blink::PolicyContainerPolicies::New(
                 network::mojom::ReferrerPolicy::kAlways,
                 network::mojom::IPAddressSpace::kPublic),
             local_frame->GetPolicyContainer()->GetPolicies());

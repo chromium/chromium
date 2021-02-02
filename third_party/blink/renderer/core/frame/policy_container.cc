@@ -8,7 +8,7 @@ namespace blink {
 
 PolicyContainer::PolicyContainer(
     mojo::PendingAssociatedRemote<mojom::blink::PolicyContainerHost> remote,
-    mojom::blink::PolicyContainerDocumentPoliciesPtr policies)
+    mojom::blink::PolicyContainerPoliciesPtr policies)
     : policies_(std::move(policies)),
       policy_container_host_remote_(std::move(remote)) {}
 
@@ -20,8 +20,7 @@ std::unique_ptr<PolicyContainer> PolicyContainer::CreateEmpty() {
   ignore_result(dummy_host.BindNewEndpointAndPassDedicatedReceiver());
 
   return std::make_unique<PolicyContainer>(
-      dummy_host.Unbind(),
-      mojom::blink::PolicyContainerDocumentPolicies::New());
+      dummy_host.Unbind(), mojom::blink::PolicyContainerPolicies::New());
 }
 
 // static
@@ -29,8 +28,8 @@ std::unique_ptr<PolicyContainer> PolicyContainer::CreateFromWebPolicyContainer(
     std::unique_ptr<WebPolicyContainer> container) {
   if (!container)
     return nullptr;
-  mojom::blink::PolicyContainerDocumentPoliciesPtr policies =
-      mojom::blink::PolicyContainerDocumentPolicies::New(
+  mojom::blink::PolicyContainerPoliciesPtr policies =
+      mojom::blink::PolicyContainerPolicies::New(
           container->policies.referrer_policy,
           container->policies.ip_address_space);
   return std::make_unique<PolicyContainer>(std::move(container->remote),
@@ -53,8 +52,8 @@ void PolicyContainer::UpdateReferrerPolicy(
   policy_container_host_remote_->SetReferrerPolicy(policy);
 }
 
-const mojom::blink::PolicyContainerDocumentPoliciesPtr&
-PolicyContainer::GetPolicies() const {
+const mojom::blink::PolicyContainerPoliciesPtr& PolicyContainer::GetPolicies()
+    const {
   return policies_;
 }
 

@@ -21,7 +21,7 @@ void MockPolicyContainerHost::FlushForTesting() {
 blink::mojom::PolicyContainerPtr
 MockPolicyContainerHost::CreatePolicyContainerForBlink() {
   return blink::mojom::PolicyContainer::New(
-      blink::mojom::PolicyContainerDocumentPolicies::New(),
+      blink::mojom::PolicyContainerPolicies::New(),
       BindNewEndpointAndPassDedicatedRemote());
 }
 

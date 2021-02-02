@@ -15,6 +15,22 @@
 
 namespace content {
 
+// The contents of a PolicyContainerHost.
+struct PolicyContainerPolicies {
+  // The referrer policy for the associated document. If not overwritten via a
+  // call to SetReferrerPolicy (for example after parsing the Referrer-Policy
+  // header or a meta tag), the default referrer policy will be applied to the
+  // document.
+  network::mojom::ReferrerPolicy referrer_policy =
+      network::mojom::ReferrerPolicy::kDefault;
+
+  // The IPAddressSpace associated with the document. In all non-network pages
+  // (srcdoc, data urls, etc.) where we don't have an IP address to work with,
+  // it is inherited following the general rules of the PolicyContainerHost.
+  network::mojom::IPAddressSpace ip_address_space =
+      network::mojom::IPAddressSpace::kUnknown;
+};
+
 // PolicyContainerHost serves as a container for several security policies. It
 // should be owned by a RenderFrameHost. It keep tracks of the policies assigned
 // to a document. When a document creates/opens another document with a local
@@ -41,29 +57,13 @@ class CONTENT_EXPORT PolicyContainerHost
     : public base::RefCounted<PolicyContainerHost>,
       public blink::mojom::PolicyContainerHost {
  public:
-  struct DocumentPolicies {
-    // The referrer policy for the associated document. If not overwritten via a
-    // call to SetReferrerPolicy (for example after parsing the Referrer-Policy
-    // header or a meta tag), the default referrer policy will be applied to the
-    // document.
-    network::mojom::ReferrerPolicy referrer_policy =
-        network::mojom::ReferrerPolicy::kDefault;
-
-    // The IPAddressSpace associated with the document. In all non-network
-    // pages (srcdoc, data urls, etc.) where we don't have an ip address to work
-    // with, it is inherited following the general rules of the
-    // PolicyContainerHost.
-    network::mojom::IPAddressSpace ip_address_space =
-        network::mojom::IPAddressSpace::kUnknown;
-  };
-
-  // Constructs a PolicyContainerHost containing default document policies and
-  // an unbound mojo receiver.
+  // Constructs a PolicyContainerHost containing default policies and an unbound
+  // mojo receiver.
   PolicyContainerHost();
 
-  // Constructs a PolicyContainerHost containing the given |document_policies|
-  // and an unbound mojo receiver.
-  explicit PolicyContainerHost(const DocumentPolicies& document_policies);
+  // Constructs a PolicyContainerHost containing the given |policies| and an
+  // unbound mojo receiver.
+  explicit PolicyContainerHost(const PolicyContainerPolicies& policies);
 
   // PolicyContainerHost instances are neither copyable nor movable.
   PolicyContainerHost(const PolicyContainerHost&) = delete;
@@ -80,19 +80,17 @@ class CONTENT_EXPORT PolicyContainerHost
   // PolicyContainerHost::FromFrameToken. This function can be called only once.
   void AssociateWithFrameToken(const base::UnguessableToken& token);
 
-  const DocumentPolicies& document_policies() const {
-    return document_policies_;
-  }
+  const PolicyContainerPolicies& policies() const { return policies_; }
 
   network::mojom::ReferrerPolicy referrer_policy() const {
-    return document_policies_.referrer_policy;
+    return policies_.referrer_policy;
   }
 
   network::mojom::IPAddressSpace ip_address_space() const {
-    return document_policies_.ip_address_space;
+    return policies_.ip_address_space;
   }
   void SetIPAddressSpace(network::mojom::IPAddressSpace ip_address_space) {
-    document_policies_.ip_address_space = ip_address_space;
+    policies_.ip_address_space = ip_address_space;
   }
 
   // Return a PolicyContainer containing copies of the policies and a pending
@@ -126,7 +124,7 @@ class CONTENT_EXPORT PolicyContainerHost
 
   void SetReferrerPolicy(network::mojom::ReferrerPolicy referrer_policy) final;
 
-  DocumentPolicies document_policies_;
+  PolicyContainerPolicies policies_;
 
   mojo::AssociatedReceiver<blink::mojom::PolicyContainerHost>
       policy_container_host_receiver_{this};

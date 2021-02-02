@@ -462,7 +462,7 @@ bool DoesSandboxNavigationStayWithinSubtree(
   return true;
 }
 
-bool ShouldStoreDocumentPoliciesInFrameNavigationEntry(
+bool ShouldStorePolicyContainerPoliciesInFrameNavigationEntry(
     const NavigationRequest* request) {
   // For local schemes we need to store the policy container in the
   // FrameNavigationEntry, so that we can reload it in case of history
@@ -1464,7 +1464,7 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
         nullptr /* blob_url_loader_factory */,
         nullptr /* web_bundle_navigation_info */,
         // We will set the document policies later in this function.
-        nullptr /* document_policies */);
+        nullptr /* policy_container_policies */);
 
     new_entry = GetLastCommittedEntry()->CloneAndReplace(
         frame_entry, true, rfh->frame_tree_node(), frame_tree_.root());
@@ -1591,8 +1591,9 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
   frame_entry->SetPageState(params.page_state);
   frame_entry->set_method(params.method);
   frame_entry->set_post_id(params.post_id);
-  frame_entry->set_document_policies(
-      ComputeDocumentPoliciesForFrameEntry(rfh, is_same_document, request));
+  frame_entry->set_policy_container_policies(
+      ComputePolicyContainerPoliciesForFrameEntry(rfh, is_same_document,
+                                                  request));
 
   if (!params.url_is_unreachable)
     frame_entry->set_committed_origin(params.origin);
@@ -1825,7 +1826,8 @@ void NavigationControllerImpl::RendererDidNavigateToExistingEntry(
       request->web_bundle_navigation_info()
           ? request->web_bundle_navigation_info()->Clone()
           : nullptr,
-      ComputeDocumentPoliciesForFrameEntry(rfh, is_same_document, request));
+      ComputePolicyContainerPoliciesForFrameEntry(rfh, is_same_document,
+                                                  request));
 
   // The redirected to page should not inherit the favicon from the previous
   // page.
@@ -1884,7 +1886,8 @@ void NavigationControllerImpl::RendererDidNavigateNewSubframe(
       request->web_bundle_navigation_info()
           ? request->web_bundle_navigation_info()->Clone()
           : nullptr,
-      ComputeDocumentPoliciesForFrameEntry(rfh, is_same_document, request));
+      ComputePolicyContainerPoliciesForFrameEntry(rfh, is_same_document,
+                                                  request));
 
   std::unique_ptr<NavigationEntryImpl> new_entry =
       GetLastCommittedEntry()->CloneAndReplace(
@@ -1968,7 +1971,8 @@ bool NavigationControllerImpl::RendererDidNavigateAutoSubframe(
       request->web_bundle_navigation_info()
           ? request->web_bundle_navigation_info()->Clone()
           : nullptr,
-      ComputeDocumentPoliciesForFrameEntry(rfh, is_same_document, request));
+      ComputePolicyContainerPoliciesForFrameEntry(rfh, is_same_document,
+                                                  request));
 
   return send_commit_notification;
 }
@@ -2364,14 +2368,14 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
       // CreateNavigationEntry() may have changed the transition type.
       page_transition = entry->GetTransitionType();
     }
-    std::unique_ptr<PolicyContainerHost::DocumentPolicies> document_policies;
+    std::unique_ptr<PolicyContainerPolicies> policies;
     if (GetLastCommittedEntry()) {
       FrameNavigationEntry* previous_frame_entry =
           GetLastCommittedEntry()->GetFrameEntry(node);
-      if (previous_frame_entry && previous_frame_entry->document_policies()) {
-        document_policies =
-            std::make_unique<PolicyContainerHost::DocumentPolicies>(
-                *previous_frame_entry->document_policies());
+      if (previous_frame_entry &&
+          previous_frame_entry->policy_container_policies()) {
+        policies = std::make_unique<PolicyContainerPolicies>(
+            *previous_frame_entry->policy_container_policies());
       }
     }
     entry->AddOrUpdateFrameEntry(
@@ -2380,7 +2384,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
         base::nullopt /* commit_origin */, referrer, initiator_origin,
         std::vector<GURL>(), blink::PageState(), method, -1,
         blob_url_loader_factory, nullptr /* web_bundle_navigation_info */,
-        std::move(document_policies));
+        std::move(policies));
   } else {
     // Main frame case.
     entry = NavigationEntryImpl::FromNavigationEntry(CreateNavigationEntry(
@@ -2416,7 +2420,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
         nullptr /* origin */, referrer, initiator_origin, std::vector<GURL>(),
         blink::PageState(), method, -1, blob_url_loader_factory,
         nullptr /* web_bundle_navigation_info */,
-        nullptr /* document_policies */);
+        nullptr /* policy_container_policies */);
   }
 
   LoadURLParams params(url);
@@ -3098,10 +3102,11 @@ void NavigationControllerImpl::NavigateWithoutEntry(
     if (GetLastCommittedEntry()) {
       FrameNavigationEntry* previous_frame_entry =
           GetLastCommittedEntry()->GetFrameEntry(node);
-      if (previous_frame_entry && previous_frame_entry->document_policies()) {
-        pending_entry_->GetFrameEntry(node)->set_document_policies(
-            std::make_unique<PolicyContainerHost::DocumentPolicies>(
-                *previous_frame_entry->document_policies()));
+      if (previous_frame_entry &&
+          previous_frame_entry->policy_container_policies()) {
+        pending_entry_->GetFrameEntry(node)->set_policy_container_policies(
+            std::make_unique<PolicyContainerPolicies>(
+                *previous_frame_entry->policy_container_policies()));
       }
     }
   }
@@ -3117,11 +3122,9 @@ void NavigationControllerImpl::NavigateWithoutEntry(
   if (!GetLastCommittedEntry() && params.url.IsAboutBlank()) {
     if (node->current_frame_host() &&
         node->current_frame_host()->policy_container_host()) {
-      pending_entry_->GetFrameEntry(node)->set_document_policies(
-          std::make_unique<PolicyContainerHost::DocumentPolicies>(
-              node->current_frame_host()
-                  ->policy_container_host()
-                  ->document_policies()));
+      pending_entry_->GetFrameEntry(node)->set_policy_container_policies(
+          std::make_unique<PolicyContainerPolicies>(
+              node->current_frame_host()->policy_container_host()->policies()));
     }
   }
 
@@ -3232,7 +3235,7 @@ NavigationControllerImpl::CreateNavigationEntryFromLoadParams(
         // If in NavigateWithoutEntry we later determine that this navigation is
         // a conversion of a new navigation into a reload, we will set the right
         // document policies there.
-        nullptr /* document_policies */);
+        nullptr /* policy_container_policies */);
   } else {
     // Otherwise, create a pending entry for the main frame.
     entry = NavigationEntryImpl::FromNavigationEntry(CreateNavigationEntry(
@@ -3860,12 +3863,12 @@ void NavigationControllerImpl::PendingEntryRefDeleted(PendingEntryRef* ref) {
   delegate_->NotifyNavigationStateChanged(INVALIDATE_TYPE_URL);
 }
 
-std::unique_ptr<PolicyContainerHost::DocumentPolicies>
-NavigationControllerImpl::ComputeDocumentPoliciesForFrameEntry(
+std::unique_ptr<PolicyContainerPolicies>
+NavigationControllerImpl::ComputePolicyContainerPoliciesForFrameEntry(
     RenderFrameHostImpl* rfh,
     bool is_same_document,
     NavigationRequest* request) {
-  if (!ShouldStoreDocumentPoliciesInFrameNavigationEntry(request))
+  if (!ShouldStorePolicyContainerPoliciesInFrameNavigationEntry(request))
     return nullptr;
 
   if (is_same_document) {
@@ -3877,15 +3880,14 @@ NavigationControllerImpl::ComputeDocumentPoliciesForFrameEntry(
     if (!previous_frame_entry)
       return nullptr;
 
-    const PolicyContainerHost::DocumentPolicies* previous_document_policies =
-        previous_frame_entry->document_policies();
+    const PolicyContainerPolicies* previous_policies =
+        previous_frame_entry->policy_container_policies();
 
-    if (!previous_document_policies)
+    if (!previous_policies)
       return nullptr;
 
     // Make a copy of the policy container for the new FrameNavigationEntry.
-    return std::make_unique<PolicyContainerHost::DocumentPolicies>(
-        *previous_document_policies);
+    return std::make_unique<PolicyContainerPolicies>(*previous_policies);
   }
 
   if (!request->IsWaitingToCommit()) {
@@ -3893,14 +3895,14 @@ NavigationControllerImpl::ComputeDocumentPoliciesForFrameEntry(
     // NavigationRequest contains a dummy policy container, while the
     // RenderFrameHost already inherited the policy container from the
     // creator, so let's take the policies from there.
-    return std::make_unique<PolicyContainerHost::DocumentPolicies>(
-        rfh->policy_container_host()->document_policies());
+    return std::make_unique<PolicyContainerPolicies>(
+        rfh->policy_container_host()->policies());
   }
 
   // Take the policy container from the request since we did not move it
   // into the RFH yet.
-  return std::make_unique<PolicyContainerHost::DocumentPolicies>(
-      request->policy_container_host()->document_policies());
+  return std::make_unique<PolicyContainerPolicies>(
+      request->policy_container_host()->policies());
 }
 
 void NavigationControllerImpl::SetHistoryOffsetAndLength(int history_offset,

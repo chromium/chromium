@@ -33,11 +33,11 @@ base::LazyInstance<TokenPolicyContainerMap>::Leaky
 
 }  // namespace
 
-PolicyContainerHost::PolicyContainerHost()
-    : PolicyContainerHost(PolicyContainerHost::DocumentPolicies{}) {}
+PolicyContainerHost::PolicyContainerHost() = default;
+
 PolicyContainerHost::PolicyContainerHost(
-    const PolicyContainerHost::DocumentPolicies& document_policies)
-    : document_policies_(document_policies) {}
+    const PolicyContainerPolicies& policies)
+    : policies_(policies) {}
 
 PolicyContainerHost::~PolicyContainerHost() {
   // The PolicyContainerHost associated with |frame_token_| might have
@@ -66,7 +66,7 @@ PolicyContainerHost* PolicyContainerHost::FromFrameToken(
 
 void PolicyContainerHost::SetReferrerPolicy(
     network::mojom::ReferrerPolicy referrer_policy) {
-  document_policies_.referrer_policy = referrer_policy;
+  policies_.referrer_policy = referrer_policy;
 }
 
 blink::mojom::PolicyContainerPtr
@@ -84,14 +84,13 @@ PolicyContainerHost::CreatePolicyContainerForBlink() {
       remote.InitWithNewEndpointAndPassReceiver()));
 
   return blink::mojom::PolicyContainer::New(
-      blink::mojom::PolicyContainerDocumentPolicies::New(
-          document_policies_.referrer_policy,
-          document_policies_.ip_address_space),
+      blink::mojom::PolicyContainerPolicies::New(policies_.referrer_policy,
+                                                 policies_.ip_address_space),
       std::move(remote));
 }
 
 scoped_refptr<PolicyContainerHost> PolicyContainerHost::Clone() const {
-  return base::MakeRefCounted<PolicyContainerHost>(document_policies_);
+  return base::MakeRefCounted<PolicyContainerHost>(policies_);
 }
 
 void PolicyContainerHost::Bind(

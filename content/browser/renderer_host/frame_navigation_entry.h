@@ -57,7 +57,7 @@ class CONTENT_EXPORT FrameNavigationEntry
       int64_t post_id,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
       std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info,
-      std::unique_ptr<PolicyContainerHost::DocumentPolicies> document_policies);
+      std::unique_ptr<PolicyContainerPolicies> policy_container_policies);
 
   // Creates a copy of this FrameNavigationEntry that can be modified
   // independently from the original.
@@ -80,7 +80,7 @@ class CONTENT_EXPORT FrameNavigationEntry
       int64_t post_id,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
       std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info,
-      std::unique_ptr<PolicyContainerHost::DocumentPolicies> document_policies);
+      std::unique_ptr<PolicyContainerPolicies> policy_container_policies);
 
   // The unique name of the frame this entry is for.  This is a stable name for
   // the frame based on its position in the tree and relation to other named
@@ -189,17 +189,16 @@ class CONTENT_EXPORT FrameNavigationEntry
   scoped_refptr<network::ResourceRequestBody> GetPostData(
       std::string* content_type) const;
 
-  // The document policies for this entry. This is needed for local schemes,
-  // since for them the policy container was inherited by the creator, while for
-  // network schemes we can reconstruct the policy container by parsing the
-  // network response.
-  void set_document_policies(
-      std::unique_ptr<PolicyContainerHost::DocumentPolicies>
-          document_policies) {
-    document_policies_ = std::move(document_policies);
+  // The policy container policies for this entry. This is needed for local
+  // schemes, since for them the policy container was inherited by the creator,
+  // while for network schemes we can reconstruct the policy container by
+  // parsing the network response.
+  void set_policy_container_policies(
+      std::unique_ptr<PolicyContainerPolicies> policies) {
+    policy_container_policies_ = std::move(policies);
   }
-  const PolicyContainerHost::DocumentPolicies* document_policies() const {
-    return document_policies_.get();
+  const PolicyContainerPolicies* policy_container_policies() const {
+    return policy_container_policies_.get();
   }
 
   // Optional URLLoaderFactory to facilitate blob URL loading.
@@ -260,8 +259,8 @@ class CONTENT_EXPORT FrameNavigationEntry
   // TODO(995177): Support Session/Tab restore.
   std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info_;
 
-  // TODO(https://crbug.com/1140393): Persist the document policies.
-  std::unique_ptr<PolicyContainerHost::DocumentPolicies> document_policies_;
+  // TODO(https://crbug.com/1140393): Persist these policies.
+  std::unique_ptr<PolicyContainerPolicies> policy_container_policies_;
 
   DISALLOW_COPY_AND_ASSIGN(FrameNavigationEntry);
 };

@@ -162,7 +162,7 @@ void LoadFrameDontWait(WebLocalFrame* frame, const WebURL& url) {
     params->is_browser_initiated = true;
     MockPolicyContainerHost mock_policy_container_host;
     params->policy_container = std::make_unique<WebPolicyContainer>(
-        WebPolicyContainerDocumentPolicies(),
+        WebPolicyContainerPolicies(),
         mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote());
     FillNavigationParamsResponse(params.get());
     impl->CommitNavigation(std::move(params), nullptr /* extra_data */);
@@ -369,7 +369,7 @@ WebViewImpl* WebViewHelper::InitializeWithOpener(
   WebLocalFrame* frame = WebLocalFrame::CreateMainFrame(
       web_view_, web_frame_client, nullptr, base::UnguessableToken::Create(),
       std::make_unique<WebPolicyContainer>(
-          WebPolicyContainerDocumentPolicies(),
+          WebPolicyContainerPolicies(),
           mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote()),
       opener);
   web_frame_client->Bind(frame, std::move(owned_web_frame_client));
@@ -468,7 +468,7 @@ WebLocalFrameImpl* WebViewHelper::CreateLocalChild(
       nullptr, previous_sibling, properties,
       mojom::blink::FrameOwnerElementType::kIframe,
       base::UnguessableToken::Create(), nullptr,
-      std::make_unique<WebPolicyContainer>(WebPolicyContainerDocumentPolicies(),
+      std::make_unique<WebPolicyContainer>(WebPolicyContainerPolicies(),
                                            mojo::NullAssociatedRemote())));
   client->Bind(frame, std::move(owned_client));
 

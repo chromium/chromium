@@ -29,7 +29,7 @@ class CORE_EXPORT PolicyContainer {
   PolicyContainer() = delete;
   PolicyContainer(
       mojo::PendingAssociatedRemote<mojom::blink::PolicyContainerHost> remote,
-      mojom::blink::PolicyContainerDocumentPoliciesPtr policies);
+      mojom::blink::PolicyContainerPoliciesPtr policies);
   PolicyContainer(const PolicyContainer&) = delete;
   PolicyContainer& operator=(const PolicyContainer&) = delete;
   ~PolicyContainer() = default;
@@ -45,7 +45,7 @@ class CORE_EXPORT PolicyContainer {
 
   network::mojom::blink::IPAddressSpace GetIPAddressSpace() const;
 
-  const mojom::blink::PolicyContainerDocumentPoliciesPtr& GetPolicies() const;
+  const mojom::blink::PolicyContainerPoliciesPtr& GetPolicies() const;
 
   // Return a keep alive handle for the browser process' PolicyContainerHost. If
   // that PolicyContainerHost is owned by a RenderFrameHost, holding a keep
@@ -56,7 +56,7 @@ class CORE_EXPORT PolicyContainer {
   IssueKeepAliveHandle();
 
  private:
-  mojom::blink::PolicyContainerDocumentPoliciesPtr policies_;
+  mojom::blink::PolicyContainerPoliciesPtr policies_;
 
   mojo::AssociatedRemote<mojom::blink::PolicyContainerHost>
       policy_container_host_remote_;

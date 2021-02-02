@@ -1287,12 +1287,13 @@ NavigationRequest::NavigationRequest(
 scoped_refptr<PolicyContainerHost>
 NavigationRequest::MaybeInheritPolicyContainerHost(
     const FrameNavigationEntry* frame_navigation_entry) {
-  if (frame_navigation_entry && frame_navigation_entry->document_policies()) {
+  if (frame_navigation_entry &&
+      frame_navigation_entry->policy_container_policies()) {
     // If there is a history entry with some document policies, initialize the
     // PolicyContainerHost with them, so that they will get applied to the
     // document created by the navigation.
     return base::MakeRefCounted<PolicyContainerHost>(
-        *frame_navigation_entry->document_policies());
+        *frame_navigation_entry->policy_container_policies());
   }
 
   // Srcdoc iframes inherit their policies from their parent.
@@ -2623,9 +2624,9 @@ void NavigationRequest::OnResponseStarted(
           frame_entry->web_bundle_navigation_info()
               ? frame_entry->web_bundle_navigation_info()->Clone()
               : nullptr,
-          frame_entry->document_policies()
-              ? std::make_unique<PolicyContainerHost::DocumentPolicies>(
-                    *frame_entry->document_policies())
+          frame_entry->policy_container_policies()
+              ? std::make_unique<PolicyContainerPolicies>(
+                    *frame_entry->policy_container_policies())
               : nullptr);
     }
   }

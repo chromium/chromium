@@ -1152,8 +1152,8 @@ std::unique_ptr<blink::WebPolicyContainer> ToWebPolicyContainer(
     return nullptr;
 
   return std::make_unique<blink::WebPolicyContainer>(
-      blink::WebPolicyContainerDocumentPolicies{in->policies->referrer_policy,
-                                                in->policies->ip_address_space},
+      blink::WebPolicyContainerPolicies{in->policies->referrer_policy,
+                                        in->policies->ip_address_space},
       std::move(in->remote));
 }
 
