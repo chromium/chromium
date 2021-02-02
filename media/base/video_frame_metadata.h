@@ -114,8 +114,8 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   // should use read lock fences.
   bool read_lock_fences_enabled = false;
 
-  // Indicates that the frame is rotated.
-  base::Optional<VideoRotation> rotation;
+  // Indicates that the frame has a rotation and/or flip.
+  base::Optional<VideoTransformation> transformation;
 
   // Android only: if set, then this frame is not suitable for overlay, even
   // if ALLOW_OVERLAY is set.  However, it allows us to process the overlay

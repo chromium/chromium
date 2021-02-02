@@ -278,7 +278,7 @@ void MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate::OnFrame(
 
   // Rotation may be explicitly set sometimes.
   if (incoming_frame.rotation() != webrtc::kVideoRotation_0) {
-    video_frame->metadata().rotation =
+    video_frame->metadata().transformation =
         WebRtcToMediaVideoRotation(incoming_frame.rotation());
   }
 

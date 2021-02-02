@@ -379,8 +379,10 @@ void VideoTrackRecorderImpl::Encoder::RetrieveFrameOnEncodingTaskRunner(
     const gfx::Size& old_visible_size = video_frame->visible_rect().size();
     gfx::Size new_visible_size = old_visible_size;
 
-    media::VideoRotation video_rotation =
-        video_frame->metadata().rotation.value_or(media::VIDEO_ROTATION_0);
+    media::VideoRotation video_rotation = media::VIDEO_ROTATION_0;
+    if (video_frame->metadata().transformation)
+      video_rotation = video_frame->metadata().transformation->rotation;
+
     if (video_rotation == media::VIDEO_ROTATION_90 ||
         video_rotation == media::VIDEO_ROTATION_270) {
       new_visible_size.SetSize(old_visible_size.height(),

@@ -609,8 +609,9 @@ void WebMediaPlayerMSCompositor::SetCurrentFrame(
   bool is_first_frame = true;
   bool has_frame_size_changed = false;
 
-  base::Optional<media::VideoRotation> new_rotation =
-      frame->metadata().rotation.value_or(media::VIDEO_ROTATION_0);
+  base::Optional<media::VideoRotation> new_rotation = media::VIDEO_ROTATION_0;
+  if (frame->metadata().transformation)
+    new_rotation = frame->metadata().transformation->rotation;
 
   base::Optional<bool> new_opacity;
   new_opacity = media::IsOpaque(frame->format());
@@ -619,17 +620,19 @@ void WebMediaPlayerMSCompositor::SetCurrentFrame(
     // We have a current frame, so determine what has changed.
     is_first_frame = false;
 
-    media::VideoRotation current_video_rotation =
-        current_frame_->metadata().rotation.value_or(media::VIDEO_ROTATION_0);
+    auto current_video_rotation = media::VIDEO_ROTATION_0;
+    if (current_frame_->metadata().transformation) {
+      current_video_rotation =
+          current_frame_->metadata().transformation->rotation;
+    }
 
     has_frame_size_changed =
         RotationAdjustedSize(*new_rotation, frame->natural_size()) !=
         RotationAdjustedSize(current_video_rotation,
                              current_frame_->natural_size());
 
-    if (current_video_rotation == *new_rotation) {
+    if (current_video_rotation == *new_rotation)
       new_rotation.reset();
-    }
 
     if (*new_opacity == media::IsOpaque(current_frame_->format()))
       new_opacity.reset();

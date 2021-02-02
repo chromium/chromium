@@ -64,10 +64,10 @@ gfx::Rect ScaleRectangle(const gfx::Rect& input_rect,
 }
 
 webrtc::VideoRotation GetFrameRotation(const media::VideoFrame* frame) {
-  if (!frame->metadata().rotation) {
+  if (!frame->metadata().transformation) {
     return webrtc::kVideoRotation_0;
   }
-  switch (*frame->metadata().rotation) {
+  switch (frame->metadata().transformation->rotation) {
     case media::VIDEO_ROTATION_0:
       return webrtc::kVideoRotation_0;
     case media::VIDEO_ROTATION_90:

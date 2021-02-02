@@ -870,21 +870,21 @@ void RequestManager::SubmitCapturedPreviewRecordingBuffer(
       auto translate_rotation = [](const int rotation) -> VideoRotation {
         switch (rotation) {
           case 0:
-            return VideoRotation::VIDEO_ROTATION_0;
+            return VIDEO_ROTATION_0;
           case 90:
-            return VideoRotation::VIDEO_ROTATION_90;
+            return VIDEO_ROTATION_90;
           case 180:
-            return VideoRotation::VIDEO_ROTATION_180;
+            return VIDEO_ROTATION_180;
           case 270:
-            return VideoRotation::VIDEO_ROTATION_270;
+            return VIDEO_ROTATION_270;
         }
-        return VideoRotation::VIDEO_ROTATION_0;
+        return VIDEO_ROTATION_0;
       };
-      metadata.rotation =
+      metadata.transformation =
           translate_rotation(device_context_->GetRotationForDisplay());
     } else {
       // All frames are pre-rotated to the display orientation.
-      metadata.rotation = VideoRotation::VIDEO_ROTATION_0;
+      metadata.transformation = VIDEO_ROTATION_0;
     }
     device_context_->SubmitCapturedVideoCaptureBuffer(
         client_type, std::move(*buffer), format, pending_result.reference_time,

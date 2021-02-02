@@ -57,13 +57,8 @@ bool StructTraits<media::mojom::VideoFrameMetadataDataView,
   // unsigned int.
   output->hw_protected_validation_id = input.hw_protected_validation_id();
 
-  if (input.has_rotation()) {
-    media::VideoRotation rotation;
-    if (!input.ReadRotation(&rotation))
-      return false;
-
-    output->rotation = rotation;
-  }
+  READ_AND_ASSIGN_OPT(media::VideoTransformation, transformation,
+                      Transformation);
 
   if (input.has_copy_mode()) {
     media::VideoFrameMetadata::CopyMode copy_mode;

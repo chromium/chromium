@@ -21,7 +21,7 @@ namespace {
 
 class VideoFrameMetadataStructTraitsTest
     : public testing::Test,
-      public media::mojom::VideoFrameMetadataTraitsTestService {
+      public mojom::VideoFrameMetadataTraitsTestService {
  public:
   VideoFrameMetadataStructTraitsTest() = default;
 
@@ -62,7 +62,7 @@ TEST_F(VideoFrameMetadataStructTraitsTest, EmptyMetadata) {
 
   EXPECT_FALSE(metadata_out.capture_counter.has_value());
   EXPECT_FALSE(metadata_out.capture_update_rect.has_value());
-  EXPECT_FALSE(metadata_out.rotation.has_value());
+  EXPECT_FALSE(metadata_out.transformation.has_value());
   EXPECT_FALSE(metadata_out.allow_overlay);
   EXPECT_FALSE(metadata_out.copy_mode.has_value());
   EXPECT_FALSE(metadata_out.end_of_stream);
@@ -105,12 +105,11 @@ TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
   // gfx::Rects
   metadata_in.capture_update_rect = gfx::Rect(12, 34, 360, 480);
 
-  // media::VideoRotations
-  metadata_in.rotation = media::VideoRotation::VIDEO_ROTATION_90;
+  // VideoTransformation
+  metadata_in.transformation = VideoTransformation(VIDEO_ROTATION_90, true);
 
-  // media::VideoFrameMetadata::CopyMode
-  metadata_in.copy_mode =
-      media::VideoFrameMetadata::CopyMode::kCopyToNewTexture;
+  // VideoFrameMetadata::CopyMode
+  metadata_in.copy_mode = VideoFrameMetadata::CopyMode::kCopyToNewTexture;
 
   // bools
   metadata_in.allow_overlay = true;
@@ -155,7 +154,7 @@ TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
 
   EXPECT_EQ(metadata_in.capture_counter, metadata_out.capture_counter);
   EXPECT_EQ(metadata_in.capture_update_rect, metadata_out.capture_update_rect);
-  EXPECT_EQ(metadata_in.rotation, metadata_out.rotation);
+  EXPECT_EQ(metadata_in.transformation, metadata_out.transformation);
   EXPECT_EQ(metadata_in.allow_overlay, metadata_out.allow_overlay);
   EXPECT_EQ(metadata_in.copy_mode, metadata_out.copy_mode);
   EXPECT_EQ(metadata_in.end_of_stream, metadata_out.end_of_stream);

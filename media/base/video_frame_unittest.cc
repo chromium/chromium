@@ -59,8 +59,8 @@ media::VideoFrameMetadata GetFullVideoFrameMetadata() {
   // gfx::Rects
   metadata.capture_update_rect = gfx::Rect(12, 34, 360, 480);
 
-  // media::VideoRotations
-  metadata.rotation = media::VideoRotation::VIDEO_ROTATION_90;
+  // media::VideoTransformation
+  metadata.transformation = media::VIDEO_ROTATION_90;
 
   // media::VideoFrameMetadata::CopyMode
   metadata.copy_mode = media::VideoFrameMetadata::CopyMode::kCopyToNewTexture;
@@ -119,7 +119,7 @@ void VerifyVideoFrameMetadataEquality(const media::VideoFrameMetadata& a,
   EXPECT_EQ(a.interactive_content, b.interactive_content);
   EXPECT_EQ(a.reference_time, b.reference_time);
   EXPECT_EQ(a.read_lock_fences_enabled, b.read_lock_fences_enabled);
-  EXPECT_EQ(a.rotation, b.rotation);
+  EXPECT_EQ(a.transformation, b.transformation);
   EXPECT_EQ(a.texture_owner, b.texture_owner);
   EXPECT_EQ(a.wants_promotion_hint, b.wants_promotion_hint);
   EXPECT_EQ(a.protected_video, b.protected_video);

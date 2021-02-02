@@ -9,8 +9,10 @@
 #include "base/optional.h"
 #include "media/base/ipc/media_param_traits_macros.h"
 #include "media/base/video_frame_metadata.h"
+#include "media/base/video_transformation.h"
 #include "media/mojo/mojom/media_types.mojom-shared.h"
 #include "media/mojo/mojom/media_types_enum_mojom_traits.h"
+#include "media/mojo/mojom/video_transformation_mojom_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 
@@ -77,9 +79,10 @@ struct StructTraits<media::mojom::VideoFrameMetadataDataView,
       copy_mode,
       media::VideoFrameMetadata::CopyMode::kCopyToNewTexture)
 
-  GENERATE_OPT_SERIALIZATION(media::VideoRotation,
-                             rotation,
-                             media::VideoRotation::VIDEO_ROTATION_0)
+  static base::Optional<media::VideoTransformation> transformation(
+      const media::VideoFrameMetadata& input) {
+    return input.transformation;
+  }
 
   GENERATE_OPT_SERIALIZATION(double, device_scale_factor, 0.0)
   GENERATE_OPT_SERIALIZATION(double, page_scale_factor, 0.0)

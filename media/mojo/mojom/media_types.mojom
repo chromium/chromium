@@ -280,8 +280,7 @@ struct VideoFrameMetadata {
 
   bool read_lock_fences_enabled;
 
-  bool has_rotation;
-  VideoRotation rotation;
+  VideoTransformation? transformation;
 
   bool texture_owner;
 
