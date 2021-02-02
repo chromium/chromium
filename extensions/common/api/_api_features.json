@@ -204,7 +204,6 @@
       "matches": [
         "chrome://add-supervision/*",
         "chrome://assistant-optin/*",
-        "chrome://cellular-setup/*",
         "chrome://discards/*",
         "chrome://extensions/*",
         "chrome://home/*",
@@ -212,6 +211,7 @@
         "chrome://hats/*",
         "chrome://mobilesetup/*",
         "chrome://oobe/*",
+        "chrome://os-settings/*",
         "chrome://password-change/*",
         "chrome://lock-reauth/*"
       ]
@@ -626,13 +626,13 @@
     "matches": [
       "chrome://add-supervision/*",
       "chrome://assistant-optin/*",
-      "chrome://cellular-setup/*",
       "chrome://chrome-signin/*",
       "chrome://discards/*",
       "chrome://hats/*",
       "chrome://home/*",
       "chrome://mobilesetup/*",
       "chrome://oobe/*",
+      "chrome://os-settings/*",
       "chrome://password-change/*",
       "chrome://lock-reauth/*"
     ]
@@ -648,13 +648,13 @@
     "matches": [
       "chrome://add-supervision/*",
       "chrome://assistant-optin/*",
-      "chrome://cellular-setup/*",
       "chrome://chrome-signin/*",
       "chrome://discards/*",
       "chrome://hats/*",
       "chrome://home/*",
       "chrome://mobilesetup/*",
       "chrome://oobe/*",
+      "chrome://os-settings/*",
       "chrome://password-change/*",
       "chrome://lock-reauth/*"
     ]
@@ -668,13 +668,13 @@
     "matches": [
       "chrome://add-supervision/*",
       "chrome://assistant-optin/*",
-      "chrome://cellular-setup/*",
       "chrome://chrome-signin/*",
       "chrome://discards/*",
       "chrome://hats/*",
       "chrome://home/*",
       "chrome://mobilesetup/*",
-      "chrome://oobe/*"
+      "chrome://oobe/*",
+      "chrome://os-settings/*"
     ]
   }]
 }

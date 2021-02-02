@@ -297,7 +297,6 @@ static constexpr const char* const kChromeUrls[] = {
     // "chrome://arc-overview-tracing",
     "chrome://assistant-optin",
     "chrome://bluetooth-pairing",
-    "chrome://cellular-setup",
     "chrome://certificate-manager",
     "chrome://crostini-credits",
     "chrome://crostini-installer",

@@ -239,8 +239,6 @@ const char kChromeUIAppDisabledHost[] = "app-disabled";
 const char kChromeUIAppDisabledURL[] = "chrome://app-disabled";
 const char kChromeUIBluetoothPairingHost[] = "bluetooth-pairing";
 const char kChromeUIBluetoothPairingURL[] = "chrome://bluetooth-pairing/";
-const char kChromeUICellularSetupHost[] = "cellular-setup";
-const char kChromeUICellularSetupUrl[] = "chrome://cellular-setup";
 const char kChromeUICertificateManagerDialogURL[] =
     "chrome://certificate-manager/";
 const char kChromeUICertificateManagerHost[] = "certificate-manager";
@@ -318,7 +316,6 @@ bool IsSystemWebUIHost(base::StringPiece host) {
       kChromeUIAddSupervisionHost,
       kChromeUIAssistantOptInHost,
       kChromeUIBluetoothPairingHost,
-      kChromeUICellularSetupHost,
       kChromeUICertificateManagerHost,
       kChromeUICrostiniCreditsHost,
       kChromeUICrostiniInstallerHost,

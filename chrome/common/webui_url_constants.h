@@ -233,8 +233,6 @@ extern const char kChromeUIAppDisabledHost[];
 extern const char kChromeUIAppDisabledURL[];
 extern const char kChromeUIBluetoothPairingHost[];
 extern const char kChromeUIBluetoothPairingURL[];
-extern const char kChromeUICellularSetupHost[];
-extern const char kChromeUICellularSetupUrl[];
 extern const char kChromeUICertificateManagerDialogURL[];
 extern const char kChromeUICertificateManagerHost[];
 extern const char kChromeUIConfirmPasswordChangeHost[];

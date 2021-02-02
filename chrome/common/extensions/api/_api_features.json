@@ -221,15 +221,15 @@
     "channel": "stable",
     "contexts": ["webui"],
     "matches": [
-      "chrome://cellular-setup/*",
+      "chrome://assistant-optin/*",
+      "chrome://add-supervision/*",
       "chrome://chrome-signin/*",
       "chrome://discards/*",
       "chrome://hats/*",
       "chrome://mobilesetup/*",
       "chrome://oobe/*",
-      "chrome://password-change/*",
-      "chrome://assistant-optin/*",
-      "chrome://add-supervision/*"
+      "chrome://os-settings/*",
+      "chrome://password-change/*"
     ]
   }],
   "commandLinePrivate": {

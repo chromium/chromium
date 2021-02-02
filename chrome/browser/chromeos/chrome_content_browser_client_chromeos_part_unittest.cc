@@ -33,7 +33,7 @@ TEST(ChromeContentBrowserClientChromeOsPartTest, FontSizeForChromeUI) {
   TestCase test_cases[] = {
       {"https://google.com/", false}, {"about:blank", false},
       {"chrome://history", false},    {"chrome://settings", false},
-      {"chrome://os-settings", true}, {"chrome://cellular-setup", true},
+      {"chrome://os-settings", true},
   };
   for (const TestCase& test_case : test_cases) {
     const std::string& url = test_case.url;

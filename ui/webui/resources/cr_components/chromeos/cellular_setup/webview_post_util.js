@@ -4,8 +4,8 @@
 
 /**
  * @fileoverview Provides utility methods used by the cellular activation flow.
- * Current: chrome://mobilesetup (mobile_setup.html/mobile_setup_portal.html)
- * New UI: chrome://cellular-setup (cellular_setup_dialog.html)
+ *  Current: chrome://mobilesetup (mobile_setup.html/mobile_setup_portal.html)
+ *  New UI: cr_components/chromeos/cellular_setup/cellular_setup.html
  */
 cr.define('webviewPost.util', function() {
   /**

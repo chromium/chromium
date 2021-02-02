@@ -41,7 +41,6 @@ group("resources") {
       ":bluetooth_pairing_dialog_resources",
       "chromeos:multidevice_setup_resources",
       "chromeos/accessibility:build",
-      "chromeos/cellular_setup:resources",
       "chromeos/emoji_picker:resources",
       "chromeos/multidevice_internals:resources",
       "nearby_internals:resources",

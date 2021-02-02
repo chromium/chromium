@@ -2203,8 +2203,6 @@ static_library("ui") {
       "webui/chromeos/bluetooth_dialog_localized_strings_provider.h",
       "webui/chromeos/bluetooth_pairing_dialog.cc",
       "webui/chromeos/bluetooth_pairing_dialog.h",
-      "webui/chromeos/cellular_setup/cellular_setup_dialog.cc",
-      "webui/chromeos/cellular_setup/cellular_setup_dialog.h",
       "webui/chromeos/cellular_setup/cellular_setup_dialog_launcher.cc",
       "webui/chromeos/cellular_setup/cellular_setup_dialog_launcher.h",
       "webui/chromeos/cellular_setup/cellular_setup_localized_strings_provider.cc",
