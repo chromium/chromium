@@ -10,6 +10,12 @@
 <dom-module id="setup-loading-page">
   <template>
     <style include="iron-flex cr-hidden-style">
+      paper-spinner-lite {
+        height: 32px;
+        margin-bottom: 8px;
+        width: 32px;
+      }
+
       #error-icon-container {
         background-image: -webkit-image-set(
             url(error_1x.png) 1x,
@@ -27,8 +33,9 @@
     </style>
     <base-page title="[[getTitle_(showError)]]"
         message="[[getMessage_(showError)]]">
-      <div slot="page-body" class="layout horizontal center-center">
-        <!-- TODO(crbug.com/1093185): Conditionally show spinner when setup is added in OOBE -->
+      <div slot="page-body" class="layout vertical center-center">
+        <paper-spinner-lite active hidden$="[[showError]]">
+        </paper-spinner-lite>
         <div id="network-connection-message" hidden$="[[showError]]">
           [[loadingMessage]]
         </div>
