@@ -7200,18 +7200,142 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(url_a1, web_contents()->GetURL());
 }
 
+// This tests that even if a page initializes WebRTC, tha page can be cached as
+// long as it doesn't make a connection.
+// On the Android test environments, the test might fail due to IP restrictions.
+// See the discussion at http://crrev.com/c/2564926.
+#if !defined(OS_ANDROID)
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       RTCPeerConnectionNotCached) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url_a(embedded_test_server()->GetURL("/title1.html"));
-  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+                       TrivialRTCPeerConnectionCached) {
+  ASSERT_TRUE(CreateHttpsServer()->Start());
+
+  GURL url_a(https_server()->GetURL("/title1.html"));
+  GURL url_b(https_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_a = current_frame_host();
+
+  // Create an RTCPeerConnection without starting a connection.
+  EXPECT_TRUE(ExecJs(rfh_a, "const pc1 = new RTCPeerConnection()"));
+
+  // 2) Navigate to B.
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+
+  // 3) Go back.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
+                FROM_HERE);
+
+  // RTCPeerConnection object, that is created before being put into the cache,
+  // is still available.
+  EXPECT_EQ("success", EvalJs(rfh_a, R"(
+    new Promise(async resolve => {
+      const pc1 = new RTCPeerConnection();
+      const pc2 = new RTCPeerConnection();
+      pc1.onicecandidate = e => {
+        if (e.candidate)
+          pc2.addIceCandidate(e.candidate);
+      }
+      pc2.onicecandidate = e => {
+        if (e.candidate)
+          pc1.addIceCandidate(e.candidate);
+      }
+      pc1.addTransceiver("audio");
+      const connectionEstablished = new Promise((resolve, reject) => {
+        pc1.oniceconnectionstatechange = () => {
+          const state = pc1.iceConnectionState;
+          switch (state) {
+          case "connected":
+          case "completed":
+            resolve();
+            break;
+          case "failed":
+          case "disconnected":
+          case "closed":
+            reject(state);
+            break;
+          }
+        }
+      });
+      await pc1.setLocalDescription();
+      await pc2.setRemoteDescription(pc1.localDescription);
+      await pc2.setLocalDescription();
+      await pc1.setRemoteDescription(pc2.localDescription);
+      try {
+        await connectionEstablished;
+      } catch (e) {
+        resolve("fail " + e);
+        return;
+      }
+      resolve("success");
+    });
+  )"));
+}
+#endif  // !defined(OS_ANDROID)
+
+// This tests that a page using WebRTC and creating actual connections cannot be
+// cached.
+// On the Android test environments, the test might fail due to IP restrictions.
+// See the discussion at http://crrev.com/c/2564926.
+#if !defined(OS_ANDROID)
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       NonTrivialRTCPeerConnectionNotCached) {
+  ASSERT_TRUE(CreateHttpsServer()->Start());
+
+  GURL url_a(https_server()->GetURL("/title1.html"));
+  GURL url_b(https_server()->GetURL("b.com", "/title1.html"));
 
   // 1) Navigate to A.
   ASSERT_TRUE(NavigateToURL(shell(), url_a));
   RenderFrameHostImpl* rfh_a = current_frame_host();
   RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
 
-  EXPECT_TRUE(ExecJs(rfh_a, "new RTCPeerConnection()"));
+  // Create an RTCPeerConnection with starting a connection.
+  EXPECT_EQ("success", EvalJs(rfh_a, R"(
+    new Promise(async resolve => {
+      const pc1 = new RTCPeerConnection();
+      const pc2 = new RTCPeerConnection();
+      pc1.onicecandidate = e => {
+        if (e.candidate)
+          pc2.addIceCandidate(e.candidate);
+      }
+      pc2.onicecandidate = e => {
+        if (e.candidate)
+          pc1.addIceCandidate(e.candidate);
+      }
+      pc1.addTransceiver("audio");
+      const connectionEstablished = new Promise(resolve => {
+        pc1.oniceconnectionstatechange = () => {
+          const state = pc1.iceConnectionState;
+          switch (state) {
+          case "connected":
+          case "completed":
+            resolve();
+            break;
+          case "failed":
+          case "disconnected":
+          case "closed":
+            reject(state);
+            break;
+          }
+        }
+      });
+      await pc1.setLocalDescription();
+      await pc2.setRemoteDescription(pc1.localDescription);
+      await pc2.setLocalDescription();
+      await pc1.setRemoteDescription(pc2.localDescription);
+      await connectionEstablished;
+      try {
+        await connectionEstablished;
+      } catch (e) {
+        resolve("fail " + e);
+        return;
+      }
+      resolve("success");
+    });
+  )"));
 
   // 2) Navigate to B.
   ASSERT_TRUE(NavigateToURL(shell(), url_b));
@@ -7228,6 +7352,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ExpectBlocklistedFeature(
       blink::scheduler::WebSchedulerTrackedFeature::kWebRTC, FROM_HERE);
 }
+#endif  // !defined(OS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WebLocksNotCached) {
   ASSERT_TRUE(embedded_test_server()->Start());
