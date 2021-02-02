@@ -46,6 +46,8 @@ class NTPResourceCache : public content::NotificationObserver,
     NORMAL,
     INCOGNITO,
     GUEST,
+    // The OTR profile that is not used for Incognito or Guest windows.
+    NON_PRIMARY_OTR,
   };
 
   explicit NTPResourceCache(Profile* profile);
@@ -127,6 +129,7 @@ class NTPResourceCache : public content::NotificationObserver,
   scoped_refptr<base::RefCountedMemory> new_tab_guest_signed_out_html_;
   scoped_refptr<base::RefCountedMemory> new_tab_incognito_html_;
   scoped_refptr<base::RefCountedMemory> new_tab_incognito_css_;
+  scoped_refptr<base::RefCountedMemory> new_tab_non_primary_otr_html_;
   content::NotificationRegistrar registrar_;
   PrefChangeRegistrar profile_pref_change_registrar_;
   PrefChangeRegistrar local_state_pref_change_registrar_;
