@@ -503,6 +503,11 @@ content::WebContents* WebAppInstallManager::EnsureWebContentsCreated() {
 void WebAppInstallManager::OnWebContentsReadyRunTask(
     PendingTask pending_task,
     WebAppUrlLoader::Result result) {
+  if (!web_contents_) {
+    DCHECK(!started_);
+    return;
+  }
+
   DCHECK_EQ(WebAppUrlLoader::Result::kUrlLoaded, result);
   std::move(pending_task.start).Run();
 }
