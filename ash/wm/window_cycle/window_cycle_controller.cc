@@ -321,26 +321,25 @@ void WindowCycleController::InitFromUserPrefs() {
 }
 
 void WindowCycleController::OnAltTabModePrefChanged() {
-  if (!IsInteractiveAltTabModeAllowed())
+  // Only update UI for alt-tab mode if the user is using alt-tab with the
+  // interactive alt-tab mode supported.
+  if (!IsInteractiveAltTabModeAllowed() || !IsCycling())
     return;
 
   is_switching_mode_ = true;
 
   // Update the window cycle list.
   MaybeResetCycleList();
-  // Update the highlighted window in the window cycle list.
-  // When user first press alt + tab, `HandleCycleForwardMRU` triggers
-  // `HandleCycleWindow(WindowCycleController::FORWARD)` since it considers
-  // the initial tab as forward cycling. Therefore, switching the mode
-  // should imitate the same forward cycling behavior after the cycle is reset.
-  HandleCycleWindow(WindowCycleController::FORWARD);
+
+  // After the cycle is reset, imitate the same forward cycling behavior as
+  // starting alt-tab with `Step()`, which makes sure the correct window is
+  // selected and highlighted.
+  Step(WindowCycleController::FORWARD);
 
   // Update tab slider button UI.
-  if (window_cycle_list_) {
-    window_cycle_list_->OnModeChanged(
-        IsAltTabPerActiveDesk(),
-        WindowCycleTabSlider::ModeSwitchSource::USER_PREFS);
-  }
+  window_cycle_list_->OnModeChanged(
+      IsAltTabPerActiveDesk(),
+      WindowCycleTabSlider::ModeSwitchSource::USER_PREFS);
 
   is_switching_mode_ = false;
 }
