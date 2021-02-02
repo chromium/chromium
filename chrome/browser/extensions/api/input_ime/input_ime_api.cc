@@ -364,8 +364,15 @@ bool ImeObserver::ConvertInputContextAutoComplete(
 
 input_ime::AutoCapitalizeType ImeObserver::ConvertInputContextAutoCapitalize(
     ui::IMEEngineHandlerInterface::InputContext input_context) {
+  // NOTE: ui::TEXT_INPUT_FLAG_AUTOCAPITALIZE_NONE corresponds to Blink's "none"
+  // that's a synonym for "off", while input_ime::AUTO_CAPITALIZE_TYPE_NONE
+  // auto-generated via API specs means "unspecified" and translates to empty
+  // string. The latter should not be emitted as the API specifies a non-falsy
+  // enum. So technically there's a bug here; either this impl or the API needs
+  // fixing. However, as a public API, the behaviour is left intact for now.
   if (input_context.flags & ui::TEXT_INPUT_FLAG_AUTOCAPITALIZE_NONE)
     return input_ime::AUTO_CAPITALIZE_TYPE_NONE;
+
   if (input_context.flags & ui::TEXT_INPUT_FLAG_AUTOCAPITALIZE_CHARACTERS)
     return input_ime::AUTO_CAPITALIZE_TYPE_CHARACTERS;
   if (input_context.flags & ui::TEXT_INPUT_FLAG_AUTOCAPITALIZE_WORDS)
