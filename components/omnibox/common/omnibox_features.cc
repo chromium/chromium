@@ -168,7 +168,7 @@ const base::Feature kOmniboxMaxURLMatches{
 // would be shown. E.g., show up to 10 suggestions if doing so would display no
 // URLs; else show up to 8 suggestions if doing so would include 1 or more URLs.
 const base::Feature kDynamicMaxAutocomplete{"OmniboxDynamicMaxAutocomplete",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+                                            enabled_by_default_desktop_only};
 
 // Feature used to enable bubbling URL suggestions above search suggestions
 // after grouping if 2 conditions are met:

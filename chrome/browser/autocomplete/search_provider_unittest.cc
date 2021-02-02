@@ -1337,7 +1337,7 @@ TEST_F(SearchProviderTest, DefaultFetcherSuggestRelevance) {
           {omnibox::kUIExperimentMaxAutocompleteMatches,
            {{OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "6"}}},
       },
-      {/* nothing disabled */});
+      {omnibox::kDynamicMaxAutocomplete});
   struct {
     const std::string json;
     const ExpectedMatch matches[6];
@@ -1583,7 +1583,7 @@ TEST_F(SearchProviderTest, KeywordFetcherSuggestRelevance) {
           {omnibox::kUIExperimentMaxAutocompleteMatches,
            {{OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "6"}}},
       },
-      {/* nothing disabled */});
+      {omnibox::kDynamicMaxAutocomplete});
   struct KeywordFetcherMatch {
     std::string contents;
     bool from_keyword;
@@ -2329,7 +2329,7 @@ TEST_F(SearchProviderTest, LocalAndRemoteRelevances) {
           {omnibox::kUIExperimentMaxAutocompleteMatches,
            {{OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "6"}}},
       },
-      {/* nothing disabled */});
+      {omnibox::kDynamicMaxAutocomplete});
   // We hardcode the string "term1" below, so ensure that the search term that
   // got added to history already is that string.
   ASSERT_EQ(ASCIIToUTF16("term1"), term1_);

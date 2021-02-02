@@ -4583,8 +4583,6 @@
                     "params": {
                         "EntitySuggestionsReduceLatencyDecoderWakeup": "true",
                         "MaxZeroSuggestMatches": "10",
-                        "OmniboxDynamicMaxAutocompleteIncreasedLimit": "10",
-                        "OmniboxDynamicMaxAutocompleteUrlCutoff": "2",
                         "OmniboxMaxURLMatches": "7",
                         "RichAutocompletionAutocompleteNonPrefixAll": "true",
                         "RichAutocompletionAutocompleteTitles": "true",
@@ -4593,7 +4591,6 @@
                     "enable_features": [
                         "OmniboxBubbleUrlSuggestions",
                         "OmniboxDisplayTitleForCurrentUrl",
-                        "OmniboxDynamicMaxAutocomplete",
                         "OmniboxEntitySuggestionsReduceLatency",
                         "OmniboxHistoryQuickProviderAblateInMemoryURLIndexCacheFile",
                         "OmniboxMaxURLMatches",
@@ -4603,7 +4600,6 @@
                         "OmniboxReactiveZeroSuggestionsOnNTPRealbox",
                         "OmniboxRemoveSuggestionsFromClipboard",
                         "OmniboxRichAutocompletion",
-                        "OmniboxRichEntitySuggestions",
                         "OmniboxTrendingZeroPrefixSuggestionsOnNTP",
                         "OmniboxUIExperimentMaxAutocompleteMatches",
                         "QueryInOmnibox",
