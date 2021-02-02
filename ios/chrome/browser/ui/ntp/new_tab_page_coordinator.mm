@@ -441,11 +441,6 @@
   [self.contentSuggestionsCoordinator reload];
 }
 
-- (CGFloat)heightAboveFakeOmnibox {
-  return [self.contentSuggestionsCoordinator
-              .headerController heightAboveFakeOmnibox];
-}
-
 #pragma mark - Private
 
 // YES if we're using the refactored NTP and the Discover Feed is visible.
