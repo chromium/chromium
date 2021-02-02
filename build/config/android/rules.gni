@@ -1015,12 +1015,6 @@ if (enable_java_templates) {
     _build_config = _base_path + ".build_config"
     _build_config_target_name = "$target_name$build_config_target_suffix"
 
-    if (defined(invoker.create_srcjar)) {
-      assert(!invoker.create_srcjar,
-             "create_srcjar=true has been deprecated. " +
-                 "See https://crbug.com/1073476")
-    }
-
     _deps = []
     if (defined(invoker.deps)) {
       _deps += invoker.deps
@@ -4153,7 +4147,6 @@ if (enable_java_templates) {
   #   extract_native_libraries: Whether to extract .so files found in the .aar.
   #       If the file contains .so, either extract_native_libraries or
   #       ignore_native_libraries must be set.
-  #   create_srcjar: If false, does not create an R.java file.
   #   TODO(jbudorick@): remove this arguments after crbug.com/522043 is fixed.
   #   requires_android: Whether this target can only be used for compiling
   #       Android related targets.
@@ -4299,7 +4292,6 @@ if (enable_java_templates) {
       android_resources(_res_target_name) {
         forward_variables_from(invoker,
                                [
-                                 "create_srcjar",
                                  "custom_package",
                                  "resource_overlay",
                                  "testonly",
@@ -4321,14 +4313,6 @@ if (enable_java_templates) {
         if (!_strip_resources && _scanned_files.has_r_text_file) {
           r_text_file = "${_output_path}/R.txt"
         }
-
-        # This is so we do not fail when different prebuilts have resources in
-        # the same package. android_library targets that require resources from
-        # prebuilts must add a resources_package gn flag to their target that
-        # would generate a fake R.java for all their dependencies. All
-        # android_library and android_resources targets will be migrated to
-        # this new way soon (tm) https://crbug.com/1073476
-        create_srcjar = false
       }
     } else if (defined(invoker.strip_drawables)) {
       not_needed(invoker, [ "strip_drawables" ])

@@ -391,11 +391,6 @@ class BuildConfigGenerator extends DefaultTask {
                 // the library is present: b/70887421
                 sb.append('  deps += [":androidx_fragment_fragment_java"]\n')
                 break
-            case 'androidx_vectordrawable_vectordrawable':
-            case 'com_android_support_support_vector_drawable':
-                // Target has AIDL, but we don't support it yet: http://crbug.com/644439
-                sb.append('  create_srcjar = false\n')
-                break
             case 'android_arch_lifecycle_runtime':
             case 'android_arch_lifecycle_viewmodel':
             case 'androidx_lifecycle_lifecycle_runtime':

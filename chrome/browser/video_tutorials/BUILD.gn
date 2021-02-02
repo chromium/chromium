@@ -88,7 +88,6 @@ if (is_android) {
   }
 
   android_resources("java_resources") {
-    create_srcjar = false
     sources = [
       "android/java/res/drawable/corner_bottom_end.xml",
       "android/java/res/drawable/corner_bottom_start.xml",

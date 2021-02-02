@@ -849,7 +849,6 @@ android_aar_prebuilt("androidx_vectordrawable_vectordrawable_java") {
     ":androidx_core_core_java",
   ]
   resource_overlay = true
-  create_srcjar = false
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2310,7 +2309,6 @@ android_aar_prebuilt("com_android_support_support_vector_drawable_java") {
     ":com_android_support_support_compat_java",
   ]
   resource_overlay = true
-  create_srcjar = false
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.

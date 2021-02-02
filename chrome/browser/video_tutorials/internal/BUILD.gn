@@ -112,7 +112,6 @@ if (is_android) {
   }
 
   android_resources("java_resources") {
-    create_srcjar = false
     sources = [
       "android/java/res/drawable/circular_media_button_background.xml",
       "android/java/res/layout/language_card.xml",

@@ -30,5 +30,4 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [ "java/res/values/dimens.xml" ]
-  create_srcjar = false
 }

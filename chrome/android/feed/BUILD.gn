@@ -47,5 +47,4 @@ android_resources("chrome_feed_java_resources") {
     "//chrome/android:chrome_app_java_resources",
     "//ui/android:ui_java_resources",
   ]
-  create_srcjar = false
 }

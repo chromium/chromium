@@ -70,6 +70,5 @@ android_library("signin_java_test_support") {
 android_resources("signin_test_resources") {
   testonly = true
 
-  create_srcjar = false
   sources = [ "javatests/res/drawable/test_profile_picture.xml" ]
 }
