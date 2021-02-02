@@ -178,21 +178,21 @@ enum class FloatingMenuPosition {
   kSystemDefault,
 };
 
-// Mouse panning mode for magnifier. This indicates the way the magnified
-// viewport is panned as the mouse is moved across the screen. These values are
+// Mouse following mode for magnifier. This indicates the way the magnified
+// viewport follows the mouse as it moves across the screen. These values are
 // written to prefs so they should not be changed. New values should be added at
 // the end.
-enum class MagnifierMousePanningMode {
-  // Default value, indicates no mouse panning mode chosen.
+enum class MagnifierMouseFollowingMode {
+  // Default value, indicates no mouse following mode chosen.
   kNone,
 
-  // Continuous panning mode.
+  // Continuous following mode.
   kContinuous,
 
-  // Centered panning mode.
+  // Centered following mode.
   kCentered,
 
-  // Edge panning mode.
+  // Edge following mode.
   kEdge,
 };
 

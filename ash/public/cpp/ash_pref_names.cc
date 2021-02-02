@@ -32,10 +32,10 @@ const char kAccessibilityScreenMagnifierEnabled[] =
 // is enabled.
 const char kAccessibilityScreenMagnifierFocusFollowingEnabled[] =
     "settings.a11y.screen_magnifier_focus_following";
-// An integer pref which indicates the mouse panning mode for screen magnifier.
-// This maps to AccessibilityController::MagnifierMousePanningMode.
-const char kAccessibilityScreenMagnifierMousePanningMode[] =
-    "settings.a11y.screen_magnifier_mouse_panning_mode";
+// An integer pref which indicates the mouse following mode for screen magnifier.
+// This maps to AccessibilityController::MagnifierMouseFollowingMode.
+const char kAccessibilityScreenMagnifierMouseFollowingMode[] =
+    "settings.a11y.screen_magnifier_mouse_following_mode";
 // A boolean pref which determines whether screen magnifier should center
 // the text input focus.
 const char kAccessibilityScreenMagnifierCenterFocus[] =
