@@ -7,10 +7,12 @@
 #include <set>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/mac/bundle_locations.h"
 #include "base/mac/scoped_mach_port.h"
@@ -125,6 +127,38 @@ void RecordXPCEvent(XPCConnectionEvent event) {
   [[self serviceProxy] getDisplayedAlertsForProfileId:profileId
                                             incognito:incognito
                                                 reply:reply];
+}
+
+- (void)getAllDisplayedAlertsWithCallback:
+    (GetAllDisplayedNotificationsCallback)callback {
+  // Create a copyable version of the OnceCallback because ObjectiveC blocks
+  // copy all referenced variables via copy constructor.
+  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  auto reply = ^(NSArray* alerts) {
+    std::vector<MacNotificationIdentifier> alertIds;
+    alertIds.reserve([alerts count]);
+
+    for (NSDictionary* toast in alerts) {
+      std::string notificationId = base::SysNSStringToUTF8(
+          [toast objectForKey:notification_constants::kNotificationId]);
+      std::string profileId = base::SysNSStringToUTF8(
+          [toast objectForKey:notification_constants::kNotificationProfileId]);
+      bool incognito =
+          [[toast objectForKey:notification_constants::kNotificationIncognito]
+              boolValue];
+
+      alertIds.push_back(
+          {std::move(notificationId), std::move(profileId), incognito});
+    }
+
+    // Create set from std::vector to avoid N^2 insertion runtime.
+    base::flat_set<MacNotificationIdentifier> alertSet(std::move(alertIds));
+
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(copyable_callback, std::move(alertSet)));
+  };
+
+  [[self serviceProxy] getAllDisplayedAlertsWithReply:reply];
 }
 
 // NotificationReply:

@@ -33,10 +33,15 @@
 - (void)closeAllNotifications;
 
 // Will invoke |reply| with an array of NSString notification IDs for all alerts
-// for |profileId| and |incognito| value currently displayed.
+// for |profileId| and |incognito| value currently displayed. Note that the IDs
+// are scoped to the {profileId, incognito} pair and are not globally unique.
 - (void)getDisplayedAlertsForProfileId:(NSString*)profileId
                              incognito:(BOOL)incognito
                                  reply:(void (^)(NSArray*))reply;
+
+// Will invoke |reply| with an array of NSDictionary identifying all alerts.
+// Each entry contains the notificationId, profileId and incognito properties.
+- (void)getAllDisplayedAlertsWithReply:(void (^)(NSArray*))reply;
 
 @end
 

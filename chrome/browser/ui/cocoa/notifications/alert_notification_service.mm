@@ -104,11 +104,19 @@ crashpad::SimpleStringDictionary* GetCrashpadAnnotations() {
 - (void)getDisplayedAlertsForProfileId:(NSString*)profileId
                              incognito:(BOOL)incognito
                                  reply:(void (^)(NSArray*))reply {
+  DCHECK(_didSetExceptionPort);
   DCHECK(_notificationDelivery);
 
   [_notificationDelivery getDisplayedAlertsForProfileId:profileId
                                               incognito:incognito
                                                   reply:reply];
+}
+
+- (void)getAllDisplayedAlertsWithReply:(void (^)(NSArray*))reply {
+  DCHECK(_didSetExceptionPort);
+  DCHECK(_notificationDelivery);
+
+  [_notificationDelivery getAllDisplayedAlertsWithReply:reply];
 }
 
 @end

@@ -7,8 +7,10 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
+#include "base/containers/flat_set.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/browser/ui/cocoa/notifications/notification_constants_mac.h"
@@ -75,6 +77,28 @@ getDisplayedAlertsForProfileId:(NSString*)profileId
 
   std::move(callback).Run(std::move(alerts),
                           /*supports_synchronization=*/true);
+}
+
+- (void)getAllDisplayedAlertsWithCallback:
+    (GetAllDisplayedNotificationsCallback)callback {
+  std::vector<MacNotificationIdentifier> alertIds;
+  alertIds.reserve([_alerts count]);
+
+  for (NSDictionary* toast in _alerts.get()) {
+    std::string notificationId = base::SysNSStringToUTF8(
+        [toast objectForKey:notification_constants::kNotificationId]);
+    std::string profileId = base::SysNSStringToUTF8(
+        [toast objectForKey:notification_constants::kNotificationProfileId]);
+    bool incognito = [[toast
+        objectForKey:notification_constants::kNotificationIncognito] boolValue];
+
+    alertIds.push_back(
+        {std::move(notificationId), std::move(profileId), incognito});
+  }
+
+  // Create set from std::vector to avoid N^2 insertion runtime.
+  base::flat_set<MacNotificationIdentifier> alertSet(std::move(alertIds));
+  std::move(callback).Run(std::move(alertSet));
 }
 
 - (NSArray*)alerts {

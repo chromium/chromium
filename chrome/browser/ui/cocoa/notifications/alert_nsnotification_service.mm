@@ -102,6 +102,29 @@
   reply(notificationIds);
 }
 
+- (void)getAllDisplayedAlertsWithReply:(void (^)(NSArray*))reply {
+  NSUserNotificationCenter* notificationCenter =
+      [NSUserNotificationCenter defaultUserNotificationCenter];
+  NSArray* deliveredNotifications = [notificationCenter deliveredNotifications];
+  NSMutableArray* notificationIds =
+      [NSMutableArray arrayWithCapacity:[deliveredNotifications count]];
+  for (NSUserNotification* toast in deliveredNotifications) {
+    NSString* toastId =
+        [toast.userInfo objectForKey:notification_constants::kNotificationId];
+    NSString* toastProfileId = [toast.userInfo
+        objectForKey:notification_constants::kNotificationProfileId];
+    NSNumber* toastIncognito = [toast.userInfo
+        objectForKey:notification_constants::kNotificationIncognito];
+
+    [notificationIds addObject:@{
+      notification_constants::kNotificationId : toastId,
+      notification_constants::kNotificationProfileId : toastProfileId,
+      notification_constants::kNotificationIncognito : toastIncognito
+    }];
+  }
+  reply(notificationIds);
+}
+
 - (void)userNotificationCenter:(NSUserNotificationCenter*)center
        didActivateNotification:(NSUserNotification*)notification {
   NSDictionary* response =
