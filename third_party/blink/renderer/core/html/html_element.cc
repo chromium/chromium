@@ -1259,7 +1259,7 @@ void HTMLElement::AdjustDirectionalityIfNeededAfterChildrenChanged() {
   if (!SelfOrAncestorHasDirAutoAttribute())
     return;
 
-  UpdateDescendantsHasDirAutoAttribute(true /* has_dir_auto */);
+  UpdateDescendantHasDirAutoAttribute(true /* has_dir_auto */);
 
   for (Element* element_to_adjust = this; element_to_adjust;
        element_to_adjust =
@@ -1642,7 +1642,7 @@ Element* HTMLElement::unclosedOffsetParent() {
   return layout_object->OffsetParent(this);
 }
 
-void HTMLElement::UpdateDescendantsHasDirAutoAttribute(bool has_dir_auto) {
+void HTMLElement::UpdateDescendantHasDirAutoAttribute(bool has_dir_auto) {
   Node* node = FlatTreeTraversal::FirstChild(*this);
   while (node) {
     if (auto* element = DynamicTo<Element>(node)) {
@@ -1659,6 +1659,7 @@ void HTMLElement::UpdateDescendantsHasDirAutoAttribute(bool has_dir_auto) {
         // assignment in FlatTreeTraversal when updating slot.
         // Slot and its children will be updated after recalculating children.
         if (root->NeedsSlotAssignmentRecalc()) {
+          root->SetNeedsDirAutoAttributeUpdate(true);
           node = FlatTreeTraversal::NextSkippingChildren(*node, this);
           continue;
         }
@@ -1705,10 +1706,10 @@ void HTMLElement::OnDirAttrChanged(const AttributeModificationParams& params) {
 
   if (is_old_auto && !is_new_auto) {
     ClearSelfOrAncestorHasDirAutoAttribute();
-    UpdateDescendantsHasDirAutoAttribute(false /* has_dir_auto */);
+    UpdateDescendantHasDirAutoAttribute(false /* has_dir_auto */);
   } else if (!is_old_auto && is_new_auto) {
     SetSelfOrAncestorHasDirAutoAttribute();
-    UpdateDescendantsHasDirAutoAttribute(true /* has_dir_auto */);
+    UpdateDescendantHasDirAutoAttribute(true /* has_dir_auto */);
   }
 
   if (is_new_auto)

@@ -155,6 +155,13 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
     return available_to_element_internals_;
   }
 
+  void SetNeedsDirAutoAttributeUpdate(bool flag) {
+    needs_dir_auto_attribute_update_ = flag;
+  }
+  bool NeedsDirAutoAttributeUpdate() const {
+    return needs_dir_auto_attribute_update_;
+  }
+
   bool ContainsShadowRoots() const { return child_shadow_root_count_; }
 
   StyleSheetList& StyleSheets();
@@ -184,7 +191,8 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
   unsigned slot_assignment_mode_ : 1;
   unsigned is_declarative_shadow_root_ : 1;
   unsigned available_to_element_internals_ : 1;
-  unsigned unused_ : 9;
+  unsigned needs_dir_auto_attribute_update_ : 1;
+  unsigned unused_ : 8;
 };
 
 inline Element* ShadowRoot::ActiveElement() const {

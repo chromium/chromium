@@ -344,9 +344,12 @@ void SlotAssignment::RecalcAssignment() {
   // We should call below functions outside FlatTreeTraversalForbiddenScope
   // because we can go a tree walk to either their ancestors or descendants
   // if needed.
-  if (auto* element = DynamicTo<HTMLElement>(owner_->host())) {
-    element->UpdateDescendantsHasDirAutoAttribute(
-        element->SelfOrAncestorHasDirAutoAttribute());
+  if (owner_->NeedsDirAutoAttributeUpdate()) {
+    owner_->SetNeedsDirAutoAttributeUpdate(false);
+    if (auto* element = DynamicTo<HTMLElement>(owner_->host())) {
+      element->UpdateDescendantHasDirAutoAttribute(
+          element->SelfOrAncestorHasDirAutoAttribute());
+    }
   }
   // Resolve the directionality of elements deferred their adjustment.
   HTMLElement::AdjustCandidateDirectionalityForSlot(
