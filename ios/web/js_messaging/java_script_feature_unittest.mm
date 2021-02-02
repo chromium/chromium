@@ -4,6 +4,9 @@
 
 #import "ios/web/public/js_messaging/java_script_feature.h"
 
+#import <WebKit/WebKit.h>
+
+#import "ios/web/public/test/js_test_util.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
@@ -39,6 +42,88 @@ TEST_F(JavaScriptFeatureTest, CreateFeatureScript) {
   EXPECT_EQ(target_frames_main, feature_script2.GetTargetFrames());
   EXPECT_TRUE(
       [feature_script2.GetScriptString() containsString:@"__gCrWeb.common"]);
+}
+
+// Tests the creation of FeatureScripts with different reinjection behaviors.
+TEST_F(JavaScriptFeatureTest, FeatureScriptReinjectionBehavior) {
+  auto once_feature_script =
+      web::JavaScriptFeature::FeatureScript::CreateWithFilename(
+          "base_js",
+          web::JavaScriptFeature::FeatureScript::InjectionTime::kDocumentStart,
+          web::JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames,
+          web::JavaScriptFeature::FeatureScript::ReinjectionBehavior::
+              kInjectOncePerWindow);
+
+  auto reinject_feature_script =
+      web::JavaScriptFeature::FeatureScript::CreateWithFilename(
+          "base_js",
+          web::JavaScriptFeature::FeatureScript::InjectionTime::kDocumentStart,
+          web::JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames,
+          web::JavaScriptFeature::FeatureScript::ReinjectionBehavior::
+              kReinjectOnDocumentRecreation);
+
+  EXPECT_NSNE(once_feature_script.GetScriptString(),
+              reinject_feature_script.GetScriptString());
+}
+
+// Tests that FeatureScripts are only injected once when created with
+// |ReinjectionBehavior::kInjectOncePerWindow|.
+TEST_F(JavaScriptFeatureTest, ReinjectionBehaviorOnce) {
+  auto feature_script =
+      web::JavaScriptFeature::FeatureScript::CreateWithFilename(
+          "base_js",
+          web::JavaScriptFeature::FeatureScript::InjectionTime::kDocumentStart,
+          web::JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames,
+          web::JavaScriptFeature::FeatureScript::ReinjectionBehavior::
+              kInjectOncePerWindow);
+
+  WKWebView* web_view = [[WKWebView alloc] init];
+  web::test::ExecuteJavaScript(web_view, feature_script.GetScriptString());
+
+  // Ensure __gCrWeb was injected.
+  ASSERT_TRUE(web::test::ExecuteJavaScript(
+      web_view, @"try { !!window.__gCrWeb; } catch (err) {false;}"));
+
+  // Store a value within |window.__gCrWeb|.
+  web::test::ExecuteJavaScript(web_view, @"window.__gCrWeb.someData = 1;");
+  ASSERT_NSEQ(@(1), web::test::ExecuteJavaScript(web_view,
+                                                 @"window.__gCrWeb.someData"));
+
+  // Execute feature script again, which should not overwrite window state.
+  web::test::ExecuteJavaScript(web_view, feature_script.GetScriptString());
+  // The |someData| value should still exist.
+  EXPECT_NSEQ(@(1), web::test::ExecuteJavaScript(web_view,
+                                                 @"window.__gCrWeb.someData"));
+}
+
+// Tests that FeatureScripts are re-injected when created with
+// |ReinjectionBehavior::kReinjectOnDocumentRecreation|.
+TEST_F(JavaScriptFeatureTest, ReinjectionBehaviorReinject) {
+  auto feature_script =
+      web::JavaScriptFeature::FeatureScript::CreateWithFilename(
+          "base_js",
+          web::JavaScriptFeature::FeatureScript::InjectionTime::kDocumentStart,
+          web::JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames,
+          web::JavaScriptFeature::FeatureScript::ReinjectionBehavior::
+              kReinjectOnDocumentRecreation);
+
+  WKWebView* web_view = [[WKWebView alloc] init];
+  web::test::ExecuteJavaScript(web_view, feature_script.GetScriptString());
+
+  // Ensure __gCrWeb was injected.
+  ASSERT_TRUE(web::test::ExecuteJavaScript(
+      web_view, @"try { !!window.__gCrWeb; } catch (err) {false;}"));
+
+  // Store a value within |window.__gCrWeb|.
+  web::test::ExecuteJavaScript(web_view, @"window.__gCrWeb.someData = 1;");
+  ASSERT_NSEQ(@(1), web::test::ExecuteJavaScript(web_view,
+                                                 @"window.__gCrWeb.someData"));
+
+  // Execute feature script again, which should overwrite |window.__gCrWeb|.
+  web::test::ExecuteJavaScript(web_view, feature_script.GetScriptString());
+  // The |someData| value should no longer exist.
+  EXPECT_FALSE(web::test::ExecuteJavaScript(
+      web_view, @"try { window.__gCrWeb.someData; } catch (err) {false;}"));
 }
 
 // Tests creating a JavaScriptFeature.

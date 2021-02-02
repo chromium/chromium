@@ -44,22 +44,34 @@ JavaScriptFeature::FeatureScript
 JavaScriptFeature::FeatureScript::CreateWithFilename(
     const std::string& filename,
     InjectionTime injection_time,
-    TargetFrames target_frames) {
+    TargetFrames target_frames,
+    ReinjectionBehavior reinjection_behavior) {
   return JavaScriptFeature::FeatureScript(filename, injection_time,
-                                          target_frames);
+                                          target_frames, reinjection_behavior);
 }
 
-JavaScriptFeature::FeatureScript::FeatureScript(const std::string& filename,
-                                                InjectionTime injection_time,
-                                                TargetFrames target_frames)
+JavaScriptFeature::FeatureScript::FeatureScript(
+    const std::string& filename,
+    InjectionTime injection_time,
+    TargetFrames target_frames,
+    ReinjectionBehavior reinjection_behavior)
     : script_filename_(filename),
       injection_time_(injection_time),
-      target_frames_(target_frames) {}
+      target_frames_(target_frames),
+      reinjection_behavior_(reinjection_behavior) {}
 
 JavaScriptFeature::FeatureScript::~FeatureScript() = default;
 
 NSString* JavaScriptFeature::FeatureScript::GetScriptString() const {
   NSString* script_filename = base::SysUTF8ToNSString(script_filename_);
+  if (reinjection_behavior_ ==
+      ReinjectionBehavior::kReinjectOnDocumentRecreation) {
+    return GetPageScript(script_filename);
+  }
+  // WKUserScript instances will automatically be re-injected by WebKit when the
+  // document is re-created, even though the JavaScript context will not be
+  // re-created. So the script needs to be wrapped in |MakeScriptInjectableOnce|
+  // so that is is not re-injected.
   return MakeScriptInjectableOnce(InjectionTokenForScript(script_filename),
                                   GetPageScript(script_filename));
 }
