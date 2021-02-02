@@ -97,7 +97,45 @@ void DroppedFrameCounter::AddDroppedFrame() {
   ++total_dropped_;
 }
 
-void DroppedFrameCounter::ResetFrameSorter() {
+void DroppedFrameCounter::ResetPendingFrames(base::TimeTicks timestamp) {
+  // Before resetting the pending frames, update the measurements for the
+  // sliding windows.
+  if (!latest_sliding_window_start_.is_null()) {
+    const auto report_until = timestamp - kSlidingWindowInterval;
+    // Report the sliding window metrics for frames that have already been
+    // completed (and some of which may have been dropped).
+    while (!sliding_window_.empty()) {
+      const auto& args = sliding_window_.front().first;
+      latest_sliding_window_start_ = args.frame_time;
+      latest_sliding_window_interval_ = args.interval;
+      bool was_dropped = sliding_window_.front().second;
+      if (was_dropped)
+        --dropped_frame_count_in_window_;
+      sliding_window_.pop();
+      if (latest_sliding_window_start_ > report_until)
+        break;
+      double percent_dropped_frame = std::min(
+          (dropped_frame_count_in_window_ * 100.0) / total_frames_in_window_,
+          100.0);
+      sliding_window_histogram_.AddPercentDroppedFrame(percent_dropped_frame,
+                                                       /*count=*/1);
+    }
+
+    // Report no dropped frames for the sliding windows spanning the rest of the
+    // time.
+    if (latest_sliding_window_start_ < report_until) {
+      const auto difference = report_until - latest_sliding_window_start_;
+      const size_t count =
+          std::ceil(difference / latest_sliding_window_interval_);
+      if (count > 0)
+        sliding_window_histogram_.AddPercentDroppedFrame(0., count);
+    }
+  }
+
+  dropped_frame_count_in_window_ = 0;
+  sliding_window_ = {};
+  latest_sliding_window_start_ = {};
+  latest_sliding_window_interval_ = {};
   frame_sorter_.Reset();
 }
 
@@ -210,6 +248,7 @@ void DroppedFrameCounter::Reset() {
   dropped_frame_count_in_window_ = 0;
   fcp_received_ = false;
   sliding_window_ = {};
+  latest_sliding_window_start_ = {};
   sliding_window_histogram_.Clear();
   ring_buffer_.Clear();
   frame_sorter_.Reset();
@@ -274,6 +313,9 @@ void DroppedFrameCounter::NotifyFrameResult(const viz::BeginFrameArgs& args,
                                                      count);
     sliding_window_max_percent_dropped_ =
         std::max(sliding_window_max_percent_dropped_, percent_dropped_frame);
+
+    latest_sliding_window_start_ = last_timestamp;
+    latest_sliding_window_interval_ = remaining_oldest_args.interval;
   }
 
   if (is_dropped)

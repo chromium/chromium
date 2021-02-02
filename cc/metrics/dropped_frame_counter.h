@@ -75,9 +75,12 @@ class CC_EXPORT DroppedFrameCounter {
   // Reset is used on navigation, which resets frame statistics as well as
   // frame sorter.
   void Reset();
-  // ResetFrameSorter is used when we need to keep track of frame statistics
-  // but not to track the frames prior to reset in frame sorter.
-  void ResetFrameSorter();
+
+  // ResetPendingFrames is used when we need to keep track of frame statistics,
+  // but should no longer wait for the pending frames (e.g. connection to
+  // gpu-process was reset, or the page became invisible, etc.). The pending
+  // frames are not considered to be dropped.
+  void ResetPendingFrames(base::TimeTicks timestamp);
 
   void set_total_counter(TotalFrameCounter* total_counter) {
     total_counter_ = total_counter;
@@ -106,6 +109,9 @@ class CC_EXPORT DroppedFrameCounter {
   double total_frames_in_window_ = 60.0;
   SlidingWindowHistogram sliding_window_histogram_;
 
+  base::TimeTicks latest_sliding_window_start_;
+  base::TimeDelta latest_sliding_window_interval_;
+
   RingBufferType ring_buffer_;
   size_t total_frames_ = 0;
   size_t total_partial_ = 0;
@@ -126,7 +132,6 @@ class CC_EXPORT DroppedFrameCounter {
     viz::BeginFrameId frame_id;
   };
   base::Optional<ScrollStartInfo> scroll_start_;
-
   std::map<viz::BeginFrameId, ScrollStartInfo> scroll_start_per_frame_;
 };
 

@@ -289,6 +289,8 @@ class DroppedFrameCounterTest : public testing::Test {
 
   void SetInterval(base::TimeDelta interval) { interval_ = interval; }
 
+  base::TimeTicks GetNextFrameTime() const { return frame_time_ + interval_; }
+
  public:
   DroppedFrameCounter dropped_frame_counter_;
 
@@ -423,6 +425,73 @@ TEST_F(DroppedFrameCounterTest, Percentile95WithIdleFrames) {
   SimulateFrameSequence({false}, 1);
 
   EXPECT_EQ(histogram->total_count(), 100u * kFps);
+  EXPECT_EQ(histogram->GetPercentDroppedFramePercentile(0.96), 0u);
+  EXPECT_GT(histogram->GetPercentDroppedFramePercentile(0.97), 0u);
+}
+
+TEST_F(DroppedFrameCounterTest, Percentile95WithIdleFramesWhileHidden) {
+  // The test scenario is the same as |Percentile95WithIdleFrames| test:
+  //  . 4s of 20% dropped frames.
+  //  . 96s of idle time.
+  // However, the 96s of idle time happens *after* the page becomes invisible
+  // (e.g. after a tab-switch). In this case, the idle time *should not*
+  // contribute to the sliding window.
+
+  // Set an interval that rounds up nicely with 1 second.
+  constexpr auto kInterval = base::TimeDelta::FromMilliseconds(10);
+  constexpr size_t kFps = base::TimeDelta::FromSeconds(1) / kInterval;
+  static_assert(
+      kFps % 5 == 0,
+      "kFps must be a multiple of 5 because this test depends on it.");
+  SetInterval(kInterval);
+
+  const auto* histogram = dropped_frame_counter_.GetSlidingWindowHistogram();
+
+  // First 4 seconds with 20% dropped frames.
+  SimulateFrameSequence({false, false, false, false, true}, (kFps / 5) * 4);
+  EXPECT_EQ(histogram->GetPercentDroppedFramePercentile(0.95), 20u);
+
+  // Hide the page (thus resetting the pending frames), then idle for 96s before
+  // producing a single frame.
+  dropped_frame_counter_.ResetPendingFrames(GetNextFrameTime());
+  AdvancetimeByIntervals(kFps * 97);
+
+  // A single frame to flush the pipeline.
+  SimulateFrameSequence({false}, 1);
+
+  EXPECT_EQ(histogram->GetPercentDroppedFramePercentile(0.95), 20u);
+}
+
+TEST_F(DroppedFrameCounterTest, Percentile95WithIdleFramesThenHide) {
+  // The test scenario is the same as |Percentile95WithIdleFramesWhileHidden|:
+  //  . 4s of 20% dropped frames.
+  //  . 96s of idle time.
+  // However, the 96s of idle time happens *before* the page becomes invisible
+  // (e.g. after a tab-switch). In this case, the idle time *should*
+  // contribute to the sliding window.
+
+  // Set an interval that rounds up nicely with 1 second.
+  constexpr auto kInterval = base::TimeDelta::FromMilliseconds(10);
+  constexpr size_t kFps = base::TimeDelta::FromSeconds(1) / kInterval;
+  static_assert(
+      kFps % 5 == 0,
+      "kFps must be a multiple of 5 because this test depends on it.");
+  SetInterval(kInterval);
+
+  const auto* histogram = dropped_frame_counter_.GetSlidingWindowHistogram();
+
+  // First 4 seconds with 20% dropped frames.
+  SimulateFrameSequence({false, false, false, false, true}, (kFps / 5) * 4);
+  EXPECT_EQ(histogram->GetPercentDroppedFramePercentile(0.95), 20u);
+
+  // Idle for 96s before hiding the page.
+  AdvancetimeByIntervals(kFps * 97);
+  dropped_frame_counter_.ResetPendingFrames(GetNextFrameTime());
+  AdvancetimeByIntervals(kFps * 97);
+
+  // A single frame to flush the pipeline.
+  SimulateFrameSequence({false}, 1);
+
   EXPECT_EQ(histogram->GetPercentDroppedFramePercentile(0.96), 0u);
   EXPECT_GT(histogram->GetPercentDroppedFramePercentile(0.97), 0u);
 }
