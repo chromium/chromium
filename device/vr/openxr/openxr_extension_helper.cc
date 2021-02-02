@@ -35,13 +35,33 @@ OpenXrExtensionHelper::OpenXrExtensionHelper(
     XrInstance instance,
     const OpenXrExtensionEnumeration* const extension_enumeration)
     : extension_enumeration_(extension_enumeration) {
-  // Failure results in a nullptr
+  // Failure to query a method results in a nullptr
+
+  // D3D11
   (void)xrGetInstanceProcAddr(
       instance, "xrGetD3D11GraphicsRequirementsKHR",
       reinterpret_cast<PFN_xrVoidFunction*>(
           const_cast<PFN_xrGetD3D11GraphicsRequirementsKHR*>(
               &extension_methods_.xrGetD3D11GraphicsRequirementsKHR)));
 
+  // Hand tracking methods
+  (void)xrGetInstanceProcAddr(
+      instance, "xrCreateHandTrackerEXT",
+      reinterpret_cast<PFN_xrVoidFunction*>(
+          const_cast<PFN_xrCreateHandTrackerEXT*>(
+              &extension_methods_.xrCreateHandTrackerEXT)));
+  (void)xrGetInstanceProcAddr(
+      instance, "xrDestroyHandTrackerEXT",
+      reinterpret_cast<PFN_xrVoidFunction*>(
+          const_cast<PFN_xrDestroyHandTrackerEXT*>(
+              &extension_methods_.xrDestroyHandTrackerEXT)));
+  (void)xrGetInstanceProcAddr(
+      instance, "xrLocateHandJointsEXT",
+      reinterpret_cast<PFN_xrVoidFunction*>(
+          const_cast<PFN_xrLocateHandJointsEXT*>(
+              &extension_methods_.xrLocateHandJointsEXT)));
+
+  // Anchors methods
   (void)xrGetInstanceProcAddr(
       instance, "xrCreateSpatialAnchorMSFT",
       reinterpret_cast<PFN_xrVoidFunction*>(

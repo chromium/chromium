@@ -12,6 +12,7 @@ namespace blink {
 class XRAnchor;
 class XRImageTrackingResult;
 class XRInputSource;
+class XRJointSpace;
 class XRLightProbe;
 class XRPlane;
 class XRReferenceSpace;
@@ -28,6 +29,8 @@ device::mojom::blink::XRNativeOriginInformation Create(
     const XRLightProbe* light_probe);
 device::mojom::blink::XRNativeOriginInformation Create(
     const XRReferenceSpace* reference_space);
+device::mojom::blink::XRNativeOriginInformation Create(
+    const XRJointSpace* joint_space);
 
 device::mojom::blink::XRNativeOriginInformation Create(
     device::mojom::XRReferenceSpaceType reference_space_type);

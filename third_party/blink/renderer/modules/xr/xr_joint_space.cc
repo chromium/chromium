@@ -3,37 +3,43 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/xr/xr_joint_space.h"
+#include "third_party/blink/renderer/modules/xr/xr_hand.h"
 #include "third_party/blink/renderer/modules/xr/xr_space.h"
+#include "third_party/blink/renderer/modules/xr/xr_utils.h"
 
 namespace blink {
 
 XRJointSpace::XRJointSpace(
     XRSession* session,
     std::unique_ptr<TransformationMatrix> mojo_from_joint,
-    String joint_name,
-    float radius)
+    device::mojom::blink::XRHandJoint joint,
+    float radius,
+    device::mojom::blink::XRHandedness handedness)
     : XRSpace(session),
       mojo_from_joint_space_(std::move(mojo_from_joint)),
-      joint_name_(joint_name),
-      radius_(radius) {}
+      joint_(joint),
+      radius_(radius),
+      handedness_(handedness) {}
 
 base::Optional<TransformationMatrix> XRJointSpace::MojoFromNative() {
   return *mojo_from_joint_space_.get();
 }
 
 bool XRJointSpace::EmulatedPosition() const {
-  NOTIMPLEMENTED();
   return false;
 }
 
 base::Optional<device::mojom::blink::XRNativeOriginInformation>
 XRJointSpace::NativeOrigin() const {
-  NOTIMPLEMENTED();
-  return base::nullopt;
+  return XRNativeOriginInformation::Create(this);
 }
 
 bool XRJointSpace::IsStationary() const {
   return false;
+}
+
+const String XRJointSpace::jointName() const {
+  return MojomHandJointToString(joint_);
 }
 
 std::string XRJointSpace::ToString() const {

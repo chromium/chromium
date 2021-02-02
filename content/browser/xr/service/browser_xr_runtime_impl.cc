@@ -233,6 +233,10 @@ bool BrowserXRRuntimeImpl::SupportsFeature(
 
 #if BUILDFLAG(ENABLE_OPENXR)
     case device::mojom::XRDeviceId::OPENXR_DEVICE_ID:
+      // Only support hand input if the feature flag is enabled.
+      if (feature == device::mojom::XRSessionFeature::HAND_INPUT) {
+        return base::FeatureList::IsEnabled(features::kWebXrHandInput);
+      }
       return base::Contains(kOpenXRFeatures, feature);
 #endif
   }

@@ -17,7 +17,6 @@ class XRJointPose : public XRPose {
 
  public:
   XRJointPose(const TransformationMatrix& transform,
-              bool emulatedPosition,
               float radius);
 
   float radius() const { return radius_; }

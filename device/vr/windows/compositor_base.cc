@@ -206,6 +206,9 @@ void XRCompositorCommon::RequestSession(
   presentation_receiver_.reset();
   frame_data_receiver_.reset();
 
+  EnableSupportedFeatures(options->required_features,
+                          options->optional_features);
+
   if (!StartRuntime()) {
     TRACE_EVENT_INSTANT0("xr", "Failed to start runtime",
                          TRACE_EVENT_SCOPE_THREAD);
@@ -251,8 +254,6 @@ void XRCompositorCommon::RequestSession(
   session->data_provider = frame_data_receiver_.BindNewPipeAndPassRemote();
   session->submit_frame_sink = std::move(submit_frame_sink);
 
-  EnableSupportedFeatures(options->required_features,
-                          options->optional_features);
   session->enabled_features.insert(session->enabled_features.end(),
                                    enabled_features_.begin(),
                                    enabled_features_.end());

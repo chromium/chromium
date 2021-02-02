@@ -1382,6 +1382,8 @@ bool ArCoreImpl::NativeOriginExists(
 
       return anchor_manager_->AnchorExists(
           AnchorId(native_origin_information.get_anchor_id()));
+    case mojom::XRNativeOriginInformation::Tag::HAND_JOINT_SPACE_INFO:
+      return false;
   }
 }
 
@@ -1412,6 +1414,8 @@ base::Optional<gfx::Transform> ArCoreImpl::GetMojoFromNativeOrigin(
     case mojom::XRNativeOriginInformation::Tag::ANCHOR_ID:
       return anchor_manager_->GetMojoFromAnchor(
           AnchorId(native_origin_information.get_anchor_id()));
+    case mojom::XRNativeOriginInformation::Tag::HAND_JOINT_SPACE_INFO:
+      return base::nullopt;
   }
 }
 

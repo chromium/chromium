@@ -15,6 +15,7 @@
 #include "third_party/openxr/src/include/openxr/openxr.h"
 #include "third_party/openxr/src/include/openxr/openxr_platform.h"
 #include "ui/gfx/transform.h"
+#include "ui/gfx/transform_util.h"
 
 using AnchorId = util::IdTypeU64<class AnchorTag>;
 constexpr AnchorId kInvalidAnchorId =
@@ -54,6 +55,7 @@ namespace device {
 // Returns the identity pose, where the position is {0, 0, 0} and the
 // orientation is {0, 0, 0, 1}.
 XrPosef PoseIdentity();
+gfx::Transform XrPoseToGfxTransform(const XrPosef& pose);
 XrPosef GfxTransformToXrPose(const gfx::Transform& transform);
 
 XrResult GetSystem(XrInstance instance, XrSystemId* system);

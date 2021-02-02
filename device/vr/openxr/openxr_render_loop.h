@@ -141,8 +141,6 @@ class OpenXrRenderLoop : public XRCompositorCommon,
   std::unique_ptr<OpenXrApiWrapper> openxr_;
   std::unique_ptr<OpenXRInputHelper> input_helper_;
 
-  bool anchors_enabled_{false};
-
   std::vector<CreateAnchorRequest> create_anchor_requests_;
 
   base::RepeatingCallback<void(mojom::VRDisplayInfoPtr)>

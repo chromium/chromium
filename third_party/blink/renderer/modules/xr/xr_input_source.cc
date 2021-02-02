@@ -106,6 +106,13 @@ XRInputSource* XRInputSource::CreateOrUpdateFrom(
         TryGetTransformationMatrix(state->mojo_from_input);
   }
 
+  if (updated_source->state_.is_visible) {
+    if (state->hand_tracking_data.get()) {
+      updated_source->hand_ = MakeGarbageCollected<XRHand>(
+          state->hand_tracking_data.get(), updated_source);
+    }
+  }
+
   updated_source->state_.emulated_position = state->emulated_position;
 
   return updated_source;

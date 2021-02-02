@@ -21,17 +21,20 @@ class XRJointSpace : public XRSpace {
  public:
   XRJointSpace(XRSession* session,
                std::unique_ptr<TransformationMatrix> mojo_from_joint,
-               String joint_name,
-               float radius);
+               device::mojom::blink::XRHandJoint joint,
+               float radius,
+               device::mojom::XRHandedness handedness);
 
-  float GetRadius() const { return radius_; }
-  const String& jointName() const { return joint_name_; }
+  float radius() const { return radius_; }
+  device::mojom::blink::XRHandJoint joint() const { return joint_; }
+  const String jointName() const;
+  device::mojom::XRHandedness handedness() const { return handedness_; }
 
   base::Optional<TransformationMatrix> MojoFromNative() override;
   bool EmulatedPosition() const override;
 
   base::Optional<device::mojom::blink::XRNativeOriginInformation> NativeOrigin()
-      const override;
+      const final;
 
   bool IsStationary() const override;
 
@@ -41,8 +44,9 @@ class XRJointSpace : public XRSpace {
 
  private:
   const std::unique_ptr<TransformationMatrix> mojo_from_joint_space_;
-  const String joint_name_;
+  const device::mojom::blink::XRHandJoint joint_;
   const float radius_;
+  const device::mojom::XRHandedness handedness_;
 };
 
 }  // namespace blink

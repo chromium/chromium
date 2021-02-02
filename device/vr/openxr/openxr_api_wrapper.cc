@@ -427,8 +427,9 @@ XrResult OpenXrApiWrapper::CreateGamepadHelper(
   DCHECK(HasSession());
   DCHECK(HasSpace(XR_REFERENCE_SPACE_TYPE_LOCAL));
 
-  return OpenXRInputHelper::CreateOpenXRInputHelper(
-      instance_, extension_helper, session_, local_space_, input_helper);
+  return OpenXRInputHelper::CreateOpenXRInputHelper(instance_, system_,
+                                                    extension_helper, session_,
+                                                    local_space_, input_helper);
 }
 
 XrResult OpenXrApiWrapper::BeginSession() {
@@ -844,9 +845,9 @@ bool OpenXrApiWrapper::GetStageParameters(XrExtent2Df* stage_bounds,
   *stage_bounds = stage_bounds_;
 
   XrSpaceLocation local_from_stage_location = {XR_TYPE_SPACE_LOCATION};
-  if (FAILED(xrLocateSpace(stage_space_, local_space_,
-                           frame_state_.predictedDisplayTime,
-                           &local_from_stage_location)) ||
+  if (XR_FAILED(xrLocateSpace(stage_space_, local_space_,
+                              frame_state_.predictedDisplayTime,
+                              &local_from_stage_location)) ||
       !(local_from_stage_location.locationFlags &
         XR_SPACE_LOCATION_ORIENTATION_VALID_BIT) ||
       !(local_from_stage_location.locationFlags &

@@ -50,7 +50,9 @@ class XRInputSource : public ScriptWrappable, public Gamepad::Client {
 
   XRSession* session() const { return session_; }
 
-  XRHand* hand() const { return hand_; }
+  device::mojom::XRHandedness xr_handedness() const {
+    return state_.handedness;
+  }
 
   const String handedness() const;
   const String targetRayMode() const;
@@ -58,6 +60,7 @@ class XRInputSource : public ScriptWrappable, public Gamepad::Client {
   XRSpace* targetRaySpace() const;
   XRSpace* gripSpace() const;
   Gamepad* gamepad() const { return gamepad_; }
+  XRHand* hand() const { return hand_; }
   Vector<String> profiles() const { return state_.profiles; }
 
   uint32_t source_id() const { return state_.source_id; }
@@ -164,7 +167,7 @@ class XRInputSource : public ScriptWrappable, public Gamepad::Client {
   Member<XRTargetRaySpace> target_ray_space_;
   Member<XRGripSpace> grip_space_;
   Member<Gamepad> gamepad_;
-  Member<XRHand> hand_{nullptr};
+  Member<XRHand> hand_;
 
   // Input device pose in mojo space. This is the grip pose for
   // tracked controllers, and the viewer pose for screen input.

@@ -45,6 +45,11 @@ const char kCannotObtainNativeOrigin[] =
     "The operation was unable to obtain necessary information and could not be "
     "completed.";
 
+const char kSpacesSequenceTooLarge[] =
+    "Insufficient buffer capacity for pose results.";
+
+const char kMismatchedBufferSizes[] = "Buffer sizes must be equal";
+
 }  // namespace
 
 XRFrame::XRFrame(XRSession* session, bool is_animation_frame)
@@ -385,23 +390,106 @@ HeapVector<Member<XRImageTrackingResult>> XRFrame::getImageTrackingResults(
 XRJointPose* XRFrame::getJointPose(XRJointSpace* joint,
                                    XRSpace* baseSpace,
                                    ExceptionState& exception_state) {
-  NOTIMPLEMENTED();
-  return nullptr;
+  if (!is_active_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kInactiveFrame);
+    return nullptr;
+  }
+
+  if (session_ != baseSpace->session() || session_ != joint->session()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kSessionMismatch);
+    return nullptr;
+  }
+
+  const XRPose* pose = joint->getPose(baseSpace);
+  if (!pose) {
+    return nullptr;
+  }
+
+  const float radius = joint->radius();
+
+  return MakeGarbageCollected<XRJointPose>(pose->transform()->TransformMatrix(),
+                                           radius);
 }
 
 bool XRFrame::fillJointRadii(HeapVector<Member<XRJointSpace>>& jointSpaces,
                              NotShared<DOMFloat32Array> radii,
                              ExceptionState& exception_state) {
-  NOTIMPLEMENTED();
-  return false;
+  if (!is_active_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kInactiveFrame);
+    return false;
+  }
+
+  if (jointSpaces.size() != radii->length()) {
+    exception_state.ThrowTypeError(kMismatchedBufferSizes);
+    return false;
+  }
+
+  for (unsigned offset = 0; offset < jointSpaces.size(); offset++) {
+    const XRJointSpace* jointSpace = jointSpaces[offset];
+    if (session_ != jointSpace->session()) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                        kSessionMismatch);
+      return false;
+    }
+
+    radii->Data()[offset] = jointSpace->radius();
+  }
+
+  return true;
 }
 
 bool XRFrame::fillPoses(HeapVector<Member<XRSpace>>& spaces,
                         XRSpace* baseSpace,
                         NotShared<DOMFloat32Array> transforms,
                         ExceptionState& exception_state) {
-  NOTIMPLEMENTED();
-  return false;
+  if (!is_active_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kInactiveFrame);
+    return false;
+  }
+
+  const unsigned floats_per_transform = 16;
+
+  if (spaces.size() * floats_per_transform > transforms->length()) {
+    exception_state.ThrowTypeError(kSpacesSequenceTooLarge);
+    return false;
+  }
+
+  if (session_ != baseSpace->session()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kSessionMismatch);
+    return false;
+  }
+
+  bool allValid = true;
+  unsigned offset = 0;
+  for (const auto& space : spaces) {
+    if (session_ != space->session()) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                        kSessionMismatch);
+      return false;
+    }
+
+    const XRPose* pose = space->getPose(baseSpace);
+    if (!pose) {
+      for (unsigned i = 0; i < floats_per_transform; i++) {
+        transforms->Data()[offset + i] = NAN;
+        allValid = false;
+      }
+    } else {
+      const float* const poseMatrix = pose->transform()->matrix()->Data();
+      for (unsigned i = 0; i < floats_per_transform; i++) {
+        transforms->Data()[offset + i] = poseMatrix[i];
+      }
+    }
+
+    offset += floats_per_transform;
+  }
+
+  return allValid;
 }
 
 void XRFrame::Trace(Visitor* visitor) const {

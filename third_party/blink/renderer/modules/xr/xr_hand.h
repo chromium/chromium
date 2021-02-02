@@ -12,25 +12,58 @@
 
 namespace blink {
 
+class XRInputSource;
 class XRJointSpace;
 
 class XRHand : public ScriptWrappable,
                public PairIterable<String, Member<XRJointSpace>> {
   DEFINE_WRAPPERTYPEINFO();
 
+  static const unsigned kNumJoints =
+      static_cast<unsigned>(device::mojom::blink::XRHandJoint::kMaxValue) + 1u;
+
+  using THandJointsMapKey = String;
+  using THandJointsMapValue = Member<XRJointSpace>;
+  using THandJointCollection =
+      std::array<std::tuple<THandJointsMapKey, THandJointsMapValue>,
+                 kNumJoints>;
+
  public:
-  XRHand() = default;
+  explicit XRHand(const device::mojom::blink::XRHandTrackingData* state,
+                  XRInputSource* input_source);
   ~XRHand() override = default;
 
-  unsigned int size() const;
+  unsigned int size() const { return joint_spaces_.size(); }
+
   XRJointSpace* get(const String& key);
 
   void Trace(Visitor*) const override;
 
  private:
+  class HandJointIterationSource final
+      : public PairIterable<THandJointsMapKey,
+                            THandJointsMapValue>::IterationSource {
+   public:
+    explicit HandJointIterationSource(const THandJointCollection& joint_spaces);
+
+    bool Next(ScriptState* script_state,
+              THandJointsMapKey& key,
+              THandJointsMapValue& value,
+              ExceptionState& exception_state) override;
+
+   private:
+    const THandJointCollection& joint_spaces_;
+
+    uint32_t current;
+  };
+
   using Iterationsource =
       PairIterable<String, Member<XRJointSpace>>::IterationSource;
-  IterationSource* StartIteration(ScriptState*, ExceptionState&) override;
+  IterationSource* StartIteration(ScriptState*, ExceptionState&) override {
+    return MakeGarbageCollected<HandJointIterationSource>(joint_spaces_);
+  }
+
+  THandJointCollection joint_spaces_;
 };
 
 }  // namespace blink

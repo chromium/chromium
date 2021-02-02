@@ -46,6 +46,12 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
   mojom::XRFrameDataPtr frame_data = mojom::XRFrameData::New();
   frame_data->frame_id = next_frame_id_;
 
+  const bool anchors_enabled = base::Contains(
+      enabled_features_, device::mojom::XRSessionFeature::ANCHORS);
+
+  const bool hand_input_enabled = base::Contains(
+      enabled_features_, device::mojom::XRSessionFeature::HAND_INPUT);
+
   Microsoft::WRL::ComPtr<ID3D11Texture2D> texture;
   if (XR_FAILED(openxr_->BeginFrame(&texture))) {
     return frame_data;
@@ -56,8 +62,8 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
   frame_data->time_delta =
       base::TimeDelta::FromNanoseconds(openxr_->GetPredictedDisplayTime());
 
-  frame_data->input_state =
-      input_helper_->GetInputState(openxr_->GetPredictedDisplayTime());
+  frame_data->input_state = input_helper_->GetInputState(
+      hand_input_enabled, openxr_->GetPredictedDisplayTime());
 
   frame_data->pose = mojom::VRPose::New();
 
@@ -85,7 +91,7 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
                                   current_display_info_.Clone()));
   }
 
-  if (anchors_enabled_) {
+  if (anchors_enabled) {
     OpenXrAnchorManager* anchor_manager =
         openxr_->GetOrCreateAnchorManager(extension_helper_);
 
@@ -161,16 +167,24 @@ void OpenXrRenderLoop::StopRuntime() {
 }
 
 void OpenXrRenderLoop::EnableSupportedFeatures(
-    const std::vector<device::mojom::XRSessionFeature>& requiredFeatures,
-    const std::vector<device::mojom::XRSessionFeature>& optionalFeatures) {
+    const std::vector<device::mojom::XRSessionFeature>& required_features,
+    const std::vector<device::mojom::XRSessionFeature>& optional_features) {
   const bool anchors_supported =
       extension_helper_.ExtensionEnumeration()->ExtensionSupported(
           XR_MSFT_SPATIAL_ANCHOR_EXTENSION_NAME);
+  const bool hand_input_supported =
+      extension_helper_.ExtensionEnumeration()->ExtensionSupported(
+          kMSFTHandInteractionExtensionName);
+
   // Filter out features that are requested but not supported
   auto required_extension_enabled_filter =
-      [anchors_supported](device::mojom::XRSessionFeature feature) {
+      [anchors_supported,
+       hand_input_supported](device::mojom::XRSessionFeature feature) {
         if (feature == device::mojom::XRSessionFeature::ANCHORS &&
             !anchors_supported) {
+          return false;
+        } else if (feature == device::mojom::XRSessionFeature::HAND_INPUT &&
+                   !hand_input_supported) {
           return false;
         }
         return true;
@@ -182,16 +196,11 @@ void OpenXrRenderLoop::EnableSupportedFeatures(
   // reached this point, it is safe to assume that all requested features are
   // enabled.
   // TODO(https://crbug.com/995377): revisit the approach when the bug is fixed.
-  std::copy(requiredFeatures.begin(), requiredFeatures.end(),
+  std::copy(required_features.begin(), required_features.end(),
             std::inserter(enabled_features_, enabled_features_.begin()));
-  std::copy_if(optionalFeatures.begin(), optionalFeatures.end(),
+  std::copy_if(optional_features.begin(), optional_features.end(),
                std::inserter(enabled_features_, enabled_features_.begin()),
                required_extension_enabled_filter);
-
-  // Cache feature support
-  const bool anchors_requested =
-      enabled_features_.count(device::mojom::XRSessionFeature::ANCHORS) != 0;
-  anchors_enabled_ = anchors_requested && anchors_supported;
 }
 
 device::mojom::XREnvironmentBlendMode OpenXrRenderLoop::GetEnvironmentBlendMode(
@@ -408,6 +417,7 @@ OpenXrRenderLoop::GetXrLocationFromNativeOriginInformation(
       return GetXrLocationFromReferenceSpace(native_origin_information,
                                              native_origin_from_anchor);
     case mojom::XRNativeOriginInformation::Tag::PLANE_ID:
+    case mojom::XRNativeOriginInformation::Tag::HAND_JOINT_SPACE_INFO:
       // Unsupported for now
       return base::nullopt;
     case mojom::XRNativeOriginInformation::Tag::ANCHOR_ID:

@@ -103,12 +103,18 @@ void OpenXrDevice::RequestSession(
   // TODO(https://crbug.com/995377): Currently OpenXR features are declared
   // statically, but we may only know a runtime's true support for a feature
   // dynamically
-  const bool anchorsRequired = base::Contains(
+  const bool anchors_required = base::Contains(
       options->required_features, device::mojom::XRSessionFeature::ANCHORS);
-  const bool anchorsSupported =
+  const bool anchors_supported =
       extension_helper_.ExtensionEnumeration()->ExtensionSupported(
           XR_MSFT_SPATIAL_ANCHOR_EXTENSION_NAME);
-  if (anchorsRequired && !anchorsSupported) {
+  const bool hand_input_required = base::Contains(
+      options->required_features, device::mojom::XRSessionFeature::HAND_INPUT);
+  const bool hand_input_supported =
+      extension_helper_.ExtensionEnumeration()->ExtensionSupported(
+          kMSFTHandInteractionExtensionName);
+  if ((anchors_required && !anchors_supported) ||
+      (hand_input_required && !hand_input_supported)) {
     // Reject session request
     std::move(callback).Run(nullptr, mojo::NullRemote());
     return;

@@ -21,6 +21,7 @@ class OpenXRInputHelper {
  public:
   static XrResult CreateOpenXRInputHelper(
       XrInstance instance,
+      XrSystemId system,
       const OpenXrExtensionHelper& extension_helper,
       XrSession session,
       XrSpace local_space,
@@ -31,6 +32,7 @@ class OpenXRInputHelper {
   ~OpenXRInputHelper();
 
   std::vector<mojom::XRInputSourceStatePtr> GetInputState(
+      bool hand_input_enabled,
       XrTime predicted_display_time);
 
   void OnInteractionProfileChanged(XrResult* xr_result);
@@ -41,9 +43,14 @@ class OpenXRInputHelper {
   base::Optional<Gamepad> GetWebXRGamepad(const OpenXrController& controller);
 
   XrResult Initialize(XrInstance instance,
+                      XrSystemId system,
                       const OpenXrExtensionHelper& extension_helper);
 
   XrResult SyncActions(XrTime predicted_display_time);
+
+  XrSpace GetMojomSpace() const {
+    return local_space_;  // Mojom space is currently defined as local space
+  }
 
   XrSession session_;
   XrSpace local_space_;
