@@ -28,7 +28,7 @@
 #include "ipc/ipc_sync_message.h"
 #include "mojo/public/cpp/bindings/sync_event_watcher.h"
 
-#if !defined(OS_NACL) && !BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
+#if !BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
 #include "ipc/trace_ipc_message.h"
 #endif
 
@@ -614,12 +614,8 @@ bool SyncChannel::Send(Message* message) {
   Logging::GetInstance()->GetMessageText(
       message->type(), &name, message, nullptr);
   TRACE_EVENT1("ipc", "SyncChannel::Send", "name", name);
-#elif !defined(OS_NACL)
-  TRACE_IPC_MESSAGE_SEND("ipc", "SyncChannel::Send", message);
 #else
-  TRACE_EVENT2("ipc", "SyncChannel::Send",
-               "class", IPC_MESSAGE_ID_CLASS(message->type()),
-               "line", IPC_MESSAGE_ID_LINE(message->type()));
+  TRACE_IPC_MESSAGE_SEND("ipc", "SyncChannel::Send", message);
 #endif
   if (!message->is_sync()) {
     ChannelProxy::SendInternal(message);
