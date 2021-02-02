@@ -1865,6 +1865,11 @@ void PrintRenderFrameHelper::Print(blink::WebLocalFrame* frame,
     if (!self)
       return;
 
+    // GetPrintSettingsFromUser() could return nullptr when
+    // |print_manager_host_| is closed.
+    if (!print_settings)
+      return;
+
     print_settings->params->print_scaling_option =
         print_settings->params->prefer_css_page_size
             ? mojom::PrintScalingOption::kSourceSize

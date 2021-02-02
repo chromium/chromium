@@ -277,6 +277,11 @@ void ScriptedPrintReply(mojom::PrintManagerHost::ScriptedPrintCallback callback,
                         int process_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  if (!content::RenderProcessHost::FromID(process_id)) {
+    // Early return if the renderer is not alive.
+    return;
+  }
+
   // Resets SetBlocked().
   content::RenderProcessHost::FromID(process_id)->SetBlocked(false);
 
