@@ -338,13 +338,13 @@ void VideoEncodeAcceleratorAdapter::EncodeOnAcceleratorThread(
     result = PrepareCpuFrame(options_.frame_size, frame);
 
   if (result.has_error()) {
-    auto status = result.error();
+    auto status = std::move(result).error();
     status.WithData("frame", frame->AsHumanReadableString());
     std::move(done_cb).Run(std::move(status).AddHere());
     return;
   }
 
-  frame = result.value();
+  frame = std::move(result).value();
 
   auto active_encode = std::make_unique<PendingOp>();
   active_encode->done_callback = std::move(done_cb);

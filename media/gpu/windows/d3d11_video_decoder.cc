@@ -193,8 +193,7 @@ HRESULT D3D11VideoDecoder::InitializeAcceleratedDecoder(
   return hr;
 }
 
-StatusOr<std::tuple<ComD3D11VideoDecoder>>
-D3D11VideoDecoder::CreateD3D11Decoder() {
+StatusOr<ComD3D11VideoDecoder> D3D11VideoDecoder::CreateD3D11Decoder() {
   // By default we assume outputs are 8-bit for SDR color spaces and 10 bit for
   // HDR color spaces (or VP9.2). We'll get a config change once we know the
   // real bit depth if this turns out to be wrong.
@@ -411,12 +410,12 @@ void D3D11VideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   auto video_decoder_or_error = CreateD3D11Decoder();
   if (video_decoder_or_error.has_error()) {
-    NotifyError(video_decoder_or_error.error());
+    NotifyError(std::move(video_decoder_or_error).error());
     return;
   }
 
-  hr = InitializeAcceleratedDecoder(
-      config, std::move(std::get<0>(video_decoder_or_error.value())));
+  hr = InitializeAcceleratedDecoder(config,
+                                    std::move(video_decoder_or_error).value());
 
   if (!SUCCEEDED(hr)) {
     NotifyError("Failed to get device context");
@@ -642,12 +641,12 @@ void D3D11VideoDecoder::DoDecode() {
       // accelerated decoder asked for any.
       auto video_decoder_or_error = CreateD3D11Decoder();
       if (video_decoder_or_error.has_error()) {
-        NotifyError(video_decoder_or_error.error());
+        NotifyError(std::move(video_decoder_or_error).error());
         return;
       }
       DCHECK(set_accelerator_decoder_cb_);
       set_accelerator_decoder_cb_.Run(
-          std::move(std::get<0>(video_decoder_or_error.value())));
+          std::move(video_decoder_or_error).value());
       picture_buffers_.clear();
     } else if (result == media::AcceleratedVideoDecoder::kTryAgain) {
       LOG(ERROR) << "Try again is not supported";
@@ -744,9 +743,9 @@ void D3D11VideoDecoder::CreatePictureBuffers() {
               ? 1
               : D3D11DecoderConfigurator::BUFFER_COUNT);
       if (result.has_value()) {
-        in_texture = std::move(result.value());
+        in_texture = std::move(result).value();
       } else {
-        NotifyError(std::move(result.error()).AddHere());
+        NotifyError(std::move(result).error().AddHere());
         return;
       }
     }

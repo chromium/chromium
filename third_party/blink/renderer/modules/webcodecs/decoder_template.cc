@@ -167,9 +167,9 @@ void DecoderTemplate<Traits>::decode(const InputType* chunk,
   auto status_or_buffer = MakeDecoderBuffer(*chunk);
 
   if (status_or_buffer.has_value()) {
-    request->decoder_buffer = std::move(status_or_buffer.value());
+    request->decoder_buffer = std::move(status_or_buffer).value();
   } else {
-    request->status = std::move(status_or_buffer.error());
+    request->status = std::move(status_or_buffer).error();
   }
 
   requests_.push_back(request);

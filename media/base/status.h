@@ -166,8 +166,8 @@ MEDIA_EXPORT Status OkStatus();
 // }
 //
 // auto result = FactoryFn();
-// if (result.has_error())  return std::move(result.error());
-// my_object_ = std::move(result.value());
+// if (result.has_error())  return std::move(result).error();
+// my_object_ = std::move(result).value();
 //
 // Can also be combined into a single switch using `code()`:
 //
@@ -178,7 +178,7 @@ MEDIA_EXPORT Status OkStatus();
 //    break;
 //  // Maybe switch on specific non-kOk codes for special processing.
 //  default:  // Send unknown errors upwards.
-//    return std::move(result.error());
+//    return std::move(result).error();
 // }
 //
 // Also useful if one would like to get an enum class return value, unless an
@@ -189,8 +189,8 @@ MEDIA_EXPORT Status OkStatus();
 // StatusOr<ResultType> Foo() { ... }
 //
 // auto result = Foo();
-// if (result.has_error()) return std::move(result.error());
-// switch (result.value()) {
+// if (result.has_error()) return std::move(result).error();
+// switch (std::move(result).value()) {
 //  case ResultType::kNeedMoreInput:
 //   ...
 // }
@@ -199,16 +199,16 @@ class StatusOr {
  public:
   // All of these may be implicit, so that one may just return Status or
   // the value in question.
-  StatusOr(Status&& error) : error_(std::move(error)) {
-    DCHECK(!this->error().is_ok());
+  /* not explicit */ StatusOr(Status&& error) : error_(std::move(error)) {
+    DCHECK_NE(code(), StatusCode::kOk);
   }
-  StatusOr(const Status& error) : error_(error) {
-    DCHECK(!this->error().is_ok());
+  /* not explicit */ StatusOr(const Status& error) : error_(error) {
+    DCHECK_NE(code(), StatusCode::kOk);
   }
   StatusOr(StatusCode code,
            const base::Location& location = base::Location::Current())
       : error_(Status(code, "", location)) {
-    DCHECK(!error().is_ok());
+    DCHECK_NE(code, StatusCode::kOk);
   }
 
   StatusOr(T&& value) : value_(std::move(value)) {}
@@ -225,26 +225,38 @@ class StatusOr {
   // Do we have a value?
   bool has_value() const { return value_.has_value(); }
 
-  // Since we often test for errors, provide this too.
-  bool has_error() const { return !has_value(); }
+  // Do we have an error?
+  bool has_error() const { return error_.has_value(); }
 
   // Return the error, if we have one.  Up to the caller to make sure that we
-  // have one via |!has_value()|.
-  Status& error() { return *error_; }
+  // have one via |has_error()|.
+  // NOTE: once this is called, the StatusOr is defunct and should not be used.
+  Status error() && {
+    CHECK(error_);
+    auto error = std::move(*error_);
+    error_.reset();
+    return error;
+  }
 
-  const Status& error() const { return *error_; }
+  // Return the value.  It's up to the caller to verify that we have a value
+  // before calling this.  Also, this only works once, after which we will have
+  // an error.  Use like this: std::move(status_or).value();
+  // NOTE: once this is called, the StatusOr is defunct and should not be used.
+  T value() && {
+    CHECK(value_);
+    auto value = std::move(std::get<0>(*value_));
+    value_.reset();
+    return value;
+  }
 
-  // Return a ref to the value.  It's up to the caller to verify that we have a
-  // value before calling this.
-  T& value() { return std::get<0>(*value_); }
-
-  // Returns the error code we have, if any, or `kOk` if we have a value.  If
-  // this returns `kOk`, then it is equivalent to has_value().
+  // Returns the error code we have, if any, or `kOk`.
   StatusCode code() const {
-    return has_error() ? error().code() : StatusCode::kOk;
+    CHECK(error_ || value_);
+    return error_ ? error_->code() : StatusCode::kOk;
   }
 
  private:
+  // Optional error.
   base::Optional<Status> error_;
   // We wrap |T| in a container so that windows COM wrappers work.  They
   // override operator& and similar, and won't compile in a base::Optional.
