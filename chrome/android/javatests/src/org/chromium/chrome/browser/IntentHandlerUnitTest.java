@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -32,6 +33,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.browserservices.verification.OriginVerifier;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.translate.TranslateIntentHandler;
 import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestHelper;
@@ -586,5 +588,16 @@ public class IntentHandlerUnitTest {
         Intent intent = new Intent(TranslateIntentHandler.ACTION_TRANSLATE_TAB);
         assertFalse(mIntentHandler.shouldIgnoreIntent(intent, /*startedActivity=*/false));
         assertTrue(mIntentHandler.shouldIgnoreIntent(intent, /*startedActivity=*/true));
+    }
+
+    @Test
+    @SmallTest
+    public void testIgnoreUnauthenticatedBringToFront() {
+        int tabId = 1;
+        Intent intent = IntentHandler.createTrustedBringTabToFrontIntent(tabId);
+        assertEquals(tabId, IntentHandler.getBringTabToFrontId(intent));
+
+        intent.removeExtra("trusted_application_code_extra");
+        assertEquals(Tab.INVALID_TAB_ID, IntentHandler.getBringTabToFrontId(intent));
     }
 }

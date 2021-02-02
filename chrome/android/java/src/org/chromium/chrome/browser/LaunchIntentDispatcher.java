@@ -145,8 +145,7 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
         PartnerBrowserCustomizations.getInstance().initializeAsync(
                 mActivity.getApplicationContext());
 
-        int tabId = IntentUtils.safeGetIntExtra(
-                mIntent, IntentHandler.TabOpenType.BRING_TAB_TO_FRONT_STRING, Tab.INVALID_TAB_ID);
+        int tabId = IntentHandler.getBringTabToFrontId(mIntent);
         boolean incognito =
                 mIntent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false);
 

@@ -29,8 +29,8 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
-import org.chromium.chrome.browser.document.ChromeIntentUtil;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
@@ -514,7 +514,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
             tabModel.setIndex(tabIndex, TabSelectionType.FROM_OMNIBOX);
         } else {
             // Browser is in background, bring to to foreground and switch to the tab.
-            Intent newIntent = ChromeIntentUtil.createBringTabToFrontIntent(tab.getId());
+            Intent newIntent = IntentHandler.createTrustedBringTabToFrontIntent(tab.getId());
             if (newIntent != null) {
                 newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 IntentUtils.safeStartActivity(ContextUtils.getApplicationContext(), newIntent);

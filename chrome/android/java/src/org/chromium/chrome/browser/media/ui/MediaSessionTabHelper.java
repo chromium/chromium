@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.document.ChromeIntentUtil;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -85,7 +85,7 @@ public class MediaSessionTabHelper implements MediaSessionHelper.Delegate {
 
     @Override
     public Intent createBringTabToFrontIntent() {
-        return ChromeIntentUtil.createBringTabToFrontIntent(mTab.getId());
+        return IntentHandler.createTrustedBringTabToFrontIntent(mTab.getId());
     }
 
     @Override

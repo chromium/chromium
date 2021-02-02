@@ -29,6 +29,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.IntentUtils;
@@ -37,6 +38,7 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
@@ -215,6 +217,7 @@ public class IntentHandler {
     private static final String NEWS_LINK_PREFIX = "http://news.google.com/news/url?";
     private static final String YOUTUBE_LINK_PREFIX_HTTPS = "https://www.youtube.com/redirect?";
     private static final String YOUTUBE_LINK_PREFIX_HTTP = "http://www.youtube.com/redirect?";
+    private static final String BRING_TAB_TO_FRONT_EXTRA = "BRING_TAB_TO_FRONT";
 
     /**
      * Represents popular external applications that can load a page in Chrome via intent.
@@ -302,7 +305,6 @@ public class IntentHandler {
         // be reused.
         int REUSE_TAB_MATCHING_ID_ELSE_NEW_TAB = 6;
 
-        String BRING_TAB_TO_FRONT_STRING = "BRING_TAB_TO_FRONT";
         String REUSE_TAB_MATCHING_ID_STRING = "REUSE_TAB_MATCHING_ID";
         String REUSE_TAB_ORIGINAL_URL_STRING = "REUSE_TAB_ORIGINAL_URL";
     }
@@ -474,8 +476,7 @@ public class IntentHandler {
                 IntentWithRequestMetadataHandler.getInstance().getRequestMetadataAndClear(intent);
         @TabOpenType
         int tabOpenType = getTabOpenType(intent);
-        int tabIdToBringToFront = IntentUtils.safeGetIntExtra(
-                intent, TabOpenType.BRING_TAB_TO_FRONT_STRING, Tab.INVALID_TAB_ID);
+        int tabIdToBringToFront = getBringTabToFrontId(intent);
         if (url == null && tabIdToBringToFront == Tab.INVALID_TAB_ID
                 && tabOpenType != TabOpenType.OPEN_NEW_INCOGNITO_TAB) {
             return handleWebSearchIntent(intent)
@@ -1095,9 +1096,7 @@ public class IntentHandler {
         if (IntentUtils.safeGetBooleanExtra(intent, EXTRA_OPEN_NEW_INCOGNITO_TAB, false)) {
             return TabOpenType.OPEN_NEW_INCOGNITO_TAB;
         }
-        if (IntentUtils.safeGetIntExtra(
-                    intent, TabOpenType.BRING_TAB_TO_FRONT_STRING, Tab.INVALID_TAB_ID)
-                != Tab.INVALID_TAB_ID) {
+        if (getBringTabToFrontId(intent) != Tab.INVALID_TAB_ID) {
             return TabOpenType.BRING_TAB_TO_FRONT;
         }
 
@@ -1417,6 +1416,37 @@ public class IntentHandler {
         IntentHandler.addTrustedIntentExtras(newIntent);
 
         return newIntent;
+    }
+
+    /**
+     * Creates an Intent that tells Chrome to bring an Activity for a particular Tab back to the
+     * foreground.
+     * @param tabId The id of the Tab to bring to the foreground.
+     * @return Created Intent or null if this operation isn't possible.
+     */
+    @Nullable
+    public static Intent createTrustedBringTabToFrontIntent(int tabId) {
+        // Iterate through all {@link CustomTab}s and check whether the given tabId belongs to a
+        // {@link CustomTab}. If so, return null as the client app's task cannot be foregrounded.
+        for (Activity activity : ApplicationStatus.getRunningActivities()) {
+            if (activity instanceof CustomTabActivity
+                    && ((CustomTabActivity) activity).getActivityTab() != null
+                    && tabId == ((CustomTabActivity) activity).getActivityTab().getId()) {
+                return null;
+            }
+        }
+
+        Context context = ContextUtils.getApplicationContext();
+        Intent intent = new Intent(context, ChromeLauncherActivity.class);
+        intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
+        intent.putExtra(BRING_TAB_TO_FRONT_EXTRA, tabId);
+        IntentHandler.addTrustedIntentExtras(intent);
+        return intent;
+    }
+
+    public static int getBringTabToFrontId(Intent intent) {
+        if (!wasIntentSenderChrome(intent)) return Tab.INVALID_TAB_ID;
+        return IntentUtils.safeGetIntExtra(intent, BRING_TAB_TO_FRONT_EXTRA, Tab.INVALID_TAB_ID);
     }
 
     /**
