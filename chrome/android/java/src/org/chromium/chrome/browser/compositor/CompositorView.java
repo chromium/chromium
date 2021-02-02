@@ -349,13 +349,12 @@ public class CompositorView
         setOverlayVideoMode(enabled);
         CompositorViewJni.get().setOverlayImmersiveArMode(
                 mNativeCompositorView, CompositorView.this, enabled);
-        if (!enabled) {
-            // Exiting AR mode leaves SurfaceControl in a confused state if the screen keyboard
-            // (IME) was activated, see https://crbug.com/1166248. Reset the surface manager
-            // at session exit to work around this.
-            mCompositorSurfaceManager.shutDown();
-            createCompositorSurfaceManager();
-        }
+        // Entering or exiting AR mode can leave SurfaceControl in a confused state, especially if
+        // the screen keyboard (IME) was activated, see https://crbug.com/1166248 and
+        // https://crbug.com/1169822. Reset the surface manager at session start and exit to work
+        // around this.
+        mCompositorSurfaceManager.shutDown();
+        createCompositorSurfaceManager();
     }
 
     private int getSurfacePixelFormat() {
