@@ -43,8 +43,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="interstitial.decision.repeat_visit"
     enum="SecurityInterstitialDecision" expires_after="M94">
-  <owner>felt@chromium.org</owner>
   <owner>carlosil@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
   <summary>
     User decision when presented with a security interstitial, on a site that
     the user had previously visited. As of M44, subresource interstitials were
