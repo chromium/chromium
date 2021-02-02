@@ -76,7 +76,12 @@ public final class ForcedSigninProcessor {
                         @Override
                         public void onSignInComplete() {
                             // TODO(https://crbug.com/1044206): Remove this.
-                            ProfileSyncService.get().setFirstSetupComplete(
+                            ProfileSyncService syncService = ProfileSyncService.get();
+                            if (syncService == null) {
+                                // Sync was disabled with a command-line flag, skip sign-in.
+                                return;
+                            }
+                            syncService.setFirstSetupComplete(
                                     SyncFirstSetupCompleteSource.BASIC_FLOW);
                         }
 
