@@ -347,20 +347,35 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionInternal(
   return result;
 }
 
-}  // namespace
-
-MinMaxSizes ComputeMinAndMaxContentContributionForTest(
-    WritingMode parent_writing_mode,
+// Currently this simply sets the correct override sizes for the replaced
+// element, and lets legacy layout do the result.
+MinMaxSizesResult ComputeMinAndMaxContentContributionForReplaced(
     const NGBlockNode& child,
-    const MinMaxSizes& min_max_sizes) {
-  auto MinMaxSizesFunc = [&](MinMaxSizesType) -> MinMaxSizesResult {
-    return MinMaxSizesResult(min_max_sizes,
-                             /* depends_on_percentage_block_size */ false);
-  };
-  return ComputeMinAndMaxContentContributionInternal(parent_writing_mode, child,
-                                                     MinMaxSizesFunc)
-      .sizes;
+    const MinMaxSizesInput& input) {
+  const ComputedStyle& child_style = child.Style();
+  LayoutBox* box = child.GetLayoutBox();
+  bool needs_size_reset = false;
+  if (!box->HasOverrideContainingBlockContentLogicalHeight()) {
+    box->SetOverrideContainingBlockContentLogicalHeight(
+        input.percentage_resolution_block_size);
+    needs_size_reset = true;
+  }
+
+  MinMaxSizes result = box->PreferredLogicalWidths();
+
+  if (needs_size_reset)
+    box->ClearOverrideContainingBlockContentSize();
+
+  // Replaced elements which have a percentage block-size use the
+  // |MinMaxSizesInput::percentage_resolution_block_size| field.
+  bool depends_on_percentage_block_size =
+      child_style.LogicalMinHeight().IsPercentOrCalc() ||
+      child_style.LogicalHeight().IsPercentOrCalc() ||
+      child_style.LogicalMaxHeight().IsPercentOrCalc();
+  return MinMaxSizesResult(result, depends_on_percentage_block_size);
 }
+
+}  // namespace
 
 MinMaxSizesResult ComputeMinAndMaxContentContribution(
     const ComputedStyle& parent_style,
@@ -371,35 +386,12 @@ MinMaxSizesResult ComputeMinAndMaxContentContribution(
   WritingMode child_writing_mode = child_style.GetWritingMode();
 
   if (IsParallelWritingMode(parent_writing_mode, child_writing_mode)) {
-    // Tables are special; even if a width is specified, they may end up being
-    // sized different. So we just always let the table code handle this.
+    // Legacy tables are special - always let the legacy table code handle this.
     if (child.IsTable() && !child.IsNGTable())
       return child.ComputeMinMaxSizes(parent_writing_mode, input, nullptr);
 
-    // Replaced elements may size themselves using aspect ratios and block
-    // sizes, so we pass that on as well.
-    if (child.IsReplaced()) {
-      LayoutBox* box = child.GetLayoutBox();
-      bool needs_size_reset = false;
-      if (!box->HasOverrideContainingBlockContentLogicalHeight()) {
-        box->SetOverrideContainingBlockContentLogicalHeight(
-            input.percentage_resolution_block_size);
-        needs_size_reset = true;
-      }
-
-      MinMaxSizes result = box->PreferredLogicalWidths();
-
-      if (needs_size_reset)
-        box->ClearOverrideContainingBlockContentSize();
-
-      // Replaced elements which have a percentage block-size use the
-      // |MinMaxSizesInput::percentage_resolution_block_size| field.
-      bool depends_on_percentage_block_size =
-          child_style.LogicalMinHeight().IsPercentOrCalc() ||
-          child_style.LogicalHeight().IsPercentOrCalc() ||
-          child_style.LogicalMaxHeight().IsPercentOrCalc();
-      return MinMaxSizesResult(result, depends_on_percentage_block_size);
-    }
+    if (child.IsReplaced())
+      return ComputeMinAndMaxContentContributionForReplaced(child, input);
   }
 
   auto MinMaxSizesFunc = [&](MinMaxSizesType type) -> MinMaxSizesResult {
@@ -420,6 +412,42 @@ MinMaxSizesResult ComputeMinAndMaxContentContribution(
 
   return ComputeMinAndMaxContentContributionInternal(parent_writing_mode, child,
                                                      MinMaxSizesFunc);
+}
+
+MinMaxSizesResult ComputeMinAndMaxContentContributionForSelf(
+    const NGBlockNode& child,
+    const MinMaxSizesInput& input) {
+  const ComputedStyle& child_style = child.Style();
+  WritingMode writing_mode = child_style.GetWritingMode();
+
+  // Legacy tables are special - always let the legacy table code handle this.
+  if (child.IsTable() && !child.IsNGTable())
+    return child.ComputeMinMaxSizes(writing_mode, input, nullptr);
+
+  if (child.IsReplaced())
+    return ComputeMinAndMaxContentContributionForReplaced(child, input);
+
+  auto MinMaxSizesFunc = [&](MinMaxSizesType type) -> MinMaxSizesResult {
+    MinMaxSizesInput input_copy(input);
+    input_copy.type = type;
+    return child.ComputeMinMaxSizes(writing_mode, input_copy);
+  };
+
+  return ComputeMinAndMaxContentContributionInternal(writing_mode, child,
+                                                     MinMaxSizesFunc);
+}
+
+MinMaxSizes ComputeMinAndMaxContentContributionForTest(
+    WritingMode parent_writing_mode,
+    const NGBlockNode& child,
+    const MinMaxSizes& min_max_sizes) {
+  auto MinMaxSizesFunc = [&](MinMaxSizesType) -> MinMaxSizesResult {
+    return MinMaxSizesResult(min_max_sizes,
+                             /* depends_on_percentage_block_size */ false);
+  };
+  return ComputeMinAndMaxContentContributionInternal(parent_writing_mode, child,
+                                                     MinMaxSizesFunc)
+      .sizes;
 }
 
 LayoutUnit ComputeInlineSizeFromAspectRatio(const NGConstraintSpace& space,

@@ -292,25 +292,18 @@ inline LayoutUnit ResolveMainBlockLength(
       opt_percentage_resolution_block_size_for_min_max);
 }
 
-// For the given style and min/max content sizes, computes the min and max
-// content contribution (https://drafts.csswg.org/css-sizing/#contributions).
+// For the given |child|, computes the min and max content contribution
+// (https://drafts.csswg.org/css-sizing/#contributions).
+//
 // This is similar to ComputeInlineSizeForFragment except that it does not
 // require a constraint space (percentage sizes as well as auto margins compute
-// to zero) and that an auto inline size resolves to the respective min/max
-// content size.
-// Also, the min/max contribution does include the inline margins as well.
-// Because content contributions are commonly needed by a block's parent,
-// we also take a writing mode here so we can compute this in the parent's
-// coordinate system.
-CORE_EXPORT MinMaxSizes
-ComputeMinAndMaxContentContributionForTest(WritingMode writing_mode,
-                                           const NGBlockNode&,
-                                           const MinMaxSizes&);
-
-// A version of ComputeMinAndMaxContentContribution that does not require you
-// to compute the min/max content size of the child. Instead, this function
-// will compute it if necessary.
-// |child| is the node of which to compute the min/max content contribution.
+// to zero) and an auto inline-size resolves to the respective min/max content
+// size.
+//
+// Additoinally, the min/max contribution includes the inline margins. Because
+// content contributions are commonly needed by a block's parent, we also take
+// a writing-mode here so we can compute this in the parent's coordinate system.
+//
 // Note that if the writing mode of the child is orthogonal to that of the
 // parent, we'll still return the inline min/max contribution in the writing
 // mode of the parent (i.e. typically something based on the preferred *block*
@@ -319,6 +312,19 @@ MinMaxSizesResult ComputeMinAndMaxContentContribution(
     const ComputedStyle& parent_style,
     const NGBlockNode& child,
     const MinMaxSizesInput&);
+
+// Similar to |ComputeMinAndMaxContentContribution| but ignores the parent
+// writing-mode, and instead computes the contribution relative to |child|'s
+// own writing-mode.
+MinMaxSizesResult ComputeMinAndMaxContentContributionForSelf(
+    const NGBlockNode& child,
+    const MinMaxSizesInput&);
+
+// Used for unit-tests.
+CORE_EXPORT MinMaxSizes
+ComputeMinAndMaxContentContributionForTest(WritingMode writing_mode,
+                                           const NGBlockNode&,
+                                           const MinMaxSizes&);
 
 // Computes the min-block-size and max-block-size values for a node.
 MinMaxSizes ComputeMinMaxBlockSize(

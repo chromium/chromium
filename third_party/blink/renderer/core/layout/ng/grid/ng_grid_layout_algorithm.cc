@@ -376,18 +376,19 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
     // This should match the %-resolution sizes we use for layout during
     // measuring.
     MinMaxSizesInput input(kIndefiniteSize, MinMaxSizesType::kContent);
-    return ComputeMinAndMaxContentContribution(Style(), node, input).sizes;
+    return ComputeMinAndMaxContentContributionForSelf(node, input).sizes;
   };
 
-  // TODO(ikilpatrick): This function is just an initial approximation, and
-  // should be removed. Specifically it is incorrect for:
-  //  - Replaced elements.
-  //  - Items with non-visible overflow.
-  //  - Incorrect %-resolution sizes, and available sizes.
-  auto MainSize = [&]() -> LayoutUnit {
-    // TODO(ikilpatrick): This constraint space is incorrect. Specifically the
-    // available, and percentages sizes should be determined from the base or
-    // used track-sizes instead.
+  // TODO(ikilpatrick):
+  //  - If we have an indefinite inline-size, we should resolve percentages
+  //    against zero. Any percentage padding will resolve against this size.
+  //  - The available, and percentage sizes should be determined from the base
+  //    or used track-sizes (if available).
+  //  - Set the stretch-if-auto bit(s) correctly if appropriate, ensuring we
+  //    don't set it against an indefinite track.
+  // If done correctly we should be able to merge this function with logic
+  // within PlaceGridItems.
+  auto CreateConstraintSpace = [&]() -> NGConstraintSpace {
     NGConstraintSpaceBuilder builder(ConstraintSpace(),
                                      item_style.GetWritingDirection(),
                                      /* is_new_fc */ true);
@@ -396,16 +397,17 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
     builder.SetIsPaintedAtomically(true);
     builder.SetAvailableSize(ChildAvailableSize());
     builder.SetPercentageResolutionSize(child_percentage_size_);
-    const NGConstraintSpace space = builder.ToConstraintSpace();
+    return builder.ToConstraintSpace();
+  };
 
-    if (is_parallel_with_track_direction) {
-      // TODO(ikilpatrick): ComputeInlineSizeForFragment is incorrect for
-      // replaced elements.
-      const NGBoxStrut border_padding =
-          ComputeBorders(space, node) + ComputePadding(space, item_style);
-      return ComputeInlineSizeForFragment(space, node, border_padding);
-    }
-
+  // This function will determine the correct block-size of a grid-item.
+  // TODO(ikilpatrick): This should try and skip layout when possible. Notes:
+  //  - We'll need to do a full layout for tables.
+  //  - We'll need special logic for replaced elements.
+  //  - We'll need to respect the aspect-ratio when appropriate.
+  auto BlockSize = [&]() -> LayoutUnit {
+    DCHECK(!is_parallel_with_track_direction);
+    const auto space = CreateConstraintSpace();
     scoped_refptr<const NGLayoutResult> result = node.Layout(space);
     return NGFragment(ConstraintSpace().GetWritingDirection(),
                       result->PhysicalFragment())
@@ -419,19 +421,103 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
       if (is_parallel_with_track_direction)
         contribution = MinMaxContentSizes().min_size;
       else
-        contribution = MainSize();
+        contribution = BlockSize();
       break;
-    case GridItemContributionType::kForIntrinsicMinimums:
-      contribution = MainSize();
+    case GridItemContributionType::kForIntrinsicMinimums: {
+      // TODO(ikilpatrick): All of the below is incorrect for replaced elements.
+
+      const Length& main_length = is_parallel_with_track_direction
+                                      ? item_style.LogicalWidth()
+                                      : item_style.LogicalHeight();
+
+      // We could be clever is and make this an if-stmt, but each type has
+      // subtle consequences. This forces us in the future when we add a new
+      // length type to consider what the best thing is for grid.
+      switch (main_length.GetType()) {
+        case Length::kAuto:
+        case Length::kFitContent:
+        case Length::kFillAvailable:
+        case Length::kPercent:
+        case Length::kCalculated: {
+          // All of the above lengths are considered auto if we are querying a
+          // minimum contribution. They all require definite track-sizes to
+          // determine their final size.
+
+          // Scroll containers are "compressible", and we only consider their
+          // min-size when determining their contribution.
+          if (item_style.IsScrollContainer()) {
+            const auto space = CreateConstraintSpace();
+            const NGBoxStrut border_padding =
+                ComputeBorders(space, node) + ComputePadding(space, item_style);
+
+            // TODO(ikilpatrick): This block needs to respect the aspect-ratio,
+            // and apply the transferred min/max sizes when appropriate. We do
+            // this sometimes elsewhere so should unify and simplify this code.
+            if (is_parallel_with_track_direction) {
+              auto MinMaxSizesFunc =
+                  [&](MinMaxSizesType type) -> MinMaxSizesResult {
+                // TODO(ikilpatrick): Again, kIndefiniteSize here is incorrect,
+                // and needs to use the base or resolved track sizes.
+                MinMaxSizesInput input(kIndefiniteSize, type);
+                return node.ComputeMinMaxSizes(item_style.GetWritingMode(),
+                                               input, &space);
+              };
+
+              contribution = ResolveMinInlineLength(
+                  space, item_style, border_padding, MinMaxSizesFunc,
+                  item_style.LogicalMinWidth(), LengthResolvePhase::kLayout);
+            } else {
+              contribution = ResolveMinBlockLength(
+                  space, item_style, border_padding,
+                  item_style.LogicalMinHeight(), LengthResolvePhase::kLayout);
+            }
+            break;
+          }
+
+          if (is_parallel_with_track_direction)
+            contribution = MinMaxContentSizes().min_size;
+          else
+            contribution = BlockSize();
+          break;
+        }
+        case Length::kMinContent:
+        case Length::kMaxContent:
+        case Length::kFixed: {
+          // All of the above lengths are "definite" (non-auto), and don't need
+          // the special min-size treatment above. (They will all end up being
+          // the specified size).
+          if (is_parallel_with_track_direction) {
+            // TODO(ikilpatrick): This is incorrect for replaced elements.
+            const auto space = CreateConstraintSpace();
+            const NGBoxStrut border_padding =
+                ComputeBorders(space, node) + ComputePadding(space, item_style);
+            contribution =
+                ComputeInlineSizeForFragment(space, node, border_padding);
+          } else {
+            contribution = BlockSize();
+          }
+          break;
+        }
+        case Length::kMinIntrinsic:
+        case Length::kDeviceWidth:
+        case Length::kDeviceHeight:
+        case Length::kExtendToZoom:
+        case Length::kNone:
+          NOTREACHED();
+          break;
+      }
       break;
+    }
     case GridItemContributionType::kForMaxContentMinimums:
     case GridItemContributionType::kForMaxContentMaximums:
       if (is_parallel_with_track_direction)
         contribution = MinMaxContentSizes().max_size;
       else
-        contribution = MainSize();
+        contribution = BlockSize();
       break;
   }
+
+  DCHECK_NE(contribution, kIndefiniteSize);
 
   return contribution + ((track_direction == kForColumns)
                              ? grid_item.margins.InlineSum()
