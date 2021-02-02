@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "services/device/generic_sensor/absolute_orientation_euler_angles_fusion_algorithm_using_accelerometer_and_magnetometer.h"
+#include "services/device/generic_sensor/gravity_fusion_algorithm_using_accelerometer.h"
 #include "services/device/generic_sensor/linear_acceleration_fusion_algorithm_using_accelerometer.h"
 #include "services/device/generic_sensor/orientation_quaternion_fusion_algorithm_using_euler_angles.h"
 #include "services/device/generic_sensor/platform_sensor_fusion.h"
@@ -21,6 +22,7 @@ bool PlatformSensorProviderLinuxBase::IsFusionSensorType(
     mojom::SensorType type) {
   switch (type) {
     case mojom::SensorType::LINEAR_ACCELERATION:
+    case mojom::SensorType::GRAVITY:
     case mojom::SensorType::ABSOLUTE_ORIENTATION_EULER_ANGLES:
     case mojom::SensorType::ABSOLUTE_ORIENTATION_QUATERNION:
     case mojom::SensorType::RELATIVE_ORIENTATION_EULER_ANGLES:
@@ -41,6 +43,10 @@ void PlatformSensorProviderLinuxBase::CreateFusionSensor(
     case mojom::SensorType::LINEAR_ACCELERATION:
       fusion_algorithm = std::make_unique<
           LinearAccelerationFusionAlgorithmUsingAccelerometer>();
+      break;
+    case mojom::SensorType::GRAVITY:
+      fusion_algorithm =
+          std::make_unique<GravityFusionAlgorithmUsingAccelerometer>();
       break;
     case mojom::SensorType::ABSOLUTE_ORIENTATION_EULER_ANGLES:
       fusion_algorithm = std::make_unique<

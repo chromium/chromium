@@ -609,6 +609,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/sensor/absolute_orientation_sensor.idl",
           "//third_party/blink/renderer/modules/sensor/accelerometer.idl",
           "//third_party/blink/renderer/modules/sensor/ambient_light_sensor.idl",
+          "//third_party/blink/renderer/modules/sensor/gravity_sensor.idl",
           "//third_party/blink/renderer/modules/sensor/gyroscope.idl",
           "//third_party/blink/renderer/modules/sensor/linear_acceleration_sensor.idl",
           "//third_party/blink/renderer/modules/sensor/magnetometer.idl",

@@ -21,6 +21,8 @@ source_set("generic_sensor") {
     "absolute_orientation_euler_angles_fusion_algorithm_using_accelerometer_and_magnetometer.cc",
     "absolute_orientation_euler_angles_fusion_algorithm_using_accelerometer_and_magnetometer.h",
     "generic_sensor_consts.h",
+    "gravity_fusion_algorithm_using_accelerometer.cc",
+    "gravity_fusion_algorithm_using_accelerometer.h",
     "linear_acceleration_fusion_algorithm_using_accelerometer.cc",
     "linear_acceleration_fusion_algorithm_using_accelerometer.h",
     "orientation_euler_angles_fusion_algorithm_using_quaternion.cc",

@@ -121,6 +121,7 @@ SensorTypeToFeaturePolicyFeatures(SensorType type) {
       return {blink::mojom::FeaturePolicyFeature::kAmbientLightSensor};
     case SensorType::ACCELEROMETER:
     case SensorType::LINEAR_ACCELERATION:
+    case SensorType::GRAVITY:
       return {blink::mojom::FeaturePolicyFeature::kAccelerometer};
     case SensorType::GYROSCOPE:
       return {blink::mojom::FeaturePolicyFeature::kGyroscope};

@@ -1006,6 +1006,10 @@
         },
     },
     {
+      name: "GravitySensor",
+      status: "experimental",
+    },
+    {
       name: "GroupEffect",
       status: "test",
     },

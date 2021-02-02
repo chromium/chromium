@@ -75,6 +75,7 @@ on Windows is summarized below:
 | AMBIENT_LIGHT                     | SENSOR_TYPE_AMBIENT_LIGHT                 |
 | ACCELEROMETER                     | SENSOR_TYPE_ACCELEROMETER_3D              |
 | LINEAR_ACCELEROMETER              | *                                         |
+| GRAVITY                           | *                                         |
 | GYROSCOPE                         | SENSOR_TYPE_GYROMETER_3D                  |
 | MAGNETOMETER                      | SENSOR_TYPE_COMPASS_3D                    |
 | ABSOLUTE_ORIENTATION_EULER_ANGLES | SENSOR_TYPE_INCLINOMETER_3D               |
@@ -84,6 +85,10 @@ on Windows is summarized below:
 implementing a low-pass-filter over the values returned by the
 ACCELEROMETER in order to remove the contribution of the gravitational
 force.
+
+*The GRAVITY sensor type is provided by implementing a low-pass-filter
+over the values returned by the ACCELEROMETER in order to get
+the contribution of the gravitational force.
 
 The "Sensor GUID" column specifies the names of the sensor type GUIDs
 used to provide data for a SensorType. Any SensorType not mentioned by

@@ -24,6 +24,9 @@ class PlatformSensorProviderAndroid : public PlatformSensorProvider {
                             CreateSensorCallback callback) override;
 
  private:
+  void CreateGravitySensor(JNIEnv* env,
+                           SensorReadingSharedBuffer* reading_buffer,
+                           CreateSensorCallback callback);
   void CreateLinearAccelerationSensor(JNIEnv* env,
                                       SensorReadingSharedBuffer* reading_buffer,
                                       CreateSensorCallback callback);

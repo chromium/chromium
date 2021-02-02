@@ -2674,6 +2674,9 @@ interface GeolocationPositionError
     getter code
     getter message
     method constructor
+interface GravitySensor : Accelerometer
+    attribute @@toStringTag
+    method constructor
 interface Gyroscope : Sensor
     attribute @@toStringTag
     getter x

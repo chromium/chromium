@@ -14,6 +14,7 @@ The Generic Sensors API is implemented in `third_party/blink/renderer/modules/se
 * [AbsoluteOrientationSensor] &rarr; ABSOLUTE_ORIENTATION_QUATERNION
 * [Accelerometer] &rarr; ACCELEROMETER
 * [AmbientLightSensor] &rarr; AMBIENT_LIGHT
+* [GravitySensor] &rarr; GRAVITY
 * [Gyroscope] &rarr; GYROSCOPE
 * [LinearAccelerationSensor] &rarr; LINEAR_ACCELEROMETER
 * [Magnetometer] &rarr; MAGNETOMETER
@@ -22,6 +23,7 @@ The Generic Sensors API is implemented in `third_party/blink/renderer/modules/se
 [AbsoluteOrientationSensor]: ../../../third_party/blink/renderer/modules/sensor/absolute_orientation_sensor.idl
 [Accelerometer]: ../../../third_party/blink/renderer/modules/sensor/accelerometer.idl
 [AmbientLightSensor]: ../../../third_party/blink/renderer/modules/sensor/ambient_light_sensor.idl
+[GravitySensor]: ../../../third_party/blink/renderer/modules/sensor/gravity_sensor.idl
 [Gyroscope]: ../../../third_party/blink/renderer/modules/sensor/gyroscope.idl
 [LinearAccelerationSensor]: ../../../third_party/blink/renderer/modules/sensor/linear_acceleration_sensor.idl
 [Magnetometer]: ../../../third_party/blink/renderer/modules/sensor/magnetometer.idl
@@ -34,6 +36,7 @@ The DeviceOrientation Events API is implemented in `third_party/blink/renderer/m
 * [DeviceMotionEvent]
   * ACCELEROMETER: populates the `accelerationIncludingGravity` field
   * LINEAR_ACCELEROMETER: populates the `acceleration` field
+  * GRAVITY: populates the `gravity` field
   * GYROSCOPE: populates the `rotationRate` field
 * [DeviceOrientationEvent]
   * ABSOLUTE_ORIENTATION_EULER_ANGLES (when a listener for the `'deviceorientationabsolute'` event is added)
@@ -68,6 +71,7 @@ platform.
 | PROXIMITY                         |                           |                                       |                                       |                                           |
 | ACCELEROMETER                     | TYPE_ACCELEROMETER        | in_accel                              | SMCMotionSensor                       | Yes                                       |
 | LINEAR_ACCELEROMETER              | See below                 | ACCELEROMETER (*)                     |                                       | ACCELEROMETER (*)                         |
+| GRAVITY                           | See below                 | ACCELEROMETER (*)                     |                                       | ACCELEROMETER (*)                         |
 | GYROSCOPE                         | TYPE_GYROSCOPE            | in_anglvel                            |                                       | Yes                                       |
 | MAGNETOMETER                      | TYPE_MAGNETIC_FIELD       | in_magn                               |                                       | Yes                                       |
 | PRESSURE                          |                           |                                       |                                       |                                           |
@@ -86,6 +90,10 @@ Sensors are implemented by passing through values provided by the
 class. The TYPE_* values in the below descriptions correspond to the integer
 constants from the android.hardware.Sensor used to provide data for a
 SensorType.
+
+For GRAVITY, the following sensor fallback is used:
+1. Use TYPE_GRAVITY directly
+2. ACCELEROMETER, with a low-pass filter to isolate the effect of gravity
 
 For LINEAR_ACCELEROMETER, the following sensor fallback is used:
 1. Use TYPE_LINEAR_ACCELERATION directly

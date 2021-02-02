@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-PASS Accelerometer: Feature-Policy allow='accelerometer' attribute allows same-origin iframe
-PASS Accelerometer: Feature-Policy allow='accelerometer' attribute allows cross-origin iframe
-PASS LinearAccelerationSensor: Feature-Policy allow='accelerometer' attribute allows same-origin iframe
-PASS LinearAccelerationSensor: Feature-Policy allow='accelerometer' attribute allows cross-origin iframe
-FAIL GravitySensor: Feature-Policy allow='accelerometer' attribute allows same-origin iframe assert_implements: GravitySensor is not supported. undefined
-FAIL GravitySensor: Feature-Policy allow='accelerometer' attribute allows cross-origin iframe assert_implements: GravitySensor is not supported. undefined
-Harness: the test ran to completion.
-

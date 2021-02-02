@@ -24,6 +24,7 @@ bool IsExtraSensorClass(mojom::SensorType type) {
   switch (type) {
     case mojom::SensorType::ACCELEROMETER:
     case mojom::SensorType::LINEAR_ACCELERATION:
+    case mojom::SensorType::GRAVITY:
     case mojom::SensorType::GYROSCOPE:
     case mojom::SensorType::ABSOLUTE_ORIENTATION_EULER_ANGLES:
     case mojom::SensorType::ABSOLUTE_ORIENTATION_QUATERNION:

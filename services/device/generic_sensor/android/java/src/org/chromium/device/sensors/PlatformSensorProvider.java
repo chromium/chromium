@@ -171,6 +171,9 @@ class PlatformSensorProvider {
             case SensorType.LINEAR_ACCELERATION:
                 sensorType = Sensor.TYPE_LINEAR_ACCELERATION;
                 break;
+            case SensorType.GRAVITY:
+                sensorType = Sensor.TYPE_GRAVITY;
+                break;
             case SensorType.GYROSCOPE:
                 sensorType = Sensor.TYPE_GYROSCOPE;
                 break;
@@ -208,6 +211,8 @@ class PlatformSensorProvider {
                 return PlatformSensor.create(Sensor.TYPE_ACCELEROMETER, 3, this);
             case SensorType.LINEAR_ACCELERATION:
                 return PlatformSensor.create(Sensor.TYPE_LINEAR_ACCELERATION, 3, this);
+            case SensorType.GRAVITY:
+                return PlatformSensor.create(Sensor.TYPE_GRAVITY, 3, this);
             case SensorType.GYROSCOPE:
                 return PlatformSensor.create(Sensor.TYPE_GYROSCOPE, 3, this);
             case SensorType.MAGNETOMETER:

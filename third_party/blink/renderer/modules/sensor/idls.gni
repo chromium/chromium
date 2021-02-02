@@ -6,6 +6,7 @@ modules_idl_files = [
   "absolute_orientation_sensor.idl",
   "accelerometer.idl",
   "ambient_light_sensor.idl",
+  "gravity_sensor.idl",
   "gyroscope.idl",
   "linear_acceleration_sensor.idl",
   "magnetometer.idl",

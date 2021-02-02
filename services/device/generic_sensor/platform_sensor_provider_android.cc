@@ -10,6 +10,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/ref_counted.h"
 #include "services/device/generic_sensor/absolute_orientation_euler_angles_fusion_algorithm_using_accelerometer_and_magnetometer.h"
+#include "services/device/generic_sensor/gravity_fusion_algorithm_using_accelerometer.h"
 #include "services/device/generic_sensor/jni_headers/PlatformSensorProvider_jni.h"
 #include "services/device/generic_sensor/linear_acceleration_fusion_algorithm_using_accelerometer.h"
 #include "services/device/generic_sensor/orientation_euler_angles_fusion_algorithm_using_quaternion.h"
@@ -45,6 +46,9 @@ void PlatformSensorProviderAndroid::CreateSensorInternal(
   // Android version, so the fallback ensures selection of the best possible
   // option.
   switch (type) {
+    case mojom::SensorType::GRAVITY:
+      CreateGravitySensor(env, reading_buffer, std::move(callback));
+      break;
     case mojom::SensorType::LINEAR_ACCELERATION:
       CreateLinearAccelerationSensor(env, reading_buffer, std::move(callback));
       break;
@@ -75,6 +79,33 @@ void PlatformSensorProviderAndroid::CreateSensorInternal(
       std::move(callback).Run(concrete_sensor);
       break;
     }
+  }
+}
+
+// For GRAVITY we see if the platform supports it directly through
+// TYPE_GRAVITY. If not we use a fusion algorithm to remove the
+// contribution of linear acceleration from the raw ACCELEROMETER.
+void PlatformSensorProviderAndroid::CreateGravitySensor(
+    JNIEnv* env,
+    SensorReadingSharedBuffer* reading_buffer,
+    CreateSensorCallback callback) {
+  ScopedJavaLocalRef<jobject> sensor = Java_PlatformSensorProvider_createSensor(
+      env, j_object_, static_cast<jint>(mojom::SensorType::GRAVITY));
+
+  if (sensor.obj()) {
+    auto concrete_sensor = base::MakeRefCounted<PlatformSensorAndroid>(
+        mojom::SensorType::GRAVITY, reading_buffer, this, sensor);
+
+    std::move(callback).Run(concrete_sensor);
+  } else {
+    auto sensor_fusion_algorithm =
+        std::make_unique<GravityFusionAlgorithmUsingAccelerometer>();
+
+    // If this PlatformSensorFusion object is successfully initialized,
+    // |callback| will be run with a reference to this object.
+    PlatformSensorFusion::Create(reading_buffer, this,
+                                 std::move(sensor_fusion_algorithm),
+                                 std::move(callback));
   }
 }
 

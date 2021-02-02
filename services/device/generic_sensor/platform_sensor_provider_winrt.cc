@@ -9,6 +9,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/task_runner_util.h"
+#include "services/device/generic_sensor/gravity_fusion_algorithm_using_accelerometer.h"
 #include "services/device/generic_sensor/linear_acceleration_fusion_algorithm_using_accelerometer.h"
 #include "services/device/generic_sensor/orientation_euler_angles_fusion_algorithm_using_quaternion.h"
 #include "services/device/generic_sensor/platform_sensor_fusion.h"
@@ -50,6 +51,16 @@ void PlatformSensorProviderWinrt::CreateSensorInternal(
       PlatformSensorFusion::Create(
           reading_buffer, this, std::move(linear_acceleration_fusion_algorithm),
           std::move(callback));
+      break;
+    }
+    case mojom::SensorType::GRAVITY: {
+      auto gravity_fusion_algorithm =
+          std::make_unique<GravityFusionAlgorithmUsingAccelerometer>();
+      // If this PlatformSensorFusion object is successfully initialized,
+      // |callback| will be run with a reference to this object.
+      PlatformSensorFusion::Create(reading_buffer, this,
+                                   std::move(gravity_fusion_algorithm),
+                                   std::move(callback));
       break;
     }
 

@@ -31262,6 +31262,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3792" label="XRWebGLBindingGetDepthInformation"/>
   <int value="3793" label="SessionStorageFirstUsedBeforeFcp"/>
   <int value="3794" label="SessionStorageFirstUsedAfterFcp"/>
+  <int value="3795" label="GravitySensorConstructor"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

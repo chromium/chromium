@@ -1622,6 +1622,8 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_uncaptured_error_event.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_validation_error.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_validation_error.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gravity_sensor.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gravity_sensor.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gyroscope.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gyroscope.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_handwriting_drawing.cc",

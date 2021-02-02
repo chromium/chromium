@@ -271,6 +271,8 @@ export function sensorMocks() {
         return 'LinearAccelerationSensor';
       case SensorType.AMBIENT_LIGHT:
         return 'AmbientLightSensor';
+      case SensorType.GRAVITY:
+        return 'GravitySensor';
       case SensorType.GYROSCOPE:
         return 'Gyroscope';
       case SensorType.MAGNETOMETER:
@@ -391,6 +393,7 @@ export function sensorMocks() {
         ['Accelerometer', new SensorTypeSettings(SensorType.ACCELEROMETER)],
         ['LinearAccelerationSensor', new SensorTypeSettings(SensorType.LINEAR_ACCELERATION)],
         ['AmbientLightSensor', new SensorTypeSettings(SensorType.AMBIENT_LIGHT)],
+        ['GravitySensor', new SensorTypeSettings(SensorType.GRAVITY)],
         ['Gyroscope', new SensorTypeSettings(SensorType.GYROSCOPE)],
         ['Magnetometer', new SensorTypeSettings(SensorType.MAGNETOMETER)],
         ['AbsoluteOrientationSensor', new SensorTypeSettings(SensorType.ABSOLUTE_ORIENTATION_QUATERNION)],
