@@ -306,20 +306,6 @@ TestSystemWebAppInstallation::SetUpNonResizeableApp() {
       SystemAppType::SAMPLE, std::move(app_info)));
 }
 
-// static
-std::unique_ptr<TestSystemWebAppInstallation>
-TestSystemWebAppInstallation::SetUpAppWithBackgroundTask() {
-  SystemAppInfo app_info(
-      "Test", GURL("chrome://test-system-app/pwa.html"),
-      base::BindRepeating(&GenerateWebApplicationInfoForTestApp));
-  app_info.timer_info.emplace();
-  app_info.timer_info->open_immediately = true;
-  app_info.timer_info->period = base::TimeDelta::FromDays(1);
-  app_info.timer_info->url = GURL("chrome://test-system-app/page2.html");
-  return base::WrapUnique(new TestSystemWebAppInstallation(
-      SystemAppType::SETTINGS, std::move(app_info)));
-}
-
 std::unique_ptr<KeyedService>
 TestSystemWebAppInstallation::CreateWebAppProvider(SystemAppInfo info,
                                                    Profile* profile) {

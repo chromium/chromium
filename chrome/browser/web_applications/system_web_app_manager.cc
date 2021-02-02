@@ -5,7 +5,6 @@
 #include "chrome/browser/web_applications/system_web_app_manager.h"
 
 #include <algorithm>
-#include <memory>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -49,7 +48,6 @@
 #include "content/public/browser/url_data_source.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
-#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -76,6 +74,7 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "extensions/common/constants.h"
+
 #if !defined(OFFICIAL_BUILD)
 #include "chrome/browser/chromeos/web_applications/file_manager_web_app_info.h"
 #include "chrome/browser/chromeos/web_applications/sample_system_web_app_info.h"
@@ -265,9 +264,6 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps(
       {{GetOrigin("chrome://sample-system-web-app"), {"Frobulate"}},
        {GetOrigin("chrome-untrusted://sample-system-web-app"), {"Frobulate"}}});
   infos.at(SystemAppType::SAMPLE).capture_navigations = true;
-  infos.at(SystemAppType::SAMPLE).timer_info = SystemAppBackgroundTaskInfo(
-      base::TimeDelta::FromSeconds(30),
-      GURL("chrome://sample-system-web-app/timer.html"));
 #endif  // !defined(OFFICIAL_BUILD)
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -443,15 +439,8 @@ SystemWebAppManager::SystemWebAppManager(Profile* profile)
 
 SystemWebAppManager::~SystemWebAppManager() = default;
 
-void SystemWebAppManager::StopBackgroundTasks() {
-  for (auto& task : tasks_) {
-    task->StopTask();
-  }
-}
-
 void SystemWebAppManager::Shutdown() {
   shutting_down_ = true;
-  StopBackgroundTasks();
 }
 
 void SystemWebAppManager::SetSubsystems(
@@ -733,11 +722,6 @@ void SystemWebAppManager::SetSystemAppsForTesting(
   system_app_infos_ = std::move(system_apps);
 }
 
-const std::vector<std::unique_ptr<SystemAppBackgroundTask>>&
-SystemWebAppManager::GetBackgroundTasksForTesting() {
-  return tasks_;
-}
-
 void SystemWebAppManager::SetUpdatePolicyForTesting(UpdatePolicy policy) {
   update_policy_ = policy;
 }
@@ -865,21 +849,9 @@ void SystemWebAppManager::OnAppsSynchronized(
 
   RecordSystemWebAppInstallResults(install_results);
 
-  for (const auto& it : system_app_infos_) {
-    const SystemAppInfo& app_info = it.second;
-
-    if (app_info.timer_info) {
-      tasks_.push_back(std::make_unique<SystemAppBackgroundTask>(
-          profile_, app_info.timer_info.value()));
-      tasks_.back()->StartTask(on_apps_synchronized());
-    }
-  }
-
   // May be called more than once in tests.
   if (!on_apps_synchronized_->is_signaled()) {
     on_apps_synchronized_->Signal();
-    // TODO(http://crbug/1173187): Don't create SWA background tasks that are
-    // associated with a disabled SWA.
     OnAppsPolicyChanged();
   }
 
