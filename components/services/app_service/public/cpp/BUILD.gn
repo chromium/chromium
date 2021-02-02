@@ -33,6 +33,8 @@ source_set("app_share_target") {
 component("app_update") {
   output_name = "APP_UPDATE"
   sources = [
+    "app_capability_access_cache.cc",
+    "app_capability_access_cache.h",
     "app_registry_cache.cc",
     "app_registry_cache.h",
     "app_registry_cache_wrapper.cc",
@@ -169,6 +171,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "app_capability_access_cache_unittest.cc",
     "app_registry_cache_unittest.cc",
     "app_update_unittest.cc",
     "capability_access_update_unittest.cc",
