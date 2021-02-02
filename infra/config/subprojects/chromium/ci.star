@@ -1761,6 +1761,7 @@ ci.chromiumos_builder(
 ci.cipd_3pp_builder(
     name = "3pp-linux-amd64-packager",
     os = os.LINUX_DEFAULT,
+    builderless = False,
     console_view_entry = consoles.console_view_entry(
         category = "3pp|linux",
         short_name = "amd64",
