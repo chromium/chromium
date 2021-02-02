@@ -27,7 +27,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -39,6 +38,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.externalauth.ExternalAuthUtils;
+import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 import java.io.IOException;
 
@@ -55,6 +55,9 @@ public class AssistantVoiceSearchServiceRenderTest {
             ChromeRenderTestRule.Builder.withPublicCorpus().build();
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Rule
+    public DisableAnimationsTestRule mDisableAnimationsTestRule = new DisableAnimationsTestRule();
 
     @Mock
     GSAState mGsaState;
@@ -81,11 +84,10 @@ public class AssistantVoiceSearchServiceRenderTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1165682")
     @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:colorful_mic/true"})
     @Feature({"RenderTest"})
     public void testAssistantColorfulMic() throws IOException {
-        mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, /* incognito= */ false);
+        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
 
         mRenderTestRule.render(mActivityTestRule.getActivity().findViewById(R.id.ntp_content),
                 "avs_colorful_mic_unfocused_ntp");
@@ -100,7 +102,7 @@ public class AssistantVoiceSearchServiceRenderTest {
     @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:colorful_mic/false"})
     @Feature({"RenderTest"})
     public void testAssistantMic() throws IOException {
-        mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, /* incognito= */ false);
+        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
 
         mRenderTestRule.render(mActivityTestRule.getActivity().findViewById(R.id.ntp_content),
                 "avs__mic_unfocused_ntp");
