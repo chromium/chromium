@@ -375,6 +375,7 @@ FetchResponseData* Response::CreateUnfilteredFetchResponseDataWithoutBody(
   else
     response = FetchResponseData::CreateNetworkErrorResponse();
 
+  response->SetPadding(fetch_api_response.padding);
   response->SetResponseSource(fetch_api_response.response_source);
   response->SetURLList(fetch_api_response.url_list);
   response->SetStatus(fetch_api_response.status_code);

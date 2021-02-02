@@ -285,6 +285,7 @@ component("core") {
     "//services/service_manager/public/cpp",
     "//skia",
     "//skia:skcms",
+    "//storage/common",
     "//third_party/blink/public:buildflags",
     "//third_party/blink/public:image_resources_grit",
     "//third_party/blink/public:resources",

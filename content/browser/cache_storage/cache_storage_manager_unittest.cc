@@ -20,6 +20,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -49,12 +50,12 @@
 #include "net/disk_cache/disk_cache.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "storage/browser/blob/blob_storage_context.h"
-#include "storage/browser/quota/padding_key.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/fake_blob.h"
 #include "storage/browser/test/mock_quota_manager_proxy.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
+#include "storage/common/quota/padding_key.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom.h"
@@ -694,20 +695,25 @@ class CacheStorageManagerTest : public testing::Test {
       base::RunLoop* loop,
       FetchResponseType response_type = FetchResponseType::kDefault,
       ResponseHeaderMap response_headers = ResponseHeaderMap()) {
+    // CacheStorage depends on fetch to provide the opaque response padding
+    // value now.  We prepolute a padding value here to simulate that.
+    int64_t padding = response_type == FetchResponseType::kOpaque ? 10 : 0;
+
     auto response = blink::mojom::FetchAPIResponse::New(
         std::vector<GURL>({request->url}), status_code, "OK", response_type,
-        network::mojom::FetchResponseSource::kUnspecified, response_headers,
-        base::nullopt /* mime_type */, net::HttpRequestHeaders::kGetMethod,
-        std::move(blob), blink::mojom::ServiceWorkerResponseError::kUnknown,
-        base::Time(), std::string() /* cache_storage_cache_name */,
-        std::vector<std::string>() /* cors_exposed_header_names */,
-        nullptr /* side_data_blob */,
-        nullptr /* side_data_blob_for_cache_put */,
+        padding, network::mojom::FetchResponseSource::kUnspecified,
+        response_headers, /*mime_type=*/base::nullopt,
+        net::HttpRequestHeaders::kGetMethod, std::move(blob),
+        blink::mojom::ServiceWorkerResponseError::kUnknown, base::Time(),
+        /*cache_storage_cache_name=*/std::string(),
+        /*cors_exposed_header_names=*/std::vector<std::string>(),
+        /*side_data_blob=*/nullptr,
+        /*side_data_blob_for_cache_put=*/nullptr,
         network::mojom::ParsedHeaders::New(),
         net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN,
-        "unknown" /* alpn_negotiated_protocol */,
-        false /* loaded_with_credentials */, false /* was_fetched_via_spdy */,
-        false /* has_range_requested */);
+        /*alpn_negotiated_protocol=*/"unknown",
+        /*loaded_with_credentials=*/false, /*was_fetched_via_spdy=*/false,
+        /*has_range_requested=*/false);
 
     blink::mojom::BatchOperationPtr operation =
         blink::mojom::BatchOperation::New();
@@ -1597,53 +1603,6 @@ TEST_F(CacheStorageManagerTest, QuotaCorrectAfterReopen) {
   EXPECT_TRUE(CachePut(cache_handle.value(), kBarURL, response_type));
 
   EXPECT_EQ(2 * cache_size, GetQuotaOriginUsage(origin1_));
-}
-
-TEST_F(CacheStorageManagerTest, PersistedCacheKeyUsed) {
-  const GURL kFooURL = origin1_.GetURL().Resolve("foo");
-  const std::string kCacheName = "foo";
-
-  EXPECT_TRUE(Open(origin1_, kCacheName));
-  CacheStorageCacheHandle original_handle = std::move(callback_cache_handle_);
-
-  EXPECT_TRUE(
-      CachePut(original_handle.value(), kFooURL, FetchResponseType::kOpaque));
-
-  int64_t cache_size_after_put = Size(origin1_);
-  EXPECT_LT(0, cache_size_after_put);
-
-  // Close the caches and cache manager.
-  EXPECT_TRUE(FlushCacheStorageIndex(origin1_));
-  DestroyStorageManager();
-
-  // ResetPaddingKeyForTesting isn't thread safe so
-  base::RunLoop().RunUntilIdle();
-  storage::ResetPaddingKeyForTesting();
-
-  // Create a new CacheStorageManager that hasn't yet loaded the origin.
-  CreateStorageManager();
-  quota_manager_proxy_->SimulateQuotaManagerDestroyed();
-  RecreateStorageManager();
-
-  // Reopening the origin/cache creates a new CacheStorage instance with a new
-  // random key.
-  EXPECT_TRUE(Open(origin1_, kCacheName));
-
-  // Size (before any change) should be the same as before it was closed.
-  EXPECT_EQ(cache_size_after_put, Size(origin1_));
-
-  // Delete the value. If the new padding key was used to deduct the padded size
-  // then after deletion we would expect to see a non-zero cache size.
-  EXPECT_TRUE(Delete(origin1_, "foo"));
-  EXPECT_EQ(0, Size(origin1_));
-
-  // Now put the exact same resource back into the cache. This time we expect to
-  // see a different size as the padding is calculated with a different key.
-  CacheStorageCacheHandle new_handle = std::move(callback_cache_handle_);
-  EXPECT_TRUE(
-      CachePut(new_handle.value(), kFooURL, FetchResponseType::kOpaque));
-
-  EXPECT_NE(cache_size_after_put, Size(origin1_));
 }
 
 // With a memory cache the cache can't be freed from memory until the client
@@ -2637,6 +2596,72 @@ TEST_F(CacheStorageQuotaClientDiskOnlyTest, QuotaDeleteUnloadedOriginData) {
 
   EXPECT_TRUE(QuotaDeleteOriginData(origin1_));
   EXPECT_EQ(0, QuotaGetOriginUsage(origin1_));
+}
+
+TEST_F(CacheStorageManagerTest, UpgradePaddingVersion) {
+  // Create an empty directory for the cache_storage files.
+  auto* legacy_manager =
+      static_cast<LegacyCacheStorageManager*>(cache_manager_.get());
+  base::FilePath manager_dir = legacy_manager->root_path();
+  base::FilePath storage_dir = LegacyCacheStorageManager::ConstructOriginPath(
+      manager_dir, origin1_, storage::mojom::CacheStorageOwner::kCacheAPI);
+  EXPECT_TRUE(base::CreateDirectory(manager_dir));
+
+  // Destroy the manager while we operate on the underlying files.
+  DestroyStorageManager();
+
+  // Determine the location of the old, frozen copy of the cache_storage
+  // files in the test data.
+  base::FilePath root_path;
+  base::PathService::Get(base::DIR_SOURCE_ROOT, &root_path);
+  base::FilePath test_data_path =
+      root_path.AppendASCII("content/test/data/cache_storage/padding_v2/")
+          .Append(storage_dir.BaseName());
+
+  // Copy the old files into the test storage directory.
+  EXPECT_TRUE(base::CopyDirectory(test_data_path, storage_dir.DirName(),
+                                  /*recursive=*/true));
+
+  // Read the index file from disk.
+  base::FilePath index_path = storage_dir.AppendASCII("index.txt");
+  std::string protobuf;
+  EXPECT_TRUE(base::ReadFileToString(index_path, &protobuf));
+  proto::CacheStorageIndex original_index;
+  EXPECT_TRUE(original_index.ParseFromString(protobuf));
+
+  // Verify the old index matches our expectations.  It should contain
+  // a single cache with the old padding version.
+  EXPECT_EQ(original_index.cache_size(), 1);
+  EXPECT_EQ(original_index.cache(0).padding_version(), 2);
+  int64_t original_padding = original_index.cache(0).padding();
+
+  // Re-create the manager and ask it for the size of the test origin.
+  // This should trigger the migration of the padding values on disk.
+  CreateStorageManager();
+  int64_t total_usage = GetOriginUsage(origin1_);
+
+  // Flush the index and destroy the manager so we can inspect the index
+  // again.
+  FlushCacheStorageIndex(origin1_);
+  DestroyStorageManager();
+
+  // Read the newly modified index off of disk.
+  std::string protobuf2;
+  base::ReadFileToString(index_path, &protobuf2);
+  proto::CacheStorageIndex upgraded_index;
+  EXPECT_TRUE(upgraded_index.ParseFromString(protobuf2));
+
+  // Verify the single cache has had its padding version upgraded.
+  EXPECT_EQ(upgraded_index.cache_size(), 1);
+  EXPECT_EQ(upgraded_index.cache(0).padding_version(), 3);
+  int64_t upgraded_size = upgraded_index.cache(0).size();
+  int64_t upgraded_padding = upgraded_index.cache(0).padding();
+
+  // Verify the padding has changed with the migration.  Note, the non-padded
+  // size may or may not have changed depending on if additional fields are
+  // stored in each entry or the index in the new disk schema.
+  EXPECT_NE(original_padding, upgraded_padding);
+  EXPECT_EQ(total_usage, (upgraded_size + upgraded_padding));
 }
 
 INSTANTIATE_TEST_SUITE_P(

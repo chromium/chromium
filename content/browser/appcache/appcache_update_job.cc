@@ -26,7 +26,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/request_priority.h"
 #include "net/http/http_request_headers.h"
-#include "storage/browser/quota/padding_key.h"
+#include "storage/common/quota/padding_key.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/appcache/appcache.mojom.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
@@ -207,10 +207,7 @@ int64_t ComputeAppCacheResponsePadding(const GURL& response_url,
   if (response_url.GetOrigin() == manifest_url.GetOrigin())
     return 0;
 
-  return storage::ComputeResponsePadding(
-      response_url.spec(), storage::GetDefaultPaddingKey(),
-      /*has_metadata=*/false, /*loaded_with_credentials=*/false,
-      net::HttpRequestHeaders::kGetMethod);
+  return storage::ComputeRandomResponsePadding();
 }
 
 }  // namespace

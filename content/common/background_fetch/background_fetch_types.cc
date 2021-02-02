@@ -31,8 +31,8 @@ blink::mojom::FetchAPIResponsePtr BackgroundFetchSettledFetch::CloneResponse(
     return nullptr;
   return blink::mojom::FetchAPIResponse::New(
       response->url_list, response->status_code, response->status_text,
-      response->response_type, response->response_source, response->headers,
-      response->mime_type, response->request_method,
+      response->response_type, response->padding, response->response_source,
+      response->headers, response->mime_type, response->request_method,
       CloneSerializedBlob(response->blob), response->error,
       response->response_time, response->cache_storage_cache_name,
       response->cors_exposed_header_names,

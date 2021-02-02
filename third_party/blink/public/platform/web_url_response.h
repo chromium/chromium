@@ -264,6 +264,12 @@ class WebURLResponse {
   BLINK_PLATFORM_EXPORT void SetType(network::mojom::FetchResponseType);
   BLINK_PLATFORM_EXPORT network::mojom::FetchResponseType GetType() const;
 
+  // Pre-computed padding.  This should only be non-zero if the type is
+  // kOpaque.  In addition, it is only set for responses provided by a
+  // service worker FetchEvent handler.
+  BLINK_PLATFORM_EXPORT void SetPadding(int64_t);
+  BLINK_PLATFORM_EXPORT int64_t GetPadding() const;
+
   // The URL list of the Response object the ServiceWorker passed to
   // respondWith(). See
   // network::ResourceResponseInfo::url_list_via_service_worker for details.

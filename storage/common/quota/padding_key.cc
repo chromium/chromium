@@ -2,14 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "storage/browser/quota/padding_key.h"
+#include "storage/common/quota/padding_key.h"
 
+#include <inttypes.h>
 #include <cstdint>
 #include <vector>
-
 #include "base/no_destructor.h"
+#include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "crypto/hmac.h"
+#include "crypto/random.h"
+#include "net/base/schemeful_site.h"
 #include "net/http/http_request_headers.h"
+#include "services/network/public/mojom/url_response_head.mojom-shared.h"
 
 using crypto::SymmetricKey;
 
@@ -55,30 +60,44 @@ void ResetPaddingKeyForTesting() {
       SymmetricKey::GenerateRandomKey(kPaddingKeyAlgorithm, 128);
 }
 
-int64_t ComputeResponsePadding(const std::string& response_url,
-                               const crypto::SymmetricKey* padding_key,
-                               bool has_metadata,
-                               bool loaded_with_credentials,
-                               const std::string& request_method) {
+bool ShouldPadResponseType(network::mojom::FetchResponseType type) {
+  return type == network::mojom::FetchResponseType::kOpaque ||
+         type == network::mojom::FetchResponseType::kOpaqueRedirect;
+}
+
+int64_t ComputeRandomResponsePadding() {
+  uint64_t raw_random = 0;
+  crypto::RandBytes(&raw_random, sizeof(uint64_t));
+  return raw_random % kPaddingRange;
+}
+
+int64_t ComputeStableResponsePadding(const url::Origin& origin,
+                                     const std::string& response_url,
+                                     const base::Time& response_time,
+                                     const std::string& request_method,
+                                     int64_t side_data_size) {
   DCHECK(!response_url.empty());
 
-  crypto::HMAC hmac(crypto::HMAC::SHA256);
-  CHECK(hmac.Init(padding_key));
+  net::SchemefulSite site(origin);
 
-  std::string key = response_url;
-  if (has_metadata)
-    key += "METADATA";
-  if (loaded_with_credentials)
-    key += "CREDENTIALED";
+  DCHECK_GT(response_time, base::Time::UnixEpoch());
+  int64_t microseconds =
+      (response_time - base::Time::UnixEpoch()).InMicroseconds();
 
   // It should only be possible to have a CORS safelisted method here since
   // the spec does not permit other methods for no-cors requests.
   DCHECK(request_method == net::HttpRequestHeaders::kGetMethod ||
          request_method == net::HttpRequestHeaders::kHeadMethod ||
          request_method == net::HttpRequestHeaders::kPostMethod);
-  key += request_method;
 
-  uint64_t digest_start;
+  std::string key = base::StringPrintf(
+      "%s-%" PRId64 "-%s-%s-%" PRId64, response_url.c_str(), microseconds,
+      site.Serialize().c_str(), request_method.c_str(), side_data_size);
+
+  crypto::HMAC hmac(crypto::HMAC::SHA256);
+  CHECK(hmac.Init(GetDefaultPaddingKey()));
+
+  uint64_t digest_start = 0;
   CHECK(hmac.Sign(key, reinterpret_cast<uint8_t*>(&digest_start),
                   sizeof(digest_start)));
   return digest_start % kPaddingRange;

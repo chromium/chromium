@@ -52,8 +52,8 @@
 #include "net/http/http_status_code.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "storage/browser/blob/blob_storage_context.h"
-#include "storage/browser/quota/padding_key.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
+#include "storage/common/quota/padding_key.h"
 #include "third_party/blink/public/common/cache_storage/cache_storage_utils.h"
 #include "third_party/blink/public/common/fetch/fetch_api_request_headers_map.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
@@ -78,7 +78,8 @@ const size_t kMaxQueryCacheResultBytes =
 //
 //   1: Uniform random 400K.
 //   2: Uniform random 14,431K.
-const int32_t kCachePaddingAlgorithmVersion = 2;
+//   3: FetchAPIResponse.padding and separate side data padding.
+const int32_t kCachePaddingAlgorithmVersion = 3;
 
 // Maximum number of recursive QueryCacheOpenNextEntry() calls we permit
 // before forcing an asynchronous task.
@@ -373,6 +374,15 @@ void ReadMetadataDidReadMetadata(disk_cache::Entry* entry,
   std::move(callback).Run(std::move(metadata));
 }
 
+bool ShouldPadResourceSize(const content::proto::CacheResponse* response) {
+  return storage::ShouldPadResponseType(
+      ProtoResponseTypeToFetchResponseType(response->response_type()));
+}
+
+bool ShouldPadResourceSize(const blink::mojom::FetchAPIResponse& response) {
+  return storage::ShouldPadResponseType(response.response_type);
+}
+
 blink::mojom::FetchAPIRequestPtr CreateRequest(
     const proto::CacheMetadata& metadata,
     const GURL& request_url) {
@@ -393,6 +403,7 @@ blink::mojom::FetchAPIRequestPtr CreateRequest(
 }
 
 blink::mojom::FetchAPIResponsePtr CreateResponse(
+    const url::Origin& origin,
     const proto::CacheMetadata& metadata,
     const std::string& cache_name) {
   // We no longer support Responses with only a single URL entry.  This field
@@ -426,6 +437,16 @@ blink::mojom::FetchAPIResponsePtr CreateResponse(
   if (metadata.response().has_request_method())
     request_method = metadata.response().request_method();
 
+  auto response_time =
+      base::Time::FromInternalValue(metadata.response().response_time());
+
+  int64_t padding = 0;
+  if (metadata.response().has_padding()) {
+    padding = metadata.response().padding();
+  } else if (ShouldPadResourceSize(&metadata.response())) {
+    padding = storage::ComputeRandomResponsePadding();
+  }
+
   // Note that |has_range_requested| can be safely set to false since it only
   // affects HTTP 206 (Partial) responses, which are blocked from cache storage.
   // See https://fetch.spec.whatwg.org/#main-fetch for usage of
@@ -434,68 +455,44 @@ blink::mojom::FetchAPIResponsePtr CreateResponse(
       url_list, metadata.response().status_code(),
       metadata.response().status_text(),
       ProtoResponseTypeToFetchResponseType(metadata.response().response_type()),
-      network::mojom::FetchResponseSource::kCacheStorage, headers, mime_type,
-      request_method, nullptr /* blob */,
-      blink::mojom::ServiceWorkerResponseError::kUnknown,
-      base::Time::FromInternalValue(metadata.response().response_time()),
+      padding, network::mojom::FetchResponseSource::kCacheStorage, headers,
+      mime_type, request_method, /*blob=*/nullptr,
+      blink::mojom::ServiceWorkerResponseError::kUnknown, response_time,
       cache_name,
       std::vector<std::string>(
           metadata.response().cors_exposed_header_names().begin(),
           metadata.response().cors_exposed_header_names().end()),
-      nullptr /* side_data_blob */, nullptr /* side_data_blob_for_cache_put */,
+      /*side_data_blob=*/nullptr, /*side_data_blob_for_cache_put=*/nullptr,
       network::mojom::ParsedHeaders::New(),
       // Default proto value of 0 maps to CONNECTION_INFO_UNKNOWN.
       static_cast<net::HttpResponseInfo::ConnectionInfo>(
           metadata.response().connection_info()),
       alpn_negotiated_protocol, metadata.response().loaded_with_credentials(),
       metadata.response().was_fetched_via_spdy(),
-      /* has_range_requested */ false);
+      /*has_range_requested=*/false);
 }
 
-// The size of opaque (non-cors) resource responses are padded in order
-// to obfuscate their actual size.
-bool ShouldPadResponseType(network::mojom::FetchResponseType response_type,
-                           bool has_urls) {
-  switch (response_type) {
-    case network::mojom::FetchResponseType::kBasic:
-    case network::mojom::FetchResponseType::kCors:
-    case network::mojom::FetchResponseType::kDefault:
-    case network::mojom::FetchResponseType::kError:
-      return false;
-    case network::mojom::FetchResponseType::kOpaque:
-    case network::mojom::FetchResponseType::kOpaqueRedirect:
-      return has_urls;
-  }
-  NOTREACHED();
-  return false;
-}
-
-bool ShouldPadResourceSize(const content::proto::CacheResponse* response) {
-  return ShouldPadResponseType(
-      ProtoResponseTypeToFetchResponseType(response->response_type()),
-      response->url_list_size());
-}
-
-bool ShouldPadResourceSize(const blink::mojom::FetchAPIResponse& response) {
-  return ShouldPadResponseType(response.response_type,
-                               !response.url_list.empty());
-}
-
-int64_t CalculateResponsePaddingInternal(
+int64_t CalculateSideDataPadding(
+    const url::Origin& origin,
     const ::content::proto::CacheResponse* response,
-    const crypto::SymmetricKey* padding_key,
     int side_data_size) {
   DCHECK(ShouldPadResourceSize(response));
   DCHECK_GE(side_data_size, 0);
+
+  if (!side_data_size)
+    return 0;
+
+  // Fallback to random padding if this is for an older entry without
+  // a url list or request method.
+  if (response->url_list_size() == 0 || !response->has_request_method())
+    return storage::ComputeRandomResponsePadding();
+
   const std::string& url = response->url_list(response->url_list_size() - 1);
-  bool loaded_with_credentials = response->has_loaded_with_credentials() &&
-                                 response->loaded_with_credentials();
-  const std::string& request_method = response->has_request_method()
-                                          ? response->request_method()
-                                          : net::HttpRequestHeaders::kGetMethod;
-  return storage::ComputeResponsePadding(url, padding_key, side_data_size > 0,
-                                         loaded_with_credentials,
-                                         request_method);
+  const base::Time response_time =
+      base::Time::FromInternalValue(response->response_time());
+
+  return storage::ComputeStableResponsePadding(
+      origin, url, response_time, response->request_method(), side_data_size);
 }
 
 net::RequestPriority GetDiskCachePriority(
@@ -507,12 +504,19 @@ net::RequestPriority GetDiskCachePriority(
 }  // namespace
 
 struct LegacyCacheStorageCache::QueryCacheResult {
-  explicit QueryCacheResult(base::Time entry_time) : entry_time(entry_time) {}
+  QueryCacheResult(base::Time entry_time,
+                   int64_t padding,
+                   int64_t side_data_padding)
+      : entry_time(entry_time),
+        padding(padding),
+        side_data_padding(side_data_padding) {}
 
   blink::mojom::FetchAPIRequestPtr request;
   blink::mojom::FetchAPIResponsePtr response;
   disk_cache::ScopedEntryPtr entry;
   base::Time entry_time;
+  int64_t padding = 0;
+  int64_t side_data_padding = 0;
 };
 
 struct LegacyCacheStorageCache::QueryCacheContext {
@@ -1245,17 +1249,40 @@ void LegacyCacheStorageCache::QueryCacheDidReadMetadata(
     return;
   }
 
+  // Check for older cache entries that need to be padded, but don't
+  // have any padding stored in the entry.  Upgrade these entries
+  // as we encounter them.  This method will be re-entered once the
+  // new paddings are written back to disk.
+  if (ShouldPadResourceSize(&metadata->response()) &&
+      !metadata->response().has_padding()) {
+    QueryCacheUpgradePadding(std::move(query_cache_context), std::move(entry),
+                             std::move(metadata));
+    return;
+  }
+
   // If the entry was created before we started adding entry times, then
   // default to using the Response object's time for sorting purposes.
   int64_t entry_time = metadata->has_entry_time()
                            ? metadata->entry_time()
                            : metadata->response().response_time();
 
-  query_cache_context->matches->push_back(
-      QueryCacheResult(base::Time::FromInternalValue(entry_time)));
+  // Note, older entries that don't require padding may still not have
+  // a padding value since we don't pay the cost to upgrade these entries.
+  // Treat these as a zero padding.
+  int64_t padding =
+      metadata->response().has_padding() ? metadata->response().padding() : 0;
+  int64_t side_data_padding = metadata->response().has_side_data_padding()
+                                  ? metadata->response().side_data_padding()
+                                  : 0;
+
+  DCHECK(!ShouldPadResourceSize(&metadata->response()) ||
+         (padding + side_data_padding));
+
+  query_cache_context->matches->push_back(QueryCacheResult(
+      base::Time::FromInternalValue(entry_time), padding, side_data_padding));
   QueryCacheResult* match = &query_cache_context->matches->back();
   match->request = CreateRequest(*metadata, GURL(entry->GetKey()));
-  match->response = CreateResponse(*metadata, cache_name_);
+  match->response = CreateResponse(origin_, *metadata, cache_name_);
 
   if (!match->response) {
     entry->Doom();
@@ -1317,6 +1344,53 @@ void LegacyCacheStorageCache::QueryCacheDidReadMetadata(
   QueryCacheOpenNextEntry(std::move(query_cache_context));
 }
 
+void LegacyCacheStorageCache::QueryCacheUpgradePadding(
+    std::unique_ptr<QueryCacheContext> query_cache_context,
+    disk_cache::ScopedEntryPtr entry,
+    std::unique_ptr<proto::CacheMetadata> metadata) {
+  DCHECK(ShouldPadResourceSize(&metadata->response()));
+
+  // This should only be called while initializing because the padding
+  // version change should trigger an immediate query of all resources
+  // to recompute padding.
+  DCHECK(initializing_);
+
+  auto* response = metadata->mutable_response();
+  response->set_padding(storage::ComputeRandomResponsePadding());
+  response->set_side_data_padding(CalculateSideDataPadding(
+      origin_, response, entry->GetDataSize(INDEX_SIDE_DATA)));
+
+  // Get a temporary copy of the entry and metadata pointers before moving them
+  // into base::BindOnce.
+  disk_cache::Entry* temp_entry_ptr = entry.get();
+  auto* temp_metadata_ptr = metadata.get();
+
+  WriteMetadata(
+      temp_entry_ptr, *temp_metadata_ptr,
+      base::BindOnce(
+          [](base::WeakPtr<LegacyCacheStorageCache> self,
+             std::unique_ptr<QueryCacheContext> query_cache_context,
+             disk_cache::ScopedEntryPtr entry,
+             std::unique_ptr<proto::CacheMetadata> metadata, int expected_bytes,
+             int rv) {
+            if (!self)
+              return;
+            if (expected_bytes != rv) {
+              entry->Doom();
+              self->QueryCacheOpenNextEntry(std::move(query_cache_context));
+              return;
+            }
+            // We must have a padding here in order to avoid infinite
+            // recursion.
+            DCHECK(metadata->response().has_padding());
+            self->QueryCacheDidReadMetadata(std::move(query_cache_context),
+                                            std::move(entry),
+                                            std::move(metadata));
+          },
+          weak_ptr_factory_.GetWeakPtr(), std::move(query_cache_context),
+          std::move(entry), std::move(metadata)));
+}
+
 // static
 bool LegacyCacheStorageCache::QueryCacheResultCompare(
     const QueryCacheResult& lhs,
@@ -1340,26 +1414,6 @@ size_t LegacyCacheStorageCache::EstimatedResponseSizeWithoutBlob(
   for (const auto& header : response.cors_exposed_header_names)
     size += header.size();
   return size;
-}
-
-// static
-int64_t LegacyCacheStorageCache::CalculateResponsePadding(
-    const blink::mojom::FetchAPIResponse& response,
-    const crypto::SymmetricKey* padding_key,
-    int side_data_size) {
-  DCHECK_GE(side_data_size, 0);
-  if (!ShouldPadResourceSize(response))
-    return 0;
-  // Going forward we should always have a request method here since its
-  // impossible to create a no-cors Response via the constructor.  We must
-  // handle a missing method, however, since we may get a Response loaded
-  // from an old cache_storage instance without the data.
-  std::string request_method = response.request_method.has_value()
-                                   ? response.request_method.value()
-                                   : net::HttpRequestHeaders::kGetMethod;
-  return storage::ComputeResponsePadding(
-      response.url_list.back().spec(), padding_key, side_data_size > 0,
-      response.loaded_with_credentials, request_method);
 }
 
 // static
@@ -1605,18 +1659,12 @@ void LegacyCacheStorageCache::WriteSideDataDidReadMetaData(
   if (!headers || headers->response().response_time() !=
                       expected_response_time.ToInternalValue()) {
     WriteSideDataComplete(std::move(callback), std::move(entry),
+                          /*padding=*/0, /*side_data_padding=*/0,
                           CacheStorageError::kErrorNotFound);
     return;
   }
   // Get a temporary copy of the entry pointer before passing it in base::Bind.
   disk_cache::Entry* temp_entry_ptr = entry.get();
-
-  std::unique_ptr<content::proto::CacheResponse> response(
-      headers->release_response());
-
-  int side_data_size_before_write = 0;
-  if (ShouldPadResourceSize(response.get()))
-    side_data_size_before_write = entry->GetDataSize(INDEX_SIDE_DATA);
 
   // Create a callback that is copyable, even though it can only be called once.
   // BindRepeating() cannot be used directly because |callback|, |entry| and
@@ -1625,7 +1673,7 @@ void LegacyCacheStorageCache::WriteSideDataDidReadMetaData(
       base::AdaptCallbackForRepeating(base::BindOnce(
           &LegacyCacheStorageCache::WriteSideDataDidWrite,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback), std::move(entry),
-          buf_len, std::move(response), side_data_size_before_write, trace_id));
+          buf_len, std::move(headers), trace_id));
 
   DCHECK(scheduler_->IsRunningExclusiveOperation());
   int rv = temp_entry_ptr->WriteData(
@@ -1640,8 +1688,7 @@ void LegacyCacheStorageCache::WriteSideDataDidWrite(
     ErrorCallback callback,
     ScopedWritableEntry entry,
     int expected_bytes,
-    std::unique_ptr<::content::proto::CacheResponse> response,
-    int side_data_size_before_write,
+    std::unique_ptr<::content::proto::CacheMetadata> metadata,
     int64_t trace_id,
     int rv) {
   TRACE_EVENT_WITH_FLOW0("CacheStorage",
@@ -1649,31 +1696,67 @@ void LegacyCacheStorageCache::WriteSideDataDidWrite(
                          TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_IN);
   if (rv != expected_bytes) {
     WriteSideDataComplete(std::move(callback), std::move(entry),
+                          /*padding=*/0, /*side_data_padding=*/0,
                           CacheStorageError::kErrorStorage);
     return;
   }
 
-  if (ShouldPadResourceSize(response.get())) {
-    cache_padding_ -= CalculateResponsePaddingInternal(
-        response.get(), cache_padding_key_.get(), side_data_size_before_write);
+  auto* response = metadata->mutable_response();
 
-    cache_padding_ += CalculateResponsePaddingInternal(
-        response.get(), cache_padding_key_.get(), rv);
+  if (ShouldPadResourceSize(response)) {
+    cache_padding_ -= response->side_data_padding();
+
+    response->set_side_data_padding(
+        CalculateSideDataPadding(origin_, response, rv));
+    cache_padding_ += response->side_data_padding();
+
+    // Get a temporary copy of the entry pointer before passing it in
+    // base::Bind.
+    disk_cache::Entry* temp_entry_ptr = entry.get();
+
+    WriteMetadata(
+        temp_entry_ptr, *metadata,
+        base::BindOnce(&LegacyCacheStorageCache::WriteSideDataDidWriteMetadata,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                       std::move(entry), response->padding(),
+                       response->side_data_padding()));
+    return;
   }
 
   WriteSideDataComplete(std::move(callback), std::move(entry),
+                        response->padding(), response->side_data_padding(),
                         CacheStorageError::kSuccess);
+}
+
+void LegacyCacheStorageCache::WriteSideDataDidWriteMetadata(
+    ErrorCallback callback,
+    ScopedWritableEntry entry,
+    int64_t padding,
+    int64_t side_data_padding,
+    int expected_bytes,
+    int rv) {
+  auto result = blink::mojom::CacheStorageError::kSuccess;
+  if (rv != expected_bytes) {
+    result = MakeErrorStorage(
+        ErrorStorageType::kWriteSideDataDidWriteMetadataWrongBytes);
+  }
+  WriteSideDataComplete(std::move(callback), std::move(entry), padding,
+                        side_data_padding, result);
 }
 
 void LegacyCacheStorageCache::WriteSideDataComplete(
     ErrorCallback callback,
     ScopedWritableEntry entry,
+    int64_t padding,
+    int64_t side_data_padding,
     blink::mojom::CacheStorageError error) {
   if (error != CacheStorageError::kSuccess) {
     // If we found the entry, then we possibly wrote something and now we're
     // dooming the entry, causing a change in size, so update the size before
     // returning.
     if (error != CacheStorageError::kErrorNotFound) {
+      entry.reset();
+      cache_padding_ -= (padding + side_data_padding);
       UpdateCacheSize(base::BindOnce(std::move(callback), error));
       return;
     }
@@ -1867,17 +1950,33 @@ void LegacyCacheStorageCache::PutDidCreateEntry(
   for (const auto& header : put_context->response->cors_exposed_header_names)
     response_metadata->add_cors_exposed_header_names(header);
 
+  DCHECK(!ShouldPadResourceSize(*put_context->response) ||
+         put_context->response->padding);
+  response_metadata->set_padding(put_context->response->padding);
+
+  int64_t side_data_padding = 0;
+  if (ShouldPadResourceSize(*put_context->response) &&
+      put_context->side_data_blob) {
+    side_data_padding = CalculateSideDataPadding(
+        origin_, response_metadata, put_context->side_data_blob_size);
+  }
+  response_metadata->set_side_data_padding(side_data_padding);
+
   // Get a temporary copy of the entry pointer before passing it in base::Bind.
   disk_cache::Entry* temp_entry_ptr = put_context->cache_entry.get();
 
   WriteMetadata(
       temp_entry_ptr, metadata,
       base::BindOnce(&LegacyCacheStorageCache::PutDidWriteHeaders,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(put_context)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(put_context),
+                     response_metadata->padding(),
+                     response_metadata->side_data_padding()));
 }
 
 void LegacyCacheStorageCache::PutDidWriteHeaders(
     std::unique_ptr<PutContext> put_context,
+    int64_t padding,
+    int64_t side_data_padding,
     int expected_bytes,
     int rv) {
   TRACE_EVENT_WITH_FLOW0("CacheStorage",
@@ -1893,11 +1992,9 @@ void LegacyCacheStorageCache::PutDidWriteHeaders(
     return;
   }
 
-  if (ShouldPadResourceSize(*put_context->response)) {
-    cache_padding_ += CalculateResponsePadding(*put_context->response,
-                                               cache_padding_key_.get(),
-                                               0 /* side_data_size */);
-  }
+  DCHECK(!ShouldPadResourceSize(*put_context->response) ||
+         (padding + side_data_padding));
+  cache_padding_ += padding + side_data_padding;
 
   PutWriteBlobToCache(std::move(put_context), INDEX_RESPONSE_BODY);
 }
@@ -2081,12 +2178,9 @@ void LegacyCacheStorageCache::PaddingDidQueryCache(
   int64_t cache_padding = 0;
   if (error == CacheStorageError::kSuccess) {
     for (const auto& result : *query_cache_results) {
-      if (ShouldPadResourceSize(*result.response)) {
-        int32_t side_data_size =
-            result.entry ? result.entry->GetDataSize(INDEX_SIDE_DATA) : 0;
-        cache_padding += CalculateResponsePadding(
-            *result.response, cache_padding_key_.get(), side_data_size);
-      }
+      DCHECK(!ShouldPadResourceSize(*result.response) ||
+             (result.padding + result.side_data_padding));
+      cache_padding += result.padding + result.side_data_padding;
     }
   }
 
@@ -2290,9 +2384,9 @@ void LegacyCacheStorageCache::DeleteDidQueryCache(
   for (auto& result : *query_cache_results) {
     disk_cache::ScopedEntryPtr entry = std::move(result.entry);
     if (ShouldPadResourceSize(*result.response)) {
-      cache_padding_ -=
-          CalculateResponsePadding(*result.response, cache_padding_key_.get(),
-                                   entry->GetDataSize(INDEX_SIDE_DATA));
+      DCHECK(!ShouldPadResourceSize(*result.response) ||
+             (result.padding + result.side_data_padding));
+      cache_padding_ -= (result.padding + result.side_data_padding);
     }
     entry->Doom();
   }

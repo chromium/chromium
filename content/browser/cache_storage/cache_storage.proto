@@ -56,6 +56,8 @@ message CacheResponse {
   optional bool was_fetched_via_spdy = 12;
   optional string mime_type = 13;
   optional string request_method = 14;
+  optional int64 padding = 15;
+  optional int64 side_data_padding = 16;
 }
 
 message CacheMetadata {

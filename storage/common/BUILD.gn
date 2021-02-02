@@ -17,6 +17,8 @@ component("common") {
     "file_system/file_system_types.h",
     "file_system/file_system_util.cc",
     "file_system/file_system_util.h",
+    "quota/padding_key.cc",
+    "quota/padding_key.h",
   ]
 
   # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.

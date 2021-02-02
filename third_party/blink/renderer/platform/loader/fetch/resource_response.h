@@ -361,6 +361,9 @@ class PLATFORM_EXPORT ResourceResponse final {
   // https://html.spec.whatwg.org/C/#cors-cross-origin
   bool IsCorsCrossOrigin() const;
 
+  int64_t GetPadding() const { return padding_; }
+  void SetPadding(int64_t padding) { padding_ = padding; }
+
   // See network::ResourceResponseInfo::url_list_via_service_worker.
   const Vector<KURL>& UrlListViaServiceWorker() const {
     return url_list_via_service_worker_;
@@ -605,6 +608,11 @@ class PLATFORM_EXPORT ResourceResponse final {
   // https://fetch.spec.whatwg.org/#concept-response-type
   network::mojom::FetchResponseType response_type_ =
       network::mojom::FetchResponseType::kDefault;
+
+  // Pre-computed padding.  This should only be non-zero if |response_type| is
+  // set to kOpaque.  In addition, it is only set if the response was provided
+  // by a service worker FetchEvent handler.
+  int64_t padding_ = 0;
 
   // HTTP version used in the response, if known.
   HTTPVersion http_version_ = kHTTPVersionUnknown;

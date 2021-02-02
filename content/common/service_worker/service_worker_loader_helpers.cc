@@ -97,6 +97,7 @@ void ServiceWorkerLoaderHelpers::SaveResponseInfo(
   out_head->was_fallback_required_by_service_worker = false;
   out_head->url_list_via_service_worker = response.url_list;
   out_head->response_type = response.response_type;
+  out_head->padding = response.padding;
   if (response.mime_type.has_value()) {
     std::string charset;
     bool had_charset = false;

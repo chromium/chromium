@@ -384,40 +384,43 @@ void FetchManager::Loader::DidReceiveResponse(
       FetchResponseData::CreateWithBuffer(BodyStreamBuffer::Create(
           script_state, place_holder_body_, signal_, cached_metadata_handler_));
 
-  response_data->InitFromResourceResponse(
-      url_list_, fetch_request_data_->Method(),
-      fetch_request_data_->Credentials(), response);
-
-  FetchResponseData* tainted_response = nullptr;
-
   DCHECK(!(network_utils::IsRedirectResponseCode(response_http_status_code_) &&
            HasNonEmptyLocationHeader(response_data->HeaderList()) &&
            fetch_request_data_->Redirect() != RedirectMode::kManual));
 
+  auto response_type = response.GetType();
   if (network_utils::IsRedirectResponseCode(response_http_status_code_) &&
       fetch_request_data_->Redirect() == RedirectMode::kManual) {
-    tainted_response = response_data->CreateOpaqueRedirectFilteredResponse();
-  } else {
-    switch (response.GetType()) {
-      case FetchResponseType::kBasic:
-      case FetchResponseType::kDefault:
-        tainted_response = response_data->CreateBasicFilteredResponse();
-        break;
-      case FetchResponseType::kCors: {
-        HTTPHeaderSet header_names = cors::ExtractCorsExposedHeaderNamesList(
-            fetch_request_data_->Credentials(), response);
-        tainted_response =
-            response_data->CreateCorsFilteredResponse(header_names);
-        break;
-      }
-      case FetchResponseType::kOpaque:
-        tainted_response = response_data->CreateOpaqueFilteredResponse();
-        break;
-      case FetchResponseType::kOpaqueRedirect:
-      case FetchResponseType::kError:
-        NOTREACHED();
-        break;
+    response_type = network::mojom::FetchResponseType::kOpaqueRedirect;
+  }
+
+  response_data->InitFromResourceResponse(
+      execution_context_, response_type, url_list_,
+      fetch_request_data_->Method(), fetch_request_data_->Credentials(),
+      response);
+
+  FetchResponseData* tainted_response = nullptr;
+  switch (response_type) {
+    case FetchResponseType::kBasic:
+    case FetchResponseType::kDefault:
+      tainted_response = response_data->CreateBasicFilteredResponse();
+      break;
+    case FetchResponseType::kCors: {
+      HTTPHeaderSet header_names = cors::ExtractCorsExposedHeaderNamesList(
+          fetch_request_data_->Credentials(), response);
+      tainted_response =
+          response_data->CreateCorsFilteredResponse(header_names);
+      break;
     }
+    case FetchResponseType::kOpaque:
+      tainted_response = response_data->CreateOpaqueFilteredResponse();
+      break;
+    case FetchResponseType::kOpaqueRedirect:
+      tainted_response = response_data->CreateOpaqueRedirectFilteredResponse();
+      break;
+    case FetchResponseType::kError:
+      NOTREACHED();
+      break;
   }
 
   response_has_no_store_header_ = response.CacheControlContainsNoStore();

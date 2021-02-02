@@ -9256,6 +9256,8 @@ Called by update_bad_message_reasons.py.-->
   <int value="21" label="kKeysImplBackendClosed"/>
   <int value="22" label="kCreateBackendDidCreateFailed"/>
   <int value="23" label="kStorageGetAllMatchedEntriesBackendClosed"/>
+  <int value="24" label="kStorageHandleNull"/>
+  <int value="25" label="kWriteSideDataDidWriteMetadataWrongBytes"/>
 </enum>
 
 <enum name="CacheStorageErrorType">

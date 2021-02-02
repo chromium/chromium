@@ -374,6 +374,14 @@ network::mojom::FetchResponseType WebURLResponse::GetType() const {
   return resource_response_->GetType();
 }
 
+void WebURLResponse::SetPadding(int64_t padding) {
+  resource_response_->SetPadding(padding);
+}
+
+int64_t WebURLResponse::GetPadding() const {
+  return resource_response_->GetPadding();
+}
+
 void WebURLResponse::SetUrlListViaServiceWorker(
     const WebVector<WebURL>& url_list_via_service_worker) {
   Vector<KURL> url_list(url_list_via_service_worker.size());

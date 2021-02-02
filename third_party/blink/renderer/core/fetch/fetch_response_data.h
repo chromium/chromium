@@ -85,6 +85,8 @@ class CORE_EXPORT FetchResponseData final
   }
   bool HasRangeRequested() const { return has_range_requested_; }
 
+  int64_t GetPadding() const { return padding_; }
+  void SetPadding(int64_t padding) { padding_ = padding; }
   void SetResponseSource(network::mojom::FetchResponseSource response_source) {
     response_source_ = response_source;
   }
@@ -138,6 +140,8 @@ class CORE_EXPORT FetchResponseData final
 
   // Initialize non-body data from the given |response|.
   void InitFromResourceResponse(
+      ExecutionContext* context,
+      network::mojom::FetchResponseType response_type,
       const Vector<KURL>& request_url_list,
       const AtomicString& request_method,
       network::mojom::CredentialsMode request_credentials,
@@ -147,6 +151,7 @@ class CORE_EXPORT FetchResponseData final
 
  private:
   network::mojom::FetchResponseType type_;
+  int64_t padding_;
   network::mojom::FetchResponseSource response_source_;
   std::unique_ptr<TerminationReason> termination_reason_;
   Vector<KURL> url_list_;

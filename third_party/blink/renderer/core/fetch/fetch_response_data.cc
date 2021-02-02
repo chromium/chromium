@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/fetch/fetch_response_data.h"
 
+#include "storage/common/quota/padding_key.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_response.mojom-blink.h"
 #include "third_party/blink/renderer/core/fetch/fetch_header_list.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
@@ -188,6 +189,7 @@ FetchResponseData* FetchResponseData::Clone(ScriptState* script_state,
                                             ExceptionState& exception_state) {
   FetchResponseData* new_response = Create();
   new_response->type_ = type_;
+  new_response->padding_ = padding_;
   new_response->response_source_ = response_source_;
   if (termination_reason_) {
     new_response->termination_reason_ = std::make_unique<TerminationReason>();
@@ -269,6 +271,7 @@ mojom::blink::FetchAPIResponsePtr FetchResponseData::PopulateFetchAPIResponse(
   response->status_code = status_;
   response->status_text = status_message_;
   response->response_type = type_;
+  response->padding = padding_;
   response->response_source = response_source_;
   response->mime_type = mime_type_;
   response->request_method = request_method_;
@@ -289,6 +292,8 @@ mojom::blink::FetchAPIResponsePtr FetchResponseData::PopulateFetchAPIResponse(
 }
 
 void FetchResponseData::InitFromResourceResponse(
+    ExecutionContext* context,
+    network::mojom::FetchResponseType response_type,
     const Vector<KURL>& request_url_list,
     const AtomicString& request_method,
     network::mojom::CredentialsMode request_credentials,
@@ -347,6 +352,22 @@ void FetchResponseData::InitFromResourceResponse(
             network::mojom::blink::FetchResponseType::kDefault)));
 
   SetHasRangeRequested(response.HasRangeRequested());
+
+  // Use the explicit padding in the response provided by a service worker
+  // or compute a new padding if necessary.
+  if (response.GetPadding()) {
+    SetPadding(response.GetPadding());
+  } else {
+    if (storage::ShouldPadResponseType(response_type)) {
+      int64_t padding = response.WasCached()
+                            ? storage::ComputeStableResponsePadding(
+                                  context->GetSecurityOrigin()->ToUrlOrigin(),
+                                  Url()->GetString().Utf8(), ResponseTime(),
+                                  request_method.Utf8())
+                            : storage::ComputeRandomResponsePadding();
+      SetPadding(padding);
+    }
+  }
 }
 
 FetchResponseData::FetchResponseData(Type type,
@@ -354,6 +375,7 @@ FetchResponseData::FetchResponseData(Type type,
                                      uint16_t status,
                                      AtomicString status_message)
     : type_(type),
+      padding_(0),
       response_source_(source),
       status_(status),
       status_message_(status_message),

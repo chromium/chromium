@@ -47,7 +47,6 @@ struct PutContext;
 
 namespace proto {
 class CacheMetadata;
-class CacheResponse;
 }  // namespace proto
 
 namespace cache_storage_cache_unittest {
@@ -83,10 +82,6 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
       int64_t cache_size,
       int64_t cache_padding,
       std::unique_ptr<crypto::SymmetricKey> cache_padding_key);
-  static int64_t CalculateResponsePadding(
-      const blink::mojom::FetchAPIResponse& response,
-      const crypto::SymmetricKey* padding_key,
-      int side_data_size);
   static int32_t GetResponsePaddingVersion();
 
   void Match(blink::mojom::FetchAPIRequestPtr request,
@@ -282,6 +277,10 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
       std::unique_ptr<QueryCacheContext> query_cache_context,
       disk_cache::ScopedEntryPtr entry,
       std::unique_ptr<proto::CacheMetadata> metadata);
+  void QueryCacheUpgradePadding(
+      std::unique_ptr<QueryCacheContext> query_cache_context,
+      disk_cache::ScopedEntryPtr entry,
+      std::unique_ptr<proto::CacheMetadata> metadata);
   static bool QueryCacheResultCompare(const QueryCacheResult& lhs,
                                       const QueryCacheResult& rhs);
   static size_t EstimatedResponseSizeWithoutBlob(
@@ -362,12 +361,19 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
       ErrorCallback callback,
       ScopedWritableEntry entry,
       int expected_bytes,
-      std::unique_ptr<content::proto::CacheResponse> response,
-      int side_data_size_before_write,
+      std::unique_ptr<content::proto::CacheMetadata> metadata,
       int64_t trace_id,
       int rv);
+  void WriteSideDataDidWriteMetadata(ErrorCallback callback,
+                                     ScopedWritableEntry entry,
+                                     int64_t padding,
+                                     int64_t side_data_padding,
+                                     int expected_bytes,
+                                     int rv);
   void WriteSideDataComplete(ErrorCallback callback,
                              ScopedWritableEntry entry,
+                             int64_t padding,
+                             int64_t side_data_padding,
                              blink::mojom::CacheStorageError error);
 
   // Puts the request and response object in the cache. The response body (if
@@ -386,6 +392,8 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
   void PutDidCreateEntry(std::unique_ptr<PutContext> put_context,
                          disk_cache::EntryResult result);
   void PutDidWriteHeaders(std::unique_ptr<PutContext> put_context,
+                          int64_t padding,
+                          int64_t side_data_padding,
                           int expected_bytes,
                           int rv);
   void PutWriteBlobToCache(std::unique_ptr<PutContext> put_context,
@@ -540,6 +548,7 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
   // The actual cache size (not including padding).
   int64_t cache_size_;
   int64_t cache_padding_ = 0;
+  // TODO(wanderview): remove padding key management
   std::unique_ptr<crypto::SymmetricKey> cache_padding_key_;
   int64_t last_reported_size_ = 0;
   size_t max_query_size_bytes_;

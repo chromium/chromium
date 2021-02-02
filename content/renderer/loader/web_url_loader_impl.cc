@@ -832,6 +832,7 @@ void WebURLLoaderImpl::PopulateURLResponse(
   response->SetWasFallbackRequiredByServiceWorker(
       head.was_fallback_required_by_service_worker);
   response->SetType(head.response_type);
+  response->SetPadding(head.padding);
   response->SetUrlListViaServiceWorker(head.url_list_via_service_worker);
   response->SetCacheStorageCacheName(
       head.service_worker_response_source ==

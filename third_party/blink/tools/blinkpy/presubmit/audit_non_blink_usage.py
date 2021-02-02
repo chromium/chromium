@@ -1248,6 +1248,15 @@ _CONFIG = [
         'allowed': ['net::RequestPriority'],
     },
     {
+        'paths':
+        ['third_party/blink/renderer/core/fetch/fetch_response_data.cc'],
+        'allowed': [
+            'storage::ComputeRandomResponsePadding',
+            'storage::ComputeStableResponsePadding',
+            'storage::ShouldPadResponseType'
+        ],
+    },
+    {
         'paths': ['third_party/blink/renderer/core/frame/local_frame_view.cc'],
         'allowed': [
             'base::LapTimer',

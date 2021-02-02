@@ -36,6 +36,10 @@ struct FetchAPIResponse {
   network.mojom.FetchResponseType response_type =
     network.mojom.FetchResponseType.kDefault;
 
+  // Pre-computed padding for this response.  This should only be non-zero
+  // for when |response_type| is kOpaque.
+  int64 padding = 0;
+
   // The source of this response, e.g. network, CacheStorage.
   network.mojom.FetchResponseSource response_source =
     network.mojom.FetchResponseSource.kUnspecified;
