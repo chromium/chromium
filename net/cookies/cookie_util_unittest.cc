@@ -56,7 +56,7 @@ TEST(CookieUtilTest, TestCookieDateParsing) {
   const struct {
     const char* str;
     const bool valid;
-    const time_t epoch;
+    const double epoch;
   } tests[] = {
       {"Sat, 15-Apr-17 21:01:22 GMT", true, 1492290082},
       {"Thu, 19-Apr-2007 16:00:00 GMT", true, 1176998400},
@@ -118,6 +118,11 @@ TEST(CookieUtilTest, TestCookieDateParsing) {
       {"Apr 15 21:01:22 17", true, 1492290082},
       {"2017 April 15 21:01:22", true, 1492290082},
       {"15 April 2017 21:01:22", true, 1492290082},
+      // Test two-digit abbreviated year numbers.
+      {"1-Jan-71 00:00:00 GMT" /* 1971 */, true, 31536000},
+      {"1-Jan-70 00:00:00 GMT" /* 1970 */, true, 0},
+      {"1-Jan-69 00:00:00 GMT" /* 2069 */, true, 3124224000},
+      {"1-Jan-68 00:00:00 GMT" /* 2068 */, true, 3092601600},
       // Some invalid dates
       {"98 April 17 21:01:22", false, 0},
       {"Thu, 012-Aug-2008 20:49:07 GMT", false, 0},
@@ -138,7 +143,7 @@ TEST(CookieUtilTest, TestCookieDateParsing) {
       continue;
     }
     EXPECT_TRUE(!parsed_time.is_null()) << test.str;
-    EXPECT_EQ(test.epoch, parsed_time.ToTimeT()) << test.str;
+    EXPECT_EQ(test.epoch, parsed_time.ToDoubleT()) << test.str;
   }
 }
 
@@ -150,7 +155,8 @@ TEST(CookieUtilTest, TestCookieDateParsing) {
 TEST(CookieUtilTest, ParseCookieExpirationTimeBeyond2038) {
   const char* kTests[] = {
       "Thu, 12-Aug-31841 20:49:07 GMT", "2039 April 15 21:01:22",
-      "2039 April 15 21:01:22", "2038 April 15 21:01:22",
+      "2039 April 15 21:01:22",         "2038 April 15 21:01:22",
+      "15 April 69 21:01:22",           "15 April 68, 21:01:22",
   };
 
   for (auto* test : kTests) {
@@ -171,11 +177,17 @@ TEST(CookieUtilTest, ParseCookieExpirationTimeBeyond2038) {
 TEST(CookieUtilTest, ParseCookieExpirationTimeBefore1970) {
   const char* kTests[] = {
       // Times around the Unix epoch.
-      "1970 Jan 1 00:00:00", "1969 March 3 21:01:22",
+      "1970 Jan 1 00:00:00",
+      "1969 March 3 21:01:22",
+      // Two digit year abbreviations.
+      "1-Jan-70 00:00:00",
+      "Jan 1, 70 00:00:00",
       // Times around the Windows epoch.
-      "1601 Jan 1 00:00:00", "1600 April 15 21:01:22",
+      "1601 Jan 1 00:00:00",
+      "1600 April 15 21:01:22",
       // Times around kExplodedMinYear on Mac.
-      "1902 Jan 1 00:00:00", "1901 Jan 1 00:00:00",
+      "1902 Jan 1 00:00:00",
+      "1901 Jan 1 00:00:00",
   };
 
   for (auto* test : kTests) {

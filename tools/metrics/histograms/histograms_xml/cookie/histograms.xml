@@ -23,6 +23,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Cookie.AbbreviatedExpirationYear" units="year"
     expires_after="2021-06-30">
+  <obsolete>
+    Removed Jan 2021: no longer needed since crbug.com/907610 is now fixed.
+  </obsolete>
   <owner>chlily@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>

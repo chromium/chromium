@@ -316,20 +316,10 @@ base::Time ParseCookieExpirationTime(const std::string& time_string) {
     return base::Time();
   }
 
-  // Log metrics for use of abbreviated, 2-digit, year numbers to determine
-  // compat impact of fixing behavior for year 69.
-  // (crbug.com/907610) We currently treat 69 as 1969, whereas the spec says to
-  // treat it as 2069:
-  // https://tools.ietf.org/html/draft-ietf-httpbis-rfc6265bis-07#page-17
-  if (exploded.year >= 0 && exploded.year <= 99) {
-    base::UmaHistogramExactLinear("Cookie.AbbreviatedExpirationYear",
-                                  exploded.year, 100);
-  }
-
   // Normalize the year to expand abbreviated years to the full year.
-  if (exploded.year >= 69 && exploded.year <= 99)
+  if (exploded.year >= 70 && exploded.year <= 99)
     exploded.year += 1900;
-  if (exploded.year >= 0 && exploded.year <= 68)
+  if (exploded.year >= 0 && exploded.year <= 69)
     exploded.year += 2000;
 
   // Note that clipping the date if it is outside of a platform-specific range
