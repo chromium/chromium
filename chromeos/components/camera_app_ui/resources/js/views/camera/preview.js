@@ -85,7 +85,6 @@ export class Preview {
      */
     this.scanner_ = null;
 
-
     window.addEventListener('resize', () => this.onWindowResize_());
 
     [state.State.EXPERT, state.State.SHOW_METADATA].forEach((s) => {
@@ -321,7 +320,7 @@ export class Preview {
       return;
     }
 
-    dom.getAll('.metadata-value', HTMLElement).forEach((element) => {
+    dom.getAll('.metadata.value', HTMLElement).forEach((element) => {
       element.style.display = 'none';
     });
 
@@ -578,7 +577,7 @@ export class Preview {
     const x = event.offsetX / this.video_.offsetWidth;
     const y = event.offsetY / this.video_.offsetHeight;
     const constraints = {advanced: [{pointsOfInterest: [{x, y}]}]};
-    const track = this.video_.srcObject.getVideoTracks()[0];
+    const track = this.stream.getVideoTracks()[0];
     const focus = (async () => {
       try {
         await track.applyConstraints(constraints);

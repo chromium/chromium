@@ -363,6 +363,9 @@
       <message desc="Label for expert mode option: show camera pan/tilt/zoom options." name="IDS_EXPERT_SHOW_PTZ_OPTIONS">
         Show pan tilt zoom options
       </message>
+      <message desc="Label for expert mode option: custom video parameters." name="IDS_EXPERT_CUSTOM_VIDEO_PARAMETERS">
+        Custom video parameters
+      </message>
       <message desc="Error message when the device does not support expert mode but tries to enable it." name="IDS_ERROR_MSG_EXPERT_MODE_NOT_SUPPORTED">
         Expert mode is not supported on this device
       </message>

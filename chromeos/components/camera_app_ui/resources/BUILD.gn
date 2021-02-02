@@ -82,6 +82,7 @@ copy("chrome_camera_app_js") {
     "js/dynamic_import.js",
     "js/error.js",
     "js/gallerybutton.js",
+    "js/h264.js",
     "js/init.js",
     "js/intent.js",
     "js/main.js",
@@ -190,6 +191,7 @@ copy("chrome_camera_app_js_views_camera") {
     "js/views/camera/preview.js",
     "js/views/camera/review_result.js",
     "js/views/camera/timertick.js",
+    "js/views/camera/video_encoder_options.js",
   ]
 
   outputs = [ "$out_camera_app_dir/js/views/camera/{{source_file_part}}" ]

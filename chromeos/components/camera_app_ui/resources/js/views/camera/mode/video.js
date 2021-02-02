@@ -6,6 +6,8 @@ import {AsyncJobQueue} from '../../../async_job_queue.js';
 import {browserProxy} from '../../../browser_proxy/browser_proxy.js';
 import {assert, assertString} from '../../../chrome_util.js';
 import * as dom from '../../../dom.js';
+// eslint-disable-next-line no-unused-vars
+import {EncoderParameters} from '../../../h264.js';
 import {Filenamer} from '../../../models/file_namer.js';
 import {
   VideoSaver,  // eslint-disable-line no-unused-vars
@@ -27,10 +29,31 @@ import {PhotoResult} from './photo.js';  // eslint-disable-line no-unused-vars
 import {RecordTime} from './record_time.js';
 
 /**
- * Video recording MIME type. Mkv with AVC1 is the only preferred format.
- * @type {string}
+ * @type {?EncoderParameters}
  */
-const VIDEO_MIMETYPE = 'video/x-matroska;codecs=avc1,pcm';
+let avc1Parameters = null;
+
+/**
+ * Sets avc1 parameter used in video recording.
+ * @param {?EncoderParameters} params
+ */
+export function setAvc1Parameters(params) {
+  avc1Parameters = params;
+}
+
+/**
+ * Gets video recording MIME type. Mkv with AVC1 is the only preferred format.
+ * @return {string} Video recording MIME type.
+ */
+function getVideoMimeType() {
+  let suffix = '';
+  if (avc1Parameters !== null) {
+    const {profile, level} = avc1Parameters;
+    suffix = '.' + profile.toString(16).padStart(2, '0') +
+        level.toString(16).padStart(4, '0');
+  }
+  return `video/x-matroska;codecs=avc1${suffix},pcm`;
+}
 
 /**
  * Contains video recording result.
@@ -243,17 +266,20 @@ export class Video extends ModeBase {
     this.everPaused_ = false;
     await sound.play(dom.get('#sound-rec-start', HTMLAudioElement));
 
-    if (this.mediaRecorder_ === null) {
-      try {
-        if (!MediaRecorder.isTypeSupported(VIDEO_MIMETYPE)) {
-          throw new Error('The preferred mimeType is not supported.');
-        }
-        this.mediaRecorder_ =
-            new MediaRecorder(this.stream_, {mimeType: VIDEO_MIMETYPE});
-      } catch (e) {
-        toast.show('error_msg_record_start_failed');
-        throw e;
+    try {
+      const mimeType = getVideoMimeType();
+      if (!MediaRecorder.isTypeSupported(mimeType)) {
+        throw new Error(
+            `The preferred mimeType "${mimeType}" is not supported.`);
       }
+      const option = {mimeType};
+      if (avc1Parameters !== null) {
+        option.videoBitsPerSecond = avc1Parameters.bitrate;
+      }
+      this.mediaRecorder_ = new MediaRecorder(this.stream_, option);
+    } catch (e) {
+      toast.show('error_msg_record_start_failed');
+      throw e;
     }
 
     this.recordTime_.start({resume: false});

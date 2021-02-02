@@ -16,6 +16,7 @@ import {
 export const State = {
   CAMERA_CONFIGURING: 'camera-configuring',
   CAMERA_SWITCHING: 'camera-switching',
+  CUSTOM_VIDEO_PARAMETERS: 'custom-video-parameters',
   EXPERT: 'expert',
   FPS_30: 'fps-30',
   FPS_60: 'fps-60',

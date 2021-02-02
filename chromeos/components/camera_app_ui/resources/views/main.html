@@ -39,34 +39,34 @@
             <div id="preview-info" class="expert-control-row metadata-row
               mode-on">
               <span class="title">Info</span>
-              <div id="preview-resolution" class="metadata-value"></div>
-              <div id="preview-device-name" class="metadata-value"></div>
+              <div id="preview-resolution" class="metadata value"></div>
+              <div id="preview-device-name" class="metadata value"></div>
             </div>
             <div id="preview-stat" class="expert-control-row metadata-row
               mode-on">
               <span class="title">Stat</span>
-              <div id="preview-fps" class="metadata-value"></div>
-              <div id="preview-num-faces" class="metadata-value"></div>
+              <div id="preview-fps" class="metadata value"></div>
+              <div id="preview-num-faces" class="metadata value"></div>
             </div>
             <div id="preview-af" class="expert-control-row metadata-row">
               <span class="title">AF</span>
-              <div id="preview-focus-distance" class="metadata-value"></div>
-              <div id="preview-af-state" class="metadata-value"></div>
+              <div id="preview-focus-distance" class="metadata value"></div>
+              <div id="preview-af-state" class="metadata value"></div>
             </div>
             <div id="preview-ae" class="expert-control-row metadata-row">
               <span class="title">AE</span>
-              <div id="preview-sensitivity" class="metadata-value"></div>
-              <div id="preview-exposure-time" class="metadata-value"></div>
-              <div id="preview-frame-duration" class="metadata-value"></div>
-              <div id="preview-ae-antibanding-mode" class="metadata-value">
+              <div id="preview-sensitivity" class="metadata value"></div>
+              <div id="preview-exposure-time" class="metadata value"></div>
+              <div id="preview-frame-duration" class="metadata value"></div>
+              <div id="preview-ae-antibanding-mode" class="metadata value">
               </div>
-              <div id="preview-ae-state" class="metadata-value"></div>
+              <div id="preview-ae-state" class="metadata value"></div>
             </div>
             <div id="preview-awb" class="expert-control-row metadata-row">
               <span class="title">AWB</span>
-              <div id="preview-wb-gain-red" class="metadata-value"></div>
-              <div id="preview-wb-gain-blue" class="metadata-value"></div>
-              <div id="preview-awb-state" class="metadata-value"></div>
+              <div id="preview-wb-gain-red" class="metadata value"></div>
+              <div id="preview-wb-gain-blue" class="metadata value"></div>
+              <div id="preview-awb-state" class="metadata value"></div>
             </div>
             <div id="pan-slider" class="expert-control-row">
               <span class="title">Pan</span>
@@ -79,6 +79,19 @@
             <div id="zoom-slider" class="expert-control-row">
               <span class="title">Zoom</span>
               <input type="range">
+            </div>
+            <div class="video-option-row expert-control-row">
+              <span class="title">Profile</span>
+              <select id="video-profile">
+                <!-- Generate in runtime -->
+              </select>
+            </div>
+            <div id="bitrate-slider" class="video-option-row
+                     expert-control-row">
+              <span class="title">Bitrate</span>
+              <input type="range" min="1">
+              <div id="bitrate-multiplier" class="value"></div>
+              <div id="bitrate-number" class="value"></div>
             </div>
           </div>
           <div id="preview-grid">
@@ -435,6 +448,13 @@
                  data-key="showPtzOptions">
           <span i18n-text="expert_show_ptz_options"></span>
         </label>
+        <label class="menu-item">
+          <input class="icon" id="custom-video-parameters"
+                 type="checkbox" tabindex="0"
+                 data-state="custom-video-parameters"
+                 data-key="customVideoParameters">
+          <span i18n-text="expert_custom_video_parameters"></span>
+        </label>
       </div>
     </div>
     <div id="spinner" class="centered-overlay"></div>
@@ -495,6 +515,9 @@
           </div>
           <div class="icon end"></div>
         </button>
+    </template>
+    <template id="video-profile-option-template">
+      <option></option>
     </template>
   </body>
 </html>

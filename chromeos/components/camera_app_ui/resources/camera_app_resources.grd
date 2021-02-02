@@ -46,6 +46,7 @@
       <structure name="IDR_CAMERA_FILE_UTIL_JS" file="js/models/file_util.js" type="chrome_html" />
       <structure name="IDR_CAMERA_GALLERYBUTTON_JS" file="js/gallerybutton.js" type="chrome_html" />
       <structure name="IDR_CAMERA_IDB_JS" file="js/models/idb.js" type="chrome_html" />
+      <structure name="IDR_CAMERA_H264_JS" file="js/h264.js" type="chrome_html" />
       <structure name="IDR_CAMERA_IMAGECAPTURE_JS" file="js/mojo/image_capture.js" type="chrome_html" />
       <structure name="IDR_CAMERA_INIT_JS" file="js/init.js" type="chrome_html" />
       <structure name="IDR_CAMERA_INTENT_JS" file="js/intent.js" type="chrome_html" />
@@ -87,6 +88,7 @@
       <structure name="IDR_CAMERA_UNTRUSTED_SCRIPT_LOADER_JS" file="js/untrusted_script_loader.js" type="chrome_html" />
       <structure name="IDR_CAMERA_UNTRUSTED_VIDEO_PROCESSOR_HELPER_JS" file="js/untrusted_video_processor_helper.js" type="chrome_html" />
       <structure name="IDR_CAMERA_UTIL_JS" file="js/util.js" type="chrome_html" />
+      <structure name="IDR_CAMERA_VIDEO_ENCODER_OPTIONS_JS" file="js/views/camera/video_encoder_options.js" type="chrome_html" />
       <structure name="IDR_CAMERA_VIDEO_SAVER_JS" file="js/models/video_saver.js" type="chrome_html" />
       <structure name="IDR_CAMERA_VIDEO_PROCESSOR_INTERFACE_JS" file="js/models/video_processor_interface.js" type="chrome_html" />
       <structure name="IDR_CAMERA_VIEW_JS" file="js/views/view.js" type="chrome_html" />
