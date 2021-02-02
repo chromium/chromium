@@ -4277,6 +4277,12 @@ const char kExperimentalAccessibilityDictationExtensionName[] =
 const char kExperimentalAccessibilityDictationExtensionDescription[] =
     "Enables the JavaScript dictation extension.";
 
+const char kExperimentalAccessibilityDictationOfflineName[] =
+    "Experimental accessibility dictation offline.";
+const char kExperimentalAccessibilityDictationOfflineDescription[] =
+    "Enables offline speech recognition for the accessibility dictation "
+    "feature.";
+
 const char kExperimentalAccessibilitySwitchAccessTextName[] =
     "Enable enhanced Switch Access text input.";
 const char kExperimentalAccessibilitySwitchAccessTextDescription[] =

@@ -43021,6 +43021,8 @@ from previous Chrome versions.
   <int value="-1863020461" label="PasswordChangeInSettings:enabled"/>
   <int value="-1861814223" label="MidiManagerDynamicInstantiation:enabled"/>
   <int value="-1860481724" label="ChromeHomeExpandButton:enabled"/>
+  <int value="-1859437916"
+      label="enable-experimental-accessibility-dictation-offline"/>
   <int value="-1859421131" label="BackForwardCache:disabled"/>
   <int value="-1859095876" label="Previews:disabled"/>
   <int value="-1858284725" label="TabGroupsFeedback:enabled"/>

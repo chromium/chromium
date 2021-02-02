@@ -1592,6 +1592,11 @@
     "expiry_milestone": 92
   },
   {
+    "name": "enable-experimental-accessibility-dictation-offline",
+    "owners": [ "akihiroota", "katie" ],
+    "expiry_milestone": 92
+  },
+  {
     "name": "enable-experimental-accessibility-labels",
     "owners": [ "dmazzoni", "mschillaci" ],
     "expiry_milestone": 99

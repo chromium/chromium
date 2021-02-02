@@ -18,6 +18,9 @@ const char kEnableExperimentalAccessibilityAutoclick[] =
 const char kEnableExperimentalAccessibilityDictationExtension[] =
     "enable-experimental-accessibility-dictation-extension";
 
+const char kEnableExperimentalAccessibilityDictationOffline[] =
+    "enable-experimental-accessibility-dictation-offline";
+
 // Enables support for visually debugging the accessibility labels
 // feature, which provides images descriptions for screen reader users.
 const char kEnableExperimentalAccessibilityLabelsDebugging[] =
@@ -48,6 +51,11 @@ const char kEnableSwitchAccessPointScanning[] =
 bool IsExperimentalAccessibilityDictationExtensionEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       ::switches::kEnableExperimentalAccessibilityDictationExtension);
+}
+
+bool IsExperimentalAccessibilityDictationOfflineEnabled() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ::switches::kEnableExperimentalAccessibilityDictationOffline);
 }
 
 bool IsExperimentalAccessibilityLanguageDetectionEnabled() {
