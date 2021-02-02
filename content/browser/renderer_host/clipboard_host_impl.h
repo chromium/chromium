@@ -90,9 +90,7 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost {
   // A paste allowed request is obsolete if it is older than this time.
   static const base::TimeDelta kIsPasteAllowedRequestTooOld;
 
-  ClipboardHostImpl(
-      RenderFrameHost* render_frame_host,
-      mojo::PendingReceiver<blink::mojom::ClipboardHost> receiver);
+  explicit ClipboardHostImpl(RenderFrameHost* render_frame_host);
 
   // Performs a check to see if pasting |data| is allowed and invokes |callback|
   // upon completion. |callback| maybe be invoked immediately if the data has
@@ -180,7 +178,6 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost {
 
   std::unique_ptr<ui::DataTransferEndpoint> CreateDataEndpoint();
 
-  mojo::Receiver<blink::mojom::ClipboardHost> receiver_;
   ui::Clipboard* const clipboard_;  // Not owned
   GlobalFrameRoutingId render_frame_routing_id_;
   std::unique_ptr<ui::ScopedClipboardWriter> clipboard_writer_;

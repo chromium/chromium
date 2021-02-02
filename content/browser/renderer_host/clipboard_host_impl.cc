@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/ptr_util.h"
 #include "base/pickle.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
@@ -19,6 +20,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/child_process_host.h"
 #include "ipc/ipc_message.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "skia/ext/skia_utils_base.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -82,11 +84,8 @@ void ClipboardHostImpl::IsPasteAllowedRequest::InvokeCallbacks() {
   }
 }
 
-ClipboardHostImpl::ClipboardHostImpl(
-    RenderFrameHost* render_frame_host,
-    mojo::PendingReceiver<blink::mojom::ClipboardHost> receiver)
-    : receiver_(this, std::move(receiver)),
-      clipboard_(ui::Clipboard::GetForCurrentThread()) {
+ClipboardHostImpl::ClipboardHostImpl(RenderFrameHost* render_frame_host)
+    : clipboard_(ui::Clipboard::GetForCurrentThread()) {
   // |render_frame_host| may be null in unit tests.
   if (render_frame_host) {
     render_frame_routing_id_ =
@@ -107,18 +106,10 @@ ClipboardHostImpl::ClipboardHostImpl(
 void ClipboardHostImpl::Create(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::ClipboardHost> receiver) {
-  // Clipboard implementations do interesting things, like run nested message
-  // loops. Use manual memory management instead of SelfOwnedReceiver<T> which
-  // synchronously destroys on failure and can result in some unfortunate
-  // use-after-frees after the nested message loops exit.
-  auto* host = new ClipboardHostImpl(
-      static_cast<RenderFrameHostImpl*>(render_frame_host),
+  mojo::MakeSelfOwnedReceiver(
+      base::WrapUnique(new ClipboardHostImpl(
+          static_cast<RenderFrameHostImpl*>(render_frame_host))),
       std::move(receiver));
-  host->receiver_.set_disconnect_handler(base::BindOnce(
-      [](ClipboardHostImpl* host) {
-        base::SequencedTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, host);
-      },
-      host));
 }
 
 ClipboardHostImpl::~ClipboardHostImpl() {
