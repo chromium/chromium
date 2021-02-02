@@ -5022,7 +5022,8 @@ LayoutUnit LayoutBox::ContainingBlockLogicalHeightForPercentageResolution(
   if (available_height == -1)
     return available_height;
 
-  available_height -= root_margin_border_padding_height;
+  available_height = std::max(
+      available_height - root_margin_border_padding_height, LayoutUnit());
 
   // LayoutNG already includes padding in
   // OverrideContainingBlockContentLogicalHeight so we only need to add it here
