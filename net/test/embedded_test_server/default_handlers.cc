@@ -117,8 +117,8 @@ std::unique_ptr<HttpResponse> HandleEchoCriticalHeader(
   http_response->set_content_type("text/plain");
   http_response->AddCustomHeader("Access-Control-Allow-Origin", "*");
 
-  http_response->AddCustomHeader("Accept-CH", "UA-Platform");
-  http_response->AddCustomHeader("Critical-CH", "UA-Platform");
+  http_response->AddCustomHeader("Accept-CH", "Sec-CH-UA-Platform");
+  http_response->AddCustomHeader("Critical-CH", "Sec-CH-UA-Platform");
 
   http_response->set_content(
       request.headers.find("Sec-CH-UA-Mobile")->second +
