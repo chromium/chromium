@@ -145,9 +145,10 @@ void ProgrammaticScriptInjector::OnInjectionComplete(
     std::unique_ptr<base::Value> execution_result,
     UserScript::RunLocation run_location,
     content::RenderFrame* render_frame) {
-  DCHECK(results_.empty());
-  if (execution_result)
-    results_.Append(std::move(execution_result));
+  DCHECK(!result_.has_value());
+  if (execution_result) {
+    result_ = base::Value::FromUniquePtrValue(std::move(execution_result));
+  }
   Finish(std::string(), render_frame);
 }
 
@@ -195,10 +196,9 @@ void ProgrammaticScriptInjector::Finish(const std::string& error,
   // injecting scripts. Don't respond if it was (the browser side watches for
   // frame deletions so nothing is left hanging).
   if (render_frame) {
-    render_frame->Send(
-        new ExtensionHostMsg_ExecuteCodeFinished(
-            render_frame->GetRoutingID(), params_->request_id,
-            error, url_, results_));
+    render_frame->Send(new ExtensionHostMsg_ExecuteCodeFinished(
+        render_frame->GetRoutingID(), params_->request_id, error, url_,
+        result_));
   }
 }
 

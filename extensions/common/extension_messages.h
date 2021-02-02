@@ -44,6 +44,7 @@
 #include "extensions/common/user_script.h"
 #include "extensions/common/view_type.h"
 #include "ipc/ipc_message_macros.h"
+#include "ipc/ipc_message_utils.h"
 #include "ui/accessibility/ax_param_traits.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -849,7 +850,10 @@ IPC_MESSAGE_ROUTED4(
     int /* request id */,
     std::string /* error; empty implies success */,
     GURL /* URL of the code executed on. May be empty if unsuccessful. */,
-    base::ListValue /* result of the script */)
+    base::Optional<base::Value> /* result of the script, if any. We use a
+                                   base::Optional<> here to differentiate
+                                   between no result (such as in the case of an
+                                   error) and a null result. */)
 
 // Sent from the renderer to the browser to notify that content scripts are
 // running in the renderer that the IPC originated from.

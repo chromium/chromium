@@ -191,12 +191,11 @@ class Handler : public content::WebContentsObserver {
   }
 
   // Handles the ExecuteCodeFinished message.
-  // TODO(devlin): Change this to a base::Value, rather than a ListValue.
   void OnExecuteCodeFinished(content::RenderFrameHost* render_frame_host,
                              int request_id,
                              const std::string& error,
                              const GURL& on_url,
-                             const base::ListValue& result_list) {
+                             const base::Optional<base::Value>& result) {
     DCHECK_EQ(request_id_, request_id);
     DCHECK(!pending_render_frames_.empty());
     size_t erased = base::Erase(pending_render_frames_, render_frame_host);
@@ -210,8 +209,8 @@ class Handler : public content::WebContentsObserver {
     // TODO(devlin): Do we need to trust the renderer for the URL here? Is there
     // a risk of the frame having navigated since the injection happened?
     frame_result.url = on_url;
-    if (!result_list.GetList().empty())
-      frame_result.value = result_list.GetList()[0].Clone();
+    if (result.has_value())
+      frame_result.value = result->Clone();
 
     results_.push_back(std::move(frame_result));
 
