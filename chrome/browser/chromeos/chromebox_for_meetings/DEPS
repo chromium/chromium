@@ -4,6 +4,7 @@ include_rules = [
   "+chromeos/components/chromebox_for_meetings/features",
   "+chromeos/services/chromebox_for_meetings/public/cpp",
   "+chromeos/services/cros_healthd/public/cpp",
+  "+components/variations",
 ]
 
 specific_include_rules = {

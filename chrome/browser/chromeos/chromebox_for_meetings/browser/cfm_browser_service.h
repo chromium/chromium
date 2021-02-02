@@ -31,14 +31,15 @@ class CfmBrowserService : public CfmObserver,
   static bool IsInitialized();
 
  protected:
-  // Forward |CfmObserver| implementation
+  // CfmObserver:
   bool ServiceRequestReceived(const std::string& interface_name) override;
 
-  // Disconnect handler for |mojom::CfmServiceAdaptor|
+  // ServiceAdaptorDelegate:
   void OnAdaptorDisconnect() override;
-
-  // Forward |ServiceAdaptorDelegate| implementation
   void OnBindService(mojo::ScopedMessagePipeHandle receiver_pipe) override;
+
+  // mojom::CfmBrowser:
+  void GetVariationsData(GetVariationsDataCallback callback) override;
 
   // Disconnect handler for |mojom::CfmBrowser|
   virtual void OnMojoDisconnect();

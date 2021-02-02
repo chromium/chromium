@@ -3177,6 +3177,7 @@ source_set("chromeos") {
       "//chromeos/services/chromebox_for_meetings/public/cpp",
       "//chromeos/services/chromebox_for_meetings/public/mojom",
       "//components/reporting/proto:record_constants",
+      "//components/variations/field_trial_config",
     ]
   }
 }
