@@ -34,6 +34,9 @@ class MetricsProvider {
   virtual void AsyncInit(base::OnceClosure done_callback);
 
   // Called when a new MetricsLog is created.
+  // This can be used to log a histogram that will appear in the log. Not safe
+  // for some other uses, like user actions.
+  // TODO(crbug.com/1171830): Improve this.
   virtual void OnDidCreateMetricsLog();
 
   // Called when metrics recording has been enabled.

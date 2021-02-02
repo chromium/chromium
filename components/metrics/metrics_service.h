@@ -203,7 +203,6 @@ class MetricsService : public base::HistogramFlattener {
       PrefService* local_state,
       DelegatingProvider* delegating_provider);
 
- private:
   // The MetricsService has a lifecycle that is stored as a state.
   // See metrics_service.cc for description of this lifecycle.
   enum State {
@@ -213,6 +212,9 @@ class MetricsService : public base::HistogramFlattener {
     SENDING_LOGS,         // Sending logs an creating new ones when we run out.
   };
 
+  State state() const { return state_; }
+
+ private:
   enum ShutdownCleanliness {
     CLEANLY_SHUTDOWN = 0xdeadbeef,
     NEED_TO_SHUTDOWN = ~CLEANLY_SHUTDOWN

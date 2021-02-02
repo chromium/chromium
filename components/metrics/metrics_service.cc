@@ -560,7 +560,11 @@ void MetricsService::FinishedInitTask() {
   // Create the initial log.
   if (!initial_metrics_log_) {
     initial_metrics_log_ = CreateLog(MetricsLog::ONGOING_LOG);
-    delegating_provider_.OnDidCreateMetricsLog();
+    // Note: We explicitly do not call OnDidCreateMetricsLog() here, as this
+    // function would have already been called in Start() and this log will
+    // already contain any histograms logged there. OnDidCreateMetricsLog()
+    // will be called again after the initial log is closed, for the next log.
+    // TODO(crbug.com/1171830): Consider getting rid of |initial_metrics_log_|.
   }
 
   rotation_scheduler_->InitTaskComplete();
@@ -781,6 +785,13 @@ void MetricsService::PrepareInitialMetricsLog() {
   DVLOG(1) << "Generated an initial log.";
   log_manager_.FinishCurrentLog(log_store());
   log_manager_.ResumePausedLog();
+
+  // We call OnDidCreateMetricsLog() here for the next log. Normally, this is
+  // called when the log is created, but in this special case, the log we paused
+  // was created much earlier - by Start(). The histograms that were recorded
+  // via OnDidCreateMetricsLog() are now in the initial metrics log we just
+  // processed, so we need to record new ones for the next log.
+  delegating_provider_.OnDidCreateMetricsLog();
 
   // Store unsent logs, including the initial log that was just saved, so
   // that they're not lost in case of a crash before upload time.

@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/metrics/user_metrics.h"
@@ -77,7 +78,10 @@ class TestMetricsService : public MetricsService {
       : MetricsService(state_manager, client, local_state) {}
   ~TestMetricsService() override = default;
 
+  using MetricsService::INIT_TASK_SCHEDULED;
   using MetricsService::RecordCurrentEnvironmentHelper;
+  using MetricsService::SENDING_LOGS;
+  using MetricsService::state;
 
   // MetricsService:
   void SetPersistentSystemProfile(const std::string& serialized_proto,
@@ -111,6 +115,18 @@ class TestMetricsLog : public MetricsLog {
 
  private:
   DISALLOW_COPY_AND_ASSIGN(TestMetricsLog);
+};
+
+const char kOnDidCreateMetricsLogHistogramName[] = "Test.OnDidCreateMetricsLog";
+
+class TestMetricsProviderForOnDidCreateMetricsLog : public TestMetricsProvider {
+ public:
+  TestMetricsProviderForOnDidCreateMetricsLog() = default;
+  ~TestMetricsProviderForOnDidCreateMetricsLog() override = default;
+
+  void OnDidCreateMetricsLog() override {
+    base::UmaHistogramBoolean(kOnDidCreateMetricsLogHistogramName, true);
+  }
 };
 
 class MetricsServiceTest : public testing::Test {
@@ -172,6 +188,33 @@ class MetricsServiceTest : public testing::Test {
 
       EXPECT_EQ(kStabilityFlags, histogram->flags() & kStabilityFlags) << hash;
     }
+  }
+
+  // Returns the number of samples logged to the specified histogram or 0 if
+  // the histogram was not found.
+  int GetHistogramSampleCount(const ChromeUserMetricsExtension& uma_log,
+                              base::StringPiece histogram_name) {
+    const auto histogram_name_hash = HashMetricName(histogram_name);
+    int samples = 0;
+    for (int i = 0; i < uma_log.histogram_event_size(); ++i) {
+      const auto& histogram = uma_log.histogram_event(i);
+      if (histogram.name_hash() == histogram_name_hash) {
+        for (int j = 0; j < histogram.bucket_size(); ++j) {
+          const auto& bucket = histogram.bucket(j);
+          // Per proto comments, count field not being set means 1 sample.
+          samples += (!bucket.has_count() ? 1 : bucket.count());
+        }
+      }
+    }
+    return samples;
+  }
+
+  // Returns the sampled count of the |kOnDidCreateMetricsLogHistogramName|
+  // histogram in the currently staged log in |test_log_store|.
+  int GetSampleCountOfOnDidCreateLogHistogram(MetricsLogStore* test_log_store) {
+    ChromeUserMetricsExtension log;
+    EXPECT_TRUE(DecodeLogDataToProto(test_log_store->staged_log(), &log));
+    return GetHistogramSampleCount(log, kOnDidCreateMetricsLogHistogramName);
   }
 
  protected:
@@ -367,6 +410,48 @@ TEST_F(MetricsServiceTest, InitialStabilityLogAfterCrash) {
   CheckForNonStabilityHistograms(uma_log);
 
   EXPECT_EQ(1, uma_log.system_profile().stability().crash_count());
+}
+
+TEST_F(MetricsServiceTest, InitialLogsHaveOnDidCreateMetricsLogHistograms) {
+  EnableMetricsReporting();
+  TestMetricsServiceClient client;
+  TestMetricsService service(GetMetricsStateManager(), &client,
+                             GetLocalState());
+
+  // Create a provider that will log to |kOnDidCreateMetricsLogHistogramName|
+  // in OnDidCreateMetricsLog()
+  auto* test_provider = new TestMetricsProviderForOnDidCreateMetricsLog();
+  service.RegisterMetricsProvider(
+      std::unique_ptr<MetricsProvider>(test_provider));
+
+  service.InitializeMetricsRecordingState();
+  // Start() will create an initial log.
+  service.Start();
+  ASSERT_EQ(TestMetricsService::INIT_TASK_SCHEDULED, service.state());
+
+  // Run pending tasks to finish the init task, which will create the
+  // |initial_metrics_log_|.
+  task_runner_->RunPendingTasks();
+  ASSERT_EQ(TestMetricsService::SENDING_LOGS, service.state());
+
+  MetricsLogStore* test_log_store = service.LogStoreForTest();
+
+  // Stage the next log, which should be the |initial_metrics_log_|.
+  // Check that it has one sample in |kOnDidCreateMetricsLogHistogramName|.
+  test_log_store->StageNextLog();
+  EXPECT_EQ(1, GetSampleCountOfOnDidCreateLogHistogram(test_log_store));
+
+  // Discard the staged log and close and stage the next one. This is the
+  // first "ongoing log".
+  // Check that it has one sample in |kOnDidCreateMetricsLogHistogramName|.
+  test_log_store->DiscardStagedLog();
+  service.StageCurrentLogForTest();
+  EXPECT_EQ(1, GetSampleCountOfOnDidCreateLogHistogram(test_log_store));
+
+  // Check one more log for good measure.
+  test_log_store->DiscardStagedLog();
+  service.StageCurrentLogForTest();
+  EXPECT_EQ(1, GetSampleCountOfOnDidCreateLogHistogram(test_log_store));
 }
 
 TEST_F(MetricsServiceTest,
