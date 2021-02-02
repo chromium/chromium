@@ -1696,6 +1696,49 @@ public class StartSurfaceTest {
         TabUiTestHelper.verifyTabModelTabCount(cta, 2, 0);
     }
 
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
+    // clang-format off
+    @CommandLineFlags.Add({BASE_PARAMS + "/single"})
+    public void testShow_SingleAsHomepage_BackButtonOnCarouselTabSwitcher() {
+        // clang-format on
+        if (!mImmediateReturn) {
+            onView(withId(org.chromium.chrome.tab_ui.R.id.home_button)).perform(click());
+        }
+
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        CriteriaHelper.pollUiThread(
+                () -> cta.getLayoutManager() != null && cta.getLayoutManager().overviewVisible());
+        waitForTabModel();
+        TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
+
+        OverviewModeBehaviorWatcher hideWatcher =
+                TabUiTestHelper.createOverviewHideWatcher(mActivityTestRule.getActivity());
+        onView(withId(org.chromium.chrome.start_surface.R.id.search_box_text))
+                .perform(replaceText("about:blank"));
+        onView(withId(org.chromium.chrome.start_surface.R.id.url_bar))
+                .perform(pressKey(KeyEvent.KEYCODE_ENTER));
+        hideWatcher.waitForBehavior();
+        TabUiTestHelper.verifyTabModelTabCount(cta, 2, 0);
+
+        TabUiTestHelper.mergeAllNormalTabsToAGroup(cta);
+        onViewWaiting(withId(org.chromium.chrome.tab_ui.R.id.home_button));
+        onView(withId(org.chromium.chrome.tab_ui.R.id.home_button)).perform(click());
+        CriteriaHelper.pollUiThread(() -> cta.getLayoutManager().overviewVisible());
+
+        onView(allOf(withParent(withId(
+                             org.chromium.chrome.tab_ui.R.id.carousel_tab_switcher_container)),
+                       withId(org.chromium.chrome.tab_ui.R.id.tab_list_view)))
+                .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
+        onView(allOf(withId(org.chromium.chrome.tab_ui.R.id.dialog_container_view), isDisplayed()));
+
+        pressBack();
+        waitForView(withId(org.chromium.chrome.tab_ui.R.id.dialog_container_view), VIEW_GONE);
+        onView(withId(R.id.primary_tasks_surface_view)).check(matches(isDisplayed()));
+    }
+
     private static Matcher<View> isView(final View targetView) {
         return new TypeSafeMatcher<View>() {
             @Override
