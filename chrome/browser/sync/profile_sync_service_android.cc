@@ -84,7 +84,7 @@ ProfileSyncServiceAndroid::ProfileSyncServiceAndroid(JNIEnv* env, jobject obj)
     return;
   }
 
-  profile_ = ProfileManager::GetActiveUserProfile();
+  profile_ = ProfileManager::GetLastUsedProfile();
   if (profile_ == nullptr) {
     NOTREACHED() << "Sync Init: Profile not found.";
     return;
