@@ -12,18 +12,16 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
-#include "base/mac/bundle_locations.h"
-#include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_mach_port.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
 #include "base/strings/nullable_string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/notifications/alert_dispatcher_xpc.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/browser/notifications/notification_platform_bridge_mac_utils.h"
@@ -31,14 +29,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/cocoa/notifications/notification_builder_mac.h"
 #include "chrome/browser/ui/cocoa/notifications/notification_constants_mac.h"
-#import "chrome/browser/ui/cocoa/notifications/notification_delivery.h"
 #import "chrome/browser/ui/cocoa/notifications/notification_response_builder_mac.h"
-#include "chrome/common/buildflags.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/crash/core/app/crashpad.h"
-#include "content/public/browser/browser_task_traits.h"
 #include "third_party/blink/public/common/notifications/notification_constants.h"
-#include "third_party/crashpad/crashpad/client/crashpad_client.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -62,32 +55,11 @@
 // - Sound names can be implemented by setting soundName in NSUserNotification
 //   NSUserNotificationDefaultSoundName gives you the platform default.
 
-namespace {
-
-// This enum backs an UMA histogram, so it should be treated as append-only.
-enum XPCConnectionEvent {
-  INTERRUPTED = 0,
-  INVALIDATED,
-  XPC_CONNECTION_EVENT_COUNT
-};
-
-void RecordXPCEvent(XPCConnectionEvent event) {
-  UMA_HISTOGRAM_ENUMERATION("Notifications.XPCConnectionEvent", event,
-                            XPC_CONNECTION_EVENT_COUNT);
-}
-
-}  // namespace
-
 // A Cocoa class that represents the delegate of NSUserNotificationCenter and
 // can forward commands to C++.
 @interface NotificationCenterDelegate
     : NSObject<NSUserNotificationCenterDelegate> {
 }
-@end
-
-// Interface to communicate with the Alert XPC service.
-@interface AlertDispatcherImpl : NSObject<AlertDispatcher>
-
 @end
 
 // /////////////////////////////////////////////////////////////////////////////
@@ -116,8 +88,9 @@ NotificationPlatformBridge::Create() {
       return std::make_unique<NotificationPlatformBridgeMacUNNotification>();
     }
   }
-  base::scoped_nsobject<AlertDispatcherImpl> alert_dispatcher(
-      [[AlertDispatcherImpl alloc] init]);
+  // TODO(crbug.com/1170731): Use a helper app to display alerts.
+  base::scoped_nsobject<NSObject<AlertDispatcher>> alert_dispatcher(
+      [[AlertDispatcherXPC alloc] init]);
   return std::make_unique<NotificationPlatformBridgeMac>(
       [NSUserNotificationCenter defaultUserNotificationCenter],
       alert_dispatcher.get());
@@ -198,8 +171,8 @@ void NotificationPlatformBridgeMac::Display(
       setNotificationType:[NSNumber numberWithInteger:static_cast<NSInteger>(
                                                           notification_type)]];
 
-  // Send alert notifications to the XPC service. Chrome itself can only display
-  // banners.
+  // Send alert notifications to the alert dispatcher. Chrome itself can only
+  // display banners.
   if (is_alert) {
     NSDictionary* dict = [builder buildDictionary];
     [alert_dispatcher_ dispatchNotification:dict];
@@ -233,7 +206,7 @@ void NotificationPlatformBridgeMac::Close(Profile* profile,
   }
 
   // If no banner existed with that ID try to see if there is an alert
-  // in the xpc server.
+  // in the alert dispatcher.
   [alert_dispatcher_ closeNotificationWithId:notificationId
                                    profileId:profileId
                                    incognito:incognito];
@@ -321,119 +294,6 @@ void NotificationPlatformBridgeMac::DisplayServiceShutDown(Profile* profile) {}
      shouldPresentNotification:(NSUserNotification*)nsNotification {
   // Always display notifications, regardless of whether the app is foreground.
   return YES;
-}
-
-@end
-
-@implementation AlertDispatcherImpl {
-  // The connection to the XPC server in charge of delivering alerts.
-  base::scoped_nsobject<NSXPCConnection> _xpcConnection;
-
-  // YES if the remote object has had |-setMachExceptionPort:| called
-  // since the service was last started, interrupted, or invalidated.
-  // If NO, then -serviceProxy will set the exception port.
-  BOOL _setExceptionPort;
-}
-
-- (instancetype)init {
-  if ((self = [super init])) {
-    _xpcConnection.reset([[NSXPCConnection alloc]
-        initWithServiceName:
-            [NSString
-                stringWithFormat:notification_constants::kAlertXPCServiceName,
-                                 [base::mac::OuterBundle() bundleIdentifier]]]);
-    _xpcConnection.get().remoteObjectInterface =
-        [NSXPCInterface interfaceWithProtocol:@protocol(NotificationDelivery)];
-
-    _xpcConnection.get().interruptionHandler = ^{
-      // We will be getting this handler both when the XPC server crashes or
-      // when it decides to close the connection.
-      LOG(WARNING) << "AlertNotificationService: XPC connection interrupted.";
-      RecordXPCEvent(INTERRUPTED);
-      _setExceptionPort = NO;
-    };
-
-    _xpcConnection.get().invalidationHandler = ^{
-      // This means that the connection should be recreated if it needs
-      // to be used again.
-      LOG(WARNING) << "AlertNotificationService: XPC connection invalidated.";
-      RecordXPCEvent(INVALIDATED);
-      _setExceptionPort = NO;
-    };
-
-    _xpcConnection.get().exportedInterface =
-        [NSXPCInterface interfaceWithProtocol:@protocol(NotificationReply)];
-    _xpcConnection.get().exportedObject = self;
-    [_xpcConnection resume];
-  }
-
-  return self;
-}
-
-// AlertDispatcher:
-- (void)dispatchNotification:(NSDictionary*)data {
-  [[self serviceProxy] deliverNotification:data];
-}
-
-- (void)closeNotificationWithId:(NSString*)notificationId
-                      profileId:(NSString*)profileId
-                      incognito:(BOOL)incognito {
-  [[self serviceProxy] closeNotificationWithId:notificationId
-                                     profileId:profileId
-                                     incognito:incognito];
-}
-
-- (void)closeAllNotifications {
-  [[self serviceProxy] closeAllNotifications];
-}
-
-- (void)
-getDisplayedAlertsForProfileId:(NSString*)profileId
-                     incognito:(BOOL)incognito
-                      callback:(GetDisplayedNotificationsCallback)callback {
-  // Create a copyable version of the OnceCallback because ObjectiveC blocks
-  // copy all referenced variables via copy constructor.
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
-  auto reply = ^(NSArray* alerts) {
-    std::set<std::string> displayedNotifications;
-
-    for (NSString* alert in alerts)
-      displayedNotifications.insert(base::SysNSStringToUTF8(alert));
-
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(copyable_callback, std::move(displayedNotifications),
-                       /*supports_synchronization=*/true));
-  };
-
-  [[self serviceProxy] getDisplayedAlertsForProfileId:profileId
-                                            incognito:incognito
-                                                reply:reply];
-}
-
-// NotificationReply:
-- (void)notificationClick:(NSDictionary*)notificationResponseData {
-  ProcessMacNotificationResponse(notificationResponseData);
-}
-
-// Private methods:
-
-// Retrieves the connection's remoteObjectProxy. Always use this as opposed
-// to going directly through the connection, since this will ensure that the
-// service has its exception port configured for crash reporting.
-- (id<NotificationDelivery>)serviceProxy {
-  id<NotificationDelivery> proxy = [_xpcConnection remoteObjectProxy];
-
-  if (!_setExceptionPort) {
-    base::mac::ScopedMachSendRight exceptionPort(
-        crash_reporter::GetCrashpadClient().GetHandlerMachPort());
-    base::scoped_nsobject<CrXPCMachPort> xpcPort(
-        [[CrXPCMachPort alloc] initWithMachSendRight:std::move(exceptionPort)]);
-    [proxy setUseUNNotification:NO machExceptionPort:xpcPort];
-    _setExceptionPort = YES;
-  }
-
-  return proxy;
 }
 
 @end

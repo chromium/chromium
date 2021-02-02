@@ -9,10 +9,10 @@
 
 #include "chrome/browser/notifications/displayed_notifications_dispatch_callback.h"
 
-// Interface to communicate with the Alert XPC service.
+// Interface to communicate with the Alert Notification service.
 @protocol AlertDispatcher<NSObject>
 
-// Deliver a notification to the XPC service to be displayed as an alert.
+// Deliver a notification to be displayed as an alert.
 - (void)dispatchNotification:(NSDictionary*)data;
 
 // Close a notification for a given |notificationId|, |profileId| and

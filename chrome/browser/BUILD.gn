@@ -4962,6 +4962,8 @@ static_library("browser") {
       "metrics/power/power_metrics_provider_mac.h",
       "metrics/power/power_metrics_provider_mac.mm",
       "notifications/alert_dispatcher_mac.h",
+      "notifications/alert_dispatcher_xpc.h",
+      "notifications/alert_dispatcher_xpc.mm",
       "notifications/notification_platform_bridge_mac.h",
       "notifications/notification_platform_bridge_mac.mm",
       "notifications/notification_platform_bridge_mac_unnotification.h",
