@@ -118,6 +118,7 @@ bindings_core_v8_files =
                     "core/v8/source_location.cc",
                     "core/v8/source_location.h",
                     "core/v8/to_v8_for_core.h",
+                    "core/v8/to_v8_traits.h",
                     "core/v8/use_counter_callback.cc",
                     "core/v8/use_counter_callback.h",
                     "core/v8/v8_binding_for_core.cc",
