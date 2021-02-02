@@ -774,6 +774,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.Modules.Hover" enum="NtpModules"
+    expires_after="2022-01-01">
+  <owner>danielms@google.com</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logged when the user hovers on a module. Only logged once per NTP and
+    module. Only logged on the 1P NTP. Note that even if the user has Google as
+    their default search engine, Incognito and Guest mode NTPs are not
+    considered 1P and dont't log this histogram.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.Modules.Impression" units="ms"
     expires_after="2021-07-04">
   <owner>tiborg@chromium.org</owner>

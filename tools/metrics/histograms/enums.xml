@@ -54071,6 +54071,21 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Other, not at startup"/>
 </enum>
 
+<enum name="NtpModules">
+  <summary>
+    Hash values for the IDs of NTP modules. Each of these values is computed by
+    casting the output of base::PersistentHash(module_id) to
+    base::HistogramBase::Sample.
+  </summary>
+  <int value="-1996945391" label="chrome_cart"/>
+  <int value="-1985729288" label="recipe_tasks"/>
+  <int value="-1870686922" label="drive"/>
+  <int value="-1810591528" label="shopping_tasks"/>
+  <int value="-505117227" label="dummy2"/>
+  <int value="301684683" label="kaleidoscope (deprecated)"/>
+  <int value="1976054971" label="dummy"/>
+</enum>
+
 <enum name="NtpMostVisitedScheme">
   <obsolete>
     Deprecated 2016-05.
