@@ -178,8 +178,8 @@ void ChromeRLZTrackerDelegate::SetOmniboxSearchCallback(
   DCHECK(!callback.is_null());
   omnibox_url_opened_subscription_ =
       OmniboxEventGlobalTracker::GetInstance()->RegisterCallback(
-          base::Bind(&ChromeRLZTrackerDelegate::OnURLOpenedFromOmnibox,
-                     base::Unretained(this)));
+          base::BindOnce(&ChromeRLZTrackerDelegate::OnURLOpenedFromOmnibox,
+                         base::Unretained(this)));
   on_omnibox_search_callback_ = std::move(callback);
 }
 
