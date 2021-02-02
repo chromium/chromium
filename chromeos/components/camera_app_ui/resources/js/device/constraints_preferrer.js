@@ -35,13 +35,13 @@ export let CaptureCandidate;
  */
 export class ConstraintsPreferrer {
   /**
-   * @param {function()} doReconfigureStream Trigger stream reconfiguration to
-   *     reflect changes in user preferred settings.
+   * @param {function(): !Promise} doReconfigureStream Trigger stream
+   *     reconfiguration to reflect changes in user preferred settings.
    * @protected
    */
   constructor(doReconfigureStream) {
     /**
-     * @type {function()}
+     * @type {function(): !Promise}
      * @protected
      */
     this.doReconfigureStream_ = doReconfigureStream;
@@ -72,7 +72,7 @@ export class ConstraintsPreferrer {
     /**
      * Listener for changes of preferred resolution used on particular video
      * device.
-     * @type {function(string, !Resolution)}
+     * @type {function(string, !Resolution): void}
      * @private
      */
     this.preferredResolutionChangeListener_ = () => {};
@@ -166,7 +166,7 @@ export class ConstraintsPreferrer {
   /**
    * Sets listener for changes of preferred resolution used in taking photo on
    * particular video device.
-   * @param {function(string, !Resolution)} listener
+   * @param {function(string, !Resolution): void} listener
    */
   setPreferredResolutionChangeListener(listener) {
     this.preferredResolutionChangeListener_ = listener;
@@ -184,7 +184,7 @@ const SUPPORTED_CONSTANT_FPS = [30, 60];
  */
 export class VideoConstraintsPreferrer extends ConstraintsPreferrer {
   /**
-   * @param {function()} doReconfigureStream
+   * @param {function(): !Promise} doReconfigureStream
    * @public
    */
   constructor(doReconfigureStream) {
@@ -450,7 +450,7 @@ export class VideoConstraintsPreferrer extends ConstraintsPreferrer {
  */
 export class PhotoConstraintsPreferrer extends ConstraintsPreferrer {
   /**
-   * @param {function()} doReconfigureStream
+   * @param {function(): !Promise} doReconfigureStream
    * @public
    */
   constructor(doReconfigureStream) {
