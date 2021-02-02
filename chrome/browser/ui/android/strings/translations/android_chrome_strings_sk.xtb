@@ -402,7 +402,6 @@ Vyhľadávanie spustíte pridržaním ľubovoľného slova. Spresníte ho výber
 <translation id="3894427358181296146">Pridanie priečinka</translation>
 <translation id="3895926599014793903">Vynútiť povolenie priblíženia</translation>
 <translation id="3908308510347173149">Aktualizovať službu <ph name="PRODUCT_NAME" /></translation>
-<translation id="3909763690984331376">Kontrola bezpečnosti <ph name="BEGIN_NEW" />Novinka<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">Vyhľadáva sa to najlepšie z internetu…</translation>
 <translation id="3924911262913579434">Je zapnutý režim <ph name="SAFE_BROWSING_MODE" /></translation>
 <translation id="3927692899758076493">Bezpätkové</translation>
@@ -633,6 +632,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />resetujte synchroniz�
 <translation id="5530766185686772672">Zavrieť karty inkognito</translation>
 <translation id="5530920986376047241">Stránky si môžete uložiť do zoznamu na čítanie, aby ste ich mohli znova nájsť</translation>
 <translation id="5534640966246046842">Web bol skopírovaný</translation>
+<translation id="5548606607480005320">Kontrola bezpečnosti</translation>
 <translation id="5556459405103347317">Znova načítať</translation>
 <translation id="5561549206367097665">Čaká sa na sieť…</translation>
 <translation id="55737423895878184">Poloha a upozornenia sú povolené</translation>
@@ -730,6 +730,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />resetujte synchroniz�
 <translation id="6122831415929794347">Chcete vypnúť Bezpečné prehliadanie?</translation>
 <translation id="6127379762771434464">Položka bola odstránená</translation>
 <translation id="6137022273846704445">Jazyk aplikácie <ph name="APP_NAME" /></translation>
+<translation id="6138832295072039549">Tu zmeňte nastavenia webu</translation>
 <translation id="6140709049082532940">Rozšírená ochrana:</translation>
 <translation id="6140912465461743537">Krajina alebo oblasť</translation>
 <translation id="614940544461990577">Vyskúšajte:</translation>

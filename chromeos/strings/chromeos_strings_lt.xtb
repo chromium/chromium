@@ -62,6 +62,7 @@
 <translation id="2338501278241028356">Įjunkite „Bluetooth“, kad aptiktumėte įrenginius netoliese</translation>
 <translation id="2364498172489649528">Pavyko</translation>
 <translation id="2391082728065870591">Siųsti atsiliepimo ataskaitą</translation>
+<translation id="2418150275289244458">Atidaryti skiltyje „Nustatymai“</translation>
 <translation id="2446553403094072641">Slankiojo kablelio tikslumas</translation>
 <translation id="2448312741937722512">Tipas</translation>
 <translation id="2461822463642141190">Dabartinė</translation>
@@ -273,6 +274,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="7177485034254901881">Šį „<ph name="DEVICE_TYPE" />“ valdo <ph name="MANAGER" />. Administratoriai gali nuotoliniu būdu konfigūruoti įrenginį.</translation>
 <translation id="7216409898977639127">Mobiliojo ryšio teikėjas</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7343649194310845056">Tinklo įrenginiai</translation>
 <translation id="7359657277149375382">Failo tipas</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -282,6 +284,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="7490813197707563893">MAC adresas</translation>
 <translation id="7497215489070763236">Serverio CA sertifikatas</translation>
 <translation id="7502658306369382406">„IPv6“ adresas</translation>
+<translation id="7550715992156305117">Diagnostikos veiksmų sekos</translation>
 <translation id="7561454561030345039">Šį veiksmą tvarko jūsų administratorius</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331">Liko <ph name="TIME_VALUE" /></translation>

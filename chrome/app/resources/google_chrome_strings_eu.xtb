@@ -19,6 +19,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1399397803214730675">Ordenagailuak Google Chrome arakatzailearen bertsio berriagoa du. Softwareak ez badu funtzionatzean, desinstalatu Google Chrome eta saiatu berriro.</translation>
 <translation id="1434626383986940139">Chrome Canary aplikazioak</translation>
 <translation id="147727933880789532">Chrome-k luzapena desgaitzea gomendatzen du; izan ere, ez ditu betetzen Arakatze seguru hobetua eginbidearen arauak.</translation>
+<translation id="1516530951338665275">Google Chrome-k Bluetooth-a erabiltzeko baimena behar du parekatzen jarraitzeko. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Eguneratu Chrome</translation>
 <translation id="1587223624401073077">Google Chrome kamera erabiltzen ari da.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> arriskutsua da; horregatik, blokeatu egin du Chrome-k.</translation>
@@ -209,6 +210,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="6566149418543181476">Google Chrome eguneratzen (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Chrome OS sistema</translation>
 <translation id="6650333065969705433">Rosetta erabili nahi baduzu babestutako multimedia edukia erreproduzitzeko, Chrome berrabiarazi behar duzu.</translation>
+<translation id="6668872995670558829">Beharrezkoa da Chrome-ko profil bat izatea</translation>
 <translation id="6676384891291319759">Sartu Interneten</translation>
 <translation id="6679975945624592337">Onartu Google Chrome atzeko planoan abiaraztea</translation>
 <translation id="6739177684496155661">Chrome-eko beste profil batean egin nahi duzu aurrera?</translation>
@@ -227,6 +229,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Chrome-ren eguneratze bat erabilgarri dago eta arakatzailea berrabiarazten duzunean aplikatuko da.}=1{Chrome-ren eguneratze bat erabilgarri dago eta arakatzailea berrabiarazten duzunean aplikatuko da. Ezkutuko moduko leihoa ez da berriro irekiko.}other{Chrome-ren eguneratze bat erabilgarri dago eta arakatzailea berrabiarazten duzunean aplikatuko da. Ezkutuko moduko # leihoak ez dira berriro irekiko.}}</translation>
 <translation id="7155997830309522122">Hala bada, editatu Chrome-n gordetako pasahitza, berriarekin bat etor dadin.</translation>
 <translation id="7242029209006116544">Kontu kudeatu batekin hasten ari zara saioa eta, beraz, Google Chrome-ko zure profilaren gaineko kontrola emango diozu kontuaren administratzaileari. <ph name="USER_NAME" /> erabiltzailearekin iraunkorki lotuko dira zure Chrome datuak, esaterako, aplikazioak, laster-markak eta beste ezarpen batzuk. Datu horiek ezabatzeko, Google-ko kontuen Panela erabili ahal izango duzu, baina ezin izango dituzu datuak lotu beste kontu batera. Zure Chrome datuak bereizita izan nahi badituzu, beste profil bat sor dezakezu. <ph name="LEARN_MORE" /></translation>
+<translation id="7255293161244507351"><ph name="MANAGEMENT_DOMAIN" /> da kontuaren kudeatzailea. Administratzaileak Chrome-ko profil bat behar du sarbidea izateko. Profil hori guztiz bereizita dago profil pertsonaletatik. Administratzaileak kendu egin ditzake profil hau erabiltzean sortutako Chrome-ko datuak (adibidez, sortutako laster-markak, historia, pasahitzak eta bestelako ezarpenak). <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="7295052994004373688">Hizkuntza honetan dago Google Chrome-ren erabiltzaile-interfazea</translation>
 <translation id="7296210096911315575">Erabilerari eta segurtasunari buruzko informazio garrantzitsua</translation>
 <translation id="7303916856901595720">Kontua Chrome-ko beste profil batera eraman nahi duzu?</translation>
@@ -234,6 +237,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="7339898014177206373">Leiho berria</translation>
 <translation id="7398801000654795464">Chrome arakatzaileko saioa <ph name="USER_EMAIL_ADDRESS" /> gisa hasi duzu. Saioa berriro hasteko, erabili hasiera batean erabilitako kontu bera.</translation>
 <translation id="7408085963519505752">Chrome OS-en baldintzak</translation>
+<translation id="7416131756095014387">Kudeatuta dago kontua. Administratzaileak Chrome-ko profil bat behar du sarbidea izateko. Profil hori guztiz bereizita dago profil pertsonaletatik. Administratzaileak kendu egin ditzake profil hau erabiltzean sortutako Chrome-ko datuak (adibidez, sortutako laster-markak, historia, pasahitzak eta bestelako ezarpenak). <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="7419046106786626209">Chrome OS-ek ezin izan ditu sinkronizatu zure datuak, sinkronizazioa ez dagoelako erabilgarri zure domeinuan.</translation>
 <translation id="7486227612705979895">Chrome-k zure Drive unitatea atzituko du helbide-barran iradokizunak egiteko</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>

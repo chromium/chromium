@@ -62,6 +62,7 @@
 <translation id="2338501278241028356">අවට උපාංග සොයා ගැනීමට බ්ලූටූත් ක්‍රියාත්මක කරන්න</translation>
 <translation id="2364498172489649528">සමත් විය</translation>
 <translation id="2391082728065870591">ප්‍රතිපෝෂණ වාර්තාව යවන්න</translation>
+<translation id="2418150275289244458">සැකසීම්වල විවෘත කරන්න</translation>
 <translation id="2446553403094072641">පාවෙන ලක්ෂ්‍යය නිරවද්‍යතාව</translation>
 <translation id="2448312741937722512">වර්ගය</translation>
 <translation id="2461822463642141190">වත්මන්</translation>
@@ -273,6 +274,7 @@
 <translation id="7177485034254901881">මෙම <ph name="DEVICE_TYPE" /> කළමනාකරණය කරනු ලබන්නේ <ph name="MANAGER" /> මගිනි. පරිපාලකයින්ට උපාංගය දුරස්ථව වින්‍යාස කිරීමට හැකිය.</translation>
 <translation id="7216409898977639127">සෙලියුලර් සපයන්නා</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7343649194310845056">ජාල උපාංග</translation>
 <translation id="7359657277149375382">ගොනු වර්ගය</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -282,6 +284,7 @@
 <translation id="7490813197707563893">MAC ලිපිනය</translation>
 <translation id="7497215489070763236">සේවාදායකයේ CA සහතිකය</translation>
 <translation id="7502658306369382406">IPv6 ලිපිනය</translation>
+<translation id="7550715992156305117">දෝෂ නිර්ණ දින චර්යා</translation>
 <translation id="7561454561030345039">මෙම ක්‍රියාව ඔබේ පරිපාලක විසින් කළමනාකරණය කරයි</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> ඉතිරිය</translation>

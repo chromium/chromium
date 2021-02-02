@@ -402,7 +402,6 @@ Hae sanaa koskettamalla sitä pitkään. Jos haluat tarkentaa hakuasi, valitse e
 <translation id="3894427358181296146">Lisää kansio</translation>
 <translation id="3895926599014793903">Ota zoomaus käyttöön</translation>
 <translation id="3908308510347173149">Päivitä <ph name="PRODUCT_NAME" /></translation>
-<translation id="3909763690984331376">Turvatarkistus <ph name="BEGIN_NEW" />Uusi<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">Haetaan verkon parasta sisältöä…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> on päällä</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -633,6 +632,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5530766185686772672">Sulje incognito-välilehdet</translation>
 <translation id="5530920986376047241">Voit tallentaa sivuja lukulistallesi myöhempää käyttöä varten</translation>
 <translation id="5534640966246046842">Sivusto kopioitu</translation>
+<translation id="5548606607480005320">Turvatarkistus</translation>
 <translation id="5556459405103347317">Lataa uudelleen</translation>
 <translation id="5561549206367097665">Odotetaan verkkoyhteyttä…</translation>
 <translation id="55737423895878184">Sijainti ja ilmoitukset sallitaan</translation>
@@ -730,6 +730,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="6122831415929794347">Laitetaanko Selaussuoja pois päältä?</translation>
 <translation id="6127379762771434464">Kohde poistettu</translation>
 <translation id="6137022273846704445">Kieli: <ph name="APP_NAME" /></translation>
+<translation id="6138832295072039549">Muuta sivustoasetuksia täällä</translation>
 <translation id="6140709049082532940">Parannettu suojaus:</translation>
 <translation id="6140912465461743537">Maa/alue</translation>
 <translation id="614940544461990577">Kokeile seuraavia toimenpiteitä:</translation>

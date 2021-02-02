@@ -577,6 +577,7 @@
 <translation id="5992218262414051481">ඉහළ ප්‍රභේදන ප්‍රකාරය සබලයි. එය ක්‍රියාවිරහිත කිරීම ටොගල කිරීමට නැවත Ctrl+Search+H ඔබන්න.</translation>
 <translation id="6018164090099858612">කැඩපත් ප්‍රකාරයෙන් ඉවත් වෙමින්</translation>
 <translation id="602001110135236999">වමට අනුචලන කරන්න</translation>
+<translation id="602472752137106327">සියලු මේසවලින් කවුළු පෙන්වයි, රේඩියෝ බොත්තම තෝරන ලදී</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />, ඔබේ පරිපාලකයා විසින් කළමනාකරණය කරයි</translation>
 <translation id="6030495522958826102">මෙනුව තිරයේ පහළ වම් කොණට ගෙන ගියා.</translation>
 <translation id="6032620807120418574">පූර්ණ තිරය පටිගත කිරීමට ඕනෑම තැනක ක්ලික් කරන්න</translation>
@@ -675,6 +676,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{එක් අංකයක් ඉතිරිය}one{අංක #ක් ඉතිරිය}other{අංක #ක් ඉතිරිය}}</translation>
 <translation id="6878400149835617132">කෙටිමඟ අක්‍රියයි</translation>
 <translation id="6886172995547742638">ඔබගේ <ph name="DEVICE_TYPE" /> අඩු ක්‍රියාකාරිත්වයක් අත්විඳිය හැකිය. සහතික කළ <ph name="PREFERRED_MINIMUM_POWER" />W හෝ වඩා ඉහළ USB-C බල ඇඩැප්ටරයක් භාවිත කරන්න.</translation>
+<translation id="688631446150864480">කවුළු මාරු කිරීමට පහළ ඊතල යතුර ඔබන්න</translation>
 <translation id="6896758677409633944">පිටපත්</translation>
 <translation id="6910714959251846841">මෙම යාවත්කාලීන කිරීම සඳහා ඔබේ උපාංගය බල ගැන්වීම අවශ්‍යය. <ph name="SYSTEM_APP_NAME" /> යාවත්කාලීන කිරීම ගැන නවතම තොරතුරු දැන ගන්න.</translation>
 <translation id="6919251195245069855">ඔබේ ස්මාර්ට් කාඩ්පත හඳුනා ගැනීමට නොහැකි විය. නැවත උත්සාහ කරන්න.</translation>
@@ -840,6 +842,7 @@
 <translation id="8297006494302853456">දුර්වලයි</translation>
 <translation id="8308637677604853869">පෙර මෙනුව</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> කවුළුව තෝරා ගන්නා ලදී</translation>
 <translation id="8351131234907093545">සටහන සාදන්න</translation>
 <translation id="8371779926711439835">අකුරෙන් ඉදිරියට</translation>
 <translation id="8375916635258623388">මෙම <ph name="DEVICE_NAME" /> සහ ඔබේ දුරකථනය ස්වයංක්‍රීයව සම්බන්ධ වනු ඇත</translation>
@@ -863,6 +866,7 @@
 <translation id="8477270416194247200">අවලංගු කිරීමට Alt+සෙවීම හෝ Shift ඔබන්න.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> හට සහය නොදක්වයි. විභේදනය <ph name="FALLBACK_RESOLUTION" /> ට වෙනස් විය. වෙනස්කම් තබා ගැනීමට තහවුරු කිරීම ක්ලික් කරන්න. පෙර සැකසුම් <ph name="TIMEOUT_SECONDS" /> තුළ ප්‍රතිසාධන කෙරේ.</translation>
 <translation id="8513108775083588393">ස්වයංක්‍රීය කරකැවීම</translation>
+<translation id="851458219935658693">වත්මන් මේසයෙන් කවුළු පෙන්වයි, රේඩියෝ බොත්තම තෝරා ගන්නා ලදී</translation>
 <translation id="8517041960877371778">ඔබගේ <ph name="DEVICE_TYPE" /> සක්‍රියව පවතින විට එය ආරෝපණය නොවනු ඇත.</translation>
 <translation id="8553395910833293175">සියලු මේස වෙත දැනටමත් පවරා ඇත.</translation>
 <translation id="8563862697512465947">දැනුම්දීම් සැකසීම්</translation>

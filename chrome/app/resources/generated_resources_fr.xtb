@@ -1059,6 +1059,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> et 1 autre touche</translation>
 <translation id="2165421703844373933">Accédez à l'Assistant en disant "Ok Google". Pour économiser la batterie, sélectionnez “Activé (recommandé)”. L'Assistant ne répondra que lorsque votre appareil sera branché ou en charge.</translation>
 <translation id="2166369534954157698">Voici à quoi ressemblera votre texte.</translation>
+<translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Se connecter quand même</translation>
 <translation id="2170054054876170358">Vérifiez que votre téléphone est déverrouillé et à proximité, et que le Bluetooth et le Wi-Fi sont activés.</translation>
 <translation id="2173302385160625112">Vérifiez votre connexion Internet</translation>
@@ -1110,7 +1111,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2225864335125757863">Modifiez ces mots de passe immédiatement pour protéger votre compte :</translation>
 <translation id="2226449515541314767">Le contrôle total des appareils MIDI a été bloqué pour ce site.</translation>
 <translation id="2226907662744526012">Déverrouiller automatiquement une fois le code saisi</translation>
-<translation id="222704500187107962">Cette exception sera automatiquement supprimée une fois que vous aurez quitté la session de navigation privée en cours</translation>
 <translation id="2227179592712503583">Supprimer la suggestion</translation>
 <translation id="2229161054156947610">Plus d'1 heure restante</translation>
 <translation id="222931766245975952">Fichier tronqué.</translation>
@@ -1282,7 +1282,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2428939361789119025">Désactiver le Wi-Fi</translation>
 <translation id="2431027948063157455">Impossible de charger l'Assistant Google. Veuillez vérifier votre connexion réseau et réessayer.</translation>
 <translation id="2433452467737464329">Ajoutez un paramètre de requête dans l'URL pour une actualisation automatique de la page : chrome://network/?refresh=&lt;sec&gt;.</translation>
-<translation id="2433490881840073798"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE" /></translation>
 <translation id="2433507940547922241">Apparence</translation>
 <translation id="2433836460518180625">Déverrouiller l'appareil uniquement</translation>
 <translation id="2434449159125086437">Échec de la configuration de l'imprimante. Veuillez vérifier la configuration, puis réessayer.</translation>
@@ -3086,7 +3085,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4492698018379445570">Retrouvez les articles ajoutés à vos paniers et passez commande quand vous le souhaitez</translation>
 <translation id="4493468155686877504">Recommandée (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">Ne pas afficher sur cette page</translation>
-<translation id="4496054781541092778">autorisation "<ph name="PERMISSION" />" bloquée automatiquement</translation>
 <translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> a planté</translation>
 <translation id="450099669180426158">Icône représentant un point d'exclamation</translation>
 <translation id="4501530680793980440">Confirmer la suppression</translation>
@@ -3108,7 +3106,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4519935350946509010">Erreur de connexion.</translation>
 <translation id="4520385623207007473">Cookies utilisés</translation>
 <translation id="452039078290142656">appareils inconnus de <ph name="VENDOR_NAME" /></translation>
-<translation id="4521489190203965562">Session de navigation privée actuelle : <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" />, <ph name="RECENT_PERMISSIONS_CHANGE_2" /> et plus</translation>
 <translation id="4522570452068850558">Détails</translation>
 <translation id="4522600456902129422">Continuer à autoriser ce site à voir le contenu du presse-papiers</translation>
 <translation id="4524832533047962394">Le mode d'enregistrement proposé n'est pas compatible avec cette version du système d'exploitation. Vérifiez que vous utilisez bien la version la plus récente.</translation>
@@ -3739,7 +3736,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="527605982717517565">Toujours exécuter JavaScript sur <ph name="HOST" /></translation>
 <translation id="5278823018825269962">ID d'état</translation>
 <translation id="5280064835262749532">Mettre à jour les identifiants pour <ph name="SHARE_PATH" /></translation>
-<translation id="5280174558369304332">Extensions à supprimer :</translation>
 <translation id="5280243692621919988">Effacer les cookies et les données des sites à la fermeture du navigateur</translation>
 <translation id="5280426389926346830">Créer un raccourci ?</translation>
 <translation id="528208740344463258">Pour télécharger et utiliser des applications Android, vous devez d'abord installer cette mise à jour obligatoire. Vous ne pouvez pas utiliser votre <ph name="DEVICE_TYPE" /> pendant la mise à jour. Une fois l'installation terminée, votre <ph name="DEVICE_TYPE" /> redémarrera.</translation>
@@ -3885,7 +3881,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="5449551289610225147">Mot de passe incorrect</translation>
 <translation id="5449588825071916739">Ajouter tous les onglets aux favoris…</translation>
 <translation id="5449716055534515760">Fe&amp;rmer la fenêtre</translation>
-<translation id="5452974209916053028">Session de navigation privée actuelle : <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" />, <ph name="RECENT_PERMISSIONS_CHANGE_2" /></translation>
 <translation id="5454005855577728171">Bulle de sous-titres décalée de <ph name="POSITION_ON_SCREEN_FROM_LEFT" /> % sur la droite et de <ph name="POSITION_ON_SCREEN_FROM_TOP" /> % vers le bas</translation>
 <translation id="5454166040603940656">avec <ph name="PROVIDER" /></translation>
 <translation id="5457113250005438886">Non valide</translation>
@@ -4105,7 +4100,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5691581861107245578">Obtenez des suggestions d'emoji en fonction de ce que vous écrivez</translation>
 <translation id="5691772641933328258">Empreinte digitale non reconnue</translation>
 <translation id="5692183275898619210">Impression terminée</translation>
-<translation id="569425414730375234">Session de navigation privée actuelle : <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" /></translation>
 <translation id="5695184138696833495">ADB pour les applications Android sous Linux</translation>
 <translation id="5696143504434933566">Signaler un abus lié à l'extension <ph name="EXTENSION_NAME" /></translation>
 <translation id="5696177755977520104">Synchronisation des paramètres de Chrome OS</translation>
@@ -4382,7 +4376,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6025215716629925253">Trace de la pile</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> –  Appareil USB connecté</translation>
 <translation id="6028117231645531007">Ajouter une empreinte digitale</translation>
-<translation id="6029594605736587274">autorisation "<ph name="PERMISSION" />" bloquée</translation>
 <translation id="6031600495088157824">Options de saisie dans la barre d'outils</translation>
 <translation id="6032715498678347852">Pour autoriser l'accès à ce site pour une extension, cliquez sur celle-ci.</translation>
 <translation id="6032912588568283682">Système de fichiers</translation>
@@ -4839,7 +4832,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6550675742724504774">Options</translation>
 <translation id="6551508934388063976">Commande indisponible. Appuyez sur CTRL + N pour ouvrir une nouvelle fenêtre.</translation>
 <translation id="6551612971599078809">Le site utilise actuellement un appareil USB</translation>
-<translation id="6552395360547205189">Session de navigation privée actuelle : <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" /></translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> utilisateurs</translation>
 <translation id="655483977608336153">Réessayer</translation>
 <translation id="6555432686520421228">Supprime tous les comptes utilisateur et réinitialise votre appareil <ph name="IDS_SHORT_PRODUCT_NAME" /> qui devient comme neuf.</translation>
@@ -5842,7 +5834,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7710568461918838723">&amp;Caster…</translation>
 <translation id="7711900714716399411">Raccordez votre téléphone à votre ordinateur avec un câble USB. S'il l'est déjà, débranchez-le, puis rebranchez-le.</translation>
 <translation id="7712739869553853093">Boîte de dialogue d'aperçu avant impression</translation>
-<translation id="7712836429117959503">Extension inconnue avec l'ID <ph name="EXTENSION_ID" /></translation>
 <translation id="7714307061282548371">Les cookies du domaine <ph name="DOMAIN" /> ont été autorisés</translation>
 <translation id="7714464543167945231">Certificat</translation>
 <translation id="7716648931428307506">Sélectionnez l'emplacement où enregistrer le mot de passe</translation>
@@ -6225,7 +6216,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8118488170956489476">Votre <ph name="BEGIN_LINK" />navigateur est géré<ph name="END_LINK" /> par votre organisation</translation>
 <translation id="8118515372935001629">Fréquence d'actualisation de l'affichage</translation>
 <translation id="8118860139461251237">Gérer vos téléchargements</translation>
-<translation id="811942868379260654"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" />, <ph name="RECENT_PERMISSIONS_CHANGE_2" /> et plus</translation>
 <translation id="8119438628456698432">Génération des fichiers journaux…</translation>
 <translation id="811994229154425014">Appuyer deux fois sur la barre d'espace pour saisir un point</translation>
 <translation id="8123590694679414600">Les données ont été chiffrées avec votre phrase secrète de synchronisation à la date suivante :
@@ -6427,7 +6417,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="835951711479681002">Enregistrer dans votre compte Google</translation>
 <translation id="8363095875018065315">stable</translation>
 <translation id="8363142353806532503">Micro bloqué</translation>
-<translation id="8363763184161554204">autorisation "<ph name="PERMISSION" />" accordée</translation>
 <translation id="8366396658833131068">Votre connexion réseau est rétablie. Veuillez sélectionner un autre réseau ou appuyer sur "Continuer" ci-dessous pour lancer votre application kiosque.</translation>
 <translation id="8368027906805972958">Appareil inconnu ou non compatible (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368859634510605990">&amp;Ouvrir tous les favoris</translation>
@@ -6987,7 +6976,6 @@ Appuyez sur un contacteur associé à l'action pour supprimer l'association.</tr
 <translation id="899657321862108550">Votre Chrome, où que vous soyez</translation>
 <translation id="899676909165543803">Le lecteur d'empreinte digitale est la touche située en bas à droite sur le clavier. Appuyez dessus légèrement avec n'importe quel doigt.</translation>
 <translation id="8999560016882908256">Erreur de syntaxe dans la section : <ph name="ERROR_LINE" /></translation>
-<translation id="9002878223019487115"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" /> <ph name="RECENT_PERMISSIONS_CHANGE_2" /></translation>
 <translation id="9003647077635673607">Autoriser sur tous les sites Web</translation>
 <translation id="9003677638446136377">Revérifier</translation>
 <translation id="9003940392834790328">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, géré par votre administrateur, détails</translation>

@@ -577,6 +577,7 @@
 <translation id="5992218262414051481">高對比模式已啟用。再次按下 Ctrl 鍵 + 搜尋鍵 + H 鍵即可停用。</translation>
 <translation id="6018164090099858612">退出鏡像模式</translation>
 <translation id="602001110135236999">向左捲動</translation>
+<translation id="602472752137106327">顯示所有桌面的視窗，已點選圓形按鈕</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />，由系統管理員管理</translation>
 <translation id="6030495522958826102">已將選單移至畫面左下角。</translation>
 <translation id="6032620807120418574">點擊任一處即可錄製全螢幕畫面</translation>
@@ -675,6 +676,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{剩餘一個位數}other{剩餘 # 個位數}}</translation>
 <translation id="6878400149835617132">已關閉快速鍵功能</translation>
 <translation id="6886172995547742638">你的「<ph name="DEVICE_TYPE" />」可能會有效能低落的問題。請使用 <ph name="PREFERRED_MINIMUM_POWER" /> 瓦以上且符合標準的 USB-C 電源變壓器。</translation>
+<translation id="688631446150864480">按下向下鍵即可切換視窗</translation>
 <translation id="6896758677409633944">複製</translation>
 <translation id="6910714959251846841">必須對你的裝置執行 Powerwash 才能安裝這項更新。進一步瞭解最新的 <ph name="SYSTEM_APP_NAME" />更新內容。</translation>
 <translation id="6919251195245069855">無法辨識你的智慧型卡片，請再試一次。</translation>
@@ -840,6 +842,7 @@
 <translation id="8297006494302853456">弱</translation>
 <translation id="8308637677604853869">前一個選單</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="8345019317483336363">已選取「<ph name="WINDOW_TITLE" />」視窗</translation>
 <translation id="8351131234907093545">寫筆記</translation>
 <translation id="8371779926711439835">移至下一個字母</translation>
 <translation id="8375916635258623388">這部 <ph name="DEVICE_NAME" /> 會自動連結到你的手機</translation>
@@ -863,6 +866,7 @@
 <translation id="8477270416194247200">按下 Alt + 搜尋鍵或 Shift 鍵即可取消。</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> 不支援 <ph name="SPECIFIED_RESOLUTION" />，解析度已變更為 <ph name="FALLBACK_RESOLUTION" />。請按一下 [確認] 以保留變更。系統會在 <ph name="TIMEOUT_SECONDS" />後還原先前的設定。</translation>
 <translation id="8513108775083588393">自動旋轉</translation>
+<translation id="851458219935658693">顯示目前桌面的視窗，已點選圓形按鈕</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> 在開啟時可能無法充電。</translation>
 <translation id="8553395910833293175">已指派給所有桌面。</translation>
 <translation id="8563862697512465947">通知設定</translation>

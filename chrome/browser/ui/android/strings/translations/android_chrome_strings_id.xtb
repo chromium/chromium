@@ -402,7 +402,6 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="3894427358181296146">Tambah folder</translation>
 <translation id="3895926599014793903">Aktifkan zoom secara paksa</translation>
 <translation id="3908308510347173149">Update <ph name="PRODUCT_NAME" /></translation>
-<translation id="3909763690984331376">Pemeriksaan keselamatan <ph name="BEGIN_NEW" />Baru<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">Menemukan yang terbaik dari web...</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> aktif</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -633,6 +632,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5530766185686772672">Tutup tab samaran</translation>
 <translation id="5530920986376047241">Anda dapat menyimpan halaman ke daftar bacaan untuk menemukannya lagi</translation>
 <translation id="5534640966246046842">Situs disalin</translation>
+<translation id="5548606607480005320">Pemeriksaan keselamatan</translation>
 <translation id="5556459405103347317">Muat ulang</translation>
 <translation id="5561549206367097665">Menunggu jaringan…</translation>
 <translation id="55737423895878184">Lokasi dan notifikasi diizinkan</translation>
@@ -730,6 +730,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="6122831415929794347">Nonaktifkan Safe Browsing?</translation>
 <translation id="6127379762771434464">Item dihapus</translation>
 <translation id="6137022273846704445">Bahasa <ph name="APP_NAME" /></translation>
+<translation id="6138832295072039549">Ubah setelan situs di sini</translation>
 <translation id="6140709049082532940">Perlindungan yang disempurnakan:</translation>
 <translation id="6140912465461743537">Negara/Wilayah</translation>
 <translation id="614940544461990577">Coba:</translation>

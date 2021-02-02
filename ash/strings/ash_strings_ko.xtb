@@ -577,6 +577,7 @@
 <translation id="5992218262414051481">고대비 모드가 사용 설정되었습니다. 사용 중지하려면 다시 Ctrl+Search+H를 누르세요.</translation>
 <translation id="6018164090099858612">미러링 모드 종료 중</translation>
 <translation id="602001110135236999">왼쪽으로 스크롤</translation>
+<translation id="602472752137106327">모든 데스크의 창 표시, 라디오 버튼 선택됨</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />, 관리자가 관리함</translation>
 <translation id="6030495522958826102">메뉴가 화면 왼쪽 하단으로 이동했습니다.</translation>
 <translation id="6032620807120418574">전체 화면을 녹화하려면 아무 곳이나 클릭하세요.</translation>
@@ -675,6 +676,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{1자리 남음}other{#자리 남음}}</translation>
 <translation id="6878400149835617132">바로가기 사용 중지됨</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> 기기의 성능이 저하될 수 있습니다. 인증된 <ph name="PREFERRED_MINIMUM_POWER" />W 이상의 USB-C 전원 어댑터를 사용하세요.</translation>
+<translation id="688631446150864480">창을 전환하려면 아래쪽 화살표 키를 누르세요.</translation>
 <translation id="6896758677409633944">복사</translation>
 <translation id="6910714959251846841">업데이트하려면 기기에서 파워워시를 실행해야 합니다. 최신 <ph name="SYSTEM_APP_NAME" /> 업데이트에 관해 자세히 알아보세요.</translation>
 <translation id="6919251195245069855">스마트 카드를 인식할 수 없습니다. 다시 시도해 보세요.</translation>
@@ -840,6 +842,7 @@
 <translation id="8297006494302853456">약함</translation>
 <translation id="8308637677604853869">이전 메뉴</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> 창 선택됨</translation>
 <translation id="8351131234907093545">메모 만들기</translation>
 <translation id="8371779926711439835">한 글자 앞으로 이동</translation>
 <translation id="8375916635258623388">이 <ph name="DEVICE_NAME" />과(와) 휴대전화가 자동으로 연결됩니다.</translation>
@@ -863,6 +866,7 @@
 <translation id="8477270416194247200">취소하려면 Alt+검색 또는 Shift 키를 누르세요.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" />에서 <ph name="SPECIFIED_RESOLUTION" />을(를) 지원하지 않습니다. 해상도가 <ph name="FALLBACK_RESOLUTION" />(으)로 변경되었습니다. 변경사항을 유지하려면 확인을 클릭하세요. <ph name="TIMEOUT_SECONDS" /> 후 이전 설정으로 복원됩니다.</translation>
 <translation id="8513108775083588393">자동 회전</translation>
+<translation id="851458219935658693">현재 데스크의 창 표시, 라디오 버튼 선택됨</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" />이(가) 켜져 있는 동안에는 충전되지 않을 수 있습니다.</translation>
 <translation id="8553395910833293175">이미 모든 데스크에 할당되어 있습니다.</translation>
 <translation id="8563862697512465947">알림 설정</translation>

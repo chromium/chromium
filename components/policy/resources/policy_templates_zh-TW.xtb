@@ -127,9 +127,9 @@
 
       這項政策可設定的選項如下：
 
-      *「不要針對成人內容篩選網站」或是未設定時：網站不會經過篩選
+      *「不要過濾含有成人內容的網站」或是未設定時：網站不會經過篩選
 
-      *「針對成人內容篩選頂層網站」：系統會篩除色情網站</translation>
+      *「過濾含有成人內容的頂層網站」：系統會篩除色情網站</translation>
 <translation id="1177624681620856105"> 這項政策可控管系統是否要在外部通訊協定的啟動確認提示中顯示「一律開啟」核取方塊。
 
       如果將這項政策設為 True 或不予設定，當系統顯示外部通訊協定的確認訊息時，使用者可以選取「一律允許」，這樣日後會略過這個網站上的所有通訊協定確認提示。
@@ -349,7 +349,6 @@
           如果未設定這項政策，<ph name="PRODUCT_NAME" /> 會嘗試偵測伺服器是否位於內部網路，且只會回應內部網路伺服器傳來的 IWA 要求。如果偵測結果顯示伺服器位於網際網路，<ph name="PRODUCT_NAME" /> 就會忽略該伺服器傳來的 IWA 要求。
 
       注意：請以半形逗號分隔伺服器名稱，可使用萬用字元 (<ph name="WILDCARD_VALUE" />)。</translation>
-<translation id="1488406778491620405">「<ph name="PRODUCT_NAME" />」無障礙功能可讓螢幕閱讀器的視障使用者取得無標籤網路圖片的說明。啟用這項功能的使用者將可使用去識別化的 Google 服務，針對未加上標籤的網路圖片取得自動產生的說明。啟用這項功能後，系統會將圖片內容傳送給 Google 伺服器以產生說明內容。系統不會傳送 Cookie 或其他使用者資料，且 Google 不會儲存或記錄任何圖片內容。如果將這項政策設為 True，「<ph name="PRODUCT_NAME" />」功能即會啟用，不過這項設定只會影響螢幕閱讀器或其他類似輔助技術的使用者。如果將這項政策設為 False，使用者將無法啟用這項功能。設好這項政策後，使用者即無法變更或覆寫設定。</translation>
 <translation id="1502843533062797703">啟用禁止第三方軟體置入可執行程式碼的政策</translation>
 <translation id="1506017854924185821">是否要在瀏覽器啟動時顯示設定檔選擇畫面</translation>
 <translation id="1509377996969000672">你可以透過這項政策設定已連接到裝置的企業印表機。其格式與 <ph name="NATIVE_PRINTERS_POLICY_NAME" /> 條目相符，且針對每台印表機另外設有「id」或「guid」必填欄位，用於指明要加入許可清單或拒絕清單。相關檔案大小不得超過 5 MB，且必須採用 JSON 格式。一個 5 MB 的編碼檔案可包含約 21,000 台印表機的資料。加密編譯雜湊的作用是驗證下載內容的完整性。系統會下載及快取這個檔案，而且只要網址或雜湊一有變動，就會重新下載檔案。<ph name="PRODUCT_OS_NAME" />會下載這個檔案來設定印表機，並依據 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />、<ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> 和 <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> 開放使用印表機。
@@ -389,6 +388,11 @@
           如果停用或不設定這項政策，系統會停用 Kerberos 帳戶設定。使用者無法新增 Kerberos 帳戶，也無法使用 Kerberos 驗證。系統會刪除所有現有的 Kerberos 帳戶和所有已儲存的密碼。</translation>
 <translation id="1561424797596341174">針對遠端存取主機的偵錯版本覆寫政策</translation>
 <translation id="1561967320164410511">用於個人認證的 U2F 和擴充功能</translation>
+<translation id="1567718448549957373">如果將這項政策設為啟用或不設定，將可透過不安全的 HTTP 連線接收 <ph name="BASIC_AUTH" /> 驗證要求。
+
+      如果將這項政策設為停用，則會禁止不安全的 HTTP 要求使用 <ph name="BASIC_AUTH" /> 驗證機制，只能採用安全的 HTTPS。
+
+      如果設定的 <ph name="AUTH_SCHEMES_POLICY_NAME" /> 政策不含 <ph name="BASIC_AUTH" />，系統會忽略這項政策設定 (一律禁止使用 <ph name="BASIC_AUTH" />)。</translation>
 <translation id="1575015449587326319">OnFileDownloaded Chrome Enterprise Connector 的配置政策</translation>
 <translation id="1583248206450240930">根據預設使用 <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="1588240398285670601">瀏覽器設定</translation>
@@ -1469,6 +1473,7 @@
 
       這項政策已遭淘汰，請改用 <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />。</translation>
 <translation id="3030000825273123558">啟用計量回報功能</translation>
+<translation id="3032322294267258117">控管透過 GAIA 進行驗證 (未使用 SAML) 的使用者設定。</translation>
 <translation id="3038323923255997294">在 <ph name="PRODUCT_NAME" /> 關閉時繼續執行背景應用程式 </translation>
 <translation id="3041707370546071653">是否要記住 Kerberos 密碼。如果不設定或者設為 False，系統就不會記住密碼。如未指定密碼，則可忽略這項設定。</translation>
 <translation id="3041887182529293512">如果將這項政策設為 True 或不設定，系統會根據使用者的瀏覽記錄、興趣喜好或所在位置，在新分頁上顯示自動產生的內容建議。
@@ -1692,12 +1697,6 @@
 <translation id="3308724602356134956">如果設定這項政策，<ph name="PRODUCT_OS_NAME" />會下載並使用你為使用者的桌面和登入畫面背景所設定的桌面圖片，且使用者無法變更這項設定。請指定 <ph name="PRODUCT_OS_NAME" />可從中下載桌面圖片的網址，以及用於驗證下載內容完整性的加密編譯雜湊值 (請指定無須驗證即可存取的網址，且圖片必須為 JPEG 格式，檔案大小上限為 16 MB)。
 
       如果未設定，使用者將可選擇桌面和登入畫面背景的圖片。</translation>
-<translation id="3312206664202507568">在 chrome://password-change 中啟用一個頁面，讓 SAML 使用者能在工作階段中變更 SAML 密碼，並確保 SAML 密碼和裝置的螢幕鎖定密碼會保持同步。
-
-      這項政策也會啟用通知功能，提醒 SAML 使用者 SAML 密碼即將到期，方便使用者立即在工作階段中變更密碼。
-      但是，只有當 SAML 識別資訊提供者在 SAML 登入流程中將密碼到期資訊傳送至裝置時，系統才會顯示這些通知。
-
-      設定這項政策後，使用者即無法變更或覆寫。</translation>
 <translation id="332771718998993005">確定公開為「<ph name="PRODUCT_NAME" />」目的地的名稱。
 
           如果這項政策設為非空白字串，該字串就會成為「<ph name="PRODUCT_NAME" />」目的地的名稱，否則目的地名稱將會是裝置名稱。如果未設定這項政策，則目的地名稱會是裝置名稱，且裝置擁有者 (或裝置管理網域中的使用者) 可進行變更。名稱長度上限為 24 個字元。</translation>
@@ -1836,11 +1835,6 @@
 <translation id="350443680860256679">設定 ARC</translation>
 <translation id="350797926066071931">啟用翻譯</translation>
 <translation id="3508047333410537654">在登入畫面上啟用單聲道音訊</translation>
-<translation id="3509819648242653622">你可以透過這項政策，禁止系統載入網址遭到禁止的網頁。這項政策可提供網址模式清單，用於指定要禁止的網址。如果未設定這項政策，則瀏覽器不會禁止任何網址。網址模式的格式如下：https://www.chromium.org/administrators/url-blacklist-filter-format。<ph name="URL_ALLOWLIST_POLICY_NAME" /> 中最多可定義 1000 個例外網址。
-
-      自 <ph name="PRODUCT_NAME" /> 73 版開始，你可以封鎖 javascript://* 網址。不過，這項設定只適用於在網址列 (或書籤小程式等) 輸入的 JavaScript。動態載入資料的網頁內 JavaScript 網址不會受到這項政策影響。舉例來說，即使你封鎖了 example.com/abc，example.com 仍可透過 XMLHTTPRequest 載入 example.com/abc。
-
-      注意：封鎖內部的 chrome://* 網址可能會導致非預期的錯誤。</translation>
 <translation id="3513655665999652754">Quirks Server 會提供特定硬體的設定檔，例如可調整螢幕校正功能的
        ICC 顯示器設定檔。
 
@@ -2160,10 +2154,6 @@
 <translation id="3942041691320538491">如果將這項政策設為 0 (預設值)，你將可存取開發人員工具和 JavaScript 控制台，但無法在由企業政策安裝的擴充功能中進行存取。如果將這項政策設為 1，你將可在所有情況下存取開發人員工具和 JavaScript 控制台，在由企業政策安裝的擴充功能中也能進行存取。如果將這項政策設為 2，你將無法存取開發人員工具，也無法檢查網站元素。
 
       此外，用來開啟開發人員工具或 JavaScript 控制台的鍵盤快速鍵、選單項目或內容選單項目也會停用。</translation>
-<translation id="3947431236979598549">允許在磁碟空間不足時啟用或停用通知。這項設定會套用至裝置上的所有使用者。
-      如果裝置未受管理或是只有一位使用者，系統會忽略這項政策，並一律顯示通知。
-
-      如果受管理的裝置上有多個使用者帳戶，只有當這項政策啟用時，系統才會顯示通知。</translation>
 <translation id="3950110092991281616">僅在一般工作階段中啟用背景驗證功能。</translation>
 <translation id="3950239119790560549">更新時間限制</translation>
 <translation id="3956686688560604829">使用 Internet Explorer 的 SiteList 政策取得舊版瀏覽器支援。</translation>
@@ -2261,9 +2251,6 @@
       如果設定這項政策，使用者將無法變更。如果未設定，系統會先停用放大鏡，但使用者隨時可以啟用。</translation>
 <translation id="410068710490553233">允許登入其他 Google 帳戶</translation>
 <translation id="4101282687722389021">這個項目上次進行更新的時間戳記 (世界標準時間)。時間戳記並非整數值，因此會以字串的形式傳送</translation>
-<translation id="4103177213841380258">這項政策可控管本機搜尋使用者介面 (<ph name="CHROME_DEVICES_LINK" />) 中可操控功能的存取權。本機搜尋使用者介面會顯示使用者附近的可搜尋裝置，以及註冊於這些可搜尋裝置的雲端裝置。在所有作業系統上 (<ph name="PRODUCT_OS_NAME" />除外)，本機搜尋使用者介面也能讓使用者將連接至電腦的傳統印表機新增至 <ph name="CLOUD_PRINT_NAME" />。
-
-      如果不設定這項政策，系統會啟用這項功能。</translation>
 <translation id="4103289232974211388">經使用者確認後重新導向 SAML IdP</translation>
 <translation id="4105884561459127998">設定 SAML 登入的驗證類型。
 
@@ -2363,7 +2350,7 @@
       如果將這項政策設為停用或不設定，使用者可在使用行動網路連線時，將檔案傳輸至雲端硬碟。</translation>
 <translation id="4250680216510889253">否</translation>
 <translation id="4261820385751181068">裝置登入畫面語言代碼</translation>
-<translation id="4269859918103560644">允許使用者自行決定</translation>
+<translation id="4269859918103560644">允許使用者決定</translation>
 <translation id="4274691295133617461">如果將這項政策設為 3，網站即可要求透過 File System API 讀取主機作業系統中檔案系統的檔案和目錄。如果將這項政策設為 2，系統會拒絕網站存取。
 
       如果不設定，網站可要求存取檔案和目錄，但使用者可以變更這項設定。</translation>
@@ -2474,6 +2461,15 @@
 <translation id="4510923771103268849">允許使用者擁有 Crostini 容器的 Root 權限</translation>
 <translation id="4515404363392014383">針對信任的來源啟用「安全瀏覽」</translation>
 <translation id="4518251772179446575">詢問網站何時要追蹤使用者的實際位置</translation>
+<translation id="4521193243799782295">在登入時，<ph name="PRODUCT_OS_NAME" />可以透過伺服器進行線上驗證，或使用快取密碼進行離線驗證。
+
+      如果將這項政策的值設為 -1，該政策就不會強制要求使用者進行線上驗證，而是會允許使用者進行離線驗證，直到有其他強制執行線上登入的機制為止。如果將這項政策的值設為 0，使用者就一律必須線上登入。如果將這項政策設為任何其他值，就是指定使用者從上次線上驗證到下次登入必須再次進行線上驗證的間隔時間。
+
+      如果不設定這項政策，<ph name="PRODUCT_OS_NAME" />會使用離線登入。
+
+      這項政策的影響範圍只有使用 GAIA 驗證 (未使用 SAML) 的使用者。
+
+      指定政策值時需以天為單位。</translation>
 <translation id="4528929591840709501">裝置停止充電的時間 (根據裝置當地時區)。</translation>
 <translation id="4529868888205510667">除非已透過其他方式停用 ARC，否則將這項政策設為 True 或不設定時，使用者可以使用 ARC。如果將這項政策設為 False，無關聯的使用者將無法使用 ARC。
 
@@ -2895,13 +2891,6 @@
 <translation id="5152393033264257734">允許 DNS 攔截檢查功能，以及你是不是要前往「http://intranetsite/」資訊列。</translation>
 <translation id="5152787786897382519">Chromium 和 Google Chrome 有部分政策群組具有相依關係，依此共同管控特定功能。這些組合如下列政策群組所示。由於政策可能具有多個來源，系統只會套用群組中最高優先來源所提供的值，忽略同個群組中優先順序較低的來源所提供的值。請參閱 <ph name="POLICY_PRIORITY_DOC_URL" /> 瞭解來源的優先順序。</translation>
 <translation id="5153187201534281749">工具列中的瀏覽器實驗功能圖示</translation>
-<translation id="515816885693899426">這項政策已遭淘汰，請改用「<ph name="URL_BLOCKLIST_POLICY_NAME" />」政策。
-
-      你可以透過這項政策，禁止系統載入網址遭到禁止的網頁。這項政策可提供網址模式清單，用於指定要禁止的網址。如果未設定這項政策，則瀏覽器不會禁止任何網址。網址模式的格式如下：https://www.chromium.org/administrators/url-blacklist-filter-format。<ph name="URL_ALLOWLIST_POLICY_NAME" /> 中最多可定義 1000 個例外網址。
-
-      自 <ph name="PRODUCT_NAME" /> 73 版開始，你可以封鎖 javascript://* 網址。不過，這項設定只適用於在網址列 (或書籤小程式等) 輸入的 JavaScript。動態載入資料的網頁內 JavaScript 網址不會受到這項政策影響。舉例來說，即使你封鎖了 example.com/abc，example.com 仍可透過 XMLHTTPRequest 載入 example.com/abc。
-
-      注意：封鎖內部的 chrome://* 網址可能會導致非預期的錯誤。</translation>
 <translation id="5163002264923337812">啟用舊版網頁式登入流程</translation>
 <translation id="516520353995300280">設定這項政策後，系統不會強制要求列出的舊版憑證授權單位 (CA) (由包含指定 <ph name="SUBJECT_PUBLIC_KEY_INFO" /> 雜湊的憑證鏈所組成) 依憑證透明化規定公開憑證。此外，因為未依規定對外公開而不受信任的憑證，企業主機也可以繼續使用。不過，視為舊版 CA 的 CA 憑證必須包含 <ph name="SUBJECT_PUBLIC_KEY_INFO" /> 雜湊，才不會遭強制要求公開憑證。舊版 CA 是受到一或多個 <ph name="PRODUCT_NAME" /> 支援的作業系統公開信任、但不受 Android 開放原始碼計畫或 <ph name="PRODUCT_OS_NAME" />信任的 CA。
 
@@ -3563,11 +3552,6 @@
 <translation id="6099853574908182288">預設列印色彩模式</translation>
 <translation id="6102342563050263313">啟用捲動至網址片段所指定文字的功能</translation>
 <translation id="6107642964266628393">控管 Chrome 作業系統的更新方式和更新時間。</translation>
-<translation id="6110478331147706293">設定這項政策後，系統不會要求指定網址中的主機名稱依憑證透明化規定公開憑證。雖然這會讓系統更難以偵測到誤用憑證的情形，但也因此可讓主機繼續使用因為未依規定對外公開而不受信任的憑證。
-
-      如果未設定這項政策，凡是應依憑證透明化規定公開而未公開的憑證，<ph name="PRODUCT_NAME" /> 都會將其設為不受信任的憑證。
-
-      網址格式必須符合 https://www.chromium.org/administrators/url-blacklist-filter-format 的規定。不過，判定憑證是否有效與網址配置、通訊埠或路徑皆無關，因此 <ph name="PRODUCT_NAME" /> 只會檢視網址的主機名稱部分 (不支援含萬用字元的主機名稱)。</translation>
 <translation id="6111936128861357925">允許 Dinosaur Easter Egg Game (恐龍復活節彩蛋遊戲)</translation>
 <translation id="6123052603197028610">不允許向 Google 伺服器發送擷取時間戳記的查詢</translation>
 <translation id="6132506775968708399">封鎖第三方 Cookie</translation>
@@ -3587,6 +3571,7 @@
 <translation id="6155936611791017817">設定大型游標在登入畫面的預設狀態</translation>
 <translation id="6157537876488211233">以逗號間隔的 Proxy 略過規則清單</translation>
 <translation id="6158324314836466367">企業線上應用程式商店名稱 (已不適用)</translation>
+<translation id="6169768162756928771">GAIA 使用者身分管理設定</translation>
 <translation id="6172896675583897796">如果將這項政策設為啟用，Google 助理將可存取畫面內容，並將該項資料傳送給伺服器。如果將這項政策設為停用，Google 助理無法存取畫面內容。
 
       如果未設定這項政策，使用者可自行決定要啟用或停用這項功能。</translation>
@@ -3776,15 +3761,6 @@
 <translation id="6453641799812499182">在新版 <ph name="CORS" /> 模式中啟用 <ph name="CORS" /> 檢查安全防護措施</translation>
 <translation id="645425387487868471">啟用 <ph name="PRODUCT_NAME" /> 的強制登入功能</translation>
 <translation id="6458361632497500815">如果將這項政策設為啟用或不設定，只要 <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" />、<ph name="CROSTINI_ALLOWED_POLICY_NAME" /> 和 <ph name="DEVICE_UNAFFILIATED_CROSTINI_ALLOWED_POLICY_NAME" /> 這 3 項政策都設為啟用，所有使用者將可使用 <ph name="PRODUCT_CROSTINI_NAME" />。如果將這項政策設為停用，無關聯的使用者將無法使用 <ph name="PRODUCT_CROSTINI_NAME" />。變更為停用後，系統會開始將這項政策套用到新的 <ph name="PRODUCT_CROSTINI_NAME" /> 容器，不會套用到已經在執行的這類容器。</translation>
-<translation id="646376229090051440">你可以設定一組通訊協定清單，並且為每個通訊協定設定相關聯的允許來源格式清單，清單中的通訊協定無須提示使用者即可啟動外部應用程式。列出通訊協定時，請勿加入結尾分隔符，因此請列出「skype」而非「skype:」或「skype://」。
-
-      如果設定這項政策，只有當通訊協定已列於清單中，且嘗試啟動通訊協定的網站來源符合該通訊協定 allowed_origins 清單中的其中一個來源格式時，系統才會依照政策規定，允許通訊協定在不提示使用者的情況下啟動外部應用程式。如果未符合其中一項條件，系統就不會依照政策規定，省略外部通訊協定啟動提示。
-
-      如果不設定這項政策，依預設沒有任何通訊協定可以在不提示使用者的情況下啟動。除非 <ph name="EXTERNAL_PROTOCOL_DIALOG_SHOW_ALWAYS_OPEN_CHECKBOX_POLICY_NAME" /> 政策已設為停用，否則使用者可以選擇不接收個別通訊協定或網站的提示。這項政策不會影響使用者不接收個別通訊協定或網站提示的設定。
-
-      來源符合格式使用了與「<ph name="URL_BLOCKLIST_POLICY_NAME" />」政策類似的格式，如以下頁面所述：http://www.chromium.org/administrators/url-blacklist-filter-format。
-
-      不過，這項政策的來源符合格式不能包含「/path」或「@query」元素。系統會忽略所有包含「/path」或「@query」元素的格式。</translation>
 <translation id="6464074037294098618">啟用地址的自動填入功能</translation>
 <translation id="6467613372414922590">允許使用者層級的內建訊息傳遞主機 (在無管理員權限的情況下安裝)。</translation>
 <translation id="6473623140202114570">設定安全瀏覽功能在哪些網域中不會觸發警告。</translation>
@@ -4014,7 +3990,7 @@
       系統不支援 (且會略過) 在 75 版以前使用多個擴充功能 ID (並以半形逗號分隔) 的版本。系統會套用政策中的其他部分。
 
       注意：這項政策也會影響使用 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> 強制安裝的擴充功能和應用程式。</translation>
-<translation id="6731757988219967594">針對成人內容篩選頂層網站 (但不篩選嵌入的 iframe)</translation>
+<translation id="6731757988219967594">過濾含有成人內容的頂層網站 (而非嵌入的 iframe)</translation>
 <translation id="6734521799274931721">控管是否允許在 Chrome 作業系統使用網路檔案共用功能</translation>
 <translation id="6735701345096330595">強制執行拼字檢查的語言</translation>
 <translation id="6740611636377710500">允許這位使用者執行 PluginVm。
@@ -4395,7 +4371,6 @@
       如果不設定這項政策，當解析器與使用者設定的系統解析器相關聯，瀏覽器可能會將 DNS-over-HTTPS 要求傳送給該解析器。</translation>
 <translation id="7158358621906236999">預設感應器設定</translation>
 <translation id="7167436895080860385">允許使用者在密碼管理員中顯示密碼 (已不適用)</translation>
-<translation id="7170049569641162846">允許本機裝置探索</translation>
 <translation id="7173856672248996428">暫時設定檔</translation>
 <translation id="717630378807352957">允許設定檔中的所有印表機。</translation>
 <translation id="7177293255621000064">將這項政策設為 True 時，使用者無法透過檔案瀏覽器存取所有類型的外部儲存媒體 (USB 隨身碟、外接硬碟、SD 卡、其他記憶卡和光學儲存媒體)。如果將這項政策設為 False 或不設定，使用者可以在其裝置上使用外部儲存媒體。
@@ -4541,15 +4516,6 @@
 <translation id="7407441173422042771">這項政策可控管 <ph name="PRODUCT_NAME" /> 中的網路預測功能。這項設定會控管 DNS 預先擷取功能、TCP、SSL 預先連線和網頁預先轉譯機制。
 
       如果設定這項政策，使用者將無法變更。如果未設定這項政策，系統會關閉網路預測功能，但使用者可以變更這項設定。</translation>
-<translation id="7415655595380180976">這項政策已遭淘汰，請改用「<ph name="URL_ALLOWLIST_POLICY_NAME" />」政策。
-
-      如果設定這項政策，使用者可以存取許可清單中的網址，這些網址是網址封鎖清單的例外項目。請參閱該項政策的說明，瞭解這份清單所含項目的格式。舉例來說，如果將 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 設為「*」，系統會封鎖所有要求。你可以透過這項政策允許使用者存取一些特定的網址。請使用 https://www.chromium.org/administrators/url-blacklist-filter-format 網頁中所指定的格式，透過這項政策將特定的網路通訊協定、其他網域的子網域、通訊埠或特定路徑設為例外。系統需要判定是否封鎖某一個網址時，會以最精確的篩選條件為依據。許可清單的優先順序高於封鎖清單。這項政策最多只能輸入 1,000 個項目。
-
-      這項政策還可以讓瀏覽器自動叫用已註冊為通訊協定處理常式的外部應用程式，用於處理許可清單中的「tel:」或「ssh:」等通訊協定。
-
-      如果未設定這項政策，就不會有例外項目。
-
-      在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />服務的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 軟體進行管理或透過 MCX 加入網域的執行個體。</translation>
 <translation id="7417438464912687020">允許與這部裝置建立遠端存取連線</translation>
 <translation id="7417972229667085380">簡報模式中的閒置延遲時間延長百分比 (已不適用)</translation>
 <translation id="7421483919690710988">設定媒體磁碟快取大小 (以位元組為單位)</translation>
@@ -5009,31 +4975,6 @@
 <translation id="8133152694354699657">如果將這項政策設為 True 或不設定，使用者將可使用「輕觸搜尋」功能，並且可以啟用或停用這項功能。
 
       如果將這項政策設為 False，系統會完全停用「輕觸搜尋」功能。</translation>
-<translation id="8135271712389620651">設定規則清單，避免 <ph name="PRODUCT_OS_NAME" />發生資料外洩。
-      複製並貼上資料、傳輸檔案、列印、分享螢幕畫面或擷取螢幕畫面等動作都有可能導致資料外洩。
-
-      每項規則都包含下列項目：
-      - 以網址定義的來源清單；系統會將來源中的所有資料都視為機密資料並套用限制。
-      - 以網址或元件定義的目的地清單，用於指定要允許或禁止將機密資料分享到哪些目的地。
-      - 要套用到來源資料的限制清單。
-
-      你可以透過新增規則控管下列項目：
-      - 來源與目的地共用的剪貼簿資料。
-      - 任何來源的螢幕畫面擷取動作設定。
-      - 任何來源的列印動作設定。
-      - 任何來源在顯示狀態下的隱私保護畫面設定。
-      - 任何來源的螢幕畫面分享動作設定。
-
-      限制等級可設為「BLOCK」或「ALLOW」。
-      - 如果將限制設為「BLOCK」，將無法執行該動作。
-      - 如果將限制設為「ALLOW」，則可以執行該動作。
-
-      注意：
-      - PRIVACY_SCREEN 限制等級設為「BLOCK」時，不會禁止啟用隱私保護畫面，而會強制執行該功能。
-      - 如果有任一限制是「CLIPBOARD」，請勿將目的地留空，但目的地對其餘限制沒有影響。
-      - 網址模式須採用以下格式：https://www.chromium.org/administrators/url-blacklist-filter-format。
-
-      如果不設定這項政策，系統不會套用任何限制。</translation>
 <translation id="8136906469922284163">如果將這項政策設為 Ture，頁面卸載時將可顯示彈出式視窗。
 
       如果將這項政策設為 False 或不設定，頁面卸載時將無法顯示彈出式視窗。
@@ -5085,9 +5026,6 @@
 
       如果將這項政策設為停用或不設定，系統不會傳送任何封包。</translation>
 <translation id="816783746144552109">設定裝置的 Chrome 作業系統最低版本限制。</translation>
-<translation id="8171025799847651230">如果將這項政策設為停用，將無法開啟遠端存取主機服務，也無法將該服務設為接受外來連線。這項政策不適用於遠端支援情境。
-
-          如果設為 True、留空或不設定，這項政策就不會生效。</translation>
 <translation id="8171924760436219650">在登入畫面上將滑鼠的主要按鈕切換為右鍵</translation>
 <translation id="8176035528522326671">僅允許企業使用者成為多重設定檔的主要使用者 (受企業管理的使用者的預設行為)</translation>
 <translation id="8179161412673077784">禁止具有濫用行為的網站開啟新視窗或新分頁</translation>
@@ -5239,13 +5177,6 @@
 <translation id="8371178326720637170">啟用受管理擴充功能以使用 Enterprise Hardware Platform API</translation>
 <translation id="8375817202037102567">禁止這些網站對檔案和目錄的寫入權限</translation>
 <translation id="8379317372795444261">允許透過 HTTP 連線使用<ph name="BASIC_AUTH" />驗證</translation>
-<translation id="838056554726401140">指定要套用 <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> 的網址清單。這項政策不會影響使用者設定的自動開啟值。
-
-      如果設定這項政策，只有當網址列在這份清單中，且檔案類型列在 <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> 中時，系統才會依照政策自動開啟檔案。如果未達成其中一項條件，系統就不會依照政策自動開啟下載的內容。
-
-      如果不設定這項政策，系統會自動開啟檔案類型列於 <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> 的所有下載內容。
-
-      網址模式的格式必須符合 https://www.chromium.org/administrators/url-blacklist-filter-format 中的規定。</translation>
 <translation id="8382184662529825177">啟用可用於保護裝置內容的遠端認證機制</translation>
 <translation id="838870586332499308">啟用數據漫遊</translation>
 <translation id="8393850527597048037">僅限平台</translation>
@@ -5573,6 +5504,7 @@
 <translation id="8890438048579188548">隱藏 <ph name="CLOUD_PRINT_NAME" />淘汰警告訊息</translation>
 <translation id="8892286064305622118"><ph name="PLUGIN_VM_NAME" /> 需要的可用磁碟空間</translation>
 <translation id="8892783613915541293">使用 AC 電源供電的裝置閒置時，系統採取的動作和延遲管理電源行動</translation>
+<translation id="8897796778265450949">限制透過 GAIA 驗證 (未使用 SAML) 的使用者可離線登入的時間</translation>
 <translation id="8903283771634816230">如果將這項政策設為啟用，<ph name="PRODUCT_NAME" /> 將使用作業系統的預設印表機，做為列印預覽的預設目的地。
 
       如果將這項政策設為停用或不設定，則 <ph name="PRODUCT_NAME" /> 會使用最近一次用過的印表機，做為列印預覽的預設目的地。</translation>
@@ -5615,13 +5547,6 @@
 
 如要進一步瞭解安全內容，請參閱 https://www.w3.org/TR/secure-contexts/
       </translation>
-<translation id="8940519618730206658">如果設定這項政策，使用者可以存取許可清單中的網址，這些網址是 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 的例外項目。請參閱該項政策的說明，瞭解這份清單所含項目的格式。舉例來說，如果將 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 設為「*」，系統會封鎖所有要求。你可以透過這項政策允許使用者存取一些特定的網址。請使用 https://www.chromium.org/administrators/url-blacklist-filter-format 網頁中所指定的格式，透過這項政策將特定的網路通訊協定、其他網域的子網域、通訊埠或特定路徑設為例外。系統需要判定是否封鎖某一個網址時，會以最精確的篩選條件為依據。<ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策的優先順序高於 <ph name="URL_BLOCKLIST_POLICY_NAME" />。這項政策最多只能輸入 1,000 個項目。
-
-      這項政策還可以讓瀏覽器自動叫用已註冊為通訊協定處理常式的外部應用程式，用於處理許可清單中的「tel:」或「ssh:」等通訊協定。
-
-      如果未設定這項政策，<ph name="URL_BLOCKLIST_POLICY_NAME" /> 就不會有例外項目。
-
-      在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />服務的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 軟體進行管理或透過 MCX 加入網域的執行個體。</translation>
 <translation id="8942616385591203339">這項政策可控制是否可在使用者初次登入時，向使用者顯示同步處理同意聲明。如果使用者不需要查看同步處理同意聲明，則應設為 false。
       如果設為 false，就不會顯示同步處理同意聲明。
       如果設為 true 或不予設定，則可顯示同步處理同意聲明。</translation>

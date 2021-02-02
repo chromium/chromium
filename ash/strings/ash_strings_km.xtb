@@ -577,6 +577,7 @@
 <translation id="5992218262414051481">បានបើក​មុខងារ​កម្រិត​ពណ៌ខ្ពស់។ សូមចុច Ctrl+Search+H ម្តងទៀត​ដើម្បី​បិទវា។</translation>
 <translation id="6018164090099858612">កំពុង​ចាកចេញ​ពី​មុខងារឆ្លុះ</translation>
 <translation id="602001110135236999">រំកិលទៅ​ឆ្វេង</translation>
+<translation id="602472752137106327">បង្ហាញ​វិនដូពីតុទាំងអស់ បានជ្រើសរើស​ប៊ូតុង​មូល</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, កម្លាំងរលកសញ្ញា <ph name="SIGNAL_STRENGTH" />, គ្រប់គ្រងដោយ​អ្នកគ្រប់គ្រង​របស់អ្នក</translation>
 <translation id="6030495522958826102">ម៉ឺនុយ​ត្រូវបានផ្លាស់ទី​ទៅ​ជ្រុងខាងក្រោម​ផ្នែកខាងឆ្វេង​នៃអេក្រង់​។</translation>
 <translation id="6032620807120418574">ចុចកន្លែង​ណាមួយ ដើម្បីថត​អេក្រង់ពេញ</translation>
@@ -675,6 +676,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{នៅសល់មួយខ្ទង់ទៀត}other{នៅសល់ # ខ្ទង់ទៀត}}</translation>
 <translation id="6878400149835617132">បានបិទ​ផ្លូវកាត់</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> របស់អ្នកអាចដំណើរការយឺតជាងមុន។ សូមប្រើឆ្នាំងសាក USB-C កម្រិត <ph name="PREFERRED_MINIMUM_POWER" />W ឬខ្ពស់ជាងនេះដែលមានការទទួលស្គាល់។</translation>
+<translation id="688631446150864480">ចុច​គ្រាប់ចុច​ព្រួញចុះក្រោម ដើម្បីប្ដូរវិនដូ</translation>
 <translation id="6896758677409633944">ចម្លង</translation>
 <translation id="6910714959251846841">កំណែ​ថ្មី​នេះ​តម្រូវឱ្យ powerwash ឧបករណ៍​របស់អ្នក។ ស្វែងយល់​បន្ថែម​អំពី​កំណែ​ <ph name="SYSTEM_APP_NAME" /> ថ្មី​បំផុត។</translation>
 <translation id="6919251195245069855">មិន​ស្គាល់​កាត​ឆ្លាតវៃរបស់អ្នកទេ។ សូមព្យាយាមម្ដងទៀត។</translation>
@@ -840,6 +842,7 @@
 <translation id="8297006494302853456">ខ្សោយ</translation>
 <translation id="8308637677604853869">ម៉ឺនុយពីមុន</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="8345019317483336363">បានជ្រើសរើស​វិនដូ <ph name="WINDOW_TITLE" /></translation>
 <translation id="8351131234907093545">បង្កើត​កំណត់​ចំណាំ</translation>
 <translation id="8371779926711439835">ទៅមុខមួយតួអក្សរ</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> នេះ និងទូរសព្ទរបស់អ្នក​នឹងភ្ជាប់ដោយស្វ័យប្រវត្តិ</translation>
@@ -863,6 +866,7 @@
 <translation id="8477270416194247200">ចុច Alt+Search ឬ Shift ដើម្បីបោះបង់។</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> មិនអាច​ប្រើ <ph name="SPECIFIED_RESOLUTION" /> បានទេ។ បានប្ដូរ​កម្រិតច្បាស់​ទៅ <ph name="FALLBACK_RESOLUTION" />។ សូមចុច "បញ្ជាក់" ដើម្បីរក្សាទុក​ការផ្លាស់ប្ដូរ។ ការកំណត់​ពីមុននឹងរក្សាទុក​ក្នុងរយៈពេល <ph name="TIMEOUT_SECONDS" />។</translation>
 <translation id="8513108775083588393">បង្វិល​ស្វ័យ​ប្រវត្តិ</translation>
+<translation id="851458219935658693">បង្ហាញ​វិនដូពីតុបច្ចុប្បន្ន បានជ្រើសរើស​ប៊ូតុង​មូល</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> របស់អ្នកអាចនឹងមិនសាកថ្មទេនៅពេលបើក។</translation>
 <translation id="8553395910833293175">បានកំណត់​ទៅតុទាំងអស់​រួចហើយ។</translation>
 <translation id="8563862697512465947">​កំណត់​ការ​ជូន​ដំណឹង</translation>

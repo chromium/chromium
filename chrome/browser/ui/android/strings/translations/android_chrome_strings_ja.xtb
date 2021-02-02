@@ -402,7 +402,6 @@
 <translation id="3894427358181296146">フォルダの追加</translation>
 <translation id="3895926599014793903">強制的にズームを有効にする</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> を更新する</translation>
-<translation id="3909763690984331376">安全確認 <ph name="BEGIN_NEW" />新機能<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">ウェブで最適なデータを探しています。</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" />: オン</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -633,6 +632,7 @@
 <translation id="5530766185686772672">シークレットタブを閉じる</translation>
 <translation id="5530920986376047241">リーディング リストにページを保存すると、後から簡単にアクセスできるようになります</translation>
 <translation id="5534640966246046842">サイトがコピーされました</translation>
+<translation id="5548606607480005320">安全確認</translation>
 <translation id="5556459405103347317">再読み込み</translation>
 <translation id="5561549206367097665">ネットワーク接続を待機しています…</translation>
 <translation id="55737423895878184">位置情報の使用と通知の送信が許可されています</translation>
@@ -730,6 +730,7 @@
 <translation id="6122831415929794347">セーフ ブラウジングをオフにしますか？</translation>
 <translation id="6127379762771434464">アイテムを削除しました</translation>
 <translation id="6137022273846704445"><ph name="APP_NAME" /> の言語</translation>
+<translation id="6138832295072039549">サイトの設定をここで変更</translation>
 <translation id="6140709049082532940">保護強化機能:</translation>
 <translation id="6140912465461743537">国 / 地域</translation>
 <translation id="614940544461990577">次をお試しください</translation>

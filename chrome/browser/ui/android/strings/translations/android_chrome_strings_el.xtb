@@ -402,7 +402,6 @@
 <translation id="3894427358181296146">Προσθήκη φακέλου…</translation>
 <translation id="3895926599014793903">Αναγκαστική ενεργοποίηση εστίασης</translation>
 <translation id="3908308510347173149">Ενημέρωση <ph name="PRODUCT_NAME" /></translation>
-<translation id="3909763690984331376">Έλεγχος ασφαλείας <ph name="BEGIN_NEW" />Νέο<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">Εύρεση των καλύτερων στον ιστό…</translation>
 <translation id="3924911262913579434">Η λειτουργία <ph name="SAFE_BROWSING_MODE" /> είναι ενεργή.</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -633,6 +632,7 @@
 <translation id="5530766185686772672">Κλείσιμο καρτ.ανών.περιήγ.</translation>
 <translation id="5530920986376047241">Μπορείτε να αποθηκεύετε σελίδες στη λίστα ανάγνωσης για να τις βρίσκετε εύκολα ξανά.</translation>
 <translation id="5534640966246046842">Ο ιστότοπος αντιγράφηκε</translation>
+<translation id="5548606607480005320">Έλεγχος ασφαλείας</translation>
 <translation id="5556459405103347317">Επαναφόρτωση</translation>
 <translation id="5561549206367097665">Αναμονή για δίκτυο…</translation>
 <translation id="55737423895878184">Η Τοποθεσία και οι ειδοποιήσεις επιτρέπονται</translation>
@@ -730,6 +730,7 @@
 <translation id="6122831415929794347">Απενεργοποίηση Ασφαλούς περιήγησης;</translation>
 <translation id="6127379762771434464">Το στοιχείο καταργήθηκε</translation>
 <translation id="6137022273846704445">Γλώσσα της εφαρμογής <ph name="APP_NAME" /></translation>
+<translation id="6138832295072039549">Αλλάξτε τις ρυθμίσεις του ιστοτόπου σας εδώ.</translation>
 <translation id="6140709049082532940">Βελτιωμένη ασφάλεια:</translation>
 <translation id="6140912465461743537">Χώρα/Περιοχή</translation>
 <translation id="614940544461990577">Δοκιμάστε να κάνετε τα εξής:</translation>

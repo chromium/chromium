@@ -403,7 +403,6 @@
 <translation id="3894427358181296146">ಫೋಲ್ಡರ್ ಸೇರಿಸು</translation>
 <translation id="3895926599014793903">ಒತ್ತಾಯದ ಝೂಮ್ ಸಕ್ರಿಯಗೊಳಿಸುವಿಕೆ</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
-<translation id="3909763690984331376">ಸುರಕ್ಷತೆಯ ಪರಿಶೀಲನೆ <ph name="BEGIN_NEW" />ಹೊಸತು<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">ವೆಬ್‌ನಿಂದ ಅತ್ಯುತ್ತಮ ವಿಷಯಗಳನ್ನು ಹುಡುಕಲಾಗುತ್ತಿದೆ…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> ಆನ್ ಆಗಿದೆ</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -633,6 +632,7 @@
 <translation id="5530766185686772672">ಅದೃಶ್ಯ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="5530920986376047241">ಪುಟಗಳನ್ನು ಮತ್ತೊಮ್ಮೆ ಹುಡುಕುವುದಕ್ಕಾಗಿ, ಅವುಗಳನ್ನು ನಿಮ್ಮ ಓದುವ ಪಟ್ಟಿಯಲ್ಲಿ ಉಳಿಸಬಹುದು</translation>
 <translation id="5534640966246046842">ಸೈಟ್ ಅನ್ನು ನಕಲಿಸಲಾಗಿದೆ</translation>
+<translation id="5548606607480005320">ಸುರಕ್ಷತೆಯ ಪರಿಶೀಲನೆ</translation>
 <translation id="5556459405103347317">ಮರುಲೋಡ್‌</translation>
 <translation id="5561549206367097665">ನೆಟ್‌ವರ್ಕ್‌ಗಾಗಿ ನಿರೀಕ್ಷಿಸಲಾಗುತ್ತಿದೆ…</translation>
 <translation id="55737423895878184">ಸ್ಥಳ ಮತ್ತು ಅಧಿಸೂಚನೆಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
@@ -730,6 +730,7 @@
 <translation id="6122831415929794347">ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್ ಅನ್ನು ಆಫ್ ಮಾಡುವುದೇ?</translation>
 <translation id="6127379762771434464">ಐಟಂ ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
 <translation id="6137022273846704445"><ph name="APP_NAME" /> ನ ಭಾಷೆ</translation>
+<translation id="6138832295072039549">ಇಲ್ಲಿ ನಿಮ್ಮ ಸೈಟ್‌ನ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಬದಲಾಯಿಸಿ</translation>
 <translation id="6140709049082532940">ವರ್ಧಿತ ಸುರಕ್ಷತೆ:</translation>
 <translation id="6140912465461743537">ರಾಷ್ಟ್ರ/ಪ್ರದೇಶ</translation>
 <translation id="614940544461990577">ಪ್ರಯತ್ನಿಸಿ:</translation>

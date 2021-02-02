@@ -62,6 +62,7 @@
 <translation id="2338501278241028356">আশেপাশের ডিভাইস খুঁজে পেতে ব্লুটুথ চালু করুন</translation>
 <translation id="2364498172489649528">পাস করেছে</translation>
 <translation id="2391082728065870591">ফিডব্যাক রিপোর্ট পাঠান</translation>
+<translation id="2418150275289244458">সেটিংসে খুলুন</translation>
 <translation id="2446553403094072641">ফ্লোটিং পয়েন্ট অ্যাকুরেসি</translation>
 <translation id="2448312741937722512">প্রকার</translation>
 <translation id="2461822463642141190">বর্তমান</translation>
@@ -264,6 +265,7 @@
 <translation id="6977381486153291903">ফার্মওয়ের পুনর্বিবেচনাগুলি</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> এই ডিভাইস ম্যানেজ করে এবং ব্যবহারকারী দেখেছেন এমন ওয়েবপেজ, পাসওয়ার্ড ও ইমেল আইডি সহ তার সব অ্যাক্টিভিটি সংক্রান্ত ডেটা অ্যাক্সেস করে।</translation>
 <translation id="7040230719604914234">অপারেটর</translation>
+<translation id="7059230779847288458">চার্জ করা হচ্ছে, সম্পূর্ণ চার্জ হতে <ph name="TIME_VALUE" /> সময় লাগবে</translation>
 <translation id="708426984172631313">থেমে গেছে</translation>
 <translation id="7143207342074048698">সংযুক্ত হচ্ছে</translation>
 <translation id="714876143603641390">Lan কানেক্টিভিটি</translation>
@@ -271,6 +273,7 @@
 <translation id="7177485034254901881"><ph name="MANAGER" />-এর মাধ্যমে এই <ph name="DEVICE_TYPE" /> ম্যানেজ করা হয়। অ্যাডমিনিস্ট্রেটর অন্য জায়গা থেকে ডিভাইসটি কনফিগার করতে পারেন।</translation>
 <translation id="7216409898977639127">মোবাইল পরিষেবা প্রদানকারী</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7343649194310845056">নেটওয়ার্ক ডিভাইস</translation>
 <translation id="7359657277149375382">ফাইলের প্রকার</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -280,8 +283,10 @@
 <translation id="7490813197707563893">MAC ঠিকানা</translation>
 <translation id="7497215489070763236">সার্ভার CA সার্টিফিকেট</translation>
 <translation id="7502658306369382406">IPv6 ঠিকানা</translation>
+<translation id="7550715992156305117">ডায়াগনস্টিক রুটিন</translation>
 <translation id="7561454561030345039">এই কাজটি আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331"><ph name="TIME_VALUE" /> বাকি আছে</translation>
 <translation id="7620771111601174153">সহায়তা কেন্দ্র বিভাগে গিয়ে আরও জানুন</translation>
 <translation id="7648838807254605802">বেশি HTTPS লেটেন্সি</translation>
 <translation id="7658239707568436148">বাতিল</translation>

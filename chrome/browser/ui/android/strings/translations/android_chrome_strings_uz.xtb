@@ -402,7 +402,6 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="3894427358181296146">Jild qo‘shish</translation>
 <translation id="3895926599014793903">Hajmni majburiy o‘zgartirish funksiyasini yoqish</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> ilovasini yangilang</translation>
-<translation id="3909763690984331376">Xavfsizlik tekshiruvi <ph name="BEGIN_NEW" />Yangi<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">Internetdan maʼlumotlar yuklanmoqda…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> yoniq</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -633,6 +632,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5530766185686772672">Inkognito oynalarini yopish</translation>
 <translation id="5530920986376047241">Sahifalarni keyinroq topish uchun ularni saqlab olish mumkin</translation>
 <translation id="5534640966246046842">Sayt nusxalandi</translation>
+<translation id="5548606607480005320">Xavfsizlik tekshiruvi</translation>
 <translation id="5556459405103347317">Qayta yuklash</translation>
 <translation id="5561549206367097665">Tarmoq kutilmoqda...</translation>
 <translation id="55737423895878184">Joylashuv xizmati va bildirishnomalarga ruxsat berildi</translation>

@@ -402,7 +402,6 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="3894427358181296146">Gehitu karpeta</translation>
 <translation id="3895926599014793903">Behartu zooma gaitzera</translation>
 <translation id="3908308510347173149">Eguneratu <ph name="PRODUCT_NAME" /></translation>
-<translation id="3909763690984331376">Segurtasun-egiaztapena <ph name="BEGIN_NEW" />Berria<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">Sareko gauzarik onenak bilatzen…</translation>
 <translation id="3924911262913579434">"<ph name="SAFE_BROWSING_MODE" />" aktibatuta dago</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -432,6 +431,7 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="4095146165863963773">Aplikazioko datuak ezabatu nahi dituzu?</translation>
 <translation id="4095189195365058471">Irakurri geroago <ph name="BEGIN_NEW" />Berria<ph name="END_NEW" /></translation>
 <translation id="4099578267706723511">Hobetu Chrome Google-ri erabilera-estatistikak eta hutsegite-txostenak bidalita.</translation>
+<translation id="4108314971463891922">Jarraitu</translation>
 <translation id="4108998448622696017">Gertaera arriskutsuak hautematen ditu eta haien berri ematen dizu gertatu ahala.</translation>
 <translation id="4116038641877404294">Deskargatu orriak konexiorik gabe erabiltzeko</translation>
 <translation id="4135200667068010335">Fitxa partekatzeko hautatutako gailuen zerrenda itxita dago.</translation>
@@ -632,6 +632,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5530766185686772672">Itxi ezkutuko moduko fitxak</translation>
 <translation id="5530920986376047241">Orriak irakurketa-zerrendan gorde ditzakezu, geroago aurkitu ahal izateko</translation>
 <translation id="5534640966246046842">Kopiatu da webgunea</translation>
+<translation id="5548606607480005320">Segurtasun-egiaztapena</translation>
 <translation id="5556459405103347317">Kargatu berriro</translation>
 <translation id="5561549206367097665">Konektatzeko zain…</translation>
 <translation id="55737423895878184">Kokapena eta jakinarazpenak onartzen dira</translation>
@@ -643,6 +644,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5606787249466187650">Arakatu pribatutasunaren proben eremua</translation>
 <translation id="5620163320393916465">Ez dago pasahitzik gordeta</translation>
 <translation id="5620928963363755975">Bilatu Deskargak atalean dituzun fitxategiak eta orriak Aukera gehiago botoia sakatuta</translation>
+<translation id="562289928968387744">Kudeatu erreakzioak</translation>
 <translation id="5626134646977739690">Izena:</translation>
 <translation id="5639724618331995626">Onartu webgune guztiak</translation>
 <translation id="5648166631817621825">Azken zazpi egunetakoak</translation>
@@ -728,6 +730,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="6122831415929794347">Arakatze segurua desaktibatu nahi duzu?</translation>
 <translation id="6127379762771434464">Kendu egin da elementua</translation>
 <translation id="6137022273846704445"><ph name="APP_NAME" /> aplikazioaren hizkuntza</translation>
+<translation id="6138832295072039549">Aldatu webgunearen ezarpenak hemen</translation>
 <translation id="6140709049082532940">Babes hobetua:</translation>
 <translation id="6140912465461743537">Herrialdea/Lurraldea</translation>
 <translation id="614940544461990577">Konpontzeko, hauek egin ditzakezu:</translation>

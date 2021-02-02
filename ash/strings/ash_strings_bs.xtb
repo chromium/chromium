@@ -577,6 +577,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="5992218262414051481">Omogućen je način rada u visokom kontrastu. Pritisnite ponovo Ctrl + tipku za pretraživanje + H da ga onemogućite.</translation>
 <translation id="6018164090099858612">Izlazak iz načina rada za preslikavanje</translation>
 <translation id="602001110135236999">Listaj ulijevo</translation>
+<translation id="602472752137106327">Prikazivanje prozora sa svih radnih površina, odabrano je dugme za izbor</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />, upravlja vaš administrator</translation>
 <translation id="6030495522958826102">Meni je pomjeren u donji lijevi ugao ekrana.</translation>
 <translation id="6032620807120418574">Kliknite bilo gdje da snimate cijeli ekran</translation>
@@ -675,6 +676,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Preostala je jedna cifra}one{Preostala je # cifra}few{Preostale su # cifre}other{Preostalo je # cifara}}</translation>
 <translation id="6878400149835617132">Prečica je isključena</translation>
 <translation id="6886172995547742638">Vaš uređaj <ph name="DEVICE_TYPE" /> može funkcionirati uz slabije performanse. Koristite certificirani USB-C adapter za napajanje od <ph name="PREFERRED_MINIMUM_POWER" /> W ili jači.</translation>
+<translation id="688631446150864480">Pritisnite tipku strelice nadolje da se prebacite između prozora</translation>
 <translation id="6896758677409633944">Kopiraj</translation>
 <translation id="6910714959251846841">Za ovo ažuriranje na uređaju je potrebno izvršiti Powerwash. Saznajte više o najnovijem ažuriranju za aplikaciju <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Prepoznavanje pametne kartice nije uspjelo. Ponovite.</translation>
@@ -840,6 +842,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="8297006494302853456">Slabo</translation>
 <translation id="8308637677604853869">Prethodni meni</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="8345019317483336363">Odabran je prozor <ph name="WINDOW_TITLE" /></translation>
 <translation id="8351131234907093545">Napravite bilješku</translation>
 <translation id="8371779926711439835">Slovo unaprijed</translation>
 <translation id="8375916635258623388">Uređaj <ph name="DEVICE_NAME" /> i vaš telefon će se povezati automatski</translation>
@@ -863,6 +866,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="8477270416194247200">Za otkazivanje pritisnite Alt + tipku za pretraživanje ili Shift.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> ne podržava <ph name="SPECIFIED_RESOLUTION" />. Rezolucija je promijenjena na <ph name="FALLBACK_RESOLUTION" />. Kliknite Potvrdi da zadržite promjene. Prethodne postavke će se vratiti za <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8513108775083588393">Aut. rotiranje</translation>
+<translation id="851458219935658693">Prikazivanje prozora s trenutne radne površine, odabrano je dugme za izbor</translation>
 <translation id="8517041960877371778">Moguće je da se vaš uređaj <ph name="DEVICE_TYPE" /> neće puniti dok je uključen.</translation>
 <translation id="8553395910833293175">Već je dodijeljeno svim radnim površinama.</translation>
 <translation id="8563862697512465947">Postavke obavijesti</translation>

@@ -426,6 +426,7 @@
 <translation id="1465827627707997754">Պիցցայի կտոր</translation>
 <translation id="1468571364034902819">Հնարավոր չէ օգտագործել այս պրոֆիլը</translation>
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{Ավելացնել ներդիր նոր խմբում}one{Ավելացնել ներդիրներ նոր խմբում}other{Ավելացնել ներդիրներ նոր խմբում}}</translation>
+<translation id="1470350905258700113">Օգտագործել այս սարքը</translation>
 <translation id="1470946456740188591">Ստեղնային դիտարկումը միացնելու/անջատելու համար օգտագործեք Ctrl + Search + 7 դյուրանցումը</translation>
 <translation id="1472675084647422956">Ցույց տալ ավելին</translation>
 <translation id="1474785664565228650">Վերագործարկեք Parallels Desktop-ը, որպեսզի խոսափողի կարգավորումը փոխվի, և դուք կարողանաք շարունակել աշխատանքը։</translation>
@@ -1060,6 +1061,7 @@
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> ու ևս 1 փոխանջատիչ</translation>
 <translation id="2165421703844373933">Օգտագործեք ձեր Օգնականը՝ ասելով «Ok Google»: Մարտկոցի լիցքը տնտեսելու համար ընտրեք «Միացնել (խորհուրդ է տրվում)» կարգավորումը: Ձեր Օգնականը կպատասխանի, միայն երբ սարքը միացված է սնուցման աղբյուրին կամ լիցքավորվում է:</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
+<translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Մուտք գործել</translation>
 <translation id="2170054054876170358">Համոզվեք, որ այն մոտակայքում է, ապակողպված է, և որ Bluetooth-ն ու Wi-Fi-ը միացված են։</translation>
 <translation id="2173302385160625112">Ստուգեք կապը</translation>
@@ -1111,7 +1113,6 @@
 <translation id="2225864335125757863">Ձեր հաշիվը պաշտպանելու համար փոխեք այս գաղտնաբառերը՝</translation>
 <translation id="2226449515541314767">Այս կայքին արգելված է ամբողջությամբ վերահսկել MIDI սարքերը:</translation>
 <translation id="2226907662744526012">Ավտոմատ ապակողպել, երբ մուտքագրվում է PIN կոդը</translation>
-<translation id="222704500187107962">Երբ դուրս գաք ընթացիկ ինկոգնիտո աշխատաշրջանից, այս բացառությունն ավտոմատ կհեռացվի։</translation>
 <translation id="2227179592712503583">Հեռացնել հուշումը</translation>
 <translation id="2229161054156947610">Մնացել է 1 ժամից ավել</translation>
 <translation id="222931766245975952">Ֆայլը հատված է</translation>
@@ -1283,7 +1284,6 @@
 <translation id="2428939361789119025">Անջատել Wi-Fi-ը</translation>
 <translation id="2431027948063157455">Չհաջողվեց բեռնել Google Օգնականը։ Ստուգեք կապն ու նորից փորձեք։</translation>
 <translation id="2433452467737464329">Ավելացրեք URL-ում հարցման հարաչափ էջի ինքնաթարմացման համար՝ chrome://network/?refresh=&lt;sec&gt;</translation>
-<translation id="2433490881840073798"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE" /></translation>
 <translation id="2433507940547922241">Արտաքին տեսք</translation>
 <translation id="2433836460518180625">Միայն ապակողպել սարքը</translation>
 <translation id="2434449159125086437">Չհաջողվեց կարգավորել տպիչը: Ստուգեք կարգավորումները և նորից փորձեք:</translation>
@@ -1401,6 +1401,7 @@
 <translation id="2541002089857695151">Օպտիմալացնե՞լ հեռարձակումը լիաէկրան ռեժիմում</translation>
 <translation id="2541706104884128042">Սահմանվել են քնի նոր ժամեր</translation>
 <translation id="2542050502251273923">Սահմանում է ցանցային կապի կառավարչի և ff_debug կարգավորումն օգտագործող այլ ծառայությունների վրիպազերծման մակարդակը։</translation>
+<translation id="2544292303401268586">Ձեր ադմինիստրատորը խնդրել է վերագործարկել ձեր սարքը, որպեսզի հավելվածները թարմացվեն։ Դա կարող է տևել մի քանի րոպե։</translation>
 <translation id="2544853746127077729">Իսկորոշման վկայագիրը մերժվել է ցանցի կողմից</translation>
 <translation id="2546283357679194313">Cookie ֆայլեր և կայքի տվյալներ</translation>
 <translation id="2548347166720081527">«<ph name="PERMISSION" />»՝ թույլատրված է</translation>
@@ -2783,6 +2784,7 @@
 <translation id="409579654357498729">Ավելացնել Cloud Print-ին</translation>
 <translation id="4096508467498758490">Անջատեք մշակողի ռեժիմի ընդլայնումները</translation>
 <translation id="4097406557126260163">Հավելվածներ և ընդլայնումներ</translation>
+<translation id="409742781329613461">Խորհուրդներ Chrome-ի օգտագործման համար</translation>
 <translation id="4097560579602855702">Որոնեք Google-ում</translation>
 <translation id="4098667039111970300">Ստիլուսի գործիքներ գործիքագոտում</translation>
 <translation id="4099060993766194518">Վերականգնե՞լ կանխադրված որոնիչը</translation>
@@ -3087,7 +3089,6 @@
 <translation id="4492698018379445570">Գտեք ապրանքները, որոնք ավելացրել եք գնումների զամբյուղներում, և վճարեք, երբ ցանկանաք</translation>
 <translation id="4493468155686877504">Առաջարկվող չափը (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">Ցույց չտալ այս էջում</translation>
-<translation id="4496054781541092778"><ph name="PERMISSION" />՝ ավտոմատ արգելափակվել է</translation>
 <translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> փլագինը խափանվել է</translation>
 <translation id="450099669180426158">Բացականչական նշանի պատկերակ</translation>
 <translation id="4501530680793980440">Հեռացման հաստատում</translation>
@@ -3109,7 +3110,6 @@
 <translation id="4519935350946509010">Միացման սխալ</translation>
 <translation id="4520385623207007473">Օգտագործվող քուքիներ</translation>
 <translation id="452039078290142656">անհայտ սարքեր <ph name="VENDOR_NAME" />-ից</translation>
-<translation id="4521489190203965562">Ընթացիկ ինկոգնիտո աշխատաշրջանը՝ <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" />, <ph name="RECENT_PERMISSIONS_CHANGE_2" /> և այլ փոփոխություններ</translation>
 <translation id="4522570452068850558">Մանրամասներ</translation>
 <translation id="4522600456902129422">Թույլատրել այս կայքին տեսնել սեղմատախտակը</translation>
 <translation id="4524832533047962394">Օպերացիոն համակարգի այս տարբերակը չի աջակցում գրանցման տրամադրված ռեժիմը: Թարմացրեք տարբերակը:</translation>
@@ -3741,7 +3741,6 @@
 <translation id="527605982717517565">Միշտ թույլ տալ JavaScript-ը <ph name="HOST" />-ում</translation>
 <translation id="5278823018825269962">Կարգավիճակի նույնացուցիչ</translation>
 <translation id="5280064835262749532">Թարմացրեք <ph name="SHARE_PATH" />-ի տվյալները</translation>
-<translation id="5280174558369304332">Ընդլայնումը կջնջվի՝</translation>
 <translation id="5280243692621919988">Բոլոր պատուհանները փակելիս մաքրել քուքիները և կայքերի տվյալները</translation>
 <translation id="5280426389926346830">Ստեղծե՞լ դյուրանցում</translation>
 <translation id="528208740344463258">Android հավելվածները ներբեռնելու և օգտագործելու համար հարկավոր է տեղադրել թարմացումը: Տեղադրման ժամանակ դուք չեք կարող օգտագործել <ph name="DEVICE_TYPE" /> սարքը։ Թարմացումից հետո <ph name="DEVICE_TYPE" /> սարքը կվերագործարկվի:</translation>
@@ -3889,7 +3888,6 @@
 <translation id="5449551289610225147">Սխալ գաղտնաբառ</translation>
 <translation id="5449588825071916739">Բոլոր ներդիրների էջանշում</translation>
 <translation id="5449716055534515760">Փակել պա&amp;տուհանը</translation>
-<translation id="5452974209916053028">Ընթացիկ ինկոգնիտո աշխատաշրջանը՝ <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" />, <ph name="RECENT_PERMISSIONS_CHANGE_2" /></translation>
 <translation id="5454005855577728171">Ենթագրերը տեղաշարժվել են <ph name="POSITION_ON_SCREEN_FROM_LEFT" />%-ով կողք և <ph name="POSITION_ON_SCREEN_FROM_TOP" />%-ով ներքև</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" />-ի հետ</translation>
 <translation id="5457113250005438886">Անվավեր</translation>
@@ -4099,6 +4097,7 @@
 <translation id="5678550637669481956">Կարդալու և գրելու թույլտվություն է տրվել <ph name="VOLUME_NAME" />-ին:</translation>
 <translation id="5678955352098267522">Կարդալ ձեր տվյալները <ph name="WEBSITE_1" /> կայքում</translation>
 <translation id="5680050361008726776">Հեռացնե՞լ «<ph name="ESIM_PROFILE_NAME" />» պրոֆիլը</translation>
+<translation id="5683806393796685434">Մուտքագրեք ձեր ակտիվացման կոդը</translation>
 <translation id="5684181005476681636">Wi-Fi-ի մանրամասներ</translation>
 <translation id="5684661240348539843">Ակտիվների նույնացուցիչ</translation>
 <translation id="5687326903064479980">Ժամային գոտի</translation>
@@ -4107,7 +4106,6 @@
 <translation id="5691581861107245578">Ստացեք զմայլիկների առաջարկներ՝ ձեր մուտքագրած տեքստի հիման վրա</translation>
 <translation id="5691772641933328258">Չհաջողվեց ճանաչել մատնահետքը</translation>
 <translation id="5692183275898619210">Տպումն ավարտվեց</translation>
-<translation id="569425414730375234">Ընթացիկ ինկոգնիտո աշխատաշրջանը՝ <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" /></translation>
 <translation id="5695184138696833495">Android-ի համար հավելվածների ADB գործիք Լինուքսում</translation>
 <translation id="5696143504434933566">Հաղորդել չարաշահման մասին («<ph name="EXTENSION_NAME" />»)</translation>
 <translation id="5696177755977520104">Chrome OS-ի կարգավորումների համաժամացում</translation>
@@ -4351,6 +4349,7 @@
 <translation id="5978277834170881274">&amp;Օգտագործել հիմնական ուղղագրիչը</translation>
 <translation id="5979084224081478209">Ստուգել գաղտնաբառերը</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Դուք նորից 1 վտանգավոր ընդլայնում եք միացրել}one{Դուք նորից {NUM_EXTENSIONS} վտանգավոր ընդլայնում եք միացրել}other{Դուք նորից {NUM_EXTENSIONS} վտանգավոր ընդլայնում եք միացրել}}</translation>
+<translation id="5979353814339191480">Այս պարամետրը կիրառվում է Chromebook սարքերում, որոնք ունեն բջջային ինտերնետի սակագնային պլան կամ մոդեմ, ինչպես նաև շարժական թեժ կետին միանալիս։</translation>
 <translation id="5979421442488174909">&amp;Թարգմանել <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">Կայքերն էջանշելու համար հասցեագոտում սեղմեք աստղին</translation>
 <translation id="5984222099446776634">Recently Visited</translation>
@@ -4384,7 +4383,6 @@
 <translation id="6025215716629925253">Սթեքի ժամանակագրություն</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – USB սարքը միացված է</translation>
 <translation id="6028117231645531007">Ավելացնել մատնահետք</translation>
-<translation id="6029594605736587274"><ph name="PERMISSION" />՝ արգելափակված է</translation>
 <translation id="6031600495088157824">Ներածման ընտրանքները գործիքագոտում</translation>
 <translation id="6032715498678347852">Սեղմեք ընդլայնման վրա՝ այս կայքը դրան հասանելի դարձնելու համար։</translation>
 <translation id="6032912588568283682">Ֆայլային համակարգ</translation>
@@ -4831,6 +4829,7 @@
 <translation id="653659894138286600">Սկանավորեք փաստաթղթեր և պատկերներ</translation>
 <translation id="6537613839935722475">Անվանման մեջ կարող են օգտագործվել տառեր, թվեր և գծիկներ (-)</translation>
 <translation id="6537880577641744343">Commander</translation>
+<translation id="6538098297809675636">Կոդը հայտնաբերելիս սխալ առաջացավ</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Նշում.<ph name="END_BOLD" /> Այս գործառույթը միացնել միայն այն դեպքում, երբ գիտեք թե ինչ եք անում կամ, եթե ձեզ խնդրել են դա անել, քանի որ տվյալների հավաքումը կարող է նվազեցնել կատարողականությունը:</translation>
 <translation id="6541638731489116978">Այս կայքին արգելվել է օգտագործել շարժման տվիչները:</translation>
 <translation id="6545665334409411530">Կրկնման արագությունը</translation>
@@ -4841,7 +4840,6 @@
 <translation id="6550675742724504774">Ընտրանքներ</translation>
 <translation id="6551508934388063976">Հրամանը մատչելի չէ: Նոր պատուհան բացելու համար սեղմեք control-N:</translation>
 <translation id="6551612971599078809">Կայքը USB սարք է օգտագործում</translation>
-<translation id="6552395360547205189">Ընթացիկ ինկոգնիտո աշխատաշրջանը՝ <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" /></translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> օգտատեր</translation>
 <translation id="655483977608336153">Փորձել նորից</translation>
 <translation id="6555432686520421228">Հեռացնել բոլոր օգտատերերի հաշիվները և վերականգնել <ph name="IDS_SHORT_PRODUCT_NAME" /> սարքի գործարանային կարգավորումները:</translation>
@@ -5844,7 +5842,6 @@
 <translation id="7710568461918838723">&amp;Հեռարձակել...</translation>
 <translation id="7711900714716399411">Օգտագործեք USB մալուխ՝ հեռախոսը համակարգչին միացնելու համար։ Եթե հեռախոսն արդեն միացված է, USB մալուխն անջատեք հեռախոսից և նորից միացրեք։</translation>
 <translation id="7712739869553853093">Տպել նախադիտման պատուհանը</translation>
-<translation id="7712836429117959503"><ph name="EXTENSION_ID" /> ID-ով անհայտ ընդլայնում</translation>
 <translation id="7714307061282548371"><ph name="DOMAIN" /> կայքի քուքիները թույլատրված են</translation>
 <translation id="7714464543167945231">Վկայագիր</translation>
 <translation id="7716648931428307506">Ընտրեք, թե որտեղ պետք է պահվեն գաղտնաբառերը</translation>
@@ -6028,6 +6025,7 @@
 <translation id="7904526211178107182">Հասանելի դարձրեք Լինուքսի միացքները ձեր ցանցի մյուս սարքերին։</translation>
 <translation id="7907837847548254634">Կարճ ընդգծել ֆոկուսավորված օբյեկտը</translation>
 <translation id="7908378463497120834">Չհաջողվեց միացնել ձեր արտաքին հիշողության սարքի առնվազն մեկ հատվածը:</translation>
+<translation id="7909324225945368569">Պրոֆիլի վերանվանման դաշտ</translation>
 <translation id="7909969815743704077">Ներբեռնվել է ինկոգնիտո ռեժիմում</translation>
 <translation id="7910768399700579500">&amp;Նոր պանակ</translation>
 <translation id="7911118814695487383">Լինուքս</translation>
@@ -6225,7 +6223,6 @@
 <translation id="8118488170956489476">Ձեր <ph name="BEGIN_LINK" />դիտարկիչը կառավարվում է<ph name="END_LINK" /> ձեր կազմակերպության կողմից</translation>
 <translation id="8118515372935001629">Էկրանի թարմացման հաճախականությունը</translation>
 <translation id="8118860139461251237">Կառավարել ձեր ներբեռնումները</translation>
-<translation id="811942868379260654"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" />, <ph name="RECENT_PERMISSIONS_CHANGE_2" /> և այլ փոփոխություններ</translation>
 <translation id="8119438628456698432">Մատյանների ֆայլերը ստեղծվում են…</translation>
 <translation id="811994229154425014">Սեղմել կրկնակի բացատ՝ կետ մուտքագրելու համար</translation>
 <translation id="8123590694679414600">Տվյալները գաղտնագրվել են ձեր համաժամացման անցաբառով
@@ -6427,7 +6424,6 @@
 <translation id="835951711479681002">Պահել իմ Google հաշվում</translation>
 <translation id="8363095875018065315">կայուն</translation>
 <translation id="8363142353806532503">Խոսափողի օգտագործումն արգելված է</translation>
-<translation id="8363763184161554204">«<ph name="PERMISSION" />»՝ թույլատրված է</translation>
 <translation id="8366396658833131068">Ցանցի կապակցումը վերականգնվել է: Kiosk հավելվածը գործարկելու համար ընտրեք այլ ցանց կամ սեղմեք «Շարունակել» կոճակը:</translation>
 <translation id="8368027906805972958">Անհայտ կամ չաջակցվող սարք (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368859634510605990">&amp;Բացել բոլոր էջանիշները</translation>
@@ -6646,6 +6642,7 @@
 <translation id="8642900771896232685">2 վայրկյան</translation>
 <translation id="8642947597466641025">Մեծացնել տեքստը</translation>
 <translation id="8643443571868262066"><ph name="FILE_NAME" /> ֆայլը կարող է վտանգավոր լինել: Ստուգե՞լ այն Google-ի լրացուցիչ պաշտպանության միջոցով։</translation>
+<translation id="8644047503904673749">{COUNT,plural, =0{Քուքիներ չկան}=1{Արգելափակված է 1 քուքի}one{Արգելափակված է # քուքի}other{Արգելափակված է # քուքի}}</translation>
 <translation id="8644655801811752511">Չհաջողվեց զրոյացնել անվտանգության բանալու կարգավորումները։ Փորձեք անել դա անմիջապես բանալին տեղադրելուց հետո։</translation>
 <translation id="8645354835496065562">Միշտ թույլատրել տվիչների օգտագործումը</translation>
 <translation id="8645920082661222035">Հայտնաբերում է վտանգավոր իրադարձություններն ու զգուշացնում դրանց մասին</translation>
@@ -6987,7 +6984,6 @@
 <translation id="899657321862108550">Ձեր Chrome-ը՝ ամենուր ձեզ հետ</translation>
 <translation id="899676909165543803">Մատնահետքերի սկաները ստեղնաշարի աջ կողմի ստեղնն է (ներքևում): Որևէ մատով թեթևակի հպեք դրան։</translation>
 <translation id="8999560016882908256">Բաժնի շարահյուսության սխալ՝ <ph name="ERROR_LINE" /></translation>
-<translation id="9002878223019487115"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" />, <ph name="RECENT_PERMISSIONS_CHANGE_2" /></translation>
 <translation id="9003647077635673607">Թույլ տալ բոլոր վեբկայքերում</translation>
 <translation id="9003677638446136377">Ստուգել նորից</translation>
 <translation id="9003940392834790328">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, կառավարվում է ձեր ադմինիստրատորի կողմից, մանրամասներ</translation>

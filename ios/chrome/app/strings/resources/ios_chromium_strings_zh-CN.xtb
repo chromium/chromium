@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
 <translation id="102360288709523007">将使用情况统计信息和崩溃报告发送给 Google，帮助我们完善 Chromium。</translation>
+<translation id="1130979953299110755">当您退出帐号后，您的书签、历史记录、密码及其他 Chromium 数据将不再同步到您的 Google 帐号中。</translation>
 <translation id="1185134272377778587">关于 Chromium</translation>
 <translation id="1257458525759135959">若要保存图片，请点按“设置”并允许 Chromium 添加照片</translation>
 <translation id="1361748954329991663">Chromium 版本太旧。如果 <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> 中无任何可用更新，则可能是因为您的设备不再支持新版 Chromium。</translation>

@@ -62,6 +62,7 @@
 <translation id="2338501278241028356">برای کاوش دستگاه‌های همین اطراف، بلوتوث را روشن کنید</translation>
 <translation id="2364498172489649528">موفق</translation>
 <translation id="2391082728065870591">ارسال گزارش بازخورد</translation>
+<translation id="2418150275289244458">باز کردن در تنظیمات</translation>
 <translation id="2446553403094072641">دقت نقطه شناور</translation>
 <translation id="2448312741937722512">نوع</translation>
 <translation id="2461822463642141190">فعلی</translation>
@@ -273,6 +274,7 @@
 <translation id="7177485034254901881">این <ph name="DEVICE_TYPE" /> توسط <ph name="MANAGER" /> مدیریت می‌شود. سرپرستان می‌توانند این دستگاه را ازراه‌دور پیکربندی کنند.</translation>
 <translation id="7216409898977639127">ارائه‌دهنده شبکه تلفن همراه</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7343649194310845056">دستگاه‌های شبکه</translation>
 <translation id="7359657277149375382">نوع فایل</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -282,6 +284,7 @@
 <translation id="7490813197707563893">‏نشانی MAC</translation>
 <translation id="7497215489070763236">گواهینامه مرکز صدور گواهی سرور</translation>
 <translation id="7502658306369382406">‏نشانی IPv6</translation>
+<translation id="7550715992156305117">روال‌های عیب‌یابی</translation>
 <translation id="7561454561030345039">سرپرست شما این اقدام را مدیریت می‌کند</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> باقی مانده است</translation>

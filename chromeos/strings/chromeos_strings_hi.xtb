@@ -62,6 +62,7 @@
 <translation id="2338501278241028356">आस-पास के डिवाइस खोजने के लिए ब्लूटूथ चालू करें</translation>
 <translation id="2364498172489649528">जांच में पास</translation>
 <translation id="2391082728065870591">सुझाव, शिकायत या राय की रिपोर्ट भेजें</translation>
+<translation id="2418150275289244458">'सेटिंग' में जाकर खोलें</translation>
 <translation id="2446553403094072641">फ़्लोटिंग पॉइंट ऐक्युरसी</translation>
 <translation id="2448312741937722512">प्रकार</translation>
 <translation id="2461822463642141190">मौजूदा</translation>
@@ -273,6 +274,7 @@
 <translation id="7177485034254901881">इस <ph name="DEVICE_TYPE" /> को <ph name="MANAGER" /> प्रबंधित करता है. एडमिन इस डिवाइस को किसी दूसरी जगह से भी कॉन्फ़िगर कर सकते हैं.</translation>
 <translation id="7216409898977639127">सेल्युलर सेवा देने वाली कंपनी</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7343649194310845056">नेटवर्क के डिवाइस</translation>
 <translation id="7359657277149375382">फ़ाइल प्रकार</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -282,6 +284,7 @@
 <translation id="7490813197707563893">MAC पता</translation>
 <translation id="7497215489070763236">सर्वर CA प्रमाणपत्र</translation>
 <translation id="7502658306369382406">IPv6 पता</translation>
+<translation id="7550715992156305117">डाइग्नोस्टिक्स रूटीन</translation>
 <translation id="7561454561030345039">इस कार्रवाई को आपका एडमिन प्रबंधित करता है</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> बाकी हैं</translation>

@@ -1058,6 +1058,7 @@
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" />, மேலும் 1 ஸ்விட்ச்</translation>
 <translation id="2165421703844373933">"Ok Google" என்று சொல்லி அசிஸ்டண்ட்டை அணுகலாம். பேட்டரியைச் சேமிக்க "ஆன் செய்க (பரிந்துரைக்கப்படுவது)" என்பதைத் தேர்ந்தெடுங்கள். உங்கள் சாதனம் செருகப்படும்போது அல்லது சார்ஜ் செய்யப்படும்போது மட்டுமே அசிஸ்டண்ட் பதிலளிக்கும்.</translation>
 <translation id="2166369534954157698">அகர முதல எழுத்தெல்லாம் ஆதிபகவன் முதற்றே உலகு</translation>
+<translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">எப்படியேனும் உள்நுழை</translation>
 <translation id="2170054054876170358">உங்கள் மொபைல் அன்லாக் செய்யப்பட்டு அருகில் இருப்பதையும் அதில் புளூடூத், வைஃபை இயக்கப்பட்டிருப்பதையும் உறுதிப்படுத்திக் கொள்ளவும்.</translation>
 <translation id="2173302385160625112">உங்கள் இணைய இணைப்பைச் சரிபார்க்கவும்</translation>
@@ -1109,7 +1110,6 @@
 <translation id="2225864335125757863">உங்கள் கணக்கைப் பாதுகாப்பாக வைத்துக்கொள்ள இந்தக் கடவுச்சொற்களை உடனடியாக மாற்றவும்:</translation>
 <translation id="2226449515541314767">MIDI சாதனங்களை முழுமையாக கட்டுப்படுத்துவதிலிருந்து இந்தத் தளம் தடுக்கப்பட்டுள்ளது.</translation>
 <translation id="2226907662744526012">பின்னை உள்ளிட்டதும் தானாகத் திற</translation>
-<translation id="222704500187107962">நடப்பு மறைநிலை அமர்வைவிட்டு நீங்கள் வெளியேறியவுடன் இந்த விதிவிலக்கு தானாக அகற்றப்படும்</translation>
 <translation id="2227179592712503583">பரிந்துரையை அகற்று</translation>
 <translation id="2229161054156947610">1 மணிநேரத்திற்கும் அதிகமாக உள்ளது</translation>
 <translation id="222931766245975952">கோப்பு சிதைந்தது</translation>
@@ -1281,7 +1281,6 @@
 <translation id="2428939361789119025">வைஃபையை முடக்கு</translation>
 <translation id="2431027948063157455">Google அசிஸ்டண்ட்டை ஏற்ற முடியவில்லை. உங்கள் நெட்வொர்க் இணைப்பைச் சரிபார்த்து, மீண்டும் முயலவும்.</translation>
 <translation id="2433452467737464329">பக்கத்தைத் தானாகவே புதுப்பிக்க URLலில் வினவல் அளவுருவைச் சேர்க்கவும்: chrome://network/?refresh=&lt;sec&gt;</translation>
-<translation id="2433490881840073798"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE" /></translation>
 <translation id="2433507940547922241">தோற்றம்</translation>
 <translation id="2433836460518180625">சாதனத்தை மட்டும் திற</translation>
 <translation id="2434449159125086437">பிரிண்டரை அமைக்க இயலவில்லை. உள்ளமைவைச் சரிபார்த்து மீண்டும் முயலவும்.</translation>
@@ -3085,7 +3084,6 @@
 <translation id="4492698018379445570">ஷாப்பிங் கார்ட்டில் உள்ளவற்றைப் பார்க்கலாம் வாங்கத் தயாரானதும் செக்-அவுட் செய்யலாம்</translation>
 <translation id="4493468155686877504">பரிந்துரைக்கப்படுவது (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">இந்தப் பக்கத்தில் காண்பிக்க வேண்டாம்</translation>
-<translation id="4496054781541092778"><ph name="PERMISSION" /> தானாகத் தடுக்கப்பட்டது</translation>
 <translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> செயலிழந்தது</translation>
 <translation id="450099669180426158">ஆச்சரியக்குறி ஐகான்</translation>
 <translation id="4501530680793980440">அகற்றுதலை உறுதிப்படுத்து</translation>
@@ -3107,7 +3105,6 @@
 <translation id="4519935350946509010">இணைப்புப் பிழை.</translation>
 <translation id="4520385623207007473">பயன்படுத்தப்படும் குக்கீகள்</translation>
 <translation id="452039078290142656"><ph name="VENDOR_NAME" /> வழங்கும் தெரியாத சாதனங்கள்</translation>
-<translation id="4521489190203965562">நடப்பு மறைநிலை அமர்வு: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" />, <ph name="RECENT_PERMISSIONS_CHANGE_2" />, மேலும் பல</translation>
 <translation id="4522570452068850558">விவரங்கள்</translation>
 <translation id="4522600456902129422">இந்தத் தளம், கிளிப்போர்டைப் பார்ப்பதைத் தொடர்ந்து அனுமதி</translation>
 <translation id="4524832533047962394">வழங்கப்பட்ட பதிவுப் பயன்முறையை இந்த ஆப்ரேட்டிங் சிஸ்டத்தின் பதிப்பு ஆதரிக்கவில்லை. புதிய பதிப்பில் இயக்குவதை உறுதிசெய்யவும்.</translation>
@@ -3738,7 +3735,6 @@
 <translation id="527605982717517565"><ph name="HOST" /> இல் JavaScript ஐ எப்போதும் அனுமதி</translation>
 <translation id="5278823018825269962">நிலை ஐடி</translation>
 <translation id="5280064835262749532"><ph name="SHARE_PATH" />க்கான அனுமதிச் சான்றுகளைப் புதுப்பியுங்கள்</translation>
-<translation id="5280174558369304332">அகற்றப்படவுள்ள நீட்டிப்புகள்:</translation>
 <translation id="5280243692621919988">சாளரங்கள் அனைத்தையும் மூடும்போது குக்கீகளையும் வலைதளத் தரவையும் அழி</translation>
 <translation id="5280426389926346830">ஷார்ட்கட்டை உருவாக்கவா?</translation>
 <translation id="528208740344463258">Android ஆப்ஸைப் பதிவிறக்கிப் பயன்படுத்துவதற்கு, தேவையான புதுப்பிப்பை முதலில் நீங்கள் நிறுவ வேண்டும். உங்கள் <ph name="DEVICE_TYPE" /> புதுப்பிக்கப்படும் போது, அதை நீங்கள் பயன்படுத்த முடியாது. நிறுவல் முடிந்ததும், உங்கள் <ph name="DEVICE_TYPE" /> தொடங்கும்.</translation>
@@ -3884,7 +3880,6 @@
 <translation id="5449551289610225147">தவறான கடவுச்சொல்</translation>
 <translation id="5449588825071916739">எல்லா தாவல்களையும் புக்மார்க்கிடுக</translation>
 <translation id="5449716055534515760">Close Win&amp;dow</translation>
-<translation id="5452974209916053028">நடப்பு மறைநிலை அமர்வு: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" />, <ph name="RECENT_PERMISSIONS_CHANGE_2" /></translation>
 <translation id="5454005855577728171">வசனக் குமிழ் <ph name="POSITION_ON_SCREEN_FROM_LEFT" />% பக்கவாட்டிலும் <ph name="POSITION_ON_SCREEN_FROM_TOP" />% கீழும் நகர்த்தப்பட்டது</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> உடன்</translation>
 <translation id="5457113250005438886">தவறானது</translation>
@@ -4104,7 +4099,6 @@
 <translation id="5691581861107245578">நீங்கள் உள்ளிடும் சொற்களுக்கு ஏற்ப ஈமோஜி பரிந்துரைகளைப் பெறலாம்</translation>
 <translation id="5691772641933328258">கைரேகை அங்கீகரிக்கப்படவில்லை</translation>
 <translation id="5692183275898619210">அச்சிடப்பட்டது</translation>
-<translation id="569425414730375234">நடப்பு மறைநிலை அமர்வு: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" /></translation>
 <translation id="5695184138696833495">Linux Android ஆப்ஸ் ADB</translation>
 <translation id="5696143504434933566">"<ph name="EXTENSION_NAME" />" இலிருந்து தவறான செயல்பாடு நடந்தது எனப் புகாரளி</translation>
 <translation id="5696177755977520104">Chrome OS அமைப்புகள் ஒத்திசைவு</translation>
@@ -4381,7 +4375,6 @@
 <translation id="6025215716629925253">அடுக்கின் அடையாளம்</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - USB சாதனம் இணைக்கப்பட்டது</translation>
 <translation id="6028117231645531007">கைரேகையைச் சேர்</translation>
-<translation id="6029594605736587274"><ph name="PERMISSION" /> தடுக்கப்பட்டது</translation>
 <translation id="6031600495088157824">கருவிப்பட்டியில் உள்ள உள்ளீட்டு விருப்பங்கள்</translation>
 <translation id="6032715498678347852">இந்தத் தளத்திற்கான அணுகலை நீட்டிப்பிற்கு வழங்க அதைக் கிளிக் செய்யவும்.</translation>
 <translation id="6032912588568283682">கோப்பு முறைமை</translation>
@@ -4838,7 +4831,6 @@
 <translation id="6550675742724504774">விருப்பத்தேர்வுகள்</translation>
 <translation id="6551508934388063976">ஆணைக் கிடைக்கவில்லை. புதிய சாளரத்தைத் திறக்க control-N ஐ அழுத்தவும்.</translation>
 <translation id="6551612971599078809">தளம் USBயைப் பயன்படுத்துகிறது</translation>
-<translation id="6552395360547205189">நடப்பு மறைநிலை அமர்வு: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" /></translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> பயனர்கள்</translation>
 <translation id="655483977608336153">மீண்டும் முயல்க</translation>
 <translation id="6555432686520421228">எல்லா பயனர் கணக்குகளையும் அகற்றிவிட்டு, புதியது போன்று உங்கள் <ph name="IDS_SHORT_PRODUCT_NAME" /> சாதனத்தை மீட்டமைக்கவும்.</translation>
@@ -5841,7 +5833,6 @@
 <translation id="7710568461918838723">&amp;அனுப்பு...</translation>
 <translation id="7711900714716399411">கம்ப்யூட்டருடன் மொபைலை இணைக்க USB கேபிளைப் பயன்படுத்தவும். மொபைல் ஏற்கெனவே இணைக்கப்பட்டிருந்தால் அதன் இணைப்பைத் துண்டித்துவிட்டு மீண்டும் இணைக்கவும்.</translation>
 <translation id="7712739869553853093">பிரிண்ட் உரையாடலின் மாதிரிக்காட்சி</translation>
-<translation id="7712836429117959503">அறியப்படாத நீட்டிப்பு; ஐடி: <ph name="EXTENSION_ID" /></translation>
 <translation id="7714307061282548371"><ph name="DOMAIN" /> இன் குக்கீகள் அனுமதிக்கப்படுகின்றன</translation>
 <translation id="7714464543167945231">சான்றிதழ்</translation>
 <translation id="7716648931428307506">கடவுச்சொல்லை எங்கு சேமிக்க வேண்டும் என்பதைத் தேர்ந்தெடுக்கவும்</translation>
@@ -6224,7 +6215,6 @@
 <translation id="8118488170956489476">உங்கள் நிறுவனம் உங்கள் <ph name="BEGIN_LINK" />உலாவியை நிர்வகிக்கிறது<ph name="END_LINK" /></translation>
 <translation id="8118515372935001629">திரை புதுப்பிக்கும் விகிதம்</translation>
 <translation id="8118860139461251237">உங்கள் பதிவிறக்கங்களை நிர்வகிக்கவும்</translation>
-<translation id="811942868379260654"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" />, <ph name="RECENT_PERMISSIONS_CHANGE_2" />, மேலும் பல</translation>
 <translation id="8119438628456698432">லாக் ஃபைல்களை உருவாக்குகிறது...</translation>
 <translation id="811994229154425014">ஸ்பேஸை இருமுறை தட்டினால் முற்றுப்புள்ளியை உள்ளிடு</translation>
 <translation id="8123590694679414600"><ph name="TIME" /> அன்று உங்கள் ஒத்திசைவுக் கடவுச்சொற்றொடர் மூலம் தரவு என்க்ரிப்ட் செய்யப்பட்டது.
@@ -6426,7 +6416,6 @@
 <translation id="835951711479681002">உங்கள் Google கணக்கில் சேமியுங்கள்</translation>
 <translation id="8363095875018065315">நிலையானது</translation>
 <translation id="8363142353806532503">மைக்ரோஃபோன் தடுக்கப்பட்டது</translation>
-<translation id="8363763184161554204"><ph name="PERMISSION" /> அனுமதிக்கப்பட்டது</translation>
 <translation id="8366396658833131068">உங்கள் நெட்வொர்க் இணைப்பு மீட்டெடுக்கப்பட்டது. உங்கள் கியோஸ்க் பயன்பாட்டைத் தொடங்க, வேறு நெட்வொர்க்கைத் தேர்ந்தெடுக்கவும் அல்லது கீழேயுள்ள 'தொடரவும்' பொத்தானை அழுத்தவும்.</translation>
 <translation id="8368027906805972958">அறியாத அல்லது ஆதரிக்கப்படாத சாதனம் (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368859634510605990">புக்மார்க்ஸ் அனைத்தையும் &amp;திற</translation>
@@ -6985,7 +6974,6 @@
 <translation id="899657321862108550">உங்கள் Chrome எங்கெங்கிலும்</translation>
 <translation id="899676909165543803">உங்கள் கீபோர்டின் கீழே வலது ஓரத்தில் கைரேகை சென்சார் உள்ளது. அதை ஏதேனும் ஒரு விரலால் மெதுவாகத் தொடவும்.</translation>
 <translation id="8999560016882908256">பிரிவில் சின்டாக்ஸ் பிழை: <ph name="ERROR_LINE" /></translation>
-<translation id="9002878223019487115"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" />, <ph name="RECENT_PERMISSIONS_CHANGE_2" /></translation>
 <translation id="9003647077635673607">எல்லா இணையதளங்களிலும் அனுமதி</translation>
 <translation id="9003677638446136377">மீண்டும் சரிபார்க்கவும்</translation>
 <translation id="9003940392834790328">நெட்வொர்க்: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />%, உங்கள் நிர்வாகி நிர்வகிக்கிறார், விவரங்கள்</translation>

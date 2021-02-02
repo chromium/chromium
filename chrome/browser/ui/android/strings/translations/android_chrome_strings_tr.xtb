@@ -402,7 +402,6 @@ Arama yapmak için herhangi bir kelimeye dokunup basılı tutun. Aramanızı has
 <translation id="3894427358181296146">Klasör ekleyin</translation>
 <translation id="3895926599014793903">Yakınlaştırmayı etkinleştirmeye zorla</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> cihazı güncelle</translation>
-<translation id="3909763690984331376">Güvenlik kontrolü <ph name="BEGIN_NEW" />Yeni<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">Web'in en iyilerini buluyoruz…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> açık</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -633,6 +632,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="5530766185686772672">Gizli sekmeleri kapat</translation>
 <translation id="5530920986376047241">Sayfaları daha sonra kolayca bulmak için okuma listenize kaydedebilirsiniz</translation>
 <translation id="5534640966246046842">Site kopyalandı</translation>
+<translation id="5548606607480005320">Güvenlik kontrolü</translation>
 <translation id="5556459405103347317">Yeniden Yükle</translation>
 <translation id="5561549206367097665">Ağ bekleniyor…</translation>
 <translation id="55737423895878184">Konum ve bildirimlere izin veriliyor</translation>

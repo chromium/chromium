@@ -128,6 +128,7 @@
 <translation id="4994636714258228724">‏خود کو Chromium میں شامل کریں</translation>
 <translation id="5224391634244552924">‏کوئی محفوظ کردہ پاس ورڈ نہیں۔ جب آپ پاس ورڈز کو محفوظ کرتے ہیں تو Chromium انہیں چیک کر سکتا ہے۔</translation>
 <translation id="5277894862589591112">‏اپنی تبدیلیوں کو لاگو کرنے کیلئے، Chromium کو دوبارہ شروع کریں</translation>
+<translation id="5357324149468831780">‏یہ اکاؤنٹ نظم کردہ ہے۔ آپ کے منتظم کو رسائی کیلئے ایک Chromium پروفائل درکار ہے۔ یہ پروفائل کسی بھی ذاتی پروفائل سے مکمل طور پر الگ ہے۔ آپ کا منتظم اس پروفائل کے استعمال کے دوران تخلیق ہونے والے Chromium ڈیٹا (جیسے، بُک مارکس کی تخلیق، سرگزشت، پاس ورڈز اور دیگر ترتیبات) کو ہٹا سکتا ہے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="5358375970380395591">‏آپ زیر انتظام اکاؤنٹ سے سائن ان کر رہے ہیں اور اس کے منتظم کو اپنے Chromium پروفائل پر کنٹرول دے رہے ہیں. آپ کا Chromium کا ڈیٹا، جیسے آپ کی ایپس، بُک مارکس، سرگزشت، پاس ورڈز اور دیگر ترتیبات <ph name="USER_NAME" /> سے مستقل طور پر مربوط ہو جائیں گی۔ آپ Google اکاؤنٹس ڈیش بورڈ کے ذریعہ یا ڈیٹا حذف کر سکیں گے لیکن آپ اس ڈیٹا کو دوسرے اکاؤنٹ کے ساتھ وابستہ نہیں کر سکیں گے۔ <ph name="LEARN_MORE" /></translation>
 <translation id="5386450000063123300">‏Chromium کو اپ ڈیٹ کیا جا رہا ہے (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">‏Chromium میں سائن ان کی اجازت دیں</translation>
@@ -142,6 +143,7 @@
 <translation id="5623402015214259806">{0,plural, =0{‏Chromium کا اپ ڈیٹ دستیاب ہے}=1{‏Chromium کا اپ ڈیٹ دستیاب ہے}other{‏Chromium کا اپ ڈیٹ # دن سے دستیاب ہے}}</translation>
 <translation id="5631814766731275228">‏Chromium کا نام اور اس کی تصویر</translation>
 <translation id="5634636535844844681">‏Chromium کیلئے Windows 7 یا اس کے بعد کا ورژن درکار ہے۔</translation>
+<translation id="5642268154044585431">‏Chromium پروفائل درکار ہے</translation>
 <translation id="5653831366781983928">‏براہ کرم ابھی Chromium کو ری اسٹارٹ کریں</translation>
 <translation id="5698481217667032250">‏Chromium کو اس زبان میں ڈسپلے کریں</translation>
 <translation id="5736967399513123100">‏تحفظ یافتہ میڈیا چلانے کی خاطر Chromium کو فعال کرنے کیلئے آپ کو Rosetta انسٹال کرنے کی ضرورت ہے۔ کیا آپ اسے ابھی انسٹال کرنا چاہتے ہیں؟</translation>
@@ -172,6 +174,7 @@
 <translation id="6309712487085796862">‏Chromium آپ کا کیمرا استعمال کر رہا ہے۔</translation>
 <translation id="6333502561965082103">‏Chromium پر ایک اور کارروائی کی جا رہی ہے۔ براہ کرم بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="6334986366598267305">‏اب آپ کے Google اکاؤنٹ کے ساتھ اور اشتراک کردہ کمپیوٹرز پر Chromium کا استعمال زيادہ آسان ہے۔</translation>
+<translation id="6345021408165055322">‏یہ اکاؤنٹ <ph name="MANAGEMENT_DOMAIN" /> کے زیر انتظام ہے۔ آپ کے منتظم کو رسائی کیلئے ایک Chromium پروفائل درکار ہے۔ یہ پروفائل کسی بھی ذاتی پروفائل سے مکمل طور پر الگ ہے۔ آپ کا منتظم اس پروفائل کے استعمال کے دوران تخلیق ہونے والے Chromium ڈیٹا (جیسے، بُک مارکس کی تخلیق، سرگزشت، پاس ورڈز اور دیگر ترتیبات) کو ہٹا سکتا ہے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="6373523479360886564">‏کیا آپ واقعی Chromium کو ان انسٹال کرنا چاہتے ہیں؟</translation>
 <translation id="6403826409255603130">‏Chromium ایک ایسا ویب براؤزر ہے جو ویب صفحات اور ایپلیکیشنز کو روشنی کی رفتار سے چلاتا ہے۔ Chromium میں پہلے سے شامل میلویئر اور فریب دہی تحفظ کے ساتھ ویب کو مزید محفوظ طور پر براؤز کریں۔</translation>
 <translation id="6434250628340475518">‏Chromium OS سسٹم</translation>
@@ -196,6 +199,7 @@
 <translation id="6863361426438995919">‏Google Pay ‏(Chromium میں کاپی کر دیا گیا)</translation>
 <translation id="6893813176749746474">‏Chromium کو اپ ڈیٹ کر دیا گیا ہے لیکن آپ نے کم از کم 30 دن سے اسے استعمال نہیں کیا ہے۔</translation>
 <translation id="6897548120660295439">‏اس صفحے پر تحفظ یافتہ میڈیا چلانے کیلئے Rosetta‏ Chromium کو فعال کرتا ہے۔</translation>
+<translation id="691026815377248078">‏جوڑا بنانا جاری رکھنے کیلئے Chromium کو بلوٹوتھ رسائی کی ضرورت ہے۔ <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">‏لنک کو Chromium &amp;پوشیدگی ونڈو میں کھولیں</translation>
 <translation id="6978145336957848883">‏کمزور پاس ورڈز کا اندازہ لگانا آسان ہوتا ہے۔ Chromium کو <ph name="BEGIN_LINK" />آپ کے لیے مضبوط پاس ورڈز تخلیق کرنے اور یاد رکھنے دیں<ph name="END_LINK" />۔</translation>
 <translation id="6990124437352146030">‏Chromium کو اس سائٹ کیلئے آپ کے مائیکروفون تک رسائی کی اجازت درکار ہے</translation>

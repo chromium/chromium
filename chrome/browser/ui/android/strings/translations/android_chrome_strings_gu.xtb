@@ -402,7 +402,6 @@
 <translation id="3894427358181296146">ફોલ્ડર ઉમેરો</translation>
 <translation id="3895926599014793903">ફરજિયાતપૂર્વક ઝૂમ ચાલુ કરો</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> અપડેટ કરો</translation>
-<translation id="3909763690984331376">સલામતી માટે તપાસ <ph name="BEGIN_NEW" />નવું<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">વેબમાંથી શ્રેષ્ઠ શોધવું…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> ચાલુ છે</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -633,6 +632,7 @@
 <translation id="5530766185686772672">છુપા ટેબ્સ બંધ કરો</translation>
 <translation id="5530920986376047241">તમે તમારી વાંચન સૂચિમાં પેજ સાચવી શકો છો, જેથી તે ફરીથી મેળવી શકાય</translation>
 <translation id="5534640966246046842">સાઇટ કૉપિ કરી</translation>
+<translation id="5548606607480005320">સલામતી માટે તપાસ</translation>
 <translation id="5556459405103347317">ફરિથી લોડ કરો</translation>
 <translation id="5561549206367097665">નેટવર્કની રાહ જોઈ રહ્યાં છે…</translation>
 <translation id="55737423895878184">સ્થાન અને નોટિફિકેશનોની મંજૂરી છે</translation>
@@ -730,6 +730,7 @@
 <translation id="6122831415929794347">Safe Browsing બંધ કરીએ?</translation>
 <translation id="6127379762771434464">આઇટમ દૂર કરી</translation>
 <translation id="6137022273846704445"><ph name="APP_NAME" />ની ભાષા</translation>
+<translation id="6138832295072039549">તમારા સાઇટ સેટિંગમાં અહીંથી ફેરફાર કરો</translation>
 <translation id="6140709049082532940">વધારેલું સંરક્ષણ:</translation>
 <translation id="6140912465461743537">દેશ/પ્રદેશ</translation>
 <translation id="614940544461990577">પ્રયાસ કરો:</translation>

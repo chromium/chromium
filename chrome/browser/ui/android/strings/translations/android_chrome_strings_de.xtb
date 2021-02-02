@@ -402,7 +402,6 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="3894427358181296146">Ordner hinzufügen</translation>
 <translation id="3895926599014793903">Zoom zwingend aktivieren</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> aktualisieren</translation>
-<translation id="3909763690984331376">Sicherheitscheck <ph name="BEGIN_NEW" />Neu<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">Das Beste aus dem Web wird gesucht…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> ist aktiv</translation>
 <translation id="3927692899758076493">Serifenlose Schrift</translation>
@@ -432,6 +431,7 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="4095146165863963773">App-Daten löschen?</translation>
 <translation id="4095189195365058471">Später lesen <ph name="BEGIN_NEW" />Neu<ph name="END_NEW" /></translation>
 <translation id="4099578267706723511">Nutzungsstatistiken und Absturzberichte zur Verbesserung von Chrome an Google senden</translation>
+<translation id="4108314971463891922">Folgen</translation>
 <translation id="4108998448622696017">Erkennt schädliche Ereignisse, sobald diese passieren, und warnt Sie entsprechend.</translation>
 <translation id="4116038641877404294">Seiten zur Offline-Ansicht herunterladen</translation>
 <translation id="4135200667068010335">Die Liste von Geräten, mit denen ein Tab geteilt werden kann, ist geschlossen.</translation>
@@ -632,6 +632,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="5530766185686772672">Inkognito-Tabs schließen</translation>
 <translation id="5530920986376047241">Sie können Seiten zu Ihrer Leseliste hinzufügen, um sie wiederzufinden</translation>
 <translation id="5534640966246046842">Website kopiert</translation>
+<translation id="5548606607480005320">Sicherheitscheck</translation>
 <translation id="5556459405103347317">Neu laden</translation>
 <translation id="5561549206367097665">Warten auf Netzwerk…</translation>
 <translation id="55737423895878184">Standortermittlung und Benachrichtigungen sind erlaubt</translation>
@@ -643,6 +644,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="5606787249466187650">Privacy Sandbox entdecken</translation>
 <translation id="5620163320393916465">Keine gespeicherten Passwörter</translation>
 <translation id="5620928963363755975">Ihre Dateien und Seiten finden Sie durch Auswahl der Schaltfläche "Weitere Optionen" unter "Downloads"</translation>
+<translation id="562289928968387744">Reaktionen verwalten</translation>
 <translation id="5626134646977739690">Name:</translation>
 <translation id="5639724618331995626">Alle Websites zulassen</translation>
 <translation id="5648166631817621825">Letzte 7 Tage</translation>

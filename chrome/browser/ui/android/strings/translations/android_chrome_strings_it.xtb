@@ -402,7 +402,6 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="3894427358181296146">Aggiungi cartella</translation>
 <translation id="3895926599014793903">Attivazione forzata dello zoom</translation>
 <translation id="3908308510347173149">Aggiorna <ph name="PRODUCT_NAME" /></translation>
-<translation id="3909763690984331376">Controllo di sicurezza <ph name="BEGIN_NEW" />Novità<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">Stiamo cercando il meglio sul Web…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> on</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -633,6 +632,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5530766185686772672">Chiudi schede in incognito</translation>
 <translation id="5530920986376047241">Puoi salvare le pagine nell'elenco di lettura in modo da ritrovarle in un secondo momento</translation>
 <translation id="5534640966246046842">Sito copiato</translation>
+<translation id="5548606607480005320">Controllo di sicurezza</translation>
 <translation id="5556459405103347317">Ricarica</translation>
 <translation id="5561549206367097665">In attesa della rete…</translation>
 <translation id="55737423895878184">La geolocalizzazione e le notifiche sono consentite</translation>
@@ -730,6 +730,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="6122831415929794347">Disattivare la Navigazione sicura?</translation>
 <translation id="6127379762771434464">Elemento rimosso</translation>
 <translation id="6137022273846704445">Lingua di <ph name="APP_NAME" /></translation>
+<translation id="6138832295072039549">Cambia qui le impostazioni del sito</translation>
 <translation id="6140709049082532940">Protezione avanzata:</translation>
 <translation id="6140912465461743537">Paese/regione</translation>
 <translation id="614940544461990577">Prova a:</translation>

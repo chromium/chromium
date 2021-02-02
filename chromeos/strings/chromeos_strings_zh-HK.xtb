@@ -62,6 +62,7 @@
 <translation id="2338501278241028356">開啟藍牙即可探索附近的裝置</translation>
 <translation id="2364498172489649528">已通過</translation>
 <translation id="2391082728065870591">傳送意見反映報告</translation>
+<translation id="2418150275289244458">在設定中開啟</translation>
 <translation id="2446553403094072641">浮點準確性</translation>
 <translation id="2448312741937722512">類型</translation>
 <translation id="2461822463642141190">電流</translation>
@@ -273,6 +274,7 @@
 <translation id="7177485034254901881">此 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理。管理員可能會遠端設定裝置。</translation>
 <translation id="7216409898977639127">流動服務供應商</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7343649194310845056">網絡裝置</translation>
 <translation id="7359657277149375382">檔案類型</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -282,6 +284,7 @@
 <translation id="7490813197707563893">MAC 地址</translation>
 <translation id="7497215489070763236">伺服器 CA 憑證</translation>
 <translation id="7502658306369382406">IPv6 位址</translation>
+<translation id="7550715992156305117">日常診斷安排</translation>
 <translation id="7561454561030345039">此操作由管理員管理</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331">剩餘 <ph name="TIME_VALUE" /></translation>

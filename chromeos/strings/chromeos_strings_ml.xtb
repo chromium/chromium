@@ -264,6 +264,7 @@
 <translation id="6977381486153291903">ഫേംവെയർ പുനഃപരിശോധന</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ഈ ഉപകരണം മാനേജ് ചെയ്യുന്നു, സന്ദർശിച്ച വെബ്‌പേജുകൾ, പാസ്‌വേഡുകൾ, ഇമെയിൽ എന്നിവയുൾപ്പെടെ ഉപയോക്താവിന്റെ എല്ലാ ആക്‌റ്റിവിറ്റികളിലേക്കും ആക്‌സസും ഉണ്ടായിരിക്കും.</translation>
 <translation id="7040230719604914234">ഓപ്പറേറ്റർ</translation>
+<translation id="7059230779847288458">ചാർജ് ചെയ്യുന്നു, പൂർത്തിയാകാൻ <ph name="TIME_VALUE" /> ശേഷിക്കുന്നു</translation>
 <translation id="708426984172631313">നിർത്തി</translation>
 <translation id="7143207342074048698">കണക്റ്റിംഗ്</translation>
 <translation id="714876143603641390">LAN കണക്റ്റിവിറ്റി</translation>
@@ -282,6 +283,7 @@
 <translation id="7502658306369382406">IPv6 വിലാസം</translation>
 <translation id="7561454561030345039">ഈ പ്രവർത്തനം മാനേജ് ചെയ്യുന്നത് നിങ്ങളുടെ അഡ്‌മിനാണ്</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331"><ph name="TIME_VALUE" /> ശേഷിക്കുന്നു</translation>
 <translation id="7620771111601174153">സഹായകേന്ദ്രത്തിൽ കൂടുതലറിയുക</translation>
 <translation id="7648838807254605802">ഉയർന്ന HTTPS പ്രതികരണ സമയം</translation>
 <translation id="7658239707568436148">റദ്ദാക്കൂ</translation>

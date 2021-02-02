@@ -402,7 +402,6 @@
 <translation id="3894427358181296146">Պանակի ավելացում</translation>
 <translation id="3895926599014793903">Հարկադրաբար միացնել չափափոխումը</translation>
 <translation id="3908308510347173149">Թարմացնել <ph name="PRODUCT_NAME" /> հավելվածը</translation>
-<translation id="3909763690984331376">Անվտանգության ստուգում <ph name="BEGIN_NEW" />Նորույթ<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">Տվյալների բեռնում համացանցից…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" />ը միացված է</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -633,6 +632,7 @@
 <translation id="5530766185686772672">Փակել ինկոգնիտո ներդիրները</translation>
 <translation id="5530920986376047241">Դուք կարող եք ձեր ընթերցանության ցանկում պահել էջեր՝ դրանք նորից գտնելու համար</translation>
 <translation id="5534640966246046842">Կայքը պատճենվեց</translation>
+<translation id="5548606607480005320">Անվտանգության ստուգում</translation>
 <translation id="5556459405103347317">Վերաբեռնել</translation>
 <translation id="5561549206367097665">Ցանցի որոնում…</translation>
 <translation id="55737423895878184">Տեղորոշումն ու ծանուցումները թույլատրված են</translation>
@@ -730,6 +730,7 @@
 <translation id="6122831415929794347">Անջատե՞լ ապահով դիտարկումը</translation>
 <translation id="6127379762771434464">Տարրը հեռացվեց</translation>
 <translation id="6137022273846704445"><ph name="APP_NAME" /> հավելվածի լեզուն</translation>
+<translation id="6138832295072039549">Այստեղ կարող եք փոխել կայքի կարգավորումները</translation>
 <translation id="6140709049082532940">Բարելավված պաշտպանություն՝</translation>
 <translation id="6140912465461743537">Երկիր/տարածաշրջան</translation>
 <translation id="614940544461990577">Փորձեք՝</translation>

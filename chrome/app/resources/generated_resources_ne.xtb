@@ -1054,6 +1054,7 @@
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> र थप एउटा स्विच</translation>
 <translation id="2165421703844373933">"Ok Google" भनेर आफ्नो सहायकमाथि पहुँच राख्नुहोस्। ब्याट्रीको खपत कम गर्न “सक्रिय (सिफारिस गरिएको)” छनौट गर्नुहोस्। तपाईंको सहायकले तपाईंको यन्त्र बिजुलीको प्लगमा जोडिएको वा चार्ज भइरहेको बेलामा मात्र जवाफ दिने छ।</translation>
 <translation id="2166369534954157698">अ आ इ ई उ ऊ ए ऐ ओ औ अं अ: क ख ग घ ङ</translation>
+<translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">कुनैपनि अवस्थामा साइन इन गर्नुहोस्</translation>
 <translation id="2170054054876170358">तपाईंको फोन नजिकै छ, अनलक गरिएको छ र त्यसको ब्लुटुथ र Wi-Fi अन छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="2173302385160625112">आफ्नो इन्टरनेट जडानको जाँच गर्नुहोस्</translation>
@@ -1105,7 +1106,6 @@
 <translation id="2225864335125757863">आफ्नो खाता सुरक्षित राख्न यी पासवर्डहरू तुरुन्तै बदल्नुहोस्:</translation>
 <translation id="2226449515541314767">MIDI यन्त्रहरूको पूरा नियन्त्रणको लागि यो साइट ब्लक गरिएको छ।</translation>
 <translation id="2226907662744526012">एक पटक PIN प्रविष्टि गरेपछि स्वतः अनलक हुने सुविधा सक्षम पार्नुहोस्</translation>
-<translation id="222704500187107962">तपाईं हालको इन्कग्निटो सत्रबाट बाहिरिएपछि यो अपवाद स्वतः हटाइने छ</translation>
 <translation id="2227179592712503583">सुझाव हटाउनुहोस्</translation>
 <translation id="2229161054156947610">1 धण्टा बढी समय बाँकी</translation>
 <translation id="222931766245975952">फाइल काटियो</translation>
@@ -1277,7 +1277,6 @@
 <translation id="2428939361789119025">WiFi निष्क्रिय पार्नुहोस्</translation>
 <translation id="2431027948063157455">Google सहायक लोड गर्न सकिएन, कृपया आफ्नो इन्टरनेट जाँच गरी पुनः प्रयास गर्नुहोस्।</translation>
 <translation id="2433452467737464329">यो पृष्ठलाई स्वत: ताजा गर्न URL मा एउटा क्वेरी पाराम थप्नुहोस्: chrome://network/?refresh=&lt;sec&gt;</translation>
-<translation id="2433490881840073798"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" /><ph name="RECENT_PERMISSIONS_CHANGE" /></translation>
 <translation id="2433507940547922241">रूपरंग</translation>
 <translation id="2433836460518180625">केवल यन्त्र अनलक गर्नुहोस्</translation>
 <translation id="2434449159125086437">प्रिन्टर सेटअप गर्न सकिएन। कृपया कन्फिगुरेसनको जाँच गरी फेरि प्रयास गर्नुहोस्।</translation>
@@ -3081,7 +3080,6 @@
 <translation id="4492698018379445570">आफूले सपिङ कार्टमा हालेका वस्तुहरू हेर्नुहोस् र आफूलाई मन लागेका बेला चेक आउट गर्नुहोस्</translation>
 <translation id="4493468155686877504">सिफारिस गरिएको (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">यो पेजमा नदेखाउनुहोस्</translation>
-<translation id="4496054781541092778"><ph name="PERMISSION" /> माथि स्वतः रोक लगाइएको छ</translation>
 <translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> क्र्यास भएको छ</translation>
 <translation id="450099669180426158">विस्मयादिबोधक चिन्ह प्रतिमा</translation>
 <translation id="4501530680793980440">हटाउने कार्य पक्का गर्नुहोस्</translation>
@@ -3103,7 +3101,6 @@
 <translation id="4519935350946509010">जडानसम्बन्धी त्रुटि।</translation>
 <translation id="4520385623207007473">प्रयोगमा रहेका कुकीहरू</translation>
 <translation id="452039078290142656"><ph name="VENDOR_NAME" /> बाट अज्ञात उपकरणहरू</translation>
-<translation id="4521489190203965562">हालैको इन्कोग्निटो सत्र: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" />, <ph name="RECENT_PERMISSIONS_CHANGE_2" />, र थप</translation>
 <translation id="4522570452068850558">विवरणहरू</translation>
 <translation id="4522600456902129422">यो साइटलाई क्लिपबोर्ड हेर्न दिने अनुमति जारी राख्नुहोस्</translation>
 <translation id="4524832533047962394">अपरेटिङ सिस्टमको यो संस्करणले उपलब्ध गराइएको दर्ता मोड समर्थन गर्दैन। कृपया आफूले सबैभन्दा नवीनतम संस्करण चलाइरहेको कुरा सुनिश्चित गर्नुहोस्।</translation>
@@ -3734,7 +3731,6 @@
 <translation id="527605982717517565"><ph name="HOST" /> मा सँधै जाभास्क्रिप्टको लागि अनुम</translation>
 <translation id="5278823018825269962">स्ट्याटस Id</translation>
 <translation id="5280064835262749532"><ph name="SHARE_PATH" /> को युजरनेम र पासवर्ड अपडेट गर्नुहोस्</translation>
-<translation id="5280174558369304332">हटाइनु पर्ने विस्तारहरू:</translation>
 <translation id="5280243692621919988">तपाईंले सबै विन्डो बन्द गरेपछि कुकी र साइटका डेटा हटाइयोस्</translation>
 <translation id="5280426389926346830">सर्टकट सिर्जना गर्ने हो?</translation>
 <translation id="528208740344463258">Android एपहरू डाउनलोड गर्न र प्रयोग गर्न, तपाईंले पहिले यो आवश्यक अद्यावधिक स्थापना गर्नु पर्छ। तपाईंको <ph name="DEVICE_TYPE" /> अद्यावधिक भइरहेका अवस्थामा, तपाईं यसलाई प्रयोग गर्न सक्नुहुन्न। स्थापना सम्पन्न भएपछि, तपाईंको <ph name="DEVICE_TYPE" /> पुनः सुरु हुने छ।</translation>
@@ -3880,7 +3876,6 @@
 <translation id="5449551289610225147">अमान्य पासवर्ड</translation>
 <translation id="5449588825071916739">सबै ट्याबहरूलाई बुकमार्क गर्नुहोस्</translation>
 <translation id="5449716055534515760">सञ्झ्या&amp;ल बन्द गर्नुहोस्</translation>
-<translation id="5452974209916053028">हालको इन्कोग्निटो सत्र: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" />, <ph name="RECENT_PERMISSIONS_CHANGE_2" /></translation>
 <translation id="5454005855577728171">क्याप्सन बबल बायाँदेखि दायाँ <ph name="POSITION_ON_SCREEN_FROM_LEFT" />% र माथिदेखि त‌ल <ph name="POSITION_ON_SCREEN_FROM_TOP" />% सारियो</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> सँग</translation>
 <translation id="5457113250005438886">अवैध</translation>
@@ -4098,7 +4093,6 @@
 <translation id="5691581861107245578">आफूले टाइप गरिरहेका कुराका आधारमा इमोजीसम्बन्धी सिफारिसहरू प्राप्त गर्नुहोस्</translation>
 <translation id="5691772641933328258">फिंगरप्रिन्ट पहिचान गरिएन</translation>
 <translation id="5692183275898619210">छाप्ने काम सम्पन्न भयो</translation>
-<translation id="569425414730375234">हालको इन्कोग्निटो सत्र: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" /></translation>
 <translation id="5695184138696833495">Linux मा Android एपको ADB</translation>
 <translation id="5696143504434933566"><ph name="EXTENSION_NAME" /> को दुरुपयोगबारे रिपोर्ट गर्नुहोस्</translation>
 <translation id="5696177755977520104">Chrome OS सेटिङ सिंक</translation>
@@ -4374,7 +4368,6 @@
 <translation id="6025215716629925253">स्ट्याक ट्रेस</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - USB यन्त्र जडान गरिएको छ</translation>
 <translation id="6028117231645531007">फिंगरप्रिन्ट थप्नुहोस्</translation>
-<translation id="6029594605736587274"><ph name="PERMISSION" /> माथि रोक लगाइएको छ</translation>
 <translation id="6031600495088157824">टुलबारमा इनपुटका विकल्पहरू देखाइयोस्</translation>
 <translation id="6032715498678347852">एक्स्टेन्सनलाई यो साइटमाथिको पहुँच दिन यसमा क्लिक गर्नुहोस्।</translation>
 <translation id="6032912588568283682">फाइल प्रणाली</translation>
@@ -4831,7 +4824,6 @@
 <translation id="6550675742724504774">विकल्पहरू</translation>
 <translation id="6551508934388063976">आदेश अनुपलब्ध छ। नया विन्डो खोल्नको लागि control-N थिच्नुहोस्।</translation>
 <translation id="6551612971599078809">साइटले USB प्रयोग गर्दै छ</translation>
-<translation id="6552395360547205189">हालको इन्कोग्निटो सत्र: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" /></translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> प्रयोगकर्ताहरू</translation>
 <translation id="655483977608336153">फेरि प्रयास गर्नुहोस्</translation>
 <translation id="6555432686520421228">तपाइँका सबै प्रयोगकर्ता खाताहरू हटाउनुहोस् र नयाँ जस्तै बनााउनको लागि तपाइँको <ph name="IDS_SHORT_PRODUCT_NAME" /> यन्त्र रिसेट गर्नुहोस्।</translation>
@@ -5834,7 +5826,6 @@
 <translation id="7710568461918838723">&amp;Cast...</translation>
 <translation id="7711900714716399411">तपाईंको फोन र कम्प्युटर जोड्न USB केबल प्रयोग गर्नुहोस्। तपाईंको फोन जोडिइसकेको छ भने केबल निकाल्नुहोस् र फेरि घुसाउनुहोस्।</translation>
 <translation id="7712739869553853093">प्रिन्ट प्रिभ्यू डायलग</translation>
-<translation id="7712836429117959503"><ph name="EXTENSION_ID" /> ID भएको अज्ञात विस्तार</translation>
 <translation id="7714307061282548371"><ph name="DOMAIN" /> का कुकीहरूलाई अनुमति दिइयो</translation>
 <translation id="7714464543167945231">प्रमाणपत्र</translation>
 <translation id="7716648931428307506">आफ्नो पासवर्ड सुरक्षित गर्ने स्थान चयन गर्नुहोस्</translation>
@@ -6216,7 +6207,6 @@
 <translation id="8118488170956489476">तपाईंको संगठनले तपाईंको <ph name="BEGIN_LINK" />ब्राउजरको व्यवस्थापन गर्छ<ph name="END_LINK" /></translation>
 <translation id="8118515372935001629">डिस्प्ले रिफ्रेस हुने दर</translation>
 <translation id="8118860139461251237">तपाइँका डाउनलोडहरू व्यवस्थापित गर्नुहोस्</translation>
-<translation id="811942868379260654"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" />, <ph name="RECENT_PERMISSIONS_CHANGE_2" />, र थप</translation>
 <translation id="8119438628456698432">लग फाइलहरू सिर्जना गर्दै...</translation>
 <translation id="811994229154425014">दुई पटक स्पेस थिच्दा पूर्ण विराम टाइप हुने पारियोस्</translation>
 <translation id="8123590694679414600"><ph name="TIME" /> मा तपाईंको सिंक पासफ्रेजमार्फत डेटा इन्क्रिप्ट
@@ -6418,7 +6408,6 @@
 <translation id="835951711479681002">आफ्नो Google खातामा सुरक्षित गर्नुहोस्</translation>
 <translation id="8363095875018065315">स्थिर</translation>
 <translation id="8363142353806532503">माइक्रोफोन प्रयोग गर्नमाथि रोक लगाइयो</translation>
-<translation id="8363763184161554204"><ph name="PERMISSION" /> सम्बन्धी अनुमति दिइएको छ</translation>
 <translation id="8366396658833131068">तपाइँको सञ्जाल जडान पुनर्स्थापित भएको छ। कृपया एक भिन्न सञ्जाल चयन गर्नुहोस् वा तपाइँको किसोक एप सुरु गर्नको लागि 'जारी राख्नुहोस्' बटन थिच्नुहोस्।</translation>
 <translation id="8368027906805972958">अज्ञात वा प्रयोग गर्न नमिल्ने यन्त्र (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368859634510605990">&amp;सबै बुकमार्कहरू खोल्नुहोस्</translation>
@@ -6977,7 +6966,6 @@
 <translation id="899657321862108550">तपाईंको Chrome, सबैतिर</translation>
 <translation id="899676909165543803">तपाईंको किबोर्डको दायाँतिर सबैभन्दा तल रहेको कुञ्जी फिंगरप्रिन्ट सेन्सर हो। यसलाई कुनै एक औँलाले हल्का छुनुहोस्।</translation>
 <translation id="8999560016882908256">खण्डको विन्याससम्बन्धी त्रुटि: <ph name="ERROR_LINE" /></translation>
-<translation id="9002878223019487115"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" />, <ph name="RECENT_PERMISSIONS_CHANGE_2" /></translation>
 <translation id="9003647077635673607">सबै वेबसाइटहरूमा अनुमति दिनुहोस्</translation>
 <translation id="9003677638446136377">फेरि जाँच गर्नुहोस्</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /> <ph name="CONNECTION_STATUS" /> मध्ये नेटवर्क<ph name="NETWORK_INDEX" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ, विवरणहरू</translation>

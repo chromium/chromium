@@ -402,7 +402,6 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="3894427358181296146">Mappa hozzáadása</translation>
 <translation id="3895926599014793903">A nagyítás mindig engedélyezett</translation>
 <translation id="3908308510347173149">A(z) <ph name="PRODUCT_NAME" /> frissítése</translation>
-<translation id="3909763690984331376">Biztonsági ellenőrzés <ph name="BEGIN_NEW" />Új<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">A legjobb találatok keresése az interneten…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> aktív</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -633,6 +632,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5530766185686772672">Inkognitó lapok bezárása</translation>
 <translation id="5530920986376047241">Oldalakat menthet az olvasólistájára, hogy később újra megtalálhassa őket.</translation>
 <translation id="5534640966246046842">Webhely vágólapra másolva</translation>
+<translation id="5548606607480005320">Biztonsági ellenőrzés</translation>
 <translation id="5556459405103347317">Újratöltés</translation>
 <translation id="5561549206367097665">Várakozás a hálózatra…</translation>
 <translation id="55737423895878184">Helyadatok és értesítések engedélyezve</translation>
@@ -730,6 +730,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="6122831415929794347">Kikapcsolja a Biztonságos Böngészést?</translation>
 <translation id="6127379762771434464">Elem eltávolítva</translation>
 <translation id="6137022273846704445">A(z) <ph name="APP_NAME" /> nyelve</translation>
+<translation id="6138832295072039549">Itt módosíthatja a webhelybeállításokat</translation>
 <translation id="6140709049082532940">Speciális védelem:</translation>
 <translation id="6140912465461743537">Ország/régió</translation>
 <translation id="614940544461990577">Próbálja ki a következőket:</translation>

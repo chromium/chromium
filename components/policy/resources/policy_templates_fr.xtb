@@ -351,25 +351,6 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       Si cette règle n'est pas configurée, <ph name="PRODUCT_NAME" /> essaie de détecter si un serveur se trouve sur l'intranet et répond aux requêtes IWA seulement si c'est le cas. Si un serveur est détecté sur Internet, <ph name="PRODUCT_NAME" /> ignore alors les requêtes IWA.
 
       Remarque : S'il y a plusieurs serveurs, séparez leur nom par une virgule. Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés.</translation>
-<translation id="1488406778491620405">La fonctionnalité d'accessibilité <ph name="PRODUCT_NAME" />
-          permet aux personnes malvoyantes qui utilisent un lecteur d'écran
-          d'obtenir une description des images ne comportant pas de libellé sur le Web. Les utilisateurs ayant activé
-          cette fonctionnalité peuvent accéder à des descriptions fournies automatiquement par un
-          service Google anonyme lorsqu'ils rencontrent une image sans libellé sur le Web.
-
-          Si cette fonctionnalité est activée, elle transmet le contenu des images aux serveurs de Google
-          afin qu'une description puisse être générée. Elle n'envoie aucun cookie ni aucune information sur l'utilisateur.
-          Google n'enregistre pas le contenu des images et n'en conserve aucune trace.
-
-          Si cette règle est définie sur "True", la fonctionnalité
-          <ph name="PRODUCT_NAME" />
-          est activée. Toutefois, elle ne s'applique qu'aux utilisateurs d'un
-          lecteur d'écran ou d'une autre technologie d'assistance similaire.
-
-          Si cette règle est définie sur "False", aucun utilisateur ne peut activer
-          la fonctionnalité.
-
-          Si vous configurez cette règle, les utilisateurs ne peuvent ni la modifier, ni l'ignorer.</translation>
 <translation id="1502843533062797703">Activer le blocage de l'injection de logiciels tiers</translation>
 <translation id="1506017854924185821">Disponibilité de l'outil de sélection du profil au démarrage</translation>
 <translation id="1509377996969000672">La définition de cette règle fournit les configurations des imprimantes d'entreprise associées à des appareils. Son format correspond au dictionnaire <ph name="NATIVE_PRINTERS_POLICY_NAME" />, avec un champ supplémentaire "id" ou "guid" obligatoire pour chaque imprimante à ajouter à la liste d'autorisation ou à la liste de refus. Le fichier est au format JSON et sa taille ne peut pas dépasser 5 Mo. Un fichier encodé de 5 Mo peut contenir environ 21 000 imprimantes. Le hachage cryptographique permet de valider l'intégrité du téléchargement. Le fichier est téléchargé, mis en cache, puis téléchargé à nouveau à chaque modification de l'URL ou du hachage. <ph name="PRODUCT_OS_NAME" /> télécharge le fichier des configurations d'imprimante et rend les imprimantes accessibles avec <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> et <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.
@@ -779,7 +760,7 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="2069350366303315077">Si cette règle est activée, <ph name="PRODUCT_NAME" /> force l'ouverture des sessions Invité et empêche les connexions de profils. Les connexions en mode Invité sont des profils <ph name="PRODUCT_NAME" /> où les fenêtres s'ouvrent en mode navigation privée.
 
       Si cette règle est désactivée ou qu'elle n'est pas configurée, ou si le mode Invité du navigateur est désactivé (via <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" />), l'utilisation de nouveaux profils ou de profils existants est autorisée.</translation>
-<translation id="2070744136203607632">Ne pas procéder à la vérification des interceptions DNS</translation>
+<translation id="2070744136203607632">Ne pas procéder aux contrôles d'interception DNS</translation>
 <translation id="2073552873076775140">Autoriser la connexion à <ph name="PRODUCT_NAME" /></translation>
 <translation id="2075732129949889165">Playbook Crostini Ansible</translation>
 <translation id="2077129598763517140">Utiliser l'accélération matérielle si disponible</translation>
@@ -1736,12 +1717,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="3308724602356134956">Si vous configurez cette règle, <ph name="PRODUCT_OS_NAME" /> télécharge et utilise l'image de fond d'écran que vous avez définie pour l'arrière-plan de l'écran de connexion et le bureau des utilisateurs (lesquels ne peuvent pas modifier la configuration). Spécifiez l'URL (accessible sans authentification) à laquelle <ph name="PRODUCT_OS_NAME" /> peut télécharger l'image de fond d'écran (16 Mo maximum et au format JPEG), ainsi qu'un hachage cryptographique pour vérifier l'intégrité de l'image.
 
       Si cette règle n'est pas configurée, les utilisateurs peuvent alors choisir l'image pour l'arrière-plan de l'écran de connexion et leur bureau.</translation>
-<translation id="3312206664202507568">Affiche la page chrome://password-change, qui permet aux utilisateurs SAML de changer leur mot de passe en cours de session. De cette façon, le mot de passe SAML et celui de l'écran de verrouillage de l'appareil restent synchronisés.
-
-      Cette règle permet également d'activer les notifications destinées à signaler aux utilisateurs SAML que leur mot de passe SAML va bientôt arriver à expiration. Ils peuvent ainsi le modifier immédiatement, durant la session.
-      Toutefois, ces notifications ne s'affichent que si le fournisseur d'identité SAML envoie à l'appareil des informations sur l'expiration du mot de passe au cours du processus de connexion SAML.
-
-      Si cette règle est définie, l'utilisateur ne peut pas la modifier ni l'ignorer.</translation>
 <translation id="332771718998993005">Détermine le nom de la destination <ph name="PRODUCT_NAME" />.
 
           Si cette règle est définie sur une chaîne non vide, cette chaîne devient le nom de la destination <ph name="PRODUCT_NAME" />. Sinon, le nom de la destination est le nom de l'appareil. Si cette règle n'est pas définie, le nom de la destination est celui de l'appareil, et le propriétaire de l'appareil (ou un utilisateur du domaine gérant l'appareil) peut le modifier. Le nom est limité à 24 caractères.</translation>
@@ -1885,11 +1860,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 <translation id="350443680860256679">Configurer ARC</translation>
 <translation id="350797926066071931">Activer Google Traduction</translation>
 <translation id="3508047333410537654">Activer l'audio mono sur l'écran de connexion</translation>
-<translation id="3509819648242653622">Si cette règle est définie, les pages Web avec des URL interdites ne peuvent pas se charger. Cette règle fournit une liste de formats d'URL précisant les URL interdites. Si elle n'est pas configurée, aucune URL n'est interdite dans le navigateur. Les formats d'URL doivent respecter les conditions énoncées sur la page https://www.chromium.org/administrators/url-blacklist-filter-format. Vous pouvez définir jusqu'à 1 000 exceptions dans <ph name="URL_ALLOWLIST_POLICY_NAME" />.
-
-      À compter de <ph name="PRODUCT_NAME" /> 73, vous pouvez bloquer les URL javascript://*. Toutefois, cela ne concerne que le code JavaScript saisi dans la barre d'adresse (ou, par exemple, les favoris intelligents). Cette règle ne s'applique pas aux URL JavaScript intégrées dans les pages si les données sont chargées dynamiquement. Par exemple, si vous bloquez "example.com/abc", la page example.com pourra quand même charger "example.com/abc" via une requête XMLHTTPRequest.
-
-      Remarque : le blocage des URL internes chrome://* URLs peut provoquer des erreurs inattendues.</translation>
 <translation id="3513655665999652754">Quirks Server fournit les fichiers de configuration propres au matériel tels que les profils d'affichage ICC pour régler le calibrage du moniteur.
 
       Si cette règle est définie sur "False", l'appareil n'essaiera pas de contacter Quirks Server pour télécharger les fichiers de configuration.
@@ -2207,11 +2177,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 <translation id="3942041691320538491">Si cette règle est définie sur 0 (valeur par défaut), vous pouvez accéder aux outils pour les développeurs et à la Console JavaScript, sauf si des extensions ont été installées dans le cadre des règles de l'entreprise. Si cette règle est définie sur 1, vous pouvez accéder aux outils pour les développeurs et à la Console JavaScript dans tous les cas, y compris si des extensions ont été installées dans le cadre des règles de l'entreprise. Si cette règle est définie sur 2, vous ne pouvez pas accéder aux outils pour les développeurs ni examiner des éléments de sites Web.
 
       En outre, les raccourcis clavier, ainsi que les options de menu ou de menu contextuel permettant d'ouvrir ces outils ou cette console sont désactivés.</translation>
-<translation id="3947431236979598549">Cette règle permet d'activer ou de désactiver une notification lorsque l'espace disque est faible. Elle s'applique à l'ensemble des utilisateurs de l'appareil.
-
-      Elle est ignorée et la notification est toujours affichée si l'appareil n'est pas géré ou qu'il n'y a qu'un seul utilisateur.
-
-      Si plusieurs comptes utilisateur sont configurés sur un appareil géré, la notification ne s'affiche que lorsque cette règle est activée.</translation>
 <translation id="3950110092991281616">Activer l'authentification ambiante seulement pour les sessions standards.</translation>
 <translation id="3950239119790560549">Mettre à jour les restrictions de temps</translation>
 <translation id="3956686688560604829">Utiliser la règle SiteList d'Internet Explorer pour Legacy Browser Support.</translation>
@@ -2310,9 +2275,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
       Si vous définissez cette règle, les utilisateurs ne peuvent pas modifier la configuration. Si vous ne la définissez pas, la loupe est désactivée par défaut, mais les utilisateurs peuvent l'activer à tout moment.</translation>
 <translation id="410068710490553233">Autoriser la connexion à d'autres comptes Google</translation>
 <translation id="4101282687722389021">Horodatage UTC de la dernière mise à jour de cette entrée. Il est envoyé sous forme de chaîne, car il ne tiendrait pas dans un entier.</translation>
-<translation id="4103177213841380258">Cette règle commande l'accès aux fonctionnalités contrôlables dans l'interface utilisateur de détection en local (<ph name="CHROME_DEVICES_LINK" />), qui affiche les appareils visibles à proximité de l'utilisateur ainsi que les appareils cloud enregistrés auprès de ceux-ci. Sur tous les systèmes d'exploitation à l'exception de <ph name="PRODUCT_OS_NAME" />, l'interface utilisateur de détection en local permet également aux utilisateurs d'ajouter à <ph name="CLOUD_PRINT_NAME" /> des imprimantes standards connectées à leurs ordinateurs.
-
-      Si cette règle n'est pas configurée, cette fonctionnalité reste activée.</translation>
 <translation id="4103289232974211388">Rediriger vers le fournisseur d'identité SAML après confirmation de l'utilisateur</translation>
 <translation id="4105884561459127998">Configure le type d'authentification pour les connexions SAML.
 
@@ -2945,13 +2907,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 <translation id="5152393033264257734">Autoriser les contrôles d'interception des requêtes DNS et les barres d'infos "Essayez avec http://siteintranet/".</translation>
 <translation id="5152787786897382519">Chromium et Google Chrome possèdent tous deux des groupes de règles interdépendantes pour contrôler une fonctionnalité. Ces ensembles sont représentés par les groupes de règles suivants. Les règles pouvant avoir plusieurs sources, seules les valeurs issues de la source ayant la priorité la plus haute sont appliquées. Les valeurs provenant d'une source ayant une priorité inférieure dans le même groupe sont ignorées. L'ordre de priorité est défini à la page <ph name="POLICY_PRIORITY_DOC_URL" />.</translation>
 <translation id="5153187201534281749">Icône des fonctionnalités expérimentales du navigateur dans la barre d'outils</translation>
-<translation id="515816885693899426">Cette règle est obsolète (veuillez utiliser la règle <ph name="URL_BLOCKLIST_POLICY_NAME" /> à la place).
-
-      Si cette règle est définie, les pages Web avec des URL interdites ne peuvent pas se charger. Cette règle fournit une liste de formats d'URL précisant les URL interdites. Si elle n'est pas configurée, aucune URL n'est interdite dans le navigateur. Les formats d'URL doivent respecter les conditions énoncées sur la page https://www.chromium.org/administrators/url-blacklist-filter-format. Vous pouvez définir jusqu'à 1 000 exceptions dans <ph name="URL_ALLOWLIST_POLICY_NAME" />.
-
-      À compter de <ph name="PRODUCT_NAME" /> 73, vous pouvez bloquer les URL javascript://*. Toutefois, cela ne concerne que le code JavaScript saisi dans la barre d'adresse (ou, par exemple, les favoris intelligents). Cette règle ne s'applique pas aux URL JavaScript intégrées dans les pages si les données sont chargées dynamiquement. Par exemple, si vous bloquez "example.com/abc", la page example.com pourra quand même charger "example.com/abc" via une requête XMLHTTPRequest.
-
-      Remarque : le blocage des URL internes chrome://* URLs peut provoquer des erreurs inattendues.</translation>
 <translation id="5163002264923337812">Activer l'ancienne procédure de connexion basée sur le Web</translation>
 <translation id="516520353995300280">Permet de désactiver l'application des exigences de divulgation stipulées dans les règles de transparence des certificats. S'applique à une liste d'autorités de certification héritées, concernant les chaînes de certificats avec un hachage <ph name="SUBJECT_PUBLIC_KEY_INFO" /> spécifié. Les hôtes Enterprise peuvent ainsi continuer d'utiliser des certificats qui ne seraient sinon pas jugés fiables (pour ne pas avoir été communiqués au public comme il se doit). Pour procéder à cette désactivation, le hachage <ph name="SUBJECT_PUBLIC_KEY_INFO" /> doit figurer dans un certificat CA reconnu comme une autorité de certification héritée. Une autorité de certification héritée est reconnue publiquement par un ou plusieurs systèmes d'exploitation compatibles avec <ph name="PRODUCT_NAME" /> (mais pas avec le Projet Android Open Source ni avec <ph name="PRODUCT_OS_NAME" />).
 
@@ -3623,11 +3578,6 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="6099853574908182288">Mode d'impression par défaut couleur</translation>
 <translation id="6102342563050263313">Activer le défilement jusqu'au texte spécifié dans des fragments d'URL</translation>
 <translation id="6107642964266628393">Contrôle comment et quand les mises à jour de Chrome OS sont appliquées.</translation>
-<translation id="6110478331147706293">Permet de désactiver l'application des exigences de divulgation stipulées dans les règles de transparence des certificats pour les noms d'hôte dans la liste d'URL spécifiées. Même si cela complique la détection des certificats qui ne sont pas émis correctement, les hôtes peuvent continuer d'utiliser des certificats qui ne seraient sinon pas jugés fiables (pour ne pas avoir été communiqués au public comme il se doit).
-
-      Si cette règle n'est pas configurée, cela signifie que si les certificats ne sont pas communiqués tel que le prévoient les règles de transparence des certificats, <ph name="PRODUCT_NAME" /> considère alors qu'ils ne sont pas fiables.
-
-      Le format d'une URL doit respecter les conditions indiquées sur la page https://www.chromium.org/administrators/url-blacklist-filter-format. Toutefois, la validité des certificats pour un nom d'hôte donné étant indépendante du schéma, du port ou du chemin d'accès, <ph name="PRODUCT_NAME" /> ne prend en compte que la partie du nom d'hôte de l'URL. Les hôtes génériques ne sont pas acceptés.</translation>
 <translation id="6111936128861357925">Autoriser le jeu Easter Egg du dinosaure</translation>
 <translation id="6123052603197028610">Ne pas autoriser l'envoi de requêtes aux serveurs Google visant à récupérer les horodatages</translation>
 <translation id="6132506775968708399">Bloquer les cookies tiers</translation>
@@ -3837,15 +3787,6 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="6453641799812499182">Atténuer les vérifications <ph name="CORS" /> dans la nouvelle mise en œuvre de <ph name="CORS" /></translation>
 <translation id="645425387487868471">Activer la connexion forcée pour <ph name="PRODUCT_NAME" /></translation>
 <translation id="6458361632497500815">Si cette règle est activée ou qu'elle n'est pas configurée, tous les utilisateurs sont autorisés à utiliser <ph name="PRODUCT_CROSTINI_NAME" /> tant que les trois règles <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" />, <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> et <ph name="DEVICE_UNAFFILIATED_CROSTINI_ALLOWED_POLICY_NAME" /> sont activées. Si elle est désactivée, les utilisateurs non affiliés ne sont pas autorisés à utiliser <ph name="PRODUCT_CROSTINI_NAME" />. Si vous la désactivez, elle est appliquée aux conteneurs <ph name="PRODUCT_CROSTINI_NAME" /> qui vont être lancés, mais pas à ceux qui le sont déjà.</translation>
-<translation id="646376229090051440">Permet d'établir la liste des protocoles (et pour chacun d'eux, une liste associée de formats d'origines autorisées) qui peuvent lancer une application externe sans afficher d'invite. Lorsqu'un protocole est répertorié, le séparateur de fin ne doit pas être inclus. Par exemple, il convient de garder "skype" et non "skype:" ou "skype://".
-
-      Si cette règle est configurée, un protocole n'est autorisé à lancer une application externe sans afficher d'invite que si ce protocole est répertorié dans la liste établie, et si l'origine du site qui essaie de lancer le protocole correspond à l'un des formats d'origines figurant dans la liste des origines autorisées de ce protocole. Si l'une des conditions est fausse, la règle n'omet pas l'invite de lancement du protocole externe.
-
-      Si cette règle n'est pas configurée, aucun protocole ne peut être lancé sans invite par défaut. Les utilisateurs peuvent désactiver les invites selon le protocole ou le site, sauf si la règle <ph name="EXTERNAL_PROTOCOL_DIALOG_SHOW_ALWAYS_OPEN_CHECKBOX_POLICY_NAME" /> est désactivée. Cette règle n'a aucune incidence sur les exceptions définies par les utilisateurs concernant les invites selon le protocole ou le site.
-
-      Les formats d'origines correspondants dans la liste sont semblables à ceux de la règle <ph name="URL_BLOCKLIST_POLICY_NAME" /> décrite sur http://www.chromium.org/administrators/url-blacklist-filter-format.
-
-      Toutefois, dans le cadre de cette règle, ces formats ne doivent pas inclure les éléments "/path" ni "@query". Tout format qui inclut l'élément "/path" ou "@query" est ignoré.</translation>
 <translation id="6464074037294098618">Activer la saisie automatique pour les adresses</translation>
 <translation id="6467613372414922590">Autoriser les hôtes de messagerie natifs au niveau de l'utilisateur (installés sans l'autorisation d'un administrateur)</translation>
 <translation id="6473623140202114570">Configurez la liste des domaines sur lesquels la navigation sécurisée ne déclenchera aucun avertissement.</translation>
@@ -4454,7 +4395,6 @@ Si vous sélectionnez les options suivantes :
       Si cette règle n'est pas définie, le navigateur peut envoyer des requêtes DNS-over-HTTPS à un résolveur associé au résolveur configuré du système.</translation>
 <translation id="7158358621906236999">Paramètre par défaut des capteurs</translation>
 <translation id="7167436895080860385">Permet aux utilisateurs d'afficher les mots de passe dans le gestionnaire de mots de passe (obsolète).</translation>
-<translation id="7170049569641162846">Autoriser la détection des appareils en local</translation>
 <translation id="7173856672248996428">Profil éphémère</translation>
 <translation id="717630378807352957">Autorise toutes les imprimantes répertoriées dans le fichier de configuration.</translation>
 <translation id="7177293255621000064">Si vous définissez cette règle sur "True", tous les types de supports de stockage externes (clés USB, disques durs externes, cartes SD, autres cartes mémoire, etc.) sont alors indisponibles dans l'explorateur de fichiers. Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, les utilisateurs peuvent utiliser des supports de stockage externes sur leur appareil.
@@ -4567,7 +4507,7 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
       Pour épingler des applications dans la barre des tâches, consultez PinnedLauncherApps.</translation>
 <translation id="7339315111520512972">Forcer le code réseau à s'exécuter dans le processus du navigateur</translation>
 <translation id="7340034977315324840">Indiquer les périodes d'activité de l'appareil</translation>
-<translation id="7343004974628511824">Procéder à la vérification des interceptions DNS</translation>
+<translation id="7343004974628511824">Procéder aux contrôles d'interception DNS</translation>
 <translation id="7343497214039883642">Fichier de configuration des imprimantes d'entreprise pour des appareils</translation>
 <translation id="7358744897221281073">Si ce paramètre est activé, les utilisateurs qui ont déjà activé Phone Hub pourront continuer sur Chrome OS ce qu'ils étaient en train de faire sur leur téléphone, par exemple consulter des pages Web.
 
@@ -4602,15 +4542,6 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
 <translation id="7407441173422042771">Cette règle permet de contrôler la prédiction réseau dans <ph name="PRODUCT_NAME" />. Elle contrôle la prélecture des DNS, ainsi que la préconnexion et le préchargement TCP et SSL des pages Web.
 
       Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier. Si cette règle n'est pas configurée, la prédiction réseau est activée. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
-<translation id="7415655595380180976">Cette règle étant obsolète, veuillez utiliser la règle <ph name="URL_ALLOWLIST_POLICY_NAME" /> à la place.
-
-      Configurer cette règle permet d'autoriser l'accès aux URL répertoriées comme exceptions à la liste des URL bloquées. Consultez la description de la règle pour connaître le format des entrées de cette liste. Par exemple, définir la règle <ph name="URL_BLOCKLIST_POLICY_NAME" /> sur "*" entraîne le blocage de toutes les requêtes, et vous pouvez appliquer cette règle pour autoriser l'accès à un nombre limité d'URL. Cela vous permet d'ouvrir des exceptions pour certains schémas, ports, chemins d'accès spécifiques ou sous-domaines d'autres domaines utilisant le format spécifié sur https://www.chromium.org/administrators/url-blacklist-filter-format. Le filtre le plus spécifique détermine si une URL est bloquée ou non. Sachez également que la liste d'autorisation prévaut sur la liste de blocage. Cette règle est limitée à 1 000 entrées.
-
-      Elle permet également d'autoriser ou non le navigateur d'une application externe enregistrée comme gestionnaire de protocoles à appeler automatiquement les protocoles répertoriés tels que "tel:" ou "ssh:".
-
-      Si cette règle n'est pas configurée, aucune exception n'est autorisée.
-
-      Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, exécutées sous Windows 10 Pro ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Sous <ph name="MAC_OS_NAME" />, elle n'est disponible que sur les instances gérées via MDM ou associées à un domaine via MCX.</translation>
 <translation id="7417438464912687020">Autoriser les connexions d'accès à distance à cet ordinateur</translation>
 <translation id="7417972229667085380">Pourcentage d'adaptation du délai d'inactivité en mode Présentation (abandonné)</translation>
 <translation id="7421483919690710988">Définir la taille du cache du disque de support en octets</translation>
@@ -5083,31 +5014,6 @@ Si ce paramètre est désactivé et que les connexions UDP sortantes sont filtr�
 <translation id="8133152694354699657">Si cette règle est définie sur "True" ou qu'elle n'est pas configurée, la fonctionnalité "Appuyer pour rechercher" est proposée aux utilisateurs, qui peuvent ensuite choisir de l'activer ou non.
 
       Si cette règle est définie sur "False", cette fonctionnalité est entièrement désactivée.</translation>
-<translation id="8135271712389620651">Permet d'établir la liste des règles visant à empêcher les fuites de données sur <ph name="PRODUCT_OS_NAME" />.
-      Une fuite de données peut se produire lors d'un copier-coller de données, d'un transfert de fichiers, d'une impression, d'un partage ou d'une capture d'écran, etc.
-
-      Chaque règle se compose des éléments suivants :
-      - Une liste de sources définies sous la forme d'URL. Les données de ces sources sont considérées comme confidentielles, et les restrictions leur sont appliquées.
-      - Une liste de destinations définies sous la forme d'URL ou de composants, et pour lesquelles le partage de données confidentielles est autorisé ou non.
-      - Une liste de restrictions à appliquer aux données des sources.
-
-      Les règles peuvent être ajoutées aux fins suivantes :
-      - Contrôler les données du presse-papiers partagées entre les sources et les destinations.
-      - Contrôler les captures d'écran de n'importe quelle source.
-      - Contrôler l'impression de n'importe quelle source.
-      - Contrôler l'écran de confidentialité lorsque l'une des sources est visible.
-      - Contrôler le partage d'écran de n'importe quelle source.
-
-      Le niveau de restriction peut être défini sur "BLOCK" ou "ALLOW".
-      - Si la restriction est définie sur "BLOCK", l'action concernée n'est pas autorisée.
-      - Si la restriction est définie sur "ALLOW", l'action est autorisée.
-
-      Remarques :
-      - La restriction "PRIVACY_SCREEN" n'empêche pas d'activer l'écran de confidentialité, mais elle force son affichage lorsque le niveau de restriction est défini sur "BLOCK".
-      - Les destinations ne peuvent pas être vides si l'une des restrictions est la restriction "CLIPBOARD". Toutefois, elles n'ont aucune incidence pour les autres restrictions.
-      - Les formats d'URL doivent respecter les conditions énoncées sur la page https://www.chromium.org/administrators/url-blacklist-filter-format.
-
-      Si la règle n'est pas configurée, aucune restriction n'est appliquée.</translation>
 <translation id="8136906469922284163">Si cette règle est définie sur "True", les pages sont autorisées à afficher des pop-up pendant qu'elles se déchargent.
 
       Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, les pages ne peuvent pas afficher de pop-up pendant qu'elles se déchargent.
@@ -5159,9 +5065,6 @@ Si cette règle n'est pas définie, l'écran de confidentialité est désactivé
 
       Si cette règle est désactivée ou qu'elle n'est pas configurée, aucun paquet n'est transmis.</translation>
 <translation id="816783746144552109">Configurer la version Chrome OS minimale autorisée de l'appareil.</translation>
-<translation id="8171025799847651230">Si cette règle est désactivée, le service hôte d'accès à distance ne peut pas être démarré ni configuré pour accepter les connexions entrantes.  Elle ne concerne pas les cas d'assistance à distance.
-
-          Elle n'a aucune incidence non plus si elle est définie sur "True", qu'elle n'est pas configurée ou que la liste est vide.</translation>
 <translation id="8171924760436219650">Définir le bouton droit de la souris comme bouton principal sur l'écran de connexion</translation>
 <translation id="8176035528522326671">Autoriser l'utilisateur d'entreprise à participer aux sessions à plusieurs profils en tant qu'utilisateur principal seulement (comportement par défaut pour les utilisateurs gérés par une entreprise)</translation>
 <translation id="8179161412673077784">Empêcher les sites aux expériences abusives d'ouvrir de nouvelles fenêtres ou de nouveaux onglets</translation>
@@ -5312,13 +5215,6 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 <translation id="8371178326720637170">Autorise les extensions gérées à utiliser l'API Enterprise Hardware Platform</translation>
 <translation id="8375817202037102567">Bloquer l'accès en écriture aux fichiers et répertoires pour ces sites</translation>
 <translation id="8379317372795444261">Authentification <ph name="BASIC_AUTH" /> autorisée sur les connexions HTTP</translation>
-<translation id="838056554726401140">Liste d'URL indiquant les URL pour lesquelles la règle <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> s'applique. Cette règle n'a aucune incidence sur les valeurs définies par les utilisateurs pour l'ouverture automatique.
-
-      Si cette règle est définie, les fichiers seront ouverts automatiquement à condition que la règle s'applique à l'URL et que le type de fichier figure dans <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />. Si l'une des deux conditions est fausse, le fichier téléchargé ne s'ouvrira pas automatiquement suivant cette règle.
-
-      Si cette règle n'est pas définie, tous les fichiers téléchargés qui concernent un type de fichier figurant dans <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> seront ouverts automatiquement.
-
-      Un format d'URL doit correspondre aux critères mentionnés sur cette page : https://www.chromium.org/administrators/url-blacklist-filter-format.</translation>
 <translation id="8382184662529825177">Autoriser l'utilisation de l'attestation à distance pour assurer la protection du contenu de l'appareil</translation>
 <translation id="838870586332499308">Activer l'itinérance des données</translation>
 <translation id="8393850527597048037">Plate-forme uniquement</translation>
@@ -5702,13 +5598,6 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
       Pour en savoir plus sur les contextes sécurisés, consultez
       https://www.w3.org/TR/secure-contexts/
       </translation>
-<translation id="8940519618730206658">Lorsque cette règle est configurée, l'accès aux URL répertoriées comme exceptions à <ph name="URL_BLOCKLIST_POLICY_NAME" /> est autorisé. Consultez la description de la règle pour connaître le format des entrées de cette liste. Par exemple, définir la règle <ph name="URL_BLOCKLIST_POLICY_NAME" /> sur "*" entraîne le blocage de toutes les requêtes, et vous pouvez appliquer cette règle pour autoriser l'accès à un nombre limité d'URL. Cela vous permet d'ouvrir des exceptions pour certains schémas, ports, chemins d'accès spécifiques ou sous-domaines d'autres domaines utilisant le format spécifié sur https://www.chromium.org/administrators/url-blacklist-filter-format. Le filtre le plus spécifique détermine si une URL est bloquée ou non. La règle <ph name="URL_ALLOWLIST_POLICY_NAME" /> prévaut sur la règle <ph name="URL_BLOCKLIST_POLICY_NAME" />. Cette règle est limitée à 1 000 entrées.
-
-      Elle permet également d'autoriser ou non le navigateur d'une application externe enregistrée comme gestionnaire de protocoles à appeler automatiquement les protocoles répertoriés tels que "tel:" ou "ssh:".
-
-      Si cette règle n'est pas configurée, aucune exception n'est autorisée pour <ph name="URL_BLOCKLIST_POLICY_NAME" />.
-
-      Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, exécutées sous Windows 10 Pro ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Sous <ph name="MAC_OS_NAME" />, elle n'est disponible que sur les instances gérées via MDM ou associées à un domaine via MCX.</translation>
 <translation id="8942616385591203339">Permet d'activer l'affichage de l'autorisation de synchronisation lors de la première connexion de l'utilisateur. Si cette autorisation n'a jamais besoin d'être montrée à l'utilisateur, cette règle doit être définie sur False.
       Si cette règle est définie sur False, l'autorisation de synchronisation n'est pas affichée.
       Si cette règle est définie sur True ou si elle n'est pas configurée, l'autorisation de synchronisation peut être affichée.</translation>

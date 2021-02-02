@@ -402,7 +402,6 @@ Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa
 <translation id="3894427358181296146">Adicionar pasta</translation>
 <translation id="3895926599014793903">Forçar ativação do zoom</translation>
 <translation id="3908308510347173149">Atualizar <ph name="PRODUCT_NAME" /></translation>
-<translation id="3909763690984331376">Verificação de segurança <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">A procurar o melhor da Web…</translation>
 <translation id="3924911262913579434">A funcionalidade <ph name="SAFE_BROWSING_MODE" /> está ativada.</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -633,6 +632,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5530766185686772672">Fechar sep. de naveg. anón.</translation>
 <translation id="5530920986376047241">Pode guardar páginas na sua lista de leitura para encontrá-las novamente.</translation>
 <translation id="5534640966246046842">Site copiado</translation>
+<translation id="5548606607480005320">Verificação de segurança</translation>
 <translation id="5556459405103347317">Recarregar</translation>
 <translation id="5561549206367097665">A aguardar pela rede...</translation>
 <translation id="55737423895878184">A localização e as notificações são permitidas.</translation>
@@ -730,6 +730,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="6122831415929794347">Pretende desativar a Navegação segura?</translation>
 <translation id="6127379762771434464">Item removido</translation>
 <translation id="6137022273846704445">Idioma da app <ph name="APP_NAME" /></translation>
+<translation id="6138832295072039549">Altere as definições do site aqui.</translation>
 <translation id="6140709049082532940">Proteção melhorada:</translation>
 <translation id="6140912465461743537">País/região</translation>
 <translation id="614940544461990577">Experimente:</translation>

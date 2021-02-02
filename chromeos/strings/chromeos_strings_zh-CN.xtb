@@ -62,6 +62,7 @@
 <translation id="2338501278241028356">开启蓝牙以发现附近的设备</translation>
 <translation id="2364498172489649528">通过</translation>
 <translation id="2391082728065870591">发送反馈报告</translation>
+<translation id="2418150275289244458">在“设置”中打开</translation>
 <translation id="2446553403094072641">浮点准确性</translation>
 <translation id="2448312741937722512">类型</translation>
 <translation id="2461822463642141190">电流</translation>
@@ -265,6 +266,7 @@
 <translation id="6977381486153291903">固件版本</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> 负责管理此设备，而且有权查看所有用户活动（包括访问过的网页、密码和电子邮件）。</translation>
 <translation id="7040230719604914234">运营商</translation>
+<translation id="7059230779847288458">正在充电，还需 <ph name="TIME_VALUE" />才能充满</translation>
 <translation id="708426984172631313">已停止</translation>
 <translation id="7143207342074048698">正在连接</translation>
 <translation id="714876143603641390">LAN 连接性</translation>
@@ -272,6 +274,7 @@
 <translation id="7177485034254901881">此 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理。管理员可能会远程配置此设备。</translation>
 <translation id="7216409898977639127">移动网络服务提供商</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7343649194310845056">网络设备</translation>
 <translation id="7359657277149375382">文件类型</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -281,8 +284,10 @@
 <translation id="7490813197707563893">MAC 地址</translation>
 <translation id="7497215489070763236">服务器 CA 证书</translation>
 <translation id="7502658306369382406">IPv6 地址</translation>
+<translation id="7550715992156305117">诊断例程</translation>
 <translation id="7561454561030345039">此操作由您的管理员管理</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331">电池续航时间还剩 <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">在帮助中心内了解详情</translation>
 <translation id="7648838807254605802">HTTPS 延迟较高</translation>
 <translation id="7658239707568436148">取消</translation>

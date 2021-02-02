@@ -402,7 +402,6 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="3894427358181296146">Ajouter un dossier</translation>
 <translation id="3895926599014793903">Forcer l'activation du zoom</translation>
 <translation id="3908308510347173149">Mettre à jour <ph name="PRODUCT_NAME" /></translation>
-<translation id="3909763690984331376">Contrôle de sécurité <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">Recherche du meilleur contenu sur le Web…</translation>
 <translation id="3924911262913579434">Mode <ph name="SAFE_BROWSING_MODE" /> activé</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -633,6 +632,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5530766185686772672">Fermer onglets navig. privée</translation>
 <translation id="5530920986376047241">Vous pouvez enregistrer des pages dans votre liste de lecture pour les lire plus tard</translation>
 <translation id="5534640966246046842">Site copié</translation>
+<translation id="5548606607480005320">Contrôle de sécurité</translation>
 <translation id="5556459405103347317">Actualiser</translation>
 <translation id="5561549206367097665">En attente de connexion au réseau…</translation>
 <translation id="55737423895878184">La localisation et les notifications sont autorisées</translation>

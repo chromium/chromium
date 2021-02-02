@@ -62,6 +62,7 @@
 <translation id="2338501278241028356">‏יש להפעיל את Bluetooth כדי לאתר מכשירים קרובים</translation>
 <translation id="2364498172489649528">הילד או הילדה עברו את הבדיקה בהצלחה</translation>
 <translation id="2391082728065870591">שליחת דוח המשוב</translation>
+<translation id="2418150275289244458">פתיחה בהגדרות</translation>
 <translation id="2446553403094072641">‏רמת הדיוק של נקודה צפה (floating-point)</translation>
 <translation id="2448312741937722512">סוג</translation>
 <translation id="2461822463642141190">כרגע</translation>
@@ -273,6 +274,7 @@
 <translation id="7177485034254901881">מכשיר <ph name="DEVICE_TYPE" /> זה מנוהל על ידי <ph name="MANAGER" />. מנהלי מערכת עשויים להגדיר את המכשיר הזה מרחוק.</translation>
 <translation id="7216409898977639127">ספק שירות סלולרי</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7343649194310845056">מכשירים ברשת</translation>
 <translation id="7359657277149375382">סוג קובץ</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -282,6 +284,7 @@
 <translation id="7490813197707563893">‏כתובת MAC</translation>
 <translation id="7497215489070763236">‏אישור CA של שרת</translation>
 <translation id="7502658306369382406">‏כתובת IPv6</translation>
+<translation id="7550715992156305117">תרחישי אבחון</translation>
 <translation id="7561454561030345039">הפעולה הזו מנוהלת על-ידי מנהל המערכת</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331">הזמן שנותר: <ph name="TIME_VALUE" /></translation>

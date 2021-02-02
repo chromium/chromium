@@ -329,6 +329,7 @@
 <translation id="1367951781824006909">फाइल निवडा</translation>
 <translation id="1369149969991017342">स्विच ॲक्सेस (फक्त एक किंवा दोन स्विचसह कॉंप्युटर नियंत्रित करा)</translation>
 <translation id="1372841398847029212">तुमच्या खात्याशी सिंक करा</translation>
+<translation id="1373176046406139583">तुमची स्क्रीन अनलॉक केलेली असताना तुमच्यासोबत कोण शेअर करू शकते हे तुमच्या डिव्हाइसची दृश्यमानता नियंत्रित करते. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">नेटवर्क "<ph name="NETWORK_NAME" />" द्वारे आवश्यक सर्टिफिकेट एकतर स्थापित झाले नाही किंवा यापुढे वैध नाही. कृपया एक नवीन सर्टिफिकेट मिळवा आणि पुन्हा कनेक्ट करण्याचा प्रयत्न करा.</translation>
 <translation id="1375321115329958930">सेव्ह केलेले पासवर्ड</translation>
 <translation id="137651782282853227">सेव्ह केलेले पत्ते येथे दिसून येतील</translation>
@@ -1056,6 +1057,7 @@
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> आणि आणखी एक स्विच</translation>
 <translation id="2165421703844373933">तुम्ही "Ok Google" म्हणता तेव्हा Assistant अ‍ॅक्सेस करा. बॅटरीची बचत करण्यासाठी, “सुरू करा (शिफारस केलेले)” निवडा. तुमचे डिव्हाइस प्लग इन केले असेल तेव्हा किंवा चार्ज होत असेल फक्त तेव्हा Assistant प्रतिसाद देईल.</translation>
 <translation id="2166369534954157698">चपळ तपकिरी कोल्ह्याने आळशी कुत्र्यावर उडी मारली</translation>
+<translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">तरीही साइन इन करा</translation>
 <translation id="2170054054876170358">तुमचा फोन जवळपास असल्याची, अनलॉक केलेला असल्याची आणि त्याचे ब्लूटूथ व वाय-फाय सुरू असल्याची खात्री करा.</translation>
 <translation id="2173302385160625112">तुमचे इंटरनेट कनेक्शन तपासा</translation>
@@ -1107,7 +1109,6 @@
 <translation id="2225864335125757863">तुमचे खाते सुरक्षित ठेवण्यासाठी हे पासवर्ड तात्काळ बदला:</translation>
 <translation id="2226449515541314767">MIDI डिव्हाइसचे पूर्ण नियंत्रण असण्यापासून ही साइट अवरोधित केली गेली आहे.</translation>
 <translation id="2226907662744526012">पिन एंटर केल्यानंतर आपोआप अनलॉक करा</translation>
-<translation id="222704500187107962">तुम्ही सध्याच्या गुप्त सेशनमधून बाहेर पडल्यानंतर हे एक्सेप्शन आपोआप काढून टाकले जाईल</translation>
 <translation id="2227179592712503583">सूचना काढून टाका</translation>
 <translation id="2229161054156947610">1 तासापेक्षा जास्त बाकी</translation>
 <translation id="222931766245975952">फाईल कापली गेली</translation>
@@ -1279,7 +1280,6 @@
 <translation id="2428939361789119025">वाय-फाय बंद करा</translation>
 <translation id="2431027948063157455">Google Assistant लोड होऊ शकले नाही, कृपया तुमचे नेटवर्क कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="2433452467737464329">पृष्ठ स्वयं-रिफ्रेश करण्यासाठी URL मध्ये क्वेरी परम जोडा: chrome://network/?refresh=&lt;sec&gt;</translation>
-<translation id="2433490881840073798"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE" /></translation>
 <translation id="2433507940547922241">स्वरूप</translation>
 <translation id="2433836460518180625">फक्त डिव्हाइस अनलॉक करा</translation>
 <translation id="2434449159125086437">प्रिंटर सेट करू शकलो नाही. कृपया कॉंफिगरेशन तपासा आणि पुन्हा प्रयत्न करा.</translation>
@@ -3054,7 +3054,7 @@
 <translation id="4462159676511157176">कस्टम नाव सर्व्हर</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" /> साठी सेट केलेली <ph name="TIME" /> ची वेळ मर्यादा</translation>
 <translation id="4465725236958772856"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, तुमच्या अ‍ॅडमिनिस्ट्रेटरने व्यवस्थापित केलेले, कनेक्ट करा</translation>
-<translation id="4466068638972170851">तुम्हाला काय ऐकायचे आहे ते हायलाइट करा, नंतर Search + S दाबा. तुम्ही शोध की दाबून आणि धरून ठेवू शकता किंवा निवड करण्यासाठी स्टेटस ट्रेजवळ बोलण्याकरिता बोलण्यासाठी निवडा आयकनवर टॅप करू शकता.</translation>
+<translation id="4466068638972170851">तुम्हाला काय ऐकायचे आहे ते हायलाइट करा, नंतर Search + S दाबा. तुम्ही शोध की दाबून आणि धरून ठेवू शकता किंवा निवड करण्यासाठी स्टेटस ट्रेजवळ बोलण्यासाठी निवडा आयकनवर टॅप करू शकता.</translation>
 <translation id="4469477701382819144">अनाहूत किंवा दिशाभूल करणाऱ्या जाहिराती दाखवणाऱ्या साइटवर ब्लॉक केले</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> <ph name="FOLDERNAME" /> मधील फाइल संपादित करू शकते</translation>
 <translation id="4470957202018033307">बाह्य स्टोरेज प्राधान्ये</translation>
@@ -3081,7 +3081,6 @@
 <translation id="4492698018379445570">तुम्ही शॉपिंग कार्टमध्ये काय जोडले आहे ते पाहा आणि तुम्ही तयार असाल तेव्हा चेक आउट करा</translation>
 <translation id="4493468155686877504">शिफारस केलेले (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">या पेजवर दर्शवू नका</translation>
-<translation id="4496054781541092778">आपोआप ब्लॉक केलेली <ph name="PERMISSION" /></translation>
 <translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> क्रॅश झाले आहे</translation>
 <translation id="450099669180426158">उद्गारवाचक चिन्हाचा आयकन</translation>
 <translation id="4501530680793980440">काढून टाकण्याची पुष्टी करा</translation>
@@ -3103,7 +3102,6 @@
 <translation id="4519935350946509010">कनेक्शन एरर.</translation>
 <translation id="4520385623207007473">वापरात असलेल्या कुकीज</translation>
 <translation id="452039078290142656"><ph name="VENDOR_NAME" /> कडील अज्ञात डिव्हाइस</translation>
-<translation id="4521489190203965562">सध्याचे गुप्त सेशन: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" />, <ph name="RECENT_PERMISSIONS_CHANGE_2" /> आणि बरेच काही</translation>
 <translation id="4522570452068850558">तपशील</translation>
 <translation id="4522600456902129422">या साइटला क्लिपबोर्ड पाहण्याची नेहमी अनुमती द्या</translation>
 <translation id="4524832533047962394">पुरवलेल्या नोंदणी मोडला ऑपरेटिंग सिस्टमची ही आवृत्ती सपोर्ट करत नाही. तुम्ही नवीनतम आवृत्ती रन करत आहात याची कृपया खात्री करा.</translation>
@@ -3438,6 +3436,7 @@
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - इंटरलेस केलेला</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, कनेक्ट करा</translation>
 <translation id="49027928311173603">सर्व्हरवरून डाउनलोड केलेले धोरण चुकीचे आहे: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4904061654709986277">प्रोफाइल जोडा</translation>
 <translation id="4906490889887219338">नेटवर्क फाइल शेअर सेट किंवा व्यवस्थापित करा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, फोन बॅटरी <ph name="BATTERY_STATUS" />%, तपशील</translation>
 <translation id="4907161631261076876">ही फाईल सामान्यपणे डाउनलोड केली नाही आणि कदाचित धोकादायक असू शकते.</translation>
@@ -3560,6 +3559,7 @@
 <translation id="5068918910148307423">अलीकडील बंद केलेल्या साइटना डेटा पाठविणे आणि प्राप्त करणे समाप्त करण्यासाठी अनुमती देऊ नका</translation>
 <translation id="5068919226082848014">पिझ्झा</translation>
 <translation id="5070773577685395116">ते समजले नाही का?</translation>
+<translation id="5071892329440114717">साधारण संरक्षणाचे तपशील दाखवा</translation>
 <translation id="5072052264945641674">कर्सर आकार समायोजित करा</translation>
 <translation id="5072836811783999860">व्यवस्थापित बुकमार्क दर्शवा</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />, <ph name="FILE2" />}other{<ph name="FILE1" />, <ph name="FILE2" /> आणि आणखी #}}</translation>
@@ -3732,7 +3732,6 @@
 <translation id="527605982717517565"><ph name="HOST" /> वर JavaScript ला नेहमी परवानगी द्या</translation>
 <translation id="5278823018825269962">स्थिती आयडी</translation>
 <translation id="5280064835262749532"><ph name="SHARE_PATH" /> ची क्रेडेंशिअल अपडेट करा.</translation>
-<translation id="5280174558369304332">काढण्यासाठी एक्सटेंशन:</translation>
 <translation id="5280243692621919988">तुम्ही सर्व विंडो बंद करता तेव्हा कुकी आणि साइट डेटा साफ करा</translation>
 <translation id="5280426389926346830">शॉर्टकट तयार करायचा?</translation>
 <translation id="528208740344463258">Android अ‍ॅप्स डाउनलोड करण्यासाठी आणि वापरण्यासाठी, अगोदर तुम्ही हा आवश्यक अपडेट इंस्टॉल करणे गरजेचे आहे. तुमचे <ph name="DEVICE_TYPE" /> अपडेट होत असताना, तुम्ही त्याचा वापर करू शकत नाही. इंस्टॉल झाल्यानंतर तुमचे <ph name="DEVICE_TYPE" /> रीस्टार्ट होईल.</translation>
@@ -3878,7 +3877,6 @@
 <translation id="5449551289610225147">चुकीचा पासवर्ड</translation>
 <translation id="5449588825071916739">सर्व टॅब बुकमार्क करा</translation>
 <translation id="5449716055534515760">विं&amp;डो बंद करा</translation>
-<translation id="5452974209916053028">सध्याचे गुप्त सेशन: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" />, <ph name="RECENT_PERMISSIONS_CHANGE_2" /></translation>
 <translation id="5454005855577728171">कॅप्शन बबल <ph name="POSITION_ON_SCREEN_FROM_LEFT" />% आडवे, <ph name="POSITION_ON_SCREEN_FROM_TOP" />% खाली वर हलवले आहे</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> सह</translation>
 <translation id="5457113250005438886">चुकीचा</translation>
@@ -4097,7 +4095,6 @@
 <translation id="5691581861107245578">तुम्ही काय टाइप करत आहात यावर आधारित इमोजी सूचना मिळवा</translation>
 <translation id="5691772641933328258">फिंगरप्रिंट ओळखले नाही</translation>
 <translation id="5692183275898619210">प्रिंट पूर्ण झाले</translation>
-<translation id="569425414730375234">सध्याचे गुप्त सेशन: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" /></translation>
 <translation id="5695184138696833495">Linux Android अ‍ॅप ADB</translation>
 <translation id="5696143504434933566">"<ph name="EXTENSION_NAME" />" च्‍‍‍‍या गैरवर्तनाची तक्रार करा</translation>
 <translation id="5696177755977520104">Chrome OS सेटिंग्ज सिंक</translation>
@@ -4375,7 +4372,6 @@
 <translation id="6025215716629925253">स्टॅक ट्रेस</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - USB डिव्हाइस कनेक्ट केले</translation>
 <translation id="6028117231645531007">फिंगरप्रिंट जोडा</translation>
-<translation id="6029594605736587274">ब्लॉक केलेली <ph name="PERMISSION" /></translation>
 <translation id="6031600495088157824">टूलबारमध्ये इनपुट पर्याय</translation>
 <translation id="6032715498678347852">या साइटला एक्स्टेंशन अ‍ॅक्सेस देण्यासाठी, त्यावर क्लिक करा.</translation>
 <translation id="6032912588568283682">फाइल सिस्‍टिम</translation>
@@ -4712,6 +4708,7 @@
 <translation id="6412673304250309937">Chrome मध्ये स्टोअर केलेल्या असुरक्षित साइटच्या सूचीमध्ये URL तपासतो. साइटने तुमचा पासवर्ड चोरण्याचा प्रयत्न केल्यास किंवा तुम्ही हानीकारक फाइल डाउनलोड केल्यावर, Chrome, पेज आशयाच्या भागांसह, URL सुरक्षित ब्राउझिंग कडे पाठवू शकतो.</translation>
 <translation id="6412931879992742813">नवीन गुप्त विंडो</translation>
 <translation id="641469293210305670">अपडेट आणि अ‍ॅप्स इंस्टॉल करा</translation>
+<translation id="6414878884710400018">सिस्टम प्राधान्ये उघडा</translation>
 <translation id="6414888972213066896">या साइटला भेट देणे ठीक आहे का ते तुम्ही तुमच्या पालकास विचारले</translation>
 <translation id="6415900369006735853">तुमच्या फोनमधून इंटरनेटशी कनेक्ट करा</translation>
 <translation id="6416743254476733475">अनुमती द्या किंवा तुमच्या कॉंप्युटरवर ब्लॉक करा.</translation>
@@ -4779,6 +4776,7 @@
 <translation id="648927581764831596">काहीही उपलब्ध नाही</translation>
 <translation id="6490471652906364588">USB-C डिव्‍हाइस (उजवे पोर्ट)</translation>
 <translation id="6491376743066338510">ऑथोरायझेशन करता आले नाही</translation>
+<translation id="6494327278868541139">वर्धित संरक्षणाचे तपशील दाखवा</translation>
 <translation id="6494445798847293442">प्रमाणीकरण अधिकृतता नाही</translation>
 <translation id="6494974875566443634">कस्टमायझेशन</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, तुमच्या अ‍ॅडमिनिस्ट्रेटरने व्यवस्थापित केलेले, तपशील</translation>
@@ -4830,7 +4828,6 @@
 <translation id="6550675742724504774">पर्याय</translation>
 <translation id="6551508934388063976">कमांड अनुपलब्ध. एक नवीन विंडो उघडण्यासाठी control-N दाबा.</translation>
 <translation id="6551612971599078809">साइट USB वापरत आहे</translation>
-<translation id="6552395360547205189">सध्याचे गुप्त सेशन: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" /></translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> वापरकर्ते</translation>
 <translation id="655483977608336153">पुन्हा प्रयत्न करा</translation>
 <translation id="6555432686520421228">सर्व वापरकर्ता खाती काढा आणि तुमचा <ph name="IDS_SHORT_PRODUCT_NAME" /> डिव्हाइस अगदी नव्यासारखे सेट करा.</translation>
@@ -5314,6 +5311,7 @@
 <translation id="7108933416628942903">आता लॉक करा</translation>
 <translation id="7109543803214225826">शॉर्टकट काढला</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{गट यामध्ये टॅब जोडा}other{गट यामध्ये टॅब जोडा}}</translation>
+<translation id="7111822978084196600">या विंडोला नाव द्या</translation>
 <translation id="7113502843173351041">तुमचा ईमेल ॲड्रेस माहिती करून घ्या</translation>
 <translation id="7114054701490058191">पासवर्ड जुळत नाहीत</translation>
 <translation id="7114648273807173152">तुमच्या Google खात्यामध्ये साइन इन करण्यासाठी Smart Lock वापरण्याकरिता, सेटिंग्ज &gt; कनेक्ट केलेली डिव्हाइस &gt; तुमचा फोन &gt; Smart Lock वर जा.</translation>
@@ -5575,6 +5573,7 @@
 <translation id="7421925624202799674">पृष्ठ स्रोत &amp;पहा</translation>
 <translation id="7422192691352527311">प्राधान्ये...</translation>
 <translation id="7423098979219808738">प्रथम विचारा</translation>
+<translation id="7423425410216218516"><ph name="MINUTES" /> मिनिटांसाठी दृश्यमानता सुरू आहे</translation>
 <translation id="7423513079490750513"><ph name="INPUT_METHOD_NAME" /> काढून टाका</translation>
 <translation id="7423807071740419372"><ph name="APP_NAME" /> ला रन होण्यासाठी परवानगीची आवश्यकता आहे</translation>
 <translation id="7427348830195639090">पार्श्वभूमी पृष्ठ: <ph name="BACKGROUND_PAGE_URL" /></translation>
@@ -5831,7 +5830,6 @@
 <translation id="7710568461918838723">कास्ट करा...</translation>
 <translation id="7711900714716399411">तुमचा फोन तुमच्या कॉंप्युटरशी कनेक्ट करण्यासाठी USB केबल वापरा. तुमचा फोन आधीपासून कनेक्ट केलेला असल्यास, तो अनप्लग करा आणि तो पुन्हा प्लग इन करा.</translation>
 <translation id="7712739869553853093">प्रिंट पूर्वावलोकन डायलॉग</translation>
-<translation id="7712836429117959503"><ph name="EXTENSION_ID" /> आयडीसह अज्ञात एक्स्टेंशन</translation>
 <translation id="7714307061282548371"><ph name="DOMAIN" /> वरील कुकीजना अनुमती आहे</translation>
 <translation id="7714464543167945231">सर्टिफिकेट</translation>
 <translation id="7716648931428307506">तुमचा पासवर्ड कुठे सेव्ह करायचा ते निवडा</translation>
@@ -6212,7 +6210,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8118488170956489476">तुमच्या संस्थेद्वारे तुमचा <ph name="BEGIN_LINK" />ब्राउझर व्यवस्थापित केलेला आहे<ph name="END_LINK" /></translation>
 <translation id="8118515372935001629">डिस्प्ले रिफ्रेश रेट</translation>
 <translation id="8118860139461251237">तुमचे डाउनलोड व्यवस्थापित करा</translation>
-<translation id="811942868379260654"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" />, <ph name="RECENT_PERMISSIONS_CHANGE_2" /> आणि आणखी</translation>
 <translation id="8119438628456698432">लॉग फाइल जनरेट करत आहे...</translation>
 <translation id="811994229154425014">पूर्णविराम टाइप करण्यासाठी दोनदा स्पेस</translation>
 <translation id="8123590694679414600"><ph name="TIME" /> रोजी तुमचा डेटा तुमच्या सिंक पासफ्रेजसह एंक्रिप्ट केला होता.
@@ -6414,7 +6411,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="835951711479681002">तुमच्या Google खाते मध्ये सेव्ह करा</translation>
 <translation id="8363095875018065315">स्थिर</translation>
 <translation id="8363142353806532503">मायक्रोफोन ब्लॉक केला आहे</translation>
-<translation id="8363763184161554204">अनुमती असलेली <ph name="PERMISSION" /></translation>
 <translation id="8366396658833131068">तुमची नेटवर्क कनेक्टिव्हिटी पुनर्संचयित झाली आहे. कृपया एक भिन्न नेटवर्क निवडा किंवा तुमचा कियोस्क ॲप लाँच करण्यासाठी खालील 'सुरू ठेवा' बटण दाबा.</translation>
 <translation id="8368027906805972958">अज्ञात किंवा सपोर्ट नसलेले डिव्हाइस (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368859634510605990">सर्व बुकमार्क &amp;उघडा</translation>
@@ -6959,6 +6955,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - क्रॅश झाले</translation>
 <translation id="8981825781894055334">पेपर संपत आला आहे</translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> <ph name="FILENAME" /> संपादित करू शकते</translation>
+<translation id="8984694057134206124">तुम्ही <ph name="MINUTES" /> मिनिटांसाठी सर्वांना दृश्यमान असाल. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="8985264973231822211"><ph name="DEVICE_LAST_ACTIVATED_TIME" /> दिवसापूर्वी ॲक्टिव्ह होते</translation>
 <translation id="8986362086234534611">विसरा</translation>
 <translation id="8986494364107987395">Google ला वापर आकडेवारी आणि क्रॅश अहवाल आपोआप पाठवा</translation>
@@ -6973,7 +6970,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="899657321862108550">तुमचे Chrome, सर्वत्र</translation>
 <translation id="899676909165543803">तुमच्या कीबोर्डवर तळाशी उजवीकडे असलेली की फिंगरप्रिंट सेन्सरची आहे. कोणत्याही बोटाने त्याला हळुवार स्पर्श करा.</translation>
 <translation id="8999560016882908256">विभाग सिंटॅक्स एरर: <ph name="ERROR_LINE" /></translation>
-<translation id="9002878223019487115"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" />, <ph name="RECENT_PERMISSIONS_CHANGE_2" /></translation>
 <translation id="9003647077635673607">सर्व वेबसाइटवर अनुमती द्या</translation>
 <translation id="9003677638446136377">पुन्हा तपासा</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, तुमच्या अ‍ॅडमिनिस्ट्रेटरने व्यवस्थापित केलेले, तपशील</translation>

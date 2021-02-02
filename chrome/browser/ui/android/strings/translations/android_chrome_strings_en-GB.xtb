@@ -402,7 +402,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3894427358181296146">Add folder</translation>
 <translation id="3895926599014793903">Force enable zoom</translation>
 <translation id="3908308510347173149">Update <ph name="PRODUCT_NAME" /></translation>
-<translation id="3909763690984331376">Safety check <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">Finding the best from the web…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> is on</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -633,6 +632,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5530766185686772672">Close incognito tabs</translation>
 <translation id="5530920986376047241">You can save pages to your reading list to find them again</translation>
 <translation id="5534640966246046842">Site copied</translation>
+<translation id="5548606607480005320">Safety check</translation>
 <translation id="5556459405103347317">Reload</translation>
 <translation id="5561549206367097665">Waiting for network…</translation>
 <translation id="55737423895878184">Location and notifications are allowed</translation>

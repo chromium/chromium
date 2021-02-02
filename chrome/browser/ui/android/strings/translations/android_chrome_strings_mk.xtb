@@ -402,7 +402,6 @@
 <translation id="3894427358181296146">Додај папка</translation>
 <translation id="3895926599014793903">Присилно овозможи зумирање</translation>
 <translation id="3908308510347173149">Ажурирај го уредот <ph name="PRODUCT_NAME" /></translation>
-<translation id="3909763690984331376">Безбедносна проверка <ph name="BEGIN_NEW" />Нова<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">Го наоѓаме најдоброто на интернет…</translation>
 <translation id="3924911262913579434">Режимот „<ph name="SAFE_BROWSING_MODE" />“ е вклучен</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -633,6 +632,7 @@
 <translation id="5530766185686772672">Затвори инкогнито-картички</translation>
 <translation id="5530920986376047241">Може да зачувувате страници во списокот за читање за да ги наоѓате повторно</translation>
 <translation id="5534640966246046842">Сајтот е копиран</translation>
+<translation id="5548606607480005320">Безбедносна проверка</translation>
 <translation id="5556459405103347317">Повторно вчитај</translation>
 <translation id="5561549206367097665">Се чека мрежа…</translation>
 <translation id="55737423895878184">Локацијата и известувањата се дозволени</translation>
@@ -730,6 +730,7 @@
 <translation id="6122831415929794347">Да се исклучи „Безбедно прелистување“?</translation>
 <translation id="6127379762771434464">Ставката е отстранета</translation>
 <translation id="6137022273846704445">Јазик на <ph name="APP_NAME" /></translation>
+<translation id="6138832295072039549">Променете ги поставките за сајтот тука</translation>
 <translation id="6140709049082532940">Подобрена заштита:</translation>
 <translation id="6140912465461743537">Држава/регион</translation>
 <translation id="614940544461990577">Обидете се:</translation>

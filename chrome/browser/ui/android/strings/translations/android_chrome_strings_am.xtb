@@ -402,7 +402,6 @@
 <translation id="3894427358181296146">አቃፊ ያክሉ</translation>
 <translation id="3895926599014793903">ማጉላት አንቃን ያስገድዱ</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" />ን ያዘምኑ</translation>
-<translation id="3909763690984331376">የደህንነት ፍተሻ <ph name="BEGIN_NEW" />አዲስ<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">ምርጡን ከድር ማግኘት…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> በርቷል</translation>
 <translation id="3927692899758076493">ሳንስ ሰሪፍ</translation>
@@ -633,6 +632,7 @@
 <translation id="5530766185686772672">ማንነት የማያሳውቁ ትሮችን ዝጋ</translation>
 <translation id="5530920986376047241">እነሱን እንደገና ለማግኘት ገጾችን በንባብ ዝርዝርዎ ውስጥ ማስቀመጥ ይችላሉ</translation>
 <translation id="5534640966246046842">ጣቢያ ተቀድቷል</translation>
+<translation id="5548606607480005320">የደህንነት ፍተሻ</translation>
 <translation id="5556459405103347317">ዳግም ጫን</translation>
 <translation id="5561549206367097665">አውታረ መረብን በመጠበቅ ላይ…</translation>
 <translation id="55737423895878184">አካባቢ እና ማሳወቂያዎች ይፈቀዳሉ</translation>
@@ -730,6 +730,7 @@
 <translation id="6122831415929794347">የጥንቃቄ አሰሳ ይጥፋ?</translation>
 <translation id="6127379762771434464">ንጥል ተወግዷል</translation>
 <translation id="6137022273846704445">የ<ph name="APP_NAME" /> ቋንቋ</translation>
+<translation id="6138832295072039549">የእርስዎን የጣቢያ ቅንብሮች እዚህ ላይ ይለውጡ</translation>
 <translation id="6140709049082532940">የላቀ ጥበቃ</translation>
 <translation id="6140912465461743537">አገር/ክልል</translation>
 <translation id="614940544461990577">ይሞክሩ፦</translation>

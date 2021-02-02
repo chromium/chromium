@@ -1059,6 +1059,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> and 1 more switch</translation>
 <translation id="2165421703844373933">Access your Assistant when you say "Ok Google". To save battery, choose 'On (Recommended)'. Your Assistant will respond only when your device is plugged in or charging.</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
+<translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Sign in anyway</translation>
 <translation id="2170054054876170358">Make sure that your phone is nearby, unlocked and has Bluetooth and Wi-Fi turned on.</translation>
 <translation id="2173302385160625112">Check your Internet connection</translation>
@@ -1110,7 +1111,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2225864335125757863">Change these passwords immediately to keep your account safe:</translation>
 <translation id="2226449515541314767">This site has been blocked from having full control of MIDI devices.</translation>
 <translation id="2226907662744526012">Unlock automatically once PIN is entered</translation>
-<translation id="222704500187107962">This exception will be automatically removed after you exit the current Incognito session</translation>
 <translation id="2227179592712503583">Remove suggestion</translation>
 <translation id="2229161054156947610">More than 1 hour left</translation>
 <translation id="222931766245975952">File truncated</translation>
@@ -1282,7 +1282,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2428939361789119025">Turn off Wi-Fi</translation>
 <translation id="2431027948063157455">Google Assistant was unable to load. Please check your network connection and retry.</translation>
 <translation id="2433452467737464329">Add a query param in URL to auto-refresh the page: chrome://network/?refresh=&lt;sec&gt;</translation>
-<translation id="2433490881840073798"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE" /></translation>
 <translation id="2433507940547922241">Appearance</translation>
 <translation id="2433836460518180625">Unlock device only</translation>
 <translation id="2434449159125086437">Unable to set up printer. Please check configuration and try again.</translation>
@@ -3088,7 +3087,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4492698018379445570">Find what you added to shopping baskets and check out when you're ready</translation>
 <translation id="4493468155686877504">Recommended (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">Don't show on this page</translation>
-<translation id="4496054781541092778">automatically blocked <ph name="PERMISSION" /></translation>
 <translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> has crashed</translation>
 <translation id="450099669180426158">Exclamation mark icon</translation>
 <translation id="4501530680793980440">Confirm Removal</translation>
@@ -3110,7 +3108,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4519935350946509010">Connection error.</translation>
 <translation id="4520385623207007473">Cookies in use</translation>
 <translation id="452039078290142656">unknown devices from <ph name="VENDOR_NAME" /></translation>
-<translation id="4521489190203965562">Current incognito session: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" />, <ph name="RECENT_PERMISSIONS_CHANGE_2" /> and more</translation>
 <translation id="4522570452068850558">Details</translation>
 <translation id="4522600456902129422">Continue allowing this site to see the clipboard</translation>
 <translation id="4524832533047962394">The supplied enrolment mode is not supported by this version of the operating system. Please make sure that you are running the newest version.</translation>
@@ -3741,7 +3738,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="527605982717517565">Always allow JavaScript on <ph name="HOST" /></translation>
 <translation id="5278823018825269962">Status ID</translation>
 <translation id="5280064835262749532">Update credentials for <ph name="SHARE_PATH" /></translation>
-<translation id="5280174558369304332">Extensions to be removed:</translation>
 <translation id="5280243692621919988">Clear cookies and site data when you close all windows</translation>
 <translation id="5280426389926346830">Create Shortcut?</translation>
 <translation id="528208740344463258">To download and use Android apps, first you need to install this required update. While your <ph name="DEVICE_TYPE" /> is updating, you can’t use it. After installation is complete, your <ph name="DEVICE_TYPE" /> will restart.</translation>
@@ -3887,7 +3883,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5449551289610225147">Invalid password</translation>
 <translation id="5449588825071916739">Bookmark All Tabs</translation>
 <translation id="5449716055534515760">Close Win&amp;dow</translation>
-<translation id="5452974209916053028">Current incognito session: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" />, <ph name="RECENT_PERMISSIONS_CHANGE_2" /></translation>
 <translation id="5454005855577728171">Moved caption bubble to <ph name="POSITION_ON_SCREEN_FROM_LEFT" />% across, <ph name="POSITION_ON_SCREEN_FROM_TOP" />% down</translation>
 <translation id="5454166040603940656">with <ph name="PROVIDER" /></translation>
 <translation id="5457113250005438886">Invalid</translation>
@@ -4107,7 +4102,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5691581861107245578">Get emoji suggestions based on what you're typing</translation>
 <translation id="5691772641933328258">Fingerprint not recognised</translation>
 <translation id="5692183275898619210">Printing complete</translation>
-<translation id="569425414730375234">Current incognito session: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" /></translation>
 <translation id="5695184138696833495">Linux Android app ADB</translation>
 <translation id="5696143504434933566">Report abuse from '<ph name="EXTENSION_NAME" />'</translation>
 <translation id="5696177755977520104">Chrome OS settings sync</translation>
@@ -4385,7 +4379,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6025215716629925253">Stack Trace</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – USB device connected</translation>
 <translation id="6028117231645531007">Add fingerprint</translation>
-<translation id="6029594605736587274">blocked <ph name="PERMISSION" /></translation>
 <translation id="6031600495088157824">Input options in toolbar</translation>
 <translation id="6032715498678347852">To give an extension access to this site, click it.</translation>
 <translation id="6032912588568283682">File system</translation>
@@ -4843,7 +4836,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6550675742724504774">Options</translation>
 <translation id="6551508934388063976">Command unavailable. Press control-N to open a new window.</translation>
 <translation id="6551612971599078809">Site is using USB</translation>
-<translation id="6552395360547205189">Current incognito session: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" /></translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> users</translation>
 <translation id="655483977608336153">Try again</translation>
 <translation id="6555432686520421228">Remove all user accounts and reset your <ph name="IDS_SHORT_PRODUCT_NAME" /> device to be just like new.</translation>
@@ -5846,7 +5838,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7710568461918838723">&amp;Cast...</translation>
 <translation id="7711900714716399411">Use a USB cable to connect your phone to your computer. If your phone is already connected, unplug it and plug it back in.</translation>
 <translation id="7712739869553853093">Print preview dialogue</translation>
-<translation id="7712836429117959503">Unknown extension with ID <ph name="EXTENSION_ID" /></translation>
 <translation id="7714307061282548371">Cookies from <ph name="DOMAIN" /> allowed</translation>
 <translation id="7714464543167945231">Certificate</translation>
 <translation id="7716648931428307506">Select where to save your password</translation>
@@ -6230,7 +6221,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8118488170956489476">Your <ph name="BEGIN_LINK" />browser is managed<ph name="END_LINK" /> by your organisation</translation>
 <translation id="8118515372935001629">Display refresh rate</translation>
 <translation id="8118860139461251237">Manage your downloads</translation>
-<translation id="811942868379260654"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" />, <ph name="RECENT_PERMISSIONS_CHANGE_2" /> and more</translation>
 <translation id="8119438628456698432">Generating log files…</translation>
 <translation id="811994229154425014">Double-space to type full stop</translation>
 <translation id="8123590694679414600">Data was encrypted with your sync passphrase on
@@ -6432,7 +6422,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="835951711479681002">Save in your Google Account</translation>
 <translation id="8363095875018065315">stable</translation>
 <translation id="8363142353806532503">Microphone blocked</translation>
-<translation id="8363763184161554204">allowed <ph name="PERMISSION" /></translation>
 <translation id="8366396658833131068">Your network connectivity is restored. Please select a different network or press 'Continue' button below to launch your kiosk app.</translation>
 <translation id="8368027906805972958">Unknown or unsupported device (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368859634510605990">&amp;Open all bookmarks</translation>
@@ -6992,7 +6981,6 @@ Press an assigned switch to remove assignment.</translation>
 <translation id="899657321862108550">Your Chrome, Everywhere</translation>
 <translation id="899676909165543803">The fingerprint sensor is the bottom-right key on your keyboard. Touch it lightly with any finger.</translation>
 <translation id="8999560016882908256">Section syntax error: <ph name="ERROR_LINE" /></translation>
-<translation id="9002878223019487115"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" /> <ph name="RECENT_PERMISSIONS_CHANGE_2" /></translation>
 <translation id="9003647077635673607">Allow on all websites</translation>
 <translation id="9003677638446136377">Check again</translation>
 <translation id="9003940392834790328">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, managed by your administrator, details</translation>

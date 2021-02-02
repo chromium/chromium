@@ -62,6 +62,7 @@
 <translation id="2338501278241028356">블루투스를 사용 설정하여 근처 기기 탐색</translation>
 <translation id="2364498172489649528">통과</translation>
 <translation id="2391082728065870591">의견 보고서 보내기</translation>
+<translation id="2418150275289244458">설정에서 열기</translation>
 <translation id="2446553403094072641">부동 소수점 정확성</translation>
 <translation id="2448312741937722512">유형</translation>
 <translation id="2461822463642141190">현재</translation>
@@ -273,6 +274,7 @@
 <translation id="7177485034254901881">이 <ph name="DEVICE_TYPE" />은(는) <ph name="MANAGER" />에서 관리합니다. 관리자가 기기를 원격으로 구성할 수 있습니다.</translation>
 <translation id="7216409898977639127">이동통신사</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7343649194310845056">네트워크 기기</translation>
 <translation id="7359657277149375382">파일 형식</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -282,6 +284,7 @@
 <translation id="7490813197707563893">MAC 주소</translation>
 <translation id="7497215489070763236">서버 CA 인증서</translation>
 <translation id="7502658306369382406">IPv6 주소</translation>
+<translation id="7550715992156305117">진단 루틴</translation>
 <translation id="7561454561030345039">관리자가 관리하는 작업입니다.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> 남음</translation>

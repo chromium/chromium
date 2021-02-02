@@ -62,6 +62,7 @@
 <translation id="2338501278241028356">Uključite Bluetooth da otkrijete uređaje u blizini</translation>
 <translation id="2364498172489649528">Uspješno</translation>
 <translation id="2391082728065870591">Pošalji izvještaj o povratnim informacijama</translation>
+<translation id="2418150275289244458">Otvori u postavkama</translation>
 <translation id="2446553403094072641">Preciznost izračunavanja s pokretim zarezom</translation>
 <translation id="2448312741937722512">Vrsta</translation>
 <translation id="2461822463642141190">Trenutno</translation>
@@ -273,6 +274,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="7177485034254901881">Ovim uređajem <ph name="DEVICE_TYPE" /> upravlja <ph name="MANAGER" />. Administratori mogu daljinski konfigurirati uređaj.</translation>
 <translation id="7216409898977639127">Mobilni operater</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7343649194310845056">Mrežni uređaji</translation>
 <translation id="7359657277149375382">Vrsta datoteke</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -282,6 +284,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="7490813197707563893">MAC adresa</translation>
 <translation id="7497215489070763236">CA certifikat servera</translation>
 <translation id="7502658306369382406">IPv6 adresa</translation>
+<translation id="7550715992156305117">Rutine dijagnostike</translation>
 <translation id="7561454561030345039">Ovom radnjom upravlja vaš administrator</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331">Još <ph name="TIME_VALUE" /></translation>

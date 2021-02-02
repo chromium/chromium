@@ -402,7 +402,6 @@
 <translation id="3894427358181296146">ဖိုလ်ဒါ ထည့်ရန်</translation>
 <translation id="3895926599014793903">ဇူးမ် အတင်း ဖွင့်ရန်</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> ကို အပ်ဒိတ်လုပ်ပါ</translation>
-<translation id="3909763690984331376">လုံခြုံရေး စစ်ဆေးမှု <ph name="BEGIN_NEW" />အသစ်<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">ဝဘ်မှ အကောင်းဆုံးကို ရှာနေသည်…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> ကို ဖွင့်ထားသည်</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -633,6 +632,7 @@
 <translation id="5530766185686772672">လျှို့ဝှက်သုံးတဘ်များပိတ်ပါ</translation>
 <translation id="5530920986376047241">စာမျက်နှာများကို နောက်တစ်ကြိမ်ရှာတွေ့ရန် သင့်ဖတ်ရန်စာရင်းတွင် သိမ်းနိုင်သည်</translation>
 <translation id="5534640966246046842">ဝဘ်ဆိုက်ကို ကူးပြီးပါပြီ</translation>
+<translation id="5548606607480005320">လုံခြုံရေး စစ်ဆေးမှု</translation>
 <translation id="5556459405103347317">ပြန်တင်ရန်</translation>
 <translation id="5561549206367097665">ကွန်ရက်ကို စောင့်နေသည်…</translation>
 <translation id="55737423895878184">တည်နေရာနှင့် အကြောင်းကြားချက်များကို ခွင့်ပြုထားပါသည်</translation>
@@ -730,6 +730,7 @@
 <translation id="6122831415929794347">'ဘေးကင်းစွာ အသုံးပြုခြင်း' ကို ပိတ်လိုသလား။</translation>
 <translation id="6127379762771434464">အကြောင်းအရာကို ဖယ်ရှားလိုက်ပါပြီ</translation>
 <translation id="6137022273846704445"><ph name="APP_NAME" /> ၏ ဘာသာစကား</translation>
+<translation id="6138832295072039549">သင့်ဝဘ်ဆိုက်ဆက်တင်များကို ဤနေရာတွင် ပြောင်းပါ</translation>
 <translation id="6140709049082532940">အရည်အသွေးမြှင့်တင်ထားသည့် ကာကွယ်မှု -</translation>
 <translation id="6140912465461743537">နိုင်ငံ/ဒေသ</translation>
 <translation id="614940544461990577">စမ်းကြည့်ပါ −</translation>

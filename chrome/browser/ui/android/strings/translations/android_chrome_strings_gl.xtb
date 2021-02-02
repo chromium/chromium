@@ -402,7 +402,6 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="3894427358181296146">Engadir cartafol</translation>
 <translation id="3895926599014793903">Forzar a activación do zoom</translation>
 <translation id="3908308510347173149">Actualizar <ph name="PRODUCT_NAME" /></translation>
-<translation id="3909763690984331376">Revisión de seguranza <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">Buscando o mellor contido da Web…</translation>
 <translation id="3924911262913579434">A función <ph name="SAFE_BROWSING_MODE" /> está activada</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -633,6 +632,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5530766185686772672">Pechar pestanas incógnito</translation>
 <translation id="5530920986376047241">Podes gardar páxinas na túa lista de lectura para acceder a elas de novo</translation>
 <translation id="5534640966246046842">Copiouse o sitio</translation>
+<translation id="5548606607480005320">Revisión de seguranza</translation>
 <translation id="5556459405103347317">Volver cargar</translation>
 <translation id="5561549206367097665">Esperando unha rede…</translation>
 <translation id="55737423895878184">Permítese consultar a localización e mostrar notificacións</translation>
@@ -730,6 +730,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="6122831415929794347">Queres desactivar a función Navegación segura?</translation>
 <translation id="6127379762771434464">Eliminouse o elemento</translation>
 <translation id="6137022273846704445">Idioma de <ph name="APP_NAME" /></translation>
+<translation id="6138832295072039549">Cambia aquí a configuración do teu sitio</translation>
 <translation id="6140709049082532940">Protección mellorada:</translation>
 <translation id="6140912465461743537">País/rexión</translation>
 <translation id="614940544461990577">Proba a facer o seguinte:</translation>

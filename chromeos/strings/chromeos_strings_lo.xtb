@@ -62,6 +62,7 @@
 <translation id="2338501278241028356">ເປີດ Bluetooth ເພື່ອຊອກຫາອຸປະກອນທີ່ຢູ່ໃກ້ຄຽງ</translation>
 <translation id="2364498172489649528">ຜ່ານແລ້ວ</translation>
 <translation id="2391082728065870591">ສົ່ງລາຍງານຄຳຕິຊົມ</translation>
+<translation id="2418150275289244458">ເປີດໃນການຕັ້ງຄ່າ</translation>
 <translation id="2446553403094072641">ຄວາມຖືກຕ້ອງຂອງຈຸດລອຍຕົວ</translation>
 <translation id="2448312741937722512">ປະ​ເພດ</translation>
 <translation id="2461822463642141190">ປັດຈຸບັນ</translation>
@@ -274,6 +275,7 @@
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> ນີ້ຈັດການໂດຍ <ph name="MANAGER" />. ຜູ້ເບິ່ງແຍງລະບົບອາດຈະຕັ້ງຄ່າອຸປະກອນຈາກທາງໄກໄດ້.</translation>
 <translation id="7216409898977639127">ຜູ້ໃຫ້ບໍລິການມືຖື</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7343649194310845056">ອຸປະກອນເຄືອຂ່າຍ</translation>
 <translation id="7359657277149375382">ປະເພດໄຟລ໌</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -283,6 +285,7 @@
 <translation id="7490813197707563893">ທີ່ຢູ່ MAC</translation>
 <translation id="7497215489070763236">ໃບຢັ້ງຢືນ CA ຂອງເຊີບເວີ</translation>
 <translation id="7502658306369382406">ທີ່ຢູ່ IPv6</translation>
+<translation id="7550715992156305117">ການວິນິໄສທີ່ເຮັດປະຈຳ</translation>
 <translation id="7561454561030345039">ການດຳເນີນການນີ້ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331">ຍັງເຫຼືອ <ph name="TIME_VALUE" /></translation>

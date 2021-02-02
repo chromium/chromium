@@ -265,6 +265,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="6977381486153291903">Firmware-Version</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> verwaltet dieses Gerät und hat Zugriff auf alle Nutzeraktivitäten, einschließlich besuchter Webseiten, Passwörter und E-Mails.</translation>
 <translation id="7040230719604914234">Operator</translation>
+<translation id="7059230779847288458">Vollständig geladen in <ph name="TIME_VALUE" /></translation>
 <translation id="708426984172631313">ABGEBROCHEN</translation>
 <translation id="7143207342074048698">Verbindung...</translation>
 <translation id="714876143603641390">LAN-Konnektivität</translation>
@@ -283,6 +284,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="7502658306369382406">IPv6-Adresse</translation>
 <translation id="7561454561030345039">Diese Aktion wird von Ihrem Administrator verwaltet</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331">Noch <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Weitere Informationen in der Hilfe</translation>
 <translation id="7648838807254605802">Hohe HTTPS-Latenz</translation>
 <translation id="7658239707568436148">Abbrechen</translation>

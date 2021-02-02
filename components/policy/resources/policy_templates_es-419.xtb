@@ -351,25 +351,6 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
       Si no estableces la política, <ph name="PRODUCT_NAME" /> intentará detectar si un servidor se encuentra en la intranet. Solo en ese caso responderá a las solicitudes de IWA. Si se detecta un servidor como Internet, <ph name="PRODUCT_NAME" /> ignorará las solicitudes de IWA que provengan de ese servidor.
 
       Nota: Los nombres de los servidores se separan con comas. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).</translation>
-<translation id="1488406778491620405">La función de accesibilidad de <ph name="PRODUCT_NAME" />
-          permite que los usuarios del lector de pantalla para personas con discapacidad visual
-          obtengan descripciones de las imágenes sin etiquetar que se encuentran en la Web. Los usuarios que habiliten esta función
-          podrán usar un servicio anónimo de Google para
-          obtener descripciones automáticas de las imágenes sin etiquetar que encuentran en la Web.
-
-          Si se habilita esta función, el contenido de las imágenes se enviará a los servidores de Google
-          para generar una descripción. No se enviarán cookies ni otros datos
-          del usuario. Además, Google no guardará ni registrará el contenido de las imágenes.
-
-          Si se establece esta política como verdadera, se habilitará la función de
-          <ph name="PRODUCT_NAME" />,
-          aunque solo afectará a los usuarios que usen un
-          lector de pantalla o alguna otra tecnología de accesibilidad.
-
-          Si se establece esta política como falsa, los usuarios no podrán habilitar
-          la función.
-
-          Si la estableces, los usuarios no podrán cambiarla ni anularla.</translation>
 <translation id="1502843533062797703">Habilitar el bloqueo de inserción de software de terceros</translation>
 <translation id="1506017854924185821">Disponibilidad del selector de perfiles en el inicio</translation>
 <translation id="1509377996969000672">Si estableces la política, se proporcionan configuraciones para las impresoras empresariales vinculadas a dispositivos. Su formato coincide con el diccionario de <ph name="NATIVE_PRINTERS_POLICY_NAME" />. Incluye un campo "id" o "guid" obligatorio adicional para cada impresora para la lista de impresoras permitidas o bloqueadas. El tamaño del archivo no puede superar los 5 MB y está en formato JSON (un archivo de ese tamaño contiene aproximadamente 21,000 impresoras). El hash criptográfico permite verificar la integridad de la descarga. Cada vez que cambie la URL o el hash, se descargará el archivo, se almacenará en caché y se volverá a descargar. <ph name="PRODUCT_OS_NAME" /> descargará el archivo para las configuraciones de impresoras y hará que las impresoras estén disponibles junto con <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> y <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.
@@ -1738,12 +1719,6 @@ Esta política solo se puede establecer en la Consola del administrador de Googl
       podrá descargar la imagen de fondo de pantalla y un hash criptográfico (en formato JPEG con un tamaño de archivo de hasta 16 MB) para verificar su integridad.
 
       Si no estableces la política, los usuarios podrán elegir la imagen de fondo para la pantalla de acceso y el escritorio.</translation>
-<translation id="3312206664202507568">Habilita una página en chrome://password-change que permite a los usuarios de SAML cambiar sus contraseñas de SAML durante la sesión, lo que asegura que se sincronicen la contraseña de SAML y la de bloqueo de pantalla del dispositivo.
-
-      Esta política también habilita las notificaciones para advertir a los usuarios de SAML de que sus contraseñas de SAML están a punto de caducar, para que puedan renovarlas de inmediato durante la sesión.
-      Sin embargo, solo se mostrarán estas notificaciones si el proveedor de identidad de SAML envía la información de vencimiento de contraseña al dispositivo durante el proceso de acceso de SAML.
-
-      Si configuras esta política, el usuario no podrá cambiarla ni anularla.</translation>
 <translation id="332771718998993005">Determina el nombre anunciado como un destino de <ph name="PRODUCT_NAME" />.
 
           Si esta política se establece con una string no vacía, esa string se usará como el nombre del destino de <ph name="PRODUCT_NAME" />. De lo contrario, el nombre del destino será el nombre del dispositivo. Si esta política no se establece, el nombre del destino será el nombre del dispositivo, y el propietario del dispositivo (o un usuario del dominio que administre el dispositivo) podrá cambiarlo. El nombre tiene un límite máximo de 24 caracteres.</translation>
@@ -1885,11 +1860,6 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
 <translation id="350443680860256679">Configurar ARC</translation>
 <translation id="350797926066071931">Habilitar Traductor de Google</translation>
 <translation id="3508047333410537654">Habilita la función de audio mono en la pantalla de acceso</translation>
-<translation id="3509819648242653622">Si estableces la política, no podrán cargarse las páginas web que tengan URL prohibidas. Proporciona una lista de patrones de URL donde se especifican URL prohibidas. Si no estableces la política, no se prohibirá ninguna URL en el navegador. El patrón de una URL debe presentar un formato conforme a lo especificado en https://www.chromium.org/administrators/url-blacklist-filter-format. Se pueden definir 1,000 excepciones como máximo en la política <ph name="URL_ALLOWLIST_POLICY_NAME" />.
-
-      A partir de la versión 73 de <ph name="PRODUCT_NAME" />, podrás bloquear las URL javascript://*. Sin embargo, la política solo afectará el lenguaje JavaScript ingresado en la barra de direcciones (o, por ejemplo, bookmarklets). Quedan excluidas de esta política las URL de JavaScript en páginas con datos cargados dinámicamente. Por ejemplo, si bloqueas example.com/abc, la página example.com podrá seguir cargando example.com/abc mediante XMLHTTPRequest.
-
-      Nota: Si bloqueas las URL internas de chrome://*, se pueden generar errores inesperados.</translation>
 <translation id="3513655665999652754">Quirks Server proporciona archivos de configuración específicos de hardware, como perfiles de visualización de ICC, para ajustar la calibración del monitor.
 
       Si esta política se configura como falsa, el dispositivo no intentará comunicarse con Quirks Server para descargar archivos de configuración.
@@ -2207,11 +2177,6 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
 <translation id="3942041691320538491">Si le asignas a la política el valor "0" (la opción predeterminada), podrás acceder a las herramientas para desarrolladores y la Consola de JavaScript, aunque no podrás hacerlo en el contexto de extensiones instaladas por una política empresarial. Si le asignas a la política el valor "1", podrás acceder a las herramientas para desarrolladores y la Consola de JavaScript en todos los contextos, incluido el de extensiones instaladas por una política empresarial. Si le asignas a la política el valor "2", no podrás acceder a las herramientas para desarrolladores ni inspeccionar elementos de sitios web.
 
       Esta configuración también desactivará las combinaciones de teclas y las entradas del menú contextual o de cualquier menú que permiten abrir las herramientas para desarrolladores o la Consola de JavaScript.</translation>
-<translation id="3947431236979598549">Permite habilitar o inhabilitar una notificación cuando hay poco espacio disponible en el disco. Se aplica a todos los usuarios del dispositivo.
-
-      Se ignorará esta política y se mostrará la notificación siempre si el dispositivo no está administrado o hay solo un usuario.
-
-      Si hay múltiples cuentas de usuario en un dispositivo administrado, se mostrará la notificación solo cuando esté habilitada la política.</translation>
 <translation id="3950110092991281616">Permite la autenticación ambiental solo en sesiones comunes.</translation>
 <translation id="3950239119790560549">Actualizar las restricciones de tiempo</translation>
 <translation id="3956686688560604829">Usar la política SiteList de Internet Explorer para la extensión Compatibilidad con navegadores heredados</translation>
@@ -2310,9 +2275,6 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
       Si estableces la política, los usuarios no podrán cambiarla. Si no la estableces, la lupa estará desactivada al principio, pero los usuarios podrán activarla en cualquier momento.</translation>
 <translation id="410068710490553233">Permite acceder en más Cuentas de Google</translation>
 <translation id="4101282687722389021">Una marca de tiempo (UTC) que indica la última vez que se actualizó esta entrada. Se envía como un string ya que la marca de tiempo no entra en un valor entero.</translation>
-<translation id="4103177213841380258">Esta política regula el acceso a las funciones controlables de la IU de descubrimiento local (<ph name="CHROME_DEVICES_LINK" />) que muestra cuáles son los dispositivos detectables cerca del usuario y los dispositivos en la nube que están registrados con él. En todos los sistemas operativos, excepto en <ph name="PRODUCT_OS_NAME" />, la IU de descubrimiento local también permite que los usuarios agreguen a <ph name="CLOUD_PRINT_NAME" /> impresoras clásicas conectadas a sus computadoras.
-
-      Si no estableces esta política, se habilitará esta función.</translation>
 <translation id="4103289232974211388">Redireccionar al IdP de SAML después de la confirmación del usuario</translation>
 <translation id="4105884561459127998">Configura el tipo de autenticación para los accesos SAML.
 
@@ -2945,13 +2907,6 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
 <translation id="5152393033264257734">Permite las revisiones de intercepción de DNS y las barras de información de "http://intranetsite/" para "quisiste decir".</translation>
 <translation id="5152787786897382519">Chromium y Google Chrome tienen algunos grupos de políticas que dependen unos de otros para controlar una función. Los siguientes grupos de políticas representan estos conjuntos. Como las políticas pueden tener diferentes fuentes, solo se aplicarán los valores que provengan de la fuente de mayor prioridad. Se ignorarán los valores que provengan de una fuente de menor prioridad perteneciente al mismo grupo. El orden de prioridad se define en <ph name="POLICY_PRIORITY_DOC_URL" />.</translation>
 <translation id="5153187201534281749">Ícono de experimentos del navegador de la barra de herramientas</translation>
-<translation id="515816885693899426">Esta política dejó de estar disponible. Usa la política "<ph name="URL_BLOCKLIST_POLICY_NAME" />" en su lugar.
-
-      Si estableces la política, no podrán cargarse las páginas web que tengan URL prohibidas. Proporciona una lista de patrones de URL donde se especifican URL prohibidas. Si no estableces la política, no se prohibirá ninguna URL en el navegador. El patrón de una URL debe presentar un formato conforme a lo especificado en https://www.chromium.org/administrators/url-blacklist-filter-format. Se pueden definir 1,000 excepciones como máximo en la política <ph name="URL_ALLOWLIST_POLICY_NAME" />.
-
-      A partir de la versión 73 de <ph name="PRODUCT_NAME" />, podrás bloquear las URL javascript://*. Sin embargo, la política solo afectará el lenguaje JavaScript ingresado en la barra de direcciones (o, por ejemplo, bookmarklets). Quedan excluidas de esta política las URL de JavaScript en páginas con datos cargados dinámicamente. Por ejemplo, si bloqueas example.com/abc, la página example.com podrá seguir cargando example.com/abc mediante XMLHTTPRequest.
-
-      Nota: Si bloqueas las URL internas de chrome://*, se pueden generar errores inesperados.</translation>
 <translation id="5163002264923337812">Habilitar la forma de acceso antigua basada en la Web</translation>
 <translation id="516520353995300280">Si estableces la política, se inhabilitará la aplicación de los requisitos de divulgación del Certificado de transparencia en una lista de autoridades certificadoras (CA) heredadas para las cadenas que contengan certificados con uno de los hash de <ph name="SUBJECT_PUBLIC_KEY_INFO" /> especificados. Los hosts empresariales podrán seguir usando los certificados que no sean de confianza (porque no se divulgaron públicamente de forma correcta). Para inhabilitar la aplicación, los hash de <ph name="SUBJECT_PUBLIC_KEY_INFO" /> deben aparecer en un certificado de CA reconocido como CA heredada. Una CA heredada cuenta con la confianza pública de uno o más sistemas operativos compatibles con <ph name="PRODUCT_NAME" />, pero no del Proyecto de código abierto de Android o <ph name="PRODUCT_OS_NAME" />.
 
@@ -3619,11 +3574,6 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="6099853574908182288">Modo predeterminado de impresión a color</translation>
 <translation id="6102342563050263313">Habilitar el desplazamiento al texto especificado en fragmentos de URL</translation>
 <translation id="6107642964266628393">Controla cuándo y cómo se aplican las actualizaciones del Sistema operativo Chrome.</translation>
-<translation id="6110478331147706293">Si estableces la política, se desactivarán los requisitos de divulgación del Certificado de transparencia para los nombres de host en las URL especificadas. Si bien esta acción dificulta la detección de los certificados que se usan de forma incorrecta, los hosts pueden seguir usando certificados que no sean de confianza (porque no se divulgaron públicamente de forma correcta).
-
-      Si no estableces esta política, <ph name="PRODUCT_NAME" /> considerará que no son de confianza los certificados que no se divulguen, a pesar de requerir divulgación mediante el Certificado de transparencia.
-
-      El patrón de una URL tiene el siguiente formato (https://www.chromium.org/administrators/url-blacklist-filter-format). Sin embargo, dado que la validez de los certificados para un nombre de host específico no depende del esquema, el puerto ni la ruta, <ph name="PRODUCT_NAME" /> solo considerará la porción de la URL con el nombre de host. Los hosts con comodines no son compatibles.</translation>
 <translation id="6111936128861357925">Permitir juego del huevo de pascua del dinosaurio</translation>
 <translation id="6123052603197028610">No permite que las consultas que se envíen a los servidores de Google recuperen marcas de tiempo</translation>
 <translation id="6132506775968708399">Bloquea cookies de terceros</translation>
@@ -3836,15 +3786,6 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="6453641799812499182">Permite que <ph name="CORS" /> revise las mitigaciones en la nueva implementación de <ph name="CORS" /></translation>
 <translation id="645425387487868471">Permitir forzar el acceso para <ph name="PRODUCT_NAME" /></translation>
 <translation id="6458361632497500815">Si habilitas la política o no la estableces, todos los usuarios podrán utilizar <ph name="PRODUCT_CROSTINI_NAME" /> siempre que estén habilitadas las 3 políticas (<ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" />, <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> y <ph name="DEVICE_UNAFFILIATED_CROSTINI_ALLOWED_POLICY_NAME" />). Si inhabilitas la política, los usuarios no afiliados no podrán usar <ph name="PRODUCT_CROSTINI_NAME" />. En ese caso, se comenzará a aplicar la política en los contenedores de <ph name="PRODUCT_CROSTINI_NAME" /> que se inicien a partir de ese momento, pero no en aquellos que ya estén en ejecución.</translation>
-<translation id="646376229090051440">Te permite configurar una lista de protocolos y, para cada protocolo, una lista asociada de patrones de origen permitidos, que pueden ejecutar una aplicación externa sin pedirle permiso al usuario. El separador no debe incluirse cuando se enumera el protocolo; por lo tanto, usa "skype" en lugar de usar "skype:" o "skype://".
-
-      Si estableces esta política, un protocolo solo podrá ejecutar una aplicación externa sin pedir permiso según la política si el protocolo aparece en la lista y el origen del sitio que intenta ejecutar el protocolo coincide con uno de los patrones de origen que se encuentra en la lista allowed_origins de ese protocolo. Si no se cumple alguna de estas condiciones, la política no omitirá el pedido de permiso para la ejecución por parte del protocolo externo.
-
-      Si no estableces la política, los protocolos podrán ejecutar aplicaciones sin solicitar permiso de forma predeterminada. A menos que se inhabilite la política <ph name="EXTERNAL_PROTOCOL_DIALOG_SHOW_ALWAYS_OPEN_CHECKBOX_POLICY_NAME" />, los usuarios podrán rechazar las solicitudes de permiso según cada protocolo o sitio. Esta política no modifica las excepciones de solicitudes de permiso que establecen los usuarios para cada protocolo o sitio.
-
-      Los patrones de coincidencia de orígenes usan un formato similar a los de la política "<ph name="URL_BLOCKLIST_POLICY_NAME" />", que se documentan en http://www.chromium.org/administrators/url-blacklist-filter-format.
-
-      Sin embargo, los patrones de coincidencia de orígenes para esta política no pueden incluir los elementos "/path" o "@query". Se ignorará cualquier patrón que contenga alguno de estos elementos.</translation>
 <translation id="6464074037294098618">Habilitar "Autocompletar" para las direcciones</translation>
 <translation id="6467613372414922590">Permite el uso de hosts de mensajería nativa en el nivel de usuario (instalados sin permisos de administrador).</translation>
 <translation id="6473623140202114570">Configura la lista de dominios donde la Navegación segura no activa advertencias.</translation>
@@ -4451,7 +4392,6 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
       Si no se establece esta política, es posible que el navegador envíe solicitudes de DNS sobre HTTPS a un agente de resolución asociado al agente de resolución configurado por el usuario en el sistema operativo.</translation>
 <translation id="7158358621906236999">Configuración predeterminada de los sensores</translation>
 <translation id="7167436895080860385">Permitir que los usuarios muestren las contraseñas en el administrador de contraseñas (dejó de estar disponible)</translation>
-<translation id="7170049569641162846">Permitir el descubrimiento de dispositivos locales</translation>
 <translation id="7173856672248996428">Perfil efímero</translation>
 <translation id="717630378807352957">Permite todas las impresoras del archivo de configuración.</translation>
 <translation id="7177293255621000064">Si estableces la política como verdadera, no estará disponible en el navegador de archivos ningún tipo de medios de almacenamiento (unidades de memoria flash USB, discos duros externos, tarjetas de memoria SD y de otros tipos, almacenamiento óptico, etc.). Si estableces la política como falsa o no la estableces, los usuarios podrán usar el almacenamiento externo en su dispositivo.
@@ -4597,15 +4537,6 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="7407441173422042771">Esta política controla la predicción de red en <ph name="PRODUCT_NAME" />. Controla la precarga de DNS, la preconexión a TCP y SSL, y la representación previa de páginas web.
 
       Si estableces la política, los usuarios no podrán cambiarla. Si no la estableces, se activará la predicción de red, pero el usuario podrá cambiarla.</translation>
-<translation id="7415655595380180976">Esta política dejó de estar disponible. Usa la política "<ph name="URL_ALLOWLIST_POLICY_NAME" />" en su lugar.
-
-      Si estableces la política, permitirás el acceso a las URL de la lista, como excepciones a la lista de URL bloqueadas. Consulta la descripción de esa política para conocer el formato de las entradas de esta lista. Por ejemplo, si estableces "*" en la política <ph name="URL_BLOCKLIST_POLICY_NAME" />, se bloquearán todas las solicitudes. Además, con esta política puedes permitir el acceso a una lista limitada de URL. Úsala a fin de abrir excepciones para determinados esquemas, subdominios de otros dominios, puertos o rutas específicas, mediante el formato que se indica en la siguiente dirección ( https://www.chromium.org/administrators/url-blacklist-filter-format ). El filtro más específico determina si una URL está bloqueada o habilitada. La lista de elementos permitidos tiene prioridad sobre la de elementos bloqueados. Esta política se limitará a 1,000 entradas
-
-      y puede permitir que el navegador invoque de forma automática aplicaciones externas registradas como controladores de los protocolos que se encuentran en la lista correspondiente, p. ej., "tel:" o "ssh:".
-
-      Si no estableces la política, no se permitirán excepciones.
-
-      En <ph name="MS_WIN_NAME" />, esta funcionalidad solo estará disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, están inscritas en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> o se ejecutan en Windows 10 Pro. En <ph name="MAC_OS_NAME" />, esta funcionalidad solo está disponible en instancias administradas mediante MDM o vinculadas a un dominio a través de MCX.</translation>
 <translation id="7417438464912687020">Permite las conexiones de acceso remoto a esta máquina</translation>
 <translation id="7417972229667085380">Indica el porcentaje en el que debe ajustarse la demora de inactividad en el modo de presentación (en desuso).</translation>
 <translation id="7421483919690710988">Establecer tamaño de caché de disco de medios en bytes</translation>
@@ -5071,31 +5002,6 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="8133152694354699657">Si estableces la política como verdadera o no la estableces, la función Tocar para buscar estará disponible para los usuarios, quienes podrán activarla o desactivarla.
 
       Si estableces la política como falsa, se desactivará la función por completo.</translation>
-<translation id="8135271712389620651">Configura una lista de reglas para prevenir la filtración de datos de <ph name="PRODUCT_OS_NAME" />.
-      Se pueden filtrar datos cuando se copia y pega información, se transfieren archivos, se imprime contenido, se comparten pantallas, se realizan capturas de pantalla, etc.
-
-      Cada regla consiste en lo siguiente:
-      - Una lista de orígenes definidos como URL (los datos de los orígenes se considerarán confidenciales y se les aplicarán restricciones conforme a esta condición)
-      - Una lista de destinos definidos como URL o componentes (se podrá determinar si se comparten o no los datos confidenciales con estos destinos)
-      - Una lista de restricciones que se aplicarán en los datos de los orígenes
-
-      Se pueden definir reglas para lo siguiente:
-      - Controlar los datos del portapapeles que se comparten entre los orígenes y los destinos
-      - Controlar si se realizan capturas de pantalla de los orígenes
-      - Controlar si se imprime contenido de los orígenes
-      - Controlar la pantalla de privacidad cuando alguno de los orígenes está visible
-      - Controlar la función compartir pantalla de los orígenes
-
-      Puedes establecer BLOCK o ALLOW como nivel de restricción.
-      - Si estableces la restricción como BLOCK, no se permitirá la acción.
-      - Si estableces la restricción como ALLOW, se permitirá la acción.
-
-      Notas:
-      - La restricción de PRIVACY_SCREEN no impide que se active la pantalla de privacidad, pero sí lo hace cuando se establece la restricción como BLOCK.
-      - Los campos de destino no pueden estar vacíos cuando una de las restricciones es CLIPBOARD; sin embargo, sí pueden quedar vacíos con el resto de las restricciones.
-      - Los patrones de las URL deben presentar un formato conforme a lo especificado en https://www.chromium.org/administrators/url-blacklist-filter-format.
-
-      Si no estableces la política, no se aplicarán restricciones.</translation>
 <translation id="8136906469922284163">Si estableces la política como verdadera, las páginas podrán mostrar ventanas emergentes mientras se descargan.
 
       Si estableces la política como falsa o no la estableces, las páginas no podrán mostrar ventanas emergentes mientras se descargan.
@@ -5147,9 +5053,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
       Si la inhabilitas o no la estableces, no se enviarán paquetes.</translation>
 <translation id="816783746144552109">Configura la versión mínima permitida del Sistema operativo Chrome para el dispositivo.</translation>
-<translation id="8171025799847651230">Si inhabilitas esta política, no podrá iniciarse el servicio de host de acceso remoto ni configurarse para aceptar conexiones entrantes.  Esta política no afecta el servicio de asistencia remota.
-
-          Tampoco tiene efecto si la estableces como verdadera, la dejas vacía o no la estableces.</translation>
 <translation id="8171924760436219650">Cambia el botón principal del mouse al botón derecho en la pantalla de acceso</translation>
 <translation id="8176035528522326671">Permitir que el usuario de empresa sea solo usuario principal en la sesión de perfiles múltiples (comportamiento predeterminado para usuarios administrados por empresas)</translation>
 <translation id="8179161412673077784">Impide que los sitios que brindan experiencias abusivas abran ventanas o pestañas nuevas</translation>
@@ -5309,13 +5212,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="8371178326720637170">Habilitar las extensiones administradas para usar la API de Enterprise Hardware Platform</translation>
 <translation id="8375817202037102567">Bloquea el acceso de escritura a archivos y directorios en estos sitios</translation>
 <translation id="8379317372795444261">Se permite la autenticación <ph name="BASIC_AUTH" /> en las conexiones de HTTP</translation>
-<translation id="838056554726401140">Lista de las URL en las que se aplicará <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />. Esta política no afecta los valores abiertos automáticamente que configuran los usuarios.
-
-      Si configuras esta política, se abrirán los archivos automáticamente solo cuando la URL forme parte de este conjunto y el tipo de archivo se incluya en <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />. Si no se cumple alguna de las dos condiciones, la descarga no se abrirá automáticamente.
-
-      Si no configuras esta política, se abrirán automáticamente todas las descargas cuyo tipo de archivo se indique en <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />.
-
-      El patrón de una URL debe presentar un formato conforme a lo especificado en https://www.chromium.org/administrators/url-blacklist-filter-format.</translation>
 <translation id="8382184662529825177">Habilita el uso de la atestación remota para la protección de contenido del dispositivo.</translation>
 <translation id="838870586332499308">Activar la itinerancia de datos</translation>
 <translation id="8393850527597048037">Solo para la plataforma</translation>
@@ -5714,13 +5610,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Para obtener más información sobre contextos seguros, consulta
       https://www.w3.org/TR/secure-contexts/
       </translation>
-<translation id="8940519618730206658">Si estableces la política, permitirás el acceso a las URL de la lista, como excepciones a la lista de la política <ph name="URL_BLOCKLIST_POLICY_NAME" />. Consulta la descripción de esa política para conocer el formato de las entradas de esta lista. Por ejemplo, si estableces "*" en la política <ph name="URL_BLOCKLIST_POLICY_NAME" />, se bloquearán todas las solicitudes. Además, con esta política puedes permitir el acceso a una lista limitada de URL. Úsala a fin de abrir excepciones para determinados esquemas, subdominios de otros dominios, puertos o rutas específicas, mediante el formato que se indica en la siguiente dirección ( https://www.chromium.org/administrators/url-blacklist-filter-format ). El filtro más específico determina si una URL está bloqueada o habilitada. La política <ph name="URL_ALLOWLIST_POLICY_NAME" /> tiene prioridad sobre la política <ph name="URL_BLOCKLIST_POLICY_NAME" />, y se limitará a 1,000 entradas.
-
-      Esta política también puede permitir que el navegador invoque de forma automática aplicaciones externas registradas como controladores de los protocolos que se encuentran en la lista correspondiente, p. ej., "tel:" o "ssh:".
-
-      Si no estableces la política, no se permitirán excepciones a la política <ph name="URL_BLOCKLIST_POLICY_NAME" />.
-
-      En <ph name="MS_WIN_NAME" />, esta funcionalidad solo estará disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, están inscritas en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> o se ejecutan en Windows 10 Pro. En <ph name="MAC_OS_NAME" />, esta funcionalidad solo está disponible en instancias administradas mediante MDM o vinculadas a un dominio a través de MCX.</translation>
 <translation id="8942616385591203339">Esta política controla si se muestra el consentimiento de sincronización al usuario durante el primer acceso. Debe establecerse como falso si consideras que el usuario nunca necesitará este consentimiento.
       Si se establece como falso, no se mostrará el consentimiento.
       Si se establece como verdadero o no se establece, se puede mostrar el consentimiento.</translation>

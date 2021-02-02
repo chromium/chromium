@@ -62,6 +62,7 @@
 <translation id="2338501278241028356">Включете Bluetooth, за да бъдат открити устройствата в близост</translation>
 <translation id="2364498172489649528">Премината</translation>
 <translation id="2391082728065870591">Изпращане на сигнал с отзиви</translation>
+<translation id="2418150275289244458">Отваряне в настройките</translation>
 <translation id="2446553403094072641">Точност на плаващата точка</translation>
 <translation id="2448312741937722512">Тип</translation>
 <translation id="2461822463642141190">Ток</translation>
@@ -273,6 +274,7 @@
 <translation id="7177485034254901881">Това устройство <ph name="DEVICE_TYPE" /> се управлява от <ph name="MANAGER" />. Администраторите може да го конфигурират отдалечено.</translation>
 <translation id="7216409898977639127">Мобилен оператор</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7343649194310845056">Мрежови устройства</translation>
 <translation id="7359657277149375382">Файлов тип</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -282,6 +284,7 @@
 <translation id="7490813197707563893">MAC адрес</translation>
 <translation id="7497215489070763236">Сертификат от сертифициращ орган за сървъра</translation>
 <translation id="7502658306369382406">IPv6 адрес</translation>
+<translation id="7550715992156305117">Диагностични процедури</translation>
 <translation id="7561454561030345039">Това действие се управлява от администратора ви</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331">Оставащо време: <ph name="TIME_VALUE" /></translation>

@@ -577,6 +577,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="5992218262414051481">De modus voor hoog contrast is ingeschakeld. Druk nogmaals op Ctrl+Zoeken+H om deze uit te schakelen.</translation>
 <translation id="6018164090099858612">Mirrormodus wordt gesloten</translation>
 <translation id="602001110135236999">Naar links scrollen</translation>
+<translation id="602472752137106327">Vensters van alle bureaus tonen, keuzerondje geselecteerd</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />, beheerd door je beheerder</translation>
 <translation id="6030495522958826102">Menu verplaatst naar linksonder in het scherm.</translation>
 <translation id="6032620807120418574">Klik ergens om het volledige scherm op te nemen</translation>
@@ -675,6 +676,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Nog 1 cijfer nodig}other{Nog # cijfers nodig}}</translation>
 <translation id="6878400149835617132">Snelkoppeling uitgeschakeld</translation>
 <translation id="6886172995547742638">Je <ph name="DEVICE_TYPE" /> kan slechtere prestaties leveren. Gebruik een gecertificeerde USB-C-voedingsadapter van <ph name="PREFERRED_MINIMUM_POWER" /> W of hoger.</translation>
+<translation id="688631446150864480">Druk op de pijl-omlaag om tussen vensters te schakelen</translation>
 <translation id="6896758677409633944">Kopieer</translation>
 <translation id="6910714959251846841">Deze update vereist een powerwash van je apparaat. Meer informatie over de laatste update van <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Je smartkaart wordt niet herkend. Probeer het opnieuw.</translation>
@@ -840,6 +842,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="8297006494302853456">Zwak</translation>
 <translation id="8308637677604853869">Vorig menu</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="8345019317483336363">Venster <ph name="WINDOW_TITLE" /> geselecteerd</translation>
 <translation id="8351131234907093545">Notitie maken</translation>
 <translation id="8371779926711439835">Vooruit per letter</translation>
 <translation id="8375916635258623388">Deze <ph name="DEVICE_NAME" /> en je telefoon maken automatisch verbinding</translation>
@@ -863,6 +866,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="8477270416194247200">Druk op Alt+Zoeken of Shift om te annuleren.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> ondersteunt <ph name="SPECIFIED_RESOLUTION" /> niet. De resolutie is gewijzigd in <ph name="FALLBACK_RESOLUTION" />. Klik op 'Bevestigen' om de wijzigingen te behouden. De vorige instellingen worden over <ph name="TIMEOUT_SECONDS" /> hersteld.</translation>
 <translation id="8513108775083588393">Autom. draaien</translation>
+<translation id="851458219935658693">Vensters van het huidige bureau tonen, keuzerondje geselecteerd</translation>
 <translation id="8517041960877371778">Je <ph name="DEVICE_TYPE" /> wordt mogelijk niet opgeladen terwijl deze is ingeschakeld.</translation>
 <translation id="8553395910833293175">Al toegewezen aan alle bureaus.</translation>
 <translation id="8563862697512465947">Meldingsinstellingen</translation>

@@ -62,6 +62,7 @@
 <translation id="2338501278241028356">ಸಮೀಪದ ಸಾಧನಗಳನ್ನು ಅನ್ವೇಷಿಸಲು ಬ್ಲೂಟೂತ್ ಆನ್ ಮಾಡಿ</translation>
 <translation id="2364498172489649528">ಪರಿಶೀಲನೆ ಸಫಲವಾಗಿದೆ</translation>
 <translation id="2391082728065870591">ಪ್ರತಿಕ್ರಿಯೆ ವರದಿ ಕಳುಹಿಸಿ</translation>
+<translation id="2418150275289244458">ಸೆಟ್ಟಿಂಗ್‍ಗಳಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="2446553403094072641">ಫ್ಲೋಟಿಂಗ್ ಪಾಯಿಂಟ್ ನಿಖರತೆ</translation>
 <translation id="2448312741937722512">ಪ್ರಕಾರ</translation>
 <translation id="2461822463642141190">ಪ್ರಸ್ತುತ</translation>
@@ -272,6 +273,7 @@
 <translation id="7177485034254901881">ಈ <ph name="DEVICE_TYPE" /> ಸಾಧನವನ್ನು <ph name="MANAGER" /> ನಿರ್ವಹಿಸುತ್ತದೆ ನಿರ್ವಾಹಕರು ರಿಮೋಟ್ ಆಗಿ ಸಾಧನವನ್ನು ಕಾನ್ಫಿಗರ್ ಮಾಡಬಹುದು.</translation>
 <translation id="7216409898977639127">ಸೆಲ್ಯುಲಾರ್ ಒದಗಿಸುವವರು</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7343649194310845056">ನೆಟ್‌ವರ್ಕ್ ಸಾಧನಗಳು</translation>
 <translation id="7359657277149375382">ಫೈಲ್ ಪ್ರಕಾರ</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -281,6 +283,7 @@
 <translation id="7490813197707563893">MAC ವಿಳಾಸ</translation>
 <translation id="7497215489070763236">ಸರ್ವರ್ CA ಪ್ರಮಾಣಪತ್ರ</translation>
 <translation id="7502658306369382406">IPv6 ವಿಳಾಸ</translation>
+<translation id="7550715992156305117">ಡಯಾಗ್ನಾಸ್ಟಿಕ್ ದಿನಚರಿಗಳು</translation>
 <translation id="7561454561030345039">ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸುತ್ತಾರೆ</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> ಬಾಕಿ ಉಳಿದಿದೆ</translation>

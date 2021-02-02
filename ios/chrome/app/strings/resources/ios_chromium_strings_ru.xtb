@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ru">
 <translation id="102360288709523007">Отправлять в Google статистику использования и отчеты о сбоях</translation>
+<translation id="1130979953299110755">После выхода из аккаунта ваши закладки, история, пароли и другие данные Chromium перестанут синхронизироваться с аккаунтом Google.</translation>
 <translation id="1185134272377778587">О Chromium</translation>
 <translation id="1257458525759135959">Чтобы сохранять изображения, нажмите "Настройки" и предоставьте Chromium доступ к вашим фото.</translation>
 <translation id="1361748954329991663">Версия Chromium устарела. Если в <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> нет обновлений, возможно, ваше устройство не поддерживает новые версии Chromium.</translation>

@@ -62,6 +62,7 @@
 <translation id="2338501278241028356">Vklopite Bluetooth, če želite odkriti naprave v bližini</translation>
 <translation id="2364498172489649528">Preverjanje je uspelo</translation>
 <translation id="2391082728065870591">Pošiljanje poročila s povratnimi informacijami</translation>
+<translation id="2418150275289244458">Odpri v nastavitvah</translation>
 <translation id="2446553403094072641">Natančnost plavajoče točke</translation>
 <translation id="2448312741937722512">Vrsta</translation>
 <translation id="2461822463642141190">Trenutno</translation>
@@ -273,6 +274,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="7177485034254901881">To napravo <ph name="DEVICE_TYPE" /> upravlja domena <ph name="MANAGER" />. Skrbniki lahko napravo konfigurirajo na daljavo.</translation>
 <translation id="7216409898977639127">Ponudnik mobilnih storitev</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7343649194310845056">Omrežne naprave</translation>
 <translation id="7359657277149375382">Vrsta datoteke</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -282,6 +284,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="7490813197707563893">Naslov MAC</translation>
 <translation id="7497215489070763236">Strežniško overjeno potrdilo</translation>
 <translation id="7502658306369382406">Naslov IPv6</translation>
+<translation id="7550715992156305117">Rutine za diagnostiko</translation>
 <translation id="7561454561030345039">To dejanje upravlja skrbnik</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331">Še <ph name="TIME_VALUE" /></translation>

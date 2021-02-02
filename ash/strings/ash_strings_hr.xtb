@@ -577,6 +577,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="5992218262414051481">Način visokog kontrasta omogućen je. Ponovo pritisnite Ctrl + Search + H da biste ga isključili.</translation>
 <translation id="6018164090099858612">Izlaz iz zrcalnog načina</translation>
 <translation id="602001110135236999">Pomicanje ulijevo</translation>
+<translation id="602472752137106327">Prikaži prozore sa svih radnih površina, odabran je izborni gumb</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />, upravlja administrator</translation>
 <translation id="6030495522958826102">Izbornik je premješten u donji lijevi kut zaslona.</translation>
 <translation id="6032620807120418574">Kliknite bilo gdje da biste snimili cijeli zaslon</translation>
@@ -675,6 +676,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Preostala jedna brojka}one{Preostala # brojka}few{Preostale # brojke}other{Preostalo # brojki}}</translation>
 <translation id="6878400149835617132">Prečac je isključen</translation>
 <translation id="6886172995547742638">Uređaj <ph name="DEVICE_TYPE" /> može pokazati slabiju izvedbu. Upotrebljavajte certificirani pretvarač napona USB-C od najmanje <ph name="PREFERRED_MINIMUM_POWER" /> W.</translation>
+<translation id="688631446150864480">Pritisnite tipku strelice prema dolje da biste prešli na drugi prozor</translation>
 <translation id="6896758677409633944">Kopiraj</translation>
 <translation id="6910714959251846841">Ovo ažuriranje zahtijeva powerwashing uređaja. Saznajte više o najnovijem ažuriranju za <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Nismo prepoznali vašu pametnu karticu. Pokušajte ponovo.</translation>
@@ -840,6 +842,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="8297006494302853456">Slab</translation>
 <translation id="8308637677604853869">Prethodni izbornik</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="8345019317483336363">Odabran je prozor <ph name="WINDOW_TITLE" /></translation>
 <translation id="8351131234907093545">Izrada bilješke</translation>
 <translation id="8371779926711439835">Slovo unaprijed</translation>
 <translation id="8375916635258623388">Ovaj uređaj <ph name="DEVICE_NAME" /> i vaš telefon povezat će se automatski</translation>
@@ -863,6 +866,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="8477270416194247200">Pritisnite Alt + Pretraživanje ili Shift da biste otkazali.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> ne podržava razlučivost <ph name="SPECIFIED_RESOLUTION" />. Razlučivost je promijenjena u <ph name="FALLBACK_RESOLUTION" />. Kliknite Potvrdi da biste zadržali promjene. Prethodne postavke vratit će se za <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8513108775083588393">Aut. zakret.</translation>
+<translation id="851458219935658693">Prikaži prozore s trenutačne radne površine, odabran je izborni gumb</translation>
 <translation id="8517041960877371778">Uređaj <ph name="DEVICE_TYPE" /> možda se neće puniti dok je uključen.</translation>
 <translation id="8553395910833293175">Već je dodijeljeno svim radnim površinama.</translation>
 <translation id="8563862697512465947">Postavke obavijesti</translation>

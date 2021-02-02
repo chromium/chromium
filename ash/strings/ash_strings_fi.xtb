@@ -577,6 +577,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="5992218262414051481">Suuri kontrasti ‑tila on käytössä. Poista se käytöstä painamalla uudelleen Ctrl + haku + H.</translation>
 <translation id="6018164090099858612">Poistutaan peilitilasta</translation>
 <translation id="602001110135236999">Vieritä vasemmalle</translation>
+<translation id="602472752137106327">Näytä ikkunat kaikilta työpöydiltä, valintanappi valittu</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" />, järjestelmänvalvojan hallinnoima</translation>
 <translation id="6030495522958826102">Valikko siirretty näytön vasempaan alanurkkaan</translation>
 <translation id="6032620807120418574">Ota kuvakaappaus koko näytöstä klikkaamalla minne tahansa</translation>
@@ -675,6 +676,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Vielä yksi numero}other{Vielä # numeroa}}</translation>
 <translation id="6878400149835617132">Pikanäppäin poistettu käytöstä</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> voi toimia huonommin. Käytä sertifioitua USB-C-virtalähdettä, jonka teho on vähintään <ph name="PREFERRED_MINIMUM_POWER" /> W.</translation>
+<translation id="688631446150864480">Vaihda ikkunaa painamalla alanuolta</translation>
 <translation id="6896758677409633944">Kopioi</translation>
 <translation id="6910714959251846841">Tämän päivityksen asennus edellyttää laitteen powerwashia. Lue lisää uusimmasta <ph name="SYSTEM_APP_NAME" /> ‑päivityksestä.</translation>
 <translation id="6919251195245069855">Älykorttia ei tunnistettu. Yritä uudelleen.</translation>
@@ -840,6 +842,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="8297006494302853456">Heikko</translation>
 <translation id="8308637677604853869">Edellinen valikko</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
+<translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> ‑ikkuna valittu</translation>
 <translation id="8351131234907093545">Luo muistiinpano</translation>
 <translation id="8371779926711439835">Yksi kirjain eteenpäin</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> muodostaa yhteyden puhelimeesi automaattisesti</translation>
@@ -863,6 +866,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="8477270416194247200">Peruuta painamalla Alt+haku tai vaihto.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> ei tue resoluutiota <ph name="SPECIFIED_RESOLUTION" />. Resoluutioksi vaihdettiin <ph name="FALLBACK_RESOLUTION" />. Pidä muutokset valitsemalla Vahvista. Aiempi asetus palautetaan <ph name="TIMEOUT_SECONDS" /> päästä.</translation>
 <translation id="8513108775083588393">Autom. kääntö</translation>
+<translation id="851458219935658693">Näytä ikkunat nykyiseltä työpöydältä, valintanappi valittu</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> ei välttämättä lataudu, kun se on käynnissä.</translation>
 <translation id="8553395910833293175">Lisätty jo kaikille työpöydille.</translation>
 <translation id="8563862697512465947">Ilmoitusasetukset</translation>

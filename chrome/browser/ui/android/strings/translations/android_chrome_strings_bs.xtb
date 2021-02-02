@@ -402,7 +402,6 @@ Dodirnite i zadržite bilo koju riječ da je pretražite. Za fino podešavanje p
 <translation id="3894427358181296146">Dodaj folder</translation>
 <translation id="3895926599014793903">Prisilno omogući zumiranje</translation>
 <translation id="3908308510347173149">Ažuriraj aplikaciju <ph name="PRODUCT_NAME" /></translation>
-<translation id="3909763690984331376">Sigurnosna provjera <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">Tražimo najbolje sadržaje na internetu…</translation>
 <translation id="3924911262913579434">Funkcija <ph name="SAFE_BROWSING_MODE" /> je uključena</translation>
 <translation id="3927692899758076493">Sans-serif</translation>
@@ -633,6 +632,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5530766185686772672">Zatvori anonimne kartice</translation>
 <translation id="5530920986376047241">Možete sačuvati stranice na listu za čitanje da ih kasnije možete pronaći</translation>
 <translation id="5534640966246046842">Web lokacija je kopirana</translation>
+<translation id="5548606607480005320">Sigurnosna provjera</translation>
 <translation id="5556459405103347317">Učitaj ponovo</translation>
 <translation id="5561549206367097665">Čekanje na mrežu…</translation>
 <translation id="55737423895878184">Lokacija i obavještenja su dozvoljeni</translation>
@@ -730,6 +730,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="6122831415929794347">Isključiti Sigurno pregledanje?</translation>
 <translation id="6127379762771434464">Stavka je uklonjena</translation>
 <translation id="6137022273846704445">Jezik aplikacije <ph name="APP_NAME" /></translation>
+<translation id="6138832295072039549">Ovdje promijenite postavke web lokacije</translation>
 <translation id="6140709049082532940">Poboljšana zaštita:</translation>
 <translation id="6140912465461743537">Država/regija</translation>
 <translation id="614940544461990577">Pokušajte:</translation>

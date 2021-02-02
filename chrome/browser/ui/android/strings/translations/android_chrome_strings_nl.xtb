@@ -402,7 +402,6 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="3894427358181296146">Map toevoegen</translation>
 <translation id="3895926599014793903">Zoom inschakelen forceren</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> updaten</translation>
-<translation id="3909763690984331376">Veiligheidscheck <ph name="BEGIN_NEW" />Nieuw<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">We zoeken naar het beste op internet…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> is ingeschakeld</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -633,6 +632,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5530766185686772672">Incognitotabbladen sluiten</translation>
 <translation id="5530920986376047241">Je kunt pagina's opslaan in je leeslijst zodat je ze later kunt terugvinden</translation>
 <translation id="5534640966246046842">Site gekopieerd</translation>
+<translation id="5548606607480005320">Veiligheidscheck</translation>
 <translation id="5556459405103347317">Opnieuw laden</translation>
 <translation id="5561549206367097665">Wachten op netwerk…</translation>
 <translation id="55737423895878184">Locatie en meldingen zijn toegestaan</translation>
@@ -730,6 +730,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="6122831415929794347">Safe Browsing uitschakelen?</translation>
 <translation id="6127379762771434464">Item verwijderd</translation>
 <translation id="6137022273846704445">Taal van <ph name="APP_NAME" /></translation>
+<translation id="6138832295072039549">Hier kun je je instellingen wijzigen</translation>
 <translation id="6140709049082532940">Geoptimaliseerde beveiliging:</translation>
 <translation id="6140912465461743537">Land/regio</translation>
 <translation id="614940544461990577">Probeer dit eens:</translation>

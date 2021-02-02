@@ -402,7 +402,6 @@
 <translation id="3894427358181296146">添加文件夹</translation>
 <translation id="3895926599014793903">强制启用缩放功能</translation>
 <translation id="3908308510347173149">更新 <ph name="PRODUCT_NAME" /></translation>
-<translation id="3909763690984331376">安全检查<ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">正在从网络中查找最具价值的数据…</translation>
 <translation id="3924911262913579434">已开启“<ph name="SAFE_BROWSING_MODE" />”</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -432,6 +431,7 @@
 <translation id="4095146165863963773">要删除应用数据吗？</translation>
 <translation id="4095189195365058471">以后再读<ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
 <translation id="4099578267706723511">将使用情况统计信息和崩溃报告发送给 Google，帮助我们完善 Chrome。</translation>
+<translation id="4108314971463891922">关注</translation>
 <translation id="4108998448622696017">检测危险事件并在此类事件发生时向您发出警告。</translation>
 <translation id="4116038641877404294">下载网页以便离线查看</translation>
 <translation id="4135200667068010335">要与之分享标签页的设备的列表已关闭。</translation>
@@ -632,6 +632,7 @@
 <translation id="5530766185686772672">关闭无痕模式标签页</translation>
 <translation id="5530920986376047241">您可以将所需页面保存到阅读清单中，以便再次查看</translation>
 <translation id="5534640966246046842">已复制网站</translation>
+<translation id="5548606607480005320">安全检查</translation>
 <translation id="5556459405103347317">重新加载</translation>
 <translation id="5561549206367097665">正在等待连接到网络…</translation>
 <translation id="55737423895878184">允许使用位置信息以及显示通知</translation>
@@ -643,6 +644,7 @@
 <translation id="5606787249466187650">探索隐私沙盒</translation>
 <translation id="5620163320393916465">尚未保存任何密码</translation>
 <translation id="5620928963363755975">通过“更多选项”按钮在“下载内容”中查找您的文件和网页</translation>
+<translation id="562289928968387744">管理回应</translation>
 <translation id="5626134646977739690">名字：</translation>
 <translation id="5639724618331995626">允许访问所有网站</translation>
 <translation id="5648166631817621825">过去 7 天</translation>
@@ -728,6 +730,7 @@
 <translation id="6122831415929794347">要关闭“安全浏览”功能吗？</translation>
 <translation id="6127379762771434464">该项已移除</translation>
 <translation id="6137022273846704445"><ph name="APP_NAME" /> 的语言</translation>
+<translation id="6138832295072039549">如需更改您的网站设置，请点击此处</translation>
 <translation id="6140709049082532940">增强型保护：</translation>
 <translation id="6140912465461743537">国家/地区</translation>
 <translation id="614940544461990577">请试试以下办法：</translation>

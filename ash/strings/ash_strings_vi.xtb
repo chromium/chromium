@@ -577,6 +577,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="5992218262414051481">Đã bật Chế độ tương phản cao. Nhấn lại Ctrl+Search+H để tắt.</translation>
 <translation id="6018164090099858612">Đang thoát chế độ phản chiếu</translation>
 <translation id="602001110135236999">Cuộn sang trái</translation>
+<translation id="602472752137106327">Hiển thị cửa sổ từ tất cả không gian làm việc, đã chọn nút chọn</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />, Do quản trị viên của bạn quản lý</translation>
 <translation id="6030495522958826102">Đã di chuyển trình đơn vào góc dưới cùng bên trái màn hình.</translation>
 <translation id="6032620807120418574">Nhấp vào vị trí bất kỳ để chụp toàn màn hình</translation>
@@ -675,6 +676,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Còn lại một số}other{Còn lại # số}}</translation>
 <translation id="6878400149835617132">Đã tắt phím tắt</translation>
 <translation id="6886172995547742638">Hiệu suất của <ph name="DEVICE_TYPE" /> của bạn có thể bị giảm. Hãy dùng bộ sạc USB-C được chứng nhận có công suất <ph name="PREFERRED_MINIMUM_POWER" />W trở lên.</translation>
+<translation id="688631446150864480">Nhấn phím Mũi tên xuống để chuyển đổi giữa các cửa sổ</translation>
 <translation id="6896758677409633944">Sao chép</translation>
 <translation id="6910714959251846841">Bản cập nhật này yêu cầu phải powerwash (đặt lại toàn bộ) thiết bị của bạn. Hãy tìm hiểu thêm về bản cập nhật <ph name="SYSTEM_APP_NAME" /> mới nhất.</translation>
 <translation id="6919251195245069855">Không nhận dạng được thẻ thông minh của bạn. Vui lòng thử lại.</translation>
@@ -840,6 +842,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="8297006494302853456">Yếu</translation>
 <translation id="8308637677604853869">Menu trước</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="8345019317483336363">Đã chọn cửa sổ <ph name="WINDOW_TITLE" /></translation>
 <translation id="8351131234907093545">Tạo ghi chú</translation>
 <translation id="8371779926711439835">Tiến một ký tự</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> này và điện thoại của bạn sẽ tự động kết nối</translation>
@@ -863,6 +866,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="8477270416194247200">Nhấn phím Alt+Search hoặc Shift để hủy.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> không hỗ trợ <ph name="SPECIFIED_RESOLUTION" />. Độ phân giải đã được thay đổi thành <ph name="FALLBACK_RESOLUTION" />. Hãy nhấp vào xác nhận để lưu các thay đổi. Các tùy chọn cài đặt trước sẽ được khôi phục sau <ph name="TIMEOUT_SECONDS" /> nữa.</translation>
 <translation id="8513108775083588393">Tự động xoay</translation>
+<translation id="851458219935658693">Hiển thị cửa sổ từ không gian làm việc hiện tại, đã chọn nút chọn</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> của bạn có thể không sạc khi được bật.</translation>
 <translation id="8553395910833293175">Đã được gán cho tất cả không gian làm việc.</translation>
 <translation id="8563862697512465947">Cài đặt Thông báo</translation>

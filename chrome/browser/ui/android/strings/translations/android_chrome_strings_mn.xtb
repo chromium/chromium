@@ -402,7 +402,6 @@
 <translation id="3894427358181296146">Хавтас нэмэх</translation>
 <translation id="3895926599014793903">Ямар ч тохиолдолд томруулан харуулах</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" />-г шинэчлэх</translation>
-<translation id="3909763690984331376">Аюулгүй байдлын шалгалт <ph name="BEGIN_NEW" />Шинэ<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">Вебээс шилдэг илэрцийг хайж байна…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> идэвхтэй байна</translation>
 <translation id="3927692899758076493">Санс сериф</translation>
@@ -632,6 +631,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5530766185686772672">Нууцлал бүхий цонхыг хаах</translation>
 <translation id="5530920986376047241">Та хуудаснуудыг дахин хайж олохын тулд тэдгээрийг унших жагсаалтдаа хадгалах боломжтой</translation>
 <translation id="5534640966246046842">Сайтыг хуулсан</translation>
+<translation id="5548606607480005320">Аюулгүй байдлын шалгалт</translation>
 <translation id="5556459405103347317">Дахин ачаал</translation>
 <translation id="5561549206367097665">Сүлжээг хүлээж байна...</translation>
 <translation id="55737423895878184">Байршил болон мэдэгдлийг зөвшөөрсөн</translation>
@@ -729,6 +729,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6122831415929794347">Аюулгүй үзэх онцлогийг унтраах уу?</translation>
 <translation id="6127379762771434464">Хамгийн их зочилсон вэбсайтуудыг устгасан</translation>
 <translation id="6137022273846704445"><ph name="APP_NAME" />-н хэл</translation>
+<translation id="6138832295072039549">Сайтын тохиргоогоо энд өөрчлөөрэй</translation>
 <translation id="6140709049082532940">Сайжруулсан хамгаалалт:</translation>
 <translation id="6140912465461743537">Улс/бүс</translation>
 <translation id="614940544461990577">Оролдож үзэх:</translation>

@@ -62,6 +62,7 @@
 <translation id="2338501278241028356">Włącz Bluetooth, by wykryć urządzenia w pobliżu</translation>
 <translation id="2364498172489649528">Zaliczone</translation>
 <translation id="2391082728065870591">Prześlij zgłoszenie opinii</translation>
+<translation id="2418150275289244458">Otwórz w ustawieniach</translation>
 <translation id="2446553403094072641">Precyzja obliczeń zmiennoprzecinkowych</translation>
 <translation id="2448312741937722512">Typ</translation>
 <translation id="2461822463642141190">Aktualnie</translation>
@@ -272,6 +273,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7177485034254901881">Tym urządzeniem <ph name="DEVICE_TYPE" /> zarządza <ph name="MANAGER" />. Administratorzy mogą je zdalnie konfigurować.</translation>
 <translation id="7216409898977639127">Operator komórkowy</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7343649194310845056">Urządzenia sieciowe</translation>
 <translation id="7359657277149375382">Typ pliku</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -281,6 +283,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7490813197707563893">Adres MAC</translation>
 <translation id="7497215489070763236">Certyfikat CA serwera</translation>
 <translation id="7502658306369382406">Adres IPv6</translation>
+<translation id="7550715992156305117">Procedury diagnostyczne</translation>
 <translation id="7561454561030345039">Tym ustawieniem zarządza Twój administrator</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7620771111601174153">Dowiedz się więcej w Centrum pomocy</translation>

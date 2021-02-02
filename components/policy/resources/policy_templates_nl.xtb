@@ -351,15 +351,6 @@ Als je dit beleid uitschakelt, wordt op de webpagina naar specifieke tekstfragme
       Als je het beleid niet instelt, probeert <ph name="PRODUCT_NAME" /> te detecteren of er een server op het intranet is. Alleen dan reageert het product op IWA-verzoeken. Als een server wordt gedetecteerd als internet, worden IWA-verzoeken ervan genegeerd door <ph name="PRODUCT_NAME" />.
 
       Opmerking: Gebruik bij meerdere servernamen een komma als scheidingsteken. Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.</translation>
-<translation id="1488406778491620405">Met de toegankelijkheidsfunctie <ph name="PRODUCT_NAME" /> kunnen slechtziende gebruikers van een schermlezer beschrijvingen van niet-gelabelde afbeeldingen op internet krijgen. Gebruikers die de functie inschakelen, kunnen een anonieme Google-service gebruiken voor automatische beschrijvingen van niet-gelabelde afbeeldingen die ze tegenkomen op internet.
-
-          Als deze functie is ingeschakeld, wordt de content van afbeeldingen naar de servers van Google gestuurd om een beschrijving te genereren. Er worden geen cookies of andere gebruikersgegevens gestuurd en Google bewaart of registreert de content van afbeeldingen niet.
-
-          Als dit beleid is ingesteld op True, wordt de functie <ph name="PRODUCT_NAME" /> ingeschakeld, maar is deze alleen van toepassing op gebruikers die een schermlezer of andere vergelijkbare ondersteunende technologie gebruiken.
-
-          Als dit beleid is ingesteld op False, kunnen gebruikers de functie niet inschakelen.
-
-          Als je dit beleid instelt, kunnen gebruikers dit niet wijzigen of overschrijven.</translation>
 <translation id="1502843533062797703">Blokkering van injectie van software van derden inschakelen</translation>
 <translation id="1506017854924185821">Beschikbaarheid van profielkiezer bij opstarten</translation>
 <translation id="1509377996969000672">Als je dit beleid instelt, worden configuraties geboden voor bedrijfsprinters die aan apparaten zijn gekoppeld. De indeling komt overeen met de dictionary <ph name="NATIVE_PRINTERS_POLICY_NAME" />, waarbij voor elke printer ook een veld 'id' of 'guid' verplicht is voor de toelatingslijst of weigeringslijst. Bestanden moeten een json-indeling hebben en mogen maximaal 5 MB zijn. In een bestand van 5 MB kunnen ongeveer 21.000 printers staan. De cryptografische hash wordt gebruikt om de integriteit van de download te verifiëren. Het bestand wordt gedownload, opgeslagen in het cachegeheugen en opnieuw gedownload als de URL of de hash wordt gewijzigd. <ph name="PRODUCT_OS_NAME" /> downloadt het bestand voor printerconfiguraties en maakt printers beschikbaar in overeenstemming met <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> en <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.
@@ -399,6 +390,11 @@ Als je dit beleid uitschakelt, wordt op de webpagina naar specifieke tekstfragme
           Als dit beleid is uitgeschakeld of niet is ingesteld, worden de instellingen voor Kerberos-accounts uitgeschakeld. Er kunnen geen Kerberos-accounts worden toegevoegd en Kerberos-verificatie kan niet worden gebruikt. Alle bestaande Kerberos-accounts worden verwijderd en alle opgeslagen wachtwoorden worden verwijderd.</translation>
 <translation id="1561424797596341174">Beleid overschrijft Debug-builds van de host voor externe toegang</translation>
 <translation id="1561967320164410511">U2F plus extensies voor individuele bevestiging</translation>
+<translation id="1567718448549957373">Als je het beleid aanzet of niet instelt, mogen <ph name="BASIC_AUTH" />-verificatie-uitdagingen worden ontvangen via niet-beveiligde HTTP.
+
+      Als je het beleid uitzet, mogen niet-beveiligde HTTP-verzoeken het <ph name="BASIC_AUTH" />-verificatieschema niet gebruiken. Alleen beveiligde HTTPS is toegestaan.
+
+      De instelling voor dit beleid wordt genegeerd (en <ph name="BASIC_AUTH" /> is altijd verboden) als het beleid <ph name="AUTH_SCHEMES_POLICY_NAME" /> is ingesteld en niet <ph name="BASIC_AUTH" /> bevat.</translation>
 <translation id="1575015449587326319">Configuratiebeleid voor de Chrome Enterprise-connector OnFileDownloaded</translation>
 <translation id="1583248206450240930"><ph name="PRODUCT_FRAME_NAME" /> standaard gebruiken</translation>
 <translation id="1588240398285670601">Browserinstellingen</translation>
@@ -1484,6 +1480,7 @@ Dit beleid kan alleen worden ingesteld via de Google Beheerdersconsole.</transla
 
       Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />.</translation>
 <translation id="3030000825273123558">Rapportage van statistieken inschakelen</translation>
+<translation id="3032322294267258117">Bepaalt instellingen voor gebruikers die zijn geverifieerd via GAIA zonder SAML.</translation>
 <translation id="3038323923255997294">Doorgaan met uitvoeren van achtergrondapps als <ph name="PRODUCT_NAME" /> is gesloten</translation>
 <translation id="3041707370546071653">Of het Kerberos-wachtwoord moet worden onthouden. Als je dit niet instelt of instelt op False, wordt het wachtwoord niet onthouden. Dit wordt genegeerd als het wachtwoord niet is opgegeven.</translation>
 <translation id="3041887182529293512">Als je het beleid instelt op 'True' of niet instelt, worden automatisch gegenereerde contentsuggesties weergegeven op de pagina 'Nieuw tabblad', op basis van de browsegeschiedenis, interesses of locatie van de gebruiker.
@@ -1712,12 +1709,6 @@ Dit beleid kan alleen worden ingesteld via de Google Beheerdersconsole.</transla
 <translation id="3308724602356134956">Als je het beleid instelt, downloadt en gebruikt <ph name="PRODUCT_OS_NAME" /> de door jou ingestelde achtergrondafbeelding voor de achtergrond van het bureaublad van de gebruiker en het inlogscherm. Gebruikers kunnen de afbeelding niet wijzigen. Specificeer de URL (die toegankelijk moet zijn zonder verificatie) waar <ph name="PRODUCT_OS_NAME" /> de achtergrondafbeelding kan downloaden, evenals een cryptografische hash (in jpeg-indeling met een bestandsgrootte van maximaal 16 MB) om de integriteit daarvan te verifiëren.
 
       Als je het beleid niet instelt, kiezen gebruikers de afbeelding voor de achtergrond van het bureaublad en het inlogscherm.</translation>
-<translation id="3312206664202507568">Hiermee wordt een pagina op chrome://password-change actief waar SAML-gebruikers hun SAML-wachtwoorden kunnen wijzigen tijdens een sessie. Dit zorgt ervoor dat het SAML-wachtwoord en het wachtwoord voor schermvergrendeling van het apparaat gesynchroniseerd blijven.
-
-      Met dit beleid worden er ook meldingen gegenereerd voor SAML-gebruikers van wie het SAML-wachtwoord bijna verloopt. Ze kunnen dit dan meteen verhelpen door tijdens de sessie het wachtwoord te wijzigen.
-      Deze meldingen worden alleen weergegeven als de SAML-identiteitsprovider tijdens de SAML-inlogprocedure informatie over het verlopen van het wachtwoord verzendt naar het apparaat.
-
-      Als dit beleid is ingesteld, kan de gebruiker het niet wijzigen of overschrijven.</translation>
 <translation id="332771718998993005">De naam bepalen die wordt geadverteerd als een bestemming van <ph name="PRODUCT_NAME" />.
 
           Als dit beleid is ingesteld op een niet-lege tekenreeks, wordt die tekenreeks gebruikt als de naam van de <ph name="PRODUCT_NAME" />-bestemming. Anders wordt de apparaatnaam gebruikt voor de bestemmingsnaam. Als dit beleid niet is ingesteld, is de naam van de bestemming de apparaatnaam en kan de eigenaar van het apparaat (of een gebruiker in het domein dat het apparaat beheert) deze naam wijzigen. De naam mag maximaal 24 tekens lang zijn.</translation>
@@ -1858,11 +1849,6 @@ Er worden geen automatische updatecontroles geblokkeerd door dit beleid, maar de
 <translation id="350443680860256679">ARC configureren</translation>
 <translation id="350797926066071931">Vertalen inschakelen</translation>
 <translation id="3508047333410537654">Monogeluid op het inlogscherm inschakelen</translation>
-<translation id="3509819648242653622">Als je het beleid instelt, wordt voorkomen dat webpagina's met verboden URL's worden geladen. Het beleid biedt een lijst met URL-patronen die verboden URL's definiëren. Als je het beleid niet instelt, worden er geen URL's verboden in de browser. Gebruik een notatie voor het URL-patroon volgens deze indeling (https://www.chromium.org/administrators/url-blacklist-filter-format). Er kunnen maximaal 1000 uitzonderingen worden gedefinieerd in <ph name="URL_ALLOWLIST_POLICY_NAME" />.
-
-      Vanaf <ph name="PRODUCT_NAME" /> versie 73 kun je javascript://* URL's blokkeren. Maar dit heeft alleen gevolgen voor JavaScript die wordt ingevoerd in de adresbalk (of bijvoorbeeld bookmarklets). In-page JavaScript-URL's met dynamisch geladen gegevens vallen niet onder dit beleid. Als je bijvoorbeeld 'example.com/abc' blokkeert, kan de pagina 'example.com' nog steeds 'example.com/abc' laden via XMLHTTPRequest.
-
-      Opmerking: Het blokkeren van interne chrome://* URL's kan tot onverwachte fouten leiden.</translation>
 <translation id="3513655665999652754">De Quirks Server levert hardwarespecifieke configuratiebestanden, zoals
      ICC-displayprofielen om de beeldschermkalibratie aan te passen.
 
@@ -2182,11 +2168,6 @@ Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je het belei
 <translation id="3942041691320538491">Als je het beleid instelt op '0' (standaardinstelling), heb je toegang tot de tools voor ontwikkelaars en de JavaScript-console, maar niet in de context van extensies die via het organisatiebeleid zijn geïnstalleerd. Als je het beleid instelt op '1', heb je toegang tot de tools voor ontwikkelaars en de JavaScript-console in alle contexten, waaronder die van extensies die via het organisatiebeleid zijn geïnstalleerd. Als je het beleid instelt op '2', heb je geen toegang tot de tools voor ontwikkelaars en kun je website-elementen niet inspecteren.
 
       Met deze instelling worden sneltoetsen en menu- en contextmenu-opties uitgeschakeld waarmee tools voor ontwikkelaars of de JavaScript-console kunnen worden geopend.</translation>
-<translation id="3947431236979598549">Hiermee kun je meldingen bij weinig schijfruimte in- of uitschakelen. Dit is van toepassing op alle gebruikers op het apparaat.
-
-      Dit beleid wordt genegeerd en de melding wordt altijd weergegeven als het apparaat onbeheerd is of er slechts één gebruiker is.
-
-      Als er meerdere gebruikersaccounts zijn op een beheerd apparaat, wordt de melding alleen weergegeven wanneer dit beleid is ingeschakeld.</translation>
 <translation id="3950110092991281616">Ambient-verificatie alleen inschakelen in normale sessies.</translation>
 <translation id="3950239119790560549">Tijdsbeperkingen voor updates</translation>
 <translation id="3956686688560604829">Gebruik het SiteList-beleid van Internet Explorer voor ondersteuning voor oudere browsers.</translation>
@@ -2285,9 +2266,6 @@ Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je het belei
       Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je dit beleid niet instelt, is het vergrootglas in eerste instantie uitgeschakeld, maar kunnen gebruikers dit op elk moment inschakelen.</translation>
 <translation id="410068710490553233">Inloggen op aanvullende Google-accounts toestaan</translation>
 <translation id="4101282687722389021">UTC-tijdstempel voor de laatste tijd waarop dit item is geüpdatet. Gestuurd als tekenreeks omdat het tijdstempel niet past in een geheel getal.</translation>
-<translation id="4103177213841380258">Dit beleid beheert de toegang tot bedienbare functies in de UI voor lokale vindbaarheid (<ph name="CHROME_DEVICES_LINK" />) waarin vindbare apparaten in de buurt van de gebruiker en door de gebruiker geregistreerde cloudapparaten worden weergegeven. Op alle besturingssystemen (met uitzondering van <ph name="PRODUCT_OS_NAME" />) kunnen gebruikers via de UI voor lokale vindbaarheid ook klassieke printers die aan hun computers zijn gekoppeld, toevoegen aan <ph name="CLOUD_PRINT_NAME" />.
-
-      Als je dit beleid niet instelt, blijft deze functie ingeschakeld.</translation>
 <translation id="4103289232974211388">Omleiden naar SAML IdP na bevestiging van de gebruiker</translation>
 <translation id="4105884561459127998">Hiermee configureer je de verificatietypen voor SAML-logins.
 
@@ -2497,6 +2475,15 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
 <translation id="4510923771103268849">De gebruiker heeft toestemming voor roottoegang tot Crostini-containers</translation>
 <translation id="4515404363392014383">'Safe Browsing' inschakelen voor vertrouwde bronnen</translation>
 <translation id="4518251772179446575">Goedkeuring vragen wanneer een site de fysieke locatie van gebruikers wil bijhouden</translation>
+<translation id="4521193243799782295">Tijdens het inloggen kan <ph name="PRODUCT_OS_NAME" /> de verificatie uitvoeren met behulp van een server (online) of door gebruik te maken van een wachtwoord in het cachegeheugen (offline).
+
+      Als dit beleid is ingesteld met een waarde van -1, dwingt dit beleid geen online verificatie af en kan de gebruiker offline verificatie gebruiken totdat een andere reden dan dit beleid de gebruiker dwingt online in te loggen. Als dit beleid is ingesteld met een waarde van 0, is online inloggen altijd vereist. Als dit beleid met een andere waarde is ingesteld, bepaalt het de tijdsduur na de laatste online verificatie waarna de gebruiker opnieuw online verificatie moet gebruiken om in te loggen.
+
+      Als dit beleid niet is ingesteld, is offline inloggen mogelijk voor <ph name="PRODUCT_OS_NAME" />.
+
+      Dit beleid is alleen van toepassing op gebruikers die via GAIA zijn geverifieerd met SAML.
+
+      De beleidswaarde moet worden opgegeven in dagen.</translation>
 <translation id="4528929591840709501">Tijd wanneer het apparaat ophoudt met opladen, geïnterpreteerd in de lokale tijdzone van het apparaat.</translation>
 <translation id="4529868888205510667">Tenzij ARC op een andere manier is uitgeschakeld, zorgt het instellen van het beleid op True of het niet instellen van het beleid ervoor dat gebruikers ARC kunnen gebruiken. Als het beleid wordt ingesteld op False, kunnen niet-gelieerde gebruikers ARC niet gebruiken.
 
@@ -2918,13 +2905,6 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
 <translation id="5152393033264257734">Controles voor DNS-onderschepping en infobalken voor 'bedoelde je http://intranetsite/' toestaan.</translation>
 <translation id="5152787786897382519">Zowel Chromium als Google Chrome bevatten enkele beleidsgroepen die voor het beheer van een functie van elkaar afhankelijk zijn. Deze reeksen worden vertegenwoordigd door de volgende beleidsgroepen. Aangezien beleidsregels meerdere bronnen kunnen hebben, worden alleen waarden afkomstig van de bron met de hoogste prioriteit toegepast. Waarden van een bron met een lagere prioriteit in dezelfde groep worden genegeerd. De prioriteitsvolgorde wordt gedefinieerd in <ph name="POLICY_PRIORITY_DOC_URL" />.</translation>
 <translation id="5153187201534281749">Icoon voor experimentele browserfuncties op werkbalk</translation>
-<translation id="515816885693899426">Dit beleid is beëindigd. Gebruik in plaats daarvan het beleid <ph name="URL_BLOCKLIST_POLICY_NAME" />.
-
-      Als je het beleid instelt, wordt voorkomen dat webpagina's met verboden URL's worden geladen. Het beleid biedt een lijst met URL-patronen die verboden URL's definiëren. Als je het beleid niet instelt, worden er geen URL's verboden in de browser. Gebruik een notatie voor het URL-patroon volgens deze indeling (https://www.chromium.org/administrators/url-blacklist-filter-format). Er kunnen maximaal 1000 uitzonderingen worden gedefinieerd in <ph name="URL_ALLOWLIST_POLICY_NAME" />.
-
-      Vanaf <ph name="PRODUCT_NAME" /> versie 73 kun je javascript://* URL's blokkeren. Maar dit heeft alleen gevolgen voor JavaScript die wordt ingevoerd in de adresbalk (of bijvoorbeeld bookmarklets). In-page JavaScript-URL's met dynamisch geladen gegevens vallen niet onder dit beleid. Als je bijvoorbeeld 'example.com/abc' blokkeert, kan de pagina 'example.com' nog steeds 'example.com/abc' laden via XMLHTTPRequest.
-
-      Opmerking: Het blokkeren van interne chrome://* URL's kan tot onverwachte fouten leiden.</translation>
 <translation id="5163002264923337812">Het oude webgebaseerde inlogproces inschakelen</translation>
 <translation id="516520353995300280">Als je het beleid instelt, wordt de handhaving van vereisten voor openbaarmaking via Certificaattransparantie uitgeschakeld voor een lijst van verouderde certificeringsinstanties (CA's) voor certificaatketens met een gespecificeerde <ph name="SUBJECT_PUBLIC_KEY_INFO" />-hash. Enterprise-hosts kunnen certificaten blijven gebruiken die anders niet zouden worden vertrouwd (omdat deze niet op de juiste manier openbaar zijn gemaakt). Als je de handhaving wilt uitschakelen, moet de <ph name="SUBJECT_PUBLIC_KEY_INFO" />-hash voorkomen in een CA-certificaat dat wordt herkend als verouderde CA. Een verouderde CA wordt openbaar vertrouwd door een of meer besturingssystemen die worden ondersteund door <ph name="PRODUCT_NAME" />, maar niet door het Android-opensourceproject of <ph name="PRODUCT_OS_NAME" />.
 
@@ -3595,11 +3575,6 @@ Gebruikers kunnen deze instelling niet wijzigen.</translation>
 <translation id="6099853574908182288">Standaard kleurenmodus voor afdrukken</translation>
 <translation id="6102342563050263313">Scrollen naar opgegeven tekst in URL-fragmenten inschakelen</translation>
 <translation id="6107642964266628393">Bepaalt hoe en wanneer Chrome OS-updates worden toegepast.</translation>
-<translation id="6110478331147706293">Als je het beleid instelt, wordt de handhaving van vereisten voor openbaarmaking via Certificaattransparantie uitgeschakeld voor de hostnamen in de opgegeven URL's. Hoewel het moeilijker wordt om misbruik van certificaten te detecteren, kunnen hosts certificaten blijven gebruiken die anders niet zouden worden vertrouwd (omdat deze niet op de juiste manier openbaar zijn gemaakt).
-
-      Als je het beleid niet instelt, betekent dit dat als certificaten die openbaar moeten worden gemaakt via Certificaattransparantie niet openbaar worden gemaakt, de betreffende certificaten niet door <ph name="PRODUCT_NAME" /> worden vertrouwd.
-
-      Voor een URL-patroon wordt deze indeling gehanteerd (https://www.chromium.org/administrators/url-blacklist-filter-format). Aangezien de certificaten geldig zijn voor een bepaalde hostnaam (los van het schema, de poort of het pad), houdt <ph name="PRODUCT_NAME" /> alleen rekening met het hostnaamgedeelte van de URL. Hosts met jokertekens worden niet ondersteund.</translation>
 <translation id="6111936128861357925">Easter egg-dinosaurusgame toestaan</translation>
 <translation id="6123052603197028610">Geen query's naar Google-servers toestaan om tijdstempels op te halen</translation>
 <translation id="6132506775968708399">Cookies van derden blokkeren</translation>
@@ -3619,6 +3594,7 @@ Gebruikers kunnen deze instelling niet wijzigen.</translation>
 <translation id="6155936611791017817">De standaardstatus van de grote muisaanwijzer op het inlogscherm instellen</translation>
 <translation id="6157537876488211233">Door komma's gescheiden lijst van regels voor proxyomzeiling</translation>
 <translation id="6158324314836466367">Naam van zakelijke webwinkel (verouderd)</translation>
+<translation id="6169768162756928771">Beheerinstellingen voor GAIA-gebruikersidentiteit</translation>
 <translation id="6172896675583897796">Als je het beleid inschakelt, heeft de Google Assistent toegang tot de schermcontext en kan de Assistent die gegevens naar een server sturen. Als je het beleid uitschakelt, heeft de Google Assistent geen toegang tot de schermcontext.
 
       Als je het beleid niet instelt, kunnen gebruikers zelf bepalen of ze deze functie willen in- of uitschakelen.</translation>
@@ -3809,15 +3785,6 @@ Als je het beleid instelt, kunnen gebruikers dit niet aanpassen in de browserins
 <translation id="6453641799812499182"><ph name="CORS" />-controlebeperkingen voor de nieuwe <ph name="CORS" />-implementatie inschakelen</translation>
 <translation id="645425387487868471">Gedwongen inloggen voor <ph name="PRODUCT_NAME" /> inschakelen</translation>
 <translation id="6458361632497500815">Als je het beleid inschakelt of niet instelt, kunnen alle gebruikers <ph name="PRODUCT_CROSTINI_NAME" /> gebruiken, zolang alle drie beleidsregels (<ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" />, <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> en <ph name="DEVICE_UNAFFILIATED_CROSTINI_ALLOWED_POLICY_NAME" />) zijn ingeschakeld. Als je het beleid uitschakelt, kunnen niet-aangesloten gebruikers <ph name="PRODUCT_CROSTINI_NAME" /> niet gebruiken. Als je het beleid uitschakelt, wordt het beleid toegepast op startende nieuwe <ph name="PRODUCT_CROSTINI_NAME" />-containers en niet op containers die al actief zijn.</translation>
-<translation id="646376229090051440">Hiermee kun je een lijst met protocollen instellen (en voor elk protocol een gekoppelde lijst met toegestane herkomstpatronen) die een externe app kunnen starten zonder prompt aan de gebruiker. Het scheidingsteken achteraan moet niet worden opgenomen bij de vermelding van het protocol. Vermeld bijvoorbeeld 'skype' in plaats van 'skype:' of 'skype://'.
-
-      Als dit beleid is ingesteld, kan een protocol volgens het beleid een externe app alleen starten zonder prompt aan de gebruiker als het protocol in de lijst wordt vermeld en de herkomst van de site die probeert het protocol te starten, overeenkomt met een van de herkomstpatronen in de lijst allowed_origins van dat protocol. Als een van de voorwaarden False is, wordt de prompt voor starten via een extern protocol volgens het beleid niet overgeslagen.
-
-      Als dit beleid niet is ingesteld, kunnen protocollen standaard niet worden gestart zonder prompt. Gebruikers kunnen zich voor specifieke protocollen/sites afmelden voor prompts, tenzij het beleid <ph name="EXTERNAL_PROTOCOL_DIALOG_SHOW_ALWAYS_OPEN_CHECKBOX_POLICY_NAME" /> is uitgeschakeld. Dit beleid heeft geen invloed op promptuitzonderingen voor specifieke protocollen/sites die zijn ingesteld door gebruikers.
-
-      De patronen voor overeenkomende herkomst gebruiken een vergelijkbare indeling als die voor het beleid '<ph name="URL_BLOCKLIST_POLICY_NAME" />' (deze worden gedocumenteerd op http://www.chromium.org/administrators/url-blacklist-filter-format).
-
-      Patronen voor overeenkomende herkomst voor dit beleid mogen geen '/path' or '@query'-elementen bevatten. Patronen die een '/path'- of '@query'-element bevatten, worden genegeerd.</translation>
 <translation id="6464074037294098618">Automatisch invullen voor adressen inschakelen</translation>
 <translation id="6467613372414922590">Hosts voor native berichten op gebruikersniveau toestaan (geïnstalleerd zonder beheerdersrechten)</translation>
 <translation id="6473623140202114570">Configureer de lijst met domeinen waar Safe Browsing geen waarschuwingen activeert.</translation>
@@ -4426,7 +4393,6 @@ Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncti
       Als dit beleid niet is ingesteld, kan de browser DNS-over-HTTPS-verzoeken verzenden naar een resolver die is gekoppeld aan de geconfigureerde systeemresolver van de gebruiker.</translation>
 <translation id="7158358621906236999">Standaardinstelling voor sensoren</translation>
 <translation id="7167436895080860385">Gebruikers toestaan wachtwoorden weer te geven in Wachtwoordmanager (beëindigd)</translation>
-<translation id="7170049569641162846">Toestaan dat lokale apparaten worden gevonden</translation>
 <translation id="7173856672248996428">Kort geldig profiel</translation>
 <translation id="717630378807352957">Alle printers in het configuratiebestand toestaan.</translation>
 <translation id="7177293255621000064">Als je het beleid instelt op 'True', zijn alle typen externe opslagmedia (USB-sticks, externe harde schijven, SD's en andere geheugenkaarten, optische opslagapparaten) niet meer beschikbaar in de bestandsbrowser. Als je het beleid instelt op 'False' of niet instelt, kunnen gebruikers externe opslag gebruiken op hun apparaat.
@@ -4575,15 +4541,6 @@ Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncti
 <translation id="7407441173422042771">Met dit beleid wordt netwerkvoorspelling in <ph name="PRODUCT_NAME" /> beheerd. Hiermee worden DNS-prefetching, het vooraf verbinden met TCP en SSL en het vooraf renderen van webpagina's beheerd.
 
       Als je het beleid instelt, kunnen gebruikers het niet wijzigen. Als je het beleid niet instelt, wordt netwerkvoorspelling ingeschakeld, maar kan de gebruiker dit wijzigen.</translation>
-<translation id="7415655595380180976">Dit beleid is beëindigd. Gebruik in plaats daarvan het beleid <ph name="URL_ALLOWLIST_POLICY_NAME" />.
-
-      Als je het beleid instelt, wordt toegang tot de vermelde URL's toegestaan, als uitzonderingen op de blokkeringslijst voor URL's. Bekijk de beschrijving van dit beleid voor de indeling van items in deze lijst. Als je <ph name="URL_BLOCKLIST_POLICY_NAME" /> bijvoorbeeld instelt op *, worden alle verzoeken geblokkeerd en kun je dit beleid gebruiken om toegang tot een beperkte lijst met URL's toe te staan. Je kunt dit beleid gebruiken om uitzonderingen voor bepaalde schema's, subdomeinen van andere domeinen, poorten of specifieke paden op te geven met de indeling die wordt gespecificeerd op ( https://www.chromium.org/administrators/url-blacklist-filter-format ). Het meest specifieke filter bepaalt of een URL geblokkeerd of toegestaan wordt. De toelatingslijst krijgt voorrang op de blokkeringslijst. Dit beleid is beperkt tot 1000 items.
-
-      Met dit beleid kan ook de automatische aanroep door de browser van een externe app worden ingeschakeld die is geregistreerd als protocolhandler voor de vermelde protocollen, zoals tel: of ssh:.
-
-      Als je het beleid niet instelt, zijn er geen uitzonderingen toegestaan.
-
-      In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
 <translation id="7417438464912687020">Verbindingen voor externe toegang tot deze machine toestaan</translation>
 <translation id="7417972229667085380">Het percentage waarmee je de inactieve vertraging in presentatiemodus kunt schalen (verouderd)</translation>
 <translation id="7421483919690710988">Grootte van mediaschijfcache in bytes instellen</translation>
@@ -5054,31 +5011,6 @@ Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncti
 <translation id="8133152694354699657">Als je het beleid instelt op 'True' of niet instelt, wordt 'Tikken om te zoeken' beschikbaar voor gebruikers. Ze kunnen de functie in- of uitschakelen.
 
       Als je het beleid instelt op 'False', wordt 'Tikken om te zoeken' volledig uitgeschakeld.</translation>
-<translation id="8135271712389620651">Hiermee stel je een lijst op met regels ter voorkoming van datalekken op <ph name="PRODUCT_OS_NAME" />.
-      Een datalek kan optreden als je gegevens kopieert en plakt, gegevens overdraagt, afdrukt, je scherm deelt of screenshots maakt, enzovoort.
-
-Elke regel bevat het volgende:
-- Een lijst met bronnen die zijn gedefinieerd als URL's. Alle gegevens in de bronnen worden beschouwd als vertrouwelijk en hierop worden de beperkingen toegepast.
-      - Een lijst met bestemmingen die zijn gedefinieerd als URL's of componenten, waarmee de vertrouwelijke gegevens wel of niet mogen worden gedeeld.
-      - Een lijst met beperkingen die op de gegevens van de bronnen moeten worden toegepast.
-
-      Regels kunnen om deze redenen worden toegevoegd:
-- Bepalen welke klembordgegevens mogen worden gedeeld tussen de bronnen en de bestemmingen.
-      - Bepalen of er screenshots van de bronnen mogen worden gemaakt.
-      - Bepalen of er bronnen mogen worden afgedrukt.
-      - Bepalen of het privacyscherm moet worden gebruikt als er bronnen zichtbaar zijn.
-      - Bepalen of de bronnen het scherm mogen delen.
-
-      Het beperkingsniveau kan worden ingesteld op BLOCK of ALLOW.
-      - Als de beperking is ingesteld op BLOCK, is de actie niet toegestaan.
-      - Als de beperking is ingesteld op ALLOW, is de actie toegestaan.
-
-      Opmerkingen:
-- Met de beperking PRIVACY_SCREEN blokkeer je niet de mogelijkheid om het privacyscherm in te schakelen maar dwing je dit af als de beperkingsklasse is ingesteld op BLOCK.
-      - Bestemmingen mogen niet leeg zijn als een van de beperkingen CLIPBOARD is, maar ze maken geen verschil voor de overige beperkingen.
-      - Gebruik een notatie voor de URL-patronen volgens deze indeling (https://www.chromium.org/administrators/url-blacklist-filter-format).
-
-Als het beleid niet is ingesteld, worden er geen beperkingen toegepast.</translation>
 <translation id="8136906469922284163">Als je het beleid instelt op True, kunnen pagina's pop-ups laten zien terwijl het laden van de pagina's ongedaan wordt gemaakt.
 
       Als je het beleid instelt op False of niet instelt, kunnen pagina's geen pop-ups laten zien terwijl het laden van de pagina's ongedaan wordt gemaakt.
@@ -5130,9 +5062,6 @@ Als dit beleid niet is ingesteld, wordt het privacyscherm in eerste instantie ui
 
       Als je het beleid uitschakelt of niet instelt, worden er geen pakketten gestuurd.</translation>
 <translation id="816783746144552109">Configureer de minimaal toegestane Chrome OS-versie voor het apparaat.</translation>
-<translation id="8171025799847651230">Als dit beleid is uitgeschakeld, kan de hostservice voor externe toegang niet worden gestart of ingesteld om inkomende verbindingen te accepteren.  Dit beleid heeft geen effect op scenario's voor support op afstand.
-
-          Dit beleid is niet geldig als het is ingesteld op True, leeg wordt gelaten of niet wordt ingesteld.</translation>
 <translation id="8171924760436219650">De rechtermuisknop instellen als de primaire muisknop op het inlogscherm</translation>
 <translation id="8176035528522326671">Toestaan dat Enterprise-gebruiker alleen primair gebruiker van meerdere profielen is (standaardgedrag voor beheerde Enterprise-gebruikers)</translation>
 <translation id="8179161412673077784">Niet toestaan dat sites met misleidende functionaliteit nieuwe vensters of tabbladen openen</translation>
@@ -5282,13 +5211,6 @@ De aanbevolen manier om beleidsregels te configureren op Windows, is via GPO, ma
 <translation id="8371178326720637170">Hiermee kunnen beheerde extensies de Enterprise Hardware Platform-API gebruiken</translation>
 <translation id="8375817202037102567">Schrijftoegang tot bestanden en directory's voor deze sites blokkeren</translation>
 <translation id="8379317372795444261"><ph name="BASIC_AUTH" />-verificatie is toegestaan voor HTTP-verbindingen</translation>
-<translation id="838056554726401140">Lijst met URL's waarin wordt aangegeven op welke URL's <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> van toepassing is. Dit beleid is niet van invloed op waarden voor automatisch openen die zijn ingesteld door gebruikers.
-
-      Als dit beleid is ingesteld, worden bestanden alleen geopend op basis van het beleid als de URL onderdeel is van deze set en het bestandstype wordt vermeld in <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />. Als een van de voorwaarden False is, wordt de download niet automatisch geopend op basis van het beleid.
-
-      Als dit beleid niet is ingesteld, worden alle downloads waarvan het bestandstype in <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> staat automatisch geopend.
-
-      Een URL-patroon moet worden ingedeeld volgens https://www.chromium.org/administrators/url-blacklist-filter-format.</translation>
 <translation id="8382184662529825177">Het gebruik van externe verificatie inschakelen voor het beveiligen van content voor het apparaat</translation>
 <translation id="838870586332499308">Dataroaming inschakelen</translation>
 <translation id="8393850527597048037">Alleen platform</translation>
@@ -5619,6 +5541,7 @@ Dit beleid wordt verwijderd in M75.</translation>
 <translation id="8890438048579188548">Waarschuwingen over beëindiging van <ph name="CLOUD_PRINT_NAME" /> verbergen</translation>
 <translation id="8892286064305622118">Vrije schijfruimte vereist voor <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="8892783613915541293">Vertragingen en acties die moeten worden ondernomen als het apparaat inactief is en op netvoeding werkt</translation>
+<translation id="8897796778265450949">Beperk de tijd dat een gebruiker die via GAIA is geverifieerd zonder SAML, offline kan inloggen.</translation>
 <translation id="8903283771634816230">Als je dit beleid inschakelt, gebruikt <ph name="PRODUCT_NAME" /> de standaardprinter van het OS als standaardbestemming voor het afdrukvoorbeeld.
 
       Als je het beleid uitschakelt of niet instelt, gebruikt <ph name="PRODUCT_NAME" /> de laatst gebruikte printer als standaardbestemming voor het afdrukvoorbeeld.</translation>
@@ -5674,13 +5597,6 @@ Dit beleid wordt verwijderd in M75.</translation>
       Voor meer informatie over een veilige context ga je naar
       https://www.w3.org/TR/secure-contexts/
       </translation>
-<translation id="8940519618730206658">Als je dit beleid instelt, wordt toegang geboden tot de vermelde URL's, als uitzonderingen op <ph name="URL_BLOCKLIST_POLICY_NAME" />. Bekijk de beschrijving van dit beleid voor de indeling van items in deze lijst. Als je <ph name="URL_BLOCKLIST_POLICY_NAME" /> bijvoorbeeld instelt op *, worden alle verzoeken geblokkeerd en kun je dit beleid gebruiken om toegang tot een beperkte lijst met URL's toe te staan. Je kunt dit beleid gebruiken om uitzonderingen voor bepaalde schema's, subdomeinen van andere domeinen, poorten of specifieke paden op te geven met de indeling die wordt gespecificeerd op ( https://www.chromium.org/administrators/url-blacklist-filter-format ). Het meest specifieke filter bepaalt of een URL geblokkeerd of toegestaan wordt. Het beleid <ph name="URL_ALLOWLIST_POLICY_NAME" /> krijgt voorrang op <ph name="URL_BLOCKLIST_POLICY_NAME" />. Dit beleid is beperkt tot 1000 items.
-
-      Met dit beleid kan ook de automatische aanroep door de browser van een externe app worden ingeschakeld die is geregistreerd als protocolhandler voor de vermelde protocollen, zoals tel: of ssh:.
-
-      Als je het beleid niet instelt, zijn er geen uitzonderingen toegestaan op <ph name="URL_BLOCKLIST_POLICY_NAME" />.
-
-      In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
 <translation id="8942616385591203339">Dit beleid bepaalt of er informatie over toestemming voor synchronisatie mag worden getoond aan de gebruiker wanneer deze voor het eerst inlogt. De waarde moet op 'False' worden ingesteld als er nooit toestemming voor synchronisatie is vereist voor de gebruiker.
       Als dit is ingesteld op 'False', wordt er geen informatie over toestemming voor synchronisatie weergegeven.
       Als dit is ingesteld op 'True' of als dit niet is ingesteld, kan er informatie over toestemming voor synchronisatie worden weergegeven.</translation>

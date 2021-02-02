@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="uk">
 <translation id="102360288709523007">Допоможіть покращити Chromium, надсилаючи в Google статистику використання та звіти про аварійне завершення роботи.</translation>
+<translation id="1130979953299110755">Якщо ви вийдете, дані Chromium (зокрема закладки, історія, паролі тощо) більше не синхронізуватимуться з вашим обліковим записом Google.</translation>
 <translation id="1185134272377778587">Про Chromium</translation>
 <translation id="1257458525759135959">Щоб зберегти зображення, натисніть "Налаштування" та дозвольте Chromium додавати фотографії</translation>
 <translation id="1361748954329991663">Версія Chromium застаріла. Якщо оновлень в <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> немає, можливо, ваш пристрій більше не підтримує нові версії Chromium.</translation>

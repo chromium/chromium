@@ -62,6 +62,7 @@
 <translation id="2338501278241028356">በአቅራቢያ ያሉ መሣሪያዎችን ለማግኘት ብሉቱዝን ያብሩ</translation>
 <translation id="2364498172489649528">አልፏል</translation>
 <translation id="2391082728065870591">የግብረመልስ ሪፖርት ላክ</translation>
+<translation id="2418150275289244458">በቅንብሮች ውስጥ ክፈት</translation>
 <translation id="2446553403094072641">የተንሳፋፊ ነጥብ ትክክለኛነት</translation>
 <translation id="2448312741937722512">አይነት</translation>
 <translation id="2461822463642141190">የአሁኑ ጊዜ</translation>
@@ -273,6 +274,7 @@
 <translation id="7177485034254901881">ይህ <ph name="DEVICE_TYPE" /> በ<ph name="MANAGER" /> የሚተዳደር ነው። አስተዳዳሪዎች መሣሪያውን ከርቀት ማዋቀር ይችላሉ።</translation>
 <translation id="7216409898977639127">የተንቀሳቃሽ ስልክ አገልግሎት አቅራቢ</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7343649194310845056">የአውታረ መረብ መሣሪያዎች</translation>
 <translation id="7359657277149375382">የፋይል አይነት</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -282,6 +284,7 @@
 <translation id="7490813197707563893">የማክ አድራሻ</translation>
 <translation id="7497215489070763236">የአገልጋይ CA እውቅና ማረጋገጫ</translation>
 <translation id="7502658306369382406">የIPv6 አድራሻ</translation>
+<translation id="7550715992156305117">የምርመራ የዕለት ተዕለት ሥራዎች</translation>
 <translation id="7561454561030345039">ይህ ቅንብር በአስተዳዳሪዎ የሚቀናበር ነው።</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> ቀርቷል</translation>

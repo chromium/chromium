@@ -62,6 +62,7 @@
 <translation id="2338501278241028356">Yaxınlıqdakı cihazları tapmaq üçün Bluetooth'u aktiv edin</translation>
 <translation id="2364498172489649528">Keçdi</translation>
 <translation id="2391082728065870591">Rəy Hesabatını Göndərin</translation>
+<translation id="2418150275289244458">Ayarlarda açın</translation>
 <translation id="2446553403094072641">Dəyişən nöqtə dəqiqliyi</translation>
 <translation id="2448312741937722512">Növ</translation>
 <translation id="2461822463642141190">Cari</translation>
@@ -272,6 +273,7 @@
 <translation id="7177485034254901881">Bu <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> tərəfindən idarə olunur. Administratorlar cihazı məsafədən konfiqurasiya edə bilər.</translation>
 <translation id="7216409898977639127">Mobil provayder</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7343649194310845056">Şəbəkə Cihazları</translation>
 <translation id="7359657277149375382">Fayl növü</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -281,6 +283,7 @@
 <translation id="7490813197707563893">MAC ünvanı</translation>
 <translation id="7497215489070763236">Server CA sertifikatı</translation>
 <translation id="7502658306369382406">IPv6 ünvanı</translation>
+<translation id="7550715992156305117">Diaqnostika Rejimləri</translation>
 <translation id="7561454561030345039">Bu əməliyyat admininiz tərəfindən idarə olunur</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> qalıb</translation>

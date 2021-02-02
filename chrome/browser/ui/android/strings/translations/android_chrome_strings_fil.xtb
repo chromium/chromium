@@ -402,7 +402,6 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="3894427358181296146">Magdagdag ng folder</translation>
 <translation id="3895926599014793903">Puwersahang i-enable ang zoom</translation>
 <translation id="3908308510347173149">I-update ang <ph name="PRODUCT_NAME" /></translation>
-<translation id="3909763690984331376">Pag-check sa kaligtasan <ph name="BEGIN_NEW" />Bago<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">Hinahanap ang pinakamahusay mula sa web…</translation>
 <translation id="3924911262913579434">Naka-on ang <ph name="SAFE_BROWSING_MODE" /></translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -633,6 +632,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5530766185686772672">Isara ang mga tab na incognito</translation>
 <translation id="5530920986376047241">Puwede kang mag-save ng mga page sa iyong listahan ng babasahin para mahanap ulit ang mga ito</translation>
 <translation id="5534640966246046842">Nakopya ang site</translation>
+<translation id="5548606607480005320">Pag-check sa kaligtasan</translation>
 <translation id="5556459405103347317">I-reload</translation>
 <translation id="5561549206367097665">Naghihintay ng network…</translation>
 <translation id="55737423895878184">Pinapayagan ang lokasyon at mga notification</translation>

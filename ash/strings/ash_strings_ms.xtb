@@ -578,6 +578,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5992218262414051481">Mod Kontras Tinggi didayakan. Tekan Ctrl+Cari+H semula untuk mematikannya.</translation>
 <translation id="6018164090099858612">Keluar daripada mod cermin</translation>
 <translation id="602001110135236999">Tatal ke kiri</translation>
+<translation id="602472752137106327">Tunjukkan tetingkap daripada semua meja, butang radio dipilih</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />, Diurus oleh Pentadbir anda</translation>
 <translation id="6030495522958826102">Menu dialihkan ke sudut bawah sebelah kiri skrin.</translation>
 <translation id="6032620807120418574">Klik mana-mana bahagian untuk merakam skrin penuh</translation>
@@ -676,6 +677,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Tinggal satu angka}other{Tinggal # angka}}</translation>
 <translation id="6878400149835617132">Pintasan dimatikan</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> anda mungkin menunjukkan prestasi yang lebih rendah. Gunakan penyesuai kuasa USB-C <ph name="PREFERRED_MINIMUM_POWER" />W ke atas yang diperakui.</translation>
+<translation id="688631446150864480">Tekan kekunci Anak panah ke bawah untuk menukar tetingkap</translation>
 <translation id="6896758677409633944">Salin</translation>
 <translation id="6910714959251846841">Kemas kini ini memerlukan powerwash dijalankan pada peranti anda. Ketahui lebih lanjut tentang kemas kini <ph name="SYSTEM_APP_NAME" /> yang terbaharu.</translation>
 <translation id="6919251195245069855">Tidak dapat mengecam kad pintar anda. Cuba lagi.</translation>
@@ -841,6 +843,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="8297006494302853456">Lemah</translation>
 <translation id="8308637677604853869">Menu sebelumnya</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> tetingkap dipilih</translation>
 <translation id="8351131234907093545">Buat nota</translation>
 <translation id="8371779926711439835">Maju satu huruf</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> ini dan telefon anda akan disambungkan secara automatik</translation>
@@ -864,6 +867,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="8477270416194247200">Tekan Alt+Search atau Shift untuk membatalkan.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> tidak menyokong <ph name="SPECIFIED_RESOLUTION" />. Peleraian telah ditukar kepada <ph name="FALLBACK_RESOLUTION" />. Klik sahkan untuk menyimpan perubahan. Tetapan terdahulu akan dipulihkan dalam masa <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8513108775083588393">Autoputar</translation>
+<translation id="851458219935658693">Tunjukkan tetingkap daripada meja semasa, butang radio dipilih</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> anda mungkin tidak akan dicas semasa dihidupkan.</translation>
 <translation id="8553395910833293175">Telah pun diuntukkan kepada semua meja.</translation>
 <translation id="8563862697512465947">Tetapan Pemberitahuan</translation>

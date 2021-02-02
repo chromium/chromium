@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr-CA">
 <translation id="102360288709523007">Améliorer Chromium en envoyant des statistiques d'utilisation et des rapports d'erreur.</translation>
+<translation id="1130979953299110755">Si vous vous déconnectez, vos favoris, votre historique, vos mots de passe et d'autres données de Chromium ne seront plus synchronisés avec votre compte Google.</translation>
 <translation id="1185134272377778587">À propos de Chromium</translation>
 <translation id="1257458525759135959">Pour enregistrer des images, touchez Paramètres et autorisez Chromium à les ajouter à vos photos</translation>
 <translation id="1361748954329991663">Chromium n'est pas à jour. Si aucune mise à jour n'est offerte dans l'<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, il est possible que votre appareil ne prenne plus en charge les nouvelles versions de Chromium.</translation>

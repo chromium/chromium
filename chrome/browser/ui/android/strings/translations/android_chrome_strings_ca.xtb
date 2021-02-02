@@ -402,7 +402,6 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="3894427358181296146">Afegeix una carpeta</translation>
 <translation id="3895926599014793903">Força l'activació del zoom</translation>
 <translation id="3908308510347173149">Actualitza <ph name="PRODUCT_NAME" /></translation>
-<translation id="3909763690984331376">Comprovació de seguretat <ph name="BEGIN_NEW" />Novetat<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">Estem cercant el millor contingut del web…</translation>
 <translation id="3924911262913579434">S'ha activat <ph name="SAFE_BROWSING_MODE" /></translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -633,6 +632,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5530766185686772672">Tanca pestanyes d'incògnit</translation>
 <translation id="5530920986376047241">Pots desar pàgines a la llista de lectura per trobar-les de nou</translation>
 <translation id="5534640966246046842">S'ha copiat el lloc web</translation>
+<translation id="5548606607480005320">Comprovació de seguretat</translation>
 <translation id="5556459405103347317">Torna a carregar</translation>
 <translation id="5561549206367097665">S'està esperant la xarxa…</translation>
 <translation id="55737423895878184">Es permeten la ubicació i les notificacions</translation>
@@ -730,6 +730,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="6122831415929794347">Vols desactivar Navegació segura?</translation>
 <translation id="6127379762771434464">S'ha suprimit l'element</translation>
 <translation id="6137022273846704445">Idioma de l'aplicació <ph name="APP_NAME" /></translation>
+<translation id="6138832295072039549">Canvia la configuració del teu lloc web aquí</translation>
 <translation id="6140709049082532940">Protecció millorada:</translation>
 <translation id="6140912465461743537">País/regió</translation>
 <translation id="614940544461990577">Prova el següent:</translation>
@@ -1073,7 +1074,7 @@ Les dades de la teva sessió d'incògnit només s'esborraran de Chrome quan <ph 
 <translation id="8442258441309440798">No hi ha cap història disponible</translation>
 <translation id="8443209985646068659">Chrome no actualitzable</translation>
 <translation id="8445448999790540984">No es poden exportar les contrasenyes</translation>
-<translation id="8447219758310755868">Crowdmasking</translation>
+<translation id="8447219758310755868">Emmascara la multitud</translation>
 <translation id="8461694314515752532">Encripta les dades sincronitzades amb la teva frase de contrasenya de sincronització</translation>
 <translation id="8466613982764129868">Comprova que el dispositiu <ph name="TARGET_DEVICE_NAME" /> estigui connectat a Internet</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>

@@ -17,6 +17,7 @@
 <translation id="1399397803214730675">该计算机已安装了更高版本的 Google Chrome 浏览器。如果该软件无法正常运行，请卸载 Google Chrome 浏览器，然后重试。</translation>
 <translation id="1434626383986940139">Chrome Canary 应用</translation>
 <translation id="147727933880789532">Chrome 建议您停用此扩展程序，因为它目前不符合“增强型安全浏览”标准。</translation>
+<translation id="1516530951338665275">Google Chrome 需获得蓝牙使用权限才能继续配对。<ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">更新 Chrome</translation>
 <translation id="1587223624401073077">Google Chrome 正在使用您的摄像头。</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> 存在危险，因此 Chrome 已将其拦截。</translation>
@@ -201,6 +202,7 @@
 <translation id="6566149418543181476">正在更新 Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Chrome 操作系统</translation>
 <translation id="6650333065969705433">您必须重启 Chrome，才能使用 Rosetta 播放受保护的媒体内容。</translation>
+<translation id="6668872995670558829">必须使用 Chrome 工作资料</translation>
 <translation id="6676384891291319759">访问互联网</translation>
 <translation id="6679975945624592337">让 Google Chrome 在后台运行</translation>
 <translation id="6739177684496155661">使用一份新的 Chrome 个人资料继续浏览？</translation>
@@ -219,6 +221,7 @@
 <translation id="7140653346177713799">{COUNT,plural, =0{Chrome 有一项新的可用更新；一旦您重新启动，系统即会应用这项更新。}=1{Chrome 有一项新的可用更新；一旦您重新启动，系统即会应用这项更新。您的无痕式窗口不会重新打开。}other{Chrome 有一项新的可用更新；一旦您重新启动，系统即会应用这项更新。您的 # 个无痕式窗口不会重新打开。}}</translation>
 <translation id="7155997830309522122">如果是的话，请修改您在 Chrome 中保存的密码，使它与您的新密码保持一致。</translation>
 <translation id="7242029209006116544">您目前登录的帐号是一个托管帐号，该帐号的管理员将能够控制您的 Google Chrome 个人资料。您的 Chrome 数据（例如您的应用、书签、历史记录、密码和其他设置）将永远与 <ph name="USER_NAME" /> 相关联。您可以通过 Google 帐号信息中心删除这些数据，但无法将这些数据与其他帐号相关联。您可以选择创建新的个人资料来单独存储现有的 Chrome 数据。<ph name="LEARN_MORE" /></translation>
+<translation id="7255293161244507351">此帐号由 <ph name="MANAGEMENT_DOMAIN" /> 管理。您的管理员要求使用 Chrome 工作资料访问此帐号。这份工作资料完全独立于任何个人资料之外。在使用此工作资料期间生成的 Chrome 数据（例如创建的书签、历史记录、密码和其他设置）都可由您的管理员移除。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="7295052994004373688">使用此语言显示 Google Chrome 界面</translation>
 <translation id="7296210096911315575">重要用途和安全信息</translation>
 <translation id="7303916856901595720">将帐号移到一份新的 Chrome 个人资料名下？</translation>
@@ -226,6 +229,7 @@
 <translation id="7339898014177206373">打开新的窗口</translation>
 <translation id="7398801000654795464">您之前登录 Chrome 时使用的帐号为 <ph name="USER_EMAIL_ADDRESS" />，请使用同一帐号再次登录。</translation>
 <translation id="7408085963519505752">Chrome操作系统条款</translation>
+<translation id="7416131756095014387">此帐号处于受管理状态。您的管理员要求使用 Chrome 工作资料访问此帐号。这份工作资料完全独立于任何个人资料之外。在使用此工作资料期间生成的 Chrome 数据（例如创建的书签、历史记录、密码和其他设置）都可由您的管理员移除。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="7419046106786626209">由于您的网域停用了同步功能，Chrome操作系统无法同步您的数据。</translation>
 <translation id="7486227612705979895">Chrome 将访问您的云端硬盘，以在地址栏提供建议</translation>
 <translation id="7535429826459677826">Google Chrome 开发者版</translation>

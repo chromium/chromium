@@ -402,7 +402,6 @@ Gusa na ushikilie neno lolote ili utafute. Ili uchuje utafutaji wako, chagua man
 <translation id="3894427358181296146">Ongeza folda</translation>
 <translation id="3895926599014793903">Lazimisha kuwasha ukuzaji</translation>
 <translation id="3908308510347173149">Sasisha <ph name="PRODUCT_NAME" /></translation>
-<translation id="3909763690984331376">Angalizo la usalama <ph name="BEGIN_NEW" />Mpya<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">Inatafuta maudhui bora zaidi kwenye wavuti…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> imewashwa</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -633,6 +632,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="5530766185686772672">Funga vichupo fiche</translation>
 <translation id="5530920986376047241">Unaweza kuhifadhi kurasa kwenye orodha yako ya kusoma ili uweze kuzipata tena</translation>
 <translation id="5534640966246046842">Tovuti imenakiliwa</translation>
+<translation id="5548606607480005320">Angalizo la usalama</translation>
 <translation id="5556459405103347317">Pakia upya</translation>
 <translation id="5561549206367097665">Inasubiri intaneti…</translation>
 <translation id="55737423895878184">Vipengele vya mahali na arifa vinaruhusiwa</translation>
@@ -730,6 +730,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="6122831415929794347">Ungependa kuzima kipengele cha Kuvinjari Salama?</translation>
 <translation id="6127379762771434464">Kipengee kimeondolewa</translation>
 <translation id="6137022273846704445">Lugha inayotumika kwenye <ph name="APP_NAME" /></translation>
+<translation id="6138832295072039549">Badilisha mipangilio ya tovuti yako hapa</translation>
 <translation id="6140709049082532940">Ulinzi ulioboreshwa:</translation>
 <translation id="6140912465461743537">Nchi/Eneo</translation>
 <translation id="614940544461990577">Jaribu:</translation>

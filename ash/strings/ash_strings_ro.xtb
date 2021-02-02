@@ -577,6 +577,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="5992218262414051481">Modul Contrast ridicat este activat. Apasă din nou pe Ctrl + tasta de căutare + H pentru a-l dezactiva.</translation>
 <translation id="6018164090099858612">Se iese din modul oglindă</translation>
 <translation id="602001110135236999">Derulează la stânga</translation>
+<translation id="602472752137106327">Se afișează ferestrele de pe toate desktopurile, buton radio selectat</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" />, gestionată de administratorul tău</translation>
 <translation id="6030495522958826102">Meniul a fost mutat în colțul din stânga jos al ecranului.</translation>
 <translation id="6032620807120418574">Dă clic oriunde pentru a înregistra ecranul complet</translation>
@@ -675,6 +676,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Încă o cifră}few{Încă # cifre}other{Încă # de cifre}}</translation>
 <translation id="6878400149835617132">Comanda rapidă a fost dezactivată</translation>
 <translation id="6886172995547742638">Dispozitivul <ph name="DEVICE_TYPE" /> poate avea o performanță mai slabă. Folosește un adaptor de curent USB-C certificat de minimum <ph name="PREFERRED_MINIMUM_POWER" /> W.</translation>
+<translation id="688631446150864480">Apasă tasta săgeată în jos pentru a comuta între ferestre</translation>
 <translation id="6896758677409633944">Copiază</translation>
 <translation id="6910714959251846841">Această actualizare necesită rularea funcției Powerwash a dispozitivului. Află mai multe despre cea mai recentă actualizare <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Nu s-a recunoscut cardul inteligent. Încearcă din nou.</translation>
@@ -840,6 +842,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="8297006494302853456">Slab</translation>
 <translation id="8308637677604853869">Meniul anterior</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> fereastră selectată</translation>
 <translation id="8351131234907093545">Creează o notă</translation>
 <translation id="8371779926711439835">Înainte cu o literă</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> și telefonul se vor conecta automat</translation>
@@ -863,6 +866,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="8477270416194247200">Apasă pe Alt + tasta de căutare sau pe Shift pentru a anula.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> nu acceptă <ph name="SPECIFIED_RESOLUTION" />. Rezoluția a fost modificată la <ph name="FALLBACK_RESOLUTION" />. Dă clic pe Confirmă pentru a păstra modificările. Setările anterioare vor fi restabilite în <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8513108775083588393">Rotire autom.</translation>
+<translation id="851458219935658693">Se afișează ferestrele de pe desktopul actual, buton radio selectat</translation>
 <translation id="8517041960877371778">Este posibil ca <ph name="DEVICE_TYPE" /> să nu se încarce cât timp este pornit.</translation>
 <translation id="8553395910833293175">A fost deja atribuită tuturor desktopurilor.</translation>
 <translation id="8563862697512465947">Setări de notificare</translation>

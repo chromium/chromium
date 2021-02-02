@@ -402,7 +402,6 @@ Nospiediet un turiet jebkuru vārdu, lai to meklētu. Lai precizētu meklēšanu
 <translation id="3894427358181296146">Mapes pievienošana</translation>
 <translation id="3895926599014793903">Tālummaiņas piespiedu iespējošana</translation>
 <translation id="3908308510347173149">Atjaunināt <ph name="PRODUCT_NAME" /></translation>
-<translation id="3909763690984331376">Drošības pārbaude <ph name="BEGIN_NEW" />Jaunums<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">Notiek vislabākā tīmekļa satura meklēšana</translation>
 <translation id="3924911262913579434">Darbojas <ph name="SAFE_BROWSING_MODE" /></translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -633,6 +632,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="5530766185686772672">Aizvērt inkognito cilnes</translation>
 <translation id="5530920986376047241">Lasīšanas sarakstā varat saglabāt lapas, lai atrastu tās vēlāk</translation>
 <translation id="5534640966246046842">Vietne ir nokopēta.</translation>
+<translation id="5548606607480005320">Drošības pārbaude</translation>
 <translation id="5556459405103347317">Pārlādēt</translation>
 <translation id="5561549206367097665">Tiek gaidīts savienojums ar tīklu…</translation>
 <translation id="55737423895878184">Atrašanās vietas noteikšana un paziņojumi ir atļauti.</translation>
@@ -730,6 +730,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="6122831415929794347">Vai vēlaties izslēgt drošu pārlūkošanu?</translation>
 <translation id="6127379762771434464">Vienums ir noņemts</translation>
 <translation id="6137022273846704445">Lietotnes <ph name="APP_NAME" /> valoda</translation>
+<translation id="6138832295072039549">Šeit varat mainīt vietnes iestatījumus.</translation>
 <translation id="6140709049082532940">Uzlabota aizsardzība:</translation>
 <translation id="6140912465461743537">Valsts/reģions</translation>
 <translation id="614940544461990577">Veiciet tālāk norādītās darbības.</translation>

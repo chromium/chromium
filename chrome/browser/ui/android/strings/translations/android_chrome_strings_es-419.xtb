@@ -402,7 +402,6 @@ Para buscar una palabra, mantenla presionada. Si quieres definir mejor la búsqu
 <translation id="3894427358181296146">Agregar carpeta</translation>
 <translation id="3895926599014793903">Forzar habilitación de zoom</translation>
 <translation id="3908308510347173149">Actualizar <ph name="PRODUCT_NAME" /></translation>
-<translation id="3909763690984331376">Verificación de seguridad <ph name="BEGIN_NEW" />Nuevo<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">Buscando lo mejor de la Web…</translation>
 <translation id="3924911262913579434">El modo <ph name="SAFE_BROWSING_MODE" /> está activado</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -633,6 +632,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5530766185686772672">Cerrar pest. de incógnito</translation>
 <translation id="5530920986376047241">Puedes guardar páginas en tu lista de lectura para volver a ellas más tarde.</translation>
 <translation id="5534640966246046842">Se copió el sitio</translation>
+<translation id="5548606607480005320">Verificación de seguridad</translation>
 <translation id="5556459405103347317">Cargar de nuevo</translation>
 <translation id="5561549206367097665">Esperando red…</translation>
 <translation id="55737423895878184">La ubicación y las notificaciones están habilitadas</translation>
@@ -730,6 +730,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="6122831415929794347">¿Quieres desactivar la Navegación segura?</translation>
 <translation id="6127379762771434464">Se eliminó el elemento</translation>
 <translation id="6137022273846704445">Idioma de <ph name="APP_NAME" /></translation>
+<translation id="6138832295072039549">Cambia la configuración de tu sitio aquí</translation>
 <translation id="6140709049082532940">Protección mejorada:</translation>
 <translation id="6140912465461743537">País o región</translation>
 <translation id="614940544461990577">Intenta:</translation>

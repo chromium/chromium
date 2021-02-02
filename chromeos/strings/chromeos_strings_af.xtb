@@ -62,6 +62,7 @@
 <translation id="2338501278241028356">Skakel Bluetooth aan om toestelle in die omtrek te ontdek</translation>
 <translation id="2364498172489649528">Geslaag</translation>
 <translation id="2391082728065870591">Stuur terugvoerverslag</translation>
+<translation id="2418150275289244458">Maak in Instellings oop</translation>
 <translation id="2446553403094072641">Akkuraatheid van wisselpunt</translation>
 <translation id="2448312741937722512">Soort</translation>
 <translation id="2461822463642141190">Huidig</translation>
@@ -273,6 +274,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="7177485034254901881">Hierdie <ph name="DEVICE_TYPE" /> word bestuur deur <ph name="MANAGER" />. Administrateurs kan die toestel oor 'n afstand opstel.</translation>
 <translation id="7216409898977639127">Sellulêre diensverskaffer</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7343649194310845056">Netwerktoestelle</translation>
 <translation id="7359657277149375382">Lêertipe</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -282,6 +284,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="7490813197707563893">MAC-adres</translation>
 <translation id="7497215489070763236">Bediener se CA-sertifikaat</translation>
 <translation id="7502658306369382406">IPv6-adres</translation>
+<translation id="7550715992156305117">Diagnostiese roetines</translation>
 <translation id="7561454561030345039">Jou administrateur bestuur hierdie handeling</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> oor</translation>

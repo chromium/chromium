@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
 <translation id="102360288709523007">사용 통계와 비정상 종료 보고서를 Google로 전송하면 Chromium 개선에 도움이 됩니다.</translation>
+<translation id="1130979953299110755">로그아웃하면 북마크, 방문 기록, 비밀번호 및 기타 Chromium 데이터가 더 이상 Google 계정과 동기화되지 않습니다.</translation>
 <translation id="1185134272377778587">Chromium 정보</translation>
 <translation id="1257458525759135959">이미지를 저장하려면 '설정'을 탭하여 Chromium에 사진 추가 권한을 부여하세요.</translation>
 <translation id="1361748954329991663">Chromium이 이전 버전입니다. <ph name="BEGIN_LINK" />앱 스토어<ph name="END_LINK" />에 사용 가능한 업데이트가 없으면 기기에서 더 이상 Chromium의 새 버전을 지원하지 않는 것일 수 있습니다.</translation>

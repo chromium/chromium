@@ -126,6 +126,7 @@
 <translation id="4994636714258228724">Mich zu Chromium hinzufügen</translation>
 <translation id="5224391634244552924">Keine gespeicherten Passwörter. Chromium kann Ihre Passwörter prüfen, wenn Sie sie speichern.</translation>
 <translation id="5277894862589591112">Starten Sie Chromium neu, um die Änderungen zu übernehmen</translation>
+<translation id="5357324149468831780">Dieses Konto wird verwaltet. Laut Ihrem Administrator ist für den Zugriff ein Chromium-Profil erforderlich. Dieses Profil wird getrennt von einem persönlichen Profil verwaltet. Alle Chromium-Daten, die während der Nutzung dieses Profils erstellt werden, wie Lesezeichen, Verlauf, Passwörter und andere Einstellungen, können von Ihrem Administrator entfernt werden. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="5358375970380395591">Sie melden sich mit einem verwalteten Konto an und ermöglichen dessen Administrator Zugriff auf Ihr Chromium-Profil. Ihre Chromium-Daten, wie Apps, Lesezeichen, Verlauf, Passwörter und andere Einstellungen, werden dauerhaft mit <ph name="USER_NAME" /> verknüpft. Sie können diese Daten über das Google Konten-Dashboard löschen, aber nicht mit einem anderen Konto verknüpfen. <ph name="LEARN_MORE" /></translation>
 <translation id="5386450000063123300">Chromium wird aktualisiert (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Anmeldung in Chromium zulassen</translation>
@@ -140,6 +141,7 @@
 <translation id="5623402015214259806">{0,plural, =0{Ein Chromium-Update ist verfügbar}=1{Ein Chromium-Update ist verfügbar}other{Ein Chromium-Update ist seit # Tagen verfügbar}}</translation>
 <translation id="5631814766731275228">Chromium-Name und -Bild</translation>
 <translation id="5634636535844844681">Für Chromium ist Windows 7 oder höher erforderlich.</translation>
+<translation id="5642268154044585431">Chromium-Profil erforderlich</translation>
 <translation id="5653831366781983928">Starten Sie Chromium jetzt neu</translation>
 <translation id="5698481217667032250">Chromium in dieser Sprache anzeigen</translation>
 <translation id="5736967399513123100">Damit Chromium geschützte Medien abspielen kann, muss Rosetta installiert werden. Jetzt installieren?</translation>
@@ -170,6 +172,7 @@
 <translation id="6309712487085796862">Chromium verwendet Ihre Kamera.</translation>
 <translation id="6333502561965082103">In Chromium wird eine andere Aktion durchgeführt. Bitte versuchen Sie es später noch einmal.</translation>
 <translation id="6334986366598267305">Sie können Chromium jetzt noch einfacher mit Ihrem Google-Konto und auf gemeinsam genutzten Computern verwenden.</translation>
+<translation id="6345021408165055322">Dieses Konto wird von <ph name="MANAGEMENT_DOMAIN" /> verwaltet. Laut Ihrem Administrator ist für den Zugriff ein Chromium-Profil erforderlich. Dieses Profil wird getrennt von einem persönlichen Profil verwaltet. Alle Chromium-Daten, die während der Nutzung dieses Profils erstellt werden, wie Lesezeichen, Verlauf, Passwörter und andere Einstellungen, können von Ihrem Administrator entfernt werden. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="6373523479360886564">Möchten Sie Chromium wirklich deinstallieren?</translation>
 <translation id="6403826409255603130">Chromium ist ein Webbrowser, der Webseiten und Apps in Sekundenschnelle lädt und dabei äußerst stabil und nutzerfreundlich ist. Dank des integrierten Malware- und Phishing-Schutzes können Sie bedenkenlos im Internet surfen.</translation>
 <translation id="6434250628340475518">Chromium OS-System</translation>
@@ -194,6 +197,7 @@ Einige Funktionen stehen möglicherweise nicht zur Verfügung. Geben Sie bitte e
 <translation id="6863361426438995919">Google Pay (in Chromium kopiert)</translation>
 <translation id="6893813176749746474">Chromium wurde aktualisiert, Sie haben den Browser jedoch mindestens 30 Tage nicht verwendet.</translation>
 <translation id="6897548120660295439">Rosetta ermöglicht Chromium, geschützte Medien auf dieser Seite abzuspielen.</translation>
+<translation id="691026815377248078">Chromium benötigt Zugriff auf Bluetooth, um mit der Koppelung fortzufahren. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">Link in Chromium-Inkognitofenster öffnen</translation>
 <translation id="6978145336957848883">Schwache Passwörter sind einfach zu erraten. Erlauben Sie Chromium, ein <ph name="BEGIN_LINK" />sicheres Passwort für Ihre Onlinekonten zu erstellen und zu speichern<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium benötigt für diese Website die Berechtigung, auf Ihr Mikrofon zuzugreifen</translation>

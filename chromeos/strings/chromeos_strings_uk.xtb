@@ -62,6 +62,7 @@
 <translation id="2338501278241028356">Щоб знайти пристрої поблизу, увімкніть Bluetooth</translation>
 <translation id="2364498172489649528">Виконано</translation>
 <translation id="2391082728065870591">Надіслати відгук</translation>
+<translation id="2418150275289244458">Відкрити в налаштуваннях</translation>
 <translation id="2446553403094072641">Точність рухомої коми</translation>
 <translation id="2448312741937722512">Тип</translation>
 <translation id="2461822463642141190">Енергоспоживання</translation>
@@ -273,6 +274,7 @@
 <translation id="7177485034254901881">Цим пристроєм <ph name="DEVICE_TYPE" /> керує <ph name="MANAGER" />. Адміністратори можуть віддалено налаштовувати його.</translation>
 <translation id="7216409898977639127">Постачальник мобільного зв’язку</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7343649194310845056">Мережеві пристрої</translation>
 <translation id="7359657277149375382">Тип файлу</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -282,6 +284,7 @@
 <translation id="7490813197707563893">MAC-адреса</translation>
 <translation id="7497215489070763236">Сертифікат ЦС для сервера</translation>
 <translation id="7502658306369382406">Адреса IPv6</translation>
+<translation id="7550715992156305117">Послідовності дій для діагностики</translation>
 <translation id="7561454561030345039">Цією дією керує адміністратор</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331">Ще <ph name="TIME_VALUE" /></translation>

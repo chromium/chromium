@@ -62,6 +62,7 @@
 <translation id="2338501278241028356">Ak chcete nájsť zariadenia v okolí, zapnite Bluetooth</translation>
 <translation id="2364498172489649528">Úspešné</translation>
 <translation id="2391082728065870591">Odoslať správu so spätnou väzbou</translation>
+<translation id="2418150275289244458">Otvoriť v nastaveniach</translation>
 <translation id="2446553403094072641">Presnosť pohyblivej rádovej čiarky</translation>
 <translation id="2448312741937722512">Typ</translation>
 <translation id="2461822463642141190">Aktuálna</translation>
@@ -273,6 +274,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="7177485034254901881">Toto zariadenie <ph name="DEVICE_TYPE" /> spravuje <ph name="MANAGER" />. Správcovia ho môžu vzdialene konfigurovať.</translation>
 <translation id="7216409898977639127">Poskytovateľ mobilného pripojenia</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7343649194310845056">Sieťové zariadenia</translation>
 <translation id="7359657277149375382">Typ súboru</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -282,6 +284,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="7490813197707563893">Adresa MAC</translation>
 <translation id="7497215489070763236">Certifikát CA servera</translation>
 <translation id="7502658306369382406">Adresa IPv6</translation>
+<translation id="7550715992156305117">Diagnostické postupy</translation>
 <translation id="7561454561030345039">Túto akciu ovláda váš správca</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331">Zostáva <ph name="TIME_VALUE" /></translation>

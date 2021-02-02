@@ -62,6 +62,7 @@
 <translation id="2338501278241028356">تفعيل البلوتوث لاكتشاف الأجهزة القريبة</translation>
 <translation id="2364498172489649528">تم الاجتياز.</translation>
 <translation id="2391082728065870591">إرسال تقرير بالتعليقات</translation>
+<translation id="2418150275289244458">الفتح من خلال "الإعدادات"</translation>
 <translation id="2446553403094072641">دقة النقطة العائمة</translation>
 <translation id="2448312741937722512">النوع</translation>
 <translation id="2461822463642141190">الاستهلاك الحالي لطاقة البطارية</translation>
@@ -273,6 +274,7 @@
 <translation id="7177485034254901881">يدير <ph name="MANAGER" /> جهاز <ph name="DEVICE_TYPE" /> هذا. ويمكن للمشرفين إعداد هذا الجهاز عن بُعد.</translation>
 <translation id="7216409898977639127">موفر شبكة الجوّال</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7343649194310845056">أجهزة الشبكات</translation>
 <translation id="7359657277149375382">نوع الملف</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -282,6 +284,7 @@
 <translation id="7490813197707563893">‏عنوان MAC</translation>
 <translation id="7497215489070763236">‏شهادة CA للخادم</translation>
 <translation id="7502658306369382406">‏عنوان IPv6</translation>
+<translation id="7550715992156305117">سلسلة إجراءات بيانات التشخيص</translation>
 <translation id="7561454561030345039">يتولّى مشرفك إدارة هذا الإجراء.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331">الوقت المتبقّي: <ph name="TIME_VALUE" /></translation>

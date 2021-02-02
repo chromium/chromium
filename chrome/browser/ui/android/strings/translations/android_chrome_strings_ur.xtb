@@ -402,7 +402,6 @@
 <translation id="3894427358181296146">فولڈر کا اضافہ کریں</translation>
 <translation id="3895926599014793903">زوم کو زبردستی فعال کریں</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> اپ ڈیٹ کریں</translation>
-<translation id="3909763690984331376">سیفٹی چیک <ph name="BEGIN_NEW" />نیا<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">ویب سے بہترین چیزیں تلاش کی جا رہی ہیں…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> آن ہے</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -432,6 +431,7 @@
 <translation id="4095146165863963773">ایپ کا ڈیٹا حذف کریں؟</translation>
 <translation id="4095189195365058471">بعد میں پڑھیں <ph name="BEGIN_NEW" />نیا<ph name="END_NEW" /></translation>
 <translation id="4099578267706723511">‏Google کو استعمال کے اعداد و شمار اور کریش رپورٹس بھیج کر Chrome کو بہتر بنانے میں مدد کریں۔</translation>
+<translation id="4108314971463891922">پیروی کریں</translation>
 <translation id="4108998448622696017">جب خطرناک ایونٹس ہوتے ہیں تو ان کا پتہ لگا کر آپ کو ان کے بارے میں متنبہ کرتا ہے۔</translation>
 <translation id="4116038641877404294">آف لائن صفحات استعمال کرنے کے لیے انہیں ڈاؤن لوڈ کریں</translation>
 <translation id="4135200667068010335">ان آلات کی فہرست بند ہے جن کے ساتھ ٹیب کا اشتراک کرنا ہے۔</translation>
@@ -632,6 +632,7 @@
 <translation id="5530766185686772672">پوشیدگی ٹیبز بند کریں</translation>
 <translation id="5530920986376047241">آپ صفحات کو دوبارہ تلاش کرنے کے لیے اپنی پڑھنے کی فہرست میں محفوظ کر سکتے ہیں</translation>
 <translation id="5534640966246046842">سائٹ کاپی ہو گئی</translation>
+<translation id="5548606607480005320">سیفٹی چیک</translation>
 <translation id="5556459405103347317">دوبارہ لوڈ کریں</translation>
 <translation id="5561549206367097665">نیٹ ورک کا منتظر…</translation>
 <translation id="55737423895878184">مقام اور اطلاعات کی اجازت ہے</translation>
@@ -643,6 +644,7 @@
 <translation id="5606787249466187650">رازداری سینڈ باکس دریافت کریں</translation>
 <translation id="5620163320393916465">کوئی محفوظ کردہ پاس ورڈز نہیں</translation>
 <translation id="5620928963363755975">مزید اختیارات بٹن سے اپنی فائلیں اور صفحات ڈاؤن لوڈز میں تلاش کریں</translation>
+<translation id="562289928968387744">ردعمل کا نظم کریں</translation>
 <translation id="5626134646977739690">نام:</translation>
 <translation id="5639724618331995626">سبھی سائٹس کو اجازت دیں</translation>
 <translation id="5648166631817621825">آخری 7 دن</translation>

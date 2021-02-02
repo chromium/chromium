@@ -62,6 +62,7 @@
 <translation id="2338501278241028356">Ενεργοποιήστε το Bluetooth, για να εντοπίσετε κοντινές συσκευές</translation>
 <translation id="2364498172489649528">Επιτυχία</translation>
 <translation id="2391082728065870591">Αποστολή αναφοράς σχολίων</translation>
+<translation id="2418150275289244458">Άνοιγμα στις Ρυθμίσεις</translation>
 <translation id="2446553403094072641">Ακρίβεια κινητής υποδιαστολής</translation>
 <translation id="2448312741937722512">Τύπος</translation>
 <translation id="2461822463642141190">Τρέχουσα</translation>
@@ -273,6 +274,7 @@
 <translation id="7177485034254901881">Η διαχείριση της συσκευής <ph name="DEVICE_TYPE" /> γίνεται από τον τομέα <ph name="MANAGER" />. Οι διαχειριστές μπορούν να διαμορφώσουν τη συσκευή απομακρυσμένα.</translation>
 <translation id="7216409898977639127">Πάροχος δικτύου κινητής τηλεφωνίας</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7343649194310845056">Συσκευές δικτύου</translation>
 <translation id="7359657277149375382">Τύπος αρχείου</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -282,6 +284,7 @@
 <translation id="7490813197707563893">Διεύθυνση MAC</translation>
 <translation id="7497215489070763236">Πιστοποιητικό διακομιστή CA</translation>
 <translation id="7502658306369382406">Διεύθυνση IPv6</translation>
+<translation id="7550715992156305117">Ρουτίνες διαγνωστικών στοιχείων</translation>
 <translation id="7561454561030345039">Η διαχείριση αυτής της ενέργειας γίνεται από τον διαχειριστή σας.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331">Απομένουν <ph name="TIME_VALUE" /></translation>

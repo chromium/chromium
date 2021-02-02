@@ -402,7 +402,6 @@
 <translation id="3894427358181296146">إضافة مجلد</translation>
 <translation id="3895926599014793903">فرض تفعيل التكبير أو التصغير</translation>
 <translation id="3908308510347173149">تحديث <ph name="PRODUCT_NAME" /></translation>
-<translation id="3909763690984331376">التحقّق من الأمان <ph name="BEGIN_NEW" />جديد<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">جارٍ العثور على الأفضل من الويب...</translation>
 <translation id="3924911262913579434">وضع <ph name="SAFE_BROWSING_MODE" /> مفعّل.</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -633,6 +632,7 @@
 <translation id="5530766185686772672">إغلاق علامات تبويب التصفح المتخفي</translation>
 <translation id="5530920986376047241">يمكنك حفظ الصفحات في قائمة القراءة للوصول إليها مرة أخرى لاحقًا.</translation>
 <translation id="5534640966246046842">تم نسخ الموقع</translation>
+<translation id="5548606607480005320">التحقّق من الأمان</translation>
 <translation id="5556459405103347317">إعادة التحميل</translation>
 <translation id="5561549206367097665">في انتظار الشبكة...</translation>
 <translation id="55737423895878184">مسموح بالإشعارات وتحديد الموقع الجغرافي</translation>
@@ -730,6 +730,7 @@
 <translation id="6122831415929794347">هل تريد إيقاف "التصفُّح الآمن"؟</translation>
 <translation id="6127379762771434464">أُزيلَ عنصر</translation>
 <translation id="6137022273846704445">لغة <ph name="APP_NAME" /></translation>
+<translation id="6138832295072039549">يمكنك تغيير إعدادات الموقع الإلكتروني من هنا.</translation>
 <translation id="6140709049082532940">الحماية المُحسَّنة:</translation>
 <translation id="6140912465461743537">الدولة/الإقليم</translation>
 <translation id="614940544461990577">يمكنك محاولة:</translation>
@@ -1073,7 +1074,7 @@
 <translation id="8442258441309440798">لا تتوفّر أي قصص</translation>
 <translation id="8443209985646068659">‏يتعذَّر تحديث Chrome</translation>
 <translation id="8445448999790540984">يتعذّر تصدير كلمات المرور</translation>
-<translation id="8447219758310755868">Crowdmasking</translation>
+<translation id="8447219758310755868">إخفاء زيارات المستخدمين</translation>
 <translation id="8461694314515752532">ترميز البيانات المتزامنة باستخدام عبارة مرور المزامنة الخاصة بك</translation>
 <translation id="8466613982764129868">يُرجى التأكُّد من اتصال الجهاز <ph name="TARGET_DEVICE_NAME" /> بالإنترنت.</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>

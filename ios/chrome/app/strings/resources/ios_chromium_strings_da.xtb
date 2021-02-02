@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="da">
 <translation id="102360288709523007">Hjælp med at gøre Chromium bedre ved at sende brugsstatistik og nedbrudsrapporter til Google.</translation>
+<translation id="1130979953299110755">Hvis du logger ud, vil bogmærker, historik, adgangskoder og andre Chromium-data ikke længere blive synkroniseret med din Google-konto.</translation>
 <translation id="1185134272377778587">Om Chromium</translation>
 <translation id="1257458525759135959">Hvis du vil gemme billeder, skal du trykke på Indstillinger for at give Chromium tilladelse til at føje billeder til din mappe</translation>
 <translation id="1361748954329991663">Chromium er forældet. Hvis der ikke er en tilgængelig opdatering i <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, kan det skyldes, at din enhed ikke længere understøtter nye Chromium-versioner.</translation>

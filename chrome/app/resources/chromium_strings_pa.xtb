@@ -128,6 +128,7 @@
 <translation id="4994636714258228724">ਖੁਦ ਨੂੰ Chromium ਵਿੱਚ ਜੋੜੋ</translation>
 <translation id="5224391634244552924">ਕੋਈ ਰੱਖਿਅਤ ਕੀਤਾ ਪਾਸਵਰਡ ਨਹੀਂ। ਤੁਹਾਡੇ ਵੱਲੋਂ ਆਪਣੇ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰਨ 'ਤੇ Chromium ਉਹਨਾਂ ਦੀ ਜਾਂਚ ਕਰ ਸਕਦਾ ਹੈ।</translation>
 <translation id="5277894862589591112">ਆਪਣੀਆਂ ਤਬਦੀਲੀਆਂ ਲਾਗੂ ਕਰਨ ਲਈ, Chromium ਨੂੰ ਮੁੜ-ਲਾਂਚ ਕਰੋ</translation>
+<translation id="5357324149468831780">ਇਸ ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਗਿਆ ਹੈ। ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਪਹੁੰਚ ਲਈ Chromium ਪ੍ਰੋਫਾਈਲ ਦੀ ਲੋੜ ਹੈ। ਇਹ ਪ੍ਰੋਫਾਈਲ ਕਿਸੇ ਵੀ ਨਿੱਜੀ ਪ੍ਰੋਫਾਈਲ ਤੋਂ ਪੂਰੀ ਤਰ੍ਹਾਂ ਵੱਖਰਾ ਹੈ। ਇਸ ਪ੍ਰੋਫਾਈਲ ਦੀ ਵਰਤੋਂ ਦੇ ਦੌਰਾਨ ਤਿਆਰ ਕੀਤੇ Chromium ਡਾਟੇ ਨੂੰ (ਜਿਵੇਂ ਕਿ ਬੁੱਕਮਾਰਕ, ਇਤਿਹਾਸ, ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਸੈਟਿੰਗਾਂ ਦੀ ਰਚਨਾ) ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਹਟਾਇਆ ਜਾ ਸਕਦਾ ਹੈ। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
 <translation id="5358375970380395591">ਤੁਸੀਂ ਇੱਕ ਪ੍ਰਬੰਧਿਤ ਕੀਤੇ ਖਾਤੇ ਨਾਲ ਸਾਈਨ-ਇਨ ਕਰ ਰਹੇ ਹੋ ਅਤੇ ਇਸ ਦੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਆਪਣੇ Chromium ਪ੍ਰੋਫਾਈਲ ਦਾ ਕੰਟਰੋਲ ਦੇ ਰਹੇ ਹੋ। ਤੁਹਾਡਾ Chromium ਡਾਟਾ, ਜਿਵੇਂ ਕਿ ਤੁਹਾਡੀਆਂ ਐਪਾਂ, ਬੁੱਕਮਾਰਕ, ਇਤਿਹਾਸ, ਪਾਸਵਰਡ, ਅਤੇ ਹੋਰ ਸੈਟਿੰਗਾਂ <ph name="USER_NAME" /> ਨਾਲ ਸਥਾਈ ਤੌਰ 'ਤੇ ਜੋੜੇ ਜਾਣਗੇ। ਤੁਸੀਂ ਇਸ ਡਾਟੇ ਨੂੰ Google ਖਾਤੇ ਡੈਸ਼ਬੋਰਡ ਰਾਹੀਂ ਮਿਟਾ ਸਕੋਗੇ, ਪਰ ਤੁਸੀਂ ਇਸ ਡਾਟੇ ਨੂੰ ਦੂਜੇ ਖਾਤੇ ਨਾਲ ਨਹੀਂ ਜੋੜ ਸਕੋਗੇ। <ph name="LEARN_MORE" /></translation>
 <translation id="5386450000063123300">Chromium ਅੱਪਡੇਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Chromium ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨ ਦਿਓ</translation>
@@ -142,6 +143,7 @@
 <translation id="5623402015214259806">{0,plural, =0{Chromium ਅੱਪਡੇਟ ਉਪਲਬਧ ਹੈ}=1{Chromium ਅੱਪਡੇਟ ਉਪਲਬਧ ਹੈ}other{Chromium ਅੱਪਡੇਟ # ਦਿਨਾਂ ਤੋਂ ਉਪਲਬਧ ਹੈ}}</translation>
 <translation id="5631814766731275228">Chromium ਨਾਮ ਅਤੇ ਤਸਵੀਰ</translation>
 <translation id="5634636535844844681">Google Chrome ਨੂੰ Windows 7 ਜਾਂ ਇਸ ਤੋਂ ਬਾਅਦ ਵਾਲੇ ਵਰਜਨ ਦੀ ਲੋੜ ਹੈ।</translation>
+<translation id="5642268154044585431">Chromium ਪ੍ਰੋਫਾਈਲ ਲੋੜੀਂਦਾ ਹੈ</translation>
 <translation id="5653831366781983928">ਕਿਰਪਾ ਕਰਕੇ ਹੁਣੇ Chromium ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="5698481217667032250">Chromium ਨੂੰ ਇਸ ਭਾਸ਼ਾ ਵਿੱਚ  ਦਿਖਾਓ ।</translation>
 <translation id="5736967399513123100">ਸੁਰੱਖਿਅਤ ਮੀਡੀਆ ਚਲਾਉਣ ਲਈ Chromium ਨੂੰ ਚਾਲੂ ਕਰਨ ਵਾਸਤੇ, ਤੁਹਾਨੂੰ Rosetta ਸਥਾਪਤ ਕਰਨ ਦੀ ਲੋੜ ਹੈ। ਕੀ ਤੁਸੀਂ ਇਸਨੂੰ ਹੁਣੇ ਸਥਾਪਤ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
@@ -172,6 +174,7 @@
 <translation id="6309712487085796862">Chromium ਤੁਹਾਡਾ ਕੈਮਰਾ ਵਰਤ ਰਿਹਾ ਹੈ।</translation>
 <translation id="6333502561965082103">Chromium 'ਤੇ ਕੋਈ ਹੋਰ ਕਾਰਵਾਈ ਜਾਰੀ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="6334986366598267305">ਹੁਣ Chromium ਨੂੰ ਤੁਹਾਡੇ Google ਖਾਤੇ ਅਤੇ ਸਾਂਝੇ ਕੀਤੇ ਕੰਪਿਊਟਰ 'ਤੇ ਵਰਤਣਾ ਵੱਧ ਆਸਾਨ ਹੈ।</translation>
+<translation id="6345021408165055322">ਇਸ ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ <ph name="MANAGEMENT_DOMAIN" /> ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ। ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਪਹੁੰਚ ਲਈ Chromium ਪ੍ਰੋਫਾਈਲ ਦੀ ਲੋੜ ਹੈ। ਇਹ ਪ੍ਰੋਫਾਈਲ ਕਿਸੇ ਵੀ ਨਿੱਜੀ ਪ੍ਰੋਫਾਈਲ ਤੋਂ ਪੂਰੀ ਤਰ੍ਹਾਂ ਵੱਖਰਾ ਹੈ। ਇਸ ਪ੍ਰੋਫਾਈਲ ਦੀ ਵਰਤੋਂ ਦੇ ਦੌਰਾਨ ਤਿਆਰ ਕੀਤੇ Chromium ਡਾਟੇ ਨੂੰ (ਜਿਵੇਂ ਕਿ ਬੁੱਕਮਾਰਕ, ਇਤਿਹਾਸ, ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਸੈਟਿੰਗਾਂ ਦੀ ਰਚਨਾ) ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਹਟਾਇਆ ਜਾ ਸਕਦਾ ਹੈ। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
 <translation id="6373523479360886564">ਕੀ ਤੁਸੀਂ ਪੱਕੇ ਤੌਰ 'ਤੇ Chromium ਨੂੰ ਅਣਸਥਾਪਤ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="6403826409255603130">Chromium ਇੱਕ ਵੈੱਬ ਬ੍ਰਾਊਜ਼ਰ ਹੈ ਜੋ ਵੈੱਬ-ਪੰਨਿਆਂ ਅਤੇ ਐਪਲੀਕੇਸ਼ਨਾਂ ਨੂੰ ਬਹੁਤ ਤੇਜ਼ ਚਲਾਉਂਦਾ ਹੈ। ਇਹ ਤੇਜ਼, ਸਥਿਰ ਅਤੇ ਵਰਤੋਂ ਵਿੱਚ ਆਸਾਨ ਹੈ। Chromium ਵਿੱਚ ਪਹਿਲਾਂ ਤੋਂ ਮੌਜੂਦ ਮਲਵੇਅਰ ਅਤੇ ਫਿਸ਼ਿੰਗ ਸੁਰੱਖਿਆ ਨਾਲ ਵੱਧ ਸੁਰੱਖਿਅਤ ਤਰੀਕੇ ਨਾਲ ਵੈੱਬ ਬ੍ਰਾਊਜ਼ ਕਰੋ।</translation>
 <translation id="6434250628340475518">Chromium OS ਸਿਸਟਮ</translation>
@@ -196,6 +199,8 @@
 <translation id="6863361426438995919">Google Pay (Chromium 'ਤੇ ਕਾਪੀ ਕੀਤਾ ਗਿਆ)</translation>
 <translation id="6893813176749746474">Chromium ਨੂੰ ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ ਹੈ, ਪਰੰਤੂ ਤੁਸੀਂ ਇਸਨੂੰ ਪਿਛਲੇ ਘੱਟੋ-ਘੱਟ 30 ਦਿਨਾਂ ਤੋਂ ਨਹੀਂ ਵਰਤਿਆ ਹੈ।</translation>
 <translation id="6897548120660295439">Rosetta ਇਸ ਪੰਨੇ 'ਤੇ Chromium ਨੂੰ ਸੁਰੱਖਿਅਤ ਮੀਡੀਆ ਚਲਾਉਣ ਦੇ ਯੋਗ ਬਣਾਉਂਦਾ ਹੈ।</translation>
+<translation id="691026815377248078">ਜੋੜਾਬੱਧਕਰਨ ਜਾਰੀ ਰੱਖਣ ਲਈ Chromium ਨੂੰ ਬਲੂਟੁੱਥ ਪਹੁੰਚ 
+ ਦੀ ਲੋੜ ਹੈ। <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">Chromium ਇਨ&amp;ਕੋਗਨਿਟੋ ਵਿੰਡੋ ਵਿੱਚ ਲਿੰਕ ਖੋਲ੍ਹੋ</translation>
 <translation id="6978145336957848883">ਕਮਜ਼ੋਰ ਪਾਸਵਰਡਾਂ ਦਾ ਅੰਦਾਜ਼ਾ ਲਗਾਉਣਾ ਆਸਾਨ ਹੁੰਦਾ ਹੈ। Chromium ਨੂੰ <ph name="BEGIN_LINK" />ਤੁਹਾਡੇ ਲਈ ਮਜ਼ਬੂਤ ਪਾਸਵਰਡ ਬਣਾਉਣ ਅਤੇ ਯਾਦ ਰੱਖਣ<ph name="END_LINK" /> ਦਿਓ।</translation>
 <translation id="6990124437352146030">Chromium ਨੂੰ ਇਸ ਸਾਈਟ ਵਾਸਤੇ ਤੁਹਾਡੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਲਈ ਇਜਾਜ਼ਤ ਦੀ ਲੋੜ ਹੈ</translation>

@@ -424,6 +424,7 @@
 <translation id="1465827627707997754">ピザ</translation>
 <translation id="1468571364034902819">このプロフィールは使用できません</translation>
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{タブを新しいグループに追加}other{タブを新しいグループに追加}}</translation>
+<translation id="1470350905258700113">このデバイスを使用する</translation>
 <translation id="1470946456740188591">カーソル ブラウジングをオンまたはオフにするには、Ctrl+検索+7 ショートカット キーを使用します</translation>
 <translation id="1472675084647422956">表示項目を増やす</translation>
 <translation id="1474785664565228650">マイクの設定を変更するには、Parallels Desktop を再起動する必要があります。続行するには、Parallels Desktop を再起動してください。</translation>
@@ -1058,6 +1059,7 @@
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" />、他 1 個のスイッチ</translation>
 <translation id="2165421703844373933">「OK Google」と話すとアシスタントにアクセスできます。バッテリー消費を抑えるには [オン（推奨）] を選択してください。オンにすると、デバイスが電源または充電器に接続されている場合にのみアシスタントが反応します。</translation>
 <translation id="2166369534954157698">あいうえおアイウエオABCabc123漢字</translation>
+<translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">このままログインする</translation>
 <translation id="2170054054876170358">Bluetooth 搭載のスマートフォンが近くにあり、Wi-Fi がオンになっていて、ロックも解除されていることを確認してください。</translation>
 <translation id="2173302385160625112">インターネット接続を確認してください</translation>
@@ -1109,7 +1111,6 @@
 <translation id="2225864335125757863">アカウントのセキュリティ保護のため、今すぐ次のパスワードを変更してください。</translation>
 <translation id="2226449515541314767">このサイトには MIDI デバイスのフル コントロールは許可されていません。</translation>
 <translation id="2226907662744526012">PIN を入力して自動的にロックを解除する</translation>
-<translation id="222704500187107962">この例外は、現在のシークレット モード セッションを終了した後に自動的に削除されます</translation>
 <translation id="2227179592712503583">候補を削除</translation>
 <translation id="2229161054156947610">あと 1 時間以上</translation>
 <translation id="222931766245975952">ファイルの一部が削除されました</translation>
@@ -1281,7 +1282,6 @@
 <translation id="2428939361789119025">Wi-Fi をオフにする</translation>
 <translation id="2431027948063157455">Google アシスタントを読み込めませんでした。ネットワーク接続を確認してから、もう一度お試しください。</translation>
 <translation id="2433452467737464329">ページを自動更新するには URL に次のようなクエリ パラメータを追加してください: chrome://network/?refresh=&lt;sec&gt;</translation>
-<translation id="2433490881840073798"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />、<ph name="RECENT_PERMISSIONS_CHANGE" /></translation>
 <translation id="2433507940547922241">デザイン</translation>
 <translation id="2433836460518180625">デバイスのロック解除のみ</translation>
 <translation id="2434449159125086437">プリンタをセットアップできません。設定を確認してもう一度お試しください。</translation>
@@ -1399,6 +1399,7 @@
 <translation id="2541002089857695151">全画面キャストを最適化しますか？</translation>
 <translation id="2541706104884128042">お休み時間が変更されました</translation>
 <translation id="2542050502251273923">ff_debug を使用して、ネットワーク接続マネージャーと他のサービスのデバッグレベルを設定します。</translation>
+<translation id="2544292303401268586">デバイスを再起動してアプリを更新するよう管理者がリクエストしています。この処理には、完了までに数分かかることがあります。</translation>
 <translation id="2544853746127077729">認証証明書がネットワークによって拒否されました</translation>
 <translation id="2546283357679194313">Cookie とサイトデータ</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" />を許可</translation>
@@ -2781,6 +2782,7 @@
 <translation id="409579654357498729">クラウド プリントに追加</translation>
 <translation id="4096508467498758490">デベロッパー モードの拡張機能を無効にする</translation>
 <translation id="4097406557126260163">アプリと拡張機能</translation>
+<translation id="409742781329613461">Chrome のヒント</translation>
 <translation id="4097560579602855702">Google で検索</translation>
 <translation id="4098667039111970300">ツールバーのタッチペン ツール</translation>
 <translation id="4099060993766194518">既定の検索エンジンに戻しますか？</translation>
@@ -3085,7 +3087,6 @@
 <translation id="4492698018379445570">ショッピング カートに追加したアイテムを確認して、ご購入手続きに進むことができます</translation>
 <translation id="4493468155686877504">推奨（<ph name="INSTALL_SIZE" />）</translation>
 <translation id="4495419450179050807">このページに表示しない</translation>
-<translation id="4496054781541092778"><ph name="PERMISSION" />を自動ブロック</translation>
 <translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> で問題が発生しました</translation>
 <translation id="450099669180426158">感嘆符アイコン</translation>
 <translation id="4501530680793980440">削除の確認</translation>
@@ -3107,7 +3108,6 @@
 <translation id="4519935350946509010">接続エラーが発生しました。</translation>
 <translation id="4520385623207007473">使用中の Cookie</translation>
 <translation id="452039078290142656"><ph name="VENDOR_NAME" /> の不明なデバイス</translation>
-<translation id="4521489190203965562">現在のシークレット モード セッション: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />、<ph name="RECENT_PERMISSIONS_CHANGE_1" />、<ph name="RECENT_PERMISSIONS_CHANGE_2" />、その他</translation>
 <translation id="4522570452068850558">詳細</translation>
 <translation id="4522600456902129422">このサイトによるクリップボードへのアクセスを今後も許可する</translation>
 <translation id="4524832533047962394">指定の登録モードは、このバージョンのオペレーティング システムではサポートされていません。最新バージョンであることをご確認ください。</translation>
@@ -3738,7 +3738,6 @@
 <translation id="527605982717517565"><ph name="HOST" /> の JavaScript を常に許可する</translation>
 <translation id="5278823018825269962">ステータス ID</translation>
 <translation id="5280064835262749532"><ph name="SHARE_PATH" /> の認証情報を更新してください</translation>
-<translation id="5280174558369304332">削除対象の拡張機能:</translation>
 <translation id="5280243692621919988">すべてのウィンドウを閉じるときに Cookie とサイトデータを削除する</translation>
 <translation id="5280426389926346830">ショートカットを作成しますか？</translation>
 <translation id="528208740344463258">Android アプリをダウンロードして使用するには、まずこの必須のアップデートをインストールする必要があります。<ph name="DEVICE_TYPE" /> の更新中、ご利用いただくことはできません。インストールが完了すると、<ph name="DEVICE_TYPE" /> は再起動されます。</translation>
@@ -3884,7 +3883,6 @@
 <translation id="5449551289610225147">パスワードが無効です</translation>
 <translation id="5449588825071916739">すべてのタブをブックマークに追加する</translation>
 <translation id="5449716055534515760">ウィンドウを閉じる(&amp;D)</translation>
-<translation id="5452974209916053028">現在のシークレット モード セッション: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />、<ph name="RECENT_PERMISSIONS_CHANGE_1" />、<ph name="RECENT_PERMISSIONS_CHANGE_2" /></translation>
 <translation id="5454005855577728171">字幕のふきだしが、左から <ph name="POSITION_ON_SCREEN_FROM_LEFT" />%、上から <ph name="POSITION_ON_SCREEN_FROM_TOP" />% の位置に移動しました</translation>
 <translation id="5454166040603940656">- <ph name="PROVIDER" /></translation>
 <translation id="5457113250005438886">無効</translation>
@@ -4095,6 +4093,7 @@
 <translation id="5678550637669481956"><ph name="VOLUME_NAME" /> への読み書きのアクセス権が許可されました。</translation>
 <translation id="5678955352098267522"><ph name="WEBSITE_1" /> でのユーザーデータの読み取り</translation>
 <translation id="5680050361008726776">「<ph name="ESIM_PROFILE_NAME" />」を削除しますか？</translation>
+<translation id="5683806393796685434">アクティベーション コードを入力してください</translation>
 <translation id="5684181005476681636">Wi-Fi の詳細</translation>
 <translation id="5684661240348539843">アセット ID</translation>
 <translation id="5687326903064479980">タイムゾーン</translation>
@@ -4103,7 +4102,6 @@
 <translation id="5691581861107245578">入力した内容に基づいて絵文字の候補が表示されます</translation>
 <translation id="5691772641933328258">指紋を認識できません</translation>
 <translation id="5692183275898619210">印刷完了</translation>
-<translation id="569425414730375234">現在のシークレット モード セッション: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" /></translation>
 <translation id="5695184138696833495">Linux Android アプリ ADB</translation>
 <translation id="5696143504434933566">「<ph name="EXTENSION_NAME" />」の不正行為を報告する</translation>
 <translation id="5696177755977520104">Chrome OS 設定の同期</translation>
@@ -4347,6 +4345,7 @@
 <translation id="5978277834170881274">基本スペルチェックを使用(&amp;U)</translation>
 <translation id="5979084224081478209">パスワードを確認</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{1 個の有害な可能性がある拡張機能を再度有効にしました}other{{NUM_EXTENSIONS} 個の有害な可能性がある拡張機能を再度有効にしました}}</translation>
+<translation id="5979353814339191480">このオプションは、データプランやモバイル ネットワーク ドングル、またはモバイル アクセス ポイントのテザリングを使用する Chromebook に適用されます。</translation>
 <translation id="5979421442488174909"><ph name="LANGUAGE" />に翻訳(&amp;T)</translation>
 <translation id="5979469435153841984">ページをブックマークするには、アドレスバーのスターアイコンをクリックしてください</translation>
 <translation id="5984222099446776634">最近のアクセス</translation>
@@ -4380,7 +4379,6 @@
 <translation id="6025215716629925253">スタック トレース</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - USB デバイスに接続されています</translation>
 <translation id="6028117231645531007">指紋を追加</translation>
-<translation id="6029594605736587274"><ph name="PERMISSION" />をブロック</translation>
 <translation id="6031600495088157824">ツールバーの入力オプション</translation>
 <translation id="6032715498678347852">このサイトに拡張機能がアクセスするのを許可するには、クリックしてください。</translation>
 <translation id="6032912588568283682">ファイル システム</translation>
@@ -4827,6 +4825,7 @@
 <translation id="653659894138286600">ドキュメントと画像のスキャン</translation>
 <translation id="6537613839935722475">名前には文字、数字、ハイフン（-）を使用できます</translation>
 <translation id="6537880577641744343">コマンダー</translation>
+<translation id="6538098297809675636">コード検出エラー</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />注:<ph name="END_BOLD" /> データの収集によりパフォーマンスが低下する場合があるため、意図的に行う場合、または指示された場合のみ有効にしてください。</translation>
 <translation id="6541638731489116978">このサイトではモーション センサーへのアクセスがブロックされています。</translation>
 <translation id="6545665334409411530">リピート回数 / 秒</translation>
@@ -4837,7 +4836,6 @@
 <translation id="6550675742724504774">オプション</translation>
 <translation id="6551508934388063976">コマンドを使用できません。Ctrl+N を押して新しいウィンドウを開いてください。</translation>
 <translation id="6551612971599078809">サイトで USB が使用されています</translation>
-<translation id="6552395360547205189">現在のシークレット モード セッション: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />、<ph name="RECENT_PERMISSIONS_CHANGE_1" /></translation>
 <translation id="655384502888039633">ユーザー数: <ph name="USER_COUNT" /> 人</translation>
 <translation id="655483977608336153">再試行</translation>
 <translation id="6555432686520421228">すべてのユーザー アカウントを削除し、<ph name="IDS_SHORT_PRODUCT_NAME" /> デバイスを出荷時と同じ状態にリセットします。</translation>
@@ -5840,7 +5838,6 @@
 <translation id="7710568461918838723">キャスト(&amp;C)...</translation>
 <translation id="7711900714716399411">USB ケーブルを使用してスマートフォンとパソコンを接続してください。スマートフォンがすでに接続されている場合は、いったん取り外してから、接続しなおします。</translation>
 <translation id="7712739869553853093">印刷プレビュー ダイアログ</translation>
-<translation id="7712836429117959503">不明な拡張機能（ID「<ph name="EXTENSION_ID" />」）</translation>
 <translation id="7714307061282548371"><ph name="DOMAIN" /> からの Cookie が許可されました</translation>
 <translation id="7714464543167945231">証明書</translation>
 <translation id="7716648931428307506">パスワードの保存先を選択します</translation>
@@ -6025,6 +6022,7 @@
 <translation id="7904526211178107182">Linux ポートをネットワーク上の他のデバイスが利用できるようにします。</translation>
 <translation id="7907837847548254634">フォーカス中の項目をハイライト表示する</translation>
 <translation id="7908378463497120834">外部ストレージ デバイスの少なくとも 1 つのパーティションがマウントできませんでした。</translation>
+<translation id="7909324225945368569">プロフィールの名前を変更</translation>
 <translation id="7909969815743704077">シークレット モードでダウンロード</translation>
 <translation id="7910768399700579500">新しいフォルダ(&amp;N)</translation>
 <translation id="7911118814695487383">Linux</translation>
@@ -6223,7 +6221,6 @@
 <translation id="8118488170956489476">お使いの<ph name="BEGIN_LINK" />ブラウザは組織によって管理<ph name="END_LINK" />されています</translation>
 <translation id="8118515372935001629">ディスプレイのリフレッシュ レート</translation>
 <translation id="8118860139461251237">ダウンロードの管理</translation>
-<translation id="811942868379260654"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />、<ph name="RECENT_PERMISSIONS_CHANGE_1" />、<ph name="RECENT_PERMISSIONS_CHANGE_2" />、その他</translation>
 <translation id="8119438628456698432">ログファイルを生成しています...</translation>
 <translation id="811994229154425014">スペース 2 つでピリオドを入力</translation>
 <translation id="8123590694679414600"><ph name="TIME" /> にデータを同期パスフレーズで暗号化しました。
@@ -6425,7 +6422,6 @@
 <translation id="835951711479681002">Google アカウントに保存</translation>
 <translation id="8363095875018065315">Stable</translation>
 <translation id="8363142353806532503">マイクがブロックされています</translation>
-<translation id="8363763184161554204"><ph name="PERMISSION" />を許可</translation>
 <translation id="8366396658833131068">ネットワーク接続が復元されました。キオスク アプリを起動するには、別のネットワークを選択するか、下の [続行] ボタンを押してください。</translation>
 <translation id="8368027906805972958">不明またはサポートされていないデバイス（<ph name="DEVICE_ID" />）</translation>
 <translation id="8368859634510605990">すべてのブックマークを開く(&amp;O)</translation>
@@ -6644,6 +6640,7 @@
 <translation id="8642900771896232685">2秒</translation>
 <translation id="8642947597466641025">テキストを拡大する</translation>
 <translation id="8643443571868262066"><ph name="FILE_NAME" /> は危害を及ぼす可能性があります。Google の高度な保護機能に送信してスキャンしますか？</translation>
+<translation id="8644047503904673749">{COUNT,plural, =0{Cookie なし}=1{1 件の Cookie がブロックされています}other{# 件の Cookie がブロックされています}}</translation>
 <translation id="8644655801811752511">このセキュリティ キーをリセットできません。キーの挿入直後にリセットしてみてください。</translation>
 <translation id="8645354835496065562">センサーへのアクセスを引き続き許可する</translation>
 <translation id="8645920082661222035">危険なイベントの発生を予測して警告します</translation>
@@ -6984,7 +6981,6 @@
 <translation id="899657321862108550">あなたの Chrome をいつでもどこでも</translation>
 <translation id="899676909165543803">指紋認証センサーはキーボードの右下のキーに搭載されています。いずれかの指で軽く触れてください。</translation>
 <translation id="8999560016882908256">セクションの構文エラーです: <ph name="ERROR_LINE" /></translation>
-<translation id="9002878223019487115"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />、<ph name="RECENT_PERMISSIONS_CHANGE_1" />、<ph name="RECENT_PERMISSIONS_CHANGE_2" /></translation>
 <translation id="9003647077635673607">すべてのウェブサイトで許可する</translation>
 <translation id="9003677638446136377">もう一度確認</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、管理者によって管理、詳細</translation>

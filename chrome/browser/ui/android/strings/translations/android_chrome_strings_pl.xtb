@@ -402,7 +402,6 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="3894427358181296146">Dodaj folder</translation>
 <translation id="3895926599014793903">Wymuś powiększenie</translation>
 <translation id="3908308510347173149">Zaktualizuj: <ph name="PRODUCT_NAME" /></translation>
-<translation id="3909763690984331376">Potwierdzenie bezpieczeństwa <ph name="BEGIN_NEW" />Nowość<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">Szukam najlepszych treści w internecie…</translation>
 <translation id="3924911262913579434">Tryb <ph name="SAFE_BROWSING_MODE" /> jest włączony</translation>
 <translation id="3927692899758076493">Bezszeryfowa</translation>
@@ -632,6 +631,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5530766185686772672">Zamknij karty incognito</translation>
 <translation id="5530920986376047241">Na liście Do przeczytania możesz zapisywać strony, do których chcesz wrócić później</translation>
 <translation id="5534640966246046842">Strona została skopiowana</translation>
+<translation id="5548606607480005320">Potwierdzenie bezpieczeństwa</translation>
 <translation id="5556459405103347317">Odśwież</translation>
 <translation id="5561549206367097665">Czekam na sieć…</translation>
 <translation id="55737423895878184">Lokalizacja i powiadomienia są włączone</translation>
@@ -728,6 +728,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="6122831415929794347">Wyłączyć Bezpieczne przeglądanie?</translation>
 <translation id="6127379762771434464">Element został usunięty</translation>
 <translation id="6137022273846704445">Język aplikacji <ph name="APP_NAME" /></translation>
+<translation id="6138832295072039549">Tu możesz zmienić ustawienia witryn</translation>
 <translation id="6140709049082532940">Silniejsza ochrona:</translation>
 <translation id="6140912465461743537">Kraj/region</translation>
 <translation id="614940544461990577">Wypróbuj te rozwiązania:</translation>

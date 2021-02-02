@@ -62,6 +62,7 @@
 <translation id="2338501278241028356">近くのデバイスを検出するには Bluetooth をオンにしてください</translation>
 <translation id="2364498172489649528">成功</translation>
 <translation id="2391082728065870591">フィードバック レポートを送信</translation>
+<translation id="2418150275289244458">設定で開く</translation>
 <translation id="2446553403094072641">浮動小数点数精度</translation>
 <translation id="2448312741937722512">種類</translation>
 <translation id="2461822463642141190">電流</translation>
@@ -273,6 +274,7 @@
 <translation id="7177485034254901881">この <ph name="DEVICE_TYPE" /> は <ph name="MANAGER" /> によって管理されています。管理者がこのデバイスをリモートで設定している可能性があります。</translation>
 <translation id="7216409898977639127">モバイル プロバイダ</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7343649194310845056">ネットワーク デバイス</translation>
 <translation id="7359657277149375382">ファイル形式</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -282,6 +284,7 @@
 <translation id="7490813197707563893">MAC アドレス</translation>
 <translation id="7497215489070763236">サーバーの CA 証明書</translation>
 <translation id="7502658306369382406">IPv6 アドレス</translation>
+<translation id="7550715992156305117">ルーティン診断</translation>
 <translation id="7561454561030345039">この操作は管理者によって管理されています</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331">あと <ph name="TIME_VALUE" /></translation>

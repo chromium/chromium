@@ -577,6 +577,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="5992218262414051481">Yüksək Kontrast Rejimi aktiv edildi. Rejimi deaktiv etmək üçün Ctrl+Search+H düymələrini basın.</translation>
 <translation id="6018164090099858612">Güzgü rejimindən çıxır</translation>
 <translation id="602001110135236999">Sola sürüşdürün</translation>
+<translation id="602472752137106327">Bütün masalardan pəncərələri göstərin, radio düyməsi seçilib</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />, Administratorunuz tərəfindən idarə olunur</translation>
 <translation id="6030495522958826102">Menyu ekranın aşağı sol küncünə köçürülüb.</translation>
 <translation id="6032620807120418574">Tam ekranı çəkmək üçün istənilən yerə toxunun</translation>
@@ -675,6 +676,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Bir rəqəm qalıb}other{# rəqəm qalıb}}</translation>
 <translation id="6878400149835617132">Qısayol deaktiv edildi</translation>
 <translation id="6886172995547742638">Sizin <ph name="DEVICE_TYPE" /> aşağı performans göstərə bilər. Sertifikatlı <ph name="PREFERRED_MINIMUM_POWER" />W və ya daha yüksək USB-C cərəyan yuvasından istifadə edin.</translation>
+<translation id="688631446150864480">Pəncərələri dəyişdirmək üçün Aşağı ox düyməsini basın</translation>
 <translation id="6896758677409633944">Kopyalayın</translation>
 <translation id="6910714959251846841">Bu güncəlləmə cihazın sıfırlanmasını tələb edir. Ən son <ph name="SYSTEM_APP_NAME" /> güncəlləməsi haqqında ətraflı məlumat əldə edin.</translation>
 <translation id="6919251195245069855">Smart kartınız tanınmadı. Yenidən sınayın.</translation>
@@ -840,6 +842,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="8297006494302853456">Zəif</translation>
 <translation id="8308637677604853869">Öncəki menyu</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> pəncərəsi seçilib</translation>
 <translation id="8351131234907093545">Qeyd yaradın</translation>
 <translation id="8371779926711439835">Hərf üzrə irəli keçin</translation>
 <translation id="8375916635258623388">Bu <ph name="DEVICE_NAME" /> və telefon avtomatik qoşulacaq</translation>
@@ -863,6 +866,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="8477270416194247200">Ləğv etmək üçün Alt+Search və ya Shift düyməsini basın.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> əksetmə qabiliyyətini dəstəkləmir. Əksetmə qabiliyyəti <ph name="FALLBACK_RESOLUTION" /> olaraq dəyişildi. Dəyişiklikləri saxlamaq üçün "təsdiq edin" üzərinə klikləyin. Əvvəlki ayarlar <ph name="TIMEOUT_SECONDS" /> ərzində bərpa ediləcək.</translation>
 <translation id="8513108775083588393">Avtodönüş</translation>
+<translation id="851458219935658693">Mövcud masadan pəncərələri göstərin, radio düyməsi seçilib</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> cihazınız aktiv olan zaman elektrik yığmaya bilər.</translation>
 <translation id="8553395910833293175">Artıq bütün masalara təyin olunub.</translation>
 <translation id="8563862697512465947">Bildiriş Ayarları</translation>

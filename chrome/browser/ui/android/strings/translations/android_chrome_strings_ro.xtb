@@ -402,7 +402,6 @@ Atinge lung orice cuvânt pentru a-l căuta. Pentru a rafina căutarea, selectea
 <translation id="3894427358181296146">Adaugă un dosar</translation>
 <translation id="3895926599014793903">Forțează activarea zoomului</translation>
 <translation id="3908308510347173149">Actualizează <ph name="PRODUCT_NAME" /></translation>
-<translation id="3909763690984331376">Verificare de siguranță <ph name="BEGIN_NEW" />Nou<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">Se caută tot ce e mai bun de pe web…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> este activă</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -633,6 +632,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5530766185686772672">Închide filele incognito</translation>
 <translation id="5530920986376047241">Poți să salvezi pagini în lista de lectură ca să le regăsești</translation>
 <translation id="5534640966246046842">Site-ul a fost copiat</translation>
+<translation id="5548606607480005320">Verificare de siguranță</translation>
 <translation id="5556459405103347317">Reîncarcă</translation>
 <translation id="5561549206367097665">Se așteaptă rețeaua…</translation>
 <translation id="55737423895878184">Locația și notificările sunt permise</translation>
@@ -730,6 +730,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="6122831415929794347">Dezactivezi Navigarea sigură?</translation>
 <translation id="6127379762771434464">Elementul a fost eliminat</translation>
 <translation id="6137022273846704445">Limba pentru <ph name="APP_NAME" /></translation>
+<translation id="6138832295072039549">Modifică aici setările pentru site</translation>
 <translation id="6140709049082532940">Protecție îmbunătățită:</translation>
 <translation id="6140912465461743537">Țară/Regiune</translation>
 <translation id="614940544461990577">Încearcă:</translation>

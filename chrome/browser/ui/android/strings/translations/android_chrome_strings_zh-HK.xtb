@@ -402,7 +402,6 @@
 <translation id="3894427358181296146">新增資料夾</translation>
 <translation id="3895926599014793903">強制啟用縮放功能</translation>
 <translation id="3908308510347173149">更新 <ph name="PRODUCT_NAME" /></translation>
-<translation id="3909763690984331376">安全檢查<ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">正在網上搜尋最佳結果…</translation>
 <translation id="3924911262913579434">已開啟「<ph name="SAFE_BROWSING_MODE" />」</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -633,6 +632,7 @@
 <translation id="5530766185686772672">關閉無痕式分頁</translation>
 <translation id="5530920986376047241">您可將頁面儲存至閱讀清單，以便再次查看</translation>
 <translation id="5534640966246046842">已複製網站</translation>
+<translation id="5548606607480005320">安全檢查</translation>
 <translation id="5556459405103347317">重新載入</translation>
 <translation id="5561549206367097665">正在等待網絡連線…</translation>
 <translation id="55737423895878184">允許分享位置資訊和顯示通知</translation>
@@ -730,6 +730,7 @@
 <translation id="6122831415929794347">要關閉安全瀏覽嗎？</translation>
 <translation id="6127379762771434464">項目已移除</translation>
 <translation id="6137022273846704445"><ph name="APP_NAME" /> 的語言</translation>
+<translation id="6138832295072039549">在此變更網站設定</translation>
 <translation id="6140709049082532940">強化保護功能：</translation>
 <translation id="6140912465461743537">國家/地區</translation>
 <translation id="614940544461990577">建議做法：</translation>

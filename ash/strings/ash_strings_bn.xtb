@@ -347,6 +347,7 @@
 <translation id="3901991538546252627"><ph name="NAME" />-এ সংযোগ করা হচ্ছে</translation>
 <translation id="3943857333388298514">পেস্ট করুন</translation>
 <translation id="394485226368336402">অডিও সেটিংস</translation>
+<translation id="3945319193631853098">সেট আপ করা সম্পূর্ণ করতে ট্যাপ করুন</translation>
 <translation id="3945867833895287237">হটস্পটে কানেক্ট করা হচ্ছে...</translation>
 <translation id="3962859241508114581">আগের ট্র্যাক চালান</translation>
 <translation id="3969043077941541451">বন্ধ আছে</translation>
@@ -576,6 +577,7 @@
 <translation id="5992218262414051481">উচ্চ কনট্রাস্ট মোড চালু করা হয়েছে। টগল করে বন্ধ করার জন্য Ctrl+Search+H টিপুন।</translation>
 <translation id="6018164090099858612">মিরর মোড থেকে প্রস্থান করছে</translation>
 <translation id="602001110135236999">বাঁ দিকে স্ক্রল করুন</translation>
+<translation id="602472752137106327">সব ডেস্ক থেকে উইন্ডো দেখুন, রেডিও বোতাম বেছে নেওয়া হয়েছে</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" />, আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে</translation>
 <translation id="6030495522958826102">স্ক্রিনের নিচে বাঁদিকের কোণায় মেনু সরে গেছে।</translation>
 <translation id="6032620807120418574">ফুল স্ক্রিন ছবি রেকর্ড করতে, যেকোনও জায়গায় ক্লিক করুন</translation>
@@ -674,6 +676,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{আরও ১টি সংখ্যা লিখতে হবে}one{আরও #টি সংখ্যা লিখতে হবে}other{আরও #টি সংখ্যা লিখতে হবে}}</translation>
 <translation id="6878400149835617132">শর্টকাট বন্ধ করা আছে</translation>
 <translation id="6886172995547742638">আপনার <ph name="DEVICE_TYPE" />-এর পারফর্ম্যান্স আশানুরূপ নাও হতে পারে। একটি <ph name="PREFERRED_MINIMUM_POWER" />W অথবা আরও ভাল USB-C পাওয়ার অ্যাডাপ্টার ব্যবহার করুন।</translation>
+<translation id="688631446150864480">উইন্ডো পাল্টাতে, 'নিম্নমুখী তীরচিহ্ন' কী প্রেস করুন</translation>
 <translation id="6896758677409633944">কপি</translation>
 <translation id="6910714959251846841">এই আপডেটটির জন্য আপনার ডিভাইস পাওয়ারওয়াশ করা প্রয়োজন। সাম্প্রতিক <ph name="SYSTEM_APP_NAME" /> আপডেট সম্পর্কে আরও জানুন।</translation>
 <translation id="6919251195245069855">আপনার স্মার্ট কার্ড শনাক্ত করা যায়নি। আবার চেষ্টা করুন।</translation>
@@ -724,6 +727,7 @@
 <translation id="7392563512730092880">সেটিংস থেকে আপনি যখন খুশি সেট আপ করে নিতে পারেন।</translation>
 <translation id="7398254312354928459">নেটওয়ার্ক সংযোগ পরিবর্তন করা হয়েছে</translation>
 <translation id="7405710164030118432">ডিভাইসটি আনলক করতে আপনার Family Link-এর অভিভাবকীয় অ্যাক্সেস কোডটি লিখুন</translation>
+<translation id="7406608787870898861">আপনার মোবাইল নেটওয়ার্ক সেট আপ করা সম্পূর্ণ করুন</translation>
 <translation id="741244894080940828">রূপান্তর</translation>
 <translation id="7413851974711031813">বন্ধ করতে এস্কেপ (Esc) বোতাম প্রেস করুন</translation>
 <translation id="742594950370306541">ক্যামেরা ব্যবহার করা হচ্ছে।</translation>
@@ -838,6 +842,7 @@
 <translation id="8297006494302853456">দুর্বল</translation>
 <translation id="8308637677604853869">পূর্ববর্তী মেনু</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="8345019317483336363"><ph name="WINDOW_TITLE" />টি উইন্ডো বেছে নেওয়া হয়েছে</translation>
 <translation id="8351131234907093545">নোট তৈরি করুন</translation>
 <translation id="8371779926711439835">অক্ষর অনুযায়ী এগিয়ে যান</translation>
 <translation id="8375916635258623388">এই <ph name="DEVICE_NAME" />টি এবং আপনার ফোন নিজে থেকেই কানেক্ট হয়ে যাবে</translation>
@@ -861,6 +866,7 @@
 <translation id="8477270416194247200">Alt+Search টিপুন বা বাতিল করতে Shift টিপুন</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> রেজোলিউশনে চলতে পারে না। এই রেজোলিউশন পরিবর্তন করে <ph name="FALLBACK_RESOLUTION" /> করা হয়েছে। পরিবর্তিত সেটিংস বজায় রাখতে, 'কনফার্ম করুন' বোতামে ক্লিক করুন। <ph name="TIMEOUT_SECONDS" />-এর মধ্যে পুরনো সেটিংসে ফিরিয়ে নিয়ে যাওয়া হবে।</translation>
 <translation id="8513108775083588393">অটো রোটেট</translation>
+<translation id="851458219935658693">বর্তমান ডেস্ক থেকে উইন্ডো দেখুন, রেডিও বোতাম বেছে নেওয়া হয়েছে</translation>
 <translation id="8517041960877371778">আপনার <ph name="DEVICE_TYPE" /> চালু থাকা অবস্থায় চার্জ নাও হতে পারে।</translation>
 <translation id="8553395910833293175">সব ডেস্কে আগেই অ্যাসাইন করা হয়েছে।</translation>
 <translation id="8563862697512465947">বিজ্ঞপ্তি সেটিংস</translation>

@@ -577,6 +577,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="5992218262414051481">Modaliteti i kontrastit të lartë u aktivizua. Shtyp përsëri Ctrl+Kërko+Shift+H për ta çaktivizuar.</translation>
 <translation id="6018164090099858612">Po del nga modaliteti i pasqyrës</translation>
 <translation id="602001110135236999">Lëviz majtas</translation>
+<translation id="602472752137106327">Shfaq dritaret nga të gjitha tavolinat e punës, butoni i radios i zgjedhur</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />, menaxhuar nga administratori yt</translation>
 <translation id="6030495522958826102">Menyja u zhvendos në këndin poshtë majtas të ekranit.</translation>
 <translation id="6032620807120418574">Kliko diku për të regjistruar ekranin e plotë</translation>
@@ -675,6 +676,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Një shifër e mbetur}other{# shifra të mbetura}}</translation>
 <translation id="6878400149835617132">Shkurtorja është çaktivizuar</translation>
 <translation id="6886172995547742638">Pajisja jote <ph name="DEVICE_TYPE" /> mund të ketë një cilësi funksionimi më të ulët. Përdor një përshtatës elektrik të certifikuar të tipit USB-C me fuqi <ph name="PREFERRED_MINIMUM_POWER" /> W ose më shumë.</translation>
+<translation id="688631446150864480">Shtyp tastin "Shigjeta poshtë" për të ndërruar dritaret</translation>
 <translation id="6896758677409633944">Kopjo</translation>
 <translation id="6910714959251846841">Ky përditësim kërkon spastrim rrënjësor të pajisjes tënde. Mëso më shumë për përditësimin e fundit të <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Karta smart nuk mund të njihej. Provo përsëri.</translation>
@@ -840,6 +842,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="8297006494302853456">I dobët</translation>
 <translation id="8308637677604853869">Menyja e mëparshme</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="8345019317483336363">U zgjodh dritarja <ph name="WINDOW_TITLE" /></translation>
 <translation id="8351131234907093545">Krijo një shënim</translation>
 <translation id="8371779926711439835">Përpara një shkronjë</translation>
 <translation id="8375916635258623388">Kjo pajisje <ph name="DEVICE_NAME" /> dhe telefoni yt do të lidhen automatikisht</translation>
@@ -863,6 +866,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="8477270416194247200">Shtyp Alt+"Kërko" ose "Shift" për të anuluar.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> nuk e mbështet <ph name="SPECIFIED_RESOLUTION" />. Rezolucioni është ndryshuar në <ph name="FALLBACK_RESOLUTION" />. Kliko te "Konfirmo" për t'i mbajtur ndryshimet. Cilësimet e mëparshme do të restaurohen për <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8513108775083588393">Autorrotullim</translation>
+<translation id="851458219935658693">Shfaq dritaret nga tavolina aktuale e punës, butoni i radios i zgjedhur</translation>
 <translation id="8517041960877371778">Pajisja jote <ph name="DEVICE_TYPE" /> mund të mos ngarkohet kur është e ndezur.</translation>
 <translation id="8553395910833293175">Është caktuar tashmë te të gjitha tavolinat e punës.</translation>
 <translation id="8563862697512465947">Cilësimet e njoftimeve</translation>

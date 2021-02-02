@@ -402,7 +402,6 @@
 <translation id="3894427358181296146">ফোল্ডার যোগ করুন</translation>
 <translation id="3895926599014793903">ফোর্স জুম চালু করুন</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> আপডেট করুন</translation>
-<translation id="3909763690984331376">নিরাপত্তা পরীক্ষা <ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">ওয়েব থেকে সেরা ফলাফল লোড করা হচ্ছে…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> চালু করা আছে</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -434,6 +433,7 @@
 <translation id="4095146165863963773">অ্যাপ্লিকেশান ডেটা মুছবেন?</translation>
 <translation id="4095189195365058471">পরে পড়ুন <ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /></translation>
 <translation id="4099578267706723511">Google-এ ব্যবহারের পরিসংখ্যান এবং ক্র্যাশ রিপোর্টগুলি পাঠিয়ে Chrome-কে আরও ভাল করে তুলতে সহায়তা করুন৷</translation>
+<translation id="4108314971463891922">ফলো করুন</translation>
 <translation id="4108998448622696017">কোনও ঝুঁকিপূর্ণ ঘটনা ঘটলে সেটি শনাক্ত করে আপনাকে সতর্ক করা হয়।</translation>
 <translation id="4116038641877404294">পৃষ্ঠাগুলি অফলাইনে ব্যবহার করতে সেগুলি ডাউনলোড করুন</translation>
 <translation id="4135200667068010335">ট্যাব শেয়ার করা যাবে এমন ডিভাইসের সূচি বন্ধ আছে।</translation>
@@ -634,6 +634,7 @@
 <translation id="5530766185686772672">ছদ্মবেশী ট্যাবগুলি বন্ধ করুন</translation>
 <translation id="5530920986376047241">আপনার পড়ার তালিকায় পৃষ্ঠা সেভ করে রাখতে পারেন, যাতে সেগুলি আবার খুঁজে পাওয়া যায়</translation>
 <translation id="5534640966246046842">সাইট কপি করা হয়েছে</translation>
+<translation id="5548606607480005320">নিরাপত্তা সংক্রান্ত পরীক্ষা</translation>
 <translation id="5556459405103347317">রিলোড করুন</translation>
 <translation id="5561549206367097665">নেটওয়ার্কের জন্য অপেক্ষা করা হচ্ছে...</translation>
 <translation id="55737423895878184">লোকেশন এবং বিজ্ঞপ্তিগুলি অনুমোদিত</translation>
@@ -645,6 +646,7 @@
 <translation id="5606787249466187650">গোপনীয়তা স্যান্ডবক্সের ব্যাপারে আরও তথ্য জানুন</translation>
 <translation id="5620163320393916465">কোনও পাসওয়ার্ড সেভ করা নেই</translation>
 <translation id="5620928963363755975">আরও বিকল্প বোতামের ডাউনলোড বিকল্প থেকে আপনার সমস্ত ফাইল ও পৃষ্ঠাগুলি খুঁজে পান</translation>
+<translation id="562289928968387744">প্রতিক্রিয়া ম্যানেজ করুন</translation>
 <translation id="5626134646977739690">নাম:</translation>
 <translation id="5639724618331995626">সমস্ত সাইটকে অনুমতি দিন</translation>
 <translation id="5648166631817621825">গত ৭ দিন</translation>
@@ -730,6 +732,7 @@
 <translation id="6122831415929794347">Safe Browsing বন্ধ করতে চান?</translation>
 <translation id="6127379762771434464">আইটেম সরানো হয়েছে</translation>
 <translation id="6137022273846704445"><ph name="APP_NAME" /> অ্যাপের ভাষা</translation>
+<translation id="6138832295072039549">এখান থেকে আপনার সাইট সেটিংস পরিবর্তন করুন</translation>
 <translation id="6140709049082532940">উন্নত সুরক্ষা:</translation>
 <translation id="6140912465461743537">দেশ/অঞ্চল</translation>
 <translation id="614940544461990577">এটি করে দেখুন:</translation>

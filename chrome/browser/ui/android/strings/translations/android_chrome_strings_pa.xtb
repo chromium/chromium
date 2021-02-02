@@ -402,7 +402,6 @@
 <translation id="3894427358181296146">ਫੋਲਡਰ ਜੋੜੋ</translation>
 <translation id="3895926599014793903">ਜ਼ੂਮ ਨੂੰ ਚਾਲੂ ਕਰਨ 'ਤੇ ਜ਼ੋਰ ਦਿਓ</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ</translation>
-<translation id="3909763690984331376">ਸੁਰੱਖਿਆ ਜਾਂਚ <ph name="BEGIN_NEW" />ਨਵਾਂ<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">ਵੈੱਬ ਤੋਂ ਬਿਹਤਰੀਨ ਜਾਣਕਾਰੀ ਲੱਭ ਰਹੇ ਹਾਂ…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> ਚਾਲੂ ਹੈ</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -432,6 +431,7 @@
 <translation id="4095146165863963773">ਕੀ ਐਪ ਡਾਟਾ ਮਿਟਾਉਣਾ ਹੈ?</translation>
 <translation id="4095189195365058471">ਬਾਅਦ ਵਿੱਚ ਪੜ੍ਹੋ <ph name="BEGIN_NEW" />ਨਵਾਂ<ph name="END_NEW" /></translation>
 <translation id="4099578267706723511">Google ਨੂੰ ਵਰਤੋਂ ਅੰਕੜੇ ਅਤੇ ਕ੍ਰੈਸ਼ ਰਿਪੋਰਟਾਂ ਭੇਜ ਕੇ Chrome ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰੋ।</translation>
+<translation id="4108314971463891922">ਅਨੁਸਰਣ ਕਰੋ</translation>
 <translation id="4108998448622696017">ਖਤਰਨਾਕ ਘਟਨਾਵਾਂ ਦਾ ਪਤਾ ਲਗਾਕੇ ਉਹਨਾਂ ਦੇ ਵਾਪਰਨ ਵੇਲੇ ਤੁਹਾਨੂੰ ਚਿਤਾਵਨੀ ਦਿੱਤੀ ਜਾਂਦੀ ਹੈ।</translation>
 <translation id="4116038641877404294">ਪੰਨਿਆਂ ਨੂੰ ਆਫ਼ਲਾਈਨ ਵਰਤਣ ਲਈ ਉਹਨਾਂ ਨੂੰ ਡਾਊਨਲੋਡ ਕਰੋ</translation>
 <translation id="4135200667068010335">ਟੈਬ ਨੂੰ ਸਾਂਝਾ ਕਰਨ ਲਈ ਡੀਵਾਈਸਾਂ ਦੀ ਸੂਚੀ ਬੰਦ ਹੈ।</translation>
@@ -632,6 +632,7 @@
 <translation id="5530766185686772672">ਗੁਮਨਾਮ ਟੈਬਸ ਬੰਦ ਕਰੋ</translation>
 <translation id="5530920986376047241">ਪੰਨਿਆਂ ਨੂੰ ਦੁਬਾਰਾ ਲੱਭਣ ਲਈ ਤੁਸੀਂ ਉਹਨਾਂ ਨੂੰ ਆਪਣੀ ਪੜ੍ਹਨ-ਸੂਚੀ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="5534640966246046842">ਸਾਈਟ ਕਾਪੀ ਕੀਤੀ ਗਈ</translation>
+<translation id="5548606607480005320">ਸੁਰੱਖਿਆ ਜਾਂਚ</translation>
 <translation id="5556459405103347317">ਰੀਲੋਡ ਕਰੋ</translation>
 <translation id="5561549206367097665">ਨੈੱਟਵਰਕ ਦੀ ਉਡੀਕ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ…</translation>
 <translation id="55737423895878184">ਟਿਕਾਣਾ ਜਾਣਕਾਰੀ ਅਤੇ ਸੂਚਨਾਵਾਂ ਨੂੰ ਦਿਖਾਇਆ ਜਾਂਦਾ ਹੈ</translation>
@@ -643,6 +644,7 @@
 <translation id="5606787249466187650">ਪਰਦੇਦਾਰੀ ਸੈਂਡਬਾਕਸ ਦੀ ਪੜਚੋਲ ਕਰੋ</translation>
 <translation id="5620163320393916465">ਕੋਈ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ ਨਹੀਂ</translation>
 <translation id="5620928963363755975">'ਹੋਰ ਵਿਕਲਪ' ਬਟਨ ਤੋਂ ਡਾਊਨਲੋਡਾਂ ਵਿੱਚ ਆਪਣੀਆਂ ਫ਼ਾਈਲਾਂ ਅਤੇ ਪੰਨਿਆਂ ਨੂੰ ਲੱਭੋ</translation>
+<translation id="562289928968387744">ਪ੍ਰਤਿਕਿਰਿਆਵਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="5626134646977739690">ਨਾਮ:</translation>
 <translation id="5639724618331995626">ਸਭ ਸਾਈਟਾਂ ਦੀ ਮਨਜ਼ੂਰੀ ਦਿਓ</translation>
 <translation id="5648166631817621825">ਪਿਛਲੇ 7 ਦਿਨ</translation>

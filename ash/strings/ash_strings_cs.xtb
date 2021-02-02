@@ -577,6 +577,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="5992218262414051481">Je aktivován režim vysokého kontrastu. Vypnete jej opětovným stisknutím kombinace kláves Ctrl+Hledat+H.</translation>
 <translation id="6018164090099858612">Ukončování režimu zrcadlení</translation>
 <translation id="602001110135236999">Posunout doleva</translation>
+<translation id="602472752137106327">Zobrazit okna ze všech ploch, je vybrán přepínač</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" />, spravováno administrátorem</translation>
 <translation id="6030495522958826102">Nabídka byla přesunuta do levého dolního rohu obrazovky.</translation>
 <translation id="6032620807120418574">Kliknutím kamkoliv spustíte záznam celé obrazovky</translation>
@@ -675,6 +676,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Zbývá jedna číslice}few{Zbývají # číslice}many{Zbývá # číslice}other{Zbývá # číslic}}</translation>
 <translation id="6878400149835617132">Zkratka je vypnutá</translation>
 <translation id="6886172995547742638">Výkon zařízení <ph name="DEVICE_TYPE" /> se může snížit. Použijte certifikovaný napájecí adaptér s výkonem <ph name="PREFERRED_MINIMUM_POWER" /> W nebo vyšším.</translation>
+<translation id="688631446150864480">Okna můžete přepnout pomocí šipky dolů</translation>
 <translation id="6896758677409633944">Kopírovat</translation>
 <translation id="6910714959251846841">Kvůli této aktualizaci je potřeba zařízení pomocí funkce Powerwash obnovit do továrního nastavení. Viz další informace o nejnovější aktualizaci systému <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Chytrou kartu se nepodařilo rozpoznat. Zkuste to znovu.</translation>
@@ -840,6 +842,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="8297006494302853456">Slabý</translation>
 <translation id="8308637677604853869">Předchozí nabídka</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="8345019317483336363">Vybrané okno: <ph name="WINDOW_TITLE" /></translation>
 <translation id="8351131234907093545">Vytvořit poznámku</translation>
 <translation id="8371779926711439835">Dopředu o písmeno</translation>
 <translation id="8375916635258623388">Toto zařízení <ph name="DEVICE_NAME" />a váš telefon se automaticky spojí</translation>
@@ -863,6 +866,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="8477270416194247200">Vypnete jej stisknutím kombinace kláves Alt + Hledat nebo klávesy Shift.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> rozlišení <ph name="SPECIFIED_RESOLUTION" /> nepodporuje. Rozlišení bylo změněno na <ph name="FALLBACK_RESOLUTION" />. Chcete-li změny ponechat, potvrďte je. Předchozí nastavení bude obnoveno za <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8513108775083588393">Autom. otáčení</translation>
+<translation id="851458219935658693">Zobrazit okna z aktuální plochy, je vybrán přepínač</translation>
 <translation id="8517041960877371778">Je možné, že když bude zařízení <ph name="DEVICE_TYPE" /> zapnuté, nebude se nabíjet.</translation>
 <translation id="8553395910833293175">Již přiřazeno ke všem plochám.</translation>
 <translation id="8563862697512465947">Nastavení oznámení</translation>

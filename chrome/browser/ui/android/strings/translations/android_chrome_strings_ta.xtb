@@ -402,7 +402,6 @@
 <translation id="3894427358181296146">கோப்புறையைச் சேர்</translation>
 <translation id="3895926599014793903">பெரிதாக்குவதைச் செயல்படுத்த வலியுறுத்து</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> ஐப் புதுப்பி</translation>
-<translation id="3909763690984331376">பாதுகாப்புச் சரிபார்ப்பு <ph name="BEGIN_NEW" />புதிது<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">இணையத்திலிருந்து தரவை ஏற்றுகிறோம்…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> இயக்கத்தில் உள்ளது</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -633,6 +632,7 @@
 <translation id="5530766185686772672">மறைநிலை தாவல்களை மூடு</translation>
 <translation id="5530920986376047241">பக்கங்களைப் பின்னர் வாசிக்க உங்கள் வாசிப்புப் பட்டியலில் அவற்றைச் சேமிக்கலாம்</translation>
 <translation id="5534640966246046842">தளம் நகலெடுக்கப்பட்டது</translation>
+<translation id="5548606607480005320">பாதுகாப்புச் சரிபார்ப்பு</translation>
 <translation id="5556459405103347317">மீண்டும் ஏற்று</translation>
 <translation id="5561549206367097665">நெட்வொர்க்கிற்காகக் காத்திருக்கிறது…</translation>
 <translation id="55737423895878184">இருப்பிடமும் அறிவிப்புகளும் அனுமதிக்கப்படுகின்றன</translation>

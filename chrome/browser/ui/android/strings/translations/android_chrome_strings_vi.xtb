@@ -402,7 +402,6 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="3894427358181296146">Thêm thư mục</translation>
 <translation id="3895926599014793903">Buộc bật thu phóng</translation>
 <translation id="3908308510347173149">Cập nhật <ph name="PRODUCT_NAME" /></translation>
-<translation id="3909763690984331376">Kiểm tra an toàn <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">Đang tìm dữ liệu thích hợp nhất từ web…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> đang bật</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -633,6 +632,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="5530766185686772672">Đóng thẻ ẩn danh</translation>
 <translation id="5530920986376047241">Bạn có thể lưu các trang vào danh sách đọc để tìm lại</translation>
 <translation id="5534640966246046842">Đã sao chép trang web</translation>
+<translation id="5548606607480005320">Kiểm tra an toàn</translation>
 <translation id="5556459405103347317">Tải lại</translation>
 <translation id="5561549206367097665">Đang chờ mạng…</translation>
 <translation id="55737423895878184">Cho phép vị trí và thông báo</translation>
@@ -730,6 +730,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="6122831415929794347">Tắt tính năng Duyệt web an toàn?</translation>
 <translation id="6127379762771434464">Đã xóa mục</translation>
 <translation id="6137022273846704445">Ngôn ngữ của <ph name="APP_NAME" /></translation>
+<translation id="6138832295072039549">Thay đổi các chế độ cài đặt trang web tại đây</translation>
 <translation id="6140709049082532940">Chế độ bảo vệ nâng cao:</translation>
 <translation id="6140912465461743537">Quốc gia/Vùng</translation>
 <translation id="614940544461990577">Hãy thử:</translation>

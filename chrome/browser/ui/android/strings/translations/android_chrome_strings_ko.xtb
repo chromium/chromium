@@ -402,7 +402,6 @@
 <translation id="3894427358181296146">폴더 추가</translation>
 <translation id="3895926599014793903">확대/축소 강제 사용</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> 업데이트</translation>
-<translation id="3909763690984331376">안전 확인 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">웹에서 최상의 결과를 찾는 중…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> 사용 중</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -633,6 +632,7 @@
 <translation id="5530766185686772672">시크릿 탭 닫기</translation>
 <translation id="5530920986376047241">다시 찾을 수 있도록 읽기 목록에 페이지를 저장할 수 있습니다.</translation>
 <translation id="5534640966246046842">사이트 복사됨</translation>
+<translation id="5548606607480005320">안전 확인</translation>
 <translation id="5556459405103347317">새로고침</translation>
 <translation id="5561549206367097665">네트워크 대기 중…</translation>
 <translation id="55737423895878184">위치 및 알림이 허용되었습니다</translation>
@@ -730,6 +730,7 @@
 <translation id="6122831415929794347">세이프 브라우징을 사용 중지하시겠습니까?</translation>
 <translation id="6127379762771434464">항목 삭제됨</translation>
 <translation id="6137022273846704445"><ph name="APP_NAME" />의 언어</translation>
+<translation id="6138832295072039549">여기에서 사이트 설정을 변경하세요.</translation>
 <translation id="6140709049082532940">향상된 보호 모드:</translation>
 <translation id="6140912465461743537">국가/지역</translation>
 <translation id="614940544461990577">다음 방법을 시도해 보세요.</translation>

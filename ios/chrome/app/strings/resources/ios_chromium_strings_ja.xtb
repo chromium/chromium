@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
 <translation id="102360288709523007">使用統計情報と障害レポートを Google に送信して Chromium の機能向上に役立てる。</translation>
+<translation id="1130979953299110755">ログアウトすると、ブックマーク、履歴、パスワード、その他の Chromium データは、Google アカウントに同期されなくなります。</translation>
 <translation id="1185134272377778587">Chromium について</translation>
 <translation id="1257458525759135959">画像を保存するには、[設定] をタップして写真への追加を Chromium に許可してください</translation>
 <translation id="1361748954329991663">Chromium は古いバージョンです。<ph name="BEGIN_LINK" />アプリストア<ph name="END_LINK" />に利用可能なアップデートがない場合は、デバイスで新しいバージョンの Chromium がサポートされなくなった可能性があります。</translation>

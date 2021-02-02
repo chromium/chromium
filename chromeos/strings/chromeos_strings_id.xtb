@@ -62,6 +62,7 @@
 <translation id="2338501278241028356">Aktifkan Bluetooth untuk menemukan perangkat di sekitar</translation>
 <translation id="2364498172489649528">Lulus</translation>
 <translation id="2391082728065870591">Kirim Laporan Masukan</translation>
+<translation id="2418150275289244458">Buka di setelan</translation>
 <translation id="2446553403094072641">Akurasi floating point</translation>
 <translation id="2448312741937722512">Jenis</translation>
 <translation id="2461822463642141190">Arus</translation>
@@ -273,6 +274,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> ini dikelola oleh <ph name="MANAGER" />. Administrator dapat mengonfigurasi perangkat dari jarak jauh.</translation>
 <translation id="7216409898977639127">Operator seluler</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7343649194310845056">Perangkat Jaringan</translation>
 <translation id="7359657277149375382">Jenis file</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -282,6 +284,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="7490813197707563893">Alamat MAC</translation>
 <translation id="7497215489070763236">Sertifikat CA server</translation>
 <translation id="7502658306369382406">Alamat IPv6</translation>
+<translation id="7550715992156305117">Rutinitas Diagnostik</translation>
 <translation id="7561454561030345039">Tindakan ini dikelola oleh administrator Anda</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> lagi</translation>

@@ -402,7 +402,6 @@ Dotaknite se poljubne besede in jo pridržite, če želite iskati. Če želite i
 <translation id="3894427358181296146">Dodajanje mape</translation>
 <translation id="3895926599014793903">Vsili povečavo</translation>
 <translation id="3908308510347173149">Posodobi <ph name="PRODUCT_NAME" /></translation>
-<translation id="3909763690984331376">Varnostno preverjanje <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">Iskanje najboljšega v spletu …</translation>
 <translation id="3924911262913579434">Način »<ph name="SAFE_BROWSING_MODE" />« je vklopljen</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -633,6 +632,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5530766185686772672">Zapri zavih. brez bel. zgo.</translation>
 <translation id="5530920986376047241">Strani lahko shranite na seznam za branje, če jih želite poiskati znova.</translation>
 <translation id="5534640966246046842">Spletno mesto kopirano</translation>
+<translation id="5548606607480005320">Varnostno preverjanje</translation>
 <translation id="5556459405103347317">Znova naloži</translation>
 <translation id="5561549206367097665">Čakanje na omrežje …</translation>
 <translation id="55737423895878184">Lokacija in obvestila so dovoljeni</translation>
@@ -730,6 +730,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="6122831415929794347">Želite izklopiti varno brskanje?</translation>
 <translation id="6127379762771434464">Element odstranjen</translation>
 <translation id="6137022273846704445">Jezik aplikacije <ph name="APP_NAME" /></translation>
+<translation id="6138832295072039549">Tukaj spremenite nastavitve svojega spletnega mesta</translation>
 <translation id="6140709049082532940">Izboljšana zaščita:</translation>
 <translation id="6140912465461743537">Država/regija</translation>
 <translation id="614940544461990577">Poskusite:</translation>

@@ -1058,6 +1058,7 @@
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" />, మరో 1 స్విచ్</translation>
 <translation id="2165421703844373933">మీరు "Ok Google" అని చెప్పడం ద్వారా మీ అసిస్టెంట్‌ను యాక్సెస్ చేయండి. బ్యాటరీని సేవ్ చేయడానికి, “ఆన్ (సిఫార్సు చేస్తున్నాము)” ఎంచుకోండి. మీ పరికరాన్ని ప్లగ్ ఇన్ చేసినప్పుడు లేదా ఛార్జింగ్‌లో ఉన్నప్పుడు మాత్రమే మీ అసిస్టెంట్ స్పందిస్తుంది.</translation>
 <translation id="2166369534954157698">దేశ భాషలందు తెలుగు లెస్స</translation>
+<translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">ఏదేమైనా సైన్ ఇన్ చేయి</translation>
 <translation id="2170054054876170358">మీ ఫోన్ సమీపంలోనే ఉండి, అలాగే బ్లూటూత్, Wi-Fi ఆన్ చేయబడి ఉందని నిర్ధారించుకోండి.</translation>
 <translation id="2173302385160625112">మీ ఇంటర్నెట్ కనెక్షన్‌ను తనిఖీ చేయండి</translation>
@@ -1109,7 +1110,6 @@
 <translation id="2225864335125757863">మీ ఖాతాను సురక్షితంగా ఉంచడానికి వెంటనే ఈ పాస్‌వర్డ్‌లను మార్చండి:</translation>
 <translation id="2226449515541314767">ఈ సైట్ MIDI పరికరాలకు పూర్తి నియంత్రణ లేకుండా బ్లాక్ చేయబడింది.</translation>
 <translation id="2226907662744526012">ఒకసారి పిన్ ఎంటర్ చేసిన తర్వాత ఆటోమేటిక్‌గా అన్‌లాక్ చేయి</translation>
-<translation id="222704500187107962">ప్రస్తుత అజ్ఞాత సెషన్ నుండి మీరు నిష్క్రమించిన తర్వాత, ఈ మినహాయింపు ఆటోమేటిక్‌గా తొలగించబడుతుంది</translation>
 <translation id="2227179592712503583">సూచనను తీసివేయి</translation>
 <translation id="2229161054156947610">1 గంట పైగా మిగిలి ఉంది</translation>
 <translation id="222931766245975952">ఫైల్ కుదించబడింది</translation>
@@ -1281,7 +1281,6 @@
 <translation id="2428939361789119025">Wi-Fiను ఆఫ్ చేయండి</translation>
 <translation id="2431027948063157455">Google అసిస్టెంట్‌ను లోడ్ చేయడం సాధ్యపడలేదు, దయచేసి మీ నెట్‌వర్క్ కనెక్షన్‌ను తనిఖీ చేసుకుని మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="2433452467737464329">పేజీని స్వీయ రీఫ్రెష్ చేయడానికి URLలో ప్రశ్న పరామితిని జోడించండి: chrome://network/?refresh=&lt;sec&gt;</translation>
-<translation id="2433490881840073798"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE" /></translation>
 <translation id="2433507940547922241">కనిపించే తీరు</translation>
 <translation id="2433836460518180625">పరికరాన్ని మాత్రం అన్‌లాక్ చేయండి</translation>
 <translation id="2434449159125086437">ప్రింటర్‌ను సెటప్ చేయలేకపోయింది. దయచేసి కాన్ఫిగరేషన్‌ను సరిచూసుకుని, ఆపై మళ్లీ ప్రయత్నించండి.</translation>
@@ -3085,7 +3084,6 @@
 <translation id="4492698018379445570">మీరు షాపింగ్ కార్ట్‌లలో ఏం జోడించారో కనుగొని, మీరు సిద్ధంగా ఉన్నప్పుడు చెక్ అవుట్ చేయండి</translation>
 <translation id="4493468155686877504">సిఫార్సు చేయబడినది (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">ఈ పేజీని చూపవద్దు</translation>
-<translation id="4496054781541092778"><ph name="PERMISSION" /> ఆటోమేటిక్‌గా బ్లాక్ చేయబడింది</translation>
 <translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> క్రాష్ అయింది</translation>
 <translation id="450099669180426158">ఆశ్చర్యార్థక గుర్తు చిహ్నం</translation>
 <translation id="4501530680793980440">తీసివేతను నిర్ధారించండి</translation>
@@ -3107,7 +3105,6 @@
 <translation id="4519935350946509010">కనెక్షన్ ఎర్రర్.</translation>
 <translation id="4520385623207007473">ఉపయోగంలో ఉన్న కుక్కీలు</translation>
 <translation id="452039078290142656"><ph name="VENDOR_NAME" /> అందించిన తెలియని పరికరాలు</translation>
-<translation id="4521489190203965562">ప్రస్తుత అజ్ఞాత సెషన్: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" />, <ph name="RECENT_PERMISSIONS_CHANGE_2" />, మరిన్ని</translation>
 <translation id="4522570452068850558">వివరాలు</translation>
 <translation id="4522600456902129422">క్లిప్‌బోర్డ్‌ను చూసేందుకు ఈ సైట్‌కు అనుమతిని కొనసాగించు</translation>
 <translation id="4524832533047962394">సరఫరా చేయబడిన నమోదు మోడ్‌కు ఈ ఆపరేటింగ్ సిస్టమ్ వెర్షన్‌లో మద్దతు లేదు. దయచేసి మీరు తాజా వెర్షన్‌ను ఉపయోగిస్తున్నారని నిర్ధారించుకోండి.</translation>
@@ -3738,7 +3735,6 @@
 <translation id="527605982717517565"><ph name="HOST" />పై ఎల్లప్పుడూ JavaScriptను అనుమతించు</translation>
 <translation id="5278823018825269962">స్టేటస్ Id</translation>
 <translation id="5280064835262749532"><ph name="SHARE_PATH" /> కోసం ఆధారాలు అప్‌డేట్ చేయండి</translation>
-<translation id="5280174558369304332">తీసివేయాల్సిన ఎక్స్‌టెన్షన్‌లు:</translation>
 <translation id="5280243692621919988">మీరు అన్ని బ్రౌజర్ విండోలను మూసివేసేటప్పుడు కుక్కీ‌లు, సైట్ డేటాను క్లియర్ చేయండి</translation>
 <translation id="5280426389926346830">షార్ట్‌కట్‌ను సృష్టించాలా?</translation>
 <translation id="528208740344463258">Android యాప్‌లను డౌన్‌లోడ్ చేసి, ఉపయోగించడం కోసం, ముందుగా మీరు ఈ అవసరమైన అప్‌డేట్‌ను ఇన్‌స్టాల్ చేయాలి. మీ <ph name="DEVICE_TYPE" /> అప్‌డేట్ అవుతున్న సమయంలో, మీరు దీనిని ఉపయోగించలేరు. ఇన్‌స్టాల్ చేయడం పూర్తయిన తర్వాత, మీ <ph name="DEVICE_TYPE" /> పునఃప్రారంభించబడుతుంది.</translation>
@@ -3884,7 +3880,6 @@
 <translation id="5449551289610225147">పాస్‌వర్డ్ చెల్లదు</translation>
 <translation id="5449588825071916739">అన్ని ట్యాబ్‌లను బుక్‌మార్క్ చేయి</translation>
 <translation id="5449716055534515760">&amp;విండో మూసివెయ్యి</translation>
-<translation id="5452974209916053028">ప్రస్తుత అజ్ఞాత సెషన్: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" />, <ph name="RECENT_PERMISSIONS_CHANGE_2" /></translation>
 <translation id="5454005855577728171">క్యాప్షన్ బబుల్ <ph name="POSITION_ON_SCREEN_FROM_LEFT" />% పక్కకి, <ph name="POSITION_ON_SCREEN_FROM_TOP" />% కిందికి తరలించబడింది</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" />తో</translation>
 <translation id="5457113250005438886">చెల్లదు</translation>
@@ -4103,7 +4098,6 @@
 <translation id="5691581861107245578">మీరు టైప్ చేస్తున్న దానికి సంబంధించిన ఎమోజీ సూచనలను పొందండి</translation>
 <translation id="5691772641933328258">వేలిముద్ర గుర్తించబడలేదు</translation>
 <translation id="5692183275898619210">ముద్రణ పూర్తయింది</translation>
-<translation id="569425414730375234">ప్రస్తుత అజ్ఞాత సెషన్: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" /></translation>
 <translation id="5695184138696833495">Linux Android యాప్ ADB</translation>
 <translation id="5696143504434933566">"<ph name="EXTENSION_NAME" />" నుండి దుర్వినియోగాన్ని నివేదించు</translation>
 <translation id="5696177755977520104">Chrome OS సెట్టింగ్‌లు సింక్</translation>
@@ -4380,7 +4374,6 @@
 <translation id="6025215716629925253">స్టాక్ ట్రేస్</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - USB పరికరం కనెక్ట్ చేయబడింది</translation>
 <translation id="6028117231645531007">వేలిముద్రను జోడించండి</translation>
-<translation id="6029594605736587274">'<ph name="PERMISSION" />'ను బ్లాక్ చేశారు</translation>
 <translation id="6031600495088157824">టూల్‌బార్‌లోని ఇన్‌పుట్ ఆప్షన్‌లు</translation>
 <translation id="6032715498678347852">ఈ సైట్‌కు ఎక్స్‌టెన్షన్ యాక్సెస్ ఇవ్వడానికి, దాన్ని క్లిక్ చేయండి.</translation>
 <translation id="6032912588568283682">ఫైల్ సిస్టమ్</translation>
@@ -4837,7 +4830,6 @@
 <translation id="6550675742724504774">ఎంపికలు</translation>
 <translation id="6551508934388063976">ఆదేశం అందుబాటులో లేదు. కొత్త విండోను తెరవడానికి control-N నొక్కండి.</translation>
 <translation id="6551612971599078809">సైట్ USBని ఉపయోగిస్తోంది</translation>
-<translation id="6552395360547205189">ప్రస్తుత అజ్ఞాత సెషన్: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" /></translation>
 <translation id="655384502888039633"><ph name="USER_COUNT" /> వినియోగదారులు</translation>
 <translation id="655483977608336153">మళ్లీ ప్రయత్నించు</translation>
 <translation id="6555432686520421228">అన్ని వినియోగదారు ఖాతాలను తీసివేయండి మరియు మీ <ph name="IDS_SHORT_PRODUCT_NAME" /> పరికరాన్ని కొత్త‌ దాని లాగా రీసెట్ చేయండి.</translation>
@@ -5840,7 +5832,6 @@
 <translation id="7710568461918838723">&amp;ప్రసారం...</translation>
 <translation id="7711900714716399411">మీ ఫోన్‌ను మీ కంప్యూటర్‌కు కనెక్ట్ చేయడానికి USB కేబుల్‌ను ఉపయోగించండి. మీ ఫోన్ ఇప్పటికే కనెక్ట్ చేసి ఉంటే, దాన్ని అన్‌ప్లగ్ చేసి, మళ్లీ ప్లగ్-ఇన్ చేయండి.</translation>
 <translation id="7712739869553853093">ప్రివ్యూ డైలాగ్‌ను ప్రింట్ చేయండి</translation>
-<translation id="7712836429117959503">ID <ph name="EXTENSION_ID" />ని కలిగి ఉన్న తెలియని ఎక్స్‌టెన్షన్</translation>
 <translation id="7714307061282548371"><ph name="DOMAIN" /> నుండి కుక్కీలు అనుమతించబడ్డాయి</translation>
 <translation id="7714464543167945231">సర్టిఫికెట్</translation>
 <translation id="7716648931428307506">మీ పాస్‌వర్డ్‌ను ఎక్కడ సేవ్ చేయాలో ఎంచుకోండి</translation>
@@ -6219,7 +6210,6 @@
 <translation id="8118488170956489476">మీ సంస్థ మీ <ph name="BEGIN_LINK" />బ్రౌజర్‌ని నిర్వహిస్తోంది<ph name="END_LINK" /></translation>
 <translation id="8118515372935001629">డిస్‌ప్లే రిఫ్రెష్ రేటు</translation>
 <translation id="8118860139461251237">మీ డౌన్‌లోడ్‌లను నిర్వహించండి</translation>
-<translation id="811942868379260654"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" />, <ph name="RECENT_PERMISSIONS_CHANGE_2" />, మరిన్ని</translation>
 <translation id="8119438628456698432">లాగ్ ఫైల్‌లను జెనరేట్ చేస్తోంది...</translation>
 <translation id="811994229154425014">వ్యవధిని టైప్ చేయడానికి డబుల్-స్పేస్ నొక్కండి</translation>
 <translation id="8123590694679414600"><ph name="TIME" />న మీ సమకాలీకరణ రహస్య పదబంధంతో డేటా ఎన్‌క్రిప్ట్ చేయబడింది.
@@ -6421,7 +6411,6 @@
 <translation id="835951711479681002">మీ Google ఖాతాలో సేవ్ చేయండి</translation>
 <translation id="8363095875018065315">స్థిరం</translation>
 <translation id="8363142353806532503">మైక్రోఫోన్ బ్లాక్ చేయబడింది</translation>
-<translation id="8363763184161554204"><ph name="PERMISSION" />‌ను అనుమతించారు</translation>
 <translation id="8366396658833131068">మీ నెట్‌వర్క్ కనెక్టివిటీ పునరుద్ధరించబడింది. దయచేసి వేరే నెట్‌వర్క్‌ను ఎంచుకోండి లేదా మీ కియోస్క్ యాప్‌ను ప్రారంభించడానికి కింది 'కొనసాగించు' బటన్ నొక్కండి.</translation>
 <translation id="8368027906805972958">తెలియని లేదా మద్దతు లేని పరికరం (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368859634510605990">&amp;అన్ని బుక్‌మార్క్‌లను తెరువు</translation>
@@ -6980,7 +6969,6 @@
 <translation id="899657321862108550">మీ Chrome, అన్ని పరికరాలలో పొందవచ్చు</translation>
 <translation id="899676909165543803">మీ కీబోర్డ్‌లో దిగువున కుడివైపు కీ కింది భాగంలో వేలిముద్ర సెన్సార్ ఉంది. ఏదైనా వేలితో దానిపై మెల్లగా తాకండి.</translation>
 <translation id="8999560016882908256">ఒక విభాగంలో సింటాక్స్ ఎర్రర్: <ph name="ERROR_LINE" /></translation>
-<translation id="9002878223019487115"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE_1" />, <ph name="RECENT_PERMISSIONS_CHANGE_2" /></translation>
 <translation id="9003647077635673607">అన్ని వెబ్‌సైట్‌ల్లో అనుమతించు</translation>
 <translation id="9003677638446136377">మళ్లీ తనిఖీ చేయి</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, మీ అడ్మినిస్ట్రేటర్ ద్వారా నిర్వహించబడుతోంది, వివరాలు</translation>

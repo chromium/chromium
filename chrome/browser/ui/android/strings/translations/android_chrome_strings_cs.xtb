@@ -402,7 +402,6 @@ Vyhledávání spustíte podržením libovolného slova. Vyhledávání můžete
 <translation id="3894427358181296146">Přidat složku</translation>
 <translation id="3895926599014793903">Vynutit aktivaci přiblížení</translation>
 <translation id="3908308510347173149">Aktualizovat <ph name="PRODUCT_NAME" /></translation>
-<translation id="3909763690984331376">Bezpečnostní kontrola <ph name="BEGIN_NEW" />Novinka<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">Hledáme to nejlepší z webu…</translation>
 <translation id="3924911262913579434">Režim <ph name="SAFE_BROWSING_MODE" /> je zapnutý</translation>
 <translation id="3927692899758076493">Bezpatková</translation>
@@ -633,6 +632,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5530766185686772672">Zavřít anonymní karty</translation>
 <translation id="5530920986376047241">Stránky si můžete uložit na seznam četby, abyste je znovu našli</translation>
 <translation id="5534640966246046842">Web byl zkopírován</translation>
+<translation id="5548606607480005320">Bezpečnostní kontrola</translation>
 <translation id="5556459405103347317">Načíst znovu</translation>
 <translation id="5561549206367097665">Čekání na síť…</translation>
 <translation id="55737423895878184">Určování polohy a oznámení jsou povoleny</translation>
@@ -730,6 +730,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="6122831415929794347">Vypnout Bezpečné prohlížení?</translation>
 <translation id="6127379762771434464">Položka byla odstraněna</translation>
 <translation id="6137022273846704445">Jazyk aplikace <ph name="APP_NAME" /></translation>
+<translation id="6138832295072039549">Tady můžete změnit nastavení webu</translation>
 <translation id="6140709049082532940">Vylepšená ochrana:</translation>
 <translation id="6140912465461743537">Země/Region</translation>
 <translation id="614940544461990577">Zkuste:</translation>

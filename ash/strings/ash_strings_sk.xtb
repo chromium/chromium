@@ -577,6 +577,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="5992218262414051481">Režim vysokého kontrastu je aktívny. Vypnete ho opätovným stlačením kombinácie klávesov Ctrl+Hľadať+H.</translation>
 <translation id="6018164090099858612">Ukončuje sa režim zrkadlenia</translation>
 <translation id="602001110135236999">Posunúť doľava</translation>
+<translation id="602472752137106327">Prepínač je prepnutý na možnosť zobrazenia okien zo všetkých plôch</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, sila signálu <ph name="SIGNAL_STRENGTH" />, ovládané správcom</translation>
 <translation id="6030495522958826102">Ponuka bola presunutá do ľavého dolného rohu obrazovky.</translation>
 <translation id="6032620807120418574">Kliknutím na ľubovoľné miesto nahráte celú obrazovku</translation>
@@ -675,6 +676,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Zostáva jedna číslica}few{Zostávajú # číslice}many{# digits remaining}other{Zostáva # číslic}}</translation>
 <translation id="6878400149835617132">Skratka je vypnutá</translation>
 <translation id="6886172995547742638">Vaše zariadenie <ph name="DEVICE_TYPE" /> môže mať nižší výkon. Používajte nabíjačku s portom USB-C, ktorá má certifikovaný výkon minimálne <ph name="PREFERRED_MINIMUM_POWER" /> W</translation>
+<translation id="688631446150864480">Ak chcete prepnúť okná, stlačte kláves so šípkou nadol</translation>
 <translation id="6896758677409633944">Kopírovať</translation>
 <translation id="6910714959251846841">Táto aktualizácia vyžaduje vykonať v zariadení obnovenie Powerwash. Prečítajte si ďalšie informácie o najnovšej aktualizácii aplikácie <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Inteligentnú kartu sa nepodarilo rozpoznať. Skúste to znova.</translation>
@@ -840,6 +842,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="8297006494302853456">Slabé</translation>
 <translation id="8308637677604853869">Predchádzajúca ponuka</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="8345019317483336363">Bolo vybrané okno <ph name="WINDOW_TITLE" /></translation>
 <translation id="8351131234907093545">Vytvoriť poznámku</translation>
 <translation id="8371779926711439835">Dopredu o písmeno</translation>
 <translation id="8375916635258623388">Toto zariadenie <ph name="DEVICE_NAME" /> a váš telefón sa automaticky pripoja</translation>
@@ -863,6 +866,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="8477270416194247200">Ak to chcete zrušiť, stlačte klávesy Alt+Hľadať alebo Shift.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> nepodporuje rozlíšenie <ph name="SPECIFIED_RESOLUTION" />. Preto bolo zmenené na <ph name="FALLBACK_RESOLUTION" />. Zmeny ponecháte kliknutím na Potvrdiť. Predchádzajúce nastavenia budú obnovené o <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8513108775083588393">Aut. otáčanie</translation>
+<translation id="851458219935658693">Prepínač je prepnutý na možnosť zobrazenia okien z aktuálnej plochy</translation>
 <translation id="8517041960877371778">Vaše zariadenie <ph name="DEVICE_TYPE" /> sa nemusí nabíjať, keď je zapnuté.</translation>
 <translation id="8553395910833293175">Už bolo pridelené všetkým plochám.</translation>
 <translation id="8563862697512465947">Nastavenia upozornení</translation>

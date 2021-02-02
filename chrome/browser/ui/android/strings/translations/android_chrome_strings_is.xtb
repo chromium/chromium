@@ -402,7 +402,6 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="3894427358181296146">Bæta möppu við</translation>
 <translation id="3895926599014793903">Þvinga fram aðdrátt</translation>
 <translation id="3908308510347173149">Uppfæra <ph name="PRODUCT_NAME" /></translation>
-<translation id="3909763690984331376">Öryggisathugun <ph name="BEGIN_NEW" />Nýtt<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">Leitar að því besta á vefnum…</translation>
 <translation id="3924911262913579434">Áætlunin <ph name="SAFE_BROWSING_MODE" /> er virk</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -633,6 +632,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5530766185686772672">Loka huliðsflipum</translation>
 <translation id="5530920986376047241">Þú getur vistað síður á leslistann þinn til að finna þær aftur</translation>
 <translation id="5534640966246046842">Vefsvæði afritað</translation>
+<translation id="5548606607480005320">Öryggisathugun</translation>
 <translation id="5556459405103347317">Endurhlaða</translation>
 <translation id="5561549206367097665">Bíður eftir neti…</translation>
 <translation id="55737423895878184">Staðsetning og tilkynningar eru leyfðar</translation>
@@ -730,6 +730,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="6122831415929794347">Viltu slökkva á öruggri vefnotkun?</translation>
 <translation id="6127379762771434464">Atriði fjarlægt</translation>
 <translation id="6137022273846704445">Tungumálið sem <ph name="APP_NAME" /> notar</translation>
+<translation id="6138832295072039549">Breyttu stillingum vefsvæðisins hér</translation>
 <translation id="6140709049082532940">Aukin vörn:</translation>
 <translation id="6140912465461743537">Land/svæði</translation>
 <translation id="614940544461990577">Prófaðu að:</translation>

@@ -402,7 +402,6 @@
 <translation id="3894427358181296146">फोल्डर जोडा</translation>
 <translation id="3895926599014793903">झूम सुरू करण्याची सक्ती</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> अपडेट करा</translation>
-<translation id="3909763690984331376">सुरक्षा तपासण्या <ph name="BEGIN_NEW" />नवीन<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">वेबवरून सर्वोत्तम शोधत आहे…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> सुरू आहे</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -432,6 +431,7 @@
 <translation id="4095146165863963773">ॲप डेटा हटवायचा?</translation>
 <translation id="4095189195365058471">नंतर वाचा <ph name="BEGIN_NEW" />नवीन<ph name="END_NEW" /></translation>
 <translation id="4099578267706723511">वापर आकडेवारी आणि क्रॅश अहवाल Google कडे पाठवून Chrome अधिक चांगले करण्यास मदत करा.</translation>
+<translation id="4108314971463891922">फॉलो करा</translation>
 <translation id="4108998448622696017">धोकादायक घटना घडल्यावर ती ओळखून तुम्हाला चेतावणी देतो.</translation>
 <translation id="4116038641877404294">पेज ऑफलाइन वापरण्यासाठी ती डाउनलोड करा</translation>
 <translation id="4135200667068010335">बंद केलेल्या टॅबसह शेअर करण्यासाठी डिव्हाइसची सूची.</translation>
@@ -632,6 +632,7 @@
 <translation id="5530766185686772672">गुप्त टॅब बंद करा</translation>
 <translation id="5530920986376047241">पेज पुन्हा सापडण्यासाठी तुम्ही तुमच्या वाचन सूचीमध्ये ती सेव्ह करू शकता</translation>
 <translation id="5534640966246046842">साइट कॉपी केली</translation>
+<translation id="5548606607480005320">सुरक्षा तपासणी</translation>
 <translation id="5556459405103347317">रीलोड करा</translation>
 <translation id="5561549206367097665">नेटवर्कची वाट पाहत आहे…</translation>
 <translation id="55737423895878184">स्‍थान आणि सूचनांना अनुमती आहे</translation>
@@ -643,6 +644,7 @@
 <translation id="5606787249466187650">गोपनीयता सॅंडबॉक्स एक्सप्लोर करा</translation>
 <translation id="5620163320393916465">सेव्ह केलेले पासवर्ड नाहीत</translation>
 <translation id="5620928963363755975">तुमच्या फाइल आणि पेज अधिक पर्याय बटणावरील डाउनलोडमध्ये शोधा</translation>
+<translation id="562289928968387744">प्रतिक्रिया व्यवस्थापित करा</translation>
 <translation id="5626134646977739690">नाव:</translation>
 <translation id="5639724618331995626">सर्व साइटना अनुमती द्या</translation>
 <translation id="5648166631817621825">अखेरच्या 7 दिवसांमधील</translation>

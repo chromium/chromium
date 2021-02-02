@@ -402,7 +402,6 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="3894427358181296146">Kausta lisamine</translation>
 <translation id="3895926599014793903">Sundluba suumimine</translation>
 <translation id="3908308510347173149">Värskenda rakendust <ph name="PRODUCT_NAME" /></translation>
-<translation id="3909763690984331376">Ohutuskontroll <ph name="BEGIN_NEW" />Uus<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">Otsitakse parimat, mida veebil on pakkuda …</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> on sisse lülitatud</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -633,6 +632,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5530766185686772672">Inkognito vahelehtede sulgemine</translation>
 <translation id="5530920986376047241">Saate oma lehti salvestada lugemisloendisse, et neid hiljem uuesti vaadata</translation>
 <translation id="5534640966246046842">Sait on kopeeritud</translation>
+<translation id="5548606607480005320">Ohutuskontroll</translation>
 <translation id="5556459405103347317">Laadi uuesti</translation>
 <translation id="5561549206367097665">Võrguühenduse ootamine …</translation>
 <translation id="55737423895878184">Asukoht ja märguanded on lubatud</translation>
@@ -730,6 +730,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="6122831415929794347">Kas lülitada Google'i ohutu sirvimine välja?</translation>
 <translation id="6127379762771434464">Üksus eemaldati</translation>
 <translation id="6137022273846704445">Rakenduse <ph name="APP_NAME" /> keel</translation>
+<translation id="6138832295072039549">Muutke siin oma saidi seadeid</translation>
 <translation id="6140709049082532940">Täiustatud kaitse:</translation>
 <translation id="6140912465461743537">Riik/piirkond</translation>
 <translation id="614940544461990577">Proovige järgmist.</translation>

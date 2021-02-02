@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fi">
 <translation id="102360288709523007">Auta parantamaan Chromiumia lähettämällä käyttötilastoja ja virheraportteja Googlelle.</translation>
+<translation id="1130979953299110755">Jos kirjaudut ulos, kirjanmerkkejä, historiaa, salasanoja tai muuta Chromium-dataasi ei enää synkronoida Google-tilillesi.</translation>
 <translation id="1185134272377778587">Tietoja Chromiumista</translation>
 <translation id="1257458525759135959">Anna Chromiumin lisätä uusia kuvia valitsemalla Asetukset, niin voit tallentaa kuvia.</translation>
 <translation id="1361748954329991663">Chromium on vanhentunut. Jos päivitystä ei ole saatavilla <ph name="BEGIN_LINK" />sovelluskaupasta<ph name="END_LINK" />, laitteesi ei välttämättä enää tue Chromiumin uusia versioita.</translation>

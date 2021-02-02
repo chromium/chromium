@@ -62,6 +62,7 @@
 <translation id="2338501278241028356">បើកប៊្លូធូស​ដើម្បី​ស្វែងរក​ឧបករណ៍​ដែល​នៅជិត</translation>
 <translation id="2364498172489649528">ជាប់</translation>
 <translation id="2391082728065870591">ផ្ញើ​របាយការណ៍អំពីមតិកែលម្អ</translation>
+<translation id="2418150275289244458">បើក​នៅក្នុង​ការកំណត់</translation>
 <translation id="2446553403094072641">ភាពត្រឹមត្រូវនៃ​ពិន្ទុអណ្ដែត</translation>
 <translation id="2448312741937722512">ប្រភេទ</translation>
 <translation id="2461822463642141190">បច្ចុប្បន្ន</translation>
@@ -272,6 +273,7 @@
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> នេះស្ថិតក្រោម​ការគ្រប់គ្រងរបស់ <ph name="MANAGER" />។ អ្នកគ្រប់គ្រង​អាចកំណត់រចនាសម្ព័ន្ធ​ឧបករណ៍​នេះពីចម្ងាយបាន។</translation>
 <translation id="7216409898977639127">ក្រុមហ៊ុន​ផ្តល់សេវា​ទូរសព្ទ</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7343649194310845056">ឧបករណ៍​បណ្ដាញ</translation>
 <translation id="7359657277149375382">ប្រភេទ​ឯកសារ</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -281,6 +283,7 @@
 <translation id="7490813197707563893">អាសយដ្ឋាន MAC</translation>
 <translation id="7497215489070763236">វិញ្ញាបនបត្រ CA ម៉ាស៊ីនមេ</translation>
 <translation id="7502658306369382406">អាសយដ្ឋាន IPv6</translation>
+<translation id="7550715992156305117">ការធ្វើតេស្ត​តាមការកំណត់</translation>
 <translation id="7561454561030345039">សកម្មភាពនេះត្រូវបានគ្រប់គ្រងដោយអ្នកគ្រប់គ្រងរបស់អ្នក</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331">នៅសល់ <ph name="TIME_VALUE" /> ទៀត</translation>

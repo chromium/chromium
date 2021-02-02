@@ -402,7 +402,6 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="3894427358181296146">Añadir carpeta</translation>
 <translation id="3895926599014793903">Forzar zoom</translation>
 <translation id="3908308510347173149">Actualizar <ph name="PRODUCT_NAME" /></translation>
-<translation id="3909763690984331376">Comprobación de seguridad <ph name="BEGIN_NEW" />Nuevo<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">Buscando lo mejor de la Web…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> activada</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -633,6 +632,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5530766185686772672">Cerrar pestañas de incógnito</translation>
 <translation id="5530920986376047241">Puedes guardar páginas en tu lista de lectura para volver a ellas en otro momento</translation>
 <translation id="5534640966246046842">Se ha copiado el sitio web</translation>
+<translation id="5548606607480005320">Comprobación de seguridad</translation>
 <translation id="5556459405103347317">Volver a cargar</translation>
 <translation id="5561549206367097665">Esperando red…</translation>
 <translation id="55737423895878184">Las notificaciones y la ubicación están permitidas</translation>
@@ -730,6 +730,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="6122831415929794347">¿Desactivar Navegación segura?</translation>
 <translation id="6127379762771434464">Elemento quitado</translation>
 <translation id="6137022273846704445">Idioma de <ph name="APP_NAME" /></translation>
+<translation id="6138832295072039549">Cambia los ajustes de tu sitio aquí</translation>
 <translation id="6140709049082532940">Protección mejorada:</translation>
 <translation id="6140912465461743537">País/región</translation>
 <translation id="614940544461990577">Prueba a:</translation>

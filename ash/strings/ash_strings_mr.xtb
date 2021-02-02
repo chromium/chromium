@@ -9,7 +9,7 @@
 <translation id="1036672894875463507">मी Google Assistant आहे, तुम्हाला संपूर्ण दिवसभर मदत करण्यासाठी येथे आहे!
 सुरुवात करण्यासाठी, तुम्ही करून पाहू शकता अशा गोष्टी या आहेत.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> जोडले</translation>
-<translation id="1047017786576569492">अंशिक</translation>
+<translation id="1047017786576569492">आंशिक</translation>
 <translation id="1047773237499189053">नवीन वैशिष्ट्य उपलब्ध आहे, अधिक जाणून घेण्यासाठी अप अ‍ॅरो की वापरा.</translation>
 <translation id="1056775291175587022">नेटवर्क नाहीत</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
@@ -347,6 +347,7 @@
 <translation id="3901991538546252627"><ph name="NAME" /> वर कनेक्ट करीत आहे</translation>
 <translation id="3943857333388298514">पेस्ट करा</translation>
 <translation id="394485226368336402">ऑडिओ सेटिंग्ज</translation>
+<translation id="3945319193631853098">सेट करणे पूर्ण करण्यासाठी टॅप करा</translation>
 <translation id="3945867833895287237">हॉटस्पॉटशी कनेक्ट करत आहे...</translation>
 <translation id="3962859241508114581">मागील ट्रॅक</translation>
 <translation id="3969043077941541451">बंद आहे</translation>
@@ -724,6 +725,7 @@
 <translation id="7392563512730092880">तुम्ही नंतर कधीही सेटिंग्जमधून सेट करू शकता.</translation>
 <translation id="7398254312354928459">नेटवर्क कनेक्शन स्विच केले</translation>
 <translation id="7405710164030118432">डिव्हाइस अनलॉक करण्यासाठी, तुमचा Family Link पालक ॲक्सेस कोड एंटर करा</translation>
+<translation id="7406608787870898861">तुमचे मोबाइल नेटवर्क सेट करणे पूर्ण करा</translation>
 <translation id="741244894080940828">रूपांतर</translation>
 <translation id="7413851974711031813">बंद करण्यासाठी एस्केप दाबा</translation>
 <translation id="742594950370306541">कॅमेरा वापरात आहे.</translation>
