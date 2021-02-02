@@ -719,7 +719,17 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 // Replaces the Most Visited items currently displayed by the most recent ones.
 - (void)useFreshMostVisited {
   self.mostVisitedItems = self.freshMostVisitedItems;
-  [self.dataSink reloadSection:self.mostVisitedSectionInfo];
+  if (IsDiscoverFeedEnabled()) {
+    // All data needs to be reloaded in order to force a re-layout, this is
+    // cheaper since the Feed is not part of this ViewController when Discover
+    // is enabled.
+    [self reloadAllData];
+    // TODO(crbug.com/1170995): Potentially remove once ContentSuggestions can
+    // be added as part of a header.
+    [self.discoverFeedDelegate contentSuggestionsWasUpdated];
+  } else {
+    [self.dataSink reloadSection:self.mostVisitedSectionInfo];
+  }
 }
 
 // ntp_snippets doesn't differentiate between disabled vs collapsed, so if

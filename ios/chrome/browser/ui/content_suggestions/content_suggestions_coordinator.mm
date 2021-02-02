@@ -555,6 +555,10 @@
               .window.rootViewController.view safeAreaInsets];
 }
 
+- (void)contentSuggestionsWasUpdated {
+  [self.ntpCommandHandler updateDiscoverFeedLayout];
+}
+
 #pragma mark - ContentSuggestionsActionHandler
 
 - (void)loadMoreFeedArticles {
