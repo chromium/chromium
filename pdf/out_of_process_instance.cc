@@ -206,9 +206,6 @@ constexpr char kJSEmailCc[] = "cc";
 constexpr char kJSEmailBcc[] = "bcc";
 constexpr char kJSEmailSubject[] = "subject";
 constexpr char kJSEmailBody[] = "body";
-// Rotation (Page -> Plugin)
-constexpr char kJSRotateClockwiseType[] = "rotateClockwise";
-constexpr char kJSRotateCounterclockwiseType[] = "rotateCounterclockwise";
 // Select all text in the document (Page -> Plugin)
 constexpr char kJSSelectAllType[] = "selectAll";
 // Get the selected text in the document (Page -> Plugin)
@@ -712,10 +709,6 @@ void OutOfProcessInstance::HandleMessage(const pp::Var& message) {
     HandleSaveAttachmentMessage(dict);
   } else if (type == kJSSaveType) {
     HandleSaveMessage(dict);
-  } else if (type == kJSRotateClockwiseType) {
-    RotateClockwise();
-  } else if (type == kJSRotateCounterclockwiseType) {
-    RotateCounterclockwise();
   } else if (type == kJSSelectAllType) {
     engine()->SelectAll();
   } else if (type == kJSResetPrintPreviewModeType) {

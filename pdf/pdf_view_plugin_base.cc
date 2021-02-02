@@ -57,6 +57,9 @@ void PdfViewPluginBase::HandleMessage(const base::Value& message) {
       base::MakeFixedFlatMap<base::StringPiece, MessageHandler>({
           {"displayAnnotations",
            &PdfViewPluginBase::HandleDisplayAnnotationsMessage},
+          {"rotateClockwise", &PdfViewPluginBase::HandleRotateClockwiseMessage},
+          {"rotateCounterclockwise",
+           &PdfViewPluginBase::HandleRotateCounterclockwiseMessage},
           {"setBackgroundColor",
            &PdfViewPluginBase::HandleSetBackgroundColorMessage},
           {"setReadOnly", &PdfViewPluginBase::HandleSetReadOnlyMessage},
@@ -200,6 +203,16 @@ void PdfViewPluginBase::SetZoom(double scale) {
 void PdfViewPluginBase::HandleDisplayAnnotationsMessage(
     const base::Value& message) {
   engine()->DisplayAnnotations(message.FindBoolKey("display").value());
+}
+
+void PdfViewPluginBase::HandleRotateClockwiseMessage(
+    const base::Value& /*message*/) {
+  engine()->RotateClockwise();
+}
+
+void PdfViewPluginBase::HandleRotateCounterclockwiseMessage(
+    const base::Value& /*message*/) {
+  engine()->RotateCounterclockwise();
 }
 
 void PdfViewPluginBase::HandleSetBackgroundColorMessage(
