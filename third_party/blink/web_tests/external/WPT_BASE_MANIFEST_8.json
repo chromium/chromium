@@ -88778,6 +88778,19 @@
        {}
       ]
      ],
+     "multicol-breaking-006.html": [
+      "7efeee80251f6d912ff8d6ef1111e2fd6cf5b8a6",
+      [
+       null,
+       [
+        [
+         "/css/css-multicol/multicol-breaking-006-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "multicol-breaking-nobackground-000.html": [
       "768ec63298f03eb28a80a4e33f140314168b010d",
       [
@@ -198660,6 +198673,10 @@
      ],
      "multicol-breaking-005-ref.html": [
       "a22fda57c0b2759cce0e1e6ce72de7c07c22ed23",
+      []
+     ],
+     "multicol-breaking-006-ref.html": [
+      "06e92eb8395b77ef33b5754a6743ec05c0159682",
       []
      ],
      "multicol-breaking-nobackground-000-ref.html": [
@@ -380708,6 +380725,13 @@
       {}
      ]
     ],
+    "preloader-link-media.tentative.html": [
+     "0e58d8b6c890edfc494eca3775501f425a153c14",
+     [
+      null,
+      {}
+     ]
+    ],
     "preloader-template.tentative.html": [
      "e816309184844a6d46a20e1152c9efca80fe6f0b",
      [
@@ -391495,7 +391519,7 @@
      ]
     ],
     "pointerevent_capture_suppressing_mouse.html": [
-     "080ca1520d91ecd88264f0c501998cefc410edaf",
+     "b621dcb49a9e60b27c5ab599790136c06a4ef922",
      [
       null,
       {
