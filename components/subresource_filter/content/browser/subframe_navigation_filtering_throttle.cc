@@ -63,13 +63,11 @@ void LogCnameAliasMetrics(const CnameAliasMetricInfo& info) {
 
 SubframeNavigationFilteringThrottle::SubframeNavigationFilteringThrottle(
     content::NavigationHandle* handle,
-    AsyncDocumentSubresourceFilter* parent_frame_filter,
-    Delegate* delegate)
+    AsyncDocumentSubresourceFilter* parent_frame_filter)
     : content::NavigationThrottle(handle),
       parent_frame_filter_(parent_frame_filter),
       alias_check_enabled_(base::FeatureList::IsEnabled(
-          ::features::kSendCnameAliasesToSubresourceFilterFromBrowser)),
-      delegate_(delegate) {
+          ::features::kSendCnameAliasesToSubresourceFilterFromBrowser)) {
   DCHECK(!handle->IsInMainFrame());
   DCHECK(parent_frame_filter_);
 }
@@ -274,19 +272,8 @@ void SubframeNavigationFilteringThrottle::NotifyLoadPolicy() const {
   if (!observer_manager)
     return;
 
-  content::GlobalFrameRoutingId starting_rfh_id =
-      navigation_handle()->GetPreviousRenderFrameHostId();
-  content::RenderFrameHost* starting_rfh = content::RenderFrameHost::FromID(
-      starting_rfh_id.child_id, starting_rfh_id.frame_routing_id);
-
-  // |starting_rfh| can be null if the navigation started from a non live
-  // RenderFrameHost. For instance when a renderer process crashed.
-  // See https://crbug.com/904248
-  bool is_ad_subframe = starting_rfh && delegate_->CalculateIsAdSubframe(
-                                            starting_rfh, load_policy_);
-
-  observer_manager->NotifySubframeNavigationEvaluated(
-      navigation_handle(), load_policy_, is_ad_subframe);
+  observer_manager->NotifySubframeNavigationEvaluated(navigation_handle(),
+                                                      load_policy_);
 }
 
 void SubframeNavigationFilteringThrottle::UpdateDeferInfo() {

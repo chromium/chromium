@@ -7,6 +7,7 @@
 
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
 #include "components/subresource_filter/content/browser/subresource_filter_safe_browsing_client.h"
+#include "components/subresource_filter/content/common/ad_evidence.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 
@@ -50,21 +51,16 @@ class SubresourceFilterObserver {
       const mojom::ActivationState& activation_state) {}
 
   // Called before navigation commit, either at the WillStartRequest stage or
-  // WillRedirectRequest stage. |is_ad_subframe| is true if |load_policy| is
-  // ALLOW or WOULD_DISALLOW or if ad tagging has determined that the frame is
-  // an ad.
+  // WillRedirectRequest stage.
   virtual void OnSubframeNavigationEvaluated(
       content::NavigationHandle* navigation_handle,
-      LoadPolicy load_policy,
-      bool is_ad_subframe) {}
+      LoadPolicy load_policy) {}
 
-  // Use this to detect ad frames that never navigate beyond about:blank (e.g.,
-  // doc.written frames). Called when a frame is first created and navigated to
-  // about:blank and its already known that the frame is an ad. E.g., because
-  // the script that created the frame is ad script or the frame is a child of
-  // an ad frame.
-  virtual void OnAdSubframeDetected(
-      content::RenderFrameHost* render_frame_host) {}
+  // Called when a frame is tagged as an ad, along with evidence for it being
+  // an ad at tagging time. This will be called after frame creation and prior
+  // to DidFinishNavigation.
+  virtual void OnAdSubframeDetected(content::RenderFrameHost* render_frame_host,
+                                    const FrameAdEvidence& ad_evidence) {}
 };
 
 }  // namespace subresource_filter

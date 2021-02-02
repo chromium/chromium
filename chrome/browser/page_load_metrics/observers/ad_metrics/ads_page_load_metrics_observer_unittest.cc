@@ -35,6 +35,7 @@
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/page_load_metrics/common/page_load_metrics_util.h"
 #include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
+#include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -502,14 +503,6 @@ class AdsPageLoadMetricsObserverTest
   // Returns the final RenderFrameHost after navigation commits.
   RenderFrameHost* NavigateMainFrame(const std::string& url) {
     return NavigateFrame(url, web_contents()->GetMainFrame());
-  }
-
-  // Frame creation doesn't trigger a mojo call since unit tests have no render
-  // process. Just mock them for now.
-  void OnAdSubframeDetected(RenderFrameHost* render_frame_host) {
-    subresource_filter::SubresourceFilterObserverManager::FromWebContents(
-        web_contents())
-        ->NotifyAdSubframeDetected(render_frame_host);
   }
 
   void OnCpuTimingUpdate(RenderFrameHost* render_frame_host,
@@ -1146,7 +1139,7 @@ TEST_F(AdsPageLoadMetricsObserverTest, CountAbortedNavigation) {
       NavigationSimulator::CreateRendererInitiated(GURL(kAdUrl), subframe_ad);
   // The sub-frame renavigates before it commits.
   navigation_simulator->Start();
-  OnAdSubframeDetected(subframe_ad);
+  TagSubframeAsAd(subframe_ad);
   navigation_simulator->Fail(net::ERR_ABORTED);
 
   // Load resources for the aborted frame (e.g., simulate the navigation
@@ -1175,7 +1168,7 @@ TEST_F(AdsPageLoadMetricsObserverTest, CountAbortedSecondNavigationForFrame) {
       NavigationSimulator::CreateRendererInitiated(GURL(kAdUrl), sub_frame);
   // The sub-frame renavigates before it commits.
   navigation_simulator->Start();
-  OnAdSubframeDetected(sub_frame);
+  TagSubframeAsAd(sub_frame);
   navigation_simulator->Fail(net::ERR_ABORTED);
 
   // Load resources for the aborted frame (e.g., simulate the navigation
@@ -1206,7 +1199,7 @@ TEST_F(AdsPageLoadMetricsObserverTest, TwoResourceLoadsBeforeCommit) {
 
   // The sub-frame renavigates before it commits.
   navigation_simulator->Start();
-  OnAdSubframeDetected(subframe_ad);
+  TagSubframeAsAd(subframe_ad);
   navigation_simulator->Fail(net::ERR_ABORTED);
 
   // Renavigate the subframe to a successful commit. But again, the resource
@@ -1417,7 +1410,7 @@ TEST_F(AdsPageLoadMetricsObserverTest,
       RenderFrameHostTester::For(main_frame)->AppendChild("frame_name");
   auto navigation_simulator = NavigationSimulator::CreateRendererInitiated(
       GURL("https://foo.com"), subframe);
-  OnAdSubframeDetected(subframe);
+  TagSubframeAsAd(subframe);
   navigation_simulator->Commit();
 
   subframe = navigation_simulator->GetFinalRenderFrameHost();

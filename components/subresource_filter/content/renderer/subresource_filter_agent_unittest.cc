@@ -46,14 +46,14 @@ class SubresourceFilterAgentUnderTest : public SubresourceFilterAgent {
       UnverifiedRulesetDealer* ruleset_dealer,
       bool is_main_frame,
       bool is_provisional,
-      bool is_ad_subframe,
+      bool is_parent_ad_subframe,
       bool is_subframe_created_by_ad_script)
       : SubresourceFilterAgent(nullptr /* RenderFrame */,
                                ruleset_dealer,
                                nullptr /* AdResourceTracker */),
         is_main_frame_(is_main_frame),
         is_provisional_(is_provisional),
-        is_ad_subframe_(is_ad_subframe),
+        is_parent_ad_subframe_(is_parent_ad_subframe),
         is_subframe_created_by_ad_script_(is_subframe_created_by_ad_script) {}
   ~SubresourceFilterAgentUnderTest() override = default;
 
@@ -67,6 +67,7 @@ class SubresourceFilterAgentUnderTest : public SubresourceFilterAgent {
 
   bool IsMainFrame() override { return is_main_frame_; }
   bool IsProvisional() override { return is_provisional_; }
+  bool IsParentAdSubframe() override { return is_parent_ad_subframe_; }
   bool IsSubframeCreatedByAdScript() override {
     return is_subframe_created_by_ad_script_;
   }
@@ -81,7 +82,7 @@ class SubresourceFilterAgentUnderTest : public SubresourceFilterAgent {
 
   bool IsAdSubframe() override { return is_ad_subframe_; }
   void SetIsAdSubframe(AdFrameType ad_frame_type) override {
-    is_ad_subframe_ = true;
+    is_ad_subframe_ = ad_frame_type != blink::mojom::AdFrameType::kNonAd;
   }
 
   blink::WebDocumentSubresourceFilter* filter() {
@@ -108,11 +109,12 @@ class SubresourceFilterAgentUnderTest : public SubresourceFilterAgent {
 
   const bool is_main_frame_;
   const bool is_provisional_;
-
-  // Production can set `is_ad_subframe_` on the RenderFrame, which we intercept
-  // and store here.
-  bool is_ad_subframe_;
+  const bool is_parent_ad_subframe_;
   const bool is_subframe_created_by_ad_script_;
+
+  // Production can set this on the RenderFrame, which we intercept and store
+  // here.
+  bool is_ad_subframe_ = false;
   std::unique_ptr<blink::WebDocumentSubresourceFilter> last_injected_filter_;
   mojom::ActivationState inherited_activation_state_for_new_document_;
 
@@ -143,22 +145,26 @@ class SubresourceFilterAgentTest : public ::testing::Test {
   void SetUp() override {
     ResetAgent(/*is_main_frame=*/true,
                /*is_provisional=*/false,
-               /*is_ad_subframe=*/false,
+               /*is_parent_ad_subframe=*/false,
                /*is_subframe_created_by_ad_script=*/false);
   }
 
   void ResetAgent(bool is_main_frame,
                   bool is_provisional,
-                  bool is_ad_subframe,
+                  bool is_parent_ad_subframe,
                   bool is_subframe_created_by_ad_script) {
-    ResetAgentWithoutInitialize(is_main_frame, is_provisional, is_ad_subframe,
+    ResetAgentWithoutInitialize(is_main_frame, is_provisional,
+                                is_parent_ad_subframe,
                                 is_subframe_created_by_ad_script);
     ExpectSendSubframeWasCreatedByAdScript(
         !is_main_frame && !is_provisional && is_subframe_created_by_ad_script
             ? 1
             : 0);
     ExpectSendFrameIsAdSubframe(
-        !is_main_frame && !is_provisional && is_ad_subframe ? 1 : 0);
+        !is_main_frame && !is_provisional &&
+                (is_parent_ad_subframe || is_subframe_created_by_ad_script)
+            ? 1
+            : 0);
     agent_->Initialize();
     ::testing::Mock::VerifyAndClearExpectations(&*agent_);
   }
@@ -168,11 +174,11 @@ class SubresourceFilterAgentTest : public ::testing::Test {
   // behaviour of the initialize step.
   void ResetAgentWithoutInitialize(bool is_main_frame,
                                    bool is_provisional,
-                                   bool is_ad_subframe,
+                                   bool is_parent_ad_subframe,
                                    bool is_subframe_created_by_ad_script) {
     agent_ = std::make_unique<
         ::testing::StrictMock<SubresourceFilterAgentUnderTest>>(
-        &ruleset_dealer_, is_main_frame, is_provisional, is_ad_subframe,
+        &ruleset_dealer_, is_main_frame, is_provisional, is_parent_ad_subframe,
         is_subframe_created_by_ad_script);
     // Initialize() will see about:blank.
     EXPECT_CALL(*agent(), GetDocumentURL())
@@ -585,7 +591,7 @@ TEST_F(SubresourceFilterAgentTest,
 
   auto filter = agent()->TakeFilter();
   ResetAgent(/*is_main_frame=*/true, /*is_provisional=*/false,
-             /*is_ad_subframe=*/false,
+             /*is_parent_ad_subframe=*/false,
              /*is_subframe_created_by_ad_script=*/false);
 
   // The filter has been disconnected from the agent, so a call to
@@ -602,7 +608,7 @@ TEST_F(SubresourceFilterAgentTest,
       SetTestRulesetToDisallowURLsWithPathSuffix("somethingNotMatched"));
 
   ResetAgent(/*is_main_frame=*/false, /*is_provisional=*/false,
-             /*is_ad_subframe=*/false,
+             /*is_parent_ad_subframe=*/false,
              /*is_subframe_created_by_ad_script=*/false);
   agent()->SetInheritedActivationStateForNewDocument(
       mojom::ActivationLevel::kEnabled);
@@ -654,24 +660,9 @@ TEST_F(SubresourceFilterAgentTest,
   EXPECT_TRUE(agent()->IsAdSubframe());
 }
 
-TEST_F(SubresourceFilterAgentTest, DryRun_FrameAlreadyTaggedAsAd) {
-  ResetAgent(/*is_main_frame=*/false, /*is_provisional=*/false,
-             /*is_ad_subframe=*/true,
-             /*is_subframe_created_by_ad_script=*/false);
-  ASSERT_NO_FATAL_FAILURE(
-      SetTestRulesetToDisallowURLsWithPathSuffix("somethingNotMatched"));
-  ExpectSubresourceFilterGetsInjected();
-  StartLoadAndSetActivationState(
-      mojom::ActivationLevel::kDryRun,
-      AdFrameType::kNonAd /* is_associated_with_ad_subframe */);
-  ASSERT_TRUE(::testing::Mock::VerifyAndClearExpectations(agent()));
-
-  EXPECT_TRUE(agent()->IsAdSubframe());
-}
-
 TEST_F(SubresourceFilterAgentTest, DryRun_SendsFrameIsAdSubframe) {
   ResetAgentWithoutInitialize(/*is_main_frame=*/false, /*is_provisional=*/false,
-                              /*is_ad_subframe=*/true,
+                              /*is_parent_ad_subframe=*/true,
                               /*is_subframe_created_by_ad_script=*/false);
   ExpectSendFrameIsAdSubframe(1);
   agent()->Initialize();
@@ -688,7 +679,7 @@ TEST_F(SubresourceFilterAgentTest, DryRun_SendsFrameIsAdSubframe) {
 TEST_F(SubresourceFilterAgentTest,
        DryRun_SendFrameIsAdSubframeNotSentFromProvisionalFrame) {
   ResetAgentWithoutInitialize(/*is_main_frame=*/false, /*is_provisional=*/true,
-                              /*is_ad_subframe=*/true,
+                              /*is_parent_ad_subframe=*/true,
                               /*is_subframe_created_by_ad_script=*/false);
   ExpectSendFrameIsAdSubframe(0);
   agent()->Initialize();
@@ -706,7 +697,7 @@ TEST_F(SubresourceFilterAgentTest,
 TEST_F(SubresourceFilterAgentTest,
        DryRun_SendFrameIsAdSubframeNotSentFromNonAdFrame) {
   ResetAgentWithoutInitialize(/*is_main_frame=*/false, /*is_provisional=*/false,
-                              /*is_ad_subframe=*/false,
+                              /*is_parent_ad_subframe=*/false,
                               /*is_subframe_created_by_ad_script=*/false);
   ExpectSendFrameIsAdSubframe(0);
   agent()->Initialize();
@@ -724,7 +715,7 @@ TEST_F(SubresourceFilterAgentTest,
 TEST_F(SubresourceFilterAgentTest,
        DryRun_SendFrameIsAdSubframeNotSentFromMainFrame) {
   ResetAgentWithoutInitialize(/*is_main_frame=*/true, /*is_provisional=*/false,
-                              /*is_ad_subframe=*/true,
+                              /*is_parent_ad_subframe=*/true,
                               /*is_subframe_created_by_ad_script=*/false);
   ExpectSendFrameIsAdSubframe(0);
   agent()->Initialize();
@@ -741,9 +732,10 @@ TEST_F(SubresourceFilterAgentTest,
 
 TEST_F(SubresourceFilterAgentTest, DryRun_SendsSubframeWasCreatedByAdScript) {
   ResetAgentWithoutInitialize(/*is_main_frame=*/false, /*is_provisional=*/false,
-                              /*is_ad_subframe=*/false,
+                              /*is_parent_ad_subframe=*/false,
                               /*is_subframe_created_by_ad_script=*/true);
   ExpectSendSubframeWasCreatedByAdScript(1);
+  ExpectSendFrameIsAdSubframe(1);
   agent()->Initialize();
 
   // Call DidCreateNewDocument twice and verify that
@@ -759,7 +751,7 @@ TEST_F(SubresourceFilterAgentTest, DryRun_SendsSubframeWasCreatedByAdScript) {
 TEST_F(SubresourceFilterAgentTest,
        DryRun_SendSubframeWasCreatedByAdScriptNotSentFromProvisionalFrame) {
   ResetAgentWithoutInitialize(/*is_main_frame=*/false, /*is_provisional=*/true,
-                              /*is_ad_subframe=*/false,
+                              /*is_parent_ad_subframe=*/false,
                               /*is_subframe_created_by_ad_script=*/true);
   ExpectSendSubframeWasCreatedByAdScript(0);
   agent()->Initialize();
@@ -778,7 +770,7 @@ TEST_F(
     SubresourceFilterAgentTest,
     DryRun_SendSubframeWasCreatedByAdScriptNotSentFromFrameNotCreatedByAdScript) {
   ResetAgentWithoutInitialize(/*is_main_frame=*/false, /*is_provisional=*/false,
-                              /*is_ad_subframe=*/false,
+                              /*is_parent_ad_subframe=*/false,
                               /*is_subframe_created_by_ad_script=*/false);
   ExpectSendSubframeWasCreatedByAdScript(0);
   agent()->Initialize();
@@ -796,7 +788,7 @@ TEST_F(
 TEST_F(SubresourceFilterAgentTest,
        DryRun_SendSubframeWasCreatedByAdScriptNotSentFromMainFrame) {
   ResetAgentWithoutInitialize(/*is_main_frame=*/true, /*is_provisional=*/false,
-                              /*is_ad_subframe=*/false,
+                              /*is_parent_ad_subframe=*/false,
                               /*is_subframe_created_by_ad_script=*/true);
   ExpectSendSubframeWasCreatedByAdScript(0);
   agent()->Initialize();

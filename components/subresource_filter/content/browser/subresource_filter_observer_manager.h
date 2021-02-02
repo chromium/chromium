@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer.h"
+#include "components/subresource_filter/content/common/ad_evidence.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -54,12 +55,14 @@ class SubresourceFilterObserverManager
   // SubframeNavigationFilteringThrottle.
   void NotifySubframeNavigationEvaluated(
       content::NavigationHandle* navigation_handle,
-      LoadPolicy load_policy,
-      bool is_ad_subframe);
+      LoadPolicy load_policy);
 
-  // Called in TODO to notify observers that an ad frame has been detected
-  // with the associated RenderFrameHost.
-  void NotifyAdSubframeDetected(content::RenderFrameHost* render_frame_host);
+  // Called in DidCreateNewDocument or ReadyToCommitNavigation to notify
+  // observers that an ad frame has been detected with the associated
+  // RenderFrameHost. The evidence that caused the frame to be tagged is passed
+  // as `ad_evidence`.
+  void NotifyAdSubframeDetected(content::RenderFrameHost* render_frame_host,
+                                const FrameAdEvidence& ad_evidence);
 
  private:
   friend class content::WebContentsUserData<SubresourceFilterObserverManager>;

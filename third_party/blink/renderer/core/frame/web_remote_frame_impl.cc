@@ -415,6 +415,10 @@ WebRemoteFrameImpl::GetPendingVisualPropertiesForTesting() const {
   return GetFrame()->GetPendingVisualPropertiesForTesting();
 }
 
+bool WebRemoteFrameImpl::IsAdSubframe() const {
+  return GetFrame()->IsAdSubframe();
+}
+
 WebRemoteFrameImpl::WebRemoteFrameImpl(
     mojom::blink::TreeScopeType scope,
     WebRemoteFrameClient* client,

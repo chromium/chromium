@@ -169,6 +169,12 @@ class WebRemoteFrame : public WebFrame {
     return RemoteFrameToken(GetFrameToken());
   }
 
+  // Ad Tagging ---------------------------------------------------------
+
+  // True if the frame is thought (heuristically) to be created for
+  // advertising purposes.
+  bool IsAdSubframe() const override = 0;
+
  protected:
   explicit WebRemoteFrame(mojom::TreeScopeType scope,
                           const base::UnguessableToken& frame_token)

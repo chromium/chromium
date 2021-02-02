@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "components/subresource_filter/content/common/ad_evidence.h"
 #include "components/subresource_filter/content/common/subresource_filter_utils.h"
 #include "components/subresource_filter/content/renderer/unverified_ruleset_dealer.h"
 #include "components/subresource_filter/content/renderer/web_document_subresource_filter_impl.h"
@@ -64,8 +65,10 @@ void SubresourceFilterAgent::Initialize() {
   if (!IsMainFrame() && !IsProvisional()) {
     if (IsSubframeCreatedByAdScript())
       SendSubframeWasCreatedByAdScript();
-    if (IsAdSubframe())
-      SendFrameIsAdSubframe();
+
+    // As this is the initial empty document, we won't have received any message
+    // from the browser and so we must calculate the ad status here.
+    SetIsAdSubframeIfNecessary();
   }
 
   // `render_frame()` can be null in unit tests.
@@ -110,6 +113,10 @@ GURL SubresourceFilterAgent::GetDocumentURL() {
 
 bool SubresourceFilterAgent::IsMainFrame() {
   return render_frame()->IsMainFrame();
+}
+
+bool SubresourceFilterAgent::IsParentAdSubframe() {
+  return render_frame()->GetWebFrame()->Parent()->IsAdSubframe();
 }
 
 bool SubresourceFilterAgent::IsProvisional() {
@@ -236,6 +243,27 @@ void SubresourceFilterAgent::ActivateForNextCommittedLoad(
 
 void SubresourceFilterAgent::OnDestruct() {
   delete this;
+}
+
+void SubresourceFilterAgent::SetIsAdSubframeIfNecessary() {
+  DCHECK(!IsAdSubframe());
+
+  // TODO(alexmt): Store FrameAdEvidence on each frame, typically updated by the
+  // browser but also populated here when the browser has not informed the
+  // renderer.
+  FrameAdEvidence ad_evidence(IsParentAdSubframe());
+  ad_evidence.filter_list_result = FilterListEvidence::kNeverChecked;
+  ad_evidence.created_by_ad_script =
+      IsSubframeCreatedByAdScript()
+          ? ScriptHeuristicEvidence::kCreatedByAdScript
+          : ScriptHeuristicEvidence::kNotCreatedByAdScript;
+  if (ad_evidence.IndicatesAdSubframe()) {
+    blink::mojom::AdFrameType ad_frame_type =
+        ad_evidence.parent_is_ad ? blink::mojom::AdFrameType::kChildAd
+                                 : blink::mojom::AdFrameType::kRootAd;
+    SetIsAdSubframe(ad_frame_type);
+    SendFrameIsAdSubframe();
+  }
 }
 
 void SubresourceFilterAgent::DidCreateNewDocument() {

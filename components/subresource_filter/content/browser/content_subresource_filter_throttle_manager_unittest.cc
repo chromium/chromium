@@ -915,8 +915,8 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
   EXPECT_EQ(1, disallowed_notification_count());
 }
 
-// If the RenderFrame determines that the frame is an ad, then any navigation
-// for that frame should be considered an ad.
+// If the RenderFrame determines that the frame is an ad due to creation by ad
+// script, then any navigation for that frame should be considered an ad.
 TEST_P(ContentSubresourceFilterThrottleManagerTest,
        SubframeNavigationTaggedAsAdByRenderer) {
   NavigateAndCommitMainFrame(GURL(kTestURLWithDryRun));
@@ -927,8 +927,8 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
       GURL("https://www.example.com/allowed.html"), main_rfh());
 
   EXPECT_FALSE(throttle_manager()->IsFrameTaggedAsAd(subframe));
+  throttle_manager()->OnSubframeWasCreatedByAdScript(subframe);
   throttle_manager()->OnFrameIsAdSubframe(subframe);
-  EXPECT_TRUE(throttle_manager()->IsFrameTaggedAsAd(subframe));
 
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             SimulateStartAndGetResult(navigation_simulator()));
@@ -936,6 +936,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
             SimulateCommitAndGetResult(navigation_simulator()));
   subframe = navigation_simulator()->GetFinalRenderFrameHost();
   EXPECT_TRUE(subframe);
+  EXPECT_TRUE(throttle_manager()->IsFrameTaggedAsAd(subframe));
   ExpectActivationSignalForFrame(subframe, true /* expect_activation */,
                                  true /* is_ad_subframe */);
 
@@ -949,8 +950,9 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
                                  true /* is_ad_subframe */);
 }
 
-// If the RenderFrame determines that the frame is an ad, and the frame changes
-// processes, then the frame should still be considered an ad.
+// If the RenderFrame determines that the frame is an ad due to creation by ad
+// script, and the frame changes processes, then the frame should still be
+// considered an ad.
 TEST_P(ContentSubresourceFilterThrottleManagerTest,
        AdTagCarriesAcrossProcesses) {
   content::IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
@@ -965,13 +967,13 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
   content::RenderFrameHost* initial_subframe = CreateSubframeWithTestNavigation(
       GURL("https://www.example2.com/allowed.html"), main_rfh());
 
-  // Simulate the render process telling the manager that the frame is an ad.
+  // Simulate the render process telling the manager that the frame is an ad due
+  // to creation by ad script.
+  throttle_manager()->OnSubframeWasCreatedByAdScript(initial_subframe);
   throttle_manager()->OnFrameIsAdSubframe(initial_subframe);
-  EXPECT_TRUE(throttle_manager()->IsFrameTaggedAsAd(initial_subframe));
 
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             SimulateStartAndGetResult(navigation_simulator()));
-
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             SimulateCommitAndGetResult(navigation_simulator()));
   content::RenderFrameHost* final_subframe =
@@ -984,8 +986,8 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
                                  true /* is_ad_subframe */);
 }
 
-// If the RenderFrame determines that the frame is an ad, then its child frames
-// should also be considered ads.
+// If the RenderFrame determines that the frame was created by ad script, it
+// should be tagged and then its child frames should also be tagged as ads.
 TEST_P(ContentSubresourceFilterThrottleManagerTest,
        GrandchildNavigationTaggedAsAdByRenderer) {
   NavigateAndCommitMainFrame(GURL(kTestURLWithDryRun));
@@ -996,7 +998,9 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
   content::RenderFrameHost* subframe = CreateSubframeWithTestNavigation(
       GURL("https://www.example.com/allowed.html"), main_rfh());
 
-  // Simulate the render process telling the manager that the frame is an ad.
+  // Simulate the render process telling the manager that the frame is an ad due
+  // to creation by ad script.
+  throttle_manager()->OnSubframeWasCreatedByAdScript(subframe);
   throttle_manager()->OnFrameIsAdSubframe(subframe);
 
   EXPECT_EQ(content::NavigationThrottle::PROCEED,

@@ -55,6 +55,10 @@ struct FrameAdEvidence {
   // evidence is complete for calculation.
   bool IsPopulated() const;
 
+  // Returns whether the fields indicate that the corresponding subframe is an
+  // ad or not. Should only be called once `IsPopulated()`.
+  bool IndicatesAdSubframe() const;
+
   // Whether the frame's parent is an ad.
   bool parent_is_ad;
 

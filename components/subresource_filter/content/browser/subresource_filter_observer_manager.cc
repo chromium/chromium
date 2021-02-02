@@ -44,17 +44,16 @@ void SubresourceFilterObserverManager::NotifyPageActivationComputed(
 
 void SubresourceFilterObserverManager::NotifySubframeNavigationEvaluated(
     content::NavigationHandle* navigation_handle,
-    LoadPolicy load_policy,
-    bool is_ad_subframe) {
+    LoadPolicy load_policy) {
   for (auto& observer : observers_)
-    observer.OnSubframeNavigationEvaluated(navigation_handle, load_policy,
-                                           is_ad_subframe);
+    observer.OnSubframeNavigationEvaluated(navigation_handle, load_policy);
 }
 
 void SubresourceFilterObserverManager::NotifyAdSubframeDetected(
-    content::RenderFrameHost* render_frame_host) {
+    content::RenderFrameHost* render_frame_host,
+    const FrameAdEvidence& ad_evidence) {
   for (auto& observer : observers_)
-    observer.OnAdSubframeDetected(render_frame_host);
+    observer.OnAdSubframeDetected(render_frame_host, ad_evidence);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SubresourceFilterObserverManager)

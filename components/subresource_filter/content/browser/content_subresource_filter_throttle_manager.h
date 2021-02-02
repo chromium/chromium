@@ -82,8 +82,7 @@ class ContentSubresourceFilterThrottleManager
     : public base::SupportsUserData::Data,
       public content::WebContentsObserver,
       public mojom::SubresourceFilterHost,
-      public SubresourceFilterObserver,
-      public SubframeNavigationFilteringThrottle::Delegate {
+      public SubresourceFilterObserver {
  public:
   static const char
       kContentSubresourceFilterThrottleManagerWebContentsUserDataKey[];
@@ -129,10 +128,6 @@ class ContentSubresourceFilterThrottleManager
     return ruleset_handle_.get();
   }
 
-  // SubframeNavigationFilteringThrottle::Delegate:
-  bool CalculateIsAdSubframe(content::RenderFrameHost* frame_host,
-                             LoadPolicy load_policy) override;
-
   // Returns whether |frame_host| is considered to be an ad.
   bool IsFrameTaggedAsAd(content::RenderFrameHost* frame_host) const;
 
@@ -154,6 +149,8 @@ class ContentSubresourceFilterThrottleManager
 
   static void LogAction(SubresourceFilterAction action);
 
+  void SetFrameAsAdSubframeForTesting(content::RenderFrameHost* frame_host);
+
  protected:
   // content::WebContentsObserver:
   void RenderFrameDeleted(content::RenderFrameHost* frame_host) override;
@@ -172,8 +169,7 @@ class ContentSubresourceFilterThrottleManager
       const mojom::ActivationState& activation_state) override;
   void OnSubframeNavigationEvaluated(
       content::NavigationHandle* navigation_handle,
-      LoadPolicy load_policy,
-      bool is_ad_subframe) override;
+      LoadPolicy load_policy) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ContentSubresourceFilterThrottleManagerTest,
@@ -216,9 +212,14 @@ class ContentSubresourceFilterThrottleManager
   FrameAdEvidence& EnsureFrameAdEvidence(
       content::RenderFrameHost* render_frame_host);
 
-  // Registers |render_frame_host| as an ad frame. If the frame later moves to
+  // Registers `render_frame_host` as an ad frame. If the frame later moves to
   // a new process its RenderHost will be told that it's an ad.
   void OnFrameIsAdSubframe(content::RenderFrameHost* render_frame_host);
+
+  // Registers `frame_host` as a frame that was created by ad script.
+  // TODO(crbug.com/1145634): Propagate this bit for a frame that navigates
+  // cross-origin.
+  void OnSubframeWasCreatedByAdScript(content::RenderFrameHost* frame_host);
 
   // mojom::SubresourceFilterHost:
   void DidDisallowFirstSubresource() override;
@@ -283,7 +284,8 @@ class ContentSubresourceFilterThrottleManager
   // are met:
   // 1. Its navigation URL is in the filter list
   // 2. Its parent is a known ad subframe
-  // 3. The RenderFrame declares the frame is an ad (see AdTracker in Blink)
+  // 3. Ad script was on the v8 stack when the frame was created (see AdTracker
+  //    in Blink)
   // 4. It's the result of moving an old ad subframe RFH to a new RFH (e.g.,
   //    OOPIF)
   std::map<int, const FrameAdEvidence> ad_frames_;
@@ -291,10 +293,9 @@ class ContentSubresourceFilterThrottleManager
   // Map of subframes that have not (yet) been tagged as ads, keyed by
   // FrameTreeNode ID, with value being the evidence that the frames are ads.
   // Once a subframe is tagged as an ad, the evidence is moved to `ad_frames_`
-  // and no longer updated. Otherwise, it is updated whenever a navigation's
-  // LoadPolicy is calculated.
-  // TODO(crbug.com/1101584): Once evidence is used for tagging, comment on when
-  // in the lifecycle evidence can be frozen.
+  // and no longer updated. This will be called prior to commit time in the case
+  // of an initial synchronous load or at ReadyToCommitNavigation otherwise.
+  // Otherwise, it is updated whenever a navigation's LoadPolicy is calculated.
   std::map<int, FrameAdEvidence> tracked_ad_evidence_;
 
   // Map of frames whose navigations have been identified as ads, keyed by

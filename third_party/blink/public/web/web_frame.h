@@ -154,6 +154,12 @@ class BLINK_EXPORT WebFrame {
   // notifications.
   virtual bool IsLoading() const;
 
+  // Ad Tagging ---------------------------------------------------------
+
+  // True if the frame is thought (heuristically) to be created for
+  // advertising purposes.
+  virtual bool IsAdSubframe() const = 0;
+
   // Utility -------------------------------------------------------------
 
   // Returns the frame inside a given frame or iframe element. Returns 0 if

@@ -438,10 +438,11 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   // not typically reused for non-ad purposes.
   //
   // For LocalFrame, it might be (1) calculated directly in the renderer based
-  // on script in the stack, or (2) replicated from the browser process, or (3)
-  // signaled from the browser process at ready-to-commit time. For RemoteFrame,
-  // it might be (1) replicated from the browser process or (2) signaled from
-  // the browser process at ready-to-commit time.
+  // on script in the stack in the case of an initial synchronous commit, or (2)
+  // replicated from the browser process, or (3) signaled from the browser
+  // process at ready-to-commit time. For RemoteFrame, it might be (1)
+  // replicated from the browser process or (2) signaled from the browser
+  // process at ready-to-commit time.
   mojom::blink::AdFrameType ad_frame_type_;
 
  private:

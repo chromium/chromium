@@ -45,20 +45,6 @@ const char kCnameAliasWasAdTaggedCountHistogram[] =
 const char kCnameAliasWasBlockedCountHistogram[] =
     "SubresourceFilter.CnameAlias.Browser.WasBlockedBasedOnAliasCount";
 
-class MockDelegate : public SubframeNavigationFilteringThrottle::Delegate {
- public:
-  MockDelegate() = default;
-  ~MockDelegate() override = default;
-
-  // SubframeNavigationFilteringThrottle::Delegate:
-  bool CalculateIsAdSubframe(content::RenderFrameHost* frame_host,
-                             LoadPolicy load_policy) override {
-    return false;
-  }
-
-  DISALLOW_COPY_AND_ASSIGN(MockDelegate);
-};
-
 class SubframeNavigationFilteringThrottleTest
     : public content::RenderViewHostTestHarness,
       public content::WebContentsObserver {
@@ -92,7 +78,7 @@ class SubframeNavigationFilteringThrottleTest
     // throttle if the parent is not activated with a valid filter.
     if (parent_filter_) {
       auto throttle = std::make_unique<SubframeNavigationFilteringThrottle>(
-          navigation_handle, parent_filter_.get(), &mock_delegate_);
+          navigation_handle, parent_filter_.get());
       ASSERT_NE(nullptr, throttle->GetNameForLogging());
       navigation_handle->RegisterThrottleForTesting(std::move(throttle));
     }
@@ -178,7 +164,6 @@ class SubframeNavigationFilteringThrottleTest
   testing::TestRulesetCreator test_ruleset_creator_;
   testing::TestRulesetPair test_ruleset_pair_;
 
-  MockDelegate mock_delegate_;
   std::unique_ptr<VerifiedRulesetDealer::Handle> dealer_handle_;
   std::unique_ptr<VerifiedRuleset::Handle> ruleset_handle_;
 

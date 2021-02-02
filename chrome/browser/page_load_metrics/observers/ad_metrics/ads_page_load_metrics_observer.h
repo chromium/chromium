@@ -189,7 +189,8 @@ class AdsPageLoadMetricsObserver
 
   // subresource_filter::SubresourceFilterObserver:
   void OnAdSubframeDetected(
-      content::RenderFrameHost* render_frame_host) override;
+      content::RenderFrameHost* render_frame_host,
+      const subresource_filter::FrameAdEvidence& ad_evidence) override;
   void OnSubresourceFilterGoingAway() override;
   void OnPageActivationComputed(
       content::NavigationHandle* navigation_handle,

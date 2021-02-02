@@ -170,35 +170,36 @@ void ContentSubresourceFilterThrottleManager::ReadyToCommitNavigation(
       navigation_handle->GetRenderFrameHost();
   int frame_tree_node_id = navigation_handle->GetFrameTreeNodeId();
 
-  // Finish setting FrameAdEvidence fields on initial committed navigations for
-  // subframes. For uncommitted navigations, see `DidFinishNavigation()`.
   if (!navigation_handle->IsInMainFrame() &&
-      !base::Contains(navigated_frames_, frame_tree_node_id) &&
       !base::Contains(ad_frames_, frame_tree_node_id)) {
     FrameAdEvidence& ad_evidence = EnsureFrameAdEvidence(frame_host);
 
-    DCHECK_NE(ad_evidence.filter_list_result,
-              FilterListEvidence::kNeverChecked);
-    if (ad_evidence.filter_list_result == FilterListEvidence::kUnknown) {
-      // We should only reach here if the activation is disabled.
-      DCHECK(!base::Contains(ongoing_activation_throttles_,
-                             navigation_handle->GetNavigationId()));
-      MaybeUpdateEvidenceBasedOnLoadPolicy(frame_host,
-                                           /*load_policy=*/base::nullopt);
+    // Finish setting FrameAdEvidence fields on initial committed navigations
+    // for subframes. For uncommitted navigations, see `DidFinishNavigation()`.
+    if (!base::Contains(navigated_frames_, frame_tree_node_id)) {
+      DCHECK_NE(ad_evidence.filter_list_result,
+                FilterListEvidence::kNeverChecked);
+      if (ad_evidence.filter_list_result == FilterListEvidence::kUnknown) {
+        // We should only reach here if the activation is disabled.
+        DCHECK(!base::Contains(ongoing_activation_throttles_,
+                               navigation_handle->GetNavigationId()));
+        MaybeUpdateEvidenceBasedOnLoadPolicy(frame_host,
+                                             /*load_policy=*/base::nullopt);
+      }
+
+      DCHECK_NE(ad_evidence.created_by_ad_script,
+                ScriptHeuristicEvidence::kNotCreatedByAdScript);
+      if (ad_evidence.created_by_ad_script ==
+          ScriptHeuristicEvidence::kUnknown) {
+        ad_evidence.created_by_ad_script =
+            ScriptHeuristicEvidence::kNotCreatedByAdScript;
+      }
     }
 
-    DCHECK_NE(ad_evidence.created_by_ad_script,
-              ScriptHeuristicEvidence::kNotCreatedByAdScript);
-    if (ad_evidence.created_by_ad_script == ScriptHeuristicEvidence::kUnknown) {
-      ad_evidence.created_by_ad_script =
-          ScriptHeuristicEvidence::kNotCreatedByAdScript;
+    if (ad_evidence.IndicatesAdSubframe()) {
+      SetFrameAsAdSubframe(frame_host);
     }
-    DCHECK(ad_evidence.IsPopulated());
   }
-
-  // TODO(crbug.com/1101584): When we switch to using FrameAdEvidence for
-  // tagging, tag subframes that now meet the criterion here and remove the
-  // above `IsPopulated()` DCHECK.
 
   if (navigation_handle->GetNetErrorCode() != net::OK)
     return;
@@ -315,10 +316,13 @@ void ContentSubresourceFilterThrottleManager::DidFinishNavigation(
           ScriptHeuristicEvidence::kNotCreatedByAdScript;
     }
 
-    // TODO(crbug.com/1101584): When we switch to using FrameAdEvidence for
-    // tagging, update this DCHECK to enforce that `ad_evidence` is populated
-    // and that `ad_frames_` matches the evidence.
-    DCHECK(ad_evidence.IsPopulated());
+    // Initial synchronous navigations to about:blank should only be tagged by
+    // the renderer.
+    DCHECK(!ad_evidence.IndicatesAdSubframe());
+  } else {
+    DCHECK(navigation_handle->IsInMainFrame() ||
+           base::Contains(ad_frames_, frame_tree_node_id) ||
+           EnsureFrameAdEvidence(frame_host).IsPopulated());
   }
 
   bool did_inherit_opener_activation;
@@ -480,8 +484,7 @@ void ContentSubresourceFilterThrottleManager::OnPageActivationComputed(
 
 void ContentSubresourceFilterThrottleManager::OnSubframeNavigationEvaluated(
     content::NavigationHandle* navigation_handle,
-    LoadPolicy load_policy,
-    bool is_ad_subframe) {
+    LoadPolicy load_policy) {
   DCHECK(!navigation_handle->IsInMainFrame());
 
   int frame_tree_node_id = navigation_handle->GetFrameTreeNodeId();
@@ -495,9 +498,6 @@ void ContentSubresourceFilterThrottleManager::OnSubframeNavigationEvaluated(
   DCHECK(starting_rfh);
 
   MaybeUpdateEvidenceBasedOnLoadPolicy(starting_rfh, load_policy);
-
-  if (is_ad_subframe && !base::Contains(ad_frames_, frame_tree_node_id))
-    SetFrameAsAdSubframe(starting_rfh);
 }
 
 void ContentSubresourceFilterThrottleManager::
@@ -553,19 +553,6 @@ void ContentSubresourceFilterThrottleManager::MaybeAppendNavigationThrottles(
   }
 }
 
-bool ContentSubresourceFilterThrottleManager::CalculateIsAdSubframe(
-    content::RenderFrameHost* frame_host,
-    LoadPolicy load_policy) {
-  DCHECK(frame_host);
-  content::RenderFrameHost* parent_frame = frame_host->GetParent();
-  DCHECK(parent_frame);
-
-  return (load_policy != LoadPolicy::ALLOW &&
-          load_policy != LoadPolicy::EXPLICITLY_ALLOW) ||
-         base::Contains(ad_frames_, frame_host->GetFrameTreeNodeId()) ||
-         base::Contains(ad_frames_, parent_frame->GetFrameTreeNodeId());
-}
-
 bool ContentSubresourceFilterThrottleManager::IsFrameTaggedAsAd(
     content::RenderFrameHost* frame_host) const {
   return frame_host &&
@@ -614,7 +601,7 @@ ContentSubresourceFilterThrottleManager::
   AsyncDocumentSubresourceFilter* parent_filter =
       GetParentFrameFilter(navigation_handle);
   return parent_filter ? std::make_unique<SubframeNavigationFilteringThrottle>(
-                             navigation_handle, parent_filter, this)
+                             navigation_handle, parent_filter)
                        : nullptr;
 }
 
@@ -714,9 +701,36 @@ void ContentSubresourceFilterThrottleManager::
 
 void ContentSubresourceFilterThrottleManager::OnFrameIsAdSubframe(
     content::RenderFrameHost* render_frame_host) {
-  DCHECK(render_frame_host);
+  FrameAdEvidence& ad_evidence = EnsureFrameAdEvidence(render_frame_host);
+
+  // `FrameIsAdSubframe()` can only be called for an initial empty document. As
+  // it won't pass through `ReadyToCommitNavigation()` (and has not yet passed
+  // through `DidFinishNavigation()`), we finish setting its FrameAdEvidence
+  // fields here.
+  DCHECK_NE(ad_evidence.created_by_ad_script,
+            ScriptHeuristicEvidence::kNotCreatedByAdScript);
+  if (ad_evidence.created_by_ad_script == ScriptHeuristicEvidence::kUnknown) {
+    ad_evidence.created_by_ad_script =
+        ScriptHeuristicEvidence::kNotCreatedByAdScript;
+  }
+
+  ad_evidence.filter_list_result = FilterListEvidence::kNeverChecked;
 
   SetFrameAsAdSubframe(render_frame_host);
+}
+
+void ContentSubresourceFilterThrottleManager::SetFrameAsAdSubframe(
+    content::RenderFrameHost* render_frame_host) {
+  int frame_tree_node_id = render_frame_host->GetFrameTreeNodeId();
+
+  auto ad_evidence_it = tracked_ad_evidence_.find(frame_tree_node_id);
+  DCHECK(ad_evidence_it != tracked_ad_evidence_.end());
+  DCHECK(ad_evidence_it->second.IndicatesAdSubframe());
+
+  const FrameAdEvidence& frozen_evidence =
+      ad_frames_.emplace(frame_tree_node_id, ad_evidence_it->second)
+          .first->second;
+  tracked_ad_evidence_.erase(ad_evidence_it);
 
   bool parent_is_ad = base::Contains(
       ad_frames_, render_frame_host->GetParent()->GetFrameTreeNodeId());
@@ -729,7 +743,15 @@ void ContentSubresourceFilterThrottleManager::OnFrameIsAdSubframe(
   render_frame_host->UpdateAdFrameType(ad_frame_type);
 
   SubresourceFilterObserverManager::FromWebContents(web_contents())
-      ->NotifyAdSubframeDetected(render_frame_host);
+      ->NotifyAdSubframeDetected(render_frame_host, frozen_evidence);
+}
+
+void ContentSubresourceFilterThrottleManager::SetFrameAsAdSubframeForTesting(
+    content::RenderFrameHost* render_frame_host) {
+  // We mark the frame as created by ad script so that the ad evidence indicates
+  // an ad subframe.
+  OnSubframeWasCreatedByAdScript(render_frame_host);
+  OnFrameIsAdSubframe(render_frame_host);
 }
 
 void ContentSubresourceFilterThrottleManager::DidDisallowFirstSubresource() {
@@ -753,25 +775,19 @@ void ContentSubresourceFilterThrottleManager::OnAdsViolationTriggered(
 }
 
 void ContentSubresourceFilterThrottleManager::SubframeWasCreatedByAdScript() {
-  content::RenderFrameHost* frame_host = receiver_.GetCurrentTargetFrame();
+  OnSubframeWasCreatedByAdScript(receiver_.GetCurrentTargetFrame());
+}
+
+void ContentSubresourceFilterThrottleManager::OnSubframeWasCreatedByAdScript(
+    content::RenderFrameHost* frame_host) {
   DCHECK(frame_host);
 
-  // TODO(crbug.com/1101584): Once evidence is used for tagging, remove the
-  // base::Contains check.
-  if (!frame_host->GetParent() ||
-      base::Contains(ad_frames_, frame_host->GetFrameTreeNodeId())) {
+  if (!frame_host->GetParent()) {
     return;
   }
 
   EnsureFrameAdEvidence(frame_host).created_by_ad_script =
       ScriptHeuristicEvidence::kCreatedByAdScript;
-}
-
-void ContentSubresourceFilterThrottleManager::SetFrameAsAdSubframe(
-    content::RenderFrameHost* frame_host) {
-  int frame_tree_node_id = frame_host->GetFrameTreeNodeId();
-  ad_frames_.emplace(frame_tree_node_id, EnsureFrameAdEvidence(frame_host));
-  tracked_ad_evidence_.erase(frame_tree_node_id);
 }
 
 FrameAdEvidence& ContentSubresourceFilterThrottleManager::EnsureFrameAdEvidence(

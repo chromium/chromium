@@ -71,6 +71,8 @@ class SubresourceFilterTestHarness : public ChromeRenderViewHostTestHarness {
     return fake_safe_browsing_database_.get();
   }
 
+  void TagSubframeAsAd(content::RenderFrameHost* render_frame_host);
+
  private:
   base::ScopedTempDir ruleset_service_dir_;
   TestingPrefServiceSimple pref_service_;

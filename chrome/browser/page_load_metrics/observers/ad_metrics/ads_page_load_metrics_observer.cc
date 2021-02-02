@@ -752,7 +752,8 @@ void AdsPageLoadMetricsObserver::OnV8MemoryMeasurementAvailable(
 }
 
 void AdsPageLoadMetricsObserver::OnAdSubframeDetected(
-    content::RenderFrameHost* render_frame_host) {
+    content::RenderFrameHost* render_frame_host,
+    const subresource_filter::FrameAdEvidence& ad_evidence) {
   FrameTreeNodeId frame_tree_node_id = render_frame_host->GetFrameTreeNodeId();
   UpdateAdFrameData(frame_tree_node_id, true /* is_adframe */,
                     false /* should_ignore_detected_ad */, render_frame_host,

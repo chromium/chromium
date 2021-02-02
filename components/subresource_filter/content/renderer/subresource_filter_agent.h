@@ -59,6 +59,7 @@ class SubresourceFilterAgent
   virtual GURL GetDocumentURL();
 
   virtual bool IsMainFrame();
+  virtual bool IsParentAdSubframe();
   virtual bool IsProvisional();
   virtual bool IsSubframeCreatedByAdScript();
 
@@ -78,7 +79,8 @@ class SubresourceFilterAgent
   virtual void SendDocumentLoadStatistics(
       const mojom::DocumentLoadStatistics& statistics);
 
-  // Tells the browser that the frame is an ad subframe.
+  // Tells the browser that the renderer tagged the frame as an ad subframe.
+  // This is not sent for frames tagged by the browser.
   virtual void SendFrameIsAdSubframe();
 
   // Tells the browser that the frame is a subframe that was created by ad
@@ -88,6 +90,12 @@ class SubresourceFilterAgent
   // True if the frame has been heuristically determined to be an ad subframe.
   virtual bool IsAdSubframe();
   virtual void SetIsAdSubframe(blink::mojom::AdFrameType ad_frame_type);
+
+  // If the browser has not yet informed the renderer of the frame's ad status
+  // (i.e. due to an initial synchronous commit to about:blank), calculates
+  // whether the frame should be an ad by populating a temporary FrameAdEvidence
+  // object.
+  void SetIsAdSubframeIfNecessary();
 
   // mojom::SubresourceFilterAgent:
   void ActivateForNextCommittedLoad(

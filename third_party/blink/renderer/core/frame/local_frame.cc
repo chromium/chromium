@@ -1563,11 +1563,11 @@ LocalFrame::LocalFrame(LocalFrameClient* client,
   idleness_detector_ = MakeGarbageCollected<IdlenessDetector>(this, clock);
   inspector_task_runner_->InitIsolate(V8PerIsolateData::MainThreadIsolate());
 
-  if (ad_tracker_) {
-    SetIsAdSubframeIfNecessary();
-  }
   DCHECK(ad_tracker_ ? RuntimeEnabledFeatures::AdTaggingEnabled()
                      : !RuntimeEnabledFeatures::AdTaggingEnabled());
+  is_subframe_created_by_ad_script_ =
+      !IsMainFrame() && ad_tracker_ &&
+      ad_tracker_->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop);
   if (IsMainFrame()) {
     text_fragment_selector_generator_ =
         MakeGarbageCollected<TextFragmentSelectorGenerator>();
@@ -1794,25 +1794,6 @@ bool LocalFrame::CanNavigate(const Frame& target_frame,
                                 "nor is it the target's parent or opener.");
   }
   return false;
-}
-
-void LocalFrame::SetIsAdSubframeIfNecessary() {
-  DCHECK(ad_tracker_);
-  if (IsAdSubframe())
-    return;
-
-  Frame* parent = Tree().Parent();
-  if (!parent)
-    return;
-
-  bool parent_is_ad = parent->IsAdSubframe();
-
-  is_subframe_created_by_ad_script_ =
-      ad_tracker_->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop);
-  if (parent_is_ad || is_subframe_created_by_ad_script_) {
-    SetIsAdSubframe(parent_is_ad ? blink::mojom::AdFrameType::kChildAd
-                                 : blink::mojom::AdFrameType::kRootAd);
-  }
 }
 
 ContentCaptureManager* LocalFrame::GetContentCaptureManager() {

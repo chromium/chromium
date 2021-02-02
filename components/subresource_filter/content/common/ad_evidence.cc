@@ -36,4 +36,12 @@ bool FrameAdEvidence::IsPopulated() const {
          filter_list_result != FilterListEvidence::kUnknown;
 }
 
+bool FrameAdEvidence::IndicatesAdSubframe() const {
+  DCHECK(IsPopulated());
+
+  return parent_is_ad ||
+         filter_list_result == FilterListEvidence::kMatchedBlockingRule ||
+         created_by_ad_script == ScriptHeuristicEvidence::kCreatedByAdScript;
+}
+
 }  // namespace subresource_filter

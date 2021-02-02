@@ -343,18 +343,46 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
   ui_test_utils::NavigateToURL(browser(), GetURL("frame_factory.html"));
 
   // Create an ad frame.
-  RenderFrameHost* ad_frame =
-      CreateSrcFrame(GetWebContents(), GetURL("frame_factory.html?2&ad=true"));
+  GURL ad_url = GetURL("frame_factory.html?2&ad=true");
+  RenderFrameHost* ad_frame = CreateSrcFrame(GetWebContents(), ad_url);
 
-  // Verify that we are not evaluating subframe navigations.
-  EXPECT_FALSE(observer.GetIsAdSubframe(ad_frame->GetFrameTreeNodeId()));
+  // Verify that we are not evaluating subframe loads.
+  EXPECT_FALSE(observer.GetSubframeLoadPolicy(ad_url).has_value());
+  EXPECT_FALSE(*observer.GetIsAdSubframe(ad_frame->GetFrameTreeNodeId()));
 
   // Child frame created by ad script.
   RenderFrameHost* ad_frame_tagged_by_script = CreateSrcFrameFromAdScript(
       GetWebContents(), GetURL("frame_factory.html?1"));
 
   // No frames should be detected by script heuristics.
-  EXPECT_FALSE(observer.GetIsAdSubframe(
+  EXPECT_FALSE(*observer.GetIsAdSubframe(
+      ad_frame_tagged_by_script->GetFrameTreeNodeId()));
+}
+
+IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
+                       AdContentSettingBlocked_AdTaggingEnabled) {
+  HostContentSettingsMapFactory::GetForProfile(
+      web_contents()->GetBrowserContext())
+      ->SetDefaultContentSetting(ContentSettingsType::ADS,
+                                 CONTENT_SETTING_BLOCK);
+
+  TestSubresourceFilterObserver observer(web_contents());
+  ui_test_utils::NavigateToURL(browser(), GetURL("frame_factory.html"));
+
+  // Create an ad frame.
+  GURL ad_url = GetURL("frame_factory.html?2&ad=true");
+  RenderFrameHost* ad_frame = CreateSrcFrame(GetWebContents(), ad_url);
+
+  // Verify that we are evaluating subframe loads.
+  EXPECT_TRUE(observer.GetSubframeLoadPolicy(ad_url).has_value());
+  EXPECT_TRUE(*observer.GetIsAdSubframe(ad_frame->GetFrameTreeNodeId()));
+
+  // Child frame created by ad script.
+  RenderFrameHost* ad_frame_tagged_by_script = CreateSrcFrameFromAdScript(
+      GetWebContents(), GetURL("frame_factory.html?1"));
+
+  // Frames should be detected by script heuristics.
+  EXPECT_TRUE(*observer.GetIsAdSubframe(
       ad_frame_tagged_by_script->GetFrameTreeNodeId()));
 }
 
@@ -363,7 +391,7 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, FramesByURL) {
 
   // Main frame.
   ui_test_utils::NavigateToURL(browser(), GetURL("frame_factory.html"));
-  EXPECT_FALSE(observer.GetIsAdSubframe(
+  EXPECT_FALSE(*observer.GetIsAdSubframe(
       GetWebContents()->GetMainFrame()->GetFrameTreeNodeId()));
 
   // (1) Vanilla child.
@@ -375,16 +403,26 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, FramesByURL) {
   RenderFrameHost* ad_child =
       CreateSrcFrame(GetWebContents(), GetURL("frame_factory.html?2&ad=true"));
   EXPECT_TRUE(*observer.GetIsAdSubframe(ad_child->GetFrameTreeNodeId()));
+  observer.VerifyEvidenceForAdSubframe(
+      ad_child, /*parent_is_ad=*/false,
+      FilterListEvidence::kMatchedBlockingRule,
+      ScriptHeuristicEvidence::kNotCreatedByAdScript);
 
   // (3) Ad child of 2.
   RenderFrameHost* ad_child_2 =
       CreateSrcFrame(ad_child, GetURL("frame_factory.html?sub=1&3&ad=true"));
   EXPECT_TRUE(*observer.GetIsAdSubframe(ad_child_2->GetFrameTreeNodeId()));
+  observer.VerifyEvidenceForAdSubframe(
+      ad_child_2, /*parent_is_ad=*/true, FilterListEvidence::kNeverChecked,
+      ScriptHeuristicEvidence::kCreatedByAdScript);
 
   // (4) Vanilla child of 2.
   RenderFrameHost* vanilla_child_2 =
       CreateSrcFrame(ad_child, GetURL("frame_factory.html?4"));
   EXPECT_TRUE(*observer.GetIsAdSubframe(vanilla_child_2->GetFrameTreeNodeId()));
+  observer.VerifyEvidenceForAdSubframe(
+      vanilla_child_2, /*parent_is_ad=*/true, FilterListEvidence::kNeverChecked,
+      ScriptHeuristicEvidence::kCreatedByAdScript);
 
   // (5) Vanilla child of 1. This tests something subtle.
   // frame_factory.html?ad=true loads the same script that frame_factory.html
@@ -493,6 +531,9 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, FrameLoadedByAdScript) {
   RenderFrameHost* ad_child = CreateSrcFrameFromAdScript(
       GetWebContents(), GetURL("frame_factory.html?1"));
   EXPECT_TRUE(*observer.GetIsAdSubframe(ad_child->GetFrameTreeNodeId()));
+  observer.VerifyEvidenceForAdSubframe(
+      ad_child, /*parent_is_ad=*/false, FilterListEvidence::kNeverChecked,
+      ScriptHeuristicEvidence::kCreatedByAdScript);
 }
 
 // Test that same-origin doc.write created iframes are tagged as ads.
@@ -505,12 +546,66 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, SameOriginFrameTagging) {
   // (1) Vanilla child.
   content::RenderFrameHost* vanilla_frame =
       CreateDocWrittenFrame(GetWebContents());
-  EXPECT_FALSE(observer.GetIsAdSubframe(vanilla_frame->GetFrameTreeNodeId()));
+  EXPECT_FALSE(*observer.GetIsAdSubframe(vanilla_frame->GetFrameTreeNodeId()));
 
   // (2) Ad child.
   content::RenderFrameHost* ad_frame =
       CreateDocWrittenFrameFromAdScript(GetWebContents());
-  EXPECT_TRUE(*observer.GetIsAdSubframe(ad_frame->GetFrameTreeNodeId()));
+  observer.VerifyEvidenceForAdSubframe(
+      ad_frame, /*parent_is_ad=*/false, FilterListEvidence::kNeverChecked,
+      ScriptHeuristicEvidence::kCreatedByAdScript);
+}
+
+// Test that the children same-origin doc.write created iframes are tagged as
+// ads where appropriate.
+IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
+                       ChildrenOfSameOriginFrames_CorrectlyTagged) {
+  TestSubresourceFilterObserver observer(web_contents());
+
+  // Main frame.
+  ui_test_utils::NavigateToURL(browser(), GetURL("frame_factory.html"));
+
+  // Vanilla frame and descendants
+  content::RenderFrameHost* vanilla_frame =
+      CreateDocWrittenFrame(GetWebContents());
+  EXPECT_FALSE(*observer.GetIsAdSubframe(vanilla_frame->GetFrameTreeNodeId()));
+
+  content::RenderFrameHost* vanilla_child_of_vanilla =
+      CreateSrcFrame(vanilla_frame, GetURL("frame_factory.html"));
+  EXPECT_FALSE(*observer.GetIsAdSubframe(
+      vanilla_child_of_vanilla->GetFrameTreeNodeId()));
+
+  content::RenderFrameHost* ad_child_of_vanilla =
+      CreateSrcFrameFromAdScript(vanilla_frame, GetURL("frame_factory.html"));
+  EXPECT_TRUE(
+      *observer.GetIsAdSubframe(ad_child_of_vanilla->GetFrameTreeNodeId()));
+  observer.VerifyEvidenceForAdSubframe(
+      ad_child_of_vanilla, /*parent_is_ad=*/false,
+      FilterListEvidence::kNeverChecked,
+      ScriptHeuristicEvidence::kCreatedByAdScript);
+
+  // Ad frame and descendants
+  content::RenderFrameHost* ad_frame =
+      CreateDocWrittenFrameFromAdScript(GetWebContents());
+  observer.VerifyEvidenceForAdSubframe(
+      ad_frame, /*parent_is_ad=*/false, FilterListEvidence::kNeverChecked,
+      ScriptHeuristicEvidence::kCreatedByAdScript);
+
+  content::RenderFrameHost* vanilla_child_of_ad =
+      CreateSrcFrame(ad_frame, GetURL("frame_factory.html"));
+  EXPECT_TRUE(
+      *observer.GetIsAdSubframe(vanilla_child_of_ad->GetFrameTreeNodeId()));
+  observer.VerifyEvidenceForAdSubframe(
+      vanilla_child_of_ad, /*parent_is_ad=*/true,
+      FilterListEvidence::kNeverChecked,
+      ScriptHeuristicEvidence::kCreatedByAdScript);
+
+  content::RenderFrameHost* ad_child_of_ad =
+      CreateSrcFrameFromAdScript(ad_frame, GetURL("frame_factory.html"));
+  EXPECT_TRUE(*observer.GetIsAdSubframe(ad_child_of_ad->GetFrameTreeNodeId()));
+  observer.VerifyEvidenceForAdSubframe(
+      ad_child_of_ad, /*parent_is_ad=*/true, FilterListEvidence::kNeverChecked,
+      ScriptHeuristicEvidence::kCreatedByAdScript);
 }
 
 // Test that frames with an aborted initial load due to a doc.write are still
@@ -525,18 +620,18 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
   // Vanilla child.
   content::RenderFrameHost* vanilla_frame_with_aborted_load =
       CreateFrameWithDocWriteAbortedLoad(GetWebContents());
-  // We expect an empty Optional<bool> as no successful subframe navigation
-  // occurred and it is not set as an ad frame.
-  EXPECT_FALSE(observer
-                   .GetIsAdSubframe(
-                       vanilla_frame_with_aborted_load->GetFrameTreeNodeId())
-                   .has_value());
+  EXPECT_FALSE(*observer.GetIsAdSubframe(
+      vanilla_frame_with_aborted_load->GetFrameTreeNodeId()));
 
   // Child created by ad script.
   content::RenderFrameHost* ad_frame_with_aborted_load =
       CreateFrameWithDocWriteAbortedLoadFromAdScript(GetWebContents());
   EXPECT_TRUE(*observer.GetIsAdSubframe(
       ad_frame_with_aborted_load->GetFrameTreeNodeId()));
+  observer.VerifyEvidenceForAdSubframe(
+      ad_frame_with_aborted_load, /*parent_is_ad=*/false,
+      FilterListEvidence::kNeverChecked,
+      ScriptHeuristicEvidence::kCreatedByAdScript);
 
   // Child with ad parent.
   content::RenderFrameHost* ad_frame = CreateSrcFrameFromAdScript(
@@ -546,6 +641,10 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
   EXPECT_TRUE(*observer.GetIsAdSubframe(ad_frame->GetFrameTreeNodeId()));
   EXPECT_TRUE(*observer.GetIsAdSubframe(
       child_frame_of_ad_with_aborted_load->GetFrameTreeNodeId()));
+  observer.VerifyEvidenceForAdSubframe(
+      child_frame_of_ad_with_aborted_load, /*parent_is_ad=*/true,
+      FilterListEvidence::kNeverChecked,
+      ScriptHeuristicEvidence::kCreatedByAdScript);
 }
 
 // Test that frames with an aborted initial load due to a window.stop are still
@@ -560,18 +659,18 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
   // Vanilla child.
   content::RenderFrameHost* vanilla_frame_with_aborted_load =
       CreateFrameWithWindowStopAbortedLoad(GetWebContents());
-  // We expect an empty Optional<bool> as no successful subframe navigation
-  // occurred and it is not set as an ad frame.
-  EXPECT_FALSE(observer
-                   .GetIsAdSubframe(
-                       vanilla_frame_with_aborted_load->GetFrameTreeNodeId())
-                   .has_value());
+  EXPECT_FALSE(*observer.GetIsAdSubframe(
+      vanilla_frame_with_aborted_load->GetFrameTreeNodeId()));
 
   // Child created by ad script.
   content::RenderFrameHost* ad_frame_with_aborted_load =
       CreateFrameWithWindowStopAbortedLoadFromAdScript(GetWebContents());
   EXPECT_TRUE(*observer.GetIsAdSubframe(
       ad_frame_with_aborted_load->GetFrameTreeNodeId()));
+  observer.VerifyEvidenceForAdSubframe(
+      ad_frame_with_aborted_load, /*parent_is_ad=*/false,
+      FilterListEvidence::kNeverChecked,
+      ScriptHeuristicEvidence::kCreatedByAdScript);
 
   // Child with ad parent.
   content::RenderFrameHost* ad_frame = CreateSrcFrameFromAdScript(
@@ -581,6 +680,10 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
   EXPECT_TRUE(*observer.GetIsAdSubframe(ad_frame->GetFrameTreeNodeId()));
   EXPECT_TRUE(*observer.GetIsAdSubframe(
       child_frame_of_ad_with_aborted_load->GetFrameTreeNodeId()));
+  observer.VerifyEvidenceForAdSubframe(
+      child_frame_of_ad_with_aborted_load, /*parent_is_ad=*/true,
+      FilterListEvidence::kNeverChecked,
+      ScriptHeuristicEvidence::kCreatedByAdScript);
 }
 
 // Test that the children of a frame with its initial load aborted due to a
@@ -607,6 +710,10 @@ IN_PROC_BROWSER_TEST_F(
       vanilla_frame_with_aborted_load, GetURL("frame_factory.html"));
   EXPECT_TRUE(
       *observer.GetIsAdSubframe(ad_child_of_vanilla->GetFrameTreeNodeId()));
+  observer.VerifyEvidenceForAdSubframe(
+      ad_child_of_vanilla, /*parent_is_ad=*/false,
+      FilterListEvidence::kNeverChecked,
+      ScriptHeuristicEvidence::kCreatedByAdScript);
 
   // Create a frame and abort its initial load in ad script. The children of
   // this ad frame should be tagged as ads.
@@ -614,15 +721,26 @@ IN_PROC_BROWSER_TEST_F(
       CreateFrameWithDocWriteAbortedLoadFromAdScript(GetWebContents());
   EXPECT_TRUE(*observer.GetIsAdSubframe(
       ad_frame_with_aborted_load->GetFrameTreeNodeId()));
+  observer.VerifyEvidenceForAdSubframe(
+      ad_frame_with_aborted_load, /*parent_is_ad=*/false,
+      FilterListEvidence::kNeverChecked,
+      ScriptHeuristicEvidence::kCreatedByAdScript);
 
   content::RenderFrameHost* vanilla_child_of_ad =
       CreateSrcFrame(ad_frame_with_aborted_load, GetURL("frame_factory.html"));
   EXPECT_TRUE(
       *observer.GetIsAdSubframe(vanilla_child_of_ad->GetFrameTreeNodeId()));
+  observer.VerifyEvidenceForAdSubframe(
+      vanilla_child_of_ad, /*parent_is_ad=*/true,
+      FilterListEvidence::kNeverChecked,
+      ScriptHeuristicEvidence::kCreatedByAdScript);
 
   content::RenderFrameHost* ad_child_of_ad = CreateSrcFrameFromAdScript(
       ad_frame_with_aborted_load, GetURL("frame_factory.html"));
   EXPECT_TRUE(*observer.GetIsAdSubframe(ad_child_of_ad->GetFrameTreeNodeId()));
+  observer.VerifyEvidenceForAdSubframe(
+      ad_child_of_ad, /*parent_is_ad=*/true, FilterListEvidence::kNeverChecked,
+      ScriptHeuristicEvidence::kCreatedByAdScript);
 }
 
 // Test that the children of a frame with its initial load aborted due to a
@@ -650,6 +768,10 @@ IN_PROC_BROWSER_TEST_F(
       vanilla_frame_with_aborted_load, GetURL("frame_factory.html"));
   EXPECT_TRUE(
       *observer.GetIsAdSubframe(ad_child_of_vanilla->GetFrameTreeNodeId()));
+  observer.VerifyEvidenceForAdSubframe(
+      ad_child_of_vanilla, /*parent_is_ad=*/false,
+      FilterListEvidence::kNeverChecked,
+      ScriptHeuristicEvidence::kCreatedByAdScript);
 
   // Create a frame and abort its initial load in ad script. The children of
   // this ad frame should be tagged as ads.
@@ -657,15 +779,27 @@ IN_PROC_BROWSER_TEST_F(
       CreateFrameWithWindowStopAbortedLoadFromAdScript(GetWebContents());
   EXPECT_TRUE(*observer.GetIsAdSubframe(
       ad_frame_with_aborted_load->GetFrameTreeNodeId()));
+  observer.VerifyEvidenceForAdSubframe(
+      ad_frame_with_aborted_load, /*parent_is_ad=*/false,
+      FilterListEvidence::kNeverChecked,
+      ScriptHeuristicEvidence::kCreatedByAdScript);
 
   content::RenderFrameHost* vanilla_child_of_ad =
       CreateSrcFrame(ad_frame_with_aborted_load, GetURL("frame_factory.html"));
   EXPECT_TRUE(
       *observer.GetIsAdSubframe(vanilla_child_of_ad->GetFrameTreeNodeId()));
+  observer.VerifyEvidenceForAdSubframe(
+      vanilla_child_of_ad, /*parent_is_ad=*/true,
+      FilterListEvidence::kNeverChecked,
+      ScriptHeuristicEvidence::kCreatedByAdScript);
 
   content::RenderFrameHost* ad_child_of_ad = CreateSrcFrameFromAdScript(
       ad_frame_with_aborted_load, GetURL("frame_factory.html"));
   EXPECT_TRUE(*observer.GetIsAdSubframe(ad_child_of_ad->GetFrameTreeNodeId()));
+  observer.VerifyEvidenceForAdSubframe(
+      vanilla_child_of_ad, /*parent_is_ad=*/true,
+      FilterListEvidence::kNeverChecked,
+      ScriptHeuristicEvidence::kCreatedByAdScript);
 }
 
 // Basic vanilla stylesheet with vanilla font and image.

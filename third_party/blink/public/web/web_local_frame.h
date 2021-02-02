@@ -739,10 +739,9 @@ class WebLocalFrame : public WebFrame {
 
   // True if the frame is thought (heuristically) to be created for
   // advertising purposes.
-  virtual bool IsAdSubframe() const = 0;
+  bool IsAdSubframe() const override = 0;
 
-  // This setter is available in case the embedder has more information about
-  // whether or not the frame is an ad.
+  // See blink::LocalFrame::SetIsAdSubframe()
   virtual void SetIsAdSubframe(blink::mojom::AdFrameType ad_frame_type) = 0;
 
   // True iff a script tagged as an ad was on the v8 stack when the frame was
