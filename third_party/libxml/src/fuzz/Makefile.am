@@ -1,6 +1,8 @@
 AUTOMAKE_OPTIONS = -Wno-syntax
 EXTRA_PROGRAMS = genSeed html regexp schema uri xml xpath
 check_PROGRAMS = testFuzzer
+EXTRA_DIST = html.dict regexp.dict schema.dict xml.dict xpath.dict \
+	     seed/uri
 CLEANFILES = $(EXTRA_PROGRAMS)
 AM_CPPFLAGS = -I$(top_srcdir)/include
 DEPENDENCIES = $(top_builddir)/libxml2.la

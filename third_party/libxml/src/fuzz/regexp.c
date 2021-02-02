@@ -21,6 +21,9 @@ LLVMFuzzerTestOneInput(const char *data, size_t size) {
     char *str[2] = { NULL, NULL };
     size_t numStrings;
 
+    if (size > 200)
+        return(0);
+
     numStrings = xmlFuzzExtractStrings(data, size, str, 2);
 
     /* CUR_SCHAR doesn't handle invalid UTF-8 and may cause infinite loops. */

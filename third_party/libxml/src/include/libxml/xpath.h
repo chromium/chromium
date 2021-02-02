@@ -359,8 +359,6 @@ struct _xmlXPathContext {
     unsigned long opLimit;
     unsigned long opCount;
     int depth;
-    int maxDepth;
-    int maxParserDepth;
 };
 
 /*

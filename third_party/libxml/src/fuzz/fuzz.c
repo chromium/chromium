@@ -211,6 +211,8 @@ xmlFuzzReadEntities(void) {
 
         if (xmlHashLookup(fuzzData.entities, (xmlChar *)url) == NULL) {
             entityInfo = xmlMalloc(sizeof(xmlFuzzEntityInfo));
+            if (entityInfo == NULL)
+                break;
             entityInfo->data = entity;
             entityInfo->size = entitySize;
 
@@ -271,6 +273,10 @@ xmlFuzzEntityLoader(const char *URL, const char *ID ATTRIBUTE_UNUSED,
     input->filename = NULL;
     input->buf = xmlParserInputBufferCreateMem(entity->data, entity->size,
                                                XML_CHAR_ENCODING_NONE);
+    if (input->buf == NULL) {
+        xmlFreeInputStream(input);
+        return(NULL);
+    }
     input->base = input->cur = xmlBufContent(input->buf->buffer);
     input->end = input->base + entity->size;
 

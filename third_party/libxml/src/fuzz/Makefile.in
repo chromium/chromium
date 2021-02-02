@@ -489,6 +489,9 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = -Wno-syntax
+EXTRA_DIST = html.dict regexp.dict schema.dict xml.dict xpath.dict \
+	     seed/uri
+
 CLEANFILES = $(EXTRA_PROGRAMS)
 AM_CPPFLAGS = -I$(top_srcdir)/include
 DEPENDENCIES = $(top_builddir)/libxml2.la

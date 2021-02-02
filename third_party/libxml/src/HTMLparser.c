@@ -3297,6 +3297,7 @@ htmlParseComment(htmlParserCtxtPtr ctxt) {
     int q, ql;
     int r, rl;
     int cur, l;
+    int next, nl;
     xmlParserInputState state;
 
     /*
@@ -3329,6 +3330,21 @@ htmlParseComment(htmlParserCtxtPtr ctxt) {
     while ((cur != 0) &&
            ((cur != '>') ||
 	    (r != '-') || (q != '-'))) {
+	NEXTL(l);
+	next = CUR_CHAR(nl);
+	if (next == 0) {
+	    SHRINK;
+	    GROW;
+	    next = CUR_CHAR(nl);
+	}
+
+	if ((q == '-') && (r == '-') && (cur == '!') && (next == '>')) {
+	  htmlParseErr(ctxt, XML_ERR_COMMENT_NOT_FINISHED,
+		       "Comment incorrectly closed by '--!>'", NULL, NULL);
+	  cur = '>';
+	  break;
+	}
+
 	if (len + 5 >= size) {
 	    xmlChar *tmp;
 
@@ -3348,17 +3364,13 @@ htmlParseComment(htmlParserCtxtPtr ctxt) {
             htmlParseErrInt(ctxt, XML_ERR_INVALID_CHAR,
                             "Invalid char in comment 0x%X\n", q);
         }
+
 	q = r;
 	ql = rl;
 	r = cur;
 	rl = l;
-	NEXTL(l);
-	cur = CUR_CHAR(l);
-	if (cur == 0) {
-	    SHRINK;
-	    GROW;
-	    cur = CUR_CHAR(l);
-	}
+	cur = next;
+	l = nl;
     }
     buf[len] = 0;
     if (cur == '>') {
@@ -5209,6 +5221,39 @@ htmlParseLookupSequence(htmlParserCtxtPtr ctxt, xmlChar first,
 }
 
 /**
+ * htmlParseLookupCommentEnd:
+ * @ctxt: an HTML parser context
+ *
+ * Try to find a comment end tag in the input stream
+ * The search includes "-->" as well as WHATWG-recommended incorrectly-closed tags.
+ * (See https://html.spec.whatwg.org/multipage/parsing.html#parse-error-incorrectly-closed-comment)
+ * This function has a side effect of (possibly) incrementing ctxt->checkIndex
+ * to avoid rescanning sequences of bytes, it DOES change the state of the
+ * parser, do not use liberally.
+ * This wraps to htmlParseLookupSequence()
+ *
+ * Returns the index to the current parsing point if the full sequence is available, -1 otherwise.
+ */
+static int
+htmlParseLookupCommentEnd(htmlParserCtxtPtr ctxt)
+{
+    int mark = 0;
+    int cur = CUR_PTR - BASE_PTR;
+
+    while (mark >= 0) {
+	mark = htmlParseLookupSequence(ctxt, '-', '-', 0, 0);
+	if ((mark < 0) ||
+	    (NXT(mark+2) == '>') ||
+	    ((NXT(mark+2) == '!') && (NXT(mark+3) == '>'))) {
+	    return mark;
+	}
+	ctxt->checkIndex = cur + mark + 1;
+    }
+    return mark;
+}
+
+
+/**
  * htmlParseTryOrFinish:
  * @ctxt:  an HTML parser context
  * @terminate:  last chunk indicator
@@ -5393,8 +5438,7 @@ htmlParseTryOrFinish(htmlParserCtxtPtr ctxt, int terminate) {
 		cur = in->cur[0];
 	        if ((cur == '<') && (next == '!') &&
 		    (in->cur[2] == '-') && (in->cur[3] == '-')) {
-		    if ((!terminate) &&
-		        (htmlParseLookupSequence(ctxt, '-', '-', '>', 0) < 0))
+		    if ((!terminate) && (htmlParseLookupCommentEnd(ctxt) < 0))
 			goto done;
 #ifdef DEBUG_PUSH
 		    xmlGenericError(xmlGenericErrorContext,
@@ -5454,8 +5498,7 @@ htmlParseTryOrFinish(htmlParserCtxtPtr ctxt, int terminate) {
 		next = in->cur[1];
 		if ((cur == '<') && (next == '!') &&
 		    (in->cur[2] == '-') && (in->cur[3] == '-')) {
-		    if ((!terminate) &&
-		        (htmlParseLookupSequence(ctxt, '-', '-', '>', 0) < 0))
+		    if ((!terminate) && (htmlParseLookupCommentEnd(ctxt) < 0))
 			goto done;
 #ifdef DEBUG_PUSH
 		    xmlGenericError(xmlGenericErrorContext,
@@ -5502,8 +5545,7 @@ htmlParseTryOrFinish(htmlParserCtxtPtr ctxt, int terminate) {
 		next = in->cur[1];
 	        if ((cur == '<') && (next == '!') &&
 		    (in->cur[2] == '-') && (in->cur[3] == '-')) {
-		    if ((!terminate) &&
-		        (htmlParseLookupSequence(ctxt, '-', '-', '>', 0) < 0))
+		    if ((!terminate) && (htmlParseLookupCommentEnd(ctxt) < 0))
 			goto done;
 #ifdef DEBUG_PUSH
 		    xmlGenericError(xmlGenericErrorContext,
@@ -5757,9 +5799,7 @@ htmlParseTryOrFinish(htmlParserCtxtPtr ctxt, int terminate) {
 			htmlParseDocTypeDecl(ctxt);
 		    } else if ((cur == '<') && (next == '!') &&
 			(in->cur[2] == '-') && (in->cur[3] == '-')) {
-			if ((!terminate) &&
-			    (htmlParseLookupSequence(
-				ctxt, '-', '-', '>', 0) < 0))
+			if ((!terminate) && (htmlParseLookupCommentEnd(ctxt) < 0))
 			    goto done;
 #ifdef DEBUG_PUSH
 			xmlGenericError(xmlGenericErrorContext,
@@ -5832,7 +5872,7 @@ htmlParseTryOrFinish(htmlParserCtxtPtr ctxt, int terminate) {
 			xmlGenericError(xmlGenericErrorContext,
 				"HPP: Parsing char data\n");
 #endif
-                        while ((cur != '<') && (cur != 0)) {
+                        while ((cur != '<') && (in->cur < in->end)) {
                             if (cur == '&') {
 			        htmlParseReference(ctxt);
                             } else {
