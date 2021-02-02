@@ -5,8 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_TO_V8_TRAITS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_TO_V8_TRAITS_H_
 
+#include "third_party/blink/renderer/platform/bindings/callback_function_base.h"
+#include "third_party/blink/renderer/platform/bindings/callback_interface_base.h"
+#include "third_party/blink/renderer/platform/bindings/dictionary_base.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
+#include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -16,6 +21,7 @@ namespace blink {
 // conversion, but it cannot throw an exception when an error occurs.
 // We will solve this problem and replace ToV8() in to_v8.h with
 // ToV8Traits::ToV8().
+// TODO(canonmukai): Replace existing ToV8() with ToV8Traits<>.
 
 // Primary template for ToV8Traits.
 template <typename T, typename SFINAEHelper = void>
@@ -51,6 +57,68 @@ struct ToV8Traits<
       return v8::MaybeLocal<v8::Value>();
     }
     return wrapper;
+  }
+};
+
+// Dictionary
+template <typename T>
+struct ToV8Traits<T,
+                  typename std::enable_if_t<
+                      std::is_base_of<bindings::DictionaryBase, T>::value>> {
+  static v8::MaybeLocal<v8::Value> ToV8(
+      ScriptState* script_state,
+      const bindings::DictionaryBase* dictionary) {
+    DCHECK(dictionary);
+    v8::Local<v8::Value> v8_value = dictionary->CreateV8Object(
+        script_state->GetIsolate(), script_state->GetContext()->Global());
+    DCHECK(!v8_value.IsEmpty());
+    return v8_value;
+  }
+};
+
+// Callback function
+template <typename T>
+struct ToV8Traits<T,
+                  typename std::enable_if_t<
+                      std::is_base_of<CallbackFunctionBase, T>::value>> {
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        CallbackFunctionBase* callback) {
+    // creation_context (|script_state->GetContext()|) is intentionally ignored.
+    // Callback functions are not wrappers nor clonable. ToV8 on a callback
+    // function must be used only when it's in the same world.
+    DCHECK(callback);
+    DCHECK(&callback->GetWorld() ==
+           &ScriptState::From(script_state->GetContext())->World());
+    return callback->CallbackObject().As<v8::Value>();
+  }
+};
+
+// Callback interface
+template <typename T>
+struct ToV8Traits<T,
+                  typename std::enable_if_t<
+                      std::is_base_of<CallbackInterfaceBase, T>::value>> {
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        CallbackInterfaceBase* callback) {
+    // creation_context (|script_state->GetContext()|) is intentionally ignored.
+    // Callback Interfaces are not wrappers nor clonable. ToV8 on a callback
+    // interface must be used only when it's in the same world.
+    DCHECK(callback);
+    DCHECK(&callback->GetWorld() ==
+           &ScriptState::From(script_state->GetContext())->World());
+    return callback->CallbackObject().As<v8::Value>();
+  }
+};
+
+// Enumeration
+template <typename T>
+struct ToV8Traits<T,
+                  typename std::enable_if_t<
+                      std::is_base_of<bindings::EnumerationBase, T>::value>> {
+  static v8::MaybeLocal<v8::Value> ToV8(
+      ScriptState* script_state,
+      const bindings::EnumerationBase& enumeration) {
+    return V8String(script_state->GetIsolate(), enumeration.AsCStr());
   }
 };
 
