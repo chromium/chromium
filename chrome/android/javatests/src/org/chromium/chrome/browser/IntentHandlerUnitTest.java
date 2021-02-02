@@ -14,56 +14,42 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.provider.Browser;
-import android.speech.RecognizerResultsIntent;
 import android.support.test.InstrumentationRegistry;
 
 import androidx.browser.customtabs.CustomTabsService;
 import androidx.browser.customtabs.CustomTabsSessionToken;
-import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.browserservices.verification.OriginVerifier;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
-import org.chromium.chrome.browser.test.CommandLineInitRule;
 import org.chromium.chrome.browser.translate.TranslateIntentHandler;
 import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
-import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestHelper;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
- * Tests for IntentHandler.
+ * Unit tests for IntentHandler.
  * TODO(nileshagrawal): Add tests for onNewIntent.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
-public class IntentHandlerTest {
-    @Rule
-    public final RuleChain mChain =
-            RuleChain.outerRule(new CommandLineInitRule(null)).around(new ChromeBrowserTestRule());
-
-    private static final String VOICE_SEARCH_QUERY = "VOICE_QUERY";
-    private static final String VOICE_SEARCH_QUERY_URL = "http://www.google.com/?q=VOICE_QUERY";
-
-    private static final String VOICE_URL_QUERY = "www.google.com";
-    private static final String VOICE_URL_QUERY_URL = "INVALID_URLZ";
-
+@Batch(Batch.UNIT_TESTS)
+public class IntentHandlerUnitTest {
     private static final String[] ACCEPTED_NON_HTTP_AND_HTTPS_URLS = {"chrome://newtab",
             "file://foo.txt", "ftp://www.foo.com", "", "://javascript:80/hello",
             "ftp@https://confusing:@something.example:5/goat?sayit", "://www.google.com/",
@@ -105,17 +91,26 @@ public class IntentHandlerTest {
     };
 
     private static final String[][] INTENT_URLS_AND_TYPES_FOR_MHTML = {
-            {"file://foo.mhtml", ""}, {"file://foo.mht", ""}, {"file://foo!.mht", ""},
-            {"file://foo!.mhtml", ""}, {"file://foo.mhtml", "application/octet-stream"},
-            {"file://foo.mht", "application/octet-stream"}, {"file://foo", "multipart/related"},
-            {"file://foo", "message/rfc822"}, {"content://example.com/1", "multipart/related"},
+            {"file://foo.mhtml", ""},
+            {"file://foo.mht", ""},
+            {"file://foo!.mht", ""},
+            {"file://foo!.mhtml", ""},
+            {"file://foo.mhtml", "application/octet-stream"},
+            {"file://foo.mht", "application/octet-stream"},
+            {"file://foo", "multipart/related"},
+            {"file://foo", "message/rfc822"},
+            {"content://example.com/1", "multipart/related"},
             {"content://example.com/1", "message/rfc822"},
     };
 
     private static final String[][] INTENT_URLS_AND_TYPES_NOT_FOR_MHTML = {
-            {"http://www.example.com", ""}, {"ftp://www.example.com", ""}, {"file://foo", ""},
-            {"file://foo", "application/octet-stream"}, {"file://foo.txt", ""},
-            {"file://foo.mhtml", "text/html"}, {"content://example.com/1", ""},
+            {"http://www.example.com", ""},
+            {"ftp://www.example.com", ""},
+            {"file://foo", ""},
+            {"file://foo", "application/octet-stream"},
+            {"file://foo.txt", ""},
+            {"file://foo.mhtml", "text/html"},
+            {"content://example.com/1", ""},
             {"content://example.com/1", "text/html"},
     };
 
@@ -158,6 +153,7 @@ public class IntentHandlerTest {
 
     @Before
     public void setUp() {
+        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
         IntentHandler.setTestIntentsEnabled(false);
         mIntentHandler = new IntentHandler(null, null);
         mIntent = new Intent();
@@ -239,37 +235,6 @@ public class IntentHandlerTest {
         mIntent.setData(null);
         Assert.assertTrue(
                 "Intent with null data should be valid", IntentHandler.intentHasValidUrl(mIntent));
-    }
-
-    @Test
-    @MediumTest
-    @UiThreadTest
-    @Feature({"Android-AppBase"})
-    public void testGetQueryFromVoiceSearchResultIntent_validVoiceQuery() {
-        Intent intent = new Intent(RecognizerResultsIntent.ACTION_VOICE_SEARCH_RESULTS);
-        intent.putStringArrayListExtra(RecognizerResultsIntent.EXTRA_VOICE_SEARCH_RESULT_STRINGS,
-                new ArrayList<>(Collections.singletonList(VOICE_SEARCH_QUERY)));
-        intent.putStringArrayListExtra(RecognizerResultsIntent.EXTRA_VOICE_SEARCH_RESULT_URLS,
-                new ArrayList<>(Collections.singletonList(VOICE_SEARCH_QUERY_URL)));
-        String query = IntentHandler.getUrlFromVoiceSearchResult(intent);
-        Assert.assertEquals(VOICE_SEARCH_QUERY_URL, query);
-    }
-
-    @Test
-    @MediumTest
-    @UiThreadTest
-    @Feature({"Android-AppBase"})
-    public void testGetQueryFromVoiceSearchResultIntent_validUrlQuery() {
-        Intent intent = new Intent(RecognizerResultsIntent.ACTION_VOICE_SEARCH_RESULTS);
-        intent.putStringArrayListExtra(RecognizerResultsIntent.EXTRA_VOICE_SEARCH_RESULT_STRINGS,
-                new ArrayList<>(Collections.singletonList(VOICE_URL_QUERY)));
-        intent.putStringArrayListExtra(RecognizerResultsIntent.EXTRA_VOICE_SEARCH_RESULT_URLS,
-                new ArrayList<>(Collections.singletonList(VOICE_URL_QUERY_URL)));
-        String query = IntentHandler.getUrlFromVoiceSearchResult(intent);
-        Assert.assertTrue(String.format("Expected qualified URL: %s, to start "
-                                          + "with http://www.google.com",
-                                  query),
-                query.indexOf("http://www.google.com") == 0);
     }
 
     @Test
@@ -410,6 +375,8 @@ public class IntentHandlerTest {
         String extraHeaders = IntentHandler.getExtraHeadersFromIntent(headersIntent);
         assertTrue(extraHeaders.contains("bearer-token: Some token"));
         assertTrue(extraHeaders.contains("redirect-url: https://www.google.com"));
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> OriginVerifier.clearCachedVerificationsForTesting());
     }
 
     @Test
@@ -439,6 +406,8 @@ public class IntentHandlerTest {
 
         String extraHeaders = IntentHandler.getExtraHeadersFromIntent(headersIntent);
         assertNull(extraHeaders);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> OriginVerifier.clearCachedVerificationsForTesting());
     }
 
     @Test

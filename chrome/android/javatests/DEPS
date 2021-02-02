@@ -1,6 +1,7 @@
 include_rules = [
   "+chrome/app",
   "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  "+chrome/browser/android/browserservices/verification",
   "+chrome/browser/android/lifecycle",
   "+chrome/browser/image_fetcher",
   "+chrome/browser/paint_preview/android",
