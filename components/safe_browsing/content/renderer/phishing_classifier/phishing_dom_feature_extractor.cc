@@ -372,10 +372,6 @@ blink::WebDocument PhishingDOMFeatureExtractor::GetNextDocument() {
         return frame->ToWebLocalFrame()->GetDocument();
       }
     }
-  } else {
-    // Keep track of how often frame traversal got "stuck" due to the
-    // current subdocument getting removed from the frame tree.
-    UMA_HISTOGRAM_COUNTS_1M("SBClientPhishing.DOMFeatureFrameRemoved", 1);
   }
   return blink::WebDocument();
 }

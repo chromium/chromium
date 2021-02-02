@@ -246,9 +246,8 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
     // too many pages as phishing, but for those that we already think are
     // phishing we want to send a request to the server to give ourselves
     // a chance to fix misclassifications.
-    if (csd_service_->IsInCache(url_)) {
-      base::UmaHistogramBoolean("SBClientPhishing.ReportLimitSkipped", true);
-    } else if (csd_service_->OverPhishingReportLimit()) {
+    if (!csd_service_->IsInCache(url_) &&
+        csd_service_->OverPhishingReportLimit()) {
       DontClassifyForPhishing(NO_CLASSIFY_TOO_MANY_REPORTS);
     }
 

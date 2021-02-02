@@ -138,7 +138,6 @@ void PhishingTermFeatureExtractor::ExtractFeaturesWithTimeout() {
 
   if (!state_->iterator.get()) {
     // We failed to initialize the break iterator, so stop now.
-    UMA_HISTOGRAM_COUNTS_1M("SBClientPhishing.TermFeatureBreakIterError", 1);
     RunCallback(false);
     return;
   }

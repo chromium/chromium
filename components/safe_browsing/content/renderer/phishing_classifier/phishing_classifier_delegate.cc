@@ -184,10 +184,6 @@ void PhishingClassifierDelegate::PageCaptured(base::string16* page_text,
     return;
   }
 
-  UMA_HISTOGRAM_BOOLEAN(
-      "SBClientPhishing.PageCapturedMatchesBrowserURL",
-      (last_url_received_from_browser_ == stripped_last_load_url));
-
   MaybeStartClassification();
 }
 
