@@ -28,6 +28,8 @@ class CORE_EXPORT FragmentData {
   FragmentData& EnsureNextFragment();
   void ClearNextFragment() { DestroyTail(); }
 
+  FragmentData& LastFragment();
+
   // Physical offset of this fragment's local border box's top-left position
   // from the origin of the transform node of the fragment's property tree
   // state.

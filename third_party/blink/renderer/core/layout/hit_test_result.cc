@@ -74,6 +74,7 @@ HitTestResult::HitTestResult(const HitTestResult& other)
       inner_possibly_pseudo_node_(other.inner_possibly_pseudo_node_),
       point_in_inner_node_frame_(other.point_in_inner_node_frame_),
       local_point_(other.LocalPoint()),
+      box_fragment_local_point_(other.box_fragment_local_point_),
       inner_url_element_(other.URLElement()),
       scrollbar_(other.GetScrollbar()),
       box_fragment_(other.box_fragment_),
@@ -120,6 +121,7 @@ void HitTestResult::PopulateFromCachedResult(const HitTestResult& other) {
   inner_possibly_pseudo_node_ = other.InnerPossiblyPseudoNode();
   point_in_inner_node_frame_ = other.point_in_inner_node_frame_;
   local_point_ = other.LocalPoint();
+  box_fragment_local_point_ = other.box_fragment_local_point_;
   inner_url_element_ = other.URLElement();
   scrollbar_ = other.GetScrollbar();
   box_fragment_ = other.box_fragment_;
@@ -149,14 +151,19 @@ void HitTestResult::SetNodeAndPosition(
     Node* node,
     scoped_refptr<const NGPhysicalBoxFragment> box_fragment,
     const PhysicalOffset& position) {
-  local_point_ = position;
+  if (box_fragment) {
+    box_fragment_local_point_ = position;
+    local_point_ = position + box_fragment->OffsetFromFirstFragment();
+  } else {
+    local_point_ = position;
+  }
   SetInnerNodeAndBoxFragment(node, std::move(box_fragment));
 }
 
 void HitTestResult::OverrideNodeAndPosition(Node* node,
                                             PhysicalOffset position) {
   // We are replacing the inner node. Reset any box fragment previously found.
-  box_fragment_.reset();
+  ForceComputeFromNode();
 
   // The new inner node needs to be monolithic.
   DCHECK(!node->GetLayoutBox() ||
@@ -166,10 +173,8 @@ void HitTestResult::OverrideNodeAndPosition(Node* node,
   SetInnerNode(node);
 }
 
-void HitTestResult::SetBoxFragment(
-    scoped_refptr<const NGPhysicalBoxFragment> box_fragment) {
-  DCHECK(!box_fragment || !box_fragment->IsInlineBox());
-  box_fragment_ = std::move(box_fragment);
+void HitTestResult::ForceComputeFromNode() {
+  box_fragment_.reset();
 }
 
 PositionWithAffinity HitTestResult::GetPosition() const {
@@ -202,7 +207,7 @@ PositionWithAffinity HitTestResult::GetPosition() const {
       RuntimeEnabledFeatures::LayoutNGFullPositionForPointEnabled() &&
       !box_fragment_->IsLayoutObjectDestroyedOrMoved()) {
     if (const NGPhysicalBoxFragment* fragment = box_fragment_->PostLayout())
-      return fragment->PositionForPoint(LocalPoint());
+      return fragment->PositionForPoint(box_fragment_local_point_);
   }
   return layout_object->PositionForPoint(LocalPoint());
 }
@@ -343,7 +348,7 @@ void HitTestResult::SetInnerNodeAndBoxFragment(
   }
 
   if (box_fragment) {
-    SetBoxFragment(std::move(box_fragment));
+    box_fragment_ = std::move(box_fragment);
   } else if (RuntimeEnabledFeatures::LayoutNGFullPositionForPointEnabled()) {
     if (const LayoutBox* layout_box = n->GetLayoutBox()) {
       // Fragmentation-aware code will set the correct box fragment on its own,
@@ -357,6 +362,7 @@ void HitTestResult::SetInnerNodeAndBoxFragment(
         // them, since there's no way for us to pick the right one here.
         DCHECK_EQ(layout_box->PhysicalFragmentCount(), 1u);
         box_fragment_ = layout_box->GetPhysicalFragment(0);
+        box_fragment_local_point_ = local_point_;
       }
     }
   }

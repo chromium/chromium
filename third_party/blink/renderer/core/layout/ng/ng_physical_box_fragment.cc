@@ -383,12 +383,40 @@ const LayoutBox* NGPhysicalBoxFragment::OwnerLayoutBox() const {
     owner_box = To<LayoutBox>(owner_box->SlowFirstChild());
     DCHECK(owner_box && owner_box->IsLayoutFlowThread());
   }
+  // Check |this| and the |LayoutBox| that produced it are in sync.
   DCHECK(owner_box->PhysicalFragments().Contains(*this));
+  DCHECK_EQ(IsFirstForNode(), this == owner_box->GetPhysicalFragment(0));
   return owner_box;
 }
 
 LayoutBox* NGPhysicalBoxFragment::MutableOwnerLayoutBox() const {
   return const_cast<LayoutBox*>(OwnerLayoutBox());
+}
+
+PhysicalOffset NGPhysicalBoxFragment::OffsetFromFirstFragment() const {
+  // This function uses |FragmentData|, so must be |kPrePaintClean|.
+  DCHECK_GE(GetDocument().Lifecycle().GetState(),
+            DocumentLifecycle::kPrePaintClean);
+  DCHECK(OwnerLayoutBox()->PhysicalFragments().Contains(*this));
+
+  // Skip early-return code path for DCHECK to test the logic in all tests.
+#if !DCHECK_IS_ON()
+  // Fast codepath for when this is not block-fragmented, or when this is the
+  // first fragment.
+  if (IsFirstForNode())
+    return PhysicalOffset();
+#endif
+
+  const LayoutBox* owner_box = OwnerLayoutBox();
+  DCHECK(owner_box);
+  const FragmentData* fragment_data =
+      owner_box->FragmentDataFromPhysicalFragment(*this);
+  DCHECK(fragment_data);
+  const FragmentData& first_fragment_data = owner_box->FirstFragment();
+  // All |FragmentData| for an NG block fragmented |LayoutObject| should be in
+  // the same transform node that their |PaintOffset()| are in the same
+  // coordinate system.
+  return fragment_data->PaintOffset() - first_fragment_data.PaintOffset();
 }
 
 const NGPhysicalBoxFragment* NGPhysicalBoxFragment::PostLayout() const {

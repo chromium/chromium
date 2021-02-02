@@ -709,6 +709,10 @@ LocalFrameView* FindWebViewPluginContentFrameView(
 
 void PrePaintTreeWalk::WalkNGChildren(const LayoutObject* parent,
                                       NGFragmentChildIterator* iterator) {
+  FragmentData* fragmentainer_fragment_data = nullptr;
+#if DCHECK_IS_ON()
+  const LayoutObject* fragmentainer_owner_box = nullptr;
+#endif
   for (; !iterator->IsAtEnd(); iterator->Advance()) {
     const LayoutObject* object = (*iterator)->GetLayoutObject();
     if (const auto* fragment_item = (*iterator)->FragmentItem()) {
@@ -723,30 +727,60 @@ void PrePaintTreeWalk::WalkNGChildren(const LayoutObject* parent,
       if (UNLIKELY(box_fragment->IsLayoutObjectDestroyedOrMoved()))
         continue;
 
+      // Check |box_fragment| and the |LayoutBox| that produced it are in sync.
+      // |OwnerLayoutBox()| has a few DCHECKs for this purpose.
+      DCHECK(box_fragment->OwnerLayoutBox());
+
       // A fragmentainer doesn't paint anything itself. Just include its offset
       // and descend into children.
       DCHECK((*iterator)->BoxFragment()->IsFragmentainerBox());
-      PhysicalOffset offset = (*iterator)->Link().offset;
-      PaintPropertyTreeBuilderFragmentContext::ContainingBlockContext*
-          containing_block_context = nullptr;
-      if (context_storage_.back().tree_builder_context) {
-        PaintPropertyTreeBuilderContext& tree_builder_context =
-            context_storage_.back().tree_builder_context.value();
-        PaintPropertyTreeBuilderFragmentContext& context =
-            tree_builder_context.fragments[0];
-        containing_block_context = &context.current;
-        containing_block_context->paint_offset += offset;
+      if (UNLIKELY(!context_storage_.back().tree_builder_context)) {
+        WalkChildren(/* parent */ nullptr, iterator);
+        continue;
       }
 
-      // Check |box_fragment| and |LayoutBox| who produced it are in sync.
-      DCHECK(box_fragment->OwnerLayoutBox());
-      DCHECK_EQ(box_fragment->IsFirstForNode(),
-                box_fragment ==
-                    box_fragment->OwnerLayoutBox()->GetPhysicalFragment(0));
+      PaintPropertyTreeBuilderContext& tree_builder_context =
+          context_storage_.back().tree_builder_context.value();
+      PaintPropertyTreeBuilderFragmentContext& context =
+          tree_builder_context.fragments[0];
+      PaintPropertyTreeBuilderFragmentContext::ContainingBlockContext*
+          containing_block_context = &context.current;
+      const PhysicalOffset offset = (*iterator)->Link().offset;
+      containing_block_context->paint_offset += offset;
+      const PhysicalOffset paint_offset =
+          containing_block_context->paint_offset;
+
+      // Create corresponding |FragmentData|. Hit-testing needs
+      // |FragmentData.PaintOffset|.
+      if (fragmentainer_fragment_data) {
+        DCHECK(!box_fragment->IsFirstForNode());
+#if DCHECK_IS_ON()
+        DCHECK_EQ(fragmentainer_owner_box, box_fragment->OwnerLayoutBox());
+#endif
+        fragmentainer_fragment_data =
+            &fragmentainer_fragment_data->EnsureNextFragment();
+      } else {
+        const LayoutBox* owner_box = box_fragment->OwnerLayoutBox();
+#if DCHECK_IS_ON()
+        DCHECK(!fragmentainer_owner_box);
+        fragmentainer_owner_box = owner_box;
+#endif
+        fragmentainer_fragment_data =
+            &owner_box->GetMutableForPainting().FirstFragment();
+        if (box_fragment->IsFirstForNode()) {
+          fragmentainer_fragment_data->ClearNextFragment();
+        } else {
+          // |box_fragment| is nested in another fragmentainer, and that it is
+          // the first one in this loop, but not the first one for the
+          // |LayoutObject|. Append a new |FragmentData| to the last one.
+          fragmentainer_fragment_data =
+              &fragmentainer_fragment_data->LastFragment().EnsureNextFragment();
+        }
+      }
+      fragmentainer_fragment_data->SetPaintOffset(paint_offset);
 
       WalkChildren(/* parent */ nullptr, iterator);
-      if (containing_block_context)
-        containing_block_context->paint_offset -= offset;
+      containing_block_context->paint_offset -= offset;
       continue;
     }
     Walk(*object, iterator);
