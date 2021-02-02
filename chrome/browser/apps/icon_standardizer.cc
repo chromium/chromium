@@ -181,6 +181,13 @@ bool IsIconCircleShaped(const gfx::ImageSkia& image) {
 
     float scale = preview_diagonal / visible_icon_diagonal;
 
+    // If the visible icon requires too large of a scale, then the icon is small
+    // enough that it should not be considered circular. This also serves as a
+    // speculative crash fix by setting an upper limit on |scale| in the case it
+    // is too large. (crbug.com/1162155)
+    if (scale >= 1.6f)
+      return false;
+
     gfx::Size scaled_icon_size =
         gfx::ScaleToRoundedSize(rep.pixel_size(), scale);
 
