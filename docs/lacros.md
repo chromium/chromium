@@ -53,7 +53,23 @@ The ash-side implementation lives in
 Code can be conditionally compiled into lacros via
 BUILDFLAG(IS_CHROMEOS_LACROS).
 
-Lacros bugs can be filed under component: OS>LaCrOs.
+## Filing bugs 
+
+Lacros bugs should be filed under OS=Lacros
+
+Bugs in the ash-chrome binary that only affect ash-chrome should be labeled OS=Chrome.
+
+Bugs in the lacros-chrome binary that only affect lacros-chrome should be labeled OS=Lacros.
+
+Bugs in the ash-chrome binary that affect lacros-chrome should be labeled with both OS=Chrome and OS=Lacros. 
+These should not block ash-chrome releases in the short term, but should block ash-chrome releases in the long term.
+
+Bug in the lacros-chrome binary that affects ash-chrome: should not be possible. If lacros-chrome causes bugs in ash-chrome, then there must be a corresponding bug in ash-chrome as well. 
+The lacros-chrome bug should be labeled OS=Lacros and the ash-chrome bug should be labeled OS=Chrome. 
+
+Cross-platform browser bugs e.g. Blink bug should set both OS=Lacros and OS=Chrome in the short term, since we are supporting both ash and lacros as browsers in the short term. 
+Once Lacros launches, the plan to use Lacros vs Chrome will be finalized.
+
 
 ## GN var and C++ macros
 
