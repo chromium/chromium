@@ -95,7 +95,7 @@ Status H264AnnexBToAvcBitstreamConverter::ConvertChunk(
                                  blob(nalu.data, nalu.data + nalu.size));
         pps_to_include.insert(pps_id);
         if (auto* pps = parser_.GetPPS(pps_id))
-          pps_to_include.insert(pps->seq_parameter_set_id);
+          sps_to_include.insert(pps->seq_parameter_set_id);
         config_changed = true;
         break;
       }
