@@ -11,7 +11,7 @@ declare_args() {
   # Whether //chrome code and resources are in a DFM for Monochrome and
   # Trichrome bundles. This module will also include code and resources from all
   # other DFMs.
-  enable_chrome_module = true
+  enable_chrome_module = android_channel != "beta"
 
   # Whether to enable DFMs which depend on the chrome DFM. These will be split
   # out of the chrome DFM using DexSplitter.
