@@ -197,4 +197,99 @@ TEST_F(MatchedPropertiesCacheTest, EnsuredOutsideFlatTreeAndDisplayNone) {
   EXPECT_TRUE(cache.Find(key1, *style, *parent_none));
 }
 
+TEST_F(MatchedPropertiesCacheTest, WritingModeDependency) {
+  TestCache cache(GetDocument());
+
+  auto parent_a = CreateStyle();
+  auto parent_b = CreateStyle();
+  auto style_a = CreateStyle();
+  auto style_b = CreateStyle();
+  parent_a->SetWritingMode(WritingMode::kHorizontalTb);
+  parent_b->SetWritingMode(WritingMode::kVerticalRl);
+
+  TestKey key("display:block", 1, GetDocument());
+
+  cache.Add(key, *style_a, *parent_a);
+  EXPECT_TRUE(cache.Find(key, *style_a, *parent_a));
+  EXPECT_TRUE(cache.Find(key, *style_b, *parent_a));
+  EXPECT_FALSE(cache.Find(key, *style_b, *parent_b));
+}
+
+TEST_F(MatchedPropertiesCacheTest, DirectionDependency) {
+  TestCache cache(GetDocument());
+
+  auto parent_a = CreateStyle();
+  auto parent_b = CreateStyle();
+  auto style_a = CreateStyle();
+  auto style_b = CreateStyle();
+  parent_a->SetDirection(TextDirection::kLtr);
+  parent_b->SetDirection(TextDirection::kRtl);
+
+  TestKey key("display:block", 1, GetDocument());
+
+  cache.Add(key, *style_a, *parent_a);
+  EXPECT_TRUE(cache.Find(key, *style_a, *parent_a));
+  EXPECT_TRUE(cache.Find(key, *style_b, *parent_a));
+  EXPECT_FALSE(cache.Find(key, *style_b, *parent_b));
+}
+
+TEST_F(MatchedPropertiesCacheTest, VariableDependency) {
+  TestCache cache(GetDocument());
+
+  auto parent_a = CreateStyle();
+  auto parent_b = CreateStyle();
+  auto style_a = CreateStyle();
+  auto style_b = CreateStyle();
+  parent_a->SetVariableData("--x", CreateVariableData("1px"), true);
+  parent_b->SetVariableData("--x", CreateVariableData("2px"), true);
+  style_a->SetHasVariableReferenceFromNonInheritedProperty();
+  style_b->SetHasVariableReferenceFromNonInheritedProperty();
+
+  TestKey key("top:var(--x)", 1, GetDocument());
+
+  cache.Add(key, *style_a, *parent_a);
+  EXPECT_TRUE(cache.Find(key, *style_a, *parent_a));
+  EXPECT_TRUE(cache.Find(key, *style_b, *parent_a));
+  EXPECT_FALSE(cache.Find(key, *style_b, *parent_b));
+}
+
+TEST_F(MatchedPropertiesCacheTest, VariableDependencyNoVars) {
+  TestCache cache(GetDocument());
+
+  auto parent_a = CreateStyle();
+  auto parent_b = CreateStyle();
+  auto style_a = CreateStyle();
+  auto style_b = CreateStyle();
+  style_a->SetHasVariableReferenceFromNonInheritedProperty();
+  style_b->SetHasVariableReferenceFromNonInheritedProperty();
+
+  TestKey key("top:var(--x)", 1, GetDocument());
+
+  cache.Add(key, *style_a, *parent_a);
+  // parent_a/b both have no variables, so this should be a cache hit.
+  EXPECT_TRUE(cache.Find(key, *style_a, *parent_a));
+  EXPECT_TRUE(cache.Find(key, *style_b, *parent_a));
+  EXPECT_TRUE(cache.Find(key, *style_b, *parent_b));
+}
+
+TEST_F(MatchedPropertiesCacheTest, NoVariableDependency) {
+  TestCache cache(GetDocument());
+
+  auto parent_a = CreateStyle();
+  auto parent_b = CreateStyle();
+  auto style_a = CreateStyle();
+  auto style_b = CreateStyle();
+  parent_a->SetVariableData("--x", CreateVariableData("1px"), true);
+  parent_b->SetVariableData("--x", CreateVariableData("2px"), true);
+
+  TestKey key("top:var(--x)", 1, GetDocument());
+
+  cache.Add(key, *style_a, *parent_a);
+  // parent_a/b both have variables, but style_a/b is not marked as
+  // depending on them.
+  EXPECT_TRUE(cache.Find(key, *style_a, *parent_a));
+  EXPECT_TRUE(cache.Find(key, *style_b, *parent_a));
+  EXPECT_TRUE(cache.Find(key, *style_b, *parent_b));
+}
+
 }  // namespace blink

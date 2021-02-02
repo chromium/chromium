@@ -83,6 +83,19 @@ bool CachedMatchedProperties::DependenciesEqual(
     return false;
   }
 
+  if (parent_computed_style->GetWritingMode() !=
+      state.ParentStyle()->GetWritingMode()) {
+    return false;
+  }
+  if (parent_computed_style->Direction() != state.ParentStyle()->Direction())
+    return false;
+  if (computed_style->HasVariableReferenceFromNonInheritedProperty()) {
+    if (parent_computed_style->InheritedVariables() !=
+        state.ParentStyle()->InheritedVariables()) {
+      return false;
+    }
+  }
+
   return true;
 }
 
@@ -188,16 +201,6 @@ bool MatchedPropertiesCache::IsStyleCacheable(const ComputedStyle& style) {
   if (style.Zoom() != ComputedStyleInitialValues::InitialZoom())
     return false;
   if (style.TextAutosizingMultiplier() != 1)
-    return false;
-  if (style.GetWritingMode() !=
-          ComputedStyleInitialValues::InitialWritingMode() ||
-      style.Direction() != ComputedStyleInitialValues::InitialDirection()) {
-    return false;
-  }
-
-  // styles with non inherited properties that reference variables are not
-  // cacheable.
-  if (style.HasVariableReferenceFromNonInheritedProperty())
     return false;
   // -internal-light-dark() values in UA sheets have different computed values
   // based on the used value of color-scheme.
