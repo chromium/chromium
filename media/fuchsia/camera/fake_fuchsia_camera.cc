@@ -10,6 +10,7 @@
 #include "base/fuchsia/process_context.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
+#include "base/process/process_handle.h"
 #include "base/task/current_thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -153,7 +154,10 @@ FakeCameraStream::FakeCameraStream()
     : binding_(this),
       sysmem_allocator_(base::ComponentContextForProcess()
                             ->svc()
-                            ->Connect<fuchsia::sysmem::Allocator>()) {}
+                            ->Connect<fuchsia::sysmem::Allocator>()) {
+  sysmem_allocator_->SetDebugClientInfo("ChromiumFakeCameraStream",
+                                        base::GetCurrentProcId());
+}
 
 FakeCameraStream::~FakeCameraStream() = default;
 

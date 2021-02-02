@@ -113,7 +113,8 @@ bool VideoCaptureDeviceFuchsia::IsSupportedPixelFormat(
 }
 
 VideoCaptureDeviceFuchsia::VideoCaptureDeviceFuchsia(
-    fidl::InterfaceHandle<fuchsia::camera3::Device> device) {
+    fidl::InterfaceHandle<fuchsia::camera3::Device> device)
+    : sysmem_allocator_("CrVideoCaptureDeviceFuchsia") {
   device_.Bind(std::move(device));
   device_.set_error_handler(
       fit::bind_member(this, &VideoCaptureDeviceFuchsia::OnDeviceError));
@@ -263,6 +264,11 @@ void VideoCaptureDeviceFuchsia::InitializeBufferCollection(
       SysmemBufferReader::GetRecommendedConstraints(
           kMaxUsedOutputFrames,
           /*min_buffer_size=*/base::nullopt);
+  // This is not an actual device driver, so the priority should be > 1. It's
+  // also not a high-level system, so the name should be < 100.
+  constexpr uint32_t kNamePriority = 10;
+  buffer_collection_creator_->SetName(kNamePriority,
+                                      "CrVideoCaptureDeviceFuchsia");
   buffer_collection_creator_->Create(
       std::move(constraints),
       base::BindOnce(&VideoCaptureDeviceFuchsia::OnBufferCollectionCreated,

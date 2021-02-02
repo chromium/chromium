@@ -334,6 +334,7 @@ FuchsiaVideoDecoder::FuchsiaVideoDecoder(
       enable_sw_decoding_(enable_sw_decoding),
       use_overlays_for_video_(base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kUseOverlaysForVideo)),
+      sysmem_allocator_("CrFuchsiaVideoDecoder"),
       client_native_pixmap_factory_(ui::CreateClientNativePixmapFactoryOzone()),
       weak_factory_(this) {
   DCHECK(raster_context_provider_);

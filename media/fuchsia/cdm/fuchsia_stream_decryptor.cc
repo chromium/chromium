@@ -101,7 +101,8 @@ FuchsiaStreamDecryptorBase::FuchsiaStreamDecryptorBase(
     fuchsia::media::StreamProcessorPtr processor,
     size_t min_buffer_size)
     : processor_(std::move(processor), this),
-      min_buffer_size_(min_buffer_size) {}
+      min_buffer_size_(min_buffer_size),
+      allocator_("CrFuchsiaStreamDecryptorBase") {}
 
 FuchsiaStreamDecryptorBase::~FuchsiaStreamDecryptorBase() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

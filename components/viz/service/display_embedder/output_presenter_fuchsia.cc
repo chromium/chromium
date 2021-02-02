@@ -15,6 +15,7 @@
 #include "base/feature_list.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
+#include "base/process/process_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
@@ -194,6 +195,9 @@ OutputPresenterFuchsia::OutputPresenterFuchsia(
   sysmem_allocator_ = base::ComponentContextForProcess()
                           ->svc()
                           ->Connect<fuchsia::sysmem::Allocator>();
+
+  sysmem_allocator_->SetDebugClientInfo("CrOutputPresenter",
+                                        base::GetCurrentProcId());
 
   image_pipe_.set_error_handler([this](zx_status_t status) {
     ZX_LOG(ERROR, status) << "ImagePipe disconnected";
