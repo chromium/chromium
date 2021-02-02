@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -71,8 +71,9 @@ class AuraLinuxApplication : public ui::AXPlatformNodeDelegateBase,
   AuraLinuxApplication& operator=(const AuraLinuxApplication&) = delete;
 
   // Get the single instance of this class.
-  static AuraLinuxApplication* GetInstance() {
-    return base::Singleton<AuraLinuxApplication>::get();
+  static AuraLinuxApplication& GetInstance() {
+    static base::NoDestructor<AuraLinuxApplication> instance;
+    return *instance;
   }
 
   // Called every time we create a new accessibility on a View.
@@ -83,7 +84,7 @@ class AuraLinuxApplication : public ui::AXPlatformNodeDelegateBase,
       return;
 
     widget = GetToplevelWidgetIncludingTransientWindows(widget);
-    if (base::Contains(widgets_, widget))
+    if (!widget || base::Contains(widgets_, widget))
       return;
 
     widgets_.push_back(widget);
@@ -130,7 +131,20 @@ class AuraLinuxApplication : public ui::AXPlatformNodeDelegateBase,
 
   // ui::AXPlatformNodeDelegate:
 
-  const ui::AXNodeData& GetData() const override { return data_; }
+  const ui::AXNodeData& GetData() const override {
+    // Despite the fact that the comment above
+    // `views::ViewsDelegate::GetInstance()` says that a nullptr check is not
+    // needed, we discovered that the delegate instance may be nullptr during
+    // test setup. Since the application name does not change, we can set it
+    // only once and avoid setting it every time our accessibility data is
+    // retrieved.
+    if (data_.GetStringAttribute(ax::mojom::StringAttribute::kName).empty() &&
+        ViewsDelegate::GetInstance()) {
+      data_.SetName(ViewsDelegate::GetInstance()->GetApplicationName());
+    }
+
+    return data_;
+  }
 
   int GetChildCount() const override {
     return static_cast<int>(widgets_.size());
@@ -145,15 +159,21 @@ class AuraLinuxApplication : public ui::AXPlatformNodeDelegateBase,
     return widget->GetRootView()->GetNativeViewAccessible();
   }
 
+  bool IsChildOfLeaf() const override {
+    // TODO(crbug.com/1100047): Needed to prevent endless loops only on the
+    // AuraLinux platform.
+    return false;
+  }
+
  private:
-  friend struct base::DefaultSingletonTraits<AuraLinuxApplication>;
+  friend class base::NoDestructor<AuraLinuxApplication>;
 
   AuraLinuxApplication() {
+    data_.id = unique_id_.Get();
     data_.role = ax::mojom::Role::kApplication;
+    data_.AddState(ax::mojom::State::kFocusable);
     platform_node_ = ui::AXPlatformNode::Create(this);
-    data_.AddStringAttribute(
-        ax::mojom::StringAttribute::kName,
-        ViewsDelegate::GetInstance()->GetApplicationName());
+    DCHECK(platform_node_);
     ui::AXPlatformNodeAuraLinux::SetApplication(platform_node_);
     ui::AXPlatformNodeAuraLinux::StaticInitialize();
   }
@@ -164,10 +184,10 @@ class AuraLinuxApplication : public ui::AXPlatformNodeDelegateBase,
   }
 
   ui::AXPlatformNode* platform_node_;
-  ui::AXNodeData data_;
   ui::AXUniqueId unique_id_;
+  mutable ui::AXNodeData data_;
   std::vector<Widget*> widgets_;
-  base::ScopedMultiSourceObservation<views::Widget, views::WidgetObserver>
+  base::ScopedMultiSourceObservation<Widget, WidgetObserver>
       widget_observations_{this};
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       window_observations_{this};
@@ -177,14 +197,18 @@ class AuraLinuxApplication : public ui::AXPlatformNodeDelegateBase,
 
 // static
 std::unique_ptr<ViewAccessibility> ViewAccessibility::Create(View* view) {
-  AuraLinuxApplication::GetInstance()->RegisterWidget(view->GetWidget());
+  AuraLinuxApplication::GetInstance().RegisterWidget(view->GetWidget());
   return std::make_unique<ViewAXPlatformNodeDelegateAuraLinux>(view);
 }
 
 ViewAXPlatformNodeDelegateAuraLinux::ViewAXPlatformNodeDelegateAuraLinux(
     View* view)
     : ViewAXPlatformNodeDelegate(view) {
-  view->AddObserver(this);
+  view_observation_.Observe(view);
+}
+
+ViewAXPlatformNodeDelegateAuraLinux::~ViewAXPlatformNodeDelegateAuraLinux() {
+  view_observation_.Reset();
 }
 
 gfx::NativeViewAccessible ViewAXPlatformNodeDelegateAuraLinux::GetParent() {
@@ -198,12 +222,18 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegateAuraLinux::GetParent() {
   if (parent_widget)
     return parent_widget->GetRootView()->GetNativeViewAccessible();
 
-  return AuraLinuxApplication::GetInstance()->GetNativeViewAccessible();
+  return AuraLinuxApplication::GetInstance().GetNativeViewAccessible();
+}
+
+bool ViewAXPlatformNodeDelegateAuraLinux::IsChildOfLeaf() const {
+  // TODO(crbug.com/1100047): Needed to prevent endless loops only on the
+  // AuraLinux platform.
+  return false;
 }
 
 void ViewAXPlatformNodeDelegateAuraLinux::OnViewHierarchyChanged(
-    views::View* observed_view,
-    const views::ViewHierarchyChangedDetails& details) {
+    View* observed_view,
+    const ViewHierarchyChangedDetails& details) {
   if (view() != details.child || !details.is_add)
     return;
   static_cast<ui::AXPlatformNodeAuraLinux*>(ax_platform_node())
