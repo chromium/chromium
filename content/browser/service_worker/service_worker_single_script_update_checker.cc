@@ -16,6 +16,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/url_loader_throttles.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/referrer.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
@@ -26,6 +27,7 @@
 #include "net/http/http_response_info.h"
 #include "services/network/public/cpp/net_adapters.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/blink/public/common/loader/throttling_url_loader.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
@@ -102,8 +104,7 @@ ServiceWorkerSingleScriptUpdateChecker::ServiceWorkerSingleScriptUpdateChecker(
         fetch_client_settings_object,
     base::TimeDelta time_since_last_check,
     const net::HttpRequestHeaders& default_headers,
-    ServiceWorkerUpdatedScriptLoader::BrowserContextGetter
-        browser_context_getter,
+    BrowserContext* browser_context,
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
     mojo::Remote<storage::mojom::ServiceWorkerResourceReader> compare_reader,
     mojo::Remote<storage::mojom::ServiceWorkerResourceReader> copy_reader,
@@ -120,6 +121,8 @@ ServiceWorkerSingleScriptUpdateChecker::ServiceWorkerSingleScriptUpdateChecker(
                        mojo::SimpleWatcher::ArmingPolicy::MANUAL,
                        base::SequencedTaskRunnerHandle::Get()),
       callback_(std::move(callback)) {
+  DCHECK(browser_context);
+
   TRACE_EVENT_WITH_FLOW2("ServiceWorker",
                          "ServiceWorkerSingleScriptUpdateChecker::"
                          "ServiceWorkerSingleScriptUpdateChecker",
@@ -217,12 +220,24 @@ ServiceWorkerSingleScriptUpdateChecker::ServiceWorkerSingleScriptUpdateChecker(
       writer_resource_id,
       /*pause_when_not_identical=*/true);
 
-  network_loader_ = ServiceWorkerUpdatedScriptLoader::
-      ThrottlingURLLoaderCoreWrapper::CreateLoaderAndStart(
-          loader_factory->Clone(), browser_context_getter, MSG_ROUTING_NONE,
-          GlobalRequestID::MakeBrowserInitiated().request_id, options,
-          resource_request, network_client_receiver_.BindNewPipeAndPassRemote(),
-          kUpdateCheckTrafficAnnotation);
+  // Service worker update checking doesn't have a relevant frame and tab, so
+  // that `web_contents_getter` returns nullptr and the frame id is set to
+  // kNoFrameTreeNodeId.
+  base::RepeatingCallback<WebContents*()> web_contents_getter =
+      base::BindRepeating([]() -> WebContents* { return nullptr; });
+  std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles =
+      CreateContentBrowserURLLoaderThrottles(
+          resource_request, browser_context, std::move(web_contents_getter),
+          /*navigation_ui_data=*/nullptr, RenderFrameHost::kNoFrameTreeNodeId);
+
+  network_client_remote_.Bind(
+      network_client_receiver_.BindNewPipeAndPassRemote());
+  network_loader_ = blink::ThrottlingURLLoader::CreateLoaderAndStart(
+      network::SharedURLLoaderFactory::Create(loader_factory->Clone()),
+      std::move(throttles), MSG_ROUTING_NONE,
+      GlobalRequestID::MakeBrowserInitiated().request_id, options,
+      &resource_request, network_client_remote_.get(),
+      kUpdateCheckTrafficAnnotation, base::ThreadTaskRunnerHandle::Get());
   DCHECK_EQ(network_loader_state_,
             ServiceWorkerUpdatedScriptLoader::LoaderState::kNotStarted);
   network_loader_state_ =
@@ -619,8 +634,9 @@ void ServiceWorkerSingleScriptUpdateChecker::OnCompareDataComplete(
     DCHECK_EQ(error, net::ERR_IO_PENDING);
     auto paused_state = std::make_unique<PausedState>(
         std::move(cache_writer_), std::move(network_loader_),
-        network_client_receiver_.Unbind(), std::move(pending_buffer),
-        bytes_written, network_loader_state_, body_writer_state_);
+        std::move(network_client_remote_), network_client_receiver_.Unbind(),
+        std::move(pending_buffer), bytes_written, network_loader_state_,
+        body_writer_state_);
     Succeed(Result::kDifferent, std::move(paused_state));
     return;
   }
@@ -698,9 +714,8 @@ void ServiceWorkerSingleScriptUpdateChecker::Finish(
 
 ServiceWorkerSingleScriptUpdateChecker::PausedState::PausedState(
     std::unique_ptr<ServiceWorkerCacheWriter> cache_writer,
-    std::unique_ptr<
-        ServiceWorkerUpdatedScriptLoader::ThrottlingURLLoaderCoreWrapper>
-        network_loader,
+    std::unique_ptr<blink::ThrottlingURLLoader> network_loader,
+    mojo::Remote<network::mojom::URLLoaderClient> network_client_remote,
     mojo::PendingReceiver<network::mojom::URLLoaderClient>
         network_client_receiver,
     scoped_refptr<network::MojoToNetPendingBuffer> pending_network_buffer,
@@ -709,6 +724,7 @@ ServiceWorkerSingleScriptUpdateChecker::PausedState::PausedState(
     ServiceWorkerUpdatedScriptLoader::WriterState body_writer_state)
     : cache_writer(std::move(cache_writer)),
       network_loader(std::move(network_loader)),
+      network_client_remote(std::move(network_client_remote)),
       network_client_receiver(std::move(network_client_receiver)),
       pending_network_buffer(std::move(pending_network_buffer)),
       consumed_bytes(consumed_bytes),

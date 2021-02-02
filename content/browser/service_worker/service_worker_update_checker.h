@@ -148,9 +148,6 @@ class CONTENT_EXPORT ServiceWorkerUpdateChecker {
   // Headers that need to be added to network requests for update checking.
   net::HttpRequestHeaders default_headers_;
 
-  ServiceWorkerUpdatedScriptLoader::BrowserContextGetter
-      browser_context_getter_;
-
   // True if any at least one of the scripts is fetched by network.
   bool network_accessed_ = false;
 

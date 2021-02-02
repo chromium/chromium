@@ -141,9 +141,7 @@ class ServiceWorkerSingleScriptUpdateCheckerTest : public testing::Test {
         GURL(url), url == main_script_url, GURL(main_script_url), scope,
         force_bypass_cache, update_via_cache,
         std::move(fetch_client_settings_object), time_since_last_check,
-        net::HttpRequestHeaders(),
-        base::BindRepeating([](BrowserContext* context) { return context; },
-                            browser_context_.get()),
+        net::HttpRequestHeaders(), browser_context_.get(),
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             loader_factory),
         WrapReader(std::move(compare_reader)),

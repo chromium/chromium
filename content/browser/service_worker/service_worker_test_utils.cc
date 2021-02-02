@@ -808,12 +808,13 @@ ServiceWorkerUpdateCheckTestUtils::CreateUpdateCheckerPausedState(
     ServiceWorkerUpdatedScriptLoader::WriterState body_writer_state,
     scoped_refptr<network::MojoToNetPendingBuffer> pending_network_buffer,
     uint32_t consumed_size) {
-  mojo::PendingRemote<network::mojom::URLLoaderClient> network_loader_client;
+  mojo::Remote<network::mojom::URLLoaderClient> network_loader_client;
   mojo::PendingReceiver<network::mojom::URLLoaderClient>
       network_loader_client_receiver =
-          network_loader_client.InitWithNewPipeAndPassReceiver();
+          network_loader_client.BindNewPipeAndPassReceiver();
   return std::make_unique<ServiceWorkerSingleScriptUpdateChecker::PausedState>(
       std::move(cache_writer), /*network_loader=*/nullptr,
+      std::move(network_loader_client),
       std::move(network_loader_client_receiver),
       std::move(pending_network_buffer), consumed_size, network_loader_state,
       body_writer_state);
