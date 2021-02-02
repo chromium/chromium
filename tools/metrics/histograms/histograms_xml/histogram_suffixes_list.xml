@@ -3773,6 +3773,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Chrome" label="A client created by Chrome."/>
   <suffix name="CrOSVM" label="A client created by ChromeOS VM."/>
   <suffix name="InvalidType" label="Invalid client."/>
+  <suffix name="LaCrOS" label="A client created by LaCrOS."/>
   <suffix name="Legacy" label="A client using an old CRAS lib."/>
   <suffix name="PCM" label="A client created by PCM."/>
   <suffix name="ServerStream" label="A client created by CRAS server."/>
@@ -3790,6 +3791,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Cras.StreamSamplingFormat.Output"/>
   <affected-histogram name="Cras.StreamSamplingRate.Input"/>
   <affected-histogram name="Cras.StreamSamplingRate.Output"/>
+  <affected-histogram name="Cras.StreamTimeoutMilliSeconds"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="Cras_DeviceType" separator=".">
@@ -3832,6 +3834,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Cras.StreamFlags"/>
   <affected-histogram name="Cras.StreamSamplingFormat"/>
   <affected-histogram name="Cras.StreamSamplingRate"/>
+</histogram_suffixes>
+
+<histogram_suffixes name="Cras_StreamType" separator=".">
+  <suffix name="Default" label="Default"/>
+  <suffix name="VoiceCommunication" label="WebRTC"/>
+  <affected-histogram name="Cras.InputStreamRuntime.ARC"/>
+  <affected-histogram name="Cras.InputStreamRuntime.Chrome"/>
+  <affected-histogram name="Cras.InputStreamRuntime.CrOSVM"/>
+  <affected-histogram name="Cras.InputStreamRuntime.LaCrOS"/>
+  <affected-histogram name="Cras.OutputStreamRuntime.ARC"/>
+  <affected-histogram name="Cras.OutputStreamRuntime.Chrome"/>
+  <affected-histogram name="Cras.OutputStreamRuntime.CrOSVM"/>
+  <affected-histogram name="Cras.OutputStreamRuntime.LaCrOS"/>
+  <affected-histogram name="Cras.StreamTimeoutMilliSeconds.ARC"/>
+  <affected-histogram name="Cras.StreamTimeoutMilliSeconds.Chrome"/>
+  <affected-histogram name="Cras.StreamTimeoutMilliSeconds.CrOSVM"/>
+  <affected-histogram name="Cras.StreamTimeoutMilliSeconds.LaCrOS"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="Cras_TimePeriod" separator=".">
