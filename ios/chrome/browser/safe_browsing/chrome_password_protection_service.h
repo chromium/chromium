@@ -8,6 +8,7 @@
 #import "components/safe_browsing/ios/password_protection/password_protection_service.h"
 
 class ChromeBrowserState;
+class PrefService;
 
 namespace safe_browsing {
 
@@ -113,6 +114,13 @@ class ChromePasswordProtectionService : public PasswordProtectionService {
 
  protected:
   ChromeBrowserState* browser_state_;
+
+ private:
+  // Gets prefs associated with |browser_state_|.
+  PrefService* GetPrefs();
+
+  // Returns whether |browser_state_| has safe browsing service enabled.
+  bool IsSafeBrowsingEnabled();
 };
 
 }  // namespace safe_browsing

@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/safe_browsing/chrome_password_protection_service.h"
 
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -150,7 +153,15 @@ bool ChromePasswordProtectionService::CanSendSamplePing() {
 bool ChromePasswordProtectionService::IsPingingEnabled(
     LoginReputationClientRequest::TriggerType trigger_type,
     ReusedPasswordAccountType password_type) {
-  // TODO(crbug.com/1147967): Complete PhishGuard iOS implementation.
+  if (!IsSafeBrowsingEnabled())
+    return false;
+
+  // Currently, pinging is only enabled for saved passwords reuse events in iOS.
+  if (trigger_type == LoginReputationClientRequest::PASSWORD_REUSE_EVENT &&
+      password_type.account_type() ==
+          ReusedPasswordAccountType::SAVED_PASSWORD) {
+    return true;
+  }
   return false;
 }
 
@@ -210,5 +221,13 @@ void ChromePasswordProtectionService::MaybeLogPasswordReuseLookupEvent(
     RequestOutcome outcome,
     PasswordType password_type,
     const LoginReputationClientResponse* response) {}
+
+PrefService* ChromePasswordProtectionService::GetPrefs() {
+  return browser_state_->GetPrefs();
+}
+
+bool ChromePasswordProtectionService::IsSafeBrowsingEnabled() {
+  return ::safe_browsing::IsSafeBrowsingEnabled(*GetPrefs());
+}
 
 }  // namespace safe_browsing
