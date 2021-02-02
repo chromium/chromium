@@ -81,7 +81,7 @@ std::unique_ptr<protocol::Array<To>> ConvertVector(const Vector<From>& from) {
 }  // namespace
 
 InspectorMediaAgent::InspectorMediaAgent(InspectedFrames* inspected_frames)
-    : local_frame_(inspected_frames->Root()),
+    : frame_(inspected_frames->Root()),
       enabled_(&agent_state_, /*default_value = */ false) {}
 
 InspectorMediaAgent::~InspectorMediaAgent() = default;
@@ -95,8 +95,8 @@ void InspectorMediaAgent::Restore() {
 void InspectorMediaAgent::RegisterAgent() {
   instrumenting_agents_->AddInspectorMediaAgent(this);
   auto* cache = MediaInspectorContextImpl::From(
-      *local_frame_->DomWindow()->GetExecutionContext());
-  Vector<WebString> players = cache->AllPlayerIds();
+      *frame_->DomWindow()->GetExecutionContext());
+  Vector<WebString> players = cache->AllPlayerIdsAndMarkSent();
   PlayersCreated(players);
   for (const auto& player_id : players) {
     const auto& media_player = cache->MediaPlayerFromId(player_id);
@@ -165,7 +165,7 @@ void InspectorMediaAgent::PlayersCreated(const Vector<WebString>& player_ids) {
 }
 
 void InspectorMediaAgent::Trace(Visitor* visitor) const {
-  visitor->Trace(local_frame_);
+  visitor->Trace(frame_);
   InspectorBaseAgent::Trace(visitor);
 }
 

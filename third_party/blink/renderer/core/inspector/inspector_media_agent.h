@@ -46,7 +46,7 @@ class CORE_EXPORT InspectorMediaAgent final
  private:
   void RegisterAgent();
 
-  Member<LocalFrame> local_frame_;
+  Member<LocalFrame> frame_;
   InspectorAgentState::Boolean enabled_;
   DISALLOW_COPY_AND_ASSIGN(InspectorMediaAgent);
 };
