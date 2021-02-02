@@ -590,6 +590,21 @@ TEST_F(ScrollableShelfViewTest, CorrectUIAfterSwitchingToTablet) {
             first_tappable_view->GetBoundsInScreen().x());
 }
 
+// Verifies that activating a shelf icon's ripple ring does not bring crash
+// on an extremely small display. It is an edge case detected by fuzz tests.
+TEST_F(ScrollableShelfViewTest, VerifyActivateIconRippleOnVerySmallDisplay) {
+  AddAppShortcut();
+
+  // Resize the display to ensure that no shelf icon is visible.
+  UpdateDisplay("60x601");
+
+  // Activate a shelf icon's ink drop. Verify that no crash happens.
+  views::InkDropHostView* icon = test_api_->GetButton(0);
+  auto* ink_drop = icon->GetInkDrop();
+  ink_drop->SnapToActivated();
+  EXPECT_EQ(views::InkDropState::ACTIVATED, ink_drop->GetTargetInkDropState());
+}
+
 // Verifies that the scrollable shelf without overflow has the correct layout in
 // tablet mode.
 TEST_F(ScrollableShelfViewTest, CorrectUIInTabletWithoutOverflow) {
