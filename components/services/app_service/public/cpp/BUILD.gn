@@ -35,6 +35,8 @@ component("app_update") {
   sources = [
     "app_capability_access_cache.cc",
     "app_capability_access_cache.h",
+    "app_capability_access_cache_wrapper.cc",
+    "app_capability_access_cache_wrapper.h",
     "app_registry_cache.cc",
     "app_registry_cache.h",
     "app_registry_cache_wrapper.cc",
