@@ -468,6 +468,13 @@ bool ViewAXPlatformNodeDelegate::IsIgnored() const {
   return ViewAccessibility::IsIgnored() || GetData().IsIgnored();
 }
 
+bool ViewAXPlatformNodeDelegate::IsInvisibleOrIgnored() const {
+  if (IsIgnored())
+    return true;
+
+  return !view()->GetVisible();
+}
+
 bool ViewAXPlatformNodeDelegate::IsFocused() const {
   return GetFocus() == GetNativeObject();
 }

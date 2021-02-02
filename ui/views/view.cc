@@ -1630,7 +1630,7 @@ View::FocusBehavior View::GetFocusBehavior() const {
 }
 
 void View::SetFocusBehavior(FocusBehavior focus_behavior) {
-  if (focus_behavior_ == focus_behavior)
+  if (GetFocusBehavior() == focus_behavior)
     return;
 
   focus_behavior_ = focus_behavior;
@@ -1640,11 +1640,13 @@ void View::SetFocusBehavior(FocusBehavior focus_behavior) {
 }
 
 bool View::IsFocusable() const {
-  return focus_behavior_ == FocusBehavior::ALWAYS && GetEnabled() && IsDrawn();
+  return GetFocusBehavior() == FocusBehavior::ALWAYS && GetEnabled() &&
+         IsDrawn();
 }
 
 bool View::IsAccessibilityFocusable() const {
-  return focus_behavior_ != FocusBehavior::NEVER && GetEnabled() && IsDrawn();
+  return GetFocusBehavior() != FocusBehavior::NEVER && GetEnabled() &&
+         IsDrawn();
 }
 
 FocusManager* View::GetFocusManager() {

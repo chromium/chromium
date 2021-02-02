@@ -11,6 +11,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
+#include "build/build_config.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -27,8 +28,11 @@
 #include "ui/views/accessibility/ax_widget_obj_wrapper.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/menu/submenu_view.h"
+#include "ui/views/controls/menu/test_menu_item_view.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/table/table_view.h"
+#include "ui/views/test/menu_test_utils.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
 
@@ -238,6 +242,71 @@ class ViewAXPlatformNodeDelegateTableTest
  private:
   std::unique_ptr<TestTableModel> model_;
   TableView* table_ = nullptr;  // Owned by parent.
+};
+
+class ViewAXPlatformNodeDelegateMenuTest
+    : public ViewAXPlatformNodeDelegateTest {
+ public:
+  void SetUp() override {
+    ViewAXPlatformNodeDelegateTest::SetUp();
+
+    owner_ = std::make_unique<Widget>();
+    Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
+    params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+    owner_->Init(std::move(params));
+    owner_->Show();
+
+    menu_delegate_ = std::make_unique<TestMenuDelegate>();
+    menu_ = new views::TestMenuItemView(menu_delegate_.get());
+    runner_ = std::make_unique<MenuRunner>(menu_, 0);
+
+    menu_->AppendMenuItemImpl(0, base::ASCIIToUTF16("normal"), gfx::ImageSkia(),
+                              MenuItemView::Type::kNormal);
+    menu_->AppendMenuItemImpl(1, base::ASCIIToUTF16("submenu"),
+                              gfx::ImageSkia(), MenuItemView::Type::kSubMenu);
+    menu_->AppendMenuItemImpl(2, base::ASCIIToUTF16("actionable"),
+                              gfx::ImageSkia(),
+                              MenuItemView::Type::kActionableSubMenu);
+    menu_->AppendMenuItemImpl(3, base::ASCIIToUTF16("checkbox"),
+                              gfx::ImageSkia(), MenuItemView::Type::kCheckbox);
+    menu_->AppendMenuItemImpl(4, base::ASCIIToUTF16("radio"), gfx::ImageSkia(),
+                              MenuItemView::Type::kRadio);
+    menu_->AppendMenuItemImpl(5, base::ASCIIToUTF16("separator"),
+                              gfx::ImageSkia(), MenuItemView::Type::kSeparator);
+    menu_->AppendMenuItemImpl(6, base::ASCIIToUTF16("highlighted"),
+                              gfx::ImageSkia(),
+                              MenuItemView::Type::kHighlighted);
+    menu_->AppendMenuItemImpl(7, base::ASCIIToUTF16("title"), gfx::ImageSkia(),
+                              MenuItemView::Type::kTitle);
+
+    submenu_ = menu_->GetSubmenu();
+    submenu_->GetMenuItemAt(3)->SetSelected(true);
+  }
+
+  void TearDown() override {
+    if (owner_)
+      owner_->CloseNow();
+    ViewAXPlatformNodeDelegateTest::TearDown();
+  }
+
+  void RunMenu() {
+    runner_.get()->RunMenuAt(owner_.get(), nullptr, gfx::Rect(),
+                             MenuAnchorPosition::kTopLeft,
+                             ui::MENU_SOURCE_NONE);
+  }
+
+  ViewAXPlatformNodeDelegate* submenu_accessibility() {
+    return view_accessibility(submenu_);
+  }
+
+ private:
+  // Owned by runner_.
+  views::TestMenuItemView* menu_ = nullptr;
+
+  SubmenuView* submenu_ = nullptr;
+  std::unique_ptr<TestMenuDelegate> menu_delegate_;
+  std::unique_ptr<MenuRunner> runner_;
+  std::unique_ptr<Widget> owner_;
 };
 
 TEST_F(ViewAXPlatformNodeDelegateTest, FocusBehaviorShouldAffectIgnoredState) {
@@ -630,6 +699,161 @@ TEST_F(ViewAXPlatformNodeDelegateTableTest, TableHasCell) {
   EXPECT_DCHECK_DEATH(table_accessibility()->GetCellId(0, -1));
   EXPECT_DCHECK_DEATH(table_accessibility()->GetCellId(10, 0));
   EXPECT_DCHECK_DEATH(table_accessibility()->GetCellId(0, 4));
+}
+
+TEST_F(ViewAXPlatformNodeDelegateMenuTest, MenuTest) {
+  RunMenu();
+
+  ViewAXPlatformNodeDelegate* submenu = submenu_accessibility();
+  EXPECT_FALSE(submenu->GetData().HasState(ax::mojom::State::kFocusable));
+  EXPECT_EQ(submenu->GetChildCount(), 7);
+  EXPECT_EQ(submenu->GetData().role, ax::mojom::Role::kMenu);
+  EXPECT_EQ(submenu->GetData().GetHasPopup(), ax::mojom::HasPopup::kMenu);
+
+  auto items = submenu->view()->children();
+
+  // MenuItemView::Type::kNormal
+  ViewAXPlatformNodeDelegate* normal_item = view_accessibility(items[0]);
+  EXPECT_TRUE(normal_item->GetData().HasState(ax::mojom::State::kFocusable));
+  EXPECT_TRUE(normal_item->GetData().IsSelectable());
+  EXPECT_FALSE(normal_item->GetData().GetBoolAttribute(
+      ax::mojom::BoolAttribute::kSelected));
+  EXPECT_FALSE(normal_item->IsInvisibleOrIgnored());
+  EXPECT_FALSE(normal_item->GetData().IsInvisibleOrIgnored());
+  EXPECT_EQ(normal_item->GetData().role, ax::mojom::Role::kMenuItem);
+  EXPECT_EQ(normal_item->GetData().GetHasPopup(), ax::mojom::HasPopup::kFalse);
+  EXPECT_EQ(normal_item->GetPosInSet(), 1);
+  EXPECT_EQ(normal_item->GetSetSize(), 7);
+  EXPECT_EQ(normal_item->GetChildCount(), 0);
+  EXPECT_EQ(normal_item->GetIndexInParent(), 0);
+
+  // MenuItemView::Type::kSubMenu
+  ViewAXPlatformNodeDelegate* submenu_item = view_accessibility(items[1]);
+  EXPECT_TRUE(submenu_item->GetData().HasState(ax::mojom::State::kFocusable));
+  EXPECT_TRUE(submenu_item->GetData().IsSelectable());
+  EXPECT_FALSE(submenu_item->GetData().GetBoolAttribute(
+      ax::mojom::BoolAttribute::kSelected));
+  EXPECT_FALSE(submenu_item->IsInvisibleOrIgnored());
+  EXPECT_FALSE(submenu_item->GetData().IsInvisibleOrIgnored());
+  EXPECT_EQ(submenu_item->GetData().role, ax::mojom::Role::kMenuItem);
+  EXPECT_EQ(submenu_item->GetData().GetHasPopup(), ax::mojom::HasPopup::kMenu);
+  EXPECT_EQ(submenu_item->GetPosInSet(), 2);
+  EXPECT_EQ(submenu_item->GetSetSize(), 7);
+#if defined(OS_APPLE)
+  // A virtual child with role menu is exposed so that VoiceOver treats a
+  // MenuItemView of type kSubMenu as a submenu rather than an item.
+  EXPECT_EQ(submenu_item->GetChildCount(), 1);
+#else
+  EXPECT_EQ(submenu_item->GetChildCount(), 0);
+#endif  // defined(OS_APPLE)
+  EXPECT_EQ(submenu_item->GetIndexInParent(), 1);
+
+  // MenuItemView::Type::kActionableSubMenu
+  ViewAXPlatformNodeDelegate* actionable_submenu_item =
+      view_accessibility(items[2]);
+  EXPECT_TRUE(actionable_submenu_item->GetData().HasState(
+      ax::mojom::State::kFocusable));
+  EXPECT_TRUE(actionable_submenu_item->GetData().IsSelectable());
+  EXPECT_FALSE(actionable_submenu_item->GetData().GetBoolAttribute(
+      ax::mojom::BoolAttribute::kSelected));
+  EXPECT_FALSE(actionable_submenu_item->IsInvisibleOrIgnored());
+  EXPECT_FALSE(actionable_submenu_item->GetData().IsInvisibleOrIgnored());
+  EXPECT_EQ(actionable_submenu_item->GetData().role,
+            ax::mojom::Role::kMenuItem);
+  EXPECT_EQ(actionable_submenu_item->GetData().GetHasPopup(),
+            ax::mojom::HasPopup::kMenu);
+  EXPECT_EQ(actionable_submenu_item->GetPosInSet(), 3);
+  EXPECT_EQ(actionable_submenu_item->GetSetSize(), 7);
+#if defined(OS_APPLE)
+  // A virtual child with role menu is exposed so that VoiceOver treats a
+  // MenuItemView of type kActionableSubMenu as a submenu rather than an item.
+  EXPECT_EQ(actionable_submenu_item->GetChildCount(), 1);
+#else
+  EXPECT_EQ(actionable_submenu_item->GetChildCount(), 0);
+#endif  // defined(OS_APPLE)
+  EXPECT_EQ(actionable_submenu_item->GetIndexInParent(), 2);
+
+  // MenuItemView::Type::kCheckbox
+  ViewAXPlatformNodeDelegate* checkbox_item = view_accessibility(items[3]);
+  EXPECT_TRUE(checkbox_item->GetData().HasState(ax::mojom::State::kFocusable));
+  EXPECT_TRUE(checkbox_item->GetData().IsSelectable());
+  EXPECT_TRUE(checkbox_item->GetData().GetBoolAttribute(
+      ax::mojom::BoolAttribute::kSelected));
+  EXPECT_FALSE(checkbox_item->IsInvisibleOrIgnored());
+  EXPECT_FALSE(checkbox_item->GetData().IsInvisibleOrIgnored());
+  EXPECT_EQ(checkbox_item->GetData().role, ax::mojom::Role::kMenuItemCheckBox);
+  EXPECT_EQ(checkbox_item->GetData().GetHasPopup(),
+            ax::mojom::HasPopup::kFalse);
+  EXPECT_EQ(checkbox_item->GetPosInSet(), 4);
+  EXPECT_EQ(checkbox_item->GetSetSize(), 7);
+  EXPECT_EQ(checkbox_item->GetChildCount(), 0);
+  EXPECT_EQ(checkbox_item->GetIndexInParent(), 3);
+
+  // MenuItemView::Type::kRadio
+  ViewAXPlatformNodeDelegate* radio_item = view_accessibility(items[4]);
+  EXPECT_TRUE(radio_item->GetData().HasState(ax::mojom::State::kFocusable));
+  EXPECT_TRUE(radio_item->GetData().IsSelectable());
+  EXPECT_FALSE(radio_item->GetData().GetBoolAttribute(
+      ax::mojom::BoolAttribute::kSelected));
+  EXPECT_FALSE(radio_item->IsInvisibleOrIgnored());
+  EXPECT_FALSE(radio_item->GetData().IsInvisibleOrIgnored());
+  EXPECT_EQ(radio_item->GetData().role, ax::mojom::Role::kMenuItemRadio);
+  EXPECT_EQ(radio_item->GetData().GetHasPopup(), ax::mojom::HasPopup::kFalse);
+  EXPECT_EQ(radio_item->GetPosInSet(), 5);
+  EXPECT_EQ(radio_item->GetSetSize(), 7);
+  EXPECT_EQ(radio_item->GetChildCount(), 0);
+  EXPECT_EQ(radio_item->GetIndexInParent(), 4);
+
+  // MenuItemView::Type::kSeparator
+  ViewAXPlatformNodeDelegate* separator_item = view_accessibility(items[5]);
+  EXPECT_FALSE(
+      separator_item->GetData().HasState(ax::mojom::State::kFocusable));
+  EXPECT_FALSE(separator_item->GetData().IsSelectable());
+  EXPECT_FALSE(separator_item->GetData().GetBoolAttribute(
+      ax::mojom::BoolAttribute::kSelected));
+  EXPECT_TRUE(separator_item->IsInvisibleOrIgnored());
+  EXPECT_TRUE(separator_item->GetData().IsInvisibleOrIgnored());
+  EXPECT_EQ(separator_item->GetData().role, ax::mojom::Role::kSplitter);
+  EXPECT_EQ(separator_item->GetData().GetHasPopup(),
+            ax::mojom::HasPopup::kFalse);
+  EXPECT_FALSE(separator_item->GetData().HasIntAttribute(
+      ax::mojom::IntAttribute::kPosInSet));
+  EXPECT_FALSE(separator_item->GetData().HasIntAttribute(
+      ax::mojom::IntAttribute::kSetSize));
+  EXPECT_EQ(separator_item->GetChildCount(), 0);
+  EXPECT_EQ(separator_item->GetIndexInParent(), -1);
+
+  // MenuItemView::Type::kHighlighted
+  ViewAXPlatformNodeDelegate* highlighted_item = view_accessibility(items[6]);
+  EXPECT_TRUE(
+      highlighted_item->GetData().HasState(ax::mojom::State::kFocusable));
+  EXPECT_TRUE(highlighted_item->GetData().IsSelectable());
+  EXPECT_FALSE(highlighted_item->GetData().GetBoolAttribute(
+      ax::mojom::BoolAttribute::kSelected));
+  EXPECT_FALSE(highlighted_item->IsInvisibleOrIgnored());
+  EXPECT_FALSE(highlighted_item->GetData().IsInvisibleOrIgnored());
+  EXPECT_EQ(highlighted_item->GetData().role, ax::mojom::Role::kMenuItem);
+  EXPECT_EQ(highlighted_item->GetData().GetHasPopup(),
+            ax::mojom::HasPopup::kFalse);
+  EXPECT_EQ(highlighted_item->GetPosInSet(), 6);
+  EXPECT_EQ(highlighted_item->GetSetSize(), 7);
+  EXPECT_EQ(highlighted_item->GetChildCount(), 0);
+  EXPECT_EQ(highlighted_item->GetIndexInParent(), 5);
+
+  // MenuItemView::Type::kTitle
+  ViewAXPlatformNodeDelegate* title_item = view_accessibility(items[7]);
+  EXPECT_TRUE(title_item->GetData().HasState(ax::mojom::State::kFocusable));
+  EXPECT_TRUE(title_item->GetData().IsSelectable());
+  EXPECT_FALSE(title_item->GetData().GetBoolAttribute(
+      ax::mojom::BoolAttribute::kSelected));
+  EXPECT_FALSE(title_item->IsInvisibleOrIgnored());
+  EXPECT_FALSE(title_item->GetData().IsInvisibleOrIgnored());
+  EXPECT_EQ(title_item->GetData().role, ax::mojom::Role::kMenuItem);
+  EXPECT_EQ(title_item->GetData().GetHasPopup(), ax::mojom::HasPopup::kFalse);
+  EXPECT_EQ(title_item->GetPosInSet(), 7);
+  EXPECT_EQ(title_item->GetSetSize(), 7);
+  EXPECT_EQ(title_item->GetChildCount(), 0);
+  EXPECT_EQ(title_item->GetIndexInParent(), 6);
 }
 
 #if defined(USE_AURA)

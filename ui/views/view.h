@@ -1169,7 +1169,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   void InsertAfterInFocusList(View* view);
 
   // Gets/sets |FocusBehavior|. SetFocusBehavior() advances focus if necessary.
-  FocusBehavior GetFocusBehavior() const;
+  virtual FocusBehavior GetFocusBehavior() const;
   void SetFocusBehavior(FocusBehavior focus_behavior);
 
   // Returns true if this view is focusable, |enabled_| and drawn.

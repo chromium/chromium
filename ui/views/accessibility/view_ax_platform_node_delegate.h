@@ -50,6 +50,7 @@ class ViewAXPlatformNodeDelegate : public ViewAccessibility,
   void AnnounceText(const base::string16& text) override;
 #endif
   bool IsIgnored() const override;
+  bool IsInvisibleOrIgnored() const override;
   void FireFocusAfterMenuClose() override;
 
   // ui::AXPlatformNodeDelegate

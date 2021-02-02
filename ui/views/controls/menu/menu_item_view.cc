@@ -212,6 +212,11 @@ void MenuItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
         ax::mojom::StringAttribute::kKeyShortcuts,
         base::UTF16ToUTF8(base::string16(1, mnemonic)));
   }
+
+  if (IsTraversableByKeyboard()) {
+    node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected,
+                                IsSelected());
+  }
 }
 
 bool MenuItemView::HandleAccessibleAction(const ui::AXActionData& action_data) {
@@ -228,6 +233,29 @@ bool MenuItemView::HandleAccessibleAction(const ui::AXActionData& action_data) {
   GetMenuController()->SetSelection(this, MenuController::SELECTION_DEFAULT);
   GetMenuController()->OnWillDispatchKeyEvent(&event);
   return true;
+}
+
+View::FocusBehavior MenuItemView::GetFocusBehavior() const {
+  // If the creator/owner of the MenuItemView has explicitly set the focus
+  // behavior to something other than the default NEVER, don't override it.
+  View::FocusBehavior focus_behavior = View::GetFocusBehavior();
+  if (focus_behavior != FocusBehavior::NEVER)
+    return focus_behavior;
+
+  // Some MenuItemView types are presumably never focusable, even by assistive
+  // technologies.
+  if (type_ == Type::kEmpty || type_ == Type::kSeparator)
+    return FocusBehavior::NEVER;
+
+  // The rest of the MenuItemView types are presumably focusable, at least by
+  // assistive technologies. But if they lack presentable information, then
+  // there won't be anything for ATs to convey to the user. Filter those out.
+  if (title_.empty() && secondary_title_.empty() && minor_text_.empty() &&
+      vector_icon_.empty()) {
+    return FocusBehavior::NEVER;
+  }
+
+  return FocusBehavior::ACCESSIBLE_ONLY;
 }
 
 // static
