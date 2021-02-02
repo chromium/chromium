@@ -95,15 +95,18 @@ class TFLiteExperimentKeyedServiceBrowserTest : public InProcessBrowserTest {
   ~TFLiteExperimentKeyedServiceBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* cmd) override {
-    // Location of test data.
-    base::FilePath g_test_data_directory;
+    base::FilePath model_file_path;
 
-    // Set TFLite model path.
-    base::PathService::Get(chrome::DIR_TEST_DATA, &g_test_data_directory);
-    g_test_data_directory =
-        g_test_data_directory.Append(FILE_PATH_LITERAL("simple_test.tflite"));
+    EXPECT_TRUE(
+        base::PathService::Get(base::DIR_SOURCE_ROOT, &model_file_path));
+
+    model_file_path = model_file_path.Append(FILE_PATH_LITERAL("components"))
+                          .Append(FILE_PATH_LITERAL("test"))
+                          .Append(FILE_PATH_LITERAL("data"))
+                          .Append(FILE_PATH_LITERAL("optimization_guide"))
+                          .Append(FILE_PATH_LITERAL("simple_test.tflite"));
     cmd->AppendSwitchASCII(tflite_experiment::switches::kTFLiteModelPath,
-                           g_test_data_directory.MaybeAsASCII());
+                           model_file_path.MaybeAsASCII());
 
     // Set TFLite experiment log path.
     cmd->AppendSwitchASCII(

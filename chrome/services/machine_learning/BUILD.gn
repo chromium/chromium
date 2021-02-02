@@ -67,7 +67,7 @@ source_set("unit_tests") {
     sources += [ "in_process_tflite_predictor_unittest.cc" ]
   }
 
-  data = [ "//chrome/test/data/" ]
+  data = [ "//components/test/data/optimization_guide" ]
 
   deps = [
     ":machine_learning",
@@ -84,7 +84,7 @@ source_set("unit_tests") {
 
 if (build_with_tflite_lib) {
   copy("tflite_simple_test") {
-    sources = [ "//chrome/test/data/simple_test.tflite" ]
+    sources = [ "//components/test/data/optimization_guide/simple_test.tflite" ]
     outputs = [ "$root_out_dir/test_data/simple_test.tflite" ]
   }
 }

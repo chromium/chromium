@@ -46,9 +46,10 @@ class InProcessTFLitePredictorTest : public ::testing::Test {
     EXPECT_TRUE(
         base::PathService::Get(base::DIR_SOURCE_ROOT, &model_file_path));
 
-    model_file_path = model_file_path.Append(FILE_PATH_LITERAL("chrome"))
+    model_file_path = model_file_path.Append(FILE_PATH_LITERAL("components"))
                           .Append(FILE_PATH_LITERAL("test"))
                           .Append(FILE_PATH_LITERAL("data"))
+                          .Append(FILE_PATH_LITERAL("optimization_guide"))
                           .Append(FILE_PATH_LITERAL("simple_test.tflite"));
     EXPECT_TRUE(base::PathExists(model_file_path));
     return model_file_path.AsUTF8Unsafe();
