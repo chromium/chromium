@@ -176,14 +176,12 @@ void URLLoaderImpl::Start(oldhttp::URLRequest request, Callback callback) {
 
   // Start the request.
   net_request_->Start();
-  is_loading_ = true;
 }
 
 void URLLoaderImpl::FollowRedirect(Callback callback) {
   if (!net_request_ || auto_follow_redirects_ ||
       !net_request_->is_redirecting()) {
     callback(BuildResponse(net::ERR_INVALID_HANDLE));
-    return;
   }
 
   done_callback_ = std::move(callback);
@@ -194,10 +192,15 @@ void URLLoaderImpl::FollowRedirect(Callback callback) {
 void URLLoaderImpl::QueryStatus(QueryStatusCallback callback) {
   oldhttp::URLLoaderStatus status;
 
-  status.is_loading = is_loading_;
-  if (net_request_ && !is_loading_) {
+  if (!net_request_) {
+    status.is_loading = false;
+  } else if (net_request_->is_pending() || net_request_->is_redirecting()) {
+    status.is_loading = true;
+  } else {
+    status.is_loading = false;
     status.error = BuildError(net_error_);
   }
+
   callback(std::move(status));
 }
 
@@ -247,7 +250,6 @@ void URLLoaderImpl::OnResponseStarted(net::URLRequest* request, int net_error) {
 
   // Return early if the request failed.
   if (net_error_ != net::OK) {
-    is_loading_ = false;
     std::move(done_callback_)(BuildResponse(net_error_));
     return;
   }
@@ -258,13 +260,11 @@ void URLLoaderImpl::OnResponseStarted(net::URLRequest* request, int net_error) {
     zx::socket read_socket;
     zx_status_t result = zx::socket::create(0, &read_socket, &write_socket_);
     if (result != ZX_OK) {
-      is_loading_ = false;
-      net_error_ = net::ERR_INSUFFICIENT_RESOURCES;
       ZX_DLOG(WARNING, result) << "zx_socket_create";
-      std::move(done_callback_)(BuildResponse(net_error_));
+      std::move(done_callback_)(BuildResponse(net::ERR_INSUFFICIENT_RESOURCES));
       return;
     }
-    oldhttp::URLResponse response = BuildResponse(net_error_);
+    oldhttp::URLResponse response = BuildResponse(net::OK);
     response.body = oldhttp::URLBody::New();
     response.body->set_stream(std::move(read_socket));
     std::move(done_callback_)(std::move(response));
@@ -311,9 +311,6 @@ void URLLoaderImpl::ReadNextBuffer() {
 
 bool URLLoaderImpl::WriteResponseBytes(int result) {
   if (result < 0) {
-    is_loading_ = false;
-    net_error_ = result;
-
     // Signal read error back to the client.
     if (write_socket_) {
       DCHECK(response_body_mode_ == oldhttp::ResponseBodyMode::STREAM ||
@@ -331,8 +328,6 @@ bool URLLoaderImpl::WriteResponseBytes(int result) {
 
   if (result == 0) {
     // Read complete.
-    is_loading_ = false;
-
     if (write_socket_) {
       DCHECK(response_body_mode_ == oldhttp::ResponseBodyMode::STREAM ||
              response_body_mode_ ==
@@ -349,8 +344,8 @@ bool URLLoaderImpl::WriteResponseBytes(int result) {
         response.body = std::move(body);
         std::move(done_callback_)(std::move(response));
       } else {
-        net_error_ = net::ERR_INSUFFICIENT_RESOURCES;
-        std::move(done_callback_)(BuildResponse(net_error_));
+        std::move(done_callback_)(
+            BuildResponse(net::ERR_INSUFFICIENT_RESOURCES));
       }
     }
     return false;
@@ -375,8 +370,6 @@ bool URLLoaderImpl::WriteResponseBytes(int result) {
       // Something went wrong, attempt to shut down the socket and close it.
       ZX_DLOG(WARNING, status) << "zx_socket_write";
       write_socket_ = zx::socket();
-      is_loading_ = false;
-      net_error_ = net::ERR_FAILED;
       return false;
     }
   } else {
