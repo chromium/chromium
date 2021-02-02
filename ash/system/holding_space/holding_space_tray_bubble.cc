@@ -63,6 +63,7 @@ void RecordTimeFromFirstAvailabilityToFirstEntry(PrefService* prefs) {
 }
 
 // HoldingSpaceTrayBubbleEventHandler ------------------------------------------
+
 class HoldingSpaceTrayBubbleEventHandler : public ui::EventHandler {
  public:
   explicit HoldingSpaceTrayBubbleEventHandler(
@@ -240,12 +241,18 @@ class HoldingSpaceTrayBubble::ChildBubbleContainer
     start_layout_ = current_layout_;
     target_layout_ = target_layout;
 
-    // Animate changes from the `current_layout_` to the `target_layout_`.
+    // Animate changes from the `current_layout_` to the `target_layout_`. Note
+    // the use of a throughput tracker to record layout animation smoothness.
     layout_animation_ = std::make_unique<gfx::SlideAnimation>(this);
     layout_animation_->SetSlideDuration(
         ui::ScopedAnimationDurationScaleMode::duration_multiplier() *
         kAnimationDuration);
     layout_animation_->SetTweenType(gfx::Tween::Type::FAST_OUT_SLOW_IN);
+    layout_animation_throughput_tracker_ =
+        GetWidget()->GetCompositor()->RequestNewThroughputTracker();
+    layout_animation_throughput_tracker_->Start(
+        metrics_util::ForSmoothness(base::BindRepeating(
+            holding_space_metrics::RecordBubbleResizeAnimationSmoothness)));
     layout_animation_->Show();
   }
 
@@ -261,6 +268,10 @@ class HoldingSpaceTrayBubble::ChildBubbleContainer
   void AnimationEnded(const gfx::Animation* animation) override {
     current_layout_ = target_layout_;
     PreferredSizeChanged();
+
+    // Record layout animation smoothness.
+    layout_animation_throughput_tracker_->Stop();
+    layout_animation_throughput_tracker_.reset();
   }
 
  private:
@@ -275,6 +286,7 @@ class HoldingSpaceTrayBubble::ChildBubbleContainer
   mutable views::ProposedLayout target_layout_;   // Layout being animated to.
 
   std::unique_ptr<gfx::SlideAnimation> layout_animation_;
+  base::Optional<ui::ThroughputTracker> layout_animation_throughput_tracker_;
 };
 
 // HoldingSpaceTrayBubble ------------------------------------------------------
