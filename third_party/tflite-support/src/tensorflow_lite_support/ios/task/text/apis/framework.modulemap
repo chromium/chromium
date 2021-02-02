@@ -1,0 +1,4 @@
+framework module TensorFlowLiteTaskText {
+    umbrella header "TFLTaskText.h"
+    export *
+}

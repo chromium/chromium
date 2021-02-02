@@ -1,0 +1,38 @@
+From 81287a62d65139f29c512fed88ed734bef2c33f5 Mon Sep 17 00:00:00 2001
+From: Michael Crouse <mcrouse@chromium.org>
+Date: Tue, 22 Dec 2020 14:25:39 -0800
+Subject: [PATCH] use StringPiece for string_view
+
+---
+ .../cc/text/tokenizers/regex_tokenizer.cc              | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/third_party/tflite-support/src/tensorflow_lite_support/cc/text/tokenizers/regex_tokenizer.cc b/third_party/tflite-support/src/tensorflow_lite_support/cc/text/tokenizers/regex_tokenizer.cc
+index 38aff8805b30..44c43b2d5086 100644
+--- a/third_party/tflite-support/src/tensorflow_lite_support/cc/text/tokenizers/regex_tokenizer.cc
++++ b/third_party/tflite-support/src/tensorflow_lite_support/cc/text/tokenizers/regex_tokenizer.cc
+@@ -61,16 +61,16 @@ RegexTokenizer::RegexTokenizer(const std::string& regex_pattern,
+ }
+ 
+ TokenizerResult RegexTokenizer::Tokenize(const std::string& input) {
+-  absl::string_view leftover(input.data());
+-  absl::string_view last_end = leftover;
++  re2::StringPiece leftover(input.data());
++  re2::StringPiece last_end = leftover;
+ 
+   TokenizerResult result;
+ 
+   // Keep looking for split points until we have reached the end of the input.
+-  absl::string_view extracted_delim_token;
++  re2::StringPiece extracted_delim_token;
+   while (RE2::FindAndConsume(&leftover, delim_re_, &extracted_delim_token)) {
+-    absl::string_view token(last_end.data(),
+-                            extracted_delim_token.data() - last_end.data());
++    re2::StringPiece token(last_end.data(),
++                           extracted_delim_token.data() - last_end.data());
+     bool has_non_empty_token = token.length() > 0;
+ 
+     last_end = leftover;
+-- 
+2.29.2.729.g45daf8777d-goog
+

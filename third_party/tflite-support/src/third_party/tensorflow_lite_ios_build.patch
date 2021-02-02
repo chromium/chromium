@@ -1,0 +1,37 @@
+diff --git a/tensorflow/lite/experimental/ios/BUILD.apple b/tensorflow/lite/experimental/ios/BUILD
+similarity index 99%
+rename from tensorflow/lite/experimental/ios/BUILD.apple
+rename to tensorflow/lite/experimental/ios/BUILD
+index e1e3be2bcd..912d27702b 100644
+--- a/tensorflow/lite/experimental/ios/BUILD.apple
++++ b/tensorflow/lite/experimental/ios/BUILD
+@@ -21,6 +21,7 @@ sh_binary(
+     srcs = [
+         "hide_symbols_with_allowlist.sh",
+     ],
++    visibility = ["//visibility:public"],
+ )
+ 
+ strip_common_include_path_prefix(
+diff --git a/tensorflow/lite/experimental/ios/ios.bzl b/tensorflow/lite/experimental/ios/ios.bzl
+index 63747eb8d1..07bcb49de0 100644
+--- a/tensorflow/lite/experimental/ios/ios.bzl
++++ b/tensorflow/lite/experimental/ios/ios.bzl
+@@ -60,7 +60,7 @@ def tflite_ios_static_framework(
+            "BUNDLE_NAME=\"" + bundle_name + "\" " +
+            "ALLOWLIST_FILE_PATH=\"$(location " + allowlist_symbols_file + ")\" " +
+            "OUTPUT=\"$(OUTS)\" " +
+-           "\"$(location //tensorflow/lite/experimental/ios:hide_symbols_with_allowlist)\"")
++           "\"$(location @org_tensorflow//tensorflow/lite/experimental/ios:hide_symbols_with_allowlist)\"")
+ 
+     native.genrule(
+         name = name,
+@@ -68,7 +68,7 @@ def tflite_ios_static_framework(
+         outs = [name + ".zip"],
+         cmd = cmd,
+         tools = [
+-            "//tensorflow/lite/experimental/ios:hide_symbols_with_allowlist",
++            "@org_tensorflow//tensorflow/lite/experimental/ios:hide_symbols_with_allowlist",
+         ],
+     )
+ 

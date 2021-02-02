@@ -1,0 +1,21 @@
+Name: libutf
+Short Name: libutf
+URL: https://github.com/cls/libutf
+Version: ee5074db68f498a5c802dc9f1645f396c219938a
+Date: 2021/01/05
+License: MIT License
+License File: LICENSE
+Security Critical: Yes
+CPEPrefix: unknown
+
+Description:
+This is a C89 UTF-8 library, with an API compatible with that of Plan 9's libutf.
+
+Modifications:
+- Add dynamically configured files via awk (patches/0001-adding-awk-built-files.patch)
+
+
+Update Process:
+1) Clone the libutf github repo at the desired commit into src/
+2) Generate the static files by running make in the src/ directory
+3) Apply each patch listed above residing in patches/ using `git apply patches/$PATCHFILE`

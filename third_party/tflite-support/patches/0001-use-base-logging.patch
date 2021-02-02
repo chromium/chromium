@@ -1,0 +1,26 @@
+From 5307d81798215dae084b5079e797fd4408040340 Mon Sep 17 00:00:00 2001
+From: Michael Crouse <mcrouse@chromium.org>
+Date: Tue, 22 Dec 2020 14:18:09 -0800
+Subject: [PATCH] use base logging
+
+---
+ .../src/tensorflow_lite_support/cc/port/default/statusor.cc     | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/third_party/tflite-support/src/tensorflow_lite_support/cc/port/default/statusor.cc b/third_party/tflite-support/src/tensorflow_lite_support/cc/port/default/statusor.cc
+index 547a79192324..182c37e4aaf6 100644
+--- a/third_party/tflite-support/src/tensorflow_lite_support/cc/port/default/statusor.cc
++++ b/third_party/tflite-support/src/tensorflow_lite_support/cc/port/default/statusor.cc
+@@ -18,8 +18,8 @@ limitations under the License.
+ 
+ #include <utility>
+ 
+-#include <glog/logging.h>
+ #include "absl/strings/str_cat.h"
++#include "base/logging.h"
+ 
+ namespace tflite {
+ namespace support {
+-- 
+2.29.2.729.g45daf8777d-goog
+

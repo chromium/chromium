@@ -1,0 +1,118 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/sanitizers/sanitizers.gni")
+import("//third_party/flatbuffers/flatbuffer.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+config("tflite_support_config") {
+  include_dirs = [
+    "src",
+    "src/tensorflow_lite_support",
+  ]
+}
+
+proto_library("tflite-support-proto") {
+  proto_in_dir = "src"
+  sources =
+      [ "src/tensorflow_lite_support/cc/task/core/proto/external_file.proto" ]
+  cc_generator_options = "lite=true:"
+}
+
+config("tflite_support_flags") {
+  cflags = [
+    "-Wno-comment",
+    "-Wno-extern-c-compat",
+    "-Wno-sign-compare",
+  ]
+  cflags_cc = [ "-frtti" ]
+}
+
+flatbuffer("metadata_schema") {
+  sources = [ "src/tensorflow_lite_support/metadata/metadata_schema.fbs" ]
+}
+
+source_set("tflite-support_headers") {
+  public = [
+    "src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h",
+  ]
+
+  deps = [
+    ":tflite-support-proto",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/flatbuffers",
+    "//third_party/libzip",
+    "//third_party/re2",
+    "//third_party/smhasher:murmurhash2",
+    "//third_party/tflite",
+    "//third_party/tflite:tflite-config-proto",
+    "//third_party/utf",
+  ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+
+  configs += [
+    ":tflite_support_flags",
+    ":tflite_support_config",
+    "//build/config/compiler:no_chromium_code",
+  ]
+
+  visibility = [ ":*" ]
+}
+
+static_library("tflite-support") {
+  sources = [
+    "src/tensorflow_lite_support/cc/common.cc",
+    "src/tensorflow_lite_support/cc/common.h",
+    "src/tensorflow_lite_support/cc/port/default/statusor.cc",
+    "src/tensorflow_lite_support/cc/port/default/statusor.h",
+    "src/tensorflow_lite_support/cc/port/default/statusor_internals.h",
+    "src/tensorflow_lite_support/cc/port/default/tflite_wrapper.cc",
+    "src/tensorflow_lite_support/cc/port/default/tflite_wrapper.h",
+    "src/tensorflow_lite_support/cc/port/status_macros.h",
+    "src/tensorflow_lite_support/cc/port/statusor.h",
+    "src/tensorflow_lite_support/cc/task/core/base_task_api.h",
+    "src/tensorflow_lite_support/cc/task/core/category.h",
+    "src/tensorflow_lite_support/cc/task/core/external_file_handler.cc",
+    "src/tensorflow_lite_support/cc/task/core/external_file_handler.h",
+    "src/tensorflow_lite_support/cc/task/core/proto/external_file_proto_inc.h",
+    "src/tensorflow_lite_support/cc/task/core/task_api_factory.h",
+    "src/tensorflow_lite_support/cc/task/core/task_utils.cc",
+    "src/tensorflow_lite_support/cc/task/core/task_utils.h",
+    "src/tensorflow_lite_support/cc/task/core/tflite_engine.cc",
+    "src/tensorflow_lite_support/cc/task/core/tflite_engine.h",
+    "src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.cc",
+    "src/tensorflow_lite_support/cc/text/tokenizers/regex_tokenizer.cc",
+    "src/tensorflow_lite_support/cc/text/tokenizers/regex_tokenizer.h",
+    "src/tensorflow_lite_support/cc/text/tokenizers/tokenizer.h",
+    "src/tensorflow_lite_support/cc/utils/common_utils.cc",
+    "src/tensorflow_lite_support/cc/utils/common_utils.h",
+    "src/tensorflow_lite_support/metadata/cc/metadata_extractor.cc",
+    "src/tensorflow_lite_support/metadata/cc/metadata_extractor.h",
+  ]
+
+  deps = [
+    ":metadata_schema",
+    ":tflite-support-proto",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/flatbuffers",
+    "//third_party/libzip",
+    "//third_party/re2",
+    "//third_party/smhasher:murmurhash2",
+    "//third_party/tflite",
+    "//third_party/tflite:tflite-config-proto",
+    "//third_party/utf",
+  ]
+
+  public_deps = [ ":tflite-support_headers" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+
+  configs += [
+    ":tflite_support_flags",
+    "//build/config/compiler:no_chromium_code",
+  ]
+
+  public_configs = [ ":tflite_support_config" ]
+  visibility = [ ":*" ]
+}
