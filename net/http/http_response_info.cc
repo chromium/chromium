@@ -167,6 +167,7 @@ HttpResponseInfo::ConnectionInfoCoarse HttpResponseInfo::ConnectionInfoToCoarse(
     case CONNECTION_INFO_QUIC_DRAFT_28:
     case CONNECTION_INFO_QUIC_DRAFT_29:
     case CONNECTION_INFO_QUIC_T051:
+    case CONNECTION_INFO_QUIC_RFC_V1:
       return CONNECTION_INFO_COARSE_QUIC;
 
     case CONNECTION_INFO_UNKNOWN:
@@ -527,6 +528,7 @@ bool HttpResponseInfo::DidUseQuic() const {
     case CONNECTION_INFO_QUIC_DRAFT_28:
     case CONNECTION_INFO_QUIC_DRAFT_29:
     case CONNECTION_INFO_QUIC_T051:
+    case CONNECTION_INFO_QUIC_RFC_V1:
       return true;
     case NUM_OF_CONNECTION_INFOS:
       NOTREACHED();
@@ -623,6 +625,8 @@ std::string HttpResponseInfo::ConnectionInfoToString(
       return "http2+quic/999";
     case CONNECTION_INFO_QUIC_T051:
       return "h3-T051";
+    case CONNECTION_INFO_QUIC_RFC_V1:
+      return "h3";
     case NUM_OF_CONNECTION_INFOS:
       break;
   }
