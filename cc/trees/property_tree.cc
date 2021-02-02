@@ -2091,21 +2091,19 @@ const AnimationScaleData& PropertyTrees::GetAnimationScaleData(
   if (animation_scale.affected_by_invalid_scale ||
       failed_for_multiple_scale_animations) {
     // Will use the parent's maximum_to_screen_scale.
-  } else if (!animation_scale.affected_by_animation_scale) {
-    // No affecting scale animation. Calculate the current to_screen scale.
+  } else if (!node->to_screen_is_potentially_animated) {
+    // No transform animations. Calculate the current to_screen scale.
     gfx::Vector2dF to_screen_scales =
         MathUtil::ComputeTransform2dScaleComponents(
             transform_tree.ToScreen(transform_id), kInvalidScale);
     animation_scale.maximum_to_screen_scale =
         std::max(to_screen_scales.x(), to_screen_scales.y());
     return animation_scale;
-  } else if (ancestor_affected_by_animation_scale) {
-    DCHECK(!node_affected_by_animation_scale);
+  } else if (!node->has_potential_animation) {
     gfx::Vector2dF local_scales =
         MathUtil::ComputeTransform2dScaleComponents(node->local, 1.0f);
     local_maximum_scale = std::max(local_scales.x(), local_scales.y());
   } else {
-    DCHECK(node_affected_by_animation_scale);
     DCHECK_NE(node->maximum_animation_scale, kInvalidScale);
     local_maximum_scale = node->maximum_animation_scale;
   }

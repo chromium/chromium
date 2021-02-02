@@ -6092,6 +6092,52 @@ TEST_F(DrawPropertiesTest, AnimationScales) {
   EXPECT_TRUE(AnimationAffectedByInvalidScale(child2));
 }
 
+TEST_F(DrawPropertiesTest, AnimationScaleFromSmallToOne) {
+  LayerImpl* root = root_layer();
+  root->SetBounds(gfx::Size(1, 1));
+  auto* parent = AddLayer<LayerImpl>();
+  parent->SetBounds(gfx::Size(1, 1));
+  auto* child = AddLayer<LayerImpl>();
+  child->SetBounds(gfx::Size(1, 1));
+  auto* grandchild = AddLayer<LayerImpl>();
+  grandchild->SetBounds(gfx::Size(1, 1));
+  SetElementIdsForTesting();
+
+  gfx::Transform parent_scale;
+  parent_scale.Scale(1, 2);
+  gfx::Transform small_scale;
+  small_scale.Scale(0.1, 0.2);
+
+  CopyProperties(root, parent);
+  CreateTransformNode(parent).local = parent_scale;
+  CopyProperties(parent, child);
+  CreateTransformNode(child).local = small_scale;
+  CopyProperties(child, grandchild);
+  CreateTransformNode(grandchild).local = small_scale;
+
+  TransformOperations small_scale_operations;
+  small_scale_operations.AppendMatrix(small_scale);
+  TransformOperations scale_one_operations;
+
+  // Both child and grandchild animate scale from 0.1x0.2 to 1.
+  AddAnimatedTransformToElementWithAnimation(
+      child->element_id(), timeline_impl(), 1.0, small_scale_operations,
+      scale_one_operations);
+  AddAnimatedTransformToElementWithAnimation(
+      grandchild->element_id(), timeline_impl(), 1.0, small_scale_operations,
+      scale_one_operations);
+  UpdateActiveTreeDrawProperties();
+
+  EXPECT_FLOAT_EQ(2.f, MaximumAnimationToScreenScale(grandchild));
+  EXPECT_FLOAT_EQ(2.f, MaximumAnimationToScreenScale(child));
+  EXPECT_FLOAT_EQ(2.f, MaximumAnimationToScreenScale(parent));
+  EXPECT_FLOAT_EQ(1.f, MaximumAnimationToScreenScale(root));
+  EXPECT_FALSE(AnimationAffectedByInvalidScale(grandchild));
+  EXPECT_FALSE(AnimationAffectedByInvalidScale(child));
+  EXPECT_FALSE(AnimationAffectedByInvalidScale(parent));
+  EXPECT_FALSE(AnimationAffectedByInvalidScale(root));
+}
+
 TEST_F(DrawPropertiesTest, VisibleContentRectInChildRenderSurface) {
   LayerImpl* root = root_layer();
   LayerImpl* clip = AddLayer<LayerImpl>();
