@@ -22,7 +22,6 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/assistant/public/cpp/features.h"

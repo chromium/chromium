@@ -17,7 +17,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/crosapi/browser_util.h"
 #include "chrome/browser/ui/ash/system_tray_client.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/cryptohome/system_salt_getter.h"
 #include "components/component_updater/component_updater_service.h"

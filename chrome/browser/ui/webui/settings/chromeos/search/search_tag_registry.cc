@@ -12,7 +12,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_concept.h"
 #include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace chromeos {

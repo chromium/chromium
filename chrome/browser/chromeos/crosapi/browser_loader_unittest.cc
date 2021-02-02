@@ -11,7 +11,6 @@
 #include "chrome/browser/chromeos/crosapi/browser_util.h"
 #include "chrome/browser/component_updater/fake_cros_component_manager.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/update_client/update_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"

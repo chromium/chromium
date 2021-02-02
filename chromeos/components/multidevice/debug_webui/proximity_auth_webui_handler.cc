@@ -21,7 +21,6 @@
 #include "chromeos/components/proximity_auth/messenger.h"
 #include "chromeos/components/proximity_auth/remote_device_life_cycle_impl.h"
 #include "chromeos/components/proximity_auth/remote_status_update.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/device_sync/proto/enum_util.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"

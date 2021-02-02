@@ -18,7 +18,6 @@
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/proximity_auth/messenger_observer.h"
 #include "chromeos/components/proximity_auth/remote_status_update.h"
-#include "chromeos/constants/chromeos_features.h"
 
 namespace proximity_auth {
 

@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_tag_registry.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"

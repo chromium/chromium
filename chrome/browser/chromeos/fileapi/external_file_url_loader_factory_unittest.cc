@@ -14,7 +14,6 @@
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/common/child_process_host.h"
 #include "content/public/common/url_constants.h"
