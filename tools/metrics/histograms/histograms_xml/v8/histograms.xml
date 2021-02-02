@@ -829,7 +829,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.TurboFanOptimizeConcurrentTotalTime" units="microseconds"
-    expires_after="2021-05-16">
+    expires_after="2021-08-01">
   <owner>bmeurer@chromium.org</owner>
   <owner>mslekova@chromium.org</owner>
   <summary>
@@ -1247,7 +1247,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.WasmTierUpModuleMicroSeconds" units="microseconds"
-    expires_after="2021-05-30">
+    expires_after="2021-08-01">
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
