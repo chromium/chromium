@@ -151,6 +151,8 @@ const SurveyIdentifiers surveys[] = {
      "bAeiT5J4P0ugnJ3q1cK0Ra6jg7s8"},
     {&features::kHaTSDesktopDevToolsIssuesCSP, "devtools-issues-csp",
      "c9fjDmwjb0ugnJ3q1cK0USeAJJ9C"},
+    {&features::kHaTSDesktopDevToolsLayoutPanel, "devtools-layout-panel",
+     "hhoMFLFq70ugnJ3q1cK0XYpqkErh"},
     {&features::kHappinessTrackingSurveysForDesktopSettings,
      kHatsSurveyTriggerSettings, kTriggerIdProvidedByFeatureParams},
     {&features::kHappinessTrackingSurveysForDesktopSettingsPrivacy,

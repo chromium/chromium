@@ -463,6 +463,11 @@ const base::Feature kHaTSDesktopDevToolsIssuesHeavyAd{
 const base::Feature kHaTSDesktopDevToolsIssuesCSP{
     "HaTSDesktopDevToolsIssuesCSP", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables or disables the Happiness Tracking System for Layout panel in Chrome
+// DevTools on Desktop.
+const base::Feature kHaTSDesktopDevToolsLayoutPanel{
+    "HaTSDesktopDevToolsLayoutPanel", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables the migration of Happiness Tracking Surveys on Desktop (to the latest
 // version).
 const base::Feature kHappinessTrackingSurveysForDesktopMigration{
