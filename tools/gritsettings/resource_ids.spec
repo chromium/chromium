@@ -394,6 +394,10 @@
   "chromeos/resources/chromeos_resources.grd": {
     "includes": [2660],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chromeos/components/eche_app_ui/chromeos_eche_app_resources.grd": {
+    "META": {"sizes": {"includes": [50],}},
+    "includes": [2670],
+  },
   # END chromeos/ section.
 
   # START components/ section.

@@ -1,0 +1,7 @@
+include_rules = [
+  # Do not add chrome here (use a delegate instead).
+  "+chromeos/grit/chromeos_sample_system_web_app_resources.h",
+  "+content/public/browser",
+  "+content/public/common",
+  "+ui/webui",
+]

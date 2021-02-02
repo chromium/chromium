@@ -1,0 +1,53 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/test/base/js2gtest.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(is_chromeos, "Eche App is Chrome OS only")
+
+static_library("eche_app_ui") {
+  sources = [
+    "eche_app_ui.cc",
+    "eche_app_ui.h",
+    "url_constants.cc",
+    "url_constants.h",
+  ]
+
+  deps = [
+    "//chromeos/constants",
+    "//chromeos/resources:eche_app_resources",
+    "//content/public/browser",
+    "//ui/webui",
+  ]
+}
+
+js_type_check("closure_compile") {
+  deps = [ ":app" ]
+}
+
+js_library("app") {
+  sources = [ "resources/app.js" ]
+}
+
+js2gtest("browser_tests_js") {
+  test_type = "mojo_lite_webui"
+
+  sources = [ "test/eche_app_ui_browsertest.js" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+}
+
+generate_grd("build_grd") {
+  input_files_base_dir = rebase_path("resources", "//")
+  input_files = [
+    "index.html",
+    "app.js",
+    "app.css",
+  ]
+  manifest_files = []
+  grd_prefix = "chromeos_eche_app"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+}

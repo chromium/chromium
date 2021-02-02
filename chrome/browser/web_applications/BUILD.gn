@@ -105,6 +105,7 @@ source_set("web_applications") {
       "//ash/public/cpp",
       "//chromeos/components/camera_app_ui",
       "//chromeos/components/connectivity_diagnostics",
+      "//chromeos/components/eche_app_ui",
       "//chromeos/components/help_app_ui",
       "//chromeos/components/media_app_ui",
       "//chromeos/constants",
