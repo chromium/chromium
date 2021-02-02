@@ -8,6 +8,7 @@ import("//tools/polymer/html_to_js.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 component_js_files = [
+  "emoji_button.js",
   "emoji_picker.js",
   "emoji_group.js",
   "emoji_group_button.js",
@@ -81,20 +82,28 @@ js_library("emoji_picker") {
   externs_list = [ "$externs_path/chrome_send.js" ]
 }
 
-js_library("emoji_group") {
-  deps = [
-    ":events",
-    ":types",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
 js_library("emoji_group_button") {
   deps = [
     ":events",
     ":icons",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
+  ]
+}
+
+js_library("emoji_group") {
+  deps = [
+    ":emoji_button",
+    ":types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("emoji_button") {
+  deps = [
+    ":events",
+    ":types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 
@@ -118,6 +127,7 @@ js_library("store") {
 js_type_check("closure_compile") {
   is_polymer3 = true
   deps = [
+    ":emoji_button",
     ":emoji_group",
     ":emoji_group_button",
     ":emoji_picker",

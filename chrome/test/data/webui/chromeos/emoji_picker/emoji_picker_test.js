@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {EmojiGroupButton} from 'chrome://emoji-picker/emoji_group_button.js';
 import {EmojiPicker} from 'chrome://emoji-picker/emoji_picker.js';
 import {DATA_LOADED_EVENT} from 'chrome://emoji-picker/events.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
@@ -78,7 +77,8 @@ suite('<emoji-picker>', () => {
 
     // wait so emoji-groups render and we have something to scroll to.
     await waitForCondition(
-        () => findInEmojiPicker(['[data-group="1"] > emoji-group', 'button']));
+        () => findInEmojiPicker(
+            ['[data-group="1"] > emoji-group', 'emoji-button', 'button']));
     secondButton.click();
 
     // wait while waiting for scroll to happen and update buttons.
@@ -99,15 +99,14 @@ suite('<emoji-picker>', () => {
   test('recently used should be populated after emoji is clicked', async () => {
     // yield to allow emoji-group and emoji buttons to render.
     const emojiButton = await waitForCondition(
-        () => findInEmojiPicker([
-          '[data-group="0"] > emoji-group', '.emoji-group-emoji', 'button'
-        ]));
+        () => findInEmojiPicker(
+            ['[data-group="0"] > emoji-group', 'emoji-button', 'button']));
     emojiButton.click();
 
     // wait until emoji exists in recently used section.
     const recentlyUsed = await waitForCondition(
         () => findInEmojiPicker(
-            ['[data-group=history] > emoji-group', 'button']));
+            ['[data-group=history] > emoji-group', 'emoji-button', 'button']));
 
     // check text is correct.
     const recentText = recentlyUsed.innerText;

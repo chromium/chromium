@@ -1,6 +1,5 @@
 <style>
   :root {
-    --emoji-background: transparent;
     --emoji-per-row: 7;
     --emoji-size: 32px;
   }
@@ -20,42 +19,12 @@
     grid-template-columns: repeat(var(--emoji-per-row), 1fr);
     justify-items: center;
   }
-
-  .emoji-button {
-    background: var(--emoji-background);
-    border: none;
-    border-radius: 0;
-    cursor: pointer;
-    font-size: 17px;
-    height: var(--emoji-size);
-    line-height: 100%;
-    padding: 0;
-    text-align: center;
-    width: var(--emoji-size);
-  }
-  .emoji-button:focus,
-  .emoji-button:active {
-    --emoji-background: rgba(var(--cr-hairline-rgb), 0.1);
-    outline-color: var(--cr-toggle-color);
-    outline-width: 2px;
-  }
-
-  .variants {
-    /* 4px grey triangle in bottom-right.
-     * 315 degrees means starting at bottom-right towards top-left.
-     */
-    background: linear-gradient(
-        315deg, var(--google-grey-refresh-500) 4px,
-        var(--emoji-background) 4px, var(--emoji-background));
-  }
 </style>
 
 <div class="emoji-group-heading">[[data.group]]</div>
 <div class="emoji-group-emoji">
   <template is="dom-repeat" items="[[data.emoji]]">
-    <button class$="emoji-button [[_className(item.alternates)]]"
-            on-click="onClickEmoji">
-      [[_renderEmoji(item.base)]]
-    </button>
+    <emoji-button emoji="[[item.base]]" variants="[[item.alternates]]">
+    </emoji-button>
   </template>
 </div>

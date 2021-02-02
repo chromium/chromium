@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './emoji_button.js';
+
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {createCustomEvent, EMOJI_BUTTON_EVENT} from './events.js';
-import {Codepoints, EmojiGroup} from './types.js';
+import {EmojiGroup} from './types.js';
 
 class EmojiGroupComponent extends PolymerElement {
   static get is() {
@@ -25,22 +26,6 @@ class EmojiGroupComponent extends PolymerElement {
 
   constructor() {
     super();
-  }
-
-  onClickEmoji(ev) {
-    this.dispatchEvent(createCustomEvent(
-        EMOJI_BUTTON_EVENT, {emoji: ev.path[0].textContent.trim()}));
-  }
-
-  /**
-   * @param {Codepoints} codepoints
-   */
-  _renderEmoji(codepoints) {
-    return String.fromCodePoint(...codepoints);
-  }
-
-  _className(alternates) {
-    return alternates.length > 0 ? 'variants' : '';
   }
 }
 
