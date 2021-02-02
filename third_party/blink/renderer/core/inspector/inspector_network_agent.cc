@@ -1022,10 +1022,14 @@ void InspectorNetworkAgent::WillSendRequestInternal(
 
   resources_data_->ResourceCreated(request_id, loader_id, request.Url(),
                                    post_data);
-  if (initiator_info.name == fetch_initiator_type_names::kXmlhttprequest)
+  if (initiator_info.name == fetch_initiator_type_names::kXmlhttprequest) {
     type = InspectorPageAgent::kXHRResource;
-  else if (initiator_info.name == fetch_initiator_type_names::kFetch)
+  } else if (initiator_info.name == fetch_initiator_type_names::kFetch) {
     type = InspectorPageAgent::kFetchResource;
+  } else if (initiator_info.name == fetch_initiator_type_names::kBeacon ||
+             initiator_info.name == fetch_initiator_type_names::kPing) {
+    type = InspectorPageAgent::kPingResource;
+  }
 
   if (pending_request_type_)
     type = *pending_request_type_;
@@ -1230,7 +1234,8 @@ void InspectorNetworkAgent::DidReceiveResourceResponse(
       saved_type == InspectorPageAgent::kXHRResource ||
       saved_type == InspectorPageAgent::kDocumentResource ||
       saved_type == InspectorPageAgent::kFetchResource ||
-      saved_type == InspectorPageAgent::kEventSourceResource) {
+      saved_type == InspectorPageAgent::kEventSourceResource ||
+      saved_type == InspectorPageAgent::kPingResource) {
     type = saved_type;
   }
 

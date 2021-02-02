@@ -428,6 +428,8 @@ String InspectorPageAgent::ResourceTypeJson(
       return protocol::Network::ResourceTypeEnum::Manifest;
     case kSignedExchangeResource:
       return protocol::Network::ResourceTypeEnum::SignedExchange;
+    case kPingResource:
+      return protocol::Network::ResourceTypeEnum::Ping;
     case kOtherResource:
       return protocol::Network::ResourceTypeEnum::Other;
   }
