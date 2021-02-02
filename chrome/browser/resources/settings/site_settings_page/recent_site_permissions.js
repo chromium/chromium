@@ -215,7 +215,7 @@ Polymer({
    */
   getPermissionsText_({recentPermissions}) {
     // Recently changed permisisons for a site are grouped into three buckets,
-    // each desrcribed by a single sentence.
+    // each described by a single sentence.
     const groupSentences = [
       this.getPermissionGroupText_(
           'Allowed',

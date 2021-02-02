@@ -126,31 +126,33 @@ suite('CrSettingsRecentSitePermissionsTest', function() {
     // Check that the text describing the changed permissions is correct.
     const i18n = testElement.i18n.bind(testElement);
 
-    const expectedPermissionString1 = i18n(
-                                          'recentPermissionAllowedTwoItems',
-                                          i18n('siteSettingsCameraMidSentence'),
-                                          i18n('siteSettingsAdsMidSentence')) +
-        `${i18n('sentenceEnd')} ` +
-        i18n('recentPermissionAutoBlockedOneItem',
-             i18n('siteSettingsMidiDevicesMidSentence')) +
-        `${i18n('sentenceEnd')} ` +
-        i18n('recentPermissionBlockedMoreThanTwoItems',
-             i18n('siteSettingsLocationMidSentence'), 2) +
-        i18n('sentenceEnd');
+    let allowed = i18n(
+        'recentPermissionAllowedTwoItems',
+        i18n('siteSettingsCameraMidSentence'),
+        i18n('siteSettingsAdsMidSentence'));
+    const autoBlocked = i18n(
+        'recentPermissionAutoBlockedOneItem',
+        i18n('siteSettingsMidiDevicesMidSentence'));
+    let blocked = i18n(
+        'recentPermissionBlockedMoreThanTwoItems',
+        i18n('siteSettingsLocationMidSentence'), 2);
+
+    const expectedPermissionString1 = `${allowed}${i18n('sentenceEnd')} ${
+        autoBlocked}${i18n('sentenceEnd')} ${blocked}${i18n('sentenceEnd')}`;
 
     const expectedPermissionString2 = i18n(
         'recentPermissionAllowedOneItem',
         i18n('siteSettingsHandlersMidSentence'));
 
+    allowed = i18n(
+        'recentPermissionAutoBlockedOneItem',
+        i18n('siteSettingsClipboardMidSentence'));
+    blocked = i18n(
+        'recentPermissionBlockedOneItem',
+        i18n('siteSettingsPopupsMidSentence'));
+
     const expectedPermissionString3 =
-        i18n(
-            'recentPermissionAutoBlockedOneItem',
-            i18n('siteSettingsClipboardMidSentence')) +
-        `${i18n('sentenceEnd')} ` +
-        i18n(
-            'recentPermissionBlockedOneItem',
-            i18n('siteSettingsPopupsMidSentence')) +
-        i18n('sentenceEnd');
+        `${allowed}${i18n('sentenceEnd')} ${blocked}${i18n('sentenceEnd')}`;
 
     assertEquals(
         expectedPermissionString1,
