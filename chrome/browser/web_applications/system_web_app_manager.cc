@@ -151,6 +151,7 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps(
         SystemAppInfo(
             "Diagnostics", GURL("chrome://diagnostics"),
             base::BindRepeating(&CreateWebAppInfoForDiagnosticsSystemWebApp)));
+    infos.at(SystemAppType::DIAGNOSTICS).minimum_window_size = {600, 390};
   }
 
   infos.emplace(SystemAppType::SETTINGS,
