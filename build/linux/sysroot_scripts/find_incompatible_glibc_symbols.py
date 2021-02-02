@@ -34,7 +34,7 @@ def get_replacements(nm_file, max_allowed_glibc_version):
       symbols[symbol] = set([version])
 
   replacements = []
-  for symbol, versions in symbols.iteritems():
+  for symbol, versions in symbols.items():
     if len(versions) <= 1:
       continue
     versions_parsed = [[

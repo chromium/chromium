@@ -22,7 +22,7 @@ def AddPackagesFromFile(file):
   lines = file.readlines()
   if len(lines) % 3 != 0:
     exit(1)
-  for i in xrange(0, len(lines), 3):
+  for i in range(0, len(lines), 3):
     packages[lines[i]] = (lines[i + 1], lines[i + 2])
 
 AddPackagesFromFile(open(sys.argv[1], 'r'))
@@ -30,5 +30,5 @@ AddPackagesFromFile(sys.stdin)
 
 output_file = open(sys.argv[1], 'w')
 
-for (package, (filename, sha256)) in packages.iteritems():
+for (package, (filename, sha256)) in packages.items():
   output_file.write(package + filename + sha256)
