@@ -21,22 +21,23 @@ namespace cc {
 using SlidingWindowHistogram = DroppedFrameCounter::SlidingWindowHistogram;
 
 void SlidingWindowHistogram::AddPercentDroppedFrame(
-    double percent_dropped_frame) {
+    double percent_dropped_frame,
+    size_t count) {
   DCHECK_GE(percent_dropped_frame, 0.0);
   DCHECK_GE(100.0, percent_dropped_frame);
-  histogram_bins_[static_cast<int>(round(percent_dropped_frame))]++;
-  total_count++;
+  histogram_bins_[static_cast<int>(std::round(percent_dropped_frame))] += count;
+  total_count_ += count;
 }
 
 uint32_t SlidingWindowHistogram::GetPercentDroppedFramePercentile(
     double percentile) const {
-  if (total_count == 0)
+  if (total_count_ == 0)
     return 0;
   DCHECK_GE(percentile, 0.0);
   DCHECK_GE(1.0, percentile);
   int current_index = 100;  // Last bin in historgam
   uint32_t skipped_counter = histogram_bins_[current_index];  // Last bin values
-  double samples_to_skip = (1 - percentile) * total_count;
+  double samples_to_skip = ((1 - percentile) * total_count_);
   // We expect this method to calculate higher end percentiles such 95 and as a
   // result we count from the last bin to find the correct bin.
   while (skipped_counter < samples_to_skip && current_index > 0) {
@@ -46,9 +47,22 @@ uint32_t SlidingWindowHistogram::GetPercentDroppedFramePercentile(
   return current_index;
 }
 
-void SlidingWindowHistogram::clear() {
+void SlidingWindowHistogram::Clear() {
   std::fill(std::begin(histogram_bins_), std::end(histogram_bins_), 0);
-  total_count = 0;
+  total_count_ = 0;
+}
+
+std::ostream& SlidingWindowHistogram::Dump(std::ostream& stream) const {
+  for (size_t i = 0; i < base::size(histogram_bins_); ++i) {
+    stream << i << ": " << histogram_bins_[i] << std::endl;
+  }
+  return stream << "Total: " << total_count_;
+}
+
+std::ostream& operator<<(
+    std::ostream& stream,
+    const DroppedFrameCounter::SlidingWindowHistogram& histogram) {
+  return histogram.Dump(stream);
 }
 
 DroppedFrameCounter::DroppedFrameCounter()
@@ -154,8 +168,9 @@ void DroppedFrameCounter::ReportFrames() {
       "Graphics.Smoothness.95pctPercentDroppedFrames_1sWindow",
       sliding_window_95pct_percent_dropped);
 
-  DCHECK_LE(sliding_window_95pct_percent_dropped,
-            static_cast<uint32_t>(round(sliding_window_max_percent_dropped_)));
+  DCHECK_LE(
+      sliding_window_95pct_percent_dropped,
+      static_cast<uint32_t>(std::round(sliding_window_max_percent_dropped_)));
 
   if (ukm_smoothness_data_ && total_frames > 0) {
     UkmSmoothnessData smoothness_data;
@@ -195,13 +210,14 @@ void DroppedFrameCounter::Reset() {
   dropped_frame_count_in_window_ = 0;
   fcp_received_ = false;
   sliding_window_ = {};
-  sliding_window_histogram_.clear();
+  sliding_window_histogram_.Clear();
   ring_buffer_.Clear();
   frame_sorter_.Reset();
 }
 
 base::TimeDelta DroppedFrameCounter::ComputeCurrentWindowSize() const {
-  DCHECK_GT(sliding_window_.size(), 0u);
+  if (sliding_window_.empty())
+    return {};
   return sliding_window_.back().first.frame_time +
          sliding_window_.back().first.interval -
          sliding_window_.front().first.frame_time;
@@ -215,28 +231,53 @@ void DroppedFrameCounter::NotifyFrameResult(const viz::BeginFrameArgs& args,
   // are not relevant.
   if (args.interval >= kSlidingWindowInterval)
     return;
-  sliding_window_.push({args, is_dropped});
-  if (is_dropped)
-    dropped_frame_count_in_window_++;
 
-  if (ComputeCurrentWindowSize() < kSlidingWindowInterval)
+  sliding_window_.push({args, is_dropped});
+
+  if (ComputeCurrentWindowSize() < kSlidingWindowInterval) {
+    if (is_dropped)
+      ++dropped_frame_count_in_window_;
     return;
+  }
 
   DCHECK_GE(dropped_frame_count_in_window_, 0u);
   DCHECK_GE(sliding_window_.size(), dropped_frame_count_in_window_);
 
-  double percent_dropped_frame =
-      fmin((dropped_frame_count_in_window_ * 100.0) / total_frames_in_window_,
-           100.0);
-  sliding_window_max_percent_dropped_ =
-      fmax(sliding_window_max_percent_dropped_, percent_dropped_frame);
-  sliding_window_histogram_.AddPercentDroppedFrame(percent_dropped_frame);
-
-  while (ComputeCurrentWindowSize() >= kSlidingWindowInterval) {
-    if (sliding_window_.front().second)  // If frame is dropped.
-      dropped_frame_count_in_window_--;
+  const auto max_sliding_window_start =
+      args.frame_time - kSlidingWindowInterval;
+  const auto max_difference = args.interval * 1.5;
+  while (ComputeCurrentWindowSize() > kSlidingWindowInterval) {
+    const auto removed_args = sliding_window_.front().first;
+    const auto removed_was_dropped = sliding_window_.front().second;
+    if (removed_was_dropped)
+      --dropped_frame_count_in_window_;
     sliding_window_.pop();
+    DCHECK(!sliding_window_.empty());
+
+    auto dropped = dropped_frame_count_in_window_;
+    if (ComputeCurrentWindowSize() <= kSlidingWindowInterval && is_dropped)
+      ++dropped;
+
+    // If two consecutive 'completed' frames are far apart from each other (in
+    // time), then report the 'dropped frame count' for the sliding window(s) in
+    // between. Note that the window-size still needs to be at least
+    // kSlidingWindowInterval.
+    const auto& remaining_oldest_args = sliding_window_.front().first;
+    const auto last_timestamp =
+        std::min(remaining_oldest_args.frame_time, max_sliding_window_start);
+    const auto difference = last_timestamp - removed_args.frame_time;
+    const size_t count =
+        difference > max_difference ? std::ceil(difference / args.interval) : 1;
+    double percent_dropped_frame =
+        std::min((dropped * 100.0) / total_frames_in_window_, 100.0);
+    sliding_window_histogram_.AddPercentDroppedFrame(percent_dropped_frame,
+                                                     count);
+    sliding_window_max_percent_dropped_ =
+        std::max(sliding_window_max_percent_dropped_, percent_dropped_frame);
   }
+
+  if (is_dropped)
+    ++dropped_frame_count_in_window_;
 }
 
 void DroppedFrameCounter::OnFcpReceived() {

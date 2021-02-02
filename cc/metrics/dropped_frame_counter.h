@@ -29,13 +29,16 @@ class CC_EXPORT DroppedFrameCounter {
 
   class CC_EXPORT SlidingWindowHistogram {
    public:
-    void AddPercentDroppedFrame(double percent_dropped_frame);
+    void AddPercentDroppedFrame(double percent_dropped_frame, size_t count = 1);
     uint32_t GetPercentDroppedFramePercentile(double percentile) const;
-    void clear();
+    void Clear();
+    std::ostream& Dump(std::ostream& stream) const;
+
+    uint32_t total_count() const { return total_count_; }
 
    private:
     uint32_t histogram_bins_[101] = {0};
-    uint32_t total_count = 0;
+    uint32_t total_count_ = 0;
   };
 
   DroppedFrameCounter();
@@ -88,6 +91,10 @@ class CC_EXPORT DroppedFrameCounter {
     return sliding_window_histogram_.GetPercentDroppedFramePercentile(0.95);
   }
 
+  const SlidingWindowHistogram* GetSlidingWindowHistogram() const {
+    return &sliding_window_histogram_;
+  }
+
  private:
   void NotifyFrameResult(const viz::BeginFrameArgs& args, bool is_dropped);
   base::TimeDelta ComputeCurrentWindowSize() const;
@@ -122,6 +129,10 @@ class CC_EXPORT DroppedFrameCounter {
 
   std::map<viz::BeginFrameId, ScrollStartInfo> scroll_start_per_frame_;
 };
+
+CC_EXPORT std::ostream& operator<<(
+    std::ostream&,
+    const DroppedFrameCounter::SlidingWindowHistogram&);
 
 }  // namespace cc
 
