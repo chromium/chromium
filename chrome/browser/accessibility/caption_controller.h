@@ -82,7 +82,10 @@ class CaptionController : public BrowserListObserver,
   void OnLiveCaptionEnabledChanged();
   void OnLiveCaptionLanguageChanged();
   bool IsLiveCaptionEnabled();
-  void UpdateUIEnabled();
+  void StartLiveCaption();
+  void StopLiveCaption();
+  void CreateUI();
+  void DestroyUI();
   void UpdateCaptionStyle();
 
   void UpdateAccessibilityCaptionHistograms();

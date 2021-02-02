@@ -64,6 +64,8 @@ void CaptionController::Init() {
   if (!base::FeatureList::IsEnabled(media::kLiveCaption))
     return;
 
+  base::UmaHistogramBoolean("Accessibility.LiveCaption.FeatureEnabled",
+                            base::FeatureList::IsEnabled(media::kLiveCaption));
   base::UmaHistogramBoolean(
       "Accessibility.LiveCaption.UseSodaForLiveCaption",
       base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption));
@@ -85,8 +87,11 @@ void CaptionController::Init() {
                           base::Unretained(this)));
 
   enabled_ = IsLiveCaptionEnabled();
-  if (enabled_)
-    UpdateUIEnabled();
+  if (enabled_) {
+    StartLiveCaption();
+  } else {
+    StopLiveCaption();
+  }
 
   content::BrowserAccessibilityState::GetInstance()
       ->AddUIThreadHistogramCallback(base::BindOnce(
@@ -100,41 +105,16 @@ void CaptionController::OnLiveCaptionEnabledChanged() {
     return;
   enabled_ = enabled;
 
-  if (enabled_) {
-    // Only create the UI when SODA is downloaded--otherwise, wait for the SODA
-    // download to complete before creating the UI. This checks whether SODA is
-    // registered, which implies that it has already downloaded previously. It's
-    // possible for someone to enable Live Caption while SODA is downloading, in
-    // which case the UI will construct prematurely.
-    // TODO(crbug.com/1160272): Check whether SODA has downloaded without
-    // blocking the process.
-    if (!base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption) ||
-        speech::SodaInstaller::GetInstance()->IsSodaRegistered()) {
-      UpdateUIEnabled();
-    } else {
-      // Register SODA component and download speech model.
-      g_browser_process->local_state()->SetTime(
-          prefs::kSodaScheduledDeletionTime, base::Time());
-      // Observe the SODA installation and call UpdateUIEnabled when it
-      // completes.
-      speech::SodaInstaller::GetInstance()->AddObserver(this);
-      speech::SodaInstaller::GetInstance()->InstallSoda(profile_->GetPrefs());
-      speech::SodaInstaller::GetInstance()->InstallLanguage(
-          profile_->GetPrefs());
-    }
+  if (enabled) {
+    StartLiveCaption();
   } else {
+    StopLiveCaption();
     // Schedule SODA to be deleted in 30 days if the feature is not enabled
     // before then.
     g_browser_process->local_state()->SetTime(
         prefs::kSodaScheduledDeletionTime,
         base::Time::Now() + base::TimeDelta::FromDays(kSodaCleanUpDelayInDays));
-    UpdateUIEnabled();
   }
-}
-
-void CaptionController::OnSodaInstalled() {
-  speech::SodaInstaller::GetInstance()->RemoveObserver(this);
-  UpdateUIEnabled();
 }
 
 void CaptionController::OnLiveCaptionLanguageChanged() {
@@ -147,42 +127,80 @@ bool CaptionController::IsLiveCaptionEnabled() {
   return profile_prefs->GetBoolean(prefs::kLiveCaptionEnabled);
 }
 
-void CaptionController::UpdateUIEnabled() {
-  if (enabled_) {
-    if (is_ui_constructed_)
-      return;
-    is_ui_constructed_ = true;
-    // Create captions UI in each browser view.
-    for (Browser* browser : *BrowserList::GetInstance()) {
-      OnBrowserAdded(browser);
-    }
+void CaptionController::StartLiveCaption() {
+  DCHECK(enabled_);
+  if (!base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption) ||
+      speech::SodaInstaller::GetInstance()->IsSodaInstalled()) {
+    CreateUI();
+    return;
+  }
 
-    // Add observers to the BrowserList for new browser views being added.
-    BrowserList::GetInstance()->AddObserver(this);
+  // Ask the SodaInstaller to download the speech model and language pack. The
+  // SodaInstaller determines whether SODA is already on the device and whether
+  // or not to download. Once SODA is on the device and ready, the SodaInstaller
+  // calls OnSodaInstalled on its observers. The UI is created at that time.
+  g_browser_process->local_state()->SetTime(prefs::kSodaScheduledDeletionTime,
+                                            base::Time());
+  speech::SodaInstaller::GetInstance()->AddObserver(this);
+  speech::SodaInstaller::GetInstance()->InstallSoda(profile_->GetPrefs());
+  speech::SodaInstaller::GetInstance()->InstallLanguage(profile_->GetPrefs());
+}
 
-    // Observe caption style prefs.
-    for (const char* const pref_name : kCaptionStylePrefsToObserve) {
-      DCHECK(!pref_change_registrar_->IsObserved(pref_name));
-      pref_change_registrar_->Add(
-          pref_name, base::BindRepeating(&CaptionController::UpdateCaptionStyle,
-                                         base::Unretained(this)));
-    }
-    UpdateCaptionStyle();
-  } else {
-    if (!is_ui_constructed_)
-      return;
-    is_ui_constructed_ = false;
-    // Destroy caption bubble controllers.
-    caption_bubble_controllers_.clear();
+void CaptionController::StopLiveCaption() {
+  DCHECK(!enabled_);
+  speech::SodaInstaller::GetInstance()->RemoveObserver(this);
+  DestroyUI();
+}
 
-    // Remove observers.
-    BrowserList::GetInstance()->RemoveObserver(this);
+void CaptionController::OnSodaInstalled() {
+  // Live Caption should always be enabled when this is called. If Live Caption
+  // has been disabled, then this should not be observing the SodaInstaller
+  // anymore.
+  DCHECK(enabled_);
+  speech::SodaInstaller::GetInstance()->RemoveObserver(this);
+  CreateUI();
+}
 
-    // Remove prefs to observe.
-    for (const char* const pref_name : kCaptionStylePrefsToObserve) {
-      DCHECK(pref_change_registrar_->IsObserved(pref_name));
-      pref_change_registrar_->Remove(pref_name);
-    }
+void CaptionController::CreateUI() {
+  DCHECK(enabled_);
+  if (is_ui_constructed_)
+    return;
+  DCHECK(!base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption) ||
+         speech::SodaInstaller::GetInstance()->IsSodaInstalled());
+  is_ui_constructed_ = true;
+  // Create captions UI in each browser view.
+  for (Browser* browser : *BrowserList::GetInstance()) {
+    OnBrowserAdded(browser);
+  }
+
+  // Add observers to the BrowserList for new browser views being added.
+  BrowserList::GetInstance()->AddObserver(this);
+
+  // Observe caption style prefs.
+  for (const char* const pref_name : kCaptionStylePrefsToObserve) {
+    DCHECK(!pref_change_registrar_->IsObserved(pref_name));
+    pref_change_registrar_->Add(
+        pref_name, base::BindRepeating(&CaptionController::UpdateCaptionStyle,
+                                       base::Unretained(this)));
+  }
+  UpdateCaptionStyle();
+}
+
+void CaptionController::DestroyUI() {
+  DCHECK(!enabled_);
+  if (!is_ui_constructed_)
+    return;
+  is_ui_constructed_ = false;
+  // Destroy caption bubble controllers.
+  caption_bubble_controllers_.clear();
+
+  // Remove observers.
+  BrowserList::GetInstance()->RemoveObserver(this);
+
+  // Remove prefs to observe.
+  for (const char* const pref_name : kCaptionStylePrefsToObserve) {
+    DCHECK(pref_change_registrar_->IsObserved(pref_name));
+    pref_change_registrar_->Remove(pref_name);
   }
 }
 

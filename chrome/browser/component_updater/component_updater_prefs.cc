@@ -20,6 +20,7 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
   RegisterPrefsForRecoveryComponent(registry);
 
 #if !defined(OS_ANDROID)
+  // TODO(crbug.com/1055150): Move this to SodaInstaller.
   RegisterPrefsForSodaComponent(registry);
 #endif
 

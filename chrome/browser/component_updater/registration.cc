@@ -175,17 +175,6 @@ void RegisterComponentsForUpdate(bool is_off_the_record_profile,
   component_updater::RegisterGamesComponent(cus, profile_prefs);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && defined(OS_ANDROID)
 
-#if !defined(OS_ANDROID)
-  base::UmaHistogramBoolean("Accessibility.LiveCaption.FeatureEnabled",
-                            base::FeatureList::IsEnabled(media::kLiveCaption));
-  component_updater::RegisterSodaComponent(
-      cus, profile_prefs, g_browser_process->local_state(), base::OnceClosure(),
-      base::OnceClosure());
-  component_updater::RegisterSodaLanguageComponent(
-      cus, profile_prefs, g_browser_process->local_state(),
-      base::OnceClosure());
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   RegisterSmartDimComponent(cus);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

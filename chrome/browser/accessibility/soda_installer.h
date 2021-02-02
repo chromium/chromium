@@ -57,8 +57,10 @@ class SodaInstaller {
   // should be.
   virtual void InstallLanguage(PrefService* prefs) = 0;
 
-  // Returns whether or not SODA is already registered on this device.
-  virtual bool IsSodaRegistered() = 0;
+  // Returns whether or not SODA is installed on this device. Will return a
+  // stale value until InstallSoda() and InstallLanguage() have run and
+  // asynchronously returned an answer.
+  virtual bool IsSodaInstalled() const = 0;
 
   // Adds an observer to the observer list.
   void AddObserver(Observer* observer);
@@ -80,6 +82,8 @@ class SodaInstaller {
   void NotifyOnSodaProgress(int progress);
 
   base::ObserverList<Observer> observers_;
+  bool has_soda_ = false;
+  bool has_language_pack_ = false;
 };
 
 }  // namespace speech

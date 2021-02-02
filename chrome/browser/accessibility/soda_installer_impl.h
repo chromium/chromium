@@ -38,7 +38,7 @@ class SodaInstallerImpl : public SodaInstaller,
   // SodaInstaller:
   void InstallSoda(PrefService* prefs) override;
   void InstallLanguage(PrefService* prefs) override;
-  bool IsSodaRegistered() override;
+  bool IsSodaInstalled() const override;
 
  private:
   // component_updater::ServiceObserver:
@@ -46,9 +46,6 @@ class SodaInstallerImpl : public SodaInstaller,
 
   void OnSodaBinaryInstalled();
   void OnSodaLanguagePackInstalled();
-
-  bool has_soda_ = false;
-  bool has_language_pack_ = false;
 
   std::map<std::string, update_client::CrxUpdateItem> downloading_components_;
 

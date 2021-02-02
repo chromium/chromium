@@ -30,13 +30,13 @@ class SodaInstallerImplChromeOS : public SodaInstaller {
   // SodaInstaller:
   void InstallSoda(PrefService* prefs) override;
   void InstallLanguage(PrefService* prefs) override;
-  bool IsSodaRegistered() override;
+  bool IsSodaInstalled() const override;
 
  private:
   void SetSodaLibPath(base::FilePath new_path);
 
   // This function is the InstallCallback for DlcserviceClient::Install().
-  void OnSodaInstaller(
+  void OnSodaInstalled(
       const chromeos::DlcserviceClient::InstallResult& install_result);
 
   // This function is the ProgressCallback for DlcserviceClient::Install().

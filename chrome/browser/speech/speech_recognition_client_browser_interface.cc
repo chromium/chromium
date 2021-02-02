@@ -64,12 +64,13 @@ void SpeechRecognitionClientBrowserInterface::
 
   if (enabled) {
     if (!base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption) ||
-        speech::SodaInstaller::GetInstance()->IsSodaRegistered()) {
+        speech::SodaInstaller::GetInstance()->IsSodaInstalled()) {
       NotifyObservers(enabled);
     } else {
       speech::SodaInstaller::GetInstance()->AddObserver(this);
     }
   } else {
+    speech::SodaInstaller::GetInstance()->RemoveObserver(this);
     NotifyObservers(enabled);
   }
 }
