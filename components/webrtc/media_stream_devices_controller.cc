@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_result.h"
 #include "components/permissions/permissions_client.h"
@@ -112,13 +113,16 @@ void MediaStreamDevicesController::RequestPermissions(
     will_prompt_for_video =
         permission_status.content_setting == CONTENT_SETTING_ASK;
 
+    bool has_pan_tilt_zoom_camera = controller->HasAvailableDevices(
+        ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
+        request.requested_video_device_id);
+    base::UmaHistogramBoolean("WebRTC.MediaStreamDevices.HasPanTiltZoomCamera",
+                              has_pan_tilt_zoom_camera);
+
     // Request CAMERA_PAN_TILT_ZOOM only if the website requested the
     // pan-tilt-zoom permission and there are suitable PTZ capable devices
     // available.
-    if (request.request_pan_tilt_zoom_permission &&
-        controller->HasAvailableDevices(
-            ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
-            request.requested_video_device_id)) {
+    if (request.request_pan_tilt_zoom_permission && has_pan_tilt_zoom_camera) {
       permissions::PermissionResult permission_status =
           permission_manager->GetPermissionStatusForFrame(
               ContentSettingsType::CAMERA_PAN_TILT_ZOOM, rfh,

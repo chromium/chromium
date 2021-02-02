@@ -1149,10 +1149,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.MediaStreamDevices.HasPanTiltZoomCamera"
-    enum="BooleanAvailable" expires_after="M88">
-  <obsolete>
-    Removed in M88.
-  </obsolete>
+    enum="BooleanAvailable" expires_after="M100">
   <owner>reillyg@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>
