@@ -473,8 +473,8 @@ ParsingContext::FeaturePolicyNode ParsingContext::ParsePermissionsPolicyToIR(
   auto root = net::structured_headers::ParseDictionary(policy.Utf8());
   if (!root) {
     logger_.Error(
-        "Parse of permission policy failed because of errors reported by "
-        "strctured header parser.");
+        "Parse of permissions policy failed because of errors reported by "
+        "structured header parser.");
     return {};
   }
 
