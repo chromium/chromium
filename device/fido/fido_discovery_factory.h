@@ -14,6 +14,7 @@
 #include "build/chromeos_buildflags.h"
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/cable/v2_constants.h"
+#include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/fido_device_discovery.h"
 #include "device/fido/fido_discovery_base.h"
 #include "device/fido/fido_request_handler_base.h"
@@ -97,6 +98,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
   // Configures the ChromeOS platform authenticator discovery to instantiate an
   // authenticator if the legacy U2F authenticator is enabled by policy.
   void set_require_legacy_cros_authenticator(bool value);
+
+  // Sets a CtapGetAssertionRequest on the instance for checking if a credential
+  // exists on the enterprise policy controlled legacy U2F authenticator. If one
+  // exists and the enterprise policy is active, an authenticator may be
+  // instantiated even if IsUVPAA() is false (because no PIN has been set).
+  void set_get_assertion_request_for_legacy_credential_check(
+      CtapGetAssertionRequest request);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  protected:
@@ -125,6 +133,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::RepeatingCallback<uint32_t()> generate_request_id_callback_;
   bool require_legacy_cros_authenticator_ = false;
+  base::Optional<CtapGetAssertionRequest>
+      get_assertion_request_for_legacy_credential_check_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   base::flat_set<VidPid> hid_ignore_list_;
 };

@@ -73,6 +73,10 @@
 #include "device/fido/win/webauthn_api.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "device/fido/cros/authenticator.h"
+#endif
+
 namespace content {
 
 // RequestExtension is a type of extension in a WebAuthn request that might
@@ -721,6 +725,10 @@ void AuthenticatorCommon::StartGetAssertionRequest(
   }
   request_delegate_->ConfigureCable(caller_origin_, cable_pairings,
                                     discovery_factory());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  discovery_factory()->set_get_assertion_request_for_legacy_credential_check(
+      *ctap_get_assertion_request_);
+#endif
 
   request_ = std::make_unique<device::GetAssertionRequestHandler>(
       discovery_factory(),

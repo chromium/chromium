@@ -28,6 +28,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ChromeOSAuthenticator
       base::RepeatingCallback<uint32_t()> generate_request_id_callback);
   ~ChromeOSAuthenticator() override;
 
+  static bool HasCredentialForGetAssertionRequest(
+      const CtapGetAssertionRequest& request);
+
+  static void HasLegacyU2fCredentialForGetAssertionRequest(
+      const CtapGetAssertionRequest& request,
+      base::OnceCallback<void(bool has_credential)> callback);
+
   // Returns whether the platform authenticator is available, which is true if
   // the current user has a PIN set up or biometrics enrolled.
   //
@@ -43,9 +50,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ChromeOSAuthenticator
   // enterprise policy or debug u2f_flags.
   static void IsPowerButtonModeEnabled(
       base::OnceCallback<void(bool is_enabled)> callback);
-
-  bool HasCredentialForGetAssertionRequest(
-      const CtapGetAssertionRequest& request);
 
   // FidoAuthenticator
   void InitializeAuthenticator(base::OnceClosure callback) override;

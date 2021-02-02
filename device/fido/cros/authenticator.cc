@@ -366,6 +366,66 @@ bool ChromeOSAuthenticator::HasCredentialForGetAssertionRequest(
          resp.credential_id().size() > 0;
 }
 
+void ChromeOSAuthenticator::HasLegacyU2fCredentialForGetAssertionRequest(
+    const CtapGetAssertionRequest& request,
+    base::OnceCallback<void(bool has_credential)> callback) {
+  dbus::Bus::Options dbus_options;
+  dbus_options.bus_type = dbus::Bus::SYSTEM;
+  scoped_refptr<dbus::Bus> bus = new dbus::Bus(dbus_options);
+  dbus::ObjectProxy* u2f_proxy = bus->GetObjectProxy(
+      u2f::kU2FServiceName, dbus::ObjectPath(u2f::kU2FServicePath));
+
+  if (!u2f_proxy) {
+    FIDO_LOG(ERROR) << "Couldn't get u2f proxy";
+    std::move(callback).Run(false);
+    return;
+  }
+
+  u2f::HasCredentialsRequest req;
+  req.set_rp_id(request.rp_id);
+  if (request.app_id) {
+    req.set_app_id(*request.app_id);
+  }
+
+  for (const PublicKeyCredentialDescriptor& descriptor : request.allow_list) {
+    const std::vector<uint8_t>& id = descriptor.id();
+    req.add_credential_id(std::string(id.begin(), id.end()));
+  }
+
+  dbus::MethodCall method_call(u2f::kU2FInterface,
+                               u2f::kU2FHasLegacyCredentials);
+  dbus::MessageWriter writer(&method_call);
+  writer.AppendProtoAsArrayOfBytes(req);
+
+  u2f_proxy->CallMethod(
+      &method_call, kShortTimeoutMs,
+      base::BindOnce(
+          [](base::OnceCallback<void(bool has_credential)> callback,
+             dbus::Response* dbus_response) {
+            if (!dbus_response) {
+              FIDO_LOG(ERROR)
+                  << "HasCredentials dbus call had no response or timed out";
+              std::move(callback).Run(false);
+              return;
+            }
+
+            dbus::MessageReader reader(dbus_response);
+            u2f::HasCredentialsResponse resp;
+            if (!reader.PopArrayOfBytesAsProto(&resp)) {
+              FIDO_LOG(ERROR)
+                  << "Failed to parse reply for call to HasCredentials";
+              std::move(callback).Run(false);
+              return;
+            }
+
+            std::move(callback).Run(
+                resp.status() ==
+                    u2f::HasCredentialsResponse_HasCredentialsStatus_SUCCESS &&
+                resp.credential_id().size() > 0);
+          },
+          std::move(callback)));
+}
+
 void ChromeOSAuthenticator::Cancel() {
   if (current_request_id_ == 0u)
     return;

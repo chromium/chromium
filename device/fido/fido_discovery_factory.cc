@@ -178,8 +178,9 @@ FidoDiscoveryFactory::MaybeCreatePlatformDiscovery() const {
 std::unique_ptr<FidoDiscoveryBase>
 FidoDiscoveryFactory::MaybeCreatePlatformDiscovery() const {
   if (base::FeatureList::IsEnabled(kWebAuthCrosPlatformAuthenticator)) {
-    auto discovery =
-        std::make_unique<FidoChromeOSDiscovery>(generate_request_id_callback_);
+    auto discovery = std::make_unique<FidoChromeOSDiscovery>(
+        generate_request_id_callback_,
+        std::move(get_assertion_request_for_legacy_credential_check_));
     discovery->set_require_power_button_mode(
         require_legacy_cros_authenticator_);
     return discovery;
@@ -194,6 +195,12 @@ void FidoDiscoveryFactory::set_generate_request_id_callback(
 
 void FidoDiscoveryFactory::set_require_legacy_cros_authenticator(bool value) {
   require_legacy_cros_authenticator_ = value;
+}
+
+void FidoDiscoveryFactory::
+    set_get_assertion_request_for_legacy_credential_check(
+        CtapGetAssertionRequest request) {
+  get_assertion_request_for_legacy_credential_check_ = std::move(request);
 }
 #endif
 
