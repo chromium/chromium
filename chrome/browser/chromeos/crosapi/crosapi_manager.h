@@ -9,24 +9,22 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "mojo/public/cpp/bindings/remote.h"
+#include "chrome/browser/chromeos/crosapi/crosapi_id.h"
 
 namespace mojo {
 class PlatformChannelEndpoint;
 }  // namespace mojo
 
 namespace crosapi {
-namespace mojom {
-class BrowserService;
-class Crosapi;
-}  // namespace mojom
-
 class CrosapiAsh;
 class EnvironmentProvider;
 
 // Maintains the crosapi connection provided by ash-chrome.
 class CrosapiManager {
  public:
+  // Returns true if the global CrosapiManager is initialized.
+  static bool IsInitialized();
+
   // Returns the instance of CrosapiManager. It is effectively a singleton.
   static CrosapiManager* Get();
 
@@ -35,26 +33,27 @@ class CrosapiManager {
   CrosapiManager& operator=(const CrosapiManager&) = delete;
   ~CrosapiManager();
 
+  CrosapiAsh* crosapi_ash() { return crosapi_ash_.get(); }
+
   // Binds local_endpoint to BrowserService, and invites to the Mojo universe.
   // Then, request Crosapi pending receiver to the client, and on its callback,
   // binds it to |crosapi_|.
-  // Also, BrowserService's version is queried, and on its completion,
-  // |completion_callback| is called. |disconnect_handler| invocation is bound
-  // to BrowserService at first, but on Crosapi binding, it is transferred to
-  // Crosapi. So, before Crosapi binding, |disconnect_handler| is called on
-  // BrowserService disconnection. After Crosapi binding, it is called on
-  // Crosapi disconnection, but not on BrowserService disconnection.
-  void SendInvitation(
-      EnvironmentProvider* environment_provider,
-      mojo::PlatformChannelEndpoint local_endpoint,
-      base::OnceClosure disconnect_handler,
-      base::OnceCallback<void(mojo::Remote<mojom::BrowserService>)>
-          completion_callback);
+  // |disconnect_handler| invocation is bound to BrowserService at first, but
+  // on Crosapi binding, it is transferred to Crosapi. So, before Crosapi
+  // binding, |disconnect_handler| is called on BrowserService disconnection.
+  // After Crosapi binding, it is called on Crosapi disconnection, but not on
+  // BrowserService disconnection.
+  // Returns an identifier representing the crosapi connection. It can be used
+  // for client to know where some sub-surfaces come from.
+  CrosapiId SendInvitation(EnvironmentProvider* environment_provider,
+                           mojo::PlatformChannelEndpoint local_endpoint,
+                           base::OnceClosure disconnect_handler);
 
  private:
   class InvitationFlow;
 
-  std::unique_ptr<CrosapiAsh> crosapi_;
+  CrosapiId::Generator crosapi_id_generator_;
+  std::unique_ptr<CrosapiAsh> crosapi_ash_;
   std::vector<std::unique_ptr<InvitationFlow>> pending_invitation_flow_list_;
 };
 

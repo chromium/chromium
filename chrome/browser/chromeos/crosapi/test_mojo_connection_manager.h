@@ -7,20 +7,15 @@
 
 #include <memory>
 #include <utility>
-#include <vector>
 
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/crosapi/environment_provider.h"
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace crosapi {
-namespace mojom {
-class BrowserService;
-}  // namespace mojom
+
+class EnvironmentProvider;
 
 // An extension of BrowserManager to help set up and manage the mojo connections
 // between the test executable and ash-chrome in testing environment.
@@ -53,18 +48,8 @@ class TestMojoConnectionManager {
   // Called when a client, such as a test launcher, attempts to connect.
   void OnTestingSocketAvailable();
 
-  // Called when Crosapi is connected.
-  void OnCrosapiConnected(
-      mojo::Remote<crosapi::mojom::BrowserService> browser_service);
-
-  // Called when the Mojo connection to lacros-chrome is disconnected.
-  // It may be "just a Mojo error" or "test is finished".
-  void OnMojoDisconnected();
-
-  // Proxy to BrowserService mojo service in a browser (e.g. testee
-  // lacros-chrome, or test executable such as lacros_browser_tests).
-  // Available during the connected browser is running.
-  mojo::Remote<crosapi::mojom::BrowserService> browser_service_;
+  // Used to pass ash-chrome specific flags/configurations to lacros-chrome.
+  std::unique_ptr<EnvironmentProvider> environment_provider_;
 
   // A socket for a client, such as a test launcher, to connect to.
   base::ScopedFD testing_socket_;
@@ -73,9 +58,6 @@ class TestMojoConnectionManager {
   // |OnTestingSocketAvailable| when it becomes readable.
   std::unique_ptr<base::FileDescriptorWatcher::Controller>
       testing_socket_watcher_;
-
-  // Used to pass ash-chrome specific flags/configurations to lacros-chrome.
-  std::unique_ptr<EnvironmentProvider> environment_provider_;
 
   base::WeakPtrFactory<TestMojoConnectionManager> weak_factory_{this};
 };

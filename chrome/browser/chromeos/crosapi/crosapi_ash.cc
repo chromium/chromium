@@ -14,6 +14,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/crosapi/browser_manager.h"
+#include "chrome/browser/chromeos/crosapi/browser_service_host_ash.h"
 #include "chrome/browser/chromeos/crosapi/cert_database_ash.h"
 #include "chrome/browser/chromeos/crosapi/clipboard_ash.h"
 #include "chrome/browser/chromeos/crosapi/device_attributes_ash.h"
@@ -43,7 +44,8 @@
 namespace crosapi {
 
 CrosapiAsh::CrosapiAsh()
-    : device_attributes_ash_(std::make_unique<DeviceAttributesAsh>()),
+    : browser_service_host_ash_(std::make_unique<BrowserServiceHostAsh>()),
+      device_attributes_ash_(std::make_unique<DeviceAttributesAsh>()),
       file_manager_ash_(std::make_unique<FileManagerAsh>()),
       keystore_service_ash_(std::make_unique<KeystoreServiceAsh>()),
       message_center_ash_(std::make_unique<MessageCenterAsh>()),
@@ -72,8 +74,10 @@ CrosapiAsh::~CrosapiAsh() {
 
 void CrosapiAsh::BindReceiver(
     mojo::PendingReceiver<mojom::Crosapi> pending_receiver,
+    CrosapiId crosapi_id,
     base::OnceClosure disconnect_handler) {
-  mojo::ReceiverId id = receiver_set_.Add(this, std::move(pending_receiver));
+  mojo::ReceiverId id =
+      receiver_set_.Add(this, std::move(pending_receiver), crosapi_id);
   if (!disconnect_handler.is_null())
     disconnect_handler_map_.emplace(id, std::move(disconnect_handler));
 }

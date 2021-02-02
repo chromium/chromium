@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/process/process_handle.h"
 #include "base/stl_util.h"
+#include "chrome/browser/chromeos/crosapi/browser_service_host_ash.h"
 #include "chrome/browser/chromeos/crosapi/browser_util.h"
 #include "chrome/browser/chromeos/crosapi/crosapi_ash.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
@@ -38,12 +39,9 @@ CrosapiManager* g_instance = nullptr;
 //   invoked.
 class CrosapiManager::InvitationFlow {
  public:
-  InvitationFlow(
-      base::OnceClosure disconnect_handler,
-      base::OnceCallback<void(mojo::Remote<crosapi::mojom::BrowserService>)>
-          completion_callback)
-      : disconnect_handler_(std::move(disconnect_handler)),
-        completion_callback_(std::move(completion_callback)) {}
+  InvitationFlow(CrosapiId crosapi_id, base::OnceClosure disconnect_handler)
+      : crosapi_id_(crosapi_id),
+        disconnect_handler_(std::move(disconnect_handler)) {}
   InvitationFlow(const InvitationFlow&) = delete;
   InvitationFlow& operator=(const InvitationFlow&) = delete;
   ~InvitationFlow() = default;
@@ -82,22 +80,17 @@ class CrosapiManager::InvitationFlow {
 
   void OnCrosapiReceiverReceived(
       mojo::PendingReceiver<crosapi::mojom::Crosapi> pending_receiver) {
-    auto* crosapi_manager = CrosapiManager::Get();
-    crosapi_manager->crosapi_->BindReceiver(std::move(pending_receiver),
-                                            std::move(disconnect_handler_));
-    browser_service_.QueryVersion(base::BindOnce(
-        &InvitationFlow::OnVersionReady, weak_factory_.GetWeakPtr()));
-  }
-
-  void OnVersionReady(uint32_t version) {
     // Preserve needed members before destroying itself.
     auto browser_service = std::move(browser_service_);
-    auto completion_callback = std::move(completion_callback_);
-    // OnComplete here invalidates WeakPtr so disconnect_handler set to
-    // BrowserService is invalidated.
+    auto crosapi_id = crosapi_id_;
+    auto disconnect_handler = std::move(disconnect_handler_);
     OnComplete();  // |this| is deleted here.
 
-    std::move(completion_callback).Run(std::move(browser_service));
+    auto* crosapi_manager = CrosapiManager::Get();
+    crosapi_manager->crosapi_ash_->BindReceiver(
+        std::move(pending_receiver), crosapi_id, std::move(disconnect_handler));
+    crosapi_manager->crosapi_ash_->browser_service_host_ash()->AddRemote(
+        crosapi_id, std::move(browser_service));
   }
 
   void OnComplete() {
@@ -109,19 +102,23 @@ class CrosapiManager::InvitationFlow {
   }
 
   mojo::Remote<crosapi::mojom::BrowserService> browser_service_;
+  CrosapiId crosapi_id_;
   base::OnceClosure disconnect_handler_;
-  base::OnceCallback<void(mojo::Remote<crosapi::mojom::BrowserService>)>
-      completion_callback_;
 
   base::WeakPtrFactory<InvitationFlow> weak_factory_{this};
 };
+
+bool CrosapiManager::IsInitialized() {
+  return g_instance != nullptr;
+}
 
 CrosapiManager* CrosapiManager::Get() {
   DCHECK(g_instance);
   return g_instance;
 }
 
-CrosapiManager::CrosapiManager() : crosapi_(std::make_unique<CrosapiAsh>()) {
+CrosapiManager::CrosapiManager()
+    : crosapi_ash_(std::make_unique<CrosapiAsh>()) {
   DCHECK(!g_instance);
   g_instance = this;
 }
@@ -131,17 +128,16 @@ CrosapiManager::~CrosapiManager() {
   g_instance = nullptr;
 }
 
-void CrosapiManager::SendInvitation(
+CrosapiId CrosapiManager::SendInvitation(
     EnvironmentProvider* environment_provider,
     mojo::PlatformChannelEndpoint local_endpoint,
-    base::OnceClosure disconnect_handler,
-    base::OnceCallback<void(mojo::Remote<crosapi::mojom::BrowserService>)>
-        completion_callback) {
-  DCHECK(!completion_callback.is_null());
+    base::OnceClosure disconnect_handler) {
+  CrosapiId crosapi_id = crosapi_id_generator_.GenerateNextId();
   pending_invitation_flow_list_.push_back(std::make_unique<InvitationFlow>(
-      std::move(disconnect_handler), std::move(completion_callback)));
+      crosapi_id, std::move(disconnect_handler)));
   pending_invitation_flow_list_.back()->Run(environment_provider,
                                             std::move(local_endpoint));
+  return crosapi_id;
 }
 
 }  // namespace crosapi

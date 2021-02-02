@@ -24,6 +24,9 @@
 #include "base/test/multiprocess_test.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
+#include "chrome/browser/chromeos/crosapi/browser_service_host_ash.h"
+#include "chrome/browser/chromeos/crosapi/browser_service_host_observer.h"
+#include "chrome/browser/chromeos/crosapi/crosapi_ash.h"
 #include "chrome/browser/chromeos/crosapi/crosapi_manager.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -41,12 +44,13 @@
 #include "testing/multiprocess_func_list.h"
 
 namespace crosapi {
+namespace {
 
 class TestBrowserService : public crosapi::mojom::BrowserService {
  public:
-  TestBrowserService(mojo::PendingReceiver<mojom::BrowserService> receiver,
-                     base::RunLoop& run_loop)
-      : receiver_(this, std::move(receiver)), run_loop_(run_loop) {}
+  explicit TestBrowserService(
+      mojo::PendingReceiver<mojom::BrowserService> receiver)
+      : receiver_(this, std::move(receiver)) {}
 
   ~TestBrowserService() override = default;
 
@@ -58,8 +62,6 @@ class TestBrowserService : public crosapi::mojom::BrowserService {
       RequestCrosapiReceiverCallback callback) override {
     EXPECT_TRUE(init_is_called_);
     std::move(callback).Run(crosapi_.BindNewPipeAndPassReceiver());
-    request_crosapi_is_called_ = true;
-    run_loop_.Quit();
   }
 
   void NewWindow(NewWindowCallback callback) override {}
@@ -69,22 +71,81 @@ class TestBrowserService : public crosapi::mojom::BrowserService {
 
   bool init_is_called() { return init_is_called_; }
 
-  bool request_crosapi_is_called() { return request_crosapi_is_called_; }
-
  private:
   mojo::Receiver<mojom::BrowserService> receiver_;
 
   bool init_is_called_ = false;
-  bool request_crosapi_is_called_ = false;
-
-  base::RunLoop& run_loop_;
 
   mojo::Remote<crosapi::mojom::Crosapi> crosapi_;
 };
 
+class TestBrowserServiceHostObserver : public BrowserServiceHostObserver {
+ public:
+  // |callback| is invoked when OnBrowserServiceConnected is called
+  // |num_calls| times.
+  TestBrowserServiceHostObserver(size_t num_calls, base::OnceClosure callback)
+      : remaining_num_calls_(num_calls), callback_(std::move(callback)) {
+    DCHECK_GT(num_calls, 0);
+  }
+
+  void OnBrowserServiceConnected(CrosapiId id,
+                                 mojo::RemoteSetElementId mojo_id,
+                                 mojom::BrowserService* browser_service,
+                                 uint32_t browser_service_version) override {
+    --remaining_num_calls_;
+    if (remaining_num_calls_ == 0)
+      std::move(callback_).Run();
+  }
+
+ private:
+  size_t remaining_num_calls_;
+  base::OnceClosure callback_;
+};
+
+std::vector<base::ScopedFD> ConnectTestingMojoSocket(
+    const std::string& socket_path) {
+  auto channel = mojo::NamedPlatformChannel::ConnectToServer(socket_path);
+  if (!channel.is_valid())
+    return {};
+  base::ScopedFD socket_fd = channel.TakePlatformHandle().TakeFD();
+
+  uint8_t buf[32];
+  std::vector<base::ScopedFD> descriptors;
+  ssize_t size;
+  base::RunLoop run_loop;
+  base::ThreadPool::PostTaskAndReply(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(base::BindLambdaForTesting([&]() {
+        // Mark the channel as blocking.
+        int flags = fcntl(socket_fd.get(), F_GETFL);
+        PCHECK(flags != -1);
+        fcntl(socket_fd.get(), F_SETFL, flags & ~O_NONBLOCK);
+        size = mojo::SocketRecvmsg(socket_fd.get(), buf, sizeof(buf),
+                                   &descriptors, true /*block*/);
+      })),
+      run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_EQ(1, size);
+  EXPECT_EQ(0u, buf[0]);
+  return descriptors;
+}
+
+base::Process LaunchTestSubprocess(std::vector<base::ScopedFD> descriptors) {
+  base::LaunchOptions options;
+  options.fds_to_remap.emplace_back(descriptors[0].get(), descriptors[0].get());
+  base::CommandLine cmd(base::GetMultiProcessTestChildBaseCommandLine());
+  cmd.AppendSwitchASCII(mojo::PlatformChannel::kHandleSwitch,
+                        base::NumberToString(descriptors[0].get()));
+  cmd.AppendSwitchASCII(chromeos::switches::kCrosStartupDataFD,
+                        base::NumberToString(descriptors[1].get()));
+  return base::SpawnMultiProcessTestChild("CrosapiClientMain", cmd, options);
+}
+
+}  // namespace
+
 using TestMojoConnectionManagerTest = testing::Test;
 
-TEST_F(TestMojoConnectionManagerTest, ConnectWithBrowser) {
+TEST_F(TestMojoConnectionManagerTest, ConnectMultipleClients) {
   // Create temp dir before task environment, just in case lingering tasks need
   // to access it.
   base::ScopedTempDir temp_dir;
@@ -139,53 +200,42 @@ TEST_F(TestMojoConnectionManagerTest, ConnectWithBrowser) {
   run_loop1.Run();
 
   // Test connects with ash-chrome via the socket.
-  auto channel = mojo::NamedPlatformChannel::ConnectToServer(socket_path);
-  ASSERT_TRUE(channel.is_valid());
-  base::ScopedFD socket_fd = channel.TakePlatformHandle().TakeFD();
+  std::vector<base::ScopedFD> descriptors1 =
+      ConnectTestingMojoSocket(socket_path);
+  ASSERT_EQ(2u, descriptors1.size());
+  std::vector<base::ScopedFD> descriptors2 =
+      ConnectTestingMojoSocket(socket_path);
+  ASSERT_EQ(2u, descriptors2.size());
 
-  uint8_t buf[32];
-  std::vector<base::ScopedFD> descriptors;
-  ssize_t size;
   base::RunLoop run_loop2;
-  base::ThreadPool::PostTaskAndReply(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(base::BindLambdaForTesting([&]() {
-        // Mark the channel as blocking.
-        int flags = fcntl(socket_fd.get(), F_GETFL);
-        PCHECK(flags != -1);
-        fcntl(socket_fd.get(), F_SETFL, flags & ~O_NONBLOCK);
-        size = mojo::SocketRecvmsg(socket_fd.get(), buf, sizeof(buf),
-                                   &descriptors, true /*block*/);
-      })),
-      run_loop2.QuitClosure());
+  // Two BrowserService connections should be made (one for each subprocess).
+  TestBrowserServiceHostObserver observer(2, run_loop2.QuitClosure());
+  crosapi_manager->crosapi_ash()->browser_service_host_ash()->AddObserver(
+      &observer);
+  base::ScopedClosureRunner observer_reset(base::BindOnce(
+      base::BindLambdaForTesting([&observer, &crosapi_manager]() {
+        crosapi_manager->crosapi_ash()
+            ->browser_service_host_ash()
+            ->RemoveObserver(&observer);
+      })));
+
+  // Then launch two subprocesses running in parallel.
+  // These will connect BrowserService mojo.
+  base::Process sub1 = LaunchTestSubprocess(std::move(descriptors1));
+  base::Process sub2 = LaunchTestSubprocess(std::move(descriptors2));
+
+  // Wait for two BrowserService instances.
   run_loop2.Run();
-  EXPECT_EQ(1, size);
-  EXPECT_EQ(0u, buf[0]);
-  ASSERT_EQ(2u, descriptors.size());
 
-  // Test launches lacros-chrome as child process.
-  base::LaunchOptions options;
-  options.fds_to_remap.emplace_back(descriptors[0].get(), descriptors[0].get());
-  base::CommandLine lacros_cmd(base::GetMultiProcessTestChildBaseCommandLine());
-  lacros_cmd.AppendSwitchASCII(mojo::PlatformChannel::kHandleSwitch,
-                               base::NumberToString(descriptors[0].get()));
-  lacros_cmd.AppendSwitchASCII(chromeos::switches::kCrosStartupDataFD,
-                               base::NumberToString(descriptors[1].get()));
-  base::Process lacros_process =
-      base::SpawnMultiProcessTestChild("LacrosMain", lacros_cmd, options);
-  descriptors.clear();  // Close descriptors.
-
-  // lacros-chrome accepts the invitation to establish mojo connection with
-  // ash-chrome.
-  int rv = -1;
-  ASSERT_TRUE(base::WaitForMultiprocessTestChildExit(
-      lacros_process, TestTimeouts::action_timeout(), &rv));
-  lacros_process.Close();
-  EXPECT_EQ(0, rv);
+  // Connection succeeded. Terminate subprocesses.
+  ASSERT_TRUE(base::TerminateMultiProcessTestChild(sub1, 0, true));
+  sub1.Close();
+  ASSERT_TRUE(base::TerminateMultiProcessTestChild(sub2, 0, true));
+  sub2.Close();
 }
 
 // Another process that emulates the behavior of lacros-chrome.
-MULTIPROCESS_TEST_MAIN(LacrosMain) {
+MULTIPROCESS_TEST_MAIN(CrosapiClientMain) {
   base::test::SingleThreadTaskEnvironment task_environment;
   mojo::IncomingInvitation invitation = mojo::IncomingInvitation::Accept(
       mojo::PlatformChannel::RecoverPassedEndpointFromCommandLine(
@@ -193,11 +243,9 @@ MULTIPROCESS_TEST_MAIN(LacrosMain) {
   base::RunLoop run_loop;
   TestBrowserService test_browser_service(
       mojo::PendingReceiver<crosapi::mojom::BrowserService>(
-          invitation.ExtractMessagePipe(0)),
-      run_loop);
+          invitation.ExtractMessagePipe(0)));
+  // Do not return from the run loop.
   run_loop.Run();
-  DCHECK(test_browser_service.init_is_called());
-  DCHECK(test_browser_service.request_crosapi_is_called());
   return 0;
 }
 

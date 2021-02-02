@@ -12,9 +12,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/optional.h"
 #include "base/process/process.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/crosapi/browser_manager_observer.h"
+#include "chrome/browser/chromeos/crosapi/browser_service_host_observer.h"
+#include "chrome/browser/chromeos/crosapi/crosapi_id.h"
 #include "chrome/browser/chromeos/crosapi/environment_provider.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -34,7 +37,8 @@ class TestMojoConnectionManager;
 
 // Manages the lifetime of lacros-chrome, and its loading status. This class is
 // a part of ash-chrome.
-class BrowserManager : public session_manager::SessionManagerObserver {
+class BrowserManager : public session_manager::SessionManagerObserver,
+                       public BrowserServiceHostObserver {
  public:
   // Static getter of BrowserManager instance. In real use cases,
   // BrowserManager instance should be unique in the process.
@@ -149,6 +153,22 @@ class BrowserManager : public session_manager::SessionManagerObserver {
     TERMINATING,
   };
 
+  struct BrowserServiceInfo {
+    BrowserServiceInfo(mojo::RemoteSetElementId mojo_id,
+                       mojom::BrowserService* service,
+                       uint32_t interface_version);
+    BrowserServiceInfo(const BrowserServiceInfo&);
+    BrowserServiceInfo& operator=(const BrowserServiceInfo&);
+    ~BrowserServiceInfo();
+
+    // ID managed in BrowserServiceHostAsh, which is tied to the |service|.
+    mojo::RemoteSetElementId mojo_id;
+    // BrowserService proxy connected to lacros-chrome.
+    mojom::BrowserService* service;
+    // Supported interface version of the BrowserService in Lacros-chrome.
+    uint32_t interface_version;
+  };
+
   // Posts CreateLogFile() and StartWithLogFile() to the thread pooll.
   void Start();
 
@@ -156,13 +176,13 @@ class BrowserManager : public session_manager::SessionManagerObserver {
   // by logfd.
   void StartWithLogFile(base::ScopedFD logfd);
 
-  // Called when PendingReceiver of Crosapi is passed from lacros-chrome.
-  void OnCrosapiReceiverReceived(
-      mojo::PendingReceiver<mojom::Crosapi> pending_receiver);
-
-  // Called when crosapi connection is established.
-  void OnCrosapiConnected(
-      mojo::Remote<crosapi::mojom::BrowserService> browser_service);
+  // BrowserServiceHostObserver:
+  void OnBrowserServiceConnected(CrosapiId id,
+                                 mojo::RemoteSetElementId mojo_id,
+                                 mojom::BrowserService* browser_service,
+                                 uint32_t browser_service_version) override;
+  void OnBrowserServiceDisconnected(CrosapiId id,
+                                    mojo::RemoteSetElementId mojo_id) override;
 
   // Called when the Mojo connection to lacros-chrome is disconnected.
   // It may be "just a Mojo error" or "lacros-chrome crash".
@@ -178,9 +198,6 @@ class BrowserManager : public session_manager::SessionManagerObserver {
 
   // Called on load completion.
   void OnLoadComplete(const base::FilePath& path);
-
-  // Callback of QueryVersion for BrowserService.
-  void OnBrowserServiceVersionReady(uint32_t version);
 
   State state_ = State::NOT_INITIALIZED;
 
@@ -207,9 +224,13 @@ class BrowserManager : public session_manager::SessionManagerObserver {
   // Process handle for the lacros-chrome process.
   base::Process lacros_process_;
 
+  // ID for the current Crosapi connection.
+  // Available only when lacros-chrome is running.
+  base::Optional<CrosapiId> crosapi_id_;
+
   // Proxy to BrowserService mojo service in lacros-chrome.
   // Available during lacros-chrome is running.
-  mojo::Remote<mojom::BrowserService> browser_service_;
+  base::Optional<BrowserServiceInfo> browser_service_;
 
   // Helps set up and manage the mojo connections between lacros-chrome and
   // ash-chrome in testing environment. Only applicable when

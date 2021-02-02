@@ -10,18 +10,16 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/chromeos/crosapi/browser_util.h"
-#include "chrome/browser/chromeos/crosapi/crosapi_ash.h"
 #include "chrome/browser/chromeos/crosapi/crosapi_manager.h"
+#include "chrome/browser/chromeos/crosapi/environment_provider.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/platform/socket_utils_posix.h"
-#include "mojo/public/cpp/system/invitation.h"
 
 namespace crosapi {
 
@@ -98,14 +96,14 @@ void TestMojoConnectionManager::OnTestingSocketAvailable() {
     return;
   }
 
-  // TODO(crbug.com/1124490): Support multiple mojo connections from lacros.
   mojo::PlatformChannel channel;
   CrosapiManager::Get()->SendInvitation(
       environment_provider_.get(), channel.TakeLocalEndpoint(),
-      base::BindOnce(&TestMojoConnectionManager::OnMojoDisconnected,
-                     weak_factory_.GetWeakPtr()),
-      base::BindOnce(&TestMojoConnectionManager::OnCrosapiConnected,
-                     weak_factory_.GetWeakPtr()));
+      base::BindOnce([]() {
+        // Called when the Mojo connection to lacros-chrome is disconnected.
+        // It may be "just a Mojo error" or "test is finished".
+        LOG(WARNING) << "Mojo to lacros-chrome is disconnected.";
+      }));
 
   base::ScopedFD startup_fd =
       browser_util::CreateStartupData(environment_provider_.get());
@@ -127,17 +125,6 @@ void TestMojoConnectionManager::OnTestingSocketAvailable() {
     PLOG(ERROR) << "Failed to send file descriptors to the socket";
     return;
   }
-}
-
-void TestMojoConnectionManager::OnCrosapiConnected(
-    mojo::Remote<crosapi::mojom::BrowserService> browser_service) {
-  browser_service_ = std::move(browser_service);
-  LOG(INFO) << "Connection to lacros-chrome is established.";
-}
-
-void TestMojoConnectionManager::OnMojoDisconnected() {
-  browser_service_.reset();
-  LOG(WARNING) << "Mojo to lacros-chrome is disconnected.";
 }
 
 }  // namespace crosapi
