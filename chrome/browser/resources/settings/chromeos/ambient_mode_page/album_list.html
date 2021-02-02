@@ -7,6 +7,8 @@
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-list/iron-list.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
 <link rel="import" href="constants.html">
+<link rel="import" href="../os_route.html">
+<link rel="import" href="../../global_scroll_target_behavior.html">
 <link rel="import" href="../../settings_shared_css.html">
 
 <dom-module id="album-list">
@@ -30,7 +32,8 @@
     <paper-spinner-lite active="[[!albums]]" hidden="[[albums]]">
     </paper-spinner-lite>
 
-    <iron-list grid items="{{albums}}">
+    <iron-list scroll-target="[[subpageScrollTarget]]"
+      grid items="{{albums}}">
       <template>
         <album-item album="{{item}}" checked="{{item.checked}}"
             topic-source="[[topicSource]]" tabindex$="[[tabIndex]]"

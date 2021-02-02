@@ -16,6 +16,7 @@ js_type_check("closure_compile") {
     ":ambient_mode_photos_page",
     ":art_album_dialog",
     ":constants",
+    ":text_with_tooltip",
     ":topic_source_item",
     ":topic_source_list",
   ]
@@ -58,6 +59,9 @@ js_library("ambient_mode_photos_page") {
   ]
 }
 
+js_library("text_with_tooltip") {
+}
+
 js_library("constants") {
 }
 
@@ -86,6 +90,8 @@ js_library("album_item") {
 
 js_library("album_list") {
   deps = [
+   "..:os_route",
+    "../..:global_scroll_target_behavior",
     ":constants",
     "//ui/webui/resources/js:cr",
   ]
@@ -107,6 +113,7 @@ js_type_check("closure_compile_module") {
     ":ambient_mode_page.m",
     ":ambient_mode_photos_page.m",
     ":art_album_dialog.m",
+    ":text_with_tooltip.m",
     ":topic_source_item.m",
     ":topic_source_list.m",
   ]
@@ -156,6 +163,14 @@ js_library("ambient_mode_photos_page.m") {
   extra_deps = [ ":ambient_mode_photos_page_module" ]
 }
 
+js_library("text_with_tooltip.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/ambient_mode_page/text_with_tooltip.m.js" ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":text_with_tooltip_module" ]
+}
+
 js_library("topic_source_item.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/ambient_mode_page/topic_source_item.m.js" ]
   deps = [
@@ -188,7 +203,9 @@ js_library("album_item.m") {
 js_library("album_list.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/ambient_mode_page/album_list.m.js" ]
   deps = [
-    ":constants",
+    "..:os_route.m",
+    "../..:global_scroll_target_behavior.m",
+    ":constants.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":album_list_module" ]
@@ -211,6 +228,7 @@ group("polymer3_elements") {
     ":ambient_mode_photos_page_module",
     ":art_album_dialog_module",
     ":modulize",
+    ":text_with_tooltip_module",
     ":topic_source_item_module",
     ":topic_source_list_module",
   ]
@@ -228,6 +246,17 @@ polymer_modulizer("ambient_mode_page") {
 polymer_modulizer("ambient_mode_photos_page") {
   js_file = "ambient_mode_photos_page.js"
   html_file = "ambient_mode_photos_page.html"
+  html_type = "dom-module"
+  migrated_imports = os_settings_migrated_imports
+  namespace_rewrites = os_settings_namespace_rewrites
+  auto_imports =
+      os_settings_auto_imports +
+      [ "ui/webui/resources/html/assert.html|assert,assertNotReached" ]
+}
+
+polymer_modulizer("text_with_tooltip") {
+  js_file = "text_with_tooltip.js"
+  html_file = "text_with_tooltip.html"
   html_type = "dom-module"
   migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites

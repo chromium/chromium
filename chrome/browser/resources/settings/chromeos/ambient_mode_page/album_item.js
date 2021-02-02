@@ -35,6 +35,16 @@ Polymer({
       computed: 'computeAriaLabel_(album.*, checked)',
       reflectToAttribute: true,
     },
+
+    titleTooltipIsVisible: {
+      type: Boolean,
+      observer: 'tooltipVisibilityChanged_',
+    },
+
+    descriptionTooltipIsVisible: {
+      type: Boolean,
+      observer: 'tooltipVisibilityChanged_',
+    },
   },
 
   listeners: {keydown: 'onKeydown_'},
@@ -82,6 +92,19 @@ Polymer({
     this.fireSelectedAlbumsChanged_();
     event.preventDefault();
     event.stopPropagation();
+  },
+
+  /**
+   * Because of the paper-tooltips anchored in this item exceed the bounds of
+   * #albumItem and each 'grid' item in iron-list has it's own stacking
+   * context, we need to adjust the z-index of the items relative to each
+   * other so that the tooltip is not covered by adjacent albumItems.
+   * @private
+   */
+  tooltipVisibilityChanged_() {
+    const tooltipIsVisible =
+        this.titleTooltipIsVisible || this.descriptionTooltipIsVisible;
+    this.style.zIndex = tooltipIsVisible ? '1' : '0';
   },
 
   /**

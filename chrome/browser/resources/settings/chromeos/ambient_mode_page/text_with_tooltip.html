@@ -1,0 +1,26 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
+<link rel="import" href="../../settings_shared_css.html">
+
+<dom-module id="text-with-tooltip">
+  <template>
+    <style include="settings-shared cr-shared-style">
+      .line-clamp {
+        -webkit-box-orient: vertical;
+        display: -webkit-box;
+        overflow: hidden;
+      }
+    </style>
+    <div id="textDiv" style$="-webkit-line-clamp: [[lineClamp]];"
+      class$="line-clamp [[textStyle]]">
+      [[text]]
+    </div>
+    <template is="dom-if" if="[[textOverflowing_]]">
+      <paper-tooltip for="textDiv" fit-to-visible-bounds>
+        [[text]]
+      </paper-tooltip>
+    </template>
+  </template>
+  <script src="text_with_tooltip.js"></script>
+</dom-module>

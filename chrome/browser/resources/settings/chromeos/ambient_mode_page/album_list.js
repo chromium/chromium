@@ -12,6 +12,10 @@
 Polymer({
   is: 'album-list',
 
+  behaviors: [
+    settings.GlobalScrollTargetBehavior,
+  ],
+
   properties: {
     /** @private {!AmbientModeTopicSource} */
     topicSource: {
@@ -26,6 +30,15 @@ Polymer({
       type: Array,
       value: null,
       notify: true,
+    },
+
+    /**
+     * Needed by GlobalScrollTargetBehavior.
+     * @override
+     */
+    subpageRoute: {
+      type: Object,
+      value: settings.routes.AMBIENT_MODE_PHOTOS,
     },
   },
 
