@@ -95,6 +95,7 @@
 #include "base/system/sys_info.h"
 #include "chromeos/audio/cras_audio_handler.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/constants/devicetype.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/user_manager/user_type.h"
@@ -1077,8 +1078,14 @@ void HandleToggleAssistant(const ui::Accelerator& accelerator) {
         base::UserMetricsAction("VoiceInteraction.Started.Search_Space"));
   } else if (accelerator.IsCmdDown() && accelerator.key_code() == ui::VKEY_A) {
     // Search+A shortcut is disabled on device with an assistant key.
-    if (ui::DeviceKeyboardHasAssistantKey())
+    // Currently only Google branded device has the key. Some external keyboard
+    // may report it has the key but actually not.  This would cause keyboard
+    // shortcut stops working.  So we only check the key on these branded
+    // devices.
+    if (chromeos::IsGoogleBrandedDevice() &&
+        ui::DeviceKeyboardHasAssistantKey()) {
       return;
+    }
 
     base::RecordAction(
         base::UserMetricsAction("VoiceInteraction.Started.Search_A"));
