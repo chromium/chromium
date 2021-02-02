@@ -639,7 +639,7 @@ void PrerenderInProcessBrowserTest::MonitorResourceRequest(
   requests_[request.GetURL()]++;
   if (waiting_url_ == request.GetURL() &&
       requests_[request.GetURL()] == waiting_count_) {
-    waiting_closure_.Run();
+    std::move(waiting_closure_).Run();
   }
 }
 

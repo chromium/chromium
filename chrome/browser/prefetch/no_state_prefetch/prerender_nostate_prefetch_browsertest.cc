@@ -442,13 +442,13 @@ class NoStatePrefetchBrowserTest
   // manifest exists.
   static void WaitForAppcache(const GURL& manifest_url,
                               content::AppCacheService* appcache_service,
-                              base::Closure callback,
+                              base::OnceClosure callback,
                               bool* found_manifest) {
     scoped_refptr<content::AppCacheInfoCollection> info_collection =
         new content::AppCacheInfoCollection();
     appcache_service->GetAllAppCacheInfo(
         info_collection.get(),
-        base::BindOnce(ProcessAppCacheInfo, manifest_url, callback,
+        base::BindOnce(ProcessAppCacheInfo, manifest_url, std::move(callback),
                        found_manifest, info_collection));
   }
 
@@ -457,7 +457,7 @@ class NoStatePrefetchBrowserTest
   // the UI thread.
   static void ProcessAppCacheInfo(
       const GURL& target_manifest,
-      base::Closure callback,
+      base::OnceClosure callback,
       bool* found_manifest,
       scoped_refptr<content::AppCacheInfoCollection> info_collection,
       int status) {
@@ -471,7 +471,8 @@ class NoStatePrefetchBrowserTest
         }
       }
     }
-    content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, callback);
+    content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
+                                                 std::move(callback));
   }
 
   base::test::ScopedFeatureList feature_list_;

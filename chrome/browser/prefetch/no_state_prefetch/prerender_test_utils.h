@@ -411,7 +411,7 @@ class PrerenderInProcessBrowserTest : virtual public InProcessBrowserTest {
   std::map<GURL, uint32_t> requests_;
   GURL waiting_url_;
   uint32_t waiting_count_ = 0;
-  base::Closure waiting_closure_;
+  base::OnceClosure waiting_closure_;
   base::Lock lock_;
 
   DISALLOW_COPY_AND_ASSIGN(PrerenderInProcessBrowserTest);
