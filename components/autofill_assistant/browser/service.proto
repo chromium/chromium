@@ -649,9 +649,9 @@ message TriggerScriptUIProto {
   // Whether the bottom sheet should temporarily disappear when scrolling down
   // the website, to move out of the way.
   //
-  // Avoid setting both resize_visual_viewport and scroll_to_hide to true, as
-  // the resulting behavior is confusing: the bottom sheet can pop back up after
-  // a scroll down instead of staying hidden in some situations.
+  // The value of resize_visual_viewport is ignored when scroll_to_hide is true.
+  // This allows the backend setting both to true and letting chrome choose
+  // scroll_to_hide if it is supported.
   optional bool scroll_to_hide = 9;
 }
 

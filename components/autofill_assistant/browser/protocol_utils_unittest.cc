@@ -394,5 +394,36 @@ TEST_F(ProtocolUtilsTest, ParseTriggerScriptsValid) {
   EXPECT_EQ(timeout_ms, 500000);
 }
 
+TEST_F(ProtocolUtilsTest, TurnOffResizeVisualViewport) {
+  GetTriggerScriptsResponseProto proto;
+
+  auto* script1 = proto.add_trigger_scripts();
+  script1->mutable_user_interface()->set_scroll_to_hide(true);
+  script1->mutable_user_interface()->set_resize_visual_viewport(true);
+
+  auto* script2 = proto.add_trigger_scripts();
+  script2->mutable_user_interface()->set_resize_visual_viewport(true);
+
+  std::string proto_str;
+  proto.SerializeToString(&proto_str);
+
+  std::vector<std::unique_ptr<TriggerScript>> trigger_scripts;
+  std::vector<std::string> additional_allowed_domains;
+  int interval_ms;
+  base::Optional<int> timeout_ms;
+  EXPECT_TRUE(ProtocolUtils::ParseTriggerScripts(proto_str, &trigger_scripts,
+                                                 &additional_allowed_domains,
+                                                 &interval_ms, &timeout_ms));
+  ASSERT_THAT(trigger_scripts, SizeIs(2));
+
+  EXPECT_TRUE(trigger_scripts[0]->AsProto().user_interface().scroll_to_hide());
+  EXPECT_FALSE(
+      trigger_scripts[0]->AsProto().user_interface().resize_visual_viewport());
+
+  EXPECT_FALSE(trigger_scripts[1]->AsProto().user_interface().scroll_to_hide());
+  EXPECT_TRUE(
+      trigger_scripts[1]->AsProto().user_interface().resize_visual_viewport());
+}
+
 }  // namespace
 }  // namespace autofill_assistant
