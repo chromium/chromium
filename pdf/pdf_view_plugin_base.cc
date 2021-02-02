@@ -18,8 +18,8 @@
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/optional.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdfium/pdfium_engine.h"
@@ -201,13 +201,8 @@ void PdfViewPluginBase::HandleDisplayAnnotationsMessage(
 
 void PdfViewPluginBase::HandleSetBackgroundColorMessage(
     const base::Value& message) {
-  // TODO(crbug.com/1172571): Accept the color as a number instead of a string
-  // to reduce the number of CHECKs.
-  const std::string* hex_color = message.FindStringKey("color");
-  CHECK(hex_color);
-
-  uint32_t background_color;
-  CHECK(base::HexStringToUInt(*hex_color, &background_color));
+  const SkColor background_color =
+      base::checked_cast<SkColor>(message.FindDoubleKey("color").value());
   SetBackgroundColor(background_color);
 }
 

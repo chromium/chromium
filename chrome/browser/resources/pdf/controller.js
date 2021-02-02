@@ -398,7 +398,10 @@ export class PluginController {
     });
   }
 
-  /** @param {string} color New color, in hex, for the PDF plugin. */
+  /**
+   * @param {number} color New color, as a 32-bit integer, of the PDF plugin
+   *     background.
+   */
   setBackgroundColor(color) {
     this.postMessage_({
       type: 'setBackgroundColor',

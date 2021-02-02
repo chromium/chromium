@@ -359,15 +359,15 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
 
 /**
  * The background color used for print preview (--google-grey-refresh-300).
- * @type {string}
+ * @type {number}
  */
-const PRINT_PREVIEW_BACKGROUND_COLOR = '0xFFDADCE0';
+const PRINT_PREVIEW_BACKGROUND_COLOR = 0xffdadce0;
 
 /**
  * The background color used for print preview when dark mode is enabled
  * (--google-grey-refresh-700).
- * @type {string}
+ * @type {number}
  */
-const PRINT_PREVIEW_DARK_BACKGROUND_COLOR = '0xFF5F6368';
+const PRINT_PREVIEW_DARK_BACKGROUND_COLOR = 0xff5f6368;
 
 customElements.define(PDFViewerPPElement.is, PDFViewerPPElement);

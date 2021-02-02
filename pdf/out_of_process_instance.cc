@@ -645,7 +645,7 @@ bool OutOfProcessInstance::Init(uint32_t argc,
       headers = argv[i];
     } else if (strcmp(argn[i], "background-color") == 0) {
       SkColor background_color;
-      if (!base::HexStringToUInt(argv[i], &background_color))
+      if (!base::StringToUint(argv[i], &background_color))
         return false;
       SetBackgroundColor(background_color);
     } else if (strcmp(argn[i], "top-toolbar-height") == 0) {

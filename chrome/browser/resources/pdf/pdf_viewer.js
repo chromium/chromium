@@ -1218,8 +1218,8 @@ const TOOLBAR_WINDOW_MIN_HEIGHT = 250;
 
 /**
  * The background color used for the regular viewer.
- * @type {string}
+ * @type {number}
  */
-const BACKGROUND_COLOR = '0xFF525659';
+const BACKGROUND_COLOR = 0xff525659;
 
 customElements.define(PDFViewerElement.is, PDFViewerElement);

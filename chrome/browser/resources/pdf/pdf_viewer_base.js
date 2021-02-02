@@ -149,9 +149,9 @@ export class PDFViewerBaseElement extends PolymerElement {
     return this.shadowRoot.querySelector(query);
   }
 
-  /** @return {string} */
+  /** @return {number} */
   getBackgroundColor() {
-    return '';
+    return -1;
   }
 
   /**
