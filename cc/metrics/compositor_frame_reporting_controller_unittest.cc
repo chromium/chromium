@@ -1520,5 +1520,62 @@ TEST_F(CompositorFrameReportingControllerTest,
   EXPECT_EQ(kSkipFramesActual, dropped_counter.total_compositor_dropped());
 }
 
+TEST_F(CompositorFrameReportingControllerTest,
+       SkippedFramesFromDisplayCompositorHaveSmoothThread) {
+  auto thread_type_compositor = FrameSequenceMetrics::ThreadType::kCompositor;
+  reporting_controller_.SetThreadAffectsSmoothness(thread_type_compositor,
+                                                   true);
+  dropped_counter.OnFcpReceived();
+
+  // Submit and present two compositor frames.
+  SimulatePresentCompositorFrame();
+  EXPECT_EQ(1u, dropped_counter.total_frames());
+  EXPECT_EQ(0u, dropped_counter.total_main_dropped());
+  EXPECT_EQ(0u, dropped_counter.total_compositor_dropped());
+
+  SimulatePresentCompositorFrame();
+  EXPECT_EQ(2u, dropped_counter.total_frames());
+  EXPECT_EQ(0u, dropped_counter.total_main_dropped());
+  EXPECT_EQ(0u, dropped_counter.total_compositor_dropped());
+
+  // Now skip over a few frames, and submit + present another frame.
+  const uint32_t kSkipFrames_1 = 5;
+  for (uint32_t i = 0; i < kSkipFrames_1; ++i)
+    IncrementCurrentId();
+  SimulatePresentCompositorFrame();
+  EXPECT_EQ(3u + kSkipFrames_1, dropped_counter.total_frames());
+  EXPECT_EQ(0u, dropped_counter.total_main_dropped());
+  EXPECT_EQ(kSkipFrames_1, dropped_counter.total_compositor_dropped());
+  EXPECT_EQ(kSkipFrames_1, dropped_counter.total_smoothness_dropped());
+
+  // Now skip over a few frames which are not affecting smoothness.
+  reporting_controller_.SetThreadAffectsSmoothness(thread_type_compositor,
+                                                   false);
+  const uint32_t kSkipFrames_2 = 7;
+  for (uint32_t i = 0; i < kSkipFrames_2; ++i)
+    IncrementCurrentId();
+  SimulatePresentCompositorFrame();  // Present another frame.
+  EXPECT_EQ(4u + kSkipFrames_1 + kSkipFrames_2, dropped_counter.total_frames());
+  EXPECT_EQ(0u, dropped_counter.total_main_dropped());
+  EXPECT_EQ(kSkipFrames_1 + kSkipFrames_2,
+            dropped_counter.total_compositor_dropped());
+  EXPECT_EQ(kSkipFrames_1, dropped_counter.total_smoothness_dropped());
+
+  // Now skip over a few frames more frames which are affecting smoothness.
+  reporting_controller_.SetThreadAffectsSmoothness(thread_type_compositor,
+                                                   true);
+  const uint32_t kSkipFrames_3 = 10;
+  for (uint32_t i = 0; i < kSkipFrames_3; ++i)
+    IncrementCurrentId();
+  SimulatePresentCompositorFrame();  // Present another frame.
+  EXPECT_EQ(5u + kSkipFrames_1 + kSkipFrames_2 + kSkipFrames_3,
+            dropped_counter.total_frames());
+  EXPECT_EQ(0u, dropped_counter.total_main_dropped());
+  EXPECT_EQ(kSkipFrames_1 + kSkipFrames_2 + kSkipFrames_3,
+            dropped_counter.total_compositor_dropped());
+  EXPECT_EQ(kSkipFrames_1 + kSkipFrames_3,
+            dropped_counter.total_smoothness_dropped());
+}
+
 }  // namespace
 }  // namespace cc

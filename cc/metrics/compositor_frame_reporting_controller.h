@@ -5,6 +5,7 @@
 #ifndef CC_METRICS_COMPOSITOR_FRAME_REPORTING_CONTROLLER_H_
 #define CC_METRICS_COMPOSITOR_FRAME_REPORTING_CONTROLLER_H_
 
+#include <map>
 #include <memory>
 #include <vector>
 
@@ -118,6 +119,8 @@ class CC_EXPORT CompositorFrameReportingController {
   std::unique_ptr<CompositorFrameReporter> RestoreReporterAtBeginImpl(
       const viz::BeginFrameId& id);
   CompositorFrameReporter::SmoothThread GetSmoothThread() const;
+  CompositorFrameReporter::SmoothThread GetSmoothThreadAtTime(
+      base::TimeTicks timestamp) const;
 
   // Checks whether there are reporters containing updates from the main
   // thread, and returns a weak-ptr to that reporter (if any). Otherwise returns
@@ -145,6 +148,10 @@ class CC_EXPORT CompositorFrameReportingController {
 
   bool is_compositor_thread_driving_smoothness_ = false;
   bool is_main_thread_driving_smoothness_ = false;
+  // Sorted history of smooththread. Element i indicating the smooththread from
+  // timestamp of element i-1 until timestamp of element i.
+  std::map<base::TimeTicks, CompositorFrameReporter::SmoothThread>
+      smooth_thread_history_;
 
   // The latency reporter passed to each CompositorFrameReporter. Owned here
   // because it must be common among all reporters.
