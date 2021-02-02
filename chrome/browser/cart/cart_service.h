@@ -21,12 +21,18 @@ class CartService : public KeyedService {
   ~CartService() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
-  // Gets called when cart module is dismissed.
-  void Dismiss();
-  // Gets called when the dismiss of cart module is restored.
-  void Restore();
-  // Returns the current dismiss status of cart module.
-  bool IsDismissed();
+  // Gets called when cart module is temporarily hidden.
+  void Hide();
+  // Gets called when restoring the temporarily hidden cart module.
+  void RestoreHidden();
+  // Returns whether cart module has been temporarily hidden.
+  bool IsHidden();
+  // Gets called when cart module is permanently removed.
+  void Remove();
+  // Gets called when restoring the permanently removed cart module.
+  void RestoreRemoved();
+  // Returns whether cart module has been permanently removed.
+  bool IsRemoved();
 
  private:
   friend class CartServiceFactory;

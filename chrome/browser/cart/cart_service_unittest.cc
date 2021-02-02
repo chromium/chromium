@@ -28,13 +28,24 @@ class CartServiceTest : public testing::Test {
   CartService* service_;
 };
 
-// Verifies the dismiss status is flipped by dismiss and restore.
-TEST_F(CartServiceTest, TestDismissStatusChange) {
-  ASSERT_FALSE(service_->IsDismissed());
+// Verifies the hide status is flipped by hiding and restoring.
+TEST_F(CartServiceTest, TestHideStatusChange) {
+  ASSERT_FALSE(service_->IsHidden());
 
-  service_->Dismiss();
-  ASSERT_TRUE(service_->IsDismissed());
+  service_->Hide();
+  ASSERT_TRUE(service_->IsHidden());
 
-  service_->Restore();
-  ASSERT_FALSE(service_->IsDismissed());
+  service_->RestoreHidden();
+  ASSERT_FALSE(service_->IsHidden());
+}
+
+// Verifies the remove status is flipped by removing and restoring.
+TEST_F(CartServiceTest, TestRemoveStatusChange) {
+  ASSERT_FALSE(service_->IsRemoved());
+
+  service_->Remove();
+  ASSERT_TRUE(service_->IsRemoved());
+
+  service_->RestoreRemoved();
+  ASSERT_FALSE(service_->IsRemoved());
 }

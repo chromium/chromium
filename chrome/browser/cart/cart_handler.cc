@@ -48,9 +48,9 @@ void CartHandler::GetMerchantCarts(GetMerchantCartsCallback callback) {
 }
 
 void CartHandler::DismissCartModule() {
-  CartServiceFactory::GetForProfile(profile_)->Dismiss();
+  CartServiceFactory::GetForProfile(profile_)->Hide();
 }
 
 void CartHandler::RestoreCartModule() {
-  CartServiceFactory::GetForProfile(profile_)->Restore();
+  CartServiceFactory::GetForProfile(profile_)->RestoreHidden();
 }
