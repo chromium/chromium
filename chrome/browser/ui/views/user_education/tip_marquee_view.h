@@ -7,11 +7,15 @@
 
 #include "base/callback.h"
 #include "base/callback_forward.h"
+#include "base/scoped_observation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
+#include "ui/views/view_observer.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace gfx {
 class ImageSkia;
@@ -27,7 +31,7 @@ class StyledLabel;
 //       🌏 Did you know that Chrome can display web pages? [ LEARN MORE ]
 //                                       🌏 Did you know that Chrome ca...
 //                                                                       🌏
-class TipMarqueeView : public views::View {
+class TipMarqueeView : public views::View, public views::WidgetObserver {
  public:
   METADATA_HEADER(TipMarqueeView);
 
@@ -70,16 +74,24 @@ class TipMarqueeView : public views::View {
   gfx::Size CalculatePreferredSize() const override;
   void OnPaint(gfx::Canvas* canvas) override;
 
-  void LearnMoreLinkClicked();
+  // views::WidgetObserver:
+  void OnWidgetDestroying(views::Widget* widget) override;
+
+  void LinkClicked();
   bool GetFitsInLayout() const;
 
   bool IsPointInIcon(const gfx::Point& p) const;
+
+  void ToggleOverflowWidget();
 
   base::string16 tip_text_;
   views::StyledLabel* tip_text_label_ = nullptr;
   gfx::ImageSkia chrome_icon_;
   LearnMoreLinkClickedCallback learn_more_link_clicked_callback_;
   bool collapsed_ = false;
+  views::Widget* show_tip_widget_ = nullptr;
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      widget_observer_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_TIP_MARQUEE_VIEW_H_

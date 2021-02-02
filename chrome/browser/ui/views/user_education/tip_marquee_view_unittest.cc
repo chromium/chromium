@@ -3,21 +3,29 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/user_education/tip_marquee_view.h"
+#include <cstddef>
 
 #include "base/bind.h"
+#include "base/callback_forward.h"
+#include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/types/event_type.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/window/dialog_delegate.h"
 
 namespace {
 
@@ -35,6 +43,34 @@ class LearnMoreCallback {
  private:
   void IncrementCount(TipMarqueeView*) { ++count_; }
   int count_ = 0;
+};
+
+class WidgetCloseWaiter : public views::WidgetObserver {
+ public:
+  explicit WidgetCloseWaiter(views::Widget* widget) {
+    observation_.Observe(widget);
+  }
+
+  void OnWidgetClosing(views::Widget* widget) override {
+    quit_closure_ = run_loop_.QuitClosure();
+  }
+
+  void OnWidgetDestroyed(views::Widget* widget) override {
+    if (quit_closure_)
+      std::move(quit_closure_).Run();
+    observation_.Reset();
+  }
+
+  void WaitForClose() {
+    ASSERT_FALSE(quit_closure_.is_null());
+    run_loop_.Run();
+  }
+
+ private:
+  base::RunLoop run_loop_;
+  base::OnceClosure quit_closure_;
+  base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
+      this};
 };
 
 }  // anonymous namespace
@@ -226,4 +262,64 @@ TEST_F(TipMarqueeViewTest, ClickWhenForcedCollapsedCallsLearnMore) {
   EXPECT_EQ(0, callback.count());
   SimulateMarqueeClick(kPressPoint);
   EXPECT_EQ(1, callback.count());
+}
+
+TEST_F(TipMarqueeViewTest, ClickWhenForcedCollapsedDisplaysOverflow) {
+  marquee_->SetTip(base::ASCIIToUTF16("Tip Text"));
+  widget_->LayoutRootViewIfNecessary();
+  gfx::Size spacer_size = spacer_->size();
+  spacer_size.Enlarge(1, 0);
+  spacer_->SetPreferredSize(spacer_size);
+  contents_->Layout();
+  ASSERT_EQ(marquee_->width(), marquee_->GetMinimumSize().width());
+
+  // This location should be comfortably inside the icon area.
+  constexpr gfx::Point kPressPoint(10, 10);
+  SimulateMarqueeClick(kPressPoint);
+  views::DialogDelegate* const delegate =
+      marquee_->GetProperty(views::kAnchoredDialogKey);
+  EXPECT_NE(static_cast<views::DialogDelegate*>(nullptr), delegate);
+}
+
+TEST_F(TipMarqueeViewTest, OverflowBubbleCancelDoesNotDismissTip) {
+  marquee_->SetTip(base::ASCIIToUTF16("Tip Text"));
+  widget_->LayoutRootViewIfNecessary();
+  gfx::Size spacer_size = spacer_->size();
+  spacer_size.Enlarge(1, 0);
+  spacer_->SetPreferredSize(spacer_size);
+  contents_->Layout();
+  ASSERT_EQ(marquee_->width(), marquee_->GetMinimumSize().width());
+
+  // This location should be comfortably inside the icon area.
+  constexpr gfx::Point kPressPoint(10, 10);
+  SimulateMarqueeClick(kPressPoint);
+  views::DialogDelegate* const delegate =
+      marquee_->GetProperty(views::kAnchoredDialogKey);
+  views::Widget* const overflow_widget = delegate->GetWidget();
+  ASSERT_NE(static_cast<views::Widget*>(nullptr), overflow_widget);
+  WidgetCloseWaiter waiter(overflow_widget);
+  ui::KeyEvent press_esc(ui::ET_KEY_PRESSED, ui::VKEY_ESCAPE, 0);
+  overflow_widget->OnKeyEvent(&press_esc);
+  waiter.WaitForClose();
+  EXPECT_TRUE(marquee_->GetVisible());
+}
+
+TEST_F(TipMarqueeViewTest, OverflowBubbleGotItDismissesTip) {
+  marquee_->SetTip(base::ASCIIToUTF16("Tip Text"));
+  widget_->LayoutRootViewIfNecessary();
+  gfx::Size spacer_size = spacer_->size();
+  spacer_size.Enlarge(1, 0);
+  spacer_->SetPreferredSize(spacer_size);
+  contents_->Layout();
+  ASSERT_EQ(marquee_->width(), marquee_->GetMinimumSize().width());
+
+  // This location should be comfortably inside the icon area.
+  constexpr gfx::Point kPressPoint(10, 10);
+  SimulateMarqueeClick(kPressPoint);
+  views::DialogDelegate* const delegate =
+      marquee_->GetProperty(views::kAnchoredDialogKey);
+  WidgetCloseWaiter waiter(delegate->GetWidget());
+  delegate->AcceptDialog();
+  waiter.WaitForClose();
+  EXPECT_FALSE(marquee_->GetVisible());
 }
