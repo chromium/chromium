@@ -865,6 +865,8 @@ void CreatePublicKeyCredentialForPaymentCredential(
     return;
   }
 
+  mojo_options->is_payment_credential_creation = true;
+
   auto* authenticator =
       CredentialManagerProxy::From(resolver->GetScriptState())->Authenticator();
   authenticator->MakeCredential(
@@ -1162,7 +1164,9 @@ ScriptPromise CredentialsContainer::create(
         FederatedCredential::Create(options->federated(), exception_state));
   } else if (options->hasPayment()) {
     if (RuntimeEnabledFeatures::SecurePaymentConfirmationEnabled(
-            resolver->GetExecutionContext())) {
+            resolver->GetExecutionContext()) &&
+        resolver->GetExecutionContext()->IsFeatureEnabled(
+            mojom::blink::FeaturePolicyFeature::kPayment)) {
       CreatePublicKeyCredentialForPaymentCredential(options->payment(),
                                                     resolver);
     } else {

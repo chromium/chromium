@@ -521,7 +521,8 @@ class WebAuthLocalClientBrowserTest : public WebAuthBrowserTestBase {
         /*hmac_create_secret=*/false, /*prf_enable=*/false,
         blink::mojom::ProtectionPolicy::UNSPECIFIED,
         /*enforce_protection_policy=*/false, /*appid_exclude=*/base::nullopt,
-        /*cred_props=*/false, device::LargeBlobSupport::kNotRequested);
+        /*cred_props=*/false, device::LargeBlobSupport::kNotRequested,
+        /*is_payment_credential_creation=*/false);
 
     return mojo_options;
   }

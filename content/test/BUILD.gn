@@ -2496,9 +2496,11 @@ test("content_unittests") {
       "../browser/hid/hid_service_unittest.cc",
       "../browser/webauth/authenticator_impl_unittest.cc",
       "../browser/webauth/authenticator_mojom_traits_unittest.cc",
+      "../browser/webauth/webauth_request_security_checker_unittest.cc",
     ]
     deps += [
       "//components/autofill/content/browser/webauthn",
+      "//components/payments/core",
       "//device/base",
       "//device/fido",
       "//device/fido:cablev2_authenticator",
