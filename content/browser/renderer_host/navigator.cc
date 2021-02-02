@@ -56,6 +56,85 @@
 
 namespace content {
 
+namespace {
+
+void RecordWebPlatformSecurityMetrics(RenderFrameHostImpl* rfh,
+                                      bool has_embedding_control,
+                                      bool is_error_page) {
+  ContentBrowserClient* client = GetContentClient()->browser();
+  if (rfh->cross_origin_opener_policy().value ==
+      network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin) {
+    client->LogWebFeatureForCurrentPage(
+        rfh, blink::mojom::WebFeature::kCrossOriginOpenerPolicySameOrigin);
+  }
+  if (rfh->cross_origin_opener_policy().value ==
+      network::mojom::CrossOriginOpenerPolicyValue::kSameOriginAllowPopups) {
+    client->LogWebFeatureForCurrentPage(
+        rfh, blink::mojom::WebFeature::
+                 kCrossOriginOpenerPolicySameOriginAllowPopups);
+  }
+
+  if (rfh->cross_origin_embedder_policy().value ==
+      network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp) {
+    client->LogWebFeatureForCurrentPage(
+        rfh, blink::mojom::WebFeature::kCrossOriginEmbedderPolicyRequireCorp);
+  }
+
+  if (rfh->cross_origin_opener_policy().value ==
+      network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep) {
+    client->LogWebFeatureForCurrentPage(
+        rfh, blink::mojom::WebFeature::kCoopAndCoepIsolated);
+  }
+
+  if (rfh->cross_origin_opener_policy().reporting_endpoint ||
+      rfh->cross_origin_opener_policy().report_only_reporting_endpoint) {
+    client->LogWebFeatureForCurrentPage(
+        rfh, blink::mojom::WebFeature::kCrossOriginOpenerPolicyReporting);
+  }
+
+  // Record iframes embedded in cross-origin contexts without a CSP
+  // frame-ancestor directive.
+  bool is_embedded_in_cross_origin_context = false;
+  RenderFrameHostImpl* parent = rfh->frame_tree_node()->parent();
+  while (parent) {
+    if (!parent->GetLastCommittedOrigin().IsSameOriginWith(
+            rfh->GetLastCommittedOrigin())) {
+      is_embedded_in_cross_origin_context = true;
+      break;
+    }
+    parent = parent->frame_tree_node()->parent();
+  }
+
+  if (is_embedded_in_cross_origin_context && !has_embedding_control &&
+      !is_error_page) {
+    client->LogWebFeatureForCurrentPage(
+        rfh,
+        blink::mojom::WebFeature::kCrossOriginSubframeWithoutEmbeddingControl);
+  }
+}
+
+bool HasEmbeddingControl(NavigationRequest* navigation_request) {
+  if (!navigation_request->response())
+    // This navigation did not result in a network request. The embedding of
+    // the frame is not controlled by network headers.
+    return true;
+
+  // Check if the request has a CSP frame-ancestor directive.
+  for (const auto& csp : navigation_request->response()
+                             ->parsed_headers->content_security_policy) {
+    if (csp->header->type ==
+            network::mojom::ContentSecurityPolicyType::kEnforce &&
+        csp->directives.contains(
+            network::mojom::CSPDirectiveName::FrameAncestors)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+}  // namespace
+
 struct Navigator::NavigationMetricsData {
   NavigationMetricsData(base::TimeTicks start_time,
                         GURL url,
@@ -407,6 +486,14 @@ void Navigator::DidNavigate(
       !navigation_request->IsServedFromBackForwardCache() &&
       !is_same_document_navigation && !was_within_same_document;
 
+  // Store some information for recording WebPlatform security metrics. These
+  // metrics depends on information present in the NavigationRequest. However
+  // they must be recorded after the NavigationRequest has been destroyed and
+  // DidFinishNavigation was called, otherwise they will not be properly
+  // attributed to the right page.
+  bool has_embedding_control = HasEmbeddingControl(navigation_request.get());
+  bool is_error_page = navigation_request->IsErrorPage();
+
   render_frame_host->DidNavigate(params, navigation_request.get(),
                                  did_create_new_document);
 
@@ -420,6 +507,11 @@ void Navigator::DidNavigate(
         params, did_navigate, details.did_replace_entry,
         details.previous_main_frame_url, details.type);
     navigation_request.reset();
+  }
+
+  if (did_create_new_document) {
+    RecordWebPlatformSecurityMetrics(render_frame_host, has_embedding_control,
+                                     is_error_page);
   }
 
   if (!did_navigate)
