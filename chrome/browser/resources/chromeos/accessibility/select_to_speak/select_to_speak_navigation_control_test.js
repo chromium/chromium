@@ -13,6 +13,11 @@ SelectToSpeakNavigationControlTest = class extends SelectToSpeakE2ETest {
     super();
     this.mockTts = new MockTts();
     chrome.tts = this.mockTts;
+
+    // Save original updateSelectToSpeakPanel function so we can override it in
+    // tests, then later restore the original implementation.
+    this.updateSelectToSpeakPanel =
+        chrome.accessibilityPrivate.updateSelectToSpeakPanel;
   }
 
   /** @override */
@@ -22,6 +27,8 @@ SelectToSpeakNavigationControlTest = class extends SelectToSpeakE2ETest {
     window.EventType = chrome.automation.EventType;
     window.RoleType = chrome.automation.RoleType;
     window.SelectToSpeakState = chrome.accessibilityPrivate.SelectToSpeakState;
+    chrome.accessibilityPrivate.updateSelectToSpeakPanel =
+        this.updateSelectToSpeakPanel;
 
     (async function() {
       let module = await import('/select_to_speak/select_to_speak_main.js');
@@ -1100,4 +1107,30 @@ TEST_F(
             // Trigger STS, which will initially set focus to the panel.
             this.triggerReadSelectedText();
           });
+    });
+
+TEST_F(
+    'SelectToSpeakNavigationControlTest', 'SelectingWindowDoesNotShowPanel',
+    function() {
+      const bodyHtml = `
+        <title>Test</title>
+        <div style="position: absolute; top: 300px;">
+          Hello
+        </div>
+      `;
+      this.runWithLoadedTree(bodyHtml, (root) => {
+        // Expect call to updateSelectToSpeakPanel to set panel to be hidden.
+        chrome.accessibilityPrivate.updateSelectToSpeakPanel =
+            this.newCallback((visible) => {
+              assertFalse(visible);
+            });
+
+        // Trigger mouse selection on a part of the page where no text nodes
+        // exist, should select entire page.
+        const mouseEvent = {
+          screenX: root.location.left + 1,
+          screenY: root.location.top + 1,
+        };
+        this.triggerReadMouseSelectedText(mouseEvent, mouseEvent);
+      });
     });

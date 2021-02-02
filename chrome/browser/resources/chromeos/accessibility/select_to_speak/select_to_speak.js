@@ -2081,6 +2081,16 @@ export class SelectToSpeak {
     if (nodes.length === 0) {
       return true;
     }
+
+    if (nodes.length === 1 && nodes[0] === nodes[0].root && nodes[0].parent &&
+        nodes[0].parent.root &&
+        nodes[0].parent.root.role === RoleType.DESKTOP) {
+      // If the selected node is a root node within the desktop, such as a
+      // a browser window, then do not show the navigation panel. There will
+      // be no where for the user to navigate to. Also panel could be clipped
+      // offscreen if the window is fullscreened.
+      return false;
+    }
     // Do not show panel on system UI. System UI can be problematic due to
     // auto-dismissing behavior (see http://crbug.com/1157148), but also
     // navigation controls do not work well control-rich interfaces that are
