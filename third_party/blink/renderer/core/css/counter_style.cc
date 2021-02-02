@@ -478,10 +478,17 @@ String CounterStyle::GenerateRepresentation(int value) const {
     return GenerateFallbackRepresentation(value);
 
   wtf_size_t initial_length = NumGraphemeClusters(initial_representation);
-  if (NeedsNegativeSign(value)) {
-    initial_length += NumGraphemeClusters(negative_prefix_);
-    initial_length += NumGraphemeClusters(negative_suffix_);
-  }
+
+  // TODO(crbug.com/687225): Spec requires us to further increment
+  // |initial_length| by the length of the negative sign, but no current
+  // implementation is doing that. For backward compatibility, we don't do that
+  // for now. See https://github.com/w3c/csswg-drafts/issues/5906 for details.
+  //
+  // if (NeedsNegativeSign(value)) {
+  //  initial_length += NumGraphemeClusters(negative_prefix_);
+  //  initial_length += NumGraphemeClusters(negative_suffix_);
+  // }
+
   wtf_size_t pad_copies =
       pad_length_ > initial_length ? pad_length_ - initial_length : 0;
 
