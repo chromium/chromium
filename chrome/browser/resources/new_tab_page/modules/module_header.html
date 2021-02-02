@@ -47,3 +47,8 @@
       class="icon-clear" on-click="onDismissButtonClick_">
   </cr-icon-button>
 </template>
+<template is="dom-if" if="[[showMenuButton]]">
+  <cr-icon-button id="menuButton" title="$i18n{moreActions}"
+      class="icon-more-vert" on-click="onMenuButtonClick_">
+  </cr-icon-button>
+</template>

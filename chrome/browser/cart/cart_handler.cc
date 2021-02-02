@@ -3,14 +3,14 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/cart/cart_handler.h"
-#include "chrome/browser/cart/cart_service.h"
 #include "chrome/browser/cart/cart_service_factory.h"
 #include "components/search/ntp_features.h"
 
 CartHandler::CartHandler(
     mojo::PendingReceiver<chrome_cart::mojom::CartHandler> handler,
     Profile* profile)
-    : handler_(this, std::move(handler)), profile_(profile) {}
+    : handler_(this, std::move(handler)),
+      cart_service_(CartServiceFactory::GetForProfile(profile)) {}
 
 CartHandler::~CartHandler() = default;
 
@@ -47,10 +47,18 @@ void CartHandler::GetMerchantCarts(GetMerchantCartsCallback callback) {
   std::move(callback).Run(std::move(carts));
 }
 
-void CartHandler::DismissCartModule() {
-  CartServiceFactory::GetForProfile(profile_)->Hide();
+void CartHandler::HideCartModule() {
+  cart_service_->Hide();
 }
 
-void CartHandler::RestoreCartModule() {
-  CartServiceFactory::GetForProfile(profile_)->RestoreHidden();
+void CartHandler::RestoreHiddenCartModule() {
+  cart_service_->RestoreHidden();
+}
+
+void CartHandler::RemoveCartModule() {
+  cart_service_->Remove();
+}
+
+void CartHandler::RestoreRemovedCartModule() {
+  cart_service_->RestoreRemoved();
 }

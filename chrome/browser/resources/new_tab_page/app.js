@@ -895,8 +895,7 @@ class AppElement extends PolymerElement {
     this.dismissedModuleData_ = {
       id: $$(this, '#modules').itemForElement(e.target).id,
       element: /** @type {!Element} */ (e.target),
-      message: loadTimeData.getStringF(
-          'dismissModuleToastMessage', e.detail.message),
+      message: e.detail.message,
       restoreCallback: e.detail.restoreCallback,
     };
     this.dismissedModuleData_.element.hidden = true;

@@ -9,6 +9,7 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.m.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ModuleDescriptor} from '../module_descriptor.js';
 import {ChromeCartProxy} from './chrome_cart_proxy.js';
@@ -109,33 +110,54 @@ class ChromeCartModuleElement extends PolymerElement {
     return imageUrls.slice(0, 3);
   }
 
-  /** @private */
-  onDismissButtonClick_() {
-    ChromeCartProxy.getInstance().handler.dismissCartModule();
-    this.dispatchEvent(new CustomEvent('dismiss-module', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        message: 'Your carts',
-        restoreCallback: this.onRestore_.bind(this),
-      },
-    }));
-  }
-
-  /** @private */
-  onRestore_() {
-    ChromeCartProxy.getInstance().handler.restoreCartModule();
+  /**
+   * @param {!Event} e
+   * @private
+   */
+  onCartMenuButtonClick_(e) {
+    e.preventDefault();
+    this.$.cartActionMenu.showAt(e.target);
   }
 
   /**
    * @param {!Event} e
    * @private
    */
-  onMenuButtonClick_(e) {
+  onModuleMenuButtonClick_(e) {
     e.preventDefault();
-    const index = this.$.cartItemRepeat.indexForElement(
-        e.target.parentElement.parentElement);
-    this.$.actionMenu.showAt(e.target);
+    this.$.moduleActionMenu.showAt(e.target);
+  }
+
+  /** @private */
+  onModuleHide_() {
+    ChromeCartProxy.getInstance().handler.hideCartModule();
+    this.dispatchEvent(new CustomEvent('dismiss-module', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        message:
+            loadTimeData.getString('modulesCartModuleMenuHideToastMessage'),
+        restoreCallback: () => {
+          ChromeCartProxy.getInstance().handler.restoreHiddenCartModule();
+        },
+      },
+    }));
+  }
+
+  /** @private */
+  onModuleRemove_() {
+    ChromeCartProxy.getInstance().handler.removeCartModule();
+    this.dispatchEvent(new CustomEvent('dismiss-module', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        message:
+            loadTimeData.getString('modulesCartModuleMenuRemoveToastMessage'),
+        restoreCallback: () => {
+          ChromeCartProxy.getInstance().handler.restoreRemovedCartModule();
+        },
+      },
+    }));
   }
 
   /**
