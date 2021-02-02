@@ -165,7 +165,6 @@
 
 #if defined(OS_ANDROID)
 #include "chrome/renderer/sandbox_status_extension_android.h"
-#include "components/continuous_search/renderer/search_result_extractor_impl.h"  // nogncheck
 #else
 #include "chrome/renderer/media/chrome_speech_recognition_client.h"
 #include "chrome/renderer/searchbox/searchbox.h"
@@ -525,13 +524,6 @@ void ChromeContentRendererClient::RenderFrameCreated(
 
   if (render_frame->IsMainFrame())
     new webapps::WebPageMetadataAgent(render_frame);
-
-#if defined(OS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kContinuousSearch) &&
-      render_frame->IsMainFrame()) {
-    continuous_search::SearchResultExtractorImpl::Create(render_frame);
-  }
-#endif
 
   new NetErrorHelper(render_frame);
 

@@ -40,3 +40,14 @@ android_library("javatests") {
     "//url:gurl_java",
   ]
 }
+
+source_set("continuous_search") {
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser/continuous_search/internal",
+  ]
+}

@@ -11,7 +11,6 @@ include_rules = [
   "+components/content_settings/renderer",
   "+components/contextual_search/buildflags.h",
   "+components/contextual_search/content/renderer",
-  "+components/continuous_search",
   "+components/crash/core/common/crash_key.h",
   "+components/crx_file",
   "+components/data_reduction_proxy/content/common",

@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.continuous_search;
 
 import org.chromium.url.GURL;
 
-import java.util.Objects;
-
 /**
  * Holds a single result from the SRP.
  */
@@ -32,21 +30,5 @@ public class SearchResult {
      */
     public String getTitle() {
         return mTitle;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == this) return true;
-
-        if (!(o instanceof SearchResult)) return false;
-
-        SearchResult other = (SearchResult) o;
-
-        return mUrl.equals(other.mUrl) && mTitle.equals(other.mTitle);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(mUrl, mTitle);
     }
 }

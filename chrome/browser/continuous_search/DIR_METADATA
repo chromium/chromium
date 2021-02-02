@@ -1,5 +1,5 @@
 monorail: {
-  component:  "UI>Browser>ContinuousSearch"
+  component: "TODO"
 }
-team_email: "csn-dev@google.com"
+team_email: "TODO"
 os: ANDROID

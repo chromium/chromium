@@ -1,4 +1,0 @@
-include_rules = [
-  "+components/google/core/common/google_util.h",
-  "+content/public/browser",
-]

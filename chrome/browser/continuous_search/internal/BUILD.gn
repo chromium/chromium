@@ -4,15 +4,8 @@
 
 import("//build/config/android/rules.gni")
 
-java_cpp_enum("search_result_extractor_client_status_generated_enum") {
-  sources = [ "search_result_extractor_client_status.h" ]
-}
-
 generate_jni("jni_headers") {
-  sources = [
-    "android/java/src/org/chromium/chrome/browser/continuous_search/SearchResultExtractorProducer.java",
-    "android/java/src/org/chromium/chrome/browser/continuous_search/SearchUrlHelper.java",
-  ]
+  sources = [ "android/java/src/org/chromium/chrome/browser/continuous_search/SearchUrlHelper.java" ]
 }
 
 android_library("java") {
@@ -22,7 +15,6 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/continuous_search/BackNavigationTabObserver.java",
     "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchTabObserver.java",
     "android/java/src/org/chromium/chrome/browser/continuous_search/SearchResult.java",
-    "android/java/src/org/chromium/chrome/browser/continuous_search/SearchResultExtractorProducer.java",
     "android/java/src/org/chromium/chrome/browser/continuous_search/SearchResultGroup.java",
     "android/java/src/org/chromium/chrome/browser/continuous_search/SearchResultListCoordinator.java",
     "android/java/src/org/chromium/chrome/browser/continuous_search/SearchResultListMediator.java",
@@ -36,8 +28,6 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/continuous_search/SearchResultUserDataObserver.java",
     "android/java/src/org/chromium/chrome/browser/continuous_search/SearchUrlHelper.java",
   ]
-
-  srcjar_deps = [ "//components/continuous_search/browser:search_result_extractor_client_status_generated_enum" ]
 
   deps = [
     ":java_resources",
@@ -59,10 +49,7 @@ android_library("junit") {
   bypass_platform_checks = true
   testonly = true
 
-  sources = [
-    "android/junit/org/chromium/chrome/browser/continuous_search/BackNavigationTabObserverTest.java",
-    "android/junit/org/chromium/chrome/browser/continuous_search/SearchResultExtractorProducerTest.java",
-  ]
+  sources = [ "android/junit/org/chromium/chrome/browser/continuous_search/BackNavigationTabObserverTest.java" ]
 
   deps = [
     ":java",
@@ -91,9 +78,6 @@ android_resources("java_resources") {
 
 source_set("internal") {
   sources = [
-    "search_result_extractor_producer.cc",
-    "search_result_extractor_producer.h",
-    "search_result_extractor_producer_interface.h",
     "search_url_helper.cc",
     "search_url_helper.h",
   ]
@@ -101,11 +85,7 @@ source_set("internal") {
   deps = [
     ":jni_headers",
     "//base",
-    "//components/continuous_search/browser",
-    "//components/continuous_search/common/public/mojom",
     "//components/google/core/common",
-    "//content/public/browser",
-    "//skia",
     "//url",
     "//url:gurl_android",
   ]
@@ -114,21 +94,13 @@ source_set("internal") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "search_result_extractor_producer_unittest.cc",
-    "search_url_helper_unittest.cc",
-  ]
+  sources = [ "search_url_helper_unittest.cc" ]
 
   deps = [
     ":internal",
     "//base",
-    "//chrome/test:test_support",
-    "//components/continuous_search/browser/test:test_support",
-    "//components/continuous_search/common/public/mojom",
-    "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//url",
-    "//url:gurl_android",
   ]
 }

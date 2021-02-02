@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.continuous_search;
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * A class that holds a group of related {@link SearchResult}s.
@@ -31,22 +30,5 @@ public class SearchResultGroup {
 
     List<SearchResult> getResults() {
         return mResults;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == this) return true;
-
-        if (!(o instanceof SearchResultGroup)) return false;
-
-        SearchResultGroup other = (SearchResultGroup) o;
-
-        return mLabel.equals(other.mLabel) && mIsAdGroup == other.mIsAdGroup
-                && mResults.equals(other.mResults);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(mLabel, mIsAdGroup, mResults);
     }
 }
