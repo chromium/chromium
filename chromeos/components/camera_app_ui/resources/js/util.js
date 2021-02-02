@@ -92,27 +92,27 @@ export function openHelp() {
  *     up with.
  */
 export function setupI18nElements(rootElement) {
-  const getElements = (attr, type) =>
-      dom.getAllFrom(rootElement, '[' + attr + ']', type);
+  const getElements = (attr) =>
+      dom.getAllFrom(rootElement, '[' + attr + ']', HTMLElement);
   const getMessage = (element, attr) =>
       browserProxy.getI18nMessage(element.getAttribute(attr));
   const setAriaLabel = (element, attr) =>
       element.setAttribute('aria-label', getMessage(element, attr));
 
-  getElements('i18n-text', HTMLElement)
+  getElements('i18n-text')
       .forEach(
           (element) => element.textContent = getMessage(element, 'i18n-text'));
-  getElements('i18n-tooltip-true', HTMLElement)
+  getElements('i18n-tooltip-true')
       .forEach(
           (element) => element.setAttribute(
               'tooltip-true', getMessage(element, 'i18n-tooltip-true')));
-  getElements('i18n-tooltip-false', HTMLElement)
+  getElements('i18n-tooltip-false')
       .forEach(
           (element) => element.setAttribute(
               'tooltip-false', getMessage(element, 'i18n-tooltip-false')));
-  getElements('i18n-aria', HTMLElement)
+  getElements('i18n-aria')
       .forEach((element) => setAriaLabel(element, 'i18n-aria'));
-  tooltip.setup(getElements('i18n-label', HTMLInputElement))
+  tooltip.setup(getElements('i18n-label'))
       .forEach((element) => setAriaLabel(element, 'i18n-label'));
 }
 
