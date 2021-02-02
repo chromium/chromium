@@ -13,17 +13,29 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
-cart_db::ChromeCartContentProto BuildProto(const char* domain) {
+cart_db::ChromeCartContentProto BuildProto(const char* domain,
+                                           const char* merchant_url) {
   cart_db::ChromeCartContentProto proto;
   proto.set_key(domain);
-  proto.set_merchant_cart_url("www.foo.com");
+  proto.set_merchant_cart_url(merchant_url);
   return proto;
 }
 
 const char kMockMerchantA[] = "A_merchant";
-const cart_db::ChromeCartContentProto kMockProtoA = BuildProto(kMockMerchantA);
+const char kMockMerchantURLA[] = "www.foo.com";
+const char kMockMerchantB[] = "B_merchant";
+const char kMockMerchantURLB[] = "www.bar.com";
+const cart_db::ChromeCartContentProto kMockProtoA =
+    BuildProto(kMockMerchantA, kMockMerchantURLA);
+const cart_db::ChromeCartContentProto kMockProtoB =
+    BuildProto(kMockMerchantB, kMockMerchantURLB);
 const std::vector<ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
     kExpectedA = {{kMockMerchantA, kMockProtoA}};
+const std::vector<ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
+    kExpectedB = {{kMockMerchantB, kMockProtoB}};
+const std::vector<ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
+    kExpectedAB = {{kMockMerchantA, kMockProtoA},
+                   {kMockMerchantB, kMockProtoB}};
 const std::vector<ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
     kEmptyExpected = {};
 }  // namespace
@@ -92,6 +104,105 @@ TEST_F(CartServiceTest, TestRemoveStatusChange) {
 
   service_->RestoreRemoved();
   ASSERT_FALSE(service_->IsRemoved());
+}
+
+// Tests adding one cart to the service.
+TEST_F(CartServiceTest, TestAddCart) {
+  CartDB* cart_db_ = service_->GetDB();
+  base::RunLoop run_loop[3];
+  cart_db_->LoadAllCarts(base::BindOnce(
+      &CartServiceTest::GetEvaluationPersistedStateDB, base::Unretained(this),
+      run_loop[0].QuitClosure(), kEmptyExpected));
+  run_loop[0].Run();
+
+  service_->AddCart(kMockMerchantA, kMockProtoA);
+
+  cart_db_->LoadAllCarts(base::BindOnce(
+      &CartServiceTest::GetEvaluationPersistedStateDB, base::Unretained(this),
+      run_loop[1].QuitClosure(), kExpectedA));
+  run_loop[1].Run();
+
+  service_->AddCart(kMockMerchantA, kMockProtoB);
+
+  cart_db_->LoadAllCarts(base::BindOnce(
+      &CartServiceTest::GetEvaluationPersistedStateDB, base::Unretained(this),
+      run_loop[2].QuitClosure(), kExpectedB));
+  run_loop[2].Run();
+}
+
+// Tests deleting one cart from the service.
+TEST_F(CartServiceTest, TestDeleteCart) {
+  CartDB* cart_db_ = service_->GetDB();
+  base::RunLoop run_loop[3];
+  cart_db_->AddCart(
+      kMockMerchantA, kMockProtoA,
+      base::BindOnce(&CartServiceTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[0].QuitClosure(), true));
+  run_loop[0].Run();
+
+  cart_db_->LoadAllCarts(base::BindOnce(
+      &CartServiceTest::GetEvaluationPersistedStateDB, base::Unretained(this),
+      run_loop[1].QuitClosure(), kExpectedA));
+  run_loop[1].Run();
+
+  service_->DeleteCart(kMockMerchantA);
+
+  cart_db_->LoadAllCarts(base::BindOnce(
+      &CartServiceTest::GetEvaluationPersistedStateDB, base::Unretained(this),
+      run_loop[2].QuitClosure(), kEmptyExpected));
+  run_loop[2].Run();
+}
+
+// Tests loading one cart from the service.
+TEST_F(CartServiceTest, TestLoadCart) {
+  CartDB* cart_db_ = service_->GetDB();
+  base::RunLoop run_loop[3];
+  cart_db_->AddCart(
+      kMockMerchantA, kMockProtoA,
+      base::BindOnce(&CartServiceTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[0].QuitClosure(), true));
+  run_loop[0].Run();
+
+  service_->LoadCart(
+      kMockMerchantB,
+      base::BindOnce(&CartServiceTest::GetEvaluationPersistedStateDB,
+                     base::Unretained(this), run_loop[1].QuitClosure(),
+                     kEmptyExpected));
+  run_loop[1].Run();
+
+  service_->LoadCart(
+      kMockMerchantA,
+      base::BindOnce(&CartServiceTest::GetEvaluationPersistedStateDB,
+                     base::Unretained(this), run_loop[2].QuitClosure(),
+                     kExpectedA));
+  run_loop[2].Run();
+}
+
+// Tests loading all carts from the service.
+TEST_F(CartServiceTest, TestLoadAllCarts) {
+  CartDB* cart_db_ = service_->GetDB();
+  base::RunLoop run_loop[4];
+  cart_db_->AddCart(
+      kMockMerchantA, kMockProtoA,
+      base::BindOnce(&CartServiceTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[0].QuitClosure(), true));
+  run_loop[0].Run();
+
+  service_->LoadAllCarts(base::BindOnce(
+      &CartServiceTest::GetEvaluationPersistedStateDB, base::Unretained(this),
+      run_loop[1].QuitClosure(), kExpectedA));
+  run_loop[1].Run();
+
+  cart_db_->AddCart(
+      kMockMerchantB, kMockProtoB,
+      base::BindOnce(&CartServiceTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[2].QuitClosure(), true));
+  run_loop[2].Run();
+
+  service_->LoadAllCarts(base::BindOnce(
+      &CartServiceTest::GetEvaluationPersistedStateDB, base::Unretained(this),
+      run_loop[3].QuitClosure(), kExpectedAB));
+  run_loop[3].Run();
 }
 
 // Verifies the database is cleared when detected history deletion.

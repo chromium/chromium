@@ -50,6 +50,27 @@ bool CartService::IsRemoved() {
   return profile_->GetPrefs()->GetBoolean(prefs::kCartModuleRemoved);
 }
 
+void CartService::LoadCart(const std::string& domain,
+                           CartDB::LoadCallback callback) {
+  cart_db_->LoadCart(domain, std::move(callback));
+}
+
+void CartService::LoadAllCarts(CartDB::LoadCallback callback) {
+  cart_db_->LoadAllCarts(std::move(callback));
+}
+
+void CartService::AddCart(const std::string& domain,
+                          const cart_db::ChromeCartContentProto& proto) {
+  cart_db_->AddCart(domain, proto,
+                    base::BindOnce(&CartService::OnOperationFinished,
+                                   weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CartService::DeleteCart(const std::string& domain) {
+  cart_db_->DeleteCart(domain, base::BindOnce(&CartService::OnOperationFinished,
+                                              weak_ptr_factory_.GetWeakPtr()));
+}
+
 void CartService::OnOperationFinished(bool success) {
   DCHECK(success) << "database operation failed.";
 }
