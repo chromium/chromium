@@ -43,4 +43,9 @@ bool DataTransferEndpoint::operator==(const DataTransferEndpoint& other) const {
 
 DataTransferEndpoint::~DataTransferEndpoint() = default;
 
+bool DataTransferEndpoint::IsSameOriginWith(
+    const DataTransferEndpoint& other) const {
+  return IsUrlType() && (type_ == other.type_) && (origin_ == other.origin_);
+}
+
 }  // namespace ui

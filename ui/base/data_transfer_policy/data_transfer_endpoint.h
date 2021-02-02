@@ -65,6 +65,10 @@ class COMPONENT_EXPORT(UI_BASE_DATA_TRANSFER_POLICY) DataTransferEndpoint {
 
   bool notify_if_restricted() const { return notify_if_restricted_; }
 
+  // Returns true if both of the endpoints have the same origin_ and type_ ==
+  // kUrl.
+  bool IsSameOriginWith(const DataTransferEndpoint& other) const;
+
  private:
   // This variable should always have a value representing the object type.
   EndpointType type_;
