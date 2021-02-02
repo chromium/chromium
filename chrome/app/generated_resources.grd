@@ -11153,6 +11153,39 @@ Please help our engineers fix this problem. Tell us what happened right before y
     </if>
 
     <if expr="is_macosx">
+      <!-- These strings are placeholders for strings that are filled in via
+           field trials, so they are *not* used as-is except in tests. -->
+      <message name="IDS_MAC_SYSTEM_INFOBAR_TEXT_ARM"
+               desc="Mac system-specific infobar text for Arm64-on-Arm64."
+               translateable="false">
+        Chrome can’t play premium videos or music on this device yet. Chrome will update automatically when this issue is fixed.
+      </message>
+      <message name="IDS_MAC_SYSTEM_INFOBAR_TEXT_ROSETTA"
+               desc="Mac system-specific infobar text for Intel-on-Arm64."
+               translateable="false">
+        This is an x86-64 Chrome on Arm64, so things might not work quite right yet!
+      </message>
+      <message name="IDS_MAC_SYSTEM_INFOBAR_LINK_TEXT_ARM"
+               desc="Mac system-specific infobar link text for Arm64-on-Arm64."
+               translateable="false">
+        Learn more
+      </message>
+      <message name="IDS_MAC_SYSTEM_INFOBAR_LINK_URL_ARM"
+               desc="Mac system-specific infobar link for Arm64-on-Arm64."
+               translateable="false">
+        https://support.google.com/chrome/?p=mac_ARM
+      </message>
+      <message name="IDS_MAC_SYSTEM_INFOBAR_LINK_TEXT_ROSETTA"
+               desc="Mac system-specific infobar link text for Intel-on-Arm64."
+               translateable="false">
+        Learn more
+      </message>
+      <message name="IDS_MAC_SYSTEM_INFOBAR_LINK_URL_ROSETTA"
+               desc="Mac system-specific infobar link for Intel-on-Arm64."
+               translateable="false">
+        https://support.google.com/chrome/?p=mac_ARM
+      </message>
+
       <!-- The Rosetta is required infobar -->
       <message name="IDS_ROSETTA_REQUIRED_INFOBAR_TEXT"
                desc="The infobar text when installation of Rosetta is required">

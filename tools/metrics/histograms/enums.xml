@@ -38677,7 +38677,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
 </enum>
 
 <enum name="InfoBarIdentifier">
-  <int value="1" label="APP_BANNER_INFOBAR_DELEGATE (Obsolete)"/>
+  <int value="1" label="APP_BANNER_INFOBAR_DELEGATE"/>
   <int value="2" label="APP_BANNER_INFOBAR_DELEGATE_DESKTOP (Obsolete)"/>
   <int value="3"
       label="ANDROID_DOWNLOAD_MANAGER_OVERWRITE_INFOBAR_DELEGATE (Obsolete)"/>
@@ -38748,8 +38748,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="65" label="AUTOFILL_CC_ASSIST_INFOBAR_DELEGATE"/>
   <int value="66" label="ADS_BLOCKED_INFOBAR_DELEGATE_ANDROID"/>
   <int value="67" label="INSTANT_APPS_INFOBAR_DELEGATE_ANDROID"/>
-  <int value="68"
-      label="DATA_REDUCTION_PROXY_PREVIEW_INFOBAR_DELEGATE (Obsolete)"/>
+  <int value="68" label="DATA_REDUCTION_PROXY_PREVIEW_INFOBAR_DELEGATE"/>
   <int value="69" label="SCREEN_CAPTURE_INFOBAR_DELEGATE_ANDROID"/>
   <int value="70" label="GROUPED_PERMISSION_INFOBAR_DELEGATE_ANDROID"/>
   <int value="71" label="OFFLINE_PAGE_INFOBAR_DELEGATE_ANDROID"/>
@@ -38763,12 +38762,11 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="78" label="SURVEY_INFOBAR_ANDROID"/>
   <int value="79" label="NEAR_OOM_INFOBAR_ANDROID"/>
   <int value="80" label="INSTALLABLE_AMBIENT_BADGE_INFOBAR_DELEGATE"/>
-  <int value="81" label="PAGE_LOAD_CAPPING_INFOBAR_DELEGATE (Obsolete)"/>
+  <int value="81" label="PAGE_LOAD_CAPPING_INFOBAR_DELEGATE"/>
   <int value="82" label="DOWNLOAD_PROGRESS_INFOBAR_ANDROID"/>
   <int value="83" label="AR_CORE_UPGRADE_ANDROID"/>
   <int value="84" label="BLOATED_RENDERER_INFOBAR_DELEGATE"/>
-  <int value="85"
-      label="SUPERVISED_USERS_DEPRECATED_INFOBAR_DELEGATE (Obsolete)"/>
+  <int value="85" label="SUPERVISED_USERS_DEPRECATED_INFOBAR_DELEGATE"/>
   <int value="86" label="NEAR_OOM_REDUCTION_INFOBAR_ANDROID"/>
   <int value="87" label="LITE_PAGE_PREVIEWS_INFOBAR"/>
   <int value="88" label="MODULE_INSTALL_FAILURE_INFOBAR_ANDROID"/>
@@ -38784,11 +38782,9 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="98" label="MIXED_CONTENT_DOWNLOAD_INFOBAR_DELEGATE_ANDROID"/>
   <int value="99" label="CONDITIONAL_TAB_STRIP_INFOBAR_ANDROID"/>
   <int value="100" label="LITE_MODE_HTTPS_IMAGE_COMPRESSION_INFOBAR_ANDROID"/>
-  <int value="101" label="SYSTEM_INFOBAR_DELEGATE_MAC (Obsolete)"/>
+  <int value="101" label="SYSTEM_INFOBAR_DELEGATE_MAC"/>
   <int value="102" label="EXPERIMENTAL_INFOBAR_DELEGATE_LACROS"/>
   <int value="103" label="ROSETTA_REQUIRED_INFOBAR_DELEGATE"/>
-  <int value="104" label="WEBID_PERMISSION_INFOBAR_DELEGATE"/>
-  <int value="105" label="AUTOFILL_OFFER_NOTIFICATION_INFOBAR_DELEGATE"/>
 </enum>
 
 <enum name="InfoBarResponse">
