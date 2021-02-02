@@ -10,6 +10,10 @@
 #include <utility>
 
 #include "ash/components/account_manager/account_manager.h"
+#include "ash/components/account_manager/account_manager_ui.h"
+#include "base/callback_forward.h"
+#include "base/callback_helpers.h"
+#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -30,6 +34,10 @@ namespace {
 const char kFakeGaiaId[] = "fake-gaia-id";
 const char kFakeEmail[] = "fake_email@example.com";
 const char kFakeToken[] = "fake-token";
+const account_manager::Account kFakeAccount = account_manager::Account{
+    account_manager::AccountKey{kFakeGaiaId,
+                                account_manager::AccountType::kGaia},
+    kFakeEmail};
 
 }  // namespace
 
@@ -85,6 +93,54 @@ class TestAccountManagerObserver
   mojo::Receiver<mojom::AccountManagerObserver> receiver_;
 };
 
+class FakeAccountManagerUI : public ash::AccountManagerUI {
+ public:
+  FakeAccountManagerUI() {}
+  FakeAccountManagerUI(const FakeAccountManagerUI&) = delete;
+  FakeAccountManagerUI& operator=(const FakeAccountManagerUI&) = delete;
+  ~FakeAccountManagerUI() override {}
+
+  void SetIsDialogShown(bool is_dialog_shown) {
+    is_dialog_shown_ = is_dialog_shown;
+  }
+
+  void CloseDialog() {
+    if (!close_dialog_closure_.is_null()) {
+      std::move(close_dialog_closure_).Run();
+    }
+    is_dialog_shown_ = false;
+  }
+
+  int show_account_addition_dialog_calls() {
+    return show_account_addition_dialog_calls_;
+  }
+
+  int show_account_reauthentication_dialog_calls() {
+    return show_account_reauthentication_dialog_calls_;
+  }
+
+ private:
+  // AccountManagerUI overrides:
+  void ShowAddAccountDialog(base::OnceClosure close_dialog_closure) override {
+    close_dialog_closure_ = std::move(close_dialog_closure);
+    show_account_addition_dialog_calls_++;
+    is_dialog_shown_ = true;
+  }
+  void ShowReauthAccountDialog(
+      const std::string& email,
+      base::OnceClosure close_dialog_closure) override {
+    close_dialog_closure_ = std::move(close_dialog_closure);
+    show_account_reauthentication_dialog_calls_++;
+    is_dialog_shown_ = true;
+  }
+  bool IsDialogShown() override { return is_dialog_shown_; }
+
+  base::OnceClosure close_dialog_closure_;
+  bool is_dialog_shown_ = false;
+  int show_account_addition_dialog_calls_ = 0;
+  int show_account_reauthentication_dialog_calls_ = 0;
+};
+
 class AccountManagerAshTest : public ::testing::Test {
  public:
   AccountManagerAshTest() = default;
@@ -96,6 +152,8 @@ class AccountManagerAshTest : public ::testing::Test {
   void SetUp() override {
     account_manager_ash_ =
         std::make_unique<AccountManagerAsh>(&account_manager_);
+    account_manager_ash_->SetAccountManagerUI(
+        std::make_unique<FakeAccountManagerUI>());
     account_manager_ash_->BindReceiver(remote_.BindNewPipeAndPassReceiver());
     account_manager_async_waiter_ =
         std::make_unique<mojom::AccountManagerAsyncWaiter>(
@@ -115,6 +173,38 @@ class AccountManagerAshTest : public ::testing::Test {
     account_manager_.RegisterPrefs(pref_service_.registry());
     run_loop.Run();
     return account_manager_.IsInitialized();
+  }
+
+  FakeAccountManagerUI* GetFakeAccountManagerUI() {
+    return static_cast<FakeAccountManagerUI*>(
+        account_manager_ash_->account_manager_ui_.get());
+  }
+
+  mojom::AccountAdditionResultPtr ShowAddAccountDialog(
+      base::OnceClosure quit_closure) {
+    auto add_account_result = mojom::AccountAdditionResult::New();
+    account_manager_ash_->ShowAddAccountDialog(base::BindOnce(
+        [](base::OnceClosure quit_closure,
+           mojom::AccountAdditionResultPtr* add_account_result,
+           mojom::AccountAdditionResultPtr result) {
+          (*add_account_result)->status = result->status;
+          (*add_account_result)->account = std::move(result->account);
+          std::move(quit_closure).Run();
+        },
+        std::move(quit_closure), &add_account_result));
+    return add_account_result;
+  }
+
+  void ShowReauthAccountDialog(const std::string& email,
+                               base::OnceClosure close_dialog_closure) {
+    account_manager_ash_->ShowReauthAccountDialog(
+        email, std::move(close_dialog_closure));
+  }
+
+  void CallAccountAdditionFinished(
+      const account_manager::AccountAdditionResult& result) {
+    account_manager_ash_->OnAccountAdditionFinished(result);
+    GetFakeAccountManagerUI()->CloseDialog();
   }
 
   int GetNumObservers() { return account_manager_ash_->observers_.size(); }
@@ -200,6 +290,183 @@ TEST_F(AccountManagerAshTest, LacrosObserversAreNotifiedOnAccountRemovals) {
   EXPECT_EQ(1, observer.GetNumOnAccountRemovedCalls());
   EXPECT_EQ(kTestAccountKey, observer.GetLastRemovedAccount().key);
   EXPECT_EQ(kFakeEmail, observer.GetLastRemovedAccount().raw_email);
+}
+
+TEST_F(AccountManagerAshTest,
+       ShowAddAccountDialogReturnsInProgressIfDialogIsOpen) {
+  EXPECT_EQ(0, GetFakeAccountManagerUI()->show_account_addition_dialog_calls());
+  GetFakeAccountManagerUI()->SetIsDialogShown(true);
+  mojom::AccountAdditionResultPtr account_addition_result;
+  account_manager_async_waiter()->ShowAddAccountDialog(
+      &account_addition_result);
+
+  // Check status.
+  EXPECT_EQ(mojom::AccountAdditionResult::Status::kAlreadyInProgress,
+            account_addition_result->status);
+  // Check that dialog was not called.
+  EXPECT_EQ(0, GetFakeAccountManagerUI()->show_account_addition_dialog_calls());
+}
+
+TEST_F(AccountManagerAshTest,
+       ShowAddAccountDialogReturnsCancelledAfterDialogIsClosed) {
+  EXPECT_EQ(0, GetFakeAccountManagerUI()->show_account_addition_dialog_calls());
+  GetFakeAccountManagerUI()->SetIsDialogShown(false);
+
+  base::RunLoop run_loop;
+  mojom::AccountAdditionResultPtr account_addition_result =
+      ShowAddAccountDialog(run_loop.QuitClosure());
+  // Simulate closing the dialog.
+  GetFakeAccountManagerUI()->CloseDialog();
+  run_loop.Run();
+
+  // Check status.
+  EXPECT_EQ(mojom::AccountAdditionResult::Status::kCancelledByUser,
+            account_addition_result->status);
+  // Check that dialog was called once.
+  EXPECT_EQ(1, GetFakeAccountManagerUI()->show_account_addition_dialog_calls());
+}
+
+TEST_F(AccountManagerAshTest,
+       ShowAddAccountDialogReturnsSuccessAfterAccountIsAdded) {
+  EXPECT_EQ(0, GetFakeAccountManagerUI()->show_account_addition_dialog_calls());
+  GetFakeAccountManagerUI()->SetIsDialogShown(false);
+
+  base::RunLoop run_loop;
+  mojom::AccountAdditionResultPtr account_addition_result =
+      ShowAddAccountDialog(run_loop.QuitClosure());
+  // Simulate account addition.
+  CallAccountAdditionFinished(account_manager::AccountAdditionResult(
+      account_manager::AccountAdditionResult::Status::kSuccess, kFakeAccount));
+  // Simulate closing the dialog.
+  GetFakeAccountManagerUI()->CloseDialog();
+  run_loop.Run();
+
+  // Check status.
+  EXPECT_EQ(mojom::AccountAdditionResult::Status::kSuccess,
+            account_addition_result->status);
+  // Check account.
+  base::Optional<account_manager::Account> account =
+      account_manager::FromMojoAccount(account_addition_result->account);
+  EXPECT_TRUE(account.has_value());
+  EXPECT_EQ(kFakeAccount.key, account.value().key);
+  EXPECT_EQ(kFakeAccount.raw_email, account.value().raw_email);
+  // Check that dialog was called once.
+  EXPECT_EQ(1, GetFakeAccountManagerUI()->show_account_addition_dialog_calls());
+}
+
+TEST_F(AccountManagerAshTest, ShowAddAccountDialogCanHandleMultipleCalls) {
+  EXPECT_EQ(0, GetFakeAccountManagerUI()->show_account_addition_dialog_calls());
+  GetFakeAccountManagerUI()->SetIsDialogShown(false);
+
+  base::RunLoop run_loop;
+  mojom::AccountAdditionResultPtr account_addition_result =
+      ShowAddAccountDialog(run_loop.QuitClosure());
+
+  base::RunLoop run_loop_2;
+  mojom::AccountAdditionResultPtr account_addition_result_2 =
+      ShowAddAccountDialog(run_loop_2.QuitClosure());
+  run_loop_2.Run();
+  // The second call gets 'kAlreadyInProgress' reply.
+  EXPECT_EQ(mojom::AccountAdditionResult::Status::kAlreadyInProgress,
+            account_addition_result_2->status);
+
+  // Simulate account addition.
+  CallAccountAdditionFinished(account_manager::AccountAdditionResult(
+      account_manager::AccountAdditionResult::Status::kSuccess, kFakeAccount));
+  // Simulate closing the dialog.
+  GetFakeAccountManagerUI()->CloseDialog();
+  run_loop.Run();
+
+  EXPECT_EQ(mojom::AccountAdditionResult::Status::kSuccess,
+            account_addition_result->status);
+  // Check account.
+  base::Optional<account_manager::Account> account =
+      account_manager::FromMojoAccount(account_addition_result->account);
+  EXPECT_TRUE(account.has_value());
+  EXPECT_EQ(kFakeAccount.key, account.value().key);
+  EXPECT_EQ(kFakeAccount.raw_email, account.value().raw_email);
+  // Check that dialog was called once.
+  EXPECT_EQ(1, GetFakeAccountManagerUI()->show_account_addition_dialog_calls());
+}
+
+TEST_F(AccountManagerAshTest,
+       ShowAddAccountDialogCanHandleMultipleSequentialCalls) {
+  EXPECT_EQ(0, GetFakeAccountManagerUI()->show_account_addition_dialog_calls());
+  GetFakeAccountManagerUI()->SetIsDialogShown(false);
+
+  base::RunLoop run_loop;
+  mojom::AccountAdditionResultPtr account_addition_result =
+      ShowAddAccountDialog(run_loop.QuitClosure());
+  // Simulate account addition.
+  CallAccountAdditionFinished(account_manager::AccountAdditionResult(
+      account_manager::AccountAdditionResult::Status::kSuccess, kFakeAccount));
+  // Simulate closing the dialog.
+  GetFakeAccountManagerUI()->CloseDialog();
+  run_loop.Run();
+  EXPECT_EQ(mojom::AccountAdditionResult::Status::kSuccess,
+            account_addition_result->status);
+  // Check account.
+  base::Optional<account_manager::Account> account =
+      account_manager::FromMojoAccount(account_addition_result->account);
+  EXPECT_TRUE(account.has_value());
+  EXPECT_EQ(kFakeAccount.key, account.value().key);
+  EXPECT_EQ(kFakeAccount.raw_email, account.value().raw_email);
+
+  base::RunLoop run_loop_2;
+  mojom::AccountAdditionResultPtr account_addition_result_2 =
+      ShowAddAccountDialog(run_loop_2.QuitClosure());
+  // Simulate account addition.
+  CallAccountAdditionFinished(account_manager::AccountAdditionResult(
+      account_manager::AccountAdditionResult::Status::kSuccess, kFakeAccount));
+  // Simulate closing the dialog.
+  GetFakeAccountManagerUI()->CloseDialog();
+  run_loop_2.Run();
+  EXPECT_EQ(mojom::AccountAdditionResult::Status::kSuccess,
+            account_addition_result_2->status);
+  // Check account.
+  base::Optional<account_manager::Account> account_2 =
+      account_manager::FromMojoAccount(account_addition_result_2->account);
+  EXPECT_TRUE(account_2.has_value());
+  EXPECT_EQ(kFakeAccount.key, account_2.value().key);
+  EXPECT_EQ(kFakeAccount.raw_email, account_2.value().raw_email);
+
+  // Check that dialog was called 2 times.
+  EXPECT_EQ(2, GetFakeAccountManagerUI()->show_account_addition_dialog_calls());
+}
+
+TEST_F(AccountManagerAshTest,
+       ShowReauthAccountDialogDoesntCallTheDialogIfItsAlreadyShown) {
+  EXPECT_EQ(
+      0,
+      GetFakeAccountManagerUI()->show_account_reauthentication_dialog_calls());
+  GetFakeAccountManagerUI()->SetIsDialogShown(true);
+  base::RunLoop run_loop;
+  // Simulate account reauthentication.
+  ShowReauthAccountDialog(kFakeEmail, run_loop.QuitClosure());
+  // Simulate closing the dialog.
+  GetFakeAccountManagerUI()->CloseDialog();
+
+  // Check that dialog was not called.
+  EXPECT_EQ(
+      0,
+      GetFakeAccountManagerUI()->show_account_reauthentication_dialog_calls());
+}
+
+TEST_F(AccountManagerAshTest, ShowReauthAccountDialogOpensTheDialog) {
+  EXPECT_EQ(
+      0,
+      GetFakeAccountManagerUI()->show_account_reauthentication_dialog_calls());
+  GetFakeAccountManagerUI()->SetIsDialogShown(false);
+  base::RunLoop run_loop;
+  // Simulate account reauthentication.
+  ShowReauthAccountDialog(kFakeEmail, run_loop.QuitClosure());
+  // Simulate closing the dialog.
+  GetFakeAccountManagerUI()->CloseDialog();
+
+  // Check that dialog was called once.
+  EXPECT_EQ(
+      1,
+      GetFakeAccountManagerUI()->show_account_reauthentication_dialog_calls());
 }
 
 }  // namespace crosapi

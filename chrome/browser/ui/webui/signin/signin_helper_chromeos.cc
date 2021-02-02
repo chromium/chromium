@@ -5,12 +5,15 @@
 #include "chrome/browser/ui/webui/signin/signin_helper_chromeos.h"
 
 #include "ash/components/account_manager/account_manager.h"
+#include "ash/components/account_manager/account_manager_ash.h"
+#include "components/account_manager_core/account.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 
 namespace chromeos {
 
 SigninHelper::SigninHelper(
     ash::AccountManager* account_manager,
+    crosapi::AccountManagerAsh* account_manager_ash,
     const base::RepeatingClosure& close_dialog_closure,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::string& gaia_id,
@@ -18,12 +21,13 @@ SigninHelper::SigninHelper(
     const std::string& auth_code,
     const std::string& signin_scoped_device_id)
     : account_manager_(account_manager),
+      account_manager_ash_(account_manager_ash),
       close_dialog_closure_(close_dialog_closure),
       email_(email),
       url_loader_factory_(std::move(url_loader_factory)),
       gaia_auth_fetcher_(this, gaia::GaiaSource::kChrome, url_loader_factory_) {
-  account_key_ = ::account_manager::AccountKey{
-      gaia_id, ::account_manager::AccountType::kGaia};
+  account_key_ =
+      account_manager::AccountKey{gaia_id, account_manager::AccountType::kGaia};
 
   DCHECK(!signin_scoped_device_id.empty());
   gaia_auth_fetcher_.StartAuthCodeForOAuth2TokenExchangeWithDeviceId(
@@ -53,11 +57,24 @@ void SigninHelper::OnClientOAuthSuccess(const ClientOAuthResult& result) {
 
 void SigninHelper::OnClientOAuthFailure(const GoogleServiceAuthError& error) {
   // TODO(sinhak): Display an error.
+
+  // Notify `AccountManagerAsh` about account addition failure and send `error`.
+  account_manager_ash_->OnAccountAdditionFinished(
+      account_manager::AccountAdditionResult(
+          account_manager::AccountAdditionResult::Status::kNetworkError,
+          error));
   CloseDialogAndExit();
 }
 
 void SigninHelper::UpsertAccount(const std::string& refresh_token) {
   account_manager_->UpsertAccount(account_key_, email_, refresh_token);
+
+  // Notify `AccountManagerAsh` about successful account addition and send
+  // the account.
+  account_manager_ash_->OnAccountAdditionFinished(
+      account_manager::AccountAdditionResult(
+          account_manager::AccountAdditionResult::Status::kSuccess,
+          account_manager::Account{account_key_, email_}));
 }
 
 void SigninHelper::CloseDialogAndExit() {

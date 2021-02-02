@@ -7,7 +7,9 @@
 #include <utility>
 
 #include "ash/components/account_manager/account_manager.h"
+#include "ash/components/account_manager/account_manager_ash.h"
 #include "ash/components/account_manager/account_manager_factory.h"
+#include "chrome/browser/ash/account_manager/account_manager_ui_impl.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/net/delay_network_call.h"
@@ -48,9 +50,10 @@ bool IsAccountManagerAvailable(const Profile* const profile) {
 
 void InitializeAccountManager(const base::FilePath& cryptohome_root_dir,
                               base::OnceClosure initialization_callback) {
-  auto* account_manager = g_browser_process->platform_part()
-                              ->GetAccountManagerFactory()
-                              ->GetAccountManager(cryptohome_root_dir.value());
+  ash::AccountManager* account_manager =
+      g_browser_process->platform_part()
+          ->GetAccountManagerFactory()
+          ->GetAccountManager(/*profile_path=*/cryptohome_root_dir.value());
 
   account_manager->Initialize(
       cryptohome_root_dir,
@@ -60,6 +63,14 @@ void InitializeAccountManager(const base::FilePath& cryptohome_root_dir,
                           base::TimeDelta::FromMilliseconds(
                               chromeos::kDefaultNetworkRetryDelayMS)),
       std::move(initialization_callback));
+
+  crosapi::AccountManagerAsh* account_manager_ash =
+      g_browser_process->platform_part()
+          ->GetAccountManagerFactory()
+          ->GetAccountManagerAsh(/*profile_path=*/cryptohome_root_dir.value());
+
+  account_manager_ash->SetAccountManagerUI(
+      std::make_unique<ash::AccountManagerUIImpl>());
 }
 
 }  // namespace ash

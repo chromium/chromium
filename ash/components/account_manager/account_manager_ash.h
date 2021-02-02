@@ -6,12 +6,19 @@
 #define ASH_COMPONENTS_ACCOUNT_MANAGER_ACCOUNT_MANAGER_ASH_H_
 
 #include "ash/components/account_manager/account_manager.h"
+#include "ash/components/account_manager/account_manager_ui.h"
+#include "base/callback_forward.h"
 #include "base/optional.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/account_manager_core/account.h"
+#include "components/account_manager_core/account_addition_result.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+
+namespace chromeos {
+class SigninHelper;
+}  // namespace chromeos
 
 namespace crosapi {
 
@@ -29,6 +36,9 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER) AccountManagerAsh
 
   void BindReceiver(mojo::PendingReceiver<mojom::AccountManager> receiver);
 
+  void SetAccountManagerUI(
+      std::unique_ptr<ash::AccountManagerUI> account_manager_ui);
+
   // crosapi::mojom::AccountManager:
   void IsInitialized(IsInitializedCallback callback) override;
   void AddObserver(AddObserverCallback callback) override;
@@ -44,12 +54,26 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER) AccountManagerAsh
  private:
   friend class AccountManagerAshTest;
   friend class TestAccountManagerObserver;
+  friend class AccountManagerFacadeAshTest;
+  friend class chromeos::SigninHelper;
 
+  // This method is called by `chromeos::SigninHelper` which passes `AccountKey`
+  // of account that was added.
+  void OnAccountAdditionFinished(
+      const account_manager::AccountAdditionResult& result);
+  // A callback for `AccountManagerUI::ShowAccountAdditionDialog`.
+  void OnAddAccountDialogClosed();
+  void FinishAddAccount(const account_manager::AccountAdditionResult& result);
   void FlushMojoForTesting();
 
+  ShowAddAccountDialogCallback account_addition_callback_;
+  bool account_addition_in_progress_ = false;
   ash::AccountManager* const account_manager_;
   mojo::ReceiverSet<mojom::AccountManager> receivers_;
   mojo::RemoteSet<mojom::AccountManagerObserver> observers_;
+  std::unique_ptr<ash::AccountManagerUI> account_manager_ui_;
+
+  base::WeakPtrFactory<AccountManagerAsh> weak_ptr_factory_{this};
 };
 
 }  // namespace crosapi
