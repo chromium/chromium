@@ -2114,7 +2114,7 @@ static_library("browser") {
     "//components/omnibox/browser",
     "//components/onc",
     "//components/open_from_clipboard",
-    "//components/optimization_guide/content",
+    "//components/optimization_guide/content/browser",
     "//components/optimization_guide/core",
     "//components/os_crypt",
     "//components/page_load_metrics/browser",

@@ -23,7 +23,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/base32/base32.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
-#include "components/optimization_guide/content/optimization_guide_decider.h"
+#include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"

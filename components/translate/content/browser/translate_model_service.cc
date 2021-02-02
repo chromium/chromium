@@ -10,7 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/task/post_task.h"
-#include "components/optimization_guide/content/optimization_guide_decider.h"
+#include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

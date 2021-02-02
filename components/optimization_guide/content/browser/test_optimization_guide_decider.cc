@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/content/test_optimization_guide_decider.h"
+#include "components/optimization_guide/content/browser/test_optimization_guide_decider.h"
 
 #include "content/public/browser/navigation_handle.h"
 

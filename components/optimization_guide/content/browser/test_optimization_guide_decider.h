@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_TEST_OPTIMIZATION_GUIDE_DECIDER_H_
-#define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_TEST_OPTIMIZATION_GUIDE_DECIDER_H_
+#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_TEST_OPTIMIZATION_GUIDE_DECIDER_H_
+#define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_TEST_OPTIMIZATION_GUIDE_DECIDER_H_
 
-#include "components/optimization_guide/content/optimization_guide_decider.h"
+#include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 
 namespace optimization_guide {
 
@@ -50,4 +50,4 @@ class TestOptimizationGuideDecider : public OptimizationGuideDecider {
 
 }  // namespace optimization_guide
 
-#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_TEST_OPTIMIZATION_GUIDE_DECIDER_H_
+#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_TEST_OPTIMIZATION_GUIDE_DECIDER_H_

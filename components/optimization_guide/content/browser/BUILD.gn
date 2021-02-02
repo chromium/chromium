@@ -8,7 +8,7 @@ if (is_android) {
 
 # TODO(crbug/1154790): Make this into a static_library when the rest of
 # optimization guide is migrated and this has at least one cc file.
-source_set("content") {
+source_set("browser") {
   sources = [ "optimization_guide_decider.h" ]
 
   deps = [
@@ -26,7 +26,7 @@ static_library("test_support") {
     "test_optimization_guide_decider.h",
   ]
   deps = [
-    ":content",
+    ":browser",
     "//content/public/browser",
     "//testing/gtest",
   ]

@@ -16,7 +16,7 @@
 #include "chrome/browser/lite_video/lite_video_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/blocklist/opt_out_blocklist/opt_out_store.h"
-#include "components/optimization_guide/content/optimization_guide_decider.h"
+#include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/lite_video_metadata.pb.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/network_service_instance.h"

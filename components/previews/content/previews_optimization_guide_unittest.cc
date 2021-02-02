@@ -14,7 +14,7 @@
 #include "base/containers/flat_set.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/optimization_guide/content/test_optimization_guide_decider.h"
+#include "components/optimization_guide/content/browser/test_optimization_guide_decider.h"
 #include "components/previews/content/previews_user_data.h"
 #include "components/previews/core/previews_features.h"
 #include "components/previews/core/previews_switches.h"

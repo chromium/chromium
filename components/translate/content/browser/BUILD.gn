@@ -28,7 +28,7 @@ static_library("browser") {
   deps = [
     "//components/keyed_service/core",
     "//components/language/core/browser",
-    "//components/optimization_guide/content",
+    "//components/optimization_guide/content/browser",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/search_engines:search_engines",

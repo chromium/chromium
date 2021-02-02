@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "chrome/common/subresource_redirect_service.mojom.h"
-#include "components/optimization_guide/content/optimization_guide_decider.h"
+#include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "content/public/browser/render_document_host_user_data.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_receiver_set.h"

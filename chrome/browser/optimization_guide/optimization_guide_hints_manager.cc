@@ -27,7 +27,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_navigation_data.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/google/core/common/google_util.h"
-#include "components/optimization_guide/content/optimization_guide_decider.h"
+#include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "components/optimization_guide/core/bloom_filter.h"
 #include "components/optimization_guide/core/hint_cache.h"
 #include "components/optimization_guide/core/hints_component_util.h"

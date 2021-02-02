@@ -38,7 +38,7 @@
 #include "components/blocklist/opt_out_blocklist/opt_out_blocklist_item.h"
 #include "components/blocklist/opt_out_blocklist/opt_out_store.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_switches.h"
-#include "components/optimization_guide/content/test_optimization_guide_decider.h"
+#include "components/optimization_guide/content/browser/test_optimization_guide_decider.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/previews/content/previews_ui_service.h"
 #include "components/previews/content/previews_user_data.h"
