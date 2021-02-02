@@ -61,6 +61,9 @@ void WebSocketAdapter::OnOpeningHandshakeStarted(
 void WebSocketAdapter::OnFailure(const std::string& message,
                                  int net_error,
                                  int response_code) {
+  FIDO_LOG(ERROR) << "Tunnel server connection failed: " << message << " "
+                  << net_error << " " << response_code;
+
   if (response_code != net::HTTP_GONE) {
     // The callback will be cleaned up when the pipe disconnects.
     return;
