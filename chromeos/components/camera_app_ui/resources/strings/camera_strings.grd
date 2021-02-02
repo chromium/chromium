@@ -375,7 +375,7 @@
       <message desc="Error message shown when failing to take photo." name="IDS_ERROR_MSG_TAKE_PHOTO_FAILED">
         Unable to take photo
       </message>
-      <message desc="Error message shown when failing to take portrait photo." name="IDS_ERROR_MSG_TAKE_PORTRAIT_PHOTO_FAILED">
+      <message desc="Error message shown when failing to take portrait (bokeh effect, background blur) photo." name="IDS_ERROR_MSG_TAKE_PORTRAIT_BOKEH_PHOTO_FAILED">
         Unable to take portrait photo
       </message>
       <message desc="Short description of the Camera App." name="IDS_DESCRIPTION">
@@ -450,10 +450,10 @@
       <message desc="Label for switch to take square photo mode button." name="IDS_LABEL_SWITCH_TAKE_SQUARE_PHOTO_BUTTON">
         Square
       </message>
-      <message desc="Label for spoken feedback to read out switch to take portrait photo mode button." name="IDS_SWITCH_TAKE_PORTRAIT_PHOTO_BUTTON">
+      <message desc="Label for spoken feedback to read out switch to take portrait (bokeh effect, background blur) photo mode button." name="IDS_SWITCH_TAKE_PORTRAIT_BOKEH_PHOTO_BUTTON">
         Switch to take portrait photo
       </message>
-      <message desc="Label for switch to take portrait photo mode button." name="IDS_LABEL_SWITCH_TAKE_PORTRAIT_PHOTO_BUTTON">
+      <message desc="Label for switch to take portrait (bokeh effect, background blur) photo mode button." name="IDS_LABEL_SWITCH_TAKE_PORTRAIT_BOKEH_PHOTO_BUTTON">
         Portrait
       </message>
       <message desc="Label for the confirm button to confirm with the reviewed photo or video." name="IDS_CONFIRM_REVIEW_BUTTON">
