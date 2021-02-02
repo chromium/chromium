@@ -18,6 +18,7 @@
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/text_elider.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/controls/highlight_path_generator.h"
 
@@ -56,8 +57,7 @@ DeskButtonBase::DeskButtonBase(const base::string16& text,
   SetFocusPainter(nullptr);
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 
-  // TODO(minch): A11y of zero state.
-  SetAccessibleName(base::UTF8ToUTF16(GetClassName()));
+  SetAccessibleName(l10n_util::GetStringUTF16(IDS_ASH_DESKS_NEW_DESK_BUTTON));
 
   auto border = std::make_unique<WmHighlightItemBorder>(border_corder_radius);
   border_ptr_ = border.get();
@@ -149,7 +149,11 @@ ZeroStateDefaultDeskButton::ZeroStateDefaultDeskButton(DesksBarView* bar_view)
     : DeskButtonBase(DesksController::Get()->desks()[0]->name(),
                      kCornerRadius,
                      kCornerRadius),
-      bar_view_(bar_view) {}
+      bar_view_(bar_view) {
+  GetViewAccessibility().OverrideName(
+      l10n_util::GetStringFUTF16(IDS_ASH_DESKS_DESK_ACCESSIBLE_NAME,
+                                 DesksController::Get()->desks()[0]->name()));
+}
 
 const char* ZeroStateDefaultDeskButton::GetClassName() const {
   return "ZeroStateDefaultDeskButton";
