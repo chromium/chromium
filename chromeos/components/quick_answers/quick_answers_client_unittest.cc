@@ -290,7 +290,8 @@ TEST_F(QuickAnswersClientTest, SendRequest) {
                                    IntentInfo("sel", IntentType::kDictionary));
 
   std::unique_ptr<QuickAnswer> quick_answer = std::make_unique<QuickAnswer>();
-  quick_answer->primary_answer = "answer";
+  quick_answer->first_answer_row.push_back(
+      std::make_unique<QuickAnswerResultText>("answer"));
   EXPECT_CALL(*mock_delegate_,
               OnQuickAnswerReceived(QuickAnswerEqual(&(*quick_answer))));
   client_->OnQuickAnswerReceived(std::move(quick_answer));

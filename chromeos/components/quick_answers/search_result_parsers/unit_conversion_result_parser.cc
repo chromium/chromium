@@ -31,7 +31,6 @@ bool UnitConversionResultParser::Parse(const Value* result,
   }
 
   quick_answer->result_type = ResultType::kUnitConversionResult;
-  quick_answer->primary_answer = *dest;
   quick_answer->first_answer_row.push_back(
       std::make_unique<QuickAnswerResultText>(*dest));
 

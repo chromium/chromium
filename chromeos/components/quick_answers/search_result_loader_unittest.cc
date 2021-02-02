@@ -72,7 +72,8 @@ class SearchResultLoaderTest : public testing::Test {
 TEST_F(SearchResultLoaderTest, Success) {
   std::unique_ptr<QuickAnswer> expected_quick_answer =
       std::make_unique<QuickAnswer>();
-  expected_quick_answer->primary_answer = "9.055 inches";
+  expected_quick_answer->first_answer_row.push_back(
+      std::make_unique<QuickAnswerResultText>("9.055 inches"));
 
   EXPECT_CALL(
       *mock_delegate_,

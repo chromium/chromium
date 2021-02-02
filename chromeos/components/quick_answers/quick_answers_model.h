@@ -109,11 +109,7 @@ struct QuickAnswer {
   QuickAnswer();
   ~QuickAnswer();
 
-  //  TODO: Remove these after we deprecate simple UI version.
   ResultType result_type;
-  std::string primary_answer;
-  std::string secondary_answer;
-
   std::vector<std::unique_ptr<QuickAnswerUiElement>> title;
   std::vector<std::unique_ptr<QuickAnswerUiElement>> first_answer_row;
   std::vector<std::unique_ptr<QuickAnswerUiElement>> second_answer_row;

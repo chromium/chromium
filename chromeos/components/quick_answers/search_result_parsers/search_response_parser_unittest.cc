@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
+#include "chromeos/components/quick_answers/test/test_helpers.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -71,7 +72,8 @@ TEST_F(SearchResponseParserTest, ProcessResponseSuccessFirstResult) {
       std::make_unique<std::string>(kSearchResponse));
   WaitForResponse();
   EXPECT_TRUE(quick_answer_);
-  EXPECT_EQ("9.055 inches", quick_answer_->primary_answer);
+  EXPECT_EQ("9.055 inches",
+            GetQuickAnswerTextForTesting(quick_answer_->first_answer_row));
 }
 
 TEST_F(SearchResponseParserTest, ProcessResponseSuccessMultipleResults) {
@@ -102,7 +104,8 @@ TEST_F(SearchResponseParserTest, ProcessResponseSuccessMultipleResults) {
       std::make_unique<std::string>(kSearchResponse));
   WaitForResponse();
   EXPECT_TRUE(quick_answer_);
-  EXPECT_EQ("9.055 inches", quick_answer_->primary_answer);
+  EXPECT_EQ("9.055 inches",
+            GetQuickAnswerTextForTesting(quick_answer_->first_answer_row));
 }
 
 TEST_F(SearchResponseParserTest, ProcessResponseNoResults) {

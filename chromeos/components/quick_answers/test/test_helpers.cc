@@ -7,6 +7,24 @@
 namespace chromeos {
 namespace quick_answers {
 
+std::string GetQuickAnswerTextForTesting(
+    const std::vector<std::unique_ptr<QuickAnswerUiElement>>& elements) {
+  std::string text = "";
+
+  for (const auto& element : elements) {
+    switch (element->type) {
+      case QuickAnswerUiElementType::kText:
+        text += base::UTF16ToUTF8(
+            static_cast<QuickAnswerText*>(element.get())->text);
+        break;
+      default:
+        break;
+    }
+  }
+
+  return UnescapeStringForHTML(text);
+}
+
 MockQuickAnswersDelegate::MockQuickAnswersDelegate() = default;
 MockQuickAnswersDelegate::~MockQuickAnswersDelegate() = default;
 

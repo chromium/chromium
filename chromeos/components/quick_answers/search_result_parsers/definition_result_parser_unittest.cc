@@ -9,6 +9,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "chromeos/components/quick_answers/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -84,17 +85,16 @@ TEST_F(DefinitionResultParserTest, Success) {
   const auto& expected_answer =
       "incapable of being fully explored or understood.";
   EXPECT_EQ(ResultType::kDefinitionResult, quick_answer.result_type);
-  EXPECT_EQ(expected_answer, quick_answer.primary_answer);
-  EXPECT_EQ(expected_title, quick_answer.secondary_answer);
 
   EXPECT_EQ(1u, quick_answer.title.size());
   EXPECT_EQ(1u, quick_answer.first_answer_row.size());
   auto* answer =
       static_cast<QuickAnswerText*>(quick_answer.first_answer_row[0].get());
-  EXPECT_EQ(base::UTF8ToUTF16(expected_answer), answer->text);
+  EXPECT_EQ(expected_answer,
+            GetQuickAnswerTextForTesting(quick_answer.first_answer_row));
   EXPECT_EQ(gfx::kGoogleGrey700, answer->color);
   auto* title = static_cast<QuickAnswerText*>(quick_answer.title[0].get());
-  EXPECT_EQ(base::UTF8ToUTF16(expected_title), title->text);
+  EXPECT_EQ(expected_title, GetQuickAnswerTextForTesting(quick_answer.title));
   EXPECT_EQ(gfx::kGoogleGrey900, title->color);
 }
 
@@ -122,8 +122,9 @@ TEST_F(DefinitionResultParserTest, NoPhonetic) {
   const auto& expected_answer =
       "incapable of being fully explored or understood.";
   EXPECT_EQ(ResultType::kDefinitionResult, quick_answer.result_type);
-  EXPECT_EQ(expected_answer, quick_answer.primary_answer);
-  EXPECT_EQ(expected_title, quick_answer.secondary_answer);
+  EXPECT_EQ(expected_answer,
+            GetQuickAnswerTextForTesting(quick_answer.first_answer_row));
+  EXPECT_EQ(expected_title, GetQuickAnswerTextForTesting(quick_answer.title));
 }
 
 TEST_F(DefinitionResultParserTest, NoDefinition) {

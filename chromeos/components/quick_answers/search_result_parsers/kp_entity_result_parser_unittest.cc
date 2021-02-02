@@ -9,6 +9,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "chromeos/components/quick_answers/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -44,15 +45,11 @@ TEST_F(KpEntityResultParserTest, SuccessWithRating) {
 
   EXPECT_TRUE(parser_->Parse(&result, &quick_answer));
   EXPECT_EQ(ResultType::kKnowledgePanelEntityResult, quick_answer.result_type);
-  EXPECT_EQ("4.5 ★ (100 reviews)", quick_answer.primary_answer);
-  EXPECT_TRUE(quick_answer.secondary_answer.empty());
 
   EXPECT_EQ(0u, quick_answer.title.size());
   EXPECT_EQ(1u, quick_answer.first_answer_row.size());
-  EXPECT_EQ(
-      base::UTF8ToUTF16("4.5 ★ (100 reviews)"),
-      static_cast<QuickAnswerText*>(quick_answer.first_answer_row[0].get())
-          ->text);
+  EXPECT_EQ("4.5 ★ (100 reviews)",
+            GetQuickAnswerTextForTesting(quick_answer.first_answer_row));
 }
 
 TEST_F(KpEntityResultParserTest, SuccessWithRatingScoreRound) {
@@ -70,14 +67,13 @@ TEST_F(KpEntityResultParserTest, SuccessWithRatingScoreRound) {
 
   EXPECT_TRUE(parser_->Parse(&result, &quick_answer));
   EXPECT_EQ(ResultType::kKnowledgePanelEntityResult, quick_answer.result_type);
-  EXPECT_EQ("4.5 ★ (100 reviews)", quick_answer.primary_answer);
-  EXPECT_TRUE(quick_answer.secondary_answer.empty());
 
   EXPECT_EQ(0u, quick_answer.title.size());
   EXPECT_EQ(1u, quick_answer.first_answer_row.size());
   auto* answer =
       static_cast<QuickAnswerText*>(quick_answer.first_answer_row[0].get());
-  EXPECT_EQ(base::UTF8ToUTF16("4.5 ★ (100 reviews)"), answer->text);
+  EXPECT_EQ("4.5 ★ (100 reviews)",
+            GetQuickAnswerTextForTesting(quick_answer.first_answer_row));
   EXPECT_EQ(gfx::kGoogleGrey700, answer->color);
 
   result.SetDoublePath(
@@ -87,13 +83,13 @@ TEST_F(KpEntityResultParserTest, SuccessWithRatingScoreRound) {
 
   QuickAnswer quick_answer2;
   EXPECT_TRUE(parser_->Parse(&result, &quick_answer2));
-  EXPECT_EQ("4.6 ★ (100 reviews)", quick_answer2.primary_answer);
 
   EXPECT_EQ(0u, quick_answer2.title.size());
   EXPECT_EQ(1u, quick_answer2.first_answer_row.size());
   answer =
       static_cast<QuickAnswerText*>(quick_answer2.first_answer_row[0].get());
-  EXPECT_EQ(base::UTF8ToUTF16("4.6 ★ (100 reviews)"), answer->text);
+  EXPECT_EQ("4.5 ★ (100 reviews)",
+            GetQuickAnswerTextForTesting(quick_answer.first_answer_row));
   EXPECT_EQ(gfx::kGoogleGrey700, answer->color);
 }
 
@@ -107,14 +103,13 @@ TEST_F(KpEntityResultParserTest, SuccessWithKnownForReason) {
 
   EXPECT_TRUE(parser_->Parse(&result, &quick_answer));
   EXPECT_EQ(ResultType::kKnowledgePanelEntityResult, quick_answer.result_type);
-  EXPECT_EQ("44th U.S. President", quick_answer.primary_answer);
-  EXPECT_TRUE(quick_answer.secondary_answer.empty());
 
   EXPECT_EQ(0u, quick_answer.title.size());
   EXPECT_EQ(1u, quick_answer.first_answer_row.size());
   auto* answer =
       static_cast<QuickAnswerText*>(quick_answer.first_answer_row[0].get());
-  EXPECT_EQ(base::UTF8ToUTF16("44th U.S. President"), answer->text);
+  EXPECT_EQ("44th U.S. President",
+            GetQuickAnswerTextForTesting(quick_answer.first_answer_row));
   EXPECT_EQ(gfx::kGoogleGrey700, answer->color);
 }
 

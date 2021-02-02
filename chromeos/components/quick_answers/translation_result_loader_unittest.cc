@@ -87,8 +87,10 @@ class TranslationResultLoaderTest : public testing::Test {
 TEST_F(TranslationResultLoaderTest, Success) {
   std::unique_ptr<QuickAnswer> expected_quick_answer =
       std::make_unique<QuickAnswer>();
-  expected_quick_answer->primary_answer = kTestTranslationResult;
-  expected_quick_answer->secondary_answer = kTestTranslationTitle;
+  expected_quick_answer->first_answer_row.push_back(
+      std::make_unique<QuickAnswerResultText>(kTestTranslationResult));
+  expected_quick_answer->title.push_back(
+      std::make_unique<QuickAnswerText>(kTestTranslationTitle));
   test_url_loader_factory_.AddResponse(kCloudTranslationApiRequest,
                                        kValidResponse);
   EXPECT_CALL(

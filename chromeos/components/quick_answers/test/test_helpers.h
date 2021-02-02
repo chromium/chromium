@@ -8,10 +8,14 @@
 #include "chromeos/components/quick_answers/quick_answers_client.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/components/quick_answers/result_loader.h"
+#include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace chromeos {
 namespace quick_answers {
+
+std::string GetQuickAnswerTextForTesting(
+    const std::vector<std::unique_ptr<QuickAnswerUiElement>>& elements);
 
 class MockQuickAnswersDelegate : public QuickAnswersDelegate {
  public:
@@ -43,8 +47,10 @@ class MockResultLoaderDelegate : public ResultLoader::ResultLoaderDelegate {
 };
 
 MATCHER_P(QuickAnswerEqual, quick_answer, "") {
-  return (arg->primary_answer == quick_answer->primary_answer &&
-          arg->secondary_answer == quick_answer->secondary_answer);
+  return (GetQuickAnswerTextForTesting(arg->first_answer_row) ==
+              GetQuickAnswerTextForTesting(quick_answer->first_answer_row) &&
+          GetQuickAnswerTextForTesting(arg->title) ==
+              GetQuickAnswerTextForTesting(quick_answer->title));
 }
 
 MATCHER_P(QuickAnswersRequestEqual, quick_answers_request, "") {
