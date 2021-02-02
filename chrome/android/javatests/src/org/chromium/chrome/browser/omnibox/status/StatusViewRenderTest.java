@@ -182,7 +182,7 @@ public class StatusViewRenderTest extends DummyUiActivityTestCase {
         runOnUiThreadBlocking(() -> {
             Drawable locationIcon =
                     ContentSettingsResources.getContentSettingsIcon(mStatusView.getContext(),
-                            ContentSettingsType.GEOLOCATION, ContentSettingValues.ALLOW, true);
+                            ContentSettingsType.GEOLOCATION, ContentSettingValues.ALLOW);
             mStatusModel.set(StatusProperties.STATUS_ICON_ALPHA, 1f);
             mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, true);
             mStatusModel.set(

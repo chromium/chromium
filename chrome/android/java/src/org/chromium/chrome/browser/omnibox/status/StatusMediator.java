@@ -690,8 +690,8 @@ public class StatusMediator implements PermissionDialogController.Observer {
         }
         mLastPermission = SingleWebsiteSettings.getHighestPriorityPermission(permissions);
         assert mLastPermission != ContentSettingsType.DEFAULT;
-        Drawable permissionIcon = ContentSettingsResources.getContentSettingsIcon(
-                mContext, mLastPermission, result, true);
+        Drawable permissionIcon =
+                ContentSettingsResources.getContentSettingsIcon(mContext, mLastPermission, result);
         // TODO(crbug.com/1158288): Animate the icon change.
         // Set the timer to switch the icon back afterwards.
         mPermissionTaskHandler.removeCallbacksAndMessages(null);

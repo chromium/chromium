@@ -118,12 +118,8 @@ public class SiteSettings
                 p.setSummary(ContentSettingsResources.getCategorySummary(contentType, checked));
             }
 
-            if (p.isEnabled()) {
-                p.setIcon(SettingsUtils.getTintedIcon(
-                        getContext(), ContentSettingsResources.getIcon(contentType)));
-            } else {
-                p.setIcon(ContentSettingsResources.getDisabledIcon(contentType, getResources()));
-            }
+            p.setIcon(SettingsUtils.getTintedIcon(
+                    getContext(), ContentSettingsResources.getIcon(contentType)));
         }
 
         Preference p = findPreference(Type.ALL_SITES);
