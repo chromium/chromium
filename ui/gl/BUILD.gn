@@ -513,13 +513,12 @@ static_library("test_support") {
     deps += [ "//ui/ozone" ]
   }
 
-  public_configs = []
-
   # If the run-time search path isn't set properly when we use ANGLE with its
   # Vulkan backend, it may end up finding the system libvulkan.so rather than
   # the one built in the output directory
   if ((is_linux || is_chromeos) && !is_component_build) {
-    public_configs += [ "//build/config/gcc:rpath_for_built_shared_libraries" ]
+    all_dependent_configs =
+        [ "//build/config/gcc:rpath_for_built_shared_libraries" ]
   }
 }
 
