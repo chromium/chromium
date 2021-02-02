@@ -12,7 +12,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "chromeos/components/chromebox_for_meetings/features/features.h"
 #include "chromeos/dbus/chromebox_for_meetings/cfm_observer.h"
 #include "chromeos/dbus/chromebox_for_meetings/fake_cfm_hotline_client.h"
 #include "dbus/bus.h"
@@ -132,9 +131,7 @@ CfmHotlineClient::~CfmHotlineClient() {
 // static
 void CfmHotlineClient::Initialize(dbus::Bus* bus) {
   DCHECK(bus);
-  if (chromeos::cfm::features::IsCfmMojoEnabled()) {
-    (new CfmHotlineClientImpl())->Init(bus);
-  }
+  (new CfmHotlineClientImpl())->Init(bus);
 }
 
 // static

@@ -58,10 +58,10 @@ class FakeCfmLoggerServiceDelegate : public CfmLoggerService::Delegate {
 class CfmLoggerServiceTest : public testing::Test {
  public:
   CfmLoggerServiceTest() {
-    base::FieldTrialParams params = {
-        {chromeos::cfm::features::kCfmTelemetryParam.name, "true"}};
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        chromeos::cfm::features::kCfmMojoServices, params);
+    scoped_feature_list_.InitWithFeatures(
+        {chromeos::cfm::features::kMojoServices,
+         chromeos::cfm::features::kCloudLogger},
+        {});
   }
   CfmLoggerServiceTest(const CfmLoggerServiceTest&) = delete;
   CfmLoggerServiceTest& operator=(const CfmLoggerServiceTest&) = delete;
@@ -124,10 +124,9 @@ class CfmLoggerServiceTest : public testing::Test {
 
   void DisableLoggerFeature() {
     scoped_feature_list_.Reset();
-    base::FieldTrialParams params = {
-        {chromeos::cfm::features::kCfmTelemetryParam.name, "false"}};
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        chromeos::cfm::features::kCfmMojoServices, params);
+    scoped_feature_list_.InitWithFeatures(
+        {chromeos::cfm::features::kMojoServices},
+        {chromeos::cfm::features::kCloudLogger});
   }
 
  protected:

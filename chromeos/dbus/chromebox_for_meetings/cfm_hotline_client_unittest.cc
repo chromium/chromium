@@ -17,9 +17,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chromeos/components/chromebox_for_meetings/features/features.h"
 #include "dbus/mock_bus.h"
 #include "dbus/mock_object_proxy.h"
 #include "dbus/object_path.h"
@@ -49,10 +47,7 @@ class FakeCfmObserver : public cfm::CfmObserver {
 
 class CfmHotlineClientTest : public testing::Test {
  public:
-  CfmHotlineClientTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        chromeos::cfm::features::kCfmMojoServices);
-  }
+  CfmHotlineClientTest() = default;
   ~CfmHotlineClientTest() override = default;
 
   void SetUp() override {
@@ -142,7 +137,6 @@ class CfmHotlineClientTest : public testing::Test {
   base::File test_file_;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::deque<std::unique_ptr<dbus::Response>> used_responses_;
   // Maps from biod signal name to the corresponding callback provided by
   // |client_|.

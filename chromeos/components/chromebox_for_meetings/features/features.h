@@ -14,19 +14,19 @@ namespace chromeos {
 namespace cfm {
 namespace features {
 
-COMPONENT_EXPORT(CFM_FEATURES)
-extern const base::Feature kCfmMojoServices;
+// IMPORTANT: Please keep this file in alphabetical order.
 
+// Enables or disables the ability to enqueue cloud telemetry information using
+// Chrome Encrypted Reporting Pipeline API.
+// Note: Functionality depends on Feature {MeetDevicesMojoServices}
+// Note: Enqueue functionality depends on Feature {EncryptedReportingPipeline}
 COMPONENT_EXPORT(CFM_FEATURES)
-extern const base::FeatureParam<bool> kCfmTelemetryParam;
+extern const base::Feature kCloudLogger;
 
-// Whether cross platform mojo connections is enabled.
+// Enables or disables the ability to bind mojo connections through chrome for
+// CfM specific mojom based system services.
 COMPONENT_EXPORT(CFM_FEATURES)
-bool IsCfmMojoEnabled();
-
-// Whether Telemetry through Encrypted Reporting Pipeline is enabled.
-COMPONENT_EXPORT(CFM_FEATURES)
-bool IsCfmTelemetryEnabled();
+extern const base::Feature kMojoServices;
 
 }  // namespace features
 }  // namespace cfm

@@ -42,6 +42,7 @@
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 
 #if BUILDFLAG(PLATFORM_CFM)
+#include "chromeos/components/chromebox_for_meetings/features/features.h"
 #include "chromeos/dbus/chromebox_for_meetings/cfm_hotline_client.h"
 #endif
 
@@ -109,7 +110,9 @@ void InitializeFeatureListDependentDBus() {
   dbus::Bus* bus = DBusThreadManager::Get()->GetSystemBus();
   InitializeDBusClient<bluez::BluezDBusManager>(bus);
 #if BUILDFLAG(PLATFORM_CFM)
-  InitializeDBusClient<CfmHotlineClient>(bus);
+  if (base::FeatureList::IsEnabled(chromeos::cfm::features::kMojoServices)) {
+    InitializeDBusClient<CfmHotlineClient>(bus);
+  }
 #endif
   InitializeDBusClient<WilcoDtcSupportdClient>(bus);
 }
@@ -119,7 +122,9 @@ void ShutdownDBus() {
   // shut down in reverse order of initialization (in case of dependencies).
   WilcoDtcSupportdClient::Shutdown();
 #if BUILDFLAG(PLATFORM_CFM)
-  CfmHotlineClient::Shutdown();
+  if (base::FeatureList::IsEnabled(chromeos::cfm::features::kMojoServices)) {
+    CfmHotlineClient::Shutdown();
+  }
 #endif
   bluez::BluezDBusManager::Shutdown();
 

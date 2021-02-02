@@ -129,7 +129,7 @@ void PopulateChromeFrameBindersForExtension(
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 #if BUILDFLAG(PLATFORM_CFM)
-  if (chromeos::cfm::features::IsCfmMojoEnabled() &&
+  if (base::FeatureList::IsEnabled(chromeos::cfm::features::kMojoServices) &&
       chromeos::cfm::IsChromeboxForMeetingsAppId(extension->id())) {
     binder_map->Add<chromeos::cfm::mojom::CfmServiceContext>(
         base::BindRepeating(

@@ -15,7 +15,8 @@ namespace chromeos {
 namespace cfm {
 
 void InitializeCfmServices() {
-  if (!features::IsCfmMojoEnabled() || !CfmHotlineClient::Get()) {
+  if (!base::FeatureList::IsEnabled(features::kMojoServices) ||
+      !CfmHotlineClient::Get()) {
     return;
   }
 
@@ -26,7 +27,8 @@ void InitializeCfmServices() {
 }
 
 void ShutdownCfmServices() {
-  if (!features::IsCfmMojoEnabled() || !CfmHotlineClient::Get()) {
+  if (!base::FeatureList::IsEnabled(features::kMojoServices) ||
+      !CfmHotlineClient::Get()) {
     return;
   }
 
