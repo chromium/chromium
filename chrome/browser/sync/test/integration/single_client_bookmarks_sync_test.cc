@@ -977,7 +977,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
   const std::string title = "Seattle Sounders FC";
   fake_server::EntityBuilderFactory entity_builder_factory;
   fake_server::BookmarkEntityBuilder bookmark_builder =
-      entity_builder_factory.NewBookmarkEntityBuilder(title);
+      entity_builder_factory.NewBookmarkEntityBuilder(title, kBookmarkGuid);
   bookmark_builder.SetId(
       syncer::LoopbackServerEntity::CreateId(syncer::BOOKMARKS, kBookmarkGuid));
   fake_server_->InjectEntity(bookmark_builder.BuildFolder());
@@ -996,7 +996,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
   const std::string title = "Seattle Sounders FC";
   fake_server::EntityBuilderFactory entity_builder_factory;
   fake_server::BookmarkEntityBuilder bookmark_builder =
-      entity_builder_factory.NewBookmarkEntityBuilder(title);
+      entity_builder_factory.NewBookmarkEntityBuilder(title, kBookmarkGuid);
   bookmark_builder.SetId(
       syncer::LoopbackServerEntity::CreateId(syncer::BOOKMARKS, kBookmarkGuid));
   fake_server_->InjectEntity(bookmark_builder.BuildFolder());

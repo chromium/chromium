@@ -73215,6 +73215,9 @@ would be helpful to identify which type is being sent.
 </enum>
 
 <enum name="SyncBookmarkModelMetadataClientTagState">
+  <obsolete>
+    Deprecated 2021-02.
+  </obsolete>
   <int value="0" label="At least one mismatch found"/>
   <int value="1" label="All present do match but some are not present"/>
   <int value="2" label="All present and matching"/>

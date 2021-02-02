@@ -255,24 +255,17 @@ void BookmarkRemoteUpdatesHandler::Process(
     const SyncedBookmarkTracker::Entity* tracked_entity =
         bookmark_tracker_->GetEntityForSyncId(update_entity.id);
 
-    // This may be a good chance to populate the client tag for the first time.
-    // TODO(crbug.com/1032052): Remove this code once all local sync metadata
-    // is required to populate the client tag (and be considered invalid
-    // otherwise).
+    // In rare cases (attributed to protocol violations) the local GUID may need
+    // updating.
+    // TODO(crbug.com/1032052): Delete this code and report an error instead.
     bool local_guid_needs_update = false;
     const base::GUID remote_guid =
         base::GUID::ParseLowercase(update_entity.specifics.bookmark().guid());
     if (tracked_entity && !update_entity.is_deleted() &&
         update_entity.server_defined_unique_tag.empty() &&
-        !tracked_entity->final_guid_matches(remote_guid)) {
-      DCHECK(remote_guid.is_valid());
-      bookmark_tracker_->PopulateFinalGuid(tracked_entity, remote_guid);
-      // In many cases final_guid_matches() may return false because a final
-      // GUID is not known for sure, but actually it matches the local GUID.
-      if (tracked_entity->bookmark_node() &&
-          remote_guid != tracked_entity->bookmark_node()->guid()) {
-        local_guid_needs_update = true;
-      }
+        tracked_entity->bookmark_node() &&
+        remote_guid != tracked_entity->bookmark_node()->guid()) {
+      local_guid_needs_update = true;
     }
 
     if (tracked_entity &&
@@ -313,6 +306,10 @@ void BookmarkRemoteUpdatesHandler::Process(
           remote_guid.AsLowercaseString());
     }
     if (old_tracked_entity) {
+      // TODO(crbug.com/1143246): UMA data supports the idea that this can be
+      // transformed into a DCHECK. However, strictly speaking, this can only be
+      // safely done once the tracker supports lookups based on client tag
+      // hashes.
       if (tracked_entity) {
         DCHECK_NE(tracked_entity, old_tracked_entity);
         // We generally shouldn't have an entry for both the old ID and the new

@@ -74,6 +74,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Sync.BookmarkModelMetadataClientTagState"
     enum="SyncBookmarkModelMetadataClientTagState" expires_after="M89">
+  <obsolete>
+    Deprecated 2021-02.
+  </obsolete>
   <owner>mamir@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>

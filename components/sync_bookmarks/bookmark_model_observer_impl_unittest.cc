@@ -820,8 +820,7 @@ TEST_F(BookmarkModelObserverImplTest,
 
   sync_pb::EntitySpecifics specifics =
       CreateSpecificsFromBookmarkNode(bookmark_node, bookmark_model(),
-                                      /*force_favicon_load=*/false,
-                                      /*include_guid=*/true);
+                                      /*force_favicon_load=*/false);
   const gfx::Image favicon_image = CreateTestImage(kColor);
   scoped_refptr<base::RefCountedMemory> favicon_bytes =
       favicon_image.As1xPNGBytes();

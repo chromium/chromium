@@ -42,14 +42,10 @@ std::string FullTitleToLegacyCanonicalizedTitle(const std::string& node_title);
 bool IsBookmarkEntityReuploadNeeded(
     const syncer::EntityData& remote_entity_data);
 
-// TODO(crbug.com/978430): Remove argument |include_guid| once the client tag
-// hash is required to be populated during sync metadata validation upon
-// startup in SyncedBookmarkTracker::BookmarkModelMatchesMetadata().
 sync_pb::EntitySpecifics CreateSpecificsFromBookmarkNode(
     const bookmarks::BookmarkNode* node,
     bookmarks::BookmarkModel* model,
-    bool force_favicon_load,
-    bool include_guid);
+    bool force_favicon_load);
 
 // Creates a bookmark node under the given parent node from the given specifics.
 // Returns the newly created node. Callers must verify that

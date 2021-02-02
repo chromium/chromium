@@ -513,9 +513,9 @@ void BookmarkModelTypeProcessor::AppendNodeAndChildrenForDebugging(
   data.name = base::UTF16ToUTF8(node->GetTitle());
   data.is_folder = node->is_folder();
   data.unique_position = metadata->unique_position();
-  data.specifics = CreateSpecificsFromBookmarkNode(node, bookmark_model_,
-                                                   /*force_favicon_load=*/false,
-                                                   entity->has_final_guid());
+  data.specifics =
+      CreateSpecificsFromBookmarkNode(node, bookmark_model_,
+                                      /*force_favicon_load=*/false);
 
   if (node->is_permanent_node()) {
     data.server_defined_unique_tag =

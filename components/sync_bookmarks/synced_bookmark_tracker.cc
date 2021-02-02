@@ -28,47 +28,7 @@
 
 namespace sync_bookmarks {
 
-const base::Feature kInvalidateBookmarkSyncMetadataIfMismatchingGuid{
-    "InvalidateBookmarkSyncMetadataIfMismatchingGuid",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
-// TODO(crbug.com/1032052): Clean up once UMA metric
-// Sync.BookmarksModelMetadataCorruptionReason, bucket MISSING_CLIENT_TAG_HASH,
-// is verified to be small enough.
-extern const base::Feature kInvalidateBookmarkSyncMetadataIfClientTagMissing{
-    "InvalidateBookmarkSyncMetadataIfClientTagMissing",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-// Soft version of the above: it does treat local sync metadata as obsolete if
-// client tags are missing, but only if the local client is in sync with the
-// server, for some definition of in-sync (see implementation in
-// ShouldInvalidateMetadataDueToMissingClientTags()).
-extern const base::Feature
-    kInvalidateBookmarkSyncMetadataIfClientTagMissingWhileInSync{
-        "InvalidateBookmarkSyncMetadataIfClientTagMissingWhileInSync",
-        base::FEATURE_ENABLED_BY_DEFAULT};
-
 namespace {
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class MetadataClientTagHashStateForUma {
-  kAtLeastOneMismatchFound = 0,
-  kAllPresentMatchButSomeMissing = 1,
-  kAllPresentAndMatching = 2,
-  kMaxValue = kAllPresentAndMatching
-};
-
-MetadataClientTagHashStateForUma GetMetadataClientTagHashHistogramBucket(
-    bool client_tag_mismatch_found,
-    bool bookmark_without_client_tag_found) {
-  if (client_tag_mismatch_found) {
-    return MetadataClientTagHashStateForUma::kAtLeastOneMismatchFound;
-  }
-  if (bookmark_without_client_tag_found) {
-    return MetadataClientTagHashStateForUma::kAllPresentMatchButSomeMissing;
-  }
-  return MetadataClientTagHashStateForUma::kAllPresentAndMatching;
-}
 
 void HashSpecifics(const sync_pb::EntitySpecifics& specifics,
                    std::string* hash) {
@@ -93,37 +53,6 @@ BuildIdToBookmarkNodeMap(const bookmarks::BookmarkModel* model) {
     id_to_bookmark_node_map[node->id()] = node;
   }
   return id_to_bookmark_node_map;
-}
-
-// Predicate that determines whether a last-synced-time is considered recent
-// enough to activate the logic for
-// |kInvalidateBookmarkSyncMetadataIfClientTagMissingWhileInSync|.
-bool IsRecentEnoughTimeToConsiderInSync(base::Time time) {
-  return base::Time::Now() - time < base::TimeDelta::FromDays(2);
-}
-
-bool ShouldInvalidateMetadataDueToMissingClientTags(
-    bool bookmark_without_client_tag_found,
-    bool has_local_changes,
-    base::Time last_sync_time) {
-  if (!bookmark_without_client_tag_found) {
-    // All good, nothing to invalidate.
-    return false;
-  }
-
-  if (!has_local_changes &&
-      IsRecentEnoughTimeToConsiderInSync(last_sync_time) &&
-      base::FeatureList::IsEnabled(
-          kInvalidateBookmarkSyncMetadataIfClientTagMissingWhileInSync)) {
-    // This seems like a very good time to invalidate metadata, since it's very
-    // likely that the local state is in sync with the remote (server-side)
-    // state. This means there's low change to run into conflicts.
-    return true;
-  }
-
-  // Force-invalidate if the corresponding feature toggle is enabled.
-  return base::FeatureList::IsEnabled(
-      kInvalidateBookmarkSyncMetadataIfClientTagMissing);
 }
 
 }  // namespace
@@ -175,26 +104,6 @@ bool SyncedBookmarkTracker::Entity::MatchesFaviconHash(
   DCHECK(!metadata_->is_deleted());
   return metadata_->bookmark_favicon_hash() ==
          base::PersistentHash(favicon_png_bytes);
-}
-
-bool SyncedBookmarkTracker::Entity::has_final_guid() const {
-  return metadata_->has_client_tag_hash();
-}
-
-bool SyncedBookmarkTracker::Entity::final_guid_matches(
-    const base::GUID& guid) const {
-  return metadata_->has_client_tag_hash() &&
-         metadata_->client_tag_hash() ==
-             syncer::ClientTagHash::FromUnhashed(syncer::BOOKMARKS,
-                                                 guid.AsLowercaseString())
-                 .value();
-}
-
-void SyncedBookmarkTracker::Entity::set_final_guid(const base::GUID& guid) {
-  metadata_->set_client_tag_hash(
-      syncer::ClientTagHash::FromUnhashed(syncer::BOOKMARKS,
-                                          guid.AsLowercaseString())
-          .value());
 }
 
 void SyncedBookmarkTracker::Entity::PopulateFaviconHashIfUnset(
@@ -355,7 +264,7 @@ const SyncedBookmarkTracker::Entity* SyncedBookmarkTracker::Add(
   metadata->set_acked_sequence_number(0);
   metadata->mutable_unique_position()->CopyFrom(unique_position);
   // For any newly added bookmark, be it a local creation or a remote one, the
-  // authoritative final GUID is known from start.
+  // authoritative GUID is known from start.
   metadata->set_client_tag_hash(
       syncer::ClientTagHash::FromUnhashed(
           syncer::BOOKMARKS, bookmark_node->guid().AsLowercaseString())
@@ -400,12 +309,6 @@ void SyncedBookmarkTracker::UpdateServerVersion(const Entity* entity,
                                                 int64_t server_version) {
   DCHECK(entity);
   AsMutableEntity(entity)->metadata()->set_server_version(server_version);
-}
-
-void SyncedBookmarkTracker::PopulateFinalGuid(const Entity* entity,
-                                              const base::GUID& guid) {
-  DCHECK(entity);
-  AsMutableEntity(entity)->set_final_guid(guid);
 }
 
 void SyncedBookmarkTracker::PopulateFaviconHashIfUnset(
@@ -572,10 +475,6 @@ SyncedBookmarkTracker::InitEntitiesFromModelAndMetadata(
     sync_pb::BookmarkModelMetadata model_metadata) {
   DCHECK(model_type_state_.initial_sync_done());
 
-  // Used for histograms.
-  bool client_tag_mismatch_found = false;
-  bool bookmark_without_client_tag_found = false;
-
   // Build a temporary map to look up bookmark nodes efficiently by node ID.
   std::unordered_map<int64_t, const bookmarks::BookmarkNode*>
       id_to_bookmark_node_map = BuildIdToBookmarkNodeMap(model);
@@ -625,7 +524,9 @@ SyncedBookmarkTracker::InitEntitiesFromModelAndMetadata(
       }
 
       if (!bookmark_metadata.metadata().has_client_tag_hash()) {
-        bookmark_without_client_tag_found = true;
+        DLOG(ERROR) << "Error when decoding sync metadata: "
+                    << "Bookmark client tag hash is missing for tombstone.";
+        return CorruptionReason::MISSING_CLIENT_TAG_HASH;
       }
 
       auto tombstone_entity = std::make_unique<Entity>(
@@ -656,33 +557,22 @@ SyncedBookmarkTracker::InitEntitiesFromModelAndMetadata(
 
     if (!node->is_permanent_node() &&
         !bookmark_metadata.metadata().has_client_tag_hash()) {
-      bookmark_without_client_tag_found = true;
+      DLOG(ERROR) << "Error when decoding sync metadata: "
+                  << "Bookmark client tag hash is missing.";
+      return CorruptionReason::MISSING_CLIENT_TAG_HASH;
     }
 
-    // The client-tag-hash is optional, but if it does exist, it is expected to
-    // be equal to the hash of the bookmark's GUID. This can be hit for example
-    // if local bookmark GUIDs were reassigned upon startup due to duplicates
-    // (which is a BookmarkModel invariant violation and should be impossible).
-    // TODO(crbug.com/1032052): Simplify this code once all local sync metadata
-    // is required to populate the client tag (and be considered invalid
-    // otherwise).
-    if (bookmark_metadata.metadata().has_client_tag_hash() &&
-        !node->is_permanent_node() &&
+    // The client-tag-hash is expected to be equal to the hash of the bookmark's
+    // GUID. This can be hit for example if local bookmark GUIDs were
+    // reassigned upon startup due to duplicates (which is a BookmarkModel
+    // invariant violation and should be impossible).
+    if (!node->is_permanent_node() &&
         bookmark_metadata.metadata().client_tag_hash() !=
             syncer::ClientTagHash::FromUnhashed(
                 syncer::BOOKMARKS, node->guid().AsLowercaseString())
                 .value()) {
       DLOG(ERROR) << "Bookmark GUID does not match the client tag.";
-      client_tag_mismatch_found = true;
-
-      if (base::FeatureList::IsEnabled(
-              kInvalidateBookmarkSyncMetadataIfMismatchingGuid)) {
-        return CorruptionReason::BOOKMARK_GUID_MISMATCH;
-      } else {
-        // Simply clear the field, although it's most likely accurate, since it
-        // isn't useful while the actual (unhashed) GUID is unknown.
-        bookmark_metadata.mutable_metadata()->clear_client_tag_hash();
-      }
+      return CorruptionReason::BOOKMARK_GUID_MISMATCH;
     }
 
     auto entity = std::make_unique<Entity>(
@@ -710,17 +600,6 @@ SyncedBookmarkTracker::InitEntitiesFromModelAndMetadata(
     if (bookmark_node_to_entities_map_.count(node) == 0) {
       return CorruptionReason::UNTRACKED_BOOKMARK;
     }
-  }
-
-  UMA_HISTOGRAM_ENUMERATION(
-      "Sync.BookmarkModelMetadataClientTagState",
-      GetMetadataClientTagHashHistogramBucket(
-          client_tag_mismatch_found, bookmark_without_client_tag_found));
-
-  if (ShouldInvalidateMetadataDueToMissingClientTags(
-          bookmark_without_client_tag_found, HasLocalChanges(),
-          last_sync_time_)) {
-    return CorruptionReason::MISSING_CLIENT_TAG_HASH;
   }
 
   CheckAllNodesTracked(model);

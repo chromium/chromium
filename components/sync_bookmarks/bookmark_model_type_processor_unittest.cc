@@ -18,6 +18,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
+#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/commit_queue.h"
 #include "components/sync/model/data_type_activation_request.h"
@@ -408,10 +409,10 @@ TEST_F(
 
   // Process an update for the same bookmark with the same data.
   syncer::UpdateResponseDataList updates;
-  updates.push_back(
-      CreateUpdateResponseData({kNodeId, kTitle, kUrl, kBookmarkBarId,
-                                /*server_tag=*/std::string()},
-                               kRandomPosition, /*response_version=*/1));
+  updates.push_back(CreateUpdateResponseData(
+      {kNodeId, kTitle, kUrl, kBookmarkBarId,
+       /*server_tag=*/std::string()},
+      kRandomPosition, /*response_version=*/1, bookmark_node->guid()));
   updates[0].response_version++;
 
   EXPECT_CALL(*schedule_save_closure(), Run());

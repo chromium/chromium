@@ -207,8 +207,7 @@ bool IsBookmarkEntityReuploadNeeded(
 sync_pb::EntitySpecifics CreateSpecificsFromBookmarkNode(
     const bookmarks::BookmarkNode* node,
     bookmarks::BookmarkModel* model,
-    bool force_favicon_load,
-    bool include_guid) {
+    bool force_favicon_load) {
   sync_pb::EntitySpecifics specifics;
   sync_pb::BookmarkSpecifics* bm_specifics = specifics.mutable_bookmark();
   if (!node->is_folder()) {
@@ -216,10 +215,7 @@ sync_pb::EntitySpecifics CreateSpecificsFromBookmarkNode(
   }
 
   DCHECK(node->guid().is_valid()) << "Actual: " << node->guid();
-
-  if (include_guid) {
-    bm_specifics->set_guid(node->guid().AsLowercaseString());
-  }
+  bm_specifics->set_guid(node->guid().AsLowercaseString());
 
   const std::string node_title = base::UTF16ToUTF8(node->GetTitle());
   bm_specifics->set_legacy_canonicalized_title(

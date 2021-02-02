@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "components/sync/protocol/bookmark_model_metadata.pb.h"
@@ -32,10 +31,6 @@ struct EntityData;
 }  // namespace syncer
 
 namespace sync_bookmarks {
-
-// Exposed for testing.
-extern const base::Feature kInvalidateBookmarkSyncMetadataIfMismatchingGuid;
-extern const base::Feature kInvalidateBookmarkSyncMetadataIfClientTagMissing;
 
 // This class is responsible for keeping the mapping between bookmark nodes in
 // the local model and the server-side corresponding sync entities. It manages
@@ -96,23 +91,6 @@ class SyncedBookmarkTracker {
     void set_commit_may_have_started(bool value) {
       commit_may_have_started_ = value;
     }
-
-    // Returns whether the bookmark's GUID is known to match the server-side
-    // originator client item ID (or for pre-2015 bookmarks, the equivalent
-    // inferred GUID). This function may return false negatives since the
-    // required local metadata got populated with M81.
-    // TODO(crbug.com/1032052): Remove this code once all local sync metadata
-    // is required to populate the client tag (and be considered invalid
-    // otherwise).
-    bool has_final_guid() const;
-
-    // Returns true if the final GUID is known and it matches |guid|.
-    bool final_guid_matches(const base::GUID& guid) const;
-
-    // TODO(crbug.com/1032052): Remove this code once all local sync metadata
-    // is required to populate the client tag (and be considered invalid
-    // otherwise).
-    void set_final_guid(const base::GUID& guid);
 
     void PopulateFaviconHashIfUnset(const std::string& favicon_png_bytes);
 
@@ -187,9 +165,6 @@ class SyncedBookmarkTracker {
   // Updates the server version of an existing entity. |entity| must be owned by
   // this tracker.
   void UpdateServerVersion(const Entity* entity, int64_t server_version);
-
-  // Populates a bookmark's final GUID. |entity| must be owned by this tracker.
-  void PopulateFinalGuid(const Entity* entity, const base::GUID& guid);
 
   // Populates the metadata field representing the hashed favicon. This method
   // is effectively used to backfill the proto field, which was introduced late.

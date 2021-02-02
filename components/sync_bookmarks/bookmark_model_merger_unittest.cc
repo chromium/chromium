@@ -217,9 +217,6 @@ static syncer::UniquePosition MakeRandomPosition() {
 
 }  // namespace
 
-// TODO(crbug.com/978430): Parameterize unit tests to account for both
-// GUID-based and original merge algorithms.
-
 TEST(BookmarkModelMergerTest, ShouldMergeLocalAndRemoteModels) {
   const size_t kMaxEntries = 1000;
 

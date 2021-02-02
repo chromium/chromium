@@ -65,8 +65,8 @@ void BookmarkModelObserverImpl::BookmarkNodeMoved(
   const sync_pb::UniquePosition unique_position =
       ComputePosition(*new_parent, new_index, sync_id).ToProto();
 
-  sync_pb::EntitySpecifics specifics = CreateSpecificsFromBookmarkNode(
-      node, model, /*force_favicon_load=*/true, entity->has_final_guid());
+  sync_pb::EntitySpecifics specifics =
+      CreateSpecificsFromBookmarkNode(node, model, /*force_favicon_load=*/true);
 
   bookmark_tracker_->Update(entity, entity->metadata()->server_version(),
                             modification_time, unique_position, specifics);
@@ -99,8 +99,7 @@ void BookmarkModelObserverImpl::BookmarkNodeAdded(
           .ToProto();
 
   sync_pb::EntitySpecifics specifics =
-      CreateSpecificsFromBookmarkNode(node, model, /*force_favicon_load=*/true,
-                                      /*include_guid=*/true);
+      CreateSpecificsFromBookmarkNode(node, model, /*force_favicon_load=*/true);
 
   // It is possible that a created bookmark was restored after deletion and
   // the tombstone was not committed yet. In that case the existing entity
@@ -193,8 +192,8 @@ void BookmarkModelObserverImpl::BookmarkNodeChanged(
     return;
   }
 
-  sync_pb::EntitySpecifics specifics = CreateSpecificsFromBookmarkNode(
-      node, model, /*force_favicon_load=*/true, entity->has_final_guid());
+  sync_pb::EntitySpecifics specifics =
+      CreateSpecificsFromBookmarkNode(node, model, /*force_favicon_load=*/true);
   ProcessUpdate(entity, specifics);
 }
 
@@ -233,7 +232,7 @@ void BookmarkModelObserverImpl::BookmarkNodeFaviconChanged(
   }
 
   const sync_pb::EntitySpecifics specifics = CreateSpecificsFromBookmarkNode(
-      node, model, /*force_favicon_load=*/false, entity->has_final_guid());
+      node, model, /*force_favicon_load=*/false);
 
   // TODO(crbug.com/1094825): implement |base_specifics_hash| similar to
   // ClientTagBasedModelTypeProcessor.
@@ -289,8 +288,7 @@ void BookmarkModelObserverImpl::BookmarkNodeChildrenReordered(
                    : syncer::UniquePosition::After(position, suffix);
 
     const sync_pb::EntitySpecifics specifics = CreateSpecificsFromBookmarkNode(
-        child.get(), model, /*force_favicon_load=*/true,
-        entity->has_final_guid());
+        child.get(), model, /*force_favicon_load=*/true);
 
     bookmark_tracker_->Update(entity, entity->metadata()->server_version(),
                               modification_time, position.ToProto(), specifics);

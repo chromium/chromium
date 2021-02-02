@@ -75,7 +75,7 @@ TEST(BookmarkSpecificsConversionsTest, ShouldCreateSpecificsFromBookmarkNode) {
   model->SetNodeMetaInfo(node, kKey2, kValue2);
 
   sync_pb::EntitySpecifics specifics = CreateSpecificsFromBookmarkNode(
-      node, model.get(), /*force_favicon_load=*/false, /*include_guid=*/true);
+      node, model.get(), /*force_favicon_load=*/false);
   const sync_pb::BookmarkSpecifics& bm_specifics = specifics.bookmark();
   EXPECT_THAT(bm_specifics.guid(), Eq(node->guid().AsLowercaseString()));
   EXPECT_THAT(bm_specifics.legacy_canonicalized_title(), Eq(kTitle));
@@ -92,28 +92,6 @@ TEST(BookmarkSpecificsConversionsTest, ShouldCreateSpecificsFromBookmarkNode) {
 }
 
 TEST(BookmarkSpecificsConversionsTest,
-     ShouldCreateSpecificsFromBookmarkNodeWithoutGuid) {
-  const GURL kUrl("http://www.url.com");
-  const std::string kTitle = "Title";
-
-  std::unique_ptr<bookmarks::BookmarkModel> model =
-      bookmarks::TestBookmarkClient::CreateModel();
-
-  const bookmarks::BookmarkNode* bookmark_bar_node = model->bookmark_bar_node();
-  const bookmarks::BookmarkNode* node = model->AddURL(
-      /*parent=*/bookmark_bar_node, /*index=*/0, base::UTF8ToUTF16(kTitle),
-      kUrl);
-  ASSERT_THAT(node, NotNull());
-
-  sync_pb::EntitySpecifics specifics = CreateSpecificsFromBookmarkNode(
-      node, model.get(), /*force_favicon_load=*/false, /*include_guid=*/false);
-  const sync_pb::BookmarkSpecifics& bm_specifics = specifics.bookmark();
-  ASSERT_THAT(bm_specifics.legacy_canonicalized_title(), Eq(kTitle));
-  ASSERT_THAT(GURL(bm_specifics.url()), Eq(kUrl));
-  EXPECT_FALSE(bm_specifics.has_guid());
-}
-
-TEST(BookmarkSpecificsConversionsTest,
      ShouldCreateSpecificsFromBookmarkNodeWithIllegalTitle) {
   std::unique_ptr<bookmarks::BookmarkModel> model =
       bookmarks::TestBookmarkClient::CreateModel();
@@ -127,7 +105,7 @@ TEST(BookmarkSpecificsConversionsTest,
         GURL("http://www.url.com"));
     ASSERT_THAT(node, NotNull());
     sync_pb::EntitySpecifics specifics = CreateSpecificsFromBookmarkNode(
-        node, model.get(), /*force_favicon_load=*/false, /*include_guid=*/true);
+        node, model.get(), /*force_favicon_load=*/false);
     // Legacy clients append a space to illegal titles.
     EXPECT_THAT(specifics.bookmark().legacy_canonicalized_title(),
                 Eq(illegal_title + " "));
@@ -144,7 +122,7 @@ TEST(BookmarkSpecificsConversionsTest,
   ASSERT_THAT(node, NotNull());
 
   sync_pb::EntitySpecifics specifics = CreateSpecificsFromBookmarkNode(
-      node, model.get(), /*force_favicon_load=*/false, /*include_guid=*/true);
+      node, model.get(), /*force_favicon_load=*/false);
   const sync_pb::BookmarkSpecifics& bm_specifics = specifics.bookmark();
   EXPECT_FALSE(bm_specifics.has_url());
 }
@@ -166,7 +144,7 @@ TEST(BookmarkSpecificsConversionsTest,
   ASSERT_FALSE(node->is_favicon_loaded());
   ASSERT_THAT(client_ptr->GetLoadFaviconRequestsForTest(), Eq(0));
   sync_pb::EntitySpecifics specifics = CreateSpecificsFromBookmarkNode(
-      node, model.get(), /*force_favicon_load=*/true, /*include_guid=*/true);
+      node, model.get(), /*force_favicon_load=*/true);
   EXPECT_THAT(client_ptr->GetLoadFaviconRequestsForTest(), Eq(1));
 }
 
@@ -187,7 +165,7 @@ TEST(BookmarkSpecificsConversionsTest,
   ASSERT_FALSE(node->is_favicon_loaded());
   ASSERT_THAT(client_ptr->GetLoadFaviconRequestsForTest(), Eq(0));
   sync_pb::EntitySpecifics specifics = CreateSpecificsFromBookmarkNode(
-      node, model.get(), /*force_favicon_load=*/false, /*include_guid=*/true);
+      node, model.get(), /*force_favicon_load=*/false);
   EXPECT_THAT(client_ptr->GetLoadFaviconRequestsForTest(), Eq(0));
 }
 
