@@ -61,7 +61,10 @@ android_library("javatests") {
     "//third_party/mockito:mockito_java",
   ]
 
-  sources = [ "java/src/org/chromium/components/signin/identitymanager/ProfileOAuth2TokenServiceDelegateTest.java" ]
+  sources = [
+    "java/src/org/chromium/components/signin/AccountManagerFacadeTest.java",
+    "java/src/org/chromium/components/signin/identitymanager/ProfileOAuth2TokenServiceDelegateTest.java",
+  ]
 }
 
 java_library("junit") {
