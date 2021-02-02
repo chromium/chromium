@@ -619,11 +619,10 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     DCHECK(!resource()->is_cross_thread())
         << "Write access is only allowed on the owning thread";
 
-    if (current_resource_has_write_access_ || IsGpuContextLost() ||
-        use_oop_rasterization_)
+    if (current_resource_has_write_access_ || IsGpuContextLost())
       return;
 
-    if (is_accelerated_) {
+    if (is_accelerated_ && !use_oop_rasterization_) {
       resource()->BeginWriteAccess();
     }
 
@@ -639,17 +638,22 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     if (!current_resource_has_write_access_ || IsGpuContextLost())
       return;
 
-    DCHECK(!use_oop_rasterization_);
-
     if (is_accelerated_) {
       // We reset |mode_| here since the draw commands which overwrite the
       // complete canvas must have been flushed at this point without triggering
       // copy-on-write.
       mode_ = SkSurface::kRetain_ContentChangeMode;
-      // Issue any skia work using this resource before releasing write access.
-      FlushGrContext();
-      resource()->EndWriteAccess();
+
+      if (!use_oop_rasterization_) {
+        // Issue any skia work using this resource before releasing write
+        // access.
+        FlushGrContext();
+        resource()->EndWriteAccess();
+      }
     } else {
+      // Currently we never use OOP raster when the resource is not accelerated
+      // so we check that assumption here.
+      DCHECK(!use_oop_rasterization_);
       if (ShouldReplaceTargetBuffer())
         resource_ = NewOrRecycledResource();
       resource()->CopyRenderingResultsToGpuMemoryBuffer(
