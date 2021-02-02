@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/path_service.h"
 #include "base/single_thread_task_runner.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -16,6 +17,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_messages.h"
+#include "chrome/common/chrome_paths.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -327,6 +329,14 @@ void ImageWriterUnitTestBase::SetUp() {
 void ImageWriterUnitTestBase::TearDown() {
   testing::Test::TearDown();
   test_utils_.TearDown();
+}
+
+bool GetTestDataDirectory(base::FilePath* path) {
+  bool success = base::PathService::Get(chrome::DIR_TEST_DATA, path);
+  if (!success)
+    return false;
+  *path = path->AppendASCII("image_writer_private");
+  return true;
 }
 
 }  // namespace image_writer
