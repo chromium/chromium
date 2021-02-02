@@ -374,8 +374,7 @@ class PendingAppInstallTaskWithRunOnOsLoginTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(PendingAppInstallTaskTest,
-       WebAppOrShortcutFromContents_InstallationSucceeds) {
+TEST_F(PendingAppInstallTaskTest, InstallSucceeds) {
   auto task = GetInstallationTaskWithTestMocks(
       {WebAppUrl(), DisplayMode::kUndefined,
        ExternalInstallSource::kInternalDefault});
@@ -418,8 +417,7 @@ TEST_F(PendingAppInstallTaskTest,
   run_loop.Run();
 }
 
-TEST_F(PendingAppInstallTaskTest,
-       WebAppOrShortcutFromContents_InstallationFails) {
+TEST_F(PendingAppInstallTaskTest, InstallFails) {
   auto task = GetInstallationTaskWithTestMocks(
       {WebAppUrl(), DisplayMode::kStandalone,
        ExternalInstallSource::kInternalDefault});
@@ -449,8 +447,7 @@ TEST_F(PendingAppInstallTaskTest,
   run_loop.Run();
 }
 
-TEST_F(PendingAppInstallTaskTest,
-       WebAppOrShortcutFromContents_NoDesktopShortcut) {
+TEST_F(PendingAppInstallTaskTest, InstallNoDesktopShortcut) {
   ExternalInstallOptions install_options(
       WebAppUrl(), DisplayMode::kStandalone,
       ExternalInstallSource::kInternalDefault);
@@ -483,8 +480,7 @@ TEST_F(PendingAppInstallTaskTest,
   run_loop.Run();
 }
 
-TEST_F(PendingAppInstallTaskTest,
-       WebAppOrShortcutFromContents_NoQuickLaunchBarShortcut) {
+TEST_F(PendingAppInstallTaskTest, InstallNoQuickLaunchBarShortcut) {
   ExternalInstallOptions install_options(
       WebAppUrl(), DisplayMode::kStandalone,
       ExternalInstallSource::kInternalDefault);
@@ -516,9 +512,8 @@ TEST_F(PendingAppInstallTaskTest,
   run_loop.Run();
 }
 
-TEST_F(
-    PendingAppInstallTaskTest,
-    WebAppOrShortcutFromContents_NoDesktopShortcutAndNoQuickLaunchBarShortcut) {
+TEST_F(PendingAppInstallTaskTest,
+       InstallNoDesktopShortcutAndNoQuickLaunchBarShortcut) {
   ExternalInstallOptions install_options(
       WebAppUrl(), DisplayMode::kStandalone,
       ExternalInstallSource::kInternalDefault);
@@ -551,8 +546,7 @@ TEST_F(
   run_loop.Run();
 }
 
-TEST_F(PendingAppInstallTaskTest,
-       WebAppOrShortcutFromContents_ForcedContainerWindow) {
+TEST_F(PendingAppInstallTaskTest, InstallForcedContainerWindow) {
   auto install_options =
       ExternalInstallOptions(WebAppUrl(), DisplayMode::kStandalone,
                              ExternalInstallSource::kInternalDefault);
@@ -575,8 +569,7 @@ TEST_F(PendingAppInstallTaskTest,
   run_loop.Run();
 }
 
-TEST_F(PendingAppInstallTaskTest,
-       WebAppOrShortcutFromContents_ForcedContainerTab) {
+TEST_F(PendingAppInstallTaskTest, InstallForcedContainerTab) {
   auto install_options =
       ExternalInstallOptions(WebAppUrl(), DisplayMode::kBrowser,
                              ExternalInstallSource::kInternalDefault);
@@ -599,7 +592,7 @@ TEST_F(PendingAppInstallTaskTest,
   run_loop.Run();
 }
 
-TEST_F(PendingAppInstallTaskTest, WebAppOrShortcutFromContents_DefaultApp) {
+TEST_F(PendingAppInstallTaskTest, InstallDefaultApp) {
   auto install_options =
       ExternalInstallOptions(WebAppUrl(), DisplayMode::kUndefined,
                              ExternalInstallSource::kInternalDefault);
@@ -624,7 +617,7 @@ TEST_F(PendingAppInstallTaskTest, WebAppOrShortcutFromContents_DefaultApp) {
   run_loop.Run();
 }
 
-TEST_F(PendingAppInstallTaskTest, WebAppOrShortcutFromContents_AppFromPolicy) {
+TEST_F(PendingAppInstallTaskTest, InstallAppFromPolicy) {
   auto install_options =
       ExternalInstallOptions(WebAppUrl(), DisplayMode::kUndefined,
                              ExternalInstallSource::kExternalPolicy);
@@ -984,7 +977,7 @@ TEST_F(PendingAppInstallTaskTest, InstallURLLoadFailed) {
   }
 }
 
-TEST_F(PendingAppInstallTaskTest, FailedWebContentsDestroyed) {
+TEST_F(PendingAppInstallTaskTest, InstallFailedWebContentsDestroyed) {
   ExternalInstallOptions install_options(
       GURL(), DisplayMode::kStandalone,
       ExternalInstallSource::kInternalDefault);
@@ -1005,7 +998,7 @@ TEST_F(PendingAppInstallTaskTest, FailedWebContentsDestroyed) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(PendingAppInstallTaskTest, InstallWithWebAppInfo_Succeeds) {
+TEST_F(PendingAppInstallTaskTest, InstallWithWebAppInfoSucceeds) {
   ExternalInstallOptions options(WebAppUrl(), DisplayMode::kStandalone,
                                  ExternalInstallSource::kSystemInstalled);
   options.only_use_app_info_factory = true;
@@ -1055,7 +1048,7 @@ TEST_F(PendingAppInstallTaskTest, InstallWithWebAppInfo_Succeeds) {
   run_loop.Run();
 }
 
-TEST_F(PendingAppInstallTaskTest, InstallWithWebAppInfo_Fails) {
+TEST_F(PendingAppInstallTaskTest, InstallWithWebAppInfoFails) {
   ExternalInstallOptions options(WebAppUrl(), DisplayMode::kStandalone,
                                  ExternalInstallSource::kSystemInstalled);
   options.only_use_app_info_factory = true;
@@ -1095,8 +1088,7 @@ TEST_F(PendingAppInstallTaskTest, InstallWithWebAppInfo_Fails) {
   run_loop.Run();
 }
 
-TEST_F(PendingAppInstallTaskWithRunOnOsLoginTest,
-       WebAppOrShortcutFromContents_RunOnOsLogin) {
+TEST_F(PendingAppInstallTaskWithRunOnOsLoginTest, InstallRunOnOsLogin) {
   ExternalInstallOptions install_options(
       WebAppUrl(), DisplayMode::kStandalone,
       ExternalInstallSource::kInternalDefault);
@@ -1133,8 +1125,7 @@ TEST_F(PendingAppInstallTaskWithRunOnOsLoginTest,
   run_loop.Run();
 }
 
-TEST_F(PendingAppInstallTaskWithRunOnOsLoginTest,
-       WebAppOrShortcutFromContents_NoRunOnOsLogin) {
+TEST_F(PendingAppInstallTaskWithRunOnOsLoginTest, InstallNoRunOnOsLogin) {
   ExternalInstallOptions install_options(
       WebAppUrl(), DisplayMode::kStandalone,
       ExternalInstallSource::kInternalDefault);
