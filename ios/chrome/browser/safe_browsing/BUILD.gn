@@ -146,6 +146,7 @@ source_set("eg2_tests") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "chrome_password_protection_service_unittest.mm",
     "pending_unsafe_resource_storage_unittest.mm",
     "real_time_url_lookup_service_factory_unittest.mm",
     "safe_browsing_blocking_page_unittest.mm",
