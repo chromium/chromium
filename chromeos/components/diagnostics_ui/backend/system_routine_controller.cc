@@ -216,6 +216,9 @@ SystemRoutineController::~SystemRoutineController() {
     diagnostics_service_->GetRoutineUpdate(
         inflight_routine_id_, healthd::DiagnosticRoutineCommandEnum::kCancel,
         /*should_include_output=*/false, base::DoNothing());
+    if (IsLoggingEnabled()) {
+      routine_log_ptr_->LogRoutineCancelled();
+    }
   }
 
   // Emit the total number of routines run.
@@ -677,6 +680,9 @@ void SystemRoutineController::OnInflightRoutineRunnerDisconnected() {
       /*should_include_output=*/false,
       base::BindOnce(&SystemRoutineController::OnRoutineCancelAttempted,
                      base::Unretained(this)));
+  if (IsLoggingEnabled()) {
+    routine_log_ptr_->LogRoutineCancelled();
+  }
 }
 
 void SystemRoutineController::OnRoutineCancelAttempted(
