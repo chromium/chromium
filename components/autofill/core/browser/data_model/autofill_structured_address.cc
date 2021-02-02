@@ -38,7 +38,6 @@ base::string16 AddressComponentWithRewriter::ValueForComparison() const {
 StreetName::StreetName(AddressComponent* parent)
     : AddressComponent(ADDRESS_HOME_STREET_NAME,
                        parent,
-                       {},
                        MergeMode::kDefault) {}
 
 StreetName::~StreetName() = default;
@@ -46,7 +45,6 @@ StreetName::~StreetName() = default;
 DependentStreetName::DependentStreetName(AddressComponent* parent)
     : AddressComponent(ADDRESS_HOME_DEPENDENT_STREET_NAME,
                        parent,
-                       {},
                        MergeMode::kDefault) {}
 
 DependentStreetName::~DependentStreetName() = default;
@@ -55,7 +53,6 @@ StreetAndDependentStreetName::StreetAndDependentStreetName(
     AddressComponent* parent)
     : AddressComponent(ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME,
                        parent,
-                       {&thoroughfare_name_, &dependent_thoroughfare_name_},
                        MergeMode::kDefault) {}
 
 StreetAndDependentStreetName::~StreetAndDependentStreetName() = default;
@@ -63,7 +60,6 @@ StreetAndDependentStreetName::~StreetAndDependentStreetName() = default;
 HouseNumber::HouseNumber(AddressComponent* parent)
     : AddressComponent(ADDRESS_HOME_HOUSE_NUMBER,
                        parent,
-                       {},
                        MergeMode::kDefault) {}
 
 HouseNumber::~HouseNumber() = default;
@@ -71,25 +67,23 @@ HouseNumber::~HouseNumber() = default;
 Premise::Premise(AddressComponent* parent)
     : AddressComponent(ADDRESS_HOME_PREMISE_NAME,
                        parent,
-                       {},
                        MergeMode::kDefault) {}
 
 Premise::~Premise() = default;
 
 Floor::Floor(AddressComponent* parent)
-    : AddressComponent(ADDRESS_HOME_FLOOR, parent, {}, MergeMode::kDefault) {}
+    : AddressComponent(ADDRESS_HOME_FLOOR, parent, MergeMode::kDefault) {}
 
 Floor::~Floor() = default;
 
 Apartment::Apartment(AddressComponent* parent)
-    : AddressComponent(ADDRESS_HOME_APT_NUM, parent, {}, MergeMode::kDefault) {}
+    : AddressComponent(ADDRESS_HOME_APT_NUM, parent, MergeMode::kDefault) {}
 
 Apartment::~Apartment() = default;
 
 SubPremise::SubPremise(AddressComponent* parent)
     : AddressComponent(ADDRESS_HOME_SUBPREMISE,
                        parent,
-                       {&floor_, &apartment_},
                        MergeMode::kDefault) {}
 
 SubPremise::~SubPremise() = default;
@@ -101,7 +95,6 @@ StreetAddress::StreetAddress(AddressComponent* parent)
     : AddressComponentWithRewriter(
           ADDRESS_HOME_STREET_ADDRESS,
           parent,
-          {&streets_, &number_, &premise_, &sub_premise_},
           MergeMode::kReplaceEmpty | MergeMode::kReplaceSubset |
               MergeMode::kDefault) {}
 
@@ -301,7 +294,6 @@ void StreetAddress::GetAdditionalSupportedFieldTypes(
 CountryCode::CountryCode(AddressComponent* parent)
     : AddressComponent(ADDRESS_HOME_COUNTRY,
                        parent,
-                       {},
                        MergeMode::kReplaceEmpty |
                            MergeMode::kUseBetterOrNewerForSameValue) {}
 
@@ -312,7 +304,6 @@ CountryCode::~CountryCode() = default;
 DependentLocality::DependentLocality(AddressComponent* parent)
     : AddressComponent(ADDRESS_HOME_DEPENDENT_LOCALITY,
                        parent,
-                       {},
                        MergeMode::kReplaceSubset | MergeMode::kReplaceEmpty) {}
 
 DependentLocality::~DependentLocality() = default;
@@ -322,7 +313,6 @@ DependentLocality::~DependentLocality() = default;
 City::City(AddressComponent* parent)
     : AddressComponent(ADDRESS_HOME_CITY,
                        parent,
-                       {},
                        MergeMode::kReplaceSubset | MergeMode::kReplaceEmpty) {}
 
 City::~City() = default;
@@ -333,7 +323,6 @@ State::State(AddressComponent* parent)
     : AddressComponentWithRewriter(
           ADDRESS_HOME_STATE,
           parent,
-          {},
           MergeMode::kPickShorterIfOneContainsTheOther | kReplaceEmpty) {}
 
 State::~State() = default;
@@ -344,7 +333,6 @@ PostalCode::PostalCode(AddressComponent* parent)
     : AddressComponentWithRewriter(
           ADDRESS_HOME_ZIP,
           parent,
-          {},
           MergeMode::kUseMostRecentSubstring | kReplaceEmpty) {}
 
 PostalCode::~PostalCode() = default;
@@ -356,7 +344,6 @@ base::string16 PostalCode::NormalizedValue() const {
 SortingCode::SortingCode(AddressComponent* parent)
     : AddressComponent(ADDRESS_HOME_SORTING_CODE,
                        parent,
-                       {},
                        MergeMode::kReplaceEmpty | kUseMostRecentSubstring) {}
 
 SortingCode::~SortingCode() = default;
@@ -364,7 +351,12 @@ SortingCode::~SortingCode() = default;
 Address::Address() : Address{nullptr} {}
 
 Address::Address(const Address& other) : Address() {
-  *this = other;
+  CopyFrom(other);
+}
+
+Address& Address::operator=(const Address& other) {
+  CopyFrom(other);
+  return *this;
 }
 
 bool Address::WipeInvalidStructure() {
@@ -379,8 +371,6 @@ bool Address::WipeInvalidStructure() {
 Address::Address(AddressComponent* parent)
     : AddressComponent(ADDRESS_HOME_ADDRESS,
                        parent,
-                       {&street_address_, &postal_code_, &sorting_code_,
-                        &dependent_locality_, &city_, &state_, &country_code_},
                        MergeMode::kMergeChildrenAndReformat) {}
 
 Address::~Address() = default;

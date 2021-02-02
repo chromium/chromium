@@ -139,9 +139,7 @@ class NameFull : public AddressComponent {
   NameFull(const NameFull& other);
   ~NameFull() override;
 
-  // Migrates from a legacy structure in which name tokens are imported without
-  // a status.
-  void MigrateLegacyStructure(bool is_verified_profile);
+  void MigrateLegacyStructure(bool is_verified_profile) override;
 
  protected:
   std::vector<const re2::RE2*> GetParseRegularExpressionsByRelevance()

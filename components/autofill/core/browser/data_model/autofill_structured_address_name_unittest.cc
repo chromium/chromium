@@ -464,7 +464,7 @@ TEST(AutofillStructuredName, MergeNamesByCombiningSubstructureObservations) {
   // structure of |one| is maintained, while the substructure of the last name
   // is taken from two.
   NameFull copy_of_one;
-  copy_of_one = one;
+  copy_of_one.CopyFrom(one);
   EXPECT_TRUE(one.MergeWithComponent(two));
 
   EXPECT_EQ(one.GetValueForType(NAME_FULL),
@@ -560,7 +560,7 @@ TEST(AutofillStructuredName, TestCopyConstructuror) {
                                     VerificationStatus::kParsed);
 
   NameFull copy = orginal;
-  EXPECT_EQ(orginal, copy);
+  EXPECT_TRUE(orginal.SameAs(copy));
 }
 
 TEST(AutofillStructuredName,

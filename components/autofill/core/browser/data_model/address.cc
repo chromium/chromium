@@ -45,7 +45,7 @@ bool Address::operator==(const Address& other) const {
   // TODO(crbug.com/1130194): Clean legacy implementation once structured
   // addresses are fully launched.
   if (structured_address::StructuredAddressesEnabled()) {
-    return structured_address_ == other.structured_address_;
+    return structured_address_.SameAs(other.structured_address_);
   }
 
   bool are_states_equal = (state_ == other.state_);

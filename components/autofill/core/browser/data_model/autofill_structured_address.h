@@ -221,10 +221,9 @@ class Address : public AddressComponent {
   Address(const Address& other);
   explicit Address(AddressComponent* parent);
   ~Address() override;
+  Address& operator=(const Address& other);
 
-  // Migrates from a legacy structure in which name tokens are imported without
-  // a status.
-  void MigrateLegacyStructure(bool is_verified_profile);
+  void MigrateLegacyStructure(bool is_verified_profile) override;
 
   // Checks if the street address contains an invalid structure and wipes it if
   // necessary.

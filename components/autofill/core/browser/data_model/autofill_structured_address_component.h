@@ -122,25 +122,31 @@ class AddressComponent {
   // Constructor for a compound child node.
   AddressComponent(ServerFieldType storage_type,
                    AddressComponent* parent,
-                   std::vector<AddressComponent*> subcomponents,
                    unsigned int merge_mode);
 
-  // Disallows copies since they are not needed in the current Autofill design.
+  // Disallows copies and direct assignments since they are not needed in the
+  // current Autofill design.
   AddressComponent(const AddressComponent& other) = delete;
+  AddressComponent& operator=(const AddressComponent& right) = delete;
 
   virtual ~AddressComponent();
 
-  // Assignment operator that works recursively down the tree and assigns the
-  // |value_| and |verification_status_| of every node in right to the
-  // corresponding nodes in |this|. For an assignment it is required that both
-  // nodes have the same |storage_type_|.
-  AddressComponent& operator=(const AddressComponent& right);
+  // Migrates from a legacy structure in which tokens are imported without
+  // a status.
+  virtual void MigrateLegacyStructure(bool is_verified_profile) {}
 
-  // Comparison operator that works recursively down the tree.
-  bool operator==(const AddressComponent& right) const;
+  // Comparison operators are deleted in favor of and |SameAs()|.
+  bool operator==(const AddressComponent& right) const = delete;
+  bool operator!=(const AddressComponent& right) const = delete;
 
-  // Inequality operator that works recursively down the tree.
-  bool operator!=(const AddressComponent& right) const;
+  // Compares the values and verification statuses with |other| recursively down
+  // the tree. Returns true iff all values and verification statuses of this
+  // node and its subtree and |other| with its subtree are the same.
+  bool SameAs(const AddressComponent& other) const;
+
+  // Copies the values and verification statuses from |other| recursively down
+  // the tree.
+  void CopyFrom(const AddressComponent& other);
 
   // Returns the autofill storage type stored in |storage_type_|.
   ServerFieldType GetStorageType() const;
@@ -488,6 +494,10 @@ class AddressComponent {
       const re2::RE2* parse_expression);
 
  private:
+  // Function to be called by child nodes on construction to register
+  // themselves as child nodes.
+  void RegisterChildNode(AddressComponent* child);
+
   // Unsets the node and all of its children.
   void UnsetAddressComponentAndItsSubcomponents();
 

@@ -143,9 +143,10 @@ const base::Feature kAutofillEnablePasswordInfoBarAccountIndicationFooter{
 
 // Controls if Autofill supports new structure in names.
 // TODO(crbug.com/1098943): Remove once launched.
+// DO_NOT_SUBMIT: Revert back to disabled by default.
 const base::Feature kAutofillEnableSupportForMoreStructureInNames{
     "AutofillEnableSupportForMoreStructureInNames",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls if Autofill supports new structure in addresses.
 // TODO(crbug.com/1098943): Remove once launched.

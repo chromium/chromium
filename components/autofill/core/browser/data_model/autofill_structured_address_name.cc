@@ -40,18 +40,17 @@ base::string16 ReduceToInitials(const base::string16& value) {
 }
 
 NameHonorific::NameHonorific(AddressComponent* parent)
-    : AddressComponent(NAME_HONORIFIC_PREFIX, parent, {}, MergeMode::kDefault) {
-}
+    : AddressComponent(NAME_HONORIFIC_PREFIX, parent, MergeMode::kDefault) {}
 
 NameHonorific::~NameHonorific() = default;
 
 NameFirst::NameFirst(AddressComponent* parent)
-    : AddressComponent(NAME_FIRST, parent, {}, MergeMode::kDefault) {}
+    : AddressComponent(NAME_FIRST, parent, MergeMode::kDefault) {}
 
 NameFirst::~NameFirst() = default;
 
 NameMiddle::NameMiddle(AddressComponent* parent)
-    : AddressComponent(NAME_MIDDLE, parent, {}, MergeMode::kDefault) {}
+    : AddressComponent(NAME_MIDDLE, parent, MergeMode::kDefault) {}
 
 NameMiddle::~NameMiddle() = default;
 
@@ -92,13 +91,12 @@ bool NameMiddle::ConvertAndSetValueForAdditionalFieldTypeName(
 }
 
 NameLastFirst::NameLastFirst(AddressComponent* parent)
-    : AddressComponent(NAME_LAST_FIRST, parent, {}, MergeMode::kDefault) {}
+    : AddressComponent(NAME_LAST_FIRST, parent, MergeMode::kDefault) {}
 
 NameLastFirst::~NameLastFirst() = default;
 
 NameLastConjunction::NameLastConjunction(AddressComponent* parent)
-    : AddressComponent(NAME_LAST_CONJUNCTION, parent, {}, MergeMode::kDefault) {
-}
+    : AddressComponent(NAME_LAST_CONJUNCTION, parent, MergeMode::kDefault) {}
 
 NameLastConjunction::~NameLastConjunction() = default;
 
@@ -113,14 +111,13 @@ std::vector<const re2::RE2*> NameLast::GetParseRegularExpressionsByRelevance()
 }
 
 NameLastSecond::NameLastSecond(AddressComponent* parent)
-    : AddressComponent(NAME_LAST_SECOND, parent, {}, MergeMode::kDefault) {}
+    : AddressComponent(NAME_LAST_SECOND, parent, MergeMode::kDefault) {}
 
 NameLastSecond::~NameLastSecond() = default;
 
 NameLast::NameLast(AddressComponent* parent)
     : AddressComponent(NAME_LAST,
                        parent,
-                       {&first_, &conjunction_, &second_},
                        MergeMode::kDefault) {}
 
 NameLast::~NameLast() = default;
@@ -137,14 +134,13 @@ NameFull::NameFull(AddressComponent* parent)
     : AddressComponent(
           NAME_FULL,
           parent,
-          {/*&name_honorific_,*/ &name_first_, &name_middle_, &name_last_},
           MergeMode::kDefault) {}
 
 NameFull::NameFull(const NameFull& other) : NameFull() {
   // The purpose of the copy operator is to copy the values and verification
   // statuses of all nodes in |other| to |this|. This exact functionality is
-  // already implemented in the assignment operator.
-  *this = other;
+  // already implemented as a recursive operation in the base class.
+  this->CopyFrom(other);
 }
 
 void NameFull::MigrateLegacyStructure(bool is_verified_profile) {

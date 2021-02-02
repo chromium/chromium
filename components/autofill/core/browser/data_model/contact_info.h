@@ -65,8 +65,8 @@ class NameInfo : public FormGroup {
   void MergeStructuredNameValidationStatuses(const NameInfo& newer);
 
   // Returns a constant reference to the structured name tree.
-  const structured_address::NameFull& GetStructuredName() const {
-    return name_;
+  const structured_address::AddressComponent& GetStructuredName() const {
+    return *name_;
   }
 
  private:
@@ -105,7 +105,7 @@ class NameInfo : public FormGroup {
 
   // This data structure stores the more-structured representation of the name
   // when |features::kAutofillEnableSupportForMoreStructureInNames| is enabled.
-  structured_address::NameFull name_;
+  const std::unique_ptr<structured_address::AddressComponent> name_;
 };
 
 class EmailInfo : public FormGroup {
