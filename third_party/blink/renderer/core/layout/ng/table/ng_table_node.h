@@ -36,7 +36,7 @@ class CORE_EXPORT NGTableNode final : public NGBlockNode {
   //
   // TODO(layout-dev): This isn't ideal, as we may have a fixed inline-size
   // parent where an "infinite" size would be fine.
-  bool AllowColumnPercentages() const;
+  bool AllowColumnPercentages(bool is_layout_pass) const;
 };
 
 template <>

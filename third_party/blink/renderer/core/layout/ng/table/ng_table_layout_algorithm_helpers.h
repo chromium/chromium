@@ -26,10 +26,6 @@ class CORE_EXPORT NGTableAlgorithmHelpers {
     return current_column + 1;
   }
 
-  // Flex/grid/table-cell containing blocks require that the table min/max
-  // sizes be computed without percentages. |allow_column_percentages| is used
-  // to change this behaviour.
-  //
   // |undistributable_space| is size of space not occupied by cells
   // (borders, border spacing).
   static MinMaxSizes ComputeGridInlineMinMax(
@@ -37,7 +33,7 @@ class CORE_EXPORT NGTableAlgorithmHelpers {
       const NGTableTypes::Columns& column_constraints,
       LayoutUnit undistributable_space,
       bool is_fixed_layout,
-      bool allow_column_percentages,
+      bool is_layout_pass,
       bool skip_collapsed_columns);
 
   static void DistributeColspanCellsToColumns(

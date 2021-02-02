@@ -841,7 +841,7 @@ MinMaxSizes NGTableAlgorithmHelpers::ComputeGridInlineMinMax(
     const NGTableTypes::Columns& column_constraints,
     LayoutUnit undistributable_space,
     bool is_fixed_layout,
-    bool allow_column_percentages,
+    bool is_layout_pass,
     bool skip_collapsed_columns) {
   MinMaxSizes min_max;
   // https://www.w3.org/TR/css-tables-3/#computing-the-table-width
@@ -898,8 +898,7 @@ MinMaxSizes NGTableAlgorithmHelpers::ComputeGridInlineMinMax(
 
   // Table max inline size constraint can be computed from the total column
   // percentage combined with max_inline_size of non-percent columns.
-  if (percent_sum > 0 &&
-      (allow_column_percentages || node.AllowColumnPercentages())) {
+  if (percent_sum > 0 && node.AllowColumnPercentages(is_layout_pass)) {
     LayoutUnit size_from_percent_and_fixed;
     DCHECK_GE(percent_sum, 0.0f);
     if (non_percent_max_size_sum != LayoutUnit()) {
