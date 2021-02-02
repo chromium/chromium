@@ -9,7 +9,10 @@
   RuntimeEnabled=StorageBuckets,
   SecureContext
 ] interface BucketManager {
-    [CallWith=ScriptState, RaisesException] Promise<USVString> openOrCreate(USVString name);
-    [CallWith=ScriptState, RaisesException] Promise<sequence<USVString>> keys();
-    [CallWith=ScriptState, RaisesException, ImplementedAs=Delete] Promise<void> delete(USVString name);
+    [
+      CallWith=ScriptState,
+      RaisesException
+    ] Promise<StorageBucket> open(DOMString name, optional StorageBucketOptions options = {});
+    [CallWith=ScriptState, RaisesException] Promise<sequence<DOMString>> keys();
+    [CallWith=ScriptState, RaisesException, ImplementedAs=Delete] Promise<void> delete(DOMString name);
 };

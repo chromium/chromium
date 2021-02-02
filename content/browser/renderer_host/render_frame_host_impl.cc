@@ -8276,6 +8276,12 @@ void RenderFrameHostImpl::CreateIDBFactory(
   GetProcess()->BindIndexedDB(GetLastCommittedOrigin(), std::move(receiver));
 }
 
+void RenderFrameHostImpl::CreateBucketManagerHost(
+    mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver) {
+  GetProcess()->BindBucketManagerHost(GetLastCommittedOrigin(),
+                                      std::move(receiver));
+}
+
 void RenderFrameHostImpl::CreatePermissionService(
     mojo::PendingReceiver<blink::mojom::PermissionService> receiver) {
   if (!permission_service_context_)

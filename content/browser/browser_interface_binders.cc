@@ -14,6 +14,7 @@
 #include "content/browser/background_fetch/background_fetch_service_impl.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/browser_main_loop.h"
+#include "content/browser/buckets/bucket_context.h"
 #include "content/browser/content_index/content_index_service_impl.h"
 #include "content/browser/conversions/conversion_internals.mojom.h"
 #include "content/browser/conversions/conversion_internals_ui.h"
@@ -88,6 +89,7 @@
 #include "third_party/blink/public/mojom/background_sync/background_sync.mojom.h"
 #include "third_party/blink/public/mojom/badging/badging.mojom.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
+#include "third_party/blink/public/mojom/buckets/bucket_manager_host.mojom.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom.h"
 #include "third_party/blink/public/mojom/choosers/color_chooser.mojom.h"
 #include "third_party/blink/public/mojom/content_index/content_index.mojom.h"
@@ -680,6 +682,9 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
   map->Add<blink::mojom::IDBFactory>(base::BindRepeating(
       &RenderFrameHostImpl::CreateIDBFactory, base::Unretained(host)));
 
+  map->Add<blink::mojom::BucketManagerHost>(base::BindRepeating(
+      &RenderFrameHostImpl::CreateBucketManagerHost, base::Unretained(host)));
+
   map->Add<blink::mojom::FileChooser>(
       base::BindRepeating(&FileChooserImpl::Create, base::Unretained(host)));
 
@@ -1012,6 +1017,8 @@ void PopulateBinderMapWithContext(
       &RenderProcessHostImpl::CreateNotificationService, host));
   map->Add<blink::mojom::IDBFactory>(
       BindWorkerReceiverForOrigin(&RenderProcessHostImpl::BindIndexedDB, host));
+  map->Add<blink::mojom::BucketManagerHost>(BindWorkerReceiverForOrigin(
+      &RenderProcessHostImpl::BindBucketManagerHost, host));
 
   // render process host binders taking a frame id and an origin
   map->Add<blink::mojom::LockManager>(BindWorkerReceiverForOriginAndFrameId(
@@ -1092,6 +1099,8 @@ void PopulateBinderMapWithContext(
       &RenderProcessHostImpl::CreateWebSocketConnector, host));
   map->Add<blink::mojom::IDBFactory>(
       BindWorkerReceiverForOrigin(&RenderProcessHostImpl::BindIndexedDB, host));
+  map->Add<blink::mojom::BucketManagerHost>(BindWorkerReceiverForOrigin(
+      &RenderProcessHostImpl::BindBucketManagerHost, host));
 
   // render process host binders taking a frame id and an origin
   map->Add<blink::mojom::LockManager>(BindWorkerReceiverForOriginAndFrameId(
@@ -1201,6 +1210,8 @@ void PopulateBinderMapWithContext(
           host));
   map->Add<blink::mojom::IDBFactory>(BindServiceWorkerReceiverForOrigin(
       &RenderProcessHostImpl::BindIndexedDB, host));
+  map->Add<blink::mojom::BucketManagerHost>(BindServiceWorkerReceiverForOrigin(
+      &RenderProcessHostImpl::BindBucketManagerHost, host));
 
   // render process host binders taking a frame id and an origin
   map->Add<blink::mojom::LockManager>(

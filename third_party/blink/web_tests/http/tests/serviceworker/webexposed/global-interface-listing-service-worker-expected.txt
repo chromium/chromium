@@ -82,7 +82,7 @@ interface BucketManager
     method constructor
     method delete
     method keys
-    method openOrCreate
+    method open
 interface ByteLengthQueuingStrategy
     attribute @@toStringTag
     getter highWaterMark
@@ -1418,6 +1418,14 @@ interface ServiceWorkerRegistration : EventTarget
     method unregister
     method update
     setter onupdatefound
+interface StorageBucket
+    attribute @@toStringTag
+    method constructor
+    method durability
+    method estimate
+    method expires
+    method persisted
+    method setExpires
 interface StorageManager : EventTarget
     attribute @@toStringTag
     getter onquotachange

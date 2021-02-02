@@ -1392,6 +1392,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void CreateIDBFactory(
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver);
 
+  void CreateBucketManagerHost(
+      mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver);
+
   void GetSensorProvider(
       mojo::PendingReceiver<device::mojom::SensorProvider> receiver);
 

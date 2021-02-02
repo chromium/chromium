@@ -2045,6 +2045,14 @@ void RenderProcessHostImpl::BindIndexedDB(
       origin, std::move(receiver));
 }
 
+void RenderProcessHostImpl::BindBucketManagerHost(
+    const url::Origin& origin,
+    mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  storage_partition_impl_->GetBucketContext()->BindBucketManagerHost(
+      origin, std::move(receiver));
+}
+
 void RenderProcessHostImpl::ForceCrash() {
   child_process_->CrashHungProcess();
 }

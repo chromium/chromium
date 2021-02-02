@@ -9,5 +9,6 @@
     ImplementedAs=BucketManager,
     RuntimeEnabled=StorageBuckets
 ] partial interface Navigator {
-    [RaisesException] readonly attribute BucketManager storageBuckets;
+    [CallWith=ScriptState, RaisesException]
+      readonly attribute BucketManager storageBuckets;
 };

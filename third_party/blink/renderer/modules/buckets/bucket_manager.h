@@ -5,45 +5,58 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_BUCKETS_BUCKET_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_BUCKETS_BUCKET_MANAGER_H_
 
+#include "third_party/blink/public/mojom/buckets/bucket_manager_host.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 class ExceptionState;
 class NavigatorBase;
+class StorageBucketOptions;
 
 class MODULES_EXPORT BucketManager final : public ScriptWrappable,
-                                           public Supplement<NavigatorBase> {
+                                           public Supplement<NavigatorBase>,
+                                           public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   static const char kSupplementName[];
 
   // Web-exposed as navigator.storageBuckets
-  static BucketManager* storageBuckets(NavigatorBase&, ExceptionState&);
+  static BucketManager* storageBuckets(ScriptState* script_state,
+                                       NavigatorBase& navigator,
+                                       ExceptionState& exception_state);
 
-  explicit BucketManager(NavigatorBase&);
+  BucketManager(NavigatorBase& navigator, ExecutionContext* context);
   ~BucketManager() override = default;
 
-  ScriptPromise openOrCreate(ScriptState* script_state,
-                             const String& name,
-                             ExceptionState& exception_state);
+  ScriptPromise open(ScriptState* script_state,
+                     const String& name,
+                     const StorageBucketOptions* options,
+                     ExceptionState& exception_state);
   ScriptPromise keys(ScriptState* script_state,
                      ExceptionState& exception_state);
   ScriptPromise Delete(ScriptState* script_state,
                        const String& name,
                        ExceptionState& exception_state);
 
+  // GarbageCollected
   void Trace(Visitor*) const override;
 
  private:
-  // TODO(ayui): Temporary list of bucket names. This information will be
-  // obtained from the browser process in the future.
-  Vector<String> bucket_list_;
+  void DidOpen(ScriptPromiseResolver* resolver,
+               mojo::PendingRemote<mojom::blink::BucketHost> bucket_remote);
+  void DidGetKeys(ScriptPromiseResolver* resolver,
+                  const Vector<String>& keys,
+                  bool success);
+  void DidDelete(ScriptPromiseResolver* resolver, bool success);
+
+  HeapMojoRemote<mojom::blink::BucketManagerHost> manager_remote_;
 };
 
 }  // namespace blink

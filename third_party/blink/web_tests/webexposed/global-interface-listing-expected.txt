@@ -609,7 +609,7 @@ interface BucketManager
     method constructor
     method delete
     method keys
-    method openOrCreate
+    method open
 interface ByteLengthQueuingStrategy
     attribute @@toStringTag
     getter highWaterMark
@@ -8269,6 +8269,15 @@ interface Storage
     method key
     method removeItem
     method setItem
+interface StorageBucket
+    attribute @@toStringTag
+    method constructor
+    method durability
+    method estimate
+    method expires
+    method persist
+    method persisted
+    method setExpires
 interface StorageEvent : Event
     attribute @@toStringTag
     getter key

@@ -1302,6 +1302,8 @@ void StoragePartitionImpl::Initialize(
   // restoring the state fails.
   cookie_store_context_->Initialize(service_worker_context_, base::DoNothing());
 
+  bucket_context_ = base::MakeRefCounted<BucketContext>();
+
   // The Conversion Measurement API is not available in Incognito mode.
   if (!is_in_memory_ &&
       base::FeatureList::IsEnabled(features::kConversionMeasurement)) {
@@ -1579,6 +1581,11 @@ PrefetchURLLoaderService* StoragePartitionImpl::GetPrefetchURLLoaderService() {
 CookieStoreContext* StoragePartitionImpl::GetCookieStoreContext() {
   DCHECK(initialized_);
   return cookie_store_context_.get();
+}
+
+BucketContext* StoragePartitionImpl::GetBucketContext() {
+  DCHECK(initialized_);
+  return bucket_context_.get();
 }
 
 GeneratedCodeCacheContext*

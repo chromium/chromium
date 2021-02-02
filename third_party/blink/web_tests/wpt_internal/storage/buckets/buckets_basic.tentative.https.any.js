@@ -1,4 +1,4 @@
-// META: title=Buckets API: Basic tests for openOrCreate(), keys(), delete().
+// META: title=Buckets API: Basic tests for open(), keys(), delete().
 // META: global=window,worker
 
 'use strict';
@@ -7,7 +7,7 @@
 // Split and add extensive testing once implementation for the endpoints are
 // added and method definitions are more defined.
 promise_test(async testCase => {
-  await navigator.storageBuckets.openOrCreate('bucket_name');
+  await navigator.storageBuckets.open('bucket_name');
   testCase.add_cleanup(async () => {
     await navigator.storageBuckets.delete('bucket_name');
   });
@@ -15,11 +15,11 @@ promise_test(async testCase => {
   const buckets = await navigator.storageBuckets.keys();
   assert_equals(buckets.length, 1);
   assert_equals(buckets[0], 'bucket_name');
-}, 'openOrCreate() stores bucket name');
+}, 'open() stores bucket name');
 
 promise_test(async testCase => {
-  await navigator.storageBuckets.openOrCreate('bucket_name');
-  await navigator.storageBuckets.openOrCreate('bucket_name');
+  await navigator.storageBuckets.open('bucket_name');
+  await navigator.storageBuckets.open('bucket_name');
   testCase.add_cleanup(async () => {
     await navigator.storageBuckets.delete('bucket_name');
   });
@@ -27,12 +27,12 @@ promise_test(async testCase => {
   const buckets = await navigator.storageBuckets.keys();
   assert_equals(buckets.length, 1);
   assert_equals(buckets[0], 'bucket_name');
-}, 'openOrCreate() does not store duplicate bucket name');
+}, 'open() does not store duplicate bucket name');
 
 promise_test(async testCase => {
-  await navigator.storageBuckets.openOrCreate('bucket_name3');
-  await navigator.storageBuckets.openOrCreate('bucket_name1');
-  await navigator.storageBuckets.openOrCreate('bucket_name2');
+  await navigator.storageBuckets.open('bucket_name3');
+  await navigator.storageBuckets.open('bucket_name1');
+  await navigator.storageBuckets.open('bucket_name2');
   testCase.add_cleanup(async () => {
     await navigator.storageBuckets.delete('bucket_name1');
     await navigator.storageBuckets.delete('bucket_name2');
@@ -47,8 +47,8 @@ promise_test(async testCase => {
 }, 'keys() lists all stored bucket names alphabetically');
 
 promise_test(async testCase => {
-  await navigator.storageBuckets.openOrCreate('bucket_name1');
-  await navigator.storageBuckets.openOrCreate('bucket_name2');
+  await navigator.storageBuckets.open('bucket_name1');
+  await navigator.storageBuckets.open('bucket_name2');
   testCase.add_cleanup(async () => {
     await navigator.storageBuckets.delete('bucket_name1');
     await navigator.storageBuckets.delete('bucket_name2');
@@ -67,7 +67,7 @@ promise_test(async testCase => {
 }, 'delete() removes stored bucket name');
 
 promise_test(async testCase => {
-  await navigator.storageBuckets.openOrCreate('bucket_name');
+  await navigator.storageBuckets.open('bucket_name');
   testCase.add_cleanup(async () => {
     await navigator.storageBuckets.delete('bucket_name');
   });
