@@ -1537,6 +1537,22 @@
       "features": [
         "all"
       ]
+    },
+    {
+      "id": 167,
+      "description": "8.17.10.1433 AMD drivers trigger hands in video stack",
+      "cr_bugs": [1160623],
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x1002",
+      "driver_version": {
+        "op": "=",
+        "value": "8.17.10.1433"
+      },
+      "features": [
+        "accelerated_video_decode"
+      ]
     }
   ]
 }
