@@ -245,12 +245,17 @@ void DriveFsEventRouter::DisplayConfirmDialog(
     std::move(callback).Run(drivefs::mojom::DialogResult::kNotDisplayed);
     return;
   }
+  auto extension_ids = GetEventListenerExtensionIds(
+      file_manager_private::OnDriveConfirmDialog::kEventName);
+  if (extension_ids.empty()) {
+    std::move(callback).Run(drivefs::mojom::DialogResult::kNotDisplayed);
+    return;
+  }
   dialog_callback_ = std::move(callback);
 
   file_manager_private::DriveConfirmDialogEvent event;
   event.type = ConvertDialogReasonType(reason.type);
-  for (const auto& extension_id : GetEventListenerExtensionIds(
-           file_manager_private::OnDriveConfirmDialog::kEventName)) {
+  for (const auto& extension_id : extension_ids) {
     event.file_url =
         ConvertDrivePathToFileSystemUrl(reason.path, extension_id).spec();
     DispatchEventToExtension(

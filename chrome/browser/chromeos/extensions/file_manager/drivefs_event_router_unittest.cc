@@ -72,6 +72,8 @@ class TestDriveFsEventRouter : public DriveFsEventRouter {
  public:
   TestDriveFsEventRouter() {
     ON_CALL(*this, IsPathWatched).WillByDefault(testing::Return(true));
+    ON_CALL(*this, GetEventListenerExtensionIds)
+        .WillByDefault(testing::Return(std::set<std::string>{"ext"}));
   }
 
   void DispatchEventToExtension(
@@ -82,11 +84,12 @@ class TestDriveFsEventRouter : public DriveFsEventRouter {
     DispatchEventToExtensionImpl(extension_id, event_name, *event_args);
   }
 
-  MOCK_METHOD3(DispatchEventToExtensionImpl,
-               void(const std::string& extension_id,
-                    const std::string& name,
-                    const base::ListValue& event));
-  MOCK_METHOD1(IsPathWatched, bool(const base::FilePath&));
+  MOCK_METHOD(void,
+              DispatchEventToExtensionImpl,
+              (const std::string& extension_id,
+               const std::string& name,
+               const base::ListValue& event));
+  MOCK_METHOD(bool, IsPathWatched, (const base::FilePath&));
 
   GURL ConvertDrivePathToFileSystemUrl(
       const base::FilePath& file_path,
@@ -96,10 +99,10 @@ class TestDriveFsEventRouter : public DriveFsEventRouter {
 
   std::string GetDriveFileSystemName() override { return "drivefs"; }
 
-  std::set<std::string> GetEventListenerExtensionIds(
-      const std::string& event_name) override {
-    return {"ext"};
-  }
+  MOCK_METHOD(std::set<std::string>,
+              GetEventListenerExtensionIds,
+              (const std::string& event_name),
+              (override));
 
  private:
   DISALLOW_COPY_AND_ASSIGN(TestDriveFsEventRouter);
@@ -227,7 +230,7 @@ TEST_F(DriveFsEventRouterTest,
       base::in_place, 2, 3, "b", drivefs::mojom::ItemEvent::State::kInProgress,
       10, 100, drivefs::mojom::ItemEventReason::kTransfer);
   observer().OnSyncingStatusUpdate(syncing_status);
-  testing::Mock::VerifyAndClear(&observer());
+  testing::Mock::VerifyAndClearExpectations(&observer());
 
   EXPECT_CALL(
       mock(),
@@ -245,7 +248,7 @@ TEST_F(DriveFsEventRouterTest,
   syncing_status.item_events.clear();
   observer().OnSyncingStatusUpdate(syncing_status);
 
-  testing::Mock::VerifyAndClear(&observer());
+  testing::Mock::VerifyAndClearExpectations(&observer());
 
   EXPECT_CALL(
       mock(),
@@ -292,7 +295,7 @@ TEST_F(DriveFsEventRouterTest, OnSyncingStatusUpdate_FailedSync) {
       80, 100, drivefs::mojom::ItemEventReason::kPin);
   observer().OnSyncingStatusUpdate(syncing_status);
 
-  testing::Mock::VerifyAndClear(&observer());
+  testing::Mock::VerifyAndClearExpectations(&observer());
 
   EXPECT_CALL(
       mock(),
@@ -339,7 +342,7 @@ TEST_F(DriveFsEventRouterTest, OnSyncingStatusUpdate_CompletedSync) {
       80, 100, drivefs::mojom::ItemEventReason::kTransfer);
   observer().OnSyncingStatusUpdate(syncing_status);
 
-  testing::Mock::VerifyAndClear(&observer());
+  testing::Mock::VerifyAndClearExpectations(&observer());
 
   EXPECT_CALL(
       mock(),
@@ -383,7 +386,7 @@ TEST_F(DriveFsEventRouterTest,
               "", file_manager_private::TRANSFER_STATE_COMPLETED, 0, 0, 0)));
   observer().OnSyncingStatusUpdate(syncing_status);
 
-  testing::Mock::VerifyAndClear(&observer());
+  testing::Mock::VerifyAndClearExpectations(&observer());
 
   EXPECT_CALL(
       mock(),
@@ -436,7 +439,7 @@ TEST_F(DriveFsEventRouterTest, OnSyncingStatusUpdate_CompletedSync_WithQueued) {
               "", file_manager_private::TRANSFER_STATE_COMPLETED, 0, 0, 0)));
   observer().OnSyncingStatusUpdate(syncing_status);
 
-  testing::Mock::VerifyAndClear(&observer());
+  testing::Mock::VerifyAndClearExpectations(&observer());
 
   EXPECT_CALL(
       mock(),
@@ -487,7 +490,7 @@ TEST_F(DriveFsEventRouterTest,
               "", file_manager_private::TRANSFER_STATE_COMPLETED, 0, 0, 0)));
   observer().OnSyncingStatusUpdate(syncing_status);
 
-  testing::Mock::VerifyAndClear(&observer());
+  testing::Mock::VerifyAndClearExpectations(&observer());
 
   EXPECT_CALL(
       mock(),
@@ -544,7 +547,7 @@ TEST_F(DriveFsEventRouterTest, OnSyncingStatusUpdate_CompletedSync_ThenQueued) {
       -1, -1, drivefs::mojom::ItemEventReason::kTransfer);
   observer().OnSyncingStatusUpdate(syncing_status);
 
-  testing::Mock::VerifyAndClear(&observer());
+  testing::Mock::VerifyAndClearExpectations(&observer());
 
   EXPECT_CALL(
       mock(),
@@ -584,7 +587,7 @@ TEST_F(DriveFsEventRouterTest,
               "", file_manager_private::TRANSFER_STATE_COMPLETED, 0, 0, 0)));
   observer().OnSyncingStatusUpdate(syncing_status);
 
-  testing::Mock::VerifyAndClear(&observer());
+  testing::Mock::VerifyAndClearExpectations(&observer());
 
   EXPECT_CALL(
       mock(),
@@ -602,7 +605,7 @@ TEST_F(DriveFsEventRouterTest,
       -1, -1, drivefs::mojom::ItemEventReason::kTransfer);
   observer().OnSyncingStatusUpdate(syncing_status);
 
-  testing::Mock::VerifyAndClear(&observer());
+  testing::Mock::VerifyAndClearExpectations(&observer());
 
   EXPECT_CALL(
       mock(),
@@ -630,7 +633,7 @@ TEST_F(DriveFsEventRouterTest, OnSyncingStatusUpdate_QueuedOnly) {
       base::in_place, 2, 3, "b", drivefs::mojom::ItemEvent::State::kQueued, 0,
       100, drivefs::mojom::ItemEventReason::kTransfer);
 
-  testing::Mock::VerifyAndClear(&observer());
+  testing::Mock::VerifyAndClearExpectations(&observer());
 
   EXPECT_CALL(
       mock(),
@@ -877,6 +880,23 @@ TEST_F(DriveFsEventRouterTest, DisplayConfirmDialog_UnmountBeforeResult) {
         EXPECT_EQ(drivefs::mojom::DialogResult::kDismiss, result);
       }));
   event_router_->OnDialogResult(drivefs::mojom::DialogResult::kDismiss);
+  EXPECT_TRUE(called);
+}
+
+TEST_F(DriveFsEventRouterTest, DisplayConfirmDialog_NoListeners) {
+  EXPECT_CALL(mock(), GetEventListenerExtensionIds)
+      .WillRepeatedly(testing::Return(std::set<std::string>{}));
+
+  drivefs::mojom::DialogReason reason;
+  reason.type = drivefs::mojom::DialogReason::Type::kEnableDocsOffline;
+  reason.path = base::FilePath("a");
+  bool called = false;
+  event_router_->DisplayConfirmDialog(
+      reason,
+      base::BindLambdaForTesting([&](drivefs::mojom::DialogResult result) {
+        called = true;
+        EXPECT_EQ(drivefs::mojom::DialogResult::kNotDisplayed, result);
+      }));
   EXPECT_TRUE(called);
 }
 
