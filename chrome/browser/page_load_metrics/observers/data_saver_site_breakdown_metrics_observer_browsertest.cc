@@ -571,7 +571,7 @@ IN_PROC_BROWSER_TEST_F(LazyLoadWithLiteModeBrowserTest,
   net::EmbeddedTestServer cross_origin_server;
   cross_origin_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
   ASSERT_TRUE(cross_origin_server.Start());
-  embedded_test_server()->RegisterRequestHandler(base::Bind(
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
       [](uint16_t cross_origin_port,
          const net::test_server::HttpRequest& request)
           -> std::unique_ptr<net::test_server::HttpResponse> {
