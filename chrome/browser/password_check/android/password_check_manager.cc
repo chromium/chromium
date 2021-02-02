@@ -67,7 +67,7 @@ PasswordCheckManager::PasswordCheckManager(Profile* profile, Observer* observer)
   observed_bulk_leak_check_service_.Add(
       BulkLeakCheckServiceFactory::GetForProfile(profile));
 
-  // Instructs the presenter and provider to initialize and built their caches.
+  // Instructs the presenter and provider to initialize and build their caches.
   // This will soon after invoke OnCompromisedCredentialsChanged(). Calls to
   // GetCompromisedCredentials() that might happen until then will return an
   // empty list.

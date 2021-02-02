@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.password_manager.settings;
 
-import android.content.Context;
-
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -87,8 +85,7 @@ public interface PasswordManagerHandler {
             String targetPath, IntStringCallback successCallback, Callback<String> errorCallback);
 
     /**
-     * Proceed to edit a credential entry.
-     * @param index is the current id of a credential.
+     * Show the UI that allows to edit saved credentials.
      */
-    void showPasswordEntryEditingView(Context context, int index);
+    void showPasswordEntryEditingView();
 }

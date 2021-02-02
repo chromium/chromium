@@ -14,9 +14,9 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
+#include "chrome/browser/password_entry_edit/android/credential_edit_bridge.h"
 #include "chrome/browser/ui/passwords/settings/password_manager_presenter.h"
 #include "chrome/browser/ui/passwords/settings/password_ui_view.h"
-#include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 
 namespace password_manager {
@@ -85,9 +85,7 @@ class PasswordUIViewAndroid : public PasswordUIView {
       const base::android::JavaRef<jobject>& error_callback);
   void HandleShowPasswordEntryEditingView(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jobject>& context,
-      int index);
+      const base::android::JavaParamRef<jobject>& obj);
   // Destroy the native implementation.
   void Destroy(JNIEnv*, const base::android::JavaRef<jobject>&);
 
@@ -153,6 +151,9 @@ class PasswordUIViewAndroid : public PasswordUIView {
 
   // Java side of UI controller.
   JavaObjectWeakGlobalRef weak_java_ui_controller_;
+
+  // Used to open the view/edit/delete UI.
+  std::unique_ptr<CredentialEditBridge> credential_edit_bridge_;
 
   DISALLOW_COPY_AND_ASSIGN(PasswordUIViewAndroid);
 };

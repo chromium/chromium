@@ -3225,6 +3225,7 @@ static_library("browser") {
       "//chrome/browser/optimization_guide/android:jni_headers",
       "//chrome/browser/password_check/android:jni_headers",
       "//chrome/browser/password_check/android:password_check_enums_srcjar",
+      "//chrome/browser/password_entry_edit/android",
       "//chrome/browser/password_manager/android:jni_headers",
       "//chrome/browser/payments/android:jni_headers",
       "//chrome/browser/policy/android:jni_headers",

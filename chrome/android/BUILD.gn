@@ -650,6 +650,7 @@ java_group("chrome_all_java") {
     "//chrome/browser/download/internal/android:java",
     "//chrome/browser/page_annotations/android:java",
     "//chrome/browser/password_check:internal_java",
+    "//chrome/browser/password_entry_edit/android/internal:java",
     "//chrome/browser/tabmodel/internal:java",
     "//chrome/browser/touch_to_fill/android/internal:java",
     "//chrome/browser/ui/android/appmenu/internal:java",

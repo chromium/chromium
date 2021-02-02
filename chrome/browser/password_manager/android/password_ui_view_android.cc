@@ -208,10 +208,8 @@ void PasswordUIViewAndroid::HandleSerializePasswords(
 
 void PasswordUIViewAndroid::HandleShowPasswordEntryEditingView(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& context,
-    int index) {
-  // TODO(crbug.com/1141409): Wire the new editing module here.
+    const JavaParamRef<jobject>& obj) {
+  credential_edit_bridge_.reset(new CredentialEditBridge());
 }
 
 ScopedJavaLocalRef<jstring> JNI_PasswordUIView_GetAccountDashboardURL(
