@@ -26,7 +26,7 @@ export function getFrom(target, selector, type) {
  * @param {!Node} target
  * @param {string} selector
  * @param {function(new: T, ...?)} type The expected element type.
- * @return {!NodeList<T>}
+ * @return {!NodeListOf<T>}
  * @template T
  */
 export function getAllFrom(target, selector, type) {
@@ -53,7 +53,7 @@ export function get(selector, type) {
  * be specific type.
  * @param {string} selector
  * @param {function(new: T, ...?)} type The expected element type.
- * @return {!NodeList<T>}
+ * @return {!NodeListOf<T>}
  * @template T
  */
 export function getAll(selector, type) {

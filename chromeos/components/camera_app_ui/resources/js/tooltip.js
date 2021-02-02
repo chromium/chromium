@@ -68,10 +68,10 @@ function show(element) {
 
 /**
  * Sets up tooltips for elements.
- * @param {!NodeList<!HTMLInputElement>} elements Elements whose tooltips to be
- *     shown.
- * @return {!NodeList<!HTMLInputElement>} Elements whose tooltips have been set
- *     up.
+ * @param {!NodeListOf<!HTMLInputElement>} elements Elements whose tooltips to
+ *     be shown.
+ * @return {!NodeListOf<!HTMLInputElement>} Elements whose tooltips have been
+ *     set up.
  */
 export function setup(elements) {
   wrapper = dom.get('#tooltip', HTMLElement);

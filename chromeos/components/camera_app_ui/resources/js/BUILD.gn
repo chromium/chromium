@@ -144,6 +144,7 @@ js_library("compile_resources") {
   externs_list = [
     "externs/chrome.js",
     "externs/swa.js",
+    "externs/typescript.js",
     "externs/universal_analytics_api.js",
     "externs/w3c_api.js",
     "$externs_path/chrome_extensions.js",
