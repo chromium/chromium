@@ -7491,10 +7491,7 @@ if (!is_fuchsia && !is_android) {
 
   group("telemetry_gpu_unittests") {
     testonly = true
-    deps = [
-      "//third_party/catapult:telemetry_chrome_test_support",
-      "//tools/metrics:metrics_python_tests",
-    ]
+    deps = [ "//tools/perf/chrome_telemetry_build:telemetry_chrome_test_without_chrome" ]
     data = [
       # TODO(kbr): refactor the telemetry dependencies more cleanly.
       "//content/test/gpu/",
