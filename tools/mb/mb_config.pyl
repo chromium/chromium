@@ -289,6 +289,7 @@
       'Libfuzzer Upload Windows ASan': 'libfuzzer_windows_asan_release_bot',
 
       'Linux Builder (reclient)': 'gpu_tests_release_bot_reclient',
+      'Linux TSan Builder (reclient)': 'tsan_disable_nacl_release_bot_reclient',
       'Linux Viz': 'release_trybot',
       'linux-ash-chromium-builder-fyi-rel': 'chromeos_with_codecs_release_bot',
       'linux-lacros-builder-fyi-rel': 'lacros_on_linux_release_bot',
@@ -2606,6 +2607,10 @@
 
     'tsan_disable_nacl_release_bot': [
       'tsan', 'disable_nacl', 'release_bot',
+    ],
+
+    'tsan_disable_nacl_release_bot_reclient': [
+      'tsan', 'disable_nacl', 'release_bot_reclient',
     ],
 
     'tsan_disable_nacl_release_trybot': [
