@@ -1338,8 +1338,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.NightLight.Temperature"
-    enum="AshNightLightTemperatureRanges" expires_after="2021-02-07">
+    enum="AshNightLightTemperatureRanges" expires_after="2022-02-01">
   <owner>afakhry@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
   <summary>
     The ranges in which the selected values of the Night Light color temperature
     reside. Emitted when the user drags the Night Light color temperature slider
