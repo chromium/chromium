@@ -14,6 +14,8 @@ with path_util.SysPath(path_util.GetTelemetryDir()):
   from telemetry import project_config
 with path_util.SysPath(path_util.GetVariationsDir()):
   import fieldtrial_util  # pylint: disable=import-error
+with path_util.SysPath(path_util.GetAndroidPylibDir()):
+  from pylib.constants import host_paths
 
 
 class ChromiumConfig(project_config.ProjectConfig):
@@ -25,6 +27,11 @@ class ChromiumConfig(project_config.ProjectConfig):
       client_configs = [CLIENT_CONFIG_PATH]
     if default_chrome_root is None:
       default_chrome_root = path_util.GetChromiumSrcDir()
+    # Some android utilities in Catapult expect a java binary available on PATH,
+    # so place chromium's heremetic JDK on PATH if we have it checked out.
+    if os.path.exists(host_paths.JAVA_PATH):
+      os.environ['PATH'] = (host_paths.JAVA_PATH + os.pathsep +
+                            os.environ['PATH'])
 
     super(ChromiumConfig, self).__init__(
         top_level_dir=top_level_dir, benchmark_dirs=benchmark_dirs,

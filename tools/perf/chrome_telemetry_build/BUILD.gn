@@ -101,6 +101,7 @@ group("telemetry_chrome_test_without_chrome") {
   testonly = true
 
   data = [
+    "//build/android/pylib/",  # chromium_config.py uses pylib to look for Java
     "//components/crash/content/tools/generate_breakpad_symbols.py",
     "//testing/scripts/common.py",
     "//testing/xvfb.py",
