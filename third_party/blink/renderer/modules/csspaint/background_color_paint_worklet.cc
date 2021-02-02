@@ -166,23 +166,27 @@ bool GetBGColorPaintWorkletParamsInternal(Element* element,
                                           Vector<double>* offsets) {
   if (!element->GetElementAnimations())
     return false;
-  // TODO(crbug.com/1153672): We can do better than this. For example, we can
-  // composite the background color animation that has the highest composite
+  // We composite the background color animation that has the highest composite
   // order. Or if we have only one animation on background color and other
   // animation(s) are on other properties, then we can also composite the
   // background color animation.
-  Animation* active_animation = nullptr;
+  Animation* composited_animation = nullptr;
   for (const auto& animation : element->GetElementAnimations()->Animations()) {
-    if (animation.key->CalculateAnimationPlayState() != Animation::kIdle) {
-      if (active_animation)
-        return false;
-      active_animation = animation.key;
-    }
+    if (animation.key->CalculateAnimationPlayState() == Animation::kIdle ||
+        !animation.key->Affects(*element, GetCSSPropertyBackgroundColor()))
+      continue;
+    animation.key->SetDidBGColorAnimFallBack();
+    if (!composited_animation ||
+        Animation::HasLowerCompositeOrdering(
+            composited_animation, animation.key,
+            Animation::CompareAnimationsOrdering::kPointerOrder))
+      composited_animation = animation.key;
   }
-  DCHECK(active_animation);
+  DCHECK(composited_animation);
+
   // If we are here, then this element must have one background color animation
   // only. Fall back to the main thread if it is not composite:replace.
-  const AnimationEffect* effect = active_animation->effect();
+  const AnimationEffect* effect = composited_animation->effect();
   DCHECK(effect->IsKeyframeEffect());
   const KeyframeEffectModelBase* model =
       static_cast<const KeyframeEffect*>(effect)->Model();
@@ -202,6 +206,7 @@ bool GetBGColorPaintWorkletParamsInternal(Element* element,
     }
     GetCompositorKeyframeOffset(frame, offsets);
   }
+  composited_animation->ResetDidBGColorAnimFallBack();
   return true;
 }
 
@@ -250,11 +255,8 @@ bool BackgroundColorPaintWorklet::GetBGColorPaintWorkletParams(
     Vector<double>* offsets) {
   DCHECK(node->IsElementNode());
   Element* element = static_cast<Element*>(node);
-  bool success =
-      GetBGColorPaintWorkletParamsInternal(element, animated_colors, offsets);
-  if (!success)
-    element->EnsureElementAnimations().SetDidBGColorAnimFallBack();
-  return success;
+  return GetBGColorPaintWorkletParamsInternal(element, animated_colors,
+                                              offsets);
 }
 
 sk_sp<PaintRecord> BackgroundColorPaintWorklet::ProxyClientPaintForTest() {

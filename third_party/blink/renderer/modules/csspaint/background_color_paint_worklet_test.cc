@@ -82,11 +82,9 @@ TEST_F(BackgroundColorPaintWorkletTest, FallbackToMainCompositeAccumulate) {
       element, &animated_colors, &offsets));
 }
 
-// 1. When there are multiple active background-color animations, fall back to
-// main.
-// 2. When there is only one background-color animation with composite mode
-// being replace, then we don't fall back to main.
-TEST_F(BackgroundColorPaintWorkletTest, FallbackToMainMultipleAnimations) {
+// Test that when there are multiple bgcolor animations on an Element, we
+// composite the animation with the highest compositing order.
+TEST_F(BackgroundColorPaintWorkletTest, MultipleAnimationsNotFallback) {
   ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
   SetBodyInnerHTML(R"HTML(
     <div id ="target" style="width: 100px; height: 100px">
@@ -109,18 +107,26 @@ TEST_F(BackgroundColorPaintWorkletTest, FallbackToMainMultipleAnimations) {
   StringKeyframeVector keyframes;
   keyframes.push_back(start_keyframe);
   keyframes.push_back(end_keyframe);
-
-  auto* model = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
+  auto* model1 = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
 
   Element* element = GetElementById("target");
   NonThrowableExceptionState exception_state;
   DocumentTimeline* timeline =
       MakeGarbageCollected<DocumentTimeline>(&GetDocument());
   Animation* animation1 = Animation::Create(
-      MakeGarbageCollected<KeyframeEffect>(element, model, timing), timeline,
+      MakeGarbageCollected<KeyframeEffect>(element, model1, timing), timeline,
       exception_state);
+
+  start_keyframe->SetCSSPropertyValue(
+      property_id, "blue", SecureContextMode::kInsecureContext, nullptr);
+  end_keyframe->SetCSSPropertyValue(
+      property_id, "yellow", SecureContextMode::kInsecureContext, nullptr);
+  keyframes.clear();
+  keyframes.push_back(start_keyframe);
+  keyframes.push_back(end_keyframe);
+  auto* model2 = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   Animation* animation2 = Animation::Create(
-      MakeGarbageCollected<KeyframeEffect>(element, model, timing), timeline,
+      MakeGarbageCollected<KeyframeEffect>(element, model2, timing), timeline,
       exception_state);
   UpdateAllLifecyclePhasesForTest();
   animation1->play();
@@ -131,16 +137,16 @@ TEST_F(BackgroundColorPaintWorkletTest, FallbackToMainMultipleAnimations) {
   EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 2u);
   Vector<Color> animated_colors;
   Vector<double> offsets;
-  EXPECT_FALSE(BackgroundColorPaintWorklet::GetBGColorPaintWorkletParams(
-      element, &animated_colors, &offsets));
-
-  // Cancel one of them, so we only have one active background-color animation,
-  // in this case, we don't fall back.
-  animation1->cancel();
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(element->GetElementAnimations());
   EXPECT_TRUE(BackgroundColorPaintWorklet::GetBGColorPaintWorkletParams(
       element, &animated_colors, &offsets));
+  EXPECT_EQ(animated_colors.size(), 2u);
+  // The animated_colors should be blue and yellow.
+  EXPECT_EQ(animated_colors[0].Red(), 0);
+  EXPECT_EQ(animated_colors[0].Green(), 0);
+  EXPECT_EQ(animated_colors[0].Blue(), 255);
+  EXPECT_EQ(animated_colors[1].Red(), 255);
+  EXPECT_EQ(animated_colors[1].Green(), 255);
+  EXPECT_EQ(animated_colors[1].Blue(), 0);
 }
 
 // Test that calling BackgroundColorPaintWorkletProxyClient::Paint won't crash

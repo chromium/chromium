@@ -563,11 +563,6 @@ bool GetBGColorPaintWorkletParams(const BoxPainterBase::FillLayerInfo& info,
                                   Node* node,
                                   Vector<Color>* animated_colors,
                                   Vector<double>* offsets) {
-  if (info.should_paint_color_with_paint_worklet_image) {
-    static_cast<Element*>(node)
-        ->EnsureElementAnimations()
-        .ResetDidBGColorAnimFallBack();
-  }
   if (!info.should_paint_color_with_paint_worklet_image)
     return false;
   BackgroundColorPaintImageGenerator* generator =
