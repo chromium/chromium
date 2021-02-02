@@ -50,9 +50,12 @@ class CORE_EXPORT InspectorContrast {
                          Document& document,
                          Element* top_element,
                          Vector<Color>& colors);
+  void CollectNodesAndBuildRTreeIfNeeded();
 
   cc::RTree<Member<Node>> rtree_;
   HeapVector<Member<Node>> elements_;
+  Document* document_;
+  bool rtree_built_ = false;
 };
 
 }  // namespace blink

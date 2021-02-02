@@ -120,15 +120,22 @@ InspectorContrast::InspectorContrast(Document* document) {
     }
   }
 
-  document->GetFrame()
+  document_ = document;
+}
+
+void InspectorContrast::CollectNodesAndBuildRTreeIfNeeded() {
+  if (rtree_built_)
+    return;
+
+  document_->GetFrame()
       ->ContentLayoutObject()
       ->GetFrameView()
       ->UpdateLifecycleToPrePaintClean(DocumentUpdateReason::kInspector);
 
   InspectorDOMAgent::CollectNodes(
-      document, INT_MAX, true,
+      document_, INT_MAX, true,
       WTF::BindRepeating(&NodeIsElementWithLayoutObject), &elements_);
-  SortElementsByPaintOrder(elements_, document);
+  SortElementsByPaintOrder(elements_, document_);
   rtree_.Build(
       elements_,
       [](const HeapVector<Member<Node>>& items, size_t index) {
@@ -137,10 +144,13 @@ InspectorContrast::InspectorContrast(Document* document) {
       [](const HeapVector<Member<Node>>& items, size_t index) {
         return items[index];
       });
+
+  rtree_built_ = true;
 }
 
 std::vector<ContrastInfo> InspectorContrast::GetElementsWithContrastIssues(
     size_t max_elements = 0) {
+  CollectNodesAndBuildRTreeIfNeeded();
   std::vector<ContrastInfo> result;
   for (Node* node : elements_) {
     auto info = GetContrast(To<Element>(node));
@@ -248,6 +258,7 @@ Vector<Color> InspectorContrast::GetBackgroundColors(Element* element) {
 std::vector<Member<Node>> InspectorContrast::ElementsFromRect(
     const PhysicalRect& rect,
     Document& document) {
+  CollectNodesAndBuildRTreeIfNeeded();
   std::vector<Member<Node>> overlapping_elements;
   rtree_.Search(PixelSnappedIntRect(rect), &overlapping_elements);
   return overlapping_elements;
