@@ -4,6 +4,7 @@
 
 #include "headless/lib/browser/headless_browser_main_parts.h"
 
+#include "headless/app/headless_shell_switches.h"
 #include "headless/lib/browser/headless_browser_context_impl.h"
 #include "headless/lib/browser/headless_browser_impl.h"
 #include "headless/lib/browser/headless_devtools.h"
@@ -100,7 +101,11 @@ void HeadlessBrowserMainParts::CreatePrefService() {
   local_state_ = factory.Create(std::move(pref_registry));
 
 #if defined(OS_WIN)
-  CHECK(OSCrypt::Init(local_state_.get()));
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableCookieEncryption)) {
+    if (!OSCrypt::Init(local_state_.get()))
+      LOG(ERROR) << "Failed to initialize OSCrypt";
+  }
 #endif
 }
 #endif  // defined(HEADLESS_USE_PREFS)
