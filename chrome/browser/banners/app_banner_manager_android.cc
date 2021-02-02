@@ -15,18 +15,16 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/webapps/add_to_homescreen_coordinator.h"
 #include "chrome/browser/banners/android/jni_headers/AppBannerManager_jni.h"
-#include "chrome/browser/flags/android/chrome_feature_list.h"
-#include "chrome/browser/infobars/infobar_service.h"
-#include "chrome/browser/webapps/android/features.h"
-#include "chrome/common/channel_info.h"
-#include "chrome/common/chrome_features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
+#include "components/version_info/android/channel_getter.h"
 #include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
 #include "components/webapps/browser/android/add_to_homescreen_params.h"
+#include "components/webapps/browser/android/features.h"
 #include "components/webapps/browser/android/shortcut_info.h"
 #include "components/webapps/browser/android/webapps_icon_utils.h"
 #include "components/webapps/browser/android/webapps_utils.h"
@@ -358,7 +356,7 @@ InstallableStatusCode AppBannerManagerAndroid::QueryNativeApp(
   // having to set android_channel GN flag for manual testing. Do not run
   // AppBannerManager#fetchAppDetails() for non-official local builds to ensure that tests use
   // gIgnoreChromeChannelForTesting rather than relying on the local build exemption.
-  version_info::Channel channel = chrome::GetChannel();
+  version_info::Channel channel = version_info::android::GetChannel();
   bool local_build = channel == version_info::Channel::UNKNOWN &&
                      version_info::IsOfficialBuild();
   if (!(local_build || gIgnoreChromeChannelForTesting ||
@@ -441,8 +439,9 @@ void AppBannerManagerAndroid::Install() {
 
 void AppBannerManagerAndroid::MaybeShowAmbientBadge() {
   if (!base::FeatureList::IsEnabled(
-          ::features::kInstallableAmbientBadgeInfoBar))
+          features::kInstallableAmbientBadgeInfoBar)) {
     return;
+  }
 
   // Do not show the ambient badge if it was recently dismissed.
   if (AppBannerSettingsHelper::WasBannerRecentlyBlocked(
@@ -451,29 +450,31 @@ void AppBannerManagerAndroid::MaybeShowAmbientBadge() {
     return;
   }
 
-  InfoBarService* infobar_service =
-      InfoBarService::FromWebContents(web_contents());
+  infobars::ContentInfoBarManager* infobar_manager =
+      webapps::WebappsClient::Get()->GetInfoBarManagerForWebContents(
+          web_contents());
   bool infobar_visible =
-      infobar_service &&
+      infobar_manager &&
       InstallableAmbientBadgeInfoBarDelegate::GetVisibleAmbientBadgeInfoBar(
-          infobar_service);
+          infobar_manager);
 
   if (!infobar_visible)
     ShowAmbientBadge();
 }
 
 void AppBannerManagerAndroid::HideAmbientBadge() {
-  InfoBarService* infobar_service =
-      InfoBarService::FromWebContents(web_contents());
-  if (infobar_service == nullptr)
+  infobars::ContentInfoBarManager* infobar_manager =
+      webapps::WebappsClient::Get()->GetInfoBarManagerForWebContents(
+          web_contents());
+  if (infobar_manager == nullptr)
     return;
 
   infobars::InfoBar* ambient_badge_infobar =
       InstallableAmbientBadgeInfoBarDelegate::GetVisibleAmbientBadgeInfoBar(
-          infobar_service);
+          infobar_manager);
 
   if (ambient_badge_infobar)
-    infobar_service->RemoveInfoBar(ambient_badge_infobar);
+    infobar_manager->RemoveInfoBar(ambient_badge_infobar);
 }
 
 bool AppBannerManagerAndroid::IsSupportedNonWebAppPlatform(

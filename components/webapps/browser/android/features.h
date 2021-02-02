@@ -11,7 +11,9 @@ struct Feature;
 
 namespace webapps {
 namespace features {
+
 extern const base::Feature kAddToHomescreenMessaging;
+extern const base::Feature kInstallableAmbientBadgeInfoBar;
 
 }  // namespace features
 }  // namespace webapps

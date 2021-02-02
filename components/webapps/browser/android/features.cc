@@ -12,5 +12,9 @@ namespace features {
 const base::Feature kAddToHomescreenMessaging{
     "AddToHomescreenMessaging", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables or disables the installable ambient badge infobar.
+const base::Feature kInstallableAmbientBadgeInfoBar{
+    "InstallableAmbientBadgeInfoBar", base::FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace webapps

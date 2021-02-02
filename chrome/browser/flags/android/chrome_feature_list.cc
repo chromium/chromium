@@ -48,6 +48,7 @@
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/sync/driver/sync_driver_switches.h"
+#include "components/webapps/browser/android/features.h"
 #include "content/public/common/content_features.h"
 #include "device/fido/features.h"
 #include "media/base/media_switches.h"
@@ -98,7 +99,6 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &features::kDownloadsLocationChange,
     &features::kEarlyLibraryLoad,
     &features::kGenericSensorExtraClasses,
-    &features::kInstallableAmbientBadgeInfoBar,
     &features::kMetricsSettingsAndroid,
     &features::kNetworkServiceInProcess,
     &features::kPredictivePrefetchingAllowedOnAllConnectionTypes,
@@ -299,6 +299,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &switches::kSyncUseSessionsUnregisterDelay,
     &subresource_filter::kSafeBrowsingSubresourceFilter,
     &video_tutorials::features::kVideoTutorials,
+    &webapps::features::kInstallableAmbientBadgeInfoBar,
     &webapps::features::kPwaInstallUseBottomSheet,
 };
 
