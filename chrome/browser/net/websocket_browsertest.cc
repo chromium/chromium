@@ -557,7 +557,7 @@ class FailureMonitoringHandshakeClient
     int response_code = -1;
   };
 
-  explicit FailureMonitoringHandshakeClient(base::Closure quit)
+  explicit FailureMonitoringHandshakeClient(base::OnceClosure quit)
       : quit_(std::move(quit)) {}
 
   FailureMonitoringHandshakeClient(const FailureMonitoringHandshakeClient&) =
@@ -595,7 +595,7 @@ class FailureMonitoringHandshakeClient
 
  private:
   Result result_;
-  base::Closure quit_;
+  base::OnceClosure quit_;
   mojo::Receiver<network::mojom::WebSocketHandshakeClient>
       handshake_client_receiver_{this};
 };
