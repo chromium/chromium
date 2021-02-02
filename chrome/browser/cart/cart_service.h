@@ -4,17 +4,21 @@
 #ifndef CHROME_BROWSER_CART_CART_SERVICE_H_
 #define CHROME_BROWSER_CART_CART_SERVICE_H_
 
+#include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/cart/cart_db.h"
 #include "chrome/browser/cart/cart_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_registry_simple.h"
 
 // Service to maintain and read/write data for chrome cart module.
 // TODO(crbug.com/1157892) Make this BrowserContext-based and get rid of Profile
 // usage so that we can modularize this.
-class CartService : public KeyedService {
+class CartService : public history::HistoryServiceObserver,
+                    public KeyedService {
  public:
   CartService(const CartService&) = delete;
   CartService& operator=(const CartService&) = delete;
@@ -33,6 +37,13 @@ class CartService : public KeyedService {
   void RestoreRemoved();
   // Returns whether cart module has been permanently removed.
   bool IsRemoved();
+  // Get the proto database owned by the service.
+  CartDB* GetDB();
+  // history::HistoryServiceObserver:
+  void OnURLsDeleted(history::HistoryService* history_service,
+                     const history::DeletionInfo& deletion_info) override;
+  // KeyedService:
+  void Shutdown() override;
 
  private:
   friend class CartServiceFactory;
@@ -40,8 +51,12 @@ class CartService : public KeyedService {
   // Use |CartServiceFactory::GetForProfile(...)| to get an instance of this
   // service.
   explicit CartService(Profile* profile);
+  // Callback when a database operation (e.g. insert or delete) is finished.
+  void OnOperationFinished(bool success);
+
   Profile* profile_;
   std::unique_ptr<CartDB> cart_db_;
+  history::HistoryService* history_service_;
   base::WeakPtrFactory<CartService> weak_ptr_factory_{this};
 };
 
