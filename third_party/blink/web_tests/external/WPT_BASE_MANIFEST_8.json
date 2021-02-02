@@ -71719,6 +71719,19 @@
        {}
       ]
      ],
+     "table-as-item-percent-width-cell-001.html": [
+      "b578b233405fdc164be5c26456f8bc1d558cf85c",
+      [
+       null,
+       [
+        [
+         "/css/css-flexbox/table-as-item-percent-width-cell-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "table-as-item-specified-width.html": [
       "a4b370eb254dd84eaa90fcc4a658d101b681655c",
       [
@@ -99680,6 +99693,19 @@
        [
         [
          "/css/css-scrollbars/textarea-scrollbar-width-none-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "transparent-on-root.html": [
+      "fcab71127d3cd8b38c0843cedff1f10aa59bb7bf",
+      [
+       null,
+       [
+        [
+         "/css/css-scrollbars/transparent-on-root-ref.html",
          "=="
         ]
        ],
@@ -188505,6 +188531,10 @@
        []
       ]
      },
+     "table-as-item-percent-width-cell-001-ref.html": [
+      "2f40b6c49fdcee593a160c82c381d4c14f377a38",
+      []
+     ],
      "table-item-flex-percentage-width-ref.html": [
       "e598475fddf54274f93609de94b0f950618bc8e2",
       []
@@ -201413,6 +201443,10 @@
      },
      "textarea-scrollbar-width-none-ref.html": [
       "9f505dd7f1d121c0bd0af0131b51f536225326b1",
+      []
+     ],
+     "transparent-on-root-ref.html": [
+      "a5b2de4f00f3abd19c74b08b80a027d09a7abcca",
       []
      ],
      "viewport-scrollbar-body-ref.html": [
@@ -242221,7 +242255,7 @@
      []
     ],
     "link-header-preload.html.headers": [
-     "293598ee66982baa00b92c9e64df6347190ab057",
+     "83758fb9cdc128d291b96c2a9a7e8abb3958dc64",
      []
     ],
     "onerror-event-expected.txt": [
@@ -392821,7 +392855,7 @@
      ]
     ],
     "link-header-preload.html": [
-     "b5932a1b0aa174f1fe8e28402595e681f39732be",
+     "8ad528d0e7c46cc7613461665f0eafed472f54c9",
      [
       null,
       {}
