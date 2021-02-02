@@ -619,6 +619,7 @@ void SystemRoutineController::OnStandardRoutineResult(
   auto result_info =
       ConstructStandardRoutineResultInfoPtr(routine_type, result);
   SendRoutineResult(std::move(result_info));
+  metrics::EmitRoutineResult(routine_type, result);
   if (IsLoggingEnabled()) {
     routine_log_ptr_->LogRoutineCompleted(routine_type, result);
   }
@@ -633,6 +634,7 @@ void SystemRoutineController::OnPowerRoutineResult(
   auto result_info = ConstructPowerRoutineResultInfoPtr(
       routine_type, result, percent_change, seconds_elapsed);
   SendRoutineResult(std::move(result_info));
+  metrics::EmitRoutineResult(routine_type, result);
   if (IsLoggingEnabled()) {
     routine_log_ptr_->LogRoutineCompleted(routine_type, result);
   }

@@ -7,11 +7,16 @@
 
 #include <cstdint>
 
+#include "chromeos/components/diagnostics_ui/mojom/system_routine_controller.mojom.h"
+
 namespace chromeos {
 namespace diagnostics {
 namespace metrics {
 
 void EmitRoutineRunCount(uint16_t routine_count);
+
+void EmitRoutineResult(mojom::RoutineType routine_type,
+                       mojom::StandardRoutineResult result);
 
 }  // namespace metrics
 }  // namespace diagnostics

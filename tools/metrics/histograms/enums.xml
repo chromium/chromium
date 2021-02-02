@@ -14536,6 +14536,13 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="13" label="AlreadyUploaded"/>
 </enum>
 
+<enum name="CrosDiagnosticsRoutineResult">
+  <int value="0" label="TestPassed"/>
+  <int value="1" label="TestFailed"/>
+  <int value="2" label="ExecutionError"/>
+  <int value="3" label="UnableToRun"/>
+</enum>
+
 <enum name="CrosDictationToggleDictationMethod">
   <int value="0" label="Search+D"/>
   <int value="1" label="Click onscreen button"/>
