@@ -264,7 +264,7 @@ js_library("oobe_eula") {
     ":web_view_helper",
     "components:login_screen_behavior",
     "components:oobe_modal_dialog",
-    "components/oobe_dialog:oobe_dialog",
+    "components/oobe_adaptive_dialog:oobe_adaptive_dialog",
     "components/oobe_dialog_host_behavior:oobe_dialog_host_behavior",
     "components/oobe_i18n_behavior:oobe_i18n_behavior",
   ]

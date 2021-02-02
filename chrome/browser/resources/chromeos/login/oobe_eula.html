@@ -10,8 +10,8 @@
 
 <link rel="import" href="/components/common_styles.html">
 <link rel="import" href="/components/hd_iron_icon.html">
+<link rel="import" href="/components/oobe_adaptive_dialog.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
-<link rel="import" href="/components/oobe_dialog.html">
 
 <dom-module id="oobe-eula-element">
   <template>
@@ -73,29 +73,28 @@
       }
     </style>
     <link rel="stylesheet" href="chrome://resources/css/throbber.css">
-    <oobe-dialog id="eulaLoadingDialog" for-step="loading" role="dialog"
-        aria-label$="[[i18nDynamic(locale, 'termsOfServiceLoading')]]"
-        has-buttons>
+    <oobe-adaptive-dialog id="eulaLoadingDialog" for-step="loading"
+        role="dialog"
+        aria-label$="[[i18nDynamic(locale, 'termsOfServiceLoading')]]">
+      <hd-iron-icon slot="icon"
+        icon1x="oobe-32:googleg" icon2x="oobe-64:googleg">
+      </hd-iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'termsOfServiceLoading')]]
       </h1>
-      <hd-iron-icon slot="oobe-icon"
-          icon1x="oobe-32:googleg" icon2x="oobe-64:googleg">
-      </hd-iron-icon>
-    </oobe-dialog>
-
+    </oobe-adaptive-dialog>
     <!-- As this dialog have pre-loading logic that require access to elements,
          dialog is marked as no-lazy. -->
-    <oobe-dialog id="eulaDialog" for-step="eula" role="dialog"
+    <oobe-adaptive-dialog id="eulaDialog" for-step="eula" role="dialog"
         aria-label$="[[i18nDynamic(locale, 'oobeEulaSectionTitle')]]"
-        aria-describedby="crosEulaFrame" has-buttons no-lazy>
+        aria-describedby="crosEulaFrame" no-lazy>
+      <hd-iron-icon slot="icon"
+          icon1x="oobe-32:googleg" icon2x="oobe-64:googleg">
+      </hd-iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'oobeEulaSectionTitle')]]
       </h1>
-      <hd-iron-icon slot="oobe-icon"
-          icon1x="oobe-32:googleg" icon2x="oobe-64:googleg">
-      </hd-iron-icon>
-      <div slot="footer" class="flex layout vertical">
+      <div slot="content" class="flex layout vertical">
         <webview id="crosEulaFrame" allowTransparency
             role="document" class="flex oobe-tos-webview focus-on-show"
             aria-label$="[[i18nDynamic(locale, 'oobeEulaIframeLabel')]]"
@@ -137,20 +136,19 @@
             text-key="oobeEulaAcceptAndContinueButtonText">
         </oobe-text-button>
       </div>
-    </oobe-dialog>
-
-    <oobe-dialog id="securitySettingsDialog" role="dialog" has-buttons
-        for-step="security"
-        aria-label$="[[i18nDynamic(locale, 'eulaSystemSecuritySettings')]]">
+    </oobe-adaptive-dialog>
+    <oobe-adaptive-dialog id="securitySettingsDialog" role="dialog"
+      for-step="security"
+      aria-label$="[[i18nDynamic(locale, 'eulaSystemSecuritySettings')]]">
+      <hd-iron-icon slot="icon"
+          icon1x="oobe-32:googleg" icon2x="oobe-64:googleg">
+      </hd-iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'eulaSystemSecuritySettings')]]
       </h1>
-      <hd-iron-icon slot="oobe-icon"
-          icon1x="oobe-32:googleg" icon2x="oobe-64:googleg">
-      </hd-iron-icon>
-      <div slot="subtitle" id="settingsSubtitle">
+      <p slot="subtitle">
         [[i18nDynamic(locale, 'eulaTpmDesc')]]
-      </div>
+      </p>
       <div slot="bottom-buttons" class="flex layout horizontal">
         <div class="flex"></div>
         <oobe-text-button id="settings-close-button" inverse
@@ -158,7 +156,7 @@
             text-key="eulaSystemSecuritySettingsOkButton"
             on-click="onSecuritySettingsCloseClicked_"></oobe-text-button>
       </div>
-    </oobe-dialog>
+    </oobe-adaptive-dialog>
     <oobe-modal-dialog id="additionalToS" ignore-popstate
         on-close="focusAdditionalTermsLink_"
         on-cancel="focusAdditionalTermsLink_">
