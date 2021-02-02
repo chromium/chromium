@@ -424,3 +424,22 @@
     canvasTransform = ctx.getTransform();
     transform.multiplySelf(transform);
     @assert transform.toLocaleString() == canvasTransform.toLocaleString();
+
+- name: 2d.transformation.translate3d
+  desc: translate3d() function modifies the underlying matrix appropriately
+  testing:
+  - 2d.transformation.translate3d
+  code: |
+    const dx = 2;
+    const dy = 3;
+    const dz = 4;
+    ctx.translate3d(dx, dy, dz);
+    let canvasTransform = ctx.getTransform();
+    @assert canvasTransform.m41 = dx;
+    @assert canvasTransform.m42 = dy;
+    @assert canvasTransform.m43 = dz;
+    ctx.translate3d(dx, dy, dz);
+    canvasTransform = ctx.getTransform();
+    @assert canvasTransform.m41 = 2 * dx;
+    @assert canvasTransform.m42 = 2 * dy;
+    @assert canvasTransform.m43 = 2 * dz;

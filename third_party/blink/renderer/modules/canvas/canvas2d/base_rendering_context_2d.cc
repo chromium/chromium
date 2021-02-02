@@ -538,6 +538,8 @@ void BaseRenderingContext2D::rotate(double angle_in_radians) {
 }
 
 void BaseRenderingContext2D::translate(double tx, double ty) {
+  // TODO(crbug.com/1140535): Investigate the performance impact of simply
+  // calling the 3d version of this function
   cc::PaintCanvas* c = GetOrCreatePaintCanvas();
   if (!c)
     return;
@@ -558,8 +560,40 @@ void BaseRenderingContext2D::translate(double tx, double ty) {
   ModifiableState().SetTransform(new_transform);
   if (!GetState().IsTransformInvertible())
     return;
+
   c->translate(ftx, fty);
   path_.Transform(AffineTransform().Translate(-ftx, -fty));
+}
+
+void BaseRenderingContext2D::translate3d(double tx, double ty, double tz) {
+  cc::PaintCanvas* c = GetOrCreatePaintCanvas();
+  if (!c)
+    return;
+
+  if (!GetState().IsTransformInvertible())
+    return;
+
+  if (!std::isfinite(tx) || !std::isfinite(ty) || !std::isfinite(tz))
+    return;
+
+  // If there is no translate there's no reason to continue
+  if (tx == 0 && ty == 0 && tz == 0)
+    return;
+
+  // clamp to float to avoid float cast overflow when used as SkScalar
+  float ftx = clampTo<float>(tx);
+  float fty = clampTo<float>(ty);
+  float ftz = clampTo<float>(ty);
+  // We need to call SetTransform() to set the IsTransformInvertible flag
+  ModifiableState().SetTransform(
+      GetState().GetTransform().Translate3d(ftx, fty, ftz));
+  if (!GetState().IsTransformInvertible())
+    return;
+
+  TransformationMatrix translation_matrix =
+      TransformationMatrix().Translate3d(ftx, fty, ftx);
+  c->concat(TransformationMatrix::ToSkM44(translation_matrix));
+  path_.Transform(translation_matrix);
 }
 
 void BaseRenderingContext2D::transform(double m11,
