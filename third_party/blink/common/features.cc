@@ -316,6 +316,10 @@ const base::Feature kAllowSyncXHRInPageDismissal{
 const base::Feature kFontAccess{"FontAccess",
                                 base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Font enumeration and data access. https://crbug.com/1173275
+const base::Feature kFontAccessPersistent{"FontAccessPersistent",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Prefetch request properties are updated to be privacy-preserving. See
 // crbug.com/988956.
 const base::Feature kPrefetchPrivacyChanges{"PrefetchPrivacyChanges",

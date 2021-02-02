@@ -425,6 +425,12 @@ const char kFontAccessAPIDescription[] =
     "Enables the experimental Font Access APIs, giving websites access "
     "to enumerate local fonts and access their table data.";
 
+const char kFontAccessPersistentName[] =
+    "Enable persistent access to the Font Access API";
+const char kFontAccessPersistentDescription[] =
+    "Enables persistent access to the Font Access API, giving websites access "
+    "to enumerate local fonts after being granted a permission.";
+
 const char kForceColorProfileSRGB[] = "sRGB";
 const char kForceColorProfileP3[] = "Display P3 D65";
 const char kForceColorProfileColorSpin[] = "Color spin with gamma 2.4";

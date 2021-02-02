@@ -44018,6 +44018,7 @@ from previous Chrome versions.
   <int value="-989671895" label="OfflineIndicatorAlwaysHttpProbe:enabled"/>
   <int value="-989050085" label="AppStoreBillingDebug:enabled"/>
   <int value="-987470173" label="ClickToCallOpenDialerDirectly:disabled"/>
+  <int value="-987191098" label="FontAccessPersistent:disabled"/>
   <int value="-984052166" label="DoodlesOnLocalNtp:enabled"/>
   <int value="-983342281" label="TabSwitcherLongpressMenu:disabled"/>
   <int value="-981237342" label="SyncUSSAutofillWalletMetadata:disabled"/>
@@ -46317,6 +46318,7 @@ from previous Chrome versions.
   <int value="1203821857" label="Vulkan:disabled"/>
   <int value="1205849612" label="enable-sync-synced-notifications"/>
   <int value="1205929554" label="SendTabToSelfOmniboxSendingAnimation:enabled"/>
+  <int value="1210298193" label="FontAccessPersistent:enabled"/>
   <int value="1210343926" label="enable-drop-sync-credential"/>
   <int value="1211284676" label="V8NoTurbo:enabled"/>
   <int value="1211756417"
