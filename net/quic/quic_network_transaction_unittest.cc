@@ -9739,6 +9739,9 @@ TEST_P(QuicNetworkTransactionTest, RetryOnHttp3GoAway) {
                  ConstructDataFrame("response on the first connection")));
   mock_quic_data1.AddWrite(
       ASYNC, ConstructClientAckPacket(write_packet_number1++, 4, 1));
+  // Make socket hang to make sure connection stays in connection pool.
+  // This should not prevent the retry from opening a new connection.
+  mock_quic_data1.AddRead(ASYNC, ERR_IO_PENDING);
   mock_quic_data1.AddRead(ASYNC, 0);  // EOF
   mock_quic_data1.AddSocketDataToFactory(&socket_factory_);
 
@@ -9809,6 +9812,7 @@ TEST_P(QuicNetworkTransactionTest, RetryOnHttp3GoAway) {
   EXPECT_THAT(callback2.WaitForResult(), IsOk());
   CheckResponseData(&trans2, "response on the second connection");
 
+  mock_quic_data1.Resume();
   mock_quic_data2.Resume();
   EXPECT_TRUE(mock_quic_data1.AllWriteDataConsumed());
   EXPECT_TRUE(mock_quic_data1.AllReadDataConsumed());
