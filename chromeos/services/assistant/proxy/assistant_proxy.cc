@@ -88,11 +88,17 @@ void AssistantProxy::BindControllers(
   mojo::PendingReceiver<PlatformDelegateMojom> pending_platform_delegate =
       pending_platform_delegate_remote.InitWithNewPipeAndPassReceiver();
 
+  mojo::PendingRemote<MediaDelegateMojom> pending_media_delegate_remote;
+  pending_media_delegate_receiver_ =
+      pending_media_delegate_remote.InitWithNewPipeAndPassReceiver();
+
   libassistant_service_remote_->Bind(
       pending_audio_input_controller_remote.InitWithNewPipeAndPassReceiver(),
       pending_conversation_controller_remote.InitWithNewPipeAndPassReceiver(),
       display_controller_remote_.BindNewPipeAndPassReceiver(),
+      media_controller_remote_.BindNewPipeAndPassReceiver(),
       pending_service_controller_remote.InitWithNewPipeAndPassReceiver(),
+      std::move(pending_media_delegate_remote),
       std::move(pending_platform_delegate_remote));
 
   conversation_controller_proxy_ =
@@ -136,6 +142,11 @@ ConversationControllerProxy& AssistantProxy::conversation_controller_proxy() {
 AssistantProxy::DisplayController& AssistantProxy::display_controller() {
   DCHECK(display_controller_remote_.is_bound());
   return *display_controller_remote_.get();
+}
+
+AssistantProxy::MediaController& AssistantProxy::media_controller() {
+  DCHECK(media_controller_remote_.is_bound());
+  return *media_controller_remote_.get();
 }
 
 void AssistantProxy::AddSpeechRecognitionObserver(

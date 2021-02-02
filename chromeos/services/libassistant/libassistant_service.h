@@ -62,7 +62,9 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) LibassistantService
       mojo::PendingReceiver<mojom::ConversationController>
           conversation_controller,
       mojo::PendingReceiver<mojom::DisplayController> display_controller,
+      mojo::PendingReceiver<mojom::MediaController> media_controller,
       mojo::PendingReceiver<mojom::ServiceController> service_controller,
+      mojo::PendingRemote<mojom::MediaDelegate> media_delegate,
       mojo::PendingRemote<mojom::PlatformDelegate> platform_delegate) override;
   void AddSpeechRecognitionObserver(
       mojo::PendingRemote<mojom::SpeechRecognitionObserver> observer) override;

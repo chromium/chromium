@@ -34,6 +34,7 @@ class ServiceControllerProxy;
 class AssistantProxy {
  public:
   using DisplayController = chromeos::libassistant::mojom::DisplayController;
+  using MediaController = chromeos::libassistant::mojom::MediaController;
 
   AssistantProxy();
   AssistantProxy(AssistantProxy&) = delete;
@@ -54,6 +55,9 @@ class AssistantProxy {
   // Returns the controller that manages display related settings.
   DisplayController& display_controller();
 
+  // Returns the controller that manages media related settings.
+  MediaController& media_controller();
+
   // The background thread is temporary exposed until the entire Libassistant
   // API is hidden behind this proxy API.
   base::Thread& background_thread() { return background_thread_; }
@@ -69,6 +73,10 @@ class AssistantProxy {
   mojo::PendingReceiver<chromeos::libassistant::mojom::PlatformDelegate>
   ExtractPlatformDelegate();
 
+  // Extract the |MediaDelegate| binding so it can be bound and used.
+  mojo::PendingReceiver<chromeos::libassistant::mojom::MediaDelegate>
+  ExtractMediaDelegate();
+
  private:
   using AudioInputControllerMojom =
       chromeos::libassistant::mojom::AudioInputController;
@@ -77,6 +85,8 @@ class AssistantProxy {
       chromeos::libassistant::mojom::ConversationController;
   using DisplayControllerMojom =
       chromeos::libassistant::mojom::DisplayController;
+  using MediaControllerMojom = chromeos::libassistant::mojom::MediaController;
+  using MediaDelegateMojom = chromeos::libassistant::mojom::MediaDelegate;
   using LibassistantServiceMojom =
       chromeos::libassistant::mojom::LibassistantService;
   using ServiceControllerMojom =
@@ -98,6 +108,7 @@ class AssistantProxy {
   LibassistantServiceHost* libassistant_service_host_ = nullptr;
   mojo::Remote<LibassistantServiceMojom> libassistant_service_remote_;
   mojo::Remote<DisplayControllerMojom> display_controller_remote_;
+  mojo::Remote<MediaControllerMojom> media_controller_remote_;
 
   std::unique_ptr<ConversationControllerProxy> conversation_controller_proxy_;
   std::unique_ptr<ServiceControllerProxy> service_controller_proxy_;
@@ -105,6 +116,9 @@ class AssistantProxy {
   // Will be unbound after they are extracted.
   mojo::PendingRemote<AudioInputControllerMojom> audio_input_controller_;
   mojo::PendingReceiver<PlatformDelegateMojom> platform_delegate_;
+
+  // Will be unbound after ExtractMediaDelegate() is called.
+  mojo::PendingReceiver<MediaDelegateMojom> pending_media_delegate_receiver_;
 
   // The thread on which the Libassistant service runs.
   // Warning: must be the last object, so it is destroyed (and flushed) first.

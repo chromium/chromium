@@ -33,8 +33,11 @@ void FakeLibassistantService::Bind(
         conversation_controller,
     mojo::PendingReceiver<libassistant::mojom::DisplayController>
         display_controller,
+    mojo::PendingReceiver<libassistant::mojom::MediaController>
+        media_controller,
     mojo::PendingReceiver<libassistant::mojom::ServiceController>
         service_controller,
+    mojo::PendingRemote<libassistant::mojom::MediaDelegate> media_delegate,
     mojo::PendingRemote<libassistant::mojom::PlatformDelegate>
         platform_delegate) {
   service_controller_.Bind(std::move(service_controller));

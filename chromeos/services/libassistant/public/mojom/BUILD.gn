@@ -12,6 +12,7 @@ mojom("mojom") {
     "audio_input_controller.mojom",
     "conversation_controller.mojom",
     "display_controller.mojom",
+    "media_controller.mojom",
     "platform_delegate.mojom",
     "service.mojom",
     "service_controller.mojom",

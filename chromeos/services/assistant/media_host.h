@@ -40,9 +40,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) MediaHost {
   MediaHost& operator=(const MediaHost&) = delete;
   ~MediaHost();
 
-  mojo::PendingReceiver<media_session::mojom::MediaController>
-  BindMediaControllerAndPassPendingReceiver();
-
   // Start handling media.
   void Start(
       assistant_client::AssistantManagerInternal* assistant_manager_internal);
