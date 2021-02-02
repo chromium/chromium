@@ -241,6 +241,11 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
                 ? IntentUtils.safeGetBooleanExtra(intent, EXTRA_IS_OFF_THE_RECORD, false)
                 : entry.isOffTheRecord;
         OTRProfileID otrProfileID = DownloadUtils.getOTRProfileIDFromIntent(intent);
+        // TODO(crbug.com/1164379): Pass OTRProfileID from intent by adding
+        //  |DownloadNotificationService#EXTRA_OTR_PROFILE_ID|.
+        if (isOffTheRecord && otrProfileID == null) {
+            otrProfileID = OTRProfileID.getPrimaryOTRProfileID();
+        }
         DownloadServiceDelegate downloadServiceDelegate = getServiceDelegate(id);
 
         checkNotNull(downloadServiceDelegate);
