@@ -30,7 +30,8 @@ class WebUIBubbleView : public views::WebView,
     virtual void OnWebViewSizeChanged() = 0;
   };
 
-  explicit WebUIBubbleView(content::BrowserContext* browser_context);
+  // The maximum bubble view size is expressed in dip unit.
+  WebUIBubbleView(content::BrowserContext* browser_context, gfx::Size max_size);
   ~WebUIBubbleView() override;
 
   // The type T enables WebUIBubbleView to know what WebUIController is being

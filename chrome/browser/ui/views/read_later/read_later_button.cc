@@ -163,7 +163,9 @@ void ReadLaterButton::ButtonPressed() {
       // SetHighlighted(false) here.
       SetHighlighted(false);
     } else {
-      auto web_view = std::make_unique<WebUIBubbleView>(browser_->profile());
+      auto web_view = std::make_unique<WebUIBubbleView>(
+          browser_->profile(),
+          browser_view->GetWidget()->GetWorkAreaBoundsInScreen().size());
       web_view->LoadURL<ReadLaterUI>(GURL(chrome::kChromeUIReadLaterURL));
       auto bubble_view =
           std::make_unique<WebUIBubbleDialogView>(this, std::move(web_view));

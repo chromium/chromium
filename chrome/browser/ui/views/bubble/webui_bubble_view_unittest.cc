@@ -65,7 +65,8 @@ class WebUIBubbleViewTest : public ChromeViewsTestBase {
     widget_ = std::make_unique<Widget>();
     Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
     widget_->Init(std::move(params));
-    auto web_view = std::make_unique<WebUIBubbleView>(profile_.get());
+    auto web_view =
+        std::make_unique<WebUIBubbleView>(profile_.get(), gfx::Size(800, 600));
 
     web_view->SetWebContents(test_contents_.get());
     test_contents_->SetDelegate(web_view.get());

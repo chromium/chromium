@@ -35,7 +35,7 @@ class WebUIBubbleDialogViewTest : public ChromeViewsTestBase {
 
     auto bubble_view = std::make_unique<WebUIBubbleDialogView>(
         anchor_widget_->GetContentsView(),
-        std::make_unique<WebUIBubbleView>(profile_.get()));
+        std::make_unique<WebUIBubbleView>(profile_.get(), gfx::Size(800, 600)));
     bubble_view_ = bubble_view.get();
     bubble_widget_ =
         BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));

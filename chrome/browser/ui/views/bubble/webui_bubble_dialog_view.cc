@@ -11,12 +11,9 @@
 
 namespace {
 
-// The min / max size available to the WebBubbleDialogView.
-// These are arbitrary sizes that match those set by ExtensionPopup.
-// TODO(tluk): Determine the correct size constraints for the
-// WebBubbleDialogView.
+// The min size available to the WebBubbleDialogView. These are arbitrary sizes
+// that match those set by ExtensionPopup.
 constexpr gfx::Size kMinSize(25, 25);
-constexpr gfx::Size kMaxSize(800, 600);
 
 }  // namespace
 
@@ -54,7 +51,7 @@ gfx::Size WebUIBubbleDialogView::CalculatePreferredSize() const {
   // Constrain the size to popup min/max.
   gfx::Size preferred_size = BubbleDialogDelegateView::CalculatePreferredSize();
   preferred_size.SetToMax(kMinSize);
-  preferred_size.SetToMin(kMaxSize);
+  preferred_size.SetToMin(GetWidget()->GetWorkAreaBoundsInScreen().size());
   return preferred_size;
 }
 

@@ -17,18 +17,16 @@ bool IsEscapeEvent(const content::NativeWebKeyboardEvent& event) {
          event.windows_key_code == ui::VKEY_ESCAPE;
 }
 
-// The min / max size available to the WebUIBubbleView.
+// The min size available to the WebUIBubbleView.
 // These are arbitrary sizes that match those set by ExtensionPopup.
-// TODO(tluk): Determine the correct size constraints for the
-// WebUIBubbleView.
 constexpr gfx::Size kMinSize(25, 25);
-constexpr gfx::Size kMaxSize(800, 600);
 
 }  // namespace
 
-WebUIBubbleView::WebUIBubbleView(content::BrowserContext* browser_context)
+WebUIBubbleView::WebUIBubbleView(content::BrowserContext* browser_context,
+                                 gfx::Size max_size)
     : WebView(browser_context) {
-  EnableSizingFromWebContents(kMinSize, kMaxSize);
+  EnableSizingFromWebContents(kMinSize, max_size);
   SetVisible(false);
 
   // Allow the embedder to handle accelerators not handled by the WebContents.

@@ -52,6 +52,7 @@ class WebUIBubbleManagerBase : public views::WidgetObserver {
 
  protected:
   WebUIBubbleView* cached_web_view() { return cached_web_view_.get(); }
+  views::View* anchor_view() { return anchor_view_; }
 
  private:
   virtual std::unique_ptr<WebUIBubbleView> CreateWebView() = 0;
@@ -98,7 +99,9 @@ class WebUIBubbleManager : public WebUIBubbleManagerBase {
 
  private:
   std::unique_ptr<WebUIBubbleView> CreateWebView() override {
-    auto web_view = std::make_unique<WebUIBubbleView>(browser_context_);
+    auto web_view = std::make_unique<WebUIBubbleView>(
+        browser_context_,
+        anchor_view()->GetWidget()->GetWorkAreaBoundsInScreen().size());
     content::WebContents* web_contents = web_view->GetWebContents();
     if (enable_extension_apis_) {
       // In order for the WebUI in the renderer to use extensions APIs we must

@@ -28,7 +28,9 @@ class TestWebUIBubbleManager : public WebUIBubbleManagerBase {
 
  private:
   std::unique_ptr<WebUIBubbleView> CreateWebView() override {
-    return std::make_unique<WebUIBubbleView>(browser_context_);
+    return std::make_unique<WebUIBubbleView>(
+        browser_context_,
+        anchor_view()->GetWidget()->GetWorkAreaBoundsInScreen().size());
   }
 
   content::BrowserContext* browser_context_;
