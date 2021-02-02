@@ -1230,8 +1230,11 @@ dialog::backdrop {
     background: rgba(0,0,0,0.1)
 }
 
+popup:not(:-internal-popup-open) {
+    display: none !important;
+}
 popup {
-    display: block; /* Overridden with "none" if popup isn't open */
+    display: block;
     position: fixed;
     top: 0;
     left: 0;

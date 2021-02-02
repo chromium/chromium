@@ -41,6 +41,7 @@ void HTMLPopupElement::hide() {
   PopUntilElementReached(this);
   GetDocument().PopPopupElement(this);
   open_ = false;
+  PseudoStateChanged(CSSSelector::kPseudoPopupOpen);
   MarkStyleDirty();
   ScheduleHideEvent();
 }
@@ -70,6 +71,7 @@ void HTMLPopupElement::show() {
   }
   PopUntilElementReached(parent_popup);
   open_ = true;
+  PseudoStateChanged(CSSSelector::kPseudoPopupOpen);
   GetDocument().PushNewPopupElement(this);
   MarkStyleDirty();
 }

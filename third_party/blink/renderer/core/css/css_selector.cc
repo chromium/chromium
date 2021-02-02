@@ -335,6 +335,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoListBox:
     case kPseudoMultiSelectFocus:
     case kPseudoHostHasAppearance:
+    case kPseudoPopupOpen:
     case kPseudoSlotted:
     case kPseudoVideoPersistent:
     case kPseudoVideoPersistentAncestor:
@@ -366,6 +367,7 @@ const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
      CSSSelector::kPseudoWebKitCustomElement},
     {"-internal-modal", CSSSelector::kPseudoModal},
     {"-internal-multi-select-focus", CSSSelector::kPseudoMultiSelectFocus},
+    {"-internal-popup-open", CSSSelector::kPseudoPopupOpen},
     {"-internal-shadow-host-has-appearance",
      CSSSelector::kPseudoHostHasAppearance},
     {"-internal-spatial-navigation-focus",
@@ -656,6 +658,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoListBox:
     case kPseudoModal:
     case kPseudoMultiSelectFocus:
+    case kPseudoPopupOpen:
     case kPseudoSpatialNavigationFocus:
     case kPseudoSpatialNavigationInterest:
     case kPseudoVideoPersistent:
