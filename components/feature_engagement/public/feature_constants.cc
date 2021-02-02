@@ -131,8 +131,8 @@ const base::Feature kIPHVideoTutorialNTPSummaryFeature{
     "IPH_VideoTutorial_NTP_Summary", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHExploreSitesTileFeature{
     "IPH_ExploreSitesTile", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kIPHFeedHeaderMenuFeature{
-    "IPH_FeedHeaderMenu", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kIPHFeedHeaderMenuFeature{"IPH_FeedHeaderMenu",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHChromeReengagementNotification1Feature{
     "IPH_ChromeReengagementNotification1", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHChromeReengagementNotification2Feature{
