@@ -60,6 +60,7 @@ class SubresourceFilterAgent
 
   virtual bool IsMainFrame();
   virtual bool IsProvisional();
+  virtual bool IsSubframeCreatedByAdScript();
 
   virtual bool HasDocumentLoader();
 
@@ -79,6 +80,10 @@ class SubresourceFilterAgent
 
   // Tells the browser that the frame is an ad subframe.
   virtual void SendFrameIsAdSubframe();
+
+  // Tells the browser that the frame is a subframe that was created by ad
+  // script.
+  virtual void SendSubframeWasCreatedByAdScript();
 
   // True if the frame has been heuristically determined to be an ad subframe.
   virtual bool IsAdSubframe();

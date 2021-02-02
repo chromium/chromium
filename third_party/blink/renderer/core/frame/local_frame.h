@@ -503,6 +503,10 @@ class CORE_EXPORT LocalFrame final
   // just before commit (ReadyToCommitNavigation time) by the embedder.
   void SetIsAdSubframe(blink::mojom::AdFrameType ad_frame_type);
 
+  bool IsSubframeCreatedByAdScript() const {
+    return is_subframe_created_by_ad_script_;
+  }
+
   // Updates the frame color overlay to match the highlight ad setting.
   void UpdateAdHighlight();
 
@@ -1009,6 +1013,13 @@ class CORE_EXPORT LocalFrame final
 
   bool is_window_controls_overlay_visible_ = false;
   gfx::Rect window_controls_overlay_rect_;
+
+  // True if this frame is a subframe that had a script tagged as an ad on the
+  // v8 stack at the time of creation. This is not currently propagated when a
+  // frame navigates cross-origin.
+  // TODO(crbug.com/1145634): propagate this bit for a frame that navigates
+  // cross-origin.
+  bool is_subframe_created_by_ad_script_ = false;
 };
 
 inline FrameLoader& LocalFrame::Loader() const {

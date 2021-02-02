@@ -1807,8 +1807,9 @@ void LocalFrame::SetIsAdSubframeIfNecessary() {
 
   bool parent_is_ad = parent->IsAdSubframe();
 
-  if (parent_is_ad ||
-      ad_tracker_->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop)) {
+  is_subframe_created_by_ad_script_ =
+      ad_tracker_->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop);
+  if (parent_is_ad || is_subframe_created_by_ad_script_) {
     SetIsAdSubframe(parent_is_ad ? blink::mojom::AdFrameType::kChildAd
                                  : blink::mojom::AdFrameType::kRootAd);
   }

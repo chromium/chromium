@@ -852,6 +852,11 @@ void WebLocalFrameImpl::SetIsAdSubframe(
   GetFrame()->SetIsAdSubframe(ad_frame_type);
 }
 
+bool WebLocalFrameImpl::IsSubframeCreatedByAdScript() {
+  DCHECK(GetFrame());
+  return GetFrame()->IsSubframeCreatedByAdScript();
+}
+
 void WebLocalFrameImpl::ExecuteScript(const WebScriptSource& source) {
   DCHECK(GetFrame());
   ClassicScript::CreateUnspecifiedScript(source)->RunScript(

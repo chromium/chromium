@@ -52,16 +52,21 @@ void SubresourceFilterAgent::Initialize() {
 
   // We must check for provisional here because in that case 2 RenderFrames will
   // be created for the same FrameTreeNode in the browser. The browser service
-  // only expects us to call SendFrameIsAdSubframe() a single time for a newly
-  // created RenderFrame, so we must choose one. A provisional frame is created
-  // when a navigation is performed cross-site and the navigation is done there
-  // to isolate it from the previous frame tree. We choose to send this message
-  // from the initial (non-provisional) "about:blank" frame that is created
-  // before the navigation to match previous behaviour, and because this frame
-  // will always exist. Whereas the provisional frame would only be created to
-  // perform the navigation conditionally, so we ignore sending the IPC there.
-  if (!IsMainFrame() && IsAdSubframe() && !IsProvisional())
-    SendFrameIsAdSubframe();
+  // only expects us to call SendSubframeWasCreatedByAdScript() and
+  // SendFrameIsAdSubframe() a single time each for a newly created RenderFrame,
+  // so we must choose one. A provisional frame is created when a navigation is
+  // performed cross-site and the navigation is done there to isolate it from
+  // the previous frame tree. We choose to send this message from the initial
+  // (non-provisional) "about:blank" frame that is created before the navigation
+  // to match previous behaviour, and because this frame will always exist.
+  // Whereas the provisional frame would only be created to perform the
+  // navigation conditionally, so we ignore sending the IPC there.
+  if (!IsMainFrame() && !IsProvisional()) {
+    if (IsSubframeCreatedByAdScript())
+      SendSubframeWasCreatedByAdScript();
+    if (IsAdSubframe())
+      SendFrameIsAdSubframe();
+  }
 
   // `render_frame()` can be null in unit tests.
   if (render_frame()) {
@@ -111,6 +116,10 @@ bool SubresourceFilterAgent::IsProvisional() {
   return render_frame()->GetWebFrame()->IsProvisional();
 }
 
+bool SubresourceFilterAgent::IsSubframeCreatedByAdScript() {
+  return render_frame()->GetWebFrame()->IsSubframeCreatedByAdScript();
+}
+
 bool SubresourceFilterAgent::HasDocumentLoader() {
   return render_frame()->GetWebFrame()->GetDocumentLoader();
 }
@@ -134,6 +143,10 @@ void SubresourceFilterAgent::SendDocumentLoadStatistics(
 
 void SubresourceFilterAgent::SendFrameIsAdSubframe() {
   GetSubresourceFilterHost()->FrameIsAdSubframe();
+}
+
+void SubresourceFilterAgent::SendSubframeWasCreatedByAdScript() {
+  GetSubresourceFilterHost()->SubframeWasCreatedByAdScript();
 }
 
 bool SubresourceFilterAgent::IsAdSubframe() {

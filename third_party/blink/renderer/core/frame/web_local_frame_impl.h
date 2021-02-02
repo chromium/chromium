@@ -296,6 +296,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   WebPerformance Performance() const override;
   bool IsAdSubframe() const override;
   void SetIsAdSubframe(blink::mojom::AdFrameType ad_frame_type) override;
+  bool IsSubframeCreatedByAdScript() override;
   gfx::Size SpoolSizeInPixelsForTesting(const gfx::Size& page_size_in_pixels,
                                         uint32_t page_count) override;
   void PrintPagesForTesting(cc::PaintCanvas*,

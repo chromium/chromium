@@ -83,6 +83,10 @@ interface SubresourceFilterHost {
   // ReadyToCommitNavigation time.
   FrameIsAdSubframe();
 
+  // Called when a RenderFrame is created with ad script on the v8 stack. The
+  // browser keeps track of this for deciding whether to tag subframes as ads.
+  SubframeWasCreatedByAdScript();
+
   // This is sent to a RenderFrameHost in the browser when a document load is
   // finished, just before the DidFinishLoad message, and contains statistics
   // collected by the DocumentSubresourceFilter up until that point: the number

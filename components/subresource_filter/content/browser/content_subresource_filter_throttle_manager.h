@@ -20,6 +20,8 @@
 #include "components/subresource_filter/content/browser/subresource_filter_observer.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
 #include "components/subresource_filter/content/browser/verified_ruleset_dealer.h"
+#include "components/subresource_filter/content/common/ad_evidence.h"
+#include "components/subresource_filter/content/common/subresource_filter_utils.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -211,6 +213,9 @@ class ContentSubresourceFilterThrottleManager
   VerifiedRuleset::Handle* EnsureRulesetHandle();
   void DestroyRulesetHandleIfNoLongerUsed();
 
+  FrameAdEvidence& EnsureFrameAdEvidence(
+      content::RenderFrameHost* render_frame_host);
+
   // Registers |render_frame_host| as an ad frame. If the frame later moves to
   // a new process its RenderHost will be told that it's an ad.
   void OnFrameIsAdSubframe(content::RenderFrameHost* render_frame_host);
@@ -218,6 +223,7 @@ class ContentSubresourceFilterThrottleManager
   // mojom::SubresourceFilterHost:
   void DidDisallowFirstSubresource() override;
   void FrameIsAdSubframe() override;
+  void SubframeWasCreatedByAdScript() override;
   void SetDocumentLoadStatistics(
       mojom::DocumentLoadStatisticsPtr statistics) override;
   void OnAdsViolationTriggered(mojom::AdsViolation violation) override;
@@ -239,6 +245,19 @@ class ContentSubresourceFilterThrottleManager
       const mojom::ActivationLevel& activation_level,
       bool did_inherit_opener_activation);
 
+  // Sets a frame as an ad subframe by moving its ad evidence from
+  // `tracked_ad_evidence_` to `ad_frames_` (and thus freezing it).
+  void SetFrameAsAdSubframe(content::RenderFrameHost* render_frame_host);
+
+  // If `render_frame_host` is tagged as an ad, does nothing. Otherwise, updates
+  // `render_frame_host`'s FrameAdEvidence. `load_policy` should be equal to
+  // base::nullopt if the frame's URL was not checked against the filter list.
+  // Otherwise, `load_policy.value()` should equal the LoadPolicy that resulted
+  // from the lookup.
+  void MaybeUpdateEvidenceBasedOnLoadPolicy(
+      content::RenderFrameHost* render_frame_host,
+      base::Optional<LoadPolicy> load_policy);
+
   // For each RenderFrameHost where the last committed load (or the initial load
   // if no committed load has occurred) has subresource filtering activated,
   // owns the corresponding AsyncDocumentSubresourceFilter.
@@ -257,13 +276,26 @@ class ContentSubresourceFilterThrottleManager
   std::map<int64_t, ActivationStateComputingNavigationThrottle*>
       ongoing_activation_throttles_;
 
-  // Set of frames that have been identified as ads, keyed by FrameTreeNode ID.
-  // A frame is an ad subframe if any of the following conditions are met:
+  // Map of frames that have been identified as ads, keyed by FrameTreeNode ID,
+  // with value being the evidence that the respective frames are ads. This
+  // evidence object is frozen upon the frame being tagged as an ad and is no
+  // longer updated. An RFH is an ad subframe if any of the following conditions
+  // are met:
   // 1. Its navigation URL is in the filter list
   // 2. Its parent is a known ad subframe
   // 3. The RenderFrame declares the frame is an ad (see AdTracker in Blink)
-  // Note that frame tagging persists RenderFrameHost switches.
-  std::set<int> ad_frames_;
+  // 4. It's the result of moving an old ad subframe RFH to a new RFH (e.g.,
+  //    OOPIF)
+  std::map<int, const FrameAdEvidence> ad_frames_;
+
+  // Map of subframes that have not (yet) been tagged as ads, keyed by
+  // FrameTreeNode ID, with value being the evidence that the frames are ads.
+  // Once a subframe is tagged as an ad, the evidence is moved to `ad_frames_`
+  // and no longer updated. Otherwise, it is updated whenever a navigation's
+  // LoadPolicy is calculated.
+  // TODO(crbug.com/1101584): Once evidence is used for tagging, comment on when
+  // in the lifecycle evidence can be frozen.
+  std::map<int, FrameAdEvidence> tracked_ad_evidence_;
 
   // Map of frames whose navigations have been identified as ads, keyed by
   // FrameTreeNode ID. Contains information on the most current completed
