@@ -4,8 +4,11 @@
 
 #import "ios/chrome/browser/safe_browsing/chrome_password_protection_service.h"
 
+#include "components/keyed_service/core/service_access_type.h"
+#include "components/password_manager/core/browser/password_store.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -59,13 +62,42 @@ void ChromePasswordProtectionService::SanitizeReferrerChain(
 void ChromePasswordProtectionService::PersistPhishedSavedPasswordCredential(
     const std::vector<password_manager::MatchingReusedCredential>&
         matching_reused_credentials) {
-  // TODO(crbug.com/1147967): Complete PhishGuard iOS implementation.
+  if (!browser_state_)
+    return;
+
+  for (const auto& credential : matching_reused_credentials) {
+    password_manager::PasswordStore* password_store =
+        GetStoreForReusedCredential(credential);
+    // Password store can be null in tests.
+    if (!password_store) {
+      continue;
+    }
+    password_store->AddCompromisedCredentials(
+        password_manager::CompromisedCredentials(
+            credential.signon_realm, credential.username, base::Time::Now(),
+            password_manager::CompromiseType::kPhished,
+            password_manager::IsMuted(false)));
+  }
 }
 
 void ChromePasswordProtectionService::RemovePhishedSavedPasswordCredential(
     const std::vector<password_manager::MatchingReusedCredential>&
         matching_reused_credentials) {
-  // TODO(crbug.com/1147967): Complete PhishGuard iOS implementation.
+  if (!browser_state_)
+    return;
+
+  for (const auto& credential : matching_reused_credentials) {
+    password_manager::PasswordStore* password_store =
+        GetStoreForReusedCredential(credential);
+    // Password store can be null in tests.
+    if (!password_store) {
+      continue;
+    }
+    password_store->RemoveCompromisedCredentials(
+        credential.signon_realm, credential.username,
+        password_manager::RemoveCompromisedCredentialsReason::
+            kMarkSiteAsLegitimate);
+  }
 }
 
 RequestOutcome ChromePasswordProtectionService::GetPingNotSentReason(
@@ -135,8 +167,13 @@ bool ChromePasswordProtectionService::CanShowInterstitial(
 
 bool ChromePasswordProtectionService::IsURLAllowlistedForPasswordEntry(
     const GURL& url) const {
-  // TODO(crbug.com/1147967): Complete PhishGuard iOS implementation.
-  return false;
+  if (!browser_state_)
+    return false;
+
+  PrefService* prefs = browser_state_->GetPrefs();
+  return IsURLAllowlistedByPolicy(url, *prefs) ||
+         MatchesPasswordProtectionChangePasswordURL(url, *prefs) ||
+         MatchesPasswordProtectionLoginURL(url, *prefs);
 }
 
 bool ChromePasswordProtectionService::IsInPasswordAlertMode(
@@ -221,6 +258,32 @@ void ChromePasswordProtectionService::MaybeLogPasswordReuseLookupEvent(
     RequestOutcome outcome,
     PasswordType password_type,
     const LoginReputationClientResponse* response) {}
+
+password_manager::PasswordStore*
+ChromePasswordProtectionService::GetStoreForReusedCredential(
+    const password_manager::MatchingReusedCredential& reused_credential) {
+  if (!browser_state_)
+    return nullptr;
+  return reused_credential.in_store ==
+                 password_manager::PasswordForm::Store::kAccountStore
+             ? GetAccountPasswordStore()
+             : GetProfilePasswordStore();
+}
+
+password_manager::PasswordStore*
+ChromePasswordProtectionService::GetProfilePasswordStore() const {
+  // Always use EXPLICIT_ACCESS as the password manager checks IsIncognito
+  // itself when it shouldn't access the PasswordStore.
+  return IOSChromePasswordStoreFactory::GetForBrowserState(
+             browser_state_, ServiceAccessType::EXPLICIT_ACCESS)
+      .get();
+}
+
+password_manager::PasswordStore*
+ChromePasswordProtectionService::GetAccountPasswordStore() const {
+  // AccountPasswordStore is currenly not supported on iOS.
+  return nullptr;
+}
 
 PrefService* ChromePasswordProtectionService::GetPrefs() {
   return browser_state_->GetPrefs();

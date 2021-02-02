@@ -5,10 +5,17 @@
 #ifndef IOS_CHROME_BROWSER_SAFE_BROWSING_CHROME_PASSWORD_PROTECTION_SERVICE_H_
 #define IOS_CHROME_BROWSER_SAFE_BROWSING_CHROME_PASSWORD_PROTECTION_SERVICE_H_
 
+#include <vector>
+
+#include "components/password_manager/core/browser/password_reuse_detector.h"
 #import "components/safe_browsing/ios/password_protection/password_protection_service.h"
 
 class ChromeBrowserState;
 class PrefService;
+
+namespace password_manager {
+class PasswordStore;
+}
 
 namespace safe_browsing {
 
@@ -112,15 +119,25 @@ class ChromePasswordProtectionService : public PasswordProtectionService {
       PasswordType password_type,
       const LoginReputationClientResponse* response) override;
 
- protected:
-  ChromeBrowserState* browser_state_;
-
  private:
+  password_manager::PasswordStore* GetStoreForReusedCredential(
+      const password_manager::MatchingReusedCredential& reused_credential);
+
+  // Returns the profile PasswordStore associated with this instance.
+  password_manager::PasswordStore* GetProfilePasswordStore() const;
+
+  // Returns the GAIA-account-scoped PasswordStore associated with this
+  // instance. The account password store contains passwords stored in the
+  // account and is accessible only when the user is signed in and non syncing.
+  password_manager::PasswordStore* GetAccountPasswordStore() const;
+
   // Gets prefs associated with |browser_state_|.
   PrefService* GetPrefs();
 
   // Returns whether |browser_state_| has safe browsing service enabled.
   bool IsSafeBrowsingEnabled();
+
+  ChromeBrowserState* browser_state_;
 };
 
 }  // namespace safe_browsing
