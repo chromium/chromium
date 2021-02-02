@@ -9,9 +9,6 @@
 # -keep for **.test.**.
 -keepnames class **.test.** { *; }
 
-# Do not mark classes as final, as doing so may interfere with mocking.
--optimizations !class/marking/final
-
 # For some unknown reason, JUnit does not like renamed annotations, and causes
 # the tests annotated by them not to be run.
 -keepnames @interface *
