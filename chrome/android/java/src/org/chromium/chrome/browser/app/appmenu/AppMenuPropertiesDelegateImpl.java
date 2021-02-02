@@ -603,10 +603,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             if (item.getItemId() == R.id.track_prices_row_menu_id) {
                 item.setVisible(isPriceTrackingVisible);
                 item.setEnabled(isPriceTrackingEnabled);
-                if (isPriceTrackingVisible) {
-                    menu.findItem(R.id.track_prices_check_id)
-                            .setChecked(PriceTrackingUtilities.isTrackPricesOnTabsEnabled());
-                }
             }
             if (item.getItemId() == R.id.close_all_tabs_menu_id) {
                 boolean hasTabs = mTabModelSelector.getTotalTabCount() > 0;

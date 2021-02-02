@@ -562,6 +562,11 @@ public final class ChromePreferenceKeys {
     public static final String PREFETCH_OFFLINE_COUNTER = "prefetch_notification_offline_counter";
 
     /**
+     * Whether users turn on the feature getting price drop alerts.
+     */
+    public static final String PRICE_TRACKING_PRICE_DROP_ALERTS =
+            "Chrome.PriceTracking.PriceDropAlerts";
+    /**
      * Whether users disable the PriceWelcomeMessageCard.
      */
     public static final String PRICE_TRACKING_PRICE_WELCOME_MESSAGE_CARD =
@@ -872,6 +877,7 @@ public final class ChromePreferenceKeys {
                 OFFLINE_MEASUREMENTS_LAST_CHECK_MILLIS,
                 OFFLINE_MEASUREMENTS_TIME_BETWEEN_CHECKS_MILLIS_LIST,
                 PERSISTENT_OFFLINE_CONTENT_AVAILABILITY_STATUS,
+                PRICE_TRACKING_PRICE_DROP_ALERTS,
                 PRICE_TRACKING_PRICE_WELCOME_MESSAGE_CARD,
                 PRICE_TRACKING_PRICE_WELCOME_MESSAGE_CARD_SHOW_COUNT,
                 PRICE_TRACKING_TRACK_PRICES_ON_TABS,
