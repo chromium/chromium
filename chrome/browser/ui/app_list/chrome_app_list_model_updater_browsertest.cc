@@ -25,6 +25,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "components/account_id/account_id.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/sync/model/string_ordinal.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_system.h"
 
@@ -120,6 +121,48 @@ IN_PROC_BROWSER_TEST_F(OemAppPositionTest, ValidOemAppPosition) {
       model_updater->FindItem(ash::kOemFolderId);
   ASSERT_TRUE(oem_folder);
   EXPECT_TRUE(oem_folder->position().IsValid());
+}
+
+IN_PROC_BROWSER_TEST_F(AppPositionReorderingTest,
+                       GetPositionBeforeFirstItemTest) {
+  AppListClientImpl* client = AppListClientImpl::GetInstance();
+  ASSERT_TRUE(client);
+  AppListModelUpdater* model_updater = test::GetModelUpdater(client);
+
+  // Default apps will be present but we add an app to guarantee there will be
+  // at least 1 app.
+  const std::string app1_id =
+      LoadExtension(test_data_dir_.AppendASCII("app1"))->id();
+  ASSERT_FALSE(app1_id.empty());
+
+  // Create the app list view and show the apps grid.
+  ash::AcceleratorController::Get()->PerformActionIfEnabled(
+      ash::TOGGLE_APP_LIST_FULLSCREEN, {});
+
+  std::vector<std::string> top_level_id_list =
+      app_list_test_api_.GetTopLevelViewIdList();
+  syncer::StringOrdinal position_before_first_item =
+      model_updater->GetPositionBeforeFirstItem();
+
+  // Check that position is before all items in the list.
+  for (const auto& id : top_level_id_list) {
+    ChromeAppListItem* item = model_updater->FindItem(id);
+    ASSERT_TRUE(position_before_first_item.LessThan(item->position()));
+  }
+
+  // Move app to the front.
+  app_list_test_api_.MoveItemToPosition(app1_id, 0);
+
+  std::vector<std::string> reordered_top_level_id_list =
+      app_list_test_api_.GetTopLevelViewIdList();
+  syncer::StringOrdinal new_position_before_first_item =
+      model_updater->GetPositionBeforeFirstItem();
+
+  // Re-check that position is before all items in the list.
+  for (const auto& id : reordered_top_level_id_list) {
+    ChromeAppListItem* item = model_updater->FindItem(id);
+    ASSERT_TRUE(new_position_before_first_item.LessThan(item->position()));
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(AppPositionReorderingTest,

@@ -68,3 +68,19 @@ syncer::StringOrdinal AppListModelUpdater::GetFirstAvailablePositionInternal(
     return syncer::StringOrdinal::CreateInitialOrdinal();
   return sorted_items.back()->position().CreateAfter();
 }
+
+// static
+syncer::StringOrdinal AppListModelUpdater::GetPositionBeforeFirstItemInternal(
+    const std::vector<ChromeAppListItem*>& top_level_items) {
+  auto iter =
+      std::min_element(top_level_items.begin(), top_level_items.end(),
+                       [](ChromeAppListItem* const& item1,
+                          ChromeAppListItem* const& item2) -> bool {
+                         return item1->position().LessThan(item2->position());
+                       });
+
+  if (iter == top_level_items.end())
+    return syncer::StringOrdinal::CreateInitialOrdinal();
+
+  return (*iter)->position().CreateBefore();
+}
