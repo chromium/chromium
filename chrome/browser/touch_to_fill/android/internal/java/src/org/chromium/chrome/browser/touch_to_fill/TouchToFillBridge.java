@@ -4,9 +4,12 @@
 
 package org.chromium.chrome.browser.touch_to_fill;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -20,16 +23,21 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
     private long mNativeView;
     private final TouchToFillComponent mTouchToFillComponent;
 
-    private TouchToFillBridge(long nativeView, WindowAndroid windowAndroid) {
+    private TouchToFillBridge(long nativeView, WindowAndroid windowAndroid,
+            BottomSheetController bottomSheetController) {
         mNativeView = nativeView;
         mTouchToFillComponent = new TouchToFillCoordinator();
-        mTouchToFillComponent.initialize(windowAndroid.getContext().get(),
-                BottomSheetControllerProvider.from(windowAndroid), this);
+        mTouchToFillComponent.initialize(
+                windowAndroid.getContext().get(), bottomSheetController, this);
     }
 
     @CalledByNative
-    private static TouchToFillBridge create(long nativeView, WindowAndroid windowAndroid) {
-        return new TouchToFillBridge(nativeView, windowAndroid);
+    private static @Nullable TouchToFillBridge create(
+            long nativeView, WindowAndroid windowAndroid) {
+        BottomSheetController bottomSheetController =
+                BottomSheetControllerProvider.from(windowAndroid);
+        if (bottomSheetController == null) return null;
+        return new TouchToFillBridge(nativeView, windowAndroid, bottomSheetController);
     }
 
     @CalledByNative

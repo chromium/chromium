@@ -62,8 +62,14 @@ void TouchToFillViewImpl::Show(
     const GURL& url,
     IsOriginSecure is_origin_secure,
     base::span<const password_manager::UiCredential> credentials) {
-  if (!RecreateJavaObject())
+  if (!RecreateJavaObject()) {
+    // It's possible that the constructor cannot access the bottom sheet clank
+    // component. That case may be temporary but we can't let users in a waiting
+    // state so report that TouchToFill is dismissed in order to show the normal
+    // Android keyboard (plus keyboard accessory) instead.
+    controller_->OnDismiss();
     return;
+  }
   // Serialize the |credentials| span into a Java array and instruct the bridge
   // to show it together with |url| to the user.
   JNIEnv* env = AttachCurrentThread();
