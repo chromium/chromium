@@ -9,7 +9,6 @@
 
 #include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_id_from_account_info.h"
 #include "chrome/browser/signin/chrome_device_id_helper.h"

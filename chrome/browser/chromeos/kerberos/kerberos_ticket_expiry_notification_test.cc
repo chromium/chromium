@@ -5,7 +5,6 @@
 #include "chrome/browser/chromeos/kerberos/kerberos_ticket_expiry_notification.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/test/base/testing_browser_process.h"

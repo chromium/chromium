@@ -8,7 +8,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/util/values/values_util.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/user_manager/known_user.h"
 #include "google_apis/gaia/gaia_oauth_client.h"

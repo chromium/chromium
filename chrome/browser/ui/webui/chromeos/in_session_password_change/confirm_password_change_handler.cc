@@ -10,7 +10,6 @@
 #include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/login/saml/in_session_password_change_manager.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/login/auth/saml_password_attributes.h"

@@ -6,7 +6,6 @@
 
 #include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
