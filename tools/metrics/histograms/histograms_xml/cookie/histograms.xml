@@ -118,10 +118,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cookie.Count" units="units" expires_after="2021-07-27">
-  <owner>battre@chromium.org</owner>
+  <obsolete>
+    Removed Feb 2021 in favor of Cookie.Count2, which has a wider range.
+  </obsolete>
+  <owner>chlily@chromium.org</owner>
+  <owner>morlovich@chromium.org</owner>
   <summary>
     Number of cookies in the store (recorded every 10 minutes of active browsing
     time)
+  </summary>
+</histogram>
+
+<histogram name="Cookie.Count2" units="units" expires_after="2021-07-27">
+  <owner>chlily@chromium.org</owner>
+  <owner>morlovich@chromium.org</owner>
+  <summary>
+    Number of cookies in the store (recorded every 10 minutes of active browsing
+    time), with a wider range than Cookie.Count.
   </summary>
 </histogram>
 

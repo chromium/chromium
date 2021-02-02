@@ -1843,8 +1843,12 @@ void CookieMonster::InitializeHistograms() {
       base::Histogram::FactoryGet("Cookie.ExpirationDurationMinutesNonSecure",
                                   1, kMinutesInTenYears, 50,
                                   base::Histogram::kUmaTargetedHistogramFlag);
-  histogram_count_ = base::Histogram::FactoryGet(
-      "Cookie.Count", 1, 4000, 50, base::Histogram::kUmaTargetedHistogramFlag);
+
+  // From UMA_HISTOGRAM_COUNTS_100000
+  // This replaces Cookie.Count which only counted up to 4000 cookies.
+  histogram_count_ =
+      base::Histogram::FactoryGet("Cookie.Count2", 1, 100000, 50,
+                                  base::Histogram::kUmaTargetedHistogramFlag);
 
   // From UMA_HISTOGRAM_ENUMERATION
   histogram_cookie_type_ = base::LinearHistogram::FactoryGet(
