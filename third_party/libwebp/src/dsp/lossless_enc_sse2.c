@@ -249,6 +249,7 @@ static void AddVectorEq_SSE2(const uint32_t* a, uint32_t* out, int size) {
     }                                  \
   } while (0)
 
+#if !(defined(__i386__) || defined(_M_IX86))
 static float CombinedShannonEntropy_SSE2(const int X[256], const int Y[256]) {
   int i;
   double retval = 0.;
@@ -300,6 +301,8 @@ static float CombinedShannonEntropy_SSE2(const int X[256], const int Y[256]) {
   retval += VP8LFastSLog2(sumX) + VP8LFastSLog2(sumXY);
   return (float)retval;
 }
+#endif  // !(defined(__i386__) || defined(_M_IX86))
+
 #undef ANALYZE_X_OR_Y
 #undef ANALYZE_XY
 
@@ -659,7 +662,12 @@ WEBP_TSAN_IGNORE_FUNCTION void VP8LEncDspInitSSE2(void) {
   VP8LCollectColorRedTransforms = CollectColorRedTransforms_SSE2;
   VP8LAddVector = AddVector_SSE2;
   VP8LAddVectorEq = AddVectorEq_SSE2;
+  // TODO(https://crbug.com/webp/499): this function produces different results
+  // from the C code due to use of double/float resulting in output differences
+  // when compared to -noasm.
+#if !(defined(__i386__) || defined(_M_IX86))
   VP8LCombinedShannonEntropy = CombinedShannonEntropy_SSE2;
+#endif
   VP8LVectorMismatch = VectorMismatch_SSE2;
   VP8LBundleColorMap = BundleColorMap_SSE2;
 

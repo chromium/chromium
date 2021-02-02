@@ -259,6 +259,12 @@ int ReadPNG(const uint8_t* const data, size_t data_size,
     goto End;
   }
 
+  // If it looks like the bitstream is going to need more memory than libpng's
+  // internal limit (default: 8M), try to (reasonably) raise it.
+  if (data_size > png_get_chunk_malloc_max(png) && data_size < (1u << 24)) {
+    png_set_chunk_malloc_max(png, data_size);
+  }
+
   info = png_create_info_struct(png);
   if (info == NULL) goto Error;
   end_info = png_create_info_struct(png);

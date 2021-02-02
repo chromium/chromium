@@ -51,9 +51,7 @@ extern "C" {
 # define __has_builtin(x) 0
 #endif
 
-// for now, none of the optimizations below are available in emscripten
-#if !defined(EMSCRIPTEN)
-
+#if !defined(HAVE_CONFIG_H)
 #if defined(_MSC_VER) && _MSC_VER > 1310 && \
     (defined(_M_X64) || defined(_M_IX86))
 #define WEBP_MSC_SSE2  // Visual C++ SSE2 targets
@@ -62,6 +60,7 @@ extern "C" {
 #if defined(_MSC_VER) && _MSC_VER >= 1500 && \
     (defined(_M_X64) || defined(_M_IX86))
 #define WEBP_MSC_SSE41  // Visual C++ SSE4.1 targets
+#endif
 #endif
 
 // WEBP_HAVE_* are used to indicate the presence of the instruction set in dsp
@@ -75,6 +74,9 @@ extern "C" {
 #if defined(__SSE4_1__) || defined(WEBP_MSC_SSE41) || defined(WEBP_HAVE_SSE41)
 #define WEBP_USE_SSE41
 #endif
+
+#undef WEBP_MSC_SSE41
+#undef WEBP_MSC_SSE2
 
 // The intrinsics currently cause compiler errors with arm-nacl-gcc and the
 // inline assembly would need to be modified for use with Native Client.
@@ -109,8 +111,6 @@ extern "C" {
 #if defined(__mips_msa) && defined(__mips_isa_rev) && (__mips_isa_rev >= 5)
 #define WEBP_USE_MSA
 #endif
-
-#endif  /* EMSCRIPTEN */
 
 #ifndef WEBP_DSP_OMIT_C_CODE
 #define WEBP_DSP_OMIT_C_CODE 1

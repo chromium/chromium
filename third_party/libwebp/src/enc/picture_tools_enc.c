@@ -83,7 +83,7 @@ static int SmoothenBlock(const uint8_t* a_ptr, int a_stride, uint8_t* y_ptr,
   return (count == 0);
 }
 
-void WebPReplaceTransparentPixels(WebPPicture* pic, uint32_t color) {
+void WebPReplaceTransparentPixels(WebPPicture* const pic, uint32_t color) {
   if (pic != NULL && pic->use_argb) {
     int y = pic->height;
     uint32_t* argb = pic->argb;

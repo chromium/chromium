@@ -298,9 +298,15 @@ int ReadPictureWithWIC(const char* const filename,
           factory, stream, NULL,
           WICDecodeMetadataCacheOnDemand, &decoder));
   IFS(IWICBitmapDecoder_GetFrameCount(decoder, &frame_count));
-  if (SUCCEEDED(hr) && frame_count == 0) {
-    fprintf(stderr, "No frame found in input file.\n");
-    hr = E_FAIL;
+  if (SUCCEEDED(hr)) {
+    if (frame_count == 0) {
+      fprintf(stderr, "No frame found in input file.\n");
+      hr = E_FAIL;
+    } else if (frame_count > 1) {
+      // WIC will be tried before native WebP decoding so avoid duplicating the
+      // error message.
+      hr = E_FAIL;
+    }
   }
   IFS(IWICBitmapDecoder_GetFrame(decoder, 0, &frame));
   IFS(IWICBitmapFrameDecode_GetPixelFormat(frame, &src_pixel_format));

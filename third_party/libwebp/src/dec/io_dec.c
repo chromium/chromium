@@ -465,7 +465,7 @@ static int EmitRescaledAlphaRGB(const VP8Io* const io, WebPDecParams* const p,
     int lines_left = expected_num_out_lines;
     const int y_end = p->last_y + lines_left;
     while (lines_left > 0) {
-      const size_t row_offset = scaler->src_y - io->mb_y;
+      const int64_t row_offset = (int64_t)scaler->src_y - io->mb_y;
       WebPRescalerImport(scaler, io->mb_h + io->mb_y - scaler->src_y,
                          io->a + row_offset * io->width, io->width);
       lines_left -= p->emit_alpha_row(p, y_end - lines_left, lines_left);
