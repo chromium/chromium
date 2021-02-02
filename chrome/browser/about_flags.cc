@@ -5777,10 +5777,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFontAccessAPIDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kFontAccess)},
 
-    {"font-access-chooser", flag_descriptions::kFontAccessChooserAPIName,
-     flag_descriptions::kFontAccessChooserAPIDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kFontAccessChooser)},
-
     {"mouse-subframe-no-implicit-capture",
      flag_descriptions::kMouseSubframeNoImplicitCaptureName,
      flag_descriptions::kMouseSubframeNoImplicitCaptureDescription, kOsAll,

@@ -425,11 +425,6 @@ const char kFontAccessAPIDescription[] =
     "Enables the experimental Font Access APIs, giving websites access "
     "to enumerate local fonts and access their table data.";
 
-const char kFontAccessChooserAPIName[] = "Font Access Chooser API";
-const char kFontAccessChooserAPIDescription[] =
-    "Enables the experimental Font Access Chooser API, giving websites access "
-    "to local font data using a picker.";
-
 const char kForceColorProfileSRGB[] = "sRGB";
 const char kForceColorProfileP3[] = "Display P3 D65";
 const char kForceColorProfileColorSpin[] = "Color spin with gamma 2.4";
