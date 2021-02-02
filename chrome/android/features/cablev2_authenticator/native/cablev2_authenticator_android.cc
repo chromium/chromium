@@ -396,7 +396,8 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
     // The transaction might fail before interactive mode, thus
     // |cable_authenticator_| may be empty.
     if (cable_authenticator_) {
-      Java_CableAuthenticator_onComplete(env_, cable_authenticator_);
+      Java_CableAuthenticator_onComplete(env_, cable_authenticator_,
+                                         !static_cast<bool>(maybe_error));
     }
     // ResetGlobalData will delete the |Transaction|, which will delete this
     // object. Thus nothing else can be done after this call.

@@ -370,8 +370,28 @@ public class CableAuthenticatorUI
         });
     }
 
-    void onComplete() {
-        getActivity().runOnUiThread(() -> { getActivity().finish(); });
+    /**
+     * Called when a transaction has completed.
+     *
+     * @param ok true if the transaction completed successfully. Otherwise it
+     *           indicates some form of error that could include tunnel server
+     *           errors, handshake failures, etc.
+     */
+    void onComplete(boolean ok) {
+        ThreadUtils.assertOnUiThread();
+
+        if (!ok && mUSBPrompt != null) {
+            // A protocol failure occured. Suggest that the user connect a USB
+            // cable.
+            maybeShowUSBPrompt();
+            return;
+        }
+
+        // |postDelayedTask| does not support cancelation of timers, thus
+        // |mUSBPrompt| is set to null to ensure that, if a timer fires to show
+        // the USB screen, it does nothing after this activity has completed.
+        mUSBPrompt = null;
+        getActivity().finish();
     }
 
     /**

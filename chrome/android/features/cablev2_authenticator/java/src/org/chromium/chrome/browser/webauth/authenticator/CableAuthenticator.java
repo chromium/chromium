@@ -294,11 +294,15 @@ class CableAuthenticator {
 
     /**
      * Called from native code when a network-based operation has completed.
+     *
+     * @param ok true if the transaction completed successfully. Otherwise it
+     *           indicates some form of error that could include tunnel server
+     *           errors, handshake failures, etc.
      */
     @CalledByNative
-    public void onComplete() {
+    public void onComplete(boolean ok) {
         assert mTaskRunner.belongsToCurrentThread();
-        mUi.onComplete();
+        mUi.onComplete(ok);
     }
 
     void onActivityResult(int requestCode, int resultCode, Intent data) {
