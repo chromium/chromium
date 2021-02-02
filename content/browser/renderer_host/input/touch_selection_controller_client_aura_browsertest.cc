@@ -377,7 +377,7 @@ class TouchSelectionControllerClientAuraSiteIsolationTest
     aura::Window* shell_window = shell()->window();
     aura::Window* content_window = view->GetNativeView();
     aura::Window::ConvertPointToTarget(content_window, shell_window, &point);
-    ui::EventSink* sink = content_window->GetHost()->event_sink();
+    ui::EventSink* sink = content_window->GetHost()->GetEventSink();
     ui::TouchEvent touch(type, point, ui::EventTimeForNow(),
                          ui::PointerDetails(ui::EventPointerType::kTouch, 0));
     ui::EventDispatchDetails details = sink->OnEventFromSource(&touch);

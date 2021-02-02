@@ -464,7 +464,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
   EXPECT_EQ(1, GetCurrentIndex());
 
   aura::Window* content = web_contents->GetContentNativeView();
-  ui::EventSink* sink = content->GetHost()->event_sink();
+  ui::EventSink* sink = content->GetHost()->GetEventSink();
   gfx::Rect bounds = content->GetBoundsInRootWindow();
 
   // Spurious mouse moves interfere with the overscroll gesture which causes

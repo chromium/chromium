@@ -98,7 +98,7 @@ class AutofillUiTest : public InProcessBrowserTest,
   AutofillManager* GetAutofillManager();
 
   AutofillManagerTestDelegateImpl* test_delegate() { return &test_delegate_; }
-  content::RenderWidgetHost::KeyPressEventCallback key_press_event_sink();
+  content::RenderWidgetHost::KeyPressEventCallback key_press_GetEventSink();
 
  private:
   // WebContentsObserver override:

@@ -339,7 +339,7 @@ void CoreOobeHandler::OnDeviceInfoUpdated(const std::string& bluetooth_name) {
 }
 
 ui::EventSink* CoreOobeHandler::GetEventSink() {
-  return ash::Shell::GetPrimaryRootWindow()->GetHost()->event_sink();
+  return ash::Shell::GetPrimaryRootWindow()->GetHost()->GetEventSink();
 }
 
 void CoreOobeHandler::UpdateLabel(const std::string& id,

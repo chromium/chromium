@@ -446,11 +446,11 @@ void FrameCaptionButtonContainerView::MenuButtonPressed() {
   // Send up event as well as down event as ARC++ clients expect this sequence.
   aura::Window* root_window = GetWidget()->GetNativeWindow()->GetRootWindow();
   ui::KeyEvent press_key_event(ui::ET_KEY_PRESSED, ui::VKEY_APPS, ui::EF_NONE);
-  ignore_result(root_window->GetHost()->event_sink()->OnEventFromSource(
+  ignore_result(root_window->GetHost()->GetEventSink()->OnEventFromSource(
       &press_key_event));
   ui::KeyEvent release_key_event(ui::ET_KEY_RELEASED, ui::VKEY_APPS,
                                  ui::EF_NONE);
-  ignore_result(root_window->GetHost()->event_sink()->OnEventFromSource(
+  ignore_result(root_window->GetHost()->GetEventSink()->OnEventFromSource(
       &release_key_event));
   // TODO(oshima): Add metrics
 }

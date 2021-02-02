@@ -41,7 +41,7 @@ class UnifiedEventTargeter : public aura::WindowTargeter {
             static_cast<aura::Window*>(nullptr), dst_root_);
       }
       ignore_result(
-          dst_root_->GetHost()->event_sink()->OnEventFromSource(event));
+          dst_root_->GetHost()->GetEventSink()->OnEventFromSource(event));
 
       // Reset the source host.
       delegate_->SetCurrentEventTargeterSourceHost(nullptr);

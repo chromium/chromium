@@ -83,9 +83,6 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   Window* window() { return window_; }
   const Window* window() const { return window_; }
 
-  // TODO(msw): Remove this, callers should use GetEventSink().
-  ui::EventSink* event_sink();
-
   WindowEventDispatcher* dispatcher() {
     return const_cast<WindowEventDispatcher*>(
         const_cast<const WindowTreeHost*>(this)->dispatcher());

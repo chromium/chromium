@@ -169,7 +169,7 @@ TEST_F(WindowManagerTest, Focus) {
       aura::client::GetFocusClient(w121.get());
   EXPECT_EQ(w121.get(), focus_client->GetFocusedWindow());
 
-  ui::EventSink* sink = root_window->GetHost()->event_sink();
+  ui::EventSink* sink = root_window->GetHost()->GetEventSink();
 
   // The key press should be sent to the focused sub-window.
   ui::KeyEvent keyev(ui::ET_KEY_PRESSED, ui::VKEY_E, ui::EF_NONE);
@@ -439,7 +439,7 @@ TEST_F(WindowManagerTest, ActivateOnTouch) {
   ui::TouchEvent touchev1(ui::ET_TOUCH_PRESSED, press_point, getTime(),
                           ui::PointerDetails(ui::EventPointerType::kTouch, 0));
 
-  ui::EventSink* sink = root_window->GetHost()->event_sink();
+  ui::EventSink* sink = root_window->GetHost()->GetEventSink();
   ui::EventDispatchDetails details = sink->OnEventFromSource(&touchev1);
   ASSERT_FALSE(details.dispatcher_destroyed);
 
@@ -501,7 +501,7 @@ TEST_F(WindowManagerTest, MouseEventCursors) {
   aura::Window::ConvertPointToTarget(window->parent(), root_window, &point2);
 
   aura::WindowTreeHost* host = root_window->GetHost();
-  ui::EventSink* sink = host->event_sink();
+  ui::EventSink* sink = host->GetEventSink();
 
   // Cursor starts as a pointer (set during Shell::Init()).
   EXPECT_EQ(ui::mojom::CursorType::kPointer, host->last_cursor().type());
@@ -621,7 +621,7 @@ TEST_F(WindowManagerTest, TransformActivate) {
   ui::MouseEvent mouseev1(ui::ET_MOUSE_PRESSED, miss_point, miss_point,
                           ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                           ui::EF_LEFT_MOUSE_BUTTON);
-  ui::EventSink* sink = root_window->GetHost()->event_sink();
+  ui::EventSink* sink = root_window->GetHost()->GetEventSink();
   ui::EventDispatchDetails details = sink->OnEventFromSource(&mouseev1);
   ASSERT_FALSE(details.dispatcher_destroyed);
   EXPECT_EQ(NULL, aura::client::GetFocusClient(w1.get())->GetFocusedWindow());
@@ -665,7 +665,7 @@ TEST_F(WindowManagerTest, AdditionalFilters) {
 
   // Dispatches mouse and keyboard events.
   ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE);
-  ui::EventSink* sink = root_window->GetHost()->event_sink();
+  ui::EventSink* sink = root_window->GetHost()->GetEventSink();
   ui::EventDispatchDetails details = sink->OnEventFromSource(&key_event);
   ASSERT_FALSE(details.dispatcher_destroyed);
   ui::MouseEvent mouse_pressed(ui::ET_MOUSE_PRESSED, gfx::Point(0, 0),

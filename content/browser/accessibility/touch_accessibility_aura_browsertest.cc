@@ -47,7 +47,7 @@ class TouchAccessibilityBrowserTest : public ContentBrowserTest {
 
   void SendTouchExplorationEvent(int x, int y) {
     aura::Window* window = shell()->web_contents()->GetContentNativeView();
-    ui::EventSink* sink = window->GetHost()->event_sink();
+    ui::EventSink* sink = window->GetHost()->GetEventSink();
     gfx::Rect bounds = window->GetBoundsInRootWindow();
     gfx::Point location(bounds.x() + x, bounds.y() + y);
     int flags = ui::EF_TOUCH_ACCESSIBILITY;

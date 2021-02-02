@@ -815,7 +815,7 @@ TEST_F(DragDropControllerTest, SyntheticEventsDuringDragDrop) {
                               mouse_move_location, ui::EventTimeForNow(), 0, 0);
     ui::EventDispatchDetails details = Shell::GetPrimaryRootWindow()
                                            ->GetHost()
-                                           ->event_sink()
+                                           ->GetEventSink()
                                            ->OnEventFromSource(&mouse_move);
     ASSERT_FALSE(details.dispatcher_destroyed);
   }

@@ -56,7 +56,7 @@ class AuraTestBase : public testing::Test {
 
   Window* root_window() { return helper_->GetContext(); }
   WindowTreeHost* host() { return helper_->GetHost(); }
-  ui::EventSink* event_sink() { return host()->event_sink(); }
+  ui::EventSink* GetEventSink() { return host()->GetEventSink(); }
   TestScreen* test_screen() { return helper_->GetTestScreen(); }
   client::FocusClient* focus_client() { return helper_->GetFocusClient(); }
 

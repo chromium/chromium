@@ -97,7 +97,7 @@ void AuraTestBase::ParentWindow(Window* window) {
 }
 
 bool AuraTestBase::DispatchEventUsingWindowDispatcher(ui::Event* event) {
-  ui::EventDispatchDetails details = event_sink()->OnEventFromSource(event);
+  ui::EventDispatchDetails details = GetEventSink()->OnEventFromSource(event);
   CHECK(!details.dispatcher_destroyed);
   return event->handled();
 }

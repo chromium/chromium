@@ -117,7 +117,7 @@ class ViewsTestBase : public PlatformTest {
     return aura::test::AuraTestHelper::GetInstance()->GetContext();
   }
 
-  ui::EventSink* event_sink() { return host()->event_sink(); }
+  ui::EventSink* GetEventSink() { return host()->GetEventSink(); }
 
   aura::WindowTreeHost* host() {
     return aura::test::AuraTestHelper::GetInstance()->GetHost();

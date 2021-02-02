@@ -117,10 +117,6 @@ bool WindowTreeHost::HasObserver(const WindowTreeHostObserver* observer) const {
   return observers_.HasObserver(observer);
 }
 
-ui::EventSink* WindowTreeHost::event_sink() {
-  return dispatcher_.get();
-}
-
 base::WeakPtr<WindowTreeHost> WindowTreeHost::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
@@ -283,7 +279,7 @@ ui::EventDispatchDetails WindowTreeHost::DispatchKeyEventPostIME(
 
   // We should bypass event rewriters here as they've been tried before.
   ui::EventDispatchDetails dispatch_details =
-      event_sink()->OnEventFromSource(event);
+      GetEventSink()->OnEventFromSource(event);
   if (!dispatch_details.dispatcher_destroyed)
     dispatcher_->set_skip_ime(false);
   return dispatch_details;

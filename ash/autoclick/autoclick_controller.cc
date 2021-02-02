@@ -250,7 +250,7 @@ void AutoclickController::DoScrollAction(ScrollPadAction action) {
                          0 /* x_offset_ordinal */, 0 /* y_offset_ordinal */,
                          2 /* finger_count */);
   ui::MouseWheelEvent wheel(scroll);
-  ignore_result(host->event_sink()->OnEventFromSource(&wheel));
+  ignore_result(host->GetEventSink()->OnEventFromSource(&wheel));
 }
 
 void AutoclickController::OnEnteredScrollButton() {
@@ -365,7 +365,7 @@ void AutoclickController::DoAutoclickAction() {
       ui::MouseEvent press_event(ui::ET_MOUSE_PRESSED, location_in_pixels,
                                  location_in_pixels, ui::EventTimeForNow(),
                                  mouse_event_flags_ | button, button);
-      details = host->event_sink()->OnEventFromSource(&press_event);
+      details = host->GetEventSink()->OnEventFromSource(&press_event);
       if (drag_start) {
         drag_event_rewriter_->SetEnabled(true);
         return;
@@ -380,7 +380,7 @@ void AutoclickController::DoAutoclickAction() {
     ui::MouseEvent release_event(ui::ET_MOUSE_RELEASED, location_in_pixels,
                                  location_in_pixels, ui::EventTimeForNow(),
                                  mouse_event_flags_ | button, button);
-    details = host->event_sink()->OnEventFromSource(&release_event);
+    details = host->GetEventSink()->OnEventFromSource(&release_event);
 
     // Now a single click, or half the drag & drop, has been completed.
     if (in_progress_event_type != AutoclickEventType::kDoubleClick ||
@@ -397,12 +397,12 @@ void AutoclickController::DoAutoclickAction() {
         ui::ET_MOUSE_RELEASED, location_in_pixels, location_in_pixels,
         ui::EventTimeForNow(),
         mouse_event_flags_ | button | ui::EF_IS_DOUBLE_CLICK, button);
-    details = host->event_sink()->OnEventFromSource(&double_press_event);
+    details = host->GetEventSink()->OnEventFromSource(&double_press_event);
     if (details.dispatcher_destroyed) {
       OnActionCompleted(in_progress_event_type);
       return;
     }
-    details = host->event_sink()->OnEventFromSource(&double_release_event);
+    details = host->GetEventSink()->OnEventFromSource(&double_release_event);
     OnActionCompleted(in_progress_event_type);
   }
 }

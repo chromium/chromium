@@ -1875,7 +1875,7 @@ TEST_F(WidgetCaptureTest, MouseEventDispatchedToRightWindow) {
   ui::MouseEvent mouse_event(ui::ET_MOUSE_EXITED, gfx::Point(), gfx::Point(),
                              ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
   ui::EventDispatchDetails details =
-      widget1.GetNativeWindow()->GetHost()->event_sink()->OnEventFromSource(
+      widget1.GetNativeWindow()->GetHost()->GetEventSink()->OnEventFromSource(
           &mouse_event);
   ASSERT_FALSE(details.dispatcher_destroyed);
   EXPECT_TRUE(widget1.GetAndClearGotMouseEvent());
