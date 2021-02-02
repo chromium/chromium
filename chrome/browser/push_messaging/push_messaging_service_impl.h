@@ -42,6 +42,7 @@ class Profile;
 class PushMessagingAppIdentifier;
 class PushMessagingServiceTest;
 class ScopedKeepAlive;
+class ScopedProfileKeepAlive;
 
 namespace blink {
 namespace mojom {
@@ -431,8 +432,12 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
   // KeepAlive registered while we have in-flight push messages, to make sure
-  // we can finish processing them without being interrupted.
+  // we can finish processing them without being interrupted by BrowserProcess
+  // teardown.
   std::unique_ptr<ScopedKeepAlive> in_flight_keep_alive_;
+
+  // Same as ScopedKeepAlive, but prevents |profile_| from getting deleted.
+  std::unique_ptr<ScopedProfileKeepAlive> in_flight_profile_keep_alive_;
 #endif
 
   content::NotificationRegistrar registrar_;

@@ -58,7 +58,10 @@ enum class ProfileKeepAliveOrigin {
   // browser window to open, so wait for the event to finish processing.
   kPendingNotificationClickEvent = 10,
 
-  kMaxValue = kPendingNotificationClickEvent,
+  // There's a visible Push Notification from a Service Worker.
+  kInFlightPushMessage = 11,
+
+  kMaxValue = kInFlightPushMessage,
 };
 
 std::ostream& operator<<(std::ostream& out,

@@ -28,6 +28,8 @@
 #include "chrome/browser/permissions/abusive_origin_permission_revocation_request.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/push_messaging/push_messaging_app_identifier.h"
 #include "chrome/browser/push_messaging/push_messaging_constants.h"
 #include "chrome/browser/push_messaging/push_messaging_features.h"
@@ -349,6 +351,8 @@ void PushMessagingServiceImpl::OnMessage(const std::string& app_id,
     in_flight_keep_alive_ = std::make_unique<ScopedKeepAlive>(
         KeepAliveOrigin::IN_FLIGHT_PUSH_MESSAGE,
         KeepAliveRestartOption::DISABLED);
+    in_flight_profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
+        profile_, ProfileKeepAliveOrigin::kInFlightPushMessage);
   }
 #endif
 
@@ -595,8 +599,10 @@ void PushMessagingServiceImpl::DidHandleMessage(
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
   // Reset before running callbacks below, so tests can verify keep-alive reset.
-  if (in_flight_message_deliveries_.empty())
+  if (in_flight_message_deliveries_.empty()) {
     in_flight_keep_alive_.reset();
+    in_flight_profile_keep_alive_.reset();
+  }
 #endif
 
   std::move(message_handled_closure).Run();
@@ -1413,6 +1419,7 @@ void PushMessagingServiceImpl::Observe(
   shutdown_started_ = true;
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
   in_flight_keep_alive_.reset();
+  in_flight_profile_keep_alive_.reset();
 #endif  // BUILDFLAG(ENABLE_BACKGROUND_MODE)
 }
 
