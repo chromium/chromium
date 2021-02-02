@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_CLIPBOARD_NOTIFICATION_HELPER_H_
 #define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_CLIPBOARD_NOTIFICATION_HELPER_H_
 
+#include <vector>
+
 #include "base/strings/string16.h"
 #include "ui/base/clipboard/clipboard_observer.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
@@ -39,11 +41,17 @@ class DlpClipboardNotificationHelper : public views::WidgetObserver,
   void WarnOnPaste(const ui::DataTransferEndpoint* const data_src,
                    const ui::DataTransferEndpoint* const data_dst);
 
+  // Returns true if the user approved to paste the clipboard data to this
+  // |data_dst| before.
+  bool DidUserProceedOnWarn(const ui::DataTransferEndpoint* const data_dst);
+
  private:
   virtual void ShowClipboardBlockBubble(const base::string16& text);
   virtual void ShowClipboardBlockToast(const std::string& id,
                                        const base::string16& text);
-  virtual void ShowClipboardWarnBubble(const base::string16& text);
+  virtual void ShowClipboardWarnBubble(
+      const base::string16& text,
+      const ui::DataTransferEndpoint* const data_dst);
 
   // views::WidgetObserver
   void OnWidgetClosing(views::Widget* widget) override;
@@ -59,6 +67,15 @@ class DlpClipboardNotificationHelper : public views::WidgetObserver,
                            int timeout_duration_ms);
 
   void CloseWidget(views::Widget* widget, views::Widget::ClosedReason reason);
+
+  void ProceedOnWarn(views::Widget* widget,
+                     const ui::DataTransferEndpoint& data_dst);
+
+  void ResetUserWarnSelection();
+
+  // Vector of destinations approved by the user on warning for copy/paste. It
+  // gets reset when the clipboard data changes.
+  std::vector<ui::DataTransferEndpoint> approved_dsts_;
 
   views::UniqueWidgetPtr widget_;
 };

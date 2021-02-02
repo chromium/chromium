@@ -42,6 +42,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
+#include "url/origin.h"
 
 namespace policy {
 
@@ -279,7 +280,7 @@ class ClipboardWarnBubble : public ClipboardBubbleView {
 
   void SetProceedCallback(base::RepeatingCallback<void()> cb) {
     DCHECK(paste_button_);
-    // TODO(crbug.com/1168106): Add the logic for "paste".
+    paste_button_->SetCallback(std::move(cb));
   }
 
  private:
@@ -355,6 +356,40 @@ views::Widget::InitParams GetWidgetInitParams() {
   return params;
 }
 
+void SynthesizePaste() {
+  ui::KeyEvent control_press(/*type=*/ui::ET_KEY_PRESSED, ui::VKEY_CONTROL,
+                             /*code=*/static_cast<ui::DomCode>(0),
+                             /*flags=*/0);
+  auto* host = ash::GetWindowTreeHostForDisplay(
+      display::Screen::GetScreen()->GetDisplayForNewWindows().id());
+  DCHECK(host);
+  host->DeliverEventToSink(&control_press);
+
+  ui::KeyEvent v_press(/*type=*/ui::ET_KEY_PRESSED, ui::VKEY_V,
+                       /*code=*/static_cast<ui::DomCode>(0),
+                       /*flags=*/ui::EF_CONTROL_DOWN);
+
+  host->DeliverEventToSink(&v_press);
+
+  ui::KeyEvent v_release(/*type=*/ui::ET_KEY_RELEASED, ui::VKEY_V,
+                         /*code=*/static_cast<ui::DomCode>(0),
+                         /*flags=*/ui::EF_CONTROL_DOWN);
+  host->DeliverEventToSink(&v_release);
+
+  ui::KeyEvent control_release(/*type=*/ui::ET_KEY_RELEASED, ui::VKEY_CONTROL,
+                               /*code=*/static_cast<ui::DomCode>(0),
+                               /*flags=*/0);
+  host->DeliverEventToSink(&control_release);
+}
+
+ui::DataTransferEndpoint CloneEndpoint(
+    const ui::DataTransferEndpoint* const data_endpoint) {
+  if (data_endpoint == nullptr)
+    return ui::DataTransferEndpoint(ui::EndpointType::kDefault);
+
+  return ui::DataTransferEndpoint(*data_endpoint);
+}
+
 }  // namespace
 
 DlpClipboardNotificationHelper::DlpClipboardNotificationHelper() {
@@ -427,8 +462,26 @@ void DlpClipboardNotificationHelper::WarnOnPaste(
       return;
     }
   }
-  ShowClipboardWarnBubble(l10n_util::GetStringFUTF16(
-      IDS_POLICY_DLP_CLIPBOARD_WARN_ON_PASTE, host_name));
+  ShowClipboardWarnBubble(
+      l10n_util::GetStringFUTF16(IDS_POLICY_DLP_CLIPBOARD_WARN_ON_PASTE,
+                                 host_name),
+      data_dst);
+}
+
+bool DlpClipboardNotificationHelper::DidUserProceedOnWarn(
+    const ui::DataTransferEndpoint* const data_dst) {
+  const ui::EndpointType dst_type =
+      data_dst ? data_dst->type() : ui::EndpointType::kDefault;
+
+  for (const auto& endpoint : approved_dsts_) {
+    if (endpoint.type() == dst_type) {
+      if (dst_type != ui::EndpointType::kUrl)
+        return true;
+      else if (endpoint.IsSameOriginWith(*data_dst))
+        return true;
+    }
+  }
+  return false;
 }
 
 void DlpClipboardNotificationHelper::ShowClipboardBlockBubble(
@@ -457,7 +510,8 @@ void DlpClipboardNotificationHelper::ShowClipboardBlockToast(
 }
 
 void DlpClipboardNotificationHelper::ShowClipboardWarnBubble(
-    const base::string16& text) {
+    const base::string16& text,
+    const ui::DataTransferEndpoint* const data_dst) {
   InitWidget();
   DCHECK(widget_);
 
@@ -467,7 +521,9 @@ void DlpClipboardNotificationHelper::ShowClipboardWarnBubble(
   warn_bubble->SetDismissCallback(base::BindRepeating(
       &DlpClipboardNotificationHelper::CloseWidget, base::Unretained(this),
       widget_.get(), views::Widget::ClosedReason::kCancelButtonClicked));
-  // TODO(crbug.com/1168106): Set proceed callback.
+  warn_bubble->SetProceedCallback(base::BindRepeating(
+      &DlpClipboardNotificationHelper::ProceedOnWarn, base::Unretained(this),
+      widget_.get(), CloneEndpoint(data_dst)));
 
   ResizeAndShowWidget(warn_bubble->GetBubbleSize(),
                       kClipboardDlpWarnDurationMs);
@@ -493,6 +549,7 @@ void DlpClipboardNotificationHelper::OnWidgetActivationChanged(
 void DlpClipboardNotificationHelper::OnClipboardDataChanged() {
   if (widget_)
     widget_->Close();
+  ResetUserWarnSelection();
 }
 
 void DlpClipboardNotificationHelper::InitWidget() {
@@ -525,6 +582,18 @@ void DlpClipboardNotificationHelper::CloseWidget(
     views::Widget::ClosedReason reason) {
   if (widget == widget_.get())
     widget->CloseWithReason(reason);
+}
+
+void DlpClipboardNotificationHelper::ProceedOnWarn(
+    views::Widget* widget,
+    const ui::DataTransferEndpoint& data_dst) {
+  CloseWidget(widget, views::Widget::ClosedReason::kAcceptButtonClicked);
+  approved_dsts_.push_back(data_dst);
+  SynthesizePaste();
+}
+
+void DlpClipboardNotificationHelper::ResetUserWarnSelection() {
+  approved_dsts_.clear();
 }
 
 }  // namespace policy

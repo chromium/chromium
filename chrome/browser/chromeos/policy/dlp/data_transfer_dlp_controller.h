@@ -45,9 +45,14 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
   ~DataTransferDlpController() override;
 
  private:
-  virtual void DoNotifyBlockedPaste(
+  virtual void NotifyBlockedPaste(
       const ui::DataTransferEndpoint* const data_src,
       const ui::DataTransferEndpoint* const data_dst);
+
+  virtual void WarnOnPaste(const ui::DataTransferEndpoint* const data_src,
+                           const ui::DataTransferEndpoint* const data_dst);
+
+  bool ShouldProceedOnWarn(const ui::DataTransferEndpoint* const data_dst);
 
   const DlpRulesManager& dlp_rules_manager_;
   DlpClipboardNotificationHelper helper_;
