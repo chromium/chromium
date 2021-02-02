@@ -427,19 +427,21 @@ bool MockDrmDevice::CloseBufferHandle(uint32_t handle) {
   return true;
 }
 
-bool MockDrmDevice::CommitProperties(
+bool MockDrmDevice::CommitPropertiesInternal(
     drmModeAtomicReq* request,
     uint32_t flags,
     uint32_t crtc_count,
     scoped_refptr<PageFlipRequest> page_flip_request) {
+  commit_count_++;
   if (flags == kTestModesetFlags)
     ++test_modeset_count_;
   else if (flags == kCommitModesetFlags)
     ++commit_modeset_count_;
 
-  commit_count_++;
-  if (!commit_expectation_)
+  if ((flags & kCommitModesetFlags && !set_crtc_expectation_) ||
+      (flags & DRM_MODE_ATOMIC_NONBLOCK && !commit_expectation_)) {
     return false;
+  }
 
   for (uint32_t i = 0; i < request->cursor; ++i) {
     bool res = ValidatePropertyValue(request->items[i].property_id,
