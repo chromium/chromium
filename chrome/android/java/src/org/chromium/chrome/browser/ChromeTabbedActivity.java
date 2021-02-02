@@ -332,6 +332,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
             getTabModelSelector().getModel(true).closeAllTabs(false, false);
         }
+
+        @Override
+        public boolean isActiveModel() {
+            return getTabModelSelector().getModel(true).isActiveModel();
+        }
     };
 
     /**

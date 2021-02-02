@@ -118,6 +118,18 @@ public class IncognitoUtils {
     }
 
     /**
+     * Determine whether the incognito tab model is active.
+     */
+    public static boolean isIncognitoTabModelActive() {
+        for (IncognitoTabHost host : IncognitoTabHostRegistry.getInstance().getHosts()) {
+            if (host.isActiveModel()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Closes all incognito tabs.
      */
     public static void closeAllIncognitoTabs() {
