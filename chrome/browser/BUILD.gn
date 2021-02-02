@@ -3215,7 +3215,7 @@ static_library("browser") {
       "//chrome/browser/android/webapk:proto",
       "//chrome/browser/banners/android:jni_headers",
       "//chrome/browser/consent_auditor/android:jni_headers",
-      "//chrome/browser/continuous_search",
+      "//chrome/browser/continuous_search/internal",
       "//chrome/browser/download/internal/android",
       "//chrome/browser/endpoint_fetcher:jni_headers",
       "//chrome/browser/feedback/android",

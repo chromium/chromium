@@ -97,6 +97,7 @@ include_rules = [
   "+components/contextual_search/content/browser",
   "+components/contextual_search/content/common",
   "+components/contextual_search/core/browser",
+  "+components/continuous_search/browser",
   "+components/cookie_config",
   "+components/country_codes",
   "+components/crash/content/app",
