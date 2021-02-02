@@ -1772,7 +1772,7 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
-    builder = "lacros-chrome",
+    builder = "lacros-amd64-generic-chrome",
 )
 
 chrome_internal_verifier(

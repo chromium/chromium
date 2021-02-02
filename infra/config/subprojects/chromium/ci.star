@@ -418,7 +418,7 @@ consoles.console_view(
     category = "chrome",
     short_name = short_name,
 ) for name, short_name in (
-    ("lacros-chrome", "lcr"),
+    ("lacros-amd64-generic-chrome", "lcr"),
     ("linux-chromeos-chrome", "cro"),
     ("linux-chrome", "lnx"),
     ("mac-chrome", "mac"),

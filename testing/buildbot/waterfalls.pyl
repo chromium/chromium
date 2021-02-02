@@ -294,7 +294,7 @@
         },
         'os_type': 'chromeos'
       },
-      'lacros-chrome': {
+      'lacros-amd64-generic-chrome': {
         'additional_compile_targets': [
           'chrome',
         ],

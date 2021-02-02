@@ -233,7 +233,7 @@
       "use_goma": true
     }
   },
-  "lacros-chrome": {
+  "lacros-amd64-generic-chrome": {
     "args_file": "//build/args/chromeos/amd64-generic.gni",
     "gn_args": {
       "chromeos_is_browser_only": true,
