@@ -676,6 +676,7 @@ try_.chromium_chromiumos_builder(
     name = "lacros-amd64-generic-rel",
     builderless = not settings.is_master,
     main_list_view = "try",
+    tryjob = try_.job(),
 )
 
 try_.chromium_chromiumos_builder(
