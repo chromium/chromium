@@ -258,7 +258,7 @@ base::FilePath PrintedDocument::CreateDebugDumpPath(
   filename += document_name;
   base::FilePath::StringType system_filename;
 #if defined(OS_WIN)
-  system_filename = filename;
+  system_filename = base::UTF16ToWide(filename);
 #else   // OS_WIN
   system_filename = base::UTF16ToUTF8(filename);
 #endif  // OS_WIN

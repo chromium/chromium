@@ -79,7 +79,7 @@ PrintingContext::Result PrintingContextWin::UseDefaultSettings() {
   scoped_refptr<PrintBackend> backend =
       PrintBackend::CreateInstance(delegate_->GetAppLocale());
   base::string16 default_printer =
-      base::UTF8ToWide(backend->GetDefaultPrinterName());
+      base::UTF8ToUTF16(backend->GetDefaultPrinterName());
   if (!default_printer.empty()) {
     ScopedPrinterHandle printer;
     if (printer.OpenPrinterWithName(default_printer.c_str())) {
@@ -110,11 +110,13 @@ PrintingContext::Result PrintingContextWin::UseDefaultSettings() {
       const PRINTER_INFO_2* info_2_end = info_2 + count_returned;
       for (; info_2 < info_2_end; ++info_2) {
         ScopedPrinterHandle printer;
-        if (!printer.OpenPrinterWithName(info_2->pPrinterName))
+        if (!printer.OpenPrinterWithName(
+                base::as_u16cstr(info_2->pPrinterName)))
           continue;
         std::unique_ptr<DEVMODE, base::FreeDeleter> dev_mode =
             CreateDevMode(printer.Get(), nullptr);
-        if (InitializeSettings(info_2->pPrinterName, dev_mode.get()) == OK)
+        if (InitializeSettings(base::as_u16cstr(info_2->pPrinterName),
+                               dev_mode.get()) == OK)
           return OK;
       }
       if (context_)
@@ -289,7 +291,7 @@ PrintingContext::Result PrintingContextWin::NewDocument(
 
   DCHECK(SimplifyDocumentTitle(document_name) == document_name);
   DOCINFO di = {sizeof(DOCINFO)};
-  di.lpszDocName = document_name.c_str();
+  di.lpszDocName = base::as_wcstr(document_name);
 
   // Is there a debug dump directory specified? If so, force to print to a file.
   if (PrintedDocument::HasDebugDumpPath()) {
@@ -378,7 +380,7 @@ BOOL PrintingContextWin::AbortProc(HDC hdc, int nCode) {
 }
 
 PrintingContext::Result PrintingContextWin::InitializeSettings(
-    const std::wstring& device_name,
+    const base::string16& device_name,
     DEVMODE* dev_mode) {
   if (!dev_mode)
     return OnError();

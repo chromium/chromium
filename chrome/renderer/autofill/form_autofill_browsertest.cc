@@ -290,7 +290,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     // Autofill uses the system font to render suggestion previews. On Windows
     // an extra step is required to ensure that the system font is configured.
     blink::WebFontRendering::SetMenuFontMetrics(
-        base::ASCIIToUTF16("Arial").c_str(), 12);
+        blink::WebString::FromASCII("Arial"), 12);
   }
 #endif
 

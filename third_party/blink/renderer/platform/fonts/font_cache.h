@@ -203,11 +203,11 @@ class PLATFORM_EXPORT FontCache {
   static void SetLCDTextEnabled(bool enabled) { lcd_text_enabled_ = enabled; }
   static void AddSideloadedFontForTesting(sk_sp<SkTypeface>);
   // Functions to cache and retrieve the system font metrics.
-  static void SetMenuFontMetrics(const wchar_t* family_name,
+  static void SetMenuFontMetrics(const AtomicString& family_name,
                                  int32_t font_height);
-  static void SetSmallCaptionFontMetrics(const wchar_t* family_name,
+  static void SetSmallCaptionFontMetrics(const AtomicString& family_name,
                                          int32_t font_height);
-  static void SetStatusFontMetrics(const wchar_t* family_name,
+  static void SetStatusFontMetrics(const AtomicString& family_name,
                                    int32_t font_height);
   static int32_t MenuFontHeight() { return menu_font_height_; }
   static const AtomicString& MenuFontFamily() {

@@ -48,7 +48,7 @@ class PRINTING_EXPORT ScopedPrinterHandle
     : public base::win::GenericScopedHandle<PrinterHandleTraits,
                                             base::win::DummyVerifierTraits> {
  public:
-  bool OpenPrinterWithName(const wchar_t* printer);
+  bool OpenPrinterWithName(const base::char16* printer);
 };
 
 class PRINTING_EXPORT PrinterChangeHandleTraits {

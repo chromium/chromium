@@ -3049,13 +3049,14 @@ void WebViewImpl::UpdateFontRenderingFromRendererPrefs() {
 #if defined(OS_WIN)
   // Cache the system font metrics in blink.
   WebFontRendering::SetMenuFontMetrics(
-      renderer_preferences_.menu_font_family_name.c_str(),
+      WebString::FromUTF16(renderer_preferences_.menu_font_family_name),
       renderer_preferences_.menu_font_height);
   WebFontRendering::SetSmallCaptionFontMetrics(
-      renderer_preferences_.small_caption_font_family_name.c_str(),
+      WebString::FromUTF16(
+          renderer_preferences_.small_caption_font_family_name),
       renderer_preferences_.small_caption_font_height);
   WebFontRendering::SetStatusFontMetrics(
-      renderer_preferences_.status_font_family_name.c_str(),
+      WebString::FromUTF16(renderer_preferences_.status_font_family_name),
       renderer_preferences_.status_font_height);
   WebFontRendering::SetAntialiasedTextEnabled(
       renderer_preferences_.should_antialias_text);

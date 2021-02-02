@@ -48,7 +48,7 @@ HRESULT GetElevationType(PTOKEN_ELEVATION_TYPE elevation) {
 namespace rlz_lib {
 
 bool ProcessInfo::IsRunningAsSystem() {
-  static base::string16 user_sid;
+  static std::wstring user_sid;
   if (user_sid.empty()) {
     if (!base::win::GetUserSidString(&user_sid))
       return false;

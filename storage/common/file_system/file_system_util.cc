@@ -327,16 +327,18 @@ std::string GetFileSystemTypeString(FileSystemType type) {
 }
 
 std::string FilePathToString(const base::FilePath& file_path) {
+  // TODO(pkasting): Probably this should use AsUTF8Unsafe() across platforms.
 #if defined(OS_WIN)
-  return base::UTF16ToUTF8(file_path.value());
+  return file_path.AsUTF8Unsafe();
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
   return file_path.value();
 #endif
 }
 
 base::FilePath StringToFilePath(const std::string& file_path_string) {
+  // TODO(pkasting): Probably this should use FromUTF8Unsafe() across platforms.
 #if defined(OS_WIN)
-  return base::FilePath(base::UTF8ToUTF16(file_path_string));
+  return base::FilePath::FromUTF8Unsafe(file_path_string);
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
   return base::FilePath(file_path_string);
 #endif

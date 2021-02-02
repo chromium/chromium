@@ -145,10 +145,11 @@ bool PrinterChangeHandleTraits::CloseHandle(HANDLE handle) {
   return true;
 }
 
-bool ScopedPrinterHandle::OpenPrinterWithName(const wchar_t* printer) {
+bool ScopedPrinterHandle::OpenPrinterWithName(const base::char16* printer) {
   HANDLE temp_handle;
   // ::OpenPrinter may return error but assign some value into handle.
-  if (::OpenPrinter(const_cast<LPTSTR>(printer), &temp_handle, nullptr)) {
+  if (::OpenPrinter(const_cast<LPTSTR>(base::as_wcstr(printer)), &temp_handle,
+                    nullptr)) {
     Set(temp_handle);
   }
   return IsValid();
@@ -216,7 +217,7 @@ HRESULT XPSModule::OpenProvider(const base::string16& printer_name,
                                 HPTPROVIDER* provider) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-  return g_open_provider_proc(printer_name.c_str(), version, provider);
+  return g_open_provider_proc(base::as_wcstr(printer_name), version, provider);
 }
 
 HRESULT XPSModule::GetPrintCapabilities(HPTPROVIDER provider,
@@ -409,9 +410,9 @@ std::string GetDriverInfo(HANDLE printer) {
         FileVersionInfo::CreateFileVersionInfo(
             base::FilePath(info_6.get()->pDriverPath)));
     if (version_info.get()) {
-      info[1] = base::WideToUTF8(version_info->file_version());
-      info[2] = base::WideToUTF8(version_info->product_name());
-      info[3] = base::WideToUTF8(version_info->product_version());
+      info[1] = base::UTF16ToUTF8(version_info->file_version());
+      info[2] = base::UTF16ToUTF8(version_info->product_name());
+      info[3] = base::UTF16ToUTF8(version_info->product_version());
     }
   }
 
@@ -573,7 +574,8 @@ std::unique_ptr<DEVMODE, base::FreeDeleter> PromptDevMode(
     DEVMODE* in,
     HWND window,
     bool* canceled) {
-  wchar_t* printer_name_ptr = const_cast<wchar_t*>(printer_name.c_str());
+  wchar_t* printer_name_ptr =
+      const_cast<wchar_t*>(base::as_wcstr(printer_name));
   LONG buffer_size = DocumentProperties(window, printer, printer_name_ptr,
                                         nullptr, nullptr, 0);
   if (buffer_size < static_cast<int>(sizeof(DEVMODE)))

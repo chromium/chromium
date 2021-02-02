@@ -10,6 +10,7 @@
 
 #include "base/stl_util.h"
 #include "base/strings/string16.h"
+#include "base/strings/utf_string_conversions.h"
 #include "rlz/lib/assert.h"
 
 namespace rlz_lib {
@@ -69,14 +70,14 @@ bool GetComputerSid(const wchar_t* account_name, SID* sid, DWORD sid_size) {
   return success != FALSE;
 }
 
-std::wstring ConvertSidToString(SID* sid) {
+base::string16 ConvertSidToString(SID* sid) {
   std::wstring sid_string;
   wchar_t* sid_buffer = NULL;
   if (ConvertSidToStringSidW(sid, &sid_buffer)) {
     sid_string = sid_buffer;
     LocalFree(sid_buffer);
   }
-  return sid_string;
+  return base::WideToUTF16(sid_string);
 }
 
 }  // namespace

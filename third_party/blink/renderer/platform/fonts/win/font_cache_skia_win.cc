@@ -207,21 +207,21 @@ const AtomicString& FontCache::SystemFontFamily() {
 }
 
 // static
-void FontCache::SetMenuFontMetrics(const wchar_t* family_name,
+void FontCache::SetMenuFontMetrics(const AtomicString& family_name,
                                    int32_t font_height) {
   menu_font_family_name_ = new AtomicString(family_name);
   menu_font_height_ = EnsureMinimumFontHeightIfNeeded(font_height);
 }
 
 // static
-void FontCache::SetSmallCaptionFontMetrics(const wchar_t* family_name,
+void FontCache::SetSmallCaptionFontMetrics(const AtomicString& family_name,
                                            int32_t font_height) {
   small_caption_font_family_name_ = new AtomicString(family_name);
   small_caption_font_height_ = EnsureMinimumFontHeightIfNeeded(font_height);
 }
 
 // static
-void FontCache::SetStatusFontMetrics(const wchar_t* family_name,
+void FontCache::SetStatusFontMetrics(const AtomicString& family_name,
                                      int32_t font_height) {
   status_font_family_name_ = new AtomicString(family_name);
   status_font_height_ = EnsureMinimumFontHeightIfNeeded(font_height);

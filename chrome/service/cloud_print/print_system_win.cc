@@ -71,11 +71,11 @@ class PrintSystemWatcherWin : public base::win::ObjectWatcher::Delegate {
     delegate_ = delegate;
     // An empty printer name means watch the current server, we need to pass
     // nullptr to OpenPrinterWithName().
-    LPTSTR printer_name_to_use = nullptr;
-    std::wstring printer_name_wide;
+    base::char16* printer_name_to_use = nullptr;
+    base::string16 printer_name_16;
     if (!printer_name.empty()) {
-      printer_name_wide = base::UTF8ToWide(printer_name);
-      printer_name_to_use = const_cast<LPTSTR>(printer_name_wide.c_str());
+      printer_name_16 = base::UTF8ToUTF16(printer_name);
+      printer_name_to_use = const_cast<base::char16*>(printer_name_16.c_str());
     }
     bool ret = false;
     if (printer_.OpenPrinterWithName(printer_name_to_use)) {
@@ -688,8 +688,8 @@ bool PrintSystemWin::GetJobDetails(const std::string& printer_name,
       print_backend_->GetPrinterDriverInfo(printer_name));
   DCHECK(job_details);
   printing::ScopedPrinterHandle printer_handle;
-  std::wstring printer_name_wide = base::UTF8ToWide(printer_name);
-  printer_handle.OpenPrinterWithName(printer_name_wide.c_str());
+  base::string16 printer_name_16 = base::UTF8ToUTF16(printer_name);
+  printer_handle.OpenPrinterWithName(printer_name_16.c_str());
   DCHECK(printer_handle.IsValid());
   bool ret = false;
   if (printer_handle.IsValid()) {

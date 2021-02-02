@@ -143,7 +143,7 @@ void GetDevPropString(DEVINST handle,
   if (cr != CR_SUCCESS)
     VLOG(1) << "CM_Get_DevNode_Property failed: CONFIGRET 0x" << std::hex << cr;
   else
-    *out = base::WideToUTF8(reinterpret_cast<base::char16*>(buffer.get()));
+    *out = base::WideToUTF8(reinterpret_cast<wchar_t*>(buffer.get()));
 }
 
 // Retrieves manufacturer (provider) and version information of underlying
@@ -163,7 +163,7 @@ void GetDevPropString(DEVINST handle,
 void GetDriverInfoFromDeviceId(const std::string& dev_id,
                                std::string* out_manufacturer,
                                std::string* out_driver_version) {
-  base::string16 dev_instance_id =
+  std::wstring dev_instance_id =
       base::UTF8ToWide(dev_id.substr(4, dev_id.size() - 43));
   base::ReplaceChars(dev_instance_id, L"#", L"\\", &dev_instance_id);
 
@@ -208,7 +208,7 @@ struct MidiPort {
 template <typename InterfaceType,
           typename RuntimeType,
           typename StaticsInterfaceType,
-          base::char16 const* runtime_class_id>
+          wchar_t const* runtime_class_id>
 class MidiManagerWinrt::MidiPortManager {
  public:
   // MidiPortManager instances should be constructed on the kComTaskRunner.

@@ -289,7 +289,7 @@ void AddGenericDllEvictionPolicy(TargetPolicy* policy) {
 }
 
 // Returns the object path prepended with the current logon session.
-base::string16 PrependWindowsSessionPath(const base::char16* object) {
+std::wstring PrependWindowsSessionPath(const wchar_t* object) {
   // Cache this because it can't change after process creation.
   static DWORD s_session_id = 0;
   if (s_session_id == 0) {
@@ -626,8 +626,8 @@ ResultCode SetJobMemoryLimit(const base::CommandLine& cmd_line,
 // Generate a unique sandbox AC profile for the appcontainer based on the SHA1
 // hash of the appcontainer_id. This does not need to be secure so using SHA1
 // isn't a security concern.
-base::string16 GetAppContainerProfileName(const std::string& appcontainer_id,
-                                          SandboxType sandbox_type) {
+std::wstring GetAppContainerProfileName(const std::string& appcontainer_id,
+                                        SandboxType sandbox_type) {
   std::string sandbox_base_name;
   switch (sandbox_type) {
     case SandboxType::kXrCompositing:
@@ -714,7 +714,7 @@ ResultCode SetupAppContainerProfile(AppContainerProfile* profile,
     }
   }
 
-  std::vector<base::string16> base_caps = {
+  std::vector<std::wstring> base_caps = {
       L"lpacChromeInstallFiles",
       L"registryRead",
   };
@@ -782,7 +782,7 @@ ResultCode SandboxWin::AddBaseHandleClosePolicy(TargetPolicy* policy) {
   }
 
   // TODO(cpu): Add back the BaseNamedObjects policy.
-  base::string16 object_path = PrependWindowsSessionPath(
+  std::wstring object_path = PrependWindowsSessionPath(
       L"\\BaseNamedObjects\\windows_shell_global_counters");
   return policy->AddKernelObjectToClose(L"Section", object_path.data());
 }
@@ -826,7 +826,7 @@ ResultCode SandboxWin::AddAppContainerProfileToPolicy(
     TargetPolicy* policy) {
   if (base::win::GetVersion() < base::win::Version::WIN10_RS1)
     return SBOX_ALL_OK;
-  base::string16 profile_name =
+  std::wstring profile_name =
       GetAppContainerProfileName(appcontainer_id, sandbox_type);
   ResultCode result =
       policy->AddAppContainerProfile(profile_name.c_str(), true);
