@@ -2348,6 +2348,10 @@ crbug.com/27659 external/wpt/css/css-ruby/ruby-whitespace-002.html [ Failure ]
 # WebRTC: Perfect Negotiation times out in Plan B. This is expected.
 crbug.com/980872 virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection-perfect-negotiation.https.html [ Timeout ]
 
+# WebRTC: there's an open bug with some capture scenarios not working.
+crbug.com/1156408 external/wpt/webrtc/RTCPeerConnection-relay-canvas.https.html [ Pass Failure Timeout ]
+crbug.com/1156408 external/wpt/webrtc/RTCPeerConnection-capture-video.https.html [ Pass Failure Timeout ]
+
 crbug.com/1074547 external/wpt/css/css-transitions/transitioncancel-002.html [ Timeout ]
 
 crbug.com/1078474 external/wpt/css/css-pseudo/cascade-highlight-001.html [ Failure ]
