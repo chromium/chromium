@@ -765,9 +765,8 @@ class LayerTreeHostAnimationTestCheckerboardDoesntStartAnimations
 MULTI_THREAD_TEST_F(
     LayerTreeHostAnimationTestCheckerboardDoesntStartAnimations);
 
-// Verifies that scroll offset animations are only accepted when impl-scrolling
-// is supported, and that when scroll offset animations are accepted,
-// scroll offset updates are sent back to the main thread.
+// Verifies that a scroll offset animation sends scroll offset updates back to
+// the main thread.
 class LayerTreeHostAnimationTestScrollOffsetChangesArePropagated
     : public LayerTreeHostAnimationTest {
  public:
@@ -798,11 +797,7 @@ class LayerTreeHostAnimationTestScrollOffsetChangesArePropagated
             std::move(curve), 1, 0,
             KeyframeModel::TargetPropertyId(TargetProperty::SCROLL_OFFSET)));
         keyframe_model->set_needs_synchronized_start_time(true);
-        bool impl_scrolling_supported = proxy()->SupportsImplScrolling();
-        if (impl_scrolling_supported)
-          animation_child_->AddKeyframeModel(std::move(keyframe_model));
-        else
-          EndTest();
+        animation_child_->AddKeyframeModel(std::move(keyframe_model));
         break;
       }
       default:
@@ -2175,7 +2170,6 @@ class ImplSideInvalidationWithoutCommitTestScroll
         std::move(curve), 1, 0,
         KeyframeModel::TargetPropertyId(TargetProperty::SCROLL_OFFSET)));
     keyframe_model->set_needs_synchronized_start_time(true);
-    ASSERT_TRUE(proxy()->SupportsImplScrolling());
     animation_child_->AddKeyframeModel(std::move(keyframe_model));
     PostSetNeedsCommitToMainThread();
   }

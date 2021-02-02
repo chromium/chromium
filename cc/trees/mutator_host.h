@@ -42,8 +42,7 @@ class MutatorHost {
  public:
   virtual ~MutatorHost() = default;
 
-  virtual std::unique_ptr<MutatorHost> CreateImplInstance(
-      bool supports_impl_scrolling) const = 0;
+  virtual std::unique_ptr<MutatorHost> CreateImplInstance() const = 0;
 
   virtual void ClearMutators() = 0;
 
@@ -62,7 +61,6 @@ class MutatorHost {
 
   virtual void PushPropertiesTo(MutatorHost* host_impl) = 0;
 
-  virtual void SetSupportsScrollAnimations(bool supports_scroll_animations) = 0;
   virtual void SetScrollAnimationDurationForTesting(
       base::TimeDelta duration) = 0;
   virtual bool NeedsTickAnimations() const = 0;

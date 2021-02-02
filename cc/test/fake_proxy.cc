@@ -4,6 +4,8 @@
 
 #include "cc/test/fake_proxy.h"
 
+#include <memory>
+
 #include "cc/paint/paint_worklet_layer_painter.h"
 #include "cc/trees/layer_tree_mutator.h"
 
@@ -25,10 +27,6 @@ void FakeProxy::SetMutator(std::unique_ptr<LayerTreeMutator> mutator) {}
 
 void FakeProxy::SetPaintWorkletLayerPainter(
     std::unique_ptr<PaintWorkletLayerPainter> painter) {}
-
-bool FakeProxy::SupportsImplScrolling() const {
-  return true;
-}
 
 bool FakeProxy::MainFrameWillHappenForTesting() {
   return false;

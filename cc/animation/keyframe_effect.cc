@@ -243,9 +243,6 @@ void KeyframeEffect::Pause(base::TimeDelta pause_offset,
 
 void KeyframeEffect::AddKeyframeModel(
     std::unique_ptr<KeyframeModel> keyframe_model) {
-  DCHECK(keyframe_model->target_property_type() !=
-             TargetProperty::SCROLL_OFFSET ||
-         (animation_->animation_host()->SupportsScrollAnimations()));
   DCHECK(!keyframe_model->is_impl_only() ||
          keyframe_model->target_property_type() ==
              TargetProperty::SCROLL_OFFSET);

@@ -199,8 +199,6 @@ void LayerTreeHost::InitializeProxy(std::unique_ptr<Proxy> proxy) {
   proxy_->Start();
 
   UpdateDeferMainFrameUpdateInternal();
-
-  mutator_host_->SetSupportsScrollAnimations(proxy_->SupportsImplScrolling());
 }
 
 LayerTreeHost::~LayerTreeHost() {
@@ -540,9 +538,8 @@ std::unique_ptr<LayerTreeHostImpl> LayerTreeHost::CreateLayerTreeHostImpl(
     LayerTreeHostImplClient* client) {
   DCHECK(task_runner_provider_->IsImplThread());
 
-  const bool supports_impl_scrolling = task_runner_provider_->HasImplThread();
   std::unique_ptr<MutatorHost> mutator_host_impl =
-      mutator_host_->CreateImplInstance(supports_impl_scrolling);
+      mutator_host_->CreateImplInstance();
 
   if (!settings_.scroll_animation_duration_for_testing.is_zero()) {
     mutator_host_->SetScrollAnimationDurationForTesting(

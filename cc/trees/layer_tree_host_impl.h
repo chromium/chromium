@@ -740,7 +740,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // Only valid for synchronous (non-scheduled) single-threaded case.
   void SynchronouslyInitializeAllTiles();
 
-  bool SupportsImplScrolling() const;
   bool CommitToActiveTree() const;
 
   // Virtual so tests can inject their own.

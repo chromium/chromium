@@ -17,7 +17,7 @@ class MockMutatorHost : public MutatorHost {
   MockMutatorHost();
   ~MockMutatorHost();
 
-  MOCK_CONST_METHOD1(CreateImplInstance, std::unique_ptr<MutatorHost>(bool));
+  MOCK_CONST_METHOD0(CreateImplInstance, std::unique_ptr<MutatorHost>());
   MOCK_METHOD0(ClearMutators, void());
   MOCK_METHOD1(UpdateRegisteredElementIds, void(ElementListType changed_list));
   MOCK_METHOD0(InitClientAnimationState, void());
@@ -28,8 +28,6 @@ class MockMutatorHost : public MutatorHost {
   MOCK_METHOD1(SetLayerTreeMutator,
                void(std::unique_ptr<LayerTreeMutator> mutator));
   MOCK_METHOD1(PushPropertiesTo, void(MutatorHost* host_impl));
-  MOCK_METHOD1(SetSupportsScrollAnimations,
-               void(bool supports_scroll_animations));
   MOCK_METHOD1(SetScrollAnimationDurationForTesting,
                void(base::TimeDelta duration));
   MOCK_CONST_METHOD0(NeedsTickAnimations, bool());

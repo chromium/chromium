@@ -79,8 +79,6 @@ class CC_EXPORT Proxy {
   virtual void SetPaintWorkletLayerPainter(
       std::unique_ptr<PaintWorkletLayerPainter> painter) = 0;
 
-  virtual bool SupportsImplScrolling() const = 0;
-
   virtual void UpdateBrowserControlsState(BrowserControlsState constraints,
                                           BrowserControlsState current,
                                           bool animate) = 0;

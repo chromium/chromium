@@ -57,16 +57,12 @@ std::unique_ptr<AnimationHost> AnimationHost::CreateForTesting(
     ThreadInstance thread_instance) {
   auto animation_host = base::WrapUnique(new AnimationHost(thread_instance));
 
-  if (thread_instance == ThreadInstance::IMPL)
-    animation_host->SetSupportsScrollAnimations(true);
-
   return animation_host;
 }
 
 AnimationHost::AnimationHost(ThreadInstance thread_instance)
     : mutator_host_client_(nullptr),
       thread_instance_(thread_instance),
-      supports_scroll_animations_(false),
       needs_push_properties_(false),
       mutator_(nullptr) {
   if (thread_instance_ == ThreadInstance::IMPL) {
@@ -85,13 +81,10 @@ AnimationHost::~AnimationHost() {
   DCHECK(element_to_animations_map_.empty());
 }
 
-std::unique_ptr<MutatorHost> AnimationHost::CreateImplInstance(
-    bool supports_impl_scrolling) const {
+std::unique_ptr<MutatorHost> AnimationHost::CreateImplInstance() const {
   DCHECK_EQ(thread_instance_, ThreadInstance::MAIN);
-
   auto mutator_host_impl =
       base::WrapUnique<MutatorHost>(new AnimationHost(ThreadInstance::IMPL));
-  mutator_host_impl->SetSupportsScrollAnimations(supports_impl_scrolling);
   return mutator_host_impl;
 }
 
@@ -339,18 +332,9 @@ AnimationHost::GetElementAnimationsForElementId(ElementId element_id) const {
   return iter == element_to_animations_map_.end() ? nullptr : iter->second;
 }
 
-void AnimationHost::SetSupportsScrollAnimations(
-    bool supports_scroll_animations) {
-  supports_scroll_animations_ = supports_scroll_animations;
-}
-
 void AnimationHost::SetScrollAnimationDurationForTesting(
     base::TimeDelta duration) {
   ScrollOffsetAnimationCurve::SetAnimationDurationForTesting(duration);
-}
-
-bool AnimationHost::SupportsScrollAnimations() const {
-  return supports_scroll_animations_;
 }
 
 bool AnimationHost::NeedsTickAnimations() const {

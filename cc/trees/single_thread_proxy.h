@@ -62,7 +62,6 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   void SetMutator(std::unique_ptr<LayerTreeMutator> mutator) override;
   void SetPaintWorkletLayerPainter(
       std::unique_ptr<PaintWorkletLayerPainter> painter) override;
-  bool SupportsImplScrolling() const override;
   bool MainFrameWillHappenForTesting() override;
   void SetSourceURL(ukm::SourceId source_id, const GURL& url) override {
     // Single-threaded mode is only for browser compositing and for renderers in

@@ -606,10 +606,6 @@ void ProxyMain::SetPaintWorkletLayerPainter(
                      base::Unretained(proxy_impl_.get()), std::move(painter)));
 }
 
-bool ProxyMain::SupportsImplScrolling() const {
-  return true;
-}
-
 bool ProxyMain::MainFrameWillHappenForTesting() {
   DCHECK(IsMainThread());
   bool main_frame_will_happen = false;

@@ -4769,11 +4769,6 @@ gfx::ScrollOffset LayerTreeHostImpl::GetScrollOffsetForAnimation(
   return gfx::ScrollOffset();
 }
 
-bool LayerTreeHostImpl::SupportsImplScrolling() const {
-  // Supported in threaded mode.
-  return task_runner_provider_->HasImplThread();
-}
-
 bool LayerTreeHostImpl::CommitToActiveTree() const {
   return settings_.commit_to_active_tree;
 }

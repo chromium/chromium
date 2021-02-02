@@ -657,10 +657,6 @@ void SingleThreadProxy::CompositeImmediatelyForTest(
   }
 }
 
-bool SingleThreadProxy::SupportsImplScrolling() const {
-  return false;
-}
-
 bool SingleThreadProxy::ShouldComposite() const {
   DCHECK(task_runner_provider_->IsImplThread());
   return host_impl_->visible() && host_impl_->CanDraw();
