@@ -180,6 +180,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
  private:
   // Message handlers.
   void HandleDisplayAnnotationsMessage(const base::Value& message);
+  void HandleSetBackgroundColorMessage(const base::Value& message);
   void HandleSetReadOnlyMessage(const base::Value& message);
   void HandleSetTwoUpViewMessage(const base::Value& message);
 

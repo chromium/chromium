@@ -67,6 +67,7 @@
 #include "ppapi/cpp/var_array_buffer.h"
 #include "ppapi/cpp/var_dictionary.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -178,9 +179,6 @@ constexpr char kJSResetPrintPreviewModeType[] = "resetPrintPreviewMode";
 constexpr char kJSPrintPreviewUrl[] = "url";
 constexpr char kJSPrintPreviewGrayscale[] = "grayscale";
 constexpr char kJSPrintPreviewPageCount[] = "pageCount";
-// Background color changed (Page -> Plugin)
-constexpr char kJSBackgroundColorChangedType[] = "backgroundColorChanged";
-constexpr char kJSBackgroundColor[] = "backgroundColor";
 // Load preview page (Page -> Plugin)
 constexpr char kJSLoadPreviewPageType[] = "loadPreviewPage";
 constexpr char kJSPreviewPageUrl[] = "url";
@@ -646,7 +644,7 @@ bool OutOfProcessInstance::Init(uint32_t argc,
     } else if (strcmp(argn[i], "headers") == 0) {
       headers = argv[i];
     } else if (strcmp(argn[i], "background-color") == 0) {
-      uint32_t background_color;
+      SkColor background_color;
       if (!base::HexStringToUInt(argv[i], &background_color))
         return false;
       SetBackgroundColor(background_color);
@@ -720,8 +718,6 @@ void OutOfProcessInstance::HandleMessage(const pp::Var& message) {
     RotateCounterclockwise();
   } else if (type == kJSSelectAllType) {
     engine()->SelectAll();
-  } else if (type == kJSBackgroundColorChangedType) {
-    HandleBackgroundColorChangedMessage(dict);
   } else if (type == kJSResetPrintPreviewModeType) {
     HandleResetPrintPreviewModeMessage(dict);
   } else if (type == kJSLoadPreviewPageType) {
@@ -1669,19 +1665,6 @@ std::string OutOfProcessInstance::GetFileNameFromUrl(const std::string& url) {
       /*referrer_charset=*/std::string(), /*suggested_name=*/std::string(),
       /*mime_type=*/std::string(), /*default_name=*/std::string());
   return base::UTF16ToUTF8(file_name);
-}
-
-void OutOfProcessInstance::HandleBackgroundColorChangedMessage(
-    const pp::VarDictionary& dict) {
-  if (!dict.Get(pp::Var(kJSBackgroundColor)).is_string()) {
-    NOTREACHED();
-    return;
-  }
-  uint32_t background_color;
-  if (base::HexStringToUInt(dict.Get(pp::Var(kJSBackgroundColor)).AsString(),
-                            &background_color)) {
-    SetBackgroundColor(background_color);
-  }
 }
 
 void OutOfProcessInstance::HandleGetNamedDestinationMessage(

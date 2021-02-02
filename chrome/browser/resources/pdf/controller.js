@@ -398,11 +398,11 @@ export class PluginController {
     });
   }
 
-  /** @param {string} newColor New color, in hex, for the PDF plugin. */
-  backgroundColorChanged(newColor) {
+  /** @param {string} color New color, in hex, for the PDF plugin. */
+  setBackgroundColor(color) {
     this.postMessage_({
-      type: 'backgroundColorChanged',
-      backgroundColor: newColor,
+      type: 'setBackgroundColor',
+      color: color,
     });
   }
 

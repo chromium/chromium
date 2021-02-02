@@ -19,6 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/optional.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdfium/pdfium_engine.h"
@@ -56,6 +57,8 @@ void PdfViewPluginBase::HandleMessage(const base::Value& message) {
       base::MakeFixedFlatMap<base::StringPiece, MessageHandler>({
           {"displayAnnotations",
            &PdfViewPluginBase::HandleDisplayAnnotationsMessage},
+          {"setBackgroundColor",
+           &PdfViewPluginBase::HandleSetBackgroundColorMessage},
           {"setReadOnly", &PdfViewPluginBase::HandleSetReadOnlyMessage},
           {"setTwoUpView", &PdfViewPluginBase::HandleSetTwoUpViewMessage},
       });
@@ -194,6 +197,18 @@ void PdfViewPluginBase::SetZoom(double scale) {
 void PdfViewPluginBase::HandleDisplayAnnotationsMessage(
     const base::Value& message) {
   engine()->DisplayAnnotations(message.FindBoolKey("display").value());
+}
+
+void PdfViewPluginBase::HandleSetBackgroundColorMessage(
+    const base::Value& message) {
+  // TODO(crbug.com/1172571): Accept the color as a number instead of a string
+  // to reduce the number of CHECKs.
+  const std::string* hex_color = message.FindStringKey("color");
+  CHECK(hex_color);
+
+  uint32_t background_color;
+  CHECK(base::HexStringToUInt(*hex_color, &background_color));
+  SetBackgroundColor(background_color);
 }
 
 void PdfViewPluginBase::HandleSetReadOnlyMessage(const base::Value& message) {

@@ -139,8 +139,8 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
   }
 
   /** @private */
-  sendBackgroundColorForPrintPreview_() {
-    this.pluginController_.backgroundColorChanged(
+  setBackgroundColorForPrintPreview_() {
+    this.pluginController_.setBackgroundColor(
         this.dark_ ? PRINT_PREVIEW_DARK_BACKGROUND_COLOR :
                      PRINT_PREVIEW_BACKGROUND_COLOR);
   }
@@ -252,7 +252,7 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
         return true;
       case 'darkModeChanged':
         this.dark_ = /** @type {{darkMode: boolean}} */ (message.data).darkMode;
-        this.sendBackgroundColorForPrintPreview_();
+        this.setBackgroundColorForPrintPreview_();
         return true;
       case 'scrollPosition':
         const position = this.viewport.position;
@@ -345,7 +345,7 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
     if (!strings) {
       return;
     }
-    this.sendBackgroundColorForPrintPreview_();
+    this.setBackgroundColorForPrintPreview_();
   }
 
   /** @override */
