@@ -168,6 +168,12 @@ const base::Feature kAutofillExtractAllDatalists{
 const base::Feature kAutofillFixFillableFieldTypes{
     "AutofillFixFillableFieldTypes", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls if a server prediction with a prediction source |OVERRIDE| is
+// granted precedence over html type attributes.
+// TODO(crbug.com/1170384) Remove once launched
+const base::Feature kAutofillServerTypeTakesPrecedence{
+    "AutofillServerTypeTakesPrecedence", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // When enabled, Autofill will use FormRendererIds instead of
 // GetIdentifierForRefill() to identify forms during refills.
 // TODO(crbug/896689): Remove once experiment is finished.

@@ -57,6 +57,9 @@ class AutofillField : public FormFieldData {
 
   ServerFieldType heuristic_type() const { return heuristic_type_; }
   ServerFieldType server_type() const { return server_type_; }
+  bool server_type_prediction_is_override() const {
+    return server_type_prediction_is_override_;
+  }
   const std::vector<
       AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction>&
   server_predictions() const {
@@ -79,6 +82,10 @@ class AutofillField : public FormFieldData {
   // Setters for the detected types.
   void set_heuristic_type(ServerFieldType type);
   void set_server_type(ServerFieldType type);
+  // Setter for the indicator that the server prediction is an override.
+  void set_server_type_prediction_is_override(bool is_override) {
+    server_type_prediction_is_override_ = is_override;
+  }
   void add_possible_types_validities(
       const ServerFieldTypeValidityStateMap& possible_types_validities);
   void set_server_predictions(
@@ -215,6 +222,9 @@ class AutofillField : public FormFieldData {
 
   // The type of the field, as determined by the Autofill server.
   ServerFieldType server_type_ = NO_SERVER_DATA;
+
+  // Indicates if the server type prediction is an override.
+  bool server_type_prediction_is_override_ = false;
 
   // The possible types of the field, as determined by the Autofill server,
   // including |server_type_| as the first item.

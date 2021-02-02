@@ -65,6 +65,19 @@ void AddFieldSuggestionToForm(
   field_suggestion->set_primary_type_prediction(field_type);
 }
 
+void AddFieldOverrideToForm(
+    ::autofill::AutofillQueryResponse_FormSuggestion* form_suggestion,
+    autofill::FormFieldData field_data,
+    ServerFieldType field_type) {
+  AddFieldSuggestionToForm(form_suggestion, field_data, field_type);
+
+  DCHECK_GT(form_suggestion->field_suggestions().size(), 0);
+  form_suggestion
+      ->mutable_field_suggestions(form_suggestion->field_suggestions().size() -
+                                  1)
+      ->set_primary_type_prediction_is_override(true);
+}
+
 }  // namespace
 
 class FormStructureTestImpl : public test::FormStructureTest {
@@ -5293,6 +5306,102 @@ TEST_F(FormStructureTestImpl, PossibleValues) {
   FormStructure form_structure2(form_data);
   form_structure2.ParseFieldTypesFromAutocompleteAttributes();
   EXPECT_EQ(0U, form_structure2.PossibleValues(ADDRESS_BILLING_COUNTRY).size());
+}
+
+// Test that server predictions get precedence over htmll types if they are
+// overrides.
+TEST_F(FormStructureTestImpl, ParseQueryResponse_ServerPredictionIsOverride) {
+  FormData form_data;
+  FormFieldData field;
+  form_data.url = GURL("http://foo.com");
+  field.form_control_type = "text";
+
+  // Just some field.
+  field.label = ASCIIToUTF16("some field");
+  field.name = ASCIIToUTF16("some_field");
+  // But this field has an autocomplete attribute.
+  field.autocomplete_attribute = "name";
+  field.unique_renderer_id = MakeFieldRendererId();
+  form_data.fields.push_back(field);
+
+  // Some other field.
+  field.label = ASCIIToUTF16("some other field");
+  field.name = ASCIIToUTF16("some_other_field");
+  // Which has the same attribute.
+  field.autocomplete_attribute = "name";
+  field.unique_renderer_id = MakeFieldRendererId();
+  form_data.fields.push_back(field);
+
+  // Setup the query response with an override for the name field to be a first
+  // name.
+  AutofillQueryResponse response;
+  auto* form_suggestion = response.add_form_suggestions();
+  AddFieldOverrideToForm(form_suggestion, form_data.fields[0], NAME_FIRST);
+  AddFieldSuggestionToForm(form_suggestion, form_data.fields[1], NAME_LAST);
+
+  std::string response_string = SerializeAndEncode(response);
+
+  // Disable the feature which gives overrides precedence.
+  {
+    base::test::ScopedFeatureList scoped_feature;
+    scoped_feature.InitAndDisableFeature(
+        features::kAutofillServerTypeTakesPrecedence);
+
+    // Parse the response and update the field type predictions.
+    FormStructure form(form_data);
+    form.DetermineHeuristicTypes(nullptr);
+    std::vector<FormStructure*> forms{&form};
+    FormStructure::ParseApiQueryResponse(
+        response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+    ASSERT_EQ(form.field_count(), 2U);
+
+    // Validate the type predictions.
+    EXPECT_EQ(UNKNOWN_TYPE, form.field(0)->heuristic_type());
+    EXPECT_EQ(HTML_TYPE_NAME, form.field(0)->html_type());
+    EXPECT_EQ(NAME_FIRST, form.field(0)->server_type());
+    EXPECT_EQ(UNKNOWN_TYPE, form.field(1)->heuristic_type());
+    EXPECT_EQ(HTML_TYPE_NAME, form.field(1)->html_type());
+    EXPECT_EQ(NAME_LAST, form.field(1)->server_type());
+
+    // Validate that the overrides are set correctly.
+    EXPECT_TRUE(form.field(0)->server_type_prediction_is_override());
+    EXPECT_FALSE(form.field(1)->server_type_prediction_is_override());
+
+    // Validate that the html prediction won.
+    EXPECT_EQ(form.field(0)->Type().GetStorableType(), NAME_FULL);
+    EXPECT_EQ(form.field(1)->Type().GetStorableType(), NAME_FULL);
+  }
+
+  // Enable the feature to give overrides precedence.
+  {
+    base::test::ScopedFeatureList scoped_feature;
+    scoped_feature.InitAndEnableFeature(
+        features::kAutofillServerTypeTakesPrecedence);
+
+    // Parse the response and update the field type predictions.
+    FormStructure form(form_data);
+    form.DetermineHeuristicTypes(nullptr);
+    std::vector<FormStructure*> forms{&form};
+    FormStructure::ParseApiQueryResponse(
+        response_string, forms, test::GetEncodedSignatures(forms), nullptr);
+    ASSERT_EQ(form.field_count(), 2U);
+
+    // Validate the type predictions.
+    EXPECT_EQ(UNKNOWN_TYPE, form.field(0)->heuristic_type());
+    EXPECT_EQ(HTML_TYPE_NAME, form.field(0)->html_type());
+    EXPECT_EQ(NAME_FIRST, form.field(0)->server_type());
+    EXPECT_EQ(UNKNOWN_TYPE, form.field(1)->heuristic_type());
+    EXPECT_EQ(HTML_TYPE_NAME, form.field(1)->html_type());
+    EXPECT_EQ(NAME_LAST, form.field(1)->server_type());
+
+    // Validate that the overrides are set correctly.
+    EXPECT_TRUE(form.field(0)->server_type_prediction_is_override());
+    EXPECT_FALSE(form.field(1)->server_type_prediction_is_override());
+
+    // Validate that the server prediction won for the first field.
+    EXPECT_EQ(form.field(0)->Type().GetStorableType(), NAME_FIRST);
+    EXPECT_EQ(form.field(1)->Type().GetStorableType(), NAME_FULL);
+  }
 }
 
 // Test the heuristic prediction for NAME_LAST_SECOND overrides server

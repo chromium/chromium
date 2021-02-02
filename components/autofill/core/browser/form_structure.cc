@@ -913,6 +913,12 @@ void FormStructure::ProcessQueryResponse(
       std::vector<AutofillQueryResponse::FormSuggestion::FieldSuggestion::
                       FieldPrediction>
           server_predictions;
+
+      if (current_field.has_primary_type_prediction()) {
+        field->set_server_type_prediction_is_override(
+            current_field.primary_type_prediction_is_override());
+      }
+
       if (current_field.predictions_size() == 0) {
         AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction
             field_prediction;
@@ -1174,6 +1180,8 @@ void FormStructure::RetrieveFromCache(
         }
       }
       field->set_server_type(cached_field->server_type());
+      field->set_server_type_prediction_is_override(
+          cached_field->server_type_prediction_is_override());
       field->set_previously_autofilled(cached_field->previously_autofilled());
 
       // Only retrieve an overall prediction from cache if a server prediction

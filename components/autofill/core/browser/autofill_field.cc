@@ -100,6 +100,14 @@ void AutofillField::SetTypeTo(const AutofillType& type) {
 }
 
 AutofillType AutofillField::ComputedType() const {
+  // If the corresponding feature is enabled, server predictions that are an
+  // override are granted precedence unconditionally.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillServerTypeTakesPrecedence) &&
+      server_type_prediction_is_override_ && server_type_ != NO_SERVER_DATA) {
+    return AutofillType(server_type_);
+  }
+
   // If autocomplete=tel/tel-* and server confirms it really is a phone field,
   // we always user the server prediction as html types are not very reliable.
   if ((GroupTypeOfHtmlFieldType(html_type_, html_mode_) == PHONE_BILLING ||
