@@ -37,6 +37,7 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.regex.Pattern;
 
 /**
  * Exposes limited access to a Java object over a Mojo interface.
@@ -124,6 +125,9 @@ class RemoteObjectImpl implements RemoteObject {
     public static final short UNSIGNED_BYTE_MASK = 0xff;
     public static final int UNSIGNED_SHORT_MASK = 0xffff;
     public static final long UNSIGNED_INT_MASK = 0xffffffffL;
+
+    private static final Pattern sDoubleNumberPattern = Pattern.compile(
+            "^(-?[0-9]+)(\\.0+)? ( ( (?:\\.[0-9]*[1-9])? )0* ) ((?:e.*)?)$", Pattern.COMMENTS);
 
     public RemoteObjectImpl(Object target, Class<? extends Annotation> safeAnnotationClass,
             Auditor auditor, ObjectIdAllocator objectIdAllocator, boolean allowInspection) {
@@ -782,9 +786,9 @@ class RemoteObjectImpl implements RemoteObject {
         // Expression is somewhat complicated, in order to deal with scientific notation. Either
         // group 2 will match (and so the decimal will be stripped along with zeroes), or group 3
         // will match (and the decimal will be left), but not both (since there cannot be more than
-        // one decimal point).
-        return String.format((Locale) null, "%.6g", doubleValue)
-                .replaceFirst("^(-?[0-9]+)(\\.0+)?((\\.[0-9]*[1-9])0*)?(e.*)?$", "$1$4$5");
+        // one decimal point). Group 5 will match an exponential part.
+        return sDoubleNumberPattern.matcher(String.format((Locale) null, "%.6g", doubleValue))
+                .replaceAll("$1$4$5");
     }
 
     private static Object getPrimitiveZero(Class<?> parameterType) {

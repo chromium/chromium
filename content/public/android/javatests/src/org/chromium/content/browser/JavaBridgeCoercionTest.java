@@ -278,7 +278,7 @@ public class JavaBridgeCoercionTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void testPassNumberDouble(boolean useMojo) throws Throwable {
         mActivityTestRule.executeJavaScript("testObject.setByteValue(42.1);");
         Assert.assertEquals(42, mTestObject.waitForByteValue());
@@ -344,6 +344,14 @@ public class JavaBridgeCoercionTest {
 
         mActivityTestRule.executeJavaScript("testObject.setStringValue(42.1);");
         Assert.assertEquals("42.1", mTestObject.waitForStringValue());
+        // Verify to format the double value as decimal floating-point notation of 6 places and
+        // round to 42.0000, then final result should leave out .0000.
+        mActivityTestRule.executeJavaScript("testObject.setStringValue(42.000000001);");
+        Assert.assertEquals("42", mTestObject.waitForStringValue());
+        mActivityTestRule.executeJavaScript("testObject.setStringValue(42.1e22);");
+        Assert.assertEquals("4.21e+23", mTestObject.waitForStringValue());
+        mActivityTestRule.executeJavaScript("testObject.setStringValue(42.000000001e22);");
+        Assert.assertEquals("4.2e+23", mTestObject.waitForStringValue());
 
         mActivityTestRule.executeJavaScript("testObject.setBooleanValue(0.0);");
         Assert.assertFalse(mTestObject.waitForBooleanValue());
