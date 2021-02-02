@@ -268,6 +268,8 @@ void AutocompleteResult::SortAndCull(
     LimitNumberOfURLsShown(GetMaxMatches(is_zero_suggest), max_url_count,
                            comparing_object);
 
+  GroupAndDemoteMatchesWithHeaders();
+
   // Limit total matches accounting for suggestions score <= 0, sub matches, and
   // feature configs such as OmniboxUIExperimentMaxAutocompleteMatches,
   // OmniboxMaxZeroSuggestMatches, and OmniboxDynamicMaxAutocomplete.
@@ -296,12 +298,6 @@ void AutocompleteResult::SortAndCull(
     if (base::FeatureList::IsEnabled(omnibox::kBubbleUrlSuggestions))
       BubbleURLSuggestions(next, begin_url, matches_);
   }
-
-  // Grouping and Demoting Matches with Headers needs to be done only after
-  // matches are grouped by Search and URL type to ensure that URLs don't sink
-  // to the bottom of the suggestions list, and surface below the Matches with
-  // headers.
-  GroupAndDemoteMatchesWithHeaders();
 
   // If we have a default match, run some sanity checks. Skip these checks if
   // the default match has no |destination_url|. An example of this is the

@@ -119,9 +119,6 @@ class AutocompleteResultTest : public testing::Test {
 
     // Type of the match
     AutocompleteMatchType::Type type{AutocompleteMatchType::SEARCH_SUGGEST};
-
-    // Suggestion Group ID for this suggeston
-    base::Optional<int> suggestion_group_id;
   };
 
   AutocompleteResultTest() {
@@ -204,7 +201,6 @@ void AutocompleteResultTest::PopulateAutocompleteMatch(
   match->relevance = data.relevance;
   match->allowed_to_be_default_match = data.allowed_to_be_default_match;
   match->duplicate_matches = data.duplicate_matches;
-  match->suggestion_group_id = data.suggestion_group_id;
 }
 
 void AutocompleteResultTest::PopulateAutocompleteMatches(
@@ -1566,52 +1562,6 @@ TEST_F(AutocompleteResultTest, SortAndCullGroupSuggestionsByType) {
                       AutocompleteResult::GetMaxMatches());
 }
 #endif
-
-TEST_F(AutocompleteResultTest, SortAndCullKeepGroupedSuggestionsLast) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{omnibox::kUIExperimentMaxAutocompleteMatches,
-        {{OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "6"}}}},
-      {/* nothing disabled */});
-  TestData data[] = {
-      {0, 1, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, 1},
-      {1, 2, 600, false, {}, AutocompleteMatchType::HISTORY_URL},
-      {2, 1, 700, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, 1},
-      {3, 2, 800, true, {}, AutocompleteMatchType::HISTORY_TITLE},
-      {4, 1, 900, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, 2},
-      {5, 2, 1000, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, 2},
-      {6, 3, 1100, false, {}, AutocompleteMatchType::BOOKMARK_TITLE},
-  };
-  ACMatches matches;
-  PopulateAutocompleteMatches(data, base::size(data), &matches);
-
-  AutocompleteInput input(base::ASCIIToUTF16("a"),
-                          metrics::OmniboxEventProto::OTHER,
-                          TestSchemeClassifier());
-  AutocompleteResult result;
-
-  result.headers_map_[1] = STRING16_LITERAL("1");
-  result.headers_map_[2] = STRING16_LITERAL("2");
-
-  result.AppendMatches(input, matches);
-  result.SortAndCull(input, template_url_service_.get());
-
-  TestData expected_data[] = {
-      // default match unmoved
-      {3, 2, 800, true, {}, AutocompleteMatchType::HISTORY_TITLE},
-      // search types
-      {6, 3, 1100, false, {}, AutocompleteMatchType::BOOKMARK_TITLE},
-      {1, 2, 600, false, {}, AutocompleteMatchType::HISTORY_URL},
-      // Group <2> is scored higher
-      {5, 2, 1000, false, {}, AutocompleteMatchType::SEARCH_SUGGEST},
-      {4, 1, 900, false, {}, AutocompleteMatchType::SEARCH_SUGGEST},
-      // Group <1> is scored lower
-      {2, 1, 700, false, {}, AutocompleteMatchType::SEARCH_SUGGEST},
-  };
-
-  AssertResultMatches(result, expected_data,
-                      AutocompleteResult::GetMaxMatches());
-}
 
 TEST_F(AutocompleteResultTest, SortAndCullMaxURLMatches) {
   base::test::ScopedFeatureList feature_list;
