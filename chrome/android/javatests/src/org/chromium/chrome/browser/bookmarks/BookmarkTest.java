@@ -1123,6 +1123,36 @@ public class BookmarkTest {
     @Test
     @SmallTest
     @Features.EnableFeatures({ChromeFeatureList.READ_LATER})
+    public void testSearchReadingList_Deletion() throws Exception {
+        addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
+        BookmarkPromoHeader.forcePromoStateForTests(PromoState.PROMO_NONE);
+        openBookmarkManager();
+        CriteriaHelper.pollUiThread(() -> mBookmarkModel.getReadingListItem(mTestUrlA) != null);
+
+        // Open the "Reading list" folder.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mManager.openFolder(mBookmarkModel.getRootFolderId()));
+        onView(withText("Reading list")).perform(click());
+        RecyclerViewTestUtils.waitForStableRecyclerView(mItemsContainer);
+
+        // Enter search UI, but don't enter any search key word.
+        BookmarkManager manager = getBookmarkManager();
+        TestThreadUtils.runOnUiThreadBlocking(manager::openSearchUI);
+        Assert.assertEquals("Wrong state, should be searching", BookmarkUIState.STATE_SEARCHING,
+                manager.getCurrentState());
+        RecyclerViewTestUtils.waitForStableRecyclerView(mItemsContainer);
+
+        // Delete the reading list page in search state.
+        View readingListItem = mItemsContainer.findViewHolderForAdapterPosition(0).itemView;
+        View more = readingListItem.findViewById(R.id.more);
+        TestThreadUtils.runOnUiThreadBlocking(more::callOnClick);
+        onView(withText("Delete")).check(matches(isDisplayed())).perform(click());
+        CriteriaHelper.pollUiThread(() -> mBookmarkModel.getReadingListItem(mTestUrlA) == null);
+    }
+
+    @Test
+    @SmallTest
+    @Features.EnableFeatures({ChromeFeatureList.READ_LATER})
     public void testReadingListEmptyView() throws Exception {
         BookmarkPromoHeader.forcePromoStateForTests(PromoState.PROMO_NONE);
         openBookmarkManager();
