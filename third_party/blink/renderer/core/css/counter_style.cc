@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css/style_rule_counter_style.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
+#include "third_party/blink/renderer/core/layout/list_marker_text.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -53,11 +54,37 @@ CounterStyleSystem ToCounterStyleSystemEnum(const CSSValue* value) {
       return CounterStyleSystem::kNumeric;
     case CSSValueID::kAdditive:
       return CounterStyleSystem::kAdditive;
+    case CSSValueID::kInternalSimpChineseInformal:
+      return CounterStyleSystem::kSimpChineseInformal;
+    case CSSValueID::kInternalSimpChineseFormal:
+      return CounterStyleSystem::kSimpChineseFormal;
+    case CSSValueID::kInternalTradChineseInformal:
+      return CounterStyleSystem::kTradChineseInformal;
+    case CSSValueID::kInternalTradChineseFormal:
+      return CounterStyleSystem::kTradChineseFormal;
     case CSSValueID::kExtends:
       return CounterStyleSystem::kUnresolvedExtends;
     default:
       NOTREACHED();
       return CounterStyleSystem::kSymbolic;
+  }
+}
+
+bool HasSymbols(CounterStyleSystem system) {
+  switch (system) {
+    case CounterStyleSystem::kCyclic:
+    case CounterStyleSystem::kFixed:
+    case CounterStyleSystem::kSymbolic:
+    case CounterStyleSystem::kAlphabetic:
+    case CounterStyleSystem::kNumeric:
+    case CounterStyleSystem::kAdditive:
+      return true;
+    case CounterStyleSystem::kUnresolvedExtends:
+    case CounterStyleSystem::kSimpChineseInformal:
+    case CounterStyleSystem::kSimpChineseFormal:
+    case CounterStyleSystem::kTradChineseInformal:
+    case CounterStyleSystem::kTradChineseFormal:
+      return false;
   }
 }
 
@@ -78,6 +105,11 @@ bool SymbolsAreValid(const StyleRuleCounterStyle& rule,
       return additive_symbols && additive_symbols->length();
     case CounterStyleSystem::kUnresolvedExtends:
       return !symbols && !additive_symbols;
+    case CounterStyleSystem::kSimpChineseInformal:
+    case CounterStyleSystem::kSimpChineseFormal:
+    case CounterStyleSystem::kTradChineseInformal:
+    case CounterStyleSystem::kTradChineseFormal:
+      return true;
   }
 }
 
@@ -202,6 +234,46 @@ Vector<wtf_size_t> AdditiveAlgorithm(unsigned value,
   return result;
 }
 
+// TODO(crbug.com/687225): After @counter-style is shipped and the legacy
+// code paths are removed, remove everything else of list_marker_text and move
+// the implementation of the special algorithms here.
+
+String SimpChineseInformalAlgorithm(unsigned value) {
+  // @counter-style algorithm works on absolute value, but the legacy
+  // implementation works on the original value (and handles negative sign on
+  // its own). Range check before proceeding.
+  if (value > std::numeric_limits<int>::max())
+    return String();
+  return list_marker_text::GetText(EListStyleType::kSimpChineseInformal, value);
+}
+
+String SimpChineseFormalAlgorithm(unsigned value) {
+  // @counter-style algorithm works on absolute value, but the legacy
+  // implementation works on the original value (and handles negative sign on
+  // its own). Range check before proceeding.
+  if (value > std::numeric_limits<int>::max())
+    return String();
+  return list_marker_text::GetText(EListStyleType::kSimpChineseFormal, value);
+}
+
+String TradChineseInformalAlgorithm(unsigned value) {
+  // @counter-style algorithm works on absolute value, but the legacy
+  // implementation works on the original value (and handles negative sign on
+  // its own). Range check before proceeding.
+  if (value > std::numeric_limits<int>::max())
+    return String();
+  return list_marker_text::GetText(EListStyleType::kTradChineseInformal, value);
+}
+
+String TradChineseFormalAlgorithm(unsigned value) {
+  // @counter-style algorithm works on absolute value, but the legacy
+  // implementation works on the original value (and handles negative sign on
+  // its own). Range check before proceeding.
+  if (value > std::numeric_limits<int>::max())
+    return String();
+  return list_marker_text::GetText(EListStyleType::kTradChineseFormal, value);
+}
+
 }  // namespace
 
 // static
@@ -246,7 +318,7 @@ CounterStyle::CounterStyle(const StyleRuleCounterStyle& rule)
   if (const CSSValue* fallback = rule.GetFallback())
     fallback_name_ = To<CSSCustomIdentValue>(fallback)->Value();
 
-  if (system_ != CounterStyleSystem::kUnresolvedExtends) {
+  if (HasSymbols(system_)) {
     if (system_ == CounterStyleSystem::kAdditive) {
       for (const CSSValue* symbol :
            To<CSSValueList>(*rule.GetAdditiveSymbols())) {
@@ -347,6 +419,10 @@ bool CounterStyle::RangeContains(int value) const {
     case CounterStyleSystem::kCyclic:
     case CounterStyleSystem::kNumeric:
     case CounterStyleSystem::kFixed:
+    case CounterStyleSystem::kSimpChineseInformal:
+    case CounterStyleSystem::kSimpChineseFormal:
+    case CounterStyleSystem::kTradChineseInformal:
+    case CounterStyleSystem::kTradChineseFormal:
       return true;
     case CounterStyleSystem::kSymbolic:
     case CounterStyleSystem::kAlphabetic:
@@ -367,6 +443,10 @@ bool CounterStyle::NeedsNegativeSign(int value) const {
     case CounterStyleSystem::kAlphabetic:
     case CounterStyleSystem::kNumeric:
     case CounterStyleSystem::kAdditive:
+    case CounterStyleSystem::kSimpChineseInformal:
+    case CounterStyleSystem::kSimpChineseFormal:
+    case CounterStyleSystem::kTradChineseInformal:
+    case CounterStyleSystem::kTradChineseFormal:
       return true;
     case CounterStyleSystem::kCyclic:
     case CounterStyleSystem::kFixed:
@@ -422,32 +502,36 @@ String CounterStyle::GenerateInitialRepresentation(int value) const {
 
   unsigned abs_value = value < 0 ? -value : value;
 
-  Vector<wtf_size_t> symbol_indexes;
   switch (system_) {
     case CounterStyleSystem::kCyclic:
-      symbol_indexes = CyclicAlgorithm(value, symbols_.size());
-      break;
+      return IndexesToString(CyclicAlgorithm(value, symbols_.size()));
     case CounterStyleSystem::kFixed:
-      symbol_indexes =
-          FixedAlgorithm(value, first_symbol_value_, symbols_.size());
-      break;
+      return IndexesToString(
+          FixedAlgorithm(value, first_symbol_value_, symbols_.size()));
     case CounterStyleSystem::kNumeric:
-      symbol_indexes = NumericAlgorithm(abs_value, symbols_.size());
-      break;
+      return IndexesToString(NumericAlgorithm(abs_value, symbols_.size()));
     case CounterStyleSystem::kSymbolic:
-      symbol_indexes = SymbolicAlgorithm(abs_value, symbols_.size());
-      break;
+      return IndexesToString(SymbolicAlgorithm(abs_value, symbols_.size()));
     case CounterStyleSystem::kAlphabetic:
-      symbol_indexes = AlphabeticAlgorithm(abs_value, symbols_.size());
-      break;
+      return IndexesToString(AlphabeticAlgorithm(abs_value, symbols_.size()));
     case CounterStyleSystem::kAdditive:
-      symbol_indexes = AdditiveAlgorithm(abs_value, additive_weights_);
-      break;
+      return IndexesToString(AdditiveAlgorithm(abs_value, additive_weights_));
+    case CounterStyleSystem::kSimpChineseInformal:
+      return SimpChineseInformalAlgorithm(abs_value);
+    case CounterStyleSystem::kSimpChineseFormal:
+      return SimpChineseFormalAlgorithm(abs_value);
+    case CounterStyleSystem::kTradChineseInformal:
+      return TradChineseInformalAlgorithm(abs_value);
+    case CounterStyleSystem::kTradChineseFormal:
+      return TradChineseFormalAlgorithm(abs_value);
     case CounterStyleSystem::kUnresolvedExtends:
       NOTREACHED();
-      break;
+      return String();
   }
+}
 
+String CounterStyle::IndexesToString(
+    const Vector<wtf_size_t>& symbol_indexes) const {
   if (symbol_indexes.IsEmpty())
     return String();
 

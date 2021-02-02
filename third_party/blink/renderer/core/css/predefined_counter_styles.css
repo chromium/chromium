@@ -340,9 +340,54 @@
   /* 마이너스 (followed by a space) */
 }
 
+/* https://drafts.csswg.org/css-counter-styles-3/#limited-chinese */
+
+/* Note: While the officially specified range is -9999 to 9999 for these counter
+ * styles, implementations are allowed to support a larger range for
+ * investigative purposes. Therefore, we support the full int range. */
+
+@counter-style simp-chinese-informal {
+  system: -internal-simp-chinese-informal;
+  suffix: \3001;
+  /* 、 */
+  negative: \8D1F;
+  /* 负 */
+  fallback: cjk-decimal;
+}
+
+@counter-style simp-chinese-formal {
+  system: -internal-simp-chinese-formal;
+  suffix: \3001;
+  /* 、 */
+  negative: \8D1F;
+  /* 负 */
+  fallback: cjk-decimal;
+}
+
+@counter-style trad-chinese-informal {
+  system: -internal-trad-chinese-informal;
+  suffix: \3001;
+  /* 、 */
+  negative: \8CA0;
+  /* 負 */
+  fallback: cjk-decimal;
+}
+
+@counter-style trad-chinese-formal {
+  system: -internal-trad-chinese-formal;
+  suffix: \3001;
+  /* 、 */
+  negative: \8CA0;
+  /* 負 */
+  fallback: cjk-decimal;
+}
+
+@counter-style cjk-ideographic {
+  system: extends trad-chinese-informal;
+}
+
 /*
- * TODO(crbug.com/687225): Add everthing else in:
- * - https://drafts.csswg.org/css-counter-styles-3/#limited-chinese
+ * TODO(crbug.com/687225): Add everything else in:
  * - https://drafts.csswg.org/css-counter-styles-3/#ethiopic-numeric-counter-style
  * - https://w3c.github.io/predefined-counter-styles/
  */

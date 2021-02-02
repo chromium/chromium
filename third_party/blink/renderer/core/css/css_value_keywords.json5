@@ -1474,6 +1474,11 @@
     "numeric",
     "additive",
     "extends",
+    // Predefined counter styles that don't use the above systems
+    "-internal-simp-chinese-informal",
+    "-internal-simp-chinese-formal",
+    "-internal-trad-chinese-informal",
+    "-internal-trad-chinese-formal",
 
     // @counter-style range
     // infinite,

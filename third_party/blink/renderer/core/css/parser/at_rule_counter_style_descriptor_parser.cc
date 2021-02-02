@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/css/css_string_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 
@@ -60,6 +61,18 @@ CSSValue* ConsumeCounterStyleSystem(CSSParserTokenRange& range,
     return MakeGarbageCollected<CSSValuePair>(
         ident, extended, CSSValuePair::kKeepIdenticalValues);
   }
+
+  // Internal keywords for predefined counter styles that use special
+  // algorithms. For example, 'simp-chinese-informal'.
+  if (context.Mode() == kUASheetMode) {
+    if (CSSValue* ident = css_parsing_utils::ConsumeIdent<
+            CSSValueID::kInternalSimpChineseInformal,
+            CSSValueID::kInternalSimpChineseFormal,
+            CSSValueID::kInternalTradChineseInformal,
+            CSSValueID::kInternalTradChineseFormal>(range))
+      return ident;
+  }
+
   return nullptr;
 }
 

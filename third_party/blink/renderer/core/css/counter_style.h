@@ -20,6 +20,10 @@ enum class CounterStyleSystem {
   kAlphabetic,
   kNumeric,
   kAdditive,
+  kSimpChineseInformal,
+  kSimpChineseFormal,
+  kTradChineseInformal,
+  kTradChineseFormal,
   kUnresolvedExtends,
 };
 
@@ -97,6 +101,8 @@ class CORE_EXPORT CounterStyle final : public GarbageCollected<CounterStyle> {
   // Uses the fallback counter style to generate a representation for the value.
   // It may recurse, and if it enters a loop, it uses 'decimal' instead.
   String GenerateFallbackRepresentation(int value) const;
+
+  String IndexesToString(const Vector<wtf_size_t>& symbol_indexes) const;
 
   // The corresponding style rule in CSS.
   Member<const StyleRuleCounterStyle> style_rule_;
