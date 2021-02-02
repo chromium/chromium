@@ -19,6 +19,7 @@ import tempfile
 import zipfile
 
 import archive
+import data_quality
 import describe
 import diff
 import file_format
@@ -364,7 +365,7 @@ class IntegrationTest(unittest.TestCase):
     self.assertEqual(expected, actual)
 
     sym_strs = (repr(sym) for sym in size_info.symbols)
-    stats = describe.DescribeSizeInfoCoverage(size_info)
+    stats = data_quality.DescribeSizeInfoCoverage(size_info)
     if len(size_info.containers) == 1:
       # If there's only one container, merge the its metadata into build_config.
       merged_data_desc = describe.DescribeDict(size_info.metadata_legacy)

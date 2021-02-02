@@ -46,6 +46,7 @@ libsupersize/archive.py
 libsupersize/bcanalyzer.py
 libsupersize/canned_queries.py
 libsupersize/console.py
+libsupersize/data_quality.py
 libsupersize/demangle.py
 libsupersize/describe.py
 libsupersize/diff.py

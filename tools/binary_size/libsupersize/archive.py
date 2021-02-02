@@ -21,11 +21,13 @@ import string
 import subprocess
 import sys
 import tempfile
+import time
 import zipfile
 import zlib
 
 import apkanalyzer
 import ar
+import data_quality
 import demangle
 import describe
 import file_format
@@ -1894,6 +1896,10 @@ def _AddContainerArguments(parser):
       action='store_true',
       help='Include a padding field for each symbol, instead of rederiving '
       'from consecutive symbols on file load.')
+  parser.add_argument(
+      '--check-data-quality',
+      action='store_true',
+      help='Perform sanity checks to ensure there is no missing data.')
 
   # The split_name arg is used for bundles to identify DFMs.
   parser.set_defaults(split_name=None)
@@ -2231,12 +2237,15 @@ def _IterSubArgs(top_args, on_config_error):
 def Run(top_args, on_config_error):
   if not top_args.size_file.endswith('.size'):
     on_config_error('size_file must end with .size')
+  if top_args.check_data_quality:
+    start_time = time.time()
 
   knobs = SectionSizeKnobs()
   build_config = {}
   seen_container_names = set()
   container_list = []
   raw_symbols_list = []
+
   # Iterate over each container.
   for (sub_args, opts, container_name, apk_so_path, resources_pathmap_path,
        linker_name, size_info_prefix) in _IterSubArgs(top_args,
@@ -2275,7 +2284,7 @@ def Run(top_args, on_config_error):
                              normalize_names=False)
 
   if logging.getLogger().isEnabledFor(logging.DEBUG):
-    for line in describe.DescribeSizeInfoCoverage(size_info):
+    for line in data_quality.DescribeSizeInfoCoverage(size_info):
       logging.debug(line)
   logging.info('Recorded info for %d symbols', len(size_info.raw_symbols))
   for container in size_info.containers:
@@ -2288,3 +2297,12 @@ def Run(top_args, on_config_error):
                            include_padding=top_args.include_padding)
   size_in_mb = os.path.getsize(top_args.size_file) / 1024.0 / 1024.0
   logging.info('Done. File size is %.2fMiB.', size_in_mb)
+
+  if top_args.check_data_quality:
+    logging.info('Checking data quality')
+    data_quality.CheckDataQuality(size_info, top_args.track_string_literals)
+    duration = (time.time() - start_time) / 60
+    if duration > 10:
+      raise data_quality.QualityCheckError(
+          'Command should not take longer than 10 minutes.'
+          ' Took {:.1f} minutes.'.format(duration))

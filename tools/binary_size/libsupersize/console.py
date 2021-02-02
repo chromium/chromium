@@ -18,6 +18,7 @@ import types
 
 import archive
 import canned_queries
+import data_quality
 import describe
 import diff
 import file_format
@@ -76,6 +77,7 @@ class _Session(object):
     self._printed_variables = []
     self._variables = {
         'Print': self._PrintFunc,
+        'CheckDataQuality': self._CheckDataQuality,
         'Csv': self._CsvFunc,
         'Diff': self._DiffFunc,
         'SaveSizeInfo': self._SaveSizeInfo,
@@ -207,8 +209,13 @@ class _Session(object):
       size_info: Defaults to size_infos[0].
     """
     size_info = size_info or self._size_infos[0]
-    describe.WriteLines(
-        describe.DescribeSizeInfoCoverage(size_info), sys.stdout.write)
+    describe.WriteLines(data_quality.DescribeSizeInfoCoverage(size_info),
+                        sys.stdout.write)
+
+  def _CheckDataQuality(self, size_info=None, track_string_literals=True):
+    """Performs checks that run as part of --check-data-quality."""
+    size_info = size_info or self._size_infos[0]
+    data_quality.CheckDataQuality(size_info, track_string_literals)
 
   def _PrintFunc(self, obj=None, verbose=False, summarize=True, recursive=False,
                  use_pager=None, to_file=None):

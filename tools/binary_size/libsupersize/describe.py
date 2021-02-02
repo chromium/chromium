@@ -4,6 +4,7 @@
 """Methods for converting model objects to human-readable formats."""
 
 import abc
+import data_quality
 import io
 import collections
 import csv
@@ -594,115 +595,10 @@ class DescriberText(Describer):
 
     if self.verbose:
       desc_list.append(('', ))
-      desc_list.append(DescribeSizeInfoCoverage(size_info))
+      desc_list.append(data_quality.DescribeSizeInfoCoverage(size_info))
     desc_list.append(('', ))
     desc_list.append(self.GenerateLines(size_info.symbols))
     return itertools.chain.from_iterable(desc_list)
-
-
-def _DescribeSizeInfoContainerCoverage(raw_symbols, container):
-  """Yields lines describing how accurate |size_info| is."""
-  for section, section_name in models.SECTION_TO_SECTION_NAME.items():
-    expected_size = container.section_sizes.get(section_name)
-    in_section = raw_symbols.WhereInSection(section_name, container=container)
-    actual_size = in_section.size
-
-    if expected_size is None:
-      yield 'Section {}: {} bytes from {} symbols.'.format(
-          section_name, actual_size, len(in_section))
-    else:
-      size_percent = _Divide(actual_size, expected_size)
-      yield ('Section {}: has {:.1%} of {} bytes accounted for from '
-             '{} symbols. {} bytes are unaccounted for.').format(
-                 section_name, size_percent, actual_size, len(in_section),
-                 expected_size - actual_size)
-
-    padding = in_section.padding
-    yield '* Padding accounts for {} bytes ({:.1%})'.format(
-        padding, _Divide(padding, actual_size))
-
-    def size_msg(syms, padding=False):
-      size = syms.size if not padding else syms.size_without_padding
-      size_msg = 'Accounts for {} bytes ({:.1%}).'.format(
-          size, _Divide(size, actual_size))
-      if padding:
-        size_msg = size_msg[:-1] + ' padding is {} bytes.'.format(syms.padding)
-      return size_msg
-
-    syms = in_section.Filter(lambda s: s.source_path)
-    yield '* {} have source paths. {}'.format(len(syms), size_msg(syms))
-    syms = in_section.WhereHasComponent()
-    yield '* {} have a component assigned. {}'.format(len(syms), size_msg(syms))
-
-    syms = in_section.WhereNameMatches(r'^\*')
-    if len(syms):
-      yield '* {} placeholders exist (symbols that start with **). {}'.format(
-          len(syms), size_msg(syms))
-
-    syms = syms.Inverted().WhereHasAnyAttribution().Inverted()
-    if syms:
-      yield '* {} symbols have no name or path. {}'.format(
-          len(syms), size_msg(syms))
-
-    if section == 'r':
-      syms = in_section.Filter(lambda s: s.IsStringLiteral())
-      yield '* {} string literals exist. {}'.format(
-          len(syms), size_msg(syms, padding=True))
-
-    syms = in_section.Filter(lambda s: s.aliases)
-    if len(syms):
-      uniques = sum(1 for s in syms.IterUniqueSymbols())
-      saved = sum(s.size_without_padding * (s.num_aliases - 1)
-                  for s in syms.IterUniqueSymbols())
-      yield ('* {} aliases exist, mapped to {} unique addresses '
-             '({} bytes saved)').format(len(syms), uniques, saved)
-
-    syms = in_section.WhereObjectPathMatches('{shared}')
-    if len(syms):
-      yield '* {} symbols have shared ownership. {}'.format(
-          len(syms), size_msg(syms))
-    else:
-      yield '* 0 symbols have shared ownership.'
-
-    for flag, desc in (
-        (models.FLAG_HOT, 'marked as "hot"'),
-        (models.FLAG_UNLIKELY, 'marked as "unlikely"'),
-        (models.FLAG_STARTUP, 'marked as "startup"'),
-        (models.FLAG_CLONE, 'clones'),
-        (models.FLAG_GENERATED_SOURCE, 'from generated sources')):
-      syms = in_section.WhereHasFlag(flag)
-      if len(syms):
-        yield '* {} symbols are {}. {}'.format(len(syms), desc, size_msg(syms))
-
-    # These thresholds were found by experimenting with arm32 Chrome.
-    # E.g.: Set them to 0 and see what warnings get logged, then take max value.
-    spam_counter = 0
-    for i in range(len(in_section) - 1):
-      sym = in_section[i + 1]
-      if (not sym.full_name.startswith('*')
-          and not sym.source_path.endswith('.S')  # Assembly symbol are iffy.
-          and not sym.IsStringLiteral()
-          and ((sym.section in 'rd' and sym.padding >= 256) or
-               (sym.section in 't' and sym.padding >= 64))):
-        # TODO(crbug.com/959906): We should synthesize symbols for these gaps
-        #     rather than attribute them as padding.
-        spam_counter += 1
-        if spam_counter <= 5:
-          yield 'Large padding of {} between:'.format(sym.padding)
-          yield '  A) ' + repr(in_section[i])
-          yield '  B) ' + repr(sym)
-
-
-def DescribeSizeInfoCoverage(size_info):
-  for i, container in enumerate(size_info.containers):
-    if i > 0:
-      yield ''
-    if container.name:
-      yield 'Container <%s>' % container.name
-    # TODO(huangs): Change to use "yield from" once linters allow this.
-    for line in _DescribeSizeInfoContainerCoverage(size_info.raw_symbols,
-                                                   container):
-      yield line
 
 
 class DescriberCsv(Describer):

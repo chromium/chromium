@@ -316,8 +316,11 @@ class BaseSizeInfo(object):
     return self._pak_symbols
 
   @property
-  def all_section_sizes(self):
-    return [c.section_sizes for c in self.containers]
+  def section_sizes(self):
+    ret = collections.Counter()
+    for c in self.containers:
+      ret.update(c.section_sizes)
+    return dict(ret)
 
   @property
   def metadata(self):
