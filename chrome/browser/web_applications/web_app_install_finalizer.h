@@ -17,6 +17,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 
 class Profile;
+class ScopedKeepAlive;
 
 namespace web_app {
 
@@ -76,9 +77,11 @@ class WebAppInstallFinalizer final : public InstallFinalizer {
                                        std::unique_ptr<WebApp> web_app,
                                        bool success);
 
-  void OnIconsDataDeletedAndWebAppUninstalled(const AppId& app_id,
-                                              UninstallWebAppCallback callback,
-                                              bool success);
+  void OnIconsDataDeletedAndWebAppUninstalled(
+      const AppId& app_id,
+      UninstallWebAppCallback callback,
+      std::unique_ptr<ScopedKeepAlive> keep_browser_alive,
+      bool success);
   void OnDatabaseCommitCompletedForInstall(InstallFinalizedCallback callback,
                                            AppId app_id,
                                            bool success);
@@ -90,6 +93,7 @@ class WebAppInstallFinalizer final : public InstallFinalizer {
       bool success);
   void OnUninstallOsHooks(const AppId& app_id,
                           UninstallWebAppCallback callback,
+                          std::unique_ptr<ScopedKeepAlive> keep_browser_alive,
                           OsHooksResults os_hooks_info);
 
   WebAppRegistrar& GetWebAppRegistrar() const;
