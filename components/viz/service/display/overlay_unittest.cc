@@ -106,6 +106,21 @@ class FullscreenOverlayProcessor : public TestOverlayProcessor {
   }
 };
 
+// Gets the minimum scaling amount used by either dimension for the src relative
+// to the dst.
+float GetMinScaleFactor(const OverlayCandidate& candidate) {
+  if (candidate.resource_size_in_pixels.IsEmpty() ||
+      candidate.uv_rect.IsEmpty()) {
+    return 1.0f;
+  }
+  return std::min(candidate.display_rect.width() /
+                      (candidate.uv_rect.width() *
+                       candidate.resource_size_in_pixels.width()),
+                  candidate.display_rect.height() /
+                      (candidate.uv_rect.height() *
+                       candidate.resource_size_in_pixels.height()));
+}
+
 class DefaultOverlayProcessor : public TestOverlayProcessor {
  public:
   DefaultOverlayProcessor() : expected_rects_(1, gfx::RectF(kOverlayRect)) {}
@@ -118,8 +133,19 @@ class DefaultOverlayProcessor : public TestOverlayProcessor {
     // through the full renderer and picked up the output surface, or not.
     ASSERT_EQ(1U, surfaces->size());
     OverlayCandidate& candidate = surfaces->back();
+    const float kAbsoluteError = 0.01f;
+    // If we are testing fallback for protected overlay scaling, then check that
+    // first.
+    if (!scaling_sequence_.empty()) {
+      float scaling = GetMinScaleFactor(candidate);
+      EXPECT_LE(std::abs(scaling - scaling_sequence_.front().first),
+                kAbsoluteError);
+      candidate.overlay_handled = scaling_sequence_.front().second;
+      scaling_sequence_.erase(scaling_sequence_.begin());
+      return;
+    }
+
     for (const auto& r : expected_rects_) {
-      const float kAbsoluteError = 0.01f;
       if (std::abs(r.x() - candidate.display_rect.x()) <= kAbsoluteError &&
           std::abs(r.y() - candidate.display_rect.y()) <= kAbsoluteError &&
           std::abs(r.width() - candidate.display_rect.width()) <=
@@ -144,8 +170,13 @@ class DefaultOverlayProcessor : public TestOverlayProcessor {
     expected_rects_.push_back(rect);
   }
 
+  void AddScalingSequence(float scaling, bool uses_overlay) {
+    scaling_sequence_.emplace_back(scaling, uses_overlay);
+  }
+
  private:
   std::vector<gfx::RectF> expected_rects_;
+  std::vector<std::pair<float, bool>> scaling_sequence_;
 };
 
 class SingleOverlayProcessor : public DefaultOverlayProcessor {
@@ -387,13 +418,13 @@ TextureDrawQuad* CreateCandidateQuadAt(
     AggregatedRenderPass* render_pass,
     const gfx::Rect& rect,
     gfx::ProtectedVideoType protected_video_type,
-    ResourceFormat resource_format) {
+    ResourceFormat resource_format,
+    const gfx::Size& resource_size_in_pixels) {
   bool needs_blending = false;
   bool premultiplied_alpha = false;
   bool flipped = false;
   bool nearest_neighbor = false;
   float vertex_opacity[4] = {1.0f, 1.0f, 1.0f, 1.0f};
-  gfx::Size resource_size_in_pixels = rect.size();
   bool is_overlay_candidate = true;
   ResourceId resource_id = CreateResource(
       parent_resource_provider, child_resource_provider, child_context_provider,
@@ -408,6 +439,21 @@ TextureDrawQuad* CreateCandidateQuadAt(
   overlay_quad->set_resource_size_in_pixels(resource_size_in_pixels);
 
   return overlay_quad;
+}
+
+TextureDrawQuad* CreateCandidateQuadAt(
+    DisplayResourceProvider* parent_resource_provider,
+    ClientResourceProvider* child_resource_provider,
+    ContextProvider* child_context_provider,
+    const SharedQuadState* shared_quad_state,
+    AggregatedRenderPass* render_pass,
+    const gfx::Rect& rect,
+    gfx::ProtectedVideoType protected_video_type,
+    ResourceFormat resource_format) {
+  return CreateCandidateQuadAt(
+      parent_resource_provider, child_resource_provider, child_context_provider,
+      shared_quad_state, render_pass, rect, protected_video_type,
+      resource_format, rect.size());
 }
 
 TextureDrawQuad* CreateCandidateQuadAt(
@@ -576,6 +622,10 @@ class OverlayTest : public testing::Test {
 
   void AddExpectedRectToOverlayProcessor(const gfx::RectF& rect) {
     overlay_processor_->AddExpectedRect(rect);
+  }
+
+  void AddScalingSequenceToOverlayProcessor(float scaling, bool uses_overlay) {
+    overlay_processor_->AddScalingSequence(scaling, uses_overlay);
   }
 
   scoped_refptr<TestContextProvider> provider_;
@@ -4105,6 +4155,69 @@ TEST_F(UnderlayTest, EstimateOccludedDamage) {
         iter_occluder_end);
 
     ASSERT_EQ(kExpectedDamages[i], candidate.damage_area_estimate);
+  }
+}
+
+TEST_F(UnderlayTest, ProtectedVideoOverlayScaling) {
+  // This test verifies the algorithm used when adjusting the scaling for
+  // protected content due to HW overlay scaling limitations where we resort
+  // to clipping when we need to downscale beyond the HW's limits.
+
+  // This is only used in the overlay prioritization path.
+  if (!features::IsOverlayPrioritizationEnabled())
+    return;
+
+  // 0.5 should fail, and then it'll increase it by 0.5 each try until it
+  // succeeds. Have it succeed at 0.65f.
+  AddScalingSequenceToOverlayProcessor(0.5f, false);
+  AddScalingSequenceToOverlayProcessor(0.55f, false);
+  AddScalingSequenceToOverlayProcessor(0.6f, false);
+  AddScalingSequenceToOverlayProcessor(0.65f, true);
+  // Then send one in at 0.625, which we let pass, that'll establish a high
+  // end working bound of 0.626.
+  AddScalingSequenceToOverlayProcessor(0.625f, true);
+  // Send another one in at 0.5f, which fails and then it should try 0.626 since
+  // it knows 0.6 and below fails and 0.625 worked (and the 0.001 is to keep the
+  // bounds separated).
+  AddScalingSequenceToOverlayProcessor(0.5f, false);
+  AddScalingSequenceToOverlayProcessor(0.626f, true);
+
+  float initial_scalings[] = {0.5f, 0.625f, 0.5f};
+  for (auto initial_scaling : initial_scalings) {
+    auto pass = CreateRenderPass();
+
+    AggregatedRenderPassId render_pass_id{3};
+    AggregatedRenderPassDrawQuad* quad =
+        pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
+    quad->SetNew(pass->shared_quad_state_list.back(), kOverlayRect,
+                 kOverlayRect, render_pass_id, 0, gfx::RectF(), gfx::Size(),
+                 gfx::Vector2dF(1, 1), gfx::PointF(), gfx::RectF(), false,
+                 1.0f);
+
+    // First, we want the overlay to be scaled by 0.5 and have it rejected.
+    float res_scale = 1.0f / (initial_scaling * (1.0f - kUVTopLeft.x()));
+    CreateCandidateQuadAt(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+        pass->output_rect, gfx::ProtectedVideoType::kHardwareProtected,
+        YUV_420_BIPLANAR, gfx::ScaleToRoundedSize(kDisplaySize, res_scale))
+        ->needs_blending = false;
+    pass->shared_quad_state_list.front()->opacity = 1.0;
+
+    OverlayCandidateList candidate_list;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+
+    AggregatedRenderPassList pass_list;
+    pass_list.push_back(std::move(pass));
+    SurfaceDamageRectList surface_damage_rect_list;
+
+    overlay_processor_->ProcessForOverlays(
+        resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+        render_pass_filters, render_pass_backdrop_filters,
+        std::move(surface_damage_rect_list), nullptr, &candidate_list,
+        &damage_rect_, &content_bounds_);
+    ASSERT_EQ(1U, candidate_list.size());
   }
 }
 
