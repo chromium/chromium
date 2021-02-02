@@ -92,6 +92,7 @@ void LayoutNGTable::GridBordersChanged() {
 
 void LayoutNGTable::TableGridStructureChanged() {
   NOT_DESTROYED();
+  // Callers must ensure table layout gets invalidated.
   InvalidateCachedTableBorders();
 }
 

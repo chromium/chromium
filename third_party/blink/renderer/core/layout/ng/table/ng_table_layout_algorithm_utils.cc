@@ -94,6 +94,7 @@ NGTableTypes::Row ComputeMinimumRowBlockSize(
                                        wtf_size_t start_column_index,
                                        const NGBoxStrut& cell_borders) {
     const wtf_size_t start_column = start_column_index;
+    DCHECK_LT(start_column, column_locations.size());
     const wtf_size_t end_column =
         std::min(start_column + cell.TableCellColspan() - 1,
                  column_locations.size() - 1);

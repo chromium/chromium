@@ -123,10 +123,12 @@ void LayoutNGTableCell::StyleDidChange(StyleDifference diff,
 
 void LayoutNGTableCell::ColSpanOrRowSpanChanged() {
   NOT_DESTROYED();
-  // TODO(atotic) Invalidate layout?
   UpdateColAndRowSpanFlags();
-  if (LayoutNGTable* table = Table())
+  if (LayoutNGTable* table = Table()) {
+    table->SetNeedsLayoutAndIntrinsicWidthsRecalc(
+        layout_invalidation_reason::kTableChanged);
     table->TableGridStructureChanged();
+  }
 }
 
 LayoutBox* LayoutNGTableCell::CreateAnonymousBoxWithSameTypeAs(
