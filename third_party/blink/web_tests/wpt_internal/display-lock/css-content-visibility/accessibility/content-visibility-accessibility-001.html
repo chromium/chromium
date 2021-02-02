@@ -60,7 +60,7 @@ async_test((t) => {
   for (let i = 0; i < axTarget.childrenCount; ++i) {
     const axChild = axTarget.childAtIndex(i);
     t.step(() => { assert_false(axChild.isIgnored, "After acquire, isIgnored is false on child #" + i); });
-    t.step(() => { assert_false(axChild.isVisible, "After acquire, isVisible is false on child #" + i); });
+    t.step(() => { assert_true(axChild.isVisible, "After acquire, isVisible is false on child #" + i); });
   }
 
   // Check that nodes in content-visibility:auto are available for aria-labelledby.

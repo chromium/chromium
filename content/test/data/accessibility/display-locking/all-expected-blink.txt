@@ -6,13 +6,13 @@ rootWebArea
 ++++++++++staticText name='spacer so that everything below will be offscreen (and won't get viewport-activated)'
 ++++++++++++inlineTextBox name='spacer so that everything below will be offscreen (and won't get viewport-activated)'
 ++++++++genericContainer offscreen
-++++++++++staticText invisible offscreen name='<newline>    '
-++++++++++genericContainer invisible offscreen
-++++++++++++staticText invisible offscreen name='child text will be in AX tree but without layout'
-++++++++++staticText invisible offscreen name='<newline>    '
-++++++++++genericContainer invisible offscreen
-++++++++++++staticText invisible offscreen name='<newline>      nested activatable locked element will be in AX tree but without layout<newline>    '
-++++++++++staticText invisible offscreen name='<newline>  '
+++++++++++staticText offscreen name='<newline>    '
+++++++++++genericContainer offscreen
+++++++++++++staticText offscreen name='child text will be in AX tree but without layout'
+++++++++++staticText offscreen name='<newline>    '
+++++++++++genericContainer offscreen
+++++++++++++staticText offscreen name='<newline>      nested activatable locked element will be in AX tree but without layout<newline>    '
+++++++++++staticText offscreen name='<newline>  '
 ++++++++staticText offscreen name='normal text 1'
 ++++++++++inlineTextBox offscreen name='normal text 1'
 ++++++++genericContainer offscreen

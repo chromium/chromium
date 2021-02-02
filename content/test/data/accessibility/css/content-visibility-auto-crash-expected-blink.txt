@@ -3,9 +3,9 @@ rootWebArea name='Done'
 ++++genericContainer ignored
 ++++++genericContainer ignored
 ++++++genericContainer
-++++++++genericContainer invisible
-++++++++++genericContainer invisible
-++++++++++++staticText invisible name='target'
-++++++++++staticText invisible name='xxx<newline>'
-++++++++++staticText invisible name='<newline>'
-++++++++staticText invisible name='<newline>'
+++++++++genericContainer
+++++++++++genericContainer
+++++++++++++staticText name='target'
+++++++++++staticText name='xxx<newline>'
+++++++++++staticText name='<newline>'
+++++++++staticText name='<newline>'

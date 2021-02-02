@@ -1,13 +1,13 @@
 ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++IA2_ROLE_SECTION
 ++IA2_ROLE_SECTION
-++++ROLE_SYSTEM_STATICTEXT name='<newline>    ' INVISIBLE
-++++IA2_ROLE_SECTION INVISIBLE
-++++++ROLE_SYSTEM_STATICTEXT name='child' INVISIBLE
-++++ROLE_SYSTEM_STATICTEXT name='<newline>    ' INVISIBLE
-++++IA2_ROLE_SECTION INVISIBLE
-++++++ROLE_SYSTEM_STATICTEXT name='nested locked element!' INVISIBLE
-++++ROLE_SYSTEM_STATICTEXT name='<newline>    ' INVISIBLE
-++++IA2_ROLE_SECTION INVISIBLE
-++++++ROLE_SYSTEM_STATICTEXT name='nested non activatable locked element' INVISIBLE
-++++ROLE_SYSTEM_STATICTEXT name='<newline>  ' INVISIBLE
+++++ROLE_SYSTEM_STATICTEXT name='<newline>    '
+++++IA2_ROLE_SECTION
+++++++ROLE_SYSTEM_STATICTEXT name='child'
+++++ROLE_SYSTEM_STATICTEXT name='<newline>    '
+++++IA2_ROLE_SECTION
+++++++ROLE_SYSTEM_STATICTEXT name='nested locked element!'
+++++ROLE_SYSTEM_STATICTEXT name='<newline>    '
+++++IA2_ROLE_SECTION
+++++++ROLE_SYSTEM_STATICTEXT name='nested non activatable locked element'
+++++ROLE_SYSTEM_STATICTEXT name='<newline>  '

@@ -8,5 +8,6 @@ AXWebArea
 ++AXGroup
 ++++AXStaticText AXValue='spacer so that everything below will be offscreen (and won't get viewport-activated)'
 ++AXGroup
+++++AXStaticText AXValue='<newline>    This text will not get viewport-activated, and will be in AX tree but without layout.<newline>  '
 ++AXGroup
 ++++AXStaticText AXValue='doneActivating'

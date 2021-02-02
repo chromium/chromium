@@ -1,2 +1,2 @@
-[document web]
-++[section]
+[document web] visible
+++[section] visible
