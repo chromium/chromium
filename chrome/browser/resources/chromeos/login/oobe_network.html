@@ -29,7 +29,8 @@
         </network-select-login>
       </div>
       <div slot="back-navigation">
-        <oobe-back-button on-click="onBackClicked_"></oobe-back-button>
+        <oobe-back-button id="backButton"
+            on-click="onBackClicked_"></oobe-back-button>
       </div>
       <div slot="bottom-buttons">
         <oobe-next-button id="nextButton" disabled="[[!isConnected_]]"

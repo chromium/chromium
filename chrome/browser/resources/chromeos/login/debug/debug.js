@@ -800,6 +800,14 @@ cr.define('cr.ui.login.debug', function() {
         {
           id: 'us-terms-loaded',
           trigger: (screen) => {
+            screen.clearDemoMode();
+            screen.reloadPlayStoreToS();
+          },
+        },
+        {
+          id: 'demo-mode',
+          trigger: (screen) => {
+            screen.setupForDemoMode();
             screen.reloadPlayStoreToS();
           },
         },

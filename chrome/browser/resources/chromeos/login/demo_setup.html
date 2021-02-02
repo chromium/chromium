@@ -46,13 +46,13 @@
       <h1 slot="title">
         [[i18nDynamic(locale, 'demoSetupErrorScreenTitle')]]
       </h1>
-      <div slot="subtitle">[[errorMessage_]]</div>
+      <div slot="subtitle" id="errorMessage">[[errorMessage_]]</div>
       <div slot="content" class="flex layout vertical center center-justified">
         <img srcset="images/alert-illustration_1x.svg 1x,
             images/alert-illustration_2x.svg 2x">
       </div>
       <div slot="back-navigation">
-        <oobe-back-button inverse on-click="onCloseClicked_"
+        <oobe-back-button inverse on-click="onCloseClicked_" id="back"
             disabled="[[isPowerwashRequired_]]"></oobe-back-button>
       </div>
       <div slot="bottom-buttons">

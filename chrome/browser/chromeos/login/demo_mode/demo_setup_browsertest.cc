@@ -30,6 +30,7 @@
 #include "chrome/browser/chromeos/login/test/js_checker.h"
 #include "chrome/browser/chromeos/login/test/oobe_base_test.h"
 #include "chrome/browser/chromeos/login/test/oobe_screen_waiter.h"
+#include "chrome/browser/chromeos/login/test/oobe_screens_utils.h"
 #include "chrome/browser/chromeos/login/test/test_condition_waiter.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
@@ -67,87 +68,41 @@ namespace chromeos {
 
 namespace {
 
-const test::UIPath kDemoSetupDialog = {"demo-setup", "demoSetupProgressDialog"};
+const test::UIPath kDemoConfirmationDialog = {"connect",
+                                              "demoModeConfirmationDialog"};
+
+const test::UIPath kDemoPreferencesScreen = {"demo-preferences"};
+const test::UIPath kDemoPreferencesCountry = {"demo-preferences",
+                                              "countrySelect"};
+const test::UIPath kDemoPreferencesCountrySelect = {"demo-preferences",
+                                                    "countrySelect", "select"};
+const test::UIPath kDemoPreferencesNext = {"demo-preferences", "nextButton"};
+
+const test::UIPath kNetworkScreen = {"network-selection"};
+const test::UIPath kNetworkNextButton = {"network-selection", "nextButton"};
+const test::UIPath kNetworkBackButton = {"network-selection", "backButton"};
+
+const test::UIPath kDemoSetupProgressDialog = {"demo-setup",
+                                               "demoSetupProgressDialog"};
+const test::UIPath kDemoSetupErrorDialog = {"demo-setup",
+                                            "demoSetupErrorDialog"};
+const test::UIPath kDemoSetupErrorDialogRetry = {"demo-setup", "retryButton"};
+const test::UIPath kDemoSetupErrorDialogPowerwash = {"demo-setup",
+                                                     "powerwashButton"};
+const test::UIPath kDemoSetupErrorDialogBack = {"demo-setup", "back"};
+const test::UIPath kDemoSetupErrorDialogMessage = {"demo-setup",
+                                                   "errorMessage"};
+
+const test::UIPath kArcTosDialog = {"arc-tos", "arcTosDialog"};
+const test::UIPath kArcTosAcceptButton = {"arc-tos", "arcTosAcceptButton"};
+const test::UIPath kArcTosDemoAppsNotice = {"arc-tos", "arcTosMetricsDemoApps"};
+const test::UIPath kArcTosBackButton = {"arc-tos", "arcTosBackButton"};
+const test::UIPath kArcTosNextButton = {"arc-tos", "arcTosNextButton"};
 
 constexpr char kDefaultNetworkServicePath[] = "/service/eth1";
 constexpr char kDefaultNetworkName[] = "eth1";
 
 constexpr int kInvokeDemoModeGestureTapsCount = 10;
-
-// How js query is executed.
-enum class JSExecution { kSync, kAsync };
-
-// Buttons available on OOBE dialogs.
-enum class OobeButton { kBack, kNext, kText };
-
-// Dialogs that are a part of Demo Mode setup screens.
-enum class DemoSetupDialog {
-  kNetwork,
-  kEula,
-  kArcTosLoading,
-  kArcTosLoaded,
-  kArcTosError,
-  kProgress,
-  kError
-};
-
-// Returns the tag of the given `button` type.
-std::string ButtonToTag(OobeButton button) {
-  switch (button) {
-    case OobeButton::kBack:
-      return "oobe-back-button";
-    case OobeButton::kNext:
-      return "oobe-next-button";
-    case OobeButton::kText:
-      return "oobe-text-button";
-    default:
-      NOTREACHED() << "This is not valid OOBE button type";
-  }
-}
-
-// Returns js id of the given `dialog`.
-std::string DialogToStringId(DemoSetupDialog dialog) {
-  switch (dialog) {
-    case DemoSetupDialog::kNetwork:
-      return "networkDialog";
-    case DemoSetupDialog::kEula:
-      return "eulaDialog";
-    case DemoSetupDialog::kArcTosLoading:
-      return "arcTosLoadingDialog";
-    case DemoSetupDialog::kArcTosLoaded:
-      return "arcTosDialog";
-    case DemoSetupDialog::kArcTosError:
-      return "arcTosErrorDialog";
-    case DemoSetupDialog::kProgress:
-      return "demoSetupProgressDialog";
-    case DemoSetupDialog::kError:
-      return "demoSetupErrorDialog";
-    default:
-      NOTREACHED() << "This dialog does not belong to Demo Mode setup screens";
-  }
-}
-
-// Returns query to access the content of the given OOBE `screen` or empty
-// string if the `screen` is not a part of Demo Mode setup flow.
-std::string ScreenToContentQuery(OobeScreenId screen) {
-  if (screen == DemoPreferencesScreenView::kScreenId)
-    return "$('demo-preferences')";
-  if (screen == NetworkScreenView::kScreenId)
-    return "$('network-selection')";
-  if (screen == EulaView::kScreenId)
-    return "$('oobe-eula-md')";
-  if (screen == ArcTermsOfServiceScreenView::kScreenId)
-    return "$('arc-tos')";
-  if (screen == DemoSetupScreenView::kScreenId)
-    return "$('demo-setup')";
-  NOTREACHED() << "This OOBE screen is not a part of Demo Mode setup flow";
-  return std::string();
-}
-
-// Waits for js condition to be fulfilled.
-void WaitForJsCondition(const std::string& js_condition) {
-  test::OobeJS().CreateWaiter(js_condition)->Wait();
-}
 
 }  // namespace
 
@@ -167,93 +122,45 @@ class DemoSetupTestBase : public OobeBaseTest {
     DisconnectAllNetworks();
   }
 
-  bool IsScreenShown(OobeScreenId screen) {
-    const std::string screen_name = screen.name;
-    const std::string query = base::StrCat(
-        {"!!document.querySelector('#", screen_name,
-         "') && !document.querySelector('#", screen_name, "').hidden"});
-    return test::OobeJS().GetBool(query);
-  }
-
   void IsConfirmationDialogShown() {
-    test::OobeJS().ExpectAttributeEQ(
-        "open", {"connect", "demoModeConfirmationDialog"}, true);
+    test::OobeJS().ExpectAttributeEQ("open", kDemoConfirmationDialog, true);
   }
 
   void IsConfirmationDialogHidden() {
-    test::OobeJS().ExpectAttributeEQ(
-        "open", {"connect", "demoModeConfirmationDialog"}, false);
+    test::OobeJS().ExpectAttributeEQ("open", kDemoConfirmationDialog, false);
   }
 
-  // TODO(michaelpg): Replace this with IsScreenDialogElementVisible, which is
-  // more robust because it checks whether the element is actually rendered.
-  // Do this after a branch in case it introduces flakiness.
-  bool IsScreenDialogElementShown(OobeScreenId screen,
-                                  DemoSetupDialog dialog,
-                                  const std::string& element_selector) {
-    const std::string element = base::StrCat(
-        {ScreenToContentQuery(screen), ".$['", DialogToStringId(dialog),
-         "'].querySelector('", element_selector, "')"});
-    const std::string query =
-        base::StrCat({"!!", element, " && !", element, ".hidden"});
-    return test::OobeJS().GetBool(query);
+  void ClickOkOnConfirmationDialog() {
+    test::OobeJS().TapOnPath({"connect", "okButton"});
   }
 
-  bool IsScreenDialogElementVisible(OobeScreenId screen,
-                                    DemoSetupDialog dialog,
-                                    const std::string& element_selector) {
-    const std::string element = base::StrCat(
-        {ScreenToContentQuery(screen), ".$['", DialogToStringId(dialog),
-         "'].querySelector('", element_selector, "')"});
-    const std::string query =
-        base::StrCat({"!!", element, " && ", element, ".offsetHeight > 0"});
-    return test::OobeJS().GetBool(query);
+  void ClickCancelOnConfirmationDialog() {
+    test::OobeJS().TapOnPath({"connect", "cancelButton"});
   }
 
-  bool IsScreenDialogElementEnabled(OobeScreenId screen,
-                                    DemoSetupDialog dialog,
-                                    const std::string& element_selector) {
-    const std::string element = base::StrCat(
-        {ScreenToContentQuery(screen), ".$['", DialogToStringId(dialog),
-         "'].querySelector('", element_selector, "')"});
-    const std::string query =
-        base::StrCat({"!!", element, " && !", element, ".disabled"});
-    return test::OobeJS().GetBool(query);
-  }
+  void TriggerDemoModeOnWelcomeScreen() {
+    test::WaitForWelcomeScreen();
+    IsConfirmationDialogHidden();
 
-  // Returns whether a custom item with `custom_item_name` is shown as a first
-  // element on the network list.
-  bool IsCustomNetworkListElementShown(const std::string& custom_item_name) {
-    const std::string element_selector = base::StrCat(
-        {ScreenToContentQuery(NetworkScreenView::kScreenId),
-         ".getNetworkListItemWithQueryForTest('network-list-item')"});
-    const std::string query =
-        base::StrCat({"!!", element_selector, " && ", element_selector,
-                      ".item.customItemName == '", custom_item_name, "' && !",
-                      element_selector, ".hidden"});
-    return test::OobeJS().GetBool(query);
+    InvokeDemoModeWithAccelerator();
+    IsConfirmationDialogShown();
+
+    ClickOkOnConfirmationDialog();
+
+    OobeScreenWaiter(DemoPreferencesScreenView::kScreenId).Wait();
   }
 
   // Returns whether error message is shown on demo setup error screen and
   // contains text consisting of strings identified by `error_message_id` and
   // `recovery_message_id`.
-  bool IsErrorMessageShown(int error_message_id, int recovery_message_id) {
-    const std::string element_selector =
-        base::StrCat({ScreenToContentQuery(DemoSetupScreenView::kScreenId),
-                      ".$['", DialogToStringId(DemoSetupDialog::kError),
-                      "'].querySelector('div[slot=subtitle]')"});
-    const std::string query = base::StrCat(
-        {"!!", element_selector, " && ", element_selector, ".innerHTML == '",
-         l10n_util::GetStringUTF8(error_message_id), " ",
-         l10n_util::GetStringUTF8(recovery_message_id), "' && !",
-         element_selector, ".hidden"});
-    return test::OobeJS().GetBool(query);
-  }
+  void ExpectErrorMessage(int error_message_id, int recovery_message_id) {
+    const std::string expected_message =
+        base::StrCat({l10n_util::GetStringUTF8(error_message_id), " ",
+                      l10n_util::GetStringUTF8(recovery_message_id)});
 
-  void SetPlayStoreTermsForTesting() {
-    test::ExecuteOobeJS(
-        R"(login.ArcTermsOfServiceScreen.setTosForTesting(
-              'Test Play Store Terms of Service');)");
+    test::OobeJS().ExpectVisiblePath(kDemoSetupErrorDialogMessage);
+    test::OobeJS().ExpectElementText(expected_message,
+                                     kDemoSetupErrorDialogMessage);
   }
 
   void InvokeDemoModeWithAccelerator() {
@@ -274,81 +181,24 @@ class DemoSetupTestBase : public OobeBaseTest {
     test::ExecuteOobeJS(query);
   }
 
-  void ClickOkOnConfirmationDialog() {
-    test::OobeJS().TapOnPath({"connect", "okButton"});
-  }
-
-  void ClickCancelOnConfirmationDialog() {
-    test::OobeJS().TapOnPath({"connect", "cancelButton"});
-  }
-
-  // Simulates `button` click on a specified OOBE `screen`. Can be used for
-  // screens that consists of one oobe-dialog element.
-  void ClickOobeButton(OobeScreenId screen,
-                       OobeButton button,
-                       JSExecution execution) {
-    const std::string query = base::StrCat(
-        {ScreenToContentQuery(screen), ScreenToOobeDialogType(screen),
-         ".querySelector('", ButtonToTag(button), "').click();"});
-    switch (execution) {
-      case JSExecution::kAsync:
-        test::ExecuteOobeJSAsync(query);
-        return;
-      case JSExecution::kSync:
-        test::ExecuteOobeJS(query);
-        return;
-      default:
-        NOTREACHED();
-    }
-  }
-
-  // During transition to new layout in OOBE we use oobe-adaptive-dialog instead
-  // of oobe-dialog. This is a helper function for this transition.
-  std::string ScreenToOobeDialogType(OobeScreenId screen) {
-    if (screen == DemoPreferencesScreenView::kScreenId) {
-      return ".$$('oobe-adaptive-dialog')";
-    } else {
-      return ".$$('oobe-dialog')";
-    }
-  }
-
-  // Simulates `button` click on a `dialog` of the specified OOBE `screen`.
-  // Can be used for screens that consists of multiple oobe-dialog elements.
-  void ClickScreenDialogButton(OobeScreenId screen,
-                               DemoSetupDialog dialog,
-                               OobeButton button,
-                               JSExecution execution) {
-    ClickScreenDialogButtonWithSelector(screen, dialog, ButtonToTag(button),
-                                        execution);
-  }
-
-  // Simulates click on a button with `button_selector` on a `dialog` of the
-  // specified OOBE `screen`. Can be used for screens that consist of multiple
-  // oobe-dialog elements.
-  void ClickScreenDialogButtonWithSelector(OobeScreenId screen,
-                                           DemoSetupDialog dialog,
-                                           const std::string& button_selector,
-                                           JSExecution execution) {
-    const std::string query = base::StrCat(
-        {ScreenToContentQuery(screen), ".$['", DialogToStringId(dialog),
-         "'].querySelector('", button_selector, "').click();"});
-    switch (execution) {
-      case JSExecution::kAsync:
-        test::ExecuteOobeJSAsync(query);
-        return;
-      case JSExecution::kSync:
-        test::ExecuteOobeJS(query);
-        return;
-      default:
-        NOTREACHED();
-    }
+  // Returns whether a custom item with `custom_item_name` is shown as a first
+  // element on the network list.
+  bool IsCustomNetworkListElementShown(const std::string& custom_item_name) {
+    const std::string element_selector = base::StrCat(
+        {test::GetOobeElementPath(kNetworkScreen),
+         ".getNetworkListItemWithQueryForTest('network-list-item')"});
+    const std::string query =
+        base::StrCat({"!!", element_selector, " && ", element_selector,
+                      ".item.customItemName == '", custom_item_name, "' && !",
+                      element_selector, ".hidden"});
+    return test::OobeJS().GetBool(query);
   }
 
   // Simulates click on the network list item. `element` should specify
   // the aria-label of the desired network-list-item.
   void ClickNetworkListElement(const std::string& name) {
     const std::string element =
-        base::StrCat({ScreenToContentQuery(NetworkScreenView::kScreenId),
+        base::StrCat({test::GetOobeElementPath(kNetworkScreen),
                       ".getNetworkListItemByNameForTest('", name, "')"});
     // We are looking up element by localized text. In Polymer v2 we might
     // get to this point when element still not have proper localized string,
@@ -357,51 +207,23 @@ class DemoSetupTestBase : public OobeBaseTest {
     test::OobeJS().CreateVisibilityWaiter(true, element)->Wait();
 
     const std::string query = base::StrCat({element, ".click()"});
-    test::ExecuteOobeJSAsync(query);
+    test::ExecuteOobeJS(query);
   }
 
-  void SkipToErrorDialog() {
-    // Simulate online setup error.
-    enrollment_helper_.ExpectEnrollmentMode(
-        policy::EnrollmentConfig::MODE_ATTESTATION);
-    enrollment_helper_.ExpectAttestationEnrollmentError(
-        policy::EnrollmentStatus::ForRegistrationError(
-            policy::DeviceManagementStatus::DM_STATUS_TEMPORARY_UNAVAILABLE));
+  void UseOfflineModeOnNetworkScreen() {
+    test::WaitForNetworkSelectionScreen();
+    test::OobeJS().ExpectDisabledPath(kNetworkNextButton);
 
-    // Enrollment type is set in the part of the flow that is skipped, That is
-    // why we need to set it here.
-    auto* const wizard_controller = WizardController::default_controller();
-    wizard_controller->SimulateDemoModeSetupForTesting(
-        DemoSession::DemoModeConfig::kOnline);
-    wizard_controller->AdvanceToScreen(DemoSetupScreenView::kScreenId);
-
-    OobeScreenWaiter(DemoSetupScreenView::kScreenId).Wait();
-    // TODO(agawronska): Progress dialog transition is async - extra work is
-    // needed to be able to check it reliably.
-    WaitForScreenDialog(DemoSetupScreenView::kScreenId,
-                        DemoSetupDialog::kError);
+    const std::string offline_setup_item_name =
+        l10n_util::GetStringUTF8(IDS_NETWORK_OFFLINE_DEMO_SETUP_LIST_ITEM_NAME);
+    ClickNetworkListElement(offline_setup_item_name);
   }
 
-  void WaitForScreenDialog(OobeScreenId screen, DemoSetupDialog dialog) {
-    const std::string query =
-        base::StrCat({"!", ScreenToContentQuery(screen), ".$['",
-                      DialogToStringId(dialog), "'].hidden"});
-    WaitForJsCondition(query);
-  }
-
-  void SkipToScreen(OobeScreenId screen) {
-    auto* const wizard_controller = WizardController::default_controller();
-    wizard_controller->SimulateDemoModeSetupForTesting();
-    wizard_controller->AdvanceToScreen(screen);
-
-    OobeScreenWaiter(screen).Wait();
-    EXPECT_TRUE(IsScreenShown(screen));
-  }
-
-  DemoSetupScreen* GetDemoSetupScreen() {
-    return static_cast<DemoSetupScreen*>(
-        WizardController::default_controller()->screen_manager()->GetScreen(
-            DemoSetupScreenView::kScreenId));
+  void UseOnlineModeOnNetworkScreen() {
+    test::WaitForNetworkSelectionScreen();
+    // Wait until default network is connected.
+    test::OobeJS().CreateEnabledWaiter(true, kNetworkNextButton)->Wait();
+    test::OobeJS().ClickOnPath(kNetworkNextButton);
   }
 
   void SimulateOfflineEnvironment() {
@@ -468,6 +290,12 @@ class DemoSetupTestBase : public OobeBaseTest {
     test::ExecuteOobeJS(query);
   }
 
+  DemoSetupScreen* GetDemoSetupScreen() {
+    return static_cast<DemoSetupScreen*>(
+        WizardController::default_controller()->screen_manager()->GetScreen(
+            DemoSetupScreenView::kScreenId));
+  }
+
  protected:
   test::EnrollmentHelperMixin enrollment_helper_{&mixin_host_};
 
@@ -497,6 +325,55 @@ class DemoSetupArcSupportedTest : public DemoSetupTestBase {
                                     "officially-supported");
     ASSERT_TRUE(arc::IsArcAvailable());
   }
+
+  void SetPlayStoreTermsForTesting() {
+    test::ExecuteOobeJS(
+        R"(login.ArcTermsOfServiceScreen.setTosForTesting(
+              'Test Play Store Terms of Service');)");
+  }
+
+  void WaitForArcTosScreen() {
+    OobeScreenWaiter(ArcTermsOfServiceScreenView::kScreenId).Wait();
+    SetPlayStoreTermsForTesting();
+    test::OobeJS().CreateVisibilityWaiter(true, kArcTosDialog)->Wait();
+  }
+
+  void AcceptArcTos() {
+    test::OobeJS().CreateVisibilityWaiter(true, kArcTosNextButton)->Wait();
+    test::OobeJS().ClickOnPath(kArcTosNextButton);
+    test::OobeJS().CreateVisibilityWaiter(true, kArcTosAcceptButton)->Wait();
+    test::OobeJS().ClickOnPath(kArcTosAcceptButton);
+  }
+
+  void AcceptTermsAndExpectDemoSetupProgress() {
+    test::WaitForEulaScreen();
+    test::TapEulaAccept();
+
+    WaitForArcTosScreen();
+
+    test::OobeJS().ExpectVisiblePath(kArcTosDemoAppsNotice);
+
+    // As setup screen shows only progress indicator and disappears afterwards
+    // we need to set up waiter before the action that triggers the screen.
+    OobeScreenWaiter setup_progress_waiter(DemoSetupScreenView::kScreenId);
+    AcceptArcTos();
+    setup_progress_waiter.Wait();
+  }
+
+  void AcceptTermsAndExpectDemoSetupFailure() {
+    test::WaitForEulaScreen();
+    test::TapEulaAccept();
+
+    WaitForArcTosScreen();
+
+    test::OobeJS().ExpectVisiblePath(kArcTosDemoAppsNotice);
+
+    AcceptArcTos();
+    // As we expect the error message to stay on the screen, it is safe to
+    // wait for it in the usual manner.
+    OobeScreenWaiter(DemoSetupScreenView::kScreenId).Wait();
+    test::OobeJS().CreateVisibilityWaiter(true, kDemoSetupErrorDialog)->Wait();
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
@@ -508,7 +385,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
 
   ClickOkOnConfirmationDialog();
 
-  EXPECT_TRUE(IsScreenShown(DemoPreferencesScreenView::kScreenId));
+  OobeScreenWaiter(DemoPreferencesScreenView::kScreenId).Wait();
 }
 
 // TODO(crbug.com/1150349): Flaky on ChromeOS ASAN.
@@ -528,7 +405,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   ClickCancelOnConfirmationDialog();
   IsConfirmationDialogHidden();
 
-  EXPECT_FALSE(IsScreenShown(DemoPreferencesScreenView::kScreenId));
+  test::OobeJS().ExpectHiddenPath(kDemoPreferencesScreen);
 }
 
 // TODO(crbug.com/1150349): Flaky on ChromeOS ASAN.
@@ -587,52 +464,18 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   enrollment_helper_.ExpectAttestationEnrollmentSuccess();
   SimulateNetworkConnected();
 
-  InvokeDemoModeWithAccelerator();
-  ClickOkOnConfirmationDialog();
+  TriggerDemoModeOnWelcomeScreen();
 
-  OobeScreenWaiter(DemoPreferencesScreenView::kScreenId).Wait();
-  EXPECT_TRUE(IsScreenShown(DemoPreferencesScreenView::kScreenId));
+  test::OobeJS().ClickOnPath(kDemoPreferencesNext);
 
-  ClickOobeButton(DemoPreferencesScreenView::kScreenId, OobeButton::kText,
-                  JSExecution::kAsync);
+  UseOnlineModeOnNetworkScreen();
 
-  OobeScreenWaiter(NetworkScreenView::kScreenId).Wait();
-  EXPECT_TRUE(IsScreenShown(NetworkScreenView::kScreenId));
-  EXPECT_TRUE(IsScreenDialogElementEnabled(NetworkScreenView::kScreenId,
-                                           DemoSetupDialog::kNetwork,
-                                           ButtonToTag(OobeButton::kNext)));
+  AcceptTermsAndExpectDemoSetupProgress();
 
-  ClickOobeButton(NetworkScreenView::kScreenId, OobeButton::kNext,
-                  JSExecution::kAsync);
-
-  OobeScreenWaiter(EulaView::kScreenId).Wait();
-  EXPECT_TRUE(IsScreenShown(EulaView::kScreenId));
-
-  ClickScreenDialogButton(EulaView::kScreenId, DemoSetupDialog::kEula,
-                          OobeButton::kText, JSExecution::kAsync);
-
-  OobeScreenWaiter(ArcTermsOfServiceScreenView::kScreenId).Wait();
-  EXPECT_TRUE(IsScreenShown(ArcTermsOfServiceScreenView::kScreenId));
-
-  SetPlayStoreTermsForTesting();
-
-  EXPECT_TRUE(IsScreenDialogElementVisible(
-      ArcTermsOfServiceScreenView::kScreenId, DemoSetupDialog::kArcTosLoaded,
-      "#arcTosMetricsDemoApps"));
-
-  ClickScreenDialogButtonWithSelector(ArcTermsOfServiceScreenView::kScreenId,
-                                      DemoSetupDialog::kArcTosLoaded,
-                                      "#arcTosNextButton", JSExecution::kSync);
-  ClickScreenDialogButtonWithSelector(ArcTermsOfServiceScreenView::kScreenId,
-                                      DemoSetupDialog::kArcTosLoaded,
-                                      "#arcTosAcceptButton", JSExecution::kAsync);
-
-  OobeScreenWaiter(DemoSetupScreenView::kScreenId).Wait();
   EXPECT_TRUE(DemoSetupController::GetSubOrganizationEmail().empty());
-  // TODO(agawronska): Progress dialog transition is async - extra work is
-  // needed to be able to check it reliably.
 
   OobeScreenWaiter(GetFirstSigninScreen()).Wait();
+
   EXPECT_TRUE(StartupUtils::IsOobeCompleted());
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
 }
@@ -645,11 +488,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   enrollment_helper_.ExpectAttestationEnrollmentSuccess();
   SimulateNetworkConnected();
 
-  InvokeDemoModeWithAccelerator();
-  ClickOkOnConfirmationDialog();
-
-  OobeScreenWaiter(DemoPreferencesScreenView::kScreenId).Wait();
-  EXPECT_TRUE(IsScreenShown(DemoPreferencesScreenView::kScreenId));
+  TriggerDemoModeOnWelcomeScreen();
 
   // Verify the country names are displayed correctly. Regression test for
   // potential country code changes.
@@ -673,56 +512,26 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   for (const std::string country_code : DemoSession::kSupportedCountries) {
     const auto it = kCountryCodeToNameMap.find(country_code);
     ASSERT_NE(kCountryCodeToNameMap.end(), it);
-    const std::string query = base::StrCat(
-        {ScreenToContentQuery(DemoPreferencesScreenView::kScreenId),
-         ScreenToOobeDialogType(DemoPreferencesScreenView::kScreenId),
-         ".querySelector('#countrySelect').$$('option[value=\"", country_code,
-         "\"]').innerHTML"});
+    const std::string query =
+        base::StrCat({test::GetOobeElementPath(kDemoPreferencesCountry),
+                      ".$$('option[value=\"", country_code, "\"]').innerHTML"});
     EXPECT_EQ(it->second, test::OobeJS().GetString(query));
   }
 
   // Select France as the Demo Mode country.
-  const std::string select_country = base::StrCat(
-      {ScreenToContentQuery(DemoPreferencesScreenView::kScreenId),
-       ScreenToOobeDialogType(DemoPreferencesScreenView::kScreenId),
-       ".querySelector('#countrySelect').onSelected_('fr');"});
-  test::ExecuteOobeJSAsync(select_country);
+  test::OobeJS().SelectElementInPath("fr", kDemoPreferencesCountrySelect);
+  test::OobeJS().ClickOnPath(kDemoPreferencesNext);
 
-  ClickOobeButton(DemoPreferencesScreenView::kScreenId, OobeButton::kText,
-                  JSExecution::kAsync);
+  UseOnlineModeOnNetworkScreen();
 
-  OobeScreenWaiter(NetworkScreenView::kScreenId).Wait();
-  EXPECT_TRUE(IsScreenShown(NetworkScreenView::kScreenId));
-  EXPECT_TRUE(IsScreenDialogElementEnabled(NetworkScreenView::kScreenId,
-                                           DemoSetupDialog::kNetwork,
-                                           ButtonToTag(OobeButton::kNext)));
+  AcceptTermsAndExpectDemoSetupProgress();
 
-  ClickOobeButton(NetworkScreenView::kScreenId, OobeButton::kNext,
-                  JSExecution::kAsync);
-
-  OobeScreenWaiter(EulaView::kScreenId).Wait();
-  EXPECT_TRUE(IsScreenShown(EulaView::kScreenId));
-
-  ClickScreenDialogButton(EulaView::kScreenId, DemoSetupDialog::kEula,
-                          OobeButton::kText, JSExecution::kAsync);
-
-  OobeScreenWaiter(ArcTermsOfServiceScreenView::kScreenId).Wait();
-  EXPECT_TRUE(IsScreenShown(ArcTermsOfServiceScreenView::kScreenId));
-
-  SetPlayStoreTermsForTesting();
-  ClickScreenDialogButtonWithSelector(ArcTermsOfServiceScreenView::kScreenId,
-                                      DemoSetupDialog::kArcTosLoaded,
-                                      "#arcTosNextButton", JSExecution::kSync);
-  ClickScreenDialogButtonWithSelector(ArcTermsOfServiceScreenView::kScreenId,
-                                      DemoSetupDialog::kArcTosLoaded,
-                                      "#arcTosAcceptButton", JSExecution::kAsync);
-
-  OobeScreenWaiter(DemoSetupScreenView::kScreenId).Wait();
   // Verify the email corresponds to France.
   EXPECT_EQ("admin-fr@cros-demo-mode.com",
             DemoSetupController::GetSubOrganizationEmail());
 
   OobeScreenWaiter(GetFirstSigninScreen()).Wait();
+
   EXPECT_TRUE(StartupUtils::IsOobeCompleted());
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
 }
@@ -736,56 +545,21 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, OnlineSetupFlowErrorDefault) {
           policy::DeviceManagementStatus::DM_STATUS_TEMPORARY_UNAVAILABLE));
   SimulateNetworkConnected();
 
-  InvokeDemoModeWithAccelerator();
-  ClickOkOnConfirmationDialog();
+  TriggerDemoModeOnWelcomeScreen();
 
-  OobeScreenWaiter(DemoPreferencesScreenView::kScreenId).Wait();
-  EXPECT_TRUE(IsScreenShown(DemoPreferencesScreenView::kScreenId));
+  test::OobeJS().ClickOnPath(kDemoPreferencesNext);
 
-  ClickOobeButton(DemoPreferencesScreenView::kScreenId, OobeButton::kText,
-                  JSExecution::kAsync);
+  UseOnlineModeOnNetworkScreen();
 
-  OobeScreenWaiter(NetworkScreenView::kScreenId).Wait();
-  EXPECT_TRUE(IsScreenShown(NetworkScreenView::kScreenId));
-  EXPECT_TRUE(IsScreenDialogElementEnabled(NetworkScreenView::kScreenId,
-                                           DemoSetupDialog::kNetwork,
-                                           ButtonToTag(OobeButton::kNext)));
+  AcceptTermsAndExpectDemoSetupFailure();
 
-  ClickOobeButton(NetworkScreenView::kScreenId, OobeButton::kNext,
-                  JSExecution::kAsync);
-
-  OobeScreenWaiter(EulaView::kScreenId).Wait();
-  EXPECT_TRUE(IsScreenShown(EulaView::kScreenId));
-
-  ClickScreenDialogButton(EulaView::kScreenId, DemoSetupDialog::kEula,
-                          OobeButton::kText, JSExecution::kAsync);
-
-  OobeScreenWaiter(ArcTermsOfServiceScreenView::kScreenId).Wait();
-  EXPECT_TRUE(IsScreenShown(ArcTermsOfServiceScreenView::kScreenId));
-
-  SetPlayStoreTermsForTesting();
-  ClickScreenDialogButtonWithSelector(ArcTermsOfServiceScreenView::kScreenId,
-                                      DemoSetupDialog::kArcTosLoaded,
-                                      "#arcTosNextButton", JSExecution::kSync);
-  ClickScreenDialogButtonWithSelector(ArcTermsOfServiceScreenView::kScreenId,
-                                      DemoSetupDialog::kArcTosLoaded,
-                                      "#arcTosAcceptButton", JSExecution::kAsync);
-
-  OobeScreenWaiter(DemoSetupScreenView::kScreenId).Wait();
-  // TODO(agawronska): Progress dialog transition is async - extra work is
-  // needed to be able to check it reliably.
-  WaitForScreenDialog(DemoSetupScreenView::kScreenId, DemoSetupDialog::kError);
   // Default error returned by MockDemoModeOnlineEnrollmentHelperCreator.
-  EXPECT_TRUE(IsErrorMessageShown(IDS_DEMO_SETUP_TEMPORARY_ERROR,
-                                  IDS_DEMO_SETUP_RECOVERY_RETRY));
-  EXPECT_TRUE(IsScreenDialogElementShown(
-      DemoSetupScreenView::kScreenId, DemoSetupDialog::kError, "#retryButton"));
-  EXPECT_FALSE(IsScreenDialogElementShown(DemoSetupScreenView::kScreenId,
-                                          DemoSetupDialog::kError,
-                                          "#powerwashButton"));
-  EXPECT_TRUE(IsScreenDialogElementEnabled(DemoSetupScreenView::kScreenId,
-                                           DemoSetupDialog::kError,
-                                           ButtonToTag(OobeButton::kBack)));
+  ExpectErrorMessage(IDS_DEMO_SETUP_TEMPORARY_ERROR,
+                     IDS_DEMO_SETUP_RECOVERY_RETRY);
+
+  test::OobeJS().ExpectVisiblePath(kDemoSetupErrorDialogRetry);
+  test::OobeJS().ExpectHiddenPath(kDemoSetupErrorDialogPowerwash);
+  test::OobeJS().ExpectEnabledPath(kDemoSetupErrorDialogBack);
 
   EXPECT_FALSE(StartupUtils::IsOobeCompleted());
   EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
@@ -809,55 +583,20 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
           chromeos::InstallAttributes::LOCK_ALREADY_LOCKED));
   SimulateNetworkConnected();
 
-  InvokeDemoModeWithAccelerator();
-  ClickOkOnConfirmationDialog();
+  TriggerDemoModeOnWelcomeScreen();
 
-  OobeScreenWaiter(DemoPreferencesScreenView::kScreenId).Wait();
-  EXPECT_TRUE(IsScreenShown(DemoPreferencesScreenView::kScreenId));
+  test::OobeJS().ClickOnPath(kDemoPreferencesNext);
 
-  ClickOobeButton(DemoPreferencesScreenView::kScreenId, OobeButton::kText,
-                  JSExecution::kAsync);
+  UseOnlineModeOnNetworkScreen();
 
-  OobeScreenWaiter(NetworkScreenView::kScreenId).Wait();
-  EXPECT_TRUE(IsScreenShown(NetworkScreenView::kScreenId));
-  EXPECT_TRUE(IsScreenDialogElementEnabled(NetworkScreenView::kScreenId,
-                                           DemoSetupDialog::kNetwork,
-                                           ButtonToTag(OobeButton::kNext)));
+  AcceptTermsAndExpectDemoSetupFailure();
 
-  ClickOobeButton(NetworkScreenView::kScreenId, OobeButton::kNext,
-                  JSExecution::kAsync);
+  ExpectErrorMessage(IDS_DEMO_SETUP_ALREADY_LOCKED_ERROR,
+                     IDS_DEMO_SETUP_RECOVERY_POWERWASH);
 
-  OobeScreenWaiter(EulaView::kScreenId).Wait();
-  EXPECT_TRUE(IsScreenShown(EulaView::kScreenId));
-
-  ClickScreenDialogButton(EulaView::kScreenId, DemoSetupDialog::kEula,
-                          OobeButton::kText, JSExecution::kAsync);
-
-  OobeScreenWaiter(ArcTermsOfServiceScreenView::kScreenId).Wait();
-  EXPECT_TRUE(IsScreenShown(ArcTermsOfServiceScreenView::kScreenId));
-
-  SetPlayStoreTermsForTesting();
-  ClickScreenDialogButtonWithSelector(ArcTermsOfServiceScreenView::kScreenId,
-                                      DemoSetupDialog::kArcTosLoaded,
-                                      "#arcTosNextButton", JSExecution::kSync);
-  ClickScreenDialogButtonWithSelector(ArcTermsOfServiceScreenView::kScreenId,
-                                      DemoSetupDialog::kArcTosLoaded,
-                                      "#arcTosAcceptButton", JSExecution::kAsync);
-
-  OobeScreenWaiter(DemoSetupScreenView::kScreenId).Wait();
-  // TODO(agawronska): Progress dialog transition is async - extra work is
-  // needed to be able to check it reliably.
-  WaitForScreenDialog(DemoSetupScreenView::kScreenId, DemoSetupDialog::kError);
-  EXPECT_TRUE(IsErrorMessageShown(IDS_DEMO_SETUP_ALREADY_LOCKED_ERROR,
-                                  IDS_DEMO_SETUP_RECOVERY_POWERWASH));
-  EXPECT_FALSE(IsScreenDialogElementShown(
-      DemoSetupScreenView::kScreenId, DemoSetupDialog::kError, "#retryButton"));
-  EXPECT_TRUE(IsScreenDialogElementShown(DemoSetupScreenView::kScreenId,
-                                         DemoSetupDialog::kError,
-                                         "#powerwashButton"));
-  EXPECT_FALSE(IsScreenDialogElementEnabled(DemoSetupScreenView::kScreenId,
-                                            DemoSetupDialog::kError,
-                                            ButtonToTag(OobeButton::kBack)));
+  test::OobeJS().ExpectHiddenPath(kDemoSetupErrorDialogRetry);
+  test::OobeJS().ExpectVisiblePath(kDemoSetupErrorDialogPowerwash);
+  test::OobeJS().ExpectDisabledPath(kDemoSetupErrorDialogBack);
 
   EXPECT_FALSE(StartupUtils::IsOobeCompleted());
   EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
@@ -870,8 +609,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   enrollment_helper_.ExpectNoEnrollment();
   SimulateNetworkConnected();
 
-  InvokeDemoModeWithAccelerator();
-  ClickOkOnConfirmationDialog();
+  TriggerDemoModeOnWelcomeScreen();
 
   // Set the component to fail to install when requested.
   WizardController::default_controller()
@@ -879,44 +617,15 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
       ->SetCrOSComponentLoadErrorForTest(
           component_updater::CrOSComponentManager::Error::INSTALL_FAILURE);
 
-  OobeScreenWaiter(DemoPreferencesScreenView::kScreenId).Wait();
-  EXPECT_TRUE(IsScreenShown(DemoPreferencesScreenView::kScreenId));
+  test::OobeJS().ClickOnPath(kDemoPreferencesNext);
 
-  ClickOobeButton(DemoPreferencesScreenView::kScreenId, OobeButton::kText,
-                  JSExecution::kAsync);
+  UseOnlineModeOnNetworkScreen();
 
-  OobeScreenWaiter(NetworkScreenView::kScreenId).Wait();
-  EXPECT_TRUE(IsScreenShown(NetworkScreenView::kScreenId));
-  EXPECT_TRUE(IsScreenDialogElementEnabled(NetworkScreenView::kScreenId,
-                                           DemoSetupDialog::kNetwork,
-                                           ButtonToTag(OobeButton::kNext)));
+  AcceptTermsAndExpectDemoSetupFailure();
 
-  ClickOobeButton(NetworkScreenView::kScreenId, OobeButton::kNext,
-                  JSExecution::kAsync);
+  ExpectErrorMessage(IDS_DEMO_SETUP_COMPONENT_ERROR,
+                     IDS_DEMO_SETUP_RECOVERY_CHECK_NETWORK);
 
-  OobeScreenWaiter(EulaView::kScreenId).Wait();
-  EXPECT_TRUE(IsScreenShown(EulaView::kScreenId));
-
-  ClickScreenDialogButton(EulaView::kScreenId, DemoSetupDialog::kEula,
-                          OobeButton::kText, JSExecution::kAsync);
-
-  OobeScreenWaiter(ArcTermsOfServiceScreenView::kScreenId).Wait();
-  EXPECT_TRUE(IsScreenShown(ArcTermsOfServiceScreenView::kScreenId));
-
-  SetPlayStoreTermsForTesting();
-  ClickScreenDialogButtonWithSelector(ArcTermsOfServiceScreenView::kScreenId,
-                                      DemoSetupDialog::kArcTosLoaded,
-                                      "#arcTosNextButton", JSExecution::kSync);
-  ClickScreenDialogButtonWithSelector(ArcTermsOfServiceScreenView::kScreenId,
-                                      DemoSetupDialog::kArcTosLoaded,
-                                      "#arcTosAcceptButton", JSExecution::kAsync);
-
-  OobeScreenWaiter(DemoSetupScreenView::kScreenId).Wait();
-  // TODO(agawronska): Progress dialog transition is async - extra work is
-  // needed to be able to check it reliably.
-  WaitForScreenDialog(DemoSetupScreenView::kScreenId, DemoSetupDialog::kError);
-  EXPECT_TRUE(IsErrorMessageShown(IDS_DEMO_SETUP_COMPONENT_ERROR,
-                                  IDS_DEMO_SETUP_RECOVERY_CHECK_NETWORK));
   EXPECT_FALSE(StartupUtils::IsOobeCompleted());
   EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
 }
@@ -924,20 +633,13 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, OfflineDemoModeUnavailable) {
   SimulateNetworkDisconnected();
 
-  InvokeDemoModeWithAccelerator();
-  ClickOkOnConfirmationDialog();
+  TriggerDemoModeOnWelcomeScreen();
 
-  OobeScreenWaiter(DemoPreferencesScreenView::kScreenId).Wait();
-  EXPECT_TRUE(IsScreenShown(DemoPreferencesScreenView::kScreenId));
+  test::OobeJS().ClickOnPath(kDemoPreferencesNext);
 
-  ClickOobeButton(DemoPreferencesScreenView::kScreenId, OobeButton::kText,
-                  JSExecution::kAsync);
+  test::WaitForNetworkSelectionScreen();
 
-  OobeScreenWaiter(NetworkScreenView::kScreenId).Wait();
-  EXPECT_TRUE(IsScreenShown(NetworkScreenView::kScreenId));
-  EXPECT_FALSE(IsScreenDialogElementEnabled(NetworkScreenView::kScreenId,
-                                            DemoSetupDialog::kNetwork,
-                                            ButtonToTag(OobeButton::kNext)));
+  test::OobeJS().ExpectDisabledPath(kNetworkNextButton);
 
   // Offline Demo Mode is not available when there are no preinstalled demo
   // resources.
@@ -949,56 +651,28 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, OfflineSetupFlowSuccess) {
   enrollment_helper_.ExpectOfflineEnrollmentSuccess();
   SimulateNetworkDisconnected();
 
-  InvokeDemoModeWithAccelerator();
-  ClickOkOnConfirmationDialog();
+  TriggerDemoModeOnWelcomeScreen();
 
   // It needs to be done after demo setup controller was created (demo setup
   // flow was started).
   SimulateOfflineEnvironment();
+  test::OobeJS().ClickOnPath(kDemoPreferencesNext);
 
-  OobeScreenWaiter(DemoPreferencesScreenView::kScreenId).Wait();
-  EXPECT_TRUE(IsScreenShown(DemoPreferencesScreenView::kScreenId));
+  UseOfflineModeOnNetworkScreen();
 
-  ClickOobeButton(DemoPreferencesScreenView::kScreenId, OobeButton::kText,
-                  JSExecution::kAsync);
+  test::WaitForEulaScreen();
+  test::TapEulaAccept();
 
-  OobeScreenWaiter(NetworkScreenView::kScreenId).Wait();
-  EXPECT_TRUE(IsScreenShown(NetworkScreenView::kScreenId));
-  EXPECT_FALSE(IsScreenDialogElementEnabled(NetworkScreenView::kScreenId,
-                                            DemoSetupDialog::kNetwork,
-                                            ButtonToTag(OobeButton::kNext)));
+  WaitForArcTosScreen();
 
-  const std::string offline_setup_item_name =
-      l10n_util::GetStringUTF8(IDS_NETWORK_OFFLINE_DEMO_SETUP_LIST_ITEM_NAME);
-  ClickNetworkListElement(offline_setup_item_name);
+  test::OobeJS().ExpectVisiblePath(kArcTosDemoAppsNotice);
 
-  OobeScreenWaiter(EulaView::kScreenId).Wait();
-  EXPECT_TRUE(IsScreenShown(EulaView::kScreenId));
-
-  ClickScreenDialogButton(EulaView::kScreenId, DemoSetupDialog::kEula,
-                          OobeButton::kText, JSExecution::kSync);
-
-  OobeScreenWaiter(ArcTermsOfServiceScreenView::kScreenId).Wait();
-  EXPECT_TRUE(IsScreenShown(ArcTermsOfServiceScreenView::kScreenId));
-
-  SetPlayStoreTermsForTesting();
-
-  EXPECT_TRUE(IsScreenDialogElementVisible(
-      ArcTermsOfServiceScreenView::kScreenId, DemoSetupDialog::kArcTosLoaded,
-      "#arcTosMetricsDemoApps"));
-
-  ClickScreenDialogButtonWithSelector(ArcTermsOfServiceScreenView::kScreenId,
-                                      DemoSetupDialog::kArcTosLoaded,
-                                      "#arcTosNextButton", JSExecution::kSync);
-  ClickScreenDialogButtonWithSelector(ArcTermsOfServiceScreenView::kScreenId,
-                                      DemoSetupDialog::kArcTosLoaded,
-                                      "#arcTosAcceptButton", JSExecution::kAsync);
-
-  OobeScreenWaiter(DemoSetupScreenView::kScreenId).Wait();
-  // TODO(agawronska): Progress dialog transition is async - extra work is
-  // needed to be able to check it reliably.
+  OobeScreenWaiter setup_progress_waiter(DemoSetupScreenView::kScreenId);
+  AcceptArcTos();
+  setup_progress_waiter.Wait();
 
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
+
   EXPECT_TRUE(StartupUtils::IsOobeCompleted());
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
 }
@@ -1017,61 +691,32 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
           policy::EnrollmentStatus::OFFLINE_POLICY_DECODING_FAILED));
   SimulateNetworkDisconnected();
 
-  InvokeDemoModeWithAccelerator();
-  ClickOkOnConfirmationDialog();
+  TriggerDemoModeOnWelcomeScreen();
 
   // It needs to be done after demo setup controller was created (demo setup
   // flow was started).
   SimulateOfflineEnvironment();
+  test::OobeJS().ClickOnPath(kDemoPreferencesNext);
 
-  OobeScreenWaiter(DemoPreferencesScreenView::kScreenId).Wait();
-  EXPECT_TRUE(IsScreenShown(DemoPreferencesScreenView::kScreenId));
+  UseOfflineModeOnNetworkScreen();
 
-  ClickOobeButton(DemoPreferencesScreenView::kScreenId, OobeButton::kText,
-                  JSExecution::kAsync);
+  test::WaitForEulaScreen();
+  test::TapEulaAccept();
 
-  OobeScreenWaiter(NetworkScreenView::kScreenId).Wait();
-  EXPECT_TRUE(IsScreenShown(NetworkScreenView::kScreenId));
-  EXPECT_FALSE(IsScreenDialogElementEnabled(NetworkScreenView::kScreenId,
-                                            DemoSetupDialog::kNetwork,
-                                            ButtonToTag(OobeButton::kNext)));
+  WaitForArcTosScreen();
 
-  const std::string offline_setup_item_name =
-      l10n_util::GetStringUTF8(IDS_NETWORK_OFFLINE_DEMO_SETUP_LIST_ITEM_NAME);
-  ClickNetworkListElement(offline_setup_item_name);
+  test::OobeJS().ExpectVisiblePath(kArcTosDemoAppsNotice);
 
-  OobeScreenWaiter(EulaView::kScreenId).Wait();
-  EXPECT_TRUE(IsScreenShown(EulaView::kScreenId));
-
-  ClickScreenDialogButton(EulaView::kScreenId, DemoSetupDialog::kEula,
-                          OobeButton::kText, JSExecution::kSync);
-
-  OobeScreenWaiter(ArcTermsOfServiceScreenView::kScreenId).Wait();
-  EXPECT_TRUE(IsScreenShown(ArcTermsOfServiceScreenView::kScreenId));
-
-  SetPlayStoreTermsForTesting();
-  ClickScreenDialogButtonWithSelector(ArcTermsOfServiceScreenView::kScreenId,
-                                      DemoSetupDialog::kArcTosLoaded,
-                                      "#arcTosNextButton", JSExecution::kSync);
-  ClickScreenDialogButtonWithSelector(ArcTermsOfServiceScreenView::kScreenId,
-                                      DemoSetupDialog::kArcTosLoaded,
-                                      "#arcTosAcceptButton", JSExecution::kAsync);
-
+  AcceptArcTos();
   OobeScreenWaiter(DemoSetupScreenView::kScreenId).Wait();
-  // TODO(agawronska): Progress dialog transition is async - extra work is
-  // needed to be able to check it reliably.
-  WaitForScreenDialog(DemoSetupScreenView::kScreenId, DemoSetupDialog::kError);
-  // Default error returned by MockDemoModeOfflineEnrollmentHelperCreator.
-  EXPECT_TRUE(IsErrorMessageShown(IDS_DEMO_SETUP_OFFLINE_POLICY_ERROR,
-                                  IDS_DEMO_SETUP_RECOVERY_OFFLINE_FATAL));
-  EXPECT_TRUE(IsScreenDialogElementShown(
-      DemoSetupScreenView::kScreenId, DemoSetupDialog::kError, "#retryButton"));
-  EXPECT_FALSE(IsScreenDialogElementShown(DemoSetupScreenView::kScreenId,
-                                          DemoSetupDialog::kError,
-                                          "#powerwashButton"));
-  EXPECT_TRUE(IsScreenDialogElementEnabled(DemoSetupScreenView::kScreenId,
-                                           DemoSetupDialog::kError,
-                                           ButtonToTag(OobeButton::kBack)));
+  test::OobeJS().CreateVisibilityWaiter(true, kDemoSetupErrorDialog)->Wait();
+
+  ExpectErrorMessage(IDS_DEMO_SETUP_OFFLINE_POLICY_ERROR,
+                     IDS_DEMO_SETUP_RECOVERY_OFFLINE_FATAL);
+
+  test::OobeJS().ExpectVisiblePath(kDemoSetupErrorDialogRetry);
+  test::OobeJS().ExpectHiddenPath(kDemoSetupErrorDialogPowerwash);
+  test::OobeJS().ExpectEnabledPath(kDemoSetupErrorDialogBack);
 
   EXPECT_FALSE(StartupUtils::IsOobeCompleted());
   EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
@@ -1085,60 +730,29 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
           chromeos::InstallAttributes::LOCK_READBACK_ERROR));
   SimulateNetworkDisconnected();
 
-  InvokeDemoModeWithAccelerator();
-  ClickOkOnConfirmationDialog();
+  TriggerDemoModeOnWelcomeScreen();
 
   // It needs to be done after demo setup controller was created (demo setup
   // flow was started).
   SimulateOfflineEnvironment();
+  test::OobeJS().ClickOnPath(kDemoPreferencesNext);
 
-  OobeScreenWaiter(DemoPreferencesScreenView::kScreenId).Wait();
-  EXPECT_TRUE(IsScreenShown(DemoPreferencesScreenView::kScreenId));
+  UseOfflineModeOnNetworkScreen();
 
-  ClickOobeButton(DemoPreferencesScreenView::kScreenId, OobeButton::kText,
-                  JSExecution::kAsync);
+  test::WaitForEulaScreen();
+  test::TapEulaAccept();
 
-  OobeScreenWaiter(NetworkScreenView::kScreenId).Wait();
-  EXPECT_TRUE(IsScreenShown(NetworkScreenView::kScreenId));
-  EXPECT_FALSE(IsScreenDialogElementEnabled(NetworkScreenView::kScreenId,
-                                            DemoSetupDialog::kNetwork,
-                                            ButtonToTag(OobeButton::kNext)));
-
-  const std::string offline_setup_item_name =
-      l10n_util::GetStringUTF8(IDS_NETWORK_OFFLINE_DEMO_SETUP_LIST_ITEM_NAME);
-  ClickNetworkListElement(offline_setup_item_name);
-
-  OobeScreenWaiter(EulaView::kScreenId).Wait();
-  EXPECT_TRUE(IsScreenShown(EulaView::kScreenId));
-
-  ClickScreenDialogButton(EulaView::kScreenId, DemoSetupDialog::kEula,
-                          OobeButton::kText, JSExecution::kSync);
-
-  OobeScreenWaiter(ArcTermsOfServiceScreenView::kScreenId).Wait();
-  EXPECT_TRUE(IsScreenShown(ArcTermsOfServiceScreenView::kScreenId));
-
-  SetPlayStoreTermsForTesting();
-  ClickScreenDialogButtonWithSelector(ArcTermsOfServiceScreenView::kScreenId,
-                                      DemoSetupDialog::kArcTosLoaded,
-                                      "#arcTosNextButton", JSExecution::kSync);
-  ClickScreenDialogButtonWithSelector(ArcTermsOfServiceScreenView::kScreenId,
-                                      DemoSetupDialog::kArcTosLoaded,
-                                      "#arcTosAcceptButton", JSExecution::kAsync);
+  WaitForArcTosScreen();
+  AcceptArcTos();
 
   OobeScreenWaiter(DemoSetupScreenView::kScreenId).Wait();
-  // TODO(agawronska): Progress dialog transition is async - extra work is
-  // needed to be able to check it reliably.
-  WaitForScreenDialog(DemoSetupScreenView::kScreenId, DemoSetupDialog::kError);
-  EXPECT_TRUE(IsErrorMessageShown(IDS_DEMO_SETUP_LOCK_ERROR,
-                                  IDS_DEMO_SETUP_RECOVERY_POWERWASH));
-  EXPECT_FALSE(IsScreenDialogElementShown(
-      DemoSetupScreenView::kScreenId, DemoSetupDialog::kError, "#retryButton"));
-  EXPECT_TRUE(IsScreenDialogElementShown(DemoSetupScreenView::kScreenId,
-                                         DemoSetupDialog::kError,
-                                         "#powerwashButton"));
-  EXPECT_FALSE(IsScreenDialogElementEnabled(DemoSetupScreenView::kScreenId,
-                                            DemoSetupDialog::kError,
-                                            ButtonToTag(OobeButton::kBack)));
+  test::OobeJS().CreateVisibilityWaiter(true, kDemoSetupErrorDialog)->Wait();
+  ExpectErrorMessage(IDS_DEMO_SETUP_LOCK_ERROR,
+                     IDS_DEMO_SETUP_RECOVERY_POWERWASH);
+
+  test::OobeJS().ExpectHiddenPath(kDemoSetupErrorDialogRetry);
+  test::OobeJS().ExpectVisiblePath(kDemoSetupErrorDialogPowerwash);
+  test::OobeJS().ExpectDisabledPath(kDemoSetupErrorDialogBack);
 
   EXPECT_FALSE(StartupUtils::IsOobeCompleted());
   EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
@@ -1153,54 +767,62 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
                        MAYBE_NextDisabledOnNetworkScreen) {
   SimulateNetworkDisconnected();
-  SkipToScreen(NetworkScreenView::kScreenId);
-  EXPECT_FALSE(IsScreenDialogElementEnabled(NetworkScreenView::kScreenId,
-                                            DemoSetupDialog::kNetwork,
-                                            ButtonToTag(OobeButton::kNext)));
 
-  ClickOobeButton(NetworkScreenView::kScreenId, OobeButton::kNext,
-                  JSExecution::kSync);
+  TriggerDemoModeOnWelcomeScreen();
+  test::OobeJS().ClickOnPath(kDemoPreferencesNext);
 
-  OobeScreenWaiter(NetworkScreenView::kScreenId).Wait();
-  EXPECT_TRUE(IsScreenShown(NetworkScreenView::kScreenId));
+  test::WaitForNetworkSelectionScreen();
+
+  test::OobeJS().ExpectDisabledPath(kNetworkNextButton);
+
+  test::OobeJS()
+      .CreateEnabledWaiter(false /* disabled */, kNetworkNextButton)
+      ->Wait();
+
+  test::OobeJS().TapOnPath(kNetworkNextButton);
+
+  // Screen should not change.
+  test::WaitForNetworkSelectionScreen();
 }
 
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, ClickNetworkOnNetworkScreen) {
-  SkipToScreen(NetworkScreenView::kScreenId);
-  EXPECT_FALSE(IsScreenDialogElementEnabled(NetworkScreenView::kScreenId,
-                                            DemoSetupDialog::kNetwork,
-                                            ButtonToTag(OobeButton::kNext)));
+  TriggerDemoModeOnWelcomeScreen();
+  test::OobeJS().ClickOnPath(kDemoPreferencesNext);
+  test::WaitForNetworkSelectionScreen();
+
+  test::OobeJS().ExpectDisabledPath(kNetworkNextButton);
 
   ClickNetworkListElement(kDefaultNetworkName);
   SimulateNetworkConnected();
 
-  OobeScreenWaiter(EulaView::kScreenId).Wait();
-  EXPECT_TRUE(IsScreenShown(EulaView::kScreenId));
+  test::WaitForEulaScreen();
 }
 
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
                        ClickConnectedNetworkOnNetworkScreen) {
   SimulateNetworkConnected();
-  SkipToScreen(NetworkScreenView::kScreenId);
-  EXPECT_TRUE(IsScreenDialogElementEnabled(NetworkScreenView::kScreenId,
-                                           DemoSetupDialog::kNetwork,
-                                           ButtonToTag(OobeButton::kNext)));
+
+  TriggerDemoModeOnWelcomeScreen();
+  test::OobeJS().ClickOnPath(kDemoPreferencesNext);
+
+  test::WaitForNetworkSelectionScreen();
+
+  test::OobeJS().ExpectEnabledPath(kNetworkNextButton);
 
   ClickNetworkListElement(kDefaultNetworkName);
 
-  OobeScreenWaiter(EulaView::kScreenId).Wait();
-  EXPECT_TRUE(IsScreenShown(EulaView::kScreenId));
+  test::WaitForEulaScreen();
 }
 
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, BackOnNetworkScreen) {
   SimulateNetworkConnected();
-  SkipToScreen(NetworkScreenView::kScreenId);
+  TriggerDemoModeOnWelcomeScreen();
+  test::OobeJS().ClickOnPath(kDemoPreferencesNext);
 
-  ClickOobeButton(NetworkScreenView::kScreenId, OobeButton::kBack,
-                  JSExecution::kAsync);
+  test::WaitForNetworkSelectionScreen();
 
+  test::OobeJS().ClickOnPath(kNetworkBackButton);
   OobeScreenWaiter(DemoPreferencesScreenView::kScreenId).Wait();
-  EXPECT_TRUE(IsScreenShown(DemoPreferencesScreenView::kScreenId));
 }
 
 // TODO(crbug.com/1150349): Flaky on ChromeOS ASAN.
@@ -1212,14 +834,18 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, BackOnNetworkScreen) {
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, MAYBE_BackOnArcTermsScreen) {
   // User cannot go to ARC ToS screen without accepting eula - simulate that.
   StartupUtils::MarkEulaAccepted();
+  SimulateNetworkConnected();
 
-  SkipToScreen(ArcTermsOfServiceScreenView::kScreenId);
+  TriggerDemoModeOnWelcomeScreen();
 
-  ClickScreenDialogButtonWithSelector(ArcTermsOfServiceScreenView::kScreenId,
-                                      DemoSetupDialog::kArcTosLoaded,
-                                      "#arcTosBackButton", JSExecution::kSync);
+  test::OobeJS().ClickOnPath(kDemoPreferencesNext);
 
-  OobeScreenWaiter(NetworkScreenView::kScreenId).Wait();
+  UseOnlineModeOnNetworkScreen();
+
+  OobeScreenWaiter(ArcTermsOfServiceScreenView::kScreenId).Wait();
+  test::OobeJS().ClickOnPath(kArcTosBackButton);
+
+  test::WaitForNetworkSelectionScreen();
 }
 
 // TODO(crbug.com/1150349): Flaky on ChromeOS ASAN.
@@ -1229,11 +855,24 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, MAYBE_BackOnArcTermsScreen) {
 #define MAYBE_BackOnErrorScreen BackOnErrorScreen
 #endif
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, MAYBE_BackOnErrorScreen) {
-  SkipToErrorDialog();
+  // Simulate online setup failure.
+  enrollment_helper_.ExpectEnrollmentMode(
+      policy::EnrollmentConfig::MODE_ATTESTATION);
+  enrollment_helper_.ExpectAttestationEnrollmentError(
+      policy::EnrollmentStatus::ForRegistrationError(
+          policy::DeviceManagementStatus::DM_STATUS_TEMPORARY_UNAVAILABLE));
+  SimulateNetworkConnected();
 
-  ClickScreenDialogButton(DemoSetupScreenView::kScreenId,
-                          DemoSetupDialog::kError, OobeButton::kBack,
-                          JSExecution::kAsync);
+  TriggerDemoModeOnWelcomeScreen();
+
+  test::OobeJS().ClickOnPath(kDemoPreferencesNext);
+
+  UseOnlineModeOnNetworkScreen();
+
+  AcceptTermsAndExpectDemoSetupFailure();
+
+  test::OobeJS().ExpectEnabledPath(kDemoSetupErrorDialogBack);
+  test::OobeJS().ClickOnPath(kDemoSetupErrorDialogBack);
 
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
 }
@@ -1245,7 +884,21 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, MAYBE_BackOnErrorScreen) {
 #define MAYBE_RetryOnErrorScreen RetryOnErrorScreen
 #endif
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, MAYBE_RetryOnErrorScreen) {
-  SkipToErrorDialog();
+  // Simulate online setup failure.
+  enrollment_helper_.ExpectEnrollmentMode(
+      policy::EnrollmentConfig::MODE_ATTESTATION);
+  enrollment_helper_.ExpectAttestationEnrollmentError(
+      policy::EnrollmentStatus::ForRegistrationError(
+          policy::DeviceManagementStatus::DM_STATUS_TEMPORARY_UNAVAILABLE));
+  SimulateNetworkConnected();
+
+  TriggerDemoModeOnWelcomeScreen();
+
+  test::OobeJS().ClickOnPath(kDemoPreferencesNext);
+
+  UseOnlineModeOnNetworkScreen();
+
+  AcceptTermsAndExpectDemoSetupFailure();
 
   // We need to create another mock after showing error dialog.
   enrollment_helper_.ResetMock();
@@ -1253,32 +906,37 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, MAYBE_RetryOnErrorScreen) {
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION);
   enrollment_helper_.ExpectAttestationEnrollmentSuccess();
-  ClickScreenDialogButtonWithSelector(DemoSetupScreenView::kScreenId,
-                                      DemoSetupDialog::kError, "#retryButton",
-                                      JSExecution::kAsync);
-  // TODO(agawronska): Progress dialog transition is async - extra work is
-  // needed to be able to check it reliably.
-  OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
+
+  test::OobeJS().ClickOnPath(kDemoSetupErrorDialogRetry);
+
+  OobeScreenWaiter(GetFirstSigninScreen()).Wait();
+
+  EXPECT_TRUE(StartupUtils::IsOobeCompleted());
+  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
 }
 
 // Test is flaky: crbug.com/1099402
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
                        DISABLED_ShowOfflineSetupOptionOnNetworkList) {
-  auto* const wizard_controller = WizardController::default_controller();
-  wizard_controller->SimulateDemoModeSetupForTesting();
+  TriggerDemoModeOnWelcomeScreen();
+
   SimulateOfflineEnvironment();
-  SkipToScreen(NetworkScreenView::kScreenId);
+  test::OobeJS().ClickOnPath(kDemoPreferencesNext);
+
+  test::WaitForNetworkSelectionScreen();
 
   EXPECT_TRUE(IsCustomNetworkListElementShown("offlineDemoSetupListItemName"));
 }
 
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
                        NoOfflineSetupOptionOnNetworkList) {
-  SkipToScreen(NetworkScreenView::kScreenId);
+  test::WaitForWelcomeScreen();
+  test::TapWelcomeNext();
+  test::WaitForNetworkSelectionScreen();
   EXPECT_FALSE(IsCustomNetworkListElementShown("offlineDemoSetupListItemName"));
 }
 
-class DemoSetupProgressStepsTest : public DemoSetupTestBase {
+class DemoSetupProgressStepsTest : public DemoSetupArcSupportedTest {
  public:
   DemoSetupProgressStepsTest() = default;
   ~DemoSetupProgressStepsTest() override = default;
@@ -1286,7 +944,7 @@ class DemoSetupProgressStepsTest : public DemoSetupTestBase {
   // Checks how many steps have been rendered in the demo setup screen.
   int CountNumberOfStepsInUi() {
     const std::string query =
-        base::StrCat({test::GetOobeElementPath(kDemoSetupDialog),
+        base::StrCat({test::GetOobeElementPath(kDemoSetupProgressDialog),
                       ".querySelectorAll('progress-list-item').length"});
     return test::OobeJS().GetInt(query);
   }
@@ -1294,7 +952,7 @@ class DemoSetupProgressStepsTest : public DemoSetupTestBase {
   // Checks how many steps are marked as given status in the demo setup screen.
   int CountStepsInUi(const std::string& status) {
     const std::string query = base::StrCat(
-        {"Object.values(", test::GetOobeElementPath(kDemoSetupDialog),
+        {"Object.values(", test::GetOobeElementPath(kDemoSetupProgressDialog),
          ".querySelectorAll('progress-list-item')).filter(node => "
          "node.shadowRoot.querySelector('#icon-",
          status, ":not([hidden])')).length"});
@@ -1308,11 +966,11 @@ class DemoSetupProgressStepsTest : public DemoSetupTestBase {
 
 IN_PROC_BROWSER_TEST_F(DemoSetupProgressStepsTest,
                        SetupProgessStepsDisplayCorrectly) {
-  auto* const wizard_controller = WizardController::default_controller();
-  wizard_controller->SimulateDemoModeSetupForTesting(
-      DemoSession::DemoModeConfig::kOnline);
   SimulateNetworkConnected();
-  SkipToScreen(DemoSetupScreenView::kScreenId);
+  TriggerDemoModeOnWelcomeScreen();
+  test::OobeJS().ClickOnPath(kDemoPreferencesNext);
+  UseOnlineModeOnNetworkScreen();
+  AcceptTermsAndExpectDemoSetupProgress();
 
   DemoSetupScreen* demoSetupScreen = GetDemoSetupScreen();
 
@@ -1397,23 +1055,17 @@ IN_PROC_BROWSER_TEST_F(DemoSetupFRETest, DeviceFromFactory) {
   enrollment_helper_.ExpectOfflineEnrollmentSuccess();
   SimulateNetworkDisconnected();
 
-  InvokeDemoModeWithAccelerator();
-  ClickOkOnConfirmationDialog();
+  TriggerDemoModeOnWelcomeScreen();
 
-  auto* const wizard_controller = WizardController::default_controller();
-  wizard_controller->SimulateDemoModeSetupForTesting();
-  // It needs to be done after demo setup controller was created (demo setup
-  // flow was started).
   SimulateOfflineEnvironment();
-  // Enrollment type is set in the part of the flow that is skipped, That is
-  // why we need to set it here.
-  wizard_controller->demo_setup_controller()->set_demo_config(
-      DemoSession::DemoModeConfig::kOffline);
+  test::OobeJS().ClickOnPath(kDemoPreferencesNext);
 
-  SkipToScreen(NetworkScreenView::kScreenId);
-  SkipToScreen(DemoSetupScreenView::kScreenId);
-  // TODO(agawronska): Progress dialog transition is async - extra work is
-  // needed to be able to check it reliably.
+  UseOfflineModeOnNetworkScreen();
+
+  // We accept success during demo setup, but "network not connected" error
+  // afterwards.
+  AcceptTermsAndExpectDemoSetupProgress();
+  OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
 
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
   EXPECT_TRUE(StartupUtils::IsOobeCompleted());
@@ -1432,25 +1084,18 @@ IN_PROC_BROWSER_TEST_F(DemoSetupFRETest, NonEnterpriseDevice) {
   enrollment_helper_.ExpectOfflineEnrollmentSuccess();
   SimulateNetworkDisconnected();
 
-  InvokeDemoModeWithAccelerator();
-  ClickOkOnConfirmationDialog();
+  TriggerDemoModeOnWelcomeScreen();
 
-  auto* const wizard_controller = WizardController::default_controller();
-  wizard_controller->SimulateDemoModeSetupForTesting();
-  // It needs to be done after demo setup controller was created (demo setup
-  // flow was started).
   SimulateOfflineEnvironment();
-  // Enrollment type is set in the part of the flow that is skipped, That is
-  // why we need to set it here.
-  wizard_controller->demo_setup_controller()->set_demo_config(
-      DemoSession::DemoModeConfig::kOffline);
+  test::OobeJS().ClickOnPath(kDemoPreferencesNext);
 
-  SkipToScreen(NetworkScreenView::kScreenId);
-  SkipToScreen(DemoSetupScreenView::kScreenId);
-  // TODO(agawronska): Progress dialog transition is async - extra work is
-  // needed to be able to check it reliably.
+  UseOfflineModeOnNetworkScreen();
 
+  // We accept success during demo setup, but "network not connected" error
+  // afterwards.
+  AcceptTermsAndExpectDemoSetupProgress();
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
+
   EXPECT_TRUE(StartupUtils::IsOobeCompleted());
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
 }
@@ -1468,25 +1113,18 @@ IN_PROC_BROWSER_TEST_F(DemoSetupFRETest, LegacyDemoModeDevice) {
   enrollment_helper_.ExpectOfflineEnrollmentSuccess();
   SimulateNetworkDisconnected();
 
-  InvokeDemoModeWithAccelerator();
-  ClickOkOnConfirmationDialog();
+  TriggerDemoModeOnWelcomeScreen();
 
-  auto* const wizard_controller = WizardController::default_controller();
-  wizard_controller->SimulateDemoModeSetupForTesting();
-  // It needs to be done after demo setup controller was created (demo setup
-  // flow was started).
   SimulateOfflineEnvironment();
-  // Enrollment type is set in the part of the flow that is skipped, That is
-  // why we need to set it here.
-  wizard_controller->demo_setup_controller()->set_demo_config(
-      DemoSession::DemoModeConfig::kOffline);
+  test::OobeJS().ClickOnPath(kDemoPreferencesNext);
 
-  SkipToScreen(NetworkScreenView::kScreenId);
-  SkipToScreen(DemoSetupScreenView::kScreenId);
-  // TODO(agawronska): Progress dialog transition is async - extra work is
-  // needed to be able to check it reliably.
+  UseOfflineModeOnNetworkScreen();
 
+  // We accept success during demo setup, but "network not connected" error
+  // afterwards.
+  AcceptTermsAndExpectDemoSetupProgress();
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
+
   EXPECT_TRUE(StartupUtils::IsOobeCompleted());
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
 }
@@ -1502,24 +1140,14 @@ IN_PROC_BROWSER_TEST_F(DemoSetupFRETest, DeviceWithFRE) {
   enrollment_helper_.ExpectNoEnrollment();
   SimulateNetworkDisconnected();
 
-  InvokeDemoModeWithAccelerator();
-  ClickOkOnConfirmationDialog();
+  TriggerDemoModeOnWelcomeScreen();
 
-  auto* const wizard_controller = WizardController::default_controller();
-  wizard_controller->SimulateDemoModeSetupForTesting();
-  // It needs to be done after demo setup controller was created (demo setup
-  // flow was started).
   SimulateOfflineEnvironment();
-  // Enrollment type is set in the part of the flow that is skipped, That is
-  // why we need to set it here.
-  wizard_controller->demo_setup_controller()->set_demo_config(
-      DemoSession::DemoModeConfig::kOffline);
+  test::OobeJS().ClickOnPath(kDemoPreferencesNext);
 
-  SkipToScreen(NetworkScreenView::kScreenId);
-  SkipToScreen(DemoSetupScreenView::kScreenId);
-  // TODO(agawronska): Progress dialog transition is async - extra work is
-  // needed to be able to check it reliably.
-  WaitForScreenDialog(DemoSetupScreenView::kScreenId, DemoSetupDialog::kError);
+  UseOfflineModeOnNetworkScreen();
+
+  AcceptTermsAndExpectDemoSetupFailure();
 
   EXPECT_FALSE(StartupUtils::IsOobeCompleted());
   EXPECT_FALSE(StartupUtils::IsDeviceRegistered());

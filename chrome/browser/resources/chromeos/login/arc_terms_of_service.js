@@ -612,6 +612,9 @@ Polymer({
    * @private
    */
   setTermsViewContentLoadedState_() {
+    if (this.uiStep == UIState.LOADED) {
+      return;
+    }
     this.setUIStep(UIState.LOADED);
     this.enableButtons_(true);
     this.showFullDialog = false;
