@@ -120,6 +120,10 @@ class SessionService : public sessions::CommandStorageManagerDelegate,
   void SetWindowWorkspace(const SessionID& window_id,
                           const std::string& workspace);
 
+  // Sets whether the window is visible on all workspaces or not.
+  void SetWindowVisibleOnAllWorkspaces(const SessionID& window_id,
+                                       bool visible_on_all_workspaces);
+
   // Sets the visual index of the tab in its parent window.
   void SetTabIndexInWindow(const SessionID& window_id,
                            const SessionID& tab_id,
@@ -131,9 +135,9 @@ class SessionService : public sessions::CommandStorageManagerDelegate,
                    const SessionID& tab_id,
                    base::Optional<tab_groups::TabGroupId> group);
 
-  // Updates the metadata associated with a tab group. |window_id| should be the
-  // window where the group currently resides. Note that a group can't be split
-  // between multiple windows.
+  // Updates the metadata associated with a tab group. |window_id| should be
+  // the window where the group currently resides. Note that a group can't be
+  // split between multiple windows.
   void SetTabGroupMetadata(const SessionID& window_id,
                            const tab_groups::TabGroupId& group_id,
                            const tab_groups::TabGroupVisualData* visual_data);
@@ -143,8 +147,8 @@ class SessionService : public sessions::CommandStorageManagerDelegate,
                       const SessionID& tab_id,
                       bool is_pinned);
 
-  // Note: this is invoked from the NavigationController's destructor, which is
-  // after the actual tab has been removed.
+  // Note: this is invoked from the NavigationController's destructor, which
+  // is after the actual tab has been removed.
   void TabClosed(const SessionID& window_id, const SessionID& tab_id);
 
   // Notification a window has opened.
@@ -228,6 +232,7 @@ class SessionService : public sessions::CommandStorageManagerDelegate,
   FRIEND_TEST_ALL_PREFIXES(SessionServiceTest, RemoveUnusedRestoreWindowsTest);
   FRIEND_TEST_ALL_PREFIXES(SessionServiceTest, Workspace);
   FRIEND_TEST_ALL_PREFIXES(SessionServiceTest, WorkspaceSavedOnOpened);
+  FRIEND_TEST_ALL_PREFIXES(SessionServiceTest, VisibleOnAllWorkspaces);
   FRIEND_TEST_ALL_PREFIXES(NoStartupWindowTest, DontInitSessionServiceForApps);
 
   typedef std::map<SessionID, std::pair<int, int>> IdToRange;
@@ -243,8 +248,9 @@ class SessionService : public sessions::CommandStorageManagerDelegate,
   void RemoveUnusedRestoreWindows(
       std::vector<std::unique_ptr<sessions::SessionWindow>>* window_list);
 
-  // Implementation of RestoreIfNecessary. If |browser| is non-null and we need
-  // to restore, the tabs are added to it, otherwise a new browser is created.
+  // Implementation of RestoreIfNecessary. If |browser| is non-null and we
+  // need to restore, the tabs are added to it, otherwise a new browser is
+  // created.
   bool RestoreIfNecessary(const std::vector<GURL>& urls_to_open,
                           Browser* browser);
 
@@ -278,9 +284,9 @@ class SessionService : public sessions::CommandStorageManagerDelegate,
                                std::set<SessionID>* windows_to_track);
 
   // Iterates over all the known browsers invoking BuildCommandsForBrowser.
-  // This only adds browsers that should be tracked (|ShouldRestoreWindowOfType|
-  // returns true). All browsers that are tracked are added to windows_to_track
-  // (as long as it is non-null).
+  // This only adds browsers that should be tracked
+  // (|ShouldRestoreWindowOfType| returns true). All browsers that are tracked
+  // are added to windows_to_track (as long as it is non-null).
   void BuildCommandsFromBrowsers(IdToRange* tab_to_available_range,
                                  std::set<SessionID>* windows_to_track);
 
@@ -294,8 +300,8 @@ class SessionService : public sessions::CommandStorageManagerDelegate,
   // Converts all pending tab/window closes to commands and schedules them.
   void CommitPendingCloses();
 
-  // Returns true if there is only one window open with a single tab that shares
-  // our profile.
+  // Returns true if there is only one window open with a single tab that
+  // shares our profile.
   bool IsOnlyOneTabLeft() const;
 
   // Returns true if there are open trackable browser windows whose ids do
@@ -304,7 +310,8 @@ class SessionService : public sessions::CommandStorageManagerDelegate,
   // |ShouldRestoreWindowOfType| for details.
   bool HasOpenTrackableBrowsers(const SessionID& window_id) const;
 
-  // Returns true if changes to tabs in the specified window should be tracked.
+  // Returns true if changes to tabs in the specified window should be
+  // tracked.
   bool ShouldTrackChangesToWindow(const SessionID& window_id) const;
 
   // Returns true if we track changes to the specified browser.
@@ -319,7 +326,7 @@ class SessionService : public sessions::CommandStorageManagerDelegate,
   // session data is currently saved verses when we may want to save it.
   // It records the data in UMA stats.
   void RecordSessionUpdateHistogramData(int type,
-    base::TimeTicks* last_updated_time);
+                                        base::TimeTicks* last_updated_time);
 
   // Deletes session data if no windows are open for the current profile.
   void MaybeDeleteSessionOnlyData();

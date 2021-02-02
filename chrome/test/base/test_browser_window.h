@@ -208,6 +208,9 @@ class TestBrowserWindow : public BrowserWindow {
       std::unique_ptr<FeaturePromoController> feature_promo_controller);
 
   void set_workspace(std::string workspace) { workspace_ = workspace; }
+  void set_visible_on_all_workspaces(bool visible_on_all_workspaces) {
+    visible_on_all_workspaces_ = visible_on_all_workspaces;
+  }
 
  protected:
   void DestroyBrowser() override {}
@@ -244,6 +247,7 @@ class TestBrowserWindow : public BrowserWindow {
   gfx::NativeWindow native_window_ = nullptr;
 
   std::string workspace_;
+  bool visible_on_all_workspaces_ = false;
 
   std::unique_ptr<FeaturePromoController> feature_promo_controller_;
 

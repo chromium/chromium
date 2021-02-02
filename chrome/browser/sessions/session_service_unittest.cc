@@ -1286,6 +1286,37 @@ TEST_F(SessionServiceTest, WorkspaceSavedOnOpened) {
   EXPECT_TRUE(found_workspace_command);
 }
 
+// Tests that the visible on all workspaces state is saved during
+// SessionService::BuildCommandsForBrowser.
+TEST_F(SessionServiceTest, VisibleOnAllWorkspaces) {
+  auto* test_browser_window =
+      static_cast<TestBrowserWindow*>(browser()->window());
+  test_browser_window->set_visible_on_all_workspaces(true);
+  // Force a reset, to verify that SessionService::BuildCommandsForBrowser
+  // handles workspaces correctly.
+  AddTab(browser(), GURL("http://foo/1"));
+  service()->ResetFromCurrentBrowsers();
+
+  sessions::CommandStorageManager* command_storage_manager =
+      service()->GetCommandStorageManagerForTest();
+  const std::vector<std::unique_ptr<sessions::SessionCommand>>&
+      pending_commands = command_storage_manager->pending_commands();
+  bool found_visible_on_all_workspaces_command = false;
+  std::unique_ptr<sessions::SessionCommand> visible_on_all_workspaces_command =
+      sessions::CreateSetWindowVisibleOnAllWorkspacesCommand(
+          browser()->session_id(),
+          /*visible_on_all_workspaces=*/true);
+  for (const auto& command : pending_commands) {
+    if (command->id() == visible_on_all_workspaces_command->id() &&
+        command->contents_as_string_piece() ==
+            visible_on_all_workspaces_command->contents_as_string_piece()) {
+      found_visible_on_all_workspaces_command = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(found_visible_on_all_workspaces_command);
+}
+
 // Functions used by GetSessionsAndDestroy.
 namespace {
 

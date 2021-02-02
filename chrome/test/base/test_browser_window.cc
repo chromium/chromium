@@ -250,7 +250,7 @@ std::string TestBrowserWindow::GetWorkspace() const {
 }
 
 bool TestBrowserWindow::IsVisibleOnAllWorkspaces() const {
-  return false;
+  return visible_on_all_workspaces_;
 }
 
 std::unique_ptr<content::EyeDropper> TestBrowserWindow::OpenEyeDropper(

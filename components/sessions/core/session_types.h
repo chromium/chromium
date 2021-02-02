@@ -154,6 +154,9 @@ struct SESSIONS_EXPORT SessionWindow {
   // The workspace in which the window resides.
   std::string workspace;
 
+  // Whether the window is visible on all workspaces or not.
+  bool visible_on_all_workspaces;
+
   // Index of the selected tab in tabs; -1 if no tab is selected. After restore
   // this value is guaranteed to be a valid index into tabs.
   //

@@ -745,7 +745,7 @@ void DesksController::ActivateDeskInternal(const Desk* desk,
   Desk* old_active = active_desk_;
   MoveVisibleOnAllDesksWindowsFromActiveDeskTo(const_cast<Desk*>(desk));
   active_desk_ = const_cast<Desk*>(desk);
-  RestackAssignedWindowsOnActiveDesk();
+  RestackVisibleOnAllDesksWindowsOnActiveDesk();
 
   // There should always be an active desk at any time.
   DCHECK(old_active);
@@ -868,7 +868,7 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
 
     // Now that |target_desk| is activated, we can restack the visible on all
     // desks windows that were moved from the old active desk.
-    RestackAssignedWindowsOnActiveDesk();
+    RestackVisibleOnAllDesksWindowsOnActiveDesk();
 
     // Now that the windows from the removed and target desks merged, add them
     // all to the grid in the order of the new MRU.
@@ -939,7 +939,7 @@ void DesksController::MoveVisibleOnAllDesksWindowsFromActiveDeskTo(
   mru_tracker->SetIgnoreActivations(false);
 }
 
-void DesksController::RestackAssignedWindowsOnActiveDesk() {
+void DesksController::RestackVisibleOnAllDesksWindowsOnActiveDesk() {
   auto mru_windows =
       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
   for (auto* visible_on_all_desks_window : visible_on_all_desks_windows_) {

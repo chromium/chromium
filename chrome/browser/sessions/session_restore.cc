@@ -177,7 +177,8 @@ class SessionRestoreImpl : public BrowserListObserver {
     for (auto i = begin; i != end; ++i) {
       Browser* browser = CreateRestoredBrowser(
           BrowserTypeForWindowType((*i)->type), (*i)->bounds, (*i)->workspace,
-          (*i)->show_state, (*i)->app_name, (*i)->user_title);
+          (*i)->visible_on_all_workspaces, (*i)->show_state, (*i)->app_name,
+          (*i)->user_title);
       browsers.push_back(browser);
 
       // Restore and show the browser.
@@ -415,7 +416,8 @@ class SessionRestoreImpl : public BrowserListObserver {
         }
         browser = CreateRestoredBrowser(
             BrowserTypeForWindowType((*i)->type), (*i)->bounds, (*i)->workspace,
-            show_state, (*i)->app_name, (*i)->user_title);
+            (*i)->visible_on_all_workspaces, show_state, (*i)->app_name,
+            (*i)->user_title);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
         chromeos::BootTimesRecorder::Get()->AddLoginTimeMarker(
             "SessionRestore-CreateRestoredBrowser-End", false);
@@ -644,6 +646,7 @@ class SessionRestoreImpl : public BrowserListObserver {
   Browser* CreateRestoredBrowser(Browser::Type type,
                                  gfx::Rect bounds,
                                  const std::string& workspace,
+                                 bool visible_on_all_workspaces,
                                  ui::WindowShowState show_state,
                                  const std::string& app_name,
                                  const std::string& user_title) {
@@ -666,6 +669,7 @@ class SessionRestoreImpl : public BrowserListObserver {
 
     params.initial_show_state = show_state;
     params.initial_workspace = workspace;
+    params.initial_visible_on_all_workspaces_state = visible_on_all_workspaces;
     params.is_session_restore = true;
     return Browser::Create(params);
   }

@@ -249,7 +249,7 @@ class ASH_EXPORT DesksController : public DesksHelper,
   // Iterates through the visible on all desks windows on the active desk
   // and restacks them based on their position in the global MRU tracker. This
   // should be called after desk activation.
-  void RestackAssignedWindowsOnActiveDesk();
+  void RestackVisibleOnAllDesksWindowsOnActiveDesk();
 
   // Returns the desk to which |window| belongs or nullptr if it doesn't belong
   // to any desk.

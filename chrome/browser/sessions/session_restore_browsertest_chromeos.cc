@@ -35,6 +35,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/autotest_desks_api.h"
+#include "ash/public/cpp/desks_helper.h"
 #endif
 
 #if defined(USE_AURA)
@@ -129,7 +130,8 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreTestChromeOS, RestoreBrowserWindows) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
-// Assigns three browser windows to three different desks.
+// Assigns three browser windows to three different desks. Assign a fourth
+// browser window to all desks if Bento is enabled.
 IN_PROC_BROWSER_TEST_P(SessionRestoreTestChromeOS,
                        PRE_RestoreBrowserWindowsToDesks) {
   // Create two more desks so we have three desks in total.
@@ -160,14 +162,36 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreTestChromeOS,
   Browser* browser_desk2 = CreateBrowserWithParams(browser_desk2_params);
   browser_desk2->SetWindowUserTitle("2");
 
+  // Create a fourth browser window and make it visible on all desks if Bento is
+  // enabled.
+  if (IsBentoEnabled()) {
+    ash::AutotestDesksApi().ActivateDeskAtIndex(0, base::DoNothing());
+
+    Browser::CreateParams visible_on_all_desks_browser_params =
+        Browser::CreateParams(profile(), true);
+    visible_on_all_desks_browser_params
+        .initial_visible_on_all_workspaces_state = true;
+    Browser* visible_on_all_desks_browser =
+        CreateBrowserWithParams(visible_on_all_desks_browser_params);
+
+    auto* visible_on_all_desks_window =
+        visible_on_all_desks_browser->window()->GetNativeWindow();
+    ASSERT_TRUE(visible_on_all_desks_window->GetProperty(
+        aura::client::kVisibleOnAllWorkspacesKey));
+    ASSERT_TRUE(ash::DesksHelper::Get()->BelongsToActiveDesk(
+        visible_on_all_desks_window));
+  }
+
   TurnOnSessionRestore();
 }
 
-// Verifies that three windows restored to their right desk after restored.
+// Verifies that three windows restored to their right desk after restored. Also
+// verifies that the fourth window is visible on all desks after being restored
+// if Bento is enabled.
 IN_PROC_BROWSER_TEST_P(SessionRestoreTestChromeOS,
                        RestoreBrowserWindowsToDesks) {
   auto* browser_list = BrowserList::GetInstance();
-  ASSERT_EQ(3u, browser_list->size());
+  ASSERT_EQ(IsBentoEnabled() ? 4u : 3u, browser_list->size());
 
   // The first, second and third browser should restore to the first, second
   // and third desk, consecutively.
@@ -192,6 +216,20 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreTestChromeOS,
         aura::client::kWindowWorkspaceKey);
     ASSERT_EQ(desk_index,
               workspace == aura::client::kUnassignedWorkspace ? 0 : workspace);
+  }
+
+  // If Bento is enabled, there should be a fourth browser that should be
+  // visible on all desks.
+  if (IsBentoEnabled()) {
+    auto* visible_on_all_desks_browser = browser_list->get(3);
+    auto* visible_on_all_desks_window =
+        visible_on_all_desks_browser->window()->GetNativeWindow();
+    ASSERT_TRUE(visible_on_all_desks_window->GetProperty(
+        aura::client::kVisibleOnAllWorkspacesKey));
+    // Visible on all desks windows should always reside on the active desk,
+    // even if there is a desk switch.
+    ASSERT_TRUE(ash::DesksHelper::Get()->BelongsToActiveDesk(
+        visible_on_all_desks_window));
   }
 }
 #endif
