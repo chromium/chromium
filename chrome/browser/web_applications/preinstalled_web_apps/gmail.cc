@@ -23,6 +23,7 @@ ExternalInstallOptions GetConfigForGmail() {
   options.user_type_allowlist = {"unmanaged", "managed", "child"};
   options.gate_on_feature = kMigrateDefaultChromeAppToWebAppsGSuite.name;
   options.uninstall_and_replace.push_back("pjkljhegncpnkpknbcohdijeoejaedia");
+  options.disable_if_tablet_form_factor = true;
   options.load_and_await_service_worker_registration = false;
   options.only_use_app_info_factory = true;
   options.app_info_factory = base::BindRepeating([]() {
