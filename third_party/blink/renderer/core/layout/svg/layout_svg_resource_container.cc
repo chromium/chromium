@@ -211,9 +211,6 @@ void LayoutSVGResourceContainer::InvalidateCacheAndMarkForLayout(
     LayoutInvalidationReasonForTracing reason,
     SubtreeLayoutScope* layout_scope) {
   NOT_DESTROYED();
-  if (SelfNeedsLayout())
-    return;
-
   SetNeedsLayoutAndFullPaintInvalidation(reason, kMarkContainerChain,
                                          layout_scope);
 
