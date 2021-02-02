@@ -1629,36 +1629,39 @@ void CameraDeviceDelegate::DoGetPhotoState(
     photo_state->iso->current = result_metadata_.sensitivity.value();
   }
 
-  auto ae_compensation_step = GetMetadataEntryAsSpan<Rational>(
-      static_metadata_,
-      cros::mojom::CameraMetadataTag::ANDROID_CONTROL_AE_COMPENSATION_STEP);
-  ae_compensation_step_ = 0.0;
-  if (ae_compensation_step.size() == 1) {
-    if (ae_compensation_step[0].numerator == 0 ||
-        ae_compensation_step[0].denominator == 0) {
-      LOG(WARNING) << "AE_COMPENSATION_STEP: numerator:"
-                   << ae_compensation_step[0].numerator
-                   << "denominator:" << ae_compensation_step[0].denominator;
-    } else {
-      ae_compensation_step_ =
-          static_cast<float>(ae_compensation_step[0].numerator) /
-          static_cast<float>(ae_compensation_step[0].denominator);
-    }
-  }
   auto ae_compensation_range = GetMetadataEntryAsSpan<int32_t>(
       static_metadata_,
       cros::mojom::CameraMetadataTag::ANDROID_CONTROL_AE_COMPENSATION_RANGE);
-  if (ae_compensation_step_ != 0.0 && ae_compensation_range.size() == 2) {
-    photo_state->exposure_compensation->min =
-        ae_compensation_range[0] * ae_compensation_step_;
-    photo_state->exposure_compensation->max =
-        ae_compensation_range[1] * ae_compensation_step_;
-    photo_state->exposure_compensation->step = ae_compensation_step_;
-    if (result_metadata_.ae_compensation)
-      photo_state->exposure_compensation->current =
-          result_metadata_.ae_compensation.value() * ae_compensation_step_;
-    else
-      photo_state->exposure_compensation->current = 0;
+  ae_compensation_step_ = 0.0;
+  if (ae_compensation_range.size() == 2) {
+    if (ae_compensation_range[0] != 0 || ae_compensation_range[1] != 0) {
+      auto ae_compensation_step = GetMetadataEntryAsSpan<Rational>(
+          static_metadata_,
+          cros::mojom::CameraMetadataTag::ANDROID_CONTROL_AE_COMPENSATION_STEP);
+      if (ae_compensation_step.size() == 1) {
+        if (ae_compensation_step[0].numerator == 0 ||
+            ae_compensation_step[0].denominator == 0) {
+          LOG(WARNING) << "AE_COMPENSATION_STEP: numerator:"
+                       << ae_compensation_step[0].numerator << ", denominator:"
+                       << ae_compensation_step[0].denominator;
+        } else {
+          ae_compensation_step_ =
+              static_cast<float>(ae_compensation_step[0].numerator) /
+              static_cast<float>(ae_compensation_step[0].denominator);
+          photo_state->exposure_compensation->min =
+              ae_compensation_range[0] * ae_compensation_step_;
+          photo_state->exposure_compensation->max =
+              ae_compensation_range[1] * ae_compensation_step_;
+          photo_state->exposure_compensation->step = ae_compensation_step_;
+          if (result_metadata_.ae_compensation)
+            photo_state->exposure_compensation->current =
+                result_metadata_.ae_compensation.value() *
+                ae_compensation_step_;
+          else
+            photo_state->exposure_compensation->current = 0;
+        }
+      }
+    }
   }
 
   std::move(callback).Run(std::move(photo_state));
