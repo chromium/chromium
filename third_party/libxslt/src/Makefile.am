@@ -25,6 +25,7 @@ EXTRA_DIST = xsltConf.sh.in xslt-config.in libxslt.spec libxslt.spec.in \
              FEATURES TODO Copyright libxslt.m4 \
 	     win32/libxslt/libxslt.def win32/libxslt/libxslt.dsw \
 	     win32/libxslt/libxslt_so.dsp win32/libxslt/xsltproc.dsp \
+	     CMakeLists.txt config.h.cmake.in FindGcrypt.cmake libxslt-config.cmake.in libxslt-config.cmake.cmake.in \
 	     $(CVS_EXTRA_DIST)
 
 ## We create xsltConf.sh here and not from configure because we want
@@ -72,6 +73,9 @@ rpm: cleantar
 
 pkgconfigdir=$(libdir)/pkgconfig
 pkgconfig_DATA = libxslt.pc libexslt.pc
+
+cmakedir = $(libdir)/cmake/libxslt
+cmake_DATA = FindGcrypt.cmake libxslt-config.cmake
 
 m4datadir = $(datadir)/aclocal
 m4data_DATA = libxslt.m4
