@@ -950,7 +950,8 @@ TEST_F(DirectCompositionPixelTest, YUY2SwapChain) {
   // CreateSwapChainForCompositionSurfaceHandle fails with YUY2 format on
   // Win10/AMD bot (Radeon RX550). See https://crbug.com/967860.
   if (context_ && context_->GetVersionInfo() &&
-      context_->GetVersionInfo()->driver_vendor == "ANGLE (AMD)")
+      context_->GetVersionInfo()->driver_vendor.find("AMD") !=
+          std::string::npos)
     return;
 
   // Swap chain size is overridden to content rect size only if scaled overlays
@@ -1166,7 +1167,8 @@ TEST_F(DirectCompositionPixelTest, SwapChainImage) {
     return;
   // Fails on AMD RX 5500 XT. https://crbug.com/1152565.
   if (context_ && context_->GetVersionInfo() &&
-      context_->GetVersionInfo()->driver_vendor == "ANGLE (AMD)")
+      context_->GetVersionInfo()->driver_vendor.find("AMD") !=
+          std::string::npos)
     return;
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
