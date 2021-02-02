@@ -13,12 +13,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_browsertest.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
-#include "chrome/browser/web_applications/system_web_app_manager.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -26,8 +21,6 @@
 #include "chromeos/ui/base/window_pin_type.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/account_id/account_id.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "ui/aura/window.h"
@@ -40,58 +33,6 @@ GURL GetGoogleURL() {
 
 using BrowserNavigatorTestChromeOS = BrowserNavigatorTest;
 
-// Verifies that the OS settings page opens in a standalone surface when
-// accessed via link or url.
-IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS, NavigateToOSSettings) {
-  // By default, browsertests open settings in a browser tab. For this test, we
-  // verify that if this flag is not set, settings opens in the settings app.
-  // This simulates the default case users see.
-  SetAllowOsSettingsInTabForTesting(false);
-  // Install the Settings App.
-  web_app::WebAppProvider::Get(browser()->profile())
-      ->system_web_app_manager()
-      .InstallSystemAppsForTesting();
-
-  // Verify that only one window is upon before navigating to OS settings.
-  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
-
-  // Navigate to OS Settings page via typing URL into URL bar.
-  NavigateParams params(MakeNavigateParams(browser()));
-  params.url = GURL("chrome://os-settings/");
-  params.transition = ui::PageTransition::PAGE_TRANSITION_TYPED;
-  Navigate(&params);
-
-  // The above Navigate() should trigger an asynchronous call to launch OS
-  // Settings SWA. Flush Mojo calls so the browser window is created.
-  web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());
-
-  // Verify that navigating to chrome://os-settings/ via typing does not cause
-  // the browser itself to navigate to the OS Settings page.
-  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
-  EXPECT_NE(GURL("chrome://os-settings/"),
-            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
-
-  // Navigate to OS Settings page via clicking a link on another page.
-  params.transition = ui::PageTransition::PAGE_TRANSITION_LINK;
-  Navigate(&params);
-
-  // The above Navigate() should trigger  an asynchronous call to launch OS
-  // Settings SWA. Flush Mojo calls so the browser window is created.
-  web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());
-
-  Browser* os_settings_browser =
-      chrome::SettingsWindowManager::GetInstance()->FindBrowserForProfile(
-          browser()->profile());
-
-  // Verify that navigating to chrome://os-settings/ via a link from another
-  // page opens a standalone surface.
-  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
-  EXPECT_EQ(
-      GURL("chrome://os-settings/"),
-      os_settings_browser->tab_strip_model()->GetActiveWebContents()->GetURL());
-  EXPECT_NE(browser(), os_settings_browser);
-}
-
 // Verifies that new browser is not opened for Signin profile.
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS, RestrictSigninProfile) {
   EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
@@ -99,36 +40,6 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS, RestrictSigninProfile) {
   EXPECT_EQ(Browser::CreationStatus::kErrorProfileUnsuitable,
             Browser::GetCreationStatusForProfile(
                 chromeos::ProfileHelper::GetSigninProfile()));
-}
-
-// This test verifies that the settings page is opened in a new browser window.
-IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS, NavigateToSettings) {
-  // Install the Settings App.
-  web_app::WebAppProvider::Get(browser()->profile())
-      ->system_web_app_manager()
-      .InstallSystemAppsForTesting();
-  GURL old_url = browser()->tab_strip_model()->GetActiveWebContents()->GetURL();
-  {
-    content::WindowedNotificationObserver observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::NotificationService::AllSources());
-    chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-        browser()->profile());
-    observer.Wait();
-  }
-  // browser() tab contents should be unaffected.
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
-  EXPECT_EQ(old_url,
-            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
-
-  // Settings page should be opened in a new window.
-  Browser* settings_browser =
-      chrome::SettingsWindowManager::GetInstance()->FindBrowserForProfile(
-          browser()->profile());
-  EXPECT_NE(browser(), settings_browser);
-  EXPECT_EQ(
-      GURL(chrome::GetOSSettingsUrl(std::string())),
-      settings_browser->tab_strip_model()->GetActiveWebContents()->GetURL());
 }
 
 // Verify that page navigation is blocked in locked fullscreen mode.

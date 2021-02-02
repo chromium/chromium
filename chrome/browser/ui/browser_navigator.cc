@@ -53,7 +53,6 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "components/account_id/account_id.h"
 #endif
 
@@ -90,8 +89,6 @@ class BrowserNavigatorWebContentsAdoption {
 };
 
 namespace {
-
-bool allow_os_settings_in_tab = false;
 
 // Returns true if |params.browser| exists and can open a new tab for
 // |params.url|. Not all browsers support multiple tabs, such as app frames and
@@ -566,39 +563,24 @@ void Navigate(NavigateParams* params) {
     return;
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (source_browser) {
-    // Open OS settings in PWA, even when user types in URL bar.
-    if (params->url.GetOrigin() ==
-            GURL(chrome::kChromeUIOSSettingsURL).GetOrigin() &&
-        !allow_os_settings_in_tab) {
-      chrome::SettingsWindowManager* settings_window_manager =
-          chrome::SettingsWindowManager::GetInstance();
-      if (!settings_window_manager->IsSettingsBrowser(source_browser)) {
-        settings_window_manager->ShowChromePageForProfile(
-            GetSourceProfile(params), params->url);
-        return;
-      }
-    }
-
-    if (source_browser != params->browser) {
-      // When the newly created browser was spawned by a browser which visits
-      // another user's desktop, it should be shown on the same desktop as the
-      // originating one. (This is part of the desktop separation per profile).
-      auto* window_manager = MultiUserWindowManagerHelper::GetWindowManager();
-      // Some unit tests have no client instantiated.
-      if (window_manager) {
-        aura::Window* src_window = source_browser->window()->GetNativeWindow();
-        aura::Window* new_window = params->browser->window()->GetNativeWindow();
-        const AccountId& src_account_id =
-            window_manager->GetUserPresentingWindow(src_window);
-        if (src_account_id !=
-            window_manager->GetUserPresentingWindow(new_window)) {
-          // Once the window gets presented, it should be shown on the same
-          // desktop as the desktop of the creating browser. Note that this
-          // command will not show the window if it wasn't shown yet by the
-          // browser creation.
-          window_manager->ShowWindowForUser(new_window, src_account_id);
-        }
+  if (source_browser && source_browser != params->browser) {
+    // When the newly created browser was spawned by a browser which visits
+    // another user's desktop, it should be shown on the same desktop as the
+    // originating one. (This is part of the desktop separation per profile).
+    auto* window_manager = MultiUserWindowManagerHelper::GetWindowManager();
+    // Some unit tests have no client instantiated.
+    if (window_manager) {
+      aura::Window* src_window = source_browser->window()->GetNativeWindow();
+      aura::Window* new_window = params->browser->window()->GetNativeWindow();
+      const AccountId& src_account_id =
+          window_manager->GetUserPresentingWindow(src_window);
+      if (src_account_id !=
+          window_manager->GetUserPresentingWindow(new_window)) {
+        // Once the window gets presented, it should be shown on the same
+        // desktop as the desktop of the creating browser. Note that this
+        // command will not show the window if it wasn't shown yet by the
+        // browser creation.
+        window_manager->ShowWindowForUser(new_window, src_account_id);
       }
     }
   }
@@ -824,8 +806,4 @@ bool IsURLAllowedInIncognito(const GURL& url,
   }
 
   return IsHostAllowedInIncognito(url);
-}
-
-void SetAllowOsSettingsInTabForTesting(bool is_allowed) {
-  allow_os_settings_in_tab = is_allowed;
 }

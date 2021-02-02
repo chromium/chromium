@@ -5,11 +5,15 @@
 #include "chrome/browser/chromeos/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/chromeos/web_applications/system_web_app_integration_test.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/system_web_app_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/notification_types.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -55,6 +59,59 @@ IN_PROC_BROWSER_TEST_P(SettingsAppIntegrationTest, SettingsAppDisabled) {
   ASSERT_TRUE(web_ui);
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_CHROME_URLS_DISABLED_PAGE_HEADER),
             web_contents->GetTitle());
+}
+
+// This test verifies that the settings page is opened in a new browser window.
+IN_PROC_BROWSER_TEST_P(SettingsAppIntegrationTest, OmniboxNavigateToSettings) {
+  // Install the Settings App.
+  web_app::WebAppProvider::Get(browser()->profile())
+      ->system_web_app_manager()
+      .InstallSystemAppsForTesting();
+  GURL old_url = browser()->tab_strip_model()->GetActiveWebContents()->GetURL();
+  {
+    content::WindowedNotificationObserver observer(
+        content::NOTIFICATION_LOAD_STOP,
+        content::NotificationService::AllSources());
+    chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+        browser()->profile());
+    observer.Wait();
+  }
+  // browser() tab contents should be unaffected.
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(old_url,
+            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+
+  // Settings page should be opened in a new window.
+  Browser* settings_browser =
+      chrome::SettingsWindowManager::GetInstance()->FindBrowserForProfile(
+          browser()->profile());
+  EXPECT_NE(browser(), settings_browser);
+  EXPECT_EQ(
+      GURL(chrome::GetOSSettingsUrl(std::string())),
+      settings_browser->tab_strip_model()->GetActiveWebContents()->GetURL());
+}
+
+IN_PROC_BROWSER_TEST_P(SettingsAppIntegrationTest,
+                       RedirectIncognitoToOriginalProfile) {
+  // Install the real SWA, not the test mock. This verifies the production
+  // SystemAppInfo is correct.
+  web_app::WebAppProvider::Get(browser()->profile())
+      ->system_web_app_manager()
+      .InstallSystemAppsForTesting();
+
+  // When launching from incognito profile, OS Settings gets launched to the
+  // original profile.
+  Profile* incognito_profile = browser()->profile()->GetPrimaryOTRProfile();
+  web_app::LaunchSystemWebAppAsync(incognito_profile,
+                                   web_app::SystemAppType::SETTINGS);
+  web_app::FlushSystemWebAppLaunchesForTesting(
+      incognito_profile->GetOriginalProfile());
+
+  // There should be a browser for the original profile, but not the incognito
+  // profile.
+  auto* manager = chrome::SettingsWindowManager::GetInstance();
+  EXPECT_TRUE(manager->FindBrowserForProfile(browser()->profile()));
+  EXPECT_FALSE(manager->FindBrowserForProfile(incognito_profile));
 }
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(

@@ -292,10 +292,6 @@ void InProcessBrowserTest::SetUp() {
                                       chrome::kTestUserProfileDir);
     }
   }
-
-  // By default, OS settings are not opened in a browser tab but in settings
-  // app. OS browsertests require OS settings to be opened in a browser tab.
-  SetAllowOsSettingsInTabForTesting(true);
 #endif
 
   SetScreenInstance();
