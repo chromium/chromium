@@ -22,18 +22,24 @@ const float kDefaultDimOpacity = 0.5f;
 
 }  // namespace
 
-WindowDimmer::WindowDimmer(aura::Window* parent)
+WindowDimmer::WindowDimmer(aura::Window* parent,
+                           bool animate,
+                           Delegate* delegate)
     : parent_(parent),
       window_(
           window_factory::NewWindow(nullptr, aura::client::WINDOW_TYPE_NORMAL)
-              .release()) {
+              .release()),
+      delegate_(delegate) {
   window_->Init(ui::LAYER_SOLID_COLOR);
-  ::wm::SetWindowVisibilityChangesAnimated(window_);
-  ::wm::SetWindowVisibilityAnimationType(
-      window_, ::wm::WINDOW_VISIBILITY_ANIMATION_TYPE_FADE);
-  ::wm::SetWindowVisibilityAnimationDuration(
-      window_,
-      base::TimeDelta::FromMilliseconds(kDefaultDimAnimationDurationMs));
+  window_->SetName("Dimming Window");
+  if (animate) {
+    ::wm::SetWindowVisibilityChangesAnimated(window_);
+    ::wm::SetWindowVisibilityAnimationType(
+        window_, ::wm::WINDOW_VISIBILITY_ANIMATION_TYPE_FADE);
+    ::wm::SetWindowVisibilityAnimationDuration(
+        window_,
+        base::TimeDelta::FromMilliseconds(kDefaultDimAnimationDurationMs));
+  }
   window_->AddObserver(this);
 
   SetDimOpacity(kDefaultDimOpacity);
@@ -65,6 +71,12 @@ void WindowDimmer::SetDimOpacity(float target_opacity) {
   window_->layer()->SetColor(SkColorSetA(SK_ColorBLACK, 255 * target_opacity));
 }
 
+void WindowDimmer::SetDimColor(SkColor dimming_color) {
+  DCHECK(window_);
+  DCHECK_NE(SkColorGetA(dimming_color), SK_AlphaOPAQUE);
+  window_->layer()->SetColor(dimming_color);
+}
+
 void WindowDimmer::OnWindowBoundsChanged(aura::Window* window,
                                          const gfx::Rect& old_bounds,
                                          const gfx::Rect& new_bounds,
@@ -76,6 +88,8 @@ void WindowDimmer::OnWindowBoundsChanged(aura::Window* window,
 void WindowDimmer::OnWindowDestroying(aura::Window* window) {
   if (window == parent_) {
     parent_->RemoveObserver(this);
+    if (delegate_)
+      delegate_->OnDimmedWindowDestroying(window);
     parent_ = nullptr;
   } else {
     DCHECK_EQ(window_, window);
@@ -91,6 +105,12 @@ void WindowDimmer::OnWindowHierarchyChanging(
     // the window to ensure it isn't obscuring the wrong thing.
     window_->Hide();
   }
+}
+
+void WindowDimmer::OnWindowParentChanged(aura::Window* window,
+                                         aura::Window* parent) {
+  if (delegate_ && window == parent_)
+    delegate_->OnDimmedWindowParentChanged(window);
 }
 
 }  // namespace ash

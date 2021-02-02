@@ -1040,6 +1040,13 @@ void CaptureModeController::OnVideoRecordCountDownFinished() {
   capture_mode_session_->set_a11y_alert_on_session_exit(false);
 
   const base::Optional<CaptureParams> capture_params = GetCaptureParams();
+
+  // Acquire the session's layer in order to potentially reuse it for painting
+  // a highlight around the region being recorded.
+  std::unique_ptr<ui::Layer> session_layer =
+      capture_mode_session_->ReleaseLayer();
+  session_layer->set_delegate(nullptr);
+
   // Stop the capture session now, so the bar doesn't show up in the captured
   // video.
   Stop();
@@ -1067,6 +1074,10 @@ void CaptureModeController::OnVideoRecordCountDownFinished() {
   Shell::Get()->UpdateCursorCompositingEnabled();
   video_recording_watcher_ =
       std::make_unique<VideoRecordingWatcher>(this, capture_params->window);
+
+  // We only paint the recorded area highlight for window and region captures.
+  if (source_ != CaptureModeSource::kFullscreen)
+    video_recording_watcher_->Reset(std::move(session_layer));
 
   constexpr size_t kVideoBufferCapacityBytes = 512 * 1024;
 

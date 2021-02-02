@@ -19,6 +19,7 @@
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/stop_recording_button_tray.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
+#include "ash/capture_mode/video_recording_watcher.h"
 #include "ash/display/cursor_window_controller.h"
 #include "ash/display/output_protection_delegate.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
@@ -31,6 +32,9 @@
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_state.h"
@@ -45,6 +49,7 @@
 #include "chromeos/dbus/power_manager/suspend.pb.h"
 #include "components/account_id/account_id.h"
 #include "ui/aura/window_tracker.h"
+#include "ui/compositor/compositor.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -58,6 +63,7 @@
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget_observer.h"
+#include "ui/wm/core/window_util.h"
 
 namespace ash {
 
@@ -117,6 +123,14 @@ void MoveMouseToAndUpdateCursorDisplay(
   Shell::Get()->cursor_manager()->SetDisplay(
       display::Screen::GetScreen()->GetDisplayNearestPoint(point));
   event_generator->MoveMouseTo(point);
+}
+
+bool IsLayerStackedRightBelow(ui::Layer* layer, ui::Layer* sibling) {
+  DCHECK_EQ(layer->parent(), sibling->parent());
+  const auto& children = layer->parent()->children();
+  const int sibling_index =
+      std::find(children.begin(), children.end(), sibling) - children.begin();
+  return sibling_index > 0 && children[sibling_index - 1] == layer;
 }
 
 }  // namespace
@@ -299,6 +313,15 @@ class CaptureModeTest : public AshTestBase {
   CaptureModeController* StartImageRegionCapture() {
     return StartCaptureSession(CaptureModeSource::kRegion,
                                CaptureModeType::kImage);
+  }
+
+  CaptureModeController* StartSessionAndRecordWindow(aura::Window* window) {
+    auto* controller = StartCaptureSession(CaptureModeSource::kWindow,
+                                           CaptureModeType::kVideo);
+    GetEventGenerator()->MoveMouseToCenterOf(window);
+    controller->StartVideoRecordingImmediatelyForTesting();
+    EXPECT_TRUE(controller->is_recording_in_progress());
+    return controller;
   }
 
   // Select a region by pressing and dragging the mouse.
@@ -1541,19 +1564,143 @@ TEST_F(CaptureModeTest, WindowRecordingCaptureId) {
   EXPECT_FALSE(window->subtree_capture_id().is_valid());
 }
 
+TEST_F(CaptureModeTest, DimmingOfUnRecordedWindows) {
+  auto win1 = CreateTestWindow(gfx::Rect(200, 200));
+  auto win2 = CreateTestWindow(gfx::Rect(200, 200));
+  auto recorded_window = CreateTestWindow(gfx::Rect(200, 200));
+
+  auto* controller = StartSessionAndRecordWindow(recorded_window.get());
+  auto* recording_watcher = controller->video_recording_watcher_for_testing();
+  auto* shield_layer = recording_watcher->layer();
+  // Since the recorded window is the top most, no windows should be
+  // individually dimmed.
+  EXPECT_TRUE(recording_watcher->should_paint_layer());
+  EXPECT_TRUE(IsLayerStackedRightBelow(shield_layer, recorded_window->layer()));
+  EXPECT_FALSE(
+      recording_watcher->IsWindowDimmedForTesting(recorded_window.get()));
+  EXPECT_FALSE(recording_watcher->IsWindowDimmedForTesting(win1.get()));
+  EXPECT_FALSE(recording_watcher->IsWindowDimmedForTesting(win2.get()));
+
+  // Activating |win1| brings it to the front of the shield, so it should be
+  // dimmed separately.
+  wm::ActivateWindow(win1.get());
+  EXPECT_TRUE(recording_watcher->should_paint_layer());
+  EXPECT_TRUE(IsLayerStackedRightBelow(shield_layer, recorded_window->layer()));
+  EXPECT_FALSE(
+      recording_watcher->IsWindowDimmedForTesting(recorded_window.get()));
+  EXPECT_TRUE(recording_watcher->IsWindowDimmedForTesting(win1.get()));
+  EXPECT_FALSE(recording_watcher->IsWindowDimmedForTesting(win2.get()));
+  // Similarly for |win2|.
+  wm::ActivateWindow(win2.get());
+  EXPECT_TRUE(recording_watcher->should_paint_layer());
+  EXPECT_TRUE(IsLayerStackedRightBelow(shield_layer, recorded_window->layer()));
+  EXPECT_FALSE(
+      recording_watcher->IsWindowDimmedForTesting(recorded_window.get()));
+  EXPECT_TRUE(recording_watcher->IsWindowDimmedForTesting(win1.get()));
+  EXPECT_TRUE(recording_watcher->IsWindowDimmedForTesting(win2.get()));
+
+  // Minimizing the recorded window should stop painting the shield, and the
+  // dimmers should be removed.
+  WindowState::Get(recorded_window.get())->Minimize();
+  EXPECT_FALSE(recording_watcher->should_paint_layer());
+  EXPECT_FALSE(recording_watcher->IsWindowDimmedForTesting(win1.get()));
+  EXPECT_FALSE(recording_watcher->IsWindowDimmedForTesting(win2.get()));
+
+  // Activating the recorded window again unminimizes the window, which will
+  // reenable painting the shield.
+  wm::ActivateWindow(recorded_window.get());
+  EXPECT_FALSE(recording_watcher->IsWindowDimmedForTesting(win1.get()));
+  EXPECT_FALSE(recording_watcher->IsWindowDimmedForTesting(win2.get()));
+  EXPECT_FALSE(WindowState::Get(recorded_window.get())->IsMinimized());
+  EXPECT_TRUE(recording_watcher->should_paint_layer());
+
+  // Destroying a dimmed window is correctly tracked.
+  wm::ActivateWindow(win2.get());
+  EXPECT_TRUE(recording_watcher->IsWindowDimmedForTesting(win2.get()));
+  win2.reset();
+  EXPECT_FALSE(recording_watcher->IsWindowDimmedForTesting(win2.get()));
+}
+
+TEST_F(CaptureModeTest, DimmingWithDesks) {
+  auto recorded_window = CreateAppWindow(gfx::Rect(250, 100));
+  auto* controller = StartSessionAndRecordWindow(recorded_window.get());
+  auto* recording_watcher = controller->video_recording_watcher_for_testing();
+  EXPECT_TRUE(recording_watcher->should_paint_layer());
+
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kKeyboard);
+  Desk* desk_2 = desks_controller->desks()[1].get();
+  ActivateDesk(desk_2);
+
+  // A window on a different desk than that of the recorded window should not be
+  // dimmed.
+  auto win1 = CreateAppWindow(gfx::Rect(200, 200));
+  EXPECT_FALSE(recording_watcher->IsWindowDimmedForTesting(win1.get()));
+
+  // However, moving it to the desk of the recorded window should give it a
+  // dimmer, since it's a more recently-used window (i.e. above the recorded
+  // window).
+  Desk* desk_1 = desks_controller->desks()[0].get();
+  desks_controller->MoveWindowFromActiveDeskTo(
+      win1.get(), desk_1, win1->GetRootWindow(),
+      DesksMoveWindowFromActiveDeskSource::kShortcut);
+  EXPECT_TRUE(recording_watcher->IsWindowDimmedForTesting(win1.get()));
+
+  // Moving the recorded window out of the active desk should destroy the
+  // dimmer.
+  ActivateDesk(desk_1);
+  desks_controller->MoveWindowFromActiveDeskTo(
+      recorded_window.get(), desk_2, recorded_window->GetRootWindow(),
+      DesksMoveWindowFromActiveDeskSource::kShortcut);
+  EXPECT_FALSE(recording_watcher->IsWindowDimmedForTesting(win1.get()));
+}
+
+TEST_F(CaptureModeTest, DimmingWithDisplays) {
+  UpdateDisplay("400x400,401+0-800x800");
+  auto recorded_window = CreateAppWindow(gfx::Rect(250, 100));
+  auto* controller = StartSessionAndRecordWindow(recorded_window.get());
+  auto* recording_watcher = controller->video_recording_watcher_for_testing();
+  EXPECT_TRUE(recording_watcher->should_paint_layer());
+
+  // Create a new window on the second display. It should not be dimmed.
+  auto window = CreateTestWindow(gfx::Rect(420, 10, 200, 200));
+  auto roots = Shell::GetAllRootWindows();
+  EXPECT_EQ(roots[1], window->GetRootWindow());
+  EXPECT_FALSE(recording_watcher->IsWindowDimmedForTesting(window.get()));
+
+  // However when moved to the first display, it gets dimmed.
+  window_util::MoveWindowToDisplay(window.get(),
+                                   roots[0]->GetHost()->GetDisplayId());
+  EXPECT_TRUE(recording_watcher->IsWindowDimmedForTesting(window.get()));
+
+  // Moving the recorded window to the second display will remove the dimming of
+  // |window|.
+  window_util::MoveWindowToDisplay(recorded_window.get(),
+                                   roots[1]->GetHost()->GetDisplayId());
+  EXPECT_FALSE(recording_watcher->IsWindowDimmedForTesting(window.get()));
+}
+
 TEST_F(CaptureModeTest, MultiDisplayWindowRecording) {
   UpdateDisplay("400x400,401+0-800x800");
   auto roots = Shell::GetAllRootWindows();
   ASSERT_EQ(2u, roots.size());
 
   auto window = CreateTestWindow(gfx::Rect(200, 200));
-  StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kVideo);
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kVideo);
 
   auto* event_generator = GetEventGenerator();
   event_generator->MoveMouseToCenterOf(window.get());
-  auto* controller = CaptureModeController::Get();
+  auto* session_layer = controller->capture_mode_session()->layer();
   controller->StartVideoRecordingImmediatelyForTesting();
   EXPECT_TRUE(controller->is_recording_in_progress());
+  // The session layer is reused to paint the recording shield.
+  auto* shield_layer =
+      controller->video_recording_watcher_for_testing()->layer();
+  EXPECT_EQ(session_layer, shield_layer);
+  EXPECT_EQ(shield_layer->parent(), window->layer()->parent());
+  EXPECT_TRUE(IsLayerStackedRightBelow(shield_layer, window->layer()));
+  EXPECT_EQ(shield_layer->bounds(), roots[0]->bounds());
 
   // The capturer should capture from the frame sink of the first display, and
   // the video size should match the size of the current root window.
@@ -1572,6 +1719,12 @@ TEST_F(CaptureModeTest, MultiDisplayWindowRecording) {
   ASSERT_EQ(window->GetRootWindow(), roots[1]);
   EXPECT_EQ(roots[1]->GetFrameSinkId(), test_delegate->GetCurrentFrameSinkId());
   EXPECT_EQ(roots[1]->bounds().size(), test_delegate->GetCurrentVideoSize());
+
+  // The shield layer should move with the window, and maintain the stacking
+  // below the window's layer.
+  EXPECT_EQ(shield_layer->parent(), window->layer()->parent());
+  EXPECT_TRUE(IsLayerStackedRightBelow(shield_layer, window->layer()));
+  EXPECT_EQ(shield_layer->bounds(), roots[1]->bounds());
 }
 
 TEST_F(CaptureModeTest, RotateDisplayWhileRecording) {
@@ -1785,6 +1938,7 @@ TEST_F(CaptureModeTest, ClosingWindowBeingRecorded) {
                                     ->stop_recording_button_tray();
   EXPECT_FALSE(stop_recording_button->visible_preferred());
   EXPECT_FALSE(controller->is_recording_in_progress());
+  EXPECT_FALSE(controller->video_recording_watcher_for_testing());
   histogram_tester.ExpectBucketCount(
       kEndRecordingReasonInClamshellHistogramName,
       EndRecordingReason::kDisplayOrWindowClosing, 1);

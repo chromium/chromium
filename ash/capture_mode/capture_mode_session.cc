@@ -57,8 +57,6 @@ namespace ash {
 
 namespace {
 
-constexpr int kCaptureRegionBorderStrokePx = 1;
-
 // The visual radius of the drag affordance circles which are shown while
 // resizing a drag region.
 constexpr int kAffordanceCircleRadiusDp = 4;
@@ -87,8 +85,6 @@ constexpr int kSizeLabelBorderRadius = 4;
 
 constexpr int kSizeLabelHorizontalPadding = 8;
 
-constexpr SkColor kRegionBorderColor = SK_ColorWHITE;
-
 // Blue300 at 30%.
 constexpr SkColor kCaptureRegionColor = SkColorSetA(gfx::kGoogleBlue300, 77);
 
@@ -113,7 +109,7 @@ constexpr int kFocusRingSpacingDp = 2;
 // When updating the capture region, request a repaint on the region and inset
 // such that the border, affordance circles and affordance circle shadows are
 // all repainted as well.
-constexpr int kDamageInsetDp = kCaptureRegionBorderStrokePx +
+constexpr int kDamageInsetDp = capture_mode::kCaptureRegionBorderStrokePx +
                                kAffordanceCircleRadiusDp +
                                kRegionAffordanceCircleShadow2Blur;
 
@@ -842,14 +838,15 @@ void CaptureModeSession::PaintCaptureRegion(gfx::Canvas* canvas) {
     return;
   }
 
-  region.Inset(-kCaptureRegionBorderStrokePx, -kCaptureRegionBorderStrokePx);
+  region.Inset(-capture_mode::kCaptureRegionBorderStrokePx,
+               -capture_mode::kCaptureRegionBorderStrokePx);
   canvas->FillRect(region, SK_ColorTRANSPARENT, SkBlendMode::kClear);
 
   // Draw the region border.
   cc::PaintFlags border_flags;
-  border_flags.setColor(kRegionBorderColor);
+  border_flags.setColor(capture_mode::kRegionBorderColor);
   border_flags.setStyle(cc::PaintFlags::kStroke_Style);
-  border_flags.setStrokeWidth(kCaptureRegionBorderStrokePx);
+  border_flags.setStrokeWidth(capture_mode::kCaptureRegionBorderStrokePx);
   border_flags.setLooper(gfx::CreateShadowDrawLooper({kRegionOutlineShadow}));
   canvas->DrawRect(gfx::RectF(region), border_flags);
 
@@ -892,7 +889,7 @@ void CaptureModeSession::PaintCaptureRegion(gfx::Canvas* canvas) {
 
   // Draw the drag affordance circles.
   cc::PaintFlags circle_flags;
-  circle_flags.setColor(kRegionBorderColor);
+  circle_flags.setColor(capture_mode::kRegionBorderColor);
   circle_flags.setStyle(cc::PaintFlags::kFill_Style);
   circle_flags.setAntiAlias(true);
   circle_flags.setLooper(gfx::CreateShadowDrawLooper(
