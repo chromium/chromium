@@ -30,6 +30,7 @@ js_library("module_wrapper") {
     ":module_descriptor",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
+  externs_list = [ "//third_party/closure_compiler/externs/metrics_private.js" ]
 }
 
 js_library("module_header") {

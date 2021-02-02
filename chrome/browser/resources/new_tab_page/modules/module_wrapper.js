@@ -45,20 +45,48 @@ class ModuleWrapperElement extends PolymerElement {
       BrowserProxy.getInstance().handler.onModuleUsage(this.descriptor.id);
     }, {once: true});
 
-    // Install observer to log module impression.
-    const observer = new IntersectionObserver(([{intersectionRatio}]) => {
+    // Install observer to log module header impression.
+    const headerObserver = new IntersectionObserver(([{intersectionRatio}]) => {
       if (intersectionRatio >= 1.0) {
-        observer.disconnect();
+        headerObserver.disconnect();
         BrowserProxy.getInstance().handler.onModuleImpression(
             this.descriptor.id, BrowserProxy.getInstance().now());
       }
     }, {threshold: 1.0});
+
+    // Install observer to track max perdecage (x/10th) of the module visible on
+    // the page.
+    let intersectionPerdecage = 0;
+    const moduleObserver = new IntersectionObserver(([{intersectionRatio}]) => {
+      intersectionPerdecage =
+          Math.floor(Math.max(intersectionPerdecage, intersectionRatio * 10));
+    }, {threshold: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]});
+    window.addEventListener('unload', () => {
+      const recordPerdecage = (metricName, value) => {
+        chrome.metricsPrivate.recordValue(
+            {
+              metricName,
+              type: chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LINEAR,
+              min: 1,       // Choose 1 if real min is 0.
+              max: 11,      // Exclusive.
+              buckets: 12,  // Numbers 0-10 and unused overflow bucket of 11.
+            },
+            value);
+      };
+      recordPerdecage(
+          'NewTabPage.Modules.ImpressionRatio', intersectionPerdecage);
+      recordPerdecage(
+          `NewTabPage.Modules.ImpressionRatio.${this.descriptor.id}`,
+          intersectionPerdecage);
+    });
+
     // Calling observe will immediately invoke the callback. If the module is
     // fully shown when the page loads, the first callback invocation will
-    // happen before the impression probe has dimensions. For this reason, we
-    // start observing after the element has had a chance to be rendered.
+    // happen before the elements have dimensions. For this reason, we start
+    // observing after the elements have had a chance to be rendered.
     microTask.run(() => {
-      observer.observe(this.$.impressionProbe);
+      headerObserver.observe(this.$.impressionProbe);
+      moduleObserver.observe(this);
     });
   }
 }
