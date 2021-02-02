@@ -5,11 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_READ_LATER_READ_LATER_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_READ_LATER_READ_LATER_BUTTON_H_
 
-#include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
 #include "chrome/browser/ui/webui/read_later/read_later_ui.h"
-#include "components/reading_list/core/reading_list_model.h"
-#include "components/reading_list/core/reading_list_model_observer.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget_observer.h"
@@ -22,8 +19,7 @@ class WebUIBubbleDialogView;
 // read later menu.
 // TODO(corising): Handle the the async presentation of the UI bubble.
 class ReadLaterButton : public views::LabelButton,
-                        public views::WidgetObserver,
-                        public ReadingListModelObserver {
+                        public views::WidgetObserver {
  public:
   METADATA_HEADER(ReadLaterButton);
   explicit ReadLaterButton(Browser* browser);
@@ -44,23 +40,12 @@ class ReadLaterButton : public views::LabelButton,
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
 
-  // ReadingListModelObserver:
-  void ReadingListModelLoaded(const ReadingListModel* model) override {}
-  void ReadingListModelBeingDeleted(const ReadingListModel* model) override;
-  void ReadingListDidAddEntry(const ReadingListModel* model,
-                              const GURL& url,
-                              reading_list::EntrySource source) override;
-
   void ButtonPressed();
 
   Browser* const browser_;
 
   // TODO(pbos): Figure out a better way to handle this.
   WebUIBubbleDialogView* read_later_side_panel_bubble_ = nullptr;
-
-  ReadingListModel* reading_list_model_ = nullptr;
-  base::ScopedObservation<ReadingListModel, ReadingListModelObserver>
-      reading_list_model_scoped_observation_{this};
 
   std::unique_ptr<WebUIBubbleManager<ReadLaterUI>> webui_bubble_manager_;
 

@@ -2152,18 +2152,8 @@ void TabStripModel::AddToReadLaterImpl(const std::vector<int>& indices) {
 
   for (int index : indices) {
     WebContents* contents = GetWebContentsAt(index);
-    GURL url;
-    base::string16 title;
-    chrome::GetURLAndTitleToBookmark(contents, &url, &title);
-    if (model->IsUrlSupported(url)) {
-      model->AddEntry(url, base::UTF16ToUTF8(title),
-                      reading_list::EntrySource::ADDED_VIA_CURRENT_APP);
-    }
-  }
-  // Maybe show the bookmark bar if an item exists in read later.
-  if (model->size()) {
-    chrome::MaybeShowBookmarkBarForReadLater(
-        chrome::FindBrowserWithWebContents(GetWebContentsAt(indices[0])));
+    chrome::MoveTabToReadLater(chrome::FindBrowserWithWebContents(contents),
+                               contents);
   }
 }
 

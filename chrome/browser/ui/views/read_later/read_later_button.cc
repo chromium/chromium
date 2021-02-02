@@ -13,7 +13,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/read_later/reading_list_model_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_view.h"
@@ -92,11 +91,6 @@ ReadLaterButton::ReadLaterButton(Browser* browser)
         base::UmaHistogramMediumTimes("ReadingList.WindowDisplayedDuration",
                                       time_elapsed);
       })) {
-  reading_list_model_ =
-      ReadingListModelFactory::GetForBrowserContext(browser_->profile());
-  if (reading_list_model_)
-    reading_list_model_scoped_observation_.Observe(reading_list_model_);
-
   SetImageLabelSpacing(ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
 
@@ -156,23 +150,6 @@ void ReadLaterButton::OnWidgetDestroying(views::Widget* widget) {
   DCHECK(bubble_widget_observation_.IsObservingSource(
       webui_bubble_manager_->GetBubbleWidget()));
   bubble_widget_observation_.Reset();
-}
-
-void ReadLaterButton::ReadingListModelBeingDeleted(
-    const ReadingListModel* model) {
-  DCHECK(model == reading_list_model_);
-  DCHECK(reading_list_model_scoped_observation_.IsObservingSource(
-      reading_list_model_));
-  reading_list_model_scoped_observation_.Reset();
-  reading_list_model_ = nullptr;
-}
-
-void ReadLaterButton::ReadingListDidAddEntry(const ReadingListModel* model,
-                                             const GURL& url,
-                                             reading_list::EntrySource source) {
-  base::UmaHistogramEnumeration(
-      "ReadingList.BookmarkBarState.OnEveryAddToReadingList",
-      browser_->bookmark_bar_state());
 }
 
 void ReadLaterButton::ButtonPressed() {

@@ -211,11 +211,9 @@ void CreateAndShowNewWindowWithContents(
                                                  TabStripModel::ADD_ACTIVE);
 }
 
-bool GetActiveTabURLAndTitleToSave(Browser* browser,
-                                   GURL* url,
-                                   base::string16* title) {
-  content::WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+bool GetTabURLAndTitleToSave(content::WebContents* web_contents,
+                             GURL* url,
+                             base::string16* title) {
   // |web_contents| can be nullptr if the last tab in the browser was closed
   // but the browser wasn't closed yet. https://crbug.com/799668
   if (!web_contents)
@@ -1049,14 +1047,23 @@ bool CanMoveActiveTabToReadLater(Browser* browser) {
 }
 
 bool MoveCurrentTabToReadLater(Browser* browser) {
+  return MoveTabToReadLater(browser,
+                            browser->tab_strip_model()->GetActiveWebContents());
+}
+
+bool MoveTabToReadLater(Browser* browser, content::WebContents* web_contents) {
   GURL url;
   base::string16 title;
   ReadingListModel* model = GetReadingListModel(browser);
-  if (!model || !GetActiveTabURLAndTitleToSave(browser, &url, &title))
+  if (!model || !GetTabURLAndTitleToSave(web_contents, &url, &title) ||
+      !model->IsUrlSupported(url))
     return false;
   model->AddEntry(url, base::UTF16ToUTF8(title),
                   reading_list::EntrySource::ADDED_VIA_CURRENT_APP);
   MaybeShowBookmarkBarForReadLater(browser);
+  base::UmaHistogramEnumeration(
+      "ReadingList.BookmarkBarState.OnEveryAddToReadingList",
+      browser->bookmark_bar_state());
   return true;
 }
 
@@ -1064,7 +1071,9 @@ bool MarkCurrentTabAsReadInReadLater(Browser* browser) {
   GURL url;
   base::string16 title;
   ReadingListModel* model = GetReadingListModel(browser);
-  if (!model || !GetActiveTabURLAndTitleToSave(browser, &url, &title))
+  WebContents* web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
+  if (!model || !GetTabURLAndTitleToSave(web_contents, &url, &title))
     return false;
   const ReadingListEntry* entry = model->GetEntryByURL(url);
   // Mark current tab as read.
@@ -1077,7 +1086,9 @@ bool IsCurrentTabUnreadInReadLater(Browser* browser) {
   GURL url;
   base::string16 title;
   ReadingListModel* model = GetReadingListModel(browser);
-  if (!model || !GetActiveTabURLAndTitleToSave(browser, &url, &title))
+  WebContents* web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
+  if (!model || !GetTabURLAndTitleToSave(web_contents, &url, &title))
     return false;
   const ReadingListEntry* entry = model->GetEntryByURL(url);
   return entry && !entry->IsRead();
