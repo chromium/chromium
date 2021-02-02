@@ -5,5 +5,5 @@
     "noEmit": true,
     "target": "esnext"
   },
-  "files": ["js/main.js"]
+  "files": ["js/main.js", "js/externs/types.d.ts"]
 }
