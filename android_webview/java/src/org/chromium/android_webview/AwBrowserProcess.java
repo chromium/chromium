@@ -51,6 +51,7 @@ import org.chromium.components.policy.CombinedPolicyProvider;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.ChildProcessCreationParams;
 import org.chromium.content_public.browser.ChildProcessLauncherHelper;
+import org.chromium.content_public.browser.trusttokens.TrustTokenFulfillerManager;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -152,6 +153,9 @@ public final class AwBrowserProcess {
                                 ScopedSysTraceEvent.scoped("AwBrowserProcess.maybeEnable")) {
                     AwSafeBrowsingConfigHelper.maybeEnableSafeBrowsingFromManifest(appContext);
                 }
+
+                TrustTokenFulfillerManager.setFactory(
+                        PlatformServiceBridge.getInstance().getLocalTrustTokenFulfillerFactory());
 
                 try (ScopedSysTraceEvent e2 = ScopedSysTraceEvent.scoped(
                              "AwBrowserProcess.startBrowserProcessesSync")) {
