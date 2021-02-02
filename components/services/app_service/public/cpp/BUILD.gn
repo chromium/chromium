@@ -39,6 +39,8 @@ component("app_update") {
     "app_registry_cache_wrapper.h",
     "app_update.cc",
     "app_update.h",
+    "capability_access_update.cc",
+    "capability_access_update.h",
   ]
 
   defines = [ "IS_APP_UPDATE_IMPL" ]
@@ -169,6 +171,7 @@ source_set("unit_tests") {
   sources = [
     "app_registry_cache_unittest.cc",
     "app_update_unittest.cc",
+    "capability_access_update_unittest.cc",
     "icon_cache_unittest.cc",
     "icon_coalescer_unittest.cc",
     "intent_util_unittest.cc",
