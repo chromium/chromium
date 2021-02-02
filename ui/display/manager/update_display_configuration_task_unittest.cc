@@ -16,11 +16,16 @@
 #include "ui/display/manager/display_layout_manager.h"
 #include "ui/display/manager/test/action_logger_util.h"
 #include "ui/display/manager/test/test_native_display_delegate.h"
+#include "ui/display/types/display_constants.h"
 
 namespace display {
 namespace test {
 
 namespace {
+
+// Non-zero generic connector IDs.
+constexpr uint64_t kEdpConnectorId = 71u;
+constexpr uint64_t kSecondConnectorId = kEdpConnectorId + 10u;
 
 class TestSoftwareMirroringController
     : public DisplayConfigurator::SoftwareMirroringController {
@@ -153,13 +158,17 @@ class UpdateDisplayConfigurationTaskTest : public testing::Test {
                        .SetId(123)
                        .SetNativeMode(small_mode_.Clone())
                        .SetCurrentMode(small_mode_.Clone())
+                       .SetType(DISPLAY_CONNECTION_TYPE_INTERNAL)
+                       .SetBaseConnectorId(kEdpConnectorId)
                        .Build();
 
     displays_[1] = FakeDisplaySnapshot::Builder()
                        .SetId(456)
                        .SetNativeMode(big_mode_.Clone())
                        .SetCurrentMode(big_mode_.Clone())
+                       .SetType(DISPLAY_CONNECTION_TYPE_DISPLAYPORT)
                        .AddMode(small_mode_.Clone())
+                       .SetBaseConnectorId(kSecondConnectorId)
                        .Build();
   }
   ~UpdateDisplayConfigurationTaskTest() override = default;
@@ -340,21 +349,33 @@ TEST_F(UpdateDisplayConfigurationTaskTest, FailExtendedConfiguration) {
   EXPECT_TRUE(configured_);
   EXPECT_FALSE(configuration_status_);
   EXPECT_EQ(
-      JoinActions(GetCrtcAction(
-                      {displays_[0]->display_id(), gfx::Point(), &small_mode_})
-                      .c_str(),
-                  GetCrtcAction({displays_[1]->display_id(),
-                                 gfx::Point(0, small_mode_.size().height()),
-                                 &big_mode_})
-                      .c_str(),
-                  GetCrtcAction(
-                      {displays_[0]->display_id(), gfx::Point(), &small_mode_})
-                      .c_str(),
-                  GetCrtcAction({displays_[1]->display_id(),
-                                 gfx::Point(0, small_mode_.size().height()),
-                                 &small_mode_})
-                      .c_str(),
-                  nullptr),
+      JoinActions(
+          // All displays will fail to modeset together. Initiate retry logic.
+          GetCrtcAction(
+              {displays_[0]->display_id(), gfx::Point(), &small_mode_})
+              .c_str(),
+          GetCrtcAction({displays_[1]->display_id(),
+                         gfx::Point(0, small_mode_.size().height()),
+                         &big_mode_})
+              .c_str(),
+          // Retry logic fails to modeset internal display. Since internal
+          // displays are restricted to their preferred mode, there are no other
+          // modes to try. The configuration will fail, but the external display
+          // will still try to modeset.
+          GetCrtcAction(
+              {displays_[0]->display_id(), gfx::Point(), &small_mode_})
+              .c_str(),
+          // External display fail modeset, downgrade once, and then fail
+          // completely.
+          GetCrtcAction({displays_[1]->display_id(),
+                         gfx::Point(0, small_mode_.size().height()),
+                         &big_mode_})
+              .c_str(),
+          GetCrtcAction({displays_[1]->display_id(),
+                         gfx::Point(0, small_mode_.size().height()),
+                         &small_mode_})
+              .c_str(),
+          nullptr),
       log_.GetActionsAndClear());
 }
 

@@ -29,6 +29,11 @@ namespace {
 
 constexpr int64_t kDisplayIds[3] = {123, 456, 789};
 
+// Non-zero generic connector IDs.
+constexpr uint64_t kEdpConnectorId = 71u;
+constexpr uint64_t kSecondConnectorId = kEdpConnectorId + 10u;
+constexpr uint64_t kThirdConnectorId = kEdpConnectorId + 20u;
+
 std::unique_ptr<DisplayMode> MakeDisplayMode(int width,
                                              int height,
                                              bool is_interlaced,
@@ -243,6 +248,7 @@ class DisplayConfiguratorTest : public testing::Test {
                       .SetNativeMode(small_mode_.Clone())
                       .SetCurrentMode(small_mode_.Clone())
                       .SetType(DISPLAY_CONNECTION_TYPE_INTERNAL)
+                      .SetBaseConnectorId(kEdpConnectorId)
                       .SetIsAspectPerservingScaling(true)
                       .Build();
 
@@ -252,6 +258,7 @@ class DisplayConfiguratorTest : public testing::Test {
                       .SetCurrentMode(big_mode_.Clone())
                       .AddMode(small_mode_.Clone())
                       .SetType(DISPLAY_CONNECTION_TYPE_HDMI)
+                      .SetBaseConnectorId(kSecondConnectorId)
                       .SetIsAspectPerservingScaling(true)
                       .Build();
 
@@ -260,6 +267,7 @@ class DisplayConfiguratorTest : public testing::Test {
                       .SetNativeMode(small_mode_.Clone())
                       .SetCurrentMode(small_mode_.Clone())
                       .SetType(DISPLAY_CONNECTION_TYPE_HDMI)
+                      .SetBaseConnectorId(kThirdConnectorId)
                       .SetIsAspectPerservingScaling(true)
                       .Build();
 
@@ -962,6 +970,7 @@ TEST_F(DisplayConfiguratorTest, HandleConfigureCrtcFailure) {
                     .AddMode(modes[3]->Clone())
                     .AddMode(modes[4]->Clone())
                     .SetType(DISPLAY_CONNECTION_TYPE_INTERNAL)
+                    .SetBaseConnectorId(kEdpConnectorId)
                     .SetIsAspectPerservingScaling(true)
                     .Build();
 
@@ -973,8 +982,16 @@ TEST_F(DisplayConfiguratorTest, HandleConfigureCrtcFailure) {
   state_controller_.set_state(MULTIPLE_DISPLAY_STATE_SINGLE);
   UpdateOutputs(1, true);
 
-  EXPECT_EQ(GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
-                           outputs_[0]->native_mode()}),
+  EXPECT_EQ(JoinActions(
+                // Initial attempt fails. Initiate retry logic.
+                GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
+                               outputs_[0]->native_mode()})
+                    .c_str(),
+                // Retry fails since it cannot downgrade the internal display.
+                GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
+                               outputs_[0]->native_mode()})
+                    .c_str(),
+                nullptr),
             log_->GetActionsAndClear());
 
   outputs_[0] = FakeDisplaySnapshot::Builder()
@@ -986,6 +1003,7 @@ TEST_F(DisplayConfiguratorTest, HandleConfigureCrtcFailure) {
                     .AddMode(modes[3]->Clone())
                     .AddMode(modes[4]->Clone())
                     .SetType(DISPLAY_CONNECTION_TYPE_DISPLAYPORT)
+                    .SetBaseConnectorId(kEdpConnectorId)
                     .SetIsAspectPerservingScaling(true)
                     .Build();
 
@@ -994,16 +1012,22 @@ TEST_F(DisplayConfiguratorTest, HandleConfigureCrtcFailure) {
   // is closed).
   UpdateOutputs(1, true);
 
-  EXPECT_EQ(JoinActions(GetCrtcAction({outputs_[0]->display_id(),
-                                       gfx::Point(0, 0), modes[0].get()})
-                            .c_str(),
-                        GetCrtcAction({outputs_[0]->display_id(),
-                                       gfx::Point(0, 0), modes[3].get()})
-                            .c_str(),
-                        GetCrtcAction({outputs_[0]->display_id(),
-                                       gfx::Point(0, 0), modes[2].get()})
-                            .c_str(),
-                        nullptr),
+  EXPECT_EQ(JoinActions(
+                // Initial attempt fails. Initiate retry logic.
+                GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
+                               modes[0].get()})
+                    .c_str(),
+                // Retry attempts trying all available modes.
+                GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
+                               modes[0].get()})
+                    .c_str(),
+                GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
+                               modes[3].get()})
+                    .c_str(),
+                GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
+                               modes[2].get()})
+                    .c_str(),
+                nullptr),
             log_->GetActionsAndClear());
 
   outputs_[0] = FakeDisplaySnapshot::Builder()
@@ -1015,6 +1039,7 @@ TEST_F(DisplayConfiguratorTest, HandleConfigureCrtcFailure) {
                     .AddMode(modes[3]->Clone())
                     .AddMode(modes[4]->Clone())
                     .SetType(DISPLAY_CONNECTION_TYPE_INTERNAL)
+                    .SetBaseConnectorId(kEdpConnectorId)
                     .SetIsAspectPerservingScaling(true)
                     .Build();
 
@@ -1027,6 +1052,7 @@ TEST_F(DisplayConfiguratorTest, HandleConfigureCrtcFailure) {
                     .AddMode(modes[3]->Clone())
                     .AddMode(modes[4]->Clone())
                     .SetType(DISPLAY_CONNECTION_TYPE_HDMI)
+                    .SetBaseConnectorId(kSecondConnectorId)
                     .SetIsAspectPerservingScaling(true)
                     .Build();
 
@@ -1039,39 +1065,37 @@ TEST_F(DisplayConfiguratorTest, HandleConfigureCrtcFailure) {
 
   EXPECT_EQ(
       JoinActions(
+          // Initial attempt fails. Initiate retry logic.
           GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
                          outputs_[0]->native_mode()})
               .c_str(),
-          // Then attempt to configure crtc1 with the first mode.
           GetCrtcAction(
               {outputs_[1]->display_id(), gfx::Point(0, 0), modes[0].get()})
               .c_str(),
-          // First try is expected to fail and it will retry with the next
-          // largest mode in the list (for non-internal displays).since the
-          // internal display will always fail, the display configurator will
-          // attempt all of the external display's available modes before it
-          // gives up.
+          // Retry logic fails to modeset internal display. Since internal
+          // displays are restricted to their preferred mode, there are no other
+          // modes to try. The configuration fails completely, but the external
+          // display will still try to modeset.
           GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
                          outputs_[0]->native_mode()})
+              .c_str(),
+          // The external display will cycle through all its available modes
+          // before failing completely.
+          GetCrtcAction(
+              {outputs_[1]->display_id(), gfx::Point(0, 0), modes[0].get()})
               .c_str(),
           GetCrtcAction(
               {outputs_[1]->display_id(), gfx::Point(0, 0), modes[3].get()})
               .c_str(),
-          GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
-                         outputs_[0]->native_mode()})
-              .c_str(),
           GetCrtcAction(
               {outputs_[1]->display_id(), gfx::Point(0, 0), modes[2].get()})
-              .c_str(),
-          GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
-                         outputs_[0]->native_mode()})
               .c_str(),
           GetCrtcAction(
               {outputs_[1]->display_id(), gfx::Point(0, 0), modes[1].get()})
               .c_str(),
-          // Since it was requested to go into mirror mode and the configured
-          // modes were different, it should now try and setup a valid
-          // configurable extended mode in the same order described above.
+          // Since mirror mode configuration failed it should now attempt to
+          // configure in extended mode. However, initial attempt fails.
+          // Initiate retry logic.
           GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
                          outputs_[0]->native_mode()})
               .c_str(),
@@ -1080,24 +1104,26 @@ TEST_F(DisplayConfiguratorTest, HandleConfigureCrtcFailure) {
                                            DisplayConfigurator::kVerticalGap),
                          modes[0].get()})
               .c_str(),
+          // Just as above, retry logic fails to modeset internal display.
           GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
                          outputs_[0]->native_mode()})
+              .c_str(),
+          //  The configuration fails completely but still attempts to modeset
+          // the external display.
+          GetCrtcAction({outputs_[1]->display_id(),
+                         gfx::Point(0, modes[0]->size().height() +
+                                           DisplayConfigurator::kVerticalGap),
+                         modes[0].get()})
               .c_str(),
           GetCrtcAction({outputs_[1]->display_id(),
                          gfx::Point(0, modes[0]->size().height() +
                                            DisplayConfigurator::kVerticalGap),
                          modes[3].get()})
               .c_str(),
-          GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
-                         outputs_[0]->native_mode()})
-              .c_str(),
           GetCrtcAction({outputs_[1]->display_id(),
                          gfx::Point(0, modes[0]->size().height() +
                                            DisplayConfigurator::kVerticalGap),
                          modes[2].get()})
-              .c_str(),
-          GetCrtcAction({outputs_[0]->display_id(), gfx::Point(0, 0),
-                         outputs_[0]->native_mode()})
               .c_str(),
           GetCrtcAction({outputs_[1]->display_id(),
                          gfx::Point(0, modes[0]->size().height() +
@@ -1304,8 +1330,12 @@ TEST_F(DisplayConfiguratorTest,
   EXPECT_EQ(0, observer_.num_changes());
   EXPECT_EQ(1, observer_.num_failures());
 
-  EXPECT_EQ(GetCrtcActions(DisplayConfig::kOff, &small_mode_, &big_mode_),
-            log_->GetActionsAndClear());
+  EXPECT_EQ(
+      JoinActions(
+          GetCrtcActions(DisplayConfig::kOff, &small_mode_, &big_mode_).c_str(),
+          GetCrtcActions(DisplayConfig::kOff, &small_mode_, &big_mode_).c_str(),
+          nullptr),
+      log_->GetActionsAndClear());
 
   // This configuration should trigger a display configuration since the
   // previous configuration failed.
@@ -1321,6 +1351,11 @@ TEST_F(DisplayConfiguratorTest,
       JoinActions(
           GetCrtcActions(&small_mode_, &big_mode_).c_str(),
           GetCrtcActions(&small_mode_).c_str(),
+          GetCrtcAction({outputs_[1]->display_id(),
+                         gfx::Point(0, small_mode_.size().height() +
+                                           DisplayConfigurator::kVerticalGap),
+                         &big_mode_})
+              .c_str(),
           GetCrtcAction({outputs_[1]->display_id(),
                          gfx::Point(0, small_mode_.size().height() +
                                            DisplayConfigurator::kVerticalGap),
