@@ -129,4 +129,15 @@ suite('EsimRenameDialog', function() {
           'new profile nickname');
     });
   });
+
+  test('Warning message visibility', function() {
+    const warningMessage = esimRenameDialog.$$('#warningMessage');
+    assertTrue(!!warningMessage);
+
+    esimRenameDialog.isConnectedToESimNetwork = false;
+    assertTrue(warningMessage.hidden);
+
+    esimRenameDialog.isConnectedToESimNetwork = true;
+    assertFalse(warningMessage.hidden);
+  });
 });

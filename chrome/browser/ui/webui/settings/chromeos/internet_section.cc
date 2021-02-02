@@ -722,6 +722,8 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_INTERNET_NETWORK_REMOVE_PROFILE_DIALOG_ERROR_MESSAGE},
       {"eSimRemoveProfileDialogOkay",
        IDS_SETTINGS_INTERNET_NETWORK_REMOVE_PROFILE_DIALOG_OKAY},
+      {"eSimDialogConnectionWarning",
+       IDS_SETTINGS_INTERNET_ESIM_DIALOG_CONNECTION_WARNING},
   };
   AddLocalizedStringsBulk(html_source, kLocalizedStrings);
 

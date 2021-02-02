@@ -1,5 +1,6 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/cellular_setup_icons.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/esim_manager_utils.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/network/mojo_interface_provider.html">
@@ -14,6 +15,17 @@
         --cr-dialog-width: 324px;
       }
 
+      #warningMessage {
+        --iron-icon-fill-color: #5F6368;
+        --iron-icon-height: 16px;
+        --iron-icon-width: 16px;
+        font-size: smaller;
+      }
+
+      #warningMessage iron-icon {
+        padding-inline-end: 4px;
+      }
+
       #cancel {
         margin-inline-end: 8px;
       }
@@ -21,6 +33,10 @@
     <cr-dialog id="dialog" show-on-attach>
       <div slot="title">[[getTitleString_(esimProfileName_)]]</div>
       <div slot="body">
+        <div id="warningMessage" hidden$="[[!isConnectedToESimNetwork]]">
+          <iron-icon icon="cellular-setup:warning"></iron-icon>
+          $i18n{eSimDialogConnectionWarning}
+        </div>
         <div id="errorMessage" hidden$="[[!errorMessage_]]">
           [[errorMessage_]]
         </div>

@@ -1,6 +1,7 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
 <link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/network/cellular_utils.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/network/mojo_interface_provider.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/network/network_listener_behavior.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/network/onc_mojo.html">
@@ -167,14 +168,16 @@
     <template is="dom-if" if="[[showESimProfileRenameDialog_]]" restamp>
       <esim-rename-dialog id="esimRenameDialog"
           on-close="onCloseESimProfileRenameDialog_"
-          iccid="[[esimProfileIccid_]]">
+          iccid="[[esimProfileIccid_]]"
+          is-connected-to-e-sim-network="[[isConnectedToESimNetwork_]]">
       </esim-rename-dialog>
     </template>
 
     <template is="dom-if" if="[[showESimRemoveProfileDialog_]]" restamp>
       <esim-remove-profile-dialog id="esimRemoveProfileDialog"
           on-close="onCloseESimRemoveProfileDialog_"
-          iccid="[[esimProfileIccid_]]">
+          iccid="[[esimProfileIccid_]]"
+          is-connected-to-e-sim-network="[[isConnectedToESimNetwork_]]">
       </esim-remove-profile-dialog>
     </template>
   </template>

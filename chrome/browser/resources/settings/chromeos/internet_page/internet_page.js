@@ -132,6 +132,12 @@ Polymer({
     cellularSetupDialogPageName_: String,
 
     /** @private {boolean} */
+    isConnectedToESimNetwork_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /** @private {boolean} */
     showESimProfileRenameDialog_: {
       type: Boolean,
       value: false,
@@ -211,6 +217,7 @@ Polymer({
       this.globalPolicy_ = response.result;
     });
     this.onVpnProvidersChanged();
+    this.onNetworkStateListChanged();
   },
 
   /**
@@ -312,6 +319,12 @@ Polymer({
   },
 
   /** NetworkListenerBehavior override */
+  onNetworkStateListChanged() {
+    isConnectedToESimNetwork().then((isConnected) => {
+      this.isConnectedToESimNetwork_ = isConnected;
+    });
+  },
+
   onVpnProvidersChanged() {
     this.networkConfig_.getVpnProviders().then(response => {
       const providers = response.providers;

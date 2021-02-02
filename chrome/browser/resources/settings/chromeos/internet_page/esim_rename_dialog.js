@@ -20,6 +20,11 @@ Polymer({
       value: '',
     },
 
+    isConnectedToESimNetwork: {
+      type: Boolean,
+      value: false,
+    },
+
     /** @private {string} */
     esimProfileName_: {
       type: String,
