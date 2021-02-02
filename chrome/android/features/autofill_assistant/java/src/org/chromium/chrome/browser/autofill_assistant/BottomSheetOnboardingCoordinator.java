@@ -162,7 +162,7 @@ class BottomSheetOnboardingCoordinator extends BaseOnboardingCoordinator {
 
     /** Hides the UI, if one is shown. */
     @Override
-    void hide() {
+    public void hide() {
         mController.removeObserver(mBottomSheetObserver);
         if (mContent != null) {
             mController.hideContent(mContent, /* animate= */ mAnimate);

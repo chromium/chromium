@@ -74,7 +74,7 @@ class DialogOnboardingCoordinator extends BaseOnboardingCoordinator {
     }
 
     @Override
-    void hide() {
+    public void hide() {
         if (mDialog != null) {
             mDialog.cancel();
             mDialog = null;

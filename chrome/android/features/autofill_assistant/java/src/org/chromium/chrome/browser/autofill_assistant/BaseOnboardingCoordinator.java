@@ -39,8 +39,7 @@ import java.util.Map;
  * Autofill Assistant for the first time.
  */
 @JNINamespace("autofill_assistant")
-// TODO(b/174445633): Add a public interface for |show()|, |hide()| and |getOboardingShown()|
-public abstract class BaseOnboardingCoordinator {
+public abstract class BaseOnboardingCoordinator implements OnboardingView {
     private static final String INTENT_IDENTFIER = "INTENT";
     private static final String FETCH_TIMEOUT_IDENTIFIER = "ONBOARDING_FETCH_TIMEOUT_MS";
     private static final String BUY_MOVIE_TICKETS_INTENT = "BUY_MOVIE_TICKET";
@@ -86,6 +85,7 @@ public abstract class BaseOnboardingCoordinator {
      * <p>The {@code targetUrl} is the initial URL Autofill Assistant is being started on. The
      * navigation to that URL is allowed, other navigations will hide Autofill Assistant.
      */
+    @Override
     public void show(Callback<Integer> callback, WebContents webContents, String targetUrl) {
         addWebContentObserver(callback, webContents, targetUrl);
         show(callback);
@@ -125,7 +125,8 @@ public abstract class BaseOnboardingCoordinator {
      * Returns {@code true} if the onboarding has been shown at the beginning when this
      * autofill assistant flow got triggered.
      */
-    boolean getOnboardingShown() {
+    @Override
+    public boolean getOnboardingShown() {
         return mOnboardingShown;
     }
 
@@ -316,7 +317,6 @@ public abstract class BaseOnboardingCoordinator {
     }
 
     abstract ScrollView createViewImpl();
-    abstract void hide();
     abstract void initViewImpl(Callback<Integer> callback);
     abstract void showViewImpl();
 
