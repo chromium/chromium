@@ -9265,6 +9265,12 @@ Called by update_bad_message_reasons.py.-->
   <int value="27" label="Too many quads."/>
 </enum>
 
+<enum name="CameraPrivacySwitchEvent">
+  <int value="0" label="Camera privacy switch toggled on"/>
+  <int value="1" label="Camera privacy switch toggled off"/>
+  <int value="2" label="Camera privacy switch on notification shown"/>
+</enum>
+
 <enum name="CancelableTaskStatus">
   <int value="0" label="Live, on same sequence"/>
   <int value="1" label="Live, on other sequence"/>

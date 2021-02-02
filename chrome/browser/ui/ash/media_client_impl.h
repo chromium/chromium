@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/chromeos/camera_mic/vm_camera_mic_manager.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -121,6 +122,10 @@ class MediaClientImpl : public ash::MediaClient,
       cros::mojom::CameraPrivacySwitchState::UNKNOWN;
 
   bool is_camera_active_ = false;
+
+  // Most recent time the notification that the camera privacy switch is on was
+  // shown.
+  base::TimeTicks camera_switch_notification_shown_timestamp_;
 
   base::WeakPtrFactory<MediaClientImpl> weak_ptr_factory_{this};
 
