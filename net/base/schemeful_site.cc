@@ -5,8 +5,6 @@
 #include "net/base/schemeful_site.h"
 
 #include "base/check.h"
-#include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
@@ -89,24 +87,8 @@ bool SchemefulSite::FromWire(const url::Origin& site_as_origin,
   // match if used to construct another SchemefulSite. Thus, if there is a
   // mismatch here, we must indicate a failure.
   SchemefulSite candidate(site_as_origin);
-  if (candidate.site_as_origin_ != site_as_origin) {
-    // TODO(crbug.com/1157010): Remove crash keys after deserialization failures
-    // are diagnosed.
-    static base::debug::CrashKeyString* schemeful_site_origin_from_wire =
-        base::debug::AllocateCrashKeyString("schemeful_site_origin_from_wire",
-                                            base::debug::CrashKeySize::Size256);
-    url::debug::ScopedOriginCrashKey origin_from_wire_crash_key(
-        schemeful_site_origin_from_wire, &site_as_origin);
-
-    static base::debug::CrashKeyString* schemeful_site_candidate_origin =
-        base::debug::AllocateCrashKeyString("schemeful_site_candidate_origin",
-                                            base::debug::CrashKeySize::Size256);
-    url::debug::ScopedOriginCrashKey candidate_origin_crash_key(
-        schemeful_site_candidate_origin, &candidate.site_as_origin_);
-
-    base::debug::DumpWithoutCrashing();
+  if (candidate.site_as_origin_ != site_as_origin)
     return false;
-  }
 
   *out = std::move(candidate);
   return true;
