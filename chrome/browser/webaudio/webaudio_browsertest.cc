@@ -14,6 +14,16 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #endif
 
+// TODO(crbug.com/1173300): Investigate why different macOS versions have
+// different fingerprints.
+#if defined(OS_MAC)
+#define MAYBE_VerifyDynamicsCompressorFingerprint \
+  DISABLED_VerifyDynamicsCompressorFingerprint
+#else
+#define MAYBE_VerifyDynamicsCompressorFingerprint \
+  VerifyDynamicsCompressorFingerprint
+#endif
+
 namespace {
 
 // This test runs on Android as well as desktop platforms.
@@ -25,7 +35,7 @@ class WebAudioBrowserTest : public PlatformBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(WebAudioBrowserTest,
-                       VerifyDynamicsCompressorFingerprint) {
+                       MAYBE_VerifyDynamicsCompressorFingerprint) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::DOMMessageQueue messages;
   base::RunLoop run_loop;
