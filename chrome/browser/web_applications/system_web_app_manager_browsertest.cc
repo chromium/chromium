@@ -15,6 +15,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
@@ -1513,8 +1514,29 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
-    SystemWebAppManagerWebAppInfoBrowserTest);
+class SystemWebAppManagerBackgroundTaskTest
+    : public SystemWebAppManagerBrowserTest {
+ public:
+  SystemWebAppManagerBackgroundTaskTest()
+      : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
+    maybe_installation_ =
+        TestSystemWebAppInstallation::SetUpAppWithBackgroundTask();
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBackgroundTaskTest, TimerFires) {
+  content::TestNavigationObserver navigation_observer(
+      GURL("chrome://test-system-app/page2.html"));
+  navigation_observer.WatchExistingWebContents();
+  WaitForTestSystemAppInstall();
+  navigation_observer.Wait();
+
+  auto& tasks = GetManager().GetBackgroundTasksForTesting();
+  EXPECT_EQ(1u, tasks.size());
+  EXPECT_TRUE(tasks[0]->open_immediately_for_testing());
+  EXPECT_EQ(base::TimeDelta::FromDays(1), tasks[0]->period_for_testing());
+  EXPECT_EQ(1u, tasks[0]->timer_activated_count_for_testing());
+}
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerLaunchFilesBrowserTest);
@@ -1552,5 +1574,8 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerUpgradeBrowserTest);
 #endif
+
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
+    SystemWebAppManagerBackgroundTaskTest);
 
 }  // namespace web_app

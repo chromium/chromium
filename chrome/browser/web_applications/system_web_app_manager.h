@@ -16,9 +16,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
 #include "chrome/browser/web_applications/components/pending_app_manager.h"
+#include "chrome/browser/web_applications/components/system_web_app_background_task.h"
 #include "chrome/browser/web_applications/components/system_web_app_types.h"
+#include "chrome/browser/web_applications/components/web_app_url_loader.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -107,6 +110,9 @@ struct SystemAppInfo {
   bool is_resizeable = true;
 
   WebApplicationInfoFactory app_info_factory;
+
+  // Setup information to drive a background task.
+  base::Optional<SystemAppBackgroundTaskInfo> timer_info;
 };
 
 // Installs, uninstalls, and updates System Web Apps.
@@ -225,6 +231,10 @@ class SystemWebAppManager {
 
   void Shutdown();
 
+  // Get the timers. Only use this for testing.
+  const std::vector<std::unique_ptr<SystemAppBackgroundTask>>&
+  GetBackgroundTasksForTesting();
+
  protected:
   virtual const base::Version& CurrentVersion() const;
   virtual const std::string& CurrentLocale() const;
@@ -237,6 +247,8 @@ class SystemWebAppManager {
                                                          const GURL& url);
 
   bool AppHasFileHandlingOriginTrial(SystemAppType type);
+
+  void StopBackgroundTasks();
 
   void OnAppsSynchronized(
       bool did_force_install_apps,
@@ -282,6 +294,8 @@ class SystemWebAppManager {
   OsIntegrationManager* os_integration_manager_ = nullptr;
 
   PrefChangeRegistrar local_state_pref_change_registrar_;
+
+  std::vector<std::unique_ptr<SystemAppBackgroundTask>> tasks_;
 
   base::WeakPtrFactory<SystemWebAppManager> weak_ptr_factory_{this};
 };

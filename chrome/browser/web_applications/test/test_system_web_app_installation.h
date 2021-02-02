@@ -61,6 +61,9 @@ class TestSystemWebAppInstallation {
 
   static std::unique_ptr<TestSystemWebAppInstallation> SetUpNonResizeableApp();
 
+  static std::unique_ptr<TestSystemWebAppInstallation>
+  SetUpAppWithBackgroundTask();
+
   ~TestSystemWebAppInstallation();
 
   void WaitForAppInstall();

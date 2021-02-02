@@ -39,6 +39,8 @@ source_set("components") {
     "policy/web_app_policy_manager.h",
     "protocol_handler_manager.cc",
     "protocol_handler_manager.h",
+    "system_web_app_background_task.cc",
+    "system_web_app_background_task.h",
     "system_web_app_types.h",
     "web_app_audio_focus_id_map.cc",
     "web_app_audio_focus_id_map.h",

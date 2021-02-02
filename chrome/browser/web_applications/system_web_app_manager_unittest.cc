@@ -158,6 +158,9 @@ class SystemWebAppWaiter {
 class SystemWebAppManagerTest : public WebAppTest {
  public:
   SystemWebAppManagerTest() = default;
+  template <typename... TaskEnvironmentTraits>
+  explicit SystemWebAppManagerTest(TaskEnvironmentTraits&&... traits)
+      : WebAppTest(std::forward<TaskEnvironmentTraits>(traits)...) {}
   SystemWebAppManagerTest(const SystemWebAppManagerTest&) = delete;
   SystemWebAppManagerTest& operator=(const SystemWebAppManagerTest&) = delete;
 
@@ -981,6 +984,133 @@ TEST_F(SystemWebAppManagerTest, IsSWABeforeSync) {
 
   EXPECT_TRUE(unsynced_system_web_app_manager->IsSystemWebApp(
       GenerateAppIdFromURL(AppUrl1())));
+}
+
+class SystemWebAppManagerTimerTest : public SystemWebAppManagerTest {
+ public:
+  SystemWebAppManagerTimerTest()
+      : SystemWebAppManagerTest(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+};
+
+TEST_F(SystemWebAppManagerTimerTest, TestTimer) {
+  InitEmptyRegistrar();
+
+  base::flat_map<SystemAppType, SystemAppInfo> system_apps;
+  system_apps.emplace(
+      SystemAppType::SETTINGS,
+      SystemAppInfo(kSettingsAppInternalName, AppUrl1(),
+                    base::BindRepeating(&GetApp1WebApplicationInfo)));
+
+  system_apps.at(SystemAppType::SETTINGS).timer_info =
+      SystemAppBackgroundTaskInfo();
+  system_apps.at(SystemAppType::SETTINGS).timer_info->period =
+      base::TimeDelta::FromSeconds(60);
+  system_apps.at(SystemAppType::SETTINGS).timer_info->url = AppUrl1();
+
+  system_web_app_manager().SetSystemAppsForTesting(std::move(system_apps));
+  StartAndWaitForAppsToSynchronize();
+
+  auto& timers = system_web_app_manager().GetBackgroundTasksForTesting();
+  EXPECT_EQ(1u, timers.size());
+  EXPECT_EQ(false, timers[0]->open_immediately_for_testing());
+
+  auto url_loader = std::make_unique<TestWebAppUrlLoader>();
+  TestWebAppUrlLoader* loader = url_loader.get();
+  timers[0]->SetUrlLoaderForTesting(std::move(url_loader));
+  loader->AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded});
+  loader->SetNextLoadUrlResult(AppUrl1(), WebAppUrlLoader::Result::kUrlLoaded);
+
+  EXPECT_EQ(base::TimeDelta::FromSeconds(60), timers[0]->period_for_testing());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(0u, timers[0]->timer_activated_count_for_testing());
+  EXPECT_EQ(0u, timers[0]->opened_count_for_testing());
+  // Fast forward until the timer fires.
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(61));
+  EXPECT_EQ(1u, timers[0]->timer_activated_count_for_testing());
+  EXPECT_EQ(1u, timers[0]->opened_count_for_testing());
+
+  loader->AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded});
+  loader->SetNextLoadUrlResult(AppUrl1(), WebAppUrlLoader::Result::kUrlLoaded);
+
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(61));
+
+  EXPECT_EQ(2u, timers[0]->timer_activated_count_for_testing());
+  EXPECT_EQ(2u, timers[0]->opened_count_for_testing());
+
+  loader->AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded});
+  loader->SetNextLoadUrlResult(AppUrl1(),
+                               WebAppUrlLoader::Result::kFailedUnknownReason);
+
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(61));
+
+  EXPECT_EQ(3u, timers[0]->timer_activated_count_for_testing());
+  // The timer fired, but we couldn't open the page.
+  EXPECT_EQ(2u, timers[0]->opened_count_for_testing());
+}
+
+TEST_F(SystemWebAppManagerTimerTest, TestTimerStartsImmediately) {
+  InitEmptyRegistrar();
+
+  base::flat_map<SystemAppType, SystemAppInfo> system_apps;
+  system_apps.emplace(
+      SystemAppType::SETTINGS,
+      SystemAppInfo(kSettingsAppInternalName, AppUrl1(),
+                    base::BindRepeating(&GetApp1WebApplicationInfo)));
+
+  system_apps.at(SystemAppType::SETTINGS).timer_info =
+      SystemAppBackgroundTaskInfo();
+  system_apps.at(SystemAppType::SETTINGS).timer_info->period =
+      base::TimeDelta::FromSeconds(30);
+  system_apps.at(SystemAppType::SETTINGS).timer_info->url = AppUrl1();
+  system_apps.at(SystemAppType::SETTINGS).timer_info->open_immediately = true;
+
+  system_web_app_manager().SetSystemAppsForTesting(std::move(system_apps));
+
+  TestWebAppUrlLoader* loader = nullptr;
+  SystemWebAppWaiter waiter(&system_web_app_manager());
+
+  system_web_app_manager().Start();
+
+  // We need to wait until the web contents and url loader are created to
+  // intercept the url loader with a TestWebAppUrlLoader. Do that by having a
+  // hook into on_apps_synchronized.
+  system_web_app_manager().on_apps_synchronized().Post(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        auto& timers = system_web_app_manager().GetBackgroundTasksForTesting();
+
+        timers[0]->SetUrlLoaderForTesting(
+            std::make_unique<TestWebAppUrlLoader>());
+        loader = reinterpret_cast<TestWebAppUrlLoader*>(
+            timers[0]->UrlLoaderForTesting());
+        loader->AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded});
+        loader->SetNextLoadUrlResult(AppUrl1(),
+                                     WebAppUrlLoader::Result::kUrlLoaded);
+      }));
+  waiter.Wait();
+
+  auto& timers = system_web_app_manager().GetBackgroundTasksForTesting();
+
+  timers[0]->SetUrlLoaderForTesting(std::make_unique<TestWebAppUrlLoader>());
+  loader =
+      reinterpret_cast<TestWebAppUrlLoader*>(timers[0]->UrlLoaderForTesting());
+  loader->AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded});
+  loader->SetNextLoadUrlResult(AppUrl1(), WebAppUrlLoader::Result::kUrlLoaded);
+
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  EXPECT_EQ(1u, timers.size());
+  EXPECT_EQ(true, timers[0]->open_immediately_for_testing());
+  EXPECT_EQ(base::TimeDelta::FromSeconds(30), timers[0]->period_for_testing());
+  EXPECT_EQ(1u, timers[0]->timer_activated_count_for_testing());
+  EXPECT_EQ(1u, timers[0]->opened_count_for_testing());
+
+  loader->SetNextLoadUrlResult(AppUrl1(), WebAppUrlLoader::Result::kUrlLoaded);
+
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(30));
+
+  EXPECT_EQ(2u, timers[0]->timer_activated_count_for_testing());
+  EXPECT_EQ(2u, timers[0]->opened_count_for_testing());
 }
 
 }  // namespace web_app

@@ -28,7 +28,20 @@ SampleSystemWebAppUI::SampleSystemWebAppUI(content::WebUI* web_ui)
   trusted_source->AddResourcePath(
       "sandbox.html", IDR_CHROMEOS_SAMPLE_SYSTEM_WEB_APP_SANDBOX_HTML);
   trusted_source->AddResourcePath(
-      "app_icon_192.png", IDR_CHROMEOS_SAMPLE_SYSTEM_WEB_APP_APP_ICON_192_PNG);
+      "timer.html", IDR_CHROMEOS_SAMPLE_SYSTEM_WEB_APP_TIMER_HTML);
+  trusted_source->AddResourcePath("main.js",
+                                  IDR_CHROMEOS_SAMPLE_SYSTEM_WEB_APP_MAIN_JS);
+  trusted_source->AddResourcePath("worker.js",
+                                  IDR_CHROMEOS_SAMPLE_SYSTEM_WEB_APP_WORKER_JS);
+  trusted_source->AddResourcePath("timer.js",
+                                  IDR_CHROMEOS_SAMPLE_SYSTEM_WEB_APP_TIMER_JS);
+
+  // TODO(https://crbug/1169829): Don't simply disable trusted types. Do the
+  // right thing.
+  trusted_source->DisableTrustedTypesCSP();
+  trusted_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::WorkerSrc,
+      std::string("worker-src 'self';"));
 
 #if !DCHECK_IS_ON()
   // If a user goes to an invalid url and non-DCHECK mode (DHECK = debug mode)
