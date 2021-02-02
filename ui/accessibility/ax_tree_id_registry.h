@@ -11,7 +11,7 @@
 
 #include "base/macros.h"
 #include "ui/accessibility/ax_action_handler.h"
-#include "ui/accessibility/ax_export.h"
+#include "ui/accessibility/ax_base_export.h"
 #include "ui/accessibility/ax_tree_id.h"
 
 namespace base {
@@ -31,7 +31,7 @@ class AXActionHandlerBase;
 // The first form allows underlying instances to change but refer to the same
 // frame.
 // The second form allows this registry to track the object for later retrieval.
-class AX_EXPORT AXTreeIDRegistry {
+class AX_BASE_EXPORT AXTreeIDRegistry {
  public:
   using FrameID = std::pair<int, int>;
 

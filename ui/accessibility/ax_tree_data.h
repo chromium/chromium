@@ -14,9 +14,9 @@
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_split.h"
+#include "ui/accessibility/ax_base_export.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
-#include "ui/accessibility/ax_export.h"
-#include "ui/accessibility/ax_node.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree_id_registry.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -24,7 +24,7 @@ namespace ui {
 
 // The data associated with an accessibility tree that's global to the
 // tree and not associated with any particular node in the tree.
-struct AX_EXPORT AXTreeData {
+struct AX_BASE_EXPORT AXTreeData {
   AXTreeData();
   AXTreeData(const AXTreeData& other);
   virtual ~AXTreeData();
@@ -77,8 +77,8 @@ struct AX_EXPORT AXTreeData {
   AXNodeID root_scroller_id = kInvalidAXNodeID;
 };
 
-AX_EXPORT bool operator==(const AXTreeData& lhs, const AXTreeData& rhs);
-AX_EXPORT bool operator!=(const AXTreeData& lhs, const AXTreeData& rhs);
+AX_BASE_EXPORT bool operator==(const AXTreeData& lhs, const AXTreeData& rhs);
+AX_BASE_EXPORT bool operator!=(const AXTreeData& lhs, const AXTreeData& rhs);
 
 }  // namespace ui
 

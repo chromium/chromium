@@ -5,7 +5,7 @@
 #ifndef UI_ACCESSIBILITY_AX_ACTION_HANDLER_BASE_H_
 #define UI_ACCESSIBILITY_AX_ACTION_HANDLER_BASE_H_
 
-#include "ui/accessibility/ax_export.h"
+#include "ui/accessibility/ax_base_export.h"
 #include "ui/accessibility/ax_tree_id.h"
 
 namespace ui {
@@ -20,7 +20,7 @@ struct AXActionData;
 //
 // Subclasses can use |tree_id| when annotating their |AXNodeData| for clients
 // to respond with the appropriate target node id.
-class AX_EXPORT AXActionHandlerBase {
+class AX_BASE_EXPORT AXActionHandlerBase {
  public:
   virtual ~AXActionHandlerBase();
 

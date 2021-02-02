@@ -49,7 +49,8 @@ namespace ui {
 //        placeholder must be updated within the same AXTreeUpdate, otherwise
 //        it's a fatal error. This guarantees the tree is always complete
 //        before or after an AXTreeUpdate.
-template<typename AXNodeData, typename AXTreeData> struct AXTreeUpdateBase {
+template <typename AXNodeData, typename AXTreeData>
+struct AXTreeUpdateBase {
   AXTreeUpdateBase() = default;
   ~AXTreeUpdateBase() = default;
 
