@@ -85,7 +85,8 @@ PaintPropertyTreeBuilderContext::PaintPropertyTreeBuilderContext()
       clip_changed(false),
       is_repeating_fixed_position(false),
       has_svg_hidden_container_ancestor(false),
-      supports_composited_raster_invalidation(true) {}
+      supports_composited_raster_invalidation(true),
+      was_layout_shift_root(false) {}
 
 PaintPropertyChangeType VisualViewportPaintPropertyTreeBuilder::Update(
     VisualViewport& visual_viewport,
@@ -184,18 +185,6 @@ class FragmentPaintPropertyTreeBuilder {
     return properties_ && properties_->TransformIsolationNode();
   }
 
-  bool IsLayoutShiftRoot() const {
-    if (!properties_)
-      return false;
-    return IsA<LayoutView>(object_) ||
-           (properties_->Transform() &&
-            !properties_->Transform()->IsIdentityOr2DTranslation()) ||
-           properties_->ScrollTranslation() ||
-           properties_->ReplacedContentTransform() ||
-           properties_->TransformIsolationNode() ||
-           object_.IsStickyPositioned();
-  }
-
  private:
   ALWAYS_INLINE bool CanPropagateSubpixelAccumulation() const;
   ALWAYS_INLINE void UpdatePaintOffset();
@@ -230,6 +219,7 @@ class FragmentPaintPropertyTreeBuilder {
   ALWAYS_INLINE void UpdateClipIsolationNode();
   ALWAYS_INLINE void SetTransformNodeStateForSVGChild(
       TransformPaintPropertyNode::State&);
+  ALWAYS_INLINE void UpdateLayoutShiftRootChanged(bool is_layout_shift_root);
 
   bool NeedsPaintPropertyUpdate() const {
     return object_.NeedsPaintPropertyUpdate() ||
@@ -2603,6 +2593,30 @@ void FragmentPaintPropertyTreeBuilder::UpdateClipPathCache() {
       path ? AdoptRef(new RefCountedPath(std::move(*path))) : nullptr);
 }
 
+static bool IsLayoutShiftRoot(const LayoutObject& object,
+                              const FragmentData& fragment) {
+  const auto* properties = fragment.PaintProperties();
+  if (!properties)
+    return false;
+  if (IsA<LayoutView>(object))
+    return true;
+  if (auto* transform = properties->Transform()) {
+    if (!transform->IsIdentityOr2DTranslation())
+      return true;
+  }
+  if (properties->ScrollTranslation())
+    return true;
+  if (properties->ReplacedContentTransform())
+    return true;
+  if (properties->TransformIsolationNode())
+    return true;
+  if (auto* offset_translation = properties->PaintOffsetTranslation()) {
+    if (offset_translation->RequiresCompositingForScrollDependentPosition())
+      return true;
+  }
+  return false;
+}
+
 void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
 #if DCHECK_IS_ON()
   FindPaintOffsetNeedingUpdateScope check_paint_offset(
@@ -2652,6 +2666,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
     context_.current.should_flatten_inherited_transform = true;
   }
   UpdateLocalBorderBoxContext();
+  UpdateLayoutShiftRootChanged(IsLayoutShiftRoot(object_, fragment_data_));
 
   // For LayoutView, additional_offset_to_layout_shift_root_delta applies to
   // neither itself nor descendants. For other layout shift roots, we clear the
@@ -2686,22 +2701,26 @@ void FragmentPaintPropertyTreeBuilder::UpdateForChildren() {
   }
   UpdateOutOfFlowContext();
 
-  bool is_layout_shift_root = IsLayoutShiftRoot();
-  if (context_.was_layout_shift_root || is_layout_shift_root) {
+  bool is_layout_shift_root = IsLayoutShiftRoot(object_, fragment_data_);
+  UpdateLayoutShiftRootChanged(is_layout_shift_root);
+  if (full_context_.was_layout_shift_root || is_layout_shift_root) {
     context_.current.additional_offset_to_layout_shift_root_delta =
         PhysicalOffset();
-  }
-
-  if (is_layout_shift_root != context_.was_layout_shift_root) {
-    context_.current.layout_shift_root_changed = true;
-  } else if (is_layout_shift_root && context_.was_layout_shift_root) {
-    context_.current.layout_shift_root_changed = false;
   }
 
 #if DCHECK_IS_ON()
   if (properties_)
     properties_->Validate();
 #endif
+}
+
+void FragmentPaintPropertyTreeBuilder::UpdateLayoutShiftRootChanged(
+    bool is_layout_shift_root) {
+  if (is_layout_shift_root != full_context_.was_layout_shift_root) {
+    context_.current.layout_shift_root_changed = true;
+  } else if (is_layout_shift_root && full_context_.was_layout_shift_root) {
+    context_.current.layout_shift_root_changed = false;
+  }
 }
 
 }  // namespace
@@ -3599,6 +3618,8 @@ PaintPropertyChangeType PaintPropertyTreeBuilder::UpdateForSelf() {
       CompositingReasonFinder::DirectReasonsForPaintProperties(object_);
   context_.is_affected_by_outer_viewport_bounds_delta =
       IsAffectedByOuterViewportBoundsDelta();
+  context_.was_layout_shift_root =
+      IsLayoutShiftRoot(object_, object_.FirstFragment());
 
   UpdatePaintingLayer();
 
@@ -3619,7 +3640,6 @@ PaintPropertyChangeType PaintPropertyTreeBuilder::UpdateForSelf() {
     FragmentPaintPropertyTreeBuilder builder(object_, pre_paint_info_, context_,
                                              context_.fragments[0],
                                              pre_paint_info_->fragment_data);
-    context_.fragments[0].was_layout_shift_root = builder.IsLayoutShiftRoot();
     builder.UpdateForSelf();
     property_changed = std::max(property_changed, builder.PropertyChanged());
   } else {
@@ -3628,7 +3648,6 @@ PaintPropertyChangeType PaintPropertyTreeBuilder::UpdateForSelf() {
       FragmentPaintPropertyTreeBuilder builder(
           object_, /* pre_paint_info */ nullptr, context_, fragment_context,
           *fragment_data);
-      fragment_context.was_layout_shift_root = builder.IsLayoutShiftRoot();
       builder.UpdateForSelf();
       property_changed = std::max(property_changed, builder.PropertyChanged());
       fragment_data = fragment_data->NextFragment();

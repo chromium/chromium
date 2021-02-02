@@ -406,6 +406,11 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
            CompositingReason::kActiveTransformAnimation;
   }
 
+  bool RequiresCompositingForScrollDependentPosition() const {
+    return DirectCompositingReasons() &
+           CompositingReason::kScrollDependentPosition;
+  }
+
   CompositingReasons DirectCompositingReasonsForDebugging() const {
     return DirectCompositingReasons();
   }
