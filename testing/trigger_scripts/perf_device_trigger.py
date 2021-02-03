@@ -238,7 +238,11 @@ class PerfDeviceTriggerer(base_test_triggerer.BaseTestTriggerer):
       return {}
     perf_bots = {}
     for bot in query_result['items']:
-      alive = (not bot['is_dead'] and not bot['quarantined'])
+      # Device maintenance is usually quick, and we can wait for it to finish.
+      # However, if the device is too hot, it can take a long time for it to
+      # cool down, so check for 'Device temperature' in maintenance_msg.
+      alive = (not bot['is_dead'] and not bot['quarantined'] and
+               'Device temperature' not in bot.get('maintenance_msg', ''))
       perf_bots[bot['bot_id']] = Bot(bot['bot_id'], alive)
     return perf_bots
 
