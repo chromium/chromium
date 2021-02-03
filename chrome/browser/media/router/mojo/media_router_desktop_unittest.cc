@@ -64,11 +64,13 @@ class MediaRouterDesktopTest : public MediaRouterMojoTest {
  protected:
   std::unique_ptr<MediaRouterMojoImpl> CreateMediaRouter() override {
     std::unique_ptr<MockCastMediaSinkService> cast_media_sink_service;
-    // We disable the DIAL MRP because initializing the DIAL MRP requires
-    // initialization of objects it depends on, which is outside the scope of
-    // this unit test. DIAL MRP initialization is covered by Media Router
-    // browser tests.
-    feature_list_.InitAndDisableFeature(kDialMediaRouteProvider);
+    // We disable the DIAL and Cast MRPs because initializing the MRPs requires
+    // initialization of objects they depend on, which is outside the scope of
+    // this unit test. MRP initialization is covered by Media Router browser
+    // tests.
+    feature_list_.InitWithFeatures(
+        {}, /* disabled_features */ {kDialMediaRouteProvider,
+                                     kCastMediaRouteProvider});
     cast_media_sink_service = std::make_unique<MockCastMediaSinkService>();
     cast_media_sink_service_ = cast_media_sink_service.get();
     media_sink_service_ =
