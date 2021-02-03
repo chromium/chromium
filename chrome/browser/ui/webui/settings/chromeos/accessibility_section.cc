@@ -704,7 +704,7 @@ std::string AccessibilitySection::GetSectionPath() const {
 bool AccessibilitySection::LogMetric(mojom::Setting setting,
                                      base::Value& value) const {
   // TODO(accessibility): Ensure to capture metrics for Switch Access's action
-  // idalog on detach.
+  // dialog on detach.
   switch (setting) {
     case mojom::Setting::kFullscreenMagnifierFocusFollowing:
       base::UmaHistogramBoolean(
