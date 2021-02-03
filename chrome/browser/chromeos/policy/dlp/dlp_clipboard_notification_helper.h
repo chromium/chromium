@@ -52,6 +52,8 @@ class DlpClipboardNotificationHelper : public views::WidgetObserver,
 
   void ResetUserWarnSelection();
 
+  views::Widget* GetWidgetForTesting() { return widget_.get(); }
+
  private:
   virtual void ShowClipboardBlockBubble(const base::string16& text);
   virtual void ShowClipboardBlockToast(const std::string& id,

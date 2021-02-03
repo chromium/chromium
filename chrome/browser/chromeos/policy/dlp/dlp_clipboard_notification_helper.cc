@@ -400,8 +400,10 @@ DlpClipboardNotificationHelper::DlpClipboardNotificationHelper() {
 
 DlpClipboardNotificationHelper::~DlpClipboardNotificationHelper() {
   ui::ClipboardMonitor::GetInstance()->RemoveObserver(this);
-  if (widget_)
+  if (widget_) {
     widget_->RemoveObserver(this);
+    CloseWidget(widget_.get(), views::Widget::ClosedReason::kUnspecified);
+  }
 }
 
 void DlpClipboardNotificationHelper::NotifyBlockedPaste(
@@ -556,13 +558,12 @@ void DlpClipboardNotificationHelper::OnWidgetDestroyed(views::Widget* widget) {
 void DlpClipboardNotificationHelper::OnWidgetActivationChanged(
     views::Widget* widget,
     bool active) {
-  if (widget_.get() == widget && !active)
+  if (!active)
     CloseWidget(widget, views::Widget::ClosedReason::kLostFocus);
 }
 
 void DlpClipboardNotificationHelper::OnClipboardDataChanged() {
-  if (widget_)
-    widget_->Close();
+  CloseWidget(widget_.get(), views::Widget::ClosedReason::kUnspecified);
   ResetUserWarnSelection();
 }
 
@@ -594,7 +595,7 @@ void DlpClipboardNotificationHelper::ResizeAndShowWidget(
 void DlpClipboardNotificationHelper::CloseWidget(
     views::Widget* widget,
     views::Widget::ClosedReason reason) {
-  if (widget == widget_.get())
+  if (widget && widget == widget_.get())
     widget->CloseWithReason(reason);
 }
 
