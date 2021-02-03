@@ -320,7 +320,7 @@ public class NotificationPlatformBridgeTest {
 
         // Replies are always delivered to an action button.
         assertThat(actionTester.toString(), getNotificationActions(actionTester),
-                Matchers.contains("Notifications.Persistent.Shown",
+                Matchers.hasItems("Notifications.Persistent.Shown",
                         "Notifications.Persistent.ClickedActionButton"));
     }
 
@@ -660,7 +660,7 @@ public class NotificationPlatformBridgeTest {
 
         // Clicking on a notification should record the right user metrics.
         assertThat(actionTester.toString(), getNotificationActions(actionTester),
-                Matchers.contains(
+                Matchers.hasItems(
                         "Notifications.Persistent.Shown", "Notifications.Persistent.Clicked"));
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramTotalCountForTesting(

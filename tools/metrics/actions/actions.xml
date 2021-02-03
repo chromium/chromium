@@ -16571,6 +16571,77 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Notifications.WebPlatform.ActionButton.Click">
+  <owner>peconn@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <description>
+    Recorded when the user clicks on the action button of a web platform
+    notification.
+  </description>
+</action>
+
+<action name="Notifications.WebPlatform.ActionButton.Close">
+  <owner>peconn@chromium.org</owner>
+  <owner>beverloo@chromium.org</owner>
+  <description>
+    Recorded when the user clicks on the action button of a web platform
+    notification, and the notification closes.
+  </description>
+</action>
+
+<action name="Notifications.WebPlatform.ActionButton.FocusActivity">
+  <owner>peconn@chromium.org</owner>
+  <owner>beverloo@chromium.org</owner>
+  <description>
+    Recorded when the user clicks on the action button of a web platform
+    notification, and the notification focuses an Activity.
+  </description>
+</action>
+
+<action name="Notifications.WebPlatform.ActionButton.NewActivity">
+  <owner>peconn@chromium.org</owner>
+  <owner>beverloo@chromium.org</owner>
+  <description>
+    Recorded when the user clicks on the action button of a web platform
+    notification, and the notification opens a new Activity.
+  </description>
+</action>
+
+<action name="Notifications.WebPlatform.Body.Click">
+  <owner>peconn@chromium.org</owner>
+  <owner>beverloo@chromium.org</owner>
+  <description>
+    Recorded when the user clicks on the body of a web platform notification.
+  </description>
+</action>
+
+<action name="Notifications.WebPlatform.Body.Close">
+  <owner>peconn@chromium.org</owner>
+  <owner>beverloo@chromium.org</owner>
+  <description>
+    Recorded when the user clicks on the body of a web platform notification,
+    and the notification closes.
+  </description>
+</action>
+
+<action name="Notifications.WebPlatform.Body.FocusActivity">
+  <owner>peconn@chromium.org</owner>
+  <owner>beverloo@chromium.org</owner>
+  <description>
+    Recorded when the user clicks on the body of a web platform notification,
+    and the notification focuses an Activity.
+  </description>
+</action>
+
+<action name="Notifications.WebPlatform.Body.NewActivity">
+  <owner>peconn@chromium.org</owner>
+  <owner>beverloo@chromium.org</owner>
+  <description>
+    Recorded when the user clicks on the body of a web platform notification,
+    and the notification opens a new Activity.
+  </description>
+</action>
+
 <action name="NPAPIRemovalInfobar.LearnMore">
   <obsolete>Deprecated due to NPAPI removal.</obsolete>
   <owner>wfh@chromium.org</owner>
