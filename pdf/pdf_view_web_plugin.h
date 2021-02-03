@@ -137,9 +137,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void DidOpen(std::unique_ptr<UrlLoader> loader, int32_t result) override;
   void DidOpenPreview(std::unique_ptr<UrlLoader> loader,
                       int32_t result) override;
-  void DoPaint(const std::vector<gfx::Rect>& paint_rects,
-               std::vector<PaintReadyRect>* ready,
-               std::vector<gfx::Rect>* pending) override;
   void OnGeometryChanged(double old_zoom, float old_device_scale) override;
 
  private:

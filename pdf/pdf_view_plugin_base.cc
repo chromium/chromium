@@ -21,12 +21,15 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/optional.h"
 #include "base/values.h"
+#include "pdf/paint_ready_rect.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/ppapi_migration/image.h"
 #include "pdf/ppapi_migration/url_loader.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/skia_util.h"
 
 namespace chrome_pdf {
 
@@ -234,6 +237,87 @@ void PdfViewPluginBase::HandleSetReadOnlyMessage(const base::Value& message) {
 
 void PdfViewPluginBase::HandleSetTwoUpViewMessage(const base::Value& message) {
   engine()->SetTwoUpView(message.FindBoolKey("enableTwoUpView").value());
+}
+
+void PdfViewPluginBase::DoPaint(const std::vector<gfx::Rect>& paint_rects,
+                                std::vector<PaintReadyRect>* ready,
+                                std::vector<gfx::Rect>* pending) {
+  if (image_data_.drawsNothing()) {
+    DCHECK(plugin_size_.IsEmpty());
+    return;
+  }
+
+  PrepareForFirstPaint(ready);
+
+  if (!received_viewport_message_ || !needs_reraster_)
+    return;
+
+  engine()->PrePaint();
+
+  for (const gfx::Rect& paint_rect : paint_rects) {
+    // Intersect with plugin area since there could be pending invalidates from
+    // when the plugin area was larger.
+    gfx::Rect rect = gfx::IntersectRects(paint_rect, gfx::Rect(plugin_size_));
+    if (rect.IsEmpty())
+      continue;
+
+    // Paint the rendering of the PDF document.
+    gfx::Rect pdf_rect = gfx::IntersectRects(rect, available_area_);
+    if (!pdf_rect.IsEmpty()) {
+      pdf_rect.Offset(-available_area_.x(), 0);
+
+      std::vector<gfx::Rect> pdf_ready;
+      std::vector<gfx::Rect> pdf_pending;
+      engine()->Paint(pdf_rect, image_data_, pdf_ready, pdf_pending);
+      for (gfx::Rect& ready_rect : pdf_ready) {
+        ready_rect.Offset(available_area_.OffsetFromOrigin());
+        ready->push_back(PaintReadyRect(ready_rect, GetPluginImageData()));
+      }
+      for (gfx::Rect& pending_rect : pdf_pending) {
+        pending_rect.Offset(available_area_.OffsetFromOrigin());
+        pending->push_back(pending_rect);
+      }
+    }
+
+    // Ensure the region above the first page (if any) is filled;
+    const int32_t first_page_ypos = 0 == engine()->GetNumberOfPages()
+                                        ? 0
+                                        : engine()->GetPageScreenRect(0).y();
+    if (rect.y() < first_page_ypos) {
+      gfx::Rect region = gfx::IntersectRects(
+          rect, gfx::Rect(gfx::Size(plugin_size_.width(), first_page_ypos)));
+      ready->push_back(PaintReadyRect(region, GetPluginImageData()));
+      image_data_.erase(background_color_, gfx::RectToSkIRect(region));
+    }
+
+    // Ensure the background parts are filled.
+    for (const BackgroundPart& background_part : background_parts_) {
+      gfx::Rect intersection =
+          gfx::IntersectRects(background_part.location, rect);
+      if (!intersection.IsEmpty()) {
+        image_data_.erase(background_part.color,
+                          gfx::RectToSkIRect(intersection));
+        ready->push_back(PaintReadyRect(intersection, GetPluginImageData()));
+      }
+    }
+  }
+
+  engine()->PostPaint();
+
+  InvalidateAfterPaintDone();
+}
+
+void PdfViewPluginBase::PrepareForFirstPaint(
+    std::vector<PaintReadyRect>* ready) {
+  if (!first_paint_)
+    return;
+
+  // Fill the image data buffer with the background color.
+  first_paint_ = false;
+  image_data_.eraseColor(background_color_);
+  gfx::Rect rect(gfx::SkISizeToSize(image_data_.dimensions()));
+  ready->push_back(
+      PaintReadyRect(rect, GetPluginImageData(), /*flush_now=*/true));
 }
 
 void PdfViewPluginBase::ClearDeferredInvalidates(

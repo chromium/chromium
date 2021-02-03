@@ -407,14 +407,6 @@ void PdfViewWebPlugin::DidOpenPreview(std::unique_ptr<UrlLoader> loader,
   NOTIMPLEMENTED();
 }
 
-// TODO(https://crbug.com/1099020): To be implemented as a Pepper-free version
-// of `OutOfProcessInstance::DoPaint()`
-void PdfViewWebPlugin::DoPaint(const std::vector<gfx::Rect>& paint_rects,
-                               std::vector<PaintReadyRect>* ready,
-                               std::vector<gfx::Rect>* pending) {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
 void PdfViewWebPlugin::OnGeometryChanged(double old_zoom,
                                          float old_device_scale) {
   RecalculateAreas(old_zoom, old_device_scale);

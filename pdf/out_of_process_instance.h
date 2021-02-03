@@ -45,7 +45,6 @@ class VarDictionary;
 namespace chrome_pdf {
 
 class Graphics;
-class PaintReadyRect;
 class PDFiumEngine;
 class Thumbnail;
 class UrlLoader;
@@ -185,9 +184,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   void DidOpen(std::unique_ptr<UrlLoader> loader, int32_t result) override;
   void DidOpenPreview(std::unique_ptr<UrlLoader> loader,
                       int32_t result) override;
-  void DoPaint(const std::vector<gfx::Rect>& paint_rects,
-               std::vector<PaintReadyRect>* ready,
-               std::vector<gfx::Rect>* pending) override;
   void OnGeometryChanged(double old_zoom, float old_device_scale) override;
   Image GetPluginImageData() const override;
 

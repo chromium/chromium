@@ -92,12 +92,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Handles `postMessage()` calls from the embedder.
   void HandleMessage(const base::Value& message);
 
-  // Paints the given invalid area of the plugin to the given graphics device.
-  // PaintManager::Client::OnPaint() should be its only caller.
-  virtual void DoPaint(const std::vector<gfx::Rect>& paint_rects,
-                       std::vector<PaintReadyRect>* ready,
-                       std::vector<gfx::Rect>* pending) = 0;
-
   // Schedules invalidation tasks after painting finishes.
   void InvalidateAfterPaintDone();
 
@@ -120,10 +114,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // device scale
   int GetDocumentPixelWidth() const;
   int GetDocumentPixelHeight() const;
-
-  const std::vector<BackgroundPart>& background_parts() const {
-    return background_parts_;
-  }
 
   const SkBitmap& image_data() const { return image_data_; }
   SkBitmap& mutable_image_data() { return image_data_; }
@@ -162,15 +152,12 @@ class PdfViewPluginBase : public PDFEngine::Client,
   float device_scale() const { return device_scale_; }
   void set_device_scale(float device_scale) { device_scale_ = device_scale; }
 
-  bool first_paint() const { return first_paint_; }
   void set_first_paint(bool first_paint) { first_paint_ = first_paint; }
 
-  bool needs_reraster() const { return needs_reraster_; }
   void set_needs_reraster(bool needs_reraster) {
     needs_reraster_ = needs_reraster;
   }
 
-  bool received_viewport_message() const { return received_viewport_message_; }
   void set_received_viewport_message(bool received) {
     received_viewport_message_ = received;
   }
@@ -184,6 +171,16 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void HandleSetBackgroundColorMessage(const base::Value& message);
   void HandleSetReadOnlyMessage(const base::Value& message);
   void HandleSetTwoUpViewMessage(const base::Value& message);
+
+  // Paints the given invalid area of the plugin to the given graphics device.
+  // PaintManager::Client::OnPaint() should be its only caller.
+  void DoPaint(const std::vector<gfx::Rect>& paint_rects,
+               std::vector<PaintReadyRect>* ready,
+               std::vector<gfx::Rect>* pending);
+
+  // The preparation when painting on the image data buffer for the first
+  // time.
+  void PrepareForFirstPaint(std::vector<PaintReadyRect>* ready);
 
   // Callback to clear deferred invalidates after painting finishes.
   void ClearDeferredInvalidates(int32_t /*unused_but_required*/);
