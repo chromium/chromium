@@ -337,9 +337,9 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTab(const UrlLoadParams& params) {
   auto openTab = ^{
     TabInsertionBrowserAgent* insertionAgent =
         TabInsertionBrowserAgent::FromBrowser(browser_);
-    insertionAgent->InsertWebState(saved_params.web_params, adjacent_web_state,
-                                   false, insertion_index,
-                                   saved_params.in_background());
+    insertionAgent->InsertWebState(
+        saved_params.web_params, adjacent_web_state, false, insertion_index,
+        saved_params.in_background(), saved_params.inherit_opener);
     notifier_->NewTabDidLoadUrl(saved_params.web_params.url,
                                 saved_params.user_initiated);
   };

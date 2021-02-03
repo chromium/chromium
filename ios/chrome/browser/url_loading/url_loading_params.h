@@ -82,6 +82,9 @@ struct UrlLoadParams {
   // Only used when the |web_params.url| isn't valid. Defaults to |false|.
   bool should_focus_omnibox;
 
+  // Whether the new tab should inherit opener.
+  bool inherit_opener;
+
   // Opaque way of changing loading behavior.
   UrlLoadStrategy load_strategy;
 

@@ -1200,6 +1200,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   params.from_chrome = command.fromChrome;
   params.user_initiated = command.userInitiated;
   params.should_focus_omnibox = command.shouldFocusOmnibox;
+  params.inherit_opener = !command.inBackground;
   self.sceneURLLoadingService->LoadUrlInNewTab(params);
 }
 
@@ -2188,9 +2189,11 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 }
 
 - (void)openNewTabFromOriginPoint:(CGPoint)originPoint
-                     focusOmnibox:(BOOL)focusOmnibox {
+                     focusOmnibox:(BOOL)focusOmnibox
+                    inheritOpener:(BOOL)inheritOpener {
   [self.currentInterface.bvc openNewTabFromOriginPoint:originPoint
-                                          focusOmnibox:focusOmnibox];
+                                          focusOmnibox:focusOmnibox
+                                         inheritOpener:inheritOpener];
 }
 
 - (Browser*)currentBrowserForURLLoading {
@@ -2569,7 +2572,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
                   withURLLoadParams:(const UrlLoadParams&)urlLoadParams {
   TabInsertionBrowserAgent::FromBrowser(browser)->InsertWebState(
       urlLoadParams.web_params, nil, false, browser->GetWebStateList()->count(),
-      false);
+      /*in_background=*/false, /*inherit_opener=*/false);
   [self beginActivatingBrowser:browser dismissTabSwitcher:YES focusOmnibox:NO];
 }
 

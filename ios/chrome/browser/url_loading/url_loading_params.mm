@@ -78,6 +78,7 @@ UrlLoadParams::UrlLoadParams()
       from_chrome(false),
       user_initiated(true),
       should_focus_omnibox(false),
+      inherit_opener(false),
       load_strategy(UrlLoadStrategy::NORMAL) {}
 
 UrlLoadParams::UrlLoadParams(const UrlLoadParams& other)
@@ -89,6 +90,7 @@ UrlLoadParams::UrlLoadParams(const UrlLoadParams& other)
       from_chrome(other.from_chrome),
       user_initiated(other.user_initiated),
       should_focus_omnibox(other.should_focus_omnibox),
+      inherit_opener(other.inherit_opener),
       load_strategy(other.load_strategy) {}
 
 UrlLoadParams& UrlLoadParams::operator=(const UrlLoadParams& other) {
@@ -100,6 +102,7 @@ UrlLoadParams& UrlLoadParams::operator=(const UrlLoadParams& other) {
   from_chrome = other.from_chrome;
   user_initiated = other.user_initiated;
   should_focus_omnibox = other.should_focus_omnibox;
+  inherit_opener = other.inherit_opener;
   load_strategy = other.load_strategy;
   return *this;
 }

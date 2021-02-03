@@ -89,7 +89,8 @@ class Browser;
 
 // Opens a new tab as if originating from |originPoint| and |focusOmnibox|.
 - (void)openNewTabFromOriginPoint:(CGPoint)originPoint
-                     focusOmnibox:(BOOL)focusOmnibox;
+                     focusOmnibox:(BOOL)focusOmnibox
+                    inheritOpener:(BOOL)inheritOpener;
 
 // Adds |tabAddedCompletion| to the completion block (if any) that will be run
 // the next time a tab is added to the TabModel this object was initialized

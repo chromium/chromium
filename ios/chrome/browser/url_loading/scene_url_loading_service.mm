@@ -75,7 +75,8 @@ void SceneUrlLoadingService::LoadUrlInNewTab(const UrlLoadParams& params) {
     // openNewTabFromOriginPoint a delegate there. openNewTabFromOriginPoint is
     // only called from here.
     [delegate_ openNewTabFromOriginPoint:params.origin_point
-                            focusOmnibox:params.should_focus_omnibox];
+                            focusOmnibox:params.should_focus_omnibox
+                           inheritOpener:params.inherit_opener];
   }
 }
 

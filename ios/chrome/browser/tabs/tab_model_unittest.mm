@@ -121,7 +121,8 @@ TEST_F(TabModelTest, InsertWithSessionController) {
                              /*parent=*/nil,
                              /*opened_by_dom=*/false,
                              /*index=*/web_state_list_->count(),
-                             /*in_background=*/false);
+                             /*in_background=*/false,
+                             /*inherit_opener=*/false);
 
   EXPECT_EQ(web_state_list_->count(), 1);
   EXPECT_EQ(new_web_state, web_state_list_->GetWebStateAt(0));

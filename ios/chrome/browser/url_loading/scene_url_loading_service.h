@@ -47,7 +47,8 @@ struct UrlLoadParams;
 
 // Opens a new tab as if originating from |originPoint| and |focusOmnibox|.
 - (void)openNewTabFromOriginPoint:(CGPoint)originPoint
-                     focusOmnibox:(BOOL)focusOmnibox;
+                     focusOmnibox:(BOOL)focusOmnibox
+                    inheritOpener:(BOOL)inheritOpener;
 
 // Informs the BVC that a new foreground tab is about to be opened in given
 // |targetMode|. This is intended to be called before setWebUsageSuspended:NO in
