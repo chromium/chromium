@@ -102,10 +102,6 @@ export const UserAction = {
   FIT_TO_PAGE_FIRST: 5,
   FIT_TO_PAGE: 6,
 
-  // Recorded when the bookmarks panel is opened.
-  OPEN_BOOKMARKS_PANEL_FIRST: 7,
-  OPEN_BOOKMARKS_PANEL: 8,
-
   // Recorded when a bookmark is followed.
   FOLLOW_BOOKMARK_FIRST: 9,
   FOLLOW_BOOKMARK: 10,
@@ -236,10 +232,6 @@ const firstMap = new Map([
   [
     UserAction.FIT_TO_PAGE,
     UserAction.FIT_TO_PAGE_FIRST,
-  ],
-  [
-    UserAction.OPEN_BOOKMARKS_PANEL,
-    UserAction.OPEN_BOOKMARKS_PANEL_FIRST,
   ],
   [
     UserAction.FOLLOW_BOOKMARK,

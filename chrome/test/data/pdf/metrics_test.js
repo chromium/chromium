@@ -136,11 +136,11 @@ chrome.test.runTests(function() {
       chrome.metricsPrivate = new MockMetricsPrivate();
       record(UserAction.DOCUMENT_OPENED);
 
-      record(UserAction.OPEN_BOOKMARKS_PANEL);
+      record(UserAction.SELECT_SIDENAV_OUTLINE);
       record(UserAction.FOLLOW_BOOKMARK);
       record(UserAction.FOLLOW_BOOKMARK);
 
-      record(UserAction.OPEN_BOOKMARKS_PANEL);
+      record(UserAction.SELECT_SIDENAV_OUTLINE);
       record(UserAction.FOLLOW_BOOKMARK);
       record(UserAction.FOLLOW_BOOKMARK);
       record(UserAction.FOLLOW_BOOKMARK);
@@ -148,8 +148,8 @@ chrome.test.runTests(function() {
       chrome.test.assertEq(
           {
             [UserAction.DOCUMENT_OPENED]: 1,
-            [UserAction.OPEN_BOOKMARKS_PANEL_FIRST]: 1,
-            [UserAction.OPEN_BOOKMARKS_PANEL]: 2,
+            [UserAction.SELECT_SIDENAV_OUTLINE_FIRST]: 1,
+            [UserAction.SELECT_SIDENAV_OUTLINE]: 2,
             [UserAction.FOLLOW_BOOKMARK_FIRST]: 1,
             [UserAction.FOLLOW_BOOKMARK]: 5
           },

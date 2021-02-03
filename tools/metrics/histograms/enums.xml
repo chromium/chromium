@@ -10456,8 +10456,8 @@ histogram as enum -->
   <int value="4" label="FitToWidth"/>
   <int value="5" label="FitToPageFirst"/>
   <int value="6" label="FitToPage"/>
-  <int value="7" label="OpenBookmarksPanelFirst"/>
-  <int value="8" label="OpenBookmarksPanel"/>
+  <int value="7" label="OpenBookmarksPanelFirst (deprecated)"/>
+  <int value="8" label="OpenBookmarksPanel (deprecated)"/>
   <int value="9" label="FollowBookmarkFirst"/>
   <int value="10" label="FollowBookmark"/>
   <int value="11" label="PageSelectorNavigateFirst"/>

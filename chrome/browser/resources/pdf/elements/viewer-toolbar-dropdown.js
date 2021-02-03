@@ -61,9 +61,6 @@ Polymer({
       observer: 'lowerBoundChanged_',
     },
 
-    /** Unique id to identify this dropdown for metrics purposes. */
-    metricsId: String,
-
     /** Whether the dropdown must be selected before opening. */
     openAfterSelect: {
       type: Boolean,
@@ -131,10 +128,7 @@ Polymer({
       if (!this.maxHeightValid_) {
         this.updateMaxHeight();
       }
-      this.fire('dropdown-opened', this.metricsId);
-    }
 
-    if (this.dropdownOpen) {
       const listener = (e) => {
         if (e.path.includes(this)) {
           return;

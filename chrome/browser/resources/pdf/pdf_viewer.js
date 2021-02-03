@@ -1062,16 +1062,6 @@ export class PDFViewerElement extends PDFViewerBaseElement {
   }
 
   /**
-   * @param {!CustomEvent<string>} e
-   * @private
-   */
-  onDropdownOpened_(e) {
-    if (e.detail === 'bookmarks') {
-      record(UserAction.OPEN_BOOKMARKS_PANEL);
-    }
-  }
-
-  /**
    * @param {!CustomEvent<!{newtab: boolean, uri: string}>} e
    * @private
    */
