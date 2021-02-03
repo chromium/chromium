@@ -30,6 +30,8 @@ import org.chromium.ui.base.WindowAndroid;
  * fields.
  */
 class ManualFillingCoordinator implements ManualFillingComponent {
+    private final ManualFillingComponentSupplier mComponentSupplier =
+            new ManualFillingComponentSupplier();
     private final ManualFillingMediator mMediator = new ManualFillingMediator();
     private ObserverList<Observer> mObserverList = new ObserverList<>();
 
@@ -47,6 +49,8 @@ class ManualFillingCoordinator implements ManualFillingComponent {
         sheetStub.setLayoutResource(R.layout.keyboard_accessory_sheet);
         initialize(windowAndroid, new KeyboardAccessoryCoordinator(mMediator, barStub),
                 new AccessorySheetCoordinator(sheetStub), sheetController);
+        mComponentSupplier.set(this);
+        mComponentSupplier.attach(windowAndroid.getUnownedUserDataHost());
     }
 
     @VisibleForTesting
@@ -57,6 +61,7 @@ class ManualFillingCoordinator implements ManualFillingComponent {
 
     @Override
     public void destroy() {
+        mComponentSupplier.destroy();
         for (Observer observer : mObserverList) observer.onDestroy();
         mMediator.destroy();
     }

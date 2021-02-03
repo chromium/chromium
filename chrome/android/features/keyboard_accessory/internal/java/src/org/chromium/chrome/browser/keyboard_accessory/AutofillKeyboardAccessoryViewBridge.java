@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.keyboard_accessory;
 import android.content.Context;
 import android.content.DialogInterface;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
@@ -26,9 +28,10 @@ import org.chromium.ui.base.WindowAndroid;
 public class AutofillKeyboardAccessoryViewBridge
         implements AutofillDelegate, DialogInterface.OnClickListener {
     private long mNativeAutofillKeyboardAccessory;
-    private ManualFillingComponent mManualFillingComponent;
-    private Context mContext;
-    private PropertyProvider<AutofillSuggestion[]> mChipProvider =
+    private @Nullable ObservableSupplier<ManualFillingComponent> mManualFillingComponentSupplier;
+    private @Nullable ManualFillingComponent mManualFillingComponent;
+    private @Nullable Context mContext;
+    private final PropertyProvider<AutofillSuggestion[]> mChipProvider =
             new PropertyProvider<>(AccessoryAction.AUTOFILL_SUGGESTION);
 
     private AutofillKeyboardAccessoryViewBridge() {}
@@ -83,9 +86,12 @@ public class AutofillKeyboardAccessoryViewBridge
     private void init(long nativeAutofillKeyboardAccessory, WindowAndroid windowAndroid) {
         mContext = windowAndroid.getActivity().get();
         assert mContext != null;
-        if (mContext instanceof ChromeActivity) {
-            mManualFillingComponent = ((ChromeActivity) mContext).getManualFillingComponent();
-            mManualFillingComponent.registerAutofillProvider(mChipProvider, this);
+
+        mManualFillingComponentSupplier = ManualFillingComponentSupplier.from(windowAndroid);
+        if (mManualFillingComponentSupplier != null) {
+            ManualFillingComponent currentFillingComponent =
+                    mManualFillingComponentSupplier.addObserver(this::connectToFillingComponent);
+            connectToFillingComponent(currentFillingComponent);
         }
 
         mNativeAutofillKeyboardAccessory = nativeAutofillKeyboardAccessory;
@@ -104,6 +110,9 @@ public class AutofillKeyboardAccessoryViewBridge
      */
     @CalledByNative
     private void dismiss() {
+        if (mManualFillingComponentSupplier != null) {
+            mManualFillingComponentSupplier.removeObserver(this::connectToFillingComponent);
+        }
         mChipProvider.notifyObservers(new AutofillSuggestion[0]);
         mContext = null;
     }
@@ -159,6 +168,18 @@ public class AutofillKeyboardAccessoryViewBridge
         array[index] = new AutofillSuggestion(label, sublabel, itemTag, drawableId,
                 false /* isIconAtStart */, suggestionId, isDeletable, false /* isMultilineLabel */,
                 false /* isBoldLabel */);
+    }
+
+    /**
+     * Used to register the filling component that receives and renders the autofill suggestions.
+     * Noop if the component hasn't changed or became null.
+     * @param fillingComponent The {@link ManualFillingComponent} displaying suggestions as chips.
+     */
+    private void connectToFillingComponent(@Nullable ManualFillingComponent fillingComponent) {
+        if (mManualFillingComponent == fillingComponent) return;
+        mManualFillingComponent = fillingComponent;
+        if (mManualFillingComponent == null) return;
+        mManualFillingComponent.registerAutofillProvider(mChipProvider, this);
     }
 
     @NativeMethods
