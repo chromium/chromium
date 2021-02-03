@@ -13,13 +13,6 @@ config("compiler") {
   # but on other platforms it's much higher, so a variety of code assumes more
   # will be available. Raise to 8M which matches e.g. macOS.
   ldflags = [ "-Wl,-z,stack-size=0x800000" ]
-
-  if (target_cpu != "arm64") {
-    # TODO(https://crbug.com/1086134): RELR packing of dynamic relocations is
-    # enabled by default in the Fuchsia toolchain, but is not fully supported
-    # in Chromium builds except on ARM64.
-    ldflags += [ "-Wl,--pack-dyn-relocs=none" ]
-  }
 }
 
 # Settings for executables.
