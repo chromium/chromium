@@ -72,10 +72,10 @@ void WebLaunchFilesHelper::DidFinishNavigation(
 namespace {
 
 // On Chrome OS paths that exist on an external mount point need to be treated
-// differently to make sure the native file system code accesses these paths via
+// differently to make sure the File System Access code accesses these paths via
 // the correct file system backend. This method checks if this is the case, and
-// updates `entry_path` to the path that should be used by the native file
-// system implementation.
+// updates `entry_path` to the path that should be used by the File System
+// Access implementation.
 content::FileSystemAccessEntryFactory::PathType MaybeRemapPath(
     base::FilePath* entry_path) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
