@@ -34,8 +34,8 @@ void SodaInstaller::NotifyOnSodaProgress(int percent) {
 }
 
 void SodaInstaller::NotifySodaInstalledForTesting() {
-  has_soda_ = true;
-  has_language_pack_ = true;
+  soda_binary_installed_ = true;
+  language_installed_ = true;
   NotifyOnSodaInstalled();
 }
 

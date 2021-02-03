@@ -42,7 +42,12 @@ class SodaInstaller {
   // Gets the directory path of the installed SODA lib bundle, or an empty path
   // if not installed. Currently Chrome OS only, returns empty path on other
   // platforms.
-  virtual base::FilePath GetSodaLibPath() const = 0;
+  virtual base::FilePath GetSodaBinaryPath() const = 0;
+
+  // Gets the directory path of the installed SODA language bundle, or an empty
+  // path if not installed. Currently Chrome OS only, returns empty path on
+  // other platforms.
+  virtual base::FilePath GetLanguagePath() const = 0;
 
   // Installs the SODA binary. Called by CaptionController when the
   // kLiveCaptionEnabled preference changes. PrefService is passed to share
@@ -82,8 +87,8 @@ class SodaInstaller {
   void NotifyOnSodaProgress(int progress);
 
   base::ObserverList<Observer> observers_;
-  bool has_soda_ = false;
-  bool has_language_pack_ = false;
+  bool soda_binary_installed_ = false;
+  bool language_installed_ = false;
 };
 
 }  // namespace speech

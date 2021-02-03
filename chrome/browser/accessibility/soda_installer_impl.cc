@@ -63,13 +63,18 @@ SodaInstallerImpl::~SodaInstallerImpl() {
   component_updater_observer_.RemoveAll();
 }
 
-base::FilePath SodaInstallerImpl::GetSodaLibPath() const {
-  DLOG(FATAL) << "GetSodaLibPath not supported on this platform";
+base::FilePath SodaInstallerImpl::GetSodaBinaryPath() const {
+  DLOG(FATAL) << "GetSodaBinaryPath not supported on this platform";
+  return base::FilePath();
+}
+
+base::FilePath SodaInstallerImpl::GetLanguagePath() const {
+  DLOG(FATAL) << "GetLanguagePath not supported on this platform";
   return base::FilePath();
 }
 
 void SodaInstallerImpl::InstallSoda(PrefService* prefs) {
-  has_soda_ = false;
+  soda_binary_installed_ = false;
   component_updater::RegisterSodaComponent(
       g_browser_process->component_updater(), prefs,
       g_browser_process->local_state(),
@@ -85,7 +90,7 @@ void SodaInstallerImpl::InstallSoda(PrefService* prefs) {
 }
 
 void SodaInstallerImpl::InstallLanguage(PrefService* prefs) {
-  has_language_pack_ = false;
+  language_installed_ = false;
   component_updater::RegisterSodaLanguageComponent(
       g_browser_process->component_updater(), prefs,
       g_browser_process->local_state(),
@@ -100,7 +105,7 @@ void SodaInstallerImpl::InstallLanguage(PrefService* prefs) {
 
 bool SodaInstallerImpl::IsSodaInstalled() const {
   DCHECK(base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption));
-  return has_soda_ && has_language_pack_;
+  return soda_binary_installed_ && language_installed_;
 }
 
 void SodaInstallerImpl::OnEvent(Events event, const std::string& id) {
@@ -139,16 +144,16 @@ void SodaInstallerImpl::OnEvent(Events event, const std::string& id) {
 }
 
 void SodaInstallerImpl::OnSodaBinaryInstalled() {
-  has_soda_ = true;
-  if (has_language_pack_) {
+  soda_binary_installed_ = true;
+  if (language_installed_) {
     component_updater_observer_.RemoveAll();
     NotifyOnSodaInstalled();
   }
 }
 
 void SodaInstallerImpl::OnSodaLanguagePackInstalled() {
-  has_language_pack_ = true;
-  if (has_soda_) {
+  language_installed_ = true;
+  if (soda_binary_installed_) {
     component_updater_observer_.RemoveAll();
     NotifyOnSodaInstalled();
   }

@@ -33,7 +33,10 @@ class SodaInstallerImpl : public SodaInstaller,
   SodaInstallerImpl& operator=(const SodaInstallerImpl&) = delete;
 
   // Currently only implemented in the chromeos-specific subclass.
-  base::FilePath GetSodaLibPath() const override;
+  base::FilePath GetSodaBinaryPath() const override;
+
+  // Currently only implemented in the chromeos-specific subclass.
+  base::FilePath GetLanguagePath() const override;
 
   // SodaInstaller:
   void InstallSoda(PrefService* prefs) override;

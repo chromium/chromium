@@ -25,7 +25,11 @@ class SodaInstallerImplChromeOS : public SodaInstaller {
 
   // Where the SODA DLC was installed. Cached on completed installation.
   // Empty if SODA DLC not installed yet.
-  base::FilePath GetSodaLibPath() const override;
+  base::FilePath GetSodaBinaryPath() const override;
+
+  // Where the SODA language pack DLC was installed. Cached on completed
+  // installation. Empty if not installed yet.
+  base::FilePath GetLanguagePath() const override;
 
   // SodaInstaller:
   void InstallSoda(PrefService* prefs) override;
@@ -33,16 +37,29 @@ class SodaInstallerImplChromeOS : public SodaInstaller {
   bool IsSodaInstalled() const override;
 
  private:
-  void SetSodaLibPath(base::FilePath new_path);
+  void SetSodaBinaryPath(base::FilePath new_path);
+  void SetLanguagePath(base::FilePath new_path);
 
-  // This function is the InstallCallback for DlcserviceClient::Install().
+  // These functions are the InstallCallbacks for DlcserviceClient::Install().
   void OnSodaInstalled(
       const chromeos::DlcserviceClient::InstallResult& install_result);
+  void OnLanguageInstalled(
+      const chromeos::DlcserviceClient::InstallResult& install_result);
 
-  // This function is the ProgressCallback for DlcserviceClient::Install().
+  // These functions are the ProgressCallbacks for DlcserviceClient::Install().
   void OnSodaProgress(double progress);
+  void OnLanguageProgress(double progress);
+
+  void OnSodaCombinedProgress();
+
+  bool is_soda_downloading_ = false;
+  bool is_language_downloading_ = false;
+
+  double soda_progress_ = 0.0;
+  double language_progress_ = 0.0;
 
   base::FilePath soda_lib_path_;
+  base::FilePath language_path_;
 };
 
 }  // namespace speech
