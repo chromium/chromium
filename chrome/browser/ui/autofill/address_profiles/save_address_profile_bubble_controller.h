@@ -39,7 +39,6 @@ class SaveAddressProfileBubbleController
 
  protected:
   // AutofillBubbleControllerBase::
-  bool HandleDidFinishRelevantNavigation() override;
   PageActionIconType GetPageActionIconType() override;
   void DoShowBubble() override;
 

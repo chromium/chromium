@@ -230,12 +230,6 @@ const char kAutofillEnableOffersInDownstreamDescription[] =
     "When enabled, offer data will be retrieved during downstream and shown in "
     "the dropdown list.";
 
-const char kAutofillEnableStickyPaymentsBubbleName[] =
-    "Enable Autofill payments sticky bubbles";
-const char kAutofillEnableStickyPaymentsBubbleDescription[] =
-    "When enabled, all Autofill payments bubbles will not be dismissed upon "
-    "navigation.";
-
 const char kAutofillEnableToolbarStatusChipName[] =
     "Move Autofill omnibox icons next to the profile avatar icon";
 const char kAutofillEnableToolbarStatusChipDescription[] =

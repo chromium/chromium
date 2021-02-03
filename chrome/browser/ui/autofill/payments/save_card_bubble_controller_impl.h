@@ -137,7 +137,6 @@ class SaveCardBubbleControllerImpl
   virtual void ShowPaymentsSettingsPage();
 
   // AutofillBubbleControllerBase::
-  bool HandleDidFinishRelevantNavigation() override;
   PageActionIconType GetPageActionIconType() override;
   void DoShowBubble() override;
 

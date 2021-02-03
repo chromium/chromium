@@ -24,14 +24,12 @@ extern const base::Feature kAutofillCreditCardAblationExperiment;
 extern const base::Feature kAutofillCreditCardAuthentication;
 extern const base::Feature kAutofillCreditCardUploadFeedback;
 extern const base::Feature kAutofillDownstreamCvcPromptUseGooglePayLogo;
-extern const base::Feature kAutofillEnableFixedPaymentsBubbleLogging;
 extern const base::Feature kAutofillEnableGoogleIssuedCard;
 extern const base::Feature kAutofillEnableOfferNotification;
 extern const base::Feature kAutofillEnableOffersInClankKeyboardAccessory;
 extern const base::Feature kAutofillEnableOffersInDownstream;
 extern const base::Feature
     kAutofillEnableSaveCardInfoBarAccountIndicationFooter;
-extern const base::Feature kAutofillEnableStickyPaymentsBubble;
 extern const base::Feature kAutofillEnableToolbarStatusChip;
 extern const base::Feature kAutofillEnableVirtualCard;
 extern const base::Feature kAutofillSaveCardDismissOnNavigation;

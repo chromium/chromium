@@ -23,37 +23,6 @@ void AutofillBubbleControllerBase::Show() {
   UpdatePageActionIcon();
   DoShowBubble();
   UpdatePageActionIcon();
-  SetShownTimestampToNow();
-}
-
-void AutofillBubbleControllerBase::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableStickyPaymentsBubble)) {
-    return;
-  }
-
-  if (!navigation_handle->IsInMainFrame() || !navigation_handle->HasCommitted())
-    return;
-
-  // Don't react to same-document (fragment) navigations.
-  if (navigation_handle->IsSameDocument())
-    return;
-
-  // Don't do anything if a navigation occurs before a user could reasonably
-  // interact with the bubble.
-  const base::TimeDelta elapsed_time =
-      AutofillClock::Now() - bubble_shown_timestamp_;
-  if (elapsed_time < kCardBubbleSurviveNavigationTime)
-    return;
-
-  if (!HandleDidFinishRelevantNavigation())
-    return;
-
-  if (bubble_view_)
-    bubble_view_->Hide();
-  else
-    UpdatePageActionIcon();
 }
 
 void AutofillBubbleControllerBase::OnVisibilityChanged(
@@ -70,10 +39,6 @@ void AutofillBubbleControllerBase::UpdatePageActionIcon() {
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
   if (browser)
     browser->window()->UpdatePageActionIcon(GetPageActionIconType());
-}
-
-void AutofillBubbleControllerBase::SetShownTimestampToNow() {
-  bubble_shown_timestamp_ = AutofillClock::Now();
 }
 
 void AutofillBubbleControllerBase::HideBubble() {

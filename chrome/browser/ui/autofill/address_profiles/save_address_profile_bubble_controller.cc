@@ -44,10 +44,6 @@ void SaveAddressProfileBubbleController::OnBubbleClosed() {
   UpdatePageActionIcon();
 }
 
-bool SaveAddressProfileBubbleController::HandleDidFinishRelevantNavigation() {
-  return true;
-}
-
 PageActionIconType SaveAddressProfileBubbleController::GetPageActionIconType() {
   return PageActionIconType::kSaveCard;
 }

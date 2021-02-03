@@ -49,7 +49,6 @@ class LocalCardMigrationBubbleControllerImpl
       content::WebContents* web_contents);
 
   // AutofillBubbleControllerBase::
-  bool HandleDidFinishRelevantNavigation() override;
   PageActionIconType GetPageActionIconType() override;
   void DoShowBubble() override;
 

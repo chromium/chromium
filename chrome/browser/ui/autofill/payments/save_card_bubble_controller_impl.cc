@@ -341,16 +341,6 @@ void SaveCardBubbleControllerImpl::OnSaveButton(
         pref_service_->GetInteger(
             prefs::kAutofillAcceptSaveCreditCardPromptState),
         GetSecurityLevel(), GetSyncState());
-
-    // If the experiment is not enabled, update user's previous decision here.
-    // Otherwise since the logging will happen in OnBubbleClosed() which is
-    // invoked after OnSaveButton(), the previous decision should be set there.
-    if (!base::FeatureList::IsEnabled(
-            features::kAutofillEnableFixedPaymentsBubbleLogging)) {
-      pref_service_->SetInteger(
-          prefs::kAutofillAcceptSaveCreditCardPromptState,
-          prefs::PREVIOUS_SAVE_CREDIT_CARD_PROMPT_USER_DECISION_ACCEPTED);
-    }
   }
 }
 
@@ -363,17 +353,6 @@ void SaveCardBubbleControllerImpl::OnCancelButton() {
         pref_service_->GetInteger(
             prefs::kAutofillAcceptSaveCreditCardPromptState),
         GetSecurityLevel(), GetSyncState());
-
-    // If the experiment is not enabled, update user's previous decision here.
-    // Otherwise since the logging will happen in OnBubbleClosed() which is
-    // invoked after OnCancelButton(), the previous decision should be set
-    // there.
-    if (!base::FeatureList::IsEnabled(
-            features::kAutofillEnableFixedPaymentsBubbleLogging)) {
-      pref_service_->SetInteger(
-          prefs::kAutofillAcceptSaveCreditCardPromptState,
-          prefs::PREVIOUS_SAVE_CREDIT_CARD_PROMPT_USER_DECISION_DENIED);
-    }
 
     if (current_bubble_type_ == BubbleType::LOCAL_SAVE) {
       std::move(local_save_card_prompt_callback_).Run(AutofillClient::DECLINED);
@@ -393,10 +372,7 @@ void SaveCardBubbleControllerImpl::OnLegalMessageLinkClicked(const GURL& url) {
           prefs::kAutofillAcceptSaveCreditCardPromptState),
       GetSecurityLevel(), GetSyncState());
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableFixedPaymentsBubbleLogging)) {
-    AutofillMetrics::LogCreditCardUploadLegalMessageLinkClicked();
-  }
+  AutofillMetrics::LogCreditCardUploadLegalMessageLinkClicked();
 }
 
 void SaveCardBubbleControllerImpl::OnManageCardsClicked() {
@@ -419,9 +395,7 @@ void SaveCardBubbleControllerImpl::OnBubbleClosed(
   set_bubble_view(nullptr);
 
   // Log save card prompt result according to the closed reason.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableFixedPaymentsBubbleLogging) &&
-      (current_bubble_type_ == BubbleType::LOCAL_SAVE ||
+  if ((current_bubble_type_ == BubbleType::LOCAL_SAVE ||
        current_bubble_type_ == BubbleType::UPLOAD_SAVE)) {
     AutofillMetrics::SaveCardPromptResultMetric metric;
     switch (closed_reason) {
@@ -564,36 +538,6 @@ AutofillBubbleBase* SaveCardBubbleControllerImpl::GetSaveBubbleView() const {
   return GetSaveCardBubbleView();
 }
 
-bool SaveCardBubbleControllerImpl::HandleDidFinishRelevantNavigation() {
-  // Nothing to do if there's no bubble available.
-  if (current_bubble_type_ == BubbleType::INACTIVE)
-    return false;
-
-  if (current_bubble_type_ == BubbleType::LOCAL_SAVE ||
-      current_bubble_type_ == BubbleType::UPLOAD_SAVE) {
-    AutofillMetrics::LogSaveCardPromptMetric(
-        bubble_view() ? AutofillMetrics::SAVE_CARD_PROMPT_END_NAVIGATION_SHOWING
-                      : AutofillMetrics::SAVE_CARD_PROMPT_END_NAVIGATION_HIDDEN,
-        is_upload_save_, is_reshow_, options_,
-        pref_service_->GetInteger(
-            prefs::kAutofillAcceptSaveCreditCardPromptState),
-        GetSecurityLevel(), GetSyncState());
-
-    if (current_bubble_type_ == BubbleType::LOCAL_SAVE) {
-      DCHECK(!local_save_card_prompt_callback_.is_null());
-      std::move(local_save_card_prompt_callback_).Run(AutofillClient::IGNORED);
-    } else {  // BubbleType::UPLOAD_SAVE
-      DCHECK(!upload_save_card_prompt_callback_.is_null());
-      std::move(upload_save_card_prompt_callback_)
-          .Run(AutofillClient::IGNORED, {});
-    }
-  }
-
-  // Otherwise, get rid of the bubble and icon.
-  current_bubble_type_ = BubbleType::INACTIVE;
-  return true;
-}
-
 PageActionIconType SaveCardBubbleControllerImpl::GetPageActionIconType() {
   return PageActionIconType::kSaveCard;
 }
@@ -614,15 +558,12 @@ void SaveCardBubbleControllerImpl::DoShowBubble() {
           pref_service_->GetInteger(
               prefs::kAutofillAcceptSaveCreditCardPromptState),
           GetSecurityLevel(), GetSyncState());
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillEnableFixedPaymentsBubbleLogging)) {
-        AutofillMetrics::LogSaveCardPromptOfferMetric(
-            AutofillMetrics::SAVE_CARD_PROMPT_SHOWN, is_upload_save_,
-            is_reshow_, options_,
-            pref_service_->GetInteger(
-                prefs::kAutofillAcceptSaveCreditCardPromptState),
-            GetSecurityLevel(), GetSyncState());
-      }
+      AutofillMetrics::LogSaveCardPromptOfferMetric(
+          AutofillMetrics::SAVE_CARD_PROMPT_SHOWN, is_upload_save_, is_reshow_,
+          options_,
+          pref_service_->GetInteger(
+              prefs::kAutofillAcceptSaveCreditCardPromptState),
+          GetSecurityLevel(), GetSyncState());
       break;
     case BubbleType::MANAGE_CARDS:
       AutofillMetrics::LogManageCardsPromptMetric(
@@ -685,8 +626,6 @@ void SaveCardBubbleControllerImpl::ShowIconOnly() {
   // explicitly clicks the icon.
   UpdatePageActionIcon();
 
-  SetShownTimestampToNow();
-
   switch (current_bubble_type_) {
     case BubbleType::UPLOAD_SAVE:
     case BubbleType::LOCAL_SAVE:
@@ -696,15 +635,12 @@ void SaveCardBubbleControllerImpl::ShowIconOnly() {
           pref_service_->GetInteger(
               prefs::kAutofillAcceptSaveCreditCardPromptState),
           GetSecurityLevel(), GetSyncState());
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillEnableFixedPaymentsBubbleLogging)) {
-        AutofillMetrics::LogSaveCardPromptOfferMetric(
-            AutofillMetrics::SAVE_CARD_PROMPT_NOT_SHOWN_MAX_STRIKES_REACHED,
-            is_upload_save_, is_reshow_, options_,
-            pref_service_->GetInteger(
-                prefs::kAutofillAcceptSaveCreditCardPromptState),
-            GetSecurityLevel(), GetSyncState());
-      }
+      AutofillMetrics::LogSaveCardPromptOfferMetric(
+          AutofillMetrics::SAVE_CARD_PROMPT_NOT_SHOWN_MAX_STRIKES_REACHED,
+          is_upload_save_, is_reshow_, options_,
+          pref_service_->GetInteger(
+              prefs::kAutofillAcceptSaveCreditCardPromptState),
+          GetSecurityLevel(), GetSyncState());
       break;
     case BubbleType::FAILURE:
       AutofillMetrics::LogCreditCardUploadFeedbackMetric(

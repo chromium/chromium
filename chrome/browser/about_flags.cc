@@ -6422,13 +6422,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAppCacheDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kAppCache)},
 
-    {"autofill-enable-sticky-payments-bubble",
-     flag_descriptions::kAutofillEnableStickyPaymentsBubbleName,
-     flag_descriptions::kAutofillEnableStickyPaymentsBubbleDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableStickyPaymentsBubble)},
-
     {"align-font-display-auto-lcp",
      flag_descriptions::kAlignFontDisplayAutoTimeoutWithLCPGoalName,
      flag_descriptions::kAlignFontDisplayAutoTimeoutWithLCPGoalDescription,

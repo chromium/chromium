@@ -293,11 +293,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "autofill-enable-sticky-payments-bubble",
-    "owners": [ "siyua" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "autofill-enable-toolbar-status-chip",
     "owners": [ "siyua" ],
     "expiry_milestone": 96

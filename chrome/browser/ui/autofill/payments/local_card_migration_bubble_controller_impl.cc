@@ -98,53 +98,28 @@ void LocalCardMigrationBubbleControllerImpl::OnBubbleClosed(
   }
 
   // Log local card migration bubble result according to the closed reason.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableFixedPaymentsBubbleLogging)) {
-    AutofillMetrics::LocalCardMigrationBubbleResultMetric metric;
-    switch (closed_reason) {
-      case PaymentsBubbleClosedReason::kAccepted:
-        metric = AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_ACCEPTED;
-        break;
-      case PaymentsBubbleClosedReason::kClosed:
-        metric = AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_CLOSED;
-        break;
-      case PaymentsBubbleClosedReason::kNotInteracted:
-        metric = AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_NOT_INTERACTED;
-        break;
-      case PaymentsBubbleClosedReason::kLostFocus:
-        metric = AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_LOST_FOCUS;
-        break;
-      case PaymentsBubbleClosedReason::kUnknown:
-        metric = AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_RESULT_UNKNOWN;
-        break;
-      case PaymentsBubbleClosedReason::kCancelled:
-        NOTREACHED();
-        return;
-    }
-    AutofillMetrics::LogLocalCardMigrationBubbleResultMetric(metric,
-                                                             is_reshow_);
+  AutofillMetrics::LocalCardMigrationBubbleResultMetric metric;
+  switch (closed_reason) {
+    case PaymentsBubbleClosedReason::kAccepted:
+      metric = AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_ACCEPTED;
+      break;
+    case PaymentsBubbleClosedReason::kClosed:
+      metric = AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_CLOSED;
+      break;
+    case PaymentsBubbleClosedReason::kNotInteracted:
+      metric = AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_NOT_INTERACTED;
+      break;
+    case PaymentsBubbleClosedReason::kLostFocus:
+      metric = AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_LOST_FOCUS;
+      break;
+    case PaymentsBubbleClosedReason::kUnknown:
+      metric = AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_RESULT_UNKNOWN;
+      break;
+    case PaymentsBubbleClosedReason::kCancelled:
+      NOTREACHED();
+      return;
   }
-}
-
-bool LocalCardMigrationBubbleControllerImpl::
-    HandleDidFinishRelevantNavigation() {
-  // Nothing to do if there's no bubble available.
-  if (!local_card_migration_bubble_closure_)
-    return false;
-
-  local_card_migration_bubble_closure_.Reset();
-  for (LocalCardMigrationControllerObserver& observer : observer_list_) {
-    observer.OnMigrationNoLongerAvailable();
-  }
-
-  AutofillMetrics::LogLocalCardMigrationBubbleUserInteractionMetric(
-      bubble_view()
-          ? AutofillMetrics::
-                LOCAL_CARD_MIGRATION_BUBBLE_CLOSED_NAVIGATED_WHILE_SHOWING
-          : AutofillMetrics::
-                LOCAL_CARD_MIGRATION_BUBBLE_CLOSED_NAVIGATED_WHILE_HIDDEN,
-      is_reshow_);
-  return true;
+  AutofillMetrics::LogLocalCardMigrationBubbleResultMetric(metric, is_reshow_);
 }
 
 PageActionIconType

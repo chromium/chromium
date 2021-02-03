@@ -150,9 +150,6 @@ extern const char kAutofillEnableOffersInClankKeyboardAccessoryDescription[];
 extern const char kAutofillEnableOffersInDownstreamName[];
 extern const char kAutofillEnableOffersInDownstreamDescription[];
 
-extern const char kAutofillEnableStickyPaymentsBubbleName[];
-extern const char kAutofillEnableStickyPaymentsBubbleDescription[];
-
 extern const char kAutofillEnableToolbarStatusChipName[];
 extern const char kAutofillEnableToolbarStatusChipDescription[];
 

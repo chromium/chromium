@@ -1157,21 +1157,7 @@ IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTestForStatusChip,
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-class LocalCardMigrationBrowserTestForFixedLogging
-    : public LocalCardMigrationBrowserTest {
- protected:
-  LocalCardMigrationBrowserTestForFixedLogging() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kAutofillEnableFixedPaymentsBubbleLogging);
-  }
-
-  ~LocalCardMigrationBrowserTestForFixedLogging() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTestForFixedLogging,
+IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTest,
                        ClosedReason_BubbleAccepted) {
   base::HistogramTester histogram_tester;
 
@@ -1185,7 +1171,7 @@ IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTestForFixedLogging,
       AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_ACCEPTED, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTestForFixedLogging,
+IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTest,
                        ClosedReason_BubbleClosed) {
   base::HistogramTester histogram_tester;
 
@@ -1200,7 +1186,7 @@ IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTestForFixedLogging,
       AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_CLOSED, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTestForFixedLogging,
+IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTest,
                        ClosedReason_BubbleNotInteracted) {
   base::HistogramTester histogram_tester;
 
@@ -1217,7 +1203,7 @@ IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTestForFixedLogging,
       AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_NOT_INTERACTED, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTestForFixedLogging,
+IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTest,
                        ClosedReason_BubbleLostFocus) {
   base::HistogramTester histogram_tester;
 

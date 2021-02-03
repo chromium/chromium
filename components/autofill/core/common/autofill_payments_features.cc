@@ -55,12 +55,6 @@ const base::Feature kAutofillDownstreamCvcPromptUseGooglePayLogo{
     "AutofillDownstreamCvcPromptUseGooglePayLogo",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// When enabled, autofill payments bubbles' result will be recorded as either
-// 'accepted', 'cancelled', 'closed', 'not interacted' or 'lost focus'.
-const base::Feature kAutofillEnableFixedPaymentsBubbleLogging{
-    "AutofillEnableFixedPaymentsBubbleLogging",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Controls whether we show a Google-issued card in the suggestions list.
 const base::Feature kAutofillEnableGoogleIssuedCard{
     "AutofillEnableGoogleIssuedCard", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -86,11 +80,6 @@ const base::Feature kAutofillEnableOffersInDownstream{
 const base::Feature kAutofillEnableSaveCardInfoBarAccountIndicationFooter{
     "AutofillEnableSaveCardInfoBarAccountIndicationFooter",
     base::FEATURE_DISABLED_BY_DEFAULT};
-
-// When enabled, all payments related bubbles will not be dismissed upon page
-// navigation.
-const base::Feature kAutofillEnableStickyPaymentsBubble{
-    "AutofillEnableStickyPaymentsBubble", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // When enabled, Autofill data related icons will be shown in the status
 // chip in toolbar along with the avatar toolbar button.

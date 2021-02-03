@@ -22,21 +22,10 @@ class AutofillBubbleControllerBase : public content::WebContentsObserver {
   ~AutofillBubbleControllerBase() override;
 
   // content::WebContentsObserver:
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
   void WebContentsDestroyed() override;
 
  protected:
-  // Called in DidFinishNavigation() if the navigation may result in an action
-  // in the bubble. Isn't called when the navigation happens too quickly or is a
-  // navigation to the same document. Check DidFinishNavigation() for details.
-  // Returns true if this navigation is relevant from the point of view of the
-  // specific controller (e.g. whether the bubble is available or not).
-  // Subclasses usually override this method to do custom work upon
-  // navigation (e.g. reporting metrics).
-  virtual bool HandleDidFinishRelevantNavigation() = 0;
-
   virtual PageActionIconType GetPageActionIconType() = 0;
 
   // Subclasses should implement this method to actually show the bubble and
@@ -61,9 +50,6 @@ class AutofillBubbleControllerBase : public content::WebContentsObserver {
   // Weak reference. Will be nullptr if no bubble is currently shown.
   AutofillBubbleBase* bubble_view_ = nullptr;
 
-  // The time at which the bubble was shown. If it has been visible for less
-  // time than some reasonable limit, don't close the bubble upon navigation.
-  base::Time bubble_shown_timestamp_;
 };
 
 }  // namespace autofill
