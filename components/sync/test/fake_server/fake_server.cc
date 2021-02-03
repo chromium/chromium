@@ -35,6 +35,9 @@ using syncer::LoopbackServerEntity;
 using syncer::ModelType;
 using syncer::ModelTypeSet;
 
+const char switches::kDisableFakeServerFailureOutput[] =
+    "disable-fake-server-failure-output";
+
 namespace fake_server {
 
 FakeServer::FakeServer()
@@ -654,7 +657,7 @@ void FakeServer::LogForTestFailure(const base::Location& location,
                                    const std::string& title,
                                    const std::string& body) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          "disable-fake-server-failure-output")) {
+          switches::kDisableFakeServerFailureOutput)) {
     return;
   }
   gtest_scoped_traces_.push_back(std::make_unique<testing::ScopedTrace>(

@@ -10,6 +10,12 @@
 #include "base/run_loop.h"
 #include "base/time/time.h"
 
+namespace switches {
+
+extern const char kStatusChangeCheckerTimeoutInSeconds[];
+
+}  // namespace switches
+
 // Interface for a helper class that can pump the message loop while waiting
 // for a certain state transition to take place.
 //
@@ -18,6 +24,9 @@
 //
 // The instances of this class are intended to be single-use.  It doesn't make
 // sense to call StartBlockingWait() more than once.
+//
+// |switches::kStatusChangeCheckerTimeoutInSeconds| can be passed to the command
+// line to override the timeout used by instances of this class.
 class StatusChangeChecker {
  public:
   StatusChangeChecker();

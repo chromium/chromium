@@ -30,6 +30,12 @@
 #include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+namespace switches {
+
+extern const char kDisableFakeServerFailureOutput[];
+
+}  // namespace switches
+
 namespace fake_server {
 
 // This function only compares one part of the markers, the time-independent
@@ -44,6 +50,8 @@ bool AreFullUpdateTypeDataProgressMarkersEquivalent(
 
 // A fake version of the Sync server used for testing. This class is not thread
 // safe.
+// |switches::kDisableFakeServerFailureOutput| can be passed to the command line
+// to avoid debug logs upon test failure.
 class FakeServer : public syncer::LoopbackServer::ObserverForTests {
  public:
   class Observer {
@@ -250,7 +258,9 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
       const sync_pb::ClientToServerMessage& message,
       sync_pb::ClientToServerResponse* response);
 
-  // Logs a string that is meant to be shown in case the running test fails.
+  // Logs a string that is meant to be shown in case the running test fails,
+  // as long as |switches::kDisableFakeServerFailureOutput| hasn't been passed
+  // to the command line.
   void LogForTestFailure(const base::Location& location,
                          const std::string& title,
                          const std::string& body);

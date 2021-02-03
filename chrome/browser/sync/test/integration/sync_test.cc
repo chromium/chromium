@@ -109,13 +109,8 @@
 
 using syncer::ProfileSyncService;
 
-namespace switches {
-const char kPasswordFileForTest[] = "password-file-for-test";
-const char kSyncUserForTest[] = "sync-user-for-test";
-const char kSyncPasswordForTest[] = "sync-password-for-test";
-}  // namespace switches
-
 namespace {
+
 // Sender ID coming from the Firebase console.
 const char kInvalidationGCMSenderId[] = "8181035976";
 
@@ -236,6 +231,10 @@ instance_id::InstanceIDDriver* GetOrCreateInstanceIDDriver(
 }
 
 }  // namespace
+
+const char switches::kPasswordFileForTest[] = "password-file-for-test";
+const char switches::kSyncUserForTest[] = "sync-user-for-test";
+const char switches::kSyncPasswordForTest[] = "sync-password-for-test";
 
 SyncTest::FakeInstanceID::FakeInstanceID(const std::string& app_id,
                                          gcm::GCMDriver* gcm_driver)
