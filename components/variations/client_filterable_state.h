@@ -64,6 +64,9 @@ struct ClientFilterableState {
   // The hardware form factor that Chrome is running on.
   Study::FormFactor form_factor;
 
+  // The CPU architecture on which Chrome is running.
+  Study::CpuArchitecture cpu_architecture;
+
   // The OS on which Chrome is running.
   Study::Platform platform;
 

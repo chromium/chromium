@@ -66,6 +66,25 @@ bool CheckStudyFormFactor(const Study::Filter& filter,
   return !base::Contains(filter.exclude_form_factor(), form_factor);
 }
 
+bool CheckStudyCpuArchitecture(const Study::Filter& filter,
+                               Study::CpuArchitecture cpu_architecture) {
+  // Empty allowlist and denylist signifies matching any CPU architecture.
+  if (filter.cpu_architecture_size() == 0 &&
+      filter.exclude_cpu_architecture_size() == 0) {
+    return true;
+  }
+
+  // Allow the cpu_architecture if it matches the allowlist.
+  // Note if both a allowlist and denylist are specified, the denylist is
+  // ignored. We do not expect both to be present for Chrome due to server-side
+  // checks.
+  if (filter.cpu_architecture_size() > 0)
+    return base::Contains(filter.cpu_architecture(), cpu_architecture);
+
+  // Omit if we match the denylist.
+  return !base::Contains(filter.exclude_cpu_architecture(), cpu_architecture);
+}
+
 bool CheckStudyHardwareClass(const Study::Filter& filter,
                              const std::string& hardware_class) {
   // Empty hardware_class and exclude_hardware_class matches all.
@@ -275,6 +294,13 @@ bool ShouldAddStudy(const Study& study,
     if (!CheckStudyFormFactor(study.filter(), client_state.form_factor)) {
       DVLOG(1) << "Filtered out study " << study.name() <<
                   " due to form factor.";
+      return false;
+    }
+
+    if (!CheckStudyCpuArchitecture(study.filter(),
+                                   client_state.cpu_architecture)) {
+      DVLOG(1) << "Filtered out study " << study.name()
+               << " due to cpu architecture.";
       return false;
     }
 

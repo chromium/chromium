@@ -121,6 +121,29 @@ RestrictionPolicy GetVariationPolicyRestriction(PrefService* local_state) {
   return static_cast<RestrictionPolicy>(value);
 }
 
+Study::CpuArchitecture GetCurrentCpuArchitecture() {
+  std::string process_arch = base::SysInfo::ProcessCPUArchitecture();
+  if (process_arch == "ARM_64")
+    return Study::ARM64;
+  if (process_arch == "ARM")
+    return Study::ARM32;
+  if (process_arch == "x86")
+    return Study::X86_32;
+  if (process_arch == "x86_64") {
+    std::string os_arch = base::SysInfo::OperatingSystemArchitecture();
+    if (base::StartsWith(os_arch, "arm",
+                         base::CompareCase::INSENSITIVE_ASCII) ||
+        base::EqualsCaseInsensitiveASCII(os_arch, "aarch64")) {
+      // x86-64 binary running on an arm64 host via the Rosetta 2 binary
+      // translator.
+      return Study::TRANSLATED_X86_64;
+    }
+    return Study::X86_64;
+  }
+  NOTREACHED();
+  return Study::X86_64;
+}
+
 }  // namespace
 
 VariationsFieldTrialCreator::VariationsFieldTrialCreator(
@@ -224,6 +247,7 @@ VariationsFieldTrialCreator::GetClientFilterableStateForVersion(
   state->channel =
       ConvertProductChannelToStudyChannel(client_->GetChannelForVariations());
   state->form_factor = client_->GetCurrentFormFactor();
+  state->cpu_architecture = GetCurrentCpuArchitecture();
   state->platform = GetPlatform();
   // TODO(crbug/1111131): Expand to other platforms.
 #if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
