@@ -77,21 +77,22 @@ int GetNumRenderers(Browser* browser) {
   return static_cast<int>(render_process_hosts.size());
 }
 
-void RequestGlobalDumpCallback(base::Closure quit_closure,
+void RequestGlobalDumpCallback(base::OnceClosure quit_closure,
                                bool success,
                                uint64_t) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, quit_closure);
+  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                std::move(quit_closure));
   ASSERT_TRUE(success);
 }
 
 void OnStartTracingDoneCallback(
     base::trace_event::MemoryDumpLevelOfDetail explicit_dump_type,
-    base::Closure quit_closure) {
+    base::OnceClosure quit_closure) {
   memory_instrumentation::MemoryInstrumentation::GetInstance()
       ->RequestGlobalDumpAndAppendToTrace(
           MemoryDumpType::EXPLICITLY_TRIGGERED, explicit_dump_type,
           MemoryDumpDeterminism::NONE,
-          BindOnce(&RequestGlobalDumpCallback, quit_closure));
+          BindOnce(&RequestGlobalDumpCallback, std::move(quit_closure)));
 }
 
 class ProcessMemoryMetricsEmitterFake : public ProcessMemoryMetricsEmitter {

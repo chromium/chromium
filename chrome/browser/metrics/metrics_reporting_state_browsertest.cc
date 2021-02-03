@@ -116,10 +116,10 @@ void ChromeBrowserMainExtraPartsChecker::PostEarlyInitialization() {
 
 // Callback from changing whether reporting is enabled.
 void OnMetricsReportingStateChanged(bool* new_state_ptr,
-                                    base::Closure run_loop_closure,
+                                    base::OnceClosure run_loop_closure,
                                     bool new_state) {
   *new_state_ptr = new_state;
-  run_loop_closure.Run();
+  std::move(run_loop_closure).Run();
 }
 
 IN_PROC_BROWSER_TEST_P(MetricsReportingStateTest, ChangeMetricsReportingState) {
