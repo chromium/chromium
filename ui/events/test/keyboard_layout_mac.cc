@@ -40,7 +40,17 @@ PlatformKeyboardLayout ScopedKeyboardLayout::GetActiveLayout() {
 
 void ScopedKeyboardLayout::ActivateLayout(PlatformKeyboardLayout layout) {
   DCHECK(layout);
-  OSStatus result = TISSelectInputSource(layout);
+  // According to the documentation in HIToolbox's TextInputSources.h
+  // (recommended reading), TISSelectInputSource() can fail if the input source
+  // isn't "selectable" or "enabled".
+  //
+  // On the bots, for some reason, sometimes the US keyboard layout isn't
+  // "enabled" even though it is present - we aren't sure why this happens,
+  // perhaps if input sources have never been switched on this bot before? In
+  // any case, it's harmless to re-enable it here if it's already enabled.
+  OSStatus result = TISEnableInputSource(layout);
+  DCHECK_EQ(noErr, result);
+  result = TISSelectInputSource(layout);
   DCHECK_EQ(noErr, result);
 }
 
