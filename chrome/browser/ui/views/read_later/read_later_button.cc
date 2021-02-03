@@ -9,10 +9,12 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/string16.h"
+#include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/read_later/reading_list_model_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_view.h"
@@ -31,9 +33,11 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/ink_drop_mask.h"
+#include "ui/views/background.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/button_controller.h"
@@ -75,6 +79,15 @@ void RecordBookmarkBarState(Browser* browser) {
       "Bookmarks.BookmarksBarStatus.OnReadingListOpened", state);
 }
 
+// Note this matches the background base layer alpha used in ToolbarButton.
+constexpr SkAlpha kBackgroundBaseLayerAlpha = 204;
+constexpr base::TimeDelta kHighlightShowDuration =
+    base::TimeDelta::FromMilliseconds(150);
+constexpr base::TimeDelta kHighlightHideDuration =
+    base::TimeDelta::FromMilliseconds(650);
+constexpr base::TimeDelta kHighlightDuration =
+    base::TimeDelta::FromMilliseconds(2250);
+
 }  // namespace
 
 ReadLaterButton::ReadLaterButton(Browser* browser)
@@ -91,7 +104,14 @@ ReadLaterButton::ReadLaterButton(Browser* browser)
       widget_open_timer_(base::BindRepeating([](base::TimeDelta time_elapsed) {
         base::UmaHistogramMediumTimes("ReadingList.WindowDisplayedDuration",
                                       time_elapsed);
-      })) {
+      })),
+      highlight_color_animation_(
+          std::make_unique<HighlightColorAnimation>(this)) {
+  reading_list_model_ =
+      ReadingListModelFactory::GetForBrowserContext(browser_->profile());
+  if (reading_list_model_)
+    reading_list_model_scoped_observation_.Observe(reading_list_model_);
+
   SetImageLabelSpacing(ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
 
@@ -135,11 +155,15 @@ void ReadLaterButton::OnThemeChanged() {
   const ui::ThemeProvider* theme_provider = GetThemeProvider();
   if (!theme_provider)
     return;
-  const SkColor color =
-      theme_provider->GetColor(ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON);
-  SetEnabledTextColors(color);
-  SetImageModel(views::Button::STATE_NORMAL,
-                ui::ImageModel::FromVectorIcon(kReadLaterIcon, color));
+  highlight_color_animation_->SetColor(
+      ToolbarButton::AdjustHighlightColorForContrast(
+          theme_provider, gfx::kGoogleBlue300, gfx::kGoogleBlue600,
+          gfx::kGoogleBlue050, gfx::kGoogleBlue900));
+  SetEnabledTextColors(highlight_color_animation_->GetTextColor());
+  SetImageModel(
+      views::Button::STATE_NORMAL,
+      ui::ImageModel::FromVectorIcon(
+          kReadLaterIcon, highlight_color_animation_->GetIconColor()));
 
   LabelButton::OnThemeChanged();
 }
@@ -151,9 +175,28 @@ void ReadLaterButton::OnWidgetDestroying(views::Widget* widget) {
   bubble_widget_observation_.Reset();
 }
 
+void ReadLaterButton::ReadingListModelBeingDeleted(
+    const ReadingListModel* model) {
+  DCHECK(model == reading_list_model_);
+  DCHECK(reading_list_model_scoped_observation_.IsObservingSource(
+      reading_list_model_));
+  reading_list_model_scoped_observation_.Reset();
+  reading_list_model_ = nullptr;
+}
+
+void ReadLaterButton::ReadingListDidAddEntry(const ReadingListModel* model,
+                                             const GURL& url,
+                                             reading_list::EntrySource source) {
+  if (source == reading_list::EntrySource::ADDED_VIA_CURRENT_APP &&
+      BrowserView::GetBrowserViewForBrowser(browser_)->IsActive()) {
+    highlight_color_animation_->Show();
+  }
+}
+
 void ReadLaterButton::ButtonPressed() {
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser_);
+  highlight_color_animation_->Hide();
 
   if (browser_view->side_panel()) {
     if (!read_later_side_panel_bubble_) {
@@ -189,6 +232,130 @@ void ReadLaterButton::ButtonPressed() {
       widget_open_timer_.Reset(webui_bubble_manager_->GetBubbleWidget());
     }
   }
+}
+
+void ReadLaterButton::UpdateColors() {
+  if (!GetThemeProvider())
+    return;
+
+  const int highlight_radius =
+      ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
+          views::EMPHASIS_MAXIMUM, size());
+  SetEnabledTextColors(highlight_color_animation_->GetTextColor());
+  SetImageModel(
+      views::Button::STATE_NORMAL,
+      ui::ImageModel::FromVectorIcon(
+          kReadLaterIcon, highlight_color_animation_->GetIconColor()));
+  base::Optional<SkColor> background_color =
+      highlight_color_animation_->GetBackgroundColor();
+  if (background_color) {
+    SetBackground(views::CreateBackgroundFromPainter(
+        views::Painter::CreateSolidRoundRectPainter(
+            *background_color, highlight_radius, gfx::Insets(0))));
+  } else {
+    SetBackground(nullptr);
+  }
+}
+
+ReadLaterButton::HighlightColorAnimation::HighlightColorAnimation(
+    ReadLaterButton* parent)
+    : parent_(parent),
+      highlight_color_animation_(
+          std::vector<gfx::MultiAnimation::Part>{
+              gfx::MultiAnimation::Part(kHighlightShowDuration,
+                                        gfx::Tween::FAST_OUT_SLOW_IN),
+              gfx::MultiAnimation::Part(kHighlightDuration,
+                                        gfx::Tween::Type::LINEAR),
+              gfx::MultiAnimation::Part(kHighlightHideDuration,
+                                        gfx::Tween::FAST_OUT_SLOW_IN)},
+          gfx::MultiAnimation::kDefaultTimerInterval) {
+  highlight_color_animation_.set_delegate(this);
+  highlight_color_animation_.set_continuous(false);
+}
+
+ReadLaterButton::HighlightColorAnimation::~HighlightColorAnimation() = default;
+
+void ReadLaterButton::HighlightColorAnimation::Show() {
+  // Do nothing if an animation is already showing.
+  if (highlight_color_animation_.is_animating())
+    return;
+
+  highlight_color_animation_.Start();
+  parent_->UpdateColors();
+}
+
+void ReadLaterButton::HighlightColorAnimation::Hide() {
+  ClearHighlightColor();
+}
+
+SkColor ReadLaterButton::HighlightColorAnimation::GetTextColor() const {
+  SkColor original_text_color = color_utils::GetColorWithMaxContrast(
+      parent_->GetThemeProvider()->GetColor(ThemeProperties::COLOR_TOOLBAR));
+  return FadeWithAnimation(highlight_color_, original_text_color);
+}
+
+base::Optional<SkColor>
+ReadLaterButton::HighlightColorAnimation::GetBackgroundColor() const {
+  if (!highlight_color_animation_.is_animating())
+    return base::nullopt;
+  SkColor original_bg_color = SkColorSetA(
+      ToolbarButton::GetDefaultBackgroundColor(parent_->GetThemeProvider()),
+      kBackgroundBaseLayerAlpha);
+  SkColor highlight_bg_color = color_utils::GetResultingPaintColor(
+      SkColorSetA(highlight_color_, SkColorGetA(highlight_color_) *
+                                        kToolbarInkDropHighlightVisibleOpacity),
+      original_bg_color);
+  return FadeWithAnimation(highlight_bg_color, original_bg_color);
+}
+
+SkColor ReadLaterButton::HighlightColorAnimation::GetIconColor() const {
+  SkColor original_icon_color = parent_->GetThemeProvider()->GetColor(
+      ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON);
+  return FadeWithAnimation(highlight_color_, original_icon_color);
+}
+
+void ReadLaterButton::HighlightColorAnimation::AnimationEnded(
+    const gfx::Animation* animation) {
+  ClearHighlightColor();
+}
+
+void ReadLaterButton::HighlightColorAnimation::AnimationProgressed(
+    const gfx::Animation* animation) {
+  parent_->UpdateColors();
+}
+
+SkColor ReadLaterButton::HighlightColorAnimation::FadeWithAnimation(
+    SkColor target_color,
+    SkColor original_color) const {
+  if (!highlight_color_animation_.is_animating())
+    return original_color;
+
+  switch (highlight_color_animation_.current_part_index()) {
+    case 0:
+      // Fade in.
+      return gfx::Tween::ColorValueBetween(
+          highlight_color_animation_.GetCurrentValue(), original_color,
+          target_color);
+      break;
+    case 1:
+      // Highlight shown.
+      return target_color;
+      break;
+    case 2:
+      // Fade out.
+      return gfx::Tween::ColorValueBetween(
+          highlight_color_animation_.GetCurrentValue(), target_color,
+          original_color);
+      break;
+    default:
+      NOTREACHED();
+  }
+  return original_color;
+}
+
+void ReadLaterButton::HighlightColorAnimation::ClearHighlightColor() {
+  highlight_color_animation_.Stop();
+  parent_->UpdateColors();
 }
 
 BEGIN_METADATA(ReadLaterButton, views::LabelButton)
