@@ -753,13 +753,7 @@ crbug.com/1066577 external/wpt/css/css-lists/li-value-reversed-005.html [ Failur
 crbug.com/1066577 external/wpt/css/css-lists/li-value-reversed-004.html [ Failure ]
 
 # [css-counter-styles-3]
-# Implemented as custom counter styles, but not exactly match existing behavior:
-# - Complex CJK styles should fallback to 'cjk-decimal', not 'decimal'
-# - CJK styles should support larger value ranges, matching the old behavior
 crbug.com/687225 fast/css/content-counter-large-negative-cjk.html [ Failure ]
-crbug.com/687225 fast/lists/css3-counter-styles-054.html [ Failure ]
-crbug.com/687225 fast/lists/css3-counter-styles-059.html [ Failure ]
-crbug.com/687225 fast/lists/css3-counter-styles-064.html [ Failure ]
 # Missing ref files for these tests
 crbug.com/687225 external/wpt/css/css-counter-styles/* [ Skip ]
 

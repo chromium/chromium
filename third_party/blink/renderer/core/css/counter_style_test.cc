@@ -509,4 +509,70 @@ TEST_F(CounterStyleTest, UpperArmenian) {
   }
 }
 
+TEST_F(CounterStyleTest, KoreanHangulFormal) {
+  // Verifies that our 'korean-hangul-formal' implementation matches the spec in
+  // the officially specified range 1-9999.
+  // https://drafts.csswg.org/css-counter-styles-3/#korean-hangul-formal
+  const CounterStyle& korean_hangul_formal_as_specced =
+      AddCounterStyle("korean-hangul-formal-as-specced", R"CSS(
+    system: additive;
+    range: -9999 9999;
+    additive-symbols: 9000 \AD6C\CC9C, 8000 \D314\CC9C, 7000 \CE60\CC9C, 6000 \C721\CC9C, 5000 \C624\CC9C, 4000 \C0AC\CC9C, 3000 \C0BC\CC9C, 2000 \C774\CC9C, 1000 \C77C\CC9C, 900 \AD6C\BC31, 800 \D314\BC31, 700 \CE60\BC31, 600 \C721\BC31, 500 \C624\BC31, 400 \C0AC\BC31, 300 \C0BC\BC31, 200 \C774\BC31, 100 \C77C\BC31, 90 \AD6C\C2ED, 80 \D314\C2ED, 70 \CE60\C2ED, 60 \C721\C2ED, 50 \C624\C2ED, 40 \C0AC\C2ED, 30 \C0BC\C2ED, 20 \C774\C2ED, 10 \C77C\C2ED, 9 \AD6C, 8 \D314, 7 \CE60, 6 \C721, 5 \C624, 4 \C0AC, 3 \C0BC, 2 \C774, 1 \C77C, 0 \C601;
+    negative: "\B9C8\C774\B108\C2A4  ";
+  )CSS");
+  const CounterStyle& korean_hangul_formal_as_implemented =
+      GetCounterStyle("korean-hangul-formal");
+  for (int value = -9999; value <= 9999; ++value) {
+    String expected =
+        korean_hangul_formal_as_specced.GenerateRepresentation(value);
+    String actual =
+        korean_hangul_formal_as_implemented.GenerateRepresentation(value);
+    EXPECT_EQ(expected, actual);
+  }
+}
+
+TEST_F(CounterStyleTest, KoreanHanjaFormal) {
+  // Verifies that our 'korean-hanja-formal' implementation matches the spec in
+  // the officially specified range 1-9999.
+  // https://drafts.csswg.org/css-counter-styles-3/#korean-hanja-formal
+  const CounterStyle& korean_hanja_formal_as_specced =
+      AddCounterStyle("korean-hanja-formal-as-specced", R"CSS(
+    system: additive;
+    range: -9999 9999;
+    additive-symbols: 9000 \4E5D\4EDF, 8000 \516B\4EDF, 7000 \4E03\4EDF, 6000 \516D\4EDF, 5000 \4E94\4EDF, 4000 \56DB\4EDF, 3000 \53C3\4EDF, 2000 \8CB3\4EDF, 1000 \58F9\4EDF, 900 \4E5D\767E, 800 \516B\767E, 700 \4E03\767E, 600 \516D\767E, 500 \4E94\767E, 400 \56DB\767E, 300 \53C3\767E, 200 \8CB3\767E, 100 \58F9\767E, 90 \4E5D\62FE, 80 \516B\62FE, 70 \4E03\62FE, 60 \516D\62FE, 50 \4E94\62FE, 40 \56DB\62FE, 30 \53C3\62FE, 20 \8CB3\62FE, 10 \58F9\62FE, 9 \4E5D, 8 \516B, 7 \4E03, 6 \516D, 5 \4E94, 4 \56DB, 3 \53C3, 2 \8CB3, 1 \58F9, 0 \96F6;
+    negative: "\B9C8\C774\B108\C2A4  ";
+  )CSS");
+  const CounterStyle& korean_hanja_formal_as_implemented =
+      GetCounterStyle("korean-hanja-formal");
+  for (int value = -9999; value <= 9999; ++value) {
+    String expected =
+        korean_hanja_formal_as_specced.GenerateRepresentation(value);
+    String actual =
+        korean_hanja_formal_as_implemented.GenerateRepresentation(value);
+    EXPECT_EQ(expected, actual);
+  }
+}
+
+TEST_F(CounterStyleTest, KoreanHanjaInformal) {
+  // Verifies that our 'korean-hanja-informal' implementation matches the spec
+  // in the officially specified range 1-9999.
+  // https://drafts.csswg.org/css-counter-styles-3/#korean-hanja-informal
+  const CounterStyle& korean_hanja_informal_as_specced =
+      AddCounterStyle("korean-hanja-informal-as-specced", R"CSS(
+    system: additive;
+    range: -9999 9999;
+    additive-symbols: 9000 \4E5D\5343, 8000 \516B\5343, 7000 \4E03\5343, 6000 \516D\5343, 5000 \4E94\5343, 4000 \56DB\5343, 3000 \4E09\5343, 2000 \4E8C\5343, 1000 \5343, 900 \4E5D\767E, 800 \516B\767E, 700 \4E03\767E, 600 \516D\767E, 500 \4E94\767E, 400 \56DB\767E, 300 \4E09\767E, 200 \4E8C\767E, 100 \767E, 90 \4E5D\5341, 80 \516B\5341, 70 \4E03\5341, 60 \516D\5341, 50 \4E94\5341, 40 \56DB\5341, 30 \4E09\5341, 20 \4E8C\5341, 10 \5341, 9 \4E5D, 8 \516B, 7 \4E03, 6 \516D, 5 \4E94, 4 \56DB, 3 \4E09, 2 \4E8C, 1 \4E00, 0 \96F6;
+    negative: "\B9C8\C774\B108\C2A4  ";
+  )CSS");
+  const CounterStyle& korean_hanja_informal_as_implemented =
+      GetCounterStyle("korean-hanja-informal");
+  for (int value = -9999; value <= 9999; ++value) {
+    String expected =
+        korean_hanja_informal_as_specced.GenerateRepresentation(value);
+    String actual =
+        korean_hanja_informal_as_implemented.GenerateRepresentation(value);
+    EXPECT_EQ(expected, actual);
+  }
+}
+
 }  // namespace blink
