@@ -22,6 +22,7 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/round_rect_painter.h"
 #include "ui/views/view.h"
@@ -43,11 +44,14 @@ static constexpr int kBorderPaddingDueToRoundedCorners = 1;
 
 class MenuScrollButton : public View {
  public:
+  METADATA_HEADER(MenuScrollButton);
   MenuScrollButton(SubmenuView* host, bool is_up)
       : host_(host),
         is_up_(is_up),
         // Make our height the same as that of other MenuItemViews.
         pref_height_(MenuItemView::pref_menu_height()) {}
+  MenuScrollButton(const MenuScrollButton&) = delete;
+  MenuScrollButton& operator=(const MenuScrollButton&) = delete;
 
   gfx::Size CalculatePreferredSize() const override {
     return gfx::Size(MenuConfig::instance().scroll_arrow_height * 2 - 1,
@@ -133,9 +137,10 @@ class MenuScrollButton : public View {
 
   // Color for the arrow to scroll.
   SkColor arrow_color_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuScrollButton);
 };
+
+BEGIN_METADATA(MenuScrollButton, View)
+END_METADATA
 
 }  // namespace
 
@@ -151,7 +156,10 @@ class MenuScrollButton : public View {
 
 class MenuScrollViewContainer::MenuScrollView : public View {
  public:
+  METADATA_HEADER(MenuScrollView);
   explicit MenuScrollView(View* child) { AddChildView(child); }
+  MenuScrollView(const MenuScrollView&) = delete;
+  MenuScrollView& operator=(const MenuScrollView&) = delete;
 
   void ScrollRectToVisible(const gfx::Rect& rect) override {
     // NOTE: this assumes we only want to scroll in the y direction.
@@ -177,10 +185,10 @@ class MenuScrollViewContainer::MenuScrollView : public View {
 
   // Returns the contents, which is the SubmenuView.
   View* GetContents() { return children().front(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MenuScrollView);
 };
+
+BEGIN_METADATA(MenuScrollViewContainer, MenuScrollView, View)
+END_METADATA
 
 // MenuScrollViewContainer ----------------------------------------------------
 

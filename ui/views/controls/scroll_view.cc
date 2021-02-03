@@ -23,6 +23,7 @@
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/focus_ring.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/view.h"
@@ -49,7 +50,10 @@ T CombineScrollOffsets(T x, T y) {
 
 class ScrollCornerView : public View {
  public:
+  METADATA_HEADER(ScrollCornerView);
   ScrollCornerView() = default;
+  ScrollCornerView(const ScrollCornerView&) = delete;
+  ScrollCornerView& operator=(const ScrollCornerView&) = delete;
 
   void OnPaint(gfx::Canvas* canvas) override {
     ui::NativeTheme::ExtraParams ignored;
@@ -57,10 +61,10 @@ class ScrollCornerView : public View {
         canvas->sk_canvas(), ui::NativeTheme::kScrollbarCorner,
         ui::NativeTheme::kNormal, GetLocalBounds(), ignored);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScrollCornerView);
 };
+
+BEGIN_METADATA(ScrollCornerView, View)
+END_METADATA
 
 // Returns true if any descendants of |view| have a layer (not including
 // |view|).
@@ -128,7 +132,10 @@ int AdjustPosition(int current_position,
 // Viewport contains the contents View of the ScrollView.
 class ScrollView::Viewport : public View {
  public:
+  METADATA_HEADER(Viewport);
   explicit Viewport(ScrollView* scroll_view) : scroll_view_(scroll_view) {}
+  Viewport(const Viewport&) = delete;
+  Viewport& operator=(const Viewport&) = delete;
   ~Viewport() override = default;
 
   void ScrollRectToVisible(const gfx::Rect& rect) override {
@@ -159,24 +166,26 @@ class ScrollView::Viewport : public View {
 
   void ViewHierarchyChanged(
       const ViewHierarchyChangedDetails& details) override {
-    if (details.is_add && IsContentsViewport() && Contains(details.parent))
+    if (details.is_add && GetIsContentsViewport() && Contains(details.parent))
       scroll_view_->UpdateViewportLayerForClipping();
   }
 
   void OnChildLayerChanged(View* child) override {
-    if (IsContentsViewport())
+    if (GetIsContentsViewport())
       scroll_view_->UpdateViewportLayerForClipping();
   }
 
  private:
-  bool IsContentsViewport() const {
+  bool GetIsContentsViewport() const {
     return parent() && scroll_view_->contents_viewport_ == this;
   }
 
   ScrollView* scroll_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(Viewport);
 };
+
+BEGIN_METADATA(ScrollView, Viewport, View)
+ADD_READONLY_PROPERTY_METADATA(bool, IsContentsViewport)
+END_METADATA
 
 ScrollView::ScrollView()
     : ScrollView(base::FeatureList::IsEnabled(

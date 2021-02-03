@@ -24,6 +24,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/drag_controller.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_targeter.h"
@@ -63,6 +64,7 @@ class MouseEnterExitEvent : public ui::MouseEvent {
 // is the reason this system exists at all).
 class AnnounceTextView : public View {
  public:
+  METADATA_HEADER(AnnounceTextView);
   ~AnnounceTextView() override = default;
 
   void Announce(const base::string16& text) {
@@ -84,6 +86,9 @@ class AnnounceTextView : public View {
  private:
   base::string16 announce_text_;
 };
+
+BEGIN_METADATA(AnnounceTextView, View)
+END_METADATA
 
 // This event handler receives events in the pre-target phase and takes care of
 // the following:

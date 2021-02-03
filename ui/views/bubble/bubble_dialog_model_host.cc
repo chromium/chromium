@@ -21,6 +21,7 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 
@@ -50,6 +51,7 @@ DialogContentType FieldTypeToContentType(ui::DialogModelField::Type type) {
 // StyledLabel.
 class CheckboxControl : public Checkbox {
  public:
+  METADATA_HEADER(CheckboxControl);
   CheckboxControl(std::unique_ptr<View> label, int label_line_height)
       : label_line_height_(label_line_height) {
     auto* layout = SetLayoutManager(std::make_unique<BoxLayout>());
@@ -90,10 +92,14 @@ class CheckboxControl : public Checkbox {
   const int label_line_height_;
 };
 
+BEGIN_METADATA(CheckboxControl, Checkbox)
+END_METADATA
+
 }  // namespace
 
 class BubbleDialogModelHost::LayoutConsensusView : public View {
  public:
+  METADATA_HEADER(LayoutConsensusView);
   LayoutConsensusView(LayoutConsensusGroup* group, std::unique_ptr<View> view)
       : group_(group) {
     group->AddView(this);
@@ -125,6 +131,9 @@ class BubbleDialogModelHost::LayoutConsensusView : public View {
  private:
   LayoutConsensusGroup* const group_;
 };
+
+BEGIN_METADATA(BubbleDialogModelHost, LayoutConsensusView, View)
+END_METADATA
 
 BubbleDialogModelHost::LayoutConsensusGroup::LayoutConsensusGroup() = default;
 BubbleDialogModelHost::LayoutConsensusGroup::~LayoutConsensusGroup() {

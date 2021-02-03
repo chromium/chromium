@@ -21,6 +21,8 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/resources/grit/ui_resources.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/views_delegate.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -196,6 +198,7 @@ using EditingHandleView = TouchSelectionControllerImpl::EditingHandleView;
 // A View that displays the text selection handle.
 class TouchSelectionControllerImpl::EditingHandleView : public View {
  public:
+  METADATA_HEADER(EditingHandleView);
   EditingHandleView(TouchSelectionControllerImpl* controller,
                     gfx::NativeView parent,
                     bool is_cursor_handle)
@@ -225,7 +228,7 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
     widget_->CloseNow();
   }
 
-  gfx::SelectionBound::Type selection_bound_type() {
+  gfx::SelectionBound::Type GetSelectionBoundType() const {
     return selection_bound_.type();
   }
 
@@ -277,7 +280,7 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
     return GetSelectionWidgetBounds(selection_bound_).size();
   }
 
-  bool IsWidgetVisible() const { return widget_->IsVisible(); }
+  bool GetWidgetVisible() const { return widget_->IsVisible(); }
 
   void SetWidgetVisible(bool visible) {
     if (widget_->IsVisible() == visible)
@@ -286,6 +289,7 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
       widget_->Show();
     else
       widget_->Hide();
+    OnPropertyChanged(&widget_, kPropertyEffectsNone);
   }
 
   // If |is_visible| is true, this will update the widget and trigger a repaint
@@ -339,8 +343,9 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
     if (draw_invisible_ == draw_invisible)
       return;
     draw_invisible_ = draw_invisible;
-    SchedulePaint();
+    OnPropertyChanged(&draw_invisible_, kPropertyEffectsPaint);
   }
+  bool GetDrawInvisible() const { return draw_invisible_; }
 
  private:
   TouchSelectionControllerImpl* controller_;
@@ -367,6 +372,19 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
   // Owning widget.
   Widget* widget_ = nullptr;
 };
+
+DEFINE_ENUM_CONVERTERS(
+    gfx::SelectionBound::Type,
+    {gfx::SelectionBound::Type::LEFT, STRING16_LITERAL("LEFT")},
+    {gfx::SelectionBound::Type::RIGHT, STRING16_LITERAL("RIGHT")},
+    {gfx::SelectionBound::Type::CENTER, STRING16_LITERAL("CENTER")},
+    {gfx::SelectionBound::Type::EMPTY, STRING16_LITERAL("EMPTY")})
+
+BEGIN_METADATA(TouchSelectionControllerImpl, EditingHandleView, View)
+ADD_READONLY_PROPERTY_METADATA(gfx::SelectionBound::Type, SelectionBoundType)
+ADD_PROPERTY_METADATA(bool, WidgetVisible)
+ADD_PROPERTY_METADATA(bool, DrawInvisible)
+END_METADATA
 
 TouchSelectionControllerImpl::TouchSelectionControllerImpl(
     ui::TouchEditable* client_view)
@@ -544,7 +562,7 @@ void TouchSelectionControllerImpl::SetHandleBound(
     const gfx::SelectionBound& bound,
     const gfx::SelectionBound& bound_in_screen) {
   handle->SetWidgetVisible(ShouldShowHandleFor(bound));
-  handle->SetBoundInScreen(bound_in_screen, handle->IsWidgetVisible());
+  handle->SetBoundInScreen(bound_in_screen, handle->GetWidgetVisible());
 }
 
 bool TouchSelectionControllerImpl::ShouldShowHandleFor(
@@ -653,7 +671,7 @@ void TouchSelectionControllerImpl::HideQuickMenu() {
 gfx::Rect TouchSelectionControllerImpl::GetQuickMenuAnchorRect() const {
   // Get selection end points in client_view's space.
   gfx::SelectionBound b1_in_screen = selection_bound_1_clipped_;
-  gfx::SelectionBound b2_in_screen = cursor_handle_->IsWidgetVisible()
+  gfx::SelectionBound b2_in_screen = cursor_handle_->GetWidgetVisible()
                                          ? b1_in_screen
                                          : selection_bound_2_clipped_;
   // Convert from screen to client.
@@ -686,7 +704,7 @@ gfx::NativeView TouchSelectionControllerImpl::GetCursorHandleNativeView() {
 
 gfx::SelectionBound::Type
 TouchSelectionControllerImpl::GetSelectionHandle1Type() {
-  return selection_handle_1_->selection_bound_type();
+  return selection_handle_1_->GetSelectionBoundType();
 }
 
 gfx::Rect TouchSelectionControllerImpl::GetSelectionHandle1Bounds() {
@@ -702,15 +720,15 @@ gfx::Rect TouchSelectionControllerImpl::GetCursorHandleBounds() {
 }
 
 bool TouchSelectionControllerImpl::IsSelectionHandle1Visible() {
-  return selection_handle_1_->IsWidgetVisible();
+  return selection_handle_1_->GetWidgetVisible();
 }
 
 bool TouchSelectionControllerImpl::IsSelectionHandle2Visible() {
-  return selection_handle_2_->IsWidgetVisible();
+  return selection_handle_2_->GetWidgetVisible();
 }
 
 bool TouchSelectionControllerImpl::IsCursorHandleVisible() {
-  return cursor_handle_->IsWidgetVisible();
+  return cursor_handle_->GetWidgetVisible();
 }
 
 gfx::Rect TouchSelectionControllerImpl::GetExpectedHandleBounds(

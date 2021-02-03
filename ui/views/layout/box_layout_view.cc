@@ -8,6 +8,7 @@
 
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/layout/layout_manager.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace views {
 
@@ -131,5 +132,35 @@ void BoxLayoutView::ClearFlexForView(const View* view) {
   layout_->ClearFlexForView(view);
   InvalidateLayout();
 }
+
+DEFINE_ENUM_CONVERTERS(BoxLayout::Orientation,
+                       {BoxLayout::Orientation::kHorizontal,
+                        STRING16_LITERAL("kHorizontal")},
+                       {BoxLayout::Orientation::kVertical,
+                        STRING16_LITERAL("kVertical")})
+
+DEFINE_ENUM_CONVERTERS(
+    BoxLayout::MainAxisAlignment,
+    {BoxLayout::MainAxisAlignment::kStart, STRING16_LITERAL("kStart")},
+    {BoxLayout::MainAxisAlignment::kCenter, STRING16_LITERAL("kCenter")},
+    {BoxLayout::MainAxisAlignment::kEnd, STRING16_LITERAL("kEnd")})
+
+DEFINE_ENUM_CONVERTERS(
+    BoxLayout::CrossAxisAlignment,
+    {BoxLayout::CrossAxisAlignment::kStretch, STRING16_LITERAL("kStretch")},
+    {BoxLayout::CrossAxisAlignment::kStart, STRING16_LITERAL("kStart")},
+    {BoxLayout::CrossAxisAlignment::kCenter, STRING16_LITERAL("kCenter")},
+    {BoxLayout::CrossAxisAlignment::kEnd, STRING16_LITERAL("kEnd")})
+
+BEGIN_METADATA(BoxLayoutView, View)
+ADD_PROPERTY_METADATA(BoxLayout::Orientation, Orientation)
+ADD_PROPERTY_METADATA(BoxLayout::MainAxisAlignment, MainAxisAlignment)
+ADD_PROPERTY_METADATA(BoxLayout::CrossAxisAlignment, CrossAxisAlignment)
+ADD_PROPERTY_METADATA(gfx::Insets, InsideBorderInsets)
+ADD_PROPERTY_METADATA(int, MinimumCrossAxisSize)
+ADD_PROPERTY_METADATA(int, BetweenChildSpacing)
+ADD_PROPERTY_METADATA(int, CollapseMarginsSpacing)
+ADD_PROPERTY_METADATA(int, DefaultFlex)
+END_METADATA
 
 }  // namespace views
