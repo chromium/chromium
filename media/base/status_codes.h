@@ -176,6 +176,13 @@ enum class StatusCode : StatusCodeType {
   // Frame operation errors: 0x0A
   kUnsupportedFrameFormatError = 0x00000A01,
 
+  // DecoderStream errors: 0x0B
+  kDecoderStreamInErrorState = 0x00000B00,
+  kDecoderStreamReinitFailed = 0x00000B01,
+  // This is a temporary error for use while the demuxer doesn't return a
+  // proper status.
+  kDecoderStreamDemuxerError = 0x00000B02,
+
   // DecodeStatus temporary codes.  These names were chosen to match the
   // DecodeStatus enum, so that un-converted code can DecodeStatus::OK/etc.
   // Note that OK must result in Status::is_ok(), since converted code will

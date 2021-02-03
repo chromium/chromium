@@ -817,9 +817,9 @@ void AudioRendererImpl::SetPlayDelayCBForTesting(PlayDelayCBForTesting cb) {
   play_delay_cb_for_testing_ = std::move(cb);
 }
 
-void AudioRendererImpl::DecodedAudioReady(AudioDecoderStream::ReadStatus status,
-                                          scoped_refptr<AudioBuffer> buffer) {
-  DVLOG(2) << __func__ << "(" << status << ")";
+void AudioRendererImpl::DecodedAudioReady(
+    AudioDecoderStream::ReadResult result) {
+  DVLOG(2) << __func__ << "(" << result.code() << ")";
   DCHECK(task_runner_->BelongsToCurrentThread());
 
   base::AutoLock auto_lock(lock_);
@@ -828,18 +828,14 @@ void AudioRendererImpl::DecodedAudioReady(AudioDecoderStream::ReadStatus status,
   CHECK(pending_read_);
   pending_read_ = false;
 
-  if (status == AudioDecoderStream::ABORTED ||
-      status == AudioDecoderStream::DEMUXER_READ_ABORTED) {
-    HandleAbortedReadOrDecodeError(PIPELINE_OK);
+  if (result.has_error()) {
+    HandleAbortedReadOrDecodeError(result.code() == StatusCode::kAborted
+                                       ? PIPELINE_OK
+                                       : PIPELINE_ERROR_DECODE);
     return;
   }
 
-  if (status == AudioDecoderStream::DECODE_ERROR) {
-    HandleAbortedReadOrDecodeError(PIPELINE_ERROR_DECODE);
-    return;
-  }
-
-  DCHECK_EQ(status, AudioDecoderStream::OK);
+  scoped_refptr<AudioBuffer> buffer = std::move(result).value();
   DCHECK(buffer);
 
   if (state_ == kFlushing) {

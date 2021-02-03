@@ -611,23 +611,19 @@ void RTCVideoDecoderStreamAdapter::DecodeOnMediaThread(
 }
 
 void RTCVideoDecoderStreamAdapter::OnFrameReady(
-    media::VideoDecoderStream::ReadStatus status,
-    scoped_refptr<media::VideoFrame> frame) {
+    media::VideoDecoderStream::ReadResult result) {
   DVLOG(3) << __func__;
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   pending_read_ = false;
 
-  switch (status) {
-    case media::VideoDecoderStream::ReadStatus::OK:
+  switch (result.code()) {
+    case media::StatusCode::kOk:
       break;
-    case media::VideoDecoderStream::ReadStatus::ABORTED:
-    case media::VideoDecoderStream::ReadStatus::DEMUXER_READ_ABORTED:
+    case media::StatusCode::kAborted:
       // We're doing a Reset(), so just ignore it and keep going.
       return;
-
-    case media::VideoDecoderStream::ReadStatus::DECODE_ERROR:
-
+    default:
       DVLOG(2) << "Entering permanent error state";
       UMA_HISTOGRAM_ENUMERATION("Media.RTCVideoDecoderError",
                                 media::VideoDecodeAccelerator::PLATFORM_FAILURE,
@@ -638,9 +634,10 @@ void RTCVideoDecoderStreamAdapter::OnFrameReady(
         pending_buffer_count_ = 0;
       }
       return;
-    default:
-      NOTREACHED();
   }
+
+  scoped_refptr<media::VideoFrame> frame = std::move(result).value();
+  DCHECK(frame);
 
   const base::TimeDelta timestamp = frame->timestamp();
   webrtc::VideoFrame rtc_frame =

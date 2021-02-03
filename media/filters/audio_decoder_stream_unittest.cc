@@ -110,8 +110,7 @@ class AudioDecoderStreamTest : public testing::Test {
   }
 
   void OnAudioBufferReadDone(base::OnceClosure closure,
-                             AudioDecoderStream::ReadStatus status,
-                             scoped_refptr<AudioBuffer> audio_buffer) {
+                             AudioDecoderStream::ReadResult result) {
     std::move(closure).Run();
   }
 

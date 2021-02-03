@@ -39,7 +39,6 @@ class DecoderBuffer;
 class DecoderFactory;
 class GpuVideoAcceleratorFactories;
 class MediaLog;
-class VideoFrame;
 }  // namespace media
 
 namespace blink {
@@ -112,8 +111,7 @@ class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
                                InitCB init_cb);
   void OnInitializeDone(base::TimeTicks start_time, bool success);
   void DecodeOnMediaThread(std::unique_ptr<PendingBuffer>);
-  void OnFrameReady(media::VideoDecoderStream::ReadStatus status,
-                    scoped_refptr<media::VideoFrame> frame);
+  void OnFrameReady(media::VideoDecoderStream::ReadResult result);
 
   bool ShouldReinitializeForSettingHDRColorSpace(
       const webrtc::EncodedImage& input_image) const;
