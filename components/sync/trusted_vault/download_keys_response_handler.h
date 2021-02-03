@@ -23,7 +23,7 @@ class DownloadKeysResponseHandler {
   struct ProcessedResponse {
     explicit ProcessedResponse(TrustedVaultRequestStatus status);
     ProcessedResponse(TrustedVaultRequestStatus status,
-                      std::vector<std::vector<uint8_t>> keys,
+                      std::vector<std::vector<uint8_t>> new_keys,
                       int last_key_version);
     ProcessedResponse(const ProcessedResponse& other);
     ProcessedResponse& operator=(const ProcessedResponse& other);
@@ -38,11 +38,9 @@ class DownloadKeysResponseHandler {
     // isn't valid serialized ListSecurityDomainsResponse proto.
     TrustedVaultRequestStatus status;
 
-    // Contains new keys and potentially previously known trusted vault key if
-    // it wasn't removed server-side. Doesn't contain keys that predate
-    // last known trusted vault key, because it's impossible to validate them
-    // and the client should be aware of them already.
-    std::vector<std::vector<uint8_t>> keys;
+    // Contains new keys (e.g. keys are stored by the server, excluding last
+    // known key and keys that predate it).
+    std::vector<std::vector<uint8_t>> new_keys;
     int last_key_version;
   };
 

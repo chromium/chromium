@@ -313,7 +313,7 @@ TEST_F(TrustedVaultConnectionImplTest, ShouldCancelJoinSecurityDomainsRequest) {
 
 TEST_F(TrustedVaultConnectionImplTest, ShouldSendListSecurityDomainsRequest) {
   std::unique_ptr<TrustedVaultConnection::Request> request =
-      connection()->DownloadKeys(
+      connection()->DownloadNewKeys(
           /*account_info=*/CoreAccountInfo(),
           TrustedVaultKeyAndVersion(/*key=*/std::vector<uint8_t>(),
                                     /*version=*/0),
@@ -335,10 +335,10 @@ TEST_F(TrustedVaultConnectionImplTest, ShouldSendListSecurityDomainsRequest) {
 // download_keys_response_handler_unittest.cc).
 TEST_F(TrustedVaultConnectionImplTest,
        ShouldHandleFailedListSecurityDomainsRequest) {
-  base::MockCallback<TrustedVaultConnection::DownloadKeysCallback> callback;
+  base::MockCallback<TrustedVaultConnection::DownloadNewKeysCallback> callback;
 
   std::unique_ptr<TrustedVaultConnection::Request> request =
-      connection()->DownloadKeys(
+      connection()->DownloadNewKeys(
           /*account_info=*/CoreAccountInfo(),
           TrustedVaultKeyAndVersion(/*key=*/std::vector<uint8_t>(),
                                     /*version=*/0),
@@ -356,13 +356,13 @@ TEST_F(TrustedVaultConnectionImplTest,
       CreateConnectionWithAccessToken(
           /*access_token=*/base::nullopt);
 
-  base::MockCallback<TrustedVaultConnection::DownloadKeysCallback> callback;
+  base::MockCallback<TrustedVaultConnection::DownloadNewKeysCallback> callback;
 
-  // |callback| is called immediately after DownloadKeys(), because there is no
-  // access token.
+  // |callback| is called immediately after DownloadNewKeys(), because there is
+  // no access token.
   EXPECT_CALL(callback, Run(Eq(TrustedVaultRequestStatus::kOtherError), _, _));
   std::unique_ptr<TrustedVaultConnection::Request> request =
-      connection->DownloadKeys(
+      connection->DownloadNewKeys(
           /*account_info=*/CoreAccountInfo(),
           TrustedVaultKeyAndVersion(
               /*key=*/std::vector<uint8_t>(),
@@ -375,10 +375,10 @@ TEST_F(TrustedVaultConnectionImplTest,
 }
 
 TEST_F(TrustedVaultConnectionImplTest, ShouldCancelListSecurityDomainsRequest) {
-  base::MockCallback<TrustedVaultConnection::DownloadKeysCallback> callback;
+  base::MockCallback<TrustedVaultConnection::DownloadNewKeysCallback> callback;
 
   std::unique_ptr<TrustedVaultConnection::Request> request =
-      connection()->DownloadKeys(
+      connection()->DownloadNewKeys(
           /*account_info=*/CoreAccountInfo(),
           TrustedVaultKeyAndVersion(
               /*key=*/std::vector<uint8_t>(),

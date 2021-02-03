@@ -76,12 +76,12 @@ class MockTrustedVaultConnection : public TrustedVaultConnection {
                RegisterAuthenticationFactorCallback callback),
               (override));
   MOCK_METHOD(std::unique_ptr<Request>,
-              DownloadKeys,
+              DownloadNewKeys,
               (const CoreAccountInfo& account_info,
                const base::Optional<TrustedVaultKeyAndVersion>&
                    last_trusted_vault_key_and_version,
                std::unique_ptr<SecureBoxKeyPair> device_key_pair,
-               DownloadKeysCallback callback),
+               DownloadNewKeysCallback callback),
               (override));
 };
 
@@ -476,7 +476,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldFetchKeysImmediately) {
                                       account_info);
   backend()->SetPrimaryAccount(account_info);
 
-  EXPECT_CALL(*connection(), DownloadKeys).Times(0);
+  EXPECT_CALL(*connection(), DownloadNewKeys).Times(0);
 
   std::vector<std::vector<uint8_t>> fetched_keys;
   // Callback should be called immediately.
@@ -486,7 +486,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldFetchKeysImmediately) {
   backend()->FetchKeys(account_info, fetch_keys_callback.Get());
 }
 
-TEST_F(StandaloneTrustedVaultBackendTest, ShouldDownloadKeys) {
+TEST_F(StandaloneTrustedVaultBackendTest, ShouldDownloadNewKeys) {
   CoreAccountInfo account_info;
   account_info.gaia = "user";
 
@@ -504,16 +504,16 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldDownloadKeys) {
   const int kNewLastKeyVersion = 1;
 
   std::unique_ptr<SecureBoxKeyPair> device_key_pair;
-  TrustedVaultConnection::DownloadKeysCallback download_keys_callback;
+  TrustedVaultConnection::DownloadNewKeysCallback download_keys_callback;
   EXPECT_CALL(*connection(),
-              DownloadKeys(Eq(account_info),
-                           OptionalTrustedVaultKeyAndVersionEq(
-                               kInitialVaultKey, kInitialLastKeyVersion),
-                           _, _))
+              DownloadNewKeys(Eq(account_info),
+                              OptionalTrustedVaultKeyAndVersionEq(
+                                  kInitialVaultKey, kInitialLastKeyVersion),
+                              _, _))
       .WillOnce([&](const CoreAccountInfo&,
                     const base::Optional<TrustedVaultKeyAndVersion>&,
                     std::unique_ptr<SecureBoxKeyPair> key_pair,
-                    TrustedVaultConnection::DownloadKeysCallback callback) {
+                    TrustedVaultConnection::DownloadNewKeysCallback callback) {
         device_key_pair = std::move(key_pair);
         download_keys_callback = std::move(callback);
         return std::make_unique<TrustedVaultConnection::Request>();
@@ -525,7 +525,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldDownloadKeys) {
   backend()->FetchKeys(account_info, fetch_keys_callback.Get());
   ASSERT_FALSE(download_keys_callback.is_null());
 
-  // Ensure that the right device key was passed into DonwloadKeys().
+  // Ensure that the right device key was passed into DownloadNewKeys().
   ASSERT_THAT(device_key_pair, NotNull());
   EXPECT_THAT(device_key_pair->private_key().ExportToBytes(),
               Eq(private_device_key_material));
@@ -552,19 +552,19 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   EXPECT_TRUE(backend()->MarkKeysAsStale(account_info));
   backend()->SetPrimaryAccount(account_info);
 
-  TrustedVaultConnection::DownloadKeysCallback download_keys_callback;
-  ON_CALL(*connection(), DownloadKeys(_, _, _, _))
+  TrustedVaultConnection::DownloadNewKeysCallback download_keys_callback;
+  ON_CALL(*connection(), DownloadNewKeys(_, _, _, _))
       .WillByDefault(
           [&](const CoreAccountInfo&,
               const base::Optional<TrustedVaultKeyAndVersion>&,
               std::unique_ptr<SecureBoxKeyPair> key_pair,
-              TrustedVaultConnection::DownloadKeysCallback callback) {
+              TrustedVaultConnection::DownloadNewKeysCallback callback) {
             download_keys_callback = std::move(callback);
             return std::make_unique<TrustedVaultConnection::Request>();
           });
 
   clock()->SetNow(base::Time::Now());
-  EXPECT_CALL(*connection(), DownloadKeys(_, _, _, _));
+  EXPECT_CALL(*connection(), DownloadNewKeys(_, _, _, _));
 
   // FetchKeys() should trigger keys downloading.
   backend()->FetchKeys(account_info, /*callback=*/base::DoNothing());
@@ -577,8 +577,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
            /*keys=*/std::vector<std::vector<uint8_t>>(),
            /*last_key_version=*/0);
 
-  download_keys_callback = TrustedVaultConnection::DownloadKeysCallback();
-  EXPECT_CALL(*connection(), DownloadKeys(_, _, _, _)).Times(0);
+  download_keys_callback = TrustedVaultConnection::DownloadNewKeysCallback();
+  EXPECT_CALL(*connection(), DownloadNewKeys(_, _, _, _)).Times(0);
   // Following request should be throttled.
   backend()->FetchKeys(account_info, /*callback=*/base::DoNothing());
   EXPECT_TRUE(download_keys_callback.is_null());
@@ -587,7 +587,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   // Advance time to pass the throttling duration and trigger another attempt.
   clock()->Advance(switches::kTrustedVaultServiceThrottlingDuration.Get());
 
-  EXPECT_CALL(*connection(), DownloadKeys(_, _, _, _));
+  EXPECT_CALL(*connection(), DownloadNewKeys(_, _, _, _));
   backend()->FetchKeys(account_info, /*callback=*/base::DoNothing());
   EXPECT_FALSE(download_keys_callback.is_null());
 }
@@ -595,7 +595,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 // Tests silent device registration (when no vault keys available yet). After
 // successful registration, the client should be able to download keys.
 TEST_F(StandaloneTrustedVaultBackendTest,
-       ShouldSilentlyRegisterDeviceAndDownloadKeys) {
+       ShouldSilentlyRegisterDeviceAndDownloadNewKeys) {
   CoreAccountInfo account_info;
   account_info.gaia = "user";
 
@@ -629,16 +629,16 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   EXPECT_TRUE(registration_info.device_registered());
   EXPECT_TRUE(registration_info.has_private_key_material());
 
-  TrustedVaultConnection::DownloadKeysCallback download_keys_callback;
+  TrustedVaultConnection::DownloadNewKeysCallback download_keys_callback;
   ON_CALL(*connection(),
-          DownloadKeys(account_info,
-                       /*last_trusted_vault_key_and_version=*/Eq(base::nullopt),
-                       _, _))
+          DownloadNewKeys(
+              account_info,
+              /*last_trusted_vault_key_and_version=*/Eq(base::nullopt), _, _))
       .WillByDefault(
           [&](const CoreAccountInfo&,
               const base::Optional<TrustedVaultKeyAndVersion>&,
               std::unique_ptr<SecureBoxKeyPair> key_pair,
-              TrustedVaultConnection::DownloadKeysCallback callback) {
+              TrustedVaultConnection::DownloadNewKeysCallback callback) {
             download_keys_callback = std::move(callback);
             return std::make_unique<TrustedVaultConnection::Request>();
           });

@@ -132,8 +132,7 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleSingleKeyRotation) {
 
   EXPECT_THAT(processed_response.status,
               Eq(TrustedVaultRequestStatus::kSuccess));
-  EXPECT_THAT(processed_response.keys,
-              ElementsAre(kKnownTrustedVaultKey, kTrustedVaultKey1));
+  EXPECT_THAT(processed_response.new_keys, ElementsAre(kTrustedVaultKey1));
   EXPECT_THAT(processed_response.last_key_version,
               Eq(kKnownTrustedVaultKeyVersion + 1));
 }
@@ -155,9 +154,8 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleMultipleKeyRotations) {
 
   EXPECT_THAT(processed_response.status,
               Eq(TrustedVaultRequestStatus::kSuccess));
-  EXPECT_THAT(
-      processed_response.keys,
-      ElementsAre(kKnownTrustedVaultKey, kTrustedVaultKey1, kTrustedVaultKey2));
+  EXPECT_THAT(processed_response.new_keys,
+              ElementsAre(kTrustedVaultKey1, kTrustedVaultKey2));
   EXPECT_THAT(processed_response.last_key_version,
               Eq(kKnownTrustedVaultKeyVersion + 2));
 }
@@ -188,9 +186,8 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldHandlePriorKeys) {
 
   EXPECT_THAT(processed_response.status,
               Eq(TrustedVaultRequestStatus::kSuccess));
-  EXPECT_THAT(
-      processed_response.keys,
-      ElementsAre(kKnownTrustedVaultKey, kTrustedVaultKey2, kTrustedVaultKey3));
+  EXPECT_THAT(processed_response.new_keys,
+              ElementsAre(kTrustedVaultKey2, kTrustedVaultKey3));
   EXPECT_THAT(processed_response.last_key_version,
               Eq(kKnownTrustedVaultKeyVersion + 2));
 }
@@ -217,7 +214,7 @@ TEST_F(DownloadKeysResponseHandlerTest,
 
   EXPECT_THAT(processed_response.status,
               Eq(TrustedVaultRequestStatus::kSuccess));
-  EXPECT_THAT(processed_response.keys,
+  EXPECT_THAT(processed_response.new_keys,
               ElementsAre(kTrustedVaultKey1, kTrustedVaultKey2));
   EXPECT_THAT(processed_response.last_key_version,
               Eq(kKnownTrustedVaultKeyVersion + 2));
@@ -246,7 +243,7 @@ TEST_F(DownloadKeysResponseHandlerTest,
 
   EXPECT_THAT(processed_response.status,
               Eq(TrustedVaultRequestStatus::kLocalDataObsolete));
-  EXPECT_THAT(processed_response.keys, IsEmpty());
+  EXPECT_THAT(processed_response.new_keys, IsEmpty());
 }
 
 // The test populates undecryptable/corrupted |wrapped_key| field, handler
@@ -292,7 +289,7 @@ TEST_F(DownloadKeysResponseHandlerTest,
 
   EXPECT_THAT(processed_response.status,
               Eq(TrustedVaultRequestStatus::kLocalDataObsolete));
-  EXPECT_THAT(processed_response.keys, IsEmpty());
+  EXPECT_THAT(processed_response.new_keys, IsEmpty());
 }
 
 // The test populates invalid |key_proof| field for intermediate key when
@@ -315,7 +312,7 @@ TEST_F(DownloadKeysResponseHandlerTest,
 
   EXPECT_THAT(processed_response.status,
               Eq(TrustedVaultRequestStatus::kLocalDataObsolete));
-  EXPECT_THAT(processed_response.keys, IsEmpty());
+  EXPECT_THAT(processed_response.new_keys, IsEmpty());
 }
 
 // In this scenario client already has most recent trusted vault key. It should
@@ -394,8 +391,7 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleMultipleSecurityDomains) {
 
   EXPECT_THAT(processed_response.status,
               Eq(TrustedVaultRequestStatus::kSuccess));
-  EXPECT_THAT(processed_response.keys,
-              ElementsAre(kKnownTrustedVaultKey, kTrustedVaultKey1));
+  EXPECT_THAT(processed_response.new_keys, ElementsAre(kTrustedVaultKey1));
   EXPECT_THAT(processed_response.last_key_version,
               Eq(kKnownTrustedVaultKeyVersion + 1));
 }
@@ -454,8 +450,7 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleMultipleMembers) {
 
   EXPECT_THAT(processed_response.status,
               Eq(TrustedVaultRequestStatus::kSuccess));
-  EXPECT_THAT(processed_response.keys,
-              ElementsAre(kKnownTrustedVaultKey, kTrustedVaultKey1));
+  EXPECT_THAT(processed_response.new_keys, ElementsAre(kTrustedVaultKey1));
   EXPECT_THAT(processed_response.last_key_version,
               Eq(kKnownTrustedVaultKeyVersion + 1));
 }
@@ -495,7 +490,7 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleEmptyLastKnownKey) {
 
   EXPECT_THAT(processed_response.status,
               Eq(TrustedVaultRequestStatus::kSuccess));
-  EXPECT_THAT(processed_response.keys, ElementsAre(kTrustedVaultKey1));
+  EXPECT_THAT(processed_response.new_keys, ElementsAre(kTrustedVaultKey1));
   EXPECT_THAT(processed_response.last_key_version, Eq(kLastKeyVersion));
 }
 

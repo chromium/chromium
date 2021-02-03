@@ -44,7 +44,7 @@ class TrustedVaultConnection {
  public:
   using RegisterAuthenticationFactorCallback =
       base::OnceCallback<void(TrustedVaultRequestStatus)>;
-  using DownloadKeysCallback =
+  using DownloadNewKeysCallback =
       base::OnceCallback<void(TrustedVaultRequestStatus,
                               const std::vector<std::vector<uint8_t>>& /*keys*/,
                               int /*last_key_version*/)>;
@@ -79,15 +79,16 @@ class TrustedVaultConnection {
       const SecureBoxPublicKey& authentication_factor_public_key,
       RegisterAuthenticationFactorCallback callback) WARN_UNUSED_RESULT = 0;
 
-  // Asynchronously attempts to download new vault keys from the trusted vault
-  // server. Caller should hold returned request object until |callback| call
-  // or until request needs to be cancelled.
-  virtual std::unique_ptr<Request> DownloadKeys(
+  // Asynchronously attempts to download new vault keys (e.g. keys with version
+  // greater than the on in |last_trusted_vault_key_and_version|) from the
+  // trusted vault server. Caller should hold returned request object until
+  // |callback| call or until request needs to be cancelled.
+  virtual std::unique_ptr<Request> DownloadNewKeys(
       const CoreAccountInfo& account_info,
       const base::Optional<TrustedVaultKeyAndVersion>&
           last_trusted_vault_key_and_version,
       std::unique_ptr<SecureBoxKeyPair> device_key_pair,
-      DownloadKeysCallback callback) WARN_UNUSED_RESULT = 0;
+      DownloadNewKeysCallback callback) WARN_UNUSED_RESULT = 0;
 };
 
 }  // namespace syncer

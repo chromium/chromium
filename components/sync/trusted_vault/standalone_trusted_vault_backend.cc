@@ -133,7 +133,7 @@ void StandaloneTrustedVaultBackend::FetchKeys(
 
   // |this| outlives |connection_| and |ongoing_connection_request_|, so it's
   // safe to use base::Unretained() here.
-  ongoing_connection_request_ = connection_->DownloadKeys(
+  ongoing_connection_request_ = connection_->DownloadNewKeys(
       *primary_account_, GetLastTrustedVaultKeyAndVersion(*per_user_vault),
       std::move(key_pair),
       base::BindOnce(&StandaloneTrustedVaultBackend::OnKeysDownloaded,
