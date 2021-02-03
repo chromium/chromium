@@ -121,16 +121,37 @@ struct __attribute__((packed)) SlotSpanMetadata {
   ALWAYS_INLINE void SetFreelistHead(PartitionFreelistEntry* new_head);
 
   // Returns size of the region used within a slot. The used region comprises
-  // of actual allocated data, extras and possibly empty space.
+  // of actual allocated data, extras and possibly empty space in the middle.
   ALWAYS_INLINE size_t GetUtilizedSlotSize() const {
     // The returned size can be:
     // - The slot size for small buckets.
-    // - Exact needed size to satisfy allocation (incl. extras), for large
+    // - Exact size needed to satisfy allocation (incl. extras), for large
     //   buckets and direct-mapped allocations (see also the comment in
     //   CanStoreRawSize() for more info).
-    if (LIKELY(!CanStoreRawSize()))
+    if (LIKELY(!CanStoreRawSize())) {
       return bucket->slot_size;
+    }
     return GetRawSize();
+  }
+
+  // Returns the size available to the app. It can be equal or higher than the
+  // requested size. If higher, the overage won't exceed what's actually usable
+  // by the app without a risk of running out of an allocated region or into
+  // PartitionAlloc's internal data (like extras).
+  ALWAYS_INLINE size_t GetUsableSize(PartitionRoot<thread_safe>* root) const {
+    // The returned size can be:
+    // - The slot size minus extras, for small buckets. This could be more than
+    //   requested size.
+    // - Raw size minus extras, for large buckets and direct-mapped allocations
+    //   (see also the comment in CanStoreRawSize() for more info). This is
+    //   equal to requested size.
+    size_t size_to_ajdust;
+    if (LIKELY(!CanStoreRawSize())) {
+      size_to_ajdust = bucket->slot_size;
+    } else {
+      size_to_ajdust = GetRawSize();
+    }
+    return root->AdjustSizeForExtrasSubtract(size_to_ajdust);
   }
 
   // Returns the total size of the slots that are currently provisioned.

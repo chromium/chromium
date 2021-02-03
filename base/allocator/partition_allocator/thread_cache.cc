@@ -224,7 +224,7 @@ ThreadCache* ThreadCache::Create(PartitionRoot<internal::ThreadSafe>* root) {
   //
   // This also means that deallocation must use RawFreeStatic(), hence the
   // operator delete() implementation below.
-  size_t utilized_slot_size;
+  size_t usable_size;
   bool already_zeroed;
 
   auto* bucket =
@@ -232,7 +232,7 @@ ThreadCache* ThreadCache::Create(PartitionRoot<internal::ThreadSafe>* root) {
                           sizeof(ThreadCache));
   void* buffer =
       root->RawAlloc(bucket, PartitionAllocZeroFill, sizeof(ThreadCache),
-                     &utilized_slot_size, &already_zeroed);
+                     &usable_size, &already_zeroed);
   ThreadCache* tcache = new (buffer) ThreadCache(root);
 
   // This may allocate.
@@ -324,7 +324,7 @@ void ThreadCache::FillBucket(size_t bucket_index) {
   Bucket& bucket = buckets_[bucket_index];
   int count = bucket.limit / kBatchFillRatio;
 
-  size_t utilized_slot_size;
+  size_t usable_size;
   bool is_already_zeroed;
 
   PA_DCHECK(!root_->buckets[bucket_index].CanStoreRawSize());
@@ -345,8 +345,8 @@ void ThreadCache::FillBucket(size_t bucket_index) {
     void* ptr = root_->AllocFromBucket(
         &root_->buckets[bucket_index],
         PartitionAllocFastPathOrReturnNull | PartitionAllocReturnNull,
-        root_->buckets[bucket_index].slot_size /* raw_size */,
-        &utilized_slot_size, &is_already_zeroed);
+        root_->buckets[bucket_index].slot_size /* raw_size */, &usable_size,
+        &is_already_zeroed);
 
     // Either the previous allocation would require a slow path allocation, or
     // the central allocator is out of memory. If the bucket was filled with

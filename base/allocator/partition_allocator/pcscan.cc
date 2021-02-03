@@ -358,8 +358,7 @@ PCScan<thread_safe>::PCScanTask::TryMarkObjectInNormalBucketPool(
       SlotSpan::FromSlotInnerPtr(reinterpret_cast<void*>(base));
   PA_DCHECK(root == PartitionRoot<thread_safe>::FromSlotSpan(target_slot_span));
 
-  const size_t usable_size = root->AdjustSizeForExtrasSubtract(
-      target_slot_span->GetUtilizedSlotSize());
+  const size_t usable_size = target_slot_span->GetUsableSize(root);
   // Range check for inner pointers.
   if (maybe_ptr >= base + usable_size)
     return 0;
@@ -387,9 +386,7 @@ void PCScan<thread_safe>::PCScanTask::ClearQuarantinedObjects() const {
       auto* slot_span = SlotSpan::FromSlotInnerPtr(object);
       // Use zero as a zapping value to speed up the fast bailout check in
       // ScanPartitions.
-      memset(
-          object, 0,
-          root->AdjustSizeForExtrasSubtract(slot_span->GetUtilizedSlotSize()));
+      memset(object, 0, slot_span->GetUsableSize(root));
     });
   }
 }

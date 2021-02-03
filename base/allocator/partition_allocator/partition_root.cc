@@ -490,7 +490,8 @@ bool PartitionRoot<thread_safe>::ReallocDirectMappedInPlace(
 
   // bucket->slot_size is the current size of the allocation.
   size_t current_slot_size = slot_span->bucket->slot_size;
-  char* char_ptr = static_cast<char*>(SlotSpan::ToSlotSpanStartPtr(slot_span));
+  char* slot_start =
+      static_cast<char*>(SlotSpan::ToSlotSpanStartPtr(slot_span));
   if (new_slot_size == current_slot_size) {
     // No need to move any memory around, but update size and cookie below.
     // That's because raw_size may have changed.
@@ -508,19 +509,19 @@ bool PartitionRoot<thread_safe>::ReallocDirectMappedInPlace(
 
     // Shrink by decommitting unneeded pages and making them inaccessible.
     size_t decommit_size = current_slot_size - new_slot_size;
-    DecommitSystemPagesForData(char_ptr + new_slot_size, decommit_size,
+    DecommitSystemPagesForData(slot_start + new_slot_size, decommit_size,
                                PageUpdatePermissions);
   } else if (new_slot_size <=
              DirectMapExtent::FromSlotSpan(slot_span)->map_size) {
     // Grow within the actually allocated memory. Just need to make the
     // pages accessible again.
     size_t recommit_slot_size_growth = new_slot_size - current_slot_size;
-    RecommitSystemPagesForData(char_ptr + current_slot_size,
+    RecommitSystemPagesForData(slot_start + current_slot_size,
                                recommit_slot_size_growth,
                                PageUpdatePermissions);
 
 #if DCHECK_IS_ON()
-    memset(char_ptr + current_slot_size, kUninitializedByte,
+    memset(slot_start + current_slot_size, kUninitializedByte,
            recommit_slot_size_growth);
 #endif
   } else {
@@ -529,16 +530,19 @@ bool PartitionRoot<thread_safe>::ReallocDirectMappedInPlace(
     return false;
   }
 
+  slot_span->SetRawSize(raw_size);
+  slot_span->bucket->slot_size = new_slot_size;
+
 #if DCHECK_IS_ON()
   // Write a new trailing cookie.
   if (allow_cookies) {
-    internal::PartitionCookieWriteValue(char_ptr + raw_size -
-                                        internal::kCookieSize);
+    char* user_data_start =
+        static_cast<char*>(AdjustPointerForExtrasAdd(slot_start));
+    size_t usable_size = slot_span->GetUsableSize(this);
+    internal::PartitionCookieWriteValue(user_data_start + usable_size);
   }
 #endif
 
-  slot_span->SetRawSize(raw_size);
-  slot_span->bucket->slot_size = new_slot_size;
   return true;
 }
 
@@ -585,7 +589,7 @@ void* PartitionRoot<thread_safe>::ReallocFlags(int flags,
       internal::ScopedGuard<thread_safe> guard{lock_};
       // TODO(palmer): See if we can afford to make this a CHECK.
       PA_DCHECK(IsValidSlotSpan(slot_span));
-      old_usable_size = GetUsableSize(ptr);
+      old_usable_size = slot_span->GetUsableSize(this);
 
       if (UNLIKELY(slot_span->bucket->is_direct_mapped())) {
         // We may be able to perform the realloc in place by changing the
@@ -617,8 +621,9 @@ void* PartitionRoot<thread_safe>::ReallocFlags(int flags,
         // Write a new trailing cookie only when it is possible to keep track
         // raw size (otherwise we wouldn't know where to look for it later).
         if (allow_cookies) {
+          size_t usable_size = slot_span->GetUsableSize(this);
           internal::PartitionCookieWriteValue(static_cast<char*>(ptr) +
-                                              new_size);
+                                              usable_size);
         }
 #endif
       }

@@ -437,20 +437,19 @@ struct BASE_EXPORT PartitionRoot {
   // Allocates memory, without initializing extras.
   //
   // - |flags| are as in AllocFlags().
-  // - |raw_size| should accommodate extras on top of AllocFlags()'s
+  // - |raw_size| accommodates for extras on top of AllocFlags()'s
   //   |requested_size|.
-  // - |utilized_slot_size| and |is_already_zeroed| are output only.
-  //   |utilized_slot_size| is guaranteed to be larger or equal to
-  //   |raw_size|.
+  // - |usable_size| and |is_already_zeroed| are output only. |usable_size| is
+  //   guaranteed to be larger or equal to AllocFlags()'s |requested_size|.
   ALWAYS_INLINE void* RawAlloc(Bucket* bucket,
                                int flags,
                                size_t raw_size,
-                               size_t* utilized_slot_size,
+                               size_t* usable_size,
                                bool* is_already_zeroed);
   ALWAYS_INLINE void* AllocFromBucket(Bucket* bucket,
                                       int flags,
                                       size_t raw_size,
-                                      size_t* utilized_slot_size,
+                                      size_t* usable_size,
                                       bool* is_already_zeroed)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
@@ -757,7 +756,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFromBucket(
     Bucket* bucket,
     int flags,
     size_t raw_size,
-    size_t* utilized_slot_size,
+    size_t* usable_size,
     bool* is_already_zeroed) {
   SlotSpan* slot_span = bucket->active_slot_spans_head;
   // Check that this slot span is neither full nor freed.
@@ -767,7 +766,10 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFromBucket(
   void* slot_start = slot_span->freelist_head;
   if (LIKELY(slot_start)) {
     *is_already_zeroed = false;
-    *utilized_slot_size = bucket->slot_size;
+    // This is a fast path, so avoid calling GetUsableSize() on Release builds
+    // as it is more costly. Copy its small bucket path instead.
+    *usable_size = AdjustSizeForExtrasSubtract(bucket->slot_size);
+    PA_DCHECK(*usable_size == slot_span->GetUsableSize(this));
 
     // If these DCHECKs fire, you probably corrupted memory. TODO(palmer): See
     // if we can afford to make these CHECKs.
@@ -799,7 +801,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFromBucket(
               (slot_span->bucket->is_direct_mapped() &&
                (bucket == &sentinel_bucket)));
 
-    *utilized_slot_size = slot_span->GetUtilizedSlotSize();
+    *usable_size = slot_span->GetUsableSize(this);
   }
 
   return slot_start;
@@ -893,12 +895,11 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
   // Note: ref-count and cookies can be 0-sized.
   //
   // For more context, see the other "Layout inside the slot" comment below.
-#if BUILDFLAG(USE_BACKUP_REF_PTR) || DCHECK_IS_ON() || ZERO_RANDOMLY_ON_FREE
+#if DCHECK_IS_ON() || ZERO_RANDOMLY_ON_FREE
   const size_t utilized_slot_size = slot_span->GetUtilizedSlotSize();
 #endif
-
 #if BUILDFLAG(USE_BACKUP_REF_PTR) || DCHECK_IS_ON()
-  const size_t usable_size = AdjustSizeForExtrasSubtract(utilized_slot_size);
+  const size_t usable_size = slot_span->GetUsableSize(this);
 #endif
   void* slot_start = AdjustPointerForExtrasSubtract(ptr);
 
@@ -1060,20 +1061,15 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::RecommitSystemPagesForData(
 }
 
 // static
-// Gets the allocated size of the |ptr|, from the point of view of the app, not
-// PartitionAlloc. It can be equal or higher than the requested size. If higher,
-// the overage won't exceed what's actually usable by the app without a risk of
-// running out of an allocated region or into PartitionAlloc's internal data.
-// Used as malloc_usable_size.
+// Returns the size available to the app. It can be equal or higher than the
+// requested size. If higher, the overage won't exceed what's actually usable
+// by the app without a risk of running out of an allocated region or into
+// PartitionAlloc's internal data. Used as malloc_usable_size.
 template <bool thread_safe>
 ALWAYS_INLINE size_t PartitionRoot<thread_safe>::GetUsableSize(void* ptr) {
-  SlotSpan* slot_span = SlotSpan::FromSlotInnerPtr(ptr);
+  auto* slot_span = SlotSpan::FromSlotInnerPtr(ptr);
   auto* root = FromSlotSpan(slot_span);
-
-  size_t size = slot_span->GetUtilizedSlotSize();
-  // Adjust back by subtracing extras (if any).
-  size = root->AdjustSizeForExtrasSubtract(size);
-  return size;
+  return slot_span->GetUsableSize(root);
 }
 
 // Return the capacity of the underlying slot (adjusted for extras). This
@@ -1167,7 +1163,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   PA_CHECK(raw_size >= requested_size);  // check for overflows
 
   uint16_t bucket_index = SizeToBucketIndex(raw_size);
-  size_t utilized_slot_size;
+  size_t usable_size;
   bool is_already_zeroed;
   void* slot_start = nullptr;
 
@@ -1201,31 +1197,37 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
       tcache = internal::ThreadCache::Create(this);
       with_thread_cache = true;
     }
-    slot_start = tcache->GetFromCache(bucket_index, &utilized_slot_size);
+    size_t slot_size;
+    slot_start = tcache->GetFromCache(bucket_index, &slot_size);
     is_already_zeroed = false;
 
+    // LIKELY: median hit rate in the thread cache is 95%, from metrics.
+    if (LIKELY(slot_start)) {
+      // This follows the logic of SlotSpanMetadata::GetUsableSize for small
+      // buckets, which is too expensive to call here.
+      // Keep it in sync!
+      usable_size = AdjustSizeForExtrasSubtract(slot_size);
+
 #if DCHECK_IS_ON()
-    // Make sure that the allocated pointer comes from the same place it would
-    // for a non-thread cache allocation.
-    if (slot_start) {
+      // Make sure that the allocated pointer comes from the same place it would
+      // for a non-thread cache allocation.
       SlotSpan* slot_span = SlotSpan::FromSlotStartPtr(slot_start);
       PA_DCHECK(IsValidSlotSpan(slot_span));
       PA_DCHECK(slot_span->bucket == &bucket_at(bucket_index));
+      PA_DCHECK(slot_span->bucket->slot_size == slot_size);
+      PA_DCHECK(usable_size == slot_span->GetUsableSize(this));
       // All large allocations must go through the RawAlloc path to correctly
-      // set |utilized_slot_size|.
+      // set |usable_size|.
       PA_DCHECK(!slot_span->CanStoreRawSize());
       PA_DCHECK(!slot_span->bucket->is_direct_mapped());
-    }
 #endif
-
-    // UNLIKELY: median hit rate in the thread cache is 95%, from metrics.
-    if (UNLIKELY(!slot_start)) {
+    } else {
       slot_start = RawAlloc(buckets + bucket_index, flags, raw_size,
-                            &utilized_slot_size, &is_already_zeroed);
+                            &usable_size, &is_already_zeroed);
     }
   } else {
-    slot_start = RawAlloc(buckets + bucket_index, flags, raw_size,
-                          &utilized_slot_size, &is_already_zeroed);
+    slot_start = RawAlloc(buckets + bucket_index, flags, raw_size, &usable_size,
+                          &is_already_zeroed);
   }
 
   if (UNLIKELY(!slot_start))
@@ -1261,7 +1263,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   //   to save raw_size, i.e. only for large allocations. For small allocations,
   //   we have no other choice than putting the cookie at the very end of the
   //   slot, thus creating the "empty" space.
-  size_t usable_size = AdjustSizeForExtrasSubtract(utilized_slot_size);
+
   // The value given to the application is just after the ref-count and cookie.
   void* ret = AdjustPointerForExtrasAdd(slot_start);
 
@@ -1303,10 +1305,10 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::RawAlloc(
     Bucket* bucket,
     int flags,
     size_t raw_size,
-    size_t* utilized_slot_size,
+    size_t* usable_size,
     bool* is_already_zeroed) {
   internal::ScopedGuard<thread_safe> guard{lock_};
-  return AllocFromBucket(bucket, flags, raw_size, utilized_slot_size,
+  return AllocFromBucket(bucket, flags, raw_size, usable_size,
                          is_already_zeroed);
 }
 
