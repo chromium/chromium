@@ -28,8 +28,10 @@
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_window.h"
+#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/resource_coordinator/session_restore_policy.h"
 #include "chrome/browser/resource_coordinator/tab_manager_features.h"
 #include "chrome/browser/sessions/session_restore_test_helper.h"
@@ -177,8 +179,10 @@ class SessionRestoreTest : public InProcessBrowserTest {
     Profile* profile = browser->profile();
 
     // Close the browser.
-    std::unique_ptr<ScopedKeepAlive> keep_alive(new ScopedKeepAlive(
-        KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED));
+    auto keep_alive = std::make_unique<ScopedKeepAlive>(
+        KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED);
+    auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+        profile, ProfileKeepAliveOrigin::kBrowserWindow);
     CloseBrowserSynchronously(browser);
 
     ui_test_utils::AllBrowserTabAddedWaiter tab_waiter;
@@ -212,6 +216,7 @@ class SessionRestoreTest : public InProcessBrowserTest {
       WaitForTabsToLoad(new_browser);
 
     keep_alive.reset();
+    profile_keep_alive.reset();
 
     return new_browser;
   }
@@ -1386,8 +1391,10 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, CloseSingleTabRestoresNothing) {
 IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
                        AutoClosedSingleTabDoesNotGetRestored) {
   Profile* profile = browser()->profile();
-  std::unique_ptr<ScopedKeepAlive> keep_alive(new ScopedKeepAlive(
-      KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED));
+  auto keep_alive = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED);
+  auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+      profile, ProfileKeepAliveOrigin::kBrowserWindow);
 
   // First close the original browser to clear the session information (as
   // verified by CloseSingleTabRestoresNothing).
@@ -1436,6 +1443,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
   WaitForTabsToLoad(new_browser);
 
   keep_alive.reset();
+  profile_keep_alive.reset();
 
   AssertOneWindowWithOneTab(new_browser);
   EXPECT_EQ(chrome::kChromeUINewTabURL,
@@ -2048,8 +2056,10 @@ IN_PROC_BROWSER_TEST_F(SmartSessionRestoreTest, MAYBE_PRE_CorrectLoadingOrder) {
         i, {TabStripModel::GestureType::kOther});
 
   // Close the browser.
-  std::unique_ptr<ScopedKeepAlive> keep_alive(new ScopedKeepAlive(
-      KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED));
+  auto keep_alive = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED);
+  auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+      profile, ProfileKeepAliveOrigin::kBrowserWindow);
   CloseBrowserSynchronously(browser());
 
   StartObserving(kExpectedNumTabs);
@@ -2060,6 +2070,7 @@ IN_PROC_BROWSER_TEST_F(SmartSessionRestoreTest, MAYBE_PRE_CorrectLoadingOrder) {
   ASSERT_TRUE(new_browser);
   WaitForAllTabsToStartLoading();
   keep_alive.reset();
+  profile_keep_alive.reset();
 
   ASSERT_EQ(kExpectedNumTabs, web_contents().size());
   // Test that we have observed the tabs being loaded in the inverse order of
@@ -2086,8 +2097,10 @@ IN_PROC_BROWSER_TEST_F(SmartSessionRestoreTest, MAYBE_CorrectLoadingOrder) {
 
   // Close the browser that gets opened automatically so we can track the order
   // of loading of the tabs.
-  std::unique_ptr<ScopedKeepAlive> keep_alive(new ScopedKeepAlive(
-      KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED));
+  auto keep_alive = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED);
+  auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+      profile, ProfileKeepAliveOrigin::kBrowserWindow);
   CloseBrowserSynchronously(browser());
   // We have an extra tab that is added when the test starts, which gets ignored
   // later when we test for proper order.
@@ -2099,6 +2112,7 @@ IN_PROC_BROWSER_TEST_F(SmartSessionRestoreTest, MAYBE_CorrectLoadingOrder) {
   ASSERT_TRUE(new_browser);
   WaitForAllTabsToStartLoading();
   keep_alive.reset();
+  profile_keep_alive.reset();
 
   ASSERT_EQ(kExpectedNumTabs + 1, web_contents().size());
 

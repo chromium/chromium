@@ -25,7 +25,9 @@
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_impl.h"
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/sessions/session_restore_test_helper.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/sessions/session_service_test_helper.h"
@@ -282,6 +284,8 @@ class BetterSessionRestoreTest : public InProcessBrowserTest {
 
     ScopedKeepAlive test_keep_alive(KeepAliveOrigin::PANEL_VIEW,
                                     KeepAliveRestartOption::DISABLED);
+    ScopedProfileKeepAlive test_profile_keep_alive(
+        profile, ProfileKeepAliveOrigin::kBrowserWindow);
 
     // Close the browser.
     if (close_all_windows)

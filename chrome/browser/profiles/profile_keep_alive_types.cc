@@ -33,6 +33,8 @@ std::ostream& operator<<(std::ostream& out,
       return out << "kPendingNotificationClickEvent";
     case ProfileKeepAliveOrigin::kInFlightPushMessage:
       return out << "kInFlightPushMessage";
+    case ProfileKeepAliveOrigin::kSessionRestore:
+      return out << "kSessionRestore";
   }
   NOTREACHED();
   return out << static_cast<int>(origin);

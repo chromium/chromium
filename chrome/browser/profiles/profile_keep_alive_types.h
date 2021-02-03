@@ -61,7 +61,10 @@ enum class ProfileKeepAliveOrigin {
   // There's a visible Push Notification from a Service Worker.
   kInFlightPushMessage = 11,
 
-  kMaxValue = kInFlightPushMessage,
+  // Session restore in progress.
+  kSessionRestore = 12,
+
+  kMaxValue = kSessionRestore,
 };
 
 std::ostream& operator<<(std::ostream& out,

@@ -33,6 +33,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/sessions/session_restore_delegate.h"
 #include "chrome/browser/sessions/session_service.h"
@@ -138,8 +140,10 @@ class SessionRestoreImpl : public BrowserListObserver {
 
     active_session_restorers->insert(this);
 
-    keep_alive_.reset(new ScopedKeepAlive(KeepAliveOrigin::SESSION_RESTORE,
-                                          KeepAliveRestartOption::DISABLED));
+    keep_alive_ = std::make_unique<ScopedKeepAlive>(
+        KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED);
+    profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
+        profile, ProfileKeepAliveOrigin::kBrowserWindow);
   }
 
   bool synchronous() const { return synchronous_; }
@@ -773,6 +777,10 @@ class SessionRestoreImpl : public BrowserListObserver {
   // Chrome doesn't prematurely exit we register a KeepAlive for the lifetime
   // of this object.
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
+
+  // Same as |keep_alive_|, but also prevent |profile_| from getting deleted
+  // (when DestroyProfileOnBrowserClose is enabled).
+  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
 
   // The time we started the restore.
   base::TimeTicks restore_started_;
