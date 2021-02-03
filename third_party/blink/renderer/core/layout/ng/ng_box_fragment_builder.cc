@@ -462,8 +462,7 @@ LogicalOffset NGBoxFragmentBuilder::GetChildOffset(
   if (const NGFragmentItemsBuilder* items_builder = items_builder_) {
     if (auto offset = items_builder->LogicalOffsetFor(*object))
       return *offset;
-    NOTREACHED();
-    return LogicalOffset();
+    // Out-of-flow objects may be in |FragmentItems| or in |children_|.
   }
 
   for (const auto& child : children_) {
