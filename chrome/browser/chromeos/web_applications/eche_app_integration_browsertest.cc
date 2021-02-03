@@ -4,11 +4,16 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chromeos/web_applications/system_web_app_integration_test.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/web_applications/system_web_app_manager.h"
 #include "chromeos/components/eche_app_ui/url_constants.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/display/screen.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 
 class EcheAppIntegrationTest : public SystemWebAppIntegrationTest {
  public:
@@ -26,6 +31,19 @@ IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest, EcheApp) {
   const GURL url(chromeos::kChromeUIEcheAppURL);
   EXPECT_NO_FATAL_FAILURE(
       ExpectSystemWebAppValid(web_app::SystemAppType::ECHE, url, "Eche App"));
+}
+
+// Test that the Eche App has a default size of 480x640 and is in the center of
+// the screen.
+IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest, DefaultWindowBounds) {
+  WaitForTestSystemAppInstall();
+  Browser* browser;
+  LaunchApp(web_app::SystemAppType::ECHE, &browser);
+  gfx::Rect work_area =
+      display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
+  int x = (work_area.width() - 480) / 2;
+  int y = (work_area.height() - 640) / 2;
+  EXPECT_EQ(browser->window()->GetBounds(), gfx::Rect(x, y, 480, 640));
 }
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(

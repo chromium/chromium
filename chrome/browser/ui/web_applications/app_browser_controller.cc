@@ -109,6 +109,7 @@ constexpr gfx::Size HELP_DEFAULT_SIZE(960, 600);
 constexpr gfx::Size CAMERA_WINDOW_DEFAULT_SIZE(kChromeCameraAppDefaultWidth,
                                                kChromeCameraAppDefaultHeight +
                                                    32);
+constexpr gfx::Size ECHE_DEFAULT_SIZE(480, 640);
 }  // namespace
 
 // static
@@ -388,6 +389,11 @@ gfx::Rect AppBrowserController::GetDefaultBounds() const {
     gfx::Rect bounds =
         display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
     bounds.ClampToCenteredSize(CAMERA_WINDOW_DEFAULT_SIZE);
+    return bounds;
+  } else if (system_app_type_ == SystemAppType::ECHE) {
+    gfx::Rect bounds =
+        display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
+    bounds.ClampToCenteredSize(ECHE_DEFAULT_SIZE);
     return bounds;
   }
   return gfx::Rect();
