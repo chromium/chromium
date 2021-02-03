@@ -36,6 +36,11 @@ public class PasswordChangeFixtureParameters {
     private String mDebugSocketId;
 
     /**
+     * Number of consecutive script runs. Provided via --num-runs.
+     */
+    private int mNumRuns;
+
+    /**
      * Loads test parameters from command line.
      */
     public static PasswordChangeFixtureParameters loadFromCommandLine() {
@@ -49,12 +54,15 @@ public class PasswordChangeFixtureParameters {
         params.mPassword = CommandLine.getInstance().getSwitchValue("password", "");
         params.mDebugBundleId = CommandLine.getInstance().getSwitchValue("debug-bundle-id");
         params.mDebugSocketId = CommandLine.getInstance().getSwitchValue("debug-socket-id");
+        params.mNumRuns =
+                Integer.parseInt(CommandLine.getInstance().getSwitchValue("num-runs", "1"));
 
         assert params.mAutofillAssistantUrl != null : "--autofill-assistant-url must be provided.";
         assert params.mDomainUrl != null : "--domain-url must be provided.";
         assert params.mUsername != null : "--username must be provided.";
         assert params.mDebugBundleId != null : "--debug-bundle-id must be provided.";
         assert params.mDebugSocketId != null : "--debug-socket-id must be provided.";
+        assert params.mNumRuns > 0 : "--num-runs must be greater than 0.";
 
         return params;
     }
@@ -81,5 +89,9 @@ public class PasswordChangeFixtureParameters {
 
     public String getDebugSocketId() {
         return mDebugSocketId;
+    }
+
+    public int getNumRuns() {
+        return mNumRuns;
     }
 }

@@ -115,22 +115,11 @@ public class PasswordChangeFixtureSingleRunTest
     }
 
     /**
-     * Checks the script successfully changes password in Chrome password manager. There should be
-     * only one entry for that domain with the new password.
+     * Performs and validates a single password change script run.
+     *
+     * @return Updated credential.
      */
-    @Test
-    @Manual
-    public void testPasswordChangeFlow() throws Exception {
-        PasswordStoreCredential credential =
-                new PasswordStoreCredential(new GURL(mParameters.getDomainUrl()),
-                        mParameters.getUsername(), mParameters.getPassword());
-
-        // Insert credential into the password store.
-        mPasswordStoreBridge.insertPasswordCredential(credential);
-
-        // Wait until insert operation finishes.
-        waitUntil(() -> mPasswordStoreBridge.getPasswordStoreCredentialsCount() == 1);
-
+    private PasswordStoreCredential testSingleRun(PasswordStoreCredential credential) {
         // Run password change script for user.
         runScriptForUser(credential.getUsername());
 
@@ -143,6 +132,33 @@ public class PasswordChangeFixtureSingleRunTest
         // Assert store contains a single credential.
         Assert.assertTrue("Store does not contain a single credential",
                 mPasswordStoreBridge.getPasswordStoreCredentialsCount() == 1);
+
+        return mNewCredential;
+    }
+
+    /**
+     * Runs the script multiple times (defined by --num-runs) consecutively. Checks the script
+     * successfully changes password in Chrome password manager. There should be only one entry for
+     * that domain with the new password.
+     */
+    @Test
+    @Manual
+    public void testMultipleRuns() throws Exception {
+        PasswordStoreCredential credential =
+                new PasswordStoreCredential(new GURL(mParameters.getDomainUrl()),
+                        mParameters.getUsername(), mParameters.getPassword());
+
+        // Insert initial credential into the password store.
+        mPasswordStoreBridge.insertPasswordCredential(credential);
+
+        // Wait until insert operation finishes.
+        waitUntil(() -> mPasswordStoreBridge.getPasswordStoreCredentialsCount() == 1);
+
+        for (int i = 0; i < mParameters.getNumRuns(); i++) {
+            // Run and test script.
+            credential = testSingleRun(credential);
+            Log.i(TAG, "[EVENT: Run #%s succeded]", String.valueOf(i + 1));
+        }
 
         logPasswordStoreCredentials(mPasswordStoreBridge, "Final password store state");
     }
@@ -153,11 +169,11 @@ public class PasswordChangeFixtureSingleRunTest
      */
     @Test
     @Manual
-    public void testPasswordChangeNoCookies() throws Exception {
+    public void testSingleRunNoCookies() throws Exception {
         clearBrowsingData(new int[] {BrowsingDataType.HISTORY, BrowsingDataType.CACHE,
                                   BrowsingDataType.COOKIES, BrowsingDataType.SITE_SETTINGS},
                 TimePeriod.ALL_TIME);
-        Log.i(TAG, "EVENT: Site settings cleared");
+        Log.i(TAG, "[EVENT: Site settings cleared]");
 
         PasswordStoreCredential credential =
                 new PasswordStoreCredential(new GURL(mParameters.getDomainUrl()),
@@ -169,18 +185,8 @@ public class PasswordChangeFixtureSingleRunTest
         // Wait until insert operation finishes.
         waitUntil(() -> mPasswordStoreBridge.getPasswordStoreCredentialsCount() == 1);
 
-        // Run password change script for user.
-        runScriptForUser(credential.getUsername());
-
-        // Validate password change run. Update credential with generated password.
-        validateFullRun();
-
-        // Check credential has been updated and passwords differ.
-        waitUntil(() -> checkCredentialsDifferByPassword(credential, mNewCredential));
-
-        // Assert store contains a single credential.
-        Assert.assertTrue("Store does not contain a single credential",
-                mPasswordStoreBridge.getPasswordStoreCredentialsCount() == 1);
+        // Run and test password change.
+        testSingleRun(credential);
 
         logPasswordStoreCredentials(mPasswordStoreBridge, "Final password store state");
     }
@@ -234,6 +240,6 @@ public class PasswordChangeFixtureSingleRunTest
 
     @Override
     public void onEdit(PasswordStoreCredential credential) {
-        Log.i(TAG, "EVENT: Credential %s edited", credential.toString());
+        Log.i(TAG, "[EVENT: Credential %s edited]", credential.toString());
     }
 }
