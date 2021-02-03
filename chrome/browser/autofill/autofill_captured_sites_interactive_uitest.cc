@@ -88,7 +88,7 @@ class AutofillCapturedSitesInteractiveTest
  public:
   // TestRecipeReplayChromeFeatureActionExecutor
   bool AutofillForm(const std::string& focus_element_css_selector,
-                    const std::vector<std::string> iframe_path,
+                    const std::vector<std::string>& iframe_path,
                     const int attempts,
                     content::RenderFrameHost* frame) override {
     content::WebContents* web_contents =
@@ -302,6 +302,9 @@ class AutofillCapturedSitesInteractiveTest
 };
 
 IN_PROC_BROWSER_TEST_P(AutofillCapturedSitesInteractiveTest, Recipe) {
+  captured_sites_test_utils::PrintInstructions(
+      "autofill_captured_sites_interactive_uitest");
+
   // Prints the path of the test to be executed.
   VLOG(1) << GetParam().site_name;
 
@@ -309,7 +312,8 @@ IN_PROC_BROWSER_TEST_P(AutofillCapturedSitesInteractiveTest, Recipe) {
   ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &src_dir));
 
   bool test_completed = recipe_replayer()->ReplayTest(
-      GetParam().capture_file_path, GetParam().recipe_file_path);
+      GetParam().capture_file_path, GetParam().recipe_file_path,
+      captured_sites_test_utils::GetCommandFilePath());
   if (!test_completed)
     ADD_FAILURE() << "Full execution was unable to complete.";
 
