@@ -21,6 +21,8 @@ component("attestation") {
   sources = [
     "attestation_flow.cc",
     "attestation_flow.h",
+    "attestation_flow_factory.cc",
+    "attestation_flow_factory.h",
     "attestation_flow_integrated.cc",
     "attestation_flow_integrated.h",
     "attestation_flow_utils.cc",
