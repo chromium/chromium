@@ -371,7 +371,7 @@ public final class EditUrlSuggestionUnitTest {
         when(mTemplateUrlService.getSearchQueryForUrl(mBarbazSearchUrl))
                 .thenReturn(BARBAZ_SEARCH_TERMS);
 
-        Assert.assertTrue(mProcessor.doesProcessSuggestion(mSearchSuggestion, 0));
+        Assert.assertFalse(mProcessor.doesProcessSuggestion(mSearchSuggestion, 0));
         Assert.assertFalse(mProcessor.doesProcessSuggestion(mSearchSuggestion, 1));
 
         when(mSearchSuggestion.getUrl()).thenReturn(mBarbazSearchUrl);

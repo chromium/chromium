@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.omnibox.suggestions.editurl;
 
 import android.content.Context;
-import android.text.TextUtils;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
@@ -20,7 +19,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewPr
 import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionDrawableState;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionSpannable;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties;
-import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegateImpl.ShareOrigin;
 import org.chromium.chrome.browser.tab.SadTab;
@@ -94,7 +92,8 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
             return false;
         }
 
-        if (!isSuggestionEquivalentToCurrentPage(suggestion, activeTab.getUrl())) {
+        if (suggestion.getType() != OmniboxSuggestionType.URL_WHAT_YOU_TYPED
+                || !suggestion.getUrl().equals(activeTab.getUrl())) {
             return false;
         }
 
@@ -198,23 +197,5 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
     private void onEditLink() {
         RecordUserAction.record("Omnibox.EditUrlSuggestion.Edit");
         mUrlBarDelegate.setOmniboxEditingText(mLastProcessedSuggestionURL.getSpec());
-    }
-
-    /**
-     * @return true if the suggestion is effectively the same as the current page, either because:
-     * 1. It's a search suggestion for the same search terms as the current SERP.
-     * 2. It's a URL suggestion for the current URL.
-     */
-    private boolean isSuggestionEquivalentToCurrentPage(
-            AutocompleteMatch suggestion, GURL pageUrl) {
-        switch (suggestion.getType()) {
-            case OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED:
-                return TextUtils.equals(suggestion.getFillIntoEdit(),
-                        TemplateUrlServiceFactory.get().getSearchQueryForUrl(pageUrl));
-            case OmniboxSuggestionType.URL_WHAT_YOU_TYPED:
-                return suggestion.getUrl().equals(pageUrl);
-            default:
-                return false;
-        }
     }
 }
