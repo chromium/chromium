@@ -8,7 +8,6 @@ import static org.chromium.base.test.util.Batch.PER_CLASS;
 import static org.chromium.chrome.browser.paint_preview.TabbedPaintPreviewTest.assertAttachedAndShown;
 
 import android.os.SystemClock;
-import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -176,7 +175,7 @@ public class StartupPaintPreviewTest {
      */
     @Test
     @MediumTest
-    public void testRemoveOnActionbarClick() throws ExecutionException, InterruptedException {
+    public void testRemoveOnSnackbarClick() throws ExecutionException, InterruptedException {
         Tab tab = sActivityTestRule.getActivity().getActivityTab();
         StartupPaintPreview startupPaintPreview = TestThreadUtils.runOnUiThreadBlocking(
                 () -> new StartupPaintPreview(tab, null, null, null, null));
@@ -202,7 +201,7 @@ public class StartupPaintPreviewTest {
      */
     @Test
     @MediumTest
-    public void testRemoveOnNavigation() throws ExecutionException, UiObjectNotFoundException {
+    public void testRemoveOnNavigation() throws ExecutionException {
         Tab tab = sActivityTestRule.getActivity().getActivityTab();
         StartupPaintPreview startupPaintPreview = TestThreadUtils.runOnUiThreadBlocking(
                 () -> new StartupPaintPreview(tab, null, null, null, null));
@@ -245,7 +244,8 @@ public class StartupPaintPreviewTest {
 
     private void simulateLongPress(View view, float x, float y)
             throws ExecutionException, InterruptedException {
-        simulateTapWithDuration(view, x, y, ViewConfiguration.getLongPressTimeout() + 100);
+        Thread.sleep(100);
+        simulateTapWithDuration(view, x, y, ViewConfiguration.getLongPressTimeout() + 200);
     }
 
     private void simulateTapWithDuration(View view, float x, float y, long holdDurationMs)
