@@ -413,16 +413,18 @@ public class LensUtils {
      *                         image.
      * @param pageUrl          The url of the top level frame of the page.
      * @param requiresConfirmation Whether the request requires an confirmation dialog.
+     * @param lensIntentType The Lens intent type
      * @return The intent parameters to intent to Google Lens.
      */
     public static LensIntentParams buildLensIntentParams(final Uri imageUri,
             final boolean isIncognito, final String srcUrl, final String titleOrAltText,
-            final String pageUrl, final boolean requiresConfirmation) {
+            final String pageUrl, final boolean requiresConfirmation, final int lensIntentType) {
         LensIntentParams.Builder intentParamsBuilder = new LensIntentParams.Builder();
+        // TODO(crbug/1170825): Pass LensQueryResult directly to LensIntentParams.
         return intentParamsBuilder.withImageUri(imageUri)
                 .withIsIncognito(isIncognito)
                 .withRequiresConfirmation(requiresConfirmation)
-                .withIntentType(getLensShoppingIntentType())
+                .withIntentType(lensIntentType)
                 .withImageTitleOrAltText(titleOrAltText)
                 .withSrcUrl(srcUrl)
                 .withPageUrl(pageUrl)

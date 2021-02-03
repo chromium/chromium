@@ -137,9 +137,11 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
             boolean isIncognito, GURL srcUrl, String titleOrAltText, GURL pageUrl,
             LensQueryResult lensQueryResult, boolean requiresConfirmation) {
         if (LensUtils.useDirectIntentSdkIntegration(ContextUtils.getApplicationContext())) {
+            // Extract intent type from query result if available.
+            int intentType = lensQueryResult != null ? lensQueryResult.getLensIntentType() : 0;
             LensIntentParams intentParams = LensUtils.buildLensIntentParams(imageUri, isIncognito,
                     srcUrl.getValidSpecOrEmpty(), titleOrAltText, pageUrl.getValidSpecOrEmpty(),
-                    requiresConfirmation);
+                    requiresConfirmation, intentType);
             LensController.getInstance().startLens(window, intentParams);
         } else {
             Intent shareIntent =
