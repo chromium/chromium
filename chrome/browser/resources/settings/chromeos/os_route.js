@@ -209,7 +209,7 @@ cr.define('settings', function() {
     if (loadTimeData.valueExists('showCrostini') &&
         loadTimeData.getBoolean('showCrostini')) {
       r.CROSTINI = createSection(
-          r.BASIC, mojom.CROSTINI_SECTION_PATH, Section.kCrostini);
+          r.ADVANCED, mojom.CROSTINI_SECTION_PATH, Section.kCrostini);
       r.CROSTINI_DETAILS = createSubpage(
           r.CROSTINI, mojom.CROSTINI_DETAILS_SUBPAGE_PATH,
           Subpage.kCrostiniDetails);
