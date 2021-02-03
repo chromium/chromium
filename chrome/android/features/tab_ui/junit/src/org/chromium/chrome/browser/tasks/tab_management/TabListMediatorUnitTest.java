@@ -236,6 +236,8 @@ public class TabListMediatorUnitTest {
     @Mock
     GridLayoutManager mGridLayoutManager;
     @Mock
+    GridLayoutManager.SpanSizeLookup mSpanSizeLookup;
+    @Mock
     Profile mProfile;
     @Mock
     Tracker mTracker;
@@ -342,6 +344,10 @@ public class TabListMediatorUnitTest {
                 .openTabGridDialog(any(Tab.class));
         doNothing().when(mContext).registerComponentCallbacks(mComponentCallbacksCaptor.capture());
         doReturn(mGridLayoutManager).when(mRecyclerView).getLayoutManager();
+        doReturn(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_PORTRAIT)
+                .when(mGridLayoutManager)
+                .getSpanCount();
+        doReturn(mSpanSizeLookup).when(mGridLayoutManager).getSpanSizeLookup();
         doReturn(TAB1_DOMAIN)
                 .when(mUrlUtilitiesJniMock)
                 .getDomainAndRegistry(eq(TAB1_URL), anyBoolean());
@@ -367,6 +373,18 @@ public class TabListMediatorUnitTest {
         assertThat(mTabModelObserverCaptor.getAllValues().isEmpty(), equalTo(true));
         mMediator.initWithNative(mProfile);
         assertThat(mTabModelObserverCaptor.getAllValues().isEmpty(), equalTo(false));
+
+        doAnswer(invocation -> {
+            int position = invocation.getArgument(0);
+            int itemType = mModel.get(position).type;
+            if (itemType == TabProperties.UiType.MESSAGE
+                    || itemType == TabProperties.UiType.PRICE_WELCOME) {
+                return mGridLayoutManager.getSpanCount();
+            }
+            return 1;
+        })
+                .when(mSpanSizeLookup)
+                .getSpanSize(anyInt());
     }
 
     @After
@@ -2153,6 +2171,7 @@ public class TabListMediatorUnitTest {
                 mTabContentManager::getTabThumbnailWithCallback, mTitleProvider,
                 mTabListFaviconProvider, true, null, null, null, getClass().getSimpleName(),
                 TabProperties.UiType.CLOSABLE);
+        mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
 
         initAndAssertAllProperties();
@@ -2177,6 +2196,7 @@ public class TabListMediatorUnitTest {
                 mTabContentManager::getTabThumbnailWithCallback, mTitleProvider,
                 mTabListFaviconProvider, true, null, null, null, getClass().getSimpleName(),
                 TabProperties.UiType.CLOSABLE);
+        mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
 
         initAndAssertAllProperties();
@@ -2206,6 +2226,170 @@ public class TabListMediatorUnitTest {
             assertThat(mModel.get(i).model.get(TabProperties.PAGE_INFO_ICON_DRAWABLE_ID),
                     equalTo(R.drawable.ic_logo_googleg_24dp));
         }
+    }
+
+    @Test
+    public void testGetPriceWelcomeMessageInsertionIndex() {
+        initWithThreeTabs();
+
+        doReturn(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_PORTRAIT)
+                .when(mGridLayoutManager)
+                .getSpanCount();
+        assertThat(mMediator.getPriceWelcomeMessageInsertionIndex(), equalTo(2));
+
+        doReturn(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_LANDSCAPE)
+                .when(mGridLayoutManager)
+                .getSpanCount();
+        assertThat(mMediator.getPriceWelcomeMessageInsertionIndex(), equalTo(3));
+    }
+
+    @Test
+    public void testUpdateLayout_PriceWelcome() {
+        initAndAssertAllProperties();
+        addSpecialItem(1, TabProperties.UiType.PRICE_WELCOME, PRICE_WELCOME);
+        assertThat(mModel.lastIndexForMessageItemFromType(PRICE_WELCOME), equalTo(1));
+
+        doAnswer(invocation -> {
+            int position = invocation.getArgument(0);
+            int itemType = mModel.get(position).type;
+            if (itemType == TabProperties.UiType.PRICE_WELCOME) {
+                return mGridLayoutManager.getSpanCount();
+            }
+            return 1;
+        })
+                .when(mSpanSizeLookup)
+                .getSpanSize(anyInt());
+        mMediator.updateLayout();
+        assertThat(mModel.lastIndexForMessageItemFromType(PRICE_WELCOME), equalTo(1));
+        PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeBoolean(
+                PriceTrackingUtilities.PRICE_WELCOME_MESSAGE_CARD, true);
+        mMediator.updateLayout();
+        assertThat(mModel.lastIndexForMessageItemFromType(PRICE_WELCOME), equalTo(2));
+    }
+
+    @Test
+    public void testUpdateLayout_Divider() {
+        initAndAssertAllProperties();
+        addSpecialItem(1, TabProperties.UiType.DIVIDER, 0);
+        assertThat(mModel.get(1).type, equalTo(TabProperties.UiType.DIVIDER));
+
+        doAnswer(invocation -> {
+            int position = invocation.getArgument(0);
+            int itemType = mModel.get(position).type;
+            if (itemType == TabProperties.UiType.DIVIDER) {
+                return mGridLayoutManager.getSpanCount();
+            }
+            return 1;
+        })
+                .when(mSpanSizeLookup)
+                .getSpanSize(anyInt());
+        PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeBoolean(
+                PriceTrackingUtilities.PRICE_WELCOME_MESSAGE_CARD, true);
+        mMediator.updateLayout();
+        assertThat(mModel.get(1).type, equalTo(TabProperties.UiType.DIVIDER));
+    }
+
+    @Test
+    public void testIndexOfNthTabCard() {
+        initAndAssertAllProperties();
+        addSpecialItem(1, TabProperties.UiType.PRICE_WELCOME, PRICE_WELCOME);
+
+        assertThat(mModel.lastIndexForMessageItemFromType(PRICE_WELCOME), equalTo(1));
+        assertThat(mModel.indexOfNthTabCard(-1), equalTo(TabModel.INVALID_TAB_INDEX));
+        assertThat(mModel.indexOfNthTabCard(0), equalTo(0));
+        assertThat(mModel.indexOfNthTabCard(1), equalTo(2));
+        assertThat(mModel.indexOfNthTabCard(2), equalTo(3));
+    }
+
+    @Test
+    public void testGetTabCardCountsBefore() {
+        initAndAssertAllProperties();
+        addSpecialItem(1, TabProperties.UiType.PRICE_WELCOME, PRICE_WELCOME);
+
+        assertThat(mModel.lastIndexForMessageItemFromType(PRICE_WELCOME), equalTo(1));
+        assertThat(mModel.getTabCardCountsBefore(-1), equalTo(TabModel.INVALID_TAB_INDEX));
+        assertThat(mModel.getTabCardCountsBefore(0), equalTo(0));
+        assertThat(mModel.getTabCardCountsBefore(1), equalTo(1));
+        assertThat(mModel.getTabCardCountsBefore(2), equalTo(1));
+        assertThat(mModel.getTabCardCountsBefore(3), equalTo(2));
+    }
+
+    @Test
+    public void testGetTabIndexBefore() {
+        initAndAssertAllProperties();
+        addSpecialItem(1, TabProperties.UiType.PRICE_WELCOME, PRICE_WELCOME);
+        assertThat(mModel.lastIndexForMessageItemFromType(PRICE_WELCOME), equalTo(1));
+        assertThat(mModel.getTabIndexBefore(2), equalTo(0));
+        assertThat(mModel.getTabIndexBefore(0), equalTo(TabModel.INVALID_TAB_INDEX));
+    }
+
+    @Test
+    public void testGetTabIndexAfter() {
+        initAndAssertAllProperties();
+        addSpecialItem(1, TabProperties.UiType.PRICE_WELCOME, PRICE_WELCOME);
+        assertThat(mModel.lastIndexForMessageItemFromType(PRICE_WELCOME), equalTo(1));
+        assertThat(mModel.getTabIndexAfter(0), equalTo(2));
+        assertThat(mModel.getTabIndexAfter(2), equalTo(TabModel.INVALID_TAB_INDEX));
+    }
+
+    @Test
+    public void testGetIndexForSelectedTab() {
+        initAndAssertAllProperties();
+        assertThat(mModel.getIndexForSelectedTab(), equalTo(0));
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testGetIndexForSelectedTab_multipleSelectedTabs() {
+        initAndAssertAllProperties();
+        mModel.get(0).model.set(TabProperties.IS_SELECTED, true);
+        mModel.get(1).model.set(TabProperties.IS_SELECTED, true);
+        mModel.getIndexForSelectedTab();
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testGetIndexForSelectedTab_noSelectedTabs() {
+        initAndAssertAllProperties();
+        mModel.get(0).model.set(TabProperties.IS_SELECTED, false);
+        mModel.get(1).model.set(TabProperties.IS_SELECTED, false);
+        mModel.getIndexForSelectedTab();
+    }
+
+    @Test
+    public void testListObserver_OnItemRangeInserted() {
+        TabUiFeatureUtilities.ENABLE_PRICE_TRACKING.setForTesting(true);
+        mMediator = new TabListMediator(mContext, mModel, TabListMode.GRID, mTabModelSelector,
+                mTabContentManager::getTabThumbnailWithCallback, mTitleProvider,
+                mTabListFaviconProvider, true, null, null, null, getClass().getSimpleName(),
+                TabProperties.UiType.CLOSABLE);
+        mMediator.registerOrientationListener(mGridLayoutManager);
+        mMediator.initWithNative(mProfile);
+        initAndAssertAllProperties();
+
+        PropertyModel model = mock(PropertyModel.class);
+        when(model.get(CARD_TYPE)).thenReturn(MESSAGE);
+        when(model.get(MESSAGE_TYPE)).thenReturn(PRICE_WELCOME);
+        mMediator.addSpecialItemToModel(1, TabProperties.UiType.PRICE_WELCOME, model);
+        assertThat(mModel.lastIndexForMessageItemFromType(PRICE_WELCOME), equalTo(2));
+    }
+
+    @Test
+    public void testListObserver_OnItemRangeRemoved() {
+        TabUiFeatureUtilities.ENABLE_PRICE_TRACKING.setForTesting(true);
+        mMediator = new TabListMediator(mContext, mModel, TabListMode.GRID, mTabModelSelector,
+                mTabContentManager::getTabThumbnailWithCallback, mTitleProvider,
+                mTabListFaviconProvider, true, null, null, null, getClass().getSimpleName(),
+                TabProperties.UiType.CLOSABLE);
+        mMediator.registerOrientationListener(mGridLayoutManager);
+        mMediator.initWithNative(mProfile);
+        initWithThreeTabs();
+
+        PropertyModel model = mock(PropertyModel.class);
+        when(model.get(CARD_TYPE)).thenReturn(MESSAGE);
+        when(model.get(MESSAGE_TYPE)).thenReturn(PRICE_WELCOME);
+        mMediator.addSpecialItemToModel(2, TabProperties.UiType.PRICE_WELCOME, model);
+        assertThat(mModel.lastIndexForMessageItemFromType(PRICE_WELCOME), equalTo(2));
+        mModel.removeAt(0);
+        assertThat(mModel.lastIndexForMessageItemFromType(PRICE_WELCOME), equalTo(2));
     }
 
     @Test
@@ -2549,6 +2733,7 @@ public class TabListMediatorUnitTest {
                 mTabContentManager::getTabThumbnailWithCallback, mTitleProvider,
                 mTabListFaviconProvider, actionOnRelatedTabs, null, null, handler,
                 getClass().getSimpleName(), uiType);
+        mMediator.registerOrientationListener(mGridLayoutManager);
 
         // TabGroupModelFilterObserver is registered when native is ready.
         assertThat(mTabGroupModelFilterObserverCaptor.getAllValues().isEmpty(), equalTo(true));
@@ -2603,5 +2788,27 @@ public class TabListMediatorUnitTest {
                 .when(mOptimizationGuideBridgeJniMock)
                 .canApplyOptimization(
                         anyLong(), any(GURL.class), anyInt(), any(OptimizationGuideCallback.class));
+    }
+
+    private void initWithThreeTabs() {
+        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2, tab3));
+        mMediator.resetWithListOfTabs(PseudoTab.getListOfPseudoTab(tabs), false, false);
+        assertThat(mModel.size(), equalTo(3));
+        assertThat(mModel.get(0).model.get(TabProperties.IS_SELECTED), equalTo(true));
+        assertThat(mModel.get(1).model.get(TabProperties.IS_SELECTED), equalTo(false));
+        assertThat(mModel.get(2).model.get(TabProperties.IS_SELECTED), equalTo(false));
+    }
+
+    private void addSpecialItem(int index, @UiType int uiType, int itemIdentifier) {
+        PropertyModel model = mock(PropertyModel.class);
+        when(model.get(CARD_TYPE)).thenReturn(MESSAGE);
+        if (uiType == TabProperties.UiType.MESSAGE
+                || uiType == TabProperties.UiType.PRICE_WELCOME) {
+            when(model.get(MESSAGE_TYPE)).thenReturn(itemIdentifier);
+        }
+        // Avoid auto-updating the layout when inserting the special card.
+        doReturn(1).when(mSpanSizeLookup).getSpanSize(anyInt());
+        mMediator.addSpecialItemToModel(index, uiType, model);
     }
 }

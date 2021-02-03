@@ -341,6 +341,13 @@ public class TabListCoordinator
     }
 
     /**
+     * @see TabListMediator#getPriceWelcomeMessageInsertionIndex().
+     */
+    int getPriceWelcomeMessageInsertionIndex() {
+        return mMediator.getPriceWelcomeMessageInsertionIndex();
+    }
+
+    /**
      * @return The container {@link androidx.recyclerview.widget.RecyclerView} that is showing the
      *         tab list UI.
      */
