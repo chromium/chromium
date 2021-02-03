@@ -184,6 +184,8 @@ class WTF_EXPORT AtomicString {
   AtomicString LowerASCII() const;
   AtomicString UpperASCII() const;
 
+  bool IsLowerASCII() const { return string_.IsLowerASCII(); }
+
   // See comments in WTFString.h.
   int ToInt(bool* ok = nullptr) const { return string_.ToInt(ok); }
   double ToDouble(bool* ok = nullptr) const { return string_.ToDouble(ok); }

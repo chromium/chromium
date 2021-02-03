@@ -538,6 +538,8 @@ class WTF_EXPORT String {
                                       length);
   }
 
+  bool IsLowerASCII() const { return !impl_ || impl_->IsLowerASCII(); }
+
   bool ContainsOnlyASCIIOrEmpty() const {
     return !impl_ || impl_->ContainsOnlyASCIIOrEmpty();
   }

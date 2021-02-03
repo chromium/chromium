@@ -592,8 +592,9 @@ String String::FromUTF8(const LChar* string_start, size_t string_length) {
   if (!length)
     return g_empty_string;
 
-  if (CharactersAreAllASCII(string_start, length))
-    return StringImpl::Create(string_start, length);
+  ASCIIStringAttributes attributes = CharacterAttributes(string_start, length);
+  if (attributes.contains_only_ascii)
+    return StringImpl::Create(string_start, length, attributes);
 
   Vector<UChar, 1024> buffer(length);
   UChar* buffer_start = buffer.data();
