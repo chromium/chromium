@@ -7,6 +7,7 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -76,3 +77,6 @@ void WebUIBubbleDialogView::CloseUI() {
 void WebUIBubbleDialogView::OnWebViewSizeChanged() {
   SizeToContents();
 }
+
+BEGIN_METADATA(WebUIBubbleDialogView, views::BubbleDialogDelegateView)
+END_METADATA

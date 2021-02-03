@@ -33,6 +33,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 // GlobalErrorBubbleViewBase ---------------------------------------------------
 
@@ -147,3 +148,6 @@ void GlobalErrorBubbleView::OnDialogInitialized() {
 void GlobalErrorBubbleView::CloseBubbleView() {
   GetWidget()->Close();
 }
+
+BEGIN_METADATA(GlobalErrorBubbleView, views::BubbleDialogDelegateView)
+END_METADATA

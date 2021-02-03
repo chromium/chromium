@@ -8,11 +8,14 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_view.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 // A Views bubble host for a WebUIBubbleView.
 class WebUIBubbleDialogView : public views::BubbleDialogDelegateView,
                               public WebUIBubbleView::Host {
  public:
+  METADATA_HEADER(WebUIBubbleDialogView);
+
   static base::WeakPtr<WebUIBubbleDialogView> CreateWebUIBubbleDialog(
       std::unique_ptr<WebUIBubbleDialogView> bubble_view);
 

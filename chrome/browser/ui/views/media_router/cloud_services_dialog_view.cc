@@ -23,6 +23,7 @@
 #include "ui/gfx/text_constants.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "url/gurl.h"
 
@@ -131,5 +132,8 @@ void CloudServicesDialogView::WindowClosing() {
 
 // static
 CloudServicesDialogView* CloudServicesDialogView::instance_ = nullptr;
+
+BEGIN_METADATA(CloudServicesDialogView, views::BubbleDialogDelegateView)
+END_METADATA
 
 }  // namespace media_router

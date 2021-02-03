@@ -39,6 +39,7 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 
 namespace media_router {
@@ -472,5 +473,8 @@ void CastDialogView::OnFilePickerClosed(const ui::SelectedFileInfo* file_info) {
 
 // static
 CastDialogView* CastDialogView::instance_ = nullptr;
+
+BEGIN_METADATA(CastDialogView, views::BubbleDialogDelegateView)
+END_METADATA
 
 }  // namespace media_router

@@ -133,7 +133,7 @@ SharingDialogView::SharingDialogView(views::View* anchor_view,
     SetFootnoteView(CreateOriginView(data_));
   }
 
-  set_close_on_main_frame_origin_navigation(true);
+  SetCloseOnMainFrameOriginNavigation(true);
 }
 
 SharingDialogView::~SharingDialogView() = default;

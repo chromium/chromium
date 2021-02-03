@@ -300,8 +300,8 @@ IntentPickerBubbleView::IntentPickerBubbleView(
   // origin changed. Other intent picker bubbles will be handled in
   // intent_picker_helpers, they will get closed on each navigation start and
   // should stay open until after navigation finishes.
-  set_close_on_main_frame_origin_navigation(icon_type ==
-                                            PageActionIconType::kClickToCall);
+  SetCloseOnMainFrameOriginNavigation(icon_type ==
+                                      PageActionIconType::kClickToCall);
 
   chrome::RecordDialogCreation(chrome::DialogIdentifier::INTENT_PICKER);
 }

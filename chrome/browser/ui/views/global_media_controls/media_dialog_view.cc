@@ -34,6 +34,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/views_features.h"
 
 using media_session::mojom::MediaSessionAction;
@@ -327,3 +328,6 @@ void MediaDialogView::OnSodaProgress(int progress) {
   live_caption_title_->SetText(l10n_util::GetStringFUTF16Int(
       IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION_DOWNLOAD_PROGRESS, progress));
 }
+
+BEGIN_METADATA(MediaDialogView, views::BubbleDialogDelegateView)
+END_METADATA

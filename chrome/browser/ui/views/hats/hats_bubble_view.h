@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "chrome/browser/ui/views/close_bubble_on_tab_activation_helper.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 class AppMenuButton;
 class Browser;
@@ -25,6 +26,8 @@ using HatsConsentCallback = base::OnceCallback<void(bool accept)>;
 // It displays a WebUI that hosts the survey.
 class HatsBubbleView : public views::BubbleDialogDelegateView {
  public:
+  METADATA_HEADER(HatsBubbleView);
+
   // Histogram enum on how users interact with the bubble.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -35,6 +38,9 @@ class HatsBubbleView : public views::BubbleDialogDelegateView {
     kIgnored = 3,
     kMaxValue = kIgnored,
   };
+
+  HatsBubbleView(const HatsBubbleView&) = delete;
+  HatsBubbleView& operator=(const HatsBubbleView&) = delete;
 
   // Returns a pointer to the Hats Bubble being shown. For testing only.
   static views::BubbleDialogDelegateView* GetHatsBubble();
@@ -71,8 +77,6 @@ class HatsBubbleView : public views::BubbleDialogDelegateView {
   static HatsBubbleView* instance_;
   CloseBubbleOnTabActivationHelper close_bubble_helper_;
   HatsConsentCallback consent_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(HatsBubbleView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_HATS_HATS_BUBBLE_VIEW_H_

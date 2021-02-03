@@ -8,6 +8,7 @@
 #include "base/strings/string16.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace gfx {
 class ImageSkia;
@@ -17,6 +18,7 @@ class ImageSkia;
 // for app related dialog classes, e.g AppBlockDialogView, AppPauseDialogView.
 class AppDialogView : public views::BubbleDialogDelegateView {
  public:
+  METADATA_HEADER(AppDialogView);
   explicit AppDialogView(const gfx::ImageSkia& image);
   ~AppDialogView() override;
 

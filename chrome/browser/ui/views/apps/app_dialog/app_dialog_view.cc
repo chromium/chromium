@@ -11,6 +11,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 AppDialogView::AppDialogView(const gfx::ImageSkia& image)
     : BubbleDialogDelegateView(nullptr, views::BubbleBorder::NONE) {
@@ -41,3 +42,6 @@ void AppDialogView::SetLabelText(const base::string16& text) {
   DCHECK(label_);
   label_->SetText(text);
 }
+
+BEGIN_METADATA(AppDialogView, views::BubbleDialogDelegateView)
+END_METADATA

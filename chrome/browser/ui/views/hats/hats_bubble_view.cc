@@ -29,6 +29,7 @@
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -186,3 +187,6 @@ void HatsBubbleView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
 
   views::BubbleDialogDelegateView::OnBoundsChanged(previous_bounds);
 }
+
+BEGIN_METADATA(HatsBubbleView, views::BubbleDialogDelegateView)
+END_METADATA
