@@ -109,8 +109,10 @@ void DroppedFrameCounter::ResetPendingFrames(base::TimeTicks timestamp) {
       latest_sliding_window_start_ = args.frame_time;
       latest_sliding_window_interval_ = args.interval;
       bool was_dropped = sliding_window_.front().second;
-      if (was_dropped)
+      if (was_dropped) {
+        DCHECK_GT(dropped_frame_count_in_window_, 0u);
         --dropped_frame_count_in_window_;
+      }
       sliding_window_.pop();
       if (latest_sliding_window_start_ > report_until)
         break;
@@ -119,6 +121,9 @@ void DroppedFrameCounter::ResetPendingFrames(base::TimeTicks timestamp) {
           100.0);
       sliding_window_histogram_.AddPercentDroppedFrame(percent_dropped_frame,
                                                        /*count=*/1);
+    }
+    if (sliding_window_.empty()) {
+      DCHECK_EQ(dropped_frame_count_in_window_, 0u);
     }
 
     // Report no dropped frames for the sliding windows spanning the rest of the
@@ -288,8 +293,10 @@ void DroppedFrameCounter::NotifyFrameResult(const viz::BeginFrameArgs& args,
   while (ComputeCurrentWindowSize() > kSlidingWindowInterval) {
     const auto removed_args = sliding_window_.front().first;
     const auto removed_was_dropped = sliding_window_.front().second;
-    if (removed_was_dropped)
+    if (removed_was_dropped) {
+      DCHECK_GT(dropped_frame_count_in_window_, 0u);
       --dropped_frame_count_in_window_;
+    }
     sliding_window_.pop();
     DCHECK(!sliding_window_.empty());
 
