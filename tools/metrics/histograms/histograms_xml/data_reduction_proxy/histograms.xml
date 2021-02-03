@@ -105,6 +105,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="DataReductionProxy.ConfigService.AuthExpired"
     enum="BooleanExpired" expires_after="M90">
+  <obsolete>
+    Obsoleted Jan 2021.
+  </obsolete>
   <owner>robertogden@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -120,6 +123,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="DataReductionProxy.ConfigService.ConnectionSetupTime"
     units="ms" expires_after="M90">
+  <obsolete>
+    Obsoleted Jan 2021.
+  </obsolete>
   <owner>robertogden@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -132,6 +138,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="DataReductionProxy.ConfigService.FetchFailedAttemptsBeforeSuccess"
     units="units" expires_after="M90">
+  <obsolete>
+    Obsoleted Jan 2021.
+  </obsolete>
   <owner>robertogden@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -146,6 +155,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="DataReductionProxy.ConfigService.FetchLatency" units="ms"
     expires_after="M90">
+  <obsolete>
+    Obsoleted Jan 2021.
+  </obsolete>
   <owner>robertogden@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -158,6 +170,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="DataReductionProxy.ConfigService.FetchResponseCode"
     enum="HttpResponseCode" expires_after="M90">
+  <obsolete>
+    Obsoleted Jan 2021.
+  </obsolete>
   <owner>robertogden@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -168,6 +183,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="DataReductionProxy.ConfigService.HttpRequestRTT" units="ms"
     expires_after="2021-06-20">
+  <obsolete>
+    Obsoleted Jan 2021.
+  </obsolete>
   <owner>robertogden@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -178,6 +196,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="DataReductionProxy.ConfigService.HTTPRequests"
     enum="DataReductionProxyConfigServiceHTTPRequests" expires_after="M90">
+  <obsolete>
+    Obsoleted Jan 2021.
+  </obsolete>
   <owner>robertogden@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -193,6 +214,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="DataReductionProxy.ConfigService.MainFrames"
     enum="DataReductionProxyConfigServiceMainFrames" expires_after="M90">
+  <obsolete>
+    Obsoleted Jan 2021.
+  </obsolete>
   <owner>robertogden@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>

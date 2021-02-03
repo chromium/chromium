@@ -37,9 +37,6 @@ const char kDataReductionProxy[] = "auth.spdyproxy.origin";
 // consult the OWNERS.
 const char kDataSaverEnabled[] = "spdy_proxy.enabled";
 
-// String that specifies a persisted Data Reduction Proxy configuration.
-const char kDataReductionProxyConfig[] = "data_reduction.config";
-
 // A boolean specifying whether data usage should be collected for reporting.
 const char kDataUsageReportingEnabled[] = "data_usage_reporting.enabled";
 
@@ -61,12 +58,6 @@ const char kHttpReceivedContentLength[] = "http_received_content_length";
 // An int64_t pref that contains the total original size of all HTTP content
 // received over the network.
 const char kHttpOriginalContentLength[] = "http_original_content_length";
-
-// Pref to store the retrieval time of the last Data Reduction Proxy
-// configuration.
-const char kDataReductionProxyLastConfigRetrievalTime[] =
-    "data_reduction.last_config_retrieval_time";
-
 
 // An integer pref that stores the number of the week when the weekly data use
 // prefs were updated.

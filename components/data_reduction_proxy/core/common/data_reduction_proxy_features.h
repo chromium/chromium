@@ -16,7 +16,6 @@ extern const base::Feature kDataReductionProxyHoldback;
 extern const base::Feature kDataReductionProxyServerExperiments;
 extern const base::Feature kDataReductionProxyAggressiveConfigFetch;
 extern const base::Feature kReportSaveDataSavings;
-extern const base::Feature kFetchClientConfig;
 
 }  // namespace features
 }  // namespace data_reduction_proxy

@@ -5,8 +5,5 @@
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("data_reduction_proxy_proto") {
-  sources = [
-    "client_config.proto",
-    "data_store.proto",
-  ]
+  sources = [ "data_store.proto" ]
 }

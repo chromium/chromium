@@ -8,17 +8,12 @@
 #include <memory>
 #include <string>
 
-#include "components/data_reduction_proxy/proto/client_config.pb.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/proxy_server.h"
 #include "net/nqe/effective_connection_type.h"
 #include "net/proxy_resolution/proxy_retry_info.h"
 #include "url/gurl.h"
 
-namespace base {
-class Time;
-class TimeDelta;
-}  // namespace base
 
 namespace data_reduction_proxy {
 
@@ -67,39 +62,6 @@ GURL AddApiKeyToUrl(const GURL& url);
 const char* GetSiteBreakdownOtherHostName();
 
 }  // namespace util
-
-namespace protobuf_parser {
-
-static_assert(net::EFFECTIVE_CONNECTION_TYPE_LAST == 6,
-              "If net::EFFECTIVE_CONNECTION_TYPE changes, "
-              "PageloadMetrics_EffectiveConnectionType needs to be updated.");
-
-// Returns the corresponding scheme string for the prefetch proto scheme.
-std::string SchemeFromPrefetchScheme(
-    PrefetchProxyConfig_Proxy_Scheme proxy_scheme);
-
-// Returns the |Duration| representation of |time_delta|.
-void TimeDeltaToDuration(const base::TimeDelta& time_delta, Duration* duration);
-
-// Returns the |base::TimeDelta| representation of |duration|.  This is accurate
-// to the microsecond.
-base::TimeDelta DurationToTimeDelta(const Duration& duration);
-
-// Returns the |Timestamp| representation of |time|.
-void TimeToTimestamp(const base::Time& time, Timestamp* timestamp);
-
-// Returns the |Time| representation of |timestamp|. This is accurate to the
-// microsecond.
-base::Time TimestampToTime(const Timestamp& timestamp);
-
-// Returns an allocated |Duration| unique pointer.
-std::unique_ptr<Duration> CreateDurationFromTimeDelta(
-    const base::TimeDelta& time_delta);
-
-// Returns an allocated |Timestamp| unique pointer.
-std::unique_ptr<Timestamp> CreateTimestampFromTime(const base::Time& time);
-
-}  // namespace protobuf_parser
 
 }  // namespace data_reduction_proxy
 

@@ -89,12 +89,6 @@ void DataReductionProxySettings::InitDataReductionProxySettings(
 
   for (auto& observer : observers_)
     observer.OnSettingsInitialized();
-
-  while (!proxy_config_clients_.empty()) {
-    data_reduction_proxy_service_->AddCustomProxyConfigClient(
-        std::move(proxy_config_clients_.back()));
-    proxy_config_clients_.pop_back();
-  }
 }
 
 void DataReductionProxySettings::SetCallbackToRegisterSyntheticFieldTrial(
@@ -279,9 +273,6 @@ void DataReductionProxySettings::MaybeActivateDataReductionProxy(
       RecordSettingsEnabledState(DATA_REDUCTION_SETTINGS_ACTION_ON_TO_OFF);
     }
   }
-
-  data_reduction_proxy_service_->SetProxyPrefs(IsDataReductionProxyEnabled(),
-                                               at_startup);
 }
 
 const net::HttpRequestHeaders&
@@ -298,22 +289,6 @@ void DataReductionProxySettings::SetProxyRequestHeaders(
     observer.OnProxyRequestHeadersChanged(headers);
 }
 
-const std::vector<GURL>& DataReductionProxySettings::GetPrefetchProxies()
-    const {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  return prefetch_proxies_;
-}
-
-void DataReductionProxySettings::UpdatePrefetchProxyHosts(
-    const std::vector<GURL>& prefetch_proxies) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  prefetch_proxies_ = prefetch_proxies;
-  for (auto& observer : observers_)
-    observer.OnPrefetchProxyHostsChanged(prefetch_proxies);
-  LOCAL_HISTOGRAM_BOOLEAN("DataReductionProxy.Settings.ConfigReceived", true);
-}
-
-
 void DataReductionProxySettings::AddDataReductionProxySettingsObserver(
     DataReductionProxySettingsObserver* observer) {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -324,17 +299,6 @@ void DataReductionProxySettings::RemoveDataReductionProxySettingsObserver(
     DataReductionProxySettingsObserver* observer) {
   DCHECK(thread_checker_.CalledOnValidThread());
   observers_.RemoveObserver(observer);
-}
-
-void DataReductionProxySettings::AddCustomProxyConfigClient(
-    mojo::Remote<network::mojom::CustomProxyConfigClient> proxy_config_client) {
-  if (data_reduction_proxy_service_) {
-    data_reduction_proxy_service_->AddCustomProxyConfigClient(
-        std::move(proxy_config_client));
-    return;
-  }
-
-  proxy_config_clients_.push_back(std::move(proxy_config_client));
 }
 
 // Metrics methods

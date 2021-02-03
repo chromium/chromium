@@ -11,15 +11,11 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_data.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_test_utils.h"
-#include "components/data_reduction_proxy/proto/client_config.pb.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "net/http/http_util.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "services/network/test/test_network_connection_tracker.h"
-#include "services/network/test/test_network_quality_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -34,8 +30,6 @@ class DataReductionProxyChromeSettingsTest
  public:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-        network::mojom::ConnectionType::CONNECTION_4G);
     auto settings = std::make_unique<DataReductionProxyChromeSettings>(false);
     drp_chrome_settings_ = settings.get();
     test_context_ =
@@ -45,9 +39,6 @@ class DataReductionProxyChromeSettingsTest
             .Build();
     net::ProxyList proxies;
     proxies.SetFromPacString(kProxyPac);
-    test_context_->test_network_quality_tracker()
-        ->ReportEffectiveConnectionTypeForTesting(
-            net::EFFECTIVE_CONNECTION_TYPE_4G);
     dict_ = std::make_unique<base::DictionaryValue>();
 
     PrefRegistrySimple* registry = test_context_->pref_service()->registry();

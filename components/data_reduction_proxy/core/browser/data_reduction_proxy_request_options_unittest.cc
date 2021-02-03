@@ -21,7 +21,6 @@
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_test_utils.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_features.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_switches.h"
-#include "components/variations/variations_associated_data.h"
 #include "net/base/auth.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/load_flags.h"

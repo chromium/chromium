@@ -228,9 +228,7 @@ void DataReductionProxyChromeSettings::InitDataReductionProxySettings(
           ->GetURLLoaderFactoryForBrowserProcess();
   std::unique_ptr<data_reduction_proxy::DataReductionProxyService> service =
       std::make_unique<data_reduction_proxy::DataReductionProxyService>(
-          this, profile_prefs, url_loader_factory, std::move(store),
-          g_browser_process->network_quality_tracker(),
-          content::GetNetworkConnectionTracker(),
+          this, profile_prefs, std::move(store),
           data_use_measurement::ChromeDataUseMeasurement::GetInstance(),
           db_task_runner, commit_delay, GetClient(),
           version_info::GetChannelString(chrome::GetChannel()),
@@ -270,10 +268,6 @@ DataReductionProxyChromeSettings::CreateDataFromNavigationHandle(
   //  - request_info_
   auto data = std::make_unique<data_reduction_proxy::DataReductionProxyData>();
   data->set_request_url(handle->GetURL());
-  data->set_effective_connection_type(
-      data_reduction_proxy_service()->GetEffectiveConnectionType());
-  data->set_connection_type(net::NetworkChangeNotifier::ConnectionType(
-      data_reduction_proxy_service()->GetConnectionType()));
   data->set_used_data_reduction_proxy(false);
 
   if (!headers || headers->IsRedirect(nullptr))

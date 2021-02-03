@@ -17,7 +17,6 @@
 #include "base/strings/string_util.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_features.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_switches.h"
-#include "components/variations/variations_associated_data.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/proxy_server.h"
 #include "net/http/http_status_code.h"
@@ -30,10 +29,6 @@
 namespace {
 
 const char kEnabled[] = "Enabled";
-
-// Default URL for retrieving the Data Reduction Proxy configuration.
-const char kClientConfigURL[] =
-    "https://datasaver.googleapis.com/v1/clientConfigs";
 
 const char kExperimentsOption[] = "exp";
 
@@ -69,47 +64,6 @@ bool IsIncludedInFREPromoFieldTrial() {
     return true;
 
   return CanShowAndroidLowMemoryDevicePromo();
-}
-
-bool ForceEnableClientConfigServiceForAllDataSaverUsers() {
-  return base::FeatureList::IsEnabled(
-      data_reduction_proxy::features::kFetchClientConfig);
-}
-
-GURL GetConfigServiceURL() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  std::string url;
-  if (command_line->HasSwitch(switches::kDataReductionProxyConfigURL)) {
-    url = command_line->GetSwitchValueASCII(
-        switches::kDataReductionProxyConfigURL);
-  }
-
-  if (url.empty())
-    return GURL(kClientConfigURL);
-
-  GURL result(url);
-  if (result.is_valid())
-    return result;
-
-  LOG(WARNING) << "The following client config URL specified at the "
-               << "command-line or variation is invalid: " << url;
-  return GURL(kClientConfigURL);
-}
-
-int GetFieldTrialParameterAsInteger(const std::string& group,
-                                    const std::string& param_name,
-                                    int default_value,
-                                    int min_value) {
-  DCHECK(default_value >= min_value);
-  std::string param_value =
-      variations::GetVariationParamValue(group, param_name);
-  int value;
-  if (param_value.empty() || !base::StringToInt(param_value, &value) ||
-      value < min_value) {
-    return default_value;
-  }
-
-  return value;
 }
 
 std::string GetDataSaverServerExperimentsOptionName() {

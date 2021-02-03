@@ -535,6 +535,10 @@ const char kAssistantQuickAnswersEnabled[] =
 // Deprecated 01/2021
 const char kGoogleServicesHostedDomain[] = "google.services.hosted_domain";
 
+const char kDataReductionProxyLastConfigRetrievalTime[] =
+    "data_reduction.last_config_retrieval_time";
+const char kDataReductionProxyConfig[] = "data_reduction.config";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -632,6 +636,9 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kAssistantQuickAnswersEnabled, true);
 
   registry->RegisterStringPref(kGoogleServicesHostedDomain, std::string());
+
+  registry->RegisterInt64Pref(kDataReductionProxyLastConfigRetrievalTime, 0L);
+  registry->RegisterStringPref(kDataReductionProxyConfig, std::string());
 }
 
 }  // namespace
@@ -1291,6 +1298,8 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
   // Added 01/2021
   profile_prefs->ClearPref(kGoogleServicesHostedDomain);
+  profile_prefs->ClearPref(kDataReductionProxyLastConfigRetrievalTime);
+  profile_prefs->ClearPref(kDataReductionProxyConfig);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

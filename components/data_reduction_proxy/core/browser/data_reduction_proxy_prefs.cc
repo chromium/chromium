@@ -152,9 +152,6 @@ void RegisterSyncableProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(prefs::kDailyHttpReceivedContentLength);
 
   registry->RegisterInt64Pref(prefs::kDailyHttpContentLengthLastUpdateDate, 0L);
-  registry->RegisterStringPref(prefs::kDataReductionProxyConfig, std::string());
-  registry->RegisterInt64Pref(prefs::kDataReductionProxyLastConfigRetrievalTime,
-                              0L);
 
   registry->RegisterIntegerPref(prefs::kThisWeekNumber, 0);
   registry->RegisterDictionaryPref(
@@ -196,9 +193,6 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(prefs::kDailyHttpReceivedContentLength);
   registry->RegisterInt64Pref(
       prefs::kDailyHttpContentLengthLastUpdateDate, 0L);
-  registry->RegisterStringPref(prefs::kDataReductionProxyConfig, std::string());
-  registry->RegisterInt64Pref(prefs::kDataReductionProxyLastConfigRetrievalTime,
-                              0L);
 
   registry->RegisterIntegerPref(prefs::kThisWeekNumber, 0);
   registry->RegisterDictionaryPref(
