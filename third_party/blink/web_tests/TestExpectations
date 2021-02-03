@@ -5644,7 +5644,9 @@ crbug.com/1163793 http/tests/inspector-protocol/page/page-events-associated.js [
 crbug.com/1164459 [ Mac10.15 ] external/wpt/preload/download-resources.html [ Pass Failure ]
 
 # CSS spelling and grammar features (issue 1163437)
-crbug.com/1147859 external/wpt/css/css-pseudo/highlight-painting-order.html [ Failure ]
+crbug.com/1147859 external/wpt/css/css-pseudo/highlight-painting-001.html [ Failure ]
+crbug.com/1147859 external/wpt/css/css-pseudo/highlight-painting-002.html [ Failure ]
+crbug.com/1147859 external/wpt/css/css-pseudo/highlight-painting-003.html [ Failure ]
 
 # Sheriff 2021-01-15
 crbug.com/1167222 http/tests/websocket/multiple-connections-throttled.html [ Pass Failure ]

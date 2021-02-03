@@ -16,13 +16,15 @@
         line-height: 1;
     }
     p > span {
-        position: absolute;
         color: initial;
         text-shadow: none;
+        position: absolute;
     }
     p > span > span {
         background: #C0C0C0;
         text-shadow: 0.5000em 0.5000em #3838E0;
+        /* force blue to paint over red */
+        position: relative;
     }
 </style>
 <p><span>q<span>uic</span>k</span>quick
