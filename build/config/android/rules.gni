@@ -3097,7 +3097,9 @@ if (enable_java_templates) {
       if (defined(invoker.name)) {
         # Create size info files for targets that care about size
         # (have proguard enabled).
-        if (_proguard_enabled) {
+        _include_size_info =
+            defined(invoker.include_size_info) && invoker.include_size_info
+        if (_include_size_info || _proguard_enabled) {
           _size_info_target = "${target_name}__size_info"
           create_size_info_files(_size_info_target) {
             name = "${invoker.name}.apk"
@@ -3481,6 +3483,7 @@ if (enable_java_templates) {
                                "expected_libs_and_assets_base",
                                "generate_buildconfig_java",
                                "generate_final_jni",
+                               "include_size_info",
                                "input_jars_paths",
                                "use_modern_linker",
                                "jacoco_never_instrument",
@@ -3778,6 +3781,10 @@ if (enable_java_templates) {
     android_apk(target_name) {
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       testonly = true
+
+      # Enables the test_runner to find the source file location of a test
+      # after it is ran.
+      include_size_info = true
       deps = [ "//testing/android/broker:broker_java" ]
       if (defined(invoker.deps)) {
         deps += invoker.deps
