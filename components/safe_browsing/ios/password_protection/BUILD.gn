@@ -9,9 +9,15 @@ source_set("password_protection") {
     "password_protection_request_ios.mm",
     "password_protection_service.h",
     "password_protection_service.mm",
+    "request_canceler_ios.h",
+    "request_canceler_ios.mm",
   ]
   deps = [
     "//base",
+    "//components/password_manager/core/browser",
+    "//components/safe_browsing/core:csd_proto",
     "//components/safe_browsing/core/password_protection",
+    "//ios/web/public",
+    "//url",
   ]
 }
