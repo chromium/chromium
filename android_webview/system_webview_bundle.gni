@@ -88,14 +88,6 @@ template("system_webview_bundle") {
       proguard_android_sdk_dep = webview_framework_dep
     }
 
-    # NOTE: Only sign bundle for official builds since this is very slow.
-    if (enable_chrome_android_internal && use_signing_keys &&
-        is_official_build) {
-      sign_bundle = true
-      keystore_path = webview_keystore_path
-      keystore_name = webview_keystore_name
-      keystore_password = webview_keystore_password
-    }
     forward_variables_from(invoker, "*")
   }
 }

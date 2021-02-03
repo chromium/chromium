@@ -4460,11 +4460,6 @@ if (enable_java_templates) {
   #    enable_language_splits: Optional. If true, enable APK splits based
   #      on languages.
   #
-  #    sign_bundle: Optional. If true, sign the bundle. Default is false
-  #      because signing is very slow, and there is no reason to do it
-  #      unless one wants to upload the bundle to the Play Store (e.g.
-  #      for official builds).
-  #
   #    keystore_path: optional keystore path, used only when generating APKs.
   #    keystore_name: optional keystore name, used only when generating APKs.
   #    keystore_password: optional keystore password, used only when
@@ -4836,8 +4831,6 @@ if (enable_java_templates) {
     _all_rebased_module_zip_paths =
         rebase_path(_all_module_zip_paths, root_build_dir)
 
-    _sign_bundle = defined(invoker.sign_bundle) && invoker.sign_bundle
-
     _enable_language_splits = defined(invoker.enable_language_splits) &&
                               invoker.enable_language_splits
 
@@ -4858,13 +4851,6 @@ if (enable_java_templates) {
 
     _rebased_keystore_path = rebase_path(_keystore_path, root_build_dir)
 
-    if (_sign_bundle) {
-      # For now, the same keys are used to sign the bundle and the set of
-      # generated APKs. In the future, signing the bundle may require a
-      # different set of keys.
-      _bundle_keystore_name = _keystore_name
-    }
-
     _bundle_target_name = "${_target_name}__bundle"
     action_with_pydeps(_bundle_target_name) {
       # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
@@ -4880,16 +4866,6 @@ if (enable_java_templates) {
         "--pathmap-out-path=$_rebased_bundle_path.pathmap.txt",
         "--module-zips=$_all_rebased_module_zip_paths",
       ]
-      if (_sign_bundle) {
-        args += [
-          "--keystore-path",
-          _rebased_keystore_path,
-          "--keystore-password",
-          _keystore_password,
-          "--key-name",
-          _bundle_keystore_name,
-        ]
-      }
       if (_split_dimensions != []) {
         args += [ "--split-dimensions=$_split_dimensions" ]
       }

@@ -158,7 +158,6 @@ template("chrome_bundle") {
                              "lint_suppressions_dep",
                              "min_sdk_version",
                              "proguard_android_sdk_dep",
-                             "sign_bundle",
                              "static_library_provider",
                              "static_library_synchronized_proguard",
                              "version_code",
@@ -175,14 +174,5 @@ template("chrome_bundle") {
     # testing easier. This removes the need to manually specify, e.g.,
     # "-m dev_ui" on every install or run.
     default_modules_for_testing = [ "dev_ui" ]
-
-    # NOTE: Only sign bundle for official builds since this is very slow.
-    if (enable_chrome_android_internal && use_signing_keys &&
-        is_official_build) {
-      sign_bundle = true
-      keystore_path = chrome_keystore_path
-      keystore_name = chrome_keystore_name
-      keystore_password = chrome_keystore_password
-    }
   }
 }

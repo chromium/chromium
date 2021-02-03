@@ -56,11 +56,6 @@ single base module, which enables language-based splits:
     # be 'foo_bundle' otherwise.
     bundle_name = "FooBundle"
 
-    # Signing your bundle is required to upload it to the Play Store
-    # but since signing is very slow, avoid doing it for non official
-    # builds. Signing the bundle is not required for local testing.
-    sign_bundle = is_official_build
-
     # Enable language-based splits for this bundle. Which means that
     # resources and assets specific to a given language will be placed
     # into their own split APK in the final .apks archive.
