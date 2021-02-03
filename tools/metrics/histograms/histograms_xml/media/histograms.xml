@@ -4102,9 +4102,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Media.VideoCapture.Windows.NumberOfRetriesNeededForMFGetDeviceStreamCategory"
-    units="retries" expires_after="2021-02-01">
+    units="retries" expires_after="2022-02-01">
   <owner>guidou@chromium.org</owner>
-  <owner>armax@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
   <summary>
     Counts how many retries are needed for calls to MediaFoundation function
     GetDeviceStreamCategory before getting a result different from
@@ -4114,9 +4114,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Media.VideoCapture.Windows.NumberOfRetriesNeededForMFGetDeviceStreamCount"
-    units="retries" expires_after="2021-02-01">
+    units="retries" expires_after="2022-02-01">
   <owner>guidou@chromium.org</owner>
-  <owner>armax@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
   <summary>
     Counts how many retries are needed for calls to MediaFoundation function
     GetDeviceStreamCount before getting a result different from

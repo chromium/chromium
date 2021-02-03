@@ -1121,10 +1121,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.DesktopCaptureCounters" enum="DesktopCaptureCounters"
-    expires_after="2020-12-31">
+    expires_after="2021-12-31">
   <owner>guidou@chromium.org</owner>
-  <owner>marinaciocea@chromium.org</owner>
-  <owner>armax@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
   <summary>
     Counters on creation of DesktopCaptureDevice and the first capture call.
   </summary>
@@ -1774,8 +1773,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.UserMediaRequest.Result2"
-    enum="MediaStreamRequestResult2" expires_after="2021-02-07">
-  <owner>grunell@chromium.org</owner>
+    enum="MediaStreamRequestResult2" expires_after="2022-02-07">
+  <owner>guidou@chromium.org</owner>
+  <owner>agpalak@chromium.org</owner>
   <summary>
     Counters for UserMediaRequests results such as failure reasons. The standard
     specification error names are in parenthesis.
