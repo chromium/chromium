@@ -505,37 +505,4 @@ public class IntentUtils {
         }
         return 0;
     }
-
-    /**
-     * Determines whether this app is the only possible handler for this Intent.
-     *
-     * @param context Any context for this app.
-     * @param intent The intent to check.
-     * @return True if the intent targets this app.
-     */
-    public static boolean intentTargetsSelf(Context context, Intent intent) {
-        boolean hasPackage = !TextUtils.isEmpty(intent.getPackage());
-        boolean matchesPackage = hasPackage && context.getPackageName().equals(intent.getPackage());
-        boolean hasComponent = intent.getComponent() != null;
-        boolean matchesComponent = hasComponent
-                && context.getPackageName().equals(intent.getComponent().getPackageName());
-
-        // Component takes precedence over PackageName when routing Intents if both are set, but to
-        // be on the safe side, ensure that if we have both package and component set, that they
-        // agree.
-        if (matchesComponent) {
-            if (hasPackage) {
-                // We should not create intents that disagree on package/component, but for security
-                // purposes we should handle this case.
-                assert matchesPackage;
-                return matchesPackage;
-            }
-            return true;
-        }
-        if (matchesPackage) {
-            assert !hasComponent;
-            return !hasComponent;
-        }
-        return false;
-    }
 }
