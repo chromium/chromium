@@ -29,10 +29,10 @@ PASS list marker is 20001.
 
 hebrew
 PASS list marker is -1.
-PASS list marker is ספא.
+PASS list marker is אפס.
 PASS list marker is א.
 
-PASS list marker is טצקתת'טצקתת.
+PASS list marker is תתקצט׳תתקצט.
 PASS list marker is 1000000.
 PASS list marker is 1000001.
 

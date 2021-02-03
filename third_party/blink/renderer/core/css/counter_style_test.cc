@@ -453,4 +453,22 @@ TEST_F(CounterStyleTest, PrefixAndSuffix) {
   EXPECT_EQ("Y", extended.GetSuffix());
 }
 
+TEST_F(CounterStyleTest, Hebrew) {
+  // Verifies that our 'hebrew' implementation matches the spec in the
+  // officially specified range 1-10999.
+  // https://drafts.csswg.org/css-counter-styles-3/#hebrew
+  const CounterStyle& hebrew_as_specced =
+      AddCounterStyle("hebrew-as-specced", R"CSS(
+    system: additive;
+    range: 1 10999;
+    additive-symbols: 10000 \5D9\5F3, 9000 \5D8\5F3, 8000 \5D7\5F3, 7000 \5D6\5F3, 6000 \5D5\5F3, 5000 \5D4\5F3, 4000 \5D3\5F3, 3000 \5D2\5F3, 2000 \5D1\5F3, 1000 \5D0\5F3, 400 \5EA, 300 \5E9, 200 \5E8, 100 \5E7, 90 \5E6, 80 \5E4, 70 \5E2, 60 \5E1, 50 \5E0, 40 \5DE, 30 \5DC, 20 \5DB, 19 \5D9\5D8, 18 \5D9\5D7, 17 \5D9\5D6, 16 \5D8\5D6, 15 \5D8\5D5, 10 \5D9, 9 \5D8, 8 \5D7, 7 \5D6, 6 \5D5, 5 \5D4, 4 \5D3, 3 \5D2, 2 \5D1, 1 \5D0;
+  )CSS");
+  const CounterStyle& hebrew_as_implemented = GetCounterStyle("hebrew");
+  for (int value = 1; value <= 10999; ++value) {
+    String expected = hebrew_as_specced.GenerateRepresentation(value);
+    String actual = hebrew_as_implemented.GenerateRepresentation(value);
+    EXPECT_EQ(expected, actual);
+  }
+}
+
 }  // namespace blink

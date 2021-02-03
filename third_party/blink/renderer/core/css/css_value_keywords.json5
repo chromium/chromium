@@ -1479,6 +1479,7 @@
     "-internal-simp-chinese-formal",
     "-internal-trad-chinese-informal",
     "-internal-trad-chinese-formal",
+    "-internal-hebrew",
 
     // @counter-style range
     // infinite,

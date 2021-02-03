@@ -54,6 +54,8 @@ CounterStyleSystem ToCounterStyleSystemEnum(const CSSValue* value) {
       return CounterStyleSystem::kNumeric;
     case CSSValueID::kAdditive:
       return CounterStyleSystem::kAdditive;
+    case CSSValueID::kInternalHebrew:
+      return CounterStyleSystem::kHebrew;
     case CSSValueID::kInternalSimpChineseInformal:
       return CounterStyleSystem::kSimpChineseInformal;
     case CSSValueID::kInternalSimpChineseFormal:
@@ -80,6 +82,7 @@ bool HasSymbols(CounterStyleSystem system) {
     case CounterStyleSystem::kAdditive:
       return true;
     case CounterStyleSystem::kUnresolvedExtends:
+    case CounterStyleSystem::kHebrew:
     case CounterStyleSystem::kSimpChineseInformal:
     case CounterStyleSystem::kSimpChineseFormal:
     case CounterStyleSystem::kTradChineseInformal:
@@ -105,6 +108,7 @@ bool SymbolsAreValid(const StyleRuleCounterStyle& rule,
       return additive_symbols && additive_symbols->length();
     case CounterStyleSystem::kUnresolvedExtends:
       return !symbols && !additive_symbols;
+    case CounterStyleSystem::kHebrew:
     case CounterStyleSystem::kSimpChineseInformal:
     case CounterStyleSystem::kSimpChineseFormal:
     case CounterStyleSystem::kTradChineseInformal:
@@ -237,6 +241,12 @@ Vector<wtf_size_t> AdditiveAlgorithm(unsigned value,
 // TODO(crbug.com/687225): After @counter-style is shipped and the legacy
 // code paths are removed, remove everything else of list_marker_text and move
 // the implementation of the special algorithms here.
+
+String HebrewAlgorithm(unsigned value) {
+  if (value > 999999)
+    return String();
+  return list_marker_text::GetText(EListStyleType::kHebrew, value);
+}
 
 String SimpChineseInformalAlgorithm(unsigned value) {
   // @counter-style algorithm works on absolute value, but the legacy
@@ -429,6 +439,8 @@ bool CounterStyle::RangeContains(int value) const {
       return value >= 1;
     case CounterStyleSystem::kAdditive:
       return value >= 0;
+    case CounterStyleSystem::kHebrew:
+      return value >= 0 && value <= 999999;
     case CounterStyleSystem::kUnresolvedExtends:
       NOTREACHED();
       return false;
@@ -443,6 +455,7 @@ bool CounterStyle::NeedsNegativeSign(int value) const {
     case CounterStyleSystem::kAlphabetic:
     case CounterStyleSystem::kNumeric:
     case CounterStyleSystem::kAdditive:
+    case CounterStyleSystem::kHebrew:
     case CounterStyleSystem::kSimpChineseInformal:
     case CounterStyleSystem::kSimpChineseFormal:
     case CounterStyleSystem::kTradChineseInformal:
@@ -523,6 +536,8 @@ String CounterStyle::GenerateInitialRepresentation(int value) const {
       return IndexesToString(AlphabeticAlgorithm(abs_value, symbols_.size()));
     case CounterStyleSystem::kAdditive:
       return IndexesToString(AdditiveAlgorithm(abs_value, additive_weights_));
+    case CounterStyleSystem::kHebrew:
+      return HebrewAlgorithm(abs_value);
     case CounterStyleSystem::kSimpChineseInformal:
       return SimpChineseInformalAlgorithm(abs_value);
     case CounterStyleSystem::kSimpChineseFormal:
