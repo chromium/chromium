@@ -19,10 +19,25 @@ enum Destination {
   // Devices. For more information, see go/reliable-meet-device-telemetry.
   MEET_DEVICE_TELEMETRY = 2;
 
+  // |WEB_PROTECT| legacy web protect event handler
+  WEB_PROTECT = 3;
+
+  // |ARC_INSTALL| legacy arc app installation event handler
+  ARC_INSTALL = 4;
+
+  // |POLICY_VALIDATION| legacy policy validation event handler
+  POLICY_VALIDATION = 5;
+
+  // |EXTENSION_INSTALL| legacy extension installation event handler
+  EXTENSION_INSTALL = 6;
+
+  // |REPORTING_RECORD| Temporary group for Encrypted Reporting Pipeline
+  REPORTING_RECORD = 7;
+
   // |DEVICE_TRUST_REPORTS| handler is for reporting data updates related to the
   // Device Trust connector, sent by Chrome browsers for Chrome Browser Cloud
   // Management (CBCM).
-  DEVICE_TRUST_REPORTS = 3;
+  DEVICE_TRUST_REPORTS = 8;
 }
 
 // |Priority| is used to determine when items from the queue should be rate
