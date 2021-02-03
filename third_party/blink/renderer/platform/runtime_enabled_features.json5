@@ -450,7 +450,7 @@
     },
     {
       name: "CSSAspectRatioInterpolation",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CSSAspectRatioProperty",
