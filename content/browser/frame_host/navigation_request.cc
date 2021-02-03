@@ -5018,4 +5018,8 @@ void NavigationRequest::SetState(NavigationState state) {
   state_ = state;
 }
 
+bool NavigationRequest::IsWaitingForBeforeUnload() {
+  return state_ < WILL_START_NAVIGATION;
+}
+
 }  // namespace content

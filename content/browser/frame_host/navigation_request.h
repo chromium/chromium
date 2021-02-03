@@ -699,6 +699,10 @@ class CONTENT_EXPORT NavigationRequest
   // tracing purposes.
   void AsValueInto(base::trace_event::TracedValue* traced_value);
 
+  // Whether this navigation request waits for the result of beforeunload before
+  // proceeding.
+  bool IsWaitingForBeforeUnload();
+
  private:
   friend class NavigationRequestTest;
 
