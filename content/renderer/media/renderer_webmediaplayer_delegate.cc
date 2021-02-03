@@ -237,8 +237,6 @@ bool RendererWebMediaPlayerDelegate::OnMessageReceived(
                         OnMediaDelegateVolumeMultiplierUpdate)
     IPC_MESSAGE_HANDLER(MediaPlayerDelegateMsg_BecamePersistentVideo,
                         OnMediaDelegateBecamePersistentVideo)
-    IPC_MESSAGE_HANDLER(MediaPlayerDelegateMsg_SetAudioSinkId,
-                        OnMediaDelegateSetAudioSink)
     IPC_MESSAGE_HANDLER(MediaPlayerDelegateMsg_NotifyPowerExperimentState,
                         OnMediaDelegatePowerExperimentState)
     IPC_MESSAGE_UNHANDLED(return false)
@@ -293,14 +291,6 @@ void RendererWebMediaPlayerDelegate::OnMediaDelegateBecamePersistentVideo(
   Observer* observer = id_map_.Lookup(player_id);
   if (observer)
     observer->OnBecamePersistentVideo(value);
-}
-
-void RendererWebMediaPlayerDelegate::OnMediaDelegateSetAudioSink(
-    int player_id,
-    std::string sink_id) {
-  Observer* observer = id_map_.Lookup(player_id);
-  if (observer)
-    observer->OnSetAudioSink(sink_id);
 }
 
 void RendererWebMediaPlayerDelegate::OnMediaDelegatePowerExperimentState(

@@ -41,10 +41,6 @@ IPC_MESSAGE_ROUTED2(MediaPlayerDelegateMsg_BecamePersistentVideo,
                     int /* delegate_id, distinguishes instances */,
                     double /* is_persistent */)
 
-IPC_MESSAGE_ROUTED2(MediaPlayerDelegateMsg_SetAudioSinkId,
-                    int /* delegate_id, distinguishes instances */,
-                    std::string /* sink_id */)
-
 IPC_MESSAGE_ROUTED2(MediaPlayerDelegateMsg_NotifyPowerExperimentState,
                     int /* delegate_id, distinguishes instances */,
                     bool /* is experiment starting (true) or stopping? */)

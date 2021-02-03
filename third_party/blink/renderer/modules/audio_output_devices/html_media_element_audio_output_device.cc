@@ -152,7 +152,22 @@ void SetSinkIdResolver::Trace(Visitor* visitor) const {
 
 }  // namespace
 
-HTMLMediaElementAudioOutputDevice::HTMLMediaElementAudioOutputDevice() {}
+HTMLMediaElementAudioOutputDevice::HTMLMediaElementAudioOutputDevice(
+    HTMLMediaElement& element)
+    : AudioOutputDeviceController(element) {}
+
+// static
+HTMLMediaElementAudioOutputDevice& HTMLMediaElementAudioOutputDevice::From(
+    HTMLMediaElement& element) {
+  HTMLMediaElementAudioOutputDevice* self =
+      static_cast<HTMLMediaElementAudioOutputDevice*>(
+          AudioOutputDeviceController::From(element));
+  if (!self) {
+    self = MakeGarbageCollected<HTMLMediaElementAudioOutputDevice>(element);
+    AudioOutputDeviceController::ProvideTo(element, self);
+  }
+  return *self;
+}
 
 String HTMLMediaElementAudioOutputDevice::sinkId(HTMLMediaElement& element) {
   HTMLMediaElementAudioOutputDevice& aod_element =
@@ -179,23 +194,20 @@ ScriptPromise HTMLMediaElementAudioOutputDevice::setSinkId(
   return promise;
 }
 
-const char HTMLMediaElementAudioOutputDevice::kSupplementName[] =
-    "HTMLMediaElementAudioOutputDevice";
+void HTMLMediaElementAudioOutputDevice::SetSinkId(const String& sink_id) {
+  // No need to call WebFrameClient::CheckIfAudioSinkExistsAndIsAuthorized as
+  // this call is not coming from content and should already be allowed.
+  WebMediaPlayer* web_media_player = GetSupplementable()->GetWebMediaPlayer();
+  if (!web_media_player)
+    return;
 
-HTMLMediaElementAudioOutputDevice& HTMLMediaElementAudioOutputDevice::From(
-    HTMLMediaElement& element) {
-  HTMLMediaElementAudioOutputDevice* supplement =
-      Supplement<HTMLMediaElement>::From<HTMLMediaElementAudioOutputDevice>(
-          element);
-  if (!supplement) {
-    supplement = MakeGarbageCollected<HTMLMediaElementAudioOutputDevice>();
-    ProvideTo(element, supplement);
-  }
-  return *supplement;
+  sink_id_ = sink_id;
+
+  web_media_player->SetSinkId(sink_id_, base::DoNothing());
 }
 
 void HTMLMediaElementAudioOutputDevice::Trace(Visitor* visitor) const {
-  Supplement<HTMLMediaElement>::Trace(visitor);
+  AudioOutputDeviceController::Trace(visitor);
 }
 
 }  // namespace blink

@@ -147,6 +147,8 @@ void MediaSessionController::OnExitPictureInPicture(int player_id) {
 void MediaSessionController::OnSetAudioSinkId(
     int player_id,
     const std::string& raw_device_id) {
+  DCHECK_EQ(player_id_, player_id);
+
   // The sink id needs to be hashed before it is suitable for use in the
   // renderer process.
   auto salt_and_origin = content::GetMediaDeviceSaltAndOrigin(
@@ -160,8 +162,15 @@ void MediaSessionController::OnSetAudioSinkId(
   static_cast<RenderFrameHostImpl*>(id_.render_frame_host)
       ->SetAudioOutputDeviceIdForGlobalMediaControls(hashed_sink_id);
 
-  id_.render_frame_host->Send(new MediaPlayerDelegateMsg_SetAudioSinkId(
-      id_.render_frame_host->GetRoutingID(), id_.delegate_id, hashed_sink_id));
+  media::mojom::MediaPlayer* remote =
+      web_contents_->media_web_contents_observer()->GetMediaPlayerRemote(id_);
+  if (!remote) {
+    // TODO(https://crbug.com/1161551): Remove this when lifetime bug is fixed.
+    NOTREACHED() << "Controller should not outlive remote MediaPlayer";
+    return;
+  }
+
+  remote->SetAudioSinkId(hashed_sink_id);
 }
 
 RenderFrameHost* MediaSessionController::render_frame_host() const {

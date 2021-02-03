@@ -432,6 +432,8 @@ blink_core_sources_html = [
   "list_item_ordinal.h",
   "loading_attribute.cc",
   "loading_attribute.h",
+  "media/audio_output_device_controller.cc",
+  "media/audio_output_device_controller.h",
   "media/autoplay_policy.cc",
   "media/autoplay_policy.h",
   "media/autoplay_uma_helper.cc",

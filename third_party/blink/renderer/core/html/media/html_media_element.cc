@@ -75,6 +75,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/html/html_source_element.h"
+#include "third_party/blink/renderer/core/html/media/audio_output_device_controller.h"
 #include "third_party/blink/renderer/core/html/media/autoplay_policy.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element_controls_list.h"
 #include "third_party/blink/renderer/core/html/media/media_controls.h"
@@ -4507,6 +4508,13 @@ void HTMLMediaElement::RequestSeekBackward(base::TimeDelta seek_time) {
   double seconds = seek_time.InSecondsF();
   DCHECK_GE(seconds, 0) << "Attempted to seek by a negative number of seconds";
   setCurrentTime(currentTime() - seconds);
+}
+
+void HTMLMediaElement::SetAudioSinkId(const String& sink_id) {
+  auto* audio_output_controller = AudioOutputDeviceController::From(*this);
+  DCHECK(audio_output_controller);
+
+  audio_output_controller->SetSinkId(sink_id);
 }
 
 bool HTMLMediaElement::MediaShouldBeOpaque() const {

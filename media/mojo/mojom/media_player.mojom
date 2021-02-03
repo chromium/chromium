@@ -31,6 +31,9 @@ interface MediaPlayer {
 
   // Requests the media player to exit the Picture-in-Picture mode.
   RequestExitPictureInPicture();
+
+  // Set the media player sink id to |sink_id|.
+  SetAudioSinkId(string sink_id);
 };
 
 // Implemented by MediaWebContentsObserver::MediaPlayerObserverHostImpl in the

@@ -123,6 +123,7 @@ class PictureInPictureMediaPlayerReceiver : public media::mojom::MediaPlayer {
   void RequestSeekBackward(base::TimeDelta seek_time) override {}
   void RequestEnterPictureInPicture() override {}
   void RequestExitPictureInPicture() override {}
+  void SetAudioSinkId(const std::string& sink_id) override {}
 
  private:
   mojo::Receiver<media::mojom::MediaPlayer> receiver_{this};

@@ -45,7 +45,6 @@ class MockWebMediaPlayerDelegateObserver
   MOCK_METHOD1(OnVolumeMultiplierUpdate, void(double));
   MOCK_METHOD1(OnBecamePersistentVideo, void(bool));
   MOCK_METHOD0(OnPictureInPictureModeEnded, void());
-  MOCK_METHOD1(OnSetAudioSink, void(const std::string&));
 };
 
 class RendererWebMediaPlayerDelegateTest : public content::RenderViewTest {
