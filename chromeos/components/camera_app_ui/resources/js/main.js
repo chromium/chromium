@@ -287,7 +287,8 @@ export class App {
         link.as = 'image';
         link.href = url;
         link.onload = () => resolve();
-        link.onerror = (e) => reject(e.reason);
+        link.onerror = () =>
+            reject(new Error(`Failed to preload image ${url}`));
         document.head.appendChild(link);
       });
       const results = await Promise.allSettled(

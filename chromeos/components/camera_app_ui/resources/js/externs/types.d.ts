@@ -11,3 +11,16 @@ type MojomNamespace = {
 declare var arc: MojomNamespace;
 declare var blink: MojomNamespace;
 declare var cros: MojomNamespace;
+
+// This is currently a Chrome only API, and the spec is still in working draft
+// stage.
+// https://developer.mozilla.org/en-US/docs/Web/API/UIEvent/sourceCapabilities
+
+interface UIEvent extends Event {
+  readonly sourceCapabilities: InputDeviceCapabilities|null;
+}
+
+interface InputDeviceCapabilities {
+  readonly firesTouchEvents: boolean;
+  readonly pointerMovementScrolls: boolean;
+}

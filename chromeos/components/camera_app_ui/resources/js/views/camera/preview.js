@@ -196,7 +196,9 @@ export class Preview {
     this.video_.load();
     this.video_ = video;
     video.addEventListener('resize', () => this.onIntrinsicSizeChanged_());
-    video.addEventListener('click', (event) => this.onFocusClicked_(event));
+    video.addEventListener(
+        'click',
+        (event) => this.onFocusClicked_(assertInstanceof(event, MouseEvent)));
     return this.onIntrinsicSizeChanged_();
   }
 
@@ -567,7 +569,7 @@ export class Preview {
 
   /**
    * Handles clicking for focus.
-   * @param {!Event} event Click event.
+   * @param {!MouseEvent} event Click event.
    * @private
    */
   onFocusClicked_(event) {
