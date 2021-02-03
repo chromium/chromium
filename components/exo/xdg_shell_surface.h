@@ -49,10 +49,7 @@ class XdgShellSurface : public ShellSurface {
                   int container);
   ~XdgShellSurface() override;
 
-  // Xdg surfaces have the behaviour that they should maximize themselves if
-  // their bounds are larger or equal to the display area. This behaviour is
-  // implemented in linux display managers (e.g. Muffin/Cinnamon).
-  bool ShouldAutoMaximize() override;
+  void OverrideInitParams(views::Widget::InitParams* params) override;
 
   bool x_flipped() const { return x_flipped_; }
   void set_x_flipped(bool flipped) { x_flipped_ = flipped; }
@@ -65,6 +62,11 @@ class XdgShellSurface : public ShellSurface {
   // direction when the layout does not fit to the work area.
   bool y_flipped_ = false;
   bool x_flipped_ = false;
+
+  // Xdg surfaces have the behaviour that they should maximize themselves if
+  // their bounds are larger or equal to the display area. This behaviour is
+  // implemented in linux display managers (e.g. Muffin/Cinnamon).
+  bool ShouldAutoMaximize();
 
   DISALLOW_COPY_AND_ASSIGN(XdgShellSurface);
 };

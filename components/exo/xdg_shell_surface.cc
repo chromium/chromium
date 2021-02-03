@@ -5,6 +5,7 @@
 #include "components/exo/xdg_shell_surface.h"
 
 #include "ash/frame/non_client_frame_view_ash.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
@@ -24,6 +25,17 @@ XdgShellSurface::XdgShellSurface(Surface* surface,
     : ShellSurface(surface, origin, activatable, can_minimize, container) {}
 
 XdgShellSurface::~XdgShellSurface() {}
+
+void XdgShellSurface::OverrideInitParams(views::Widget::InitParams* params) {
+  DCHECK(params);
+
+  // Auto-maximize can override the initial show_state, if it's enabled via
+  // window property.
+  bool auto_maximize_enabled = params->init_properties_container.GetProperty(
+      chromeos::kAutoMaximizeXdgShellEnabled);
+  if (auto_maximize_enabled && ShouldAutoMaximize())
+    params->show_state = ui::SHOW_STATE_MAXIMIZED;
+}
 
 bool XdgShellSurface::ShouldAutoMaximize() {
   if (initial_show_state() != ui::SHOW_STATE_DEFAULT || is_popup_ ||

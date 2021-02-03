@@ -23,6 +23,11 @@ enum class WindowPinType;
 
 // Alphabetical sort.
 
+// Whether resizable windows equal to or larger than the screen should be
+// automatically maximized. Affects Exo's xdg-shell clients only.
+COMPONENT_EXPORT(CHROMEOS_UI_BASE)
+extern const ui::ClassProperty<bool>* const kAutoMaximizeXdgShellEnabled;
+
 // If set to true, the window will be replaced by a black rectangle when taking
 // screenshot for assistant. Used to preserve privacy for incognito windows.
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)

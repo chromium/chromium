@@ -88,11 +88,6 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   // Start an interactive move of surface.
   void StartMove();
 
-  // Before widget initialization, this method will be called. Depending on the
-  // implementation, it may return true to force the surface to launch in a
-  // maximized state.
-  virtual bool ShouldAutoMaximize();
-
   // Return the initial show state for this surface.
   ui::WindowShowState initial_show_state() { return initial_show_state_; }
 

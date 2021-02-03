@@ -17,6 +17,8 @@ DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(COMPONENT_EXPORT(CHROMEOS_UI_BASE),
 
 namespace chromeos {
 
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kAutoMaximizeXdgShellEnabled, true)
+
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kBlockedForAssistantSnapshotKey, false)
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kEscHoldToExitFullscreen, false)

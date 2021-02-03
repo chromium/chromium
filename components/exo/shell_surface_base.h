@@ -208,6 +208,10 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   // of the widget (e.g. maximized).
   void CreateShellSurfaceWidget(ui::WindowShowState show_state);
 
+  // Lets subclasses modify Widget parameters immediately before widget
+  // creation.
+  virtual void OverrideInitParams(views::Widget::InitParams* params) {}
+
   // Returns true if surface is currently being resized.
   bool IsResizing() const;
 

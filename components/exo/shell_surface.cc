@@ -237,11 +237,6 @@ void ShellSurface::StartResize(int component) {
   AttemptToStartDrag(component);
 }
 
-bool ShellSurface::ShouldAutoMaximize() {
-  // Unless a child class overrides the behaviour, we will never auto-maximize.
-  return false;
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // SurfaceDelegate overrides:
 
@@ -481,10 +476,6 @@ bool ShellSurface::OnPreWidgetCommit() {
       Configure();
       return false;
     }
-
-    // Allow the window to maximize itself on launch.
-    if (ShouldAutoMaximize())
-      initial_show_state_ = ui::SHOW_STATE_MAXIMIZED;
 
     CreateShellSurfaceWidget(initial_show_state_);
   }
