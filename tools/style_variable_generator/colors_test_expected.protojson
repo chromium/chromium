@@ -23,7 +23,7 @@ test_colors: [
     key: "toggle_color",
     value: {
       light_value: 0x19202124,
-      dark_value: 0x19FFFFFF
+      dark_value: 0x60FFFFFF
     }
   },
   {

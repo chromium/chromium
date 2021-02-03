@@ -17,6 +17,17 @@ enum class ColorName {
   kToggleColor,
 };
 
+enum class OpacityName {
+  kDisabledOpacity,
+};
+
+constexpr SkAlpha GetOpacity(OpacityName opacity_name) {
+  switch (opacity_name) {
+    case OpacityName::kDisabledOpacity:
+      return 0x60;
+  }
+}
+
 constexpr SkColor ResolveColor(ColorName color_name, bool is_dark_mode) {
   switch (color_name) {
     case ColorName::kGoogleGrey900:
@@ -28,7 +39,11 @@ constexpr SkColor ResolveColor(ColorName color_name, bool is_dark_mode) {
         return ResolveColor(ColorName::kGoogleGrey900, is_dark_mode);
       }
     case ColorName::kToggleColor:
-      return SkColorSetA(ResolveColor(ColorName::kTextColorPrimary, is_dark_mode), 0x19);
+      if (is_dark_mode) {
+        return SkColorSetA(ResolveColor(ColorName::kTextColorPrimary, is_dark_mode), GetOpacity(OpacityName::kDisabledOpacity));
+      } else {
+        return SkColorSetA(ResolveColor(ColorName::kTextColorPrimary, is_dark_mode), 0x19);
+      }
   }
 }
 

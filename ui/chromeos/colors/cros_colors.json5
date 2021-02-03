@@ -202,4 +202,7 @@
 
     user_icon_color_secondary: "rgb(210, 210, 212)",
   },
+  opacities: {
+    disabled_opacity: 0.38,
+  },
 }

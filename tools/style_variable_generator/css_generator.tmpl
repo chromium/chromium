@@ -17,8 +17,12 @@ Chrome OS pages.
 html:not(body) {
 {%- for model_name, color in light_colors.items() %}
   {{model_name | to_css_var_name}}-rgb: {{color | css_color_rgb}};
-  {{model_name | to_css_var_name}}: {{css_color_from_rgb_var(model_name, color.a)}};
+  {{model_name | to_css_var_name}}: {{css_color_from_rgb_var(model_name, color)}};
 {%  endfor %}
+
+{%- for name, value in opacities.items() %}
+  {{name | to_css_var_name}}: {{value}};
+{%  endfor -%}
 }
 {%- if dark_colors %}
 
@@ -32,7 +36,7 @@ Chrome OS pages.
   html:not(body) {
 {%- for model_name, color in dark_colors.items() %}
     {{model_name | to_css_var_name}}-rgb: {{color | css_color_rgb}};
-    {{model_name | to_css_var_name}}: {{css_color_from_rgb_var(model_name, color.a)}};
+    {{model_name | to_css_var_name}}: {{css_color_from_rgb_var(model_name, color)}};
 {%  endfor %}
   }
 }

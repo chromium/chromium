@@ -14,7 +14,11 @@
       dark: "$white",
     },
     toggle_color: {
-      light: "rgba($text_color_primary_rgb, 0.1)"
+      light: "rgba($text_color_primary_rgb, 0.1)",
+      dark: "rgba($text_color_primary_rgb, $disabled_opacity)",
     }
+  },
+  opacities: {
+    disabled_opacity: 0.38,
   },
 }

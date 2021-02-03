@@ -13,24 +13,28 @@ class Color:
     - #RRGGBB
     - rgb(r, g, b)
     - rgba(r, g, b, a)
+    - rgba(r, g, b, $named_opacity)
     - $other_color
     - rgb($other_color_rgb)
     - rgba($other_color_rgb, a)
+    - rgba($other_color_rgb, $named_opacity)
 
     NB: The color components that refer to other colors' RGB values must end
     with '_rgb'.
     '''
 
     def __init__(self, value_str=None):
-        # TODO(calamity): Add opacity-only values
         self.var = None
         self.rgb_var = None
+        self.opacity_var = None
         self.r = -1
         self.g = -1
         self.b = -1
-        self.a = 1
+        self.a = -1
         if value_str is not None:
             self.Parse(value_str)
+            if not self.var and not self.opacity_var and self.a == -1:
+                raise ValueError(repr(self))
 
     def _AssignRGB(self, rgb):
         for v in rgb:
@@ -52,7 +56,7 @@ class Color:
         return False
 
     def _ParseRGBRef(self, rgb_ref):
-        match = re.match('^\$([\w\d_]+)_rgb$', rgb_ref)
+        match = re.match('^\$([a-z0-9_]+)_rgb$', rgb_ref)
         if not match:
             raise ValueError('Expected a reference to an RGB variable')
 
@@ -62,6 +66,11 @@ class Color:
             self.rgb_var = rgb_var + '_rgb'
 
     def _ParseAlpha(self, alpha_value):
+        match = re.match('^\$([a-z0-9_]+_opacity)$', alpha_value)
+        if match:
+            self.opacity_var = match.group(1)
+            return
+
         self.a = float(alpha_value)
         if not (0 <= self.a <= 1):
             raise ValueError('Alpha expected to be between 0 and 1')
@@ -81,6 +90,7 @@ class Color:
                 raise ValueError('Expected #RRGGBB')
 
             self._AssignRGB([int(x, 16) for x in textwrap.wrap(value, 2)])
+            self.a = 1
 
             return True
 
@@ -88,6 +98,8 @@ class Color:
             match = re.match('^rgb\((.*)\)$', value)
             if not match:
                 return False
+
+            self.a = 1
 
             values = match.group(1).split(',')
             if len(values) == 1:
@@ -106,7 +118,7 @@ class Color:
             if not match:
                 return False
 
-            values = match.group(1).split(',')
+            values = [x.strip() for x in match.group(1).split(',')]
             if len(values) == 2:
                 self._ParseRGBRef(values[0])
                 self._ParseAlpha(values[1])
@@ -128,6 +140,7 @@ class Color:
             var = match.group(1)
 
             if self._ParseWhiteBlack(var):
+                self.a = 1
                 return True
 
             if value.endswith('_rgb'):
@@ -154,10 +167,12 @@ class Color:
             raise ValueError('Malformed color value')
 
     def __repr__(self):
+        a = self.opacity_var if self.opacity_var else '%g' % self.a
+
         if self.var:
             return 'var(--%s)' % self.var
 
         if self.rgb_var:
-            return 'rgba(var(--%s), %g)' % (self.rgb_var, self.a)
+            return 'rgba(var(--%s), %s)' % (self.rgb_var, a)
 
-        return 'rgba(%d, %d, %d, %g)' % (self.r, self.g, self.b, self.a)
+        return 'rgba(%d, %d, %d, %s)' % (self.r, self.g, self.b, a)

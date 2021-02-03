@@ -22,6 +22,24 @@ enum class ColorName {
 {%-  endfor %}
 };
 
+{%- if opacities %}
+
+enum class OpacityName {
+{%-   for name in opacities %}
+  {{name | to_const_name}},
+{%-   endfor %}
+};
+
+constexpr SkAlpha GetOpacity(OpacityName opacity_name) {
+  switch (opacity_name) {
+{%-   for name, value in opacities.items() %}
+    case OpacityName::{{name | to_const_name}}:
+      return {{value | alpha_to_hex}};
+{%-   endfor %}
+  }
+}
+{%- endif %}
+
 constexpr SkColor ResolveColor(ColorName color_name, bool is_dark_mode) {
   switch (color_name) {
 {%- for obj in colors %}
