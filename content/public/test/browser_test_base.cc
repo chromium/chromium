@@ -959,8 +959,7 @@ void BrowserTestBase::InitializeNetworkProcess() {
       mojo_rule->host_pattern = rule.host_pattern;
       mojo_rule->replacement = rule.replacement;
       mojo_rule->host_resolver_flags = rule.host_resolver_flags;
-      mojo_rule->canonical_name =
-          !rule.dns_aliases.empty() ? rule.dns_aliases.front() : std::string();
+      mojo_rule->dns_aliases = rule.dns_aliases;
       mojo_rules.push_back(std::move(mojo_rule));
     }
   }

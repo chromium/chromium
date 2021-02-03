@@ -804,13 +804,10 @@ void RuleBasedHostResolverProc::AddRuleWithFlags(
     const std::string& host_pattern,
     const std::string& replacement,
     HostResolverFlags flags,
-    const std::string& canonical_name) {
+    std::vector<std::string> dns_aliases) {
   DCHECK(!replacement.empty());
-  std::vector<std::string> aliases;
-  if (!canonical_name.empty())
-    aliases.emplace_back(canonical_name);
   Rule rule(Rule::kResolverTypeSystem, host_pattern, ADDRESS_FAMILY_UNSPECIFIED,
-            flags, replacement, std::move(aliases), 0);
+            flags, replacement, std::move(dns_aliases), 0);
   AddRuleInternal(rule);
 }
 

@@ -213,6 +213,18 @@ void SubresourceFilterBrowserTest::SetRulesetToDisallowURLsWithPathSuffix(
       test_ruleset_publisher.SetRuleset(test_ruleset_pair.unindexed));
 }
 
+void SubresourceFilterBrowserTest::SetRulesetToDisallowURLsWithSubstrings(
+    std::vector<base::StringPiece> substrings) {
+  TestRulesetPair test_ruleset_pair;
+  ruleset_creator_.CreateRulesetToDisallowURLWithSubstrings(
+      std::move(substrings), &test_ruleset_pair);
+
+  TestRulesetPublisher test_ruleset_publisher(
+      g_browser_process->subresource_filter_ruleset_service());
+  ASSERT_NO_FATAL_FAILURE(
+      test_ruleset_publisher.SetRuleset(test_ruleset_pair.unindexed));
+}
+
 void SubresourceFilterBrowserTest::SetRulesetWithRules(
     const std::vector<proto::UrlRule>& rules) {
   TestRulesetPair test_ruleset_pair;

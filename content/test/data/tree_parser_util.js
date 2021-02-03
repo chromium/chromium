@@ -211,3 +211,5 @@ var TreeParserUtil = (function() {
     flatten: flatten
   };
 })();
+
+document.scriptExecuted = true;

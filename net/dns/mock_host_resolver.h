@@ -379,7 +379,7 @@ class RuleBasedHostResolverProc : public HostResolverProc {
   void AddRuleWithFlags(const std::string& host_pattern,
                         const std::string& ip_literal,
                         HostResolverFlags flags,
-                        const std::string& canonical_name = "");
+                        std::vector<std::string> dns_aliases = {});
 
   // Same as AddRule(), but the replacement is expected to be an IPv4 or IPv6
   // literal. This can be used in place of AddRule() to bypass the system's

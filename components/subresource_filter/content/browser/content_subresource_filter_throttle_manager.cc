@@ -318,7 +318,8 @@ void ContentSubresourceFilterThrottleManager::DidFinishNavigation(
 
     // Initial synchronous navigations to about:blank should only be tagged by
     // the renderer.
-    DCHECK(!ad_evidence.IndicatesAdSubframe());
+    DCHECK(!(navigation_handle->GetURL().IsAboutBlank() &&
+             ad_evidence.IndicatesAdSubframe()));
   } else {
     DCHECK(navigation_handle->IsInMainFrame() ||
            base::Contains(ad_frames_, frame_tree_node_id) ||

@@ -18,12 +18,15 @@ enum ResolverType {
   kResolverTypeDirectLookup,
 };
 
+// `dns_aliases` is a list of aliases read from DNS records, e.g. CNAME
+// aliases, and is intended to preserve the alias chain in reverse, from
+// canonical name (i.e. address record name) through to query name.
 struct Rule {
   ResolverType resolver_type;
   string host_pattern;
   string replacement;
   int32 host_resolver_flags;
-  string canonical_name;
+  array<string> dns_aliases;
 };
 
 // Testing interface to the network service.

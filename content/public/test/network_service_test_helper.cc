@@ -127,7 +127,7 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
           DCHECK(ip_address.AssignFromIPLiteral(rule->replacement));
           host_resolver->AddRuleWithFlags(rule->host_pattern, rule->replacement,
                                           rule->host_resolver_flags,
-                                          rule->canonical_name);
+                                          rule->dns_aliases);
           break;
         }
         case network::mojom::ResolverType::kResolverTypeDirectLookup:
@@ -136,7 +136,7 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
         default:
           host_resolver->AddRuleWithFlags(rule->host_pattern, rule->replacement,
                                           rule->host_resolver_flags,
-                                          rule->canonical_name);
+                                          rule->dns_aliases);
           break;
       }
     }
