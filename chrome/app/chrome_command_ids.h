@@ -5,6 +5,7 @@
 #ifndef CHROME_APP_CHROME_COMMAND_IDS_H_
 #define CHROME_APP_CHROME_COMMAND_IDS_H_
 
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
 // This file lists all the command IDs understood by e.g. the browser.
@@ -437,6 +438,11 @@
 // Tab Search
 #define IDC_TAB_SEARCH 52500
 #define IDC_TAB_SEARCH_CLOSE 52501
+
+// Views debug commands.
+#define IDC_DEBUG_TOGGLE_TABLET_MODE 52510
+#define IDC_DEBUG_PRINT_VIEW_TREE 52511
+// Please leave a gap here for new debug commands.
 
 // NOTE: The last valid command value is 57343 (0xDFFF)
 // See http://msdn.microsoft.com/en-us/library/t2zechd4(VS.71).aspx

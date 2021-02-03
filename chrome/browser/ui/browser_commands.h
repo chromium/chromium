@@ -219,6 +219,7 @@ bool CanToggleCaretBrowsing(Browser* browser);
 void ToggleCaretBrowsing(Browser* browser);
 void PromptToNameWindow(Browser* browser);
 void ToggleCommander(Browser* browser);
+void ExecuteUIDebugCommand(int id, const Browser* browser);
 
 base::Optional<int> GetKeyboardFocusedTabIndex(const Browser* browser);
 

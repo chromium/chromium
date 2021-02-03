@@ -66,6 +66,7 @@
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/extension_system.h"
 #include "printing/buildflags/buildflags.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 #if defined(OS_MAC)
@@ -92,7 +93,6 @@
 #endif
 
 #if defined(USE_OZONE)
-#include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
@@ -834,6 +834,13 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       }
       break;
     }
+
+    // UI debug commands
+    case IDC_DEBUG_TOGGLE_TABLET_MODE:
+    case IDC_DEBUG_PRINT_VIEW_TREE:
+      ExecuteUIDebugCommand(id, browser_);
+      break;
+
     default:
       LOG(WARNING) << "Received Unimplemented Command: " << id;
       break;
@@ -1124,6 +1131,11 @@ void BrowserCommandController::InitCommandState() {
                                         enable_tab_search_commands);
   command_updater_.UpdateCommandEnabled(IDC_TAB_SEARCH_CLOSE,
                                         enable_tab_search_commands);
+
+  if (base::FeatureList::IsEnabled(features::kUIDebugTools)) {
+    command_updater_.UpdateCommandEnabled(IDC_DEBUG_TOGGLE_TABLET_MODE, true);
+    command_updater_.UpdateCommandEnabled(IDC_DEBUG_PRINT_VIEW_TREE, true);
+  }
 
   // Initialize other commands whose state changes based on various conditions.
   UpdateCommandsForFullscreenMode();
