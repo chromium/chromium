@@ -1,0 +1,100 @@
+<!--
+Copyright(c) 2021 The Chromium Authors.All rights reserved.
+Use of this source code is governed by a BSD - style license that can be
+found in the LICENSE file.
+-->
+<html>
+<head>
+  <title>WebGpu MxN Video playbacks</title>
+  <script type="text/javascript" src="webgpu_video.js"></script>
+  <script>
+    const _default_rows = 7;
+    const _default_columns = 7;
+    const _total_video_width = 1600;
+    const _total_video_height = 900;
+
+    const parseString = (function (names) {
+      var pairs = {};
+      for (let i = 0; i < names.length; ++i) {
+        var keyValue = names[i].split('=', 2);
+        if (keyValue.length == 1)
+          pairs[keyValue[0]] = '';
+        else
+          pairs[keyValue[0]] = decodeURIComponent(keyValue[1].replace(/\+/g, ' '));
+      }
+      return pairs;
+    })(window.location.search.substr(1).split('&'));
+
+    async function startMxNVideos() {
+      const container = document.getElementById('container');
+
+      // Initialize WebGpu
+      const result = await webGpuInit();
+      if (!result) {
+        var p = container.appendChild(document.createElement('p'));
+        p.style.position = "absolute";
+        p.style.top = 0;
+        p.style.left = 0;
+        p.innerHTML = "Webgpu not supported!" + "<br />" +
+          "Did you forget to add command line switch --enable-unsafe-webgpu ?";
+        return;
+      }
+
+      const { canvas, context, device } = result;
+
+      // Get the number of video rows and columns from the string.
+      var video_rows = parseString['rows'];
+      var video_columns = parseString['columns'];
+      if (video_rows == undefined)
+        video_rows = _default_rows;
+      if (video_columns == undefined)
+        video_columns = _default_columns;
+
+      // Limite the number of videos to 20x20.
+      // The video will not load when the number is too big.
+      const max_col_row = Math.max(video_rows, video_columns);
+      if (max_col_row > 20) {
+        var p = container.appendChild(document.createElement('p'));
+        p.style.position = "absolute";
+        p.style.top = 0;
+        p.style.left = 0;
+        p.style.width = _total_video_width;
+        p.style.height = _total_video_height;
+        p.innerHTML = "Cannot support videos more than 20 x 20 !" + "<br />" +
+          "Please change the number of rows/columns.";
+        return;
+      }
+
+      // Calculate the video size
+      const video_width = _total_video_width / max_col_row;
+      const video_height = _total_video_height / max_col_row;
+
+      // TODO(magchen@): Create MxN videos here.
+      const video = document.createElement('video');
+      video.loop = true;
+      video.autoplay = true;
+      video.muted = true;
+      video.src = './kitty2_960x540_24fps.mp4';
+      video.width = video_width;
+      video.height = video_height;
+      video.style.position = "absolute";
+      video.style.top = 0;
+      video.style.left = 0;
+      await video.play();
+
+      // Upload Video by WebGPU.
+      await webGpuLoadVideo(video, canvas, context, device);
+
+      // TODO(magchen@): Create one smal video (size = 89x50) at the upper right
+      // corner to similate the one from the local camera.
+
+      // TODO(magchen@): Add icons on top of video.
+
+    }
+  </script>
+</head>
+<body onload="startMxNVideos()">
+  <div id="container" style="position:absolute; top:0px; left:0px">
+  </div>
+</body>
+</html>

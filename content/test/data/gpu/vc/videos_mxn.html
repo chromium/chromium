@@ -1,0 +1,110 @@
+<!-- Copyright(c) 2021 The Chromium Authors.All rights reserved.
+Use of this source code is governed by a BSD - style license that can be
+found in the LICENSE file.
+-->
+<html>
+<head>
+  <title>MxN Video playbacks</title>
+  <script>
+    const _default_rows = 7;
+    const _default_columns = 7;
+    const _total_video_width = 1600;
+    const _total_video_height = 900;
+
+    const parsedString = (function (names) {
+      var pairs = {};
+      for (let i = 0; i < names.length; ++i) {
+        var keyValue = names[i].split('=', 2);
+        if (keyValue.length == 1)
+          pairs[keyValue[0]] = '';
+        else
+          pairs[keyValue[0]] = decodeURIComponent(keyValue[1].replace(/\+/g, ' '));
+      }
+      return pairs;
+    })(window.location.search.substr(1).split('&'));
+
+    function startMxNVideos() {
+      const container = document.getElementById('container');
+
+      // Get the video row count and the column count from the string.
+      // Example: videos_mxn.html?rows=9&columns=9
+      var video_rows = parsedString['rows'];
+      var video_columns = parsedString['columns'];
+      if (video_rows == undefined)
+        video_rows = _default_rows;
+      if (video_columns == undefined)
+        video_columns = _default_columns;
+
+      // Limite the number of videos to 20x20.
+      // These videos will not load when the number is too big.
+      const max_col_row = Math.max(video_rows, video_columns);
+      if (max_col_row > 20) {
+        var p = container.appendChild(document.createElement('p'));
+        p.style.position = "absolute";
+        p.style.top = 0;
+        p.style.left = 0;
+        p.style.width = _total_video_width;
+        p.style.height = _total_video_height;
+        p.innerHTML = "Cannot support videos more than 20 x 20!" + "<br />" +
+          "Please change the number of rows/columns.";
+        return;
+      }
+
+      // Calculate the video size
+      const video_width = _total_video_width / max_col_row;
+      const video_height = _total_video_height / max_col_row;
+
+      // Create MxN videos.
+      for (let row = 0; row < video_rows; row++) {
+        for (let column = 0; column < video_columns; column++) {
+          const video_top = row * video_height;
+          const video_left = column * video_width;
+          createOneVideo(video_top, video_left, video_width, video_height);
+          // Create an icon on top of each video.
+          createOneIcon(video_top, video_left, video_width, video_height);
+        }
+      }
+
+      // Create one smal video (size = 89x50) at the upper right corner to similate the one
+      // from the local camera.
+      createOneVideo(0, _total_video_width - 89, 89, 50);
+    }
+
+    function createOneVideo(top, left, width, height) {
+      const video = document.createElement('video');
+      video.loop = true;
+      video.autoplay = true;
+      video.muted = true;
+      video.src = './kitty2_960x540_24fps.mp4';
+      video.width = width;
+      video.height = height;
+      video.style.position = "absolute";
+      video.style.top = top;
+      video.style.left = left;
+      video.play();
+
+      container.appendChild(video);
+    }
+
+    function createOneIcon(video_top, video_left, video_width, video_height) {
+      const icon = document.createElement('icon');
+      const icon_width = video_width / 10;
+      const icon_height = video_height / 10;
+
+      icon.style.backgroundColor = "red";
+      icon.style.position = "absolute";
+      icon.style.width = icon_width;
+      icon.style.height = icon_height;
+      icon.style.top = video_top + video_height - icon_width;
+      icon.style.left = video_left + icon_height;
+
+      container.appendChild(icon);
+    }
+
+  </script>
+</head>
+<body onload="startMxNVideos()">
+  <div id="container" style="position:absolute; top:0px; left:0px">
+  </div>
+</body>
+</html>
