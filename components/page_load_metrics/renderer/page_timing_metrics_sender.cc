@@ -24,7 +24,7 @@ namespace page_load_metrics {
 
 const base::Feature kLayoutShiftNormalizationEmitShiftsForKeyMetrics{
     "LayoutShiftNormalizationEmitShiftsForKeyMetrics",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 namespace {
 const int kInitialTimerDelayMillis = 50;
