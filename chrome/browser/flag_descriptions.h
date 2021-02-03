@@ -2638,9 +2638,6 @@ extern const char kOsSettingsPolymer3Description[];
 extern const char kPhoneHubName[];
 extern const char kPhoneHubDescription[];
 
-extern const char kPhoneHubUseBleName[];
-extern const char kPhoneHubUseBleDescription[];
-
 extern const char kReduceDisplayNotificationsName[];
 extern const char kReduceDisplayNotificationsDescription[];
 

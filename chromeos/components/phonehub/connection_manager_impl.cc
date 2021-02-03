@@ -8,7 +8,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "chromeos/services/secure_channel/public/cpp/client/secure_channel_client.h"
@@ -136,17 +135,10 @@ void ConnectionManagerImpl::AttemptConnection() {
     return;
   }
 
-  if (features::IsPhoneHubUseBleEnabled()) {
-    connection_attempt_ = secure_channel_client_->ListenForConnectionFromDevice(
-        *remote_device, *local_device, kPhoneHubFeatureName,
-        secure_channel::ConnectionMedium::kBluetoothLowEnergy,
-        secure_channel::ConnectionPriority::kMedium);
-  } else {
-    connection_attempt_ = secure_channel_client_->InitiateConnectionToDevice(
-        *remote_device, *local_device, kPhoneHubFeatureName,
-        secure_channel::ConnectionMedium::kNearbyConnections,
-        secure_channel::ConnectionPriority::kMedium);
-  }
+  connection_attempt_ = secure_channel_client_->InitiateConnectionToDevice(
+      *remote_device, *local_device, kPhoneHubFeatureName,
+      secure_channel::ConnectionMedium::kNearbyConnections,
+      secure_channel::ConnectionPriority::kMedium);
   connection_attempt_->SetDelegate(this);
 
   PA_LOG(INFO) << "ConnectionManager status updated to: " << GetStatus();
