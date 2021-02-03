@@ -31,11 +31,6 @@ class AccessibilityEventRecorderUia : public AccessibilityEventRecorder {
       const base::StringPiece& application_name_match_pattern);
   ~AccessibilityEventRecorderUia() override;
 
-  static std::unique_ptr<AccessibilityEventRecorder> CreateUia(
-      BrowserAccessibilityManager* manager,
-      base::ProcessId pid,
-      const AXTreeSelector& selector);
-
   // Called to ensure the event recorder has finished recording async events.
   void FlushAsyncEvents() override;
 

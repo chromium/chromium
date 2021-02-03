@@ -19,6 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
+#include "content/public/browser/ax_inspect_factory.h"
 
 using ui::AXTreeFormatter;
 using ui::AXTreeSelector;

@@ -19,7 +19,7 @@ class CONTENT_EXPORT AccessibilityEventRecorderMac
  public:
   AccessibilityEventRecorderMac(BrowserAccessibilityManager* manager,
                                 base::ProcessId pid,
-                                AXUIElementRef node);
+                                const AXTreeSelector& selector);
   ~AccessibilityEventRecorderMac() override;
 
   // Callback executed every time we receive an event notification.

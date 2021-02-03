@@ -5,6 +5,7 @@
 #include "content/public/browser/ax_inspect_factory.h"
 
 #include "base/notreached.h"
+#include "content/browser/accessibility/accessibility_event_recorder.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_blink.h"
 #include "ui/base/buildflags.h"
 
@@ -24,11 +25,34 @@ AXInspectFactory::CreatePlatformFormatter() {
 }
 
 // static
+std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreatePlatformRecorder(
+    BrowserAccessibilityManager* manager,
+    base::ProcessId pid,
+    const AXTreeSelector& selector) {
+  return AXInspectFactory::CreateRecorder(kBlink);
+}
+
+// static
 std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateFormatter(
     AXInspectFactory::Type type) {
   switch (type) {
     case kBlink:
       return std::make_unique<AccessibilityTreeFormatterBlink>();
+    default:
+      NOTREACHED() << "Unsupported formatter type " << type;
+  }
+  return nullptr;
+}
+
+// static
+std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreateRecorder(
+    AXInspectFactory::Type type,
+    BrowserAccessibilityManager* manager,
+    base::ProcessId pid,
+    const AXTreeSelector& selector) {
+  switch (type) {
+    case kBlink:
+      return std::make_unique<AccessibilityEventRecorder>(manager);
     default:
       NOTREACHED() << "Unsupported formatter type " << type;
   }

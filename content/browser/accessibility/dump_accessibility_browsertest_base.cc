@@ -77,8 +77,7 @@ using ui::AXTreeFormatter;
 
 // DumpAccessibilityTestBase
 DumpAccessibilityTestBase::DumpAccessibilityTestBase()
-    : event_recorder_factory_(nullptr),
-      enable_accessibility_after_navigating_(false),
+    : enable_accessibility_after_navigating_(false),
       test_helper_(DumpAccessibilityTestHelper::TestPasses()[GetParam()]) {}
 
 DumpAccessibilityTestBase::~DumpAccessibilityTestBase() {}
@@ -183,21 +182,7 @@ void DumpAccessibilityTestBase::ParseHtmlForExtraDirectives(
 
 void DumpAccessibilityTestBase::RunTest(const base::FilePath file_path,
                                         const char* file_dir) {
-  // Get all the tree formatters; the test is run independently on each one.
-  auto test_passes = DumpAccessibilityTestHelper::TestPasses();
-  auto event_recorders = AccessibilityEventRecorder::GetTestPasses();
-  CHECK(event_recorders.size() == test_passes.size());
-
-  // The current test number is supplied as a test parameter.
-  size_t current_pass = GetParam();
-  CHECK_LT(current_pass, test_passes.size());
-  CHECK_EQ(test_passes.size(), event_recorders.size());
-
-  event_recorder_factory_ = event_recorders[current_pass].create_recorder;
-
   RunTestForPlatform(file_path, file_dir);
-
-  event_recorder_factory_ = nullptr;
 }
 
 void DumpAccessibilityTestBase::RunTestForPlatform(

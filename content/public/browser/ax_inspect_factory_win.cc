@@ -4,8 +4,11 @@
 
 #include "content/public/browser/ax_inspect_factory.h"
 
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "base/win/com_init_util.h"
+#include "content/browser/accessibility/accessibility_event_recorder_uia_win.h"
+#include "content/browser/accessibility/accessibility_event_recorder_win.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_blink.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_uia_win.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_win.h"
@@ -16,6 +19,14 @@ namespace content {
 std::unique_ptr<ui::AXTreeFormatter>
 AXInspectFactory::CreatePlatformFormatter() {
   return CreateFormatter(kWinIA2);
+}
+
+// static
+std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreatePlatformRecorder(
+    BrowserAccessibilityManager* manager,
+    base::ProcessId pid,
+    const ui::AXTreeSelector& selector) {
+  return AXInspectFactory::CreateRecorder(kWinIA2, manager, pid, selector);
 }
 
 // static
@@ -30,6 +41,32 @@ std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateFormatter(
     case kWinUIA:
       base::win::AssertComInitialized();
       return std::make_unique<AccessibilityTreeFormatterUia>();
+    default:
+      NOTREACHED() << "Unsupported formatter type " << type;
+  }
+  return nullptr;
+}
+
+// static
+std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreateRecorder(
+    AXInspectFactory::Type type,
+    BrowserAccessibilityManager* manager,
+    base::ProcessId pid,
+    const ui::AXTreeSelector& selector) {
+  if (!selector.pattern.empty()) {
+    LOG(FATAL) << "Recording accessibility events from an application name "
+                  "match pattern not supported on this platform yet.";
+  }
+
+  switch (type) {
+    case kBlink:
+      return std::make_unique<AccessibilityEventRecorder>(manager);
+    case kWinIA2:
+      return std::make_unique<AccessibilityEventRecorderWin>(manager, pid,
+                                                             selector.pattern);
+    case kWinUIA:
+      return std::make_unique<AccessibilityEventRecorderUia>(manager, pid,
+                                                             selector.pattern);
     default:
       NOTREACHED() << "Unsupported formatter type " << type;
   }

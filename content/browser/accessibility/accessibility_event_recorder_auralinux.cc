@@ -54,24 +54,6 @@ gboolean AccessibilityEventRecorderAuraLinux::OnATKEventReceived(
   return true;
 }
 
-// static
-std::unique_ptr<AccessibilityEventRecorder> AccessibilityEventRecorder::Create(
-    BrowserAccessibilityManager* manager,
-    base::ProcessId pid,
-    const AXTreeSelector& selector) {
-  return std::make_unique<AccessibilityEventRecorderAuraLinux>(manager, pid,
-                                                               selector);
-}
-
-std::vector<AccessibilityEventRecorder::TestPass>
-AccessibilityEventRecorder::GetTestPasses() {
-  // Both the Blink pass and native pass use the same recorder
-  return {
-      {"blink", &AccessibilityEventRecorder::Create},
-      {"linux", &AccessibilityEventRecorder::Create},
-  };
-}
-
 bool AccessibilityEventRecorderAuraLinux::ShouldUseATSPI() {
   return pid_ != base::GetCurrentProcId() ||
          !application_name_match_pattern_.empty();

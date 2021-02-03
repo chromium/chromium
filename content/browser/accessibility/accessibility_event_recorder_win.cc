@@ -80,32 +80,6 @@ AccessibilityEventRecorderWin* AccessibilityEventRecorderWin::instance_ =
     nullptr;
 
 // static
-std::unique_ptr<AccessibilityEventRecorder> AccessibilityEventRecorder::Create(
-    BrowserAccessibilityManager* manager,
-    base::ProcessId pid,
-    const AXTreeSelector& selector) {
-  if (!selector.pattern.empty()) {
-    LOG(FATAL) << "Recording accessibility events from an application name "
-                  "match pattern not supported on this platform yet.";
-  }
-
-  return std::make_unique<AccessibilityEventRecorderWin>(manager, pid,
-                                                         selector.pattern);
-}
-
-std::vector<AccessibilityEventRecorder::TestPass>
-AccessibilityEventRecorder::GetTestPasses() {
-  // In addition to the 'Blink' pass, Windows includes two accessibility APIs
-  // that need to be tested independently (MSAA & UIA); the Blink pass uses the
-  // same recorder as the MSAA pass.
-  return {
-      {"blink", &AccessibilityEventRecorder::Create},
-      {"win", &AccessibilityEventRecorder::Create},
-      {"uia", &AccessibilityEventRecorderUia::CreateUia},
-  };
-}
-
-// static
 CALLBACK void AccessibilityEventRecorderWin::WinEventHookThunk(
     HWINEVENTHOOK handle,
     DWORD event,

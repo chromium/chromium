@@ -18,7 +18,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "content/browser/accessibility/accessibility_event_recorder.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
@@ -101,7 +100,7 @@ class DumpAccessibilityEventsTest : public DumpAccessibilityTestBase {
   std::string final_tree_;
 };
 
-bool IsRecordingComplete(AccessibilityEventRecorder& event_recorder,
+bool IsRecordingComplete(ui::AXEventRecorder& event_recorder,
                          std::vector<std::string>& run_until) {
   // If no @*-RUN-UNTIL-EVENT directives, then having any events is enough.
   LOG(ERROR) << "=== IsRecordingComplete#1 run_until size=" << run_until.size();
@@ -139,9 +138,13 @@ std::vector<std::string> DumpAccessibilityEventsTest::Dump(
   bool run_go_again = false;
   std::vector<std::string> result;
   do {
-    // Create a new Event Recorder for the run
-    std::unique_ptr<AccessibilityEventRecorder> event_recorder =
-        event_recorder_factory_(
+    // Create a new Event Recorder for the run.
+    size_t current_pass = GetParam();
+    auto test_passes = DumpAccessibilityTestHelper::TestPasses();
+
+    std::unique_ptr<ui::AXEventRecorder> event_recorder =
+        AXInspectFactory::CreateRecorder(
+            test_passes[current_pass],
             web_contents->GetRootBrowserAccessibilityManager(), pid, {});
     event_recorder->SetOnlyWebEvents(true);
 
@@ -237,9 +240,9 @@ void DumpAccessibilityEventsTest::RunEventTest(
 // Parameterize the tests so that each test-pass is run independently.
 struct DumpAccessibilityEventsTestPassToString {
   std::string operator()(const ::testing::TestParamInfo<size_t>& i) const {
-    auto passes = AccessibilityEventRecorder::GetTestPasses();
+    auto passes = DumpAccessibilityTestHelper::TestPasses();
     CHECK_LT(i.param, passes.size());
-    return passes[i.param].name;
+    return std::string(passes[i.param]);
   }
 };
 
@@ -247,7 +250,7 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     DumpAccessibilityEventsTest,
     ::testing::Range(size_t{0},
-                     AccessibilityEventRecorder::GetTestPasses().size()),
+                     DumpAccessibilityTestHelper::TestPasses().size()),
     DumpAccessibilityEventsTestPassToString());
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,

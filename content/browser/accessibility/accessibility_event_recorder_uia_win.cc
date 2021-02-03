@@ -45,15 +45,6 @@ std::string UiaIdentifierToStringPretty(int32_t id) {
 volatile base::subtle::Atomic32 AccessibilityEventRecorderUia::instantiated_ =
     0;
 
-// static
-std::unique_ptr<AccessibilityEventRecorder>
-AccessibilityEventRecorderUia::CreateUia(BrowserAccessibilityManager* manager,
-                                         base::ProcessId pid,
-                                         const AXTreeSelector& selector) {
-  return std::make_unique<AccessibilityEventRecorderUia>(manager, pid,
-                                                         selector.pattern);
-}
-
 AccessibilityEventRecorderUia::AccessibilityEventRecorderUia(
     BrowserAccessibilityManager* manager,
     base::ProcessId pid,

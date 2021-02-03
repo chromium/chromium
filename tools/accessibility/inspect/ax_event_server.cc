@@ -5,13 +5,15 @@
 #include "tools/accessibility/inspect/ax_event_server.h"
 
 #include "base/bind.h"
+#include "content/public/browser/ax_inspect_factory.h"
 
 namespace tools {
 
 AXEventServer::AXEventServer(base::ProcessId pid,
                              const ui::AXTreeSelector& selector)
-    : recorder_(
-          content::AccessibilityEventRecorder::Create(nullptr, pid, selector)) {
+    : recorder_(content::AXInspectFactory::CreatePlatformRecorder(nullptr,
+                                                                  pid,
+                                                                  selector)) {
   recorder_->ListenToEvents(
       base::BindRepeating(&AXEventServer::OnEvent, base::Unretained(this)));
 }

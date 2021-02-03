@@ -31,11 +31,11 @@ static void EventReceivedThunk(AXObserverRef observer_ref,
   this_ptr->EventReceived(element, notification, user_info);
 }
 
-// static
-std::unique_ptr<AccessibilityEventRecorder> AccessibilityEventRecorder::Create(
+AccessibilityEventRecorderMac::AccessibilityEventRecorderMac(
     BrowserAccessibilityManager* manager,
     base::ProcessId pid,
-    const AXTreeSelector& selector) {
+    const AXTreeSelector& selector)
+    : AccessibilityEventRecorder(manager), observer_run_loop_source_(nullptr) {
   AXUIElementRef node = nil;
   if (pid) {
     node = AXUIElementCreateApplication(pid);
@@ -49,23 +49,6 @@ std::unique_ptr<AccessibilityEventRecorder> AccessibilityEventRecorder::Create(
     }
   }
 
-  return std::make_unique<AccessibilityEventRecorderMac>(manager, pid, node);
-}
-
-std::vector<AccessibilityEventRecorder::TestPass>
-AccessibilityEventRecorder::GetTestPasses() {
-  // Both the Blink pass and native pass use the same recorder
-  return {
-      {"blink", &AccessibilityEventRecorder::Create},
-      {"mac", &AccessibilityEventRecorder::Create},
-  };
-}
-
-AccessibilityEventRecorderMac::AccessibilityEventRecorderMac(
-    BrowserAccessibilityManager* manager,
-    base::ProcessId pid,
-    AXUIElementRef node)
-    : AccessibilityEventRecorder(manager), observer_run_loop_source_(NULL) {
   if (kAXErrorSuccess !=
       AXObserverCreateWithInfoCallback(pid, EventReceivedThunk,
                                        observer_ref_.InitializeInto())) {

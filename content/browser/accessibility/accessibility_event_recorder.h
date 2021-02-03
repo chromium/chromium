@@ -38,23 +38,12 @@ class BrowserAccessibilityManager;
 // As currently designed, there should only be one instance of this class.
 class CONTENT_EXPORT AccessibilityEventRecorder : public ui::AXEventRecorder {
  public:
-  // Construct the right platform-specific subclass.
-  static std::unique_ptr<AccessibilityEventRecorder> Create(
-      BrowserAccessibilityManager* manager = nullptr,
-      base::ProcessId pid = 0,
-      const AXTreeSelector& selector = {});
-
   // Get a set of factory methods to create event-recorders, one for each test
   // pass; see |DumpAccessibilityTestBase|.
   using EventRecorderFactory = std::unique_ptr<AccessibilityEventRecorder> (*)(
       BrowserAccessibilityManager* manager,
       base::ProcessId pid,
       const AXTreeSelector& selector);
-  struct TestPass {
-    const char* name;
-    EventRecorderFactory create_recorder;
-  };
-  static std::vector<TestPass> GetTestPasses();
 
   AccessibilityEventRecorder(BrowserAccessibilityManager* manager);
 
