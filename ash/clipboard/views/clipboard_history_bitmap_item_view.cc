@@ -9,7 +9,6 @@
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/views/clipboard_history_delete_button.h"
 #include "ash/clipboard/views/clipboard_history_view_constants.h"
-#include "ash/public/cpp/rounded_image_view.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/scoped_light_mode_as_default.h"
 #include "base/time/time.h"
@@ -44,15 +43,14 @@ constexpr base::TimeDelta kFadeInDurationMs =
 // An ImageView which reacts to updates from ClipboardHistoryResourceManager by
 // fading out the old image, and fading in the new image. Used when HTML is done
 // rendering. Only expected to transition once in its lifetime.
-class FadeImageView : public RoundedImageView,
+class FadeImageView : public views::ImageView,
                       public ui::ImplicitAnimationObserver,
                       public ClipboardHistoryResourceManager::Observer {
  public:
   FadeImageView(const ClipboardHistoryItem* clipboard_history_item,
                 const ClipboardHistoryResourceManager* resource_manager,
                 base::RepeatingClosure update_callback)
-      : RoundedImageView(ClipboardHistoryViews::kImageRoundedCornerRadius,
-                         RoundedImageView::Alignment::kCenter),
+      : views::ImageView(),
         resource_manager_(resource_manager),
         clipboard_history_item_(*clipboard_history_item),
         update_callback_(update_callback) {
@@ -201,6 +199,17 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
   }
 
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override {
+    // Create rounded corners around the contents area through the clip path
+    // instead of layer clip. Because we have to avoid using any layer here.
+    // Note that the menu's container does not cut the children's layers outside
+    // of the container's bounds. As a result, if menu items have their own
+    // layers, the part beyond the container's bounds is still visible when the
+    // context menu is in overflow.
+    const SkRect local_bounds = gfx::RectToSkRect(GetContentsBounds());
+    const SkScalar radius =
+        SkIntToScalar(ClipboardHistoryViews::kImageRoundedCornerRadius);
+    SetClipPath(SkPath::RRect(local_bounds, radius, radius));
+
     UpdateImageViewSize();
   }
 
@@ -217,13 +226,7 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
             AshColorProvider::ControlsLayerType::kHairlineBorderColor));
   }
 
-  std::unique_ptr<RoundedImageView> BuildImageView() {
-    // `BuildImageView()` achieves the image's rounded corners through
-    // RoundedImageView instead of layer. Because the menu's container does not
-    // cut the children's layers outside of the container's bounds. As a result,
-    // if menu items have their own layers, the part beyond the container's
-    // bounds is still visible when the context menu is in overflow.
-
+  std::unique_ptr<views::ImageView> BuildImageView() {
     const auto* clipboard_history_item = container_->clipboard_history_item();
     switch (container_->data_format_) {
       case ui::ClipboardInternalFormat::kHtml:
@@ -232,9 +235,7 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
             base::BindRepeating(&BitmapContentsView::UpdateImageViewSize,
                                 weak_ptr_factory_.GetWeakPtr()));
       case ui::ClipboardInternalFormat::kBitmap: {
-        auto image_view = std::make_unique<RoundedImageView>(
-            ClipboardHistoryViews::kImageRoundedCornerRadius,
-            RoundedImageView::Alignment::kCenter);
+        auto image_view = std::make_unique<views::ImageView>();
         gfx::ImageSkia bitmap_image = gfx::ImageSkia::CreateFrom1xBitmap(
             clipboard_history_item->data().bitmap());
         image_view->SetImage(bitmap_image);
@@ -247,7 +248,7 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
   }
 
   void UpdateImageViewSize() {
-    const gfx::Size image_size = image_view_->original_image().size();
+    const gfx::Size image_size = image_view_->GetImage().size();
     gfx::Rect contents_bounds = GetContentsBounds();
 
     const float width_ratio =
@@ -275,13 +276,13 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
 
     DCHECK_GT(scaling_up_ratio, 0.f);
 
-    image_view_->SetImage(image_view_->original_image(),
-                          gfx::Size(image_size.width() / scaling_up_ratio,
-                                    image_size.height() / scaling_up_ratio));
+    image_view_->SetImageSize(
+        gfx::Size(image_size.width() / scaling_up_ratio,
+                  image_size.height() / scaling_up_ratio));
   }
 
   ClipboardHistoryBitmapItemView* const container_;
-  RoundedImageView* image_view_ = nullptr;
+  views::ImageView* image_view_ = nullptr;
 
   // Helps to place a border above `image_view_`.
   views::View* border_container_view_ = nullptr;
