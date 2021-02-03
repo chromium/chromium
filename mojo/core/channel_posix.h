@@ -43,14 +43,28 @@ class ChannelPosix : public Channel,
                               size_t extra_header_size,
                               std::vector<PlatformHandle>* handles,
                               bool* deferred) override;
+  bool OnControlMessage(Message::MessageType message_type,
+                        const void* payload,
+                        size_t payload_size,
+                        std::vector<PlatformHandle> handles) override;
+
+ protected:
+  ~ChannelPosix() override;
+  virtual void StartOnIOThread();
+  virtual void ShutDownOnIOThread();
+  virtual void OnWriteError(Error error);
+
+  void RejectUpgradeOffer();
+  void AcceptUpgradeOffer();
+
+  // Keeps the Channel alive at least until explicit shutdown on the IO thread.
+  scoped_refptr<Channel> self_;
+
+  scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 
  private:
-  ~ChannelPosix() override;
-
-  void StartOnIOThread();
   void WaitForWriteOnIOThread();
   void WaitForWriteOnIOThreadNoLock();
-  void ShutDownOnIOThread();
 
   // base::CurrentThread::DestructionObserver:
   void WillDestroyCurrentMessageLoop() override;
@@ -78,17 +92,8 @@ class ChannelPosix : public Channel,
 #endif  // !defined(OS_NACL)
 
 #if defined(OS_IOS)
-  bool OnControlMessage(Message::MessageType message_type,
-                        const void* payload,
-                        size_t payload_size,
-                        std::vector<PlatformHandle> handles) override;
   bool CloseHandles(const int* fds, size_t num_fds);
 #endif  // defined(OS_IOS)
-
-  void OnWriteError(Error error);
-
-  // Keeps the Channel alive at least until explicit shutdown on the IO thread.
-  scoped_refptr<Channel> self_;
 
   // We may be initialized with a server socket, in which case this will be
   // valid until it accepts an incoming connection.
@@ -97,8 +102,6 @@ class ChannelPosix : public Channel,
   // The socket over which to communicate. May be passed in at construction time
   // or accepted over |server_|.
   base::ScopedFD socket_;
-
-  scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 
   // These watchers must only be accessed on the IO thread.
   std::unique_ptr<base::MessagePumpForIO::FdWatchController> read_watcher_;

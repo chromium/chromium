@@ -206,7 +206,8 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeController : public ports::NodeDelegate,
                            PlatformHandle broker_channel) override;
   void OnAcceptBrokerClient(const ports::NodeName& from_node,
                             const ports::NodeName& broker_name,
-                            PlatformHandle broker_channel) override;
+                            PlatformHandle broker_channel,
+                            const uint64_t broker_capabilities) override;
   void OnEventMessage(const ports::NodeName& from_node,
                       Channel::MessagePtr message) override;
   void OnRequestPortMerge(const ports::NodeName& from_node,
@@ -216,7 +217,8 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeController : public ports::NodeDelegate,
                              const ports::NodeName& name) override;
   void OnIntroduce(const ports::NodeName& from_node,
                    const ports::NodeName& name,
-                   PlatformHandle channel_handle) override;
+                   PlatformHandle channel_handle,
+                   const uint64_t remote_capailities) override;
   void OnBroadcast(const ports::NodeName& from_node,
                    Channel::MessagePtr message) override;
 #if defined(OS_WIN)

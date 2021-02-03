@@ -93,8 +93,6 @@ ResultExpr GpuProcessPolicy::EvaluateSyscall(int sysno) const {
     default:
       break;
   }
-  if (SyscallSets::IsEventFd(sysno))
-    return Allow();
 
 #if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && defined(USE_X11)
   if (SyscallSets::IsSystemVSharedMemory(sysno))

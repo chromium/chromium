@@ -59,14 +59,22 @@ struct alignas(8) AcceptInviteeDataV0 {
   ports::NodeName token;
 };
 
-using AcceptInviteeData = AcceptInviteeDataV0;
+struct alignas(8) AcceptInviteeDataV1 : AcceptInviteeDataV0 {
+  uint64_t capabilities = kNodeCapabilityNone;
+};
+
+using AcceptInviteeData = AcceptInviteeDataV1;
 
 struct alignas(8) AcceptInvitationDataV0 {
   ports::NodeName token;
   ports::NodeName invitee_name;
 };
 
-using AcceptInvitationData = AcceptInvitationDataV0;
+struct alignas(8) AcceptInvitationDataV1 : AcceptInvitationDataV0 {
+  uint64_t capabilities = kNodeCapabilityNone;
+};
+
+using AcceptInvitationData = AcceptInvitationDataV1;
 
 struct alignas(8) AcceptPeerDataV0 {
   ports::NodeName token;
@@ -106,7 +114,12 @@ struct alignas(8) AcceptBrokerClientDataV0 {
   ports::NodeName broker_name;
 };
 
-using AcceptBrokerClientData = AcceptBrokerClientDataV0;
+struct alignas(8) AcceptBrokerClientDataV1 : AcceptBrokerClientDataV0 {
+  uint64_t capabilities = kNodeCapabilityNone;
+  uint64_t broker_capabilities = kNodeCapabilityNone;
+};
+
+using AcceptBrokerClientData = AcceptBrokerClientDataV1;
 
 // This is followed by arbitrary payload data which is interpreted as a token
 // string for port location.
@@ -117,15 +130,19 @@ struct alignas(8) RequestPortMergeData {
 
 // Used for both REQUEST_INTRODUCTION and INTRODUCE.
 //
-// For INTRODUCE the message also includes a valid platform handle for a channel
-// the receiver may use to communicate with the named node directly, or an
-// invalid platform handle if the node is unknown to the sender or otherwise
-// cannot be introduced.
+// For INTRODUCE the message also includes a valid platform handle for a
+// channel the receiver may use to communicate with the named node directly,
+// or an invalid platform handle if the node is unknown to the sender or
+// otherwise cannot be introduced.
 struct alignas(8) IntroductionDataV0 {
   ports::NodeName name;
 };
 
-using IntroductionData = IntroductionDataV0;
+struct alignas(8) IntroductionDataV1 : IntroductionDataV0 {
+  uint64_t capabilities = kNodeCapabilityNone;
+};
+
+using IntroductionData = IntroductionDataV1;
 
 // This message is just a PlatformHandle. The data struct alignas(8) here has
 // only a padding field to ensure an aligned, non-zero-length payload.
@@ -141,7 +158,8 @@ struct alignas(8) RelayEventMessageData {
   ports::NodeName destination;
 };
 
-// This struct alignas(8) is followed by the full payload of a relayed message.
+// This struct alignas(8) is followed by the full payload of a relayed
+// message.
 struct alignas(8) EventMessageFromRelayDataV0 {
   ports::NodeName source;
 };
@@ -190,21 +208,23 @@ Channel::MessagePtr CreateMessage(MessageType type,
   return msg_ptr;
 }
 
-// This method takes a second template argument which is another datatype which
-// represents the smallest size this payload can be to be considered valid this
-// MUST be used when there is more than one version of a message to specify the
-// oldest version of the message.
+// This method takes a second template argument which is another datatype
+// which represents the smallest size this payload can be to be considered
+// valid this MUST be used when there is more than one version of a message to
+// specify the oldest version of the message.
 template <typename DataType, typename MinSizedDataType>
 bool GetMessagePayloadMinimumSized(const void* bytes,
                                    size_t num_bytes,
                                    DataType* out_data) {
   static_assert(sizeof(DataType) > 0, "DataType must have non-zero size.");
-  if (num_bytes < sizeof(Header) + sizeof(MinSizedDataType))
+  if (num_bytes < sizeof(Header) + sizeof(MinSizedDataType)) {
     return false;
+  }
 
-  // Always make sure that the full object is zeored and default constructed as
-  // we may not have the complete type. The default construction allows fields
-  // to be default initialized to be resilient to older message versions.
+  // Always make sure that the full object is zeored and default constructed
+  // as we may not have the complete type. The default construction allows
+  // fields to be default initialized to be resilient to older message
+  // versions.
   memset(out_data, 0, sizeof(*out_data));
   new (out_data) DataType;
 
@@ -322,6 +342,7 @@ void NodeChannel::AcceptInvitee(const ports::NodeName& inviter_name,
       MessageType::ACCEPT_INVITEE, sizeof(AcceptInviteeData), 0, &data);
   data->inviter_name = inviter_name;
   data->token = token;
+  data->capabilities = local_capabilities_;
   WriteChannelMessage(std::move(message));
 }
 
@@ -332,6 +353,7 @@ void NodeChannel::AcceptInvitation(const ports::NodeName& token,
       MessageType::ACCEPT_INVITATION, sizeof(AcceptInvitationData), 0, &data);
   data->token = token;
   data->invitee_name = invitee_name;
+  data->capabilities = local_capabilities_;
   WriteChannelMessage(std::move(message));
 }
 
@@ -380,7 +402,8 @@ void NodeChannel::BrokerClientAdded(const ports::NodeName& client_name,
 }
 
 void NodeChannel::AcceptBrokerClient(const ports::NodeName& broker_name,
-                                     PlatformHandle broker_channel) {
+                                     PlatformHandle broker_channel,
+                                     const uint64_t broker_capabilities) {
   AcceptBrokerClientData* data;
   std::vector<PlatformHandle> handles;
   if (broker_channel.is_valid())
@@ -390,6 +413,8 @@ void NodeChannel::AcceptBrokerClient(const ports::NodeName& broker_name,
                     sizeof(AcceptBrokerClientData), handles.size(), &data);
   message->SetHandles(std::move(handles));
   data->broker_name = broker_name;
+  data->broker_capabilities = broker_capabilities;
+  data->capabilities = local_capabilities_;
   WriteChannelMessage(std::move(message));
 }
 
@@ -413,7 +438,8 @@ void NodeChannel::RequestIntroduction(const ports::NodeName& name) {
 }
 
 void NodeChannel::Introduce(const ports::NodeName& name,
-                            PlatformHandle channel_handle) {
+                            PlatformHandle channel_handle,
+                            uint64_t capabilities) {
   IntroductionData* data;
   std::vector<PlatformHandle> handles;
   if (channel_handle.is_valid())
@@ -422,6 +448,9 @@ void NodeChannel::Introduce(const ports::NodeName& name,
       MessageType::INTRODUCE, sizeof(IntroductionData), handles.size(), &data);
   message->SetHandles(std::move(handles));
   data->name = name;
+  // Note that these are not our capabilities, but the capabilities of the peer
+  // we're introducing.
+  data->capabilities = capabilities;
   WriteChannelMessage(std::move(message));
 }
 
@@ -516,6 +545,7 @@ NodeChannel::NodeChannel(
                                std::move(io_task_runner)))
 #endif
 {
+  InitializeLocalCapabilities();
 }
 
 NodeChannel::~NodeChannel() {
@@ -549,7 +579,10 @@ void NodeChannel::OnChannelMessage(const void* payload,
   switch (header->type) {
     case MessageType::ACCEPT_INVITEE: {
       AcceptInviteeData data;
-      if (GetMessagePayload(payload, payload_size, &data)) {
+      if (GetMessagePayloadMinimumSized<AcceptInviteeData, AcceptInviteeDataV0>(
+              payload, payload_size, &data)) {
+        // Attach any capabilities that the other side advertised.
+        SetRemoteCapabilities(data.capabilities);
         delegate_->OnAcceptInvitee(remote_node_name_, data.inviter_name,
                                    data.token);
         return;
@@ -559,7 +592,11 @@ void NodeChannel::OnChannelMessage(const void* payload,
 
     case MessageType::ACCEPT_INVITATION: {
       AcceptInvitationData data;
-      if (GetMessagePayload(payload, payload_size, &data)) {
+      if (GetMessagePayloadMinimumSized<AcceptInvitationData,
+                                        AcceptInvitationDataV0>(
+              payload, payload_size, &data)) {
+        // Attach any capabilities that the other side advertised.
+        SetRemoteCapabilities(data.capabilities);
         delegate_->OnAcceptInvitation(remote_node_name_, data.token,
                                       data.invitee_name);
         return;
@@ -606,7 +643,9 @@ void NodeChannel::OnChannelMessage(const void* payload,
 
     case MessageType::ACCEPT_BROKER_CLIENT: {
       AcceptBrokerClientData data;
-      if (GetMessagePayload(payload, payload_size, &data)) {
+      if (GetMessagePayloadMinimumSized<AcceptBrokerClientData,
+                                        AcceptBrokerClientDataV0>(
+              payload, payload_size, &data)) {
         PlatformHandle broker_channel;
         if (handles.size() > 1) {
           DLOG(ERROR) << "Dropping invalid AcceptBrokerClient message.";
@@ -615,8 +654,11 @@ void NodeChannel::OnChannelMessage(const void* payload,
         if (handles.size() == 1)
           broker_channel = std::move(handles[0]);
 
+        // Attach any capabilities that the other side advertised.
+        SetRemoteCapabilities(data.capabilities);
         delegate_->OnAcceptBrokerClient(remote_node_name_, data.broker_name,
-                                        std::move(broker_channel));
+                                        std::move(broker_channel),
+                                        data.broker_capabilities);
         return;
       }
       break;
@@ -659,7 +701,8 @@ void NodeChannel::OnChannelMessage(const void* payload,
 
     case MessageType::INTRODUCE: {
       IntroductionData data;
-      if (GetMessagePayload(payload, payload_size, &data)) {
+      if (GetMessagePayloadMinimumSized<IntroductionData, IntroductionDataV0>(
+              payload, payload_size, &data)) {
         if (handles.size() > 1) {
           DLOG(ERROR) << "Dropping invalid introduction message.";
           break;
@@ -668,8 +711,11 @@ void NodeChannel::OnChannelMessage(const void* payload,
         if (handles.size() == 1)
           channel_handle = std::move(handles[0]);
 
+        // The node channel for this introduction will be created later, so we
+        // can only pass up the capabilities we received from the broker for
+        // that remote.
         delegate_->OnIntroduce(remote_node_name_, data.name,
-                               std::move(channel_handle));
+                               std::move(channel_handle), data.capabilities);
         return;
       }
       break;
@@ -788,8 +834,8 @@ void NodeChannel::OnChannelError(Channel::Error error) {
     process_error_callback_.Run("Channel received a malformed message");
   }
 
-  // |OnChannelError()| may cause |this| to be destroyed, but still need access
-  // to the name after that destruction. So make a copy of
+  // |OnChannelError()| may cause |this| to be destroyed, but still need
+  // access to the name after that destruction. So make a copy of
   // |remote_node_name_| so it can be used if |this| becomes destroyed.
   ports::NodeName node_name = remote_node_name_;
   delegate_->OnChannelError(node_name, this);
@@ -801,6 +847,51 @@ void NodeChannel::WriteChannelMessage(Channel::MessagePtr message) {
     DLOG(ERROR) << "Dropping message on closed channel.";
   else
     channel_->Write(std::move(message));
+}
+
+void NodeChannel::OfferChannelUpgrade() {
+#if !defined(OS_NACL)
+  base::AutoLock lock(channel_lock_);
+  channel_->OfferChannelUpgrade();
+#endif
+}
+
+uint64_t NodeChannel::RemoteCapabilities() const {
+  return remote_capabilities_;
+}
+
+bool NodeChannel::HasRemoteCapability(const uint64_t capability) const {
+  return (remote_capabilities_ & capability) == capability;
+}
+
+void NodeChannel::SetRemoteCapabilities(const uint64_t capabilities) {
+  remote_capabilities_ |= capabilities;
+}
+
+uint64_t NodeChannel::LocalCapabilities() const {
+  return local_capabilities_;
+}
+
+bool NodeChannel::HasLocalCapability(const uint64_t capability) const {
+  return (local_capabilities_ & capability) == capability;
+}
+
+void NodeChannel::SetLocalCapabilities(const uint64_t capabilities) {
+  if (GetConfiguration().dont_advertise_capabilities) {
+    return;
+  }
+
+  local_capabilities_ |= capabilities;
+}
+
+void NodeChannel::InitializeLocalCapabilities() {
+  if (GetConfiguration().dont_advertise_capabilities) {
+    return;
+  }
+
+  if (core::Channel::SupportsChannelUpgrade()) {
+    SetLocalCapabilities(kNodeCapabilitySupportsUpgrade);
+  }
 }
 
 }  // namespace core

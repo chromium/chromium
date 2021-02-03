@@ -480,9 +480,7 @@ class Channel::ReadBuffer {
     data_ = MakeAlignedBuffer(size_);
   }
 
-  ~ReadBuffer() {
-    DCHECK(data_);
-  }
+  ~ReadBuffer() { DCHECK(data_); }
 
   const char* occupied_bytes() const {
     return data_.get() + num_discarded_bytes_;
@@ -728,6 +726,20 @@ bool Channel::OnControlMessage(Message::MessageType message_type,
                                std::vector<PlatformHandle> handles) {
   return false;
 }
+
+// Currently only Non-nacl CrOs, Linux, and Android support upgrades.
+#if defined(OS_NACL) || \
+    (!(defined(OS_CHROMEOS) || defined(OS_LINUX) || defined(OS_ANDROID)))
+// static
+MOJO_SYSTEM_IMPL_EXPORT bool Channel::SupportsChannelUpgrade() {
+  return false;
+}
+
+MOJO_SYSTEM_IMPL_EXPORT void Channel::OfferChannelUpgrade() {
+  NOTREACHED();
+  return;
+}
+#endif
 
 }  // namespace core
 }  // namespace mojo

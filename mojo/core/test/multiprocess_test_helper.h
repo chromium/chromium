@@ -44,6 +44,9 @@ class MultiprocessTestHelper {
     // system, using a named pipe.
     NAMED_PEER,
 #endif  //  !defined(OS_FUCHSIA)
+    // This is the same as child; however, it will never advertise any
+    // capabilities.
+    CHILD_WITHOUT_CAPABILITIES
   };
 
   MultiprocessTestHelper();

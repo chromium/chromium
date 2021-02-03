@@ -1371,6 +1371,7 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     MultiprocessMessagePipeTestWithPeerSupport,
     testing::Values(test::MojoTestBase::LaunchType::CHILD,
+                    test::MojoTestBase::LaunchType::CHILD_WITHOUT_CAPABILITIES,
                     test::MojoTestBase::LaunchType::PEER,
                     test::MojoTestBase::LaunchType::ASYNC
 #if !defined(OS_FUCHSIA)

@@ -21,6 +21,10 @@
 #include "mojo/public/tests/test_support_private.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace {
+const char kDisableAllCapabilities[] = "disable-all-capabilities";
+}
+
 int main(int argc, char** argv) {
 #if !defined(OS_ANDROID)
   // Silence death test thread warnings on Linux. We can afford to run our death
@@ -48,6 +52,12 @@ int main(int argc, char** argv) {
           switches::kTestChildProcess)) {
     mojo_config.is_broker_process = true;
   }
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kDisableAllCapabilities)) {
+    mojo_config.dont_advertise_capabilities = true;
+  }
+
   mojo::core::Init(mojo_config);
 
   mojo::test::TestSupport::Init(new mojo::core::test::TestSupportImpl());

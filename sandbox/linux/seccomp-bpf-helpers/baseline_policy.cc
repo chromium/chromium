@@ -40,9 +40,11 @@ namespace sandbox {
 namespace {
 
 bool IsBaselinePolicyAllowed(int sysno) {
+  // clang-format off
   return SyscallSets::IsAllowedAddressSpaceAccess(sysno) ||
          SyscallSets::IsAllowedBasicScheduler(sysno) ||
          SyscallSets::IsAllowedEpoll(sysno) ||
+         SyscallSets::IsEventFd(sysno) ||
          SyscallSets::IsAllowedFileSystemAccessViaFd(sysno) ||
          SyscallSets::IsAllowedFutex(sysno) ||
          SyscallSets::IsAllowedGeneralIo(sysno) ||
@@ -59,6 +61,7 @@ bool IsBaselinePolicyAllowed(int sysno) {
          SyscallSets::IsMipsPrivate(sysno) ||
 #endif
          SyscallSets::IsAllowedOperationOnFd(sysno);
+  // clang-format on
 }
 
 // System calls that will trigger the crashing SIGSYS handler.
@@ -68,7 +71,6 @@ bool IsBaselinePolicyWatched(int sysno) {
          SyscallSets::IsAdvancedTimer(sysno) ||
          SyscallSets::IsAsyncIo(sysno) ||
          SyscallSets::IsDebug(sysno) ||
-         SyscallSets::IsEventFd(sysno) ||
          SyscallSets::IsExtendedAttributes(sysno) ||
          SyscallSets::IsFaNotify(sysno) ||
          SyscallSets::IsFsControl(sysno) ||

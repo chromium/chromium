@@ -215,7 +215,7 @@ ResultExpr RestrictMmapFlags() {
   // TODO(davidung), remove MAP_DENYWRITE with updated Tegra libraries.
   const uint64_t kAllowedMask = MAP_SHARED | MAP_PRIVATE | MAP_ANONYMOUS |
                                 MAP_STACK | MAP_NORESERVE | MAP_FIXED |
-                                MAP_DENYWRITE;
+                                MAP_DENYWRITE | MAP_LOCKED;
   const Arg<int> flags(3);
   return If((flags & ~kAllowedMask) == 0, Allow()).Else(CrashSIGSYS());
 }
@@ -245,9 +245,12 @@ ResultExpr RestrictFcntlCommands() {
 
   const uint64_t kAllowedMask = O_ACCMODE | O_APPEND | O_NONBLOCK | O_SYNC |
                                 kOLargeFileFlag | O_CLOEXEC | O_NOATIME;
+  const uint64_t kAllowedSeals = F_SEAL_SEAL | F_SEAL_GROW | F_SEAL_SHRINK;
+  // clang-format off
   return Switch(cmd)
       .CASES((F_GETFL,
               F_GETFD,
+              F_GET_SEALS,
               F_SETFD,
               F_SETLK,
               F_SETLKW,
@@ -257,7 +260,10 @@ ResultExpr RestrictFcntlCommands() {
              Allow())
       .Case(F_SETFL,
             If((long_arg & ~kAllowedMask) == 0, Allow()).Else(CrashSIGSYS()))
+      .Case(F_ADD_SEALS,
+            If((long_arg & ~kAllowedSeals) == 0, Allow()).Else(CrashSIGSYS()))
       .Default(CrashSIGSYS());
+  // clang-format on
 }
 
 #if defined(__i386__) || defined(__mips__)
