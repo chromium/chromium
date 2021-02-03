@@ -335,7 +335,7 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
     group_modifier_container->AddChildView(
         std::make_unique<ColorPickerView>(
             colors_, background_color(), initial_color,
-            base::Bind(
+            base::BindRepeating(
                 &TabGroupEditorBubbleView::UpdateGroup,
                 base::Unretained(this))));
   ...
@@ -433,7 +433,7 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
       group_modifier_container->AddChildView(
           std::make_unique<ColorPickerView>(
               this, colors_, initial_color_id,
-              base::Bind(
+              base::BindRepeating(
                 &TabGroupEditorBubbleView::UpdateGroup,
                 base::Unretained(this))));
   color_selector_->SetProperty(
