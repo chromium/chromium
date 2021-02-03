@@ -63,9 +63,9 @@ base::string16 FileSystemAccessIconView::GetTextForTooltipAndAccessibleName()
     const {
   return has_write_access_
              ? l10n_util::GetStringUTF16(
-                   IDS_NATIVE_FILE_SYSTEM_WRITE_USAGE_TOOLTIP)
+                   IDS_FILE_SYSTEM_ACCESS_WRITE_USAGE_TOOLTIP)
              : l10n_util::GetStringUTF16(
-                   IDS_NATIVE_FILE_SYSTEM_DIRECTORY_USAGE_TOOLTIP);
+                   IDS_FILE_SYSTEM_ACCESS_DIRECTORY_USAGE_TOOLTIP);
 }
 
 void FileSystemAccessIconView::OnExecuting(ExecuteSource execute_source) {

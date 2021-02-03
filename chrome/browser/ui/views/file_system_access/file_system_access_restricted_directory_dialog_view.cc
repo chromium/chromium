@@ -47,13 +47,13 @@ FileSystemAccessRestrictedDirectoryDialogView::
         base::OnceCallback<void(SensitiveDirectoryResult)> callback)
     : handle_type_(handle_type), callback_(std::move(callback)) {
   SetTitle(handle_type_ == HandleType::kDirectory
-               ? IDS_NATIVE_FILE_SYSTEM_RESTRICTED_DIRECTORY_TITLE
-               : IDS_NATIVE_FILE_SYSTEM_RESTRICTED_FILE_TITLE);
+               ? IDS_FILE_SYSTEM_ACCESS_RESTRICTED_DIRECTORY_TITLE
+               : IDS_FILE_SYSTEM_ACCESS_RESTRICTED_FILE_TITLE);
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(
                      handle_type_ == HandleType::kDirectory
-                         ? IDS_NATIVE_FILE_SYSTEM_RESTRICTED_DIRECTORY_BUTTON
-                         : IDS_NATIVE_FILE_SYSTEM_RESTRICTED_FILE_BUTTON));
+                         ? IDS_FILE_SYSTEM_ACCESS_RESTRICTED_DIRECTORY_BUTTON
+                         : IDS_FILE_SYSTEM_ACCESS_RESTRICTED_FILE_BUTTON));
 
   auto run_callback = [](FileSystemAccessRestrictedDirectoryDialogView* dialog,
                          SensitiveDirectoryResult result) {
@@ -75,8 +75,8 @@ FileSystemAccessRestrictedDirectoryDialogView::
 
   AddChildView(file_system_access_ui_helper::CreateOriginLabel(
       handle_type_ == HandleType::kDirectory
-          ? IDS_NATIVE_FILE_SYSTEM_RESTRICTED_DIRECTORY_TEXT
-          : IDS_NATIVE_FILE_SYSTEM_RESTRICTED_FILE_TEXT,
+          ? IDS_FILE_SYSTEM_ACCESS_RESTRICTED_DIRECTORY_TEXT
+          : IDS_FILE_SYSTEM_ACCESS_RESTRICTED_FILE_TEXT,
       origin, views::style::CONTEXT_DIALOG_BODY_TEXT, /*show_emphasis=*/true));
 }
 

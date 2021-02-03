@@ -29,15 +29,15 @@ int GetMessageText(const FileSystemAccessPermissionView::Request& request) {
   switch (request.access) {
     case AccessType::kRead:
       return request.handle_type == HandleType::kDirectory
-                 ? IDS_NATIVE_FILE_SYSTEM_ORIGIN_SCOPED_READ_PERMISSION_DIRECTORY_TEXT
-                 : IDS_NATIVE_FILE_SYSTEM_ORIGIN_SCOPED_READ_PERMISSION_FILE_TEXT;
+                 ? IDS_FILE_SYSTEM_ACCESS_ORIGIN_SCOPED_READ_PERMISSION_DIRECTORY_TEXT
+                 : IDS_FILE_SYSTEM_ACCESS_ORIGIN_SCOPED_READ_PERMISSION_FILE_TEXT;
     case AccessType::kWrite:
     case AccessType::kReadWrite:
       // Only difference between write and read-write access dialog is in button
       // label and dialog title.
       return request.handle_type == HandleType::kDirectory
-                 ? IDS_NATIVE_FILE_SYSTEM_ORIGIN_SCOPED_WRITE_PERMISSION_DIRECTORY_TEXT
-                 : IDS_NATIVE_FILE_SYSTEM_ORIGIN_SCOPED_WRITE_PERMISSION_FILE_TEXT;
+                 ? IDS_FILE_SYSTEM_ACCESS_ORIGIN_SCOPED_WRITE_PERMISSION_DIRECTORY_TEXT
+                 : IDS_FILE_SYSTEM_ACCESS_ORIGIN_SCOPED_WRITE_PERMISSION_FILE_TEXT;
   }
   NOTREACHED();
 }
@@ -46,14 +46,14 @@ int GetButtonLabel(const FileSystemAccessPermissionView::Request& request) {
   switch (request.access) {
     case AccessType::kRead:
       return request.handle_type == HandleType::kDirectory
-                 ? IDS_NATIVE_FILE_SYSTEM_VIEW_DIRECTORY_PERMISSION_ALLOW_TEXT
-                 : IDS_NATIVE_FILE_SYSTEM_VIEW_FILE_PERMISSION_ALLOW_TEXT;
+                 ? IDS_FILE_SYSTEM_ACCESS_VIEW_DIRECTORY_PERMISSION_ALLOW_TEXT
+                 : IDS_FILE_SYSTEM_ACCESS_VIEW_FILE_PERMISSION_ALLOW_TEXT;
     case AccessType::kWrite:
-      return IDS_NATIVE_FILE_SYSTEM_WRITE_PERMISSION_ALLOW_TEXT;
+      return IDS_FILE_SYSTEM_ACCESS_WRITE_PERMISSION_ALLOW_TEXT;
     case AccessType::kReadWrite:
       return request.handle_type == HandleType::kDirectory
-                 ? IDS_NATIVE_FILE_SYSTEM_EDIT_DIRECTORY_PERMISSION_ALLOW_TEXT
-                 : IDS_NATIVE_FILE_SYSTEM_EDIT_FILE_PERMISSION_ALLOW_TEXT;
+                 ? IDS_FILE_SYSTEM_ACCESS_EDIT_DIRECTORY_PERMISSION_ALLOW_TEXT
+                 : IDS_FILE_SYSTEM_ACCESS_EDIT_FILE_PERMISSION_ALLOW_TEXT;
   }
   NOTREACHED();
 }
@@ -116,23 +116,23 @@ base::string16 FileSystemAccessPermissionView::GetWindowTitle() const {
     case AccessType::kRead:
       if (request_.handle_type == HandleType::kDirectory) {
         return l10n_util::GetStringUTF16(
-            IDS_NATIVE_FILE_SYSTEM_READ_DIRECTORY_PERMISSION_TITLE);
+            IDS_FILE_SYSTEM_ACCESS_READ_DIRECTORY_PERMISSION_TITLE);
       } else {
         return l10n_util::GetStringFUTF16(
-            IDS_NATIVE_FILE_SYSTEM_READ_FILE_PERMISSION_TITLE,
+            IDS_FILE_SYSTEM_ACCESS_READ_FILE_PERMISSION_TITLE,
             request_.path.BaseName().LossyDisplayName());
       }
     case AccessType::kWrite:
       return l10n_util::GetStringFUTF16(
-          IDS_NATIVE_FILE_SYSTEM_WRITE_PERMISSION_TITLE,
+          IDS_FILE_SYSTEM_ACCESS_WRITE_PERMISSION_TITLE,
           request_.path.BaseName().LossyDisplayName());
     case AccessType::kReadWrite:
       if (request_.handle_type == HandleType::kDirectory) {
         return l10n_util::GetStringUTF16(
-            IDS_NATIVE_FILE_SYSTEM_EDIT_DIRECTORY_PERMISSION_TITLE);
+            IDS_FILE_SYSTEM_ACCESS_EDIT_DIRECTORY_PERMISSION_TITLE);
       } else {
         return l10n_util::GetStringFUTF16(
-            IDS_NATIVE_FILE_SYSTEM_EDIT_FILE_PERMISSION_TITLE,
+            IDS_FILE_SYSTEM_ACCESS_EDIT_FILE_PERMISSION_TITLE,
             request_.path.BaseName().LossyDisplayName());
       }
   }

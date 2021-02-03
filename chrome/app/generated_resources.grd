@@ -10516,130 +10516,130 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Upload
     </message>
 
-    <!-- Native File System permission dialog -->
-    <message name="IDS_NATIVE_FILE_SYSTEM_WRITE_PERMISSION_TITLE" desc="Title of dialog for confirming write access to a file, or a directory and the files it contains, using the Native File System API">
+    <!-- File System Access permission dialog -->
+    <message name="IDS_FILE_SYSTEM_ACCESS_WRITE_PERMISSION_TITLE" desc="Title of dialog for confirming write access to a file, or a directory and the files it contains, using the File System Access API">
       Save changes to <ph name="FILE_OR_FOLDER_NAME">$1<ex>README.md</ex></ph>?
     </message>
-    <message name="IDS_NATIVE_FILE_SYSTEM_WRITE_PERMISSION_ALLOW_TEXT" desc="Text of the 'allow' button in the dialog for confirming write access to files or directories using the Native File System API">
+    <message name="IDS_FILE_SYSTEM_ACCESS_WRITE_PERMISSION_ALLOW_TEXT" desc="Text of the 'allow' button in the dialog for confirming write access to files or directories using the File System Access API">
       Save changes
     </message>
-    <message name="IDS_NATIVE_FILE_SYSTEM_ORIGIN_SCOPED_WRITE_PERMISSION_FILE_TEXT" desc="Text of the dialog for confirming origin scoped write access to files using the Native File System API">
+    <message name="IDS_FILE_SYSTEM_ACCESS_ORIGIN_SCOPED_WRITE_PERMISSION_FILE_TEXT" desc="Text of the dialog for confirming origin scoped write access to files using the File System Access API">
       <ph name="ORIGIN">$1<ex>example.com</ex></ph> will be able to edit <ph name="FILENAME">$2<ex>README.md</ex></ph> until you close all tabs for this site
     </message>
-    <message name="IDS_NATIVE_FILE_SYSTEM_ORIGIN_SCOPED_WRITE_PERMISSION_DIRECTORY_TEXT" desc="Text of the dialog for confirming origin scoped write access to a directory using the Native File System API">
+    <message name="IDS_FILE_SYSTEM_ACCESS_ORIGIN_SCOPED_WRITE_PERMISSION_DIRECTORY_TEXT" desc="Text of the dialog for confirming origin scoped write access to a directory using the File System Access API">
       <ph name="ORIGIN">$1<ex>example.com</ex></ph> will be able to edit files in <ph name="FOLDERNAME">$2<ex>My Project</ex></ph> until you close all tabs for this site
     </message>
-    <message name="IDS_NATIVE_FILE_SYSTEM_ORIGIN_SCOPED_READ_PERMISSION_FILE_TEXT" desc="Text of dialog for confirming read access to files using the Native File System API">
+    <message name="IDS_FILE_SYSTEM_ACCESS_ORIGIN_SCOPED_READ_PERMISSION_FILE_TEXT" desc="Text of dialog for confirming read access to files using the File System Access API">
       <ph name="ORIGIN">$1<ex>example.com</ex></ph> will be able to view <ph name="FILENAME">$2<ex>README.md</ex></ph> until you close all tabs for this site
     </message>
-    <message name="IDS_NATIVE_FILE_SYSTEM_ORIGIN_SCOPED_READ_PERMISSION_DIRECTORY_TEXT" desc="Text of dialog asking user if they intended to share a particular directory">
+    <message name="IDS_FILE_SYSTEM_ACCESS_ORIGIN_SCOPED_READ_PERMISSION_DIRECTORY_TEXT" desc="Text of dialog asking user if they intended to share a particular directory">
       <ph name="ORIGIN">$1<ex>example.com</ex></ph> will be able to view files in <ph name="FOLDERNAME">$2<ex>My Project</ex></ph> until you close all tabs for this site
     </message>
-    <message name="IDS_NATIVE_FILE_SYSTEM_EDIT_FILE_PERMISSION_TITLE" desc="Title of dialog asking user to confirm giving read and write access to a file using the Native File System API">
+    <message name="IDS_FILE_SYSTEM_ACCESS_EDIT_FILE_PERMISSION_TITLE" desc="Title of dialog asking user to confirm giving read and write access to a file using the File System Access API">
       Let site edit <ph name="FILE_NAME">$1<ex>README.md</ex></ph>?
     </message>
-    <message name="IDS_NATIVE_FILE_SYSTEM_EDIT_DIRECTORY_PERMISSION_TITLE" desc="Title of dialog asking user to confirm giving read and write access to (files in) a directory using the Native File System API">
+    <message name="IDS_FILE_SYSTEM_ACCESS_EDIT_DIRECTORY_PERMISSION_TITLE" desc="Title of dialog asking user to confirm giving read and write access to (files in) a directory using the File System Access API">
       Let site edit files?
     </message>
-    <message name="IDS_NATIVE_FILE_SYSTEM_READ_FILE_PERMISSION_TITLE" desc="Title of dialog asking user to confirm giving read access to a file using the Native File System API">
+    <message name="IDS_FILE_SYSTEM_ACCESS_READ_FILE_PERMISSION_TITLE" desc="Title of dialog asking user to confirm giving read access to a file using the File System Access API">
       Let site view <ph name="FILE_NAME">$1<ex>README.md</ex></ph>?
     </message>
-    <message name="IDS_NATIVE_FILE_SYSTEM_READ_DIRECTORY_PERMISSION_TITLE" desc="Title of dialog asking user if they intended to share a particular directory">
+    <message name="IDS_FILE_SYSTEM_ACCESS_READ_DIRECTORY_PERMISSION_TITLE" desc="Title of dialog asking user if they intended to share a particular directory">
       Let site view files?
     </message>
-    <message name="IDS_NATIVE_FILE_SYSTEM_EDIT_FILE_PERMISSION_ALLOW_TEXT" desc="Text of the 'allow' button in the dialog for confirming write access to a file using the Native File System API">
+    <message name="IDS_FILE_SYSTEM_ACCESS_EDIT_FILE_PERMISSION_ALLOW_TEXT" desc="Text of the 'allow' button in the dialog for confirming write access to a file using the File System Access API">
       Edit file
     </message>
-    <message name="IDS_NATIVE_FILE_SYSTEM_EDIT_DIRECTORY_PERMISSION_ALLOW_TEXT" desc="Text of the 'allow' button in the dialog for confirming write access to a directory (and the files in it) using the Native File System API">
+    <message name="IDS_FILE_SYSTEM_ACCESS_EDIT_DIRECTORY_PERMISSION_ALLOW_TEXT" desc="Text of the 'allow' button in the dialog for confirming write access to a directory (and the files in it) using the File System Access API">
       Edit files
     </message>
-    <message name="IDS_NATIVE_FILE_SYSTEM_VIEW_FILE_PERMISSION_ALLOW_TEXT" desc="Text of the 'allow' button in the dialog for confirming read access to a file using the Native File System API">
+    <message name="IDS_FILE_SYSTEM_ACCESS_VIEW_FILE_PERMISSION_ALLOW_TEXT" desc="Text of the 'allow' button in the dialog for confirming read access to a file using the File System Access API">
       View file
     </message>
-    <message name="IDS_NATIVE_FILE_SYSTEM_VIEW_DIRECTORY_PERMISSION_ALLOW_TEXT" desc="Text of the 'allow' button in the dialog for confirming read access to a directory (and the files in it) using the Native File System API">
+    <message name="IDS_FILE_SYSTEM_ACCESS_VIEW_DIRECTORY_PERMISSION_ALLOW_TEXT" desc="Text of the 'allow' button in the dialog for confirming read access to a directory (and the files in it) using the File System Access API">
       View files
     </message>
 
-    <!-- Native File System usage indicator -->
-    <message name="IDS_NATIVE_FILE_SYSTEM_WRITE_USAGE_TOOLTIP" desc="Tooltip for the omnibox Native File System API file write access usage indicator.">
+    <!-- File System Access usage indicator -->
+    <message name="IDS_FILE_SYSTEM_ACCESS_WRITE_USAGE_TOOLTIP" desc="Tooltip for the omnibox File System Access API file write access usage indicator.">
       This page is allowed to edit files
     </message>
-    <message name="IDS_NATIVE_FILE_SYSTEM_DIRECTORY_USAGE_TOOLTIP" desc="Tooltip for the omnibox Native File System API directory read access usage indicator.">
+    <message name="IDS_FILE_SYSTEM_ACCESS_DIRECTORY_USAGE_TOOLTIP" desc="Tooltip for the omnibox File System Access API directory read access usage indicator.">
       This page is allowed to view files
     </message>
-    <message name="IDS_NATIVE_FILE_SYSTEM_USAGE_BUBBLE_SINGLE_WRITABLE_FILE_TEXT" desc="Text of the bubble showing what file an origin can currently write to">
+    <message name="IDS_FILE_SYSTEM_ACCESS_USAGE_BUBBLE_SINGLE_WRITABLE_FILE_TEXT" desc="Text of the bubble showing what file an origin can currently write to">
       <ph name="ORIGIN">$1<ex>example.com</ex></ph> can edit <ph name="FILENAME">$2<ex>README.md</ex></ph>
     </message>
-    <message name="IDS_NATIVE_FILE_SYSTEM_USAGE_BUBBLE_WRITABLE_FILES_TEXT" desc="Text of the bubble showing what files an origin can currently write to">
+    <message name="IDS_FILE_SYSTEM_ACCESS_USAGE_BUBBLE_WRITABLE_FILES_TEXT" desc="Text of the bubble showing what files an origin can currently write to">
       <ph name="ORIGIN">$1<ex>example.com</ex></ph> can edit the following files
     </message>
-    <message name="IDS_NATIVE_FILE_SYSTEM_USAGE_BUBBLE_SINGLE_WRITABLE_DIRECTORY_TEXT" desc="Text of the bubble showing what file an origin can currently write to">
+    <message name="IDS_FILE_SYSTEM_ACCESS_USAGE_BUBBLE_SINGLE_WRITABLE_DIRECTORY_TEXT" desc="Text of the bubble showing what file an origin can currently write to">
       <ph name="ORIGIN">$1<ex>example.com</ex></ph> can edit files in <ph name="FOLDERNAME">$2<ex>My Project</ex></ph>
     </message>
-    <message name="IDS_NATIVE_FILE_SYSTEM_USAGE_BUBBLE_WRITABLE_DIRECTORIES_TEXT" desc="Text of the bubble showing what files an origin can currently write to">
+    <message name="IDS_FILE_SYSTEM_ACCESS_USAGE_BUBBLE_WRITABLE_DIRECTORIES_TEXT" desc="Text of the bubble showing what files an origin can currently write to">
       <ph name="ORIGIN">$1<ex>example.com</ex></ph> can edit files in the following folders
     </message>
-    <message name="IDS_NATIVE_FILE_SYSTEM_USAGE_BUBBLE_WRITABLE_FILES_AND_DIRECTORIES_TEXT" desc="Text of the bubble showing what files and directories an origin can currently write to">
+    <message name="IDS_FILE_SYSTEM_ACCESS_USAGE_BUBBLE_WRITABLE_FILES_AND_DIRECTORIES_TEXT" desc="Text of the bubble showing what files and directories an origin can currently write to">
       <ph name="ORIGIN">$1<ex>example.com</ex></ph> can edit the following files and folders
     </message>
-    <message name="IDS_NATIVE_FILE_SYSTEM_USAGE_BUBBLE_SINGLE_READABLE_FILE_TEXT" desc="Text of the bubble showing what file an origin can currently access">
+    <message name="IDS_FILE_SYSTEM_ACCESS_USAGE_BUBBLE_SINGLE_READABLE_FILE_TEXT" desc="Text of the bubble showing what file an origin can currently access">
       <ph name="ORIGIN">$1<ex>example.com</ex></ph> can view <ph name="FILENAME">$2<ex>README.md</ex></ph>
     </message>
-    <message name="IDS_NATIVE_FILE_SYSTEM_USAGE_BUBBLE_READABLE_FILES_TEXT" desc="Text of the bubble showing what files an origin can currently access">
+    <message name="IDS_FILE_SYSTEM_ACCESS_USAGE_BUBBLE_READABLE_FILES_TEXT" desc="Text of the bubble showing what files an origin can currently access">
       <ph name="ORIGIN">$1<ex>example.com</ex></ph> can view the following files
     </message>
-    <message name="IDS_NATIVE_FILE_SYSTEM_USAGE_BUBBLE_SINGLE_READABLE_DIRECTORY_TEXT" desc="Text of the bubble showing what files and directories an origin can currently access">
+    <message name="IDS_FILE_SYSTEM_ACCESS_USAGE_BUBBLE_SINGLE_READABLE_DIRECTORY_TEXT" desc="Text of the bubble showing what files and directories an origin can currently access">
       <ph name="ORIGIN">$1<ex>example.com</ex></ph> can view files in <ph name="FOLDERNAME">$2<ex>My Project</ex></ph>
     </message>
-    <message name="IDS_NATIVE_FILE_SYSTEM_USAGE_BUBBLE_READABLE_DIRECTORIES_TEXT" desc="Text of the bubble showing what files and directories an origin can currently access">
+    <message name="IDS_FILE_SYSTEM_ACCESS_USAGE_BUBBLE_READABLE_DIRECTORIES_TEXT" desc="Text of the bubble showing what files and directories an origin can currently access">
       <ph name="ORIGIN">$1<ex>example.com</ex></ph> can view files in the following folders
     </message>
-    <message name="IDS_NATIVE_FILE_SYSTEM_USAGE_BUBBLE_READABLE_FILES_AND_DIRECTORIES_TEXT" desc="Text of the bubble showing what files and directories an origin can currently access">
+    <message name="IDS_FILE_SYSTEM_ACCESS_USAGE_BUBBLE_READABLE_FILES_AND_DIRECTORIES_TEXT" desc="Text of the bubble showing what files and directories an origin can currently access">
       <ph name="ORIGIN">$1<ex>example.com</ex></ph> can view the following files and folders
     </message>
-    <message name="IDS_NATIVE_FILE_SYSTEM_USAGE_BUBBLE_READ_AND_WRITE" desc="Text of the bubble showing what files and directories an origin can currently read and write to">
+    <message name="IDS_FILE_SYSTEM_ACCESS_USAGE_BUBBLE_READ_AND_WRITE" desc="Text of the bubble showing what files and directories an origin can currently read and write to">
       <ph name="ORIGIN">$1<ex>example.com</ex></ph> can view and edit the following files and folders
     </message>
-    <message name="IDS_NATIVE_FILE_SYSTEM_USAGE_BUBBLE_SAVE_CHANGES" desc="Sub-heading for the files and directories with write access in the bubble showing what files and directories an origin can currently read and write to">
+    <message name="IDS_FILE_SYSTEM_ACCESS_USAGE_BUBBLE_SAVE_CHANGES" desc="Sub-heading for the files and directories with write access in the bubble showing what files and directories an origin can currently read and write to">
       Save changes
     </message>
-    <message name="IDS_NATIVE_FILE_SYSTEM_USAGE_BUBBLE_VIEW_CHANGES" desc="Sub-heading for the files and directories with read access in the bubble showing what files and directories an origin can currently read and write to">
+    <message name="IDS_FILE_SYSTEM_ACCESS_USAGE_BUBBLE_VIEW_CHANGES" desc="Sub-heading for the files and directories with read access in the bubble showing what files and directories an origin can currently read and write to">
       View changes
     </message>
-    <message name="IDS_NATIVE_FILE_SYSTEM_USAGE_BUBBLE_FILES_TEXT" desc="Text to display a list of files in the native file system usage bubble">
+    <message name="IDS_FILE_SYSTEM_ACCESS_USAGE_BUBBLE_FILES_TEXT" desc="Text to display a list of files in the File System Access usage bubble">
       {0, plural, offset:2
         =1 {<ph name="FILE1">{1}<ex>README.md</ex></ph>}
         =2 {<ph name="FILE1">{1}<ex>README.md</ex></ph>, <ph name="FILE2">{2}<ex>Chrome.png</ex></ph>}
         other {<ph name="FILE1">{1}<ex>README.md</ex></ph>, <ph name="FILE2">{2}<ex>Chrome.png</ex></ph>, and # more}
       }
     </message>
-    <message name="IDS_NATIVE_FILE_SYSTEM_USAGE_EXPAND" desc="Tooltip for and name of a button that shows (expands) a detailed list of files and directories">
+    <message name="IDS_FILE_SYSTEM_ACCESS_USAGE_EXPAND" desc="Tooltip for and name of a button that shows (expands) a detailed list of files and directories">
       Expand...
     </message>
-    <message name="IDS_NATIVE_FILE_SYSTEM_USAGE_COLLAPSE" desc="Tooltip for and name of a button that hides (collapses) a detailed list of files and directories">
+    <message name="IDS_FILE_SYSTEM_ACCESS_USAGE_COLLAPSE" desc="Tooltip for and name of a button that hides (collapses) a detailed list of files and directories">
       Collapse...
     </message>
-    <message name="IDS_NATIVE_FILE_SYSTEM_USAGE_REMOVE_ACCESS" desc="Text of button in the bubble showing what files and directories an origin can currently access that removes all such access">
+    <message name="IDS_FILE_SYSTEM_ACCESS_USAGE_REMOVE_ACCESS" desc="Text of button in the bubble showing what files and directories an origin can currently access that removes all such access">
       Remove access
     </message>
 
-    <!-- Native File System restricted directory and file dialogs. -->
-    <message name="IDS_NATIVE_FILE_SYSTEM_RESTRICTED_DIRECTORY_TITLE" desc="Title of dialog explaining that the user selected a directory that chrome doesn't want to expose to the web">
+    <!-- File System Access restricted directory and file dialogs. -->
+    <message name="IDS_FILE_SYSTEM_ACCESS_RESTRICTED_DIRECTORY_TITLE" desc="Title of dialog explaining that the user selected a directory that chrome doesn't want to expose to the web">
       Can't open this folder
     </message>
-    <message name="IDS_NATIVE_FILE_SYSTEM_RESTRICTED_DIRECTORY_TEXT" desc="Text of dialog explaining that the user selected a directory that chrome doesn't want to expose to the web">
+    <message name="IDS_FILE_SYSTEM_ACCESS_RESTRICTED_DIRECTORY_TEXT" desc="Text of dialog explaining that the user selected a directory that chrome doesn't want to expose to the web">
       <ph name="ORIGIN">$1<ex>example.com</ex></ph> can’t open this folder because it contains system files
     </message>
-    <message name="IDS_NATIVE_FILE_SYSTEM_RESTRICTED_DIRECTORY_BUTTON" desc="Text of the button in dialog explaining that the user selected a directory that chrome doesn't want to expose to the web">
+    <message name="IDS_FILE_SYSTEM_ACCESS_RESTRICTED_DIRECTORY_BUTTON" desc="Text of the button in dialog explaining that the user selected a directory that chrome doesn't want to expose to the web">
       Choose a different folder
     </message>
-    <message name="IDS_NATIVE_FILE_SYSTEM_RESTRICTED_FILE_TITLE" desc="Title of dialog explaining that the user selected a file in a directory that chrome doesn't want to expose to the web">
+    <message name="IDS_FILE_SYSTEM_ACCESS_RESTRICTED_FILE_TITLE" desc="Title of dialog explaining that the user selected a file in a directory that chrome doesn't want to expose to the web">
       Can't open this file
     </message>
-    <message name="IDS_NATIVE_FILE_SYSTEM_RESTRICTED_FILE_TEXT" desc="Text of dialog explaining that the user selected a file in a directory that chrome doesn't want to expose to the web">
+    <message name="IDS_FILE_SYSTEM_ACCESS_RESTRICTED_FILE_TEXT" desc="Text of dialog explaining that the user selected a file in a directory that chrome doesn't want to expose to the web">
       <ph name="ORIGIN">$1<ex>example.com</ex></ph> can’t open files in this folder because it contains system files
     </message>
-    <message name="IDS_NATIVE_FILE_SYSTEM_RESTRICTED_FILE_BUTTON" desc="Text of the button in dialog explaining that the user selected a file in a directory that chrome doesn't want to expose to the web">
+    <message name="IDS_FILE_SYSTEM_ACCESS_RESTRICTED_FILE_BUTTON" desc="Text of the button in dialog explaining that the user selected a file in a directory that chrome doesn't want to expose to the web">
       Choose a different file
     </message>
 
