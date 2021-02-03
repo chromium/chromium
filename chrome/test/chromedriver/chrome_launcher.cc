@@ -933,10 +933,10 @@ Status ProcessExtension(const std::string& extension,
   std::string id;
 
   if (is_crx_file) {
-    crx_file::VerifierResult result =
-        crx_file::Verify(extension_crx, crx_file::VerifierFormat::CRX3,
-                         {} /** required_key_hashes */,
-                         {} /** required_file_hash */, &public_key_base64, &id);
+    crx_file::VerifierResult result = crx_file::Verify(
+        extension_crx, crx_file::VerifierFormat::CRX3,
+        {} /** required_key_hashes */, {} /** required_file_hash */,
+        &public_key_base64, &id, /*compressed_verified_contents=*/nullptr);
     if (result == crx_file::VerifierResult::ERROR_HEADER_INVALID) {
       return Status(kUnknownError,
                     "CRX verification failed to parse extension header. Chrome "

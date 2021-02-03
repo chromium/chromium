@@ -298,7 +298,8 @@ bool ParseCrxOuterData(const base::FilePath& crx_path,
   const crx_file::VerifierResult crx_verifier_result = crx_file::Verify(
       crx_path, crx_file::VerifierFormat::CRX3,
       /*required_key_hashes=*/std::vector<std::vector<uint8_t>>(),
-      /*required_file_hash=*/std::vector<uint8_t>(), &public_key, extension_id);
+      /*required_file_hash=*/std::vector<uint8_t>(), &public_key, extension_id,
+      /*compressed_verified_contents=*/nullptr);
   if (crx_verifier_result != crx_file::VerifierResult::OK_FULL) {
     ADD_FAILURE() << "Failed to read created CRX: verifier result "
                   << static_cast<int>(crx_verifier_result);

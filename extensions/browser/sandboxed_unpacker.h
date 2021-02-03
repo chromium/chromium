@@ -271,6 +271,9 @@ class SandboxedUnpacker : public base::RefCountedThreadSafe<SandboxedUnpacker> {
   // Represents the extension we're unpacking.
   scoped_refptr<Extension> extension_;
 
+  // The compressed verified contents extracted from the CRX header.
+  std::vector<uint8_t> compressed_verified_contents_;
+
   // The public key that was extracted from the CRX header.
   std::string public_key_;
 

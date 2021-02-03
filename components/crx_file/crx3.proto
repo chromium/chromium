@@ -29,6 +29,13 @@ message CrxFileHeader {
   // The pinned algorithm will be this, at least on 2017-01-01.
   repeated AsymmetricKeyProof sha256_with_ecdsa = 3;
 
+  // A verified contents file containing signatures over the archive contents.
+  // The verified contents are encoded in UTF-8 and then GZIP-compressed.
+  // Consult
+  // https://source.chromium.org/chromium/chromium/src/+/master:extensions/browser/verified_contents.h
+  // for information about the verified contents format.
+  optional bytes verified_contents = 4;
+
   // The binary form of a SignedData message. We do not use a nested
   // SignedData message, as handlers of this message must verify the proofs
   // on exactly these bytes, so it is convenient to parse in two steps.

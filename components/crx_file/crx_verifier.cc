@@ -98,6 +98,7 @@ VerifierResult VerifyCrx3(
     const std::vector<std::vector<uint8_t>>& required_key_hashes,
     std::string* public_key,
     std::string* crx_id,
+    std::vector<uint8_t>* compressed_verified_contents,
     bool require_publisher_key,
     bool accept_publisher_test_key) {
   // Parse [header-size] and [header].
@@ -112,6 +113,13 @@ VerifierResult VerifyCrx3(
   CrxFileHeader header;
   if (!header.ParseFromArray(header_bytes.data(), header_size))
     return VerifierResult::ERROR_HEADER_INVALID;
+
+  // Parse [verified_contents].
+  if (header.has_verified_contents() && compressed_verified_contents) {
+    const std::string& header_verified_contents(header.verified_contents());
+    compressed_verified_contents->assign(header_verified_contents.begin(),
+                                         header_verified_contents.end());
+  }
 
   // Parse [signed-header].
   const std::string& signed_header_data_str = header.signed_header_data();
@@ -208,7 +216,8 @@ VerifierResult Verify(
     const std::vector<std::vector<uint8_t>>& required_key_hashes,
     const std::vector<uint8_t>& required_file_hash,
     std::string* public_key,
-    std::string* crx_id) {
+    std::string* crx_id,
+    std::vector<uint8_t>* compressed_verified_contents) {
   std::string public_key_local;
   std::string crx_id_local;
   base::File file(crx_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
@@ -238,10 +247,10 @@ VerifierResult Verify(
     bool require_publisher_key =
         format == VerifierFormat::CRX3_WITH_PUBLISHER_PROOF ||
         format == VerifierFormat::CRX3_WITH_TEST_PUBLISHER_PROOF;
-    result =
-        VerifyCrx3(&file, file_hash.get(), required_key_hashes,
-                   &public_key_local, &crx_id_local, require_publisher_key,
-                   format == VerifierFormat::CRX3_WITH_TEST_PUBLISHER_PROOF);
+    result = VerifyCrx3(
+        &file, file_hash.get(), required_key_hashes, &public_key_local,
+        &crx_id_local, compressed_verified_contents, require_publisher_key,
+        format == VerifierFormat::CRX3_WITH_TEST_PUBLISHER_PROOF);
   } else {
     result = VerifierResult::ERROR_HEADER_INVALID;
   }

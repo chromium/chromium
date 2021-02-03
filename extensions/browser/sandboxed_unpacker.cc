@@ -818,9 +818,10 @@ bool SandboxedUnpacker::ValidateSignature(
       return false;
     }
   }
+
   const crx_file::VerifierResult result = crx_file::Verify(
       crx_path, required_format, std::vector<std::vector<uint8_t>>(), hash,
-      &public_key_, &extension_id_);
+      &public_key_, &extension_id_, &compressed_verified_contents_);
 
   switch (result) {
     case crx_file::VerifierResult::OK_FULL: {

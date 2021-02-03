@@ -179,7 +179,8 @@ HRESULT ValidateAndUnpackCRX(const base::FilePath& from_crx_path,
 
   std::string public_key;
   if (crx_file::Verify(to_crx_path, crx_format, {crx_hash}, {}, &public_key,
-                       nullptr) != crx_file::VerifierResult::OK_FULL) {
+                       nullptr, /*compressed_verified_contents=*/nullptr) !=
+      crx_file::VerifierResult::OK_FULL) {
     return CRYPT_E_NO_MATCH;
   }
 

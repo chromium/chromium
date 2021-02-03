@@ -57,7 +57,8 @@ TEST_F(CrxVerifierTest, ValidFullCrx3) {
 
   EXPECT_EQ(VerifierResult::OK_FULL,
             Verify(TestFile("valid_no_publisher.crx3"), VerifierFormat::CRX3,
-                   keys, hash, &public_key, &crx_id));
+                   keys, hash, &public_key, &crx_id,
+                   /*compressed_verified_contents=*/nullptr));
   EXPECT_EQ(std::string(kOjjHash), crx_id);
   EXPECT_EQ(std::string(kOjjKey), public_key);
 
@@ -65,7 +66,8 @@ TEST_F(CrxVerifierTest, ValidFullCrx3) {
   crx_id = "UNSET";
   EXPECT_EQ(VerifierResult::OK_FULL,
             Verify(TestFile("valid_no_publisher.crx3"), VerifierFormat::CRX3,
-                   keys, hash, &public_key, &crx_id));
+                   keys, hash, &public_key, &crx_id,
+                   /*compressed_verified_contents=*/nullptr));
   EXPECT_EQ(std::string(kOjjHash), crx_id);
   EXPECT_EQ(std::string(kOjjKey), public_key);
 }
@@ -76,9 +78,10 @@ TEST_F(CrxVerifierTest, Crx3RejectsCrx2) {
   std::string public_key = "UNSET";
   std::string crx_id = "UNSET";
 
-  EXPECT_EQ(VerifierResult::ERROR_HEADER_INVALID,
-            Verify(TestFile("valid.crx2"), VerifierFormat::CRX3, keys, hash,
-                   &public_key, &crx_id));
+  EXPECT_EQ(
+      VerifierResult::ERROR_HEADER_INVALID,
+      Verify(TestFile("valid.crx2"), VerifierFormat::CRX3, keys, hash,
+             &public_key, &crx_id, /*compressed_verified_contents=*/nullptr));
   EXPECT_EQ("UNSET", crx_id);
   EXPECT_EQ("UNSET", public_key);
 }
@@ -94,7 +97,8 @@ TEST_F(CrxVerifierTest, VerifiesFileHash) {
 
   EXPECT_EQ(VerifierResult::OK_FULL,
             Verify(TestFile("valid_no_publisher.crx3"), VerifierFormat::CRX3,
-                   keys, hash, &public_key, &crx_id));
+                   keys, hash, &public_key, &crx_id,
+                   /*compressed_verified_contents=*/nullptr));
   EXPECT_EQ(std::string(kOjjHash), crx_id);
   EXPECT_EQ(std::string(kOjjKey), public_key);
 
@@ -104,7 +108,8 @@ TEST_F(CrxVerifierTest, VerifiesFileHash) {
   crx_id = "UNSET";
   EXPECT_EQ(VerifierResult::ERROR_EXPECTED_HASH_INVALID,
             Verify(TestFile("valid_no_publisher.crx3"), VerifierFormat::CRX3,
-                   keys, hash, &public_key, &crx_id));
+                   keys, hash, &public_key, &crx_id,
+                   /*compressed_verified_contents=*/nullptr));
   EXPECT_EQ("UNSET", crx_id);
   EXPECT_EQ("UNSET", public_key);
 
@@ -114,7 +119,8 @@ TEST_F(CrxVerifierTest, VerifiesFileHash) {
   crx_id = "UNSET";
   EXPECT_EQ(VerifierResult::ERROR_FILE_HASH_FAILED,
             Verify(TestFile("valid_no_publisher.crx3"), VerifierFormat::CRX3,
-                   keys, hash, &public_key, &crx_id));
+                   keys, hash, &public_key, &crx_id,
+                   /*compressed_verified_contents=*/nullptr));
   EXPECT_EQ("UNSET", crx_id);
   EXPECT_EQ("UNSET", public_key);
 }
@@ -131,7 +137,8 @@ TEST_F(CrxVerifierTest, ChecksRequiredKeyHashes) {
   std::string crx_id = "UNSET";
   EXPECT_EQ(VerifierResult::OK_FULL,
             Verify(TestFile("valid_no_publisher.crx3"), VerifierFormat::CRX3,
-                   good_keys, hash, &public_key, &crx_id));
+                   good_keys, hash, &public_key, &crx_id,
+                   /*compressed_verified_contents=*/nullptr));
   EXPECT_EQ(std::string(kOjjHash), crx_id);
   EXPECT_EQ(std::string(kOjjKey), public_key);
 
@@ -142,7 +149,8 @@ TEST_F(CrxVerifierTest, ChecksRequiredKeyHashes) {
   crx_id = "UNSET";
   EXPECT_EQ(VerifierResult::ERROR_REQUIRED_PROOF_MISSING,
             Verify(TestFile("valid_no_publisher.crx3"), VerifierFormat::CRX3,
-                   bad_keys, hash, &public_key, &crx_id));
+                   bad_keys, hash, &public_key, &crx_id,
+                   /*compressed_verified_contents=*/nullptr));
   EXPECT_EQ("UNSET", crx_id);
   EXPECT_EQ("UNSET", public_key);
 }
@@ -152,28 +160,31 @@ TEST_F(CrxVerifierTest, ChecksPinnedKey) {
   const std::vector<std::vector<uint8_t>> keys;
   std::string public_key = "UNSET";
   std::string crx_id = "UNSET";
-  EXPECT_EQ(VerifierResult::OK_FULL,
-            Verify(TestFile("valid_publisher.crx3"),
-                   VerifierFormat::CRX3_WITH_PUBLISHER_PROOF, keys, hash,
-                   &public_key, &crx_id));
+  EXPECT_EQ(
+      VerifierResult::OK_FULL,
+      Verify(TestFile("valid_publisher.crx3"),
+             VerifierFormat::CRX3_WITH_PUBLISHER_PROOF, keys, hash, &public_key,
+             &crx_id, /*compressed_verified_contents=*/nullptr));
   EXPECT_EQ(std::string(kOjjHash), crx_id);
   EXPECT_EQ(std::string(kOjjKey), public_key);
 
   public_key = "UNSET";
   crx_id = "UNSET";
-  EXPECT_EQ(VerifierResult::ERROR_REQUIRED_PROOF_MISSING,
-            Verify(TestFile("valid_test_publisher.crx3"),
-                   VerifierFormat::CRX3_WITH_PUBLISHER_PROOF, keys, hash,
-                   &public_key, &crx_id));
+  EXPECT_EQ(
+      VerifierResult::ERROR_REQUIRED_PROOF_MISSING,
+      Verify(TestFile("valid_test_publisher.crx3"),
+             VerifierFormat::CRX3_WITH_PUBLISHER_PROOF, keys, hash, &public_key,
+             &crx_id, /*compressed_verified_contents=*/nullptr));
   EXPECT_EQ("UNSET", crx_id);
   EXPECT_EQ("UNSET", public_key);
 
   public_key = "UNSET";
   crx_id = "UNSET";
-  EXPECT_EQ(VerifierResult::ERROR_REQUIRED_PROOF_MISSING,
-            Verify(TestFile("valid_no_publisher.crx3"),
-                   VerifierFormat::CRX3_WITH_PUBLISHER_PROOF, keys, hash,
-                   &public_key, &crx_id));
+  EXPECT_EQ(
+      VerifierResult::ERROR_REQUIRED_PROOF_MISSING,
+      Verify(TestFile("valid_no_publisher.crx3"),
+             VerifierFormat::CRX3_WITH_PUBLISHER_PROOF, keys, hash, &public_key,
+             &crx_id, /*compressed_verified_contents=*/nullptr));
   EXPECT_EQ("UNSET", crx_id);
   EXPECT_EQ("UNSET", public_key);
 }
@@ -183,28 +194,31 @@ TEST_F(CrxVerifierTest, ChecksPinnedKeyAcceptsTest) {
   const std::vector<std::vector<uint8_t>> keys;
   std::string public_key = "UNSET";
   std::string crx_id = "UNSET";
-  EXPECT_EQ(VerifierResult::OK_FULL,
-            Verify(TestFile("valid_publisher.crx3"),
-                   VerifierFormat::CRX3_WITH_TEST_PUBLISHER_PROOF, keys, hash,
-                   &public_key, &crx_id));
+  EXPECT_EQ(
+      VerifierResult::OK_FULL,
+      Verify(TestFile("valid_publisher.crx3"),
+             VerifierFormat::CRX3_WITH_TEST_PUBLISHER_PROOF, keys, hash,
+             &public_key, &crx_id, /*compressed_verified_contents=*/nullptr));
   EXPECT_EQ(std::string(kOjjHash), crx_id);
   EXPECT_EQ(std::string(kOjjKey), public_key);
 
   public_key = "UNSET";
   crx_id = "UNSET";
-  EXPECT_EQ(VerifierResult::OK_FULL,
-            Verify(TestFile("valid_test_publisher.crx3"),
-                   VerifierFormat::CRX3_WITH_TEST_PUBLISHER_PROOF, keys, hash,
-                   &public_key, &crx_id));
+  EXPECT_EQ(
+      VerifierResult::OK_FULL,
+      Verify(TestFile("valid_test_publisher.crx3"),
+             VerifierFormat::CRX3_WITH_TEST_PUBLISHER_PROOF, keys, hash,
+             &public_key, &crx_id, /*compressed_verified_contents=*/nullptr));
   EXPECT_EQ(std::string(kJlnHash), crx_id);
   EXPECT_EQ(std::string(kJlnKey), public_key);
 
   public_key = "UNSET";
   crx_id = "UNSET";
-  EXPECT_EQ(VerifierResult::ERROR_REQUIRED_PROOF_MISSING,
-            Verify(TestFile("valid_no_publisher.crx3"),
-                   VerifierFormat::CRX3_WITH_TEST_PUBLISHER_PROOF, keys, hash,
-                   &public_key, &crx_id));
+  EXPECT_EQ(
+      VerifierResult::ERROR_REQUIRED_PROOF_MISSING,
+      Verify(TestFile("valid_no_publisher.crx3"),
+             VerifierFormat::CRX3_WITH_TEST_PUBLISHER_PROOF, keys, hash,
+             &public_key, &crx_id, /*compressed_verified_contents=*/nullptr));
   EXPECT_EQ("UNSET", crx_id);
   EXPECT_EQ("UNSET", public_key);
 }
@@ -215,7 +229,7 @@ TEST_F(CrxVerifierTest, NullptrSafe) {
   EXPECT_EQ(VerifierResult::OK_FULL,
             Verify(TestFile("valid_publisher.crx3"),
                    VerifierFormat::CRX3_WITH_PUBLISHER_PROOF, keys, hash,
-                   nullptr, nullptr));
+                   nullptr, nullptr, /*compressed_verified_contents=*/nullptr));
 }
 
 TEST_F(CrxVerifierTest, RequiresDeveloperKey) {
@@ -223,11 +237,29 @@ TEST_F(CrxVerifierTest, RequiresDeveloperKey) {
   const std::vector<std::vector<uint8_t>> keys;
   std::string public_key = "UNSET";
   std::string crx_id = "UNSET";
-  EXPECT_EQ(VerifierResult::ERROR_REQUIRED_PROOF_MISSING,
-            Verify(TestFile("unsigned.crx3"), VerifierFormat::CRX3, keys, hash,
-                   &public_key, &crx_id));
+  EXPECT_EQ(
+      VerifierResult::ERROR_REQUIRED_PROOF_MISSING,
+      Verify(TestFile("unsigned.crx3"), VerifierFormat::CRX3, keys, hash,
+             &public_key, &crx_id, /*compressed_verified_contents=*/nullptr));
   EXPECT_EQ("UNSET", crx_id);
   EXPECT_EQ("UNSET", public_key);
+}
+
+// Verifies that `compressed_verified_contents` is not set when verified
+// contents are not present in the header of the CRX.
+TEST_F(CrxVerifierTest, ChecksCompressedVerifiedContentsEmpty) {
+  const std::vector<uint8_t> hash;
+  const std::vector<std::vector<uint8_t>> keys;
+  std::string public_key = "UNSET";
+  std::string crx_id = "UNSET";
+  std::vector<uint8_t> compressed_verified_contents;
+  EXPECT_EQ(VerifierResult::OK_FULL,
+            Verify(TestFile("valid_test_publisher.crx3"),
+                   VerifierFormat::CRX3_WITH_TEST_PUBLISHER_PROOF, keys, hash,
+                   &public_key, &crx_id, &compressed_verified_contents));
+  EXPECT_EQ(std::string(kJlnHash), crx_id);
+  EXPECT_EQ(std::string(kJlnKey), public_key);
+  EXPECT_TRUE(compressed_verified_contents.empty());
 }
 
 }  // namespace crx_file

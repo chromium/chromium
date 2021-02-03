@@ -49,9 +49,10 @@ TEST_F(CrxCreatorTest, Create) {
   const std::vector<std::vector<uint8_t>> keys;
   const std::vector<uint8_t> hash;
   std::string public_key_in_crx;
-  EXPECT_EQ(VerifierResult::OK_FULL,
-            Verify(temp_file, VerifierFormat::CRX3, keys, hash,
-                   &public_key_in_crx, nullptr));
+  EXPECT_EQ(
+      VerifierResult::OK_FULL,
+      Verify(temp_file, VerifierFormat::CRX3, keys, hash, &public_key_in_crx,
+             nullptr, /*compressed_verified_contents=*/nullptr));
   EXPECT_EQ(expected_public_key, public_key_in_crx);
 
   // Delete the file.

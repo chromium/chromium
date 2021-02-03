@@ -217,11 +217,11 @@ PredictionModelDownloadManager::ProcessDownload(
   if (!switches::ShouldSkipModelDownloadVerificationForTesting()) {
     // Verify that the |file_path| contains a valid CRX file.
     std::string public_key;
-    crx_file::VerifierResult verifier_result =
-        crx_file::Verify(file_path, crx_file::VerifierFormat::CRX3,
-                         /*required_key_hashes=*/{},
-                         /*required_file_hash=*/{}, &public_key,
-                         /*crx_id=*/nullptr);
+    crx_file::VerifierResult verifier_result = crx_file::Verify(
+        file_path, crx_file::VerifierFormat::CRX3,
+        /*required_key_hashes=*/{},
+        /*required_file_hash=*/{}, &public_key,
+        /*crx_id=*/nullptr, /*compressed_verified_contents=*/nullptr);
     if (verifier_result != crx_file::VerifierResult::OK_FULL) {
       RecordPredictionModelDownloadStatus(
           PredictionModelDownloadStatus::kFailedCrxVerification);
