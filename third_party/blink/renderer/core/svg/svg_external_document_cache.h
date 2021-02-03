@@ -34,6 +34,7 @@ namespace blink {
 class Document;
 class ExecutionContext;
 class ResourceClient;
+class SVGResourceDocumentContent;
 class TextResource;
 
 class CORE_EXPORT SVGExternalDocumentCache final
@@ -45,35 +46,38 @@ class CORE_EXPORT SVGExternalDocumentCache final
   explicit SVGExternalDocumentCache(Document&);
   void Trace(Visitor*) const override;
 
-  class CORE_EXPORT Entry final : public GarbageCollected<Entry> {
-   public:
-    Entry(TextResource* resource, ExecutionContext* context)
-        : resource_(resource), context_(context) {
-      DCHECK(resource_);
-      DCHECK(context_);
-    }
-    void SetWasRevalidating() { was_revalidating_ = true; }
-
-    Document* GetDocument();
-    const KURL& Url() const;
-
-    void Trace(Visitor*) const;
-
-   private:
-    Member<TextResource> resource_;
-    Member<Document> document_;
-    Member<ExecutionContext> context_;
-    bool was_revalidating_ = false;
-  };
-
-  Entry* Get(ResourceClient*,
-             const KURL&,
-             const AtomicString& initiator_name,
-             network::mojom::blink::CSPDisposition =
-                 network::mojom::blink::CSPDisposition::CHECK);
+  SVGResourceDocumentContent* Get(
+      ResourceClient*,
+      const KURL&,
+      const AtomicString& initiator_name,
+      network::mojom::blink::CSPDisposition =
+          network::mojom::blink::CSPDisposition::CHECK);
 
  private:
-  HeapHashMap<WeakMember<Resource>, Member<Entry>> entries_;
+  HeapHashMap<WeakMember<Resource>, Member<SVGResourceDocumentContent>>
+      entries_;
+};
+
+class CORE_EXPORT SVGResourceDocumentContent final
+    : public GarbageCollected<SVGResourceDocumentContent> {
+ public:
+  SVGResourceDocumentContent(TextResource* resource, ExecutionContext* context)
+      : resource_(resource), context_(context) {
+    DCHECK(resource_);
+    DCHECK(context_);
+  }
+  void SetWasRevalidating() { was_revalidating_ = true; }
+
+  Document* GetDocument();
+  const KURL& Url() const;
+
+  void Trace(Visitor*) const;
+
+ private:
+  Member<TextResource> resource_;
+  Member<Document> document_;
+  Member<ExecutionContext> context_;
+  bool was_revalidating_ = false;
 };
 
 }  // namespace blink

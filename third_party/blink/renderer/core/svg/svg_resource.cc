@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources_cycle_solver.h"
+#include "third_party/blink/renderer/core/svg/svg_external_document_cache.h"
 #include "third_party/blink/renderer/core/svg/svg_uri_reference.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
@@ -177,17 +178,17 @@ void LocalSVGResource::Trace(Visitor* visitor) const {
 ExternalSVGResource::ExternalSVGResource(const KURL& url) : url_(url) {}
 
 void ExternalSVGResource::Load(Document& document) {
-  if (cache_entry_)
+  if (document_content_)
     return;
-  cache_entry_ = SVGExternalDocumentCache::From(document)->Get(
+  document_content_ = SVGExternalDocumentCache::From(document)->Get(
       this, url_, fetch_initiator_type_names::kCSS);
   target_ = ResolveTarget();
 }
 
 void ExternalSVGResource::LoadWithoutCSP(Document& document) {
-  if (cache_entry_)
+  if (document_content_)
     return;
-  cache_entry_ = SVGExternalDocumentCache::From(document)->Get(
+  document_content_ = SVGExternalDocumentCache::From(document)->Get(
       this, url_, fetch_initiator_type_names::kCSS,
       network::mojom::blink::CSPDisposition::DO_NOT_CHECK);
   target_ = ResolveTarget();
@@ -206,11 +207,11 @@ String ExternalSVGResource::DebugName() const {
 }
 
 Element* ExternalSVGResource::ResolveTarget() {
-  if (!cache_entry_)
+  if (!document_content_)
     return nullptr;
   if (!url_.HasFragmentIdentifier())
     return nullptr;
-  Document* external_document = cache_entry_->GetDocument();
+  Document* external_document = document_content_->GetDocument();
   if (!external_document)
     return nullptr;
   AtomicString decoded_fragment(DecodeURLEscapeSequences(
@@ -219,7 +220,7 @@ Element* ExternalSVGResource::ResolveTarget() {
 }
 
 void ExternalSVGResource::Trace(Visitor* visitor) const {
-  visitor->Trace(cache_entry_);
+  visitor->Trace(document_content_);
   SVGResource::Trace(visitor);
   ResourceClient::Trace(visitor);
 }

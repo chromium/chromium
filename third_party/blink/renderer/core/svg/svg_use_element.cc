@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_transformable_container.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
+#include "third_party/blink/renderer/core/svg/svg_external_document_cache.h"
 #include "third_party/blink/renderer/core/svg/svg_g_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length_context.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
@@ -93,7 +94,7 @@ SVGUseElement::SVGUseElement(Document& document)
 SVGUseElement::~SVGUseElement() = default;
 
 void SVGUseElement::Trace(Visitor* visitor) const {
-  visitor->Trace(cache_entry_);
+  visitor->Trace(document_content_);
   visitor->Trace(x_);
   visitor->Trace(y_);
   visitor->Trace(width_);
@@ -196,12 +197,12 @@ void SVGUseElement::UpdateTargetReference() {
   element_url_is_local_ = url_string.StartsWith('#');
   if (!IsStructurallyExternal() || !GetDocument().IsActive()) {
     ClearResource();
-    cache_entry_ = nullptr;
+    document_content_ = nullptr;
     return;
   }
   if (!element_url_.HasFragmentIdentifier() ||
-      (cache_entry_ &&
-       EqualIgnoringFragmentIdentifier(element_url_, cache_entry_->Url()))) {
+      (document_content_ && EqualIgnoringFragmentIdentifier(
+                                element_url_, document_content_->Url()))) {
     return;
   }
 
@@ -214,8 +215,8 @@ void SVGUseElement::UpdateTargetReference() {
     context_document =
         To<LocalDOMWindow>(GetDocument().GetExecutionContext())->document();
   }
-  cache_entry_ = SVGExternalDocumentCache::From(*context_document)
-                     ->Get(this, element_url_, localName());
+  document_content_ = SVGExternalDocumentCache::From(*context_document)
+                          ->Get(this, element_url_, localName());
 }
 
 void SVGUseElement::SvgAttributeChanged(
@@ -315,9 +316,9 @@ Element* SVGUseElement::ResolveTargetElement() {
                              WrapWeakPersistent(this)));
     }
   }
-  if (!cache_entry_ || !cache_entry_->GetDocument())
+  if (!document_content_ || !document_content_->GetDocument())
     return nullptr;
-  return cache_entry_->GetDocument()->getElementById(element_identifier);
+  return document_content_->GetDocument()->getElementById(element_identifier);
 }
 
 SVGElement* SVGUseElement::InstanceRoot() const {
@@ -593,7 +594,7 @@ void SVGUseElement::NotifyFinished(Resource* resource) {
     return;
 
   InvalidateShadowTree();
-  if (resource->ErrorOccurred() || !cache_entry_->GetDocument()) {
+  if (resource->ErrorOccurred() || !document_content_->GetDocument()) {
     DispatchEvent(*Event::Create(event_type_names::kError));
   } else {
     if (have_fired_load_event_)

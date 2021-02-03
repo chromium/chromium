@@ -58,7 +58,7 @@ Document* CreateDocument(const TextResource* resource,
 
 }  // namespace
 
-Document* SVGExternalDocumentCache::Entry::GetDocument() {
+Document* SVGResourceDocumentContent::GetDocument() {
   if (resource_->IsLoaded()) {
     // If this entry saw a revalidation, re-parse the document.
     // TODO(fs): This will be inefficient for successful revalidations, so we
@@ -73,11 +73,11 @@ Document* SVGExternalDocumentCache::Entry::GetDocument() {
   return document_;
 }
 
-const KURL& SVGExternalDocumentCache::Entry::Url() const {
+const KURL& SVGResourceDocumentContent::Url() const {
   return resource_->Url();
 }
 
-void SVGExternalDocumentCache::Entry::Trace(Visitor* visitor) const {
+void SVGResourceDocumentContent::Trace(Visitor* visitor) const {
   visitor->Trace(resource_);
   visitor->Trace(document_);
   visitor->Trace(context_);
@@ -99,7 +99,7 @@ SVGExternalDocumentCache* SVGExternalDocumentCache::From(Document& document) {
 SVGExternalDocumentCache::SVGExternalDocumentCache(Document& document)
     : Supplement<Document>(document) {}
 
-SVGExternalDocumentCache::Entry* SVGExternalDocumentCache::Get(
+SVGResourceDocumentContent* SVGExternalDocumentCache::Get(
     ResourceClient* client,
     const KURL& url,
     const AtomicString& initiator_name,
@@ -120,8 +120,10 @@ SVGExternalDocumentCache::Entry* SVGExternalDocumentCache::Get(
   if (!resource)
     return nullptr;
   auto& entry = entries_.insert(resource, nullptr).stored_value->value;
-  if (!entry)
-    entry = MakeGarbageCollected<Entry>(resource, execution_context);
+  if (!entry) {
+    entry = MakeGarbageCollected<SVGResourceDocumentContent>(resource,
+                                                             execution_context);
+  }
   if (resource->IsCacheValidator())
     entry->SetWasRevalidating();
   return entry;

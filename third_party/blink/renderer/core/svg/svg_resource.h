@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_RESOURCE_H_
 
 #include "base/macros.h"
-#include "third_party/blink/renderer/core/svg/svg_external_document_cache.h"
 #include "third_party/blink/renderer/core/svg/svg_resource_client.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
@@ -20,6 +19,7 @@ class Document;
 class Element;
 class IdTargetObserver;
 class LayoutSVGResourceContainer;
+class SVGResourceDocumentContent;
 class SVGResourcesCycleSolver;
 class TreeScope;
 
@@ -145,7 +145,7 @@ class ExternalSVGResource final : public SVGResource, public ResourceClient {
   void NotifyFinished(Resource*) override;
   String DebugName() const override;
 
-  Member<SVGExternalDocumentCache::Entry> cache_entry_;
+  Member<SVGResourceDocumentContent> document_content_;
   KURL url_;
 };
 
