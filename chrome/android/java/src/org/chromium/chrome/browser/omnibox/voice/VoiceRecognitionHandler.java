@@ -96,6 +96,10 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
     // for voice transcription. See AssistantActionPerformed, below.
     @VisibleForTesting
     static final String EXTRA_ACTION_PERFORMED = "com.android.chrome.voice.ACTION_PERFORMED";
+    // Extra containing the current timestamp (in epoch time) used for tracking intent latency.
+    @VisibleForTesting
+    static final String EXTRA_INTENT_SENT_TIMESTAMP =
+            "com.android.chrome.voice.INTENT_SENT_TIMESTAMP";
 
     private final Delegate mDelegate;
     private Long mQueryStartTimeMs;
@@ -711,6 +715,8 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
         if (!assistantVoiceSearchService.shouldRequestAssistantVoiceSearch()) return false;
 
         Intent intent = assistantVoiceSearchService.getAssistantVoiceSearchIntent();
+        // Allows Assistant to track intent latency.
+        intent.putExtra(EXTRA_INTENT_SENT_TIMESTAMP, System.currentTimeMillis());
 
         if (shouldAddPageUrl(source)) {
             String url = getUrl();

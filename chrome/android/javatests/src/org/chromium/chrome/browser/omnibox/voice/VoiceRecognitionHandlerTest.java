@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.voice;
 
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
@@ -713,6 +714,8 @@ public class VoiceRecognitionHandlerTest {
         Assert.assertTrue(mWindowAndroid.wasCancelableIntentShown());
         Assert.assertEquals(mIntent, mWindowAndroid.getCancelableIntent());
         verify(mAssistantVoiceSearchService).reportUserEligibility();
+        verify(mIntent).putExtra(
+                eq(VoiceRecognitionHandler.EXTRA_INTENT_SENT_TIMESTAMP), anyLong());
     }
 
     @Test
