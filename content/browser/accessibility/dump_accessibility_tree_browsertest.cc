@@ -295,7 +295,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCSSColor) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityCSSContentVisibilityAutoCrash) {
+                       DISABLED_AccessibilityCSSContentVisibilityAutoCrash) {
   RunCSSTest(FILE_PATH_LITERAL("content-visibility-auto-crash.html"));
 }
 
