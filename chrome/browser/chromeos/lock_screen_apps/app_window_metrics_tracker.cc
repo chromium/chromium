@@ -135,8 +135,10 @@ void AppWindowMetricsTracker::Reset() {
   time_stamps_.clear();
 }
 
-void AppWindowMetricsTracker::RenderViewCreated(
-    content::RenderViewHost* render_view_host) {
+void AppWindowMetricsTracker::RenderFrameCreated(
+    content::RenderFrameHost* frame_host) {
+  if (frame_host->GetParent())
+    return;
   SetState(State::kWindowShown);
 
   UMA_HISTOGRAM_TIMES(

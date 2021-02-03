@@ -45,7 +45,7 @@ class AppWindowMetricsTracker : public content::WebContentsObserver {
   void Reset();
 
   // content::WebContentsObserver:
-  void RenderViewCreated(content::RenderViewHost* render_view_host) override;
+  void RenderFrameCreated(content::RenderFrameHost* frame_host) override;
   void DocumentOnLoadCompletedInMainFrame() override;
 
  private:
