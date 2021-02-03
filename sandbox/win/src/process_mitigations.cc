@@ -528,6 +528,14 @@ void ConvertProcessMitigationsToPolicy(MitigationFlags flags,
   return;
 }
 
+void ConvertProcessMitigationsToComponentFilter(MitigationFlags flags,
+                                                COMPONENT_FILTER* filter) {
+  filter->ComponentFlags = 0;
+  if (flags & MITIGATION_KTM_COMPONENT) {
+    filter->ComponentFlags = COMPONENT_KTM;
+  }
+}
+
 MitigationFlags FilterPostStartupProcessMitigations(MitigationFlags flags) {
   base::win::Version version = base::win::GetVersion();
 

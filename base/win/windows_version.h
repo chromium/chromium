@@ -50,6 +50,7 @@ enum class Version {
   WIN10_19H2 = 15,  // 19H2: Version 1909, Build 18363.
   WIN10_20H1 = 16,  // 20H1: Version 2004, Build 19041.
   WIN10_20H2 = 17,  // 20H2: Version 2009, Build 19042.
+  WIN10_21H1 = 18,  // 21H1: Version TBD
   WIN_LAST,         // Indicates error condition.
 };
 

@@ -293,6 +293,10 @@ const MitigationFlags MITIGATION_RESTRICT_INDIRECT_BRANCH_PREDICTION =
 // PROCESS_CREATION_MITIGATION_POLICY2_CET_USER_SHADOW_STACKS_ALWAYS_OFF.
 const MitigationFlags MITIGATION_CET_DISABLED = 0x00400000;
 
+// Enable KTM component mitigation. When enabled, it locks down all function
+// calls to consume the kernel transaction manager.
+const MitigationFlags MITIGATION_KTM_COMPONENT = 0x00800000;
+
 }  // namespace sandbox
 
 #endif  // SANDBOX_SRC_SECURITY_LEVEL_H_

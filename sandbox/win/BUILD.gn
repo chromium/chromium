@@ -238,6 +238,8 @@ test("sbox_integration_tests") {
     ":sbox_integration_test_hooking_dll",
     ":sbox_integration_test_win_proc",
   ]
+
+  libs = [ "ktmw32.lib" ]
 }
 
 shared_library("sbox_integration_test_hijack_dll") {

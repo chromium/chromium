@@ -4,6 +4,7 @@
 
 #include "sandbox/win/src/process_mitigations.h"
 
+#include <ktmw32.h>
 #include <windows.h>
 
 #include "base/files/file_util.h"
@@ -12,6 +13,7 @@
 #include "base/process/kill.h"
 #include "base/scoped_native_library.h"
 #include "base/test/test_timeouts.h"
+#include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
 #include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/target_services.h"
@@ -384,6 +386,25 @@ SBOX_TESTS_COMMAND int CheckPolicy(int argc, wchar_t** argv) {
 
       break;
     }
+    //--------------------------------------------------
+    // MITIGATION_KTM_COMPONENT_FILTER
+    //--------------------------------------------------
+    case (TESTPOLICY_KTMCOMPONENTFILTER): {
+      // If the mitigation is enabled, creating a KTM should fail.
+      SECURITY_ATTRIBUTES tm_attributes = {0};
+      tm_attributes.nLength = sizeof(SECURITY_ATTRIBUTES);
+      tm_attributes.lpSecurityDescriptor = nullptr;
+      tm_attributes.bInheritHandle = false;
+      base::win::ScopedHandle ktm;
+      ktm.Set(CreateTransactionManager(&tm_attributes, nullptr,
+                                       TRANSACTION_MANAGER_VOLATILE,
+                                       TRANSACTION_MANAGER_COMMIT_DEFAULT));
+      if (ktm.IsValid() || ::GetLastError() != ERROR_ACCESS_DENIED)
+        return SBOX_TEST_FAILED;
+
+      break;
+    }
+
     default:
       return SBOX_TEST_INVALID_PARAMETER;
   }
@@ -1120,6 +1141,18 @@ TEST(ProcessMitigationsTest, CetDisablePolicy) {
   // 2) Test setting post-startup.
   //    ** Post-startup not supported.  Must be enabled on creation.
   //---------------------------------
+}
+
+TEST(ProcessMitigationsTest, CheckWin10KernelTransactionManagerMitigation) {
+  if (base::win::GetVersion() < base::win::Version::WIN10_21H1)
+    return;
+  std::wstring test_policy_command = L"CheckPolicy ";
+  test_policy_command += std::to_wstring(TESTPOLICY_KTMCOMPONENTFILTER);
+  TestRunner runner;
+  sandbox::TargetPolicy* policy = runner.GetPolicy();
+  EXPECT_EQ(policy->SetProcessMitigations(MITIGATION_KTM_COMPONENT),
+            SBOX_ALL_OK);
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_policy_command.c_str()));
 }
 
 }  // namespace sandbox

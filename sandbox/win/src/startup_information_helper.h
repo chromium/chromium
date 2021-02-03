@@ -81,9 +81,10 @@ class StartupInformationHelper {
 
   // These need to have the same lifetime as startup_info_.startup_info();
   std::wstring desktop_;
-  DWORD64 mitigations_[2];
-  DWORD child_process_creation_;
-  DWORD all_applications_package_policy_;
+  DWORD64 mitigations_[2]{};
+  COMPONENT_FILTER component_filter_{};
+  DWORD child_process_creation_ = 0;
+  DWORD all_applications_package_policy_ = 0;
   std::vector<HANDLE> inherited_handle_list_;
   std::vector<HANDLE> job_handle_list_;
   std::unique_ptr<SecurityCapabilities> security_capabilities_ = nullptr;
