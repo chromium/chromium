@@ -45,4 +45,21 @@ AccessibilityTextRunInfo::AccessibilityTextRunInfo(
 
 AccessibilityTextRunInfo::~AccessibilityTextRunInfo() = default;
 
+AccessibilityLinkInfo::AccessibilityLinkInfo() = default;
+
+AccessibilityLinkInfo::AccessibilityLinkInfo(
+    const std::string& url,
+    uint32_t index_in_page,
+    const gfx::RectF& bounds,
+    const AccessibilityTextRunRangeInfo& text_range)
+    : url(url),
+      index_in_page(index_in_page),
+      bounds(bounds),
+      text_range(text_range) {}
+
+AccessibilityLinkInfo::AccessibilityLinkInfo(
+    const AccessibilityLinkInfo& other) = default;
+
+AccessibilityLinkInfo::~AccessibilityLinkInfo() = default;
+
 }  // namespace chrome_pdf

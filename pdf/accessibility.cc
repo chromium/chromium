@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <utility>
+#include <vector>
 
 #include "base/numerics/safe_math.h"
 #include "pdf/accessibility_structs.h"
@@ -64,36 +65,37 @@ bool CompareTextRuns(const T& a, const T& b) {
   return a.text_run_index < b.text_run_index;
 }
 
-void GetAccessibilityLinkInfo(
+std::vector<AccessibilityLinkInfo> GetAccessibilityLinkInfo(
     PDFEngine* engine,
     int32_t page_index,
-    const std::vector<AccessibilityTextRunInfo>& text_runs,
-    std::vector<pp::PDF::PrivateAccessibilityLinkInfo>* links) {
-  std::vector<PDFEngine::AccessibilityLinkInfo> engine_link_info =
+    const std::vector<AccessibilityTextRunInfo>& text_runs) {
+  std::vector<PDFEngine::AccessibilityLinkInfo> engine_link_infos =
       engine->GetLinkInfo(page_index);
-  for (size_t i = 0; i < engine_link_info.size(); ++i) {
-    auto& cur_engine_info = engine_link_info[i];
-    pp::PDF::PrivateAccessibilityLinkInfo link_info;
+  std::vector<AccessibilityLinkInfo> link_infos;
+  link_infos.reserve(engine_link_infos.size());
+  for (size_t i = 0; i < engine_link_infos.size(); ++i) {
+    auto& cur_engine_info = engine_link_infos[i];
+    AccessibilityLinkInfo link_info;
     link_info.url = std::move(cur_engine_info.url);
     link_info.index_in_page = i;
-    link_info.bounds = PPFloatRectFromRectF(cur_engine_info.bounds);
+    link_info.bounds = cur_engine_info.bounds;
 
     if (!GetEnclosingTextRunRangeForCharRange(
             text_runs, cur_engine_info.start_char_index,
-            cur_engine_info.char_count, &link_info.text_run_index,
-            &link_info.text_run_count)) {
+            cur_engine_info.char_count, &link_info.text_range.index,
+            &link_info.text_range.count)) {
       // If a valid text run range is not found for the link, set the fallback
-      // values of |text_run_index| and |text_run_count| for |link_info|.
-      link_info.text_run_index = text_runs.size();
-      link_info.text_run_count = 0;
+      // values of |index| and |count| for |text_range| in |link_info|.
+      link_info.text_range.index = text_runs.size();
+      link_info.text_range.count = 0;
     }
-    links->push_back(std::move(link_info));
+    link_infos.push_back(std::move(link_info));
   }
-  std::sort(links->begin(), links->end(),
-            [](const pp::PDF::PrivateAccessibilityLinkInfo& a,
-               const pp::PDF::PrivateAccessibilityLinkInfo& b) {
-              return a.text_run_index < b.text_run_index;
+  std::sort(link_infos.begin(), link_infos.end(),
+            [](const AccessibilityLinkInfo& a, const AccessibilityLinkInfo& b) {
+              return a.text_range.index < b.text_range.index;
             });
+  return link_infos;
 }
 
 void GetAccessibilityImageInfo(
@@ -178,6 +180,19 @@ void GetAccessibilityFormFieldInfo(
                                 &form_fields->text_fields);
 }
 
+std::vector<pp::PDF::PrivateAccessibilityLinkInfo>
+ToPrivateAccessibilityLinkInfo(
+    const std::vector<AccessibilityLinkInfo>& link_infos) {
+  std::vector<pp::PDF::PrivateAccessibilityLinkInfo> pp_link_infos;
+  pp_link_infos.reserve(link_infos.size());
+  for (const auto& link_info : link_infos) {
+    pp_link_infos.push_back(
+        {link_info.url, link_info.index_in_page, link_info.text_range.index,
+         link_info.text_range.count, PPFloatRectFromRectF(link_info.bounds)});
+  }
+  return pp_link_infos;
+}
+
 }  // namespace
 
 bool GetAccessibilityInfo(
@@ -260,7 +275,8 @@ bool GetAccessibilityInfo(
   }
 
   page_info.text_run_count = text_runs.size();
-  GetAccessibilityLinkInfo(engine, page_index, text_runs, &page_objects->links);
+  page_objects->links = ToPrivateAccessibilityLinkInfo(
+      GetAccessibilityLinkInfo(engine, page_index, text_runs));
   GetAccessibilityImageInfo(engine, page_index, page_info.text_run_count,
                             &page_objects->images);
   GetAccessibilityHighlightInfo(engine, page_index, text_runs,

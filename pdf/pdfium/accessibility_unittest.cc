@@ -448,16 +448,10 @@ TEST_F(AccessibilityTest, TestInternalLinkClickActionHandling) {
 }
 
 TEST_F(AccessibilityTest, GetAccessibilityLinkInfo) {
-  // Clone of pp::PDF::PrivateAccessibilityLinkInfo.
-  struct {
-    std::string url;
-    uint32_t index_in_page;
-    uint32_t text_run_index;
-    uint32_t text_run_count;
-    gfx::RectF bounds;
-  } expected_link_info[] = {{"http://yahoo.com", 0, 1, 1, {75, 191, 110, 16}},
-                            {"http://bing.com", 1, 4, 1, {131, 121, 138, 20}},
-                            {"http://google.com", 2, 7, 1, {82, 67, 161, 21}}};
+  AccessibilityLinkInfo expected_link_info[] = {
+      {"http://yahoo.com", 0, {75, 191, 110, 16}, {1, 1}},
+      {"http://bing.com", 1, {131, 121, 138, 20}, {4, 1}},
+      {"http://google.com", 2, {82, 67, 161, 21}, {7, 1}}};
 
   if (UsingTestFonts()) {
     expected_link_info[0].bounds = {75, 192, 110, 15};
@@ -489,8 +483,8 @@ TEST_F(AccessibilityTest, GetAccessibilityLinkInfo) {
     EXPECT_EQ(link_info.index_in_page, expected_link_info[i].index_in_page);
     EXPECT_EQ(expected_link_info[i].bounds,
               RectFFromPPFloatRect(link_info.bounds));
-    EXPECT_EQ(link_info.text_run_index, expected_link_info[i].text_run_index);
-    EXPECT_EQ(link_info.text_run_count, expected_link_info[i].text_run_count);
+    EXPECT_EQ(link_info.text_run_index, expected_link_info[i].text_range.index);
+    EXPECT_EQ(link_info.text_run_count, expected_link_info[i].text_range.count);
   }
 }
 

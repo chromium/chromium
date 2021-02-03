@@ -87,12 +87,38 @@ struct AccessibilityTextRunInfo {
   uint32_t len = 0;
   gfx::RectF bounds;
   AccessibilityTextDirection direction = AccessibilityTextDirection::kNone;
-  struct AccessibilityTextStyleInfo style;
+  AccessibilityTextStyleInfo style;
 };
 
 struct AccessibilityCharInfo {
   uint32_t unicode_character = 0;
   double char_width = 0.0;
+};
+
+struct AccessibilityTextRunRangeInfo {
+  // Index of the starting text run of the annotation in the collection of all
+  // text runs in the page.
+  uint32_t index = 0;
+  // Count of the text runs spanning the annotation.
+  uint32_t count = 0;
+};
+
+struct AccessibilityLinkInfo {
+  AccessibilityLinkInfo();
+  AccessibilityLinkInfo(const std::string& url,
+                        uint32_t index_in_page,
+                        const gfx::RectF& bounds,
+                        const AccessibilityTextRunRangeInfo& text_range);
+  AccessibilityLinkInfo(const AccessibilityLinkInfo& other);
+  ~AccessibilityLinkInfo();
+
+  // URL of the link.
+  std::string url;
+  // Index of this link in the collection of links in the page.
+  uint32_t index_in_page = 0;
+  // Bounding box of the link.
+  gfx::RectF bounds;
+  AccessibilityTextRunRangeInfo text_range;
 };
 
 }  // namespace chrome_pdf
