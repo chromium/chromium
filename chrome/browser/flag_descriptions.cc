@@ -4566,11 +4566,6 @@ const char kPhoneHubDescription[] =
     "Provides a UI for users to view information about their Android phone"
     "and perform phone-side actions within Chrome OS.";
 
-const char kPhoneHubUseBleName[] = "Enable Phone Hub connection with BLE";
-const char kPhoneHubUseBleDescription[] =
-    "If enabled, Phone Hub will use the BLE as the main source of connection "
-    "between the Chrome OS device and the remote phone.";
-
 const char kReduceDisplayNotificationsName[] = "Reduce display notifications";
 const char kReduceDisplayNotificationsDescription[] =
     "If enabled, notifications for display rotation, display removed, display "

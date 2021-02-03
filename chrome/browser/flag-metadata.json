@@ -2076,11 +2076,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "enable-phone-hub-use-ble",
-    "owners": [ "better-together-dev@google.com", "khorimoto"],
-    "expiry_milestone": 90
-  },
-  {
     "name": "enable-pixel-canvas-recording",
     "owners": [ "malaykeshav", "oshima" ],
     "expiry_milestone": 95

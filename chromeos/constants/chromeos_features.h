@@ -226,8 +226,6 @@ extern const base::Feature kOsSettingsPolymer3;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kPhoneHub;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-extern const base::Feature kPhoneHubUseBle;
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kPinSetupForFamilyLink;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kPluginVmShowCameraPermissions;
