@@ -21,7 +21,7 @@
 namespace chromeos {
 
 namespace {
-const char kFreezerPath[] = "/sys/fs/cgroup/freezer/chrome_renderers";
+const char kFreezerPath[] = "/sys/fs/cgroup/freezer/ui/chrome_renderers";
 const char kToBeFrozen[] = "to_be_frozen";
 const char kFreezerState[] = "freezer.state";
 const char kCgroupProcs[] = "cgroup.procs";
