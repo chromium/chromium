@@ -30,6 +30,7 @@ import org.chromium.android_webview.common.ProductionSupportedFlagList;
 import org.chromium.android_webview.common.services.IDeveloperUiService;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 
 import java.util.HashMap;
@@ -226,7 +227,8 @@ public final class DeveloperUiService extends Service {
         notificationIntent.setClassName(
                 getPackageName(), "org.chromium.android_webview.devui.MainActivity");
         notificationIntent.putExtra(FRAGMENT_ID_INTENT_EXTRA, FRAGMENT_ID_FLAGS);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                this, 0, notificationIntent, IntentUtils.getPendingIntentMutabilityFlag(false));
 
         Notification.Builder builder = createNotificationBuilder()
                                                .setContentTitle(NOTIFICATION_TITLE)
