@@ -77,6 +77,12 @@ void EnrollmentCertificateUploaderImpl::ObtainAndUploadCertificate(
 void EnrollmentCertificateUploaderImpl::Start() {
   num_retries_ = 0;
 
+  if (has_already_uploaded_) {
+    // Certificate was successfully uploaded earlier. Do not upload second time.
+    RunCallbacks(Status::kSuccess);
+    return;
+  }
+
   // We expect a registered CloudPolicyClient.
   if (!policy_client_->is_registered()) {
     LOG(ERROR)
@@ -136,6 +142,7 @@ void EnrollmentCertificateUploaderImpl::UploadCertificate(
 
 void EnrollmentCertificateUploaderImpl::OnUploadComplete(bool status) {
   if (status) {
+    has_already_uploaded_ = true;
     VLOG(1) << "Enterprise Enrollment Certificate uploaded to DMServer.";
     RunCallbacks(Status::kSuccess);
   } else {

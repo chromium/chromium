@@ -68,9 +68,13 @@ void StatusCallbackSuccess(policy::CloudPolicyClient::StatusCallback callback) {
 
 class EnrollmentCertificateUploaderTest : public ::testing::Test {
  public:
-  EnrollmentCertificateUploaderTest() {
+  EnrollmentCertificateUploaderTest()
+      : uploader_(&policy_client_, &attestation_flow_) {
     settings_helper_.ReplaceDeviceSettingsProviderWithStub();
     policy_client_.SetDMToken("fake_dm_token");
+
+    uploader_.set_retry_limit(3);
+    uploader_.set_retry_delay(base::TimeDelta());
   }
 
  protected:
@@ -91,12 +95,7 @@ class EnrollmentCertificateUploaderTest : public ::testing::Test {
   }
 
   void Run(CertStatus expected_status) {
-    EnrollmentCertificateUploaderImpl uploader(&policy_client_,
-                                               &attestation_flow_);
-    uploader.set_retry_limit(3);
-    uploader.set_retry_delay(base::TimeDelta());
-
-    uploader.ObtainAndUploadCertificate(
+    uploader_.ObtainAndUploadCertificate(
         base::BindLambdaForTesting([expected_status](CertStatus status) {
           EXPECT_EQ(status, expected_status);
         }));
@@ -108,6 +107,8 @@ class EnrollmentCertificateUploaderTest : public ::testing::Test {
   ScopedCrosSettingsTestHelper settings_helper_;
   StrictMock<MockAttestationFlow> attestation_flow_;
   StrictMock<policy::MockCloudPolicyClient> policy_client_;
+
+  EnrollmentCertificateUploaderImpl uploader_;
 };
 
 TEST_F(EnrollmentCertificateUploaderTest, UnregisteredPolicyClient) {
@@ -139,6 +140,14 @@ TEST_F(EnrollmentCertificateUploaderTest, UploadCertificateFailure) {
 
 TEST_F(EnrollmentCertificateUploaderTest, NewCertificate) {
   SetupMocks();
+  Run(/*expected_status=*/CertStatus::kSuccess);
+}
+
+TEST_F(EnrollmentCertificateUploaderTest, UploadsOnlyOnce) {
+  SetupMocks();
+  Run(/*expected_status=*/CertStatus::kSuccess);
+  // Mocks expect single upload request and will fail if requested more than
+  // once.
   Run(/*expected_status=*/CertStatus::kSuccess);
 }
 
