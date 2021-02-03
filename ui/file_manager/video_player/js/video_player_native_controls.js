@@ -7,6 +7,7 @@
 // #import {appUtil} from '../../base/js/app_util.m.js';
 // #import {getRequiredElement, queryRequiredElement} from 'chrome://resources/js/util.m.js';
 // #import {assertInstanceof} from 'chrome://resources/js/assert.m.js';
+// #import 'chrome://resources/cr_elements/cr_toast/cr_toast.m.js';
 // clang-format on
 
 /**
