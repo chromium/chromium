@@ -7678,7 +7678,8 @@
                 "linux",
                 "ios",
                 "android",
-                "android_weblayer"
+                "android_weblayer",
+                "android_webview"
             ],
             "experiments": [
                 {
