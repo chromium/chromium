@@ -11,10 +11,11 @@
 
 namespace mojo {
 
-// NOTE: TypeConverter is deprecated. Please consider StructTraits /
-// UnionTraits / EnumTraits / ArrayTraits / MapTraits / StringTraits if you
-// would like to convert between custom types and the wire format of mojom
-// types.
+// NOTE: When possible, please consider using StructTraits / UnionTraits /
+// EnumTraits / ArrayTraits / MapTraits / StringTraits if you would like to
+// convert between custom types and the wire format of mojom types. The use of
+// TypeConverter should be limited as much as possible: ideally, only use it in
+// renderers, e.g., for Blink IDL and Oilpan types.
 //
 // Specialize the following class:
 //   template <typename T, typename U> struct TypeConverter;
