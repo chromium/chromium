@@ -9580,6 +9580,7 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
       GetTreeID(), root_1.id, 0 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
 
+  // Hello <embedded> world<embedded><embedded>hey<embedded><embedded>
   base::string16 expected_text =
       base::StrCat({STRING16_LITERAL("Hello "), AXNode::kEmbeddedCharacter,
                     STRING16_LITERAL(" world"), AXNode::kEmbeddedCharacter,
@@ -9592,18 +9593,22 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
   position = AXNodePosition::CreateTextPosition(
       GetTreeID(), text_field_4.id, 0 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
-  EXPECT_EQ(1, position->MaxTextOffset()) << *position;
+  EXPECT_EQ(AXNode::kEmbeddedCharacterLength, position->MaxTextOffset())
+      << *position;
 
   position = position->CreateParentPosition();
-  EXPECT_EQ(22, position->MaxTextOffset()) << *position;
+  // Hello <embedded> world<embedded><embedded>hey<embedded><embedded>
+  EXPECT_EQ(20, position->MaxTextOffset()) << *position;
 
   // `AXPosition::MaxTextOffset()` on a node which is the parent of a set of
   // text nodes and non-text nodes, the latter represented by "embedded object
   // replacement characters".
+  //
+  // Hello <embedded> world<embedded><embedded>hey<embedded><embedded>
   position = AXNodePosition::CreateTextPosition(
       GetTreeID(), root_1.id, 0 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
-  EXPECT_EQ(22, position->MaxTextOffset()) << *position;
+  EXPECT_EQ(20, position->MaxTextOffset()) << *position;
 
   // The following is to test a specific edge case with heading navigation,
   // occurring in `AXPosition::CreatePreviousFormatStartPosition`.

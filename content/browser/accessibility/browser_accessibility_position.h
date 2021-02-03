@@ -32,6 +32,7 @@ class CONTENT_EXPORT BrowserAccessibilityPosition
   AXPositionInstance Clone() const override;
 
   base::string16 GetText() const override;
+  ax::mojom::Role GetRole() const override;
   bool IsInLineBreak() const override;
   bool IsInTextObject() const override;
   bool IsInWhiteSpace() const override;
@@ -43,7 +44,7 @@ class CONTENT_EXPORT BrowserAccessibilityPosition
   int AnchorChildCount() const override;
   int AnchorUnignoredChildCount() const override;
   int AnchorIndexInParent() const override;
-  int AnchorSiblingCount() const override;
+  int GetAnchorSiblingCount() const override;
   base::stack<BrowserAccessibility*> GetAncestorAnchors() const override;
   BrowserAccessibility* GetLowestUnignoredAncestor() const override;
   void AnchorParent(AXTreeID* tree_id, ui::AXNodeID* parent_id) const override;

@@ -35,6 +35,12 @@ base::string16 BrowserAccessibilityPosition::GetText() const {
   return GetAnchor()->GetText();
 }
 
+ax::mojom::Role BrowserAccessibilityPosition::GetRole() const {
+  if (IsNullPosition())
+    return ax::mojom::Role::kNone;
+  return GetAnchor()->GetData().role;
+}
+
 bool BrowserAccessibilityPosition::IsInLineBreak() const {
   if (IsNullPosition())
     return false;
@@ -103,7 +109,7 @@ int BrowserAccessibilityPosition::AnchorIndexInParent() const {
                      : AXPosition::INVALID_INDEX;
 }
 
-int BrowserAccessibilityPosition::AnchorSiblingCount() const {
+int BrowserAccessibilityPosition::GetAnchorSiblingCount() const {
   BrowserAccessibility* parent = GetAnchor()->PlatformGetParent();
   if (parent)
     return static_cast<int>(parent->InternalChildCount());

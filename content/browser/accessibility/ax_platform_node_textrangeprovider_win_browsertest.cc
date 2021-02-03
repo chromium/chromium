@@ -20,6 +20,8 @@
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/dns/mock_host_resolver.h"
+#include "ui/accessibility/ax_node_position.h"
+#include "ui/accessibility/ax_tree_id.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -227,7 +229,7 @@ class AXPlatformNodeTextRangeProviderWinBrowserTest
     ASSERT_EQ(ax::mojom::Role::kIframe,
               leaf_iframe_browser_accessibility->GetRole());
 
-    AXTreeID iframe_tree_id = AXTreeID::FromString(
+    ui::AXTreeID iframe_tree_id = ui::AXTreeID::FromString(
         leaf_iframe_browser_accessibility->GetStringAttribute(
             ax::mojom::StringAttribute::kChildTreeId));
     BrowserAccessibilityManager* iframe_browser_accessibility_manager =
@@ -440,8 +442,8 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
       <!DOCTYPE html>
       <html>
         <body>
-          <input type='text' aria-label='input_text'>
-          <input type='search' aria-label='input_search'>
+          <input type="text" aria-label="input_text">
+          <input type="search" aria-label="input_search">
         </body>
       </html>
   )HTML"));
@@ -2742,7 +2744,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
     GetTextRangeProviderFromTextNode(*node, &text_range_provider);
     ASSERT_NE(nullptr, text_range_provider.Get());
     EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"Some text");
-    AXTreeID old_tree_id = GetManager()->GetTreeID();
+    ui::AXTreeID old_tree_id = GetManager()->GetTreeID();
 
     // Reloading changes the tree id, triggering an AXTreeManager replacement.
     shell()->Reload();

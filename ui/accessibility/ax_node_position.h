@@ -41,6 +41,7 @@ class AX_EXPORT AXNodePosition : public AXPosition<AXNodePosition, AXNode> {
   bool IsInTextObject() const override;
   bool IsInWhiteSpace() const override;
   int MaxTextOffset() const override;
+  ax::mojom::Role GetRole() const override;
 
  protected:
   void AnchorChild(int child_index,
@@ -49,14 +50,12 @@ class AX_EXPORT AXNodePosition : public AXPosition<AXNodePosition, AXNode> {
   int AnchorChildCount() const override;
   int AnchorUnignoredChildCount() const override;
   int AnchorIndexInParent() const override;
-  int AnchorSiblingCount() const override;
   base::stack<AXNode*> GetAncestorAnchors() const override;
   AXNode* GetLowestUnignoredAncestor() const override;
   void AnchorParent(AXTreeID* tree_id, AXNodeID* parent_id) const override;
   AXNode* GetNodeInTree(AXTreeID tree_id, AXNodeID node_id) const override;
   AXNodeID GetAnchorID(AXNode* node) const override;
   AXTreeID GetTreeID(AXNode* node) const override;
-
   bool IsEmbeddedObjectInParent() const override;
   bool IsInLineBreakingObject() const override;
   ax::mojom::Role GetAnchorRole() const override;
