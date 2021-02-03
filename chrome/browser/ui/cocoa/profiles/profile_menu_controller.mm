@@ -32,16 +32,6 @@
 
 namespace {
 
-// Used in UMA histogram macros, shouldn't be reordered or renumbered
-enum ValidateMenuItemSelector {
-  UNKNOWN_SELECTOR = 0,
-  NEW_PROFILE,
-  EDIT_PROFILE,
-  SWITCH_PROFILE_MENU,
-  SWITCH_PROFILE_DOCK,
-  MAX_VALIDATE_MENU_SELECTOR,
-};
-
 // Check Add Person pref.
 bool IsAddPersonEnabled() {
   PrefService* service = g_browser_process->local_state();

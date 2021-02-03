@@ -77023,6 +77023,9 @@ Full version information for the fingerprint enum values:
 </enum>
 
 <enum name="ValidateMenuItemSelectorType">
+  <obsolete>
+    Deprecated as of 2021/01.
+  </obsolete>
   <int value="0"
       label="The menu items' associated action is an unknown selector."/>
   <int value="1" label="The menu item's associated action is -newProfile."/>
