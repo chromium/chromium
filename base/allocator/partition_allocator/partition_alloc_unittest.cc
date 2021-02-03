@@ -2941,6 +2941,21 @@ TEST_F(PartitionAllocTest, FastPathOrReturnNull) {
   allocator.root()->FreeNoHooks(ptr2);
 }
 
+// Death tests misbehave on Android, http://crbug.com/643760.
+#if defined(GTEST_HAS_DEATH_TEST) && !defined(OS_ANDROID)
+#if !defined(OFFICIAL_BUILD) || !defined(NDEBUG)
+
+TEST_F(PartitionAllocDeathTest, CheckTriggered) {
+  using ::testing::ContainsRegex;
+#if DCHECK_IS_ON()
+  EXPECT_DEATH(PA_CHECK(5 == 7), ContainsRegex("Check failed.*5 == 7"));
+#endif
+  EXPECT_DEATH(PA_CHECK(5 == 7), ContainsRegex("Check failed.*5 == 7"));
+}
+
+#endif  // !defined(OFFICIAL_BUILD) && !defined(NDEBUG)
+#endif  // defined(GTEST_HAS_DEATH_TEST) && !defined(OS_ANDROID)
+
 }  // namespace internal
 }  // namespace base
 
