@@ -258,8 +258,10 @@ So, the given C++ code:
 
 ```c++
 void OvenHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback("bakeDonuts",
-      base::Bind(&OvenHandler::HandleBakeDonuts, base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "bakeDonuts",
+      base::BindRepeating(&OvenHandler::HandleBakeDonuts,
+                          base::Unretained(this)));
 }
 
 void OvenHandler::HandleBakeDonuts(const base::ListValue* args) {
@@ -727,7 +729,8 @@ renderer:
 v8::Local<v8::Object> chrome = GetOrCreateChromeObject(isolate, context);
 chrome->Set(gin::StringToSymbol(isolate, "send"),
             gin::CreateFunctionTemplate(
-                isolate, base::Bind(&WebUIExtension::Send))->GetFunction());
+                isolate,
+                base::BindRepeating(&WebUIExtension::Send))->GetFunction());
 ```
 
 The `chrome.send()` method takes a message name and argument list.
