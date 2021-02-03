@@ -62,6 +62,7 @@ constexpr int kInvalidRuleLimit = -1;
 int g_static_guaranteed_minimum_for_testing = kInvalidRuleLimit;
 int g_global_static_rule_limit_for_testing = kInvalidRuleLimit;
 int g_regex_rule_limit_for_testing = kInvalidRuleLimit;
+int g_dynamic_and_session_rule_limit_for_testing = kInvalidRuleLimit;
 
 int GetIndexedRulesetFormatVersion() {
   return g_indexed_ruleset_format_version_for_testing ==
@@ -294,8 +295,10 @@ int GetMaximumRulesPerRuleset() {
   return GetStaticGuaranteedMinimumRuleCount() + GetGlobalStaticRuleLimit();
 }
 
-int GetDynamicRuleLimit() {
-  return dnr_api::MAX_NUMBER_OF_DYNAMIC_RULES;
+int GetDynamicAndSessionRuleLimit() {
+  return g_dynamic_and_session_rule_limit_for_testing == kInvalidRuleLimit
+             ? dnr_api::MAX_NUMBER_OF_DYNAMIC_OR_SESSION_RULES
+             : g_dynamic_and_session_rule_limit_for_testing;
 }
 
 int GetRegexRuleLimit() {
@@ -318,6 +321,12 @@ ScopedRuleLimitOverride CreateScopedGlobalStaticRuleLimitOverrideForTesting(
 ScopedRuleLimitOverride CreateScopedRegexRuleLimitOverrideForTesting(
     int limit) {
   return base::AutoReset<int>(&g_regex_rule_limit_for_testing, limit);
+}
+
+ScopedRuleLimitOverride
+CreateScopedDynamicAndSessionRuleLimitOverrideForTesting(int limit) {
+  return base::AutoReset<int>(&g_dynamic_and_session_rule_limit_for_testing,
+                              limit);
 }
 
 size_t GetEnabledStaticRuleCount(const CompositeMatcher* composite_matcher) {

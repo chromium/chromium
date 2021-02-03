@@ -14,6 +14,7 @@
 #include "base/json/json_file_value_serializer.h"
 #include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/indexed_rule.h"
+#include "extensions/browser/api/declarative_net_request/rules_count_pair.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
 #include "extensions/browser/extension_prefs.h"
@@ -304,6 +305,13 @@ std::ostream& operator<<(std::ostream& output, LoadRulesetResult result) {
       output << "kErrorChecksumNotFound";
       break;
   }
+  return output;
+}
+
+std::ostream& operator<<(std::ostream& output, const RulesCountPair& count) {
+  output << "\nRulesCountPair\n";
+  output << "|rule_count| " << count.rule_count << "\n";
+  output << "|regex_rule_count| " << count.regex_rule_count << "\n";
   return output;
 }
 

@@ -98,6 +98,10 @@ const char kDynamicRuleCountExceeded[] = "Dynamic rule count exceeded.";
 const char kDynamicRegexRuleCountExceeded[] =
     "Dynamic rule count for regex rules exceeded.";
 
+const char kSessionRuleCountExceeded[] = "Session rule count exceeded.";
+const char kSessionRegexRuleCountExceeded[] =
+    "Session rule count for regex rules exceeded.";
+
 const char kInvalidRulesetIDError[] = "Invalid ruleset id: *.";
 const char kEnabledRulesetsRuleCountExceeded[] =
     "The set of enabled rulesets exceeds the rule count limit.";

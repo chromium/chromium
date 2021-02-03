@@ -44,6 +44,7 @@ namespace declarative_net_request {
 class RulesetMatcher;
 enum class DynamicRuleUpdateAction;
 struct LoadRequestData;
+struct RulesCountPair;
 
 // Observes loading and unloading of extensions to load and unload their
 // rulesets for the Declarative Net Request API. Lives on the UI thread. Note: A
@@ -111,6 +112,10 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
       std::vector<int> rule_ids_to_remove,
       std::vector<api::declarative_net_request::Rule> rules_to_add,
       ApiCallback callback);
+
+  // Returns the RulesCountPair for the |extension_id| and |ruleset_id| pair.
+  RulesCountPair GetRulesCountPair(const ExtensionId& extension_id,
+                                   RulesetID ruleset_id) const;
 
   RulesetManager* ruleset_manager() { return &ruleset_manager_; }
 

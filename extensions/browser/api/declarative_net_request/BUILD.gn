@@ -22,6 +22,8 @@ source_set("declarative_net_request") {
     "request_action.h",
     "request_params.cc",
     "request_params.h",
+    "rules_count_pair.cc",
+    "rules_count_pair.h",
     "rules_monitor_service.cc",
     "rules_monitor_service.h",
     "ruleset_manager.cc",

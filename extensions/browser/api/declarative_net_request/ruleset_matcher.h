@@ -22,6 +22,8 @@ namespace extensions {
 
 namespace declarative_net_request {
 
+struct RulesCountPair;
+
 namespace flat {
 struct ExtensionIndexedRuleset;
 struct UrlRuleMetadata;
@@ -51,6 +53,7 @@ class RulesetMatcher {
   bool IsExtraHeadersMatcher() const;
   size_t GetRulesCount() const;
   size_t GetRegexRulesCount() const;
+  RulesCountPair GetRulesCountPair() const;
 
   void OnRenderFrameCreated(content::RenderFrameHost* host);
   void OnRenderFrameDeleted(content::RenderFrameHost* host);

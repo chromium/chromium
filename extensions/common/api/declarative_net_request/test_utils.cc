@@ -205,6 +205,13 @@ TestRule CreateGenericRule(int id) {
   return rule;
 }
 
+TestRule CreateRegexRule(int id) {
+  TestRule rule = CreateGenericRule(id);
+  rule.condition->url_filter.reset();
+  rule.condition->regex_filter = std::string("filter");
+  return rule;
+}
+
 TestRulesetInfo::TestRulesetInfo(const std::string& manifest_id_and_path,
                                  const base::Value& rules_value,
                                  bool enabled)

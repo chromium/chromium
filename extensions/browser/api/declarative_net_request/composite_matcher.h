@@ -53,6 +53,9 @@ class CompositeMatcher {
 
   const MatcherList& matchers() const { return matchers_; }
 
+  // Returns a pointer to RulesetMatcher with the given |id| if one is present.
+  const RulesetMatcher* GetMatcherWithID(RulesetID id) const;
+
   // Inserts |matcher|, overwriting any existing RulesetMatcher with the same
   // RulesetID.
   void AddOrUpdateRuleset(std::unique_ptr<RulesetMatcher> matcher);

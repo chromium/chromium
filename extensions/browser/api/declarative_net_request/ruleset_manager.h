@@ -71,6 +71,8 @@ class RulesetManager {
   // Returns the CompositeMatcher corresponding to the |extension_id| or null
   // if no matcher is present for the extension.
   CompositeMatcher* GetMatcherForExtension(const ExtensionId& extension_id);
+  const CompositeMatcher* GetMatcherForExtension(
+      const ExtensionId& extension_id) const;
 
   // Returns the action to take for the given request; does not return an
   // |ALLOW| action. Note: the returned action is owned by |request|.

@@ -153,6 +153,9 @@ struct TestRule : public DictionarySource {
 // Helper function to build a generic TestRule.
 TestRule CreateGenericRule(int id = kMinValidID);
 
+// Helper function to build a generic regex TestRule.
+TestRule CreateRegexRule(int id = kMinValidID);
+
 // Bitmasks to configure the extension under test.
 enum ConfigFlag {
   kConfig_None = 0,

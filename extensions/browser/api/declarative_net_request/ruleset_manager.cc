@@ -127,6 +127,13 @@ std::set<ExtensionId> RulesetManager::GetExtensionsWithRulesets() const {
 
 CompositeMatcher* RulesetManager::GetMatcherForExtension(
     const ExtensionId& extension_id) {
+  return const_cast<CompositeMatcher*>(
+      static_cast<const RulesetManager*>(this)->GetMatcherForExtension(
+          extension_id));
+}
+
+const CompositeMatcher* RulesetManager::GetMatcherForExtension(
+    const ExtensionId& extension_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // This is O(n) but it's ok since the number of extensions will be small and

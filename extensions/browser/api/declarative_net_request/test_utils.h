@@ -33,6 +33,7 @@ namespace declarative_net_request {
 
 class FileBackedRulesetSource;
 class RulesetMatcher;
+struct RulesCountPair;
 struct TestRule;
 
 // Enum specifying the extension load type. Used for parameterized tests.
@@ -58,6 +59,7 @@ std::ostream& operator<<(std::ostream& output, const ParseResult& result);
 std::ostream& operator<<(std::ostream& output,
                          const base::Optional<RequestAction>& action);
 std::ostream& operator<<(std::ostream& output, LoadRulesetResult result);
+std::ostream& operator<<(std::ostream& output, const RulesCountPair& count);
 
 // Returns true if the given extension's indexed static rulesets are all valid.
 // Should be called on a sequence where file IO is allowed.

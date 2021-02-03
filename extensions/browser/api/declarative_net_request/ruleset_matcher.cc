@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/request_action.h"
+#include "extensions/browser/api/declarative_net_request/rules_count_pair.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
 
 namespace extensions {
@@ -70,6 +71,10 @@ size_t RulesetMatcher::GetRulesCount() const {
 
 size_t RulesetMatcher::GetRegexRulesCount() const {
   return regex_matcher_.GetRulesCount();
+}
+
+RulesCountPair RulesetMatcher::GetRulesCountPair() const {
+  return RulesCountPair(GetRulesCount(), GetRegexRulesCount());
 }
 
 void RulesetMatcher::OnRenderFrameCreated(content::RenderFrameHost* host) {

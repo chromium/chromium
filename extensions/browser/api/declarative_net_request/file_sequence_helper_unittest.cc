@@ -18,6 +18,7 @@
 #include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/parse_info.h"
+#include "extensions/browser/api/declarative_net_request/rules_count_pair.h"
 #include "extensions/browser/api/declarative_net_request/test_utils.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/browser/extension_file_task_runner.h"
@@ -102,11 +103,12 @@ class FileSequenceHelperTest : public ExtensionsTest {
     data.rulesets.emplace_back(std::move(source));
 
     // Unretained is safe because |helper_| outlives the |add_rules_task|.
-    auto add_rules_task =
-        base::BindOnce(&FileSequenceHelper::UpdateDynamicRules,
-                       base::Unretained(helper_.get()), std::move(data),
-                       /* rule_ids_to_remove */ std::vector<int>(),
-                       std::move(rules_to_add), std::move(add_rules_callback));
+    auto add_rules_task = base::BindOnce(
+        &FileSequenceHelper::UpdateDynamicRules,
+        base::Unretained(helper_.get()), std::move(data),
+        /* rule_ids_to_remove */ std::vector<int>(), std::move(rules_to_add),
+        RulesCountPair(GetDynamicAndSessionRuleLimit(), GetRegexRuleLimit()),
+        std::move(add_rules_callback));
 
     base::HistogramTester tester;
     GetExtensionFileTaskRunner()->PostTask(FROM_HERE,

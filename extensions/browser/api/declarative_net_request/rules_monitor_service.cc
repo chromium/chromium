@@ -28,6 +28,7 @@
 #include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/file_sequence_helper.h"
 #include "extensions/browser/api/declarative_net_request/parse_info.h"
+#include "extensions/browser/api/declarative_net_request/rules_count_pair.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_manager.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher.h"
 #include "extensions/browser/api/web_request/permission_helper.h"
@@ -59,10 +60,6 @@ namespace dnr_api = api::declarative_net_request;
 static base::LazyInstance<
     BrowserContextKeyedAPIFactory<RulesMonitorService>>::Leaky g_factory =
     LAZY_INSTANCE_INITIALIZER;
-
-// TODO(crbug.com/1043200): Remove this constant once a shared rule limit is
-// implemented for dynamic and session-scoped rules.
-constexpr size_t kSessionRulesetLimit = 5000;
 
 bool RulesetInfoCompareByID(const RulesetInfo& lhs, const RulesetInfo& rhs) {
   return lhs.source().id() < rhs.source().id();
@@ -109,8 +106,8 @@ std::unique_ptr<RulesetMatcher> CreateSessionScopedMatcher(
     std::vector<api::declarative_net_request::Rule> rules,
     std::string* error) {
   DCHECK(error);
-  RulesetSource source(kSessionRulesetID, kSessionRulesetLimit, extension_id,
-                       true /* enabled */);
+  RulesetSource source(kSessionRulesetID, GetDynamicAndSessionRuleLimit(),
+                       extension_id, true /* enabled */);
 
   ParseInfo info = source.IndexRules(std::move(rules));
   if (info.has_error()) {
@@ -174,15 +171,16 @@ class RulesMonitorService::FileSequenceBridge {
       LoadRequestData load_data,
       std::vector<int> rule_ids_to_remove,
       std::vector<dnr_api::Rule> rules_to_add,
+      const RulesCountPair& rule_limit,
       FileSequenceHelper::UpdateDynamicRulesUICallback ui_callback) const {
     // base::Unretained is safe here because we trigger the destruction of
     // |file_sequence_state_| on |file_task_runner_| from our destructor. Hence
     // it is guaranteed to be alive when |update_dynamic_rules_task| is run.
-    base::OnceClosure update_dynamic_rules_task =
-        base::BindOnce(&FileSequenceHelper::UpdateDynamicRules,
-                       base::Unretained(file_sequence_helper_.get()),
-                       std::move(load_data), std::move(rule_ids_to_remove),
-                       std::move(rules_to_add), std::move(ui_callback));
+    base::OnceClosure update_dynamic_rules_task = base::BindOnce(
+        &FileSequenceHelper::UpdateDynamicRules,
+        base::Unretained(file_sequence_helper_.get()), std::move(load_data),
+        std::move(rule_ids_to_remove), std::move(rules_to_add), rule_limit,
+        std::move(ui_callback));
     file_task_runner_->PostTask(FROM_HERE,
                                 std::move(update_dynamic_rules_task));
   }
@@ -367,6 +365,21 @@ void RulesMonitorService::UpdateSessionRules(
                          std::move(rule_ids_to_remove),
                          std::move(rules_to_add)),
           std::move(callback));
+}
+
+RulesCountPair RulesMonitorService::GetRulesCountPair(
+    const ExtensionId& extension_id,
+    RulesetID id) const {
+  const CompositeMatcher* matcher =
+      ruleset_manager_.GetMatcherForExtension(extension_id);
+  if (!matcher)
+    return RulesCountPair();
+
+  const RulesetMatcher* ruleset_matcher = matcher->GetMatcherWithID(id);
+  if (!ruleset_matcher)
+    return RulesCountPair();
+
+  return ruleset_matcher->GetRulesCountPair();
 }
 
 RulesMonitorService::RulesMonitorService(
@@ -573,6 +586,16 @@ void RulesMonitorService::UpdateDynamicRulesInternal(
 
   LoadRequestData data(extension_id);
 
+  // Calculate available shared rule limits. These limits won't be affected by
+  // another simultaneous api call since we ensure that for a given extension,
+  // only up to 1 updateDynamicRules/updateSessionRules call is in progress. See
+  // the usage of `ApiCallQueue`.
+  RulesCountPair shared_rules_limit(GetDynamicAndSessionRuleLimit(),
+                                    GetRegexRuleLimit());
+  RulesCountPair session_rules_count =
+      GetRulesCountPair(extension_id, kSessionRulesetID);
+  RulesCountPair available_limit = shared_rules_limit - session_rules_count;
+
   // We are updating the indexed ruleset. Don't set the expected checksum since
   // it'll change.
   data.rulesets.emplace_back(
@@ -583,7 +606,7 @@ void RulesMonitorService::UpdateDynamicRulesInternal(
                      weak_factory_.GetWeakPtr(), std::move(callback));
   file_sequence_bridge_->UpdateDynamicRules(
       std::move(data), std::move(rule_ids_to_remove), std::move(rules_to_add),
-      std::move(update_rules_callback));
+      available_limit, std::move(update_rules_callback));
 }
 
 void RulesMonitorService::UpdateSessionRulesInternal(
@@ -612,11 +635,25 @@ void RulesMonitorService::UpdateSessionRulesInternal(
                    std::make_move_iterator(rules_to_add.begin()),
                    std::make_move_iterator(rules_to_add.end()));
 
-  // TODO(crbug.com/1043200): Implement a shared rules and regex rules limit for
-  // dynamic and session-scoped rules.
-  if (new_rules.size() > kSessionRulesetLimit) {
-    std::move(callback).Run("Number of session scoped rules exceeded");
-    return;
+  // Check if the update would exceed shared rule limits.
+  {
+    RulesCountPair dynamic_rule_count =
+        GetRulesCountPair(extension_id, kDynamicRulesetID);
+    RulesCountPair shared_rule_limit(GetDynamicAndSessionRuleLimit(),
+                                     GetRegexRuleLimit());
+    RulesCountPair available_limit = shared_rule_limit - dynamic_rule_count;
+    if (new_rules.size() > available_limit.rule_count) {
+      std::move(callback).Run(kSessionRuleCountExceeded);
+      return;
+    }
+    size_t regex_rule_count = std::count_if(
+        new_rules.begin(), new_rules.end(), [](const dnr_api::Rule& rule) {
+          return !!rule.condition.regex_filter;
+        });
+    if (regex_rule_count > available_limit.regex_rule_count) {
+      std::move(callback).Run(kSessionRegexRuleCountExceeded);
+      return;
+    }
   }
 
   std::unique_ptr<base::ListValue> new_rules_value = base::ListValue::From(
@@ -720,14 +757,14 @@ void RulesMonitorService::OnInitialRulesetsLoadedFromDisk(
   // at install time (by raising a hard error) to maintain forwards
   // compatibility. Since we iterate based on the order of ruleset ID, we'll
   // give more preference to rulesets occurring first in the manifest.
-  size_t static_rules_count = 0;
-  size_t static_regex_rules_count = 0;
+  RulesCountPair static_ruleset_count;
   bool notify_ruleset_failed_to_load = false;
   bool global_rule_limit_exceeded = false;
 
-  size_t static_rule_limit =
+  RulesCountPair static_rule_limit(
       global_rules_tracker_.GetAvailableAllocation(load_data.extension_id) +
-      GetStaticGuaranteedMinimumRuleCount();
+          GetStaticGuaranteedMinimumRuleCount(),
+      GetRegexRuleLimit());
 
   for (RulesetInfo& ruleset : load_data.rulesets) {
     if (!ruleset.did_load_successfully()) {
@@ -737,31 +774,29 @@ void RulesMonitorService::OnInitialRulesetsLoadedFromDisk(
 
     std::unique_ptr<RulesetMatcher> matcher = ruleset.TakeMatcher();
 
+    RulesCountPair matcher_count = matcher->GetRulesCountPair();
+
     // Per-ruleset limits should have been enforced during
     // indexing/installation.
-    DCHECK_LE(matcher->GetRegexRulesCount(),
+    DCHECK_LE(matcher_count.regex_rule_count,
               static_cast<size_t>(GetRegexRuleLimit()));
-    DCHECK_LE(matcher->GetRulesCount(), ruleset.source().rule_count_limit());
+    DCHECK_LE(matcher_count.rule_count, ruleset.source().rule_count_limit());
 
     if (ruleset.source().is_dynamic_ruleset()) {
       matchers.push_back(std::move(matcher));
       continue;
     }
 
-    size_t new_rules_count = static_rules_count + matcher->GetRulesCount();
-    if (new_rules_count > static_rule_limit) {
+    RulesCountPair new_ruleset_count = static_ruleset_count + matcher_count;
+    if (new_ruleset_count.rule_count > static_rule_limit.rule_count) {
       global_rule_limit_exceeded = true;
       continue;
     }
 
-    size_t new_regex_rules_count =
-        static_regex_rules_count + matcher->GetRegexRulesCount();
-    if (new_regex_rules_count > static_cast<size_t>(GetRegexRuleLimit())) {
+    if (new_ruleset_count.regex_rule_count > static_rule_limit.regex_rule_count)
       continue;
-    }
 
-    static_rules_count = new_rules_count;
-    static_regex_rules_count = new_regex_rules_count;
+    static_ruleset_count = new_ruleset_count;
     matchers.push_back(std::move(matcher));
   }
 
@@ -777,7 +812,7 @@ void RulesMonitorService::OnInitialRulesetsLoadedFromDisk(
   }
 
   bool allocation_updated = global_rules_tracker_.OnExtensionRuleCountUpdated(
-      load_data.extension_id, static_rules_count);
+      load_data.extension_id, static_ruleset_count.rule_count);
   DCHECK(allocation_updated);
 
   AddCompositeMatcher(load_data.extension_id,
@@ -806,8 +841,7 @@ void RulesMonitorService::OnNewStaticRulesetsLoaded(
     return;
   }
 
-  size_t static_rules_count = 0;
-  size_t static_regex_rules_count = 0;
+  RulesCountPair static_ruleset_count;
   CompositeMatcher* matcher =
       ruleset_manager_.GetMatcherForExtension(load_data.extension_id);
   if (matcher) {
@@ -827,8 +861,7 @@ void RulesMonitorService::OnNewStaticRulesetsLoaded(
       if (base::Contains(ids_to_enable, matcher->id()))
         continue;
 
-      static_rules_count += matcher->GetRulesCount();
-      static_regex_rules_count += matcher->GetRegexRulesCount();
+      static_ruleset_count += matcher->GetRulesCountPair();
     }
   }
 
@@ -842,18 +875,20 @@ void RulesMonitorService::OnNewStaticRulesetsLoaded(
 
     std::unique_ptr<RulesetMatcher> matcher = ruleset.TakeMatcher();
 
+    RulesCountPair matcher_count = matcher->GetRulesCountPair();
+
     // Per-ruleset limits should have been enforced during
     // indexing/installation.
-    DCHECK_LE(matcher->GetRegexRulesCount(),
+    DCHECK_LE(matcher_count.regex_rule_count,
               static_cast<size_t>(GetRegexRuleLimit()));
-    DCHECK_LE(matcher->GetRulesCount(), ruleset.source().rule_count_limit());
+    DCHECK_LE(matcher_count.rule_count, ruleset.source().rule_count_limit());
 
-    static_rules_count += matcher->GetRulesCount();
-    static_regex_rules_count += matcher->GetRegexRulesCount();
+    static_ruleset_count += matcher_count;
     new_matchers.push_back(std::move(matcher));
   }
 
-  if (static_regex_rules_count > static_cast<size_t>(GetRegexRuleLimit())) {
+  if (static_ruleset_count.regex_rule_count >
+      static_cast<size_t>(GetRegexRuleLimit())) {
     std::move(callback).Run(kEnabledRulesetsRegexRuleCountExceeded);
     return;
   }
@@ -861,8 +896,8 @@ void RulesMonitorService::OnNewStaticRulesetsLoaded(
   // Attempt to update the extension's extra rule count. If this update cannot
   // be completed without exceeding the global limit, then the update is not
   // applied and an error is returned.
-  if (!global_rules_tracker_.OnExtensionRuleCountUpdated(load_data.extension_id,
-                                                         static_rules_count)) {
+  if (!global_rules_tracker_.OnExtensionRuleCountUpdated(
+          load_data.extension_id, static_ruleset_count.rule_count)) {
     std::move(callback).Run(kEnabledRulesetsRuleCountExceeded);
     return;
   }

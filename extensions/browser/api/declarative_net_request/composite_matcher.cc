@@ -74,6 +74,14 @@ CompositeMatcher::CompositeMatcher(MatcherList matchers)
 
 CompositeMatcher::~CompositeMatcher() = default;
 
+const RulesetMatcher* CompositeMatcher::GetMatcherWithID(RulesetID id) const {
+  auto it = std::find_if(matchers_.begin(), matchers_.end(),
+                         [&id](const std::unique_ptr<RulesetMatcher>& matcher) {
+                           return matcher->id() == id;
+                         });
+  return it == matchers_.end() ? nullptr : it->get();
+}
+
 void CompositeMatcher::AddOrUpdateRuleset(
     std::unique_ptr<RulesetMatcher> matcher) {
   MatcherList matchers;
