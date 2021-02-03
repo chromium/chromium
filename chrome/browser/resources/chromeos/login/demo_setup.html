@@ -41,15 +41,15 @@
         aria-label$="[[i18nDynamic(locale, 'demoSetupErrorScreenTitle')]]"
         for-step="error">
       <hd-iron-icon slot="icon"
-          icon1x="oobe-32:computer" icon2x="oobe-64:computer">
+          icon1x="oobe-32:warning" icon2x="oobe-64:warning">
       </hd-iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'demoSetupErrorScreenTitle')]]
       </h1>
       <div slot="subtitle" id="errorMessage">[[errorMessage_]]</div>
       <div slot="content" class="flex layout vertical center center-justified">
-        <img srcset="images/alert-illustration_1x.svg 1x,
-            images/alert-illustration_2x.svg 2x">
+        <img srcset="images/1x/error.svg 1x,
+                     images/2x/error.svg 2x">
       </div>
       <div slot="back-navigation">
         <oobe-back-button inverse on-click="onCloseClicked_" id="back"

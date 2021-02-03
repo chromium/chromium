@@ -52,20 +52,20 @@
         for-step="error" footer-shrinkable
         aria-label$="[[i18nDynamic(locale, 'enableAdbSideloadingSetupTitle')]]">
       <hd-iron-icon slot="icon"
-          icon1x="oobe-32:alert" icon2x="oobe-64:alert">
+          icon1x="oobe-32:warning" icon2x="oobe-64:warning">
       </hd-iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'enableAdbSideloadingErrorTitle')]]
+      </h1>
       <p slot="subtitle">
         [[i18nDynamic(locale, 'enableAdbSideloadingErrorMessage')]]
         <a on-click="onLearnMoreTap_" class="oobe-local-link" is="action-link">
           [[i18nDynamic(locale, 'enableAdbSideloadingLearnMore')]]
         </a>
       </p>
-      <h1 slot="title">
-        [[i18nDynamic(locale, 'enableAdbSideloadingErrorTitle')]]
-      </h1>
       <div slot="content" class="flex layout vertical center center-justified">
-        <img srcset="images/1x/error_illustration.svg 1x,
-                     images/2x/error_illustration.svg 2x"
+        <img srcset="images/1x/error.svg 1x,
+                     images/2x/error.svg 2x"
              class="oobe-illustration"
              alt="[[i18nDynamic(locale,
                     'enableAdbSideloadingErrorIllustrationTitle')]]">

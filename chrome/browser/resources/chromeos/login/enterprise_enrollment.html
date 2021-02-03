@@ -79,14 +79,14 @@
     <oobe-dialog id="step-error" has-buttons role="alert"
         for-step="error, attribute-prompt-error, active-directory-join-error">
       <hd-iron-icon slot="oobe-icon"
-                    icon1x="oobe-32:enterprise"
-                    icon2x="oobe-64:enterprise"></hd-iron-icon>
+                    icon1x="oobe-32:warning"
+                    icon2x="oobe-64:warning"></hd-iron-icon>
       <h1 slot="title">[[i18nDynamic(locale, 'oauthEnrollErrorTitle')]]</h1>
       <div id="errorMsg" slot="subtitle">[[errorText_]]</div>
       <div slot="footer"
           class="flex layout vertical center center-justified">
-        <img srcset="images/1x/enrollment_error_illustration.svg 1x,
-                images/2x/enrollment_error_illustration.svg 2x"
+        <img srcset="images/1x/error.svg 1x,
+                     images/2x/error.svg 2x"
             alt$="[[i18nDynamic(locale,
                 'enrollmentErrorIllustrationTitle')]]"
             class="oobe-illustration">
