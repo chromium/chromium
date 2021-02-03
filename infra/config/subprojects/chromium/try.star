@@ -979,6 +979,10 @@ try_.chromium_linux_builder(
 )
 
 try_.chromium_linux_builder(
+    name = "linux-blink-v8-oilpan",
+)
+
+try_.chromium_linux_builder(
     name = "linux-blink-web-tests-force-accessibility-rel",
 )
 

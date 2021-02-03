@@ -2981,7 +2981,16 @@ ci.fyi_builder(
         category = "linux|blink",
         short_name = "VF",
     ),
-    notifies = ["linux-blink-heap-verification"],
+    notifies = ["linux-blink-fyi-bots"],
+)
+
+ci.fyi_builder(
+    name = "linux-blink-v8-oilpan",
+    console_view_entry = consoles.console_view_entry(
+        category = "linux|blink",
+        short_name = "VO",
+    ),
+    notifies = ["linux-blink-fyi-bots"],
 )
 
 ci.fyi_builder(

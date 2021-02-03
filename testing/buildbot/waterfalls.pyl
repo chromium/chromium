@@ -2928,6 +2928,15 @@
           'isolated_scripts': 'chromium_web_tests_and_wpt_webdriver_isolated_scripts',
         },
       },
+      'linux-blink-v8-oilpan': {
+        'mixins': [
+          'linux-xenial',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromium_gtests',
+          'isolated_scripts': 'chromium_webkit_isolated_scripts',
+        },
+      },
       'linux-chromeos-code-coverage': {
         'mixins': [
           'isolate_profile_data',

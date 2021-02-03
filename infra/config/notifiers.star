@@ -194,7 +194,7 @@ luci.notifier(
 )
 
 luci.notifier(
-    name = "linux-blink-heap-verification",
+    name = "linux-blink-fyi-bots",
     notify_emails = [
         "mlippautz+fyi-bots@chromium.org",
     ],

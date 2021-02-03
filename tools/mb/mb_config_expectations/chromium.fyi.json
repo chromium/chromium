@@ -542,6 +542,17 @@
       "use_goma": true
     }
   },
+  "linux-blink-v8-oilpan": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "enable_blink_heap_use_v8_oilpan": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "use_goma": true
+    }
+  },
   "linux-chromeos-code-coverage": {
     "gn_args": {
       "ffmpeg_branding": "ChromeOS",

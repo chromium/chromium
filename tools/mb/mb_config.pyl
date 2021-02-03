@@ -329,6 +329,7 @@
       'linux-blink-animation-use-time-delta': 'debug_bot_enable_blink_animation_use_time_delta',
       'linux-blink-heap-concurrent-marking-tsan-rel': 'release_trybot_tsan',
       'linux-blink-heap-verification': 'release_bot_enable_blink_heap_verification_dcheck_always_on',
+      'linux-blink-v8-oilpan': 'release_bot_enable_v8_oilpan_dcheck_always_on',
       'linux-chromeos-code-coverage': 'chromeos_with_codecs_release_bot_coverage',
       'linux-chromeos-js-code-coverage': 'chromeos_with_codecs_release_bot_javascript_coverage',
       'linux-chromium-tests-staging-builder': 'release_bot',
@@ -955,6 +956,7 @@
       'linux-autofill-assistant': 'autofill_assistant_release_trybot',
       'linux-blink-heap-concurrent-marking-tsan-rel': 'release_trybot_tsan',
       'linux-blink-heap-verification-try': 'release_trybot_enable_blink_heap_verification',
+      'linux-blink-v8-oilpan': 'release_trybot_enable_v8_oilpan',
       'linux-bfcache-rel': 'release_bot_blink',
       'linux-clang-tidy-dbg': 'debug_bot',
       'linux-clang-tidy-rel': 'release_trybot',
@@ -2486,6 +2488,10 @@
       'release_bot_blink', 'enable_blink_heap_verification', 'dcheck_always_on',
     ],
 
+    'release_bot_enable_v8_oilpan_dcheck_always_on': [
+      'release_bot_blink', 'enable_v8_oilpan', 'dcheck_always_on',
+    ],
+
     'release_bot_fuchsia': [
       'release_bot', 'fuchsia',
     ],
@@ -2544,6 +2550,10 @@
 
     'release_trybot_enable_blink_heap_verification': [
       'release_trybot_blink', 'enable_blink_heap_verification',
+    ],
+
+    'release_trybot_enable_v8_oilpan': [
+      'release_trybot_blink', 'enable_v8_oilpan',
     ],
 
     'release_trybot_fuchsia': [
@@ -2921,6 +2931,10 @@
     # times.
     'enable_archive_compression': {
       'gn_args': 'skip_archive_compression=false',
+    },
+
+    'enable_v8_oilpan': {
+      'gn_args': 'enable_blink_heap_use_v8_oilpan=true',
     },
 
     'eve': {
