@@ -13,7 +13,6 @@
 #include "url/gurl.h"
 
 namespace autofill_assistant {
-namespace {
 
 using ::testing::ElementsAre;
 using ::testing::Eq;
@@ -411,6 +410,7 @@ TEST_F(ProtocolUtilsTest, TurnOffResizeVisualViewport) {
   std::vector<std::string> additional_allowed_domains;
   int interval_ms;
   base::Optional<int> timeout_ms;
+
   EXPECT_TRUE(ProtocolUtils::ParseTriggerScripts(proto_str, &trigger_scripts,
                                                  &additional_allowed_domains,
                                                  &interval_ms, &timeout_ms));
@@ -425,5 +425,86 @@ TEST_F(ProtocolUtilsTest, TurnOffResizeVisualViewport) {
       trigger_scripts[1]->AsProto().user_interface().resize_visual_viewport());
 }
 
-}  // namespace
+TEST_F(ProtocolUtilsTest, ParseTriggerScriptsFailsOnInvalidConditions) {
+  GetTriggerScriptsResponseProto proto;
+
+  TriggerScriptProto trigger_script_1;
+  TriggerScriptProto trigger_script_2;
+  trigger_script_2.mutable_trigger_condition()->set_domain_with_scheme(
+      "invalid");
+
+  *proto.add_trigger_scripts() = trigger_script_1;
+  *proto.add_trigger_scripts() = trigger_script_2;
+
+  std::string proto_str;
+  proto.SerializeToString(&proto_str);
+
+  std::vector<std::unique_ptr<TriggerScript>> trigger_scripts;
+  std::vector<std::string> additional_allowed_domains;
+  int interval_ms;
+  base::Optional<int> timeout_ms;
+
+  EXPECT_FALSE(ProtocolUtils::ParseTriggerScripts(proto_str, &trigger_scripts,
+                                                  &additional_allowed_domains,
+                                                  &interval_ms, &timeout_ms));
+  EXPECT_THAT(trigger_scripts, IsEmpty());
+}
+
+TEST_F(ProtocolUtilsTest, ValidateTriggerConditionsSimpleConditions) {
+  TriggerScriptConditionProto condition;
+
+  condition.set_path_pattern("(blahblah)*[A-Z]");
+  EXPECT_TRUE(ProtocolUtils::ValidateTriggerCondition(condition));
+
+  condition.set_path_pattern("");
+  EXPECT_TRUE(ProtocolUtils::ValidateTriggerCondition(condition));
+
+  condition.set_path_pattern("[invalid");
+  EXPECT_FALSE(ProtocolUtils::ValidateTriggerCondition(condition));
+
+  condition.set_domain_with_scheme("https://www.example.com");
+  EXPECT_TRUE(ProtocolUtils::ValidateTriggerCondition(condition));
+
+  condition.set_domain_with_scheme("");
+  EXPECT_FALSE(ProtocolUtils::ValidateTriggerCondition(condition));
+
+  condition.set_domain_with_scheme("www.example.com");
+  EXPECT_FALSE(ProtocolUtils::ValidateTriggerCondition(condition));
+
+  condition.set_domain_with_scheme("https");
+  EXPECT_FALSE(ProtocolUtils::ValidateTriggerCondition(condition));
+}
+
+TEST_F(ProtocolUtilsTest, ValidateTriggerConditionsComplexConditions) {
+  TriggerScriptConditionProto valid_condition_1;
+  valid_condition_1.set_path_pattern("pattern1");
+  TriggerScriptConditionProto valid_condition_2;
+  valid_condition_2.set_path_pattern("pattern.*");
+  TriggerScriptConditionProto invalid_condition;
+  invalid_condition.set_path_pattern("[invalid");
+
+  TriggerScriptConditionProto condition;
+
+  TriggerScriptConditionsProto valid_conditions;
+  *valid_conditions.add_conditions() = valid_condition_1;
+  *valid_conditions.add_conditions() = valid_condition_2;
+
+  *condition.mutable_all_of() = valid_conditions;
+  EXPECT_TRUE(ProtocolUtils::ValidateTriggerCondition(condition));
+  *condition.mutable_any_of() = valid_conditions;
+  EXPECT_TRUE(ProtocolUtils::ValidateTriggerCondition(condition));
+  *condition.mutable_none_of() = valid_conditions;
+  EXPECT_TRUE(ProtocolUtils::ValidateTriggerCondition(condition));
+
+  TriggerScriptConditionsProto invalid_conditions = valid_conditions;
+  *invalid_conditions.add_conditions() = invalid_condition;
+
+  *condition.mutable_all_of() = invalid_conditions;
+  EXPECT_FALSE(ProtocolUtils::ValidateTriggerCondition(condition));
+  *condition.mutable_any_of() = invalid_conditions;
+  EXPECT_FALSE(ProtocolUtils::ValidateTriggerCondition(condition));
+  *condition.mutable_none_of() = invalid_conditions;
+  EXPECT_FALSE(ProtocolUtils::ValidateTriggerCondition(condition));
+}
+
 }  // namespace autofill_assistant

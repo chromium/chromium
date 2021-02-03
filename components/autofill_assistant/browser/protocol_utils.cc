@@ -44,6 +44,7 @@
 #include "components/autofill_assistant/browser/actions/wait_for_navigation_action.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/web/web_controller.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "url/gurl.h"
 
 namespace autofill_assistant {
@@ -426,6 +427,12 @@ bool ProtocolUtils::ParseTriggerScripts(
     return false;
   }
 
+  for (const auto& trigger_script_proto : response_proto.trigger_scripts()) {
+    if (!ValidateTriggerCondition(trigger_script_proto.trigger_condition())) {
+      return false;
+    }
+  }
+
   for (auto& trigger_script_proto : *response_proto.mutable_trigger_scripts()) {
     if (trigger_script_proto.user_interface().scroll_to_hide()) {
       // Turn off viewport resizing when scroll to hide is on as it causes
@@ -448,6 +455,68 @@ bool ProtocolUtils::ParseTriggerScripts(
     *timeout_ms = response_proto.timeout_ms();
   }
   return true;
+}
+
+// static
+bool ProtocolUtils::ValidateTriggerCondition(
+    const TriggerScriptConditionProto& trigger_condition) {
+  switch (trigger_condition.type_case()) {
+    case TriggerScriptConditionProto::kAllOf:
+      for (const auto& condition : trigger_condition.all_of().conditions()) {
+        if (!ValidateTriggerCondition(condition)) {
+          return false;
+        }
+      }
+      return true;
+    case TriggerScriptConditionProto::kAnyOf:
+      for (const auto& condition : trigger_condition.any_of().conditions()) {
+        if (!ValidateTriggerCondition(condition)) {
+          return false;
+        }
+      }
+      return true;
+    case TriggerScriptConditionProto::kNoneOf:
+      for (const auto& condition : trigger_condition.none_of().conditions()) {
+        if (!ValidateTriggerCondition(condition)) {
+          return false;
+        }
+      }
+      return true;
+    case TriggerScriptConditionProto::kPathPattern: {
+      const re2::RE2 re(trigger_condition.path_pattern());
+      if (!re.ok()) {
+#ifdef NDEBUG
+        VLOG(1) << "Invalid regexp in trigger condition";
+#else
+        VLOG(1) << "Invalid regexp in trigger condition "
+                << trigger_condition.path_pattern();
+#endif
+        return false;
+      }
+      return true;
+    }
+    case TriggerScriptConditionProto::kDomainWithScheme: {
+      const GURL domain(trigger_condition.domain_with_scheme());
+      if (!domain.is_valid()) {
+#ifdef NDEBUG
+        VLOG(1) << "Invalid domain format in trigger condition";
+#else
+        VLOG(1) << "Invalid domain format in trigger condition "
+                << trigger_condition.domain_with_scheme();
+#endif
+        return false;
+      }
+      return true;
+    }
+    case TriggerScriptConditionProto::kStoredLoginCredentials:
+    case TriggerScriptConditionProto::kIsFirstTimeUser:
+    case TriggerScriptConditionProto::kExperimentId:
+    case TriggerScriptConditionProto::kKeyboardHidden:
+    case TriggerScriptConditionProto::kScriptParameterMatch:
+    case TriggerScriptConditionProto::kSelector:
+    case TriggerScriptConditionProto::TYPE_NOT_SET:
+      return true;
+  }
 }
 
 }  // namespace autofill_assistant

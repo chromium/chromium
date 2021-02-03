@@ -597,6 +597,11 @@ message TriggerScriptConditionProto {
     Empty keyboard_hidden = 9;
     // The condition describes a parameter value that must be set to trigger.
     ScriptParameterMatchProto script_parameter_match = 10;
+    // Pattern of the path parts of the URL, including query and '#'.
+    string path_pattern = 11;
+    // Domain (exact match), including the scheme (e.g.
+    // "https://www.example.com").
+    string domain_with_scheme = 12;
   }
 
   reserved 4;

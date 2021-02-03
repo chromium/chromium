@@ -320,6 +320,9 @@ void TriggerScriptCoordinator::DidFinishNavigation(
     Stop(Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_FAILED_NAVIGATE);
     return;
   }
+
+  dynamic_trigger_conditions_->SetURL(GetCurrentURL());
+  RunOutOfScheduleTriggerConditionCheck();
 }
 
 void TriggerScriptCoordinator::OnVisibilityChanged(
@@ -390,6 +393,7 @@ void TriggerScriptCoordinator::StartCheckingTriggerConditions() {
 }
 
 void TriggerScriptCoordinator::CheckDynamicTriggerConditions() {
+  dynamic_trigger_conditions_->SetURL(GetCurrentURL());
   dynamic_trigger_conditions_->Update(
       web_controller_.get(),
       base::BindOnce(

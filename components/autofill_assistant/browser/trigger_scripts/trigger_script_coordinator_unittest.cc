@@ -507,7 +507,7 @@ TEST_F(TriggerScriptCoordinatorTest, CancelOnNavigateAway) {
   ON_CALL(*mock_dynamic_trigger_conditions_, OnUpdate(mock_web_controller_, _))
       .WillByDefault(RunOnceCallback<1>());
   EXPECT_CALL(*mock_dynamic_trigger_conditions_, GetSelectorMatches)
-      .WillOnce(Return(true));
+      .WillRepeatedly(Return(true));
   EXPECT_CALL(mock_observer_, OnTriggerScriptShown).Times(1);
   coordinator_->Start(GURL(kFakeDeepLink),
                       std::make_unique<TriggerContextImpl>());
@@ -761,6 +761,99 @@ TEST_F(TriggerScriptCoordinatorTest, KeyboardEventTriggersOutOfScheduleCheck) {
       Metrics::LiteScriptFinishedState::LITE_SCRIPT_TRIGGER_CONDITION_TIMEOUT);
 }
 
+TEST_F(TriggerScriptCoordinatorTest, UrlChangeOutOfScheduleCheckPathMatch) {
+  GetTriggerScriptsResponseProto response;
+  response.add_trigger_scripts()->mutable_trigger_condition()->set_path_pattern(
+      ".*trigger_page.*");
+  std::string serialized_response;
+  response.SerializeToString(&serialized_response);
+
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kFakeServerUrl), _, _))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+  EXPECT_CALL(*mock_static_trigger_conditions_, Init)
+      .WillOnce(RunOnceCallback<4>());
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_,
+              OnUpdate(mock_web_controller_, _))
+      .WillOnce(RunOnceCallback<1>());
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_, SetURL).Times(1);
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_, GetPathPatternMatches)
+      .WillOnce(Return(false));
+  coordinator_->Start(GURL(kFakeDeepLink),
+                      std::make_unique<TriggerContextImpl>());
+
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_,
+              SetURL(GURL("http://example.com/trigger_page")))
+      .Times(1);
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_,
+              GetPathPatternMatches(".*trigger_page.*"))
+      .WillOnce(Return(true));
+  EXPECT_CALL(mock_observer_, OnTriggerScriptShown).Times(1);
+  SimulateNavigateToUrl(GURL("http://example.com/trigger_page"));
+}
+
+TEST_F(TriggerScriptCoordinatorTest, UrlChangeOutOfScheduleCheckDomainMatch) {
+  GetTriggerScriptsResponseProto response;
+  response.add_trigger_scripts()
+      ->mutable_trigger_condition()
+      ->set_domain_with_scheme("http://example.com");
+  std::string serialized_response;
+  response.SerializeToString(&serialized_response);
+
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kFakeServerUrl), _, _))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+  EXPECT_CALL(*mock_static_trigger_conditions_, Init)
+      .WillOnce(RunOnceCallback<4>());
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_,
+              OnUpdate(mock_web_controller_, _))
+      .WillOnce(RunOnceCallback<1>());
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_, SetURL).Times(1);
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_, GetDomainAndSchemeMatches)
+      .WillOnce(Return(false));
+  coordinator_->Start(GURL(kFakeDeepLink),
+                      std::make_unique<TriggerContextImpl>());
+
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_,
+              SetURL(GURL("http://example.com/trigger_page")))
+      .Times(1);
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_,
+              GetDomainAndSchemeMatches(GURL("http://example.com")))
+      .WillOnce(Return(true));
+  EXPECT_CALL(mock_observer_, OnTriggerScriptShown).Times(1);
+  SimulateNavigateToUrl(GURL("http://example.com/trigger_page"));
+}
+
+TEST_F(TriggerScriptCoordinatorTest,
+       UrlChangeToAnUnsupportedDomainDoesNotUpdateUrl) {
+  GetTriggerScriptsResponseProto response;
+  response.add_trigger_scripts()->mutable_trigger_condition()->set_path_pattern(
+      ".*trigger_page.*");
+  std::string serialized_response;
+  response.SerializeToString(&serialized_response);
+
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kFakeServerUrl), _, _))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+  EXPECT_CALL(*mock_static_trigger_conditions_, Init)
+      .WillOnce(RunOnceCallback<4>());
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_,
+              OnUpdate(mock_web_controller_, _))
+      .WillOnce(RunOnceCallback<1>());
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_, SetURL).Times(1);
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_, GetPathPatternMatches)
+      .WillOnce(Return(false));
+  coordinator_->Start(GURL(kFakeDeepLink),
+                      std::make_unique<TriggerContextImpl>());
+
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_, SetURL).Times(0);
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_, GetPathPatternMatches)
+      .Times(0);
+  EXPECT_CALL(
+      mock_observer_,
+      OnTriggerScriptFinished(
+          Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_FAILED_NAVIGATE))
+      .Times(1);
+  SimulateNavigateToUrl(GURL("http://example.different.com/page"));
+}
+
 TEST_F(TriggerScriptCoordinatorTest, OnTriggerScriptFailedToShow) {
   GetTriggerScriptsResponseProto response;
   response.add_trigger_scripts();
@@ -860,6 +953,7 @@ TEST_F(TriggerScriptCoordinatorTest, PauseAndResumeOnTabSwitch) {
       .WillOnce(Return(true));
   EXPECT_CALL(mock_observer_, OnTriggerScriptShown).Times(1);
   EXPECT_CALL(mock_observer_, OnVisibilityChanged(true)).Times(1);
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_, SetURL).Times(1);
   SimulateWebContentsInteractabilityChanged(/* interactable = */ true);
 }
 

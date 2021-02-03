@@ -84,7 +84,8 @@ class ProtocolUtils {
                            bool* should_update_scripts);
 
   // Parse trigger scripts from the given |response| and insert them into
-  // |trigger_scripts|. Returns false if parsing failed, else true.
+  // |trigger_scripts|. Returns false if parsing failed or the proto contained
+  // invalid values.
   static bool ParseTriggerScripts(
       const std::string& response,
       std::vector<std::unique_ptr<TriggerScript>>* trigger_scripts,
@@ -93,6 +94,15 @@ class ProtocolUtils {
       base::Optional<int>* timeout_ms);
 
  private:
+  // Checks that the |trigger_condition| is well-formed (e.g. does not contain
+  // regexes that cannot be compiled).
+  static bool ValidateTriggerCondition(
+      const TriggerScriptConditionProto& trigger_condition);
+  FRIEND_TEST_ALL_PREFIXES(ProtocolUtilsTest,
+                           ValidateTriggerConditionsSimpleConditions);
+  FRIEND_TEST_ALL_PREFIXES(ProtocolUtilsTest,
+                           ValidateTriggerConditionsComplexConditions);
+
   // To avoid instantiate this class by accident.
   ProtocolUtils() = delete;
   ~ProtocolUtils() = delete;
