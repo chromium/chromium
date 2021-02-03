@@ -5,7 +5,7 @@
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
 
 #include "base/memory/ptr_util.h"
-#include "content/public/browser/render_view_host.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 
@@ -33,24 +33,13 @@ WebContentsSetBackgroundColor::WebContentsSetBackgroundColor(
 
 WebContentsSetBackgroundColor::~WebContentsSetBackgroundColor() = default;
 
-void WebContentsSetBackgroundColor::RenderViewReady() {
-  web_contents()
-      ->GetMainFrame()
-      ->GetRenderViewHost()
-      ->GetWidget()
-      ->GetView()
-      ->SetBackgroundColor(color_);
-}
-
-void WebContentsSetBackgroundColor::RenderViewCreated(
-    content::RenderViewHost* render_view_host) {
-  render_view_host->GetWidget()->GetView()->SetBackgroundColor(color_);
-}
-
-void WebContentsSetBackgroundColor::RenderViewHostChanged(
-    content::RenderViewHost* old_host,
-    content::RenderViewHost* new_host) {
-  new_host->GetWidget()->GetView()->SetBackgroundColor(color_);
+void WebContentsSetBackgroundColor::RenderFrameCreated(
+    content::RenderFrameHost* render_frame_host) {
+  // We set the background color just on the main frame's widget. Other frames
+  // that are local roots would have a widget of their own, but their background
+  // colors are part of, and controlled by, the webpage.
+  if (!render_frame_host->GetParent())
+    render_frame_host->GetView()->SetBackgroundColor(color_);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(WebContentsSetBackgroundColor)
