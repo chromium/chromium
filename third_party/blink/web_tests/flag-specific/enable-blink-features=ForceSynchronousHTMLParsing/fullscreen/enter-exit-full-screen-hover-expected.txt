@@ -1,0 +1,15 @@
+PASS getHoverActiveState(enterButton) is "hovered"
+PASS document.webkitIsFullScreen is true
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+PASS getHoverActiveState(enterButton) is "default"
+PASS getHoverActiveState(exitButton) is "hovered"
+PASS document.webkitIsFullScreen is false
+PASS getHoverActiveState(exitButton) is "default"
+Enter fullscreen Exit fullscreen
+EVENT(webkitfullscreenchange)
+EVENT(webkitfullscreenchange)
+END OF TEST
+

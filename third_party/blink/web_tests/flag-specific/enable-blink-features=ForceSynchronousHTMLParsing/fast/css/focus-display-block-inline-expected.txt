@@ -1,0 +1,6 @@
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+PASS Setting display to none on focus processed OK.
+When you hit TAB, this button should disappear.

@@ -1,0 +1,16 @@
+CONSOLE MESSAGE: Blink Test Plugin: initializing
+CONSOLE MESSAGE: Blink Test Plugin: DidChangeFocus(true)
+CONSOLE MESSAGE: line 28: Blink Test Plugin: DidChangeFocus(false)
+i1focus
+i1blur
+pfocus
+pblur
+i2focus
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+
+Test no change of focus inside plugin onfocus and onblur events
+
+  

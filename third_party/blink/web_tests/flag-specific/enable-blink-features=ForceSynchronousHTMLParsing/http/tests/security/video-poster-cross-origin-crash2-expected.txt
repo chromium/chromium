@@ -1,0 +1,2 @@
+CONSOLE ERROR: line 28: Access to image at 'http://localhost:8080/nonesuch.png' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+Test passes if it doesn't crash.

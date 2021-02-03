@@ -1,0 +1,16 @@
+Tests the timestamps provided to requestAnimationFrame callbacks
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS firstTimestamp is defined.
+PASS secondTimestamp is defined.
+PASS firstTimestamp is secondTimestamp
+PASS firstTimestamp is defined.
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
