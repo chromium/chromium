@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SYNC_TEST_INTEGRATION_BOOKMARKS_HELPER_H_
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_BOOKMARKS_HELPER_H_
 
+#include <map>
 #include <memory>
 #include <set>
 #include <string>
@@ -550,6 +551,55 @@ class BookmarksGUIDChecker : public SingleBookmarksModelMatcherChecker {
  public:
   BookmarksGUIDChecker(int profile, const base::GUID& guid);
   ~BookmarksGUIDChecker() override;
+};
+
+// Waits until the fake server has the similar structure of bookmarks like the
+// bookmark model. The checker verifies that all nodes have the same GUID,
+// title, URL, parent and order. It doesn't check favicons and any other fields.
+// Note that this class is not enough to verify test's result as it only waits
+// for the state when the bookmark model has the same structure on the server.
+// It doesn't check their content and the expected number of bookmarks. The fake
+// server must have entities with unique GUIDs.
+class BookmarkModelMatchesFakeServerChecker
+    : public SingleClientStatusChangeChecker {
+ public:
+  BookmarkModelMatchesFakeServerChecker(int profile,
+                                        syncer::ProfileSyncService* service,
+                                        fake_server::FakeServer* fake_server);
+
+  bool IsExitConditionSatisfied(std::ostream* os) override;
+
+ private:
+  std::map<std::string, sync_pb::SyncEntity>
+  GetServerPermanentBookmarksGroupedBySyncId() const;
+
+  // Fills in |server_bookmarks_by_guid| with all non-permanent entities stored
+  // on the server. All entities must have unique GUID in specifics. Returns
+  // false if there are duplicate entities on the server.
+  bool GetServerBookmarksByUniqueGUID(std::map<base::GUID, sync_pb::SyncEntity>*
+                                          server_bookmarks_by_guid) const;
+
+  // Check that a permanent parent node of given |node| is the same as for the
+  // matching |server_entity|.
+  bool CheckPermanentParentNode(const bookmarks::BookmarkNode* node,
+                                const sync_pb::SyncEntity& server_entity,
+                                std::ostream* os) const;
+
+  // Check that a regular parent node of given |node| matches to the parent of
+  // matching server entity.
+  bool CheckParentNode(
+      const bookmarks::BookmarkNode* node,
+      const std::map<base::GUID, sync_pb::SyncEntity>& server_bookmarks_by_guid,
+      std::ostream* os) const;
+
+  // Return ordered GUIDs of server entities grouped by their parents.
+  std::map<std::string, std::vector<base::GUID>>
+  GetServerGuidsGroupedByParentSyncId(
+      const std::map<base::GUID, sync_pb::SyncEntity>& server_bookmarks_by_guid)
+      const;
+
+  fake_server::FakeServer* const fake_server_;
+  const int profile_index_;
 };
 
 }  // namespace bookmarks_helper
