@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/ash/media_notification_provider_impl.h"
 
 #include "ash/public/cpp/media_notification_provider_observer.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
@@ -16,7 +15,6 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_task_environment.h"
-#include "media/base/media_switches.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -53,11 +51,6 @@ class MediaNotificationProviderImplTest : public testing::Test {
 
   void SetUp() override {
     testing::Test::SetUp();
-
-    // Disable a feature unrelated to the unit test. The use of cast features
-    // requires setting up extra dependencies.
-    feature_list_.InitAndDisableFeature(media::kGlobalMediaControlsForCast);
-
     user_manager_->Initialize();
     CHECK(testing_profile_manager_.SetUp());
 
@@ -114,7 +107,7 @@ class MediaNotificationProviderImplTest : public testing::Test {
 
   MediaNotificationProviderImpl* provider() { return provider_.get(); }
 
-  content::BrowserTaskEnvironment browser_environment_;
+  content::BrowserTaskEnvironment browser_environment;
 
  private:
   session_manager::SessionManager session_manager_;
@@ -122,8 +115,7 @@ class MediaNotificationProviderImplTest : public testing::Test {
       new chromeos::FakeChromeUserManager()};
   TestingProfileManager testing_profile_manager_{
       TestingBrowserProcess::GetGlobal()};
-  views::LayoutProvider layout_provider_;
-  base::test::ScopedFeatureList feature_list_;
+  views::LayoutProvider layout_provider;
 
   std::unique_ptr<MockMediaNotificationProviderObserver> mock_observer_;
   std::unique_ptr<MediaNotificationProviderImpl> provider_;

@@ -21,18 +21,11 @@ bool MediaRouterEnabled(content::BrowserContext* context);
 
 #if !defined(OS_ANDROID)
 
-// Enables the media router. Can be disabled in tests unrelated to
-// Media Router where it interferes. Can also be useful to disable for local
-// development on Mac because DIAL local discovery opens a local port
-// and triggers a permission prompt.
-extern const base::Feature kMediaRouter;
-
 // TODO(crbug.com/1028753): Remove default-enabled kDialMediaRouteProvider after
 // tests stop disabling it.
 extern const base::Feature kDialMediaRouteProvider;
 
 extern const base::Feature kCastMediaRouteProvider;
-
 // If enabled, allows Media Router to connect to Cast devices on all IP
 // addresses, not just RFC1918/RFC4193 private addresses. Workaround for
 // https://crbug.com/813974.
