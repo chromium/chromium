@@ -33,8 +33,8 @@ AccessibilityCommonE2ETest = class extends E2ETestBase {
     // the extension to load. Extension load is required for this test suite to
     // have a place to be injected.
     GEN(`
-  base::Closure load_cb =
-      base::Bind(&AccessibilityManager::EnableAutoclick,
+  base::OnceClosure load_cb =
+      base::BindOnce(&AccessibilityManager::EnableAutoclick,
           base::Unretained(AccessibilityManager::Get()),
           true);
     `);

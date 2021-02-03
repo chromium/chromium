@@ -48,7 +48,7 @@ E2ETestBase = class extends testing.Test {
 
   testGenPreambleCommon(extensionIdName, failOnConsoleError = true) {
     GEN(`
-    WaitForExtension(extension_misc::${extensionIdName}, load_cb);
+    WaitForExtension(extension_misc::${extensionIdName}, std::move(load_cb));
 
     extensions::ExtensionHost* host =
         extensions::ProcessManager::Get(browser()->profile())

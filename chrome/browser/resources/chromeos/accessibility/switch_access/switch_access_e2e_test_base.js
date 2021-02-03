@@ -27,8 +27,8 @@ SwitchAccessE2ETest = class extends E2ETestBase {
   testGenPreamble() {
     super.testGenPreamble();
     GEN(`
-  base::Closure load_cb =
-      base::Bind(&AccessibilityManager::SetSwitchAccessEnabled,
+  base::OnceClosure load_cb =
+      base::BindOnce(&AccessibilityManager::SetSwitchAccessEnabled,
           base::Unretained(AccessibilityManager::Get()),
           true);
     `);

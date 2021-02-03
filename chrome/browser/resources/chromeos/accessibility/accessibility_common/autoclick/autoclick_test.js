@@ -47,8 +47,8 @@ import('/accessibility_common/accessibility_common_loader.js').then(reinit);
   /** @override */
   testGenPreamble() {
     GEN(`
-  base::Closure load_cb =
-      base::Bind(&AccessibilityManager::EnableAutoclick,
+  base::OnceClosure load_cb =
+      base::BindOnce(&AccessibilityManager::EnableAutoclick,
           base::Unretained(AccessibilityManager::Get()),
           true);
     `);

@@ -28,8 +28,8 @@ SelectToSpeakE2ETest = class extends E2ETestBase {
   testGenPreamble() {
     super.testGenPreamble();
     GEN(`
-    base::Closure load_cb =
-        base::Bind(&AccessibilityManager::SetSelectToSpeakEnabled,
+    base::OnceClosure load_cb =
+        base::BindOnce(&AccessibilityManager::SetSelectToSpeakEnabled,
             base::Unretained(AccessibilityManager::Get()),
             true);
     `);
