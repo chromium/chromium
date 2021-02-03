@@ -127,10 +127,17 @@ void InspectorContrast::CollectNodesAndBuildRTreeIfNeeded() {
   if (rtree_built_)
     return;
 
-  document_->GetFrame()
-      ->ContentLayoutObject()
-      ->GetFrameView()
-      ->UpdateLifecycleToPrePaintClean(DocumentUpdateReason::kInspector);
+  LocalFrame* frame = document_->GetFrame();
+  if (!frame)
+    return;
+  LayoutView* layout_view = frame->ContentLayoutObject();
+  if (!layout_view)
+    return;
+
+  if (!layout_view->GetFrameView()->UpdateLifecycleToPrePaintClean(
+          DocumentUpdateReason::kInspector)) {
+    return;
+  }
 
   InspectorDOMAgent::CollectNodes(
       document_, INT_MAX, true,
