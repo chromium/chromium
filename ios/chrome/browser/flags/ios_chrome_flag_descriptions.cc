@@ -414,6 +414,11 @@ const char kSyncSandboxName[] = "Use Chrome Sync sandbox";
 const char kSyncSandboxDescription[] =
     "Connects to the testing server for Chrome Sync.";
 
+const char kStartSurfaceName[] = "Start Surface";
+const char kStartSurfaceDescription[] =
+    "Enable showing the Start Surface when launching Chrome via clicking the "
+    "icon or the app switcher.";
+
 const char kToolbarContainerName[] = "Use Toolbar Containers";
 const char kToolbarContainerDescription[] =
     "When enabled, the toolbars and their fullscreen animations will be "

@@ -353,6 +353,10 @@ extern const char kSimplifySignOutIOSDescription[];
 extern const char kSnapshotDrawViewName[];
 extern const char kSnapshotDrawViewDescription[];
 
+// Title and description for the flag to enable the Start Surface.
+extern const char kStartSurfaceName[];
+extern const char kStartSurfaceDescription[];
+
 // Title and description for the flag to control if Chrome Sync should use the
 // sandbox servers.
 extern const char kSyncSandboxName[];
