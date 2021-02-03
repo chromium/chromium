@@ -26,6 +26,11 @@ std::string GetKeyForURL(const GURL& url) {
              ? std::string(kFakeDataPrefix) + domain
              : domain;
 }
+
+bool CompareTimeStampForProtoPair(const CartDB::KeyAndValue pair1,
+                                  CartDB::KeyAndValue pair2) {
+  return pair1.second.timestamp() > pair2.second.timestamp();
+}
 }  // namespace
 
 CartService::CartService(Profile* profile)
@@ -197,6 +202,7 @@ void CartService::AddCartsWithFakeData() {
   dummy_proto1.set_key(std::string(kFakeDataPrefix) + eTLDPlusOne(dummy_url1));
   dummy_proto1.set_merchant("Cart Foo");
   dummy_proto1.set_merchant_cart_url(dummy_url1.spec());
+  dummy_proto1.set_timestamp(6);
   dummy_proto1.add_product_image_urls(
       "https://encrypted-tbn3.gstatic.com/"
       "shopping?q=tbn:ANd9GcQpn38jB2_BANnHUFa7kHJsf6SyubcgeU1lNYO_"
@@ -221,6 +227,7 @@ void CartService::AddCartsWithFakeData() {
   dummy_proto2.set_key(std::string(kFakeDataPrefix) + eTLDPlusOne(dummy_url2));
   dummy_proto2.set_merchant("Cart Bar");
   dummy_proto2.set_merchant_cart_url(dummy_url2.spec());
+  dummy_proto2.set_timestamp(5);
   cart_db_->AddCart(dummy_proto2.key(), dummy_proto2,
                     base::BindOnce(&CartService::OnOperationFinished,
                                    weak_ptr_factory_.GetWeakPtr()));
@@ -230,6 +237,7 @@ void CartService::AddCartsWithFakeData() {
   dummy_proto3.set_key(std::string(kFakeDataPrefix) + eTLDPlusOne(dummy_url3));
   dummy_proto3.set_merchant("Cart Baz");
   dummy_proto3.set_merchant_cart_url(dummy_url3.spec());
+  dummy_proto3.set_timestamp(4);
   cart_db_->AddCart(dummy_proto3.key(), dummy_proto3,
                     base::BindOnce(&CartService::OnOperationFinished,
                                    weak_ptr_factory_.GetWeakPtr()));
@@ -239,6 +247,7 @@ void CartService::AddCartsWithFakeData() {
   dummy_proto4.set_key(std::string(kFakeDataPrefix) + eTLDPlusOne(dummy_url4));
   dummy_proto4.set_merchant("Cart Qux");
   dummy_proto4.set_merchant_cart_url(dummy_url4.spec());
+  dummy_proto4.set_timestamp(3);
   cart_db_->AddCart(dummy_proto4.key(), dummy_proto4,
                     base::BindOnce(&CartService::OnOperationFinished,
                                    weak_ptr_factory_.GetWeakPtr()));
@@ -248,6 +257,7 @@ void CartService::AddCartsWithFakeData() {
   dummy_proto5.set_key(std::string(kFakeDataPrefix) + eTLDPlusOne(dummy_url5));
   dummy_proto5.set_merchant("Cart Corge");
   dummy_proto5.set_merchant_cart_url(dummy_url5.spec());
+  dummy_proto5.set_timestamp(2);
   cart_db_->AddCart(dummy_proto5.key(), dummy_proto5,
                     base::BindOnce(&CartService::OnOperationFinished,
                                    weak_ptr_factory_.GetWeakPtr()));
@@ -257,6 +267,7 @@ void CartService::AddCartsWithFakeData() {
   dummy_proto6.set_key(std::string(kFakeDataPrefix) + eTLDPlusOne(dummy_url6));
   dummy_proto6.set_merchant("Cart Flob");
   dummy_proto6.set_merchant_cart_url(dummy_url6.spec());
+  dummy_proto6.set_timestamp(1);
   cart_db_->AddCart(dummy_proto6.key(), dummy_proto6,
                     base::BindOnce(&CartService::OnOperationFinished,
                                    weak_ptr_factory_.GetWeakPtr()));
@@ -287,6 +298,9 @@ void CartService::onLoadCarts(CartDB::LoadCallback callback,
                                             kv.second.is_removed();
                                    }),
                     proto_pairs.end());
+  // Sort items in timestamp descending order.
+  std::sort(proto_pairs.begin(), proto_pairs.end(),
+            CompareTimeStampForProtoPair);
   std::move(callback).Run(success, std::move(proto_pairs));
 }
 
