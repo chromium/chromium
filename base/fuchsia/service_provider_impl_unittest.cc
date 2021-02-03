@@ -17,7 +17,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
-namespace fuchsia {
 
 class ServiceProviderImplTest : public testing::Test {
  public:
@@ -92,5 +91,4 @@ TEST_F(ServiceProviderImplTest, NoService) {
   VerifyTestInterface(&stub, ZX_ERR_PEER_CLOSED);
 }
 
-}  // namespace fuchsia
 }  // namespace base

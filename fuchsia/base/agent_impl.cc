@@ -15,12 +15,8 @@ AgentImpl::ComponentStateBase::~ComponentStateBase() = default;
 AgentImpl::ComponentStateBase::ComponentStateBase(
     base::StringPiece component_id)
     : component_id_(component_id) {
-  fidl::InterfaceHandle<::fuchsia::io::Directory> directory;
-  outgoing_directory_.GetOrCreateDirectory("svc")->Serve(
-      fuchsia::io::OPEN_RIGHT_READABLE | fuchsia::io::OPEN_RIGHT_WRITABLE,
-      directory.NewRequest().TakeChannel());
-  service_provider_ = std::make_unique<base::fuchsia::ServiceProviderImpl>(
-      std::move(directory));
+  service_provider_ = base::ServiceProviderImpl::CreateForOutgoingDirectory(
+      &outgoing_directory_);
 
   // Tear down this instance when the client disconnects from the directory.
   service_provider_->SetOnLastClientDisconnectedClosure(base::BindOnce(
