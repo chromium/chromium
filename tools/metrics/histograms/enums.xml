@@ -31276,6 +31276,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3793" label="SessionStorageFirstUsedBeforeFcp"/>
   <int value="3794" label="SessionStorageFirstUsedAfterFcp"/>
   <int value="3795" label="GravitySensorConstructor"/>
+  <int value="3796" label="ElementInternalsStates"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
