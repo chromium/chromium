@@ -490,9 +490,7 @@ std::unique_ptr<blink::WebInputEvent> TranslateAndScaleWebInputEvent(
     float x = (wheel_event->PositionInWidget().x() + delta.x()) * scale;
     float y = (wheel_event->PositionInWidget().y() + delta.y()) * scale;
     wheel_event->SetPositionInWidget(x, y);
-    if (wheel_event->delta_units != ui::ScrollGranularity::kScrollByPage &&
-        wheel_event->delta_units !=
-            ui::ScrollGranularity::kScrollByPercentage) {
+    if (wheel_event->delta_units != ui::ScrollGranularity::kScrollByPage) {
       wheel_event->delta_x *= scale;
       wheel_event->delta_y *= scale;
       wheel_event->wheel_ticks_x *= scale;
