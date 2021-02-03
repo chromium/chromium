@@ -305,6 +305,7 @@
       "chrome://os-settings/*",
       "chrome://settings/*",
       "chrome://sync-confirmation/*",
+      "chrome://read-later/*",
       "chrome://tab-search/*",
       "chrome://tab-strip/*",
       "chrome://welcome/*",
