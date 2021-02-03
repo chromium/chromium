@@ -181,7 +181,8 @@ bool IsNavigateFromLink(content::NavigationHandle* navigation_handle) {
 
   return !ShouldIgnoreNavigation(page_transition, kAllowFormSubmit,
                                  kAllowClientRedirect) &&
-         !navigation_handle->WasStartedFromContextMenu();
+         !navigation_handle->WasStartedFromContextMenu() &&
+         !navigation_handle->IsSameDocument();
 }
 
 void CloseOrGoBack(content::WebContents* web_contents) {
