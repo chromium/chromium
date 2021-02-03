@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_animator.h"
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
+#import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_view_controller+subclassing.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_factory.h"
@@ -311,6 +312,9 @@
         locationBarHeightForFullscreenProgress:self.previousFullscreenProgress];
     self.view.locationBarContainer.layer.cornerRadius =
         self.view.locationBarHeight.constant / 2;
+  }
+  if (!ShowThumbStripInTraitCollection(self.traitCollection)) {
+    self.view.topCornersRounded = NO;
   }
 }
 
