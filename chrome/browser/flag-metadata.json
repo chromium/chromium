@@ -4800,6 +4800,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "theme-refactor-android",
+    "owners": [ "sinansahin@google.com", "twellington", "clank-app-team@google.com" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "tint-composited-content",
     "owners": [ "chromeos-gfx@google.com" ],
     // This flag is used for QA & development on ChromeOS, which has no way to

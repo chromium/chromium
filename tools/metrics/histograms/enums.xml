@@ -44393,6 +44393,7 @@ from previous Chrome versions.
   <int value="-639026783" label="disable-gpu-appcontainer"/>
   <int value="-638952203" label="RendererSideResourceScheduler:disabled"/>
   <int value="-637215276" label="QuickAnswersOnEditableText:enabled"/>
+  <int value="-634865673" label="ThemeRefactorAndroid:enabled"/>
   <int value="-634122679" label="GoogleBrandedContextMenu:enabled"/>
   <int value="-634116286"
       label="OmniboxUIExperimentUnboldSuggestionText:enabled"/>
@@ -46804,6 +46805,7 @@ from previous Chrome versions.
   <int value="1638927687" label="AutofillRichMetadataQueries:disabled"/>
   <int value="1639190590" label="UseMessagesGoogleComDomain:enabled"/>
   <int value="1639314588" label="LookalikeUrlNavigationSuggestions:disabled"/>
+  <int value="1639728471" label="ThemeRefactorAndroid:disabled"/>
   <int value="1640386037" label="ContextualSuggestionsSlimPeekUI:disabled"/>
   <int value="1643626730" label="PrinterStatus:disabled"/>
   <int value="1643712769" label="PrintWithReducedRasterization:enabled"/>

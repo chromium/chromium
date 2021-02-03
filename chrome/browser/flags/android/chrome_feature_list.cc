@@ -227,6 +227,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kTabbedAppOverflowMenuThreeButtonActionbar,
     &kTestDefaultDisabled,
     &kTestDefaultEnabled,
+    &kThemeRefactorAndroid,
     &kToolbarIphAndroid,
     &kToolbarIphAndroidCohort1,
     &kToolbarIphAndroidCohort2,
@@ -643,6 +644,9 @@ const base::Feature kTestDefaultDisabled{"TestDefaultDisabled",
 
 const base::Feature kTestDefaultEnabled{"TestDefaultEnabled",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kThemeRefactorAndroid{"ThemeRefactorAndroid",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kToolbarIphAndroid{"ToolbarIphAndroid",
                                        base::FEATURE_DISABLED_BY_DEFAULT};

@@ -448,6 +448,7 @@ public abstract class ChromeFeatureList {
             "TabbedAppOverflowMenuThreeButtonActionbar";
     public static final String TEST_DEFAULT_DISABLED = "TestDefaultDisabled";
     public static final String TEST_DEFAULT_ENABLED = "TestDefaultEnabled";
+    public static final String THEME_REFACTOR_ANDROID = "ThemeRefactorAndroid";
     public static final String TOOLBAR_IPH_ANDROID = "ToolbarIphAndroid";
     public static final String TRANSLATE_ASSIST_CONTENT = "TranslateAssistContent";
     public static final String TRANSLATE_INTENT = "TranslateIntent";

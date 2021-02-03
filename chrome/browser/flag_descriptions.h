@@ -1860,6 +1860,9 @@ extern const char kStrictSiteIsolationDescription[];
 extern const char kActionableContentSettingsName[];
 extern const char kActionableContentSettingsDescription[];
 
+extern const char kThemeRefactorAndroidName[];
+extern const char kThemeRefactorAndroidDescription[];
+
 extern const char kToolbarIphAndroidName[];
 extern const char kToolbarIphAndroidDescription[];
 

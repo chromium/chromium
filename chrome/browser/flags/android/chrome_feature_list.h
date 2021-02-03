@@ -124,6 +124,7 @@ extern const base::Feature kTabbedAppOverflowMenuRegroup;
 extern const base::Feature kTabbedAppOverflowMenuThreeButtonActionbar;
 extern const base::Feature kTestDefaultDisabled;
 extern const base::Feature kTestDefaultEnabled;
+extern const base::Feature kThemeRefactorAndroid;
 extern const base::Feature kToolbarIphAndroid;
 extern const base::Feature kToolbarIphAndroidCohort1;
 extern const base::Feature kToolbarIphAndroidCohort2;
