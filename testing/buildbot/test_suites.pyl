@@ -430,6 +430,9 @@
 
     'cast_video_specific_chromium_gtests': {
       'cast_accessibility_unittests': {},
+      'cast_display_settings_unittests': {
+        'experiment_percentage': 100,
+      },
       'cast_graphics_unittests': {},
       'exo_unittests': {},
       'views_unittests': {
