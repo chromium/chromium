@@ -279,8 +279,8 @@ base::span<const char* const> ContentScriptsHandler::Keys() const {
 
 bool ContentScriptsHandler::Parse(Extension* extension, base::string16* error) {
   ContentScriptsKeys manifest_keys;
-  if (!ContentScriptsKeys::ParseFromDictionary(*extension->manifest()->value(),
-                                               &manifest_keys, error)) {
+  if (!ContentScriptsKeys::ParseFromDictionary(
+          extension->manifest()->available_values(), &manifest_keys, error)) {
     return false;
   }
 

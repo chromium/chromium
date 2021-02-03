@@ -7,12 +7,10 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
-#include "base/strings/string_split.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "extensions/common/api/shared_module.h"
 #include "extensions/common/error_utils.h"
@@ -94,6 +92,82 @@ int GetLocationRank(Manifest::Location location) {
   CHECK(rank != kInvalidRank);
   return rank;
 }
+
+// Helper class to filter available values from a manifest.
+class AvailableValuesFilter {
+ public:
+  // Filters `manifest.values()` removing any unavailable keys.
+  static base::Value Filter(const Manifest& manifest) {
+    return FilterInternal(manifest, *manifest.value(), "");
+  }
+
+ private:
+  // Returns a DictionaryValue corresponding to |input_dict| for the given
+  // |manifest|, with all unavailable keys removed.
+  static base::Value FilterInternal(const Manifest& manifest,
+                                    const base::Value& input_dict,
+                                    std::string current_path) {
+    base::Value output_dict(base::Value::Type::DICTIONARY);
+    DCHECK(input_dict.is_dict());
+    DCHECK(CanAccessFeature(manifest, current_path));
+
+    for (const auto& it : input_dict.DictItems()) {
+      std::string child_path = CombineKeys(current_path, it.first);
+
+      // Unavailable key, skip it.
+      if (!CanAccessFeature(manifest, child_path))
+        continue;
+
+      // If |child_path| corresponds to a leaf node, copy it.
+      bool is_leaf_node = !it.second.is_dict();
+      if (is_leaf_node) {
+        output_dict.SetKey(it.first, it.second.Clone());
+        continue;
+      }
+
+      // Child dictionary. Populate it recursively.
+      output_dict.SetKey(it.first,
+                         FilterInternal(manifest, it.second, child_path));
+    }
+    return output_dict;
+  }
+
+  // Returns true if the manifest feature corresponding to |feature_path| is
+  // available to this manifest. Note: This doesn't check parent feature
+  // availability. This is ok since we check feature availability in a
+  // breadth-first manner below which ensures that we only ever check a child
+  // feature if its parent is available. Note that api features don't follow
+  // similar availability semantics i.e. we can have child api features be
+  // available even if the parent feature is not (e.g.,
+  // runtime.sendMessage()).
+  static bool CanAccessFeature(const Manifest& manifest,
+                               const std::string& feature_path) {
+    const Feature* feature =
+        FeatureProvider::GetManifestFeatures()->GetFeature(feature_path);
+
+    // TODO(crbug.com/1171466): We assume that if a feature does not exist,
+    // it is available. This is ok for child features (if its parent is
+    // available) but is probably not correct for top-level features. We
+    // should see if false can be returned for these non-existent top-level
+    // features here.
+    if (!feature)
+      return true;
+
+    return feature
+        ->IsAvailableToManifest(manifest.hashed_id(), manifest.type(),
+                                manifest.location(),
+                                manifest.GetManifestVersion())
+        .is_available();
+  }
+
+  static std::string CombineKeys(const std::string& parent,
+                                 const std::string& child) {
+    if (parent.empty())
+      return child;
+
+    return base::StrCat({parent, ".", child});
+  }
+};
 
 }  // namespace
 
@@ -184,6 +258,9 @@ Manifest::Manifest(Location location,
       value_(std::move(value)),
       type_(GetTypeFromManifestValue(*value_, for_login_screen)) {
   DCHECK(!extension_id_.empty());
+
+  available_values_ = base::DictionaryValue::From(
+      base::Value::ToUniquePtrValue(AvailableValuesFilter::Filter(*this)));
 }
 
 Manifest::~Manifest() = default;
@@ -196,8 +273,6 @@ bool Manifest::ValidateManifest(
   // Check every feature to see if its in the manifest. Note that this means
   // we will ignore keys that are not features; we do this for forward
   // compatibility.
-  // TODO(aa): Consider having an error here in the case of strict error
-  // checking to let developers know when they screw up.
 
   const FeatureProvider* manifest_feature_provider =
       FeatureProvider::GetManifestFeatures();
@@ -233,42 +308,42 @@ bool Manifest::ValidateManifest(
 }
 
 bool Manifest::HasKey(const std::string& key) const {
-  return CanAccessKey(key) && value_->HasKey(key);
+  return available_values_->HasKey(key);
 }
 
 bool Manifest::HasPath(const std::string& path) const {
   const base::Value* ignored = nullptr;
-  return CanAccessPath(path) && value_->Get(path, &ignored);
+  return available_values_->Get(path, &ignored);
 }
 
 bool Manifest::Get(
     const std::string& path, const base::Value** out_value) const {
-  return CanAccessPath(path) && value_->Get(path, out_value);
+  return available_values_->Get(path, out_value);
 }
 
 bool Manifest::GetBoolean(
     const std::string& path, bool* out_value) const {
-  return CanAccessPath(path) && value_->GetBoolean(path, out_value);
+  return available_values_->GetBoolean(path, out_value);
 }
 
 bool Manifest::GetInteger(
     const std::string& path, int* out_value) const {
-  return CanAccessPath(path) && value_->GetInteger(path, out_value);
+  return available_values_->GetInteger(path, out_value);
 }
 
 bool Manifest::GetString(
     const std::string& path, std::string* out_value) const {
-  return CanAccessPath(path) && value_->GetString(path, out_value);
+  return available_values_->GetString(path, out_value);
 }
 
 bool Manifest::GetString(
     const std::string& path, base::string16* out_value) const {
-  return CanAccessPath(path) && value_->GetString(path, out_value);
+  return available_values_->GetString(path, out_value);
 }
 
 bool Manifest::GetDictionary(
     const std::string& path, const base::DictionaryValue** out_value) const {
-  return CanAccessPath(path) && value_->GetDictionary(path, out_value);
+  return available_values_->GetDictionary(path, out_value);
 }
 
 bool Manifest::GetDictionary(const std::string& path,
@@ -278,7 +353,7 @@ bool Manifest::GetDictionary(const std::string& path,
 
 bool Manifest::GetList(
     const std::string& path, const base::ListValue** out_value) const {
-  return CanAccessPath(path) && value_->GetList(path, out_value);
+  return available_values_->GetList(path, out_value);
 }
 
 bool Manifest::GetList(const std::string& path,
@@ -291,9 +366,7 @@ bool Manifest::GetPathOfType(const std::string& path,
                              const base::Value** out_value) const {
   const std::vector<base::StringPiece> components =
       manifest_handler_helpers::TokenizeDictionaryPath(path);
-  if (!CanAccessPath(components))
-    return false;
-  *out_value = value_->FindPathOfType(components, type);
+  *out_value = available_values_->FindPathOfType(components, type);
   return *out_value != nullptr;
 }
 
@@ -305,36 +378,14 @@ bool Manifest::EqualsForTesting(const Manifest& other) const {
 int Manifest::GetManifestVersion() const {
   // Platform apps were launched after manifest version 2 was the preferred
   // version, so they default to that.
+
+  // Subtle: This is also called in the constructor via
+  // `ComputeAvailableValues()`. Hence this should keep relying on |value_| and
+  // not change to using |available_values_| (since it might be uninitialized
+  // when this is called).
   int manifest_version = type_ == TYPE_PLATFORM_APP ? 2 : 1;
   value_->GetInteger(keys::kManifestVersion, &manifest_version);
   return manifest_version;
-}
-
-bool Manifest::CanAccessPath(const std::string& path) const {
-  return CanAccessPath(manifest_handler_helpers::TokenizeDictionaryPath(path));
-}
-
-bool Manifest::CanAccessPath(base::span<const base::StringPiece> path) const {
-  std::string key;
-  for (base::StringPiece component : path) {
-    key.append(component.data(), component.size());
-    if (!CanAccessKey(key))
-      return false;
-    key += '.';
-  }
-  return true;
-}
-
-bool Manifest::CanAccessKey(const std::string& key) const {
-  const Feature* feature =
-      FeatureProvider::GetManifestFeatures()->GetFeature(key);
-  if (!feature)
-    return true;
-
-  return feature
-      ->IsAvailableToManifest(hashed_id_, type_, location_,
-                              GetManifestVersion())
-      .is_available();
 }
 
 }  // namespace extensions

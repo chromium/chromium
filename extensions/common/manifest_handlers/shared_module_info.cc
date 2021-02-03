@@ -131,22 +131,22 @@ SharedModuleHandler::SharedModuleHandler() = default;
 SharedModuleHandler::~SharedModuleHandler() = default;
 
 bool SharedModuleHandler::Parse(Extension* extension, base::string16* error) {
-  bool has_import = extension->manifest()->HasKey(ManifestKeys::kImport);
-  bool has_export = extension->manifest()->HasKey(ManifestKeys::kExport);
+  ManifestKeys manifest_keys;
+  if (!ManifestKeys::ParseFromDictionary(
+          extension->manifest()->available_values(), &manifest_keys, error)) {
+    return false;
+  }
+
+  bool has_import = !!manifest_keys.import;
+  bool has_export = !!manifest_keys.export_;
   DCHECK(has_import || has_export);
+
+  auto info = std::make_unique<SharedModuleInfo>();
 
   if (has_import && has_export) {
     *error = base::ASCIIToUTF16(errors::kInvalidImportAndExport);
     return false;
   }
-
-  ManifestKeys manifest_keys;
-  if (!ManifestKeys::ParseFromDictionary(*extension->manifest()->value(),
-                                         &manifest_keys, error)) {
-    return false;
-  }
-
-  auto info = std::make_unique<SharedModuleInfo>();
 
   if (has_export && manifest_keys.export_->allowlist) {
     auto begin = manifest_keys.export_->allowlist->begin();

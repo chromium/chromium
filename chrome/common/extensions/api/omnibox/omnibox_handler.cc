@@ -37,8 +37,8 @@ OmniboxHandler::~OmniboxHandler() {
 
 bool OmniboxHandler::Parse(Extension* extension, base::string16* error) {
   ManifestKeys manifest_keys;
-  if (!ManifestKeys::ParseFromDictionary(*extension->manifest()->value(),
-                                         &manifest_keys, error)) {
+  if (!ManifestKeys::ParseFromDictionary(
+          extension->manifest()->available_values(), &manifest_keys, error)) {
     return false;
   }
 

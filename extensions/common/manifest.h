@@ -222,17 +222,21 @@ class Manifest final {
 
   // Gets the underlying DictionaryValue representing the manifest.
   // Note: only use this when you KNOW you don't need the validation.
+  // TODO(karandeepb): Audit existing usages to see if they should be replaced
+  // by  available_values() instead.
   const base::DictionaryValue* value() const { return value_.get(); }
+
+  // Gets the underlying DictionaryValue representing the manifest with all
+  // unavailable manifest keys removed.
+  const base::DictionaryValue& available_values() const {
+    return *available_values_;
+  }
 
  private:
   Manifest(Location location,
            std::unique_ptr<base::DictionaryValue> value,
            ExtensionId extension_id,
            bool for_login_screen);
-  // Returns true if the extension can specify the given |path|.
-  bool CanAccessPath(const std::string& path) const;
-  bool CanAccessPath(const base::span<const base::StringPiece> path) const;
-  bool CanAccessKey(const std::string& key) const;
 
   // A persistent, globally unique ID. An extension's ID is used in things
   // like directory structures and URLs, and is expected to not change across
@@ -249,6 +253,9 @@ class Manifest final {
 
   // The underlying dictionary representation of the manifest.
   const std::unique_ptr<const base::DictionaryValue> value_;
+
+  // Same as |value_| but comprises only of keys available to this manifest.
+  std::unique_ptr<const base::DictionaryValue> available_values_;
 
   const Type type_;
 

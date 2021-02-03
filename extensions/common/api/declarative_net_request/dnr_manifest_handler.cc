@@ -44,7 +44,7 @@ bool DNRManifestHandler::Parse(Extension* extension, base::string16* error) {
 
   dnr_api::ManifestKeys manifest_keys;
   if (!dnr_api::ManifestKeys::ParseFromDictionary(
-          *extension->manifest()->value(), &manifest_keys, error)) {
+          extension->manifest()->available_values(), &manifest_keys, error)) {
     return false;
   }
   std::vector<dnr_api::Ruleset> rulesets =
