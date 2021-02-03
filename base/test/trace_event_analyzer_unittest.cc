@@ -581,17 +581,17 @@ TEST_F(TraceEventAnalyzerTest, AsyncBeginEndAssocationsWithSteps) {
 
   BeginTracing();
   {
-    TRACE_EVENT_ASYNC_STEP_INTO0("c", "n", 0xA, "s1");
-    TRACE_EVENT_ASYNC_END0("c", "n", 0xA);
-    TRACE_EVENT_ASYNC_BEGIN0("c", "n", 0xB);
-    TRACE_EVENT_ASYNC_BEGIN0("c", "n", 0xC);
-    TRACE_EVENT_ASYNC_STEP_PAST0("c", "n", 0xB, "s1");
-    TRACE_EVENT_ASYNC_STEP_INTO0("c", "n", 0xC, "s1");
-    TRACE_EVENT_ASYNC_STEP_INTO1("c", "n", 0xC, "s2", "a", 1);
-    TRACE_EVENT_ASYNC_END0("c", "n", 0xB);
-    TRACE_EVENT_ASYNC_END0("c", "n", 0xC);
-    TRACE_EVENT_ASYNC_BEGIN0("c", "n", 0xA);
-    TRACE_EVENT_ASYNC_STEP_INTO0("c", "n", 0xA, "s2");
+    TRACE_EVENT_ASYNC_STEP_INTO0("cat", "n", 0xA, "s1");
+    TRACE_EVENT_ASYNC_END0("cat", "n", 0xA);
+    TRACE_EVENT_ASYNC_BEGIN0("cat", "n", 0xB);
+    TRACE_EVENT_ASYNC_BEGIN0("cat", "n", 0xC);
+    TRACE_EVENT_ASYNC_STEP_PAST0("cat", "n", 0xB, "s1");
+    TRACE_EVENT_ASYNC_STEP_INTO0("cat", "n", 0xC, "s1");
+    TRACE_EVENT_ASYNC_STEP_INTO1("cat", "n", 0xC, "s2", "a", 1);
+    TRACE_EVENT_ASYNC_END0("cat", "n", 0xB);
+    TRACE_EVENT_ASYNC_END0("cat", "n", 0xC);
+    TRACE_EVENT_ASYNC_BEGIN0("cat", "n", 0xA);
+    TRACE_EVENT_ASYNC_STEP_INTO0("cat", "n", 0xA, "s2");
   }
   EndTracing();
 

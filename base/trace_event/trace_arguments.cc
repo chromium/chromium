@@ -284,5 +284,14 @@ void TraceArguments::AppendDebugString(std::string* out) {
   *out += ")";
 }
 
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+void ConvertableToTraceFormat::Add(
+    perfetto::protos::pbzero::DebugAnnotation* annotation) const {
+  std::string json;
+  AppendAsTraceFormat(&json);
+  annotation->set_legacy_json_value(json);
+}
+#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+
 }  // namespace trace_event
 }  // namespace base

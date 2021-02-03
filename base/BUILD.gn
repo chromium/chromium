@@ -131,6 +131,16 @@ if (is_android) {
   }
 }
 
+config("perfetto_config") {
+  if (use_perfetto_client_library) {
+    defines = [
+      # Use TRACE_EVENT macro implementation from Perfetto. See
+      # trace_event/trace_event_common.h.
+      "BASE_USE_PERFETTO_CLIENT_LIBRARY=1",
+    ]
+  }
+}
+
 # Base and everything it depends on should be a static library rather than
 # a source set. Base is more of a "library" in the classic sense in that many
 # small parts of it are used in many different contexts. This combined with a
@@ -2225,7 +2235,10 @@ component("base") {
       "//third_party/perfetto/include/perfetto/protozero",
     ]
 
-    all_dependent_configs += [ "//third_party/perfetto/gn:public_config" ]
+    all_dependent_configs += [
+      ":perfetto_config",
+      "//third_party/perfetto/gn:public_config",
+    ]
 
     if (is_win) {
       sources += [
@@ -2244,6 +2257,10 @@ component("base") {
         "trace_event/java_heap_dump_provider_android.h",
         "trace_event/trace_event_android.cc",
       ]
+    }
+
+    if (use_perfetto_client_library) {
+      sources -= [ "trace_event/builtin_categories.cc" ]
     }
   } else {
     sources += [

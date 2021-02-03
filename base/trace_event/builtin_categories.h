@@ -9,7 +9,7 @@
 #include "base/macros.h"
 #include "base/stl_util.h"
 #include "base/trace_event/common/trace_event_common.h"
-#include "build/build_config.h"
+#include "base/tracing_buildflags.h"
 
 // List of builtin category names. If you want to use a new category name in
 // your code and you get a static assert, this is the right place to register
@@ -23,7 +23,7 @@
 #define INTERNAL_TRACE_LIST_BUILTIN_CATEGORIES(X)                        \
   /* These entries must go first to be consistent with the               \
    * CategoryRegistry::kCategory* consts.*/                              \
-  X("tracing categories exhausted; must increase kMaxCategories")        \
+  X("tracing categories exhausted. must increase kMaxCategories")        \
   X("tracing already shutdown")                                          \
   X("__metadata")                                                        \
   /* The rest of the list is in alphabetical order */                    \
@@ -149,9 +149,8 @@
   X("startup")                                                           \
   X("sync")                                                              \
   X("sync_lock_contention")                                              \
-  X("thread_pool")                                                       \
   X("test_gpu")                                                          \
-  X("test_tracing")                                                      \
+  X("thread_pool")                                                       \
   X("toplevel")                                                          \
   X("toplevel.flow")                                                     \
   X("ui")                                                                \
@@ -261,9 +260,101 @@
   X(TRACE_DISABLED_BY_DEFAULT("worker.scheduler"))                       \
   X(TRACE_DISABLED_BY_DEFAULT("xr.debug"))
 
+#define INTERNAL_TRACE_LIST_BUILTIN_CATEGORY_GROUPS(X)                        \
+  X("base,toplevel")                                                          \
+  X("benchmark,drm")                                                          \
+  X("benchmark,latencyInfo,rail")                                             \
+  X("benchmark,loading")                                                      \
+  X("benchmark,rail")                                                         \
+  X("benchmark,uma")                                                          \
+  X("benchmark,viz")                                                          \
+  X("blink.animations,devtools.timeline,benchmark,rail")                      \
+  X("blink,benchmark")                                                        \
+  X("blink,benchmark,rail," TRACE_DISABLED_BY_DEFAULT("blink.debug.layout"))  \
+  X("blink,blink_style")                                                      \
+  X("blink,devtools.timeline")                                                \
+  X("blink,loading")                                                          \
+  X("blink,rail")                                                             \
+  X("blink.user_timing,rail")                                                 \
+  X("blink_gc,devtools.timeline")                                             \
+  X("browser,content,navigation")                                             \
+  X("browser,navigation")                                                     \
+  X("browser,navigation,benchmark")                                           \
+  X("browser,startup")                                                        \
+  X("category1,category2")                                                    \
+  X("cc,benchmark")                                                           \
+  X("cc,input")                                                               \
+  X("cc," TRACE_DISABLED_BY_DEFAULT("devtools.timeline"))                     \
+  X("content,navigation")                                                     \
+  X("devtools.timeline,rail")                                                 \
+  X("drm,hwoverlays")                                                         \
+  X("dwrite,fonts")                                                           \
+  X("fonts,ui")                                                               \
+  X("gpu,benchmark")                                                          \
+  X("gpu,startup")                                                            \
+  X("gpu,toplevel.flow")                                                      \
+  X("inc2,inc")                                                               \
+  X("inc,inc2")                                                               \
+  X("input,benchmark")                                                        \
+  X("input,benchmark,devtools.timeline")                                      \
+  X("input,latency")                                                          \
+  X("input,rail")                                                             \
+  X("input,views")                                                            \
+  X("ipc,security")                                                           \
+  X("ipc,toplevel")                                                           \
+  X("loading,rail")                                                           \
+  X("loading,rail,devtools.timeline")                                         \
+  X("media,gpu")                                                              \
+  X("media,rail")                                                             \
+  X("navigation,benchmark,rail")                                              \
+  X("navigation,rail")                                                        \
+  X("renderer,benchmark,rail")                                                \
+  X("renderer,webkit")                                                        \
+  X("renderer_host,navigation")                                               \
+  X("renderer_host," TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"))        \
+  X("shutdown,viz")                                                           \
+  X("startup,benchmark,rail")                                                 \
+  X("startup,rail")                                                           \
+  X("ui,input")                                                               \
+  X("ui,latency")                                                             \
+  X("v8,devtools.timeline")                                                   \
+  X("v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"))          \
+  X("viz,benchmark")                                                          \
+  X("WebCore,benchmark,rail")                                                 \
+  X(TRACE_DISABLED_BY_DEFAULT("cc.debug") "," TRACE_DISABLED_BY_DEFAULT(      \
+      "viz.quads") "," TRACE_DISABLED_BY_DEFAULT("devtools.timeline.layers")) \
+  X(TRACE_DISABLED_BY_DEFAULT("cc.debug.display_items") "," \
+      TRACE_DISABLED_BY_DEFAULT("cc.debug.picture") "," \
+      TRACE_DISABLED_BY_DEFAULT("devtools.timeline.picture"))
+
 #define INTERNAL_TRACE_INIT_CATEGORY_NAME(name) name,
 
 #define INTERNAL_TRACE_INIT_CATEGORY(name) {0, 0, name},
+
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+PERFETTO_DEFINE_TEST_CATEGORY_PREFIXES("cat",
+                                       "foo",
+                                       "test",
+                                       "kTest",
+                                       "noise",
+                                       "Testing",
+                                       "NotTesting",
+                                       TRACE_DISABLED_BY_DEFAULT("test"),
+                                       TRACE_DISABLED_BY_DEFAULT("Testing"),
+                                       TRACE_DISABLED_BY_DEFAULT("NotTesting"));
+
+#define INTERNAL_CATEGORY(X) perfetto::Category(X),
+#define INTERNAL_CATEGORY_GROUP(X) perfetto::Category::Group(X),
+
+// Define a Perfetto TrackEvent data source using the list of categories defined
+// above. See https://perfetto.dev/docs/instrumentation/track-events.
+PERFETTO_DEFINE_CATEGORIES(
+    INTERNAL_TRACE_LIST_BUILTIN_CATEGORIES(INTERNAL_CATEGORY)
+        INTERNAL_TRACE_LIST_BUILTIN_CATEGORY_GROUPS(INTERNAL_CATEGORY_GROUP));
+
+#undef INTERNAL_CATEGORY
+#undef INTERNAL_CATEGORY_GROUP
+#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 namespace base {
 namespace trace_event {
@@ -291,15 +382,26 @@ static_assert(!StrEqConstexpr("abc", "ab"), "strings should not be equal");
 
 // Static-only class providing access to the compile-time registry of trace
 // categories.
+// TODO(skyostil): Remove after migrating to the Perfetto client API.
 class BASE_EXPORT BuiltinCategories {
  public:
   // Returns a built-in category name at |index| in the registry.
   static constexpr const char* At(size_t index) {
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+    return perfetto::internal::kCategories[index].name;
+#else
     return kBuiltinCategories[index];
+#endif
   }
 
   // Returns the amount of built-in categories in the registry.
-  static constexpr size_t Size() { return base::size(kBuiltinCategories); }
+  static constexpr size_t Size() {
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+    return perfetto::internal::kCategoryCount;
+#else
+    return base::size(kBuiltinCategories);
+#endif
+  }
 
   // Where in the builtin category list to start when populating the
   // about://tracing UI.
@@ -330,17 +432,18 @@ class BASE_EXPORT BuiltinCategories {
   // The array of category names used only for testing. It's kept separately
   // from the main list to avoid allocating the space for them in the binary.
   static constexpr const char* kCategoriesForTesting[] = {
-      "\001\002\003\n\r",
-      "a",
-      "all",
-      "b",
-      "b1",
-      "c",
-      "c0",
-      "c1",
-      "c2",
-      "c3",
-      "c4",
+      "test_\001\002\003\n\r",
+      "test_a",
+      "test_all",
+      "test_b",
+      "test_b1",
+      "test_c",
+      "test_c0",
+      "test_c1",
+      "test_c2",
+      "test_c3",
+      "test_c4",
+      "test_tracing",
       "cat",
       "cat1",
       "cat2",
@@ -349,33 +452,32 @@ class BASE_EXPORT BuiltinCategories {
       "cat5",
       "cat6",
       "category",
-      "drink",
-      "excluded_cat",
-      "filtered_cat",
+      "test_drink",
+      "test_excluded_cat",
+      "test_filtered_cat",
       "foo",
-      "inc",
-      "inc2",
-      "included",
-      "inc_wildcard_",
-      "inc_wildcard_abc",
-      "inc_wildchar_bla_end",
-      "inc_wildchar_x_end",
+      "test_inc",
+      "test_inc2",
+      "test_included",
+      "test_inc_wildcard_",
+      "test_inc_wildcard_abc",
+      "test_inc_wildchar_bla_end",
+      "test_inc_wildchar_x_end",
       "kTestCategory",
-      "log",
       "noise",
-      "other_included",
+      "test_other_included",
       "test",
       "test_category",
       "Testing",
       "TraceEventAgentTestCategory",
-      "unfiltered_cat",
-      "x",
-      TRACE_DISABLED_BY_DEFAULT("c9"),
-      TRACE_DISABLED_BY_DEFAULT("cat"),
-      TRACE_DISABLED_BY_DEFAULT("filtered_cat"),
+      "test_unfiltered_cat",
+      "test_x",
+      TRACE_DISABLED_BY_DEFAULT("test_c9"),
+      TRACE_DISABLED_BY_DEFAULT("test_cat"),
+      TRACE_DISABLED_BY_DEFAULT("test_filtered_cat"),
       TRACE_DISABLED_BY_DEFAULT("NotTesting"),
       TRACE_DISABLED_BY_DEFAULT("Testing"),
-      TRACE_DISABLED_BY_DEFAULT("unfiltered_cat")};
+      TRACE_DISABLED_BY_DEFAULT("test_unfiltered_cat")};
 
   // Returns whether |str| is in |array| of |array_len|.
   static constexpr bool IsStringInArray(const char* str,

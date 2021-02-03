@@ -5,16 +5,6 @@
 #ifndef BASE_TRACE_EVENT_COMMON_TRACE_EVENT_COMMON_H_
 #define BASE_TRACE_EVENT_COMMON_TRACE_EVENT_COMMON_H_
 
-// This header file defines the set of trace_event macros without specifying
-// how the events actually get collected and stored. If you need to expose trace
-// events to some other universe, you can copy-and-paste this file as well as
-// trace_event.h, modifying the macros contained there as necessary for the
-// target platform. The end result is that multiple libraries can funnel events
-// through to a shared trace event collector.
-
-// IMPORTANT: To avoid conflicts, if you need to modify this file for a library,
-// land your change in base/ first, and then copy-and-paste it.
-
 // Trace events are for tracking application performance and resource usage.
 // Macros are provided to track:
 //    Begin and end of function calls
@@ -193,6 +183,100 @@
 // Without the use of these static category pointers and enabled flags all
 // trace points would carry a significant performance cost of acquiring a lock
 // and resolving the category.
+
+// There are currently two implementations of the tracing macros. Firstly,
+// Perfetto (https://perfetto.dev/) implements a compatible set of macros which
+// we are migrating to. The Perfetto implementation is enabled through the
+// use_perfetto_client_library GN arg. If that flag is disabled, we fall back to
+// the legacy implementation in the latter half of this file (and
+// trace_event.h).
+// TODO(skyostil): Remove the legacy macro implementation.
+
+// Normally we'd use BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY) for this, but
+// because v8 includes trace_event_common.h directly (in non-Perfetto mode), we
+// can't depend on any other header files here.
+#if defined(BASE_USE_PERFETTO_CLIENT_LIBRARY)
+////////////////////////////////////////////////////////////////////////////////
+// Perfetto trace macros
+
+#include "base/threading/platform_thread.h"
+#include "base/time/time.h"
+
+// Export Perfetto symbols in the same way as //base symbols.
+#define PERFETTO_COMPONENT_EXPORT BASE_EXPORT
+
+// Enable legacy trace event macros (e.g., TRACE_EVENT{0,1,2}).
+#define PERFETTO_ENABLE_LEGACY_TRACE_EVENTS 1
+
+// Macros for reading the current trace time (bypassing any virtual time
+// overrides).
+#define TRACE_TIME_TICKS_NOW() ::base::subtle::TimeTicksNowIgnoringOverride()
+#define TRACE_TIME_NOW() ::base::subtle::TimeNowIgnoringOverride()
+
+// Implementation detail: trace event macros create temporary variables
+// to keep instrumentation overhead low. These macros give each temporary
+// variable a unique name based on the line number to prevent name collisions.
+#define INTERNAL_TRACE_EVENT_UID(name_prefix) PERFETTO_UID(name_prefix)
+
+// Special trace event macro to trace task execution with the location where it
+// was posted from.
+// TODO(skyostil): Convert this into a regular typed trace event.
+#define TRACE_TASK_EXECUTION(run_function, task) \
+  INTERNAL_TRACE_TASK_EXECUTION(run_function, task)
+
+// Special trace event macro to trace log messages.
+// TODO(skyostil): Convert this into a regular typed trace event.
+#define TRACE_LOG_MESSAGE(file, message, line) \
+  INTERNAL_TRACE_LOG_MESSAGE(file, message, line)
+
+// Declare debug annotation converters for base time types, so they can be
+// passed as trace event arguments.
+// TODO(skyostil): Serialize timestamps using perfetto::TracedValue instead.
+namespace perfetto {
+namespace protos {
+namespace pbzero {
+class DebugAnnotation;
+}  // namespace pbzero
+}  // namespace protos
+namespace internal {
+
+void BASE_EXPORT
+WriteDebugAnnotation(protos::pbzero::DebugAnnotation* annotation,
+                     ::base::TimeTicks);
+void BASE_EXPORT
+WriteDebugAnnotation(protos::pbzero::DebugAnnotation* annotation, ::base::Time);
+
+}  // namespace internal
+}  // namespace perfetto
+
+// Pull in the tracing macro definitions from Perfetto.
+#include "third_party/perfetto/include/perfetto/tracing.h"
+
+namespace perfetto {
+namespace legacy {
+
+template <>
+bool BASE_EXPORT ConvertThreadId(const ::base::PlatformThreadId& thread,
+                                 uint64_t* track_uuid_out,
+                                 int32_t* pid_override_out,
+                                 int32_t* tid_override_out);
+
+}  // namespace legacy
+
+template <>
+BASE_EXPORT TraceTimestamp
+ConvertTimestampToTraceTimeNs(const ::base::TimeTicks& ticks);
+
+}  // namespace perfetto
+
+#else  // !defined(BASE_USE_PERFETTO_CLIENT_LIBRARY)
+////////////////////////////////////////////////////////////////////////////////
+// Legacy trace macros
+
+// What follows is the legacy TRACE_EVENT macro implementation, which is being
+// replaced by the Perfetto-based implementation above. New projects wishing to
+// enable tracing should use the Perfetto SDK. See
+// https://perfetto.dev/docs/instrumentation/tracing-sdk.
 
 // Check that nobody includes this file directly.  Clients are supposed to
 // include the surrounding "trace_event.h" of their project instead.
@@ -1034,4 +1118,5 @@
 #define TRACE_EVENT_SCOPE_NAME_PROCESS ('p')
 #define TRACE_EVENT_SCOPE_NAME_THREAD ('t')
 
+#endif  // !defined(BASE_USE_PERFETTO_CLIENT_LIBRARY)
 #endif  // BASE_TRACE_EVENT_COMMON_TRACE_EVENT_COMMON_H_

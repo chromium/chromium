@@ -1885,6 +1885,7 @@ void UpdateTraceEventDurationExplicit(
                                          thread_now, thread_instruction_now);
 }
 
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 ScopedTraceBinaryEfficient::ScopedTraceBinaryEfficient(
     const char* category_group,
     const char* name) {
@@ -1911,5 +1912,6 @@ ScopedTraceBinaryEfficient::~ScopedTraceBinaryEfficient() {
                                                 event_handle_);
   }
 }
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 }  // namespace trace_event_internal

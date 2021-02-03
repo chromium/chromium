@@ -27,7 +27,9 @@
 #include "base/trace_event/trace_arguments.h"
 #include "base/trace_event/trace_category.h"
 #include "base/trace_event/trace_log.h"
-#include "build/build_config.h"
+#include "base/tracing_buildflags.h"
+
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 // By default, const char* argument values are assumed to have long-lived scope
 // and will not be copied. Use this macro to force a const char* to be copied.
@@ -93,6 +95,10 @@
 // unsigned int TRACE_EVENT_API_GET_NUM_TRACES_RECORDED()
 #define TRACE_EVENT_API_GET_NUM_TRACES_RECORDED \
   trace_event_internal::GetNumTracesRecorded
+
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+
+// Legacy TRACE_EVENT_API entrypoints. Do not use from new code.
 
 // Add a trace event to the platform tracing system.
 // base::trace_event::TraceEventHandle TRACE_EVENT_API_ADD_TRACE_EVENT(
@@ -181,6 +187,7 @@
 // Implementation detail: trace event macros create temporary variables
 // to keep instrumentation overhead low. These macros give each temporary
 // variable a unique name based on the line number to prevent name collisions.
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 #define INTERNAL_TRACE_EVENT_UID3(a, b) trace_event_unique_##a##b
 #define INTERNAL_TRACE_EVENT_UID2(a, b) INTERNAL_TRACE_EVENT_UID3(a, b)
 #define INTERNAL_TRACE_EVENT_UID(name_prefix) \
@@ -388,6 +395,7 @@
           ##__VA_ARGS__);                                            \
     }                                                                \
   } while (0)
+#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 namespace trace_event_internal {
 
@@ -708,6 +716,8 @@ static void AddMetadataEvent(const unsigned char* category_group_enabled,
                                          &args, TRACE_EVENT_FLAG_NONE);
 }
 
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+
 // Used by TRACE_EVENTx macros. Do not use directly.
 class TRACE_EVENT_API_CLASS_EXPORT ScopedTracer {
  public:
@@ -757,6 +767,8 @@ class TRACE_EVENT_API_CLASS_EXPORT ScopedTraceBinaryEfficient {
 #define TRACE_EVENT_BINARY_EFFICIENT0(category_group, name) \
     trace_event_internal::ScopedTraceBinaryEfficient \
         INTERNAL_TRACE_EVENT_UID(scoped_trace)(category_group, name);
+
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 }  // namespace trace_event_internal
 
