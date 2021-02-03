@@ -3085,7 +3085,6 @@
         'mixins': [
           'isolate_profile_data',
           'mac_10.13',
-          'no_gpu',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_mac_gtests',
@@ -5068,7 +5067,6 @@
       'Mac10.13 Tests (dbg)': {
         'mixins': [
             'mac_10.13',
-            'no_gpu',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_mac_gtests',
@@ -5364,7 +5362,6 @@
       'mac-mojo-rel': {
         'mixins': [
           'mac_10.13',
-          'no_gpu',
         ],
       },
     },
