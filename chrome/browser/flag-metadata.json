@@ -3939,12 +3939,12 @@
   {
     "name": "passwords-account-storage",
     "owners": [ "mamir", "treib" ],
-    "expiry_milestone": 89
+    "expiry_milestone": 95
   },
   {
     "name": "passwords-account-storage-iph",
     "owners": [ "mamir", "treib" ],
-    "expiry_milestone": 89
+    "expiry_milestone": 95
   },
   {
     "name": "passwords-weakness-check",
