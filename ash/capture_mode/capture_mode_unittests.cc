@@ -48,6 +48,8 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
 #include "components/account_id/account_id.h"
+#include "ui/aura/client/capture_client.h"
+#include "ui/aura/client/capture_client_observer.h"
 #include "ui/aura/window_tracker.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -132,6 +134,44 @@ bool IsLayerStackedRightBelow(ui::Layer* layer, ui::Layer* sibling) {
       std::find(children.begin(), children.end(), sibling) - children.begin();
   return sibling_index > 0 && children[sibling_index - 1] == layer;
 }
+
+// Defines a capture client observer, that sets the input capture to the window
+// given to the constructor, and destroys it once capture is lost.
+class TestCaptureClientObserver : public aura::client::CaptureClientObserver {
+ public:
+  explicit TestCaptureClientObserver(std::unique_ptr<aura::Window> window)
+      : window_(std::move(window)) {
+    DCHECK(window_);
+    auto* capture_client =
+        aura::client::GetCaptureClient(window_->GetRootWindow());
+    capture_client->SetCapture(window_.get());
+    capture_client->AddObserver(this);
+  }
+
+  ~TestCaptureClientObserver() override { StopObserving(); }
+
+  // aura::client::CaptureClientObserver:
+  void OnCaptureChanged(aura::Window* lost_capture,
+                        aura::Window* gained_capture) override {
+    if (lost_capture != window_.get())
+      return;
+
+    StopObserving();
+    window_.reset();
+  }
+
+ private:
+  void StopObserving() {
+    if (!window_)
+      return;
+
+    auto* capture_client =
+        aura::client::GetCaptureClient(window_->GetRootWindow());
+    capture_client->RemoveObserver(this);
+  }
+
+  std::unique_ptr<aura::Window> window_;
+};
 
 }  // namespace
 
@@ -451,6 +491,13 @@ TEST_F(CaptureModeTest, StartStop) {
   controller->Stop();
   EXPECT_TRUE(tracker.windows().empty());
   EXPECT_FALSE(controller->IsActive());
+}
+
+// Regression test for https://crbug.com/1172425.
+TEST_F(CaptureModeTest, NoCrashOnClearingCapture) {
+  TestCaptureClientObserver observer(CreateTestWindow(gfx::Rect(200, 200)));
+  auto* controller = StartImageRegionCapture();
+  EXPECT_TRUE(controller->IsActive());
 }
 
 TEST_F(CaptureModeTest, CheckWidgetClosed) {
