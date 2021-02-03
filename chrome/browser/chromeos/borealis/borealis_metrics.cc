@@ -18,6 +18,8 @@ const char kBorealisStartupNumAttemptsHistogram[] =
 const char kBorealisStartupResultHistogram[] = "Borealis.Startup.Result";
 const char kBorealisStartupOverallTimeHistogram[] =
     "Borealis.Startup.OverallTime";
+const char kBorealisShutdownNumAttemptsHistogram[] =
+    "Borealis.Shutdown.NumAttempts";
 
 void RecordBorealisInstallNumAttemptsHistogram() {
   base::UmaHistogramBoolean(kBorealisInstallNumAttemptsHistogram, true);
@@ -45,6 +47,10 @@ void RecordBorealisStartupResultHistogram(
 
 void RecordBorealisStartupOverallTimeHistogram(base::TimeDelta startup_time) {
   base::UmaHistogramTimes(kBorealisStartupOverallTimeHistogram, startup_time);
+}
+
+void RecordBorealisShutdownNumAttemptsHistogram() {
+  base::UmaHistogramBoolean(kBorealisShutdownNumAttemptsHistogram, true);
 }
 
 }  // namespace borealis

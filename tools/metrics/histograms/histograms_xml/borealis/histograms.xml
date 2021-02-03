@@ -58,6 +58,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Borealis.Shutdown.Attempt" enum="BooleanAttempted"
+    expires_after="2022-02-02">
+  <owner>lqu@google.com</owner>
+  <owner>src/chrome/browser/chromeos/borealis/OWNERS</owner>
+  <summary>
+    Recording every attempt to exit Borealis given the that VM was launched.
+    Recorded regardless of if the shutdown is successful.
+  </summary>
+</histogram>
+
 <histogram name="Borealis.Stability" enum="GuestOsFailureClasses"
     expires_after="2021-10-09">
   <owner>cpelling@google.com</owner>

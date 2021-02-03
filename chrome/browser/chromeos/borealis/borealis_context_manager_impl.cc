@@ -114,6 +114,7 @@ void BorealisContextManagerImpl::ShutDownBorealis() {
     shutdown_context = in_progress_startup_->Abort();
   if (!shutdown_context)
     return;
+  RecordBorealisShutdownNumAttemptsHistogram();
 
   // TODO(b/172178036): This could have been a task-sequence but that
   // abstraction is proving insufficient.

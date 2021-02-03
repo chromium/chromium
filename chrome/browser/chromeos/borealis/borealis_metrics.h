@@ -15,6 +15,7 @@ extern const char kBorealisInstallOverallTimeHistogram[];
 extern const char kBorealisStartupNumAttemptsHistogram[];
 extern const char kBorealisStartupResultHistogram[];
 extern const char kBorealisStartupOverallTimeHistogram[];
+extern const char kBorealisShutdownNumAttemptsHistogram[];
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -51,6 +52,7 @@ void RecordBorealisInstallOverallTimeHistogram(base::TimeDelta install_time);
 void RecordBorealisStartupNumAttemptsHistogram();
 void RecordBorealisStartupResultHistogram(BorealisStartupResult startup_result);
 void RecordBorealisStartupOverallTimeHistogram(base::TimeDelta startup_time);
+void RecordBorealisShutdownNumAttemptsHistogram();
 
 }  // namespace borealis
 

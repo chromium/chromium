@@ -270,6 +270,7 @@ TEST_F(BorealisContextManagerTest, ShutDownCancelsRequestsAndTerminatesVm) {
       static_cast<chromeos::FakeConciergeClient*>(
           chromeos::DBusThreadManager::Get()->GetConciergeClient());
   EXPECT_TRUE(fake_concierge_client->stop_vm_called());
+  histogram_tester_->ExpectTotalCount(kBorealisShutdownNumAttemptsHistogram, 1);
 }
 
 class MockContextManager : public BorealisContextManagerImpl {
