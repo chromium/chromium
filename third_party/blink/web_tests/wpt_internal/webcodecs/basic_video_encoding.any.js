@@ -1,7 +1,7 @@
 // META: global=window,dedicatedworker
 // META: script=/wpt_internal/webcodecs/encoder_utils.js
 
-async function encode_decode_test(codec, acc, avc_options) {
+async function encode_decode_test(codec, acc, avc_format) {
   const w = 640;
   const h = 360;
   let next_ts = 0
@@ -47,8 +47,8 @@ async function encode_decode_test(codec, acc, avc_options) {
     bitrate: 5000000,
   };
 
-  if (avc_options !== null) {
-    encoder_config.avcOptions = avc_options;
+  if (avc_format != null) {
+    encoder_config.avc = {format: avc_format};
   }
 
   let encoder = new VideoEncoder(encoder_init);
@@ -142,11 +142,11 @@ promise_test(encode_decode_test.bind(null, "vp8", "allow", null),
   "encoding and decoding vp8");
 
 promise_test(
-  encode_decode_test.bind(null, "avc1.42001E", "allow", { outputFormat: "annexb"}),
+  encode_decode_test.bind(null, "avc1.42001E", "allow", "annexb"),
   "encoding and decoding avc1.42001E (annexb)");
 
 promise_test(
-  encode_decode_test.bind(null, "avc1.42001E", "allow", { outputFormat: "avc"}),
+  encode_decode_test.bind(null, "avc1.42001E", "allow", "avc"),
   "encoding and decoding avc1.42001E (avc)");
 
 /* Uncomment this for manual testing, before we have GPU tests for that */

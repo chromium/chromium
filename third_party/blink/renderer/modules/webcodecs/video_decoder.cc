@@ -303,13 +303,7 @@ CodecConfigEval VideoDecoder::MakeMediaVideoDecoderConfig(
   }
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  if (video_type.codec == media::kCodecH264) {
-    if (extra_data.empty()) {
-      out_console_message =
-          "H.264 configuration must include an avcC description.";
-      return CodecConfigEval::kInvalid;
-    }
-
+  if (video_type.codec == media::kCodecH264 && !extra_data.empty()) {
     out_h264_avcc =
         std::make_unique<media::mp4::AVCDecoderConfigurationRecord>();
     out_h264_converter =
