@@ -39830,11 +39830,11 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
 </enum>
 
 <enum name="IOSDeviceThermalState">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Nominal"/>
-  <int value="2" label="Fair"/>
-  <int value="3" label="Serious"/>
-  <int value="4" label="Critical"/>
+  <int value="0" label="0-Unknown"/>
+  <int value="1" label="1-Nominal"/>
+  <int value="2" label="2-Fair"/>
+  <int value="3" label="3-Serious"/>
+  <int value="4" label="4-Critical"/>
 </enum>
 
 <enum name="IOSExternalURLRequestStatus">
@@ -47977,10 +47977,10 @@ from previous Chrome versions.
 </enum>
 
 <enum name="MacThermalState">
-  <int value="0" label="Nominal"/>
-  <int value="1" label="Fair"/>
-  <int value="2" label="Serious"/>
-  <int value="3" label="Critical"/>
+  <int value="0" label="0-Nominal"/>
+  <int value="1" label="1-Fair"/>
+  <int value="2" label="2-Serious"/>
+  <int value="3" label="3-Critical"/>
 </enum>
 
 <enum name="MainFrameDownloadSandboxGesture">
@@ -74357,10 +74357,10 @@ would be helpful to identify which type is being sent.
 </enum>
 
 <enum name="ThermalState">
-  <int value="0" label="Nominal"/>
-  <int value="1" label="Fair"/>
-  <int value="2" label="Serious"/>
-  <int value="3" label="Critical"/>
+  <int value="0" label="0-Nominal"/>
+  <int value="1" label="1-Fair"/>
+  <int value="2" label="2-Serious"/>
+  <int value="3" label="3-Critical"/>
 </enum>
 
 <enum name="ThirdPartyStatus">
