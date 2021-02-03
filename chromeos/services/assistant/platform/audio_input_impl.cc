@@ -230,8 +230,7 @@ void AudioInputImpl::Capture(const media::AudioBus* audio_source,
     auto now = base::TimeTicks::Now();
     if ((now - last_frame_count_report_time_) >
         base::TimeDelta::FromMinutes(2)) {
-      VLOG(1) << open_audio_stream_->device_id()
-              << " captured frames: " << captured_frames_count_;
+      VLOG(1) << "Captured frames: " << captured_frames_count_;
       last_frame_count_report_time_ = now;
     }
   }
@@ -239,7 +238,7 @@ void AudioInputImpl::Capture(const media::AudioBus* audio_source,
 
 // Runs on audio service thread.
 void AudioInputImpl::OnCaptureError(const std::string& message) {
-  LOG(ERROR) << open_audio_stream_->device_id() << " capture error " << message;
+  LOG(ERROR) << "Capture error " << message;
   base::AutoLock lock(lock_);
   for (auto* observer : observers_)
     observer->OnAudioError(AudioInput::Error::FATAL_ERROR);
@@ -280,8 +279,7 @@ void AudioInputImpl::AddObserver(
 void AudioInputImpl::RemoveObserver(
     assistant_client::AudioInput::Observer* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(observer_sequence_checker_);
-  if (open_audio_stream_)
-    VLOG(1) << open_audio_stream_->device_id() << " remove observer";
+  VLOG(1) << "Remove observer";
 
   bool have_no_observer = false;
   {
@@ -337,7 +335,7 @@ void AudioInputImpl::SetDeviceId(const std::string& device_id) {
   preferred_device_id_ = device_id;
 
   UpdateRecordingState();
-  if (open_audio_stream_)
+  if (HasOpenAudioStream())
     state_manager_->RecreateAudioInputStream();
 }
 
@@ -347,7 +345,7 @@ void AudioInputImpl::SetHotwordDeviceId(const std::string& device_id) {
 
   hotword_device_id_ = device_id;
   RecreateStateManager();
-  if (open_audio_stream_)
+  if (HasOpenAudioStream())
     state_manager_->RecreateAudioInputStream();
 }
 
@@ -378,19 +376,16 @@ bool AudioInputImpl::IsHotwordAvailable() const {
 }
 
 bool AudioInputImpl::IsRecordingForTesting() const {
-  return !!open_audio_stream_;
+  return HasOpenAudioStream();
 }
 
 bool AudioInputImpl::IsUsingHotwordDeviceForTesting() const {
   return IsRecordingForTesting()  // IN-TEST
-         && open_audio_stream_->device_id() == hotword_device_id_ &&
-         IsHotwordAvailable();
+         && GetOpenDeviceId() == hotword_device_id_ && IsHotwordAvailable();
 }
 
 base::Optional<std::string> AudioInputImpl::GetOpenDeviceIdForTesting() const {
-  if (!open_audio_stream_)
-    return base::nullopt;
-  return open_audio_stream_->device_id();
+  return GetOpenDeviceId();
 }
 
 base::Optional<bool> AudioInputImpl::IsUsingDeadStreamDetectionForTesting()
@@ -402,7 +397,7 @@ base::Optional<bool> AudioInputImpl::IsUsingDeadStreamDetectionForTesting()
 
 void AudioInputImpl::StartRecording() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(!open_audio_stream_);
+  DCHECK(!HasOpenAudioStream());
   RecreateAudioInputStream(IsHotwordAvailable());
 }
 
@@ -431,9 +426,9 @@ void AudioInputImpl::UpdateRecordingState() {
   bool should_start =
       !is_lid_closed && (should_enable_hotword || mic_open_) && has_observers;
 
-  if (!open_audio_stream_ && should_start)
+  if (!HasOpenAudioStream() && should_start)
     StartRecording();
-  else if (open_audio_stream_ && !should_start)
+  else if (HasOpenAudioStream() && !should_start)
     StopRecording();
 }
 
@@ -446,6 +441,12 @@ std::string AudioInputImpl::GetDeviceId(bool use_dsp) const {
     return media::AudioDeviceDescription::kDefaultDeviceId;
 }
 
+base::Optional<std::string> AudioInputImpl::GetOpenDeviceId() const {
+  if (!open_audio_stream_)
+    return base::nullopt;
+  return open_audio_stream_->device_id();
+}
+
 bool AudioInputImpl::ShouldEnableDeadStreamDetection(bool use_dsp) const {
   if (use_dsp && !hotword_device_id_.empty()) {
     // The DSP device won't provide data until it detects a hotword, so
@@ -453,6 +454,10 @@ bool AudioInputImpl::ShouldEnableDeadStreamDetection(bool use_dsp) const {
     return false;
   }
   return true;
+}
+
+bool AudioInputImpl::HasOpenAudioStream() const {
+  return open_audio_stream_ != nullptr;
 }
 
 }  // namespace assistant

@@ -27,10 +27,10 @@ namespace chromeos {
 namespace libassistant {
 
 class AudioInputStream;
+class AudioCapturer;
 
 class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) AudioInputImpl
-    : public assistant_client::AudioInput,
-      public media::AudioCapturerSource::CaptureCallback {
+    : public assistant_client::AudioInput {
  public:
   explicit AudioInputImpl(const base::Optional<std::string>& device_id);
   AudioInputImpl(const AudioInputImpl&) = delete;
@@ -53,17 +53,7 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) AudioInputImpl
     AudioInputImpl* input_;
   };
 
-  void RecreateStateManager();
-
   void Initialize(mojom::PlatformDelegate* platform_delegate);
-
-  // media::AudioCapturerSource::CaptureCallback overrides:
-  void Capture(const media::AudioBus* audio_source,
-               base::TimeTicks audio_capture_time,
-               double volume,
-               bool key_pressed) override;
-  void OnCaptureError(const std::string& message) override;
-  void OnCaptureMuted(bool is_muted) override;
 
   // assistant_client::AudioInput overrides. These function are called by
   // assistant from assistant thread, for which we should not assume any
@@ -103,28 +93,23 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) AudioInputImpl
   base::Optional<bool> IsUsingDeadStreamDetectionForTesting() const;
 
  private:
+  void RecreateStateManager();
+  void OnCaptureDataArrived();
+
   void StartRecording();
   void StopRecording();
   void UpdateRecordingState();
 
   std::string GetDeviceId(bool use_dsp) const;
+  base::Optional<std::string> GetOpenDeviceId() const;
   bool ShouldEnableDeadStreamDetection(bool use_dsp) const;
+  bool HasOpenAudioStream() const;
 
   // User explicitly requested to open microphone.
   bool mic_open_ = false;
 
   // Whether hotword is currently enabled.
   bool hotword_enabled_ = true;
-
-  // Guards observers_;
-  base::Lock lock_;
-  std::vector<assistant_client::AudioInput::Observer*> observers_;
-
-  // This is the total number of frames captured during the life time of this
-  // object. We don't worry about overflow because this count is only used for
-  // logging purposes. If in the future this changes, we should re-evaluate.
-  int captured_frames_count_ = 0;
-  base::TimeTicks last_frame_count_report_time_;
 
   // To be initialized on assistant thread the first call to AddObserver.
   // It ensures that AddObserver / RemoveObserver are called on the same
@@ -134,6 +119,7 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) AudioInputImpl
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   std::unique_ptr<HotwordStateManager> state_manager_;
+  std::unique_ptr<AudioCapturer> audio_capturer_;
 
   // Owned by |LibassistantService|.
   mojom::PlatformDelegate* platform_delegate_ = nullptr;

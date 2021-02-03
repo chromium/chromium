@@ -109,7 +109,9 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioInputImpl
   void UpdateRecordingState();
 
   std::string GetDeviceId(bool use_dsp) const;
+  base::Optional<std::string> GetOpenDeviceId() const;
   bool ShouldEnableDeadStreamDetection(bool use_dsp) const;
+  bool HasOpenAudioStream() const;
 
   // User explicitly requested to open microphone.
   bool mic_open_ = false;
@@ -119,7 +121,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioInputImpl
 
   // Guards observers_;
   base::Lock lock_;
-  std::vector<assistant_client::AudioInput::Observer*> observers_;
+  std::vector<assistant_client::AudioInput::Observer*> observers_
+      GUARDED_BY(lock_);
 
   // This is the total number of frames captured during the life time of this
   // object. We don't worry about overflow because this count is only used for

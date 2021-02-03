@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -42,19 +43,14 @@ assistant_client::BufferFormat g_current_format = kFormatMono;
 
 class DspHotwordStateManager : public AudioInputImpl::HotwordStateManager {
  public:
-  DspHotwordStateManager(AudioInputImpl* input,
-                         scoped_refptr<base::SequencedTaskRunner> task_runner)
-      : AudioInputImpl::HotwordStateManager(input), task_runner_(task_runner) {
-    DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  }
+  explicit DspHotwordStateManager(AudioInputImpl* input)
+      : AudioInputImpl::HotwordStateManager(input) {}
 
   DspHotwordStateManager(const DspHotwordStateManager&) = delete;
   DspHotwordStateManager& operator=(const DspHotwordStateManager&) = delete;
 
   // HotwordStateManager overrides:
-  // Runs on main thread.
   void OnConversationTurnStarted() override {
-    DCHECK(task_runner_->RunsTasksInCurrentSequence());
     if (second_phase_timer_.IsRunning()) {
       DCHECK(stream_state_ == StreamState::HOTWORD);
       second_phase_timer_.Stop();
@@ -65,9 +61,7 @@ class DspHotwordStateManager : public AudioInputImpl::HotwordStateManager {
     stream_state_ = StreamState::NORMAL;
   }
 
-  // Runs on main thread.
   void OnConversationTurnFinished() override {
-    DCHECK(task_runner_->RunsTasksInCurrentSequence());
     input_->RecreateAudioInputStream(true /* use_dsp */);
     if (stream_state_ == StreamState::HOTWORD) {
       // If |stream_state_| remains unchanged, that indicates the first stage
@@ -77,23 +71,7 @@ class DspHotwordStateManager : public AudioInputImpl::HotwordStateManager {
     stream_state_ = StreamState::HOTWORD;
   }
 
-  // Runs on audio service thread
   void OnCaptureDataArrived() override {
-    // Posting to main thread to avoid timer's sequence check error.
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&DspHotwordStateManager::OnCaptureDataArrivedMainThread,
-                       weak_factory_.GetWeakPtr()));
-  }
-
-  void RecreateAudioInputStream() override {
-    DCHECK(task_runner_->RunsTasksInCurrentSequence());
-    input_->RecreateAudioInputStream(stream_state_ == StreamState::HOTWORD);
-  }
-
-  // Runs on main thread.
-  void OnCaptureDataArrivedMainThread() {
-    DCHECK(task_runner_->RunsTasksInCurrentSequence());
     if (stream_state_ == StreamState::HOTWORD &&
         !second_phase_timer_.IsRunning()) {
       RecordDspHotwordDetection(DspHotwordDetectionStatus::HARDWARE_ACCEPTED);
@@ -106,6 +84,10 @@ class DspHotwordStateManager : public AudioInputImpl::HotwordStateManager {
               &DspHotwordStateManager::OnConversationTurnFinished,
               base::Unretained(this)));
     }
+  }
+
+  void RecreateAudioInputStream() override {
+    input_->RecreateAudioInputStream(stream_state_ == StreamState::HOTWORD);
   }
 
  private:
@@ -129,25 +111,25 @@ class DspHotwordStateManager : public AudioInputImpl::HotwordStateManager {
     base::UmaHistogramEnumeration("Assistant.DspHotwordDetection", status);
   }
 
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   StreamState stream_state_ = StreamState::HOTWORD;
   base::OneShotTimer second_phase_timer_;
-  base::WeakPtrFactory<DspHotwordStateManager> weak_factory_{this};
 };
 
 class AudioInputBufferImpl : public assistant_client::AudioBuffer {
  public:
-  AudioInputBufferImpl(const void* data, uint32_t frame_count)
-      : data_(data), frame_count_(frame_count) {}
+  AudioInputBufferImpl(std::vector<int16_t>&& data, uint32_t frame_count)
+      : data_(std::move(data)), frame_count_(frame_count) {}
   AudioInputBufferImpl(const AudioInputBufferImpl&) = delete;
   AudioInputBufferImpl& operator=(const AudioInputBufferImpl&) = delete;
+  AudioInputBufferImpl(AudioInputBufferImpl&&) = default;
+  AudioInputBufferImpl& operator=(AudioInputBufferImpl&&) = default;
   ~AudioInputBufferImpl() override = default;
 
   // assistant_client::AudioBuffer overrides:
   assistant_client::BufferFormat GetFormat() const override {
     return g_current_format;
   }
-  const void* GetData() const override { return data_; }
+  const void* GetData() const override { return data_.data(); }
   void* GetWritableData() override {
     NOTREACHED();
     return nullptr;
@@ -155,11 +137,128 @@ class AudioInputBufferImpl : public assistant_client::AudioBuffer {
   int GetFrameCount() const override { return frame_count_; }
 
  private:
-  const void* data_;
+  std::vector<int16_t> data_;
   int frame_count_;
 };
 
+AudioInputBufferImpl ToAudioInputBuffer(const media::AudioBus* audio_source) {
+  std::vector<int16_t> buffer(audio_source->channels() *
+                              audio_source->frames());
+  audio_source->ToInterleaved<media::SignedInt16SampleTypeTraits>(
+      audio_source->frames(), buffer.data());
+  return AudioInputBufferImpl(std::move(buffer), audio_source->frames());
+}
+
 }  // namespace
+
+////////////////////////////////////////////////////////////////////////////////
+// AudioCapturer
+////////////////////////////////////////////////////////////////////////////////
+
+// Helper class that will receive the callbacks from the audio source,
+// and forward the audio data to Libassistant.
+// Note that all callback methods in this object run on the audio service
+// thread, so this class should be treated carefully.
+// All public methods can be called from other threads, and the
+// |on_capture_callback| will be invoked on the given callback thread.
+class AudioCapturer : public media::AudioCapturerSource::CaptureCallback {
+ public:
+  explicit AudioCapturer(
+      base::RepeatingCallback<void()> on_capture_callback,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner)
+      : on_capture_callback_(on_capture_callback),
+        callback_task_runner_(callback_task_runner) {}
+  AudioCapturer(const AudioCapturer&) = delete;
+  AudioCapturer& operator=(const AudioCapturer&) = delete;
+  ~AudioCapturer() override = default;
+
+  void AddObserver(assistant_client::AudioInput::Observer* observer) {
+    base::AutoLock lock(observers_lock_);
+    observers_.push_back(observer);
+  }
+
+  void RemoveObserver(assistant_client::AudioInput::Observer* observer) {
+    base::AutoLock lock(observers_lock_);
+    base::Erase(observers_, observer);
+  }
+
+  int num_observers() {
+    base::AutoLock lock(observers_lock_);
+    return observers_.size();
+  }
+
+  int captured_frames_count() { return captured_frames_count_; }
+
+ private:
+  // media::AudioCapturerSource::CaptureCallback implementation:
+  // Runs on audio service thread.
+  void Capture(const media::AudioBus* audio_source,
+               base::TimeTicks audio_capture_time,
+               double volume,
+               bool key_pressed) override {
+    DCHECK_EQ(g_current_format.num_channels, audio_source->channels());
+
+    callback_task_runner_->PostTask(FROM_HERE, on_capture_callback_);
+
+    UpdateCapturedFramesCount(audio_source->frames());
+
+    AudioInputBufferImpl input_buffer(ToAudioInputBuffer(audio_source));
+    int64_t time = ToLibassistantTime(audio_capture_time);
+
+    base::AutoLock lock(observers_lock_);
+    for (auto* observer : observers_)
+      observer->OnAudioBufferAvailable(input_buffer, time);
+  }
+
+  // Runs on audio service thread.
+  void OnCaptureError(const std::string& message) override {
+    LOG(ERROR) << "Capture error " << message;
+    base::AutoLock lock(observers_lock_);
+    for (auto* observer : observers_)
+      observer->OnAudioError(assistant_client::AudioInput::Error::FATAL_ERROR);
+  }
+
+  // Runs on audio service thread.
+  void OnCaptureMuted(bool is_muted) override {}
+
+  int64_t ToLibassistantTime(base::TimeTicks audio_capture_time) const {
+    // Only provide accurate timestamp when eraser is enabled, otherwise it
+    // seems break normal libassistant voice recognition.
+    if (assistant::features::IsAudioEraserEnabled())
+      return audio_capture_time.since_origin().InMicroseconds();
+    return 0;
+  }
+
+  void UpdateCapturedFramesCount(int num_arrived_frames) {
+    captured_frames_count_ += num_arrived_frames;
+    if (VLOG_IS_ON(1)) {
+      auto now = base::TimeTicks::Now();
+      if ((now - last_frame_count_report_time_) >
+          base::TimeDelta::FromMinutes(2)) {
+        VLOG(1) << "Captured frames: " << captured_frames_count_;
+        last_frame_count_report_time_ = now;
+      }
+    }
+  }
+
+  // This is the total number of frames captured during the life time of this
+  // object. We don't worry about overflow because this count is only used for
+  // logging purposes. If in the future this changes, we should re-evaluate.
+  int captured_frames_count_ = 0;
+  base::TimeTicks last_frame_count_report_time_;
+
+  base::Lock observers_lock_;
+  std::vector<assistant_client::AudioInput::Observer*> observers_
+      GUARDED_BY(observers_lock_);
+
+  // |on_capture_callback| must always be called from the main thread.
+  base::RepeatingCallback<void()> on_capture_callback_;
+  scoped_refptr<base::SequencedTaskRunner> callback_task_runner_;
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// AudioInputImpl
+////////////////////////////////////////////////////////////////////////////////
 
 AudioInputImpl::HotwordStateManager::HotwordStateManager(
     AudioInputImpl* audio_input)
@@ -175,6 +274,11 @@ AudioInputImpl::AudioInputImpl(const base::Optional<std::string>& device_id)
       weak_factory_(this) {
   DETACH_FROM_SEQUENCE(observer_sequence_checker_);
 
+  audio_capturer_ = std::make_unique<AudioCapturer>(
+      base::BindRepeating(&AudioInputImpl::OnCaptureDataArrived,
+                          weak_factory_.GetWeakPtr()),
+      /*callback_task_runner=*/base::SequencedTaskRunnerHandle::Get());
+
   RecreateStateManager();
   if (assistant::features::IsStereoAudioInputEnabled())
     g_current_format = kFormatStereo;
@@ -189,11 +293,14 @@ AudioInputImpl::~AudioInputImpl() {
 
 void AudioInputImpl::RecreateStateManager() {
   if (IsHotwordAvailable()) {
-    state_manager_ =
-        std::make_unique<DspHotwordStateManager>(this, task_runner_);
+    state_manager_ = std::make_unique<DspHotwordStateManager>(this);
   } else {
     state_manager_ = std::make_unique<HotwordStateManager>(this);
   }
+}
+
+void AudioInputImpl::OnCaptureDataArrived() {
+  state_manager_->OnCaptureDataArrived();
 }
 
 void AudioInputImpl::Initialize(mojom::PlatformDelegate* platform_delegate) {
@@ -201,54 +308,6 @@ void AudioInputImpl::Initialize(mojom::PlatformDelegate* platform_delegate) {
   DCHECK(platform_delegate_);
   UpdateRecordingState();
 }
-
-// Runs on audio service thread.
-void AudioInputImpl::Capture(const media::AudioBus* audio_source,
-                             base::TimeTicks audio_capture_time,
-                             double volume,
-                             bool key_pressed) {
-  DCHECK_EQ(g_current_format.num_channels, audio_source->channels());
-
-  state_manager_->OnCaptureDataArrived();
-
-  std::vector<int16_t> buffer(audio_source->channels() *
-                              audio_source->frames());
-  audio_source->ToInterleaved<media::SignedInt16SampleTypeTraits>(
-      audio_source->frames(), buffer.data());
-  int64_t time = 0;
-  // Only provide accurate timestamp when eraser is enabled, otherwise it seems
-  // break normal libassistant voice recognition.
-  if (assistant::features::IsAudioEraserEnabled())
-    time = audio_capture_time.since_origin().InMicroseconds();
-  AudioInputBufferImpl input_buffer(buffer.data(), audio_source->frames());
-  {
-    base::AutoLock lock(lock_);
-    for (auto* observer : observers_)
-      observer->OnAudioBufferAvailable(input_buffer, time);
-  }
-
-  captured_frames_count_ += audio_source->frames();
-  if (VLOG_IS_ON(1)) {
-    auto now = base::TimeTicks::Now();
-    if ((now - last_frame_count_report_time_) >
-        base::TimeDelta::FromMinutes(2)) {
-      VLOG(1) << open_audio_stream_->device_id()
-              << " captured frames: " << captured_frames_count_;
-      last_frame_count_report_time_ = now;
-    }
-  }
-}
-
-// Runs on audio service thread.
-void AudioInputImpl::OnCaptureError(const std::string& message) {
-  LOG(ERROR) << open_audio_stream_->device_id() << " capture error " << message;
-  base::AutoLock lock(lock_);
-  for (auto* observer : observers_)
-    observer->OnAudioError(AudioInput::Error::FATAL_ERROR);
-}
-
-// Runs on audio service thread.
-void AudioInputImpl::OnCaptureMuted(bool is_muted) {}
 
 // Run on LibAssistant thread.
 assistant_client::BufferFormat AudioInputImpl::GetFormat() const {
@@ -259,16 +318,11 @@ assistant_client::BufferFormat AudioInputImpl::GetFormat() const {
 void AudioInputImpl::AddObserver(
     assistant_client::AudioInput::Observer* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(observer_sequence_checker_);
-  VLOG(1) << " add observer";
+  VLOG(1) << "Add observer";
 
-  bool have_first_observer = false;
-  {
-    base::AutoLock lock(lock_);
-    observers_.push_back(observer);
-    have_first_observer = observers_.size() == 1;
-  }
+  audio_capturer_->AddObserver(observer);
 
-  if (have_first_observer) {
+  if (audio_capturer_->num_observers() == 1) {
     // Post to main thread runner to start audio recording. Assistant thread
     // does not have thread context defined in //base and will fail sequence
     // check in AudioCapturerSource::Start().
@@ -282,15 +336,11 @@ void AudioInputImpl::AddObserver(
 void AudioInputImpl::RemoveObserver(
     assistant_client::AudioInput::Observer* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(observer_sequence_checker_);
-  VLOG(1) << open_audio_stream_->device_id() << " remove observer";
-  bool have_no_observer = false;
-  {
-    base::AutoLock lock(lock_);
-    base::Erase(observers_, observer);
-    have_no_observer = observers_.size() == 0;
-  }
+  VLOG(1) << "Remove observer";
 
-  if (have_no_observer) {
+  audio_capturer_->RemoveObserver(observer);
+
+  if (audio_capturer_->num_observers() == 0) {
     task_runner_->PostTask(FROM_HERE,
                            base::BindOnce(&AudioInputImpl::UpdateRecordingState,
                                           weak_factory_.GetWeakPtr()));
@@ -337,7 +387,7 @@ void AudioInputImpl::SetDeviceId(const base::Optional<std::string>& device_id) {
   preferred_device_id_ = device_id;
 
   UpdateRecordingState();
-  if (open_audio_stream_)
+  if (HasOpenAudioStream())
     state_manager_->RecreateAudioInputStream();
 }
 
@@ -348,7 +398,7 @@ void AudioInputImpl::SetHotwordDeviceId(
 
   hotword_device_id_ = device_id;
   RecreateStateManager();
-  if (open_audio_stream_)
+  if (HasOpenAudioStream())
     state_manager_->RecreateAudioInputStream();
 }
 
@@ -369,7 +419,7 @@ void AudioInputImpl::RecreateAudioInputStream(bool use_dsp) {
   open_audio_stream_ = std::make_unique<AudioInputStream>(
       platform_delegate_, GetDeviceId(use_dsp),
       ShouldEnableDeadStreamDetection(use_dsp), GetFormat(),
-      /*capture_callback=*/this);
+      /*capture_callback=*/audio_capturer_.get());
 
   VLOG(1) << open_audio_stream_->device_id() << " start recording";
 }
@@ -380,19 +430,16 @@ bool AudioInputImpl::IsHotwordAvailable() const {
 }
 
 bool AudioInputImpl::IsRecordingForTesting() const {
-  return !!open_audio_stream_;
+  return HasOpenAudioStream();
 }
 
 bool AudioInputImpl::IsUsingHotwordDeviceForTesting() const {
   return IsRecordingForTesting()  // IN-TEST
-         && open_audio_stream_->device_id() == hotword_device_id_ &&
-         IsHotwordAvailable();
+         && GetOpenDeviceId() == hotword_device_id_ && IsHotwordAvailable();
 }
 
 base::Optional<std::string> AudioInputImpl::GetOpenDeviceIdForTesting() const {
-  if (!open_audio_stream_)
-    return base::nullopt;
-  return open_audio_stream_->device_id();
+  return GetOpenDeviceId();
 }
 
 base::Optional<bool> AudioInputImpl::IsUsingDeadStreamDetectionForTesting()
@@ -404,7 +451,7 @@ base::Optional<bool> AudioInputImpl::IsUsingDeadStreamDetectionForTesting()
 
 void AudioInputImpl::StartRecording() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(!open_audio_stream_);
+  DCHECK(!HasOpenAudioStream());
   RecreateAudioInputStream(IsHotwordAvailable());
 }
 
@@ -412,8 +459,8 @@ void AudioInputImpl::StopRecording() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   if (open_audio_stream_) {
     VLOG(1) << open_audio_stream_->device_id() << " stop recording";
-    VLOG(1) << open_audio_stream_->device_id()
-            << " ending captured frames: " << captured_frames_count_;
+    VLOG(1) << open_audio_stream_->device_id() << " ending captured frames: "
+            << audio_capturer_->captured_frames_count();
     open_audio_stream_.reset();
   }
 }
@@ -421,12 +468,7 @@ void AudioInputImpl::StopRecording() {
 void AudioInputImpl::UpdateRecordingState() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
-  bool has_observers = false;
-  {
-    base::AutoLock lock(lock_);
-    has_observers = observers_.size() > 0;
-  }
-
+  bool has_observers = (audio_capturer_->num_observers() > 0);
   bool is_lid_closed = (lid_state_ == mojom::LidState::kClosed);
   bool should_enable_hotword =
       hotword_enabled_ && preferred_device_id_.has_value();
@@ -446,9 +488,9 @@ void AudioInputImpl::UpdateRecordingState() {
           << "    has_delegate: " << has_delegate << "\n"
           << " => should_start: " << should_start;
 
-  if (!open_audio_stream_ && should_start)
+  if (!HasOpenAudioStream() && should_start)
     StartRecording();
-  else if (open_audio_stream_ && !should_start)
+  else if (HasOpenAudioStream() && !should_start)
     StopRecording();
 }
 
@@ -461,6 +503,12 @@ std::string AudioInputImpl::GetDeviceId(bool use_dsp) const {
     return media::AudioDeviceDescription::kDefaultDeviceId;
 }
 
+base::Optional<std::string> AudioInputImpl::GetOpenDeviceId() const {
+  if (!open_audio_stream_)
+    return base::nullopt;
+  return open_audio_stream_->device_id();
+}
+
 bool AudioInputImpl::ShouldEnableDeadStreamDetection(bool use_dsp) const {
   if (use_dsp && hotword_device_id_.has_value()) {
     // The DSP device won't provide data until it detects a hotword, so
@@ -468,6 +516,10 @@ bool AudioInputImpl::ShouldEnableDeadStreamDetection(bool use_dsp) const {
     return false;
   }
   return true;
+}
+
+bool AudioInputImpl::HasOpenAudioStream() const {
+  return open_audio_stream_ != nullptr;
 }
 
 }  // namespace libassistant
