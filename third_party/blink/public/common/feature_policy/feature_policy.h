@@ -178,7 +178,13 @@ class BLINK_COMMON_EXPORT FeaturePolicy {
   bool IsFeatureEnabledForOrigin(mojom::FeaturePolicyFeature feature,
                                  const url::Origin& origin) const;
 
+  const Allowlist GetAllowlistForDevTools(
+      mojom::FeaturePolicyFeature feature) const;
+
   // Returns the allowlist of a given feature by this policy.
+  // TODO(crbug.com/937131): Use |FeaturePolicy::GetAllowlistForDevTools|
+  // to replace this method. This method uses legacy |default_allowlist|
+  // calculation method.
   const Allowlist GetAllowlistForFeature(
       mojom::FeaturePolicyFeature feature) const;
 
@@ -194,6 +200,9 @@ class BLINK_COMMON_EXPORT FeaturePolicy {
 
   // Returns the list of features which can be controlled by Feature Policy.
   const FeaturePolicyFeatureList& GetFeatureList() const;
+
+  bool IsFeatureEnabledByInheritedPolicy(
+      mojom::FeaturePolicyFeature feature) const;
 
  private:
   friend class FeaturePolicyTest;

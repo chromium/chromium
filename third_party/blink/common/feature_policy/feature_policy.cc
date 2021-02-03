@@ -124,6 +124,12 @@ std::unique_ptr<FeaturePolicy> FeaturePolicy::CopyStateFrom(
   return new_policy;
 }
 
+bool FeaturePolicy::IsFeatureEnabledByInheritedPolicy(
+    mojom::FeaturePolicyFeature feature) const {
+  DCHECK(base::Contains(inherited_policies_, feature));
+  return inherited_policies_.at(feature);
+}
+
 bool FeaturePolicy::IsFeatureEnabled(
     mojom::FeaturePolicyFeature feature) const {
   return IsFeatureEnabledForOrigin(feature, origin_);
@@ -165,6 +171,28 @@ bool FeaturePolicy::GetFeatureValueForOrigin(
   return inherited_value;
 }
 
+const FeaturePolicy::Allowlist FeaturePolicy::GetAllowlistForDevTools(
+    mojom::FeaturePolicyFeature feature) const {
+  // Return an empty allowlist when disabled through inheritance.
+  if (!IsFeatureEnabledByInheritedPolicy(feature))
+    return FeaturePolicy::Allowlist();
+
+  // Return defined policy if exists; otherwise return default policy.
+  auto allowlist = allowlists_.find(feature);
+  if (allowlist != allowlists_.end())
+    return allowlist->second;
+
+  // Note: |allowlists_| purely comes from HTTP header. If a feature is not
+  // declared in HTTP header, all origins are implicitly allowed.
+  FeaturePolicy::Allowlist default_allowlist;
+  default_allowlist.AddAll();
+
+  return default_allowlist;
+}
+
+// TODO(crbug.com/937131): Use |FeaturePolicy::GetAllowlistForDevTools|
+// to replace this method. This method uses legacy |default_allowlist|
+// calculation method.
 const FeaturePolicy::Allowlist FeaturePolicy::GetAllowlistForFeature(
     mojom::FeaturePolicyFeature feature) const {
   DCHECK(base::Contains(feature_list_, feature));

@@ -12,9 +12,10 @@
 namespace blink {
 
 // The FeaturePolicyFeatureDefault enum defines the default enable state for
-// a feature when neither it nor any parent frame have declared an explicit
-// policy. The three possibilities map directly to Feature Policy Allowlist
-// semantics.
+// a feature when the feature is not declared in iframe 'allow' attribute.
+// See |FeaturePolicy::InheritedValueForFeature| for usage.
+//
+// The 2 possibilities map directly to Feature Policy Allowlist semantics.
 //
 // The default values for each feature are set in GetDefaultFeatureList.
 enum class FeaturePolicyFeatureDefault {

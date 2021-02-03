@@ -9,6 +9,8 @@ blink_core_sources_feature_policy = [
   "dom_feature_policy.h",
   "feature_policy_parser.cc",
   "feature_policy_parser.h",
+  "feature_policy_devtools_support.h",
+  "feature_policy_devtools_support.cc",
   "iframe_policy.h",
   "layout_animations_policy.cc",
   "layout_animations_policy.h",
