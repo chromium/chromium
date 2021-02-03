@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
 #include "ios/chrome/browser/policy/policy_features.h"
+#import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/ui/activity_services/activity_params.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
@@ -1455,6 +1456,16 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   [self.sharingCoordinator start];
 }
 
+// Returns whether the incognito mode is forced.
+- (BOOL)isIncognitoForced {
+  return IsIncognitoModeForced(self.browser->GetBrowserState()->GetPrefs());
+}
+
+// Returns whether the incognito mode is available.
+- (BOOL)isIncognitoAvailable {
+  return !IsIncognitoModeDisabled(self.browser->GetBrowserState()->GetPrefs());
+}
+
 #pragma mark - Loading and Empty States
 
 // Shows loading spinner background view.
@@ -1782,7 +1793,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                                        inIncognito:NO
                                             newTab:NO];
                          }
-                          style:UIAlertActionStyleDefault];
+                          style:UIAlertActionStyleDefault
+                        enabled:![self isIncognitoForced]];
 
   titleString = GetNSString(IDS_IOS_BOOKMARK_CONTEXT_MENU_OPEN_INCOGNITO);
   [coordinator addItemWithTitle:titleString
@@ -1795,7 +1807,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                                        inIncognito:YES
                                             newTab:NO];
                          }
-                          style:UIAlertActionStyleDefault];
+                          style:UIAlertActionStyleDefault
+                        enabled:[self isIncognitoAvailable]];
 
   std::set<int64_t> nodeIds;
   for (const BookmarkNode* node : nodes) {
@@ -1855,7 +1868,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                                      inIncognito:NO
                                           newTab:YES];
                          }
-                          style:UIAlertActionStyleDefault];
+                          style:UIAlertActionStyleDefault
+                        enabled:![self isIncognitoForced]];
 
   if (base::ios::IsMultipleScenesSupported()) {
     titleString = GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENINNEWWINDOW);
@@ -1868,7 +1882,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     };
     [coordinator addItemWithTitle:titleString
                            action:action
-                            style:UIAlertActionStyleDefault];
+                            style:UIAlertActionStyleDefault
+                          enabled:![self isIncognitoForced]];
   }
 
   titleString = GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWINCOGNITOTAB);
@@ -1878,7 +1893,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                                      inIncognito:YES
                                           newTab:YES];
                          }
-                          style:UIAlertActionStyleDefault];
+                          style:UIAlertActionStyleDefault
+                        enabled:[self isIncognitoAvailable]];
 
   titleString = GetNSString(IDS_IOS_CONTENT_CONTEXT_COPY);
   [coordinator
@@ -2336,23 +2352,31 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
       NSMutableArray<UIMenuElement*>* menuElements =
           [[NSMutableArray alloc] init];
 
-      [menuElements addObject:[actionFactory actionToOpenInNewTabWithBlock:^{
-                      [weakSelf openAllURLs:{nodeURL}
-                                inIncognito:NO
-                                     newTab:YES];
-                    }]];
+      UIAction* openAction = [actionFactory actionToOpenInNewTabWithBlock:^{
+        [weakSelf openAllURLs:{nodeURL} inIncognito:NO newTab:YES];
+      }];
+      if ([self isIncognitoForced]) {
+        openAction.attributes = UIMenuElementAttributesDisabled;
+      }
+      [menuElements addObject:openAction];
 
-      [menuElements
-          addObject:[actionFactory actionToOpenInNewIncognitoTabWithBlock:^{
+      UIAction* openInIncognito =
+          [actionFactory actionToOpenInNewIncognitoTabWithBlock:^{
             [weakSelf openAllURLs:{nodeURL} inIncognito:YES newTab:YES];
-          }]];
+          }];
+      if (![self isIncognitoAvailable]) {
+        openInIncognito.attributes = UIMenuElementAttributesDisabled;
+      }
+      [menuElements addObject:openInIncognito];
 
       if (base::ios::IsMultipleScenesSupported()) {
-        [menuElements
-            addObject:[actionFactory
-                          actionToOpenInNewWindowWithURL:nodeURL
-                                          activityOrigin:
-                                              WindowActivityBookmarksOrigin]];
+        UIAction* openInWindow = [actionFactory
+            actionToOpenInNewWindowWithURL:nodeURL
+                            activityOrigin:WindowActivityBookmarksOrigin];
+        if ([self isIncognitoForced]) {
+          openInWindow.attributes = UIMenuElementAttributesDisabled;
+        }
+        [menuElements addObject:openInWindow];
       }
 
       [menuElements addObject:[actionFactory actionToCopyURL:nodeURL]];
