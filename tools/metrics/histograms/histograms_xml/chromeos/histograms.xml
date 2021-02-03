@@ -357,7 +357,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Chromeos.DiagnosticsUi.{RoutineType}Result"
+<histogram name="ChromeOS.DiagnosticsUi.{RoutineType}Result"
     enum="CrosDiagnosticsRoutineResult" expires_after="2021-07-15">
   <owner>baileyberro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
