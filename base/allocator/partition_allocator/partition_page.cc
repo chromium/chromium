@@ -209,10 +209,9 @@ void SlotSpanMetadata<thread_safe>::DecommitIfPossible(
 
 void DeferredUnmap::Unmap() {
   PA_DCHECK(ptr && size > 0);
-  // Currently this path is only called for direct-mapped allocations. If this
-  // changes, the if statement below has to be updated.
-  PA_DCHECK(!IsManagedByPartitionAllocNormalBuckets(ptr));
-  if (IsManagedByPartitionAllocDirectMap(ptr)) {
+  if (features::IsPartitionAllocGigaCageEnabled()) {
+    // Currently this function is only called for direct-mapped allocations.
+    PA_DCHECK(IsManagedByPartitionAllocDirectMap(ptr));
     internal::AddressPoolManager::GetInstance()->UnreserveAndDecommit(
         internal::GetDirectMapPool(), ptr, size);
   } else {
