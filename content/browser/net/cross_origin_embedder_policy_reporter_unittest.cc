@@ -106,7 +106,17 @@ class CrossOriginEmbedderPolicyReporterTest : public testing::Test {
                                       base::StringPiece disposition) {
     base::Value dict(base::Value::Type::DICTIONARY);
     for (const auto& pair :
-         CreateBodyForNavigationInternal(blocked_url, disposition)) {
+         CreateBodyInternal("navigation", blocked_url, disposition)) {
+      dict.SetKey(std::move(pair.first), base::Value(std::move(pair.second)));
+    }
+    return dict;
+  }
+
+  base::Value CreateBodyForWorkerInitialization(base::StringPiece blocked_url,
+                                                base::StringPiece disposition) {
+    base::Value dict(base::Value::Type::DICTIONARY);
+    for (const auto& pair : CreateBodyInternal("worker initialization",
+                                               blocked_url, disposition)) {
       dict.SetKey(std::move(pair.first), base::Value(std::move(pair.second)));
     }
     return dict;
@@ -130,7 +140,7 @@ class CrossOriginEmbedderPolicyReporterTest : public testing::Test {
       base::StringPiece disposition) {
     auto body = blink::mojom::ReportBody::New();
     for (const auto& pair :
-         CreateBodyForNavigationInternal(blocked_url, disposition)) {
+         CreateBodyInternal("navigation", blocked_url, disposition)) {
       body->body.push_back(blink::mojom::ReportBodyElement::New(
           std::move(pair.first), std::move(pair.second)));
     }
@@ -149,10 +159,11 @@ class CrossOriginEmbedderPolicyReporterTest : public testing::Test {
             std::make_pair("disposition", disposition.as_string())};
   }
 
-  std::vector<std::pair<std::string, std::string>>
-  CreateBodyForNavigationInternal(base::StringPiece blocked_url,
-                                  base::StringPiece disposition) const {
-    return {std::make_pair("type", "navigation"),
+  std::vector<std::pair<std::string, std::string>> CreateBodyInternal(
+      base::StringPiece type,
+      base::StringPiece blocked_url,
+      base::StringPiece disposition) const {
+    return {std::make_pair("type", type.as_string()),
             std::make_pair("blockedURL", blocked_url.as_string()),
             std::make_pair("disposition", disposition.as_string())};
   }
@@ -326,9 +337,6 @@ TEST_F(CrossOriginEmbedderPolicyReporterTest, BasicNavigation) {
   const GURL kContextUrl("https://example.com/path");
   CrossOriginEmbedderPolicyReporter reporter(
       storage_partition(), kContextUrl, "e1", "e2", net::NetworkIsolationKey());
-  CrossOriginEmbedderPolicy child_coep;
-  child_coep.report_only_value =
-      network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
 
   reporter.QueueNavigationReport(GURL("https://www1.example.com/x#foo?bar=baz"),
                                  /*report_only=*/false);
@@ -405,6 +413,34 @@ TEST_F(CrossOriginEmbedderPolicyReporterTest, UserAndPassForNavigation) {
   EXPECT_EQ(r2.url, kContextUrl);
   EXPECT_EQ(r2.body,
             CreateBodyForNavigation("https://www2.example.com/y", "reporting"));
+}
+
+TEST_F(CrossOriginEmbedderPolicyReporterTest, BasicWorkerInitialization) {
+  const GURL kContextUrl("https://example.com/path");
+  CrossOriginEmbedderPolicyReporter reporter(
+      storage_partition(), kContextUrl, "e1", "e2", net::NetworkIsolationKey());
+
+  reporter.QueueWorkerInitializationReport(
+      GURL("https://www1.example.com/worker.js"),
+      /*report_only=*/false);
+  reporter.QueueWorkerInitializationReport(
+      GURL("http://www2.example.com:41/worker.js"),
+      /*report_only=*/true);
+
+  ASSERT_EQ(2u, network_context().reports().size());
+  const Report& r1 = network_context().reports()[0];
+  const Report& r2 = network_context().reports()[1];
+
+  EXPECT_EQ(r1.type, "coep");
+  EXPECT_EQ(r1.group, "e1");
+  EXPECT_EQ(r1.url, kContextUrl);
+  EXPECT_EQ(r1.body, CreateBodyForWorkerInitialization(
+                         "https://www1.example.com/worker.js", "enforce"));
+  EXPECT_EQ(r2.type, "coep");
+  EXPECT_EQ(r2.group, "e2");
+  EXPECT_EQ(r2.url, kContextUrl);
+  EXPECT_EQ(r2.body, CreateBodyForWorkerInitialization(
+                         "http://www2.example.com:41/worker.js", "reporting"));
 }
 
 }  // namespace

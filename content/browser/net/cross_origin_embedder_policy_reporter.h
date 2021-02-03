@@ -59,9 +59,15 @@ class CONTENT_EXPORT CrossOriginEmbedderPolicyReporter final
   void BindObserver(
       mojo::PendingRemote<blink::mojom::ReportingObserver> observer);
 
-  // https://mikewest.github.io/corpp/#abstract-opdef-queue-coep-navigation-violation
-  // Queue a violation report for COEP mismatch for nested frame navigation.
+  // https://html.spec.whatwg.org/C/#check-a-navigation-response's-adherence-to-its-embedder-policy
+  // Queues a violation report for COEP mismatch for nested frame navigation.
   void QueueNavigationReport(const GURL& blocked_url, bool report_only);
+
+  // https://html.spec.whatwg.org/C/#check-a-global-object's-embedder-policy
+  // Queues a violation report for COEP mismatch during the worker
+  // initialization.
+  void QueueWorkerInitializationReport(const GURL& blocked_url,
+                                       bool report_only);
 
  private:
   void QueueAndNotify(std::initializer_list<

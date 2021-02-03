@@ -8012,7 +8012,7 @@ void RenderFrameHostImpl::CreateDedicatedWorkerHostFactory(
           /*creator_worker_token=*/base::nullopt,
           /*ancestor_render_frame_host_id=*/GetGlobalFrameRoutingId(),
           last_committed_origin_, isolation_info_,
-          cross_origin_embedder_policy_, std::move(coep_reporter)),
+          cross_origin_embedder_policy_, coep_reporter_.get()),
       std::move(receiver));
 }
 

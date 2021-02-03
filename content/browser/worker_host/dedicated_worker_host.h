@@ -11,6 +11,7 @@
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "content/browser/browser_interface_broker_impl.h"
+#include "content/browser/net/cross_origin_embedder_policy_reporter.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -60,8 +61,7 @@ class DedicatedWorkerHost final : public blink::mojom::DedicatedWorkerHost,
       const url::Origin& creator_origin,
       const net::IsolationInfo& isolation_info,
       const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
-      mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
-          coep_reporter,
+      CrossOriginEmbedderPolicyReporter* coep_reporter,
       mojo::PendingReceiver<blink::mojom::DedicatedWorkerHost> host);
   ~DedicatedWorkerHost() final;
 
@@ -255,11 +255,11 @@ class DedicatedWorkerHost final : public blink::mojom::DedicatedWorkerHost,
   // The endpoint of this mojo interface is the RenderFrameHostImpl's COEP
   // reporter. The COEP endpoint is correct, but the context_url is the
   // Document's URL.
-  // TODO(arthursonzogni): After landing PlzDedicatedWorker, make the
+  // TODO(crbug.com/1060837): After landing PlzDedicatedWorker, make the
   // DedicatedWorkerHost to have its own COEP reporter using the right
   // context_url.
-  mojo::Remote<network::mojom::CrossOriginEmbedderPolicyReporter>
-      coep_reporter_;  // Never null.
+  CrossOriginEmbedderPolicyReporter* const coep_reporter_;  // Never null.
+
   // Will be set once the worker script started loading.
   base::Optional<GURL> final_response_url_;
 

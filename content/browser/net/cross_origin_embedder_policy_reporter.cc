@@ -68,6 +68,15 @@ void CrossOriginEmbedderPolicyReporter::QueueNavigationReport(
                  report_only);
 }
 
+void CrossOriginEmbedderPolicyReporter::QueueWorkerInitializationReport(
+    const GURL& blocked_url,
+    bool report_only) {
+  GURL url_to_pass = StripUsernameAndPassword(blocked_url);
+  QueueAndNotify({std::make_pair("type", "worker initialization"),
+                  std::make_pair("blockedURL", url_to_pass.spec())},
+                 report_only);
+}
+
 void CrossOriginEmbedderPolicyReporter::Clone(
     mojo::PendingReceiver<network::mojom::CrossOriginEmbedderPolicyReporter>
         receiver) {

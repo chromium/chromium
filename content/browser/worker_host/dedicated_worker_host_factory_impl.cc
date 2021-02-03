@@ -43,8 +43,7 @@ DedicatedWorkerHostFactoryImpl::DedicatedWorkerHostFactoryImpl(
     const url::Origin& creator_origin,
     const net::IsolationInfo& isolation_info,
     const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
-    mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
-        coep_reporter)
+    CrossOriginEmbedderPolicyReporter* coep_reporter)
     : worker_process_id_(worker_process_id),
       creator_render_frame_host_id_(creator_render_frame_host_id),
       creator_worker_token_(creator_worker_token),
@@ -52,7 +51,7 @@ DedicatedWorkerHostFactoryImpl::DedicatedWorkerHostFactoryImpl(
       creator_origin_(creator_origin),
       isolation_info_(isolation_info),
       cross_origin_embedder_policy_(cross_origin_embedder_policy),
-      coep_reporter_(std::move(coep_reporter)) {
+      coep_reporter_(coep_reporter) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK((creator_render_frame_host_id_ && !creator_worker_token_) ||
          (!creator_render_frame_host_id_ && creator_worker_token_));
@@ -91,14 +90,10 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHost(
     return;
   }
 
-  mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
-      coep_reporter;
-  coep_reporter_->Clone(coep_reporter.InitWithNewPipeAndPassReceiver());
-
   auto* host = new DedicatedWorkerHost(
       service, token, worker_process_host, creator_render_frame_host_id_,
       creator_worker_token_, ancestor_render_frame_host_id_, creator_origin_,
-      isolation_info_, cross_origin_embedder_policy_, std::move(coep_reporter),
+      isolation_info_, cross_origin_embedder_policy_, coep_reporter_,
       std::move(host_receiver));
   host->BindBrowserInterfaceBrokerReceiver(std::move(broker_receiver));
 }
@@ -133,16 +128,11 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad(
 
   // TODO(https://crbug.com/1058759): Compare |creator_origin_| to
   // |script_url|, and report as bad message if that fails.
-
-  mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
-      coep_reporter;
-  coep_reporter_->Clone(coep_reporter.InitWithNewPipeAndPassReceiver());
-
   mojo::PendingRemote<blink::mojom::DedicatedWorkerHost> pending_remote_host;
   auto* host = new DedicatedWorkerHost(
       service, token, worker_process_host, creator_render_frame_host_id_,
       creator_worker_token_, ancestor_render_frame_host_id_, creator_origin_,
-      isolation_info_, cross_origin_embedder_policy_, std::move(coep_reporter),
+      isolation_info_, cross_origin_embedder_policy_, coep_reporter_,
       pending_remote_host.InitWithNewPipeAndPassReceiver());
   mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker;
   host->BindBrowserInterfaceBrokerReceiver(

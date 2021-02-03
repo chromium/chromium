@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_WORKER_HOST_DEDICATED_WORKER_HOST_FACTORY_IMPL_H_
 
 #include "base/optional.h"
+#include "content/browser/net/cross_origin_embedder_policy_reporter.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -31,8 +32,7 @@ class CONTENT_EXPORT DedicatedWorkerHostFactoryImpl
       const url::Origin& creator_origin,
       const net::IsolationInfo& isolation_info,
       const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
-      mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
-          coep_reporter);
+      CrossOriginEmbedderPolicyReporter* coep_reporter);
   ~DedicatedWorkerHostFactoryImpl() override;
 
   // blink::mojom::DedicatedWorkerHostFactory:
@@ -67,8 +67,7 @@ class CONTENT_EXPORT DedicatedWorkerHostFactoryImpl
   const url::Origin creator_origin_;
   const net::IsolationInfo isolation_info_;
   const network::CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
-  mojo::Remote<network::mojom::CrossOriginEmbedderPolicyReporter>
-      coep_reporter_;
+  CrossOriginEmbedderPolicyReporter* const coep_reporter_;
 
   DISALLOW_COPY_AND_ASSIGN(DedicatedWorkerHostFactoryImpl);
 };
