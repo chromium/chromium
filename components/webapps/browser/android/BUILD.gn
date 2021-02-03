@@ -4,11 +4,20 @@
 
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
+import("//build/config/locales.gni")
+import("//tools/grit/grit_rule.gni")
 
 android_library("java") {
   resources_package = "org.chromium.components.webapps"
   sources = [
+    "java/src/org/chromium/components/webapps/AddToHomescreenCoordinator.java",
+    "java/src/org/chromium/components/webapps/AddToHomescreenDialogView.java",
     "java/src/org/chromium/components/webapps/AddToHomescreenInstaller.java",
+    "java/src/org/chromium/components/webapps/AddToHomescreenMediator.java",
+    "java/src/org/chromium/components/webapps/AddToHomescreenProperties.java",
+    "java/src/org/chromium/components/webapps/AddToHomescreenViewBinder.java",
+    "java/src/org/chromium/components/webapps/AddToHomescreenViewDelegate.java",
+    "java/src/org/chromium/components/webapps/AppBannerManager.java",
     "java/src/org/chromium/components/webapps/AppData.java",
     "java/src/org/chromium/components/webapps/AppDetailsDelegate.java",
     "java/src/org/chromium/components/webapps/WebappsIconUtils.java",
@@ -25,6 +34,7 @@ android_library("java") {
     "//content/public/android:content_java",
     "//third_party/android_deps:androidx_annotation_annotation_java",
     "//ui/android:ui_no_recycler_view_java",
+    "//url:gurl_java",
   ]
   srcjar_deps = [ ":webapps_java_enums_srcjar" ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
@@ -32,7 +42,10 @@ android_library("java") {
 
 generate_jni("webapps_jni_headers") {
   sources = [
+    "java/src/org/chromium/components/webapps/AddToHomescreenCoordinator.java",
     "java/src/org/chromium/components/webapps/AddToHomescreenInstaller.java",
+    "java/src/org/chromium/components/webapps/AddToHomescreenMediator.java",
+    "java/src/org/chromium/components/webapps/AppBannerManager.java",
     "java/src/org/chromium/components/webapps/WebappsIconUtils.java",
     "java/src/org/chromium/components/webapps/WebappsUtils.java",
     "java/src/org/chromium/components/webapps/installable/InstallableAmbientBadgeInfoBar.java",
@@ -49,14 +62,45 @@ java_cpp_enum("webapps_java_enums_srcjar") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable-hdpi/google_play.png",
+    "java/res/drawable-hdpi/star_gray.png",
+    "java/res/drawable-hdpi/star_green.png",
+    "java/res/drawable-mdpi/google_play.png",
+    "java/res/drawable-mdpi/star_gray.png",
+    "java/res/drawable-mdpi/star_green.png",
+    "java/res/drawable-xhdpi/google_play.png",
+    "java/res/drawable-xhdpi/star_gray.png",
+    "java/res/drawable-xhdpi/star_green.png",
+    "java/res/drawable-xxhdpi/google_play.png",
+    "java/res/drawable-xxhdpi/star_gray.png",
+    "java/res/drawable-xxhdpi/star_green.png",
+    "java/res/drawable-xxxhdpi/google_play.png",
+    "java/res/drawable-xxxhdpi/star_gray.png",
+    "java/res/drawable-xxxhdpi/star_green.png",
+    "java/res/drawable/rating_bar.xml",
+    "java/res/layout/add_to_homescreen_dialog.xml",
     "java/res/mipmap-hdpi/shortcut_icon_shadow.png",
     "java/res/mipmap-mdpi/shortcut_icon_shadow.png",
     "java/res/mipmap-xhdpi/shortcut_icon_shadow.png",
     "java/res/mipmap-xxhdpi/shortcut_icon_shadow.png",
     "java/res/mipmap-xxxhdpi/shortcut_icon_shadow.png",
     "java/res/values/dimens.xml",
+    "java/res/values/styles.xml",
   ]
-  deps = [ "//components/webapk/android/libs/common:splash_resources" ]
+  deps = [
+    ":webapps_strings_grd",
+    "//components/browser_ui/strings/android:browser_ui_strings_grd",
+    "//components/browser_ui/styles/android:java_resources",
+    "//components/webapk/android/libs/common:splash_resources",
+  ]
+}
+
+java_strings_grd("webapps_strings_grd") {
+  grd_file = "android_webapps_strings.grd"
+  outputs = [ "values/android_webapps_strings.xml" ] +
+            process_file_template(
+                android_bundle_locales_as_resources,
+                [ "values-{{source_name_part}}/android_webapps_strings.xml" ])
 }
 
 source_set("unit_tests") {
@@ -78,5 +122,28 @@ source_set("unit_tests") {
     "//third_party/blink/public/mojom:mojom_platform",
     "//ui/gfx:test_support",
     "//url",
+  ]
+}
+
+java_library("junit") {
+  # Skip platform checks since Robolectric depends on requires_android targets.
+  bypass_platform_checks = true
+  testonly = true
+  sources = [
+    "java/src/org/chromium/components/webapps/AddToHomescreenDialogViewTest.java",
+    "java/src/org/chromium/components/webapps/AddToHomescreenMediatorTest.java",
+    "java/src/org/chromium/components/webapps/AddToHomescreenViewBinderTest.java",
+  ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//base/test:test_support_java",
+    "//third_party/android_deps:androidx_test_runner_java",
+    "//third_party/android_deps:robolectric_all_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 }

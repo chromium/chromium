@@ -461,13 +461,6 @@
     <style name="NavigationPopupDialog" parent="Widget.AppCompat.Light.ListPopupWindow" />
 
     <!-- Misc text appearance styles -->
-    <style name="TextAppearance.AddToHomeScreenEditText">
-        <item name="android:textSize">18sp</item>
-    </style>
-    <style name="TextAppearance.AddToHomeScreenWebAppName"
-        parent="TextAppearance.TextLarge.Primary">
-        <item name="android:textSize">20sp</item>
-    </style>
     <style name="TextAppearance.SearchEngineRecentTitle" parent="TextAppearance.RobotoMediumStyle">
         <item name="android:textColor">@color/default_text_color_link</item>
     </style>

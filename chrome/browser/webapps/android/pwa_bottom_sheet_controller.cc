@@ -13,7 +13,6 @@
 #include "chrome/browser/webapps/android/jni_headers/PwaBottomSheetControllerProvider_jni.h"
 #include "chrome/browser/webapps/android/jni_headers/PwaBottomSheetController_jni.h"
 #include "components/url_formatter/elide_url.h"
-#include "components/webapps/browser/banners/app_banner_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/android/java_bitmap.h"
 

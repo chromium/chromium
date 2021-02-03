@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.webapps.AddToHomescreenViewDelegate;
 
 /**
  * The class handling the bottom sheet install for PWA installs. The UI is shown on construction

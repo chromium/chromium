@@ -836,6 +836,7 @@ if (is_android) {
       "//components/signin/public/android:junit",
       "//components/variations/android:components_variations_junit_tests",
       "//components/webapk/android/libs/client:junit",
+      "//components/webapps/browser/android:junit",
     ]
   }
 }

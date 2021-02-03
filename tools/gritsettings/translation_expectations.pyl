@@ -51,6 +51,7 @@
       "components/javascript_dialogs/android/javascript_dialogs_android_strings.grd",
       "components/media_router/browser/android/java/strings/android_chrome_media_router_strings.grd",
       "components/permissions/android/permissions_android_strings.grd",
+      "components/webapps/browser/android/android_webapps_strings.grd",
       "content/public/android/java/strings/android_content_strings.grd",
       "device/bluetooth/bluetooth_strings.grd",
       "device/fido/fido_strings.grd",

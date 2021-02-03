@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.webapps;
 import android.graphics.Bitmap;
 import android.util.Pair;
 
+import org.chromium.components.webapps.AddToHomescreenProperties;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 

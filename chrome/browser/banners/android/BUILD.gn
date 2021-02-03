@@ -9,7 +9,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/banners/AppBannerInProductHelpController.java",
     "java/src/org/chromium/chrome/browser/banners/AppBannerInProductHelpControllerFactory.java",
     "java/src/org/chromium/chrome/browser/banners/AppBannerInProductHelpControllerProvider.java",
-    "java/src/org/chromium/chrome/browser/banners/AppBannerManager.java",
     "java/src/org/chromium/chrome/browser/banners/AppData.java",
     "java/src/org/chromium/chrome/browser/banners/AppDetailsDelegate.java",
   ]
@@ -42,10 +41,7 @@ android_resources("java_resources") {
 }
 
 generate_jni("jni_headers") {
-  sources = [
-    "java/src/org/chromium/chrome/browser/banners/AppBannerInProductHelpControllerProvider.java",
-    "java/src/org/chromium/chrome/browser/banners/AppBannerManager.java",
-  ]
+  sources = [ "java/src/org/chromium/chrome/browser/banners/AppBannerInProductHelpControllerProvider.java" ]
 }
 
 android_library("javatests") {

@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "chrome/browser/banners/app_banner_manager_android.h"
+#include "components/webapps/browser/android/app_banner_manager_android.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 

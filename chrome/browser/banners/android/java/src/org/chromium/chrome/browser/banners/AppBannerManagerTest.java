@@ -92,6 +92,7 @@ import org.chromium.components.infobars.InfoBarUiItem;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.site_engagement.SiteEngagementService;
+import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.components.webapps.AppData;
 import org.chromium.components.webapps.AppDetailsDelegate;
 import org.chromium.components.webapps.installable.InstallableAmbientBadgeInfoBar;
