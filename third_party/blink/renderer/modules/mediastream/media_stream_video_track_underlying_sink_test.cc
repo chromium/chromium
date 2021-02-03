@@ -72,8 +72,10 @@ class MediaStreamVideoTrackUnderlyingSinkTest : public testing::Test {
   PushableMediaStreamVideoSource* pushable_video_source_;
 };
 
+// TODO(1153092): Test flakes, likely due to completing before background
+// thread has had chance to call OnVideoFrame().
 TEST_F(MediaStreamVideoTrackUnderlyingSinkTest,
-       WriteToStreamForwardsToMediaStreamSink) {
+       DISABLED_WriteToStreamForwardsToMediaStreamSink) {
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
   auto* underlying_sink = CreateUnderlyingSink(script_state);
