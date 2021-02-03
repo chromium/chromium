@@ -579,7 +579,7 @@ void ModelTypeWorker::DecryptStoredEntities() {
     if (newly_found_key.gu_responses_while_should_have_been_known > 0) {
       base::UmaHistogramCounts1000(
           base::StrCat({kTimeUntilEncryptionKeyFoundHistogramPrefix,
-                        ModelTypeToString(GetModelType())}),
+                        ModelTypeToHistogramSuffix(type_)}),
           newly_found_key.gu_responses_while_should_have_been_known);
     }
   }
@@ -733,7 +733,7 @@ void ModelTypeWorker::MaybeDropPendingUpdatesEncryptedWith(
   if (entries_pending_decryption_.size() < updates_before_dropping) {
     base::UmaHistogramCounts1000(
         base::StrCat({kUndecryptablePendingUpdatesDroppedHistogramPrefix,
-                      ModelTypeToString(GetModelType())}),
+                      ModelTypeToHistogramSuffix(type_)}),
         updates_before_dropping - entries_pending_decryption_.size());
   }
 }
