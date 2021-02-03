@@ -113,7 +113,7 @@ public class EntryManager {
         }
 
         // found = last entry in the arraylist
-        int newStartY = mEntries.get(0).getEndYAxis() + 1;
+        int newStartY = mEntries.get(mEntries.size() - 1).getEndYAxis() + 1;
 
         LongScreenshotsEntry newEntry =
                 new LongScreenshotsEntry(mContext, mTab, newStartY, mDisplayHeightPx, false);
