@@ -246,6 +246,9 @@ void WebGPUImplementation::OnSwapBufferPresented(
 }
 void WebGPUImplementation::OnGpuControlReturnData(
     base::span<const uint8_t> data) {
+  if (lost_) {
+    return;
+  }
 #if BUILDFLAG(USE_DAWN)
 
   static uint32_t return_trace_id = 0;

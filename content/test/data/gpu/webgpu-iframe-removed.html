@@ -124,6 +124,46 @@
         }
       });
 
+      // Test creating a device asynchronously, but removing the iframe before
+      // the response is received.
+      await runTestCase(async () => {
+        const adapter = navigator.gpu && await navigator.gpu.requestAdapter();
+        if (!adapter) {
+          console.warn('WebGPU not supported');
+          parent.removeIframe();
+          return;
+        }
+
+        adapter.requestDevice();
+        /* Wait till the next task so we're sure the command flushed */
+        setTimeout(() => {
+          parent.removeIframe();
+        }, 0);
+      });
+
+      // Test sending an async command and then removing the iframe
+      // before the response is received.
+      await runTestCase(async () => {
+        const adapter = navigator.gpu && await navigator.gpu.requestAdapter();
+        if (!adapter) {
+          console.warn('WebGPU not supported');
+          parent.removeIframe();
+          return;
+        }
+        const device = await adapter.requestDevice();
+
+        const buffer = device.createBuffer({
+          size: 4,
+          usage: GPUBufferUsage.MAP_READ,
+        });
+
+        buffer.mapAsync(GPUMapMode.READ);
+        /* Wait till the next microtask so we're sure the command flushed */
+        setTimeout(() => {
+          parent.removeIframe();
+        }, 0);
+      });
+
       window.domAutomationController.send('FINISHED');
     }
   </script>
