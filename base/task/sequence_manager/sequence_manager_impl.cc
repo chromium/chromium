@@ -854,13 +854,17 @@ void SequenceManagerImpl::NotifyDidProcessTask(ExecutingTask* executing_task,
     }
   }
 
+  bool has_valid_start =
+      task_timing.state() != TaskQueue::TaskTiming::State::NotStarted;
   TimeRecordingPolicy recording_policy =
       ShouldRecordTaskTiming(executing_task->task_queue);
   // Record end time ASAP to avoid bias due to the overhead of observers.
-  if (recording_policy == TimeRecordingPolicy::DoRecord)
+  if (recording_policy == TimeRecordingPolicy::DoRecord && has_valid_start) {
     task_timing.RecordTaskEnd(time_after_task);
+  }
 
-  if (task_timing.has_wall_time() && main_thread_only().nesting_depth == 0) {
+  if (has_valid_start && task_timing.has_wall_time() &&
+      main_thread_only().nesting_depth == 0) {
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("sequence_manager"),
                  "SequenceManager.DidProcessTaskTimeObservers");
     for (auto& observer : main_thread_only().task_time_observers) {

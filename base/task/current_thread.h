@@ -14,6 +14,7 @@
 #include "base/message_loop/message_pump_for_ui.h"
 #include "base/pending_task.h"
 #include "base/single_thread_task_runner.h"
+#include "base/task/sequence_manager/task_time_observer.h"
 #include "base/task/task_observer.h"
 #include "build/build_config.h"
 
@@ -117,6 +118,10 @@ class BASE_EXPORT CurrentThread {
   // instance should add task observers on it.
   void AddTaskObserver(TaskObserver* task_observer);
   void RemoveTaskObserver(TaskObserver* task_observer);
+
+  void AddTaskTimeObserver(sequence_manager::TaskTimeObserver* task_observer);
+  void RemoveTaskTimeObserver(
+      sequence_manager::TaskTimeObserver* task_observer);
 
   // When this functionality is enabled, the queue time will be recorded for
   // posted tasks.
