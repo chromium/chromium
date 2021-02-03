@@ -94,6 +94,7 @@ static_library("tflite-support") {
   deps = [
     ":metadata_schema",
     ":tflite-support-proto",
+    "//base",
     "//third_party/abseil-cpp:absl",
     "//third_party/flatbuffers",
     "//third_party/libzip",
