@@ -78,7 +78,6 @@
 //
 //  INITIALIZED,          // Constructor was called.
 //  INIT_TASK_SCHEDULED,  // Waiting for deferred init tasks to finish.
-//  INIT_TASK_DONE,       // Waiting for timer to send initial log.
 //  SENDING_LOGS,         // Sending logs and creating new ones when we run out.
 //
 // In more detail, we have:
@@ -88,26 +87,20 @@
 // initial log.
 //
 //    INIT_TASK_SCHEDULED,    // Waiting for deferred init tasks to finish.
-// Typically about 30 seconds after startup, a task is sent to a second thread
-// (the file thread) to perform deferred (lower priority and slower)
-// initialization steps such as getting the list of plugins.  That task will
-// (when complete) make an async callback (via a Task) to indicate the
-// completion.
+// Typically about 30 seconds after startup, a task is sent to a background
+// thread to perform deferred (lower priority and slower) initialization steps
+// such as getting the list of plugins.  That task will (when complete) make an
+// async callback (via a Task) to indicate the completion.
 //
-//    INIT_TASK_DONE,         // Waiting for timer to send initial log.
-// The callback has arrived, and it is now possible for an initial log to be
-// created.  This callback typically arrives back less than one second after
-// the deferred init task is dispatched.
-//
-//    SENDING_LOGS,  // Sending logs an creating new ones when we run out.
-// Logs from previous sessions have been loaded, and initial logs have been
-// created (an optional stability log and the first metrics log).  We will
-// send all of these logs, and when run out, we will start cutting new logs
-// to send.  We will also cut a new log if we expect a shutdown.
+//    SENDING_LOGS,  // Sending logs and creating new ones when we run out.
+// Logs from previous sessions have been loaded, and an optional initial
+// stability log has been created.  We will send all of these logs, and when
+// they run out, we will start cutting new logs to send.  We will also cut a
+// new log if we expect a shutdown.
 //
 // The progression through the above states is simple, and sequential.
-// States proceed from INITIAL to SENDING_LOGS, and remain in the latter until
-// shutdown.
+// States proceed from INITIALIZED to SENDING_LOGS, and remain in the latter
+// until shutdown.
 //
 // Also note that whenever we successfully send a log, we mirror the list
 // of logs into the PrefService. This ensures that IF we crash, we won't start
@@ -555,17 +548,7 @@ void MetricsService::OnUserAction(const std::string& action,
 
 void MetricsService::FinishedInitTask() {
   DCHECK_EQ(INIT_TASK_SCHEDULED, state_);
-  state_ = INIT_TASK_DONE;
-
-  // Create the initial log.
-  if (!initial_metrics_log_) {
-    initial_metrics_log_ = CreateLog(MetricsLog::ONGOING_LOG);
-    // Note: We explicitly do not call OnDidCreateMetricsLog() here, as this
-    // function would have already been called in Start() and this log will
-    // already contain any histograms logged there. OnDidCreateMetricsLog()
-    // will be called again after the initial log is closed, for the next log.
-    // TODO(crbug.com/1171830): Consider getting rid of |initial_metrics_log_|.
-  }
+  state_ = SENDING_LOGS;
 
   rotation_scheduler_->InitTaskComplete();
 }
@@ -648,12 +631,13 @@ void MetricsService::CloseCurrentLog() {
   log_manager_.FinishCurrentLog(log_store());
 }
 
-void MetricsService::PushPendingLogsToPersistentStorage() {
+bool MetricsService::PushPendingLogsToPersistentStorage() {
   if (state_ < SENDING_LOGS)
-    return;  // We didn't and still don't have time to get plugin list etc.
+    return false;
 
   CloseCurrentLog();
   log_store()->TrimAndPersistUnsentLogs();
+  return true;
 }
 
 //------------------------------------------------------------------------------
@@ -676,7 +660,7 @@ void MetricsService::StartSchedulerIfNecessary() {
 
 void MetricsService::StartScheduledUpload() {
   DVLOG(1) << "StartScheduledUpload";
-  DCHECK(state_ >= INIT_TASK_DONE);
+  DCHECK(state_ >= SENDING_LOGS);
 
   // If we're getting no notifications, then the log won't have much in it, and
   // it's possible the computer is about to go to sleep, so don't upload and
@@ -717,13 +701,11 @@ void MetricsService::OnFinalLogInfoCollectionDone() {
     return;
   }
 
-  if (state_ == INIT_TASK_DONE) {
-    PrepareInitialMetricsLog();
-  } else {
-    DCHECK_EQ(SENDING_LOGS, state_);
-    CloseCurrentLog();
-    OpenNewLog();
-  }
+  DCHECK_EQ(SENDING_LOGS, state_);
+  bool success = PushPendingLogsToPersistentStorage();
+  DCHECK(success);
+  OpenNewLog();
+
   reporting_service_.Start();
   rotation_scheduler_->RotationFinished();
   HandleIdleSinceLastTransmission(true);
@@ -761,48 +743,6 @@ bool MetricsService::PrepareInitialStabilityLog(
   log_store()->TrimAndPersistUnsentLogs();
 
   return true;
-}
-
-void MetricsService::PrepareInitialMetricsLog() {
-  DCHECK_EQ(INIT_TASK_DONE, state_);
-
-  RecordCurrentEnvironment(initial_metrics_log_.get(), /*complete=*/true);
-  base::TimeDelta incremental_uptime;
-  base::TimeDelta uptime;
-  GetUptimes(local_state_, &incremental_uptime, &uptime);
-
-  // Histograms only get written to the current log, so make the new log current
-  // before writing them.
-  log_manager_.PauseCurrentLog();
-  log_manager_.BeginLoggingWithLog(std::move(initial_metrics_log_));
-
-  // Note: Some stability providers may record stability stats via histograms,
-  //       so this call has to be after BeginLoggingWithLog().
-  log_manager_.current_log()->RecordCurrentSessionData(
-      &delegating_provider_, base::TimeDelta(), base::TimeDelta());
-  RecordCurrentHistograms();
-
-  DVLOG(1) << "Generated an initial log.";
-  log_manager_.FinishCurrentLog(log_store());
-  log_manager_.ResumePausedLog();
-
-  // We call OnDidCreateMetricsLog() here for the next log. Normally, this is
-  // called when the log is created, but in this special case, the log we paused
-  // was created much earlier - by Start(). The histograms that were recorded
-  // via OnDidCreateMetricsLog() are now in the initial metrics log we just
-  // processed, so we need to record new ones for the next log.
-  delegating_provider_.OnDidCreateMetricsLog();
-
-  // Store unsent logs, including the initial log that was just saved, so
-  // that they're not lost in case of a crash before upload time.
-  log_store()->TrimAndPersistUnsentLogs();
-
-  state_ = SENDING_LOGS;
-}
-
-void MetricsService::IncrementLongPrefsValue(const char* path) {
-  int64_t value = local_state_->GetInt64(path);
-  local_state_->SetInt64(path, value + 1);
 }
 
 bool MetricsService::UmaMetricsProperlyShutdown() {

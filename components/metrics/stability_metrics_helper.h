@@ -93,9 +93,6 @@ class StabilityMetricsHelper {
   // Increments an Integer pref value specified by |path|.
   void IncrementPrefValue(const char* path);
 
-  // Increments a 64-bit Integer pref value specified by |path|.
-  void IncrementLongPrefsValue(const char* path);
-
   // Records that a renderer launch failed.
   void LogRendererLaunchFailed(bool was_extension_process);
 
