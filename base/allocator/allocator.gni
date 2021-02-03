@@ -9,11 +9,11 @@ import("//build/config/sanitizers/sanitizers.gni")
 _is_using_sanitizers = is_asan || is_hwasan || is_lsan || is_tsan || is_msan
 
 # - Windows: shims don't work for component builds and debug CRT is not
-# compatible, see below. On x86, there are some memory regresions.
+# compatible, see below.
 # - Android: symbol wrapping is not universal for component builds.
 # - Chromecast on Android: causes issues with crash reporting, see b/178423326.
 _disable_partition_alloc =
-    (is_win && (is_component_build || is_debug || target_cpu == "x86")) ||
+    (is_win && (is_component_build || is_debug)) ||
     (is_android && is_component_build) || (is_android && is_chromecast)
 _is_partition_alloc_platform = is_android || is_win
 
