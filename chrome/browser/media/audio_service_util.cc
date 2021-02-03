@@ -21,10 +21,7 @@
 
 bool IsAudioServiceSandboxEnabled() {
   base::Optional<bool> force_enable_audio_sandbox;
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
   const policy::PolicyMap& policies =
       g_browser_process->browser_policy_connector()
           ->GetPolicyService()
@@ -41,4 +38,3 @@ bool IsAudioServiceSandboxEnabled() {
   return force_enable_audio_sandbox.value_or(
       base::FeatureList::IsEnabled(features::kAudioServiceSandbox));
 }
-

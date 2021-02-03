@@ -42,10 +42,7 @@ const base::Feature kAudioServiceLaunchOnStartup{
 // Runs the audio service in a separate process.
 const base::Feature kAudioServiceOutOfProcess {
   "AudioServiceOutOfProcess",
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
