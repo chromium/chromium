@@ -15,12 +15,14 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -32,6 +34,7 @@
 #include "components/policy/core/common/cloud/mock_signing_service.h"
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/policy/core/common/cloud/reporting_job_configuration_base.h"
+#include "components/policy/core/common/features.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/version_info/version_info.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -1020,6 +1023,69 @@ TEST_F(CloudPolicyClientTest, PolicyFetchWithInvalidationNoPayload) {
   CheckPolicyResponse(policy_response);
   EXPECT_EQ(-12345, client_->fetched_invalidation_version());
 }
+
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+TEST_F(CloudPolicyClientTest, PolicyFetchWithBrowserDeviceIdentifier) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kUploadBrowserDeviceIdentifier);
+
+  RegisterClient();
+
+  // Add the policy type that contains browser device identifier.
+  client_->AddPolicyTypeToFetch(
+      dm_protocol::kChromeMachineLevelUserCloudPolicyType, std::string());
+
+  // Make a policy fetch.
+  ExpectAndCaptureJob(/*response=*/GetPolicyResponse());
+  EXPECT_CALL(observer_, OnPolicyFetched);
+  client_->FetchPolicy();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
+            job_type_);
+
+  // Collect the policy requests.
+  ASSERT_TRUE(job_request_.has_policy_request());
+  const em::DevicePolicyRequest& policy_request = job_request_.policy_request();
+  std::map<std::pair<std::string, std::string>, em::PolicyFetchRequest>
+      request_map;
+  for (int i = 0; i < policy_request.requests_size(); ++i) {
+    const em::PolicyFetchRequest& fetch_request = policy_request.requests(i);
+    ASSERT_TRUE(fetch_request.has_policy_type());
+    std::pair<std::string, std::string> key(fetch_request.policy_type(),
+                                            fetch_request.settings_entity_id());
+    EXPECT_EQ(0UL, request_map.count(key));
+    request_map[key].CopyFrom(fetch_request);
+  }
+
+  std::map<std::pair<std::string, std::string>, em::PolicyFetchRequest>
+      expected_requests;
+  // Expected user policy fetch request.
+  std::pair<std::string, std::string> user_policy_key(
+      dm_protocol::kChromeUserPolicyType, std::string());
+  expected_requests[user_policy_key] =
+      GetPolicyRequest().policy_request().requests(0);
+  // Expected user cloud policy fetch request.
+  std::pair<std::string, std::string> user_cloud_policy_key(
+      dm_protocol::kChromeMachineLevelUserCloudPolicyType, std::string());
+  em::PolicyFetchRequest policy_fetch_request =
+      GetPolicyRequest().policy_request().requests(0);
+  policy_fetch_request.set_policy_type(
+      dm_protocol::kChromeMachineLevelUserCloudPolicyType);
+  policy_fetch_request.set_allocated_browser_device_identifier(
+      GetBrowserDeviceIdentifier().release());
+  expected_requests[user_cloud_policy_key] = policy_fetch_request;
+
+  EXPECT_EQ(request_map.size(), expected_requests.size());
+  for (auto it = expected_requests.begin(); it != expected_requests.end();
+       ++it) {
+    EXPECT_EQ(1UL, request_map.count(it->first));
+    EXPECT_EQ(request_map[it->first].SerializePartialAsString(),
+              it->second.SerializePartialAsString());
+  }
+}
+#endif
 
 // Tests that previous OAuth token is no longer sent in policy fetch after its
 // value was cleared.

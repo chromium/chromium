@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
@@ -23,6 +24,7 @@
 #include "components/policy/core/common/cloud/encrypted_reporting_job_configuration.h"
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/policy/core/common/cloud/signing_service.h"
+#include "components/policy/core/common/features.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -377,6 +379,17 @@ void CloudPolicyClient::FetchPolicy() {
         fetch_request->set_invalidation_payload(invalidation_payload_);
       }
     }
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+    // Only set browser device identifier for CBCM Chrome cloud policy on
+    // desktop.
+    if (base::FeatureList::IsEnabled(
+            features::kUploadBrowserDeviceIdentifier) &&
+        type_to_fetch.first ==
+            dm_protocol::kChromeMachineLevelUserCloudPolicyType) {
+      fetch_request->set_allocated_browser_device_identifier(
+          GetBrowserDeviceIdentifier().release());
+    }
+#endif
   }
 
   // Add device state keys.
