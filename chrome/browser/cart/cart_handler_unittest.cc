@@ -25,7 +25,8 @@ void GetEvaluationMerchantCarts(
   std::move(closure).Run();
 }
 
-cart_db::ChromeCartContentProto BuildProto(const char* domain,
+cart_db::ChromeCartContentProto BuildProto(const char* key,
+                                           const char* domain,
                                            const char* merchant_url) {
   cart_db::ChromeCartContentProto proto;
   proto.set_key(domain);
@@ -34,19 +35,23 @@ cart_db::ChromeCartContentProto BuildProto(const char* domain,
   return proto;
 }
 
-const char kFakeMerchant[] = "Fake:A_merchant";
-const char kFakeMerchantURL[] = "www.foo.com";
-const char kMockMerchantB[] = "B_merchant";
-const char kMockMerchantURLB[] = "www.bar.com";
+const char kFakeMerchantKey[] = "Fake:foo.com";
+const char kFakeMerchant[] = "foo.com";
+const char kFakeMerchantURL[] = "https://www.foo.com";
+const char kMockMerchantBKey[] = "bar.com";
+const char kMockMerchantB[] = "bar.com";
+const char kMockMerchantURLB[] = "https://www.bar.com";
 const cart_db::ChromeCartContentProto kFakeProto =
-    BuildProto(kFakeMerchant, kFakeMerchantURL);
+    BuildProto(kFakeMerchantKey, kFakeMerchant, kFakeMerchantURL);
 const cart_db::ChromeCartContentProto kMockProtoB =
-    BuildProto(kMockMerchantB, kMockMerchantURLB);
+    BuildProto(kMockMerchantBKey, kMockMerchantB, kMockMerchantURLB);
 const std::vector<ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
     kExpectedFake = {{kFakeMerchant, kFakeProto}};
 const std::vector<ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
-    kExpectedAllData = {{kFakeMerchant, kFakeProto},
-                        {kMockMerchantB, kMockProtoB}};
+    kExpectedAllData = {
+        {kFakeMerchant, kFakeProto},
+        {kMockMerchantB, kMockProtoB},
+};
 const std::vector<ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
     kEmptyExpected = {};
 }  // namespace
@@ -62,6 +67,35 @@ class CartHandlerTest : public testing::Test {
     handler_ = std::make_unique<CartHandler>(
         mojo::PendingReceiver<chrome_cart::mojom::CartHandler>(), &profile_);
     service_ = CartServiceFactory::GetForProfile(&profile_);
+  }
+
+  void OperationEvaluation(base::OnceClosure closure,
+                           bool expected_success,
+                           bool actual_success) {
+    EXPECT_EQ(expected_success, actual_success);
+    std::move(closure).Run();
+  }
+
+  void GetEvaluationCartHiddenStatus(
+      base::OnceClosure closure,
+      bool isHidden,
+      bool result,
+      std::vector<ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
+          found) {
+    EXPECT_EQ(1U, found.size());
+    EXPECT_EQ(isHidden, found[0].second.is_hidden());
+    std::move(closure).Run();
+  }
+
+  void GetEvaluationCartRemovedStatus(
+      base::OnceClosure closure,
+      bool isRemoved,
+      bool result,
+      std::vector<ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
+          found) {
+    EXPECT_EQ(1U, found.size());
+    EXPECT_EQ(isRemoved, found[0].second.is_removed());
+    std::move(closure).Run();
   }
 
   void TearDown() override {}
@@ -103,13 +137,13 @@ TEST_F(CartHandlerTest, TestEnableFakeData) {
   features.InitAndEnableFeatureWithParameters(
       ntp_features::kNtpChromeCartModule,
       {{"NtpChromeCartModuleDataParam", "fake"}});
-  service_->AddCart(kFakeMerchant, kFakeProto);
-  service_->AddCart(kMockMerchantB, kMockProtoB);
+  service_->AddCart(kFakeMerchantKey, kFakeProto);
+  service_->AddCart(kMockMerchantBKey, kMockProtoB);
 
   std::vector<chrome_cart::mojom::MerchantCartPtr> carts;
   auto dummy_cart1 = chrome_cart::mojom::MerchantCart::New();
-  dummy_cart1->merchant = "Fake:A_merchant";
-  dummy_cart1->cart_url = GURL("www.foo.com");
+  dummy_cart1->merchant = kFakeMerchant;
+  dummy_cart1->cart_url = GURL(kFakeMerchantURL);
   carts.push_back(std::move(dummy_cart1));
 
   handler_->GetMerchantCarts(base::BindOnce(
@@ -122,20 +156,102 @@ TEST_F(CartHandlerTest, TestDisableFakeData) {
   base::RunLoop run_loop;
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(ntp_features::kNtpChromeCartModule);
-  service_->AddCart(kFakeMerchant, kFakeProto);
-  service_->AddCart(kMockMerchantB, kMockProtoB);
+  service_->AddCart(kFakeMerchantKey, kFakeProto);
+  service_->AddCart(kMockMerchantBKey, kMockProtoB);
 
   std::vector<chrome_cart::mojom::MerchantCartPtr> carts;
   auto dummy_cart1 = chrome_cart::mojom::MerchantCart::New();
-  dummy_cart1->merchant = "B_merchant";
-  dummy_cart1->cart_url = GURL("www.bar.com");
+  dummy_cart1->merchant = kFakeMerchant;
+  dummy_cart1->cart_url = GURL(kFakeMerchantURL);
   auto dummy_cart2 = chrome_cart::mojom::MerchantCart::New();
-  dummy_cart2->merchant = "Fake:A_merchant";
-  dummy_cart2->cart_url = GURL("www.foo.com");
+  dummy_cart2->merchant = kMockMerchantB;
+  dummy_cart2->cart_url = GURL(kMockMerchantURLB);
   carts.push_back(std::move(dummy_cart1));
   carts.push_back(std::move(dummy_cart2));
 
   handler_->GetMerchantCarts(base::BindOnce(
       &GetEvaluationMerchantCarts, run_loop.QuitClosure(), std::move(carts)));
   run_loop.Run();
+}
+
+// Tests hiding a single cart and undoing the hide.
+TEST_F(CartHandlerTest, TestHideCart) {
+  CartDB* cart_db_ = service_->GetDB();
+  base::RunLoop run_loop[6];
+  cart_db_->AddCart(
+      kMockMerchantBKey, kMockProtoB,
+      base::BindOnce(&CartHandlerTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[0].QuitClosure(), true));
+  run_loop[0].Run();
+
+  service_->LoadCart(
+      kMockMerchantB,
+      base::BindOnce(&CartHandlerTest::GetEvaluationCartHiddenStatus,
+                     base::Unretained(this), run_loop[1].QuitClosure(), false));
+  run_loop[1].Run();
+
+  handler_->HideCart(
+      GURL(kMockMerchantURLB),
+      base::BindOnce(&CartHandlerTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[2].QuitClosure(), true));
+  run_loop[2].Run();
+
+  service_->LoadCart(
+      kMockMerchantB,
+      base::BindOnce(&CartHandlerTest::GetEvaluationCartHiddenStatus,
+                     base::Unretained(this), run_loop[3].QuitClosure(), true));
+  run_loop[3].Run();
+
+  handler_->RestoreHiddenCart(
+      GURL(kMockMerchantURLB),
+      base::BindOnce(&CartHandlerTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[4].QuitClosure(), true));
+  run_loop[4].Run();
+
+  service_->LoadCart(
+      kMockMerchantB,
+      base::BindOnce(&CartHandlerTest::GetEvaluationCartHiddenStatus,
+                     base::Unretained(this), run_loop[5].QuitClosure(), false));
+  run_loop[5].Run();
+}
+
+// Tests removing a single cart and undoing the remove.
+TEST_F(CartHandlerTest, TestRemoveCart) {
+  CartDB* cart_db_ = service_->GetDB();
+  base::RunLoop run_loop[6];
+  cart_db_->AddCart(
+      kMockMerchantB, kMockProtoB,
+      base::BindOnce(&CartHandlerTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[0].QuitClosure(), true));
+  run_loop[0].Run();
+
+  service_->LoadCart(
+      kMockMerchantB,
+      base::BindOnce(&CartHandlerTest::GetEvaluationCartRemovedStatus,
+                     base::Unretained(this), run_loop[1].QuitClosure(), false));
+  run_loop[1].Run();
+
+  handler_->RemoveCart(
+      GURL(kMockMerchantURLB),
+      base::BindOnce(&CartHandlerTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[2].QuitClosure(), true));
+  run_loop[2].Run();
+
+  service_->LoadCart(
+      kMockMerchantB,
+      base::BindOnce(&CartHandlerTest::GetEvaluationCartRemovedStatus,
+                     base::Unretained(this), run_loop[3].QuitClosure(), true));
+  run_loop[3].Run();
+
+  handler_->RestoreRemovedCart(
+      GURL(kMockMerchantURLB),
+      base::BindOnce(&CartHandlerTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[4].QuitClosure(), true));
+  run_loop[4].Run();
+
+  service_->LoadCart(
+      kMockMerchantB,
+      base::BindOnce(&CartHandlerTest::GetEvaluationCartRemovedStatus,
+                     base::Unretained(this), run_loop[5].QuitClosure(), false));
+  run_loop[5].Run();
 }

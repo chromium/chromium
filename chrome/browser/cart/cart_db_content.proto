@@ -24,4 +24,12 @@ message ChromeCartContentProto {
 
   // Image URLs of products within the cart.
   repeated string product_image_urls = 5;
+
+  // Whether the cart has been temporarily hidden. Hidden cart will be
+  // re-activated when cart content changes or user visits that cart page.
+  bool is_hidden = 6;
+
+  // Whether the cart has been permanently removed. Removed cart will be deleted
+  // from the database.
+  bool is_removed = 7;
 }

@@ -17,6 +17,15 @@ std::string eTLDPlusOne(const GURL& url) {
   return net::registry_controlled_domains::GetDomainAndRegistry(
       url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
 }
+
+std::string GetKeyForURL(const GURL& url) {
+  std::string domain = eTLDPlusOne(url);
+  return base::GetFieldTrialParamValueByFeature(
+             ntp_features::kNtpChromeCartModule,
+             ntp_features::kNtpChromeCartModuleDataParam) == "fake"
+             ? std::string(kFakeDataPrefix) + domain
+             : domain;
+}
 }  // namespace
 
 CartService::CartService(Profile* profile)
@@ -74,8 +83,10 @@ void CartService::LoadCart(const std::string& domain,
   cart_db_->LoadCart(domain, std::move(callback));
 }
 
-void CartService::LoadAllCarts(CartDB::LoadCallback callback) {
-  cart_db_->LoadAllCarts(std::move(callback));
+void CartService::LoadAllActiveCarts(CartDB::LoadCallback callback) {
+  cart_db_->LoadAllCarts(base::BindOnce(&CartService::onLoadCarts,
+                                        weak_ptr_factory_.GetWeakPtr(),
+                                        std::move(callback)));
 }
 
 void CartService::AddCart(const std::string& domain,
@@ -90,12 +101,54 @@ void CartService::DeleteCart(const std::string& domain) {
                                               weak_ptr_factory_.GetWeakPtr()));
 }
 
+void CartService::HideCart(const GURL& cart_url,
+                           CartDB::OperationCallback callback) {
+  cart_db_->LoadCart(GetKeyForURL(cart_url),
+                     base::BindOnce(&CartService::SetCartHiddenStatus,
+                                    weak_ptr_factory_.GetWeakPtr(), true,
+                                    std::move(callback)));
+}
+
+void CartService::RestoreHiddenCart(const GURL& cart_url,
+                                    CartDB::OperationCallback callback) {
+  cart_db_->LoadCart(GetKeyForURL(cart_url),
+                     base::BindOnce(&CartService::SetCartHiddenStatus,
+                                    weak_ptr_factory_.GetWeakPtr(), false,
+                                    std::move(callback)));
+}
+
+void CartService::RemoveCart(const GURL& cart_url,
+                             CartDB::OperationCallback callback) {
+  cart_db_->LoadCart(GetKeyForURL(cart_url),
+                     base::BindOnce(&CartService::SetCartRemovedStatus,
+                                    weak_ptr_factory_.GetWeakPtr(), true,
+                                    std::move(callback)));
+}
+
+void CartService::RestoreRemovedCart(const GURL& cart_url,
+                                     CartDB::OperationCallback callback) {
+  cart_db_->LoadCart(GetKeyForURL(cart_url),
+                     base::BindOnce(&CartService::SetCartRemovedStatus,
+                                    weak_ptr_factory_.GetWeakPtr(), false,
+                                    std::move(callback)));
+}
+
 void CartService::LoadCartsWithFakeData(CartDB::LoadCallback callback) {
-  cart_db_->LoadCartsWithPrefix(kFakeDataPrefix, std::move(callback));
+  cart_db_->LoadCartsWithPrefix(
+      kFakeDataPrefix,
+      base::BindOnce(&CartService::onLoadCarts, weak_ptr_factory_.GetWeakPtr(),
+                     std::move(callback)));
 }
 
 void CartService::OnOperationFinished(bool success) {
   DCHECK(success) << "database operation failed.";
+}
+
+void CartService::OnOperationFinishedWithCallback(
+    CartDB::OperationCallback callback,
+    bool success) {
+  DCHECK(success) << "database operation failed.";
+  std::move(callback).Run(success);
 }
 
 void CartService::Shutdown() {
@@ -103,6 +156,9 @@ void CartService::Shutdown() {
     history_service_->RemoveObserver(this);
   }
   DeleteCartsWithFakeData();
+  // Delete all carts that are removed.
+  cart_db_->LoadAllCarts(base::BindOnce(&CartService::DeleteRemovedCarts,
+                                        weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CartService::OnURLsDeleted(history::HistoryService* history_service,
@@ -194,4 +250,60 @@ void CartService::DeleteCartsWithFakeData() {
   cart_db_->DeleteCartsWithPrefix(
       kFakeDataPrefix, base::BindOnce(&CartService::OnOperationFinished,
                                       weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CartService::DeleteRemovedCarts(
+    bool success,
+    std::vector<CartDB::KeyAndValue> proto_pairs) {
+  for (CartDB::KeyAndValue proto_pair : proto_pairs) {
+    if (proto_pair.second.is_removed()) {
+      DeleteCart(proto_pair.first);
+    }
+  }
+}
+
+void CartService::onLoadCarts(CartDB::LoadCallback callback,
+                              bool success,
+                              std::vector<CartDB::KeyAndValue> proto_pairs) {
+  proto_pairs.erase(std::remove_if(proto_pairs.begin(), proto_pairs.end(),
+                                   [](CartDB::KeyAndValue kv) {
+                                     return kv.second.is_hidden() ||
+                                            kv.second.is_removed();
+                                   }),
+                    proto_pairs.end());
+  std::move(callback).Run(success, std::move(proto_pairs));
+}
+
+void CartService::SetCartHiddenStatus(
+    bool isHidden,
+    CartDB::OperationCallback callback,
+    bool success,
+    std::vector<CartDB::KeyAndValue> proto_pairs) {
+  if (!success) {
+    return;
+  }
+  DCHECK(proto_pairs.size() == 1);
+  CartDB::KeyAndValue proto_pair = proto_pairs[0];
+  proto_pair.second.set_is_hidden(isHidden);
+  cart_db_->AddCart(
+      proto_pair.first, proto_pair.second,
+      base::BindOnce(&CartService::OnOperationFinishedWithCallback,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void CartService::SetCartRemovedStatus(
+    bool isRemoved,
+    CartDB::OperationCallback callback,
+    bool success,
+    std::vector<CartDB::KeyAndValue> proto_pairs) {
+  if (!success) {
+    return;
+  }
+  DCHECK(proto_pairs.size() == 1);
+  CartDB::KeyAndValue proto_pair = proto_pairs[0];
+  proto_pair.second.set_is_removed(isRemoved);
+  cart_db_->AddCart(
+      proto_pair.first, proto_pair.second,
+      base::BindOnce(&CartService::OnOperationFinishedWithCallback,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
