@@ -571,8 +571,10 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffsetTranslation(
       context_.fixed_position.transform = properties_->PaintOffsetTranslation();
     }
 
-    context_.current.additional_offset_to_layout_shift_root_delta +=
-        PhysicalOffset(*paint_offset_translation);
+    if (!object_.ShouldAssumePaintOffsetTranslationForLayoutShiftTracking()) {
+      context_.current.additional_offset_to_layout_shift_root_delta +=
+          PhysicalOffset(*paint_offset_translation);
+    }
   } else {
     OnClear(properties_->ClearPaintOffsetTranslation());
   }
@@ -3674,6 +3676,9 @@ PaintPropertyChangeType PaintPropertyTreeBuilder::UpdateForSelf() {
       }
     }
   }
+
+  object_.GetMutableForPainting()
+      .SetShouldAssumePaintOffsetTranslationForLayoutShiftTracking(false);
 
   return property_changed;
 }

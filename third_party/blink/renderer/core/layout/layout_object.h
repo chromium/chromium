@@ -3130,6 +3130,11 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
       layout_object_.SetShouldSkipNextLayoutShiftTracking(b);
     }
 
+    void SetShouldAssumePaintOffsetTranslationForLayoutShiftTracking(bool b) {
+      layout_object_
+          .SetShouldAssumePaintOffsetTranslationForLayoutShiftTracking(b);
+    }
+
     FragmentData& FirstFragment() { return layout_object_.fragment_; }
 
     void EnsureId() { layout_object_.fragment_.EnsureId(); }
@@ -3354,6 +3359,14 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   }
   void SetShouldSkipNextLayoutShiftTracking(bool b) {
     bitfields_.SetShouldSkipNextLayoutShiftTracking(b);
+  }
+
+  bool ShouldAssumePaintOffsetTranslationForLayoutShiftTracking() const {
+    return bitfields_
+        .ShouldAssumePaintOffsetTranslationForLayoutShiftTracking();
+  }
+  void SetShouldAssumePaintOffsetTranslationForLayoutShiftTracking(bool b) {
+    bitfields_.SetShouldAssumePaintOffsetTranslationForLayoutShiftTracking(b);
   }
 
  protected:
@@ -3788,6 +3801,8 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
           transform_affects_vector_effect_(false),
           is_layout_ng_object_for_canvas_formatted_text(false),
           should_skip_next_layout_shift_tracking_(true),
+          should_assume_paint_offset_translation_for_layout_shift_tracking_(
+              false),
           positioned_state_(kIsStaticallyPositioned),
           selection_state_(static_cast<unsigned>(SelectionState::kNone)),
           subtree_paint_property_update_reasons_(
@@ -4108,6 +4123,15 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
     // See PaintInvalidator::UpdateLayoutShiftTracking().
     ADD_BOOLEAN_BITFIELD(should_skip_next_layout_shift_tracking_,
                          ShouldSkipNextLayoutShiftTracking);
+
+    // Whether, on the next time PaintPropertyTreeBuilder builds for this
+    // object, it should be assumed it had the same paint offset transform last
+    // time as it has this time. This is used when layout reattach loses the
+    // information from the previous frame; this bit stores that information
+    // to inform the next frame for layout shift tracking.
+    ADD_BOOLEAN_BITFIELD(
+        should_assume_paint_offset_translation_for_layout_shift_tracking_,
+        ShouldAssumePaintOffsetTranslationForLayoutShiftTracking);
 
    private:
     // This is the cached 'position' value of this object

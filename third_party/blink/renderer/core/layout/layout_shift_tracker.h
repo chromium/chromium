@@ -99,6 +99,7 @@ class CORE_EXPORT LayoutShiftTracker final
       PhysicalOffset paint_offset;
       LayoutSize size;
       PhysicalRect visual_overflow_rect;
+      bool has_paint_offset_translation;
     };
     HeapHashMap<Member<const Node>, Geometry> geometries_before_detach_;
   };
