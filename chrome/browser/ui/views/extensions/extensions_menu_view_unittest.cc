@@ -553,6 +553,14 @@ TEST_F(ExtensionsMenuViewUnitTest, PinButtonUserAction) {
   EXPECT_EQ(2, user_action_tester.GetActionCount(kPinButtonUserAction));
 }
 
+TEST_F(ExtensionsMenuViewUnitTest, WindowTitle) {
+  AddSimpleExtension("Test Extension");
+
+  ExtensionsMenuView* const menu_view = extensions_menu();
+  EXPECT_FALSE(menu_view->GetWindowTitle().empty());
+  EXPECT_TRUE(menu_view->GetAccessibleWindowTitle().empty());
+}
+
 TEST_F(ExtensionsMenuViewUnitTest, ContextMenuButtonUserAction) {
   base::UserActionTester user_action_tester;
   AddSimpleExtension("Test Extension");
