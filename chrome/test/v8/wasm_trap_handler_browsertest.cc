@@ -19,14 +19,14 @@
 namespace {
 // |kIsTrapHandlerSupported| indicates whether the trap handler is supported
 // (i.e. allowed to be enabled) on the currently platform. Currently we only
-// support non-Android, Linux x64, and Windows x64. In the future more platforms
-// will be supported. Though this file is a browser test that is not built on
-// Android.
+// support non-Android, Linux x64, Windows x64 and Mac x64 and arm64. In the
+// future more platforms will be supported. Though this file is a browser test
+// that is not built on Android.
 #if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(ARCH_CPU_X86_64)
 constexpr bool kIsTrapHandlerSupported = true;
 #elif defined(OS_WIN) && defined(ARCH_CPU_X86_64)
 constexpr bool kIsTrapHandlerSupported = true;
-#elif defined(OS_MAC) && defined(ARCH_CPU_X86_64)
+#elif defined(OS_MAC) && (defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64))
 constexpr bool kIsTrapHandlerSupported = true;
 #else
 constexpr bool kIsTrapHandlerSupported = false;
