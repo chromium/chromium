@@ -323,9 +323,9 @@ void LocalFrameUkmAggregator::RecordForcedLayoutSample(
       sub_record.pre_fcp_aggregate += duration;
     if (should_report_uma_this_frame) {
       if (is_pre_fcp)
-        record.pre_fcp_uma_counter->CountMicroseconds(duration);
+        sub_record.pre_fcp_uma_counter->CountMicroseconds(duration);
       else
-        record.post_fcp_uma_counter->CountMicroseconds(duration);
+        sub_record.post_fcp_uma_counter->CountMicroseconds(duration);
     }
   }
 }
