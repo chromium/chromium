@@ -8,6 +8,8 @@
 
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_mock_clock_override.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
@@ -146,6 +148,10 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
   // available for use in tests.
   UIViewController* normal_tab_view_controller_;
   UIViewController* incognito_tab_view_controller_;
+
+  // Used to test logging the time spent in tab grid.
+  base::HistogramTester histogram_tester_;
+  base::ScopedMockClockOverride scoped_clock_;
 };
 
 // Tests that the tab grid view controller is the initial active view
@@ -264,11 +270,26 @@ TEST_F(TabGridCoordinatorTest, CompletionHandlers) {
   EXPECT_FALSE(delegate_.didEndCalled);
 }
 
-// Test that the tab grid coordinator sizes its view controller to the window.
+// Tests that the tab grid coordinator sizes its view controller to the window.
 TEST_F(TabGridCoordinatorTest, SizeTabGridCoordinatorViewController) {
   CGRect rect = [UIScreen mainScreen].bounds;
   EXPECT_TRUE(
       CGRectEqualToRect(rect, coordinator_.baseViewController.view.frame));
+}
+
+// Tests that the time spent in the tab grid is correctly logged.
+TEST_F(TabGridCoordinatorTest, TimeSpentInTabGrid) {
+  histogram_tester_.ExpectTotalCount("IOS.TabSwitcher.TimeSpent", 0);
+  scoped_clock_.Advance(base::TimeDelta::FromMinutes(1));
+  [coordinator_ showTabGrid];
+  histogram_tester_.ExpectTotalCount("IOS.TabSwitcher.TimeSpent", 0);
+  scoped_clock_.Advance(base::TimeDelta::FromSeconds(20));
+  [coordinator_ showTabViewController:normal_tab_view_controller_
+                   shouldCloseTabGrid:YES
+                           completion:nil];
+  histogram_tester_.ExpectUniqueTimeSample("IOS.TabSwitcher.TimeSpent",
+                                           base::TimeDelta::FromSeconds(20), 1);
+  histogram_tester_.ExpectTotalCount("IOS.TabSwitcher.TimeSpent", 1);
 }
 
 }  // namespace
