@@ -206,8 +206,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cryptohome.DiskCleanupResult"
-    enum="CryptohomeDiskCleanupResult" expires_after="M90">
-  <owner>vsavu@chromium.org</owner>
+    enum="CryptohomeDiskCleanupResult" expires_after="M93">
+  <owner>vsavu@google.com</owner>
   <owner>weifangsun@chromium.org</owner>
   <summary>Records the result of triggering disk cleanup.</summary>
 </histogram>
