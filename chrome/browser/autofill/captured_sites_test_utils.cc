@@ -17,9 +17,12 @@
 #include "base/process/launch.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string16.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -55,6 +58,9 @@ using base::JSONParserOptions;
 using base::JSONReader;
 
 namespace {
+// The command-line flag to specify the command file flag.
+const char kCommandFileFlag[] = "command_file";
+
 // The maximum amount of time to wait for Chrome to finish autofilling a form.
 const base::TimeDelta kAutofillActionWaitForVisualUpdateTimeout =
     base::TimeDelta::FromSeconds(3);
@@ -81,6 +87,148 @@ const char kWebPageReplayCertSPKI[] =
 
 const char kClockNotSetMessage[] =
     "No AutofillClock override set from wpr archive: ";
+
+void PrintDebugInstructions(const base::FilePath& command_file_path) {
+  const char msg[] = R"(
+
+*** INTERACTIVE DEBUGGING MODE ***
+
+To proceed, you should create a named pipe:
+  $ mkfifo %1$s
+and then write commands into it:
+  $ echo run     >%1$s  # unpauses execution
+  $ echo next 2  >%1$s  # executes the next 2 actions
+  $ echo next -1 >%1$s  # executes until the last action
+  $ echo skip -3 >%1$s  # jumps back 3 actions
+  $ echo skip 4  >%1$s  # skips the next 4 actions
+  $ echo where   >%1$s  # prints the current position
+  $ echo show -1 >%1$s  # prints last 1 actions
+  $ echo show 1  >%1$s  # prints next 1 actions
+  $ echo help    >%1$s  # prints this text
+)";
+  LOG(INFO) << base::StringPrintf(msg,
+                                  command_file_path.AsUTF8Unsafe().c_str());
+}
+
+// Command types to control and debug execution.
+// * The |kAbsoluteLimit| and |kRelativeLimit| commands indicate that
+//   execution shall not proceed if the next action's position is >= |param|
+//   or >= current_index + |param|, respectively.
+// * The |kSkipAction| command jumps |param| actions forward or backward.
+// * The |kShowAction| command prints the |param| previous (if < 0) or
+//   upcoming (if > 0) actions.
+// * The |kWhereAmI| command prints the current execution position.
+enum class ExecutionCommandType {
+  kAbsoluteLimit,
+  kRelativeLimit,
+  kSkipAction,
+  kShowAction,
+  kWhereAmI,
+};
+
+struct ExecutionCommand {
+  ExecutionCommandType type = ExecutionCommandType::kAbsoluteLimit;
+  int param = std::numeric_limits<int>::max();
+};
+
+// Blockingly reads the content of |command_file_path|, parses it into
+// ExecutionCommands, and returns the result.
+std::vector<ExecutionCommand> ReadExecutionCommands(
+    const base::FilePath& command_file_path) {
+  std::vector<ExecutionCommand> commands;
+  std::string command_lines;
+  if (base::ReadFileToString(command_file_path, &command_lines)) {
+    for (const auto command :
+         base::SplitStringPiece(command_lines, "\n", base::TRIM_WHITESPACE,
+                                base::SPLIT_WANT_NONEMPTY)) {
+      auto GetParamOr = [command](int default_value) {
+        size_t space = command.find(' ');
+        if (space == base::StringPiece::npos)
+          return default_value;
+        int value;
+        if (!base::StringToInt(command.substr(space + 1), &value))
+          return default_value;
+        return value;
+      };
+
+      if (base::StartsWith(command, "run")) {
+        commands.push_back({ExecutionCommandType::kAbsoluteLimit,
+                            std::numeric_limits<int>::max()});
+      } else if (base::StartsWith(command, "next")) {
+        commands.push_back(
+            {ExecutionCommandType::kRelativeLimit, GetParamOr(1)});
+      } else if (base::StartsWith(command, "skip")) {
+        commands.push_back({ExecutionCommandType::kSkipAction, GetParamOr(1)});
+      } else if (base::StartsWith(command, "show")) {
+        commands.push_back({ExecutionCommandType::kShowAction, GetParamOr(1)});
+      } else if (base::StartsWith(command, "where")) {
+        commands.push_back({ExecutionCommandType::kWhereAmI});
+      } else if (base::StartsWith(command, "help")) {
+        PrintDebugInstructions(command_file_path);
+      }
+    }
+  }
+  return commands;
+}
+
+struct ExecutionState {
+  // The position of the next action to be executed.
+  int index = 0;
+  // The current bound on the execution.
+  int limit = std::numeric_limits<int>::max();
+  // The number of actions to be executed.
+  int length = 0;
+};
+
+// Blockingly reads the commands from |command_file_path| and executes them.
+// Execution primarily means manipulation of the |execution_state|, particularly
+// `execution_state.limit`.
+ExecutionState ProcessCommands(ExecutionState execution_state,
+                               const base::Value::ListView* action_list,
+                               const base::FilePath& command_file_path) {
+  while (execution_state.limit <= execution_state.index) {
+    for (ExecutionCommand command : ReadExecutionCommands(command_file_path)) {
+      switch (command.type) {
+        case ExecutionCommandType::kAbsoluteLimit: {
+          execution_state.limit = command.param;
+          break;
+        }
+        case ExecutionCommandType::kRelativeLimit: {
+          if (command.param >= 0) {
+            execution_state.limit += command.param;
+          } else {
+            execution_state.limit = execution_state.length + command.param;
+          }
+          break;
+        }
+        case ExecutionCommandType::kSkipAction: {
+          execution_state.index += command.param;
+          execution_state.index = std::min(std::max(execution_state.index, 0),
+                                           execution_state.length - 1);
+          break;
+        }
+        case ExecutionCommandType::kShowAction: {
+          int min_index = execution_state.index + std::min(command.param, 0);
+          int max_index = execution_state.index + std::max(command.param, 0);
+          min_index = std::max(min_index, 0);
+          max_index = std::min(max_index, execution_state.length);
+          for (int i = min_index; i < max_index; ++i) {
+            LOG(INFO) << "Action " << (i - execution_state.index) << ": "
+                      << (*action_list)[i].DebugString();
+          }
+          break;
+        }
+        case ExecutionCommandType::kWhereAmI: {
+          LOG(INFO) << "Next action is at position " << execution_state.index
+                    << ", limit (excl) is at " << execution_state.limit
+                    << ", last (excl) is at " << execution_state.length;
+        }
+      }
+    }
+  }
+  return execution_state;
+}
+
 }  // namespace
 
 namespace captured_sites_test_utils {
@@ -183,6 +331,38 @@ std::string FilePathToUTF8(const base::FilePath::StringType& str) {
 #else
   return str;
 #endif
+}
+
+base::Optional<base::FilePath> GetCommandFilePath() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line && command_line->HasSwitch(kCommandFileFlag)) {
+    return base::make_optional(
+        command_line->GetSwitchValuePath(kCommandFileFlag));
+  }
+  return base::nullopt;
+}
+
+void PrintInstructions(const char* test_file_name) {
+  const char msg[] = R"(
+
+*** README ***
+
+A captured-site test replays an action recipe (*.test)
+against recorded web traffic (*.wpr).
+These files need to be downloaded separately.
+
+Recommended flags are:
+  --test-launcher-timeout=1000000
+  --ui-test-action-max-timeout=1000000
+  --enable-pixel-output-in-tests
+  --vmodule=captured_sites_test_utils=1,%s=1:
+
+For interactive debugging, specify a command file:
+  --%s=/path/to/file
+Commands to step through the test can be written into that file.
+Further instructions will be printed then.
+)";
+  LOG(INFO) << base::StringPrintf(msg, test_file_name, kCommandFileFlag);
 }
 
 // FrameObserver --------------------------------------------------------------
@@ -312,13 +492,15 @@ TestRecipeReplayer::TestRecipeReplayer(
 
 TestRecipeReplayer::~TestRecipeReplayer() {}
 
-bool TestRecipeReplayer::ReplayTest(const base::FilePath capture_file_path,
-                                    const base::FilePath recipe_file_path) {
+bool TestRecipeReplayer::ReplayTest(
+    const base::FilePath& capture_file_path,
+    const base::FilePath& recipe_file_path,
+    const base::Optional<base::FilePath>& command_file_path) {
   if (!StartWebPageReplayServer(capture_file_path))
     return false;
   if (OverrideAutofillClock(capture_file_path))
     VLOG(1) << "AutofillClock was set to:" << autofill::AutofillClock::Now();
-  return ReplayRecordedActions(recipe_file_path);
+  return ReplayRecordedActions(recipe_file_path, command_file_path);
 }
 
 const std::vector<testing::AssertionResult>
@@ -680,9 +862,10 @@ const std::string* FindPopulateString(
 }
 
 bool TestRecipeReplayer::ReplayRecordedActions(
-    const base::FilePath& recipe_file_path) {
+    const base::FilePath& recipe_file_path,
+    const base::Optional<base::FilePath>& command_file_path) {
   // Read the text of the recipe file.
-  base::ThreadRestrictions::SetIOAllowed(true);
+  base::ScopedAllowBlockingForTesting for_testing;
   std::string json_text;
   if (!base::ReadFileToString(recipe_file_path, &json_text)) {
     ADD_FAILURE() << "Failed to read recipe file '" << recipe_file_path << "'!";
@@ -707,9 +890,45 @@ bool TestRecipeReplayer::ReplayRecordedActions(
     ADD_FAILURE() << "Failed to extract action list from the recipe!";
     return false;
   }
-  for (auto& item : action_list_container->GetList()) {
+
+  auto action_list = action_list_container->GetList();
+  ExecutionState execution_state{.length =
+                                     static_cast<int>(action_list.size())};
+  if (command_file_path.has_value()) {
+    execution_state.limit = 0;  // Stop execution initially in debug mode.
+    PrintDebugInstructions(command_file_path.value());
+  }
+
+  while (execution_state.index < execution_state.length) {
+    if (command_file_path.has_value()) {
+      while (execution_state.limit <= execution_state.index) {
+        bool thread_finished = false;
+        base::ThreadPool::PostTaskAndReplyWithResult(
+            FROM_HERE, {base::MayBlock()},
+            base::BindOnce(&ProcessCommands, execution_state, &action_list,
+                           command_file_path.value()),
+            base::BindOnce(
+                [](ExecutionState* execution_state, bool* finished,
+                   ExecutionState new_execution_state) {
+                  *execution_state = new_execution_state;
+                  *finished = true;
+                },
+                &execution_state, &thread_finished));
+        while (!thread_finished) {
+          base::RunLoop run_loop;
+          base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+              FROM_HERE, run_loop.QuitClosure(),
+              base::TimeDelta::FromMilliseconds(1000));
+          run_loop.Run();
+        }
+      }
+    }
+    LOG(INFO) << "Proceeding with execution with action "
+              << execution_state.index << " of " << execution_state.length
+              << ": " << action_list[execution_state.index];
+
     base::DictionaryValue* action;
-    if (!item.GetAsDictionary(&action)) {
+    if (!action_list[execution_state.index].GetAsDictionary(&action)) {
       ADD_FAILURE()
           << "Failed to extract an individual action from the recipe!";
       return false;
@@ -785,7 +1004,9 @@ bool TestRecipeReplayer::ReplayRecordedActions(
     } else {
       ADD_FAILURE() << "Unrecognized action type: " << *type;
     }
-  }  // end foreach action
+
+    ++execution_state.index;
+  }
 
   // Dismiss the beforeUnloadDialog if the last page of the test has a
   // beforeUnload function.
@@ -1909,7 +2130,7 @@ TestRecipeReplayChromeFeatureActionExecutor::
 
 bool TestRecipeReplayChromeFeatureActionExecutor::AutofillForm(
     const std::string& focus_element_css_selector,
-    const std::vector<std::string> iframe_path,
+    const std::vector<std::string>& iframe_path,
     const int attempts,
     content::RenderFrameHost* frame) {
   ADD_FAILURE() << "TestRecipeReplayChromeFeatureActionExecutor::AutofillForm "

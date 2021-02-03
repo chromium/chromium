@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_AUTOFILL_CAPTURED_SITES_TEST_UTILS_H_
 #define CHROME_BROWSER_AUTOFILL_CAPTURED_SITES_TEST_UTILS_H_
 
+#include <fstream>
+#include <list>
 #include <memory>
 #include <string>
 #include <vector>
@@ -12,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/strings/strcat.h"
+#include "base/values.h"
 #include "chrome/browser/ui/browser.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "content/public/browser/browser_context.h"
@@ -83,6 +86,12 @@ struct GetParamAsString {
   }
 };
 
+base::Optional<base::FilePath> GetCommandFilePath();
+
+// Prints tips on how to run captured-site tests.
+// |test_file_name| should be without the .cc suffix.
+void PrintInstructions(const char* test_file_name);
+
 // IFrameWaiter
 //
 // IFrameWaiter is an waiter object that waits for an iframe befitting a
@@ -142,7 +151,7 @@ class TestRecipeReplayChromeFeatureActionExecutor {
   // Triggers Chrome Autofill in the specified input element on the specified
   // document.
   virtual bool AutofillForm(const std::string& focus_element_css_selector,
-                            const std::vector<std::string> iframe_path,
+                            const std::vector<std::string>& iframe_path,
                             const int attempts,
                             content::RenderFrameHost* frame);
   virtual bool AddAutofillProfileInfo(const std::string& field_type,
@@ -203,8 +212,9 @@ class TestRecipeReplayer {
   // Replay a test by:
   // 1. Starting a WPR server using the specified capture file.
   // 2. Replaying the specified Test Recipe file.
-  bool ReplayTest(const base::FilePath capture_file_path,
-                  const base::FilePath recipe_file_path);
+  bool ReplayTest(const base::FilePath& capture_file_path,
+                  const base::FilePath& recipe_file_path,
+                  const base::Optional<base::FilePath>& command_file_path);
 
   const std::vector<testing::AssertionResult> GetValidationFailures() const;
 
@@ -249,7 +259,9 @@ class TestRecipeReplayer {
   bool RunWebPageReplayCmd(const std::string& cmd,
                            const std::vector<std::string>& args,
                            base::Process* process);
-  bool ReplayRecordedActions(const base::FilePath& recipe_file_path);
+  bool ReplayRecordedActions(
+      const base::FilePath& recipe_file_path,
+      const base::Optional<base::FilePath>& command_file_path);
   bool InitializeBrowserToExecuteRecipe(
       const std::unique_ptr<base::DictionaryValue>& recipe);
   bool ExecuteAutofillAction(const base::DictionaryValue& action);
@@ -335,6 +347,7 @@ class TestRecipeReplayer {
   // expires. Returns false if no visual update is observed before the given
   // timeout elapses.
   bool WaitForVisualUpdate(base::TimeDelta timeout = visual_update_timeout);
+
   Browser* browser_;
   TestRecipeReplayChromeFeatureActionExecutor* feature_action_executor_;
 
