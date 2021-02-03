@@ -180,6 +180,37 @@ TEST_F(ResizeShadowAndCursorTest, MouseHover) {
   EXPECT_EQ(ui::mojom::CursorType::kNull, GetCurrentCursorType());
 }
 
+TEST_F(ResizeShadowAndCursorTest, NoResizeShadowOnNonToplevelWindow) {
+  ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(WindowState::Get(window())->IsNormalStateType());
+
+  auto* embedded = views::Widget::CreateWindowWithContext(
+      new TestWidgetDelegate(), GetContext(), gfx::Rect(0, 0, 100, 100));
+  embedded->Show();
+  window()->AddChild(embedded->GetNativeWindow());
+
+  embedded->GetNativeWindow()->SetName("BBB");
+  window()->SetName("AAAA");
+  embedded->SetBounds(gfx::Rect(10, 10, 100, 100));
+
+  generator.MoveMouseTo(50, 11);
+  VerifyResizeShadow(false);
+  EXPECT_EQ(ui::mojom::CursorType::kNull, GetCurrentCursorType());
+
+  EXPECT_FALSE(
+      Shell::Get()->resize_shadow_controller()->GetShadowForWindowForTest(
+          embedded->GetNativeWindow()));
+
+  generator.MoveMouseTo(gfx::Point(50, 0));
+  VerifyResizeShadow(true);
+  EXPECT_EQ(HTTOP, ResizeShadowHitTest());
+  EXPECT_EQ(ui::mojom::CursorType::kNorthResize, GetCurrentCursorType());
+
+  EXPECT_FALSE(
+      Shell::Get()->resize_shadow_controller()->GetShadowForWindowForTest(
+          embedded->GetNativeWindow()));
+}
+
 // Test that the resize shadows stay visible and that the cursor stays the same
 // as long as a user is resizing a window.
 TEST_F(ResizeShadowAndCursorTest, MouseDrag) {
