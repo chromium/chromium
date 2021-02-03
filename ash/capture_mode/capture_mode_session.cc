@@ -28,6 +28,7 @@
 #include "cc/paint/paint_flags.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_tracker.h"
 #include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/cursor/cursor_util.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -437,7 +438,23 @@ CaptureModeSession::CaptureModeSession(CaptureModeController* controller)
       current_root_(GetPreferredRootWindow()),
       magnifier_glass_(kMagnifierParams),
       cursor_setter_(std::make_unique<CursorSetter>()) {
-  Shell::Get()->AddPreTargetHandler(this);
+  // A context menu may have input capture when entering a session. Remove
+  // capture from it, otherwise subsequent mouse events will cause it to close,
+  // and then we won't be able to take a screenshot of the menu. Store it so we
+  // can return capture to it when exiting the session.
+  // Note that some windows gets destroyed when they lose the capture (e.g. a
+  // window created for capturing events while drag-drop in progress), so we
+  // need to account for that.
+  auto* capture_client = aura::client::GetCaptureClient(current_root_);
+  input_capture_window_ = capture_client->GetCaptureWindow();
+  if (input_capture_window_) {
+    aura::WindowTracker tracker({input_capture_window_});
+    capture_client->ReleaseCapture(input_capture_window_);
+    if (tracker.windows().empty())
+      input_capture_window_ = nullptr;
+    else
+      input_capture_window_->AddObserver(this);
+  }
 
   SetLayer(std::make_unique<ui::Layer>(ui::LAYER_TEXTURED));
   layer()->SetFillsBoundsOpaquely(false);
@@ -467,20 +484,12 @@ CaptureModeSession::CaptureModeSession(CaptureModeController* controller)
 
   UpdateRootWindowDimmers();
 
-  // A context menu may have input capture when entering a session. Remove
-  // capture from it, otherwise subsequent mouse events will cause it to close,
-  // and then we won't be able to take a screenshot of the menu. Store it so we
-  // can return capture to it when exiting the session.
-  auto* capture_client = aura::client::GetCaptureClient(current_root_);
-  input_capture_window_ = capture_client->GetCaptureWindow();
-  if (input_capture_window_) {
-    capture_client->ReleaseCapture(input_capture_window_);
-    input_capture_window_->AddObserver(this);
-  }
-
   TabletModeController::Get()->AddObserver(this);
   current_root_->AddObserver(this);
   display::Screen::GetScreen()->AddObserver(this);
+  // Our event handling code assumes the capture bar widget has been initialized
+  // already. So we start handling events after everything has been setup.
+  Shell::Get()->AddPreTargetHandler(this);
 
   capture_mode_util::TriggerAccessibilityAlert(l10n_util::GetStringFUTF8(
       IDS_ASH_SCREEN_CAPTURE_ALERT_OPEN,
@@ -493,15 +502,15 @@ CaptureModeSession::CaptureModeSession(CaptureModeController* controller)
 }
 
 CaptureModeSession::~CaptureModeSession() {
+  Shell::Get()->RemovePreTargetHandler(this);
+  display::Screen::GetScreen()->RemoveObserver(this);
+  current_root_->RemoveObserver(this);
+  TabletModeController::Get()->RemoveObserver(this);
   if (input_capture_window_) {
     input_capture_window_->RemoveObserver(this);
     aura::client::GetCaptureClient(current_root_)
         ->SetCapture(input_capture_window_);
   }
-  display::Screen::GetScreen()->RemoveObserver(this);
-  current_root_->RemoveObserver(this);
-  TabletModeController::Get()->RemoveObserver(this);
-  Shell::Get()->RemovePreTargetHandler(this);
 
   // This may happen if we hit esc while dragging.
   if (old_mouse_warp_status_)
