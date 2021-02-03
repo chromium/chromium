@@ -67,7 +67,6 @@
 #if defined(OS_MAC)
 #include "base/mac/mac_util.h"
 #include "chrome/browser/ui/cocoa/keystone_infobar_delegate.h"
-#include "chrome/browser/ui/startup/mac_system_infobar_delegate.h"
 #endif
 
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -607,11 +606,6 @@ void StartupBrowserCreatorImpl::AddInfoBarsIfNecessary(
           !local_state->GetBoolean(prefs::kSuppressUnsupportedOSWarning))
         ObsoleteSystemInfoBarDelegate::Create(infobar_service);
     }
-
-#if defined(OS_MAC)
-    if (MacSystemInfoBarDelegate::ShouldShow())
-      MacSystemInfoBarDelegate::Create(infobar_service);
-#endif
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     if (!command_line_.HasSwitch(switches::kNoDefaultBrowserCheck)) {
