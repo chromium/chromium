@@ -405,6 +405,20 @@ bool NodesMatch(const BookmarkNode* node_a, const BookmarkNode* node_b) {
                << node_b->guid();
     return false;
   }
+  if (node_a->parent()->is_root() != node_b->parent()->is_root() ||
+      node_a->parent()->is_permanent_node() !=
+          node_b->parent()->is_permanent_node()) {
+    LOG(ERROR) << "Permanent parent node mismatch: "
+               << node_a->parent()->is_permanent_node() << " vs. "
+               << node_b->parent()->is_permanent_node();
+    return false;
+  }
+  if (!node_a->parent()->is_root() &&
+      node_a->parent()->guid() != node_b->parent()->guid()) {
+    LOG(ERROR) << "Parent node mismatch: " << node_a->parent()->GetTitle()
+               << " vs. " << node_b->parent()->GetTitle();
+    return false;
+  }
   return true;
 }
 
@@ -835,11 +849,11 @@ void ReverseChildOrder(int profile, const BookmarkNode* parent) {
       parent)
       << "Node " << parent->GetTitle() << " does not belong to "
       << "Profile " << profile;
-  if (parent->children().empty())
+  if (parent->children().empty()) {
     return;
+  }
   for (size_t i = 0; i < parent->children().size(); ++i) {
-    Move(profile, parent->children()[i].get(), parent,
-         parent->children().size() - i);
+    Move(profile, parent->children().back().get(), parent, i);
   }
 }
 
