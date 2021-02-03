@@ -38,6 +38,9 @@ src:*third_party/grpc/src/src/core/lib/gprpp/inlined_vector.h
 # https://crbug.com/994752
 src:*third_party/spirv-cross/spirv-cross/spirv_cross_containers.hpp
 
+# Vulkan memory allocator
+src:*third_party/vulkan_memory_allocator/src/vk_mem_alloc.h
+
 #############################################################################
 # Base class's constructor accesses a derived class.
 
@@ -171,6 +174,7 @@ src:*ui/gl/gl_bindings_autogen_*
 src:*third_party/vulkan_memory_allocator/src/vk_mem_alloc.h
 src:*third_party/angle/third_party/vulkan-loader/src/loader*
 src:*third_party/vulkan-deps/vulkan-loader/src/loader*
+src:*third_party/vulkan-deps/vulkan-validation-layers/src/layers/*
 
 src:*components/os_crypt/*
 

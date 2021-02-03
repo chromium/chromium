@@ -605,7 +605,11 @@ TEST_P(LayerTreeHostFiltersPixelTest, ImageFilterScaled) {
 
   RunPixelTest(
       background,
-      base::FilePath(FILE_PATH_LITERAL("backdrop_filter_on_scaled_layer_.png"))
+      base::FilePath(
+          (use_swangle() || use_skia_vulkan())
+              ? FILE_PATH_LITERAL("backdrop_filter_on_scaled_layer_.png")
+              : FILE_PATH_LITERAL(
+                    "backdrop_filter_on_scaled_layer_legacy_swiftshader_.png"))
           .InsertBeforeExtensionASCII(GetRendererSuffix()));
 }
 
@@ -718,7 +722,11 @@ TEST_P(LayerTreeHostFiltersPixelTest, ImageRenderSurfaceScaled) {
 
   RunPixelTest(
       background,
-      base::FilePath(FILE_PATH_LITERAL("scaled_render_surface_layer_.png"))
+      base::FilePath(
+          (use_swangle() || use_skia_vulkan())
+              ? FILE_PATH_LITERAL("scaled_render_surface_layer_.png")
+              : FILE_PATH_LITERAL(
+                    "scaled_render_surface_layer_legacy_swiftshader_.png"))
           .InsertBeforeExtensionASCII(GetRendererSuffix()));
 }
 
