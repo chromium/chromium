@@ -483,7 +483,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   [model addSectionWithIdentifier:SettingsSectionIdentifierSignIn];
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForBrowserState(_browserState);
-  if ((authService->IsAuthenticated() && self.shouldDisplaySyncPromo) ||
+  if (self.shouldDisplaySyncPromo ||
       (!authService->IsAuthenticated() && self.shouldDisplaySigninPromo)) {
     if (!_signinPromoViewMediator) {
       _signinPromoViewMediator = [[SigninPromoViewMediator alloc]
@@ -541,7 +541,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
         toSectionWithIdentifier:SettingsSectionIdentifierAccount];
     _hasRecordedSigninImpression = NO;
   } else if (!authService->IsAuthenticated() &&
-             !self.shouldDisplaySigninPromo) {
+             !self.shouldDisplaySigninPromo && !self.shouldDisplaySyncPromo) {
     // Signed-out default
     AccountSignInItem* signInTextItem =
         [[AccountSignInItem alloc] initWithType:SettingsItemTypeSignInButton];
@@ -587,10 +587,11 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 // too many times by a single user account (as defined in
 // SigninPromoViewMediator).
 - (BOOL)shouldDisplaySigninPromo {
-  return [SigninPromoViewMediator
-      shouldDisplaySigninPromoViewWithAccessPoint:signin_metrics::AccessPoint::
-                                                      ACCESS_POINT_SETTINGS
-                                     browserState:_browserState];
+  return !base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency) &&
+         [SigninPromoViewMediator
+             shouldDisplaySigninPromoViewWithAccessPoint:
+                 signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS
+                                            browserState:_browserState];
 }
 
 // Returns YES if the Sync service is available and all promos have not been
@@ -599,7 +600,10 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   syncer::SyncService* syncService =
       ProfileSyncServiceFactory::GetForBrowserState(_browserState);
   return base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency) &&
-         [self shouldDisplaySigninPromo] &&
+         [SigninPromoViewMediator
+             shouldDisplaySigninPromoViewWithAccessPoint:
+                 signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS
+                                            browserState:_browserState] &&
          !syncService->IsSyncFeatureEnabled();
 }
 

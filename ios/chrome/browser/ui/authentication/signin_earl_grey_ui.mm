@@ -39,7 +39,10 @@ using chrome_test_util::SignOutAccountsButton;
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI
-      tapSettingsMenuButton:chrome_test_util::SecondarySignInButton()];
+      tapSettingsMenuButton:chrome_test_util::PrimarySignInButton()];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kIdentityPickerViewIdentifier)]
+      performAction:grey_tap()];
   [self selectIdentityWithEmail:fakeIdentity.userEmail];
   [self tapSigninConfirmationDialog];
   if ([fakeIdentity.userEmail hasSuffix:ios::kManagedIdentityEmailSuffix]) {
