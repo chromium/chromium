@@ -414,6 +414,24 @@ void LocalFrameView::Dispose() {
   if (viewport_scrollable_area_)
     viewport_scrollable_area_->ClearScrollableArea();
 
+  // If we have scheduled plugins to be updated, cancel it. They will still be
+  // notified before they are destroyed.
+  if (update_plugins_timer_.IsActive())
+    update_plugins_timer_.Stop();
+  part_update_set_.clear();
+
+  // These are LayoutObjects whose layout has been deferred to a subsequent
+  // lifecycle update. Not gonna happen.
+  layout_subtree_root_list_.Clear();
+
+  // TODO(szager): LayoutObjects are supposed to remove themselves from these
+  // tracking groups when they update style or are destroyed, but sometimes they
+  // are missed. It would be good to understand how/why that happens, but in the
+  // mean time, it's not safe to keep pointers around to defunct LayoutObjects.
+  orthogonal_writing_mode_root_list_.Clear();
+  viewport_constrained_objects_.reset();
+  background_attachment_fixed_objects_.clear();
+
   // Destroy |m_autoSizeInfo| as early as possible, to avoid dereferencing
   // partially destroyed |this| via |m_autoSizeInfo->m_frameView|.
   auto_size_info_.Clear();
@@ -1249,7 +1267,6 @@ void LocalFrameView::AddBackgroundAttachmentFixedObject(LayoutObject* object) {
 
 void LocalFrameView::RemoveBackgroundAttachmentFixedObject(
     LayoutObject* object) {
-  DCHECK(background_attachment_fixed_objects_.Contains(object));
   background_attachment_fixed_objects_.erase(object);
 
   // Ensure main thread scrolling reasons of the ancestor scroll nodes are
