@@ -260,7 +260,7 @@ void SyncEngineBackend::DoInitialize(
   last_invalidation_versions_ =
       restored_local_transport_data.invalidation_versions;
 
-  authenticated_account_id_ = params.authenticated_account_id;
+  authenticated_account_id_ = params.authenticated_account_info.account_id;
 
   auto nigori_processor = std::make_unique<NigoriModelTypeProcessor>();
   nigori_controller_ = std::make_unique<ModelTypeController>(

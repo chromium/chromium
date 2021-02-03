@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/barrier_closure.h"
-#include "base/base64.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -18,7 +17,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/rand_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -69,21 +67,6 @@ enum SyncInitialState {
   OBSOLETE_NOT_ALLOWED_BY_PLATFORM = 6,
   kMaxValue = OBSOLETE_NOT_ALLOWED_BY_PLATFORM
 };
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused. When adding values, be certain to also
-// update the corresponding definition in enums.xml.
-enum class LocalSyncTransportDataStartupState {
-  kValidData = 0,
-  kEmptyCacheGuid = 1,
-  kEmptyBirthday = 2,
-  kGaiaIdMismatch = 3,
-  kMaxValue = kGaiaIdMismatch
-};
-
-void LogSyncTransportDataState(LocalSyncTransportDataStartupState status) {
-  UMA_HISTOGRAM_ENUMERATION("Sync.LocalSyncTransportDataStartupState", status);
-}
 
 void RecordSyncInitialState(SyncService::DisableReasonSet disable_reasons,
                             bool first_setup_complete) {
@@ -141,53 +124,6 @@ std::unique_ptr<HttpPostProviderFactory> CreateHttpBridgeFactory(
   return std::make_unique<HttpBridgeFactory>(
       user_agent, std::move(pending_url_loader_factory),
       network_time_update_callback);
-}
-
-std::string GenerateCacheGUID() {
-  // Generate a GUID with 128 bits of randomness.
-  const int kGuidBytes = 128 / 8;
-  std::string guid;
-  base::Base64Encode(base::RandBytesAsString(kGuidBytes), &guid);
-  return guid;
-}
-
-bool IsLocalSyncTransportDataValid(const SyncTransportDataPrefs& sync_prefs,
-                                   const CoreAccountInfo& core_account_info) {
-  // If the cache GUID is empty, it most probably is because local sync data
-  // has been fully cleared via ClearLocalSyncTransportData() due to
-  // ShutdownReason::DISABLE_SYNC. Let's return false here anyway to make sure
-  // all prefs are cleared and a new random cache GUID generated.
-  if (sync_prefs.GetCacheGuid().empty()) {
-    LogSyncTransportDataState(
-        LocalSyncTransportDataStartupState::kEmptyCacheGuid);
-    return false;
-  }
-
-  // If cache GUID is initialized but the birthday isn't, it means the first
-  // sync cycle never completed (OnEngineInitialized()). This should be a rare
-  // case and theoretically harmless to resume, but as safety precaution, its
-  // simpler to regenerate the cache GUID and start from scratch, to avoid
-  // protocol violations (fetching updates requires that the request either has
-  // a birthday, or there should be no progress marker).
-  if (sync_prefs.GetBirthday().empty()) {
-    LogSyncTransportDataState(
-        LocalSyncTransportDataStartupState::kEmptyBirthday);
-    return false;
-  }
-
-  // Make sure the cached account information (gaia ID) is equal to the current
-  // one (otherwise the data may be corrupt). Note that, for local sync
-  // (IsLocalSyncEnabled()), the authenticated account is always empty.
-  if (sync_prefs.GetGaiaId() != core_account_info.gaia) {
-    DLOG(WARNING) << "Found mismatching gaia ID in sync preferences";
-    LogSyncTransportDataState(
-        LocalSyncTransportDataStartupState::kGaiaIdMismatch);
-    return false;
-  }
-
-  // All good: local sync data looks initialized and valid.
-  LogSyncTransportDataState(LocalSyncTransportDataStartupState::kValidData);
-  return true;
 }
 
 }  // namespace
@@ -545,27 +481,6 @@ void ProfileSyncService::StartUpSlowEngineComponents() {
     last_actionable_error_ = SyncProtocolError();
   }
 
-  // The gaia ID in sync prefs was introduced with M81, so having an empty value
-  // is legitimate and should be populated as a one-off migration.
-  // TODO(mastiz): Clean up this migration code after a grace period (e.g. 1
-  // year).
-  if (sync_transport_data_prefs_.GetGaiaId().empty()) {
-    sync_transport_data_prefs_.SetGaiaId(authenticated_account_info.gaia);
-  }
-
-  // TODO(crbug.com/938894): Move this logic to SyncEngineImpl, possibly Init().
-  // The caveat is that observers need to be notified in certain cases.
-  if (!IsLocalSyncTransportDataValid(sync_transport_data_prefs_,
-                                     authenticated_account_info)) {
-    // Either the local data is uninitialized or corrupt, so let's throw
-    // everything away and start from scratch with a new cache GUID, which also
-    // cascades into datatypes throwing away their dangling sync metadata due to
-    // cache GUID mismatches.
-    ClearLocalTransportDataAndNotify();
-    sync_transport_data_prefs_.SetCacheGuid(GenerateCacheGUID());
-    sync_transport_data_prefs_.SetGaiaId(authenticated_account_info.gaia);
-  }
-
   SyncEngine::InitParams params;
   params.host = this;
   params.encryption_observer_proxy = crypto_.GetEncryptionObserverProxy();
@@ -576,7 +491,7 @@ void ProfileSyncService::StartUpSlowEngineComponents() {
   params.http_factory_getter = base::BindOnce(
       create_http_post_provider_factory_cb_, MakeUserAgentForSync(channel_),
       url_loader_factory_->Clone(), network_time_update_callback_);
-  params.authenticated_account_id = authenticated_account_info.account_id;
+  params.authenticated_account_info = authenticated_account_info;
   if (!base::FeatureList::IsEnabled(switches::kSyncE2ELatencyMeasurement)) {
     invalidation::InvalidationService* invalidator =
         sync_client_->GetInvalidationService();
@@ -887,6 +802,12 @@ void ProfileSyncService::OnEngineInitialized(
   // we can say we successfully "synced".
   is_first_time_sync_configure_ = is_first_time_sync_configure;
 
+  if (is_first_time_sync_configure_) {
+    // This can also happen if previous sync transport data was considered
+    // invalid, so notify higher layers just in case to trigger cleanup logic.
+    sync_client_->OnLocalSyncTransportDataCleared();
+  }
+
   UpdateEngineInitUMA(success);
 
   if (!success) {
@@ -1177,11 +1098,6 @@ void ProfileSyncService::OnPreferredDataTypesPrefChange() {
 SyncClient* ProfileSyncService::GetSyncClientForTest() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return sync_client_.get();
-}
-
-// static
-std::string ProfileSyncService::GenerateCacheGUIDForTest() {
-  return GenerateCacheGUID();
 }
 
 void ProfileSyncService::AddObserver(SyncServiceObserver* observer) {

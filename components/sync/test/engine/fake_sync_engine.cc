@@ -35,7 +35,7 @@ void FakeSyncEngine::TriggerInitializationCompletion(bool success) {
 void FakeSyncEngine::Initialize(InitParams params) {
   DCHECK(params.host);
 
-  authenticated_account_id_ = params.authenticated_account_id;
+  authenticated_account_id_ = params.authenticated_account_info.account_id;
   host_ = params.host;
 
   if (allow_init_completion_) {

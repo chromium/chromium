@@ -6,11 +6,14 @@
 
 #include <utility>
 
+#include "base/base64.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/rand_util.h"
 #include "base/task_runner_util.h"
 #include "build/build_config.h"
 #include "components/invalidation/impl/invalidation_switches.h"
@@ -57,6 +60,84 @@ RestoreLocalTransportDataFromPrefs(const SyncTransportDataPrefs& prefs) {
   return result;
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. When adding values, be certain to also
+// update the corresponding definition in enums.xml.
+enum class SyncTransportDataStartupState {
+  kValidData = 0,
+  kEmptyCacheGuid = 1,
+  kEmptyBirthday = 2,
+  kGaiaIdMismatch = 3,
+  kMaxValue = kGaiaIdMismatch
+};
+
+std::string GenerateCacheGUID() {
+  // Generate a GUID with 128 bits of randomness.
+  const int kGuidBytes = 128 / 8;
+  std::string guid;
+  base::Base64Encode(base::RandBytesAsString(kGuidBytes), &guid);
+  return guid;
+}
+
+SyncTransportDataStartupState ValidateSyncTransportData(
+    const SyncTransportDataPrefs& prefs,
+    const CoreAccountInfo& core_account_info) {
+  // If the cache GUID is empty, it most probably is because local sync data
+  // has been fully cleared. Let's treat this as invalid to make sure all prefs
+  // are cleared and a new random cache GUID generated.
+  if (prefs.GetCacheGuid().empty()) {
+    return SyncTransportDataStartupState::kEmptyCacheGuid;
+  }
+
+  // If cache GUID is initialized but the birthday isn't, it means the first
+  // sync cycle never completed (OnEngineInitialized()). This should be a rare
+  // case and theoretically harmless to resume, but as safety precaution, its
+  // simpler to regenerate the cache GUID and start from scratch, to avoid
+  // protocol violations (fetching updates requires that the request either has
+  // a birthday, or there should be no progress marker).
+  if (prefs.GetBirthday().empty()) {
+    return SyncTransportDataStartupState::kEmptyBirthday;
+  }
+
+  // Make sure the cached account information (gaia ID) is equal to the current
+  // one (otherwise the data may be corrupt). Note that, for local sync, the
+  // authenticated account is always empty.
+  if (prefs.GetGaiaId() != core_account_info.gaia) {
+    DLOG(WARNING) << "Found mismatching gaia ID in sync preferences";
+    return SyncTransportDataStartupState::kGaiaIdMismatch;
+  }
+
+  // All good: local sync data looks initialized and valid.
+  return SyncTransportDataStartupState::kValidData;
+}
+
+void ValidateOrInitSyncTransportData(const CoreAccountInfo& core_account_info,
+                                     SyncTransportDataPrefs* prefs) {
+  // The gaia ID in sync prefs was introduced with M81, so having an empty value
+  // is legitimate and should be populated as a one-off migration.
+  // TODO(mastiz): Clean up this migration code after a grace period (e.g. 1
+  // year).
+  if (prefs->GetGaiaId().empty()) {
+    prefs->SetGaiaId(core_account_info.gaia);
+  }
+
+  const SyncTransportDataStartupState state =
+      ValidateSyncTransportData(*prefs, core_account_info);
+
+  base::UmaHistogramEnumeration("Sync.LocalSyncTransportDataStartupState",
+                                state);
+
+  if (state != SyncTransportDataStartupState::kValidData) {
+    // Either the local data is uninitialized or corrupt, so let's throw
+    // everything away and start from scratch with a new cache GUID, which also
+    // cascades into datatypes throwing away their dangling sync metadata due to
+    // cache GUID mismatches.
+    prefs->ClearAllExceptEncryptionBootstrapToken();
+    prefs->SetCacheGuid(GenerateCacheGUID());
+    prefs->SetGaiaId(core_account_info.gaia);
+  }
+}
+
 }  // namespace
 
 SyncEngineImpl::SyncEngineImpl(
@@ -89,8 +170,10 @@ SyncEngineImpl::~SyncEngineImpl() {
 
 void SyncEngineImpl::Initialize(InitParams params) {
   DCHECK(params.host);
-
   host_ = params.host;
+
+  ValidateOrInitSyncTransportData(params.authenticated_account_info,
+                                  prefs_.get());
 
   sync_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SyncEngineBackend::DoInitialize, backend_,
@@ -493,6 +576,11 @@ void SyncEngineImpl::OnInvalidationReceived(const std::string& payload) {
   sync_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SyncEngineBackend::DoOnInvalidationReceived,
                                 backend_, payload));
+}
+
+// static
+std::string SyncEngineImpl::GenerateCacheGUIDForTest() {
+  return GenerateCacheGUID();
 }
 
 void SyncEngineImpl::OnCookieJarChangedDoneOnFrontendLoop(

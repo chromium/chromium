@@ -111,6 +111,8 @@ class SyncEngineImpl : public SyncEngine,
   // InvalidationsListener implementation.
   void OnInvalidationReceived(const std::string& payload) override;
 
+  static std::string GenerateCacheGUIDForTest();
+
  private:
   friend class SyncEngineBackend;
 

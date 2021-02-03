@@ -1121,14 +1121,6 @@ TEST_F(ProfileSyncServiceTest, ConfigureDataTypeManagerReason) {
   ShutdownAndDeleteService();
 }
 
-TEST_F(ProfileSyncServiceTest, GenerateCacheGUID) {
-  const std::string guid1 = ProfileSyncService::GenerateCacheGUIDForTest();
-  const std::string guid2 = ProfileSyncService::GenerateCacheGUIDForTest();
-  EXPECT_EQ(24U, guid1.size());
-  EXPECT_EQ(24U, guid2.size());
-  EXPECT_NE(guid1, guid2);
-}
-
 // Regression test for crbug.com/1043642, can be removed once
 // ProfileSyncService usages after shutdown are addressed.
 TEST_F(ProfileSyncServiceTest, ShouldProvideDisableReasonsAfterShutdown) {
@@ -1137,19 +1129,6 @@ TEST_F(ProfileSyncServiceTest, ShouldProvideDisableReasonsAfterShutdown) {
   InitializeForFirstSync();
   service()->Shutdown();
   EXPECT_FALSE(service()->GetDisableReasons().Empty());
-}
-
-TEST_F(ProfileSyncServiceTest, ShouldPopulateAccountIdCachedInPrefs) {
-  SyncTransportDataPrefs transport_data_prefs(prefs());
-
-  SignIn();
-  CreateService(ProfileSyncService::MANUAL_START);
-  InitializeForNthSync();
-  ASSERT_EQ(SyncService::TransportState::ACTIVE,
-            service()->GetTransportState());
-  ASSERT_EQ(kTestCacheGuid, transport_data_prefs.GetCacheGuid());
-  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestUser),
-            transport_data_prefs.GetGaiaId());
 }
 
 #if defined(OS_ANDROID)
@@ -1188,43 +1167,6 @@ TEST_F(ProfileSyncServiceTest, DecoupleFromMasterSyncIfSignsOut) {
   EXPECT_TRUE(sync_prefs.GetDecoupledFromAndroidMasterSync());
 }
 #endif  // defined(OS_ANDROID)
-
-TEST_F(ProfileSyncServiceTest,
-       ShouldNotPopulateAccountIdCachedInPrefsWithLocalSync) {
-  SyncTransportDataPrefs transport_data_prefs(prefs());
-
-  SignIn();
-  CreateServiceWithLocalSyncBackend();
-  InitializeForNthSync();
-  ASSERT_EQ(SyncService::TransportState::ACTIVE,
-            service()->GetTransportState());
-  ASSERT_EQ(kTestCacheGuid, transport_data_prefs.GetCacheGuid());
-  EXPECT_TRUE(transport_data_prefs.GetGaiaId().empty());
-}
-
-// Verifies that local sync transport data is thrown away if there is a mismatch
-// between the account ID cached in SyncPrefs and the actual one.
-TEST_F(ProfileSyncServiceTest,
-       ShouldClearLocalSyncTransportDataDueToAccountIdMismatch) {
-  SyncTransportDataPrefs transport_data_prefs(prefs());
-
-  SignIn();
-  CreateService(ProfileSyncService::MANUAL_START);
-  PopulatePrefsForNthSync();
-  ASSERT_EQ(kTestCacheGuid, transport_data_prefs.GetCacheGuid());
-
-  // Manually override the authenticated account ID, which should be detected
-  // during initialization.
-  transport_data_prefs.SetGaiaId("corrupt_gaia_id");
-
-  service()->Initialize();
-
-  ASSERT_EQ(SyncService::TransportState::ACTIVE,
-            service()->GetTransportState());
-  EXPECT_NE(kTestCacheGuid, transport_data_prefs.GetCacheGuid());
-  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestUser),
-            transport_data_prefs.GetGaiaId());
-}
 
 TEST_F(ProfileSyncServiceTestWithSyncInvalidationsServiceCreated,
        ShouldSendDataTypesToSyncInvalidationsService) {

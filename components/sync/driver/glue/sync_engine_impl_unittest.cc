@@ -53,6 +53,7 @@ namespace {
 
 static const base::FilePath::CharType kTestSyncDir[] =
     FILE_PATH_LITERAL("sync-test");
+constexpr char kTestGaiaId[] = "test_gaia_id";
 
 class TestSyncEngineHost : public SyncEngineHostStub {
  public:
@@ -228,13 +229,15 @@ class SyncEngineImplTest : public testing::Test {
   }
 
   // Synchronously initializes the backend.
-  void InitializeBackend(bool expect_success) {
+  void InitializeBackend(bool expect_success = true,
+                         const std::string& gaia_id = kTestGaiaId) {
     host_.SetExpectSuccess(expect_success);
 
     SyncEngine::InitParams params;
     params.host = &host_;
     params.http_factory_getter = base::BindOnce(&CreateHttpBridgeFactory);
-    params.authenticated_account_id = CoreAccountId("account_id");
+    params.authenticated_account_info.gaia = gaia_id;
+    params.authenticated_account_info.account_id = CoreAccountId("account_id");
     params.sync_manager_factory = std::move(fake_manager_factory_);
 
     backend_->Initialize(std::move(params));
@@ -345,7 +348,7 @@ class SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest
 // Test basic initialization with no initial types (first time initialization).
 // Only the nigori should be configured.
 TEST_F(SyncEngineImplTest, InitShutdown) {
-  InitializeBackend(true);
+  InitializeBackend();
   EXPECT_EQ(ControlTypes(), fake_manager_->GetAndResetDownloadedTypes());
   EXPECT_EQ(ControlTypes(), fake_manager_->InitialSyncEndedTypes());
 }
@@ -353,7 +356,7 @@ TEST_F(SyncEngineImplTest, InitShutdown) {
 // Test first time sync scenario. All types should be properly configured.
 
 TEST_F(SyncEngineImplTest, FirstTimeSync) {
-  InitializeBackend(true);
+  InitializeBackend();
   EXPECT_EQ(ControlTypes(), fake_manager_->GetAndResetDownloadedTypes());
   EXPECT_EQ(ControlTypes(), fake_manager_->InitialSyncEndedTypes());
 
@@ -370,7 +373,7 @@ TEST_F(SyncEngineImplTest, FirstTimeSync) {
 TEST_F(SyncEngineImplTest, Restart) {
   fake_manager_factory_->set_progress_marker_types(enabled_types_);
   fake_manager_factory_->set_initial_sync_ended_types(enabled_types_);
-  InitializeBackend(true);
+  InitializeBackend();
   EXPECT_TRUE(fake_manager_->GetAndResetDownloadedTypes().Empty());
   EXPECT_EQ(enabled_types_, fake_manager_->InitialSyncEndedTypes());
 
@@ -382,7 +385,7 @@ TEST_F(SyncEngineImplTest, Restart) {
 
 TEST_F(SyncEngineImplTest, DisableTypes) {
   // Simulate first time sync.
-  InitializeBackend(true);
+  InitializeBackend();
   ModelTypeSet ready_types = ConfigureDataTypes();
   // Nigori is always downloaded so won't be ready.
   EXPECT_EQ(Difference(ControlTypes(), ModelTypeSet(NIGORI)), ready_types);
@@ -402,7 +405,7 @@ TEST_F(SyncEngineImplTest, DisableTypes) {
 
 TEST_F(SyncEngineImplTest, AddTypes) {
   // Simulate first time sync.
-  InitializeBackend(true);
+  InitializeBackend();
   ModelTypeSet ready_types = ConfigureDataTypes();
   // Nigori is always downloaded so won't be ready.
   EXPECT_EQ(Difference(ControlTypes(), ModelTypeSet(NIGORI)), ready_types);
@@ -425,7 +428,7 @@ TEST_F(SyncEngineImplTest, AddTypes) {
 // And and disable in the same configuration.
 TEST_F(SyncEngineImplTest, AddDisableTypes) {
   // Simulate first time sync.
-  InitializeBackend(true);
+  InitializeBackend();
   ModelTypeSet ready_types = ConfigureDataTypes();
   // Nigori is always downloaded so won't be ready.
   EXPECT_EQ(Difference(ControlTypes(), ModelTypeSet(NIGORI)), ready_types);
@@ -458,7 +461,7 @@ TEST_F(SyncEngineImplTest, NewlySupportedTypes) {
   enabled_types_.PutAll(new_types);
 
   // Does nothing.
-  InitializeBackend(true);
+  InitializeBackend();
   EXPECT_TRUE(fake_manager_->GetAndResetDownloadedTypes().Empty());
   EXPECT_EQ(old_types, fake_manager_->InitialSyncEndedTypes());
 
@@ -484,7 +487,7 @@ TEST_F(SyncEngineImplTest, DownloadControlTypes) {
 
   // Bringing up the backend should download the new types without downloading
   // any old types.
-  InitializeBackend(true);
+  InitializeBackend();
   EXPECT_EQ(new_types, fake_manager_->GetAndResetDownloadedTypes());
   EXPECT_EQ(enabled_types_, fake_manager_->InitialSyncEndedTypes());
 }
@@ -498,12 +501,12 @@ TEST_F(SyncEngineImplTest, DownloadControlTypes) {
 // download retry logic will not be invoked.
 TEST_F(SyncEngineImplTest, SilentlyFailToDownloadControlTypes) {
   fake_manager_factory_->set_configure_fail_types(ModelTypeSet::All());
-  InitializeBackend(false);
+  InitializeBackend(/*expect_success=*/false);
 }
 
 // Test that local refresh requests are delivered to sync.
 TEST_F(SyncEngineImplTest, ForwardLocalRefreshRequest) {
-  InitializeBackend(true);
+  InitializeBackend();
 
   ModelTypeSet set1 = ModelTypeSet::All();
   backend_->TriggerRefresh(set1);
@@ -518,7 +521,7 @@ TEST_F(SyncEngineImplTest, ForwardLocalRefreshRequest) {
 
 // Test that configuration on signin sends the proper GU source.
 TEST_F(SyncEngineImplTest, DownloadControlTypesNewClient) {
-  InitializeBackend(true);
+  InitializeBackend();
   EXPECT_EQ(CONFIGURE_REASON_NEW_CLIENT,
             fake_manager_->GetAndResetConfigureReason());
 }
@@ -527,7 +530,7 @@ TEST_F(SyncEngineImplTest, DownloadControlTypesNewClient) {
 TEST_F(SyncEngineImplTest, DownloadControlTypesRestart) {
   fake_manager_factory_->set_progress_marker_types(enabled_types_);
   fake_manager_factory_->set_initial_sync_ended_types(enabled_types_);
-  InitializeBackend(true);
+  InitializeBackend();
   EXPECT_EQ(CONFIGURE_REASON_NEWLY_ENABLED_DATA_TYPE,
             fake_manager_->GetAndResetConfigureReason());
 }
@@ -539,7 +542,7 @@ TEST_F(SyncEngineImplTest, DownloadControlTypesRestart) {
 TEST_F(SyncEngineImplTest, DisableThenPurgeType) {
   ModelTypeSet error_types(BOOKMARKS);
 
-  InitializeBackend(true);
+  InitializeBackend();
 
   // First enable the types.
   ModelTypeSet ready_types = ConfigureDataTypes();
@@ -561,7 +564,7 @@ TEST_F(SyncEngineImplTest, DisableThenPurgeType) {
 // StopSyncingForShutdown. This is needed for datatype deactivation during
 // DataTypeManager shutdown.
 TEST_F(SyncEngineImplTest, ModelTypeConnectorValidDuringShutdown) {
-  InitializeBackend(true);
+  InitializeBackend();
   backend_->StopSyncingForShutdown();
   // Verify that call to DeactivateDataType doesn't assert.
   backend_->DeactivateDataType(AUTOFILL);
@@ -584,7 +587,7 @@ TEST_F(SyncEngineImplTest,
   invalidation_enabled_types.Remove(SESSIONS);
 #endif
 
-  InitializeBackend(true);
+  InitializeBackend();
   EXPECT_CALL(
       invalidator_,
       UpdateInterestedTopics(
@@ -602,7 +605,7 @@ TEST_F(SyncEngineImplTest, WhenEnabledTypesStayDisabled) {
   // |enabled_types_|.
   enabled_types_.Remove(SESSIONS);
 
-  InitializeBackend(true);
+  InitializeBackend();
   EXPECT_CALL(invalidator_,
               UpdateInterestedTopics(backend_.get(),
                                      ModelTypeSetToTopicSet(Difference(
@@ -620,7 +623,7 @@ TEST_F(SyncEngineImplTest,
   // |enabled_types_|.
   enabled_types_.Put(SESSIONS);
 
-  InitializeBackend(true);
+  InitializeBackend();
   ConfigureDataTypes();
 
   EXPECT_CALL(invalidator_,
@@ -648,7 +651,7 @@ TEST_F(SyncEngineImplTest, ShouldDestroyAfterInitFailure) {
   fake_manager_factory_->set_should_fail_on_init(true);
   // Sync manager will report initialization failure and gets destroyed during
   // the error handling.
-  InitializeBackend(false);
+  InitializeBackend(/*expect_success=*/false);
 
   backend_->StopSyncingForShutdown();
   // This line would post the task causing the crash before the fix, because
@@ -709,6 +712,62 @@ TEST_F(SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest,
 
   EXPECT_CALL(invalidator_, UpdateInterestedTopics).Times(0);
   ConfigureDataTypes();
+}
+
+TEST_F(SyncEngineImplTest, GenerateCacheGUID) {
+  const std::string guid1 = SyncEngineImpl::GenerateCacheGUIDForTest();
+  const std::string guid2 = SyncEngineImpl::GenerateCacheGUIDForTest();
+  EXPECT_EQ(24U, guid1.size());
+  EXPECT_EQ(24U, guid2.size());
+  EXPECT_NE(guid1, guid2);
+}
+
+TEST_F(SyncEngineImplTest, ShouldPopulateAccountIdCachedInPrefs) {
+  const std::string kTestCacheGuid = "test_cache_guid";
+  const std::string kTestBirthday = "test_birthday";
+
+  SyncTransportDataPrefs transport_data_prefs(&pref_service_);
+  transport_data_prefs.SetCacheGuid(kTestCacheGuid);
+  transport_data_prefs.SetBirthday(kTestBirthday);
+
+  InitializeBackend();
+
+  ASSERT_EQ(kTestCacheGuid, transport_data_prefs.GetCacheGuid());
+  EXPECT_EQ(kTestGaiaId, transport_data_prefs.GetGaiaId());
+}
+
+TEST_F(SyncEngineImplTest,
+       ShouldNotPopulateAccountIdCachedInPrefsWithLocalSync) {
+  const std::string kTestCacheGuid = "test_cache_guid";
+  const std::string kTestBirthday = "test_birthday";
+
+  SyncTransportDataPrefs transport_data_prefs(&pref_service_);
+  transport_data_prefs.SetCacheGuid(kTestCacheGuid);
+  transport_data_prefs.SetBirthday(kTestBirthday);
+
+  InitializeBackend(/*expect_success=*/true, /*gaia_id=*/std::string());
+
+  ASSERT_EQ(kTestCacheGuid, transport_data_prefs.GetCacheGuid());
+  EXPECT_TRUE(transport_data_prefs.GetGaiaId().empty());
+}
+
+// Verifies that local sync transport data is thrown away if there is a mismatch
+// between the account ID cached in SyncPrefs and the actual one.
+TEST_F(SyncEngineImplTest,
+       ShouldClearLocalSyncTransportDataDueToAccountIdMismatch) {
+  const std::string kTestCacheGuid = "test_cache_guid";
+  const std::string kTestBirthday = "test_birthday";
+
+  SyncTransportDataPrefs transport_data_prefs(&pref_service_);
+  transport_data_prefs.SetCacheGuid(kTestCacheGuid);
+  transport_data_prefs.SetBirthday(kTestBirthday);
+  transport_data_prefs.SetGaiaId("corrupt_gaia_id");
+
+  InitializeBackend();
+
+  EXPECT_EQ(kTestGaiaId, transport_data_prefs.GetGaiaId());
+  EXPECT_NE(kTestCacheGuid, transport_data_prefs.GetCacheGuid());
+  EXPECT_NE(kTestBirthday, transport_data_prefs.GetBirthday());
 }
 
 }  // namespace

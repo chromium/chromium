@@ -249,8 +249,6 @@ class ProfileSyncService : public SyncService,
 
   SyncClient* GetSyncClientForTest();
 
-  static std::string GenerateCacheGUIDForTest();
-
  private:
   // Passed as an argument to StopImpl to control whether or not the sync
   // engine should clear its data when it shuts down. See StopImpl for more

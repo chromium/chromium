@@ -291,6 +291,7 @@ static_library("rest_of_sync") {
     "//base:i18n",
     "//build:branding_buildflags",
     "//components/keyed_service/core",
+    "//components/signin/public/identity_manager",
     "//components/variations/net",
     "//services/network/public/cpp",
     "//sql",
