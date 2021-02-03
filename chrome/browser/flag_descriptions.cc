@@ -2059,12 +2059,11 @@ const char kScreenCaptureTestDescription[] =
     "capture mode UI bar. Try out new screen recording functionality.";
 
 const char kScrollableTabStripFlagId[] = "scrollable-tabstrip";
-const char kScrollableTabStripName[] = "Scrollable TabStrip";
+const char kScrollableTabStripName[] = "Tab Scrolling";
 const char kScrollableTabStripDescription[] =
-    "Allows users to access tabs by scrolling when they no longer fit in the "
-    "tabstrip.";
+    "Enables tab strip to scroll left and right when full.";
 
-const char kScrollableTabStripButtonsName[] = "Scrollable TabStrip Buttons";
+const char kScrollableTabStripButtonsName[] = "Tab Scrolling Buttons";
 const char kScrollableTabStripButtonsDescription[] =
     "When the scrollable-tabstrip flag is enabled, this enables buttons to "
     "permanently appear on the tabstrip.";
