@@ -152,6 +152,12 @@ bool IsVpnProhibited() {
   return base::Contains(prohibited_technologies, shill::kTypeVPN);
 }
 
+// TODO(b/161092818): Add wireguard type when it is supported in shill.
+bool IsBuiltInVpnType(const std::string& vpn_type) {
+  return vpn_type == shill::kProviderL2tpIpsec ||
+         vpn_type == shill::kProviderOpenVpn;
+}
+
 }  // namespace
 
 NetworkConnectionHandlerImpl::ConnectRequest::ConnectRequest(
@@ -297,7 +303,7 @@ void NetworkConnectionHandlerImpl::ConnectToNetwork(
     }
 
     if (NetworkTypePattern::VPN().MatchesType(network->type()) &&
-        IsVpnProhibited()) {
+        IsBuiltInVpnType(network->GetVpnProviderType()) && IsVpnProhibited()) {
       InvokeConnectErrorCallback(service_path, std::move(error_callback),
                                  kErrorBlockedByPolicy);
       return;

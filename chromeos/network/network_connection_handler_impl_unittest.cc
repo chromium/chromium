@@ -295,6 +295,19 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
     return helper_.ConfigureService(shill_json_string);
   }
 
+  std::string ConfigureVpnServiceWithProviderType(
+      const std::string& vpn_provider_type) {
+    const std::string kVpnGuid = "vpn_guid";
+    const std::string kShillJsonStringTemplate =
+        R"({"GUID": "$1", "Type": "vpn", "State": "idle",
+            "Provider": {"Type": "$2", "Host": "host"}})";
+
+    const std::string shill_json_string = base::ReplaceStringPlaceholders(
+        kShillJsonStringTemplate, {kVpnGuid, vpn_provider_type},
+        /*offsets=*/nullptr);
+    return ConfigureService(shill_json_string);
+  }
+
   std::string GetServiceStringProperty(const std::string& service_path,
                                        const std::string& key) {
     return helper_.GetServiceStringProperty(service_path, key);
@@ -302,6 +315,21 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
 
   void AdvanceClock(base::TimeDelta time_delta) {
     task_environment_.FastForwardBy(time_delta);
+  }
+
+  // Used when testing a code that accesses NetworkHandler::Get() directly (e.g.
+  // when checking if VPN is disabled by policy when attempting to connect to a
+  // VPN network). NetworkStateTestHelper can not be used here. That's because
+  // NetworkStateTestHelper initializes a NetworkStateHandler for testing, but
+  // NetworkHandler::Initialize() constructs its own NetworkStateHandler
+  // instance and NetworkHandler::Get() uses it.
+  // Note: Tests using this method must call NetworkHandler::Shutdown() before
+  // returning.
+  void ProhibitVpnForNetworkHandler() {
+    NetworkHandler::Initialize();
+    NetworkHandler::Get()
+        ->prohibited_technologies_handler()
+        ->AddGloballyProhibitedTechnology(shill::kTypeVPN);
   }
 
   NetworkStateHandler* network_state_handler() {
@@ -621,32 +649,61 @@ TEST_F(NetworkConnectionHandlerImplTest, ConnectToTetherNetwork_Failure) {
 }
 
 TEST_F(NetworkConnectionHandlerImplTest,
-       ConnectToVpnNetworkWhenProhibited_Failure) {
-  // This test tests a code that accesses NetworkHandler::Get() directly (when
-  // checking if VPN is disabled by policy when attempting to connect to a VPN
-  // network), so NetworkStateTestHelper can not be used here. That's because
-  // NetworkStateTestHelper initializes a NetworkStateHandler for testing, but
-  // NetworkHandler::Initialize() constructs its own NetworkStateHandler
-  // instance and NetworkHandler::Get() uses it.
-  NetworkHandler::Initialize();
-  NetworkHandler::Get()
-      ->prohibited_technologies_handler()
-      ->AddGloballyProhibitedTechnology(shill::kTypeVPN);
+       ConnectToL2tpIpsecVpnNetworkWhenProhibited_Failure) {
+  ProhibitVpnForNetworkHandler();
 
-  const std::string kVpnGuid = "vpn_guid";
-  const std::string kShillJsonStringTemplate =
-      R"({"GUID": "$1", "Type": "vpn", "State": "idle",
-            "Provider": {"Type": "l2tpipsec", "Host": "host"}})";
-
-  const std::string shill_json_string =
-      base::ReplaceStringPlaceholders(kShillJsonStringTemplate, {kVpnGuid},
-                                      /*offsets=*/nullptr);
-  const std::string vpn_service_path = ConfigureService(shill_json_string);
+  const std::string vpn_service_path =
+      ConfigureVpnServiceWithProviderType(shill::kProviderL2tpIpsec);
   ASSERT_FALSE(vpn_service_path.empty());
 
   Connect(/*service_path=*/vpn_service_path);
   EXPECT_EQ(NetworkConnectionHandler::kErrorBlockedByPolicy,
             GetResultAndReset());
+
+  NetworkHandler::Shutdown();
+}
+
+TEST_F(NetworkConnectionHandlerImplTest,
+       ConnectToOpenVpnNetworkWhenProhibited_Failure) {
+  ProhibitVpnForNetworkHandler();
+
+  const std::string vpn_service_path =
+      ConfigureVpnServiceWithProviderType(shill::kProviderOpenVpn);
+  ASSERT_FALSE(vpn_service_path.empty());
+
+  Connect(/*service_path=*/vpn_service_path);
+  EXPECT_EQ(NetworkConnectionHandler::kErrorBlockedByPolicy,
+            GetResultAndReset());
+
+  NetworkHandler::Shutdown();
+}
+
+TEST_F(NetworkConnectionHandlerImplTest,
+       ConnectToThirdPartyVpnNetworkWhenProhibited_Success) {
+  ProhibitVpnForNetworkHandler();
+
+  const std::string vpn_service_path =
+      ConfigureVpnServiceWithProviderType(shill::kProviderThirdPartyVpn);
+  ASSERT_FALSE(vpn_service_path.empty());
+
+  Connect(/*service_path=*/vpn_service_path);
+  EXPECT_EQ(kSuccessResult, GetResultAndReset());
+
+  NetworkHandler::Shutdown();
+}
+
+TEST_F(NetworkConnectionHandlerImplTest,
+       ConnectToArcVpnNetworkWhenProhibited_Success) {
+  ProhibitVpnForNetworkHandler();
+
+  const std::string vpn_service_path =
+      ConfigureVpnServiceWithProviderType(shill::kProviderArcVpn);
+  ASSERT_FALSE(vpn_service_path.empty());
+
+  Connect(/*service_path=*/vpn_service_path);
+  EXPECT_EQ(kSuccessResult, GetResultAndReset());
+
+  NetworkHandler::Shutdown();
 }
 
 TEST_F(NetworkConnectionHandlerImplTest,
