@@ -573,6 +573,16 @@ DeprecationInfo GetDeprecationInfo(WebFeature feature) {
                   " See https://chromestatus.com/feature/6730096436051968 for "
                   "more details."};
 
+    case WebFeature::kV8SpeechRecognitionEvent_Interpretation_AttributeGetter:
+      return {"V8SpeechRecognitionEvent_Interpretation_AttributeGetter", kM91,
+              WillBeRemoved("SpeechRecognitionEvent's interpretation attribute",
+                            kM91, "5769608873115648")};
+
+    case WebFeature::kV8SpeechRecognitionEvent_Emma_AttributeGetter:
+      return {"V8SpeechRecognitionEvent_Emma_AttributeGetter", kM91,
+              WillBeRemoved("SpeechRecognitionEvent's emma attribute", kM91,
+                            "5769608873115648")};
+
     case WebFeature::kRTCPeerConnectionSdpSemanticsPlanB:
       return {"RTCPeerConnectionSdpSemanticsPlanB", kM93,
               "Plan B SDP semantics, which is used when constructing an "

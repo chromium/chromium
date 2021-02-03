@@ -35,6 +35,6 @@
     readonly attribute unsigned long resultIndex;
     readonly attribute SpeechRecognitionResultList? results;
 
-    [Measure] readonly attribute Document? interpretation;
-    [Measure] readonly attribute Document? emma;
+    [DeprecateAs=V8SpeechRecognitionEvent_Interpretation_AttributeGetter] readonly attribute Document? interpretation;
+    [DeprecateAs=V8SpeechRecognitionEvent_Emma_AttributeGetter] readonly attribute Document? emma;
 };
