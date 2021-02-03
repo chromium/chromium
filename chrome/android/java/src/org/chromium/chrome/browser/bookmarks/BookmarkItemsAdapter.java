@@ -95,9 +95,12 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
             clearHighlight();
             mDelegate.notifyStateChange(BookmarkItemsAdapter.this);
 
-            if (mDelegate.getCurrentState() == BookmarkUIState.STATE_SEARCHING
-                    && !TextUtils.equals(mSearchText, EMPTY_QUERY)) {
-                search(mSearchText);
+            if (mDelegate.getCurrentState() == BookmarkUIState.STATE_SEARCHING) {
+                if (!TextUtils.equals(mSearchText, EMPTY_QUERY)) {
+                    search(mSearchText);
+                } else {
+                    mDelegate.closeSearchUI();
+                }
             }
         }
     };
