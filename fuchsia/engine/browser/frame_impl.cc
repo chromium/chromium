@@ -27,8 +27,8 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/permission_controller_delegate.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/renderer_preferences_util.h"
@@ -1121,21 +1121,10 @@ void FrameImpl::DidFinishLoad(content::RenderFrameHost* render_frame_host,
   context_->devtools_controller()->OnFrameLoaded(web_contents_.get());
 }
 
-void FrameImpl::RenderViewCreated(content::RenderViewHost* render_view_host) {
-  render_view_host->GetWidget()->GetView()->SetBackgroundColor(
-      SK_AlphaTRANSPARENT);
-}
-
-void FrameImpl::RenderViewReady() {
-  web_contents_->GetRenderViewHost()
-      ->GetWidget()
-      ->GetView()
-      ->SetBackgroundColor(SK_AlphaTRANSPARENT);
-
-  // Setting the background color doesn't necessarily apply it right away, so
-  // request a redraw if there is a view connected to this Frame.
-  if (window_tree_host_)
-    window_tree_host_->compositor()->ScheduleDraw();
+void FrameImpl::RenderFrameCreated(content::RenderFrameHost* frame_host) {
+  // The top-level frame is given a transparent background color.
+  if (frame_host == web_contents()->GetMainFrame())
+    frame_host->GetView()->SetBackgroundColor(SK_AlphaTRANSPARENT);
 }
 
 void FrameImpl::DidFirstVisuallyNonEmptyPaint() {

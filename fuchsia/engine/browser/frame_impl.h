@@ -262,8 +262,7 @@ class FrameImpl : public fuchsia::web::Frame,
       content::NavigationHandle* navigation_handle) override;
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override;
-  void RenderViewCreated(content::RenderViewHost* render_view_host) override;
-  void RenderViewReady() override;
+  void RenderFrameCreated(content::RenderFrameHost* frame_host) override;
   void DidFirstVisuallyNonEmptyPaint() override;
   void ResourceLoadComplete(
       content::RenderFrameHost* render_frame_host,
