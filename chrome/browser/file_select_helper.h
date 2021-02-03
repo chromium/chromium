@@ -24,7 +24,7 @@
 #include "ui/shell_dialogs/select_file_dialog.h"
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-#include "chrome/browser/enterprise/connectors/content_analysis_delegate.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #endif
 
 class Profile;

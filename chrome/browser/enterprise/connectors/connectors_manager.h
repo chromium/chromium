@@ -7,10 +7,10 @@
 
 #include "base/callback_forward.h"
 #include "base/optional.h"
-#include "chrome/browser/enterprise/connectors/analysis_service_settings.h"
+#include "chrome/browser/enterprise/connectors/analysis/analysis_service_settings.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/file_system/service_settings.h"
-#include "chrome/browser/enterprise/connectors/reporting_service_settings.h"
+#include "chrome/browser/enterprise/connectors/reporting/reporting_service_settings.h"
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/reporting_service_settings.h"
+#include "chrome/browser/enterprise/connectors/reporting/reporting_service_settings.h"
 
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"

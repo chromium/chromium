@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_CONTENT_ANALYSIS_DIALOG_H_
-#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_CONTENT_ANALYSIS_DIALOG_H_
+#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CONTENT_ANALYSIS_DIALOG_H_
+#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CONTENT_ANALYSIS_DIALOG_H_
 
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/enterprise/connectors/content_analysis_delegate.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/animation/bounds_animator.h"
@@ -267,4 +267,4 @@ class ContentAnalysisDialog : public views::DialogDelegate,
 
 }  // namespace enterprise_connectors
 
-#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_CONTENT_ANALYSIS_DIALOG_H_
+#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CONTENT_ANALYSIS_DIALOG_H_

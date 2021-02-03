@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/content_analysis_dialog.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog.h"
 
 #include <memory>
 

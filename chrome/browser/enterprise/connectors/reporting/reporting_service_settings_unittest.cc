@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/reporting_service_settings.h"
+#include "chrome/browser/enterprise/connectors/reporting/reporting_service_settings.h"
+
 #include "base/json/json_reader.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
