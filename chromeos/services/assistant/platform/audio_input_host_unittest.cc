@@ -12,7 +12,6 @@
 #include "chromeos/audio/cras_audio_handler.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
-#include "chromeos/services/assistant/test_support/scoped_assistant_client.h"
 #include "chromeos/services/libassistant/public/mojom/audio_input_controller.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,19 +27,6 @@ using MojomAudioInputController =
     chromeos::libassistant::mojom::AudioInputController;
 using ::testing::_;
 using ::testing::NiceMock;
-
-class ScopedFakeAssistantClient : public ScopedAssistantClient {
- public:
-  ScopedFakeAssistantClient() = default;
-  ~ScopedFakeAssistantClient() override = default;
-
-  // ScopedAssistantClient overrides:
-  void RequestAudioStreamFactory(
-      mojo::PendingReceiver<audio::mojom::StreamFactory> receiver) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedFakeAssistantClient);
-};
 
 class AudioInputControllerMock : public MojomAudioInputController {
  public:
@@ -166,7 +152,6 @@ class AssistantAudioInputHostTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  ScopedFakeAssistantClient assistant_client_;
   ScopedCrasAudioHandler cras_audio_handler_;
   NiceMock<AudioInputControllerMock> audio_input_controller_;
   std::unique_ptr<AudioInputHostImpl> audio_input_host_;

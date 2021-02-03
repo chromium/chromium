@@ -29,6 +29,9 @@ class PlatformDelegateImpl
       mojo::PendingReceiver<
           ::chromeos::assistant::mojom::AssistantAudioDecoderFactory> receiver)
       override;
+  void BindAssistantVolumeControl(
+      mojo::PendingReceiver<::ash::mojom::AssistantVolumeControl> receiver)
+      override;
 
  private:
   mojo::Receiver<PlatformDelegate> receiver_{this};

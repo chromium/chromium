@@ -7,6 +7,7 @@
 
 #include "ash/public/mojom/assistant_volume_control.mojom.h"
 #include "base/macros.h"
+#include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom-forward.h"
 #include "libassistant/shared/public/platform_audio_output.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -19,7 +20,8 @@ class AssistantMediaSession;
 class VolumeControlImpl : public assistant_client::VolumeControl,
                           public ash::mojom::VolumeObserver {
  public:
-  explicit VolumeControlImpl(AssistantMediaSession* media_session);
+  VolumeControlImpl(AssistantMediaSession* media_session,
+                    chromeos::libassistant::mojom::PlatformDelegate* delegate);
   ~VolumeControlImpl() override;
 
   // assistant_client::VolumeControl overrides:
@@ -42,7 +44,7 @@ class VolumeControlImpl : public assistant_client::VolumeControl,
   void SetSystemVolumeOnMainThread(float new_volume, bool user_initiated);
   void SetSystemMutedOnMainThread(bool muted);
 
-  AssistantMediaSession* media_session_;
+  AssistantMediaSession* const media_session_;
   mojo::Remote<ash::mojom::AssistantVolumeControl> volume_control_;
   mojo::Receiver<ash::mojom::VolumeObserver> receiver_{this};
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;

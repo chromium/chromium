@@ -4,6 +4,7 @@
 
 module chromeos.libassistant.mojom;
 
+import "ash/public/mojom/assistant_volume_control.mojom";
 import "chromeos/services/assistant/public/mojom/assistant_audio_decoder.mojom";
 import "services/audio/public/mojom/stream_factory.mojom";
 
@@ -19,6 +20,10 @@ interface PlatformDelegate {
     pending_receiver<chromeos.assistant.mojom.AssistantAudioDecoderFactory>
       receiver);
 
+  // Requests Ash's AssistantVolumeControl interface from the browser.
+  BindAssistantVolumeControl(pending_receiver<ash.mojom.AssistantVolumeControl>
+    receiver);
+
   // Requests a connection to the CrosNetworkConfig service interface via the
   // browser.
   // BindNetworkConfig(pending_receiver<chromeos.network_config.mojom.CrosNetworkConfig> receiver);
@@ -26,7 +31,4 @@ interface PlatformDelegate {
   // // Requests a connection to the Device service's WakeLockProvider interface
   // // from the browser.
   // BindWakeLockProvider(pending_receiver<device.mojom.WakeLockProvider> receiver);
-
-  // // Requests Ash's AssistantVolumeControl interface from the browser.
-  // RequestAssistantVolumeControl(pending_receiver<ash.mojom.AssistantVolumeControl> receiver);
 };

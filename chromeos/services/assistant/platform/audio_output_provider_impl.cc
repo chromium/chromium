@@ -151,7 +151,7 @@ AudioOutputProviderImpl::AudioOutputProviderImpl(
       media_session_(media_session),
       loop_back_input_(platform_delegate_,
                        media::AudioDeviceDescription::kLoopbackInputDeviceId),
-      volume_control_impl_(media_session),
+      volume_control_impl_(media_session, platform_delegate),
       main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
       background_task_runner_(background_task_runner),
       device_id_(device_id) {

@@ -52,6 +52,9 @@ class FakePlatformDelegate : public mojom::PlatformDelegate {
       mojo::PendingReceiver<
           ::chromeos::assistant::mojom::AssistantAudioDecoderFactory> receiver)
       override {}
+  void BindAssistantVolumeControl(
+      mojo::PendingReceiver<::ash::mojom::AssistantVolumeControl> receiver)
+      override {}
 
   // Return the pending receiver passed to the last BindAudioStreamFactory call.
   mojo::PendingReceiver<::audio::mojom::StreamFactory>
