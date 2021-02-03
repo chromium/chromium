@@ -4054,6 +4054,14 @@ ci.gpu_fyi_linux_builder(
 )
 
 ci.gpu_fyi_linux_builder(
+    name = "GPU FYI Lacros x64 Builder",
+    console_view_entry = consoles.console_view_entry(
+        category = "Lacros|Builder",
+        short_name = "rel",
+    ),
+)
+
+ci.gpu_fyi_linux_builder(
     name = "GPU FYI Linux Builder",
     console_view_entry = consoles.console_view_entry(
         category = "Linux|Builder",
@@ -4148,6 +4156,24 @@ ci.gpu_fyi_mac_builder(
         category = "Mac|Builder",
         short_name = "dqp",
     ),
+)
+
+ci.gpu_fyi_thin_tester(
+    name = "Lacros FYI x64 Release (AMD)",
+    console_view_entry = consoles.console_view_entry(
+        category = "Lacros|AMD",
+        short_name = "amd",
+    ),
+    triggered_by = ["GPU FYI Lacros x64 Builder"],
+)
+
+ci.gpu_fyi_thin_tester(
+    name = "Lacros FYI x64 Release (Intel)",
+    console_view_entry = consoles.console_view_entry(
+        category = "Lacros|Intel",
+        short_name = "int",
+    ),
+    triggered_by = ["GPU FYI Lacros x64 Builder"],
 )
 
 ci.gpu_fyi_thin_tester(

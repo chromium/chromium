@@ -159,6 +159,16 @@ def gpu_linux_builder(*, name, **kwargs):
     )
 
 gpu_linux_builder(
+    name = "gpu-fyi-try-lacros-amd-rel",
+    pool = "luci.chromium.gpu.linux.amd.try",
+)
+
+gpu_linux_builder(
+    name = "gpu-fyi-try-lacros-intel-rel",
+    pool = "luci.chromium.gpu.linux.intel.try",
+)
+
+gpu_linux_builder(
     name = "gpu-fyi-try-linux-amd-rel",
     pool = "luci.chromium.gpu.linux.amd.try",
 )
