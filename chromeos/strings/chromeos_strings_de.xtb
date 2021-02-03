@@ -62,6 +62,7 @@
 <translation id="2338501278241028356">Aktivieren Sie Bluetooth, damit Geräte in der Nähe gefunden werden</translation>
 <translation id="2364498172489649528">Bestanden</translation>
 <translation id="2391082728065870591">Feedbackbericht senden</translation>
+<translation id="2418150275289244458">In den Einstellungen öffnen</translation>
 <translation id="2446553403094072641">Gleitkommagenauigkeit</translation>
 <translation id="2448312741937722512">Art</translation>
 <translation id="2461822463642141190">Aktuell</translation>
@@ -273,6 +274,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="7177485034254901881">Dieses <ph name="DEVICE_TYPE" /> wird von <ph name="MANAGER" /> verwaltet. Administratoren können das Gerät per Remotezugriff konfigurieren.</translation>
 <translation id="7216409898977639127">Mobilfunkanbieter</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7343649194310845056">Netzwerkgeräte</translation>
 <translation id="7359657277149375382">Dateityp</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -282,6 +284,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="7490813197707563893">MAC-Adresse</translation>
 <translation id="7497215489070763236">CA-Serverzertifikat</translation>
 <translation id="7502658306369382406">IPv6-Adresse</translation>
+<translation id="7550715992156305117">Diagnoseroutinen</translation>
 <translation id="7561454561030345039">Diese Aktion wird von Ihrem Administrator verwaltet</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331">Noch <ph name="TIME_VALUE" /></translation>
