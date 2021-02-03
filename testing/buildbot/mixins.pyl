@@ -1083,17 +1083,17 @@
     },
   },
   # latest Xcode 12 beta version.
-  'xcode_12c33': {
+  'xcode_12d4e': {
     '$mixin_append': {
       'args': [
         '--xcode-build-version',
-        '12c33'
+        '12d4e'
       ],
     },
     'swarming': {
       'named_caches': [
         {
-          'name': 'xcode_ios_12c33',
+          'name': 'xcode_ios_12d4e',
           'path': 'Xcode.app',
         },
       ],
