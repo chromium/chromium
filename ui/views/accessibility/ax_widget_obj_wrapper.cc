@@ -18,13 +18,12 @@ namespace views {
 AXWidgetObjWrapper::AXWidgetObjWrapper(AXAuraObjCache* aura_obj_cache,
                                        Widget* widget)
     : AXAuraObjWrapper(aura_obj_cache), widget_(widget) {
+  DCHECK(widget->GetNativeView());
   widget_observation_.Observe(widget);
-  widget->AddRemovalsObserver(this);
+  widget_removals_observation_.Observe(widget);
 }
 
-AXWidgetObjWrapper::~AXWidgetObjWrapper() {
-  widget_->RemoveRemovalsObserver(this);
-}
+AXWidgetObjWrapper::~AXWidgetObjWrapper() = default;
 
 bool AXWidgetObjWrapper::IsIgnored() {
   return false;

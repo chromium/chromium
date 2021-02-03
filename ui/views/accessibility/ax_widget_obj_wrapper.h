@@ -54,6 +54,11 @@ class AXWidgetObjWrapper : public AXAuraObjWrapper,
   const ui::AXUniqueId unique_id_;
 
   base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
+  base::ScopedObservation<Widget,
+                          WidgetRemovalsObserver,
+                          &Widget::AddRemovalsObserver,
+                          &Widget::RemoveRemovalsObserver>
+      widget_removals_observation_{this};
 };
 
 }  // namespace views
