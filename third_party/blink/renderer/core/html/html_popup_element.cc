@@ -17,13 +17,6 @@ HTMLPopupElement::HTMLPopupElement(Document& document)
   UseCounter::Count(document, WebFeature::kPopupElement);
 }
 
-void HTMLPopupElement::PopUntilElementReached(HTMLPopupElement* endpoint) {
-  HTMLPopupElement* element;
-  while ((element = GetDocument().TopmostPopupElement()) != endpoint) {
-    DCHECK(element) << "endpoint not found in element stack";
-    element->hide();
-  }
-}
 
 void HTMLPopupElement::MarkStyleDirty() {
   SetNeedsStyleRecalc(kLocalStyleChange,
@@ -38,7 +31,7 @@ bool HTMLPopupElement::open() const {
 void HTMLPopupElement::hide() {
   if (!open_)
     return;
-  PopUntilElementReached(this);
+  GetDocument().HideAllPopupsUntil(this);
   GetDocument().PopPopupElement(this);
   open_ = false;
   PseudoStateChanged(CSSSelector::kPseudoPopupOpen);
@@ -69,7 +62,7 @@ void HTMLPopupElement::show() {
       }
     }
   }
-  PopUntilElementReached(parent_popup);
+  GetDocument().HideAllPopupsUntil(parent_popup);
   open_ = true;
   PseudoStateChanged(CSSSelector::kPseudoPopupOpen);
   GetDocument().PushNewPopupElement(this);

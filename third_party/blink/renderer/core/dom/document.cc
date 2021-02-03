@@ -7377,6 +7377,14 @@ HTMLPopupElement* Document::TopmostPopupElement() {
   return popup_element_stack_.IsEmpty() ? nullptr : popup_element_stack_.back();
 }
 
+void Document::HideAllPopupsUntil(HTMLPopupElement* endpoint) {
+  HTMLPopupElement* element;
+  while ((element = TopmostPopupElement()) != endpoint) {
+    DCHECK(element) << "popup element not found in element stack";
+    element->hide();
+  }
+}
+
 void Document::exitPointerLock() {
   if (!GetPage())
     return;

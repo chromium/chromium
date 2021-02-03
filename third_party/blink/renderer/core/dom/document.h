@@ -1366,6 +1366,10 @@ class CORE_EXPORT Document : public ContainerNode,
   const HeapVector<Member<HTMLPopupElement>>& PopupElementStack() const {
     return popup_element_stack_;
   }
+  // This hides all visible popups up to, but not including,
+  // |endpoint|. If |endpoint| is nullptr, all popups are hidden.
+  void HideAllPopupsUntil(HTMLPopupElement* endpoint);
+
   HTMLDialogElement* ActiveModalDialog() const;
 
   void PushNewPopupElement(HTMLPopupElement*);

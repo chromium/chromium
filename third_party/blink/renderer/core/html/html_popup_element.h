@@ -31,7 +31,6 @@ class HTMLPopupElement final : public HTMLElement {
   Element* AnchorElement() const;
 
  private:
-  void PopUntilElementReached(HTMLPopupElement*);
   void ScheduleHideEvent();
   void MarkStyleDirty();
 

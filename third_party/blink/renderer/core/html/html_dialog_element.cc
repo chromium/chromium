@@ -149,6 +149,9 @@ void HTMLDialogElement::show() {
     return;
   SetBooleanAttribute(html_names::kOpenAttr, true);
 
+  // Showing a <dialog> should hide all open popups.
+  GetDocument().HideAllPopupsUntil(nullptr);
+
   // The layout must be updated here because setFocusForDialog calls
   // Element::isFocusable, which requires an up-to-date layout.
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
@@ -175,6 +178,9 @@ void HTMLDialogElement::showModal(ExceptionState& exception_state) {
     UseCounter::Count(GetDocument(),
                       WebFeature::kShowModalForElementInFullscreenStack);
   }
+
+  // Showing a <dialog> should hide all open popups.
+  GetDocument().HideAllPopupsUntil(nullptr);
 
   GetDocument().AddToTopLayer(this);
   SetBooleanAttribute(html_names::kOpenAttr, true);
