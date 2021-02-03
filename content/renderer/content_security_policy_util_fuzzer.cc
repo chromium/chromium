@@ -15,6 +15,7 @@
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/i18n/icu_util.h"
+#include "base/strings/string_util.h"
 #include "base/test/test_timeouts.h"
 #include "content/public/test/blink_test_environment.h"
 #include "content/renderer/content_security_policy_util.h"
@@ -76,6 +77,10 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   std::string raw_url(reinterpret_cast<const char*>(data), it - 1 - data);
   std::string raw_csp(reinterpret_cast<const char*>(it), size - (it - data));
+
+  // Converting non-UTF8 will not work.
+  if (!base::IsStringUTF8(raw_csp))
+    return EXIT_SUCCESS;
 
   // Generate a pseudo-random |header_type|.
   network::mojom::ContentSecurityPolicyType header_type =

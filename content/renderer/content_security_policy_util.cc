@@ -14,14 +14,14 @@ std::vector<std::string> BuildVectorOfStrings(
     const blink::WebVector<blink::WebString>& list_in) {
   std::vector<std::string> list_out;
   for (const auto& element : list_in)
-    list_out.emplace_back(element.Ascii());
+    list_out.emplace_back(element.Utf8());
   return list_out;
 }
 
 network::mojom::CSPSourcePtr BuildCSPSource(const blink::WebCSPSource& source) {
   return network::mojom::CSPSource::New(
-      source.scheme.Ascii(), source.host.Ascii(), source.port,
-      source.path.Ascii(), source.is_host_wildcard, source.is_port_wildcard);
+      source.scheme.Utf8(), source.host.Utf8(), source.port, source.path.Utf8(),
+      source.is_host_wildcard, source.is_port_wildcard);
 }
 
 network::mojom::CSPHashSourcePtr BuildCSPHashSource(
@@ -58,15 +58,15 @@ blink::WebVector<blink::WebString> ToWebVectorOfWebStrings(
   blink::WebVector<blink::WebString> list_out(list_in.size());
   size_t i = 0;
   for (auto& element : list_in)
-    list_out[i++] = blink::WebString::FromASCII(std::move(element));
+    list_out[i++] = blink::WebString::FromUTF8(std::move(element));
   return list_out;
 }
 
 blink::WebCSPSource ToWebCSPSource(network::mojom::CSPSourcePtr source) {
-  return {blink::WebString::FromASCII(std::move(source->scheme)),
-          blink::WebString::FromASCII(std::move(source->host)),
+  return {blink::WebString::FromUTF8(std::move(source->scheme)),
+          blink::WebString::FromUTF8(std::move(source->host)),
           source->port,
-          blink::WebString::FromASCII(std::move(source->path)),
+          blink::WebString::FromUTF8(std::move(source->path)),
           source->is_host_wildcard,
           source->is_port_wildcard};
 }
@@ -109,7 +109,7 @@ base::Optional<blink::WebCSPTrustedTypes> ToOptionalWebCSPTrustedTypes(
 
 blink::WebContentSecurityPolicyHeader ToWebContentSecurityPolicyHeader(
     network::mojom::ContentSecurityPolicyHeaderPtr header) {
-  return {blink::WebString::FromASCII(std::move(header->header_value)),
+  return {blink::WebString::FromUTF8(std::move(header->header_value)),
           header->type, header->source};
 }
 
@@ -119,7 +119,7 @@ network::mojom::ContentSecurityPolicyPtr BuildContentSecurityPolicy(
     const blink::WebContentSecurityPolicy& policy_in) {
   base::flat_map<network::mojom::CSPDirectiveName, std::string> raw_directives;
   for (const auto& directive : policy_in.raw_directives) {
-    raw_directives[directive.name] = directive.value.Ascii();
+    raw_directives[directive.name] = directive.value.Utf8();
   }
 
   base::flat_map<network::mojom::CSPDirectiveName,
@@ -135,7 +135,7 @@ network::mojom::ContentSecurityPolicyPtr BuildContentSecurityPolicy(
       policy_in.treat_as_public_address, policy_in.block_all_mixed_content,
       policy_in.sandbox,
       network::mojom::ContentSecurityPolicyHeader::New(
-          policy_in.header.header_value.Ascii(), policy_in.header.type,
+          policy_in.header.header_value.Utf8(), policy_in.header.type,
           policy_in.header.source),
       policy_in.use_reporting_api,
       BuildVectorOfStrings(policy_in.report_endpoints),
@@ -167,7 +167,7 @@ blink::WebContentSecurityPolicy ToWebContentSecurityPolicy(
       policy_in->raw_directives.size());
   i = 0;
   for (auto& directive : policy_in->raw_directives) {
-    raw_directives[i++] = {directive.first, blink::WebString::FromASCII(
+    raw_directives[i++] = {directive.first, blink::WebString::FromUTF8(
                                                 std::move(directive.second))};
   }
 
