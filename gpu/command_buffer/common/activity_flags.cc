@@ -45,7 +45,7 @@ void GpuProcessActivityFlags::SetFlag(Flag flag) {
   // These flags are only written by a single process / single thread.
   // We should never double-set them.
   DCHECK(!(old_value & flag));
-  base::subtle::Acquire_Store(AsAtomic(), new_value);
+  base::subtle::Release_Store(AsAtomic(), new_value);
 }
 
 void GpuProcessActivityFlags::UnsetFlag(Flag flag) {
