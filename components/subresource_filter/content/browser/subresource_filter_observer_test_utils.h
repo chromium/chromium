@@ -56,8 +56,7 @@ class TestSubresourceFilterObserver : public SubresourceFilterObserver,
       const GURL& url) const;
   base::Optional<LoadPolicy> GetSubframeLoadPolicy(const GURL& url) const;
 
-  // TODO(crbug.com/1155690): Return a bool instead of an optional here.
-  base::Optional<bool> GetIsAdSubframe(int frame_tree_node_id) const;
+  bool GetIsAdSubframe(int frame_tree_node_id) const;
 
   // Should only be called on a subframe tagged as an ad.
   const FrameAdEvidence& GetEvidenceForAdSubframe(int frame_tree_node_id) const;

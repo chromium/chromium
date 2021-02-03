@@ -76,7 +76,7 @@ TestSubresourceFilterObserver::GetPageActivation(const GURL& url) const {
   return base::nullopt;
 }
 
-base::Optional<bool> TestSubresourceFilterObserver::GetIsAdSubframe(
+bool TestSubresourceFilterObserver::GetIsAdSubframe(
     int frame_tree_node_id) const {
   return base::Contains(ad_evidence_, frame_tree_node_id);
 }
