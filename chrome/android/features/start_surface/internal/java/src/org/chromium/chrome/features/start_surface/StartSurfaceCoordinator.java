@@ -125,7 +125,6 @@ public class StartSurfaceCoordinator implements StartSurface {
                                                         : null,
                 mSurfaceMode, mActivity, mActivity.getBrowserControlsManager(),
                 this::isActivityFinishingOrDestroyed, excludeMVTiles,
-                StartSurfaceConfiguration.START_SURFACE_SHOW_STACK_TAB_SWITCHER.getValue(),
                 startSurfaceOneshotSupplier, hadWarmStart);
 
         // Show feed loading image.
@@ -135,11 +134,6 @@ public class StartSurfaceCoordinator implements StartSurface {
             mFeedLoadingCoordinator.setUpLoadingView();
         }
         startSurfaceOneshotSupplier.set(this);
-    }
-
-    boolean isShowingTabSwitcher() {
-        assert StartSurfaceConfiguration.isStartSurfaceStackTabSwitcherEnabled();
-        return mStartSurfaceMediator.isShowingTabSwitcher();
     }
 
     // Implements StartSurface.
@@ -385,10 +379,7 @@ public class StartSurfaceCoordinator implements StartSurface {
         PropertyModel propertyModel = new PropertyModel(TasksSurfaceProperties.ALL_KEYS);
         mStartSurfaceMediator.setSecondaryTasksSurfacePropertyModel(propertyModel);
         mSecondaryTasksSurface = TabManagementModuleProvider.getDelegate().createTasksSurface(
-                mActivity, mScrimCoordinator, propertyModel,
-                StartSurfaceConfiguration.isStartSurfaceStackTabSwitcherEnabled()
-                        ? TabSwitcherType.NONE
-                        : TabSwitcherType.GRID,
+                mActivity, mScrimCoordinator, propertyModel, TabSwitcherType.GRID,
                 mParentTabSupplier, false, false);
         if (mIsInitializedWithNative) {
             mSecondaryTasksSurface.onFinishNativeInitialization(

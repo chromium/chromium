@@ -42,7 +42,6 @@ import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.IS_EXPLORE_SURFACE_VISIBLE;
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.IS_SECONDARY_SURFACE_VISIBLE;
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.IS_SHOWING_OVERVIEW;
-import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.IS_SHOWING_STACK_TAB_SWITCHER;
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.TOP_MARGIN;
 
 import android.content.res.Resources;
@@ -441,60 +440,6 @@ public class StartSurfaceMediatorUnitTest {
     }
 
     @Test
-    public void showAndHideSingleSurfaceWithStackTabSwitcher() {
-        doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mFakeBoxDelegate).getVoiceRecognitionHandler();
-        doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
-
-        StartSurfaceMediator mediator =
-                createStartSurfaceMediator(SurfaceMode.SINGLE_PANE, /* excludeMVTiles= */ true,
-                        /* showStackTabSwitcher= */ false, /* hadWarmStart= */ false);
-        verify(mMainTabGridController)
-                .addOverviewModeObserver(mOverviewModeObserverCaptor.capture());
-
-        assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.NOT_SHOWN));
-        // Sets the current OvervieMoStartSurfaceStatedeState to SHOWING_START before calling the
-        // {@link StartSurfaceMediator#showOverview()}. This is because if the current
-        // StartSurfaceState is NOT_SHOWN, the state will be set default to SHOWING_TABSWITCHER in
-        // {@link StartSurfaceMediator#showOverview()}.
-        mediator.setOverviewState(StartSurfaceState.SHOWING_START);
-
-        mediator.showOverview(false);
-        verify(mMainTabGridController).showOverview(eq(false));
-        verify(mFakeBoxDelegate).addUrlFocusChangeListener(mUrlFocusChangeListenerCaptor.capture());
-        assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.SHOWN_HOMEPAGE));
-        assertThat(mPropertyModel.get(IS_INCOGNITO), equalTo(false));
-        assertThat(mPropertyModel.get(IS_VOICE_RECOGNITION_BUTTON_VISIBLE), equalTo(true));
-        assertThat(mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE), equalTo(true));
-        assertThat(mPropertyModel.get(MV_TILES_VISIBLE), equalTo(false));
-        assertThat(mPropertyModel.get(IS_SHOWING_OVERVIEW), equalTo(true));
-        assertThat(mPropertyModel.get(IS_SHOWING_STACK_TAB_SWITCHER), equalTo(false));
-        assertThat(mPropertyModel.get(TRENDY_TERMS_VISIBLE), equalTo(false));
-
-        mOverviewModeObserverCaptor.getValue().startedShowing();
-        mOverviewModeObserverCaptor.getValue().finishedShowing();
-
-        mUrlFocusChangeListenerCaptor.getValue().onUrlFocusChange(true);
-        assertThat(mPropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE), equalTo(false));
-        mUrlFocusChangeListenerCaptor.getValue().onUrlFocusChange(false);
-        assertThat(mPropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE), equalTo(true));
-        assertThat(mPropertyModel.get(IS_VOICE_RECOGNITION_BUTTON_VISIBLE), equalTo(true));
-        assertThat(mPropertyModel.get(IS_SHOWING_STACK_TAB_SWITCHER), equalTo(false));
-
-        mediator.hideOverview(true);
-        verify(mMainTabGridController).hideOverview(eq(true));
-
-        mOverviewModeObserverCaptor.getValue().startedHiding();
-        assertThat(mPropertyModel.get(IS_SHOWING_OVERVIEW), equalTo(false));
-        verify(mFakeBoxDelegate)
-                .removeUrlFocusChangeListener(mUrlFocusChangeListenerCaptor.getValue());
-
-        mOverviewModeObserverCaptor.getValue().finishedHiding();
-
-        // TODO(crbug.com/1020223): Test the other SurfaceMode.SINGLE_PANE operations.
-    }
-
-    @Test
     public void showAndHideTwoPanesSurface() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
         doReturn(mVoiceRecognitionHandler).when(mFakeBoxDelegate).getVoiceRecognitionHandler();
@@ -846,58 +791,6 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(mPropertyModel.get(MV_TILES_VISIBLE), equalTo(true));
         assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(true));
         assertThat(mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE), equalTo(false));
-
-        mediator.startedHiding();
-        assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.NOT_SHOWN));
-        assertThat(mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE), equalTo(false));
-    }
-
-    @Test
-    public void overviewModeStatesNormalModeSinglePaneStackTabSwitcher() {
-        doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mFakeBoxDelegate).getVoiceRecognitionHandler();
-        doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
-
-        StartSurfaceMediator mediator =
-                createStartSurfaceMediator(SurfaceMode.SINGLE_PANE, /* excludeMVTiles= */ true,
-                        /* showStackTabSwitcher= */ true, /* hadWarmStart= */ false);
-        assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.NOT_SHOWN));
-
-        doReturn(2).when(mNormalTabModel).getCount();
-        mediator.setOverviewState(StartSurfaceState.SHOWING_HOMEPAGE);
-        mediator.showOverview(false);
-        assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.SHOWN_HOMEPAGE));
-        assertThat(mPropertyModel.get(IS_SHOWING_OVERVIEW), equalTo(true));
-        assertThat(mPropertyModel.get(IS_INCOGNITO), equalTo(false));
-        assertThat(mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE), equalTo(true));
-        assertThat(mPropertyModel.get(MV_TILES_VISIBLE), equalTo(false));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(true));
-        assertThat(mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE), equalTo(false));
-        assertThat(mPropertyModel.get(IS_SHOWING_STACK_TAB_SWITCHER), equalTo(false));
-
-        mediator.setSecondaryTasksSurfacePropertyModel(mSecondaryTasksSurfacePropertyModel);
-        mediator.onClick(mock(View.class));
-        assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.SHOWN_TABSWITCHER));
-        assertThat(mPropertyModel.get(IS_SHOWING_OVERVIEW), equalTo(true));
-        assertThat(mPropertyModel.get(IS_INCOGNITO), equalTo(false));
-        assertThat(mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE), equalTo(false));
-        assertThat(mPropertyModel.get(MV_TILES_VISIBLE), equalTo(false));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(false));
-        assertThat(mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE), equalTo(true));
-        assertThat(mPropertyModel.get(IS_SHOWING_STACK_TAB_SWITCHER), equalTo(true));
-        assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE),
-                equalTo(false));
-        assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO), equalTo(false));
-
-        mediator.onBackPressed();
-        assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.SHOWN_HOMEPAGE));
-        assertThat(mPropertyModel.get(IS_SHOWING_OVERVIEW), equalTo(true));
-        assertThat(mPropertyModel.get(IS_INCOGNITO), equalTo(false));
-        assertThat(mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE), equalTo(true));
-        assertThat(mPropertyModel.get(MV_TILES_VISIBLE), equalTo(false));
-        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(true));
-        assertThat(mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE), equalTo(false));
-        assertThat(mPropertyModel.get(IS_SHOWING_STACK_TAB_SWITCHER), equalTo(false));
 
         mediator.startedHiding();
         assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.NOT_SHOWN));
@@ -1368,60 +1261,6 @@ public class StartSurfaceMediatorUnitTest {
     }
 
     @Test
-    public void setIncognitoDescriptionShowSinglePaneStackTabSwitcher() {
-        doReturn(false).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(mVoiceRecognitionHandler).when(mFakeBoxDelegate).getVoiceRecognitionHandler();
-        doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
-
-        StartSurfaceMediator mediator =
-                createStartSurfaceMediator(SurfaceMode.SINGLE_PANE, /* excludeMVTiles= */ true,
-                        /* showStackTabSwitcher= */ true, /* hadWarmStart= */ false);
-        mediator.setOverviewState(StartSurfaceState.SHOWING_HOMEPAGE);
-        mediator.showOverview(false);
-        verify(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
-
-        assertThat(mPropertyModel.get(IS_INCOGNITO_DESCRIPTION_INITIALIZED), equalTo(false));
-        assertThat(mPropertyModel.get(IS_INCOGNITO_DESCRIPTION_VISIBLE), equalTo(false));
-        assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO_DESCRIPTION_INITIALIZED),
-                equalTo(false));
-        assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO_DESCRIPTION_VISIBLE),
-                equalTo(false));
-
-        mediator.setSecondaryTasksSurfacePropertyModel(mSecondaryTasksSurfacePropertyModel);
-        doReturn(1).when(mIncognitoTabModel).getCount();
-        mTabModelSelectorObserverCaptor.getValue().onTabModelSelected(
-                mIncognitoTabModel, mNormalTabModel);
-        assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO_DESCRIPTION_INITIALIZED),
-                equalTo(true));
-        assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO_DESCRIPTION_VISIBLE),
-                equalTo(true));
-
-        mTabModelSelectorObserverCaptor.getValue().onTabModelSelected(
-                mNormalTabModel, mIncognitoTabModel);
-        assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO_DESCRIPTION_INITIALIZED),
-                equalTo(true));
-        assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO_DESCRIPTION_VISIBLE),
-                equalTo(false));
-
-        doReturn(0).when(mIncognitoTabModel).getCount();
-        mTabModelSelectorObserverCaptor.getValue().onTabModelSelected(
-                mIncognitoTabModel, mNormalTabModel);
-        assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO_DESCRIPTION_INITIALIZED),
-                equalTo(true));
-        assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO_DESCRIPTION_VISIBLE),
-                equalTo(true));
-
-        mTabModelSelectorObserverCaptor.getValue().onTabModelSelected(
-                mNormalTabModel, mIncognitoTabModel);
-        assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO_DESCRIPTION_INITIALIZED),
-                equalTo(true));
-        assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO_DESCRIPTION_VISIBLE),
-                equalTo(false));
-
-        mediator.hideOverview(true);
-    }
-
-    @Test
     public void showAndHideTabSwitcherToolbarHomePage() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
         doReturn(mVoiceRecognitionHandler).when(mFakeBoxDelegate).getVoiceRecognitionHandler();
@@ -1690,7 +1529,7 @@ public class StartSurfaceMediatorUnitTest {
 
         StartSurfaceMediator mediator = createStartSurfaceMediatorWithoutInit(
                 SurfaceMode.SINGLE_PANE, /* excludeMVTiles= */ false,
-                /* showStackTabSwitcher= */ false, /* hadWarmStart= */ false);
+                /* hadWarmStart= */ false);
         verify(mMainTabGridController)
                 .addOverviewModeObserver(mOverviewModeObserverCaptor.capture());
 
@@ -1721,13 +1560,13 @@ public class StartSurfaceMediatorUnitTest {
                 resources.getDimensionPixelSize(R.dimen.tab_switcher_title_top_margin);
 
         createStartSurfaceMediatorWithoutInit(SurfaceMode.OMNIBOX_ONLY, /* excludeMVTiles= */ false,
-                /* showStackTabSwitcher= */ false, /* hadWarmStart= */ false);
+                /* hadWarmStart= */ false);
         assertThat(mPropertyModel.get(TASKS_SURFACE_BODY_TOP_MARGIN), equalTo(0));
         assertThat(mPropertyModel.get(MV_TILES_CONTAINER_TOP_MARGIN), equalTo(0));
         assertThat(mPropertyModel.get(TAB_SWITCHER_TITLE_TOP_MARGIN), equalTo(0));
 
         createStartSurfaceMediatorWithoutInit(SurfaceMode.SINGLE_PANE, /* excludeMVTiles= */ false,
-                /* showStackTabSwitcher= */ false, /* hadWarmStart= */ false);
+                /* hadWarmStart= */ false);
         assertThat(mPropertyModel.get(TASKS_SURFACE_BODY_TOP_MARGIN),
                 equalTo(tasksSurfaceBodyTopMargin));
         assertThat(mPropertyModel.get(MV_TILES_CONTAINER_TOP_MARGIN),
@@ -1745,7 +1584,7 @@ public class StartSurfaceMediatorUnitTest {
         CachedFeatureFlags.setForTesting(INSTANT_START, true);
         StartSurfaceMediator mediator =
                 createStartSurfaceMediator(SurfaceMode.SINGLE_PANE, /* excludeMVTiles= */ false,
-                        /* showStackTabSwitcher= */ false, /* hadWarmStart= */ true);
+                        /* hadWarmStart= */ true);
         assertFalse(mediator.shouldShowFeedPlaceholder());
 
         mediator.setOverviewState(StartSurfaceState.SHOWING_HOMEPAGE);
@@ -1764,14 +1603,13 @@ public class StartSurfaceMediatorUnitTest {
 
     private StartSurfaceMediator createStartSurfaceMediator(
             @SurfaceMode int mode, boolean excludeMVTiles) {
-        return createStartSurfaceMediator(
-                mode, excludeMVTiles, /* showStackTabSwitcher= */ false, /* hadWarmStart= */ false);
+        return createStartSurfaceMediator(mode, excludeMVTiles, /* hadWarmStart= */ false);
     }
 
-    private StartSurfaceMediator createStartSurfaceMediator(@SurfaceMode int mode,
-            boolean excludeMVTiles, boolean showStackTabSwitcher, boolean hadWarmStart) {
-        StartSurfaceMediator mediator = createStartSurfaceMediatorWithoutInit(
-                mode, excludeMVTiles, showStackTabSwitcher, hadWarmStart);
+    private StartSurfaceMediator createStartSurfaceMediator(
+            @SurfaceMode int mode, boolean excludeMVTiles, boolean hadWarmStart) {
+        StartSurfaceMediator mediator =
+                createStartSurfaceMediatorWithoutInit(mode, excludeMVTiles, hadWarmStart);
         mediator.initWithNative(mFakeBoxDelegate,
                 (mode == SurfaceMode.SINGLE_PANE || mode == SurfaceMode.TWO_PANES)
                         ? mFeedSurfaceCreator
@@ -1780,14 +1618,13 @@ public class StartSurfaceMediatorUnitTest {
         return mediator;
     }
 
-    private StartSurfaceMediator createStartSurfaceMediatorWithoutInit(@SurfaceMode int mode,
-            boolean excludeMVTiles, boolean showStackTabSwitcher, boolean hadWarmStart) {
+    private StartSurfaceMediator createStartSurfaceMediatorWithoutInit(
+            @SurfaceMode int mode, boolean excludeMVTiles, boolean hadWarmStart) {
         StartSurfaceMediator mediator = new StartSurfaceMediator(mMainTabGridController,
                 mTabModelSelector, mode == SurfaceMode.NO_START_SURFACE ? null : mPropertyModel,
                 mode == SurfaceMode.SINGLE_PANE ? mSecondaryTasksSurfaceInitializer : null, mode,
                 ContextUtils.getApplicationContext(), mBrowserControlsStateProvider,
-                mActivityStateChecker, excludeMVTiles, showStackTabSwitcher, mStartSurfaceSupplier,
-                hadWarmStart);
+                mActivityStateChecker, excludeMVTiles, mStartSurfaceSupplier, hadWarmStart);
         return mediator;
     }
 }

@@ -603,8 +603,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         try (TraceEvent e = TraceEvent.scoped(
                      "ChromeTabbedActivity.setupCompositorContentPreNativeForPhone")) {
             CompositorViewHolder compositorViewHolder = getCompositorViewHolder();
-            if (TabUiFeatureUtilities.isGridTabSwitcherEnabled()
-                    || StartSurfaceConfiguration.isStartSurfaceStackTabSwitcherEnabled()) {
+            if (TabUiFeatureUtilities.isGridTabSwitcherEnabled()) {
                 TabManagementDelegate tabManagementDelegate =
                         TabManagementModuleProvider.getDelegate();
                 if (tabManagementDelegate != null) {
@@ -851,12 +850,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     @Override
     public void onResumeWithNative() {
         super.onResumeWithNative();
-
-        // Switch to non incognito tab model to show the non incognito start surface if needed.
-        if (StartSurfaceConfiguration.isStartSurfaceStackTabSwitcherEnabled() && isWarmOnResume()
-                && shouldShowTabSwitcherOnStart() && mTabModelSelectorImpl.isIncognitoSelected()) {
-            mTabModelSelectorImpl.selectModel(false);
-        }
 
         if (IncognitoUtils.shouldDestroyIncognitoProfileOnStartup(
                     getTabModelSelector().getCurrentModel().isIncognito())) {

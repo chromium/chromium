@@ -107,9 +107,6 @@ public class TabUiFeatureUtilities {
      * @return Whether the Grid Tab Switcher UI is enabled and available for use.
      */
     public static boolean isGridTabSwitcherEnabled() {
-        // Disable grid tab switcher if stack tab switcher is enabled for the start surface.
-        if (StartSurfaceConfiguration.isStartSurfaceStackTabSwitcherEnabled()) return false;
-
         // Disable grid tab switcher for tablet.
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(
                     ContextUtils.getApplicationContext())) {
@@ -127,9 +124,6 @@ public class TabUiFeatureUtilities {
      * @return Whether the tab group feature is enabled and available for use.
      */
     public static boolean isTabGroupsAndroidEnabled() {
-        // Disable tab groups if stack tab switcher is enabled for the start surface.
-        if (StartSurfaceConfiguration.isStartSurfaceStackTabSwitcherEnabled()) return false;
-
         // Disable tab group for tablet.
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(
                     ContextUtils.getApplicationContext())) {

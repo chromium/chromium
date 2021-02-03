@@ -26,7 +26,6 @@ import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.IS_EXPLORE_SURFACE_VISIBLE;
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.IS_SECONDARY_SURFACE_VISIBLE;
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.IS_SHOWING_OVERVIEW;
-import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.IS_SHOWING_STACK_TAB_SWITCHER;
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.RESET_FEED_SURFACE_SCROLL_POSITION;
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.TOP_MARGIN;
 
@@ -149,7 +148,6 @@ class StartSurfaceMediator
     private BrowserControlsStateProvider.Observer mBrowserControlsObserver;
     private ActivityStateChecker mActivityStateChecker;
     private boolean mExcludeMVTiles;
-    private boolean mShowStackTabSwitcher;
     private OneshotSupplier<StartSurface> mStartSurfaceSupplier;
     /**
      * Whether a pending observer needed be added to the normal TabModel after the TabModel is
@@ -176,8 +174,7 @@ class StartSurfaceMediator
             @SurfaceMode int surfaceMode, Context context,
             BrowserControlsStateProvider browserControlsStateProvider,
             ActivityStateChecker activityStateChecker, boolean excludeMVTiles,
-            boolean showStackTabSwitcher, OneshotSupplier<StartSurface> startSurfaceSupplier,
-            boolean hadWarmStart) {
+            OneshotSupplier<StartSurface> startSurfaceSupplier, boolean hadWarmStart) {
         mController = controller;
         mTabModelSelector = tabModelSelector;
         mPropertyModel = propertyModel;
@@ -187,7 +184,6 @@ class StartSurfaceMediator
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mActivityStateChecker = activityStateChecker;
         mExcludeMVTiles = excludeMVTiles;
-        mShowStackTabSwitcher = showStackTabSwitcher;
         mStartSurfaceSupplier = startSurfaceSupplier;
         mHadWarmStart = hadWarmStart;
 
@@ -482,8 +478,6 @@ class StartSurfaceMediator
     // setStartSurfaceStateInternal.
     private void setOverviewStateInternal() {
         if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
-            mPropertyModel.set(IS_SHOWING_STACK_TAB_SWITCHER, false);
-
             setExploreSurfaceVisibility(!mIsIncognito && mFeedSurfaceCreator != null);
             boolean hasNormalTab;
             if (CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START)
@@ -511,8 +505,6 @@ class StartSurfaceMediator
                 mPendingObserver = true;
             }
         } else if (mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER) {
-            mPropertyModel.set(IS_SHOWING_STACK_TAB_SWITCHER, mShowStackTabSwitcher);
-
             setTabCarouselVisibility(false);
             setMVTilesVisibility(false);
             setFakeBoxVisibility(false);
@@ -549,8 +541,8 @@ class StartSurfaceMediator
         }
 
         if (isShownState(mStartSurfaceState)) {
-            setIncognitoModeDescriptionVisibility(mIsIncognito
-                    && (mTabModelSelector.getModel(true).getCount() <= 0 || mShowStackTabSwitcher));
+            setIncognitoModeDescriptionVisibility(
+                    mIsIncognito && (mTabModelSelector.getModel(true).getCount() <= 0));
         }
     }
 
@@ -747,7 +739,7 @@ class StartSurfaceMediator
     public void onClick(View v) {
         assert mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE;
 
-        if (mSecondaryTasksSurfacePropertyModel == null && !mShowStackTabSwitcher) {
+        if (mSecondaryTasksSurfacePropertyModel == null) {
             mSecondaryTasksSurfaceController = mSecondaryTasksSurfaceInitializer.initialize();
             assert mSecondaryTasksSurfacePropertyModel != null;
         }
@@ -939,7 +931,7 @@ class StartSurfaceMediator
                         ? StartSurfaceState.SHOWN_HOMEPAGE
                         : mPreviousStartSurfaceState;
             } else if (mStartSurfaceState == StartSurfaceState.SHOWING_START) {
-                if (mTabModelSelector.isIncognitoSelected() && !mShowStackTabSwitcher) {
+                if (mTabModelSelector.isIncognitoSelected()) {
                     return StartSurfaceState.SHOWN_TABSWITCHER;
                 }
                 return StartSurfaceState.SHOWN_HOMEPAGE;

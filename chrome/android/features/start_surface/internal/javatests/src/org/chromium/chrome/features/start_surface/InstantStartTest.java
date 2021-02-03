@@ -93,7 +93,6 @@ import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.homepage.HomepageManager;
-import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
@@ -122,7 +121,6 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.OverviewModeBehaviorWatcher;
 import org.chromium.chrome.test.util.ViewUtils;
 import org.chromium.chrome.test.util.browser.Features;
@@ -498,8 +496,6 @@ public class InstantStartTest {
         Assert.assertEquals("single", StartSurfaceConfiguration.START_SURFACE_VARIATION.getValue());
         Assert.assertTrue(ReturnToChromeExperimentsUtil.shouldShowTabSwitcher(-1));
         Assert.assertTrue(StartSurfaceConfiguration.START_SURFACE_LAST_ACTIVE_TAB_ONLY.getValue());
-        Assert.assertFalse(
-                StartSurfaceConfiguration.START_SURFACE_SHOW_STACK_TAB_SWITCHER.getValue());
 
         mActivityTestRule.waitForActivityNativeInitializationComplete();
 
@@ -760,44 +756,6 @@ public class InstantStartTest {
 
         // TODO(crbug.com/1065314): fix login button animation in post-native rendering and
         //  make sure post-native single-tab card looks the same.
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"RenderTest"})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
-    // clang-format off
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_SEARCH_ENGINE_LOGO,
-        ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
-        ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
-    @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
-        "force-fieldtrials=Study/Group",
-        IMMEDIATE_RETURN_PARAMS +
-            "/start_surface_variation/single" +
-            "/exclude_mv_tiles/true" +
-            "/show_last_active_tab_only/true" +
-            "/show_stack_tab_switcher/true"})
-    @DisableIf.Build(message = "Flaky. See https://crbug.com/1170054",
-            sdk_is_less_than = Build.VERSION_CODES.O)
-    public void renderSingleAsHomepageV2_PageInfoIconShown()
-        throws IOException {
-        // clang-format on
-        startMainActivityFromLauncher();
-        Assert.assertTrue(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
-        CriteriaHelper.pollUiThread(
-                () -> mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
-
-        startAndWaitNativeInitialization();
-        waitForTabModel();
-
-        // Click on the search box. Omnibox should show up.
-        onView(withId(R.id.search_box_text)).perform(click());
-        UrlBar urlBar = (UrlBar) mActivityTestRule.getActivity().findViewById(R.id.url_bar);
-        OmniboxTestUtils.waitForFocusAndKeyboardActive(urlBar, true);
-
-        View surface = mActivityTestRule.getActivity().findViewById(R.id.location_bar);
-        ChromeRenderTestRule.sanitize(surface);
-        mRenderTestRule.render(surface, "singleV2_omniboxClickedShowLogo");
     }
 
     @Test

@@ -13,7 +13,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
@@ -105,13 +104,10 @@ public interface TabManagementDelegate {
      * @param updateHost The parent {@link LayoutUpdateHost}.
      * @param renderHost The parent {@link LayoutRenderHost}.
      * @param startSurface The {@link StartSurface} the layout should own.
-     * @param browserControlsStateProviderSupplier The {@link ObservableSupplier} for
-     *                                             {@link BrowserControlsStateProvider}.
      * @return The {@link StartSurfaceLayout}.
      */
     Layout createStartSurfaceLayout(Context context, LayoutUpdateHost updateHost,
-            LayoutRenderHost renderHost, StartSurface startSurface,
-            ObservableSupplier<BrowserControlsStateProvider> browserControlsStateProviderSupplier);
+            LayoutRenderHost renderHost, StartSurface startSurface);
 
     /**
      * Create the {@link StartSurface}

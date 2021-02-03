@@ -81,10 +81,6 @@ public class StartSurfaceToolbarCoordinator {
                                 isGridTabSwitcherEnabled)
                         .build();
 
-        // START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB and START_SURFACE_SHOW_STACK_TAB_SWITCHER
-        // should not be both true.
-        assert !(StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB.getValue()
-                && StartSurfaceConfiguration.START_SURFACE_SHOW_STACK_TAB_SWITCHER.getValue());
         mToolbarMediator = new StartSurfaceToolbarMediator(mPropertyModel,
                 (iphCommandBuilder)
                         -> {
@@ -96,7 +92,6 @@ public class StartSurfaceToolbarCoordinator {
                 },
                 StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB.getValue(),
                 StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH.getValue(),
-                StartSurfaceConfiguration.START_SURFACE_SHOW_STACK_TAB_SWITCHER.getValue(),
                 menuButtonCoordinator, identityDiscStateSupplier, identityDiscButtonSupplier);
 
         mThemeColorProvider = provider;
@@ -264,26 +259,6 @@ public class StartSurfaceToolbarCoordinator {
         if (LibraryLoader.getInstance().isInitialized()) {
             maybeCreateIncognitoSwitchCoordinator();
         }
-
-        if (StartSurfaceConfiguration.START_SURFACE_SHOW_STACK_TAB_SWITCHER.getValue()) {
-            mTabSwitcherButtonView = mView.findViewById(R.id.start_tab_switcher_button);
-            if (mTabSwitcherLongClickListener != null) {
-                mTabSwitcherButtonView.setOnLongClickListener(mTabSwitcherLongClickListener);
-                mTabSwitcherLongClickListener = null;
-            }
-            mTabSwitcherButtonCoordinator =
-                    new TabSwitcherButtonCoordinator(mTabSwitcherButtonView);
-            mTabSwitcherButtonCoordinator.setThemeColorProvider(mThemeColorProvider);
-            mTabSwitcherButtonView.setVisibility(View.VISIBLE);
-            if (mTabCountProvider != null) {
-                mTabSwitcherButtonCoordinator.setTabCountProvider(mTabCountProvider);
-                mTabCountProvider = null;
-            }
-            if (mTabSwitcherClickListener != null) {
-                mTabSwitcherButtonCoordinator.setTabSwitcherListener(mTabSwitcherClickListener);
-                mTabSwitcherClickListener = null;
-            }
-        }
     }
 
     private void maybeCreateIncognitoSwitchCoordinator() {
@@ -291,8 +266,7 @@ public class StartSurfaceToolbarCoordinator {
             return;
         }
 
-        if (IncognitoUtils.isIncognitoModeEnabled()
-                && !StartSurfaceConfiguration.START_SURFACE_SHOW_STACK_TAB_SWITCHER.getValue()) {
+        if (IncognitoUtils.isIncognitoModeEnabled()) {
             boolean visible =
                     !StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB.getValue()
                     && !StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH.getValue();

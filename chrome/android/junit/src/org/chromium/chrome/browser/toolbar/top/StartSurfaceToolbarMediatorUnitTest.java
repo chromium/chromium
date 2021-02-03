@@ -588,8 +588,8 @@ public class StartSurfaceToolbarMediatorUnitTest {
     }
 
     @Test
-    public void testShowAndHideHomePageWithNewTabAndIdentityDiscAtStart() {
-        createMediator(false, false, true);
+    public void testShowAndHideHomePage() {
+        createMediator(false, false);
         mMediator.setTabModelSelector(mTabModelSelector);
         doReturn(0).when(mIncognitoTabModel).getCount();
 
@@ -599,7 +599,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
         assertEquals(mPropertyModel.get(LOGO_IS_VISIBLE), false);
         assertEquals(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE), false);
         assertEquals(mPropertyModel.get(IDENTITY_DISC_AT_START), false);
-        assertEquals(mPropertyModel.get(INCOGNITO_SWITCHER_VISIBLE), false);
+        assertEquals(mPropertyModel.get(INCOGNITO_SWITCHER_VISIBLE), true);
         assertEquals(mPropertyModel.get(NEW_TAB_BUTTON_AT_START), false);
         assertEquals(mPropertyModel.get(IN_START_SURFACE_MODE), false);
         assertEquals(mPropertyModel.get(IS_VISIBLE), true);
@@ -608,7 +608,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
         assertEquals(mPropertyModel.get(LOGO_IS_VISIBLE), false);
         assertEquals(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE), false);
         assertEquals(mPropertyModel.get(IDENTITY_DISC_AT_START), false);
-        assertEquals(mPropertyModel.get(INCOGNITO_SWITCHER_VISIBLE), false);
+        assertEquals(mPropertyModel.get(INCOGNITO_SWITCHER_VISIBLE), true);
         assertEquals(mPropertyModel.get(NEW_TAB_BUTTON_AT_START), false);
         assertEquals(mPropertyModel.get(IN_START_SURFACE_MODE), true);
         assertEquals(mPropertyModel.get(IS_VISIBLE), true);
@@ -618,9 +618,9 @@ public class StartSurfaceToolbarMediatorUnitTest {
         mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_HOMEPAGE, true);
         assertEquals(mPropertyModel.get(LOGO_IS_VISIBLE), false);
         assertEquals(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE), false);
-        assertEquals(mPropertyModel.get(IDENTITY_DISC_AT_START), true);
-        assertEquals(mPropertyModel.get(INCOGNITO_SWITCHER_VISIBLE), false);
-        assertEquals(mPropertyModel.get(NEW_TAB_BUTTON_AT_START), true);
+        assertEquals(mPropertyModel.get(IDENTITY_DISC_AT_START), false);
+        assertEquals(mPropertyModel.get(INCOGNITO_SWITCHER_VISIBLE), true);
+        assertEquals(mPropertyModel.get(NEW_TAB_BUTTON_AT_START), false);
         assertEquals(mPropertyModel.get(IN_START_SURFACE_MODE), true);
         assertEquals(mPropertyModel.get(IS_VISIBLE), true);
 
@@ -633,16 +633,16 @@ public class StartSurfaceToolbarMediatorUnitTest {
         mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_HOMEPAGE, true);
         assertEquals(mPropertyModel.get(LOGO_IS_VISIBLE), false);
         assertEquals(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE), false);
-        assertEquals(mPropertyModel.get(IDENTITY_DISC_AT_START), true);
-        assertEquals(mPropertyModel.get(INCOGNITO_SWITCHER_VISIBLE), false);
-        assertEquals(mPropertyModel.get(NEW_TAB_BUTTON_AT_START), true);
+        assertEquals(mPropertyModel.get(IDENTITY_DISC_AT_START), false);
+        assertEquals(mPropertyModel.get(INCOGNITO_SWITCHER_VISIBLE), true);
+        assertEquals(mPropertyModel.get(NEW_TAB_BUTTON_AT_START), false);
         assertEquals(mPropertyModel.get(IN_START_SURFACE_MODE), true);
         assertEquals(mPropertyModel.get(IS_VISIBLE), true);
     }
 
     @Test
-    public void testShowAndHideTabSwitcherWithNewTabAndIdentityDiscAtStart() {
-        createMediator(false, false, true);
+    public void testShowAndHideTabSwitcher() {
+        createMediator(false, false);
         mMediator.setTabModelSelector(mTabModelSelector);
         doReturn(0).when(mIncognitoTabModel).getCount();
         mMediator.onNativeLibraryReady();
@@ -651,7 +651,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
         assertEquals(mPropertyModel.get(LOGO_IS_VISIBLE), false);
         assertEquals(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE), false);
         assertEquals(mPropertyModel.get(IDENTITY_DISC_AT_START), false);
-        assertEquals(mPropertyModel.get(INCOGNITO_SWITCHER_VISIBLE), false);
+        assertEquals(mPropertyModel.get(INCOGNITO_SWITCHER_VISIBLE), true);
         assertEquals(mPropertyModel.get(NEW_TAB_BUTTON_AT_START), false);
         assertEquals(mPropertyModel.get(IS_VISIBLE), true);
         assertEquals(mPropertyModel.get(IN_START_SURFACE_MODE), false);
@@ -660,7 +660,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
         assertEquals(mPropertyModel.get(LOGO_IS_VISIBLE), false);
         assertEquals(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE), false);
         assertEquals(mPropertyModel.get(IDENTITY_DISC_AT_START), false);
-        assertEquals(mPropertyModel.get(INCOGNITO_SWITCHER_VISIBLE), false);
+        assertEquals(mPropertyModel.get(INCOGNITO_SWITCHER_VISIBLE), true);
         assertEquals(mPropertyModel.get(NEW_TAB_BUTTON_AT_START), false);
         assertEquals(mPropertyModel.get(IS_VISIBLE), true);
         assertEquals(mPropertyModel.get(IN_START_SURFACE_MODE), true);
@@ -670,9 +670,9 @@ public class StartSurfaceToolbarMediatorUnitTest {
         mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_TABSWITCHER, true);
         assertEquals(mPropertyModel.get(LOGO_IS_VISIBLE), false);
         assertEquals(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE), false);
-        assertEquals(mPropertyModel.get(IDENTITY_DISC_AT_START), true);
-        assertEquals(mPropertyModel.get(INCOGNITO_SWITCHER_VISIBLE), false);
-        assertEquals(mPropertyModel.get(NEW_TAB_BUTTON_AT_START), true);
+        assertEquals(mPropertyModel.get(IDENTITY_DISC_AT_START), false);
+        assertEquals(mPropertyModel.get(INCOGNITO_SWITCHER_VISIBLE), true);
+        assertEquals(mPropertyModel.get(NEW_TAB_BUTTON_AT_START), false);
         assertEquals(mPropertyModel.get(IS_VISIBLE), true);
 
         mMediator.updateIdentityDisc(mButtonData);
@@ -687,31 +687,22 @@ public class StartSurfaceToolbarMediatorUnitTest {
         mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_TABSWITCHER, true);
         assertEquals(mPropertyModel.get(LOGO_IS_VISIBLE), false);
         assertEquals(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE), false);
-        assertEquals(mPropertyModel.get(IDENTITY_DISC_AT_START), true);
-        assertEquals(mPropertyModel.get(INCOGNITO_SWITCHER_VISIBLE), false);
-        assertEquals(mPropertyModel.get(NEW_TAB_BUTTON_AT_START), true);
+        assertEquals(mPropertyModel.get(IDENTITY_DISC_AT_START), false);
+        assertEquals(mPropertyModel.get(INCOGNITO_SWITCHER_VISIBLE), true);
+        assertEquals(mPropertyModel.get(NEW_TAB_BUTTON_AT_START), false);
         assertEquals(mPropertyModel.get(IS_VISIBLE), true);
     }
 
     private void createMediator(
             boolean hideIncognitoSwitchWhenNoTabs, boolean hideIncognitoSwitchOnHomePage) {
-        createMediator(hideIncognitoSwitchWhenNoTabs, hideIncognitoSwitchOnHomePage, false);
-    }
-
-    private void createMediator(boolean hideIncognitoSwitchWhenNoTabs,
-            boolean hideIncognitoSwitchOnHomePage, boolean showNewTabAndIdentityDiscAtStart) {
         mMediator = new StartSurfaceToolbarMediator(mPropertyModel, mMockCallback,
                 hideIncognitoSwitchWhenNoTabs, hideIncognitoSwitchOnHomePage,
-                showNewTabAndIdentityDiscAtStart, mMenuButtonCoordinator,
-                mIdentityDiscStateSupplier,
+                mMenuButtonCoordinator, mIdentityDiscStateSupplier,
                 ()
                         -> mIdentityDiscController.getForStartSurface(
                                 mMediator.getOverviewModeStateForTesting()));
 
         mMediator.setLayoutStateProvider(mLayoutStateProvider);
         verify(mLayoutStateProvider).addObserver(mLayoutStateObserverCaptor.capture());
-        if (showNewTabAndIdentityDiscAtStart) {
-            mPropertyModel.set(INCOGNITO_SWITCHER_VISIBLE, false);
-        }
     }
 }

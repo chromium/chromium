@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.toolbar.top;
 
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.ACCESSIBILITY_ENABLED;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.BUTTONS_CLICKABLE;
-import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IDENTITY_DISC_AT_START;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IDENTITY_DISC_CLICK_HANDLER;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IDENTITY_DISC_DESCRIPTION;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IDENTITY_DISC_IMAGE;
@@ -53,7 +52,6 @@ class StartSurfaceToolbarMediator {
     private final Callback<IPHCommandBuilder> mShowIPHCallback;
     private final boolean mHideIncognitoSwitchWhenNoTabs;
     private final boolean mHideIncognitoSwitchOnHomePage;
-    private final boolean mShowNewTabAndIdentityDiscAtStart;
     private final Supplier<ButtonData> mIdentityDiscButtonSupplier;
 
     private TabModelSelector mTabModelSelector;
@@ -71,7 +69,7 @@ class StartSurfaceToolbarMediator {
 
     StartSurfaceToolbarMediator(PropertyModel model, Callback<IPHCommandBuilder> showIPHCallback,
             boolean hideIncognitoSwitchWhenNoTabs, boolean hideIncognitoSwitchOnHomePage,
-            boolean showNewTabAndIdentityDiscAtStart, MenuButtonCoordinator menuButtonCoordinator,
+            MenuButtonCoordinator menuButtonCoordinator,
             ObservableSupplier<Boolean> identityDiscStateSupplier,
             Supplier<ButtonData> identityDiscButtonSupplier) {
         mPropertyModel = model;
@@ -79,7 +77,6 @@ class StartSurfaceToolbarMediator {
         mShowIPHCallback = showIPHCallback;
         mHideIncognitoSwitchWhenNoTabs = hideIncognitoSwitchWhenNoTabs;
         mHideIncognitoSwitchOnHomePage = hideIncognitoSwitchOnHomePage;
-        mShowNewTabAndIdentityDiscAtStart = showNewTabAndIdentityDiscAtStart;
         mMenuButtonCoordinator = menuButtonCoordinator;
         mIdentityDiscButtonSupplier = identityDiscButtonSupplier;
         identityDiscStateSupplier.addObserver((canShowHint) -> {
@@ -168,8 +165,8 @@ class StartSurfaceToolbarMediator {
     }
 
     private void updateIncognitoSwitchVisibility() {
-        if (mOverviewModeState == StartSurfaceState.SHOWN_HOMEPAGE && mHideIncognitoSwitchOnHomePage
-                || mShowNewTabAndIdentityDiscAtStart) {
+        if (mOverviewModeState == StartSurfaceState.SHOWN_HOMEPAGE
+                && mHideIncognitoSwitchOnHomePage) {
             mPropertyModel.set(INCOGNITO_SWITCHER_VISIBLE, false);
             return;
         }
@@ -222,12 +219,8 @@ class StartSurfaceToolbarMediator {
                     updateIncognitoSwitchVisibility();
                     if (mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER_OMNIBOX_ONLY
                             || mOverviewModeState
-                                    == StartSurfaceState.SHOWN_TABSWITCHER_TRENDY_TERMS
-                            || mShowNewTabAndIdentityDiscAtStart) {
+                                    == StartSurfaceState.SHOWN_TABSWITCHER_TRENDY_TERMS) {
                         mPropertyModel.set(NEW_TAB_BUTTON_AT_START, true);
-                    }
-                    if (mShowNewTabAndIdentityDiscAtStart) {
-                        mPropertyModel.set(IDENTITY_DISC_AT_START, true);
                     }
                 }
             }

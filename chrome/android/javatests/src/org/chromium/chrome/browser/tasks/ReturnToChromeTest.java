@@ -268,44 +268,6 @@ public class ReturnToChromeTest {
     }
 
     /**
-     * Test that overview mode is triggered in Single-pane stack tab switcher variation in non
-     * incognito mode when resuming from incognito mode.
-     */
-    @Test
-    @SmallTest
-    @Feature({"ReturnToChrome"})
-    // clang-format off
-    @CommandLineFlags.Add({BASE_PARAMS + "/" + TAB_SWITCHER_ON_RETURN_MS_PARAM + "/0"
-            + "/start_surface_variation/single/show_last_active_tab_only/true"
-            + "/show_stack_tab_switcher/true/open_ntp_instead_of_start/true"})
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // See https://crbug.com/1081754.
-    public void testTabSwitcherModeTriggeredWithinThreshold_WarmStart_FromIncognito_V2() throws Exception {
-        // clang-format on
-
-        // TODO(crbug.com/1093506): Remove it when instant start supports 'show_stack_tab_switcher =
-        // true'.
-        assumeFalse(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
-
-        testTabSwitcherModeTriggeredBeyondThreshold();
-
-        ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(),
-                mActivityTestRule.getActivity(), true, true);
-        Assert.assertTrue(
-                mActivityTestRule.getActivity().getTabModelSelector().isIncognitoSelected());
-        assertEquals(3, mActivityTestRule.getActivity().getTabModelSelector().getTotalTabCount());
-
-        // Trigger hide and resume.
-        ChromeApplicationTestUtils.fireHomeScreenIntent(InstrumentationRegistry.getTargetContext());
-        mActivityTestRule.resumeMainActivityFromLauncher();
-
-        CriteriaHelper.pollUiThread(() -> {
-            return !mActivityTestRule.getActivity().getTabModelSelector().isIncognitoSelected();
-        });
-        assertEquals(3, mActivityTestRule.getActivity().getTabModelSelector().getTotalTabCount());
-        Assert.assertTrue(mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
-    }
-
-    /**
      * Test that overview mode is triggered in Single-pane non stack tab switcher variation in
      * incognito mode when resuming from incognito mode.
      */
