@@ -64,9 +64,15 @@ IN_PROC_BROWSER_TEST_F(LoginUIShelfVisibilityTest, GaiaDialogOpen) {
   EXPECT_FALSE(ash::LoginScreenTestApi::IsEnterpriseEnrollmentButtonShown());
 }
 
+// This test times out on msan bots: http://crbug.com/1173801
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_PostLoginScreen DISABLED_PostLoginScreen
+#else
+#define MAYBE_PostLoginScreen PostLoginScreen
+#endif
 // Verifies that guest button and add user button are hidden on post-login
 // screens, after a user session is started.
-IN_PROC_BROWSER_TEST_F(LoginUIShelfVisibilityTest, PostLoginScreen) {
+IN_PROC_BROWSER_TEST_F(LoginUIShelfVisibilityTest, MAYBE_PostLoginScreen) {
   auto autoreset = WizardController::ForceBrandedBuildForTesting(true);
   EXPECT_TRUE(ash::LoginScreenTestApi::ClickAddUserButton());
   test::OobeGaiaPageWaiter().WaitUntilReady();
