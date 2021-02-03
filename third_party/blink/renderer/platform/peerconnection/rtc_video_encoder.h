@@ -52,9 +52,8 @@ class PLATFORM_EXPORT RTCVideoEncoder : public webrtc::VideoEncoder {
 
   // webrtc::VideoEncoder implementation.  Tasks are posted to |impl_| using the
   // appropriate VEA methods.
-  int32_t InitEncode(const webrtc::VideoCodec* codec_settings,
-                     int32_t number_of_cores,
-                     size_t max_payload_size) override;
+  int InitEncode(const webrtc::VideoCodec* codec_settings,
+                 const webrtc::VideoEncoder::Settings& settings) override;
   int32_t Encode(
       const webrtc::VideoFrame& input_image,
       const std::vector<webrtc::VideoFrameType>* frame_types) override;

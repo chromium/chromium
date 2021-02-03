@@ -932,6 +932,7 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
       bool key_frame =
           image._frameType == webrtc::VideoFrameType::kVideoFrameKey;
       webrtc::CodecSpecificInfoVP9& vp9 = info.codecSpecific.VP9;
+      info.end_of_picture = true;
       if (metadata.vp9) {
         // Temporal layer stream.
         vp9.first_frame_in_picture = true;
@@ -945,7 +946,6 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
         vp9.num_ref_pics = metadata.vp9->p_diffs.size();
         for (size_t i = 0; i < metadata.vp9->p_diffs.size(); ++i)
           vp9.p_diff[i] = metadata.vp9->p_diffs[i];
-        vp9.end_of_picture = true;
         vp9.ss_data_available = key_frame;
         vp9.first_active_layer = 0u;
         vp9.spatial_layer_resolution_present = true;
@@ -961,7 +961,6 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
         vp9.gof_idx = 0;
         vp9.num_spatial_layers = 1;
         vp9.first_frame_in_picture = true;
-        vp9.end_of_picture = true;
         vp9.spatial_layer_resolution_present = false;
         vp9.inter_pic_predicted = !key_frame;
         vp9.ss_data_available = key_frame;
@@ -1305,9 +1304,9 @@ RTCVideoEncoder::~RTCVideoEncoder() {
   DCHECK(!impl_.get());
 }
 
-int32_t RTCVideoEncoder::InitEncode(const webrtc::VideoCodec* codec_settings,
-                                    int32_t number_of_cores,
-                                    size_t max_payload_size) {
+int32_t RTCVideoEncoder::InitEncode(
+    const webrtc::VideoCodec* codec_settings,
+    const webrtc::VideoEncoder::Settings& settings) {
   DVLOG(1) << __func__ << " codecType=" << codec_settings->codecType
            << ", width=" << codec_settings->width
            << ", height=" << codec_settings->height
