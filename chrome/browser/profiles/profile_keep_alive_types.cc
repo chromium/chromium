@@ -35,6 +35,8 @@ std::ostream& operator<<(std::ostream& out,
       return out << "kInFlightPushMessage";
     case ProfileKeepAliveOrigin::kSessionRestore:
       return out << "kSessionRestore";
+    case ProfileKeepAliveOrigin::kChromeViewsDelegate:
+      return out << "kChromeViewsDelegate";
   }
   NOTREACHED();
   return out << static_cast<int>(origin);

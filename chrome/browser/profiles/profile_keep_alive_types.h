@@ -64,7 +64,11 @@ enum class ProfileKeepAliveOrigin {
   // Session restore in progress.
   kSessionRestore = 12,
 
-  kMaxValue = kSessionRestore,
+  // Views wants to keep the BrowserProcess (and Profile) alive, e.g. because
+  // a dropdown menu is active.
+  kChromeViewsDelegate = 13,
+
+  kMaxValue = kChromeViewsDelegate,
 };
 
 std::ostream& operator<<(std::ostream& out,

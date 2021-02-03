@@ -17,7 +17,9 @@
 #include "build/chromeos_buildflags.h"
 #include "ui/views/views_delegate.h"
 
+class Profile;
 class ScopedKeepAlive;
+class ScopedProfileKeepAlive;
 
 class ChromeViewsDelegate : public views::ViewsDelegate {
  public:
@@ -91,7 +93,13 @@ class ChromeViewsDelegate : public views::ViewsDelegate {
   // to do that translation.
   unsigned int ref_count_ = 0u;
 
+  // Prevents BrowserProcess teardown while |ref_count_| is non-zero.
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
+
+  // Prevents Profile* deletion while |ref_count_| is non-zero. See the
+  // DestroyProfileOnBrowserClose flag.
+  std::map<Profile*, std::unique_ptr<ScopedProfileKeepAlive>>
+      profile_keep_alives_;
 
 #if defined(OS_WIN)
   AppbarAutohideEdgeMap appbar_autohide_edge_map_;
