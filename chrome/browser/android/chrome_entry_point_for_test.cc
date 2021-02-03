@@ -15,6 +15,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/network_service_test_helper.h"
 #include "sandbox/policy/switches.h"
+#include "services/network/public/mojom/network_service.mojom.h"
 
 namespace {
 
@@ -30,9 +31,8 @@ bool NativeInit(base::android::LibraryProcessType) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->GetSwitchValueASCII(switches::kProcessType) ==
           switches::kUtilityProcess &&
-      command_line->GetSwitchValueASCII(
-          sandbox::policy::switches::kServiceSandboxType) ==
-          sandbox::policy::switches::kNetworkSandbox) {
+      command_line->GetSwitchValueASCII(switches::kUtilitySubType) ==
+          network::mojom::NetworkService::Name_) {
     ChromeContentUtilityClient::SetNetworkBinderCreationCallback(base::BindOnce(
         [](content::NetworkServiceTestHelper* helper,
            service_manager::BinderRegistry* registry) {

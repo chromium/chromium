@@ -10,6 +10,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/common/content_client.h"
+#include "sandbox/policy/features.h"
 #include "sandbox/policy/sandbox_type.h"
 
 // This file maps service classes to sandbox types.  Services which
@@ -51,7 +52,14 @@ class NetworkService;
 template <>
 inline sandbox::policy::SandboxType
 content::GetServiceSandboxType<network::mojom::NetworkService>() {
+#if defined(OS_MAC)
   return sandbox::policy::SandboxType::kNetwork;
+#else
+  return base::FeatureList::IsEnabled(
+             sandbox::policy::features::kNetworkServiceSandbox)
+             ? sandbox::policy::SandboxType::kNetwork
+             : sandbox::policy::SandboxType::kNoSandbox;
+#endif  // defined(OS_MAC)
 }
 
 // device::mojom::XRDeviceService

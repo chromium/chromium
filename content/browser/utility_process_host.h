@@ -79,8 +79,6 @@ class CONTENT_EXPORT UtilityProcessHost
   // SandboxType::kNoSandbox is specified.
   void SetSandboxType(sandbox::policy::SandboxType sandbox_type);
 
-  sandbox::policy::SandboxType sandbox_type() const { return sandbox_type_; }
-
   // Returns information about the utility child process.
   const ChildProcessData& GetData();
 #if defined(OS_POSIX)

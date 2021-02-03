@@ -40,6 +40,10 @@
 #include "ui/base/ui_base_switches.h"
 #include "ui/gl/gl_switches.h"
 
+#if defined(OS_ANDROID)
+#include "services/network/public/mojom/network_service.mojom.h"
+#endif
+
 #if defined(OS_MAC)
 #include "components/os_crypt/os_crypt_switches.h"
 #endif
@@ -173,7 +177,7 @@ bool UtilityProcessHost::StartProcess() {
     // not needed on Android anyway. See crbug.com/500854.
     std::unique_ptr<base::CommandLine> cmd_line =
         std::make_unique<base::CommandLine>(base::CommandLine::NO_PROGRAM);
-    if (sandbox_type_ == sandbox::policy::SandboxType::kNetwork &&
+    if (metrics_name_ == network::mojom::NetworkService::Name_ &&
         base::FeatureList::IsEnabled(features::kWarmUpNetworkProcess)) {
       process_->EnableWarmUpConnection();
     }

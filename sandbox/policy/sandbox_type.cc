@@ -41,11 +41,7 @@ bool IsUnsandboxedSandboxType(SandboxType sandbox_type) {
       return true;
 #endif
     case SandboxType::kNetwork:
-#if defined(OS_MAC)
       return false;
-#else
-      return !base::FeatureList::IsEnabled(features::kNetworkServiceSandbox);
-#endif  // defined(OS_MAC)
     case SandboxType::kRenderer:
     case SandboxType::kUtility:
     case SandboxType::kGpu:

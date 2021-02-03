@@ -21,6 +21,7 @@
 #include "content/public/browser/browser_child_process_host_iterator.h"
 #include "content/public/common/process_type.h"
 #include "net/url_request/url_fetcher.h"
+#include "services/network/public/mojom/network_service.mojom.h"
 
 #if defined(OS_ANDROID)
 #include "base/android/jni_android.h"
@@ -159,10 +160,8 @@ void BrowserProcessSubThread::IOThreadCleanUp() {
 
   for (BrowserChildProcessHostIterator it(PROCESS_TYPE_UTILITY); !it.Done();
        ++it) {
-    UtilityProcessHost* utility_process =
-        static_cast<UtilityProcessHost*>(it.GetDelegate());
-    if (utility_process->sandbox_type() ==
-        sandbox::policy::SandboxType::kNetwork) {
+    if (it.GetDelegate()->GetServiceName() ==
+        network::mojom::NetworkService::Name_) {
       // This ensures that cookies and cache are flushed to disk on shutdown.
       // https://crbug.com/841001
 #if BUILDFLAG(CLANG_PROFILING)
