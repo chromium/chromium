@@ -179,6 +179,8 @@ constexpr char kOobeContentDialogHTML[] = "components/oobe_content_dialog.html";
 constexpr char kOobeContentDialogJS[] = "components/oobe_content_dialog.js";
 constexpr char kOobeDialogHTML[] = "components/oobe_dialog.html";
 constexpr char kOobeDialogJS[] = "components/oobe_dialog.js";
+constexpr char kOobeLoadingDialogHTML[] = "components/oobe_loading_dialog.html";
+constexpr char kOobeLoadingDialogJS[] = "components/oobe_loading_dialog.js";
 constexpr char kOobeCarouselHTML[] = "components/oobe_carousel.html";
 constexpr char kOobeCarouselJS[] = "components/oobe_carousel.js";
 constexpr char kOobeSlideHTML[] = "components/oobe_slide.html";
@@ -709,6 +711,10 @@ void OobeUI::AddOobeComponents(content::WebUIDataSource* source,
   source->AddResourcePath(kOobeDialogHTML,
                           IDR_OOBE_COMPONENTS_OOBE_DIALOG_HTML);
   source->AddResourcePath(kOobeDialogJS, IDR_OOBE_COMPONENTS_OOBE_DIALOG_JS);
+  source->AddResourcePath(kOobeLoadingDialogHTML,
+                          IDR_OOBE_COMPONENTS_OOBE_LOADING_DIALOG_HTML);
+  source->AddResourcePath(kOobeLoadingDialogJS,
+                          IDR_OOBE_COMPONENTS_OOBE_LOADING_DIALOG_JS);
 
   if (features::IsNewOobeLayoutEnabled()) {
     source->AddResourcePath(kOobeCustomVarsCssHTML,

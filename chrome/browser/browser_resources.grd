@@ -60,6 +60,9 @@
 
         <structure name="IDR_OOBE_COMPONENTS_OOBE_DIALOG_HTML" file="resources/chromeos/login/components/oobe_dialog/oobe_dialog.html" type="chrome_html" />
         <structure name="IDR_OOBE_COMPONENTS_OOBE_DIALOG_JS" file="resources/chromeos/login/components/oobe_dialog/oobe_dialog.js" type="chrome_html" />
+        <structure name="IDR_OOBE_COMPONENTS_OOBE_LOADING_DIALOG_HTML" file="resources/chromeos/login/components/oobe_loading_dialog/oobe_loading_dialog.html" type="chrome_html" />
+        <structure name="IDR_OOBE_COMPONENTS_OOBE_LOADING_DIALOG_JS" file="resources/chromeos/login/components/oobe_loading_dialog/oobe_loading_dialog.js" type="chrome_html" />
+
 
         <!-- New layout (oobe_adaptive_dialog and oobe_content_dialog) corresponds OOBE redesign which has happened in November 2020 -->
         <structure name="IDR_OOBE_COMPONENTS_OOBE_ADAPTIVE_DIALOG_HTML" file="resources/chromeos/login/components/oobe_adaptive_dialog/oobe_adaptive_dialog.html" type="chrome_html" />
