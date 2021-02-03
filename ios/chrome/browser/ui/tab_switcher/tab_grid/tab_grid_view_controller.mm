@@ -1053,7 +1053,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self.plusSignButton = plusSignButton;
   plusSignButton.translatesAutoresizingMaskIntoConstraints = NO;
   [plusSignButton addTarget:self
-                     action:@selector(newTabButtonTapped:)
+                     action:@selector(plusSignButtonTapped:)
            forControlEvents:UIControlEventTouchUpInside];
   [self.view addSubview:plusSignButton];
 
@@ -1617,6 +1617,22 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     case TabGridPageRegularTabs:
       base::RecordAction(
           base::UserMetricsAction("MobileTabGridCreateRegularTab"));
+      break;
+    case TabGridPageRemoteTabs:
+      // No-op.
+      break;
+  }
+}
+
+- (void)plusSignButtonTapped:(id)sender {
+  switch (self.currentPage) {
+    case TabGridPageRegularTabs:
+      [self.regularTabsDelegate addNewItem];
+      // TODO(crbug.com/1135329): Record when a new regular tab is opened.
+      break;
+    case TabGridPageIncognitoTabs:
+      [self.incognitoTabsDelegate addNewItem];
+      // TODO(crbug.com/1135329): Record when a new incognito tab is opened.
       break;
     case TabGridPageRemoteTabs:
       // No-op.
