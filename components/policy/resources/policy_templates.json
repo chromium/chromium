@@ -2413,11 +2413,11 @@
       'items': [
         {
           'value': True,
-          'caption': 'Managed Guest Session users can store device-wide display settings.',
+          'caption': 'Managed Guest Session users can store device-wide display settings',
         },
         {
           'value': False,
-          'caption': 'Managed Guest Session users cannot store device-wide display settings.',
+          'caption': 'Managed Guest Session users cannot store device-wide display settings',
         },
       ],
       'default': False,
