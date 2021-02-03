@@ -92,9 +92,9 @@ class CartService : public history::HistoryServiceObserver,
   void AddCartsWithFakeData();
   // Delete carts with fake data from database.
   void DeleteCartsWithFakeData();
-  // Delete carts that are removed from database.
-  void DeleteRemovedCarts(bool success,
-                          std::vector<CartDB::KeyAndValue> proto_pairs);
+  // Delete content of carts that are removed from database.
+  void DeleteRemovedCartsContent(bool success,
+                                 std::vector<CartDB::KeyAndValue> proto_pairs);
   // A callback to filter out inactive carts for cart data loading.
   void onLoadCarts(CartDB::LoadCallback callback,
                    bool success,
@@ -109,6 +109,11 @@ class CartService : public history::HistoryServiceObserver,
                             CartDB::OperationCallback callback,
                             bool success,
                             std::vector<CartDB::KeyAndValue> proto_pairs);
+  // A callback to handle adding a cart.
+  void onAddCart(const std::string& domain,
+                 const cart_db::ChromeCartContentProto& proto,
+                 bool success,
+                 std::vector<CartDB::KeyAndValue> proto_pairs);
 
   Profile* profile_;
   std::unique_ptr<CartDB> cart_db_;

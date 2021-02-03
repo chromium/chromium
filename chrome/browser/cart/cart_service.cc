@@ -97,9 +97,9 @@ void CartService::LoadAllActiveCarts(CartDB::LoadCallback callback) {
 
 void CartService::AddCart(const std::string& domain,
                           const cart_db::ChromeCartContentProto& proto) {
-  cart_db_->AddCart(domain, proto,
-                    base::BindOnce(&CartService::OnOperationFinished,
-                                   weak_ptr_factory_.GetWeakPtr()));
+  cart_db_->LoadCart(
+      domain, base::BindOnce(&CartService::onAddCart,
+                             weak_ptr_factory_.GetWeakPtr(), domain, proto));
 }
 
 void CartService::DeleteCart(const std::string& domain) {
@@ -177,8 +177,8 @@ void CartService::Shutdown() {
     history_service_observation_.Reset();
   }
   DeleteCartsWithFakeData();
-  // Delete all carts that are removed.
-  cart_db_->LoadAllCarts(base::BindOnce(&CartService::DeleteRemovedCarts,
+  // Delete content of all carts that are removed.
+  cart_db_->LoadAllCarts(base::BindOnce(&CartService::DeleteRemovedCartsContent,
                                         weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -279,12 +279,19 @@ void CartService::DeleteCartsWithFakeData() {
                                       weak_ptr_factory_.GetWeakPtr()));
 }
 
-void CartService::DeleteRemovedCarts(
+void CartService::DeleteRemovedCartsContent(
     bool success,
     std::vector<CartDB::KeyAndValue> proto_pairs) {
   for (CartDB::KeyAndValue proto_pair : proto_pairs) {
     if (proto_pair.second.is_removed()) {
-      DeleteCart(proto_pair.first);
+      // Delete removed cart content by overwriting it with an entry with only
+      // removed status data.
+      cart_db::ChromeCartContentProto empty_proto;
+      empty_proto.set_key(proto_pair.first);
+      empty_proto.set_is_removed(true);
+      cart_db_->AddCart(proto_pair.first, empty_proto,
+                        base::BindOnce(&CartService::OnOperationFinished,
+                                       weak_ptr_factory_.GetWeakPtr()));
     }
   }
 }
@@ -312,7 +319,7 @@ void CartService::SetCartHiddenStatus(
   if (!success) {
     return;
   }
-  DCHECK(proto_pairs.size() == 1);
+  DCHECK_EQ(1U, proto_pairs.size());
   CartDB::KeyAndValue proto_pair = proto_pairs[0];
   proto_pair.second.set_is_hidden(isHidden);
   cart_db_->AddCart(
@@ -329,11 +336,45 @@ void CartService::SetCartRemovedStatus(
   if (!success) {
     return;
   }
-  DCHECK(proto_pairs.size() == 1);
+  DCHECK_EQ(1U, proto_pairs.size());
   CartDB::KeyAndValue proto_pair = proto_pairs[0];
   proto_pair.second.set_is_removed(isRemoved);
   cart_db_->AddCart(
       proto_pair.first, proto_pair.second,
       base::BindOnce(&CartService::OnOperationFinishedWithCallback,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void CartService::onAddCart(const std::string& domain,
+                            const cart_db::ChromeCartContentProto& proto,
+                            bool success,
+                            std::vector<CartDB::KeyAndValue> proto_pairs) {
+  if (!success) {
+    return;
+  }
+  if (proto_pairs.size() == 0) {
+    cart_db_->AddCart(domain, proto,
+                      base::BindOnce(&CartService::OnOperationFinished,
+                                     weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+  DCHECK_EQ(1U, proto_pairs.size());
+  cart_db::ChromeCartContentProto existing_proto = proto_pairs[0].second;
+  // Do nothing for carts that has been explicitly removed.
+  if (existing_proto.is_removed()) {
+    return;
+  }
+  // If the new proto has no product images, keep the existing proto while
+  // update timestamp and hidden status; otherwise add the new proto.
+  if (proto.product_image_urls().size() == 0) {
+    existing_proto.set_is_hidden(false);
+    existing_proto.set_timestamp(proto.timestamp());
+    cart_db_->AddCart(domain, existing_proto,
+                      base::BindOnce(&CartService::OnOperationFinished,
+                                     weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    cart_db_->AddCart(domain, proto,
+                      base::BindOnce(&CartService::OnOperationFinished,
+                                     weak_ptr_factory_.GetWeakPtr()));
+  }
 }
