@@ -636,6 +636,11 @@ void D3D11AV1Accelerator::FillPicParams(
   pp->order_hint_bits = seq_header.order_hint_bits;
 
   for (size_t i = 0; i < libgav1::kNumReferenceFrameTypes - 1; ++i) {
+    if (libgav1::IsIntraFrame(frame_header.frame_type)) {
+      pp->frame_refs[i].Index = 0xFF;
+      continue;
+    }
+
     const auto ref_idx = frame_header.reference_frame_index[i];
     const auto* rp =
         static_cast<const D3D11AV1Picture*>(ref_frames[ref_idx].get());
