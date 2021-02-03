@@ -34,6 +34,21 @@
             ]
         }
     ],
+    "ActionableContentSettings": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ActionableContentSettings"
+                    ]
+                }
+            ]
+        }
+    ],
     "AmpBackgroundTab": [
         {
             "platforms": [
