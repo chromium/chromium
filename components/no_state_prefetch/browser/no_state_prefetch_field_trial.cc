@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/no_state_prefetch/browser/prerender_field_trial.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_field_trial.h"
 
 #include <string>
 
