@@ -19,6 +19,9 @@ constexpr char kCameraAppId[] = "njfbnohfdkmbmnjapinfcopialeghnmh";
 //     "https://canvas.apps.chrome/"))
 constexpr char kCanvasAppId[] = "ieailfmhaghpphfffooibmlghaeopach";
 
+// Generated as: web_app::GenerateAppIdFromURL(GURL("chrome://diagnostics/"))
+constexpr char kDiagnosticsAppId[] = "keejpcfcpecjhmepmpcfgjemkmlicpam";
+
 // Generated as: web_app::GenerateAppIdFromURL(GURL(
 //     "https://mail.google.com/?usp=installed_webapp"))
 constexpr char kGmailAppId[] = "fpgpbaljnbnpjbpnlnjjhfeigfpemdda";

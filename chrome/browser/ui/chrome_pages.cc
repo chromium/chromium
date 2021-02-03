@@ -476,7 +476,6 @@ void ShowScanningApp(Profile* profile,
 }
 
 void ShowDiagnosticsApp(Profile* profile) {
-  // TODO(joonbug): Add entry point tracking
   DCHECK(base::FeatureList::IsEnabled(chromeos::features::kDiagnosticsApp));
 
   LaunchSystemWebAppAsync(profile, web_app::SystemAppType::DIAGNOSTICS);

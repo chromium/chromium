@@ -61,10 +61,11 @@ enum class DefaultAppName {
   kMockSystemApp = 39,
   kStadia = 40,
   kScanningApp = 41,
+  kDiagnosticsApp = 42,
 
   // Add any new values above this one, and update kMaxValue to the highest
   // enumerator value.
-  kMaxValue = kScanningApp,
+  kMaxValue = kDiagnosticsApp,
 };
 
 void RecordDefaultAppLaunch(DefaultAppName default_app_name,
@@ -261,6 +262,8 @@ void RecordAppLaunch(const std::string& app_id,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   else if (app_id == web_app::kScanningAppId)
     RecordDefaultAppLaunch(DefaultAppName::kScanningApp, launch_source);
+  else if (app_id == web_app::kDiagnosticsAppId)
+    RecordDefaultAppLaunch(DefaultAppName::kDiagnosticsApp, launch_source);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Above are default apps; below are built-in apps.
