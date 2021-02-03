@@ -26,19 +26,21 @@ bool IsCharWithinTextRun(const AccessibilityTextRunInfo& text_run,
          char_index - text_run_start_char_index < text_run.len;
 }
 
-bool GetEnclosingTextRunRangeForCharRange(
+// If a valid text run range is not found for the char range then return the
+// fallback value.
+AccessibilityTextRunRangeInfo GetEnclosingTextRunRangeForCharRange(
     const std::vector<AccessibilityTextRunInfo>& text_runs,
     int start_char_index,
-    int char_count,
-    uint32_t* start_text_run_index,
-    uint32_t* text_run_count) {
+    int char_count) {
+  // Initialize with fallback value.
+  AccessibilityTextRunRangeInfo text_range = {text_runs.size(), 0};
   if (start_char_index < 0 || char_count <= 0)
-    return false;
+    return text_range;
 
   base::CheckedNumeric<uint32_t> checked_end_char_index = char_count - 1;
   checked_end_char_index += start_char_index;
   if (!checked_end_char_index.IsValid())
-    return false;
+    return text_range;
   uint32_t end_char_index = checked_end_char_index.ValueOrDie();
   uint32_t current_char_index = 0;
   base::Optional<uint32_t> start_text_run;
@@ -51,13 +53,13 @@ bool GetEnclosingTextRunRangeForCharRange(
 
     if (start_text_run.has_value() &&
         IsCharWithinTextRun(text_runs[i], current_char_index, end_char_index)) {
-      *start_text_run_index = start_text_run.value();
-      *text_run_count = i - *start_text_run_index + 1;
-      return true;
+      text_range.index = start_text_run.value();
+      text_range.count = i - text_range.index + 1;
+      break;
     }
     current_char_index += text_runs[i].len;
   }
-  return false;
+  return text_range;
 }
 
 template <typename T>
@@ -79,16 +81,9 @@ std::vector<AccessibilityLinkInfo> GetAccessibilityLinkInfo(
     link_info.url = std::move(cur_engine_info.url);
     link_info.index_in_page = i;
     link_info.bounds = cur_engine_info.bounds;
-
-    if (!GetEnclosingTextRunRangeForCharRange(
-            text_runs, cur_engine_info.start_char_index,
-            cur_engine_info.char_count, &link_info.text_range.index,
-            &link_info.text_range.count)) {
-      // If a valid text run range is not found for the link, set the fallback
-      // values of |index| and |count| for |text_range| in |link_info|.
-      link_info.text_range.index = text_runs.size();
-      link_info.text_range.count = 0;
-    }
+    link_info.text_range = GetEnclosingTextRunRangeForCharRange(
+        text_runs, cur_engine_info.start_char_index,
+        cur_engine_info.char_count);
     link_infos.push_back(std::move(link_info));
   }
   std::sort(link_infos.begin(), link_infos.end(),
@@ -130,17 +125,9 @@ std::vector<AccessibilityHighlightInfo> GetAccessibilityHighlightInfo(
     highlight_info.bounds = cur_highlight_info.bounds;
     highlight_info.color = cur_highlight_info.color;
     highlight_info.note_text = std::move(cur_highlight_info.note_text);
-
-    if (!GetEnclosingTextRunRangeForCharRange(
-            text_runs, cur_highlight_info.start_char_index,
-            cur_highlight_info.char_count, &highlight_info.text_range.index,
-            &highlight_info.text_range.count)) {
-      // If a valid text run range is not found for the highlight, set the
-      // fallback values of |index| and |count| for |text_range| in
-      // |highlight_info|.
-      highlight_info.text_range.index = text_runs.size();
-      highlight_info.text_range.count = 0;
-    }
+    highlight_info.text_range = GetEnclosingTextRunRangeForCharRange(
+        text_runs, cur_highlight_info.start_char_index,
+        cur_highlight_info.char_count);
     highlight_infos.push_back(std::move(highlight_info));
   }
 
