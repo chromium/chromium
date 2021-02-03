@@ -131,8 +131,7 @@ js_type_check("closure_compile_module") {
     ":os_a11y_page_browser_proxy.m",
     ":switch_access_action_assignment_dialog.m",
     ":switch_access_constants.m",
-
-    #    ":switch_access_subpage.m",
+    ":switch_access_subpage.m",
     ":switch_access_subpage_browser_proxy.m",
     ":tts_subpage.m",
     ":tts_subpage_browser_proxy.m",
@@ -203,7 +202,15 @@ js_library("switch_access_constants.m") {
 js_library("switch_access_subpage.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_a11y_page/switch_access_subpage.m.js" ]
   deps = [
-    # TODO: Fill those in.
+    ":switch_access_constants.m",
+    ":switch_access_subpage_browser_proxy.m",
+    "//chrome/browser/resources/settings:router.m",
+    "//chrome/browser/resources/settings/chromeos:deep_linking_behavior.m",
+    "//chrome/browser/resources/settings/chromeos:os_route.m",
+    "//chrome/browser/resources/settings/prefs:prefs_behavior.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
   extra_deps = [ ":switch_access_subpage_module" ]
 }
@@ -279,6 +286,8 @@ polymer_modulizer("switch_access_subpage") {
   js_file = "switch_access_subpage.js"
   html_file = "switch_access_subpage.html"
   html_type = "dom-module"
+  auto_imports = os_settings_auto_imports
+  namespace_rewrites = os_settings_namespace_rewrites
 }
 
 polymer_modulizer("tts_subpage") {

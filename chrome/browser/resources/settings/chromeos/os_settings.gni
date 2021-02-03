@@ -113,6 +113,7 @@ os_settings_auto_imports = settings_auto_imports +
                              "chrome/browser/resources/settings/chromeos/os_a11y_page/switch_access_constants.html|SwitchAccessCommand,SwitchAccessDeviceType",
                              "chrome/browser/resources/settings/chromeos/os_a11y_page/switch_access_subpage_browser_proxy.html|SwitchAccessSubpageBrowserProxy,SwitchAccessSubpageBrowserProxyImpl",
                              "chrome/browser/resources/settings/chromeos/os_a11y_page/tts_subpage_browser_proxy.html|TtsSubpageBrowserProxy,TtsSubpageBrowserProxyImpl",
+                             "chrome/browser/resources/settings/chromeos/os_a11y_page/switch_access_action_assignment_dialog.html|getLabelForAssignment",
                              "chrome/browser/resources/settings/chromeos/os_languages_page/input_method_util.html|generateOptions,getFirstPartyInputMethodEngineId,getOptionLabelName,getOptionMenuItems,getOptionUiType,getOptionUrl,hasOptionsPageInSettings,InputToolCode,isNumberValue,OPTION_DEFAULT,OptionType,UiType",
                              "chrome/browser/resources/settings/chromeos/os_languages_page/languages_metrics_proxy.html|LanguagesMetricsProxy, LanguagesMetricsProxyImpl, LanguagesPageInteraction",
                              "chrome/browser/resources/settings/chromeos/os_people_page/fingerprint_browser_proxy.html|FingerprintInfo,FingerprintBrowserProxy,FingerprintResultType,FingerprintBrowserProxyImpl,FingerprintAttempt,FingerprintScan",

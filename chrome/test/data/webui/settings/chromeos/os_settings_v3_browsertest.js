@@ -258,6 +258,7 @@ TEST_F(
    'SwitchAccessActionAssignmentDialog',
    'switch_access_action_assignment_dialog_test.m.js'
  ],
+ ['SwitchAccessSubpage', 'switch_access_subpage_tests.m.js'],
  ['TetherConnectionDialog', 'tether_connection_dialog_test.m.js'],
  ['TimezoneSelector', 'timezone_selector_test.m.js'],
  ['TimezoneSubpage', 'timezone_subpage_test.m.js'],
