@@ -12,6 +12,7 @@
 #include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_fullscreen_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_depth_state_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_tracked_image_init.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -30,7 +31,6 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
-#include "third_party/blink/renderer/modules/xr/xr_depth_state_init.h"
 #include "third_party/blink/renderer/modules/xr/xr_frame_provider.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
 #include "third_party/blink/renderer/modules/xr/xr_session_viewport_scaler.h"
@@ -119,6 +119,50 @@ const char* SessionModeToString(device::mojom::blink::XRSessionMode mode) {
   return "";
 }
 
+// TODO(crbug.com/1070871): Drop this #if-else
+#if defined(USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY)
+
+device::mojom::XRDepthUsage ParseDepthUsage(const V8XRDepthUsage& usage) {
+  switch (usage.AsEnum()) {
+    case V8XRDepthUsage::Enum::kCpuOptimized:
+      return device::mojom::XRDepthUsage::kCPUOptimized;
+    case V8XRDepthUsage::Enum::kGpuOptimized:
+      return device::mojom::XRDepthUsage::kGPUOptimized;
+  }
+}
+
+Vector<device::mojom::XRDepthUsage> ParseDepthUsages(
+    const Vector<V8XRDepthUsage>& usages) {
+  Vector<device::mojom::XRDepthUsage> result;
+
+  std::transform(usages.begin(), usages.end(), std::back_inserter(result),
+                 ParseDepthUsage);
+
+  return result;
+}
+
+device::mojom::XRDepthDataFormat ParseDepthFormat(
+    const V8XRDepthDataFormat& format) {
+  switch (format.AsEnum()) {
+    case V8XRDepthDataFormat::Enum::kLuminanceAlpha:
+      return device::mojom::XRDepthDataFormat::kLuminanceAlpha;
+    case V8XRDepthDataFormat::Enum::kFloat32:
+      return device::mojom::XRDepthDataFormat::kFloat32;
+  }
+}
+
+Vector<device::mojom::XRDepthDataFormat> ParseDepthFormats(
+    const Vector<V8XRDepthDataFormat>& formats) {
+  Vector<device::mojom::XRDepthDataFormat> result;
+
+  std::transform(formats.begin(), formats.end(), std::back_inserter(result),
+                 ParseDepthFormat);
+
+  return result;
+}
+
+#else
+
 device::mojom::XRDepthUsage ParseDepthUsage(const String& usage) {
   if (usage == "cpu-optimized") {
     return device::mojom::XRDepthUsage::kCPUOptimized;
@@ -160,6 +204,8 @@ Vector<device::mojom::XRDepthDataFormat> ParseDepthFormats(
 
   return result;
 }
+
+#endif  // USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY
 
 // Converts the given string to an XRSessionFeature. If the string is
 // unrecognized, returns nullopt. Based on the spec:
