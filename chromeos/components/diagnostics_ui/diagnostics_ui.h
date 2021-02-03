@@ -6,6 +6,7 @@
 #define CHROMEOS_COMPONENTS_DIAGNOSTICS_UI_DIAGNOSTICS_UI_H_
 
 #include "base/macros.h"
+#include "base/time/time.h"
 #include "chromeos/components/diagnostics_ui/backend/session_log_handler.h"
 #include "chromeos/components/diagnostics_ui/mojom/system_data_provider.mojom-forward.h"
 #include "chromeos/components/diagnostics_ui/mojom/system_routine_controller.mojom-forward.h"
@@ -44,6 +45,10 @@ class DiagnosticsUI : public ui::MojoWebUIController {
 
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();
+
+  // Timestamp of when the app was opened. Used to calculate a duration for
+  // metrics.
+  base::Time open_timestamp_;
 
   std::unique_ptr<diagnostics::SessionLogHandler> session_log_handler_;
   std::unique_ptr<diagnostics::DiagnosticsManager> diagnostics_manager_;

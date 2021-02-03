@@ -5,10 +5,16 @@
 #include "chromeos/components/diagnostics_ui/backend/histogram_util.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 
 namespace chromeos {
 namespace diagnostics {
 namespace metrics {
+
+void EmitAppOpenDuration(const base::TimeDelta& time_elapsed) {
+  base::UmaHistogramLongTimes100("ChromeOS.DiagnosticsUi.OpenDuration",
+                                 time_elapsed);
+}
 
 void EmitRoutineRunCount(uint16_t routine_count) {
   base::UmaHistogramCounts100("ChromeOS.DiagnosticsUi.RoutineCount",

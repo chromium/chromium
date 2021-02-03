@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/components/diagnostics_ui/backend/diagnostics_manager.h"
+#include "chromeos/components/diagnostics_ui/backend/histogram_util.h"
 #include "chromeos/components/diagnostics_ui/backend/session_log_handler.h"
 #include "chromeos/components/diagnostics_ui/backend/system_data_provider.h"
 #include "chromeos/components/diagnostics_ui/backend/system_routine_controller.h"
@@ -146,9 +147,14 @@ DiagnosticsUI::DiagnosticsUI(
   AddDiagnosticsStrings(html_source.get());
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 html_source.release());
+
+  open_timestamp_ = base::Time::Now();
 }
 
-DiagnosticsUI::~DiagnosticsUI() = default;
+DiagnosticsUI::~DiagnosticsUI() {
+  const base::TimeDelta time_open = base::Time::Now() - open_timestamp_;
+  diagnostics::metrics::EmitAppOpenDuration(time_open);
+}
 
 void DiagnosticsUI::BindInterface(
     mojo::PendingReceiver<diagnostics::mojom::SystemDataProvider> receiver) {
