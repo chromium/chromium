@@ -135,6 +135,13 @@ source_set("components") {
     ]
   }
 
+  if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
+    sources += [
+      "url_handler_prefs.cc",
+      "url_handler_prefs.h",
+    ]
+  }
+
   public_deps =
       [ "//components/services/app_service/public/cpp:app_share_target" ]
 
@@ -165,6 +172,13 @@ source_set("components") {
 
   if (is_win) {
     deps += [ "//chrome/browser/web_applications/chrome_pwa_launcher:util" ]
+  }
+
+  if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
+    deps += [
+      "//base/util/values:values_util",
+      "//components/services/app_service/public/cpp:app_url_handling",
+    ]
   }
 }
 
@@ -213,6 +227,10 @@ source_set("unit_tests") {
     ]
   }
 
+  if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
+    sources += [ "url_handler_prefs_unittest.cc" ]
+  }
+
   deps = [
     ":components",
     "//base/test:test_support",
@@ -240,6 +258,10 @@ source_set("unit_tests") {
 
   if (is_win) {
     deps += [ "//chrome/browser/web_applications/chrome_pwa_launcher:util" ]
+  }
+
+  if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
+    deps += [ "//components/services/app_service/public/cpp:app_url_handling" ]
   }
 }
 

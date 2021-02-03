@@ -1982,6 +1982,12 @@ const char kWebAppsLastPreinstallSynchronizeVersion[] =
 // outlive the app installation and uninstallation.
 const char kWebAppsPreferences[] = "web_apps.web_app_ids";
 
+#if defined(OS_WIN) || defined(OS_MAC) || \
+    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+// Dictionary that maps origins to web apps that can act as URL handlers.
+const char kWebAppsUrlHandlerInfo[] = "web_apps.url_handler_info";
+#endif
+
 const char kWebAppsUserDisplayModeCleanedUp[] =
     "web_apps.user_display_mode_cleaned_up";
 

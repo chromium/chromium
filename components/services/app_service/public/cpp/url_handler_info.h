@@ -16,6 +16,8 @@ namespace apps {
 // its web app manifest.
 struct UrlHandlerInfo {
   UrlHandlerInfo();
+  explicit UrlHandlerInfo(const url::Origin& origin);
+  UrlHandlerInfo(const url::Origin& origin, bool has_origin_wildcard);
   // Copyable to support web_app::WebApp being copyable as it has a UrlHandlers
   // member variable.
   UrlHandlerInfo(const UrlHandlerInfo&);
@@ -28,6 +30,8 @@ struct UrlHandlerInfo {
   ~UrlHandlerInfo();
 
   url::Origin origin;
+
+  bool has_origin_wildcard = false;
 };
 
 using UrlHandlers = std::vector<UrlHandlerInfo>;
