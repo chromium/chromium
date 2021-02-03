@@ -299,11 +299,12 @@ bool FilePathWatcherKQueue::Watch(const FilePath& path,
     return false;
   }
 
-  // FileDescriptorWatcher may attempt to run its callback after the controller
-  // has been deleted, so bind to this via a WeakPtr.
+  // It's safe to use Unretained() because the watch is cancelled and the
+  // callback cannot be invoked after |kqueue_watch_controller_| (which is a
+  // member of |this|) has been deleted.
   kqueue_watch_controller_ = FileDescriptorWatcher::WatchReadable(
       kqueue_, BindRepeating(&FilePathWatcherKQueue::OnKQueueReadable,
-                             weak_factory_.GetWeakPtr()));
+                             Unretained(this)));
 
   return true;
 }

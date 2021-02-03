@@ -13,7 +13,6 @@
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
-#include "base/memory/weak_ptr.h"
 
 namespace base {
 
@@ -122,8 +121,6 @@ class FilePathWatcherKQueue : public FilePathWatcher::PlatformDelegate {
   // Throughout the lifetime of this, OnKQueueReadable() will be called when
   // data is available in |kqueue_|.
   std::unique_ptr<FileDescriptorWatcher::Controller> kqueue_watch_controller_;
-
-  WeakPtrFactory<FilePathWatcherKQueue> weak_factory_{this};
 };
 
 }  // namespace base
