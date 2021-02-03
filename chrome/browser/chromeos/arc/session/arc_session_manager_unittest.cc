@@ -1207,10 +1207,10 @@ constexpr ProvisioningErrorDisplayTestParam
          ArcSupportHost::Error::SIGN_IN_NETWORK_ERROR,
          1 /*GMS_SIGN_IN_NETWORK_ERROR*/},
         {arc::mojom::GMSSignInError::GMS_SIGN_IN_TIMEOUT,
-         ArcSupportHost::Error::SIGN_IN_SERVICE_UNAVAILABLE_ERROR,
+         ArcSupportHost::Error::SIGN_IN_GMS_SIGNIN_ERROR,
          5 /*GMS_SIGN_IN_TIMEOUT*/},
         {arc::mojom::GMSCheckInError::GMS_CHECK_IN_TIMEOUT,
-         ArcSupportHost::Error::SIGN_IN_GMS_NOT_AVAILABLE_ERROR,
+         ArcSupportHost::Error::SIGN_IN_GMS_CHECKIN_ERROR,
          2 /*GMS_CHECK_IN_TIMEOUT*/}};
 
 class ProvisioningErrorDisplayTest

@@ -49,9 +49,9 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
     SIGN_IN_CLOUD_PROVISION_FLOW_PERMANENT_ERROR,
     SIGN_IN_CLOUD_PROVISION_FLOW_INTERRUPTED_ERROR,
     SIGN_IN_CLOUD_PROVISION_FLOW_ENROLLMENT_TOKEN_INVALID,
-    SIGN_IN_GMS_NOT_AVAILABLE_ERROR,
+    SIGN_IN_GMS_CHECKIN_ERROR,
     SIGN_IN_NETWORK_ERROR,
-    SIGN_IN_SERVICE_UNAVAILABLE_ERROR,
+    SIGN_IN_GMS_SIGNIN_ERROR,
     // This error requires error arg to be passed in ErrorInfo struct
     // where the value of arg indicates the specific provisioning result
     // for which this error message is shown.

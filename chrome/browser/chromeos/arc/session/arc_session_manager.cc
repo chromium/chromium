@@ -384,10 +384,10 @@ ArcSupportHost::Error GetSupportHostError(const ArcProvisioningResult& result) {
   }
 
   if (result.gms_sign_in_error())
-    return ArcSupportHost::Error::SIGN_IN_SERVICE_UNAVAILABLE_ERROR;
+    return ArcSupportHost::Error::SIGN_IN_GMS_SIGNIN_ERROR;
 
   if (result.gms_check_in_error())
-    return ArcSupportHost::Error::SIGN_IN_GMS_NOT_AVAILABLE_ERROR;
+    return ArcSupportHost::Error::SIGN_IN_GMS_CHECKIN_ERROR;
 
   if (result.cloud_provision_flow_error()) {
     return GetCloudProvisionFlowError(
