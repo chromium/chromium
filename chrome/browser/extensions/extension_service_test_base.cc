@@ -47,6 +47,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/common/extensions_client.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/extensions/install_limiter.h"
@@ -332,6 +333,12 @@ void ExtensionServiceTestBase::SetUp() {
 
   // Force TabManager/TabLifecycleUnitSource creation.
   g_browser_process->resource_coordinator_parts();
+
+  // Update the webstore update url. Some tests leave it set to a non-default
+  // webstore_update_url_. This can make extension_urls::IsWebstoreUpdateUrl
+  // return a false negative.
+  ExtensionsClient::Get()->InitializeWebStoreUrls(
+      base::CommandLine::ForCurrentProcess());
 }
 
 void ExtensionServiceTestBase::TearDown() {
