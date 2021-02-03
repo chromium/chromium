@@ -17,8 +17,10 @@ var OobeDialogHostBehavior = {
    * @param {string=} selector CSS selector (optional).
    */
   propagateOnBeforeShow(selector) {
-    if (!selector)
-      selector = 'oobe-dialog,oobe-adaptive-dialog';
+    if (!selector) {
+      selector = 'oobe-dialog,oobe-adaptive-dialog,oobe-content-dialog,' +
+          'gaia-dialog,oobe-loading-dialog';
+    }
 
     var screens = Polymer.dom(this.root).querySelectorAll(selector);
     for (var i = 0; i < screens.length; ++i) {
