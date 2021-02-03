@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/service_worker/service_worker_database.h"
+#include "components/services/storage/service_worker/service_worker_database.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -14,7 +14,7 @@
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "content/browser/service_worker/service_worker_database.pb.h"
+#include "components/services/storage/service_worker/service_worker_database.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
@@ -22,7 +22,7 @@
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 #include "url/origin.h"
 
-namespace content {
+namespace storage {
 
 namespace {
 
@@ -2337,4 +2337,4 @@ TEST(ServiceWorkerDatabaseTest, NoCrossOriginEmbedderPolicyValue) {
             registration->cross_origin_embedder_policy.value);
 }
 
-}  // namespace content
+}  // namespace storage

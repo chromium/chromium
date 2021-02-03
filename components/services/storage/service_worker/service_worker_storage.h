@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_STORAGE_H_
-#define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_STORAGE_H_
+#ifndef COMPONENTS_SERVICES_STORAGE_SERVICE_WORKER_SERVICE_WORKER_STORAGE_H_
+#define COMPONENTS_SERVICES_STORAGE_SERVICE_WORKER_SERVICE_WORKER_STORAGE_H_
 
 #include <stdint.h>
 
@@ -23,16 +23,15 @@
 #include "base/memory/weak_ptr.h"
 #include "components/services/storage/public/mojom/local_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
-#include "content/browser/service_worker/service_worker_database.h"
-#include "content/browser/service_worker/service_worker_resource_ops.h"
-#include "content/common/content_export.h"
+#include "components/services/storage/service_worker/service_worker_database.h"
+#include "components/services/storage/service_worker/service_worker_resource_ops.h"
 #include "url/gurl.h"
 
 namespace base {
 class SequencedTaskRunner;
 }
 
-namespace content {
+namespace storage {
 
 class ServiceWorkerStorageControlImplTest;
 
@@ -52,10 +51,9 @@ FORWARD_DECLARE_TEST(ServiceWorkerStorageTest, DisabledStorage);
 // an owner of this class. When a storage operation fails, this is marked as
 // disabled and all subsequent requests are aborted until the registry is
 // restarted.
-class CONTENT_EXPORT ServiceWorkerStorage {
+class ServiceWorkerStorage {
  public:
   using OriginState = storage::mojom::ServiceWorkerStorageOriginState;
-
   using RegistrationList =
       std::vector<storage::mojom::ServiceWorkerRegistrationDataPtr>;
   using ResourceList =
@@ -566,6 +564,6 @@ class CONTENT_EXPORT ServiceWorkerStorage {
   DISALLOW_COPY_AND_ASSIGN(ServiceWorkerStorage);
 };
 
-}  // namespace content
+}  // namespace storage
 
-#endif  // CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_STORAGE_H_
+#endif  // COMPONENTS_SERVICES_STORAGE_SERVICE_WORKER_SERVICE_WORKER_STORAGE_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/service_worker/service_worker_disk_cache.h"
+#include "components/services/storage/service_worker/service_worker_disk_cache.h"
 
 #include <limits>
 #include <utility>
@@ -21,7 +21,7 @@
 #include "net/base/completion_repeating_callback.h"
 #include "net/base/net_errors.h"
 
-namespace content {
+namespace storage {
 
 // A callback shim that provides storage for the 'backend_ptr' value
 // and will delete a resulting ptr if completion occurs after the
@@ -347,4 +347,4 @@ void ServiceWorkerDiskCache::RemoveOpenEntry(
   open_entries_.erase(entry);
 }
 
-}  // namespace content
+}  // namespace storage

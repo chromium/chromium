@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/service_worker/service_worker_resource_ops.h"
+#include "components/services/storage/service_worker/service_worker_resource_ops.h"
 
 #include "base/numerics/checked_math.h"
 #include "base/pickle.h"
@@ -11,7 +11,7 @@
 #include "services/network/public/cpp/net_adapters.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 
-namespace content {
+namespace storage {
 
 namespace {
 
@@ -822,4 +822,4 @@ void ServiceWorkerResourceMetadataWriterImpl::DidWriteMetadata(
   std::move(write_metadata_callback_).Run(rv);
 }
 
-}  // namespace content
+}  // namespace storage

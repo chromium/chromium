@@ -2,16 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_RESOURCE_OPS_H_
-#define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_RESOURCE_OPS_H_
+#ifndef COMPONENTS_SERVICES_STORAGE_SERVICE_WORKER_SERVICE_WORKER_RESOURCE_OPS_H_
+#define COMPONENTS_SERVICES_STORAGE_SERVICE_WORKER_SERVICE_WORKER_RESOURCE_OPS_H_
 
 #include "base/memory/weak_ptr.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
-#include "content/browser/service_worker/service_worker_disk_cache.h"
-#include "content/common/content_export.h"
+#include "components/services/storage/service_worker/service_worker_disk_cache.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-namespace content {
+namespace storage {
 
 class BigIOBuffer;
 
@@ -110,7 +109,7 @@ class DiskEntryOpener {
 };
 
 // The implementation of storage::mojom::ServiceWorkerResourceReader.
-class CONTENT_EXPORT ServiceWorkerResourceReaderImpl
+class ServiceWorkerResourceReaderImpl
     : public storage::mojom::ServiceWorkerResourceReader {
  public:
   ServiceWorkerResourceReaderImpl(
@@ -182,7 +181,7 @@ class CONTENT_EXPORT ServiceWorkerResourceReaderImpl
 };
 
 // The implementation of storage::mojom::ServiceWorkerResourceWriter.
-class CONTENT_EXPORT ServiceWorkerResourceWriterImpl
+class ServiceWorkerResourceWriterImpl
     : public storage::mojom::ServiceWorkerResourceWriter {
  public:
   ServiceWorkerResourceWriterImpl(
@@ -246,7 +245,7 @@ class CONTENT_EXPORT ServiceWorkerResourceWriterImpl
 };
 
 // The implementation of storage::mojom::ServiceWorkerResourceMetadataWriter.
-class CONTENT_EXPORT ServiceWorkerResourceMetadataWriterImpl
+class ServiceWorkerResourceMetadataWriterImpl
     : public storage::mojom::ServiceWorkerResourceMetadataWriter {
  public:
   ServiceWorkerResourceMetadataWriterImpl(
@@ -295,6 +294,6 @@ class CONTENT_EXPORT ServiceWorkerResourceMetadataWriterImpl
       this};
 };
 
-}  // namespace content
+}  // namespace storage
 
-#endif  // CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_RESOURCE_OPS_H_
+#endif  // COMPONENTS_SERVICES_STORAGE_SERVICE_WORKER_SERVICE_WORKER_RESOURCE_OPS_H_

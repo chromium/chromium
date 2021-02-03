@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/service_worker/service_worker_storage.h"
+#include "components/services/storage/service_worker/service_worker_storage.h"
 
 #include <stdint.h>
 #include <memory>
@@ -19,15 +19,12 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
-#include "ipc/ipc_message.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/disk_cache.h"
-#include "net/http/http_response_headers.h"
-#include "net/http/http_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace content {
+namespace storage {
 namespace service_worker_storage_unittest {
 
 struct ReadResponseHeadResult {
@@ -981,4 +978,4 @@ TEST_F(ServiceWorkerStorageTest, GetStorageUsageForOrigin) {
 }
 
 }  // namespace service_worker_storage_unittest
-}  // namespace content
+}  // namespace storage

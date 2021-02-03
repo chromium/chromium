@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/service_worker/service_worker_storage_control_impl.h"
+#include "components/services/storage/service_worker/service_worker_storage_control_impl.h"
 
-#include "content/browser/service_worker/service_worker_resource_ops.h"
+#include "components/services/storage/service_worker/service_worker_resource_ops.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
-namespace content {
+namespace storage {
 
 namespace {
 
@@ -101,7 +101,7 @@ void ServiceWorkerStorageControlImpl::OnNoLiveVersion(int64_t version_id) {
 }
 
 void ServiceWorkerStorageControlImpl::LazyInitializeForTest() {
-  storage_->LazyInitializeForTest();
+  storage_->LazyInitializeForTest();  // IN-TEST
 }
 
 void ServiceWorkerStorageControlImpl::Disable(DisableCallback callback) {
@@ -513,4 +513,4 @@ void ServiceWorkerStorageControlImpl::MaybePurgeResources(
   }
 }
 
-}  // namespace content
+}  // namespace storage

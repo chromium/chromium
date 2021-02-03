@@ -21,13 +21,16 @@
 #include "third_party/blink/public/mojom/service_worker/embedded_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom.h"
 
+namespace storage {
+class ServiceWorkerStorageControlImpl;
+}
+
 namespace content {
 
 class FakeServiceWorker;
 class MockRenderProcessHost;
 class ServiceWorkerContextCore;
 class ServiceWorkerContextWrapper;
-class ServiceWorkerStorageControlImpl;
 class TestBrowserContext;
 
 // In-Process EmbeddedWorker test helper.
@@ -179,7 +182,7 @@ class EmbeddedWorkerTestHelper {
 
   const base::FilePath user_data_directory_;
   scoped_refptr<base::SequencedTaskRunner> database_task_runner_;
-  std::unique_ptr<ServiceWorkerStorageControlImpl> storage_control_;
+  std::unique_ptr<storage::ServiceWorkerStorageControlImpl> storage_control_;
 
   base::queue<std::unique_ptr<FakeEmbeddedWorkerInstanceClient>>
       pending_embedded_worker_instance_clients_;

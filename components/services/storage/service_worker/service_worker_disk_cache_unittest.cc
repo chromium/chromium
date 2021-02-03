@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/service_worker/service_worker_disk_cache.h"
+#include "components/services/storage/service_worker/service_worker_disk_cache.h"
 
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
@@ -14,7 +14,7 @@
 #include "net/disk_cache/disk_cache.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace content {
+namespace storage {
 
 class ServiceWorkerDiskCacheTest : public testing::Test {
  public:
@@ -178,4 +178,4 @@ TEST_F(ServiceWorkerDiskCacheTest, CleanupCallback) {
   EXPECT_FALSE(base::DirectoryExists(GetPath()));
 }
 
-}  // namespace content
+}  // namespace storage

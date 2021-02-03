@@ -2,20 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_STORAGE_CONTROL_IMPL_H_
-#define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_STORAGE_CONTROL_IMPL_H_
+#ifndef COMPONENTS_SERVICES_STORAGE_SERVICE_WORKER_SERVICE_WORKER_STORAGE_CONTROL_IMPL_H_
+#define COMPONENTS_SERVICES_STORAGE_SERVICE_WORKER_SERVICE_WORKER_STORAGE_CONTROL_IMPL_H_
 
 #include <memory>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
-#include "content/browser/service_worker/service_worker_storage.h"
-#include "content/common/content_export.h"
+#include "components/services/storage/service_worker/service_worker_storage.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-namespace content {
+namespace storage {
 
 class ServiceWorkerLiveVersionRefImpl;
 
@@ -23,7 +22,7 @@ class ServiceWorkerLiveVersionRefImpl;
 // the storage service, i.e., ServiceWorkerStorageControl.
 // TODO(crbug.com/1055677): Merge this implementation into ServiceWorkerStorage
 // and move the merged class to components/services/storage.
-class CONTENT_EXPORT ServiceWorkerStorageControlImpl
+class ServiceWorkerStorageControlImpl
     : public storage::mojom::ServiceWorkerStorageControl {
  public:
   explicit ServiceWorkerStorageControlImpl(
@@ -207,6 +206,6 @@ class CONTENT_EXPORT ServiceWorkerStorageControlImpl
   base::WeakPtrFactory<ServiceWorkerStorageControlImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace content
+}  // namespace storage
 
-#endif  // CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_STORAGE_CONTROLIMPL_H_
+#endif  // COMPONENTS_SERVICES_STORAGE_SERVICE_WORKER_SERVICE_WORKER_STORAGE_CONTROLIMPL_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/service_worker/service_worker_storage.h"
+#include "components/services/storage/service_worker/service_worker_storage.h"
 
 #include <stddef.h>
 
@@ -21,7 +21,7 @@
 #include "base/task_runner_util.h"
 #include "base/trace_event/trace_event.h"
 #include "components/services/storage/public/cpp/constants.h"
-#include "content/browser/service_worker/service_worker_disk_cache.h"
+#include "components/services/storage/service_worker/service_worker_disk_cache.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
@@ -29,7 +29,7 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 
-namespace content {
+namespace storage {
 
 namespace {
 
@@ -1942,4 +1942,4 @@ void ServiceWorkerStorage::DidDeleteDiskCache(DatabaseStatusCallback callback,
   std::move(callback).Run(ServiceWorkerDatabase::Status::kOk);
 }
 
-}  // namespace content
+}  // namespace storage

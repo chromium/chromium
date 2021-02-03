@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_DATABASE_H_
-#define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_DATABASE_H_
+#ifndef COMPONENTS_SERVICES_STORAGE_SERVICE_WORKER_SERVICE_WORKER_DATABASE_H_
+#define COMPONENTS_SERVICES_STORAGE_SERVICE_WORKER_SERVICE_WORKER_DATABASE_H_
 
 #include <stdint.h>
 
@@ -22,7 +22,6 @@
 #include "base/time/time.h"
 #include "components/services/storage/public/mojom/service_worker_database.mojom.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
-#include "content/common/content_export.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/navigation_preload_state.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
@@ -41,14 +40,16 @@ class Status;
 class WriteBatch;
 }  // namespace leveldb
 
-namespace content {
+namespace storage {
 
 // Class to persist serviceworker registration data in a database.
 // Should NOT be used on the IO thread since this does blocking
 // file io. The ServiceWorkerStorage class owns this class and
 // is responsible for only calling it serially on background
 // non-IO threads (ala SequencedWorkerPool).
-class CONTENT_EXPORT ServiceWorkerDatabase {
+// TODO(crbug.com/1016064): Update the above comments once the instance of this
+// class lives in the Storage Service.
+class ServiceWorkerDatabase {
  public:
   // We do leveldb stuff in |path| or in memory if |path| is empty.
   explicit ServiceWorkerDatabase(const base::FilePath& path);
@@ -64,7 +65,7 @@ class CONTENT_EXPORT ServiceWorkerDatabase {
 
   // Contains information of a deleted service worker version. Used as an output
   // of WriteRegistration() and DeleteRegistration().
-  struct CONTENT_EXPORT DeletedVersion {
+  struct DeletedVersion {
     int64_t registration_id = blink::mojom::kInvalidServiceWorkerRegistrationId;
     int64_t version_id = blink::mojom::kInvalidServiceWorkerVersionId;
     uint64_t resources_total_size_bytes = 0;
@@ -419,6 +420,6 @@ class CONTENT_EXPORT ServiceWorkerDatabase {
   DISALLOW_COPY_AND_ASSIGN(ServiceWorkerDatabase);
 };
 
-}  // namespace content
+}  // namespace storage
 
-#endif  // CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_DATABASE_H_
+#endif  // COMPONENTS_SERVICES_STORAGE_SERVICE_WORKER_SERVICE_WORKER_DATABASE_H_

@@ -24,6 +24,8 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "components/services/storage/service_worker/service_worker_storage.h"
+#include "components/services/storage/service_worker/service_worker_storage_control_impl.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/loader/navigation_url_loader_impl.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
@@ -32,7 +34,6 @@
 #include "content/browser/service_worker/service_worker_object_host.h"
 #include "content/browser/service_worker/service_worker_process_manager.h"
 #include "content/browser/service_worker/service_worker_quota_client.h"
-#include "content/browser/service_worker/service_worker_storage_control_impl.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/common/service_worker/service_worker_utils.h"
@@ -1604,9 +1605,10 @@ void ServiceWorkerContextWrapper::BindStorageControl(
     scoped_refptr<base::SequencedTaskRunner> database_task_runner =
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
-    storage_control_ = std::make_unique<ServiceWorkerStorageControlImpl>(
-        ServiceWorkerStorage::Create(user_data_directory_,
-                                     std::move(database_task_runner)));
+    storage_control_ =
+        std::make_unique<storage::ServiceWorkerStorageControlImpl>(
+            storage::ServiceWorkerStorage::Create(
+                user_data_directory_, std::move(database_task_runner)));
     storage_control_->Bind(std::move(receiver));
   }
 }

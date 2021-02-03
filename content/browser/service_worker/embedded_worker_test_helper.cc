@@ -10,9 +10,10 @@
 #include "base/callback.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "components/services/storage/service_worker/service_worker_storage.h"
+#include "components/services/storage/service_worker/service_worker_storage_control_impl.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
-#include "content/browser/service_worker/service_worker_storage_control_impl.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
@@ -217,9 +218,9 @@ EmbeddedWorkerTestHelper::CreateServiceWorker() {
 void EmbeddedWorkerTestHelper::BindStorageControl(
     mojo::PendingReceiver<storage::mojom::ServiceWorkerStorageControl>
         receiver) {
-  storage_control_ = std::make_unique<ServiceWorkerStorageControlImpl>(
-      ServiceWorkerStorage::Create(user_data_directory_,
-                                   database_task_runner_));
+  storage_control_ = std::make_unique<storage::ServiceWorkerStorageControlImpl>(
+      storage::ServiceWorkerStorage::Create(user_data_directory_,
+                                            database_task_runner_));
   storage_control_->Bind(std::move(receiver));
 }
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/service_worker/service_worker_storage_control_impl.h"
+#include "components/services/storage/service_worker/service_worker_storage_control_impl.h"
 
 #include <cstdint>
 #include <string>
@@ -15,8 +15,9 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "content/browser/service_worker/service_worker_storage.h"
-#include "content/browser/service_worker/service_worker_test_utils.h"
+#include "components/services/storage/service_worker/service_worker_storage.h"
+#include "components/services/storage/service_worker/service_worker_storage_test_utils.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/http/http_util.h"
@@ -26,7 +27,7 @@
 #include "third_party/blink/public/mojom/service_worker/navigation_preload_state.mojom.h"
 #include "url/gurl.h"
 
-namespace content {
+namespace storage {
 
 using DatabaseStatus = storage::mojom::ServiceWorkerDatabaseStatus;
 using RegistrationData = storage::mojom::ServiceWorkerRegistrationDataPtr;
@@ -105,7 +106,7 @@ ReadResponseHeadResult ReadResponseHead(
 ReadDataResult ReadResponseData(
     storage::mojom::ServiceWorkerResourceReader* reader,
     int data_size) {
-  MockServiceWorkerDataPipeStateNotifier notifier;
+  FakeServiceWorkerDataPipeStateNotifier notifier;
   mojo::ScopedDataPipeConsumerHandle data_consumer;
   base::RunLoop loop;
   reader->ReadData(
@@ -117,7 +118,7 @@ ReadDataResult ReadResponseData(
   loop.Run();
 
   ReadDataResult result;
-  result.data = ReadDataPipe(std::move(data_consumer));
+  result.data = test::ReadDataPipeViaRunLoop(std::move(data_consumer));
   result.status = notifier.WaitUntilComplete();
 
   return result;
@@ -1588,4 +1589,4 @@ TEST_F(ServiceWorkerStorageControlImplTest, TrackRunningVersion) {
   }
 }
 
-}  // namespace content
+}  // namespace storage

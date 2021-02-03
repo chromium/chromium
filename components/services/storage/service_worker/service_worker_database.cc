@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/service_worker/service_worker_database.h"
+#include "components/services/storage/service_worker/service_worker_database.h"
 
 #include "base/command_line.h"
 #include "base/debug/crash_logging.h"
@@ -16,7 +16,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "content/browser/service_worker/service_worker_database.pb.h"
+#include "components/services/storage/service_worker/service_worker_database.pb.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
@@ -90,7 +90,7 @@
 //   OBSOLETE: https://crbug.com/788604
 //   key: "INITDATA_FOREIGN_FETCH_ORIGIN:" + <GURL 'origin'>
 //   value: <empty>
-namespace content {
+namespace storage {
 
 namespace service_worker_internals {
 
@@ -2133,4 +2133,4 @@ bool ServiceWorkerDatabase::IsDatabaseInMemory() const {
   return path_.empty();
 }
 
-}  // namespace content
+}  // namespace storage

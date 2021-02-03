@@ -35,6 +35,7 @@ class FilePath;
 
 namespace storage {
 class QuotaManagerProxy;
+class ServiceWorkerStorageControlImpl;
 class SpecialStoragePolicy;
 }
 
@@ -47,7 +48,6 @@ namespace content {
 class BrowserContext;
 class ChromeBlobStorageContext;
 class ServiceWorkerContextObserver;
-class ServiceWorkerStorageControlImpl;
 class StoragePartitionImpl;
 class URLLoaderFactoryGetter;
 
@@ -550,7 +550,7 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   // TODO(crbug.com/1055677): Remove `storage_control_` when
   // storage::mojom::Partition supports ServiceWorkerStorageControl. An instance
   // of this impl should live in the storage service, not here.
-  std::unique_ptr<ServiceWorkerStorageControlImpl> storage_control_;
+  std::unique_ptr<storage::ServiceWorkerStorageControlImpl> storage_control_;
   // These fields are used to (re)create `storage_control_`.
   base::FilePath user_data_directory_;
   scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;

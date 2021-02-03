@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_DISK_CACHE_H_
-#define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_DISK_CACHE_H_
+#ifndef COMPONENTS_SERVICES_STORAGE_SERVICE_WORKER_SERVICE_WORKER_DISK_CACHE_H_
+#define COMPONENTS_SERVICES_STORAGE_SERVICE_WORKER_SERVICE_WORKER_DISK_CACHE_H_
 
 #include <stdint.h>
 
@@ -14,11 +14,10 @@
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
-#include "content/common/content_export.h"
 #include "net/base/completion_once_callback.h"
 #include "net/disk_cache/disk_cache.h"
 
-namespace content {
+namespace storage {
 
 // TODO(crbug.com/586174): Use disk_cache::EntryResult for better lifetime
 // management of disk cache entries. Using EntryResult will eliminate allocating
@@ -27,7 +26,7 @@ namespace content {
 class ServiceWorkerDiskCache;
 
 // Thin wrapper around disk_cache::Entry.
-class CONTENT_EXPORT ServiceWorkerDiskCacheEntry {
+class ServiceWorkerDiskCacheEntry {
  public:
   // The newly created entry takes ownership of `disk_cache_entry` and closes it
   // on destruction. |cache| must outlive the newly created entry.
@@ -64,7 +63,7 @@ class CONTENT_EXPORT ServiceWorkerDiskCacheEntry {
 // net::DiskCache wrapper for the cache used by service worker resources.
 //
 // Provides ways to create/open/doom service worker disk cache entries.
-class CONTENT_EXPORT ServiceWorkerDiskCache {
+class ServiceWorkerDiskCache {
  public:
   ServiceWorkerDiskCache();
   ~ServiceWorkerDiskCache();
@@ -144,6 +143,6 @@ class CONTENT_EXPORT ServiceWorkerDiskCache {
   base::WeakPtrFactory<ServiceWorkerDiskCache> weak_factory_{this};
 };
 
-}  // namespace content
+}  // namespace storage
 
-#endif  // CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_DISK_CACHE_H_
+#endif  // COMPONENTS_SERVICES_STORAGE_SERVICE_WORKER_SERVICE_WORKER_DISK_CACHE_H_

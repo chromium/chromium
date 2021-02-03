@@ -6,7 +6,7 @@
 [disk_cache]: /net/disk_cache/README.md
 [embedded_worker.mojom]: https://codesearch.chromium.org/chromium/src/third_party/blink/public/mojom/service_worker/embedded_worker.mojom
 [service_worker_container.mojom]: https://codesearch.chromium.org/chromium/src/third_party/blink/public/mojom/service_worker/service_worker_container.mojom
-[service_worker_database.h]: https://codesearch.chromium.org/chromium/src/content/browser/service_worker/service_worker_database.h
+[service_worker_database.h]: https://codesearch.chromium.org/chromium/src/components/services/storage/service_worker/service_worker_database.h
 [third_party/blink/common/service_worker]: /third_party/blink/common/service_worker
 [third_party/blink/public/common/service_worker]: /third_party/blink/public/common/service_worker
 [third_party/blink/public/mojom/service_worker]: /third_party/blink/public/mojom/service_worker
@@ -18,8 +18,8 @@
 [LevelDB]: /third_party/leveldatabase/README.chromium
 [Onion Soup]: https://docs.google.com/document/d/1K1nO8G9dO9kNSmtVz2gJ2GG9gQOTgm65sJlV3Fga4jE/edit?usp=sharing
 [Quota Manager]: /storage/browser/quota
-[ServiceWorkerDatabase]: https://codesearch.chromium.org/chromium/src/content/browser/service_worker/service_worker_database.h
-[ServiceWorkerStorage]: https://codesearch.chromium.org/chromium/src/content/browser/service_worker/service_worker_storage.h
+[ServiceWorkerDatabase]: https://codesearch.chromium.org/chromium/src/components/services/storage/service_worker/service_worker_database.h
+[ServiceWorkerStorage]: https://codesearch.chromium.org/chromium/src/components/services/storage/service_worker/service_worker_storage.h
 [Service Worker specification]: https://w3c.github.io/ServiceWorker/
 [MDN documentation]: https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API
 

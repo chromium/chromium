@@ -69,6 +69,16 @@ source_set("storage") {
     "partition_impl.h",
     "sandboxed_vfs_delegate.cc",
     "sandboxed_vfs_delegate.h",
+    "service_worker/service_worker_database.cc",
+    "service_worker/service_worker_database.h",
+    "service_worker/service_worker_disk_cache.cc",
+    "service_worker/service_worker_disk_cache.h",
+    "service_worker/service_worker_resource_ops.cc",
+    "service_worker/service_worker_resource_ops.h",
+    "service_worker/service_worker_storage.cc",
+    "service_worker/service_worker_storage.h",
+    "service_worker/service_worker_storage_control_impl.cc",
+    "service_worker/service_worker_storage_control_impl.h",
     "storage_service_impl.cc",
     "storage_service_impl.h",
   ]
@@ -79,6 +89,7 @@ source_set("storage") {
     "//components/services/storage/dom_storage:local_storage_proto",
     "//components/services/storage/indexed_db/scopes:scopes_metadata_proto",
     "//components/services/storage/public/mojom",
+    "//components/services/storage/service_worker:service_worker_proto",
     "//mojo/public/cpp/bindings",
     "//sql",
     "//third_party/blink/public/common",
@@ -90,6 +101,9 @@ source_set("storage") {
   deps = [
     ":filesystem_proxy_factory",
     "//components/services/storage/public/cpp",
+    "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
     "//storage/common",
   ]
 }
@@ -148,6 +162,12 @@ source_set("tests") {
     "indexed_db/transactional_leveldb/transactional_leveldb_transaction_unittest.cc",
     "indexed_db/transactional_leveldb/transactional_leveldb_unittest.cc",
     "partition_impl_unittest.cc",
+    "service_worker/service_worker_database_unittest.cc",
+    "service_worker/service_worker_disk_cache_unittest.cc",
+    "service_worker/service_worker_storage_control_impl_unittest.cc",
+    "service_worker/service_worker_storage_test_utils.cc",
+    "service_worker/service_worker_storage_test_utils.h",
+    "service_worker/service_worker_storage_unittest.cc",
     "storage_service_impl_unittest.cc",
   ]
 
@@ -161,6 +181,8 @@ source_set("tests") {
     "//components/services/storage/public/mojom",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
+    "//net",
+    "//net:test_support",
     "//sql:test_support",
     "//testing/gmock",
     "//testing/gtest",
