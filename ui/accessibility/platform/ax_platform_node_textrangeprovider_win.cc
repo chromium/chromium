@@ -1261,6 +1261,26 @@ void AXPlatformNodeTextRangeProviderWin::NormalizeTextRange(
 }
 
 // static
+void AXPlatformNodeTextRangeProviderWin::NormalizeAsUnignoredPosition(
+    AXPositionInstance& position) {
+  if (!position->IsValid())
+    return;
+
+  if (position->IsIgnored()) {
+    AXPositionInstance normalized_position = position->AsUnignoredPosition(
+        AXPositionAdjustmentBehavior::kMoveForward);
+    if (normalized_position->IsNullPosition()) {
+      normalized_position = position->AsUnignoredPosition(
+          AXPositionAdjustmentBehavior::kMoveBackward);
+    }
+
+    if (!normalized_position->IsNullPosition())
+      position = std::move(normalized_position);
+  }
+  DCHECK(!position->IsNullPosition());
+}
+
+// static
 void AXPlatformNodeTextRangeProviderWin::NormalizeAsUnignoredTextRange(
     AXPositionInstance& start,
     AXPositionInstance& end) {
@@ -1269,29 +1289,8 @@ void AXPlatformNodeTextRangeProviderWin::NormalizeAsUnignoredTextRange(
 
   if (!start->IsIgnored() && !end->IsIgnored())
     return;
-
-  if (start->IsIgnored()) {
-    AXPositionInstance normalized_start =
-        start->AsUnignoredPosition(AXPositionAdjustmentBehavior::kMoveForward);
-    if (normalized_start->IsNullPosition()) {
-      normalized_start = start->AsUnignoredPosition(
-          AXPositionAdjustmentBehavior::kMoveBackward);
-    }
-    if (!normalized_start->IsNullPosition())
-      start = std::move(normalized_start);
-  }
-
-  if (end->IsIgnored()) {
-    AXPositionInstance normalized_end =
-        end->AsUnignoredPosition(AXPositionAdjustmentBehavior::kMoveForward);
-    if (normalized_end->IsNullPosition()) {
-      normalized_end =
-          end->AsUnignoredPosition(AXPositionAdjustmentBehavior::kMoveBackward);
-    }
-    if (!normalized_end->IsNullPosition())
-      end = std::move(normalized_end);
-  }
-
+  NormalizeAsUnignoredPosition(start);
+  NormalizeAsUnignoredPosition(end);
   DCHECK_LE(*start, *end);
 }
 
@@ -1524,20 +1523,38 @@ void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::
   if (tree->GetAXTreeID() == start_->tree_id() &&
       node->id() == start_->anchor_id()) {
     AXPositionInstance new_start = start_->CreateParentPosition();
+    AXPositionInstance end_for_comparison = end_->Clone();
+
+    // Convert |new_start| and |end_for_comparison| to unignored positions to
+    // avoid AXPosition::SlowCompareTo in the < operator below.
+    NormalizeAsUnignoredPosition(new_start);
+    NormalizeAsUnignoredPosition(end_for_comparison);
+    DCHECK(!new_start->IsIgnored());
+    DCHECK(!end_for_comparison->IsIgnored());
+
     // Create a degenerate range at |end_| if we have an inverted range -
     // which occurs when the |end_| comes before the |start_|. However, if the
     // |end_| is positioned on the deleted node, don't create a degenerate range
     // yet as that position will be updated below.
-    if (node->id() != end_->anchor_id() && *end_ < *new_start)
+    if (node->id() != end_->anchor_id() && *end_for_comparison < *new_start)
       new_start = end_->Clone();
     SetStart(std::move(new_start));
   }
   if (tree->GetAXTreeID() == end_->tree_id() &&
       node->id() == end_->anchor_id()) {
     AXPositionInstance new_end = end_->CreateParentPosition();
+    AXPositionInstance start_for_comparison = start_->Clone();
+
+    // Convert |new_end| and |start_for_comparison| to unignored positions to
+    // avoid AXPosition::SlowCompareTo in the < operator below.
+    NormalizeAsUnignoredPosition(new_end);
+    NormalizeAsUnignoredPosition(start_for_comparison);
+    DCHECK(!new_end->IsIgnored());
+    DCHECK(!start_for_comparison->IsIgnored());
+
     // Create a degenerate range at |start_| if we have an inverted range -
     // which occurs when the |end_| comes before the |start_|.
-    if (*new_end < *start_)
+    if (*new_end < *start_for_comparison)
       new_end = start_->Clone();
     SetEnd(std::move(new_end));
   }

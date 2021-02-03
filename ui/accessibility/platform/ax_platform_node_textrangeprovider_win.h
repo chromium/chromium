@@ -169,6 +169,7 @@ class AX_EXPORT __declspec(uuid("3071e40d-a10d-45ff-a59f-6e8e1138e2c1"))
   // normalizes the endpoints passed by parameter.
   // TODO(vicfei): Make static.
   void NormalizeTextRange(AXPositionInstance& start, AXPositionInstance& end);
+  static void NormalizeAsUnignoredPosition(AXPositionInstance& position);
   static void NormalizeAsUnignoredTextRange(AXPositionInstance& start,
                                             AXPositionInstance& end);
 

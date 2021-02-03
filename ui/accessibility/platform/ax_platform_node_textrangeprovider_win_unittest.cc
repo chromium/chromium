@@ -5868,43 +5868,50 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // thus generating a tree update.
   //
   // ++1 kRootWebArea
-  // ++++2 kStaticText/++++3 kStaticText (replacement node)
-  // ++++4 kStaticText/++++5 kStaticText (replacement node)
+  // ++++2 kGroup (ignored)
+  // ++++++3 kStaticText/++++4 kStaticText (replacement node)
+  // ++++5 kStaticText/++++6 kStaticText (replacement node)
   AXNodeData root_1;
-  AXNodeData text_2;
+  AXNodeData group_2;
   AXNodeData text_3;
   AXNodeData text_4;
   AXNodeData text_5;
+  AXNodeData text_6;
 
   root_1.id = 1;
-  text_2.id = 2;
+  group_2.id = 2;
   text_3.id = 3;
   text_4.id = 4;
   text_5.id = 5;
+  text_6.id = 6;
 
   root_1.role = ax::mojom::Role::kRootWebArea;
-  root_1.child_ids = {text_2.id, text_4.id};
+  root_1.child_ids = {text_3.id, text_5.id};
 
-  text_2.role = ax::mojom::Role::kStaticText;
-  text_2.SetName("some text");
+  group_2.role = ax::mojom::Role::kGroup;
+  group_2.AddState(ax::mojom::State::kIgnored);
+  group_2.child_ids = {text_3.id};
 
-  // Replacement node of |text_2|.
   text_3.role = ax::mojom::Role::kStaticText;
   text_3.SetName("some text");
 
+  // Replacement node of |text_3|.
   text_4.role = ax::mojom::Role::kStaticText;
-  text_4.SetName("more text");
+  text_4.SetName("some text");
 
-  // Replacement node of |text_4|.
   text_5.role = ax::mojom::Role::kStaticText;
   text_5.SetName("more text");
+
+  // Replacement node of |text_5|.
+  text_6.role = ax::mojom::Role::kStaticText;
+  text_6.SetName("more text");
 
   ui::AXTreeUpdate update;
   ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
   update.root_id = root_1.id;
   update.tree_data.tree_id = tree_id;
   update.has_tree_data = true;
-  update.nodes = {root_1, text_2, text_4};
+  update.nodes = {root_1, text_3, text_5};
   Init(update);
 
   // Create a position at MaxTextOffset.
@@ -5913,14 +5920,14 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
       AXPlatformNodeFromNode(GetNodeFromTree(tree_id, 1)));
 
-  // start: TextPosition, anchor_id=2, text_offset=0, annotated_text=<s>ome text
-  // end  : TextPosition, anchor_id=4, text_offset=9, annotated_text=more text<>
+  // start: TextPosition, anchor_id=3, text_offset=0, annotated_text=<s>ome text
+  // end  : TextPosition, anchor_id=5, text_offset=9, annotated_text=more text<>
   ComPtr<AXPlatformNodeTextRangeProviderWin> range;
   CreateTextRangeProviderWin(
       range, owner, tree_id,
-      /*start_anchor_id*/ 2, /*start_offset*/ 0,
+      /*start_anchor_id*/ text_3.id, /*start_offset*/ 0,
       /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
-      /*end_anchor_id*/ 4, /*end_offset*/ 9,
+      /*end_anchor_id*/ text_5.id, /*end_offset*/ 9,
       /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
 
   EXPECT_UIA_TEXTRANGE_EQ(range, /*expected_text*/ L"some textmore text");
@@ -5928,9 +5935,9 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // 1. Replace the node on which |start_| is.
   {
     // Replace node |text_2| with |text_3|.
-    root_1.child_ids = {text_3.id, text_4.id};
+    root_1.child_ids = {text_4.id, text_5.id};
     AXTreeUpdate test_update;
-    test_update.nodes = {root_1, text_3};
+    test_update.nodes = {root_1, text_4};
     ASSERT_TRUE(GetTree()->Unserialize(test_update));
 
     // Replacing that node shouldn't impact the range.
@@ -5938,21 +5945,22 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
     range->GetChildren(children.Receive());
     EXPECT_UIA_TEXTRANGE_EQ(range, /*expected_text*/ L"some textmore text");
 
-    // The |start_| endpoint should have moved to its parent.
-    EXPECT_EQ(1, GetStart(range.Get())->anchor_id());
+    // The |start_| endpoint should have moved to the root, skipping its ignored
+    // parent.
+    EXPECT_EQ(root_1.id, GetStart(range.Get())->anchor_id());
     EXPECT_EQ(0, GetStart(range.Get())->text_offset());
 
     // The |end_| endpoint should not have moved.
-    EXPECT_EQ(4, GetEnd(range.Get())->anchor_id());
+    EXPECT_EQ(text_5.id, GetEnd(range.Get())->anchor_id());
     EXPECT_EQ(9, GetEnd(range.Get())->text_offset());
   }
 
   // 2. Replace the node on which |end_| is.
   {
     // Replace node |text_4| with |text_5|.
-    root_1.child_ids = {text_3.id, text_5.id};
+    root_1.child_ids = {text_4.id, text_6.id};
     AXTreeUpdate test_update;
-    test_update.nodes = {root_1, text_5};
+    test_update.nodes = {root_1, text_6};
     ASSERT_TRUE(GetTree()->Unserialize(test_update));
 
     // Replacing that node shouldn't impact the range.
@@ -5961,32 +5969,32 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
     EXPECT_UIA_TEXTRANGE_EQ(range, /*expected_text*/ L"some textmore text");
 
     // The |start_| endpoint should still be on its parent.
-    EXPECT_EQ(1, GetStart(range.Get())->anchor_id());
+    EXPECT_EQ(root_1.id, GetStart(range.Get())->anchor_id());
     EXPECT_EQ(0, GetStart(range.Get())->text_offset());
 
     // The |end_| endpoint should have moved to its parent.
-    EXPECT_EQ(1, GetEnd(range.Get())->anchor_id());
+    EXPECT_EQ(root_1.id, GetEnd(range.Get())->anchor_id());
     EXPECT_EQ(18, GetEnd(range.Get())->text_offset());
   }
 
   // 3. Replace the node on which |end_| is.
   {
-    // start: TextPosition, anchor_id=3, text_offset=0, annotated_text=<s>ome
-    // end  : TextPosition, anchor_id=3, text_offset=4, annotated_text=some<>
+    // start: TextPosition, anchor_id=4, text_offset=0, annotated_text=<s>ome
+    // end  : TextPosition, anchor_id=4, text_offset=4, annotated_text=some<>
     ComPtr<AXPlatformNodeTextRangeProviderWin> range_2;
     CreateTextRangeProviderWin(
         range_2, owner, tree_id,
-        /*start_anchor_id*/ 3, /*start_offset*/ 0,
+        /*start_anchor_id*/ text_4.id, /*start_offset*/ 0,
         /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
-        /*end_anchor_id*/ 3, /*end_offset*/ 4,
+        /*end_anchor_id*/ text_4.id, /*end_offset*/ 4,
         /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
 
     EXPECT_UIA_TEXTRANGE_EQ(range_2, /*expected_text*/ L"some");
 
-    // Replace node |text_3| with |text_2|.
-    root_1.child_ids = {text_2.id, text_5.id};
+    // Replace node |text_4| with |text_3|.
+    root_1.child_ids = {text_3.id, text_6.id};
     AXTreeUpdate test_update;
-    test_update.nodes = {root_1, text_2};
+    test_update.nodes = {root_1, text_3};
     ASSERT_TRUE(GetTree()->Unserialize(test_update));
 
     // Replacing that node shouldn't impact the range.
@@ -5995,12 +6003,116 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
     EXPECT_UIA_TEXTRANGE_EQ(range_2, /*expected_text*/ L"some");
 
     // The |start_| endpoint should have moved to its parent.
-    EXPECT_EQ(1, GetStart(range_2.Get())->anchor_id());
+    EXPECT_EQ(root_1.id, GetStart(range_2.Get())->anchor_id());
     EXPECT_EQ(0, GetStart(range_2.Get())->text_offset());
 
     // The |end_| endpoint should have moved to its parent.
-    EXPECT_EQ(1, GetEnd(range_2.Get())->anchor_id());
+    EXPECT_EQ(root_1.id, GetEnd(range_2.Get())->anchor_id());
     EXPECT_EQ(4, GetEnd(range_2.Get())->text_offset());
+  }
+}
+
+TEST_F(AXPlatformNodeTextRangeProviderTest,
+       TestReplaceStartAndEndEndpointRepeatRemoval) {
+  // This test updates the tree structure to ensure that the text range is still
+  // valid after text nodes get removed repeatedly.
+  //
+  // ++1 kRootWebArea
+  // ++++2 kStaticText
+  // ++++3 kGroup (ignored)
+  // ++++++4 kStaticText
+  // ++++5 kStaticText
+  AXNodeData root_1;
+  AXNodeData text_2;
+  AXNodeData group_3;
+  AXNodeData text_4;
+  AXNodeData text_5;
+
+  root_1.id = 1;
+  text_2.id = 2;
+  group_3.id = 3;
+  text_4.id = 4;
+  text_5.id = 5;
+
+  root_1.role = ax::mojom::Role::kRootWebArea;
+  root_1.child_ids = {text_2.id, group_3.id, text_5.id};
+
+  text_2.role = ax::mojom::Role::kStaticText;
+  text_2.SetName("text 2");
+
+  group_3.role = ax::mojom::Role::kGroup;
+  group_3.AddState(ax::mojom::State::kIgnored);
+  group_3.child_ids = {text_4.id};
+
+  text_4.role = ax::mojom::Role::kStaticText;
+  text_4.SetName("text 4");
+
+  text_5.role = ax::mojom::Role::kStaticText;
+  text_5.SetName("text 5");
+
+  ui::AXTreeUpdate update;
+  ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  update.root_id = root_1.id;
+  update.tree_data.tree_id = tree_id;
+  update.has_tree_data = true;
+  update.nodes = {root_1, text_2, group_3, text_4, text_5};
+  Init(update);
+
+  // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
+  // will build the entire tree.
+  AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
+      AXPlatformNodeFromNode(GetNodeFromTree(tree_id, 1)));
+
+  ComPtr<AXPlatformNodeTextRangeProviderWin> range;
+  CreateTextRangeProviderWin(
+      range, owner, tree_id,
+      /*start_anchor_id*/ text_2.id, /*start_offset*/ 0,
+      /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
+      /*end_anchor_id*/ text_4.id, /*end_offset*/ 0,
+      /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+  EXPECT_UIA_TEXTRANGE_EQ(range, /*expected_text*/ L"text 2");
+
+  // start: TextPosition, anchor_id=2, text_offset=0, annotated_text=<t>ext2
+  // end  : TextPosition, anchor_id=4, text_offset=0, annotated_text=<>text4
+  // 1. Remove |text_4| which |end_| is anchored on.
+  {
+    // Remove node |text_4|.
+    group_3.child_ids = {};
+    AXTreeUpdate test_update;
+    test_update.nodes = {root_1, group_3};
+    ASSERT_TRUE(GetTree()->Unserialize(test_update));
+
+    // Replacing that node should not impact the range.
+    EXPECT_UIA_TEXTRANGE_EQ(range, /*expected_text*/ L"text 2");
+  }
+
+  // start: TextPosition, anchor_id=2, text_offset=0, annotated_text=<>text2
+  // end  : TextPosition, anchor_id=2, text_offset=5, annotated_text=text2<>
+  // 2. Remove |text_2|, which both |start_| and |end_| are anchored to and
+  //  replace with |text_5|.
+  {
+    root_1.child_ids = {group_3.id, text_5.id};
+    AXTreeUpdate test_update;
+    test_update.nodes = {root_1, group_3};
+    ASSERT_TRUE(GetTree()->Unserialize(test_update));
+
+    // Removing that node should adjust the range to the |text_5|, as it took
+    // |text_2|'s position.
+    EXPECT_UIA_TEXTRANGE_EQ(range, /*expected_text*/ L"text 5");
+  }
+
+  // start: TextPosition, anchor_id=5, text_offset=0, annotated_text=<>text5
+  // end  : TextPosition, anchor_id=5, text_offset=5, annotated_text=text5<>
+  // 3. Remove |text_5|, which both |start_| and |end_| are pointing to.
+  {
+    root_1.child_ids = {group_3.id};
+    AXTreeUpdate test_update;
+    test_update.nodes = {root_1, group_3};
+    ASSERT_TRUE(GetTree()->Unserialize(test_update));
+
+    // Removing the last text node should leave a degenerate range.
+    EXPECT_UIA_TEXTRANGE_EQ(range, /*expected_text*/ L"");
   }
 }
 
