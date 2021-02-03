@@ -12,8 +12,13 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
 
 import org.chromium.base.Log;
+import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
+
+import java.util.concurrent.TimeoutException;
 
 /**
  * Contains utilities for password change integration tests.
@@ -38,6 +43,22 @@ public final class PasswordChangeFixtureTestUtils {
         return credential1.getUrl().equals(credential2.getUrl())
                 && credential1.getUsername().equals(credential2.getUsername())
                 && !credential1.getPassword().equals(credential2.getPassword());
+    }
+
+    /**
+     * Clears the browser's data for a certain time period.
+     *
+     * @param dataTypes List of BrowsingDataType elements to remove.
+     * @param timePeriod Time period range for data removal.
+     * @throws TimeoutException
+     */
+    public static void clearBrowsingData(int[] dataTypes, int timePeriod) throws TimeoutException {
+        CallbackHelper helper = new CallbackHelper();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            BrowsingDataBridge.getInstance().clearBrowsingData(
+                    helper::notifyCalled, dataTypes, timePeriod);
+        });
+        helper.waitForCallback(0);
     }
 
     /**

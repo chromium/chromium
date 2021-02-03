@@ -58,6 +58,10 @@ class PasswordStoreBridge
 
   void OnEdited(const password_manager::PasswordForm& form) override;
 
+  // Callback executed after clearing the password store. It re-initializes
+  // `saved_passwords_presenter_`.
+  void OnPasswordStoreCleared(bool success);
+
   // The corresponding java object.
   base::android::ScopedJavaGlobalRef<jobject> java_bridge_;
 
@@ -70,10 +74,13 @@ class PasswordStoreBridge
   password_manager::SavedPasswordsPresenter saved_passwords_presenter_{
       password_store_};
 
-  // A scoped observer for |saved_passwords_presenter_|.
+  // A scoped observer for `saved_passwords_presenter_`.
   base::ScopedObservation<password_manager::SavedPasswordsPresenter,
                           password_manager::SavedPasswordsPresenter::Observer>
       observed_saved_password_presenter_{this};
+
+  // `weak_factory_` is used for all callback uses.
+  base::WeakPtrFactory<PasswordStoreBridge> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_STORE_BRIDGE_H_

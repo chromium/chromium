@@ -89,7 +89,15 @@ void PasswordStoreBridge::GetAllCredentials(
 }
 
 void PasswordStoreBridge::ClearAllPasswords(JNIEnv* env) {
-  password_store_->ClearStore(base::DoNothing());
+  password_store_->ClearStore(
+      base::BindOnce(&PasswordStoreBridge::OnPasswordStoreCleared,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void PasswordStoreBridge::OnPasswordStoreCleared(bool success) {
+  if (success) {
+    saved_passwords_presenter_.Init();
+  }
 }
 
 void PasswordStoreBridge::Destroy(JNIEnv* env) {
