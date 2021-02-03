@@ -225,10 +225,16 @@ TEST_F(LocalNetworkCollectorImplTest, TestRecordZeroNetworksEligibleForSync) {
                                  /*owned_by_user=*/true,
                                  /*configured_by_sync=*/false,
                                  /*is_from_policy=*/true);
+  helper()->ConfigureWiFiNetwork(kHopperSsid, /*is_secured=*/true,
+                                 /*in_profile=*/false, /*has_connected=*/true,
+                                 /*owned_by_user=*/true,
+                                 /*configured_by_sync=*/false,
+                                 /*is_from_policy=*/false,
+                                 /*is_hidden=*/true);
 
   local_network_collector()->RecordZeroNetworksEligibleForSync();
   base::RunLoop().RunUntilIdle();
-  histogram_tester.ExpectTotalCount(kZeroNetworksSyncedReasonHistogram, 3);
+  histogram_tester.ExpectTotalCount(kZeroNetworksSyncedReasonHistogram, 4);
   histogram_tester.ExpectBucketCount(
       kZeroNetworksSyncedReasonHistogram,
       NetworkEligibilityStatus::kUnsupportedSecurityType, 1);
@@ -238,6 +244,8 @@ TEST_F(LocalNetworkCollectorImplTest, TestRecordZeroNetworksEligibleForSync) {
   histogram_tester.ExpectBucketCount(
       kZeroNetworksSyncedReasonHistogram,
       NetworkEligibilityStatus::kProhibitedByPolicy, 1);
+  histogram_tester.ExpectBucketCount(kZeroNetworksSyncedReasonHistogram,
+                                     NetworkEligibilityStatus::kHiddenSsid, 1);
 }
 
 TEST_F(LocalNetworkCollectorImplTest, TestGetSyncableNetwork) {

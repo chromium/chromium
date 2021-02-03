@@ -17,6 +17,7 @@ namespace sync_wifi {
 NetworkEligibilityStatus GetNetworkEligibilityStatus(
     const std::string& guid,
     bool is_connectable,
+    bool is_hidden,
     const network_config::mojom::SecurityType& security_type,
     const network_config::mojom::OncSource& source,
     bool log_result) {
@@ -54,6 +55,14 @@ NetworkEligibilityStatus GetNetworkEligibilityStatus(
     return NetworkEligibilityStatus::kNotConnectable;
   }
 
+  if (is_hidden) {
+    if (log_result) {
+      NET_LOG(EVENT) << NetworkGuidId(guid)
+                     << " is not eligible, it is hidden.";
+    }
+    return NetworkEligibilityStatus::kHiddenSsid;
+  }
+
   if (!network_metadata_store->GetIsCreatedByUser(guid)) {
     if (log_result) {
       NET_LOG(EVENT) << NetworkGuidId(guid)
@@ -80,11 +89,12 @@ NetworkEligibilityStatus GetNetworkEligibilityStatus(
 
 bool IsEligibleForSync(const std::string& guid,
                        bool is_connectable,
+                       bool is_hidden,
                        const network_config::mojom::SecurityType& security_type,
                        const network_config::mojom::OncSource& source,
                        bool log_result) {
-  return GetNetworkEligibilityStatus(guid, is_connectable, security_type,
-                                     source, log_result) ==
+  return GetNetworkEligibilityStatus(guid, is_connectable, is_hidden,
+                                     security_type, source, log_result) ==
          NetworkEligibilityStatus::kNetworkIsEligible;
 }
 

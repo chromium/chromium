@@ -53799,6 +53799,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="Not Configured By User"/>
   <int value="6" label="Unsupported Security Type"/>
   <int value="7" label="No Wifi Networks Available"/>
+  <int value="8" label="Hidden SSID"/>
 </enum>
 
 <enum name="NetworkErrorType">

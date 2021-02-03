@@ -96,7 +96,8 @@ std::string NetworkTestHelper::ConfigureWiFiNetwork(const std::string& ssid,
                                                     bool has_connected,
                                                     bool owned_by_user,
                                                     bool configured_by_sync,
-                                                    bool is_from_policy) {
+                                                    bool is_from_policy,
+                                                    bool is_hidden) {
   std::string security_entry =
       is_secured ? R"("SecurityClass": "psk", "Passphrase": "secretsauce", )"
                  : R"("SecurityClass": "none", )";
@@ -105,17 +106,22 @@ std::string NetworkTestHelper::ConfigureWiFiNetwork(const std::string& ssid,
       in_profile ? network_state_helper_->UserHash() : "/profile/default");
   std::string ui_data = "";
   if (is_from_policy) {
-    ui_data = base::StringPrintf(R"("UIData": "{\"onc_source\": \"%s\"}")",
+    ui_data = base::StringPrintf(R"(, "UIData": "{\"onc_source\": \"%s\"}")",
                                  in_profile ? "user_policy" : "device_policy");
+  }
+
+  std::string hidden = "";
+  if (is_hidden) {
+    hidden = R"(, "WiFi.HiddenSSID": true)";
   }
   std::string guid = base::StringPrintf("%s_guid", ssid.c_str());
   std::string service_path =
       network_state_helper_->ConfigureService(base::StringPrintf(
           R"({"GUID": "%s", "Type": "wifi", "SSID": "%s",
             %s "State": "ready", "Strength": 100,
-            %s "AutoConnect": true, "Connectable": true, %s})",
+            %s "AutoConnect": true, "Connectable": true%s%s})",
           guid.c_str(), ssid.c_str(), security_entry.c_str(),
-          profile_entry.c_str(), ui_data.c_str()));
+          profile_entry.c_str(), ui_data.c_str(), hidden.c_str()));
 
   base::RunLoop().RunUntilIdle();
 

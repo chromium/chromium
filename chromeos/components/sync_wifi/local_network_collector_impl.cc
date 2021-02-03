@@ -106,6 +106,7 @@ void LocalNetworkCollectorImpl::RecordZeroNetworksEligibleForSync() {
     }
     network_eligible_for_sync_status = GetNetworkEligibilityStatus(
         network->guid, network->connectable,
+        network->type_state->get_wifi()->hidden_ssid,
         network->type_state->get_wifi()->security, network->source,
         /*log_result=*/false);
     network_eligible_for_sync_status_codes.insert(
@@ -176,6 +177,7 @@ bool LocalNetworkCollectorImpl::IsEligible(
   const network_config::mojom::WiFiStatePropertiesPtr& wifi_properties =
       network->type_state->get_wifi();
   return IsEligibleForSync(network->guid, network->connectable,
+                           wifi_properties->hidden_ssid,
                            wifi_properties->security, network->source,
                            /*log_result=*/true);
 }
