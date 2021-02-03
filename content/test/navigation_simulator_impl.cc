@@ -1025,6 +1025,11 @@ void NavigationSimulatorImpl::DidStartNavigation(
   request_ = request;
   num_did_start_navigation_called_++;
 
+  // Some navigation requests are not directly created by the
+  // NavigationSimulator, so we should set some parameters manually after the
+  // navigation started.
+  request_->set_has_user_gesture(has_user_gesture_);
+
   // Add a throttle to count NavigationThrottle calls count.
   RegisterTestThrottle(request);
   PrepareCompleteCallbackOnRequest();
@@ -1304,8 +1309,14 @@ NavigationSimulatorImpl::BuildDidCommitProvisionalLoadParams(
   params->referrer = mojo::Clone(referrer_);
   params->contents_mime_type = contents_mime_type_;
   params->transition = transition_;
-  params->gesture =
-      has_user_gesture_ ? NavigationGestureUser : NavigationGestureAuto;
+  if (request_) {
+    params->gesture = request_->common_params().has_user_gesture
+                          ? NavigationGestureUser
+                          : NavigationGestureAuto;
+  } else {
+    params->gesture =
+        has_user_gesture_ ? NavigationGestureUser : NavigationGestureAuto;
+  }
   params->history_list_was_cleared = history_list_was_cleared_;
   params->did_create_new_entry = DidCreateNewEntry();
   params->should_replace_current_entry = should_replace_current_entry_;

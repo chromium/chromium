@@ -807,7 +807,8 @@ enum class VerifyDidCommitParamsDifference {
   kIsOverridingUserAgent = 5,
   kHTTPStatusCode = 6,
   kShouldUpdateHistory = 7,
-  kMaxValue = kShouldUpdateHistory,
+  kGesture = 8,
+  kMaxValue = kGesture,
 };
 
 }  // namespace
@@ -2778,6 +2779,8 @@ void RenderFrameHostImpl::DidNavigate(
   // the NavigationRequest instead. The browser process doesn't need to rely on
   // the renderer process.
   last_http_status_code_ = params.http_status_code;
+
+  last_gesture_ = params.gesture;
 
   if (did_create_new_document)
     DidCommitNewDocument(params, navigation_request);
@@ -9834,6 +9837,7 @@ void RenderFrameHostImpl::
   // - is_overriding_user_agent
   // - http_status_code
   // - should_update_history
+  // - gesture
   // TODO(crbug.com/1131832): Verify more params.
   const GURL& browser_base_url = request->common_params().base_url_for_data_url;
 
@@ -9872,6 +9876,21 @@ void RenderFrameHostImpl::
   const bool browser_should_update_history =
       !browser_url_is_unreachable && browser_http_status_code != 404;
 
+  // On cross-document navigations, gesture will always be set to the
+  // CommonNavigationParams' has_user_gesture value.
+  // On same-document navigations, gesture will be set to the has_user_gesture
+  // value of the navigation that initially loaded the document (so, the last
+  // cross-document navigation).
+  // TODO(https://crbug.com/1172969): Make same-document navigations return the
+  // CommonNavigationParams' has_user_gesture value instead of the document's
+  // initial gesture value.
+  const bool browser_gesture =
+      is_same_document_navigation
+          ? (last_gesture_ == NavigationGesture::NavigationGestureUser)
+          : request->common_params().has_user_gesture;
+  const bool renderer_gesture =
+      (params.gesture == NavigationGesture::NavigationGestureUser);
+
   if ((!ShouldVerify("intended_as_new_entry") ||
        request->commit_params().intended_as_new_entry ==
            params.intended_as_new_entry) &&
@@ -9885,7 +9904,8 @@ void RenderFrameHostImpl::
       (!ShouldVerify("http_status_code") ||
        browser_http_status_code == params.http_status_code) &&
       (!ShouldVerify("should_update_history") ||
-       browser_should_update_history == params.should_update_history)) {
+       browser_should_update_history == params.should_update_history) &&
+      (!ShouldVerify("gesture") || browser_gesture == renderer_gesture)) {
     return;
   }
 
@@ -9956,6 +9976,10 @@ void RenderFrameHostImpl::
                         browser_should_update_history);
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "renderer_suh",
                         params.should_update_history);
+
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "browser_gesture", browser_gesture);
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "renderer_gesture",
+                        renderer_gesture);
 
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "is_same_document",
                         is_same_document_navigation);
@@ -10039,6 +10063,7 @@ void RenderFrameHostImpl::
   DCHECK_EQ(browser_is_overriding_user_agent, params.is_overriding_user_agent);
   DCHECK_EQ(browser_http_status_code, params.http_status_code);
   DCHECK_EQ(browser_should_update_history, params.should_update_history);
+  DCHECK_EQ(browser_gesture, renderer_gesture);
 
   // Log histograms to trigger Chrometto slow reports, allowing us to see traces
   // to analyze what happened in these navigations.
@@ -10074,6 +10099,10 @@ void RenderFrameHostImpl::
   if (browser_should_update_history != params.should_update_history) {
     LogVerifyDidCommitParamsDifference(
         VerifyDidCommitParamsDifference::kShouldUpdateHistory);
+  }
+  if (browser_gesture != renderer_gesture) {
+    LogVerifyDidCommitParamsDifference(
+        VerifyDidCommitParamsDifference::kGesture);
   }
 
   base::debug::DumpWithoutCrashing();

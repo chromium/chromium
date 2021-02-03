@@ -2318,7 +2318,9 @@ TEST_F(NavigationControllerTest, PushStateWithoutPreviousEntry) {
   params->method = "GET";
   params->should_update_history = true;
   params->post_id = -1;
-  main_test_rfh()->SendRendererInitiatedNavigationRequest(url, false);
+  params->gesture = NavigationGesture::NavigationGestureAuto;
+  main_test_rfh()->SendRendererInitiatedNavigationRequest(
+      url, false /* has_user_gesture */);
   main_test_rfh()->PrepareForCommit();
   contents()->GetMainFrame()->SendNavigateWithParams(
       std::move(params), true /* was_within_same_document */);

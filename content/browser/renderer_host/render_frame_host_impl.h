@@ -2802,6 +2802,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // The POST ID of the last committed navigation.
   int64_t last_post_id_ = 0;
 
+  // The gesture of the last committed navigation.
+  NavigationGesture last_gesture_ = NavigationGesture::NavigationGestureAuto;
+
   // Whether the last committed navigation is to an error page.
   bool is_error_page_ = false;
 
