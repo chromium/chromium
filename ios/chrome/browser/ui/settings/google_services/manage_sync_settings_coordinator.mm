@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/ui/settings/google_services/sync_error_settings_command_handler.h"
 #import "ios/chrome/browser/ui/settings/sync/sync_encryption_passphrase_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/sync/sync_encryption_table_view_controller.h"
+#import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity_browser_opener.h"
 #include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
@@ -102,7 +103,7 @@ using signin_metrics::PromoAction;
   self.mediator.commandHandler = self;
   self.mediator.syncErrorHandler = self;
   self.viewController = [[ManageSyncSettingsTableViewController alloc]
-      initWithStyle:UITableViewStyleGrouped];
+      initWithStyle:ChromeTableViewStyle()];
   self.viewController.serviceDelegate = self.mediator;
   self.viewController.presentationDelegate = self;
   self.viewController.modelDelegate = self.mediator;
