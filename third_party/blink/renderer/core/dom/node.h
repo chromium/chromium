@@ -859,6 +859,7 @@ class CORE_EXPORT Node : public EventTarget {
   StaticNodeList* getDestinationInsertionPoints();
   HTMLSlotElement* AssignedSlot() const;
   HTMLSlotElement* assignedSlotForBinding();
+  HTMLSlotElement* AssignedSlotWithoutRecalc() const;
 
   bool IsFinishedParsingChildren() const {
     return GetFlag(kIsFinishedParsingChildrenFlag);
@@ -1098,6 +1099,7 @@ class CORE_EXPORT Node : public EventTarget {
     DCHECK(!HasRareData());
     return reinterpret_cast<NodeRenderingData*>(data_.Get());
   }
+  ShadowRoot* GetSlotAssignmentRoot() const;
 
   uint32_t node_flags_;
   Member<Node> parent_or_shadow_host_node_;

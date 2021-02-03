@@ -134,6 +134,20 @@ void ShadowRoot::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
   RebuildChildrenLayoutTrees(whitespace_attacher);
 }
 
+void ShadowRoot::DetachLayoutTree(bool performing_reattach) {
+  ContainerNode::DetachLayoutTree(performing_reattach);
+
+  // Shadow host may contain unassigned light dom children that need detaching.
+  // Assigned nodes are detached by the slot element.
+  for (Node& child : NodeTraversal::ChildrenOf(host())) {
+    if (!child.IsSlotable() || child.AssignedSlotWithoutRecalc())
+      continue;
+
+    if (child.GetDocument() == GetDocument())
+      child.DetachLayoutTree(performing_reattach);
+  }
+}
+
 Node::InsertionNotificationRequest ShadowRoot::InsertedInto(
     ContainerNode& insertion_point) {
   DocumentFragment::InsertedInto(insertion_point);

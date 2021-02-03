@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<!-- crbug.com/1160433 -->
+<title>Test that popup, its owner element unassigned under a shadow root, is cleanup when the page is shutdown. </title>
+<script src="../resources/picker-common.js"></script>
+<canvas>
+<video>
+<select>
+<input type="color" id="color" value="#126465">
+</canvas>
+
+<div>FAIL</div>
+
+<form action="../resources/popup-close-after-navigation.html" id="form1"></form>
+<script>
+if (window.testRunner) {
+    testRunner.waitUntilDone();
+    testRunner.dumpAsText();
+}
+
+function openCallback() {
+    form1.submit();
+}
+
+function errorCallback() {
+    testRunner.notifyDone();
+}
+
+window.onload = function () {
+    openPicker(color, openCallback, errorCallback);
+}
+</script>
+</body>
+</html>

@@ -98,6 +98,7 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
   unsigned ChildShadowRootCount() const { return child_shadow_root_count_; }
 
   void RebuildLayoutTree(WhitespaceAttacher&);
+  void DetachLayoutTree(bool performing_reattach) override;
 
   void RegisterScopedHTMLStyleChild();
   void UnregisterScopedHTMLStyleChild();

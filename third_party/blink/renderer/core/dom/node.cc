@@ -3031,13 +3031,15 @@ void Node::DecrementConnectedSubframeCount() {
   RareData()->DecrementConnectedSubframeCount();
 }
 
-HTMLSlotElement* Node::AssignedSlot() const {
+ShadowRoot* Node::GetSlotAssignmentRoot() const {
   DCHECK(!IsPseudoElement());
   ShadowRoot* root = ShadowRootOfParent();
-  if (!root)
-    return nullptr;
+  return (root && root->HasSlotAssignment()) ? root : nullptr;
+}
 
-  if (!root->HasSlotAssignment())
+HTMLSlotElement* Node::AssignedSlot() const {
+  ShadowRoot* root = GetSlotAssignmentRoot();
+  if (!root)
     return nullptr;
 
   // TODO(hayato): Node::AssignedSlot() shouldn't be called while
@@ -3065,6 +3067,18 @@ HTMLSlotElement* Node::AssignedSlot() const {
     DCHECK_EQ(root->AssignedSlotFor(*this), data->AssignedSlot());
     return data->AssignedSlot();
   }
+  return nullptr;
+}
+
+// Used when assignment recalc is forbidden, i.e., DetachLayoutTree().
+// Returned assignedSlot is not guaranteed up to date.
+HTMLSlotElement* Node::AssignedSlotWithoutRecalc() const {
+  if (!GetSlotAssignmentRoot())
+    return nullptr;
+
+  if (FlatTreeNodeData* data = GetFlatTreeNodeData())
+    return data->AssignedSlot();
+
   return nullptr;
 }
 
