@@ -31,7 +31,8 @@ import org.chromium.ui.test.util.RenderTestRule;
 import java.util.List;
 
 /**
- * Render test for {@link RadioButtonWithDescription}, {@link RadioButtonWithEditText} and
+ * Render test for {@link RadioButtonWithDescription}, {@link RadioButtonWithEditText}, {@link
+ * RadioButtonWithDescriptionAndAuxButton} and
  * {@link RadioButtonWithDescriptionLayout}.
  */
 @RunWith(ParameterizedRunner.class)
@@ -41,8 +42,9 @@ public class RadioButtonRenderTest extends DummyUiActivityTestCase {
     private static List<ParameterSet> sClassParams =
             new NightModeTestUtils.NightModeParams().getParameters();
 
-    private static final int REVISION = 1;
-    private static final String REVISION_DESCRIPTION = "Updated EditText hint color for a11y";
+    private static final int REVISION = 2;
+    private static final String REVISION_DESCRIPTION =
+            "Added RadioButtonWithDescriptionAndAuxButton to the test.";
 
     @Rule
     public RenderTestRule mRenderTestRule = RenderTestRule.Builder.withPublicCorpus()
@@ -60,6 +62,10 @@ public class RadioButtonRenderTest extends DummyUiActivityTestCase {
     private RadioButtonWithEditText mRadioButtonWithEditText2;
     private RadioButtonWithEditText mRadioButtonWithEditText3;
     private RadioButtonWithEditText mRadioButtonWithEditText4;
+
+    private RadioButtonWithDescriptionAndAuxButton mRadioButtonWithDescriptonAndAuxButton1;
+    private RadioButtonWithDescriptionAndAuxButton mRadioButtonWithDescriptonAndAuxButton2;
+    private RadioButtonWithDescriptionAndAuxButton mRadioButtonWithDescriptonAndAuxButton3;
 
     private final int mFakeBgColor;
 
@@ -88,6 +94,12 @@ public class RadioButtonRenderTest extends DummyUiActivityTestCase {
             mRadioButtonWithEditText2 = content.findViewById(R.id.test_radio_edit_text_2);
             mRadioButtonWithEditText3 = content.findViewById(R.id.test_radio_edit_text_3);
             mRadioButtonWithEditText4 = content.findViewById(R.id.test_radio_edit_text_4);
+            mRadioButtonWithDescriptonAndAuxButton1 =
+                    content.findViewById(R.id.test_radio_description_and_aux_button_1);
+            mRadioButtonWithDescriptonAndAuxButton2 =
+                    content.findViewById(R.id.test_radio_description_and_aux_button_2);
+            mRadioButtonWithDescriptonAndAuxButton3 =
+                    content.findViewById(R.id.test_radio_description_and_aux_button_3);
         });
 
         Assert.assertNotNull(mLayout);
@@ -98,6 +110,9 @@ public class RadioButtonRenderTest extends DummyUiActivityTestCase {
         Assert.assertNotNull(mRadioButtonWithEditText2);
         Assert.assertNotNull(mRadioButtonWithEditText3);
         Assert.assertNotNull(mRadioButtonWithEditText4);
+        Assert.assertNotNull(mRadioButtonWithDescriptonAndAuxButton1);
+        Assert.assertNotNull(mRadioButtonWithDescriptonAndAuxButton2);
+        Assert.assertNotNull(mRadioButtonWithDescriptonAndAuxButton3);
     }
 
     @Test
@@ -111,5 +126,11 @@ public class RadioButtonRenderTest extends DummyUiActivityTestCase {
         mRenderTestRule.render(mRadioButtonWithEditText2, "test_radio_edit_text_2");
         mRenderTestRule.render(mRadioButtonWithEditText3, "test_radio_edit_text_3");
         mRenderTestRule.render(mRadioButtonWithEditText4, "test_radio_edit_text_4");
+        mRenderTestRule.render(
+                mRadioButtonWithDescriptonAndAuxButton1, "test_radio_description_and_aux_button_1");
+        mRenderTestRule.render(
+                mRadioButtonWithDescriptonAndAuxButton2, "test_radio_description_and_aux_button_2");
+        mRenderTestRule.render(
+                mRadioButtonWithDescriptonAndAuxButton3, "test_radio_description_and_aux_button_3");
     }
 }
