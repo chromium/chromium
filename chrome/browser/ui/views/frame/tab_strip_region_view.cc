@@ -121,6 +121,11 @@ class TabStripContainerOverflowIndicator : public views::View {
     canvas->DrawRect(GetContentsBounds(), flags);
   }
 
+  void OnThemeChanged() override {
+    View::OnThemeChanged();
+    SchedulePaint();
+  }
+
  private:
   TabStrip* tab_strip_;
   views::OverflowIndicatorAlignment side_;
