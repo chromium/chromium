@@ -10,8 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
@@ -20,8 +23,12 @@ import org.chromium.ui.widget.ChromeBulletSpan;
 /**
  * Settings fragment for privacy sandbox settings. This class represents a View in the MVC paradigm.
  */
-public class PrivacySandboxSettingsFragment extends PreferenceFragmentCompat {
+public class PrivacySandboxSettingsFragment
+        extends PreferenceFragmentCompat implements Preference.OnPreferenceChangeListener {
     public static final String TRIAL_DESCRIPTION_PREFERENCE = "privacy_sandbox_trial_description";
+    public static final String TOGGLE_PREFERENCE = "privacy_sandbox_toggle";
+
+    private PrivacySandboxBridge mBridge;
 
     /**
      * Initializes all the objects related to the preferences page.
@@ -37,6 +44,23 @@ public class PrivacySandboxSettingsFragment extends PreferenceFragmentCompat {
                         getContext().getString(R.string.privacy_sandbox_trial_description),
                         new SpanInfo("<li1>", "</li1>", new ChromeBulletSpan(getContext())),
                         new SpanInfo("<li2>", "</li2>", new ChromeBulletSpan(getContext()))));
+
+        mBridge = new PrivacySandboxBridge();
+        ChromeSwitchPreference privacySandboxToggle =
+                (ChromeSwitchPreference) findPreference(TOGGLE_PREFERENCE);
+        privacySandboxToggle.setOnPreferenceChangeListener(this);
+        privacySandboxToggle.setChecked(mBridge.isPrivacySandboxEnabled());
+    }
+
+    @Override
+    public boolean onPreferenceChange(Preference preference, Object newValue) {
+        String key = preference.getKey();
+        if (!TOGGLE_PREFERENCE.equals(key)) return true;
+        boolean enabled = (boolean) newValue;
+        RecordUserAction.record(enabled ? "Settings.PrivacySandbox.ApisEnabled"
+                                        : "Settings.PrivacySandbox.ApisDisabled");
+        mBridge.setPrivacySandboxEnabled(enabled);
+        return true;
     }
 
     @Override
