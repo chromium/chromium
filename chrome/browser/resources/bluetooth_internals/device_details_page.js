@@ -9,7 +9,6 @@
  */
 
 cr.define('device_details_page', function() {
-  const Page = cr.ui.pageManager.Page;
   const Snackbar = snackbar.Snackbar;
   const SnackbarType = snackbar.SnackbarType;
 
@@ -32,7 +31,7 @@ cr.define('device_details_page', function() {
    * the DeviceInfo object and the Services section contains a ServiceList
    * compononent that lists all of the active services on the device.
    */
-  class DeviceDetailsPage extends Page {
+  class DeviceDetailsPage extends cr.ui.pageManager.Page {
     /**
      * @param {string} id
      * @param {!bluetooth.mojom.DeviceInfo} deviceInfo

@@ -20,12 +20,13 @@ cr.define('bluetooth_internals', function() {
   const DeviceDetailsPage = device_details_page.DeviceDetailsPage;
   const DevicesPage = devices_page.DevicesPage;
   const DebugLogPage = debug_log_page.DebugLogPage;
-  const PageManager = cr.ui.pageManager.PageManager;
   const Snackbar = snackbar.Snackbar;
   const SnackbarType = snackbar.SnackbarType;
 
   devices = new device_collection.DeviceCollection([]);
 
+  /** @type {cr.ui.pageManager.PageManager} */
+  const pageManager = cr.ui.pageManager.PageManager.getInstance();
   /** @type {adapter_page.AdapterPage} */
   let adapterPage = null;
   /** @type {devices_page.DevicesPage} */
@@ -44,17 +45,11 @@ cr.define('bluetooth_internals', function() {
 
   /**
    * Observer for page changes. Used to update page title header.
-   * @constructor
-   * @extends {cr.ui.pageManager.PageManager.Observer}
    */
-  const PageObserver = function() {};
-
-  PageObserver.prototype = {
-    __proto__: PageManager.Observer.prototype,
-
+  const PageObserver = class extends cr.ui.pageManager.PageManagerObserver {
     updateHistory(path) {
       window.location.hash = '#' + path;
-    },
+    }
 
     /**
      * Sets the page title. Called by PageManager.
@@ -63,7 +58,7 @@ cr.define('bluetooth_internals', function() {
      */
     updateTitle(title) {
       document.querySelector('.page-title').textContent = title;
-    },
+    }
   };
 
   /**
@@ -75,7 +70,9 @@ cr.define('bluetooth_internals', function() {
     const id = 'devices/' + address.toLowerCase();
     sidebarObj.removeItem(id);
 
-    const deviceDetailsPage = PageManager.registeredPages[id];
+    const deviceDetailsPage =
+        /** @type {!device_details_page.DeviceDetailsPage} */ (
+            pageManager.registeredPages.get(id));
     assert(deviceDetailsPage, 'Device Details page must exist');
 
     deviceDetailsPage.disconnect();
@@ -86,7 +83,7 @@ cr.define('bluetooth_internals', function() {
     devicesPage.setInspecting(
         deviceDetailsPage.deviceInfo, false /* isInspecting */);
 
-    PageManager.unregister(deviceDetailsPage);
+    pageManager.unregister(deviceDetailsPage);
   }
 
   /**
@@ -99,7 +96,9 @@ cr.define('bluetooth_internals', function() {
    */
   function makeDeviceDetailsPage(deviceInfo) {
     const deviceDetailsPageId = 'devices/' + deviceInfo.address.toLowerCase();
-    let deviceDetailsPage = PageManager.registeredPages[deviceDetailsPageId];
+    let deviceDetailsPage =
+        /** @type {?device_details_page.DeviceDetailsPage} */ (
+            pageManager.registeredPages.get(deviceDetailsPageId));
     if (deviceDetailsPage) {
       return deviceDetailsPage;
     }
@@ -117,14 +116,14 @@ cr.define('bluetooth_internals', function() {
 
     deviceDetailsPage.pageDiv.addEventListener(
         'forgetpressed', function(event) {
-          PageManager.showPageByName(devicesPage.name);
+          pageManager.showPageByName(devicesPage.name);
           removeDeviceDetailsPage(event.detail.address);
         });
 
     // Inform the devices page that the user is inspecting this device.
     // This will update the links in the device table.
     devicesPage.setInspecting(deviceInfo, true /* isInspecting */);
-    PageManager.register(deviceDetailsPage);
+    pageManager.register(deviceDetailsPage);
 
     sidebarObj.addItem({
       pageName: deviceDetailsPageId,
@@ -142,9 +141,9 @@ cr.define('bluetooth_internals', function() {
    */
   function updateDeviceDetailsPage(address) {
     const detailPageId = 'devices/' + address.toLowerCase();
-    const page = PageManager.registeredPages[detailPageId];
+    const page = pageManager.registeredPages.get(detailPageId);
     if (page) {
-      page.redraw();
+      /** @type {!device_details_page.DeviceDetailsPage} */ (page).redraw();
     }
   }
 
@@ -202,11 +201,11 @@ cr.define('bluetooth_internals', function() {
     devicesPage.pageDiv.addEventListener('inspectpressed', function(event) {
       const detailsPage =
           makeDeviceDetailsPage(devices.getByAddress(event.detail.address));
-      PageManager.showPageByName(detailsPage.name);
+      pageManager.showPageByName(detailsPage.name);
     });
 
     devicesPage.pageDiv.addEventListener('forgetpressed', function(event) {
-      PageManager.showPageByName(devicesPage.name);
+      pageManager.showPageByName(devicesPage.name);
       removeDeviceDetailsPage(event.detail.address);
     });
 
@@ -256,32 +255,32 @@ cr.define('bluetooth_internals', function() {
     $('menu-btn').addEventListener('click', function() {
       sidebarObj.open();
     });
-    PageManager.addObserver(sidebarObj);
-    PageManager.addObserver(new PageObserver());
+    pageManager.addObserver(sidebarObj);
+    pageManager.addObserver(new PageObserver());
 
     devicesPage = new DevicesPage();
-    PageManager.register(devicesPage);
+    pageManager.register(devicesPage);
     adapterPage = new AdapterPage();
-    PageManager.register(adapterPage);
+    pageManager.register(adapterPage);
     debugLogPage = new DebugLogPage(bluetoothInternalsHandler);
-    PageManager.register(debugLogPage);
+    pageManager.register(debugLogPage);
 
     // Set up hash-based navigation.
     window.addEventListener('hashchange', function() {
       // If a user navigates and the page doesn't exist, do nothing.
       const pageName = window.location.hash.substr(1);
       if ($(pageName)) {
-        PageManager.showPageByName(pageName);
+        pageManager.showPageByName(pageName);
       }
     });
 
     if (!window.location.hash) {
-      PageManager.showPageByName(adapterPage.name);
+      pageManager.showPageByName(adapterPage.name);
       return;
     }
 
     // Only the root pages are available on page load.
-    PageManager.showPageByName(window.location.hash.split('/')[0].substr(1));
+    pageManager.showPageByName(window.location.hash.split('/')[0].substr(1));
   }
 
   function initializeViews() {

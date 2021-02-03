@@ -4,46 +4,33 @@
 
 cr.define('cr.ui.pageManager', function() {
   /**
-   * PageManager contains a list of root Page and overlay Page objects and
-   * handles "navigation" by showing and hiding these pages and overlays. On
-   * initial load, PageManager can use the path to open the correct hierarchy
-   * of pages and overlay(s). Handlers for user events, like pressing buttons,
-   * can call into PageManager to open a particular overlay or cancel an
-   * existing overlay.
+   * PageManager contains a list of root Page objects and handles "navigation"
+   * by showing and hiding these pages. On initial load, PageManager can use
+   * the path to open the correct hierarchy of pages.
    */
-  const PageManager = {
-    /**
-     * True if page is served from a dialog.
-     * @type {boolean}
-     */
-    isDialog: false,
+  class PageManager {
+    constructor() {
+      /**
+       * True if page is served from a dialog.
+       * @type {boolean}
+       */
+      this.isDialog = false;
 
-    /**
-     * Offset of page container in pixels. Uber pages that use the side menu
-     * can override this with the setter.
-     * @type {number}
-     */
-    horizontalOffset_: 23,
+      /**
+       * Root pages. Maps lower-case page names to the respective page object.
+       * @type {!Map<string, !cr.ui.pageManager.Page>}
+       */
+      this.registeredPages = new Map();
 
-    /**
-     * Root pages. Maps lower-case page names to the respective page object.
-     * @type {!Object<!cr.ui.pageManager.Page>}
-     */
-    registeredPages: {},
+      /**
+       * Observers will be notified when opening and closing overlays.
+       * @private {!Array<!cr.ui.pageManager.PageManagerObserver>}
+       */
+      this.observers_ = [];
 
-    /**
-     * Pages which are meant to behave like modal dialogs. Maps lower-case
-     * overlay names to the respective overlay object.
-     * @type {!Object<!cr.ui.pageManager.Page>}
-     * @private
-     */
-    registeredOverlayPages: {},
-
-    /**
-     * Observers will be notified when opening and closing overlays.
-     * @type {!Array<!cr.ui.pageManager.PageManager.Observer>}
-     */
-    observers_: [],
+      /** @private {?cr.ui.pageManager.Page} */
+      this.defaultPage_ = null;
+    }
 
     /**
      * Initializes the complete page.
@@ -54,71 +41,27 @@ cr.define('cr.ui.pageManager', function() {
       this.defaultPage_ = defaultPage;
 
       cr.ui.FocusOutlineManager.forDocument(document);
-      document.addEventListener('scroll', this.handleScroll_.bind(this));
-
-      // Trigger the scroll handler manually to set the initial state.
-      this.handleScroll_();
-
-      // Shake the dialog if the user clicks outside the dialog bounds.
-      const containers = /** @type {!NodeList<!HTMLElement>} */ (
-          document.querySelectorAll('body > .overlay'));
-      for (let i = 0; i < containers.length; i++) {
-        const overlay = containers[i];
-        cr.ui.overlay.setupOverlay(overlay);
-        overlay.addEventListener(
-            'cancelOverlay', this.cancelOverlay.bind(this));
-      }
-
-      cr.ui.overlay.globalInitialization();
-    },
+    }
 
     /**
      * Registers new page.
      * @param {!cr.ui.pageManager.Page} page Page to register.
      */
     register(page) {
-      this.registeredPages[page.name.toLowerCase()] = page;
+      this.registeredPages.set(page.name.toLowerCase(), page);
+      page.addEventListener(
+          'page-hash-changed',
+          e => this.onPageHashChanged_(/** @type {!CustomEvent} */ (e)));
       page.initializePage();
-    },
+    }
 
     /**
      * Unregisters an existing page.
      * @param {!cr.ui.pageManager.Page} page Page to unregister.
      */
     unregister(page) {
-      delete this.registeredPages[page.name.toLowerCase()];
-    },
-
-    /**
-     * Registers a new Overlay page.
-     * @param {!cr.ui.pageManager.Page} overlay Overlay to register.
-     * @param {cr.ui.pageManager.Page} parentPage Associated parent page for
-     *     this overlay.
-     * @param {Array} associatedControls Array of control elements associated
-     *     with this page.
-     */
-    registerOverlay(overlay, parentPage, associatedControls) {
-      this.registeredOverlayPages[overlay.name.toLowerCase()] = overlay;
-      overlay.parentPage = parentPage;
-      if (associatedControls) {
-        overlay.associatedControls = associatedControls;
-        if (associatedControls.length) {
-          overlay.associatedSection =
-              this.findSectionForNode_(associatedControls[0]);
-        }
-
-        // Sanity check.
-        for (let i = 0; i < associatedControls.length; ++i) {
-          assert(associatedControls[i], 'Invalid element passed.');
-        }
-      }
-
-      overlay.tab = undefined;
-      overlay.isOverlay = true;
-
-      overlay.reverseButtonStrip();
-      overlay.initializePage();
-    },
+      this.registeredPages.delete(page.name.toLowerCase());
+    }
 
     /**
      * Shows the default page.
@@ -130,10 +73,10 @@ cr.define('cr.ui.pageManager', function() {
           this.defaultPage_ instanceof cr.ui.pageManager.Page,
           'PageManager must be initialized with a default page.');
       this.showPageByName(this.defaultPage_.name, opt_updateHistory);
-    },
+    }
 
     /**
-     * Shows a registered page. This handles both root and overlay pages.
+     * Shows a registered page.
      * @param {string} pageName Page name.
      * @param {boolean=} opt_updateHistory If we should update the history after
      *     showing the page (defaults to true).
@@ -145,13 +88,9 @@ cr.define('cr.ui.pageManager', function() {
       opt_updateHistory = opt_updateHistory !== false;
       opt_propertyBag = opt_propertyBag || {};
 
-      // If a bubble is currently being shown, hide it.
-      this.hideBubble();
-
       // Find the currently visible root-level page.
       let rootPage = null;
-      for (const name in this.registeredPages) {
-        const page = this.registeredPages[name];
+      for (const page of this.registeredPages.values()) {
         if (page.visible && !page.parentPage) {
           rootPage = page;
           break;
@@ -159,31 +98,16 @@ cr.define('cr.ui.pageManager', function() {
       }
 
       // Find the target page.
-      let targetPage = this.registeredPages[pageName.toLowerCase()];
-      if (!targetPage || !targetPage.canShowPage()) {
-        // If it's not a page, try it as an overlay.
-        const hash = opt_propertyBag.hash || '';
-        if (!targetPage && this.showOverlay_(pageName, hash, rootPage)) {
-          if (opt_updateHistory) {
-            this.updateHistoryState_(!!opt_propertyBag.replaceState);
-          }
-          this.updateTitle_();
-          return;
-        }
+      let targetPage = this.registeredPages.get(pageName.toLowerCase());
+      if (!targetPage) {
         targetPage = this.defaultPage_;
       }
 
       pageName = targetPage.name.toLowerCase();
       const targetPageWasVisible = targetPage.visible;
 
-      // Determine if the root page is 'sticky', meaning that it
-      // shouldn't change when showing an overlay. This can happen for special
-      // pages like Search.
-      const isRootPageLocked =
-          rootPage && rootPage.sticky && targetPage.parentPage;
-
       // Notify pages if they will be hidden.
-      this.forEachPage_(!isRootPageLocked, function(page) {
+      this.registeredPages.forEach(page => {
         if (page.name != pageName && !this.isAncestorOfPage(page, targetPage)) {
           page.willHidePage();
         }
@@ -193,7 +117,7 @@ cr.define('cr.ui.pageManager', function() {
       targetPage.hash = opt_propertyBag.hash || '';
 
       // Update visibilities to show only the hierarchy of the target page.
-      this.forEachPage_(!isRootPageLocked, function(page) {
+      this.registeredPages.forEach(page => {
         page.visible =
             page.name == pageName || this.isAncestorOfPage(page, targetPage);
       });
@@ -211,7 +135,7 @@ cr.define('cr.ui.pageManager', function() {
       }
 
       // Notify pages if they were shown.
-      this.forEachPage_(!isRootPageLocked, function(page) {
+      this.registeredPages.forEach(page => {
         if (!targetPageWasVisible &&
             (page.name == pageName ||
              this.isAncestorOfPage(page, targetPage))) {
@@ -228,7 +152,7 @@ cr.define('cr.ui.pageManager', function() {
       // Update the document title. Do this after didShowPage was called, in
       // case a page decides to change its title.
       this.updateTitle_();
-    },
+    }
 
     /**
      * Returns the name of the page from the current path.
@@ -242,7 +166,7 @@ cr.define('cr.ui.pageManager', function() {
 
       // Skip starting slash and remove trailing slash (if any).
       return path.slice(1).replace(/\/$/, '');
-    },
+    }
 
     /**
      * Gets the level of the page. Root pages (e.g., BrowserOptions) are at
@@ -257,7 +181,7 @@ cr.define('cr.ui.pageManager', function() {
         parent = parent.parentPage;
       }
       return level;
-    },
+    }
 
     /**
      * Checks whether one page is an ancestor of the other page in terms of
@@ -276,331 +200,42 @@ cr.define('cr.ui.pageManager', function() {
         parent = parent.parentPage;
       }
       return false;
-    },
-
-    /**
-     * Returns true if the page is a direct descendent of a root page, or if
-     * the page is considered always on top. Doesn't consider visibility.
-     * @param {cr.ui.pageManager.Page} page Page to check.
-     * @return {boolean} True if |page| is a top-level overlay.
-     */
-    isTopLevelOverlay(page) {
-      return page.isOverlay &&
-          (page.alwaysOnTop || this.getNestingLevel(page) == 1);
-    },
-
-    /**
-     * Called when an page is shown or hidden to update the root page
-     * based on the page's new visibility.
-     * @param {cr.ui.pageManager.Page} page The page being made visible or
-     *     invisible.
-     */
-    onPageVisibilityChanged(page) {
-      this.updateRootPageFreezeState();
-
-      for (let i = 0; i < this.observers_.length; ++i) {
-        this.observers_[i].onPageVisibilityChanged(page);
-      }
-
-      if (!page.visible && this.isTopLevelOverlay(page)) {
-        this.updateScrollPosition_();
-      }
-    },
+    }
 
     /**
      * Called when a page's hash changes. If the page is the topmost visible
      * page, the history state is updated.
-     * @param {cr.ui.pageManager.Page} page The page whose hash has changed.
+     * @param {!CustomEvent} e
      */
-    onPageHashChanged(page) {
+    onPageHashChanged_(e) {
+      const page = /** @type {!cr.ui.pageManager.Page} */ (e.target);
       if (page == this.getTopmostVisiblePage()) {
         this.updateHistoryState_(false);
       }
-    },
+    }
 
     /**
-     * Returns the topmost visible page, or null if no page is visible.
-     * @return {cr.ui.pageManager.Page} The topmost visible page.
-     */
-    getTopmostVisiblePage() {
-      // Check overlays first since they're top-most if visible.
-      return this.getVisibleOverlay_() ||
-          this.getTopmostVisibleNonOverlayPage_();
-    },
-
-    /**
-     * Closes the visible overlay. Updates the history state after closing the
-     * overlay.
-     */
-    closeOverlay() {
-      const overlay = this.getVisibleOverlay_();
-      if (!overlay) {
-        return;
-      }
-
-      overlay.visible = false;
-      overlay.didClosePage();
-
-      this.updateHistoryState_(false);
-      this.updateTitle_();
-
-      this.restoreLastFocusedElement_();
-    },
-
-    /**
-     * Closes all overlays and updates the history after each closed overlay.
-     */
-    closeAllOverlays() {
-      while (this.isOverlayVisible_()) {
-        this.closeOverlay();
-      }
-    },
-
-    /**
-     * Cancels (closes) the overlay, due to the user pressing <Esc>.
-     */
-    cancelOverlay() {
-      // Blur the active element to ensure any changed pref value is saved.
-      document.activeElement.blur();
-      const overlay = this.getVisibleOverlay_();
-      if (!overlay) {
-        return;
-      }
-      // Let the overlay handle the <Esc> if it wants to.
-      if (overlay.handleCancel) {
-        overlay.handleCancel();
-        this.restoreLastFocusedElement_();
-      } else {
-        this.closeOverlay();
-      }
-    },
-
-    /**
-     * Shows an informational bubble displaying |content| and pointing at the
-     * |target| element. If |content| has focusable elements, they join the
-     * current page's tab order as siblings of |domSibling|.
-     * @param {HTMLDivElement} content The content of the bubble.
-     * @param {HTMLElement} target The element at which the bubble points.
-     * @param {HTMLElement} domSibling The element after which the bubble is
-     *     added to the DOM.
-     * @param {cr.ui.ArrowLocation} location The arrow location.
-     */
-    showBubble(content, target, domSibling, location) {
-      this.hideBubble();
-
-      const bubble = new cr.ui.AutoCloseBubble;
-      bubble.anchorNode = target;
-      bubble.domSibling = domSibling;
-      bubble.arrowLocation = location;
-      bubble.content = content;
-      bubble.show();
-      this.bubble_ = bubble;
-    },
-
-    /**
-     * Hides the currently visible bubble, if any.
-     */
-    hideBubble() {
-      if (this.bubble_) {
-        this.bubble_.hide();
-      }
-    },
-
-    /**
-     * Returns the currently visible bubble, or null if no bubble is visible.
-     * @return {cr.ui.AutoCloseBubble} The bubble currently being shown.
-     */
-    getVisibleBubble() {
-      const bubble = this.bubble_;
-      return bubble && !bubble.hidden ? bubble : null;
-    },
-
-    /**
-     * Callback for window.onpopstate to handle back/forward navigations.
-     * @param {string} pageName The current page name.
-     * @param {string} hash The hash to pass into the page.
-     * @param {Object} data State data pushed into history.
-     */
-    setState(pageName, hash, data) {
-      const currentOverlay = this.getVisibleOverlay_();
-      const lowercaseName = pageName.toLowerCase();
-      const newPage = this.registeredPages[lowercaseName] ||
-          this.registeredOverlayPages[lowercaseName] || this.defaultPage_;
-      if (currentOverlay && !this.isAncestorOfPage(currentOverlay, newPage)) {
-        currentOverlay.visible = false;
-        currentOverlay.didClosePage();
-      }
-      this.showPageByName(pageName, false, {hash: hash});
-    },
-
-
-    /**
-     * Whether the page is still loading (i.e. onload hasn't finished running).
-     * @return {boolean} Whether the page is still loading.
-     */
-    isLoading() {
-      return document.documentElement.classList.contains('loading');
-    },
-
-    /**
-     * Callback for window.onbeforeunload. Used to notify overlays that they
-     * will be closed.
-     */
-    willClose() {
-      const overlay = this.getVisibleOverlay_();
-      if (overlay) {
-        overlay.didClosePage();
-      }
-    },
-
-    /**
-     * Freezes/unfreezes the scroll position of the root page based on the
-     * current page stack.
-     */
-    updateRootPageFreezeState() {
-      const topPage = this.getTopmostVisiblePage();
-      if (topPage) {
-        this.setRootPageFrozen_(topPage.isOverlay);
-      }
-    },
-
-    /**
-     * Change the horizontal offset used to reposition elements while showing an
-     * overlay from the default.
-     */
-    set horizontalOffset(value) {
-      this.horizontalOffset_ = value;
-    },
-
-    /**
-     * @param {!cr.ui.pageManager.PageManager.Observer} observer The observer to
+     * @param {!cr.ui.pageManager.PageManagerObserver} observer The observer to
      *     register.
      */
     addObserver(observer) {
       this.observers_.push(observer);
-    },
+    }
 
     /**
-     * Shows a registered overlay page. Does not update history.
-     * @param {string} overlayName Page name.
-     * @param {string} hash The hash state to associate with the overlay.
-     * @param {cr.ui.pageManager.Page} rootPage The currently visible root-level
-     *     page.
-     * @return {boolean} Whether we showed an overlay.
+     * Returns the topmost visible page.
+     * @return {cr.ui.pageManager.Page}
      * @private
      */
-    showOverlay_(overlayName, hash, rootPage) {
-      const overlay = this.registeredOverlayPages[overlayName.toLowerCase()];
-      if (!overlay || !overlay.canShowPage()) {
-        return false;
-      }
-
-      const focusOutlineManager =
-          cr.ui.FocusOutlineManager.forDocument(document);
-
-      // Save the currently focused element in the page for restoration later.
-      const currentPage = this.getTopmostVisiblePage();
-      if (currentPage && focusOutlineManager.visible) {
-        currentPage.lastFocusedElement = document.activeElement;
-      }
-
-      if ((!rootPage || !rootPage.sticky) && overlay.parentPage &&
-          !overlay.parentPage.visible) {
-        this.showPageByName(overlay.parentPage.name, false);
-      }
-
-      overlay.hash = hash;
-      if (!overlay.visible) {
-        overlay.visible = true;
-        overlay.didShowPage();
-      } else {
-        overlay.didChangeHash();
-      }
-
-      if (focusOutlineManager.visible) {
-        overlay.focus();
-      }
-
-      if (!overlay.pageDiv.contains(document.activeElement)) {
-        document.activeElement.blur();
-      }
-
-      if ($('search-field') && $('search-field').value == '') {
-        const section = overlay.associatedSection;
-        if (section) {
-          /** @suppress {checkTypes|checkVars} */
-          (function() {
-            options.BrowserOptions.scrollToSection(section);
-          })();
-        }
-      }
-
-      return true;
-    },
-
-    /**
-     * Returns whether or not an overlay is visible.
-     * @return {boolean} True if an overlay is visible.
-     * @private
-     */
-    isOverlayVisible_() {
-      return this.getVisibleOverlay_() != null;
-    },
-
-    /**
-     * Returns the currently visible overlay, or null if no page is visible.
-     * @return {cr.ui.pageManager.Page} The visible overlay.
-     * @private
-     */
-    getVisibleOverlay_() {
-      let topmostPage = null;
-      for (const name in this.registeredOverlayPages) {
-        const page = this.registeredOverlayPages[name];
-        if (!page.visible) {
-          continue;
-        }
-
-        if (page.alwaysOnTop) {
-          return page;
-        }
-
-        if (!topmostPage ||
-            this.getNestingLevel(page) > this.getNestingLevel(topmostPage)) {
-          topmostPage = page;
-        }
-      }
-      return topmostPage;
-    },
-
-    /**
-     * Returns the topmost visible page (overlays excluded).
-     * @return {cr.ui.pageManager.Page} The topmost visible page aside from any
-     *     overlays.
-     * @private
-     */
-    getTopmostVisibleNonOverlayPage_() {
-      for (const name in this.registeredPages) {
-        const page = this.registeredPages[name];
+    getTopmostVisiblePage() {
+      for (const page of this.registeredPages.values()) {
         if (page.visible) {
           return page;
         }
       }
 
       return null;
-    },
-
-    /**
-     * Scrolls the page to the correct position (the top when opening an
-     * overlay, or the old scroll position a previously hidden overlay
-     * becomes visible).
-     * @private
-     */
-    updateScrollPosition_() {
-      const container = $('page-container');
-      const scrollTop = container.oldScrollTop || 0;
-      container.oldScrollTop = undefined;
-      window.scroll(scrollLeftForDocument(document), scrollTop);
-    },
+    }
 
     /**
      * Updates the title to the title of the current page, or of the topmost
@@ -618,7 +253,7 @@ cr.define('cr.ui.pageManager', function() {
         }
         page = page.parentPage;
       }
-    },
+    }
 
     /**
      * Constructs a new path to push onto the history stack, using observers
@@ -649,152 +284,29 @@ cr.define('cr.ui.pageManager', function() {
       for (let i = 0; i < this.observers_.length; ++i) {
         this.observers_[i].updateHistory(newPath, replace);
       }
-    },
-
-    /**
-     * Restores the last focused element on a given page.
-     * @private
-     */
-    restoreLastFocusedElement_() {
-      const currentPage = this.getTopmostVisiblePage();
-
-      if (!currentPage.lastFocusedElement) {
-        return;
-      }
-
-      if (cr.ui.FocusOutlineManager.forDocument(document).visible) {
-        currentPage.lastFocusedElement.focus();
-      }
-
-      currentPage.lastFocusedElement = null;
-    },
-
-    /**
-     * Find an enclosing section for an element if it exists.
-     * @param {Node} node Element to search.
-     * @return {Node} The section element, or null.
-     * @private
-     */
-    findSectionForNode_(node) {
-      while (node = node.parentNode) {
-        if (node.nodeName == 'SECTION') {
-          return node;
-        }
-      }
-      return null;
-    },
-
-    /**
-     * Freezes/unfreezes the scroll position of the root page container.
-     * @param {boolean} freeze Whether the page should be frozen.
-     * @private
-     */
-    setRootPageFrozen_(freeze) {
-      const container = $('page-container');
-      if (container.classList.contains('frozen') == freeze) {
-        return;
-      }
-
-      if (freeze) {
-        // Lock the width, since auto width computation may change.
-        container.style.width = window.getComputedStyle(container).width;
-        container.oldScrollTop = scrollTopForDocument(document);
-        container.classList.add('frozen');
-        const verticalPosition =
-            container.getBoundingClientRect().top - container.oldScrollTop;
-        container.style.top = verticalPosition + 'px';
-        this.updateFrozenElementHorizontalPosition_(container);
-      } else {
-        container.classList.remove('frozen');
-        container.style.top = '';
-        container.style.left = '';
-        container.style.right = '';
-        container.style.width = '';
-      }
-    },
-
-    /**
-     * Called when the page is scrolled; moves elements that are position:fixed
-     * but should only behave as if they are fixed for vertical scrolling.
-     * @private
-     */
-    handleScroll_() {
-      this.updateAllFrozenElementPositions_();
-    },
-
-    /**
-     * Updates all frozen pages to match the horizontal scroll position.
-     * @private
-     */
-    updateAllFrozenElementPositions_() {
-      const frozenElements = document.querySelectorAll('.frozen');
-      for (let i = 0; i < frozenElements.length; i++) {
-        this.updateFrozenElementHorizontalPosition_(frozenElements[i]);
-      }
-    },
-
-    /**
-     * Updates the given frozen element to match the horizontal scroll position.
-     * @param {HTMLElement} e The frozen element to update.
-     * @private
-     */
-    updateFrozenElementHorizontalPosition_(e) {
-      if (isRTL()) {
-        e.style.right = this.horizontalOffset + 'px';
-      } else {
-        const scrollLeft = scrollLeftForDocument(document);
-        e.style.left = this.horizontalOffset - scrollLeft + 'px';
-      }
-    },
-
-    /**
-     * Calls the given callback with each registered page.
-     * @param {boolean} includeRootPages Whether the callback should be called
-     *     for the root pages.
-     * @param {function(cr.ui.pageManager.Page)} callback The callback.
-     * @private
-     */
-    forEachPage_(includeRootPages, callback) {
-      let pageNames = Object.keys(this.registeredOverlayPages);
-      if (includeRootPages) {
-        pageNames = Object.keys(this.registeredPages).concat(pageNames);
-      }
-
-      pageNames.forEach(function(name) {
-        callback.call(
-            this,
-            this.registeredOverlayPages[name] || this.registeredPages[name]);
-      }, this);
-    },
-  };
+    }
+  }
 
   /**
    * An observer of PageManager.
-   * @constructor
    */
-  PageManager.Observer = function() {};
-
-  PageManager.Observer.prototype = {
-    /**
-     * Called when a page is being shown or has been hidden.
-     * @param {cr.ui.pageManager.Page} page The page being shown or hidden.
-     */
-    onPageVisibilityChanged(page) {},
-
+  class PageManagerObserver {
     /**
      * Called when a new title should be set.
      * @param {string} title The title to set.
      */
-    updateTitle(title) {},
+    updateTitle(title) {}
 
     /**
      * Called when a page is navigated to.
      * @param {string} path The path of the page being visited.
      * @param {boolean} replace If true, allow no history events to be created.
      */
-    updateHistory(path, replace) {},
-  };
+    updateHistory(path, replace) {}
+  }
 
   // Export
-  return {PageManager: PageManager};
+  return {PageManager: PageManager, PageManagerObserver: PageManagerObserver};
 });
+
+cr.addSingletonGetter(cr.ui.pageManager.PageManager);

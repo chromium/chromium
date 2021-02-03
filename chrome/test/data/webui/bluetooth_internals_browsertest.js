@@ -345,7 +345,7 @@ BluetoothInternalsTest.prototype = {
 };
 
 TEST_F('BluetoothInternalsTest', 'Startup_BluetoothInternals', function() {
-  /** @const */ var PageManager = cr.ui.pageManager.PageManager;
+  /** @const */ var pageManager = cr.ui.pageManager.PageManager.getInstance();
 
   var internalsHandler = null;
   var adapterFieldSet = null;
@@ -394,14 +394,15 @@ TEST_F('BluetoothInternalsTest', 'Startup_BluetoothInternals', function() {
       snackbar.Snackbar.dismiss(true);
       connectedDevices.clear();
 
-      PageManager.registeredPages['adapter'].setAdapterInfo(fakeAdapterInfo());
+      pageManager.registeredPages.get('adapter').setAdapterInfo(
+          fakeAdapterInfo());
 
-      for (var pageName in PageManager.registeredPages) {
-        var page = PageManager.registeredPages[pageName];
+      for (const pageName of pageManager.registeredPages.keys()) {
+        var page = pageManager.registeredPages.get(pageName);
 
         if (pageNames.indexOf(pageName) < 0) {
           page.pageDiv.parentNode.removeChild(page.pageDiv);
-          PageManager.unregister(page);
+          pageManager.unregister(page);
         }
       }
     });

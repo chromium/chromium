@@ -10,42 +10,36 @@ cr.define('sidebar', function() {
   /** @typedef {{pageName: string, text: string}} */
   let SidebarItem;
 
-  /** @const {!Object}*/
-  const PageManager = cr.ui.pageManager.PageManager;
-
   /**
    * A side menu that lists the currently navigable pages.
-   * @constructor
-   * @param {!Element} sidebarDiv The div corresponding to the sidebar.
-   * @extends {cr.ui.pageManager.PageManager.Observer}
    */
-  function Sidebar(sidebarDiv) {
-    /** @private {!Element} */
-    this.sidebarDiv_ = sidebarDiv;
-    /** @private {!Element} */
-    this.sidebarContent_ =
-        assert(this.sidebarDiv_.querySelector('.sidebar-content'));
-    /** @private {!Element} */
-    this.sidebarList_ = assert(this.sidebarContent_.querySelector('ul'));
+  class Sidebar extends cr.ui.pageManager.PageManagerObserver {
+    /** @param {!Element} sidebarDiv The div corresponding to the sidebar. */
+    constructor(sidebarDiv) {
+      super();
+      /** @private {!Element} */
+      this.sidebarDiv_ = sidebarDiv;
+      /** @private {!Element} */
+      this.sidebarContent_ =
+          assert(this.sidebarDiv_.querySelector('.sidebar-content'));
+      /** @private {!Element} */
+      this.sidebarList_ = assert(this.sidebarContent_.querySelector('ul'));
 
-    this.sidebarList_.querySelectorAll('li button').forEach(function(item) {
-      item.addEventListener('click', this.onItemClick_.bind(this));
-    }, this);
+      this.sidebarList_.querySelectorAll('li button').forEach(function(item) {
+        item.addEventListener('click', this.onItemClick_.bind(this));
+      }, this);
 
-    /** @private {!Element} */
-    this.overlayDiv_ = assert(this.sidebarDiv_.querySelector('.overlay'));
-    this.overlayDiv_.addEventListener('click', this.close.bind(this));
+      /** @private {!Element} */
+      this.overlayDiv_ = assert(this.sidebarDiv_.querySelector('.overlay'));
+      this.overlayDiv_.addEventListener('click', this.close.bind(this));
 
-    window.matchMedia('screen and (max-width: 600px)')
-        .addListener(function(query) {
-          if (!query.matches) {
-            this.close();
-          }
-        }.bind(this));
-  }
-
-  Sidebar.prototype = {
-    __proto__: PageManager.Observer.prototype,
+      window.matchMedia('screen and (max-width: 600px)')
+          .addListener(function(query) {
+            if (!query.matches) {
+              this.close();
+            }
+          }.bind(this));
+    }
 
     /**
      * Adds a new list item to the sidebar using the given |item|.
@@ -62,7 +56,7 @@ cr.define('sidebar', function() {
       sidebarItem.appendChild(button);
 
       this.sidebarList_.appendChild(sidebarItem);
-    },
+    }
 
     /**
      * Closes the sidebar. Only applies to layouts with window width <= 600px.
@@ -71,7 +65,7 @@ cr.define('sidebar', function() {
       this.sidebarDiv_.classList.remove('open');
       document.body.style.overflow = '';
       document.dispatchEvent(new CustomEvent('contentfocus'));
-    },
+    }
 
     /**
      * Opens the sidebar. Only applies to layouts with window width <= 600px.
@@ -80,7 +74,7 @@ cr.define('sidebar', function() {
       document.body.style.overflow = 'hidden';
       this.sidebarDiv_.classList.add('open');
       document.dispatchEvent(new CustomEvent('contentblur'));
-    },
+    }
 
     /**
      * Removes a sidebar item where |pageName| matches the item's pageName.
@@ -90,7 +84,7 @@ cr.define('sidebar', function() {
       pageName = pageName.toLowerCase();
       const query = 'li[data-page-name="' + pageName + '"]';
       this.sidebarList_.removeChild(this.sidebarList_.querySelector(query));
-    },
+    }
 
     /**
      * Called when a page is navigated to.
@@ -101,7 +95,7 @@ cr.define('sidebar', function() {
       this.sidebarContent_.querySelectorAll('li').forEach(function(item) {
         item.classList.toggle('selected', item.dataset.pageName === path);
       });
-    },
+    }
 
     /**
      * Switches the page based on which sidebar list button was clicked.
@@ -110,9 +104,10 @@ cr.define('sidebar', function() {
      */
     onItemClick_(event) {
       this.close();
-      PageManager.showPageByName(event.target.parentNode.dataset.pageName);
-    },
-  };
+      cr.ui.pageManager.PageManager.getInstance().showPageByName(
+          event.target.parentNode.dataset.pageName);
+    }
+  }
 
   return {Sidebar: Sidebar};
 });

@@ -32,7 +32,6 @@ js_library("bluetooth_internals") {
   ]
 
   deps = [
-    ":node_utils",
     ":page",
     ":page_manager",
     "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings_js_library_for_compile",
@@ -44,19 +43,11 @@ js_library("bluetooth_internals") {
   ]
 }
 
-js_library("node_utils") {
-  deps = [ "//ui/webui/resources/js:cr" ]
-}
-
 js_library("page") {
   deps = [
-    ":node_utils",
     "//ui/webui/resources/js:cr",
     "//ui/webui/resources/js:util",
     "//ui/webui/resources/js/cr:event_target",
-    "//ui/webui/resources/js/cr/ui:bubble",
-    "//ui/webui/resources/js/cr/ui:focus_outline_manager",
-    "//ui/webui/resources/js/cr/ui:overlay",
   ]
 }
 
@@ -64,6 +55,7 @@ js_library("page_manager") {
   deps = [
     ":page",
     "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js/cr/ui:focus_outline_manager",
   ]
 }
 
@@ -117,7 +109,6 @@ generate_grd("build_grd") {
     "bluetooth_internals.html",
     "bluetooth_internals.js",
     "menu.svg",
-    "node_utils.js",
     "object_fieldset.js",
     "page_manager.js",
     "page.js",
