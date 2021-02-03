@@ -49,6 +49,7 @@ const char kUninstallScript[] = "uninstall.cmd";
 const char kDevOverrideKeyUrl[] = "url";
 const char kDevOverrideKeyUseCUP[] = "use_cup";
 const char kDevOverrideKeyInitialDelay[] = "initial_delay";
+const char kDevOverrideKeyServerKeepAliveSeconds[] = "server_keep_alive";
 
 // Developer override file name, relative to app data directory.
 const char kDevOverrideFileName[] = "overrides.json";

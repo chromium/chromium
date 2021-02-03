@@ -65,13 +65,15 @@ TEST_F(ExternalConstantsBuilderTests, TestOverridingNothing) {
   EXPECT_EQ(urls[0], GURL(UPDATE_CHECK_URL));
 
   EXPECT_EQ(verifier->InitialDelay(), kInitialDelay);
+  EXPECT_EQ(verifier->ServerKeepAliveSeconds(), kServerKeepAliveSeconds);
 }
 
 TEST_F(ExternalConstantsBuilderTests, TestOverridingEverything) {
   ExternalConstantsBuilder builder;
   builder.SetUpdateURL(std::vector<std::string>{"https://www.example.com"})
       .SetUseCUP(false)
-      .SetInitialDelay(123);
+      .SetInitialDelay(123)
+      .SetServerKeepAliveSeconds(2);
   EXPECT_TRUE(builder.Overwrite());
 
   std::unique_ptr<ExternalConstantsOverrider> verifier =
@@ -85,6 +87,7 @@ TEST_F(ExternalConstantsBuilderTests, TestOverridingEverything) {
   EXPECT_EQ(urls[0], GURL("https://www.example.com"));
 
   EXPECT_EQ(verifier->InitialDelay(), 123);
+  EXPECT_EQ(verifier->ServerKeepAliveSeconds(), 2);
 }
 
 TEST_F(ExternalConstantsBuilderTests, TestPartialOverrideWithMultipleURLs) {
@@ -106,6 +109,7 @@ TEST_F(ExternalConstantsBuilderTests, TestPartialOverrideWithMultipleURLs) {
   EXPECT_EQ(urls[1], GURL("https://www.example.com"));
 
   EXPECT_EQ(verifier->InitialDelay(), kInitialDelay);
+  EXPECT_EQ(verifier->ServerKeepAliveSeconds(), kServerKeepAliveSeconds);
 }
 
 TEST_F(ExternalConstantsBuilderTests, TestClearedEverything) {
@@ -118,6 +122,7 @@ TEST_F(ExternalConstantsBuilderTests, TestClearedEverything) {
                   .ClearUpdateURL()
                   .ClearUseCUP()
                   .ClearInitialDelay()
+                  .ClearServerKeepAliveSeconds()
                   .Overwrite());
 
   std::unique_ptr<ExternalConstantsOverrider> verifier =
@@ -130,6 +135,7 @@ TEST_F(ExternalConstantsBuilderTests, TestClearedEverything) {
   EXPECT_EQ(urls[0], GURL(UPDATE_CHECK_URL));
 
   EXPECT_EQ(verifier->InitialDelay(), kInitialDelay);
+  EXPECT_EQ(verifier->ServerKeepAliveSeconds(), kServerKeepAliveSeconds);
 }
 
 TEST_F(ExternalConstantsBuilderTests, TestOverSet) {
@@ -138,9 +144,11 @@ TEST_F(ExternalConstantsBuilderTests, TestOverSet) {
           .SetUpdateURL(std::vector<std::string>{"https://www.google.com"})
           .SetUseCUP(true)
           .SetInitialDelay(123.4)
+          .SetServerKeepAliveSeconds(2)
           .SetUpdateURL(std::vector<std::string>{"https://www.example.com"})
           .SetUseCUP(false)
           .SetInitialDelay(937.6)
+          .SetServerKeepAliveSeconds(3)
           .Overwrite());
 
   // Only the second set of values should be observed.
@@ -154,6 +162,7 @@ TEST_F(ExternalConstantsBuilderTests, TestOverSet) {
   EXPECT_EQ(urls[0], GURL("https://www.example.com"));
 
   EXPECT_EQ(verifier->InitialDelay(), 937.6);
+  EXPECT_EQ(verifier->ServerKeepAliveSeconds(), 3);
 }
 
 TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
@@ -162,6 +171,7 @@ TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
       builder.SetUpdateURL(std::vector<std::string>{"https://www.google.com"})
           .SetUseCUP(false)
           .SetInitialDelay(123.4)
+          .SetServerKeepAliveSeconds(3)
           .SetUpdateURL(std::vector<std::string>{"https://www.example.com"})
           .Overwrite());
 
@@ -176,9 +186,13 @@ TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
   EXPECT_EQ(urls[0], GURL("https://www.example.com"));
 
   EXPECT_EQ(verifier->InitialDelay(), 123.4);
+  EXPECT_EQ(verifier->ServerKeepAliveSeconds(), 3);
 
   // But now we can use the builder again:
-  EXPECT_TRUE(builder.SetInitialDelay(92.3).ClearUpdateURL().Overwrite());
+  EXPECT_TRUE(builder.SetInitialDelay(92.3)
+                  .SetServerKeepAliveSeconds(4)
+                  .ClearUpdateURL()
+                  .Overwrite());
 
   // We need a new overrider to verify because it only loads once.
   std::unique_ptr<ExternalConstantsOverrider> verifier2 =
@@ -193,6 +207,7 @@ TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
 
   EXPECT_EQ(verifier2->InitialDelay(),
             92.3);  // Updated; update should be seen.
+  EXPECT_EQ(verifier2->ServerKeepAliveSeconds(), 4);
 }
 
 }  // namespace updater

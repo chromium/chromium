@@ -108,6 +108,7 @@ void EnterTestMode(const GURL& url) {
                   .SetUpdateURL(std::vector<std::string>{url.spec()})
                   .SetUseCUP(false)
                   .SetInitialDelay(0.1)
+                  .SetServerKeepAliveSeconds(1)
                   .Overwrite());
 }
 

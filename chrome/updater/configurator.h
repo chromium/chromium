@@ -69,6 +69,7 @@ class Configurator : public update_client::Configurator {
   bool IsPerUserInstall() const override;
   std::unique_ptr<update_client::ProtocolHandlerFactory>
   GetProtocolHandlerFactory() const override;
+  int ServerKeepAliveSeconds() const;
 
  private:
   friend class base::RefCountedThreadSafe<Configurator>;

@@ -114,7 +114,8 @@ void AppServerMac::MarkTaskStarted() {
 void AppServerMac::TaskCompleted() {
   main_task_runner_->PostDelayedTask(
       FROM_HERE, base::BindOnce(&AppServerMac::AcknowledgeTaskCompletion, this),
-      base::TimeDelta::FromSeconds(10));
+      base::TimeDelta::FromSeconds(config() ? config()->ServerKeepAliveSeconds()
+                                            : kServerKeepAliveSeconds));
 }
 
 void AppServerMac::AcknowledgeTaskCompletion() {

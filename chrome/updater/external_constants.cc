@@ -26,6 +26,10 @@ class DefaultExternalConstants : public ExternalConstants {
   bool UseCUP() const override { return true; }
 
   double InitialDelay() const override { return kInitialDelay; }
+
+  int ServerKeepAliveSeconds() const override {
+    return kServerKeepAliveSeconds;
+  }
 };
 
 }  // namespace

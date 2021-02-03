@@ -6,10 +6,12 @@
 
 #include <utility>
 
+#include "base/numerics/ranges.h"
 #include "base/rand_util.h"
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/updater/activity.h"
+#include "chrome/updater/constants.h"
 #include "chrome/updater/crx_downloader_factory.h"
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/patcher.h"
@@ -52,6 +54,11 @@ Configurator::~Configurator() = default;
 
 double Configurator::InitialDelay() const {
   return base::RandDouble() * external_constants_->InitialDelay();
+}
+
+int Configurator::ServerKeepAliveSeconds() const {
+  return base::ClampToRange(external_constants_->ServerKeepAliveSeconds(), 1,
+                            kServerKeepAliveSeconds);
 }
 
 int Configurator::NextCheckDelay() const {

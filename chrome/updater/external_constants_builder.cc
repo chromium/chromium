@@ -57,6 +57,19 @@ ExternalConstantsBuilder& ExternalConstantsBuilder::ClearInitialDelay() {
   return *this;
 }
 
+ExternalConstantsBuilder& ExternalConstantsBuilder::SetServerKeepAliveSeconds(
+    int server_keep_alive_seconds) {
+  overrides_.SetIntKey(kDevOverrideKeyServerKeepAliveSeconds,
+                       server_keep_alive_seconds);
+  return *this;
+}
+
+ExternalConstantsBuilder&
+ExternalConstantsBuilder::ClearServerKeepAliveSeconds() {
+  overrides_.RemoveKey(kDevOverrideKeyServerKeepAliveSeconds);
+  return *this;
+}
+
 bool ExternalConstantsBuilder::Overwrite() {
   base::FilePath base_path;
   if (!GetBaseDirectory(&base_path)) {

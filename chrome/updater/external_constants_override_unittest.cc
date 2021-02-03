@@ -30,6 +30,7 @@ TEST_F(ExternalConstantsOverriderTest, TestEmptyDictValue) {
   EXPECT_TRUE(urls[0].is_valid());
 
   EXPECT_EQ(overrider.InitialDelay(), kInitialDelay);
+  EXPECT_EQ(overrider.ServerKeepAliveSeconds(), kServerKeepAliveSeconds);
 }
 
 TEST_F(ExternalConstantsOverriderTest, TestFullOverrides) {
@@ -40,6 +41,7 @@ TEST_F(ExternalConstantsOverriderTest, TestFullOverrides) {
   overrides[kDevOverrideKeyUseCUP] = base::Value(false);
   overrides[kDevOverrideKeyUrl] = base::Value(std::move(url_list));
   overrides[kDevOverrideKeyInitialDelay] = base::Value(137.1);
+  overrides[kDevOverrideKeyServerKeepAliveSeconds] = base::Value(1);
   ExternalConstantsOverrider overrider(
       std::move(overrides), CreateDefaultExternalConstantsForTesting());
 
@@ -53,6 +55,7 @@ TEST_F(ExternalConstantsOverriderTest, TestFullOverrides) {
   EXPECT_TRUE(urls[1].is_valid());
 
   EXPECT_EQ(overrider.InitialDelay(), 137.1);
+  EXPECT_EQ(overrider.ServerKeepAliveSeconds(), 1);
 }
 
 TEST_F(ExternalConstantsOverriderTest, TestOverrideUnwrappedURL) {
@@ -69,6 +72,7 @@ TEST_F(ExternalConstantsOverriderTest, TestOverrideUnwrappedURL) {
   // Non-overridden items should fall back to defaults
   EXPECT_TRUE(overrider.UseCUP());
   EXPECT_EQ(overrider.InitialDelay(), kInitialDelay);
+  EXPECT_EQ(overrider.ServerKeepAliveSeconds(), kServerKeepAliveSeconds);
 }
 
 }  // namespace updater

@@ -98,6 +98,20 @@ double ExternalConstantsOverrider::InitialDelay() const {
   return initial_delay_value.GetDouble();
 }
 
+int ExternalConstantsOverrider::ServerKeepAliveSeconds() const {
+  if (!override_values_.contains(kDevOverrideKeyServerKeepAliveSeconds)) {
+    return next_provider_->ServerKeepAliveSeconds();
+  }
+
+  const base::Value& server_keep_alive_seconds_value =
+      override_values_.at(kDevOverrideKeyServerKeepAliveSeconds);
+  CHECK(server_keep_alive_seconds_value.is_int())
+      << "Unexpected type of override[" << kDevOverrideKeyServerKeepAliveSeconds
+      << "]: "
+      << base::Value::GetTypeName(server_keep_alive_seconds_value.type());
+  return server_keep_alive_seconds_value.GetInt();
+}
+
 // static
 std::unique_ptr<ExternalConstantsOverrider>
 ExternalConstantsOverrider::FromDefaultJSONFile(

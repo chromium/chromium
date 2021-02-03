@@ -10,10 +10,10 @@
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/updater/app/app.h"
+#include "chrome/updater/configurator.h"
 
 namespace updater {
 
-class Configurator;
 class UpdateServiceInternal;
 class GlobalPrefs;
 class LocalPrefs;
@@ -30,6 +30,8 @@ class AppServer : public App {
 
  protected:
   ~AppServer() override;
+
+  scoped_refptr<const Configurator> config() const { return config_; }
 
   // Overrides of App.
   void Uninitialize() override;

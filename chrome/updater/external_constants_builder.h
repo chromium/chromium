@@ -38,6 +38,10 @@ class ExternalConstantsBuilder {
   ExternalConstantsBuilder& SetInitialDelay(double initial_delay);
   ExternalConstantsBuilder& ClearInitialDelay();
 
+  ExternalConstantsBuilder& SetServerKeepAliveSeconds(
+      int server_keep_alive_seconds);
+  ExternalConstantsBuilder& ClearServerKeepAliveSeconds();
+
   // Write the external constants overrides file in the default location
   // with the values that have been previously set, replacing any file
   // previously there. The builder remains usable, does not forget its state,

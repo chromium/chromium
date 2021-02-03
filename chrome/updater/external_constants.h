@@ -31,6 +31,9 @@ class ExternalConstants {
   // such as update checks.
   virtual double InitialDelay() const = 0;
 
+  // Minimum number of of seconds the server needs to stay alive.
+  virtual int ServerKeepAliveSeconds() const = 0;
+
  protected:
   std::unique_ptr<ExternalConstants> next_provider_;
 };

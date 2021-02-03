@@ -39,6 +39,7 @@ class ExternalConstantsOverrider : public ExternalConstants {
   std::vector<GURL> UpdateURL() const override;
   bool UseCUP() const override;
   double InitialDelay() const override;
+  int ServerKeepAliveSeconds() const override;
 
  private:
   const base::flat_map<std::string, base::Value> override_values_;

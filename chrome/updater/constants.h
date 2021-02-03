@@ -127,6 +127,7 @@ extern const char kUninstallScript[];
 extern const char kDevOverrideKeyUrl[];
 extern const char kDevOverrideKeyUseCUP[];
 extern const char kDevOverrideKeyInitialDelay[];
+extern const char kDevOverrideKeyServerKeepAliveSeconds[];
 
 // File name of developer overrides file.
 extern const char kDevOverrideFileName[];
@@ -210,6 +211,7 @@ constexpr int kUninstallPingReasonUserNotAnOwner = 1;
 constexpr int kErrorFailedToMoveDownloadedFile = 5;
 
 constexpr double kInitialDelay = 60;
+constexpr int kServerKeepAliveSeconds = 10;
 
 }  // namespace updater
 
