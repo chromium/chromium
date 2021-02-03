@@ -300,7 +300,7 @@ void ScriptExecutor::ExecuteScript(const HostID& host_id,
                                    const GURL& webview_src,
                                    const GURL& script_url,
                                    bool user_gesture,
-                                   base::Optional<CSSOrigin> css_origin,
+                                   CSSOrigin css_origin,
                                    ScriptExecutor::ResultType result_type,
                                    ScriptFinishedCallback callback) {
   if (host_id.type() == HostID::EXTENSIONS) {

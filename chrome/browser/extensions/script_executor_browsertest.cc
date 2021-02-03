@@ -129,9 +129,8 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, MainFrameExecution) {
       {ExtensionApiFrameIdMap::kTopFrameId},
       ScriptExecutor::DONT_MATCH_ABOUT_BLANK, UserScript::DOCUMENT_IDLE,
       ScriptExecutor::DEFAULT_PROCESS, GURL() /* webview_src */,
-      GURL() /* script_url */, false /* user_gesture */,
-      base::nullopt /* css_origin */, ScriptExecutor::JSON_SERIALIZED_RESULT,
-      helper.GetCallback());
+      GURL() /* script_url */, false /* user_gesture */, CSS_ORIGIN_AUTHOR,
+      ScriptExecutor::JSON_SERIALIZED_RESULT, helper.GetCallback());
   helper.Wait();
   EXPECT_EQ("New Title", base::UTF16ToUTF8(web_contents->GetTitle()));
 
@@ -210,9 +209,8 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, SpecifiedFrames) {
         kCode, ScriptExecutor::SPECIFIED_FRAMES, {frame1_id, frame2_id},
         ScriptExecutor::DONT_MATCH_ABOUT_BLANK, UserScript::DOCUMENT_IDLE,
         ScriptExecutor::DEFAULT_PROCESS, GURL() /* webview_src */,
-        GURL() /* script_url */, false /* user_gesture */,
-        base::nullopt /* css_origin */, ScriptExecutor::JSON_SERIALIZED_RESULT,
-        helper.GetCallback());
+        GURL() /* script_url */, false /* user_gesture */, CSS_ORIGIN_AUTHOR,
+        ScriptExecutor::JSON_SERIALIZED_RESULT, helper.GetCallback());
     helper.Wait();
 
     EXPECT_THAT(helper.results(),
@@ -230,9 +228,8 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, SpecifiedFrames) {
         kCode, ScriptExecutor::INCLUDE_SUB_FRAMES, {frame1_id, frame2_id},
         ScriptExecutor::DONT_MATCH_ABOUT_BLANK, UserScript::DOCUMENT_IDLE,
         ScriptExecutor::DEFAULT_PROCESS, GURL() /* webview_src */,
-        GURL() /* script_url */, false /* user_gesture */,
-        base::nullopt /* css_origin */, ScriptExecutor::JSON_SERIALIZED_RESULT,
-        helper.GetCallback());
+        GURL() /* script_url */, false /* user_gesture */, CSS_ORIGIN_AUTHOR,
+        ScriptExecutor::JSON_SERIALIZED_RESULT, helper.GetCallback());
     helper.Wait();
 
     EXPECT_THAT(helper.results(),
@@ -260,9 +257,8 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, SpecifiedFrames) {
         {frame1_id, frame2_id, kNonExistentFrameId},
         ScriptExecutor::DONT_MATCH_ABOUT_BLANK, UserScript::DOCUMENT_IDLE,
         ScriptExecutor::DEFAULT_PROCESS, GURL() /* webview_src */,
-        GURL() /* script_url */, false /* user_gesture */,
-        base::nullopt /* css_origin */, ScriptExecutor::JSON_SERIALIZED_RESULT,
-        helper.GetCallback());
+        GURL() /* script_url */, false /* user_gesture */, CSS_ORIGIN_AUTHOR,
+        ScriptExecutor::JSON_SERIALIZED_RESULT, helper.GetCallback());
     helper.Wait();
 
     base::Value frame1_result("Frame 1");
@@ -283,9 +279,8 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, SpecifiedFrames) {
         kCode, ScriptExecutor::SPECIFIED_FRAMES, {kNonExistentFrameId},
         ScriptExecutor::DONT_MATCH_ABOUT_BLANK, UserScript::DOCUMENT_IDLE,
         ScriptExecutor::DEFAULT_PROCESS, GURL() /* webview_src */,
-        GURL() /* script_url */, false /* user_gesture */,
-        base::nullopt /* css_origin */, ScriptExecutor::JSON_SERIALIZED_RESULT,
-        helper.GetCallback());
+        GURL() /* script_url */, false /* user_gesture */, CSS_ORIGIN_AUTHOR,
+        ScriptExecutor::JSON_SERIALIZED_RESULT, helper.GetCallback());
     helper.Wait();
 
     EXPECT_THAT(helper.results(),

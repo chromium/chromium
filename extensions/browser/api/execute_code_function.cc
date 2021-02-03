@@ -113,11 +113,16 @@ bool ExecuteCodeFunction::Execute(const std::string& code_string,
   }
   CHECK_NE(UserScript::UNDEFINED, run_at);
 
-  base::Optional<CSSOrigin> css_origin;
-  if (details_->css_origin == api::extension_types::CSS_ORIGIN_USER)
-    css_origin = CSS_ORIGIN_USER;
-  else if (details_->css_origin == api::extension_types::CSS_ORIGIN_AUTHOR)
-    css_origin = CSS_ORIGIN_AUTHOR;
+  CSSOrigin css_origin = CSS_ORIGIN_AUTHOR;
+  switch (details_->css_origin) {
+    case api::extension_types::CSS_ORIGIN_NONE:
+    case api::extension_types::CSS_ORIGIN_AUTHOR:
+      css_origin = CSS_ORIGIN_AUTHOR;
+      break;
+    case api::extension_types::CSS_ORIGIN_USER:
+      css_origin = CSS_ORIGIN_USER;
+      break;
+  }
 
   executor->ExecuteScript(
       host_id_, action_type, code_string, frame_scope, {root_frame_id_},

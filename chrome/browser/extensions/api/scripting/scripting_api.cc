@@ -259,7 +259,7 @@ bool ScriptingExecuteScriptFunction::Execute(std::string code_to_execute,
       ScriptExecutor::MATCH_ABOUT_BLANK, UserScript::DOCUMENT_IDLE,
       ScriptExecutor::DEFAULT_PROCESS,
       /* webview_src */ GURL(), std::move(script_url), user_gesture(),
-      base::nullopt, ScriptExecutor::JSON_SERIALIZED_RESULT,
+      CSS_ORIGIN_AUTHOR, ScriptExecutor::JSON_SERIALIZED_RESULT,
       base::BindOnce(&ScriptingExecuteScriptFunction::OnScriptExecuted, this));
 
   return true;
@@ -369,18 +369,14 @@ bool ScriptingInsertCSSFunction::Execute(std::string code_to_execute,
   }
   DCHECK(script_executor);
 
-  // TODO(devlin): Pull the default argument for CSSOrigin up to here, and
-  // pass it through ScriptExecutor and friends, rather than having it
-  // defined in the renderer.
-  base::Optional<CSSOrigin> origin;
+  CSSOrigin origin = CSS_ORIGIN_AUTHOR;
   switch (injection_.origin) {
-    case api::scripting::STYLE_ORIGIN_USER:
-      origin = CSS_ORIGIN_USER;
-      break;
+    case api::scripting::STYLE_ORIGIN_NONE:
     case api::scripting::STYLE_ORIGIN_AUTHOR:
       origin = CSS_ORIGIN_AUTHOR;
       break;
-    case api::scripting::STYLE_ORIGIN_NONE:
+    case api::scripting::STYLE_ORIGIN_USER:
+      origin = CSS_ORIGIN_USER;
       break;
   }
 

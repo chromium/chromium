@@ -43,7 +43,7 @@ class ScriptInjector {
   virtual bool IsUserGesture() const = 0;
 
   // Returns the CSS origin of this injection.
-  virtual base::Optional<CSSOrigin> GetCssOrigin() const = 0;
+  virtual CSSOrigin GetCssOrigin() const = 0;
 
   // Returns true is CSS is being removed or added respectively.
   //

@@ -386,12 +386,18 @@ void ScriptInjection::InjectOrRemoveCss(
   std::vector<blink::WebString> css_sources = injector_->GetCssSources(
       run_location_, injected_stylesheets, num_injected_stylesheets);
   blink::WebLocalFrame* web_frame = render_frame_->GetWebFrame();
-  // Default CSS origin is "author", but can be overridden to "user" by scripts.
-  base::Optional<CSSOrigin> css_origin = injector_->GetCssOrigin();
+
   blink::WebDocument::CSSOrigin blink_css_origin =
-      css_origin && *css_origin == CSS_ORIGIN_USER
-          ? blink::WebDocument::kUserOrigin
-          : blink::WebDocument::kAuthorOrigin;
+      blink::WebDocument::kAuthorOrigin;
+  switch (injector_->GetCssOrigin()) {
+    case CSS_ORIGIN_USER:
+      blink_css_origin = blink::WebDocument::kUserOrigin;
+      break;
+    case CSS_ORIGIN_AUTHOR:
+      blink_css_origin = blink::WebDocument::kAuthorOrigin;
+      break;
+  }
+
   blink::WebStyleSheetKey style_sheet_key;
   if (const base::Optional<std::string>& injection_key =
           injector_->GetInjectionKey())
