@@ -13,6 +13,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
+#if defined(OS_ANDROID)
+#include "components/embedder_support/android/common/url_constants.h"
+#endif
+
 namespace weblayer {
 
 ContentClientImpl::ContentClientImpl() = default;
@@ -64,10 +68,8 @@ blink::OriginTrialPolicy* ContentClientImpl::GetOriginTrialPolicy() {
 
 void ContentClientImpl::AddAdditionalSchemes(Schemes* schemes) {
 #if defined(OS_ANDROID)
-  // TODO(sky): refactor. This comes from chrome/common/url_constants.cc's
-  // kAndroidAppScheme.
-  schemes->standard_schemes.push_back("android-app");
-  schemes->referrer_schemes.push_back("android-app");
+  schemes->standard_schemes.push_back(embedder_support::kAndroidAppScheme);
+  schemes->referrer_schemes.push_back(embedder_support::kAndroidAppScheme);
 #endif
 }
 

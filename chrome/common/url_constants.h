@@ -253,10 +253,6 @@ extern const char kNearbyShareLearnMoreURL[];
 // Help center URL for who the account administrator is.
 extern const char kWhoIsMyAdministratorHelpURL[];
 
-#if defined(OS_ANDROID)
-extern const char kAndroidAppScheme[];
-#endif
-
 #if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 // "Learn more" URL for the enhanced playback notification dialog.
 extern const char kEnhancedPlaybackNotificationLearnMoreURL[];

@@ -166,6 +166,7 @@
 #if defined(OS_ANDROID)
 #include "chrome/renderer/sandbox_status_extension_android.h"
 #include "components/continuous_search/renderer/search_result_extractor_impl.h"  // nogncheck
+#include "components/embedder_support/android/common/url_constants.h"
 #else
 #include "chrome/renderer/media/chrome_speech_recognition_client.h"
 #include "chrome/renderer/searchbox/searchbox.h"
@@ -418,7 +419,7 @@ void ChromeContentRendererClient::RenderThreadStarted() {
 
 #if defined(OS_ANDROID)
   WebSecurityPolicy::RegisterURLSchemeAsAllowedForReferrer(
-      WebString::FromUTF8(chrome::kAndroidAppScheme));
+      WebString::FromUTF8(embedder_support::kAndroidAppScheme));
 #endif
 
   // chrome-search: pages should not be accessible by bookmarklets

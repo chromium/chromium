@@ -107,6 +107,7 @@
 
 #if defined(OS_ANDROID)
 #include "chrome/common/media/chrome_media_drm_bridge_client.h"
+#include "components/embedder_support/android/common/url_constants.h"
 #endif
 
 namespace {
@@ -503,10 +504,12 @@ void ChromeContentClient::AddContentDecryptionModules(
 // Example standard schemes: https://, chrome-extension://, chrome://, file://
 // Example nonstandard schemes: mailto:, data:, javascript:, about:
 static const char* const kChromeStandardURLSchemes[] = {
-    extensions::kExtensionScheme, chrome::kChromeNativeScheme,
-    chrome::kChromeSearchScheme,  dom_distiller::kDomDistillerScheme,
+    extensions::kExtensionScheme,
+    chrome::kChromeNativeScheme,
+    chrome::kChromeSearchScheme,
+    dom_distiller::kDomDistillerScheme,
 #if defined(OS_ANDROID)
-    chrome::kAndroidAppScheme,
+    embedder_support::kAndroidAppScheme,
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     chrome::kCrosScheme,
@@ -518,7 +521,7 @@ void ChromeContentClient::AddAdditionalSchemes(Schemes* schemes) {
     schemes->standard_schemes.push_back(standard_scheme);
 
 #if defined(OS_ANDROID)
-  schemes->referrer_schemes.push_back(chrome::kAndroidAppScheme);
+  schemes->referrer_schemes.push_back(embedder_support::kAndroidAppScheme);
 #endif
 
   schemes->savable_schemes.push_back(extensions::kExtensionScheme);

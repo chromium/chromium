@@ -288,10 +288,6 @@ const char kUpgradeHelpCenterBaseURL[] =
 const char kWhoIsMyAdministratorHelpURL[] =
     "https://support.google.com/chrome?p=your_administrator";
 
-#if defined(OS_ANDROID)
-const char kAndroidAppScheme[] = "android-app";
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
 const char kEnhancedPlaybackNotificationLearnMoreURL[] =
 #endif

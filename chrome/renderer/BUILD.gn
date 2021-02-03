@@ -402,8 +402,10 @@ static_library("renderer") {
       "sandbox_status_extension_android.cc",
       "sandbox_status_extension_android.h",
     ]
-
-    deps += [ "//components/continuous_search/renderer" ]
+    deps += [
+      "//components/continuous_search/renderer",
+      "//components/embedder_support/android/common:url_constants",
+    ]
   }
 
   if (is_chromeos_ash) {

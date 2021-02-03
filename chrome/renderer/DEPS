@@ -19,6 +19,7 @@ include_rules = [
   "+components/dom_distiller/content/common",
   "+components/dom_distiller/content/renderer",
   "+components/dom_distiller/core",
+  "+components/embedder_support/android/common",
   "+components/grit",
   "+components/guest_view/renderer",
   "+components/metrics/child_call_stack_profile_collector.h",
