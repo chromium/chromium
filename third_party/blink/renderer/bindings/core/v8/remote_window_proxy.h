@@ -40,16 +40,11 @@
 namespace blink {
 
 // Subclass of WindowProxy that only handles RemoteFrame.
-// TODO(dcheng): This class temporarily contains code duplicated from
-// LocalWindowProxy. It will be removed once the global proxy is instantiated
-// using v8::Context::NewRemoteContext().
 class RemoteWindowProxy final : public WindowProxy {
  public:
   RemoteWindowProxy(v8::Isolate*, RemoteFrame&, scoped_refptr<DOMWrapperWorld>);
 
  private:
-  friend class WindowProxyManager;
-
   // WindowProxy overrides:
   void Initialize() override;
   void DisposeContext(Lifecycle next_status, FrameReuseStatus) override;

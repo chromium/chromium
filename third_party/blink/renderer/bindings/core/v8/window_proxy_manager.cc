@@ -75,8 +75,7 @@ void WindowProxyManager::SetGlobalProxies(
     return;
 
   for (const auto& entry : global_proxies) {
-    To<RemoteWindowProxy>(WindowProxyMaybeUninitialized(*entry.first))
-        ->Initialize();
+    WindowProxyMaybeUninitialized(*entry.first)->InitializeIfNeeded();
   }
 }
 
