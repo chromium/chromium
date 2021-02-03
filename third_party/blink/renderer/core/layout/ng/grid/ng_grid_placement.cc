@@ -360,14 +360,18 @@ void NGGridPlacement::ResolveOutOfFlowItemGridLines(
       (track_direction == kForColumns)
           ? out_of_flow_item_style.GridColumnStart().IsAuto()
           : out_of_flow_item_style.GridRowStart().IsAuto();
-  if (is_start_line_auto || !track_collection.IsTrackWithinBounds(*start_line))
+  if (is_start_line_auto ||
+      !track_collection.IsGridLineWithinImplicitGrid(*start_line)) {
     *start_line = kNotFound;
+  }
 
   bool is_end_line_auto = (track_direction == kForColumns)
                               ? out_of_flow_item_style.GridColumnEnd().IsAuto()
                               : out_of_flow_item_style.GridRowEnd().IsAuto();
-  if (is_end_line_auto || !track_collection.IsTrackWithinBounds(*end_line - 1))
+  if (is_end_line_auto ||
+      !track_collection.IsGridLineWithinImplicitGrid(*end_line - 1)) {
     *end_line = kNotFound;
+  }
 }
 
 }  // namespace blink

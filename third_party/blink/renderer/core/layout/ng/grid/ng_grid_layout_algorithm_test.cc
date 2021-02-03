@@ -54,8 +54,8 @@ class NGGridLayoutAlgorithmTest
                                               LengthResolvePhase::kLayout));
 
     algorithm.BuildAlgorithmTrackCollections(
-        &grid_items_, &algorithm_column_track_collection_,
-        &algorithm_row_track_collection_, &grid_placement);
+        &grid_items_, &column_track_collection_, &row_track_collection_,
+        &grid_placement);
 
     // Create a vector of grid item indices using |NGGridChildIterator| order.
     Vector<wtf_size_t> reordered_item_indices(grid_items_.size());
@@ -64,23 +64,24 @@ class NGGridLayoutAlgorithmTest
 
     // Cache track span properties for grid items.
     algorithm.CacheGridItemsTrackSpanProperties(
-        algorithm_column_track_collection_, &grid_items_,
-        &reordered_item_indices);
+        column_track_collection_, &grid_items_, &reordered_item_indices);
     algorithm.CacheGridItemsTrackSpanProperties(
-        algorithm_row_track_collection_, &grid_items_, &reordered_item_indices);
+        row_track_collection_, &grid_items_, &reordered_item_indices);
 
     // Resolve inline size.
-    algorithm.ComputeUsedTrackSizes(&algorithm_column_track_collection_,
-                                    &grid_items_, &reordered_item_indices);
+    algorithm.ComputeUsedTrackSizes(
+        NGGridLayoutAlgorithm::SizingConstraint::kLayout,
+        &column_track_collection_, &grid_items_, &reordered_item_indices);
     // Resolve block size.
-    algorithm.ComputeUsedTrackSizes(&algorithm_row_track_collection_,
-                                    &grid_items_, &reordered_item_indices);
+    algorithm.ComputeUsedTrackSizes(
+        NGGridLayoutAlgorithm::SizingConstraint::kLayout,
+        &row_track_collection_, &grid_items_, &reordered_item_indices);
   }
 
   NGGridLayoutAlgorithmTrackCollection& TrackCollection(
       GridTrackSizingDirection track_direction) {
-    return (track_direction == kForColumns) ? algorithm_column_track_collection_
-                                            : algorithm_row_track_collection_;
+    return (track_direction == kForColumns) ? column_track_collection_
+                                            : row_track_collection_;
   }
 
   // Helper methods to access private data on NGGridLayoutAlgorithm. This class
@@ -180,8 +181,8 @@ class NGGridLayoutAlgorithmTest
   Vector<NGGridLayoutAlgorithm::GridItemData> grid_items_;
   Vector<NGGridLayoutAlgorithm::GridItemData> out_of_flow_items_;
 
-  NGGridLayoutAlgorithmTrackCollection algorithm_column_track_collection_;
-  NGGridLayoutAlgorithmTrackCollection algorithm_row_track_collection_;
+  NGGridLayoutAlgorithmTrackCollection column_track_collection_;
+  NGGridLayoutAlgorithmTrackCollection row_track_collection_;
 };
 
 TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmMeasuring) {
@@ -1087,8 +1088,8 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmResolveFixedTrackSizes) {
   for (wtf_size_t i = 0; i < growth_limits.size(); ++i)
     EXPECT_EQ(expected_column_growth_limits[i], growth_limits[i]);
 
-  Vector<LayoutUnit> expected_row_base_sizes = {LayoutUnit(0), LayoutUnit(50),
-                                                LayoutUnit(40)};
+  Vector<LayoutUnit> expected_row_base_sizes = {LayoutUnit(80), LayoutUnit(50),
+                                                LayoutUnit(70)};
   Vector<LayoutUnit> expected_row_growth_limits = {
       LayoutUnit(100), LayoutUnit(50), LayoutUnit(70)};
 

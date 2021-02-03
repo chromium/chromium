@@ -49,8 +49,6 @@ class CORE_EXPORT NGGridTrackCollectionBase {
     wtf_size_t range_track_count_;
   };
 
-  bool IsTrackWithinBounds(wtf_size_t track_number) const;
-
   // Gets the range index for the range that contains the given track number.
   wtf_size_t RangeIndexFromTrackNumber(wtf_size_t track_number) const;
 
@@ -195,7 +193,7 @@ class CORE_EXPORT NGGridSet {
  public:
   NGGridSet(wtf_size_t track_count, bool is_collapsed);
   // |is_content_box_size_indefinite| is used to normalize percentage track
-  // sizing functions; from https://drafts.csswg.org/css-grid-1/#track-sizes:
+  // sizing functions; from https://drafts.csswg.org/css-grid-2/#track-sizes:
   //   "If the size of the grid container depends on the size of its tracks,
   //   then the <percentage> must be treated as 'auto'".
   NGGridSet(wtf_size_t track_count,
@@ -216,6 +214,9 @@ class CORE_EXPORT NGGridSet {
   void SetGrowthLimit(LayoutUnit growth_limit);
   void SetPlannedIncrease(LayoutUnit planned_increase) {
     planned_increase_ = planned_increase;
+  }
+  void SetFitContentLimit(LayoutUnit fit_content_limit) {
+    fit_content_limit_ = fit_content_limit;
   }
   void SetItemIncurredIncrease(LayoutUnit item_incurred_increase) {
     item_incurred_increase_ = item_incurred_increase;
@@ -308,6 +309,9 @@ class CORE_EXPORT NGGridLayoutAlgorithmTrackCollection
   NGGridLayoutAlgorithmTrackCollection(
       const NGGridBlockTrackCollection& block_track_collection,
       bool is_content_box_size_indefinite);
+
+  wtf_size_t EndLineOfImplicitGrid() const;
+  bool IsGridLineWithinImplicitGrid(wtf_size_t grid_line) const;
 
   // Returns the number of sets in the collection.
   wtf_size_t SetCount() const;

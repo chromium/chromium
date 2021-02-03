@@ -27,13 +27,14 @@ class CORE_EXPORT NGGridLayoutAlgorithm
 
   // This enum corresponds to each step used to accommodate grid items across
   // intrinsic tracks according to their min and max track sizing functions, as
-  // defined in https://drafts.csswg.org/css-grid-1/#algo-spanning-items.
+  // defined in https://drafts.csswg.org/css-grid-2/#algo-spanning-items.
   enum class GridItemContributionType {
     kForIntrinsicMinimums,
     kForContentBasedMinimums,
     kForMaxContentMinimums,
     kForIntrinsicMaximums,
-    kForMaxContentMaximums
+    kForMaxContentMaximums,
+    kForFreeSpace
   };
 
   struct ItemSetIndices {
@@ -99,21 +100,12 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   explicit NGGridLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
 
   scoped_refptr<const NGLayoutResult> Layout() override;
-
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&) const override;
 
  private:
-  using NGGridSetVector = Vector<NGGridSet*, 16>;
-
   friend class NGGridLayoutAlgorithmTest;
 
-  enum class GridLayoutAlgorithmState {
-    kMeasuringItems,
-    kResolvingInlineSize,
-    kResolvingBlockSize,
-    kPlacingGridItems,
-    kCompletedLayout
-  };
+  enum class SizingConstraint { kLayout, kMinContent, kMaxContent };
 
   class ReorderedGridItems {
    public:
@@ -188,12 +180,13 @@ class CORE_EXPORT NGGridLayoutAlgorithm
 
   // Calculates from the min and max track sizing functions the used track size.
   void ComputeUsedTrackSizes(
+      SizingConstraint sizing_constraint,
       NGGridLayoutAlgorithmTrackCollection* track_collection,
       Vector<GridItemData>* grid_items,
       Vector<wtf_size_t>* reordered_item_indices) const;
 
   // These methods implement the steps of the algorithm for intrinsic track size
-  // resolution defined in https://drafts.csswg.org/css-grid-1/#algo-content.
+  // resolution defined in https://drafts.csswg.org/css-grid-2/#algo-content.
   void ResolveIntrinsicTrackSizes(
       NGGridLayoutAlgorithmTrackCollection* track_collection,
       Vector<GridItemData>* grid_items,
@@ -205,11 +198,9 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       GridItemContributionType contribution_type,
       NGGridLayoutAlgorithmTrackCollection* track_collection) const;
 
-  static void DistributeExtraSpaceToSets(
-      LayoutUnit extra_space,
-      GridItemContributionType contribution_type,
-      NGGridSetVector* sets_to_grow,
-      NGGridSetVector* sets_to_grow_beyond_limit);
+  void MaximizeTracks(
+      SizingConstraint sizing_constraint,
+      NGGridLayoutAlgorithmTrackCollection* track_collection) const;
 
   // Lays out and computes inline and block offsets for grid items.
   void PlaceItems(

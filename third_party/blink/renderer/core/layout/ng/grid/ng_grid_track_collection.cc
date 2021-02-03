@@ -11,14 +11,6 @@ namespace blink {
 
 constexpr wtf_size_t NGGridTrackCollectionBase::kInvalidRangeIndex;
 
-bool NGGridTrackCollectionBase::IsTrackWithinBounds(
-    wtf_size_t track_number) const {
-  DCHECK_NE(track_number, kInvalidRangeIndex);
-  wtf_size_t last_range_index = RangeCount() - 1;
-  return track_number <
-         RangeTrackNumber(last_range_index) + RangeTrackCount(last_range_index);
-}
-
 wtf_size_t NGGridTrackCollectionBase::RangeIndexFromTrackNumber(
     wtf_size_t track_number) const {
   wtf_size_t upper = RangeCount();
@@ -27,7 +19,8 @@ wtf_size_t NGGridTrackCollectionBase::RangeIndexFromTrackNumber(
   // We can't look for a range in a collection with no ranges.
   DCHECK_NE(upper, 0u);
   // We don't expect a |track_number| outside of the bounds of the collection.
-  DCHECK(IsTrackWithinBounds(track_number));
+  DCHECK_LT(track_number,
+            RangeTrackNumber(upper - 1) + RangeTrackCount(upper - 1));
 
   // Do a binary search on the tracks.
   wtf_size_t range = upper - lower;
@@ -51,7 +44,6 @@ wtf_size_t NGGridTrackCollectionBase::RangeIndexFromTrackNumber(
       range = upper - lower;
     }
   }
-
   return lower;
 }
 
@@ -409,7 +401,7 @@ NGGridSet::NGGridSet(wtf_size_t track_count, bool is_collapsed)
       fit_content_limit_(kIndefiniteSize),
       is_infinitely_growable_(false) {
   if (is_collapsed) {
-    // From https://drafts.csswg.org/css-grid-1/#collapsed-track: "A collapsed
+    // From https://drafts.csswg.org/css-grid-2/#collapsed-track: "A collapsed
     // track is treated as having a fixed track sizing function of '0px'".
     track_size_ = GridTrackSize(Length::Fixed(), Length::Fixed());
   }
@@ -434,7 +426,7 @@ NGGridSet::NGGridSet(wtf_size_t track_count,
     }
   } else {
     // Normalize |track_size_| into a |kMinMaxTrackSizing| type; follow the
-    // definitions from https://drafts.csswg.org/css-grid-1/#algo-terms.
+    // definitions from https://drafts.csswg.org/css-grid-2/#algo-terms.
     bool is_unresolvable_percentage_min_function =
         is_content_box_size_indefinite &&
         track_size_.MinTrackBreadth().HasPercentage();
@@ -589,7 +581,7 @@ void NGGridLayoutAlgorithmTrackCollection::AppendTrackRange(
   for (wtf_size_t i = 0; i < new_range.set_count; ++i) {
     const NGGridSet& set = sets_[new_range.starting_set_index + i];
 
-    // From https://drafts.csswg.org/css-grid-1/#algo-terms, a <flex> minimum
+    // From https://drafts.csswg.org/css-grid-2/#algo-terms, a <flex> minimum
     // sizing function shouldn't happen as it would be normalized to 'auto'.
     DCHECK(!set.TrackSize().HasFlexMinTrackBreadth());
     is_range_spanning_flexible_track |=
@@ -604,6 +596,17 @@ void NGGridLayoutAlgorithmTrackCollection::AppendTrackRange(
   if (is_range_spanning_intrinsic_track)
     new_range.properties.SetProperty(TrackSpanProperties::kHasIntrinsicTrack);
   ranges_.push_back(new_range);
+}
+
+wtf_size_t NGGridLayoutAlgorithmTrackCollection::EndLineOfImplicitGrid() const {
+  wtf_size_t last_range_index = RangeCount() - 1;
+  return RangeTrackNumber(last_range_index) + RangeTrackCount(last_range_index);
+}
+
+bool NGGridLayoutAlgorithmTrackCollection::IsGridLineWithinImplicitGrid(
+    wtf_size_t grid_line) const {
+  DCHECK_NE(grid_line, kInvalidRangeIndex);
+  return grid_line < EndLineOfImplicitGrid();
 }
 
 NGGridSet& NGGridLayoutAlgorithmTrackCollection::SetAt(wtf_size_t set_index) {
