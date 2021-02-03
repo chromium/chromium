@@ -184,8 +184,6 @@ class SyncManagerTest : public testing::Test {
     args.post_factory = std::make_unique<TestHttpPostProviderFactory>();
     args.encryption_observer_proxy = std::move(encryption_observer);
     args.extensions_activity = extensions_activity_.get();
-    if (!enable_local_sync_backend)
-      args.authenticated_account_id = CoreAccountId("account_id");
     args.cache_guid = "fake_cache_guid";
     args.invalidator_client_id = "fake_invalidator_client_id";
     args.enable_local_sync_backend = enable_local_sync_backend;

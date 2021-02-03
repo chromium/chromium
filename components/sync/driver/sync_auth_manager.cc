@@ -156,7 +156,6 @@ SyncCredentials SyncAuthManager::GetCredentials() const {
   const CoreAccountInfo& account_info = sync_account_.account_info;
 
   SyncCredentials credentials;
-  credentials.account_id = account_info.account_id;
   credentials.email = account_info.email;
   credentials.access_token = access_token_;
 

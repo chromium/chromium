@@ -148,9 +148,6 @@ void SyncManagerImpl::Init(InitArgs* args) {
   DCHECK(!args->cache_guid.empty());
   DCHECK(args->post_factory);
   DCHECK(!args->poll_interval.is_zero());
-  if (!args->enable_local_sync_backend) {
-    DCHECK(!args->authenticated_account_id.empty());
-  }
   DCHECK(args->cancelation_signal);
   DVLOG(1) << "SyncManager starting Init...";
 
@@ -173,8 +170,6 @@ void SyncManagerImpl::Init(InitArgs* args) {
   sync_encryption_handler_->AddObserver(encryption_observer_proxy_.get());
   sync_encryption_handler_->AddObserver(&debug_info_event_listener_);
   sync_encryption_handler_->AddObserver(&js_sync_encryption_handler_observer_);
-
-  DVLOG(1) << "AccountId: " << args->authenticated_account_id;
 
   allstatus_.SetHasKeystoreKey(
       !sync_encryption_handler_->GetKeystoreKeysHandler()->NeedKeystoreKey());
@@ -311,7 +306,7 @@ void SyncManagerImpl::StartConfiguration() {
 void SyncManagerImpl::UpdateCredentials(const SyncCredentials& credentials) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(initialized_);
-  DCHECK(!credentials.account_id.empty());
+
   cycle_context_->set_account_name(credentials.email);
 
   observing_network_connectivity_changes_ = true;

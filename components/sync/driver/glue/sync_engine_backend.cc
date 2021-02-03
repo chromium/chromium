@@ -285,7 +285,6 @@ void SyncEngineBackend::DoInitialize(
   args.post_factory = std::move(params.http_factory_getter).Run();
   args.encryption_observer_proxy = std::move(params.encryption_observer_proxy);
   args.extensions_activity = params.extensions_activity.get();
-  args.authenticated_account_id = params.authenticated_account_id;
   args.invalidator_client_id = params.invalidator_client_id;
   args.engine_components_factory = std::move(params.engine_components_factory);
   args.encryption_handler = sync_encryption_handler_.get();

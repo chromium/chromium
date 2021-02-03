@@ -49,13 +49,9 @@ bool FakeSyncEngine::IsInitialized() const {
 
 void FakeSyncEngine::TriggerRefresh(const ModelTypeSet& types) {}
 
-void FakeSyncEngine::UpdateCredentials(const SyncCredentials& credentials) {
-  authenticated_account_id_ = credentials.account_id;
-}
+void FakeSyncEngine::UpdateCredentials(const SyncCredentials& credentials) {}
 
-void FakeSyncEngine::InvalidateCredentials() {
-  authenticated_account_id_ = CoreAccountId();
-}
+void FakeSyncEngine::InvalidateCredentials() {}
 
 std::string FakeSyncEngine::GetCacheGuid() const {
   return "fake_engine_cache_guid";

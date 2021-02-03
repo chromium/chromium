@@ -110,8 +110,6 @@ class SyncManager {
     // Must outlive SyncManager.
     ExtensionsActivity* extensions_activity;
 
-    CoreAccountId authenticated_account_id;
-
     // Unqiuely identifies this client to the invalidation notification server.
     std::string invalidator_client_id;
 

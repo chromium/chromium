@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "google_apis/gaia/core_account_id.h"
-
 namespace syncer {
 
 // Contains everything needed to talk to and identify a user account.
@@ -16,9 +14,6 @@ struct SyncCredentials {
   SyncCredentials() = default;
   SyncCredentials(const SyncCredentials& other) = default;
   ~SyncCredentials() = default;
-
-  // Account_id of signed in account.
-  CoreAccountId account_id;
 
   // The email associated with this account.
   std::string email;
