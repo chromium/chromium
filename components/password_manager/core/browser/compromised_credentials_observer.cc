@@ -22,20 +22,19 @@ void ProcessLoginsChanged(const PasswordStoreChangeList& changes,
     if (change.type() == PasswordStoreChange::UPDATE &&
         !change.password_changed())
       continue;
-    auto reason = RemoveCompromisedCredentialsReason::kUpdate;
+    auto reason = RemoveInsecureCredentialsReason::kUpdate;
     if (change.type() == PasswordStoreChange::REMOVE &&
         base::ranges::none_of(changes, [](const auto& change) {
           return change.type() == PasswordStoreChange::ADD;
         })) {
-      reason = RemoveCompromisedCredentialsReason::kRemove;
+      reason = RemoveInsecureCredentialsReason::kRemove;
     }
     remove_callback.Run(change.form().signon_realm,
                         change.form().username_value, reason);
-    UMA_HISTOGRAM_ENUMERATION(
-        "PasswordManager.RemoveCompromisedCredentials",
-        reason == RemoveCompromisedCredentialsReason::kUpdate
-            ? PasswordStoreChange::UPDATE
-            : PasswordStoreChange::REMOVE);
+    UMA_HISTOGRAM_ENUMERATION("PasswordManager.RemoveCompromisedCredentials",
+                              reason == RemoveInsecureCredentialsReason::kUpdate
+                                  ? PasswordStoreChange::UPDATE
+                                  : PasswordStoreChange::REMOVE);
   }
 }
 

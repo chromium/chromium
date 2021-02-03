@@ -202,11 +202,11 @@ TEST_F(LeakDetectionDelegateHelperTest, SaveLeakedCredentials) {
   EXPECT_CALL(*store_, AddCompromisedCredentialsImpl(CompromisedCredentials(
                            GetSignonRealm(GURL(kLeakedOrigin)),
                            ASCIIToUTF16(kLeakedUsername), base::Time::Now(),
-                           CompromiseType::kLeaked, IsMuted(false))));
+                           InsecureType::kLeaked, IsMuted(false))));
   EXPECT_CALL(*store_, AddCompromisedCredentialsImpl(CompromisedCredentials(
                            GetSignonRealm(GURL(kOtherOrigin)),
                            ASCIIToUTF16(kLeakedUsername), base::Time::Now(),
-                           CompromiseType::kLeaked, IsMuted(false))));
+                           InsecureType::kLeaked, IsMuted(false))));
   InitiateGetCredentialLeakType();
 }
 
@@ -221,7 +221,7 @@ TEST_F(LeakDetectionDelegateHelperTest, SaveLeakedCredentialsCanonicalized) {
               AddCompromisedCredentialsImpl(CompromisedCredentials(
                   GetSignonRealm(GURL(kOtherOrigin)),
                   ASCIIToUTF16(kLeakedUsernameNonCanonicalized),
-                  base::Time::Now(), CompromiseType::kLeaked, IsMuted(false))));
+                  base::Time::Now(), InsecureType::kLeaked, IsMuted(false))));
   InitiateGetCredentialLeakType();
 }
 

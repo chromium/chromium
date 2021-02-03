@@ -22,8 +22,7 @@ std::vector<CompromisedCredentials> StatementToCompromisedCredentials(
     int parent_key = s->ColumnInt64(0);
     std::string signon_realm = s->ColumnString(1);
     base::string16 username = s->ColumnString16(2);
-    CompromiseType insecurity_type =
-        static_cast<CompromiseType>(s->ColumnInt64(3));
+    InsecureType insecurity_type = static_cast<InsecureType>(s->ColumnInt64(3));
     base::Time create_time = base::Time::FromDeltaSinceWindowsEpoch(
         (base::TimeDelta::FromMicroseconds(s->ColumnInt64(4))));
     bool is_muted = !!s->ColumnInt64(5);
@@ -43,7 +42,7 @@ CompromisedCredentials::CompromisedCredentials() = default;
 CompromisedCredentials::CompromisedCredentials(std::string signon_realm,
                                                base::string16 username,
                                                base::Time create_time,
-                                               CompromiseType insecurity_type,
+                                               InsecureType insecurity_type,
                                                IsMuted is_muted)
     : signon_realm(std::move(signon_realm)),
       username(std::move(username)),
@@ -123,7 +122,7 @@ bool InsecureCredentialsTable::AddRow(
 bool InsecureCredentialsTable::RemoveRow(
     const std::string& signon_realm,
     const base::string16& username,
-    RemoveCompromisedCredentialsReason reason) {
+    RemoveInsecureCredentialsReason reason) {
   DCHECK(db_);
   if (signon_realm.empty())
     return false;
@@ -215,7 +214,7 @@ void InsecureCredentialsTable::ReportMetrics(BulkCheckDone bulk_check_done) {
                                         "WHERE insecurity_type = ? ",
                                         kTableName)
                          .c_str()));
-  s.BindInt(0, static_cast<int>(CompromiseType::kLeaked));
+  s.BindInt(0, static_cast<int>(InsecureType::kLeaked));
   if (s.Step()) {
     int count = s.ColumnInt(0);
     base::UmaHistogramCounts100(
@@ -228,7 +227,7 @@ void InsecureCredentialsTable::ReportMetrics(BulkCheckDone bulk_check_done) {
   }
 
   s.Reset(true);
-  s.BindInt(0, static_cast<int>(CompromiseType::kPhished));
+  s.BindInt(0, static_cast<int>(InsecureType::kPhished));
   if (s.Step()) {
     int count = s.ColumnInt(0);
     base::UmaHistogramCounts100(

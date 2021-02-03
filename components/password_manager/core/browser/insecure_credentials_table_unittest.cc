@@ -88,7 +88,7 @@ class InsecureCredentialsTableTest : public testing::Test {
   std::unique_ptr<LoginDatabase> login_db_;
   CompromisedCredentials test_data_{kTestDomain, base::ASCIIToUTF16(kUsername),
                                     base::Time::FromTimeT(1),
-                                    CompromiseType::kLeaked, IsMuted(false)};
+                                    InsecureType::kLeaked, IsMuted(false)};
   PasswordForm test_form_ = TestForm();
 };
 
@@ -169,13 +169,13 @@ TEST_F(InsecureCredentialsTableTest, SameSignonRealmAndUsernameDifferentTime) {
 }
 
 TEST_F(InsecureCredentialsTableTest,
-       SameSignonRealmAndUsernameAndDifferentCompromiseType) {
+       SameSignonRealmAndUsernameAndDifferentInsecureType) {
   EXPECT_THAT(login_db()->AddLogin(test_form()), SizeIs(1));
   CompromisedCredentials compromised_credentials1 = test_data();
   CompromisedCredentials compromised_credentials2 = test_data();
-  compromised_credentials2.compromise_type = CompromiseType::kPhished;
+  compromised_credentials2.compromise_type = InsecureType::kPhished;
   CompromisedCredentials compromised_credentials3 = test_data();
-  compromised_credentials3.compromise_type = CompromiseType::kWeak;
+  compromised_credentials3.compromise_type = InsecureType::kWeak;
 
   EXPECT_TRUE(db()->AddRow(compromised_credentials1));
   EXPECT_TRUE(db()->AddRow(compromised_credentials2));
@@ -197,7 +197,7 @@ TEST_F(InsecureCredentialsTableTest, RemoveRow) {
   EXPECT_THAT(GetParentIds(db()->GetAllRows()), ElementsAre(1));
 
   EXPECT_TRUE(db()->RemoveRow(test_data().signon_realm, test_data().username,
-                              RemoveCompromisedCredentialsReason::kUpdate));
+                              RemoveInsecureCredentialsReason::kUpdate));
 
   EXPECT_THAT(db()->GetAllRows(), IsEmpty());
   EXPECT_THAT(db()->GetRows(test_data().signon_realm), IsEmpty());
@@ -216,7 +216,7 @@ TEST_F(InsecureCredentialsTableTest, ReportMetricsBeforeBulkCheck) {
   test_form().url = GURL(test_form().signon_realm);
   test_form().username_value = test_data().username =
       base::ASCIIToUTF16(kUsername3);
-  test_data().compromise_type = CompromiseType::kPhished;
+  test_data().compromise_type = InsecureType::kPhished;
   EXPECT_THAT(login_db()->AddLogin(test_form()), SizeIs(1));
   EXPECT_TRUE(db()->AddRow(test_data()));
 
@@ -252,7 +252,7 @@ TEST_F(InsecureCredentialsTableTest, GetAllRowsWithId) {
   EXPECT_THAT(login_db()->AddLogin(test_form()), SizeIs(1));
   CompromisedCredentials compromised_credentials1 = test_data();
   CompromisedCredentials compromised_credentials2 = test_data();
-  compromised_credentials2.compromise_type = CompromiseType::kReused;
+  compromised_credentials2.compromise_type = InsecureType::kReused;
 
   EXPECT_TRUE(db()->AddRow(compromised_credentials1));
   EXPECT_TRUE(db()->AddRow(compromised_credentials2));

@@ -119,7 +119,7 @@ password_manager::PasswordForm CreateTestPasswordForm(int index);
 // CreateTestPasswordForm(int index);
 password_manager::CompromisedCredentials CreateCompromisedCredentials(
     int index,
-    password_manager::CompromiseType type);
+    password_manager::InsecureType type);
 
 // Injects the password entity based on given |form| and encrypted with key
 // derived from |key_derivation_params| into |fake_server|.

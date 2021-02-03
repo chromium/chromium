@@ -39,8 +39,8 @@
 
 using password_manager::BulkLeakCheckService;
 using password_manager::CompromisedCredentials;
-using password_manager::CompromiseType;
 using password_manager::InsecureCredentialTypeFlags;
+using password_manager::InsecureType;
 using password_manager::PasswordCheckUIStatus;
 using password_manager::PasswordForm;
 using password_manager::TestPasswordStore;
@@ -167,7 +167,7 @@ CompromisedCredentials MakeCompromised(
     base::StringPiece signon_realm,
     base::StringPiece username,
     base::TimeDelta time_since_creation = base::TimeDelta(),
-    CompromiseType compromise_type = CompromiseType::kLeaked) {
+    InsecureType compromise_type = InsecureType::kLeaked) {
   return CompromisedCredentials(
       std::string(signon_realm), base::ASCIIToUTF16(username),
       base::Time::Now() - time_since_creation, compromise_type,

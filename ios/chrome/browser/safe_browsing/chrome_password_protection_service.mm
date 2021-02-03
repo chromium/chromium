@@ -75,7 +75,7 @@ void ChromePasswordProtectionService::PersistPhishedSavedPasswordCredential(
     password_store->AddCompromisedCredentials(
         password_manager::CompromisedCredentials(
             credential.signon_realm, credential.username, base::Time::Now(),
-            password_manager::CompromiseType::kPhished,
+            password_manager::InsecureType::kPhished,
             password_manager::IsMuted(false)));
   }
 }
@@ -95,7 +95,7 @@ void ChromePasswordProtectionService::RemovePhishedSavedPasswordCredential(
     }
     password_store->RemoveCompromisedCredentials(
         credential.signon_realm, credential.username,
-        password_manager::RemoveCompromisedCredentialsReason::
+        password_manager::RemoveInsecureCredentialsReason::
             kMarkSiteAsLegitimate);
   }
 }

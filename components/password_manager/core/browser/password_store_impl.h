@@ -77,7 +77,7 @@ class PasswordStoreImpl : public PasswordStore {
   PasswordStoreChangeList RemoveCompromisedCredentialsImpl(
       const std::string& signon_realm,
       const base::string16& username,
-      RemoveCompromisedCredentialsReason reason) override;
+      RemoveInsecureCredentialsReason reason) override;
   std::vector<CompromisedCredentials> GetAllCompromisedCredentialsImpl()
       override;
   std::vector<CompromisedCredentials> GetMatchingCompromisedCredentialsImpl(

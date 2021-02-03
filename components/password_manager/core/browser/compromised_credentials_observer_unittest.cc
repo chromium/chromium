@@ -44,9 +44,8 @@ class CompromisedCredentialsObserverTest : public testing::Test {
 
 TEST_F(CompromisedCredentialsObserverTest, DeletePassword) {
   const PasswordForm form = TestForm(kUsername);
-  EXPECT_CALL(remove_callback(),
-              Run(form.signon_realm, form.username_value,
-                  RemoveCompromisedCredentialsReason::kRemove));
+  EXPECT_CALL(remove_callback(), Run(form.signon_realm, form.username_value,
+                                     RemoveInsecureCredentialsReason::kRemove));
   ProcessLoginsChanged({PasswordStoreChange(PasswordStoreChange::REMOVE, form)},
                        remove_callback().Get());
   histogram_tester().ExpectUniqueSample(kHistogramName,
@@ -64,9 +63,8 @@ TEST_F(CompromisedCredentialsObserverTest, UpdateFormNoPasswordChange) {
 
 TEST_F(CompromisedCredentialsObserverTest, UpdatePassword) {
   const PasswordForm form = TestForm(kUsername);
-  EXPECT_CALL(remove_callback(),
-              Run(form.signon_realm, form.username_value,
-                  RemoveCompromisedCredentialsReason::kUpdate));
+  EXPECT_CALL(remove_callback(), Run(form.signon_realm, form.username_value,
+                                     RemoveInsecureCredentialsReason::kUpdate));
   ProcessLoginsChanged(
       {PasswordStoreChange(PasswordStoreChange::UPDATE, form, 1000, true)},
       remove_callback().Get());
@@ -76,9 +74,8 @@ TEST_F(CompromisedCredentialsObserverTest, UpdatePassword) {
 
 TEST_F(CompromisedCredentialsObserverTest, UpdateTwice) {
   const PasswordForm form = TestForm(kUsername);
-  EXPECT_CALL(remove_callback(),
-              Run(form.signon_realm, form.username_value,
-                  RemoveCompromisedCredentialsReason::kUpdate));
+  EXPECT_CALL(remove_callback(), Run(form.signon_realm, form.username_value,
+                                     RemoveInsecureCredentialsReason::kUpdate));
   ProcessLoginsChanged(
       {PasswordStoreChange(PasswordStoreChange::UPDATE, TestForm(kUsernameNew),
                            1000, false),
@@ -101,9 +98,8 @@ TEST_F(CompromisedCredentialsObserverTest, AddReplacePassword) {
   PasswordStoreChange remove(PasswordStoreChange::REMOVE, form);
   form.password_value = base::ASCIIToUTF16("new_password_12345");
   PasswordStoreChange add(PasswordStoreChange::ADD, form);
-  EXPECT_CALL(remove_callback(),
-              Run(form.signon_realm, form.username_value,
-                  RemoveCompromisedCredentialsReason::kUpdate));
+  EXPECT_CALL(remove_callback(), Run(form.signon_realm, form.username_value,
+                                     RemoveInsecureCredentialsReason::kUpdate));
   ProcessLoginsChanged({remove, add}, remove_callback().Get());
   histogram_tester().ExpectUniqueSample(kHistogramName,
                                         PasswordStoreChange::UPDATE, 1);
@@ -115,7 +111,7 @@ TEST_F(CompromisedCredentialsObserverTest, UpdateWithPrimaryKey) {
   PasswordStoreChange add(PasswordStoreChange::ADD, TestForm(kUsernameNew));
   EXPECT_CALL(remove_callback(),
               Run(old_form.signon_realm, old_form.username_value,
-                  RemoveCompromisedCredentialsReason::kUpdate));
+                  RemoveInsecureCredentialsReason::kUpdate));
   ProcessLoginsChanged({remove, add}, remove_callback().Get());
   histogram_tester().ExpectUniqueSample(kHistogramName,
                                         PasswordStoreChange::UPDATE, 1);
@@ -130,11 +126,10 @@ TEST_F(CompromisedCredentialsObserverTest, UpdateWithPrimaryKey_RemoveTwice) {
   PasswordStoreChange add(PasswordStoreChange::ADD, TestForm(kUsernameNew));
   EXPECT_CALL(remove_callback(),
               Run(old_form.signon_realm, old_form.username_value,
-                  RemoveCompromisedCredentialsReason::kUpdate));
-  EXPECT_CALL(remove_callback(),
-              Run(conflicting_new_form.signon_realm,
-                  conflicting_new_form.username_value,
-                  RemoveCompromisedCredentialsReason::kUpdate));
+                  RemoveInsecureCredentialsReason::kUpdate));
+  EXPECT_CALL(remove_callback(), Run(conflicting_new_form.signon_realm,
+                                     conflicting_new_form.username_value,
+                                     RemoveInsecureCredentialsReason::kUpdate));
   ProcessLoginsChanged({remove_old, remove_conflicting, add},
                        remove_callback().Get());
   histogram_tester().ExpectUniqueSample(kHistogramName,

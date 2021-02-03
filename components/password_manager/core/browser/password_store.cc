@@ -96,7 +96,7 @@ bool ShouldPhishedCredentialsBeUploadedToSync(const PrefService* prefs) {
 // Returns if credentials contains Phished issues.
 bool HasPhishedCredentials(
     const std::vector<CompromisedCredentials>& credentials) {
-  return base::Contains(credentials, CompromiseType::kPhished,
+  return base::Contains(credentials, InsecureType::kPhished,
                         &CompromisedCredentials::compromise_type);
 }
 
@@ -417,7 +417,7 @@ void PasswordStore::AddCompromisedCredentials(
 void PasswordStore::RemoveCompromisedCredentials(
     const std::string& signon_realm,
     const base::string16& username,
-    RemoveCompromisedCredentialsReason reason) {
+    RemoveInsecureCredentialsReason reason) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   auto callback =
       base::BindOnce(&PasswordStore::RemoveCompromisedCredentialsImpl, this,
@@ -751,7 +751,7 @@ bool PasswordStore::UpdateCompromisedCredentialsSync(
     base::span<const CompromisedCredentials> credentials) {
   RemoveCompromisedCredentialsImpl(
       form.signon_realm, form.username_value,
-      RemoveCompromisedCredentialsReason::kSyncUpdate);
+      RemoveInsecureCredentialsReason::kSyncUpdate);
   return AddCompromisedCredentialsSync(credentials);
 }
 
@@ -777,7 +777,7 @@ void PasswordStore::NotifyLoginsChanged(
         base::BindRepeating(
             [](scoped_refptr<PasswordStore> store,
                const std::string& signon_realm, const base::string16& username,
-               RemoveCompromisedCredentialsReason reason) {
+               RemoveInsecureCredentialsReason reason) {
               auto callback = base::BindOnce(
                   &PasswordStore::RemoveCompromisedCredentialsImpl, store,
                   signon_realm, username, reason);

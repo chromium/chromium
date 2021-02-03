@@ -40,7 +40,7 @@ namespace {
 
 using password_manager::PasswordForm;
 using password_manager::CompromisedCredentials;
-using password_manager::CompromiseType;
+using password_manager::InsecureType;
 using password_manager::TestPasswordStore;
 
 // Sets test password store and returns pointer to it.

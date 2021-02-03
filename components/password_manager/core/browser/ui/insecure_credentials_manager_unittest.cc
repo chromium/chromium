@@ -60,7 +60,7 @@ using StrictMockInsecureCredentialsManagerObserver =
 CompromisedCredentials MakeCompromised(
     std::string signon_realm,
     base::StringPiece username,
-    CompromiseType type = CompromiseType::kLeaked) {
+    InsecureType type = InsecureType::kLeaked) {
   return CompromisedCredentials(std::move(signon_realm),
                                 base::ASCIIToUTF16(username), base::Time(),
                                 type, IsMuted(false));
@@ -91,7 +91,7 @@ CredentialWithPassword MakeCompromisedCredential(
   CredentialWithPassword credential_with_password((CredentialView(form)));
   credential_with_password.create_time = credential.create_time;
   credential_with_password.insecure_type =
-      credential.compromise_type == CompromiseType::kLeaked
+      credential.compromise_type == InsecureType::kLeaked
           ? InsecureCredentialTypeFlags::kCredentialLeaked
           : InsecureCredentialTypeFlags::kCredentialPhished;
   return credential_with_password;
@@ -204,7 +204,7 @@ TEST_F(InsecureCredentialsManagerTest,
   EXPECT_CALL(observer, OnCompromisedCredentialsChanged(IsEmpty()));
   store().RemoveCompromisedCredentials(
       credentials[0].signon_realm, credentials[0].username,
-      RemoveCompromisedCredentialsReason::kRemove);
+      RemoveInsecureCredentialsReason::kRemove);
   RunUntilIdle();
   EXPECT_THAT(store().compromised_credentials(), IsEmpty());
 
@@ -212,7 +212,7 @@ TEST_F(InsecureCredentialsManagerTest,
   EXPECT_CALL(observer, OnCompromisedCredentialsChanged).Times(0);
   store().RemoveCompromisedCredentials(
       credentials[0].signon_realm, credentials[0].username,
-      RemoveCompromisedCredentialsReason::kRemove);
+      RemoveInsecureCredentialsReason::kRemove);
   RunUntilIdle();
 
   // After an observer is removed it should no longer receive notifications.
@@ -282,9 +282,9 @@ TEST_F(InsecureCredentialsManagerTest, JoinPhishedAndLeaked) {
   PasswordForm password =
       MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
   CompromisedCredentials leaked =
-      MakeCompromised(kExampleCom, kUsername1, CompromiseType::kLeaked);
+      MakeCompromised(kExampleCom, kUsername1, InsecureType::kLeaked);
   CompromisedCredentials phished =
-      MakeCompromised(kExampleCom, kUsername1, CompromiseType::kPhished);
+      MakeCompromised(kExampleCom, kUsername1, InsecureType::kPhished);
 
   store().AddLogin(password);
   store().AddCompromisedCredentials(leaked);

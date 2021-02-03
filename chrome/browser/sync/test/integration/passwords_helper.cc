@@ -259,7 +259,7 @@ void RemoveCompromisedCredentials(PasswordStore* store,
   store->RemoveCompromisedCredentials(
       credential.signon_realm, credential.username,
       // kRemove used for arbitrary reason just for test.
-      password_manager::RemoveCompromisedCredentialsReason::kRemove);
+      password_manager::RemoveInsecureCredentialsReason::kRemove);
   store->ScheduleTask(base::BindOnce(&PasswordStoreCallback, &wait_event));
   wait_event.Wait();
 }
@@ -382,7 +382,7 @@ PasswordForm CreateTestPasswordForm(int index) {
 
 CompromisedCredentials CreateCompromisedCredentials(
     int index,
-    password_manager::CompromiseType type) {
+    password_manager::InsecureType type) {
   CompromisedCredentials issue;
   issue.signon_realm = kFakeSignonRealm;
   // This should stay compatible with the implementation of

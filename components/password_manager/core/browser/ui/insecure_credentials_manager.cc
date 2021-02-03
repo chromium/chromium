@@ -61,15 +61,15 @@ struct CredentialWithoutPasswordLess {
   }
 };
 
-InsecureCredentialTypeFlags ConvertCompromiseType(CompromiseType type) {
+InsecureCredentialTypeFlags ConvertInsecureType(InsecureType type) {
   switch (type) {
-    case CompromiseType::kLeaked:
+    case InsecureType::kLeaked:
       return InsecureCredentialTypeFlags::kCredentialLeaked;
-    case CompromiseType::kPhished:
+    case InsecureType::kPhished:
       return InsecureCredentialTypeFlags::kCredentialPhished;
-    case CompromiseType::kWeak:
+    case InsecureType::kWeak:
       return InsecureCredentialTypeFlags::kWeakCredential;
-    case CompromiseType::kReused:
+    case InsecureType::kReused:
       return InsecureCredentialTypeFlags::kReusedCredential;
   }
   NOTREACHED();
@@ -119,7 +119,7 @@ CredentialPasswordsMap JoinInsecureCredentialsWithSavedPasswords(
 
           // Using |= operator to save in a bit mask both Leaked and Phished.
           credential_to_form.type |=
-              ConvertCompromiseType(credential.compromise_type);
+              ConvertInsecureType(credential.compromise_type);
 
           // Use the latest time. Relevant when the same credential is both
           // phished and compromised.
@@ -216,7 +216,7 @@ CredentialWithPassword::CredentialWithPassword(
                      credential.username,
                      /*password=*/{}),
       create_time(credential.create_time),
-      insecure_type(ConvertCompromiseType(credential.compromise_type)) {}
+      insecure_type(ConvertInsecureType(credential.compromise_type)) {}
 
 CredentialWithPassword& CredentialWithPassword::operator=(
     const CredentialWithPassword& other) = default;
@@ -267,7 +267,7 @@ void InsecureCredentialsManager::SaveCompromisedCredential(
       GetStoreFor(saved_password)
           .AddCompromisedCredentials(CompromisedCredentials(
               saved_password.signon_realm, saved_password.username_value,
-              base::Time::Now(), CompromiseType::kLeaked, IsMuted(false)));
+              base::Time::Now(), InsecureType::kLeaked, IsMuted(false)));
     }
   }
 }

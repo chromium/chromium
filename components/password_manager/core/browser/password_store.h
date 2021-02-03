@@ -286,7 +286,7 @@ class PasswordStore : protected PasswordStoreSync,
   // |username|.
   void RemoveCompromisedCredentials(const std::string& signon_realm,
                                     const base::string16& username,
-                                    RemoveCompromisedCredentialsReason reason);
+                                    RemoveInsecureCredentialsReason reason);
 
   // Retrieves all compromised credentials and notifies |consumer| on
   // completion. The request will be cancelled if the consumer is destroyed.
@@ -552,7 +552,7 @@ class PasswordStore : protected PasswordStoreSync,
   virtual PasswordStoreChangeList RemoveCompromisedCredentialsImpl(
       const std::string& signon_realm,
       const base::string16& username,
-      RemoveCompromisedCredentialsReason reason) = 0;
+      RemoveInsecureCredentialsReason reason) = 0;
   virtual std::vector<CompromisedCredentials>
   GetAllCompromisedCredentialsImpl() = 0;
   virtual std::vector<CompromisedCredentials>

@@ -103,7 +103,7 @@ typedef NS_ENUM(NSInteger, SafetyCheckItemType) {
 };
 
 using password_manager::CompromisedCredentials;
-using password_manager::CompromiseType;
+using password_manager::InsecureType;
 using password_manager::TestPasswordStore;
 using l10n_util::GetNSString;
 
@@ -199,7 +199,7 @@ class SafetyCheckMediatorTest : public PlatformTest {
       base::StringPiece username) {
     return password_manager::CompromisedCredentials(
         std::string(signon_realm), base::ASCIIToUTF16(username),
-        base::Time::Now(), CompromiseType::kLeaked,
+        base::Time::Now(), InsecureType::kLeaked,
         password_manager::IsMuted(false));
   }
 

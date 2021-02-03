@@ -351,7 +351,7 @@ PasswordStoreChangeList TestPasswordStore::AddCompromisedCredentialsImpl(
 PasswordStoreChangeList TestPasswordStore::RemoveCompromisedCredentialsImpl(
     const std::string& signon_realm,
     const base::string16& username,
-    RemoveCompromisedCredentialsReason reason) {
+    RemoveInsecureCredentialsReason reason) {
   const size_t old_size = compromised_credentials_.size();
   base::EraseIf(compromised_credentials_, [&](const auto& credential) {
     return credential.signon_realm == signon_realm &&

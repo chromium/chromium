@@ -44,7 +44,7 @@ using passwords_helper::UpdateLoginWithPrimaryKey;
 using CheckForCompromised = SamePasswordFormsChecker::CheckForCompromised;
 
 using password_manager::CompromisedCredentials;
-using password_manager::CompromiseType;
+using password_manager::InsecureType;
 using password_manager::PasswordForm;
 
 using testing::UnorderedElementsAre;
@@ -406,9 +406,9 @@ IN_PROC_BROWSER_TEST_P(TwoClientPasswordsSyncTest,
   PasswordForm form1 = CreateTestPasswordForm(1);
 
   const CompromisedCredentials issue0 =
-      CreateCompromisedCredentials(0, CompromiseType::kLeaked);
+      CreateCompromisedCredentials(0, InsecureType::kLeaked);
   const CompromisedCredentials issue1 =
-      CreateCompromisedCredentials(1, CompromiseType::kPhished);
+      CreateCompromisedCredentials(1, InsecureType::kPhished);
 
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
 
@@ -443,9 +443,9 @@ IN_PROC_BROWSER_TEST_P(TwoClientPasswordsSyncTest,
   ASSERT_TRUE(AllProfilesContainSamePasswordForms());
 
   const CompromisedCredentials issue1 =
-      CreateCompromisedCredentials(0, CompromiseType::kLeaked);
+      CreateCompromisedCredentials(0, InsecureType::kLeaked);
   const CompromisedCredentials issue2 =
-      CreateCompromisedCredentials(0, CompromiseType::kPhished);
+      CreateCompromisedCredentials(0, InsecureType::kPhished);
 
   // Add the form and security issues to Client 0.
   AddLogin(GetPasswordStore(0), CreateTestPasswordForm(0));
@@ -468,9 +468,9 @@ IN_PROC_BROWSER_TEST_P(TwoClientPasswordsSyncTest,
   ASSERT_TRUE(AllProfilesContainSamePasswordForms());
 
   const CompromisedCredentials issue1 =
-      CreateCompromisedCredentials(0, CompromiseType::kLeaked);
+      CreateCompromisedCredentials(0, InsecureType::kLeaked);
   const CompromisedCredentials issue2 =
-      CreateCompromisedCredentials(1, CompromiseType::kPhished);
+      CreateCompromisedCredentials(1, InsecureType::kPhished);
 
   // Add the form and security issues to Client 0.
   AddLogin(GetPasswordStore(0), CreateTestPasswordForm(0));
@@ -501,7 +501,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientPasswordsSyncTest,
   ASSERT_TRUE(AllProfilesContainSamePasswordForms());
 
   CompromisedCredentials issue =
-      CreateCompromisedCredentials(0, CompromiseType::kLeaked);
+      CreateCompromisedCredentials(0, InsecureType::kLeaked);
   // Add the form and security issue to Client 0.
   AddLogin(GetPasswordStore(0), CreateTestPasswordForm(0));
   AddCompromisedCredentials(GetPasswordStore(0), issue);

@@ -2610,10 +2610,10 @@ TEST_F(LoginDatabaseTest, RemovingLoginRemovesCompromisedCredentials) {
 
   ignore_result(db().AddLogin(form));
   CompromisedCredentials credential1{form.signon_realm, form.username_value,
-                                     base::Time(), CompromiseType::kLeaked,
+                                     base::Time(), InsecureType::kLeaked,
                                      IsMuted(false)};
   CompromisedCredentials credential2 = credential1;
-  credential2.compromise_type = CompromiseType::kPhished;
+  credential2.compromise_type = InsecureType::kPhished;
 
   db().insecure_credentials_table().AddRow(credential1);
   db().insecure_credentials_table().AddRow(credential2);

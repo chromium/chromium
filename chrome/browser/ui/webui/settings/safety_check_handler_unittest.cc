@@ -178,7 +178,7 @@ class TestPasswordsDelegate : public extensions::TestPasswordsPrivateDelegate {
 
     store_->AddCompromisedCredentials(password_manager::CompromisedCredentials(
         form.signon_realm, form.username_value, base::Time(),
-        password_manager::CompromiseType::kLeaked,
+        password_manager::InsecureType::kLeaked,
         password_manager::IsMuted(false)));
     base::RunLoop().RunUntilIdle();
   }

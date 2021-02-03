@@ -19,12 +19,15 @@ class Database;
 
 namespace password_manager {
 
+struct CompromisedCredentials;
+
 using BulkCheckDone = base::StrongAlias<class BulkCheckDoneTag, bool>;
 using IsMuted = base::StrongAlias<class IsMutedTag, bool>;
+using InsecureCredential = CompromisedCredentials;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum class CompromiseType {
+enum class InsecureType {
   // If the credentials was leaked by a data breach.
   kLeaked = 0,
   // If the credentials was entered on a phishing site.
@@ -36,7 +39,7 @@ enum class CompromiseType {
   kMaxValue = kReused
 };
 
-enum class RemoveCompromisedCredentialsReason {
+enum class RemoveInsecureCredentialsReason {
   // If the password was updated in the password store.
   kUpdate = 0,
   // If the password is removed from the password store.
@@ -54,7 +57,7 @@ struct CompromisedCredentials {
   CompromisedCredentials(std::string signon_realm,
                          base::string16 username,
                          base::Time create_time,
-                         CompromiseType compromise_type,
+                         InsecureType insecure_type,
                          IsMuted is_muted);
   CompromisedCredentials(const CompromisedCredentials& rhs);
   CompromisedCredentials(CompromisedCredentials&& rhs);
@@ -71,7 +74,7 @@ struct CompromisedCredentials {
   // The date when the record was created.
   base::Time create_time;
   // The type of the credentials that was compromised.
-  CompromiseType compromise_type = CompromiseType::kLeaked;
+  InsecureType compromise_type = InsecureType::kLeaked;
   // Whether the problem was explicitly muted by the user.
   IsMuted is_muted{false};
   // The store in which those credentials are stored.
@@ -102,7 +105,7 @@ class InsecureCredentialsTable {
   // Also logs the compromise type in UMA.
   bool RemoveRow(const std::string& signon_realm,
                  const base::string16& username,
-                 RemoveCompromisedCredentialsReason reason);
+                 RemoveInsecureCredentialsReason reason);
 
   // Gets all the rows in the database for |signon_realm|.
   std::vector<CompromisedCredentials> GetRows(

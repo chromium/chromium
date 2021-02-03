@@ -17,7 +17,7 @@ namespace password_manager {
 using RemoveCompromisedCallback =
     base::RepeatingCallback<void(const std::string&,
                                  const base::string16&,
-                                 RemoveCompromisedCredentialsReason)>;
+                                 RemoveInsecureCredentialsReason)>;
 
 // Called when the content of the password store changes.
 // Removes rows from the compromised credentials database if the login

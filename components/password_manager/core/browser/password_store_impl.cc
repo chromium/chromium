@@ -262,7 +262,7 @@ PasswordStoreChangeList PasswordStoreImpl::AddCompromisedCredentialsImpl(
 PasswordStoreChangeList PasswordStoreImpl::RemoveCompromisedCredentialsImpl(
     const std::string& signon_realm,
     const base::string16& username,
-    RemoveCompromisedCredentialsReason reason) {
+    RemoveInsecureCredentialsReason reason) {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   if (!login_db_ || !login_db_->insecure_credentials_table().RemoveRow(
                         signon_realm, username, reason)) {

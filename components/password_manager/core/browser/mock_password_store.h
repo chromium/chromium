@@ -78,7 +78,7 @@ class MockPasswordStore : public PasswordStore {
   MOCK_METHOD3(RemoveCompromisedCredentialsImpl,
                PasswordStoreChangeList(const std::string&,
                                        const base::string16&,
-                                       RemoveCompromisedCredentialsReason));
+                                       RemoveInsecureCredentialsReason));
   MOCK_METHOD0(GetAllCompromisedCredentialsImpl,
                std::vector<CompromisedCredentials>());
   MOCK_METHOD1(

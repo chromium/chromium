@@ -155,7 +155,7 @@ void ManagePasswordsTest::SetupMoreToFixState() {
   // This is an unrelated compromised credential that should still be fixed.
   password_manager::CompromisedCredentials compromised(
       "https://somesite.com/", ASCIIToUTF16(kTestUsername), base::Time(),
-      password_manager::CompromiseType::kLeaked,
+      password_manager::InsecureType::kLeaked,
       password_manager::IsMuted(false));
   password_store->AddCompromisedCredentials(compromised);
   SetupPendingPassword();
@@ -175,11 +175,11 @@ void ManagePasswordsTest::SetupUnsafeState() {
   // This is an unrelated compromised credential that should still be fixed.
   password_manager::CompromisedCredentials some_compromised(
       "https://somesite.com/", ASCIIToUTF16(kTestUsername), base::Time(),
-      password_manager::CompromiseType::kLeaked,
+      password_manager::InsecureType::kLeaked,
       password_manager::IsMuted(false));
   password_manager::CompromisedCredentials current_compromised(
       password_form_.signon_realm, password_form_.username_value, base::Time(),
-      password_manager::CompromiseType::kLeaked,
+      password_manager::InsecureType::kLeaked,
       password_manager::IsMuted(false));
   password_store->AddCompromisedCredentials(some_compromised);
   password_store->AddCompromisedCredentials(current_compromised);
@@ -239,7 +239,7 @@ std::unique_ptr<PasswordFormManager> ManagePasswordsTest::CreateFormManager() {
 
   password_manager::CompromisedCredentials compromised(
       password_form_.signon_realm, password_form_.username_value, base::Time(),
-      password_manager::CompromiseType::kLeaked,
+      password_manager::InsecureType::kLeaked,
       password_manager::IsMuted(false));
   fetcher_.set_compromised({compromised});
 

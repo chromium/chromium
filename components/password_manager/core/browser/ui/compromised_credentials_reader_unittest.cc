@@ -118,7 +118,7 @@ TEST_F(CompromisedCredentialsReaderTest, AddCredentialsToBothStores) {
                   UnorderedElementsAre(account_cred1, account_cred2)));
   profile_store().RemoveCompromisedCredentials(
       profile_cred.signon_realm, profile_cred.username,
-      RemoveCompromisedCredentialsReason::kRemove);
+      RemoveInsecureCredentialsReason::kRemove);
   RunUntilIdle();
 
   EXPECT_CALL(mock_observer,

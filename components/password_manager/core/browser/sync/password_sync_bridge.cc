@@ -76,19 +76,19 @@ PasswordIssuesFromCompromisedCredentials(
             .InMicroseconds());
     issue.set_is_muted(compromised_credential.is_muted.value());
     switch (compromised_credential.compromise_type) {
-      case CompromiseType::kLeaked:
+      case InsecureType::kLeaked:
         DCHECK(!issues.has_leaked_password_issue());
         *issues.mutable_leaked_password_issue() = std::move(issue);
         break;
-      case CompromiseType::kPhished:
+      case InsecureType::kPhished:
         DCHECK(!issues.has_phished_password_issue());
         *issues.mutable_phished_password_issue() = std::move(issue);
         break;
-      case CompromiseType::kWeak:
+      case InsecureType::kWeak:
         DCHECK(!issues.has_weak_password_issue());
         *issues.mutable_weak_password_issue() = std::move(issue);
         break;
-      case CompromiseType::kReused:
+      case InsecureType::kReused:
         DCHECK(!issues.has_reused_password_issue());
         *issues.mutable_reused_password_issue() = std::move(issue);
         break;
@@ -177,7 +177,7 @@ PasswordForm PasswordFromEntityChange(const syncer::EntityChange& entity_change,
 CompromisedCredentials CreateCompromisedCredentials(
     const std::string& signon_realm,
     const base::string16& username,
-    CompromiseType compromise_type,
+    InsecureType compromise_type,
     const sync_pb::PasswordSpecificsData::PasswordIssues::PasswordIssue&
         issue) {
   return CompromisedCredentials(
@@ -205,22 +205,22 @@ std::vector<CompromisedCredentials> CompromisedCredentialsFromEntityChange(
   const auto& password_issues = password_data.password_issues();
   if (password_issues.has_leaked_password_issue()) {
     compromised_credentials.push_back(CreateCompromisedCredentials(
-        signon_realm, username, CompromiseType::kLeaked,
+        signon_realm, username, InsecureType::kLeaked,
         password_issues.leaked_password_issue()));
   }
   if (password_issues.has_reused_password_issue()) {
     compromised_credentials.push_back(CreateCompromisedCredentials(
-        signon_realm, username, CompromiseType::kReused,
+        signon_realm, username, InsecureType::kReused,
         password_issues.reused_password_issue()));
   }
   if (password_issues.has_weak_password_issue()) {
     compromised_credentials.push_back(CreateCompromisedCredentials(
-        signon_realm, username, CompromiseType::kWeak,
+        signon_realm, username, InsecureType::kWeak,
         password_issues.weak_password_issue()));
   }
   if (password_issues.has_phished_password_issue()) {
     compromised_credentials.push_back(CreateCompromisedCredentials(
-        signon_realm, username, CompromiseType::kPhished,
+        signon_realm, username, InsecureType::kPhished,
         password_issues.phished_password_issue()));
   }
   return compromised_credentials;

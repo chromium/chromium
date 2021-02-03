@@ -55,18 +55,18 @@ MATCHER_P(EntityDataHasSignonRealm, expected_signon_realm, "") {
              .signon_realm() == expected_signon_realm;
 }
 
-bool SpecificsHasExpectedCompromiseTypes(
+bool SpecificsHasExpectedInsecureTypes(
     const sync_pb::PasswordSpecificsData::PasswordIssues& specifics,
-    const std::vector<CompromiseType>& expected_types) {
+    const std::vector<InsecureType>& expected_types) {
   return base::ranges::all_of(expected_types, [&specifics](auto type) {
     switch (type) {
-      case CompromiseType::kLeaked:
+      case InsecureType::kLeaked:
         return specifics.has_leaked_password_issue();
-      case CompromiseType::kPhished:
+      case InsecureType::kPhished:
         return specifics.has_phished_password_issue();
-      case CompromiseType::kWeak:
+      case InsecureType::kWeak:
         return specifics.has_weak_password_issue();
-      case CompromiseType::kReused:
+      case InsecureType::kReused:
         return specifics.has_reused_password_issue();
     }
   });
@@ -75,8 +75,8 @@ bool SpecificsHasExpectedCompromiseTypes(
 MATCHER_P(EntityDataHasSecurityIssueTypes, expected_issue_types, "") {
   const auto& password_issues_data =
       arg->specifics.password().client_only_encrypted_data().password_issues();
-  return SpecificsHasExpectedCompromiseTypes(password_issues_data,
-                                             expected_issue_types);
+  return SpecificsHasExpectedInsecureTypes(password_issues_data,
+                                           expected_issue_types);
 }
 
 // |*arg| must be of type PasswordForm.
@@ -96,7 +96,7 @@ MATCHER_P(IsSyncMetadataStoreChangeListWithStore, expected_metadata_store, "") {
 }
 
 sync_pb::PasswordSpecificsData_PasswordIssues CreateSpecificsIssues(
-    const std::vector<CompromiseType>& issue_types) {
+    const std::vector<InsecureType>& issue_types) {
   sync_pb::PasswordSpecificsData_PasswordIssues remote_issues;
   for (auto type : issue_types) {
     sync_pb::PasswordSpecificsData_PasswordIssues_PasswordIssue remote_issue;
@@ -104,16 +104,16 @@ sync_pb::PasswordSpecificsData_PasswordIssues CreateSpecificsIssues(
         base::Time().ToDeltaSinceWindowsEpoch().InMicroseconds());
     remote_issue.set_is_muted(false);
     switch (type) {
-      case CompromiseType::kLeaked:
+      case InsecureType::kLeaked:
         *remote_issues.mutable_leaked_password_issue() = remote_issue;
         break;
-      case CompromiseType::kPhished:
+      case InsecureType::kPhished:
         *remote_issues.mutable_phished_password_issue() = remote_issue;
         break;
-      case CompromiseType::kWeak:
+      case InsecureType::kWeak:
         *remote_issues.mutable_weak_password_issue() = remote_issue;
         break;
-      case CompromiseType::kReused:
+      case InsecureType::kReused:
         *remote_issues.mutable_reused_password_issue() = remote_issue;
         break;
     }
@@ -127,7 +127,7 @@ sync_pb::PasswordSpecifics CreateSpecifics(
     const std::string& username_value,
     const std::string& password_element,
     const std::string& signon_realm,
-    const std::vector<CompromiseType>& issue_types) {
+    const std::vector<InsecureType>& issue_types) {
   sync_pb::EntitySpecifics password_specifics;
   sync_pb::PasswordSpecificsData* password_data =
       password_specifics.mutable_password()
@@ -152,7 +152,7 @@ sync_pb::PasswordSpecifics CreateSpecificsWithSignonRealm(
 
 sync_pb::PasswordSpecifics CreateSpecificsWithSignonRealmAndIssues(
     const std::string& signon_realm,
-    const std::vector<CompromiseType>& issue_types) {
+    const std::vector<InsecureType>& issue_types) {
   return CreateSpecifics("http://www.origin.com/", "username_element",
                          "username_value", "password_element", signon_realm,
                          issue_types);
@@ -178,7 +178,7 @@ PasswordForm MakeBlocklistedForm(const std::string& signon_realm) {
 
 std::vector<CompromisedCredentials> MakeCompromisedCredentials(
     const PasswordForm& form,
-    const std::vector<CompromiseType>& types) {
+    const std::vector<InsecureType>& types) {
   std::vector<CompromisedCredentials> issues;
 
   for (auto type : types) {
@@ -1236,8 +1236,8 @@ TEST_P(PasswordSyncBridgeTest,
   if (!GetParam())
     return;
   ON_CALL(mock_processor(), IsTrackingMetadata()).WillByDefault(Return(true));
-  const std::vector<CompromiseType> kIssuesTypes = {CompromiseType::kLeaked,
-                                                    CompromiseType::kWeak};
+  const std::vector<InsecureType> kIssuesTypes = {InsecureType::kLeaked,
+                                                  InsecureType::kWeak};
   const std::vector<CompromisedCredentials> kExpectedIssues =
       MakeCompromisedCredentials(MakePasswordForm(kSignonRealm1), kIssuesTypes);
 
@@ -1268,8 +1268,8 @@ TEST_P(PasswordSyncBridgeTest,
   if (!GetParam())
     return;
   ON_CALL(mock_processor(), IsTrackingMetadata()).WillByDefault(Return(true));
-  const std::vector<CompromiseType> kIssuesTypes = {CompromiseType::kLeaked,
-                                                    CompromiseType::kReused};
+  const std::vector<InsecureType> kIssuesTypes = {InsecureType::kLeaked,
+                                                  InsecureType::kReused};
   const std::vector<CompromisedCredentials> kIssues =
       MakeCompromisedCredentials(MakePasswordForm(kSignonRealm1), kIssuesTypes);
   sync_pb::PasswordSpecifics specifics =
@@ -1308,8 +1308,8 @@ TEST_P(PasswordSyncBridgeTest, ShouldPutSecurityIssuesOnLoginChange) {
   // be assigned a primary key 1.
   const int kPrimaryKey1 = 1;
   const std::string kPrimaryKeyStr1 = "1";
-  const std::vector<CompromiseType> kIssuesTypes = {CompromiseType::kLeaked,
-                                                    CompromiseType::kReused};
+  const std::vector<InsecureType> kIssuesTypes = {InsecureType::kLeaked,
+                                                  InsecureType::kReused};
   const PasswordForm kForm = MakePasswordForm(kSignonRealm1);
 
   fake_db()->AddLoginForPrimaryKey(kPrimaryKey1, kForm);
@@ -1331,8 +1331,8 @@ TEST_P(PasswordSyncBridgeTest, ShouldAddLocalSecurityIssuesDuringInitialMerge) {
     return;
   const int kPrimaryKey1 = 1000;
   const std::string kPrimaryKeyStr1 = "1000";
-  const std::vector<CompromiseType> kIssuesTypes = {CompromiseType::kLeaked,
-                                                    CompromiseType::kReused};
+  const std::vector<InsecureType> kIssuesTypes = {InsecureType::kLeaked,
+                                                  InsecureType::kReused};
   const PasswordForm kForm = MakePasswordForm(kSignonRealm1);
 
   sync_pb::PasswordSpecifics specifics1 =
@@ -1356,8 +1356,8 @@ TEST_P(PasswordSyncBridgeTest, GetDataWithIssuesForStorageKey) {
     return;
   const int kPrimaryKey1 = 1000;
   const std::string kPrimaryKeyStr1 = "1000";
-  const std::vector<CompromiseType> kIssuesTypes = {CompromiseType::kLeaked,
-                                                    CompromiseType::kReused};
+  const std::vector<InsecureType> kIssuesTypes = {InsecureType::kLeaked,
+                                                  InsecureType::kReused};
   const PasswordForm kForm = MakePasswordForm(kSignonRealm1);
 
   fake_db()->AddLoginForPrimaryKey(kPrimaryKey1, kForm);
@@ -1367,7 +1367,7 @@ TEST_P(PasswordSyncBridgeTest, GetDataWithIssuesForStorageKey) {
   base::Optional<sync_pb::PasswordSpecifics> optional_specifics =
       GetDataFromBridge(/*storage_key=*/kPrimaryKeyStr1);
   ASSERT_TRUE(optional_specifics.has_value());
-  ASSERT_TRUE(SpecificsHasExpectedCompromiseTypes(
+  ASSERT_TRUE(SpecificsHasExpectedInsecureTypes(
       optional_specifics.value().client_only_encrypted_data().password_issues(),
       kIssuesTypes));
 }
@@ -1382,8 +1382,8 @@ TEST_P(PasswordSyncBridgeTest,
   fake_db()->AddLoginForPrimaryKey(kPrimaryKey,
                                    MakePasswordForm(kSignonRealm1));
 
-  const std::vector<CompromiseType> kIssuesTypes = {CompromiseType::kLeaked,
-                                                    CompromiseType::kReused};
+  const std::vector<InsecureType> kIssuesTypes = {InsecureType::kLeaked,
+                                                  InsecureType::kReused};
   const std::vector<CompromisedCredentials> kIssues =
       MakeCompromisedCredentials(MakePasswordForm(kSignonRealm1), kIssuesTypes);
 
@@ -1411,8 +1411,8 @@ TEST_P(PasswordSyncBridgeTest,
   // types Leaked and Reused.
   const std::string kStorageKey = "1000";
   const PasswordForm kForm = MakePasswordForm(kSignonRealm1);
-  std::vector<CompromiseType> kIssuesTypes = {
-      CompromiseType::kLeaked, CompromiseType::kReused, CompromiseType::kWeak};
+  std::vector<InsecureType> kIssuesTypes = {
+      InsecureType::kLeaked, InsecureType::kReused, InsecureType::kWeak};
   const std::vector<CompromisedCredentials> kIssues =
       MakeCompromisedCredentials(kForm, kIssuesTypes);
 
@@ -1459,12 +1459,12 @@ TEST_P(PasswordSyncBridgeTest,
   // compromised credentials, local data get updated.
   const std::string kStorageKey = "1000";
   const PasswordForm kForm = MakePasswordForm(kSignonRealm1);
-  std::vector<CompromiseType> kRemoteIssuesTypes = {CompromiseType::kReused,
-                                                    CompromiseType::kWeak};
+  std::vector<InsecureType> kRemoteIssuesTypes = {InsecureType::kReused,
+                                                  InsecureType::kWeak};
   const std::vector<CompromisedCredentials> kRemoteIssues =
       MakeCompromisedCredentials(kForm, kRemoteIssuesTypes);
   const std::vector<CompromisedCredentials> kLocalIssues =
-      MakeCompromisedCredentials(kForm, {CompromiseType::kLeaked});
+      MakeCompromisedCredentials(kForm, {InsecureType::kLeaked});
 
   fake_db()->AddLoginForPrimaryKey(kPrimaryKey, kForm);
   fake_db()->AddCompromisedCredentials(kLocalIssues);
@@ -1499,8 +1499,8 @@ TEST_P(PasswordSyncBridgeTest,
   const int kPrimaryKey = 1000;
   const std::string kStorageKey = "1000";
   PasswordForm kForm = MakePasswordForm(kSignonRealm1);
-  std::vector<CompromiseType> kIssuesTypes = {CompromiseType::kReused,
-                                              CompromiseType::kWeak};
+  std::vector<InsecureType> kIssuesTypes = {InsecureType::kReused,
+                                            InsecureType::kWeak};
   const std::vector<CompromisedCredentials> kIssues =
       MakeCompromisedCredentials(kForm, kIssuesTypes);
 

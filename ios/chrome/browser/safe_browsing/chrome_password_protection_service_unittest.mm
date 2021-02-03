@@ -255,7 +255,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
   EXPECT_CALL(*GetProfilePasswordStore(),
               RemoveCompromisedCredentialsImpl(
                   _, _,
-                  password_manager::RemoveCompromisedCredentialsReason::
+                  password_manager::RemoveInsecureCredentialsReason::
                       kMarkSiteAsLegitimate))
       .Times(2);
   service_->RemovePhishedSavedPasswordCredential(credentials);

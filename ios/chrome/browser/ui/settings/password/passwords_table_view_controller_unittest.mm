@@ -48,7 +48,7 @@
 #error "This file requires ARC support."
 #endif
 
-using password_manager::CompromiseType;
+using password_manager::InsecureType;
 using password_manager::TestPasswordStore;
 using password_manager::MockBulkLeakCheckService;
 using ::testing::Return;
@@ -235,7 +235,7 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
       base::StringPiece username) {
     return password_manager::CompromisedCredentials(
         std::string(signon_realm), base::ASCIIToUTF16(username),
-        base::Time::Now(), CompromiseType::kLeaked,
+        base::Time::Now(), InsecureType::kLeaked,
         password_manager::IsMuted(false));
   }
 

@@ -38,7 +38,7 @@ constexpr char kPassword[] = "s3cre3t";
 
 using password_manager::PasswordForm;
 using password_manager::CompromisedCredentials;
-using password_manager::CompromiseType;
+using password_manager::InsecureType;
 using password_manager::TestPasswordStore;
 
 // Sets test password store and returns pointer to it.
@@ -58,7 +58,7 @@ CompromisedCredentials MakeCompromised(base::StringPiece signon_realm,
                                        base::StringPiece username) {
   return CompromisedCredentials(std::string(signon_realm),
                                 base::ASCIIToUTF16(username), base::Time::Now(),
-                                CompromiseType::kLeaked,
+                                InsecureType::kLeaked,
                                 password_manager::IsMuted(false));
 }
 }  // namespace
