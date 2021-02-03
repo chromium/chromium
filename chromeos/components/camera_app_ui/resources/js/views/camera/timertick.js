@@ -9,7 +9,7 @@ import * as state from '../../state.js';
 
 /**
  * Handler to cancel the active running timer-ticks.
- * @type {?function()}
+ * @type {?function(): void}
  */
 let doCancel = null;
 
