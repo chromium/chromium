@@ -96,6 +96,9 @@ class CORE_EXPORT NGInlineCursorPosition {
   // True if the current position is a list marker.
   bool IsListMarker() const { return item_->IsListMarker(); }
 
+  // True if the current position is a box for "float"
+  bool IsFloating() const { return item_->IsFloating(); }
+
   // True if the current position is hidden for paint. It is error to call at
   // end.
   bool IsHiddenForPaint() const { return item_->IsHiddenForPaint(); }
