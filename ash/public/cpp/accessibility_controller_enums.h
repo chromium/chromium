@@ -183,17 +183,16 @@ enum class FloatingMenuPosition {
 // written to prefs so they should not be changed. New values should be added at
 // the end.
 enum class MagnifierMouseFollowingMode {
-  // Default value, indicates no mouse following mode chosen.
-  kNone,
-
   // Continuous following mode.
-  kContinuous,
+  kContinuous = 0,
 
   // Centered following mode.
-  kCentered,
+  kCentered = 1,
 
   // Edge following mode.
-  kEdge,
+  kEdge = 2,
+
+  kMaxValue = kEdge
 };
 
 }  // namespace ash

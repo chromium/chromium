@@ -47987,6 +47987,12 @@ from previous Chrome versions.
   <int value="3" label="3-Critical"/>
 </enum>
 
+<enum name="MagnifierMouseFollowingMode">
+  <int value="0" label="Continuous"/>
+  <int value="1" label="Centered"/>
+  <int value="2" label="Edge"/>
+</enum>
+
 <enum name="MainFrameDownloadSandboxGesture">
   <obsolete>
     Deprecated as of 03/2019.
@@ -56505,6 +56511,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="1527" label="Live Captions"/>
   <int value="1528" label="Cursor Colors: On/Off"/>
   <int value="1529" label="Fullscreen Magnifier Focus Following"/>
+  <int value="1530" label="Fullscreen Magnifier Mouse Following Mode"/>
   <int value="1600" label="Powerwash"/>
   <int value="1700" label="Change Chrome Channel"/>
   <int value="1701" label="Copy Detailed Build Info"/>

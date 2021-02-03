@@ -29,6 +29,23 @@ Polymer({
       notify: true,
     },
 
+    /**
+     * Enum values for the 'settings.a11y.screen_magnifier_mouse_following_mode'
+     * preference. These values map to
+     * AccessibilityController::MagnifierMouseFollowingMode, and are written to
+     * prefs and metrics, so order should not be changed.
+     * @private {!Object<string, number>}
+     */
+    screenMagnifierMouseFollowingModePrefValues_: {
+      readOnly: true,
+      type: Object,
+      value: {
+        CONTINUOUS: 0,
+        CENTERED: 1,
+        EDGE: 2,
+      },
+    },
+
     screenMagnifierZoomOptions_: {
       readOnly: true,
       type: Array,
@@ -243,6 +260,7 @@ Polymer({
         chromeos.settings.mojom.Setting.kSelectToSpeak,
         chromeos.settings.mojom.Setting.kHighContrastMode,
         chromeos.settings.mojom.Setting.kFullscreenMagnifier,
+        chromeos.settings.mojom.Setting.kFullscreenMagnifierMouseFollowingMode,
         chromeos.settings.mojom.Setting.kFullscreenMagnifierFocusFollowing,
         chromeos.settings.mojom.Setting.kDockedMagnifier,
         chromeos.settings.mojom.Setting.kStickyKeys,

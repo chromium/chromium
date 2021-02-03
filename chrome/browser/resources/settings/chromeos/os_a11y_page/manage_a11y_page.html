@@ -97,6 +97,32 @@
     </settings-toggle-button>
     <template is="dom-if" if="[[prefs.settings.a11y.screen_magnifier.value]]">
       <template is="dom-if" if="[[isMagnifierPanningImprovementsEnabled_]]">
+        <div class="settings-box continuation">
+          <settings-radio-group id="screenMagnifierMouseFollowingModeRadioGroup"
+              pref="{{prefs.settings.a11y.screen_magnifier_mouse_following_mode}}"
+              group-aria-label="$i18n{screenMagnifierMouseFollowingModeRadioGroupTitle}"
+              deep-link-focus-id$="[[Setting.kFullscreenMagnifierMouseFollowingMode]]"
+              class="sub-item">
+            <controlled-radio-button
+                id="screenMagnifierMouseFollowingModeContinuous"
+                name="[[screenMagnifierMouseFollowingModePrefValues_.CONTINUOUS]]"
+                pref="[[prefs.settings.a11y.screen_magnifier_mouse_following_mode]]"
+                label="$i18n{screenMagnifierMouseFollowingModeContinuous}">
+            </controlled-radio-button>
+            <controlled-radio-button
+                id="screenMagnifierMouseFollowingModeCentered"
+                name="[[screenMagnifierMouseFollowingModePrefValues_.CENTERED]]"
+                pref="[[prefs.settings.a11y.screen_magnifier_mouse_following_mode]]"
+                label="$i18n{screenMagnifierMouseFollowingModeCentered}">
+            </controlled-radio-button>
+            <controlled-radio-button
+                id="screenMagnifierMouseFollowingModeEdge"
+                name="[[screenMagnifierMouseFollowingModePrefValues_.EDGE]]"
+                pref="[[prefs.settings.a11y.screen_magnifier_mouse_following_mode]]"
+                label="$i18n{screenMagnifierMouseFollowingModeEdge}">
+            </controlled-radio-button>
+          </settings-radio-group>
+        </div>
         <div class="sub-item">
           <settings-toggle-button
               class="sub-item"

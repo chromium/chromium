@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/tablet_mode.h"
@@ -321,6 +322,18 @@ GetA11yFullscreenMagnifierFocusFollowingSearchConcepts() {
   });
   return *tags;
 }
+const std::vector<SearchConcept>&
+GetA11yFullscreenMagnifierMouseFollowingModeSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_A11Y_FULLSCREEN_MAGNIFIER_MOUSE_FOLLOWING_MODE,
+       mojom::kManageAccessibilitySubpagePath,
+       mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultDefaultRank::kLow,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kFullscreenMagnifierMouseFollowingMode}},
+  });
+  return *tags;
+}
 
 bool AreExperimentalA11yLabelsAllowed() {
   return base::FeatureList::IsEnabled(
@@ -430,6 +443,14 @@ void AccessibilitySection::AddLoadTimeData(
       {"chromeVoxLabel", IDS_SETTINGS_CHROMEVOX_LABEL},
       {"chromeVoxOptionsLabel", IDS_SETTINGS_CHROMEVOX_OPTIONS_LABEL},
       {"screenMagnifierLabel", IDS_SETTINGS_SCREEN_MAGNIFIER_LABEL},
+      {"screenMagnifierMouseFollowingModeRadioGroupTitle",
+       IDS_SETTINGS_SCREEN_MANIFIER_MOUSE_FOLLOWING_MODE_RADIO_GROUP_TITLE},
+      {"screenMagnifierMouseFollowingModeContinuous",
+       IDS_SETTINGS_SCREEN_MANIFIER_MOUSE_FOLLOWING_MODE_CONTINUOUS},
+      {"screenMagnifierMouseFollowingModeCentered",
+       IDS_SETTINGS_SCREEN_MANIFIER_MOUSE_FOLLOWING_MODE_CENTERED},
+      {"screenMagnifierMouseFollowingModeEdge",
+       IDS_SETTINGS_SCREEN_MANIFIER_MOUSE_FOLLOWING_MODE_EDGE},
       {"screenMagnifierFocusFollowingLabel",
        IDS_SETTINGS_SCREEN_MAGNIFIER_FOCUS_FOLLOWING_LABEL},
       {"screenMagnifierZoomLabel", IDS_SETTINGS_SCREEN_MAGNIFIER_ZOOM_LABEL},
@@ -690,6 +711,12 @@ bool AccessibilitySection::LogMetric(mojom::Setting setting,
           "ChromeOS.Settings.Accessibility.FullscreenMagnifierFocusFollowing",
           value.GetBool());
       return true;
+    case mojom::Setting::kFullscreenMagnifierMouseFollowingMode:
+      base::UmaHistogramEnumeration(
+          "ChromeOS.Settings.Accessibility."
+          "FullscreenMagnifierMouseFollowingMode",
+          static_cast<ash::MagnifierMouseFollowingMode>(value.GetInt()));
+      return true;
 
     default:
       return false;
@@ -714,6 +741,7 @@ void AccessibilitySection::RegisterHierarchy(
       mojom::Setting::kHighContrastMode,
       mojom::Setting::kFullscreenMagnifier,
       mojom::Setting::kFullscreenMagnifierFocusFollowing,
+      mojom::Setting::kFullscreenMagnifierMouseFollowingMode,
       mojom::Setting::kDockedMagnifier,
       mojom::Setting::kStickyKeys,
       mojom::Setting::kOnScreenKeyboard,
@@ -835,9 +863,13 @@ void AccessibilitySection::UpdateSearchTags() {
           ash::prefs::kAccessibilityScreenMagnifierEnabled)) {
     updater.AddSearchTags(
         GetA11yFullscreenMagnifierFocusFollowingSearchConcepts());
+    updater.AddSearchTags(
+        GetA11yFullscreenMagnifierMouseFollowingModeSearchConcepts());
   } else {
     updater.RemoveSearchTags(
         GetA11yFullscreenMagnifierFocusFollowingSearchConcepts());
+    updater.RemoveSearchTags(
+        GetA11yFullscreenMagnifierMouseFollowingModeSearchConcepts());
   }
 
   if (!pref_service_->GetBoolean(

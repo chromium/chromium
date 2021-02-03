@@ -816,6 +816,18 @@
   <message name="IDS_SETTINGS_SCREEN_MAGNIFIER_LABEL" desc="Label for checkbox which enables the fullscreen magnifier">
       Enable fullscreen magnifier
   </message>
+  <message name="IDS_SETTINGS_SCREEN_MANIFIER_MOUSE_FOLLOWING_MODE_RADIO_GROUP_TITLE" desc="The title of the radio group that allows the user to configure the mouse following mode of the full screen magnifier. This feature allows the user of full screen magnifier to choose how the zoomed-in screen moves as their mouse moves within the screen. The options are 'Move screen continuously as mouse moves', 'Move screen keeping mouse at center of screen', and 'Move screen when mouse touches edges of screen'.">
+    Mouse following mode
+  </message>
+  <message name="IDS_SETTINGS_SCREEN_MANIFIER_MOUSE_FOLLOWING_MODE_CONTINUOUS" desc="Label for the radio button that allows the user to choose the 'continuous' mouse following mode for the full screen magnifier, which moves the zoomed-in screen continuously (underneath the cursor in the opposite direction) as the mouse moves towards the edges of the screen. This feature allows the user of full screen magnifier to choose how the zoomed-in screen moves as their mouse moves within the screen. The options are 'Move screen continuously as mouse moves', 'Move screen keeping mouse at center of screen', and 'Move screen when mouse touches edges of screen'.">
+    Move screen continuously as mouse moves
+  </message>
+  <message name="IDS_SETTINGS_SCREEN_MANIFIER_MOUSE_FOLLOWING_MODE_CENTERED" desc="Label for the radio button that allows the user to choose the 'centered' mouse following mode for the full screen magnifier, which moves the zoomed-in screen while keeping the mouse at center of the screen. This feature allows the user of full screen magnifier to choose how the zoomed-in screen moves as their mouse moves within the screen. The options are 'Move screen continuously as mouse moves', 'Move screen keeping mouse at center of screen', and 'Move screen when mouse touches edges of screen'.">
+    Move screen keeping mouse at center of screen
+  </message>
+  <message name="IDS_SETTINGS_SCREEN_MANIFIER_MOUSE_FOLLOWING_MODE_EDGE" desc="Label for the radio button that allows the user to choose the 'edge' mouse following mode for the full screen magnifier, which moves the zoomed-in screen when the mouse touches the edges of the screen. This feature allows the user of full screen magnifier to choose how the zoomed-in screen moves as their mouse moves within the screen. The options are 'Move screen continuously as mouse moves', 'Move screen keeping mouse at center of screen', and 'Move screen when mouse touches edges of screen'.">
+    Move screen when mouse touches edges of screen
+  </message>
   <message name="IDS_SETTINGS_SCREEN_MAGNIFIER_FOCUS_FOLLOWING_LABEL" desc="Label for toggle which enables keyboard focus following in the fullscreen magnifier">
       Zoomed in screen follows keyboard focus
   </message>

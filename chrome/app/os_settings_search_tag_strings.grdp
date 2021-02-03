@@ -1065,6 +1065,9 @@
   <message name="IDS_OS_SETTINGS_TAG_A11Y_FULLSCREEN_MAGNIFIER_FOCUS_FOLLOWING" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable full-screen magnification keyboard focus-following.">
     Magnifier follows keyboard focus
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_FULLSCREEN_MAGNIFIER_MOUSE_FOLLOWING_MODE" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a set of radio buttons to choose which mouse following mode to use for the full-screen magnifier. This feature allows the user of full screen magnifier to choose how the zoomed-in screen moves as their mouse moves within the screen. The options are 'Move screen continuously as mouse moves', 'Move screen keeping mouse at center of screen', and 'Move screen when mouse touches edges of screen'.">
+    Magnifier mouse following mode
+  </message>
   <message name="IDS_OS_SETTINGS_TAG_A11Y_DOCKED_MAGNIFIER" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable docked screen magnification.">
     Docked magnifier
   </message>
