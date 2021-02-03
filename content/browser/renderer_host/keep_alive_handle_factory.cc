@@ -30,7 +30,8 @@ class KeepAliveHandleFactory::Context final : public base::RefCounted<Context> {
         []() { GetContentClient()->browser()->OnKeepaliveRequestFinished(); }));
     if (!process_host || process_host->IsKeepAliveRefCountDisabled())
       return;
-    process_host->IncrementKeepAliveRefCount();
+    process_host->IncrementKeepAliveRefCount(
+        RenderProcessHost::KeepAliveSource::KEEP_ALIVE_HANDLE_FACTORY);
   }
 
   void Detach() {

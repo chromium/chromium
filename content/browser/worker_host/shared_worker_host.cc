@@ -90,7 +90,8 @@ class SharedWorkerHost::ScopedProcessHostRef {
  public:
   explicit ScopedProcessHostRef(RenderProcessHost* render_process_host)
       : render_process_host_(render_process_host) {
-    render_process_host_->IncrementKeepAliveRefCount();
+    render_process_host_->IncrementKeepAliveRefCount(
+        RenderProcessHost::KeepAliveSource::KEEP_ALIVE_SHARED_WORKER);
   }
 
   ~ScopedProcessHostRef() {

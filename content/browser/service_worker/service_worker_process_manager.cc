@@ -161,7 +161,8 @@ ServiceWorkerProcessManager::AllocateWorkerProcess(
 
   worker_process_map_.emplace(embedded_worker_id, std::move(site_instance));
   if (!rph->IsKeepAliveRefCountDisabled())
-    rph->IncrementKeepAliveRefCount();
+    rph->IncrementKeepAliveRefCount(
+        RenderProcessHost::KeepAliveSource::KEEP_ALIVE_SERVICE_WORKER);
   out_info->process_id = rph->GetID();
   out_info->start_situation = start_situation;
   return blink::ServiceWorkerStatusCode::kOk;

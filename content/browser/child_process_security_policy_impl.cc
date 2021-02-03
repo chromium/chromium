@@ -1615,7 +1615,15 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(
         // BrowsingInstances are registered in the process. Allow this for now,
         // to maintain legacy behavior, until we rule out all the ways it can
         // happen.
-        return true;
+        RenderProcessHostImpl* child_host = static_cast<RenderProcessHostImpl*>(
+            RenderProcessHost::FromID(child_id));
+        DCHECK(child_host);
+        failure_reason = base::StringPrintf(
+            "No BIids, keep_alive_count = %zu, last_source = %d",
+            child_host->keep_alive_ref_count(),
+            child_host->keep_alive_last_source());
+        // This will fall through to the call to
+        // LogCanAccessDataForOriginCrashKeys and log the failure reason.
       }
       for (auto browsing_instance_id :
            security_state->browsing_instance_ids()) {

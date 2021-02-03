@@ -121,6 +121,15 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
     GENERATE_CRASH_DUMP,
   };
 
+  // Temporary enum to track source of KeepAlive increments.
+  enum class KeepAliveSource {
+    KEEP_ALIVE_NONE,
+    KEEP_ALIVE_HANDLE_FACTORY,
+    KEEP_ALIVE_SUBFRAME_UNLOAD,
+    KEEP_ALIVE_SERVICE_WORKER,
+    KEEP_ALIVE_SHARED_WORKER
+  };
+
   // General functions ---------------------------------------------------------
 
   ~RenderProcessHost() override {}
@@ -397,7 +406,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   //    Keeps the process alive briefly to give subframe unload handlers a
   //    chance to execute after their parent frame navigates or is detached.
   //    See https://crbug.com/852204.
-  virtual void IncrementKeepAliveRefCount() = 0;
+  virtual void IncrementKeepAliveRefCount(KeepAliveSource source) = 0;
   virtual void DecrementKeepAliveRefCount() = 0;
 
   // Sets keep alive ref counts to zero. Called when the browser context will be
