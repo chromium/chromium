@@ -399,13 +399,6 @@ HacksAndPatchesCommon() {
   mkdir -p ${INSTALL_ROOT}/usr/lib/pkgconfig
   mv ${INSTALL_ROOT}/usr/lib/${arch}-${os}/pkgconfig/* \
       ${INSTALL_ROOT}/usr/lib/pkgconfig
-
-  # Temporary workaround for invalid implicit conversion from void* in pipewire.
-  # This is already fixed upstream in [1], so this can be removed once it rolls
-  # into Debian.
-  # [1] https://github.com/PipeWire/pipewire/commit/371da358d1580dc06218d18a12a99611cac39e4e
-  local pipewire_utils_h="${INSTALL_ROOT}/usr/include/pipewire/utils.h"
-  sed -i 's/malloc/(struct spa_pod*)malloc/' "${pipewire_utils_h}"
 }
 
 
