@@ -214,29 +214,22 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
 
     @Override
     public int getSheetContentDescriptionStringId() {
-        // TODO(https://crbug.com/1112696): Use more specific string
-        // account picker content description
         return R.string.signin_account_picker_bottom_sheet_subtitle;
     }
 
     @Override
     public int getSheetHalfHeightAccessibilityStringId() {
-        return R.string.signin_account_picker_dialog_title;
+        return R.string.account_picker_bottom_sheet_accessibility_opened;
     }
 
     @Override
     public int getSheetFullHeightAccessibilityStringId() {
-        // TODO(https://crbug.com/1112696): Use more specific string
-        // like |Open account picker bottom sheet...| when bottom sheet opens
-        // after a11y meeting
-        return R.string.signin_account_picker_dialog_title;
+        return R.string.account_picker_bottom_sheet_accessibility_opened;
     }
 
     @Override
     public int getSheetClosedAccessibilityStringId() {
-        // TODO(https://crbug.com/1112696): Use more specific string when the account
-        // picker is closed.
-        return R.string.close;
+        return R.string.account_picker_bottom_sheet_accessibility_closed;
     }
 
     private static void setUpContinueButton(View view, @StringRes int buttonId) {

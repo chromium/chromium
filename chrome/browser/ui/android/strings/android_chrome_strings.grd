@@ -2592,6 +2592,12 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       <message name="IDS_SIGNIN_ACCOUNT_PICKER_DIALOG_TITLE" desc="The title for the dialog that shows the list of accounts on the device and asks the user to select one of these accounts. [CHAR-LIMIT=27]">
         Choose an account
       </message>
+      <message name="IDS_ACCOUNT_PICKER_BOTTOM_SHEET_ACCESSIBILITY_OPENED" is_accessibility_with_no_ui="true" desc="The accessibility text to read when account picker bottom sheet is opened.">
+        Sign in to Chrome, opened.
+      </message>
+      <message name="IDS_ACCOUNT_PICKER_BOTTOM_SHEET_ACCESSIBILITY_CLOSED" is_accessibility_with_no_ui="true" desc="The accessibility text to read when account picker bottom sheet is closed.">
+        Sign in to Chrome, closed.
+      </message>
       <message name="IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_SUBTITLE" desc="The subtitle for the account picker bottom sheet that tells the user what happens if the button 'Continue as John Doe' is clicked">
         Sign in to this site and Chrome with your Google Account. You can turn on sync later.
       </message>
