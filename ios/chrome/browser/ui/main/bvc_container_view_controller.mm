@@ -28,7 +28,7 @@
   // When the thumb strip is enabled, the BVC container stays around all the
   // time. When on a tab grid page with no tabs or the recent tab page, the
   // currentBVC will be set to nil.
-  DCHECK(bvc || IsThumbStripEnabled());
+  DCHECK(bvc || ShowThumbStripInTraitCollection(self.traitCollection));
   if (self.currentBVC == bvc) {
     return;
   }
@@ -55,7 +55,7 @@
     [self.view addSubview:bvc.view];
     [bvc didMoveToParentViewController:self];
 
-    if (IsThumbStripEnabled()) {
+    if (ShowThumbStripInTraitCollection(self.traitCollection)) {
       // The background needs to be clear to allow the thumb strip to be seen
       // during the enter/exit thumb strip animation.
       self.currentBVC.view.backgroundColor = [UIColor clearColor];

@@ -186,7 +186,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self setupRemoteTabsViewController];
   [self setupTopToolbar];
   [self setupBottomToolbar];
-  if (IsThumbStripEnabled()) {
+  if (ShowThumbStripInTraitCollection(self.traitCollection)) {
     [self setupThumbStripPlusSignButton];
     [self setupForegroundView];
   }
@@ -686,11 +686,12 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   CGFloat bottomInset = self.configuration == TabGridConfigurationBottomToolbar
                             ? self.bottomToolbar.intrinsicContentSize.height
                             : 0;
-  if (IsThumbStripEnabled()) {
+  BOOL showThumbStrip = ShowThumbStripInTraitCollection(self.traitCollection);
+  if (showThumbStrip) {
     bottomInset += self.topToolbar.intrinsicContentSize.height;
   }
   CGFloat topInset =
-      IsThumbStripEnabled() ? 0 : self.topToolbar.intrinsicContentSize.height;
+      showThumbStrip ? 0 : self.topToolbar.intrinsicContentSize.height;
   UIEdgeInsets inset = UIEdgeInsetsMake(topInset, 0, bottomInset, 0);
   inset.left = self.scrollView.safeAreaInsets.left;
   inset.right = self.scrollView.safeAreaInsets.right;
@@ -790,7 +791,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (!self.viewVisible) {
     return;
   }
-  if (IsThumbStripEnabled()) {
+  if (ShowThumbStripInTraitCollection(self.traitCollection)) {
     [self.tabPresentationDelegate showActiveTabInPage:self.currentPage
                                          focusOmnibox:NO
                                          closeTabGrid:NO];
@@ -833,7 +834,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self.scrollContentView = contentView;
   self.scrollView = scrollView;
   self.scrollView.accessibilityIdentifier = kTabGridScrollViewIdentifier;
-  if (IsThumbStripEnabled()) {
+  if (ShowThumbStripInTraitCollection(self.traitCollection)) {
     self.scrollView.scrollEnabled = NO;
   }
   NSArray* constraints = @[
@@ -1172,7 +1173,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // animations.
 - (void)showToolbars {
   [self.topToolbar show];
-  if (IsThumbStripEnabled()) {
+  if (ShowThumbStripInTraitCollection(self.traitCollection)) {
     GridViewController* gridViewController =
         [self gridViewControllerForPage:self.currentPage];
     DCHECK(gridViewController);
@@ -1538,7 +1539,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)gridViewControllerWillBeginDragging:
     (GridViewController*)gridViewController {
-  if (!IsThumbStripEnabled()) {
+  if (!ShowThumbStripInTraitCollection(self.traitCollection)) {
     return;
   }
   [self.incognitoPopupMenuHandler dismissPopupMenuAnimated:YES];

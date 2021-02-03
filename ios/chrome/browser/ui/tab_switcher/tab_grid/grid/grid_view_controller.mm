@@ -106,7 +106,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 - (void)loadView {
   self.horizontalLayout = [[HorizontalLayout alloc] init];
   self.gridLayout = [[GridLayout alloc] init];
-  if (IsThumbStripEnabled()) {
+  if (ShowThumbStripInTraitCollection(self.traitCollection)) {
     self.currentLayout = self.horizontalLayout;
   } else {
     self.currentLayout = self.gridLayout;
@@ -127,7 +127,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   // For thumb strip, the horizontal layout should bounce horizontal. In the
   // grid layout, the scrolling between tabs will take priority over this
   // bouncing.
-  if (IsThumbStripEnabled()) {
+  if (ShowThumbStripInTraitCollection(self.traitCollection)) {
     collectionView.alwaysBounceHorizontal = YES;
   }
   // CollectionView, in contrast to TableView, doesn’t inset the
@@ -291,7 +291,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (NSInteger)collectionView:(UICollectionView*)collectionView
      numberOfItemsInSection:(NSInteger)section {
-  if (IsThumbStripEnabled()) {
+  if (ShowThumbStripInTraitCollection(self.traitCollection)) {
     // The PlusSignCell (new item button) is always appended at the end of the
     // collection.
     return base::checked_cast<NSInteger>(self.items.count + 1);
@@ -466,7 +466,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     destinationIndex =
         base::checked_cast<NSUInteger>(coordinator.destinationIndexPath.item);
   }
-  if (IsThumbStripEnabled()) {
+  if (ShowThumbStripInTraitCollection(self.traitCollection)) {
     // The sourceIndexPath is nil if the drop item is not from the same
     // collection view.
     NSUInteger plusSignCellIndex =
@@ -527,7 +527,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 }
 
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView {
-  if (!IsThumbStripEnabled())
+  if (!ShowThumbStripInTraitCollection(self.traitCollection))
     return;
   [self updateFractionVisibleOfLastItem];
 }
@@ -830,7 +830,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   // |targetIndexPathForMoveFromItemAtIndexPath:toProposedIndexPath:| gets
   // called, and that's why indexPath.item is not being compared to
   // self.items.count here.
-  return IsThumbStripEnabled() &&
+  return ShowThumbStripInTraitCollection(self.traitCollection) &&
          indexPath.item == [self.collectionView numberOfItemsInSection:0] - 1;
 }
 

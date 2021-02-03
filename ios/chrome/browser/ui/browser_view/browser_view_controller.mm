@@ -1467,7 +1467,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   // When using the thumb strip, the web content needs to be hidden when the
   // thumb strip is opened.
-  if (IsThumbStripEnabled()) {
+  if (ShowThumbStripInTraitCollection(self.traitCollection)) {
     self.browserViewHiderCoordinator = [[BrowserViewHiderCoordinator alloc]
         initWithBaseViewController:self
                            browser:self.browser];
@@ -1707,7 +1707,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
         }
       }];
 
-  if (IsThumbStripEnabled()) {
+  if (ShowThumbStripInTraitCollection(self.traitCollection)) {
     CGFloat baseViewHeight = size.height;
     self.thumbStripPanHandler.baseViewHeight = baseViewHeight;
     // On rotation, reposition the BVC container if positioned at the bottom.
@@ -1915,7 +1915,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 }
 
 - (void)installFakeStatusBar {
-  if (IsThumbStripEnabled() &&
+  if (ShowThumbStripInTraitCollection(self.traitCollection) &&
       !fullscreen::features::ShouldUseSmoothScrolling()) {
     // A fake status bar on the browser view is not necessary when the thumb
     // strip feature is enabled because the view behind the browser view already

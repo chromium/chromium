@@ -5,7 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_UI_THUMB_STRIP_THUMB_STRIP_FEATURE_H_
 #define IOS_CHROME_BROWSER_UI_THUMB_STRIP_THUMB_STRIP_FEATURE_H_
 
-// Returns true if the Thumb Strip feature is enabled and the device is an iPad.
-bool IsThumbStripEnabled();
+#import <UIKit/UIKit.h>
+
+// Determines if the ThumbStrip should be shown in the passed UITraitCollection.
+bool ShowThumbStripInTraitCollection(UITraitCollection* traitCollection);
 
 #endif  // IOS_CHROME_BROWSER_UI_THUMB_STRIP_THUMB_STRIP_FEATURE_H_

@@ -202,7 +202,8 @@
 - (void)showTabGrid {
   BOOL animated = !self.animationsDisabledForTesting;
 
-  if (IsThumbStripEnabled()) {
+  if (ShowThumbStripInTraitCollection(
+          self.baseViewController.traitCollection)) {
     [self.thumbStripCoordinator.panHandler setState:ViewRevealState::Revealed
                                            animated:animated];
     [self.baseViewController contentWillAppearAnimated:animated];
@@ -254,7 +255,9 @@
 - (void)showTabViewController:(UIViewController*)viewController
            shouldCloseTabGrid:(BOOL)shouldCloseTabGrid
                    completion:(ProceduralBlock)completion {
-  DCHECK(viewController || (IsThumbStripEnabled() && self.bvcContainer));
+  bool thumbStripEnabled =
+      ShowThumbStripInTraitCollection(self.baseViewController.traitCollection);
+  DCHECK(viewController || (thumbStripEnabled && self.bvcContainer));
 
   if (shouldCloseTabGrid) {
     self.tabGridExitTime = base::TimeTicks::Now();
@@ -266,7 +269,7 @@
 
   // If thumb strip is enabled, this will always be true except during initial
   // setup before the BVC container has been created.
-  if (IsThumbStripEnabled() && self.bvcContainer) {
+  if (thumbStripEnabled && self.bvcContainer) {
     self.bvcContainer.currentBVC = viewController;
     self.baseViewController.childViewControllerForStatusBarStyle =
         viewController;
@@ -298,7 +301,8 @@
 
   self.bvcContainer = [[BVCContainerViewController alloc] init];
   self.bvcContainer.currentBVC = viewController;
-  if (IsThumbStripEnabled()) {
+  if (ShowThumbStripInTraitCollection(
+          self.baseViewController.traitCollection)) {
     self.bvcContainer.thumbStripPanHandler =
         self.thumbStripCoordinator.panHandler;
     [self.thumbStripCoordinator.panHandler addAnimatee:self.bvcContainer];
@@ -388,7 +392,8 @@
   baseViewController.incognitoTabsDragDropHandler = self.incognitoTabsMediator;
   baseViewController.regularTabsImageDataSource = self.regularTabsMediator;
   baseViewController.incognitoTabsImageDataSource = self.incognitoTabsMediator;
-  if (IsThumbStripEnabled()) {
+  if (ShowThumbStripInTraitCollection(
+          self.baseViewController.traitCollection)) {
     baseViewController.regularPopupMenuHandler = HandlerForProtocol(
         _regularBrowser->GetCommandDispatcher(), PopupMenuCommands);
     baseViewController.incognitoPopupMenuHandler = HandlerForProtocol(
@@ -443,7 +448,8 @@
     [self.remoteTabsMediator refreshSessionsView];
   }
 
-  if (IsThumbStripEnabled()) {
+  if (ShowThumbStripInTraitCollection(
+          self.baseViewController.traitCollection)) {
     self.thumbStripCoordinator = [[ThumbStripCoordinator alloc]
         initWithBaseViewController:baseViewController
                            browser:self.browser];
@@ -501,12 +507,14 @@
                focusOmnibox:(BOOL)focusOmnibox
                closeTabGrid:(BOOL)closeTabGrid {
   DCHECK(self.regularBrowser && self.incognitoBrowser);
-  DCHECK(closeTabGrid || IsThumbStripEnabled());
+  DCHECK(closeTabGrid || ShowThumbStripInTraitCollection(
+                             self.baseViewController.traitCollection));
   Browser* activeBrowser = nullptr;
   switch (page) {
     case TabGridPageIncognitoTabs:
       if (self.incognitoBrowser->GetWebStateList()->count() == 0) {
-        DCHECK(IsThumbStripEnabled());
+        DCHECK(ShowThumbStripInTraitCollection(
+            self.baseViewController.traitCollection));
         [self showTabViewController:nil
                  shouldCloseTabGrid:closeTabGrid
                          completion:nil];
@@ -516,7 +524,8 @@
       break;
     case TabGridPageRegularTabs:
       if (self.regularBrowser->GetWebStateList()->count() == 0) {
-        DCHECK(IsThumbStripEnabled());
+        DCHECK(ShowThumbStripInTraitCollection(
+            self.baseViewController.traitCollection));
         [self showTabViewController:nil
                  shouldCloseTabGrid:closeTabGrid
                          completion:nil];
@@ -525,7 +534,8 @@
       activeBrowser = self.regularBrowser;
       break;
     case TabGridPageRemoteTabs:
-      if (IsThumbStripEnabled()) {
+      if (ShowThumbStripInTraitCollection(
+              self.baseViewController.traitCollection)) {
         [self showTabViewController:nil
                  shouldCloseTabGrid:closeTabGrid
                          completion:nil];
