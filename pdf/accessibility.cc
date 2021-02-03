@@ -98,21 +98,23 @@ std::vector<AccessibilityLinkInfo> GetAccessibilityLinkInfo(
   return link_infos;
 }
 
-void GetAccessibilityImageInfo(
+std::vector<AccessibilityImageInfo> GetAccessibilityImageInfo(
     PDFEngine* engine,
     int32_t page_index,
-    uint32_t text_run_count,
-    std::vector<pp::PDF::PrivateAccessibilityImageInfo>* images) {
-  std::vector<PDFEngine::AccessibilityImageInfo> engine_image_info =
+    uint32_t text_run_count) {
+  std::vector<PDFEngine::AccessibilityImageInfo> engine_image_infos =
       engine->GetImageInfo(page_index);
-  for (auto& cur_engine_info : engine_image_info) {
-    pp::PDF::PrivateAccessibilityImageInfo image_info;
+  std::vector<AccessibilityImageInfo> image_infos;
+  image_infos.reserve(engine_image_infos.size());
+  for (auto& cur_engine_info : engine_image_infos) {
+    AccessibilityImageInfo image_info;
     image_info.alt_text = std::move(cur_engine_info.alt_text);
-    image_info.bounds = PPFloatRectFromRectF(cur_engine_info.bounds);
+    image_info.bounds = cur_engine_info.bounds;
     // TODO(mohitb): Update text run index to nearest text run to image bounds.
     image_info.text_run_index = text_run_count;
-    images->push_back(std::move(image_info));
+    image_infos.push_back(std::move(image_info));
   }
+  return image_infos;
 }
 
 void GetAccessibilityHighlightInfo(
@@ -191,6 +193,18 @@ ToPrivateAccessibilityLinkInfo(
          link_info.text_range.count, PPFloatRectFromRectF(link_info.bounds)});
   }
   return pp_link_infos;
+}
+
+std::vector<pp::PDF::PrivateAccessibilityImageInfo>
+ToPrivateAccessibilityImageInfo(
+    const std::vector<AccessibilityImageInfo>& image_infos) {
+  std::vector<pp::PDF::PrivateAccessibilityImageInfo> pp_image_infos;
+  pp_image_infos.reserve(image_infos.size());
+  for (const auto& image_info : image_infos) {
+    pp_image_infos.push_back({image_info.alt_text, image_info.text_run_index,
+                              PPFloatRectFromRectF(image_info.bounds)});
+  }
+  return pp_image_infos;
 }
 
 }  // namespace
@@ -277,8 +291,8 @@ bool GetAccessibilityInfo(
   page_info.text_run_count = text_runs.size();
   page_objects->links = ToPrivateAccessibilityLinkInfo(
       GetAccessibilityLinkInfo(engine, page_index, text_runs));
-  GetAccessibilityImageInfo(engine, page_index, page_info.text_run_count,
-                            &page_objects->images);
+  page_objects->images = ToPrivateAccessibilityImageInfo(
+      GetAccessibilityImageInfo(engine, page_index, page_info.text_run_count));
   GetAccessibilityHighlightInfo(engine, page_index, text_runs,
                                 &page_objects->highlights);
   GetAccessibilityFormFieldInfo(engine, page_index, page_info.text_run_count,

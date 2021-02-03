@@ -62,4 +62,16 @@ AccessibilityLinkInfo::AccessibilityLinkInfo(
 
 AccessibilityLinkInfo::~AccessibilityLinkInfo() = default;
 
+AccessibilityImageInfo::AccessibilityImageInfo() = default;
+
+AccessibilityImageInfo::AccessibilityImageInfo(const std::string& alt_text,
+                                               uint32_t text_run_index,
+                                               const gfx::RectF& bounds)
+    : alt_text(alt_text), text_run_index(text_run_index), bounds(bounds) {}
+
+AccessibilityImageInfo::AccessibilityImageInfo(
+    const AccessibilityImageInfo& other) = default;
+
+AccessibilityImageInfo::~AccessibilityImageInfo() = default;
+
 }  // namespace chrome_pdf
