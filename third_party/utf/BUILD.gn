@@ -42,16 +42,25 @@ static_library("utf") {
     "src/runetype/isvalidrune.c",
     "src/runetype/isxdigitrune.c",
     "src/runetype/runetype.c",
-    "src/utf/chartorune.c",
-    "src/utf/fullrune.c",
-    "src/utf/runelen.c",
-    "src/utf/runetochar.c",
     "src/utf/utfecpy.c",
     "src/utf/utflen.c",
     "src/utf/utfrrune.c",
     "src/utf/utfrune.c",
+    "src/utf/utftab.c",
     "src/utf/utfutf.c",
   ]
+
+  # third_party/libphonenumber_metadata already contains its own copy of UTF
+  # but only on Android. We do not include these files to avoid double linkage
+  # issues.
+  if (!is_android) {
+    sources += [
+      "src/utf/chartorune.c",
+      "src/utf/fullrune.c",
+      "src/utf/runelen.c",
+      "src/utf/runetochar.c",
+    ]
+  }
 
   public_deps = [ ":utf-headers" ]
 
