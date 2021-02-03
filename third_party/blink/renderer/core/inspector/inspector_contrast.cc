@@ -302,8 +302,19 @@ bool InspectorContrast::GetColorsFromRect(PhysicalRect rect,
     if (!style)
       continue;
 
+    // If background elements are hidden, ignore their background colors.
+    if (element != top_element && style->Visibility() == EVisibility::kHidden)
+      continue;
+
     Color background_color =
         style->VisitedDependentColor(GetCSSPropertyBackgroundColor());
+
+    // Opacity applies to the entire element so mix it with the alpha channel.
+    if (style->HasOpacity()) {
+      background_color = background_color.CombineWithAlpha(
+          background_color.Alpha() / 255 * style->Opacity());
+    }
+
     bool found_non_transparent_color = false;
     if (background_color.Alpha() != 0) {
       found_non_transparent_color = true;

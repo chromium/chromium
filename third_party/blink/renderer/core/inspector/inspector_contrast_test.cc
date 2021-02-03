@@ -59,6 +59,50 @@ TEST_F(InspectorContrastTest, GetBackgroundColorsNoText) {
   EXPECT_EQ(0u, colors.size());
 }
 
+TEST_F(InspectorContrastTest, GetBackgroundColorsBgOpacity) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <div style="position: relative">
+      <div style="position: absolute; width: 100px; height: 100px; background-color: black; opacity: 0.1;"></div>
+      <div id="target" style="position: absolute; width: 100px; height: 100px; color: black;">test</div>
+    </div>
+  )HTML");
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  Element* target = GetDocument().getElementById("target");
+  InspectorContrast contrast(&GetDocument());
+  Vector<Color> colors = contrast.GetBackgroundColors(target);
+  EXPECT_EQ(1u, colors.size());
+  EXPECT_EQ("#e5e5e5", colors.at(0).Serialized());
+}
+
+TEST_F(InspectorContrastTest, GetBackgroundColorsBgOpacityParent) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <div style="background-color: black; opacity: 0.1;">
+      <div id="target" style="color: black;">test</div>
+    </div>
+  )HTML");
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  Element* target = GetDocument().getElementById("target");
+  InspectorContrast contrast(&GetDocument());
+  Vector<Color> colors = contrast.GetBackgroundColors(target);
+  EXPECT_EQ(1u, colors.size());
+  EXPECT_EQ("#e5e5e5", colors.at(0).Serialized());
+}
+
+TEST_F(InspectorContrastTest, GetBackgroundColorsBgHidden) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <div style="position: relative">
+      <div style="position: absolute; width: 100px; height: 100px; background-color: black; visibility: hidden;"></div>
+      <div id="target" style="position: absolute; width: 100px; height: 100px; color: black;">test</div>
+    </div>
+  )HTML");
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  Element* target = GetDocument().getElementById("target");
+  InspectorContrast contrast(&GetDocument());
+  Vector<Color> colors = contrast.GetBackgroundColors(target);
+  EXPECT_EQ(1u, colors.size());
+  EXPECT_EQ("#ffffff", colors.at(0).Serialized());
+}
+
 TEST_F(InspectorContrastTest, GetBackgroundColorsWithOpacity) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <div style="background-color: rgba(0,0,0,0.75);">
