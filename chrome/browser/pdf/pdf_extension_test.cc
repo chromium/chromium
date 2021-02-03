@@ -130,6 +130,7 @@ using guest_view::TestGuestViewManager;
 using guest_view::TestGuestViewManagerFactory;
 using ui::AXTreeFormatter;
 
+namespace {
 const int kNumberLoadTestParts = 10;
 
 #if defined(OS_MAC)
@@ -150,6 +151,17 @@ void WaitForPluginServiceToLoad() {
   content::PluginService::GetInstance()->GetPlugins(std::move(callback));
   run_loop.Run();
 }
+
+void WaitForLoadStart(content::WebContents* web_contents) {
+  while (!web_contents->IsLoading() &&
+         !web_contents->GetController().GetLastCommittedEntry()) {
+    base::RunLoop run_loop;
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
+    run_loop.Run();
+  }
+}
+}  // namespace
 
 // Check if the |actual| string matches the string or the string pattern in
 // |pattern| and print a readable message if it does not match.
@@ -461,10 +473,8 @@ class PDFExtensionTestWithTestGuestViewManager : public PDFExtensionTest {
 // for https://crbug.com/536637. The original implementation checked that the
 // BrowserPlugin hosting the pdf extension was focused; in this re-write, we
 // make sure the guest view's WebContents has focus.
-//
-// Flaky: crbug.com/1126876
 IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
-                       DISABLED_PdfInMainFrameHasFocus) {
+                       PdfInMainFrameHasFocus) {
   // Load test HTML, and verify the text area has focus.
   GURL main_url(embedded_test_server()->GetURL("/pdf/test.pdf"));
   ui_test_utils::NavigateToURL(browser(), main_url);
@@ -474,6 +484,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
   auto* guest_web_contents = GetGuestViewManager()->WaitForSingleGuestCreated();
   ASSERT_TRUE(guest_web_contents);
   EXPECT_NE(embedder_web_contents, guest_web_contents);
+  WaitForLoadStart(guest_web_contents);
   EXPECT_TRUE(content::WaitForLoadStop(guest_web_contents));
 
   // Make sure the guest WebContents has focus.
@@ -487,16 +498,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
 // has the correct URL for the PDF extension.
 // TODO(wjmaclean): Are there any attributes we can/should test with respect to
 // the extension's loaded html?
-// TODO(https://crbug.com/1126876): Re-enable. Flaky on all linux, chromeos and
-// windows.
-#if defined(OS_WIN) || defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_PdfExtensionLoadedInGuest DISABLED_PdfExtensionLoadedInGuest
-#else
-#define MAYBE_PdfExtensionLoadedInGuest PdfExtensionLoadedInGuest
-#endif
 IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
-                       MAYBE_PdfExtensionLoadedInGuest) {
+                       PdfExtensionLoadedInGuest) {
   // Load test HTML, and verify the text area has focus.
   GURL main_url(embedded_test_server()->GetURL("/pdf/test.pdf"));
   ui_test_utils::NavigateToURL(browser(), main_url);
@@ -506,6 +509,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
   auto* guest_web_contents = GetGuestViewManager()->WaitForSingleGuestCreated();
   ASSERT_TRUE(guest_web_contents);
   EXPECT_NE(embedder_web_contents, guest_web_contents);
+  WaitForLoadStart(guest_web_contents);
   EXPECT_TRUE(content::WaitForLoadStop(guest_web_contents));
 
   // Verify we loaded the extension.
@@ -536,16 +540,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
 // This test verifies that when a PDF is served with a restrictive
 // Content-Security-Policy, the embed tag is still sized correctly.
 // Regression test for https://crbug.com/271452.
-// Flaky on win and linux: crbug.com/1150197
-// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if defined(OS_WIN) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
-#define MAYBE_CSPDoesNotBlockEmbedStyles DISABLED_CSPDoesNotBlockEmbedStyles
-#else
-#define MAYBE_CSPDoesNotBlockEmbedStyles CSPDoesNotBlockEmbedStyles
-#endif
 IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
-                       MAYBE_CSPDoesNotBlockEmbedStyles) {
+                       CSPDoesNotBlockEmbedStyles) {
   GURL main_url(embedded_test_server()->GetURL("/pdf/test-csp.pdf"));
   ui_test_utils::NavigateToURL(browser(), main_url);
   auto* embedder_web_contents = GetActiveWebContents();
@@ -555,6 +551,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
   auto* guest_web_contents = GetGuestViewManager()->WaitForSingleGuestCreated();
   ASSERT_TRUE(guest_web_contents);
   EXPECT_NE(embedder_web_contents, guest_web_contents);
+  WaitForLoadStart(guest_web_contents);
   EXPECT_TRUE(content::WaitForLoadStop(guest_web_contents));
 
   // Verify the extension was loaded.
@@ -594,7 +591,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
 // overrides an X-Frame-Options header on a PDF response.
 // Regression test for https://crbug.com/1107535.
 IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
-                       DISABLED_CSPFrameAncestorsOverridesXFrameOptions) {
+                       CSPFrameAncestorsOverridesXFrameOptions) {
   GURL main_url(
       embedded_test_server()->GetURL("/pdf/frame-test-csp-and-xfo.html"));
   ui_test_utils::NavigateToURL(browser(), main_url);
@@ -605,6 +602,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
   auto* guest_web_contents = GetGuestViewManager()->WaitForSingleGuestCreated();
   ASSERT_TRUE(guest_web_contents);
   EXPECT_NE(embedder_web_contents, guest_web_contents);
+  WaitForLoadStart(guest_web_contents);
   EXPECT_TRUE(content::WaitForLoadStop(guest_web_contents));
 
   // Verify the extension was loaded.
