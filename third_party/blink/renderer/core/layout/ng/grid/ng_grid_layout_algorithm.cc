@@ -1597,18 +1597,11 @@ TrackAlignmentGeometry ComputeTrackAlignmentGeometry(
     LayoutUnit available_size,
     LayoutUnit start_border_scrollbar_padding,
     LayoutUnit grid_gap) {
-  // Iterating over all the track sets is typically unnecessary, i.e. if there
-  // is default alignment. Only compute this on-demand.
-  struct FreeSpaceAndTrackCount {
-    LayoutUnit free_space;
-    wtf_size_t track_count;
-  };
-  auto ComputeFreeSpaceAndTrackCount = [&track_collection, &available_size,
-                                        &grid_gap]() -> FreeSpaceAndTrackCount {
-    // Since we normalized grid lines to be 0-indexed, the end line of the
-    // implicit grid is equivalent to the total track count.
-    return {available_size - ComputeTotalTrackSize(track_collection, grid_gap),
-            track_collection.EndLineOfImplicitGrid()};
+  // Determining the free-space is typically unnecessary, i.e. if there is
+  // default alignment. Only compute this on-demand.
+  auto FreeSpace = [&track_collection, &available_size,
+                    &grid_gap]() -> LayoutUnit {
+    return available_size - ComputeTotalTrackSize(track_collection, grid_gap);
   };
 
   // The default alignment, perform adjustments on top of this.
@@ -1625,35 +1618,38 @@ TrackAlignmentGeometry ComputeTrackAlignmentGeometry(
   switch (content_alignment.Distribution()) {
     case ContentDistributionType::kSpaceBetween: {
       // Default behavior for 'space-between' is to start align content.
-      const auto result = ComputeFreeSpaceAndTrackCount();
-      if (result.track_count < 2 || result.free_space < LayoutUnit())
+      const wtf_size_t track_count = track_collection.EndLineOfImplicitGrid();
+      const LayoutUnit free_space = FreeSpace();
+      if (track_count < 2 || free_space < LayoutUnit())
         return geometry;
 
-      geometry.gutter_size += result.free_space / (result.track_count - 1);
+      geometry.gutter_size += free_space / (track_count - 1);
       return geometry;
     }
     case ContentDistributionType::kSpaceAround: {
       // Default behaviour for 'space-around' is to center content.
-      const auto result = ComputeFreeSpaceAndTrackCount();
-      if (result.track_count < 1 || result.free_space < LayoutUnit()) {
-        geometry.start_offset += result.free_space / 2;
+      const wtf_size_t track_count = track_collection.EndLineOfImplicitGrid();
+      const LayoutUnit free_space = FreeSpace();
+      if (track_count < 1 || free_space < LayoutUnit()) {
+        geometry.start_offset += free_space / 2;
         return geometry;
       }
 
-      LayoutUnit track_space = result.free_space / result.track_count;
+      LayoutUnit track_space = free_space / track_count;
       geometry.start_offset += track_space / 2;
       geometry.gutter_size += track_space;
       return geometry;
     }
     case ContentDistributionType::kSpaceEvenly: {
       // Default behaviour for 'space-evenly' is to center content.
-      const auto result = ComputeFreeSpaceAndTrackCount();
-      if (result.free_space < LayoutUnit()) {
-        geometry.start_offset += result.free_space / 2;
+      const wtf_size_t track_count = track_collection.EndLineOfImplicitGrid();
+      const LayoutUnit free_space = FreeSpace();
+      if (free_space < LayoutUnit()) {
+        geometry.start_offset += free_space / 2;
         return geometry;
       }
 
-      LayoutUnit track_space = result.free_space / (result.track_count + 1);
+      LayoutUnit track_space = free_space / (track_count + 1);
       geometry.start_offset += track_space;
       geometry.gutter_size += track_space;
       return geometry;
@@ -1669,8 +1665,7 @@ TrackAlignmentGeometry ComputeTrackAlignmentGeometry(
       if (IsLtr(style.Direction()))
         return geometry;
 
-      const auto result = ComputeFreeSpaceAndTrackCount();
-      geometry.start_offset += result.free_space;
+      geometry.start_offset += FreeSpace();
       return geometry;
     }
     case ContentPosition::kRight: {
@@ -1678,20 +1673,17 @@ TrackAlignmentGeometry ComputeTrackAlignmentGeometry(
       if (IsRtl(style.Direction()))
         return geometry;
 
-      const auto result = ComputeFreeSpaceAndTrackCount();
-      geometry.start_offset += result.free_space;
+      geometry.start_offset += FreeSpace();
       return geometry;
       break;
     }
     case ContentPosition::kCenter: {
-      const auto result = ComputeFreeSpaceAndTrackCount();
-      geometry.start_offset += result.free_space / 2;
+      geometry.start_offset += FreeSpace() / 2;
       return geometry;
     }
     case ContentPosition::kEnd:
     case ContentPosition::kFlexEnd: {
-      const auto result = ComputeFreeSpaceAndTrackCount();
-      geometry.start_offset += result.free_space;
+      geometry.start_offset += FreeSpace();
       return geometry;
     }
     case ContentPosition::kStart:
