@@ -43,7 +43,6 @@
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/features/feature_session_type.h"
-#include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
@@ -71,7 +70,6 @@
 #include "extensions/renderer/ipc_message_sender.h"
 #include "extensions/renderer/logging_native_handler.h"
 #include "extensions/renderer/messaging_bindings.h"
-#include "extensions/renderer/messaging_util.h"
 #include "extensions/renderer/module_system.h"
 #include "extensions/renderer/native_extension_bindings_system.h"
 #include "extensions/renderer/native_renderer_messaging_service.h"
@@ -853,6 +851,8 @@ void Dispatcher::RegisterNativeHandlers(
       "id_generator",
       std::unique_ptr<NativeHandler>(new IdGeneratorCustomBindings(context)));
   module_system->RegisterNativeHandler(
+      "process", std::make_unique<ProcessInfoNativeHandler>(context));
+  module_system->RegisterNativeHandler(
       "runtime",
       std::unique_ptr<NativeHandler>(new RuntimeCustomBindings(context)));
   module_system->RegisterNativeHandler(
@@ -1370,19 +1370,6 @@ void Dispatcher::RegisterNativeHandlers(
     V8SchemaRegistry* v8_schema_registry) {
   RegisterNativeHandlers(module_system, context, this, bindings_system,
                          v8_schema_registry);
-  const Extension* extension = context->extension();
-  int manifest_version = extension ? extension->manifest_version() : 1;
-  bool is_component_extension =
-      extension && Manifest::IsComponentLocation(extension->location());
-  bool send_request_disabled = messaging_util::IsSendRequestDisabled(context);
-  module_system->RegisterNativeHandler(
-      "process",
-      std::unique_ptr<NativeHandler>(new ProcessInfoNativeHandler(
-          context, context->GetExtensionID(),
-          context->GetContextTypeDescription(),
-          ExtensionsRendererClient::Get()->IsIncognitoProcess(),
-          is_component_extension, manifest_version, send_request_disabled)));
-
   delegate_->RegisterNativeHandlers(this, module_system, bindings_system,
                                     context);
 }
