@@ -85,6 +85,7 @@ if (!is_win) {
       sources = [
         "breakpad/src/common/path_helper.cc",
         "breakpad/src/common/path_helper.h",
+        "breakpad/src/common/scoped_ptr.h",
         "breakpad/src/processor/basic_code_module.h",
         "breakpad/src/processor/basic_code_modules.cc",
         "breakpad/src/processor/basic_code_modules.h",
@@ -236,6 +237,7 @@ if (!is_win) {
 
     executable("minidump_dump") {
       sources = [
+        "breakpad/src/common/scoped_ptr.h",
         "breakpad/src/processor/basic_code_module.h",
         "breakpad/src/processor/basic_code_modules.cc",
         "breakpad/src/processor/basic_code_modules.h",
@@ -298,9 +300,11 @@ if (is_mac) {
         "breakpad/src/common/mac/macho_utilities.cc",
         "breakpad/src/common/mac/macho_walker.cc",
         "breakpad/src/common/md5.cc",
+        "breakpad/src/common/memory_range.h",
         "breakpad/src/common/module.cc",
         "breakpad/src/common/path_helper.cc",
         "breakpad/src/common/path_helper.h",
+        "breakpad/src/common/scoped_ptr.h",
         "breakpad/src/common/stabs_reader.cc",
         "breakpad/src/common/stabs_to_module.cc",
         "breakpad/src/tools/mac/dump_syms/dump_syms_tool.cc",
@@ -383,6 +387,7 @@ if (is_mac) {
       "breakpad/src/common/convert_UTF.cc",
       "breakpad/src/common/mac/MachIPC.mm",
       "breakpad/src/common/mac/arch_utilities.cc",
+      "breakpad/src/common/mac/arch_utilities.h",
       "breakpad/src/common/mac/bootstrap_compat.cc",
       "breakpad/src/common/mac/file_id.cc",
       "breakpad/src/common/mac/launch_reporter.cc",
@@ -391,6 +396,7 @@ if (is_mac) {
       "breakpad/src/common/mac/macho_walker.cc",
       "breakpad/src/common/mac/string_utilities.cc",
       "breakpad/src/common/md5.cc",
+      "breakpad/src/common/scoped_ptr.h",
       "breakpad/src/common/simple_string_dictionary.cc",
       "breakpad/src/common/string_conversion.cc",
     ]
@@ -477,6 +483,7 @@ if (is_linux || is_chromeos || is_android) {
         "breakpad/src/common/linux/symbol_collector_client.h",
         "breakpad/src/common/linux/symbol_upload.cc",
         "breakpad/src/common/linux/symbol_upload.h",
+        "breakpad/src/common/scoped_ptr.h",
         "breakpad/src/tools/linux/symupload/sym_upload.cc",
       ]
 
@@ -523,10 +530,13 @@ if (is_linux || is_chromeos || is_android) {
         "breakpad/src/common/linux/linux_libc_support.h",
         "breakpad/src/common/linux/memory_mapped_file.cc",
         "breakpad/src/common/linux/memory_mapped_file.h",
+        "breakpad/src/common/memory_allocator.h",
+        "breakpad/src/common/memory_range.h",
         "breakpad/src/common/module.cc",
         "breakpad/src/common/module.h",
         "breakpad/src/common/path_helper.cc",
         "breakpad/src/common/path_helper.h",
+        "breakpad/src/common/scoped_ptr.h",
         "breakpad/src/common/stabs_reader.cc",
         "breakpad/src/common/stabs_reader.h",
         "breakpad/src/common/stabs_to_module.cc",
@@ -616,6 +626,8 @@ if (is_linux || is_chromeos || is_android) {
       "breakpad/src/common/linux/safe_readlink.cc",
       "breakpad/src/common/linux/safe_readlink.h",
       "breakpad/src/common/memory_allocator.h",
+      "breakpad/src/common/memory_range.h",
+      "breakpad/src/common/scoped_ptr.h",
       "breakpad/src/common/simple_string_dictionary.cc",
       "breakpad/src/common/simple_string_dictionary.h",
       "breakpad/src/common/string_conversion.cc",
@@ -645,6 +657,7 @@ if (is_linux || is_chromeos || is_android) {
   static_library("processor_support") {
     sources = [
       "breakpad/src/common/scoped_ptr.h",
+      "breakpad/src/processor/basic_code_module.h",
       "breakpad/src/processor/basic_code_modules.cc",
       "breakpad/src/processor/basic_code_modules.h",
       "breakpad/src/processor/convert_old_arm64_context.cc",
@@ -776,6 +789,7 @@ if (is_linux || is_chromeos || is_android) {
       "breakpad/src/common/path_helper.cc",
       "breakpad/src/common/path_helper.h",
       "breakpad/src/tools/linux/md2core/minidump-2-core.cc",
+      "breakpad/src/tools/linux/md2core/minidump_memory_range.h",
     ]
 
     include_dirs = [ "breakpad/src" ]
@@ -1104,6 +1118,7 @@ if (is_win) {
       "breakpad/src/client/windows/sender/crash_report_sender.h",
       "breakpad/src/common/windows/http_upload.cc",
       "breakpad/src/common/windows/http_upload.h",
+      "breakpad/src/common/windows/string_utils-inl.h",
     ]
     configs += [ ":sender_config" ]
     public_configs = [ ":sender_config" ]
