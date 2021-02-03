@@ -703,6 +703,41 @@ public class VoiceRecognitionHandlerTest {
 
     @Test
     @SmallTest
+    @Feature("AssistantIntentExperimentId")
+    @EnableFeatures({ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH + "<Study"})
+    @DisableFeatures({ChromeFeatureList.ASSISTANT_INTENT_EXPERIMENT_ID + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:"
+                    + VoiceRecognitionHandler.ASSISTANT_EXPERIMENT_ID_PARAM_NAME + "/test"})
+    public void
+    testStartVoiceRecognition_AssistantExperimentIdDisabled() {
+        doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
+        startVoiceRecognition(VoiceInteractionSource.TOOLBAR);
+
+        Assert.assertTrue(mWindowAndroid.wasCancelableIntentShown());
+        verify(mIntent, never())
+                .putExtra(eq(VoiceRecognitionHandler.EXTRA_EXPERIMENT_ID), anyString());
+    }
+
+    @Test
+    @SmallTest
+    @Feature("AssistantIntentExperimentId")
+    @EnableFeatures({ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH + "<Study",
+            ChromeFeatureList.ASSISTANT_INTENT_EXPERIMENT_ID + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:"
+                    + VoiceRecognitionHandler.ASSISTANT_EXPERIMENT_ID_PARAM_NAME + "/test"})
+    public void
+    testStartVoiceRecognition_IncludeExperimentIdInAssistantIntent() {
+        doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
+        startVoiceRecognition(VoiceInteractionSource.TOOLBAR);
+
+        Assert.assertTrue(mWindowAndroid.wasCancelableIntentShown());
+        verify(mIntent).putExtra(VoiceRecognitionHandler.EXTRA_EXPERIMENT_ID, "test");
+    }
+
+    @Test
+    @SmallTest
     @Feature("AssistantIntentPageUrl")
     @EnableFeatures(ChromeFeatureList.ASSISTANT_INTENT_PAGE_URL)
     public void testStartVoiceRecognition_ToolbarButtonIncludesPageUrl() {

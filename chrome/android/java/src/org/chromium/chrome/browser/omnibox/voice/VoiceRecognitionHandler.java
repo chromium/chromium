@@ -64,6 +64,14 @@ public class VoiceRecognitionHandler {
     // This language is only returned for queries handled by Assistant.
     @VisibleForTesting
     static final String VOICE_QUERY_RESULT_LANGUAGES = "android.speech.extra.LANGUAGE";
+    // Extra containing an identifier for the current Assistant experiment. This is only populated
+    // for intents initiated via the toolbar button, and is not populated for internal Chrome URLs.
+    @VisibleForTesting
+    static final String EXTRA_EXPERIMENT_ID = "com.android.chrome.voice.EXPERIMENT_ID";
+    // The parameter from the ASSISTANT_INTENT_EXPERIMENT_ID feature that configures the experiment
+    // ID attached via the EXTRA_EXPERIMENT_ID extra.
+    @VisibleForTesting
+    static final String ASSISTANT_EXPERIMENT_ID_PARAM_NAME = "experiment_id";
     // Extra containing the URL of the current page. This is only populated for intents initiated
     // via the toolbar button, and is not populated for internal Chrome URLs.
     @VisibleForTesting
@@ -678,10 +686,14 @@ public class VoiceRecognitionHandler {
             }
         }
 
-        if (source == VoiceInteractionSource.TOOLBAR && FeatureList.isInitialized()
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.ASSISTANT_INTENT_TRANSLATE_INFO)) {
-            boolean attached = attachTranslateExtras(intent);
-            recordTranslateExtrasAttachResult(attached);
+        if (source == VoiceInteractionSource.TOOLBAR && FeatureList.isInitialized()) {
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.ASSISTANT_INTENT_TRANSLATE_INFO)) {
+                boolean attached = attachTranslateExtras(intent);
+                recordTranslateExtrasAttachResult(attached);
+            }
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.ASSISTANT_INTENT_EXPERIMENT_ID)) {
+                attachAssistantExperimentId(intent);
+            }
         }
 
         if (!showSpeechRecognitionIntent(windowAndroid, intent, source)) {
@@ -724,6 +736,16 @@ public class VoiceRecognitionHandler {
         GURL pageUrl = currentTab.getUrl();
         if (!UrlUtilities.isHttpOrHttps(pageUrl)) return null;
         return pageUrl.getSpec();
+    }
+
+    /** Adds an Extra used to indicate to Assistant which experiment arm the user is in. */
+    private void attachAssistantExperimentId(Intent intent) {
+        String experimentId = ChromeFeatureList.getFieldTrialParamByFeature(
+                ChromeFeatureList.ASSISTANT_INTENT_EXPERIMENT_ID,
+                ASSISTANT_EXPERIMENT_ID_PARAM_NAME);
+        if (!TextUtils.isEmpty(experimentId)) {
+            intent.putExtra(EXTRA_EXPERIMENT_ID, experimentId);
+        }
     }
 
     /**
