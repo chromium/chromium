@@ -49,6 +49,8 @@ chrome/browser/resources/chromeos/accessibility/select_to_speak/
 
 - The status tray button, ash/system/accessibility/select_to_speak_tray.h
 
+- Floating panel, system/accessibility/select_to_speak_menu_bubble_controller.h
+
 In addition, there are settings for STS in 
 chrome/browser/resources/settings/a11y_page/manage_a11y_page.*
 
@@ -129,6 +131,9 @@ all the root’s children to find ones that overlap with the selected rect.
 Walking back down through the children occurs in NodeUtils.findAllMatching,
 and results in a list of AutomationNodes that can be sent for speech.
 
+If the rect size is below a certain threshold, all nodes within overlapped
+block parent are selected.
+
 ##### With search + s
 
 select_to_speak.js requests focus information from the Automation API. The
@@ -187,6 +192,98 @@ status change, and listens to onSelectToSpeakStateChangeRequested to know
 when a user wants to change state. The STS extension is the source of truth
 for STS state.
 
+### Navigation features
+
+When `select-to-speak-navigation-control` flag is enabled, STS will display a
+floating control panel when activated. The control panel hosts controls for
+pause/resume, updating reading speed, navigating by sentence or paragraph,
+and deactivating STS. 
+
+#### Floating control panel
+
+The panel is implemented as a native ASH component
+[select_to_speak_menu_bubble_controller.h](https://source.chromium.org/chromium/chromium/src/+/master:ash/system/accessibility/select_to_speak_menu_bubble_controller.h).
+Similar to focus rings, the STS component extension communicates with the panel
+via the `chrome.accessibilityPrivate` API. The
+`chrome.accessibilityPrivate.updateSelectToSpeakPanel` API controls the
+visibility and button states, and panel actions are communicated back to the
+extension by adding a listener to
+`chrome.accessibilityPrivate.onSelectToSpeakPanelAction`.
+
+When the panel is displayed, STS will no longer dismiss itself when TTS
+playback is complete. The user must quit STS either from the panel or
+the tray button.
+
+##### Keyboard shortcuts
+
+When the panel is displayed, it is initially focused and captures keypresses to
+implement keyboard shortcuts:
+
+*  Space - activates currently focused button, which is 'Pause/Resume'
+   initially.
+*  Left Arrow - Navigate to previous sentence (for RTL languages, this is Right
+   Arrow)
+*  Right Arrow - Navigate to next sentence (for RTL languages, this is Left
+   Arrow)
+*  Up Arrow - Navigate to previous paragraph
+*  Down Arrow - Navigate to next paragraph
+
+If the panel loses focus, keyboard shortcuts will no longer work. User can press
+Search+S keyboard shortcut (with no text selection) to restore focus to the
+panel.
+
+##### Disallowed nodes
+
+The panel is not shown when STS is activated on nodes where navigation features
+do not add value, such as in system UI or top-level windows.
+
+*  System UI nodes - any nodes that have a `root` with role `desktop`
+*  Root nodes that are children of the root `desktop` node
+
+#### Pause/Resume
+
+Since `chrome.tts.pause` and `chrome.tts.resume` are not consistently
+implemented across all TTS engines, STS implements pause/resume functionality
+using the `chrome.tts.stop` and `chrome.tts.speak` APIs. While TTS is playing,
+STS keeps track of the current word offset, and when TTS is resumed, it will
+call `speak` with text trimmed to the start of the last spoken word.
+
+Resuming TTS behaves differently depending on the context:
+
+*  If TTS was paused within the user-selected text, resuming will play until
+   the end of the selected text.
+*  If TTS stopped when it reached the end of the selected text, but before the
+   end of the paragraph, resuming will continue from that point to the end of
+   the paragraph.
+*  If TTS stopped when it reached the end of a paragraph, resuming will speak
+   the next paragraph.
+
+#### Paragraph navigation
+
+Users can navigate to adjacent paragraphs from the current block parent when
+Select-to-speak is active. A 'paragraph' is any block element as defined by
+[ParagraphUtils.isBlock](https://source.chromium.org/chromium/chromium/src/+/master:chrome/browser/resources/chromeos/accessibility/select_to_speak/paragraph_utils.js)
+and the navigation occurs in DOM-order.
+
+#### Sentence navigation
+
+Paragraphs are split into sentences based on the `sentenceStarts` property of
+an AutomationNode. Users can skip to previous and next sentences using similar
+technique as pause/resume (`stop` then `speak` with trimmed text). See
+[sentence_utils.js](https://source.chromium.org/chromium/chromium/src/+/master:chrome/browser/resources/chromeos/accessibility/select_to_speak/sentence_utils.js)
+for logic on breaking node groups into sentences.
+
+#### Reading speed
+
+Users can slow down or speed up TTS speaking rate using the floating control
+panel. The rate the user selects in the panel is multiplied by the system
+default TTS rate. So if the user selects 1.2x reading speed in the panel and
+has a system default of 2.0x, the effective TTS rate will be 2.4x.
+
+When users adjust reading speed, `chrome.tts.stop` is called, and
+`chrome.tts.speak` is then called with text trimmed to the current word
+position, passing in the new effective TTS rate as an option.
+
 ### Special case: Google Drive apps
 
 Google Drive apps require a few work-arounds to work correctly with STS. 
@@ -218,3 +315,5 @@ for more details on design as well as UMA.
 - Per word highlighting,
 [go/chrome-sts-sentences-and-words](go/chrome-sts-sentences-and-words) and
 [go/chromeos-sts-highlight](go/chromeos-sts-highlight)
+
+- Navigation features, [go/enhanced-sts-dd](go/enhanced-sts-dd)
