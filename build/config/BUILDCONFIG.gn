@@ -162,17 +162,6 @@ declare_args() {
   is_component_build = is_debug && current_os != "ios"
 }
 
-declare_args() {
-  # Regression Test Selection (RTS).
-  # https://chromium.googlesource.com/chromium/src/+/master/docs/testing/regression-test-selection.md
-  #
-  # Exclude unittest/browsertest files listed in this file.
-  #
-  # Entries should be newline separated.
-  # Each entry much be an source-absolute path starting with //.
-  rts_exclude_file = ""
-}
-
 assert(!(is_debug && is_official_build), "Can't do official debug builds")
 
 # ==============================================================================
@@ -585,34 +574,5 @@ set_defaults("component") {
     }
   } else {
     configs = default_compiler_configs
-  }
-}
-
-# ==============================================================================
-# Regression Test Selection (RTS)
-# https://chromium.googlesource.com/chromium/src/+/master/docs/testing/regression-test-selection.md
-# ==============================================================================
-if (rts_exclude_file != "") {
-  rts_exclusions = read_file(rts_exclude_file, "list lines")
-
-  # Many tests are included in source_sets
-  template("source_set") {
-    _target_name = target_name
-    target("source_set", _target_name) {
-      forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
-      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-
-      if (defined(sources) && sources != []) {
-        # Normalize paths
-        abs_paths = get_path_info(sources, "abspath")
-
-        # Filter
-        filtered_sources = filter_exclude(abs_paths, rts_exclusions)
-
-        # Do the replacement
-        sources = []
-        sources = filtered_sources
-      }
-    }
   }
 }
