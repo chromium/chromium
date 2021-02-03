@@ -11,6 +11,7 @@ import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {$$} from '../../utils.js';
 import {ModuleDescriptor} from '../module_descriptor.js';
 import {ChromeCartProxy} from './chrome_cart_proxy.js';
 
@@ -39,6 +40,22 @@ class ChromeCartModuleElement extends PolymerElement {
 
       /** @private {boolean} */
       showRightScrollButton_: Boolean,
+
+      /** @private {string} */
+      cartMenuHideItem_: String,
+
+      /** @private {string} */
+      cartMenuRemoveItem_: String,
+
+      /**
+       * Data about the most recently dismissed cart item.
+       * @type {?{message: string, restoreCallback: function()}}
+       * @private
+       */
+      dismissedCartData_: {
+        type: Object,
+        value: null,
+      },
     };
   }
 
@@ -50,6 +67,9 @@ class ChromeCartModuleElement extends PolymerElement {
 
     /** @type {string} */
     this.scrollBehavior = 'smooth';
+
+    /** @private {number} */
+    this.currentMenuIndex_ = 0;
   }
 
   /** @override */
@@ -116,7 +136,73 @@ class ChromeCartModuleElement extends PolymerElement {
    */
   onCartMenuButtonClick_(e) {
     e.preventDefault();
+    this.currentMenuIndex_ =
+        this.$.cartItemRepeat.indexForElement(e.target.parentElement);
+    const merchant = this.cartItems[this.currentMenuIndex_].merchant;
+    this.cartMenuHideItem_ =
+        loadTimeData.getStringF('modulesCartCartMenuHideMerchant', merchant);
+    this.cartMenuRemoveItem_ =
+        loadTimeData.getStringF('modulesCartCartMenuRemoveMerchant', merchant);
     this.$.cartActionMenu.showAt(e.target);
+  }
+
+  /** @private */
+  async onCartHide_() {
+    this.$.cartActionMenu.close();
+    const merchant = this.cartItems[this.currentMenuIndex_].merchant;
+    const cartUrl = this.cartItems[this.currentMenuIndex_].cartUrl;
+
+    await ChromeCartProxy.getInstance().handler.hideCart(cartUrl);
+    this.resetCartData_();
+
+    this.dismissedCartData_ = {
+      message: loadTimeData.getStringF(
+          'modulesCartCartMenuHideMerchantToastMessage', merchant),
+      restoreCallback: async () => {
+        await ChromeCartProxy.getInstance().handler.restoreHiddenCart(cartUrl);
+      },
+    };
+    $$(this, '#dismissCartToast').show();
+  }
+
+  /** @private */
+  async onCartRemove_() {
+    this.$.cartActionMenu.close();
+    const merchant = this.cartItems[this.currentMenuIndex_].merchant;
+    const cartUrl = this.cartItems[this.currentMenuIndex_].cartUrl;
+
+    await ChromeCartProxy.getInstance().handler.removeCart(cartUrl);
+    this.resetCartData_();
+
+    this.dismissedCartData_ = {
+      message: loadTimeData.getStringF(
+          'modulesCartCartMenuRemoveMerchantToastMessage', merchant),
+      restoreCallback: async () => {
+        await ChromeCartProxy.getInstance().handler.restoreRemovedCart(cartUrl);
+      },
+    };
+    $$(this, '#dismissCartToast').show();
+  }
+
+  /** @private */
+  async onUndoDismissCartButtonClick_() {
+    // Restore the module item.
+    await this.dismissedCartData_.restoreCallback();
+    this.resetCartData_();
+
+    // Notify the user.
+    $$(this, '#dismissCartToast').hide();
+
+    this.dismissedCartData_ = null;
+  }
+
+  /** @private */
+  async resetCartData_() {
+    // TODO(crbug.com/1157892): Hide the module silently if there is no cart
+    // item to show.
+    const {carts} =
+        await ChromeCartProxy.getInstance().handler.getMerchantCarts();
+    this.cartItems = carts;
   }
 
   /**

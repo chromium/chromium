@@ -244,7 +244,16 @@
     </template>
     <div id="rightProbe" class="probe"></div>
   </div>
-  <cr-action-menu id="cartActionMenu"></cr-action-menu>
+  <cr-action-menu id="cartActionMenu">
+    <button id="hideCartButton" class="dropdown-item"
+        on-click="onCartHide_">
+      [[cartMenuHideItem_]]
+    </button>
+    <button id="removeCartButton" class="dropdown-item"
+        on-click="onCartRemove_">
+      [[cartMenuRemoveItem_]]
+    </button>
+  </cr-action-menu>
   <cr-action-menu id="moduleActionMenu">
     <button id="hideModuleButton" class="dropdown-item"
         on-click="onModuleHide_">
@@ -262,3 +271,12 @@
     </cr-icon-button>
   </template>
 </div>
+<cr-toast id="dismissCartToast" duration="10000">
+  <div id="dismissCartToastMessage">
+    [[dismissedCartData_.message]]
+  </div>
+  <cr-button id="undoDismissCartButton"
+      on-click="onUndoDismissCartButtonClick_">
+    $i18n{undo}
+  </cr-button>
+</cr-toast>
