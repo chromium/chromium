@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/chromeos/attestation/enrollment_certificate_uploader.h"
 #include "chrome/browser/chromeos/settings/device_settings_service.h"
 #include "chromeos/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
@@ -27,14 +28,18 @@ namespace attestation {
 class EnrollmentPolicyObserver : public DeviceSettingsService::Observer {
  public:
   // The observer immediately connects with DeviceSettingsService to listen for
-  // policy changes.  The CloudPolicyClient is used to upload data to the
-  // server; it must be in the registered state.  This class does not take
+  // policy changes. The EnrollmentCertificateUploader is used to attempt to
+  // upload enrollment certificate first. If it fails, the observer attempts to
+  // upload enrollment ID. The CloudPolicyClient is used to upload enrollment ID
+  // to the server; it must be in the registered state. This class does not take
   // ownership of |policy_client|.
-  explicit EnrollmentPolicyObserver(policy::CloudPolicyClient* policy_client);
+  EnrollmentPolicyObserver(policy::CloudPolicyClient* policy_client,
+                           EnrollmentCertificateUploader* certificate_uploader);
 
   // A constructor which accepts custom instances useful for testing.
   EnrollmentPolicyObserver(policy::CloudPolicyClient* policy_client,
-                           DeviceSettingsService* device_settings_service);
+                           DeviceSettingsService* device_settings_service,
+                           EnrollmentCertificateUploader* certificate_uploader);
 
   ~EnrollmentPolicyObserver() override;
 
@@ -50,7 +55,17 @@ class EnrollmentPolicyObserver : public DeviceSettingsService::Observer {
   // Checks enrollment setting and starts any necessary work.
   void Start();
 
-  // Gets an enrollment identifier directly.
+  // Obtains a fresh enrollment certificate, which contains enrollment ID, and
+  // uploads it.
+  void ObtainAndUploadCertificate();
+
+  // Handles certificate upload status. If succeeded or failed to upload - does
+  // nothing more. If failed to fetch - starts computed enrollment ID flow.
+  void OnEnrollmentCertificateUploaded(
+      EnrollmentCertificateUploader::Status status);
+
+  // Gets an enrollment identifier directly. Does nothing if |policy_client_| is
+  // not registered, or if an empty ID has already been uploaded.
   void GetEnrollmentId();
 
   // Handles an enrollment identifier obtained directly.
@@ -64,8 +79,9 @@ class EnrollmentPolicyObserver : public DeviceSettingsService::Observer {
   // the enrollment identifier that was uploaded.
   void OnUploadComplete(const std::string& enrollment_id, bool status);
 
-  DeviceSettingsService* device_settings_service_;
-  policy::CloudPolicyClient* policy_client_;
+  DeviceSettingsService* const device_settings_service_;
+  policy::CloudPolicyClient* const policy_client_;
+  EnrollmentCertificateUploader* const certificate_uploader_;
   int num_retries_;
   int retry_limit_;
   int retry_delay_;

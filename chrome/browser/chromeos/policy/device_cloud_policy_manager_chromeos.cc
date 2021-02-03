@@ -200,7 +200,8 @@ void DeviceCloudPolicyManagerChromeOS::StartConnection(
   enrollment_certificate_uploader_.reset(
       new chromeos::attestation::EnrollmentCertificateUploaderImpl(client()));
   enrollment_policy_observer_.reset(
-      new chromeos::attestation::EnrollmentPolicyObserver(client()));
+      new chromeos::attestation::EnrollmentPolicyObserver(
+          client(), enrollment_certificate_uploader_.get()));
   lookup_key_uploader_.reset(
       new LookupKeyUploader(device_store(), g_browser_process->local_state(),
                             enrollment_certificate_uploader_.get()));

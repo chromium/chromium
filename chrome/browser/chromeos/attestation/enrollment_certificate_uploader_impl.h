@@ -53,7 +53,7 @@ class EnrollmentCertificateUploaderImpl : public EnrollmentCertificateUploader {
   void Start();
 
   // Run all callbacks with |status|.
-  void RunCallbacks(bool status);
+  void RunCallbacks(Status status);
 
   // Gets a certificate.
   void GetCertificate();

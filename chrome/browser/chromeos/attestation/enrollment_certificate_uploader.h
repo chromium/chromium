@@ -13,8 +13,17 @@ namespace attestation {
 // An abstract class for enrollment certificate uploaders.
 class EnrollmentCertificateUploader {
  public:
-  // A callback where |status| is true when the upload is successful.
-  using UploadCallback = base::OnceCallback<void(bool status)>;
+  // Execution status reported by |ObtainAndUploadCertificate|.
+  enum class Status {
+    // Enrollment certificate is fetched and uploaded.
+    kSuccess,
+    // Cannot fetch enrollment certificate.
+    kFailedToFetch,
+    // Cannot upload fetched enrollment certificate.
+    kFailedToUpload
+  };
+
+  using UploadCallback = base::OnceCallback<void(Status status)>;
 
   virtual ~EnrollmentCertificateUploader() = default;
 

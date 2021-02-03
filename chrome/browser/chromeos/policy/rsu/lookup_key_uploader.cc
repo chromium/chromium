@@ -9,7 +9,6 @@
 #include "base/strings/strcat.h"
 #include "base/task/post_task.h"
 #include "base/time/default_clock.h"
-#include "chrome/browser/chromeos/attestation/enrollment_certificate_uploader.h"
 #include "chrome/browser/chromeos/policy/device_cloud_policy_store_chromeos.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/dbus/cryptohome/cryptohome_client.h"
@@ -102,8 +101,17 @@ void LookupKeyUploader::OnRsuDeviceIdReceived(
   if (rsu_device_id == prefs_->GetString(prefs::kLastRsuDeviceIdUploaded))
     return;
   certificate_uploader_->ObtainAndUploadCertificate(
-      base::BindOnce(&LookupKeyUploader::Result, weak_factory_.GetWeakPtr(),
-                     encoded_rsu_device_id));
+      base::BindOnce(&LookupKeyUploader::OnEnrollmentCertificateUploaded,
+                     weak_factory_.GetWeakPtr(), encoded_rsu_device_id));
+}
+
+void LookupKeyUploader::OnEnrollmentCertificateUploaded(
+    const std::string& encoded_uploaded_key,
+    chromeos::attestation::EnrollmentCertificateUploader::Status status) {
+  const bool success =
+      status ==
+      chromeos::attestation::EnrollmentCertificateUploader::Status::kSuccess;
+  Result(encoded_uploaded_key, success);
 }
 
 void LookupKeyUploader::Result(const std::string& encoded_uploaded_key,

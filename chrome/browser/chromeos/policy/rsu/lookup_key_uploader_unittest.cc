@@ -24,6 +24,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using CertificateStatus =
+    chromeos::attestation::EnrollmentCertificateUploader::Status;
 using chromeos::attestation::MockEnrollmentCertificateUploader;
 using testing::_;
 using testing::Invoke;
@@ -77,9 +79,10 @@ class LookupKeyUploaderTest : public chromeos::DeviceSettingsTestBase {
 
 TEST_F(LookupKeyUploaderTest, Uploads) {
   EXPECT_CALL(certificate_uploader_, ObtainAndUploadCertificate(_))
-      .WillOnce(Invoke([](base::OnceCallback<void(bool status)> callback) {
-        std::move(callback).Run(true);
-      }));
+      .WillOnce(Invoke(
+          [](base::OnceCallback<void(CertificateStatus status)> callback) {
+            std::move(callback).Run(CertificateStatus::kSuccess);
+          }));
   SetCryptohomeReplyTo(kValidRsuDeviceId);
   Start();
   ExpectSavedIdToBe(kValidRsuDeviceIdEncoded);
@@ -116,9 +119,10 @@ TEST_F(LookupKeyUploaderTest, DoesNotUploadVeryFrequently) {
   AdvanceTime();
 
   EXPECT_CALL(certificate_uploader_, ObtainAndUploadCertificate(_))
-      .WillOnce(Invoke([](base::OnceCallback<void(bool status)> callback) {
-        std::move(callback).Run(true);
-      }));
+      .WillOnce(Invoke(
+          [](base::OnceCallback<void(CertificateStatus status)> callback) {
+            std::move(callback).Run(CertificateStatus::kSuccess);
+          }));
   Start();
   ExpectSavedIdToBe(kValidRsuDeviceIdEncoded);
   EXPECT_FALSE(NeedsUpload());
@@ -127,9 +131,9 @@ TEST_F(LookupKeyUploaderTest, DoesNotUploadVeryFrequently) {
 TEST_F(LookupKeyUploaderTest, UploadsEvenWhenSubmittedBeforeIfForcedByPolicy) {
   EXPECT_CALL(certificate_uploader_, ObtainAndUploadCertificate(_))
       .Times(2)
-      .WillRepeatedly(
-          Invoke([](base::OnceCallback<void(bool status)> callback) {
-            std::move(callback).Run(true);
+      .WillRepeatedly(Invoke(
+          [](base::OnceCallback<void(CertificateStatus status)> callback) {
+            std::move(callback).Run(CertificateStatus::kSuccess);
           }));
   SetCryptohomeReplyTo(kValidRsuDeviceId);
   Start();

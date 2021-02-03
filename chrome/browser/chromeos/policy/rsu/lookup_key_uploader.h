@@ -13,14 +13,12 @@
 #include "base/optional.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "chrome/browser/chromeos/attestation/enrollment_certificate_uploader.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 
 class PrefService;
 
 namespace chromeos {
-namespace attestation {
-class EnrollmentCertificateUploader;
-}
 class CryptohomeClient;
 }  // namespace chromeos
 
@@ -58,6 +56,10 @@ class LookupKeyUploader : public CloudPolicyStore::Observer {
   void GetDataFromCryptohome(bool available);
   void OnRsuDeviceIdReceived(base::Optional<cryptohome::BaseReply> result);
   void HandleRsuDeviceId(const std::string& rsu_device_id);
+
+  void OnEnrollmentCertificateUploaded(
+      const std::string& uploaded_key,
+      chromeos::attestation::EnrollmentCertificateUploader::Status status);
 
   void Result(const std::string& uploaded_key, bool success);
   // Used in tests.

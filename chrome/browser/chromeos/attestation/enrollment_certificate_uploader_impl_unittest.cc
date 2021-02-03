@@ -23,6 +23,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using CertStatus = chromeos::attestation::EnrollmentCertificateUploader::Status;
 using testing::_;
 using testing::Invoke;
 using testing::StrictMock;
@@ -51,6 +52,11 @@ void CertCallbackBadRequestFailure(
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback),
                                 ATTESTATION_SERVER_BAD_REQUEST_FAILURE, ""));
+}
+
+void StatusCallbackFailure(policy::CloudPolicyClient::StatusCallback callback) {
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), false));
 }
 
 void StatusCallbackSuccess(policy::CloudPolicyClient::StatusCallback callback) {
@@ -84,14 +90,14 @@ class EnrollmentCertificateUploaderTest : public ::testing::Test {
         .WillOnce(WithArgs<5>(Invoke(CertCallbackSuccess)));
   }
 
-  void Run(bool expected_status) {
+  void Run(CertStatus expected_status) {
     EnrollmentCertificateUploaderImpl uploader(&policy_client_,
                                                &attestation_flow_);
     uploader.set_retry_limit(3);
     uploader.set_retry_delay(base::TimeDelta());
 
     uploader.ObtainAndUploadCertificate(
-        base::BindLambdaForTesting([expected_status](bool status) {
+        base::BindLambdaForTesting([expected_status](CertStatus status) {
           EXPECT_EQ(status, expected_status);
         }));
 
@@ -106,24 +112,34 @@ class EnrollmentCertificateUploaderTest : public ::testing::Test {
 
 TEST_F(EnrollmentCertificateUploaderTest, UnregisteredPolicyClient) {
   policy_client_.SetDMToken("");
-  Run(false /* expected_status */);
+  Run(/*expected_status=*/CertStatus::kFailedToFetch);
 }
 
 TEST_F(EnrollmentCertificateUploaderTest, GetCertificateUnspecifiedFailure) {
   EXPECT_CALL(attestation_flow_, GetCertificate(_, _, _, _, _, _))
       .WillRepeatedly(WithArgs<5>(Invoke(CertCallbackUnspecifiedFailure)));
-  Run(false /* expected_status */);
+  Run(/*expected_status=*/CertStatus::kFailedToFetch);
 }
 
 TEST_F(EnrollmentCertificateUploaderTest, GetCertificateBadRequestFailure) {
   EXPECT_CALL(attestation_flow_, GetCertificate(_, _, _, _, _, _))
       .WillOnce(WithArgs<5>(Invoke(CertCallbackBadRequestFailure)));
-  Run(false /* expected_status */);
+  Run(/*expected_status=*/CertStatus::kFailedToFetch);
+}
+
+TEST_F(EnrollmentCertificateUploaderTest, UploadCertificateFailure) {
+  EXPECT_CALL(attestation_flow_, GetCertificate(_, _, _, _, _, _))
+      .WillOnce(WithArgs<5>(Invoke(CertCallbackSuccess)));
+  EXPECT_CALL(policy_client_,
+              UploadEnterpriseEnrollmentCertificate("fake_cert", _))
+      .WillOnce(WithArgs<1>(Invoke(StatusCallbackFailure)));
+
+  Run(/*expected_status=*/CertStatus::kFailedToUpload);
 }
 
 TEST_F(EnrollmentCertificateUploaderTest, NewCertificate) {
   SetupMocks();
-  Run(true /* expected_status */);
+  Run(/*expected_status=*/CertStatus::kSuccess);
 }
 
 }  // namespace attestation

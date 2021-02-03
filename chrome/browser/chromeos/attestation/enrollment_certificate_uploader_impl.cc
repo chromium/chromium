@@ -81,7 +81,7 @@ void EnrollmentCertificateUploaderImpl::Start() {
   if (!policy_client_->is_registered()) {
     LOG(ERROR)
         << "EnrollmentCertificateUploaderImpl: Invalid CloudPolicyClient.";
-    RunCallbacks(false);
+    RunCallbacks(Status::kFailedToFetch);
     return;
   }
 
@@ -96,7 +96,7 @@ void EnrollmentCertificateUploaderImpl::Start() {
   GetCertificate();
 }
 
-void EnrollmentCertificateUploaderImpl::RunCallbacks(bool status) {
+void EnrollmentCertificateUploaderImpl::RunCallbacks(Status status) {
   for (; !callbacks_.empty(); callbacks_.pop())
     std::move(callbacks_.front()).Run(status);
 }
@@ -137,12 +137,12 @@ void EnrollmentCertificateUploaderImpl::UploadCertificate(
 void EnrollmentCertificateUploaderImpl::OnUploadComplete(bool status) {
   if (status) {
     VLOG(1) << "Enterprise Enrollment Certificate uploaded to DMServer.";
+    RunCallbacks(Status::kSuccess);
   } else {
     LOG(ERROR)
         << "Failed to upload Enterprise Enrollment Certificate to DMServer.";
+    RunCallbacks(Status::kFailedToUpload);
   }
-
-  RunCallbacks(status);
 }
 
 void EnrollmentCertificateUploaderImpl::HandleGetCertificateFailure(
@@ -150,7 +150,7 @@ void EnrollmentCertificateUploaderImpl::HandleGetCertificateFailure(
   if (status != ATTESTATION_SERVER_BAD_REQUEST_FAILURE)
     Reschedule();
   else
-    RunCallbacks(false);
+    RunCallbacks(Status::kFailedToFetch);
 }
 
 void EnrollmentCertificateUploaderImpl::Reschedule() {
@@ -162,7 +162,7 @@ void EnrollmentCertificateUploaderImpl::Reschedule() {
         retry_delay_);
   } else {
     LOG(WARNING) << "EnrollmentCertificateUploaderImpl: Retry limit exceeded.";
-    RunCallbacks(false);
+    RunCallbacks(Status::kFailedToFetch);
   }
 }
 

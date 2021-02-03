@@ -17,12 +17,15 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/chromeos/attestation/enrollment_policy_observer.h"
+#include "chrome/browser/chromeos/attestation/mock_enrollment_certificate_uploader.h"
 #include "chrome/browser/chromeos/settings/device_settings_test_helper.h"
 #include "chromeos/dbus/attestation/fake_attestation_client.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using CertificateStatus =
+    chromeos::attestation::EnrollmentCertificateUploader::Status;
 using testing::_;
 using testing::Invoke;
 using testing::Return;
@@ -60,10 +63,11 @@ class EnrollmentPolicyObserverTest : public DeviceSettingsTestBase {
         ->GetTestInterface()
         ->set_enrollment_id_ignore_cache(enrollment_id_);
     AttestationClient::Get()->GetTestInterface()->set_cached_enrollment_id(
-        "unexpeted query to cached enrollment id");
+        "unexpected query to cached enrollment ID");
   }
 
   void TearDown() override {
+    EXPECT_FALSE(observer_->request_in_flight_);
     observer_.reset();
     DeviceSettingsTestBase::TearDown();
     AttestationClient::Shutdown();
@@ -75,9 +79,21 @@ class EnrollmentPolicyObserverTest : public DeviceSettingsTestBase {
 
   void SetUpObserver() {
     observer_ = std::make_unique<EnrollmentPolicyObserver>(
-        &policy_client_, device_settings_service_.get());
+        &policy_client_, device_settings_service_.get(),
+        &certificate_uploader_);
     observer_->set_retry_limit(kRetryLimit);
     observer_->set_retry_delay(0);
+  }
+
+  void ExpectUploadEnterpriseEnrollmentCertificate(CertificateStatus status,
+                                                   int times) {
+    EXPECT_CALL(certificate_uploader_, ObtainAndUploadCertificate(_))
+        .Times(times)
+        .WillRepeatedly(Invoke(
+            [status](
+                base::OnceCallback<void(CertificateStatus status)> callback) {
+              std::move(callback).Run(status);
+            }));
   }
 
   void ExpectUploadEnterpriseEnrollmentId(int times) {
@@ -105,6 +121,7 @@ class EnrollmentPolicyObserverTest : public DeviceSettingsTestBase {
   }
 
   StrictMock<policy::MockCloudPolicyClient> policy_client_;
+  StrictMock<MockEnrollmentCertificateUploader> certificate_uploader_;
   std::unique_ptr<EnrollmentPolicyObserver> observer_;
   std::string enrollment_id_;
 
@@ -114,8 +131,41 @@ class EnrollmentPolicyObserverTest : public DeviceSettingsTestBase {
 
 constexpr char EnrollmentPolicyObserverTest::kEnrollmentId[];
 
+TEST_F(EnrollmentPolicyObserverTest, UploadEnterpriseEnrollmentCertificate) {
+  SetUpDevicePolicy(true);
+  ExpectUploadEnterpriseEnrollmentCertificate(CertificateStatus::kSuccess,
+                                              /*times=*/1);
+  SetUpObserver();
+  PropagateDevicePolicy();
+  Run();
+}
+
+TEST_F(EnrollmentPolicyObserverTest,
+       UploadEnterpriseEnrollmentCertificateFromExistingPolicy) {
+  // This test will trigger the observer work twice in a row: when the
+  // observer is created, and when it gets notified later on.
+  SetUpDevicePolicy(true);
+  PropagateDevicePolicy();
+  ExpectUploadEnterpriseEnrollmentCertificate(CertificateStatus::kSuccess,
+                                              /*times=*/2);
+  SetUpObserver();
+  PropagateDevicePolicy();
+  Run();
+}
+
+TEST_F(EnrollmentPolicyObserverTest, FailedToUploadEnrollmentCertificate) {
+  SetUpDevicePolicy(true);
+  ExpectUploadEnterpriseEnrollmentCertificate(
+      CertificateStatus::kFailedToUpload, /*times=*/1);
+  SetUpObserver();
+  PropagateDevicePolicy();
+  Run();
+}
+
 TEST_F(EnrollmentPolicyObserverTest, UploadEnterpriseEnrollmentId) {
   SetUpDevicePolicy(true);
+  ExpectUploadEnterpriseEnrollmentCertificate(CertificateStatus::kFailedToFetch,
+                                              /*times=*/1);
   ExpectUploadEnterpriseEnrollmentId(1);
   SetUpObserver();
   PropagateDevicePolicy();
@@ -128,6 +178,8 @@ TEST_F(EnrollmentPolicyObserverTest,
   // observer is created, and when it gets notified later on.
   SetUpDevicePolicy(true);
   PropagateDevicePolicy();
+  ExpectUploadEnterpriseEnrollmentCertificate(CertificateStatus::kFailedToFetch,
+                                              /*times=*/2);
   ExpectUploadEnterpriseEnrollmentId(2);
   SetUpObserver();
   PropagateDevicePolicy();
@@ -145,6 +197,8 @@ TEST_F(EnrollmentPolicyObserverTest, UnregisteredPolicyClient) {
   policy_client_.SetDMToken("");
   SetUpDevicePolicy(true);
   SetUpObserver();
+  ExpectUploadEnterpriseEnrollmentCertificate(CertificateStatus::kFailedToFetch,
+                                              /*times=*/1);
   PropagateDevicePolicy();
   Run();
 }
@@ -154,6 +208,8 @@ TEST_F(EnrollmentPolicyObserverTest, DBusFailureRetry) {
       ->GetTestInterface()
       ->set_enrollment_id_dbus_error_count(kRetryLimit - 1);
 
+  ExpectUploadEnterpriseEnrollmentCertificate(CertificateStatus::kFailedToFetch,
+                                              /*times=*/1);
   ExpectUploadEnterpriseEnrollmentId(1);
 
   SetUpDevicePolicy(true);
@@ -168,6 +224,8 @@ TEST_F(EnrollmentPolicyObserverTest, DBusFailureRetryUntilLimit) {
       ->GetTestInterface()
       ->set_enrollment_id_dbus_error_count(kRetryLimit);
 
+  ExpectUploadEnterpriseEnrollmentCertificate(CertificateStatus::kFailedToFetch,
+                                              /*times=*/1);
   ExpectUploadEnterpriseEnrollmentId(0);
 
   SetUpDevicePolicy(true);
