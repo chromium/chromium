@@ -62,6 +62,8 @@ def _import_fuchsia_runner():
     # pylint: disable=redefined-outer-name
     global aemu_target
     import aemu_target
+    global device_target
+    import device_target
     global fuchsia_target
     import target as fuchsia_target
     global qemu_target
@@ -124,27 +126,11 @@ class SubprocessOutputLogger(object):
 
 
 class _TargetHost(object):
-    def __init__(self, build_path, build_ids_path, ports_to_forward,
-                 target_device, results_directory):
+    def __init__(self, build_path, build_ids_path, ports_to_forward, target,
+                 results_directory):
         try:
             self._amber_repo = None
-            self._target = None
-            target_args = {
-                'out_dir': build_path,
-                'target_cpu': 'x64',
-                'system_log_file': None,
-                'cpu_cores': CPU_CORES,
-                'require_kvm': True,
-                'ram_size_mb': 8192
-            }
-            if target_device == 'qemu':
-                self._target = qemu_target.QemuTarget(**target_args)
-            else:
-                target_args.update({
-                    'enable_graphics': False,
-                    'hardware_gpu': False
-                })
-                self._target = aemu_target.AemuTarget(**target_args)
+            self._target = target
             self._target.Start()
             self._setup_target(build_path, build_ids_path, ports_to_forward,
                                results_directory)
@@ -201,10 +187,12 @@ class _TargetHost(object):
         if self._amber_repo:
             self._amber_repo.__exit__(None, None, None)
         if self._target:
+            # Emulator targets will be shutdown during cleanup.
             # TODO(sergeyu): Currently __init__() always starts Qemu, so we can
             # just shutdown it. Update this logic when reusing target devices
             # for multiple test runs.
-            self._target.Shutdown()
+            if not isinstance(self._target, device_target.DeviceTarget):
+                self._target.Shutdown()
             self._target = None
 
 
@@ -235,6 +223,7 @@ class FuchsiaPort(base.Port):
 
         self._target_host = self.get_option('fuchsia_target')
         self._zircon_logger = None
+        self._host_ip = self.get_option('fuchsia_host_ip')
         _import_fuchsia_runner()
 
     def _driver_class(self):
@@ -250,10 +239,42 @@ class FuchsiaPort(base.Port):
     def setup_test_run(self):
         super(FuchsiaPort, self).setup_test_run()
         try:
+            target_args = {
+                'out_dir': self._build_path(),
+                'system_log_file': None,
+                'fuchsia_out_dir': self.get_option('fuchsia_out_dir')
+            }
+            if self._target_device == 'device':
+                additional_args = {
+                    'target_cpu': self.get_option('fuchsia_target_cpu'),
+                    'ssh_config': self.get_option('fuchsia_ssh_config'),
+                    'os_check': 'ignore',
+                    'host': self.get_option('fuchsia_host'),
+                    'port': self.get_option('fuchsia_port'),
+                    'node_name': self.get_option('fuchsia_node_name')
+                }
+                target_args.update(additional_args)
+                target = device_target.DeviceTarget(**target_args)
+            else:
+                additional_args = {
+                    'target_cpu': 'x64',
+                    'cpu_cores': CPU_CORES,
+                    'require_kvm': True,
+                    'ram_size_mb': 8192
+                }
+                if self._target_device == 'qemu':
+                    target_args.update(additional_args)
+                    target = qemu_target.QemuTarget(**target_args)
+                else:
+                    additional_args.update({
+                        'enable_graphics': False,
+                        'hardware_gpu': False
+                    })
+                    target_args.update(additional_args)
+                    target = aemu_target.AemuTarget(**target_args)
             self._target_host = _TargetHost(self._build_path(),
                                             self.get_build_ids_path(),
-                                            self.SERVER_PORTS,
-                                            self._target_device,
+                                            self.SERVER_PORTS, target,
                                             self.results_directory())
 
             if self.get_option('zircon_logging'):
@@ -320,6 +341,15 @@ class ChromiumFuchsiaDriver(driver.Driver):
         super(ChromiumFuchsiaDriver, self).__init__(port, worker_number,
                                                     no_timeout)
 
+    def _initialize_server_process(self, server_name, cmd_line, environment):
+        self._server_process = self._port.server_process_constructor(
+            self._port,
+            server_name,
+            cmd_line,
+            environment,
+            more_logging=self._port.get_option('driver_logging'),
+            host_ip=self._port._host_ip)
+
     def _base_cmd_line(self):
         cmd = [
             'run',
@@ -328,7 +358,7 @@ class ChromiumFuchsiaDriver(driver.Driver):
         if self._port._target_device == 'qemu':
             cmd.append('--ozone-platform=headless')
         # Use Scenic on AEMU
-        elif self._port._target_device == 'aemu':
+        else:
             cmd.extend([
                 '--ozone-platform=scenic', '--enable-oop-rasterization',
                 '--use-vulkan', '--enable-gpu-rasterization',
@@ -356,10 +386,12 @@ class FuchsiaServerProcess(server_process.ServerProcess):
                  cmd,
                  env=None,
                  treat_no_data_as_crash=False,
-                 more_logging=False):
+                 more_logging=False,
+                 host_ip=None):
         super(FuchsiaServerProcess, self).__init__(
             port_obj, name, cmd, env, treat_no_data_as_crash, more_logging)
         self._symbolizer_proc = None
+        self._host_ip = host_ip or qemu_target.HOST_IP_ADDRESS
 
     def _start(self):
         if self._proc:
@@ -379,7 +411,7 @@ class FuchsiaServerProcess(server_process.ServerProcess):
         command = ['%s=%s' % (k, v) for k, v in self._env.items()] + \
             self._cmd + \
             ['--no-sandbox', '--stdin-redirect=%s:%s' %
-             (qemu_target.HOST_IP_ADDRESS, stdin_port)]
+             (self._host_ip, stdin_port)]
         proc = self._port.get_target_host().run_command(command)
         # Wait for incoming connection from content_shell.
         fd = listen_socket.fileno()
