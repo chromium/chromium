@@ -383,7 +383,7 @@
     },
     {
       name: "CompositingOptimizations",
-      status: "experimental"
+      status: "stable"
     },
     {
       name: "ComputedAccessibilityInfo",
