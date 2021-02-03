@@ -392,25 +392,25 @@ class PrerenderTest : public testing::Test {
     return prerender_link_manager_->IsEmpty();
   }
 
-  size_t CountExistingPrerenders() {
-    return prerender_link_manager()->prerenders_.size();
+  size_t CountExistingTriggers() {
+    return prerender_link_manager()->triggers_.size();
   }
 
-  bool LastPrerenderExists() {
-    return prerender_link_manager()->prerenders_.begin() !=
-           prerender_link_manager()->prerenders_.end();
+  bool LastTriggerExists() {
+    return prerender_link_manager()->triggers_.begin() !=
+           prerender_link_manager()->triggers_.end();
   }
 
-  bool LastPrerenderIsRunning() {
-    CHECK(LastPrerenderExists());
-    return prerender_link_manager()->PrerenderIsRunningForTesting(
-        prerender_link_manager()->prerenders_.back().get());
+  bool LastTriggerIsRunning() {
+    CHECK(LastTriggerExists());
+    return prerender_link_manager()->TriggerIsRunningForTesting(
+        prerender_link_manager()->triggers_.back().get());
   }
 
-  bool AddPrerender(const GURL& url,
-                    const GURL& initiator_url,
-                    int render_process_id,
-                    int render_view_id) {
+  bool AddLinkTrigger(const GURL& url,
+                      const GURL& initiator_url,
+                      int render_process_id,
+                      int render_view_id) {
     auto attributes = blink::mojom::PrerenderAttributes::New();
     attributes->url = url;
     attributes->rel_type = blink::mojom::PrerenderRelType::kPrerender;
@@ -418,55 +418,55 @@ class PrerenderTest : public testing::Test {
         initiator_url, network::mojom::ReferrerPolicy::kDefault);
     attributes->view_size = kDefaultViewSize;
 
-    // This could delete an existing prerender as a side-effect.
-    base::Optional<int> prerender_id =
-        prerender_link_manager()->OnStartPrerender(
+    // This could delete an existing prefetcher as a side-effect.
+    base::Optional<int> link_trigger_id =
+        prerender_link_manager()->OnStartLinkTrigger(
             render_process_id, render_view_id, std::move(attributes),
             url::Origin::Create(initiator_url));
 
-    // Check if the new prerender request was added and running.
-    return prerender_id && LastPrerenderIsRunning();
+    // Check if the new prefetch request was added and running.
+    return link_trigger_id && LastTriggerIsRunning();
   }
 
-  // Shorthand to add a simple prerender with a reasonable source. Returns
-  // true iff the prerender has been added to the NoStatePrefetchManager by the
+  // Shorthand to add a simple link trigger with a reasonable source. Returns
+  // true iff the prefetcher has been added to the NoStatePrefetchManager by the
   // PrerenderLinkManager and the NoStatePrefetchManager returned a handle.
-  bool AddSimplePrerender(const GURL& url) {
-    return AddPrerender(url, GURL(), kDefaultChildId,
-                        kDefaultRenderViewRouteId);
+  bool AddSimpleLinkTrigger(const GURL& url) {
+    return AddLinkTrigger(url, GURL(), kDefaultChildId,
+                          kDefaultRenderViewRouteId);
   }
 
-  // Shorthand to add a simple prerender with a reasonable source. Returns
-  // true iff the prerender has been added to the NoStatePrefetchManager by the
+  // Shorthand to add a simple link trigger with a reasonable source. Returns
+  // true iff the prefetcher has been added to the NoStatePrefetchManager by the
   // PrerenderLinkManager and the NoStatePrefetchManager returned a handle. The
   // referrer is set to a google domain.
-  bool AddSimpleGWSPrerender(const GURL& url) {
-    return AddPrerender(url, GURL("https://www.google.com"), kDefaultChildId,
-                        kDefaultRenderViewRouteId);
+  bool AddSimpleGWSLinkTrigger(const GURL& url) {
+    return AddLinkTrigger(url, GURL("https://www.google.com"), kDefaultChildId,
+                          kDefaultRenderViewRouteId);
   }
 
-  void AbandonFirstPrerender() {
-    CHECK(!prerender_link_manager()->prerenders_.empty());
-    prerender_link_manager()->OnAbandonPrerender(
-        prerender_link_manager()->prerenders_.front()->prerender_id);
+  void AbandonFirstTrigger() {
+    CHECK(!prerender_link_manager()->triggers_.empty());
+    prerender_link_manager()->OnAbandonLinkTrigger(
+        prerender_link_manager()->triggers_.front()->link_trigger_id);
   }
 
-  void AbandonLastPrerender() {
-    CHECK(!prerender_link_manager()->prerenders_.empty());
-    prerender_link_manager()->OnAbandonPrerender(
-        prerender_link_manager()->prerenders_.back()->prerender_id);
+  void AbandonLastTrigger() {
+    CHECK(!prerender_link_manager()->triggers_.empty());
+    prerender_link_manager()->OnAbandonLinkTrigger(
+        prerender_link_manager()->triggers_.back()->link_trigger_id);
   }
 
-  void CancelFirstPrerender() {
-    CHECK(!prerender_link_manager()->prerenders_.empty());
-    prerender_link_manager()->OnCancelPrerender(
-        prerender_link_manager()->prerenders_.front()->prerender_id);
+  void CancelFirstTrigger() {
+    CHECK(!prerender_link_manager()->triggers_.empty());
+    prerender_link_manager()->OnCancelLinkTrigger(
+        prerender_link_manager()->triggers_.front()->link_trigger_id);
   }
 
-  void CancelLastPrerender() {
-    CHECK(!prerender_link_manager()->prerenders_.empty());
-    prerender_link_manager()->OnCancelPrerender(
-        prerender_link_manager()->prerenders_.back()->prerender_id);
+  void CancelLastTrigger() {
+    CHECK(!prerender_link_manager()->triggers_.empty());
+    prerender_link_manager()->OnCancelLinkTrigger(
+        prerender_link_manager()->triggers_.back()->link_trigger_id);
   }
 
   void DisablePrerender() {
@@ -499,7 +499,7 @@ TEST_F(PrerenderTest, RespectsThirdPartyCookiesPref) {
   profile()->GetPrefs()->SetInteger(
       prefs::kCookieControlsMode,
       static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
-  EXPECT_FALSE(AddSimplePrerender(url));
+  EXPECT_FALSE(AddSimpleLinkTrigger(url));
   histogram_tester().ExpectUniqueSample(
       "Prerender.FinalStatus", FINAL_STATUS_BLOCK_THIRD_PARTY_COOKIES, 1);
 }
@@ -511,7 +511,7 @@ TEST_F(PrerenderTest, GWSPrefetchHoldbackNonGWSSReferrer) {
   no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
       url, FINAL_STATUS_PROFILE_DESTROYED);
 
-  EXPECT_TRUE(AddSimplePrerender(url));
+  EXPECT_TRUE(AddSimpleLinkTrigger(url));
 }
 
 TEST_F(PrerenderTest, GWSPrefetchHoldbackGWSReferrer) {
@@ -522,7 +522,7 @@ TEST_F(PrerenderTest, GWSPrefetchHoldbackGWSReferrer) {
       url, url::Origin::Create(GURL("www.google.com")), ORIGIN_GWS_PRERENDER,
       FINAL_STATUS_PROFILE_DESTROYED);
 
-  EXPECT_FALSE(AddSimpleGWSPrerender(url));
+  EXPECT_FALSE(AddSimpleGWSLinkTrigger(url));
 }
 
 TEST_F(PrerenderTest, GWSPrefetchHoldbackOffNonGWSReferrer) {
@@ -532,7 +532,7 @@ TEST_F(PrerenderTest, GWSPrefetchHoldbackOffNonGWSReferrer) {
   no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
       url, FINAL_STATUS_PROFILE_DESTROYED);
 
-  EXPECT_TRUE(AddSimplePrerender(url));
+  EXPECT_TRUE(AddSimpleLinkTrigger(url));
 }
 
 TEST_F(PrerenderTest, GWSPrefetchHoldbackOffGWSReferrer) {
@@ -543,7 +543,7 @@ TEST_F(PrerenderTest, GWSPrefetchHoldbackOffGWSReferrer) {
       url, url::Origin::Create(GURL("www.google.com")), ORIGIN_GWS_PRERENDER,
       FINAL_STATUS_PROFILE_DESTROYED);
 
-  EXPECT_TRUE(AddSimpleGWSPrerender(url));
+  EXPECT_TRUE(AddSimpleGWSLinkTrigger(url));
 }
 
 TEST_F(PrerenderTest, PredictorPrefetchHoldbackNonPredictorReferrer) {
@@ -555,7 +555,7 @@ TEST_F(PrerenderTest, PredictorPrefetchHoldbackNonPredictorReferrer) {
       url, url::Origin::Create(GURL("www.notgoogle.com")),
       ORIGIN_LINK_REL_PRERENDER_CROSSDOMAIN, FINAL_STATUS_PROFILE_DESTROYED);
 
-  EXPECT_TRUE(AddSimplePrerender(url));
+  EXPECT_TRUE(AddSimpleLinkTrigger(url));
 }
 
 TEST_F(PrerenderTest, PredictorPrefetchHoldbackPredictorReferrer) {
@@ -595,7 +595,7 @@ TEST_F(PrerenderTest, PredictorPrefetchHoldbackOffNonPredictorReferrer) {
       url, url::Origin::Create(GURL("www.notgoogle.com")),
       ORIGIN_LINK_REL_PRERENDER_CROSSDOMAIN, FINAL_STATUS_PROFILE_DESTROYED);
 
-  EXPECT_TRUE(AddSimplePrerender(url));
+  EXPECT_TRUE(AddSimpleLinkTrigger(url));
 }
 
 TEST_F(PrerenderTest, PredictorPrefetchHoldbackOffPredictorReferrer) {
@@ -616,7 +616,7 @@ TEST_F(PrerenderTest, PredictorPrefetchHoldbackOffPredictorReferrer) {
 TEST_F(PrerenderTest, DISABLED_PrerenderDisabledOnLowEndDevice) {
   GURL url("http://www.google.com/");
   no_state_prefetch_manager()->SetIsLowEndDevice(true);
-  EXPECT_FALSE(AddSimplePrerender(url));
+  EXPECT_FALSE(AddSimpleLinkTrigger(url));
   histogram_tester().ExpectUniqueSample("Prerender.FinalStatus",
                                         FINAL_STATUS_LOW_END_DEVICE, 1);
 }
@@ -632,7 +632,7 @@ TEST_F(PrerenderTest, FoundTest) {
   DummyNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, FINAL_STATUS_USED);
-  EXPECT_TRUE(AddSimplePrerender(url));
+  EXPECT_TRUE(AddSimpleLinkTrigger(url));
   EXPECT_TRUE(no_state_prefetch_contents->prerendering_has_started());
   std::unique_ptr<NoStatePrefetchContents> entry =
       no_state_prefetch_manager()->FindAndUseEntry(url);
@@ -667,14 +667,14 @@ TEST_F(PrerenderTest, DISABLED_DuplicateTest_NoStatePrefetch) {
   DummyNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, FINAL_STATUS_USED);
-  EXPECT_TRUE(AddSimplePrerender(url));
+  EXPECT_TRUE(AddSimpleLinkTrigger(url));
   EXPECT_FALSE(no_state_prefetch_manager()->next_no_state_prefetch_contents());
   EXPECT_TRUE(no_state_prefetch_contents->prerendering_has_started());
 
   DummyNoStatePrefetchContents* no_state_prefetch_contents1 =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, FINAL_STATUS_PROFILE_DESTROYED);
-  EXPECT_TRUE(AddSimplePrerender(url));
+  EXPECT_TRUE(AddSimpleLinkTrigger(url));
   EXPECT_EQ(no_state_prefetch_contents1,
             no_state_prefetch_manager()->next_no_state_prefetch_contents());
   EXPECT_FALSE(no_state_prefetch_contents1->prerendering_has_started());
@@ -691,7 +691,7 @@ TEST_F(PrerenderTest, ExpireTest) {
   DummyNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, FINAL_STATUS_TIMED_OUT);
-  EXPECT_TRUE(AddSimplePrerender(url));
+  EXPECT_TRUE(AddSimpleLinkTrigger(url));
   EXPECT_FALSE(no_state_prefetch_manager()->next_no_state_prefetch_contents());
   EXPECT_TRUE(no_state_prefetch_contents->prerendering_has_started());
   tick_clock()->Advance(no_state_prefetch_manager()->config().time_to_live +
@@ -706,7 +706,7 @@ TEST_F(PrerenderTest, BadURLTest) {
   DummyNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, FINAL_STATUS_UNSUPPORTED_SCHEME);
-  EXPECT_FALSE(AddSimplePrerender(url));
+  EXPECT_FALSE(AddSimpleLinkTrigger(url));
   EXPECT_FALSE(no_state_prefetch_contents->prerendering_has_started());
   EXPECT_TRUE(IsEmptyPrerenderLinkManager());
   EXPECT_FALSE(no_state_prefetch_manager()->FindEntry(url));
@@ -730,12 +730,12 @@ TEST_F(PrerenderTest, LinkManagerNavigateAwayExpire) {
   DummyNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, FINAL_STATUS_TIMED_OUT);
-  EXPECT_TRUE(AddSimplePrerender(url));
+  EXPECT_TRUE(AddSimpleLinkTrigger(url));
   EXPECT_TRUE(no_state_prefetch_contents->prerendering_has_started());
   EXPECT_FALSE(no_state_prefetch_contents->prerendering_has_been_cancelled());
   ASSERT_EQ(no_state_prefetch_contents,
             no_state_prefetch_manager()->FindEntry(url));
-  AbandonLastPrerender();
+  AbandonLastTrigger();
   EXPECT_EQ(no_state_prefetch_contents,
             no_state_prefetch_manager()->FindEntry(url));
   EXPECT_FALSE(no_state_prefetch_manager()->next_no_state_prefetch_contents());
@@ -769,7 +769,7 @@ TEST_F(PrerenderTest, LinkManagerNavigateAwayNearExpiry) {
   DummyNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, FINAL_STATUS_TIMED_OUT);
-  EXPECT_TRUE(AddSimplePrerender(url));
+  EXPECT_TRUE(AddSimpleLinkTrigger(url));
   EXPECT_TRUE(no_state_prefetch_contents->prerendering_has_started());
   EXPECT_FALSE(no_state_prefetch_contents->prerendering_has_been_cancelled());
   ASSERT_EQ(no_state_prefetch_contents,
@@ -779,7 +779,7 @@ TEST_F(PrerenderTest, LinkManagerNavigateAwayNearExpiry) {
   EXPECT_EQ(no_state_prefetch_contents,
             no_state_prefetch_manager()->FindEntry(url));
 
-  AbandonLastPrerender();
+  AbandonLastTrigger();
   EXPECT_EQ(no_state_prefetch_contents,
             no_state_prefetch_manager()->FindEntry(url));
 
@@ -807,8 +807,8 @@ TEST_F(PrerenderTest, LinkManagerNavigateAwayLaunchAnother) {
   GURL url("http://example.com");
   no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
       url, FINAL_STATUS_CANCELLED);
-  EXPECT_TRUE(AddSimplePrerender(url));
-  AbandonLastPrerender();
+  EXPECT_TRUE(AddSimpleLinkTrigger(url));
+  AbandonLastTrigger();
 
   tick_clock()->Advance(test_advance);
 
@@ -816,7 +816,7 @@ TEST_F(PrerenderTest, LinkManagerNavigateAwayLaunchAnother) {
   DummyNoStatePrefetchContents* second_no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           second_url, FINAL_STATUS_PROFILE_DESTROYED);
-  EXPECT_TRUE(AddSimplePrerender(second_url));
+  EXPECT_TRUE(AddSimpleLinkTrigger(second_url));
   EXPECT_EQ(second_no_state_prefetch_contents,
             no_state_prefetch_manager()->FindEntry(second_url));
 }
@@ -907,7 +907,7 @@ TEST_F(PrerenderTest, MaxConcurrencyTest) {
       no_state_prefetch_contentses.push_back(
           no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
               urls.back(), FINAL_STATUS_USED));
-      EXPECT_TRUE(AddSimplePrerender(urls.back()));
+      EXPECT_TRUE(AddSimpleLinkTrigger(urls.back()));
       EXPECT_FALSE(
           no_state_prefetch_manager()->next_no_state_prefetch_contents());
       EXPECT_TRUE(
@@ -918,12 +918,12 @@ TEST_F(PrerenderTest, MaxConcurrencyTest) {
       // We should be able to launch more prerenders on this system, but not for
       // the default launcher.
       GURL extra_url("http://google.com/extraurl");
-      size_t prerender_count = CountExistingPrerenders();
-      EXPECT_FALSE(AddSimplePrerender(extra_url));
-      EXPECT_EQ(prerender_count + 1, CountExistingPrerenders());
+      size_t trigger_count = CountExistingTriggers();
+      EXPECT_FALSE(AddSimpleLinkTrigger(extra_url));
+      EXPECT_EQ(trigger_count + 1, CountExistingTriggers());
 
-      CancelLastPrerender();
-      EXPECT_EQ(prerender_count, CountExistingPrerenders());
+      CancelLastTrigger();
+      EXPECT_EQ(trigger_count, CountExistingTriggers());
     }
 
     GURL url_to_delay(
@@ -931,7 +931,7 @@ TEST_F(PrerenderTest, MaxConcurrencyTest) {
     DummyNoStatePrefetchContents* no_state_prefetch_contents_to_delay =
         no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
             url_to_delay, FINAL_STATUS_USED);
-    EXPECT_FALSE(AddSimplePrerender(url_to_delay));
+    EXPECT_FALSE(AddSimpleLinkTrigger(url_to_delay));
     EXPECT_FALSE(
         no_state_prefetch_contents_to_delay->prerendering_has_started());
     EXPECT_TRUE(no_state_prefetch_manager()->next_no_state_prefetch_contents());
@@ -968,7 +968,7 @@ TEST_F(PrerenderTest, DISABLED_AliasURLTest) {
   DummyNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, alias_urls, FINAL_STATUS_USED);
-  EXPECT_TRUE(AddSimplePrerender(url));
+  EXPECT_TRUE(AddSimpleLinkTrigger(url));
   ASSERT_FALSE(no_state_prefetch_manager()->FindEntry(not_an_alias_url));
   std::unique_ptr<NoStatePrefetchContents> entry =
       no_state_prefetch_manager()->FindAndUseEntry(alias_url1);
@@ -978,7 +978,7 @@ TEST_F(PrerenderTest, DISABLED_AliasURLTest) {
   no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, alias_urls, FINAL_STATUS_USED);
-  EXPECT_TRUE(AddSimplePrerender(url));
+  EXPECT_TRUE(AddSimpleLinkTrigger(url));
   entry = no_state_prefetch_manager()->FindAndUseEntry(alias_url2);
   ASSERT_EQ(no_state_prefetch_contents, entry.get());
   no_state_prefetch_manager()->ClearPrefetchInformationForTesting();
@@ -986,7 +986,7 @@ TEST_F(PrerenderTest, DISABLED_AliasURLTest) {
   no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, alias_urls, FINAL_STATUS_USED);
-  EXPECT_TRUE(AddSimplePrerender(url));
+  EXPECT_TRUE(AddSimpleLinkTrigger(url));
   entry = no_state_prefetch_manager()->FindAndUseEntry(url);
   ASSERT_EQ(no_state_prefetch_contents, entry.get());
   no_state_prefetch_manager()->ClearPrefetchInformationForTesting();
@@ -995,10 +995,10 @@ TEST_F(PrerenderTest, DISABLED_AliasURLTest) {
   no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, alias_urls, FINAL_STATUS_USED);
-  EXPECT_TRUE(AddSimplePrerender(url));
-  EXPECT_TRUE(AddSimplePrerender(url));
-  EXPECT_TRUE(AddSimplePrerender(alias_url1));
-  EXPECT_TRUE(AddSimplePrerender(alias_url2));
+  EXPECT_TRUE(AddSimpleLinkTrigger(url));
+  EXPECT_TRUE(AddSimpleLinkTrigger(url));
+  EXPECT_TRUE(AddSimpleLinkTrigger(alias_url1));
+  EXPECT_TRUE(AddSimpleLinkTrigger(alias_url2));
   entry = no_state_prefetch_manager()->FindAndUseEntry(url);
   ASSERT_EQ(no_state_prefetch_contents, entry.get());
 }
@@ -1010,8 +1010,8 @@ TEST_F(PrerenderTest, SourceRenderViewClosed) {
   GURL url("http://www.google.com/");
   no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
       url, FINAL_STATUS_PROFILE_DESTROYED);
-  AddPrerender(url, url, 100, 200);
-  EXPECT_FALSE(LastPrerenderExists());
+  AddLinkTrigger(url, url, 100, 200);
+  EXPECT_FALSE(LastTriggerExists());
 }
 
 // Tests that prerendering is cancelled when we launch a second prerender of
@@ -1024,7 +1024,7 @@ TEST_F(PrerenderTest, RecentlyVisited) {
   DummyNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, FINAL_STATUS_RECENTLY_VISITED);
-  EXPECT_FALSE(AddSimplePrerender(url));
+  EXPECT_FALSE(AddSimpleLinkTrigger(url));
   EXPECT_FALSE(no_state_prefetch_contents->prerendering_has_started());
 }
 
@@ -1039,7 +1039,7 @@ TEST_F(PrerenderTest, NotSoRecentlyVisited) {
   DummyNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, FINAL_STATUS_USED);
-  EXPECT_TRUE(AddSimplePrerender(url));
+  EXPECT_TRUE(AddSimpleLinkTrigger(url));
   EXPECT_TRUE(no_state_prefetch_contents->prerendering_has_started());
   std::unique_ptr<NoStatePrefetchContents> entry =
       no_state_prefetch_manager()->FindAndUseEntry(url);
@@ -1053,7 +1053,7 @@ TEST_F(PrerenderTest, FragmentMatchesTest) {
   DummyNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           fragment_url, FINAL_STATUS_USED);
-  EXPECT_TRUE(AddSimplePrerender(fragment_url));
+  EXPECT_TRUE(AddSimpleLinkTrigger(fragment_url));
   EXPECT_TRUE(no_state_prefetch_contents->prerendering_has_started());
   std::unique_ptr<NoStatePrefetchContents> entry =
       no_state_prefetch_manager()->FindAndUseEntry(fragment_url);
@@ -1069,7 +1069,7 @@ TEST_F(PrerenderTest, FragmentsDifferTest) {
   DummyNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           fragment_url, FINAL_STATUS_USED);
-  EXPECT_TRUE(AddSimplePrerender(fragment_url));
+  EXPECT_TRUE(AddSimpleLinkTrigger(fragment_url));
   EXPECT_TRUE(no_state_prefetch_contents->prerendering_has_started());
 
   ASSERT_FALSE(no_state_prefetch_manager()->FindEntry(other_fragment_url));
@@ -1085,7 +1085,7 @@ TEST_F(PrerenderTest, ClearTest) {
   DummyNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, FINAL_STATUS_CACHE_OR_HISTORY_CLEARED);
-  EXPECT_TRUE(AddSimplePrerender(url));
+  EXPECT_TRUE(AddSimpleLinkTrigger(url));
   EXPECT_TRUE(no_state_prefetch_contents->prerendering_has_started());
   no_state_prefetch_manager()->ClearData(
       NoStatePrefetchManager::CLEAR_PRERENDER_CONTENTS);
@@ -1098,7 +1098,7 @@ TEST_F(PrerenderTest, CancelAllTest) {
   DummyNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, FINAL_STATUS_CANCELLED);
-  EXPECT_TRUE(AddSimplePrerender(url));
+  EXPECT_TRUE(AddSimpleLinkTrigger(url));
   EXPECT_TRUE(no_state_prefetch_contents->prerendering_has_started());
   no_state_prefetch_manager()->CancelAllPrerenders();
   EXPECT_FALSE(no_state_prefetch_manager()->FindEntry(url));
@@ -1235,7 +1235,7 @@ TEST_F(PrerenderTest, LinkRelStillAllowedWhenDisabled) {
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, url::Origin::Create(GURL("https://www.notgoogle.com")),
           ORIGIN_LINK_REL_PRERENDER_CROSSDOMAIN, FINAL_STATUS_USED);
-  EXPECT_TRUE(AddSimplePrerender(url));
+  EXPECT_TRUE(AddSimpleLinkTrigger(url));
   EXPECT_TRUE(no_state_prefetch_contents->prerendering_has_started());
   std::unique_ptr<NoStatePrefetchContents> entry =
       no_state_prefetch_manager()->FindAndUseEntry(url);
@@ -1255,7 +1255,7 @@ TEST_F(PrerenderTest, LinkRelAllowedOnCellular) {
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, url::Origin::Create(GURL("https://www.notexample.com")),
           ORIGIN_LINK_REL_PRERENDER_CROSSDOMAIN, FINAL_STATUS_USED);
-  EXPECT_TRUE(AddSimplePrerender(url));
+  EXPECT_TRUE(AddSimpleLinkTrigger(url));
   EXPECT_TRUE(no_state_prefetch_contents->prerendering_has_started());
   std::unique_ptr<NoStatePrefetchContents> entry =
       no_state_prefetch_manager()->FindAndUseEntry(url);
@@ -1397,14 +1397,14 @@ TEST_F(PrerenderTest, LinkManagerCancel) {
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, FINAL_STATUS_CANCELLED);
 
-  EXPECT_TRUE(AddSimplePrerender(url));
+  EXPECT_TRUE(AddSimpleLinkTrigger(url));
 
   EXPECT_TRUE(no_state_prefetch_contents->prerendering_has_started());
   EXPECT_FALSE(no_state_prefetch_contents->prerendering_has_been_cancelled());
   ASSERT_EQ(no_state_prefetch_contents,
             no_state_prefetch_manager()->FindEntry(url));
   EXPECT_FALSE(IsEmptyPrerenderLinkManager());
-  CancelLastPrerender();
+  CancelLastTrigger();
 
   EXPECT_TRUE(no_state_prefetch_contents->prerendering_has_been_cancelled());
   ASSERT_FALSE(no_state_prefetch_manager()->FindEntry(url));
@@ -1418,14 +1418,14 @@ TEST_F(PrerenderTest, LinkManagerAbandon) {
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, FINAL_STATUS_USED);
 
-  EXPECT_TRUE(AddSimplePrerender(url));
+  EXPECT_TRUE(AddSimpleLinkTrigger(url));
 
   EXPECT_TRUE(no_state_prefetch_contents->prerendering_has_started());
   EXPECT_FALSE(no_state_prefetch_contents->prerendering_has_been_cancelled());
   ASSERT_EQ(no_state_prefetch_contents,
             no_state_prefetch_manager()->FindEntry(url));
   EXPECT_FALSE(IsEmptyPrerenderLinkManager());
-  AbandonLastPrerender();
+  AbandonLastTrigger();
 
   EXPECT_FALSE(no_state_prefetch_contents->prerendering_has_been_cancelled());
   std::unique_ptr<NoStatePrefetchContents> entry =
@@ -1440,20 +1440,20 @@ TEST_F(PrerenderTest, LinkManagerAbandonThenCancel) {
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, FINAL_STATUS_CANCELLED);
 
-  EXPECT_TRUE(AddSimplePrerender(url));
+  EXPECT_TRUE(AddSimpleLinkTrigger(url));
 
   EXPECT_TRUE(no_state_prefetch_contents->prerendering_has_started());
   EXPECT_FALSE(no_state_prefetch_contents->prerendering_has_been_cancelled());
   ASSERT_EQ(no_state_prefetch_contents,
             no_state_prefetch_manager()->FindEntry(url));
   EXPECT_FALSE(IsEmptyPrerenderLinkManager());
-  AbandonLastPrerender();
+  AbandonLastTrigger();
 
   EXPECT_FALSE(no_state_prefetch_contents->prerendering_has_been_cancelled());
   ASSERT_EQ(no_state_prefetch_contents,
             no_state_prefetch_manager()->FindEntry(url));
 
-  CancelLastPrerender();
+  CancelLastTrigger();
   EXPECT_TRUE(IsEmptyPrerenderLinkManager());
   EXPECT_TRUE(no_state_prefetch_contents->prerendering_has_been_cancelled());
   ASSERT_FALSE(no_state_prefetch_manager()->FindEntry(url));
@@ -1476,24 +1476,24 @@ TEST_F(PrerenderTest, MAYBE_LinkManagerAddTwiceCancelTwice) {
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, FINAL_STATUS_CANCELLED);
 
-  EXPECT_TRUE(AddSimplePrerender(url));
+  EXPECT_TRUE(AddSimpleLinkTrigger(url));
 
   EXPECT_TRUE(no_state_prefetch_contents->prerendering_has_started());
   EXPECT_FALSE(no_state_prefetch_contents->prerendering_has_been_cancelled());
   EXPECT_EQ(no_state_prefetch_contents,
             no_state_prefetch_manager()->FindEntry(url));
-  EXPECT_TRUE(AddSimplePrerender(url));
+  EXPECT_TRUE(AddSimpleLinkTrigger(url));
 
   EXPECT_TRUE(no_state_prefetch_contents->prerendering_has_started());
   EXPECT_FALSE(no_state_prefetch_contents->prerendering_has_been_cancelled());
   EXPECT_EQ(no_state_prefetch_contents,
             no_state_prefetch_manager()->FindEntry(url));
-  CancelFirstPrerender();
+  CancelFirstTrigger();
 
   EXPECT_FALSE(no_state_prefetch_contents->prerendering_has_been_cancelled());
   EXPECT_EQ(no_state_prefetch_contents,
             no_state_prefetch_manager()->FindEntry(url));
-  CancelFirstPrerender();
+  CancelFirstTrigger();
 
   EXPECT_TRUE(IsEmptyPrerenderLinkManager());
   EXPECT_TRUE(no_state_prefetch_contents->prerendering_has_been_cancelled());
@@ -1511,24 +1511,24 @@ TEST_F(PrerenderTest, DISABLED_LinkManagerAddTwiceAbandonTwiceUseTwice) {
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, FINAL_STATUS_USED);
 
-  EXPECT_TRUE(AddSimplePrerender(url));
+  EXPECT_TRUE(AddSimpleLinkTrigger(url));
 
   EXPECT_TRUE(no_state_prefetch_contents->prerendering_has_started());
   EXPECT_FALSE(no_state_prefetch_contents->prerendering_has_been_cancelled());
   ASSERT_EQ(no_state_prefetch_contents,
             no_state_prefetch_manager()->FindEntry(url));
-  EXPECT_TRUE(AddSimplePrerender(url));
+  EXPECT_TRUE(AddSimpleLinkTrigger(url));
 
   EXPECT_TRUE(no_state_prefetch_contents->prerendering_has_started());
   EXPECT_FALSE(no_state_prefetch_contents->prerendering_has_been_cancelled());
   ASSERT_EQ(no_state_prefetch_contents,
             no_state_prefetch_manager()->FindEntry(url));
-  AbandonFirstPrerender();
+  AbandonFirstTrigger();
 
   EXPECT_FALSE(no_state_prefetch_contents->prerendering_has_been_cancelled());
   ASSERT_EQ(no_state_prefetch_contents,
             no_state_prefetch_manager()->FindEntry(url));
-  AbandonFirstPrerender();
+  AbandonFirstTrigger();
 
   EXPECT_FALSE(no_state_prefetch_contents->prerendering_has_been_cancelled());
   std::unique_ptr<NoStatePrefetchContents> entry =
@@ -1549,7 +1549,7 @@ TEST_F(PrerenderTest, LinkManagerExpireThenCancel) {
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, FINAL_STATUS_TIMED_OUT);
 
-  EXPECT_TRUE(AddSimplePrerender(url));
+  EXPECT_TRUE(AddSimpleLinkTrigger(url));
 
   EXPECT_TRUE(no_state_prefetch_contents->prerendering_has_started());
   EXPECT_FALSE(no_state_prefetch_contents->prerendering_has_been_cancelled());
@@ -1574,7 +1574,7 @@ TEST_F(PrerenderTest, LinkManagerExpireThenAddAgain) {
   DummyNoStatePrefetchContents* first_no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, FINAL_STATUS_TIMED_OUT);
-  EXPECT_TRUE(AddSimplePrerender(url));
+  EXPECT_TRUE(AddSimpleLinkTrigger(url));
   EXPECT_TRUE(first_no_state_prefetch_contents->prerendering_has_started());
   EXPECT_FALSE(
       first_no_state_prefetch_contents->prerendering_has_been_cancelled());
@@ -1587,7 +1587,7 @@ TEST_F(PrerenderTest, LinkManagerExpireThenAddAgain) {
   DummyNoStatePrefetchContents* second_no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, FINAL_STATUS_USED);
-  EXPECT_TRUE(AddSimplePrerender(url));
+  EXPECT_TRUE(AddSimpleLinkTrigger(url));
   EXPECT_TRUE(second_no_state_prefetch_contents->prerendering_has_started());
   std::unique_ptr<NoStatePrefetchContents> entry =
       no_state_prefetch_manager()->FindAndUseEntry(url);
@@ -1601,13 +1601,13 @@ TEST_F(PrerenderTest, DISABLED_LinkManagerCancelThenAddAgain) {
   DummyNoStatePrefetchContents* first_no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, FINAL_STATUS_CANCELLED);
-  EXPECT_TRUE(AddSimplePrerender(url));
+  EXPECT_TRUE(AddSimpleLinkTrigger(url));
   EXPECT_TRUE(first_no_state_prefetch_contents->prerendering_has_started());
   EXPECT_FALSE(
       first_no_state_prefetch_contents->prerendering_has_been_cancelled());
   ASSERT_EQ(first_no_state_prefetch_contents,
             no_state_prefetch_manager()->FindEntry(url));
-  CancelLastPrerender();
+  CancelLastTrigger();
   EXPECT_TRUE(IsEmptyPrerenderLinkManager());
   EXPECT_TRUE(
       first_no_state_prefetch_contents->prerendering_has_been_cancelled());
@@ -1617,7 +1617,7 @@ TEST_F(PrerenderTest, DISABLED_LinkManagerCancelThenAddAgain) {
   // new attempt to prefetch should return as duplicate.
   no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
       url, FINAL_STATUS_PROFILE_DESTROYED);
-  EXPECT_FALSE(AddSimplePrerender(url));
+  EXPECT_FALSE(AddSimpleLinkTrigger(url));
   EXPECT_FALSE(no_state_prefetch_manager()->FindEntry(url));
 }
 
@@ -1633,10 +1633,10 @@ TEST_F(PrerenderTest, DISABLED_LinkManagerAbandonInactivePrerender) {
   DummyNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           first_url, FINAL_STATUS_TIMED_OUT);
-  EXPECT_TRUE(AddSimplePrerender(first_url));
+  EXPECT_TRUE(AddSimpleLinkTrigger(first_url));
 
   GURL second_url("http://www.neverlaunched.com");
-  EXPECT_FALSE(AddSimplePrerender(second_url));
+  EXPECT_FALSE(AddSimpleLinkTrigger(second_url));
 
   EXPECT_FALSE(IsEmptyPrerenderLinkManager());
 
@@ -1644,8 +1644,8 @@ TEST_F(PrerenderTest, DISABLED_LinkManagerAbandonInactivePrerender) {
             no_state_prefetch_manager()->FindEntry(first_url));
   EXPECT_FALSE(no_state_prefetch_manager()->FindEntry(second_url));
 
-  AbandonFirstPrerender();
-  AbandonFirstPrerender();
+  AbandonFirstTrigger();
+  AbandonFirstTrigger();
 
   tick_clock()->Advance(
       no_state_prefetch_manager()->config().abandon_time_to_live +
@@ -1667,10 +1667,10 @@ TEST_F(PrerenderTest, LinkManagerWaitToLaunchNotLaunched) {
   DummyNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           first_url, FINAL_STATUS_USED);
-  EXPECT_TRUE(AddSimplePrerender(first_url));
+  EXPECT_TRUE(AddSimpleLinkTrigger(first_url));
 
   GURL second_url("http://www.neverlaunched.com");
-  EXPECT_FALSE(AddSimplePrerender(second_url));
+  EXPECT_FALSE(AddSimpleLinkTrigger(second_url));
 
   EXPECT_FALSE(IsEmptyPrerenderLinkManager());
 
@@ -1705,7 +1705,7 @@ TEST_F(PrerenderTest, LinkManagerExpireRevealingLaunch) {
   DummyNoStatePrefetchContents* first_no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           first_url, FINAL_STATUS_TIMED_OUT);
-  EXPECT_TRUE(AddSimplePrerender(first_url));
+  EXPECT_TRUE(AddSimpleLinkTrigger(first_url));
   EXPECT_EQ(first_no_state_prefetch_contents,
             no_state_prefetch_manager()->FindEntry(first_url));
 
@@ -1730,7 +1730,7 @@ TEST_F(PrerenderTest, LinkManagerExpireRevealingLaunch) {
   DummyNoStatePrefetchContents* second_no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           second_url, FINAL_STATUS_USED);
-  EXPECT_FALSE(AddSimplePrerender(second_url));
+  EXPECT_FALSE(AddSimpleLinkTrigger(second_url));
 
   // The first prerender is still running, but the second has not yet launched.
   EXPECT_EQ(first_no_state_prefetch_contents,
@@ -1777,7 +1777,7 @@ TEST_F(PrerenderTest, NoPrerenderInSingleProcess) {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   ASSERT_TRUE(command_line != nullptr);
   command_line->AppendSwitch(switches::kSingleProcess);
-  EXPECT_FALSE(AddSimplePrerender(url));
+  EXPECT_FALSE(AddSimpleLinkTrigger(url));
   histogram_tester().ExpectUniqueSample("Prerender.FinalStatus",
                                         FINAL_STATUS_SINGLE_PROCESS, 1);
 }

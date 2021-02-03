@@ -41,14 +41,14 @@ namespace prerender {
 
 namespace {
 
-int GetNextPrerenderId() {
+int GetNextLinkTriggerId() {
   static int next_id = 1;
   return next_id++;
 }
 
 }  // namespace
 
-PrerenderLinkManager::LinkPrerender::LinkPrerender(
+PrerenderLinkManager::LinkTrigger::LinkTrigger(
     int launcher_render_process_id,
     int launcher_render_view_id,
     blink::mojom::PrerenderAttributesPtr attributes,
@@ -65,9 +65,9 @@ PrerenderLinkManager::LinkPrerender::LinkPrerender(
       creation_time(creation_time),
       deferred_launcher(deferred_launcher),
       has_been_abandoned(false),
-      prerender_id(GetNextPrerenderId()) {}
+      link_trigger_id(GetNextLinkTriggerId()) {}
 
-PrerenderLinkManager::LinkPrerender::~LinkPrerender() {
+PrerenderLinkManager::LinkTrigger::~LinkTrigger() {
   DCHECK_EQ(nullptr, handle.get())
       << "The NoStatePrefetchHandle should be destroyed before its Prerender.";
 }
@@ -76,17 +76,17 @@ PrerenderLinkManager::PrerenderLinkManager(NoStatePrefetchManager* manager)
     : has_shutdown_(false), manager_(manager) {}
 
 PrerenderLinkManager::~PrerenderLinkManager() {
-  for (auto& prerender : prerenders_) {
-    if (prerender->handle) {
-      DCHECK(!prerender->handle->IsPrefetching())
+  for (auto& trigger : triggers_) {
+    if (trigger->handle) {
+      DCHECK(!trigger->handle->IsPrefetching())
           << "All running prefetchers should stop at the same time as the "
           << "NoStatePrefetchManager.";
-      prerender->handle.reset();
+      trigger->handle.reset();
     }
   }
 }
 
-base::Optional<int> PrerenderLinkManager::OnStartPrerender(
+base::Optional<int> PrerenderLinkManager::OnStartLinkTrigger(
     int launcher_render_process_id,
     int launcher_render_view_id,
     blink::mojom::PrerenderAttributesPtr attributes,
@@ -115,102 +115,101 @@ base::Optional<int> PrerenderLinkManager::OnStartPrerender(
     return base::nullopt;
   }
 
-  auto prerender = std::make_unique<LinkPrerender>(
+  auto trigger = std::make_unique<LinkTrigger>(
       launcher_render_process_id, launcher_render_view_id,
       std::move(attributes), initiator_origin, manager_->GetCurrentTimeTicks(),
       no_state_prefetch_contents);
 
   // Stash pointer used only for comparison later.
-  const LinkPrerender* prerender_ptr = prerender.get();
+  const LinkTrigger* trigger_ptr = trigger.get();
 
-  prerenders_.push_back(std::move(prerender));
+  triggers_.push_back(std::move(trigger));
 
   if (!no_state_prefetch_contents)
-    StartPrerenders();
+    StartLinkTriggers();
 
-  // Check if the prerender we added is still at the end of the list. It
-  // may have been discarded by StartPrerenders().
-  if (!prerenders_.empty() && prerenders_.back().get() == prerender_ptr)
-    return prerender_ptr->prerender_id;
+  // Check if the trigger we added is still at the end of the list. It
+  // may have been discarded by StartLinkTriggers().
+  if (!triggers_.empty() && triggers_.back().get() == trigger_ptr)
+    return trigger_ptr->link_trigger_id;
   return base::nullopt;
 }
 
-void PrerenderLinkManager::OnCancelPrerender(int prerender_id) {
-  LinkPrerender* prerender = FindByPrerenderId(prerender_id);
-  if (!prerender)
+void PrerenderLinkManager::OnCancelLinkTrigger(int link_trigger_id) {
+  LinkTrigger* trigger = FindByLinkTriggerId(link_trigger_id);
+  if (!trigger)
     return;
-  CancelPrerender(prerender);
-  StartPrerenders();
+  CancelLinkTrigger(trigger);
+  StartLinkTriggers();
 }
 
-void PrerenderLinkManager::OnAbandonPrerender(int prerender_id) {
-  LinkPrerender* prerender = FindByPrerenderId(prerender_id);
-  if (!prerender)
+void PrerenderLinkManager::OnAbandonLinkTrigger(int link_trigger_id) {
+  LinkTrigger* trigger = FindByLinkTriggerId(link_trigger_id);
+  if (!trigger)
     return;
 
-  if (!prerender->handle) {
-    RemovePrerender(prerender);
+  if (!trigger->handle) {
+    RemoveLinkTrigger(trigger);
     return;
   }
 
-  prerender->has_been_abandoned = true;
-  prerender->handle->OnNavigateAway();
-  DCHECK(prerender->handle);
+  trigger->has_been_abandoned = true;
+  trigger->handle->OnNavigateAway();
+  DCHECK(trigger->handle);
 
   // If the prefetcher is not running, remove it from the list so it does not
   // leak. If it is running, it will send a cancel event when it stops which
   // will remove it.
-  if (!prerender->handle->IsPrefetching())
-    RemovePrerender(prerender);
+  if (!trigger->handle->IsPrefetching())
+    RemoveLinkTrigger(trigger);
 }
 
 bool PrerenderLinkManager::IsEmpty() const {
-  return prerenders_.empty();
+  return triggers_.empty();
 }
 
-bool PrerenderLinkManager::PrerenderIsRunningForTesting(
-    LinkPrerender* prerender) const {
-  return prerender->handle.get() != nullptr;
+bool PrerenderLinkManager::TriggerIsRunningForTesting(
+    LinkTrigger* trigger) const {
+  return trigger->handle.get() != nullptr;
 }
 
-size_t PrerenderLinkManager::CountRunningPrerenders() const {
-  return std::count_if(prerenders_.begin(), prerenders_.end(),
-                       [](const std::unique_ptr<LinkPrerender>& prerender) {
-                         return prerender->handle &&
-                                prerender->handle->IsPrefetching();
+size_t PrerenderLinkManager::CountRunningTriggers() const {
+  return std::count_if(triggers_.begin(), triggers_.end(),
+                       [](const std::unique_ptr<LinkTrigger>& trigger) {
+                         return trigger->handle &&
+                                trigger->handle->IsPrefetching();
                        });
 }
 
-void PrerenderLinkManager::StartPrerenders() {
+void PrerenderLinkManager::StartLinkTriggers() {
   if (has_shutdown_)
     return;
 
-  size_t total_started_prerender_count = 0;
-  std::list<LinkPrerender*> abandoned_prerenders;
-  std::list<std::list<std::unique_ptr<LinkPrerender>>::iterator>
-      pending_prerenders;
+  size_t total_started_trigger_count = 0;
+  std::list<LinkTrigger*> abandoned_triggers;
+  std::list<std::list<std::unique_ptr<LinkTrigger>>::iterator> pending_triggers;
   std::multiset<std::pair<int, int>> running_launcher_and_render_view_routes;
 
-  // Scan the list, counting how many prerenders have handles (and so were added
+  // Scan the list, counting how many prefetches have handles (and so were added
   // to the NoStatePrefetchManager). The count is done for the system as a
   // whole, and also per launcher.
-  for (auto it = prerenders_.begin(); it != prerenders_.end(); ++it) {
-    std::unique_ptr<LinkPrerender>& prerender = *it;
-    // Skip prerenders launched by a prerender.
-    if (prerender->deferred_launcher)
+  for (auto it = triggers_.begin(); it != triggers_.end(); ++it) {
+    std::unique_ptr<LinkTrigger>& trigger = *it;
+    // Skip triggers launched by a trigger.
+    if (trigger->deferred_launcher)
       continue;
-    if (!prerender->handle) {
-      pending_prerenders.push_back(it);
+    if (!trigger->handle) {
+      pending_triggers.push_back(it);
     } else {
-      ++total_started_prerender_count;
-      if (prerender->has_been_abandoned) {
-        abandoned_prerenders.push_back(prerender.get());
+      ++total_started_trigger_count;
+      if (trigger->has_been_abandoned) {
+        abandoned_triggers.push_back(trigger.get());
       } else {
-        // We do not count abandoned prerenders towards their launcher, since it
+        // We do not count abandoned prefetches towards their launcher, since it
         // has already navigated on to another page.
         std::pair<int, int> launcher_and_render_view_route(
-            prerender->launcher_render_process_id,
-            prerender->launcher_render_view_id);
+            trigger->launcher_render_process_id,
+            trigger->launcher_render_view_id);
         running_launcher_and_render_view_routes.insert(
             launcher_and_render_view_route);
         DCHECK_GE(manager_->config().max_link_concurrency_per_launcher,
@@ -219,113 +218,113 @@ void PrerenderLinkManager::StartPrerenders() {
       }
     }
   }
-  DCHECK_LE(abandoned_prerenders.size(), total_started_prerender_count);
+  DCHECK_LE(abandoned_triggers.size(), total_started_trigger_count);
   DCHECK_GE(manager_->config().max_link_concurrency,
-            total_started_prerender_count);
-  DCHECK_LE(CountRunningPrerenders(), total_started_prerender_count);
+            total_started_trigger_count);
+  DCHECK_LE(CountRunningTriggers(), total_started_trigger_count);
 
   TimeTicks now = manager_->GetCurrentTimeTicks();
 
-  // Scan the pending prerenders, starting prerenders as we can.
-  for (const std::list<std::unique_ptr<LinkPrerender>>::iterator& it :
-       pending_prerenders) {
-    LinkPrerender* pending_prerender = it->get();
+  // Scan the pending triggers, starting triggers as we can.
+  for (const std::list<std::unique_ptr<LinkTrigger>>::iterator& it :
+       pending_triggers) {
+    LinkTrigger* pending_trigger = it->get();
 
-    TimeDelta prerender_age = now - pending_prerender->creation_time;
-    if (prerender_age >= manager_->config().max_wait_to_launch) {
-      // This prerender waited too long in the queue before launching.
-      prerenders_.erase(it);
+    TimeDelta trigger_age = now - pending_trigger->creation_time;
+    if (trigger_age >= manager_->config().max_wait_to_launch) {
+      // This trigger waited too long in the queue before launching.
+      triggers_.erase(it);
       continue;
     }
 
     std::pair<int, int> launcher_and_render_view_route(
-        pending_prerender->launcher_render_process_id,
-        pending_prerender->launcher_render_view_id);
+        pending_trigger->launcher_render_process_id,
+        pending_trigger->launcher_render_view_id);
     if (manager_->config().max_link_concurrency_per_launcher <=
         running_launcher_and_render_view_routes.count(
             launcher_and_render_view_route)) {
-      // This prerender's launcher is already at its limit.
+      // This trigger's launcher is already at its limit.
       continue;
     }
 
-    if (total_started_prerender_count >=
+    if (total_started_trigger_count >=
             manager_->config().max_link_concurrency ||
-        total_started_prerender_count >= prerenders_.size()) {
+        total_started_trigger_count >= triggers_.size()) {
       // The system is already at its prerender concurrency limit. Try removing
-      // an abandoned prerender, if one exists, to make room.
-      if (abandoned_prerenders.empty())
+      // an abandoned trigger, if one exists, to make room.
+      if (abandoned_triggers.empty())
         return;
 
-      CancelPrerender(abandoned_prerenders.front());
-      --total_started_prerender_count;
-      abandoned_prerenders.pop_front();
+      CancelLinkTrigger(abandoned_triggers.front());
+      --total_started_trigger_count;
+      abandoned_triggers.pop_front();
     }
 
     std::unique_ptr<NoStatePrefetchHandle> handle =
         manager_->AddPrerenderFromLinkRelPrerender(
-            pending_prerender->launcher_render_process_id,
-            pending_prerender->launcher_render_view_id, pending_prerender->url,
-            pending_prerender->rel_type, pending_prerender->referrer,
-            pending_prerender->initiator_origin, pending_prerender->size);
+            pending_trigger->launcher_render_process_id,
+            pending_trigger->launcher_render_view_id, pending_trigger->url,
+            pending_trigger->rel_type, pending_trigger->referrer,
+            pending_trigger->initiator_origin, pending_trigger->size);
     if (!handle) {
-      // This prerender couldn't be launched, it's gone.
-      prerenders_.erase(it);
+      // This trigger couldn't be launched, it's gone.
+      triggers_.erase(it);
       continue;
     }
 
     if (handle->IsPrefetching()) {
       // We have successfully started a new prefetcher.
-      pending_prerender->handle = std::move(handle);
-      ++total_started_prerender_count;
-      pending_prerender->handle->SetObserver(this);
+      pending_trigger->handle = std::move(handle);
+      ++total_started_trigger_count;
+      pending_trigger->handle->SetObserver(this);
       running_launcher_and_render_view_routes.insert(
           launcher_and_render_view_route);
     } else {
-      prerenders_.erase(it);
+      triggers_.erase(it);
     }
   }
 }
 
-PrerenderLinkManager::LinkPrerender*
+PrerenderLinkManager::LinkTrigger*
 PrerenderLinkManager::FindByNoStatePrefetchHandle(
     NoStatePrefetchHandle* no_state_prefetch_handle) {
   DCHECK(no_state_prefetch_handle);
-  for (auto& prerender : prerenders_) {
-    if (prerender->handle.get() == no_state_prefetch_handle)
-      return prerender.get();
+  for (auto& trigger : triggers_) {
+    if (trigger->handle.get() == no_state_prefetch_handle)
+      return trigger.get();
   }
   return nullptr;
 }
 
-PrerenderLinkManager::LinkPrerender* PrerenderLinkManager::FindByPrerenderId(
-    int prerender_id) {
-  for (auto& prerender : prerenders_) {
-    if (prerender->prerender_id == prerender_id)
-      return prerender.get();
+PrerenderLinkManager::LinkTrigger* PrerenderLinkManager::FindByLinkTriggerId(
+    int link_trigger_id) {
+  for (auto& trigger : triggers_) {
+    if (trigger->link_trigger_id == link_trigger_id)
+      return trigger.get();
   }
   return nullptr;
 }
 
-void PrerenderLinkManager::RemovePrerender(LinkPrerender* prerender) {
-  for (auto it = prerenders_.begin(); it != prerenders_.end(); ++it) {
-    LinkPrerender* current_prerender = it->get();
-    if (current_prerender == prerender) {
+void PrerenderLinkManager::RemoveLinkTrigger(LinkTrigger* trigger) {
+  for (auto it = triggers_.begin(); it != triggers_.end(); ++it) {
+    LinkTrigger* current_trigger = it->get();
+    if (current_trigger == trigger) {
       std::unique_ptr<NoStatePrefetchHandle> own_handle =
-          std::move(prerender->handle);
-      prerenders_.erase(it);
+          std::move(trigger->handle);
+      triggers_.erase(it);
       return;
     }
   }
   NOTREACHED();
 }
 
-void PrerenderLinkManager::CancelPrerender(LinkPrerender* prerender) {
-  for (auto it = prerenders_.begin(); it != prerenders_.end(); ++it) {
-    LinkPrerender* current_prerender = it->get();
-    if (current_prerender == prerender) {
+void PrerenderLinkManager::CancelLinkTrigger(LinkTrigger* trigger) {
+  for (auto it = triggers_.begin(); it != triggers_.end(); ++it) {
+    LinkTrigger* current_trigger = it->get();
+    if (current_trigger == trigger) {
       std::unique_ptr<NoStatePrefetchHandle> own_handle =
-          std::move(prerender->handle);
-      prerenders_.erase(it);
+          std::move(trigger->handle);
+      triggers_.erase(it);
       if (own_handle)
         own_handle->OnCancel();
       return;
@@ -340,12 +339,11 @@ void PrerenderLinkManager::Shutdown() {
 
 void PrerenderLinkManager::OnPrefetchStop(
     NoStatePrefetchHandle* no_state_prefetch_handle) {
-  LinkPrerender* prerender =
-      FindByNoStatePrefetchHandle(no_state_prefetch_handle);
-  if (!prerender)
+  LinkTrigger* trigger = FindByNoStatePrefetchHandle(no_state_prefetch_handle);
+  if (!trigger)
     return;
-  RemovePrerender(prerender);
-  StartPrerenders();
+  RemoveLinkTrigger(trigger);
+  StartLinkTriggers();
 }
 
 void PrerenderLinkManager::OnPrefetchNetworkBytesChanged(

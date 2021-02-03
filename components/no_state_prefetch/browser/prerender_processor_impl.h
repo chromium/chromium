@@ -51,9 +51,9 @@ class PrerenderProcessorImpl : public blink::mojom::PrerenderProcessor {
   const url::Origin initiator_origin_;
   const std::unique_ptr<PrerenderProcessorImplDelegate> delegate_;
 
-  // The ID of PrerenderLinkManager::LinkPrerender. Used for canceling or
+  // The ID of PrerenderLinkManager::LinkTrigger. Used for canceling or
   // abandoning prerendering.
-  base::Optional<int> prerender_id_;
+  base::Optional<int> link_trigger_id_;
 
   mojo::Receiver<blink::mojom::PrerenderProcessor> receiver_{this};
 };

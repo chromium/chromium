@@ -19,24 +19,24 @@ class MockPrerenderLinkManager final : public PrerenderLinkManager {
  public:
   MockPrerenderLinkManager() : PrerenderLinkManager(/*manager=*/nullptr) {}
 
-  base::Optional<int> OnStartPrerender(
+  base::Optional<int> OnStartLinkTrigger(
       int launcher_render_process_id,
       int launcher_render_view_id,
       blink::mojom::PrerenderAttributesPtr attributes,
       const url::Origin& initiator_origin) override {
     DCHECK(!is_start_called_);
     is_start_called_ = true;
-    return prerender_id_;
+    return link_trigger_id_;
   }
 
-  void OnCancelPrerender(int prerender_id) override {
-    DCHECK_EQ(prerender_id_, prerender_id);
+  void OnCancelLinkTrigger(int link_trigger_id) override {
+    DCHECK_EQ(link_trigger_id_, link_trigger_id);
     DCHECK(!is_cancel_called_);
     is_cancel_called_ = true;
   }
 
-  void OnAbandonPrerender(int prerender_id) override {
-    DCHECK_EQ(prerender_id_, prerender_id);
+  void OnAbandonLinkTrigger(int link_trigger_id) override {
+    DCHECK_EQ(link_trigger_id_, link_trigger_id);
     DCHECK(!is_abandon_called_);
     is_abandon_called_ = true;
   }
@@ -46,7 +46,7 @@ class MockPrerenderLinkManager final : public PrerenderLinkManager {
   bool is_abandon_called() const { return is_abandon_called_; }
 
  private:
-  const int prerender_id_ = 100;
+  const int link_trigger_id_ = 100;
   bool is_start_called_ = false;
   bool is_cancel_called_ = false;
   bool is_abandon_called_ = false;

@@ -53,7 +53,7 @@ void PrerenderProcessorImpl::Start(
   }
 
   // Start() must be called only one time.
-  if (prerender_id_) {
+  if (link_trigger_id_) {
     mojo::ReportBadMessage("PPI_START_TWICE");
     return;
   }
@@ -67,26 +67,26 @@ void PrerenderProcessorImpl::Start(
   if (!link_manager)
     return;
 
-  DCHECK(!prerender_id_);
-  prerender_id_ = link_manager->OnStartPrerender(
+  DCHECK(!link_trigger_id_);
+  link_trigger_id_ = link_manager->OnStartLinkTrigger(
       render_process_id_,
       render_frame_host->GetRenderViewHost()->GetRoutingID(),
       std::move(attributes), initiator_origin_);
 }
 
 void PrerenderProcessorImpl::Cancel() {
-  if (!prerender_id_)
+  if (!link_trigger_id_)
     return;
   auto* link_manager = GetPrerenderLinkManager();
   if (link_manager)
-    link_manager->OnCancelPrerender(*prerender_id_);
+    link_manager->OnCancelLinkTrigger(*link_trigger_id_);
 }
 
 void PrerenderProcessorImpl::Abandon() {
-  if (prerender_id_) {
+  if (link_trigger_id_) {
     auto* link_manager = GetPrerenderLinkManager();
     if (link_manager)
-      link_manager->OnAbandonPrerender(*prerender_id_);
+      link_manager->OnAbandonLinkTrigger(*link_trigger_id_);
   }
   delete this;
 }

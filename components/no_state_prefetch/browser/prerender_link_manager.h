@@ -38,9 +38,9 @@ class PrerenderLinkManager : public KeyedService,
   ~PrerenderLinkManager() override;
 
   // Called when a <link rel=prerender ...> element has been inserted into the
-  // document. Returns the prerender id that is used for canceling or abandoning
-  // prerendering. Returns base::nullopt if the prerender was not started.
-  virtual base::Optional<int> OnStartPrerender(
+  // document. Returns the link trigger id that is used for canceling or
+  // abandoning prefetch. Returns base::nullopt if the prefetch was not started.
+  virtual base::Optional<int> OnStartLinkTrigger(
       int launcher_render_process_id,
       int launcher_render_view_id,
       blink::mojom::PrerenderAttributesPtr attributes,
@@ -48,13 +48,13 @@ class PrerenderLinkManager : public KeyedService,
 
   // Called when a <link rel=prerender ...> element has been explicitly removed
   // from a document.
-  virtual void OnCancelPrerender(int prerender_id);
+  virtual void OnCancelLinkTrigger(int link_trigger_id);
 
   // Called when a renderer launching <link rel=prerender ...> has navigated
   // away from the launching page, the launching renderer process has crashed,
   // or perhaps the renderer process was fast-closed when the last render view
   // in it was closed.
-  virtual void OnAbandonPrerender(int prerender_id);
+  virtual void OnAbandonLinkTrigger(int link_trigger_id);
 
  private:
   friend class PrerenderBrowserTest;
@@ -62,22 +62,21 @@ class PrerenderLinkManager : public KeyedService,
   // WebViewTest.NoPrerenderer needs to access the private IsEmpty() method.
   FRIEND_TEST_ALL_PREFIXES(::WebViewTest, NoPrerenderer);
 
-  class PendingNoStatePrefetchManager;
+  // Used to store state about a <link rel=prerender ...> that triggers
+  // NoStatePrefetch.
+  struct LinkTrigger {
+    LinkTrigger(int launcher_render_process_id,
+                int launcher_render_view_id,
+                blink::mojom::PrerenderAttributesPtr attributes,
+                const url::Origin& initiator_origin,
+                base::TimeTicks creation_time,
+                NoStatePrefetchContents* deferred_launcher);
+    ~LinkTrigger();
 
-  // Used to store state about a requested prerender.
-  struct LinkPrerender {
-    LinkPrerender(int launcher_render_process_id,
-                  int launcher_render_view_id,
-                  blink::mojom::PrerenderAttributesPtr attributes,
-                  const url::Origin& initiator_origin,
-                  base::TimeTicks creation_time,
-                  NoStatePrefetchContents* deferred_launcher);
-    ~LinkPrerender();
+    LinkTrigger(const LinkTrigger& other) = delete;
+    LinkTrigger& operator=(const LinkTrigger& other) = delete;
 
-    LinkPrerender(const LinkPrerender& other) = delete;
-    LinkPrerender& operator=(const LinkPrerender& other) = delete;
-
-    // Parameters from PrerenderLinkManager::OnStartPrerender():
+    // Parameters from PrerenderLinkManager::OnStartLinkTrigger():
     const int launcher_render_process_id;
     const int launcher_render_view_id;
     const GURL url;
@@ -86,48 +85,48 @@ class PrerenderLinkManager : public KeyedService,
     const url::Origin initiator_origin;
     const gfx::Size size;
 
-    // The time at which this Prerender was added to PrerenderLinkManager.
+    // The time at which this trigger was added to PrerenderLinkManager.
     const base::TimeTicks creation_time;
 
-    // If non-null, this link prerender was launched by an unswapped prerender,
+    // If non-null, this trigger was launched by an unswapped prefetcher,
     // |deferred_launcher|. When |deferred_launcher| is swapped in, the field is
     // set to null.
     const NoStatePrefetchContents* deferred_launcher;
 
-    // Initially null, |handle| is set once we start this prerender. It is owned
+    // Initially null, |handle| is set once we start this trigger. It is owned
     // by this struct, and must be deleted before destructing this struct.
     std::unique_ptr<NoStatePrefetchHandle> handle;
 
-    // True if this prerender has been abandoned by its launcher.
+    // True if this trigger has been abandoned by its launcher.
     bool has_been_abandoned;
 
-    // The unique ID of this prerender. Used for canceling or abandoning
-    // prerendering.
-    const int prerender_id;
+    // The unique ID of this trigger. Used for canceling or abandoning
+    // prefetching.
+    const int link_trigger_id;
   };
 
   bool IsEmpty() const;
 
-  bool PrerenderIsRunningForTesting(LinkPrerender* link_prerender) const;
+  bool TriggerIsRunningForTesting(LinkTrigger* link_trigger) const;
 
-  // Returns a count of currently running prerenders.
-  size_t CountRunningPrerenders() const;
+  // Returns a count of currently running triggers.
+  size_t CountRunningTriggers() const;
 
-  // Start any prerenders that can be started, respecting concurrency limits for
+  // Start any triggers that can be started, respecting concurrency limits for
   // the system and per launcher.
-  void StartPrerenders();
+  void StartLinkTriggers();
 
-  LinkPrerender* FindByNoStatePrefetchHandle(
+  LinkTrigger* FindByNoStatePrefetchHandle(
       NoStatePrefetchHandle* no_state_prefetch_handle);
-  LinkPrerender* FindByPrerenderId(int prerender_id);
+  LinkTrigger* FindByLinkTriggerId(int link_trigger_id);
 
-  // Removes |prerender| from the the prerender link manager. Deletes the
+  // Removes |trigger| from the the prerender link manager. Deletes the
   // NoStatePrefetchHandle as needed.
-  void RemovePrerender(LinkPrerender* prerender);
+  void RemoveLinkTrigger(LinkTrigger* trigger);
 
-  // Cancels |prerender| and removes |prerender| from the prerender link
+  // Cancels |trigger| and removes |trigger| from the prerender link
   // manager.
-  void CancelPrerender(LinkPrerender* prerender);
+  void CancelLinkTrigger(LinkTrigger* trigger);
 
   // From KeyedService:
   void Shutdown() override;
@@ -141,10 +140,10 @@ class PrerenderLinkManager : public KeyedService,
 
   NoStatePrefetchManager* const manager_;
 
-  // All prerenders known to this PrerenderLinkManager. Insertions are always
-  // made at the back, so the oldest prerender is at the front, and the youngest
-  // at the back. Using std::unique_ptr<> here as LinkPrerender is not copyable.
-  std::list<std::unique_ptr<LinkPrerender>> prerenders_;
+  // All triggers known to this PrerenderLinkManager. Insertions are always
+  // made at the back, so the oldest trigger is at the front, and the youngest
+  // at the back. Using std::unique_ptr<> here as LinkTrigger is not copyable.
+  std::list<std::unique_ptr<LinkTrigger>> triggers_;
 
   DISALLOW_COPY_AND_ASSIGN(PrerenderLinkManager);
 };
