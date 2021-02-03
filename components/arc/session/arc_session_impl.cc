@@ -50,9 +50,6 @@ namespace arc {
 
 namespace {
 
-constexpr char kArcBridgeSocketPath[] = "/run/chrome/arc_bridge.sock";
-constexpr char kArcBridgeSocketGroup[] = "arc-bridge";
-
 constexpr char kOn[] = "on";
 constexpr char kOff[] = "off";
 
@@ -249,7 +246,27 @@ std::unique_ptr<ArcClientAdapter> ArcSessionDelegateImpl::CreateClient() {
 
 // static
 base::ScopedFD ArcSessionDelegateImpl::CreateSocketInternal() {
-  auto endpoint = mojo::NamedPlatformChannel({kArcBridgeSocketPath});
+  constexpr char kArcBridgeSocketPath[] = "/run/chrome/arc_bridge.sock";
+  constexpr char kArcVmBridgeSocketPath[] = "/run/chrome/arc/arc_bridge.sock";
+  constexpr char kArcBridgeSocketGroup[] = "arc-bridge";
+
+  const base::FilePath socket_path(IsArcVmEnabled() ? kArcVmBridgeSocketPath
+                                                    : kArcBridgeSocketPath);
+  if (IsArcVmEnabled()) {
+    base::File::Error error;
+    const base::FilePath socket_dir(socket_path.DirName());
+    if (!base::CreateDirectoryAndGetError(socket_dir, &error)) {
+      LOG(ERROR) << "Failed to create " << socket_dir << ": "
+                 << base::File::ErrorToString(error);
+      return base::ScopedFD();
+    }
+    if (!base::SetPosixFilePermissions(socket_dir, 0700)) {
+      PLOG(ERROR) << "Could not set permissions: " << socket_dir;
+      return base::ScopedFD();
+    }
+  }
+
+  auto endpoint = mojo::NamedPlatformChannel({socket_path.value()});
   // TODO(cmtm): use NamedPlatformChannel to bootstrap mojo connection after
   // libchrome uprev in android.
   base::ScopedFD socket_fd =
@@ -281,15 +298,15 @@ base::ScopedFD ArcSessionDelegateImpl::CreateSocketInternal() {
       return base::ScopedFD();
     }
 
-    if (chown(kArcBridgeSocketPath, -1, arc_bridge_group.gr_gid) < 0) {
+    if (chown(socket_path.value().c_str(), -1, arc_bridge_group.gr_gid) < 0) {
       PLOG(ERROR) << "chown failed";
       return base::ScopedFD();
     }
   }
 
-  if (!base::SetPosixFilePermissions(base::FilePath(kArcBridgeSocketPath),
+  if (!base::SetPosixFilePermissions(socket_path,
                                      IsArcVmEnabled() ? 0600 : 0660)) {
-    PLOG(ERROR) << "Could not set permissions: " << kArcBridgeSocketPath;
+    PLOG(ERROR) << "Could not set permissions: " << socket_path;
     return base::ScopedFD();
   }
 
