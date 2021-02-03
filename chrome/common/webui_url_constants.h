@@ -184,8 +184,6 @@ extern const char kChromeUIWebFooterExperimentHost[];
 extern const char kChromeUIWebFooterExperimentURL[];
 extern const char kChromeUIWelcomeHost[];
 extern const char kChromeUIWelcomeURL[];
-extern const char kChromeUIWorkProfileConfirmationHost[];
-extern const char kChromeUIWorkProfileConfirmationURL[];
 
 #if defined(OS_WIN)
 // TODO(crbug.com/1003960): Remove when issue is resolved.
