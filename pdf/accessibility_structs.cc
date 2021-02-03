@@ -74,4 +74,23 @@ AccessibilityImageInfo::AccessibilityImageInfo(
 
 AccessibilityImageInfo::~AccessibilityImageInfo() = default;
 
+AccessibilityHighlightInfo::AccessibilityHighlightInfo() = default;
+
+AccessibilityHighlightInfo::AccessibilityHighlightInfo(
+    const std::string& note_text,
+    uint32_t index_in_page,
+    uint32_t color,
+    const gfx::RectF& bounds,
+    const AccessibilityTextRunRangeInfo& text_range)
+    : note_text(note_text),
+      index_in_page(index_in_page),
+      color(color),
+      bounds(bounds),
+      text_range(text_range) {}
+
+AccessibilityHighlightInfo::AccessibilityHighlightInfo(
+    const AccessibilityHighlightInfo& other) = default;
+
+AccessibilityHighlightInfo::~AccessibilityHighlightInfo() = default;
+
 }  // namespace chrome_pdf

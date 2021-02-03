@@ -488,18 +488,10 @@ TEST_F(AccessibilityTest, GetAccessibilityHighlightInfo) {
   constexpr uint32_t kHighlightDefaultColor = MakeARGB(255, 255, 255, 0);
   constexpr uint32_t kHighlightRedColor = MakeARGB(102, 230, 0, 0);
   constexpr uint32_t kHighlightNoColor = MakeARGB(0, 0, 0, 0);
-  // Clone of pp::PDF::PrivateAccessibilityHighlightInfo.
-  static const struct {
-    std::string note_text;
-    uint32_t index_in_page;
-    uint32_t text_run_index;
-    uint32_t text_run_count;
-    gfx::RectF bounds;
-    uint32_t color;
-  } kExpectedHighlightInfo[] = {
-      {"Text Note", 0, 0, 1, {5, 196, 49, 26}, kHighlightDefaultColor},
-      {"", 1, 2, 1, {110, 196, 77, 26}, kHighlightRedColor},
-      {"", 2, 3, 1, {192, 196, 13, 26}, kHighlightNoColor}};
+  static const AccessibilityHighlightInfo kExpectedHighlightInfo[] = {
+      {"Text Note", 0, kHighlightDefaultColor, {5, 196, 49, 26}, {0, 1}},
+      {"", 1, kHighlightRedColor, {110, 196, 77, 26}, {2, 1}},
+      {"", 2, kHighlightNoColor, {192, 196, 13, 26}, {3, 1}}};
 
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =
@@ -527,9 +519,9 @@ TEST_F(AccessibilityTest, GetAccessibilityHighlightInfo) {
     EXPECT_EQ(kExpectedHighlightInfo[i].bounds,
               RectFFromPPFloatRect(highlight_info.bounds));
     EXPECT_EQ(highlight_info.text_run_index,
-              kExpectedHighlightInfo[i].text_run_index);
+              kExpectedHighlightInfo[i].text_range.index);
     EXPECT_EQ(highlight_info.text_run_count,
-              kExpectedHighlightInfo[i].text_run_count);
+              kExpectedHighlightInfo[i].text_range.count);
     EXPECT_EQ(highlight_info.color, kExpectedHighlightInfo[i].color);
     EXPECT_EQ(highlight_info.note_text, kExpectedHighlightInfo[i].note_text);
   }

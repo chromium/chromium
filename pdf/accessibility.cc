@@ -62,7 +62,7 @@ bool GetEnclosingTextRunRangeForCharRange(
 
 template <typename T>
 bool CompareTextRuns(const T& a, const T& b) {
-  return a.text_run_index < b.text_run_index;
+  return a.text_range.index < b.text_range.index;
 }
 
 std::vector<AccessibilityLinkInfo> GetAccessibilityLinkInfo(
@@ -92,9 +92,7 @@ std::vector<AccessibilityLinkInfo> GetAccessibilityLinkInfo(
     link_infos.push_back(std::move(link_info));
   }
   std::sort(link_infos.begin(), link_infos.end(),
-            [](const AccessibilityLinkInfo& a, const AccessibilityLinkInfo& b) {
-              return a.text_range.index < b.text_range.index;
-            });
+            CompareTextRuns<AccessibilityLinkInfo>);
   return link_infos;
 }
 
@@ -117,36 +115,38 @@ std::vector<AccessibilityImageInfo> GetAccessibilityImageInfo(
   return image_infos;
 }
 
-void GetAccessibilityHighlightInfo(
+std::vector<AccessibilityHighlightInfo> GetAccessibilityHighlightInfo(
     PDFEngine* engine,
     int32_t page_index,
-    const std::vector<AccessibilityTextRunInfo>& text_runs,
-    std::vector<pp::PDF::PrivateAccessibilityHighlightInfo>* highlights) {
-  std::vector<PDFEngine::AccessibilityHighlightInfo> engine_highlight_info =
+    const std::vector<AccessibilityTextRunInfo>& text_runs) {
+  std::vector<PDFEngine::AccessibilityHighlightInfo> engine_highlight_infos =
       engine->GetHighlightInfo(page_index);
-  for (size_t i = 0; i < engine_highlight_info.size(); ++i) {
-    auto& cur_highlight_info = engine_highlight_info[i];
-    pp::PDF::PrivateAccessibilityHighlightInfo highlight_info;
+  std::vector<AccessibilityHighlightInfo> highlight_infos;
+  highlight_infos.reserve(engine_highlight_infos.size());
+  for (size_t i = 0; i < engine_highlight_infos.size(); ++i) {
+    auto& cur_highlight_info = engine_highlight_infos[i];
+    AccessibilityHighlightInfo highlight_info;
     highlight_info.index_in_page = i;
-    highlight_info.bounds = PPFloatRectFromRectF(cur_highlight_info.bounds);
+    highlight_info.bounds = cur_highlight_info.bounds;
     highlight_info.color = cur_highlight_info.color;
     highlight_info.note_text = std::move(cur_highlight_info.note_text);
 
     if (!GetEnclosingTextRunRangeForCharRange(
             text_runs, cur_highlight_info.start_char_index,
-            cur_highlight_info.char_count, &highlight_info.text_run_index,
-            &highlight_info.text_run_count)) {
+            cur_highlight_info.char_count, &highlight_info.text_range.index,
+            &highlight_info.text_range.count)) {
       // If a valid text run range is not found for the highlight, set the
-      // fallback values of |text_run_index| and |text_run_count| for
+      // fallback values of |index| and |count| for |text_range| in
       // |highlight_info|.
-      highlight_info.text_run_index = text_runs.size();
-      highlight_info.text_run_count = 0;
+      highlight_info.text_range.index = text_runs.size();
+      highlight_info.text_range.count = 0;
     }
-    highlights->push_back(std::move(highlight_info));
+    highlight_infos.push_back(std::move(highlight_info));
   }
 
-  std::sort(highlights->begin(), highlights->end(),
-            CompareTextRuns<pp::PDF::PrivateAccessibilityHighlightInfo>);
+  std::sort(highlight_infos.begin(), highlight_infos.end(),
+            CompareTextRuns<AccessibilityHighlightInfo>);
+  return highlight_infos;
 }
 
 void GetAccessibilityTextFieldInfo(
@@ -205,6 +205,20 @@ ToPrivateAccessibilityImageInfo(
                               PPFloatRectFromRectF(image_info.bounds)});
   }
   return pp_image_infos;
+}
+
+std::vector<pp::PDF::PrivateAccessibilityHighlightInfo>
+ToPrivateAccessibilityHighlightInfo(
+    const std::vector<AccessibilityHighlightInfo>& highlight_infos) {
+  std::vector<pp::PDF::PrivateAccessibilityHighlightInfo> pp_highlight_infos;
+  pp_highlight_infos.reserve(highlight_infos.size());
+  for (const auto& highlight_info : highlight_infos) {
+    pp_highlight_infos.push_back(
+        {highlight_info.note_text, highlight_info.index_in_page,
+         highlight_info.text_range.index, highlight_info.text_range.count,
+         PPFloatRectFromRectF(highlight_info.bounds), highlight_info.color});
+  }
+  return pp_highlight_infos;
 }
 
 }  // namespace
@@ -293,8 +307,8 @@ bool GetAccessibilityInfo(
       GetAccessibilityLinkInfo(engine, page_index, text_runs));
   page_objects->images = ToPrivateAccessibilityImageInfo(
       GetAccessibilityImageInfo(engine, page_index, page_info.text_run_count));
-  GetAccessibilityHighlightInfo(engine, page_index, text_runs,
-                                &page_objects->highlights);
+  page_objects->highlights = ToPrivateAccessibilityHighlightInfo(
+      GetAccessibilityHighlightInfo(engine, page_index, text_runs));
   GetAccessibilityFormFieldInfo(engine, page_index, page_info.text_run_count,
                                 &page_objects->form_fields);
   return true;

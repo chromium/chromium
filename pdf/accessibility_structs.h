@@ -139,6 +139,28 @@ struct AccessibilityImageInfo {
   gfx::RectF bounds;
 };
 
+struct AccessibilityHighlightInfo {
+  AccessibilityHighlightInfo();
+  AccessibilityHighlightInfo(const std::string& note_text,
+                             uint32_t index_in_page,
+                             uint32_t color,
+                             const gfx::RectF& bounds,
+                             const AccessibilityTextRunRangeInfo& text_range);
+  AccessibilityHighlightInfo(const AccessibilityHighlightInfo& other);
+  ~AccessibilityHighlightInfo();
+
+  // Represents the text of the associated popup note, if present.
+  std::string note_text;
+  // Index of this highlight in the collection of highlights in the page.
+  uint32_t index_in_page = 0;
+  // Color of the highlight in ARGB. Alpha is stored in the first 8 MSBs. RGB
+  // follows after it with each using 8 bytes.
+  uint32_t color = 0;
+  // Bounding box of the highlight.
+  gfx::RectF bounds;
+  AccessibilityTextRunRangeInfo text_range;
+};
+
 }  // namespace chrome_pdf
 
 #endif  // PDF_ACCESSIBILITY_STRUCTS_H_
