@@ -301,6 +301,12 @@ When this happens, it is like we skipped an `AddRef()` and `Release()` may decre
 
 If we increment a `CheckedPtr` pointing at a non-PA allocation until it points past the end of the allocation, that pointer may happen to be pointing at the beginning of a PA superpage. Advancing the pointer through `operator+=()` assumes that the pointer stays within an allocation. So when this happens, it is as if we skipped an `AddRef()`, and `Release()` may decrement a non-existent ref count field.
 
+#### Pointers to address in another process
+
+If `CheckedPtr` is used to store an address in another process. The same address could be used in PA for the current process. Resulting in CheckedPtr trying to increment the ref count that doesn't exist.
+
+`sandbox::GetProcessBaseAddress()` was an example of a function that returns an address in another process as `void*`, resulting in this issue.
+
 #### Other
 
 TODO(bartekn): Document runtime errors encountered by BackupRefPtr

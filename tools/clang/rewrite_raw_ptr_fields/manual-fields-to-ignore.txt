@@ -120,6 +120,10 @@ courgette::LabelManagerTest_SimpleIndexAssigner_Test::TestBody()::TestCase::expe
 courgette::LabelManagerTest_SimpleIndexAssigner_Test::TestBody()::TestCase::expect_backward
 courgette::LabelManagerTest_SimpleIndexAssigner_Test::TestBody()::TestCase::expect_in
 
+# Populated manually - pointer to address in another process could be confused
+# as a pointer to PA memory
+sandbox::TargetProcess::base_address_ # https://crbug.com/1173374
+
 # Populated manually - uninitialized memory reinterpret_cast to CheckedPtr
 # causing AddRef/Deref mismatch.
 sandbox::(anonymous namespace)::_HEAP_32::Heap
