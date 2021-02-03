@@ -1076,7 +1076,6 @@ try_.chromium_linux_builder(
     name = "linux-rel-rts",
     builderless = False,
     goma_jobs = goma.jobs.J150,
-    tryjob = try_.job(experiment_percentage = 5),
     use_clang_coverage = True,
 )
 
