@@ -65,7 +65,9 @@ Once you've committed your changes locally, your CL can be submitted with:
 
 *Please make sure to CC the benchmark owner so that they're aware that they've lost coverage.*
 
-The `Tbr:` and `No-Try:` are permitted and recommended so long as the only file changed is `tools/perf/expectations.config`. If your change touches real code rather than just that configuration data, you'll need a real review before submitting it.
+The `Tbr:` and `No-Try:` are permitted and recommended so long as the only file changed is `tools/perf/expectations.config`.
+To submit a `Tbr:` change, you will need to add `Rubber Stamper (rubber-stamper@appspot.gserviceaccount.com)` as a reviewer to the patch and wait for the bot's approval.
+If your change touches real code rather than just that configuration data, you'll need a real review before submitting it.
 
 # How to disable a failing gtest perf test
 
