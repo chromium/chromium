@@ -367,4 +367,14 @@ TEST(StringBuilderTest, AppendNumberDoubleUChar) {
   EXPECT_EQ(reference, test);
 }
 
+TEST(StringBuilderTest, ReserveCapacity) {
+  StringBuilder builder;
+  builder.ReserveCapacity(100);
+  EXPECT_LE(100u, builder.Capacity());
+
+  builder.Append(0x202B);
+  ASSERT_FALSE(builder.Is8Bit());
+  EXPECT_LE(100u, builder.Capacity());
+}
+
 }  // namespace WTF
