@@ -95,6 +95,7 @@ bool TextIteratorTextNodeHandler::HandleRemainingTextRuns() {
 void TextIteratorTextNodeHandler::HandleTextNodeWithLayoutNG() {
   DCHECK_LE(offset_, end_offset_);
   DCHECK_LE(end_offset_, text_node_->data().length());
+  DCHECK_LE(mapping_units_index_, mapping_units_.size());
 
   while (offset_ < end_offset_ && !text_state_.PositionNode()) {
     const EphemeralRange range_to_emit(Position(text_node_, offset_),
@@ -109,8 +110,9 @@ void TextIteratorTextNodeHandler::HandleTextNodeWithLayoutNG() {
     }
 
     const unsigned initial_offset = offset_;
-    for (const NGOffsetMappingUnit& unit :
-         mapping->GetMappingUnitsForDOMRange(range_to_emit)) {
+    for (; mapping_units_index_ < mapping_units_.size();
+         ++mapping_units_index_) {
+      const auto& unit = mapping_units_[mapping_units_index_];
       if (unit.TextContentEnd() == unit.TextContentStart() ||
           ShouldSkipInvisibleTextAt(*text_node_, unit.DOMStart(),
                                     IgnoresStyleVisibility())) {
@@ -126,6 +128,7 @@ void TextIteratorTextNodeHandler::HandleTextNodeWithLayoutNG() {
       text_state_.EmitText(*text_node_, unit.DOMStart(), unit.DOMEnd(), string,
                            text_content_start, text_content_end);
       offset_ = unit.DOMEnd();
+      ++mapping_units_index_;
       return;
     }
 
@@ -237,12 +240,16 @@ void TextIteratorTextNodeHandler::HandleTextNodeInRange(const Text* node,
   handled_first_letter_ = false;
   first_letter_text_ = nullptr;
   uses_layout_ng_ = false;
+  mapping_units_.clear();
 
-  if (NGOffsetMapping::GetFor(Position(node, offset_))) {
+  if (auto* mapping = NGOffsetMapping::GetFor(Position(node, offset_))) {
     // Restore end offset from magic value.
     if (end_offset_ == kMaxOffset)
       end_offset_ = node->data().length();
     uses_layout_ng_ = true;
+    mapping_units_ = mapping->GetMappingUnitsForDOMRange(
+        EphemeralRange(Position(node, offset_), Position(node, end_offset_)));
+    mapping_units_index_ = 0;
     HandleTextNodeWithLayoutNG();
     return;
   }
