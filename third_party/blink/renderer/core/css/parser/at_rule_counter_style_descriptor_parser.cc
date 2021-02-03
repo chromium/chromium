@@ -70,7 +70,9 @@ CSSValue* ConsumeCounterStyleSystem(CSSParserTokenRange& range,
             CSSValueID::kInternalSimpChineseInformal,
             CSSValueID::kInternalSimpChineseFormal,
             CSSValueID::kInternalTradChineseInformal,
-            CSSValueID::kInternalTradChineseFormal>(range))
+            CSSValueID::kInternalTradChineseFormal,
+            CSSValueID::kInternalLowerArmenian,
+            CSSValueID::kInternalUpperArmenian>(range))
       return ident;
   }
 

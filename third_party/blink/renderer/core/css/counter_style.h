@@ -25,6 +25,8 @@ enum class CounterStyleSystem {
   kSimpChineseFormal,
   kTradChineseInformal,
   kTradChineseFormal,
+  kLowerArmenian,
+  kUpperArmenian,
   kUnresolvedExtends,
 };
 

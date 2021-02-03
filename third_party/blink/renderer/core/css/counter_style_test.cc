@@ -471,4 +471,42 @@ TEST_F(CounterStyleTest, Hebrew) {
   }
 }
 
+TEST_F(CounterStyleTest, LowerArmenian) {
+  // Verifies that our 'lower-armenian' implementation matches the spec in the
+  // officially specified range 1-9999.
+  // https://drafts.csswg.org/css-counter-styles-3/#valdef-counter-style-name-lower-armenian
+  const CounterStyle& lower_armenian_as_specced =
+      AddCounterStyle("lower-armenian-as-specced", R"CSS(
+    system: additive;
+    range: 1 9999;
+    additive-symbols: 9000 "\584", 8000 "\583", 7000 "\582", 6000 "\581", 5000 "\580", 4000 "\57F", 3000 "\57E", 2000 "\57D", 1000 "\57C", 900 "\57B", 800 "\57A", 700 "\579", 600 "\578", 500 "\577", 400 "\576", 300 "\575", 200 "\574", 100 "\573", 90 "\572", 80 "\571", 70 "\570", 60 "\56F", 50 "\56E", 40 "\56D", 30 "\56C", 20 "\56B", 10 "\56A", 9 "\569", 8 "\568", 7 "\567", 6 "\566", 5 "\565", 4 "\564", 3 "\563", 2 "\562", 1 "\561";
+  )CSS");
+  const CounterStyle& lower_armenian_as_implemented =
+      GetCounterStyle("lower-armenian");
+  for (int value = 1; value <= 9999; ++value) {
+    String expected = lower_armenian_as_specced.GenerateRepresentation(value);
+    String actual = lower_armenian_as_implemented.GenerateRepresentation(value);
+    EXPECT_EQ(expected, actual);
+  }
+}
+
+TEST_F(CounterStyleTest, UpperArmenian) {
+  // Verifies that our 'upper-armenian' implementation matches the spec in the
+  // officially specified range 1-9999.
+  // https://drafts.csswg.org/css-counter-styles-3/#valdef-counter-style-name-upper-armenian
+  const CounterStyle& upper_armenian_as_specced =
+      AddCounterStyle("upper-armenian-as-specced", R"CSS(
+    system: additive;
+    range: 1 9999;
+    additive-symbols: 9000 \554, 8000 \553, 7000 \552, 6000 \551, 5000 \550, 4000 \54F, 3000 \54E, 2000 \54D, 1000 \54C, 900 \54B, 800 \54A, 700 \549, 600 \548, 500 \547, 400 \546, 300 \545, 200 \544, 100 \543, 90 \542, 80 \541, 70 \540, 60 \53F, 50 \53E, 40 \53D, 30 \53C, 20 \53B, 10 \53A, 9 \539, 8 \538, 7 \537, 6 \536, 5 \535, 4 \534, 3 \533, 2 \532, 1 \531;
+  )CSS");
+  const CounterStyle& upper_armenian_as_implemented =
+      GetCounterStyle("upper-armenian");
+  for (int value = 1; value <= 9999; ++value) {
+    String expected = upper_armenian_as_specced.GenerateRepresentation(value);
+    String actual = upper_armenian_as_implemented.GenerateRepresentation(value);
+    EXPECT_EQ(expected, actual);
+  }
+}
+
 }  // namespace blink

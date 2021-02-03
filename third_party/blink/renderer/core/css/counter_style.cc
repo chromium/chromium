@@ -64,6 +64,10 @@ CounterStyleSystem ToCounterStyleSystemEnum(const CSSValue* value) {
       return CounterStyleSystem::kTradChineseInformal;
     case CSSValueID::kInternalTradChineseFormal:
       return CounterStyleSystem::kTradChineseFormal;
+    case CSSValueID::kInternalLowerArmenian:
+      return CounterStyleSystem::kLowerArmenian;
+    case CSSValueID::kInternalUpperArmenian:
+      return CounterStyleSystem::kUpperArmenian;
     case CSSValueID::kExtends:
       return CounterStyleSystem::kUnresolvedExtends;
     default:
@@ -87,6 +91,8 @@ bool HasSymbols(CounterStyleSystem system) {
     case CounterStyleSystem::kSimpChineseFormal:
     case CounterStyleSystem::kTradChineseInformal:
     case CounterStyleSystem::kTradChineseFormal:
+    case CounterStyleSystem::kLowerArmenian:
+    case CounterStyleSystem::kUpperArmenian:
       return false;
   }
 }
@@ -113,6 +119,8 @@ bool SymbolsAreValid(const StyleRuleCounterStyle& rule,
     case CounterStyleSystem::kSimpChineseFormal:
     case CounterStyleSystem::kTradChineseInformal:
     case CounterStyleSystem::kTradChineseFormal:
+    case CounterStyleSystem::kLowerArmenian:
+    case CounterStyleSystem::kUpperArmenian:
       return true;
   }
 }
@@ -284,6 +292,18 @@ String TradChineseFormalAlgorithm(unsigned value) {
   return list_marker_text::GetText(EListStyleType::kTradChineseFormal, value);
 }
 
+String LowerArmenianAlgorithm(unsigned value) {
+  if (value > 99999999)
+    return String();
+  return list_marker_text::GetText(EListStyleType::kLowerArmenian, value);
+}
+
+String UpperArmenianAlgorithm(unsigned value) {
+  if (value > 99999999)
+    return String();
+  return list_marker_text::GetText(EListStyleType::kUpperArmenian, value);
+}
+
 }  // namespace
 
 // static
@@ -441,6 +461,9 @@ bool CounterStyle::RangeContains(int value) const {
       return value >= 0;
     case CounterStyleSystem::kHebrew:
       return value >= 0 && value <= 999999;
+    case CounterStyleSystem::kLowerArmenian:
+    case CounterStyleSystem::kUpperArmenian:
+      return value >= 0 && value <= 99999999;
     case CounterStyleSystem::kUnresolvedExtends:
       NOTREACHED();
       return false;
@@ -460,6 +483,8 @@ bool CounterStyle::NeedsNegativeSign(int value) const {
     case CounterStyleSystem::kSimpChineseFormal:
     case CounterStyleSystem::kTradChineseInformal:
     case CounterStyleSystem::kTradChineseFormal:
+    case CounterStyleSystem::kLowerArmenian:
+    case CounterStyleSystem::kUpperArmenian:
       return true;
     case CounterStyleSystem::kCyclic:
     case CounterStyleSystem::kFixed:
@@ -546,6 +571,10 @@ String CounterStyle::GenerateInitialRepresentation(int value) const {
       return TradChineseInformalAlgorithm(abs_value);
     case CounterStyleSystem::kTradChineseFormal:
       return TradChineseFormalAlgorithm(abs_value);
+    case CounterStyleSystem::kLowerArmenian:
+      return LowerArmenianAlgorithm(abs_value);
+    case CounterStyleSystem::kUpperArmenian:
+      return UpperArmenianAlgorithm(abs_value);
     case CounterStyleSystem::kUnresolvedExtends:
       NOTREACHED();
       return String();
