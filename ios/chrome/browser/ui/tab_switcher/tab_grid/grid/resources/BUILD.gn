@@ -31,8 +31,3 @@ colorset("grid_theme_dark_selection_tint_color") {
 colorset("plus_sign_grid_cell_background_color") {
   sources = [ "plus_sign_grid_cell_background_color.colorset/Contents.json" ]
 }
-
-colorset("plus_sign_grid_cell_background_dark_color") {
-  sources =
-      [ "plus_sign_grid_cell_background_dark_color.colorset/Contents.json" ]
-}

@@ -64,34 +64,9 @@
       break;
   }
 
-  switch (theme) {
-    // This is necessary for iOS 13 because on iOS 13, this will return
-    // the dynamic color (which will then be colored with the user
-    // interface style).
-    // On iOS 12, this will always return the dynamic color in the light
-    // variant.
-    case GridThemeLight:
-      self.contentView.backgroundColor =
-          [UIColor colorNamed:kPlusSignCellBackgroundColor];
-      break;
-    // These dark-theme specific colorsets should only be used for iOS 12
-    // dark theme, as they will be removed along with iOS 12.
-    // TODO (crbug.com/981889): The following lines will be removed
-    // along with iOS 12
-    case GridThemeDark:
-      self.contentView.backgroundColor =
-          [UIColor colorNamed:kPlusSignCellBackgroundDarkColor];
-      break;
-  }
+  self.contentView.backgroundColor =
+      [UIColor colorNamed:kPlusSignCellBackgroundColor];
 
-  if (@available(iOS 13, *)) {
-    // When iOS 12 is dropped, only the next line is needed for styling.
-    // Every other check for |GridThemeDark| can be removed, as well as
-    // the dark theme specific assets.
-    self.overrideUserInterfaceStyle = (theme == GridThemeDark)
-                                          ? UIUserInterfaceStyleDark
-                                          : UIUserInterfaceStyleUnspecified;
-  }
   _theme = theme;
 }
 
