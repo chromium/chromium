@@ -321,7 +321,9 @@ bool PaintInvalidator::InvalidatePaint(
         PaintInvalidatorContext::kSubtreeInvalidationChecking;
   }
 
-  if (UNLIKELY(object.ContainsInlineWithOutlineAndContinuation())) {
+  if (UNLIKELY(object.ContainsInlineWithOutlineAndContinuation()) &&
+      // Need this only if the subtree needs to check geometry change.
+      PrePaintTreeWalk::ObjectRequiresTreeBuilderContext(object)) {
     // Force subtree invalidation checking to ensure invalidation of focus rings
     // when continuation's geometry changes.
     context.subtree_flags |=

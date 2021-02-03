@@ -480,4 +480,21 @@ TEST_P(PrePaintTreeWalkTest, CullRectUpdateOnSVGTransformChange) {
             foreign.FirstFragment().GetCullRect().Rect());
 }
 
+TEST_P(PrePaintTreeWalkTest, InlineOutlineWithContinuationPaintInvalidation) {
+  SetBodyInnerHTML(R"HTML(
+    <div>
+      <span style="outline: 1px solid black">
+        <span id="child-span">span</span>
+        <div>continuation</div>
+      </span>
+    </div>
+  )HTML");
+
+  // This test passes if the following doesn't crash.
+  GetDocument()
+      .getElementById("child-span")
+      ->setAttribute(html_names::kStyleAttr, "color: blue");
+  UpdateAllLifecyclePhasesForTest();
+}
+
 }  // namespace blink

@@ -455,7 +455,7 @@ bool PrePaintTreeWalk::NeedsTreeBuilderContextUpdate(
 
   return frame_view.GetLayoutView() &&
          (ObjectRequiresTreeBuilderContext(*frame_view.GetLayoutView()) ||
-          ContextRequiresTreeBuilderContext(context));
+          ContextRequiresChildTreeBuilderContext(context));
 }
 
 bool PrePaintTreeWalk::ObjectRequiresPrePaint(const LayoutObject& object) {
@@ -467,7 +467,7 @@ bool PrePaintTreeWalk::ObjectRequiresPrePaint(const LayoutObject& object) {
   ;
 }
 
-bool PrePaintTreeWalk::ContextRequiresPrePaint(
+bool PrePaintTreeWalk::ContextRequiresChildPrePaint(
     const PrePaintTreeWalkContext& context) {
   return context.paint_invalidator_context.NeedsSubtreeWalk() ||
          context.effective_allowed_touch_action_changed ||
@@ -483,12 +483,16 @@ bool PrePaintTreeWalk::ObjectRequiresTreeBuilderContext(
            object.DescendantShouldCheckGeometryForPaintInvalidation()));
 }
 
-bool PrePaintTreeWalk::ContextRequiresTreeBuilderContext(
+bool PrePaintTreeWalk::ContextRequiresChildTreeBuilderContext(
     const PrePaintTreeWalkContext& context) {
-  return context.tree_builder_context &&
-         (context.tree_builder_context->force_subtree_update_reasons ||
-          // PaintInvalidator forced subtree walk implies geometry update.
-          context.paint_invalidator_context.NeedsSubtreeWalk());
+  if (!context.NeedsTreeBuilderContext()) {
+    DCHECK(!context.tree_builder_context->force_subtree_update_reasons);
+    DCHECK(!context.paint_invalidator_context.NeedsSubtreeWalk());
+    return false;
+  }
+  return context.tree_builder_context->force_subtree_update_reasons ||
+         // PaintInvalidator forced subtree walk implies geometry update.
+         context.paint_invalidator_context.NeedsSubtreeWalk();
 }
 
 #if DCHECK_IS_ON()
@@ -497,7 +501,7 @@ void PrePaintTreeWalk::CheckTreeBuilderContextState(
     const PrePaintTreeWalkContext& parent_context) {
   if (parent_context.tree_builder_context ||
       (!ObjectRequiresTreeBuilderContext(object) &&
-       !ContextRequiresTreeBuilderContext(parent_context))) {
+       !ContextRequiresChildTreeBuilderContext(parent_context))) {
     return;
   }
 
@@ -579,11 +583,7 @@ void PrePaintTreeWalk::WalkInternal(const LayoutObject& object,
   base::Optional<NGPrePaintInfo> pre_paint_info_storage;
   NGPrePaintInfo* pre_paint_info = nullptr;
   if (iterator) {
-    bool allow_reset = context.tree_builder_context.has_value()
-#if DCHECK_IS_ON()
-                       && context.tree_builder_context->is_actually_needed
-#endif
-        ;
+    bool allow_reset = context.NeedsTreeBuilderContext();
     pre_paint_info_storage.emplace(SetupFragmentData(*iterator, allow_reset));
     pre_paint_info = &pre_paint_info_storage.value();
   }
@@ -959,7 +959,7 @@ void PrePaintTreeWalk::Walk(const LayoutObject& object,
   };
 
   bool needs_tree_builder_context_update =
-      ContextRequiresTreeBuilderContext(parent_context()) ||
+      ContextRequiresChildTreeBuilderContext(parent_context()) ||
       ObjectRequiresTreeBuilderContext(object);
 
 #if DCHECK_IS_ON()
@@ -968,7 +968,7 @@ void PrePaintTreeWalk::Walk(const LayoutObject& object,
 
   // Early out from the tree walk if possible.
   if (!needs_tree_builder_context_update && !ObjectRequiresPrePaint(object) &&
-      !ContextRequiresPrePaint(parent_context())) {
+      !ContextRequiresChildPrePaint(parent_context())) {
     return;
   }
 
@@ -999,8 +999,9 @@ void PrePaintTreeWalk::Walk(const LayoutObject& object,
   // If we need a subtree walk due to context flags, we need to store that
   // information on the display lock, since subsequent walks might not set the
   // same bits on the context.
-  if (child_walk_blocked && (ContextRequiresTreeBuilderContext(context()) ||
-                             ContextRequiresPrePaint(context()))) {
+  if (child_walk_blocked &&
+      (ContextRequiresChildTreeBuilderContext(context()) ||
+       ContextRequiresChildPrePaint(context()))) {
     // Note that |effective_allowed_touch_action_changed| and
     // |blocking_wheel_event_handler_changed| are special in that they requires
     // us to specifically recalculate this value on each subtree element. Other

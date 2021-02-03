@@ -74,6 +74,15 @@ class CORE_EXPORT PrePaintTreeWalk {
     base::Optional<PaintPropertyTreeBuilderContext> tree_builder_context;
     PaintInvalidatorContext paint_invalidator_context;
 
+    bool NeedsTreeBuilderContext() const {
+#if DCHECK_IS_ON()
+      DCHECK(tree_builder_context);
+      return tree_builder_context->is_actually_needed;
+#else
+      return tree_builder_context.has_value();
+#endif
+    }
+
     // The ancestor in the PaintLayer tree which is a scroll container. Note
     // that it is tree ancestor, not containing block or stacking ancestor.
     PaintLayer* ancestor_scroll_container_paint_layer = nullptr;
@@ -103,8 +112,9 @@ class CORE_EXPORT PrePaintTreeWalk {
         paint_invalidation_container_for_stacked_contents = nullptr;
   };
 
-  static bool ContextRequiresPrePaint(const PrePaintTreeWalkContext&);
-  static bool ContextRequiresTreeBuilderContext(const PrePaintTreeWalkContext&);
+  static bool ContextRequiresChildPrePaint(const PrePaintTreeWalkContext&);
+  static bool ContextRequiresChildTreeBuilderContext(
+      const PrePaintTreeWalkContext&);
 
 #if DCHECK_IS_ON()
   void CheckTreeBuilderContextState(const LayoutObject&,
