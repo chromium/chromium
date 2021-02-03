@@ -1159,7 +1159,7 @@ group("closure_compile_module") {
     "guest_os:closure_compile_module",
 
     #"device_page:closure_compile_module",
-    #"google_assistant_page:closure_compile_module",
+    "google_assistant_page:closure_compile_module",
     "internet_page:closure_compile_module",
     "kerberos_page:closure_compile_module",
     "localized_link:closure_compile_module",
@@ -1177,8 +1177,8 @@ group("closure_compile_module") {
     "os_printing_page:closure_compile_module",
     "os_privacy_page:closure_compile_module",
     "os_reset_page:closure_compile_module",
+    "os_search_page:closure_compile_module",
 
-    #"os_search_page:closure_compile_module",
     #"os_settings_main:closure_compile_module",
     #"os_settings_menu:closure_compile_module",
     "os_settings_page:closure_compile_module",
@@ -1186,7 +1186,7 @@ group("closure_compile_module") {
     #"os_settings_search_box:closure_compile_module",
     #"os_settings_ui:closure_compile_module",
     #"os_toolbar:closure_compile_module",
-    #"parental_controls_page:closure_compile_module",
+    "parental_controls_page:closure_compile_module",
     "personalization_page:closure_compile_module",
   ]
 }
