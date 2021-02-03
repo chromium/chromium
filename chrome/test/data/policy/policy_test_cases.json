@@ -4819,13 +4819,13 @@
     ]
   },
 
-  "SSLErrorOverrideAllowedForUrls": {
+  "SSLErrorOverrideAllowedForOrigins": {
     "os": ["win", "mac", "linux", "chromeos"],
     "policy_pref_mapping_tests": [
       {
-        "policies": { "SSLErrorOverrideAllowedForUrls": ["google.com"] },
+        "policies": { "SSLErrorOverrideAllowedForOrigins": ["google.com"] },
         "prefs": {
-          "ssl.error_override_allowed_for_urls": {"value" : ["google.com"] }
+          "ssl.error_override_allowed_for_origins": {"value" : ["google.com"] }
         }
       }
     ]

@@ -713,18 +713,18 @@ const base::Feature kRendererCodeIntegrity{"RendererCodeIntegrity",
 #endif  // defined(OS_WIN) && !defined(COMPONENT_BUILD) &&
         // !defined(ADDRESS_SANITIZER)
 
-bool IsSSLErrorOverrideAllowedForUrl(const GURL& request_url,
-                                     PrefService* prefs) {
+bool IsSSLErrorOverrideAllowedForOrigin(const GURL& request_url,
+                                        PrefService* prefs) {
   DCHECK(request_url.SchemeIsCryptographic());
 
-  if (!prefs->GetBoolean(prefs::kSSLErrorOverrideAllowed))
-    return false;
+  if (prefs->GetBoolean(prefs::kSSLErrorOverrideAllowed))
+    return true;
 
-  if (!prefs->GetList(prefs::kSSLErrorOverrideAllowedForUrls))
+  if (!prefs->GetList(prefs::kSSLErrorOverrideAllowedForOrigins))
     return true;
 
   base::Value::ConstListView allow_list_urls =
-      prefs->GetList(prefs::kSSLErrorOverrideAllowedForUrls)->GetList();
+      prefs->GetList(prefs::kSSLErrorOverrideAllowedForOrigins)->GetList();
   if (allow_list_urls.empty())
     return true;
 
@@ -733,6 +733,8 @@ bool IsSSLErrorOverrideAllowedForUrl(const GURL& request_url,
         ContentSettingsPattern::FromString(value.GetString());
     if (pattern == ContentSettingsPattern::Wildcard() || !pattern.IsValid())
       continue;
+
+    // Despite |request_url| being a GURL, the path is ignored when matching.
     if (pattern.Matches(request_url))
       return true;
   }
@@ -765,7 +767,7 @@ void HandleSSLErrorWrapper(
       std::move(ssl_cert_reporter), std::move(blocking_page_ready_callback),
       g_browser_process->network_time_tracker(), captive_portal_service,
       std::make_unique<ChromeSecurityBlockingPageFactory>(),
-      IsSSLErrorOverrideAllowedForUrl(request_url, profile->GetPrefs()));
+      IsSSLErrorOverrideAllowedForOrigin(request_url, profile->GetPrefs()));
 }
 
 enum AppLoadedInTabSource {
@@ -1281,7 +1283,7 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
   registry->RegisterListPref(prefs::kAutoplayWhitelist);
 #endif
   registry->RegisterBooleanPref(prefs::kSSLErrorOverrideAllowed, true);
-  registry->RegisterListPref(prefs::kSSLErrorOverrideAllowedForUrls);
+  registry->RegisterListPref(prefs::kSSLErrorOverrideAllowedForOrigins);
 #if defined(OS_ANDROID)
   registry->RegisterBooleanPref(prefs::kWebXRImmersiveArEnabled, true);
 #endif

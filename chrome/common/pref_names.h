@@ -165,7 +165,7 @@ extern const char kWebKitForceEnableZoom[];
 extern const char kWebKitPasswordEchoEnabled[];
 #endif
 extern const char kSSLErrorOverrideAllowed[];
-extern const char kSSLErrorOverrideAllowedForUrls[];
+extern const char kSSLErrorOverrideAllowedForOrigins[];
 extern const char kIncognitoModeAvailability[];
 extern const char kSearchSuggestEnabled[];
 #if defined(OS_ANDROID)

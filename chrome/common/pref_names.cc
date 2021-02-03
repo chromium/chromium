@@ -377,10 +377,10 @@ const char kWebKitPluginsEnabled[] = "webkit.webprefs.plugins_enabled";
 // proceed anyway. Otherwise, proceeding is not possible.
 const char kSSLErrorOverrideAllowed[] = "ssl.error_override_allowed";
 
-// List of URLs for which the SSL interstitial should allow users to proceed
+// List of origins for which the SSL interstitial should allow users to proceed
 // anyway. Ignored if kSSLErrorOverrideAllowed is false.
-const char kSSLErrorOverrideAllowedForUrls[] =
-    "ssl.error_override_allowed_for_urls";
+const char kSSLErrorOverrideAllowedForOrigins[] =
+    "ssl.error_override_allowed_for_origins";
 
 // Enum that specifies whether Incognito mode is:
 // 0 - Enabled. Default behaviour. Default mode is available on demand.
