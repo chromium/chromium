@@ -343,6 +343,7 @@ if (include_js_tests) {
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/internet_page_tests.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/kerberos_page_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/localized_link_test.m.js",
+        "$root_gen_dir/chrome/test/data/webui/settings/chromeos/manage_accessibility_page_tests.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/multidevice_feature_item_tests.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/multidevice_feature_toggle_tests.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/multidevice_page_tests.m.js",

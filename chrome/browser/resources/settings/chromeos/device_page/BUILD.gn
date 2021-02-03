@@ -3,6 +3,9 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
+import("../os_settings.gni")
 
 js_type_check("closure_compile") {
   deps = [
@@ -160,26 +163,26 @@ js_library("storage") {
 }
 
 # TODO: Uncomment as the Polymer3 migration makes progress.
-#js_type_check("closure_compile_module") {
-#  is_polymer3 = true
-#  deps = [
-#    ":device_page.m",
-#    ":device_page_browser_proxy.m",
-#    ":display.m",
-#    ":display_layout.m",
-#    ":display_overscan_dialog.m",
-#    ":drag_behavior.m",
-#    ":keyboard.m",
-#    ":layout_behavior.m",
-#    ":night_light_slider.m",
-#    ":pointers.m",
-#    ":power.m",
-#    ":storage.m",
-#    ":storage_external.m",
-#    ":storage_external_entry.m",
-#    ":stylus.m"
-#  ]
-#}
+js_type_check("closure_compile_module") {
+  is_polymer3 = true
+  deps = [
+    #  ":device_page.m",
+    ":device_page_browser_proxy.m",
+    #  ":display.m",
+    #  ":display_layout.m",
+    #  ":display_overscan_dialog.m",
+    #  ":drag_behavior.m",
+    #  ":keyboard.m",
+    #  ":layout_behavior.m",
+    #  ":night_light_slider.m",
+    #  ":pointers.m",
+    #  ":power.m",
+    #  ":storage.m",
+    #  ":storage_external.m",
+    #  ":storage_external_entry.m",
+    #  ":stylus.m"
+  ]
+}
 
 js_library("device_page.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/device_page/device_page.m.js" ]
@@ -191,9 +194,8 @@ js_library("device_page.m") {
 
 js_library("device_page_browser_proxy.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/device_page/device_page_browser_proxy.m.js" ]
-  deps = [
-    # TODO: Fill those in.
-  ]
+  deps = [ "//ui/webui/resources/js:cr.m" ]
+  externs_list = [ "$externs_path/chrome_send.js" ]
   extra_deps = [ ":modulize" ]
 }
 
@@ -301,8 +303,6 @@ js_library("stylus.m") {
   extra_deps = [ ":stylus_module" ]
 }
 
-import("//tools/polymer/polymer.gni")
-
 group("polymer3_elements") {
   public_deps = [
     ":device_page_module",
@@ -393,12 +393,11 @@ polymer_modulizer("stylus") {
   html_type = "dom-module"
 }
 
-import("//ui/webui/resources/tools/js_modulizer.gni")
-
 js_modulizer("modulize") {
   input_files = [
     "device_page_browser_proxy.js",
     "drag_behavior.js",
     "layout_behavior.js",
   ]
+  namespace_rewrites = os_settings_namespace_rewrites
 }

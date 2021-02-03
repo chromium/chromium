@@ -52,6 +52,8 @@ js_library("manage_a11y_page") {
     "..:os_route",
     "..:route_origin_behavior",
     "../..:router",
+    "../../controls:settings_slider",
+    "../../controls:settings_toggle_button",
     "../device_page:device_page_browser_proxy",
     "//ui/webui/resources/js:load_time_data",
     "//ui/webui/resources/js:web_ui_listener_behavior",
@@ -123,8 +125,7 @@ js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
     ":externs.m",
-
-    #    ":manage_a11y_page.m",
+    ":manage_a11y_page.m",
     ":manage_a11y_page_browser_proxy.m",
 
     #    ":os_a11y_page.m",
@@ -149,7 +150,16 @@ js_library("externs.m") {
 js_library("manage_a11y_page.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_a11y_page/manage_a11y_page.m.js" ]
   deps = [
-    # TODO: Fill those in.
+    ":manage_a11y_page_browser_proxy.m",
+    "//chrome/browser/resources/settings:router.m",
+    "//chrome/browser/resources/settings/chromeos:deep_linking_behavior.m",
+    "//chrome/browser/resources/settings/chromeos:os_route.m",
+    "//chrome/browser/resources/settings/chromeos:route_origin_behavior.m",
+    "//chrome/browser/resources/settings/chromeos/device_page:device_page_browser_proxy.m",
+    "//chrome/browser/resources/settings/controls:settings_slider.m",
+    "//chrome/browser/resources/settings/controls:settings_toggle_button.m",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
   extra_deps = [ ":manage_a11y_page_module" ]
 }
@@ -266,6 +276,8 @@ polymer_modulizer("manage_a11y_page") {
   js_file = "manage_a11y_page.js"
   html_file = "manage_a11y_page.html"
   html_type = "dom-module"
+  auto_imports = os_settings_auto_imports
+  namespace_rewrites = os_settings_namespace_rewrites
 }
 
 polymer_modulizer("os_a11y_page") {

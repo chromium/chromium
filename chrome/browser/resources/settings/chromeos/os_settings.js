@@ -67,6 +67,7 @@ export {AmbientModeBrowserProxyImpl} from './ambient_mode_page/ambient_mode_brow
 export {AmbientModeTemperatureUnit, AmbientModeTopicSource} from './ambient_mode_page/constants.m.js';
 export {bluetoothApis} from './bluetooth_page/bluetooth_page.m.js';
 export {CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from './crostini_page/crostini_browser_proxy.m.js';
+export {DevicePageBrowserProxy, DevicePageBrowserProxyImpl} from './device_page/device_page_browser_proxy.m.js';
 export {GoogleAssistantBrowserProxyImpl} from './google_assistant_page/google_assistant_browser_proxy.m.js';
 export {ConsentStatus, DspHotwordState} from './google_assistant_page/google_assistant_page.m.js';
 export {CROSTINI_TYPE, GuestOsBrowserProxy, GuestOsBrowserProxyImpl, GuestOsSharedUsbDevice, PLUGIN_VM_TYPE} from './guest_os/guest_os_browser_proxy.m.js';
@@ -76,6 +77,7 @@ export {MultiDeviceFeature, MultiDeviceFeatureState, MultiDevicePageContentData,
 export {Account, NearbyAccountManagerBrowserProxy, NearbyAccountManagerBrowserProxyImpl} from './nearby_share_page/nearby_account_manager_browser_proxy.m.js';
 export {getReceiveManager, observeReceiveManager, setReceiveManagerForTesting} from './nearby_share_page/nearby_share_receive_manager.m.js';
 export {dataUsageStringToEnum, NearbyShareDataUsage} from './nearby_share_page/types.m.js';
+export {ManageA11yPageBrowserProxy, ManageA11yPageBrowserProxyImpl} from './os_a11y_page/manage_a11y_page_browser_proxy.m.js';
 export {SwitchAccessSubpageBrowserProxy, SwitchAccessSubpageBrowserProxyImpl} from './os_a11y_page/switch_access_subpage_browser_proxy.m.js';
 export {TtsSubpageBrowserProxy, TtsSubpageBrowserProxyImpl} from './os_a11y_page/tts_subpage_browser_proxy.m.js';
 export {DeviceNameBrowserProxy, DeviceNameBrowserProxyImpl} from './os_about_page/device_name_browser_proxy.m.js';
