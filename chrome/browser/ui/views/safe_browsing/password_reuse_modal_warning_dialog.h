@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_SAFE_BROWSING_PASSWORD_REUSE_MODAL_WARNING_DIALOG_H_
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -57,7 +58,7 @@ class PasswordReuseModalWarningDialog
 
  private:
   OnWarningDone done_callback_;
-  ChromePasswordProtectionService* service_;
+  CheckedPtr<ChromePasswordProtectionService> service_;
   const GURL url_;
   const ReusedPasswordAccountType password_type_;
 

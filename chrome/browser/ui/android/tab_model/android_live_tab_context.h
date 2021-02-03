@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/sessions/core/live_tab_context.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -73,7 +74,7 @@ class AndroidLiveTabContext : public sessions::LiveTabContext {
   static sessions::LiveTabContext* FindContextWithID(SessionID desired_id);
 
  private:
-  TabModel* tab_model_;
+  CheckedPtr<TabModel> tab_model_;
   DISALLOW_COPY_AND_ASSIGN(AndroidLiveTabContext);
 };
 

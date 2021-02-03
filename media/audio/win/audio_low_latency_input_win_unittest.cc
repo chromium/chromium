@@ -15,6 +15,7 @@
 #include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -156,7 +157,7 @@ class WriteToFileAudioSink : public AudioInputStream::AudioInputCallback {
 
  private:
   media::SeekableBuffer buffer_;
-  FILE* binary_file_;
+  CheckedPtr<FILE> binary_file_;
   size_t bytes_to_write_;
 };
 
@@ -226,7 +227,7 @@ class AudioInputStreamWrapper {
     return ais;
   }
 
-  AudioManager* audio_man_;
+  CheckedPtr<AudioManager> audio_man_;
   AudioParameters default_params_;
   std::string device_id_ = AudioDeviceDescription::kDefaultDeviceId;
   int frames_per_buffer_;
@@ -265,7 +266,7 @@ class ScopedAudioInputStream {
   }
 
  private:
-  AudioInputStream* stream_;
+  CheckedPtr<AudioInputStream> stream_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedAudioInputStream);
 };

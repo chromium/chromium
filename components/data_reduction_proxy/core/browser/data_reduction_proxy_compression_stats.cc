@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/sparse_histogram.h"
 #include "base/strings/string_number_conversions.h"
@@ -317,9 +318,9 @@ class DataReductionProxyCompressionStats::DailyContentLengthUpdate {
   }
 
   // Non-owned. Lazily initialized, set to nullptr until initialized.
-  base::ListValue* update_;
+  CheckedPtr<base::ListValue> update_;
   // Non-owned pointer.
-  DataReductionProxyCompressionStats* compression_stats_;
+  CheckedPtr<DataReductionProxyCompressionStats> compression_stats_;
   // The path of the content length pref for |this|.
   const char* pref_path_;
 

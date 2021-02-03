@@ -10,6 +10,7 @@
 #include <string>
 
 #include "apps/test/app_window_waiter.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/pattern.h"
@@ -835,7 +836,7 @@ class ExtensionWindowLastFocusedTest : public ExtensionTabsTest {
     }
 
    private:
-    views::Widget* widget_;
+    CheckedPtr<views::Widget> widget_;
     bool waiting_;
   };
 

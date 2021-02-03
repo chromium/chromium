@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "content/public/browser/native_web_keyboard_event.h"
@@ -87,7 +88,7 @@ class WebUIBubbleViewTest : public ChromeViewsTestBase {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<content::WebContents> test_contents_;
   views::UniqueWidgetPtr widget_;
-  WebUIBubbleView* web_view_ = nullptr;
+  CheckedPtr<WebUIBubbleView> web_view_ = nullptr;
   MockHost host_;
 };
 

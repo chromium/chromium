@@ -5,6 +5,7 @@
 #ifndef CC_TEST_FAKE_PROXY_H_
 #define CC_TEST_FAKE_PROXY_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/proxy.h"
@@ -55,7 +56,7 @@ class FakeProxy : public Proxy {
       bool enable_frame_rate_throttling) override {}
 
  private:
-  LayerTreeHost* layer_tree_host_;
+  CheckedPtr<LayerTreeHost> layer_tree_host_;
 };
 
 }  // namespace cc

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_SAVE_UPDATE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_SAVE_UPDATE_VIEW_H_
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/save_update_bubble_controller.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "ui/views/view.h"
@@ -63,13 +64,13 @@ class PasswordSaveUpdateView : public PasswordBubbleViewBase {
   // Different promo dialogs that helps the user get access to credentials
   // across devices. One of these are non-null when the promotion dialog is
   // active.
-  PasswordSignInPromoView* sign_in_promo_ = nullptr;
+  CheckedPtr<PasswordSignInPromoView> sign_in_promo_ = nullptr;
 
-  views::EditableCombobox* username_dropdown_ = nullptr;
-  views::ToggleImageButton* password_view_button_ = nullptr;
+  CheckedPtr<views::EditableCombobox> username_dropdown_ = nullptr;
+  CheckedPtr<views::ToggleImageButton> password_view_button_ = nullptr;
 
   // The view for the password value.
-  views::EditableCombobox* password_dropdown_ = nullptr;
+  CheckedPtr<views::EditableCombobox> password_dropdown_ = nullptr;
 
   bool are_passwords_revealed_;
 };

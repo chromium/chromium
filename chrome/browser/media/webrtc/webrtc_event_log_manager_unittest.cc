@@ -21,6 +21,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
@@ -1217,7 +1218,7 @@ class WebRtcEventLogManagerTestIncognito
         std::make_unique<MockRenderProcessHost>(incognito_profile_);
   }
 
-  Profile* incognito_profile_;
+  CheckedPtr<Profile> incognito_profile_;
   std::unique_ptr<MockRenderProcessHost> incognito_rph_;
 };
 
@@ -1278,7 +1279,7 @@ class PeerConnectionTrackerProxyForTesting
   }
 
  private:
-  WebRtcEventLogManagerTestBase* const test_;
+  const CheckedPtr<WebRtcEventLogManagerTestBase> test_;
 };
 
 // The factory for the following fake uploader produces a sequence of
@@ -1329,7 +1330,7 @@ class FileListExpectingWebRtcEventLogUploader : public WebRtcEventLogUploader {
    private:
     std::list<WebRtcLogFileInfo> expected_files_;
     const bool result_;
-    base::RunLoop* const run_loop_;
+    const CheckedPtr<base::RunLoop> run_loop_;
   };
 
   // The logic is in the factory; the uploader just reports success so that the

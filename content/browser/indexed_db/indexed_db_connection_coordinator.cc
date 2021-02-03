@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
@@ -108,10 +109,10 @@ class IndexedDBConnectionCoordinator::ConnectionRequest {
 
   IndexedDBOriginStateHandle origin_state_handle_;
   // This is safe because IndexedDBDatabase owns this object.
-  IndexedDBDatabase* db_;
+  CheckedPtr<IndexedDBDatabase> db_;
 
   // Rawptr safe because IndexedDBConnectionCoordinator owns this object.
-  IndexedDBConnectionCoordinator* connection_coordinator_;
+  CheckedPtr<IndexedDBConnectionCoordinator> connection_coordinator_;
 
   TasksAvailableCallback tasks_available_callback_;
 

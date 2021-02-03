@@ -11,6 +11,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ui/browser.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
@@ -117,7 +118,7 @@ class IFrameWaiter : public content::WebContentsObserver {
 
   QueryType query_type_;
   base::RunLoop run_loop_;
-  content::RenderFrameHost* target_frame_;
+  CheckedPtr<content::RenderFrameHost> target_frame_;
   std::string frame_name_;
   GURL origin_;
   GURL url_;
@@ -335,8 +336,9 @@ class TestRecipeReplayer {
   // expires. Returns false if no visual update is observed before the given
   // timeout elapses.
   bool WaitForVisualUpdate(base::TimeDelta timeout = visual_update_timeout);
-  Browser* browser_;
-  TestRecipeReplayChromeFeatureActionExecutor* feature_action_executor_;
+  CheckedPtr<Browser> browser_;
+  CheckedPtr<TestRecipeReplayChromeFeatureActionExecutor>
+      feature_action_executor_;
 
   std::vector<testing::AssertionResult> validation_failures_;
 

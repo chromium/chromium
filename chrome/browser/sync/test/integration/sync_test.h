@@ -12,6 +12,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -152,7 +153,7 @@ class SyncTest : public PlatformBrowserTest {
     bool ExistsInstanceID(const std::string& app_id) const override;
 
    private:
-    gcm::GCMDriver* gcm_driver_;
+    CheckedPtr<gcm::GCMDriver> gcm_driver_;
     std::map<std::string, std::unique_ptr<FakeInstanceID>> fake_instance_ids_;
     DISALLOW_COPY_AND_ASSIGN(FakeInstanceIDDriver);
   };
@@ -447,7 +448,7 @@ class SyncTest : public PlatformBrowserTest {
   // The default profile, created before our actual testing |profiles_|. This is
   // needed in a workaround for https://crbug.com/801569, see comments in the
   // .cc file.
-  Profile* previous_profile_;
+  CheckedPtr<Profile> previous_profile_;
 
   // Number of sync clients that will be created by a test.
   int num_clients_;
@@ -510,7 +511,7 @@ class SyncTest : public PlatformBrowserTest {
   // We don't need a corresponding verifier sync client because the contents
   // of the verifier profile are strictly local, and are not meant to be
   // synced.
-  Profile* verifier_;
+  CheckedPtr<Profile> verifier_;
 
   // Indicates whether to use a new user data dir.
   // Only used for external server tests with two clients.

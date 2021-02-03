@@ -4,6 +4,7 @@
 
 #include "content/browser/font_access/font_access_manager_impl.h"
 
+#include "base/memory/checked_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -60,7 +61,7 @@ class FontAccessManagerImplBrowserBase : public ContentBrowserTest {
 
  protected:
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
-  FontEnumerationCache* enumeration_cache_;
+  CheckedPtr<FontEnumerationCache> enumeration_cache_;
 };
 
 class FontAccessManagerImplBrowserTest

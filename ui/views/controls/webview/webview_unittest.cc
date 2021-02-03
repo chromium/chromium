@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -92,7 +93,7 @@ class WebViewTestWebContentsObserver : public content::WebContentsObserver {
   bool valid_root_while_shown() const { return valid_root_while_shown_; }
 
  private:
-  content::WebContents* web_contents_;
+  CheckedPtr<content::WebContents> web_contents_;
   bool was_shown_;
   int32_t shown_count_;
   int32_t hidden_count_;
@@ -164,7 +165,7 @@ class WebViewUnitTest : public views::test::WidgetTest {
         top_level_widget_->SetContentsView(std::make_unique<View>());
     web_view_ = new WebView(browser_context_.get());
     web_view_->SetBoundsRect(gfx::Rect(contents_view->size()));
-    contents_view->AddChildView(web_view_);
+    contents_view->AddChildView(web_view_.get());
     top_level_widget_->Show();
     ASSERT_EQ(gfx::Rect(0, 0, 100, 100), web_view_->bounds());
   }
@@ -198,8 +199,8 @@ class WebViewUnitTest : public views::test::WidgetTest {
   std::unique_ptr<views::WebView::ScopedWebContentsCreatorForTesting>
       scoped_web_contents_creator_;
 
-  Widget* top_level_widget_ = nullptr;
-  WebView* web_view_ = nullptr;
+  CheckedPtr<Widget> top_level_widget_ = nullptr;
+  CheckedPtr<WebView> web_view_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(WebViewUnitTest);
 };

@@ -11,6 +11,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/scoped_observer.h"
@@ -302,7 +303,7 @@ class AdsPageLoadMetricsObserver
       subresource_observer_;
 
   // The tick clock used to get the current time. Can be replaced by tests.
-  const base::TickClock* clock_;
+  CheckedPtr<const base::TickClock> clock_;
 
   // Whether the page load currently being observed is a reload of a previous
   // page.
@@ -320,7 +321,7 @@ class AdsPageLoadMetricsObserver
 
   // Pointer to the blocklist used to throttle the heavy ad intervention. Can
   // be replaced by tests.
-  HeavyAdBlocklist* heavy_ad_blocklist_;
+  CheckedPtr<HeavyAdBlocklist> heavy_ad_blocklist_;
 
   // Whether the heavy ad privacy mitigations feature is enabled.
   const bool heavy_ad_privacy_mitigations_enabled_;

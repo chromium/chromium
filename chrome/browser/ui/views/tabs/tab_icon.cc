@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/tabs/tab_icon.h"
 
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_tick_clock.h"
 #include "base/timer/elapsed_timer.h"
@@ -81,7 +82,7 @@ class TabIcon::CrashAnimation : public gfx::LinearAnimation,
   }
 
  private:
-  TabIcon* target_;
+  CheckedPtr<TabIcon> target_;
 };
 
 TabIcon::TabIcon()

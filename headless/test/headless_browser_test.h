@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "content/public/test/browser_test_base.h"
 #include "headless/public/devtools/domains/network.h"
 #include "headless/public/devtools/domains/page.h"
@@ -43,7 +44,7 @@ class LoadObserver : public page::Observer, public network::Observer {
 
  private:
   base::OnceClosure callback_;
-  HeadlessDevToolsClient* devtools_client_;  // Not owned.
+  CheckedPtr<HeadlessDevToolsClient> devtools_client_;  // Not owned.
 
   bool navigation_succeeded_;
 
@@ -153,8 +154,8 @@ class HeadlessAsyncDevTooledBrowserTest : public HeadlessBrowserTest,
  protected:
   void RunTest();
 
-  HeadlessBrowserContext* browser_context_;  // Not owned.
-  HeadlessWebContents* web_contents_;
+  CheckedPtr<HeadlessBrowserContext> browser_context_;  // Not owned.
+  CheckedPtr<HeadlessWebContents> web_contents_;
   std::unique_ptr<HeadlessDevToolsClient> devtools_client_;
   std::unique_ptr<HeadlessDevToolsClient> browser_devtools_client_;
   bool render_process_exited_;

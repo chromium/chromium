@@ -17,6 +17,7 @@
 #include "base/files/file_path.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/memory/checked_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -140,7 +141,7 @@ class TransportClient : public media::cast::CastTransport::Client {
   void ProcessRtpPacket(std::unique_ptr<media::cast::Packet> packet) final {}
 
  private:
-  media::cast::LogEventDispatcher* const
+  const CheckedPtr<media::cast::LogEventDispatcher>
       log_event_dispatcher_;  // Not owned by this class.
 
   DISALLOW_COPY_AND_ASSIGN(TransportClient);

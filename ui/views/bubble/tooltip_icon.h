@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string16.h"
 #include "base/timer/timer.h"
@@ -91,7 +92,7 @@ class VIEWS_EXPORT TooltipIcon : public ImageView,
   bool mouse_inside_;
 
   // A bubble shown on hover. Weak; owns itself. NULL while hiding.
-  InfoBubble* bubble_;
+  CheckedPtr<InfoBubble> bubble_;
 
   // The width the tooltip prefers to be. Default is 0 (no preference).
   int preferred_width_;

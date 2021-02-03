@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/cancelable_callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/event_metrics.h"
@@ -268,11 +269,11 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   virtual base::TimeTicks Now() const;
 
   const SchedulerSettings settings_;
-  SchedulerClient* const client_;
+  const CheckedPtr<SchedulerClient> client_;
   const int layer_tree_host_id_;
-  base::SingleThreadTaskRunner* task_runner_;
+  CheckedPtr<base::SingleThreadTaskRunner> task_runner_;
 
-  viz::BeginFrameSource* begin_frame_source_ = nullptr;
+  CheckedPtr<viz::BeginFrameSource> begin_frame_source_ = nullptr;
   bool observing_begin_frame_source_ = false;
 
   bool skipped_last_frame_missed_exceeded_deadline_ = false;

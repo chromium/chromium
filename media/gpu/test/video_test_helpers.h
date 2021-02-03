@@ -14,6 +14,7 @@
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/memory/aligned_memory.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "base/synchronization/condition_variable.h"
@@ -250,7 +251,7 @@ class AlignedDataHelper {
   const uint32_t num_frames_;
 
   const VideoFrame::StorageType storage_type_;
-  gpu::GpuMemoryBufferFactory* const gpu_memory_buffer_factory_;
+  const CheckedPtr<gpu::GpuMemoryBufferFactory> gpu_memory_buffer_factory_;
 
   // The layout of VideoFrames returned by GetNextFrame().
   base::Optional<VideoFrameLayout> layout_;
@@ -280,7 +281,7 @@ class RawDataHelper {
                 const VideoFrameLayout& layout);
   // |video| and its associated data must outlive this class and VideoFrames
   // returned by GetFrame().
-  Video* const video_;
+  const CheckedPtr<Video> video_;
 
   // The size of one video frame.
   const size_t frame_size_;

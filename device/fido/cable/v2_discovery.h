@@ -13,6 +13,7 @@
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "device/fido/cable/cable_discovery_data.h"
@@ -69,7 +70,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Discovery
   static base::Optional<UnpairedKeys> KeysFromExtension(
       const std::vector<CableDiscoveryData>& extension_contents);
 
-  network::mojom::NetworkContext* const network_context_;
+  const CheckedPtr<network::mojom::NetworkContext> network_context_;
   const UnpairedKeys qr_keys_;
   const base::Optional<UnpairedKeys> extension_keys_;
   std::vector<std::unique_ptr<Pairing>> pairings_;

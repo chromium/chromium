@@ -13,6 +13,7 @@
 
 #include "base/feature_list.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "components/sync/protocol/bookmark_model_metadata.pb.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
@@ -121,7 +122,7 @@ class SyncedBookmarkTracker {
 
    private:
     // Null for tombstones.
-    const bookmarks::BookmarkNode* bookmark_node_;
+    CheckedPtr<const bookmarks::BookmarkNode> bookmark_node_;
 
     // Serializable Sync metadata.
     const std::unique_ptr<sync_pb::EntityMetadata> metadata_;

@@ -10,6 +10,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -2450,7 +2451,7 @@ class PasswordFormManagerTestWithMockedSaver : public PasswordFormManagerTest {
   }
 
  private:
-  NiceMock<MockPasswordSaveManager>* mock_password_save_manager_;
+  CheckedPtr<NiceMock<MockPasswordSaveManager>> mock_password_save_manager_;
 };
 
 TEST_F(

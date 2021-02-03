@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/stl_util.h"
 #include "mojo/public/cpp/bindings/connection_error_callback.h"
@@ -325,7 +326,7 @@ class ReceiverSetBase {
 
       void DidDispatchOrReject(Message* message, bool accepted) override {}
 
-      Entry* entry_;
+      CheckedPtr<Entry> entry_;
 
       DISALLOW_COPY_AND_ASSIGN(DispatchFilter);
     };
@@ -342,7 +343,7 @@ class ReceiverSetBase {
     }
 
     ReceiverType receiver_;
-    ReceiverSetBase* const receiver_set_;
+    const CheckedPtr<ReceiverSetBase<ReceiverType, ContextType>> receiver_set_;
     const ReceiverId receiver_id_;
     Context const context_;
 

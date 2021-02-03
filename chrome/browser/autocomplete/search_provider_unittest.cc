@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
@@ -303,10 +304,10 @@ class BaseSearchProviderTest : public testing::Test,
   void ClearAllResults();
 
   // See description above class for details of these fields.
-  TemplateURL* default_t_url_ = nullptr;
+  CheckedPtr<TemplateURL> default_t_url_ = nullptr;
   const base::string16 term1_ = ASCIIToUTF16("term1");
   GURL term1_url_;
-  TemplateURL* keyword_t_url_ = nullptr;
+  CheckedPtr<TemplateURL> keyword_t_url_ = nullptr;
   const base::string16 keyword_term_ = ASCIIToUTF16("keyword");
   GURL keyword_url_;
 
@@ -321,7 +322,7 @@ class BaseSearchProviderTest : public testing::Test,
   scoped_refptr<SearchProviderForTest> provider_;
 
   // If not nullptr, OnProviderUpdate quits the current |run_loop_|.
-  base::RunLoop* run_loop_ = nullptr;
+  CheckedPtr<base::RunLoop> run_loop_ = nullptr;
 };
 
 // SearchProviderTest ---------------------------------------------------------

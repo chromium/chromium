@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_THEME_COPYING_WIDGET_H_
 #define CHROME_BROWSER_UI_VIEWS_THEME_COPYING_WIDGET_H_
 
+#include "base/memory/checked_ptr.h"
 #include "ui/views/widget/widget.h"
 
 // This widget uses a reference widget to provide its NativeTheme and
@@ -20,7 +21,7 @@ class ThemeCopyingWidget : public views::Widget {
 
  private:
   // The widget we'll copy our theme from.
-  views::Widget* role_model_;
+  CheckedPtr<views::Widget> role_model_;
 
   DISALLOW_COPY_AND_ASSIGN(ThemeCopyingWidget);
 };

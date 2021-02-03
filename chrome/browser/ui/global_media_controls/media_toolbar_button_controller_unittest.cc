@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ui/global_media_controls/media_dialog_delegate.h"
@@ -76,7 +77,7 @@ class MockMediaDialogDelegate : public MediaDialogDelegate {
   MOCK_METHOD0(HideMediaDialog, void());
 
  private:
-  MediaNotificationService* service_;
+  CheckedPtr<MediaNotificationService> service_;
 
   DISALLOW_COPY_AND_ASSIGN(MockMediaDialogDelegate);
 };

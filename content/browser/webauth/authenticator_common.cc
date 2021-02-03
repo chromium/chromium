@@ -1788,7 +1788,7 @@ BrowserContext* AuthenticatorCommon::browser_context() const {
 device::FidoDiscoveryFactory* AuthenticatorCommon::discovery_factory() {
   DCHECK(discovery_factory_);
   return discovery_factory_testing_override_
-             ? discovery_factory_testing_override_
+             ? discovery_factory_testing_override_.get()
              : discovery_factory_.get();
 }
 

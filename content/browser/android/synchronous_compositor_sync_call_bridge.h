@@ -7,6 +7,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/thread_annotations.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -128,7 +129,7 @@ class SynchronousCompositorSyncCallBridge
   enum class RemoteState { INIT, READY, CLOSED };
 
   // UI thread only.
-  SynchronousCompositorHost* host_;
+  CheckedPtr<SynchronousCompositorHost> host_;
 
   // Shared variables between the IO thread and UI thread.
   base::Lock lock_;

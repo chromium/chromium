@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "cc/animation/keyframe_model.h"
 #include "chrome/browser/vr/transition.h"
 #include "chrome/browser/vr/vr_ui_export.h"
@@ -112,7 +113,7 @@ class VR_UI_EXPORT Animation final {
   ValueType GetTargetValue(int target_property,
                            const ValueType& default_value) const;
 
-  cc::AnimationTarget* target_ = nullptr;
+  CheckedPtr<cc::AnimationTarget> target_ = nullptr;
   KeyframeModels keyframe_models_;
   Transition transition_;
 

@@ -383,11 +383,11 @@ void OpaqueBrowserFrameViewLayout::ConfigureButton(views::FrameButton button_id,
       // show a restore button.
       bool is_restored = !delegate_->IsMaximized() && !delegate_->IsMinimized();
       views::Button* invisible_button =
-          is_restored ? restore_button_ : maximize_button_;
+          is_restored ? restore_button_.get() : maximize_button_.get();
       SetViewVisibility(invisible_button, false);
 
       views::Button* visible_button =
-          is_restored ? maximize_button_ : restore_button_;
+          is_restored ? maximize_button_.get() : restore_button_.get();
       SetViewVisibility(visible_button, true);
       SetBoundsForButton(button_id, visible_button, alignment);
       break;

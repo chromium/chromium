@@ -6,6 +6,7 @@
 
 #include <unordered_map>
 
+#include "base/memory/checked_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "cc/animation/animation_host.h"
 #include "cc/input/scrollbar_animation_controller.h"
@@ -134,7 +135,7 @@ class BaseScrollbarLayerTest : public testing::Test {
   }
 
  protected:
-  FakeResourceTrackingUIResourceManager* fake_ui_resource_manager_;
+  CheckedPtr<FakeResourceTrackingUIResourceManager> fake_ui_resource_manager_;
   FakeLayerTreeHostClient fake_client_;
   StubLayerTreeHostSingleThreadClient single_thread_client_;
   TestTaskGraphRunner task_graph_runner_;

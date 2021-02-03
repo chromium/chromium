@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -110,12 +111,12 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
   // the mouse reenters within a given amount of time.
   base::TimeTicks last_mouse_exit_timestamp_;
 
-  views::Label* title_label_ = nullptr;
-  FadeLabel* title_fade_label_ = nullptr;
+  CheckedPtr<views::Label> title_label_ = nullptr;
+  CheckedPtr<FadeLabel> title_fade_label_ = nullptr;
   base::Optional<TabAlertState> alert_state_;
-  views::Label* domain_label_ = nullptr;
-  FadeLabel* domain_fade_label_ = nullptr;
-  views::ImageView* preview_image_ = nullptr;
+  CheckedPtr<views::Label> domain_label_ = nullptr;
+  CheckedPtr<FadeLabel> domain_fade_label_ = nullptr;
+  CheckedPtr<views::ImageView> preview_image_ = nullptr;
 
   // Counter used to keep track of the number of tab hover cards seen before a
   // tab is selected by mouse press.

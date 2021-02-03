@@ -7,6 +7,7 @@
 
 #include <windows.h>
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "base/win/atl.h"
 #include "chrome/updater/win/ui/resources/resources.grh"
@@ -70,7 +71,7 @@ class CompleteWnd : public OmahaWnd {
   HRESULT SetControlState(bool is_success);
 
   base::string16 help_url_;
-  CompleteWndEvents* events_sink_ = nullptr;
+  CheckedPtr<CompleteWndEvents> events_sink_ = nullptr;
   const DWORD control_classes_;
 };
 

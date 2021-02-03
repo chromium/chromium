@@ -113,7 +113,7 @@ InfoBarView::InfoBarView(std::unique_ptr<infobars::InfoBarDelegate> delegate)
         gfx::Insets(ChromeLayoutProvider::Get()->GetDistanceMetric(
                         DISTANCE_TOAST_LABEL_VERTICAL),
                     0));
-    AddChildView(icon_);
+    AddChildView(icon_.get());
   }
 
   if (this->delegate()->IsCloseable()) {

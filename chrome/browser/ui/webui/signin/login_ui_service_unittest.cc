@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -48,7 +49,7 @@ class LoginUIServiceTest : public testing::Test {
 
   TestingProfileManager profile_manager_;
   // Test profile used by all tests - this is owned by profile_manager_.
-  TestingProfile* profile_;
+  CheckedPtr<TestingProfile> profile_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(LoginUIServiceTest);
@@ -116,7 +117,7 @@ class LoginUIServiceExtensionLoginPromptTest
   }
 
   std::unique_ptr<LoginUIService> service_;
-  TabStripModel* model_;
+  CheckedPtr<TabStripModel> model_;
 };
 
 TEST_F(LoginUIServiceExtensionLoginPromptTest, Show) {

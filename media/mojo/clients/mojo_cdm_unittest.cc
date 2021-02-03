@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
@@ -349,7 +350,7 @@ class MojoCdmTest : public ::testing::Test {
   base::TestMessageLoop message_loop_;
 
   // |remote_cdm_| represents the CDM at the end of the mojo message pipe.
-  MockCdm* remote_cdm_;
+  CheckedPtr<MockCdm> remote_cdm_;
   MockCdmFactory cdm_factory_;
 
   MojoCdmServiceContext mojo_cdm_service_context_;

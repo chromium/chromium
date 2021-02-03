@@ -5,6 +5,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/overlay/overlay_window_views.h"
 #include "chrome/browser/ui/views/overlay/track_image_button.h"
 #include "chrome/test/base/testing_profile.h"
@@ -37,7 +38,7 @@ class TestPictureInPictureWindowController
   void PreviousTrack() override {}
 
  private:
-  content::WebContents* const web_contents_;
+  const CheckedPtr<content::WebContents> web_contents_;
 };
 
 // When running on ChromeOS, NativeWidgetAura requires the parent and/or

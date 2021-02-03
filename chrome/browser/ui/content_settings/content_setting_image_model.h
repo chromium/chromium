@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
@@ -145,8 +146,8 @@ class ContentSettingImageModel {
  private:
   bool is_visible_ = false;
 
-  const gfx::VectorIcon* icon_;
-  const gfx::VectorIcon* icon_badge_;
+  CheckedPtr<const gfx::VectorIcon> icon_;
+  CheckedPtr<const gfx::VectorIcon> icon_badge_;
   int explanatory_string_id_ = 0;
   base::string16 tooltip_;
   const ImageType image_type_;

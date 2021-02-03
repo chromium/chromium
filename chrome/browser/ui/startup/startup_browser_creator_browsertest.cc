@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1233,7 +1234,7 @@ class BrowserAddedObserver : public BrowserListObserver {
   }
 
  private:
-  Browser* browser_ = nullptr;
+  CheckedPtr<Browser> browser_ = nullptr;
   base::RunLoop run_loop_;
 };
 
@@ -1849,7 +1850,7 @@ class StartupBrowserCreatorWelcomeBackTest : public InProcessBrowserTest {
   }
 
  private:
-  Profile* profile_ = nullptr;
+  CheckedPtr<Profile> profile_ = nullptr;
   std::unique_ptr<ScopedKeepAlive> scoped_keep_alive_;
   std::unique_ptr<ScopedProfileKeepAlive> scoped_profile_keep_alive_;
   StartupBrowserCreator browser_creator_;

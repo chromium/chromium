@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/passwords/credential_manager_dialog_controller.h"
 
 class AccountChooserPrompt;
@@ -51,10 +52,10 @@ class CredentialManagerDialogControllerImpl
   // Release |current_dialog_| and close the open dialog.
   void ResetDialog();
 
-  Profile* const profile_;
-  PasswordsModelDelegate* const delegate_;
-  AccountChooserPrompt* account_chooser_dialog_;
-  AutoSigninFirstRunPrompt* autosignin_dialog_;
+  const CheckedPtr<Profile> profile_;
+  const CheckedPtr<PasswordsModelDelegate> delegate_;
+  CheckedPtr<AccountChooserPrompt> account_chooser_dialog_;
+  CheckedPtr<AutoSigninFirstRunPrompt> autosignin_dialog_;
   std::vector<std::unique_ptr<password_manager::PasswordForm>>
       local_credentials_;
 

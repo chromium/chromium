@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -78,8 +79,8 @@ class TestBubbleFrameViewWidgetDelegate : public WidgetDelegate {
   }
 
  private:
-  Widget* const widget_;
-  View* contents_view_ = nullptr;  // Owned by |widget_|.
+  const CheckedPtr<Widget> widget_;
+  CheckedPtr<View> contents_view_ = nullptr;  // Owned by |widget_|.
   bool should_show_close_ = false;
 };
 
@@ -177,13 +178,13 @@ TEST_F(BubbleFrameViewTest, GetBoundsForClientViewWithClose) {
 
 TEST_F(BubbleFrameViewTest, RemoveFootnoteView) {
   TestBubbleFrameView frame(this);
-  EXPECT_EQ(nullptr, frame.footnote_container_);
+  EXPECT_EQ(nullptr, frame.footnote_container_.get());
   auto footnote = std::make_unique<StaticSizedView>(gfx::Size(200, 200));
   View* footnote_dummy_view = footnote.get();
   frame.SetFootnoteView(std::move(footnote));
   EXPECT_EQ(footnote_dummy_view->parent(), frame.footnote_container_);
   frame.SetFootnoteView(nullptr);
-  EXPECT_EQ(nullptr, frame.footnote_container_);
+  EXPECT_EQ(nullptr, frame.footnote_container_.get());
 }
 
 TEST_F(BubbleFrameViewTest,

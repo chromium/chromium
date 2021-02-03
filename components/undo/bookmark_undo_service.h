@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -67,8 +68,8 @@ class BookmarkUndoService : public bookmarks::BaseBookmarkModelObserver,
       size_t index,
       std::unique_ptr<bookmarks::BookmarkNode> node) override;
 
-  bookmarks::BookmarkModel* model_;
-  bookmarks::BookmarkUndoProvider* undo_provider_;
+  CheckedPtr<bookmarks::BookmarkModel> model_;
+  CheckedPtr<bookmarks::BookmarkUndoProvider> undo_provider_;
   UndoManager undo_manager_;
   base::ScopedObservation<bookmarks::BookmarkModel,
                           bookmarks::BookmarkModelObserver>

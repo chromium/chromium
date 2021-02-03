@@ -12,6 +12,7 @@
 
 #include "base/auto_reset.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
@@ -211,7 +212,7 @@ class PrintPreviewDialogController::WebContentsObserver
   void WebContentsDestroyed() override;
 
  private:
-  PrintPreviewDialogController* const controller_;
+  const CheckedPtr<PrintPreviewDialogController> controller_;
 
   DISALLOW_COPY_AND_ASSIGN(WebContentsObserver);
 };

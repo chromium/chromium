@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/badging/badge_manager_delegate.h"
 #include "chrome/browser/badging/badge_manager_factory.h"
@@ -64,8 +65,8 @@ class BadgeManagerUnittest : public ::testing::Test {
   BadgeManager* badge_manager() const { return badge_manager_; }
 
  private:
-  TestBadgeManagerDelegate* delegate_;
-  BadgeManager* badge_manager_;
+  CheckedPtr<TestBadgeManagerDelegate> delegate_;
+  CheckedPtr<BadgeManager> badge_manager_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
 

@@ -132,7 +132,7 @@ base::string16 NSSDecryptor::Decrypt(const std::string& crypt) const {
     result = PK11SDR_Decrypt(&request, &reply, NULL);
 #endif  // defined(USE_NSS_CERTS)
     if (result == SECSuccess)
-      plain.assign(reinterpret_cast<char*>(reply.data), reply.len);
+      plain.assign(reinterpret_cast<char*>(reply.data.get()), reply.len);
 
     SECITEM_FreeItem(&reply, PR_FALSE);
     FreeSlot(slot);

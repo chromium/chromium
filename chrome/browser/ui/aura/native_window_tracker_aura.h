@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_AURA_NATIVE_WINDOW_TRACKER_AURA_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/native_window_tracker.h"
 #include "ui/aura/window_observer.h"
 
@@ -22,7 +23,7 @@ class NativeWindowTrackerAura : public NativeWindowTracker,
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
 
-  aura::Window* window_;
+  CheckedPtr<aura::Window> window_;
 
   DISALLOW_COPY_AND_ASSIGN(NativeWindowTrackerAura);
 };

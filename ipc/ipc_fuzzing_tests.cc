@@ -10,6 +10,7 @@
 #include <sstream>
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
@@ -146,7 +147,7 @@ class SimpleListener : public IPC::Listener {
     other_ = s;
   }
  protected:
-  IPC::Sender* other_;
+  CheckedPtr<IPC::Sender> other_;
 };
 
 enum {
@@ -264,7 +265,7 @@ class FuzzerClientListener : public SimpleListener {
     return (type_id == last_msg_->type());
   }
 
-  IPC::Message* last_msg_;
+  CheckedPtr<IPC::Message> last_msg_;
 };
 
 // Runs the fuzzing server child mode. Returns when the preset number of

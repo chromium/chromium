@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "net/base/net_export.h"
 #include "net/websockets/websocket_handshake_stream_base.h"
 #include "net/websockets/websocket_stream.h"
@@ -51,9 +52,9 @@ class NET_EXPORT_PRIVATE WebSocketHandshakeStreamCreateHelper
       base::WeakPtr<SpdySession> session) override;
 
  private:
-  WebSocketStream::ConnectDelegate* const connect_delegate_;
+  const CheckedPtr<WebSocketStream::ConnectDelegate> connect_delegate_;
   const std::vector<std::string> requested_subprotocols_;
-  WebSocketStreamRequestAPI* const request_;
+  const CheckedPtr<WebSocketStreamRequestAPI> request_;
 
   DISALLOW_COPY_AND_ASSIGN(WebSocketHandshakeStreamCreateHelper);
 };

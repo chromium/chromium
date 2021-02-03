@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -73,7 +74,7 @@ class TestChromeBrowserMainExtraParts : public ChromeBrowserMainExtraParts {
   void PreProfileInit() override { test_->SetUpNetworkInterceptors(); }
 
  private:
-  ExtensionUpdateClientBaseTest* test_;
+  CheckedPtr<ExtensionUpdateClientBaseTest> test_;
 
   DISALLOW_COPY_AND_ASSIGN(TestChromeBrowserMainExtraParts);
 };

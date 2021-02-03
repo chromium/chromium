@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/browsing_data/browsing_data_remover_browsertest_base.h"
+#include "base/memory/checked_ptr.h"
 
 #include <memory>
 #include <utility>
@@ -59,7 +60,7 @@ class DownloadManagerWaiter : public content::DownloadManager::Observer {
  private:
   base::OnceClosure quit_closure_;
   bool initialized_;
-  content::DownloadManager* download_manager_;
+  CheckedPtr<content::DownloadManager> download_manager_;
 };
 }  // namespace
 
@@ -76,12 +77,12 @@ void BrowsingDataRemoverBrowserTestBase::InitFeatureList(
 
 // Call to use an Incognito browser rather than the default.
 void BrowsingDataRemoverBrowserTestBase::UseIncognitoBrowser() {
-  ASSERT_EQ(nullptr, incognito_browser_);
+  ASSERT_EQ(nullptr, incognito_browser_.get());
   incognito_browser_ = CreateIncognitoBrowser();
 }
 
 Browser* BrowsingDataRemoverBrowserTestBase::GetBrowser() const {
-  return incognito_browser_ ? incognito_browser_ : browser();
+  return incognito_browser_ ? incognito_browser_.get() : browser();
 }
 
 void BrowsingDataRemoverBrowserTestBase::SetUpOnMainThread() {

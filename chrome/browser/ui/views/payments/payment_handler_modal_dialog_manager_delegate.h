@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PAYMENTS_PAYMENT_HANDLER_MODAL_DIALOG_MANAGER_DELEGATE_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 
 namespace content {
@@ -46,10 +47,10 @@ class PaymentHandlerModalDialogManagerDelegate
  private:
   // A not-owned pointer to the WebContentsModalDialogHost associated with the
   // browser that spawned the payment handler.
-  web_modal::WebContentsModalDialogHost* host_;
+  CheckedPtr<web_modal::WebContentsModalDialogHost> host_;
 
   // A not-owned pointer to the WebContents behind the modal dialogs.
-  content::WebContents* web_contents_;
+  CheckedPtr<content::WebContents> web_contents_;
 
   DISALLOW_COPY_AND_ASSIGN(PaymentHandlerModalDialogManagerDelegate);
 };
