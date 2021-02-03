@@ -135,6 +135,9 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
   std::unique_ptr<OutputPresenter::Image> background_image_ = nullptr;
   // Set to true if background has been scheduled in a frame.
   bool background_image_is_scheduled_ = false;
+  // Whether |SchedulePrimaryPlane| needs to wait for a paint before scheduling
+  // This works around an edge case for unpromoting fullscreen quads.
+  bool primary_plane_waiting_on_paint_ = false;
 };
 
 }  // namespace viz

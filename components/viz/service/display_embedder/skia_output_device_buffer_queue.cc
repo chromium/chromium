@@ -223,12 +223,22 @@ void SkiaOutputDeviceBufferQueue::SchedulePrimaryPlane(
     // If the current_image_ is nullptr, it means there is no change on the
     // primary plane. So we just need to schedule the last submitted image.
     auto* image = current_image_ ? current_image_ : submitted_image_;
+    // |image| can be null if there was a fullscreen overlay last frame (e.g.
+    // no primary plane). If the fullscreen quad suddenly fails the fullscreen
+    // overlay check this frame (e.g. TestPageFlip failing) and then gets
+    // promoted via a different strategy like single-on-top, the quad's damage
+    // is still removed from the primary plane's damage. With no damage, we
+    // never invoke |BeginPaint| which initializes a new image. Since there
+    // still really isn't any primary plane content, it's fine to early-exit.
+    if (!image && primary_plane_waiting_on_paint_)
+      return;
     DCHECK(image);
 
     image->BeginPresent();
     presenter_->SchedulePrimaryPlane(plane.value(), image,
                                      image == submitted_image_);
   } else {
+    primary_plane_waiting_on_paint_ =  true;
     current_frame_has_no_primary_plane_ = true;
     // Even if there is no primary plane, |current_image_| may be non-null if
     // an overlay just transitioned from an underlay strategy to a fullscreen
@@ -535,6 +545,7 @@ bool SkiaOutputDeviceBufferQueue::RecreateImages() {
 
 SkSurface* SkiaOutputDeviceBufferQueue::BeginPaint(
     std::vector<GrBackendSemaphore>* end_semaphores) {
+  primary_plane_waiting_on_paint_ = false;
   if (!current_image_)
     current_image_ = GetNextImage();
   if (!current_image_->sk_surface())
