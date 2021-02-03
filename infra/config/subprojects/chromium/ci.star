@@ -3420,6 +3420,19 @@ ci.fyi_builder(
     os = os.LINUX_DEFAULT,
 )
 
+ci.fyi_builder(
+    name = "Linux TSan Builder (reclient)",
+    console_view_entry = consoles.console_view_entry(
+        category = "linux",
+        short_name = "tre",
+    ),
+    goma_backend = None,
+    reclient_instance = "goma-rbe-chromium",
+    configure_kitchen = True,
+    kitchen_emulate_gce = True,
+    os = os.LINUX_DEFAULT,
+)
+
 ci.fyi_celab_builder(
     name = "win-celab-builder-rel",
     console_view_entry = consoles.console_view_entry(
