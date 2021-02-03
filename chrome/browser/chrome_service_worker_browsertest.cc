@@ -138,7 +138,9 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
       blink::mojom::ServiceWorkerUpdateViaCache::kImports);
   GetServiceWorkerContext()->RegisterServiceWorker(
       embedded_test_server()->GetURL("/service_worker.js"), options,
-      base::BindOnce(&ExpectResultAndRun<bool>, true, run_loop.QuitClosure()));
+      base::BindOnce(&ExpectResultAndRun<blink::ServiceWorkerStatusCode>,
+                     blink::ServiceWorkerStatusCode::kOk,
+                     run_loop.QuitClosure()));
   run_loop.Run();
 
   // Leave the Service Worker registered, and make sure that the browser can
@@ -164,7 +166,9 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
       blink::mojom::ServiceWorkerUpdateViaCache::kImports);
   GetServiceWorkerContext()->RegisterServiceWorker(
       embedded_test_server()->GetURL("/service_worker.js"), options,
-      base::BindOnce(&ExpectResultAndRun<bool>, true, run_loop.QuitClosure()));
+      base::BindOnce(&ExpectResultAndRun<blink::ServiceWorkerStatusCode>,
+                     blink::ServiceWorkerStatusCode::kOk,
+                     run_loop.QuitClosure()));
   run_loop.Run();
 
   ui_test_utils::NavigateToURL(incognito,
@@ -190,7 +194,9 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
       blink::mojom::ServiceWorkerUpdateViaCache::kImports);
   GetServiceWorkerContext()->RegisterServiceWorker(
       embedded_test_server()->GetURL("/service_worker.js"), options,
-      base::BindOnce(&ExpectResultAndRun<bool>, false, run_loop.QuitClosure()));
+      base::BindOnce(&ExpectResultAndRun<blink::ServiceWorkerStatusCode>,
+                     blink::ServiceWorkerStatusCode::kErrorDisallowed,
+                     run_loop.QuitClosure()));
   run_loop.Run();
 }
 
@@ -674,7 +680,9 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerNavigationHintTest,
       blink::mojom::ServiceWorkerUpdateViaCache::kImports);
   GetServiceWorkerContext()->RegisterServiceWorker(
       embedded_test_server()->GetURL("/sw.js"), options,
-      base::BindOnce(&ExpectResultAndRun<bool>, true, run_loop.QuitClosure()));
+      base::BindOnce(&ExpectResultAndRun<blink::ServiceWorkerStatusCode>,
+                     blink::ServiceWorkerStatusCode::kOk,
+                     run_loop.QuitClosure()));
   run_loop.Run();
   RunNavigationHintTest("/scope/",
                         content::StartServiceWorkerForNavigationHintResult::
@@ -757,14 +765,16 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest, DisallowChromeScheme) {
 
   // Try to register the service worker.
   base::RunLoop run_loop;
-  bool result = true;
+  blink::ServiceWorkerStatusCode result = blink::ServiceWorkerStatusCode::kOk;
   blink::mojom::ServiceWorkerRegistrationOptions options(
       kScope, blink::mojom::ScriptType::kClassic,
       blink::mojom::ServiceWorkerUpdateViaCache::kImports);
   GetServiceWorkerContext()->RegisterServiceWorker(
       kScript, options,
       base::BindOnce(
-          [](base::OnceClosure quit_closure, bool* out_result, bool result) {
+          [](base::OnceClosure quit_closure,
+             blink::ServiceWorkerStatusCode* out_result,
+             blink::ServiceWorkerStatusCode result) {
             *out_result = result;
             std::move(quit_closure).Run();
           },
@@ -786,7 +796,7 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest, DisallowChromeScheme) {
   // It's difficult to change all these, so the test author hasn't actually
   // changed Chrome in a way that makes this test fail, to prove that the test
   // would be effective at catching a regression.
-  EXPECT_FALSE(result);
+  EXPECT_EQ(result, blink::ServiceWorkerStatusCode::kErrorInvalidArguments);
 }
 
 enum class ServicifiedFeatures { kNone, kServiceWorker, kNetwork };

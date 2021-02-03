@@ -130,9 +130,16 @@ ServiceWorkerRegistry::FindRegistrationCallback CreateFindRegistrationReceiver(
                         std::move(quit), status);
 }
 
-void ExpectResultAndRun(bool expected,
-                        base::RepeatingClosure continuation,
-                        bool actual) {
+void ExpectRegisterResultAndRun(blink::ServiceWorkerStatusCode expected,
+                                base::RepeatingClosure continuation,
+                                blink::ServiceWorkerStatusCode actual) {
+  EXPECT_EQ(expected, actual);
+  continuation.Run();
+}
+
+void ExpectUnregisterResultAndRun(bool expected,
+                                  base::RepeatingClosure continuation,
+                                  bool actual) {
   EXPECT_EQ(expected, actual);
   continuation.Run();
 }
@@ -1252,7 +1259,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest,
   observer->Init();
   public_context()->RegisterServiceWorker(
       embedded_test_server()->GetURL(kWorkerUrl), options,
-      base::BindOnce(&ExpectResultAndRun, true, base::DoNothing()));
+      base::BindOnce(&ExpectRegisterResultAndRun,
+                     blink::ServiceWorkerStatusCode::kOk, base::DoNothing()));
   observer->Wait();
   int64_t registration_id = observer->registration_id();
 
@@ -1299,7 +1307,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest,
   base::RunLoop run_loop;
   public_context()->UnregisterServiceWorker(
       embedded_test_server()->GetURL(kScope),
-      base::BindOnce(&ExpectResultAndRun, true, run_loop.QuitClosure()));
+      base::BindOnce(&ExpectUnregisterResultAndRun, true,
+                     run_loop.QuitClosure()));
   run_loop.Run();
 }
 
@@ -1323,7 +1332,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest,
   observer->Init();
   public_context()->RegisterServiceWorker(
       embedded_test_server()->GetURL(kWorkerUrl), options,
-      base::BindOnce(&ExpectResultAndRun, true, base::DoNothing()));
+      base::BindOnce(&ExpectRegisterResultAndRun,
+                     blink::ServiceWorkerStatusCode::kOk, base::DoNothing()));
   observer->Wait();
   int64_t registration_id = observer->registration_id();
 
@@ -1341,7 +1351,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest,
   base::RunLoop run_loop;
   public_context()->UnregisterServiceWorker(
       embedded_test_server()->GetURL(kScope),
-      base::BindOnce(&ExpectResultAndRun, true, run_loop.QuitClosure()));
+      base::BindOnce(&ExpectUnregisterResultAndRun, true,
+                     run_loop.QuitClosure()));
   run_loop.Run();
 }
 

@@ -2232,8 +2232,9 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
                           }));
 }
 
-void RunFirstParam(base::RepeatingClosure closure, bool success) {
-  ASSERT_TRUE(success);
+void RunFirstParam(base::RepeatingClosure closure,
+                   blink::ServiceWorkerStatusCode status) {
+  ASSERT_EQ(status, blink::ServiceWorkerStatusCode::kOk);
   closure.Run();
 }
 

@@ -154,7 +154,7 @@ class ServiceWorkerTaskQueue : public KeyedService,
 
   void DidRegisterServiceWorker(const SequencedContextId& context_id,
                                 base::Time start_time,
-                                bool success);
+                                blink::ServiceWorkerStatusCode status);
   void DidUnregisterServiceWorker(const ExtensionId& extension_id,
                                   ActivationSequence sequence,
                                   bool success);

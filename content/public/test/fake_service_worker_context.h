@@ -36,7 +36,7 @@ class FakeServiceWorkerContext : public ServiceWorkerContext {
   void RegisterServiceWorker(
       const GURL& script_url,
       const blink::mojom::ServiceWorkerRegistrationOptions& options,
-      ResultCallback callback) override;
+      StatusCodeCallback callback) override;
   void UnregisterServiceWorker(const GURL& scope,
                                ResultCallback callback) override;
   ServiceWorkerExternalRequestResult StartingExternalRequest(
@@ -60,8 +60,7 @@ class FakeServiceWorkerContext : public ServiceWorkerContext {
   void StartWorkerForScope(
       const GURL& scope,
       ServiceWorkerContext::StartWorkerCallback info_callback,
-      ServiceWorkerContext::StartWorkerFailureCallback failure_callback)
-      override;
+      ServiceWorkerContext::StatusCodeCallback failure_callback) override;
   void StartServiceWorkerAndDispatchMessage(
       const GURL& scope,
       blink::TransferableMessage message,

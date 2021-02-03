@@ -105,7 +105,7 @@ void ServiceWorkerContextAdapter::RemoveObserver(
 void ServiceWorkerContextAdapter::RegisterServiceWorker(
     const GURL& script_url,
     const blink::mojom::ServiceWorkerRegistrationOptions& options,
-    ResultCallback callback) {
+    StatusCodeCallback callback) {
   NOTIMPLEMENTED();
 }
 
@@ -173,7 +173,7 @@ void ServiceWorkerContextAdapter::ClearAllServiceWorkersForTest(
 void ServiceWorkerContextAdapter::StartWorkerForScope(
     const GURL& scope,
     StartWorkerCallback info_callback,
-    StartWorkerFailureCallback failure_callback) {
+    StatusCodeCallback status_callback) {
   NOTIMPLEMENTED();
 }
 

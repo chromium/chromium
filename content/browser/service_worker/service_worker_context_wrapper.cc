@@ -91,14 +91,13 @@ void DidFindRegistrationForStartActiveWorker(
       base::BindOnce(WorkerStarted, std::move(callback)));
 }
 
-void DidStartWorker(
-    scoped_refptr<ServiceWorkerVersion> version,
-    ServiceWorkerContext::StartWorkerCallback info_callback,
-    ServiceWorkerContext::StartWorkerFailureCallback error_callback,
-    blink::ServiceWorkerStatusCode start_worker_status) {
+void DidStartWorker(scoped_refptr<ServiceWorkerVersion> version,
+                    ServiceWorkerContext::StartWorkerCallback info_callback,
+                    ServiceWorkerContext::StatusCodeCallback failure_callback,
+                    blink::ServiceWorkerStatusCode start_worker_status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (start_worker_status != blink::ServiceWorkerStatusCode::kOk) {
-    std::move(error_callback).Run(start_worker_status);
+    std::move(failure_callback).Run(start_worker_status);
     return;
   }
   EmbeddedWorkerInstance* instance = version->embedded_worker();
@@ -109,7 +108,7 @@ void DidStartWorker(
 
 void FoundRegistrationForStartWorker(
     ServiceWorkerContext::StartWorkerCallback info_callback,
-    ServiceWorkerContext::StartWorkerFailureCallback failure_callback,
+    ServiceWorkerContext::StatusCodeCallback failure_callback,
     blink::ServiceWorkerStatusCode service_worker_status,
     scoped_refptr<ServiceWorkerRegistration> registration) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -460,11 +459,14 @@ void ServiceWorkerContextWrapper::RemoveObserver(
 void ServiceWorkerContextWrapper::RegisterServiceWorker(
     const GURL& script_url,
     const blink::mojom::ServiceWorkerRegistrationOptions& options,
-    ResultCallback callback) {
+    StatusCodeCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!context_core_) {
     GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), false));
+        FROM_HERE,
+        base::BindOnce(
+            std::move(callback),
+            blink::ServiceWorkerStatusCode::kErrorStartWorkerFailed));
     return;
   }
   blink::mojom::ServiceWorkerRegistrationOptions options_to_pass(
@@ -478,7 +480,10 @@ void ServiceWorkerContextWrapper::RegisterServiceWorker(
           network::mojom::ReferrerPolicy::kDefault,
           /*outgoing_referrer=*/script_url,
           blink::mojom::InsecureRequestsPolicy::kDoNotUpgrade),
-      WrapResultCallbackToTakeStatusCode(std::move(callback)));
+      base::BindOnce(
+          [](StatusCodeCallback callback, blink::ServiceWorkerStatusCode status,
+             const std::string&, int64_t) { std::move(callback).Run(status); },
+          std::move(callback)));
 }
 
 void ServiceWorkerContextWrapper::UnregisterServiceWorker(
@@ -646,7 +651,7 @@ void ServiceWorkerContextWrapper::ClearAllServiceWorkersForTest(
 void ServiceWorkerContextWrapper::StartWorkerForScope(
     const GURL& scope,
     StartWorkerCallback info_callback,
-    StartWorkerFailureCallback failure_callback) {
+    StatusCodeCallback failure_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   FindRegistrationForScopeImpl(
       scope, /*include_installing_version=*/true,

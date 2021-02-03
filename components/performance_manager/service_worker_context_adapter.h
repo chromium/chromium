@@ -49,7 +49,7 @@ class ServiceWorkerContextAdapter
   void RegisterServiceWorker(
       const GURL& script_url,
       const blink::mojom::ServiceWorkerRegistrationOptions& options,
-      ResultCallback callback) override;
+      StatusCodeCallback callback) override;
   void UnregisterServiceWorker(const GURL& scope,
                                ResultCallback callback) override;
   content::ServiceWorkerExternalRequestResult StartingExternalRequest(
@@ -68,10 +68,9 @@ class ServiceWorkerContextAdapter
   void CheckOfflineCapability(const GURL& url,
                               CheckOfflineCapabilityCallback callback) override;
   void ClearAllServiceWorkersForTest(base::OnceClosure callback) override;
-  void StartWorkerForScope(
-      const GURL& scope,
-      StartWorkerCallback info_callback,
-      StartWorkerFailureCallback failure_callback) override;
+  void StartWorkerForScope(const GURL& scope,
+                           StartWorkerCallback info_callback,
+                           StatusCodeCallback failure_callback) override;
   void StartServiceWorkerAndDispatchMessage(
       const GURL& scope,
       blink::TransferableMessage message,

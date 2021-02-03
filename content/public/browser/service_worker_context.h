@@ -87,14 +87,14 @@ class CONTENT_EXPORT ServiceWorkerContext {
       base::OnceCallback<void(OfflineCapability capability,
                               int64_t registration_id)>;
 
+  using StatusCodeCallback =
+      base::OnceCallback<void(blink::ServiceWorkerStatusCode status_code)>;
+
   using StartServiceWorkerForNavigationHintCallback = base::OnceCallback<void(
       StartServiceWorkerForNavigationHintResult result)>;
 
   using StartWorkerCallback = base::OnceCallback<
       void(int64_t version_id, int process_id, int thread_id)>;
-
-  using StartWorkerFailureCallback =
-      base::OnceCallback<void(blink::ServiceWorkerStatusCode status_code)>;
 
   // Returns BrowserThread::UI always.
   // TODO(https://crbug.com/1138155): Remove this.
@@ -125,7 +125,7 @@ class CONTENT_EXPORT ServiceWorkerContext {
   virtual void RegisterServiceWorker(
       const GURL& script_url,
       const blink::mojom::ServiceWorkerRegistrationOptions& options,
-      ResultCallback callback) = 0;
+      StatusCodeCallback callback) = 0;
 
   // Equivalent to calling ServiceWorkerRegistration#unregister on the
   // registration for |scope|. |callback| is passed true when the JS promise is
@@ -204,10 +204,9 @@ class CONTENT_EXPORT ServiceWorkerContext {
   //
   // There is no guarantee about whether the callback is called synchronously or
   // asynchronously.
-  virtual void StartWorkerForScope(
-      const GURL& scope,
-      StartWorkerCallback info_callback,
-      StartWorkerFailureCallback failure_callback) = 0;
+  virtual void StartWorkerForScope(const GURL& scope,
+                                   StartWorkerCallback info_callback,
+                                   StatusCodeCallback failure_callback) = 0;
 
   // Starts the active worker of the registration for the given |scope| and
   // dispatches the given |message| to the service worker. |result_callback|

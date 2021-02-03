@@ -28,7 +28,7 @@ void FakeServiceWorkerContext::RemoveObserver(
 void FakeServiceWorkerContext::RegisterServiceWorker(
     const GURL& script_url,
     const blink::mojom::ServiceWorkerRegistrationOptions& options,
-    ResultCallback callback) {
+    StatusCodeCallback callback) {
   NOTREACHED();
 }
 void FakeServiceWorkerContext::UnregisterServiceWorker(
@@ -84,7 +84,7 @@ void FakeServiceWorkerContext::ClearAllServiceWorkersForTest(
 void FakeServiceWorkerContext::StartWorkerForScope(
     const GURL& scope,
     ServiceWorkerContext::StartWorkerCallback info_callback,
-    ServiceWorkerContext::StartWorkerFailureCallback failure_callback) {
+    ServiceWorkerContext::StatusCodeCallback failure_callback) {
   NOTREACHED();
 }
 void FakeServiceWorkerContext::StartServiceWorkerForNavigationHint(

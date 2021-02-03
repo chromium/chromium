@@ -36,8 +36,8 @@ namespace browsing_data_browsertest_utils {
 
 namespace {
 
-void AddServiceWorkerCallback(bool success) {
-  ASSERT_TRUE(success);
+void AddServiceWorkerCallback(blink::ServiceWorkerStatusCode status) {
+  ASSERT_EQ(status, blink::ServiceWorkerStatusCode::kOk);
 }
 
 void GetServiceWorkersCallback(

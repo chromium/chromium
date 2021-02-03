@@ -125,12 +125,12 @@ class SelfDeleteInstaller
     FinishInstallation(false);
   }
 
-  void OnRegisterServiceWorkerResult(bool success) {
+  void OnRegisterServiceWorkerResult(blink::ServiceWorkerStatusCode status) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     if (AbortInstallIfWebContentsOrBrowserContextIsGone())
       return;
 
-    if (!success) {
+    if (status != blink::ServiceWorkerStatusCode::kOk) {
       LOG(ERROR) << "Failed to install the web payment app " << sw_url_.spec();
       FinishInstallation(false);
     }
