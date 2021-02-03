@@ -178,23 +178,13 @@ Installer::Result Installer::InstallHelper(
   if (!base::PathExists(application_installer))
     return Result(kErrorMissingRunableFile);
 
-  // TODO(crbug.com/1014630): handle the installer API.
-#if defined(OS_WIN)
-  return RunApplicationInstaller(application_installer,
-                                 install_params->arguments,
-                                 std::move(progress_callback));
-#else
-  const int exit_code =
-      RunApplicationInstaller(application_installer, install_params->arguments,
-                              std::move(progress_callback));
-
   // Upon success, when the control flow returns back to the |update_client|,
   // the prefs are updated asynchronously with the new |pv| and |fingerprint|.
   // The task sequencing guarantees that the prefs will be updated by the
   // time another CrxDataCallback is invoked, which needs updated values.
-  return exit_code == 0 ? Result(update_client::InstallError::NONE)
-                        : Result(kErrorApplicationInstallerFailed, exit_code);
-#endif  // OS_WIN
+  return RunApplicationInstaller(application_installer,
+                                 install_params->arguments,
+                                 std::move(progress_callback));
 }
 
 void Installer::InstallWithSyncPrimitives(
@@ -254,10 +244,11 @@ base::FilePath Installer::GetCurrentInstallDir() const {
 }
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
-int Installer::RunApplicationInstaller(const base::FilePath& app_installer,
-                                       const std::string& arguments) {
+Installer::Result Installer::RunApplicationInstaller(
+    const base::FilePath& app_installer,
+    const std::string& arguments) {
   NOTREACHED();
-  return -1;
+  return Installer::Result(-1);
 }
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
