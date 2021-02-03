@@ -18,14 +18,10 @@ namespace blink {
 namespace {
 
 void SetLayerNeedsRepaintOnCullRectChange(PaintLayer& layer) {
-  // TODO(wangxianzhu): Enable the condition when we actually use the calculated
-  // cull rects during painting. For now this causes unnecessary NeedsRepaint
-  // on cull rect changes that don't affect painted result. Some unit tests are
-  // temporarily disabled for this reason.
-  // if (layer.PreviousPaintResult() == kMayBeClippedByCullRect ||
-  //    RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled()) {
-  layer.SetNeedsRepaint();
-  // }
+  if (layer.PreviousPaintResult() == kMayBeClippedByCullRect ||
+      RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled()) {
+    layer.SetNeedsRepaint();
+  }
 }
 
 void SetFragmentCullRect(PaintLayer& layer,
@@ -89,12 +85,15 @@ void CullRectUpdater::UpdateInternal(const CullRect& input_cull_rect) {
 void CullRectUpdater::UpdateRecursively(PaintLayer& layer,
                                         const PaintLayer& parent_painting_layer,
                                         bool force_update_self) {
-  bool force_update_children = layer.ForcesChildrenCullRectUpdate();
-  if (force_update_self || layer.NeedsCullRectUpdate() ||
-      ShouldProactivelyUpdateCullRect(layer))
+  bool should_proactively_update = ShouldProactivelyUpdateCullRect(layer);
+  bool force_update_children = should_proactively_update;
+
+  if (force_update_self || should_proactively_update ||
+      layer.NeedsCullRectUpdate())
     force_update_children |= UpdateForSelf(layer, parent_painting_layer);
 
-  if (force_update_children || layer.DescendantNeedsCullRectUpdate())
+  if (force_update_children || should_proactively_update ||
+      layer.DescendantNeedsCullRectUpdate())
     UpdateForDescendants(layer, force_update_children);
 
   layer.ClearNeedsCullRectUpdate();
@@ -255,6 +254,34 @@ CullRect CullRectUpdater::ComputeFragmentContentsCullRect(
         root_state_, local_state, contents_state, old_contents_cull_rect);
   }
   return contents_cull_rect;
+}
+
+OverriddenCullRectScope::OverriddenCullRectScope(LocalFrameView& frame_view,
+                                                 const CullRect& cull_rect)
+    : frame_view_(frame_view) {
+  if (!RuntimeEnabledFeatures::CullRectUpdateEnabled())
+    return;
+
+  PaintLayer* root_layer = frame_view_.GetLayoutView()->Layer();
+  DCHECK(root_layer);
+
+  // The cull rects calculated during PrePaint are good.
+  if (frame_view.GetFrame().IsLocalRoot() &&
+      !root_layer->NeedsCullRectUpdate() &&
+      cull_rect ==
+          root_layer->GetLayoutObject().FirstFragment().GetCullRect()) {
+    DCHECK(!root_layer->DescendantNeedsCullRectUpdate());
+    return;
+  }
+
+  updated_ = true;
+  root_layer->SetNeedsCullRectUpdate();
+  CullRectUpdater(*root_layer).UpdateInternal(cull_rect);
+}
+
+OverriddenCullRectScope::~OverriddenCullRectScope() {
+  if (RuntimeEnabledFeatures::CullRectUpdateEnabled() && updated_)
+    frame_view_.GetLayoutView()->Layer()->SetNeedsCullRectUpdate();
 }
 
 }  // namespace blink

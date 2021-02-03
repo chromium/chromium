@@ -185,7 +185,7 @@ sk_sp<const PaintRecord> LayoutSVGResourceClipper::CreatePaintRecord() {
   // - masker/filter not applied when laying out the children
   // - fill is set to the initial fill paint server (solid, black)
   // - stroke is set to the initial stroke paint server (none)
-  PaintInfo info(builder.Context(), LayoutRect::InfiniteIntRect(),
+  PaintInfo info(builder.Context(), CullRect::Infinite(),
                  PaintPhase::kForeground, kGlobalPaintNormalPhase,
                  kPaintLayerPaintingRenderingClipPathAsMask |
                      kPaintLayerPaintingRenderingResourceSubtree);

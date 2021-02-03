@@ -57,7 +57,7 @@ struct CORE_EXPORT PaintInfo {
 
  public:
   PaintInfo(GraphicsContext& context,
-            const IntRect& cull_rect,
+            const CullRect& cull_rect,
             PaintPhase phase,
             GlobalPaintFlags global_paint_flags,
             PaintLayerFlags paint_flags,
@@ -137,6 +137,7 @@ struct CORE_EXPORT PaintInfo {
   PaintLayerFlags PaintFlags() const { return paint_flags_; }
 
   const CullRect& GetCullRect() const { return cull_rect_; }
+  void SetCullRect(const CullRect& cull_rect) { cull_rect_ = cull_rect; }
 
   bool IntersectsCullRect(
       const PhysicalRect& rect,

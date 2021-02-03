@@ -1595,7 +1595,7 @@ void NGBoxFragmentPainter::PaintTextClipMask(GraphicsContext& context,
                                              const IntRect& mask_rect,
                                              const PhysicalOffset& paint_offset,
                                              bool object_has_multiple_boxes) {
-  PaintInfo paint_info(context, mask_rect, PaintPhase::kTextClip,
+  PaintInfo paint_info(context, CullRect(mask_rect), PaintPhase::kTextClip,
                        kGlobalPaintNormalPhase, 0);
   if (!object_has_multiple_boxes) {
     PaintObject(paint_info, paint_offset);

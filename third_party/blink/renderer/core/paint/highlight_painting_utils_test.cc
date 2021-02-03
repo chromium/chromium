@@ -170,7 +170,7 @@ TEST_F(HighlightPaintingUtilsTest, SelectedTextInputShadow) {
   std::unique_ptr<PaintController> controller{
       std::make_unique<PaintController>()};
   GraphicsContext context(*controller);
-  PaintInfo paint_info(context, IntRect(), PaintPhase::kForeground,
+  PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground,
                        kGlobalPaintNormalPhase, 0 /* paint_flags */);
   TextPaintStyle paint_style;
 

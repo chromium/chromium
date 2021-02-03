@@ -1021,7 +1021,7 @@ void CanvasRenderingContext2D::fillFormattedText(
   GraphicsContext graphics_context(paint_controller);
   PhysicalOffset physical_offset((LayoutUnit(x)), (LayoutUnit(y)));
   NGBoxFragmentPainter box_fragment_painter(fragment);
-  PaintInfo paint_info(graphics_context, LayoutRect::InfiniteIntRect(),
+  PaintInfo paint_info(graphics_context, CullRect::Infinite(),
                        PaintPhase::kForeground, kGlobalPaintNormalPhase,
                        kPaintLayerPaintingRenderingClipPathAsMask |
                            kPaintLayerPaintingRenderingResourceSubtree);

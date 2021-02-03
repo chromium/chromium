@@ -343,10 +343,12 @@ void GraphicsLayer::Paint(Vector<PreCompositedLayerInfo>& pre_composited_layers,
 #endif
   DCHECK(layer_state_) << "No layer state for GraphicsLayer: " << DebugName();
 
-  IntRect new_interest_rect =
-      interest_rect
-          ? *interest_rect
-          : client_.ComputeInterestRect(this, previous_interest_rect_);
+  IntRect new_interest_rect;
+  if (!RuntimeEnabledFeatures::CullRectUpdateEnabled()) {
+    new_interest_rect = interest_rect ? *interest_rect
+                                      : client_.ComputeInterestRect(
+                                            this, previous_interest_rect_);
+  }
 
   auto& paint_controller = GetPaintController();
   PaintController::ScopedBenchmarkMode scoped_benchmark_mode(paint_controller,
@@ -682,6 +684,12 @@ void GraphicsLayer::SetContentsLayerState(
 
   ContentsLayer()->SetSubtreePropertyChanged();
   client_.GraphicsLayersDidChange();
+}
+
+gfx::Rect GraphicsLayer::PaintableRegion() const {
+  return RuntimeEnabledFeatures::CullRectUpdateEnabled()
+             ? client_.PaintableRegion(this)
+             : previous_interest_rect_;
 }
 
 scoped_refptr<cc::DisplayItemList> GraphicsLayer::PaintContentsToDisplayList() {

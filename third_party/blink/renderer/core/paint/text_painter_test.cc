@@ -31,12 +31,12 @@ class TextPainterTest : public RenderingTest {
   LineLayoutText GetLineLayoutText() { return LineLayoutText(layout_text_); }
 
   PaintInfo CreatePaintInfoForBackground() {
-    return PaintInfo(context_, IntRect(), PaintPhase::kSelfBlockBackgroundOnly,
+    return PaintInfo(context_, CullRect(), PaintPhase::kSelfBlockBackgroundOnly,
                      kGlobalPaintNormalPhase, 0);
   }
 
   PaintInfo CreatePaintInfoForTextClip() {
-    return PaintInfo(context_, IntRect(), PaintPhase::kTextClip,
+    return PaintInfo(context_, CullRect(), PaintPhase::kTextClip,
                      kGlobalPaintNormalPhase, 0);
   }
 

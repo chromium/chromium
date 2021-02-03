@@ -15,7 +15,6 @@
 namespace blink {
 
 class CullRect;
-class ClipRect;
 class ComputedStyle;
 class GraphicsContext;
 struct PhysicalOffset;
@@ -73,13 +72,14 @@ class CORE_EXPORT PaintLayerPainter {
   void PaintFragmentWithPhase(PaintPhase,
                               const PaintLayerFragment&,
                               GraphicsContext&,
-                              const ClipRect&,
+                              const CullRect&,
                               const PaintLayerPaintingInfo&,
                               PaintLayerFlags);
-  void PaintBackgroundForFragments(const PaintLayerFragments&,
-                                   GraphicsContext&,
-                                   const PaintLayerPaintingInfo&,
-                                   PaintLayerFlags);
+  void PaintBackgroundForFragmentsWithPhase(PaintPhase,
+                                            const PaintLayerFragments&,
+                                            GraphicsContext&,
+                                            const PaintLayerPaintingInfo&,
+                                            PaintLayerFlags);
   void PaintForegroundForFragments(const PaintLayerFragments&,
                                    GraphicsContext&,
                                    const PaintLayerPaintingInfo&,
@@ -89,18 +89,10 @@ class CORE_EXPORT PaintLayerPainter {
                                             GraphicsContext&,
                                             const PaintLayerPaintingInfo&,
                                             PaintLayerFlags);
-  void PaintSelfOutlineForFragments(const PaintLayerFragments&,
-                                    GraphicsContext&,
-                                    const PaintLayerPaintingInfo&,
-                                    PaintLayerFlags);
   void PaintOverlayOverflowControlsForFragments(const PaintLayerFragments&,
                                                 GraphicsContext&,
                                                 const PaintLayerPaintingInfo&,
                                                 PaintLayerFlags);
-  void PaintMaskForFragments(const PaintLayerFragments&,
-                             GraphicsContext&,
-                             const PaintLayerPaintingInfo&,
-                             PaintLayerFlags);
 
   void AdjustForPaintProperties(const GraphicsContext&,
                                 PaintLayerPaintingInfo&,

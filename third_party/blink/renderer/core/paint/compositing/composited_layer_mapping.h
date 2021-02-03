@@ -169,6 +169,7 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
   IntRect ComputeInterestRect(
       const GraphicsLayer*,
       const IntRect& previous_interest_rect) const override;
+  IntRect PaintableRegion(const GraphicsLayer*) const override;
   LayoutSize SubpixelAccumulation() const final;
   bool NeedsRepaint(const GraphicsLayer&) const override;
   void PaintContents(const GraphicsLayer*,

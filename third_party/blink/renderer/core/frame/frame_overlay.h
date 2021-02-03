@@ -90,6 +90,7 @@ class CORE_EXPORT FrameOverlay : public GraphicsLayerClient,
   bool NeedsRepaint(const GraphicsLayer&) const override { return true; }
   IntRect ComputeInterestRect(const GraphicsLayer*,
                               const IntRect&) const override;
+  IntRect PaintableRegion(const GraphicsLayer*) const override;
   void PaintContents(const GraphicsLayer*,
                      GraphicsContext&,
                      GraphicsLayerPaintingPhase,

@@ -97,6 +97,14 @@ IntSize FrameOverlay::Size() const {
 IntRect FrameOverlay::ComputeInterestRect(const GraphicsLayer* graphics_layer,
                                           const IntRect&) const {
   DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
+  DCHECK(!RuntimeEnabledFeatures::CullRectUpdateEnabled());
+  return IntRect(IntPoint(), Size());
+}
+
+IntRect FrameOverlay::PaintableRegion(
+    const GraphicsLayer* graphics_layer) const {
+  DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
+  DCHECK(RuntimeEnabledFeatures::CullRectUpdateEnabled());
   return IntRect(IntPoint(), Size());
 }
 

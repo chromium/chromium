@@ -230,7 +230,7 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
   friend class GraphicsLayerTest;
 
   // cc::ContentLayerClient implementation.
-  gfx::Rect PaintableRegion() const final { return previous_interest_rect_; }
+  gfx::Rect PaintableRegion() const final;
   scoped_refptr<cc::DisplayItemList> PaintContentsToDisplayList() final;
   bool FillsBoundsCompletely() const final { return false; }
 
@@ -292,6 +292,7 @@ class PLATFORM_EXPORT GraphicsLayer : public DisplayItemClient,
 
   mutable std::unique_ptr<PaintController> paint_controller_;
 
+  // Used only when CullRectUpdate is not enabled.
   IntRect previous_interest_rect_;
 
   struct LayerState {

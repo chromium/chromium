@@ -1586,6 +1586,8 @@ static const int kPixelDistanceToRecord = 4000;
 
 IntRect CompositedLayerMapping::RecomputeInterestRect(
     const GraphicsLayer* graphics_layer) const {
+  DCHECK(!RuntimeEnabledFeatures::CullRectUpdateEnabled());
+
   IntRect graphics_layer_bounds(IntPoint(), IntSize(graphics_layer->Size()));
 
   FloatClipRect mapping_rect((FloatRect(graphics_layer_bounds)));
@@ -1691,6 +1693,8 @@ bool CompositedLayerMapping::InterestRectChangedEnoughToRepaint(
     const IntRect& previous_interest_rect,
     const IntRect& new_interest_rect,
     const IntSize& layer_size) {
+  DCHECK(!RuntimeEnabledFeatures::CullRectUpdateEnabled());
+
   if (previous_interest_rect.IsEmpty() && new_interest_rect.IsEmpty())
     return false;
 
@@ -1728,6 +1732,8 @@ bool CompositedLayerMapping::InterestRectChangedEnoughToRepaint(
 IntRect CompositedLayerMapping::ComputeInterestRect(
     const GraphicsLayer* graphics_layer,
     const IntRect& previous_interest_rect) const {
+  DCHECK(!RuntimeEnabledFeatures::CullRectUpdateEnabled());
+
   // Use the previous interest rect if it covers the whole layer.
   IntRect whole_layer_rect =
       IntRect(IntPoint(), IntSize(graphics_layer->Size()));
@@ -1747,6 +1753,22 @@ IntRect CompositedLayerMapping::ComputeInterestRect(
                                          IntSize(graphics_layer->Size())))
     return new_interest_rect;
   return previous_interest_rect;
+}
+
+IntRect CompositedLayerMapping::PaintableRegion(
+    const GraphicsLayer* graphics_layer) const {
+  DCHECK(RuntimeEnabledFeatures::CullRectUpdateEnabled());
+  const auto& fragment = OwningLayer().GetLayoutObject().FirstFragment();
+  CullRect cull_rect = graphics_layer == scrolling_contents_layer_.get() ||
+                               (graphics_layer == foreground_layer_.get() &&
+                                scrolling_contents_layer_)
+                           ? fragment.GetContentsCullRect()
+                           : fragment.GetCullRect();
+  IntRect layer_rect(IntPoint(), IntSize(graphics_layer->Size()));
+  if (cull_rect.IsInfinite())
+    return layer_rect;
+  cull_rect.MoveBy(-graphics_layer->GetOffsetFromTransformNode());
+  return Intersection(cull_rect.Rect(), layer_rect);
 }
 
 LayoutSize CompositedLayerMapping::SubpixelAccumulation() const {
@@ -1809,7 +1831,11 @@ void CompositedLayerMapping::PaintContents(
     const GraphicsLayer* graphics_layer,
     GraphicsContext& context,
     GraphicsLayerPaintingPhase graphics_layer_painting_phase,
-    const IntRect& interest_rect) const {
+    const IntRect& interest_rect_arg) const {
+  IntRect interest_rect = RuntimeEnabledFeatures::CullRectUpdateEnabled()
+                              ? PaintableRegion(graphics_layer)
+                              : interest_rect_arg;
+
   FramePaintTiming frame_paint_timing(context, GetLayoutObject().GetFrame());
 
   // https://code.google.com/p/chromium/issues/detail?id=343772

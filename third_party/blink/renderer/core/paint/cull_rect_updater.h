@@ -14,6 +14,7 @@ namespace blink {
 
 class FragmentData;
 class PaintLayer;
+class LocalFrameView;
 
 // This class is used for updating the cull rects of PaintLayer fragments (see:
 // |FragmentData::cull_rect_| and |FragmentData::contents_cull_rect_|.
@@ -32,6 +33,8 @@ class CORE_EXPORT CullRectUpdater {
   void Update() { UpdateInternal(CullRect::Infinite()); }
 
  private:
+  friend class OverriddenCullRectScope;
+
   void UpdateInternal(const CullRect& input_cull_rect);
   void UpdateRecursively(PaintLayer&,
                          const PaintLayer& parent_painting_layer,
@@ -49,6 +52,22 @@ class CORE_EXPORT CullRectUpdater {
 
   PaintLayer& root_layer_;
   PropertyTreeState root_state_;
+};
+
+// Used when painting with a custom top-level cull rect, e.g. when printing a
+// page. It temporarily overrides the cull rect on the PaintLayer of the
+// LocalFrameView and marks the PaintLayer as needing to recalculate the cull
+// rect when leaving this scope.
+class OverriddenCullRectScope {
+  STACK_ALLOCATED();
+
+ public:
+  OverriddenCullRectScope(LocalFrameView&, const CullRect&);
+  ~OverriddenCullRectScope();
+
+ private:
+  LocalFrameView& frame_view_;
+  bool updated_ = false;
 };
 
 }  // namespace blink

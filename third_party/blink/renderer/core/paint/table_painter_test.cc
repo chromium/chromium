@@ -115,11 +115,9 @@ TEST_P(TablePainterTest, BackgroundInSelfPaintingRow) {
   SetBodyInnerHTML(R"HTML(
     <style>
       body { margin: 0 }
-      td { width: 200px; height: 200px; border: 0; background-color: green;
-    }
+      td { width: 200px; height: 200px; border: 0; background-color: green; }
       tr { background-color: blue; opacity: 0.5; }
-      table { border: none; border-spacing: 100px; border-collapse:
-    separate; }
+      table { border: none; border-spacing: 100px; border-collapse: separate; }
     </style>
     <table>
       <tr id='row'><td id='cell1'><td id='cell2'></td></tr>

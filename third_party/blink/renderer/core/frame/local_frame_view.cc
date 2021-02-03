@@ -124,6 +124,7 @@
 #include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
 #include "third_party/blink/renderer/core/paint/compositing/compositing_inputs_updater.h"
 #include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
+#include "third_party/blink/renderer/core/paint/cull_rect_updater.h"
 #include "third_party/blink/renderer/core/paint/frame_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
@@ -4131,7 +4132,10 @@ void LocalFrameView::PaintOutsideOfLifecycle(
     frame_view.Lifecycle().AdvanceTo(DocumentLifecycle::kInPaint);
   });
 
-  PaintInternal(context, global_paint_flags, cull_rect);
+  {
+    OverriddenCullRectScope force_cull_rect(*this, cull_rect);
+    PaintInternal(context, global_paint_flags, cull_rect);
+  }
 
   ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
     frame_view.Lifecycle().AdvanceTo(DocumentLifecycle::kPaintClean);
@@ -4148,7 +4152,10 @@ void LocalFrameView::PaintContentsOutsideOfLifecycle(
     frame_view.Lifecycle().AdvanceTo(DocumentLifecycle::kInPaint);
   });
 
-  FramePainter(*this).PaintContents(context, global_paint_flags, cull_rect);
+  {
+    OverriddenCullRectScope force_cull_rect(*this, cull_rect);
+    FramePainter(*this).PaintContents(context, global_paint_flags, cull_rect);
+  }
 
   ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
     frame_view.Lifecycle().AdvanceTo(DocumentLifecycle::kPaintClean);
@@ -4158,6 +4165,7 @@ void LocalFrameView::PaintContentsOutsideOfLifecycle(
 void LocalFrameView::PaintContentsForTest(const CullRect& cull_rect) {
   AllowThrottlingScope allow_throttling(*this);
   Lifecycle().AdvanceTo(DocumentLifecycle::kInPaint);
+  OverriddenCullRectScope force_cull_rect(*this, cull_rect);
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
     PaintController& paint_controller = EnsurePaintController();
     if (GetLayoutView()->Layer()->SelfOrDescendantNeedsRepaint()) {

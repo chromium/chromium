@@ -41,12 +41,9 @@ class ScopedPaintState {
     paint_offset_ = fragment_to_paint_->PaintOffset();
     if (&object == paint_info.PaintContainer()) {
       // PaintLayerPainter already adjusted for PaintOffsetTranslation for
-      // PaintContainer. TODO(wangxianzhu): Can we combine the code?
+      // PaintContainer.
       return;
     }
-    // TODO(wangxianzhu): Combine code for other paint properties into this
-    // class, then the following will be something like
-    // AdjustForLocalBorcerBoxProperties().
     const auto* properties = fragment_to_paint_->PaintProperties();
     if (properties && properties->PaintOffsetTranslation()) {
       AdjustForPaintOffsetTranslation(object,
