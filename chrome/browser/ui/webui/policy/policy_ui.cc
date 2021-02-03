@@ -34,8 +34,6 @@ content::WebUIDataSource* CreatePolicyUIHtmlSource() {
     {"labelAssetId", IDS_POLICY_LABEL_ASSET_ID},
     {"labelClientId", IDS_POLICY_LABEL_CLIENT_ID},
     {"labelDirectoryApiId", IDS_POLICY_LABEL_DIRECTORY_API_ID},
-    {"labelEnterpriseDisplayDomain",
-     IDS_POLICY_LABEL_ENTERPRISE_DISPLAY_DOMAIN},
     {"labelEnterpriseEnrollmentDomain",
      IDS_POLICY_LABEL_ENTERPRISE_ENROLLMENT_DOMAIN},
     {"labelGaiaId", IDS_POLICY_LABEL_GAIA_ID},

@@ -113,8 +113,6 @@ cr.define('policy', function() {
             loadTimeData.getString('statusDevice');
         this.setLabelAndShow_(
             '.enterprise-enrollment-domain', status.enterpriseEnrollmentDomain);
-        this.setLabelAndShow_(
-            '.enterprise-display-domain', status.enterpriseDisplayDomain);
 
         // Populate the device naming information.
         // Populate the asset identifier.
