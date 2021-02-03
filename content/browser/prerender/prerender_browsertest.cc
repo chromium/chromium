@@ -504,10 +504,11 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, RestrictedCookieAccess) {
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
   // Set a cookie to the origin.
+  const std::string initial_cookie = "initial_cookie=exist";
   const std::string prerender_cookie = "prerender_cookie=exist";
   EvalJsResult result =
       EvalJs(shell()->web_contents(),
-             "document.cookie='" + prerender_cookie + "; path=/'");
+             "document.cookie='" + initial_cookie + "; path=/'");
   EXPECT_TRUE(result.error.empty()) << result.error;
 
   // Make a prerendered page.
@@ -519,8 +520,16 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, RestrictedCookieAccess) {
   WebContents* prerender_contents = WebContents::FromRenderFrameHost(
       prerender_host->GetPrerenderedMainFrameHostForTesting());
 
-  // Verify the prerendered page can access the cookie.
-  EXPECT_EQ(prerender_cookie, EvalJs(prerender_contents, "document.cookie"));
+  // Verify the prerendered page can read the cookie.
+  EXPECT_EQ(initial_cookie, EvalJs(prerender_contents, "document.cookie"));
+
+  // Verify the prerendered page can update cookies.
+  EvalJsResult prerender_result = EvalJs(
+      prerender_contents, "document.cookie='" + prerender_cookie + "; path=/'");
+  EXPECT_TRUE(prerender_result.error.empty()) << prerender_result.error;
+  // Read the updated cookie from the initial page.
+  EXPECT_EQ(initial_cookie + "; " + prerender_cookie,
+            EvalJs(shell()->web_contents(), "document.cookie"));
 }
 
 class MojoCapabilityControlTestContentBrowserClient
