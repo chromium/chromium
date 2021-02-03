@@ -189,6 +189,7 @@ class RenderViewContextMenu : public RenderViewContextMenuBase {
   void AppendCurrentExtensionItems();
 #endif
   void AppendPrintPreviewItems();
+  void AppendSearchLensForImageItems();
   void AppendSearchWebForImageItems();
   void AppendProtocolHandlerSubMenu();
   void AppendPasswordItems();
@@ -228,6 +229,7 @@ class RenderViewContextMenu : public RenderViewContextMenuBase {
   void ExecExitFullscreen();
   void ExecCopyLinkText();
   void ExecCopyImageAt();
+  void ExecSearchLensForImage();
   void ExecSearchWebForImage();
   void ExecLoadImage();
   void ExecPlayPause();

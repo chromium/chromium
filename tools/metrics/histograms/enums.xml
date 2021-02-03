@@ -12914,7 +12914,7 @@ Called by update_net_error_codes.py.-->
   <int value="25" label="Preview image (Ephemeral tab)"/>
   <int value="26" label="Share Link (DirectShare)"/>
   <int value="27" label="Share Image (DirectShare)"/>
-  <int value="28" label="Search with Google Lens"/>
+  <int value="28" label="Search Image with Google Lens"/>
   <int value="29" label="Copy image"/>
   <int value="30" label="Shop Similar Products"/>
   <int value="31" label="Shop image with Google Lens"/>
@@ -12946,6 +12946,7 @@ Called by update_net_error_codes.py.-->
   <int value="18" label="Paste text"/>
   <int value="19" label="Go to URL"/>
   <int value="20" label="Copy link to text"/>
+  <int value="21" label="Search Image with Google Lens"/>
 </enum>
 
 <enum name="ContextMenuOptionIOS">
@@ -65482,6 +65483,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="110" label="IDC_CONTENT_CONTEXT_GENERATE_QR_CODE"/>
   <int value="111" label="IDC_CONTENT_CLIPBOARD_HISTORY_MENU"/>
   <int value="112" label="IDC_CONTENT_CONTEXT_COPYLINKTOTEXT"/>
+  <int value="113" label="IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE"/>
 </enum>
 
 <enum name="ReopenTabPromoStepAtDismissal">

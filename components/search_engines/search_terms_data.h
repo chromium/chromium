@@ -22,6 +22,11 @@ class SearchTermsData {
   // implementation simply returns the default value.
   virtual std::string GoogleBaseURLValue() const;
 
+  // Returns the value to use for the GOOGLE_BASE_SEARCH_BY_IMAGE_URL. Points
+  // at Lens if the user is enrolled in the Lens experiment, and defaults to
+  // Image Search otherwise.
+  virtual std::string GoogleBaseSearchByImageURLValue() const;
+
   // Returns the value for the GOOGLE_BASE_SUGGEST_URL term.  This
   // implementation simply returns the default value.
   std::string GoogleBaseSuggestURLValue() const;

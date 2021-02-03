@@ -2083,6 +2083,7 @@ static_library("browser") {
     "//components/language/content/browser/ulp_language_code_locator",
     "//components/language/core/browser",
     "//components/language/core/common",
+    "//components/lens",
     "//components/leveldb_proto",
     "//components/lookalikes/core",
     "//components/lookalikes/core:features",

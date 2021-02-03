@@ -667,6 +667,9 @@ bool TemplateURLRef::ParseParameter(size_t start,
     replacements->push_back(Replacement(GOOGLE_ASSISTED_QUERY_STATS, start));
   } else if (parameter == "google:baseURL") {
     replacements->push_back(Replacement(GOOGLE_BASE_URL, start));
+  } else if (parameter == "google:baseSearchByImageURL") {
+    replacements->push_back(
+        Replacement(GOOGLE_BASE_SEARCH_BY_IMAGE_URL, start));
   } else if (parameter == "google:baseSuggestURL") {
     replacements->push_back(Replacement(GOOGLE_BASE_SUGGEST_URL, start));
   } else if (parameter == "google:currentPageUrl") {
@@ -1057,6 +1060,13 @@ std::string TemplateURLRef::HandleReplacements(
         DCHECK(!i->is_post_param);
         HandleReplacement(
             std::string(), search_terms_data.GoogleBaseURLValue(), *i, &url);
+        break;
+
+      case GOOGLE_BASE_SEARCH_BY_IMAGE_URL:
+        DCHECK(!i->is_post_param);
+        HandleReplacement(std::string(),
+                          search_terms_data.GoogleBaseSearchByImageURLValue(),
+                          *i, &url);
         break;
 
       case GOOGLE_BASE_SUGGEST_URL:

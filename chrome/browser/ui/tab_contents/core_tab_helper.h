@@ -31,6 +31,11 @@ class CoreTabHelper : public content::WebContentsObserver,
 
   void UpdateContentRestrictions(int content_restrictions);
 
+  // Open the Lens standalone experience for the image that triggered the
+  // context menu.
+  void SearchWithLensInNewTab(content::RenderFrameHost* render_frame_host,
+                              const GURL& src_url);
+
   // Perform an image search for the image that triggered the context menu.  The
   // |src_url| is passed to the search request and is not used directly to fetch
   // the image resources.
@@ -70,6 +75,15 @@ class CoreTabHelper : public content::WebContentsObserver,
       const std::vector<uint8_t>& thumbnail_data,
       const gfx::Size& original_size,
       const std::string& image_extension);
+
+  // Create a thumbnail to POST to search engine for the image that triggered
+  // the context menu.  The |src_url| is passed to the search request and is
+  // not used directly to fetch the image resources.
+  void SearchByImageInNewTabImpl(content::RenderFrameHost* render_frame_host,
+                                 const GURL& src_url,
+                                 int thumbnail_min_size,
+                                 int thumbnail_max_width,
+                                 int thumbnail_max_height);
 
   // The time when we started to create the new tab page.  This time is from
   // before we created this WebContents.
