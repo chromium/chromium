@@ -223,7 +223,8 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
         .Times(AnyNumber());
     helper_.reset(
         new QuicChromiumConnectionHelper(&clock_, &random_generator_));
-    alarm_factory_.reset(new QuicChromiumAlarmFactory(runner_.get(), &clock_));
+    alarm_factory_ =
+        std::make_unique<QuicChromiumAlarmFactory>(runner_.get(), &clock_);
 
     QuicChromiumPacketWriter* writer = new QuicChromiumPacketWriter(
         socket.get(), base::ThreadTaskRunnerHandle::Get().get());
@@ -248,7 +249,7 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
     base::TimeTicks dns_end = base::TimeTicks::Now();
     base::TimeTicks dns_start = dns_end - base::TimeDelta::FromMilliseconds(1);
 
-    session_.reset(new QuicChromiumClientSession(
+    session_ = std::make_unique<QuicChromiumClientSession>(
         connection, std::move(socket),
         /*stream_factory=*/nullptr, &crypto_client_stream_factory_, &clock_,
         &transport_security_state_, /*ssl_config_service=*/nullptr,
@@ -278,7 +279,7 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
         std::make_unique<quic::QuicClientPushPromiseIndex>(), nullptr,
         base::DefaultTickClock::GetInstance(),
         base::ThreadTaskRunnerHandle::Get().get(),
-        /*socket_performance_watcher=*/nullptr, net_log_.bound().net_log()));
+        /*socket_performance_watcher=*/nullptr, net_log_.bound().net_log());
 
     writer->set_delegate(session_.get());
 
@@ -304,7 +305,7 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
         session_handle_->ReleaseStream();
     EXPECT_TRUE(stream_handle->IsOpen());
 
-    sock_.reset(new QuicProxyClientSocket(
+    sock_ = std::make_unique<QuicProxyClientSocket>(
         std::move(stream_handle), std::move(session_handle_),
         ProxyServer(ProxyServer::SCHEME_HTTPS, proxy_host_port_), user_agent_,
         endpoint_host_port_, net_log_.bound(),
@@ -313,7 +314,7 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
                                NetworkIsolationKey(), &http_auth_cache_,
                                http_auth_handler_factory_.get(),
                                host_resolver_.get()),
-        proxy_delegate_.get()));
+        proxy_delegate_.get());
 
     session_->StartReading();
   }

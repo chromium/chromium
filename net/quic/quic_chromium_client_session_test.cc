@@ -187,7 +187,7 @@ class QuicChromiumClientSessionTest
         quic::QuicSocketAddress(), ToQuicSocketAddress(kIpEndPoint), &helper_,
         &alarm_factory_, writer, true, quic::Perspective::IS_CLIENT,
         quic::test::SupportedVersions(version_));
-    session_.reset(new TestingQuicChromiumClientSession(
+    session_ = std::make_unique<TestingQuicChromiumClientSession>(
         connection, std::move(socket),
         /*stream_factory=*/nullptr, &crypto_client_stream_factory_, &clock_,
         transport_security_state_.get(), /*ssl_config_service=*/nullptr,
@@ -212,7 +212,7 @@ class QuicChromiumClientSessionTest
         std::make_unique<quic::QuicClientPushPromiseIndex>(),
         &test_push_delegate_, base::DefaultTickClock::GetInstance(),
         base::ThreadTaskRunnerHandle::Get().get(),
-        /*socket_performance_watcher=*/nullptr, &net_log_));
+        /*socket_performance_watcher=*/nullptr, &net_log_);
     if (connectivity_monitor_) {
       connectivity_monitor_->SetInitialDefaultNetwork(default_network_);
       session_->AddConnectivityObserver(connectivity_monitor_.get());
@@ -2027,9 +2027,9 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketReadError) {
   old_reads.push_back(MockRead(ASYNC, ERR_IO_PENDING, 1));
   old_reads.push_back(MockRead(ASYNC, ERR_NETWORK_CHANGED, 2));
 
-  socket_data_.reset(new SequencedSocketData(
+  socket_data_ = std::make_unique<SequencedSocketData>(
       base::span<const MockRead>(old_reads.data(), old_reads.size()),
-      base::span<const MockWrite>(old_writes.data(), old_writes.size())));
+      base::span<const MockWrite>(old_writes.data(), old_writes.size()));
 
   std::unique_ptr<quic::QuicEncryptedPacket> server_ping(
       server_maker_.MakePingPacket(1, /*include_version=*/false));

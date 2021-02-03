@@ -69,7 +69,7 @@ class TestTransactionFactory : public HttpTransactionFactory {
   // HttpTransactionFactory methods
   int CreateTransaction(RequestPriority priority,
                         std::unique_ptr<HttpTransaction>* trans) override {
-    trans->reset(new HttpNetworkTransaction(priority, session_.get()));
+    *trans = std::make_unique<HttpNetworkTransaction>(priority, session_.get());
     return OK;
   }
 
@@ -155,10 +155,10 @@ class QuicEndToEndTest : public ::testing::Test, public WithTaskEnvironment {
         quic::test::kInitialStreamFlowControlWindowForTest);
     server_config_.SetInitialSessionFlowControlWindowToSend(
         quic::test::kInitialSessionFlowControlWindowForTest);
-    server_.reset(new QuicSimpleServer(
+    server_ = std::make_unique<QuicSimpleServer>(
         quic::test::crypto_test_utils::ProofSourceForTesting(), server_config_,
         server_config_options_, quic::AllSupportedVersions(),
-        &memory_cache_backend_));
+        &memory_cache_backend_);
     server_->Listen(server_address_);
     server_address_ = server_->server_address();
     server_->StartReading();

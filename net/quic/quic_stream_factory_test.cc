@@ -272,8 +272,8 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
 
   void InitializeConnectionMigrationV2Test(
       NetworkChangeNotifier::NetworkList connected_networks) {
-    scoped_mock_network_change_notifier_.reset(
-        new ScopedMockNetworkChangeNotifier());
+    scoped_mock_network_change_notifier_ =
+        std::make_unique<ScopedMockNetworkChangeNotifier>();
     MockNetworkChangeNotifier* mock_ncn =
         scoped_mock_network_change_notifier_->mock_network_change_notifier();
     mock_ncn->ForceNetworkHandlesSupported();
@@ -281,7 +281,7 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
     quic_params_->migrate_sessions_on_network_change_v2 = true;
     quic_params_->migrate_sessions_early_v2 = true;
     quic_params_->allow_port_migration = false;
-    socket_factory_.reset(new TestMigrationSocketFactory);
+    socket_factory_ = std::make_unique<TestMigrationSocketFactory>();
     FLAGS_quic_reloadable_flag_quic_pass_path_response_to_validator = true;
     FLAGS_quic_reloadable_flag_quic_send_path_response = true;
     FLAGS_quic_reloadable_flag_quic_start_peer_migration_earlier = true;
@@ -4701,7 +4701,7 @@ TEST_P(QuicStreamFactoryTest,
   FLAGS_quic_reloadable_flag_quic_pass_path_response_to_validator = true;
   FLAGS_quic_reloadable_flag_quic_send_path_response = true;
   FLAGS_quic_reloadable_flag_quic_start_peer_migration_earlier = true;
-  socket_factory_.reset(new TestMigrationSocketFactory);
+  socket_factory_ = std::make_unique<TestMigrationSocketFactory>();
   Initialize();
 
   TestSimplePortMigrationOnPathDegrading();
@@ -4725,7 +4725,7 @@ TEST_P(QuicStreamFactoryTest, PortMigrationProbingReceivedStatelessReset) {
     return;
   }
   quic_params_->allow_port_migration = true;
-  socket_factory_.reset(new TestMigrationSocketFactory);
+  socket_factory_ = std::make_unique<TestMigrationSocketFactory>();
   Initialize();
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
@@ -4864,7 +4864,7 @@ TEST_P(QuicStreamFactoryTest,
   FLAGS_quic_reloadable_flag_quic_pass_path_response_to_validator = true;
   FLAGS_quic_reloadable_flag_quic_send_path_response = true;
   FLAGS_quic_reloadable_flag_quic_start_peer_migration_earlier = true;
-  socket_factory_.reset(new TestMigrationSocketFactory);
+  socket_factory_ = std::make_unique<TestMigrationSocketFactory>();
   Initialize();
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
@@ -4982,8 +4982,8 @@ TEST_P(QuicStreamFactoryTest,
     // Path validator is only supported in IETF QUIC.
     return;
   }
-  scoped_mock_network_change_notifier_.reset(
-      new ScopedMockNetworkChangeNotifier());
+  scoped_mock_network_change_notifier_ =
+      std::make_unique<ScopedMockNetworkChangeNotifier>();
   MockNetworkChangeNotifier* mock_ncn =
       scoped_mock_network_change_notifier_->mock_network_change_notifier();
   mock_ncn->ForceNetworkHandlesSupported();
@@ -4992,7 +4992,7 @@ TEST_P(QuicStreamFactoryTest,
   FLAGS_quic_reloadable_flag_quic_pass_path_response_to_validator = true;
   FLAGS_quic_reloadable_flag_quic_send_path_response = true;
   FLAGS_quic_reloadable_flag_quic_start_peer_migration_earlier = true;
-  socket_factory_.reset(new TestMigrationSocketFactory);
+  socket_factory_ = std::make_unique<TestMigrationSocketFactory>();
   Initialize();
 
   scoped_mock_network_change_notifier_->mock_network_change_notifier()
@@ -5004,14 +5004,14 @@ TEST_P(QuicStreamFactoryTest,
 // Verifies that port migration can be attempted on the default network and
 // succeed when path degrading is detected. NetworkHandle is supported.
 TEST_P(QuicStreamFactoryTest, MigratePortOnPathDegrading_WithNetworkHandle) {
-  scoped_mock_network_change_notifier_.reset(
-      new ScopedMockNetworkChangeNotifier());
+  scoped_mock_network_change_notifier_ =
+      std::make_unique<ScopedMockNetworkChangeNotifier>();
   MockNetworkChangeNotifier* mock_ncn =
       scoped_mock_network_change_notifier_->mock_network_change_notifier();
   mock_ncn->ForceNetworkHandlesSupported();
   mock_ncn->SetConnectedNetworksList({kDefaultNetworkForTests});
   quic_params_->allow_port_migration = true;
-  socket_factory_.reset(new TestMigrationSocketFactory);
+  socket_factory_ = std::make_unique<TestMigrationSocketFactory>();
   Initialize();
 
   scoped_mock_network_change_notifier_->mock_network_change_notifier()
@@ -5025,8 +5025,8 @@ TEST_P(QuicStreamFactoryTest, MigratePortOnPathDegrading_WithNetworkHandle) {
 // NetworkHandle is supported. Migration on network change is also enabled.
 // No additional network migration is triggered post port migration.
 TEST_P(QuicStreamFactoryTest, MigratePortOnPathDegrading_WithMigration) {
-  scoped_mock_network_change_notifier_.reset(
-      new ScopedMockNetworkChangeNotifier());
+  scoped_mock_network_change_notifier_ =
+      std::make_unique<ScopedMockNetworkChangeNotifier>();
   MockNetworkChangeNotifier* mock_ncn =
       scoped_mock_network_change_notifier_->mock_network_change_notifier();
   mock_ncn->ForceNetworkHandlesSupported();
@@ -5034,7 +5034,7 @@ TEST_P(QuicStreamFactoryTest, MigratePortOnPathDegrading_WithMigration) {
   // Enable migration on network change.
   quic_params_->migrate_sessions_on_network_change_v2 = true;
   quic_params_->allow_port_migration = true;
-  socket_factory_.reset(new TestMigrationSocketFactory);
+  socket_factory_ = std::make_unique<TestMigrationSocketFactory>();
   Initialize();
 
   scoped_mock_network_change_notifier_->mock_network_change_notifier()
@@ -5049,8 +5049,8 @@ TEST_P(QuicStreamFactoryTest,
     // Path validator is only supported in IETF QUIC.
     return;
   }
-  scoped_mock_network_change_notifier_.reset(
-      new ScopedMockNetworkChangeNotifier());
+  scoped_mock_network_change_notifier_ =
+      std::make_unique<ScopedMockNetworkChangeNotifier>();
   MockNetworkChangeNotifier* mock_ncn =
       scoped_mock_network_change_notifier_->mock_network_change_notifier();
   mock_ncn->ForceNetworkHandlesSupported();
@@ -5061,7 +5061,7 @@ TEST_P(QuicStreamFactoryTest,
   FLAGS_quic_reloadable_flag_quic_pass_path_response_to_validator = true;
   FLAGS_quic_reloadable_flag_quic_send_path_response = true;
   FLAGS_quic_reloadable_flag_quic_start_peer_migration_earlier = true;
-  socket_factory_.reset(new TestMigrationSocketFactory);
+  socket_factory_ = std::make_unique<TestMigrationSocketFactory>();
   Initialize();
 
   scoped_mock_network_change_notifier_->mock_network_change_notifier()
@@ -5255,7 +5255,7 @@ void QuicStreamFactoryTestBase::TestSimplePortMigrationOnPathDegrading() {
 // Regression test for https://crbug.com/1014092.
 TEST_P(QuicStreamFactoryTest, MultiplePortMigrationsExceedsMaxLimit) {
   quic_params_->allow_port_migration = true;
-  socket_factory_.reset(new TestMigrationSocketFactory);
+  socket_factory_ = std::make_unique<TestMigrationSocketFactory>();
   Initialize();
 
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
@@ -14206,9 +14206,9 @@ TEST_P(QuicStreamFactoryTest, ConfigInitialRttForHandshake) {
 // Test that QuicStreamRequests with similar and different tags results in
 // reused and unique QUIC streams using appropriately tagged sockets.
 TEST_P(QuicStreamFactoryTest, Tag) {
-  MockTaggingClientSocketFactory* socket_factory =
-      new MockTaggingClientSocketFactory();
-  socket_factory_.reset(socket_factory);
+  socket_factory_ = std::make_unique<MockTaggingClientSocketFactory>();
+  auto* socket_factory =
+      static_cast<MockTaggingClientSocketFactory*>(socket_factory_.get());
   Initialize();
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);

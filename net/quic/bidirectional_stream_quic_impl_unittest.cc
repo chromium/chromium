@@ -134,7 +134,7 @@ class TestDelegateBase : public BidirectionalStreamImpl::Delegate {
         is_ready_(false),
         trailers_expected_(false),
         trailers_received_(false) {
-    loop_.reset(new base::RunLoop);
+    loop_ = std::make_unique<base::RunLoop>();
   }
 
   ~TestDelegateBase() override {}
@@ -239,7 +239,7 @@ class TestDelegateBase : public BidirectionalStreamImpl::Delegate {
     int on_data_sent_count = on_data_sent_count_;
 
     loop_->Run();
-    loop_.reset(new base::RunLoop);
+    loop_ = std::make_unique<base::RunLoop>();
 
     EXPECT_EQ(method == kOnFailed, on_failed_called_);
     EXPECT_EQ(is_ready || (method == kOnStreamReady), is_ready_);
@@ -508,7 +508,7 @@ class BidirectionalStreamQuicImplTest
   void Initialize() {
     crypto_client_stream_factory_.set_handshake_mode(
         MockCryptoClientStream::ZERO_RTT);
-    mock_writes_.reset(new MockWrite[writes_.size()]);
+    mock_writes_ = std::make_unique<MockWrite[]>(writes_.size());
     for (size_t i = 0; i < writes_.size(); i++) {
       if (writes_[i].packet == nullptr) {
         mock_writes_[i] = MockWrite(writes_[i].mode, writes_[i].rv, i);
@@ -518,9 +518,9 @@ class BidirectionalStreamQuicImplTest
       }
     }
 
-    socket_data_.reset(new StaticSocketDataProvider(
+    socket_data_ = std::make_unique<StaticSocketDataProvider>(
         base::span<MockRead>(),
-        base::make_span(mock_writes_.get(), writes_.size())));
+        base::make_span(mock_writes_.get(), writes_.size()));
     socket_data_->set_printer(&printer_);
 
     std::unique_ptr<MockUDPClientSocket> socket(new MockUDPClientSocket(
@@ -529,7 +529,8 @@ class BidirectionalStreamQuicImplTest
     runner_ = new TestTaskRunner(&clock_);
     helper_.reset(
         new QuicChromiumConnectionHelper(&clock_, &random_generator_));
-    alarm_factory_.reset(new QuicChromiumAlarmFactory(runner_.get(), &clock_));
+    alarm_factory_ =
+        std::make_unique<QuicChromiumAlarmFactory>(runner_.get(), &clock_);
     connection_ = new quic::QuicConnection(
         connection_id_, quic::QuicSocketAddress(),
         ToQuicSocketAddress(peer_addr_), helper_.get(), alarm_factory_.get(),
@@ -544,7 +545,7 @@ class BidirectionalStreamQuicImplTest
     base::TimeTicks dns_end = base::TimeTicks::Now();
     base::TimeTicks dns_start = dns_end - base::TimeDelta::FromMilliseconds(1);
 
-    session_.reset(new QuicChromiumClientSession(
+    session_ = std::make_unique<QuicChromiumClientSession>(
         connection_, std::move(socket),
         /*stream_factory=*/nullptr, &crypto_client_stream_factory_, &clock_,
         &transport_security_state_, /*ssl_config_service=*/nullptr,
@@ -574,7 +575,7 @@ class BidirectionalStreamQuicImplTest
         std::make_unique<quic::QuicClientPushPromiseIndex>(), nullptr,
         base::DefaultTickClock::GetInstance(),
         base::ThreadTaskRunnerHandle::Get().get(),
-        /*socket_performance_watcher=*/nullptr, net_log().bound().net_log()));
+        /*socket_performance_watcher=*/nullptr, net_log().bound().net_log());
     session_->Initialize();
 
     // Blackhole QPACK decoder stream instead of constructing mock writes.

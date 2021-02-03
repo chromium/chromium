@@ -649,7 +649,8 @@ class QuicNetworkTransactionTest
     session_context_.http_server_properties = http_server_properties_.get();
     session_context_.net_log = net_log_.bound().net_log();
 
-    session_.reset(new HttpNetworkSession(session_params_, session_context_));
+    session_ =
+        std::make_unique<HttpNetworkSession>(session_params_, session_context_);
     session_->quic_stream_factory()
         ->set_is_quic_known_to_work_on_current_network(true);
     SpdySessionPoolPeer spdy_pool_peer(session_->spdy_session_pool());
@@ -816,7 +817,7 @@ class QuicNetworkTransactionTest
 
   void AddHangingNonAlternateProtocolSocketData() {
     std::unique_ptr<StaticSocketDataProvider> hanging_data;
-    hanging_data.reset(new StaticSocketDataProvider());
+    hanging_data = std::make_unique<StaticSocketDataProvider>();
     MockConnect hanging_connect(SYNCHRONOUS, ERR_IO_PENDING);
     hanging_data->set_connect_data(hanging_connect);
     hanging_data_.push_back(std::move(hanging_data));
@@ -827,7 +828,8 @@ class QuicNetworkTransactionTest
     context_.params()->migrate_sessions_on_network_change_v2 = true;
     context_.params()->migrate_sessions_early_v2 = true;
     context_.params()->retry_on_alternate_network_before_handshake = true;
-    scoped_mock_change_notifier_.reset(new ScopedMockNetworkChangeNotifier());
+    scoped_mock_change_notifier_ =
+        std::make_unique<ScopedMockNetworkChangeNotifier>();
     MockNetworkChangeNotifier* mock_ncn =
         scoped_mock_change_notifier_->mock_network_change_notifier();
     mock_ncn->ForceNetworkHandlesSupported();
@@ -2227,11 +2229,11 @@ TEST_P(QuicNetworkTransactionTest,
   MockQuicData mock_quic_data(picked_version);
 
   // Reset QuicTestPacket makers as the version picked may not be |version_|.
-  client_maker_.reset(new QuicTestPacketMaker(
+  client_maker_ = std::make_unique<QuicTestPacketMaker>(
       picked_version,
       quic::QuicUtils::CreateRandomConnectionId(context_.random_generator()),
       context_.clock(), kDefaultServerHostName, quic::Perspective::IS_CLIENT,
-      client_headers_include_h2_stream_dependency_));
+      client_headers_include_h2_stream_dependency_);
   QuicTestPacketMaker server_maker(
       picked_version,
       quic::QuicUtils::CreateRandomConnectionId(context_.random_generator()),
@@ -7103,7 +7105,8 @@ class QuicNetworkTransactionWithDestinationTest
     session_context.http_auth_handler_factory = auth_handler_factory_.get();
     session_context.http_server_properties = &http_server_properties_;
 
-    session_.reset(new HttpNetworkSession(session_params, session_context));
+    session_ =
+        std::make_unique<HttpNetworkSession>(session_params, session_context);
     session_->quic_stream_factory()
         ->set_is_quic_known_to_work_on_current_network(false);
   }

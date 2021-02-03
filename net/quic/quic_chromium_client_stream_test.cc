@@ -147,7 +147,7 @@ MockQuicClientSessionBase::MockQuicClientSessionBase(
                                       push_promise_index,
                                       quic::test::DefaultQuicConfig(),
                                       connection->supported_versions()) {
-  crypto_stream_.reset(new quic::test::MockQuicCryptoStream(this));
+  crypto_stream_ = std::make_unique<quic::test::MockQuicCryptoStream>(this);
   Initialize();
   ON_CALL(*this, WritevData(_, _, _, _, _, _))
       .WillByDefault(testing::Return(quic::QuicConsumedData(0, false)));
