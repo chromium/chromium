@@ -19,6 +19,7 @@
 @protocol GridCommands;
 @protocol GridDragDropHandler;
 @protocol GridImageDataSource;
+@protocol PopupMenuCommands;
 @protocol RecentTabsConsumer;
 @class RecentTabsTableViewController;
 @class TabGridViewController;
@@ -60,6 +61,9 @@
 
 @property(nonatomic, weak) id<ApplicationCommands> handler;
 @property(nonatomic, weak) id<IncognitoReauthCommands> reauthHandler;
+// Handlers for popup menu commands for the regular and incognito states.
+@property(nonatomic, weak) id<PopupMenuCommands> regularPopupMenuHandler;
+@property(nonatomic, weak) id<PopupMenuCommands> incognitoPopupMenuHandler;
 
 // Delegate for this view controller to handle presenting tab UI.
 @property(nonatomic, weak) id<TabPresentationDelegate> tabPresentationDelegate;

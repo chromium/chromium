@@ -522,6 +522,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   self.emptyStateView.scrollViewContentInsets = scrollView.contentInset;
 }
 
+- (void)scrollViewWillBeginDragging:(UIScrollView*)scrollView {
+  [self.delegate gridViewControllerWillBeginDragging:self];
+}
+
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView {
   if (!IsThumbStripEnabled())
     return;

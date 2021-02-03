@@ -52,6 +52,11 @@
 - (void)gridViewController:(GridViewController*)gridViewController
     contentNeedsAuthenticationChanged:(BOOL)needsAuth;
 
+// Tells the delegate that the grid view controller's scroll view will begin
+// dragging.
+- (void)gridViewControllerWillBeginDragging:
+    (GridViewController*)gridViewController;
+
 @end
 
 // A view controller that contains a grid of items.

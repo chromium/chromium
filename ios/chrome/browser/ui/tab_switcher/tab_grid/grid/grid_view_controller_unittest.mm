@@ -64,6 +64,10 @@
     (GridViewController*)gridViewController {
   // No-op for unittests.
 }
+- (void)gridViewControllerWillBeginDragging:
+    (GridViewController*)gridViewController {
+  // No-op for unittests.
+}
 @end
 
 class GridViewControllerTest : public RootViewControllerTest {

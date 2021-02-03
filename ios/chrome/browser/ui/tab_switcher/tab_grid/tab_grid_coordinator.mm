@@ -388,6 +388,12 @@
   baseViewController.incognitoTabsDragDropHandler = self.incognitoTabsMediator;
   baseViewController.regularTabsImageDataSource = self.regularTabsMediator;
   baseViewController.incognitoTabsImageDataSource = self.incognitoTabsMediator;
+  if (IsThumbStripEnabled()) {
+    baseViewController.regularPopupMenuHandler = HandlerForProtocol(
+        _regularBrowser->GetCommandDispatcher(), PopupMenuCommands);
+    baseViewController.incognitoPopupMenuHandler = HandlerForProtocol(
+        _incognitoBrowser->GetCommandDispatcher(), PopupMenuCommands);
+  }
 
   self.incognitoAuthMediator = [[IncognitoReauthMediator alloc]
       initWithConsumer:self.baseViewController.incognitoTabsConsumer

@@ -12,6 +12,7 @@
 #include "base/task/post_task.h"
 #include "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
+#import "ios/chrome/browser/ui/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_table_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
@@ -1532,6 +1533,15 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (void)gridViewController:(GridViewController*)gridViewController
     contentNeedsAuthenticationChanged:(BOOL)needsAuth {
   [self configureButtonsForActiveAndCurrentPage];
+}
+
+- (void)gridViewControllerWillBeginDragging:
+    (GridViewController*)gridViewController {
+  if (!IsThumbStripEnabled()) {
+    return;
+  }
+  [self.incognitoPopupMenuHandler dismissPopupMenuAnimated:YES];
+  [self.regularPopupMenuHandler dismissPopupMenuAnimated:YES];
 }
 
 #pragma mark - Control actions
