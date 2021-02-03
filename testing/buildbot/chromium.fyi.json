@@ -7410,6 +7410,17 @@
         "swarming": {},
         "test": "webapk_shell_apk_junit_tests",
         "test_id_prefix": "ninja://chrome/android/webapk/shell_apk:webapk_shell_apk_junit_tests/"
+      },
+      {
+        "experiment_percentage": 100,
+        "isolate_profile_data": true,
+        "name": "weblayer_junit_tests",
+        "resultdb": {
+          "enable": true
+        },
+        "swarming": {},
+        "test": "weblayer_junit_tests",
+        "test_id_prefix": "ninja://weblayer/browser/java:weblayer_junit_tests/"
       }
     ]
   },

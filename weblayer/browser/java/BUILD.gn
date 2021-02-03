@@ -335,6 +335,61 @@ android_library("test_java") {
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
+android_library("junit_test_support") {
+  # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
+  bypass_platform_checks = true
+  testonly = true
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//components/payments/content/android:java",
+    "//components/payments/content/android:junit_test_support",
+    "//components/payments/content/android:service_java",
+    "//components/payments/mojom:mojom_java",
+    "//content/public/android:content_java",
+    "//mojo/public/java:bindings_java",
+    "//mojo/public/java:system_java",
+    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/android_deps:robolectric_all_java",
+    "//third_party/blink/public/mojom:android_mojo_bindings_java",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_no_recycler_view_java",
+    "//url:gurl_java",
+    "//url:gurl_junit_test_support",
+    "//url:origin_java",
+  ]
+  sources = [ "org/chromium/weblayer_private/payments/test_support/WebLayerPaymentRequestBuilder.java" ]
+}
+
+junit_binary("weblayer_junit_tests") {
+  # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
+  bypass_platform_checks = true
+  testonly = true
+  sources = [ "org/chromium/weblayer_private/payments/WebLayerPaymentRequestServiceTest.java" ]
+  resources_package = "org.chromium.weblayer_private.test"
+  deps = [
+    ":java",
+    ":junit_test_support",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//components/payments/content/android:java",
+    "//components/payments/content/android:junit_test_support",
+    "//components/payments/content/android:service_java",
+    "//components/payments/mojom:mojom_java",
+    "//components/security_state/core:security_state_enums_java",
+    "//content/public/android:content_java",
+    "//mojo/public/java:bindings_java",
+    "//mojo/public/java:system_java",
+    "//services/service_manager/public/java:service_manager_java",
+    "//third_party/android_deps:robolectric_all_java",
+    "//third_party/blink/public/mojom:android_mojo_bindings_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}
+
 generate_jni_registration("test_weblayer_jni_registration") {
   testonly = true
   targets = [ ":test_java" ]
