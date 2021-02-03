@@ -75,15 +75,19 @@ void CartHandler::GetCartDataCallback(GetMerchantCartsCallback callback,
     cart->merchant = std::move(proto_pair.second.merchant());
     cart->cart_url = GURL(std::move(proto_pair.second.merchant_cart_url()));
     std::vector<std::string> image_urls;
-    for (std::string image_url : proto_pair.second.product_image_urls()) {
-      cart->product_image_urls.emplace_back(std::move(image_url));
+    // Not show product images when showing welcome surface.
+    if (!cart_service_->ShouldShowWelcomSurface()) {
+      for (std::string image_url : proto_pair.second.product_image_urls()) {
+        cart->product_image_urls.emplace_back(std::move(image_url));
+      }
     }
     carts.push_back(std::move(cart));
   }
   std::move(callback).Run(std::move(carts));
+  cart_service_->IncreaseWelcomeSurfaceCounter();
 }
 
 void CartHandler::GetWarmWelcomeVisible(
     GetWarmWelcomeVisibleCallback callback) {
-  std::move(callback).Run(false);
+  std::move(callback).Run(cart_service_->ShouldShowWelcomSurface());
 }

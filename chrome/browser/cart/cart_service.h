@@ -20,6 +20,9 @@
 class CartService : public history::HistoryServiceObserver,
                     public KeyedService {
  public:
+  // The maximum number of times that cart welcome surface shows.
+  static constexpr int kWelcomSurfaceShowLimit = 3;
+
   CartService(const CartService&) = delete;
   CartService& operator=(const CartService&) = delete;
   ~CartService() override;
@@ -60,6 +63,12 @@ class CartService : public history::HistoryServiceObserver,
   // Gets called when restoring the permanently removed single cart.
   void RestoreRemovedCart(const GURL& cart_url,
                           CartDB::OperationCallback callback);
+  // Gets called when module shows welcome surface and increases the counter by
+  // one.
+  void IncreaseWelcomeSurfaceCounter();
+  // Returns whether to show the welcome surface in module. It is related to how
+  // many times the welcome surface has shown.
+  bool ShouldShowWelcomSurface();
   // history::HistoryServiceObserver:
   void OnURLsDeleted(history::HistoryService* history_service,
                      const history::DeletionInfo& deletion_info) override;

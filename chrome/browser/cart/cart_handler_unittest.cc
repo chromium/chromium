@@ -21,6 +21,12 @@ void GetEvaluationMerchantCarts(
   for (size_t i = 0; i < expected.size(); i++) {
     ASSERT_EQ(expected[i]->merchant, found[i]->merchant);
     ASSERT_EQ(expected[i]->cart_url, found[i]->cart_url);
+    ASSERT_EQ(expected[i]->product_image_urls.size(),
+              found[i]->product_image_urls.size());
+    for (size_t j = 0; j < expected[i]->product_image_urls.size(); j++) {
+      ASSERT_EQ(expected[i]->product_image_urls[i],
+                found[i]->product_image_urls[i]);
+    }
   }
   std::move(closure).Run();
 }
@@ -95,6 +101,13 @@ class CartHandlerTest : public testing::Test {
           found) {
     EXPECT_EQ(1U, found.size());
     EXPECT_EQ(isRemoved, found[0].second.is_removed());
+    std::move(closure).Run();
+  }
+
+  void GetEvaluationShouldShowWelcomSurface(base::OnceClosure closure,
+                                            bool expected_show,
+                                            bool actual_show) {
+    EXPECT_EQ(expected_show, actual_show);
     std::move(closure).Run();
   }
 
@@ -254,4 +267,60 @@ TEST_F(CartHandlerTest, TestRemoveCart) {
       base::BindOnce(&CartHandlerTest::GetEvaluationCartRemovedStatus,
                      base::Unretained(this), run_loop[5].QuitClosure(), false));
   run_loop[5].Run();
+}
+
+// Tests show welcome surface for first three appearances of cart module.
+TEST_F(CartHandlerTest, TestShowWelcomeSurface) {
+  base::RunLoop run_loop[11];
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(ntp_features::kNtpChromeCartModule);
+
+  // Add a cart with product image.
+  CartDB* cart_db_ = service_->GetDB();
+  const char image_url[] = "www.image1.com";
+  cart_db::ChromeCartContentProto merchant_proto =
+      BuildProto(kMockMerchantBKey, kMockMerchantB, kMockMerchantURLB);
+  merchant_proto.add_product_image_urls(image_url);
+  cart_db_->AddCart(
+      kMockMerchantBKey, merchant_proto,
+      base::BindOnce(&CartHandlerTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[0].QuitClosure(), true));
+  run_loop[0].Run();
+
+  // Show welcome surface for the first three appearances.
+  for (int i = 0; i < CartService::kWelcomSurfaceShowLimit; i++) {
+    // Build a callback result without product image.
+    auto dummy_cart1 = chrome_cart::mojom::MerchantCart::New();
+    dummy_cart1->merchant = kMockMerchantB;
+    dummy_cart1->cart_url = GURL(kMockMerchantURLB);
+    std::vector<chrome_cart::mojom::MerchantCartPtr> carts_without_product;
+    carts_without_product.push_back(std::move(dummy_cart1));
+
+    handler_->GetWarmWelcomeVisible(base::BindOnce(
+        &CartHandlerTest::GetEvaluationShouldShowWelcomSurface,
+        base::Unretained(this), run_loop[2 * i + 1].QuitClosure(), true));
+    run_loop[2 * i + 1].Run();
+    handler_->GetMerchantCarts(base::BindOnce(
+        &GetEvaluationMerchantCarts, run_loop[2 * (i + 1)].QuitClosure(),
+        std::move(carts_without_product)));
+    run_loop[2 * (i + 1)].Run();
+  }
+
+  // Build a callback result with product image.
+  auto dummy_cart2 = chrome_cart::mojom::MerchantCart::New();
+  dummy_cart2->merchant = kMockMerchantB;
+  dummy_cart2->cart_url = GURL(kMockMerchantURLB);
+  dummy_cart2->product_image_urls.emplace_back(image_url);
+  std::vector<chrome_cart::mojom::MerchantCartPtr> carts_with_product;
+  carts_with_product.push_back(std::move(dummy_cart2));
+
+  // Not show welcome surface afterwards.
+  handler_->GetWarmWelcomeVisible(
+      base::BindOnce(&CartHandlerTest::GetEvaluationShouldShowWelcomSurface,
+                     base::Unretained(this), run_loop[9].QuitClosure(), false));
+  run_loop[9].Run();
+  handler_->GetMerchantCarts(base::BindOnce(&GetEvaluationMerchantCarts,
+                                            run_loop[10].QuitClosure(),
+                                            std::move(carts_with_product)));
+  run_loop[10].Run();
 }

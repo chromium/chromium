@@ -8,7 +8,9 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/persisted_state_db/profile_proto_db.h"
 #include "chrome/browser/persisted_state_db/profile_proto_db_factory.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -432,4 +434,18 @@ TEST_F(CartServiceTest, TestRemovedCartsDeleted) {
       &CartServiceTest::GetEvaluationLoadCarts, base::Unretained(this),
       run_loop[4].QuitClosure(), kEmptyExpected));
   run_loop[4].Run();
+}
+
+// Tests whether to show the welcome surface is correctly controlled.
+TEST_F(CartServiceTest, TestControlShowWelcomeSurface) {
+  const int limit = CartService::kWelcomSurfaceShowLimit;
+  for (int i = 0; i < limit; i++) {
+    EXPECT_EQ(i, profile_.GetPrefs()->GetInteger(
+                     prefs::kCartModuleWelcomeSurfaceShownTimes));
+    EXPECT_TRUE(service_->ShouldShowWelcomSurface());
+    service_->IncreaseWelcomeSurfaceCounter();
+  }
+  EXPECT_FALSE(service_->ShouldShowWelcomSurface());
+  EXPECT_EQ(limit, profile_.GetPrefs()->GetInteger(
+                       prefs::kCartModuleWelcomeSurfaceShownTimes));
 }
