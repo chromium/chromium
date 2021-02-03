@@ -14,7 +14,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -26,6 +25,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
@@ -139,7 +139,7 @@ public class WebappLauncherActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         // Close the notification tray.
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.R) {
+        if (!BuildInfo.isAtLeastS()) {
             // https://crbug.com/1166691
             ContextUtils.getApplicationContext().sendBroadcast(
                     new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS));

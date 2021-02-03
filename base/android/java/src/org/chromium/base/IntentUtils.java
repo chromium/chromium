@@ -500,7 +500,7 @@ public class IntentUtils {
     public static int getPendingIntentMutabilityFlag(boolean mutable) {
         if (!mutable && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             return ApiHelperForM.getPendingIntentImmutableFlag();
-        } else if (mutable && Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
+        } else if (mutable && BuildInfo.isAtLeastS()) {
             return FLAG_MUTABLE;
         }
         return 0;

@@ -9,13 +9,13 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Build;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
@@ -66,9 +66,9 @@ public final class SharingNotificationUtil {
                         .setAutoCancel(true)
                         .setDefaults(Notification.DEFAULT_ALL);
 
-        if (startsActivity && Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
-            // We can't use the NotificationIntentInterceptor to start Activities after Android R.
-            // Use the unmodified PendingIntent directly instead.
+        if (startsActivity && BuildInfo.isAtLeastS()) {
+            // We can't use the NotificationIntentInterceptor to start Activities starting in
+            // Android S. Use the unmodified PendingIntent directly instead.
             builder.setContentIntent(contentIntent.getPendingIntent());
         } else {
             builder.setContentIntent(contentIntent);

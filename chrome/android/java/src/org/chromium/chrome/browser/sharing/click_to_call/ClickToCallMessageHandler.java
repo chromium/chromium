@@ -15,6 +15,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.annotations.CalledByNative;
@@ -122,9 +123,9 @@ public class ClickToCallMessageHandler {
     private static PendingIntentProvider getContentIntentProvider(String phoneNumber) {
         Context context = ContextUtils.getApplicationContext();
 
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
-            // We can't use the TapReceiver broadcast to start the dialer Activity after Android R.
-            // Use the dial intent directly instead.
+        if (BuildInfo.isAtLeastS()) {
+            // We can't use the TapReceiver broadcast to start the dialer Activity starting in
+            // Android S. Use the dial intent directly instead.
             return PendingIntentProvider.getActivity(context, /*requestCode=*/0,
                     getDialIntent(phoneNumber), PendingIntent.FLAG_UPDATE_CURRENT);
         }
