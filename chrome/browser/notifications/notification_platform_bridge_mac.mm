@@ -5,6 +5,8 @@
 #include "chrome/browser/notifications/notification_platform_bridge_mac.h"
 #include "chrome/browser/notifications/notification_platform_bridge_mac_unnotification.h"
 
+#import <UserNotifications/UserNotifications.h>
+
 #include <memory>
 #include <utility>
 
@@ -83,14 +85,18 @@ NotificationPlatformBridgeMac::~NotificationPlatformBridgeMac() {
 // static
 std::unique_ptr<NotificationPlatformBridge>
 NotificationPlatformBridge::Create() {
-  if (@available(macOS 10.14, *)) {
-    if (base::FeatureList::IsEnabled(features::kNewMacNotificationAPI)) {
-      return std::make_unique<NotificationPlatformBridgeMacUNNotification>();
-    }
-  }
   // TODO(crbug.com/1170731): Use a helper app to display alerts.
   base::scoped_nsobject<NSObject<AlertDispatcher>> alert_dispatcher(
       [[AlertDispatcherXPC alloc] init]);
+
+  if (@available(macOS 10.14, *)) {
+    if (base::FeatureList::IsEnabled(features::kNewMacNotificationAPI)) {
+      return std::make_unique<NotificationPlatformBridgeMacUNNotification>(
+          [UNUserNotificationCenter currentNotificationCenter],
+          alert_dispatcher.get());
+    }
+  }
+
   return std::make_unique<NotificationPlatformBridgeMac>(
       [NSUserNotificationCenter defaultUserNotificationCenter],
       alert_dispatcher.get());

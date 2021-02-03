@@ -4,14 +4,12 @@
 
 #include "chrome/browser/notifications/notification_platform_bridge_mac_utils.h"
 
-#include "base/feature_list.h"
 #include "base/i18n/number_formatting.h"
 #include "base/optional.h"
 #include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -253,11 +251,8 @@ bool MacOSSupportsXPCAlerts() {
 }
 
 bool IsAlertNotificationMac(const message_center::Notification& notification) {
-  // TODO(crbug/1134539): Support alerts via UNNotification API.
-  if (base::FeatureList::IsEnabled(features::kNewMacNotificationAPI))
-    return false;
-
   // We show alerts via an XPC service, check if that's possible.
+  // TODO(crbug.com/1127306): Don't check this once we use the helper app.
   if (!MacOSSupportsXPCAlerts())
     return false;
 

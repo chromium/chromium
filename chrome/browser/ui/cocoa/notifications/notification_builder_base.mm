@@ -113,6 +113,14 @@
          forKey:notification_constants::kNotificationHasSettingsButton];
 }
 
+- (void)setIcon:(NSImage*)icon {
+  if (!icon)
+    return;
+
+  [_notificationData setObject:icon
+                        forKey:notification_constants::kNotificationIcon];
+}
+
 - (NSDictionary*)buildDictionary {
   return [[_notificationData copy] autorelease];
 }

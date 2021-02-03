@@ -4,6 +4,8 @@
 
 #include "chrome/browser/notifications/notification_platform_bridge_mac_unnotification.h"
 
+#include <vector>
+
 #import <UserNotifications/UserNotifications.h>
 
 #include "base/bind.h"
@@ -58,15 +60,12 @@ API_AVAILABLE(macosx(10.14))
 @end
 
 NotificationPlatformBridgeMacUNNotification::
-    NotificationPlatformBridgeMacUNNotification()
-    : NotificationPlatformBridgeMacUNNotification(
-          [UNUserNotificationCenter currentNotificationCenter]) {}
-
-NotificationPlatformBridgeMacUNNotification::
     NotificationPlatformBridgeMacUNNotification(
-        UNUserNotificationCenter* notification_center)
+        UNUserNotificationCenter* notification_center,
+        id<AlertDispatcher> alert_dispatcher)
     : delegate_([UNNotificationCenterDelegate alloc]),
       notification_center_([notification_center retain]),
+      alert_dispatcher_([alert_dispatcher retain]),
       categories_([[NSMutableSet alloc] init]),
       delivered_categories_([[NSMutableDictionary alloc] init]),
       delivered_notifications_([[NSMutableDictionary alloc] init]) {
@@ -82,7 +81,7 @@ NotificationPlatformBridgeMacUNNotification::
     ~NotificationPlatformBridgeMacUNNotification() {
   [notification_center_ setDelegate:nil];
   [notification_center_ removeAllDeliveredNotifications];
-  // TODO(crbug/1134539): Close alerts.
+  [alert_dispatcher_ closeAllNotifications];
 }
 
 void NotificationPlatformBridgeMacUNNotification::Display(
@@ -119,9 +118,14 @@ void NotificationPlatformBridgeMacUNNotification::Display(
     // TODO(crbug/1138176): Resize images by adding a transparent border so that
     // its dimensions are uniform and do not get resized once sent to the
     // notification center.
-    base::FilePath path =
-        image_retainer_.RegisterTemporaryImage(notification.icon());
-    [builder setIconPath:base::SysUTF8ToNSString(path.value())];
+    if (is_alert) {
+      // TODO(crbug.com/1127306): Use the gfx::Image when sending via Mojo?
+      [builder setIcon:notification.icon().ToNSImage()];
+    } else {
+      base::FilePath path =
+          image_retainer_.RegisterTemporaryImage(notification.icon());
+      [builder setIconPath:base::SysUTF8ToNSString(path.value())];
+    }
   }
 
   [builder setShowSettingsButton:notification.should_show_settings_button()];
@@ -146,18 +150,20 @@ void NotificationPlatformBridgeMacUNNotification::Display(
       setNotificationType:[NSNumber numberWithInteger:static_cast<NSInteger>(
                                                           notification_type)]];
 
+  std::string system_notification_id = DeriveMacNotificationId(
+      profile->IsOffTheRecord(), GetProfileId(profile), notification.id());
+  NSString* notification_id = base::SysUTF8ToNSString(system_notification_id);
+  [builder setIdentifier:notification_id];
+
   if (is_alert) {
-    // TODO(crbug.com/1134539): Send out an alert.
-    NOTIMPLEMENTED();
+    NSDictionary* dict = [builder buildDictionary];
+    [alert_dispatcher_ dispatchNotification:dict];
+    DeliveredSuccessfully(system_notification_id, std::move(builder));
+    return;
   }
 
   // Create a new category from the desired action buttons.
   UNNotificationCategory* category = [builder buildCategory];
-
-  std::string system_notification_id = DeriveMacNotificationId(
-      profile->IsOffTheRecord(), GetProfileId(profile), notification.id());
-  NSString* notification_id = base::SysUTF8ToNSString(system_notification_id);
-  [builder setIdentifier:base::SysUTF8ToNSString(system_notification_id)];
 
   // Check if this notification had an already existing category from a previous
   // call, if that is the case then remove it.
@@ -219,6 +225,7 @@ void NotificationPlatformBridgeMacUNNotification::Display(
 void NotificationPlatformBridgeMacUNNotification::Close(
     Profile* profile,
     const std::string& notification_id) {
+  NSString* originalNotificationId = base::SysUTF8ToNSString(notification_id);
   NSString* notificationId = base::SysUTF8ToNSString(DeriveMacNotificationId(
       profile->IsOffTheRecord(), GetProfileId(profile), notification_id));
   base::WeakPtr<NotificationPlatformBridgeMacUNNotification> weak_ptr =
@@ -229,53 +236,42 @@ void NotificationPlatformBridgeMacUNNotification::Close(
     for (UNNotification* notification in notifications) {
       NSString* toastNotificationId = [[notification request] identifier];
       if ([notificationId isEqualToString:toastNotificationId]) {
-        content::GetUIThreadTaskRunner({})->PostTask(
-            FROM_HERE,
-            base::BindOnce(
-                &NotificationPlatformBridgeMacUNNotification::DoClose, weak_ptr,
-                base::SysNSStringToUTF8(notificationId)));
-        break;
+        [notification_center_
+            removeDeliveredNotificationsWithIdentifiers:@[ notificationId ]];
+        return;
       }
     }
+
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &NotificationPlatformBridgeMacUNNotification::DoCloseAlert,
+            weak_ptr, profile,
+            base::SysNSStringToUTF8(originalNotificationId)));
   }];
-  // TODO(crbug/1134539): If the notification was not present as a banner, check
-  // alerts.
+
+  // Remove the category of the closed notification, and remove it from
+  // |delivered_notifications_|.
+  // TODO(knollr): Move notification category handling into a reusable class.
+  if (UNNotificationCategory* existing =
+          [delivered_categories_ objectForKey:notificationId]) {
+    [categories_ removeObject:existing];
+    [delivered_categories_ removeObjectForKey:notificationId];
+  }
+  [delivered_notifications_ removeObjectForKey:notificationId];
 }
 
 void NotificationPlatformBridgeMacUNNotification::GetDisplayed(
     Profile* profile,
     GetDisplayedNotificationsCallback callback) const {
-  bool incognito = profile->IsOffTheRecord();
-  NSString* profileId = base::SysUTF8ToNSString(GetProfileId(profile));
-  // Create a copyable version of the OnceCallback because ObjectiveC blocks
-  // copy all referenced variables via copy constructor.
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
-
-  [notification_center_ getDeliveredNotificationsWithCompletionHandler:^(
-                            NSArray<UNNotification*>* _Nonnull notifications) {
-    std::set<std::string> displayedNotifications;
-
-    for (UNNotification* notification in notifications) {
-      NSString* toastProfileId = [[[[notification request] content] userInfo]
-          objectForKey:notification_constants::kNotificationProfileId];
-      bool incognitoNotification = [[[[[notification request] content] userInfo]
-          objectForKey:notification_constants::kNotificationIncognito]
-          boolValue];
-
-      if ([toastProfileId isEqualToString:profileId] &&
-          incognito == incognitoNotification) {
-        displayedNotifications.insert(
-            base::SysNSStringToUTF8([[[[notification request] content] userInfo]
-                objectForKey:notification_constants::kNotificationId]));
-      }
-    }
-    // TODO(crbug/1134570): Query for displayed alerts as well.
-
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(copyable_callback, std::move(displayedNotifications),
-                       true /* supports_synchronization */));
-  }];
+  GetDisplayedNotificationsCallback alerts_callback = base::BindOnce(
+      &NotificationPlatformBridgeMacUNNotification::DidGetDisplayedAlerts,
+      weak_factory_.GetWeakPtr(), profile, std::move(callback));
+  [alert_dispatcher_
+      getDisplayedAlertsForProfileId:base::SysUTF8ToNSString(
+                                         GetProfileId(profile))
+                           incognito:profile && profile->IsOffTheRecord()
+                            callback:std::move(alerts_callback)];
 }
 
 void NotificationPlatformBridgeMacUNNotification::SetReadyCallback(
@@ -301,19 +297,17 @@ void NotificationPlatformBridgeMacUNNotification::RequestPermission() {
                     }];
 }
 
-void NotificationPlatformBridgeMacUNNotification::DoClose(
+void NotificationPlatformBridgeMacUNNotification::DoCloseAlert(
+    Profile* profile,
     const std::string& notification_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  NSString* notificationId = base::SysUTF8ToNSString(notification_id);
+  NSString* profileId = base::SysUTF8ToNSString(GetProfileId(profile));
+  bool incognito = profile->IsOffTheRecord();
 
-  NSString* toast_id = base::SysUTF8ToNSString(notification_id);
-  [notification_center_
-      removeDeliveredNotificationsWithIdentifiers:@[ toast_id ]];
-
-  // Remove the category of the closed notification, and remove it from
-  // |delivered_notifications_|.
-  [categories_ removeObject:[delivered_categories_ objectForKey:toast_id]];
-  [delivered_categories_ removeObjectForKey:toast_id];
-  [delivered_notifications_ removeObjectForKey:toast_id];
+  [alert_dispatcher_ closeNotificationWithId:notificationId
+                                   profileId:profileId
+                                   incognito:incognito];
 }
 
 void NotificationPlatformBridgeMacUNNotification::DeliveredSuccessfully(
@@ -347,26 +341,13 @@ void NotificationPlatformBridgeMacUNNotification::MaybeStartSynchronization() {
 void NotificationPlatformBridgeMacUNNotification::SynchronizeNotifications() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  base::WeakPtr<NotificationPlatformBridgeMacUNNotification> weak_ptr =
-      weak_factory_.GetWeakPtr();
-
-  [notification_center_ getDeliveredNotificationsWithCompletionHandler:^(
-                            NSArray<UNNotification*>* _Nonnull notifications) {
-    base::flat_set<std::string> notification_ids;
-
-    for (UNNotification* notification in notifications) {
-      std::string notification_id =
-          base::SysNSStringToUTF8([[notification request] identifier]);
-      notification_ids.insert(std::move(notification_id));
-    }
-
-    // TODO(crbug/1134570): Check for displayed alerts as well.
-
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&NotificationPlatformBridgeMacUNNotification::
-                                      DoSynchronizeNotifications,
-                                  weak_ptr, std::move(notification_ids)));
-  }];
+  // TODO(crbug.com/1127306): Skip the |alert_dispatcher_| if it is using the
+  // NSUserNotification API as it can handle close events.
+  [alert_dispatcher_
+      getAllDisplayedAlertsWithCallback:
+          base::BindOnce(&NotificationPlatformBridgeMacUNNotification::
+                             DidGetAllDisplayedAlerts,
+                         weak_factory_.GetWeakPtr())];
 }
 
 void NotificationPlatformBridgeMacUNNotification::DoSynchronizeNotifications(
@@ -395,9 +376,11 @@ void NotificationPlatformBridgeMacUNNotification::DoSynchronizeNotifications(
         [[delivered_notifications_ objectForKey:notification_id] mutableCopy]);
 
     // Remove the category of the dismissed notification.
-    [categories_
-        removeObject:[delivered_categories_ objectForKey:notification_id]];
-    [delivered_categories_ removeObjectForKey:notification_id];
+    if (UNNotificationCategory* existing =
+            [delivered_categories_ objectForKey:notification_id]) {
+      [categories_ removeObject:existing];
+      [delivered_categories_ removeObjectForKey:notification_id];
+    }
 
     // Closed notifications need to carry
     // NotificationOperation::NOTIFICATION_CLOSE and an invalid button index.
@@ -416,6 +399,77 @@ void NotificationPlatformBridgeMacUNNotification::DoSynchronizeNotifications(
 
   if (notification_ids.empty())
     synchronize_displayed_notifications_timer_.Stop();
+}
+
+void NotificationPlatformBridgeMacUNNotification::DidGetDisplayedAlerts(
+    Profile* profile,
+    GetDisplayedNotificationsCallback callback,
+    std::set<std::string> alert_ids,
+    bool supports_synchronization) {
+  // Create a copyable version of the OnceCallback because ObjectiveC blocks
+  // copy all referenced variables via copy constructor.
+  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  bool incognito = profile->IsOffTheRecord();
+  NSString* profileId = base::SysUTF8ToNSString(GetProfileId(profile));
+
+  [notification_center_ getDeliveredNotificationsWithCompletionHandler:^(
+                            NSArray<UNNotification*>* _Nonnull notifications) {
+    std::set<std::string> displayedNotifications;
+
+    for (UNNotification* notification in notifications) {
+      NSString* toastProfileId = [[[[notification request] content] userInfo]
+          objectForKey:notification_constants::kNotificationProfileId];
+      bool incognitoNotification = [[[[[notification request] content] userInfo]
+          objectForKey:notification_constants::kNotificationIncognito]
+          boolValue];
+
+      if ([toastProfileId isEqualToString:profileId] &&
+          incognito == incognitoNotification) {
+        displayedNotifications.insert(
+            base::SysNSStringToUTF8([[[[notification request] content] userInfo]
+                objectForKey:notification_constants::kNotificationId]));
+      }
+    }
+
+    for (const std::string& alert_id : alert_ids)
+      displayedNotifications.insert(alert_id);
+
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(copyable_callback, std::move(displayedNotifications),
+                       supports_synchronization));
+  }];
+}
+
+void NotificationPlatformBridgeMacUNNotification::DidGetAllDisplayedAlerts(
+    base::flat_set<MacNotificationIdentifier> alert_ids) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  base::WeakPtr<NotificationPlatformBridgeMacUNNotification> weak_ptr =
+      weak_factory_.GetWeakPtr();
+
+  [notification_center_ getDeliveredNotificationsWithCompletionHandler:^(
+                            NSArray<UNNotification*>* _Nonnull notifications) {
+    std::vector<std::string> notification_ids;
+    notification_ids.reserve([notifications count] + alert_ids.size());
+
+    for (UNNotification* notification in notifications) {
+      std::string notification_id =
+          base::SysNSStringToUTF8([[notification request] identifier]);
+      notification_ids.push_back(std::move(notification_id));
+    }
+
+    for (const MacNotificationIdentifier& alert_id : alert_ids) {
+      notification_ids.push_back(DeriveMacNotificationId(
+          alert_id.incognito, alert_id.profile_id, alert_id.notification_id));
+    }
+
+    base::flat_set<std::string> all_ids(std::move(notification_ids));
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&NotificationPlatformBridgeMacUNNotification::
+                                      DoSynchronizeNotifications,
+                                  weak_ptr, std::move(all_ids)));
+  }];
 }
 
 // /////////////////////////////////////////////////////////////////////////////

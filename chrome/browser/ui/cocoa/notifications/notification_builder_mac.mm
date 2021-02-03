@@ -13,14 +13,6 @@
 
 @implementation NotificationBuilder
 
-- (void)setIcon:(NSImage*)icon {
-  if (!icon)
-    return;
-
-  [_notificationData setObject:icon
-                        forKey:notification_constants::kNotificationIcon];
-}
-
 - (NSUserNotification*)buildUserNotification {
   base::scoped_nsobject<NSUserNotification> toast(
       [[NSUserNotification alloc] init]);

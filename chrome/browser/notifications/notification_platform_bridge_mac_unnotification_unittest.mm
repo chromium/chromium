@@ -8,10 +8,15 @@
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/run_loop.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
+#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/notification_platform_bridge_mac_unnotification.h"
+#include "chrome/browser/notifications/notification_platform_bridge_mac_utils.h"
+#include "chrome/browser/notifications/stub_alert_dispatcher_mac.h"
 #include "chrome/browser/notifications/unnotification_metrics.h"
 #include "chrome/browser/ui/cocoa/notifications/notification_constants_mac.h"
 #include "chrome/browser/ui/cocoa/notifications/unnotification_builder_mac.h"
@@ -169,13 +174,17 @@ class UNNotificationPlatformBridgeMacTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(manager_.SetUp());
     profile_ = manager_.CreateTestingProfile("Moe");
+    display_service_tester_ =
+        std::make_unique<NotificationDisplayServiceTester>(profile_);
+    alert_dispatcher_.reset([[StubAlertDispatcher alloc] init]);
     if (@available(macOS 10.14, *)) {
       center_.reset([[FakeUNUserNotificationCenter alloc] init]);
       [[center_ settings] setAlertStyle:UNAlertStyleBanner];
       [[center_ settings]
           setAuthorizationStatus:UNAuthorizationStatusAuthorized];
       bridge_ = std::make_unique<NotificationPlatformBridgeMacUNNotification>(
-          static_cast<UNUserNotificationCenter*>(center_.get()));
+          static_cast<UNUserNotificationCenter*>(center_.get()),
+          alert_dispatcher_.get());
     }
   }
 
@@ -193,14 +202,36 @@ class UNNotificationPlatformBridgeMacTest : public testing::Test {
     return notification;
   }
 
+  Notification CreateAlert(const std::string& notificationId = "id1") {
+    Notification notification = CreateNotification(notificationId);
+    notification.set_never_timeout(true);
+    return notification;
+  }
+
+  std::set<std::string> GetDisplayedSync() API_AVAILABLE(macosx(10.14)) {
+    base::RunLoop run_loop;
+    std::set<std::string> displayed;
+    bridge_->GetDisplayed(profile_, base::BindLambdaForTesting(
+                                        [&](std::set<std::string> notifications,
+                                            bool supports_synchronization) {
+                                          displayed = std::move(notifications);
+                                          run_loop.Quit();
+                                        }));
+    run_loop.Run();
+    return displayed;
+  }
+
+  base::scoped_nsobject<StubAlertDispatcher> alert_dispatcher_;
   API_AVAILABLE(macosx(10.14))
   base::scoped_nsobject<FakeUNUserNotificationCenter> center_;
   API_AVAILABLE(macosx(10.14))
   std::unique_ptr<NotificationPlatformBridgeMacUNNotification> bridge_;
   TestingProfile* profile_ = nullptr;
   base::HistogramTester histogram_tester_;
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingProfileManager manager_;
+  std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
 };
 
 class UNNotificationPlatformBridgeMacPermissionStatusTest
@@ -233,6 +264,41 @@ TEST_F(UNNotificationPlatformBridgeMacTest, TestDisplay) {
                  NSSet<UNNotificationCategory*>* categories) {
       EXPECT_EQ(1u, [categories count]);
     }];
+  }
+}
+
+TEST_F(UNNotificationPlatformBridgeMacTest, TestDisplayAlert) {
+  if (@available(macOS 10.14, *)) {
+    Notification alert = CreateAlert();
+    // Some OS versions don't support alerts.
+    if (!IsAlertNotificationMac(alert))
+      return;
+
+    bridge_->Display(NotificationHandler::Type::WEB_PERSISTENT, profile_, alert,
+                     /*metadata=*/nullptr);
+
+    // Expect the alert to be shown via |alert_dispatcher_| and not |center_|.
+    [center_ getDeliveredNotificationsWithCompletionHandler:^(
+                 NSArray<UNNotification*>* _Nonnull notifications) {
+      ASSERT_EQ(0u, [notifications count]);
+    }];
+    NSArray* displayed_alerts = [alert_dispatcher_ alerts];
+    ASSERT_EQ(1u, [displayed_alerts count]);
+
+    // Verify alert content.
+    NSDictionary* delivered_alert = [displayed_alerts objectAtIndex:0];
+    NSString* title = [delivered_alert
+        objectForKey:notification_constants::kNotificationTitle];
+    NSString* informative_text = [delivered_alert
+        objectForKey:notification_constants::kNotificationInformativeText];
+    NSString* subtitle = [delivered_alert
+        objectForKey:notification_constants::kNotificationSubTitle];
+    NSString* identifier = [delivered_alert
+        objectForKey:notification_constants::kNotificationIdentifier];
+    EXPECT_NSEQ(@"Title", title);
+    EXPECT_NSEQ(@"Context", informative_text);
+    EXPECT_NSEQ(@"gmail.com", subtitle);
+    EXPECT_NSEQ(@"r|Moe|id1", identifier);
   }
 }
 
@@ -376,6 +442,22 @@ TEST_F(UNNotificationPlatformBridgeMacTest, TestCloseNotification) {
   }
 }
 
+TEST_F(UNNotificationPlatformBridgeMacTest, TestCloseAlert) {
+  if (@available(macOS 10.14, *)) {
+    Notification alert = CreateAlert("id1");
+    bridge_->Display(NotificationHandler::Type::WEB_PERSISTENT, profile_, alert,
+                     /*metadata=*/nullptr);
+    ASSERT_EQ(1u, [[alert_dispatcher_ alerts] count]);
+
+    bridge_->Close(profile_, "id1");
+    // RunLoop is used here to ensure that Close has finished executing before
+    // the notification count is checked below. Since Close executes
+    // asynchronous calls the order is not guaranteed by nature.
+    base::RunLoop().RunUntilIdle();
+    ASSERT_EQ(0u, [[alert_dispatcher_ alerts] count]);
+  }
+}
+
 TEST_F(UNNotificationPlatformBridgeMacTest, TestGetDisplayed) {
   if (@available(macOS 10.14, *)) {
     Notification notification = CreateNotification();
@@ -393,70 +475,70 @@ TEST_F(UNNotificationPlatformBridgeMacTest, TestGetDisplayed) {
       EXPECT_EQ(1u, [notifications count]);
     }];
 
-    base::RunLoop run_loop;
-    int notification_count = -1;
-    bridge_->GetDisplayed(
-        profile_,
-        base::BindLambdaForTesting([&](std::set<std::string> notifications,
-                                       bool supports_synchronization) {
-          notification_count = notifications.size();
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-    EXPECT_EQ(1, notification_count);
+    EXPECT_EQ(1u, GetDisplayedSync().size());
   }
 }
 
 TEST_F(UNNotificationPlatformBridgeMacTest,
        TestGetDisplayedMultipleNotifications) {
   if (@available(macOS 10.14, *)) {
-    Notification first_notification = CreateNotification("id1");
-
+    // Setup 2 banners and 1 alert for the correct profile.
     bridge_->Display(NotificationHandler::Type::WEB_PERSISTENT, profile_,
-                     first_notification, nullptr);
-
-    Notification second_notification = CreateNotification("id2");
+                     CreateNotification("id1"), /*metadata=*/nullptr);
     bridge_->Display(NotificationHandler::Type::WEB_PERSISTENT, profile_,
-                     second_notification, nullptr);
+                     CreateNotification("id2"), /*metadata=*/nullptr);
+    bridge_->Display(NotificationHandler::Type::WEB_PERSISTENT, profile_,
+                     CreateAlert("id3"), /*metadata=*/nullptr);
 
-    base::RunLoop run_loop;
-    int notification_count = -1;
-    bridge_->GetDisplayed(
-        profile_,
-        base::BindLambdaForTesting([&](std::set<std::string> notifications,
-                                       bool supports_synchronization) {
-          notification_count = notifications.size();
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-    EXPECT_EQ(2, notification_count);
+    // Add some more notifications for other profiles that shouldn't show up.
+    TestingProfile::Builder profile_builder;
+    profile_builder.SetPath(profile_->GetPath());
+    profile_builder.SetProfileName(profile_->GetProfileUserName());
+    Profile* incogito_profile = profile_builder.BuildIncognito(profile_);
+    bridge_->Display(NotificationHandler::Type::WEB_PERSISTENT,
+                     incogito_profile, CreateNotification("id1"),
+                     /*metadata=*/nullptr);
+    bridge_->Display(NotificationHandler::Type::WEB_PERSISTENT,
+                     incogito_profile, CreateAlert("id99"),
+                     /*metadata=*/nullptr);
+    TestingProfile* other_profile = manager_.CreateTestingProfile("Other");
+    bridge_->Display(NotificationHandler::Type::WEB_PERSISTENT, other_profile,
+                     CreateNotification("id2"), /*metadata=*/nullptr);
 
-    [center_ getNotificationCategoriesWithCompletionHandler:^(
-                 NSSet<UNNotificationCategory*>* categories) {
-      EXPECT_EQ(2u, [categories count]);
+    EXPECT_EQ(3u, GetDisplayedSync().size());
+
+    size_t expected_alerts = IsAlertNotificationMac(CreateAlert()) ? 2 : 0;
+    [center_ getDeliveredNotificationsWithCompletionHandler:^(
+                 NSArray<UNNotification*>* _Nonnull notifications) {
+      EXPECT_EQ(6u - expected_alerts, [notifications count]);
     }];
+    ASSERT_EQ(expected_alerts, [[alert_dispatcher_ alerts] count]);
   }
 }
 
 TEST_F(UNNotificationPlatformBridgeMacTest, TestQuitRemovesNotifications) {
   if (@available(macOS 10.14, *)) {
-    Notification notification = CreateNotification();
-
+    // Setup one banner and one alert notification.
     bridge_->Display(NotificationHandler::Type::WEB_PERSISTENT, profile_,
-                     notification, nullptr);
+                     CreateNotification(), nullptr);
+    [alert_dispatcher_ dispatchNotification:@{}];
 
+    // Check that both notifications are present.
     [center_ getDeliveredNotificationsWithCompletionHandler:^(
                  NSArray<UNNotification*>* _Nonnull notifications) {
       EXPECT_EQ(1u, [notifications count]);
     }];
+    EXPECT_EQ(1u, [[alert_dispatcher_ alerts] count]);
 
+    // Destroying the bridge should close all notifications.
     bridge_.reset();
 
-    // The destructor of the bridge_ will call removeAllDeliveredNotifications.
+    // Check that all notifications are closed.
     [center_ getDeliveredNotificationsWithCompletionHandler:^(
                  NSArray<UNNotification*>* _Nonnull notifications) {
       EXPECT_EQ(0u, [notifications count]);
     }];
+    EXPECT_EQ(0u, [[alert_dispatcher_ alerts] count]);
   }
 }
 
@@ -596,6 +678,49 @@ TEST_F(UNNotificationPlatformBridgeMacTest, TestCloseRemovesCategory) {
   }
 }
 
+TEST_F(UNNotificationPlatformBridgeMacTest, TestSynchronizeNotifications) {
+  if (@available(macOS 10.14, *)) {
+    Notification banner1 = CreateNotification("banner1");
+    Notification banner2 = CreateNotification("banner2");
+    Notification alert1 = CreateAlert("alert1");
+    Notification alert2 = CreateAlert("alert2");
+
+    bridge_->Display(NotificationHandler::Type::WEB_PERSISTENT, profile_,
+                     banner1, /*metadata=*/nullptr);
+    bridge_->Display(NotificationHandler::Type::WEB_PERSISTENT, profile_,
+                     banner2, /*metadata=*/nullptr);
+    bridge_->Display(NotificationHandler::Type::WEB_PERSISTENT, profile_,
+                     alert1, /*metadata=*/nullptr);
+    bridge_->Display(NotificationHandler::Type::WEB_PERSISTENT, profile_,
+                     alert2, /*metadata=*/nullptr);
+
+    EXPECT_EQ(4u, GetDisplayedSync().size());
+
+    // Remove two notifications without notifying the |brigde_|.
+    std::string profile_id = NotificationPlatformBridge::GetProfileId(profile_);
+    [center_ removeDeliveredNotificationsWithIdentifiers:@[
+      base::SysUTF8ToNSString(DeriveMacNotificationId(
+          profile_->IsOffTheRecord(), profile_id, "banner1"))
+    ]];
+    [alert_dispatcher_
+        closeNotificationWithId:@"alert2"
+                      profileId:base::SysUTF8ToNSString(profile_id)
+                      incognito:profile_->IsOffTheRecord()];
+
+    // Let some time pass but not enough to trigger synchronization.
+    task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(5));
+
+    // Let more time pass to trigger synchronization and two close events.
+    base::MockCallback<
+        StubNotificationDisplayService::ProcessNotificationOperationCallback>
+        operation_callback;
+    EXPECT_CALL(operation_callback, Run).Times(2);
+    display_service_tester_->SetProcessNotificationOperationDelegate(
+        operation_callback.Get());
+    task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(5));
+  }
+}
+
 TEST_P(UNNotificationPlatformBridgeMacPermissionStatusTest, PermissionStatus) {
   if (@available(macOS 10.14, *)) {
     UNNotificationPermissionStatus permission_status = GetParam();
@@ -620,7 +745,8 @@ TEST_P(UNNotificationPlatformBridgeMacPermissionStatusTest, PermissionStatus) {
 
     base::HistogramTester histogram_tester;
     auto bridge = std::make_unique<NotificationPlatformBridgeMacUNNotification>(
-        static_cast<UNUserNotificationCenter*>(center.get()));
+        static_cast<UNUserNotificationCenter*>(center.get()),
+        alert_dispatcher_.get());
 
     histogram_tester.ExpectTotalCount(
         "Notifications.Permissions.UNNotification.Banners.PermissionStatus", 1);
@@ -659,7 +785,8 @@ TEST_P(UNNotificationPlatformBridgeMacBannerStyleTest, NotificationStyle) {
 
     base::HistogramTester histogram_tester;
     auto bridge = std::make_unique<NotificationPlatformBridgeMacUNNotification>(
-        static_cast<UNUserNotificationCenter*>(center.get()));
+        static_cast<UNUserNotificationCenter*>(center.get()),
+        alert_dispatcher_.get());
 
     histogram_tester.ExpectTotalCount(
         "Notifications.Permissions.UNNotification.Banners.Style", 1);

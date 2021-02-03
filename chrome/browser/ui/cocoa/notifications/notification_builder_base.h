@@ -41,6 +41,7 @@
 - (void)setCreatorPid:(NSNumber*)pid;
 - (void)setNotificationType:(NSNumber*)notificationType;
 - (void)setShowSettingsButton:(BOOL)showSettingsButton;
+- (void)setIcon:(NSImage*)icon;
 
 // Returns a representation of a notification that can be serialized.
 // Another instance of NotificationBuilder can read this directly and generate
