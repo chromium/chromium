@@ -1207,7 +1207,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.CreateShortcutIcon.Linux.Result"
-    enum="WebAppCreateShortcutIconLinuxResult" expires_after="M90">
+    enum="WebAppCreateShortcutIconLinuxResult" expires_after="M95">
   <owner>phillis@chromium.org</owner>
   <owner>cmumford@chromium.org</owner>
   <summary>
@@ -1216,7 +1216,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.CreateShortcuts.Linux.Result"
-    enum="WebAppCreateShortcutLinuxResult" expires_after="M90">
+    enum="WebAppCreateShortcutLinuxResult" expires_after="M95">
   <owner>phillis@chromium.org</owner>
   <owner>cmumford@chromium.org</owner>
   <summary>
@@ -1225,7 +1225,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.CreateShortcuts.Mac.Result"
-    enum="WebAppCreateShortcutMacResult" expires_after="M90">
+    enum="WebAppCreateShortcutMacResult" expires_after="M95">
   <owner>phillis@chromium.org</owner>
   <owner>cmumford@chromium.org</owner>
   <summary>
@@ -1247,7 +1247,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.FileHandler.Registration.Linux.RecreateShortcut.Result"
     enum="FileHandlerRegistrationLinuxRecreateShortcutResult"
-    expires_after="M90">
+    expires_after="M95">
   <owner>phillis@chromium.org</owner>
   <owner>cmumford@chromium.org</owner>
   <summary>
@@ -1257,7 +1257,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.FileHandler.Registration.Linux.Result"
-    enum="FileHandlerRegistrationLinuxResult" expires_after="M90">
+    enum="FileHandlerRegistrationLinuxResult" expires_after="M95">
   <owner>phillis@chromium.org</owner>
   <owner>cmumford@chromium.org</owner>
   <summary>
@@ -1266,7 +1266,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.FileHandler.Registration.Win.Result"
-    enum="FileHandlerRegistrationWinResult" expires_after="M90">
+    enum="FileHandlerRegistrationWinResult" expires_after="M95">
   <owner>phillis@chromium.org</owner>
   <owner>cmumford@chromium.org</owner>
   <summary>
