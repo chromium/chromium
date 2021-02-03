@@ -27,7 +27,6 @@
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/ash/accessibility/accessibility_controller_client.h"
 #include "chrome/browser/ui/ash/ambient/ambient_client_impl.h"
-#include "chrome/browser/ui/ash/arc_chrome_actions_client.h"
 #include "chrome/browser/ui/ash/ash_shell_init.h"
 #include "chrome/browser/ui/ash/cast_config_controller_media_router.h"
 #include "chrome/browser/ui/ash/chrome_new_window_client.h"
@@ -178,7 +177,6 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
 
   ui::SelectFileDialog::SetFactory(new SelectFileDialogExtensionFactory);
 
-  arc_chrome_actions_client_ = std::make_unique<ArcChromeActionsClient>();
 
 #if BUILDFLAG(ENABLE_WAYLAND_SERVER)
   exo_parts_ = ExoParts::CreateIfNecessary();

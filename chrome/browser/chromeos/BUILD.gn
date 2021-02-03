@@ -736,6 +736,8 @@ source_set("chromeos") {
     "arc/intent_helper/arc_settings_service.h",
     "arc/intent_helper/custom_tab_session_impl.cc",
     "arc/intent_helper/custom_tab_session_impl.h",
+    "arc/intent_helper/factory_reset_delegate.cc",
+    "arc/intent_helper/factory_reset_delegate.h",
     "arc/intent_helper/open_with_menu.cc",
     "arc/intent_helper/open_with_menu.h",
     "arc/intent_helper/start_smart_selection_action_menu.cc",

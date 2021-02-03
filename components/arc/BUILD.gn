@@ -41,7 +41,6 @@ static_library("arc") {
     "intent_helper/control_camera_app_delegate.h",
     "intent_helper/custom_tab.cc",
     "intent_helper/custom_tab.h",
-    "intent_helper/factory_reset_delegate.h",
     "intent_helper/intent_constants.cc",
     "intent_helper/intent_constants.h",
     "intent_helper/intent_filter.cc",

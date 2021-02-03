@@ -28,6 +28,7 @@
 #include "chrome/browser/chromeos/arc/input_method_manager/arc_input_method_manager_service.h"
 #include "chrome/browser/chromeos/arc/instance_throttle/arc_instance_throttle.h"
 #include "chrome/browser/chromeos/arc/intent_helper/arc_settings_service.h"
+#include "chrome/browser/chromeos/arc/intent_helper/factory_reset_delegate.h"
 #include "chrome/browser/chromeos/arc/keymaster/arc_keymaster_bridge.h"
 #include "chrome/browser/chromeos/arc/kiosk/arc_kiosk_bridge.h"
 #include "chrome/browser/chromeos/arc/metrics/arc_metrics_service_proxy.h"
@@ -200,7 +201,8 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   ArcImeService::GetForBrowserContext(profile);
   ArcInputMethodManagerService::GetForBrowserContext(profile);
   ArcInstanceThrottle::GetForBrowserContext(profile);
-  ArcIntentHelperBridge::GetForBrowserContext(profile);
+  ArcIntentHelperBridge::GetForBrowserContext(profile)->SetDelegate(
+      std::make_unique<FactoryResetDelegate>());
   ArcKeymasterBridge::GetForBrowserContext(profile);
   ArcKioskBridge::GetForBrowserContext(profile);
   ArcLockScreenBridge::GetForBrowserContext(profile);

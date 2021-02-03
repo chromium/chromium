@@ -1861,8 +1861,6 @@ static_library("ui") {
       "ash/accessibility/accessibility_controller_client.h",
       "ash/ambient/ambient_client_impl.cc",
       "ash/ambient/ambient_client_impl.h",
-      "ash/arc_chrome_actions_client.cc",
-      "ash/arc_chrome_actions_client.h",
       "ash/arc_custom_tab_modal_dialog_host.cc",
       "ash/arc_custom_tab_modal_dialog_host.h",
       "ash/ash_shell_init.cc",
