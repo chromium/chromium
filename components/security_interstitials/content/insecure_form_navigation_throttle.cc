@@ -129,17 +129,14 @@ InsecureFormNavigationThrottle::GetThrottleResultForMixedForm(
         handle->IsPost()) {
       LogMixedFormInterstitialMetrics(
           InterstitialTriggeredState::kMixedFormRedirectWithFormData);
-      if (feature_mode !=
-              kInsecureFormSubmissionInterstitialModeIncludeRedirects &&
-          feature_mode !=
-              kInsecureFormSubmissionInterstitialModeIncludeRedirectsWithFormData) {
+      if (feature_mode == kInsecureFormSubmissionInterstitialModeNoRedirects) {
         return content::NavigationThrottle::PROCEED;
       }
     } else {
       LogMixedFormInterstitialMetrics(
           InterstitialTriggeredState::kMixedFormRedirectNoFormData);
       if (feature_mode !=
-          kInsecureFormSubmissionInterstitialModeIncludeRedirects) {
+          kInsecureFormSubmissionInterstitialModeIncludeAllRedirects) {
         return content::NavigationThrottle::PROCEED;
       }
     }

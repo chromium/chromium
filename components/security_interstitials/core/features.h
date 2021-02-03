@@ -12,17 +12,16 @@ namespace security_interstitials {
 // Controls whether an interstitial is shown when submitting a mixed form.
 extern const base::Feature kInsecureFormSubmissionInterstitial;
 
-// Controls if the insecure form interstitial is enabled for forms that intially
-// submit to https, but redirect to http. If not set the interstitial will only
-// be shown for forms that submit directly to http.
+// Controls if the insecure form interstitial is enabled for forms that
+// initially submit to https, but redirect to http. If not set the interstitial
+// will be shown for forms that submit directly to http, or POST forms with a
+// 307/308 redirect over http (since those expose the form data over http).
 extern const char kInsecureFormSubmissionInterstitialMode[];
 // If set to this mode, the interstitial will be shown for any redirect over
 // http.
-extern const char kInsecureFormSubmissionInterstitialModeIncludeRedirects[];
-// If set to this mode, the interstitial will only be shown for redirects over
-// http that expose form data (i.e. 307 or 308 redirects for POST method forms).
-extern const char
-    kInsecureFormSubmissionInterstitialModeIncludeRedirectsWithFormData[];
+extern const char kInsecureFormSubmissionInterstitialModeIncludeAllRedirects[];
+// If set to this mode, the interstitial will not be shown for any redirect.
+extern const char kInsecureFormSubmissionInterstitialModeNoRedirects[];
 
 }  // namespace security_interstitials
 

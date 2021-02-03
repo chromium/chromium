@@ -6179,8 +6179,9 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, ErrorPage) {
 class SSLUITestWithInsecureFormsWarningEnabled : public SSLUITest {
  public:
   SSLUITestWithInsecureFormsWarningEnabled() {
-    feature_list_.InitAndEnableFeature(
-        security_interstitials::kInsecureFormSubmissionInterstitial);
+    feature_list_.InitAndEnableFeatureWithParameters(
+        security_interstitials::kInsecureFormSubmissionInterstitial,
+        {{"mode", "no-redirects"}});
   }
 
  private:
@@ -6704,9 +6705,8 @@ class SSLUITestWithInsecureFormsWarningEnabledForRedirectsWithFormData
     : public SSLUITest {
  public:
   SSLUITestWithInsecureFormsWarningEnabledForRedirectsWithFormData() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        security_interstitials::kInsecureFormSubmissionInterstitial,
-        {{"mode", "include-redirects-with-form-data"}});
+    feature_list_.InitAndEnableFeature(
+        security_interstitials::kInsecureFormSubmissionInterstitial);
   }
 
  private:
