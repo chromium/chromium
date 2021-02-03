@@ -16,10 +16,12 @@
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/printing/print_backend_service.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_utils.h"
 #include "chrome/common/printing/printer_capabilities.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "printing/printing_features.h"
 
 #if defined(OS_MAC)
 #include "chrome/common/printing/printer_capabilities_mac.h"
@@ -52,6 +54,32 @@ scoped_refptr<base::TaskRunner> CreatePrinterHandlerTaskRunner() {
   // Be conservative on unsupported platforms.
   return base::ThreadPool::CreateSingleThreadTaskRunner(kTraits);
 #endif
+}
+
+void OnDidFetchCapabilities(
+    const std::string& device_name,
+    bool has_secure_protocol,
+    LocalPrinterHandlerDefault::GetCapabilityCallback callback,
+    const base::Optional<PrinterBasicInfo>& printer_info,
+    const base::Optional<PrinterSemanticCapsAndDefaults::Papers>&
+        user_defined_papers,
+    const base::Optional<PrinterSemanticCapsAndDefaults>& caps_and_defaults) {
+  const bool has_values = printer_info.has_value() &&
+                          user_defined_papers.has_value() &&
+                          caps_and_defaults.has_value();
+  if (!has_values) {
+    LOG(WARNING) << "Failure fetching printer capabilities for  "
+                 << device_name;
+    std::move(callback).Run(base::Value());
+    return;
+  }
+
+  VLOG(1) << "Received printer info & capabilities for " << device_name;
+  PrinterSemanticCapsAndDefaults caps = caps_and_defaults.value();
+  base::Value settings = AssemblePrinterSettings(
+      device_name, std::move(printer_info.value()),
+      std::move(user_defined_papers.value()), has_secure_protocol, &caps);
+  std::move(callback).Run(std::move(settings));
 }
 
 }  // namespace
@@ -159,11 +187,22 @@ void LocalPrinterHandlerDefault::StartGetCapability(
     GetCapabilityCallback cb) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
-      base::BindOnce(&FetchCapabilitiesAsync, device_name,
-                     g_browser_process->GetApplicationLocale()),
-      std::move(cb));
+  if (base::FeatureList::IsEnabled(features::kEnableOopPrintDrivers)) {
+    VLOG(1) << "Getting printer capabilities via service for " << device_name;
+    GetPrintBackendService(g_browser_process->GetApplicationLocale(),
+                           device_name)
+        ->FetchCapabilities(
+            device_name,
+            base::BindOnce(&OnDidFetchCapabilities, device_name,
+                           /*has_secure_protocol=*/false, std::move(cb)));
+  } else {
+    VLOG(1) << "Getting printer capabilities in-process for " << device_name;
+    base::PostTaskAndReplyWithResult(
+        task_runner_.get(), FROM_HERE,
+        base::BindOnce(&FetchCapabilitiesAsync, device_name,
+                       g_browser_process->GetApplicationLocale()),
+        std::move(cb));
+  }
 }
 
 void LocalPrinterHandlerDefault::StartPrint(

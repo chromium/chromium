@@ -5782,6 +5782,13 @@ test("unit_tests") {
       "//printing/mojom",
     ]
 
+    if (is_win || is_mac || is_linux || is_chromeos) {
+      sources += [
+        "../services/printing/print_backend_service_test_impl.cc",
+        "../services/printing/print_backend_service_test_impl.h",
+      ]
+    }
+
     if (enable_print_preview) {
       sources += [
         "../browser/printing/print_preview_dialog_controller_unittest.cc",

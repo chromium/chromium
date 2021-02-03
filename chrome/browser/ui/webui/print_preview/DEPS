@@ -1,0 +1,5 @@
+specific_include_rules = {
+  "local_printer_handler_default_unittest.cc": [
+    "+chrome/services/printing/print_backend_service_test_impl.h",
+  ],
+}
