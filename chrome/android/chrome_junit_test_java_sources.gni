@@ -136,6 +136,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/notifications/NotificationSystemStatusUtilUnitTest.java",
   "junit/src/org/chromium/chrome/browser/notifications/NotificationTriggerBackgroundTaskTest.java",
   "junit/src/org/chromium/chrome/browser/notifications/NotificationTriggerSchedulerTest.java",
+  "junit/src/org/chromium/chrome/browser/notifications/PendingIntentProviderTest.java",
   "junit/src/org/chromium/chrome/browser/notifications/channels/ChromeChannelDefinitionsTest.java",
   "junit/src/org/chromium/chrome/browser/ntp/cards/InnerNodeTest.java",
   "junit/src/org/chromium/chrome/browser/offline/measurements/OfflineMeasurementsBackgroundTaskUnitTest.java",

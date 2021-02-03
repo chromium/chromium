@@ -320,11 +320,13 @@ public class NotificationPlatformBridge {
      * @param webApkPackage The package of the WebAPK associated with the notification. Empty if
      *        the notification is not associated with a WebAPK.
      * @param actionIndex The zero-based index of the action button, or -1 if not applicable.
+     * @param mutable Whether the pending intent is mutable, see {@link
+     *         PendingIntent#FLAG_IMMUTABLE}.
      */
     private PendingIntentProvider makePendingIntent(Context context, String action,
             String notificationId, @NotificationType int notificationType, String origin,
             String scopeUrl, String profileId, boolean incognito, String webApkPackage,
-            int actionIndex) {
+            int actionIndex, boolean mutable) {
         Uri intentData = makeIntentData(notificationId, origin, actionIndex);
         Intent intent = new Intent(action, intentData);
         intent.setClass(context, NotificationServiceImpl.Receiver.class);
@@ -348,8 +350,8 @@ public class NotificationPlatformBridge {
             intent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
         }
 
-        return PendingIntentProvider.getBroadcast(
-                context, PENDING_INTENT_REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntentProvider.getBroadcast(context, PENDING_INTENT_REQUEST_CODE, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT, mutable);
     }
 
     /**
@@ -581,10 +583,10 @@ public class NotificationPlatformBridge {
 
         PendingIntentProvider clickIntent = makePendingIntent(context,
                 NotificationConstants.ACTION_CLICK_NOTIFICATION, notificationId, notificationType,
-                origin, scopeUrl, profileId, incognito, webApkPackage, -1 /* actionIndex */);
+                origin, scopeUrl, profileId, incognito, webApkPackage, -1 /* actionIndex */, false);
         PendingIntentProvider closeIntent = makePendingIntent(context,
                 NotificationConstants.ACTION_CLOSE_NOTIFICATION, notificationId, notificationType,
-                origin, scopeUrl, profileId, incognito, webApkPackage, -1 /* actionIndex */);
+                origin, scopeUrl, profileId, incognito, webApkPackage, -1 /* actionIndex */, false);
 
         boolean hasImage = image != null;
         boolean forWebApk = !webApkPackage.isEmpty();
@@ -613,11 +615,12 @@ public class NotificationPlatformBridge {
         }
 
         for (int actionIndex = 0; actionIndex < actions.length; actionIndex++) {
+            ActionInfo action = actions[actionIndex];
+            boolean mutable = (action.type == NotificationActionType.TEXT);
             PendingIntentProvider intent =
                     makePendingIntent(context, NotificationConstants.ACTION_CLICK_NOTIFICATION,
                             notificationId, notificationType, origin, scopeUrl, profileId,
-                            incognito, webApkPackage, actionIndex);
-            ActionInfo action = actions[actionIndex];
+                            incognito, webApkPackage, actionIndex, mutable);
             // Don't show action button icons when there's an image, as then action buttons go on
             // the same row as the Site Settings button, so icons wouldn't leave room for text.
             Bitmap actionIcon = hasImage ? null : action.icon;
