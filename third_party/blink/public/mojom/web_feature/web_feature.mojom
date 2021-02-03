@@ -2899,7 +2899,7 @@ enum WebFeature {
   kForcedDarkMode = 3579,
   kPreferredColorSchemeDark = 3580,
   kPreferredColorSchemeDarkSetting = 3581,
-  kIdentifiabilityStudyReserved3582 = 3582,
+  kIdentifiabilityMediaDevicesEnumerateDevices = 3582,
   kIdentifiabilityStudyReserved3583 = 3583,
   kIdentifiabilityStudyReserved3584 = 3584,
   kIdentifiabilityStudyReserved3585 = 3585,

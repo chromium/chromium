@@ -31048,7 +31048,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3579" label="ForcedDarkMode"/>
   <int value="3580" label="PreferredColorSchemeDark"/>
   <int value="3581" label="PreferredColorSchemeDarkSetting"/>
-  <int value="3582" label="IdentifiabilityStudyReserved3582"/>
+  <int value="3582" label="IdentifiabilityMediaDevicesEnumerateDevices"/>
   <int value="3583" label="IdentifiabilityStudyReserved3583"/>
   <int value="3584" label="IdentifiabilityStudyReserved3584"/>
   <int value="3585" label="IdentifiabilityStudyReserved3585"/>

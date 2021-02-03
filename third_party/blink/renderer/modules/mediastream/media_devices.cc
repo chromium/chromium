@@ -317,7 +317,7 @@ namespace {
 void RecordEnumeratedDevices(ScriptPromiseResolver* resolver,
                              const MediaDeviceInfoVector& media_devices) {
   if (!IdentifiabilityStudySettings::Get()->IsWebFeatureAllowed(
-          WebFeature::kMediaDevicesEnumerateDevices)) {
+          WebFeature::kIdentifiabilityMediaDevicesEnumerateDevices)) {
     return;
   }
   Document* document = LocalDOMWindow::From(resolver->GetScriptState())
@@ -325,13 +325,13 @@ void RecordEnumeratedDevices(ScriptPromiseResolver* resolver,
                            ->GetDocument();
   IdentifiableTokenBuilder builder;
   for (const auto& device_info : media_devices) {
-    builder.AddToken(IdentifiabilityBenignStringToken(device_info->deviceId()));
+    // Ignore device_id since that varies per-site.
     builder.AddToken(IdentifiabilityBenignStringToken(device_info->kind()));
     builder.AddToken(IdentifiabilityBenignStringToken(device_info->label()));
-    builder.AddToken(IdentifiabilityBenignStringToken(device_info->groupId()));
+    // Ignore group_id since that is varies per-site.
   }
   IdentifiabilityMetricBuilder(document->UkmSourceID())
-      .SetWebfeature(WebFeature::kMediaDevicesEnumerateDevices,
+      .SetWebfeature(WebFeature::kIdentifiabilityMediaDevicesEnumerateDevices,
                      builder.GetToken())
       .Record(document->UkmRecorder());
 }
