@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/optional.h"
+#include "build/build_config.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-forward.h"
 
 class SkBitmap;
@@ -65,6 +66,11 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR_BASE) CursorFactory {
   // cursor theme and size changes.
   virtual void ObserveThemeChanges();
 };
+
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+COMPONENT_EXPORT(UI_BASE_CURSOR_BASE)
+std::vector<std::string> CursorNamesFromType(mojom::CursorType type);
+#endif
 
 }  // namespace ui
 

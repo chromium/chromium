@@ -4,6 +4,7 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_cursor.h"
 
+#include <wayland-cursor.h>
 #include <memory>
 #include <vector>
 
@@ -74,6 +75,30 @@ void WaylandCursor::UpdateBitmap(const std::vector<SkBitmap>& cursor_image,
 
   auto* address = buffer.get();
   buffers_.emplace(address, std::move(buffer));
+
+  if (listener_)
+    listener_->OnCursorBufferAttached(nullptr);
+}
+
+void WaylandCursor::SetPlatformShape(wl_cursor* cursor_data,
+                                     uint32_t serial,
+                                     int buffer_scale) {
+  if (!pointer_)
+    return;
+
+  wl_cursor_image* cursor_image = cursor_data->images[0];
+  wl_buffer* cursor_buffer = wl_cursor_image_get_buffer(cursor_image);
+
+  wl_pointer_set_cursor(pointer_->wl_object(), serial, pointer_surface_.get(),
+                        cursor_image->hotspot_x, cursor_image->hotspot_y);
+  wl_surface_set_buffer_scale(pointer_surface_.get(), buffer_scale);
+  wl_surface_damage(pointer_surface_.get(), 0, 0, cursor_image->width,
+                    cursor_image->height);
+  wl_surface_attach(pointer_surface_.get(), cursor_buffer, 0, 0);
+  wl_surface_commit(pointer_surface_.get());
+
+  if (listener_)
+    listener_->OnCursorBufferAttached(cursor_data);
 }
 
 void WaylandCursor::HideCursor(uint32_t serial) {
@@ -84,6 +109,9 @@ void WaylandCursor::HideCursor(uint32_t serial) {
   wl_surface_commit(pointer_surface_.get());
 
   connection_->ScheduleFlush();
+
+  if (listener_)
+    listener_->OnCursorBufferAttached(nullptr);
 }
 
 }  // namespace ui

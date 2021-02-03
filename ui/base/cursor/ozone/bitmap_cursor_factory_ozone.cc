@@ -117,6 +117,10 @@ BitmapCursorOzone::BitmapCursorOzone(mojom::CursorType type,
          bitmaps_.end());
 }
 
+BitmapCursorOzone::BitmapCursorOzone(mojom::CursorType type,
+                                     void* platform_data)
+    : type_(type), platform_data_(platform_data) {}
+
 BitmapCursorOzone::~BitmapCursorOzone() = default;
 
 const gfx::Point& BitmapCursorOzone::hotspot() {

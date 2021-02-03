@@ -66,6 +66,8 @@ source_set("wayland") {
     "host/wayland_connection.h",
     "host/wayland_cursor.cc",
     "host/wayland_cursor.h",
+    "host/wayland_cursor_factory.cc",
+    "host/wayland_cursor_factory.h",
     "host/wayland_cursor_position.cc",
     "host/wayland_cursor_position.h",
     "host/wayland_data_device.cc",
@@ -191,6 +193,7 @@ source_set("wayland") {
     "//ui/base:buildflags",
     "//ui/base/cursor",
     "//ui/base/cursor:cursor_base",
+    "//ui/base/cursor:theme_manager",
     "//ui/base/cursor/mojom:cursor_type",
     "//ui/base/ime/linux",
     "//ui/events",
@@ -242,6 +245,7 @@ source_set("wayland") {
   } else {
     deps += [
       "//third_party/wayland:wayland_client",
+      "//third_party/wayland:wayland_cursor",
       "//third_party/wayland:wayland_egl",
     ]
   }
@@ -372,6 +376,7 @@ source_set("wayland_unittests") {
     "common/wayland_util_unittest.cc",
     "gpu/wayland_overlay_manager_unittest.cc",
     "host/wayland_connection_unittest.cc",
+    "host/wayland_cursor_factory_unittest.cc",
     "host/wayland_data_device_unittest.cc",
     "host/wayland_data_drag_controller_unittest.cc",
     "host/wayland_event_source_unittest.cc",

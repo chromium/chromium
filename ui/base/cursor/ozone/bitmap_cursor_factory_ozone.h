@@ -37,6 +37,9 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR) BitmapCursorOzone
                     const gfx::Point& hotspot,
                     int frame_delay_ms);
 
+  // Creates a cursor with external storage.
+  BitmapCursorOzone(mojom::CursorType type, void* platform_data);
+
   mojom::CursorType type() const { return type_; }
   const gfx::Point& hotspot();
   const SkBitmap& bitmap();
@@ -44,6 +47,9 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR) BitmapCursorOzone
   // For animated cursors.
   const std::vector<SkBitmap>& bitmaps();
   int frame_delay_ms();
+
+  // For theme cursors.
+  void* platform_data() { return platform_data_; }
 
  private:
   friend class base::RefCounted<BitmapCursorOzone>;
@@ -54,6 +60,10 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR) BitmapCursorOzone
   gfx::Point hotspot_;
   int frame_delay_ms_;
 
+  // Platform cursor data.  Having this non-nullptr means that this cursor
+  // is supplied by the platform.
+  void* const platform_data_ = nullptr;
+
   DISALLOW_COPY_AND_ASSIGN(BitmapCursorOzone);
 };
 
@@ -61,9 +71,6 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR) BitmapCursorOzone
 //
 // This is a base class for platforms where PlatformCursor is an SkBitmap
 // combined with a gfx::Point for the hotspot.
-//
-// Subclasses need only implement SetBitmapCursor() as everything else is
-// implemented here.
 class COMPONENT_EXPORT(UI_BASE_CURSOR) BitmapCursorFactoryOzone
     : public CursorFactory {
  public:

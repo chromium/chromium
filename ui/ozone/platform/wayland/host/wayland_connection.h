@@ -16,6 +16,8 @@
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_manager.h"
 
+struct wl_cursor;
+
 namespace gfx {
 class Point;
 }
@@ -24,6 +26,7 @@ namespace ui {
 
 class WaylandBufferManagerHost;
 class WaylandCursor;
+class WaylandCursorBufferListener;
 class WaylandDrm;
 class WaylandEventSource;
 class WaylandKeyboard;
@@ -91,6 +94,10 @@ class WaylandConnection {
   }
   uint32_t serial() const { return serial_.serial; }
   EventSerial event_serial() const { return serial_; }
+
+  void SetPlatformCursor(wl_cursor* cursor_data, int buffer_scale);
+
+  void SetCursorBufferListener(WaylandCursorBufferListener* listener);
 
   void SetCursorBitmap(const std::vector<SkBitmap>& bitmaps,
                        const gfx::Point& hotspot_in_dips,
@@ -249,6 +256,8 @@ class WaylandConnection {
 
   // Manages Wayland windows.
   WaylandWindowManager wayland_window_manager_;
+
+  WaylandCursorBufferListener* listener_ = nullptr;
 
   bool scheduled_flush_ = false;
 

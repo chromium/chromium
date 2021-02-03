@@ -20,6 +20,7 @@ struct zwp_primary_selection_source_v1;
 struct wl_buffer;
 struct wl_callback;
 struct wl_compositor;
+struct wl_cursor_theme;
 struct wl_data_device_manager;
 struct wl_data_device;
 struct wl_data_offer;
@@ -151,6 +152,11 @@ template <>
 struct ObjectTraits<wl_compositor> {
   static const wl_interface* interface;
   static void (*deleter)(wl_compositor*);
+};
+
+template <>
+struct ObjectTraits<wl_cursor_theme> {
+  static void (*deleter)(wl_cursor_theme*);
 };
 
 template <>

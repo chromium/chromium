@@ -4,6 +4,7 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 
+#include <wayland-cursor.h>
 #include <algorithm>
 #include <memory>
 
@@ -127,11 +128,18 @@ void WaylandWindow::SetPointerFocus(bool focus) {
   // cursor. Otherwise, it is invalidated whenever the pointer leaves the
   // surface and is not restored by the Wayland compositor.
   if (has_pointer_focus_ && bitmap_) {
-    // Translate physical pixels to DIPs.
-    gfx::Point hotspot_in_dips =
-        gfx::ScaleToRoundedPoint(bitmap_->hotspot(), 1.0f / ui_scale_);
-    connection_->SetCursorBitmap(bitmap_->bitmaps(), hotspot_in_dips,
-                                 buffer_scale());
+    // Check for theme-provided cursor.
+    if (bitmap_->platform_data()) {
+      connection_->SetPlatformCursor(
+          reinterpret_cast<wl_cursor*>(bitmap_->platform_data()),
+          buffer_scale());
+    } else {
+      // Translate physical pixels to DIPs.
+      gfx::Point hotspot_in_dips =
+          gfx::ScaleToRoundedPoint(bitmap_->hotspot(), 1.0f / ui_scale_);
+      connection_->SetCursorBitmap(bitmap_->bitmaps(), hotspot_in_dips,
+                                   buffer_scale());
+    }
   }
 }
 
@@ -265,6 +273,12 @@ void WaylandWindow::SetCursor(PlatformCursor cursor) {
     // Hide the cursor.
     connection_->SetCursorBitmap(std::vector<SkBitmap>(), gfx::Point(),
                                  buffer_scale());
+    return;
+  }
+  // Check for theme-provided cursor.
+  if (bitmap_->platform_data()) {
+    connection_->SetPlatformCursor(
+        reinterpret_cast<wl_cursor*>(bitmap_->platform_data()), buffer_scale());
     return;
   }
   // Check for Wayland server-side cursor support (e.g. exo for lacros).

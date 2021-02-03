@@ -89,8 +89,22 @@ bool WaylandConnection::Initialize() {
     LOG(ERROR) << "Failed to load wayland client libraries.";
     return false;
   }
+
   if (void* libwayland_egl = dlopen("libwayland-egl.so.1", dlopen_flags))
     third_party_wayland::InitializeLibwaylandegl(libwayland_egl);
+
+  // TODO(crbug.com/1081784): consider handling this in more flexible way.
+  // libwayland-cursor is said to be part of the standard shipment of Wayland,
+  // and it seems unlikely (although possible) that it would be unavailable
+  // while libwayland-client was present.  To handle that gracefully, chrome can
+  // fall back to the generic Ozone behaviour.
+  if (void* libwayland_cursor =
+          dlopen("libwayland-cursor.so.0", dlopen_flags)) {
+    third_party_wayland::InitializeLibwaylandcursor(libwayland_cursor);
+  } else {
+    LOG(ERROR) << "Failed to load libwayland-cursor.so.0.";
+    return false;
+  }
 #endif
 
   static const wl_registry_listener registry_listener = {
@@ -163,6 +177,21 @@ void WaylandConnection::SetShutdownCb(base::OnceCallback<void()> shutdown_cb) {
   event_source()->SetShutdownCb(std::move(shutdown_cb));
 }
 
+void WaylandConnection::SetPlatformCursor(wl_cursor* cursor_data,
+                                          int buffer_scale) {
+  if (!cursor_)
+    return;
+  cursor_->SetPlatformShape(cursor_data, serial(), buffer_scale);
+}
+
+void WaylandConnection::SetCursorBufferListener(
+    WaylandCursorBufferListener* listener) {
+  listener_ = listener;
+  if (!cursor_)
+    return;
+  cursor_->set_listener(listener_);
+}
+
 void WaylandConnection::SetCursorBitmap(const std::vector<SkBitmap>& bitmaps,
                                         const gfx::Point& hotspot_in_dips,
                                         int buffer_scale) {
@@ -205,6 +234,7 @@ void WaylandConnection::UpdateInputDevices(wl_seat* seat,
       pointer_ =
           std::make_unique<WaylandPointer>(pointer, this, event_source());
       cursor_ = std::make_unique<WaylandCursor>(pointer_.get(), this);
+      cursor_->set_listener(listener_);
       wayland_cursor_position_ = std::make_unique<WaylandCursorPosition>();
     } else {
       LOG(ERROR) << "Failed to get wl_pointer from seat";
