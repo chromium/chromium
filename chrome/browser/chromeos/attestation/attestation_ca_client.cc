@@ -8,6 +8,8 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/location.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/browser_process.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "net/base/load_flags.h"
@@ -162,6 +164,15 @@ void AttestationCAClient::FetchURL(const std::string& url,
 
 PrivacyCAType AttestationCAClient::GetType() {
   return pca_type_;
+}
+
+void AttestationCAClient::CheckIfAnyProxyPresent(
+    ProxyPresenceCallback callback) {
+  // Currently the function just assumes there exists a proxy. Post the task to
+  // emulate the asynchronous behavior of the coming implementation.
+  // TODO(b/158532239): Implement this.
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
 }  // namespace attestation

@@ -35,6 +35,8 @@ class FakeServerProxy : public ServerProxy {
   void SendCertificateRequest(const std::string& request,
                               DataCallback callback) override;
 
+  void CheckIfAnyProxyPresent(ProxyPresenceCallback callback) override;
+
   void set_enroll_response(const std::string& response) {
     enroll_response_ = response;
   }
@@ -61,6 +63,7 @@ class MockServerProxy : public FakeServerProxy {
   MOCK_METHOD2(SendEnrollRequest, void(const std::string&, DataCallback));
   MOCK_METHOD2(SendCertificateRequest, void(const std::string&, DataCallback));
   MOCK_METHOD0(GetType, PrivacyCAType());
+  MOCK_METHOD1(CheckIfAnyProxyPresent, void(ProxyPresenceCallback));
 
   FakeServerProxy* fake() { return &fake_; }
 

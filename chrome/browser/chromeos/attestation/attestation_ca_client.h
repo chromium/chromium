@@ -40,6 +40,8 @@ class AttestationCAClient : public ServerProxy {
 
   PrivacyCAType GetType() override;
 
+  void CheckIfAnyProxyPresent(ProxyPresenceCallback callback) override;
+
  private:
   PrivacyCAType pca_type_;
 
