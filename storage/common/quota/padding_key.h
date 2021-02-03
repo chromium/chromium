@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "crypto/symmetric_key.h"
 #include "services/network/public/mojom/url_response_head.mojom-shared.h"
 #include "url/gurl.h"
 
@@ -22,40 +21,6 @@ class Origin;
 }  // namespace url
 
 namespace storage {
-
-COMPONENT_EXPORT(STORAGE_COMMON)
-const crypto::SymmetricKey* GetDefaultPaddingKey();
-
-// Returns a copy of the default key used to calculate padding sizes.
-//
-// The default padding key is a singleton object whose value is randomly
-// generated the first time it is requested on every browser startup. In
-// CacheStorage, when a cache does not have a padding key, it is assigned the
-// current default key.
-COMPONENT_EXPORT(STORAGE_COMMON)
-std::unique_ptr<crypto::SymmetricKey> CopyDefaultPaddingKey();
-
-// Builds a key whose value is the given string.
-//
-// May return null if deserializing fails (e.g. if the raw key is the wrong
-// size).
-COMPONENT_EXPORT(STORAGE_COMMON)
-std::unique_ptr<crypto::SymmetricKey> DeserializePaddingKey(
-    const std::string& raw_key);
-
-// Gets the raw value of the default padding key.
-//
-// Each cache stores the raw value of the key that should be used when
-// calculating its padding size.
-COMPONENT_EXPORT(STORAGE_COMMON)
-std::string SerializeDefaultPaddingKey();
-
-// Resets the default key to a random value.
-//
-// Simulating a key change across a browser restart lets us test that padding
-// calculations are using the appropriate key.
-COMPONENT_EXPORT(STORAGE_COMMON)
-void ResetPaddingKeyForTesting();
 
 // Utility method to determine if a given type of response should be padded.
 COMPONENT_EXPORT(STORAGE_COMMON)

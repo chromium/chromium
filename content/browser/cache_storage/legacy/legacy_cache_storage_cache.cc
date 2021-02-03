@@ -558,13 +558,12 @@ LegacyCacheStorageCache::CreateMemoryCache(
     LegacyCacheStorage* cache_storage,
     scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
-    scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
-    std::unique_ptr<crypto::SymmetricKey> cache_padding_key) {
+    scoped_refptr<BlobStorageContextWrapper> blob_storage_context) {
   LegacyCacheStorageCache* cache = new LegacyCacheStorageCache(
       origin, owner, cache_name, base::FilePath(), cache_storage,
       std::move(scheduler_task_runner), std::move(quota_manager_proxy),
-      std::move(blob_storage_context), 0 /* cache_size */,
-      0 /* cache_padding */, std::move(cache_padding_key));
+      std::move(blob_storage_context), /*cache_size=*/0,
+      /*cache_padding=*/0);
   cache->SetObserver(cache_storage);
   cache->InitBackend();
   return base::WrapUnique(cache);
@@ -582,13 +581,11 @@ LegacyCacheStorageCache::CreatePersistentCache(
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
     scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
     int64_t cache_size,
-    int64_t cache_padding,
-    std::unique_ptr<crypto::SymmetricKey> cache_padding_key) {
+    int64_t cache_padding) {
   LegacyCacheStorageCache* cache = new LegacyCacheStorageCache(
       origin, owner, cache_name, path, cache_storage,
       std::move(scheduler_task_runner), std::move(quota_manager_proxy),
-      std::move(blob_storage_context), cache_size, cache_padding,
-      std::move(cache_padding_key));
+      std::move(blob_storage_context), cache_size, cache_padding);
   cache->SetObserver(cache_storage);
   cache->InitBackend();
   return base::WrapUnique(cache);
@@ -1032,8 +1029,7 @@ LegacyCacheStorageCache::LegacyCacheStorageCache(
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
     scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
     int64_t cache_size,
-    int64_t cache_padding,
-    std::unique_ptr<crypto::SymmetricKey> cache_padding_key)
+    int64_t cache_padding)
     : origin_(origin),
       owner_(owner),
       cache_name_(cache_name),
@@ -1045,7 +1041,6 @@ LegacyCacheStorageCache::LegacyCacheStorageCache(
                                            scheduler_task_runner_)),
       cache_size_(cache_size),
       cache_padding_(cache_padding),
-      cache_padding_key_(std::move(cache_padding_key)),
       max_query_size_bytes_(kMaxQueryCacheResultBytes),
       cache_observer_(nullptr),
       cache_entry_handler_(
@@ -1055,7 +1050,6 @@ LegacyCacheStorageCache::LegacyCacheStorageCache(
       memory_only_(path.empty()) {
   DCHECK(!origin_.opaque());
   DCHECK(quota_manager_proxy_.get());
-  DCHECK(cache_padding_key_.get());
 
   if (cache_size_ != CacheStorage::kSizeUnknown &&
       cache_padding_ != CacheStorage::kSizeUnknown) {

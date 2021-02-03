@@ -426,11 +426,6 @@ blink::mojom::FetchAPIResponsePtr SetCacheName(
   return response;
 }
 
-std::unique_ptr<crypto::SymmetricKey> CreateTestPaddingKey() {
-  return crypto::SymmetricKey::Import(crypto::SymmetricKey::HMAC_SHA1,
-                                      "abc123");
-}
-
 void OnBadMessage(std::string* result) {
   *result = "CSDH_UNEXPECTED_OPERATION";
 }
@@ -454,8 +449,7 @@ class TestCacheStorageCache : public LegacyCacheStorageCache {
                                 quota_manager_proxy,
                                 std::move(blob_storage_context),
                                 0 /* cache_size */,
-                                0 /* cache_padding */,
-                                CreateTestPaddingKey()),
+                                0 /* cache_padding */),
         delay_backend_creation_(false) {}
 
   ~TestCacheStorageCache() override { base::RunLoop().RunUntilIdle(); }

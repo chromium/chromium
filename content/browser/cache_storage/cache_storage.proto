@@ -13,7 +13,7 @@ message CacheStorageIndex {
     required string name = 1;
     optional string cache_dir = 2;
     optional int64 size = 3;
-    optional string padding_key = 4;
+    optional string padding_key = 4 [deprecated = true];
     optional int64 padding = 5;
     optional int32 padding_version = 6;
   }

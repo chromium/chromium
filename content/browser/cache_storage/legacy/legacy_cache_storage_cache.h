@@ -29,10 +29,6 @@
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/origin.h"
 
-namespace crypto {
-class SymmetricKey;
-}
-
 namespace storage {
 class QuotaManagerProxy;
 }  // namespace storage
@@ -68,8 +64,7 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
       LegacyCacheStorage* cache_storage,
       scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
-      scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
-      std::unique_ptr<crypto::SymmetricKey> cache_padding_key);
+      scoped_refptr<BlobStorageContextWrapper> blob_storage_context);
   static std::unique_ptr<LegacyCacheStorageCache> CreatePersistentCache(
       const url::Origin& origin,
       storage::mojom::CacheStorageOwner owner,
@@ -80,8 +75,7 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
       scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
       int64_t cache_size,
-      int64_t cache_padding,
-      std::unique_ptr<crypto::SymmetricKey> cache_padding_key);
+      int64_t cache_padding);
   static int32_t GetResponsePaddingVersion();
 
   void Match(blink::mojom::FetchAPIRequestPtr request,
@@ -176,10 +170,6 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
 
   int64_t cache_padding() const { return cache_padding_; }
 
-  const crypto::SymmetricKey* cache_padding_key() const {
-    return cache_padding_key_.get();
-  }
-
   // Return the total cache size (actual size + padding). If either is unknown
   // then CacheStorage::kSizeUnknown is returned.
   int64_t PaddedCacheSize() const;
@@ -251,8 +241,7 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
       scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
       int64_t cache_size,
-      int64_t cache_padding,
-      std::unique_ptr<crypto::SymmetricKey> cache_padding_key);
+      int64_t cache_padding);
 
   // Runs |callback| with matching requests/response data. The data provided
   // in the QueryCacheResults depends on the |query_type|. If |query_type| is
@@ -548,8 +537,6 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
   // The actual cache size (not including padding).
   int64_t cache_size_;
   int64_t cache_padding_ = 0;
-  // TODO(wanderview): remove padding key management
-  std::unique_ptr<crypto::SymmetricKey> cache_padding_key_;
   int64_t last_reported_size_ = 0;
   size_t max_query_size_bytes_;
   size_t handle_ref_count_ = 0;

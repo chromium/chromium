@@ -11,8 +11,7 @@ namespace content {
 CacheStorageIndex::CacheStorageIndex()
     : doomed_cache_metadata_("",
                              CacheStorage::kSizeUnknown,
-                             CacheStorage::kSizeUnknown,
-                             "") {
+                             CacheStorage::kSizeUnknown) {
   ClearDoomedCache();
 }
 

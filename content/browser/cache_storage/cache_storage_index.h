@@ -21,11 +21,8 @@ namespace content {
 class CONTENT_EXPORT CacheStorageIndex {
  public:
   struct CacheMetadata {
-    CacheMetadata(const std::string& name,
-                  int64_t size,
-                  int64_t padding,
-                  const std::string& padding_key)
-        : name(name), size(size), padding(padding), padding_key(padding_key) {}
+    CacheMetadata(const std::string& name, int64_t size, int64_t padding)
+        : name(name), size(size), padding(padding) {}
     std::string name;
     // The size (in bytes) of the cache. Set to CacheStorage::kSizeUnknown if
     // size not known.
@@ -34,9 +31,6 @@ class CONTENT_EXPORT CacheStorageIndex {
     // The padding (in bytes) of the cache. Set to CacheStorage::kSizeUnknown
     // if padding not known.
     int64_t padding;
-
-    // The raw key used to calculate padding for some cache entries.
-    std::string padding_key;
 
     // The algorithm version used to calculate this padding.
     int32_t padding_version;
