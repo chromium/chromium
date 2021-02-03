@@ -97,6 +97,8 @@ void NetworkPortalNotificationControllerDelegate::Click(
     if (!profile)
       return;
     chrome::ScopedTabbedBrowserDisplayer displayer(profile);
+    if (!displayer.browser())
+      return;
     GURL url(captive_portal::CaptivePortalDetector::kDefaultURL);
     ShowSingletonTab(displayer.browser(), url);
   }
