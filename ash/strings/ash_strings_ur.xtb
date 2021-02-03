@@ -578,6 +578,7 @@
 <translation id="5992218262414051481">‏اعلی تناسب امتزاج کی وضع فعال ہے۔ اسے آف ٹوگل کرنے کیلئے Ctrl+Search+H کو دوبارہ دبائیں۔</translation>
 <translation id="6018164090099858612">مرر وضع سے باہر نکل رہے ہیں</translation>
 <translation id="602001110135236999">بائیں اسکرول کریں</translation>
+<translation id="602472752137106327">تمام ڈیسکس سے ونڈوز دکھائیں، ریڈیو بٹن کا انتخاب کیا گیا</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />، <ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />، آپ کے منتظم کے زیر انتظام ہے</translation>
 <translation id="6030495522958826102">مینو کو اسکرین کو نچلے بائیں کونے میں منتقل کر دیا گیا۔</translation>
 <translation id="6032620807120418574">فُل اسکرین ریکارڈ کرنے کے لیے کہیں بھی کلک کریں</translation>
@@ -676,6 +677,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{ایک ہندسہ باقی ہے}other{# ہندسے باقی ہیں}}</translation>
 <translation id="6878400149835617132">شارٹ کٹ آف ہے</translation>
 <translation id="6886172995547742638">‏آپ کے <ph name="DEVICE_TYPE" /> کی کارکردگی کم ہو سکتی ہے سندیافتہ <ph name="PREFERRED_MINIMUM_POWER" />W یا اعلی USB-C پاور ایڈاپٹر استعمال کریں۔</translation>
+<translation id="688631446150864480">ونڈوز کو سوئچ کرنے کیلئے نیچے تیر کے نشان والی کلید کو دبائیں</translation>
 <translation id="6896758677409633944">کاپی کریں</translation>
 <translation id="6910714959251846841">اس اپ ڈیٹ کیلئے آپ کے آلے کی پاور واشنگ درکار ہے۔ تازہ ترین <ph name="SYSTEM_APP_NAME" /> اپ ڈیٹ کے بارے میں مزید جانیں۔</translation>
 <translation id="6919251195245069855">آپ کے اسمارٹ کارڈ کی شناخت نہیں کی جا سکی۔ پھر آزمائيں۔</translation>
@@ -839,6 +841,7 @@
 <translation id="8297006494302853456">کمزور</translation>
 <translation id="8308637677604853869">پچھلا مینو</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> ونڈو کا انتخاب کیا گیا</translation>
 <translation id="8351131234907093545">نوٹ بنائیں</translation>
 <translation id="8371779926711439835">ایک حرف آگے جائیں</translation>
 <translation id="8375916635258623388">یہ <ph name="DEVICE_NAME" /> اور آپ کا فون خود کار طور پر منسلک ہو جائیں گے</translation>
@@ -862,6 +865,7 @@
 <translation id="8477270416194247200">‏منسوخ کرنے کے لیے Alt+Search یا Shift دبائیں۔</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> کو سپورٹ نہیں کرتا ہے۔ ریزولیوشن کو تبدیل کر کے <ph name="FALLBACK_RESOLUTION" /> کر دیا گیا تھا۔ تبدیلیاں باقی رکھنے کے لیے تصدیق کریں پر کلک کریں۔ گزشتہ تبدیلیوں کو <ph name="TIMEOUT_SECONDS" /> میں بحال کر دیا جائے گا۔</translation>
 <translation id="8513108775083588393">خودکار گھمائیں</translation>
+<translation id="851458219935658693">موجودہ ڈیسک سے ونڈوز دکھائیں، ریڈیو بٹن کا انتخاب کیا گیا</translation>
 <translation id="8517041960877371778">ہو سکتا ہے کہ آپ کا <ph name="DEVICE_TYPE" /> آن ہونے کی صورت میں چارج نہ ہو۔</translation>
 <translation id="8553395910833293175">پہلے ہی تمام ڈیسکس کو تفویض کر دیا گیا۔</translation>
 <translation id="8563862697512465947">اطلاع کی ترتیبات</translation>

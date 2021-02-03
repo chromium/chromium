@@ -6051,6 +6051,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7904526211178107182">Linux bağlantı noktalarını ağınızdaki diğer cihazların kullanımına sunun.</translation>
 <translation id="7907837847548254634">Odaklanılmış nesnede kısa bir vurgulama göster</translation>
 <translation id="7908378463497120834">Maalesef, harici depolama cihazınızdaki en az bir bölüm eklenemedi.</translation>
+<translation id="7909324225945368569">Profilinizi yeniden adlandırın</translation>
 <translation id="7909969815743704077">Gizli modda indirildi</translation>
 <translation id="7910768399700579500">&amp;Yeni klasör</translation>
 <translation id="7911118814695487383">Linux</translation>
@@ -6275,7 +6276,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8147900440966275470"><ph name="NUM" /> Sekme Bulundu</translation>
 <translation id="8148760431881541277">Oturum açmayı sınırla</translation>
 <translation id="8150259863378108853">Lacros deneysel bir tarayıcıdır. Lütfen tüm sorunları Yardım &gt; "Sorun bildir..." bölümünden bildirin</translation>
-<translation id="8151579390896831136">Adı da dahil olmak üzere profilinizi özelleştirin</translation>
 <translation id="8151638057146502721">Yapılandır</translation>
 <translation id="8154790740888707867">Dosya yok</translation>
 <translation id="815491593104042026">Hata! Güvenli olmayan bir URL (<ph name="BLOCKED_URL" />) kullanmak üzere yapılandırıldığından kimlik doğrulama başarısız oldu. Lütfen yöneticinizle bağlantı kurun.</translation>

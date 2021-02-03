@@ -6051,6 +6051,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="7904526211178107182">Muutke Linuxi pordid teistele teie võrgus olevatele seadmetele kättesaadavaks.</translation>
 <translation id="7907837847548254634">Tõsta fookuses olev objekt korraks esile</translation>
 <translation id="7908378463497120834">Kahjuks ei õnnestunud teie välisel mäluseadmel vähemalt ühe kettapartitsiooni ühendamine.</translation>
+<translation id="7909324225945368569">Nimetage oma profiil ümber</translation>
 <translation id="7909969815743704077">Alla laaditud inkognito režiimis</translation>
 <translation id="7910768399700579500">&amp;Uus kaust</translation>
 <translation id="7911118814695487383">Linux</translation>
@@ -6275,7 +6276,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8147900440966275470">Leiti <ph name="NUM" /> vaheleht</translation>
 <translation id="8148760431881541277">Sisselogimise piiramine</translation>
 <translation id="8150259863378108853">Lacros on katseline brauser. Teavitage probleemidest valikutega Abi &gt; „Probleemist teavitamine …”</translation>
-<translation id="8151579390896831136">Kohandage oma profiili, sealhulgas selle nime</translation>
 <translation id="8151638057146502721">Seadista</translation>
 <translation id="8154790740888707867">Fail puudub</translation>
 <translation id="815491593104042026">Vabandust! Autentimine ebaõnnestus, sest see on konfigureeritud kasutama ebaturvalist URL-i (<ph name="BLOCKED_URL" />). Võtke ühendust administraatoriga.</translation>

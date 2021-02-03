@@ -344,7 +344,7 @@
 <translation id="3384347053049321195">इमेज शेयर करें</translation>
 <translation id="3387650086002190359">सिस्‍टम त्रुटियों के कारण <ph name="FILE_NAME" /> डाउनलोड विफल रहा.</translation>
 <translation id="3389286852084373014">टेक्स्ट बहुत बड़ा है</translation>
-<translation id="3398320232533725830">बुकमार्क प्रबंधक खोलें</translation>
+<translation id="3398320232533725830">बुकमार्क मैनेजर खोलें</translation>
 <translation id="3414952576877147120">आकार:</translation>
 <translation id="3443221991560634068">वर्तमान पेज फिर से लोड करें</translation>
 <translation id="3478363558367712427">आप अपना सर्च इंजन चुन सकते हैं</translation>
@@ -1099,6 +1099,7 @@
 <translation id="8583805026567836021">खाते का डेटा साफ़ हो रहा है</translation>
 <translation id="8587585930972369234">खोजने के लिए दबाकर रखें</translation>
 <translation id="860043288473659153">कार्डधारक का नाम</translation>
+<translation id="860282621117673749">कीमत में कमी की सूचनाएं</translation>
 <translation id="8616006591992756292">आपके Google खाते में <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> पर अन्य प्रकार के ब्राउज़िंग इतिहास हो सकतेे हैं.</translation>
 <translation id="8617240290563765734">सुझाया गया वह URL खोलें जिसे डाउनलोड की गई सामग्री में बताया गया है?</translation>
 <translation id="8636825310635137004">अपने अन्य डिवाइस से अपने टैब पाने के लिए, सिंक करना चालू करें.</translation>

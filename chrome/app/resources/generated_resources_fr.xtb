@@ -6053,6 +6053,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7904526211178107182">Rendre les ports Linux disponibles pour les autres appareils de votre réseau.</translation>
 <translation id="7907837847548254634">Mettre en surbrillance rapidement l'objet ciblé</translation>
 <translation id="7908378463497120834">Désolé, impossible d'installer au moins une partition de votre périphérique de stockage externe.</translation>
+<translation id="7909324225945368569">Renommer votre profil</translation>
 <translation id="7909969815743704077">Téléchargé en mode navigation privée</translation>
 <translation id="7910768399700579500">&amp;Nouveau dossier</translation>
 <translation id="7911118814695487383">Linux</translation>
@@ -6277,7 +6278,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8147900440966275470"><ph name="NUM" /> onglet trouvé</translation>
 <translation id="8148760431881541277">Limiter les connexions</translation>
 <translation id="8150259863378108853">Lacros est un navigateur expérimental. Si vous relevez un problème, sélectionnez Aide &gt; Signaler un problème</translation>
-<translation id="8151579390896831136">Personnalisez votre profil, y compris son nom</translation>
 <translation id="8151638057146502721">Configurer</translation>
 <translation id="8154790740888707867">Fichier introuvable.</translation>
 <translation id="815491593104042026">Petit problème… L'authentification a échoué, car elle a été configurée pour utiliser une URL non sécurisée (<ph name="BLOCKED_URL" />). Veuillez contacter votre administrateur.</translation>

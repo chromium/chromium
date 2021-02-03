@@ -6055,6 +6055,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="7904526211178107182">Disponibilize portas do Linux para outros dispositivos na sua rede.</translation>
 <translation id="7907837847548254634">Mostrar um destaque rápido no objeto focalizado</translation>
 <translation id="7908378463497120834">Ao menos uma partição no seu dispositivo de armazenamento externo não pôde ser montada.</translation>
+<translation id="7909324225945368569">Renomeie seu perfil</translation>
 <translation id="7909969815743704077">Download feito no modo anônimo</translation>
 <translation id="7910768399700579500">&amp;Nova pasta</translation>
 <translation id="7911118814695487383">Linux</translation>
@@ -6279,7 +6280,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8147900440966275470"><ph name="NUM" /> guia encontrada</translation>
 <translation id="8148760431881541277">Limitar login</translation>
 <translation id="8150259863378108853">O Lacros é um navegador experimental. Informe qualquer problema em "Ajuda &gt; Informar um problema…"</translation>
-<translation id="8151579390896831136">Personalize seu perfil, incluindo o nome dele</translation>
 <translation id="8151638057146502721">Configurar</translation>
 <translation id="8154790740888707867">Nenhum arquivo</translation>
 <translation id="815491593104042026">Falha na autenticação, porque ela foi configurada para usar um URL não seguro (<ph name="BLOCKED_URL" />). Entre em contato com o administrador.</translation>

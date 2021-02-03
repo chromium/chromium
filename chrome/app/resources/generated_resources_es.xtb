@@ -6050,6 +6050,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7904526211178107182">Permite que los puertos de Linux estén disponibles para otros dispositivos de tu red.</translation>
 <translation id="7907837847548254634">Destaca brevemente el objeto seleccionado</translation>
 <translation id="7908378463497120834">Lo sentimos, pero al menos una partición del dispositivo de almacenamiento externo no se ha podido montar.</translation>
+<translation id="7909324225945368569">Cambiar el nombre de tu perfil</translation>
 <translation id="7909969815743704077">Se ha descargado en modo de incógnito</translation>
 <translation id="7910768399700579500">&amp;Nueva carpeta</translation>
 <translation id="7911118814695487383">Linux</translation>
@@ -6274,7 +6275,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8147900440966275470"><ph name="NUM" /> pestaña encontrada</translation>
 <translation id="8148760431881541277">Limitar inicio de sesión</translation>
 <translation id="8150259863378108853">Lacros es un navegador experimental. Para informar de cualquier problema, ve a Ayuda &gt; "Notificar un problema...".</translation>
-<translation id="8151579390896831136">Personaliza tu perfil, incluido su nombre</translation>
 <translation id="8151638057146502721">Configurar</translation>
 <translation id="8154790740888707867">Ningún archivo encontrado</translation>
 <translation id="815491593104042026">¡Vaya! Se ha producido un error de autenticación porque estaba configurada para utilizar una URL no segura (<ph name="BLOCKED_URL" />). Ponte en contacto con tu administrador.</translation>

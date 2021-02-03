@@ -481,7 +481,7 @@
 <translation id="1526335046150927198">Habilitar la aceleración de desplazamiento en el panel táctil</translation>
 <translation id="1526560967942511387">Documento sin título</translation>
 <translation id="1527336312600375509">Frecuencia de actualización del monitor</translation>
-<translation id="152913213824448541">Contactos de Compartir con Nearby</translation>
+<translation id="152913213824448541">Contactos de Google que usa Compartir con Nearby</translation>
 <translation id="1529891865407786369">Fuente de alimentación</translation>
 <translation id="1530838837447122178">Abrir configuración del mouse y el panel táctil</translation>
 <translation id="1531004739673299060">Ventana de la app</translation>
@@ -685,7 +685,7 @@
 <translation id="1744108098763830590">página en segundo plano</translation>
 <translation id="1745732479023874451">Administrar contactos</translation>
 <translation id="1748563609363301860">Puedes guardar esta contraseña en tu Cuenta de Google o solo en este dispositivo</translation>
-<translation id="1750172676754093297">Tu llave de seguridad no puede almacenar huellas digitales</translation>
+<translation id="1750172676754093297">Tu llave de seguridad no puede almacenar huellas dactilares</translation>
 <translation id="1751249301761991853">Personal</translation>
 <translation id="1751262127955453661"><ph name="ORIGIN" /> podrá editar los archivos de <ph name="FOLDERNAME" /> hasta que cierres todas las pestañas de este sitio</translation>
 <translation id="175196451752279553">Volver a abrir una pestaña cerrada</translation>
@@ -1161,7 +1161,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2280486287150724112">Margen derecho</translation>
 <translation id="2282146716419988068">Proceso de GPU</translation>
 <translation id="2282155092769082568">URL de autoconfiguración:</translation>
-<translation id="2285942871162473373">No se reconoció tu huella digital. Vuelve a intentarlo.</translation>
+<translation id="2285942871162473373">No se reconoció tu huella dactilar. Vuelve a intentarlo.</translation>
 <translation id="2287944065963043964">Pantalla de acceso</translation>
 <translation id="2288181517385084064">Cambiar a la grabadora de video</translation>
 <translation id="2288735659267887385">Configuración de accesibilidad</translation>
@@ -3359,7 +3359,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4811503964269049987">Crear un grupo con la pestaña seleccionada</translation>
 <translation id="4813136279048157860">Mis imágenes</translation>
 <translation id="4813512666221746211">Error de red</translation>
-<translation id="4814378367953456825">Escribe un nombre para esta huella digital</translation>
+<translation id="4814378367953456825">Escribe un nombre para esta huella dactilar</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 favorito borrado}other{{COUNT} favoritos borrados}}</translation>
 <translation id="4819607494758673676">Notificaciones del Asistente de Google</translation>
 <translation id="4820236583224459650">Establecer como ticket activo</translation>
@@ -3374,7 +3374,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4830502475412647084">Instalando la actualización del SO</translation>
 <translation id="4830573902900904548">Tu <ph name="DEVICE_TYPE" /> no puede conectarse a Internet a través de <ph name="NETWORK_NAME" />. Debes elegir otra red. <ph name="LEARN_MORE_LINK_START" />Más información<ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">Se encontró 1 impresora en el servidor de impresión</translation>
-<translation id="4836504898754963407">Administrar huellas digitales</translation>
+<translation id="4836504898754963407">Administrar huellas dactilares</translation>
 <translation id="4837128290434901661">¿Deseas volver a usar la Búsqueda de Google?</translation>
 <translation id="4837926214103741331">No tienes autorización para utilizar este dispositivo. Para obtener permiso de acceso, comunícate con el propietario del dispositivo.</translation>
 <translation id="4837952862063191349">Para desbloquear y restaurar los datos locales, ingresa la contraseña anterior de <ph name="DEVICE_TYPE" />.</translation>
@@ -3417,7 +3417,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4876895919560854374">Bloquear y desbloquear la pantalla</translation>
 <translation id="4877276003880815204">Analizar elementos</translation>
 <translation id="4878653975845355462">El administrador desactivó los fondos personalizados</translation>
-<translation id="4878718769565915065">No se pudo agregar una huella digital en esta llave de seguridad</translation>
+<translation id="4878718769565915065">No se pudo agregar una huella dactilar en esta llave de seguridad</translation>
 <translation id="4879491255372875719">Automático (predeterminado)</translation>
 <translation id="4880328057631981605">Nombre de punto de acceso</translation>
 <translation id="4880827082731008257">Buscar historial</translation>
@@ -3656,7 +3656,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5170568018924773124">Mostrar en carpeta</translation>
 <translation id="5171045022955879922">Buscar o escribir URL</translation>
 <translation id="5171343362375269016">Memoria en el espacio de intercambio</translation>
-<translation id="5173668317844998239">Agrega huellas digitales y borra las que están guardadas en tu llave de seguridad</translation>
+<translation id="5173668317844998239">Agrega huellas dactilares y borra las que están guardadas en tu llave de seguridad</translation>
 <translation id="5175379009094579629">El nombre del dispositivo no es válido. Ingresa uno que sí lo sea y vuelve a intentarlo.</translation>
 <translation id="5177479852722101802">Continuar el bloqueo del acceso a la cámara y al micrófono</translation>
 <translation id="5177549709747445269">Estás usando el plan de datos móviles.</translation>
@@ -4500,7 +4500,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6129953537138746214">Espacio</translation>
 <translation id="6130692320435119637">Agregar Wi-Fi</translation>
 <translation id="6136114942382973861">Cerrar la barra de descargas</translation>
-<translation id="6136287496450963112">Tu llave de seguridad no está protegida con un PIN. Para administrar las huellas digitales, crea uno.</translation>
+<translation id="6136287496450963112">Tu llave de seguridad no está protegida con un PIN. Para administrar las huellas dactilares, crea uno.</translation>
 <translation id="6137767437444130246">Certificado del usuario</translation>
 <translation id="6138680304137685902">Firma X9.62 ECDSA con SHA-384</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, sin red</translation>
@@ -4888,7 +4888,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="659005207229852190">Se completó la verificación de seguridad.</translation>
 <translation id="6590458744723262880">Cambiar nombre de carpeta</translation>
 <translation id="6592267180249644460">Fecha y hora de captura de registro de WebRTC: <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
-<translation id="6592808042417736307">Se capturó tu huella digital</translation>
+<translation id="6592808042417736307">Se capturó tu huella dactilar</translation>
 <translation id="6594011207075825276">Buscando dispositivos en serie…</translation>
 <translation id="6595187330192059106">Siempre impedir que <ph name="HOST" /> controle por completo los dispositivos MIDI</translation>
 <translation id="6596325263575161958">Opciones de encriptación</translation>
@@ -6048,6 +6048,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7904526211178107182">Haz que los puertos de Linux estén disponibles para otros dispositivos en tu red.</translation>
 <translation id="7907837847548254634">Destacar brevemente el objeto enfocado</translation>
 <translation id="7908378463497120834">Lo sentimos, al menos una partición en tu dispositivo de almacenamiento externo no se pudo montar.</translation>
+<translation id="7909324225945368569">Cambia el nombre de tu perfil</translation>
 <translation id="7909969815743704077">Descargado en el modo de navegación de incógnito</translation>
 <translation id="7910768399700579500">&amp;Nueva carpeta</translation>
 <translation id="7911118814695487383">Linux</translation>
@@ -6272,7 +6273,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8147900440966275470">Se encontró <ph name="NUM" /> pestaña</translation>
 <translation id="8148760431881541277">Limitar el acceso</translation>
 <translation id="8150259863378108853">Lacros es un navegador experimental. Para informar algún problema, usa la opción Ayuda &gt; "Informar un problema…"</translation>
-<translation id="8151579390896831136">Personaliza tu perfil, incluido el nombre</translation>
 <translation id="8151638057146502721">Configurar</translation>
 <translation id="8154790740888707867">Sin archivos</translation>
 <translation id="815491593104042026">Se produjo un error y no se pudo completar la autenticación porque está configurada para utilizar una URL no segura (<ph name="BLOCKED_URL" />). Comunícate con el administrador.</translation>
@@ -6601,7 +6601,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8551588720239073785">Configuración de fecha y hora</translation>
 <translation id="8553342806078037065">Administrar otras personas</translation>
 <translation id="8554899698005018844">Ningún idioma</translation>
-<translation id="8557022314818157177">Continúa tocando la llave de seguridad hasta que se capture tu huella digital</translation>
+<translation id="8557022314818157177">Continúa tocando la llave de seguridad hasta que se capture tu huella dactilar</translation>
 <translation id="855773602626431402">Se impidió que un complemento no incluido en la zona de pruebas se ejecutara en la página.</translation>
 <translation id="8557930019681227453">Manifiesto</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Abrir todo en una ventana &amp;nueva}=1{Abrir en una ventana &amp;nueva}other{Abrir todo ({COUNT}) en una ventana &amp;nueva}}</translation>
@@ -6875,7 +6875,7 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
 <translation id="8838770651474809439">Hamburguesa</translation>
 <translation id="883911313571074303">Escribir en la imagen</translation>
 <translation id="8841843049738266382">Leer y cambiar la lista de usuarios permitidos</translation>
-<translation id="8842594465773264717">Borrar esta huella digital</translation>
+<translation id="8842594465773264717">Borrar esta huella dactilar</translation>
 <translation id="8845001906332463065">Obtener ayuda</translation>
 <translation id="8846132060409673887">Leer el fabricante y el modelo de esta computadora</translation>
 <translation id="8846141544112579928">Buscando teclado…</translation>

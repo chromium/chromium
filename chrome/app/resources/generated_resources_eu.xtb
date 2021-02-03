@@ -3361,7 +3361,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="4811212958317149293">Erabilerraztasun-osagarriaren teklatu bidezko bilaketa automatikoa</translation>
 <translation id="4811503964269049987">Taldekatu hautatutako fitxa</translation>
 <translation id="4813136279048157860">Nire irudiak</translation>
-<translation id="4813512666221746211">Sarearen errorea</translation>
+<translation id="4813512666221746211">Sareko errorea</translation>
 <translation id="4814378367953456825">Idatzi hatz-markaren izena</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 laster-marka ezabatu da}other{{COUNT} laster-marka ezabatu dira}}</translation>
 <translation id="4819607494758673676">Google-ren Laguntzailea eginbidearen jakinarazpenak</translation>
@@ -5481,7 +5481,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="7270858098575133036">Eskatu nire baimena webgune batek sistemaren mezu esklusiboak erabili nahi dituenean MIDI gailuak atzitzeko</translation>
 <translation id="7272674038937250585">Ez da eman azalpenik</translation>
 <translation id="7273110280511444812"><ph name="DATE" /> datan erantsi zen azkenezkoz</translation>
-<translation id="727441411541283857">% <ph name="PERCENTAGE" /> - <ph name="TIME" /> geratzen dira guztiz kargatu arte</translation>
+<translation id="727441411541283857">% <ph name="PERCENTAGE" /> - <ph name="TIME" /> guztiz kargatu arte</translation>
 <translation id="727952162645687754">Deskarga-errorea</translation>
 <translation id="7280041992884344566">Errore bat gertatu da Chrome-k software kaltegarria bilatu bitartean</translation>
 <translation id="7280649757394340890">Testua ahots bihurtzeko eginbidearen ahots-ezarpenak</translation>
@@ -6050,6 +6050,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="7904526211178107182">Ezarri Linux-eko atakak sareko beste gailu batzuentzat erabilgarri.</translation>
 <translation id="7907837847548254634">Erakutsi puntu argi bizkor bat fokuratutako objektuan</translation>
 <translation id="7908378463497120834">Ezin izan da muntatu kanpoko biltegiratze-gailuaren partizio bat edo gehiago.</translation>
+<translation id="7909324225945368569">Aldatu profilaren izena</translation>
 <translation id="7909969815743704077">Ezkutuko moduan deskargatu da</translation>
 <translation id="7910768399700579500">&amp;Karpeta berria</translation>
 <translation id="7911118814695487383">Linux</translation>
@@ -6273,7 +6274,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8147900440966275470"><ph name="NUM" /> fitxa aurkitu da</translation>
 <translation id="8148760431881541277">Mugatu saioa hasteko aukera</translation>
 <translation id="8150259863378108853">Probako arakatzaile bat da Lacros. Arazoren bat aurkituz gero, jakinaraz ezazu hemen: Laguntza &gt; "Eman arazo baten berri…"</translation>
-<translation id="8151579390896831136">Pertsonalizatu profila, izena barne</translation>
 <translation id="8151638057146502721">Konfiguratu</translation>
 <translation id="8154790740888707867">Ez dago fitxategirik</translation>
 <translation id="815491593104042026">Autentifikazioak huts egin du segurua ez den URL bat (<ph name="BLOCKED_URL" />) erabiltzeko konfiguratu delako. Jarri administratzailearekin harremanetan.</translation>

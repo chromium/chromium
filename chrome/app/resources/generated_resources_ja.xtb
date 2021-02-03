@@ -6051,6 +6051,7 @@
 <translation id="7904526211178107182">Linux ポートをネットワーク上の他のデバイスが利用できるようにします。</translation>
 <translation id="7907837847548254634">フォーカス中の項目をハイライト表示する</translation>
 <translation id="7908378463497120834">外部ストレージ デバイスの少なくとも 1 つのパーティションがマウントできませんでした。</translation>
+<translation id="7909324225945368569">プロフィールの名前を変更</translation>
 <translation id="7909969815743704077">シークレット モードでダウンロード</translation>
 <translation id="7910768399700579500">新しいフォルダ(&amp;N)</translation>
 <translation id="7911118814695487383">Linux</translation>
@@ -6275,7 +6276,6 @@
 <translation id="8147900440966275470"><ph name="NUM" /> 個のタブが見つかりました</translation>
 <translation id="8148760431881541277">ログインの制限</translation>
 <translation id="8150259863378108853">Lacros は試験運用版のブラウザです。問題が発生した場合は、[ヘルプ] &gt; [問題の報告...] からご報告ください。</translation>
-<translation id="8151579390896831136">プロファイルの名前などをカスタマイズします</translation>
 <translation id="8151638057146502721">設定</translation>
 <translation id="8154790740888707867">ファイルがありません</translation>
 <translation id="815491593104042026">セキュリティで保護されていない URL（<ph name="BLOCKED_URL" />）を使用するよう設定されているため、認証に失敗しました。管理者にお問い合わせください。</translation>

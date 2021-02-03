@@ -6053,6 +6053,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="7904526211178107182">Učinite Linux priključke dostupnim drugim uređajima na vašoj mreži.</translation>
 <translation id="7907837847548254634">Prikaži kratko isticanje fokusiranog objekta</translation>
 <translation id="7908378463497120834">Nažalost, najmanje jedna particija nije aktivirana na vaš vanjski uređaj za pohranu.</translation>
+<translation id="7909324225945368569">Promijenite ime profila</translation>
 <translation id="7909969815743704077">Preuzeto u anonimnom načinu rada</translation>
 <translation id="7910768399700579500">&amp;Novi folder</translation>
 <translation id="7911118814695487383">Linux</translation>
@@ -6277,7 +6278,6 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8147900440966275470">Pronađen je sljedeći broj kartica: <ph name="NUM" /></translation>
 <translation id="8148760431881541277">Ograniči prijavu</translation>
 <translation id="8150259863378108853">Lacros je ekperimentalni preglednik. Prijavite probleme u odjeljku Pomoć &gt; "Prijavite problem..."</translation>
-<translation id="8151579390896831136">Prilagodite profil, uključujući ime profila</translation>
 <translation id="8151638057146502721">Konfiguriraj</translation>
 <translation id="8154790740888707867">Nema fajla</translation>
 <translation id="815491593104042026">Ups!  Autentifikacija nije uspjela jer je konfigurirana da koristi nesigurni URL (<ph name="BLOCKED_URL" />). Obratite se svom administratoru.</translation>

@@ -6049,6 +6049,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="7904526211178107182">Aseta Linux-portit muiden verkossasi olevien laitteiden saataville.</translation>
 <translation id="7907837847548254634">Korosta hetkeksi kohdistettu kohde</translation>
 <translation id="7908378463497120834">Ainakaan yhtä ulkoisen tallennustilan osioista ei voitu ottaa käyttöön.</translation>
+<translation id="7909324225945368569">Profiilin nimeäminen uudelleen</translation>
 <translation id="7909969815743704077">Ladattiin incognito-tilassa</translation>
 <translation id="7910768399700579500">&amp;Uusi kansio</translation>
 <translation id="7911118814695487383">Linux</translation>
@@ -6273,7 +6274,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8147900440966275470"><ph name="NUM" /> välilehti löydetty</translation>
 <translation id="8148760431881541277">Rajoita sisäänkirjautumista</translation>
 <translation id="8150259863378108853">Lacros on kokeellinen selain. Ilmoita ongelmista kohdassa Ohje &gt; "Ilmoita ongelmasta…"</translation>
-<translation id="8151579390896831136">Muokkaa profiilia, myös sen nimeä</translation>
 <translation id="8151638057146502721">Määritä</translation>
 <translation id="8154790740888707867">Ei tiedostoa</translation>
 <translation id="815491593104042026">Hups! Todennus epäonnistui, koska se määritettiin käyttämään suojaamatonta URL-osoitetta (<ph name="BLOCKED_URL" />). Ota yhteyttä järjestelmänvalvojaan.</translation>

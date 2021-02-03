@@ -6046,6 +6046,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="7904526211178107182">Gjør Linux-porter tilgjengelige for andre enheter på nettverket.</translation>
 <translation id="7907837847548254634">Vis en rask fremheving av objektet i fokus</translation>
 <translation id="7908378463497120834">Beklager, men minst én partisjon på den eksterne lagringsenheten din kunne ikke tilkobles.</translation>
+<translation id="7909324225945368569">Gi profilen nytt navn</translation>
 <translation id="7909969815743704077">Lastet ned i inkognitomodus</translation>
 <translation id="7910768399700579500">&amp;Ny mappe</translation>
 <translation id="7911118814695487383">Linux</translation>
@@ -6270,7 +6271,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8147900440966275470">Fant <ph name="NUM" /> fane</translation>
 <translation id="8148760431881541277">Begrens pålogging</translation>
 <translation id="8150259863378108853">Lacros er en nettleser på forsøksstadiet. Rapportér eventuelle problemer via Hjelp &gt; «Rapportér et problem».</translation>
-<translation id="8151579390896831136">Tilpass profilen din, inkludert navnet</translation>
 <translation id="8151638057146502721">Konfigurer</translation>
 <translation id="8154790740888707867">Ingen fil</translation>
 <translation id="815491593104042026">Beklager. Autentiseringen mislyktes fordi den var konfigurert til å bruke en usikret nettadresse (<ph name="BLOCKED_URL" />). Ta kontakt med administratoren din.</translation>

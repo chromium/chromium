@@ -6055,6 +6055,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="7904526211178107182">Leisti pasiekti „Linux“ prievadus kitiems įrenginiams jūsų tinkle.</translation>
 <translation id="7907837847548254634">Greitai paryškinti akcentuojamą objektą</translation>
 <translation id="7908378463497120834">Apgailestaujame, tačiau neįmanoma įrengti mažiausiai vieno išorinio atmintinės įrenginio disko skaidinio.</translation>
+<translation id="7909324225945368569">Pervardyti profilį</translation>
 <translation id="7909969815743704077">Atsisiųsta inkognito režimu</translation>
 <translation id="7910768399700579500">&amp;Naujas aplankas</translation>
 <translation id="7911118814695487383">Linux</translation>
@@ -6279,7 +6280,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8147900440966275470">Rasta skirtukų: <ph name="NUM" /></translation>
 <translation id="8148760431881541277">Prisijungimo ribojimas</translation>
 <translation id="8150259863378108853">„Lacros“ yra eksperimentinė naršyklė. Praneškite, jei kils problemų, skiltyje „Pagalba“ &gt; „Pranešti apie problemą...“</translation>
-<translation id="8151579390896831136">Tinkinkite profilį, įskaitant pavadinimą</translation>
 <translation id="8151638057146502721">Konfigūruoti</translation>
 <translation id="8154790740888707867">Nėra failo</translation>
 <translation id="815491593104042026">Oi! Nepavyko autentifikuoti, nes buvo sukonfigūruoti naudoti nesaugų URL (<ph name="BLOCKED_URL" />). Susisiekite su administratoriumi.</translation>

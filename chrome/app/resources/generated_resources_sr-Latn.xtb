@@ -6051,6 +6051,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7904526211178107182">Učinite Linux portove dostupnim za druge uređaje na svojoj mreži.</translation>
 <translation id="7907837847548254634">Prikaži kratko isticanje fokusiranog objekta</translation>
 <translation id="7908378463497120834">Žao nam je, najmanje jednu particiju spoljnog memorijskog uređaja nije bilo moguće uključiti.</translation>
+<translation id="7909324225945368569">Promenite ime profila</translation>
 <translation id="7909969815743704077">Preuzeto je u režimu bez arhiviranja</translation>
 <translation id="7910768399700579500">&amp;Novi direktorijum</translation>
 <translation id="7911118814695487383">Linux</translation>
@@ -6275,7 +6276,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8147900440966275470">Pronađenih kartica: <ph name="NUM" /></translation>
 <translation id="8148760431881541277">Ograničite prijavljivanje</translation>
 <translation id="8150259863378108853">Lacros je eksperimentalni pregledač. Prijavite bilo kakve probleme preko opcije Pomoć &gt; „Prijavite problem…“</translation>
-<translation id="8151579390896831136">Prilagodite profil, uključujući ime na njemu</translation>
 <translation id="8151638057146502721">Konfiguriši</translation>
 <translation id="8154790740888707867">Nema datoteke</translation>
 <translation id="815491593104042026">Ups! Potvrda autentičnosti nije uspela jer je konfigurisana za korišćenje nebezbednog URL-a (<ph name="BLOCKED_URL" />). Kontaktirajte administratora.</translation>

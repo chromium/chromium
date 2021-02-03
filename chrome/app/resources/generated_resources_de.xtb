@@ -6047,6 +6047,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7904526211178107182">Hier können Sie Linux-Ports für andere Geräte in Ihrem Netzwerk verfügbar machen.</translation>
 <translation id="7907837847548254634">Fokussiertes Element kurz hervorheben</translation>
 <translation id="7908378463497120834">Mindestens eine Partition auf Ihrem externen Speichergerät konnte nicht bereitgestellt werden.</translation>
+<translation id="7909324225945368569">Profil umbenennen</translation>
 <translation id="7909969815743704077">Im Inkognitomodus heruntergeladen</translation>
 <translation id="7910768399700579500">&amp;Neuer Ordner</translation>
 <translation id="7911118814695487383">Linux</translation>
@@ -6270,7 +6271,6 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8147900440966275470"><ph name="NUM" /> Tab gefunden</translation>
 <translation id="8148760431881541277">Anmeldung einschränken</translation>
 <translation id="8150259863378108853">Lacros ist ein experimenteller Browser. Melden Sie Probleme über „Hilfe“ &gt; „Problem melden…“</translation>
-<translation id="8151579390896831136">Profil anpassen, einschließlich seines Namens</translation>
 <translation id="8151638057146502721">Konfigurieren</translation>
 <translation id="8154790740888707867">Keine Datei</translation>
 <translation id="815491593104042026">Hoppla! Bei der Authentifizierung ist ein Fehler aufgetreten, weil in der Konfiguration eine unsichere URL angegeben wurde (<ph name="BLOCKED_URL" />). Bitte wenden Sie sich an Ihren Administrator.</translation>

@@ -6056,6 +6056,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="7904526211178107182">Naj bodo vrata za Linux na voljo drugim napravam v omrežju.</translation>
 <translation id="7907837847548254634">Prikaz hitrega poudarka na izbranem predmetu</translation>
 <translation id="7908378463497120834">Vsaj ene particije v zunanji napravi za shranjevanje ni bilo mogoče vpeti.</translation>
+<translation id="7909324225945368569">Preimenujte svoj profil</translation>
 <translation id="7909969815743704077">Preneseno v načinu brez beleženja zgodovine</translation>
 <translation id="7910768399700579500">&amp;Nova mapa</translation>
 <translation id="7911118814695487383">Linux</translation>
@@ -6280,7 +6281,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8147900440966275470">Najdeni zavihki (<ph name="NUM" />)</translation>
 <translation id="8148760431881541277">Omejitev prijav</translation>
 <translation id="8150259863378108853">Lacros je preizkusni brskalnik. Morebitne težave prijavite v Pomoč &gt; »Prijava težave …«</translation>
-<translation id="8151579390896831136">Prilagajanje profila, vključno z njegovim imenom</translation>
 <translation id="8151638057146502721">Konfiguriraj</translation>
 <translation id="8154790740888707867">Ni datoteke</translation>
 <translation id="815491593104042026">Ups. Preverjanje ni uspelo, ker je konfigurirana za uporabo URL-ja, ki ni varen (<ph name="BLOCKED_URL" />). Obrnite se na skrbnika.</translation>

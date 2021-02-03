@@ -6049,6 +6049,7 @@
 <translation id="7904526211178107182">將 Linux 通訊埠提供給網路上的其他裝置使用。</translation>
 <translation id="7907837847548254634">在聚焦的物件上顯示短暫的醒目效果</translation>
 <translation id="7908378463497120834">很抱歉，你的外部儲存裝置上至少有一個分割區無法掛載。</translation>
+<translation id="7909324225945368569">重新命名設定檔</translation>
 <translation id="7909969815743704077">已在無痕模式中下載</translation>
 <translation id="7910768399700579500">新增資料夾(&amp;N)</translation>
 <translation id="7911118814695487383">Linux</translation>
@@ -6272,7 +6273,6 @@
 <translation id="8147900440966275470">找到 <ph name="NUM" /> 個分頁</translation>
 <translation id="8148760431881541277">限制登入</translation>
 <translation id="8150259863378108853">Lacros 是實驗性瀏覽器。如有任何問題，請依序按一下 [說明] &gt; [回報問題...] 進行回報</translation>
-<translation id="8151579390896831136">自訂你的設定檔 (包括設定檔名稱)</translation>
 <translation id="8151638057146502721">設定</translation>
 <translation id="8154790740888707867">沒有檔案</translation>
 <translation id="815491593104042026">糟糕！由於設定使用的網址 (<ph name="BLOCKED_URL" />) 不安全，導致驗證失敗。請與你的管理員聯絡。</translation>

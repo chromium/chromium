@@ -6051,6 +6051,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7904526211178107182">Fes que els ports de Linux estiguin disponibles per a altres dispositius de la xarxa.</translation>
 <translation id="7907837847548254634">Marca breument l'objecte que té el focus posat</translation>
 <translation id="7908378463497120834">Com a mínim una partició del dispositiu d'emmagatzematge extern no s'ha pogut muntar.</translation>
+<translation id="7909324225945368569">Canvia el nom del perfil</translation>
 <translation id="7909969815743704077">S'ha baixat en mode d'incògnit</translation>
 <translation id="7910768399700579500">Carpeta &amp;nova</translation>
 <translation id="7911118814695487383">Linux</translation>
@@ -6274,7 +6275,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8147900440966275470">S'ha trobat <ph name="NUM" /> pestanya</translation>
 <translation id="8148760431881541277">Limita l'inici de sessió</translation>
 <translation id="8150259863378108853">Lacros és un navegador experimental. Informa de qualsevol problema des d'Ajuda &gt; Informa d'un problema...</translation>
-<translation id="8151579390896831136">Personalitza el teu perfil, inclòs el nom</translation>
 <translation id="8151638057146502721">Configura</translation>
 <translation id="8154790740888707867">No hi ha cap fitxer</translation>
 <translation id="815491593104042026">L'autenticació ha fallat perquè s'ha configurat per utilitzar un URL no segur (<ph name="BLOCKED_URL" />). Contacteu amb l'administrador.</translation>

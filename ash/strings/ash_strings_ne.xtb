@@ -578,6 +578,7 @@
 <translation id="5992218262414051481">उच्च कन्ट्रास्ट मोड सक्षम गरिएको छ। यसलाई टगल गर्दै निष्क्रिय पार्न फेरि Ctrl+Search+H थिच्नुहोस्।</translation>
 <translation id="6018164090099858612">मिरर मोडबाट बाहिर निस्कँदै</translation>
 <translation id="602001110135236999">बायाँतिर स्क्रोल गर्नुहोस्</translation>
+<translation id="602472752137106327">सबै डेस्कमा भएका विन्डोहरू देखाइयोस्, रेडियो बटन चयन गरियो</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ</translation>
 <translation id="6030495522958826102">मेनु सारेर स्क्रिनको फेदको बायाँ कुनामा लगियो।</translation>
 <translation id="6032620807120418574">फुल स्क्रिनमा रेकर्ड गर्न कुनै पनि ठाउँमा क्लिक गर्नुहोस्</translation>
@@ -676,6 +677,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{एउटा अङ्क बाँकी छ}other{# वटा अङ्क बाँकी छन्}}</translation>
 <translation id="6878400149835617132">सर्टकट निष्क्रिय पारियो</translation>
 <translation id="6886172995547742638">तपाईंको <ph name="DEVICE_TYPE" /> को कार्यक्षमता घट्न सक्छ। <ph name="PREFERRED_MINIMUM_POWER" />W वा सोभन्दा बढी क्षमताको आधिकारिक USB-C पावर एड्याप्टर प्रयोग गर्नुहोस्।</translation>
+<translation id="688631446150864480">एउटा विन्डोबाट अर्को विन्डोमा जान डाउन एरो की थिच्नुहोस्</translation>
 <translation id="6896758677409633944">प्रतिलिपि गर्नुहोस्</translation>
 <translation id="6910714959251846841">यस अद्यावधिका लागि तपाईंको यन्त्र पावरवास गर्नु पर्ने हुन्छ। <ph name="SYSTEM_APP_NAME" /> को पछिल्लो अद्यावधिकबारे थप जान्नुहोस्।</translation>
 <translation id="6919251195245069855">तपाईंको स्मार्ट कार्ड पहिचान गर्न सकिएन। फेरि प्रयास गर्नुहोस्।</translation>
@@ -839,6 +841,7 @@
 <translation id="8297006494302853456">कमजोर</translation>
 <translation id="8308637677604853869">अघिल्लो मेनु</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> नामक विन्डो चयन गरियो</translation>
 <translation id="8351131234907093545">टिपोट सिर्जना गर्नुहोस्</translation>
 <translation id="8371779926711439835">कर्सरलाई एक अक्षर अगाडि लैजानुहोस्</translation>
 <translation id="8375916635258623388">यो <ph name="DEVICE_NAME" /> र तपाईंको फोन स्वतः जोडिने छन्</translation>
@@ -862,6 +865,7 @@
 <translation id="8477270416194247200">रद्द गर्न Alt+Search वा Shift बटनमा थिच्नुहोस्।</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> ले <ph name="SPECIFIED_RESOLUTION" /> समर्थन गर्दैन। रिजोल्युसन परिवर्तन गरी<ph name="FALLBACK_RESOLUTION" /> पारियो। परिवर्तनहरू सुरक्षित गर्न पुष्टि गर्नुहोस् नामक बटनमा क्लिक गर्नुहोस्। अघिल्ला सेटिङहरूलाई <ph name="TIMEOUT_SECONDS" /> भित्र पुनर्स्थापना गरिने छ।</translation>
 <translation id="8513108775083588393">स्वतः परिक्रमा</translation>
+<translation id="851458219935658693">हालको डेस्कमा भएका विन्डोहरू देखाइयोस्, रेडियो बटन चयन गरियो</translation>
 <translation id="8517041960877371778">खुला हुँदा तपाईँको <ph name="DEVICE_TYPE" /> चार्ज नहुन सक्छ।</translation>
 <translation id="8553395910833293175">सबै डेस्कलाई काम जिम्मा दिइसकिएको छ।</translation>
 <translation id="8563862697512465947">सूचनाका सेटिङहरू</translation>

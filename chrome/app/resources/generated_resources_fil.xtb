@@ -6052,6 +6052,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7904526211178107182">Gawing available ang mga port ng Linux sa iba pang device na nasa iyong network.</translation>
 <translation id="7907837847548254634">Magpakita ng mabilisang highlight sa naka-focus na object</translation>
 <translation id="7908378463497120834">Paumanhin, hindi mai-mount ang hindi bababa sa isang bahagi ng iyong device sa storage.</translation>
+<translation id="7909324225945368569">I-rename ang iyong profile</translation>
 <translation id="7909969815743704077">Na-download sa Incognito</translation>
 <translation id="7910768399700579500">&amp;Bagong folder</translation>
 <translation id="7911118814695487383">Linux</translation>
@@ -6276,7 +6277,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8147900440966275470">Nakakita ng <ph name="NUM" /> Tab</translation>
 <translation id="8148760431881541277">Limitahan ang pag-sign in</translation>
 <translation id="8150259863378108853">Isang pang-eksperimentong browser ang Lacros. Pakiulat ang anumang isyu sa Tulong &gt; "Mag-ulat ng isyu..."</translation>
-<translation id="8151579390896831136">I-customize ang iyong profile, kabilang ang pangalan nito</translation>
 <translation id="8151638057146502721">I-configure</translation>
 <translation id="8154790740888707867">Walang file</translation>
 <translation id="815491593104042026">Oops! Nabigo ang pagpapatotoo dahil naka-configure ito na gumamit ng hindi secure na URL (<ph name="BLOCKED_URL" />). Mangyaring makipag-ugnayan sa iyong administrator.</translation>

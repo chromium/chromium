@@ -6052,6 +6052,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="7904526211178107182">Padariet Linux portus pieejamus citām ierīcēm jūsu tīklā.</translation>
 <translation id="7907837847548254634">Ātri izcelt fokusēto objektu</translation>
 <translation id="7908378463497120834">Diemžēl vismaz vienu ārējās atmiņas ierīces nodalījumu nevarēja uzstādīt.</translation>
+<translation id="7909324225945368569">Pārdēvējiet savu profilu</translation>
 <translation id="7909969815743704077">Lejupielādēts inkognito režīmā</translation>
 <translation id="7910768399700579500">Jauna mape</translation>
 <translation id="7911118814695487383">Linux</translation>
@@ -6276,7 +6277,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8147900440966275470">Atrasta <ph name="NUM" /> cilne</translation>
 <translation id="8148760431881541277">Pierakstīšanās ierobežošana</translation>
 <translation id="8150259863378108853">Lacros ir eksperimentāls pārlūks. Lūdzu, ziņojiet par problēmām šeit: Palīdzība &gt; “Ziņot par problēmu...”</translation>
-<translation id="8151579390896831136">Pielāgot savu profilu, tostarp tā nosaukumu</translation>
 <translation id="8151638057146502721">Konfigurēt</translation>
 <translation id="8154790740888707867">Nav faila.</translation>
 <translation id="815491593104042026">Diemžēl autentifikācija neizdevās, jo konfigurācijā tika norādīts izmantot nedrošu URL (<ph name="BLOCKED_URL" />). Lūdzu, sazinieties ar administratoru.</translation>

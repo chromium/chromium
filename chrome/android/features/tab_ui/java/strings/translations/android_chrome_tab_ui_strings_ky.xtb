@@ -4,6 +4,8 @@
 <translation id="1075622780330595106">Өтмөктөрүңүздүн <ph name="NUMBER_OF_TABS" /> акыркы убакта колдонулган жок. Алар жабылсынбы?</translation>
 <translation id="1181037720776840403">Алып салуу</translation>
 <translation id="125153950246128346">Башка өтмөктү көрүү үчүн, таптап коюңуз</translation>
+<translation id="1302104331113804646">Бааларга көз салуу жөндөөлөрү</translation>
+<translation id="1378979118429748177">Баалар төмөндөгөндө билдирме алып турасыз</translation>
 <translation id="1657719826150349398">Өтмөктү төмөн жылдыруу</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөк}other{<ph name="TABS_COUNT_MANY" /> өтмөк}}</translation>
 <translation id="2277224997687551299">Топтун аталышын өзгөртүү</translation>
@@ -16,12 +18,15 @@
 <translation id="2759453070259087442"><ph name="TITLE_OF_GROUP" /> өтмөктөр тобу <ph name="NUMBER_OF_TABS" /> өтмөктө жайылып көрсөтүлсүн.</translation>
 <translation id="2977480621796371840">Топтон алып салуу</translation>
 <translation id="3328308545011660196">Сунуш: <ph name="NUMBER_OF_TABS" /> өтмөк окшош окшойт. Алар топко бириктирилсинби?</translation>
+<translation id="3340978935015468852">жөндөөлөр</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөк жыйыштырылсын.}other{<ph name="TITLE_OF_GROUP" /> өтмөктөр тобундагы <ph name="TABS_COUNT_MANY" /> өтмөк жыйыштырылсын.}}</translation>
+<translation id="3940195383040445971">Бааларга өтмөктөрдө көз салуу</translation>
+<translation id="3996880007329611795">Ооба</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> өтмөк окшош окшойт. Алар топко бириктирилсинби?</translation>
 <translation id="4212246570487010370">Серептөөнү улантуу</translation>
 <translation id="4450893287417543264">Экинчи көрүнбөсүн</translation>
 <translation id="4648718555153979859">Өтмөктөрүңүз бул жерге топтолот</translation>
-<translation id="4922064041913095674">Ачык өтмөктөрүңүздө кайсы нерсе арзандаганын көрүңүз</translation>
+<translation id="4831000417970606741">Төмөндөгөн баа тууралуу эскертүүнү ачылган өтмөктө көрөсүз. Эскертүүлөрдү <ph name="SETTINGS" /> бөлүмүнөнө өчүрүп койсоңуз болот.</translation>
 <translation id="492284538114688557">Баалардын түшкөнү аныкталды</translation>
 <translation id="5007392906805964215">Карап көрүү</translation>
 <translation id="5073204694187207510">Толук экран торчосун жашыруу</translation>
@@ -30,6 +35,7 @@
 <translation id="5533021382642990449">Кийинчерээк көрсөтүү</translation>
 <translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> өтмөктөн турган өтмөктөр тобун жабуу</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> өтмөк топтолду</translation>
+<translation id="575494663145460764">Баалардын арзандаганы жөнүндө эскертүүлөрдү алгыңыз келеби?</translation>
 <translation id="58326064309361797">Топтоо үчүн өтмөктөрдү сүйрөп келиңиз</translation>
 <translation id="5846292395804797011"><ph name="TITLE_OF_GROUP" /> тобундагы <ph name="NUMBER_OF_TABS" /> өтмөктү жабуу</translation>
 <translation id="6040143037577758943">Жабуу</translation>
@@ -41,6 +47,7 @@
 <translation id="6856809498882026482">Бир нече тандоосу бар режимди жашыруу</translation>
 <translation id="7151209024774799310">Топтогу өтмөктөрдү алып салуу</translation>
 <translation id="7204204600596740190">Бир нече тандоосу бар режим</translation>
+<translation id="7352298686197644113">Ачык өтмөктөрүңүздө кайсы нерсе арзандаганын көрүңүз</translation>
 <translation id="753732157349120914">Өтмөк которуштургуч</translation>
 <translation id="7559245342362162951">Топтун өтмөктөрүн толук экрандагы торчодо көрсөтүү</translation>
 <translation id="7792771145871471484">Сунуштарды карап чыгуу.</translation>
@@ -52,7 +59,10 @@
 <translation id="8304833501377495048">Өтмөк тасмасы экинчи көрсөтүлбөсүнбү?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Тандалган <ph name="TABS_COUNT_ONE" /> өтмөктү жабуу}other{Тандалган <ph name="TABS_COUNT_MANY" /> өтмөктү жабуу}}</translation>
 <translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> өтмөктөн турган өтмөктөр тобу жайылып көрсөтүлсүн.</translation>
+<translation id="860282621117673749">Баалардын түшкөнү жөнүндө эскертүүлөр</translation>
+<translation id="8714939927607906138">Арзаныраак баа</translation>
 <translation id="8749939518995770034">Өтмөк тасмасы жабылды</translation>
+<translation id="8820741577754260431">Төмөндөгөн бааларды өтмөктөрдө көрөсүз</translation>
 <translation id="9150694013019234766">Экраныңыздын ылдый жагында жайгашкан өтмөктөрдүн тобунан өтмөктөрүңүздү которуштуруңуз</translation>
 <translation id="9169594135889675189">Топко жаңы өтмөк кошуу</translation>
 <translation id="959682366969460160">Иреттеп алыңыз</translation>

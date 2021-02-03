@@ -6051,6 +6051,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7904526211178107182">Make Linux ports available to other devices on your network.</translation>
 <translation id="7907837847548254634">Show a quick highlight on the focused object</translation>
 <translation id="7908378463497120834">Sorry, at least one partition on your external storage device could not be mounted.</translation>
+<translation id="7909324225945368569">Rename your profile</translation>
 <translation id="7909969815743704077">Downloaded in Incognito</translation>
 <translation id="7910768399700579500">&amp;New folder</translation>
 <translation id="7911118814695487383">Linux</translation>
@@ -6275,7 +6276,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8147900440966275470">Found <ph name="NUM" /> tab</translation>
 <translation id="8148760431881541277">Limit sign-in</translation>
 <translation id="8150259863378108853">Lacros is an experimental browser. Please report any issues with Help &gt; 'Report an issue…'</translation>
-<translation id="8151579390896831136">Customise your profile, including its name</translation>
 <translation id="8151638057146502721">Configure</translation>
 <translation id="8154790740888707867">No file</translation>
 <translation id="815491593104042026">Oops!  Authentication failed because it was configured to use a non-secure URL (<ph name="BLOCKED_URL" />).  Please contact your administrator.</translation>

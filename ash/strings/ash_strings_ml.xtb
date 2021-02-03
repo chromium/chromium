@@ -576,6 +576,7 @@
 <translation id="5992218262414051481">ഉയർന്ന ദൃശ്യതീവ്രത മോഡ് പ്രവർത്തനക്ഷമമാക്കി. ഇത് ഓഫാക്കാൻ, Ctrl+തിരയൽ+H വീണ്ടും അമർത്തുക.</translation>
 <translation id="6018164090099858612">മിറർ മോഡിൽ നിന്ന് പുറത്തുകടക്കുന്നു</translation>
 <translation id="602001110135236999">ഇടത്തോട്ട് സ്ക്രോൾ ചെയ്യുക</translation>
+<translation id="602472752137106327">എല്ലാ ഡെസ്‌കുകളിൽ നിന്നുമുള്ള വിൻഡോകൾ കാണിക്കുക, റേഡിയോ ബട്ടൺ തിരഞ്ഞെടുത്തു</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />, നിങ്ങളുടെ അഡ്‌മിൻ മാനേജ് ചെയ്യുന്നത്</translation>
 <translation id="6030495522958826102">സ്‌ക്രീനിന്റെ ചുവടെ ഇടത് കോണിലേക്ക് മെനു നീക്കിയിരിക്കുന്നു.</translation>
 <translation id="6032620807120418574">പൂർണ്ണ സ്ക്രീൻ റെക്കോർഡ് ചെയ്യാൻ എവിടെയെങ്കിലും ക്ലിക്ക് ചെയ്യുക</translation>
@@ -674,6 +675,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{ഒരു അക്കം ശേഷിക്കുന്നു}other{# അക്കങ്ങൾ ശേഷിക്കുന്നു}}</translation>
 <translation id="6878400149835617132">കുറുക്കുവഴി ഓഫാക്കിയിരിക്കുന്നു</translation>
 <translation id="6886172995547742638">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> ഉപകരണം കുറഞ്ഞ പ്രകടനം കാഴ്‌ച വച്ചേക്കാം. സർട്ടിഫൈ ചെയ്‌ത <ph name="PREFERRED_MINIMUM_POWER" />W അല്ലെങ്കിൽ USB-C പവർ അഡാപ്‌റ്റർ ഉപയോഗിക്കുക.</translation>
+<translation id="688631446150864480">വിന്‍ഡോകോൾക്കിടയിൽ മാറാൻ താഴേക്കുള്ള അമ്പടയാള കീ അമർത്തുക</translation>
 <translation id="6896758677409633944">പകര്‍ത്തുക</translation>
 <translation id="6910714959251846841">ഈ അപ്ഡേറ്റിനായി നിങ്ങളുടെ ഉപകരണം powerwash ചെയ്യേണ്ടതുണ്ട്. ഏറ്റവും പുതിയ <ph name="SYSTEM_APP_NAME" /> അപ്‌ഡേറ്റിനെ കുറിച്ച് കൂടുതലറിയുക.</translation>
 <translation id="6919251195245069855">നിങ്ങളുടെ സ്‌മാർട്ട് കാർഡ് തിരിച്ചറിയാൻ കഴിഞ്ഞില്ല. വീണ്ടും ശ്രമിക്കൂ.</translation>
@@ -837,6 +839,7 @@
 <translation id="8297006494302853456">ദുര്‍ബലം</translation>
 <translation id="8308637677604853869">മുൻ മെനു</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> വിന്‍ഡോ തിരഞ്ഞടുത്തു</translation>
 <translation id="8351131234907093545">കുറിപ്പ് സൃഷ്‌ടിക്കുക</translation>
 <translation id="8371779926711439835">ഒരക്ഷരം മുന്നിലേക്ക് പോവുക</translation>
 <translation id="8375916635258623388">ഈ <ph name="DEVICE_NAME" /> ഉം നിങ്ങളുടെ ഫോണും സ്വമേധയാ കണക്റ്റ് ചെയ്യും</translation>
@@ -860,6 +863,7 @@
 <translation id="8477270416194247200">റദ്ദാക്കാൻ Alt+തിരയൽ അല്ലെങ്കിൽ Shift അമർത്തുക.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" /> എന്നതിനെ പിന്തുണയ്‌ക്കുന്നില്ല. റെസല്യൂഷൻ <ph name="FALLBACK_RESOLUTION" /> എന്നതിലേക്ക് മാറ്റി. മാറ്റങ്ങൾ നിലനിർത്താൻ 'സ്ഥിരീകരിക്കുക' ക്ലിക്ക് ചെയ്യുക. മുമ്പത്തെ ക്രമീകരണം <ph name="TIMEOUT_SECONDS" /> സെക്കൻഡിൽ പുനഃസ്ഥാപിക്കും.</translation>
 <translation id="8513108775083588393">സ്വയം തിരിയുക</translation>
+<translation id="851458219935658693">നിലവിലെ ഡെസ്‌കിൽ നിന്ന് വിൻഡോകൾ കാണിക്കുക, റേഡിയോ ബട്ടൺ തിരഞ്ഞെടുത്തു</translation>
 <translation id="8517041960877371778">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> ഓണായിരിക്കുമ്പോൾ അത് ചാർജ്ജാകാതിരിക്കാം.</translation>
 <translation id="8553395910833293175">എല്ലാ ഡെസ്ക്കുകൾക്കും ഇതിനകം അസൈൻ ചെയ്‌തിട്ടുണ്ട്.</translation>
 <translation id="8563862697512465947">വിജ്ഞാപന ക്രമീകരണങ്ങള്‍‌</translation>

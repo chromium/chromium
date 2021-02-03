@@ -6046,6 +6046,7 @@
 <translation id="7904526211178107182">使 Linux 端口可供您网络上的其他设备使用。</translation>
 <translation id="7907837847548254634">短暂地突出显示焦点对象</translation>
 <translation id="7908378463497120834">抱歉，您的外部存储设备上至少有一个分区无法加载。</translation>
+<translation id="7909324225945368569">重命名您的个人资料</translation>
 <translation id="7909969815743704077">已在隐身模式下进行下载</translation>
 <translation id="7910768399700579500">新建文件夹(&amp;N)</translation>
 <translation id="7911118814695487383">Linux</translation>
@@ -6269,7 +6270,6 @@
 <translation id="8147900440966275470">找到了 <ph name="NUM" /> 个标签页</translation>
 <translation id="8148760431881541277">限制登录</translation>
 <translation id="8150259863378108853">Lacros 是一个实验性浏览器。若要报告问题，请使用“帮助”&gt;“报告问题…”</translation>
-<translation id="8151579390896831136">自定义您的个人资料，包括其名称</translation>
 <translation id="8151638057146502721">配置</translation>
 <translation id="8154790740888707867">未发现文件</translation>
 <translation id="815491593104042026">糟糕！身份验证失败，因为它被配置为使用不安全的网址(<ph name="BLOCKED_URL" />)。请联系您的管理员。</translation>

@@ -6052,6 +6052,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7904526211178107182">Fă porturile Linux disponibile pentru alte dispozitive din rețea.</translation>
 <translation id="7907837847548254634">Afișează o evidențiere rapidă a obiectului selectat</translation>
 <translation id="7908378463497120834">Ne pare rău, cel puțin o partiție de pe dispozitivul de stocare externă nu a putut fi montată.</translation>
+<translation id="7909324225945368569">Redenumește profilul</translation>
 <translation id="7909969815743704077">Descărcat în modul incognito</translation>
 <translation id="7910768399700579500">Dosar &amp;nou</translation>
 <translation id="7911118814695487383">Linux</translation>
@@ -6276,7 +6277,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8147900440966275470">S-a găsit <ph name="NUM" /> filă</translation>
 <translation id="8148760431881541277">Limitează conectarea</translation>
 <translation id="8150259863378108853">Lacros este un browser experimental. Raportează eventualele probleme accesând Ajutor &gt; Raportează o problemă…</translation>
-<translation id="8151579390896831136">Personalizează profilul, inclusiv numele acestuia</translation>
 <translation id="8151638057146502721">Configurați</translation>
 <translation id="8154790740888707867">Niciun fișier</translation>
 <translation id="815491593104042026">Hopa! Autentificarea nu a reușit, deoarece era configurată să folosească o adresă URL nesecurizată (<ph name="BLOCKED_URL" />). Contactați administratorul.</translation>

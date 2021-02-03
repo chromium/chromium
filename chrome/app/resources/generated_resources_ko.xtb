@@ -6049,6 +6049,7 @@
 <translation id="7904526211178107182">네트워크에 있는 다른 기기에서 Linux 포트를 사용할 수 있도록 설정합니다.</translation>
 <translation id="7907837847548254634">포커스된 객체를 빠르게 강조표시</translation>
 <translation id="7908378463497120834">죄송합니다. 외부 저장장치에 있는 하나 이상의 파티션을 마운트하지 못했습니다.</translation>
+<translation id="7909324225945368569">프로필 이름 바꾸기</translation>
 <translation id="7909969815743704077">시크릿 모드에서 다운로드됨</translation>
 <translation id="7910768399700579500">새 폴더(&amp;N)</translation>
 <translation id="7911118814695487383">Linux</translation>
@@ -6273,7 +6274,6 @@
 <translation id="8147900440966275470">탭 <ph name="NUM" />개 찾음</translation>
 <translation id="8148760431881541277">로그인 제한</translation>
 <translation id="8150259863378108853">Lacros는 실험 단계의 브라우저입니다. 문제가 발생하면 도움말 &gt; ‘문제 신고...’에서 신고해 주세요.</translation>
-<translation id="8151579390896831136">이름을 포함한 프로필 맞춤설정</translation>
 <translation id="8151638057146502721">구성</translation>
 <translation id="8154790740888707867">파일 없음</translation>
 <translation id="815491593104042026">보안되지 않는 URL(<ph name="BLOCKED_URL" />)을 사용하도록 설정되었기 때문에 인증할 수 없습니다. 관리자에게 문의하세요.</translation>

@@ -6052,6 +6052,7 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="7904526211178107182">Gør Linux-portene tilgængelige for andre enheder på dit netværk.</translation>
 <translation id="7907837847548254634">Vis en kort fremhævning på det element, der fokuseres på</translation>
 <translation id="7908378463497120834">Vi beklager, men der kunne ikke oprettes forbindelse til mindst én partition på enheden.</translation>
+<translation id="7909324225945368569">Giv din profil et nyt navn</translation>
 <translation id="7909969815743704077">Downloadet i inkognitotilstand</translation>
 <translation id="7910768399700579500">&amp;Ny mappe</translation>
 <translation id="7911118814695487383">Linux</translation>
@@ -6276,7 +6277,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8147900440966275470">Der blev fundet <ph name="NUM" /> fane</translation>
 <translation id="8148760431881541277">Begræns login</translation>
 <translation id="8150259863378108853">Lacros er en eksperimentel browser. Du kan rapportere problemer ved at gå til Hjælp &gt; "Rapportér et problem..."</translation>
-<translation id="8151579390896831136">Tilpas din profil, herunder dens navn</translation>
 <translation id="8151638057146502721">Konfigurer</translation>
 <translation id="8154790740888707867">Ingen fil</translation>
 <translation id="815491593104042026">Ups! Godkendelsen mislykkedes, fordi den var konfigureret til at bruge en webadresse, som ikke er sikker (<ph name="BLOCKED_URL" />). Kontakt din administrator.</translation>

@@ -6052,6 +6052,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="7904526211178107182">Sprístupnite porty Linux ďalším zariadeniam vo vašej sieti.</translation>
 <translation id="7907837847548254634">Zobrazovať krátke zvýraznenie označeného objektu</translation>
 <translation id="7908378463497120834">Je nám ľúto, ale nepodarilo sa pripojiť minimálne jeden oddiel externého pamäťového zariadenia.</translation>
+<translation id="7909324225945368569">Premenujte svoj profil</translation>
 <translation id="7909969815743704077">Stiahnuté v režime inkognito</translation>
 <translation id="7910768399700579500">&amp;Nový priečinok</translation>
 <translation id="7911118814695487383">Linux</translation>
@@ -6275,7 +6276,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8147900440966275470">Bola nájdená <ph name="NUM" /> karta</translation>
 <translation id="8148760431881541277">Obmedziť prihlásenie</translation>
 <translation id="8150259863378108853">Lacros je experimentálny prehliadač. Prípadné problémy nahlásite v sekcii Pomocník &gt; Nahlásiť problém…</translation>
-<translation id="8151579390896831136">Prispôsobte si profil vrátane názvu</translation>
 <translation id="8151638057146502721">Konfigurovať</translation>
 <translation id="8154790740888707867">Žiadny súbor</translation>
 <translation id="815491593104042026">Ojoj! Overenie zlyhalo, pretože bolo nakonfigurované tak, aby použilo nezabezpečenú webovú adresu (<ph name="BLOCKED_URL" />). Kontaktuje svojho správcu.</translation>

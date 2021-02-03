@@ -6052,6 +6052,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7904526211178107182">Disponibilize as portas do Linux a outros dispositivos na sua rede.</translation>
 <translation id="7907837847548254634">Mostrar um realce rápido no objeto em foco</translation>
 <translation id="7908378463497120834">Lamentamos, mas não foi possível montar, pelo menos, uma partição no aparelho de armazenamento externo.</translation>
+<translation id="7909324225945368569">Mude o nome do perfil</translation>
 <translation id="7909969815743704077">Transferido em modo de navegação anónima</translation>
 <translation id="7910768399700579500">&amp;Nova pasta</translation>
 <translation id="7911118814695487383">Linux</translation>
@@ -6275,7 +6276,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8147900440966275470"><ph name="NUM" /> separador encontrado</translation>
 <translation id="8148760431881541277">Limitar início de sessão</translation>
 <translation id="8150259863378108853">O Lacros é um navegador experimental. Comunique quaisquer problemas em Ajuda &gt; "Comunicar um problema…"</translation>
-<translation id="8151579390896831136">Personalize o seu perfil, incluindo o respetivo nome</translation>
 <translation id="8151638057146502721">Configurar</translation>
 <translation id="8154790740888707867">Sem ficheiro</translation>
 <translation id="815491593104042026">Ups! A autenticação falhou, porque foi configurada para utilizar um URL não seguro (<ph name="BLOCKED_URL" />). Contacte o gestor.</translation>

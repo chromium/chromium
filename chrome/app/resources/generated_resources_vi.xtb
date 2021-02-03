@@ -6051,6 +6051,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="7904526211178107182">Cho phép các thiết bị khác trên mạng của bạn sử dụng cổng Linux.</translation>
 <translation id="7907837847548254634">Làm nổi bật đối tượng được đặt tiêu điểm trong giây lát</translation>
 <translation id="7908378463497120834">Rất tiếc, ít nhất một phân vùng trên thiết bị lưu trữ bên ngoài của bạn không thể kết nối được.</translation>
+<translation id="7909324225945368569">Đổi tên hồ sơ của bạn</translation>
 <translation id="7909969815743704077">Đã tải xuống ở chế độ Ẩn danh</translation>
 <translation id="7910768399700579500">&amp;Thư mục mới</translation>
 <translation id="7911118814695487383">Linux</translation>
@@ -6275,7 +6276,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8147900440966275470">Đã tìm thấy <ph name="NUM" /> thẻ</translation>
 <translation id="8148760431881541277">Giới hạn khả năng đăng nhập</translation>
 <translation id="8150259863378108853">Lacros là một trình duyệt thử nghiệm. Vui lòng báo cáo mọi sự cố bằng cách chuyển đến mục Trợ giúp &gt; "Báo cáo sự cố..."</translation>
-<translation id="8151579390896831136">Tùy chỉnh hồ sơ của bạn, bao gồm cả tên hồ sơ</translation>
 <translation id="8151638057146502721">Định cấu hình</translation>
 <translation id="8154790740888707867">Không có tệp nào</translation>
 <translation id="815491593104042026">Rất tiếc! Xác thực không thành công do được định cấu hình sử dụng URL không an toàn (<ph name="BLOCKED_URL" />). Hãy liên hệ với quản trị viên của bạn.</translation>

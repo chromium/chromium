@@ -6051,6 +6051,7 @@ V zařízení se systémem Chrome OS můžete aktivovat funkce ladění, abyste
 <translation id="7904526211178107182">Zpřístupní porty Linuxu jiným zařízením v síti.</translation>
 <translation id="7907837847548254634">Zaměřený objekt krátce zvýraznit</translation>
 <translation id="7908378463497120834">Je nám líto, minimálně jeden oddíl externího paměťového zařízení nelze připojit.</translation>
+<translation id="7909324225945368569">Přejmenujte profil</translation>
 <translation id="7909969815743704077">Staženo v anonymním režimu</translation>
 <translation id="7910768399700579500">Nová složka</translation>
 <translation id="7911118814695487383">Linux</translation>
@@ -6274,7 +6275,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8147900440966275470">Byla nalezena <ph name="NUM" /> karta</translation>
 <translation id="8148760431881541277">Omezit přihlášení</translation>
 <translation id="8150259863378108853">Lacros je experimentální prohlížeč. Případné problémy nahlaste v sekci Nápověda &gt; Nahlásit problém…</translation>
-<translation id="8151579390896831136">Přizpůsobte si profil, včetně názvu</translation>
 <translation id="8151638057146502721">Konfigurovat</translation>
 <translation id="8154790740888707867">Žádný soubor</translation>
 <translation id="815491593104042026">Jejda, ověření se nezdařilo, protože bylo nakonfigurováno k použití nezabezpečené adresy URL (<ph name="BLOCKED_URL" />). Obraťte se na svého administrátora.</translation>

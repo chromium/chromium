@@ -6049,6 +6049,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7904526211178107182">Udostępnij porty Linuksa innym urządzeniom w Twojej sieci.</translation>
 <translation id="7907837847548254634">Podświetlaj zaznaczony obiekt</translation>
 <translation id="7908378463497120834">Nie można podłączyć co najmniej jednej partycji na urządzeniu zewnętrznej pamięci masowej.</translation>
+<translation id="7909324225945368569">Zmień nazwę profilu</translation>
 <translation id="7909969815743704077">Pobrano w trybie incognito</translation>
 <translation id="7910768399700579500">&amp;Nowy folder</translation>
 <translation id="7911118814695487383">Linux</translation>
@@ -6273,7 +6274,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8147900440966275470">Znaleziono <ph name="NUM" /> kartę</translation>
 <translation id="8148760431881541277">Ograniczanie logowania</translation>
 <translation id="8150259863378108853">Lacros to przeglądarka eksperymentalna. Jeśli pojawią się jakieś problemy, zgłoś je, klikając Pomoc &gt; „Zgłoś problem…”.</translation>
-<translation id="8151579390896831136">Dostosuj swój profil, w tym jego nazwę</translation>
 <translation id="8151638057146502721">Konfiguruj</translation>
 <translation id="8154790740888707867">Brak pliku</translation>
 <translation id="815491593104042026">Ups, uwierzytelnianie nie powiodło się, bo zostało skonfigurowane do używania niezabezpieczonego URL-a (<ph name="BLOCKED_URL" />). Skontaktuj się z administratorem.</translation>

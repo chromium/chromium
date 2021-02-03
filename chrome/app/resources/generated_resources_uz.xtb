@@ -6047,6 +6047,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="7904526211178107182">Tarmoqdagi boshqa qurilmalarga Linux portlariga ulanish imkoniyatini bering</translation>
 <translation id="7907837847548254634">Fokusdagi obyektni tez belgilab chiqarish</translation>
 <translation id="7908378463497120834">Tashqi xotira qurilmasining bir yoki bir nechta bo‘limini ulab bo‘lmadi.</translation>
+<translation id="7909324225945368569">Profilni qayta nomlang</translation>
 <translation id="7909969815743704077">Inkognito rejimida yuklab olindi</translation>
 <translation id="7910768399700579500">&amp;Yangi jild</translation>
 <translation id="7911118814695487383">Linux</translation>
@@ -6270,7 +6271,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8147900440966275470"><ph name="NUM" /> ta varaqda topildi</translation>
 <translation id="8148760431881541277">Kirishni cheklash</translation>
 <translation id="8150259863378108853">Lacros – tajribaviy brauzer. Muammolar yuz bersa, Yordam &gt; “Muammo haqida xabar berish” orqali murojaat qiling.</translation>
-<translation id="8151579390896831136">Profilingiz va uning nomini oʻzingizga moslang</translation>
 <translation id="8151638057146502721">Sozlash</translation>
 <translation id="8154790740888707867">Fayl mavjud emas</translation>
 <translation id="815491593104042026">Havfsizligi himoyalanmagan URL mazil (<ph name="BLOCKED_URL" />) topilganligi sababli, tasdiqlash tekshiruvini bajarib bo‘lmadi. Administrator bilan bog‘laning.</translation>

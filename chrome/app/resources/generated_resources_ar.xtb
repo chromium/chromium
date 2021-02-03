@@ -6056,6 +6056,7 @@
 <translation id="7904526211178107182">‏اجعل منافذ نظام التشغيل Linux متاحة لأجهزة أخرى على الشبكة.</translation>
 <translation id="7907837847548254634">تحديد سريع للعنصر الذي تم التركيز عليه</translation>
 <translation id="7908378463497120834">عذرًا، تعذر تركيب جزء واحد على الأقل من جهاز مساحة التخزين الخارجية.</translation>
+<translation id="7909324225945368569">إعادة تسمية ملفك الشخصي</translation>
 <translation id="7909969815743704077">تم التحميل في وضع التصفح المتخفي</translation>
 <translation id="7910768399700579500">م&amp;جلّد جديد</translation>
 <translation id="7911118814695487383">‏نظام التشغيل Linux</translation>
@@ -6280,7 +6281,6 @@
 <translation id="8147900440966275470">تم العثور على <ph name="NUM" /> علامة تبويب.</translation>
 <translation id="8148760431881541277">قصر تسجيل الدخول على مستخدمين محددين</translation>
 <translation id="8150259863378108853">‏Lacros هو متصفِّح تجريبي. يُرجى الإبلاغ عن أي مشاكل من خلال الانتقال إلى "مساعدة" &gt; "الإبلاغ عن مشكلة...".</translation>
-<translation id="8151579390896831136">تخصيص ملفك الشخصي بما في ذلك الاسم</translation>
 <translation id="8151638057146502721">إعداد</translation>
 <translation id="8154790740888707867">لم يتم العثور على الملف</translation>
 <translation id="815491593104042026">‏عفوا! فشلت المصادقة لأنه تم إعدادها لاستخدام عنوان URL غير آمن ( <ph name="BLOCKED_URL" /> ). يرجى الاتصال بالمسؤول.</translation>

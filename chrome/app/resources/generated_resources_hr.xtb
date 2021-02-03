@@ -6049,6 +6049,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="7904526211178107182">Linux priključke učinite dostupnima drugim uređajima u svojoj mreži.</translation>
 <translation id="7907837847548254634">Prikaz kratkog isticanja fokusiranog objekta</translation>
 <translation id="7908378463497120834">Žao nam je, nije bilo moguće postaviti najmanje jednu particiju na vanjskom uređaju za pohranu.</translation>
+<translation id="7909324225945368569">Preimenujte profil</translation>
 <translation id="7909969815743704077">Preuzeto u anonimnom načinu</translation>
 <translation id="7910768399700579500">&amp;Nova mapa</translation>
 <translation id="7911118814695487383">Linux</translation>
@@ -6273,7 +6274,6 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8147900440966275470">Pronađena je <ph name="NUM" /> kartica</translation>
 <translation id="8148760431881541277">Ograničavanje prijave</translation>
 <translation id="8150259863378108853">Lacros je eksperimentalni preglednik. Poteškoće prijavite putem odjeljka Pomoć &gt; "Prijavite poteškoću..."</translation>
-<translation id="8151579390896831136">Prilagodite profil, uključujući njegov naziv</translation>
 <translation id="8151638057146502721">Konfiguracija</translation>
 <translation id="8154790740888707867">Nema datoteke</translation>
 <translation id="815491593104042026">Ups! Autentifikacija nije uspjela jer je konfigurirana za upotrebu nesigurnog URL-a (<ph name="BLOCKED_URL" />). Obratite se administratoru.</translation>
