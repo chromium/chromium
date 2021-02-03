@@ -71,6 +71,10 @@ ALWAYS_INLINE void PartitionTlsSet(PartitionTlsKey key, void* value) {
   BOOL ret = TlsSetValue(key, value);
   PA_DCHECK(ret);
 }
+
+// Registers a callback for DLL_PROCESS_DETACH events.
+void PartitionTlsSetOnDllProcessDetach(void (*callback)());
+
 #else
 // Not supported.
 typedef int PartitionTlsKey;

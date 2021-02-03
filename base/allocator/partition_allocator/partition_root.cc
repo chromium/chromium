@@ -473,7 +473,12 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
 }
 
 template <bool thread_safe>
-PartitionRoot<thread_safe>::~PartitionRoot() = default;
+PartitionRoot<thread_safe>::~PartitionRoot() {
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  PA_CHECK(!with_thread_cache)
+      << "Must not destroy a partition with a thread cache";
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+}
 
 template <bool thread_safe>
 bool PartitionRoot<thread_safe>::ReallocDirectMappedInPlace(

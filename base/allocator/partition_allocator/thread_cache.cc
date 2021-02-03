@@ -11,6 +11,7 @@
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 
 namespace base {
 
@@ -27,7 +28,20 @@ BASE_EXPORT PartitionTlsKey g_thread_cache_key;
 namespace {
 // Since |g_thread_cache_key| is shared, make sure that no more than one
 // PartitionRoot can use it.
-static std::atomic<bool> g_has_instance;
+static std::atomic<PartitionRoot<ThreadSafe>*> g_thread_cache_root;
+
+#if defined(OS_WIN)
+void OnDllProcessDetach() {
+  // Very late allocations do occur (see crbug.com/1159411#c7 for instance),
+  // including during CRT teardown. This is problematic for the thread cache
+  // which relies on the CRT for TLS access for instance. This cannot be
+  // mitigated inside the thread cache (since getting to it requires querying
+  // TLS), but the PartitionRoot associated wih the thread cache can be made to
+  // not use the thread cache anymore.
+  g_thread_cache_root.load(std::memory_order_relaxed)->with_thread_cache =
+      false;
+}
+#endif
 
 static bool g_thread_cache_key_created = false;
 }  // namespace
@@ -205,13 +219,17 @@ void ThreadCache::Init(PartitionRoot<ThreadSafe>* root) {
   EnsureThreadSpecificDataInitialized();
 
   // Make sure that only one PartitionRoot wants a thread cache.
-  bool expected = false;
-  if (!g_has_instance.compare_exchange_strong(expected, true,
-                                              std::memory_order_seq_cst,
-                                              std::memory_order_seq_cst)) {
+  PartitionRoot<ThreadSafe>* expected = nullptr;
+  if (!g_thread_cache_root.compare_exchange_strong(expected, nullptr,
+                                                   std::memory_order_seq_cst,
+                                                   std::memory_order_seq_cst)) {
     PA_CHECK(false)
         << "Only one PartitionRoot is allowed to have a thread cache";
   }
+
+#if defined(OS_WIN)
+  PartitionTlsSetOnDllProcessDetach(OnDllProcessDetach);
+#endif
 }
 
 // static
