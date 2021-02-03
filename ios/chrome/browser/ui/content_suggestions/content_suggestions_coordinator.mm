@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/main/browser.h"
 #include "ios/chrome/browser/ntp_snippets/ios_chrome_content_suggestions_service_factory.h"
 #include "ios/chrome/browser/ntp_tiles/ios_most_visited_sites_factory.h"
+#import "ios/chrome/browser/policy/policy_util.h"
 #include "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
@@ -653,13 +654,22 @@
                                                   atIndex:indexPath.item];
                       }]];
 
-        [menuElements
-            addObject:[actionFactory actionToOpenInNewIncognitoTabWithBlock:^{
+        UIAction* incognitoAction =
+            [actionFactory actionToOpenInNewIncognitoTabWithBlock:^{
               [weakSelf.ntpMediator
                   openNewTabWithMostVisitedItem:item
                                       incognito:YES
                                         atIndex:indexPath.item];
-            }]];
+            }];
+
+        if (IsIncognitoModeDisabled(
+                self.browser->GetBrowserState()->GetPrefs())) {
+          // Disable the "Open in Incognito" option if the incognito mode is
+          // disabled.
+          incognitoAction.attributes = UIMenuElementAttributesDisabled;
+        }
+
+        [menuElements addObject:incognitoAction];
 
         if (base::ios::IsMultipleScenesSupported()) {
           UIAction* newWindowAction = [actionFactory

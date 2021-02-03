@@ -61,6 +61,7 @@ source_set("content_suggestions") {
     "//ios/chrome/browser/ntp",
     "//ios/chrome/browser/ntp_snippets",
     "//ios/chrome/browser/ntp_tiles",
+    "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/reading_list",
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/signin",

@@ -71,11 +71,12 @@
             target:self
           selector:@selector(removeMostVisited)];
 
-  NSArray* customActions =
-      [NSArray arrayWithObjects:openInNewTab, openInNewIncognitoTab,
-                                removeMostVisited, nil];
-
-  return customActions;
+  if (self.incognitoAvailable) {
+    return [NSArray arrayWithObjects:openInNewTab, openInNewIncognitoTab,
+                                     removeMostVisited, nil];
+  } else {
+    return [NSArray arrayWithObjects:openInNewTab, removeMostVisited, nil];
+  }
 }
 
 // Target for custom action.
