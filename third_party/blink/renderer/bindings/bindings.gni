@@ -197,6 +197,7 @@ bindings_unittest_files =
           "core/v8/script_streamer_test.cc",
           "core/v8/script_wrappable_v8_gc_integration_test.cc",
           "core/v8/to_v8_test.cc",
+          "core/v8/to_v8_traits_test.cc",
           "core/v8/trace_wrapper_v8_reference_test.cc",
           "core/v8/v8_binding_for_testing.cc",
           "core/v8/v8_binding_for_testing.h",
