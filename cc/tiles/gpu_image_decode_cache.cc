@@ -304,7 +304,8 @@ bool DrawAndScaleImage(
 
   const SkFilterQuality filter_quality =
       CalculateDesiredFilterQuality(draw_image);
-  const SkSamplingOptions sampling(filter_quality);
+  const SkSamplingOptions sampling(filter_quality,
+                                   SkSamplingOptions::kMedium_asMipmapLinear);
 
   bool decode_to_f16_using_n32_intermediate =
       decode_info.colorType() == kRGBA_F16_SkColorType &&
