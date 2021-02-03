@@ -34,7 +34,7 @@ const NudgeType = {
 };
 
 Polymer({
-  is: 'i-tutorial',
+  is: 'chromevox-tutorial',
 
   _template: html`{__html_template__}`,
 

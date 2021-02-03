@@ -32,7 +32,7 @@ ChromeVoxTutorialTest = class extends ChromeVoxPanelTestBase {
   async waitForTutorial() {
     return new Promise(resolve => {
       const doc = this.getPanelWindow().document;
-      if (doc.getElementById('i-tutorial-container')) {
+      if (doc.getElementById('chromevox-tutorial-container')) {
         resolve();
       } else {
         /**
@@ -43,7 +43,7 @@ ChromeVoxTutorialTest = class extends ChromeVoxPanelTestBase {
           for (const mutation of mutationsList) {
             if (mutation.type === 'childList') {
               for (const node of mutation.addedNodes) {
-                if (node.id === 'i-tutorial-container') {
+                if (node.id === 'chromevox-tutorial-container') {
                   // Once the tutorial has been added to the document, we need
                   // to wait for the lesson templates to load.
                   const panel = this.getPanel();

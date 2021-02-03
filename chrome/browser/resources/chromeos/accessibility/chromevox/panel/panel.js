@@ -290,7 +290,7 @@ Panel = class {
     $('menus_background').hidden =
         (Panel.mode_ !== Panel.Mode.FULLSCREEN_MENUS);
     // Interactive tutorial elements may not have been loaded yet.
-    const iTutorialContainer = $('i-tutorial-container');
+    const iTutorialContainer = $('chromevox-tutorial-container');
     if (iTutorialContainer) {
       iTutorialContainer.hidden =
           (Panel.mode_ !== Panel.Mode.FULLSCREEN_TUTORIAL);
@@ -1099,7 +1099,7 @@ Panel = class {
    * @param {string=} opt_page Show a specific page.
    */
   static onTutorial(opt_page) {
-    if (!$('i-tutorial')) {
+    if (!$('chromevox-tutorial')) {
       const curriculum =
           Panel.sessionState === chrome.loginState.SessionState.IN_OOBE_SCREEN ?
           'quick_orientation' :
@@ -1114,25 +1114,22 @@ Panel = class {
   }
 
   /**
-   * Creates an <i-tutorial> element and adds it to the dom.
+   * Creates a <chromevox-tutorial> element and adds it to the dom.
    * @param {(string|null)} curriculum
    */
   static createITutorial(curriculum) {
     const tutorialScript = document.createElement('script');
-    tutorialScript.src = '../i_tutorial/components/i_tutorial.js';
+    tutorialScript.src =
+        '../../common/tutorial/components/chromevox_tutorial.js';
     tutorialScript.setAttribute('type', 'module');
-    const lessonScript = document.createElement('script');
-    lessonScript.src = '../i_tutorial/components/tutorial_lesson.js';
-    lessonScript.setAttribute('type', 'module');
     document.body.appendChild(tutorialScript);
-    document.body.appendChild(lessonScript);
 
     // Create tutorial container and element.
     const tutorialContainer = document.createElement('div');
-    tutorialContainer.setAttribute('id', 'i-tutorial-container');
+    tutorialContainer.setAttribute('id', 'chromevox-tutorial-container');
     tutorialContainer.hidden = true;
-    const tutorialElement = document.createElement('i-tutorial');
-    tutorialElement.setAttribute('id', 'i-tutorial');
+    const tutorialElement = document.createElement('chromevox-tutorial');
+    tutorialElement.setAttribute('id', 'chromevox-tutorial');
     if (curriculum) {
       tutorialElement.curriculum = curriculum;
     }
@@ -1145,12 +1142,12 @@ Panel = class {
     const chromeVoxState = backgroundPage['ChromeVoxState'];
     const chromeVoxStateInstance = chromeVoxState['instance'];
 
-    $('i-tutorial').addEventListener('closetutorial', (evt) => {
+    $('chromevox-tutorial').addEventListener('closetutorial', (evt) => {
       // Ensure UserActionMonitor is destroyed before closing tutorial.
       chromeVoxStateInstance.destroyUserActionMonitor();
       Panel.onCloseTutorial();
     });
-    $('i-tutorial').addEventListener('requestspeech', (evt) => {
+    $('chromevox-tutorial').addEventListener('requestspeech', (evt) => {
       /**
        * @type {{
        * text: string,
@@ -1169,28 +1166,28 @@ Panel = class {
       const cvox = backgroundPage['ChromeVox'];
       cvox.tts.speak(text, queueMode, properties);
     });
-    $('i-tutorial').addEventListener('startinteractivemode', (evt) => {
+    $('chromevox-tutorial').addEventListener('startinteractivemode', (evt) => {
       const actions = evt.detail.actions;
       chromeVoxStateInstance.createUserActionMonitor(actions, () => {
         chromeVoxStateInstance.destroyUserActionMonitor();
         Panel.iTutorial.showNextLesson();
       });
     });
-    $('i-tutorial').addEventListener('stopinteractivemode', (evt) => {
+    $('chromevox-tutorial').addEventListener('stopinteractivemode', (evt) => {
       chromeVoxStateInstance.destroyUserActionMonitor();
     });
-    $('i-tutorial').addEventListener('requestfullydescribe', (evt) => {
+    $('chromevox-tutorial').addEventListener('requestfullydescribe', (evt) => {
       const commandHandler = backgroundPage['CommandHandler'];
       commandHandler.onCommand('fullyDescribe');
     });
-    $('i-tutorial').addEventListener('requestearcon', (evt) => {
+    $('chromevox-tutorial').addEventListener('requestearcon', (evt) => {
       const earconId = evt.detail.earconId;
       backgroundPage['ChromeVox']['earcons']['playEarcon'](earconId);
     });
-    $('i-tutorial').addEventListener('readyfortesting', () => {
+    $('chromevox-tutorial').addEventListener('readyfortesting', () => {
       Panel.iTutorialReadyForTesting_ = true;
     });
-    $('i-tutorial').addEventListener('openUrl', (evt) => {
+    $('chromevox-tutorial').addEventListener('openUrl', (evt) => {
       const url = evt.detail.url;
       // Ensure UserActionMonitor is destroyed before closing tutorial.
       chromeVoxStateInstance.destroyUserActionMonitor();

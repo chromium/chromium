@@ -160,12 +160,6 @@ group("build") {
     ":chromevox_options_script",
     ":chromevox_panel_script",
     ":chromevox_phonetic_dictionaries_js",
-    ":i_tutorial",
-    ":tutorial_lesson",
-    ":tutorial_lesson_container",
-    ":tutorial_lesson_menu",
-    ":tutorial_main_menu",
-    ":tutorial_navigation_buttons",
     "//chrome/browser/resources/chromeos/accessibility/braille_ime:braille_ime_manifest",
     "//third_party/chromevox:chromevox_third_party_resources",
     "//third_party/liblouis",
@@ -194,9 +188,6 @@ run_jsbundler("chromevox_copied_files") {
     "background/earcons/static.wav",
     "background/logging/log.css",
     "background/logging/log.html",
-    "i_tutorial/components/constants.js",
-    "i_tutorial/components/localization.js",
-    "i_tutorial/components/tutorial_behavior.js",
     "i_tutorial/practice_areas/jump_commands.html",
     "i_tutorial/practice_areas/selects.html",
     "images/chromevox-128.png",
@@ -468,65 +459,6 @@ if (is_chromeos_ash) {
     ]
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   }
-}
-
-copy("tutorial_lesson") {
-  sources = [ "$chromevox_gen_dir/i_tutorial/components/tutorial_lesson.js" ]
-  outputs = [ "$chromevox_out_dir/i_tutorial/components/tutorial_lesson.js" ]
-  deps = [
-    "i_tutorial/components:closure_compile",
-    "i_tutorial/components:components",
-  ]
-}
-
-copy("tutorial_lesson_container") {
-  sources = [ "$chromevox_gen_dir/i_tutorial/components/lesson_container.js" ]
-  outputs = [ "$chromevox_out_dir/i_tutorial/components/lesson_container.js" ]
-
-  deps = [
-    "i_tutorial/components:closure_compile",
-    "i_tutorial/components:components",
-  ]
-}
-
-copy("tutorial_main_menu") {
-  sources = [ "$chromevox_gen_dir/i_tutorial/components/main_menu.js" ]
-  outputs = [ "$chromevox_out_dir/i_tutorial/components/main_menu.js" ]
-
-  deps = [
-    "i_tutorial/components:closure_compile",
-    "i_tutorial/components:components",
-  ]
-}
-
-copy("tutorial_lesson_menu") {
-  sources = [ "$chromevox_gen_dir/i_tutorial/components/lesson_menu.js" ]
-  outputs = [ "$chromevox_out_dir/i_tutorial/components/lesson_menu.js" ]
-
-  deps = [
-    "i_tutorial/components:closure_compile",
-    "i_tutorial/components:components",
-  ]
-}
-
-copy("tutorial_navigation_buttons") {
-  sources = [ "$chromevox_gen_dir/i_tutorial/components/navigation_buttons.js" ]
-  outputs = [ "$chromevox_out_dir/i_tutorial/components/navigation_buttons.js" ]
-
-  deps = [
-    "i_tutorial/components:closure_compile",
-    "i_tutorial/components:components",
-  ]
-}
-
-copy("i_tutorial") {
-  sources = [ "$chromevox_gen_dir/i_tutorial/components/i_tutorial.js" ]
-  outputs = [ "$chromevox_out_dir/i_tutorial/components/i_tutorial.js" ]
-
-  deps = [
-    "i_tutorial/components:closure_compile",
-    "i_tutorial/components:components",
-  ]
 }
 
 # Closure type check compilation and associated js libraries.

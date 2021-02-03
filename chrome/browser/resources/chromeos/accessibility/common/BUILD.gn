@@ -18,7 +18,10 @@ accessibility_common_out_dir =
     "$root_out_dir/resources/chromeos/accessibility/common"
 
 group("build") {
-  deps = [ ":accessibility_common_copied_files" ]
+  deps = [
+    ":accessibility_common_copied_files",
+    "tutorial:build",
+  ]
 }
 
 run_jsbundler("accessibility_common_copied_files") {
