@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/allocator/partition_allocator/address_pool_manager.h"
+#include "base/allocator/partition_allocator/address_pool_manager_bitmap.h"
 #include "base/allocator/partition_allocator/object_bitmap.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
@@ -221,15 +222,17 @@ class PCScan<thread_safe>::PCScanTask final {
    public:
     void Populate(const SuperPages& super_pages) {
       for (uintptr_t super_page_base : super_pages) {
+#if DCHECK_IS_ON()
         PA_DCHECK(!(super_page_base % kSuperPageAlignment));
         PA_DCHECK(IsManagedByPartitionAllocNormalBuckets(
             reinterpret_cast<char*>(super_page_base)));
+#endif
         bitset_.Set(NormalBucketPoolOffset(super_page_base));
       }
     }
 
     ALWAYS_INLINE bool Test(uintptr_t maybe_ptr) const {
-#if defined(PA_HAS_64_BITS_POINTERS)
+#if DCHECK_IS_ON()
       PA_DCHECK(IsManagedByPartitionAllocNormalBuckets(
           reinterpret_cast<char*>(maybe_ptr)));
 #endif
@@ -257,8 +260,8 @@ class PCScan<thread_safe>::PCScanTask final {
 
   struct BitmapLookupPolicy {
     ALWAYS_INLINE bool TestOnHeapPointer(uintptr_t maybe_ptr) const {
-#if defined(PA_HAS_64_BITS_POINTERS)
-      PA_DCHECK(PartitionAddressSpace::IsInNormalBucketPool(
+#if DCHECK_IS_ON()
+      PA_DCHECK(IsManagedByPartitionAllocNormalBuckets(
           reinterpret_cast<void*>(maybe_ptr)));
 #endif
       return task_.super_pages_bitmap_.Test(maybe_ptr);
@@ -424,22 +427,20 @@ class PCScan<thread_safe>::PCScanTask::ScanLoop final {
   using ScanFunction = size_t (ScanLoop::*)(uintptr_t*, uintptr_t*) const;
 
   static ScanFunction GetScanFunction() {
-#if defined(ARCH_CPU_X86_64)
-    // We define vectorized versions of the scanning loop only for 64bit since
-    // they require support of the 64bit GigaCage.
-    if (UNLIKELY(!features::IsPartitionAllocGigaCageEnabled()))
+    if (UNLIKELY(!features::IsPartitionAllocGigaCageEnabled())) {
       return &ScanLoop::RunUnvectorizedNoGigaCage;
-
+    }
+    // We define vectorized versions of the scanning loop only for 64bit since
+    // they require support of the 64bit GigaCage, and only for x86 because
+    // a special instruction set is required.
+#if defined(ARCH_CPU_X86_64)
     base::CPU cpu;
     if (cpu.has_avx2())
       return &ScanLoop::RunAVX2;
-    else if (cpu.has_sse3())
+    if (cpu.has_sse3())
       return &ScanLoop::RunSSE3;
-    else
-      return &ScanLoop::RunUnvectorized;
-#else
-    return &ScanLoop::RunUnvectorizedNoGigaCage;
 #endif  // defined(ARCH_CPU_X86_64)
+    return &ScanLoop::RunUnvectorized;
   }
 
 #if defined(PA_HAS_64_BITS_POINTERS)
@@ -536,6 +537,7 @@ class PCScan<thread_safe>::PCScanTask::ScanLoop final {
     quarantine_size += RunUnvectorized(payload, end);
     return quarantine_size;
   }
+#endif  // defined(ARCH_CPU_X86_64)
 
   ALWAYS_INLINE NO_SANITIZE("thread") size_t
       RunUnvectorized(uintptr_t* begin, uintptr_t* end) const {
@@ -543,7 +545,15 @@ class PCScan<thread_safe>::PCScanTask::ScanLoop final {
     size_t quarantine_size = 0;
     for (; begin < end; ++begin) {
       uintptr_t maybe_ptr = *begin;
+#if defined(PA_HAS_64_BITS_POINTERS)
+      // On 64bit architectures, call IsInNormalBucketPool instead of
+      // IsManagedByPartitionAllocNormalBuckets to avoid redundant load of
+      // PartitionAddressSpace::normal_bucket_pool_base_address_.
       if (LIKELY(!IsInNormalBucketPool(maybe_ptr)))
+#else
+      if (LIKELY(!IsManagedByPartitionAllocNormalBuckets(
+              reinterpret_cast<void*>(maybe_ptr))))
+#endif
         continue;
       quarantine_size +=
           pcscan_task_.TryMarkObjectInNormalBucketPool<BitmapLookupPolicy>(
@@ -551,7 +561,6 @@ class PCScan<thread_safe>::PCScanTask::ScanLoop final {
     }
     return quarantine_size;
   }
-#endif  // defined(ARCH_CPU_X86_64)
 
   ALWAYS_INLINE NO_SANITIZE("thread") size_t
       RunUnvectorizedNoGigaCage(uintptr_t* begin, uintptr_t* end) const {
