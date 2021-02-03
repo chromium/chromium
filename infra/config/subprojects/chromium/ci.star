@@ -5649,6 +5649,7 @@ ci.win_builder(
         short_name = "w10",
     ),
     cq_mirrors_console_view = "mirrors",
+    executable = "recipe:chromium (bbagent)",
     main_console_view = "main",
     triggered_by = ["ci/Win x64 Builder"],
 )

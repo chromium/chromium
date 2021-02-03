@@ -64,6 +64,12 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:chromium (bbagent)",
+    recipe = "chromium",
+    use_bbagent = True,
+)
+
+build_recipe(
     name = "recipe:chromium_3pp",
 )
 
