@@ -461,6 +461,7 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
   // TLS in ThreadCache not supported on other OSes.
   with_thread_cache = false;
 #else
+  internal::ThreadCache::EnsureThreadSpecificDataInitialized();
   with_thread_cache =
       (opts.thread_cache == PartitionOptions::ThreadCache::kEnabled);
 

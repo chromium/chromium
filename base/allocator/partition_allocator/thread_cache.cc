@@ -29,6 +29,7 @@ namespace {
 // PartitionRoot can use it.
 static std::atomic<bool> g_has_instance;
 
+static bool g_thread_cache_key_created = false;
 }  // namespace
 
 constexpr base::TimeDelta ThreadCacheRegistry::kPurgeInterval;
@@ -62,6 +63,7 @@ void ThreadCacheRegistry::UnregisterThreadCache(ThreadCache* cache) {
 
 void ThreadCacheRegistry::DumpStats(bool my_thread_only,
                                     ThreadCacheStats* stats) {
+  ThreadCache::EnsureThreadSpecificDataInitialized();
   memset(reinterpret_cast<void*>(stats), 0, sizeof(ThreadCacheStats));
 
   PartitionAutoLock scoped_locker(GetLock());
@@ -106,6 +108,8 @@ void ThreadCacheRegistry::PurgeAll() {
 }
 
 void ThreadCacheRegistry::StartPeriodicPurge() {
+  ThreadCache::EnsureThreadSpecificDataInitialized();
+
   // Can be called several times, don't post multiple tasks.
   if (!has_pending_purge_task_)
     PostDelayedPurgeTask();
@@ -182,11 +186,23 @@ void ThreadCacheRegistry::ResetForTesting() {
 }
 
 // static
-void ThreadCache::Init(PartitionRoot<ThreadSafe>* root) {
-  PA_CHECK(root->buckets[kBucketCount - 1].slot_size == kSizeThreshold);
+void ThreadCache::EnsureThreadSpecificDataInitialized() {
+  // Using the registry lock to protect from concurrent initialization without
+  // adding a special-pupose lock.
+  PartitionAutoLock scoped_locker(ThreadCacheRegistry::Instance().GetLock());
+  if (g_thread_cache_key_created)
+    return;
 
   bool ok = PartitionTlsCreate(&g_thread_cache_key, Delete);
   PA_CHECK(ok);
+  g_thread_cache_key_created = true;
+}
+
+// static
+void ThreadCache::Init(PartitionRoot<ThreadSafe>* root) {
+  PA_CHECK(root->buckets[kBucketCount - 1].slot_size == kSizeThreshold);
+
+  EnsureThreadSpecificDataInitialized();
 
   // Make sure that only one PartitionRoot wants a thread cache.
   bool expected = false;

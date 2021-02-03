@@ -151,6 +151,10 @@ class BASE_EXPORT ThreadCache {
   static void Init(PartitionRoot<ThreadSafe>* root);
   static void Init(PartitionRoot<NotThreadSafe>* root) { IMMEDIATE_CRASH(); }
 
+  // Can be called several times, must be called before any ThreadCache
+  // interactions.
+  static void EnsureThreadSpecificDataInitialized();
+
   static ThreadCache* Get() {
     return reinterpret_cast<ThreadCache*>(PartitionTlsGet(g_thread_cache_key));
   }
