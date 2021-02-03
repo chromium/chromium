@@ -19,7 +19,10 @@ void MockPolicyContainerHost::BindWithNewEndpoint(
     mojo::PendingAssociatedReceiver<mojom::blink::PolicyContainerHost>
         receiver) {
   // The code is adapted from
-  // mojo::AssociatedReceiver::BindWithNewEndpointAndPassDedicatedRemote
+  // mojo::AssociatedReceiver::BindNewEndpointAndPassDedicatedRemote
+  //
+  // TODO(https://crbug.com/1173504): We should avoid using mojo::internal
+  // here. Revisit this code once mojo implements a helper that does this.
   mojo::MessagePipe pipe;
   scoped_refptr<mojo::internal::MultiplexRouter> router0 =
       new mojo::internal::MultiplexRouter(

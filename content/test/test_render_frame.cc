@@ -19,6 +19,7 @@
 #include "content/common/navigation_params.mojom.h"
 #include "content/public/common/navigation_policy.h"
 #include "content/public/common/url_constants.h"
+#include "content/public/test/mock_policy_container_host.h"
 #include "content/public/test/mock_render_thread.h"
 #include "content/public/test/policy_container_utils.h"
 #include "content/renderer/loader/web_url_loader_impl.h"
@@ -141,6 +142,9 @@ class MockFrameHost : public mojom::FrameHost {
       const blink::FramePolicy& frame_policy,
       blink::mojom::FrameOwnerPropertiesPtr frame_owner_properties,
       blink::mojom::FrameOwnerElementType owner_type) override {
+    MockPolicyContainerHost mock_policy_container_host;
+    mock_policy_container_host.BindWithNewEndpoint(
+        std::move(policy_container_bind_params->receiver));
     MockRenderThread* mock_render_thread =
         static_cast<MockRenderThread*>(RenderThread::Get());
     mock_render_thread->OnCreateChildFrame(

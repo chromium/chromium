@@ -28,6 +28,12 @@ class MockPolicyContainerHost : public blink::mojom::PolicyContainerHost {
 
   blink::mojom::PolicyContainerPtr CreatePolicyContainerForBlink();
 
+  // This does the same as BindNewEndpointAndPassDedicatedRemote, but allows the
+  // remote to be created first and the receiver to be passed in.
+  void BindWithNewEndpoint(
+      mojo::PendingAssociatedReceiver<blink::mojom::PolicyContainerHost>
+          receiver);
+
   mojo::PendingAssociatedRemote<blink::mojom::PolicyContainerHost>
   BindNewEndpointAndPassDedicatedRemote();
   void FlushForTesting();

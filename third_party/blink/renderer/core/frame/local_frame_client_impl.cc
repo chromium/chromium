@@ -491,6 +491,11 @@ void LocalFrameClientImpl::BeginNavigation(
   if (!web_frame_->Client())
     return;
 
+  // |initiator_frame_token| and |initiator_policy_container_keep_alive_handle|
+  // should either be both specified or both null.
+  DCHECK(!initiator_frame_token ==
+         !initiator_policy_container_keep_alive_handle);
+
   auto navigation_info = std::make_unique<WebNavigationInfo>();
   navigation_info->url_request.CopyFrom(WrappedResourceRequest(request));
   navigation_info->frame_type = frame_type;
@@ -515,6 +520,19 @@ void LocalFrameClientImpl::BeginNavigation(
       navigation_info->initiator_frame_token =
           origin_window->GetFrame()->GetFrameToken();
     }
+    // Similarly, many navigation paths do not pass an
+    // |initiator_policy_container_keep_alive_handle|.
+    if (!navigation_info->initiator_policy_container_keep_alive_handle) {
+      navigation_info->initiator_policy_container_keep_alive_handle =
+          origin_window->GetFrame()
+              ->GetPolicyContainer()
+              ->IssueKeepAliveHandle();
+    }
+  } else {
+    // TODO(https://crbug.com/1173409 and https://crbug.com/1059959): Check that
+    // we always pass an |initiator_frame_token| and an
+    // |initiator_policy_container_keep_alive_handle| if |origin_window| is not
+    // set.
   }
   for (auto& csp_policy : initiator_csp) {
     navigation_info->initiator_csp.emplace_back(
