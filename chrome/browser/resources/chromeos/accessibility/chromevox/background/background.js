@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {FindHandler} from './find_handler.js';
+import {MediaAutomationHandler} from './media_automation_handler.js';
+import {NextEarcons} from './next_earcons.js';
+import {RangeAutomationHandler} from './range_automation_handler.js';
+
 /**
  * @fileoverview The entry point for all ChromeVox2 related code for the
  * background page.

@@ -33,7 +33,6 @@ chromevox_modules = [
   "background/annotation/node_identifier.js",
   "background/annotation/user_annotation_handler.js",
   "background/automation_object_constructor_installer.js",
-  "background/background.js",
   "background/base_automation_handler.js",
   "background/braille_background.js",
   "background/braille_captions_background.js",
@@ -51,7 +50,6 @@ chromevox_modules = [
   "background/editing/editing.js",
   "background/editing/intent_handler.js",
   "background/event_source.js",
-  "background/find_handler.js",
   "background/focus_automation_handler.js",
   "background/gesture_command_data.js",
   "background/gesture_command_handler.js",
@@ -67,15 +65,12 @@ chromevox_modules = [
   "background/logging/output_logger.js",
   "background/logging/tree_dumper.js",
   "background/math_handler.js",
-  "background/media_automation_handler.js",
   "background/pointer_handler.js",
-  "background/next_earcons.js",
   "background/notifications.js",
   "background/output.js",
   "background/panel_command.js",
   "background/phonetic_data.js",
   "background/prefs.js",
-  "background/range_automation_handler.js",
   "background/smart_sticky_mode.js",
   "background/tabs_api_handler.js",
   "background/user_action_monitor.js",
@@ -127,6 +122,10 @@ chromevox_modules = [
 chromevox_es6_modules = [
   "background/background.js",
   "background/es6_loader.js",
+  "background/find_handler.js",
+  "background/media_automation_handler.js",
+  "background/next_earcons.js",
+  "background/range_automation_handler.js",
 ]
 
 # Closure library modules needed by chromevox.

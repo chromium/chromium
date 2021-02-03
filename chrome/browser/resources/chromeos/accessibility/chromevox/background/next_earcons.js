@@ -7,16 +7,7 @@
  * auditory cues.
  */
 
-
-goog.provide('NextEarcons');
-
-goog.require('EarconEngine');
-goog.require('LogStore');
-goog.require('TextLog');
-goog.require('AbstractEarcons');
-
-
-NextEarcons = class extends AbstractEarcons {
+export class NextEarcons extends AbstractEarcons {
   constructor() {
     super();
 
@@ -52,6 +43,10 @@ NextEarcons = class extends AbstractEarcons {
   }
 
   /**
+   * Plays the specified earcon sound.
+   * @param {Earcon} earcon An earcon identifier.
+   * @param {Object=} opt_location A location associated with the earcon such as
+   *     a control's bounding rectangle.
    * @override
    */
   playEarcon(earcon, opt_location) {
@@ -179,4 +174,4 @@ NextEarcons = class extends AbstractEarcons {
           device.deviceType === chrome.audio.DeviceType.INTERNAL_SPEAKER;
     });
   }
-};
+}

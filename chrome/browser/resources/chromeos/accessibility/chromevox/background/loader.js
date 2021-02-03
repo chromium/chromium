@@ -19,23 +19,22 @@ goog.require('CommandHandler');
 goog.require('DesktopAutomationHandler');
 goog.require('DownloadHandler');
 goog.require('ExtensionBridge');
-goog.require('FindHandler');
 goog.require('FocusAutomationHandler');
 goog.require('GestureCommandHandler');
 goog.require('InstanceChecker');
 goog.require('LiveRegions');
 goog.require('LocaleOutputHelper');
 goog.require('MathHandler');
-goog.require('MediaAutomationHandler');
 goog.require('NavBraille');
-goog.require('NextEarcons');
 goog.require('NodeIdentifier');
+
+// TODO: removed/unused.
 goog.require('Notifications');
+
 goog.require('Output');
 goog.require('Output.EventType');
 goog.require('PanelCommand');
 goog.require('PhoneticData');
-goog.require('RangeAutomationHandler');
 goog.require('UserAnnotationHandler');
 goog.require('constants');
 goog.require('cursors.Cursor');
