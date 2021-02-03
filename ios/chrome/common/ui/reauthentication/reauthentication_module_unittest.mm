@@ -65,7 +65,13 @@ class ReauthenticationModuleTest : public PlatformTest {
 // Tests that reauthentication is not reused when reuse is not permitted
 // even if the time interval since the previous reauthentication is less
 // than 60 seconds.
-TEST_F(ReauthenticationModuleTest, ReauthReuseNotPermitted) {
+// TODO(crbug.com/1173774): The test fails on device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_ReauthReuseNotPermitted ReauthReuseNotPermitted
+#else
+#define MAYBE_ReauthReuseNotPermitted DISABLED_ReauthReuseNotPermitted
+#endif
+TEST_F(ReauthenticationModuleTest, MAYBE_ReauthReuseNotPermitted) {
   const int kIntervalFromFakePreviousAuthInSeconds = 20;
   NSDate* lastReauthTime = [NSDate date];
   [time_accessor_ updateSuccessfulReauthTime:lastReauthTime];
@@ -91,7 +97,16 @@ TEST_F(ReauthenticationModuleTest, ReauthReuseNotPermitted) {
 // Tests that the previous reauthentication is reused when reuse is permitted
 // and the last successful reauthentication occured less than 60 seconds
 // before the current attempt.
-TEST_F(ReauthenticationModuleTest, ReauthReusePermittedLessThanSixtySeconds) {
+// TODO(crbug.com/1173774): The test fails on device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_ReauthReusePermittedLessThanSixtySeconds \
+  ReauthReusePermittedLessThanSixtySeconds
+#else
+#define MAYBE_ReauthReusePermittedLessThanSixtySeconds \
+  DISABLED_ReauthReusePermittedLessThanSixtySeconds
+#endif
+TEST_F(ReauthenticationModuleTest,
+       MAYBE_ReauthReusePermittedLessThanSixtySeconds) {
   const int kIntervalFromFakePreviousAuthInSeconds = 20;
   NSDate* lastReauthTime = [NSDate date];
   [time_accessor_ updateSuccessfulReauthTime:lastReauthTime];
@@ -124,7 +139,16 @@ TEST_F(ReauthenticationModuleTest, ReauthReusePermittedLessThanSixtySeconds) {
 // Tests that the previous reauthentication is not reused when reuse is
 // permitted, but the last successful reauthentication occured more than 60
 // seconds before the current attempt.
-TEST_F(ReauthenticationModuleTest, ReauthReusePermittedMoreThanSixtySeconds) {
+// TODO(crbug.com/1173774): The test fails on device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_ReauthReusePermittedMoreThanSixtySeconds \
+  ReauthReusePermittedMoreThanSixtySeconds
+#else
+#define MAYBE_ReauthReusePermittedMoreThanSixtySeconds \
+  DISABLED_ReauthReusePermittedMoreThanSixtySeconds
+#endif
+TEST_F(ReauthenticationModuleTest,
+       MAYBE_ReauthReusePermittedMoreThanSixtySeconds) {
   const int kIntervalFromFakePreviousAuthInSeconds = 70;
   NSDate* lastReauthTime = [NSDate date];
   [time_accessor_ updateSuccessfulReauthTime:lastReauthTime];

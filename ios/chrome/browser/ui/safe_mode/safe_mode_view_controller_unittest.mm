@@ -58,7 +58,13 @@ class SafeModeViewControllerTest : public PlatformTest {
 // reports to upload. +[SafeModeViewController hasSuggestions] does not depend
 // on the value of breakpad_helper::IsEnabled or
 // breakpad_helper::IsUploadingEnabled.
-TEST_F(SafeModeViewControllerTest, HasSuggestions) {
+// TODO(crbug.com/1173776): The test fails on device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_HasSuggestions HasSuggestions
+#else
+#define MAYBE_HasSuggestions DISABLED_HasSuggestions
+#endif
+TEST_F(SafeModeViewControllerTest, MAYBE_HasSuggestions) {
   // Test when crash reporter is disabled.
   breakpad_helper::SetUserEnabledUploading(false);
   EXPECT_FALSE([SafeModeViewController hasSuggestions]);

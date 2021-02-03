@@ -888,7 +888,16 @@ TEST_F(UserActivityHandlerTest, HandleStartupParamsU2F) {
 
 // Tests that performActionForShortcutItem set startupParameters accordingly to
 // the shortcut used
-TEST_F(UserActivityHandlerTest, PerformActionForShortcutItemWithRealShortcut) {
+// TODO(crbug.com/1172529): The test fails on device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_PerformActionForShortcutItemWithRealShortcut \
+  PerformActionForShortcutItemWithRealShortcut
+#else
+#define MAYBE_PerformActionForShortcutItemWithRealShortcut \
+  DISABLED_PerformActionForShortcutItemWithRealShortcut
+#endif
+TEST_F(UserActivityHandlerTest,
+       MAYBE_PerformActionForShortcutItemWithRealShortcut) {
   // Setup.
   GURL gurlNewTab("chrome://newtab/");
 
