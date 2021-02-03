@@ -348,6 +348,8 @@ class UserSessionManager
   ~UserSessionManager() override;
 
  private:
+  // Observes the Device Account's LST and informs UserSessionManager about it.
+  class DeviceAccountGaiaTokenObserver;
   friend class test::UserSessionManagerTestApi;
   friend struct base::DefaultSingletonTraits<UserSessionManager>;
 
@@ -499,9 +501,16 @@ class UserSessionManager
 
   void CreateTokenUtilIfMissing();
 
+  // Update token handle if the existing token handle is missing/invalid.
+  void UpdateTokenHandleIfRequired(Profile* const profile,
+                                   const AccountId& account_id);
+
+  // Force update token handle.
+  void UpdateTokenHandle(Profile* const profile, const AccountId& account_id);
+
   // Test API methods.
   void InjectAuthenticatorBuilder(
-      std::unique_ptr<StubAuthenticatorBuilder> builer);
+      std::unique_ptr<StubAuthenticatorBuilder> builder);
 
   // Controls whether browser instance should be launched after sign in
   // (used in tests).
@@ -601,6 +610,8 @@ class UserSessionManager
 
   std::unique_ptr<TokenHandleUtil> token_handle_util_;
   std::unique_ptr<TokenHandleFetcher> token_handle_fetcher_;
+  std::map<Profile*, std::unique_ptr<DeviceAccountGaiaTokenObserver>>
+      token_observers_;
 
   // Whether should launch browser, tests may override this value.
   bool should_launch_browser_;

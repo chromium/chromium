@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <map>
+#include <memory>
 #include <set>
 #include <string>
 #include <utility>
@@ -24,6 +25,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
+#include "base/scoped_observation.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string16.h"
 #include "base/system/sys_info.h"
@@ -498,6 +500,51 @@ UserSessionManager::~UserSessionManager() {
     user_manager::UserManager::Get()->RemoveObserver(this);
   }
 }
+
+// Observes the Device Account's LST and informs UserSessionManager about it.
+// Used by UserSessionManager to keep the user's token handle up to date.
+class UserSessionManager::DeviceAccountGaiaTokenObserver
+    : public ash::AccountManager::Observer {
+ public:
+  DeviceAccountGaiaTokenObserver(
+      ash::AccountManager* account_manager,
+      const AccountId& account_id,
+      base::RepeatingCallback<void(const AccountId& account_id)> callback)
+      : account_id_(account_id), callback_(callback) {
+    account_manager_observation_.Observe(account_manager);
+  }
+
+  DeviceAccountGaiaTokenObserver(const DeviceAccountGaiaTokenObserver&) =
+      delete;
+  DeviceAccountGaiaTokenObserver& operator=(
+      const DeviceAccountGaiaTokenObserver&) = delete;
+
+  ~DeviceAccountGaiaTokenObserver() override = default;
+
+  // ash::AccountManager::Observer overrides:
+  void OnTokenUpserted(const account_manager::Account& account) override {
+    if (account.key.account_type != account_manager::AccountType::kGaia)
+      return;
+    if (account.key.id != account_id_.GetGaiaId())
+      return;
+
+    callback_.Run(account_id_);
+  }
+
+  void OnAccountRemoved(const account_manager::Account& account) override {
+    // Device Account cannot be removed within session. We could have received
+    // this notification for a secondary account however, so consider this as a
+    // no-op.
+  }
+
+ private:
+  // The account being tracked by `this` instance.
+  const AccountId account_id_;
+  // `callback_` is called when `account_id`'s LST changes.
+  base::RepeatingCallback<void(const AccountId& account_id)> callback_;
+  base::ScopedObservation<ash::AccountManager, ash::AccountManager::Observer>
+      account_manager_observation_{this};
+};
 
 void UserSessionManager::SetNetworkConnectionTracker(
     network::NetworkConnectionTracker* network_connection_tracker) {
@@ -1372,6 +1419,25 @@ void UserSessionManager::InitProfilePreferences(
     VLOG(1) << "Seed IdentityManager with the authenticated account info, "
             << "success=" << !account_id.empty();
 
+    // At this point, the Device Account has been loaded. Start observing its
+    // refresh token for changes, so that token handle can be kept in sync.
+    if (TokenHandlesEnabled()) {
+      auto device_account_token_observer =
+          std::make_unique<DeviceAccountGaiaTokenObserver>(
+              account_manager, user->GetAccountId(),
+              base::BindRepeating(&UserSessionManager::UpdateTokenHandle,
+                                  weak_factory_.GetWeakPtr(), profile));
+      auto it = token_observers_.find(profile);
+      if (it == token_observers_.end()) {
+        token_observers_.emplace(profile,
+                                 std::move(device_account_token_observer));
+      } else {
+        NOTREACHED()
+            << "Found an existing Gaia token observer for this Profile. "
+               "Profile is being erroneously initialized twice?";
+      }
+    }
+
     const user_manager::User* user =
         user_manager->FindUser(user_context.GetAccountId());
     bool is_child = user->GetType() == user_manager::USER_TYPE_CHILD;
@@ -1526,7 +1592,6 @@ void UserSessionManager::CompleteProfileCreateAfterAuthTransfer(
 }
 
 void UserSessionManager::FinalizePrepareProfile(Profile* profile) {
-
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   if (user_manager->IsLoggedInAsUserWithGaiaAccount()) {
     if (user_context_.GetAuthFlow() == UserContext::AUTH_FLOW_GAIA_WITH_SAML) {
@@ -1777,16 +1842,7 @@ void UserSessionManager::NotifyUserProfileLoaded(
 
   if (TokenHandlesEnabled() && user && user->HasGaiaAccount()) {
     CreateTokenUtilIfMissing();
-    if (token_handle_util_->ShouldObtainHandle(user->GetAccountId())) {
-      if (!token_handle_fetcher_.get()) {
-        token_handle_fetcher_.reset(new TokenHandleFetcher(
-            token_handle_util_.get(), user->GetAccountId()));
-        token_handle_fetcher_->BackfillToken(
-            profile, base::BindOnce(&UserSessionManager::OnTokenHandleObtained,
-                                    weak_factory_.GetWeakPtr()));
-        token_handle_backfill_tried_for_testing_ = true;
-      }
-    }
+    UpdateTokenHandleIfRequired(profile, user->GetAccountId());
   }
 }
 
@@ -2221,6 +2277,7 @@ void UserSessionManager::Shutdown() {
   turn_sync_on_helper_.reset();
   token_handle_fetcher_.reset();
   token_handle_util_.reset();
+  token_observers_.clear();
   always_on_vpn_manager_.reset();
   u2f_notification_.reset();
   release_notes_notification_.reset();
@@ -2282,7 +2339,28 @@ void UserSessionManager::MaybeShowReleaseNotesNotification(Profile* profile) {
 
 void UserSessionManager::CreateTokenUtilIfMissing() {
   if (!token_handle_util_.get())
-    token_handle_util_.reset(new TokenHandleUtil());
+    token_handle_util_ = std::make_unique<TokenHandleUtil>();
+}
+
+void UserSessionManager::UpdateTokenHandleIfRequired(
+    Profile* const profile,
+    const AccountId& account_id) {
+  if (!token_handle_util_->ShouldObtainHandle(account_id))
+    return;
+  if (token_handle_fetcher_.get())
+    return;
+
+  UpdateTokenHandle(profile, account_id);
+}
+
+void UserSessionManager::UpdateTokenHandle(Profile* const profile,
+                                           const AccountId& account_id) {
+  token_handle_fetcher_ = std::make_unique<TokenHandleFetcher>(
+      token_handle_util_.get(), account_id);
+  token_handle_fetcher_->BackfillToken(
+      profile, base::BindOnce(&UserSessionManager::OnTokenHandleObtained,
+                              weak_factory_.GetWeakPtr()));
+  token_handle_backfill_tried_for_testing_ = true;
 }
 
 void UserSessionManager::NotifyEasyUnlockKeyOpsFinished() {
