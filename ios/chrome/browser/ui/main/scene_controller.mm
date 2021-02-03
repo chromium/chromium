@@ -618,10 +618,14 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 //   1- New tab / Navigation startup parameters are specified.
 //   2- Load URL User activity is queud.
 //   3- Move tab user activity is queued.
+//   4- Only incognito mode is available.
 // In these cases if a restore prompt was shown, it may be dismissed immediately
 // and the user will not have a chance to restore the session.
 - (BOOL)shouldShowRestorePrompt {
-  BOOL shouldShow = !self.startupParameters;
+  BOOL shouldShow =
+      !self.startupParameters &&
+      !IsIncognitoModeForced(
+          self.mainInterface.browser->GetBrowserState()->GetPrefs());
   if (shouldShow && base::ios::IsSceneStartupSupported()) {
     if (@available(iOS 13, *)) {
       for (NSUserActivity* activity in self.sceneState.connectionOptions
