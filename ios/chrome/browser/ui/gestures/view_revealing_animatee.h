@@ -17,9 +17,11 @@ enum class ViewRevealState {
 // pan gesture handler.
 @protocol ViewRevealingAnimatee
 
-// Called before a view reveal animation. Takes as argument the state in which
-// the view revealer is before the animation.
-- (void)willAnimateViewReveal:(ViewRevealState)currentViewRevealState;
+// Called before a view reveal animation. Takes as argument both the state in
+// which the view revealer is before the animation and the state that the view
+// revealer will transition to.
+- (void)willAnimateViewRevealFromState:(ViewRevealState)currentViewRevealState
+                               toState:(ViewRevealState)nextViewRevealState;
 
 // Called inside an animation block to animate the revealing of the view. Takes
 // as argument the state in which the view revealer will be after the animation.

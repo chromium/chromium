@@ -101,7 +101,8 @@
 
 #pragma mark - ViewRevealingAnimatee
 
-- (void)willAnimateViewReveal:(ViewRevealState)currentViewRevealState {
+- (void)willAnimateViewRevealFromState:(ViewRevealState)currentViewRevealState
+                               toState:(ViewRevealState)nextViewRevealState {
   // No-op.
 }
 

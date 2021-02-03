@@ -89,7 +89,8 @@
 
 #pragma mark - viewRevealingAnimatee
 
-- (void)willAnimateViewReveal:(ViewRevealState)currentViewRevealState {
+- (void)willAnimateViewRevealFromState:(ViewRevealState)currentViewRevealState
+                               toState:(ViewRevealState)nextViewRevealState {
   self.view.alpha = currentViewRevealState == ViewRevealState::Revealed ? 1 : 0;
   self.view.hidden = NO;
 }

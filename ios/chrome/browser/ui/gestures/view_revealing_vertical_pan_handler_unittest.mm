@@ -31,7 +31,8 @@
   }
   return self;
 }
-- (void)willAnimateViewReveal:(ViewRevealState)viewRevealState {
+- (void)willAnimateViewRevealFromState:(ViewRevealState)currentViewRevealState
+                               toState:(ViewRevealState)nextViewRevealState {
 }
 - (void)animateViewReveal:(ViewRevealState)viewRevealState {
   self.state = viewRevealState;

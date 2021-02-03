@@ -506,7 +506,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 #pragma mark - ViewRevealingAnimatee
 
-- (void)willAnimateViewReveal:(ViewRevealState)currentViewRevealState {
+- (void)willAnimateViewRevealFromState:(ViewRevealState)currentViewRevealState
+                               toState:(ViewRevealState)nextViewRevealState {
   self.currentState = currentViewRevealState;
   self.scrollView.scrollEnabled = NO;
   switch (currentViewRevealState) {

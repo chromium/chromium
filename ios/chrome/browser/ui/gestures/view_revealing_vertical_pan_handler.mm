@@ -131,7 +131,8 @@ enum class LayoutTransitionState {
 - (void)addAnimatee:(id<ViewRevealingAnimatee>)animatee {
   [self.animatees addObject:animatee];
   // Make sure the newly added animatee is in the correct state.
-  [animatee willAnimateViewReveal:self.currentState];
+  [animatee willAnimateViewRevealFromState:self.currentState
+                                   toState:self.currentState];
   [animatee animateViewReveal:self.currentState];
   [animatee didAnimateViewReveal:self.currentState];
 }
@@ -165,7 +166,8 @@ enum class LayoutTransitionState {
 // from the current view reveal state.
 - (void)willAnimateViewReveal {
   for (id<ViewRevealingAnimatee> animatee in self.animatees) {
-    [animatee willAnimateViewReveal:self.currentState];
+    [animatee willAnimateViewRevealFromState:self.currentState
+                                     toState:self.nextState];
   }
 }
 

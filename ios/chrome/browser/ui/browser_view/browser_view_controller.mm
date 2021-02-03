@@ -2893,7 +2893,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 #pragma mark - ViewRevealingAnimatee
 
-- (void)willAnimateViewReveal:(ViewRevealState)currentViewRevealState {
+- (void)willAnimateViewRevealFromState:(ViewRevealState)currentViewRevealState
+                               toState:(ViewRevealState)nextViewRevealState {
   // Disable fullscreen if the thumb strip is about to be shown.
   if (currentViewRevealState == ViewRevealState::Hidden &&
       !_fullscreenDisabler) {
@@ -2960,6 +2961,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       // insets.
       self.fullscreenController->FreezeToolbarHeight(true);
     }
+  }
+  if (nextViewRevealState == ViewRevealState::Revealed) {
+    [self.view endEditing:YES];
   }
 }
 

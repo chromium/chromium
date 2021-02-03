@@ -1791,7 +1791,8 @@ UIColor* BackgroundColor() {
 }
 
 #pragma mark - ViewRevealingAnimatee
-- (void)willAnimateViewReveal:(ViewRevealState)currentViewRevealState {
+- (void)willAnimateViewRevealFromState:(ViewRevealState)currentViewRevealState
+                               toState:(ViewRevealState)nextViewRevealState {
   // Specifically when Smooth Scrolling is on, the background of the view
   // is non-clear to cover the WKWebView. In this case, make the tab strip
   // background clear as soon as view revealing begins so any animations that
