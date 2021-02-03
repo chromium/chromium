@@ -360,9 +360,10 @@ bool IsDeviceAccountSignedIn(const Profile* const profile) {
   // until this is guaranteed via go/cros-dent-1-lacros.
   ProfileAttributesStorage& profile_attributes_storage =
       g_browser_process->profile_manager()->GetProfileAttributesStorage();
-  ProfileAttributesEntry* entry = nullptr;
-  if (!profile_attributes_storage.GetProfileAttributesWithPath(
-          profile->GetPath(), &entry)) {
+  ProfileAttributesEntry* entry =
+      profile_attributes_storage.GetProfileAttributesWithPath(
+          profile->GetPath());
+  if (!entry) {
     return false;
   }
   return entry->GetGAIAId() == init_params->device_account_gaia_id;
@@ -1581,19 +1582,17 @@ GURL ProfileImpl::GetHomePage() {
 
 void ProfileImpl::UpdateSupervisedUserIdInStorage() {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  ProfileAttributesEntry* entry;
-  bool has_entry = profile_manager->GetProfileAttributesStorage()
-                       .GetProfileAttributesWithPath(GetPath(), &entry);
-  if (has_entry)
+  ProfileAttributesEntry* entry = profile_manager->GetProfileAttributesStorage()
+                                      .GetProfileAttributesWithPath(GetPath());
+  if (entry)
     entry->SetSupervisedUserId(GetPrefs()->GetString(prefs::kSupervisedUserId));
 }
 
 void ProfileImpl::UpdateNameInStorage() {
-  ProfileAttributesEntry* entry;
-  bool has_entry = g_browser_process->profile_manager()
-                       ->GetProfileAttributesStorage()
-                       .GetProfileAttributesWithPath(GetPath(), &entry);
-  if (has_entry) {
+  ProfileAttributesEntry* entry = g_browser_process->profile_manager()
+                                      ->GetProfileAttributesStorage()
+                                      .GetProfileAttributesWithPath(GetPath());
+  if (entry) {
     entry->SetLocalProfileName(
         base::UTF8ToUTF16(GetPrefs()->GetString(prefs::kProfileName)),
         GetPrefs()->GetBoolean(prefs::kProfileUsingDefaultName));
@@ -1601,11 +1600,10 @@ void ProfileImpl::UpdateNameInStorage() {
 }
 
 void ProfileImpl::UpdateAvatarInStorage() {
-  ProfileAttributesEntry* entry;
-  bool has_entry = g_browser_process->profile_manager()
-                       ->GetProfileAttributesStorage()
-                       .GetProfileAttributesWithPath(GetPath(), &entry);
-  if (has_entry) {
+  ProfileAttributesEntry* entry = g_browser_process->profile_manager()
+                                      ->GetProfileAttributesStorage()
+                                      .GetProfileAttributesWithPath(GetPath());
+  if (entry) {
     entry->SetAvatarIconIndex(
         GetPrefs()->GetInteger(prefs::kProfileAvatarIndex));
     entry->SetIsUsingDefaultAvatar(
@@ -1616,11 +1614,10 @@ void ProfileImpl::UpdateAvatarInStorage() {
 }
 
 void ProfileImpl::UpdateIsEphemeralInStorage() {
-  ProfileAttributesEntry* entry;
-  bool has_entry = g_browser_process->profile_manager()
-                       ->GetProfileAttributesStorage()
-                       .GetProfileAttributesWithPath(GetPath(), &entry);
-  if (has_entry) {
+  ProfileAttributesEntry* entry = g_browser_process->profile_manager()
+                                      ->GetProfileAttributesStorage()
+                                      .GetProfileAttributesWithPath(GetPath());
+  if (entry) {
     entry->SetIsEphemeral(
         GetPrefs()->GetBoolean(prefs::kForceEphemeralProfiles));
   }

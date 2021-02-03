@@ -399,10 +399,11 @@ IN_PROC_BROWSER_TEST_F(AppControllerNewProfileManagementBrowserTest,
   // Lock the active profile.
   base::ScopedAllowBlockingForTesting allow_blocking;
   Profile* profile = [ac lastProfile];
-  ProfileAttributesEntry* entry;
-  ASSERT_TRUE(g_browser_process->profile_manager()->
-                  GetProfileAttributesStorage().
-                  GetProfileAttributesWithPath(profile->GetPath(), &entry));
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
+  ASSERT_NE(entry, nullptr);
   entry->SetIsSigninRequired(true);
   EXPECT_TRUE(entry->IsSigninRequired());
 
@@ -561,10 +562,11 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
   // Lock the active profile.
   base::ScopedAllowBlockingForTesting allow_blocking;
   Profile* profile = [ac lastProfile];
-  ProfileAttributesEntry* entry;
-  ASSERT_TRUE(g_browser_process->profile_manager()
-                  ->GetProfileAttributesStorage()
-                  .GetProfileAttributesWithPath(profile->GetPath(), &entry));
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
+  ASSERT_NE(entry, nullptr);
   entry->SetIsSigninRequired(true);
   EXPECT_TRUE(entry->IsSigninRequired());
 

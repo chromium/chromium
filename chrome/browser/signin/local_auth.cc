@@ -204,11 +204,11 @@ void LocalAuth::SetLocalAuthCredentials(ProfileAttributesEntry* entry,
 void LocalAuth::SetLocalAuthCredentials(const Profile* profile,
                                         const std::string& password) {
   DCHECK(g_browser_process->profile_manager()->IsValidProfile(profile));
-  ProfileAttributesEntry* entry = nullptr;
-  bool has_entry = g_browser_process->profile_manager()->
-      GetProfileAttributesStorage().
-      GetProfileAttributesWithPath(profile->GetPath(), &entry);
-  DCHECK(has_entry);
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
+  DCHECK(entry);
   SetLocalAuthCredentials(entry, password);
 }
 
@@ -256,10 +256,12 @@ bool LocalAuth::ValidateLocalAuthCredentials(ProfileAttributesEntry* entry,
 bool LocalAuth::ValidateLocalAuthCredentials(const Profile* profile,
                                              const std::string& password) {
   DCHECK(g_browser_process->profile_manager()->IsValidProfile(profile));
-  ProfileAttributesEntry* entry;
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
 
-  if (!g_browser_process->profile_manager()->GetProfileAttributesStorage().
-          GetProfileAttributesWithPath(profile->GetPath(), &entry)) {
+  if (!entry) {
     NOTREACHED();
     return false;
   }

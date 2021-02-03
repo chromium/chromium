@@ -239,8 +239,8 @@ void ProfileInfoCache::NotifyProfileHostedDomainChanged(
 
 void ProfileInfoCache::DeleteProfileFromCache(
     const base::FilePath& profile_path) {
-  ProfileAttributesEntry* entry;
-  if (!GetProfileAttributesWithPath(profile_path, &entry)) {
+  ProfileAttributesEntry* entry = GetProfileAttributesWithPath(profile_path);
+  if (!entry) {
     NOTREACHED();
     return;
   }
@@ -667,20 +667,19 @@ void ProfileInfoCache::RemoveProfile(const base::FilePath& profile_path) {
   DeleteProfileFromCache(profile_path);
 }
 
-bool ProfileInfoCache::GetProfileAttributesWithPath(
-    const base::FilePath& path, ProfileAttributesEntry** entry) {
+ProfileAttributesEntry* ProfileInfoCache::GetProfileAttributesWithPath(
+    const base::FilePath& path) {
   const auto entry_iter = profile_attributes_entries_.find(path.value());
   if (entry_iter == profile_attributes_entries_.end())
-    return false;
+    return nullptr;
 
   std::unique_ptr<ProfileAttributesEntry>& current_entry = entry_iter->second;
   if (!current_entry) {
     // The profile info is in the cache but its entry isn't created yet, insert
     // it in the map.
-    current_entry.reset(new ProfileAttributesEntry());
+    current_entry = std::make_unique<ProfileAttributesEntry>();
     current_entry->Initialize(this, path, prefs_);
   }
 
-  *entry = current_entry.get();
-  return true;
+  return current_entry.get();
 }

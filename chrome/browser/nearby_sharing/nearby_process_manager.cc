@@ -60,11 +60,11 @@ ProfileAttributesEntry* GetStoredNearbyProfile() {
   ProfileAttributesStorage& storage =
       profile_manager->GetProfileAttributesStorage();
 
-  ProfileAttributesEntry* entry;
-  if (!storage.GetProfileAttributesWithPath(advertising_profile_path, &entry)) {
+  ProfileAttributesEntry* entry =
+      storage.GetProfileAttributesWithPath(advertising_profile_path);
+  if (!entry) {
     // Stored profile path is invalid so remove it.
     local_state->ClearPref(::prefs::kNearbySharingActiveProfilePrefName);
-    return nullptr;
   }
   return entry;
 }

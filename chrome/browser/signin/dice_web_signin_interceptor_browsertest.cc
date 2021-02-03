@@ -343,11 +343,10 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, InterceptionTest) {
   adaptor.identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
 
   // Check the profile name.
-  ProfileAttributesEntry* entry = nullptr;
   ProfileAttributesStorage& storage =
       g_browser_process->profile_manager()->GetProfileAttributesStorage();
-  ASSERT_TRUE(
-      storage.GetProfileAttributesWithPath(new_profile->GetPath(), &entry));
+  ProfileAttributesEntry* entry =
+      storage.GetProfileAttributesWithPath(new_profile->GetPath());
   ASSERT_TRUE(entry);
   EXPECT_EQ("givenname", base::UTF16ToUTF8(entry->GetLocalProfileName()));
   // Check the profile color.
@@ -393,9 +392,8 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchAndLoad) {
       base::UTF8ToUTF16(account_info.email),
       /*is_consented_primary_account=*/false, /*icon_index=*/0,
       /*supervised_user_id*/ std::string(), EmptyAccountId());
-  ProfileAttributesEntry* entry = nullptr;
-  ASSERT_TRUE(
-      profile_storage->GetProfileAttributesWithPath(profile_path, &entry));
+  ProfileAttributesEntry* entry =
+      profile_storage->GetProfileAttributesWithPath(profile_path);
   ASSERT_TRUE(entry);
   ASSERT_EQ(entry->GetGAIAId(), account_info.gaia);
 

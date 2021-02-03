@@ -811,9 +811,9 @@ void ProfileShortcutManagerWin::GetShortcutProperties(
 
   ProfileAttributesStorage& storage =
       profile_manager_->GetProfileAttributesStorage();
-  ProfileAttributesEntry* entry;
-  bool has_entry = storage.GetProfileAttributesWithPath(profile_path, &entry);
-  DCHECK(has_entry);
+  ProfileAttributesEntry* entry =
+      storage.GetProfileAttributesWithPath(profile_path);
+  DCHECK(entry);
 
   // The shortcut shouldn't include the profile name if there is only 1 profile.
   base::string16 shortcut_profile_name;
@@ -925,10 +925,10 @@ void ProfileShortcutManagerWin::CreateOrUpdateShortcutsForProfileAtPath(
          BrowserThread::CurrentlyOn(BrowserThread::UI));
   ProfileAttributesStorage& storage =
       profile_manager_->GetProfileAttributesStorage();
-  ProfileAttributesEntry* entry;
-  bool has_entry = storage.GetProfileAttributesWithPath(profile_path, &entry);
+  ProfileAttributesEntry* entry =
+      storage.GetProfileAttributesWithPath(profile_path);
 
-  if (!has_entry)
+  if (!entry)
     return;
   bool remove_badging = storage.GetNumberOfProfiles() == 1u;
 

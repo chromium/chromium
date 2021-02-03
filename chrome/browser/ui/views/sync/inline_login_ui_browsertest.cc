@@ -565,10 +565,11 @@ IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest,
           /*is_force_sign_in_with_usermanager=*/false);
   EXPECT_CALL(*helper, CreateSyncStarter("refresh_token"));
 
-  ProfileAttributesEntry* entry;
-  ASSERT_TRUE(g_browser_process->profile_manager()
-                  ->GetProfileAttributesStorage()
-                  .GetProfileAttributesWithPath(profile()->GetPath(), &entry));
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile()->GetPath());
+  ASSERT_NE(entry, nullptr);
   entry->SetIsSigninRequired(true);
 
   ASSERT_EQ(0ul, BrowserList::GetInstance()->size());
@@ -723,10 +724,11 @@ IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest,
           /*is_force_sign_in_with_usermanager=*/true);
   EXPECT_CALL(*helper, CreateSyncStarter("refresh_token"));
 
-  ProfileAttributesEntry* entry;
-  ASSERT_TRUE(g_browser_process->profile_manager()
-                  ->GetProfileAttributesStorage()
-                  .GetProfileAttributesWithPath(profile()->GetPath(), &entry));
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile()->GetPath());
+  ASSERT_NE(entry, nullptr);
   entry->SetIsSigninRequired(true);
 
   ASSERT_EQ(0ul, BrowserList::GetInstance()->size());

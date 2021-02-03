@@ -207,10 +207,11 @@ void OpenBrowserWindowForProfile(ProfileManager::CreateCallback callback,
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   if (!profile->IsGuestSession() && !profile->IsEphemeralGuestProfile()) {
-    ProfileAttributesEntry* entry;
-    if (g_browser_process->profile_manager()->GetProfileAttributesStorage().
-            GetProfileAttributesWithPath(profile->GetPath(), &entry) &&
-        entry->IsSigninRequired()) {
+    ProfileAttributesEntry* entry =
+        g_browser_process->profile_manager()
+            ->GetProfileAttributesStorage()
+            .GetProfileAttributesWithPath(profile->GetPath());
+    if (entry && entry->IsSigninRequired()) {
       UserManager::Show(profile->GetPath(),
                         profiles::USER_MANAGER_SELECT_PROFILE_NO_ACTION);
       return;
@@ -313,10 +314,10 @@ void CloseGuestProfileWindows() {
 
 void LockBrowserCloseSuccess(const base::FilePath& profile_path) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  ProfileAttributesEntry* entry;
-  bool has_entry = profile_manager->GetProfileAttributesStorage().
-                       GetProfileAttributesWithPath(profile_path, &entry);
-  DCHECK(has_entry);
+  ProfileAttributesEntry* entry =
+      profile_manager->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_path);
+  DCHECK(entry);
   entry->SetIsSigninRequired(true);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

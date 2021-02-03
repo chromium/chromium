@@ -261,11 +261,11 @@ bool CanOpenProfileOnStartup(Profile* profile) {
   return true;
 #else
   // Profiles that require signin are not available.
-  ProfileAttributesEntry* entry = nullptr;
-  if (g_browser_process->profile_manager()
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(profile->GetPath(), &entry) &&
-      entry->IsSigninRequired()) {
+          .GetProfileAttributesWithPath(profile->GetPath());
+  if (entry && entry->IsSigninRequired()) {
     return false;
   }
 
@@ -597,13 +597,12 @@ SessionStartupPref StartupBrowserCreator::GetSessionStartupPref(
 
   // A browser starting for a profile being unlocked should always restore.
   if (!profile->IsGuestSession() && !profile->IsEphemeralGuestProfile()) {
-    ProfileAttributesEntry* entry = nullptr;
-    bool has_entry =
+    ProfileAttributesEntry* entry =
         g_browser_process->profile_manager()
             ->GetProfileAttributesStorage()
-            .GetProfileAttributesWithPath(profile->GetPath(), &entry);
+            .GetProfileAttributesWithPath(profile->GetPath());
 
-    if (has_entry && entry->IsSigninRequired())
+    if (entry && entry->IsSigninRequired())
       pref.type = SessionStartupPref::LAST;
   }
 
@@ -1307,9 +1306,9 @@ Profile* GetStartupProfile(const base::FilePath& user_data_dir,
   // manager as well. When neither of these is true, we can safely start up with
   // |profile|.
   auto* storage = &profile_manager->GetProfileAttributesStorage();
-  ProfileAttributesEntry* entry;
-  bool has_entry = storage->GetProfileAttributesWithPath(profile_path, &entry);
-  if (has_entry && (!entry->IsSigninRequired() || !profile)) {
+  ProfileAttributesEntry* entry =
+      storage->GetProfileAttributesWithPath(profile_path);
+  if (entry && (!entry->IsSigninRequired() || !profile)) {
     return profile;
   }
 
@@ -1337,10 +1336,9 @@ Profile* GetFallbackStartupProfile() {
   auto* storage = &profile_manager->GetProfileAttributesStorage();
   for (Profile* profile : ProfileManager::GetLastOpenedProfiles()) {
     // Return any profile that is not locked.
-    ProfileAttributesEntry* entry;
-    bool has_entry =
-        storage->GetProfileAttributesWithPath(profile->GetPath(), &entry);
-    if (!has_entry || !entry->IsSigninRequired())
+    ProfileAttributesEntry* entry =
+        storage->GetProfileAttributesWithPath(profile->GetPath());
+    if (!entry || !entry->IsSigninRequired())
       return profile;
   }
 

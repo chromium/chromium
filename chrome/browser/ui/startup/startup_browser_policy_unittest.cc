@@ -82,11 +82,11 @@ class StartupBrowserPolicyUnitTest : public testing::Test {
 
   // Helper function to set profile ephemeral.
   void SetProfileEphemeral(Profile* profile, bool val) {
-    ProfileAttributesEntry* entry;
     ProfileAttributesStorage& storage =
         g_browser_process->profile_manager()->GetProfileAttributesStorage();
-    EXPECT_TRUE(
-        storage.GetProfileAttributesWithPath(profile->GetPath(), &entry));
+    ProfileAttributesEntry* entry =
+        storage.GetProfileAttributesWithPath(profile->GetPath());
+    ASSERT_NE(entry, nullptr);
     entry->SetIsEphemeral(val);
   }
 

@@ -59,10 +59,11 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserServiceTest, ProfileName) {
   EXPECT_TRUE(prefs->IsUserModifiablePreference(prefs::kProfileName));
 
   std::string original_name = prefs->GetString(prefs::kProfileName);
-  ProfileAttributesEntry* entry;
-  ASSERT_TRUE(g_browser_process->profile_manager()->
-                  GetProfileAttributesStorage().
-                  GetProfileAttributesWithPath(profile->GetPath(), &entry));
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
+  ASSERT_NE(entry, nullptr);
   EXPECT_EQ(original_name, base::UTF16ToUTF8(entry->GetName()));
 }
 
@@ -94,10 +95,11 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserServiceTestSupervised, ProfileName) {
   EXPECT_FALSE(prefs->IsUserModifiablePreference(prefs::kProfileName));
   EXPECT_EQ(name, prefs->GetString(prefs::kProfileName));
 
-  ProfileAttributesEntry* entry;
-  ASSERT_TRUE(g_browser_process->profile_manager()->
-                  GetProfileAttributesStorage().
-                  GetProfileAttributesWithPath(profile->GetPath(), &entry));
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
+  ASSERT_NE(entry, nullptr);
   EXPECT_EQ(name, base::UTF16ToUTF8(entry->GetName()));
 
   // Change the name once more.

@@ -874,9 +874,10 @@ IN_PROC_BROWSER_TEST_P(EphemeralGuestProfilePolicyTest,
   EXPECT_TRUE(guest->IsEphemeralGuestProfile());
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  ProfileAttributesEntry* entry;
-  EXPECT_TRUE(profile_manager->GetProfileAttributesStorage()
-                  .GetProfileAttributesWithPath(guest->GetPath(), &entry));
+  ProfileAttributesEntry* entry =
+      profile_manager->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(guest->GetPath());
+  ASSERT_NE(entry, nullptr);
   EXPECT_TRUE(entry->IsGuest());
   EXPECT_TRUE(entry->IsEphemeral());
 }

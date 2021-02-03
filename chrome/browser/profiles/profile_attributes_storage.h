@@ -79,13 +79,12 @@ class ProfileAttributesStorage
   std::vector<ProfileAttributesEntry*>
   GetAllProfilesAttributesSortedByLocalProfilName();
 
-  // Populates |entry| with the data for the profile at |path| and returns true
-  // if the operation is successful and |entry| can be used. Returns false
-  // otherwise.
-  // |entry| should not be cached as it may not reflect subsequent changes to
-  // the profile's metadata.
-  virtual bool GetProfileAttributesWithPath(
-      const base::FilePath& path, ProfileAttributesEntry** entry) = 0;
+  // Returns a ProfileAttributesEntry with the data for the profile at |path|
+  // if the operation is successful. Returns |nullptr| otherwise.
+  // Returned value should not be cached because the profile entry may be
+  // deleted at any time, an then using this value would cause use-after-free.
+  virtual ProfileAttributesEntry* GetProfileAttributesWithPath(
+      const base::FilePath& path) = 0;
 
   // Returns the count of known profiles.
   virtual size_t GetNumberOfProfiles(

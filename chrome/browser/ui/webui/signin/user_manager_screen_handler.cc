@@ -318,10 +318,11 @@ void UserManagerScreenHandler::HandleAuthenticatedLaunchUser(
   if (!profile_path)
     return;
 
-  ProfileAttributesEntry* entry;
-  if (!g_browser_process->profile_manager()
-           ->GetProfileAttributesStorage()
-           .GetProfileAttributesWithPath(*profile_path, &entry)) {
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(*profile_path);
+  if (!entry) {
     return;
   }
 
@@ -473,10 +474,11 @@ void UserManagerScreenHandler::HandleLaunchUser(const base::ListValue* args) {
   if (!profile_path)
     return;
 
-  ProfileAttributesEntry* entry;
-  if (!g_browser_process->profile_manager()
-           ->GetProfileAttributesStorage()
-           .GetProfileAttributesWithPath(*profile_path, &entry)) {
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(*profile_path);
+  if (!entry) {
     NOTREACHED();
     return;
   }
@@ -624,13 +626,12 @@ void UserManagerScreenHandler::OnBrowserAdded(Browser* browser) {
 
   // Unlock the profile after browser opens so startup can read the lock bit.
   // Any necessary authentication must have been successful to reach this point.
-  ProfileAttributesEntry* entry = nullptr;
   if (!browser->profile()->IsGuestSession()) {
-    bool has_entry = g_browser_process->profile_manager()
-                         ->GetProfileAttributesStorage()
-                         .GetProfileAttributesWithPath(
-                             browser->profile()->GetPath(), &entry);
-    DCHECK(has_entry);
+    ProfileAttributesEntry* entry =
+        g_browser_process->profile_manager()
+            ->GetProfileAttributesStorage()
+            .GetProfileAttributesWithPath(browser->profile()->GetPath());
+    DCHECK(entry);
     // If force sign in is enabled and profile is not signed in, do not close
     // UserManager and unlock profile.
     if (signin_util::IsForceSigninEnabled() && !entry->IsAuthenticated())

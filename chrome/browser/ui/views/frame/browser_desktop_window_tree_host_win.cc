@@ -576,11 +576,11 @@ SkBitmap GetBadgedIconBitmapForProfile(Profile* profile) {
   if (app_icon_bitmap.isNull())
     return SkBitmap();
 
-
-  ProfileAttributesEntry* entry = nullptr;
-  if (!g_browser_process->profile_manager()
-           ->GetProfileAttributesStorage()
-           .GetProfileAttributesWithPath(profile->GetPath(), &entry))
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
+  if (!entry)
     return SkBitmap();
 
   SkBitmap avatar_bitmap_2x = profiles::GetWin2xAvatarImage(entry);

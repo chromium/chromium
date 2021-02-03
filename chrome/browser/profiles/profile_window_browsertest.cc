@@ -381,10 +381,11 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, OpenBrowserWindowForProfile) {
 IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest,
                        MAYBE_OpenBrowserWindowForProfileWithSigninRequired) {
   Profile* profile = browser()->profile();
-  ProfileAttributesEntry* entry;
-  ASSERT_TRUE(g_browser_process->profile_manager()
-                  ->GetProfileAttributesStorage()
-                  .GetProfileAttributesWithPath(profile->GetPath(), &entry));
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
+  ASSERT_NE(entry, nullptr);
   entry->SetIsSigninRequired(true);
   size_t num_browsers = BrowserList::GetInstance()->size();
   base::RunLoop run_loop;

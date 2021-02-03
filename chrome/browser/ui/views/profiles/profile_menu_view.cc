@@ -130,10 +130,11 @@ ProfileMenuViewBase::SyncInfo GetSyncInfoForAvatarErrorType(
 }
 
 ProfileAttributesEntry* GetProfileAttributesEntry(Profile* profile) {
-  ProfileAttributesEntry* entry;
-  CHECK(g_browser_process->profile_manager()
-            ->GetProfileAttributesStorage()
-            .GetProfileAttributesWithPath(profile->GetPath(), &entry));
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
+  CHECK(entry);
   return entry;
 }
 

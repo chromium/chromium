@@ -119,8 +119,9 @@ base::Value GetContext(Profile* profile) {
 
   ProfileAttributesStorage& storage =
       g_browser_process->profile_manager()->GetProfileAttributesStorage();
-  ProfileAttributesEntry* entry = nullptr;
-  if (storage.GetProfileAttributesWithPath(profile->GetPath(), &entry)) {
+  ProfileAttributesEntry* entry =
+      storage.GetProfileAttributesWithPath(profile->GetPath());
+  if (entry) {
     context.SetStringPath("profile.profileName", entry->GetName());
     context.SetStringPath("profile.gaiaEmail", entry->GetUserName());
   }

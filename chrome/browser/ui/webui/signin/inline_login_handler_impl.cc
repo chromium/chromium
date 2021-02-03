@@ -222,9 +222,10 @@ void SetProfileLocked(const base::FilePath profile_path, bool locked) {
   if (!profile_path.empty()) {
     ProfileManager* profile_manager = g_browser_process->profile_manager();
     if (profile_manager) {
-      ProfileAttributesEntry* entry;
-      if (profile_manager->GetProfileAttributesStorage()
-              .GetProfileAttributesWithPath(profile_path, &entry)) {
+      ProfileAttributesEntry* entry =
+          profile_manager->GetProfileAttributesStorage()
+              .GetProfileAttributesWithPath(profile_path);
+      if (entry) {
         if (locked)
           entry->LockForceSigninProfile(true);
         else
@@ -236,10 +237,11 @@ void SetProfileLocked(const base::FilePath profile_path, bool locked) {
 
 void SetProfileName(const base::FilePath& profile_path,
                     const base::string16 name) {
-  ProfileAttributesEntry* entry = nullptr;
-  if (!g_browser_process->profile_manager()
-           ->GetProfileAttributesStorage()
-           .GetProfileAttributesWithPath(profile_path, &entry)) {
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_path);
+  if (!entry) {
     NOTREACHED();
     return;
   }

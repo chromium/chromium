@@ -368,10 +368,10 @@ void SessionService::WindowClosing(const SessionID& window_id) {
     if (g_browser_process) {
       ProfileManager* profile_manager = g_browser_process->profile_manager();
       if (profile_manager) {
-        ProfileAttributesEntry* entry;
-        bool has_entry = profile_manager->GetProfileAttributesStorage().
-            GetProfileAttributesWithPath(profile()->GetPath(), &entry);
-        use_pending_close = has_entry && entry->IsSigninRequired();
+        ProfileAttributesEntry* entry =
+            profile_manager->GetProfileAttributesStorage()
+                .GetProfileAttributesWithPath(profile()->GetPath());
+        use_pending_close = entry && entry->IsSigninRequired();
       }
     }
   }

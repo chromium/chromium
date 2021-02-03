@@ -344,9 +344,9 @@ void OnProfileLoaded(ProfileManager::ProfileLoadedCallback client_callback,
 // Helper function for ScheduleForcedEphemeralProfileForDeletion.
 bool IsRegisteredAsEphemeral(ProfileAttributesStorage* storage,
                              const base::FilePath& profile_dir) {
-  ProfileAttributesEntry* entry = nullptr;
-  return storage->GetProfileAttributesWithPath(profile_dir, &entry) &&
-         entry->IsEphemeral();
+  ProfileAttributesEntry* entry =
+      storage->GetProfileAttributesWithPath(profile_dir);
+  return entry && entry->IsEphemeral();
 }
 #endif
 
@@ -584,9 +584,9 @@ bool ProfileManager::LoadProfile(const std::string& profile_name,
 bool ProfileManager::LoadProfileByPath(const base::FilePath& profile_path,
                                        bool incognito,
                                        ProfileLoadedCallback callback) {
-  ProfileAttributesEntry* entry = nullptr;
-  if (!GetProfileAttributesStorage().GetProfileAttributesWithPath(profile_path,
-                                                                  &entry)) {
+  ProfileAttributesEntry* entry =
+      GetProfileAttributesStorage().GetProfileAttributesWithPath(profile_path);
+  if (!entry) {
     std::move(callback).Run(nullptr);
     LOG(ERROR) << "Loading a profile path that does not exist";
     return false;
@@ -941,8 +941,9 @@ void ProfileManager::MaybeScheduleProfileForDeletion(
     return;
 
   ProfileAttributesStorage& storage = GetProfileAttributesStorage();
-  ProfileAttributesEntry* entry;
-  if (storage.GetProfileAttributesWithPath(profile_dir, &entry)) {
+  ProfileAttributesEntry* entry =
+      storage.GetProfileAttributesWithPath(profile_dir);
+  if (entry) {
     storage.RecordDeletedProfileState(entry);
   }
   ProfileMetrics::LogProfileDeleteUser(deletion_source);
@@ -1104,8 +1105,9 @@ void ProfileManager::InitProfileUserPrefs(Profile* profile) {
     const bool profile_is_child = profile->IsChild();
     const bool profile_is_new = profile->IsNewProfile();
     if (!profile_is_new && profile_is_child != user_is_child) {
-      ProfileAttributesEntry* entry;
-      if (storage.GetProfileAttributesWithPath(profile->GetPath(), &entry)) {
+      ProfileAttributesEntry* entry =
+          storage.GetProfileAttributesWithPath(profile->GetPath());
+      if (entry) {
         LOG(WARNING) << "Profile child status has changed.";
         storage.RemoveProfile(profile->GetPath());
       }
@@ -1144,17 +1146,16 @@ void ProfileManager::InitProfileUserPrefs(Profile* profile) {
     profile_name = l10n_util::GetStringUTF8(IDS_PROFILES_GUEST_PROFILE_NAME);
     avatar_index = 0;
   } else {
-    ProfileAttributesEntry* entry;
-    bool has_entry = storage.GetProfileAttributesWithPath(profile->GetPath(),
-                                                          &entry);
+    ProfileAttributesEntry* entry =
+        storage.GetProfileAttributesWithPath(profile->GetPath());
     // If the profile attributes storage has an entry for this profile, use the
     // data in the profile attributes storage.
-    if (has_entry) {
+    if (entry) {
       avatar_index = entry->GetAvatarIconIndex();
       profile_name = base::UTF16ToUTF8(entry->GetLocalProfileName());
       supervised_user_id = entry->GetSupervisedUserId();
     } else if (profile->GetPath() ==
-                   profiles::GetDefaultProfileDir(user_data_dir())) {
+               profiles::GetDefaultProfileDir(user_data_dir())) {
       avatar_index = profiles::GetPlaceholderAvatarIndex();
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
       profile_name =
@@ -1451,10 +1452,10 @@ void ProfileManager::DoFinalInitForServices(Profile* profile,
 
   // Set the block extensions bit on the ExtensionService. There likely are no
   // blockable extensions to block.
-  ProfileAttributesEntry* entry;
-  bool has_entry = GetProfileAttributesStorage().
-                       GetProfileAttributesWithPath(profile->GetPath(), &entry);
-  if (has_entry && entry->IsSigninRequired()) {
+  ProfileAttributesEntry* entry =
+      GetProfileAttributesStorage().GetProfileAttributesWithPath(
+          profile->GetPath());
+  if (entry && entry->IsSigninRequired()) {
     extensions::ExtensionSystem::Get(profile)
         ->extension_service()
         ->BlockAllExtensions();
@@ -1757,9 +1758,9 @@ void ProfileManager::OnLoadProfileForProfileDeletion(
       sync_service->StopAndClear();
     }
 
-    ProfileAttributesEntry* entry;
-    bool has_entry = storage.GetProfileAttributesWithPath(profile_dir, &entry);
-    DCHECK(has_entry);
+    ProfileAttributesEntry* entry =
+        storage.GetProfileAttributesWithPath(profile_dir);
+    DCHECK(entry);
     ProfileMetrics::LogProfileDelete(entry->IsAuthenticated());
     // Some platforms store passwords in keychains. They should be removed.
     scoped_refptr<password_manager::PasswordStore> password_store =
@@ -1890,13 +1891,12 @@ void ProfileManager::AddProfileToStorage(Profile* profile) {
   base::string16 username = base::UTF8ToUTF16(account_info.email);
 
   ProfileAttributesStorage& storage = GetProfileAttributesStorage();
-  // |entry| and |has_entry| below are put inside a pair of brackets for
-  // scoping, to avoid potential clashes of variable names.
+  // |entry| below is put inside a pair of brackets for scoping, to avoid
+  // potential clashes of variable names.
   {
-    ProfileAttributesEntry* entry;
-    bool has_entry = storage.GetProfileAttributesWithPath(profile->GetPath(),
-                                                          &entry);
-    if (has_entry) {
+    ProfileAttributesEntry* entry =
+        storage.GetProfileAttributesWithPath(profile->GetPath());
+    if (entry) {
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
       bool was_authenticated_status = entry->IsAuthenticated();
 #endif
@@ -1956,10 +1956,9 @@ void ProfileManager::AddProfileToStorage(Profile* profile) {
                      username, is_consented_primary_account, icon_index,
                      supervised_user_id, account_id);
 
-  ProfileAttributesEntry* entry;
-  bool has_entry =
-      storage.GetProfileAttributesWithPath(profile->GetPath(), &entry);
-  DCHECK(has_entry);
+  ProfileAttributesEntry* entry =
+      storage.GetProfileAttributesWithPath(profile->GetPath());
+  DCHECK(entry);
 
   if (profile->IsEphemeralGuestProfile())
     entry->SetIsGuest(true);
@@ -2130,9 +2129,10 @@ void ProfileManager::UpdateLastUser(Profile* last_active) {
     if (profile_path_base != GetLastUsedProfileName())
       profiles::SetLastUsedProfile(profile_path_base);
 
-    ProfileAttributesEntry* entry;
-    if (GetProfileAttributesStorage().
-            GetProfileAttributesWithPath(last_active->GetPath(), &entry)) {
+    ProfileAttributesEntry* entry =
+        GetProfileAttributesStorage().GetProfileAttributesWithPath(
+            last_active->GetPath());
+    if (entry) {
       entry->SetActiveTimeToNow();
     }
   }

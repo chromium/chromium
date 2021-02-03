@@ -106,8 +106,9 @@ base::string16 GetAvatarNameForProfile(const base::FilePath& profile_path) {
   ProfileAttributesStorage& storage =
       g_browser_process->profile_manager()->GetProfileAttributesStorage();
 
-  ProfileAttributesEntry* entry;
-  if (!storage.GetProfileAttributesWithPath(profile_path, &entry))
+  ProfileAttributesEntry* entry =
+      storage.GetProfileAttributesWithPath(profile_path);
+  if (!entry)
     return l10n_util::GetStringUTF16(IDS_SINGLE_PROFILE_DISPLAY_NAME);
 
   const base::string16 profile_name_to_display = entry->GetName();
@@ -145,9 +146,11 @@ base::string16 GetProfileSwitcherTextForItem(const AvatarMenu::Item& item) {
 
 void UpdateProfileName(Profile* profile,
                        const base::string16& new_profile_name) {
-  ProfileAttributesEntry* entry;
-  if (!g_browser_process->profile_manager()->GetProfileAttributesStorage().
-          GetProfileAttributesWithPath(profile->GetPath(), &entry)) {
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
+  if (!entry) {
     return;
   }
 
@@ -196,9 +199,11 @@ bool IsGuestModeRequested(const base::CommandLine& command_line,
 }
 
 bool IsProfileLocked(const base::FilePath& profile_path) {
-  ProfileAttributesEntry* entry;
-  if (!g_browser_process->profile_manager()->GetProfileAttributesStorage().
-          GetProfileAttributesWithPath(profile_path, &entry)) {
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_path);
+  if (!entry) {
     return false;
   }
 
@@ -225,13 +230,13 @@ bool SetActiveProfileToGuestIfLocked() {
   if (active_profile_path == guest_path)
     return true;
 
-  ProfileAttributesEntry* entry;
-  bool has_entry =
-      g_browser_process->profile_manager()->GetProfileAttributesStorage().
-          GetProfileAttributesWithPath(active_profile_path, &entry);
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(active_profile_path);
 
-  // |has_entry| may be false if a profile is specified on the command line.
-  if (has_entry && !entry->IsSigninRequired())
+  // |entry| may be false if a profile is specified on the command line.
+  if (entry && !entry->IsSigninRequired())
     return false;
 
   SetLastUsedProfile(guest_path.BaseName().MaybeAsASCII());

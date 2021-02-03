@@ -72,10 +72,11 @@ class ProfilePickerHandlerTest : public testing::Test {
   ProfileAttributesEntry* CreateTestingProfile(
       const std::string& profile_name) {
     auto* profile = profile_manager()->CreateTestingProfile(profile_name);
-    ProfileAttributesEntry* entry = nullptr;
-    CHECK(profile_manager()
-              ->profile_attributes_storage()
-              ->GetProfileAttributesWithPath(profile->GetPath(), &entry));
+    ProfileAttributesEntry* entry =
+        profile_manager()
+            ->profile_attributes_storage()
+            ->GetProfileAttributesWithPath(profile->GetPath());
+    CHECK(entry);
     return entry;
   }
 

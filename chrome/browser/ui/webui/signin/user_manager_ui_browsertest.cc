@@ -122,10 +122,10 @@ class UserManagerUIAuthenticatedUserBrowserTest
                                  GURL(chrome::kChromeUIMdUserManagerUrl));
     web_contents_ = browser()->tab_strip_model()->GetActiveWebContents();
     profile_ = browser()->profile();
-    EXPECT_TRUE(
-        g_browser_process->profile_manager()
-            ->GetProfileAttributesStorage()
-            .GetProfileAttributesWithPath(profile_->GetPath(), &entry_));
+    entry_ = g_browser_process->profile_manager()
+                 ->GetProfileAttributesStorage()
+                 .GetProfileAttributesWithPath(profile_->GetPath());
+    ASSERT_NE(entry_, nullptr);
   }
 
   void LaunchAuthenticatedUser(const std::string& email) {

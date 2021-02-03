@@ -512,12 +512,12 @@ TEST_F(BackgroundModeManagerTest, ProfileAttributesStorage) {
   EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsKeepingAlive());
   EXPECT_EQ(2u, storage->GetNumberOfProfiles());
 
-  ProfileAttributesEntry* entry1;
-  ProfileAttributesEntry* entry2;
-  ASSERT_TRUE(storage->GetProfileAttributesWithPath(profile_->GetPath(),
-                                                    &entry1));
-  ASSERT_TRUE(storage->GetProfileAttributesWithPath(profile2->GetPath(),
-                                                    &entry2));
+  ProfileAttributesEntry* entry1 =
+      storage->GetProfileAttributesWithPath(profile_->GetPath());
+  ASSERT_NE(entry1, nullptr);
+  ProfileAttributesEntry* entry2 =
+      storage->GetProfileAttributesWithPath(profile2->GetPath());
+  ASSERT_NE(entry2, nullptr);
 
   EXPECT_FALSE(entry1->GetBackgroundStatus());
   EXPECT_FALSE(entry2->GetBackgroundStatus());
@@ -931,9 +931,10 @@ TEST_F(BackgroundModeManagerTest, TransientBackgroundApp) {
   AdvancedTestBackgroundModeManager manager(
       *command_line_, profile_manager_->profile_attributes_storage(), true);
   manager.RegisterProfile(profile_);
-  ProfileAttributesEntry* entry;
-  ASSERT_TRUE(profile_manager_->profile_attributes_storage()
-                  ->GetProfileAttributesWithPath(profile_->GetPath(), &entry));
+  ProfileAttributesEntry* entry =
+      profile_manager_->profile_attributes_storage()
+          ->GetProfileAttributesWithPath(profile_->GetPath());
+  ASSERT_NE(entry, nullptr);
   EXPECT_FALSE(entry->GetBackgroundStatus());
 
   EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsKeepingAlive());
@@ -970,9 +971,10 @@ TEST_F(BackgroundModeManagerTest, TransientBackgroundAppWithPersistent) {
   AdvancedTestBackgroundModeManager manager(
       *command_line_, profile_manager_->profile_attributes_storage(), true);
   manager.RegisterProfile(profile_);
-  ProfileAttributesEntry* entry;
-  ASSERT_TRUE(profile_manager_->profile_attributes_storage()
-                  ->GetProfileAttributesWithPath(profile_->GetPath(), &entry));
+  ProfileAttributesEntry* entry =
+      profile_manager_->profile_attributes_storage()
+          ->GetProfileAttributesWithPath(profile_->GetPath());
+  ASSERT_NE(entry, nullptr);
   EXPECT_FALSE(entry->GetBackgroundStatus());
 
   EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsKeepingAlive());
@@ -1012,9 +1014,10 @@ TEST_F(BackgroundModeManagerTest,
   AdvancedTestBackgroundModeManager manager(
       *command_line_, profile_manager_->profile_attributes_storage(), true);
   manager.RegisterProfile(profile_);
-  ProfileAttributesEntry* entry;
-  ASSERT_TRUE(profile_manager_->profile_attributes_storage()
-                  ->GetProfileAttributesWithPath(profile_->GetPath(), &entry));
+  ProfileAttributesEntry* entry =
+      profile_manager_->profile_attributes_storage()
+          ->GetProfileAttributesWithPath(profile_->GetPath());
+  ASSERT_NE(entry, nullptr);
   EXPECT_FALSE(entry->GetBackgroundStatus());
 
   EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsKeepingAlive());

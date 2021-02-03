@@ -220,11 +220,11 @@ class ProfileManagerTest : public testing::Test {
     // Update IsEphemeral in attributes storage, normally it happened via
     // kForceEphemeralProfiles pref change event routed to
     // ProfileImpl::UpdateIsEphemeralInStorage().
-    ProfileAttributesEntry* entry;
     ProfileAttributesStorage& storage =
         g_browser_process->profile_manager()->GetProfileAttributesStorage();
-    EXPECT_TRUE(
-        storage.GetProfileAttributesWithPath(profile->GetPath(), &entry));
+    ProfileAttributesEntry* entry =
+        storage.GetProfileAttributesWithPath(profile->GetPath());
+    ASSERT_NE(entry, nullptr);
     entry->SetIsEphemeral(true);
   }
 
@@ -537,13 +537,15 @@ TEST_F(ProfileManagerTest, AddProfileToStorageCheckOmitted) {
 #else
   EXPECT_EQ(1u, storage.GetNumberOfProfiles());
 #endif
-  ProfileAttributesEntry* entry;
+  ProfileAttributesEntry* entry = nullptr;
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  ASSERT_TRUE(storage.GetProfileAttributesWithPath(supervised_path, &entry));
+  entry = storage.GetProfileAttributesWithPath(supervised_path);
+  ASSERT_NE(entry, nullptr);
   EXPECT_TRUE(entry->IsOmitted());
 #endif
 
-  ASSERT_TRUE(storage.GetProfileAttributesWithPath(nonsupervised_path, &entry));
+  entry = storage.GetProfileAttributesWithPath(nonsupervised_path);
+  ASSERT_NE(entry, nullptr);
   EXPECT_FALSE(entry->IsOmitted());
 }
 
@@ -774,9 +776,9 @@ TEST_F(ProfileManagerTest, InitProfileInfoCacheForAProfile) {
   size_t avatar_index =
       profile->GetPrefs()->GetInteger(prefs::kProfileAvatarIndex);
 
-  ProfileAttributesEntry* entry;
-  ASSERT_TRUE(profile_manager->GetProfileAttributesStorage().
-                  GetProfileAttributesWithPath(dest_path, &entry));
+  ProfileAttributesEntry* entry = profile_manager->GetProfileAttributesStorage()
+                                      .GetProfileAttributesWithPath(dest_path);
+  ASSERT_NE(entry, nullptr);
 
   // Check if the profile prefs are the same as the cache prefs
   EXPECT_EQ(profile_name, base::UTF16ToUTF8(entry->GetName()));
@@ -1726,16 +1728,16 @@ TEST_F(ProfileManagerTest, ProfileDisplayNameIsEmailIfDefaultName) {
   const base::string16 email2(ASCIIToUTF16("user2@gmail.com"));
   const base::string16 email3(ASCIIToUTF16("user3@gmail.com"));
 
-  ProfileAttributesEntry* entry;
+  ProfileAttributesEntry* entry =
+      storage.GetProfileAttributesWithPath(profile1->GetPath());
 
-  ASSERT_TRUE(storage.GetProfileAttributesWithPath(profile1->GetPath(),
-                                                   &entry));
+  ASSERT_NE(entry, nullptr);
   entry->SetAuthInfo("12345", email1, true);
   entry->SetGAIAGivenName(base::string16());
   entry->SetGAIAName(base::string16());
 
-  ASSERT_TRUE(storage.GetProfileAttributesWithPath(profile2->GetPath(),
-                                                   &entry));
+  entry = storage.GetProfileAttributesWithPath(profile2->GetPath());
+  ASSERT_NE(entry, nullptr);
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // (Default profile, Batman,..) are legacy profile names on Desktop and are
   // not considered default profile names for newly created profiles.
@@ -1748,8 +1750,8 @@ TEST_F(ProfileManagerTest, ProfileDisplayNameIsEmailIfDefaultName) {
   entry->SetGAIAGivenName(base::string16());
   entry->SetGAIAName(base::string16());
 
-  ASSERT_TRUE(storage.GetProfileAttributesWithPath(profile3->GetPath(),
-                                                   &entry));
+  entry = storage.GetProfileAttributesWithPath(profile3->GetPath());
+  ASSERT_NE(entry, nullptr);
 
   entry->SetAuthInfo("34567", email3, true);
   entry->SetGAIAGivenName(base::string16());
@@ -1766,8 +1768,8 @@ TEST_F(ProfileManagerTest, ProfileDisplayNameIsEmailIfDefaultName) {
   // Adding a Gaia name to a profile that previously had a default name should
   // start displaying it.
   const base::string16 gaia_given_name(ASCIIToUTF16("Robin"));
-  ASSERT_TRUE(storage.GetProfileAttributesWithPath(profile1->GetPath(),
-                                                   &entry));
+  entry = storage.GetProfileAttributesWithPath(profile1->GetPath());
+  ASSERT_NE(entry, nullptr);
   entry->SetGAIAGivenName(gaia_given_name);
   EXPECT_EQ(gaia_given_name,
             profiles::GetAvatarNameForProfile(profile1->GetPath()));

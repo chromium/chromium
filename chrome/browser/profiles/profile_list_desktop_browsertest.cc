@@ -78,9 +78,9 @@ IN_PROC_BROWSER_TEST_F(ProfileListDesktopBrowserTest, MAYBE_SignOut) {
   Profile* current_profile = browser()->profile();
   ProfileAttributesStorage& storage =
       profile_manager->GetProfileAttributesStorage();
-  ProfileAttributesEntry* entry;
-  ASSERT_TRUE(storage.GetProfileAttributesWithPath(current_profile->GetPath(),
-                                                   &entry));
+  ProfileAttributesEntry* entry =
+      storage.GetProfileAttributesWithPath(current_profile->GetPath());
+  ASSERT_NE(entry, nullptr);
 
   std::unique_ptr<AvatarMenu> menu = CreateAvatarMenu(&storage);
   menu->RebuildMenu();

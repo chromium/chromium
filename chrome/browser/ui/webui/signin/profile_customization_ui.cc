@@ -57,10 +57,10 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
 
   // loadTimeData.
   Profile* profile = Profile::FromWebUI(web_ui);
-  ProfileAttributesEntry* entry = nullptr;
-  g_browser_process->profile_manager()
-      ->GetProfileAttributesStorage()
-      .GetProfileAttributesWithPath(profile->GetPath(), &entry);
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
   source->AddString("profileName",
                     base::UTF16ToUTF8(entry->GetLocalProfileName()));
 

@@ -328,11 +328,11 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   // Check expectations when the profile creation flow is done.
   WaitForPickerClosed();
 
-  ProfileAttributesEntry* entry = nullptr;
-  ASSERT_TRUE(g_browser_process->profile_manager()
-                  ->GetProfileAttributesStorage()
-                  .GetProfileAttributesWithPath(
-                      profile_being_created->GetPath(), &entry));
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_being_created->GetPath());
+  ASSERT_NE(entry, nullptr);
   EXPECT_FALSE(entry->IsEphemeral());
   EXPECT_FALSE(entry->IsAuthenticated());
   EXPECT_EQ(entry->GetLocalProfileName(), base::UTF8ToUTF16("Joe"));
@@ -378,11 +378,11 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
       ->SyncConfirmationUIClosed(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
 
   // Check expectations when the profile creation flow is done.
-  ProfileAttributesEntry* entry = nullptr;
-  ASSERT_TRUE(g_browser_process->profile_manager()
-                  ->GetProfileAttributesStorage()
-                  .GetProfileAttributesWithPath(
-                      profile_being_created->GetPath(), &entry));
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_being_created->GetPath());
+  ASSERT_NE(entry, nullptr);
   EXPECT_FALSE(entry->IsEphemeral());
   EXPECT_EQ(entry->GetLocalProfileName(), base::UTF8ToUTF16("Joe"));
   EXPECT_EQ(ThemeServiceFactory::GetForProfile(profile_being_created)
@@ -421,11 +421,11 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   // Check expectations when the profile creation flow is done.
   WaitForPickerClosed();
 
-  ProfileAttributesEntry* entry = nullptr;
-  ASSERT_TRUE(g_browser_process->profile_manager()
-                  ->GetProfileAttributesStorage()
-                  .GetProfileAttributesWithPath(
-                      profile_being_created->GetPath(), &entry));
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_being_created->GetPath());
+  ASSERT_NE(entry, nullptr);
   EXPECT_FALSE(entry->IsEphemeral());
   // Sync is technically enabled for the profile. Without SyncService, the
   // difference between SYNC_WITH_DEFAULT_SETTINGS and CONFIGURE_SYNC_FIRST
@@ -479,10 +479,11 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
           }),
       base::string16(), std::string());
   run_loop.Run();
-  ProfileAttributesEntry* other_entry = nullptr;
   ProfileAttributesStorage& storage =
       profile_manager->GetProfileAttributesStorage();
-  ASSERT_TRUE(storage.GetProfileAttributesWithPath(new_path, &other_entry));
+  ProfileAttributesEntry* other_entry =
+      storage.GetProfileAttributesWithPath(new_path);
+  ASSERT_NE(other_entry, nullptr);
   // Fake sync is enabled in this profile with Joe's account.
   other_entry->SetAuthInfo(std::string(),
                            base::UTF8ToUTF16("joe.consumer@gmail.com"),
@@ -509,9 +510,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   // Check expectations when the profile creation flow is done.
   WaitForPickerClosed();
 
-  ProfileAttributesEntry* entry = nullptr;
-  ASSERT_TRUE(storage.GetProfileAttributesWithPath(
-      profile_being_created->GetPath(), &entry));
+  ProfileAttributesEntry* entry =
+      storage.GetProfileAttributesWithPath(profile_being_created->GetPath());
+  ASSERT_NE(entry, nullptr);
   EXPECT_FALSE(entry->IsEphemeral());
   EXPECT_FALSE(entry->IsAuthenticated());
   EXPECT_EQ(entry->GetLocalProfileName(), base::UTF8ToUTF16("Joe"));
@@ -552,11 +553,11 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   // Check expectations when the profile creation flow is done.
   WaitForPickerClosed();
 
-  ProfileAttributesEntry* entry = nullptr;
-  ASSERT_TRUE(g_browser_process->profile_manager()
-                  ->GetProfileAttributesStorage()
-                  .GetProfileAttributesWithPath(
-                      profile_being_created->GetPath(), &entry));
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_being_created->GetPath());
+  ASSERT_NE(entry, nullptr);
   EXPECT_FALSE(entry->IsEphemeral());
   EXPECT_FALSE(entry->IsAuthenticated());
   // Since the given name is not provided, the email address is used instead as
@@ -587,11 +588,11 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   EXPECT_EQ(wc, new_browser->tab_strip_model()->GetActiveWebContents());
   EXPECT_NE(nullptr, DiceTabHelper::FromWebContents(wc));
 
-  ProfileAttributesEntry* entry = nullptr;
-  ASSERT_TRUE(g_browser_process->profile_manager()
-                  ->GetProfileAttributesStorage()
-                  .GetProfileAttributesWithPath(
-                      profile_being_created->GetPath(), &entry));
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_being_created->GetPath());
+  ASSERT_NE(entry, nullptr);
   EXPECT_FALSE(entry->IsEphemeral());
   EXPECT_FALSE(entry->IsAuthenticated());
   EXPECT_EQ(entry->GetLocalProfileName(), base::UTF8ToUTF16(kWork));
@@ -657,11 +658,11 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
       ->SyncConfirmationUIClosed(LoginUIService::ABORT_SYNC);
 
   // Check expectations when the profile creation flow is done.
-  ProfileAttributesEntry* entry = nullptr;
-  ASSERT_TRUE(g_browser_process->profile_manager()
-                  ->GetProfileAttributesStorage()
-                  .GetProfileAttributesWithPath(
-                      profile_being_created->GetPath(), &entry));
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_being_created->GetPath());
+  ASSERT_NE(entry, nullptr);
   EXPECT_FALSE(entry->IsEphemeral());
   EXPECT_EQ(entry->GetLocalProfileName(), base::UTF8ToUTF16("enterprise.com"));
 
@@ -710,11 +711,11 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   // Check expectations when the profile creation flow is done.
   WaitForPickerClosed();
 
-  ProfileAttributesEntry* entry = nullptr;
-  ASSERT_TRUE(g_browser_process->profile_manager()
-                  ->GetProfileAttributesStorage()
-                  .GetProfileAttributesWithPath(
-                      profile_being_created->GetPath(), &entry));
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_being_created->GetPath());
+  ASSERT_NE(entry, nullptr);
   EXPECT_FALSE(entry->IsEphemeral());
   EXPECT_EQ(entry->GetLocalProfileName(), base::UTF8ToUTF16("enterprise.com"));
   // The color is not applied if the user enters settings.
@@ -790,11 +791,11 @@ class ProfilePickerCreationFlowEphemeralProfileBrowserTest
     ProfilePickerCreationFlowBrowserTest::SetUpInProcessBrowserTestFixture();
     if (GetTestPreCount() == 1) {
       // Only called in "PRE_" tests, to set a name to the starting profile.
-      ProfileAttributesEntry* entry = nullptr;
-      ASSERT_TRUE(profile_manager()
-                      ->GetProfileAttributesStorage()
-                      .GetProfileAttributesWithPath(
-                          browser()->profile()->GetPath(), &entry));
+      ProfileAttributesEntry* entry =
+          profile_manager()
+              ->GetProfileAttributesStorage()
+              .GetProfileAttributesWithPath(browser()->profile()->GetPath());
+      ASSERT_NE(entry, nullptr);
       entry->SetLocalProfileName(base::UTF8ToUTF16(kOriginalProfileName),
                                  entry->IsUsingDefaultName());
     }
@@ -815,11 +816,11 @@ IN_PROC_BROWSER_TEST_P(ProfilePickerCreationFlowEphemeralProfileBrowserTest,
   Profile* profile_being_created = StartSigninFlow();
 
   // Check that the profile is ephemeral, regardless of the policy.
-  ProfileAttributesEntry* entry = nullptr;
-  ASSERT_TRUE(profile_manager()
-                  ->GetProfileAttributesStorage()
-                  .GetProfileAttributesWithPath(
-                      profile_being_created->GetPath(), &entry));
+  ProfileAttributesEntry* entry =
+      profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_being_created->GetPath());
+  ASSERT_NE(entry, nullptr);
   EXPECT_TRUE(entry->IsEphemeral());
   EXPECT_TRUE(entry->IsOmitted());
   // Add an account - simulate a successful Gaia sign-in.
@@ -881,11 +882,11 @@ IN_PROC_BROWSER_TEST_P(ProfilePickerCreationFlowEphemeralProfileBrowserTest,
   Profile* profile_being_created = StartSigninFlow();
 
   // Check that the profile is ephemeral, regardless of the policy.
-  ProfileAttributesEntry* entry = nullptr;
-  ASSERT_TRUE(profile_manager()
-                  ->GetProfileAttributesStorage()
-                  .GetProfileAttributesWithPath(
-                      profile_being_created->GetPath(), &entry));
+  ProfileAttributesEntry* entry =
+      profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_being_created->GetPath());
+  ASSERT_NE(entry, nullptr);
   EXPECT_TRUE(entry->IsEphemeral());
   EXPECT_TRUE(entry->IsOmitted());
   // Exit Chrome while still in the signin flow.

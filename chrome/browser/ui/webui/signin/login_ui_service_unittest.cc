@@ -157,10 +157,11 @@ TEST_F(LoginUIServiceExtensionLoginPromptTest, Show) {
 }
 
 TEST_F(LoginUIServiceExtensionLoginPromptTest, AsLockedProfile) {
-  ProfileAttributesEntry* entry;
-  ASSERT_TRUE(g_browser_process->profile_manager()
-                  ->GetProfileAttributesStorage()
-                  .GetProfileAttributesWithPath(profile()->GetPath(), &entry));
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile()->GetPath());
+  ASSERT_NE(entry, nullptr);
   entry->SetIsSigninRequired(true);
   service_->ShowExtensionLoginPrompt(/*restricted_to_primary_account=*/true,
                                      /*email_hint=*/std::string());

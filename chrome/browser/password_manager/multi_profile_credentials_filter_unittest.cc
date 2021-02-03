@@ -94,10 +94,10 @@ class MultiProfileCredentialsFilterTest : public BrowserWithTestWindowTest {
     std::string email = "bob@example.com";
     AccountInfo account_info = identity_test_env()->MakeAccountAvailable(email);
     Profile* profile_2 = profile_manager()->CreateTestingProfile("Profile 2");
-    ProfileAttributesEntry* entry = nullptr;
-    profile_manager()
-        ->profile_attributes_storage()
-        ->GetProfileAttributesWithPath(profile_2->GetPath(), &entry);
+    ProfileAttributesEntry* entry =
+        profile_manager()
+            ->profile_attributes_storage()
+            ->GetProfileAttributesWithPath(profile_2->GetPath());
     entry->SetAuthInfo(account_info.gaia, base::UTF8ToUTF16(email),
                        /*is_consented_primary_account=*/false);
     AddTab(browser(), GURL("http://foo/1"));

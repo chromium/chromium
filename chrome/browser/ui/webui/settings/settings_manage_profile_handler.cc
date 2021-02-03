@@ -131,11 +131,12 @@ void ManageProfileHandler::HandleGetAvailableIcons(
 }
 
 std::unique_ptr<base::ListValue> ManageProfileHandler::GetAvailableIcons() {
-  ProfileAttributesEntry* entry = nullptr;
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_->GetPath());
   // TODO(msalama): Convert to a DCHECK.
-  if (!g_browser_process->profile_manager()
-           ->GetProfileAttributesStorage()
-           .GetProfileAttributesWithPath(profile_->GetPath(), &entry)) {
+  if (!entry) {
     LOG(ERROR) << "No profile attributes entry found for profile with path: "
                << profile_->GetPath();
     return std::make_unique<base::ListValue>();

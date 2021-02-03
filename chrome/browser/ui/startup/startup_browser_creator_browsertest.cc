@@ -1200,9 +1200,10 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
   SessionStartupPref pref(SessionStartupPref::URLS);
   pref.urls = urls;
   SessionStartupPref::SetStartupPref(profile2, pref);
-  ProfileAttributesEntry* entry = nullptr;
-  ASSERT_TRUE(profile_manager->GetProfileAttributesStorage()
-                  .GetProfileAttributesWithPath(profile1->GetPath(), &entry));
+  ProfileAttributesEntry* entry =
+      profile_manager->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile1->GetPath());
+  ASSERT_NE(entry, nullptr);
   entry->SetIsSigninRequired(true);
 
   browser_creator.Start(command_line, profile_manager->user_data_dir(),
@@ -2122,9 +2123,10 @@ class StartupBrowserCreatorPickerTestBase : public InProcessBrowserTest {
     for (const auto& profile_path : profile_paths) {
       ASSERT_TRUE(profile_manager->GetProfile(profile_path));
       // Mark newly created profiles as active.
-      ProfileAttributesEntry* entry = nullptr;
-      ASSERT_TRUE(profile_manager->GetProfileAttributesStorage()
-                      .GetProfileAttributesWithPath(profile_path, &entry));
+      ProfileAttributesEntry* entry =
+          profile_manager->GetProfileAttributesStorage()
+              .GetProfileAttributesWithPath(profile_path);
+      ASSERT_NE(entry, nullptr);
       entry->SetActiveTimeToNow();
     }
   }

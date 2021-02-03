@@ -35,9 +35,10 @@ TEST_F(LocalAuthTest, SetAndCheckCredentials) {
       TestingBrowserProcess::GetGlobal());
   ASSERT_TRUE(testing_profile_manager.SetUp());
   Profile* prof = testing_profile_manager.CreateTestingProfile("p1");
-  ProfileAttributesEntry* entry;
-  ASSERT_TRUE(testing_profile_manager.profile_attributes_storage()->
-      GetProfileAttributesWithPath(prof->GetPath(), &entry));
+  ProfileAttributesEntry* entry =
+      testing_profile_manager.profile_attributes_storage()
+          ->GetProfileAttributesWithPath(prof->GetPath());
+  ASSERT_NE(entry, nullptr);
   EXPECT_EQ("", entry->GetLocalAuthCredentials());
 
   std::string password("Some Password");
@@ -73,9 +74,10 @@ TEST_F(LocalAuthTest, SetUpgradeAndCheckCredentials) {
   Profile* prof = testing_profile_manager.CreateTestingProfile("p1");
 
   std::string password("Some Password");
-  ProfileAttributesEntry* entry;
-  ASSERT_TRUE(testing_profile_manager.profile_attributes_storage()->
-      GetProfileAttributesWithPath(prof->GetPath(), &entry));
+  ProfileAttributesEntry* entry =
+      testing_profile_manager.profile_attributes_storage()
+          ->GetProfileAttributesWithPath(prof->GetPath());
+  ASSERT_NE(entry, nullptr);
   LocalAuth::SetLocalAuthCredentialsWithEncoding(entry, password, '1');
 
   // Ensure we indeed persisted the correct encoding.

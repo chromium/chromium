@@ -509,10 +509,11 @@ void ProfilePickerView::OnProfileForSigninCreated(
   DCHECK(profile);
   std::move(switch_finished_callback_).Run(true);
 
-  ProfileAttributesEntry* entry = nullptr;
-  if (!g_browser_process->profile_manager()
-           ->GetProfileAttributesStorage()
-           .GetProfileAttributesWithPath(profile->GetPath(), &entry)) {
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
+  if (!entry) {
     NOTREACHED();
     return;
   }
@@ -963,11 +964,12 @@ void ProfilePickerView::FinishSignedInCreationFlowImpl(
     bool enterprise_sync_consent_needed) {
   DCHECK(!name_for_signed_in_profile_.empty());
 
-  ProfileAttributesEntry* entry = nullptr;
-  if (!g_browser_process->profile_manager()
-           ->GetProfileAttributesStorage()
-           .GetProfileAttributesWithPath(
-               signed_in_profile_being_created_->GetPath(), &entry)) {
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(
+              signed_in_profile_being_created_->GetPath());
+  if (!entry) {
     NOTREACHED();
     return;
   }

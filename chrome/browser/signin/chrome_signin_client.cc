@@ -207,11 +207,11 @@ void ChromeSigninClient::OnGetTokenInfoResponse(
   if (!token_info->HasKey("error")) {
     std::string handle;
     if (token_info->GetString("token_handle", &handle)) {
-      ProfileAttributesEntry* entry = nullptr;
-      bool has_entry = g_browser_process->profile_manager()->
-          GetProfileAttributesStorage().
-          GetProfileAttributesWithPath(profile_->GetPath(), &entry);
-      DCHECK(has_entry);
+      ProfileAttributesEntry* entry =
+          g_browser_process->profile_manager()
+              ->GetProfileAttributesStorage()
+              .GetProfileAttributesWithPath(profile_->GetPath());
+      DCHECK(entry);
       entry->SetPasswordChangeDetectionToken(handle);
     }
   }
@@ -302,10 +302,10 @@ void ChromeSigninClient::MaybeFetchSigninTokenHandle() {
   if (profiles::IsLockAvailable(profile_)) {
     ProfileAttributesStorage& storage =
         g_browser_process->profile_manager()->GetProfileAttributesStorage();
-    ProfileAttributesEntry* entry;
+    ProfileAttributesEntry* entry =
+        storage.GetProfileAttributesWithPath(profile_->GetPath());
     // If we don't have a token for detecting a password change, create one.
-    if (storage.GetProfileAttributesWithPath(profile_->GetPath(), &entry) &&
-        entry->GetPasswordChangeDetectionToken().empty() &&
+    if (entry && entry->GetPasswordChangeDetectionToken().empty() &&
         !access_token_fetcher_) {
       auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
       if (identity_manager->HasPrimaryAccount()) {
@@ -372,12 +372,11 @@ void ChromeSigninClient::OnCloseBrowsersAborted(
 
 void ChromeSigninClient::LockForceSigninProfile(
     const base::FilePath& profile_path) {
-  ProfileAttributesEntry* entry;
-  bool has_entry =
+  ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(profile_->GetPath(), &entry);
-  if (!has_entry)
+          .GetProfileAttributesWithPath(profile_->GetPath());
+  if (!entry)
     return;
   entry->LockForceSigninProfile(true);
 }

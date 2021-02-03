@@ -98,9 +98,10 @@ class SigninProfileAttributesUpdaterTest : public testing::Test {
 // Tests that the browser state info is updated on signin and signout.
 // ChromeOS does not support signout.
 TEST_F(SigninProfileAttributesUpdaterTest, SigninSignout) {
-  ProfileAttributesEntry* entry;
-  ASSERT_TRUE(profile_manager_.profile_attributes_storage()
-                  ->GetProfileAttributesWithPath(profile_->GetPath(), &entry));
+  ProfileAttributesEntry* entry =
+      profile_manager_.profile_attributes_storage()
+          ->GetProfileAttributesWithPath(profile_->GetPath());
+  ASSERT_NE(entry, nullptr);
   ASSERT_EQ(entry->GetSigninState(), SigninState::kNotSignedIn);
   EXPECT_FALSE(entry->IsSigninRequired());
 
@@ -119,9 +120,10 @@ TEST_F(SigninProfileAttributesUpdaterTest, SigninSignout) {
 
 // Tests that the browser state info is updated on auth error change.
 TEST_F(SigninProfileAttributesUpdaterTest, AuthError) {
-  ProfileAttributesEntry* entry;
-  ASSERT_TRUE(profile_manager_.profile_attributes_storage()
-                  ->GetProfileAttributesWithPath(profile_->GetPath(), &entry));
+  ProfileAttributesEntry* entry =
+      profile_manager_.profile_attributes_storage()
+          ->GetProfileAttributesWithPath(profile_->GetPath());
+  ASSERT_NE(entry, nullptr);
 
   CoreAccountId account_id =
       identity_test_env_.MakePrimaryAccountAvailable(kEmail).account_id;
@@ -150,9 +152,10 @@ TEST_F(SigninProfileAttributesUpdaterTest, AuthError) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(SigninProfileAttributesUpdaterTest, SigninSignoutResetsProfilePrefs) {
   PrefService* pref_service = profile_->GetPrefs();
-  ProfileAttributesEntry* entry;
-  ASSERT_TRUE(profile_manager_.profile_attributes_storage()
-                  ->GetProfileAttributesWithPath(profile_->GetPath(), &entry));
+  ProfileAttributesEntry* entry =
+      profile_manager_.profile_attributes_storage()
+          ->GetProfileAttributesWithPath(profile_->GetPath());
+  ASSERT_NE(entry, nullptr);
 
   // Set profile prefs.
   CheckProfilePrefsReset(pref_service, true);
@@ -186,9 +189,10 @@ TEST_F(SigninProfileAttributesUpdaterTest, SigninSignoutResetsProfilePrefs) {
 TEST_F(SigninProfileAttributesUpdaterTest,
        EnablingSyncWithUPAAccountShouldNotResetProfilePrefs) {
   PrefService* pref_service = profile_->GetPrefs();
-  ProfileAttributesEntry* entry;
-  ASSERT_TRUE(profile_manager_.profile_attributes_storage()
-                  ->GetProfileAttributesWithPath(profile_->GetPath(), &entry));
+  ProfileAttributesEntry* entry =
+      profile_manager_.profile_attributes_storage()
+          ->GetProfileAttributesWithPath(profile_->GetPath());
+  ASSERT_NE(entry, nullptr);
   // Set UPA.
   AccountInfo account_info =
       identity_test_env_.MakeUnconsentedPrimaryAccountAvailable(
@@ -207,9 +211,10 @@ TEST_F(SigninProfileAttributesUpdaterTest,
 TEST_F(SigninProfileAttributesUpdaterTest,
        EnablingSyncWithDifferentAccountThanUPAResetsProfilePrefs) {
   PrefService* pref_service = profile_->GetPrefs();
-  ProfileAttributesEntry* entry;
-  ASSERT_TRUE(profile_manager_.profile_attributes_storage()
-                  ->GetProfileAttributesWithPath(profile_->GetPath(), &entry));
+  ProfileAttributesEntry* entry =
+      profile_manager_.profile_attributes_storage()
+          ->GetProfileAttributesWithPath(profile_->GetPath());
+  ASSERT_NE(entry, nullptr);
   AccountInfo account_info =
       identity_test_env_.MakeUnconsentedPrimaryAccountAvailable(
           "email1@example.com");
@@ -237,9 +242,10 @@ class SigninProfileAttributesUpdaterWithForceSigninTest
 };
 
 TEST_F(SigninProfileAttributesUpdaterWithForceSigninTest, IsSigninRequired) {
-  ProfileAttributesEntry* entry;
-  ASSERT_TRUE(profile_manager_.profile_attributes_storage()
-                  ->GetProfileAttributesWithPath(profile_->GetPath(), &entry));
+  ProfileAttributesEntry* entry =
+      profile_manager_.profile_attributes_storage()
+          ->GetProfileAttributesWithPath(profile_->GetPath());
+  ASSERT_NE(entry, nullptr);
   EXPECT_FALSE(entry->IsAuthenticated());
   EXPECT_TRUE(entry->IsSigninRequired());
 

@@ -46,9 +46,9 @@ void SigninProfileAttributesUpdater::Shutdown() {
 }
 
 void SigninProfileAttributesUpdater::UpdateProfileAttributes() {
-  ProfileAttributesEntry* entry;
-  if (!profile_attributes_storage_->GetProfileAttributesWithPath(profile_path_,
-                                                                 &entry)) {
+  ProfileAttributesEntry* entry =
+      profile_attributes_storage_->GetProfileAttributesWithPath(profile_path_);
+  if (!entry) {
     return;
   }
 
@@ -79,9 +79,9 @@ void SigninProfileAttributesUpdater::UpdateProfileAttributes() {
 }
 
 void SigninProfileAttributesUpdater::OnErrorChanged() {
-  ProfileAttributesEntry* entry;
-  if (!profile_attributes_storage_->GetProfileAttributesWithPath(profile_path_,
-                                                                 &entry)) {
+  ProfileAttributesEntry* entry =
+      profile_attributes_storage_->GetProfileAttributesWithPath(profile_path_);
+  if (!entry) {
     return;
   }
 

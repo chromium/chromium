@@ -435,10 +435,10 @@ void DiceWebSigninInterceptor::OnExtendedAccountInfoUpdated(
     return;
   }
 
-  ProfileAttributesEntry* entry;
-  g_browser_process->profile_manager()
-      ->GetProfileAttributesStorage()
-      .GetProfileAttributesWithPath(profile_->GetPath(), &entry);
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_->GetPath());
   SkColor profile_color = GenerateNewProfileColor(entry).color;
   auto guest_option_availability = GetGuestOptionAvailablity();
   Delegate::BubbleParameters bubble_parameters{

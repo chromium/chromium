@@ -311,9 +311,9 @@ class ProfileShortcutManagerTest : public testing::Test {
   void RenameProfile(const base::Location& location,
                      const base::FilePath& profile_path,
                      const base::string16& new_profile_name) {
-    ProfileAttributesEntry* entry;
-    ASSERT_TRUE(profile_attributes_storage_->
-                    GetProfileAttributesWithPath(profile_path, &entry));
+    ProfileAttributesEntry* entry =
+        profile_attributes_storage_->GetProfileAttributesWithPath(profile_path);
+    ASSERT_NE(entry, nullptr);
     ASSERT_NE(entry->GetLocalProfileName(), new_profile_name);
     entry->SetLocalProfileName(new_profile_name, /*is_default_name=*/false);
     task_environment_.RunUntilIdle();
@@ -790,9 +790,10 @@ TEST_F(ProfileShortcutManagerTest, ProfileShortcutsWithSystemLevelShortcut) {
 
   // Ensure that changing the avatar icon and the name does not result in a
   // shortcut being created.
-  ProfileAttributesEntry* entry_3;
-  ASSERT_TRUE(profile_attributes_storage_->
-                  GetProfileAttributesWithPath(profile_3_path_, &entry_3));
+  ProfileAttributesEntry* entry_3 =
+      profile_attributes_storage_->GetProfileAttributesWithPath(
+          profile_3_path_);
+  ASSERT_NE(entry_3, nullptr);
   entry_3->SetAvatarIconIndex(3u);
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(ProfileShortcutExistsAtDefaultPath(profile_3_name_));
@@ -805,9 +806,10 @@ TEST_F(ProfileShortcutManagerTest, ProfileShortcutsWithSystemLevelShortcut) {
 
   // Rename the second profile and ensure its shortcut got renamed.
   const base::string16 new_profile_2_name = L"New Name 2";
-  ProfileAttributesEntry* entry_2;
-  ASSERT_TRUE(profile_attributes_storage_->
-                  GetProfileAttributesWithPath(profile_2_path_, &entry_2));
+  ProfileAttributesEntry* entry_2 =
+      profile_attributes_storage_->GetProfileAttributesWithPath(
+          profile_2_path_);
+  ASSERT_NE(entry_2, nullptr);
   entry_2->SetLocalProfileName(new_profile_2_name, /*is_default_name=*/false);
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(ProfileShortcutExistsAtDefaultPath(profile_2_name_));
@@ -928,9 +930,10 @@ TEST_F(ProfileShortcutManagerTest, ProfileIconOnAvatarChange) {
   EXPECT_EQ(badged_icon_1, badged_icon_2);
 
   // Change profile 1's icon.
-  ProfileAttributesEntry* entry_1;
-  ASSERT_TRUE(profile_attributes_storage_->
-                  GetProfileAttributesWithPath(profile_1_path_, &entry_1));
+  ProfileAttributesEntry* entry_1 =
+      profile_attributes_storage_->GetProfileAttributesWithPath(
+          profile_1_path_);
+  ASSERT_NE(entry_1, nullptr);
   entry_1->SetAvatarIconIndex(1u);
   task_environment_.RunUntilIdle();
 

@@ -55,14 +55,12 @@ Task::~Task() = default;
 // static
 base::string16 Task::GetProfileNameFromProfile(Profile* profile) {
   DCHECK(profile);
-  ProfileAttributesEntry* entry;
-  if (g_browser_process->profile_manager()->GetProfileAttributesStorage().
-      GetProfileAttributesWithPath(profile->GetOriginalProfile()->GetPath(),
-                                   &entry)) {
-    return entry->GetName();
-  }
-
-  return base::string16();
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(
+              profile->GetOriginalProfile()->GetPath());
+  return entry ? entry->GetName() : base::string16();
 }
 
 void Task::Activate() {

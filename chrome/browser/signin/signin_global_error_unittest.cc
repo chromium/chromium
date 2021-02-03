@@ -60,9 +60,10 @@ class SigninGlobalErrorTest : public testing::Test {
     AccountInfo account_info =
         identity_test_env_profile_adaptor_->identity_test_env()
             ->MakePrimaryAccountAvailable(kTestEmail);
-    ProfileAttributesEntry* entry;
-    ASSERT_TRUE(profile_manager_.profile_attributes_storage()->
-        GetProfileAttributesWithPath(profile()->GetPath(), &entry));
+    ProfileAttributesEntry* entry =
+        profile_manager_.profile_attributes_storage()
+            ->GetProfileAttributesWithPath(profile()->GetPath());
+    ASSERT_NE(entry, nullptr);
 
     entry->SetAuthInfo(account_info.gaia, base::UTF8ToUTF16(kTestEmail),
                        /*is_consented_primary_account=*/true);

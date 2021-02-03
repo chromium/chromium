@@ -203,17 +203,19 @@ class ProfileAttributesStorageTest : public testing::Test {
 TEST_F(ProfileAttributesStorageTest, ProfileNotFound) {
   EXPECT_EQ(0U, storage()->GetNumberOfProfiles());
 
-  ProfileAttributesEntry* entry;
-  ASSERT_FALSE(storage()->GetProfileAttributesWithPath(
-      GetProfilePath("testing_profile_path0"), &entry));
+  ASSERT_EQ(storage()->GetProfileAttributesWithPath(
+                GetProfilePath("testing_profile_path0")),
+            nullptr);
 
   AddTestingProfile();
   EXPECT_EQ(1U, storage()->GetNumberOfProfiles());
 
-  ASSERT_TRUE(storage()->GetProfileAttributesWithPath(
-      GetProfilePath("testing_profile_path0"), &entry));
-  ASSERT_FALSE(storage()->GetProfileAttributesWithPath(
-      GetProfilePath("testing_profile_path1"), &entry));
+  ASSERT_NE(storage()->GetProfileAttributesWithPath(
+                GetProfilePath("testing_profile_path0")),
+            nullptr);
+  ASSERT_EQ(storage()->GetProfileAttributesWithPath(
+                GetProfilePath("testing_profile_path1")),
+            nullptr);
 }
 
 TEST_F(ProfileAttributesStorageTest, AddProfile) {
@@ -231,23 +233,24 @@ TEST_F(ProfileAttributesStorageTest, AddProfile) {
   VerifyAndResetCallExpectations();
   EXPECT_EQ(1U, storage()->GetNumberOfProfiles());
 
-  ProfileAttributesEntry* entry;
-  ASSERT_TRUE(storage()->GetProfileAttributesWithPath(
-      GetProfilePath("new_profile_path_1"), &entry));
+  ProfileAttributesEntry* entry = storage()->GetProfileAttributesWithPath(
+      GetProfilePath("new_profile_path_1"));
+  ASSERT_NE(entry, nullptr);
   EXPECT_EQ(base::ASCIIToUTF16("new_profile_name_1"), entry->GetName());
 }
 
 TEST_F(ProfileAttributesStorageTest, RemoveProfile) {
   EXPECT_EQ(0U, storage()->GetNumberOfProfiles());
 
-  ProfileAttributesEntry* entry;
-  ASSERT_FALSE(storage()->GetProfileAttributesWithPath(
-      GetProfilePath("testing_profile_path0"), &entry));
+  ProfileAttributesEntry* entry = storage()->GetProfileAttributesWithPath(
+      GetProfilePath("testing_profile_path0"));
+  ASSERT_EQ(entry, nullptr);
 
   AddTestingProfile();
   EXPECT_EQ(1U, storage()->GetNumberOfProfiles());
-  ASSERT_TRUE(storage()->GetProfileAttributesWithPath(
-      GetProfilePath("testing_profile_path0"), &entry));
+  entry = storage()->GetProfileAttributesWithPath(
+      GetProfilePath("testing_profile_path0"));
+  ASSERT_NE(entry, nullptr);
   EXPECT_EQ(base::ASCIIToUTF16("testing_profile_name0"), entry->GetName());
 
   // Deleting an existing profile. This should call observers and make the entry
@@ -256,8 +259,9 @@ TEST_F(ProfileAttributesStorageTest, RemoveProfile) {
   storage()->RemoveProfile(GetProfilePath("testing_profile_path0"));
   VerifyAndResetCallExpectations();
   EXPECT_EQ(0U, storage()->GetNumberOfProfiles());
-  EXPECT_FALSE(storage()->GetProfileAttributesWithPath(
-      GetProfilePath("testing_profile_path0"), &entry));
+  entry = storage()->GetProfileAttributesWithPath(
+      GetProfilePath("testing_profile_path0"));
+  EXPECT_EQ(entry, nullptr);
 }
 
 TEST_F(ProfileAttributesStorageTest, MultipleProfiles) {
@@ -272,16 +276,17 @@ TEST_F(ProfileAttributesStorageTest, MultipleProfiles) {
 
   EXPECT_EQ(5U, storage()->GetNumberOfProfiles());
 
-  ProfileAttributesEntry* entry;
-  ASSERT_TRUE(storage()->GetProfileAttributesWithPath(
-      GetProfilePath("testing_profile_path0"), &entry));
+  ProfileAttributesEntry* entry = storage()->GetProfileAttributesWithPath(
+      GetProfilePath("testing_profile_path0"));
+  ASSERT_NE(entry, nullptr);
   EXPECT_EQ(base::ASCIIToUTF16("testing_profile_name0"), entry->GetName());
 
   AddCallExpectationsForRemoveProfile(0);
   storage()->RemoveProfile(GetProfilePath("testing_profile_path0"));
   VerifyAndResetCallExpectations();
-  ASSERT_FALSE(storage()->GetProfileAttributesWithPath(
-      GetProfilePath("testing_profile_path0"), &entry));
+  entry = storage()->GetProfileAttributesWithPath(
+      GetProfilePath("testing_profile_path0"));
+  ASSERT_EQ(entry, nullptr);
   EXPECT_EQ(4U, storage()->GetNumberOfProfiles());
 
   std::vector<ProfileAttributesEntry*> entries =
@@ -294,9 +299,9 @@ TEST_F(ProfileAttributesStorageTest, MultipleProfiles) {
 TEST_F(ProfileAttributesStorageTest, InitialValues) {
   AddTestingProfile();
 
-  ProfileAttributesEntry* entry;
-  ASSERT_TRUE(storage()->GetProfileAttributesWithPath(
-      GetProfilePath("testing_profile_path0"), &entry));
+  ProfileAttributesEntry* entry = storage()->GetProfileAttributesWithPath(
+      GetProfilePath("testing_profile_path0"));
+  ASSERT_NE(entry, nullptr);
   EXPECT_EQ(GetProfilePath("testing_profile_path0"), entry->GetPath());
   EXPECT_EQ(base::ASCIIToUTF16("testing_profile_name0"), entry->GetName());
   EXPECT_EQ(std::string("testing_profile_gaia0"), entry->GetGAIAId());
@@ -311,8 +316,8 @@ TEST_F(ProfileAttributesStorageTest, EntryAccessors) {
 
   base::FilePath path = GetProfilePath("testing_profile_path0");
 
-  ProfileAttributesEntry* entry;
-  ASSERT_TRUE(storage()->GetProfileAttributesWithPath(path, &entry));
+  ProfileAttributesEntry* entry = storage()->GetProfileAttributesWithPath(path);
+  ASSERT_NE(entry, nullptr);
   EXPECT_EQ(path, entry->GetPath());
 
   EXPECT_CALL(observer(), OnProfileNameChanged(path, _)).Times(2);
@@ -363,9 +368,9 @@ TEST_F(ProfileAttributesStorageTest, EntryAccessors) {
 TEST_F(ProfileAttributesStorageTest, EntryInternalAccessors) {
   AddTestingProfile();
 
-  ProfileAttributesEntry* entry;
-  ASSERT_TRUE(storage()->GetProfileAttributesWithPath(
-      GetProfilePath("testing_profile_path0"), &entry));
+  ProfileAttributesEntry* entry = storage()->GetProfileAttributesWithPath(
+      GetProfilePath("testing_profile_path0"));
+  ASSERT_NE(entry, nullptr);
 
   EXPECT_EQ(GetProfilePath("testing_profile_path0"), entry->GetPath());
 
@@ -449,9 +454,9 @@ TEST_F(ProfileAttributesStorageTest, EntryInternalAccessors) {
 TEST_F(ProfileAttributesStorageTest, ProfileActiveTime) {
   AddTestingProfile();
 
-  ProfileAttributesEntry* entry;
-  ASSERT_TRUE(storage()->GetProfileAttributesWithPath(
-      GetProfilePath("testing_profile_path0"), &entry));
+  ProfileAttributesEntry* entry = storage()->GetProfileAttributesWithPath(
+      GetProfilePath("testing_profile_path0"));
+  ASSERT_NE(entry, nullptr);
 
   // Check the state before active time is stored.
   const char kActiveTimeKey[] = "active_time";
@@ -486,8 +491,8 @@ TEST_F(ProfileAttributesStorageTest, AuthInfo) {
 
   base::FilePath path = GetProfilePath("testing_profile_path0");
 
-  ProfileAttributesEntry* entry;
-  ASSERT_TRUE(storage()->GetProfileAttributesWithPath(path, &entry));
+  ProfileAttributesEntry* entry = storage()->GetProfileAttributesWithPath(path);
+  ASSERT_NE(entry, nullptr);
 
   EXPECT_CALL(observer(), OnProfileAuthInfoChanged(path)).Times(1);
   entry->SetAuthInfo("", base::string16(), false);
@@ -509,9 +514,9 @@ TEST_F(ProfileAttributesStorageTest, SupervisedUsersAccessors) {
 
   base::FilePath path = GetProfilePath("testing_profile_path0");
 
-  ProfileAttributesEntry* entry;
-  ASSERT_TRUE(storage()->GetProfileAttributesWithPath(
-      GetProfilePath("testing_profile_path0"), &entry));
+  ProfileAttributesEntry* entry = storage()->GetProfileAttributesWithPath(
+      GetProfilePath("testing_profile_path0"));
+  ASSERT_NE(entry, nullptr);
 
   entry->SetSupervisedUserId("");
   ASSERT_FALSE(entry->IsSupervised());
@@ -545,9 +550,9 @@ TEST_F(ProfileAttributesStorageTest, ReSortTriggered) {
                         base::ASCIIToUTF16("lima_username"), true, 1,
                         std::string(""), EmptyAccountId());
 
-  ProfileAttributesEntry* entry;
-  ASSERT_TRUE(storage()->GetProfileAttributesWithPath(
-      GetProfilePath("alpha_path"), &entry));
+  ProfileAttributesEntry* entry =
+      storage()->GetProfileAttributesWithPath(GetProfilePath("alpha_path"));
+  ASSERT_NE(entry, nullptr);
 
   // Trigger a ProfileInfoCache re-sort.
   entry->SetLocalProfileName(base::ASCIIToUTF16("zulu_name"),
@@ -562,13 +567,14 @@ TEST_F(ProfileAttributesStorageTest, RemoveOtherProfile) {
 
   EXPECT_EQ(3U, storage()->GetNumberOfProfiles());
 
-  ProfileAttributesEntry* first_entry;
-  ASSERT_TRUE(storage()->GetProfileAttributesWithPath(
-      GetProfilePath("testing_profile_path0"), &first_entry));
+  ProfileAttributesEntry* first_entry = storage()->GetProfileAttributesWithPath(
+      GetProfilePath("testing_profile_path0"));
+  ASSERT_NE(first_entry, nullptr);
 
-  ProfileAttributesEntry* second_entry;
-  ASSERT_TRUE(storage()->GetProfileAttributesWithPath(
-      GetProfilePath("testing_profile_path1"), &second_entry));
+  ProfileAttributesEntry* second_entry =
+      storage()->GetProfileAttributesWithPath(
+          GetProfilePath("testing_profile_path1"));
+  ASSERT_NE(second_entry, nullptr);
 
   EXPECT_EQ(
       base::ASCIIToUTF16("testing_profile_name0"), first_entry->GetName());
@@ -576,8 +582,9 @@ TEST_F(ProfileAttributesStorageTest, RemoveOtherProfile) {
   AddCallExpectationsForRemoveProfile(1);
   storage()->RemoveProfile(GetProfilePath("testing_profile_path1"));
   VerifyAndResetCallExpectations();
-  ASSERT_FALSE(storage()->GetProfileAttributesWithPath(
-      GetProfilePath("testing_profile_path1"), &second_entry));
+  second_entry = storage()->GetProfileAttributesWithPath(
+      GetProfilePath("testing_profile_path1"));
+  ASSERT_EQ(second_entry, nullptr);
 
   EXPECT_EQ(GetProfilePath("testing_profile_path0"), first_entry->GetPath());
   EXPECT_EQ(
@@ -589,8 +596,9 @@ TEST_F(ProfileAttributesStorageTest, RemoveOtherProfile) {
   profile_info_cache()->RemoveProfile(
       GetProfilePath("testing_profile_path2"));
   VerifyAndResetCallExpectations();
-  ASSERT_FALSE(storage()->GetProfileAttributesWithPath(
-      GetProfilePath("testing_profile_path2"), &second_entry));
+  second_entry = storage()->GetProfileAttributesWithPath(
+      GetProfilePath("testing_profile_path2"));
+  ASSERT_EQ(second_entry, nullptr);
 }
 
 TEST_F(ProfileAttributesStorageTest, AccessFromElsewhere) {
@@ -598,13 +606,14 @@ TEST_F(ProfileAttributesStorageTest, AccessFromElsewhere) {
 
   DisableObserver();  // No need to test observers in this test.
 
-  ProfileAttributesEntry* first_entry;
-  ASSERT_TRUE(storage()->GetProfileAttributesWithPath(
-      GetProfilePath("testing_profile_path0"), &first_entry));
+  ProfileAttributesEntry* first_entry = storage()->GetProfileAttributesWithPath(
+      GetProfilePath("testing_profile_path0"));
+  ASSERT_NE(first_entry, nullptr);
 
-  ProfileAttributesEntry* second_entry;
-  ASSERT_TRUE(storage()->GetProfileAttributesWithPath(
-      GetProfilePath("testing_profile_path0"), &second_entry));
+  ProfileAttributesEntry* second_entry =
+      storage()->GetProfileAttributesWithPath(
+          GetProfilePath("testing_profile_path0"));
+  ASSERT_NE(second_entry, nullptr);
 
   first_entry->SetLocalProfileName(base::ASCIIToUTF16("NewName"),
                                    /*is_default_name=*/false);
@@ -666,8 +675,8 @@ TEST_F(ProfileAttributesStorageTest, ProfileForceSigninLock) {
 
   base::FilePath path = GetProfilePath("testing_profile_path0");
 
-  ProfileAttributesEntry* entry;
-  ASSERT_TRUE(storage()->GetProfileAttributesWithPath(path, &entry));
+  ProfileAttributesEntry* entry = storage()->GetProfileAttributesWithPath(path);
+  ASSERT_NE(entry, nullptr);
   ASSERT_FALSE(entry->IsSigninRequired());
 
   entry->LockForceSigninProfile(false);
@@ -691,8 +700,9 @@ TEST_F(ProfileAttributesStorageTest, AvatarIconIndex) {
 
   base::FilePath profile_path = GetProfilePath("testing_profile_path0");
 
-  ProfileAttributesEntry* entry;
-  ASSERT_TRUE(storage()->GetProfileAttributesWithPath(profile_path, &entry));
+  ProfileAttributesEntry* entry =
+      storage()->GetProfileAttributesWithPath(profile_path);
+  ASSERT_NE(entry, nullptr);
   ASSERT_EQ(0U, entry->GetAvatarIconIndex());
 
   EXPECT_CALL(observer(), OnProfileAvatarChanged(profile_path)).Times(1);
@@ -738,8 +748,9 @@ TEST_F(ProfileAttributesStorageTest, DownloadHighResAvatarTest) {
 
   // |GetHighResAvater| does not contain a cached avatar, so it should return
   // null.
-  ProfileAttributesEntry* entry;
-  ASSERT_TRUE(storage()->GetProfileAttributesWithPath(profile_path, &entry));
+  ProfileAttributesEntry* entry =
+      storage()->GetProfileAttributesWithPath(profile_path);
+  ASSERT_NE(entry, nullptr);
   EXPECT_FALSE(entry->GetHighResAvatar());
 
   // The previous |GetHighResAvater| starts |LoadAvatarPictureFromPath| async.
@@ -847,8 +858,9 @@ TEST_F(ProfileAttributesStorageTest, LoadAvatarFromDiskTest) {
 
   // Load the avatar image.
   storage()->set_disable_avatar_download_for_testing(false);
-  ProfileAttributesEntry* entry;
-  ASSERT_TRUE(storage()->GetProfileAttributesWithPath(profile_path, &entry));
+  ProfileAttributesEntry* entry =
+      storage()->GetProfileAttributesWithPath(profile_path);
+  ASSERT_NE(entry, nullptr);
   ASSERT_FALSE(entry->IsUsingGAIAPicture());
   EXPECT_CALL(observer(), OnProfileHighResAvatarLoaded(profile_path)).Times(1);
   entry->GetAvatarIcon();
@@ -953,8 +965,9 @@ TEST_F(ProfileAttributesStorageTest, ProfileThemeColors) {
   AddTestingProfile();
   base::FilePath profile_path = GetProfilePath("testing_profile_path0");
 
-  ProfileAttributesEntry* entry;
-  ASSERT_TRUE(storage()->GetProfileAttributesWithPath(profile_path, &entry));
+  ProfileAttributesEntry* entry =
+      storage()->GetProfileAttributesWithPath(profile_path);
+  ASSERT_NE(entry, nullptr);
   EXPECT_CALL(observer(), OnProfileAvatarChanged(profile_path)).Times(1);
   entry->SetAvatarIconIndex(profiles::GetPlaceholderAvatarIndex());
   VerifyAndResetCallExpectations();

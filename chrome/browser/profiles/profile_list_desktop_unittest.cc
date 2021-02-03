@@ -214,9 +214,10 @@ TEST_F(ProfileListDesktopTest, ModifyingNameResortsCorrectly) {
 
   // Change the name of the first profile, and this triggers the resorting of
   // the avatar menu.
-  ProfileAttributesEntry* entry;
-  ASSERT_TRUE(manager()->profile_attributes_storage()->
-                  GetProfileAttributesWithPath(profile1->GetPath(), &entry));
+  ProfileAttributesEntry* entry =
+      manager()->profile_attributes_storage()->GetProfileAttributesWithPath(
+          profile1->GetPath());
+  ASSERT_NE(entry, nullptr);
   entry->SetLocalProfileName(ASCIIToUTF16(newname1), false);
   EXPECT_EQ(1, change_count());
 

@@ -147,8 +147,9 @@ void AppLauncherLoginHandler::UpdateLogin() {
   if (!username.empty()) {
     ProfileAttributesStorage& storage =
         g_browser_process->profile_manager()->GetProfileAttributesStorage();
-    ProfileAttributesEntry* entry;
-    if (storage.GetProfileAttributesWithPath(profile->GetPath(), &entry)) {
+    ProfileAttributesEntry* entry =
+        storage.GetProfileAttributesWithPath(profile->GetPath());
+    if (entry) {
       // Only show the profile picture and full name for the single profile
       // case. In the multi-profile case the profile picture is visible in the
       // title bar and the full name can be ambiguous.

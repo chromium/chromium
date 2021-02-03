@@ -28,11 +28,9 @@ class ProfilePickerTest : public testing::Test {
   void SetUp() override { ASSERT_TRUE(testing_profile_manager_.SetUp()); }
 
   ProfileAttributesEntry* GetProfileAttributes(Profile* profile) {
-    ProfileAttributesEntry* entry = nullptr;
-    testing_profile_manager()
+    return testing_profile_manager()
         ->profile_attributes_storage()
-        ->GetProfileAttributesWithPath(profile->GetPath(), &entry);
-    return entry;
+        ->GetProfileAttributesWithPath(profile->GetPath());
   }
 
   base::test::TaskEnvironment* task_environment() { return &task_environment_; }

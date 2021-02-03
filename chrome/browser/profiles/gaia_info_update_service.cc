@@ -47,9 +47,9 @@ GAIAInfoUpdateService::GAIAInfoUpdateService(
     ClearProfileEntry();
     return;
   }
-  ProfileAttributesEntry* entry;
-  if (!profile_attributes_storage_->GetProfileAttributesWithPath(profile_path_,
-                                                                 &entry)) {
+  ProfileAttributesEntry* entry =
+      profile_attributes_storage_->GetProfileAttributesWithPath(profile_path_);
+  if (!entry) {
     return;
   }
 
@@ -84,9 +84,9 @@ void GAIAInfoUpdateService::UpdatePrimaryAccount(const AccountInfo& info) {
   if (!info.IsValid())
     return;
 
-  ProfileAttributesEntry* entry;
-  if (!profile_attributes_storage_->GetProfileAttributesWithPath(profile_path_,
-                                                                 &entry)) {
+  ProfileAttributesEntry* entry =
+      profile_attributes_storage_->GetProfileAttributesWithPath(profile_path_);
+  if (!entry) {
     return;
   }
   gaia_id_of_profile_attribute_entry_ = info.gaia;
@@ -116,9 +116,9 @@ void GAIAInfoUpdateService::UpdateAnyAccount(const AccountInfo& info) {
   if (!info.IsValid())
     return;
 
-  ProfileAttributesEntry* entry;
-  if (!profile_attributes_storage_->GetProfileAttributesWithPath(profile_path_,
-                                                                 &entry)) {
+  ProfileAttributesEntry* entry =
+      profile_attributes_storage_->GetProfileAttributesWithPath(profile_path_);
+  if (!entry) {
     return;
   }
 
@@ -131,9 +131,9 @@ void GAIAInfoUpdateService::UpdateAnyAccount(const AccountInfo& info) {
 }
 
 void GAIAInfoUpdateService::ClearProfileEntry() {
-  ProfileAttributesEntry* entry;
-  if (!profile_attributes_storage_->GetProfileAttributesWithPath(profile_path_,
-                                                                 &entry)) {
+  ProfileAttributesEntry* entry =
+      profile_attributes_storage_->GetProfileAttributesWithPath(profile_path_);
+  if (!entry) {
     return;
   }
   gaia_id_of_profile_attribute_entry_ = "";
@@ -180,9 +180,9 @@ void GAIAInfoUpdateService::OnExtendedAccountInfoUpdated(
 void GAIAInfoUpdateService::OnAccountsInCookieUpdated(
     const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
     const GoogleServiceAuthError& error) {
-  ProfileAttributesEntry* entry;
-  if (!profile_attributes_storage_->GetProfileAttributesWithPath(profile_path_,
-                                                                 &entry)) {
+  ProfileAttributesEntry* entry =
+      profile_attributes_storage_->GetProfileAttributesWithPath(profile_path_);
+  if (!entry) {
     return;
   }
 

@@ -190,9 +190,10 @@ IN_PROC_BROWSER_TEST_F(BrowserTestWithProfileShortcutManager,
   // The second profile's name should be part of the relaunch name.
   Browser* profile2_browser =
       CreateBrowser(profile_manager->GetProfileByPath(path_profile2));
-  ProfileAttributesEntry* entry;
-  ASSERT_TRUE(profile_manager->GetProfileAttributesStorage().
-              GetProfileAttributesWithPath(path_profile2, &entry));
+  ProfileAttributesEntry* entry =
+      profile_manager->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(path_profile2);
+  ASSERT_NE(entry, nullptr);
   ValidateBrowserWindowProperties(profile2_browser, entry->GetName());
 }
 

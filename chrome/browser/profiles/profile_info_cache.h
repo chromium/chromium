@@ -121,8 +121,8 @@ class ProfileInfoCache : public ProfileInfoInterface,
   void RemoveProfileByAccountId(const AccountId& account_id) override;
   void RemoveProfile(const base::FilePath& profile_path) override;
 
-  bool GetProfileAttributesWithPath(const base::FilePath& path,
-                                    ProfileAttributesEntry** entry) override;
+  ProfileAttributesEntry* GetProfileAttributesWithPath(
+      const base::FilePath& path) override;
   void DisableProfileMetricsForTesting() override;
 
   void NotifyProfileAuthInfoChanged(const base::FilePath& profile_path);

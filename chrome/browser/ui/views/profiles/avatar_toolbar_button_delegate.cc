@@ -37,12 +37,8 @@ ProfileAttributesStorage& GetProfileAttributesStorage() {
 }
 
 ProfileAttributesEntry* GetProfileAttributesEntry(Profile* profile) {
-  ProfileAttributesEntry* entry;
-  if (!GetProfileAttributesStorage().GetProfileAttributesWithPath(
-          profile->GetPath(), &entry)) {
-    return nullptr;
-  }
-  return entry;
+  return GetProfileAttributesStorage().GetProfileAttributesWithPath(
+      profile->GetPath());
 }
 
 bool IsGenericProfile(const ProfileAttributesEntry& entry) {

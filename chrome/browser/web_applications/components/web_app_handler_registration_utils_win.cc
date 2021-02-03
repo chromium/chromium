@@ -77,9 +77,9 @@ base::string16 GetAppNameExtensionForProfile(
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ProfileAttributesStorage& storage =
       profile_manager->GetProfileAttributesStorage();
-  ProfileAttributesEntry* entry;
-  bool has_entry = storage.GetProfileAttributesWithPath(profile_path, &entry);
-  if (has_entry) {
+  ProfileAttributesEntry* entry =
+      storage.GetProfileAttributesWithPath(profile_path);
+  if (entry) {
     app_name_extension.append(STRING16_LITERAL(" ("));
     app_name_extension.append(entry->GetLocalProfileName());
     app_name_extension.append(STRING16_LITERAL(")"));

@@ -93,9 +93,10 @@ void AssertSigninStarted(bool expect_is_started, Profile* profile) {
   ProfileAttributesStorage& storage =
       profile_manager->GetProfileAttributesStorage();
 
-  ProfileAttributesEntry* entry;
+  ProfileAttributesEntry* entry =
+      storage.GetProfileAttributesWithPath(profile->GetPath());
 
-  ASSERT_TRUE(storage.GetProfileAttributesWithPath(profile->GetPath(), &entry));
+  ASSERT_NE(entry, nullptr);
 
   ASSERT_EQ(expect_is_started, entry->IsSignedInWithCredentialProvider());
 }

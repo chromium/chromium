@@ -203,11 +203,11 @@ void RecordLastRunAppBundlePath() {
 }
 
 bool IsProfileSignedOut(Profile* profile) {
-  ProfileAttributesEntry* entry;
-  bool has_entry =
-      g_browser_process->profile_manager()->GetProfileAttributesStorage().
-          GetProfileAttributesWithPath(profile->GetPath(), &entry);
-  return has_entry && entry->IsSigninRequired();
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
+  return entry && entry->IsSigninRequired();
 }
 
 void ConfigureNSAppForKioskMode() {

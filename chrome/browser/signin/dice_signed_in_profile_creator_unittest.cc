@@ -203,11 +203,10 @@ TEST_P(DiceSignedInProfileCreatorTest, CreateWithTokensLoaded) {
             signed_in_profile()->IsEphemeralGuestProfile());
 
   // Check the profile name and icon.
-  ProfileAttributesEntry* entry = nullptr;
   ProfileAttributesStorage& storage =
       profile_manager()->GetProfileAttributesStorage();
-  ASSERT_TRUE(storage.GetProfileAttributesWithPath(
-      signed_in_profile()->GetPath(), &entry));
+  ProfileAttributesEntry* entry =
+      storage.GetProfileAttributesWithPath(signed_in_profile()->GetPath());
   ASSERT_TRUE(entry);
   ASSERT_EQ(entry->IsGuest(), use_guest_profile());
   if (!use_guest_profile()) {

@@ -266,10 +266,11 @@ void ProfilePickerHandler::HandleLaunchSelectedProfile(
   if (!profile_path)
     return;
 
-  ProfileAttributesEntry* entry;
-  if (!g_browser_process->profile_manager()
-           ->GetProfileAttributesStorage()
-           .GetProfileAttributesWithPath(*profile_path, &entry)) {
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(*profile_path);
+  if (!entry) {
     NOTREACHED();
     return;
   }
@@ -493,10 +494,11 @@ void ProfilePickerHandler::HandleSetProfileName(const base::ListValue* args) {
       base::UTF8ToUTF16(args->GetList()[1].GetString());
   base::TrimWhitespace(profile_name, base::TRIM_ALL, &profile_name);
   CHECK(!profile_name.empty());
-  ProfileAttributesEntry* entry;
-  CHECK(g_browser_process->profile_manager()
-            ->GetProfileAttributesStorage()
-            .GetProfileAttributesWithPath(profile_path.value(), &entry));
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_path.value());
+  CHECK(entry);
   entry->SetLocalProfileName(profile_name, /*is_default_name=*/false);
 }
 
@@ -712,10 +714,11 @@ bool ProfilePickerHandler::RemoveProfileFromList(
 }
 
 void ProfilePickerHandler::OnProfileAdded(const base::FilePath& profile_path) {
-  ProfileAttributesEntry* entry;
-  CHECK(g_browser_process->profile_manager()
-            ->GetProfileAttributesStorage()
-            .GetProfileAttributesWithPath(profile_path, &entry));
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_path);
+  CHECK(entry);
   if (entry->IsGuest() || entry->IsOmitted())
     return;
   AddProfileToList(profile_path);
@@ -734,10 +737,11 @@ void ProfilePickerHandler::OnProfileIsOmittedChanged(
     const base::FilePath& profile_path) {
   if (profile_path == ProfileManager::GetGuestProfilePath())
     return;
-  ProfileAttributesEntry* entry;
-  CHECK(g_browser_process->profile_manager()
-            ->GetProfileAttributesStorage()
-            .GetProfileAttributesWithPath(profile_path, &entry));
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_path);
+  CHECK(entry);
   if (entry->IsOmitted()) {
     if (RemoveProfileFromList(profile_path))
       PushProfilesList();

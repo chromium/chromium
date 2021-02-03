@@ -181,11 +181,9 @@ class AnnouncementNotificationServiceImpl
 
     // Can't find the profile path, assume the user is not signed in.
     DCHECK(profile_);
-    ProfileAttributesEntry* entry = nullptr;
-    if (!storage.GetProfileAttributesWithPath(profile_->GetPath(), &entry))
-      return false;
-
-    return entry->GetSigninState() != SigninState::kNotSignedIn;
+    ProfileAttributesEntry* entry =
+        storage.GetProfileAttributesWithPath(profile_->GetPath());
+    return entry && entry->GetSigninState() != SigninState::kNotSignedIn;
   }
 
   Profile* profile_;

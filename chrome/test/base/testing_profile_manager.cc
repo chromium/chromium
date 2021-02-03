@@ -120,10 +120,10 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
   profile_manager_->AddProfile(std::move(profile));
 
   // Update the user metadata.
-  ProfileAttributesEntry* entry;
-  bool success = profile_manager_->GetProfileAttributesStorage()
-                     .GetProfileAttributesWithPath(profile_path, &entry);
-  DCHECK(success);
+  ProfileAttributesEntry* entry =
+      profile_manager_->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_path);
+  DCHECK(entry);
   entry->SetAvatarIconIndex(avatar_id);
   entry->SetSupervisedUserId(supervised_user_id);
   entry->SetLocalProfileName(user_name, entry->IsUsingDefaultName());

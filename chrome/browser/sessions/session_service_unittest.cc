@@ -496,9 +496,10 @@ TEST_F(SessionServiceTest, LockingWindowRemembersAll) {
   ASSERT_TRUE(service()->profile());
   ProfileManager* manager = g_browser_process->profile_manager();
   ASSERT_TRUE(manager);
-  ProfileAttributesEntry* entry;
-  ASSERT_TRUE(manager->GetProfileAttributesStorage().
-      GetProfileAttributesWithPath(service()->profile()->GetPath(), &entry));
+  ProfileAttributesEntry* entry =
+      manager->GetProfileAttributesStorage().GetProfileAttributesWithPath(
+          service()->profile()->GetPath());
+  ASSERT_NE(entry, nullptr);
   entry->SetIsSigninRequired(true);
 
   service()->WindowClosing(window_id);

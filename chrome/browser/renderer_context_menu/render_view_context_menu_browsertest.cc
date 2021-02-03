@@ -1267,9 +1267,9 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, MAYBE_OpenLinkInProfile) {
   std::vector<Profile*> profiles_in_menu;
   for (int i = 0; i < num_profiles; ++i) {
     Profile* profile = CreateSecondaryProfile(i);
-    ProfileAttributesEntry* entry;
-    ASSERT_TRUE(
-        storage.GetProfileAttributesWithPath(profile->GetPath(), &entry));
+    ProfileAttributesEntry* entry =
+        storage.GetProfileAttributesWithPath(profile->GetPath());
+    ASSERT_NE(entry, nullptr);
     // Open a browser window for the profile if and only if the profile is not
     // omitted nor needing signin.
     if (std::binary_search(profiles_omit.begin(), profiles_omit.end(), i)) {

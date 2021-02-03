@@ -67,11 +67,11 @@ void LoginUIService::ShowExtensionLoginPrompt(bool enable_sync,
   if (profile_->IsGuestSession() || profile_->IsSystemProfile())
     return;
   // Locked profile should be unlocked with UserManager only.
-  ProfileAttributesEntry* entry;
-  if (g_browser_process->profile_manager()
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(profile_->GetPath(), &entry) &&
-      entry->IsSigninRequired()) {
+          .GetProfileAttributesWithPath(profile_->GetPath());
+  if (entry && entry->IsSigninRequired()) {
     return;
   }
 

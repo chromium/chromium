@@ -85,8 +85,9 @@ class ProfileColorsUtilTest : public testing::Test {
 
     EXPECT_EQ(number_of_profiles + 1, storage()->GetNumberOfProfiles());
 
-    ProfileAttributesEntry* entry = nullptr;
-    EXPECT_TRUE(storage()->GetProfileAttributesWithPath(profile_path, &entry));
+    ProfileAttributesEntry* entry =
+        storage()->GetProfileAttributesWithPath(profile_path);
+    EXPECT_NE(entry, nullptr);
 
     if (color.has_value()) {
       entry->SetProfileThemeColors(

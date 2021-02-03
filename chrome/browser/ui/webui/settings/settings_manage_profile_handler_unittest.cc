@@ -43,9 +43,9 @@ class ManageProfileHandlerTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile("Profile 1");
-    ASSERT_TRUE(
-        profile_manager_.profile_attributes_storage()
-            ->GetProfileAttributesWithPath(profile_->GetPath(), &entry_));
+    entry_ = profile_manager_.profile_attributes_storage()
+                 ->GetProfileAttributesWithPath(profile_->GetPath());
+    ASSERT_NE(entry_, nullptr);
     entry_->SetAvatarIconIndex(profiles::GetPlaceholderAvatarIndex());
 
     handler_ = std::make_unique<TestManageProfileHandler>(profile_);

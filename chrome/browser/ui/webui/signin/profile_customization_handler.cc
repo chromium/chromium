@@ -128,10 +128,10 @@ base::Value ProfileCustomizationHandler::GetProfileInfoValue() {
 }
 
 ProfileAttributesEntry* ProfileCustomizationHandler::GetProfileEntry() const {
-  ProfileAttributesEntry* entry = nullptr;
-  g_browser_process->profile_manager()
-      ->GetProfileAttributesStorage()
-      .GetProfileAttributesWithPath(profile_path_, &entry);
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_path_);
   DCHECK(entry);
   return entry;
 }

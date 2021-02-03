@@ -374,9 +374,9 @@ void BackgroundModeManager::RegisterProfile(Profile* profile) {
 
   // Initially set the name for this background mode data.
   base::string16 name = l10n_util::GetStringUTF16(IDS_PROFILES_DEFAULT_NAME);
-  ProfileAttributesEntry* entry;
-  if (profile_storage_->GetProfileAttributesWithPath(
-      profile->GetPath(), &entry)) {
+  ProfileAttributesEntry* entry =
+      profile_storage_->GetProfileAttributesWithPath(profile->GetPath());
+  if (entry) {
     name = entry->GetName();
   }
   bmd_ptr->SetName(name);
@@ -517,10 +517,9 @@ void BackgroundModeManager::OnApplicationListChanged(const Profile* profile) {
 ///////////////////////////////////////////////////////////////////////////////
 //  BackgroundModeManager, ProfileAttributesStorage::Observer overrides
 void BackgroundModeManager::OnProfileAdded(const base::FilePath& profile_path) {
-  ProfileAttributesEntry* entry;
-  bool success =
-      profile_storage_->GetProfileAttributesWithPath(profile_path, &entry);
-  DCHECK(success);
+  ProfileAttributesEntry* entry =
+      profile_storage_->GetProfileAttributesWithPath(profile_path);
+  DCHECK(entry);
   base::string16 profile_name = entry->GetName();
   // At this point, the profile should be registered with the background mode
   // manager, but when it's actually added to the ProfileAttributesStorage is
@@ -537,10 +536,9 @@ void BackgroundModeManager::OnProfileAdded(const base::FilePath& profile_path) {
 
 void BackgroundModeManager::OnProfileWillBeRemoved(
     const base::FilePath& profile_path) {
-  ProfileAttributesEntry* entry;
-  bool success =
-      profile_storage_->GetProfileAttributesWithPath(profile_path, &entry);
-  DCHECK(success);
+  ProfileAttributesEntry* entry =
+      profile_storage_->GetProfileAttributesWithPath(profile_path);
+  DCHECK(entry);
   base::string16 profile_name = entry->GetName();
   // Remove the profile from our map of profiles.
   auto it = GetBackgroundModeIterator(profile_name);
@@ -561,10 +559,9 @@ void BackgroundModeManager::OnProfileWillBeRemoved(
 void BackgroundModeManager::OnProfileNameChanged(
     const base::FilePath& profile_path,
     const base::string16& old_profile_name) {
-  ProfileAttributesEntry* entry;
-  bool success =
-      profile_storage_->GetProfileAttributesWithPath(profile_path, &entry);
-  DCHECK(success);
+  ProfileAttributesEntry* entry =
+      profile_storage_->GetProfileAttributesWithPath(profile_path);
+  DCHECK(entry);
   base::string16 new_profile_name = entry->GetName();
   BackgroundModeInfoMap::const_iterator it =
       GetBackgroundModeIterator(old_profile_name);
@@ -588,10 +585,10 @@ BackgroundModeManager::GetBackgroundModeDataForLastProfile() const {
     return nullptr;
 
   // Do not permit a locked profile to be used to open a browser.
-  ProfileAttributesEntry* entry;
-  bool success = profile_storage_->GetProfileAttributesWithPath(
-      profile_background_data->first->GetPath(), &entry);
-  DCHECK(success);
+  ProfileAttributesEntry* entry =
+      profile_storage_->GetProfileAttributesWithPath(
+          profile_background_data->first->GetPath());
+  DCHECK(entry);
   if (entry->IsSigninRequired())
     return nullptr;
 
@@ -767,9 +764,9 @@ void BackgroundModeManager::OnClientsChanged(
 
   // Update the ProfileAttributesStorage with the fact whether background
   // clients are running for this profile.
-  ProfileAttributesEntry* entry;
-  if (profile_storage_->
-      GetProfileAttributesWithPath(profile->GetPath(), &entry)) {
+  ProfileAttributesEntry* entry =
+      profile_storage_->GetProfileAttributesWithPath(profile->GetPath());
+  if (entry) {
     entry->SetBackgroundStatus(
         HasPersistentBackgroundClientForProfile(profile));
   }

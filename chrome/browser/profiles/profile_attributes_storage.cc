@@ -248,11 +248,10 @@ std::vector<ProfileAttributesEntry*>
 ProfileAttributesStorage::GetAllProfilesAttributes(bool include_guest_profile) {
   std::vector<ProfileAttributesEntry*> ret;
   for (const auto& path_and_entry : profile_attributes_entries_) {
-    ProfileAttributesEntry* entry;
     // Initialize any entries that are not yet initialized.
-    bool success = GetProfileAttributesWithPath(
-        base::FilePath(path_and_entry.first), &entry);
-    DCHECK(success);
+    ProfileAttributesEntry* entry =
+        GetProfileAttributesWithPath(base::FilePath(path_and_entry.first));
+    DCHECK(entry);
     if (!entry->IsGuest() || include_guest_profile)
       ret.push_back(entry);
   }
