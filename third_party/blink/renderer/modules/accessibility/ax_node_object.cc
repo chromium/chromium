@@ -3055,16 +3055,11 @@ void AXNodeObject::GetRelativeBounds(AXObject** out_container,
                                      FloatRect& out_bounds_in_container,
                                      SkMatrix44& out_container_transform,
                                      bool* clips_children) const {
-  if (GetLayoutObject()) {
+  if (LayoutObjectForRelativeBounds()) {
     AXObject::GetRelativeBounds(out_container, out_bounds_in_container,
                                 out_container_transform, clips_children);
     return;
   }
-
-#if DCHECK_IS_ON()
-  DCHECK(!getting_bounds_) << "GetRelativeBounds reentrant: " << ToString(true);
-  base::AutoReset<bool> reentrancy_protector(&getting_bounds_, true);
-#endif
 
   *out_container = nullptr;
   out_bounds_in_container = FloatRect();

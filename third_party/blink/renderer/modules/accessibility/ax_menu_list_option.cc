@@ -163,31 +163,21 @@ void AXMenuListOption::GetRelativeBounds(AXObject** out_container,
                                          FloatRect& out_bounds_in_container,
                                          SkMatrix44& out_container_transform,
                                          bool* clips_children) const {
-  DCHECK(!IsDetached());
   *out_container = nullptr;
   out_bounds_in_container = FloatRect();
   out_container_transform.setIdentity();
 
-  // When a <select> is collapsed, the bounds of its options are the same as
-  // that of the containing <select>.
-  // It is not necessary to compute the bounds of options in an expanded select.
-  // On Mac and Android, the menu list is native and already accessible; those
-  // are the platforms where we need AXMenuList so that the options can be part
-  // of the accessibility tree when collapsed, and there's never going to be a
-  // need to expose the bounds of options on those platforms.
-  // On Windows and Linux, AXObjectCacheImpl::UseAXMenuList() will return false,
-  // and therefore this code should not be reached.
-
-  auto* select = To<HTMLOptionElement>(GetNode())->OwnerSelectElement();
-  AXObject* ax_menu_list = AXObjectCache().GetOrCreate(select);
-  if (!ax_menu_list)
+  AXObject* parent = ParentObject();
+  if (!parent)
     return;
-  DCHECK(ax_menu_list->IsMenuList());
-  DCHECK(ax_menu_list->GetLayoutObject());
-  if (ax_menu_list->GetLayoutObject()) {
-    ax_menu_list->GetRelativeBounds(out_container, out_bounds_in_container,
-                                    out_container_transform, clips_children);
-  }
+  DCHECK(IsA<AXMenuListPopup>(parent));
+
+  AXObject* grandparent = parent->ParentObject();
+  if (!grandparent)
+    return;
+  DCHECK(grandparent->IsMenuList());
+  grandparent->GetRelativeBounds(out_container, out_bounds_in_container,
+                                 out_container_transform, clips_children);
 }
 
 String AXMenuListOption::TextAlternative(bool recursive,

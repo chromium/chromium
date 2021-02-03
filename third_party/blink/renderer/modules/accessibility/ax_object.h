@@ -1286,6 +1286,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   ax::mojom::blink::Role ButtonRoleType() const;
 
+  virtual LayoutObject* LayoutObjectForRelativeBounds() const {
+    return nullptr;
+  }
+
   bool CanSetSelectedAttribute() const;
   const AXObject* InertRoot() const;
 

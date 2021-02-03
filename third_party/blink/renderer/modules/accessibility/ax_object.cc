@@ -4209,7 +4209,7 @@ void AXObject::GetRelativeBounds(AXObject** out_container,
     }
   }
 
-  LayoutObject* layout_object = GetLayoutObject();
+  LayoutObject* layout_object = LayoutObjectForRelativeBounds();
   if (!layout_object)
     return;
 
