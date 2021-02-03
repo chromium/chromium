@@ -116,6 +116,11 @@ void SynchronousCompositorSyncCallBridge::HostDestroyedOnUIThread() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(host_);
   host_ = nullptr;
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &SynchronousCompositorSyncCallBridge::CloseHostControlOnIOThread,
+          this));
 }
 
 bool SynchronousCompositorSyncCallBridge::IsRemoteReadyOnUIThread() {
@@ -170,6 +175,21 @@ void SynchronousCompositorSyncCallBridge::
   }
   frame_futures_.clear();
   begin_frame_condition_.Signal();
+}
+
+void SynchronousCompositorSyncCallBridge::SetHostControlReceiverOnIOThread(
+    mojo::SelfOwnedReceiverRef<blink::mojom::SynchronousCompositorControlHost>
+        host_control_receiver) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  host_control_receiver_ = host_control_receiver;
+}
+
+void SynchronousCompositorSyncCallBridge::CloseHostControlOnIOThread() {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  if (host_control_receiver_) {
+    host_control_receiver_->Close();
+    host_control_receiver_.reset();
+  }
 }
 
 }  // namespace content
