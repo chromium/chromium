@@ -55,6 +55,7 @@ js_type_check("closure_compile_local") {
     ":recommend_apps",
     ":saml_confirm_password",
     ":screen_tpm_error",
+    ":screen_wrong_hwid",
     ":sync_consent",
     ":update_required_card",
     ":user_creation",
@@ -397,6 +398,15 @@ js_library("saml_confirm_password") {
 }
 
 js_library("screen_tpm_error") {
+  deps = [
+    "components:login_screen_behavior",
+    "components/oobe_adaptive_dialog:oobe_adaptive_dialog",
+    "components/oobe_dialog_host_behavior:oobe_dialog_host_behavior",
+    "components/oobe_i18n_behavior:oobe_i18n_behavior",
+  ]
+}
+
+js_library("screen_wrong_hwid") {
   deps = [
     "components:login_screen_behavior",
     "components/oobe_adaptive_dialog:oobe_adaptive_dialog",
