@@ -867,11 +867,10 @@ TEST_P(RenderFrameHostManagerTest, Init) {
       TestWebContents::Create(browser_context(), instance));
 
   RenderFrameHostManager* manager = web_contents->GetRenderManagerForTesting();
-  RenderViewHostImpl* rvh = manager->current_host();
   RenderFrameHostImpl* rfh = manager->current_frame_host();
-  ASSERT_TRUE(rvh);
+  RenderViewHostImpl* rvh = rfh->render_view_host();
   ASSERT_TRUE(rfh);
-  EXPECT_EQ(rvh, rfh->render_view_host());
+  ASSERT_TRUE(rvh);
   EXPECT_EQ(instance, rfh->GetSiteInstance());
   EXPECT_EQ(web_contents.get(), rvh->GetDelegate());
   EXPECT_EQ(web_contents.get(), rfh->delegate());
@@ -976,7 +975,7 @@ TEST_P(RenderFrameHostManagerTest, WebUI) {
   RenderFrameHostManager* manager = web_contents->GetRenderManagerForTesting();
   RenderFrameHostImpl* initial_rfh = manager->current_frame_host();
 
-  EXPECT_FALSE(manager->current_host()->IsRenderViewLive());
+  EXPECT_FALSE(initial_rfh->render_view_host()->IsRenderViewLive());
   EXPECT_FALSE(manager->current_frame_host()->web_ui());
   EXPECT_TRUE(initial_rfh);
 
@@ -1025,9 +1024,9 @@ TEST_P(RenderFrameHostManagerTest, WebUIInNewTab) {
   RenderFrameHostManager* manager1 =
       web_contents1->GetRenderManagerForTesting();
   // Test the case that new RVH is considered live.
-  manager1->current_host()->CreateRenderView(base::nullopt, MSG_ROUTING_NONE,
-                                             false);
-  EXPECT_TRUE(manager1->current_host()->IsRenderViewLive());
+  RenderViewHostImpl* rvh1 = manager1->current_frame_host()->render_view_host();
+  rvh1->CreateRenderView(base::nullopt, MSG_ROUTING_NONE, false);
+  EXPECT_TRUE(rvh1->IsRenderViewLive());
   EXPECT_TRUE(manager1->current_frame_host()->IsRenderFrameLive());
 
   // Navigate to a WebUI page.
@@ -1057,9 +1056,9 @@ TEST_P(RenderFrameHostManagerTest, WebUIInNewTab) {
       web_contents2->GetRenderManagerForTesting();
   // Make sure the new RVH is considered live.  This is usually done in
   // RenderWidgetHost::Init when opening a new tab from a link.
-  manager2->current_host()->CreateRenderView(base::nullopt, MSG_ROUTING_NONE,
-                                             false);
-  EXPECT_TRUE(manager2->current_host()->IsRenderViewLive());
+  RenderViewHostImpl* rvh2 = manager2->current_frame_host()->render_view_host();
+  rvh2->CreateRenderView(base::nullopt, MSG_ROUTING_NONE, false);
+  EXPECT_TRUE(rvh2->IsRenderViewLive());
 
   const GURL kUrl2(GetWebUIURL("foo/bar"));
   const url::Origin kInitiatorOrigin =
@@ -1376,9 +1375,10 @@ TEST_P(RenderFrameHostManagerTest, CleanUpProxiesOnProcessCrash) {
   contents()->SetOpener(opener1.get());
 
   // Make sure the new opener RVH is considered live.
-  opener1_manager->current_host()->CreateRenderView(base::nullopt,
-                                                    MSG_ROUTING_NONE, false);
-  EXPECT_TRUE(opener1_manager->current_host()->IsRenderViewLive());
+  RenderViewHostImpl* opener_rvh =
+      opener1_manager->current_frame_host()->render_view_host();
+  opener_rvh->CreateRenderView(base::nullopt, MSG_ROUTING_NONE, false);
+  EXPECT_TRUE(opener_rvh->IsRenderViewLive());
   EXPECT_TRUE(opener1_manager->current_frame_host()->IsRenderFrameLive());
 
   // Use a cross-process navigation in the opener to make the old RVH inactive.

@@ -285,10 +285,11 @@ void AddAdditionalRequestHeaders(
     return;
 
   bool is_reload = NavigationTypeUtils::IsReload(navigation_type);
-  blink::RendererPreferences render_prefs = frame_tree_node->render_manager()
-                                                ->current_host()
-                                                ->GetDelegate()
-                                                ->GetRendererPrefs();
+  blink::RendererPreferences render_prefs =
+      frame_tree_node->current_frame_host()
+          ->render_view_host()
+          ->GetDelegate()
+          ->GetRendererPrefs();
   UpdateAdditionalHeadersForBrowserInitiatedRequest(headers, browser_context,
                                                     is_reload, render_prefs);
 

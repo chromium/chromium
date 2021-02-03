@@ -237,12 +237,6 @@ void RenderFrameHostManager::InitChild(
       /*renderer_initiated_creation=*/false));
 }
 
-RenderViewHostImpl* RenderFrameHostManager::current_host() const {
-  if (!render_frame_host_)
-    return nullptr;
-  return render_frame_host_->render_view_host();
-}
-
 RenderWidgetHostView* RenderFrameHostManager::GetRenderWidgetHostView() const {
   if (render_frame_host_)
     return render_frame_host_->GetView();

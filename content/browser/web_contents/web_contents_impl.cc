@@ -959,10 +959,13 @@ WebContentsImpl::~WebContentsImpl() {
       GetOuterWebContents()->OnAudioStateChanged();
   }
 
+  // Note that root->current_frame_host() can't be null at this point, since
+  // the root RenderFrameHostManager's destructor (which clears it) hasn't run
+  // yet.
   observers_.NotifyObservers(&WebContentsObserver::FrameDeleted,
                              root->current_frame_host());
   observers_.NotifyObservers(&WebContentsObserver::RenderViewDeleted,
-                             root->current_host());
+                             root->current_frame_host()->render_view_host());
 #if defined(OS_ANDROID)
   // For simplicity, destroy the Java WebContents before we notify of the
   // destruction of the WebContents.
@@ -1263,7 +1266,7 @@ void WebContentsImpl::ExecutePageBroadcastMethod(
 }
 
 RenderViewHostImpl* WebContentsImpl::GetRenderViewHost() {
-  return GetRenderManager()->current_host();
+  return GetRenderManager()->current_frame_host()->render_view_host();
 }
 
 void WebContentsImpl::CancelActiveAndPendingDialogs() {
@@ -2140,7 +2143,7 @@ void WebContentsImpl::AttachInnerWebContents(
   RenderFrameHostImpl* inner_main_frame =
       inner_render_manager->current_frame_host();
   RenderViewHostImpl* inner_render_view_host =
-      inner_render_manager->current_host();
+      inner_main_frame->render_view_host();
   auto* outer_render_manager =
       render_frame_host_impl->frame_tree_node()->render_manager();
 
@@ -6731,6 +6734,18 @@ void WebContentsImpl::RenderViewTerminated(RenderViewHost* rvh,
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::RenderViewTerminated",
                         "render_view_host", rvh, "status",
                         static_cast<int>(status));
+
+  // It is possible to get here while the WebContentsImpl is being destroyed,
+  // in particular when the destruction of the main frame's RenderFrameHost and
+  // RenderViewHost triggers cleanup of the main frame's process, which in turn
+  // dispatches RenderProcessExited observers, one of which calls in here.  In
+  // this state, we cannot check GetRenderViewHost() below, since
+  // current_frame_host() for the root FrameTreeNode has already been cleared.
+  // Since the WebContents is going away, none of the work here is needed, so
+  // just return early.
+  if (is_being_destroyed_)
+    return;
+
   if (rvh != GetRenderViewHost()) {
     // The pending page's RenderViewHost is gone.
     return;
@@ -7470,8 +7485,6 @@ void WebContentsImpl::NotifySwappedFromRenderManager(RenderFrameHost* old_frame,
     FrameTree* frame_tree =
         static_cast<RenderFrameHostImpl*>(new_frame)->frame_tree();
     DCHECK_EQ(frame_tree->root()->current_frame_host(), new_frame);
-    DCHECK_EQ(frame_tree->root()->render_manager()->current_host(),
-              new_frame->GetRenderViewHost());
     DCHECK_EQ(frame_tree->root()->render_manager()->GetRenderWidgetHostView(),
               new_frame->GetView());
 

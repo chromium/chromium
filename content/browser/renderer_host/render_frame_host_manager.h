@@ -186,15 +186,15 @@ class CONTENT_EXPORT RenderFrameHostManager
 
   // Returns the currently active RenderFrameHost.
   //
-  // This will be non-null between Init() and Shutdown(). You may want to null
-  // check it in many cases, however. Windows can send us messages during the
-  // destruction process after it has been shut down.
+  // This will be non-null between Init() and Shutdown(), but may be null
+  // briefly during shutdown, after RenderFrameHostManager's destructor
+  // clears `render_frame_host_`.  Hence, this does not need to be null-checked
+  // except for rare cases reachable during shutdown.  For example, observer
+  // methods like RenderProcessExited could be dispatched after this has
+  // already been cleared.
   RenderFrameHostImpl* current_frame_host() const {
     return render_frame_host_.get();
   }
-
-  // TODO(creis): Remove this when we no longer use RVH for navigation.
-  RenderViewHostImpl* current_host() const;
 
   // Returns the view associated with the current RenderViewHost, or null if
   // there is no current one.
