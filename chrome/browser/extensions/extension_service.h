@@ -84,10 +84,16 @@ enum class UnloadedExtensionReason;
 enum class ExtensionUpdateCheckDataKey {
   // No update check data keys were found so no action was taken.
   kNoKey = 0,
-  // The update check daya keys had a "_malware" key resulting in the extension
+  // The update check data keys had a "_malware" key resulting in the extension
   // being disabled.
   kMalware = 1,
-  kMaxValue = kMalware
+  // The update check data keys had a "_potentially_uws" key resulting in the
+  // extension being disabled.
+  kPotentiallyUWS = 2,
+  // The update check data keys had a "_policy_violation" key resulting in the
+  // extension being disabled.
+  kPolicyViolation = 3,
+  kMaxValue = kPolicyViolation
 };
 
 // This is an interface class to encapsulate the dependencies that
@@ -552,7 +558,7 @@ class ExtensionService : public ExtensionServiceInterface,
   // Helper method to determine if an extension can be blocked.
   bool CanBlockExtension(const Extension* extension) const;
 
-  // Handles the malware omaha attribute for remotely disabled extensions.
+  // Handles the malware Omaha attribute for remotely disabled extensions.
   void HandleMalwareOmahaAttribute(const std::string& extension_id,
                                    const base::Value& attributes);
 

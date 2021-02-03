@@ -149,16 +149,32 @@ const char* const kObsoleteComponentExtensionIds[] = {
     "ljoammodoonkhnehlncldjelhidljdpi"  // Genius
 };
 
-void ReportExtensionDisabledRemotely(bool is_currently_enabled,
+void ReportExtensionDisabledRemotely(bool should_be_remotely_disabled,
                                      ExtensionUpdateCheckDataKey reason) {
-  // Report that the extension is newly disabled due to malware.
-  if (is_currently_enabled)
+  // Report that the extension is newly disabled due to Omaha attributes.
+  if (should_be_remotely_disabled)
     base::UmaHistogramEnumeration("Extensions.ExtensionDisabledRemotely",
                                   reason);
 
   // Report that the extension has added a new disable reason.
   base::UmaHistogramEnumeration("Extensions.ExtensionAddDisabledRemotelyReason",
                                 reason);
+}
+
+void ReportPolicyViolationUWSOmahaAttributes(const std::string& extension_id,
+                                             const base::Value& attributes) {
+  const base::Value* uws_value = attributes.FindKey("_potentially_uws");
+  if (uws_value != nullptr && uws_value->GetBool()) {
+    ReportExtensionDisabledRemotely(
+        /*should_be_remotely_disabled=*/false,
+        ExtensionUpdateCheckDataKey::kPotentiallyUWS);
+  }
+  const base::Value* pv_value = attributes.FindKey("_policy_violation");
+  if (pv_value != nullptr && pv_value->GetBool()) {
+    ReportExtensionDisabledRemotely(
+        /*should_be_remotely_disabled=*/false,
+        ExtensionUpdateCheckDataKey::kPolicyViolation);
+  }
 }
 
 void ReportNoUpdateCheckKeys() {
@@ -876,6 +892,7 @@ void ExtensionService::PerformActionBasedOnOmahaAttributes(
     const base::Value& attributes) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   HandleMalwareOmahaAttribute(extension_id, attributes);
+  ReportPolicyViolationUWSOmahaAttributes(extension_id, attributes);
   allowlist_.PerformActionBasedOnOmahaAttributes(extension_id, attributes);
 }
 

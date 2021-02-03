@@ -1131,9 +1131,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
-    Recorded when an extension is already disabled and a new disable reason is
-    added to the extension. The new disable reason is retrieved from the update
-    service data key reasons during an update check for extensions.
+    Recorded when a new violation is retrieved from Omaha for an extension. The
+    new violation reason is retrieved from the update service data key reasons
+    during an update check for extensions.
   </summary>
 </histogram>
 
@@ -1164,9 +1164,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
-    The update service data key reasons that the update service encounters
-    during an update check session using update client when disabling an
-    extension.
+    Recorded when an extension that was previously enabled is disabled due to a
+    new violation retrieved from Omaha. This is recorded when the violation is
+    detected when Chrome checks for an update for the extension.
   </summary>
 </histogram>
 

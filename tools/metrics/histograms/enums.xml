@@ -26985,6 +26985,8 @@ Called by update_extension_permission.py.-->
 <enum name="ExtensionUpdateCheckDataKey">
   <int value="0" label="No update check keys (no action taken)"/>
   <int value="1" label="Malware"/>
+  <int value="2" label="Potentially UWS"/>
+  <int value="3" label="Policy Violation"/>
 </enum>
 
 <enum name="ExtensionUpdaterUpdateResult">
