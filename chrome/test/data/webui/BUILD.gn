@@ -375,6 +375,7 @@ if (include_js_tests) {
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/personalization_page_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/smart_inputs_page_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/smb_shares_page_tests.m.js",
+        "$root_gen_dir/chrome/test/data/webui/settings/chromeos/os_a11y_page_tests.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/switch_access_action_assignment_dialog_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/switch_access_subpage_tests.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/test_about_page_browser_proxy_chromeos.m.js",

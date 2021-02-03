@@ -5,7 +5,7 @@
 // Uncomment as these modules are migrated to Polymer 3.
 import './date_time_page/date_time_page.m.js';
 import './date_time_page/timezone_selector.m.js';
-// import './os_a11y_page/os_a11y_page.m.js';
+import './os_a11y_page/os_a11y_page.m.js';
 import './on_startup_page/on_startup_page.m.js';
 import './os_a11y_page/manage_a11y_page.m.js';
 import './os_a11y_page/switch_access_action_assignment_dialog.m.js';

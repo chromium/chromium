@@ -291,6 +291,8 @@ preprocess_if_expr("preprocess_gen_v3") {
   out_folder = "$target_gen_dir/$preprocess_folder_v3"
   out_manifest = "$target_gen_dir/$preprocess_gen_v3_manifest"
   in_files = [
+    "a11y_page/captions_subpage.m.js",
+    "appearance_page/fonts_browser_proxy.m.js",
     "about_page/about_page_browser_proxy.m.js",
     "chromeos/ambient_mode_page/album_item.m.js",
     "chromeos/ambient_mode_page/album_list.m.js",
@@ -376,6 +378,8 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/nearby_share_page/types.m.js",
     "chromeos/on_startup_page/on_startup_page.m.js",
     "chromeos/os_a11y_page/manage_a11y_page.m.js",
+    "chromeos/os_a11y_page/os_a11y_page.m.js",
+    "chromeos/os_a11y_page/os_a11y_page_browser_proxy.m.js",
     "chromeos/os_a11y_page/switch_access_action_assignment_dialog.m.js",
     "chromeos/os_a11y_page/switch_access_constants.m.js",
     "chromeos/os_a11y_page/switch_access_subpage_browser_proxy.m.js",
@@ -1347,7 +1351,9 @@ group("polymer3_elements") {
     "..:settings_shared_css_module",
     "..:settings_vars_css_module",
     "../../settings:settings_page_css_module",
+    "../a11y_page:captions_subpage_module",
     "../about_page:modulize",
+    "../appearance_page:modulize",
     "../prefs:modulize",
     "../prefs:prefs_module",
     "../search_engines_page:modulize",

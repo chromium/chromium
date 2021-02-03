@@ -195,7 +195,8 @@ TEST_F(
       mocha.run();
     });
 
-[['AboutPage', 'os_about_page_tests.m.js'],
+[['AccessibilityPage', 'os_a11y_page_tests.m.js'],
+ ['AboutPage', 'os_about_page_tests.m.js'],
  ['AmbientModePage', 'ambient_mode_page_test.m.js'],
  ['BluetoothPage', 'bluetooth_page_tests.m.js'],
  ['CellularNetworksList', 'cellular_networks_list_test.m.js'],

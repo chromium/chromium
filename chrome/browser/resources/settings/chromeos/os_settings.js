@@ -78,6 +78,7 @@ export {Account, NearbyAccountManagerBrowserProxy, NearbyAccountManagerBrowserPr
 export {getReceiveManager, observeReceiveManager, setReceiveManagerForTesting} from './nearby_share_page/nearby_share_receive_manager.m.js';
 export {dataUsageStringToEnum, NearbyShareDataUsage} from './nearby_share_page/types.m.js';
 export {ManageA11yPageBrowserProxy, ManageA11yPageBrowserProxyImpl} from './os_a11y_page/manage_a11y_page_browser_proxy.m.js';
+export {OsA11yPageBrowserProxy, OsA11yPageBrowserProxyImpl} from './os_a11y_page/os_a11y_page_browser_proxy.m.js';
 export {SwitchAccessSubpageBrowserProxy, SwitchAccessSubpageBrowserProxyImpl} from './os_a11y_page/switch_access_subpage_browser_proxy.m.js';
 export {TtsSubpageBrowserProxy, TtsSubpageBrowserProxyImpl} from './os_a11y_page/tts_subpage_browser_proxy.m.js';
 export {DeviceNameBrowserProxy, DeviceNameBrowserProxyImpl} from './os_about_page/device_name_browser_proxy.m.js';
