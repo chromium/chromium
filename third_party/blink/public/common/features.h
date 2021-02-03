@@ -350,6 +350,8 @@ BLINK_COMMON_EXPORT extern const base::Feature kWebRtcDistinctWorkerThread;
 BLINK_COMMON_EXPORT extern const base::Feature
     kSendCnameAliasesToSubresourceFilterFromRenderer;
 
+BLINK_COMMON_EXPORT extern const base::Feature kDeclarativeShadowDOM;
+
 BLINK_COMMON_EXPORT extern const base::Feature kInterestCohortAPIOriginTrial;
 
 BLINK_COMMON_EXPORT extern const base::Feature kInterestCohortFeaturePolicy;
