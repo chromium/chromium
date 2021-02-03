@@ -335,4 +335,8 @@ public abstract class AppHooks {
     public ChromeStartupDelegate createChromeStartupDelegate() {
         return new ChromeStartupDelegate();
     }
+
+    public boolean canStartForegroundServiceWhileInvisible() {
+        return true;
+    }
 }

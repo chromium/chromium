@@ -355,4 +355,11 @@ public class DownloadForegroundServiceManager {
         mHandler.postDelayed(mMaybeStopServiceRunnable, WAIT_TIME_MS);
         mStopServiceDelayed = true;
     }
+
+    /**
+     * @return whether the service for making the app foreground is bound.
+     */
+    public boolean isServiceBound() {
+        return mIsServiceBound;
+    }
 }
