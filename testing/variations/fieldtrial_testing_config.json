@@ -5994,6 +5994,26 @@
             ]
         }
     ],
+    "SchedulePeriodicPurge": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "DiscardableMemoryExperiments",
+                    "enable_features": [
+                        "SchedulePeriodicPurge"
+                    ]
+                }
+            ]
+        }
+    ],
     "SchemefulSameSiteAllOS": [
         {
             "platforms": [
