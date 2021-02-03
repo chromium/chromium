@@ -4,15 +4,17 @@
 
 #include "third_party/blink/renderer/core/svg/svg_resource.h"
 
+#include "services/network/public/mojom/content_security_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/id_target_observer.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources_cycle_solver.h"
-#include "third_party/blink/renderer/core/svg/svg_external_document_cache.h"
+#include "third_party/blink/renderer/core/svg/svg_resource_document_content.h"
 #include "third_party/blink/renderer/core/svg/svg_uri_reference.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
+#include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 
 namespace blink {
@@ -180,17 +182,24 @@ ExternalSVGResource::ExternalSVGResource(const KURL& url) : url_(url) {}
 void ExternalSVGResource::Load(Document& document) {
   if (document_content_)
     return;
-  document_content_ = SVGExternalDocumentCache::From(document)->Get(
-      this, url_, fetch_initiator_type_names::kCSS);
+  ExecutionContext* execution_context = document.GetExecutionContext();
+  ResourceLoaderOptions options(execution_context->GetCurrentWorld());
+  options.initiator_info.name = fetch_initiator_type_names::kCSS;
+  FetchParameters params(ResourceRequest(url_), options);
+  document_content_ = SVGResourceDocumentContent::Fetch(params, document, this);
   target_ = ResolveTarget();
 }
 
 void ExternalSVGResource::LoadWithoutCSP(Document& document) {
   if (document_content_)
     return;
-  document_content_ = SVGExternalDocumentCache::From(document)->Get(
-      this, url_, fetch_initiator_type_names::kCSS,
+  ExecutionContext* execution_context = document.GetExecutionContext();
+  ResourceLoaderOptions options(execution_context->GetCurrentWorld());
+  options.initiator_info.name = fetch_initiator_type_names::kCSS;
+  FetchParameters params(ResourceRequest(url_), options);
+  params.SetContentSecurityCheck(
       network::mojom::blink::CSPDisposition::DO_NOT_CHECK);
+  document_content_ = SVGResourceDocumentContent::Fetch(params, document, this);
   target_ = ResolveTarget();
 }
 

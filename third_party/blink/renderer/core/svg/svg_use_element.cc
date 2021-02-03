@@ -36,9 +36,9 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_transformable_container.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
-#include "third_party/blink/renderer/core/svg/svg_external_document_cache.h"
 #include "third_party/blink/renderer/core/svg/svg_g_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length_context.h"
+#include "third_party/blink/renderer/core/svg/svg_resource_document_content.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_symbol_element.h"
 #include "third_party/blink/renderer/core/svg/svg_title_element.h"
@@ -215,8 +215,13 @@ void SVGUseElement::UpdateTargetReference() {
     context_document =
         To<LocalDOMWindow>(GetDocument().GetExecutionContext())->document();
   }
-  document_content_ = SVGExternalDocumentCache::From(*context_document)
-                          ->Get(this, element_url_, localName());
+
+  ExecutionContext* execution_context = context_document->GetExecutionContext();
+  ResourceLoaderOptions options(execution_context->GetCurrentWorld());
+  options.initiator_info.name = localName();
+  FetchParameters params(ResourceRequest(element_url_), options);
+  document_content_ =
+      SVGResourceDocumentContent::Fetch(params, *context_document, this);
 }
 
 void SVGUseElement::SvgAttributeChanged(

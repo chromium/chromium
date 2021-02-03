@@ -2,18 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/svg/svg_external_document_cache.h"
+#include "third_party/blink/renderer/core/svg/svg_resource_document_content.h"
 
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
+#include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 
 namespace blink {
 
-class SVGExternalDocumentCacheTest : public SimTest {};
+class SVGResourceDocumentContentTest : public SimTest {};
 
-TEST_F(SVGExternalDocumentCacheTest, GetDocumentBeforeLoadComplete) {
+TEST_F(SVGResourceDocumentContentTest, GetDocumentBeforeLoadComplete) {
   SimRequest main_resource("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   main_resource.Complete("<html><body></body></html>");
@@ -22,9 +23,12 @@ TEST_F(SVGExternalDocumentCacheTest, GetDocumentBeforeLoadComplete) {
   SimSubresourceRequest svg_resource(kSVGUrl, "application/xml");
 
   // Request a resource from the cache.
+  ExecutionContext* execution_context = GetDocument().GetExecutionContext();
+  ResourceLoaderOptions options(execution_context->GetCurrentWorld());
+  options.initiator_info.name = fetch_initiator_type_names::kCSS;
+  FetchParameters params(ResourceRequest(kSVGUrl), options);
   auto* entry =
-      SVGExternalDocumentCache::From(GetDocument())
-          ->Get(nullptr, KURL(kSVGUrl), fetch_initiator_type_names::kCSS);
+      SVGResourceDocumentContent::Fetch(params, GetDocument(), nullptr);
 
   // Write part of the response. The document should not be initialized yet,
   // because the response is not complete. The document would be invalid at this

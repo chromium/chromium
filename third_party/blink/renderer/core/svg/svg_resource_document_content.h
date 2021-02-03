@@ -20,53 +20,33 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_EXTERNAL_DOCUMENT_CACHE_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_EXTERNAL_DOCUMENT_CACHE_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_RESOURCE_DOCUMENT_CONTENT_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_RESOURCE_DOCUMENT_CONTENT_H_
 
-#include "services/network/public/mojom/content_security_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
 class Document;
 class ExecutionContext;
+class FetchParameters;
+class KURL;
 class ResourceClient;
-class SVGResourceDocumentContent;
 class TextResource;
-
-class CORE_EXPORT SVGExternalDocumentCache final
-    : public GarbageCollected<SVGExternalDocumentCache>,
-      public Supplement<Document> {
- public:
-  static const char kSupplementName[];
-  static SVGExternalDocumentCache* From(Document&);
-  explicit SVGExternalDocumentCache(Document&);
-  void Trace(Visitor*) const override;
-
-  SVGResourceDocumentContent* Get(
-      ResourceClient*,
-      const KURL&,
-      const AtomicString& initiator_name,
-      network::mojom::blink::CSPDisposition =
-          network::mojom::blink::CSPDisposition::CHECK);
-
- private:
-  HeapHashMap<WeakMember<Resource>, Member<SVGResourceDocumentContent>>
-      entries_;
-};
 
 class CORE_EXPORT SVGResourceDocumentContent final
     : public GarbageCollected<SVGResourceDocumentContent> {
  public:
+  static SVGResourceDocumentContent* Fetch(FetchParameters&,
+                                           Document&,
+                                           ResourceClient*);
+
   SVGResourceDocumentContent(TextResource* resource, ExecutionContext* context)
       : resource_(resource), context_(context) {
     DCHECK(resource_);
     DCHECK(context_);
   }
-  void SetWasRevalidating() { was_revalidating_ = true; }
 
   Document* GetDocument();
   const KURL& Url() const;
@@ -74,6 +54,8 @@ class CORE_EXPORT SVGResourceDocumentContent final
   void Trace(Visitor*) const;
 
  private:
+  void SetWasRevalidating() { was_revalidating_ = true; }
+
   Member<TextResource> resource_;
   Member<Document> document_;
   Member<ExecutionContext> context_;
@@ -82,4 +64,4 @@ class CORE_EXPORT SVGResourceDocumentContent final
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_EXTERNAL_DOCUMENT_CACHE_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_RESOURCE_DOCUMENT_CONTENT_H_

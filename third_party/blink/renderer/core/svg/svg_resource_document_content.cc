@@ -20,7 +20,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "third_party/blink/renderer/core/svg/svg_external_document_cache.h"
+#include "third_party/blink/renderer/core/svg/svg_resource_document_content.h"
 
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -29,11 +29,61 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/loader/resource/text_resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
 namespace {
+
+class SVGExternalDocumentCache final
+    : public GarbageCollected<SVGExternalDocumentCache>,
+      public Supplement<Document> {
+ public:
+  static const char kSupplementName[];
+  static SVGExternalDocumentCache* From(Document&);
+  explicit SVGExternalDocumentCache(Document&);
+
+  SVGResourceDocumentContent* Get(TextResource*);
+
+  void Trace(Visitor*) const override;
+
+ private:
+  HeapHashMap<WeakMember<Resource>, Member<SVGResourceDocumentContent>>
+      entries_;
+};
+
+const char SVGExternalDocumentCache::kSupplementName[] =
+    "SVGExternalDocumentCache";
+
+SVGExternalDocumentCache* SVGExternalDocumentCache::From(Document& document) {
+  SVGExternalDocumentCache* cache =
+      Supplement<Document>::From<SVGExternalDocumentCache>(document);
+  if (!cache) {
+    cache = MakeGarbageCollected<SVGExternalDocumentCache>(document);
+    Supplement<Document>::ProvideTo(document, cache);
+  }
+  return cache;
+}
+
+SVGExternalDocumentCache::SVGExternalDocumentCache(Document& document)
+    : Supplement<Document>(document) {}
+
+SVGResourceDocumentContent* SVGExternalDocumentCache::Get(
+    TextResource* resource) {
+  auto& entry = entries_.insert(resource, nullptr).stored_value->value;
+  if (!entry) {
+    entry = MakeGarbageCollected<SVGResourceDocumentContent>(
+        resource, GetSupplementable()->GetExecutionContext());
+  }
+  return entry;
+}
+
+void SVGExternalDocumentCache::Trace(Visitor* visitor) const {
+  Supplement<Document>::Trace(visitor);
+  visitor->Trace(entries_);
+}
 
 bool MimeTypeAllowed(const ResourceResponse& response) {
   AtomicString mime_type = response.MimeType();
@@ -83,55 +133,26 @@ void SVGResourceDocumentContent::Trace(Visitor* visitor) const {
   visitor->Trace(context_);
 }
 
-const char SVGExternalDocumentCache::kSupplementName[] =
-    "SVGExternalDocumentCache";
-
-SVGExternalDocumentCache* SVGExternalDocumentCache::From(Document& document) {
-  SVGExternalDocumentCache* cache =
-      Supplement<Document>::From<SVGExternalDocumentCache>(document);
-  if (!cache) {
-    cache = MakeGarbageCollected<SVGExternalDocumentCache>(document);
-    Supplement<Document>::ProvideTo(document, cache);
-  }
-  return cache;
-}
-
-SVGExternalDocumentCache::SVGExternalDocumentCache(Document& document)
-    : Supplement<Document>(document) {}
-
-SVGResourceDocumentContent* SVGExternalDocumentCache::Get(
-    ResourceClient* client,
-    const KURL& url,
-    const AtomicString& initiator_name,
-    network::mojom::blink::CSPDisposition csp_disposition) {
-  Document* context_document = GetSupplementable();
-  ExecutionContext* execution_context = context_document->GetExecutionContext();
-  ResourceLoaderOptions options(execution_context->GetCurrentWorld());
-  options.initiator_info.name = initiator_name;
-  FetchParameters params(ResourceRequest(url), options);
-  params.SetContentSecurityCheck(csp_disposition);
+SVGResourceDocumentContent* SVGResourceDocumentContent::Fetch(
+    FetchParameters& params,
+    Document& document,
+    ResourceClient* client) {
   params.MutableResourceRequest().SetMode(
       network::mojom::blink::RequestMode::kSameOrigin);
+  DCHECK_EQ(params.GetResourceRequest().GetRequestContext(),
+            mojom::blink::RequestContextType::UNSPECIFIED);
   params.SetRequestContext(mojom::blink::RequestContextType::IMAGE);
   params.SetRequestDestination(network::mojom::RequestDestination::kImage);
 
-  TextResource* resource = TextResource::FetchSVGDocument(
-      params, context_document->Fetcher(), client);
+  TextResource* resource =
+      TextResource::FetchSVGDocument(params, document.Fetcher(), client);
   if (!resource)
     return nullptr;
-  auto& entry = entries_.insert(resource, nullptr).stored_value->value;
-  if (!entry) {
-    entry = MakeGarbageCollected<SVGResourceDocumentContent>(resource,
-                                                             execution_context);
-  }
+  auto* document_content =
+      SVGExternalDocumentCache::From(document)->Get(resource);
   if (resource->IsCacheValidator())
-    entry->SetWasRevalidating();
-  return entry;
-}
-
-void SVGExternalDocumentCache::Trace(Visitor* visitor) const {
-  Supplement<Document>::Trace(visitor);
-  visitor->Trace(entries_);
+    document_content->SetWasRevalidating();
+  return document_content;
 }
 
 }  // namespace blink
