@@ -97,7 +97,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryWin
   std::vector<VideoCaptureDeviceInfo> GetDevicesInfoDirectShow();
 
   bool use_media_foundation_;
-  bool use_d3d11_with_media_foundation_ = false;
+  bool use_d3d11_with_media_foundation_;
   MFSessionLifetime session_;
 
   // For calling WinRT methods on a COM initiated thread.

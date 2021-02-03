@@ -696,6 +696,10 @@ const base::Feature MEDIA_EXPORT kMediaFoundationAV1Decoding{
 const base::Feature kMediaFoundationVideoCapture{
     "MediaFoundationVideoCapture", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables MediaFoundation based video capture with D3D11
+const base::Feature kMediaFoundationD3D11VideoCapture{
+    "MediaFoundationD3D11VideoCapture", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables VP8 decode acceleration for Windows.
 const base::Feature MEDIA_EXPORT kMediaFoundationVP8Decoding{
     "MediaFoundationVP8Decoding", base::FEATURE_DISABLED_BY_DEFAULT};
