@@ -14,7 +14,11 @@ namespace {
 TEST(ToV8TraitsTest, JustUsingToV8) {
   V8TestingScope scope;
   DOMPoint* point = DOMPoint::Create(1, 2, 3, 4);
-  ToV8Traits<DOMPoint>::ToV8(scope.GetScriptState(), point);
+  v8::Local<v8::Value> v8_value;
+  if (!ToV8Traits<DOMPoint>::ToV8(scope.GetScriptState(), point)
+           .ToLocal(&v8_value)) {
+    return;
+  }
 }
 
 }  // namespace
