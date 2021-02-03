@@ -340,6 +340,11 @@ ClipboardOzone::~ClipboardOzone() = default;
 
 void ClipboardOzone::OnPreShutdown() {}
 
+DataTransferEndpoint* ClipboardOzone::GetSource(ClipboardBuffer buffer) const {
+  auto it = data_src_.find(buffer);
+  return it == data_src_.end() ? nullptr : it->second.get();
+}
+
 uint64_t ClipboardOzone::GetSequenceNumber(ClipboardBuffer buffer) const {
   return async_clipboard_ozone_->GetSequenceNumber(buffer);
 }
@@ -357,6 +362,7 @@ bool ClipboardOzone::IsFormatAvailable(
 
 void ClipboardOzone::Clear(ClipboardBuffer buffer) {
   async_clipboard_ozone_->Clear(buffer);
+  data_src_[buffer].reset();
 }
 
 // TODO(crbug.com/1103194): |data_dst| should be supported.
@@ -546,6 +552,8 @@ void ClipboardOzone::WritePortableRepresentations(
       async_clipboard_ozone_->OfferData(ClipboardBuffer::kSelection);
     }
   }
+
+  data_src_[buffer] = std::move(data_src);
 }
 
 // TODO(crbug.com/1103194): |data_src| should be supported
@@ -557,6 +565,8 @@ void ClipboardOzone::WritePlatformRepresentations(
   DispatchPlatformRepresentations(std::move(platform_representations));
 
   async_clipboard_ozone_->OfferData(buffer);
+
+  data_src_[buffer] = std::move(data_src);
 }
 
 void ClipboardOzone::WriteText(const char* text_data, size_t text_len) {

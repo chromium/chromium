@@ -36,6 +36,7 @@ class TestClipboard : public Clipboard {
 
   // Clipboard overrides.
   void OnPreShutdown() override;
+  DataTransferEndpoint* GetSource(ClipboardBuffer buffer) const override;
   uint64_t GetSequenceNumber(ClipboardBuffer buffer) const override;
   bool IsFormatAvailable(const ClipboardFormatType& format,
                          ClipboardBuffer buffer,
@@ -116,6 +117,7 @@ class TestClipboard : public Clipboard {
     ~DataStore();
     void Clear();
     void SetDataSource(std::unique_ptr<DataTransferEndpoint> data_src);
+    DataTransferEndpoint* GetDataSource() const;
     uint64_t sequence_number = 0;
     base::flat_map<ClipboardFormatType, std::string> data;
     std::string url_title;

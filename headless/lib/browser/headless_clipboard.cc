@@ -19,6 +19,12 @@ HeadlessClipboard::~HeadlessClipboard() = default;
 
 void HeadlessClipboard::OnPreShutdown() {}
 
+// DataTransferEndpoint is not used on this platform.
+ui::DataTransferEndpoint* HeadlessClipboard::GetSource(
+    ui::ClipboardBuffer buffer) const {
+  return nullptr;
+}
+
 uint64_t HeadlessClipboard::GetSequenceNumber(
     ui::ClipboardBuffer buffer) const {
   return GetStore(buffer).sequence_number;

@@ -445,6 +445,15 @@ ChromeDataExchangeDelegate::ParseClipboardFilenamesPickle(
     ui::EndpointType target,
     const ui::Clipboard& data) const {
   std::vector<ui::FileInfo> file_info;
+  // We only promote 'fs/sources' custom data pickle to be filenames which can
+  // be shared and read by clients if it came from the trusted FilesApp.
+  const ui::DataTransferEndpoint* data_src =
+      data.GetSource(ui::ClipboardBuffer::kCopyPaste);
+  if (!data_src || !data_src->IsSameOriginWith(ui::DataTransferEndpoint(
+                       file_manager::util::GetFilesAppOrigin()))) {
+    return file_info;
+  }
+
   const ui::DataTransferEndpoint data_dst(target);
   base::string16 file_system_url_list;
   data.ReadCustomData(ui::ClipboardBuffer::kCopyPaste, kFilesAppMimeSources,

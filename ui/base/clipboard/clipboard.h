@@ -89,6 +89,10 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
 
   virtual void OnPreShutdown() = 0;
 
+  // Gets the source of the current clipboard buffer contents.
+  virtual const DataTransferEndpoint* GetSource(
+      ClipboardBuffer buffer) const = 0;
+
   // Returns a sequence number which uniquely identifies clipboard state.
   // This can be used to version the data on the clipboard and determine
   // whether it has changed.

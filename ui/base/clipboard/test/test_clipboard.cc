@@ -48,6 +48,10 @@ void TestClipboard::SetLastModifiedTime(const base::Time& time) {
 
 void TestClipboard::OnPreShutdown() {}
 
+DataTransferEndpoint* TestClipboard::GetSource(ClipboardBuffer buffer) const {
+  return GetStore(buffer).GetDataSource();
+}
+
 uint64_t TestClipboard::GetSequenceNumber(ClipboardBuffer buffer) const {
   return GetStore(buffer).sequence_number;
 }
@@ -383,11 +387,16 @@ void TestClipboard::DataStore::Clear() {
   url_title.clear();
   html_src_url.clear();
   image = SkBitmap();
+  data_src.reset();
 }
 
 void TestClipboard::DataStore::SetDataSource(
     std::unique_ptr<DataTransferEndpoint> data_src) {
   this->data_src = std::move(data_src);
+}
+
+DataTransferEndpoint* TestClipboard::DataStore::GetDataSource() const {
+  return this->data_src.get();
 }
 
 const TestClipboard::DataStore& TestClipboard::GetStore(

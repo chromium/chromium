@@ -25,6 +25,7 @@ class ClipboardOzone : public Clipboard {
 
   // Clipboard overrides:
   void OnPreShutdown() override;
+  DataTransferEndpoint* GetSource(ClipboardBuffer buffer) const override;
   uint64_t GetSequenceNumber(ClipboardBuffer buffer) const override;
   bool IsFormatAvailable(const ClipboardFormatType& format,
                          ClipboardBuffer buffer,
@@ -98,6 +99,8 @@ class ClipboardOzone : public Clipboard {
   class AsyncClipboardOzone;
 
   std::unique_ptr<AsyncClipboardOzone> async_clipboard_ozone_;
+  base::flat_map<ClipboardBuffer, std::unique_ptr<DataTransferEndpoint>>
+      data_src_;
 
   DISALLOW_COPY_AND_ASSIGN(ClipboardOzone);
 };

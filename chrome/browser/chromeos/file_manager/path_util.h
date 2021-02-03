@@ -31,6 +31,9 @@ extern const base::FilePath::CharType kSystemFontsPath[];
 // Absolute path for the folder containing archive mounts.
 extern const base::FilePath::CharType kArchiveMountPath[];
 
+// Returns FilesApp origin chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj.
+const url::Origin& GetFilesAppOrigin();
+
 // Gets the absolute path for the 'Downloads' folder for the |profile|.
 base::FilePath GetDownloadsFolderForProfile(Profile* profile);
 

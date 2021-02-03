@@ -415,7 +415,10 @@ TEST_F(ChromeDataExchangeDelegateTest, ClipboardFilenamesPickle) {
 
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
   {
-    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+    auto files_app = std::make_unique<ui::DataTransferEndpoint>(
+        file_manager::util::GetFilesAppOrigin());
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste,
+                                     std::move(files_app));
     writer.WritePickledData(pickle,
                             ui::ClipboardFormatType::GetWebCustomDataType());
   }
@@ -428,6 +431,16 @@ TEST_F(ChromeDataExchangeDelegateTest, ClipboardFilenamesPickle) {
   EXPECT_EQ(myfiles_dir_.Append("file2"), file_info[1].path);
   EXPECT_EQ(base::FilePath(), file_info[0].display_name);
   EXPECT_EQ(base::FilePath(), file_info[1].display_name);
+
+  // Should return empty if data_src is not FilesApp.
+  {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+    writer.WritePickledData(pickle,
+                            ui::ClipboardFormatType::GetWebCustomDataType());
+  }
+  file_info = data_exchange_delegate.ParseClipboardFilenamesPickle(
+      ui::EndpointType::kDefault, *clipboard);
+  EXPECT_TRUE(file_info.empty());
 }
 
 }  // namespace chromeos

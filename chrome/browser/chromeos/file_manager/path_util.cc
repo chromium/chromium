@@ -11,6 +11,7 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
@@ -207,6 +208,14 @@ const base::FilePath::CharType kSystemFontsPath[] =
 
 const base::FilePath::CharType kArchiveMountPath[] =
     FILE_PATH_LITERAL("/media/archive");
+
+const url::Origin& GetFilesAppOrigin() {
+  static const base::NoDestructor<url::Origin> origin([] {
+    return url::Origin::Create(extensions::Extension::GetBaseURLFromExtensionId(
+        file_manager::kFileManagerAppId));
+  }());
+  return *origin;
+}
 
 base::FilePath GetDownloadsFolderForProfile(Profile* profile) {
   // Check if FilesApp has a registered path already.  This happens for tests.
@@ -480,9 +489,8 @@ bool ConvertPathInsideVMToFileSystemURL(
     if (container_info &&
         AppendRelativePath(container_info->homedir, inside, &relative_path)) {
       *file_system_url = mount_points->CreateExternalFileSystemURL(
-          url::Origin::Create(extensions::Extension::GetBaseURLFromExtensionId(
-              file_manager::kFileManagerAppId)),
-          GetCrostiniMountPointName(profile), relative_path);
+          GetFilesAppOrigin(), GetCrostiniMountPointName(profile),
+          relative_path);
       return file_system_url->is_valid();
     }
   }

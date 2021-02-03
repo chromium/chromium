@@ -399,6 +399,12 @@ std::unique_ptr<ClipboardData> ClipboardNonBacked::WriteClipboardData(
 
 void ClipboardNonBacked::OnPreShutdown() {}
 
+DataTransferEndpoint* ClipboardNonBacked::GetSource(
+    ClipboardBuffer buffer) const {
+  const ClipboardData* data = clipboard_internal_->GetData();
+  return data ? data->source() : nullptr;
+}
+
 uint64_t ClipboardNonBacked::GetSequenceNumber(ClipboardBuffer buffer) const {
   DCHECK(CalledOnValidThread());
   return clipboard_internal_->sequence_number();
