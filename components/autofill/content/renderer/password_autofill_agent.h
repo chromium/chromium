@@ -319,16 +319,17 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
     DISALLOW_COPY_AND_ASSIGN(FocusStateNotifier);
   };
 
-  // This class keeps track of autofilled password input elements and makes sure
-  // the autofilled password value is not accessible to JavaScript code until
-  // the user interacts with the page.
+  // This class keeps track of autofilled username and password input elements
+  // and ensures that the autofilled values are not accessible to JavaScript
+  // code until the user interacts with the page. This restriction improves
+  // privacy (crbug.com/798492) and reduces attack surface (crbug.com/777272).
   class PasswordValueGatekeeper {
    public:
     PasswordValueGatekeeper();
     ~PasswordValueGatekeeper();
 
-    // Call this for every autofilled password field, so that the gatekeeper
-    // protects the value accordingly.
+    // Call this for every autofilled username and password field, so that
+    // the gatekeeper protects the value accordingly.
     void RegisterElement(blink::WebInputElement* element);
 
     // Call this to notify the gatekeeper that the user interacted with the
