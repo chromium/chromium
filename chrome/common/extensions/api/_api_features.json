@@ -477,15 +477,28 @@
     "contexts": ["blessed_extension"],
     "disallow_for_service_workers": true
   },
-  "fileManagerPrivate": {
+  "fileManagerPrivate": [{
     "dependencies": ["permission:fileManagerPrivate"],
     "contexts": ["blessed_extension"]
-  },
-  "fileManagerPrivateInternal": {
+  }, {
+    "channel": "stable",
+    "contexts": ["webui"],
+    "matches": [
+      "chrome://file-manager/*"
+    ]
+  }],
+  "fileManagerPrivateInternal": [{
     "internal": true,
     "dependencies": ["permission:fileManagerPrivate"],
     "contexts": ["blessed_extension"]
-  },
+  }, {
+    "internal": true,
+    "channel": "stable",
+    "contexts": ["webui"],
+    "matches": [
+      "chrome://file-manager/*"
+    ]
+  }],
   "fileSystemProvider": {
     "dependencies": ["permission:fileSystemProvider"],
     "contexts": ["blessed_extension"],
