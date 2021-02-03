@@ -31,6 +31,7 @@ class CartHandler : public chrome_cart::mojom::CartHandler {
   void RemoveCart(const GURL& cart_url, RemoveCartCallback callback) override;
   void RestoreRemovedCart(const GURL& cart_url,
                           RestoreRemovedCartCallback callback) override;
+  void GetWarmWelcomeVisible(GetWarmWelcomeVisibleCallback callback) override;
 
  private:
   void GetCartDataCallback(GetMerchantCartsCallback callback,

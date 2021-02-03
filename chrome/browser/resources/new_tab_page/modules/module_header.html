@@ -1,9 +1,14 @@
 <style include="cr-icons">
   :host {
+    display: flex;
+    flex-direction: column;
+    margin: 16px;
+  }
+
+  #titleContainer {
     align-items: center;
     display: flex;
     height: 22px;
-    margin: 16px;
   }
 
   #title {
@@ -16,6 +21,7 @@
     border-radius: 4px;
     color: var(--ntp-chip-text-color);
     font-size: 10px;
+    height: 12px;
     margin-inline-start: 10px;
     padding: 2px 6px;
   }
@@ -31,24 +37,36 @@
   #dismissButton {
     --cr-icon-button-margin-start: 4px;
   }
+
+  #description {
+    color: var(--cr-secondary-text-color);
+    font-size: 12px;
+    height: 12px;
+    margin-top: 3px;
+  }
 </style>
-<span id="title"><slot></slot></span>
-<template is="dom-if" if="[[chipText]]">
-  <div id="chip">[[chipText]]</div>
-</template>
-<div id="headerSpacer"></div>
-<template is="dom-if" if="[[showInfoButton]]">
-  <cr-icon-button id="infoButton" title="$i18n{moduleInfoButtonTitle}"
-      on-click="onInfoButtonClick_">
-  </cr-icon-button>
-</template>
-<template is="dom-if" if="[[showDismissButton]]">
-  <cr-icon-button id="dismissButton" title="$i18n{moduleDismissButtonTitle}"
-      class="icon-clear" on-click="onDismissButtonClick_">
-  </cr-icon-button>
-</template>
-<template is="dom-if" if="[[showMenuButton]]">
-  <cr-icon-button id="menuButton" title="$i18n{moreActions}"
-      class="icon-more-vert" on-click="onMenuButtonClick_">
-  </cr-icon-button>
+<div id="titleContainer">
+  <span id="title"><slot></slot></span>
+  <template is="dom-if" if="[[chipText]]">
+    <div id="chip">[[chipText]]</div>
+  </template>
+  <div id="headerSpacer"></div>
+  <template is="dom-if" if="[[showInfoButton]]">
+    <cr-icon-button id="infoButton" title="$i18n{moduleInfoButtonTitle}"
+        on-click="onInfoButtonClick_">
+    </cr-icon-button>
+  </template>
+  <template is="dom-if" if="[[showDismissButton]]">
+    <cr-icon-button id="dismissButton" title="$i18n{moduleDismissButtonTitle}"
+        class="icon-clear" on-click="onDismissButtonClick_">
+    </cr-icon-button>
+  </template>
+  <template is="dom-if" if="[[showMenuButton]]">
+    <cr-icon-button id="menuButton" title="$i18n{moreActions}"
+        class="icon-more-vert" on-click="onMenuButtonClick_">
+    </cr-icon-button>
+  </template>
+</div>
+<template is="dom-if" if="[[descriptionText]]">
+  <span id="description">[[descriptionText]]</span>
 </template>
