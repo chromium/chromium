@@ -462,8 +462,8 @@ namespace declarativeNetRequest {
     // extension updates.</li>
     // <li>Static rules specified as part of the extension package can not be
     // removed using this function.</li>
-    // <li>$(ref:MAX_NUMBER_OF_DYNAMIC_RULES) is the maximum number of dynamic
-    // rules an extension can add.</li>
+    // <li>$(ref:MAX_NUMBER_OF_DYNAMIC_AND_SESSION_RULES) is the maximum number
+    // of combined dynamic and session rules an extension can add.</li>
     // </ul>
     // |callback|: Called once the update is complete or has failed. In case of
     // an error, $(ref:runtime.lastError) will be set and no change will be made
@@ -487,23 +487,19 @@ namespace declarativeNetRequest {
     // specified rules are added and removed, or an error is returned.</li>
     // <li>These rules are not persisted across sessions and are backed in
     // memory.</li>
-    // <li>$(ref:MAX_NUMBER_OF_DYNAMIC_OR_SESSION_RULES) is the maximum number
-    // of combined dynamic or session rules an extension can add.</li>
+    // <li>$(ref:MAX_NUMBER_OF_DYNAMIC_AND_SESSION_RULES) is the maximum number
+    // of combined dynamic and session rules an extension can add.</li>
     // </ul>
     // |callback|: Called once the update is complete or has failed. In case of
     // an error, $(ref:runtime.lastError) will be set and no change will be made
     // to the rule set. This can happen for multiple reasons, such as invalid
     // rule format, duplicate rule ID, rule count limit exceeded, and others.
-    // <!-- TODO(crbug.com/1043200): Add documentation once implementation is
-    // complete. -->
-    [nodoc] static void updateSessionRules(UpdateRuleOptions options,
+    static void updateSessionRules(UpdateRuleOptions options,
                                    optional EmptyCallback callback);
 
     // Returns the current set of session scoped rules for the extension.
     // |callback|: Called with the set of session scoped rules.
-    // <!-- TODO(crbug.com/1043200): Add documentation once implementation is
-    // complete. -->
-    [nodoc] static void getSessionRules(GetRulesCallback callback);
+    static void getSessionRules(GetRulesCallback callback);
 
     // Updates the set of enabled static rulesets for the extension. The
     // rulesets with IDs listed in <code>options.disableRulesetIds</code> are
@@ -569,14 +565,12 @@ namespace declarativeNetRequest {
     [value=30000] static long GUARANTEED_MINIMUM_STATIC_RULES();
 
     // The maximum number of dynamic rules that an extension can add.
-    [value=5000] static long MAX_NUMBER_OF_DYNAMIC_RULES();
+    [nodoc, deprecated="Use $(ref:MAX_NUMBER_OF_DYNAMIC_AND_SESSION_RULES) instead", value=5000]
+    static long MAX_NUMBER_OF_DYNAMIC_RULES();
 
-    // The maximum number of combined dynamic or session scoped rules an
+    // The maximum number of combined dynamic and session scoped rules an
     // extension can add.
-    // <!--TODO(crbug.com/1043200): Add documentation once implementation is
-    // complete. Also deprecate MAX_NUMBER_OF_DYNAMIC_RULES.
-    // -->
-    [nodoc, value=5000] static long MAX_NUMBER_OF_DYNAMIC_OR_SESSION_RULES();
+    [value=5000] static long MAX_NUMBER_OF_DYNAMIC_AND_SESSION_RULES();
 
     // Time interval within which <code>MAX_GETMATCHEDRULES_CALLS_PER_INTERVAL
     // getMatchedRules</code> calls can be made, specified in minutes.
@@ -602,10 +596,7 @@ namespace declarativeNetRequest {
     [value="_dynamic"] static DOMString DYNAMIC_RULESET_ID();
 
     // Ruleset ID for the session-scoped rules added by the extension.
-    // <!-- TODO(crbug.com/1043200): Add documentation once implementation is
-    // complete. Also describe it in MatchedRule.rulesetId.
-    // -->
-    [nodoc, value="_session"] static DOMString SESSION_RULESET_ID();
+    [value="_session"] static DOMString SESSION_RULESET_ID();
   };
 
   interface Events {

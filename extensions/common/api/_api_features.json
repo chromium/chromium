@@ -140,13 +140,6 @@
     "dependencies": ["permission:declarativeNetRequest"],
     "contexts": ["blessed_extension"]
   },
-  // TODO(crbug.com/1043200): Enable on Stable once implementation is complete.
-  "declarativeNetRequest.getSessionRules": {
-    "channel": "trunk"
-  },
-  "declarativeNetRequest.updateSessionRules": {
-    "channel": "trunk"
-  },
   "declarativeNetRequest.onRuleMatchedDebug": {
     "dependencies": ["permission:declarativeNetRequest", "permission:declarativeNetRequestFeedback"],
     "location": "unpacked"

@@ -12,7 +12,6 @@
 #include "build/build_config.h"
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_test.h"
-#include "extensions/common/features/feature_channel.h"
 #include "net/dns/mock_host_resolver.h"
 
 namespace {
@@ -95,10 +94,6 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestAPItest, ModifyHeaders) {
 }
 
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyAPItest, GetMatchedRules) {
-  // TODO(crbug.com/1043200): This test uses
-  // chrome.declarativeNetRequest.updateSessionRules, which is only available
-  // in the TRUNK channel.
-  ScopedCurrentChannel channel_override(version_info::Channel::UNKNOWN);
   ASSERT_TRUE(RunTest("get_matched_rules")) << message_;
 }
 

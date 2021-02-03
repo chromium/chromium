@@ -4,7 +4,7 @@
 
 var updateDynamicRules = chrome.declarativeNetRequest.updateDynamicRules;
 var getDynamicRules = chrome.declarativeNetRequest.getDynamicRules;
-var ruleLimit = chrome.declarativeNetRequest.MAX_NUMBER_OF_DYNAMIC_RULES;
+var ruleLimit = chrome.declarativeNetRequest.MAX_NUMBER_OF_DYNAMIC_AND_SESSION_RULES;
 var regexRuleLimit = chrome.declarativeNetRequest.MAX_NUMBER_OF_REGEX_RULES;
 var nextId = 1;
 

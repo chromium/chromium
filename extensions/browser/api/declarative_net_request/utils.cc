@@ -297,7 +297,7 @@ int GetMaximumRulesPerRuleset() {
 
 int GetDynamicAndSessionRuleLimit() {
   return g_dynamic_and_session_rule_limit_for_testing == kInvalidRuleLimit
-             ? dnr_api::MAX_NUMBER_OF_DYNAMIC_OR_SESSION_RULES
+             ? dnr_api::MAX_NUMBER_OF_DYNAMIC_AND_SESSION_RULES
              : g_dynamic_and_session_rule_limit_for_testing;
 }
 
