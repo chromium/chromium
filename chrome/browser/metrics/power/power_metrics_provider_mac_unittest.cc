@@ -31,7 +31,7 @@ class PowerMetricsProviderTest : public testing::Test {
         std::queue<BatteryLevelProvider::BatteryState>* battery_states)
         : battery_states_(battery_states) {}
 
-    base::Optional<BatteryState> GetBatteryState() override {
+    BatteryState GetBatteryState() override {
       DCHECK(!battery_states_->empty());
       BatteryLevelProvider::BatteryState state = battery_states_->front();
       battery_states_->pop();
@@ -39,6 +39,10 @@ class PowerMetricsProviderTest : public testing::Test {
     }
 
    private:
+    std::vector<BatteryInterface> GetBatteryInterfaceList() override {
+      return {};
+    }
+
     std::queue<BatteryLevelProvider::BatteryState>* battery_states_;
   };
 
@@ -74,9 +78,10 @@ class PowerMetricsProviderTest : public testing::Test {
 
 TEST_F(PowerMetricsProviderTest, BatteryDischargeOnPower) {
   // Two consecutive readings on power should not record a battery discharge.
-  battery_states_.push(BatteryLevelProvider::BatteryState{1.00, false, now_});
   battery_states_.push(BatteryLevelProvider::BatteryState{
-      1.000, false, now_ + base::TimeDelta::FromMinutes(1)});
+      /*interface_count=*/1, /*battery_count=*/1, 1.00, false, now_});
+  battery_states_.push(BatteryLevelProvider::BatteryState{
+      1, 1, 1.000, false, now_ + base::TimeDelta::FromMinutes(1)});
 
   ConsumeBatteryStates();
   histogram_tester_.ExpectTotalCount(kHistogramName, 0);
@@ -87,10 +92,11 @@ TEST_F(PowerMetricsProviderTest, BatteryDischargeOnBattery) {
   constexpr double kSecondReading = 0.098;
 
   // Two consecutive readings on battery should record a battery discharge.
-  battery_states_.push(
-      BatteryLevelProvider::BatteryState{kFirstReading, true, now_});
   battery_states_.push(BatteryLevelProvider::BatteryState{
-      kSecondReading, true, now_ + base::TimeDelta::FromMinutes(1)});
+      /*interface_count=*/1, /*battery_count=*/1, kFirstReading, true, now_});
+  battery_states_.push(BatteryLevelProvider::BatteryState{
+      /*interface_count=*/1, /*battery_count=*/1, kSecondReading, true,
+      now_ + base::TimeDelta::FromMinutes(1)});
 
   ConsumeBatteryStates();
   histogram_tester_.ExpectUniqueSample(
@@ -103,10 +109,11 @@ TEST_F(PowerMetricsProviderTest, BatteryDischargeCapacityGrew) {
   constexpr double kFirstReading = 0.098;
   constexpr double kSecondReading = 0.100;
 
-  battery_states_.push(
-      BatteryLevelProvider::BatteryState{kFirstReading, true, now_});
   battery_states_.push(BatteryLevelProvider::BatteryState{
-      kSecondReading, true, now_ + base::TimeDelta::FromMinutes(1)});
+      /*interface_count=*/1, /*battery_count=*/1, kFirstReading, true, now_});
+  battery_states_.push(BatteryLevelProvider::BatteryState{
+      /*interface_count=*/1, /*battery_count=*/1, kSecondReading, true,
+      now_ + base::TimeDelta::FromMinutes(1)});
 
   ConsumeBatteryStates();
   histogram_tester_.ExpectTotalCount(kHistogramName, 0);
@@ -124,10 +131,12 @@ TEST_F(PowerMetricsProviderTest, BatteryDischargeCaptureIsTooEarly) {
       base::TimeDelta::FromSeconds(1);
 
   // If it took too long to record a value no recoding takes place.
-  battery_states_.push(BatteryLevelProvider::BatteryState{kFirstReading, true,
-                                                          first_capture_time});
-  battery_states_.push(BatteryLevelProvider::BatteryState{kSecondReading, true,
-                                                          second_capture_time});
+  battery_states_.push(BatteryLevelProvider::BatteryState{
+      /*interface_count=*/1, /*battery_count=*/1, kFirstReading, true,
+      first_capture_time});
+  battery_states_.push(BatteryLevelProvider::BatteryState{
+      /*interface_count=*/1, /*battery_count=*/1, kSecondReading, true,
+      second_capture_time});
 
   ConsumeBatteryStates();
   histogram_tester_.ExpectTotalCount(kHistogramName, 0);
@@ -145,10 +154,12 @@ TEST_F(PowerMetricsProviderTest, BatteryDischargeCaptureIsEarly) {
       base::TimeDelta::FromSeconds(1);
 
   // The second recording came in just in time to not be counted as too early.
-  battery_states_.push(BatteryLevelProvider::BatteryState{kFirstReading, true,
-                                                          first_capture_time});
-  battery_states_.push(BatteryLevelProvider::BatteryState{kSecondReading, true,
-                                                          second_capture_time});
+  battery_states_.push(BatteryLevelProvider::BatteryState{
+      /*interface_count=*/1, /*battery_count=*/1, kFirstReading, true,
+      first_capture_time});
+  battery_states_.push(BatteryLevelProvider::BatteryState{
+      /*interface_count=*/1, /*battery_count=*/1, kSecondReading, true,
+      second_capture_time});
 
   ConsumeBatteryStates();
 
@@ -174,10 +185,12 @@ TEST_F(PowerMetricsProviderTest, BatteryDischargeCaptureIsTooLate) {
       base::TimeDelta::FromSeconds(1);
 
   // If it took too long to record a value no recoding takes place.
-  battery_states_.push(BatteryLevelProvider::BatteryState{kFirstReading, true,
-                                                          first_capture_time});
-  battery_states_.push(BatteryLevelProvider::BatteryState{kSecondReading, true,
-                                                          second_capture_time});
+  battery_states_.push(BatteryLevelProvider::BatteryState{
+      /*interface_count=*/1, /*battery_count=*/1, kFirstReading, true,
+      first_capture_time});
+  battery_states_.push(BatteryLevelProvider::BatteryState{
+      /*interface_count=*/1, /*battery_count=*/1, kSecondReading, true,
+      second_capture_time});
 
   ConsumeBatteryStates();
   histogram_tester_.ExpectTotalCount(kHistogramName, 0);
@@ -195,10 +208,12 @@ TEST_F(PowerMetricsProviderTest, BatteryDischargeCaptureIsLate) {
 
   // If it took longer to record the metric the value recorded is scaled to
   // normalize to one minute.
-  battery_states_.push(BatteryLevelProvider::BatteryState{kFirstReading, true,
-                                                          first_capture_time});
-  battery_states_.push(BatteryLevelProvider::BatteryState{kSecondReading, true,
-                                                          second_capture_time});
+  battery_states_.push(BatteryLevelProvider::BatteryState{
+      /*interface_count=*/1, /*battery_count=*/1, kFirstReading, true,
+      first_capture_time});
+  battery_states_.push(BatteryLevelProvider::BatteryState{
+      /*interface_count=*/1, /*battery_count=*/1, kSecondReading, true,
+      second_capture_time});
 
   ConsumeBatteryStates();
 

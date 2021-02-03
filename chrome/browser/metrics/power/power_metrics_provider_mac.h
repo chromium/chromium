@@ -64,7 +64,8 @@ class PowerDrainRecorder {
       BatteryLevelProvider::Create();
 
   // Latest battery state provided by |battery_level_provider_|.
-  base::Optional<BatteryLevelProvider::BatteryState> battery_state_;
+  BatteryLevelProvider::BatteryState battery_state_{0, 0, base::nullopt, false,
+                                                    base::TimeTicks()};
 
   // Time that should elapse between calls to RecordBatteryDischarge.
   const base::TimeDelta recording_interval_;

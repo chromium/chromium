@@ -811,6 +811,7 @@ static_library("browser") {
     "metrics/network_quality_estimator_provider_impl.h",
     "metrics/oom/out_of_memory_reporter.cc",
     "metrics/oom/out_of_memory_reporter.h",
+    "metrics/power/battery_level_provider.cc",
     "metrics/power/battery_level_provider.h",
     "metrics/power/power_metrics_reporter.cc",
     "metrics/power/power_metrics_reporter.h",

@@ -45,36 +45,48 @@ class BatteryLevelProviderMac : public BatteryLevelProvider {
   BatteryLevelProviderMac() = default;
   ~BatteryLevelProviderMac() override = default;
 
-  base::Optional<BatteryState> GetBatteryState() override;
+  std::vector<BatteryInterface> GetBatteryInterfaceList() override;
+
+ private:
+  BatteryLevelProvider::BatteryInterface GetInterface(
+      CFDictionaryRef description);
 };
 
 std::unique_ptr<BatteryLevelProvider> BatteryLevelProvider::Create() {
   return std::make_unique<BatteryLevelProviderMac>();
 }
 
-base::Optional<BatteryLevelProvider::BatteryState>
-BatteryLevelProviderMac::GetBatteryState() {
-  const base::TimeTicks capture_time = base::TimeTicks::Now();
-
+std::vector<BatteryLevelProvider::BatteryInterface>
+BatteryLevelProviderMac::GetBatteryInterfaceList() {
   // Retrieve the IOPMPowerSource service.
   const base::mac::ScopedIOObject<io_service_t> service(
       IOServiceGetMatchingService(kIOMasterPortDefault,
                                   IOServiceMatching("IOPMPowerSource")));
+  if (service == IO_OBJECT_NULL)
+    return {};
 
   // Gather a dictionary containing the power information.
   base::ScopedCFTypeRef<CFMutableDictionaryRef> dict;
   kern_return_t result = IORegistryEntryCreateCFProperties(
       service.get(), dict.InitializeInto(), 0, 0);
 
+  std::vector<BatteryInterface> interfaces;
   // Retrieving dictionary failed. Cannot proceed.
-  if (result != KERN_SUCCESS)
-    return base::nullopt;
+  if (result != KERN_SUCCESS) {
+    interfaces.push_back(BatteryInterface(false));
+  } else {
+    interfaces.push_back(GetInterface(dict));
+  }
+  return interfaces;
+}
 
+BatteryLevelProvider::BatteryInterface BatteryLevelProviderMac::GetInterface(
+    CFDictionaryRef description) {
   base::Optional<bool> external_connected =
-      GetValueAsBoolean(dict, CFSTR("ExternalConnected"));
-  // Value was not available.
+      GetValueAsBoolean(description, CFSTR("ExternalConnected"));
   if (!external_connected.has_value())
-    return base::nullopt;
+    return BatteryInterface(true);
+  bool is_connected = *external_connected;
 
   CFStringRef capacity_key;
   CFStringRef max_capacity_key;
@@ -90,21 +102,10 @@ BatteryLevelProviderMac::GetBatteryState() {
 
   // Extract the information from the dictionary.
   base::Optional<SInt64> current_capacity =
-      GetValueAsSInt64(dict, capacity_key);
+      GetValueAsSInt64(description, capacity_key);
   base::Optional<SInt64> max_capacity =
-      GetValueAsSInt64(dict, max_capacity_key);
-
-  // If any of the values were not available.
+      GetValueAsSInt64(description, max_capacity_key);
   if (!current_capacity.has_value() || !max_capacity.has_value())
-    return base::nullopt;
-
-  // Avoid invalid division.
-  if (*max_capacity == 0)
-    return base::nullopt;
-
-  // |ratio| is the result of dividing |current_capacity| by |max_capacity|.
-  double charge_level = static_cast<double>(current_capacity.value()) /
-                        static_cast<double>(max_capacity.value());
-
-  return BatteryState{charge_level, !(*external_connected), capture_time};
+    return BatteryInterface(true);
+  return BatteryInterface({is_connected, *current_capacity, *max_capacity});
 }

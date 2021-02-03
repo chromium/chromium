@@ -202,18 +202,20 @@ PowerDrainRecorder::PowerDrainRecorder(base::TimeDelta recording_interval)
 PowerDrainRecorder::~PowerDrainRecorder() = default;
 
 void PowerDrainRecorder::RecordBatteryDischarge() {
-  base::Optional<BatteryLevelProvider::BatteryState> previous_battery_state =
+  BatteryLevelProvider::BatteryState previous_battery_state =
       std::exchange(battery_state_, battery_level_provider_->GetBatteryState());
 
   // Missing battery values.
-  if (!battery_state_.has_value() || !previous_battery_state.has_value())
+  if (!battery_state_.charge_level.has_value() ||
+      !previous_battery_state.charge_level.has_value()) {
     return;
+  }
 
   // Not discharging.
-  if (!battery_state_->on_battery || !previous_battery_state->on_battery)
+  if (!battery_state_.on_battery || !previous_battery_state.on_battery)
     return;
 
-  if (battery_state_->charge_level > previous_battery_state->charge_level) {
+  if (*battery_state_.charge_level > *previous_battery_state.charge_level) {
     // Charge level went up since last measurement. It's suspected the computer
     // was charged for less than the collection interval. Consider this time
     // slice as not even "on battery".
@@ -221,7 +223,7 @@ void PowerDrainRecorder::RecordBatteryDischarge() {
   }
 
   const base::TimeDelta time_since_last_record =
-      battery_state_->capture_time - previous_battery_state->capture_time;
+      battery_state_.capture_time - previous_battery_state.capture_time;
 
   // Ratio by which the time elapsed can deviate from |recording_interval|
   // without invalidating this sample.
@@ -255,7 +257,7 @@ void PowerDrainRecorder::RecordBatteryDischarge() {
   constexpr int kScalingFactor = 10000;
   int discharge =
       kScalingFactor * time_elapsed_ratio *
-      (previous_battery_state->charge_level - battery_state_->charge_level);
+      (*previous_battery_state.charge_level - *battery_state_.charge_level);
   base::UmaHistogramCounts1000("Power.Mac.BatteryDischarge", discharge);
 }
 

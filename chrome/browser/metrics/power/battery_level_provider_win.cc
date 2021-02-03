@@ -116,29 +116,28 @@ class BatteryLevelProviderWin : public BatteryLevelProvider {
   BatteryLevelProviderWin() = default;
   ~BatteryLevelProviderWin() override = default;
 
-  base::Optional<BatteryState> GetBatteryState() override;
+  std::vector<BatteryInterface> GetBatteryInterfaceList() override;
+
+ private:
+  BatteryInterface GetInterface(HDEVINFO devices,
+                                SP_DEVICE_INTERFACE_DATA* interface_data);
 };
 
 std::unique_ptr<BatteryLevelProvider> BatteryLevelProvider::Create() {
   return std::make_unique<BatteryLevelProviderWin>();
 }
 
-base::Optional<BatteryLevelProvider::BatteryState>
-BatteryLevelProviderWin::GetBatteryState() {
-  const base::TimeTicks capture_time = base::TimeTicks::Now();
-
+std::vector<BatteryLevelProvider::BatteryInterface>
+BatteryLevelProviderWin::GetBatteryInterfaceList() {
   // Battery interfaces are enumerated at every sample to detect when a new
   // interface is added, and avoid holding dangling handles when a battery is
   // disconnected.
-  base::win::ScopedDevInfo devices(
-      ::SetupDiGetClassDevs(&GUID_DEVICE_BATTERY, nullptr, nullptr,
-                            DIGCF_PRESENT | DIGCF_DEVICEINTERFACE));
+  base::win::ScopedDevInfo devices(::SetupDiGetClassDevs(
+      &GUID_DEVICE_BATTERY, 0, 0, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE));
   if (!devices.is_valid())
-    return base::nullopt;
+    return {};
 
-  uint64_t total_max_capacity = 0;
-  uint64_t total_current_capacity = 0;
-  bool external_connected = false;
+  std::vector<BatteryInterface> interfaces;
 
   // The algorithm to enumerate battery devices is taken from
   // https://docs.microsoft.com/en-us/windows/win32/power/enumerating-battery-devices
@@ -158,37 +157,28 @@ BatteryLevelProviderWin::GetBatteryState() {
       continue;
     }
 
-    base::win::ScopedHandle battery =
-        GetBatteryHandle(devices.get(), &interface_data);
-    if (!battery.IsValid())
-      continue;
-
-    base::Optional<uint64_t> battery_tag = GetBatteryTag(battery.Get());
-    if (!battery_tag)
-      continue;
-    auto battery_information =
-        GetBatteryInformation(battery.Get(), *battery_tag);
-    auto battery_status = GetBatteryStatus(battery.Get(), *battery_tag);
-    // If any of the values were not available.
-    if (!battery_information.has_value() || !battery_status.has_value())
-      continue;
-
-    // The state is set as connected if any battery has access to AC power.
-    external_connected = external_connected ||
-                         (battery_status->PowerState & BATTERY_POWER_ON_LINE);
-
-    // Total capacity is averaged across multiple batteries.
-    total_max_capacity += battery_information->FullChargedCapacity;
-    total_current_capacity += battery_status->Capacity;
+    interfaces.push_back(GetInterface(devices.get(), &interface_data));
   }
+  return interfaces;
+}
 
-  // Avoid invalid division.
-  if (total_max_capacity == 0)
-    return base::nullopt;
+BatteryLevelProvider::BatteryInterface BatteryLevelProviderWin::GetInterface(
+    HDEVINFO devices,
+    SP_DEVICE_INTERFACE_DATA* interface_data) {
+  base::win::ScopedHandle battery = GetBatteryHandle(devices, interface_data);
+  if (!battery.IsValid())
+    return BatteryInterface(false);
 
-  DCHECK_LE(total_current_capacity, total_max_capacity);
-  double charge_level = static_cast<double>(total_current_capacity) /
-                        static_cast<double>(total_max_capacity);
+  base::Optional<uint64_t> battery_tag = GetBatteryTag(battery.Get());
+  if (!battery_tag)
+    return BatteryInterface(false);
+  auto battery_information = GetBatteryInformation(battery.Get(), *battery_tag);
+  auto battery_status = GetBatteryStatus(battery.Get(), *battery_tag);
+  // If any of the values were not available.
+  if (!battery_information.has_value() || !battery_status.has_value())
+    return BatteryInterface(true);
 
-  return BatteryState{charge_level, !external_connected, capture_time};
+  return BatteryInterface({battery_status->PowerState & BATTERY_POWER_ON_LINE,
+                           battery_status->Capacity,
+                           battery_information->FullChargedCapacity});
 }
