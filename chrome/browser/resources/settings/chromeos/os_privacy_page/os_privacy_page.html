@@ -47,16 +47,14 @@
         </settings-toggle-button>
         <div class="hr"></div>
 </if>
-        <template is="dom-if" if="[[showSuggestedContentToggle_]]">
-          <settings-toggle-button
-              id="suggested-content"
-              pref="{{prefs.settings.suggested_content_enabled}}"
-              label="$i18n{enableSuggestedContent}"
-              sub-label="$i18n{enableSuggestedContentDesc}"
-              learn-more-url="$i18n{suggestedContentLearnMoreURL}">
-          </settings-toggle-button>
-          <div class="hr"></div>
-        </template>
+        <settings-toggle-button
+            id="suggested-content"
+            pref="{{prefs.settings.suggested_content_enabled}}"
+            label="$i18n{enableSuggestedContent}"
+            sub-label="$i18n{enableSuggestedContentDesc}"
+            learn-more-url="$i18n{suggestedContentLearnMoreURL}">
+        </settings-toggle-button>
+        <div class="hr"></div>
         <settings-toggle-button
             id="enable-verified-access"
             pref="{{

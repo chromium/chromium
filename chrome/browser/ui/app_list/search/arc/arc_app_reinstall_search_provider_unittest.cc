@@ -1,4 +1,3 @@
-
 // Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -13,7 +12,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/timer/mock_timer.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
@@ -204,9 +202,6 @@ TEST_F(ArcAppReinstallSearchProviderTest, TestPolicyManagedUser) {
 }
 
 TEST_F(ArcAppReinstallSearchProviderTest, TestResultsWithSearchChanged) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      chromeos::features::kSuggestedContentToggle);
   std::vector<arc::mojom::AppReinstallCandidatePtr> candidates;
   candidates.emplace_back(arc::mojom::AppReinstallCandidate::New(
       "com.package.fakepackage1", "Title of first package",

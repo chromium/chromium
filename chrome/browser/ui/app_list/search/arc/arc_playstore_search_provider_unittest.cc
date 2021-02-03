@@ -11,7 +11,6 @@
 #include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chromeos/arc/icon_decode_request.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/ui/app_list/app_list_test_util.h"
@@ -40,8 +39,6 @@ class ArcPlayStoreSearchProviderTest : public AppListTestBase {
     controller_ = std::make_unique<test::TestAppListControllerDelegate>();
     profile_->GetPrefs()->SetBoolean(chromeos::prefs::kSuggestedContentEnabled,
                                      true);
-    scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kSuggestedContentToggle}, {});
   }
 
   void TearDown() override {
@@ -51,7 +48,6 @@ class ArcPlayStoreSearchProviderTest : public AppListTestBase {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<ArcPlayStoreSearchProvider> CreateSearch(int max_results) {
     return std::make_unique<ArcPlayStoreSearchProvider>(
         max_results, profile_.get(), controller_.get());

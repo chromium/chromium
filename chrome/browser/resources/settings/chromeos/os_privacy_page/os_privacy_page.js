@@ -70,17 +70,6 @@ Polymer({
     },
 
     /**
-     * Whether to show the Suggested Content toggle.
-     * @private
-     */
-    showSuggestedContentToggle_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('suggestedContentToggleEnabled');
-      },
-    },
-
-    /**
      * Used by DeepLinkingBehavior to focus this page's deep links.
      * @type {!Set<!chromeos.settings.mojom.Setting>}
      */

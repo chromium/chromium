@@ -265,9 +265,6 @@ void ArcAppReinstallSearchProvider::Start(const base::string16& query) {
   if (pref_service &&
       !pref_service->GetBoolean(chromeos::prefs::kSuggestedContentEnabled))
     should_show_arc_app_reinstall_result = false;
-  if (!base::FeatureList::IsEnabled(
-          chromeos::features::kSuggestedContentToggle))
-    should_show_arc_app_reinstall_result = false;
 
   if (!should_show_arc_app_reinstall_result) {
     ClearResults();

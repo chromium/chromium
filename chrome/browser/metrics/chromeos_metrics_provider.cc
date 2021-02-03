@@ -209,13 +209,10 @@ void ChromeOSMetricsProvider::ProvideAccessibilityMetrics() {
 }
 
 void ChromeOSMetricsProvider::ProvideSuggestedContentMetrics() {
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kSuggestedContentToggle)) {
-    UMA_HISTOGRAM_BOOLEAN(
-        "Apps.AppList.SuggestedContent.Enabled",
-        ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
-            chromeos::prefs::kSuggestedContentEnabled));
-  }
+  UMA_HISTOGRAM_BOOLEAN(
+      "Apps.AppList.SuggestedContent.Enabled",
+      ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
+          chromeos::prefs::kSuggestedContentEnabled));
 }
 
 void ChromeOSMetricsProvider::ProvideStabilityMetrics(

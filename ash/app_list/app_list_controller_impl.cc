@@ -1293,11 +1293,6 @@ bool AppListControllerImpl::IsAssistantAllowedAndEnabled() const {
 }
 
 bool AppListControllerImpl::ShouldShowSuggestedContentInfo() const {
-  if (!base::FeatureList::IsEnabled(
-          chromeos::features::kSuggestedContentToggle)) {
-    return false;
-  }
-
   if (!IsSuggestedContentEnabled()) {
     // Don't show if user has interacted with the setting already.
     SetSuggestedContentInfoDismissed();

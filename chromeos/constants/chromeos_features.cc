@@ -648,11 +648,6 @@ const base::Feature kSmartDimModelV3{"SmartDimModelV3",
 const base::Feature kSplitSettingsSync{"SplitSettingsSync",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables a settings UI toggle that controls Suggested Content status. Also
-// enables a corresponding notice in the Launcher about Suggested Content.
-const base::Feature kSuggestedContentToggle{"SuggestedContentToggle",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables or disables using the system input engine for physical typing in
 // languages based on latin script.
 const base::Feature kSystemLatinPhysicalTyping{

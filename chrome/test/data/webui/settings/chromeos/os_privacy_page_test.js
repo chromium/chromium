@@ -31,24 +31,7 @@ suite('PrivacyPageTests', function() {
     settings.Router.getInstance().resetRouteForTesting();
   });
 
-  test('Suggested content, visibility disabled', async () => {
-    loadTimeData.overrideValues({
-      suggestedContentToggleEnabled: false,
-    });
-
-    privacyPage = document.createElement('os-settings-privacy-page');
-    document.body.appendChild(privacyPage);
-
-    Polymer.dom.flush();
-
-    assertEquals(null, privacyPage.$$('#suggested-content'));
-  });
-
-  test('Suggested content, visibility enabled', async () => {
-    loadTimeData.overrideValues({
-      suggestedContentToggleEnabled: true,
-    });
-
+  test('Suggested content, pref disabled', async () => {
     privacyPage = document.createElement('os-settings-privacy-page');
     document.body.appendChild(privacyPage);
 
@@ -60,10 +43,6 @@ suite('PrivacyPageTests', function() {
   });
 
   test('Suggested content, pref enabled', async () => {
-    loadTimeData.overrideValues({
-      suggestedContentToggleEnabled: true,
-    });
-
     // Update the backing pref to enabled.
     privacyPage.prefs = {
       'settings': {

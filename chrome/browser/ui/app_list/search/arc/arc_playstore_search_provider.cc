@@ -119,9 +119,7 @@ void ArcPlayStoreSearchProvider::Start(const base::string16& query) {
   // Always check if suggested content is enabled before searching for play
   // store apps.
   PrefService* pref_service = profile_->GetPrefs();
-  bool is_suggested_content_toggle_enabled =
-      base::FeatureList::IsEnabled(chromeos::features::kSuggestedContentToggle);
-  if (is_suggested_content_toggle_enabled && pref_service) {
+  if (pref_service) {
     bool is_suggested_content_enabled =
         pref_service->GetBoolean(chromeos::prefs::kSuggestedContentEnabled);
     if (!is_suggested_content_enabled)

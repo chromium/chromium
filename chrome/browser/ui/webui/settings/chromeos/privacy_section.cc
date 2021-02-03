@@ -203,10 +203,6 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       "privacySettingsRedesignEnabled",
       base::FeatureList::IsEnabled(::features::kPrivacySettingsRedesign));
 
-  html_source->AddBoolean("suggestedContentToggleEnabled",
-                          base::FeatureList::IsEnabled(
-                              ::chromeos::features::kSuggestedContentToggle));
-
   html_source->AddString("suggestedContentLearnMoreURL",
                          chrome::kSuggestedContentLearnMoreURL);
 
