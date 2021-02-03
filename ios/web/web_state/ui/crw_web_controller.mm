@@ -29,6 +29,7 @@
 #import "ios/web/js_messaging/crw_wk_script_message_router.h"
 #import "ios/web/js_messaging/web_frames_manager_impl.h"
 #import "ios/web/js_messaging/web_view_js_utils.h"
+#import "ios/web/js_messaging/web_view_web_state_map_impl.h"
 #import "ios/web/navigation/crw_error_page_helper.h"
 #import "ios/web/navigation/crw_js_navigation_handler.h"
 #import "ios/web/navigation/crw_navigation_item_holder.h"
@@ -423,6 +424,9 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
       [self webViewConfigurationProvider].GetScriptMessageRouter();
   self.webStateImpl->GetWebFramesManagerImpl().OnWebViewUpdated(
       _webView, webView, messageRouter);
+  web::WebViewWebStateMapImpl::FromBrowserState(
+      self.webStateImpl->GetBrowserState())
+      ->SetAssociatedWebViewForWebState(webView, self.webStateImpl);
 
   if (_webView) {
     [_webView stopLoading];
