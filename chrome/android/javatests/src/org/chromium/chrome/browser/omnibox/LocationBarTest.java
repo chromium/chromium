@@ -373,9 +373,9 @@ public class LocationBarTest {
     @Test
     @MediumTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
-    @DisabledTest(message = "https://crbug.com/1173711")
     public void testFocusLogic_buttonVisibilityTablet() {
         startActivityNormally();
+        doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
         String url = mActivityTestRule.getEmbeddedTestServerRule().getServer().getURLWithHostName(
                 HOSTNAME, "/");
         mActivityTestRule.loadUrl(url);
