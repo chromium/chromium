@@ -83,6 +83,14 @@ namespace policy {
 
 namespace em = enterprise_management;
 
+std::string GetDeviceManufacturer() {
+#if defined(OS_IOS)
+  return "Apple Inc.";
+#else
+  return std::string();
+#endif
+}
+
 std::string GetDeviceModel() {
 #if defined(OS_IOS)
   // Obtains the Apple internal device name (e.g. "iPad6,11").

@@ -1928,6 +1928,8 @@ message ChromeDesktopReportRequest {
   optional string machine_attestation_key = 11;
   // A string that represents the device model.
   optional string device_model = 12;
+  // A string that represents the brand/manufacturer of a device.
+  optional string brand_name = 13;
 }
 
 // Report user level status on Chrome OS platform. Chrome OS equivalent of
@@ -2723,6 +2725,8 @@ message RegisterBrowserRequest {
   optional BrowserDeviceIdentifier browser_device_identifier = 4;
   // The device model, e.g., iPad6,11
   optional string device_model = 5;
+  // A string that represents the brand/manufacturer of a device.
+  optional string brand_name = 6;
 }
 
 // Gets an enrollment token to a managed Google Play account for using it with

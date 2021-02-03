@@ -58,6 +58,7 @@ void ReportGenerator::CreateBasicRequest(
         policy::GetBrowserDeviceIdentifier().release());
 #if defined(OS_IOS)
     basic_request->set_device_model(policy::GetDeviceModel());
+    basic_request->set_brand_name(policy::GetDeviceManufacturer());
 #endif  // defined(OS_IOS)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }

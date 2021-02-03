@@ -288,6 +288,7 @@ void CloudPolicyClient::RegisterWithToken(const std::string& token,
   request->set_os_version(GetOSVersion());
 #if defined(OS_IOS)
   request->set_device_model(GetDeviceModel());
+  request->set_brand_name(GetDeviceManufacturer());
 #endif  // defined(OS_IOS)
 
   policy_fetch_request_job_ = service_->CreateJob(std::move(config));

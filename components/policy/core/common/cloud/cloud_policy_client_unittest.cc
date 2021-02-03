@@ -312,6 +312,7 @@ class CloudPolicyClientTest : public testing::Test {
     enrollment_request->set_os_version(policy::GetOSVersion());
 #if defined(OS_IOS)
     enrollment_request->set_device_model(policy::GetDeviceModel());
+    enrollment_request->set_brand_name(policy::GetDeviceManufacturer());
 #endif
 #endif
 
