@@ -52,6 +52,11 @@ body {
 }
 
 button,
+input {
+  --focus-ring-size: 3px;
+}
+
+button,
 input[type=radio],
 input[type=checkbox],
 label {
@@ -72,8 +77,6 @@ input[type=checkbox] {
 
 body.tab-navigation button:focus::after,
 body.tab-navigation input:focus::after {
-  --focus-ring-size: 3px;
-
   border: 2px solid var(--focus-color);
   border-radius: 4px;
   bottom: calc(-1 * var(--focus-ring-size));
@@ -382,14 +385,12 @@ body.tab-navigation .mode-item>input:focus + span::after {
 }
 
 button.shutter {
+  --focus-ring-size: 9px;
+
   display: none;
   height: 60px;
   width: 60px;
   z-index: 1;  /* On top of transforming switch-mode buttons. */
-}
-
-body.tab-navigation button.shutter:focus::after {
-  --focus-ring-size: 9px;
 }
 
 body.video #recordvideo,
@@ -595,6 +596,8 @@ body.mode-switching:not(.streaming) #camera-mode {
 }
 
 #switch-device {
+  --focus-ring-size: 8px;
+
   background-image: url(/images/camera_button_switch_device.svg);
   height: var(--big-icon);
   width: var(--big-icon);
@@ -611,10 +614,6 @@ body.mode-switching:not(.streaming) #camera-mode {
   100% {
     transform: rotate(-180deg);
   }
-}
-
-body.tab-navigation #switch-device:focus::after {
-  --focus-ring-size: 8px;
 }
 
 #gallery-enter {
@@ -1408,7 +1407,10 @@ body.tab-navigation button.menu-item:focus::after {
   right: 2px;
 }
 
-.menu-header .icon {
+.menu-header button.icon {
+  /* Icon image is small enough and won't be covered by -1px */
+  --focus-ring-size: -1px;
+
   background-image: url(/images/settings_button_back.svg);
 }
 
