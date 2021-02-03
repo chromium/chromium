@@ -51,17 +51,6 @@
 /** @const */ var ACCELERATOR_APP_LAUNCH_NETWORK_CONFIG =
     'app_launch_network_config';
 
-/* Possible UI states of the error screen. */
-/** @const */ var ERROR_SCREEN_UI_STATE = {
-  UNKNOWN: 'ui-state-unknown',
-  UPDATE: 'ui-state-update',
-  SIGNIN: 'ui-state-signin',
-  KIOSK_MODE: 'ui-state-kiosk-mode',
-  LOCAL_STATE_ERROR: 'ui-state-local-state-error',
-  AUTO_ENROLLMENT_ERROR: 'ui-state-auto-enrollment-error',
-  ROLLBACK_ERROR: 'ui-state-rollback-error'
-};
-
 /** @const */ var USER_ACTION_ROLLBACK_TOGGLED = 'rollback-toggled';
 
 cr.define('cr.ui.login', function() {

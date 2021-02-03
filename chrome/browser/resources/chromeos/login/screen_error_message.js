@@ -34,7 +34,8 @@ var USER_ACTION_SHOW_CAPTIVE_PORTAL = 'show-captive-portal';
   OFFLINE: 'offline',
   PROXY: 'proxy',
   AUTH_EXT_TIMEOUT: 'auth-ext-timeout',
-  KIOSK_ONLINE: 'kiosk-online'
+  KIOSK_ONLINE: 'kiosk-online',
+  NONE: '',
 };
 
 // Possible error states of the screen. Must be in the same order as
@@ -134,6 +135,9 @@ Polymer({
     },
   },
 
+  /**
+   * @suppress {checkTypes} isOneOf_ allows arbitrary number of arguments.
+   */
   getDialogTitle_() {
     if (this.isOneOf_(this.errorState_, 'portal', 'offline')) {
       return this.i18n('captivePortalTitle');
@@ -181,7 +185,7 @@ Polymer({
   /**
    * Checks if the state ( === arguments[0]) is equal to one of the following
    * arguments.
-   * @param {!String} state State name.
+   * @param {!string} state State name.
    */
   isOneOf_(state) {
     return Array.from(arguments).slice(1).includes(state);
@@ -221,7 +225,7 @@ Polymer({
    * @param {string} element_id
    * @param {string} string_id
    * @param {SanitizeInnerHtmlOpts=} opts
-   * @param  {...any} anchor_ids
+   * @param  {Array<string>|string} anchor_ids
    */
   updateElementWithStringAndAnchorTag_(
       element_id, string_id, opts, ...anchor_ids) {
@@ -252,7 +256,8 @@ Polymer({
       element = element.parentElement;
     }
     for (const anchorId of anchor_ids) {
-      linkElement = this.shadowRoot.getElementById(anchorId);
+      /** @suppress {checkTypes} anchorId is a string */
+      let linkElement = this.shadowRoot.getElementById(anchorId);
       if (hidden) {
         linkElement.setAttribute('hidden', '');
       } else {
@@ -337,6 +342,7 @@ Polymer({
   /**
    * Event handler that is invoked just before the screen is shown.
    * @param {Object} data Screen init payload.
+   * @suppress {missingProperties} clearErrors() exists
    */
   onBeforeShow(data) {
     cr.ui.Oobe.clearErrors();
@@ -345,6 +351,7 @@ Polymer({
 
   /**
    * Event handler that is invoked just before the screen is hidden.
+   * @suppress {missingProperties} setOobeUIState() exists
    */
   onBeforeHide() {
     Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.HIDDEN);
@@ -355,6 +362,7 @@ Polymer({
   /**
    * Event handler for guest session launch.
    * @private
+   * @suppress {missingProperties} isOobeUI() exists
    */
   launchGuestSession_() {
     if (Oobe.getInstance().isOobeUI()) {
@@ -402,8 +410,8 @@ Polymer({
    * Sets current error network state of the screen.
    * @param {string} network Name of the current network
    */
-  setErrorStateNetwork(value) {
-    this.currentNetworkName_ = value;
+  setErrorStateNetwork(network) {
+    this.currentNetworkName_ = network;
   },
 
   /**
