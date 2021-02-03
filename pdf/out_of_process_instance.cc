@@ -206,8 +206,6 @@ constexpr char kJSEmailCc[] = "cc";
 constexpr char kJSEmailBcc[] = "bcc";
 constexpr char kJSEmailSubject[] = "subject";
 constexpr char kJSEmailBody[] = "body";
-// Select all text in the document (Page -> Plugin)
-constexpr char kJSSelectAllType[] = "selectAll";
 // Get the selected text in the document (Page -> Plugin)
 constexpr char kJSGetSelectedTextType[] = "getSelectedText";
 // Reply with selected text (Plugin -> Page)
@@ -709,8 +707,6 @@ void OutOfProcessInstance::HandleMessage(const pp::Var& message) {
     HandleSaveAttachmentMessage(dict);
   } else if (type == kJSSaveType) {
     HandleSaveMessage(dict);
-  } else if (type == kJSSelectAllType) {
-    engine()->SelectAll();
   } else if (type == kJSResetPrintPreviewModeType) {
     HandleResetPrintPreviewModeMessage(dict);
   } else if (type == kJSLoadPreviewPageType) {

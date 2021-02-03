@@ -180,6 +180,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void HandleDisplayAnnotationsMessage(const base::Value& message);
   void HandleRotateClockwiseMessage(const base::Value& /*message*/);
   void HandleRotateCounterclockwiseMessage(const base::Value& /*message*/);
+  void HandleSelectAllMessage(const base::Value& /*message*/);
   void HandleSetBackgroundColorMessage(const base::Value& message);
   void HandleSetReadOnlyMessage(const base::Value& message);
   void HandleSetTwoUpViewMessage(const base::Value& message);

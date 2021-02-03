@@ -60,6 +60,7 @@ void PdfViewPluginBase::HandleMessage(const base::Value& message) {
           {"rotateClockwise", &PdfViewPluginBase::HandleRotateClockwiseMessage},
           {"rotateCounterclockwise",
            &PdfViewPluginBase::HandleRotateCounterclockwiseMessage},
+          {"selectAll", &PdfViewPluginBase::HandleSelectAllMessage},
           {"setBackgroundColor",
            &PdfViewPluginBase::HandleSetBackgroundColorMessage},
           {"setReadOnly", &PdfViewPluginBase::HandleSetReadOnlyMessage},
@@ -213,6 +214,10 @@ void PdfViewPluginBase::HandleRotateClockwiseMessage(
 void PdfViewPluginBase::HandleRotateCounterclockwiseMessage(
     const base::Value& /*message*/) {
   engine()->RotateCounterclockwise();
+}
+
+void PdfViewPluginBase::HandleSelectAllMessage(const base::Value& /*message*/) {
+  engine()->SelectAll();
 }
 
 void PdfViewPluginBase::HandleSetBackgroundColorMessage(
