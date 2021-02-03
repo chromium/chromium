@@ -330,7 +330,7 @@ bool ContentsView::IsShowingSearchResults() const {
 }
 
 void ContentsView::ShowEmbeddedAssistantUI(bool show) {
-  expand_arrow_view_->SetVisible(!show);
+  SetExpandArrowViewVisibility(!show);
 
   const int assistant_page =
       GetPageIndexForState(AppListState::kStateEmbeddedAssistant);
@@ -754,11 +754,13 @@ void ContentsView::AnimateToViewState(AppListViewState target_view_state,
   const bool closing = target_view_state == AppListViewState::kClosed;
   animate_opacity(duration, GetSearchBoxView(), !closing /*target_visibility*/);
 
-  // Fade in or out the expand arrow.
-  const bool target_arrow_visibility =
-      target_page == AppListState::kStateApps && !closing &&
-      !app_list_view_->is_side_shelf();
-  animate_opacity(duration, expand_arrow_view_, target_arrow_visibility);
+  // Fade in or out the expand arrow. Embedded Assistant hides the expand arrow
+  // and should not set its opacity to 0.
+  const bool expand_arrow_target_opacity =
+      (target_page == AppListState::kStateEmbeddedAssistant ||
+       target_page == AppListState::kStateApps) &&
+      !closing && !app_list_view_->is_side_shelf();
+  animate_opacity(duration, expand_arrow_view_, expand_arrow_target_opacity);
 
   // Animates layer's vertical position (using transform animation).
   // |layer| - The layer to transform.
