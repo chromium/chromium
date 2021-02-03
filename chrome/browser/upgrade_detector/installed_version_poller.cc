@@ -18,7 +18,6 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "build/build_config.h"
 #include "chrome/browser/upgrade_detector/build_state.h"
 #include "chrome/browser/upgrade_detector/get_installed_version.h"
 #include "chrome/browser/upgrade_detector/installed_version_monitor.h"
@@ -91,15 +90,6 @@ base::TimeDelta GetPollingInterval() {
   return InstalledVersionPoller::kDefaultPollingInterval;
 }
 
-std::unique_ptr<InstalledVersionMonitor> MakeInstalledVersionMonitor() {
-// Temporarily disabled for macOS due to https://crbug.com/1156603.
-#if defined(OS_MAC)
-  return nullptr;
-#else
-  return InstalledVersionMonitor::Create();
-#endif
-}
-
 }  // namespace
 
 // InstalledVersionPoller::ScopedDisableForTesting ----------------------------
@@ -130,7 +120,7 @@ const base::TimeDelta InstalledVersionPoller::kDefaultPollingInterval =
 InstalledVersionPoller::InstalledVersionPoller(BuildState* build_state)
     : InstalledVersionPoller(build_state,
                              GetGetInstalledVersionCallback(),
-                             MakeInstalledVersionMonitor(),
+                             InstalledVersionMonitor::Create(),
                              nullptr) {}
 
 InstalledVersionPoller::InstalledVersionPoller(
@@ -159,11 +149,8 @@ void InstalledVersionPoller::StartMonitor(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!monitor_);
   monitor_ = std::move(monitor);
-  if (monitor_) {
-    monitor_->Start(
-        base::BindRepeating(&InstalledVersionPoller::OnMonitorResult,
-                            weak_ptr_factory_.GetWeakPtr()));
-  }
+  monitor_->Start(base::BindRepeating(&InstalledVersionPoller::OnMonitorResult,
+                                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void InstalledVersionPoller::OnMonitorResult(bool error) {
