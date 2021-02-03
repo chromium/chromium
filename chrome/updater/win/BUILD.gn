@@ -30,6 +30,7 @@ executable("updater") {
     "updater.rc",
   ]
 
+  configs -= [ "//build/config/compiler:cet_shadow_stack" ]
   configs += [ "//build/config/win:windowed" ]
 
   deps = [

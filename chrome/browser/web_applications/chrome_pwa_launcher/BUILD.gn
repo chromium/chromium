@@ -27,7 +27,10 @@ executable("chrome_pwa_launcher") {
     "//components/version_info:generate_version_info",
   ]
 
-  configs -= [ "//build/config/win:console" ]
+  configs -= [
+    "//build/config/compiler:cet_shadow_stack",
+    "//build/config/win:console",
+  ]
   configs += [ "//build/config/win:windowed" ]
 }
 

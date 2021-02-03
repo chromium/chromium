@@ -24,7 +24,10 @@ if (is_win) {
       "uninstall.h",
     ]
 
-    configs -= [ "//build/config/win:console" ]
+    configs -= [
+      "//build/config/compiler:cet_shadow_stack",
+      "//build/config/win:console",
+    ]
     configs += [ "//build/config/win:windowed" ]
 
     deps = [

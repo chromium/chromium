@@ -38,7 +38,10 @@ executable("elevation_service") {
     "elevation_service.rc",
   ]
 
-  configs -= [ "//build/config/win:console" ]
+  configs -= [
+    "//build/config/compiler:cet_shadow_stack",
+    "//build/config/win:console",
+  ]
   configs += [ "//build/config/win:windowed" ]
   configs += [ ":no-missing-braces" ]
   configs -= [ "//build/config/win:winver" ]

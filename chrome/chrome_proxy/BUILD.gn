@@ -22,6 +22,9 @@ executable("chrome_proxy") {
 
   sources = [ "chrome_proxy_main_win.cc" ]
 
-  configs -= [ "//build/config/win:console" ]
+  configs -= [
+    "//build/config/compiler:cet_shadow_stack",
+    "//build/config/win:console",
+  ]
   configs += [ "//build/config/win:windowed" ]
 }

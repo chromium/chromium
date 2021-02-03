@@ -235,6 +235,8 @@ executable("mini_installer") {
   # This target is special so we manually override most linker flags and
   # specify our own to keep the size down.
   configs -= [
+    "//build/config/compiler:cet_shadow_stack",
+
     # Initialization may insert unexpected memset calls.
     "//build/config/compiler:default_init_stack_vars",
     "//build/config:executable_config",
