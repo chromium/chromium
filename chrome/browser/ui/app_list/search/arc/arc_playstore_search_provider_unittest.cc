@@ -19,8 +19,6 @@
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/test/test_app_list_controller_delegate.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "chromeos/constants/chromeos_pref_names.h"
 #include "components/arc/app/arc_playstore_search_request_state.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/value_builder.h"
@@ -37,8 +35,6 @@ class ArcPlayStoreSearchProviderTest : public AppListTestBase {
     AppListTestBase::SetUp();
     arc_test_.SetUp(profile());
     controller_ = std::make_unique<test::TestAppListControllerDelegate>();
-    profile_->GetPrefs()->SetBoolean(chromeos::prefs::kSuggestedContentEnabled,
-                                     true);
   }
 
   void TearDown() override {
@@ -102,24 +98,6 @@ TEST_F(ArcPlayStoreSearchProviderTest, Basic) {
               is_instant_app ? ash::AppListSearchResultType::kInstantApp
                              : ash::AppListSearchResultType::kPlayStoreApp);
   }
-}
-
-TEST_F(ArcPlayStoreSearchProviderTest, PrefsDisabled) {
-  profile_->GetPrefs()->SetBoolean(chromeos::prefs::kSuggestedContentEnabled,
-                                   false);
-  constexpr size_t kMaxResults = 12;
-  constexpr char kQuery[] = "Play App";
-
-  std::unique_ptr<ArcPlayStoreSearchProvider> provider =
-      CreateSearch(kMaxResults);
-  EXPECT_TRUE(provider->results().empty());
-  arc::IconDecodeRequest::DisableSafeDecodingForTesting();
-
-  AddExtension(CreateExtension(extension_misc::kGmailAppId).get());
-
-  // Suggested content pref is disabled.
-  provider->Start(base::UTF8ToUTF16(kQuery));
-  EXPECT_TRUE(provider->results().empty());
 }
 
 TEST_F(ArcPlayStoreSearchProviderTest, FailedQuery) {
