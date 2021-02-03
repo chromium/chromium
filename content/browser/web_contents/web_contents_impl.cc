@@ -1049,7 +1049,7 @@ std::vector<WebContentsImpl*> WebContentsImpl::GetAllWebContents() {
     WebContents* web_contents = WebContents::FromRenderViewHost(rvh);
     if (!web_contents)
       continue;
-    if (web_contents->GetRenderViewHost() != rvh)
+    if (web_contents->GetMainFrame()->GetRenderViewHost() != rvh)
       continue;
     // Because a WebContents can only have one current RVH at a time, there will
     // be no duplicate WebContents here.

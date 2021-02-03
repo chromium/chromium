@@ -64,7 +64,7 @@ void AccessibilityMainHandler::HandleCheckAccessibilityImageLabels(
   // dialog will disable the feature again if it is not accepted.
   content::WebContents* web_contents = web_ui()->GetWebContents();
   content::RenderWidgetHostView* view =
-      web_contents->GetRenderViewHost()->GetWidget()->GetView();
+      web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget()->GetView();
   gfx::Rect rect = view->GetViewBounds();
   auto model = std::make_unique<AccessibilityLabelsBubbleModel>(
       Profile::FromWebUI(web_ui()), web_contents, true /* enable always */);

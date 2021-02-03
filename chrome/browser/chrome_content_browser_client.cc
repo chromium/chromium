@@ -1091,9 +1091,9 @@ void LaunchURL(const GURL& url,
     ExternalProtocolHandler::LaunchUrlWithoutSecurityCheck(url, web_contents);
   } else {
     ExternalProtocolHandler::LaunchUrl(
-        url, web_contents->GetRenderViewHost()->GetProcess()->GetID(),
-        web_contents->GetRenderViewHost()->GetRoutingID(), page_transition,
-        has_user_gesture, initiating_origin);
+        url, web_contents->GetMainFrame()->GetProcess()->GetID(),
+        web_contents->GetMainFrame()->GetRenderViewHost()->GetRoutingID(),
+        page_transition, has_user_gesture, initiating_origin);
   }
 }
 

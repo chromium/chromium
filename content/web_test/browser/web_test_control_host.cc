@@ -1737,8 +1737,10 @@ void WebTestControlHost::WorkItemAdded(mojom::WorkItemPtr work_item) {
 
 void WebTestControlHost::RequestWorkItem() {
   DCHECK(main_window_);
-  RenderProcessHost* main_frame_process =
-      main_window_->web_contents()->GetRenderViewHost()->GetProcess();
+  RenderProcessHost* main_frame_process = main_window_->web_contents()
+                                              ->GetMainFrame()
+                                              ->GetRenderViewHost()
+                                              ->GetProcess();
   if (work_queue_.empty()) {
     work_queue_states_.SetBoolPath(kDictKeyWorkQueueHasItems, false);
     GetWebTestRenderThreadRemote(main_frame_process)

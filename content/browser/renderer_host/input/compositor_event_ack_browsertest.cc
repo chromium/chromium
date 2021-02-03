@@ -114,8 +114,9 @@ class CompositorEventAckBrowserTest : public ContentBrowserTest {
   ~CompositorEventAckBrowserTest() override {}
 
   RenderWidgetHostImpl* GetWidgetHost() {
+    auto* main_frame = shell()->web_contents()->GetMainFrame();
     return RenderWidgetHostImpl::From(
-        shell()->web_contents()->GetRenderViewHost()->GetWidget());
+        main_frame->GetRenderViewHost()->GetWidget());
   }
 
   void OnSyntheticGestureCompleted(SyntheticGesture::Result result) {

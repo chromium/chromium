@@ -33,7 +33,7 @@ class InteractionMediaQueriesDynamicTest : public ContentBrowserTest {
 IN_PROC_BROWSER_TEST_F(InteractionMediaQueriesDynamicTest,
                        PointerMediaQueriesDynamic) {
   RenderViewHostImpl* rvhi = static_cast<RenderViewHostImpl*>(
-      shell()->web_contents()->GetRenderViewHost());
+      shell()->web_contents()->GetMainFrame()->GetRenderViewHost());
 
   ui::SetAvailablePointerAndHoverTypesForTesting(ui::POINTER_TYPE_NONE,
                                                  ui::HOVER_TYPE_NONE);

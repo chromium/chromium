@@ -38,8 +38,11 @@ class SyntheticInputTest : public ContentBrowserTest {
   }
 
   RenderWidgetHostImpl* GetRenderWidgetHost() const {
-    return RenderWidgetHostImpl::From(
-        shell()->web_contents()->GetRenderViewHost()->GetWidget());
+    return RenderWidgetHostImpl::From(shell()
+                                          ->web_contents()
+                                          ->GetMainFrame()
+                                          ->GetRenderViewHost()
+                                          ->GetWidget());
   }
 
   void LoadURL(const char* url) {
