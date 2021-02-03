@@ -91,7 +91,7 @@ def _LoadEnvFromBat(args):
   return variables.decode(errors='ignore')
 
 
-def _LoadToolchainEnv(cpu, sdk_dir, target_store):
+def _LoadToolchainEnv(cpu, toolchain_root, sdk_dir, target_store):
   """Returns a dictionary with environment variables that must be set while
   running binaries from the toolchain (e.g. INCLUDE and PATH for cl.exe)."""
   # Check if we are running in the SDK command line environment and use
@@ -106,9 +106,8 @@ def _LoadToolchainEnv(cpu, sdk_dir, target_store):
       # Old-style paths were relative to the win_sdk\bin directory.
       json_relative_dir = os.path.join(sdk_dir, 'bin')
     else:
-      # New-style paths are relative to the toolchain directory, which is the
-      # parent of the SDK directory.
-      json_relative_dir = os.path.split(sdk_dir)[0]
+      # New-style paths are relative to the toolchain directory.
+      json_relative_dir = toolchain_root
     for k in env:
       entries = [os.path.join(*([json_relative_dir] + e)) for e in env[k]]
       # clang-cl wants INCLUDE to be ;-separated even on non-Windows,
@@ -219,7 +218,13 @@ def main():
           '<runtime dirs> <target_os> <target_cpu> '
           '<environment block name|none>')
     sys.exit(2)
+  # toolchain_root and win_sdk_path are only read if the hermetic Windows
+  # toolchain is set, that is if DEPOT_TOOLS_WIN_TOOLCHAIN is not set to 0.
+  # With the hermetic Windows toolchain, the visual studio path in argv[1]
+  # is the root of the Windows toolchain directory.
+  toolchain_root = sys.argv[1]
   win_sdk_path = sys.argv[2]
+
   runtime_dirs = sys.argv[3]
   target_os = sys.argv[4]
   target_cpu = sys.argv[5]
@@ -247,7 +252,7 @@ def main():
   for cpu in cpus:
     if cpu == target_cpu:
       # Extract environment variables for subprocesses.
-      env = _LoadToolchainEnv(cpu, win_sdk_path, target_store)
+      env = _LoadToolchainEnv(cpu, toolchain_root, win_sdk_path, target_store)
       env['PATH'] = runtime_dirs + os.pathsep + env['PATH']
 
       vc_bin_dir = FindFileInEnvList(env, 'PATH', os.pathsep, 'cl.exe')
