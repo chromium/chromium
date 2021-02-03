@@ -24,6 +24,8 @@ EmojiPickerDialog::EmojiPickerDialog() {
       ui::IMEBridge::Get()->GetInputContextHandler()->GetInputMethod();
   input_client = input_method->GetTextInputClient();
   input_client->GetEditableSelectionRange(&selection_range);
+
+  set_can_resize(false);
 }
 
 void EmojiPickerDialog::Show() {
