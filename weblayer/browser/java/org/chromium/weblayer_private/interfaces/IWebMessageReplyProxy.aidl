@@ -6,4 +6,7 @@ package org.chromium.weblayer_private.interfaces;
 
 interface IWebMessageReplyProxy {
   void postMessage(in String message) = 0;
+
+  // @since 90
+  boolean isActive() = 1;
 }

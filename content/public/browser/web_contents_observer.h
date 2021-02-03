@@ -389,6 +389,11 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   virtual void FrameSizeChanged(RenderFrameHost* render_frame_host,
                                 const gfx::Size& frame_size) {}
 
+  // Invoked when the state of render_frame_host->IsInBackForwardCache()
+  // changes.
+  virtual void FrameBackForwardCacheStateChanged(
+      RenderFrameHost* render_frame_host) {}
+
   // This method is invoked when the title of the WebContents is set. Note that
   // |entry| may be null if the web page whose title changed has not yet had a
   // NavigationEntry assigned to it.

@@ -16,6 +16,10 @@ class WebMessageReplyProxy {
  public:
   virtual void PostMessage(std::unique_ptr<WebMessage> message) = 0;
 
+  // Returns true if the page associated with the channel is in the back
+  // forward cache.
+  virtual bool IsInBackForwardCache() = 0;
+
  protected:
   virtual ~WebMessageReplyProxy() = default;
 };

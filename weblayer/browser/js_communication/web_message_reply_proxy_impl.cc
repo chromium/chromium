@@ -41,12 +41,21 @@ void WebMessageReplyProxyImpl::PostMessage(
   reply_proxy_->PostMessage(std::move(message));
 }
 
+bool WebMessageReplyProxyImpl::IsActive(JNIEnv* env) {
+  return !reply_proxy_->IsInBackForwardCache();
+}
+
 void WebMessageReplyProxyImpl::OnPostMessage(
     std::unique_ptr<WebMessage> message) {
   auto* env = base::android::AttachCurrentThread();
   Java_WebMessageReplyProxyImpl_onPostMessage(
       env, java_object_,
       base::android::ConvertUTF16ToJavaString(env, message->message));
+}
+
+void WebMessageReplyProxyImpl::OnBackForwardCacheStateChanged() {
+  Java_WebMessageReplyProxyImpl_onActiveStateChanged(
+      base::android::AttachCurrentThread(), java_object_);
 }
 
 }  // namespace weblayer

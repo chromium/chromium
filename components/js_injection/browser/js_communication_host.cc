@@ -175,6 +175,15 @@ void JsCommunicationHost::RenderFrameDeleted(
   js_to_browser_messagings_.erase(render_frame_host);
 }
 
+void JsCommunicationHost::FrameBackForwardCacheStateChanged(
+    content::RenderFrameHost* render_frame_host) {
+  auto iter = js_to_browser_messagings_.find(render_frame_host);
+  if (iter == js_to_browser_messagings_.end())
+    return;
+  for (auto& js_to_browser_messaging_ptr : iter->second)
+    js_to_browser_messaging_ptr->OnBackForwardCacheStateChanged();
+}
+
 void JsCommunicationHost::NotifyFrameForAllDocumentStartJavaScripts(
     content::RenderFrameHost* render_frame_host) {
   for (const auto& script : scripts_) {

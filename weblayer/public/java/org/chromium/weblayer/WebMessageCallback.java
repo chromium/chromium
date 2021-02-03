@@ -17,6 +17,10 @@ public abstract class WebMessageCallback {
      * Each {@link WebMessageReplyProxy} represents a single endpoint. Multiple messages sent to the
      * same endpoint use the same {@link WebMessageReplyProxy}.
      *
+     * <b>WARNING</b>: it is possible to receive messages from an inactive page. This happens if a
+     * message it sent around the same time the page is put in the back forward cache. As a result
+     * of this, it is possible for this method to be called with a new proxy that is inactive.
+     *
      * @param replyProxy An object that may be used to post a message back to the page.
      * @param message The message from the page.
      */
@@ -33,4 +37,13 @@ public abstract class WebMessageCallback {
      * @param replyProxy The proxy that has been closed.
      */
     public void onWebMessageReplyProxyClosed(@NonNull WebMessageReplyProxy replyProxy) {}
+
+    /**
+     * Called when the active state of a proxy changes.
+     *
+     * @param proxy The proxy whose active state changed.
+     *
+     * @since 90
+     */
+    public void onWebMessageReplyProxyActiveStateChanged(@NonNull WebMessageReplyProxy proxy) {}
 }

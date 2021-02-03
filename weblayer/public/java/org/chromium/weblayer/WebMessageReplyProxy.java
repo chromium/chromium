@@ -82,4 +82,23 @@ public class WebMessageReplyProxy {
     void markClosed() {
         mIsClosed = true;
     }
+
+    /**
+     * Returns whether the channel is active. The channel is active if it is not closed and not in
+     * the back forward cache.
+     *
+     * @return Whether the channel is active.
+     */
+    public boolean isActive() {
+        ThreadCheck.ensureOnUiThread();
+        if (mIsClosed) return false;
+        if (WebLayer.getSupportedMajorVersionInternal() < 90) {
+            return true;
+        }
+        try {
+            return mIReplyProxy.isActive();
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
 }

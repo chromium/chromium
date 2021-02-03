@@ -19,6 +19,12 @@ class WebMessageHost {
 
   // Called when the page sends a message to the browser side.
   virtual void OnPostMessage(std::unique_ptr<WebMessage> message) = 0;
+
+  // Called when the page moves into or out of the back forward cache.
+  // This function is called when the browser changes the state, which means
+  // it is possible to receive messages even when the page is in the back
+  // forward cache.
+  virtual void OnBackForwardCacheStateChanged() {}
 };
 
 }  // namespace weblayer

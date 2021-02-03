@@ -804,6 +804,14 @@ public class Tab {
             mProxyIdToProxy.remove(proxyId);
             mCallback.onWebMessageReplyProxyClosed(proxy);
         }
+
+        @Override
+        public void onReplyProxyActiveStateChanged(int proxyId) {
+            StrictModeWorkaround.apply();
+            WebMessageReplyProxy proxy = mProxyIdToProxy.get(proxyId);
+            assert proxy != null;
+            mCallback.onWebMessageReplyProxyActiveStateChanged(proxy);
+        }
     }
 
     private final class TabClientImpl extends ITabClient.Stub {

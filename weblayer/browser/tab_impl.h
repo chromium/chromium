@@ -66,7 +66,6 @@ class ProfileImpl;
 #if defined(OS_ANDROID)
 class BrowserControlsContainerView;
 enum class ControlsVisibilityReason;
-class WebMessageHostFactoryProxy;
 #endif
 
 class TabImpl : public Tab,
@@ -391,9 +390,6 @@ class TabImpl : public Tab,
   // When BOTH, the actual current state could be showing or hidden.
   cc::BrowserControlsState current_browser_controls_visibility_constraint_ =
       cc::BrowserControlsState::kShown;
-
-  std::map<std::string, std::unique_ptr<WebMessageHostFactoryProxy>>
-      js_name_to_proxy_;
 
   bool desktop_user_agent_enabled_ = false;
 #endif

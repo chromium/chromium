@@ -28,6 +28,8 @@ class WebMessageHostFactory;
 
 // Implementation of mojo::JsToBrowserMessaging interface. Receives
 // PostMessage() call from renderer JsBinding.
+//
+// This object is destroyed when the associated RenderFrameHost is destroyed.
 class JsToBrowserMessaging : public mojom::JsToBrowserMessaging {
  public:
   JsToBrowserMessaging(
@@ -36,6 +38,8 @@ class JsToBrowserMessaging : public mojom::JsToBrowserMessaging {
       WebMessageHostFactory* factory,
       const OriginMatcher& origin_matcher);
   ~JsToBrowserMessaging() override;
+
+  void OnBackForwardCacheStateChanged();
 
   // mojom::JsToBrowserMessaging implementation.
   void PostMessage(const base::string16& message,

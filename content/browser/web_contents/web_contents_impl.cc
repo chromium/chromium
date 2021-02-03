@@ -8568,6 +8568,15 @@ void WebContentsImpl::RenderFrameHostStateChanged(
       base::trace_event::TracedValue::Build(
           {{"old", base::trace_event::ValueToString(old_state)},
            {"new", base::trace_event::ValueToString(new_state)}}));
+  const bool was_in_back_forward_cache =
+      old_state == LifecycleState::kInBackForwardCache;
+  const bool is_in_back_forward_cache =
+      new_state == LifecycleState::kInBackForwardCache;
+  if (was_in_back_forward_cache != is_in_back_forward_cache) {
+    observers_.NotifyObservers(
+        &WebContentsObserver::FrameBackForwardCacheStateChanged,
+        render_frame_host);
+  }
   if (render_frame_host->GetParent())
     return;
 

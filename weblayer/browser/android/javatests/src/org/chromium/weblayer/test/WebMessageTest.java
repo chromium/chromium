@@ -6,6 +6,7 @@ package org.chromium.weblayer.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -20,6 +21,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.net.test.util.TestWebServer;
+import org.chromium.weblayer.WebLayer;
 import org.chromium.weblayer.WebMessage;
 import org.chromium.weblayer.WebMessageCallback;
 import org.chromium.weblayer.WebMessageReplyProxy;
@@ -43,6 +48,7 @@ public class WebMessageTest {
         public WebMessage mLastMessage;
         public CallbackHelper mCallbackHelper;
         public CallbackHelper mClosedCallbackHelper;
+        public CallbackHelper mActiveChangedCallbackHelper;
         public WebMessageReplyProxy mProxyClosed;
 
         WebMessageCallbackImpl(CallbackHelper callbackHelper) {
@@ -65,6 +71,11 @@ public class WebMessageTest {
         public void onWebMessageReplyProxyClosed(WebMessageReplyProxy replyProxy) {
             mProxyClosed = replyProxy;
             if (mClosedCallbackHelper != null) mClosedCallbackHelper.notifyCalled();
+        }
+
+        @Override
+        public void onWebMessageReplyProxyActiveStateChanged(WebMessageReplyProxy replyProxy) {
+            if (mActiveChangedCallbackHelper != null) mActiveChangedCallbackHelper.notifyCalled();
         }
     }
 
@@ -115,6 +126,8 @@ public class WebMessageTest {
                     webMessageCallback, "x", Arrays.asList("*"));
         });
 
+        int majorVersion = TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> WebLayer.getSupportedMajorVersion(mActivityTestRule.getActivity()));
         mActivityTestRule.navigateAndWait(
                 mActivityTestRule.getTestDataURL("web_message_test.html"));
         // web_message_test.html posts a message, wait for it.
@@ -125,6 +138,10 @@ public class WebMessageTest {
         assertNull(webMessageCallback.mProxyClosed);
         assertFalse(
                 runOnUiThreadBlocking(() -> { return webMessageCallback.mLastProxy.isClosed(); }));
+        if (majorVersion >= 90) {
+            assertTrue(runOnUiThreadBlocking(
+                    () -> { return webMessageCallback.mLastProxy.isActive(); }));
+        }
         webMessageCallback.reset();
         webMessageCallback.mClosedCallbackHelper = new CallbackHelper();
 
@@ -134,8 +151,9 @@ public class WebMessageTest {
         assertNotNull(webMessageCallback.mProxyClosed);
         assertEquals(webMessageCallback.mProxyClosed, proxy);
         assertTrue(runOnUiThreadBlocking(() -> { return proxy.isClosed(); }));
-
-        runOnUiThreadBlocking(() -> { activity.getTab().unregisterWebMessageCallback("x"); });
+        if (majorVersion >= 90) {
+            assertFalse(runOnUiThreadBlocking(() -> { return proxy.isActive(); }));
+        }
     }
 
     @Test
@@ -178,5 +196,57 @@ public class WebMessageTest {
             } catch (IllegalArgumentException e) {
             }
         });
+    }
+
+    @MinWebLayerVersion(90)
+    @Test
+    @SmallTest
+    @CommandLineFlags.Add("enable-features=BackForwardCache")
+    public void onActiveChangedForBackForwardCache() throws Exception {
+        TestWebServer testServer = TestWebServer.start();
+        InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl("about:blank");
+        assertNotNull(activity);
+
+        // Load a page with a message proxy and wait for the respond.
+        CallbackHelper callbackHelper = new CallbackHelper();
+        WebMessageCallbackImpl webMessageCallback = new WebMessageCallbackImpl(callbackHelper);
+        String url = mActivityTestRule.getTestDataURL("web_message_test.html");
+        int index = url.indexOf("/weblayer");
+        assertNotEquals(-1, index);
+        runOnUiThreadBlocking(() -> {
+            activity.getTab().registerWebMessageCallback(
+                    webMessageCallback, "x", Arrays.asList(url.substring(0, index)));
+        });
+        mActivityTestRule.navigateAndWait(
+                mActivityTestRule.getTestDataURL("web_message_test.html"));
+        callbackHelper.waitForFirst();
+
+        // There should be a proxy and it should be active.
+        WebMessageReplyProxy proxy = webMessageCallback.mLastProxy;
+        assertTrue(
+                runOnUiThreadBlocking(() -> { return webMessageCallback.mLastProxy.isActive(); }));
+        webMessageCallback.reset();
+        webMessageCallback.mActiveChangedCallbackHelper = new CallbackHelper();
+
+        // Navigate to a new page. The proxy should be inactive, but not closed.
+        String url2 = testServer.setResponse("/ok.html", "<html>ok</html>", null);
+        mActivityTestRule.navigateAndWait(url2);
+        webMessageCallback.mActiveChangedCallbackHelper.waitForCallback(0);
+        assertFalse(runOnUiThreadBlocking(() -> { return proxy.isActive(); }));
+        assertFalse(runOnUiThreadBlocking(() -> { return proxy.isClosed(); }));
+
+        // Navigate back and ensure the page is active.
+        runOnUiThreadBlocking(() -> { activity.getTab().getNavigationController().goBack(); });
+        webMessageCallback.mActiveChangedCallbackHelper.waitForCallback(1);
+        assertTrue(runOnUiThreadBlocking(() -> { return proxy.isActive(); }));
+        assertFalse(runOnUiThreadBlocking(() -> { return proxy.isClosed(); }));
+
+        // Post a message, to ensure the page can still get it.
+        webMessageCallback.reset();
+        webMessageCallback.mCallbackHelper = new CallbackHelper();
+        runOnUiThreadBlocking(() -> { proxy.postMessage(new WebMessage("2")); });
+        webMessageCallback.mCallbackHelper.waitForFirst();
+        assertNotNull(webMessageCallback.mLastMessage);
+        assertEquals("bouncing 2", webMessageCallback.mLastMessage.getContents());
     }
 }

@@ -16,6 +16,9 @@ class WebMessageReplyProxy {
  public:
   virtual void PostMessage(std::unique_ptr<WebMessage>) = 0;
 
+  // Returns true if the page is in the back forward cache.
+  virtual bool IsInBackForwardCache() = 0;
+
  protected:
   virtual ~WebMessageReplyProxy() = default;
 };

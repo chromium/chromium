@@ -81,6 +81,8 @@ class JsCommunicationHost : public content::WebContentsObserver {
   // content::WebContentsObserver implementations
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
+  void FrameBackForwardCacheStateChanged(
+      content::RenderFrameHost* render_frame_host) override;
 
  private:
   void NotifyFrameForWebMessageListener(
@@ -90,7 +92,6 @@ class JsCommunicationHost : public content::WebContentsObserver {
   void NotifyFrameForAddDocumentStartJavaScript(
       const DocumentStartJavaScript* script,
       content::RenderFrameHost* render_frame_host);
-
   void NotifyFrameForRemoveDocumentStartJavaScript(
       int32_t script_id,
       content::RenderFrameHost* render_frame_host);

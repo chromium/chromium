@@ -13,4 +13,7 @@ interface IWebMessageCallbackClient {
                        in String sourceOrigin) = 0;
   void onPostMessage(in int proxyId, in String message) = 1;
   void onReplyProxyDestroyed(in int proxyId) = 2;
+
+  // @since 90
+  void onReplyProxyActiveStateChanged(in int proxyId) = 3;
 }

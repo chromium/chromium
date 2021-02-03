@@ -7,6 +7,8 @@
 #include "base/callback.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "content/public/common/content_features.h"
+#include "net/dns/mock_host_resolver.h"
 #include "weblayer/public/js_communication/web_message.h"
 #include "weblayer/public/js_communication/web_message_host.h"
 #include "weblayer/public/js_communication/web_message_host_factory.h"
@@ -40,6 +42,20 @@ class WebMessageHostImpl : public WebMessageHost {
       current_connection = nullptr;
   }
 
+  int back_forward_cache_state_changed_call_count() const {
+    return back_forward_cache_state_changed_call_count_;
+  }
+
+  void WaitForBackForwardStateToBe(bool value) {
+    if (value == proxy_->IsInBackForwardCache())
+      return;
+    expected_back_forward_value_ = value;
+    state_changed_run_loop_ = std::make_unique<base::RunLoop>();
+    state_changed_run_loop_->Run();
+    state_changed_run_loop_.reset();
+  }
+
+  WebMessageReplyProxy* proxy() { return proxy_; }
   std::vector<base::string16>& messages() { return messages_; }
 
   // WebMessageHost:
@@ -55,12 +71,22 @@ class WebMessageHostImpl : public WebMessageHost {
       quit_closure_.Run();
     }
   }
+  void OnBackForwardCacheStateChanged() override {
+    ++back_forward_cache_state_changed_call_count_;
+    if (state_changed_run_loop_ &&
+        expected_back_forward_value_ == proxy_->IsInBackForwardCache()) {
+      state_changed_run_loop_->Quit();
+    }
+  }
 
  private:
   int call_count_ = 0;
+  int back_forward_cache_state_changed_call_count_ = 0;
   base::RepeatingClosure quit_closure_;
   WebMessageReplyProxy* proxy_;
   std::vector<base::string16> messages_;
+  bool expected_back_forward_value_ = false;
+  std::unique_ptr<base::RunLoop> state_changed_run_loop_;
 };
 
 // WebMessageHostFactory implementation that creates WebMessageHostImp.
@@ -109,4 +135,58 @@ IN_PROC_BROWSER_TEST_F(WebMessageTest, SendAndReceive) {
             current_connection->messages()[1]);
 }
 
+class WebMessageTestWithBfCache : public WebLayerBrowserTest {
+ public:
+  // WebLayerBrowserTest:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(features::kBackForwardCache);
+    WebLayerBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    WebLayerBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebMessageTestWithBfCache, Basic) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url1(embedded_test_server()->GetURL("a.com", "/web_message_test.html"));
+
+  base::RunLoop run_loop;
+  shell()->tab()->AddWebMessageHostFactory(
+      std::make_unique<WebMessageHostFactoryImpl>(run_loop.QuitClosure()),
+      base::ASCIIToUTF16("x"), {"http://a.com:" + url1.port()});
+
+  auto* navigation_controller = shell()->tab()->GetNavigationController();
+  navigation_controller->Navigate(url1);
+  run_loop.Run();
+
+  // A WebMessageHostImpl should be created, and it should not be in the cache.
+  WebMessageHostImpl* web_message_host = current_connection;
+  ASSERT_TRUE(web_message_host);
+  EXPECT_FALSE(web_message_host->proxy()->IsInBackForwardCache());
+  EXPECT_EQ(0, web_message_host->back_forward_cache_state_changed_call_count());
+
+  // Navigate to a new host. The old page should go into the cache.
+  OneShotNavigationObserver observer1(shell());
+  navigation_controller->Navigate(
+      embedded_test_server()->GetURL("b.com", "/simple_page.html"));
+  observer1.WaitForNavigation();
+  EXPECT_TRUE(observer1.completed());
+  ASSERT_EQ(current_connection, web_message_host);
+  web_message_host->WaitForBackForwardStateToBe(true);
+  EXPECT_EQ(1, web_message_host->back_forward_cache_state_changed_call_count());
+
+  // Navigate back.
+  OneShotNavigationObserver observer2(shell());
+  navigation_controller->GoBack();
+  observer2.WaitForNavigation();
+  web_message_host->WaitForBackForwardStateToBe(false);
+  EXPECT_EQ(2, web_message_host->back_forward_cache_state_changed_call_count());
+}
 }  // namespace weblayer
