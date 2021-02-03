@@ -93,6 +93,15 @@ int GetLocationRank(Manifest::Location location) {
   return rank;
 }
 
+int GetManifestVersion(const base::DictionaryValue& manifest_value,
+                       Manifest::Type type) {
+  // Platform apps were launched after manifest version 2 was the preferred
+  // version, so they default to that.
+  int manifest_version = type == Manifest::TYPE_PLATFORM_APP ? 2 : 1;
+  manifest_value.GetInteger(keys::kManifestVersion, &manifest_version);
+  return manifest_version;
+}
+
 // Helper class to filter available values from a manifest.
 class AvailableValuesFilter {
  public:
@@ -156,7 +165,7 @@ class AvailableValuesFilter {
     return feature
         ->IsAvailableToManifest(manifest.hashed_id(), manifest.type(),
                                 manifest.location(),
-                                manifest.GetManifestVersion())
+                                manifest.manifest_version())
         .is_available();
   }
 
@@ -256,7 +265,8 @@ Manifest::Manifest(Location location,
       hashed_id_(HashedExtensionId(extension_id_)),
       location_(location),
       value_(std::move(value)),
-      type_(GetTypeFromManifestValue(*value_, for_login_screen)) {
+      type_(GetTypeFromManifestValue(*value_, for_login_screen)),
+      manifest_version_(GetManifestVersion(*value_, type_)) {
   DCHECK(!extension_id_.empty());
 
   available_values_ = base::DictionaryValue::From(
@@ -282,7 +292,7 @@ bool Manifest::ValidateManifest(
       continue;
 
     Feature::Availability result = map_entry.second->IsAvailableToManifest(
-        hashed_id_, type_, location_, GetManifestVersion());
+        hashed_id_, type_, location_, manifest_version_);
     if (!result.is_available())
       warnings->push_back(InstallWarning(result.message(), map_entry.first));
   }
@@ -373,19 +383,6 @@ bool Manifest::GetPathOfType(const std::string& path,
 bool Manifest::EqualsForTesting(const Manifest& other) const {
   return value_->Equals(other.value()) && location_ == other.location_ &&
          extension_id_ == other.extension_id_;
-}
-
-int Manifest::GetManifestVersion() const {
-  // Platform apps were launched after manifest version 2 was the preferred
-  // version, so they default to that.
-
-  // Subtle: This is also called in the constructor via
-  // `ComputeAvailableValues()`. Hence this should keep relying on |value_| and
-  // not change to using |available_values_| (since it might be uninitialized
-  // when this is called).
-  int manifest_version = type_ == TYPE_PLATFORM_APP ? 2 : 1;
-  value_->GetInteger(keys::kManifestVersion, &manifest_version);
-  return manifest_version;
 }
 
 }  // namespace extensions

@@ -169,7 +169,7 @@ class Manifest final {
   // version when making breaking changes to the extension system. If the
   // manifest contains no explicit manifest version, this returns the current
   // system default.
-  int GetManifestVersion() const;
+  int manifest_version() const { return manifest_version_; }
 
   // Returns the manifest type.
   Type type() const { return type_; }
@@ -258,6 +258,8 @@ class Manifest final {
   std::unique_ptr<const base::DictionaryValue> available_values_;
 
   const Type type_;
+
+  const int manifest_version_;
 
   DISALLOW_COPY_AND_ASSIGN(Manifest);
 };

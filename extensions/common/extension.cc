@@ -766,7 +766,7 @@ bool Extension::LoadManifestVersion(base::string16* error) {
     }
   }
 
-  manifest_version_ = manifest_->GetManifestVersion();
+  manifest_version_ = manifest_->manifest_version();
   std::string warning;
   if (!IsManifestSupported(manifest_version_, GetType(), creation_flags_,
                            &warning)) {
