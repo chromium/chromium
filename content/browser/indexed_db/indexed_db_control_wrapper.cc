@@ -71,6 +71,7 @@ IndexedDBControlWrapper::IndexedDBControlWrapper(
 IndexedDBControlWrapper::~IndexedDBControlWrapper() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  context_->Shutdown();
   IndexedDBContextImpl::ReleaseOnIDBSequence(std::move(context_));
 }
 

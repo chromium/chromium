@@ -83,7 +83,6 @@ class ConversionManagerImpl;
 class CookieStoreContext;
 class FontAccessContext;
 class GeneratedCodeCacheContext;
-class IndexedDBContextImpl;
 class FileSystemAccessEntryFactory;
 class FileSystemAccessManagerImpl;
 class NativeIOContext;
@@ -482,8 +481,6 @@ class CONTENT_EXPORT StoragePartitionImpl
 
   network::mojom::URLLoaderFactory*
   GetURLLoaderFactoryForBrowserProcessInternal(bool corb_enabled);
-
-  IndexedDBContextImpl* GetIndexedDBContextInternal();
 
   // If |local_trust_token_fulfiller_| is bound, returns immediately.
   //

@@ -1095,9 +1095,6 @@ StoragePartitionImpl::~StoragePartitionImpl() {
   if (GetServiceWorkerContext())
     GetServiceWorkerContext()->Shutdown();
 
-  if (GetIndexedDBContextInternal())
-    GetIndexedDBContextInternal()->Shutdown();
-
   if (cache_storage_context_)
     cache_storage_context_->Shutdown();
 
@@ -1478,11 +1475,6 @@ LockManager* StoragePartitionImpl::GetLockManager() {
 storage::mojom::IndexedDBControl& StoragePartitionImpl::GetIndexedDBControl() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return *indexed_db_control_wrapper_.get();
-}
-
-IndexedDBContextImpl* StoragePartitionImpl::GetIndexedDBContextInternal() {
-  DCHECK(initialized_);
-  return indexed_db_control_wrapper_->GetIndexedDBContextInternal();
 }
 
 FileSystemAccessEntryFactory*
