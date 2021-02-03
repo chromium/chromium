@@ -609,7 +609,6 @@ unsigned AXObject::number_of_live_ax_objects_ = 0;
 AXObject::AXObject(AXObjectCacheImpl& ax_object_cache)
     : id_(0),
       parent_(nullptr),
-      children_dirty_(true),
       role_(ax::mojom::blink::Role::kUnknown),
       aria_role_(ax::mojom::blink::Role::kUnknown),
       explicit_container_id_(0),
@@ -652,6 +651,9 @@ void AXObject::Init(AXObject* parent_if_known) {
   SetParent(parent_if_known ? parent_if_known : ComputeParent());
   DCHECK(parent_ || IsA<Document>(GetNode()))
       << "The following node should have a parent: " << GetNode();
+
+  // First time object is initialized, it hasn't computed children yet.
+  SetNeedsToUpdateChildren();  // Called after role_ is set.
 
   // Initialize all other cached values.
   UpdateCachedAttributeValuesIfNeeded(false);
@@ -3778,6 +3780,16 @@ void AXObject::UpdateChildrenIfNecessary() {
 
   DCHECK(!has_lost_children);
 #endif
+}
+
+bool AXObject::NeedsToUpdateChildren() const {
+  DCHECK(!children_dirty_ || CanHaveChildren())
+      << "This needs to update children but cannot have children: " << this;
+  return children_dirty_;
+}
+
+void AXObject::SetNeedsToUpdateChildren() {
+  children_dirty_ = CanHaveChildren();
 }
 
 void AXObject::ClearChildren() {

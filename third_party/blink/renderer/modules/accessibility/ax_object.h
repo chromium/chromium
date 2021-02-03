@@ -1081,8 +1081,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool ShouldUseLayoutObjectTraversalForChildren() const;
   virtual bool CanHaveChildren() const { return true; }
   void UpdateChildrenIfNecessary();
-  bool NeedsToUpdateChildren() const { return children_dirty_; }
-  void SetNeedsToUpdateChildren() { children_dirty_ = true; }
+  bool NeedsToUpdateChildren() const;
+  void SetNeedsToUpdateChildren();
   virtual void ClearChildren();
   void DetachFromParent() { parent_ = nullptr; }
   virtual void SelectedOptions(AXObjectVector&) const {}

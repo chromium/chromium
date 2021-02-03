@@ -3408,8 +3408,12 @@ void AXNodeObject::AddChildren() {
   DCHECK(children_dirty_);
   children_dirty_ = false;
 
-  if (!CanHaveChildren())
+  if (!CanHaveChildren()) {
+    NOTREACHED()
+        << "Should not reach AddChildren() if CanHaveChildren() is false "
+        << ToString(true, true);
     return;
+  }
 
   if (RoleValue() == ax::mojom::blink::Role::kStaticText ||
       RoleValue() == ax::mojom::blink::Role::kLineBreak) {
