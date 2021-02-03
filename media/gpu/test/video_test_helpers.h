@@ -9,11 +9,9 @@
 #include <string>
 #include <vector>
 
-#include "base/bits.h"
 #include "base/containers/queue.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
-#include "base/memory/aligned_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "base/synchronization/condition_variable.h"
@@ -156,41 +154,6 @@ constexpr size_t kPlatformBufferAlignment = 128;
 #else
 constexpr size_t kPlatformBufferAlignment = 8;
 #endif
-
-inline size_t AlignToPlatformRequirements(size_t value) {
-  return base::bits::Align(value, kPlatformBufferAlignment);
-}
-
-// An aligned STL allocator.
-template <typename T, size_t ByteAlignment = kPlatformBufferAlignment>
-class AlignedAllocator : public std::allocator<T> {
- public:
-  typedef size_t size_type;
-  typedef T* pointer;
-
-  template <class T1>
-  struct rebind {
-    typedef AlignedAllocator<T1, ByteAlignment> other;
-  };
-
-  AlignedAllocator() {}
-  explicit AlignedAllocator(const AlignedAllocator&) {}
-  template <class T1>
-  explicit AlignedAllocator(const AlignedAllocator<T1, ByteAlignment>&) {}
-  ~AlignedAllocator() {}
-
-  pointer allocate(size_type n, const void* = 0) {
-    return static_cast<pointer>(base::AlignedAlloc(n, ByteAlignment));
-  }
-
-  void deallocate(pointer p, size_type n) {
-    base::AlignedFree(static_cast<void*>(p));
-  }
-
-  size_type max_size() const {
-    return std::numeric_limits<size_t>::max() / sizeof(T);
-  }
-};
 
 // Helper to align data and extract frames from raw video streams.
 // GetNextFrame() returns VideoFrames with a specified |storage_type|. The

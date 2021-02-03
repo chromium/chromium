@@ -8,10 +8,8 @@
 
 #include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "base/memory/aligned_memory.h"
 #include "base/memory/ptr_util.h"
 #include "base/stl_util.h"
-#include "base/sys_byteorder.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "media/base/format_utils.h"

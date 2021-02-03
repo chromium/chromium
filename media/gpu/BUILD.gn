@@ -456,42 +456,6 @@ source_set("android_video_decode_accelerator_unittests") {
   }
 }
 
-if (use_v4l2_codec || use_vaapi || is_mac || is_win) {
-  test("video_encode_accelerator_unittest") {
-    testonly = true
-    deps = [
-      "test:helpers",
-      "//base",
-      "//base/test:test_support",
-      "//build:chromeos_buildflags",
-      "//media:test_support",
-      "//media/gpu",
-      "//media/gpu/test:test_helpers",
-      "//media/mojo/common:mojo_shared_buffer_video_frame",
-      "//media/parsers",
-      "//mojo/core/embedder",
-      "//testing/gtest",
-      "//third_party/ffmpeg",
-      "//third_party/libyuv",
-      "//ui/base",
-      "//ui/gfx",
-      "//ui/gfx:test_support",
-      "//ui/gfx/geometry",
-      "//ui/gl",
-      "//ui/gl:test_support",
-    ]
-    configs += [ "//third_party/libyuv:libyuv_config" ]
-    sources = [ "video_encode_accelerator_unittest.cc" ]
-    if (use_x11) {
-      deps += [ "//ui/gfx/x" ]
-      public_configs = [ "//build/config/linux/libva" ]
-    }
-    if (use_ozone) {
-      deps += [ "//ui/ozone" ]
-    }
-  }
-}
-
 static_library("test_support") {
   visibility = [ "//media/gpu/*" ]
   testonly = true
