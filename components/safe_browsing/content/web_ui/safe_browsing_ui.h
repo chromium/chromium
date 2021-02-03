@@ -134,11 +134,9 @@ class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
   // currently open chrome://safe-browsing tab was opened.
   void GetReportingEvents(const base::ListValue* args);
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
   // Get the deep scanning requests that have been collected since the oldest
   // currently open chrome://safe-browsing tab was opened.
   void GetDeepScans(const base::ListValue* args);
-#endif
 
   // Register callbacks for WebUI messages.
   void RegisterMessages() override;

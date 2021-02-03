@@ -1889,21 +1889,21 @@ void SafeBrowsingUIHandler::GetLogMessages(const base::ListValue* args) {
   ResolveJavascriptCallback(base::Value(callback_id), messages_received);
 }
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
 void SafeBrowsingUIHandler::GetDeepScans(const base::ListValue* args) {
   base::ListValue pings_sent;
+#if BUILDFLAG(FULL_SAFE_BROWSING)
   for (const auto& token_and_data :
        WebUIInfoSingleton::GetInstance()->deep_scan_requests()) {
     pings_sent.Append(SerializeDeepScanDebugData(token_and_data.first,
                                                  token_and_data.second));
   }
+#endif
 
   AllowJavascript();
   std::string callback_id;
   args->GetString(0, &callback_id);
   ResolveJavascriptCallback(base::Value(callback_id), pings_sent);
 }
-#endif
 
 void SafeBrowsingUIHandler::NotifyClientDownloadRequestJsListener(
     ClientDownloadRequest* client_download_request) {
@@ -2073,11 +2073,9 @@ void SafeBrowsingUIHandler::RegisterMessages() {
       "getReportingEvents",
       base::BindRepeating(&SafeBrowsingUIHandler::GetReportingEvents,
                           base::Unretained(this)));
-#if BUILDFLAG(FULL_SAFE_BROWSING)
   web_ui()->RegisterMessageCallback(
       "getDeepScans", base::BindRepeating(&SafeBrowsingUIHandler::GetDeepScans,
                                           base::Unretained(this)));
-#endif
 }
 
 void SafeBrowsingUIHandler::SetWebUIForTesting(content::WebUI* web_ui) {
