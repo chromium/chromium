@@ -9,12 +9,18 @@
 
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #import "components/safe_browsing/ios/password_protection/password_protection_service.h"
+#include "components/sync/protocol/gaia_password_reuse.pb.h"
 
 class ChromeBrowserState;
+class GURL;
 class PrefService;
 
 namespace password_manager {
 class PasswordStore;
+}
+
+namespace web {
+class WebState;
 }
 
 namespace safe_browsing {
@@ -118,6 +124,16 @@ class ChromePasswordProtectionService : public PasswordProtectionService {
       RequestOutcome outcome,
       PasswordType password_type,
       const LoginReputationClientResponse* response) override;
+
+  // Records a Chrome Sync event that sync password reuse was detected.
+  void MaybeLogPasswordReuseDetectedEvent(web::WebState* web_state);
+
+  // Records a Chrome Sync event with the result of the user's interaction with
+  // the warning dialog.
+  void MaybeLogPasswordReuseDialogInteraction(
+      int64_t navigation_id,
+      sync_pb::GaiaPasswordReuse::PasswordReuseDialogInteraction::
+          InteractionResult interaction_result);
 
  private:
   password_manager::PasswordStore* GetStoreForReusedCredential(

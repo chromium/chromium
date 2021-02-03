@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/safe_browsing/chrome_password_protection_service.h"
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
@@ -12,22 +13,69 @@
 #include "base/values.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/browser/mock_password_store.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/safe_browsing/core/password_protection/metrics_util.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/protocol/gaia_password_reuse.pb.h"
+#include "components/sync_user_events/fake_user_event_service.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
+#include "ios/chrome/browser/sync/ios_user_event_service_factory.h"
 #import "ios/chrome/browser/web/chrome_web_test.h"
+#include "ios/web/public/navigation/referrer.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/web_state.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/page_transition_types.h"
+#include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 using ::testing::_;
+using password_manager::metrics_util::PasswordType;
 using password_manager::MockPasswordStore;
+using sync_pb::GaiaPasswordReuse;
+using sync_pb::UserEventSpecifics;
+using PasswordReuseDialogInteraction =
+    GaiaPasswordReuse::PasswordReuseDialogInteraction;
+using PasswordReuseLookup = GaiaPasswordReuse::PasswordReuseLookup;
 
 namespace safe_browsing {
+
+namespace {
+
+const char kTestEmail[] = "foo@example.com";
+
+constexpr struct {
+  // The response from the password protection service.
+  RequestOutcome request_outcome;
+  // The enum to log in the user event for that response.
+  PasswordReuseLookup::LookupResult lookup_result;
+} kTestCasesWithoutVerdict[]{
+    {RequestOutcome::MATCHED_ALLOWLIST, PasswordReuseLookup::WHITELIST_HIT},
+    {RequestOutcome::URL_NOT_VALID_FOR_REPUTATION_COMPUTING,
+     PasswordReuseLookup::URL_UNSUPPORTED},
+    {RequestOutcome::CANCELED, PasswordReuseLookup::REQUEST_FAILURE},
+    {RequestOutcome::TIMEDOUT, PasswordReuseLookup::REQUEST_FAILURE},
+    {RequestOutcome::DISABLED_DUE_TO_INCOGNITO,
+     PasswordReuseLookup::REQUEST_FAILURE},
+    {RequestOutcome::REQUEST_MALFORMED, PasswordReuseLookup::REQUEST_FAILURE},
+    {RequestOutcome::FETCH_FAILED, PasswordReuseLookup::REQUEST_FAILURE},
+    {RequestOutcome::RESPONSE_MALFORMED, PasswordReuseLookup::REQUEST_FAILURE},
+    {RequestOutcome::SERVICE_DESTROYED, PasswordReuseLookup::REQUEST_FAILURE},
+    {RequestOutcome::DISABLED_DUE_TO_FEATURE_DISABLED,
+     PasswordReuseLookup::REQUEST_FAILURE},
+    {RequestOutcome::DISABLED_DUE_TO_USER_POPULATION,
+     PasswordReuseLookup::REQUEST_FAILURE}};
+
+}  // namespace
 
 class FakeChromePasswordProtectionService
     : public ChromePasswordProtectionService {
@@ -36,13 +84,20 @@ class FakeChromePasswordProtectionService
       TestChromeBrowserState* browser_state)
       : ChromePasswordProtectionService(browser_state),
         is_incognito_(false),
+        is_account_signed_in_(false),
         is_no_hosted_domain_found_(false) {}
 
   bool IsIncognito() override { return is_incognito_; }
+  bool IsPrimaryAccountSignedIn() const override {
+    return is_account_signed_in_;
+  }
   bool IsPrimaryAccountGmail() const override {
     return is_no_hosted_domain_found_;
   }
   void SetIsIncognito(bool is_incognito) { is_incognito_ = is_incognito; }
+  void SetIsAccountSignedIn(bool is_account_signed_in) {
+    is_account_signed_in_ = is_account_signed_in;
+  }
   void SetIsNoHostedDomainFound(bool is_no_hosted_domain_found) {
     is_no_hosted_domain_found_ = is_no_hosted_domain_found;
   }
@@ -52,6 +107,7 @@ class FakeChromePasswordProtectionService
 
  private:
   bool is_incognito_;
+  bool is_account_signed_in_;
   bool is_no_hosted_domain_found_;
 };
 
@@ -60,9 +116,29 @@ class ChromePasswordProtectionServiceTest : public ChromeWebTest {
   ChromePasswordProtectionServiceTest() : ChromeWebTest() {
     service_ = std::make_unique<FakeChromePasswordProtectionService>(
         chrome_browser_state_.get());
+
+    auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
+    fake_navigation_manager_ = navigation_manager.get();
+    fake_web_state_.SetNavigationManager(std::move(navigation_manager));
+    fake_web_state_.SetBrowserState(chrome_browser_state_.get());
+
+    IOSUserEventServiceFactory::GetInstance()->SetTestingFactory(
+        chrome_browser_state_.get(),
+        base::BindRepeating(
+            &ChromePasswordProtectionServiceTest::CreateFakeUserEventService,
+            base::Unretained(this)));
   }
 
   ~ChromePasswordProtectionServiceTest() override = default;
+
+  void NavigateAndCommit(const GURL& url) {
+    fake_navigation_manager_->AddItem(
+        url, ui::PageTransition::PAGE_TRANSITION_TYPED);
+    web::NavigationItem* item = fake_navigation_manager_->GetItemAtIndex(
+        fake_navigation_manager_->GetItemCount() - 1);
+    item->SetTimestamp(base::Time::Now());
+    fake_navigation_manager_->SetLastCommittedItem(item);
+  }
 
   MockPasswordStore* GetProfilePasswordStore() const {
     return static_cast<MockPasswordStore*>(
@@ -71,8 +147,35 @@ class ChromePasswordProtectionServiceTest : public ChromeWebTest {
             .get());
   }
 
+  syncer::FakeUserEventService* GetUserEventService() const {
+    return static_cast<syncer::FakeUserEventService*>(
+        IOSUserEventServiceFactory::GetForBrowserState(
+            chrome_browser_state_.get()));
+  }
+
+  std::unique_ptr<KeyedService> CreateFakeUserEventService(
+      web::BrowserState* browser_state) {
+    return std::make_unique<syncer::FakeUserEventService>();
+  }
+
+  CoreAccountInfo SetPrimaryAccount(const std::string& email) {
+    identity_test_env_.MakeAccountAvailable(email);
+    return identity_test_env_.SetPrimaryAccount(email);
+  }
+
+  void SetUpSyncAccount(const std::string& hosted_domain,
+                        const CoreAccountInfo& account_info) {
+    identity_test_env_.SimulateSuccessfulFetchOfAccountInfo(
+        account_info.account_id, account_info.email, account_info.gaia,
+        hosted_domain, "full_name", "given_name", "locale",
+        "http://picture.example.com/picture.jpg");
+  }
+
  protected:
   std::unique_ptr<FakeChromePasswordProtectionService> service_;
+  web::FakeWebState fake_web_state_;
+  web::FakeNavigationManager* fake_navigation_manager_;
+  signin::IdentityTestEnvironment identity_test_env_;
 };
 
 // All pinging is disabled when safe browsing is disabled.
@@ -259,6 +362,71 @@ TEST_F(ChromePasswordProtectionServiceTest,
                       kMarkSiteAsLegitimate))
       .Times(2);
   service_->RemovePhishedSavedPasswordCredential(credentials);
+}
+
+TEST_F(ChromePasswordProtectionServiceTest,
+       VerifyPasswordReuseUserEventNotRecordedDueToIncognito) {
+  // Configure sync account type to GMAIL.
+  CoreAccountInfo account_info = SetPrimaryAccount(kTestEmail);
+  SetUpSyncAccount(kNoHostedDomainFound, account_info);
+  service_->SetIsIncognito(true);
+  ASSERT_TRUE(service_->IsIncognito());
+
+  // Nothing should be logged because of incognito.
+  NavigateAndCommit(GURL("https:www.example.com/"));
+
+  // PasswordReuseDetected
+  service_->MaybeLogPasswordReuseDetectedEvent(web_state());
+  EXPECT_TRUE(GetUserEventService()->GetRecordedUserEvents().empty());
+  service_->MaybeLogPasswordReuseLookupEvent(
+      web_state(), RequestOutcome::MATCHED_ALLOWLIST,
+      PasswordType::PRIMARY_ACCOUNT_PASSWORD, nullptr);
+  EXPECT_TRUE(GetUserEventService()->GetRecordedUserEvents().empty());
+
+  // PasswordReuseLookup
+  unsigned long t = 0;
+  for (const auto& it : kTestCasesWithoutVerdict) {
+    service_->MaybeLogPasswordReuseLookupEvent(
+        web_state(), it.request_outcome, PasswordType::PRIMARY_ACCOUNT_PASSWORD,
+        nullptr);
+    ASSERT_TRUE(GetUserEventService()->GetRecordedUserEvents().empty()) << t;
+    t++;
+  }
+
+  // PasswordReuseDialogInteraction
+  service_->MaybeLogPasswordReuseDialogInteraction(
+      1000 /* navigation_id */,
+      PasswordReuseDialogInteraction::WARNING_ACTION_TAKEN);
+  ASSERT_TRUE(GetUserEventService()->GetRecordedUserEvents().empty());
+}
+
+TEST_F(ChromePasswordProtectionServiceTest,
+       VerifyPasswordReuseDetectedUserEventRecorded) {
+  // Configure sync account type to GMAIL.
+  CoreAccountInfo account_info = SetPrimaryAccount(kTestEmail);
+  SetUpSyncAccount(kNoHostedDomainFound, account_info);
+  service_->SetIsAccountSignedIn(true);
+  NavigateAndCommit(GURL("https://www.example.com/"));
+
+  // Case 1: safe_browsing_enabled = true
+  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
+                                                true);
+  service_->MaybeLogPasswordReuseDetectedEvent(&fake_web_state_);
+  ASSERT_EQ(1ul, GetUserEventService()->GetRecordedUserEvents().size());
+  GaiaPasswordReuse event = GetUserEventService()
+                                ->GetRecordedUserEvents()[0]
+                                .gaia_password_reuse_event();
+  EXPECT_TRUE(event.reuse_detected().status().enabled());
+
+  // Case 2: safe_browsing_enabled = false
+  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
+                                                false);
+  service_->MaybeLogPasswordReuseDetectedEvent(&fake_web_state_);
+  ASSERT_EQ(2ul, GetUserEventService()->GetRecordedUserEvents().size());
+  event = GetUserEventService()
+              ->GetRecordedUserEvents()[1]
+              .gaia_password_reuse_event();
+  EXPECT_FALSE(event.reuse_detected().status().enabled());
 }
 
 }  // namespace safe_browsing

@@ -4,20 +4,82 @@
 
 #import "ios/chrome/browser/safe_browsing/chrome_password_protection_service.h"
 
+#include <memory>
+
+#include "base/time/time.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/sync/protocol/gaia_password_reuse.pb.h"
+#include "components/sync/protocol/user_event_specifics.pb.h"
+#include "components/sync_user_events/user_event_service.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
+#include "ios/chrome/browser/sync/ios_user_event_service_factory.h"
+#include "ios/web/public/navigation/navigation_item.h"
+#include "ios/web/public/navigation/navigation_manager.h"
+#include "ios/web/public/thread/web_thread.h"
+#import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
+using sync_pb::GaiaPasswordReuse;
+using sync_pb::UserEventSpecifics;
+using InteractionResult =
+    GaiaPasswordReuse::PasswordReuseDialogInteraction::InteractionResult;
+using PasswordReuseDialogInteraction =
+    GaiaPasswordReuse::PasswordReuseDialogInteraction;
 using PasswordReuseEvent =
     safe_browsing::LoginReputationClientRequest::PasswordReuseEvent;
+using SafeBrowsingStatus =
+    GaiaPasswordReuse::PasswordReuseDetected::SafeBrowsingStatus;
 
 namespace safe_browsing {
+
+namespace {
+
+// Given a |web_state|, returns a timestemp of its last committed
+// navigation.
+int64_t GetLastCommittedNavigationTimestamp(web::WebState* web_state) {
+  if (!web_state)
+    return 0;
+  web::NavigationItem* navigation =
+      web_state->GetNavigationManager()->GetLastCommittedItem();
+  return navigation ? navigation->GetTimestamp()
+                          .ToDeltaSinceWindowsEpoch()
+                          .InMicroseconds()
+                    : 0;
+}
+
+// Return a new UserEventSpecifics w/o the navigation_id populated
+std::unique_ptr<UserEventSpecifics> GetNewUserEventSpecifics() {
+  auto specifics = std::make_unique<UserEventSpecifics>();
+  specifics->set_event_time_usec(
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  return specifics;
+}
+
+// Return a new UserEventSpecifics w/ the navigation_id populated
+std::unique_ptr<UserEventSpecifics> GetUserEventSpecificsWithNavigationId(
+    int64_t navigation_id) {
+  if (navigation_id <= 0)
+    return nullptr;
+
+  auto specifics = GetNewUserEventSpecifics();
+  specifics->set_navigation_id(navigation_id);
+  return specifics;
+}
+
+// Return a new UserEventSpecifics populated from the web_state
+std::unique_ptr<UserEventSpecifics> GetUserEventSpecifics(
+    web::WebState* web_state) {
+  return GetUserEventSpecificsWithNavigationId(
+      GetLastCommittedNavigationTimestamp(web_state));
+}
+
+}  // namespace
 
 ChromePasswordProtectionService::ChromePasswordProtectionService(
     ChromeBrowserState* browser_state)
@@ -257,7 +319,62 @@ void ChromePasswordProtectionService::MaybeLogPasswordReuseLookupEvent(
     web::WebState* web_state,
     RequestOutcome outcome,
     PasswordType password_type,
-    const LoginReputationClientResponse* response) {}
+    const LoginReputationClientResponse* response) {
+  // TODO(crbug.com/1147967): Complete PhishGuard iOS implementation.
+}
+
+void ChromePasswordProtectionService::MaybeLogPasswordReuseDetectedEvent(
+    web::WebState* web_state) {
+  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+
+  if (IsIncognito())
+    return;
+
+  syncer::UserEventService* user_event_service =
+      IOSUserEventServiceFactory::GetForBrowserState(browser_state_);
+  if (!user_event_service)
+    return;
+
+  std::unique_ptr<UserEventSpecifics> specifics =
+      GetUserEventSpecifics(web_state);
+  if (!specifics)
+    return;
+
+  auto* const status = specifics->mutable_gaia_password_reuse_event()
+                           ->mutable_reuse_detected()
+                           ->mutable_status();
+  status->set_enabled(IsSafeBrowsingEnabled());
+
+  status->set_safe_browsing_reporting_population(SafeBrowsingStatus::NONE);
+
+  user_event_service->RecordUserEvent(std::move(specifics));
+}
+
+void ChromePasswordProtectionService::MaybeLogPasswordReuseDialogInteraction(
+    int64_t navigation_id,
+    InteractionResult interaction_result) {
+  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+
+  if (IsIncognito())
+    return;
+
+  syncer::UserEventService* user_event_service =
+      IOSUserEventServiceFactory::GetForBrowserState(browser_state_);
+  if (!user_event_service)
+    return;
+
+  std::unique_ptr<UserEventSpecifics> specifics =
+      GetUserEventSpecificsWithNavigationId(navigation_id);
+  if (!specifics)
+    return;
+
+  PasswordReuseDialogInteraction* const dialog_interaction =
+      specifics->mutable_gaia_password_reuse_event()
+          ->mutable_dialog_interaction();
+  dialog_interaction->set_interaction_result(interaction_result);
+
+  user_event_service->RecordUserEvent(std::move(specifics));
+}
 
 password_manager::PasswordStore*
 ChromePasswordProtectionService::GetStoreForReusedCredential(
