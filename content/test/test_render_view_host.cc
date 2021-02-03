@@ -268,10 +268,17 @@ bool TestRenderViewHost::CreateRenderView(
     int proxy_route_id,
     bool window_was_created_with_opener) {
   DCHECK(!IsRenderViewLive());
+  // Mark the RenderView as live, though there's nothing to do here since we
+  // don't yet use mojo to talk to the RenderView.
+  renderer_view_created_ = true;
 
-  RenderFrameHostImpl* main_frame =
-      static_cast<RenderFrameHostImpl*>(GetMainFrame());
-  if (main_frame && is_active()) {
+  // When the RenderViewHost has a main frame host attached, the RenderView
+  // in the renderer creates the main frame along with it. We mimic that here by
+  // creating the mojo connections and calling RenderFrameCreated().
+  RenderFrameHostImpl* main_frame = RenderFrameHostImpl::FromID(
+      GetProcess()->GetID(), main_frame_routing_id_);
+  DCHECK_EQ(!!main_frame, is_active());
+  if (main_frame) {
     // Pretend that we started a renderer process and created the renderer Frame
     // with its Widget. We bind all the mojom interfaces, but they all just talk
     // into the void.
@@ -289,12 +296,9 @@ bool TestRenderViewHost::CreateRenderView(
 
     // This also initializes the RenderWidgetHost attached to the frame.
     main_frame->RenderFrameCreated();
-  } else {
-    GetWidget()->SetRendererWidgetCreatedForInactiveRenderView();
   }
-
-  DCHECK(IsRenderViewLive());
   opener_frame_token_ = opener_frame_token;
+  DCHECK(IsRenderViewLive());
   return true;
 }
 

@@ -2476,11 +2476,16 @@ bool RenderFrameHostManager::CreateSpeculativeRenderFrameHost(
       new_instance, recovering_without_early_commit);
 
   // If RenderViewHost was created along with the speculative RenderFrameHost,
-  // ensure that RenderViewCreated is fired for it.  It is important to do this
-  // after speculative_render_frame_host_ is assigned, so that observers
-  // processing RenderViewCreated can find it via
-  // RenderViewHostImpl::GetMainFrame().
-  if (speculative_render_frame_host_) {
+  // ensure that RenderViewCreated() is fired for it. It is important to do
+  // this after speculative_render_frame_host_ is assigned, so that observers
+  // processing RenderViewCreated() can find it via
+  // RenderViewHostImpl::GetMainFrame(). Note that RenderViewHostImpl will not
+  // do this itself when the main frame is not present when the RenderView is
+  // created, as it defers that task to us here. Also RenderViewHostImpl will
+  // only notify the first time RenderViewCreated() is called, so it's
+  // acceptable to call it here unconditionally every time we make a
+  // speculative frame in the view.
+  if (speculative_render_frame_host_ && !frame_tree_node_->parent()) {
     speculative_render_frame_host_->render_view_host()
         ->DispatchRenderViewCreated();
   }

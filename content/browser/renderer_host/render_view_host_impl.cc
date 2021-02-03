@@ -499,24 +499,13 @@ bool RenderViewHostImpl::CreateRenderView(
   // or else there will be a leak in the renderer process.
   GetAgentSchedulingGroup().CreateView(std::move(params));
 
-  // Let our delegate know that we created a RenderView.
-  DispatchRenderViewCreated();
+  // Set the bit saying we've made the RenderView in the renderer and notify
+  // content public observers.
+  RenderViewCreated(main_rfh);
 
-  // If there is a main frame in this RenderViewHost, then the renderer-side
-  // main frame will be created along with the RenderView. The RenderFrameHost
-  // initializes its RenderWidgetHost as well, if it exists. Otherwise we must
-  // mark the non-frame-attached RenderWidgetHost as live in order for the
-  // RenderViewHost to be considered live.
-  if (main_rfh)
-    main_rfh->RenderFrameCreated();
-  else
-    GetWidget()->SetRendererWidgetCreatedForInactiveRenderView();
-
-  GetWidget()->delegate()->SendScreenRects();
-  // This must be posted after the RenderViewHost is marked live, which is done
-  // above by RenderFrameCreated() or set_renderer_initialized().
+  // This must be posted after the RenderViewHost is marked live, with
+  // `renderer_view_created_`.
   PostRenderViewReady();
-
   return true;
 }
 
@@ -585,8 +574,7 @@ void RenderViewHostImpl::OnBackForwardCacheTimeout() {
 }
 
 bool RenderViewHostImpl::IsRenderViewLive() {
-  return GetProcess()->IsInitializedAndNotDead() &&
-         GetWidget()->renderer_initialized();
+  return GetProcess()->IsInitializedAndNotDead() && renderer_view_created_;
 }
 
 void RenderViewHostImpl::SetBackgroundOpaque(bool opaque) {
@@ -608,11 +596,28 @@ RenderViewHostImpl::GetWebkitPreferencesForWidget() {
   return delegate_->GetOrCreateWebPreferences();
 }
 
-void RenderViewHostImpl::DispatchRenderViewCreated() {
-  if (has_notified_about_creation_)
-    return;
+void RenderViewHostImpl::RenderViewCreated(
+    RenderFrameHostImpl* local_main_frame) {
+  renderer_view_created_ = true;
+  if (local_main_frame) {
+    // Emebedders hears about the view being created in the renderer, then about
+    // the frame.
 
-  // Only send RenderViewCreated if there is a current or pending main frame
+    // The delegate's notification about the RenderView being created is not
+    // actually sent until/unless the main frame is also created and present for
+    // the RenderView. It is not sent for an inactive RenderView since that type
+    // of RenderView did not historically exist before site isolation.
+    DispatchRenderViewCreated();
+
+    // If there is a main frame in this RenderViewHost, then the renderer-side
+    // main frame will be created along with the RenderView. The RenderFrameHost
+    // initializes its RenderWidgetHost as well, if it exists.
+    local_main_frame->RenderFrameCreated();
+  }
+}
+
+void RenderViewHostImpl::DispatchRenderViewCreated() {
+  // We only send RenderViewCreated if there is a current or pending main frame
   // RenderFrameHost (current or pending).  Don't send notifications if this is
   // an inactive RVH that is either used by subframe RFHs or not used by any
   // RFHs at all (e.g., when created for the opener chain).
@@ -623,11 +628,17 @@ void RenderViewHostImpl::DispatchRenderViewCreated() {
   //
   // TODO(alexmos, creis): Revisit this as part of migrating RenderViewCreated
   // usage to RenderFrameCreated.  See https://crbug.com/763548.
-  if (!GetMainFrame())
-    return;
+  DCHECK(GetMainFrame());
 
-  delegate_->RenderViewCreated(this);
-  has_notified_about_creation_ = true;
+  // This is only done the first time a RenderView is created. Note that if a
+  // process and RenderView are recreated, no notification would be sent. This
+  // does allow the RenderFrameHostManager to call this method every time it
+  // makes a speculative frame, in the case that we avoided sending the dispatch
+  // due to GetMainFrame() being null when the RenderView was made.
+  if (!has_notified_about_creation_) {
+    delegate_->RenderViewCreated(this);
+    has_notified_about_creation_ = true;
+  }
 }
 
 void RenderViewHostImpl::ClosePage() {
@@ -675,9 +686,7 @@ void RenderViewHostImpl::ZoomToFindInPageRect(const gfx::Rect& rect_to_zoom) {
 void RenderViewHostImpl::RenderProcessExited(
     RenderProcessHost* host,
     const ChildProcessTerminationInfo& info) {
-  if (!GetWidget()->renderer_initialized())
-    return;
-
+  renderer_view_created_ = false;
   GetWidget()->RendererExited();
   delegate_->RenderViewTerminated(this, info.status, info.exit_code);
   // |this| might have been deleted. Do not add code here.

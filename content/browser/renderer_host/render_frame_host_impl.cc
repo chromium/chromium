@@ -5508,8 +5508,7 @@ void RenderFrameHostImpl::CreateNewWindow(
 
   // The mojom reply callback with kSuccess causes the renderer to create the
   // renderer-side objects.
-  main_frame->render_view_host()->DispatchRenderViewCreated();
-  main_frame->RenderFrameCreated();
+  main_frame->render_view_host()->RenderViewCreated(main_frame);
 }
 
 void RenderFrameHostImpl::CreatePortal(

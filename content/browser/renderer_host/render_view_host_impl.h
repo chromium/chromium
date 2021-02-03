@@ -166,6 +166,13 @@ class CONTENT_EXPORT RenderViewHostImpl
     return is_waiting_for_page_close_completion_;
   }
 
+  // Called when the RenderView in the renderer process has been created, at
+  // which point IsRenderViewLive() becomes true, and the mojo connections to
+  // the renderer process for this view now exist. This will also call
+  // DispatchRenderViewCreated() to tell the content embedder, if
+  // `local_main_frame` exists.
+  void RenderViewCreated(RenderFrameHostImpl* local_main_frame);
+
   // Generate RenderViewCreated events for observers through the delegate.
   // These events are only generated for active RenderViewHosts (which have a
   // RenderFrameHost for the main frame) as well as inactive RenderViewHosts
@@ -393,6 +400,10 @@ class CONTENT_EXPORT RenderViewHostImpl
 
   // Routing ID for this RenderViewHost.
   const int routing_id_;
+
+  // Whether the renderer-side RenderView is created. Becomes false when the
+  // renderer crashes.
+  bool renderer_view_created_ = false;
 
   // Routing ID for the main frame's RenderFrameHost.
   int main_frame_routing_id_;

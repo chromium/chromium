@@ -683,10 +683,6 @@ void RenderWidgetHostImpl::RendererWidgetCreated(bool for_frame_widget) {
   SynchronizeVisualProperties();
 }
 
-void RenderWidgetHostImpl::SetRendererWidgetCreatedForInactiveRenderView() {
-  renderer_widget_created_ = true;
-}
-
 void RenderWidgetHostImpl::Init() {
   DCHECK(renderer_widget_created_);
   DCHECK(waiting_for_init_);
@@ -2056,6 +2052,8 @@ void RenderWidgetHostImpl::RendererExited() {
   renderer_widget_created_ = false;
   // This flag is set when creating the renderer widget.
   waiting_for_init_ = false;
+
+  blink_widget_.reset();
 
   // After the renderer crashes, the view is destroyed and so the
   // RenderWidgetHost cannot track its visibility anymore. We assume such

@@ -377,16 +377,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // RendererWidgetCreated().
   void Init();
 
-  // OH NO DO NOT CALL THIS.
-  // This is called from RenderViewHost in order to mark itself as "live" even
-  // though there is actually no Widget created in the renderer, as there is no
-  // main frame attached to the RenderViewHost.
-  // TODO(crbug.com/419087): Remove this, and have RenderViewHost track its own
-  // live-ness. Then checks for a null `view_` in this class can just check
-  // `renderer_widget_created_` instead. And have RenderViewHost tell this class
-  // when the main frame goes away and thus the renderer widget along with it.
-  void SetRendererWidgetCreatedForInactiveRenderView();
-
   // Returns true if the frame content needs be stored before being evicted.
   bool ShouldShowStaleContentOnEviction();
 

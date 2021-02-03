@@ -320,43 +320,11 @@ id MockSmartMagnifyEvent() {
 
 class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
  public:
-  ~MockRenderWidgetHostImpl() override {}
-
-  // Extracts |latency_info| and stores it in |lastWheelEventLatencyInfo|.
-  void ForwardWheelEventWithLatencyInfo (
-        const blink::WebMouseWheelEvent& wheel_event,
-        const ui::LatencyInfo& ui_latency) override {
-    RenderWidgetHostImpl::ForwardWheelEventWithLatencyInfo (
-        wheel_event, ui_latency);
-    lastWheelEventLatencyInfo = ui::LatencyInfo(ui_latency);
-  }
-
-  MOCK_METHOD0(Focus, void());
-  MOCK_METHOD0(Blur, void());
-
-  ui::LatencyInfo lastWheelEventLatencyInfo;
-  static std::unique_ptr<MockRenderWidgetHostImpl> Create(
-      RenderWidgetHostDelegate* delegate,
-      AgentSchedulingGroupHost& agent_scheduling_group_host,
-      int32_t routing_id) {
-    return base::WrapUnique(new MockRenderWidgetHostImpl(
-        delegate, agent_scheduling_group_host, routing_id));
-  }
-
-  MockWidgetInputHandler* input_handler() { return &input_handler_; }
-  MockWidgetInputHandler::MessageVector GetAndResetDispatchedMessages() {
-    return input_handler_.GetAndResetDispatchedMessages();
-  }
-
-  blink::mojom::WidgetInputHandler* GetWidgetInputHandler() override {
-    return &input_handler_;
-  }
-
- private:
   MockRenderWidgetHostImpl(
       RenderWidgetHostDelegate* delegate,
       AgentSchedulingGroupHost& agent_scheduling_group_host,
-      int32_t routing_id)
+      int32_t routing_id,
+      bool for_frame_widget)
       : RenderWidgetHostImpl(/*frame_tree=*/nullptr,
                              /*self_owned=*/false,
                              delegate,
@@ -368,9 +336,13 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
     mojo::AssociatedRemote<blink::mojom::WidgetHost> widget_host;
     BindWidgetInterfaces(widget_host.BindNewEndpointAndPassDedicatedReceiver(),
                          TestRenderWidgetHost::CreateStubWidgetRemote());
-
-    SetRendererWidgetCreatedForInactiveRenderView();
-    lastWheelEventLatencyInfo = ui::LatencyInfo();
+    if (for_frame_widget) {
+      mojo::AssociatedRemote<blink::mojom::FrameWidgetHost> frame_widget_host;
+      BindFrameWidgetInterfaces(
+          frame_widget_host.BindNewEndpointAndPassDedicatedReceiver(),
+          TestRenderWidgetHost::CreateStubFrameWidgetRemote());
+    }
+    RendererWidgetCreated(for_frame_widget);
 
     ON_CALL(*this, Focus())
         .WillByDefault(
@@ -380,9 +352,38 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
             testing::Invoke(this, &MockRenderWidgetHostImpl::BlurImpl));
   }
 
+  ~MockRenderWidgetHostImpl() override = default;
+
+  // Extracts |latency_info| and stores it in |last_wheel_event_latency_info_|.
+  void ForwardWheelEventWithLatencyInfo(
+      const blink::WebMouseWheelEvent& wheel_event,
+      const ui::LatencyInfo& ui_latency) override {
+    RenderWidgetHostImpl::ForwardWheelEventWithLatencyInfo(wheel_event,
+                                                           ui_latency);
+    last_wheel_event_latency_info_ = ui::LatencyInfo(ui_latency);
+  }
+
+  MOCK_METHOD0(Focus, void());
+  MOCK_METHOD0(Blur, void());
+
+  MockWidgetInputHandler* input_handler() { return &input_handler_; }
+  MockWidgetInputHandler::MessageVector GetAndResetDispatchedMessages() {
+    return input_handler_.GetAndResetDispatchedMessages();
+  }
+
+  blink::mojom::WidgetInputHandler* GetWidgetInputHandler() override {
+    return &input_handler_;
+  }
+
+  const ui::LatencyInfo& LastWheelEventLatencyInfo() const {
+    return last_wheel_event_latency_info_;
+  }
+
+ private:
   void FocusImpl() { RenderWidgetHostImpl::Focus(); }
   void BlurImpl() { RenderWidgetHostImpl::Blur(); }
 
+  ui::LatencyInfo last_wheel_event_latency_info_;
   MockWidgetInputHandler input_handler_;
 
   DISALLOW_COPY_AND_ASSIGN(MockRenderWidgetHostImpl);
@@ -491,14 +492,10 @@ class RenderWidgetHostViewMacTest : public RenderViewHostImplTestHarness {
     process_host_->Init();
     agent_scheduling_group_host_ =
         std::make_unique<AgentSchedulingGroupHost>(*process_host_);
-    host_ = MockRenderWidgetHostImpl::Create(&delegate_,
-                                             *agent_scheduling_group_host_,
-                                             process_host_->GetNextRoutingID());
-    // MockRenderWidgetHostImpl already bound the Widget mojom interfaces.
-    mojo::AssociatedRemote<blink::mojom::FrameWidgetHost> frame_widget_host;
-    host_->BindFrameWidgetInterfaces(
-        frame_widget_host.BindNewEndpointAndPassDedicatedReceiver(),
-        TestRenderWidgetHost::CreateStubFrameWidgetRemote());
+    host_ = std::make_unique<MockRenderWidgetHostImpl>(
+        &delegate_, *agent_scheduling_group_host_,
+        process_host_->GetNextRoutingID(),
+        /*for_frame_widget=*/true);
     host_->set_owner_delegate(&mock_owner_delegate_);
     rwhv_mac_ = new RenderWidgetHostViewMac(host_.get());
     rwhv_cocoa_.reset([rwhv_mac_->GetInProcessNSView() retain]);
@@ -950,7 +947,7 @@ TEST_F(RenderWidgetHostViewMacTest, LastWheelEventLatencyInfoExists) {
   // properly in scrollWheel function.
   NSEvent* wheelEvent1 = MockScrollWheelEventWithPhase(@selector(phaseBegan),3);
   [rwhv_mac_->GetInProcessNSView() scrollWheel:wheelEvent1];
-  ASSERT_TRUE(host_->lastWheelEventLatencyInfo.FindLatency(
+  ASSERT_TRUE(host_->LastWheelEventLatencyInfo().FindLatency(
       ui::INPUT_EVENT_LATENCY_UI_COMPONENT, nullptr));
 
   MockWidgetInputHandler::MessageVector events =
@@ -965,7 +962,7 @@ TEST_F(RenderWidgetHostViewMacTest, LastWheelEventLatencyInfoExists) {
   // in scrollWheel.
   NSEvent* wheelEvent2 = MockScrollWheelEventWithPhase(@selector(phaseEnded),0);
   [rwhv_mac_->GetInProcessNSView() scrollWheel:wheelEvent2];
-  ASSERT_TRUE(host_->lastWheelEventLatencyInfo.FindLatency(
+  ASSERT_TRUE(host_->LastWheelEventLatencyInfo().FindLatency(
       ui::INPUT_EVENT_LATENCY_UI_COMPONENT, nullptr));
 
   events = host_->GetAndResetDispatchedMessages();
@@ -986,7 +983,7 @@ TEST_F(RenderWidgetHostViewMacTest, SourceEventTypeExistsInLatencyInfo) {
   events[0]->ToEvent()->CallCallback(
       blink::mojom::InputEventResultState::kConsumed);
 
-  ASSERT_TRUE(host_->lastWheelEventLatencyInfo.source_event_type() ==
+  ASSERT_TRUE(host_->LastWheelEventLatencyInfo().source_event_type() ==
               ui::SourceEventType::WHEEL);
 }
 
@@ -1323,9 +1320,9 @@ TEST_F(RenderWidgetHostViewMacTest,
   AgentSchedulingGroupHost agent_scheduling_group_host(process_host);
   MockRenderWidgetHostDelegate delegate;
   int32_t routing_id = process_host.GetNextRoutingID();
-  std::unique_ptr<MockRenderWidgetHostImpl> host =
-      MockRenderWidgetHostImpl::Create(&delegate, agent_scheduling_group_host,
-                                       routing_id);
+  auto host = std::make_unique<MockRenderWidgetHostImpl>(
+      &delegate, agent_scheduling_group_host, routing_id,
+      /*for_frame_widget=*/false);
   RenderWidgetHostViewMac* view = new RenderWidgetHostViewMac(host.get());
   base::RunLoop().RunUntilIdle();
 
@@ -1386,9 +1383,9 @@ TEST_F(RenderWidgetHostViewMacTest,
   AgentSchedulingGroupHost agent_scheduling_group_host(process_host);
   MockRenderWidgetHostDelegate delegate;
   int32_t routing_id = process_host.GetNextRoutingID();
-  std::unique_ptr<MockRenderWidgetHostImpl> host =
-      MockRenderWidgetHostImpl::Create(&delegate, agent_scheduling_group_host,
-                                       routing_id);
+  auto host = std::make_unique<MockRenderWidgetHostImpl>(
+      &delegate, agent_scheduling_group_host, routing_id,
+      /*for_frame_widget=*/false);
   RenderWidgetHostViewMac* view = new RenderWidgetHostViewMac(host.get());
   base::RunLoop().RunUntilIdle();
 
@@ -1445,9 +1442,9 @@ TEST_F(RenderWidgetHostViewMacTest,
   MockRenderWidgetHostDelegate delegate;
   AgentSchedulingGroupHost agent_scheduling_group_host(process_host);
   int32_t routing_id = process_host.GetNextRoutingID();
-  std::unique_ptr<MockRenderWidgetHostImpl> host =
-      MockRenderWidgetHostImpl::Create(&delegate, agent_scheduling_group_host,
-                                       routing_id);
+  auto host = std::make_unique<MockRenderWidgetHostImpl>(
+      &delegate, agent_scheduling_group_host, routing_id,
+      /*for_frame_widget=*/false);
   RenderWidgetHostViewMac* view = new RenderWidgetHostViewMac(host.get());
   base::RunLoop().RunUntilIdle();
 
@@ -1754,9 +1751,9 @@ class InputMethodMacTest : public RenderWidgetHostViewMacTest {
     child_process_host_->Init();
     child_agent_scheduling_group_host_ =
         std::make_unique<AgentSchedulingGroupHost>(*child_process_host_);
-    child_widget_ = MockRenderWidgetHostImpl::Create(
+    child_widget_ = std::make_unique<MockRenderWidgetHostImpl>(
         &delegate_, *child_agent_scheduling_group_host_,
-        child_process_host_->GetNextRoutingID());
+        child_process_host_->GetNextRoutingID(), /*for_frame_widget=*/false);
     child_view_ = new TestRenderWidgetHostView(child_widget_.get());
     base::RunLoop().RunUntilIdle();
   }
