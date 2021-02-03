@@ -1743,6 +1743,9 @@
           '--use-angle=d3d11',
           '--bot-mode',
         ],
+        'merge': {
+          'script': '//third_party/angle/scripts/angle_deqp_test_merge.py',
+        },
         'test': 'angle_deqp_egl_tests',
         'use_isolated_scripts_api': True,
       },
@@ -1757,6 +1760,9 @@
           # Flaky when run with multiple processes.
           '--max-processes=1',
         ],
+        'merge': {
+          'script': '//third_party/angle/scripts/angle_deqp_test_merge.py',
+        },
         'test': 'angle_deqp_egl_tests',
         'use_isolated_scripts_api': True,
       },
@@ -1775,6 +1781,9 @@
         'android_swarming': {
           'shards': 4,
         },
+        'merge': {
+          'script': '//third_party/angle/scripts/angle_deqp_test_merge.py',
+        },
         'test': 'angle_deqp_egl_tests',
         'use_isolated_scripts_api': True,
       },
@@ -1787,6 +1796,9 @@
           '--use-angle=metal',
           '--bot-mode',
         ],
+        'merge': {
+          'script': '//third_party/angle/scripts/angle_deqp_test_merge.py',
+        },
         'test': 'angle_deqp_egl_tests',
         'use_isolated_scripts_api': True,
       },
@@ -1808,6 +1820,9 @@
         'desktop_args': [
           '--bot-mode',
         ],
+        'merge': {
+          'script': '//third_party/angle/scripts/angle_deqp_test_merge.py',
+        },
         'swarming': {
           'shards': 2,
         },
@@ -1823,6 +1838,9 @@
           '--use-angle=d3d11',
           '--bot-mode',
         ],
+        'merge': {
+          'script': '//third_party/angle/scripts/angle_deqp_test_merge.py',
+        },
         'test': 'angle_deqp_gles2_tests',
         'use_isolated_scripts_api': True,
       },
@@ -1835,6 +1853,9 @@
           '--use-angle=gl',
           '--bot-mode',
         ],
+        'merge': {
+          'script': '//third_party/angle/scripts/angle_deqp_test_merge.py',
+        },
         'test': 'angle_deqp_gles2_tests',
         'use_isolated_scripts_api': True,
       },
@@ -1856,6 +1877,9 @@
         'desktop_args': [
           '--bot-mode',
         ],
+        'merge': {
+          'script': '//third_party/angle/scripts/angle_deqp_test_merge.py',
+        },
         'test': 'angle_deqp_gles2_tests',
         'use_isolated_scripts_api': True,
       },
@@ -1870,6 +1894,9 @@
         'desktop_args': [
           '--bot-mode',
         ],
+        'merge': {
+          'script': '//third_party/angle/scripts/angle_deqp_test_merge.py',
+        },
         'test': 'angle_deqp_gles2_tests',
         'use_isolated_scripts_api': True,
       },
@@ -1891,6 +1918,9 @@
         'desktop_args': [
           '--bot-mode',
         ],
+        'merge': {
+          'script': '//third_party/angle/scripts/angle_deqp_test_merge.py',
+        },
         'test': 'angle_deqp_gles2_tests',
         'use_isolated_scripts_api': True,
       },
@@ -1903,6 +1933,9 @@
           '--use-angle=d3d11',
           '--bot-mode',
         ],
+        'merge': {
+          'script': '//third_party/angle/scripts/angle_deqp_test_merge.py',
+        },
         'swarming': {
           'shards': 2,
         },
@@ -1918,6 +1951,9 @@
           '--use-angle=gl',
           '--bot-mode',
         ],
+        'merge': {
+          'script': '//third_party/angle/scripts/angle_deqp_test_merge.py',
+        },
         'swarming': {
           'shards': 2,
         },
@@ -1942,6 +1978,9 @@
         'desktop_args': [
           '--bot-mode',
         ],
+        'merge': {
+          'script': '//third_party/angle/scripts/angle_deqp_test_merge.py',
+        },
         'swarming': {
           'shards': 2,
         },
@@ -1959,6 +1998,9 @@
         'desktop_args': [
           '--bot-mode',
         ],
+        'merge': {
+          'script': '//third_party/angle/scripts/angle_deqp_test_merge.py',
+        },
         'swarming': {
           'shards': 1,
         },
@@ -1976,6 +2018,9 @@
         'desktop_args': [
           '--bot-mode',
         ],
+        'merge': {
+          'script': '//third_party/angle/scripts/angle_deqp_test_merge.py',
+        },
         'swarming': {
           'shards': 1,
         },
@@ -1993,6 +2038,9 @@
         'desktop_args': [
           '--bot-mode',
         ],
+        'merge': {
+          'script': '//third_party/angle/scripts/angle_deqp_test_merge.py',
+        },
         'swarming': {
           'shards': 1,
         },
@@ -2008,6 +2056,9 @@
           '--use-angle=d3d11',
           '--bot-mode',
         ],
+        'merge': {
+          'script': '//third_party/angle/scripts/angle_deqp_test_merge.py',
+        },
         'swarming': {
           'shards': 2,
         },
@@ -2023,6 +2074,9 @@
           '--use-angle=gl',
           '--bot-mode',
         ],
+        'merge': {
+          'script': '//third_party/angle/scripts/angle_deqp_test_merge.py',
+        },
         'swarming': {
           'shards': 4,
         },
@@ -2044,6 +2098,9 @@
         'android_swarming': {
           'shards': 12,
         },
+        'merge': {
+          'script': '//third_party/angle/scripts/angle_deqp_test_merge.py',
+        },
         'test': 'angle_deqp_gles3_tests',
         'use_isolated_scripts_api': True,
       },
@@ -2058,6 +2115,9 @@
         'desktop_args': [
           '--bot-mode',
         ],
+        'merge': {
+          'script': '//third_party/angle/scripts/angle_deqp_test_merge.py',
+        },
         'swarming': {
           'shards': 4,
         },
@@ -2082,6 +2142,9 @@
         'desktop_args': [
           '--bot-mode',
         ],
+        'merge': {
+          'script': '//third_party/angle/scripts/angle_deqp_test_merge.py',
+        },
         'swarming': {
           'shards': 4,
         },
@@ -2099,6 +2162,9 @@
         'desktop_args': [
           '--bot-mode',
         ],
+        'merge': {
+          'script': '//third_party/angle/scripts/angle_deqp_test_merge.py',
+        },
         'swarming': {
           'shards': 2,
         },
@@ -2116,6 +2182,9 @@
         'desktop_args': [
           '--bot-mode',
         ],
+        'merge': {
+          'script': '//third_party/angle/scripts/angle_deqp_test_merge.py',
+        },
         'swarming': {
           'shards': 2,
         },
@@ -2133,6 +2202,9 @@
         'desktop_args': [
           '--bot-mode',
         ],
+        'merge': {
+          'script': '//third_party/angle/scripts/angle_deqp_test_merge.py',
+        },
         'swarming': {
           'shards': 2,
         },
@@ -2151,6 +2223,9 @@
           '-v',
           '--shard-timeout=500',
         ],
+        'merge': {
+          'script': '//third_party/angle/scripts/angle_deqp_test_merge.py',
+        },
         'desktop_args': [
           '--bot-mode',
         ],
@@ -2175,6 +2250,9 @@
         'desktop_args': [
           '--bot-mode',
         ],
+        'merge': {
+          'script': '//third_party/angle/scripts/angle_deqp_test_merge.py',
+        },
         'test': 'angle_deqp_khr_gles31_tests',
         'use_isolated_scripts_api': True,
       },
@@ -2193,6 +2271,9 @@
         'desktop_args': [
           '--bot-mode',
         ],
+        'merge': {
+          'script': '//third_party/angle/scripts/angle_deqp_test_merge.py',
+        },
         'test': 'angle_deqp_khr_gles32_tests',
         'use_isolated_scripts_api': True,
       },
@@ -2214,6 +2295,9 @@
         'desktop_args': [
           '--bot-mode',
         ],
+        'merge': {
+          'script': '//third_party/angle/scripts/angle_deqp_test_merge.py',
+        },
         'test': 'angle_deqp_khr_gles3_tests',
         'use_isolated_scripts_api': True,
       },
