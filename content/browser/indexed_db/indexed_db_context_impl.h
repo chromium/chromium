@@ -30,7 +30,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
-#include "storage/browser/quota/special_storage_policy.h"
 #include "url/origin.h"
 
 namespace base {
@@ -209,10 +208,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
 
   class IndexedDBGetUsageAndQuotaCallback;
 
-  static void ClearSessionOnlyOrigins(
-      const base::FilePath& indexeddb_path,
-      scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy);
-
   ~IndexedDBContextImpl() override;
 
   void ShutdownOnIDBSequence();
@@ -247,7 +242,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
 
   // If true, nothing (not even session-only data) should be deleted on exit.
   bool force_keep_session_state_;
-  const scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy_;
   const scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
   std::unique_ptr<std::set<url::Origin>> origin_set_;
   std::map<url::Origin, int64_t> origin_size_map_;
