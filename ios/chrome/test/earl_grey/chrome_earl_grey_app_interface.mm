@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
 #import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
+#import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/test/app/bookmarks_test_util.h"
 #import "ios/chrome/test/app/browsing_data_test_util.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
@@ -625,6 +626,18 @@ base::test::ScopedFeatureList closeAllTabsScopedFeatureList;
 + (CGSize)webStateWebViewSize {
   web::WebState* web_state = chrome_test_util::GetCurrentWebState();
   return [web_state->GetWebViewProxy() bounds].size;
+}
+
++ (void)stopAllWebStatesLoading {
+  WebStateList* web_state_list =
+      chrome_test_util::GetMainController()
+          .interfaceProvider.currentInterface.browser->GetWebStateList();
+  for (int index = 0; index < web_state_list->count(); ++index) {
+    web::WebState* web_state = web_state_list->GetWebStateAt(index);
+    if (web_state->IsLoading()) {
+      web_state->Stop();
+    }
+  }
 }
 
 #pragma mark - Bookmarks Utilities (EG2)

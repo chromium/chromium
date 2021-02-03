@@ -212,6 +212,10 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
     _tearDownHandler();
   }
 
+  // EG syncs with WKWebView loading. Stops all loadings to prevent these from
+  // failing rest of tearDown actions.
+  [ChromeEarlGrey stopAllWebStatesLoading];
+
   // Clear any remaining test accounts and signed in users.
   [ChromeEarlGrey signOutAndClearIdentities];
 

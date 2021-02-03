@@ -636,6 +636,13 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
   return [ChromeEarlGreyAppInterface webStateWebViewSize];
 }
 
+- (void)stopAllWebStatesLoading {
+  [ChromeEarlGreyAppInterface stopAllWebStatesLoading];
+  // Wait for any UI change.
+  GREYWaitForAppToIdle(
+      @"Failed to wait app to idle after stopping all WebStates");
+}
+
 #pragma mark - Settings Utilities (EG2)
 
 - (void)setContentSettings:(ContentSetting)setting {

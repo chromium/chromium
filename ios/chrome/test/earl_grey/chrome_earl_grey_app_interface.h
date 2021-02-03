@@ -294,6 +294,9 @@
 // Returns the size of the current WebState's web view.
 + (CGSize)webStateWebViewSize;
 
+// Stops any pending navigations in all WebStates which are loading.
++ (void)stopAllWebStatesLoading;
+
 #pragma mark - Bookmarks Utilities (EG2)
 
 // Waits for the bookmark internal state to be done loading.
