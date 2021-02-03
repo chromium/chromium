@@ -43799,6 +43799,7 @@ from previous Chrome versions.
   <int value="-1195034892" label="ContinuousSearch:disabled"/>
   <int value="-1194129602" label="ClientSideDetectionModelOnAndroid:disabled"/>
   <int value="-1192790333" label="ArcUseHighMemoryDalvikProfile:disabled"/>
+  <int value="-1191671217" label="TabGroupsNewBadgePromo:disabled"/>
   <int value="-1191258368" label="PageInfoPerformanceHints:disabled"/>
   <int value="-1190174011" label="enable-hdr"/>
   <int value="-1186760297" label="ForceSpectreVariant2Mitigation:disabled"/>
@@ -45328,6 +45329,7 @@ from previous Chrome versions.
   <int value="283182071" label="SecurityInterstitialsDarkMode:enabled"/>
   <int value="283232244" label="OmniboxUIExperimentNarrowDropdown:enabled"/>
   <int value="285387302" label="AvatarToolbarButton:enabled"/>
+  <int value="286001833" label="TabGroupsNewBadgePromo:enabled"/>
   <int value="286717452" label="ContextualSearchDebug:disabled"/>
   <int value="287932297" label="AutofillSettingsCardTypeSplit:enabled"/>
   <int value="288012253" label="CrostiniFiles:enabled"/>

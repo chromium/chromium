@@ -94,6 +94,13 @@ const base::Feature kTabGroupsCollapseFreezing{
 const base::Feature kTabGroupsFeedback{"TabGroupsFeedback",
                                        base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Directly controls the "new" badge (as opposed to old "master switch"; see
+// https://crbug.com/1169907 for master switch deprecation and
+// https://crbug.com/968587 for the feature itself)
+// https://crbug.com/1173792
+const base::Feature kTabGroupsNewBadgePromo{"TabGroupsNewBadgePromo",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables popup cards containing tab information when hovering over a tab.
 // https://crbug.com/910739
 const base::Feature kTabHoverCards{"TabHoverCards",
