@@ -764,6 +764,7 @@ crbug.com/687225 fast/lists/css3-counter-styles-059.html [ Failure ]
 crbug.com/687225 fast/lists/css3-counter-styles-064.html [ Failure ]
 crbug.com/687225 fast/lists/w3-css3-list-styles-fallback-style.html [ Failure ]
 crbug.com/687225 fast/lists/w3-list-styles.html [ Failure ]
+crbug.com/687225 external/wpt/css/css-counter-styles/* [ Skip ]
 
 # [css-overflow]
 # Incorrect WPT tests.
