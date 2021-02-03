@@ -636,7 +636,7 @@ class WebMediaPlayerImplTest
   bool IsVideoTrackDisabled() const { return wmpi_->video_track_disabled_; }
 
   bool IsDisableVideoTrackPending() const {
-    return wmpi_->is_background_status_change_scheduled_;
+    return !wmpi_->update_background_status_cb_.IsCancelled();
   }
 
   gfx::Size GetNaturalSize() const {

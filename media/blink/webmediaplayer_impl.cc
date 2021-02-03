@@ -3607,8 +3607,7 @@ void WebMediaPlayerImpl::UpdateBackgroundVideoOptimizationState() {
   if (IsHidden()) {
     if (ShouldPausePlaybackWhenHidden()) {
       PauseVideoIfNeeded();
-    } else if (!is_background_status_change_scheduled_) {
-      is_background_status_change_scheduled_ = true;
+    } else if (update_background_status_cb_.IsCancelled()) {
       // Only trigger updates when we don't have one already scheduled.
       update_background_status_cb_.Reset(
           base::Bind(&WebMediaPlayerImpl::DisableVideoTrackIfNeeded,
@@ -3624,7 +3623,6 @@ void WebMediaPlayerImpl::UpdateBackgroundVideoOptimizationState() {
     }
   } else {
     update_background_status_cb_.Cancel();
-    is_background_status_change_scheduled_ = false;
     EnableVideoTrackIfNeeded();
   }
 }
@@ -3663,8 +3661,6 @@ void WebMediaPlayerImpl::EnableVideoTrackIfNeeded() {
 
 void WebMediaPlayerImpl::DisableVideoTrackIfNeeded() {
   DCHECK(IsHidden());
-
-  is_background_status_change_scheduled_ = false;
 
   // Don't change video track while the pipeline is resuming or seeking.
   if (is_pipeline_resuming_ || seeking_)
