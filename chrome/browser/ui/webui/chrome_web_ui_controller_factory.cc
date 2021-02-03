@@ -402,6 +402,13 @@ WebUIController* NewWebUI<chromeos::ScanningUI>(WebUI* web_ui,
           file_manager::util::GetMyFilesFolderForProfile(profile)));
 }
 
+template <>
+WebUIController* NewWebUI<chromeos::DiagnosticsUI>(WebUI* web_ui,
+                                                   const GURL& url) {
+  return new chromeos::DiagnosticsUI(
+      web_ui, base::BindRepeating(&CreateChromeSelectFilePolicy));
+}
+
 void BindMultiDeviceSetup(
     Profile* profile,
     mojo::PendingReceiver<chromeos::multidevice_setup::mojom::MultiDeviceSetup>

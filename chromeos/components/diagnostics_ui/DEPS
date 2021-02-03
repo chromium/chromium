@@ -7,5 +7,6 @@ include_rules = [
   "+services/data_decoder/public",
   "+ui/base",
   "+ui/resources",
+  "+ui/shell_dialogs",
   "+ui/webui",
 ]

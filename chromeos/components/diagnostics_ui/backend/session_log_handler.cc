@@ -9,6 +9,8 @@
 #include "base/strings/strcat.h"
 #include "chromeos/components/diagnostics_ui/backend/routine_log.h"
 #include "chromeos/components/diagnostics_ui/backend/telemetry_log.h"
+#include "content/public/browser/web_contents.h"
+#include "ui/shell_dialogs/select_file_policy.h"
 
 namespace chromeos {
 namespace diagnostics {
@@ -21,14 +23,14 @@ const char kRoutineLogPath[] = "/var/log/diagnostics_routine_log";
 
 }  // namespace
 
-SessionLogHandler::SessionLogHandler()
-    : SessionLogHandler(base::FilePath(kRoutineLogPath)) {}
+SessionLogHandler::SessionLogHandler(
+    const SelectFilePolicyCreator& select_file_policy_creator)
+    : select_file_policy_creator_(select_file_policy_creator),
+      telemetry_log_(std::make_unique<TelemetryLog>()),
+      routine_log_(
+          std::make_unique<RoutineLog>(base::FilePath(kRoutineLogPath))) {}
 
 SessionLogHandler::~SessionLogHandler() = default;
-
-SessionLogHandler::SessionLogHandler(const base::FilePath& routine_log_path)
-    : telemetry_log_(std::make_unique<TelemetryLog>()),
-      routine_log_(std::make_unique<RoutineLog>(routine_log_path)) {}
 
 TelemetryLog* SessionLogHandler::GetTelemetryLog() const {
   return telemetry_log_.get();

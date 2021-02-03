@@ -7,6 +7,13 @@
 
 #include <memory>
 
+#include "base/callback.h"
+#include "ui/shell_dialogs/select_file_policy.h"
+
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace base {
 class FilePath;
 }  // namespace base
@@ -19,12 +26,12 @@ class RoutineLog;
 
 class SessionLogHandler {
  public:
-  SessionLogHandler();
+  using SelectFilePolicyCreator =
+      base::RepeatingCallback<std::unique_ptr<ui::SelectFilePolicy>(
+          content::WebContents*)>;
+  explicit SessionLogHandler(
+      const SelectFilePolicyCreator& select_file_policy_creator);
   ~SessionLogHandler();
-
-  // Constructor for testing, allowing an injected `routine_log_path`. Should
-  // not be called outside of tests.
-  SessionLogHandler(const base::FilePath& routine_log_path);
 
   SessionLogHandler(const SessionLogHandler&) = delete;
   SessionLogHandler& operator=(const SessionLogHandler&) = delete;
@@ -38,6 +45,7 @@ class SessionLogHandler {
   // successfully written. Retrns false otherwise.
   bool CreateSessionLog(const base::FilePath& file_path);
 
+  SelectFilePolicyCreator select_file_policy_creator_;
   std::unique_ptr<TelemetryLog> telemetry_log_;
   std::unique_ptr<RoutineLog> routine_log_;
 };

@@ -4,6 +4,7 @@
 
 #include "chromeos/components/diagnostics_ui/diagnostics_ui.h"
 
+#include <memory>
 #include <string>
 
 #include "base/containers/span.h"
@@ -121,9 +122,13 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
 
 }  // namespace
 
-DiagnosticsUI::DiagnosticsUI(content::WebUI* web_ui)
+DiagnosticsUI::DiagnosticsUI(
+    content::WebUI* web_ui,
+    const chromeos::diagnostics::SessionLogHandler::SelectFilePolicyCreator&
+        select_file_policy_creator)
     : ui::MojoWebUIController(web_ui),
-      session_log_handler_(std::make_unique<diagnostics::SessionLogHandler>()) {
+      session_log_handler_(std::make_unique<diagnostics::SessionLogHandler>(
+          select_file_policy_creator)) {
   diagnostics_manager_ = std::make_unique<diagnostics::DiagnosticsManager>(
       session_log_handler_.get());
 

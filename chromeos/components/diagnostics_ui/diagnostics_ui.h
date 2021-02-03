@@ -6,6 +6,7 @@
 #define CHROMEOS_COMPONENTS_DIAGNOSTICS_UI_DIAGNOSTICS_UI_H_
 
 #include "base/macros.h"
+#include "chromeos/components/diagnostics_ui/backend/session_log_handler.h"
 #include "chromeos/components/diagnostics_ui/mojom/system_data_provider.mojom-forward.h"
 #include "chromeos/components/diagnostics_ui/mojom/system_routine_controller.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -19,14 +20,16 @@ namespace chromeos {
 namespace diagnostics {
 
 class DiagnosticsManager;
-class SessionLogHandler;
 
 }  // namespace diagnostics
 
 // The WebUI for chrome://diagnostics.
 class DiagnosticsUI : public ui::MojoWebUIController {
  public:
-  explicit DiagnosticsUI(content::WebUI* web_ui);
+  DiagnosticsUI(
+      content::WebUI* web_ui,
+      const chromeos::diagnostics::SessionLogHandler::SelectFilePolicyCreator&
+          select_file_policy_creator);
   ~DiagnosticsUI() override;
 
   DiagnosticsUI(const DiagnosticsUI&) = delete;
