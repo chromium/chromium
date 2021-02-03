@@ -435,6 +435,132 @@ const OSSettingsAppManagementBrowserTest = class extends OSSettingsBrowserTest {
   }
 };
 
+// Test fixture for the app management app detail view element.
+// eslint-disable-next-line no-var
+var OSSettingsAppManagementAppDetailViewTest =
+    class extends OSSettingsAppManagementBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return super.browsePreload + 'app_management/app_detail_view.html';
+  }
+
+  /** @override */
+  get extraLibraries() {
+    return super.extraLibraries.concat([
+      'app_management/app_detail_view_test.js',
+    ]);
+  }
+};
+
+TEST_F('OSSettingsAppManagementAppDetailViewTest', 'MAYBE_AllJsTests', () => {
+  mocha.run();
+});
+
+// Test fixture for the app management app item element.
+// eslint-disable-next-line no-var
+var OSSettingsAppManagementAppItemTest =
+    class extends OSSettingsAppManagementBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return super.browsePreload + 'app_management/app_item.html';
+  }
+
+  /** @override */
+  get extraLibraries() {
+    return super.extraLibraries.concat([
+      'app_management/app_item_test.js',
+    ]);
+  }
+};
+
+TEST_F('OSSettingsAppManagementAppItemTest', 'MAYBE_AllJsTests', () => {
+  mocha.run();
+});
+
+// Test fixture for the app management permission item element.
+// eslint-disable-next-line no-var
+var OSSettingsAppManagementPermissionItemTest =
+    class extends OSSettingsAppManagementBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return super.browsePreload + 'app_management/permission_item.html';
+  }
+
+  /** @override */
+  get extraLibraries() {
+    return super.extraLibraries.concat([
+      'app_management/permission_item_test.js',
+    ]);
+  }
+};
+
+TEST_F('OSSettingsAppManagementPermissionItemTest', 'MAYBE_AllJsTests', () => {
+  mocha.run();
+});
+
+// Test fixture for the app management pin to shelf item element.
+// eslint-disable-next-line no-var
+var OSSettingsAppManagementPinToShelfItemTest =
+    class extends OSSettingsAppManagementBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return super.browsePreload + 'app_management/pin_to_shelf_item.html';
+  }
+
+  /** @override */
+  get extraLibraries() {
+    return super.extraLibraries.concat([
+      'app_management/pin_to_shelf_item_test.js',
+    ]);
+  }
+};
+
+TEST_F('OSSettingsAppManagementPinToShelfItemTest', 'MAYBE_AllJsTests', () => {
+  mocha.run();
+});
+
+// Test fixture for the app management toggle row element.
+// eslint-disable-next-line no-var
+var OSSettingsAppManagementToggleRowTest =
+    class extends OSSettingsAppManagementBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return super.browsePreload + 'app_management/toggle_row.html';
+  }
+
+  /** @override */
+  get extraLibraries() {
+    return super.extraLibraries.concat([
+      'app_management/toggle_row_test.js',
+    ]);
+  }
+};
+
+TEST_F('OSSettingsAppManagementToggleRowTest', 'MAYBE_AllJsTests', () => {
+  mocha.run();
+});
+
+// Test fixture for the app management uninstall button element.
+// eslint-disable-next-line no-var
+var OSSettingsAppManagementUninstallButtonTest =
+    class extends OSSettingsAppManagementBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return super.browsePreload + 'app_management/uninstall_button.html';
+  }
+
+  /** @override */
+  get extraLibraries() {
+    return super.extraLibraries.concat([
+      'app_management/uninstall_button_test.js',
+    ]);
+  }
+};
+
+TEST_F('OSSettingsAppManagementUninstallButtonTest', 'MAYBE_AllJsTests', () => {
+  mocha.run();
+});
+
 // Text fixture for the app management dom switch element.
 // eslint-disable-next-line no-var
 var OSSettingsAppManagementDomSwitchTest =
@@ -540,6 +666,29 @@ var OSSettingsAppManagementPluginVmDetailViewTest =
 
 TEST_F(
     'OSSettingsAppManagementPluginVmDetailViewTest', 'MAYBE_AllJsTests', () => {
+      mocha.run();
+    });
+
+// Test fixture for the app management chrome app detail view element.
+// eslint-disable-next-line no-var
+var OSSettingsAppManagementChromeAppDetailViewTest =
+    class extends OSSettingsAppManagementBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return super.browsePreload + 'app_management/chrome_app_detail_view.html';
+  }
+
+  /** @override */
+  get extraLibraries() {
+    return super.extraLibraries.concat([
+      'app_management/chrome_app_detail_view_test.js',
+    ]);
+  }
+};
+
+TEST_F(
+    'OSSettingsAppManagementChromeAppDetailViewTest', 'MAYBE_AllJsTests',
+    () => {
       mocha.run();
     });
 

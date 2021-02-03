@@ -32,10 +32,14 @@ Polymer({
    * @private
    */
   onAppChanged_: async function() {
-    const {messages: messages} =
-        await app_management.BrowserProxy.getInstance()
-            .handler.getExtensionAppPermissionMessages(this.app_.id);
-    this.messages_ = messages;
+    try {
+      const {messages: messages} =
+          await app_management.BrowserProxy.getInstance()
+              .handler.getExtensionAppPermissionMessages(this.app_.id);
+      this.messages_ = messages;
+    } catch (err) {
+      console.log(err);
+    }
   },
 
   onClickExtensionsSettingsButton_() {
