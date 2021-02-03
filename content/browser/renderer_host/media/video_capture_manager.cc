@@ -203,6 +203,8 @@ void VideoCaptureManager::Close(
         "Media.VideoCaptureManager.DeviceSessionWasLocked", was_locked);
     if (was_locked)
       locked_sessions_.erase(locked_it);
+    if (locked_sessions_.empty() && !lock_time_.is_null())
+      RecordDeviceSessionLockDuration();
   } else {
     DCHECK(!locked_sessions_.contains(session_it->first));
   }
@@ -925,10 +927,31 @@ void VideoCaptureManager::OnScreenLocked() {
       locked_sessions_.insert(it.first);
   }
 
+  if (!locked_sessions_.empty()) {
+    DCHECK(lock_time_.is_null());
+    lock_time_ = base::TimeTicks::Now();
+  }
+
   for (auto session_id : desktopcapture_session_ids) {
     Close(session_id);
   }
 #endif  // OS_ANDROID
+}
+
+void VideoCaptureManager::OnScreenUnlocked() {
+  if (lock_time_.is_null())
+    return;
+
+  DCHECK(!locked_sessions_.empty());
+  RecordDeviceSessionLockDuration();
+}
+
+void VideoCaptureManager::RecordDeviceSessionLockDuration() {
+  DCHECK(!lock_time_.is_null());
+  base::UmaHistogramMediumTimes(
+      "Media.VideoCaptureManager.DeviceSessionLockDuration",
+      base::TimeTicks::Now() - lock_time_);
+  lock_time_ = base::TimeTicks();
 }
 
 void VideoCaptureManager::EmitLogMessage(const std::string& message,
