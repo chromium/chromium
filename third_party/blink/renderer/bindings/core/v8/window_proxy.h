@@ -167,6 +167,8 @@ class WindowProxy : public GarbageCollected<WindowProxy> {
 
   enum FrameReuseStatus { kFrameWillNotBeReused, kFrameWillBeReused };
 
+  int LifecycleForDebugging() const { return static_cast<int>(lifecycle_); }
+
  protected:
   // Lifecycle represents the following four states.
   //

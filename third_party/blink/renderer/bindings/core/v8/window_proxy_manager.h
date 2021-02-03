@@ -48,6 +48,10 @@ class WindowProxyManager : public GarbageCollected<WindowProxyManager> {
 
   CORE_EXPORT void ResetIsolatedWorldsForTesting();
 
+  int LifecycleForDebugging() const {
+    return window_proxy_->LifecycleForDebugging();
+  }
+
  protected:
   using IsolatedWorldMap = HeapHashMap<int, Member<WindowProxy>>;
   enum class FrameType { kLocal, kRemote };
