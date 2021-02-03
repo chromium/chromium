@@ -698,20 +698,6 @@ class CryptohomeClientImpl : public CryptohomeClient {
     blocking_method_caller_.reset(new BlockingMethodCaller(bus, proxy));
 
     proxy_->ConnectToSignal(
-        cryptohome::kCryptohomeInterface, cryptohome::kSignalAsyncCallStatus,
-        base::BindRepeating(&CryptohomeClientImpl::AsyncCallStatusReceived,
-                            weak_ptr_factory_.GetWeakPtr()),
-        base::BindOnce(&CryptohomeClientImpl::OnSignalConnected,
-                       weak_ptr_factory_.GetWeakPtr()));
-    proxy_->ConnectToSignal(
-        cryptohome::kCryptohomeInterface,
-        cryptohome::kSignalAsyncCallStatusWithData,
-        base::BindRepeating(
-            &CryptohomeClientImpl::AsyncCallStatusWithDataReceived,
-            weak_ptr_factory_.GetWeakPtr()),
-        base::BindOnce(&CryptohomeClientImpl::OnSignalConnected,
-                       weak_ptr_factory_.GetWeakPtr()));
-    proxy_->ConnectToSignal(
         cryptohome::kCryptohomeInterface, cryptohome::kSignalLowDiskSpace,
         base::BindRepeating(&CryptohomeClientImpl::LowDiskSpaceReceived,
                             weak_ptr_factory_.GetWeakPtr()),
@@ -728,23 +714,6 @@ class CryptohomeClientImpl : public CryptohomeClient {
   }
 
  private:
-  // Handles the result of AsyncXXX methods.
-  void OnAsyncMethodCall(AsyncMethodCallback callback,
-                         dbus::Response* response) {
-    if (!response) {
-      std::move(callback).Run(base::nullopt);
-      return;
-    }
-    dbus::MessageReader reader(response);
-    int async_id = 0;
-    if (!reader.PopInt32(&async_id)) {
-      LOG(ERROR) << "Invalid response: " << response->ToString();
-      std::move(callback).Run(base::nullopt);
-      return;
-    }
-    std::move(callback).Run(async_id);
-  }
-
   // Handles the result of GetSystemSalt().
   void OnGetSystemSalt(DBusMethodCallback<std::vector<uint8_t>> callback,
                        dbus::Response* response) {
@@ -904,39 +873,6 @@ class CryptohomeClientImpl : public CryptohomeClient {
       return;
     }
     std::move(callback).Run(std::move(token_info));
-  }
-
-  // Handles AsyncCallStatus signal.
-  void AsyncCallStatusReceived(dbus::Signal* signal) {
-    dbus::MessageReader reader(signal);
-    int async_id = 0;
-    bool return_status = false;
-    int return_code = 0;
-    if (!reader.PopInt32(&async_id) || !reader.PopBool(&return_status) ||
-        !reader.PopInt32(&return_code)) {
-      LOG(ERROR) << "Invalid signal: " << signal->ToString();
-      return;
-    }
-    for (auto& observer : observer_list_)
-      observer.AsyncCallStatus(async_id, return_status, return_code);
-  }
-
-  // Handles AsyncCallStatusWithData signal.
-  void AsyncCallStatusWithDataReceived(dbus::Signal* signal) {
-    dbus::MessageReader reader(signal);
-    int async_id = 0;
-    bool return_status = false;
-    const uint8_t* return_data_buffer = NULL;
-    size_t return_data_length = 0;
-    if (!reader.PopInt32(&async_id) || !reader.PopBool(&return_status) ||
-        !reader.PopArrayOfBytes(&return_data_buffer, &return_data_length)) {
-      LOG(ERROR) << "Invalid signal: " << signal->ToString();
-      return;
-    }
-    std::string return_data(reinterpret_cast<const char*>(return_data_buffer),
-                            return_data_length);
-    for (auto& observer : observer_list_)
-      observer.AsyncCallStatusWithData(async_id, return_status, return_data);
   }
 
   // Handles LowDiskSpace signal.

@@ -552,45 +552,6 @@ void FakeCryptohomeClient::ReturnProtobufMethodCallback(
       FROM_HERE, base::BindOnce(std::move(callback), reply));
 }
 
-void FakeCryptohomeClient::ReturnAsyncMethodResult(
-    AsyncMethodCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&FakeCryptohomeClient::ReturnAsyncMethodResultInternal,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void FakeCryptohomeClient::ReturnAsyncMethodData(AsyncMethodCallback callback,
-                                                 const std::string& data) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&FakeCryptohomeClient::ReturnAsyncMethodDataInternal,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     data));
-}
-
-void FakeCryptohomeClient::ReturnAsyncMethodResultInternal(
-    AsyncMethodCallback callback) {
-  std::move(callback).Run(async_call_id_);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&FakeCryptohomeClient::NotifyAsyncCallStatus,
-                                weak_ptr_factory_.GetWeakPtr(), async_call_id_,
-                                true, cryptohome::MOUNT_ERROR_NONE));
-  ++async_call_id_;
-}
-
-void FakeCryptohomeClient::ReturnAsyncMethodDataInternal(
-    AsyncMethodCallback callback,
-    const std::string& data) {
-  std::move(callback).Run(async_call_id_);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&FakeCryptohomeClient::NotifyAsyncCallStatusWithData,
-                     weak_ptr_factory_.GetWeakPtr(), async_call_id_, true,
-                     data));
-  ++async_call_id_;
-}
-
 void FakeCryptohomeClient::OnDircryptoMigrationProgressUpdated() {
   dircrypto_migration_progress_++;
 
@@ -605,21 +566,6 @@ void FakeCryptohomeClient::OnDircryptoMigrationProgressUpdated() {
   NotifyDircryptoMigrationProgress(cryptohome::DIRCRYPTO_MIGRATION_IN_PROGRESS,
                                    dircrypto_migration_progress_,
                                    kDircryptoMigrationMaxProgress);
-}
-
-void FakeCryptohomeClient::NotifyAsyncCallStatus(int async_id,
-                                                 bool return_status,
-                                                 int return_code) {
-  for (auto& observer : observer_list_)
-    observer.AsyncCallStatus(async_id, return_status, return_code);
-}
-
-void FakeCryptohomeClient::NotifyAsyncCallStatusWithData(
-    int async_id,
-    bool return_status,
-    const std::string& data) {
-  for (auto& observer : observer_list_)
-    observer.AsyncCallStatusWithData(async_id, return_status, data);
 }
 
 void FakeCryptohomeClient::NotifyDircryptoMigrationProgress(

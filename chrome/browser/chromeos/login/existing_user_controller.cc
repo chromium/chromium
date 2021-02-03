@@ -83,7 +83,6 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/constants/chromeos_switches.h"
-#include "chromeos/cryptohome/async_method_caller.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/cryptohome/cryptohome_util.h"
 #include "chromeos/dbus/power/power_manager_client.h"

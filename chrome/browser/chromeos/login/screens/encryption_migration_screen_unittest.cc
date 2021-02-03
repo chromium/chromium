@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/webui/chromeos/login/base_webui_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/encryption_migration_screen_handler.h"
 #include "chromeos/cryptohome/homedir_methods.h"
-#include "chromeos/cryptohome/mock_async_method_caller.h"
 #include "chromeos/dbus/cryptohome/account_identifier_operators.h"
 #include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
@@ -126,13 +125,6 @@ class EncryptionMigrationScreenTest : public testing::Test {
         std::make_unique<user_manager::ScopedUserManager>(
             base::WrapUnique(mock_user_manager));
 
-    // This is used by EncryptionMigrationScreen to remove the existing
-    // cryptohome. Ownership of mock_async_method_caller_ is transferred to
-    // AsyncMethodCaller::InitializeForTesting.
-    mock_async_method_caller_ = new cryptohome::MockAsyncMethodCaller;
-    cryptohome::AsyncMethodCaller::InitializeForTesting(
-        mock_async_method_caller_);
-
     // Set up fake dbus clients.
     CryptohomeClient::InitializeFake();
     fake_cryptohome_client_ = FakeCryptohomeClient::Get();
@@ -161,7 +153,6 @@ class EncryptionMigrationScreenTest : public testing::Test {
     PowerPolicyController::Shutdown();
     PowerManagerClient::Shutdown();
     CryptohomeClient::Shutdown();
-    cryptohome::AsyncMethodCaller::Shutdown();
   }
 
  protected:
@@ -176,7 +167,6 @@ class EncryptionMigrationScreenTest : public testing::Test {
 
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_enabler_;
   FakeCryptohomeClient* fake_cryptohome_client_ = nullptr;  // unowned
-  cryptohome::MockAsyncMethodCaller* mock_async_method_caller_ = nullptr;
 
   // Will be set to true in ContinueLogin.
   bool skip_migration_callback_called_ = false;

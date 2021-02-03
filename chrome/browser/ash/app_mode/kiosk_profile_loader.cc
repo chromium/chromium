@@ -21,7 +21,6 @@
 #include "chrome/browser/chromeos/login/demo_mode/demo_app_launcher.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
-#include "chromeos/cryptohome/async_method_caller.h"
 #include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/login/auth/auth_status_consumer.h"

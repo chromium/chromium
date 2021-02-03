@@ -36,7 +36,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/attestation/mock_attestation_flow.h"
 #include "chromeos/constants/chromeos_switches.h"
-#include "chromeos/cryptohome/async_method_caller.h"
 #include "chromeos/cryptohome/system_salt_getter.h"
 #include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "chromeos/dbus/dbus_client_implementation_type.h"
@@ -151,7 +150,6 @@ class DeviceCloudPolicyManagerChromeOSTest
 
   void SetUp() override {
     DeviceSettingsTestBase::SetUp();
-    cryptohome::AsyncMethodCaller::Initialize();
 
     device_management_service_.ScheduleInitialization(0);
     base::RunLoop().RunUntilIdle();
@@ -197,8 +195,6 @@ class DeviceCloudPolicyManagerChromeOSTest
   }
 
   void TearDown() override {
-    cryptohome::AsyncMethodCaller::Shutdown();
-
     if (initializer_)
       initializer_->Shutdown();
     ShutdownManager();

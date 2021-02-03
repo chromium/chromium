@@ -56,19 +56,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) CryptohomeClient {
  public:
   class Observer {
    public:
-    // Called when AsyncCallStatus signal is received, when results for
-    // AsyncXXX methods are returned. Cryptohome service will process the
-    // calls in a first-in-first-out manner when they are made in parallel.
-    virtual void AsyncCallStatus(int async_id,
-                                 bool return_status,
-                                 int return_code) {}
-
-    // Called when AsyncCallStatusWithData signal is received,
-    // similar to AsyncCallStatus, but with |data|.
-    virtual void AsyncCallStatusWithData(int async_id,
-                                         bool return_status,
-                                         const std::string& data) {}
-
     // Called when LowDiskSpace signal is received, when the cryptohome
     // partition is running out of disk space.
     virtual void LowDiskSpace(uint64_t disk_free_bytes) {}
@@ -84,12 +71,6 @@ class COMPONENT_EXPORT(CRYPTOHOME_CLIENT) CryptohomeClient {
    protected:
     virtual ~Observer() = default;
   };
-
-  // Callback for the methods initiate asynchronous operations.
-  // On success (i.e. the asynchronous operation is started), an |async_id|
-  // is returned, so the user code can identify the corresponding signal
-  // handler invocation later.
-  using AsyncMethodCallback = DBusMethodCallback<int /* async_id */>;
 
   // Represents the result to obtain the data related to TPM attestation.
   struct TpmAttestationDataResult {

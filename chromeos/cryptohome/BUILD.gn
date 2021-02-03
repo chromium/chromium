@@ -20,8 +20,6 @@ component("cryptohome") {
     "//components/user_manager",
   ]
   sources = [
-    "async_method_caller.cc",
-    "async_method_caller.h",
     "cryptohome_parameters.cc",
     "cryptohome_parameters.h",
     "cryptohome_util.cc",
@@ -48,8 +46,6 @@ source_set("test_support") {
     "//testing/gtest",
   ]
   sources = [
-    "mock_async_method_caller.cc",
-    "mock_async_method_caller.h",
     "mock_homedir_methods.cc",
     "mock_homedir_methods.h",
   ]

@@ -43,7 +43,6 @@
 #include "chromeos/attestation/attestation_flow_utils.h"
 #include "chromeos/attestation/mock_attestation_flow.h"
 #include "chromeos/constants/chromeos_switches.h"
-#include "chromeos/cryptohome/async_method_caller.h"
 #include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"

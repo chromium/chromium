@@ -31,7 +31,6 @@
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/cryptohome/cryptohome_util.h"
 #include "chromeos/cryptohome/homedir_methods.h"
-#include "chromeos/cryptohome/mock_async_method_caller.h"
 #include "chromeos/cryptohome/system_salt_getter.h"
 #include "chromeos/dbus/cros_disks_client.h"
 #include "chromeos/dbus/cryptohome/account_identifier_operators.h"
@@ -64,6 +63,9 @@ using ::testing::_;
 namespace chromeos {
 
 namespace {
+
+// A fake sanitized username used for testing.
+constexpr char kFakeSanitizedUsername[] = "01234567890ABC";
 
 // Salt used by pre-hashed key.
 const char kSalt[] = "SALT $$";
@@ -173,8 +175,7 @@ class TestCryptohomeClient : public ::chromeos::FakeCryptohomeClient {
 
     cryptohome::BaseReply reply;
     reply.MutableExtension(cryptohome::MountReply::reply)
-        ->set_sanitized_username(
-            cryptohome::MockAsyncMethodCaller::kFakeSanitizedUsername);
+        ->set_sanitized_username(kFakeSanitizedUsername);
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), reply));
   }
@@ -259,7 +260,6 @@ class CryptohomeAuthenticatorTest : public testing::Test {
                       AccountId::FromUserEmail("me@nowhere.org")),
         user_manager_(new chromeos::FakeChromeUserManager()),
         user_manager_enabler_(base::WrapUnique(user_manager_)),
-        mock_caller_(NULL),
         consumer_(run_loop_.QuitClosure()),
         owner_key_util_(new ownership::MockOwnerKeyUtil()) {
     // Testing profile must be initialized after user_manager_ +
@@ -290,8 +290,6 @@ class CryptohomeAuthenticatorTest : public testing::Test {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kLoginManager);
 
-    mock_caller_ = new cryptohome::MockAsyncMethodCaller;
-    cryptohome::AsyncMethodCaller::InitializeForTesting(mock_caller_);
     cryptohome::HomedirMethods::Initialize();
 
     fake_cryptohome_client_ = new TestCryptohomeClient;
@@ -307,8 +305,6 @@ class CryptohomeAuthenticatorTest : public testing::Test {
     SystemSaltGetter::Shutdown();
     CryptohomeClient::Shutdown();
 
-    cryptohome::AsyncMethodCaller::Shutdown();
-    mock_caller_ = NULL;
     cryptohome::HomedirMethods::Shutdown();
   }
 
@@ -465,8 +461,6 @@ class CryptohomeAuthenticatorTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
-
-  cryptohome::MockAsyncMethodCaller* mock_caller_;
 
   base::RunLoop run_loop_;
   MockAuthStatusConsumer consumer_;
@@ -675,8 +669,7 @@ TEST_F(CryptohomeAuthenticatorTest, DriveGuestLoginButFail) {
 
 TEST_F(CryptohomeAuthenticatorTest, DriveDataResync) {
   UserContext expected_user_context(user_context_with_transformed_key_);
-  expected_user_context.SetUserIDHash(
-      cryptohome::MockAsyncMethodCaller::kFakeSanitizedUsername);
+  expected_user_context.SetUserIDHash(kFakeSanitizedUsername);
   ExpectLoginSuccess(expected_user_context);
   FailOnLoginFailure();
 
@@ -721,8 +714,7 @@ TEST_F(CryptohomeAuthenticatorTest, DriveRequestOldPassword) {
 
 TEST_F(CryptohomeAuthenticatorTest, DriveDataRecover) {
   UserContext expected_user_context(user_context_with_transformed_key_);
-  expected_user_context.SetUserIDHash(
-      cryptohome::MockAsyncMethodCaller::kFakeSanitizedUsername);
+  expected_user_context.SetUserIDHash(kFakeSanitizedUsername);
   ExpectLoginSuccess(expected_user_context);
   FailOnLoginFailure();
 
@@ -790,8 +782,7 @@ TEST_F(CryptohomeAuthenticatorTest, ResolveCreateNew) {
 
 TEST_F(CryptohomeAuthenticatorTest, DriveCreateForNewUser) {
   UserContext expected_user_context(user_context_with_transformed_key_);
-  expected_user_context.SetUserIDHash(
-      cryptohome::MockAsyncMethodCaller::kFakeSanitizedUsername);
+  expected_user_context.SetUserIDHash(kFakeSanitizedUsername);
   ExpectLoginSuccess(expected_user_context);
   FailOnLoginFailure();
 
@@ -840,8 +831,7 @@ TEST_F(CryptohomeAuthenticatorTest, DriveLoginWithPreHashedPassword) {
   CreateTransformedKey(Key::KEY_TYPE_SALTED_SHA256, kSalt);
 
   UserContext expected_user_context(user_context_with_transformed_key_);
-  expected_user_context.SetUserIDHash(
-      cryptohome::MockAsyncMethodCaller::kFakeSanitizedUsername);
+  expected_user_context.SetUserIDHash(kFakeSanitizedUsername);
   ExpectLoginSuccess(expected_user_context);
   FailOnLoginFailure();
 

@@ -77,7 +77,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/constants/chromeos_switches.h"
-#include "chromeos/cryptohome/async_method_caller.h"
 #include "chromeos/cryptohome/cryptohome_util.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/dbus_method_call_status.h"

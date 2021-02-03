@@ -73,7 +73,6 @@
 #include "chromeos/attestation/mock_attestation_flow.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
-#include "chromeos/cryptohome/mock_async_method_caller.h"
 #include "chromeos/cryptohome/system_salt_getter.h"
 #include "chromeos/dbus/attestation/fake_attestation_client.h"
 #include "chromeos/dbus/attestation/interface.pb.h"
@@ -1915,7 +1914,6 @@ class SAMLDeviceAttestationTest : public SamlTest {
   chromeos::ScopedTestingCrosSettings settings_helper_;
   StubCrosSettingsProvider* settings_provider_ = nullptr;
 
-  cryptohome::MockAsyncMethodCaller* mock_async_method_caller_ = nullptr;
   attestation::MockMachineCertificateUploader mock_cert_uploader_;
   NiceMock<chromeos::attestation::MockAttestationFlow> mock_attestation_flow_;
   chromeos::ScopedStubInstallAttributes stub_install_attributes_;
@@ -1925,15 +1923,6 @@ void SAMLDeviceAttestationTest::SetUpInProcessBrowserTestFixture() {
   SamlTest::SetUpInProcessBrowserTestFixture();
 
   settings_provider_ = settings_helper_.device_settings();
-
-  mock_async_method_caller_ = new NiceMock<cryptohome::MockAsyncMethodCaller>();
-  mock_async_method_caller_->SetUp(/*success=*/true,
-                                   cryptohome::MountError::MOUNT_ERROR_NONE);
-
-  // Ownership of mock_async_method_caller_ is transferred to
-  // AsyncMethodCaller::InitializeForTesting.
-  cryptohome::AsyncMethodCaller::InitializeForTesting(
-      mock_async_method_caller_);
 
   ON_CALL(mock_attestation_flow_, GetCertificate)
       .WillByDefault(WithArgs<5>(Invoke(FakeGetCertificateCallbackTrue)));

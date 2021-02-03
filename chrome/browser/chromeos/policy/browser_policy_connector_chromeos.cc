@@ -62,7 +62,6 @@
 #include "chromeos/attestation/attestation_flow.h"
 #include "chromeos/constants/chromeos_paths.h"
 #include "chromeos/constants/chromeos_switches.h"
-#include "chromeos/cryptohome/async_method_caller.h"
 #include "chromeos/cryptohome/system_salt_getter.h"
 #include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
