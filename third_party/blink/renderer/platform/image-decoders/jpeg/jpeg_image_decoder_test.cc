@@ -78,8 +78,7 @@ void Downsample(size_t max_decoded_bytes,
 void ReadYUV(size_t max_decoded_bytes,
              const char* image_file_path,
              const IntSize& expected_y_size,
-             const IntSize& expected_uv_size,
-             const bool expect_decoding_failure = false) {
+             const IntSize& expected_uv_size) {
   scoped_refptr<SharedBuffer> data = ReadFile(image_file_path);
   ASSERT_TRUE(data);
 
@@ -120,9 +119,7 @@ void ReadYUV(size_t max_decoded_bytes,
       std::make_unique<ImagePlanes>(planes, row_bytes, kGray_8_SkColorType));
 
   decoder->DecodeToYUV();
-
-  EXPECT_EQ(expect_decoding_failure, decoder->Failed());
-  EXPECT_TRUE(decoder->HasDisplayableYUVData());
+  EXPECT_FALSE(decoder->Failed());
 }
 
 }  // anonymous namespace
@@ -221,14 +218,6 @@ TEST(JPEGImageDecoderTest, yuv) {
 
   ASSERT_TRUE(decoder->IsSizeAvailable());
   ASSERT_FALSE(decoder->CanDecodeToYUV());
-}
-
-// Tests that a progressive image missing an EOI marker causes a YUV decoding
-// failure but also results in displayable YUV data.
-TEST(JPEGImageDecoderTest, missingEoi) {
-  const char* jpeg_file = "/images/resources/missing-eoi.jpg";  // 1599x899
-  ReadYUV((1599 * 899 * 4), jpeg_file, IntSize(1599, 899), IntSize(800, 450),
-          /*expect_decoding_failure=*/true);
 }
 
 TEST(JPEGImageDecoderTest,

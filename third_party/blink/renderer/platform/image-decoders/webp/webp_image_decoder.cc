@@ -719,7 +719,6 @@ bool WEBPImageDecoder::DecodeSingleFrameToYUV(const uint8_t* data_bytes,
   // TODO(crbug.com/911246): Do post-processing once skcms_Transform
   // supports multiplanar formats.
   ClearDecoder();
-  image_planes->SetHasCompleteScan();
   return true;
 }
 

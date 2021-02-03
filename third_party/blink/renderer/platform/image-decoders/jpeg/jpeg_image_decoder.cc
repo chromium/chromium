@@ -1293,7 +1293,6 @@ static bool OutputRawData(JPEGImageReader* reader, ImagePlanes* image_planes) {
   }
 
   info->output_scanline = std::min(info->output_scanline, info->output_height);
-  image_planes->SetHasCompleteScan();
   return true;
 }
 

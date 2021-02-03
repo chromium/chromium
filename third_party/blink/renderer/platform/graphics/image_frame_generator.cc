@@ -208,20 +208,14 @@ bool ImageFrameGenerator::DecodeToYUV(
     decoder->DecodeToYUV();
   }
 
-  // Display a complete scan if available, even if decoding fails.
-  if (decoder->HasDisplayableYUVData()) {
+  if (!decoder->Failed()) {
     // TODO(crbug.com/910276): Set this properly for alpha support.
     SetHasAlpha(index, false);
     return true;
   }
 
-  // Currently if there is no displayable data, the decoder always fails.
-  // This may not be the case once YUV supports incremental decoding
-  // (crbug.com/943519).
-  if (decoder->Failed()) {
-    yuv_decoding_failed_ = true;
-  }
-
+  DCHECK(decoder->Failed());
+  yuv_decoding_failed_ = true;
   return false;
 }
 

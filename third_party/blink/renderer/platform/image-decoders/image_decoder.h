@@ -79,14 +79,11 @@ class PLATFORM_EXPORT ImagePlanes final {
   void* Plane(cc::YUVIndex);
   size_t RowBytes(cc::YUVIndex) const;
   SkColorType color_type() const { return color_type_; }
-  void SetHasCompleteScan() { has_complete_scan_ = true; }
-  bool HasCompleteScan() const { return has_complete_scan_; }
 
  private:
   void* planes_[cc::kNumYUVPlanes];
   size_t row_bytes_[cc::kNumYUVPlanes];
   SkColorType color_type_;
-  bool has_complete_scan_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(ImagePlanes);
 };
@@ -425,9 +422,6 @@ class PLATFORM_EXPORT ImageDecoder {
   virtual void DecodeToYUV() { NOTREACHED(); }
   void SetImagePlanes(std::unique_ptr<ImagePlanes> image_planes) {
     image_planes_ = std::move(image_planes);
-  }
-  bool HasDisplayableYUVData() const {
-    return image_planes_ && image_planes_->HasCompleteScan();
   }
 
   // Indicates if the data contains both an animation and still image.

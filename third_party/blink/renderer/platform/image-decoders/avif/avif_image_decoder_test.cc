@@ -681,7 +681,6 @@ void ReadYUV(const char* file_name,
 
   decoder->DecodeToYUV();
   EXPECT_FALSE(decoder->Failed());
-  EXPECT_TRUE(decoder->HasDisplayableYUVData());
 
   auto metadata = decoder->MakeMetadataForDecodeAcceleration();
   EXPECT_EQ(cc::ImageType::kAVIF, metadata.image_type);
