@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_V8_WRAPPER_CUSTOM_SPACES_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_V8_WRAPPER_CUSTOM_SPACES_H_
 
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "v8/include/cppgc/custom-space.h"
 
 namespace blink {
@@ -15,26 +16,26 @@ namespace blink {
 // indices of all custom spaces form a sequence starting at 0. See
 // `cppgc::CustomSpace` for details.
 
-class HeapVectorBackingSpace
+class PLATFORM_EXPORT HeapVectorBackingSpace
     : public cppgc::CustomSpace<HeapVectorBackingSpace> {
  public:
   static constexpr cppgc::CustomSpaceIndex kSpaceIndex = 0;
   static constexpr bool kSupportsCompaction = true;
 };
 
-class HeapHashTableBackingSpace
+class PLATFORM_EXPORT HeapHashTableBackingSpace
     : public cppgc::CustomSpace<HeapHashTableBackingSpace> {
  public:
   static constexpr cppgc::CustomSpaceIndex kSpaceIndex = 1;
   static constexpr bool kSupportsCompaction = true;
 };
 
-class NodeSpace : public cppgc::CustomSpace<NodeSpace> {
+class PLATFORM_EXPORT NodeSpace : public cppgc::CustomSpace<NodeSpace> {
  public:
   static constexpr cppgc::CustomSpaceIndex kSpaceIndex = 2;
 };
 
-class CSSValueSpace : public cppgc::CustomSpace<CSSValueSpace> {
+class PLATFORM_EXPORT CSSValueSpace : public cppgc::CustomSpace<CSSValueSpace> {
  public:
   static constexpr cppgc::CustomSpaceIndex kSpaceIndex = 3;
 };
