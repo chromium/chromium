@@ -12,6 +12,7 @@
 #include "base/containers/flat_tree.h"
 #include "base/feature_list.h"
 #include "base/json/json_writer.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -74,6 +75,14 @@ std::vector<uint8_t> GetSecurePaymentConfirmationChallenge(
   std::string sha256_hash = crypto::SHA256HashString(*challenge);
   std::vector<uint8_t> output_bytes(sha256_hash.begin(), sha256_hash.end());
   return output_bytes;
+}
+
+// Records UMA metric for the system prompt result.
+void RecordSystemPromptResult(
+    const SecurePaymentConfirmationSystemPromptResult result) {
+  base::UmaHistogramEnumeration(
+      "PaymentRequest.SecurePaymentConfirmation.Funnel.SystemPromptResult",
+      result);
 }
 
 }  // namespace
@@ -271,8 +280,13 @@ void SecurePaymentConfirmationApp::OnGetAssertion(
     status_string_stream << status;
     delegate->OnInstrumentDetailsError(base::StringPrintf(
         "Authenticator returned %s.", status_string_stream.str().c_str()));
+    RecordSystemPromptResult(
+        SecurePaymentConfirmationSystemPromptResult::kCanceled);
     return;
   }
+
+  RecordSystemPromptResult(
+      SecurePaymentConfirmationSystemPromptResult::kAccepted);
 
   // Serialize response into a JSON string. Browser will pass this string over
   // Mojo IPC into Blink, which will parse it into a JavaScript object for the

@@ -152,6 +152,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram
+    name="PaymentRequest.SecurePaymentConfirmation.Funnel.SystemPromptResult"
+    enum="SecurePaymentConfirmationSystemPromptResult"
+    expires_after="2021-08-01">
+  <owner>danyao@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    Records the result of the FIDO system prompt, which is shown after the
+    Secure Payment Confirmation dialog is accepted. The result is Accepted if
+    the prompt is successful, or Canceled if the prompt is canceled. Logged when
+    the FIDO system prompt closes.
+  </summary>
+</histogram>
+
+<histogram
     name="PaymentRequest.SecurePaymentConfirmationCredentialIdSizeInBytes"
     units="bytes" expires_after="2021-08-01">
   <owner>danyao@chromium.org</owner>

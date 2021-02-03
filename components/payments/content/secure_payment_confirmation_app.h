@@ -35,6 +35,15 @@ namespace payments {
 
 class PaymentRequestSpec;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Keep in sync with
+// src/tools/metrics/histograms/enums.xml.
+enum class SecurePaymentConfirmationSystemPromptResult {
+  kCanceled = 0,
+  kAccepted = 1,
+  kMaxValue = kAccepted,
+};
+
 class SecurePaymentConfirmationApp : public PaymentApp,
                                      public content::WebContentsObserver {
  public:
