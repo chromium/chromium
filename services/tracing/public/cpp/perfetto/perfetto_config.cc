@@ -81,9 +81,8 @@ void AddDataSourceConfigs(
   if (!privacy_filtering_enabled) {
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if defined(OS_CHROMEOS) ||      \
-    (BUILDFLAG(IS_CHROMECAST) && \
-     (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)))
+#if BUILDFLAG(IS_CHROMEOS_ASH) || \
+    (BUILDFLAG(IS_CHROMECAST) && defined(OS_LINUX))
     if (source_names.empty() ||
         source_names.count(tracing::mojom::kSystemTraceDataSourceName) == 1) {
       AddDataSourceConfig(perfetto_config,
