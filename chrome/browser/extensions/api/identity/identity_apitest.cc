@@ -880,29 +880,6 @@ class GetAuthTokenFunctionTest
     : public IdentityTestWithSignin,
       public signin::IdentityManager::DiagnosticsObserver {
  public:
-  explicit GetAuthTokenFunctionTest(bool is_return_scopes_enabled = true,
-                                    bool is_selected_user_id_enabled = true) {
-    std::vector<base::Feature> enabled_features;
-    std::vector<base::Feature> disabled_features;
-    if (is_return_scopes_enabled) {
-      enabled_features.push_back(
-          extensions_features::kReturnScopesInGetAuthToken);
-    } else {
-      disabled_features.push_back(
-          extensions_features::kReturnScopesInGetAuthToken);
-    }
-
-    if (is_selected_user_id_enabled) {
-      enabled_features.push_back(
-          extensions_features::kSelectedUserIdInGetAuthToken);
-    } else {
-      disabled_features.push_back(
-          extensions_features::kSelectedUserIdInGetAuthToken);
-    }
-
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
-
   std::string IssueLoginAccessTokenForAccount(const CoreAccountId& account_id) {
     std::string access_token = "access_token-" + account_id.ToString();
     identity_test_env()
@@ -3048,117 +3025,6 @@ INSTANTIATE_TEST_SUITE_P(
                                    false),
                     std::make_pair("", false)));
 
-class GetAuthTokenFunctionReturnScopesDisabledTest
-    : public GetAuthTokenFunctionTest {
- public:
-  GetAuthTokenFunctionReturnScopesDisabledTest()
-      : GetAuthTokenFunctionTest(false) {}
-
-  void RunGetAuthTokenFunctionReturnScopesDisabled(ExtensionFunction* function,
-                                                   const std::string& args,
-                                                   Browser* browser,
-                                                   std::string* access_token) {
-    EXPECT_TRUE(
-        utils::RunFunction(function, args, browser, api_test_utils::NONE));
-
-    EXPECT_TRUE(function->GetError().empty())
-        << "Unexpected error: " << function->GetError();
-    EXPECT_NE(nullptr, function->GetResultList());
-
-    const auto& result_list = function->GetResultList()->GetList();
-    EXPECT_EQ(1ul, result_list.size());
-
-    const auto& access_token_value = result_list[0];
-    EXPECT_TRUE(access_token_value.is_string());
-
-    *access_token = access_token_value.GetString();
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionReturnScopesDisabledTest,
-                       NoOptionsSuccess) {
-  SignIn("primary@example.com");
-  scoped_refptr<FakeGetAuthTokenFunction> func(new FakeGetAuthTokenFunction());
-  scoped_refptr<const Extension> extension(CreateExtension(CLIENT_ID | SCOPES));
-  func->set_extension(extension.get());
-  func->push_mint_token_result(TestOAuth2MintTokenFlow::MINT_TOKEN_SUCCESS);
-
-  std::string access_token;
-  RunGetAuthTokenFunctionReturnScopesDisabled(func.get(), "[{}]", browser(),
-                                              &access_token);
-  EXPECT_EQ(std::string(kAccessToken), access_token);
-  EXPECT_FALSE(func->login_ui_shown());
-  EXPECT_FALSE(func->scope_ui_shown());
-  EXPECT_EQ(IdentityTokenCacheValue::CACHE_STATUS_TOKEN,
-            GetCachedToken(CoreAccountInfo()).status());
-  histogram_tester()->ExpectUniqueSample(
-      kGetAuthTokenResultHistogramName, IdentityGetAuthTokenError::State::kNone,
-      1);
-}
-
-// Whether or not returning scopes is enabled should not affect error handling.
-IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionReturnScopesDisabledTest,
-                       NonInteractiveMintFailure) {
-  SignIn("primary@example.com");
-  scoped_refptr<FakeGetAuthTokenFunction> func(new FakeGetAuthTokenFunction());
-  func->set_extension(CreateExtension(CLIENT_ID | SCOPES));
-  func->push_mint_token_result(TestOAuth2MintTokenFlow::MINT_TOKEN_FAILURE);
-  std::string error =
-      utils::RunFunctionAndReturnError(func.get(), "[{}]", browser());
-  EXPECT_TRUE(base::StartsWith(error, errors::kAuthFailure,
-                               base::CompareCase::INSENSITIVE_ASCII));
-  EXPECT_FALSE(func->login_ui_shown());
-  EXPECT_FALSE(func->scope_ui_shown());
-  histogram_tester()->ExpectUniqueSample(
-      kGetAuthTokenResultHistogramName,
-      IdentityGetAuthTokenError::State::kMintTokenAuthFailure, 1);
-}
-
-// There are two parameters, which are stored in a std::pair, for these tests.
-//
-// std::string: the GetAuthToken arguments
-// bool: the expected value of GetAuthToken's enable_granular_permissions
-class GetAuthTokenFunctionReturnScopesDisabledEnableGranularPermissionsTest
-    : public GetAuthTokenFunctionReturnScopesDisabledTest,
-      public testing::WithParamInterface<std::pair<std::string, bool>> {};
-
-// Provided with the arguments for GetAuthToken, ensures that GetAuthToken's
-// enable_granular_permissions is some expected value when the
-// 'ReturnScopesInGetAuthToken' feature flag is disabled.
-IN_PROC_BROWSER_TEST_P(
-    GetAuthTokenFunctionReturnScopesDisabledEnableGranularPermissionsTest,
-    EnableGranularPermissions) {
-  const std::string& args = GetParam().first;
-  bool expected_enable_granular_permissions = GetParam().second;
-
-  SignIn("primary@example.com");
-  auto func = base::MakeRefCounted<FakeGetAuthTokenFunction>();
-  auto extension = base::WrapRefCounted(CreateExtension(CLIENT_ID | SCOPES));
-  func->set_extension(extension.get());
-  func->push_mint_token_result(TestOAuth2MintTokenFlow::MINT_TOKEN_SUCCESS);
-
-  std::string access_token;
-  RunGetAuthTokenFunctionReturnScopesDisabled(func.get(), "[{" + args + "}]",
-                                              browser(), &access_token);
-  EXPECT_EQ(kAccessToken, access_token);
-
-  EXPECT_EQ(expected_enable_granular_permissions,
-            func->enable_granular_permissions());
-  EXPECT_FALSE(func->login_ui_shown());
-  EXPECT_FALSE(func->scope_ui_shown());
-  histogram_tester()->ExpectUniqueSample(
-      kGetAuthTokenResultHistogramName, IdentityGetAuthTokenError::State::kNone,
-      1);
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    GetAuthTokenFunctionReturnScopesDisabledEnableGranularPermissionsTest,
-    testing::Values(
-        std::make_pair("\"enableGranularPermissions\": true", false),
-        std::make_pair("\"enableGranularPermissions\": false", false),
-        std::make_pair("", false)));
-
 class RemoveCachedAuthTokenFunctionTest : public ExtensionBrowserTest {
  protected:
   bool InvalidateDefaultToken() {
@@ -3204,10 +3070,6 @@ class RemoveCachedAuthTokenFunctionTest : public ExtensionBrowserTest {
 
 class GetAuthTokenFunctionSelectedUserIdTest : public GetAuthTokenFunctionTest {
  public:
-  explicit GetAuthTokenFunctionSelectedUserIdTest(
-      bool is_selected_user_id_enabled = true)
-      : GetAuthTokenFunctionTest(true, is_selected_user_id_enabled) {}
-
   // Executes a new function and checks that the selected_user_id is the
   // expected value. The interactive and scopes field are predefined.
   // The account id specified by the extension is optional.
@@ -3374,29 +3236,6 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionSelectedUserIdTest,
       1);
 }
 #endif
-
-class GetAuthTokenFunctionSelectedUserIdDisabledTest
-    : public GetAuthTokenFunctionSelectedUserIdTest {
- public:
-  GetAuthTokenFunctionSelectedUserIdDisabledTest()
-      : GetAuthTokenFunctionSelectedUserIdTest(false) {}
-};
-
-// Tests that Chrome does not use any selected user id value if the
-// 'SelectedUserIdInGetAuthToken' flag is disabled.
-IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionSelectedUserIdDisabledTest,
-                       SingleAccount) {
-  auto extension = base::WrapRefCounted(CreateExtension(CLIENT_ID | SCOPES));
-  SignIn("primary@example.com");
-  CoreAccountInfo primary_account = GetPrimaryAccountInfo();
-
-  SetCachedGaiaId(primary_account.gaia);
-  RunNewFunctionAndExpectSelectedUserId(extension, "");
-
-  histogram_tester()->ExpectUniqueSample(
-      kGetAuthTokenResultHistogramName, IdentityGetAuthTokenError::State::kNone,
-      1);
-}
 
 IN_PROC_BROWSER_TEST_F(RemoveCachedAuthTokenFunctionTest, NotFound) {
   EXPECT_TRUE(InvalidateDefaultToken());

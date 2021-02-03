@@ -92,16 +92,6 @@ void RecordFunctionResult(const IdentityGetAuthTokenError& error,
   }
 }
 
-bool IsReturnScopesInGetAuthTokenEnabled() {
-  return base::FeatureList::IsEnabled(
-      extensions_features::kReturnScopesInGetAuthToken);
-}
-
-bool IsSelectedUserIdInGetAuthTokenEnabled() {
-  return base::FeatureList::IsEnabled(
-      extensions_features::kSelectedUserIdInGetAuthToken);
-}
-
 }  // namespace
 
 IdentityGetAuthTokenFunction::IdentityGetAuthTokenFunction()
@@ -139,7 +129,7 @@ ExtensionFunction::ResponseAction IdentityGetAuthTokenFunction::Run() {
       interactive_ && IsBrowserSigninAllowed(GetProfile());
 
   enable_granular_permissions_ =
-      IsReturnScopesInGetAuthTokenEnabled() && params->details.get() &&
+      params->details.get() &&
       params->details->enable_granular_permissions.get() &&
       *params->details->enable_granular_permissions;
 
@@ -341,18 +331,14 @@ void IdentityGetAuthTokenFunction::CompleteFunctionWithResult(
     const std::set<std::string>& granted_scopes) {
   RecordFunctionResult(IdentityGetAuthTokenError(), remote_consent_approved_);
 
-  if (IsReturnScopesInGetAuthTokenEnabled()) {
-    std::unique_ptr<base::Value> granted_scopes_value =
-        std::make_unique<base::Value>(base::Value::Type::LIST);
-    for (const auto& scope : granted_scopes)
-      granted_scopes_value->Append(scope);
+  std::unique_ptr<base::Value> granted_scopes_value =
+      std::make_unique<base::Value>(base::Value::Type::LIST);
+  for (const auto& scope : granted_scopes)
+    granted_scopes_value->Append(scope);
 
-    CompleteAsyncRun(TwoArguments(
-        base::Value(access_token),
-        base::Value::FromUniquePtrValue(std::move(granted_scopes_value))));
-  } else {
-    CompleteAsyncRun(OneArgument(base::Value(access_token)));
-  }
+  CompleteAsyncRun(TwoArguments(
+      base::Value(access_token),
+      base::Value::FromUniquePtrValue(std::move(granted_scopes_value))));
 }
 
 void IdentityGetAuthTokenFunction::CompleteFunctionWithError(
@@ -1097,8 +1083,7 @@ bool IdentityGetAuthTokenFunction::enable_granular_permissions() const {
 }
 
 std::string IdentityGetAuthTokenFunction::GetSelectedUserId() const {
-  if (IsSelectedUserIdInGetAuthTokenEnabled() &&
-      selected_gaia_id_ == token_key_.account_info.gaia)
+  if (selected_gaia_id_ == token_key_.account_info.gaia)
     return selected_gaia_id_;
 
   return "";
