@@ -1735,10 +1735,10 @@
     No user certificate
   </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_CERTIFICATE_NAME" desc="Settings > Internet > Network config: Formatting string for network certificate names.">
-    <ph name="ISSUED_BY">$1<ex>Google Inc</ex></ph> [<ph name="ISSUED_TO">$2<ex>John Doe</ex></ph>]
+    <ph name="ISSUED_BY">$1<ex>Google LLC</ex></ph> [<ph name="ISSUED_TO">$2<ex>John Doe</ex></ph>]
   </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_CERTIFICATE_NAME_HARDWARE_BACKED" desc="Settings > Internet > Network configuration: Formatting string for network certificate names that are hardware backed.">
-    <ph name="ISSUED_BY">$1<ex>Google Inc</ex></ph> [<ph name="ISSUED_TO">$2<ex>John Doe</ex></ph>] (hardware-backed)
+    <ph name="ISSUED_BY">$1<ex>Google LLC</ex></ph> [<ph name="ISSUED_TO">$2<ex>John Doe</ex></ph>] (hardware-backed)
   </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_CERTIFICATE_NONE_INSTALLED" desc="Settings > Internet > Network configuration: Label when no certificates are installed.">
     None installed
