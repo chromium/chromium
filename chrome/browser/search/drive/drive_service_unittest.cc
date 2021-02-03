@@ -9,6 +9,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/load_flags.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 
@@ -35,41 +36,69 @@ class DriveServiceTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<DriveService> service_;
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   signin::IdentityTestEnvironment identity_test_env;
 };
 
 TEST_F(DriveServiceTest, PassesDataOnSuccess) {
-  bool empty_response = true;
-  base::MockCallback<DriveService::SuggestionsCallback> callback;
+  std::vector<drive::mojom::DocumentPtr> actual_documents;
+  base::MockCallback<DriveService::GetDocumentsCallback> callback;
 
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke([&empty_response](std::string arg) {
-        empty_response = arg.empty();
-      }));
+      .WillOnce(testing::Invoke(
+          [&](std::vector<drive::mojom::DocumentPtr> documents) {
+            actual_documents = std::move(documents);
+          }));
 
   service_->GetDriveSuggestions(callback.Get());
 
   identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "token", base::Time());
+      "foo", base::Time());
 
   test_url_loader_factory_.SimulateResponseForPendingRequest(
-      "https://appsitemsuggest-pa.googleapis.com/v1/items", std::string(),
+      "https://appsitemsuggest-pa.googleapis.com/v1/items",
+      R"(
+        {
+          "item": [
+            {
+              "driveItem": {
+                "title": "Foo"
+                }
+            },
+            {
+              "driveItem": {
+                "title": "Bar"
+              }
+            },
+            {
+              "driveItem": {
+              }
+            }
+
+          ]
+        }
+      )",
       net::HTTP_OK,
       network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix);
-  EXPECT_FALSE(empty_response);
+
+  EXPECT_EQ(2u, actual_documents.size());
+  EXPECT_EQ("Foo", actual_documents.at(0)->title);
+  EXPECT_EQ("Bar", actual_documents.at(1)->title);
 }
 
 TEST_F(DriveServiceTest, PassesNoDataOnAuthError) {
   bool token_is_valid = true;
 
-  base::MockCallback<DriveService::SuggestionsCallback> callback;
+  base::MockCallback<DriveService::GetDocumentsCallback> callback;
 
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke([&token_is_valid](std::string suggestion) {
-        token_is_valid = !suggestion.empty();
-      }));
+      .WillOnce(testing::Invoke(
+          [&token_is_valid](
+              std::vector<drive::mojom::DocumentPtr> suggestions) {
+            token_is_valid = !suggestions.empty();
+          }));
 
   service_->GetDriveSuggestions(callback.Get());
 
@@ -81,13 +110,15 @@ TEST_F(DriveServiceTest, PassesNoDataOnAuthError) {
 
 TEST_F(DriveServiceTest, PassesNoDataOnNetError) {
   bool empty_response = false;
-  base::MockCallback<DriveService::SuggestionsCallback> callback;
+  base::MockCallback<DriveService::GetDocumentsCallback> callback;
 
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke([&empty_response](std::string arg) {
-        empty_response = arg.empty();
-      }));
+      .WillOnce(testing::Invoke(
+          [&empty_response](
+              std::vector<drive::mojom::DocumentPtr> suggestions) {
+            empty_response = suggestions.empty();
+          }));
 
   service_->GetDriveSuggestions(callback.Get());
 
@@ -107,4 +138,56 @@ TEST_F(DriveServiceTest, PassesNoDataOnNetError) {
       network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix);
 
   EXPECT_TRUE(empty_response);
+}
+
+TEST_F(DriveServiceTest, PassesNoDataOnEmptyResponse) {
+  bool empty_response = false;
+
+  base::MockCallback<DriveService::GetDocumentsCallback> callback;
+
+  EXPECT_CALL(callback, Run(testing::_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&empty_response](
+              std::vector<drive::mojom::DocumentPtr> suggestions) {
+            empty_response = suggestions.empty();
+          }));
+
+  service_->GetDriveSuggestions(callback.Get());
+
+  identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "foo", base::Time());
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      "https://appsitemsuggest-pa.googleapis.com/v1/items", "", net::HTTP_OK,
+      network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix);
+
+  EXPECT_TRUE(empty_response);
+}
+
+TEST_F(DriveServiceTest, PassesNoDataOnMissingItemKey) {
+  std::vector<drive::mojom::DocumentPtr> actual_documents;
+  base::MockCallback<DriveService::GetDocumentsCallback> callback;
+
+  EXPECT_CALL(callback, Run(testing::_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&](std::vector<drive::mojom::DocumentPtr> documents) {
+            actual_documents = std::move(documents);
+          }));
+
+  service_->GetDriveSuggestions(callback.Get());
+
+  identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "foo", base::Time());
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      "https://appsitemsuggest-pa.googleapis.com/v1/items",
+      R"(
+        {}
+      )",
+      net::HTTP_OK,
+      network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix);
+
+  EXPECT_TRUE(actual_documents.empty());
 }

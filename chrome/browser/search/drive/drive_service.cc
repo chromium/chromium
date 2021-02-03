@@ -76,7 +76,7 @@ DriveService::DriveService(
     : url_loader_factory_(std::move(url_loader_factory)),
       identity_manager_(identity_manager) {}
 
-void DriveService::GetDriveSuggestions(SuggestionsCallback callback) {
+void DriveService::GetDriveSuggestions(GetDocumentsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // TODO(crbug/1168763) May need to handle multiple requests after
@@ -89,14 +89,14 @@ void DriveService::GetDriveSuggestions(SuggestionsCallback callback) {
       signin::ConsentLevel::kSync);
 }
 
-void DriveService::OnTokenReceived(SuggestionsCallback callback,
+void DriveService::OnTokenReceived(GetDocumentsCallback callback,
                                    GoogleServiceAuthError error,
                                    signin::AccessTokenInfo token_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   token_fetcher_.reset();
   if (error.state() != GoogleServiceAuthError::NONE) {
-    std::move(callback).Run("");
+    std::move(callback).Run(std::vector<drive::mojom::DocumentPtr>());
     return;
   }
 
@@ -113,26 +113,61 @@ void DriveService::OnTokenReceived(SuggestionsCallback callback,
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
                                       "Bearer " + token_info.token);
 
+  // TODO(crbug/1168763) Also need to handle multiple pending requests
+  // here as well.
+  if (url_loader_) {
+    return;
+  }
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  kTrafficAnnotation);
   url_loader_->SetRetryOptions(0, network::SimpleURLLoader::RETRY_NEVER);
   url_loader_->AttachStringForUpload(kRequestBody, "application/json");
   url_loader_->DownloadToString(
       url_loader_factory_.get(),
-      base::BindOnce(&DriveService::OnSuggestionsReceived,
-                     weak_factory_.GetWeakPtr(), std::move(callback)),
+      base::BindOnce(&DriveService::OnJsonReceived, weak_factory_.GetWeakPtr(),
+                     std::move(callback)),
       kMaxResponseSize);
 }
 
-void DriveService::OnSuggestionsReceived(
-    SuggestionsCallback callback,
-    const std::unique_ptr<std::string> json_response) {
+void DriveService::OnJsonReceived(
+    GetDocumentsCallback callback,
+    const std::unique_ptr<std::string> response_body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const int net_error = url_loader_->NetError();
-  if (net_error != net::OK) {
-    std::move(callback).Run("");
+  url_loader_.reset();
+
+  if (net_error != net::OK || !response_body) {
+    std::move(callback).Run(std::vector<drive::mojom::DocumentPtr>());
     return;
   }
-  std::move(callback).Run("JSON response");
+  data_decoder::DataDecoder::ParseJsonIsolated(
+      *response_body,
+      base::BindOnce(&DriveService::OnJsonParsed, weak_factory_.GetWeakPtr(),
+                     std::move(callback)));
+}
+
+void DriveService::OnJsonParsed(
+    GetDocumentsCallback callback,
+    data_decoder::DataDecoder::ValueOrError result) {
+  if (!result.value) {
+    std::move(callback).Run(std::vector<drive::mojom::DocumentPtr>());
+    return;
+  }
+  auto* documents = result.value->FindListPath("item");
+  if (!documents) {
+    std::move(callback).Run(std::vector<drive::mojom::DocumentPtr>());
+    return;
+  }
+  std::vector<drive::mojom::DocumentPtr> document_list;
+  for (const auto& document : documents->GetList()) {
+    auto* title = document.FindStringPath("driveItem.title");
+    if (!title) {
+      continue;
+    }
+    auto mojo_drive_doc = drive::mojom::Document::New();
+    mojo_drive_doc->title = *title;
+    document_list.push_back(std::move(mojo_drive_doc));
+  }
+  std::move(callback).Run(std::move(document_list));
 }

@@ -21,12 +21,10 @@ suite('NewTabPageModulesDriveModuleTest', () => {
   });
 
   test('module appears on render', async () => {
-    testProxy.handler.setResultFor(
-        'getTestString', Promise.resolve({dataItem: 'test string'}));
     await driveDescriptor.initialize();
     const module = driveDescriptor.element;
     assertTrue(!!module);
-    await testProxy.handler.whenCalled('getTestString');
+    await testProxy.handler.whenCalled('getDocuments');
     assertTrue(!!driveDescriptor.element);
   });
 });

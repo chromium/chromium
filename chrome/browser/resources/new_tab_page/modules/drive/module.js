@@ -30,8 +30,8 @@ customElements.define(DriveModuleElement.is, DriveModuleElement);
  * @return {!Promise<?DriveModuleElement>}
  */
 async function createDriveElement() {
-  const {testString} = await DriveProxy.getInstance().handler.getTestString();
-  console.log(testString);
+  console.log(await DriveProxy.getInstance().handler.getDocuments());
+  // TODO(cr/1161362): Render results in module.
   return new DriveModuleElement();
 }
 

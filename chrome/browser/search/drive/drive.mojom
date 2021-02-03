@@ -4,11 +4,14 @@
 
 module drive.mojom;
 
-// TODO(crbug/1163760): Create struct to model Drive data response.
+// TODO(crbug/161362): Further flesh out struct with document info
+// (ex. document type, activity text, etc).
+struct Document {
+  string title;
+};
 
 // Browser-side handler for requests from NTP Module UI.
 interface DriveHandler {
-  // TODO(crbug/1163760): Replace GetTestString method with
-  // method to retrieve file info from recent drive files.
-  GetTestString() => (string test_string);
+  // Fetches document suggestions from ItemSuggest API.
+  GetDocuments() => (array<Document> documents);
 };

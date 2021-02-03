@@ -14,7 +14,7 @@ DriveHandler::DriveHandler(
 
 DriveHandler::~DriveHandler() = default;
 
-void DriveHandler::GetTestString(GetTestStringCallback callback) {
+void DriveHandler::GetDocuments(GetDocumentsCallback callback) {
   DriveServiceFactory::GetForProfile(profile_)->GetDriveSuggestions(
       std::move(callback));
 }

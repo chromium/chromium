@@ -9,9 +9,11 @@
 #include <string>
 
 #include "base/sequence_checker.h"
+#include "chrome/browser/search/drive/drive.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 
@@ -29,18 +31,18 @@ class DriveService : public KeyedService {
       signin::IdentityManager* identity_manager);
   ~DriveService() override;
 
-  using SuggestionsCallback = base::OnceCallback<void(const std::string&)>;
+  using GetDocumentsCallback = drive::mojom::DriveHandler::GetDocumentsCallback;
   // Retrieves Google Drive document suggestions from ItemSuggest API.
-  void GetDriveSuggestions(SuggestionsCallback callback);
-  void OnSuggestionsReceived(SuggestionsCallback callback,
-                             const std::unique_ptr<std::string> json_response);
+  void GetDriveSuggestions(GetDocumentsCallback callback);
 
  private:
-  // TODO(crbug/1164012): Use token to create request
-  // with callback.
-  void OnTokenReceived(SuggestionsCallback callback,
+  void OnTokenReceived(GetDocumentsCallback callback,
                        GoogleServiceAuthError error,
                        signin::AccessTokenInfo token_info);
+  void OnJsonReceived(GetDocumentsCallback callback,
+                      const std::unique_ptr<std::string> json_response);
+  void OnJsonParsed(GetDocumentsCallback callback,
+                    data_decoder::DataDecoder::ValueOrError result);
 
   // Used for fetching OAuth2 access tokens. Only non-null when a token
   // is made available, or a token is being fetched.
