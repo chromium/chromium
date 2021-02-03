@@ -509,6 +509,13 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldDecodeEncodedSyncMetadata) {
   EXPECT_THAT(new_processor.GetTrackerForTest(), NotNull());
 }
 
+TEST_F(BookmarkModelTypeProcessorTest, ShouldDecodeEmptyMetadata) {
+  // No save should be scheduled.
+  EXPECT_CALL(*schedule_save_closure(), Run()).Times(0);
+  SimulateModelReadyToSync();
+  EXPECT_THAT(processor()->GetTrackerForTest(), IsNull());
+}
+
 TEST_F(BookmarkModelTypeProcessorTest,
        ShouldIgnoreNonEmptyMetadataWhileSyncNotDone) {
   sync_pb::BookmarkModelMetadata model_metadata;
@@ -522,9 +529,14 @@ TEST_F(BookmarkModelTypeProcessorTest,
   // Create a new processor and init it with the metadata str.
   BookmarkModelTypeProcessor new_processor(bookmark_undo_service());
 
+  // A save should be scheduled.
+  NiceMock<base::MockCallback<base::RepeatingClosure>>
+      new_schedule_save_closure;
+  EXPECT_CALL(new_schedule_save_closure, Run());
+
   std::string metadata_str;
   model_metadata.SerializeToString(&metadata_str);
-  new_processor.ModelReadyToSync(metadata_str, base::DoNothing(),
+  new_processor.ModelReadyToSync(metadata_str, new_schedule_save_closure.Get(),
                                  bookmark_model());
   // Metadata are corrupted, so no tracker should have been created.
   EXPECT_THAT(new_processor.GetTrackerForTest(), IsNull());
@@ -544,9 +556,14 @@ TEST_F(BookmarkModelTypeProcessorTest,
   // Create a new processor and init it with the metadata str.
   BookmarkModelTypeProcessor new_processor(bookmark_undo_service());
 
+  // A save should be scheduled.
+  NiceMock<base::MockCallback<base::RepeatingClosure>>
+      new_schedule_save_closure;
+  EXPECT_CALL(new_schedule_save_closure, Run());
+
   std::string metadata_str;
   model_metadata.SerializeToString(&metadata_str);
-  new_processor.ModelReadyToSync(metadata_str, base::DoNothing(),
+  new_processor.ModelReadyToSync(metadata_str, new_schedule_save_closure.Get(),
                                  bookmark_model());
 
   // Metadata are corrupted, so no tracker should have been created.
