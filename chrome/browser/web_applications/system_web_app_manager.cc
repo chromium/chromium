@@ -233,6 +233,8 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps(
         SystemAppInfo("Eche", GURL("chrome://eche-app"),
                       base::BindRepeating(&CreateWebAppInfoForEcheApp)));
     infos.at(SystemAppType::ECHE).capture_navigations = true;
+    infos.at(SystemAppType::ECHE).show_in_launcher = false;
+    infos.at(SystemAppType::ECHE).show_in_search = false;
   }
 
 #if !defined(OFFICIAL_BUILD)

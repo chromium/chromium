@@ -46,5 +46,13 @@ IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest, DefaultWindowBounds) {
   EXPECT_EQ(browser->window()->GetBounds(), gfx::Rect(x, y, 480, 640));
 }
 
+IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest, HiddenInLauncherAndSearch) {
+  WaitForTestSystemAppInstall();
+
+  // Check system_web_app_manager has the correct attributes for Eche App.
+  EXPECT_FALSE(GetManager().ShouldShowInLauncher(web_app::SystemAppType::ECHE));
+  EXPECT_FALSE(GetManager().ShouldShowInSearch(web_app::SystemAppType::ECHE));
+}
+
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     EcheAppIntegrationTest);
