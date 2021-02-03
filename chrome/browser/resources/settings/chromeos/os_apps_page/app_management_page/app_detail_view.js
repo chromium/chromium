@@ -6,7 +6,7 @@ Polymer({
   is: 'app-management-app-detail-view',
 
   behaviors: [
-    app_management.StoreClient,
+    app_management.AppManagementStoreClient,
     settings.RouteObserverBehavior,
   ],
 

@@ -5,7 +5,7 @@ Polymer({
   is: 'app-management-chrome-app-detail-view',
 
   behaviors: [
-    app_management.StoreClient,
+    app_management.AppManagementStoreClient,
   ],
 
   properties: {

@@ -161,7 +161,8 @@ cr.define('app_management', function() {
      * @param {OptionalBool} pinnedValue
      */
     setPinned(appId, pinnedValue) {
-      const app = app_management.Store.getInstance().data.apps[appId];
+      const app =
+          app_management.AppManagementStore.getInstance().data.apps[appId];
 
       const newApp =
           /** @type {!App} */ (Object.assign({}, app, {isPinned: pinnedValue}));
@@ -173,7 +174,8 @@ cr.define('app_management', function() {
      * @param {Permission} permission
      */
     setPermission(appId, permission) {
-      const app = app_management.Store.getInstance().data.apps[appId];
+      const app =
+          app_management.AppManagementStore.getInstance().data.apps[appId];
 
       // Check that the app had a previous value for the given permission
       assert(app.permissions[permission.permissionId]);

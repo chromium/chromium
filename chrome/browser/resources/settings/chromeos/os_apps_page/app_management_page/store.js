@@ -9,17 +9,17 @@
  */
 
 cr.define('app_management', function() {
-  class Store extends cr.ui.Store {
+  class AppManagementStore extends cr.ui.Store {
     constructor() {
       super(
           app_management.util.createEmptyState(), app_management.reduceAction);
     }
   }
 
-  cr.addSingletonGetter(Store);
+  cr.addSingletonGetter(AppManagementStore);
 
   // #cr_define_end
   return {
-    Store: Store,
+    AppManagementStore: AppManagementStore,
   };
 });

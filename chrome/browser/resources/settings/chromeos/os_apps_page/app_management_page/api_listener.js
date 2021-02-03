@@ -10,7 +10,7 @@ cr.define('app_management.apiListener', function() {
     const {apps: initialApps} =
         await app_management.BrowserProxy.getInstance().handler.getApps();
     const initialState = app_management.util.createInitialState(initialApps);
-    app_management.Store.getInstance().init(initialState);
+    app_management.AppManagementStore.getInstance().init(initialState);
 
     const callbackRouter =
         app_management.BrowserProxy.getInstance().callbackRouter;
@@ -27,7 +27,7 @@ cr.define('app_management.apiListener', function() {
    * @param {cr.ui.Action} action
    */
   function dispatch(action) {
-    app_management.Store.getInstance().dispatch(action);
+    app_management.AppManagementStore.getInstance().dispatch(action);
   }
 
   /**

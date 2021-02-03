@@ -30,7 +30,7 @@ suite('<app-management-arc-detail-view>', () => {
   setup(async () => {
     fakeHandler = setupFakeHandler();
     replaceStore();
-    app_management.Store.getInstance().dispatch(
+    app_management.AppManagementStore.getInstance().dispatch(
         app_management.actions.updateArcSupported(true));
 
     // Create an ARC app without microphone permissions.
@@ -47,7 +47,7 @@ suite('<app-management-arc-detail-view>', () => {
 
     // Add an arc app, and make it the currently selected app.
     const app = await fakeHandler.addApp(null, arcOptions);
-    app_management.Store.getInstance().dispatch(
+    app_management.AppManagementStore.getInstance().dispatch(
         app_management.actions.updateSelectedAppId(app.id));
 
     arcPermissionView =
@@ -57,7 +57,7 @@ suite('<app-management-arc-detail-view>', () => {
 
   test('App is rendered correctly', () => {
     assertEquals(
-        app_management.Store.getInstance().data.selectedAppId,
+        app_management.AppManagementStore.getInstance().data.selectedAppId,
         arcPermissionView.app_.id);
   });
 
@@ -132,7 +132,7 @@ suite('<app-management-arc-detail-view>', () => {
     assertFalse(
         isHidden(arcPermissionView.root.getElementById('permissions-card')));
 
-    app_management.Store.getInstance().dispatch(
+    app_management.AppManagementStore.getInstance().dispatch(
         app_management.actions.updateArcSupported(false));
 
     assertTrue(
@@ -140,7 +140,7 @@ suite('<app-management-arc-detail-view>', () => {
     assertTrue(
         isHidden(arcPermissionView.root.getElementById('permissions-card')));
 
-    app_management.Store.getInstance().dispatch(
+    app_management.AppManagementStore.getInstance().dispatch(
         app_management.actions.updateArcSupported(true));
   });
 
@@ -156,7 +156,7 @@ suite('<app-management-arc-detail-view>', () => {
 
     // Add an arc app, and make it the currently selected app.
     const app = await fakeHandler.addApp(null, arcOptions);
-    app_management.Store.getInstance().dispatch(
+    app_management.AppManagementStore.getInstance().dispatch(
         app_management.actions.updateSelectedAppId(app.id));
     await test_util.flushTasks();
 

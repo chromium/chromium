@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Defines StoreClient, a Polymer behavior to tie a front-end
- * element to back-end data from the store.
+ * @fileoverview Defines AppManagementStore, a Polymer behavior to tie a
+ * front-end element to back-end data from the store.
  */
 
 cr.define('app_management', function() {
@@ -31,7 +31,7 @@ cr.define('app_management', function() {
      * @return {cr.ui.Store<AppManagementPageState>}
      */
     getStore() {
-      return app_management.Store.getInstance();
+      return app_management.AppManagementStore.getInstance();
     },
   };
 
@@ -39,11 +39,12 @@ cr.define('app_management', function() {
    * @polymerBehavior
    * @implements {cr.ui.StoreObserver}
    */
-  const StoreClient = [cr.ui.StoreClient, AppManagementStoreClientImpl];
+  const AppManagementStoreClient =
+      [cr.ui.StoreClient, AppManagementStoreClientImpl];
 
   // #cr_define_end
   return {
     AppManagementStoreClientImpl: AppManagementStoreClientImpl,
-    StoreClient: StoreClient,
+    AppManagementStoreClient: AppManagementStoreClient,
   };
 });

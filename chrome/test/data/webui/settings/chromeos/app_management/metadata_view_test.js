@@ -16,7 +16,7 @@ suite('<app-management-metadata-view>', function() {
 
     // Add an app, and make it the currently selected app.
     await fakeHandler.addApp(APP_ID);
-    app_management.Store.getInstance().dispatch(
+    app_management.AppManagementStore.getInstance().dispatch(
         app_management.actions.changePage(PageType.DETAIL, APP_ID));
 
     metadataView = document.createElement('app-management-metadata-view');

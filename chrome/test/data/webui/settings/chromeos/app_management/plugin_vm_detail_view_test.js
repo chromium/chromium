@@ -37,7 +37,7 @@ suite('<app-management-plugin-vm-detail-view>', function() {
   }
 
   function getSelectedAppFromStore() {
-    const storeData = app_management.Store.getInstance().data;
+    const storeData = app_management.AppManagementStore.getInstance().data;
     return storeData.apps[storeData.selectedAppId];
   }
 
@@ -129,7 +129,7 @@ suite('<app-management-plugin-vm-detail-view>', function() {
     };
     const app = await fakeHandler.addApp(null, options);
     appId = app.id;
-    app_management.Store.getInstance().dispatch(
+    app_management.AppManagementStore.getInstance().dispatch(
         app_management.actions.updateSelectedAppId(appId));
 
     pluginVmDetailView =
@@ -140,7 +140,7 @@ suite('<app-management-plugin-vm-detail-view>', function() {
 
   test('App is rendered correctly', function() {
     assertEquals(
-        app_management.Store.getInstance().data.selectedAppId,
+        app_management.AppManagementStore.getInstance().data.selectedAppId,
         pluginVmDetailView.app_.id);
   });
 

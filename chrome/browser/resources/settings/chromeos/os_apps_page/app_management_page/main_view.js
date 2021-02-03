@@ -6,7 +6,7 @@ Polymer({
   is: 'app-management-main-view',
 
   behaviors: [
-    app_management.StoreClient,
+    app_management.AppManagementStoreClient,
     settings.RouteObserverBehavior,
   ],
 
@@ -47,7 +47,8 @@ Polymer({
    */
   currentRouteChanged(route, oldRoute) {
     if (route === settings.routes.APP_MANAGEMENT) {
-      const appId = app_management.Store.getInstance().data.selectedAppId;
+      const appId =
+          app_management.AppManagementStore.getInstance().data.selectedAppId;
 
       // Expect this to be false the first time the "Manage your apps" page
       // is requested as no app has been selected yet.

@@ -27,11 +27,12 @@ function setupFakeHandler() {
 }
 
 /**
- * Replace the app management store instance with a new, empty TestStore.
- * @return {app_management.TestStore}
+ * Replace the app management store instance with a new, empty
+ * TestAppManagementStore.
+ * @return {app_management.TestAppManagementStore}
  */
 function replaceStore() {
-  const store = new app_management.TestStore();
+  const store = new app_management.TestAppManagementStore();
   store.setReducersEnabled(true);
   store.replaceSingleton();
   return store;

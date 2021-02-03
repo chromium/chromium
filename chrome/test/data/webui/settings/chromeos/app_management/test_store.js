@@ -3,15 +3,15 @@
 // found in the LICENSE file.
 
 cr.define('app_management', function() {
-  class TestStore extends cr.ui.TestStore {
+  class TestAppManagementStore extends cr.ui.TestStore {
     constructor(data) {
       super(
-          data, app_management.Store, app_management.util.createEmptyState(),
-          app_management.reduceAction);
+          data, app_management.AppManagementStore,
+          app_management.util.createEmptyState(), app_management.reduceAction);
     }
   }
 
   return {
-    TestStore: TestStore,
+    TestAppManagementStore: TestAppManagementStore,
   };
 });
