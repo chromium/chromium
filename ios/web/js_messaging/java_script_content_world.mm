@@ -124,31 +124,30 @@ void JavaScriptContentWorld::AddFeature(const JavaScriptFeature* feature) {
     }
 
     [user_content_controller_ addUserScript:user_script];
-    // Setup Javascript message callbacks.
-    for (auto handlers_by_name : feature->GetScriptMessageHandlers()) {
-      std::unique_ptr<ScopedWKScriptMessageHandler> script_message_handler;
+  }
+
+  // Setup Javascript message callbacks.
+  for (auto handlers_by_name : feature->GetScriptMessageHandlers()) {
+    std::unique_ptr<ScopedWKScriptMessageHandler> script_message_handler;
 
 #if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
-      if (@available(iOS 14, *)) {
-        if (content_world_) {
-          script_message_handler =
-              std::make_unique<ScopedWKScriptMessageHandler>(
-                  user_content_controller_,
-                  base::SysUTF8ToNSString(handlers_by_name.first),
-                  content_world_,
-                  base::BindRepeating(handlers_by_name.second, browser_state_));
-        }
-      }
-#endif  // defined(__IPHONE14_0)
-
-      if (!script_message_handler.get()) {
+    if (@available(iOS 14, *)) {
+      if (content_world_) {
         script_message_handler = std::make_unique<ScopedWKScriptMessageHandler>(
             user_content_controller_,
-            base::SysUTF8ToNSString(handlers_by_name.first),
+            base::SysUTF8ToNSString(handlers_by_name.first), content_world_,
             base::BindRepeating(handlers_by_name.second, browser_state_));
       }
-      script_message_handlers_[feature] = std::move(script_message_handler);
     }
+#endif  // defined(__IPHONE14_0)
+
+    if (!script_message_handler.get()) {
+      script_message_handler = std::make_unique<ScopedWKScriptMessageHandler>(
+          user_content_controller_,
+          base::SysUTF8ToNSString(handlers_by_name.first),
+          base::BindRepeating(handlers_by_name.second, browser_state_));
+    }
+    script_message_handlers_[feature] = std::move(script_message_handler);
   }
 }
 
