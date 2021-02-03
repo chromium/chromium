@@ -364,6 +364,8 @@ def read_ignored_cycles():
 gc_bases = (
   'blink::GarbageCollected',
   'blink::GarbageCollectedMixin',
+  'cppgc::GarbageCollected',
+  'cppgc::GarbageCollectedMixin',
 )
 ref_bases = (
   'WTF::RefCounted',
@@ -418,7 +420,8 @@ def print_stats():
          % (
              stats['ref'] == 0 and stats['ref-mixins'] == 0 and "*" or " ",
              total == 0 and 100 or stats['mem'] * 100 / total,
-             node.name.replace('blink::', ''),
+             node.name.replace('blink::', '').replace(
+                 'cppgc::subtle::', '').replace('cppgc::', ''),
              stats['classes'],
              stats['mem'],
              stats['ref'],

@@ -159,7 +159,18 @@ CXXRecordDecl* RecordInfo::GetDependentTemplatedDecl(const Type& type) {
   if (!tmpl_decl)
     return 0;
 
-  return dyn_cast_or_null<CXXRecordDecl>(tmpl_decl->getTemplatedDecl());
+  if (CXXRecordDecl* record_decl =
+          dyn_cast_or_null<CXXRecordDecl>(tmpl_decl->getTemplatedDecl()))
+    return record_decl;
+
+  // Type is an alias.
+  TypeAliasDecl* alias_decl =
+      dyn_cast<TypeAliasDecl>(tmpl_decl->getTemplatedDecl());
+  assert(alias_decl);
+  const Type* alias_type = alias_decl->getUnderlyingType().getTypePtr();
+  if (CXXRecordDecl* record_decl = alias_type->getAsCXXRecordDecl())
+    return record_decl;
+  return GetDependentTemplatedDecl(*alias_type);
 }
 
 void RecordInfo::walkBases() {
@@ -693,7 +704,12 @@ Edge* RecordInfo::CreateEdge(const Type* type) {
     // TODO: Consider using a more canonical identification than names.
     NamespaceDecl* ns =
         dyn_cast<NamespaceDecl>(info->record()->getDeclContext());
-    if (!ns || ns->getName() != "blink")
+    // Find outer-most namespace.
+    while (NamespaceDecl* outer_ns =
+               dyn_cast<NamespaceDecl>(ns->getDeclContext())) {
+      ns = outer_ns;
+    }
+    if (!ns || (ns->getName() != "blink") && (ns->getName() != "cppgc"))
       return 0;
     if (!info->GetTemplateArgs(1, &args))
       return 0;

@@ -86,10 +86,14 @@ BlinkGCPluginConsumer::BlinkGCPluginConsumer(
       json_(0) {
   // Only check structures in the blink and WebKit namespaces.
   options_.checked_namespaces.insert("blink");
+  options_.checked_namespaces.insert("cppgc");
 
   // Ignore GC implementation files.
   options_.ignored_directories.push_back(
       "third_party/blink/renderer/platform/heap/");
+  options_.ignored_directories.push_back("v8/src/heap/cppgc/");
+  options_.ignored_directories.push_back("v8/src/heap/cppgc-js/");
+
   options_.allowed_directories.push_back(
       "third_party/blink/renderer/platform/heap/test/");
 }
