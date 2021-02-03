@@ -178,6 +178,11 @@ bool DeviceState::IsSimLocked() const {
 
 bool DeviceState::HasAPN(const std::string& access_point_name) const {
   for (const auto& apn : apn_list_.GetList()) {
+    // bogus empty entries in the list might have been converted to a list while
+    // traveling over D-Bus, skip them rather than crashing below.
+    if (!apn.is_dict())
+      continue;
+
     const std::string* apn_name = apn.FindStringKey(shill::kApnProperty);
     if (apn_name && *apn_name == access_point_name) {
       return true;
