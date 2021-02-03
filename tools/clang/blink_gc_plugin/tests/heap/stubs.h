@@ -194,10 +194,14 @@ class Visitor {
   void Trace(const T&);
 };
 
-template <typename T>
-class GarbageCollected {};
+namespace internal {
+class GarbageCollectedBase {};
+}  // namespace internal
 
-class GarbageCollectedMixin {
+template <typename T>
+class GarbageCollected : public internal::GarbageCollectedBase {};
+
+class GarbageCollectedMixin : public internal::GarbageCollectedBase {
  public:
   virtual void AdjustAndMark(Visitor*) const = 0;
   virtual bool IsHeapObjectAlive(Visitor*) const = 0;
