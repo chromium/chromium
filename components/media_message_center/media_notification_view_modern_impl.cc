@@ -25,6 +25,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 
@@ -600,5 +601,8 @@ void MediaNotificationViewModernImpl::ButtonPressed(views::Button* button) {
   if (item_)
     item_->OnMediaSessionActionButtonPressed(GetActionFromButtonTag(*button));
 }
+
+BEGIN_METADATA(MediaNotificationViewModernImpl, views::View)
+END_METADATA
 
 }  // namespace media_message_center

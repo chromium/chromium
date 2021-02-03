@@ -17,6 +17,7 @@
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 
@@ -99,3 +100,6 @@ void WebAppOriginText::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kApplication;
   node_data->SetName(label_->GetText());
 }
+
+BEGIN_METADATA(WebAppOriginText, views::View)
+END_METADATA

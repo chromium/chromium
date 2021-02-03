@@ -7,6 +7,7 @@
 
 #include "base/timer/timer.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -19,8 +20,12 @@ namespace media_message_center {
 class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaControlsProgressView
     : public views::View {
  public:
+  METADATA_HEADER(MediaControlsProgressView);
   explicit MediaControlsProgressView(
       base::RepeatingCallback<void(double)> seek_callback);
+  MediaControlsProgressView(const MediaControlsProgressView&) = delete;
+  MediaControlsProgressView& operator=(const MediaControlsProgressView&) =
+      delete;
   ~MediaControlsProgressView() override;
 
   void UpdateProgress(const media_session::MediaPosition& media_position);
@@ -51,8 +56,6 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaControlsProgressView
   base::RepeatingTimer update_progress_timer_;
 
   const base::RepeatingCallback<void(double)> seek_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaControlsProgressView);
 };
 
 }  // namespace media_message_center

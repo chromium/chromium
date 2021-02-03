@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/toolbar/browser_actions_container.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -34,6 +35,8 @@ class WebAppToolbarButtonContainer : public views::View,
                                      public PageActionIconContainer,
                                      public views::WidgetObserver {
  public:
+  METADATA_HEADER(WebAppToolbarButtonContainer);
+
   // Timing parameters for the origin fade animation.
   // These control how long it takes for the origin text and menu button
   // highlight to fade in, pause then fade out.
@@ -76,9 +79,6 @@ class WebAppToolbarButtonContainer : public views::View,
 
   WebAppMenuButton* web_app_menu_button() { return web_app_menu_button_; }
 
-  // views::View:
-  const char* GetClassName() const override;
-
   static void DisableAnimationForTesting();
 
  private:
@@ -99,7 +99,7 @@ class WebAppToolbarButtonContainer : public views::View,
 
   // Methods for coordinate the titlebar animation (origin text slide, menu
   // highlight and icon fade in).
-  bool ShouldAnimate() const;
+  bool GetAnimate() const;
 
   void StartTitlebarAnimation();
 

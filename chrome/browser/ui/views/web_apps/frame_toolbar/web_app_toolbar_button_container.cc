@@ -23,6 +23,7 @@
 #include "chrome/common/chrome_features.h"
 #include "ui/base/hit_test.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/window/hit_test_utils.h"
 
 namespace {
@@ -204,10 +205,6 @@ views::FlexRule WebAppToolbarButtonContainer::GetFlexRule() const {
       base::Unretained(toolbar_button_provider_), layout->GetDefaultFlexRule());
 }
 
-const char* WebAppToolbarButtonContainer::GetClassName() const {
-  return "WebAppToolbarButtonContainer";
-}
-
 void WebAppToolbarButtonContainer::DisableAnimationForTesting() {
   g_animation_disabled_for_testing = true;
 }
@@ -234,13 +231,13 @@ gfx::Insets WebAppToolbarButtonContainer::GetPageActionIconInsets(
 
 // Methods for coordinate the titlebar animation (origin text slide, menu
 // highlight and icon fade in).
-bool WebAppToolbarButtonContainer::ShouldAnimate() const {
+bool WebAppToolbarButtonContainer::GetAnimate() const {
   return !g_animation_disabled_for_testing &&
          !browser_view_->immersive_mode_controller()->IsEnabled();
 }
 
 void WebAppToolbarButtonContainer::StartTitlebarAnimation() {
-  if (!ShouldAnimate())
+  if (!GetAnimate())
     return;
 
   if (web_app_origin_text_)
@@ -363,7 +360,7 @@ void WebAppToolbarButtonContainer::OnWidgetVisibilityChanged(
   if (!visible || !pending_widget_visibility_)
     return;
   pending_widget_visibility_ = false;
-  if (ShouldAnimate()) {
+  if (GetAnimate()) {
     if (content_settings_container_)
       content_settings_container_->SetUpForFadeIn();
     animation_start_delay_.Start(
@@ -371,3 +368,7 @@ void WebAppToolbarButtonContainer::OnWidgetVisibilityChanged(
         &WebAppToolbarButtonContainer::StartTitlebarAnimation);
   }
 }
+
+BEGIN_METADATA(WebAppToolbarButtonContainer, views::View)
+ADD_READONLY_PROPERTY_METADATA(bool, Animate)
+END_METADATA

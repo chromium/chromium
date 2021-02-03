@@ -14,6 +14,8 @@
 #include "ui/aura/window_occlusion_tracker.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/compositor/compositor.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
@@ -22,6 +24,7 @@ namespace exo {
 
 class FullscreenShellSurface::FullscreenShellView : public views::View {
  public:
+  METADATA_HEADER(FullscreenShellView);
   FullscreenShellView() = default;
   FullscreenShellView(const FullscreenShellView&) = delete;
   FullscreenShellView& operator=(const FullscreenShellView&) = delete;
@@ -45,6 +48,9 @@ class FullscreenShellSurface::FullscreenShellView : public views::View {
  private:
   ui::AXTreeID child_ax_tree_id_ = ui::AXTreeIDUnknown();
 };
+
+BEGIN_METADATA(FullscreenShellSurface, FullscreenShellView, views::View)
+END_METADATA
 
 FullscreenShellSurface::FullscreenShellSurface()
     : SurfaceTreeHost("FullscreenShellSurfaceHost") {

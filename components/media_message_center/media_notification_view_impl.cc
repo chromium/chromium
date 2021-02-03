@@ -26,6 +26,7 @@
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 
@@ -344,7 +345,7 @@ void MediaNotificationViewImpl::SetForcedExpandedState(
   }
 
   if (header_row_)
-    header_row_->SetExpandButtonEnabled(IsExpandable());
+    header_row_->SetExpandButtonEnabled(GetExpandable());
   UpdateViewForExpandedState();
 }
 
@@ -443,7 +444,7 @@ void MediaNotificationViewImpl::UpdateWithMediaActions(
   enabled_actions_ = actions;
 
   if (header_row_)
-    header_row_->SetExpandButtonEnabled(IsExpandable());
+    header_row_->SetExpandButtonEnabled(GetExpandable());
   UpdateViewForExpandedState();
 
   PreferredSizeChanged();
@@ -520,7 +521,7 @@ void MediaNotificationViewImpl::UpdateActionButtonsVisibility() {
 
   base::flat_set<MediaSessionAction> visible_actions =
       GetTopVisibleActions(enabled_actions_, ignored_actions,
-                           GetMaxNumActions(IsActuallyExpanded()));
+                           GetMaxNumActions(GetActuallyExpanded()));
 
   for (auto* view : GetButtons()) {
     views::Button* action_button = views::Button::AsButton(view);
@@ -549,7 +550,7 @@ void MediaNotificationViewImpl::UpdateActionButtonsVisibility() {
 }
 
 void MediaNotificationViewImpl::UpdateViewForExpandedState() {
-  bool expanded = IsActuallyExpanded();
+  bool expanded = GetActuallyExpanded();
 
   // Adjust the layout of the |main_row_| based on the expanded state. If the
   // notification is expanded then the buttons should be below the title/artist
@@ -690,7 +691,7 @@ MediaNotificationViewImpl::GetMediaNotificationBackground() {
   return static_cast<MediaNotificationBackground*>(background());
 }
 
-bool MediaNotificationViewImpl::IsExpandable() const {
+bool MediaNotificationViewImpl::GetExpandable() const {
   if (forced_expanded_state_.has_value())
     return false;
 
@@ -706,10 +707,10 @@ bool MediaNotificationViewImpl::IsExpandable() const {
              .size() > kMediaNotificationActionsCount;
 }
 
-bool MediaNotificationViewImpl::IsActuallyExpanded() const {
+bool MediaNotificationViewImpl::GetActuallyExpanded() const {
   if (forced_expanded_state_.has_value())
     return forced_expanded_state_.value();
-  return expanded_ && IsExpandable();
+  return expanded_ && GetExpandable();
 }
 
 void MediaNotificationViewImpl::UpdateForegroundColor() {
@@ -819,5 +820,10 @@ std::vector<views::View*> MediaNotificationViewImpl::GetButtons() {
       buttons.end());
   return buttons;
 }
+
+BEGIN_METADATA(MediaNotificationViewImpl, views::View)
+ADD_READONLY_PROPERTY_METADATA(bool, Expandable)
+ADD_READONLY_PROPERTY_METADATA(bool, ActuallyExpanded)
+END_METADATA
 
 }  // namespace media_message_center

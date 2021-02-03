@@ -40,6 +40,8 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "url/origin.h"
@@ -99,6 +101,7 @@ constexpr base::TimeDelta kBubbleBoundsAnimationTime =
 
 class Button : public views::LabelButton {
  public:
+  METADATA_HEADER(Button);
   explicit Button(const base::string16& button_label) {
     SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
 
@@ -116,22 +119,26 @@ class Button : public views::LabelButton {
              kButtonHeight});
   }
 
-  int GetLabelWidth() { return label()->bounds().width(); }
+  Button(const Button&) = delete;
+  Button& operator=(const Button&) = delete;
+  ~Button() override = default;
 
-  gfx::FontList GetFontList() {
+  int GetLabelWidth() const { return label()->bounds().width(); }
+
+  static gfx::FontList GetFontList() {
     return gfx::FontList({kTextFontName}, gfx::Font::NORMAL, kTextFontSize,
                          gfx::Font::Weight::MEDIUM);
   }
-
-  Button(const Button&) = delete;
-  Button& operator=(const Button&) = delete;
-
-  ~Button() override = default;
 };
+
+BEGIN_METADATA(Button, views::LabelButton)
+ADD_READONLY_PROPERTY_METADATA(int, LabelWidth)
+END_METADATA
 
 // This inline bubble shown for disabled copy/paste.
 class ClipboardBubbleView : public views::View {
  public:
+  METADATA_HEADER(ClipboardBubbleView);
   explicit ClipboardBubbleView(const base::string16& text) {
     SetPaintToLayer(ui::LAYER_SOLID_COLOR);
     ash::ColorProvider* color_provider = ash::ColorProvider::Get();
@@ -189,7 +196,7 @@ class ClipboardBubbleView : public views::View {
 
   ~ClipboardBubbleView() override = default;
 
-  virtual gfx::Size GetBubbleSize() = 0;
+  virtual gfx::Size GetBubbleSize() const = 0;
 
  protected:
   // This function should get called if the view got updated e.g. AddChildView.
@@ -200,8 +207,13 @@ class ClipboardBubbleView : public views::View {
   views::ImageView* border_ = nullptr;
 };
 
+BEGIN_METADATA(ClipboardBubbleView, views::View)
+ADD_READONLY_PROPERTY_METADATA(gfx::Size, BubbleSize)
+END_METADATA
+
 class ClipboardBlockBubble : public ClipboardBubbleView {
  public:
+  METADATA_HEADER(ClipboardBlockBubble);
   explicit ClipboardBlockBubble(const base::string16& text)
       : ClipboardBubbleView(text) {
     // Add "Got it" button.
@@ -219,7 +231,7 @@ class ClipboardBlockBubble : public ClipboardBubbleView {
 
   ~ClipboardBlockBubble() override = default;
 
-  gfx::Size GetBubbleSize() override {
+  gfx::Size GetBubbleSize() const override {
     DCHECK(label_);
     DCHECK(button_);
     return {kBubbleWidth, 2 * kBubblePadding + label_->bounds().height() +
@@ -235,8 +247,12 @@ class ClipboardBlockBubble : public ClipboardBubbleView {
   Button* button_ = nullptr;
 };
 
+BEGIN_METADATA(ClipboardBlockBubble, ClipboardBubbleView)
+END_METADATA
+
 class ClipboardWarnBubble : public ClipboardBubbleView {
  public:
+  METADATA_HEADER(ClipboardWarnBubble);
   explicit ClipboardWarnBubble(const base::string16& text)
       : ClipboardBubbleView(text) {
     // Add paste button.
@@ -265,7 +281,7 @@ class ClipboardWarnBubble : public ClipboardBubbleView {
 
   ~ClipboardWarnBubble() override = default;
 
-  gfx::Size GetBubbleSize() override {
+  gfx::Size GetBubbleSize() const override {
     DCHECK(label_);
     DCHECK(cancel_button_);
     DCHECK(paste_button_);
@@ -287,6 +303,9 @@ class ClipboardWarnBubble : public ClipboardBubbleView {
   Button* cancel_button_ = nullptr;
   Button* paste_button_ = nullptr;
 };
+
+BEGIN_METADATA(ClipboardWarnBubble, ClipboardBubbleView)
+END_METADATA
 
 bool IsRectContainedByAnyDisplay(const gfx::Rect& rect) {
   const std::vector<display::Display>& displays =

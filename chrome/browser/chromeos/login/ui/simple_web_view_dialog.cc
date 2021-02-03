@@ -35,6 +35,8 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -56,11 +58,14 @@ const SkColor kDialogColor = SK_ColorWHITE;
 
 class ToolbarRowView : public views::View {
  public:
+  METADATA_HEADER(ToolbarRowView);
   ToolbarRowView() {
     SetBackground(views::CreateSolidBackground(kDialogColor));
   }
 
-  ~ToolbarRowView() override {}
+  ToolbarRowView(const ToolbarRowView&) = delete;
+  ToolbarRowView& operator=(const ToolbarRowView&) = delete;
+  ~ToolbarRowView() override = default;
 
   void Init(std::unique_ptr<views::View> back,
             std::unique_ptr<views::View> forward,
@@ -96,10 +101,10 @@ class ToolbarRowView : public views::View {
     layout->AddView(std::move(reload));
     layout->AddView(std::move(location_bar));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ToolbarRowView);
 };
+
+BEGIN_METADATA(ToolbarRowView, views::View)
+END_METADATA
 
 }  // namespace
 
@@ -108,8 +113,10 @@ namespace chromeos {
 // Stub implementation of ContentSettingBubbleModelDelegate.
 class StubBubbleModelDelegate : public ContentSettingBubbleModelDelegate {
  public:
-  StubBubbleModelDelegate() {}
-  ~StubBubbleModelDelegate() override {}
+  StubBubbleModelDelegate() = default;
+  StubBubbleModelDelegate(const StubBubbleModelDelegate&) = delete;
+  StubBubbleModelDelegate& operator=(const StubBubbleModelDelegate&) = delete;
+  ~StubBubbleModelDelegate() override = default;
 
  private:
   // ContentSettingBubbleModelDelegate implementation:
@@ -118,8 +125,6 @@ class StubBubbleModelDelegate : public ContentSettingBubbleModelDelegate {
   void ShowContentSettingsPage(ContentSettingsType type) override {}
   void ShowMediaSettingsPage() override {}
   void ShowLearnMorePage(ContentSettingsType type) override {}
-
-  DISALLOW_COPY_AND_ASSIGN(StubBubbleModelDelegate);
 };
 
 // SimpleWebViewDialog class ---------------------------------------------------
@@ -369,5 +374,8 @@ void SimpleWebViewDialog::UpdateReload(bool is_loading, bool force) {
         force);
   }
 }
+
+BEGIN_METADATA(SimpleWebViewDialog, views::View)
+END_METADATA
 
 }  // namespace chromeos

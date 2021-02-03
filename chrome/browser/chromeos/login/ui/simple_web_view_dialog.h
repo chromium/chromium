@@ -15,6 +15,7 @@
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "url/gurl.h"
 
 class CommandUpdaterImpl;
@@ -44,7 +45,10 @@ class SimpleWebViewDialog : public views::View,
                             public content::PageNavigator,
                             public content::WebContentsDelegate {
  public:
+  METADATA_HEADER(SimpleWebViewDialog);
   explicit SimpleWebViewDialog(Profile* profile);
+  SimpleWebViewDialog(const SimpleWebViewDialog&) = delete;
+  SimpleWebViewDialog& operator=(const SimpleWebViewDialog&) = delete;
   ~SimpleWebViewDialog() override;
 
   // Starts loading.
@@ -100,8 +104,6 @@ class SimpleWebViewDialog : public views::View,
   std::unique_ptr<views::WebView> web_view_container_;
 
   std::unique_ptr<StubBubbleModelDelegate> bubble_model_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleWebViewDialog);
 };
 
 }  // namespace chromeos

@@ -14,6 +14,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 
 namespace media_message_center {
@@ -192,5 +193,8 @@ void MediaControlsProgressView::HandleSeeking(const gfx::Point& location) {
       static_cast<double>(location_in_bar.x()) / progress_bar_->width();
   seek_callback_.Run(seek_to_progress);
 }
+
+BEGIN_METADATA(MediaControlsProgressView, views::View)
+END_METADATA
 
 }  // namespace media_message_center

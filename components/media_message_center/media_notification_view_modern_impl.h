@@ -15,6 +15,7 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace views {
 class Button;
@@ -34,6 +35,8 @@ class MediaNotificationItem;
 class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewModernImpl
     : public MediaNotificationView {
  public:
+  METADATA_HEADER(MediaNotificationViewModernImpl);
+
   // The name of the histogram used when recording whether the artwork was
   // present.
   static const char kArtworkHistogramName[];

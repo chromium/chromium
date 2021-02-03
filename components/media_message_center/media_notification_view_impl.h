@@ -12,6 +12,7 @@
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace message_center {
 class NotificationHeaderView;
@@ -40,6 +41,8 @@ struct COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) NotificationTheme {
 class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewImpl
     : public MediaNotificationView {
  public:
+  METADATA_HEADER(MediaNotificationViewImpl);
+
   // The name of the histogram used when recorded whether the artwork was
   // present.
   static const char kArtworkHistogramName[];
@@ -67,6 +70,9 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewImpl
       int notification_width,
       bool should_show_icon,
       base::Optional<NotificationTheme> theme = base::nullopt);
+  MediaNotificationViewImpl(const MediaNotificationViewImpl&) = delete;
+  MediaNotificationViewImpl& operator=(const MediaNotificationViewImpl&) =
+      delete;
   ~MediaNotificationViewImpl() override;
 
   // views::View:
@@ -127,8 +133,8 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewImpl
 
   MediaNotificationBackground* GetMediaNotificationBackground();
 
-  bool IsExpandable() const;
-  bool IsActuallyExpanded() const;
+  bool GetExpandable() const;
+  bool GetActuallyExpanded() const;
 
   void UpdateForegroundColor();
 
@@ -192,8 +198,6 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewImpl
   base::Optional<NotificationTheme> theme_;
 
   const bool is_cros_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaNotificationViewImpl);
 };
 
 }  // namespace media_message_center

@@ -16,6 +16,8 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 #define LOG_VIEW(name) DVLOG(1) << #name << ": " << name->bounds().ToString();
 
@@ -37,8 +39,11 @@ void SetButtonImage(views::ImageButton* button, const gfx::VectorIcon& icon) {
 // A view that invokes an |on_tapped| closure whenever it detects a tap gesture.
 class TouchView : public views::View {
  public:
+  METADATA_HEADER(TouchView);
   explicit TouchView(base::RepeatingClosure on_tapped)
       : on_tapped_(std::move(on_tapped)) {}
+  TouchView(const TouchView&) = delete;
+  TouchView& operator=(const TouchView&) = delete;
 
  private:
   // views::View implementation:
@@ -49,9 +54,10 @@ class TouchView : public views::View {
   }
 
   base::RepeatingClosure on_tapped_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchView);
 };
+
+BEGIN_METADATA(TouchView, views::View)
+END_METADATA
 
 }  // namespace
 

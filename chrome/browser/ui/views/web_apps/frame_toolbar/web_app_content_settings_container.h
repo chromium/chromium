@@ -10,19 +10,20 @@
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 class WebAppContentSettingsContainer : public views::View {
  public:
+  METADATA_HEADER(WebAppContentSettingsContainer);
   WebAppContentSettingsContainer(
       IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
       ContentSettingImageView::Delegate* content_setting_image_delegate);
-  ~WebAppContentSettingsContainer() override;
-
   WebAppContentSettingsContainer(const WebAppContentSettingsContainer&) =
       delete;
   WebAppContentSettingsContainer& operator=(
       const WebAppContentSettingsContainer&) = delete;
+  ~WebAppContentSettingsContainer() override;
 
   void UpdateContentSettingViewsVisibility();
 
@@ -39,9 +40,6 @@ class WebAppContentSettingsContainer : public views::View {
       const {
     return content_setting_views_;
   }
-
-  // views::View:
-  const char* GetClassName() const override;
 
  private:
   // Owned by the views hierarchy.

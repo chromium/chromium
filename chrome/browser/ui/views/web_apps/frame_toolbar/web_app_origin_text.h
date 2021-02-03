@@ -9,6 +9,7 @@
 #include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 class Browser;
@@ -20,7 +21,10 @@ class Label;
 // A URL's origin text with a fade in/out animation.
 class WebAppOriginText : public views::View {
  public:
+  METADATA_HEADER(WebAppOriginText);
   explicit WebAppOriginText(Browser* browser);
+  WebAppOriginText(const WebAppOriginText&) = delete;
+  WebAppOriginText& operator=(const WebAppOriginText&) = delete;
   ~WebAppOriginText() override;
 
   void SetTextColor(SkColor color);
@@ -38,8 +42,6 @@ class WebAppOriginText : public views::View {
   void AnimationComplete();
 
   base::WeakPtrFactory<WebAppOriginText> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebAppOriginText);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_ORIGIN_TEXT_H_
