@@ -29,6 +29,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.accessibility_tab_switcher.OverviewListLayout;
@@ -374,6 +375,7 @@ public class TabPersistentStoreTest {
     @UiThreadTest
     @Feature("TabPersistentStore")
     @DisableFeatures({ChromeFeatureList.CRITICAL_PERSISTED_TAB_DATA + "<Study"})
+    @DisabledTest(message = "https://crbug.com/1174097")
     public void testCleanup() throws Exception {
         MockTabModelSelector mockSelector = new MockTabModelSelector(1, 1, null);
         Tab regularTab = mockSelector.getModel(false).getTabAt(0);
