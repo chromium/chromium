@@ -14,11 +14,20 @@ constexpr char kKeyVersion[] = "version";
 constexpr char kKeyServiceProviders[] = "service_providers";
 constexpr char kKeyName[] = "name";
 constexpr char kKeyAnalysis[] = "analysis";
+constexpr char kKeyFileSystem[] = "file_system";
 constexpr char kKeyReporting[] = "reporting";
 constexpr char kKeyUrl[] = "url";
 constexpr char kKeySupportedTags[] = "supported_tags";
 constexpr char kKeyMimeTypes[] = "mime_types";
 constexpr char kKeyMaxFileSize[] = "max_file_size";
+
+// Specific key names of file system connectors.
+constexpr char kKeyFsHome[] = "home";
+constexpr char kKeyFsAuthorizationEndpoint[] = "authorization_endpoint";
+constexpr char kKeyFsTokenEndpoint[] = "token_endpoint";
+constexpr char kKeyFsMaxDirectZize[] = "max_direct_size";
+constexpr char kKeyFsScopes[] = "home";
+constexpr char kKeyFsDisable[] = "disable";
 
 // There is currently only 1 version of this config, so we can just treat it as
 // any other value in the JSON with its own key. Once that is no longer the
@@ -94,6 +103,47 @@ ServiceProviderConfig::ServiceProvider::ServiceProvider(
     const std::string* reporting_url = reporting->FindStringKey(kKeyUrl);
     if (reporting_url)
       reporting_url_ = *reporting_url;
+  }
+
+  const base::Value* file_system = version_1->FindDictKey(kKeyFileSystem);
+  if (file_system) {
+    const std::string* home_url = file_system->FindStringKey(kKeyFsHome);
+    if (home_url)
+      fs_home_url_ = *home_url;
+
+    const std::string* auth_endpoint_url =
+        file_system->FindStringKey(kKeyFsAuthorizationEndpoint);
+    if (auth_endpoint_url)
+      fs_authorization_endpoint_ = *auth_endpoint_url;
+
+    const std::string* token_endpoint =
+        file_system->FindStringKey(kKeyFsTokenEndpoint);
+    if (token_endpoint)
+      fs_token_endpoint_ = *token_endpoint;
+
+    auto max_direct_size = file_system->FindIntKey(kKeyFsMaxDirectZize);
+    if (max_direct_size)
+      fs_max_direct_size_ = max_direct_size.value();
+
+    const base::Value* scopes = file_system->FindListKey(kKeyFsScopes);
+    if (scopes) {
+      for (const base::Value& scope : scopes->GetList()) {
+        if (!scope.is_string())
+          continue;
+
+        fs_scopes_.push_back(scope.GetString());
+      }
+    }
+
+    const base::Value* disbles = file_system->FindListKey(kKeyFsDisable);
+    if (disbles) {
+      for (const base::Value& disable : disbles->GetList()) {
+        if (!disable.is_string())
+          continue;
+
+        fs_disable_.push_back(disable.GetString());
+      }
+    }
   }
 }
 

@@ -101,6 +101,22 @@ const char kServiceProviderConfig[] = R"({
           }
         }
       }
+    },
+    {
+      "name": "box",
+      "display_name": "Box",
+      "version":  {
+        "1": {
+          "file_system": {
+            "home": "https://box.com",
+            "authorization_endpoint": "https://account.box.com/api/oauth2/authorize",
+            "token_endpoint": "https://api.box.com/oauth2/token",
+            "max_direct_size": 20971520,
+            "scopes": [],
+            "disable": [ "box.com" ]
+          }
+        }
+      }
     }
   ]
 })";
@@ -165,6 +181,20 @@ base::Optional<AnalysisSettings> ConnectorsService::GetAnalysisSettings(
   return settings;
 }
 
+base::Optional<FileSystemSettings> ConnectorsService::GetFileSystemSettings(
+    const GURL& url,
+    FileSystemConnector connector) {
+  if (!ConnectorsEnabled())
+    return base::nullopt;
+
+  base::Optional<FileSystemSettings> settings =
+      connectors_manager_->GetFileSystemSettings(url, connector);
+  if (!settings.has_value())
+    return base::nullopt;
+
+  return settings;
+}
+
 bool ConnectorsService::IsConnectorEnabled(AnalysisConnector connector) const {
   if (!ConnectorsEnabled())
     return false;
@@ -173,6 +203,14 @@ bool ConnectorsService::IsConnectorEnabled(AnalysisConnector connector) const {
 }
 
 bool ConnectorsService::IsConnectorEnabled(ReportingConnector connector) const {
+  if (!ConnectorsEnabled())
+    return false;
+
+  return connectors_manager_->IsConnectorEnabled(connector);
+}
+
+bool ConnectorsService::IsConnectorEnabled(
+    FileSystemConnector connector) const {
   if (!ConnectorsEnabled())
     return false;
 

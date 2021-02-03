@@ -52,9 +52,13 @@ class ConnectorsService : public KeyedService {
   base::Optional<AnalysisSettings> GetAnalysisSettings(
       const GURL& url,
       AnalysisConnector connector);
+  base::Optional<FileSystemSettings> GetFileSystemSettings(
+      const GURL& url,
+      FileSystemConnector connector);
 
   bool IsConnectorEnabled(AnalysisConnector connector) const;
   bool IsConnectorEnabled(ReportingConnector connector) const;
+  bool IsConnectorEnabled(FileSystemConnector connector) const;
 
   bool DelayUntilVerdict(AnalysisConnector connector);
 

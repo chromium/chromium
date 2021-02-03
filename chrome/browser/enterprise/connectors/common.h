@@ -7,6 +7,7 @@
 
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/supports_user_data.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
@@ -32,9 +33,15 @@ constexpr char kKeyEnabledEventNames[] = "enabled_event_names";
 constexpr char kKeyCustomMessages[] = "custom_messages";
 constexpr char kKeyCustomMessagesMessage[] = "message";
 constexpr char kKeyCustomMessagesLearnMoreUrl[] = "learn_more_url";
+constexpr char kKeyMimeTypes[] = "mime_types";
+constexpr char kKeyEnterpriseId[] = "enterprise_id";
 
 enum class ReportingConnector {
   SECURITY_EVENT,
+};
+
+enum class FileSystemConnector {
+  SEND_DOWNLOAD_TO_CLOUD,
 };
 
 // Enum representing if an analysis should block further interactions with the
@@ -72,9 +79,7 @@ struct AnalysisSettings {
 
 struct ReportingSettings {
   ReportingSettings();
-  explicit ReportingSettings(GURL url,
-                             const std::string& dm_token,
-                             bool per_profile);
+  ReportingSettings(GURL url, const std::string& dm_token, bool per_profile);
   ReportingSettings(ReportingSettings&&);
   ReportingSettings& operator=(ReportingSettings&&);
   ~ReportingSettings();
@@ -88,9 +93,26 @@ struct ReportingSettings {
   bool per_profile = false;
 };
 
+struct FileSystemSettings {
+  FileSystemSettings();
+  FileSystemSettings(FileSystemSettings&&);
+  FileSystemSettings& operator=(FileSystemSettings&&);
+  ~FileSystemSettings();
+
+  GURL home;
+  GURL authorization_endpoint;
+  GURL token_endpoint;
+  std::string client_id;
+  std::string client_secret;
+  std::vector<std::string> scopes;
+  size_t max_direct_size;
+  std::set<std::string> mime_types;
+};
+
 // Returns the pref path corresponding to a connector.
 const char* ConnectorPref(AnalysisConnector connector);
 const char* ConnectorPref(ReportingConnector connector);
+const char* ConnectorPref(FileSystemConnector connector);
 const char* ConnectorScopePref(AnalysisConnector connector);
 const char* ConnectorScopePref(ReportingConnector connector);
 

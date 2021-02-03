@@ -234,6 +234,14 @@ AnalysisServiceSettings::~AnalysisServiceSettings() = default;
 AnalysisServiceSettings::URLPatternSettings::URLPatternSettings() = default;
 AnalysisServiceSettings::URLPatternSettings::URLPatternSettings(
     const AnalysisServiceSettings::URLPatternSettings&) = default;
+AnalysisServiceSettings::URLPatternSettings::URLPatternSettings(
+    AnalysisServiceSettings::URLPatternSettings&&) = default;
+AnalysisServiceSettings::URLPatternSettings&
+AnalysisServiceSettings::URLPatternSettings::operator=(
+    const AnalysisServiceSettings::URLPatternSettings&) = default;
+AnalysisServiceSettings::URLPatternSettings&
+AnalysisServiceSettings::URLPatternSettings::operator=(
+    AnalysisServiceSettings::URLPatternSettings&&) = default;
 AnalysisServiceSettings::URLPatternSettings::~URLPatternSettings() = default;
 
 }  // namespace enterprise_connectors

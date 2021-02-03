@@ -45,6 +45,15 @@ bool ConnectorsManager::IsConnectorEnabled(ReportingConnector connector) const {
   return pref && pref_change_registrar_.prefs()->HasPrefPath(pref);
 }
 
+bool ConnectorsManager::IsConnectorEnabled(
+    FileSystemConnector connector) const {
+  if (file_system_connector_settings_.count(connector) == 1)
+    return true;
+
+  const char* pref = ConnectorPref(connector);
+  return pref && pref_change_registrar_.prefs()->HasPrefPath(pref);
+}
+
 base::Optional<ReportingSettings> ConnectorsManager::GetReportingSettings(
     ReportingConnector connector) {
   if (!IsConnectorEnabled(connector))
@@ -99,6 +108,25 @@ ConnectorsManager::GetAnalysisSettingsFromConnectorPolicy(
   return analysis_connector_settings_[connector][0].GetAnalysisSettings(url);
 }
 
+base::Optional<FileSystemSettings> ConnectorsManager::GetFileSystemSettings(
+    const GURL& url,
+    FileSystemConnector connector) {
+  if (!IsConnectorEnabled(connector))
+    return base::nullopt;
+
+  if (file_system_connector_settings_.count(connector) == 0)
+    CacheFileSystemConnectorPolicy(connector);
+
+  // If the connector is still not in memory, it means the pref is set to an
+  // empty list or that it is not a list.
+  if (file_system_connector_settings_.count(connector) == 0)
+    return base::nullopt;
+
+  // While multiple services can be set by the connector policies, only the
+  // first one is considered for now.
+  return file_system_connector_settings_[connector][0].GetSettings(url);
+}
+
 void ConnectorsManager::CacheAnalysisConnectorPolicy(
     AnalysisConnector connector) {
   analysis_connector_settings_.erase(connector);
@@ -133,6 +161,23 @@ void ConnectorsManager::CacheReportingConnectorPolicy(
   }
 }
 
+void ConnectorsManager::CacheFileSystemConnectorPolicy(
+    FileSystemConnector connector) {
+  file_system_connector_settings_.erase(connector);
+
+  // Connectors with non-existing policies should not reach this code.
+  const char* pref = ConnectorPref(connector);
+  DCHECK(pref);
+
+  const base::ListValue* policy_value =
+      pref_change_registrar_.prefs()->GetList(pref);
+  if (policy_value && policy_value->is_list()) {
+    for (const base::Value& service_settings : policy_value->GetList())
+      file_system_connector_settings_[connector].emplace_back(
+          service_settings, *service_provider_config_);
+  }
+}
+
 bool ConnectorsManager::DelayUntilVerdict(AnalysisConnector connector) {
   if (IsConnectorEnabled(connector)) {
     if (analysis_connector_settings_.count(connector) == 0)
@@ -154,6 +199,7 @@ void ConnectorsManager::StartObservingPrefs(PrefService* pref_service) {
   StartObservingPref(AnalysisConnector::FILE_DOWNLOADED);
   StartObservingPref(AnalysisConnector::BULK_DATA_ENTRY);
   StartObservingPref(ReportingConnector::SECURITY_EVENT);
+  StartObservingPref(FileSystemConnector::SEND_DOWNLOAD_TO_CLOUD);
 }
 
 void ConnectorsManager::StartObservingPref(AnalysisConnector connector) {
@@ -178,6 +224,17 @@ void ConnectorsManager::StartObservingPref(ReportingConnector connector) {
   }
 }
 
+void ConnectorsManager::StartObservingPref(FileSystemConnector connector) {
+  const char* pref = ConnectorPref(connector);
+  DCHECK(pref);
+  if (!pref_change_registrar_.IsObserved(pref)) {
+    pref_change_registrar_.Add(
+        pref,
+        base::BindRepeating(&ConnectorsManager::CacheFileSystemConnectorPolicy,
+                            base::Unretained(this), connector));
+  }
+}
+
 const ConnectorsManager::AnalysisConnectorsSettings&
 ConnectorsManager::GetAnalysisConnectorsSettingsForTesting() const {
   return analysis_connector_settings_;
@@ -186,6 +243,11 @@ ConnectorsManager::GetAnalysisConnectorsSettingsForTesting() const {
 const ConnectorsManager::ReportingConnectorsSettings&
 ConnectorsManager::GetReportingConnectorsSettingsForTesting() const {
   return reporting_connector_settings_;
+}
+
+const ConnectorsManager::FileSystemConnectorsSettings&
+ConnectorsManager::GetFileSystemConnectorsSettingsForTesting() const {
+  return file_system_connector_settings_;
 }
 
 }  // namespace enterprise_connectors

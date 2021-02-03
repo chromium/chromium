@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_SERVICE_SETTINGS_H_
-#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_SERVICE_SETTINGS_H_
+#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_FILE_SYSTEM_SERVICE_SETTINGS_H_
+#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_FILE_SYSTEM_SERVICE_SETTINGS_H_
 
-#include <memory>
+#include <set>
 #include <string>
 
 #include "base/optional.h"
@@ -16,21 +16,17 @@
 
 namespace enterprise_connectors {
 
-// The settings for an analysis service obtained from a connector policy.
-class AnalysisServiceSettings {
+// The settings for a report service obtained from a connector policy.
+class FileSystemServiceSettings {
  public:
-  explicit AnalysisServiceSettings(
+  explicit FileSystemServiceSettings(
       const base::Value& settings_value,
       const ServiceProviderConfig& service_provider_config);
-  AnalysisServiceSettings(AnalysisServiceSettings&&);
-  ~AnalysisServiceSettings();
+  FileSystemServiceSettings(FileSystemServiceSettings&&);
+  ~FileSystemServiceSettings();
 
-  // Get the settings to apply to a specific analysis. base::nullopt implies no
-  // analysis should take place.
-  base::Optional<AnalysisSettings> GetAnalysisSettings(const GURL& url) const;
-
-  // Get the block_until_verdict setting if the settings are valid.
-  bool ShouldBlockUntilVerdict() const;
+  // Get the settings to apply. base::nullopt implies no file system settings.
+  base::Optional<FileSystemSettings> GetSettings(const GURL& url) const;
 
  private:
   // The setting to apply when a specific URL pattern is matched.
@@ -42,8 +38,8 @@ class AnalysisServiceSettings {
     URLPatternSettings& operator=(URLPatternSettings&&);
     ~URLPatternSettings();
 
-    // Tags that correspond to the pattern.
-    std::set<std::string> tags;
+    // Mime types that correspond to the pattern.
+    std::set<std::string> mime_types;
   };
 
   // Map from an ID representing a specific matched pattern to its settings.
@@ -56,7 +52,7 @@ class AnalysisServiceSettings {
       url_matcher::URLMatcherConditionSet::ID match);
 
   // Returns true if the settings were initialized correctly. If this returns
-  // false, then GetAnalysisSettings will always return base::nullopt.
+  // false, then GetSettings will always return base::nullopt.
   bool IsValid() const;
 
   // Updates the states of |matcher_|, |enabled_patterns_settings_| and/or
@@ -65,9 +61,9 @@ class AnalysisServiceSettings {
                              bool enabled,
                              url_matcher::URLMatcherConditionSet::ID* id);
 
-  // Return tags found in |enabled_patterns_settings| corresponding to the
+  // Return mime types found in |enabled_patterns_settings| corresponding to the
   // matches while excluding the ones in |disable_patterns_settings|.
-  std::set<std::string> GetTags(
+  std::set<std::string> GetMimeTypes(
       const std::set<url_matcher::URLMatcherConditionSet::ID>& matches) const;
 
   // The service provider matching the name given in a Connector policy. nullptr
@@ -93,15 +89,12 @@ class AnalysisServiceSettings {
   PatternSettings enabled_patterns_settings_;
   PatternSettings disabled_patterns_settings_;
 
-  BlockUntilVerdict block_until_verdict_ = BlockUntilVerdict::NO_BLOCK;
-  bool block_password_protected_files_ = false;
-  bool block_large_files_ = false;
-  bool block_unsupported_file_types_ = false;
-  size_t minimum_data_size_ = 100;
-  base::string16 custom_message_text_;
-  GURL custom_message_learn_more_url_;
+  // When signing in to Box only accounts that belong to this enterprise are
+  // accepted.  This prevents people from connecting arbitrary Box accounts
+  // and helps restrict to the enterprise the administrator wants.
+  std::string enterprise_id_;
 };
 
 }  // namespace enterprise_connectors
 
-#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_SERVICE_SETTINGS_H_
+#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_FILE_SYSTEM_SERVICE_SETTINGS_H_

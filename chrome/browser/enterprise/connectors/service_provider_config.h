@@ -39,16 +39,40 @@ class ServiceProviderConfig {
     ServiceProvider(ServiceProvider&&);
     ~ServiceProvider();
 
+    // Used with AnalysisConnector.
     const std::string& analysis_url() const { return analysis_url_; }
     const std::map<std::string, Tag>& analysis_tags() const {
       return analysis_tags_;
     }
+
+    // Used with ReportingConnector.
     const std::string& reporting_url() const { return reporting_url_; }
 
+    // Used with FileSystemConnector.
+    const std::string& fs_home_url() const { return fs_home_url_; }
+    const std::string& fs_authorization_endpoint() const {
+      return fs_authorization_endpoint_;
+    }
+    const std::string& fs_token_endpoint() const { return fs_token_endpoint_; }
+    size_t fs_max_direct_size() const { return fs_max_direct_size_; }
+    const std::vector<std::string>& fs_scopes() const { return fs_scopes_; }
+    const std::vector<std::string>& fs_disable() const { return fs_disable_; }
+
    private:
+    // Used with AnalysisConnector.
     std::string analysis_url_;
     std::map<std::string, Tag> analysis_tags_;
+
+    // Used with ReportingConnector.
     std::string reporting_url_;
+
+    // Used with FileSystemConnector.
+    std::string fs_home_url_;
+    std::string fs_authorization_endpoint_;
+    std::string fs_token_endpoint_;
+    size_t fs_max_direct_size_;
+    std::vector<std::string> fs_scopes_;
+    std::vector<std::string> fs_disable_;
   };
 
   explicit ServiceProviderConfig(const std::string& config);

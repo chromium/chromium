@@ -23,6 +23,12 @@ ReportingSettings::ReportingSettings(ReportingSettings&&) = default;
 ReportingSettings& ReportingSettings::operator=(ReportingSettings&&) = default;
 ReportingSettings::~ReportingSettings() = default;
 
+FileSystemSettings::FileSystemSettings() = default;
+FileSystemSettings::FileSystemSettings(FileSystemSettings&&) = default;
+FileSystemSettings& FileSystemSettings::operator=(FileSystemSettings&&) =
+    default;
+FileSystemSettings::~FileSystemSettings() = default;
+
 const char* ConnectorPref(AnalysisConnector connector) {
   switch (connector) {
     case AnalysisConnector::BULK_DATA_ENTRY:
@@ -41,6 +47,13 @@ const char* ConnectorPref(ReportingConnector connector) {
   switch (connector) {
     case ReportingConnector::SECURITY_EVENT:
       return kOnSecurityEventPref;
+  }
+}
+
+const char* ConnectorPref(FileSystemConnector connector) {
+  switch (connector) {
+    case FileSystemConnector::SEND_DOWNLOAD_TO_CLOUD:
+      return kSendDownloadToCloudPref;
   }
 }
 
