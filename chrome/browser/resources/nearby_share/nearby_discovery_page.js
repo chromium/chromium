@@ -170,6 +170,28 @@ Polymer({
     this.resizeObserver_.disconnect();
   },
 
+  /**
+   * @return {!Array<!nearbyShare.mojom.ShareTarget>}
+   * @public
+   */
+  getShareTargetsForTesting() {
+    return this.shareTargets_;
+  },
+
+  /**
+   * @param {nearbyShare.mojom.ShareTarget} shareTarget
+   * @return {boolean} True if share target found
+   * @public
+   */
+  selectShareTargetForTesting(shareTarget) {
+    const token = tokenToString(shareTarget.id);
+    if (this.shareTargetMap_.has(token)) {
+      this.selectShareTarget_(this.shareTargetMap_.get(token));
+      return true;
+    }
+    return false;
+  },
+
   /** @private */
   onViewEnterStart_() {
     this.startDiscovery_();
@@ -276,26 +298,29 @@ Polymer({
 
   /** @private */
   onNext_() {
-    if (!this.selectedShareTarget) {
-      return;
+    if (this.selectedShareTarget) {
+      this.selectShareTarget_(this.selectedShareTarget);
     }
+  },
 
-    getDiscoveryManager()
-        .selectShareTarget(this.selectedShareTarget.id)
-        .then(response => {
-          const {result, transferUpdateListener, confirmationManager} =
-              response;
-          if (result !== nearbyShare.mojom.SelectShareTargetResult.kOk) {
-            this.errorTitle_ = this.i18n('nearbyShareErrorCantShare');
-            this.errorDescription_ =
-                this.i18n('nearbyShareErrorSomethingWrong');
-            return;
-          }
+  /**
+   * Select the given share target and proceed to the confirmation page.
+   * @param {!nearbyShare.mojom.ShareTarget} shareTarget
+   * @private
+   */
+  selectShareTarget_(shareTarget) {
+    getDiscoveryManager().selectShareTarget(shareTarget.id).then(response => {
+      const {result, transferUpdateListener, confirmationManager} = response;
+      if (result !== nearbyShare.mojom.SelectShareTargetResult.kOk) {
+        this.errorTitle_ = this.i18n('nearbyShareErrorCantShare');
+        this.errorDescription_ = this.i18n('nearbyShareErrorSomethingWrong');
+        return;
+      }
 
-          this.confirmationManager = confirmationManager;
-          this.transferUpdateListener = transferUpdateListener;
-          this.fire('change-page', {page: 'confirmation'});
-        });
+      this.confirmationManager = confirmationManager;
+      this.transferUpdateListener = transferUpdateListener;
+      this.fire('change-page', {page: 'confirmation'});
+    });
   },
 
   /** @private */

@@ -214,6 +214,28 @@ suite('DiscoveryPageTest', function() {
     assertEquals('confirmation', eventDetail.page);
   });
 
+  test('selects share target using testing methods', async function() {
+    const created = await setupShareTarget();
+    const targets = discoveryPageElement.getShareTargetsForTesting();
+    assertEquals(targets.length, 1);
+
+    discoveryManager.selectShareTargetResult.token = 'test token';
+    discoveryManager.selectShareTargetResult.confirmationManager =
+        new FakeConfirmationManagerRemote();
+
+    let eventDetail = null;
+    discoveryPageElement.addEventListener('change-page', (event) => {
+      eventDetail = event.detail;
+    });
+
+    discoveryPageElement.selectShareTargetForTesting(targets[0]);
+    const selectedId = await discoveryManager.whenCalled('selectShareTarget');
+    assertTokensEqual(created.id, selectedId);
+
+    await discoveryManager.whenCalled('selectShareTarget');
+    assertEquals('confirmation', eventDetail.page);
+  });
+
   test('starts discovery', async function() {
     await startDiscovery();
   });
