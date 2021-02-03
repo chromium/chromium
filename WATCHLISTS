@@ -624,6 +624,7 @@
                   'data_use_measurement|'\
                   'lazy_load|'\
                   'lite_video|'\
+                  'memories|'\
                   'navigation_predictor|'\
                   'net/nqe|'\
                   'optimization_guide|'\
