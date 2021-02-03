@@ -151,6 +151,7 @@ source_set("components") {
     "//components/pref_registry",
     "//components/services/app_service/public/cpp:protocol_handling",
     "//components/services/app_service/public/mojom",
+    "//components/site_engagement/content",
     "//components/site_engagement/core/mojom:mojo_bindings",
     "//components/user_manager:user_manager",
     "//components/webapps/browser",

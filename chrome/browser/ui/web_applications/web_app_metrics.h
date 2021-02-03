@@ -13,8 +13,7 @@
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/site_engagement/content/site_engagement_observer.h"
-#include "components/webapps/browser/banners/app_banner_manager.h"
-#include "content/public/browser/web_contents_observer.h"
+#include "url/gurl.h"
 
 class Profile;
 class Browser;
@@ -32,8 +31,6 @@ class WebAppMetrics : public KeyedService,
                       public site_engagement::SiteEngagementObserver,
                       public BrowserListObserver,
                       public TabStripModelObserver,
-                      public webapps::AppBannerManager::Observer,
-                      public content::WebContentsObserver,
                       public base::PowerObserver {
  public:
   static WebAppMetrics* Get(Profile* profile);
@@ -68,11 +65,11 @@ class WebAppMetrics : public KeyedService,
                                     const AppId& previous_app_id,
                                     const AppId& new_app_id);
 
-  // webapps::AppBannerManager::Observer:
-  void OnInstallableWebAppStatusUpdated() override;
-
-  // content::WebContentsObserver:
-  void WebContentsDestroyed() override;
+  // Notify WebAppMetrics that an installability check has been completed for
+  // a WebContents (see AppBannerManager::OnInstallableWebAppStatusUpdated).
+  void NotifyInstallableWebAppStatusUpdated(content::WebContents* web_contents);
+  // Notify WebAppMetrics that a WebContents is being destroyed.
+  void NotifyWebContentsDestroyed(content::WebContents* web_contents);
 
   // Browser activation causes flaky tests. Call observer methods directly.
   void RemoveBrowserListObserverForTesting();
@@ -82,7 +79,6 @@ class WebAppMetrics : public KeyedService,
   void CountUserInstalledApps();
   enum class TabSwitching { kFrom, kTo, kBackgroundClosing };
   void UpdateUkmData(content::WebContents* web_contents, TabSwitching mode);
-  void UpdateForegroundWebContents(content::WebContents* web_contents);
 
   // Calculate number of user installed apps once on start to avoid cpu costs
   // in OnEngagementEvent: sacrifice histograms accuracy for speed.
@@ -96,9 +92,6 @@ class WebAppMetrics : public KeyedService,
   Profile* const profile_;
 
   BrowserTabStripTracker browser_tab_strip_tracker_;
-  base::ScopedObservation<webapps::AppBannerManager,
-                          webapps::AppBannerManager::Observer>
-      app_banner_manager_observer_{this};
 
   base::WeakPtrFactory<WebAppMetrics> weak_ptr_factory_{this};
 };

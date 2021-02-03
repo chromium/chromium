@@ -175,6 +175,7 @@
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/ui/web_applications/web_app_metrics.h"
+#include "chrome/browser/ui/web_applications/web_app_metrics_tab_helper.h"
 #include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "extensions/browser/view_type_utils.h"
@@ -458,8 +459,9 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   extensions::WebNavigationTabObserver::CreateForWebContents(web_contents);
   if (web_app::AreWebAppsEnabled(profile))
     web_app::WebAppTabHelper::CreateForWebContents(web_contents);
-  if (site_engagement::SiteEngagementService::IsEnabled())
-    web_app::WebAppMetrics::Get(profile);
+  // Note WebAppMetricsTabHelper must be created after AppBannerManager.
+  if (web_app::WebAppMetricsTabHelper::IsEnabled(web_contents))
+    web_app::WebAppMetricsTabHelper::CreateForWebContents(web_contents);
 #endif
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
