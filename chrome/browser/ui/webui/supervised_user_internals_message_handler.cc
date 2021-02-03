@@ -104,11 +104,11 @@ std::string FilteringBehaviorReasonToString(
     case supervised_user_error_page::ASYNC_CHECKER:
       return "AsyncChecker";
     case supervised_user_error_page::DENYLIST:
-      return "Blacklist";
+      return "Denylist";
     case supervised_user_error_page::MANUAL:
       return "Manual";
     case supervised_user_error_page::ALLOWLIST:
-      return "Whitelist";
+      return "Allowlist";
     case supervised_user_error_page::NOT_SIGNED_IN:
       // Should never happen, only used for requests from WebView
       NOTREACHED();
@@ -216,7 +216,7 @@ void SupervisedUserInternalsMessageHandler::SendBasicInfo() {
   SupervisedUserURLFilter* filter = GetSupervisedUserService()->GetURLFilter();
 
   base::ListValue* section_filter = AddSection(section_list.get(), "Filter");
-  AddSectionEntry(section_filter, "Blacklist active", filter->HasDenylist());
+  AddSectionEntry(section_filter, "Denylist active", filter->HasDenylist());
   AddSectionEntry(section_filter, "Online checks active",
                   filter->HasAsyncURLChecker());
   AddSectionEntry(section_filter, "Default behavior",
@@ -282,7 +282,7 @@ void SupervisedUserInternalsMessageHandler::OnTryURLResult(
                    FilteringBehaviorToString(behavior, uncertain));
   result.SetBoolean("manual", reason == supervised_user_error_page::MANUAL &&
                                   behavior == SupervisedUserURLFilter::ALLOW);
-  result.SetString("whitelists", allowlists_str);
+  result.SetString("allowlists", allowlists_str);
   web_ui()->CallJavascriptFunctionUnsafe(
       "chrome.supervised_user_internals.receiveTryURLResult", result);
 }
