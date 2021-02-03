@@ -50,7 +50,7 @@ void Helper::HandleInvalidStatusCtorArg(absl::Status* status) {
 void Helper::Crash(const absl::Status& status) {
   LOG(FATAL) << "Attempting to fetch value instead of handling error "
              << status;
-  _exit(1);
+  _Exit(1);
 }
 
 void ThrowBadStatusOrAccess(absl::Status status) {

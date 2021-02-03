@@ -19,6 +19,8 @@ Modifications:
 - Rely on re::StringPiece instead of absl::string_view (0001-use_StringPiece-for_string_view.patch)
 - Remove unsafe use of conversions between NSString and string by using SysNSStringToUTF8. Note, this
   is unused code but required for presubmit checks. (0001-use-SysNSStringToUTF8.patch)
+- Remove usage of absl::Cord in tflite::support::CreateStatusWithPayload (0001-no-absl-cord.patch)
+- Use _Exit instead of _exit to work on all platforms (0001-use-exit.patch)
 
 Third party dependencies:
 - tflite

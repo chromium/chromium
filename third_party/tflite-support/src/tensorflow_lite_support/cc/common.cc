@@ -15,7 +15,6 @@ limitations under the License.
 
 #include "tensorflow_lite_support/cc/common.h"
 
-#include "absl/strings/cord.h"
 #include "absl/strings/str_cat.h"
 
 namespace tflite {
@@ -26,8 +25,6 @@ absl::Status CreateStatusWithPayload(absl::StatusCode canonical_code,
                                      TfLiteSupportStatus tfls_code) {
   // NOTE: Ignores `message` if the canonical code is ok.
   absl::Status status = absl::Status(canonical_code, message);
-  // NOTE: Does nothing if the canonical code is ok.
-  status.SetPayload(kTfLiteSupportPayload, absl::Cord(absl::StrCat(tfls_code)));
   return status;
 }
 
