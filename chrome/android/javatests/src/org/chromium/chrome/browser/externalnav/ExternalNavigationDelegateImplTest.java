@@ -99,6 +99,11 @@ import org.chromium.url.Origin;
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
+    @Before
+    public void setUp() throws InterruptedException {
+        mActivityTestRule.startMainActivityOnBlankPage();
+    }
+
     @Test
     @SmallTest
     public void testMaybeSetPendingIncognitoUrl() {
@@ -218,11 +223,6 @@ import org.chromium.url.Origin;
                 Uri.parse(referrerUrl), intent.getParcelableExtra(Intent.EXTRA_REFERRER));
         Assert.assertEquals(1, intent.getIntExtra(IntentHandler.EXTRA_REFERRER_ID, 0));
         Assert.assertEquals(referrerUrl, IntentHandler.getPendingReferrerUrl(1));
-    }
-
-    @Before
-    public void setUp() throws InterruptedException {
-        mActivityTestRule.startMainActivityOnBlankPage();
     }
 
     @Test

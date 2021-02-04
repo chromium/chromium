@@ -3889,6 +3889,7 @@ if (is_android) {
       "//third_party/android_support_test_runner:runner_java",
       "//third_party/hamcrest:hamcrest_java",
       "//third_party/junit:junit",
+      "//third_party/mockito:mockito_java",
     ]
     sources = [
       # AssertsTest doesn't really belong in //base but it's preferable to
@@ -3900,6 +3901,7 @@ if (is_android) {
       "android/javatests/src/org/chromium/base/CommandLineInitUtilTest.java",
       "android/javatests/src/org/chromium/base/CommandLineTest.java",
       "android/javatests/src/org/chromium/base/EarlyTraceEventTest.java",
+      "android/javatests/src/org/chromium/base/IntentUtilsTest.java",
       "android/javatests/src/org/chromium/base/UserDataHostTest.java",
 
       # TODO(nona): move to Junit once that is built for Android N.

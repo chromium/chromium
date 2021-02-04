@@ -18,6 +18,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.IntentHandler;
@@ -85,7 +86,10 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     }
 
     /**
-     * Determines whether Chrome will be handling the given Intent.
+     * Determines whether Chrome would handle this Intent if fired immediately. Note that this does
+     * not guarantee that Chrome actually will handle the intent, as another app may be installed,
+     * or components may be enabled that provide alternative handlers for this intent before it gets
+     * fired.
      *
      * @param intent            Intent that will be fired.
      * @param matchDefaultOnly  See {@link PackageManager#MATCH_DEFAULT_ONLY}.
@@ -94,12 +98,7 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     public static boolean willChromeHandleIntent(Intent intent, boolean matchDefaultOnly) {
         Context context = ContextUtils.getApplicationContext();
         // Early-out if the intent targets Chrome.
-        if (context.getPackageName().equals(intent.getPackage())
-                || (intent.getComponent() != null
-                        && context.getPackageName().equals(
-                                intent.getComponent().getPackageName()))) {
-            return true;
-        }
+        if (IntentUtils.intentTargetsSelf(context, intent)) return true;
 
         // Fall back to the more expensive querying of Android when the intent doesn't target
         // Chrome.

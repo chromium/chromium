@@ -41,7 +41,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
-import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.externalnav.IntentWithRequestMetadataHandler;
 import org.chromium.chrome.browser.externalnav.IntentWithRequestMetadataHandler.RequestMetadata;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
@@ -762,11 +761,16 @@ public class IntentHandler {
     /**
      * Sets TRUSTED_APPLICATION_CODE_EXTRA on the provided intent to identify it as coming from
      * a trusted source.
+     *
+     * @param intent An Intent that targets either the Chrome package, or explicitly targets a
+     *         Chrome component.
      */
     public static void addTrustedIntentExtras(Intent intent) {
-        if (ExternalNavigationDelegateImpl.willChromeHandleIntent(intent, true)) {
-            addTrustedIntentExtrasInternal(intent);
-        }
+        boolean toChrome =
+                IntentUtils.intentTargetsSelf(ContextUtils.getApplicationContext(), intent);
+        assert toChrome;
+        // For security reasons we have to check the asserted condition anyways.
+        if (toChrome) addTrustedIntentExtrasInternal(intent);
     }
 
     @VisibleForTesting

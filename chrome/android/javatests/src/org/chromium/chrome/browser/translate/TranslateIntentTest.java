@@ -74,6 +74,8 @@ public class TranslateIntentTest {
         if (targetLanguageCode != null) {
             intent.putExtra(TranslateIntentHandler.EXTRA_TARGET_LANGUAGE_CODE, targetLanguageCode);
         }
+        intent.setClassName(ContextUtils.getApplicationContext(),
+                TranslateIntentHandler.COMPONENT_TRANSLATE_DISPATCHER);
         IntentHandler.addTrustedIntentExtras(intent);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mActivityTestRule.getActivity().onNewIntent(intent));
@@ -262,7 +264,7 @@ public class TranslateIntentTest {
         Context context = ContextUtils.getApplicationContext();
 
         final Intent intent = new Intent(TranslateIntentHandler.ACTION_TRANSLATE_TAB);
-        intent.setClassName(context, "com.google.android.apps.chrome.TranslateDispatcher");
+        intent.setClassName(context, TranslateIntentHandler.COMPONENT_TRANSLATE_DISPATCHER);
         intent.putExtra(TranslateIntentHandler.EXTRA_EXPECTED_URL, url);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         // The Activity is already launched so we cannot use startActivityCompletely().
