@@ -42,7 +42,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -113,6 +112,9 @@ public class LocationBarTest {
     public void setUp() throws InterruptedException {
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         LocaleManager.setInstanceForTest(mLocaleManager);
+
+        // Setup the search engine to point to google by default. Tests can override this behavior.
+        setupSearchEngineLogo(GOOGLE_URL);
         SearchEngineLogoUtils.setInstanceForTesting(mSearchEngineLogoUtils);
     }
 
@@ -178,9 +180,8 @@ public class LocationBarTest {
         doReturn(true)
                 .when(mSearchEngineLogoUtils)
                 .shouldShowSearchEngineLogo(/* incognito= */ false);
-        doReturn(isGoogle ? mGoogleSearchEngine : mNonGoogleSearchEngine)
-                .when(mTemplateUrlService)
-                .getDefaultSearchEngineTemplateUrl();
+        TemplateUrl templateUrl = isGoogle ? mGoogleSearchEngine : mNonGoogleSearchEngine;
+        doReturn(templateUrl).when(mTemplateUrlService).getDefaultSearchEngineTemplateUrl();
 
         // Return null to fallback to the search loupe behavior.
         Answer bitmapAnswer = (invocation) -> {
@@ -274,10 +275,8 @@ public class LocationBarTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1172927")
     public void testTemplateUrlServiceChange() throws InterruptedException {
         doReturn(false).when(mLocaleManager).needToCheckForSearchEnginePromo();
-        setupSearchEngineLogo(GOOGLE_URL);
         startActivityNormally();
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
         TestThreadUtils.runOnUiThreadBlocking(
@@ -439,7 +438,6 @@ public class LocationBarTest {
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @EnableFeatures({ChromeFeatureList.OMNIBOX_SEARCH_ENGINE_LOGO})
     public void testOmniboxSearchEngineLogo_unfocusedOnSRP() {
-        setupSearchEngineLogo(GOOGLE_URL);
         startActivityNormally();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mLocationBarMediator.updateSearchEngineStatusIcon(); });
@@ -467,7 +465,6 @@ public class LocationBarTest {
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @EnableFeatures({ChromeFeatureList.OMNIBOX_SEARCH_ENGINE_LOGO})
     public void testOmniboxSearchEngineLogo_unfocusedOnSRP_incognito() {
-        setupSearchEngineLogo(GOOGLE_URL);
         startActivityNormally();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mLocationBarMediator.updateSearchEngineStatusIcon(); });
@@ -480,7 +477,6 @@ public class LocationBarTest {
     @SmallTest
     @EnableFeatures({ChromeFeatureList.OMNIBOX_SEARCH_ENGINE_LOGO})
     public void testOmniboxSearchEngineLogo_focusedOnSRP() {
-        setupSearchEngineLogo(GOOGLE_URL);
         startActivityNormally();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mLocationBarMediator.updateSearchEngineStatusIcon(); });
@@ -496,7 +492,6 @@ public class LocationBarTest {
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @EnableFeatures(ChromeFeatureList.OMNIBOX_SEARCH_ENGINE_LOGO)
     public void testOmniboxSearchEngineLogo_ntpToSite() {
-        setupSearchEngineLogo(GOOGLE_URL);
         startActivityNormally();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mLocationBarMediator.updateSearchEngineStatusIcon(); });
@@ -512,7 +507,6 @@ public class LocationBarTest {
     @SmallTest
     @EnableFeatures(ChromeFeatureList.OMNIBOX_SEARCH_ENGINE_LOGO)
     public void testOmniboxSearchEngineLogo_siteToSite() {
-        setupSearchEngineLogo(GOOGLE_URL);
         startActivityNormally();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mLocationBarMediator.updateSearchEngineStatusIcon(); });
