@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MOJO_BINDING_CONTEXT_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MOJO_BINDING_CONTEXT_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MOJO_MOJO_BINDING_CONTEXT_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MOJO_MOJO_BINDING_CONTEXT_H_
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -31,4 +31,4 @@ class PLATFORM_EXPORT MojoBindingContext {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_MOJO_BINDING_CONTEXT_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_MOJO_MOJO_BINDING_CONTEXT_H_
