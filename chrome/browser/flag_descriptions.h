@@ -2514,6 +2514,9 @@ extern const char kExperimentalAccessibilitySwitchAccessTextDescription[];
 extern const char kSwitchAccessPointScanningName[];
 extern const char kSwitchAccessPointScanningDescription[];
 
+extern const char kExperimentalAccessibilitySwitchAccessSetupGuideName[];
+extern const char kExperimentalAccessibilitySwitchAccessSetupGuideDescription[];
+
 extern const char kMagnifierNewFocusFollowingName[];
 extern const char kMagnifierNewFocusFollowingDescription[];
 

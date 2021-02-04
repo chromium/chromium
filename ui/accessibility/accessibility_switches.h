@@ -27,6 +27,8 @@ AX_BASE_EXPORT extern const char
 AX_BASE_EXPORT extern const char
     kEnableExperimentalAccessibilityChromeVoxAnnotations[];
 AX_BASE_EXPORT extern const char kEnableSwitchAccessPointScanning[];
+AX_BASE_EXPORT extern const char
+    kEnableExperimentalAccessibilitySwitchAccessSetupGuide[];
 
 // Returns true if experimental accessibility dictation extension is enabled.
 AX_BASE_EXPORT bool IsExperimentalAccessibilityDictationExtensionEnabled();

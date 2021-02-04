@@ -3835,6 +3835,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSwitchAccessPointScanningName,
      flag_descriptions::kSwitchAccessPointScanningDescription, kOsCrOS,
      SINGLE_VALUE_TYPE(::switches::kEnableSwitchAccessPointScanning)},
+    {"enable-experimental-accessibility-switch-access-setup-guide",
+     flag_descriptions::kExperimentalAccessibilitySwitchAccessSetupGuideName,
+     flag_descriptions::
+         kExperimentalAccessibilitySwitchAccessSetupGuideDescription,
+     kOsCrOS,
+     SINGLE_VALUE_TYPE(
+         ::switches::kEnableExperimentalAccessibilitySwitchAccessSetupGuide)},
     {"enable-experimental-accessibility-chromevox-annotations",
      flag_descriptions::kExperimentalAccessibilityChromeVoxAnnotationsName,
      flag_descriptions::
