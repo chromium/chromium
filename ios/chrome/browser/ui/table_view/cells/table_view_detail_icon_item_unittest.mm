@@ -65,6 +65,8 @@ TEST_F(TableViewDetailIconItemTest, ItemProperties) {
   EXPECT_NSEQ(detail_text, detail_cell.detailTextLabel.text);
   EXPECT_EQ(UILayoutConstraintAxisVertical,
             detail_cell.textLayoutConstraintAxis);
+  EXPECT_EQ([UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle],
+            detail_cell.detailTextLabel.font);
 
   // Check image-based property.
   EXPECT_EQ([ChromeIcon searchIcon], GetImage(detail_cell));
@@ -138,9 +140,13 @@ TEST_F(TableViewDetailIconItemTest, ItemUpdateUILayoutConstraintAxisVertical) {
   // Check that the default layout is set to the horizontal axis.
   EXPECT_EQ(UILayoutConstraintAxisHorizontal,
             detail_cell.textLayoutConstraintAxis);
+  EXPECT_EQ([UIFont preferredFontForTextStyle:UIFontTextStyleBody],
+            detail_cell.detailTextLabel.font);
 
   [detail_cell setTextLayoutConstraintAxis:UILayoutConstraintAxisVertical];
 
   EXPECT_EQ(UILayoutConstraintAxisVertical,
             detail_cell.textLayoutConstraintAxis);
+  EXPECT_EQ([UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle],
+            detail_cell.detailTextLabel.font);
 }

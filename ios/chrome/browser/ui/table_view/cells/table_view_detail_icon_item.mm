@@ -203,7 +203,14 @@ const CGFloat kDetailTextTrailingPadding = 6;
 
 - (void)setTextLayoutConstraintAxis:
     (UILayoutConstraintAxis)textLayoutConstraintAxis {
+  UIFontTextStyle preferredFont =
+      textLayoutConstraintAxis == UILayoutConstraintAxisVertical
+          ? kTableViewSublabelFontStyle
+          : UIFontTextStyleBody;
+  self.detailTextLabel.font = [UIFont preferredFontForTextStyle:preferredFont];
+
   self.textStackView.axis = textLayoutConstraintAxis;
+
   [self updateForAccessibilityContentSizeCategory:
             UIContentSizeCategoryIsAccessibilityCategory(
                 self.traitCollection.preferredContentSizeCategory)];
@@ -235,6 +242,7 @@ const CGFloat kDetailTextTrailingPadding = 6;
 - (void)prepareForReuse {
   [super prepareForReuse];
 
+  [self setTextLayoutConstraintAxis:UILayoutConstraintAxisHorizontal];
   [self setIconImage:nil];
 }
 
