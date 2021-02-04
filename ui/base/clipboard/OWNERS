@@ -1,2 +1,6 @@
 dcheng@chromium.org
 huangdarwin@chromium.org
+
+per-file clipboard_ozone*=msisov@igalia.com
+per-file clipboard_ozone*=adunaev@igalia.com
+
