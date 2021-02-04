@@ -220,6 +220,7 @@ source_set("eg2_tests") {
     "//components/policy/core/common:common_constants",
     "//components/strings",
     "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser:chrome_url_constants",
     "//ios/chrome/browser:pref_names",
     "//ios/chrome/browser:utils",
     "//ios/chrome/browser/translate:eg_test_support+eg2",

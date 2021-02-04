@@ -11,6 +11,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/chrome_switches.h"
+#include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/policy/policy_app_interface.h"
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/translate/translate_app_interface.h"
@@ -379,14 +380,14 @@ void VerifyManagedSettingItem(NSString* accessibilityID,
 
   // Check the navigation.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
-                                          "chrome://management")]
+                                          kChromeUIManagementURL)]
       assertWithMatcher:grey_notNil()];
 }
 
 // Test the chrome://management page when no machine level policy is set.
 - (void)testManagementPageUnmanaged {
   // Open the management page and check if the content is expected.
-  [ChromeEarlGrey loadURL:GURL("chrome://management")];
+  [ChromeEarlGrey loadURL:GURL(kChromeUIManagementURL)];
   [ChromeEarlGrey
       waitForWebStateContainingText:l10n_util::GetStringUTF8(
                                         IDS_IOS_MANAGEMENT_UI_UNMANAGED_DESC)];
@@ -399,7 +400,7 @@ void VerifyManagedSettingItem(NSString* accessibilityID,
   SetPolicy(false, policy::key::kTranslateEnabled);
 
   // Open the management page and check if the content is expected.
-  [ChromeEarlGrey loadURL:GURL("chrome://management")];
+  [ChromeEarlGrey loadURL:GURL(kChromeUIManagementURL)];
   [ChromeEarlGrey
       waitForWebStateContainingText:l10n_util::GetStringUTF8(
                                         IDS_IOS_MANAGEMENT_UI_MESSAGE)];
