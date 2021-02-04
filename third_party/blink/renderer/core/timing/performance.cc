@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/document_load_timing.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
@@ -879,7 +880,17 @@ ScriptPromise Performance::profile(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  if (!execution_context->CrossOriginIsolatedCapability()) {
+  // Bypass COOP/COEP checks when the |--disable-web-security| flag is present.
+  bool web_security_enabled = true;
+  if (LocalDOMWindow* window = LocalDOMWindow::From(script_state)) {
+    if (LocalFrame* local_frame = window->GetFrame()) {
+      web_security_enabled =
+          local_frame->GetSettings()->GetWebSecurityEnabled();
+    }
+  }
+
+  if (web_security_enabled &&
+      !execution_context->CrossOriginIsolatedCapability()) {
     exception_state.ThrowSecurityError(
         "performance.profile() requires COOP+COEP (web.dev/coop-coep)");
     return ScriptPromise();
