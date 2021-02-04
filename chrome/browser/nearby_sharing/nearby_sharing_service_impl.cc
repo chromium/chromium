@@ -1014,33 +1014,15 @@ void NearbySharingServiceImpl::OnPrivateCertificatesChanged() {
 void NearbySharingServiceImpl::OnEndpointDiscovered(
     const std::string& endpoint_id,
     const std::vector<uint8_t>& endpoint_info) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(profile_);
-  if (!is_scanning_) {
-    NS_LOG(VERBOSE)
-        << __func__
-        << ": Ignoring discovered endpoint because we're no longer scanning";
-    return;
-  }
-
-  process_manager_->GetOrStartNearbySharingDecoder(profile_)
-      ->DecodeAdvertisement(
-          endpoint_info,
-          base::BindOnce(
-              &NearbySharingServiceImpl::OnOutgoingAdvertisementDecoded,
-              weak_ptr_factory_.GetWeakPtr(), endpoint_id));
+  AddEndpointDiscoveryEvent(
+      base::BindOnce(&NearbySharingServiceImpl::HandleEndpointDiscovered,
+                     base::Unretained(this), endpoint_id, endpoint_info));
 }
 
 void NearbySharingServiceImpl::OnEndpointLost(const std::string& endpoint_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!is_scanning_) {
-    NS_LOG(VERBOSE)
-        << __func__
-        << ": Ignoring lost endpoint because we're no longer scanning";
-    return;
-  }
-
-  RemoveOutgoingShareTargetWithEndpointId(endpoint_id);
+  AddEndpointDiscoveryEvent(
+      base::BindOnce(&NearbySharingServiceImpl::HandleEndpointLost,
+                     base::Unretained(this), endpoint_id));
 }
 
 void NearbySharingServiceImpl::OnLockStateChanged(bool locked) {
@@ -1226,6 +1208,64 @@ void NearbySharingServiceImpl::OnStopFastInitiationAdvertising() {
   // interval.
 }
 
+void NearbySharingServiceImpl::AddEndpointDiscoveryEvent(
+    base::OnceClosure event) {
+  endpoint_discovery_events_.push(std::move(event));
+  if (endpoint_discovery_events_.size() == 1u)
+    std::move(endpoint_discovery_events_.front()).Run();
+}
+
+void NearbySharingServiceImpl::HandleEndpointDiscovered(
+    const std::string& endpoint_id,
+    const std::vector<uint8_t>& endpoint_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  NS_LOG(VERBOSE) << __func__ << ": endpoint_id=" << endpoint_id
+                  << ", endpoint_info=" << base::HexEncode(endpoint_info);
+  if (!is_scanning_) {
+    NS_LOG(VERBOSE)
+        << __func__
+        << ": Ignoring discovered endpoint because we're no longer scanning";
+    FinishEndpointDiscoveryEvent();
+    return;
+  }
+
+  DCHECK(profile_);
+  process_manager_->GetOrStartNearbySharingDecoder(profile_)
+      ->DecodeAdvertisement(
+          endpoint_info,
+          base::BindOnce(
+              &NearbySharingServiceImpl::OnOutgoingAdvertisementDecoded,
+              weak_ptr_factory_.GetWeakPtr(), endpoint_id));
+}
+
+void NearbySharingServiceImpl::HandleEndpointLost(
+    const std::string& endpoint_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  NS_LOG(VERBOSE) << __func__ << ": endpoint_id=" << endpoint_id;
+  if (!is_scanning_) {
+    NS_LOG(VERBOSE)
+        << __func__
+        << ": Ignoring lost endpoint because we're no longer scanning";
+    FinishEndpointDiscoveryEvent();
+    return;
+  }
+
+  RemoveOutgoingShareTargetWithEndpointId(endpoint_id);
+  FinishEndpointDiscoveryEvent();
+}
+
+void NearbySharingServiceImpl::FinishEndpointDiscoveryEvent() {
+  DCHECK(!endpoint_discovery_events_.empty());
+  DCHECK(endpoint_discovery_events_.front().is_null());
+  endpoint_discovery_events_.pop();
+
+  // Handle the next queued up endpoint discovered/lost event.
+  if (!endpoint_discovery_events_.empty()) {
+    DCHECK(!endpoint_discovery_events_.front().is_null());
+    std::move(endpoint_discovery_events_.front()).Run();
+  }
+}
+
 void NearbySharingServiceImpl::OnOutgoingAdvertisementDecoded(
     const std::string& endpoint_id,
     sharing::mojom::AdvertisementPtr advertisement) {
@@ -1233,6 +1273,7 @@ void NearbySharingServiceImpl::OnOutgoingAdvertisementDecoded(
   if (!advertisement) {
     NS_LOG(WARNING) << __func__
                     << ": Failed to parse discovered advertisement.";
+    FinishEndpointDiscoveryEvent();
     return;
   }
 
@@ -1243,6 +1284,7 @@ void NearbySharingServiceImpl::OnOutgoingAdvertisementDecoded(
   // Looking for the ShareTarget based on endpoint id.
   if (outgoing_share_target_map_.find(endpoint_id) !=
       outgoing_share_target_map_.end()) {
+    FinishEndpointDiscoveryEvent();
     return;
   }
 
@@ -1264,6 +1306,7 @@ void NearbySharingServiceImpl::OnOutgoingDecryptedCertificate(
   // Check again for this endpoint id, to avoid race conditions.
   if (outgoing_share_target_map_.find(endpoint_id) !=
       outgoing_share_target_map_.end()) {
+    FinishEndpointDiscoveryEvent();
     return;
   }
 
@@ -1276,6 +1319,7 @@ void NearbySharingServiceImpl::OnOutgoingDecryptedCertificate(
     NS_LOG(VERBOSE) << __func__
                     << ": Failed to convert advertisement to share target from "
                        "discovered advertisement. Ignoring endpoint.";
+    FinishEndpointDiscoveryEvent();
     return;
   }
 
@@ -1299,6 +1343,8 @@ void NearbySharingServiceImpl::OnOutgoingDecryptedCertificate(
 
   // TODO(crbug/1108348) CachingManager should cache known and non-external
   // share targets.
+
+  FinishEndpointDiscoveryEvent();
 }
 
 bool NearbySharingServiceImpl::IsBluetoothPresent() const {

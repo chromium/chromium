@@ -587,10 +587,12 @@ class NearbySharingServiceImplTest : public testing::Test {
   }
 
   void SetUpAdvertisementDecoder(const std::vector<uint8_t>& endpoint_info,
-                                 bool return_empty_advertisement) {
+                                 bool return_empty_advertisement,
+                                 size_t expected_number_of_calls) {
     EXPECT_CALL(mock_decoder_,
                 DecodeAdvertisement(testing::Eq(endpoint_info), testing::_))
-        .WillOnce(
+        .Times(expected_number_of_calls)
+        .WillRepeatedly(
             testing::Invoke([=](const std::vector<uint8_t>& data,
                                 chromeos::nearby::MockNearbySharingDecoder::
                                     DecodeAdvertisementCallback callback) {
@@ -642,7 +644,8 @@ class NearbySharingServiceImplTest : public testing::Test {
     fake_nearby_connections_manager_->SetRawAuthenticationToken(kEndpointId,
                                                                 kToken);
     SetUpAdvertisementDecoder(kValidV1EndpointInfo,
-                              /*return_empty_advertisement=*/false);
+                              /*return_empty_advertisement=*/false,
+                              /*expected_number_of_calls=*/1u);
     SetUpIntroductionFrameDecoder(/*return_empty_introduction_frame=*/false);
 
     ShareTarget share_target;
@@ -693,7 +696,8 @@ class NearbySharingServiceImplTest : public testing::Test {
 
     // Ensure decoder parses a valid endpoint advertisement.
     SetUpAdvertisementDecoder(kValidV1EndpointInfo,
-                              /*return_empty_advertisement=*/false);
+                              /*return_empty_advertisement=*/false,
+                              /*expected_number_of_calls=*/1u);
 
     // Start discovering, to ensure a discovery listener is registered.
     base::RunLoop run_loop;
@@ -1308,7 +1312,8 @@ TEST_F(NearbySharingServiceImplTest,
 
   // Ensure decoder parses a valid endpoint advertisement.
   SetUpAdvertisementDecoder(kValidV1EndpointInfo,
-                            /*return_empty_advertisement=*/false);
+                            /*return_empty_advertisement=*/false,
+                            /*expected_number_of_calls=*/1u);
 
   // Start discovering, to ensure a discovery listener is registered.
   base::RunLoop run_loop;
@@ -1370,7 +1375,8 @@ TEST_F(NearbySharingServiceImplTest, RegisterSendSurfaceEmptyCertificate) {
 
   // Ensure decoder parses a valid endpoint advertisement.
   SetUpAdvertisementDecoder(kValidV1EndpointInfo,
-                            /*return_empty_advertisement=*/false);
+                            /*return_empty_advertisement=*/false,
+                            /*expected_number_of_calls=*/1u);
 
   // Start discovering, to ensure a discovery listener is registered.
   base::RunLoop run_loop;
@@ -2031,7 +2037,8 @@ TEST_F(NearbySharingServiceImplTest,
   fake_nearby_connections_manager_->SetRawAuthenticationToken(kEndpointId,
                                                               kToken);
   SetUpAdvertisementDecoder(kValidV1EndpointInfo,
-                            /*return_empty_advertisement=*/false);
+                            /*return_empty_advertisement=*/false,
+                            /*expected_number_of_calls=*/1u);
 
   SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
   NiceMock<MockTransferUpdateCallback> callback;
@@ -2057,7 +2064,8 @@ TEST_F(NearbySharingServiceImplTest,
   fake_nearby_connections_manager_->SetRawAuthenticationToken(kEndpointId,
                                                               kToken);
   SetUpAdvertisementDecoder(kValidV1EndpointInfo,
-                            /*return_empty_advertisement=*/false);
+                            /*return_empty_advertisement=*/false,
+                            /*expected_number_of_calls=*/1u);
   SetUpIntroductionFrameDecoder(/*return_empty_introduction_frame=*/true);
 
   SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
@@ -2105,7 +2113,8 @@ TEST_F(NearbySharingServiceImplTest,
   fake_nearby_connections_manager_->SetRawAuthenticationToken(kEndpointId,
                                                               kToken);
   SetUpAdvertisementDecoder(kValidV1EndpointInfo,
-                            /*return_empty_advertisement=*/false);
+                            /*return_empty_advertisement=*/false,
+                            /*expected_number_of_calls=*/1u);
   SetUpIntroductionFrameDecoder(/*return_empty_introduction_frame=*/false);
 
   SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
@@ -2187,7 +2196,8 @@ TEST_F(NearbySharingServiceImplTest, IncomingConnection_OutOfStorage) {
   fake_nearby_connections_manager_->SetRawAuthenticationToken(kEndpointId,
                                                               kToken);
   SetUpAdvertisementDecoder(kValidV1EndpointInfo,
-                            /*return_empty_advertisement=*/false);
+                            /*return_empty_advertisement=*/false,
+                            /*expected_number_of_calls=*/1u);
 
   // Set a huge file size in introduction frame to go out of storage.
   std::string intro = "introduction_frame";
@@ -2258,7 +2268,8 @@ TEST_F(NearbySharingServiceImplTest, IncomingConnection_FileSizeOverflow) {
   fake_nearby_connections_manager_->SetRawAuthenticationToken(kEndpointId,
                                                               kToken);
   SetUpAdvertisementDecoder(kValidV1EndpointInfo,
-                            /*return_empty_advertisement=*/false);
+                            /*return_empty_advertisement=*/false,
+                            /*expected_number_of_calls=*/1u);
 
   // Set file size sum huge to check for overflow.
   std::string intro = "introduction_frame";
@@ -2332,7 +2343,8 @@ TEST_F(NearbySharingServiceImplTest,
   fake_nearby_connections_manager_->SetRawAuthenticationToken(kEndpointId,
                                                               kToken);
   SetUpAdvertisementDecoder(kValidV1EndpointInfo,
-                            /*return_empty_advertisement=*/false);
+                            /*return_empty_advertisement=*/false,
+                            /*expected_number_of_calls=*/1u);
   SetUpIntroductionFrameDecoder(/*return_empty_introduction_frame=*/false);
 
   SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
@@ -2919,7 +2931,8 @@ TEST_F(NearbySharingServiceImplTest,
   fake_nearby_connections_manager_->SetRawAuthenticationToken(kEndpointId,
                                                               kToken);
   SetUpAdvertisementDecoder(kValidV1EndpointInfo,
-                            /*return_empty_advertisement=*/false);
+                            /*return_empty_advertisement=*/false,
+                            /*expected_number_of_calls=*/1u);
   SetUpIntroductionFrameDecoder(/*return_empty_introduction_frame=*/false);
 
   SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
@@ -2971,7 +2984,8 @@ TEST_F(NearbySharingServiceImplTest,
   fake_nearby_connections_manager_->SetRawAuthenticationToken(kEndpointId,
                                                               kToken);
   SetUpAdvertisementDecoder(kValidV1EndpointInfo,
-                            /*return_empty_advertisement=*/false);
+                            /*return_empty_advertisement=*/false,
+                            /*expected_number_of_calls=*/1u);
   SetUpIntroductionFrameDecoder(/*return_empty_introduction_frame=*/false);
 
   SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
@@ -3027,7 +3041,8 @@ TEST_F(NearbySharingServiceImplTest,
   fake_nearby_connections_manager_->SetRawAuthenticationToken(kEndpointId,
                                                               kToken);
   SetUpAdvertisementDecoder(kValidV1EndpointInfo,
-                            /*return_empty_advertisement=*/false);
+                            /*return_empty_advertisement=*/false,
+                            /*expected_number_of_calls=*/1u);
 
   SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
   NiceMock<MockTransferUpdateCallback> callback;
@@ -3057,7 +3072,8 @@ TEST_F(NearbySharingServiceImplTest,
 TEST_F(NearbySharingServiceImplTest,
        IncomingConnection_EmptyAuthToken_KeyVerificationRunnerStatusFail) {
   SetUpAdvertisementDecoder(kValidV1EndpointInfo,
-                            /*return_empty_advertisement=*/false);
+                            /*return_empty_advertisement=*/false,
+                            /*expected_number_of_calls=*/1u);
 
   SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
   NiceMock<MockTransferUpdateCallback> callback;
@@ -3620,4 +3636,99 @@ TEST_F(NearbySharingServiceImplTest,
   auto endpoint_info_rotated =
       fake_nearby_connections_manager_->advertising_endpoint_info();
   EXPECT_NE(endpoint_info_initial, endpoint_info_rotated);
+}
+
+TEST_F(NearbySharingServiceImplTest, OrderedEndpointDiscoveryEvents) {
+  SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
+
+  MockTransferUpdateCallback transfer_callback;
+  MockShareTargetDiscoveredCallback discovery_callback;
+
+  // Start discovering, to ensure a discovery listener is registered.
+  EXPECT_EQ(
+      NearbySharingService::StatusCodes::kOk,
+      service_->RegisterSendSurface(&transfer_callback, &discovery_callback,
+                                    SendSurfaceState::kForeground));
+  EXPECT_TRUE(fake_nearby_connections_manager_->IsDiscovering());
+
+  // Ensure that the endpoint discovered and lost event are process
+  // sequentially. This is particularly importatnt due to the asynchronous
+  // operations needed to handle endpoint discovery.
+  //
+  // Order of events:
+  //   - Nearby Connections discovers endpoint 1
+  //   - Nearby Connections loses endpoint 1
+  //   - Nearby Share processes these two events in order.
+  //   - Nearby Connections discovers endpoint 2
+  //   - Nearby Connections discovers endpoint 3
+  //   - Nearby Connections loses endpoint 3
+  //   - Nearby Connections loses endpoint 2
+  //   - Nearby Share processes these four events in order.
+
+  // Expect the advertisement decoder  to be invoked once for each discovery.
+  SetUpAdvertisementDecoder(kValidV1EndpointInfo,
+                            /*return_empty_advertisement=*/false,
+                            /*expected_number_of_calls=*/3u);
+  {
+    base::RunLoop run_loop;
+    fake_nearby_connections_manager_->OnEndpointFound(
+        /*endpoint_id=*/"1",
+        location::nearby::connections::mojom::DiscoveredEndpointInfo::New(
+            kValidV1EndpointInfo, kServiceId));
+    fake_nearby_connections_manager_->OnEndpointLost(
+        /*endpoint_id=*/"1");
+
+    ::testing::InSequence s;
+    EXPECT_CALL(discovery_callback, OnShareTargetDiscovered);
+    EXPECT_CALL(discovery_callback, OnShareTargetLost)
+        .WillOnce([&run_loop](ShareTarget share_target) { run_loop.Quit(); });
+
+    // Needed for discovery processing.
+    ProcessLatestPublicCertificateDecryption(/*expected_num_calls=*/1,
+                                             /*success=*/true);
+    run_loop.Run();
+  }
+  {
+    base::RunLoop run_loop;
+    fake_nearby_connections_manager_->OnEndpointFound(
+        /*endpoint_id=*/"2",
+        location::nearby::connections::mojom::DiscoveredEndpointInfo::New(
+            kValidV1EndpointInfo, kServiceId));
+    fake_nearby_connections_manager_->OnEndpointFound(
+        /*endpoint_id=*/"3",
+        location::nearby::connections::mojom::DiscoveredEndpointInfo::New(
+            kValidV1EndpointInfo, kServiceId));
+    fake_nearby_connections_manager_->OnEndpointLost(
+        /*endpoint_id=*/"3");
+    fake_nearby_connections_manager_->OnEndpointLost(
+        /*endpoint_id=*/"2");
+
+    ::testing::InSequence s;
+    EXPECT_CALL(discovery_callback, OnShareTargetDiscovered)
+        .WillOnce([](ShareTarget share_target) {
+          EXPECT_EQ("2", share_target.device_id);
+        });
+    EXPECT_CALL(discovery_callback, OnShareTargetDiscovered)
+        .WillOnce([](ShareTarget share_target) {
+          EXPECT_EQ("3", share_target.device_id);
+        });
+    EXPECT_CALL(discovery_callback, OnShareTargetLost)
+        .WillOnce([](ShareTarget share_target) {
+          EXPECT_EQ("3", share_target.device_id);
+        });
+    EXPECT_CALL(discovery_callback, OnShareTargetLost)
+        .WillOnce([&run_loop](ShareTarget share_target) {
+          EXPECT_EQ("2", share_target.device_id);
+          run_loop.Quit();
+        });
+    // Needed for discovery processing. Fail, then the ShareTarget device ID is
+    // set to the endpoint ID, which we use above to verify the correct endpoint
+    // ID processing order.
+    ProcessLatestPublicCertificateDecryption(/*expected_num_calls=*/2,
+                                             /*success=*/false);
+    ProcessLatestPublicCertificateDecryption(/*expected_num_calls=*/3,
+                                             /*success=*/false);
+
+    run_loop.Run();
+  }
 }

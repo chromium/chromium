@@ -176,6 +176,18 @@ class NearbySharingServiceImpl
   void OnStartFastInitiationAdvertisingError();
   void StopFastInitiationAdvertising();
   void OnStopFastInitiationAdvertising();
+
+  // Processes endpoint discovered/lost events. We queue up the events to ensure
+  // each discovered or lost event is fully handled before the next is run. For
+  // example, we don't want to start processing an endpoint-lost event before
+  // the corresponding endpoint-discovered event is finished. This is especially
+  // important because of the asynchronous steps required to process an
+  // endpoint-discovered event.
+  void AddEndpointDiscoveryEvent(base::OnceClosure event);
+  void HandleEndpointDiscovered(const std::string& endpoint_id,
+                                const std::vector<uint8_t>& endpoint_info);
+  void HandleEndpointLost(const std::string& endpoint_id);
+  void FinishEndpointDiscoveryEvent();
   void OnOutgoingAdvertisementDecoded(
       const std::string& endpoint_id,
       sharing::mojom::AdvertisementPtr advertisement);
@@ -183,6 +195,7 @@ class NearbySharingServiceImpl
       const std::string& endpoint_id,
       sharing::mojom::AdvertisementPtr advertisement,
       base::Optional<NearbyShareDecryptedPublicCertificate> certificate);
+
   bool IsBluetoothPresent() const;
   bool IsBluetoothPowered() const;
   bool HasAvailableConnectionMediums();
@@ -440,6 +453,13 @@ class NearbySharingServiceImpl
   // Available free disk space for testing. Using real disk space can introduce
   // flakiness in tests.
   base::Optional<int64_t> free_disk_space_for_testing_;
+
+  // A queue of endpoint-discovered and endpoint-lost events that ensures the
+  // events are processed sequentially, in the order received from Nearby
+  // Connections. An event is processed either immediately, if there are no
+  // other events in the queue, or as soon as the previous event processing
+  // finishes. When processing finishes, the event is removed from the queue.
+  base::queue<base::OnceClosure> endpoint_discovery_events_;
 
   mojo::Receiver<nearby_share::mojom::NearbyShareSettingsObserver>
       settings_receiver_{this};
