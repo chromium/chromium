@@ -12,7 +12,7 @@
     
                 Filtering and Buffering
              &mdash;
-    Mako 1.0.14 Documentation
+    Mako 1.1.4 Documentation
 
         </title>
 
@@ -32,7 +32,7 @@
 
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="Mako 1.0.14 Documentation" href="index.html" />
+    <link rel="top" title="Mako 1.1.4 Documentation" href="index.html" />
         <link rel="next" title="The Unicode Chapter" href="unicode.html" />
         <link rel="prev" title="Inheritance" href="inheritance.html" />
     <!-- end layout.mako headers -->
@@ -56,7 +56,7 @@
 
 
 <div id="docs-header">
-    <h1>Mako 1.0.14 Documentation</h1>
+    <h1>Mako 1.1.4 Documentation</h1>
 
     <div id="docs-search">
     Search:
@@ -68,7 +68,7 @@
     </div>
 
     <div id="docs-version-header">
-        Release: <span class="version-num">1.0.14</span>
+        Release: <span class="version-num">1.1.4</span>
 
     </div>
 
@@ -92,7 +92,7 @@
     </div>
 
     <div id="docs-navigation-banner">
-        <a href="index.html">Mako 1.0.14 Documentation</a>
+        <a href="index.html">Mako 1.1.4 Documentation</a>
         » 
                 Filtering and Buffering
             
@@ -256,7 +256,7 @@ the <code class="docutils literal notranslate"><span class="pre">imports</span><
 <span class="kn">from</span> <span class="nn">mypackage</span> <span class="kn">import</span> <span class="n">myfilter</span>
 
 <span class="k">def</span> <span class="nf">render_body</span><span class="p">(</span><span class="n">context</span><span class="p">):</span>
-    <span class="n">context</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">myfilter</span><span class="p">(</span><span class="nb">unicode</span><span class="p">(</span><span class="s2">&quot;some text&quot;</span><span class="p">)))</span></pre></div>
+    <span class="n">context</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">myfilter</span><span class="p">(</span><span class="n">unicode</span><span class="p">(</span><span class="s2">&quot;some text&quot;</span><span class="p">)))</span></pre></div>
 </div>
 </div>
 <div class="section" id="turning-off-filtering-with-the-n-filter">
@@ -361,10 +361,10 @@ because the <code class="docutils literal notranslate"><span class="pre">capture
 calling the target function, after setting up a buffered
 environment. To send arguments to the function, just send them
 to <code class="docutils literal notranslate"><span class="pre">capture</span></code> instead:</p>
-<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">${</span><span class="n">capture</span><span class="p">(</span><span class="n">somedef</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="s1">&#39;hi&#39;</span><span class="p">,</span> <span class="n">use_paging</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span><span class="cp">}</span><span class="x"></span></pre></div>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">${</span><span class="n">capture</span><span class="p">(</span><span class="n">somedef</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="s1">&#39;hi&#39;</span><span class="p">,</span> <span class="n">use_paging</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="cp">}</span><span class="x"></span></pre></div>
 </div>
 <p>The above call is equivalent to the unbuffered call:</p>
-<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">${</span><span class="n">somedef</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="s1">&#39;hi&#39;</span><span class="p">,</span> <span class="n">use_paging</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span><span class="cp">}</span><span class="x"></span></pre></div>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">${</span><span class="n">somedef</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="s1">&#39;hi&#39;</span><span class="p">,</span> <span class="n">use_paging</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="cp">}</span><span class="x"></span></pre></div>
 </div>
 </div>
 <div class="section" id="decorating">
@@ -437,7 +437,7 @@ as in the first example. The return value gets discarded.</p>
 
     <div id="docs-copyright">
         &copy; Copyright the Mako authors and contributors.
-        Documentation generated using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2
+        Documentation generated using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.4.3
         with Mako templates.
     </div>
 </div>
@@ -452,7 +452,7 @@ as in the first example. The return value gets discarded.</p>
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
           URL_ROOT:    './',
-          VERSION:     '1.0.14',
+          VERSION:     '1.1.4',
           COLLAPSE_MODINDEX: false,
           FILE_SUFFIX: '.html'
       };
@@ -464,7 +464,6 @@ as in the first example. The return value gets discarded.</p>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
     <!-- end iterate through sphinx environment script_files -->
 
     <script type="text/javascript" src="_static/detectmobile.js"></script>

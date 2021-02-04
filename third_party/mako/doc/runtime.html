@@ -12,7 +12,7 @@
     
                 The Mako Runtime Environment
              &mdash;
-    Mako 1.0.14 Documentation
+    Mako 1.1.4 Documentation
 
         </title>
 
@@ -32,7 +32,7 @@
 
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="Mako 1.0.14 Documentation" href="index.html" />
+    <link rel="top" title="Mako 1.1.4 Documentation" href="index.html" />
         <link rel="next" title="Namespaces" href="namespaces.html" />
         <link rel="prev" title="Defs and Blocks" href="defs.html" />
     <!-- end layout.mako headers -->
@@ -56,7 +56,7 @@
 
 
 <div id="docs-header">
-    <h1>Mako 1.0.14 Documentation</h1>
+    <h1>Mako 1.1.4 Documentation</h1>
 
     <div id="docs-search">
     Search:
@@ -68,7 +68,7 @@
     </div>
 
     <div id="docs-version-header">
-        Release: <span class="version-num">1.0.14</span>
+        Release: <span class="version-num">1.1.4</span>
 
     </div>
 
@@ -92,7 +92,7 @@
     </div>
 
     <div id="docs-navigation-banner">
-        <a href="index.html">Mako 1.0.14 Documentation</a>
+        <a href="index.html">Mako 1.1.4 Documentation</a>
         » 
                 The Mako Runtime Environment
             
@@ -177,12 +177,12 @@ major components, one of which is the output buffer, which is a
 file-like object such as Python’s <code class="docutils literal notranslate"><span class="pre">StringIO</span></code> or similar, and
 the other a dictionary of variables that can be freely
 referenced within a template; this dictionary is a combination
-of the arguments sent to the <a class="reference internal" href="usage.html#mako.template.Template.render" title="mako.template.Template.render"><code class="xref py py-meth docutils literal notranslate"><span class="pre">render()</span></code></a> function and
+of the arguments sent to the <a class="reference internal" href="usage.html#mako.template.Template.render" title="mako.template.Template.render"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Template.render()</span></code></a> function and
 some built-in variables provided by Mako’s runtime environment.</p>
 <div class="section" id="the-buffer">
 <h3>The Buffer<a class="headerlink" href="#the-buffer" title="Permalink to this headline">¶</a></h3>
 <p>The buffer is stored within the <a class="reference internal" href="#mako.runtime.Context" title="mako.runtime.Context"><code class="xref py py-class docutils literal notranslate"><span class="pre">Context</span></code></a>, and writing
-to it is achieved by calling the <a class="reference internal" href="#mako.runtime.Context.write" title="mako.runtime.Context.write"><code class="xref py py-meth docutils literal notranslate"><span class="pre">write()</span></code></a> method
+to it is achieved by calling the <a class="reference internal" href="#mako.runtime.Context.write" title="mako.runtime.Context.write"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Context.write()</span></code></a> method
 – in a template this looks like <code class="docutils literal notranslate"><span class="pre">context.write('some</span> <span class="pre">string')</span></code>.
 You usually don’t need to care about this, as all text within a template, as
 well as all expressions provided by <code class="docutils literal notranslate"><span class="pre">${}</span></code>, automatically send
@@ -232,7 +232,7 @@ is to specify the option <code class="docutils literal notranslate"><span class=
 to the <a class="reference internal" href="usage.html#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a> or <a class="reference internal" href="usage.html#mako.lookup.TemplateLookup" title="mako.lookup.TemplateLookup"><code class="xref py py-class docutils literal notranslate"><span class="pre">TemplateLookup</span></code></a>.  This will cause
 any non-present variables to raise an immediate <code class="docutils literal notranslate"><span class="pre">NameError</span></code>
 which includes the name of the variable in its message
-when <a class="reference internal" href="usage.html#mako.template.Template.render" title="mako.template.Template.render"><code class="xref py py-meth docutils literal notranslate"><span class="pre">render()</span></code></a> is called – <code class="docutils literal notranslate"><span class="pre">UNDEFINED</span></code> is not used.</p>
+when <a class="reference internal" href="usage.html#mako.template.Template.render" title="mako.template.Template.render"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Template.render()</span></code></a> is called – <code class="docutils literal notranslate"><span class="pre">UNDEFINED</span></code> is not used.</p>
 <div class="versionadded">
 <p><span class="versionmodified added">New in version 0.3.6.</span></p>
 </div>
@@ -260,7 +260,7 @@ you can use the <code class="docutils literal notranslate"><span class="pre">is<
 </ul>
 <p>Another facet of the <a class="reference internal" href="#mako.runtime.Context" title="mako.runtime.Context"><code class="xref py py-class docutils literal notranslate"><span class="pre">Context</span></code></a> is that its dictionary of
 variables is <strong>immutable</strong>. Whatever is set when
-<a class="reference internal" href="usage.html#mako.template.Template.render" title="mako.template.Template.render"><code class="xref py py-meth docutils literal notranslate"><span class="pre">render()</span></code></a> is called is what stays. Of course, since
+<a class="reference internal" href="usage.html#mako.template.Template.render" title="mako.template.Template.render"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Template.render()</span></code></a> is called is what stays. Of course, since
 its Python, you can hack around this and change values in the
 context’s internal dictionary, but this will probably will not
 work as well as you’d think. The reason for this is that Mako in
@@ -456,10 +456,10 @@ all templates, then re-enabled on a per-template basis for those templates which
 to make use of the new system.</p>
 <p>First, the <code class="docutils literal notranslate"><span class="pre">enable_loop=False</span></code> flag is passed to either the <a class="reference internal" href="usage.html#mako.lookup.TemplateLookup" title="mako.lookup.TemplateLookup"><code class="xref py py-class docutils literal notranslate"><span class="pre">TemplateLookup</span></code></a>
 or <a class="reference internal" href="usage.html#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a> object in use:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">lookup</span> <span class="o">=</span> <span class="n">TemplateLookup</span><span class="p">(</span><span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;/docs&#39;</span><span class="p">],</span> <span class="n">enable_loop</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span></pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">lookup</span> <span class="o">=</span> <span class="n">TemplateLookup</span><span class="p">(</span><span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;/docs&#39;</span><span class="p">],</span> <span class="n">enable_loop</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></pre></div>
 </div>
 <p>or:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">template</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="s2">&quot;some template&quot;</span><span class="p">,</span> <span class="n">enable_loop</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span></pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">template</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="s2">&quot;some template&quot;</span><span class="p">,</span> <span class="n">enable_loop</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></pre></div>
 </div>
 <p>An individual template can make usage of the feature when <code class="docutils literal notranslate"><span class="pre">enable_loop</span></code> is set to
 <code class="docutils literal notranslate"><span class="pre">False</span></code> by switching it back on within the <code class="docutils literal notranslate"><span class="pre">&lt;%page&gt;</span></code> tag:</p>
@@ -541,29 +541,51 @@ via the <code class="docutils literal notranslate"><span class="pre">enable_loop
 </div>
 <div class="section" id="api-reference">
 <h2>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<table class="longtable docutils">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head">Object Name</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="nowrap"><p><a class="reference internal" href="#mako.runtime.Context"><code class="sig-name descname">Context</code></a></p></td>
+<td><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p></td>
+</tr>
+<tr class="row-odd"><td class="nowrap"><p><a class="reference internal" href="#mako.runtime.LoopContext"><code class="sig-name descname">LoopContext</code></a></p></td>
+<td><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p></td>
+</tr>
+<tr class="row-even"><td class="nowrap"><p><a class="reference internal" href="#mako.runtime.Undefined"><code class="sig-name descname">Undefined</code></a></p></td>
+<td><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
 <dt id="mako.runtime.Context">
-<em class="property">class </em><code class="sig-prename descclassname">mako.runtime.</code><code class="sig-name descname">Context</code><span class="sig-paren">(</span><em class="sig-param">buffer</em>, <em class="sig-param">**data</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.runtime.Context" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">mako.runtime.</code><code class="sig-name descname">Context</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">buffer</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">data</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mako.runtime.Context" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Provides runtime namespace, output buffer, and various
 callstacks for templates.</p>
 <p>See <a class="reference internal" href="#"><span class="std std-ref">The Mako Runtime Environment</span></a> for detail on the usage of
 <a class="reference internal" href="#mako.runtime.Context" title="mako.runtime.Context"><code class="xref py py-class docutils literal notranslate"><span class="pre">Context</span></code></a>.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="mako.runtime.Context.get">
-<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">default=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.runtime.Context.get" title="Permalink to this definition">¶</a></dt>
+<em class="property">method </em><a class="reference internal" href="#mako.runtime.Context"><code class="docutils literal notranslate"><span class="pre">mako.runtime.Context.</span></code></a><code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mako.runtime.Context.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a value from this <a class="reference internal" href="#mako.runtime.Context" title="mako.runtime.Context"><code class="xref py py-class docutils literal notranslate"><span class="pre">Context</span></code></a>.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mako.runtime.Context.keys">
-<code class="sig-name descname">keys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mako.runtime.Context.keys" title="Permalink to this definition">¶</a></dt>
+<em class="property">method </em><a class="reference internal" href="#mako.runtime.Context"><code class="docutils literal notranslate"><span class="pre">mako.runtime.Context.</span></code></a><code class="sig-name descname">keys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mako.runtime.Context.keys" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a list of all names established in this <a class="reference internal" href="#mako.runtime.Context" title="mako.runtime.Context"><code class="xref py py-class docutils literal notranslate"><span class="pre">Context</span></code></a>.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py attribute">
 <dt id="mako.runtime.Context.kwargs">
-<em class="property">property </em><code class="sig-name descname">kwargs</code><a class="headerlink" href="#mako.runtime.Context.kwargs" title="Permalink to this definition">¶</a></dt>
+<em class="property">attribute </em><a class="reference internal" href="#mako.runtime.Context"><code class="docutils literal notranslate"><span class="pre">mako.runtime.Context.</span></code></a><code class="sig-name descname">kwargs</code><a class="headerlink" href="#mako.runtime.Context.kwargs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the dictionary of top level keyword arguments associated
 with this <a class="reference internal" href="#mako.runtime.Context" title="mako.runtime.Context"><code class="xref py py-class docutils literal notranslate"><span class="pre">Context</span></code></a>.</p>
 <p>This dictionary only includes the top-level arguments passed to
@@ -574,51 +596,51 @@ such as <code class="docutils literal notranslate"><span class="pre">self</span>
 a <a class="reference internal" href="usage.html#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a> accepts arguments via its <code class="docutils literal notranslate"><span class="pre">&lt;%page&gt;</span></code> tag,
 which are normally expected to be passed via <a class="reference internal" href="usage.html#mako.template.Template.render" title="mako.template.Template.render"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Template.render()</span></code></a>,
 except the template is being called in an inheritance context,
-using the <code class="docutils literal notranslate"><span class="pre">body()</span></code> method.   <code class="xref py py-attr docutils literal notranslate"><span class="pre">Context.kwargs</span></code> can then be
+using the <code class="docutils literal notranslate"><span class="pre">body()</span></code> method.   <a class="reference internal" href="#mako.runtime.Context.kwargs" title="mako.runtime.Context.kwargs"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Context.kwargs</span></code></a> can then be
 used to propagate these arguments to the inheriting template:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>${next.body(**context.kwargs)}</pre></div>
 </div>
 </dd></dl>
 
-<dl class="method">
+<dl class="py attribute">
 <dt id="mako.runtime.Context.lookup">
-<em class="property">property </em><code class="sig-name descname">lookup</code><a class="headerlink" href="#mako.runtime.Context.lookup" title="Permalink to this definition">¶</a></dt>
+<em class="property">attribute </em><a class="reference internal" href="#mako.runtime.Context"><code class="docutils literal notranslate"><span class="pre">mako.runtime.Context.</span></code></a><code class="sig-name descname">lookup</code><a class="headerlink" href="#mako.runtime.Context.lookup" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the <a class="reference internal" href="usage.html#mako.lookup.TemplateLookup" title="mako.lookup.TemplateLookup"><code class="xref py py-class docutils literal notranslate"><span class="pre">TemplateLookup</span></code></a> associated
 with this <a class="reference internal" href="#mako.runtime.Context" title="mako.runtime.Context"><code class="xref py py-class docutils literal notranslate"><span class="pre">Context</span></code></a>.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mako.runtime.Context.pop_caller">
-<code class="sig-name descname">pop_caller</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mako.runtime.Context.pop_caller" title="Permalink to this definition">¶</a></dt>
+<em class="property">method </em><a class="reference internal" href="#mako.runtime.Context"><code class="docutils literal notranslate"><span class="pre">mako.runtime.Context.</span></code></a><code class="sig-name descname">pop_caller</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mako.runtime.Context.pop_caller" title="Permalink to this definition">¶</a></dt>
 <dd><p>Pop a <code class="docutils literal notranslate"><span class="pre">caller</span></code> callable onto the callstack for this
 <a class="reference internal" href="#mako.runtime.Context" title="mako.runtime.Context"><code class="xref py py-class docutils literal notranslate"><span class="pre">Context</span></code></a>.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mako.runtime.Context.push_caller">
-<code class="sig-name descname">push_caller</code><span class="sig-paren">(</span><em class="sig-param">caller</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.runtime.Context.push_caller" title="Permalink to this definition">¶</a></dt>
+<em class="property">method </em><a class="reference internal" href="#mako.runtime.Context"><code class="docutils literal notranslate"><span class="pre">mako.runtime.Context.</span></code></a><code class="sig-name descname">push_caller</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">caller</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mako.runtime.Context.push_caller" title="Permalink to this definition">¶</a></dt>
 <dd><p>Push a <code class="docutils literal notranslate"><span class="pre">caller</span></code> callable onto the callstack for
 this <a class="reference internal" href="#mako.runtime.Context" title="mako.runtime.Context"><code class="xref py py-class docutils literal notranslate"><span class="pre">Context</span></code></a>.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mako.runtime.Context.write">
-<code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param">string</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.runtime.Context.write" title="Permalink to this definition">¶</a></dt>
+<em class="property">method </em><a class="reference internal" href="#mako.runtime.Context"><code class="docutils literal notranslate"><span class="pre">mako.runtime.Context.</span></code></a><code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mako.runtime.Context.write" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write a string to this <a class="reference internal" href="#mako.runtime.Context" title="mako.runtime.Context"><code class="xref py py-class docutils literal notranslate"><span class="pre">Context</span></code></a> object’s
 underlying output buffer.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mako.runtime.Context.writer">
-<code class="sig-name descname">writer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mako.runtime.Context.writer" title="Permalink to this definition">¶</a></dt>
+<em class="property">method </em><a class="reference internal" href="#mako.runtime.Context"><code class="docutils literal notranslate"><span class="pre">mako.runtime.Context.</span></code></a><code class="sig-name descname">writer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mako.runtime.Context.writer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the current writer function.</p>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="mako.runtime.LoopContext">
-<em class="property">class </em><code class="sig-prename descclassname">mako.runtime.</code><code class="sig-name descname">LoopContext</code><span class="sig-paren">(</span><em class="sig-param">iterable</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.runtime.LoopContext" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">mako.runtime.</code><code class="sig-name descname">LoopContext</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">iterable</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mako.runtime.LoopContext" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A magic loop variable.
 Automatically accessible in any <code class="docutils literal notranslate"><span class="pre">%</span> <span class="pre">for</span></code> block.</p>
@@ -640,15 +662,15 @@ notes.</p>
 <dt><code class="xref py py-attr docutils literal notranslate"><span class="pre">odd</span></code> -&gt; <cite>bool</cite></dt><dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> when <code class="docutils literal notranslate"><span class="pre">index</span></code> is odd.</p>
 </dd>
 </dl>
-<dl class="method">
+<dl class="py method">
 <dt id="mako.runtime.LoopContext.cycle">
-<code class="sig-name descname">cycle</code><span class="sig-paren">(</span><em class="sig-param">*values</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.runtime.LoopContext.cycle" title="Permalink to this definition">¶</a></dt>
+<em class="property">method </em><a class="reference internal" href="#mako.runtime.LoopContext"><code class="docutils literal notranslate"><span class="pre">mako.runtime.LoopContext.</span></code></a><code class="sig-name descname">cycle</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">values</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mako.runtime.LoopContext.cycle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Cycle through values as the loop progresses.</p>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="mako.runtime.Undefined">
 <em class="property">class </em><code class="sig-prename descclassname">mako.runtime.</code><code class="sig-name descname">Undefined</code><a class="headerlink" href="#mako.runtime.Undefined" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
@@ -673,7 +695,7 @@ object.</p>
 
     <div id="docs-copyright">
         &copy; Copyright the Mako authors and contributors.
-        Documentation generated using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2
+        Documentation generated using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.4.3
         with Mako templates.
     </div>
 </div>
@@ -688,7 +710,7 @@ object.</p>
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
           URL_ROOT:    './',
-          VERSION:     '1.0.14',
+          VERSION:     '1.1.4',
           COLLAPSE_MODINDEX: false,
           FILE_SUFFIX: '.html'
       };
@@ -700,7 +722,6 @@ object.</p>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
     <!-- end iterate through sphinx environment script_files -->
 
     <script type="text/javascript" src="_static/detectmobile.js"></script>

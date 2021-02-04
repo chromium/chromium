@@ -63,6 +63,7 @@ class ExtractMakoTestCase(TemplateTest):
     @skip()
     def test_extract(self):
         mako_tmpl = open(os.path.join(template_base, "gettext.mako"))
+        self.addCleanup(mako_tmpl.close)
         messages = list(
             extract(
                 mako_tmpl,
@@ -103,6 +104,7 @@ class ExtractMakoTestCase(TemplateTest):
         mako_tmpl = open(
             os.path.join(template_base, "gettext_utf8.mako"), "rb"
         )
+        self.addCleanup(mako_tmpl.close)
         message = next(
             extract(mako_tmpl, set(["_", None]), [], {"encoding": "utf-8"})
         )
@@ -113,6 +115,7 @@ class ExtractMakoTestCase(TemplateTest):
         mako_tmpl = open(
             os.path.join(template_base, "gettext_cp1251.mako"), "rb"
         )
+        self.addCleanup(mako_tmpl.close)
         message = next(
             extract(mako_tmpl, set(["_", None]), [], {"encoding": "cp1251"})
         )

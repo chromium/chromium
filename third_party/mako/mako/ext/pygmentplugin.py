@@ -1,5 +1,5 @@
 # ext/pygmentplugin.py
-# Copyright 2006-2019 the Mako authors and contributors <see AUTHORS file>
+# Copyright 2006-2020 the Mako authors and contributors <see AUTHORS file>
 #
 # This module is part of Mako and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -59,7 +59,7 @@ class MakoLexer(RegexLexer):
             ),
             (r"<%(?=([\w\.\:]+))", Comment.Preproc, "ondeftags"),
             (
-                r"(<%(?:!?))(.*?)(%>)(?s)",
+                r"(?s)(<%(?:!?))(.*?)(%>)",
                 bygroups(Comment.Preproc, using(PythonLexer), Comment.Preproc),
             ),
             (

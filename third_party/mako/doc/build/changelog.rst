@@ -1,6 +1,127 @@
+
 =========
 Changelog
 =========
+
+1.1
+===
+
+.. changelog::
+    :version: 1.1.4
+    :released: Thu Jan 14 2021
+
+    .. change::
+        :tags: bug, py3k
+        :tickets: 328
+
+        Fixed Python deprecation issues related to module importing, as well as
+        file access within the Lingua plugin, for deprecated APIs that began to
+        emit warnings under Python 3.10.  Pull request courtesy Petr Viktorin.
+
+.. changelog::
+    :version: 1.1.3
+    :released: Fri May 29 2020
+
+    .. change::
+        :tags: bug, templates
+        :tickets: 267
+
+        The default template encoding is now utf-8.  Previously, the encoding was
+        "ascii", which was standard throughout Python 2.   This allows that
+        "magic encoding comment" for utf-8 templates is no longer required.
+
+
+.. changelog::
+    :version: 1.1.2
+    :released: Sun Mar 1 2020
+
+    .. change::
+        :tags: feature, commands
+        :tickets: 283
+
+        Added --output-file argument to the Mako command line runner, which allows
+        a specific output file to be selected.  Pull request courtesy Björn
+        Dahlgren.
+
+.. changelog::
+    :version: 1.1.1
+    :released: Mon Jan 20 2020
+
+    .. change::
+        :tags: bug, py3k
+        :tickets: 310
+
+        Replaced usage of the long-superseded "parser.suite" module in the
+        mako.util package for parsing the python magic encoding comment with the
+        "ast.parse" function introduced many years ago in Python 2.5, as
+        "parser.suite" is emitting deprecation warnings in Python 3.9.
+
+
+
+    .. change::
+        :tags: bug, ext
+        :tickets: 304
+
+        Added "babel" and "lingua" dependency entries to the setuptools entrypoints
+        for the babel and lingua extensions, so that pkg_resources can check that
+        these extra dependencies are available, raising an informative
+        exception if not.  Pull request courtesy sinoroc.
+
+
+
+.. changelog::
+    :version: 1.1.0
+    :released: Thu Aug 1 2019
+
+    .. change::
+        :tags: bug, py3k, windows
+        :tickets: 301
+
+        Replaced usage of time.clock() on windows as well as time.time() elsewhere
+        for microsecond timestamps with timeit.default_timer(), as time.clock() is
+        being removed in Python 3.8.   Pull request courtesy Christoph Reiter.
+
+
+    .. change::
+        :tags: bug, py3k
+        :tickets: 295
+
+        Replaced usage of ``inspect.getfullargspec()`` with the vendored version
+        used by SQLAlchemy, Alembic to avoid future deprecation warnings.  Also
+        cleans up an additional version of the same function that's apparently
+        been floating around for some time.
+
+
+    .. change::
+        :tags: changed, setup
+        :tickets: 303
+
+        Removed the "python setup.py test" feature in favor of a straight run of
+        "tox".   Per Pypa / pytest developers, "setup.py" commands are in general
+        headed towards deprecation in favor of tox.  The tox.ini script has been
+        updated such that running "tox" with no arguments will perform a single run
+        of the test suite against the default installed Python interpreter.
+
+        .. seealso::
+
+            https://github.com/pypa/setuptools/issues/1684
+
+            https://github.com/pytest-dev/pytest/issues/5534
+
+    .. change::
+        :tags: changed, py3k, installer
+        :tickets: 249
+
+        Mako 1.1 now supports Python versions:
+
+        * 2.7
+        * 3.4 and higher
+
+        This includes that setup.py no longer includes any conditionals, allowing
+        for a pure Python wheel build, however this is not necessarily part of the
+        Pypi release process as of yet.  The test suite also raises for Python
+        deprecation warnings.
+
 
 1.0
 ===
@@ -65,7 +186,7 @@ Changelog
     :released: Fri May 31 2019
 
     .. change::
-        :tags: change
+        :tags: changed
 
         Updated for additional project metadata in setup.py.   Additionally,
         the code has been reformatted using Black and zimports.
@@ -1016,7 +1137,7 @@ Older Versions
         :tags:
         :tickets: 148
 
-      Fixed missing **extra collection in
+      Fixed missing \**extra collection in
       setup.py which prevented setup.py
       from running 2to3 on install.
 
@@ -1269,7 +1390,7 @@ Older Versions
       The <%page args> tag can now be used in a base
       inheriting template - the full set of render()
       arguments are passed down through the inherits
-      chain.  Undeclared arguments go into **pageargs
+      chain.  Undeclared arguments go into \**pageargs
       as usual.
 
     .. change::
@@ -1624,16 +1745,16 @@ Older Versions
 
       added "attr" accessor to namespaces. Returns
       attributes configured as module level attributes, i.e.
-      within <%! %> sections.  i.e.:
+      within <%! %> sections.  i.e.::
 
-      # somefile.html
-      <%!
-          foo = 27
-      %>
+        # somefile.html
+        <%!
+            foo = 27
+        %>
 
-      # some other template
-      <%namespace name="myns" file="somefile.html"/>
-      ${myns.attr.foo}
+        # some other template
+        <%namespace name="myns" file="somefile.html"/>
+        ${myns.attr.foo}
 
       The slight backwards incompatibility here is, you
       can't have namespace defs named "attr" since the
@@ -2027,7 +2148,7 @@ Older Versions
         :tickets:
 
       <%include> plus arguments is also programmatically available via
-      self.include_file(<filename>, **kwargs)
+      self.include_file(<filename>, \**kwargs)
 
     .. change::
         :tags:

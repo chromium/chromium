@@ -1,5 +1,5 @@
 # mako/runtime.py
-# Copyright 2006-2019 the Mako authors and contributors <see AUTHORS file>
+# Copyright 2006-2020 the Mako authors and contributors <see AUTHORS file>
 #
 # This module is part of Mako and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -7,6 +7,7 @@
 """provides runtime services for templates, including Context,
 Namespace, and various helper functions."""
 
+import functools
 import sys
 
 from mako import compat
@@ -37,7 +38,7 @@ class Context(object):
 
         # "capture" function which proxies to the
         # generic "capture" function
-        self._data["capture"] = compat.partial(capture, self)
+        self._data["capture"] = functools.partial(capture, self)
 
         # "caller" stack used by def calls with content
         self.caller_stack = self._data["caller"] = CallerStack()
@@ -625,7 +626,7 @@ class TemplateNamespace(Namespace):
 
         def get(key):
             callable_ = self.template._get_def_callable(key)
-            return compat.partial(callable_, self.context)
+            return functools.partial(callable_, self.context)
 
         for k in self.template.module._exports:
             yield (k, get(k))
@@ -635,7 +636,7 @@ class TemplateNamespace(Namespace):
             val = self.callables[key]
         elif self.template.has_def(key):
             callable_ = self.template._get_def_callable(key)
-            val = compat.partial(callable_, self.context)
+            val = functools.partial(callable_, self.context)
         elif self.inherits:
             val = getattr(self.inherits, key)
 
@@ -686,15 +687,15 @@ class ModuleNamespace(Namespace):
         for key in dir(self.module):
             if key[0] != "_":
                 callable_ = getattr(self.module, key)
-                if compat.callable(callable_):
-                    yield key, compat.partial(callable_, self.context)
+                if callable(callable_):
+                    yield key, functools.partial(callable_, self.context)
 
     def __getattr__(self, key):
         if key in self.callables:
             val = self.callables[key]
         elif hasattr(self.module, key):
             callable_ = getattr(self.module, key)
-            val = compat.partial(callable_, self.context)
+            val = functools.partial(callable_, self.context)
         elif self.inherits:
             val = getattr(self.inherits, key)
         else:
@@ -731,7 +732,7 @@ def capture(context, callable_, *args, **kwargs):
 
     """
 
-    if not compat.callable(callable_):
+    if not callable(callable_):
         raise exceptions.RuntimeException(
             "capture() function expects a callable as "
             "its argument (i.e. capture(func, *args, **kwargs))"
@@ -885,7 +886,7 @@ def _render(template, callable_, args, data, as_unicode=False):
 
 
 def _kwargs_for_callable(callable_, data):
-    argspec = compat.inspect_func_args(callable_)
+    argspec = compat.inspect_getargspec(callable_)
     # for normal pages, **pageargs is usually present
     if argspec[2]:
         return data
@@ -900,7 +901,7 @@ def _kwargs_for_callable(callable_, data):
 
 
 def _kwargs_for_include(callable_, data, **kwargs):
-    argspec = compat.inspect_func_args(callable_)
+    argspec = compat.inspect_getargspec(callable_)
     namedargs = argspec[0] + [v for v in argspec[1:3] if v is not None]
     for arg in namedargs:
         if arg != "context" and arg in data and arg not in kwargs:

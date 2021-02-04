@@ -1,41 +1,52 @@
 # mako/compat.py
-# Copyright 2006-2019 the Mako authors and contributors <see AUTHORS file>
+# Copyright 2006-2020 the Mako authors and contributors <see AUTHORS file>
 #
 # This module is part of Mako and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 
-import json  # noqa
+import collections
+import inspect
 import sys
-import time
 
 py3k = sys.version_info >= (3, 0)
-py33 = sys.version_info >= (3, 3)
 py2k = sys.version_info < (3,)
 py27 = sys.version_info >= (2, 7)
 jython = sys.platform.startswith("java")
 win32 = sys.platform.startswith("win")
 pypy = hasattr(sys, "pypy_version_info")
 
-if py3k:
-    # create a "getargspec" from getfullargspec(), which is not deprecated
-    # in Py3K; getargspec() has started to emit warnings as of Py3.5.
-    # As of Py3.4, now they are trying to move from getfullargspec()
-    # to "signature()", but getfullargspec() is not deprecated, so stick
-    # with that for now.
-
-    import collections
-
-    ArgSpec = collections.namedtuple(
-        "ArgSpec", ["args", "varargs", "keywords", "defaults"]
-    )
-    from inspect import getfullargspec as inspect_getfullargspec
-
-    def inspect_getargspec(func):
-        return ArgSpec(*inspect_getfullargspec(func)[0:4])
+ArgSpec = collections.namedtuple(
+    "ArgSpec", ["args", "varargs", "keywords", "defaults"]
+)
 
 
-else:
-    from inspect import getargspec as inspect_getargspec  # noqa
+def inspect_getargspec(func):
+    """getargspec based on fully vendored getfullargspec from Python 3.3."""
+
+    if inspect.ismethod(func):
+        func = func.__func__
+    if not inspect.isfunction(func):
+        raise TypeError("{!r} is not a Python function".format(func))
+
+    co = func.__code__
+    if not inspect.iscode(co):
+        raise TypeError("{!r} is not a code object".format(co))
+
+    nargs = co.co_argcount
+    names = co.co_varnames
+    nkwargs = co.co_kwonlyargcount if py3k else 0
+    args = list(names[:nargs])
+
+    nargs += nkwargs
+    varargs = None
+    if co.co_flags & inspect.CO_VARARGS:
+        varargs = co.co_varnames[nargs]
+        nargs = nargs + 1
+    varkw = None
+    if co.co_flags & inspect.CO_VARKEYWORDS:
+        varkw = co.co_varnames[nargs]
+
+    return ArgSpec(args, varargs, varkw, func.__defaults__)
 
 
 if py3k:
@@ -87,12 +98,21 @@ else:
         return eval("0" + lit)
 
 
-if py33:
-    from importlib import machinery
+if py3k:
+    from importlib import machinery, util
 
-    def load_module(module_id, path):
-        return machinery.SourceFileLoader(module_id, path).load_module()
-
+    if hasattr(util, 'module_from_spec'):
+        # Python 3.5+
+        def load_module(module_id, path):
+            spec = util.spec_from_file_location(module_id, path)
+            module = util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            return module
+    else:
+        def load_module(module_id, path):
+            module = machinery.SourceFileLoader(module_id, path).load_module()
+            del sys.modules[module_id]
+            return module
 
 else:
     import imp
@@ -100,7 +120,9 @@ else:
     def load_module(module_id, path):
         fp = open(path, "rb")
         try:
-            return imp.load_source(module_id, path, fp)
+            module = imp.load_source(module_id, path, fp)
+            del sys.modules[module_id]
+            return module
         finally:
             fp.close()
 
@@ -126,88 +148,11 @@ def exception_as():
     return sys.exc_info()[1]
 
 
-try:
-    import threading
-
-    if py3k:
-        import _thread as thread
-    else:
-        import thread
-except ImportError:
-    import dummy_threading as threading  # noqa
-
-    if py3k:
-        import _dummy_thread as thread
-    else:
-        import dummy_thread as thread  # noqa
-
-if win32 or jython:
-    time_func = time.clock
-else:
-    time_func = time.time
-
-try:
-    from functools import partial
-except:
-
-    def partial(func, *args, **keywords):
-        def newfunc(*fargs, **fkeywords):
-            newkeywords = keywords.copy()
-            newkeywords.update(fkeywords)
-            return func(*(args + fargs), **newkeywords)
-
-        return newfunc
-
-
 all = all  # noqa
 
 
 def exception_name(exc):
     return exc.__class__.__name__
-
-
-try:
-    from inspect import CO_VARKEYWORDS, CO_VARARGS
-
-    def inspect_func_args(fn):
-        if py3k:
-            co = fn.__code__
-        else:
-            co = fn.func_code
-
-        nargs = co.co_argcount
-        names = co.co_varnames
-        args = list(names[:nargs])
-
-        varargs = None
-        if co.co_flags & CO_VARARGS:
-            varargs = co.co_varnames[nargs]
-            nargs = nargs + 1
-        varkw = None
-        if co.co_flags & CO_VARKEYWORDS:
-            varkw = co.co_varnames[nargs]
-
-        if py3k:
-            return args, varargs, varkw, fn.__defaults__
-        else:
-            return args, varargs, varkw, fn.func_defaults
-
-
-except ImportError:
-    import inspect
-
-    def inspect_func_args(fn):
-        return inspect.getargspec(fn)
-
-
-if py3k:
-    # TODO: this has been restored in py3k
-    def callable(fn):  # noqa
-        return hasattr(fn, "__call__")
-
-
-else:
-    callable = callable  # noqa
 
 
 ################################################
