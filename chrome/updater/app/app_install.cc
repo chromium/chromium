@@ -21,7 +21,6 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
-#include "chrome/updater/registration_data.h"
 #include "chrome/updater/setup.h"
 #include "chrome/updater/tag.h"
 #include "chrome/updater/update_service.h"
@@ -140,23 +139,6 @@ void AppInstall::WakeCandidate() {
         app_install->WakeCandidateDone();
       },
       update_service_internal, base::WrapRefCounted(this)));
-}
-
-void AppInstall::RegisterUpdater() {
-  RegistrationRequest registration_request;
-  registration_request.app_id = kUpdaterAppId;
-  registration_request.version = base::Version(UPDATER_VERSION_STRING);
-
-  scoped_refptr<UpdateService> update_service = CreateUpdateService();
-  update_service->RegisterApp(
-      registration_request,
-      base::BindOnce(&AppInstall::RegisterUpdaterDone, this, update_service));
-}
-
-void AppInstall::RegisterUpdaterDone(scoped_refptr<UpdateService>,
-                                     const RegistrationResponse& response) {
-  VLOG(1) << "Updater registration complete, code = " << response.status_code;
-  MaybeInstallApp();
 }
 
 void AppInstall::MaybeInstallApp() {

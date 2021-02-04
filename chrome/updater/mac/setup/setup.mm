@@ -158,7 +158,7 @@ base::ScopedCFTypeRef<CFDictionaryRef> CreateUpdateServiceInternalLaunchdPlist(
                                    kLoggingModuleSwitchValue),
     ],
     @LAUNCH_JOBKEY_MACHSERVICES : @{GetUpdateServiceInternalMachName() : @YES},
-    @LAUNCH_JOBKEY_ABANDONPROCESSGROUP : @NO,
+    @LAUNCH_JOBKEY_ABANDONPROCESSGROUP : @YES,
     @LAUNCH_JOBKEY_LIMITLOADTOSESSIONTYPE : @"Aqua"
   };
 
@@ -361,7 +361,7 @@ void UninstallOtherVersions() {
 
     if (base::PathExists(version_executable_path)) {
       base::CommandLine command_line(version_executable_path);
-      command_line.AppendSwitchASCII(kUninstallSwitch, "self");
+      command_line.AppendSwitch(kUninstallSelfSwitch);
       command_line.AppendSwitch("--enable-logging");
       command_line.AppendSwitchASCII("--vmodule", "*/chrome/updater/*=2");
 

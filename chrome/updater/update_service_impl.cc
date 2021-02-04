@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
@@ -167,6 +168,14 @@ void UpdateServiceImpl::RegisterApp(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   persisted_data_->RegisterApp(request);
+  if (!base::Contains(persisted_data_->GetAppIds(), kUpdaterAppId)) {
+    RegistrationRequest updater_request;
+    updater_request.app_id = kUpdaterAppId;
+    updater_request.version = base::Version(UPDATER_VERSION_STRING);
+    persisted_data_->RegisterApp(updater_request);
+    update_client_->SendRegistrationPing(
+        updater_request.app_id, updater_request.version, base::DoNothing());
+  }
 
   update_client_->SendRegistrationPing(request.app_id, request.version,
                                        base::DoNothing());

@@ -5,10 +5,16 @@
 #include "chrome/updater/app/app_server.h"
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "base/bind.h"
+#include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/process/launch.h"
+#include "base/process/process.h"
 #include "base/version.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
@@ -48,7 +54,7 @@ base::OnceClosure AppServer::ModeCheck() {
 
   if (this_version < active_version) {
     global_prefs = nullptr;
-    uninstall_ = true;
+    uninstall_self_ = true;
     return base::BindOnce(&AppServer::ActiveDuty, this,
                           MakeInactiveUpdateService(),
                           MakeInactiveUpdateServiceInternal());
@@ -77,9 +83,35 @@ base::OnceClosure AppServer::ModeCheck() {
 void AppServer::Uninitialize() {
   if (config_)
     PrefsCommitPendingWrites(config_->GetPrefService());
-  if (uninstall_) {
+  if (uninstall_self_) {
     VLOG(1) << "Uninstalling version " << UPDATER_VERSION_STRING;
     UninstallSelf();
+  } else {
+    MaybeUninstall();
+  }
+}
+
+void AppServer::MaybeUninstall() {
+  if (!config_)
+    return;
+
+  auto persisted_data =
+      base::MakeRefCounted<PersistedData>(config_->GetPrefService());
+  const std::vector<std::string> app_ids = persisted_data->GetAppIds();
+  if (app_ids.size() == 1 && base::Contains(app_ids, kUpdaterAppId)) {
+    base::CommandLine command_line(
+        base::CommandLine::ForCurrentProcess()->GetProgram());
+    command_line.AppendSwitch(kUninstallIfUnusedSwitch);
+    command_line.AppendSwitch("--enable-logging");
+    command_line.AppendSwitchASCII("--vmodule", "*/chrome/updater/*=2");
+    DVLOG(2) << "Launching uninstall command: "
+             << command_line.GetCommandLineString();
+
+    base::Process process = base::LaunchProcess(command_line, {});
+    if (!process.IsValid()) {
+      DVLOG(2) << "Invalid process launching command: "
+               << command_line.GetCommandLineString();
+    }
   }
 }
 
@@ -105,12 +137,6 @@ bool AppServer::SwapVersions(GlobalPrefs* global_prefs) {
   if (!result)
     return false;
   global_prefs->SetActiveVersion(UPDATER_VERSION_STRING);
-  scoped_refptr<PersistedData> persisted_data =
-      base::MakeRefCounted<PersistedData>(global_prefs->GetPrefService());
-  if (!persisted_data->GetProductVersion(kUpdaterAppId).IsValid()) {
-    persisted_data->SetProductVersion(kUpdaterAppId,
-                                      base::Version(UPDATER_VERSION_STRING));
-  }
   global_prefs->SetSwapping(false);
   PrefsCommitPendingWrites(global_prefs->GetPrefService());
   return true;

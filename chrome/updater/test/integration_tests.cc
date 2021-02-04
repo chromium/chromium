@@ -5,6 +5,7 @@
 #include "chrome/updater/test/integration_tests.h"
 
 #include <cstdlib>
+#include <memory>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -283,6 +284,9 @@ TEST_F(IntegrationTest, UnregisterUninstalledApp) {
   ExpectActiveVersion(UPDATER_VERSION_STRING);
   ExpectActive();
 
+  RegisterApp("test1");
+  RegisterApp("test2");
+
   {
     std::unique_ptr<GlobalPrefs> global_prefs = CreateGlobalPrefs();
     auto persisted_data =
@@ -300,6 +304,9 @@ TEST_F(IntegrationTest, UnregisterUninstalledApp) {
 
   RunWake(0);
 
+  SleepFor(13);
+  ExpectInstalled();
+
   {
     std::unique_ptr<GlobalPrefs> global_prefs = CreateGlobalPrefs();
     auto persisted_data =
@@ -309,6 +316,35 @@ TEST_F(IntegrationTest, UnregisterUninstalledApp) {
   }
 
   Uninstall();
+  Clean();
+}
+
+TEST_F(IntegrationTest, UninstallUpdaterWhenAllAppsUninstalled) {
+  RegisterTestApp();
+  ExpectInstalled();
+  ExpectActiveVersion(UPDATER_VERSION_STRING);
+  ExpectActive();
+
+  {
+    std::unique_ptr<GlobalPrefs> global_prefs = CreateGlobalPrefs();
+    auto persisted_data =
+        base::MakeRefCounted<PersistedData>(global_prefs->GetPrefService());
+    const base::FilePath fake_ecp =
+        persisted_data->GetExistenceCheckerPath(kTestAppId)
+            .Append(FILE_PATH_LITERAL("NOT_THERE"));
+    persisted_data->SetExistenceCheckerPath(kTestAppId, fake_ecp);
+
+    PrefsCommitPendingWrites(global_prefs->GetPrefService());
+
+    EXPECT_EQ(fake_ecp.value(),
+              persisted_data->GetExistenceCheckerPath(kTestAppId).value());
+  }
+
+  RunWake(0);
+
+  SleepFor(13);
+
+  ExpectClean();
   Clean();
 }
 

@@ -83,6 +83,12 @@ extern const char kInstallFromOutDir[];
 // Uninstalls the updater.
 extern const char kUninstallSwitch[];
 
+// Uninstalls this version of the updater.
+extern const char kUninstallSelfSwitch[];
+
+// Uninstalls the updater if no apps are managed by it.
+extern const char kUninstallIfUnusedSwitch[];
+
 // Kicks off the update service. This switch is typically used for by a
 // scheduled to invoke the updater periodically.
 extern const char kWakeSwitch[];

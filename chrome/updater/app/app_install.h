@@ -21,7 +21,6 @@ class Version;
 
 namespace updater {
 
-struct RegistrationResponse;
 class UpdateService;
 
 // This class defines an interface for installing an application. The interface
@@ -65,11 +64,6 @@ class AppInstall : public App {
   void WakeCandidate();
 
   void WakeCandidateDone();
-
-  void RegisterUpdater();
-
-  void RegisterUpdaterDone(scoped_refptr<UpdateService>,
-                           const RegistrationResponse& response);
 
   // Handles the --tag and --app-id command line arguments, and triggers
   // installing of the corresponding application if either argument is present.

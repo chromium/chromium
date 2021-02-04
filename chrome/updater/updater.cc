@@ -113,7 +113,9 @@ int HandleUpdaterCommands(const base::CommandLine* command_line) {
     return MakeAppInstall()->Run();
   }
 
-  if (command_line->HasSwitch(kUninstallSwitch))
+  if (command_line->HasSwitch(kUninstallSwitch) ||
+      command_line->HasSwitch(kUninstallSelfSwitch) ||
+      command_line->HasSwitch(kUninstallIfUnusedSwitch))
     return MakeAppUninstall()->Run();
 
   if (command_line->HasSwitch(kWakeSwitch)) {
