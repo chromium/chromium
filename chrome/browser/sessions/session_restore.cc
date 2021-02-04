@@ -34,6 +34,7 @@
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/sessions/session_restore_delegate.h"
@@ -97,6 +98,36 @@ bool HasSingleNewTabPage(Browser* browser) {
 
 // Pointers to SessionRestoreImpls which are currently restoring the session.
 std::set<SessionRestoreImpl*>* active_session_restorers = nullptr;
+
+// Iterate different reasons for browser creation failure and crash in all
+// cases to provide more info on the root cause of the issue.
+// TODO(https://crbug.com/1172760): Remove this function when the root cause is
+// found.
+void CrashAndReportBrowserCreationIssue(Profile* profile) {
+  Browser::CreationStatus browser_creation_status =
+      Browser::GetCreationStatusForProfile(profile);
+  base::debug::Alias(&browser_creation_status);
+  // Maybe there is a flaky situation, so check OK as well.
+  CHECK_NE(browser_creation_status, Browser::CreationStatus::kOk);
+  CHECK_NE(browser_creation_status, Browser::CreationStatus::kErrorNoProcess);
+  CHECK_NE(browser_creation_status,
+           Browser::CreationStatus::kErrorLoadingKiosk);
+  CHECK_EQ(browser_creation_status,
+           Browser::CreationStatus::kErrorProfileUnsuitable);
+
+  // If creation status is none of the above, it's due to profile type, so
+  // iterate the types.
+  int profile_type =
+      static_cast<int>(ProfileMetrics::GetBrowserProfileType(profile));
+  base::debug::Alias(&profile_type);
+
+  CHECK_NE(profile_type, 0);
+  CHECK_NE(profile_type, 1);
+  CHECK_NE(profile_type, 2);
+  CHECK_NE(profile_type, 3);
+  CHECK_NE(profile_type, 4);
+  CHECK_NE(profile_type, 5);
+}
 
 }  // namespace
 
@@ -292,6 +323,12 @@ class SessionRestoreImpl : public BrowserListObserver {
                                std::vector<RestoredTab>* contents_created) {
     Browser* browser = nullptr;
     if (!created_tabbed_browser && always_create_tabbed_browser_) {
+      // TODO(https://crbug.com/1172760): Update after the root cause is found.
+      if (Browser::GetCreationStatusForProfile(profile_) !=
+          Browser::CreationStatus::kOk) {
+        CrashAndReportBrowserCreationIssue(profile_);
+        NOTREACHED();
+      }
       browser = Browser::Create(Browser::CreateParams(profile_, false));
       if (urls_to_open_.empty()) {
         // No tab browsers were created and no URLs were supplied on the command
