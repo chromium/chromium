@@ -22,10 +22,13 @@
   }
 
 <if expr="chromeos">
-  /* Content of the webview already has 64px border, add negative margin to make
-   * distance to the top 64px. */
   #addAccount {
+    /* Content of the webview already has 64px border, add negative margin to
+     * make distance to the top 64px. */
     margin-top: calc(-1 * var(--dialog-top-border-size));
+    /* margin-bottom = padding below button + button height
+     *                 + padding above button. */
+    margin-bottom: calc(3 * 32px);
   }
   /* Make distance to the top 64px. */
   #welcome {
