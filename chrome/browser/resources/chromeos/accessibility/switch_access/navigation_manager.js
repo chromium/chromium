@@ -120,7 +120,7 @@ export class NavigationManager extends NavigatorInterface {
   }
 
   /** @override */
-  getTreeForDebugging(wholeTree) {
+  getTreeForDebugging(wholeTree = true) {
     if (!wholeTree) {
       console.log(this.group_.debugString(wholeTree));
       return this.group_;

@@ -116,6 +116,8 @@ export class Navigator {
   /** @param {!NavigatorInterface} instance */
   static setSingletonInstance(instance) {
     Navigator.instance_ = instance;
+    window.getTreeForDebugging =
+        Navigator.instance_.getTreeForDebugging.bind(Navigator.instance_);
   }
 
   /** @type {!NavigatorInterface} instance */
