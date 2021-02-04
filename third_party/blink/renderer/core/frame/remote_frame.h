@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_REMOTE_FRAME_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_REMOTE_FRAME_H_
 
+#include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink-forward.h"
@@ -197,6 +198,9 @@ class CORE_EXPORT RemoteFrame final : public Frame,
   void EnableAutoResize(const gfx::Size& min_size,
                         const gfx::Size& max_size) override;
   void DisableAutoResize() override;
+  void DidUpdateVisualProperties(
+      const cc::RenderFrameMetadata& metadata) override;
+  void SetFrameSinkId(const viz::FrameSinkId& frame_sink_id) override;
 
   // Called only when this frame has a local frame owner.
   IntSize GetMainFrameViewportSize() const override;
@@ -217,6 +221,8 @@ class CORE_EXPORT RemoteFrame final : public Frame,
   RemoteFrameToken GetRemoteFrameToken() const {
     return RemoteFrameToken(GetFrameToken());
   }
+
+  const viz::LocalSurfaceId& GetLocalSurfaceId() const;
 
   viz::FrameSinkId GetFrameSinkId();
 
@@ -249,6 +255,10 @@ class CORE_EXPORT RemoteFrame final : public Frame,
   bool is_surface_layer_ = false;
   ParsedFeaturePolicy feature_policy_header_;
   String unique_name_;
+
+  viz::FrameSinkId frame_sink_id_;
+  std::unique_ptr<viz::ParentLocalSurfaceIdAllocator>
+      parent_local_surface_id_allocator_;
 
   InterfaceRegistry* const interface_registry_;
 

@@ -12,7 +12,6 @@
 #include "base/command_line.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
-#include "components/viz/common/surfaces/local_surface_id.h"
 #include "content/common/content_switches_internal.h"
 #include "content/common/input_messages.h"
 #include "content/public/common/content_client.h"
@@ -223,11 +222,7 @@ RenderFrameProxy* RenderFrameProxy::FromWebFrame(
 RenderFrameProxy::RenderFrameProxy(AgentSchedulingGroup& agent_scheduling_group,
                                    int routing_id)
     : agent_scheduling_group_(agent_scheduling_group),
-      routing_id_(routing_id),
-      // TODO(samans): Investigate if it is safe to delay creation of this
-      // object until a FrameSinkId is provided.
-      parent_local_surface_id_allocator_(
-          std::make_unique<viz::ParentLocalSurfaceIdAllocator>()) {
+      routing_id_(routing_id) {
   std::pair<RoutingIDProxyMap::iterator, bool> result =
       g_routing_id_proxy_map.Get().insert(std::make_pair(routing_id_, this));
   CHECK(result.second) << "Inserting a duplicate item.";
@@ -259,10 +254,6 @@ void RenderFrameProxy::Init(blink::WebRemoteFrame* web_frame,
 
   if (parent_is_local)
     compositing_helper_ = std::make_unique<ChildFrameCompositingHelper>(this);
-}
-
-viz::FrameSinkId RenderFrameProxy::GetFrameSinkId() const {
-  return frame_sink_id_;
 }
 
 void RenderFrameProxy::SetReplicatedState(
@@ -353,39 +344,19 @@ void RenderFrameProxy::DidStartLoading() {
   web_frame_->DidStartLoading();
 }
 
-void RenderFrameProxy::DidUpdateVisualProperties(
-    const cc::RenderFrameMetadata& metadata) {
-  if (!parent_local_surface_id_allocator_->UpdateFromChild(
-          metadata.local_surface_id.value_or(viz::LocalSurfaceId()))) {
-    return;
-  }
-
-  // The viz::LocalSurfaceId has changed so we call SynchronizeVisualProperties
-  // here to embed it.
-  web_frame_->SynchronizeVisualProperties();
-}
-
-void RenderFrameProxy::SetFrameSinkId(const viz::FrameSinkId& frame_sink_id) {
-  FrameSinkIdChanged(frame_sink_id);
-}
-
 void RenderFrameProxy::WillSynchronizeVisualProperties(
-    bool synchronized_props_changed,
     bool capture_sequence_number_changed,
+    const viz::SurfaceId& surface_id,
     const gfx::Size& compositor_viewport_size) {
   DCHECK(ancestor_web_frame_widget_);
-  DCHECK(frame_sink_id_.is_valid());
+  DCHECK(surface_id.is_valid());
   DCHECK(!remote_process_gone_);
-
-  if (synchronized_props_changed)
-    parent_local_surface_id_allocator_->GenerateId();
 
   // If we're synchronizing surfaces, then use an infinite deadline to ensure
   // everything is synchronized.
   cc::DeadlinePolicy deadline = capture_sequence_number_changed
                                     ? cc::DeadlinePolicy::UseInfiniteDeadline()
                                     : cc::DeadlinePolicy::UseDefaultDeadline();
-  viz::SurfaceId surface_id(frame_sink_id_, GetLocalSurfaceId());
   compositing_helper_->SetSurfaceId(surface_id, compositor_viewport_size,
                                     deadline);
 }
@@ -479,12 +450,12 @@ SkBitmap* RenderFrameProxy::GetSadPageBitmap() {
   return GetContentClient()->renderer()->GetSadWebViewBitmap();
 }
 
-const viz::LocalSurfaceId& RenderFrameProxy::GetLocalSurfaceId() const {
-  return parent_local_surface_id_allocator_->GetCurrentLocalSurfaceId();
-}
-
 bool RenderFrameProxy::RemoteProcessGone() const {
   return remote_process_gone_;
+}
+
+void RenderFrameProxy::DidSetFrameSinkId() {
+  remote_process_gone_ = false;
 }
 
 mojom::RenderFrameProxyHost* RenderFrameProxy::GetFrameProxyHost() {
@@ -507,22 +478,6 @@ RenderFrameProxy::GetRemoteAssociatedInterfaces() {
                 .DefaultTaskRunner());
   }
   return remote_associated_interfaces_.get();
-}
-
-void RenderFrameProxy::FrameSinkIdChanged(
-    const viz::FrameSinkId& frame_sink_id) {
-  remote_process_gone_ = false;
-  // The same ParentLocalSurfaceIdAllocator cannot provide LocalSurfaceIds for
-  // two different frame sinks, so recreate it here.
-  if (frame_sink_id_ != frame_sink_id) {
-    parent_local_surface_id_allocator_ =
-        std::make_unique<viz::ParentLocalSurfaceIdAllocator>();
-  }
-  frame_sink_id_ = frame_sink_id;
-
-  // Resend the FrameRects and allocate a new viz::LocalSurfaceId when the view
-  // changes.
-  web_frame_->ResendVisualProperties();
 }
 
 }  // namespace content

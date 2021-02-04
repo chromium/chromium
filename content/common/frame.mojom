@@ -22,7 +22,6 @@ import "services/network/public/mojom/url_loader.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
 import "services/service_manager/public/mojom/interface_provider.mojom";
-import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
 import "services/viz/public/mojom/compositing/surface_id.mojom";
 import "third_party/blink/public/mojom/blob/blob_url_store.mojom";
 import "third_party/blink/public/mojom/browser_interface_broker.mojom";
@@ -466,7 +465,6 @@ interface FrameHost {
   //                          frame tree
   [Sync] AdoptPortal(blink.mojom.PortalToken portal_token)
       => (int32 proxy_routing_id,
-          viz.mojom.FrameSinkId frame_sink_id,
           FrameReplicationState replicated_state,
           mojo_base.mojom.UnguessableToken frame_token,
           mojo_base.mojom.UnguessableToken devtools_frame_token);

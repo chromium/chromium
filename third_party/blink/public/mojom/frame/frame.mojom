@@ -5,6 +5,7 @@
 module blink.mojom;
 
 import "cc/mojom/browser_controls_state.mojom";
+import "cc/mojom/render_frame_metadata.mojom";
 import "cc/mojom/touch_action.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
@@ -16,6 +17,7 @@ import "services/network/public/mojom/cross_origin_opener_policy.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
 import "services/network/public/mojom/source_location.mojom";
 import "services/network/public/mojom/web_sandbox_flags.mojom";
+import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
 import "skia/public/mojom/skcolor.mojom";
 import "third_party/blink/public/mojom/ad_tagging/ad_frame.mojom";
 import "third_party/blink/public/mojom/blob/blob.mojom";
@@ -959,6 +961,14 @@ interface RemoteFrame {
   // Disables autoresize mode as requested by the parent frame's renderer
   // process.
   DisableAutoResize();
+
+  // Informs the completion of an autoresize transaction from the parent
+  // renderer and updates with the provided viz::LocalSurfaceId.
+  DidUpdateVisualProperties(cc.mojom.RenderFrameMetadata metadata);
+
+  // Notifies this remote frame that its associated compositing
+  // destination (RenderWidgetHostView) has changed.
+  SetFrameSinkId(viz.mojom.FrameSinkId frame_sink_id);
 };
 
 // Implemented in Blink, this interface defines main-frame-specific methods that

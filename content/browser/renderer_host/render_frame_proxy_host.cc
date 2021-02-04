@@ -480,7 +480,7 @@ void RenderFrameProxyHost::DisableAutoResize() {
 
 void RenderFrameProxyHost::DidUpdateVisualProperties(
     const cc::RenderFrameMetadata& metadata) {
-  GetAssociatedRenderFrameProxy()->DidUpdateVisualProperties(metadata);
+  GetAssociatedRemoteFrame()->DidUpdateVisualProperties(metadata);
 }
 
 void RenderFrameProxyHost::ChildProcessGone() {

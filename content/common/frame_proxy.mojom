@@ -5,9 +5,7 @@
 module content.mojom;
 
 import "ui/gfx/geometry/mojom/geometry.mojom";
-import "cc/mojom/render_frame_metadata.mojom";
 import "content/common/frame.mojom";
-import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
 
 // Mojo interface for communicating from RenderFrameProxy to
 // RenderFrameProxyHost. Implemented by the browser process, called by renderer
@@ -27,13 +25,4 @@ interface RenderFrameProxy {
   // Notifies the remote frame that the process rendering the child frame's
   // contents has terminated.
   ChildProcessGone();
-
-  // Informs the completion of an autoresize transaction from the parent
-  // renderer and updates with the provided viz::LocalSurfaceId.
-  DidUpdateVisualProperties(cc.mojom.RenderFrameMetadata metadata);
-
-  // This function notifies the remote frame that its associated
-  // compositing destination (RenderWidgetHostView) has changed.
-  SetFrameSinkId(viz.mojom.FrameSinkId frame_sink_id);
-
 };

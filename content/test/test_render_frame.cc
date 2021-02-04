@@ -163,7 +163,7 @@ class MockFrameHost : public mojom::FrameHost {
 
   void AdoptPortal(const blink::PortalToken&,
                    AdoptPortalCallback callback) override {
-    std::move(callback).Run(MSG_ROUTING_NONE, viz::FrameSinkId(),
+    std::move(callback).Run(MSG_ROUTING_NONE,
                             mojom::FrameReplicationState::New(),
                             base::UnguessableToken(), base::UnguessableToken());
   }

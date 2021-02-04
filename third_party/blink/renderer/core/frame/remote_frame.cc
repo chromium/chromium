@@ -109,6 +109,10 @@ RemoteFrame::RemoteFrame(
             frame_token,
             MakeGarbageCollected<RemoteWindowProxyManager>(*this),
             inheriting_agent_factory),
+      // TODO(samans): Investigate if it is safe to delay creation of this
+      // object until a FrameSinkId is provided.
+      parent_local_surface_id_allocator_(
+          std::make_unique<viz::ParentLocalSurfaceIdAllocator>()),
       interface_registry_(interface_registry
                               ? interface_registry
                               : InterfaceRegistry::GetEmptyInterfaceRegistry()),
@@ -770,8 +774,30 @@ void RemoteFrame::WasAttachedAsRemoteMainFrame() {
       &RemoteFrame::BindToMainFrameReceiver, WrapWeakPersistent(this)));
 }
 
+const viz::LocalSurfaceId& RemoteFrame::GetLocalSurfaceId() const {
+  return parent_local_surface_id_allocator_->GetCurrentLocalSurfaceId();
+}
+
 viz::FrameSinkId RemoteFrame::GetFrameSinkId() {
-  return Client()->GetFrameSinkId();
+  return frame_sink_id_;
+}
+
+void RemoteFrame::SetFrameSinkId(const viz::FrameSinkId& frame_sink_id) {
+  // This is a temporary workaround for https://crbug.com/1166729.
+  // TODO(https://crbug.com/1166722): Remove this once the migration is done.
+  Client()->DidSetFrameSinkId();
+
+  // The same ParentLocalSurfaceIdAllocator cannot provide LocalSurfaceIds for
+  // two different frame sinks, so recreate it here.
+  if (frame_sink_id_ != frame_sink_id) {
+    parent_local_surface_id_allocator_ =
+        std::make_unique<viz::ParentLocalSurfaceIdAllocator>();
+  }
+  frame_sink_id_ = frame_sink_id;
+
+  // Resend the FrameRects and allocate a new viz::LocalSurfaceId when the view
+  // changes.
+  ResendVisualProperties();
 }
 
 bool RemoteFrame::IsIgnoredForHitTest() const {
@@ -889,10 +915,15 @@ bool RemoteFrame::SynchronizeVisualProperties(bool propagate) {
       sent_visual_properties_->capture_sequence_number !=
           pending_visual_properties_.capture_sequence_number;
 
+  if (synchronized_props_changed)
+    parent_local_surface_id_allocator_->GenerateId();
+  pending_visual_properties_.local_surface_id = GetLocalSurfaceId();
+
+  viz::SurfaceId surface_id(frame_sink_id_,
+                            pending_visual_properties_.local_surface_id);
   Client()->WillSynchronizeVisualProperties(
-      synchronized_props_changed, capture_sequence_number_changed,
+      capture_sequence_number_changed, surface_id,
       pending_visual_properties_.compositor_viewport.size());
-  pending_visual_properties_.local_surface_id = Client()->GetLocalSurfaceId();
 
   bool rect_changed = !sent_visual_properties_ ||
                       sent_visual_properties_->screen_space_rect !=
@@ -925,6 +956,18 @@ void RemoteFrame::RecordSentVisualProperties() {
 
 void RemoteFrame::ResendVisualProperties() {
   sent_visual_properties_ = base::nullopt;
+  SynchronizeVisualProperties();
+}
+
+void RemoteFrame::DidUpdateVisualProperties(
+    const cc::RenderFrameMetadata& metadata) {
+  if (!parent_local_surface_id_allocator_->UpdateFromChild(
+          metadata.local_surface_id.value_or(viz::LocalSurfaceId()))) {
+    return;
+  }
+
+  // The viz::LocalSurfaceId has changed so we call SynchronizeVisualProperties
+  // here to embed it.
   SynchronizeVisualProperties();
 }
 

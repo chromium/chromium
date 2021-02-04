@@ -101,29 +101,25 @@ unsigned RemoteFrameClientImpl::BackForwardLength() {
 }
 
 void RemoteFrameClientImpl::WillSynchronizeVisualProperties(
-    bool synchronized_props_changed,
     bool capture_sequence_number_changed,
+    const viz::SurfaceId& surface_id,
     const gfx::Size& compositor_viewport_size) {
   web_frame_->Client()->WillSynchronizeVisualProperties(
-      synchronized_props_changed, capture_sequence_number_changed,
+      capture_sequence_number_changed, surface_id,
       compositor_viewport_size);
-}
-
-const viz::LocalSurfaceId& RemoteFrameClientImpl::GetLocalSurfaceId() const {
-  return web_frame_->Client()->GetLocalSurfaceId();
 }
 
 bool RemoteFrameClientImpl::RemoteProcessGone() const {
   return web_frame_->Client()->RemoteProcessGone();
 }
 
+void RemoteFrameClientImpl::DidSetFrameSinkId() {
+  web_frame_->Client()->DidSetFrameSinkId();
+}
+
 AssociatedInterfaceProvider*
 RemoteFrameClientImpl::GetRemoteAssociatedInterfaces() {
   return web_frame_->Client()->GetRemoteAssociatedInterfaces();
-}
-
-viz::FrameSinkId RemoteFrameClientImpl::GetFrameSinkId() {
-  return web_frame_->Client()->GetFrameSinkId();
 }
 
 }  // namespace blink

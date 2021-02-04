@@ -16,8 +16,7 @@
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
 
 namespace viz {
-class FrameSinkId;
-class LocalSurfaceId;
+class SurfaceId;
 }
 
 namespace blink {
@@ -40,17 +39,17 @@ class RemoteFrameClient : public FrameClient {
   unsigned BackForwardLength() override = 0;
 
   virtual void WillSynchronizeVisualProperties(
-      bool synchronized_props_changed,
       bool capture_sequence_number_changed,
+      const viz::SurfaceId& surface_id,
       const gfx::Size& compositor_viewport_size) = 0;
-
-  virtual const viz::LocalSurfaceId& GetLocalSurfaceId() const = 0;
 
   virtual bool RemoteProcessGone() const = 0;
 
-  virtual AssociatedInterfaceProvider* GetRemoteAssociatedInterfaces() = 0;
+  // This is a temporary workaround for https://crbug.com/1166729.
+  // TODO(https://crbug.com/1166722): Remove this once the migration is done.
+  virtual void DidSetFrameSinkId() = 0;
 
-  virtual viz::FrameSinkId GetFrameSinkId() = 0;
+  virtual AssociatedInterfaceProvider* GetRemoteAssociatedInterfaces() = 0;
 };
 
 }  // namespace blink

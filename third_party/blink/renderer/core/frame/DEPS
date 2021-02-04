@@ -28,6 +28,9 @@ specific_include_rules = {
   "mhtml_archive_test\.cc": [
     "+services/network/public/cpp/is_potentially_trustworthy.h",
   ],
+  "remote_frame\.h": [
+    "+components/viz/common/surfaces/parent_local_surface_id_allocator.h",
+  ],
   "remote_frame_view\.cc": [
     "+cc/base/math_util.h",
     "+components/paint_preview/common/paint_preview_tracker.h",

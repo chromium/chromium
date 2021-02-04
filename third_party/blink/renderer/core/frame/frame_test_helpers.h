@@ -592,8 +592,6 @@ class TestWebRemoteFrameClient : public WebRemoteFrameClient {
   AssociatedInterfaceProvider* GetRemoteAssociatedInterfaces() override {
     return associated_interface_provider_.get();
   }
-  viz::FrameSinkId GetFrameSinkId() const override;
-  const viz::LocalSurfaceId& GetLocalSurfaceId() const override;
 
  private:
   // If set to a non-null value, self-deletes on frame detach.

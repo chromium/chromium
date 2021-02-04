@@ -33,13 +33,12 @@ class RemoteFrameClientImpl final : public RemoteFrameClient {
                 const base::Optional<WebImpression>& impression) override;
   unsigned BackForwardLength() override;
   void WillSynchronizeVisualProperties(
-      bool synchronized_props_changed,
       bool capture_sequence_number_changed,
+      const viz::SurfaceId& surface_id,
       const gfx::Size& compositor_viewport_size) override;
-  const viz::LocalSurfaceId& GetLocalSurfaceId() const override;
   bool RemoteProcessGone() const override;
+  void DidSetFrameSinkId() override;
   AssociatedInterfaceProvider* GetRemoteAssociatedInterfaces() override;
-  viz::FrameSinkId GetFrameSinkId() override;
 
   WebRemoteFrameImpl* GetWebFrame() const { return web_frame_; }
 

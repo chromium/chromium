@@ -8,7 +8,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "cc/paint/paint_canvas.h"
-#include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "content/common/content_export.h"
 #include "content/common/frame_messages.h"
 #include "content/common/frame_proxy.mojom.h"
@@ -157,15 +156,11 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
       blink::CrossVariantMojoRemote<blink::mojom::BlobURLTokenInterfaceBase>
           blob_url_token,
       const base::Optional<blink::WebImpression>& impression) override;
-  const viz::LocalSurfaceId& GetLocalSurfaceId() const override;
   bool RemoteProcessGone() const override;
+  void DidSetFrameSinkId() override;
   base::UnguessableToken GetDevToolsFrameToken() override;
-  viz::FrameSinkId GetFrameSinkId() const override;
 
   void DidStartLoading();
-
-  // Called when the associated FrameSinkId has changed.
-  void FrameSinkIdChanged(const viz::FrameSinkId& frame_sink_id);
 
  private:
   RenderFrameProxy(AgentSchedulingGroup& agent_scheduling_group,
@@ -179,13 +174,12 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
   mojom::RenderFrameProxyHost* GetFrameProxyHost();
 
   // mojom::RenderFrameProxy implementation:
-  void DidUpdateVisualProperties(
-      const cc::RenderFrameMetadata& metadata) override;
   void ChildProcessGone() override;
-  void SetFrameSinkId(const viz::FrameSinkId& frame_sink_id) override;
+
+  // blink::WebRemoteFrameClient implementation:
   void WillSynchronizeVisualProperties(
-      bool synchronized_props_changed,
       bool capture_sequence_number_changed,
+      const viz::SurfaceId& surface_id,
       const gfx::Size& compositor_viewport_size) override;
 
   // ChildFrameCompositor:
@@ -230,10 +224,6 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
   base::UnguessableToken devtools_frame_token_;
 
   bool remote_process_gone_ = false;
-
-  viz::FrameSinkId frame_sink_id_;
-  std::unique_ptr<viz::ParentLocalSurfaceIdAllocator>
-      parent_local_surface_id_allocator_;
 
   // The layer used to embed the out-of-process content.
   scoped_refptr<cc::Layer> embedded_layer_;
