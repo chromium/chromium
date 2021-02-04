@@ -29,14 +29,14 @@ class DevToolsEyeDropper : public content::WebContentsObserver,
   ~DevToolsEyeDropper() override;
 
  private:
-  void AttachToHost(content::RenderWidgetHost* host);
+  void AttachToHost(content::RenderFrameHost* host);
   void DetachFromHost();
 
   // content::WebContentsObserver.
-  void RenderViewCreated(content::RenderViewHost* host) override;
-  void RenderViewDeleted(content::RenderViewHost* host) override;
-  void RenderViewHostChanged(content::RenderViewHost* old_host,
-                             content::RenderViewHost* new_host) override;
+  void RenderFrameCreated(content::RenderFrameHost* host) override;
+  void RenderFrameDeleted(content::RenderFrameHost* host) override;
+  void RenderFrameHostChanged(content::RenderFrameHost* old_host,
+                              content::RenderFrameHost* new_host) override;
 
   void ResetFrame();
   void FrameUpdated(const SkBitmap&);
