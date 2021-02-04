@@ -459,4 +459,24 @@ TEST_F(ParallelDownloadJobTest, InterruptOnStartup) {
   DestroyParallelJob();
 }
 
+// Test that if all slices are completed before forking the parallel requests,
+// no parallel requests should be created.
+TEST_F(ParallelDownloadJobTest,
+       AllSlicesFinishedBeforeForkingParallelRequests) {
+  DownloadItem::ReceivedSlices slices = {
+      DownloadItem::ReceivedSlice(0, 20),
+      DownloadItem::ReceivedSlice(50, 50, true)};
+  CreateParallelJob(10, 90, slices, 2, 1, 10);
+  DownloadItem::ReceivedSlices new_slices = {
+      DownloadItem::ReceivedSlice(0, 50),
+      DownloadItem::ReceivedSlice(50, 50, true)};
+  EXPECT_CALL(*download_item_, GetReceivedSlices())
+      .WillRepeatedly(ReturnRef(new_slices));
+
+  BuildParallelRequests();
+  EXPECT_EQ(0u, job_->workers().size());
+
+  DestroyParallelJob();
+}
+
 }  // namespace download
