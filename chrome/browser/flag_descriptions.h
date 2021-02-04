@@ -772,6 +772,9 @@ extern const char kImprovedCookieControlsForThirdPartyCookieBlockingName[];
 extern const char
     kImprovedCookieControlsForThirdPartyCookieBlockingDescription[];
 
+extern const char kImprovedKeyboardShortcutsName[];
+extern const char kImprovedKeyboardShortcutsDescription[];
+
 extern const char kCompositorThreadedScrollbarScrollingName[];
 extern const char kCompositorThreadedScrollbarScrollingDescription[];
 

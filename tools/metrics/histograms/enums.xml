@@ -42858,6 +42858,7 @@ from previous Chrome versions.
   <int value="-2021954068" label="TapVisualizerApp:disabled"/>
   <int value="-2020721975" label="smart-virtual-keyboard"/>
   <int value="-2020024440" label="scroll-end-effect"/>
+  <int value="-2018579114" label="ImprovedKeyboardShortcuts:enabled"/>
   <int value="-2017953534" label="enable-hosted-app-shim-creation"/>
   <int value="-2017778637" label="PrintSaveToDrive:disabled"/>
   <int value="-2015293660" label="AccessibilityExposeDisplayNone:disabled"/>
@@ -44137,6 +44138,7 @@ from previous Chrome versions.
   <int value="-907234795" label="NewAudioRenderingMixingStrategy:disabled"/>
   <int value="-905538983" label="SimplifyHttpsIndicator:disabled"/>
   <int value="-902125579" label="ImmersiveUiMode:disabled"/>
+  <int value="-899915066" label="ImprovedKeyboardShortcuts:disabled"/>
   <int value="-899393472" label="enable-new-app-menu-icon"/>
   <int value="-899334103" label="disable-fast-text-autosizing"/>
   <int value="-899265865" label="DismissNtpPromos:disabled"/>

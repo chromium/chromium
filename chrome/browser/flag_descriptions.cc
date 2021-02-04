@@ -1307,6 +1307,12 @@ const char kImprovedCookieControlsForThirdPartyCookieBlockingName[] =
 const char kImprovedCookieControlsForThirdPartyCookieBlockingDescription[] =
     "Enables an improved UI for existing third-party cookie blocking users.";
 
+const char kImprovedKeyboardShortcutsName[] =
+    "Enable improved keyboard shortcuts";
+const char kImprovedKeyboardShortcutsDescription[] =
+    "Ensure keyboard shortcuts work consistently with international keyboard "
+    "layouts and deprecate legacy shortcuts.";
+
 const char kImpulseScrollAnimationsName[] = "Impulse-style scroll animations";
 const char kImpulseScrollAnimationsDescription[] =
     "Replaces the default scroll animation with Impulse-style scroll "
