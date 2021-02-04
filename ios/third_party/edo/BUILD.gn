@@ -95,6 +95,8 @@ source_set("edo") {
     "src/Service/Sources/EDORemoteException.m",
     "src/Service/Sources/EDORemoteVariable.h",
     "src/Service/Sources/EDORemoteVariable.m",
+    "src/Service/Sources/EDORuntimeUtils.h",
+    "src/Service/Sources/EDORuntimeUtils.m",
     "src/Service/Sources/EDOServiceError.h",
     "src/Service/Sources/EDOServiceError.m",
     "src/Service/Sources/EDOServiceException.h",
