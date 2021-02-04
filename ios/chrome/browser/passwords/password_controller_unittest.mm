@@ -2430,3 +2430,60 @@ TEST_F(PasswordControllerTest, DetectSubmissionOnFormReset) {
   EXPECT_TRUE(form_manager->is_submitted());
   EXPECT_TRUE(form_manager->IsPasswordUpdate());
 }
+
+// Tests that submission is detected on change password form clearing,
+// when the formless fields are cleared individually.
+TEST_F(PasswordControllerTest, DetectSubmissionOnFormlessFieldsClearing) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kDetectFormSubmissionOnFormClear);
+
+  PasswordForm form(
+      CreatePasswordForm("https://chromium.test/", "user", "oldpw"));
+  EXPECT_CALL(*store_, GetLogins)
+      .WillRepeatedly(WithArg<1>(InvokeConsumer(form)));
+
+  LoadHtml(@"<html><body>"
+            "  <input type='password' id='opw'>"
+            "  <input type='password' id='npw' autocomplete='new-password'>"
+            "  <input type='password' id='cpw' autocomplete='new-password'>"
+            "  <button id='submit_button' value='Submit'>"
+            "</body></html>");
+  WaitForFormManagersCreation();
+
+  std::string main_frame_id = web::GetMainWebFrameId(web_state());
+
+  SimulateUserTyping("change_form", FormRendererId(), "opw", FieldRendererId(0),
+                     "oldpw", main_frame_id);
+  SimulateUserTyping("change_form", FormRendererId(), "npw", FieldRendererId(1),
+                     "newpw", main_frame_id);
+  SimulateUserTyping("change_form", FormRendererId(), "cpw", FieldRendererId(2),
+                     "newpw", main_frame_id);
+
+  std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
+  EXPECT_CALL(*weak_client_, PromptUserToSaveOrUpdatePasswordPtr)
+      .WillOnce(WithArg<0>(SaveToScopedPtr(&form_manager_to_save)));
+
+  std::string form_data = base::SysNSStringToUTF8(ExecuteJavaScript(
+      @"__gCrWeb.passwords.getPasswordFormDataAsString(-1);"));
+
+  // Imitiate the signal from the page resetting the form.
+  SimulateFormActivityObserverSignal("password_form_cleared", FormRendererId(),
+                                     FieldRendererId(), form_data);
+
+  auto& form_manager_check = form_manager_to_save;
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool() {
+    return form_manager_check != nullptr;
+  }));
+  EXPECT_EQ("https://chromium.test/",
+            form_manager_to_save->GetPendingCredentials().signon_realm);
+  EXPECT_EQ(ASCIIToUTF16("user"),
+            form_manager_to_save->GetPendingCredentials().username_value);
+  EXPECT_EQ(ASCIIToUTF16("newpw"),
+            form_manager_to_save->GetPendingCredentials().password_value);
+
+  auto* form_manager =
+      static_cast<PasswordFormManager*>(form_manager_to_save.get());
+  EXPECT_TRUE(form_manager->is_submitted());
+  EXPECT_TRUE(form_manager->IsPasswordUpdate());
+}
