@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/construct_traits.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
+#include "third_party/blink/renderer/platform/wtf/hash_table_deleted_value_type.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 
 namespace WTF {
@@ -488,6 +489,8 @@ template <typename T>
 inline bool IsHashTableDeletedValue(const Member<T>& m) {
   return m.IsHashTableDeletedValue();
 }
+
+constexpr auto kMemberDeletedValue = WTF::kHashTableDeletedValue;
 
 }  // namespace blink
 

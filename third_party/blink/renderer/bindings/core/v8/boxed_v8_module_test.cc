@@ -24,7 +24,7 @@ TEST(BoxedV8ModuleTest, equalAndHash) {
   const KURL js_url_b("https://example.com/b.js");
 
   Member<BoxedV8Module> module_empty = nullptr;
-  Member<BoxedV8Module> module_deleted(WTF::kHashTableDeletedValue);
+  Member<BoxedV8Module> module_deleted(kMemberDeletedValue);
 
   v8::Local<v8::Module> local_module_a = ModuleTestBase::CompileModule(
       scope.GetIsolate(), "export const a = 'a';", js_url_a);

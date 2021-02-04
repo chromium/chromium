@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_V8_WRAPPER_HEAP_TEST_UTILITIES_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_V8_WRAPPER_HEAP_TEST_UTILITIES_H_
 
+#include "base/test/task_environment.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/heap/v8_wrapper/thread_state.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "v8/include/cppgc/testing.h"
@@ -29,6 +31,22 @@ class HeapPointersOnStackScope final {
 
  private:
   cppgc::testing::OverrideEmbedderStackStateScope embedder_stack_state_;
+};
+
+class TestSupportingGC : public testing::Test {
+ public:
+  // Performs a precise garbage collection with eager sweeping.
+  static void PreciselyCollectGarbage() {
+    // TODO(1056170): Implement.
+  }
+
+  // Performs a conservative garbage collection with eager sweeping.
+  static void ConservativelyCollectGarbage() {
+    // TODO(1056170): Implement.
+  }
+
+ protected:
+  base::test::TaskEnvironment task_environment_;
 };
 
 }  // namespace blink
