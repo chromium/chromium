@@ -14,6 +14,8 @@ static_library("backend") {
     "diagnostics_manager.h",
     "histogram_util.cc",
     "histogram_util.h",
+    "log_test_helpers.cc",
+    "log_test_helpers.h",
     "power_manager_client_conversions.cc",
     "power_manager_client_conversions.h",
     "routine_log.cc",
@@ -48,6 +50,7 @@ source_set("unit_tests") {
 
   sources = [
     "cpu_usage_data_unittest.cc",
+    "log_test_helpers_unittest.cc",
     "power_manager_client_conversions_unittest.cc",
     "routine_log_unittest.cc",
     "system_data_provider_unittest.cc",

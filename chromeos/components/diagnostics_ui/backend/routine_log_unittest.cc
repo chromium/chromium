@@ -9,10 +9,10 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/strings/string_split.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "chromeos/components/diagnostics_ui/backend/log_test_helpers.h"
 #include "chromeos/components/diagnostics_ui/mojom/system_routine_controller.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,24 +21,6 @@ namespace diagnostics {
 namespace {
 
 const char kLogFileName[] = "diagnostic_routine_log";
-const char kSeparator[] = "-";
-const char kNewline[] = "\n";
-
-// Returns the lines of the log as a vector of strings.
-std::vector<std::string> GetLogLines(const std::string& log) {
-  return base::SplitString(log, kNewline,
-                           base::WhitespaceHandling::TRIM_WHITESPACE,
-                           base::SplitResult::SPLIT_WANT_NONEMPTY);
-}
-
-// Splits a single line of the log at `kSeparator`. It is expected that each log
-// line contains exactly 3 components: 1) timestamp, 2) routine name, 3) status.
-std::vector<std::string> GetLogLineContents(const std::string& log_line) {
-  const std::vector<std::string> result = base::SplitString(
-      log_line, kSeparator, base::WhitespaceHandling::TRIM_WHITESPACE,
-      base::SplitResult::SPLIT_WANT_NONEMPTY);
-  return result;
-}
 
 }  // namespace
 
@@ -93,7 +75,6 @@ TEST_F(RoutineLogTest, TwoLine) {
 
   const std::string contents = log.GetContents();
   const std::vector<std::string> log_lines = GetLogLines(contents);
-
   const std::string first_line = log_lines[0];
   const std::vector<std::string> first_line_contents =
       GetLogLineContents(first_line);

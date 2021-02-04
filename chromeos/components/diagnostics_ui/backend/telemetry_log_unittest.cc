@@ -5,15 +5,13 @@
 #include "chromeos/components/diagnostics_ui/backend/telemetry_log.h"
 
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_split.h"
+#include "chromeos/components/diagnostics_ui/backend/log_test_helpers.h"
 #include "chromeos/components/diagnostics_ui/mojom/system_data_provider.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
 namespace diagnostics {
 namespace {
-
-const char kNewline[] = "\n";
 
 mojom::SystemInfoPtr CreateSystemInfoPtr(const std::string& board_name,
                                          const std::string& marketing_name,
@@ -31,13 +29,6 @@ mojom::SystemInfoPtr CreateSystemInfoPtr(const std::string& board_name,
       cpu_threads_count, cpu_max_clock_speed_khz, std::move(version_info),
       std::move(device_capabilities));
   return system_info;
-}
-
-// Returns the lines of the log as a vector of strings.
-std::vector<std::string> GetLogLines(const std::string& log) {
-  return base::SplitString(log, kNewline,
-                           base::WhitespaceHandling::TRIM_WHITESPACE,
-                           base::SplitResult::SPLIT_WANT_NONEMPTY);
 }
 
 }  // namespace
