@@ -164,8 +164,11 @@ mojo.internal.computeStructDimensions = function(structSpec, value) {
   let size = structSpec.packedSize;
   let numInterfaceIds = 0;
   for (const field of structSpec.fields) {
-    const fieldValue = value[field.name];
+    let fieldValue = value[field.name];
     if (mojo.internal.isNullOrUndefined(fieldValue)) {
+      fieldValue = field.defaultValue;
+    }
+    if (fieldValue === null) {
       continue;
     }
 
@@ -519,7 +522,7 @@ mojo.internal.Encoder = class {
    */
   encodeMap(mapSpec, offset, value) {
     let keys, values;
-    if (value instanceof Map) {
+    if (value.constructor.name == 'Map') {
       keys = Array.from(value.keys());
       values = Array.from(value.values());
     } else {
@@ -572,8 +575,7 @@ mojo.internal.Encoder = class {
                             field.packedBitOffset, field.nullable);
       };
 
-      if (value && (value instanceof Object) &&
-          !mojo.internal.isNullOrUndefined(value[field.name])) {
+      if (value && !mojo.internal.isNullOrUndefined(value[field.name])) {
         encodeStructField(value[field.name]);
         continue;
       }
@@ -1312,7 +1314,9 @@ mojo.internal.Handle = {
     encode: function(value, encoder, byteOffset, bitOffset, nullable) {
       encoder.encodeHandle(byteOffset, value);
     },
-    encodeNull: function(encoder, byteOffset) {},
+    encodeNull: function(encoder, byteOffset) {
+      encoder.encodeUint32(byteOffset, 0xffffffff);
+    },
     decode: function(decoder, byteOffset, bitOffset, nullable) {
       return decoder.decodeHandle(byteOffset);
     },
@@ -1401,10 +1405,12 @@ mojo.internal.Map = function(keyType, valueType, valueNullable) {
         return decoder.decodeMap(mapSpec, byteOffset);
       },
       computeDimensions: function(value, nullable) {
-        const keys = (value instanceof Map) ? Array.from(value.keys()) :
-                                              Object.keys(value);
-        const values = (value instanceof Map) ? Array.from(value.values()) :
-                                                keys.map(k => value[k]);
+        const keys =
+            (value.constructor.name == 'Map') ? Array.from(value.keys())
+                                              : Object.keys(value);
+        const values =
+            (value.constructor.name == 'Map') ? Array.from(value.values())
+                                              : keys.map(k => value[k]);
 
         const size = mojo.internal.kMapDataSize +
             mojo.internal.computeTotalArraySize({elementType: keyType}, keys) +

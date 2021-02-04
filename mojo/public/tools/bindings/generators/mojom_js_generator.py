@@ -813,6 +813,11 @@ class Generator(generator.Generator):
       if mojom.IsStructKind(field.kind):
         assert field.default == "default"
         return "null"
+      if ((field.kind == mojom.INT64 or field.kind == mojom.UINT64)
+          and not isinstance(
+              field.default,
+              (mojom.EnumValue, mojom.NamedValue, mojom.BuiltinValue))):
+        return "BigInt('{}')".format(int(field.default, 0))
       return self._ExpressionToTextLite(field.default, for_module=for_module)
     if field.kind == mojom.INT64 or field.kind == mojom.UINT64:
       return "BigInt(0)"
@@ -1027,7 +1032,7 @@ class Generator(generator.Generator):
     assert isinstance(constant, mojom.Constant)
     text = self._ExpressionToTextLite(constant.value, for_module=for_module)
     if constant.kind == mojom.INT64 or constant.kind == mojom.UINT64:
-      return "BigInt('{}')".format(text)
+      return "BigInt('{}')".format(int(text, 0))
     return text
 
   def _GetConstantValueInJsModule(self, constant):

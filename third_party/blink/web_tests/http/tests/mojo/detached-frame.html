@@ -1,19 +1,13 @@
 <!DOCTYPE html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
-<script src="/gen/content/test/data/mojo_web_test_helper_test.mojom.js"></script>
 <body>
-<script>
+<script type="module">
+import {MojoWebTestHelper, MojoWebTestHelperRemote} from '/gen/content/test/data/mojo_web_test_helper_test.mojom.m.js';
 
 function frameLoaded(frame) {
-  return new Promise(resolve => {
-    let eventHandler = e => {
-      frame.removeEventListener('load', eventHandler);
-      resolve();
-    };
-    frame.addEventListener('load', eventHandler);
-  });
+  return new Promise(
+      resolve => frame.addEventListener('load', resolve, {once: true}));
 }
 
 promise_test(async () => {
@@ -27,12 +21,12 @@ promise_test(async () => {
   let frameMojo = frame.contentWindow.Mojo;
   document.body.removeChild(frame);
 
-  let helper = new content.mojom.MojoWebTestHelperPtr;
-  frameMojo.bindInterface(content.mojom.MojoWebTestHelper.name,
-                          mojo.makeRequest(helper).handle);
+  const {handle0, handle1} = frameMojo.createMessagePipe();
+  let helper = new MojoWebTestHelperRemote(handle0);
+  frameMojo.bindInterface(MojoWebTestHelper.$interfaceName, handle1);
 
   try {
-    let reply = await helper.reverse("hello world.");
+    await helper.reverse("hello world.");
     assert_unreached();
   } catch (e) {
     // Connection failure expected.
@@ -52,7 +46,7 @@ promise_test(async () => {
   document.body.removeChild(frame);
 
   let interceptor = new frameMojoInterfaceInterceptor(
-      content.mojom.MojoWebTestHelper.name);
+      MojoWebTestHelper.$interfaceName);
   try {
     interceptor.start();
     assert_unreached();
@@ -70,7 +64,7 @@ promise_test(async () => {
   // Create the interceptor while the frame is attached so that it is associated
   // with the frame's execution context.
   let interceptor = new frame.contentWindow.MojoInterfaceInterceptor(
-      content.mojom.MojoWebTestHelper.name);
+      MojoWebTestHelper.$interfaceName);
   document.body.removeChild(frame);
 
   try {
@@ -89,7 +83,7 @@ promise_test(async () => {
 
   // Create the interceptor and start it while the frame is attached.
   let interceptor = new frame.contentWindow.MojoInterfaceInterceptor(
-      content.mojom.MojoWebTestHelper.name);
+      MojoWebTestHelper.$interfaceName);
   interceptor.start();
   document.body.removeChild(frame);
 

@@ -2,112 +2,102 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
-<script src="/gen/content/test/data/mojo_web_test_helper_test.mojom.js"></script>
-<script src="resources/helpers.js"></script>
-<script>
-
-promise_test(() => {
-  let helper = new content.mojom.MojoWebTestHelperPtr;
-  Mojo.bindInterface(content.mojom.MojoWebTestHelper.name,
-                     mojo.makeRequest(helper).handle);
-
-  const kTestMessage = "hello world.";
-  const kExpectedReply = ".dlrow olleh";
-  return helper.reverse(kTestMessage).then(reply => {
-    assert_equals(reply.reversed, kExpectedReply);
-  });
-}, "can bind interfaces");
-
-promise_test(() => {
-  let helperImpl = new TestHelperImpl;
-  let interceptor =
-      new MojoInterfaceInterceptor(content.mojom.MojoWebTestHelper.name);
-  interceptor.oninterfacerequest = e => {
-    helperImpl.bindRequest(e.handle);
-  };
-  interceptor.start();
-
-  let helper = new content.mojom.MojoWebTestHelperPtr;
-  Mojo.bindInterface(content.mojom.MojoWebTestHelper.name,
-                     mojo.makeRequest(helper).handle);
-  interceptor.stop();
-
-  return helper.reverse("doesn't matter").then(reply => {
-    assert_equals(reply.reversed, kTestReply);
-  });
-}, "can intercept calls to bindInterface");
+<script type="module">
+import {MojoWebTestHelper, MojoWebTestHelperRemote} from '/gen/content/test/data/mojo_web_test_helper_test.mojom.m.js';
+import {kTestReply, TestHelperImpl} from './resources/helpers.js';
 
 promise_test(async () => {
-  // Intercept this interface at "context" scope to check that it is being
-  // requested at "process" scope.
-  let helperImpl = new TestHelperImpl;
+  let helper = new MojoWebTestHelperRemote();
+  helper.$.bindNewPipeAndPassReceiver().bindInBrowser();
+
+  const kTestMessage = 'hello world.';
+  const kExpectedReply = '.dlrow olleh';
+  const {reversed} = await helper.reverse(kTestMessage);
+  assert_equals(reversed, kExpectedReply);
+}, 'can bind interfaces');
+
+promise_test(async () => {
+  let helperImpl = new TestHelperImpl();
   let interceptor =
-      new MojoInterfaceInterceptor(content.mojom.MojoWebTestHelper.name);
+      new MojoInterfaceInterceptor(MojoWebTestHelper.$interfaceName);
   interceptor.oninterfacerequest = e => {
     helperImpl.bindRequest(e.handle);
   };
   interceptor.start();
 
-  let helper = new content.mojom.MojoWebTestHelperPtr;
-  Mojo.bindInterface(content.mojom.MojoWebTestHelper.name,
-                     mojo.makeRequest(helper).handle,
-                     "process");
+  let helper = new MojoWebTestHelperRemote();
+  helper.$.bindNewPipeAndPassReceiver().bindInBrowser();
+  interceptor.stop();
 
-  const kTestMessage = "hello world.";
-  const kExpectedReply = ".dlrow olleh";
-  await helper.reverse(kTestMessage).then(reply => {
-    assert_equals(reply.reversed, kExpectedReply);
-  });
+  const {reversed} = await helper.reverse("doesn't matter");
+  assert_equals(reversed, kTestReply);
+}, 'can intercept calls to bindInterface');
+
+promise_test(async () => {
+  // Intercept this interface at 'context' scope to check that it is being
+  // requested at 'process' scope.
+  let helperImpl = new TestHelperImpl();
+  let interceptor =
+      new MojoInterfaceInterceptor(MojoWebTestHelper.$interfaceName);
+  interceptor.oninterfacerequest = e => {
+    helperImpl.bindRequest(e.handle);
+  };
+  interceptor.start();
+
+  let helper = new MojoWebTestHelperRemote();
+  helper.$.bindNewPipeAndPassReceiver().bindInBrowser('process');
+
+  const kTestMessage = 'hello world.';
+  const kExpectedReply = '.dlrow olleh';
+  const {reversed} = await helper.reverse(kTestMessage);
+  assert_equals(reversed, kExpectedReply);
 
   interceptor.stop();
-}, "can request interfaces at process scope");
+}, 'can request interfaces at process scope');
 
-promise_test(() => {
-  let helperImpl = new TestHelperImpl;
+promise_test(async () => {
+  let helperImpl = new TestHelperImpl();
   let interceptor = new MojoInterfaceInterceptor(
-      content.mojom.MojoWebTestHelper.name, "process");
+      MojoWebTestHelper.$interfaceName, 'process');
   interceptor.oninterfacerequest = e => {
     helperImpl.bindRequest(e.handle);
   };
   interceptor.start();
 
-  let helper = new content.mojom.MojoWebTestHelperPtr;
-  Mojo.bindInterface(content.mojom.MojoWebTestHelper.name,
-                     mojo.makeRequest(helper).handle,
-                     "process");
+  let helper = new MojoWebTestHelperRemote();
+  helper.$.bindNewPipeAndPassReceiver().bindInBrowser('process');
   interceptor.stop();
 
-  return helper.reverse("doesn't matter").then(reply => {
-    assert_equals(reply.reversed, kTestReply);
-  });
-}, "can intercept interfaces at process scope");
+  const {reversed} = await helper.reverse("doesn't matter");
+  assert_equals(reversed, kTestReply);
+}, 'can intercept interfaces at process scope');
 
 test(() => {
-  let a = new MojoInterfaceInterceptor(content.mojom.MojoWebTestHelper.name);
-  let b = new MojoInterfaceInterceptor(content.mojom.MojoWebTestHelper.name);
+  let a = new MojoInterfaceInterceptor(MojoWebTestHelper.$interfaceName);
+  let b = new MojoInterfaceInterceptor(MojoWebTestHelper.$interfaceName);
   a.oninterfacerequest = () => {};
   b.oninterfacerequest = () => {};
   a.start();
   assert_throws_dom('InvalidModificationError', () => { b.start(); });
   a.stop();
-}, "interface interceptors are mutually exclusive");
+}, 'interface interceptors are mutually exclusive');
 
 test(() => {
-  let a = new MojoInterfaceInterceptor(content.mojom.MojoWebTestHelper.name,
-                                       "process");
-  let b = new MojoInterfaceInterceptor(content.mojom.MojoWebTestHelper.name,
-                                       "process");
+  let a = new MojoInterfaceInterceptor(
+      MojoWebTestHelper.$interfaceName, 'process');
+  let b = new MojoInterfaceInterceptor(
+      MojoWebTestHelper.$interfaceName, 'process');
   a.oninterfacerequest = () => {};
   b.oninterfacerequest = () => {};
   a.start();
   assert_throws_dom('InvalidModificationError', () => { b.start(); });
   a.stop();
-}, "process scope interface interceptors are mutually exclusive");
+}, 'process scope interface interceptors are mutually exclusive');
 
 promise_test(async t => {
   // First check that the interceptor can be started and intercepts requests.
   let interceptor =
-      new MojoInterfaceInterceptor(content.mojom.MojoWebTestHelper.name);
+      new MojoInterfaceInterceptor(MojoWebTestHelper.$interfaceName);
   let promise = new Promise(resolve => {
     interceptor.oninterfacerequest = e => {
       resolve(e.handle);
@@ -116,7 +106,7 @@ promise_test(async t => {
   interceptor.start();
 
   let pipe = Mojo.createMessagePipe();
-  Mojo.bindInterface(content.mojom.MojoWebTestHelper.name, pipe.handle0);
+  Mojo.bindInterface(MojoWebTestHelper.$interfaceName, pipe.handle0);
   let interceptedHandle = await promise;
   assert_true(interceptedHandle instanceof MojoHandle);
   interceptedHandle.close();
@@ -125,27 +115,25 @@ promise_test(async t => {
   // Stop the interceptor and make another request.
   interceptor.stop();
 
-  let helper = new content.mojom.MojoWebTestHelperPtr;
+  let helper = new MojoWebTestHelperRemote();
   interceptor.oninterfacerequest = t.step_func(() => {
-    assert_unreached("unexpected 'interfacerequest' event after stop");
+    assert_unreached('unexpected "interfacerequest" event after stop');
   });
-  Mojo.bindInterface(content.mojom.MojoWebTestHelper.name,
-                     mojo.makeRequest(helper).handle);
+  helper.$.bindNewPipeAndPassReceiver().bindInBrowser();
 
   // Enusre that the interface is functioning, i.e. the request definitely was
   // not intercepted.
-  await helper.reverse("abc").then(reply => {
-    assert_equals(reply.reversed, "cba");
-  });
+  const {reversed} = await helper.reverse('abc');
+  assert_equals(reversed, 'cba');
   pipe.handle1.close();
 
   // And ensure that we can start a new interceptor for the same interface since
   // the previous one was stopped.
   interceptor =
-      new MojoInterfaceInterceptor(content.mojom.MojoWebTestHelper.name);
+      new MojoInterfaceInterceptor(MojoWebTestHelper.$interfaceName);
   interceptor.oninterfacerequest = e => {};
   interceptor.start();
   interceptor.stop();
-}, "interceptors cancel properly");
+}, 'interceptors cancel properly');
 
 </script>

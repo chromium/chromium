@@ -339,14 +339,20 @@ mojo.internal.interfaceSupport.Endpoint = class {
 /**
  * Creates a new Endpoint wrapping a given pipe handle.
  *
- * @param {!MojoHandle} pipe
+ * @param {!MojoHandle|!mojo.internal.interfaceSupport.Endpoint} pipeOrEndpoint
  * @param {boolean=} setNamespaceBit
  * @return {!mojo.internal.interfaceSupport.Endpoint}
  */
 mojo.internal.interfaceSupport.createEndpoint = function(
-    pipe, setNamespaceBit = false) {
+    pipeOrEndpoint, setNamespaceBit = false) {
+  if (pipeOrEndpoint.constructor.name != 'MojoHandle') {
+    return /** @type {!mojo.internal.interfaceSupport.Endpoint} */(
+        pipeOrEndpoint);
+  }
   return new mojo.internal.interfaceSupport.Endpoint(
-      new mojo.internal.interfaceSupport.Router(pipe, setNamespaceBit), 0);
+      new mojo.internal.interfaceSupport.Router(
+          /** @type {!MojoHandle} */(pipeOrEndpoint), setNamespaceBit),
+      0);
 };
 
 /**
@@ -360,11 +366,7 @@ mojo.internal.interfaceSupport.createEndpoint = function(
  * @export
  */
 mojo.internal.interfaceSupport.getEndpointForReceiver = function(handle) {
-  if (handle instanceof MojoHandle) {
-    return mojo.internal.interfaceSupport.createEndpoint(handle);
-  }
-
-  return handle;
+  return mojo.internal.interfaceSupport.createEndpoint(handle);
 };
 
 /**
@@ -633,10 +635,8 @@ mojo.internal.interfaceSupport.InterfaceRemoteBase = class {
    */
   bindHandle(handle) {
     console.assert(!this.endpoint_, 'already bound');
-    if (handle instanceof MojoHandle) {
-      handle = mojo.internal.interfaceSupport.createEndpoint(
-          handle, /* setNamespaceBit */ true);
-    }
+    handle = mojo.internal.interfaceSupport.createEndpoint(
+        handle, /* setNamespaceBit */ true);
     this.endpoint_ = handle;
     this.endpoint_.start(this);
     this.pendingResponses_ = new Map;
@@ -799,6 +799,14 @@ mojo.internal.interfaceSupport.InterfaceRemoteBaseWrapper = class {
    */
   associateAndPassReceiver() {
     return this.remote_.associateAndPassReceiver();
+  }
+
+  /**
+   * @return {boolean}
+   * @export
+   */
+  isBound() {
+    return this.remote_.endpoint_ !== null;
   }
 
   /** @export */
@@ -982,9 +990,7 @@ mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal = class {
    * @export
    */
   bindHandle(handle) {
-    if (handle instanceof MojoHandle) {
-      handle = mojo.internal.interfaceSupport.createEndpoint(handle);
-    }
+    handle = mojo.internal.interfaceSupport.createEndpoint(handle);
     this.endpoints_.add(handle);
     handle.start(this);
   }
@@ -1055,8 +1061,9 @@ mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal = class {
             'Message expects a reply but its handler did not provide one.');
       }
 
-      if (!(result instanceof Promise))
+      if (typeof result != 'object' || result.constructor.name != 'Promise') {
         result = Promise.resolve(result);
+      }
 
       result
           .then(value => {
