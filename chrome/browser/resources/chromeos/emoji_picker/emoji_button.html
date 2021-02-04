@@ -11,6 +11,7 @@
     border: none;
     border-radius: 0;
     cursor: pointer;
+    display: block;
     font-size: 17px;
     height: 100%;
     line-height: var(--emoji-size);
@@ -24,6 +25,14 @@
     outline-color: var(--cr-toggle-color);
     outline-width: 2px;
   }
+  button:disabled {
+    /* chrome makes disabled buttons semitransparent.
+     * we set a solid colour here to prevent that
+     * (exactly which colour is not important).
+     */
+    color: red;
+    cursor: default;
+  }
 
   .has-variants {
     /* 4px grey triangle in bottom-right.
@@ -36,6 +45,14 @@
 </style>
 
 
-<button class$="[[_className(variants)]]" on-click="onClick">
+<button
+    class$="[[_className(variants)]]"
+    on-click="onClick"
+    on-contextmenu="onContextMenu"
+    on-mouseup="onMouseUp"
+    disabled="[[disabled]]">
   [[_renderEmoji(emoji)]]
 </button>
+<template is="dom-if" if="[[variantsVisible]]">
+  <emoji-variants variants="[[variants]]"></emoji-variants>
+</template>

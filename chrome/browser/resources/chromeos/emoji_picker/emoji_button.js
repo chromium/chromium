@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './emoji_variants.js';
+
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {createCustomEvent, EMOJI_BUTTON_EVENT} from './events.js';
@@ -20,8 +22,12 @@ export class EmojiButton extends PolymerElement {
     return {
       /** @type {!Codepoints} */
       emoji: {type: Array},
-      /** @type {!Array<Codepoints>} */
+      /** @type {Array<Codepoints>} */
       variants: {type: Array},
+      /** @type {!boolean} */
+      variantsVisible: {type: Boolean, value: false},
+      /** @type {!boolean} */
+      disabled: {type: Boolean, value: false, readonly: true},
     };
   }
 
@@ -30,8 +36,27 @@ export class EmojiButton extends PolymerElement {
   }
 
   onClick(ev) {
+    if (this.disabled)
+      return;
     this.dispatchEvent(createCustomEvent(
         EMOJI_BUTTON_EVENT, {emoji: this._renderEmoji(this.emoji)}));
+  }
+
+  onContextMenu(ev) {
+    ev.preventDefault();  // disable standard context menu
+  }
+
+  /**
+   * @param {!MouseEvent} ev
+   */
+  onMouseUp(ev) {
+    // only handle right mouse button clicks.
+    if (this.disabled || ev.button !== 2)
+      return;
+    if (this.variants && this.variants.length) {
+      this.variantsVisible = !this.variantsVisible;
+    }
+    ev.preventDefault();
   }
 
   _className(variants) {

@@ -12,6 +12,7 @@ component_js_files = [
   "emoji_picker.js",
   "emoji_group.js",
   "emoji_group_button.js",
+  "emoji_variants.js",
   "icons.js",
 ]
 
@@ -101,7 +102,16 @@ js_library("emoji_group") {
 
 js_library("emoji_button") {
   deps = [
+    ":emoji_variants",
     ":events",
+    ":types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("emoji_variants") {
+  # technically depends on :emoji_button, but that causes circular dependency.
+  deps = [
     ":types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
@@ -131,6 +141,7 @@ js_type_check("closure_compile") {
     ":emoji_group",
     ":emoji_group_button",
     ":emoji_picker",
+    ":emoji_variants",
     ":events",
     ":icons",
     ":store",
