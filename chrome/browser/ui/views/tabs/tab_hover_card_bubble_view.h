@@ -12,6 +12,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace gfx {
 class ImageSkia;
@@ -28,6 +29,7 @@ class Tab;
 // Dialog that displays an informational hover card containing page information.
 class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
  public:
+  METADATA_HEADER(TabHoverCardBubbleView);
   explicit TabHoverCardBubbleView(Tab* tab);
   TabHoverCardBubbleView(const TabHoverCardBubbleView&) = delete;
   TabHoverCardBubbleView& operator=(const TabHoverCardBubbleView&) = delete;
@@ -36,11 +38,11 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
   // Updates card content and anchoring and shows the tab hover card.
   void UpdateAndShow(Tab* tab);
 
-  bool IsVisible();
+  bool GetWidgetVisible() const;
 
   void FadeOutToHide();
 
-  bool IsFadingOut() const;
+  bool GetFadingOut() const;
 
   // Returns the target tab (if any).
   views::View* GetDesiredAnchorView();

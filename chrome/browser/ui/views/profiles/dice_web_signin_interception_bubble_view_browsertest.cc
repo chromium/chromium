@@ -152,12 +152,12 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
   bubble_handle_ = bubble->GetHandle();
 
   views::test::WidgetClosingObserver closing_observer(widget);
-  EXPECT_FALSE(bubble->HasAccepted());
+  EXPECT_FALSE(bubble->GetAccepted());
   // Simulate clicking Accept in the WebUI.
   bubble->OnWebUIUserChoice(SigninInterceptionUserChoice::kAccept);
   ASSERT_TRUE(callback_result_.has_value());
   EXPECT_EQ(callback_result_, SigninInterceptionResult::kAccepted);
-  EXPECT_TRUE(bubble->HasAccepted());
+  EXPECT_TRUE(bubble->GetAccepted());
 
   // Widget was not closed yet.
   ASSERT_FALSE(closing_observer.widget_closed());
@@ -198,12 +198,12 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
   bubble_handle_ = bubble->GetHandle();
 
   views::test::WidgetClosingObserver closing_observer(widget);
-  EXPECT_FALSE(bubble->HasAccepted());
+  EXPECT_FALSE(bubble->GetAccepted());
   // Simulate clicking Guest in the WebUI.
   bubble->OnWebUIUserChoice(SigninInterceptionUserChoice::kGuest);
   ASSERT_TRUE(callback_result_.has_value());
   EXPECT_EQ(callback_result_, SigninInterceptionResult::kAcceptedWithGuest);
-  EXPECT_TRUE(bubble->HasAccepted());
+  EXPECT_TRUE(bubble->GetAccepted());
 
   // Widget was not closed yet.
   ASSERT_FALSE(closing_observer.widget_closed());

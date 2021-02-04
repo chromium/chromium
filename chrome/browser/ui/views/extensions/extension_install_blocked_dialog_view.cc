@@ -33,6 +33,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace chrome {
@@ -122,3 +123,7 @@ void ExtensionInstallBlockedDialogView::AddCustomMessageContents(
       0, provider->GetDistanceMetric(
              views::DISTANCE_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT));
 }
+
+BEGIN_METADATA(ExtensionInstallBlockedDialogView,
+               views::BubbleDialogDelegateView)
+END_METADATA

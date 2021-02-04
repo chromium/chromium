@@ -2122,7 +2122,7 @@ bool TabStrip::HoverCardIsShowingForTab(Tab* tab) {
     return false;
 
   return hover_card_ && hover_card_->GetWidget()->IsVisible() &&
-         !hover_card_->IsFadingOut() &&
+         !hover_card_->GetFadingOut() &&
          hover_card_->GetDesiredAnchorView() == tab;
 }
 
@@ -3700,7 +3700,7 @@ void TabStrip::OnMouseEntered(const ui::MouseEvent& event) {
 
 void TabStrip::OnMouseExited(const ui::MouseEvent& event) {
   if (base::FeatureList::IsEnabled(features::kTabHoverCards) && hover_card_ &&
-      hover_card_->IsVisible()) {
+      hover_card_->GetVisible()) {
     hover_card_->set_last_mouse_exit_timestamp(base::TimeTicks::Now());
   }
   UpdateHoverCard(nullptr);

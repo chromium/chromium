@@ -9,6 +9,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/webview/web_dialog_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 
@@ -29,6 +30,7 @@ class HatsNextWebDialog : public views::BubbleDialogDelegateView,
                           public content::WebContentsDelegate,
                           public ProfileObserver {
  public:
+  METADATA_HEADER(HatsNextWebDialog);
   HatsNextWebDialog(Browser* browser,
                     const std::string& trigger_id,
                     base::OnceClosure success_callback,

@@ -44,6 +44,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
@@ -602,7 +603,7 @@ void TabHoverCardBubbleView::UpdateAndShow(Tab* tab) {
 
   // If widget is already visible and anchored to the correct tab we should not
   // try to reset the anchor view or reshow.
-  if (GetWidget()->IsVisible() && GetAnchorView() == tab &&
+  if (GetWidgetVisible() && GetAnchorView() == tab &&
       !slide_animation_delegate_->is_animating()) {
     GetWidget()->SetBounds(
         slide_animation_delegate_->CalculateTargetBounds(tab));
@@ -611,11 +612,11 @@ void TabHoverCardBubbleView::UpdateAndShow(Tab* tab) {
     return;
   }
 
-  if (GetWidget()->IsVisible())
+  if (GetWidgetVisible())
     ++hover_cards_seen_count_;
 
   const bool animations_enabled = gfx::Animation::ShouldRenderRichAnimation();
-  if (GetWidget()->IsVisible() && !disable_animations_for_testing_ &&
+  if (GetWidgetVisible() && !disable_animations_for_testing_ &&
       animations_enabled) {
     slide_animation_delegate_->AnimateToAnchorView(tab);
   } else {
@@ -627,7 +628,7 @@ void TabHoverCardBubbleView::UpdateAndShow(Tab* tab) {
     OnHoverCardLanded();
   }
 
-  if (!GetWidget()->IsVisible()) {
+  if (!GetWidgetVisible()) {
     if (disable_animations_for_testing_ || show_immediately ||
         !animations_enabled) {
       GetWidget()->SetOpacity(1.0f);
@@ -642,13 +643,13 @@ void TabHoverCardBubbleView::UpdateAndShow(Tab* tab) {
   }
 }
 
-bool TabHoverCardBubbleView::IsVisible() {
+bool TabHoverCardBubbleView::GetWidgetVisible() const {
   return GetWidget()->IsVisible();
 }
 
 void TabHoverCardBubbleView::FadeOutToHide() {
   delayed_show_timer_.Stop();
-  if (!GetWidget()->IsVisible())
+  if (!GetWidgetVisible())
     return;
   thumbnail_observation_->Observe(nullptr);
   slide_animation_delegate_->StopAnimation();
@@ -661,7 +662,7 @@ void TabHoverCardBubbleView::FadeOutToHide() {
   }
 }
 
-bool TabHoverCardBubbleView::IsFadingOut() const {
+bool TabHoverCardBubbleView::GetFadingOut() const {
   return fade_animation_delegate_->IsFadingOut();
 }
 
@@ -913,7 +914,7 @@ void TabHoverCardBubbleView::RecordTimeSinceLastSeenMetric(
     base::TimeDelta elapsed_time) {
   constexpr base::TimeDelta kMaxHoverCardReshowTimeDelta =
       base::TimeDelta::FromSeconds(5);
-  if ((!GetWidget()->IsVisible() || IsFadingOut()) &&
+  if ((!GetWidgetVisible() || GetFadingOut()) &&
       elapsed_time <= kMaxHoverCardReshowTimeDelta) {
     constexpr base::TimeDelta kMinHoverCardReshowTimeDelta =
         base::TimeDelta::FromMilliseconds(1);
@@ -924,3 +925,8 @@ void TabHoverCardBubbleView::RecordTimeSinceLastSeenMetric(
                                kHoverCardHistogramBucketCount);
   }
 }
+
+BEGIN_METADATA(TabHoverCardBubbleView, views::BubbleDialogDelegateView)
+ADD_READONLY_PROPERTY_METADATA(bool, WidgetVisible)
+ADD_READONLY_PROPERTY_METADATA(bool, FadingOut)
+END_METADATA

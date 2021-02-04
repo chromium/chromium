@@ -18,6 +18,7 @@
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
@@ -71,6 +72,9 @@ void ProfileCustomizationBubbleView::OnDoneButtonClicked() {
   GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kCloseButtonClicked);
 }
+
+BEGIN_METADATA(ProfileCustomizationBubbleView, views::BubbleDialogDelegateView)
+END_METADATA
 
 void DiceWebSigninInterceptorDelegate::ShowProfileCustomizationBubbleInternal(
     Browser* browser) {

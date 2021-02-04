@@ -13,6 +13,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace gfx {
@@ -24,6 +25,7 @@ class ImageSkia;
 class ExtensionInstallBlockedDialogView
     : public views::BubbleDialogDelegateView {
  public:
+  METADATA_HEADER(ExtensionInstallBlockedDialogView);
   ExtensionInstallBlockedDialogView(const std::string& extension_name,
                                     const base::string16& custom_error_message,
                                     const gfx::ImageSkia& icon,

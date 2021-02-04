@@ -41,6 +41,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/widget/widget.h"
 
@@ -51,7 +52,6 @@ PermissionPromptBubbleView::PermissionPromptBubbleView(
     PermissionPromptStyle prompt_style)
     : browser_(browser),
       delegate_(delegate),
-      name_or_origin_(GetDisplayNameOrOrigin()),
       permission_requested_time_(permission_requested_time) {
   // Note that browser_ may be null in unit tests.
   DCHECK(delegate_);
@@ -61,7 +61,7 @@ PermissionPromptBubbleView::PermissionPromptBubbleView(
   // as the default action.
   SetDefaultButton(ui::DIALOG_BUTTON_NONE);
 
-  if (ShouldShowAllowThisTimeButton()) {
+  if (GetShowAllowThisTimeButton()) {
     // Host every button in the extra_view to have full control over the width
     // of the dialog.
     SetButtons(ui::DIALOG_BUTTON_NONE);
@@ -247,7 +247,7 @@ void PermissionPromptBubbleView::SetPromptStyle(
 }
 
 void PermissionPromptBubbleView::AddedToWidget() {
-  if (name_or_origin_.is_origin) {
+  if (GetDisplayNameIsOrigin()) {
     // There is a risk of URL spoofing from origins that are too wide to fit in
     // the bubble; elide origins from the front to prevent this.
     GetBubbleFrameView()->SetTitleView(
@@ -261,12 +261,12 @@ bool PermissionPromptBubbleView::ShouldShowCloseButton() const {
 
 base::string16 PermissionPromptBubbleView::GetWindowTitle() const {
   int message_id;
-  if (ShouldShowAllowThisTimeButton()) {
+  if (GetShowAllowThisTimeButton()) {
     message_id = IDS_PERMISSIONS_BUBBLE_PROMPT_ONE_TIME;
   } else {
     message_id = IDS_PERMISSIONS_BUBBLE_PROMPT;
   }
-  return l10n_util::GetStringFUTF16(message_id, name_or_origin_.name_or_origin);
+  return l10n_util::GetStringFUTF16(message_id, GetDisplayName());
 }
 
 base::string16 PermissionPromptBubbleView::GetAccessibleWindowTitle() const {
@@ -288,8 +288,7 @@ base::string16 PermissionPromptBubbleView::GetAccessibleWindowTitle() const {
   if (visible_requests.size() == 1) {
     return l10n_util::GetStringFUTF16(
         IDS_PERMISSIONS_BUBBLE_PROMPT_ACCESSIBLE_TITLE_ONE_PERM,
-        name_or_origin_.name_or_origin,
-        visible_requests[0]->GetMessageTextFragment());
+        GetDisplayName(), visible_requests[0]->GetMessageTextFragment());
   }
 
   int template_id =
@@ -297,13 +296,12 @@ base::string16 PermissionPromptBubbleView::GetAccessibleWindowTitle() const {
           ? IDS_PERMISSIONS_BUBBLE_PROMPT_ACCESSIBLE_TITLE_TWO_PERMS
           : IDS_PERMISSIONS_BUBBLE_PROMPT_ACCESSIBLE_TITLE_TWO_PERMS_MORE;
   return l10n_util::GetStringFUTF16(
-      template_id, name_or_origin_.name_or_origin,
+      template_id, GetDisplayName(),
       visible_requests[0]->GetMessageTextFragment(),
       visible_requests[1]->GetMessageTextFragment());
 }
 
-PermissionPromptBubbleView::DisplayNameOrOrigin
-PermissionPromptBubbleView::GetDisplayNameOrOrigin() const {
+base::string16 PermissionPromptBubbleView::GetDisplayName() const {
   DCHECK(!delegate_->Requests().empty());
   GURL origin_url = delegate_->GetRequestingOrigin();
 
@@ -312,19 +310,26 @@ PermissionPromptBubbleView::GetDisplayNameOrOrigin() const {
         extensions::ui_util::GetEnabledExtensionNameForUrl(origin_url,
                                                            browser_->profile());
     if (!extension_name.empty())
-      return {extension_name, false /* is_origin */};
+      return extension_name;
   }
 
   // File URLs should be displayed as "This file".
-  if (origin_url.SchemeIsFile()) {
-    return {l10n_util::GetStringUTF16(IDS_PERMISSIONS_BUBBLE_PROMPT_THIS_FILE),
-            false /* is_origin */};
-  }
+  if (origin_url.SchemeIsFile())
+    return l10n_util::GetStringUTF16(IDS_PERMISSIONS_BUBBLE_PROMPT_THIS_FILE);
 
   // Web URLs should be displayed as the origin in the URL.
-  return {url_formatter::FormatUrlForSecurityDisplay(
-              origin_url, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC),
-          true /* is_origin */};
+  return url_formatter::FormatUrlForSecurityDisplay(
+      origin_url, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
+}
+
+bool PermissionPromptBubbleView::GetDisplayNameIsOrigin() const {
+  DCHECK(!delegate_->Requests().empty());
+  GURL origin_url = delegate_->GetRequestingOrigin();
+  return (!origin_url.SchemeIs(extensions::kExtensionScheme) ||
+          extensions::ui_util::GetEnabledExtensionNameForUrl(
+              origin_url, browser_->profile())
+              .empty()) &&
+         !origin_url.SchemeIsFile();
 }
 
 base::Optional<base::string16> PermissionPromptBubbleView::GetExtraText()
@@ -370,7 +375,7 @@ void PermissionPromptBubbleView::RecordDecision() {
       base::TimeTicks::Now() - permission_requested_time_);
 }
 
-bool PermissionPromptBubbleView::ShouldShowAllowThisTimeButton() const {
+bool PermissionPromptBubbleView::GetShowAllowThisTimeButton() const {
   if (!base::FeatureList::IsEnabled(
           permissions::features::kOneTimeGeolocationPermission)) {
     return false;
@@ -381,3 +386,8 @@ bool PermissionPromptBubbleView::ShouldShowAllowThisTimeButton() const {
   return delegate_->Requests()[0]->GetRequestType() ==
          permissions::RequestType::kGeolocation;
 }
+
+BEGIN_METADATA(PermissionPromptBubbleView, views::BubbleDialogDelegateView)
+ADD_READONLY_PROPERTY_METADATA(base::string16, DisplayName)
+ADD_READONLY_PROPERTY_METADATA(bool, DisplayNameIsOrigin)
+END_METADATA

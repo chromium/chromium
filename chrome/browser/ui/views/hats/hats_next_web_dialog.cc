@@ -34,6 +34,7 @@
 #include "ui/views/controls/webview/web_dialog_view.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 
 constexpr gfx::Size HatsNextWebDialog::kMinSize;
@@ -270,3 +271,7 @@ void HatsNextWebDialog::UpdateWidgetSize() {
 bool HatsNextWebDialog::IsWaitingForSurveyForTesting() {
   return loading_timer_.IsRunning();
 }
+
+BEGIN_METADATA(HatsNextWebDialog, views::BubbleDialogDelegateView)
+ADD_READONLY_PROPERTY_METADATA(GURL, ParameterizedHatsURL)
+END_METADATA

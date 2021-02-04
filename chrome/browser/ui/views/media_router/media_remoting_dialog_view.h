@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_MEDIA_ROUTER_MEDIA_REMOTING_DIALOG_VIEW_H_
 
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 class MediaRouterActionController;
 class PrefService;
@@ -26,6 +27,10 @@ namespace media_router {
 // then mirroring it remotely.
 class MediaRemotingDialogView : public views::BubbleDialogDelegateView {
  public:
+  METADATA_HEADER(MediaRemotingDialogView);
+  MediaRemotingDialogView(const MediaRemotingDialogView&) = delete;
+  MediaRemotingDialogView& operator=(const MediaRemotingDialogView&) = delete;
+
   using PermissionCallback = base::OnceCallback<void(bool)>;
   // Checks the existing preference value, and if unset, instantiates and shows
   // the singleton dialog to get user's permission. |callback| runs on the same
@@ -66,8 +71,6 @@ class MediaRemotingDialogView : public views::BubbleDialogDelegateView {
   // sticky. If this is checked, we record the preference and don't show the
   // dialog again.
   views::Checkbox* remember_choice_checkbox_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaRemotingDialogView);
 };
 
 }  // namespace media_router

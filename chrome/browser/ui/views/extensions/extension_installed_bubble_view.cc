@@ -38,6 +38,8 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/views/sync/dice_bubble_sync_promo_view.h"
@@ -118,9 +120,13 @@ std::unique_ptr<views::View> CreateSigninPromoView(
 class ExtensionInstalledBubbleView : public BubbleSyncPromoDelegate,
                                      public views::BubbleDialogDelegateView {
  public:
+  METADATA_HEADER(ExtensionInstalledBubbleView);
   ExtensionInstalledBubbleView(
       Browser* browser,
       std::unique_ptr<ExtensionInstalledBubbleModel> model);
+  ExtensionInstalledBubbleView(const ExtensionInstalledBubbleView&) = delete;
+  ExtensionInstalledBubbleView& operator=(const ExtensionInstalledBubbleView&) =
+      delete;
   ~ExtensionInstalledBubbleView() override;
 
   static void Show(Browser* browser,
@@ -142,8 +148,6 @@ class ExtensionInstalledBubbleView : public BubbleSyncPromoDelegate,
 
   Browser* const browser_;
   const std::unique_ptr<ExtensionInstalledBubbleModel> model_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionInstalledBubbleView);
 };
 
 // static
@@ -268,6 +272,9 @@ void ExtensionInstalledBubbleView::LinkClicked() {
   Navigate(&params);
   GetWidget()->Close();
 }
+
+BEGIN_METADATA(ExtensionInstalledBubbleView, views::BubbleDialogDelegateView)
+END_METADATA
 
 void ShowUiOnToolbarMenu(scoped_refptr<const extensions::Extension> extension,
                          Browser* browser,

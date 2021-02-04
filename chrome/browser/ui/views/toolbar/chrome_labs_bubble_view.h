@@ -12,10 +12,13 @@
 #include "components/flags_ui/flags_storage.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 // TODO(elainechien): Use composition instead of inheritance.
 class ChromeLabsBubbleView : public views::BubbleDialogDelegateView {
  public:
+  METADATA_HEADER(ChromeLabsBubbleView);
+
   static void Show(views::View* anchor_view,
                    std::unique_ptr<ChromeLabsBubbleViewModel> model);
 

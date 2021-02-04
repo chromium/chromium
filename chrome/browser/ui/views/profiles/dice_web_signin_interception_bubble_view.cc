@@ -29,6 +29,7 @@
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -80,7 +81,7 @@ DiceWebSigninInterceptionBubbleView::ScopedHandle::~ScopedHandle() {
   if (!widget)
     return;
   widget->CloseWithReason(
-      bubble_->HasAccepted() ? views::Widget::ClosedReason::kAcceptButtonClicked
+      bubble_->GetAccepted() ? views::Widget::ClosedReason::kAcceptButtonClicked
                              : views::Widget::ClosedReason::kUnspecified);
 }
 
@@ -133,8 +134,8 @@ void DiceWebSigninInterceptionBubbleView::RecordInterceptionResult(
   }
 }
 
-bool DiceWebSigninInterceptionBubbleView::HasAccepted() const {
-  return has_accepted_;
+bool DiceWebSigninInterceptionBubbleView::GetAccepted() const {
+  return accepted_;
 }
 
 DiceWebSigninInterceptionBubbleView::DiceWebSigninInterceptionBubbleView(
@@ -195,20 +196,20 @@ void DiceWebSigninInterceptionBubbleView::OnWebUIUserChoice(
   switch (user_choice) {
     case SigninInterceptionUserChoice::kAccept:
       result = SigninInterceptionResult::kAccepted;
-      has_accepted_ = true;
+      accepted_ = true;
       break;
     case SigninInterceptionUserChoice::kDecline:
       result = SigninInterceptionResult::kDeclined;
-      has_accepted_ = false;
+      accepted_ = false;
       break;
     case SigninInterceptionUserChoice::kGuest:
       result = SigninInterceptionResult::kAcceptedWithGuest;
-      has_accepted_ = true;
+      accepted_ = true;
   }
 
   RecordInterceptionResult(bubble_parameters_, profile_, result);
   std::move(callback_).Run(result);
-  if (!has_accepted_) {
+  if (!accepted_) {
     // Only close the dialog when the user declined. If the user accepted the
     // dialog displays a spinner until the handle is released.
     GetWidget()->CloseWithReason(
@@ -233,3 +234,8 @@ DiceWebSigninInterceptorDelegate::ShowSigninInterceptionBubbleInternal(
   return DiceWebSigninInterceptionBubbleView::CreateBubble(
       browser->profile(), anchor_view, bubble_parameters, std::move(callback));
 }
+
+BEGIN_METADATA(DiceWebSigninInterceptionBubbleView,
+               views::BubbleDialogDelegateView)
+ADD_READONLY_PROPERTY_METADATA(bool, Accepted)
+END_METADATA

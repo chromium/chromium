@@ -285,3 +285,6 @@ views::View* ChromeLabsBubbleView::GetMenuItemContainerForTesting() {
 bool ChromeLabsBubbleView::IsRestartPromptVisibleForTesting() {
   return restart_prompt_->GetVisible();
 }
+
+BEGIN_METADATA(ChromeLabsBubbleView, views::BubbleDialogDelegateView)
+END_METADATA
