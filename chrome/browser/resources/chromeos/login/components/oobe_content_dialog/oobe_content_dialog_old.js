@@ -39,6 +39,14 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /**
+     * Supports loading dialog which is shown without buttons.
+     */
+    noButtons: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   focus() {
