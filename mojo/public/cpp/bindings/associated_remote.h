@@ -156,6 +156,7 @@ class AssociatedRemote {
   // time of this call). Must only be called on an unbound AssociatedRemote.
   PendingAssociatedReceiver<Interface> BindNewEndpointAndPassReceiver()
       WARN_UNUSED_RESULT {
+    DCHECK(!is_bound()) << "AssociatedRemote is already bound";
     return BindNewEndpointAndPassReceiver(nullptr);
   }
 
@@ -165,6 +166,7 @@ class AssociatedRemote {
   // owns this AssociatedRemote.
   PendingAssociatedReceiver<Interface> BindNewEndpointAndPassReceiver(
       scoped_refptr<base::SequencedTaskRunner> task_runner) WARN_UNUSED_RESULT {
+    DCHECK(!is_bound()) << "AssociatedRemote is already bound";
     ScopedInterfaceEndpointHandle remote_handle;
     ScopedInterfaceEndpointHandle receiver_handle;
     ScopedInterfaceEndpointHandle::CreatePairPendingAssociation(
@@ -182,6 +184,7 @@ class AssociatedRemote {
   // are no other interfaces involved.
   PendingAssociatedReceiver<Interface> BindNewEndpointAndPassDedicatedReceiver()
       WARN_UNUSED_RESULT {
+    DCHECK(!is_bound()) << "AssociatedRemote is already bound";
     MessagePipe pipe;
     scoped_refptr<internal::MultiplexRouter> router0 =
         new internal::MultiplexRouter(
@@ -210,6 +213,7 @@ class AssociatedRemote {
   // base::SequencedTaskRunnerHandle::Get() at the time of this call). Must only
   // be called on an unbound AssociatedRemote.
   void Bind(PendingAssociatedRemote<Interface> pending_remote) {
+    DCHECK(!is_bound()) << "AssociatedRemote is already bound";
     DCHECK(pending_remote.is_valid());
     Bind(std::move(pending_remote), nullptr);
   }
