@@ -28,7 +28,7 @@ namespace {
 
 constexpr base::TimeDelta kContactUploadPeriod = base::TimeDelta::FromHours(24);
 constexpr base::TimeDelta kContactDownloadPeriod =
-    base::TimeDelta::FromHours(12);
+    base::TimeDelta::FromHours(1);
 constexpr base::TimeDelta kContactDownloadRpcTimeout =
     base::TimeDelta::FromSeconds(60);
 
