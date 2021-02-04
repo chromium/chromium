@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/autofill/address_profiles/save_address_profile_view.h"
+#include "chrome/browser/ui/views/autofill/save_address_profile_view.h"
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/testing_profile.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/autofill/address_profiles/save_address_profile_bubble_controller.h"
+#include "chrome/browser/ui/autofill/save_address_profile_bubble_controller.h"
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/browser_with_test_window_test.h"

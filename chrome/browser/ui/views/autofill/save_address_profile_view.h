@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_ADDRESS_PROFILES_SAVE_ADDRESS_PROFILE_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_AUTOFILL_ADDRESS_PROFILES_SAVE_ADDRESS_PROFILE_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_SAVE_ADDRESS_PROFILE_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_AUTOFILL_SAVE_ADDRESS_PROFILE_VIEW_H_
 
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
@@ -44,4 +44,4 @@ class SaveAddressProfileView : public AutofillBubbleBase,
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_ADDRESS_PROFILES_SAVE_ADDRESS_PROFILE_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_SAVE_ADDRESS_PROFILE_VIEW_H_
