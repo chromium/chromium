@@ -1051,7 +1051,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     return any_thread_;
   }
 
-  // Don't access compositor_thread_only_, instead use CompositorThreadOnly().
+  // Don't access compositor_thread_only_, instead use
+  // |GetCompositorThreadOnly()|.
   CompositorThreadOnly compositor_thread_only_;
   CompositorThreadOnly& GetCompositorThreadOnly() {
     compositor_thread_only_.CheckOnValidThread();
