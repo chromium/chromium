@@ -363,6 +363,39 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="V8.GC.TimeToCollectionOnBackground" units="microseconds"
+    expires_after="2021-10-01">
+  <owner>dinfuehr@chromium.org</owner>
+  <owner>ulan@chromium.org</owner>
+  <summary>
+    Time between requesting GC from background thread and actually starting
+    collection on main thread. This is reported each time a background thread
+    requests a GC.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.TimeToSafepoint" units="microseconds"
+    expires_after="2021-10-01">
+  <owner>dinfuehr@chromium.org</owner>
+  <owner>ulan@chromium.org</owner>
+  <summary>
+    Time spent in stopping other threads to reach a safepoint. This is reported
+    each time a safepoint is reached.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+  </summary>
+</histogram>
+
 <histogram name="V8.GCBackgroundMarking" units="ms" expires_after="2021-06-06">
   <owner>ulan@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
@@ -800,12 +833,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.StopTheWorld" units="ms" expires_after="2021-10-01">
+  <obsolete>
+    Removed 02/2021. Renamed to V8.GC.TimeToSafepoint due to switch to
+    microseconds.
+  </obsolete>
   <owner>dinfuehr@chromium.org</owner>
   <owner>ulan@chromium.org</owner>
   <summary>Time spent in stopping other threads before performing GC.</summary>
 </histogram>
 
 <histogram name="V8.TimeToCollection" units="ms" expires_after="2021-10-01">
+  <obsolete>
+    Removed 02/2021. Renamed to V8.GC.TimeToCollectionBackground due to switch
+    to microseconds.
+  </obsolete>
   <owner>dinfuehr@chromium.org</owner>
   <owner>ulan@chromium.org</owner>
   <summary>
