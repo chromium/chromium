@@ -174,6 +174,21 @@ export class DeviceOperator {
   }
 
   /**
+   * Gets metadata for the given device from its static characteristics.
+   * @param {string} deviceId The id of target camera device.
+   * @param {!cros.mojom.CameraMetadataTag} tag Camera metadata tag to query.
+   * @return {!Promise<!Array<number>>} Promise of the corresponding data
+   *     array.
+   * @throws {!Error} Thrown when given device id is invalid.
+   */
+  async getStaticMetadata(deviceId, tag) {
+    const device = await this.getDevice_(deviceId);
+    const {cameraInfo} = await device.getCameraInfo();
+    const staticMetadata = cameraInfo.staticCameraCharacteristics;
+    return getMetadataData(staticMetadata, tag);
+  }
+
+  /**
    * Gets supported photo resolutions for specific camera.
    * @param {string} deviceId The renderer-facing device id of the target camera
    *     which could be retrieved from MediaDeviceInfo.deviceId.
@@ -186,11 +201,8 @@ export class DeviceOperator {
     const typeOutputStream = 0;
     const numElementPerEntry = 4;
 
-    const device = await this.getDevice_(deviceId);
-    const {cameraInfo} = await device.getCameraInfo();
-    const staticMetadata = cameraInfo.staticCameraCharacteristics;
-    const streamConfigs = getMetadataData(
-        staticMetadata,
+    const streamConfigs = await this.getStaticMetadata(
+        deviceId,
         cros.mojom.CameraMetadataTag
             .ANDROID_SCALER_AVAILABLE_STREAM_CONFIGURATIONS);
     // The data of |streamConfigs| looks like:
@@ -226,11 +238,8 @@ export class DeviceOperator {
     const oneSecondInNs = 1e9;
     const numElementPerEntry = 4;
 
-    const device = await this.getDevice_(deviceId);
-    const {cameraInfo} = await device.getCameraInfo();
-    const staticMetadata = cameraInfo.staticCameraCharacteristics;
-    const minFrameDurationConfigs = getMetadataData(
-        staticMetadata,
+    const minFrameDurationConfigs = await this.getStaticMetadata(
+        deviceId,
         cros.mojom.CameraMetadataTag
             .ANDROID_SCALER_AVAILABLE_MIN_FRAME_DURATIONS);
     // The data of |minFrameDurationConfigs| looks like:
@@ -288,11 +297,8 @@ export class DeviceOperator {
   async getSupportedFpsRanges(deviceId) {
     const numElementPerEntry = 2;
 
-    const device = await this.getDevice_(deviceId);
-    const {cameraInfo} = await device.getCameraInfo();
-    const staticMetadata = cameraInfo.staticCameraCharacteristics;
-    const availableFpsRanges = getMetadataData(
-        staticMetadata,
+    const availableFpsRanges = await this.getStaticMetadata(
+        deviceId,
         cros.mojom.CameraMetadataTag
             .ANDROID_CONTROL_AE_AVAILABLE_TARGET_FPS_RANGES);
     // The data of |availableFpsRanges| looks like:
@@ -367,11 +373,9 @@ export class DeviceOperator {
     const portraitModeTag =
         /** @type{!cros.mojom.CameraMetadataTag} */ (-0x80000000);
 
-    const device = await this.getDevice_(deviceId);
-    const {cameraInfo} = await device.getCameraInfo();
-    return getMetadataData(
-               cameraInfo.staticCameraCharacteristics, portraitModeTag)
-               .length > 0;
+    const portraitMode =
+        await this.getStaticMetadata(deviceId, portraitModeTag);
+    return portraitMode.length > 0;
   }
 
   /**
