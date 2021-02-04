@@ -43,6 +43,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/cursor/cursor.h"
 #include "v8/include/v8.h"
 
@@ -112,9 +113,9 @@ bool PdfViewWebPlugin::Initialize(blink::WebPluginContainer* container) {
     if (initial_params_.attribute_names[i] == "stream-url") {
       stream_url = initial_params_.attribute_values[i].Utf8();
     } else if (initial_params_.attribute_names[i] == "background-color") {
-      uint32_t background_color;
-      if (!base::HexStringToUInt(initial_params_.attribute_values[i].Utf8(),
-                                 &background_color)) {
+      SkColor background_color;
+      if (!base::StringToUint(initial_params_.attribute_values[i].Utf8(),
+                              &background_color)) {
         return false;
       }
       SetBackgroundColor(background_color);
