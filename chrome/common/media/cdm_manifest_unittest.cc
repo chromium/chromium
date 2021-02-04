@@ -95,8 +95,9 @@ base::Value DefaultManifest() {
   return dict;
 }
 
-void CheckCodecs(const std::vector<media::VideoCodec>& actual,
-                 const std::vector<media::VideoCodec>& expected) {
+template <class Codec>
+void CheckCodecs(const std::vector<Codec>& actual,
+                 const std::vector<Codec>& expected) {
   EXPECT_EQ(expected.size(), actual.size());
   for (const auto& codec : expected) {
     EXPECT_TRUE(base::Contains(actual, codec));
@@ -184,6 +185,7 @@ TEST(CdmManifestTest, ValidManifest) {
   CheckCodecs(capability.video_codecs,
               {media::VideoCodec::kCodecVP8, media::VideoCodec::kCodecVP9,
                media::VideoCodec::kCodecAV1});
+  CheckCodecs(capability.audio_codecs, {});
   CheckEncryptionSchemes(
       capability.encryption_schemes,
       {media::EncryptionScheme::kCenc, media::EncryptionScheme::kCbcs});
@@ -197,6 +199,7 @@ TEST(CdmManifestTest, EmptyManifest) {
   CdmCapability capability;
   EXPECT_TRUE(ParseCdmManifest(manifest, &capability));
   CheckCodecs(capability.video_codecs, {});
+  CheckCodecs(capability.audio_codecs, {});
   CheckEncryptionSchemes(capability.encryption_schemes,
                          {media::EncryptionScheme::kCenc});
   CheckSessionTypes(capability.session_types,

@@ -119,13 +119,24 @@ bool CheckForCompatibleVersion(const base::Value& manifest,
   return false;
 }
 
+// Returns true and updates |audio_codecs| with the full set of audio
+// codecs that support decrypt-and-decode.
+bool GetAudioCodecs(const base::Value& manifest,
+                    std::vector<media::AudioCodec>* audio_codecs) {
+  DCHECK(audio_codecs);
+
+  // Desktop CDMs only support decryption of audio content, no decoding.
+  // So there are no audio codecs supported by desktop CDMs.
+  return true;
+}
+
 // Returns true and updates |video_codecs| if the appropriate manifest entry is
 // valid. When VP9 is supported, sets |supports_vp9_profile2| if profile 2 is
 // supported. Older CDMs may only support profile 0. Returns false and does not
 // modify |video_codecs| if the manifest entry is incorrectly formatted.
-bool GetCodecs(const base::Value& manifest,
-               std::vector<media::VideoCodec>* video_codecs,
-               bool* supports_vp9_profile2) {
+bool GetVideoCodecs(const base::Value& manifest,
+                    std::vector<media::VideoCodec>* video_codecs,
+                    bool* supports_vp9_profile2) {
   DCHECK(manifest.is_dict());
   DCHECK(video_codecs);
 
@@ -293,8 +304,9 @@ bool ParseCdmManifest(const base::Value& manifest,
                       content::CdmCapability* capability) {
   DCHECK(manifest.is_dict());
 
-  return GetCodecs(manifest, &capability->video_codecs,
-                   &capability->supports_vp9_profile2) &&
+  return GetAudioCodecs(manifest, &capability->audio_codecs) &&
+         GetVideoCodecs(manifest, &capability->video_codecs,
+                        &capability->supports_vp9_profile2) &&
          GetEncryptionSchemes(manifest, &capability->encryption_schemes) &&
          GetSessionTypes(manifest, &capability->session_types);
 }

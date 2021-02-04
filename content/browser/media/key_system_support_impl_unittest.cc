@@ -24,6 +24,7 @@ namespace content {
 
 namespace {
 
+using AudioCodec = media::AudioCodec;
 using VideoCodec = media::VideoCodec;
 using EncryptionScheme = media::EncryptionScheme;
 using CdmSessionType = media::CdmSessionType;
@@ -43,6 +44,9 @@ bool StlEquals(const Container a, std::initializer_list<T> b) {
   do {                                        \
     EXPECT_TRUE(StlEquals(a, {__VA_ARGS__})); \
   } while (false)
+
+#define EXPECT_AUDIO_CODECS(...) \
+  EXPECT_STL_EQ(capability_->audio_codecs, __VA_ARGS__)
 
 #define EXPECT_VIDEO_CODECS(...) \
   EXPECT_STL_EQ(capability_->video_codecs, __VA_ARGS__)
@@ -67,6 +71,7 @@ class KeySystemSupportTest : public testing::Test {
   // schemes.
   CdmCapability GetTestCdmCapability() {
     return CdmCapability(
+        {AudioCodec::kCodecVorbis},
         {VideoCodec::kCodecVP8, VideoCodec::kCodecVP9},
         {EncryptionScheme::kCenc, EncryptionScheme::kCbcs},
         {CdmSessionType::kTemporary, CdmSessionType::kPersistentLicense});
@@ -113,6 +118,7 @@ TEST_F(KeySystemSupportTest, OneKeySystem) {
   Register("KeySystem2", GetTestCdmCapability());
 
   EXPECT_TRUE(IsSupported("KeySystem2"));
+  EXPECT_AUDIO_CODECS(AudioCodec::kCodecVorbis);
   EXPECT_VIDEO_CODECS(VideoCodec::kCodecVP8, VideoCodec::kCodecVP9);
   EXPECT_ENCRYPTION_SCHEMES(EncryptionScheme::kCenc, EncryptionScheme::kCbcs);
   EXPECT_SESSION_TYPES(CdmSessionType::kTemporary,

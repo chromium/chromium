@@ -45,8 +45,10 @@ std::vector<T> SetToVector(const base::flat_set<T>& s) {
 // could be empty if no codecs are specified. If false, |video_codecs| will not
 // be modified.
 bool IsHardwareSecureCodecsOverriddenFromCommandLine(
+    std::vector<media::AudioCodec>* audio_codecs,
     std::vector<media::VideoCodec>* video_codecs,
     std::vector<media::EncryptionScheme>* encryption_schemes) {
+  DCHECK(audio_codecs->empty());
   DCHECK(video_codecs->empty());
   DCHECK(encryption_schemes->empty());
 
@@ -68,19 +70,23 @@ bool IsHardwareSecureCodecsOverriddenFromCommandLine(
       video_codecs->push_back(media::VideoCodec::kCodecVP9);
     else if (codec == "avc1")
       video_codecs->push_back(media::VideoCodec::kCodecH264);
+    else if (codec == "vorbis")
+      audio_codecs->push_back(media::AudioCodec::kCodecVorbis);
     else
       DVLOG(1) << "Unsupported codec specified on command line: " << codec;
   }
 
-  // Codecs enabled from command line assumes CENC support.
-  if (!video_codecs->empty())
+  if (!video_codecs->empty()) {
+    // Codecs enabled from command line assumes CENC support.
     encryption_schemes->push_back(media::EncryptionScheme::kCenc);
+  }
 
   return true;
 }
 
 void GetHardwareSecureDecryptionCaps(
     const std::string& key_system,
+    std::vector<media::AudioCodec>* audio_codecs,
     std::vector<media::VideoCodec>* video_codecs,
     std::vector<media::EncryptionScheme>* encryption_schemes) {
   DCHECK(video_codecs->empty());
@@ -97,8 +103,8 @@ void GetHardwareSecureDecryptionCaps(
 #endif
 
   // Secure codecs override takes precedence over other checks.
-  if (IsHardwareSecureCodecsOverriddenFromCommandLine(video_codecs,
-                                                      encryption_schemes)) {
+  if (IsHardwareSecureCodecsOverriddenFromCommandLine(
+          audio_codecs, video_codecs, encryption_schemes)) {
     DVLOG(1) << "Hardware secure codecs overridden from command line";
     return;
   }
@@ -119,12 +125,14 @@ void GetHardwareSecureDecryptionCaps(
   DVLOG(1) << "Hardware secure codecs not supported because mojo video "
               "decode was disabled at buildtime";
 #else
+  base::flat_set<media::AudioCodec> audio_codec_set;
   base::flat_set<media::VideoCodec> video_codec_set;
   base::flat_set<media::EncryptionScheme> encryption_scheme_set;
 
   GetContentClient()->browser()->GetHardwareSecureDecryptionCaps(
-      key_system, &video_codec_set, &encryption_scheme_set);
+      key_system, &audio_codec_set, &video_codec_set, &encryption_scheme_set);
 
+  *audio_codecs = SetToVector(audio_codec_set);
   *video_codecs = SetToVector(video_codec_set);
   *encryption_schemes = SetToVector(encryption_scheme_set);
 #endif
@@ -176,6 +184,7 @@ void KeySystemSupportImpl::IsKeySystemSupported(
 
   // Supported codecs and encryption schemes.
   auto capability = media::mojom::KeySystemCapability::New();
+  capability->audio_codecs = cdm_info->capability.audio_codecs;
   capability->video_codecs = cdm_info->capability.video_codecs;
   capability->supports_vp9_profile2 =
       cdm_info->capability.supports_vp9_profile2;
@@ -183,6 +192,7 @@ void KeySystemSupportImpl::IsKeySystemSupported(
       SetToVector(cdm_info->capability.encryption_schemes);
 
   GetHardwareSecureDecryptionCaps(key_system,
+                                  &capability->hw_secure_audio_codecs,
                                   &capability->hw_secure_video_codecs,
                                   &capability->hw_secure_encryption_schemes);
 

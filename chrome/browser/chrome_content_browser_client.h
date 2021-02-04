@@ -450,6 +450,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::NavigationHandle* navigation_handle) override;
   void GetHardwareSecureDecryptionCaps(
       const std::string& key_system,
+      base::flat_set<media::AudioCodec>* audio_codecs,
       base::flat_set<media::VideoCodec>* video_codecs,
       base::flat_set<media::EncryptionScheme>* encryption_schemes) override;
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING)

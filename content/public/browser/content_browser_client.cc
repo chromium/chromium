@@ -263,6 +263,7 @@ bool ContentBrowserClient::OverridesAudioManager() {
 
 void ContentBrowserClient::GetHardwareSecureDecryptionCaps(
     const std::string& key_system,
+    base::flat_set<media::AudioCodec>* audio_codecs,
     base::flat_set<media::VideoCodec>* video_codecs,
     base::flat_set<media::EncryptionScheme>* encryption_schemes) {}
 

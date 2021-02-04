@@ -251,6 +251,8 @@ std::unique_ptr<content::CdmInfo> CreateCdmInfoForChromeOS(
   content::CdmCapability capability;
 
   // Add the supported codecs as if they came from the component manifest.
+  // There are no supported audio codecs as the CDM only does decrypt-only
+  // for audio.
   capability.video_codecs.push_back(media::VideoCodec::kCodecVP8);
   capability.video_codecs.push_back(media::VideoCodec::kCodecVP9);
   capability.video_codecs.push_back(media::VideoCodec::kCodecAV1);
@@ -456,7 +458,8 @@ void ChromeContentClient::AddContentDecryptionModules(
 
       // Supported codecs are hard-coded in ExternalClearKeyProperties.
       content::CdmCapability capability(
-          {}, {media::EncryptionScheme::kCenc, media::EncryptionScheme::kCbcs},
+          {}, {},
+          {media::EncryptionScheme::kCenc, media::EncryptionScheme::kCbcs},
           {media::CdmSessionType::kTemporary,
            media::CdmSessionType::kPersistentLicense,
            media::CdmSessionType::kPersistentUsageRecord});
