@@ -121,6 +121,15 @@ void ThreadCacheRegistry::PurgeAll() {
     current_thread_tcache->Purge();
 }
 
+void ThreadCacheRegistry::ForcePurgeAllThreadUnsafe() {
+  PartitionAutoLock scoped_locker(GetLock());
+  ThreadCache* tcache = list_head_;
+  while (tcache) {
+    tcache->Purge();
+    tcache = tcache->next_;
+  }
+}
+
 void ThreadCacheRegistry::StartPeriodicPurge() {
   ThreadCache::EnsureThreadSpecificDataInitialized();
 

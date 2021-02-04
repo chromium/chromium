@@ -71,6 +71,9 @@ class BASE_EXPORT ThreadCacheRegistry {
   void OnDeallocation();
 
   static PartitionLock& GetLock() { return Instance().lock_; }
+  // Purges all thread caches *now*. This is completely thread-unsafe, and
+  // should only be called in a post-fork() handler.
+  void ForcePurgeAllThreadUnsafe();
 
   bool has_pending_purge_task() const { return has_pending_purge_task_; }
   void ResetForTesting();
@@ -222,6 +225,9 @@ class BASE_EXPORT ThreadCache {
   static constexpr uint16_t kBatchFillRatio = 8;
   static constexpr uint8_t kMaxCountPerBucket = 128;
 
+  // TODO(lizeb): Optimize the threshold.
+  static constexpr size_t kSizeThreshold = 512;
+
  private:
   struct Bucket {
     PartitionFreelistEntry* freelist_head;
@@ -243,8 +249,6 @@ class BASE_EXPORT ThreadCache {
   void HandleNonNormalMode();
   void ResetForTesting();
 
-  // TODO(lizeb): Optimize the threshold.
-  static constexpr size_t kSizeThreshold = 512;
   static constexpr uint16_t kBucketCount =
       ((ConstexprLog2(kSizeThreshold) - kMinBucketedOrder + 1)
        << kNumBucketsPerOrderBits) +

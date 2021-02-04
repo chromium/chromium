@@ -27,6 +27,7 @@
 #include "base/rand_util.h"
 #include "base/stl_util.h"
 #include "base/system/sys_info.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -2980,6 +2981,73 @@ TEST_F(PartitionAllocDeathTest, CheckTriggered) {
 
 #endif  // !defined(OFFICIAL_BUILD) && !defined(NDEBUG)
 #endif  // defined(GTEST_HAS_DEATH_TEST) && !defined(OS_ANDROID)
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+    defined(GTEST_HAS_DEATH_TEST) && !defined(OS_ANDROID)
+
+namespace {
+
+class LambdaThreadDelegate : public PlatformThread::Delegate {
+ public:
+  explicit LambdaThreadDelegate(RepeatingClosure f) : f_(f) {}
+  void ThreadMain() override { f_.Run(); }
+
+ private:
+  RepeatingClosure f_;
+};
+
+NOINLINE void FreeForTest(void* data) {
+  free(data);
+}
+
+}  // namespace
+
+TEST_F(PartitionAllocTest, PreforkHandler) {
+  std::atomic<bool> please_stop;
+  std::atomic<int> started_threads{0};
+
+  // Continuously allocates / frees memory, bypassing the thread cache. This
+  // makes it likely that this thread will own the lock, and that the
+  // EXPECT_EXIT() part will deadlock.
+  constexpr size_t kAllocSize = ThreadCache::kSizeThreshold + 1;
+  LambdaThreadDelegate delegate{BindLambdaForTesting([&]() {
+    started_threads++;
+    while (!please_stop.load(std::memory_order_relaxed)) {
+      void* ptr = malloc(kAllocSize);
+
+      // A simple malloc() / free() pair can be discarded by the compiler (and
+      // is), making the test fail. It is sufficient to make |FreeForTest()| a
+      // NOINLINE function for the call to not be eliminated, but it is
+      // required.
+      FreeForTest(ptr);
+    }
+  })};
+
+  constexpr int kThreads = 4;
+  PlatformThreadHandle thread_handles[kThreads];
+  for (int i = 0; i < kThreads; i++) {
+    PlatformThread::Create(0, &delegate, &thread_handles[i]);
+  }
+  // Make sure all threads are actually already running.
+  while (started_threads != kThreads) {
+  }
+
+  EXPECT_EXIT(
+      {
+        void* ptr = malloc(kAllocSize);
+        FreeForTest(ptr);
+        exit(1);
+      },
+      ::testing::ExitedWithCode(1), "");
+
+  please_stop.store(true);
+  for (int i = 0; i < kThreads; i++) {
+    PlatformThread::Join(thread_handles[i]);
+  }
+}
+
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
+        // defined(GTEST_HAS_DEATH_TEST) && !defined(OS_ANDROID)
 
 }  // namespace internal
 }  // namespace base

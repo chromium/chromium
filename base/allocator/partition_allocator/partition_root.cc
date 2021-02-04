@@ -18,6 +18,14 @@
 #include "wow64apiset.h"
 #endif
 
+#if defined(OS_LINUX)
+#include <pthread.h>
+#endif
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#include "base/allocator/allocator_shim_default_dispatch_to_partition_alloc.h"
+#endif
+
 namespace base {
 
 namespace {
@@ -40,6 +48,89 @@ typename PartitionRoot<thread_safe>::PCScanMode PartitionOptionsToPCScanMode(
   return Root::PCScanMode::kNonScannable;
 #endif
 }
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
+#if defined(OS_LINUX)
+
+// NO_THREAD_SAFETY_ANALYSIS: acquires the lock and doesn't release it, by
+// design.
+void BeforeForkInParent() NO_THREAD_SAFETY_ANALYSIS {
+  auto* regular_root = internal::PartitionAllocMalloc::Allocator();
+  regular_root->lock_.Lock();
+
+  auto* aligned_root = internal::PartitionAllocMalloc::AlignedAllocator();
+  aligned_root->lock_.Lock();
+
+  internal::ThreadCacheRegistry::GetLock().Lock();
+}
+
+void ReleaseLocks() NO_THREAD_SAFETY_ANALYSIS {
+  // In reverse order, even though there are no lock ordering dependencies.
+  internal::ThreadCacheRegistry::GetLock().Unlock();
+
+  auto* aligned_root = internal::PartitionAllocMalloc::AlignedAllocator();
+  aligned_root->lock_.Unlock();
+
+  auto* regular_root = internal::PartitionAllocMalloc::Allocator();
+  regular_root->lock_.Unlock();
+}
+
+void AfterForkInParent() {
+  ReleaseLocks();
+}
+
+void AfterForkInChild() {
+  ReleaseLocks();
+  // Unsafe, as noted in the name. This is fine here however, since at this
+  // point there is only one thread, this one (unless another post-fork()
+  // handler created a thread, but it would have needed to allocate, which would
+  // have deadlocked the process already).
+  //
+  // If we don't reclaim this memory, it is lost forever. Note that this is only
+  // really an issue if we fork() a multi-threaded process without calling
+  // exec() right away, which is discouraged.
+  internal::ThreadCacheRegistry::Instance().ForcePurgeAllThreadUnsafe();
+}
+#endif  // defined(OS_LINUX)
+
+std::atomic<bool> g_global_init_called;
+void PartitionAllocMallocInitOnce() {
+  bool expected = false;
+  // No need to block execution for potential concurrent initialization, merely
+  // want to make sure this is only called once.
+  if (!g_global_init_called.compare_exchange_strong(expected, true))
+    return;
+
+#if defined(OS_LINUX)
+  // When fork() is called, only the current thread continues to execute in the
+  // child process. If the lock is held, but *not* by this thread when fork() is
+  // called, we have a deadlock.
+  //
+  // The "solution" here is to acquire the lock on the forking thread before
+  // fork(), and keep it held until fork() is done, in the parent and the
+  // child. To clean up memory, we also must empty the thread caches in the
+  // child, which is easier, since no threads except for the current one are
+  // running right after the fork().
+  //
+  // This is not perfect though, since:
+  // - Multiple pre/post-fork() handlers can be registered, they are then run in
+  //   LIFO order for the pre-fork handler, and FIFO order for the post-fork
+  //   one. So unless we are the first to register a handler, if another handler
+  //   allocates, then we deterministically deadlock.
+  // - pthread handlers are *not* called when the application calls clone()
+  //   directly, which is what Chrome does to launch processes.
+  //
+  // However, no perfect solution really exists to make threads + fork()
+  // cooperate, but deadlocks are real (and fork() is used in DEATH_TEST()s),
+  // and other malloc() implementations use the same techniques.
+  int err =
+      pthread_atfork(BeforeForkInParent, AfterForkInParent, AfterForkInChild);
+  PA_CHECK(err == 0);
+#endif  // defined(OS_LINUX)
+}
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
 }  // namespace
 
 namespace internal {
@@ -382,84 +473,85 @@ void PartitionRoot<thread_safe>::DecommitEmptySlotSpans() {
 
 template <bool thread_safe>
 void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
-  ScopedGuard guard{lock_};
-  if (initialized)
-    return;
+  {
+    ScopedGuard guard{lock_};
+    if (initialized)
+      return;
 
 #if defined(PA_HAS_64_BITS_POINTERS)
-  // Reserve address space for partition alloc.
-  if (features::IsPartitionAllocGigaCageEnabled())
-    internal::PartitionAddressSpace::Init();
+    // Reserve address space for partition alloc.
+    if (features::IsPartitionAllocGigaCageEnabled())
+      internal::PartitionAddressSpace::Init();
 #endif
 
-  // If alignment needs to be enforced, disallow adding a cookie and/or
-  // ref-count at the beginning of the slot.
-  if (opts.alignment == PartitionOptions::Alignment::kAlignedAlloc) {
-    allow_cookies = false;
-    allow_ref_count = false;
-  } else {
-    allow_cookies = true;
-    allow_ref_count = opts.ref_count == PartitionOptions::RefCount::kEnabled;
-  }
+    // If alignment needs to be enforced, disallow adding a cookie and/or
+    // ref-count at the beginning of the slot.
+    if (opts.alignment == PartitionOptions::Alignment::kAlignedAlloc) {
+      allow_cookies = false;
+      allow_ref_count = false;
+    } else {
+      allow_cookies = true;
+      allow_ref_count = opts.ref_count == PartitionOptions::RefCount::kEnabled;
+    }
 
 #if PARTITION_EXTRAS_REQUIRED
-  extras_size = 0;
-  extras_offset = 0;
+    extras_size = 0;
+    extras_offset = 0;
 
-  if (allow_cookies) {
-    extras_size += internal::kPartitionCookieSizeAdjustment;
-    extras_offset += internal::kPartitionCookieOffsetAdjustment;
-  }
+    if (allow_cookies) {
+      extras_size += internal::kPartitionCookieSizeAdjustment;
+      extras_offset += internal::kPartitionCookieOffsetAdjustment;
+    }
 
-  if (allow_ref_count) {
-    extras_size += internal::kPartitionRefCountSizeAdjustment;
-    extras_offset += internal::kPartitionRefCountOffsetAdjustment;
-  }
+    if (allow_ref_count) {
+      extras_size += internal::kPartitionRefCountSizeAdjustment;
+      extras_offset += internal::kPartitionRefCountOffsetAdjustment;
+    }
 #endif
 
-  pcscan_mode = PartitionOptionsToPCScanMode<thread_safe>(opts.pcscan);
-  if (pcscan_mode == PCScanMode::kEnabled) {
-    // Concurrent freeing in PCScan can only safely work on thread-safe
-    // partitions.
-    PA_CHECK(thread_safe);
-    PCScan::Instance().RegisterRoot(this);
-  }
-
-  // We mark the sentinel slot span as free to make sure it is skipped by our
-  // logic to find a new active slot span.
-  memset(&sentinel_bucket, 0, sizeof(sentinel_bucket));
-  sentinel_bucket.active_slot_spans_head = SlotSpan::get_sentinel_slot_span();
-
-  // This is a "magic" value so we can test if a root pointer is valid.
-  inverted_self = ~reinterpret_cast<uintptr_t>(this);
-
-  // Set up the actual usable buckets first.
-  // Note that typical values (i.e. min allocation size of 8) will result in
-  // pseudo buckets (size==9 etc. or more generally, size is not a multiple
-  // of the smallest allocation granularity).
-  // We avoid them in the bucket lookup map, but we tolerate them to keep the
-  // code simpler and the structures more generic.
-  size_t i, j;
-  size_t current_size = kSmallestBucket;
-  size_t current_increment = kSmallestBucket >> kNumBucketsPerOrderBits;
-  Bucket* bucket = &buckets[0];
-  for (i = 0; i < kNumBucketedOrders; ++i) {
-    for (j = 0; j < kNumBucketsPerOrder; ++j) {
-      bucket->Init(current_size);
-      // Disable pseudo buckets so that touching them faults.
-      if (current_size % kSmallestBucket)
-        bucket->active_slot_spans_head = nullptr;
-      current_size += current_increment;
-      ++bucket;
+    pcscan_mode = PartitionOptionsToPCScanMode<thread_safe>(opts.pcscan);
+    if (pcscan_mode == PCScanMode::kEnabled) {
+      // Concurrent freeing in PCScan can only safely work on thread-safe
+      // partitions.
+      PA_CHECK(thread_safe);
+      PCScan::Instance().RegisterRoot(this);
     }
-    current_increment <<= 1;
-  }
-  PA_DCHECK(current_size == 1 << kMaxBucketedOrder);
-  PA_DCHECK(bucket == &buckets[0] + kNumBuckets);
+
+    // We mark the sentinel slot span as free to make sure it is skipped by our
+    // logic to find a new active slot span.
+    memset(&sentinel_bucket, 0, sizeof(sentinel_bucket));
+    sentinel_bucket.active_slot_spans_head = SlotSpan::get_sentinel_slot_span();
+
+    // This is a "magic" value so we can test if a root pointer is valid.
+    inverted_self = ~reinterpret_cast<uintptr_t>(this);
+
+    // Set up the actual usable buckets first.
+    // Note that typical values (i.e. min allocation size of 8) will result in
+    // pseudo buckets (size==9 etc. or more generally, size is not a multiple
+    // of the smallest allocation granularity).
+    // We avoid them in the bucket lookup map, but we tolerate them to keep the
+    // code simpler and the structures more generic.
+    size_t i, j;
+    size_t current_size = kSmallestBucket;
+    size_t current_increment = kSmallestBucket >> kNumBucketsPerOrderBits;
+    Bucket* bucket = &buckets[0];
+    for (i = 0; i < kNumBucketedOrders; ++i) {
+      for (j = 0; j < kNumBucketsPerOrder; ++j) {
+        bucket->Init(current_size);
+        // Disable pseudo buckets so that touching them faults.
+        if (current_size % kSmallestBucket)
+          bucket->active_slot_spans_head = nullptr;
+        current_size += current_increment;
+        ++bucket;
+      }
+      current_increment <<= 1;
+    }
+    PA_DCHECK(current_size == 1 << kMaxBucketedOrder);
+    PA_DCHECK(bucket == &buckets[0] + kNumBuckets);
 
 #if !defined(PA_THREAD_CACHE_SUPPORTED)
-  // TLS in ThreadCache not supported on other OSes.
-  with_thread_cache = false;
+    // TLS in ThreadCache not supported on other OSes.
+    with_thread_cache = false;
 #else
   internal::ThreadCache::EnsureThreadSpecificDataInitialized();
   with_thread_cache =
@@ -469,7 +561,13 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
     internal::ThreadCache::Init(this);
 #endif  // !defined(PA_THREAD_CACHE_SUPPORTED)
 
-  initialized = true;
+    initialized = true;
+  }
+
+  // Called without the lock, might allocate.
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  PartitionAllocMallocInitOnce();
+#endif
 }
 
 template <bool thread_safe>
