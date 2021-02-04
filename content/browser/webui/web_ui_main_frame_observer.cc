@@ -119,6 +119,7 @@ void WebUIMainFrameObserver::OnDidAddMessageToConsole(
   report.message = base::UTF16ToUTF8(message);
   report.line_number = line_no;
   report.url = std::move(redacted_url);
+  report.source_system = JavaScriptErrorReport::SourceSystem::kWebUIObserver;
   if (untrusted_stack_trace) {
     report.stack_trace = base::UTF16ToUTF8(*untrusted_stack_trace);
   }
