@@ -92,6 +92,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Handles `postMessage()` calls from the embedder.
   void HandleMessage(const base::Value& message);
 
+  // Initialize image buffer(s) according to the new context size.
+  virtual void InitImageData(const gfx::Size& size) = 0;
+
   // Schedules invalidation tasks after painting finishes.
   void InvalidateAfterPaintDone();
 

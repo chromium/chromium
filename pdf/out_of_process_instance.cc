@@ -805,11 +805,7 @@ void OutOfProcessInstance::DidChangeView(const pp::View& view) {
     gfx::Size new_image_data_size =
         PaintManager::GetNewContextSize(old_image_data_size, plugin_size());
     if (new_image_data_size != old_image_data_size) {
-      pepper_image_data_ =
-          pp::ImageData(this, PP_IMAGEDATAFORMAT_BGRA_PREMUL,
-                        PPSizeFromSize(new_image_data_size), false);
-      mutable_image_data() = SkBitmapFromPPImageData(
-          std::make_unique<pp::ImageData>(pepper_image_data_));
+      InitImageData(new_image_data_size);
       set_first_paint(true);
     }
 
@@ -1126,6 +1122,14 @@ void OutOfProcessInstance::DidOpenPreview(std::unique_ptr<UrlLoader> loader,
   } else {
     NOTREACHED();
   }
+}
+
+void OutOfProcessInstance::InitImageData(const gfx::Size& size) {
+  pepper_image_data_ =
+      pp::ImageData(this, PP_IMAGEDATAFORMAT_BGRA_PREMUL, PPSizeFromSize(size),
+                    /*init_to_zero=*/false);
+  mutable_image_data() = SkBitmapFromPPImageData(
+      std::make_unique<pp::ImageData>(pepper_image_data_));
 }
 
 pp::VarArray OutOfProcessInstance::GetDocumentAttachments() {

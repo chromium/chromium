@@ -25,6 +25,7 @@
 #include "pdf/pdf_init.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/post_message_receiver.h"
+#include "pdf/ppapi_migration/bitmap.h"
 #include "pdf/ppapi_migration/graphics.h"
 #include "pdf/ppapi_migration/url_loader.h"
 #include "ppapi/c/pp_errors.h"
@@ -45,6 +46,7 @@
 #include "third_party/blink/public/web/web_plugin_params.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/cursor/cursor.h"
+#include "ui/gfx/skia_util.h"
 #include "v8/include/v8.h"
 
 namespace chrome_pdf {
@@ -394,6 +396,10 @@ void PdfViewWebPlugin::DidOpen(std::unique_ptr<UrlLoader> loader,
 void PdfViewWebPlugin::DidOpenPreview(std::unique_ptr<UrlLoader> loader,
                                       int32_t result) {
   NOTIMPLEMENTED();
+}
+
+void PdfViewWebPlugin::InitImageData(const gfx::Size& size) {
+  mutable_image_data() = CreateN32PremulSkBitmap(gfx::SizeToSkISize(size));
 }
 
 void PdfViewWebPlugin::OnGeometryChanged(double old_zoom,
