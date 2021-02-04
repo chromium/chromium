@@ -36,8 +36,8 @@ using content::BrowserContext;
 namespace safe_browsing {
 
 namespace {
-// MIME-type for APKs.
-const char kApkMimeType[] = "application/vnd.android.package-archive";
+// File suffix for APKs.
+const base::FilePath::CharType kApkSuffix[] = FILE_PATH_LITERAL(".apk");
 
 // The number of user gestures to trace back for the referrer chain.
 const int kAndroidTelemetryUserGestureLimit = 2;
@@ -108,7 +108,7 @@ void AndroidTelemetryService::OnDownloadCreated(
 
 void AndroidTelemetryService::OnDownloadUpdated(download::DownloadItem* item) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK_EQ(kApkMimeType, item->GetMimeType());
+  DCHECK(item->GetTargetFilePath().MatchesExtension(kApkSuffix));
 
   if (item->GetState() == download::DownloadItem::COMPLETE) {
     // Download completed. Send report.
@@ -128,11 +128,12 @@ void AndroidTelemetryService::OnDownloadUpdated(download::DownloadItem* item) {
 }
 
 bool AndroidTelemetryService::CanSendPing(download::DownloadItem* item) {
-  if (item->GetMimeType() != kApkMimeType) {
+  if (!item->GetTargetFilePath().MatchesExtension(kApkSuffix)) {
     // This case is not recorded since we are not interested here in finding out
     // how often people download non-APK files.
     return false;
   }
+  // TODO(crbug.com/1173145): Add a metric to check if the MIME type is APK.
 
   if (!IsSafeBrowsingEnabled(*GetPrefs())) {
     RecordApkDownloadTelemetryOutcome(
