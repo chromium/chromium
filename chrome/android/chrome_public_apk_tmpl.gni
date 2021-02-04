@@ -132,12 +132,6 @@ template("chrome_public_common_apk_or_module_tmpl") {
     _target_type = invoker.target_type
   }
 
-  if (defined(invoker.enable_multidex)) {
-    _enable_multidex = invoker.enable_multidex
-  } else {
-    _enable_multidex = is_java_debug
-  }
-
   target(_target_type, target_name) {
     forward_variables_from(invoker, "*")
 
@@ -254,25 +248,6 @@ template("chrome_public_common_apk_or_module_tmpl") {
       }
     }
 
-    if (_enable_multidex) {
-      enable_multidex = true
-      if (_target_type == "android_apk") {
-        if (!defined(negative_main_dex_globs)) {
-          negative_main_dex_globs = [
-            "*ApplicationStatus*",  # Doesn't work in non-browser process.
-            "*ChromeActivity*",  # Pulls in the world; ensure it stays out.
-            "*GoogleApiAvailability*",  # Play Services only in browser process.
-            "*R\$*",  # Should not use resources from non-browser process.
-          ]
-        }
-
-        # Allow targets to append to the default list.
-        if (defined(extra_negative_main_dex_globs)) {
-          negative_main_dex_globs += extra_negative_main_dex_globs
-        }
-      }
-    }
-
     if (dfmify_dev_ui && (_target_type == "android_apk" ||
                           _target_type == "instrumentation_test_apk")) {
       # Dev UI is a feature in a DFM, and APKs don't use DFMs. To make the code
@@ -374,11 +349,6 @@ template("monochrome_public_common_apk_or_module_tmpl") {
             "_is_bundle_module is true but the invoker does not define is_base_module!")
       }
 
-      if (defined(invoker.enable_multidex)) {
-        _enable_multidex = invoker.enable_multidex
-      } else {
-        _enable_multidex = is_java_debug
-      }
       is_trichrome = defined(invoker.use_trichrome_library) &&
                      invoker.use_trichrome_library
       is_monochrome = !is_trichrome
@@ -654,19 +624,6 @@ template("monochrome_public_common_apk_or_module_tmpl") {
       }
       deps += [ "//chrome/android:${_pak_prefix}_pak_assets" ]
 
-      if (defined(invoker.negative_main_dex_globs)) {
-        negative_main_dex_globs = invoker.negative_main_dex_globs
-      } else if (_enable_multidex && invoker.target_type == "android_apk") {
-        # WebView pulls play services into the main dex.
-        negative_main_dex_globs = [
-          # TODO(agrieve): Add ApplicationStatus to this list. It's currently
-          #     included because of ActivityWindowAndroid, but is never used at
-          #     runtime by webview.
-          "*ChromeActivity*",  # Pulls in the world, so ensure it doesn't slip
-                               # in.
-        ]
-      }
-
       if (!is_java_debug) {
         proguard_configs = []
         if (defined(invoker.proguard_configs)) {
@@ -701,7 +658,6 @@ template("monochrome_public_common_apk_or_module_tmpl") {
       "isolated_splits_enabled",
       "loadable_modules",
       "native_lib_placeholders",
-      "negative_main_dex_globs",
       "never_incremental",
       "no_xml_namespaces",
       "product_config_java_packages",

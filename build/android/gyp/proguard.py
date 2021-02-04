@@ -70,11 +70,9 @@ def _ParseOptions():
       '--classpath',
       action='append',
       help='GN-list of .jar files to include as libraries.')
-  parser.add_argument(
-      '--main-dex-rules-path',
-      action='append',
-      help='Path to main dex rules for multidex'
-      '- only works with R8.')
+  parser.add_argument('--main-dex-rules-path',
+                      action='append',
+                      help='Path to main dex rules for multidex.')
   parser.add_argument(
       '--min-api', help='Minimum Android API level compatibility.')
   parser.add_argument('--enable-obfuscation',

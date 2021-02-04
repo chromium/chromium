@@ -2887,17 +2887,11 @@ if (enable_java_templates) {
     } else if (_is_bundle_module && _proguard_enabled) {
       _final_deps += [ ":$_java_target" ]
     } else if (_incremental_apk) {
-      if (defined(invoker.negative_main_dex_globs)) {
-        not_needed(invoker, [ "negative_main_dex_globs" ])
-      }
       if (defined(invoker.enable_proguard_checks)) {
         not_needed(invoker, [ "enable_proguard_checks" ])
       }
       if (defined(invoker.disable_r8_outlining)) {
         not_needed(invoker, [ "disable_r8_outlining" ])
-      }
-      if (defined(invoker.negative_main_dex_globs)) {
-        not_needed(invoker, [ "negative_main_dex_globs" ])
       }
       if (defined(invoker.dexlayout_profile)) {
         not_needed(invoker, [ "dexlayout_profile" ])
@@ -2932,13 +2926,6 @@ if (enable_java_templates) {
           # .dex files were created with.
           input_dex_filearg =
               "@FileArg(${_rebased_build_config}:final_dex:all_dex_files)"
-          if (_enable_main_dex_list) {
-            if (defined(invoker.apk_under_test)) {
-              main_dex_list_input_classes_filearg = "@FileArg(${_rebased_build_config}:deps_info:device_classpath_extended)"
-            } else {
-              main_dex_list_input_classes_filearg = "@FileArg(${_rebased_build_config}:deps_info:device_classpath)"
-            }
-          }
         } else {
           input_classes_filearg =
               "@FileArg($_rebased_build_config:deps_info:device_classpath)"
@@ -2966,12 +2953,8 @@ if (enable_java_templates) {
         ignore_desugar_missing_deps = true
 
         if (_enable_main_dex_list) {
-          forward_variables_from(invoker, [ "negative_main_dex_globs" ])
           extra_main_dex_proguard_config = _generated_proguard_main_dex_config
           deps += [ ":$_compile_resources_target" ]
-        } else if (_enable_multidex &&
-                   defined(invoker.negative_main_dex_globs)) {
-          not_needed(invoker, [ "negative_main_dex_globs" ])
         }
       }
 
@@ -3507,7 +3490,6 @@ if (enable_java_templates) {
                                "native_lib_placeholders",
                                "native_lib_version_arg",
                                "native_lib_version_rule",
-                               "negative_main_dex_globs",
                                "never_incremental",
                                "no_xml_namespaces",
                                "png_to_webp",
@@ -3641,7 +3623,6 @@ if (enable_java_templates) {
                                "native_lib_placeholders",
                                "native_lib_version_arg",
                                "native_lib_version_rule",
-                               "negative_main_dex_globs",
                                "no_xml_namespaces",
                                "package_id",
                                "package_name",

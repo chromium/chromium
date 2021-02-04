@@ -60,9 +60,9 @@ def _ParseArgs(args):
   parser.add_argument(
       '--incremental-dir',
       help='Path of directory to put intermediate dex files.')
-  parser.add_argument(
-      '--main-dex-list-path',
-      help='File containing a list of the classes to include in the main dex.')
+  parser.add_argument('--main-dex-rules-path',
+                      action='append',
+                      help='Path to main dex rules for multidex.')
   parser.add_argument(
       '--multi-dex',
       action='store_true',
@@ -135,8 +135,8 @@ def _ParseArgs(args):
   elif options.proguard_mapping_path is not None:
     parser.error('Unexpected proguard mapping without dexlayout')
 
-  if options.main_dex_list_path and not options.multi_dex:
-    parser.error('--main-dex-list-path is unused if multidex is not enabled')
+  if options.main_dex_rules_path and not options.multi_dex:
+    parser.error('--main-dex-rules-path is unused if multidex is not enabled')
 
   options.class_inputs = build_utils.ParseGnList(options.class_inputs)
   options.class_inputs_filearg = build_utils.ParseGnList(
@@ -365,8 +365,9 @@ def _CreateFinalDex(d8_inputs, output, tmp_dir, dex_cmd, options=None):
   needs_dexmerge = output.endswith('.dex') or not (options and options.library)
   if needs_dexing or needs_dexmerge:
     if options:
-      if options.main_dex_list_path:
-        dex_cmd = dex_cmd + ['--main-dex-list', options.main_dex_list_path]
+      if options.main_dex_rules_path:
+        for main_dex_rule in options.main_dex_rules_path:
+          dex_cmd = dex_cmd + ['--main-dex-rules', main_dex_rule]
       elif options.library and int(options.min_api or 1) < 21:
         # When dexing D8 requires a main dex list pre-21. For library targets,
         # it doesn't matter what's in the main dex, so just use a dummy one.
@@ -543,10 +544,10 @@ def main(args):
   options.dex_inputs += options.dex_inputs_filearg
 
   input_paths = options.class_inputs + options.dex_inputs
-  if options.multi_dex and options.main_dex_list_path:
-    input_paths.append(options.main_dex_list_path)
   input_paths.append(options.r8_jar_path)
   input_paths.append(options.custom_d8_jar_path)
+  if options.main_dex_rules_path:
+    input_paths.extend(options.main_dex_rules_path)
 
   depfile_deps = options.class_inputs_filearg + options.dex_inputs_filearg
 
@@ -582,13 +583,16 @@ def main(args):
         track_subpaths_allowlist += options.classpath
     depfile_deps += options.classpath
     input_paths += options.classpath
-    dex_cmd += ['--lib', build_utils.JAVA_HOME]
-    for path in options.bootclasspath:
-      dex_cmd += ['--lib', path]
     # Still pass the entire classpath in case a new dependency is needed by
     # desugar, so that desugar_dependencies will be updated for the next build.
     for path in options.classpath:
       dex_cmd += ['--classpath', path]
+
+  if options.classpath or options.main_dex_rules_path:
+    # --main-dex-rules requires bootclasspath.
+    dex_cmd += ['--lib', build_utils.JAVA_HOME]
+    for path in options.bootclasspath:
+      dex_cmd += ['--lib', path]
     depfile_deps += options.bootclasspath
     input_paths += options.bootclasspath
 
