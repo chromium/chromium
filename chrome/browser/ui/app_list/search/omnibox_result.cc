@@ -10,8 +10,7 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/strcat.h"
-#include "base/strings/string_split.h"
+#include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -157,10 +156,24 @@ gfx::ImageSkia CreateAnswerIcon(const gfx::VectorIcon& vector_icon) {
       dimension / 2, gfx::kGoogleBlue600, icon);
 }
 
+base::Optional<base::string16> GetAdditionalText(
+    const SuggestionAnswer::ImageLine& line) {
+  if (line.additional_text()) {
+    const auto additional_text = line.additional_text()->text();
+    if (!additional_text.empty())
+      return additional_text;
+  }
+  return base::nullopt;
+}
+
 base::string16 ImageLineToString16(const SuggestionAnswer::ImageLine& line) {
   std::vector<base::string16> text;
   for (const auto& text_field : line.text_fields()) {
     text.push_back(text_field.text());
+  }
+  const auto& additional_text = GetAdditionalText(line);
+  if (additional_text) {
+    text.push_back(additional_text.value());
   }
   // TODO(crbug.com/1130372): Use placeholders or a l10n-friendly way to
   // construct this string instead of concatenation.
@@ -296,14 +309,15 @@ GURL OmniboxResult::DestinationURL() const {
 
 void OmniboxResult::UpdateIcon() {
   if (app_list_features::IsOmniboxRichEntitiesEnabled() &&
-      (match_.type == AutocompleteMatchType::CALCULATOR || match_.answer)) {
+      IsRichEntityResult()) {
     if (match_.type == AutocompleteMatchType::CALCULATOR) {
       SetIcon(CreateAnswerIcon(omnibox::kCalculatorIcon));
     } else if (match_.answer) {
       SetIcon(CreateAnswerIcon(TypeToAnswerIcon(match_.answer->type())));
+    } else if (!match_.image_url.is_empty()) {
+      // TODO(crbug.com/1130372): If |match_.image_url| exists, download the
+      // image and set it as the result icon.
     }
-    // TODO(crbug.com/1130372): Download images once their URLs are available
-    // from the backend.
   } else {
     BookmarkModel* bookmark_model =
         BookmarkModelFactory::GetForBrowserContext(profile_);
@@ -319,27 +333,30 @@ void OmniboxResult::UpdateIcon() {
 }
 
 void OmniboxResult::UpdateTitleAndDetails() {
-  if (ShouldDisplayAsAnswer()) {
-    const auto* additional_text = match_.answer->first_line().additional_text();
-    const bool has_additional_text =
-        additional_text && !additional_text->text().empty();
-    // TODO(crbug.com/1130372): Use placeholders or a l10n-friendly way to
-    // construct this string instead of concatenation.
-    SetTitle(has_additional_text
-                 ? base::StrCat({match_.contents, base::ASCIIToUTF16(" "),
-                                 additional_text->text()})
-                 : match_.contents);
-    ChromeSearchResult::Tags title_tags;
-    ACMatchClassificationsToTags(match_.contents, match_.contents_class,
-                                 &title_tags);
-    SetTitleTags(title_tags);
+  if (app_list_features::IsOmniboxRichEntitiesEnabled()) {
+    if (is_answer()) {
+      const auto& additional_text =
+          GetAdditionalText(match_.answer->first_line());
+      // TODO(crbug.com/1130372): Use placeholders or a l10n-friendly way to
+      // construct this string instead of concatenation.
+      SetTitle(additional_text ? base::JoinString(
+                                     {match_.contents, additional_text.value()},
+                                     base::ASCIIToUTF16(" "))
+                               : match_.contents);
+      SetDetails(ImageLineToString16(match_.answer->second_line()));
+    } else {
+      ChromeSearchResult::Tags title_tags;
+      ACMatchClassificationsToTags(match_.contents, match_.contents_class,
+                                   &title_tags);
+      SetTitle(match_.contents);
+      SetTitleTags(title_tags);
 
-    // Answer results will contain the answer in the second line.
-    SetDetails(ImageLineToString16(match_.answer->second_line()));
-    ChromeSearchResult::Tags details_tags;
-    ACMatchClassificationsToTags(match_.description, match_.description_class,
-                                 &details_tags);
-    SetDetailsTags(details_tags);
+      ChromeSearchResult::Tags details_tags;
+      ACMatchClassificationsToTags(match_.description, match_.description_class,
+                                   &details_tags);
+      SetDetails(match_.description);
+      SetDetailsTags(details_tags);
+    }
   } else {
     // For url result with non-empty description, swap title and details. Thus,
     // the url description is presented as title, and url itself is presented as
@@ -376,6 +393,11 @@ void OmniboxResult::UpdateTitleAndDetails() {
 bool OmniboxResult::IsUrlResultWithDescription() const {
   return !AutocompleteMatch::IsSearchType(match_.type) &&
          !match_.description.empty();
+}
+
+bool OmniboxResult::IsRichEntityResult() const {
+  return match_.type == AutocompleteMatchType::CALCULATOR || match_.answer ||
+         !match_.image_url.is_empty();
 }
 
 void OmniboxResult::SetZeroSuggestionActions() {
@@ -421,10 +443,6 @@ void OmniboxResult::RecordOmniboxResultHistogram() {
                             is_zero_suggestion_
                                 ? OmniboxResultType::kZeroStateSuggestion
                                 : OmniboxResultType::kQuerySuggestion);
-}
-
-bool OmniboxResult::ShouldDisplayAsAnswer() {
-  return app_list_features::IsOmniboxRichEntitiesEnabled() && is_answer();
 }
 
 }  // namespace app_list

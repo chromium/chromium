@@ -54,15 +54,13 @@ class OmniboxResult : public ChromeSearchResult {
   // description.
   bool IsUrlResultWithDescription() const;
 
+  bool IsRichEntityResult() const;
+
   void SetZeroSuggestionActions();
 
   void RecordOmniboxResultHistogram();
 
   ash::SearchResultType GetSearchResultType() const;
-
-  // Whether or not the result is an answer and rich entities are enabled.
-  // TODO(crbug/1130372): Remove this when rich entities are enabled by default.
-  bool ShouldDisplayAsAnswer();
 
   Profile* profile_;
   AppListControllerDelegate* list_controller_;

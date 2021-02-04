@@ -19,6 +19,7 @@
 #include "ash/app_list/views/search_result_page_view.h"
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
+#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_switches.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/bind.h"
@@ -136,8 +137,9 @@ void SearchResultView::CreateTitleRenderText() {
 }
 
 void SearchResultView::CreateDetailsRenderText() {
-  // Ensures single line row for omnibox non-url search result.
-  if (result()->is_omnibox_search()) {
+  if (result()->is_omnibox_search() &&
+      !app_list_features::IsOmniboxRichEntitiesEnabled()) {
+    // Ensures single line row for omnibox non-url search result.
     details_text_.reset();
     return;
   }
