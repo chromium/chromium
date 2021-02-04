@@ -113,19 +113,8 @@ Panel = class {
      */
     Panel.activeMenu_ = null;
 
-    /**
-     * @type {Object}
-     * @private
-     */
-    Panel.iTutorial = {
-      // Closure needs this to know about the showNextLesson function.
-      // Otherwise, Closure fires an error whenever calling showNextLesson().
-      showNextLesson: () => {
-        throw new Error(
-            'iTutorial should be assigned to the <i-tutorial> ' +
-            'element before calling showNextLesson()');
-      }
-    };
+    /** @private {Object} */
+    Panel.tutorial = null;
 
     Panel.setPendingCallback(null);
     Panel.updateFromPrefs();
@@ -164,7 +153,7 @@ Panel = class {
     Panel.ownerWindow = window;
 
     /** @private {boolean} */
-    Panel.iTutorialReadyForTesting_ = false;
+    Panel.tutorialReadyForTesting_ = false;
   }
 
   /**
@@ -1108,8 +1097,8 @@ Panel = class {
     }
 
     Panel.setMode(Panel.Mode.FULLSCREEN_TUTORIAL);
-    if (Panel.iTutorial.show) {
-      Panel.iTutorial.show();
+    if (Panel.tutorial && Panel.tutorial.show) {
+      Panel.tutorial.show();
     }
   }
 
@@ -1135,7 +1124,7 @@ Panel = class {
     }
     tutorialContainer.appendChild(tutorialElement);
     document.body.appendChild(tutorialContainer);
-    Panel.iTutorial = tutorialElement;
+    Panel.tutorial = tutorialElement;
 
     // Add listeners. These are custom events fired from custom components.
     const backgroundPage = chrome.extension.getBackgroundPage();
@@ -1170,7 +1159,9 @@ Panel = class {
       const actions = evt.detail.actions;
       chromeVoxStateInstance.createUserActionMonitor(actions, () => {
         chromeVoxStateInstance.destroyUserActionMonitor();
-        Panel.iTutorial.showNextLesson();
+        if (Panel.tutorial && Panel.tutorial.showNextLesson) {
+          Panel.tutorial.showNextLesson();
+        }
       });
     });
     $('chromevox-tutorial').addEventListener('stopinteractivemode', (evt) => {
@@ -1185,7 +1176,7 @@ Panel = class {
       backgroundPage['ChromeVox']['earcons']['playEarcon'](earconId);
     });
     $('chromevox-tutorial').addEventListener('readyfortesting', () => {
-      Panel.iTutorialReadyForTesting_ = true;
+      Panel.tutorialReadyForTesting_ = true;
     });
     $('chromevox-tutorial').addEventListener('openUrl', (evt) => {
       const url = evt.detail.url;
@@ -1280,8 +1271,8 @@ Panel.PanelStateObserver = class {
 
   onCurrentRangeChanged(range) {
     if (Panel.mode_ === Panel.Mode.FULLSCREEN_TUTORIAL) {
-      if (Panel.iTutorial && Panel.iTutorial.restartNudges) {
-        Panel.iTutorial.restartNudges();
+      if (Panel.tutorial && Panel.tutorial.restartNudges) {
+        Panel.tutorial.restartNudges();
       }
     }
   }

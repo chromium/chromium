@@ -134,7 +134,7 @@ export const TutorialLesson = Polymer({
    * @private
    */
   populatePracticeContent() {
-    const path = '../i_tutorial/practice_areas/' + this.practiceFile + '.html';
+    const path = '../tutorial/practice_areas/' + this.practiceFile + '.html';
     const xhr = new XMLHttpRequest();
     xhr.open('GET', path, true);
     xhr.onload = (evt) => {
