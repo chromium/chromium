@@ -247,7 +247,8 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
             RecordUserAction.record(buildComputedAction("ShowFullHistory"));
             assert mContext instanceof ChromeActivity;
             ChromeActivity activity = (ChromeActivity) mContext;
-            HistoryManagerUtils.showHistoryManager(activity, activity.getActivityTab());
+            HistoryManagerUtils.showHistoryManager(activity, activity.getActivityTab(),
+                    activity.getTabModelSelector().isIncognitoSelected());
         } else {
             // 1-based index to keep in line with Desktop implementation.
             RecordUserAction.record(buildComputedAction("HistoryClick" + (position + 1)));

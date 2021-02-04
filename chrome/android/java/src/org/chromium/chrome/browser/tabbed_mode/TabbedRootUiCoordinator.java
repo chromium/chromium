@@ -219,7 +219,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mActivity.getWindow().getDecorView().findViewById(android.R.id.content), mActivity,
                 this::getBottomSheetController, profile);
         mNavigationSheet.setDelegate(new TabbedSheetDelegate(tab, aTab -> {
-            HistoryManagerUtils.showHistoryManager(mActivity, aTab);
+            HistoryManagerUtils.showHistoryManager(
+                    mActivity, aTab, mActivity.getTabModelSelector().isIncognitoSelected());
         }, mActivity.getResources().getString(R.string.show_full_history)));
         if (!mNavigationSheet.startAndExpand(/* forward=*/false, /* animate=*/true)) {
             mNavigationSheet = null;
@@ -238,17 +239,18 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     public void onFinishNativeInitialization() {
         super.onFinishNativeInitialization();
         assert mLayoutManager != null;
-        // clang-format off
         mHistoryNavigationCoordinator = HistoryNavigationCoordinator.create(
                 mActivity.getWindowAndroid(), mActivity.getLifecycleDispatcher(),
                 mActivity.getCompositorViewHolder(), mActivity.getActivityTabProvider(),
                 mActivity.getInsetObserverView(), mActivity::backShouldCloseTab,
                 mActivity::onBackPressed, mLayoutManager,
-                tab -> HistoryManagerUtils.showHistoryManager(mActivity, tab),
+                (tab)
+                        -> HistoryManagerUtils.showHistoryManager(mActivity, tab,
+                                mActivity.getTabModelSelector().isIncognitoSelected()),
                 mActivity.getResources().getString(R.string.show_full_history),
-                () -> mActivity.isActivityFinishingOrDestroyed() ? null
-                        : getBottomSheetController());
-        // clang-format on
+                ()
+                        -> mActivity.isActivityFinishingOrDestroyed() ? null
+                                                                      : getBottomSheetController());
 
         // TODO(twellington): Supply TabModelSelector as well and move initialization earlier.
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {

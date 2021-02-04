@@ -2084,7 +2084,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 NewTabPageUma.recordAction(NewTabPageUma.ACTION_OPENED_HISTORY_MANAGER);
             }
             RecordUserAction.record("MobileMenuHistory");
-            HistoryManagerUtils.showHistoryManager(this, currentTab);
+            HistoryManagerUtils.showHistoryManager(
+                    this, currentTab, getTabModelSelector().isIncognitoSelected());
             return true;
         }
 
