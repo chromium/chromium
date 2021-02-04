@@ -824,6 +824,8 @@ void ImageLoader::ImageNotifyFinished(ImageResourceContent* content) {
     return;
   }
 
+  content->RecordDecodedImageType(&element_->GetDocument());
+
   CHECK(!pending_load_event_.IsActive());
   pending_load_event_ = PostCancellableTask(
       *GetElement()->GetDocument().GetTaskRunner(TaskType::kDOMManipulation),

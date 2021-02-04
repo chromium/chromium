@@ -190,6 +190,8 @@ UseCounterPageLoadMetricsObserver::GetAllowedUkmFeatures() {
           WebFeature::kRTCPeerConnectionConstructedWithUnifiedPlan,
           WebFeature::kRTCPeerConnectionUsingComplexPlanB,
           WebFeature::kRTCPeerConnectionUsingComplexUnifiedPlan,
+          WebFeature::kWebPImage,
+          WebFeature::kAVIFImage,
       }));
   return *opt_in_features;
 }

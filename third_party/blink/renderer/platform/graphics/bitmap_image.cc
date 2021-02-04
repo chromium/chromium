@@ -157,6 +157,11 @@ IntSize BitmapImage::DensityCorrectedSize() const {
   return density_corrected_size_.IsEmpty() ? Size() : density_corrected_size_;
 }
 
+void BitmapImage::RecordDecodedImageType(UseCounter* use_counter) {
+  BitmapImageMetrics::CountDecodedImageType(decoder_->FilenameExtension(),
+                                            use_counter);
+}
+
 IntSize BitmapImage::PreferredDisplaySize() const {
   UpdateSize();
   if (!density_corrected_size_respecting_orientation_.IsEmpty())

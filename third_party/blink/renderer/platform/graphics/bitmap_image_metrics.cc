@@ -8,9 +8,11 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/media_buildflags.h"
+#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/color_space_gamut.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 
@@ -37,6 +39,19 @@ void BitmapImageMetrics::CountDecodedImageType(const String& type) {
                                               : DecodedImageType::kUnknown;
 
   UMA_HISTOGRAM_ENUMERATION("Blink.DecodedImageType", decoded_image_type);
+}
+
+void BitmapImageMetrics::CountDecodedImageType(const String& type,
+                                               UseCounter* use_counter) {
+  if (use_counter) {
+    if (type == "webp") {
+      use_counter->CountUse(WebFeature::kWebPImage);
+#if BUILDFLAG(ENABLE_AV1_DECODER)
+    } else if (type == "avif") {
+      use_counter->CountUse(WebFeature::kAVIFImage);
+#endif
+    }
+  }
 }
 
 void BitmapImageMetrics::CountImageJpegDensity(int image_min_side,

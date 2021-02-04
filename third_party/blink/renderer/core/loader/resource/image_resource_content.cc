@@ -666,4 +666,9 @@ bool ImageResourceContent::IsAdResource() const {
   return info_->IsAdResource();
 }
 
+void ImageResourceContent::RecordDecodedImageType(UseCounter* use_counter) {
+  if (auto* bitmap_image = DynamicTo<BitmapImage>(image_.get()))
+    bitmap_image->RecordDecodedImageType(use_counter);
+}
+
 }  // namespace blink

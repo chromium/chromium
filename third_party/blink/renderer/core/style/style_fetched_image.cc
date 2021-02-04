@@ -151,6 +151,7 @@ void StyleFetchedImage::ImageNotifyFinished(ImageResourceContent*) {
       svg_image->CheckLoaded();
       svg_image->UpdateUseCounters(*document_);
     }
+    image_->RecordDecodedImageType(document_->GetExecutionContext());
   }
 
   if (LocalDOMWindow* window = document_->domWindow())
