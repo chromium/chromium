@@ -5,6 +5,8 @@
 #ifndef UI_GFX_LINUX_TEST_MOCK_GBM_DEVICE_H_
 #define UI_GFX_LINUX_TEST_MOCK_GBM_DEVICE_H_
 
+#include <drm_fourcc.h>
+#include <vector>
 #include "ui/gfx/linux/gbm_device.h"
 
 namespace ui {
@@ -16,6 +18,7 @@ class MockGbmDevice : public GbmDevice {
   ~MockGbmDevice() override;
 
   void set_allocation_failure(bool should_fail_allocations);
+  std::vector<uint64_t> GetSupportedModifiers() const;
 
   // GbmDevice:
   std::unique_ptr<GbmBuffer> CreateBuffer(uint32_t format,
@@ -34,6 +37,11 @@ class MockGbmDevice : public GbmDevice {
  private:
   uint32_t next_handle_ = 0;
   bool should_fail_allocations_ = false;
+
+  // List of modifiers that MockGbm validates when used.
+  const std::vector<uint64_t> supported_modifiers_ = {
+      DRM_FORMAT_MOD_LINEAR, I915_FORMAT_MOD_X_TILED, I915_FORMAT_MOD_Y_TILED,
+      I915_FORMAT_MOD_Yf_TILED_CCS};
 
   DISALLOW_COPY_AND_ASSIGN(MockGbmDevice);
 };
