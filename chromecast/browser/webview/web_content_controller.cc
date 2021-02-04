@@ -569,6 +569,10 @@ void WebContentController::FrameSizeChanged(
 void WebContentController::RenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
   current_render_frame_set_.insert(render_frame_host);
+
+  if (!render_frame_host->GetParent())
+    RegisterRenderWidgetInputObserver(render_frame_host->GetRenderWidgetHost());
+
   auto* instance =
       JsClientInstance::Find(render_frame_host->GetProcess()->GetID(),
                              render_frame_host->GetRoutingID());
@@ -585,6 +589,14 @@ void WebContentController::RenderFrameCreated(
 void WebContentController::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
   current_render_frame_set_.erase(render_frame_host);
+
+  if (!render_frame_host->GetParent()) {
+    content::RenderWidgetHost* rwh = render_frame_host->GetRenderWidgetHost();
+    UnregisterRenderWidgetInputObserver(rwh);
+    content::RenderWidgetHostView* rwhv = render_frame_host->GetView();
+    base::EraseIf(touch_queue_,
+                  [rwhv](TouchData data) { return data.rwhv == rwhv; });
+  }
 }
 
 void WebContentController::RenderFrameHostChanged(
@@ -595,20 +607,6 @@ void WebContentController::RenderFrameHostChanged(
   if (surface_) {
     surface_->Commit();
   }
-}
-
-void WebContentController::RenderViewCreated(
-    content::RenderViewHost* render_view_host) {
-  RegisterRenderWidgetInputObserver(render_view_host->GetWidget());
-}
-
-void WebContentController::RenderViewDeleted(
-    content::RenderViewHost* render_view_host) {
-  content::RenderWidgetHost* rwh = render_view_host->GetWidget();
-  UnregisterRenderWidgetInputObserver(rwh);
-  content::RenderWidgetHostView* rwhv = rwh->GetView();
-  base::EraseIf(touch_queue_,
-                [rwhv](TouchData data) { return data.rwhv == rwhv; });
 }
 
 void WebContentController::OnJsClientInstanceRegistered(
