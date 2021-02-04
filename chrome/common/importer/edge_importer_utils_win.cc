@@ -9,16 +9,19 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
 #include "base/win/windows_version.h"
 #include "chrome/common/importer/importer_test_registry_overrider_win.h"
 
 namespace {
 
-const base::char16 kEdgeSettingsMainKey[] = L"MicrosoftEdge\\Main";
+const base::char16 kEdgeSettingsMainKey[] =
+    STRING16_LITERAL("MicrosoftEdge\\Main");
 
 const base::char16 kEdgePackageName[] =
-    L"microsoft.microsoftedge_8wekyb3d8bbwe";
+    STRING16_LITERAL("microsoft.microsoftedge_8wekyb3d8bbwe");
 
 // We assume at the moment that the package name never changes for Edge.
 base::string16 GetEdgePackageName() {
@@ -26,12 +29,12 @@ base::string16 GetEdgePackageName() {
 }
 
 base::string16 GetEdgeRegistryKey(const base::string16& key_name) {
-  base::string16 registry_key =
-      L"Software\\Classes\\Local Settings\\"
-      L"Software\\Microsoft\\Windows\\CurrentVersion\\AppContainer\\"
-      L"Storage\\";
+  base::string16 registry_key = STRING16_LITERAL(
+      "Software\\Classes\\Local "
+      "Settings\\Software\\Microsoft\\Windows\\CurrentVersion\\AppContainer\\St"
+      "orage\\");
   registry_key += GetEdgePackageName();
-  registry_key += L"\\";
+  registry_key += STRING16_LITERAL("\\");
   registry_key += key_name;
   return registry_key;
 }
@@ -59,14 +62,14 @@ base::FilePath GetEdgeDataFilePath() {
     return base::FilePath();
 
   base::FilePath base_path(buffer);
-  base::string16 rel_path = L"Packages\\";
+  base::string16 rel_path = STRING16_LITERAL("Packages\\");
   rel_path += GetEdgePackageName();
-  rel_path += L"\\AC\\MicrosoftEdge\\User\\Default";
-  return base_path.Append(rel_path);
+  rel_path += STRING16_LITERAL("\\AC\\MicrosoftEdge\\User\\Default");
+  return base_path.Append(base::UTF16ToWide(rel_path));
 }
 
 bool IsEdgeFavoritesLegacyMode() {
-  base::win::RegKey key(HKEY_CURRENT_USER, GetEdgeSettingsKey().c_str(),
+  base::win::RegKey key(HKEY_CURRENT_USER, base::as_wcstr(GetEdgeSettingsKey()),
                         KEY_READ);
   DWORD ese_enabled = 0;
   // Check whether Edge is using the new Extensible Store Engine (ESE) format

@@ -90,7 +90,7 @@ bool AttemptFastNotify(const base::CommandLine& command_line) {
 // Returns true if |command_line| contains a /prefetch:# argument where # is in
 // [1, 8].
 bool HasValidWindowsPrefetchArgument(const base::CommandLine& command_line) {
-  const base::char16 kPrefetchArgumentPrefix[] = L"/prefetch:";
+  const wchar_t kPrefetchArgumentPrefix[] = L"/prefetch:";
 
   for (const auto& arg : command_line.argv()) {
     if (arg.size() == base::size(kPrefetchArgumentPrefix) &&
@@ -119,7 +119,7 @@ bool RemoveAppCompatFlagsEntry() {
                KEY_READ | KEY_WRITE) == ERROR_SUCCESS) {
     std::wstring layers;
     if (key.ReadValue(current_exe.value().c_str(), &layers) == ERROR_SUCCESS) {
-      std::vector<base::string16> tokens = base::SplitString(
+      std::vector<std::wstring> tokens = base::SplitString(
           layers, L" ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
       size_t initial_size = tokens.size();
       static const wchar_t* const kCompatModeTokens[] = {
@@ -134,7 +134,7 @@ bool RemoveAppCompatFlagsEntry() {
       if (tokens.empty()) {
         result = key.DeleteValue(current_exe.value().c_str());
       } else {
-        base::string16 without_compat_mode_tokens =
+        std::wstring without_compat_mode_tokens =
             base::JoinString(tokens, L" ");
         result = key.WriteValue(current_exe.value().c_str(),
                                 without_compat_mode_tokens.c_str());
@@ -153,16 +153,13 @@ int RunFallbackCrashHandler(const base::CommandLine& cmd_line) {
   wchar_t exe_file[MAX_PATH] = {};
   CHECK(::GetModuleFileName(nullptr, exe_file, base::size(exe_file)));
 
-  base::string16 product_name;
-  base::string16 version;
-  base::string16 channel_name;
-  base::string16 special_build;
+  std::wstring product_name, version, channel_name, special_build;
   install_static::GetExecutableVersionDetails(exe_file, &product_name, &version,
                                               &special_build, &channel_name);
 
   return crash_reporter::RunAsFallbackCrashHandler(
-      cmd_line, base::UTF16ToUTF8(product_name), base::UTF16ToUTF8(version),
-      base::UTF16ToUTF8(channel_name));
+      cmd_line, base::WideToUTF8(product_name), base::WideToUTF8(version),
+      base::WideToUTF8(channel_name));
 }
 
 }  // namespace

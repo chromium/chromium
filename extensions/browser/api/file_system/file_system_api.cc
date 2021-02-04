@@ -247,7 +247,7 @@ ExtensionFunction::ResponseAction FileSystemGetDisplayPathFunction::Run() {
   }
 
   file_path = path_util::PrettifyPath(file_path);
-  return RespondNow(OneArgument(base::Value(file_path.value())));
+  return RespondNow(OneArgument(base::Value(file_path.AsUTF8Unsafe())));
 }
 
 FileSystemEntryFunction::FileSystemEntryFunction()

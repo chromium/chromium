@@ -38,7 +38,7 @@ void NotificationHelperCrashReporterClient::
 
   crash_reporter::SetCrashReporterClient(instance);
 
-  base::string16 user_data_dir;
+  std::wstring user_data_dir;
   install_static::GetUserDataDirectory(&user_data_dir, nullptr);
 
   crash_reporter::InitializeCrashpadWithEmbeddedHandler(
@@ -67,16 +67,17 @@ void NotificationHelperCrashReporterClient::GetProductNameAndVersion(
   *product_name = base::ASCIIToUTF16(PRODUCT_SHORTNAME_STRING);
 
   std::unique_ptr<FileVersionInfo> version_info(
-      FileVersionInfo::CreateFileVersionInfo(base::FilePath(exe_path)));
+      FileVersionInfo::CreateFileVersionInfo(
+          base::FilePath::FromUTF16Unsafe(exe_path)));
   if (version_info) {
     *version = version_info->product_version();
     *special_build = version_info->special_build();
   } else {
-    *version = L"0.0.0.0-devel";
-    *special_build = L"";
+    *version = STRING16_LITERAL("0.0.0.0-devel");
+    *special_build = base::string16();
   }
 
-  *channel_name = install_static::GetChromeChannelName();
+  *channel_name = base::WideToUTF16(install_static::GetChromeChannelName());
 }
 
 bool NotificationHelperCrashReporterClient::ShouldShowRestartDialog(
@@ -110,13 +111,15 @@ int NotificationHelperCrashReporterClient::GetResultCodeRespawnFailed() {
 
 bool NotificationHelperCrashReporterClient::GetCrashDumpLocation(
     base::string16* crash_dir) {
-  *crash_dir = install_static::GetCrashDumpLocation();
+  *crash_dir = base::WideToUTF16(install_static::GetCrashDumpLocation());
   return !crash_dir->empty();
 }
 
 bool NotificationHelperCrashReporterClient::GetCrashMetricsLocation(
     base::string16* metrics_dir) {
-  install_static::GetUserDataDirectory(metrics_dir, nullptr);
+  std::wstring dir;
+  install_static::GetUserDataDirectory(&dir, nullptr);
+  *metrics_dir = base::WideToUTF16(dir);
   return !metrics_dir->empty();
 }
 

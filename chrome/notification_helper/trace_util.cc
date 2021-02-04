@@ -25,7 +25,7 @@ void TraceImpl(const wchar_t* format, ...) {
   if (vswprintf(buffer, base::size(buffer), format, args) > 0) {
     OutputDebugString(buffer);
   } else {
-    base::string16 error_string(L"Format error for string: ");
+    std::wstring error_string(L"Format error for string: ");
     OutputDebugString(error_string.append(format).c_str());
   }
   va_end(args);

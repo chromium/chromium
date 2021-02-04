@@ -22,6 +22,7 @@
 #include "base/format_macros.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/common/chrome_result_codes.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/install_static/user_data_dir.h"
@@ -65,8 +66,8 @@ bool ChromeCrashReporterClient::GetAlternativeCrashDumpLocation(
     base::string16* crash_dir) {
   // By setting the BREAKPAD_DUMP_LOCATION environment variable, an alternate
   // location to write breakpad crash dumps can be set.
-  *crash_dir =
-      install_static::GetEnvironmentString16(L"BREAKPAD_DUMP_LOCATION");
+  *crash_dir = base::WideToUTF16(
+      install_static::GetEnvironmentString16(L"BREAKPAD_DUMP_LOCATION"));
   return !crash_dir->empty();
 }
 
@@ -81,8 +82,13 @@ void ChromeCrashReporterClient::GetProductNameAndVersion(
   assert(special_build);
   assert(channel_name);
 
-  install_static::GetExecutableVersionDetails(
-      exe_path, product_name, version, special_build, channel_name);
+  std::wstring product, ver, build, channel;
+  install_static::GetExecutableVersionDetails(base::UTF16ToWide(exe_path),
+                                              &product, &ver, &build, &channel);
+  *product_name = base::WideToUTF16(product);
+  *version = base::WideToUTF16(ver);
+  *special_build = base::WideToUTF16(build);
+  *channel_name = base::WideToUTF16(channel);
 }
 
 bool ChromeCrashReporterClient::ShouldShowRestartDialog(base::string16* title,
@@ -95,20 +101,20 @@ bool ChromeCrashReporterClient::ShouldShowRestartDialog(base::string16* title,
     return false;
   }
 
-  base::string16 restart_info =
+  std::wstring restart_info =
       install_static::GetEnvironmentString16(install_static::kRestartInfo);
 
   // The CHROME_RESTART var contains the dialog strings separated by '|'.
   // See ChromeBrowserMainPartsWin::PrepareRestartOnCrashEnviroment()
   // for details.
-  std::vector<base::string16> dlg_strings = install_static::TokenizeString16(
+  std::vector<std::wstring> dlg_strings = install_static::TokenizeString16(
       restart_info, L'|', true);  // true = Trim whitespace.
 
   if (dlg_strings.size() < 3)
     return false;
 
-  *title = dlg_strings[0];
-  *message = dlg_strings[1];
+  *title = base::WideToUTF16(dlg_strings[0]);
+  *message = base::WideToUTF16(dlg_strings[1]);
   *is_rtl_locale = dlg_strings[2] == install_static::kRtlLocale;
   return true;
 }
@@ -158,13 +164,15 @@ bool ChromeCrashReporterClient::GetCrashDumpLocation(
   if (GetAlternativeCrashDumpLocation(crash_dir))
     return true;
 
-  *crash_dir = install_static::GetCrashDumpLocation();
+  *crash_dir = base::WideToUTF16(install_static::GetCrashDumpLocation());
   return !crash_dir->empty();
 }
 
 bool ChromeCrashReporterClient::GetCrashMetricsLocation(
     base::string16* metrics_dir) {
-  install_static::GetUserDataDirectory(metrics_dir, nullptr);
+  std::wstring dir;
+  install_static::GetUserDataDirectory(&dir, nullptr);
+  *metrics_dir = base::WideToUTF16(dir);
   return !metrics_dir->empty();
 }
 

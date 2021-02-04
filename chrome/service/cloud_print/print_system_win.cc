@@ -278,16 +278,15 @@ class JobSpoolerWin : public PrintSystem::JobSpooler {
         return false;
       }
 
-      base::string16 printer_wide = base::UTF8ToWide(printer_name);
       std::unique_ptr<DEVMODE, base::FreeDeleter> dev_mode =
-          CjtToDevMode(printer_wide, print_ticket);
+          CjtToDevMode(base::UTF8ToUTF16(printer_name), print_ticket);
       if (!dev_mode) {
         NOTREACHED();
         return false;
       }
 
-      HDC dc =
-          CreateDC(L"WINSPOOL", printer_wide.c_str(), nullptr, dev_mode.get());
+      HDC dc = CreateDC(L"WINSPOOL", base::UTF8ToWide(printer_name).c_str(),
+                        nullptr, dev_mode.get());
       if (!dc) {
         NOTREACHED();
         return false;
@@ -296,7 +295,7 @@ class JobSpoolerWin : public PrintSystem::JobSpooler {
       di.cbSize = sizeof(DOCINFO);
       base::string16 doc_name = base::UTF8ToUTF16(job_title);
       DCHECK(printing::SimplifyDocumentTitle(doc_name) == doc_name);
-      di.lpszDocName = doc_name.c_str();
+      di.lpszDocName = base::as_wcstr(doc_name);
       job_id_ = StartDoc(dc, &di);
       if (job_id_ <= 0)
         return false;

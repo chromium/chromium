@@ -30,12 +30,12 @@ namespace {
 
 const char kTerminateEventSuffix[] = "_service_terminate_evt";
 
-base::string16 GetServiceProcessReadyEventName() {
+std::wstring GetServiceProcessReadyEventName() {
   return base::UTF8ToWide(
       GetServiceProcessScopedVersionedName("_service_ready"));
 }
 
-base::string16 GetServiceProcessTerminateEventName() {
+std::wstring GetServiceProcessTerminateEventName() {
   return base::UTF8ToWide(
       GetServiceProcessScopedVersionedName(kTerminateEventSuffix));
 }
@@ -62,7 +62,7 @@ class ServiceProcessTerminateMonitor
   explicit ServiceProcessTerminateMonitor(base::OnceClosure terminate_task)
       : terminate_task_(std::move(terminate_task)) {}
   void Start() {
-    base::string16 event_name = GetServiceProcessTerminateEventName();
+    std::wstring event_name = GetServiceProcessTerminateEventName();
     DCHECK(event_name.length() <= MAX_PATH);
     terminate_event_.Set(CreateEvent(nullptr, TRUE, FALSE, event_name.c_str()));
     watcher_.StartWatchingOnce(terminate_event_.Get(), this);
@@ -93,7 +93,7 @@ bool ForceServiceProcessShutdown(const std::string& version,
   base::win::ScopedHandle terminate_event;
   std::string versioned_name = version;
   versioned_name.append(kTerminateEventSuffix);
-  base::string16 event_name =
+  std::wstring event_name =
       base::UTF8ToWide(GetServiceProcessScopedName(versioned_name));
   terminate_event.Set(OpenEvent(EVENT_MODIFY_STATE, FALSE, event_name.c_str()));
   if (!terminate_event.IsValid())
@@ -185,7 +185,7 @@ bool ServiceProcessState::DeleteServiceProcessDataRegion() {
 }
 
 bool CheckServiceProcessReady() {
-  base::string16 event_name = GetServiceProcessReadyEventName();
+  std::wstring event_name = GetServiceProcessReadyEventName();
   base::win::ScopedHandle event(
       OpenEvent(SYNCHRONIZE | READ_CONTROL, false, event_name.c_str()));
   if (!event.IsValid())
@@ -207,7 +207,7 @@ void ServiceProcessState::CreateState() {
 
 bool ServiceProcessState::TakeSingletonLock() {
   DCHECK(state_);
-  base::string16 event_name = GetServiceProcessReadyEventName();
+  std::wstring event_name = GetServiceProcessReadyEventName();
   DCHECK(event_name.length() <= MAX_PATH);
   base::win::ScopedHandle service_process_ready_event;
   service_process_ready_event.Set(

@@ -370,7 +370,7 @@ void InitChromeLogging(const base::CommandLine& command_line,
   LogEventProvider::Initialize(kChromeTraceProviderName);
 
   // Enable logging to the Windows Event Log.
-  SetEventSource(base::UTF16ToASCII(
+  SetEventSource(base::WideToASCII(
                      install_static::InstallDetails::Get().install_full_name()),
                  BROWSER_CATEGORY, MSG_LOG_MESSAGE);
 #endif

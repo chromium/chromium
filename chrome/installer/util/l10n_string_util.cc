@@ -20,6 +20,7 @@
 #include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/win/atl.h"
 #include "base/win/embedded_i18n/language_selector.h"
 #include "chrome/install_static/install_details.h"
@@ -38,10 +39,12 @@ constexpr base::win::i18n::LanguageSelector::LangToOffset
 
 // Returns the language under which Chrome was downloaded, or an empty string if
 // no such language is specified.
-base::string16 GetPreferredLanguageFromGoogleUpdate() {
+std::wstring GetPreferredLanguageFromGoogleUpdate() {
+  // TODO(pkasting): Probably GoogleUpdateSettings should use wstring
+  // pervasively.
   base::string16 language;
   GoogleUpdateSettings::GetLanguage(&language);
-  return language;
+  return base::AsWString(language);
 }
 
 const base::win::i18n::LanguageSelector& GetLanguageSelector() {

@@ -5,6 +5,8 @@
 #ifndef CHROME_COMMON_IMPORTER_IMPORTER_TEST_REGISTRY_OVERRIDER_WIN_H_
 #define CHROME_COMMON_IMPORTER_IMPORTER_TEST_REGISTRY_OVERRIDER_WIN_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/strings/string16.h"
 
@@ -26,7 +28,7 @@ class ImporterTestRegistryOverrider {
   static base::string16 GetTestRegistryOverride();
 
  private:
-  base::string16 temporary_key_;
+  std::wstring temporary_key_;
 
   DISALLOW_COPY_AND_ASSIGN(ImporterTestRegistryOverrider);
 };

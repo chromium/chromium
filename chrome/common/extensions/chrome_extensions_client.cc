@@ -203,9 +203,9 @@ std::set<base::FilePath> ChromeExtensionsClient::GetBrowserImagePaths(
   if (theme_images) {
     for (base::DictionaryValue::Iterator it(*theme_images); !it.IsAtEnd();
          it.Advance()) {
-      base::FilePath::StringType path;
+      std::string path;
       if (it.value().GetAsString(&path))
-        image_paths.insert(base::FilePath(path));
+        image_paths.insert(base::FilePath::FromUTF8Unsafe(path));
     }
   }
 

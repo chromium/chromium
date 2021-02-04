@@ -21,6 +21,7 @@
 #include "base/process/process_handle.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequence_manager/thread_controller_power_monitor.h"
 #include "base/threading/hang_watcher.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -207,11 +208,11 @@ namespace {
 // Early versions of Chrome incorrectly registered a chromehtml: URL handler,
 // which gives us nothing but trouble. Avoid launching chrome this way since
 // some apps fail to properly escape arguments.
-bool HasDeprecatedArguments(const base::string16& command_line) {
+bool HasDeprecatedArguments(const std::wstring& command_line) {
   const wchar_t kChromeHtml[] = L"chromehtml:";
-  base::string16 command_line_lower = base::ToLowerASCII(command_line);
+  std::wstring command_line_lower = base::ToLowerASCII(command_line);
   // We are only searching for ASCII characters so this is OK.
-  return (command_line_lower.find(kChromeHtml) != base::string16::npos);
+  return (command_line_lower.find(kChromeHtml) != std::wstring::npos);
 }
 
 // If we try to access a path that is not currently available, we want the call
@@ -247,15 +248,13 @@ void SetUpExtendedCrashReporting(bool is_browser_process) {
   wchar_t exe_file[MAX_PATH] = {};
   CHECK(::GetModuleFileName(nullptr, exe_file, base::size(exe_file)));
 
-  base::string16 product_name;
-  base::string16 version_number;
-  base::string16 channel_name;
-  base::string16 special_build;
+  std::wstring product_name, version_number, channel_name, special_build;
   install_static::GetExecutableVersionDetails(
       exe_file, &product_name, &version_number, &special_build, &channel_name);
 
-  extended_crash_reporting->SetProductStrings(product_name, version_number,
-                                              channel_name, special_build);
+  extended_crash_reporting->SetProductStrings(
+      base::WideToUTF16(product_name), base::WideToUTF16(version_number),
+      base::WideToUTF16(channel_name), base::WideToUTF16(special_build));
 }
 
 #endif  // defined(OS_WIN)

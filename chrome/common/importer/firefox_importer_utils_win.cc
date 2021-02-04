@@ -19,7 +19,7 @@ namespace {
 // One admin user installs Firefox 3, which causes there is a Firefox 3 entry
 // under HKLM. So when the non-admin user log in, we should deal with Firefox 2
 // related data instead of Firefox 3.
-const HKEY kFireFoxRegistryPaths[] = {HKEY_CURRENT_USER, HKEY_LOCAL_MACHINE};
+const HKEY kFirefoxRegistryPaths[] = {HKEY_CURRENT_USER, HKEY_LOCAL_MACHINE};
 
 constexpr const wchar_t* kFirefoxPath = L"Software\\Mozilla\\Mozilla Firefox";
 constexpr const wchar_t* kCurrentVersion = L"CurrentVersion";
@@ -33,8 +33,8 @@ int GetCurrentFirefoxMajorVersionFromRegistry() {
   // When installing Firefox with admin account, the product keys will be
   // written under HKLM\Mozilla. Otherwise it the keys will be written under
   // HKCU\Mozilla.
-  for (const HKEY kFireFoxRegistryPath : kFireFoxRegistryPaths) {
-    base::win::RegKey reg_key(kFireFoxRegistryPath, kFirefoxPath, KEY_READ);
+  for (const HKEY registry_path : kFirefoxRegistryPaths) {
+    base::win::RegKey reg_key(registry_path, kFirefoxPath, KEY_READ);
 
     LONG result = reg_key.ReadValue(kCurrentVersion, ver_buffer,
                                     &ver_buffer_length, NULL);
@@ -47,7 +47,7 @@ int GetCurrentFirefoxMajorVersionFromRegistry() {
 
 base::FilePath GetFirefoxInstallPathFromRegistry() {
   // Detects the path that Firefox is installed in.
-  base::string16 registry_path = kFirefoxPath;
+  std::wstring registry_path = kFirefoxPath;
   wchar_t buffer[MAX_PATH];
   DWORD buffer_length = sizeof(buffer);
   base::win::RegKey reg_key(HKEY_LOCAL_MACHINE, registry_path.c_str(),
@@ -57,7 +57,7 @@ base::FilePath GetFirefoxInstallPathFromRegistry() {
   if (result != ERROR_SUCCESS)
     return base::FilePath();
 
-  registry_path += L"\\" + base::string16(buffer) + L"\\Main";
+  registry_path += L"\\" + std::wstring(buffer) + L"\\Main";
   buffer_length = sizeof(buffer);
   base::win::RegKey reg_key_directory(HKEY_LOCAL_MACHINE,
                                       registry_path.c_str(), KEY_READ);

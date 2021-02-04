@@ -8,15 +8,15 @@
 
 namespace {
 
-const base::char16 kIEFavoritesOrderKey[] =
-    L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\"
-    L"MenuOrder\\Favorites";
+const base::char16 kIEFavoritesOrderKey[] = STRING16_LITERAL(
+    "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\MenuOrder\\Favorit"
+    "es");
 
-const base::char16 kIEStorage2Key[] =
-  L"Software\\Microsoft\\Internet Explorer\\IntelliForms\\Storage2";
+const base::char16 kIEStorage2Key[] = STRING16_LITERAL(
+    "Software\\Microsoft\\Internet Explorer\\IntelliForms\\Storage2");
 
 const base::char16 kIESettingsMainKey[] =
-  L"Software\\Microsoft\\Internet Explorer\\Main";
+    STRING16_LITERAL("Software\\Microsoft\\Internet Explorer\\Main");
 
 base::string16 GetPotentiallyOverridenIEKey(
     const base::string16& desired_key_path) {

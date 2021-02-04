@@ -32,7 +32,7 @@ namespace {
 // Command line switch "--console" runs the service interactively for
 // debugging purposes.
 constexpr char kConsoleSwitchName[] = "console";
-constexpr base::char16 kWindowsServiceName[] = L"ChromeElevationService";
+constexpr wchar_t kWindowsServiceName[] = L"ChromeElevationService";
 
 }  // namespace
 
@@ -204,7 +204,7 @@ void ServiceMain::ServiceControlHandler(DWORD control) {
 }
 
 // static
-void WINAPI ServiceMain::ServiceMainEntry(DWORD argc, base::char16* argv[]) {
+void WINAPI ServiceMain::ServiceMainEntry(DWORD argc, wchar_t* argv[]) {
   ServiceMain::GetInstance()->ServiceMainImpl();
 }
 

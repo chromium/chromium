@@ -41,12 +41,12 @@ bool GetTestKeyFromEnvironment(base::string16* key) {
 
 ImporterTestRegistryOverrider::ImporterTestRegistryOverrider()
     : temporary_key_(kTestHKCUOverrideKeyPrefix +
-                     base::UTF8ToUTF16(base::GenerateGUID())) {
+                     base::UTF8ToWide(base::GenerateGUID())) {
   DCHECK(!GetTestKeyFromEnvironment(NULL));
 
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   bool success = env->SetVar(kTestHKCUOverrideEnvironmentVariable,
-                             base::UTF16ToUTF8(temporary_key_));
+                             base::WideToUTF8(temporary_key_));
   DCHECK(success);
 }
 

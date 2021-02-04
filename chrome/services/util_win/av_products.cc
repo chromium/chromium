@@ -112,7 +112,7 @@ bool GetProductVersion(std::wstring* path, std::string* product_version) {
     FileVersionInfoWin* version_info_win =
         static_cast<FileVersionInfoWin*>(version_info.get());
     std::string version_str =
-        base::SysWideToUTF8(version_info_win->product_version());
+        base::UTF16ToUTF8(version_info_win->product_version());
 
     *product_version = std::move(version_str);
     return true;
