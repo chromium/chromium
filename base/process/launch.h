@@ -246,8 +246,8 @@ struct BASE_EXPORT LaunchOptions {
 
   // Specifies which basic capabilities to grant to the child process.
   // By default the child process will receive the caller's complete namespace,
-  // access to the current base::fuchsia::DefaultJob(), handles for stdio and
-  // access to the dynamic library loader.
+  // access to the current base::GetDefaultJob(), handles for stdio and access
+  // to the dynamic library loader.
   // Note that the child is always provided access to the loader service.
   uint32_t spawn_flags = FDIO_SPAWN_CLONE_NAMESPACE | FDIO_SPAWN_CLONE_STDIO |
                          FDIO_SPAWN_CLONE_JOB;

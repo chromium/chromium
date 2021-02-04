@@ -133,7 +133,7 @@ TEST_F(SystemMemoryPressureEvaluatorFuchsiaTest, Basic) {
 }
 
 TEST_F(SystemMemoryPressureEvaluatorFuchsiaTest, Periodic) {
-  base::fuchsia::ScopedServiceBinding<::fuchsia::memorypressure::Provider>
+  base::ScopedServiceBinding<fuchsia::memorypressure::Provider>
       publish_provider(test_context_.additional_services(), this);
 
   MultiSourceMemoryPressureMonitor monitor;

@@ -93,7 +93,7 @@ constexpr char kDataResetComponentName[] = "cast:chromium.cast.DataReset";
 const char kStagedForDeletionSubdirectory[] = "staged_for_deletion";
 
 base::FilePath GetStagedForDeletionDirectoryPath() {
-  base::FilePath cache_directory(base::fuchsia::kPersistedCacheDirectoryPath);
+  base::FilePath cache_directory(base::kPersistedCacheDirectoryPath);
   return cache_directory.Append(kStagedForDeletionSubdirectory);
 }
 
@@ -137,11 +137,10 @@ void SetDataParamsForMainContext(fuchsia::web::CreateContextParams* params) {
   // Allow best-effort persistent of Cast application data.
   // TODO(crbug.com/1148334): Remove the need for an explicit quota to be
   // configured, once the platform provides storage quotas.
-  const auto profile_path =
-      base::FilePath(base::fuchsia::kPersistedCacheDirectoryPath)
-          .Append(kProfileSubdirectoryName);
+  const auto profile_path = base::FilePath(base::kPersistedCacheDirectoryPath)
+                                .Append(kProfileSubdirectoryName);
   CHECK(base::CreateDirectory(profile_path));
-  params->set_data_directory(base::fuchsia::OpenDirectory(profile_path));
+  params->set_data_directory(base::OpenDirectoryHandle(profile_path));
   CHECK(params->data_directory());
   params->set_data_quota_bytes(*data_quota_bytes);
 }
@@ -386,8 +385,7 @@ bool CastRunner::DeletePersistentData() {
   }
 
   // Stage everything under `/cache` for deletion.
-  const base::FilePath cache_directory(
-      base::fuchsia::kPersistedCacheDirectoryPath);
+  const base::FilePath cache_directory(base::kPersistedCacheDirectoryPath);
   base::FileEnumerator enumerator(
       cache_directory, /*recursive=*/false,
       base::FileEnumerator::FileType::FILES |
