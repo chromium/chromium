@@ -86,8 +86,6 @@ extern const base::Feature kBluetoothFixA2dpPacketSize;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kBluetoothPhoneFilter;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-extern const base::Feature kCameraSystemWebApp;
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kPreferConstantFrameRate;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kCdmFactoryDaemon;

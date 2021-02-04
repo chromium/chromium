@@ -175,12 +175,7 @@ void RegisterURLReplacingHandler(net::EmbeddedTestServer* test_server,
 
 class ExtensionPolicyTest : public PolicyTest {
  public:
-  ExtensionPolicyTest() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    scoped_feature_list_.InitAndDisableFeature(
-        chromeos::features::kCameraSystemWebApp);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  }
+  ExtensionPolicyTest() = default;
 
  protected:
   void SetUp() override {
@@ -385,24 +380,15 @@ class ExtensionPolicyTest : public PolicyTest {
       skip_scheduled_extension_checks_;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   web_app::ScopedOsHooksSuppress os_hooks_suppress_;
 };
 
 }  // namespace
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// Check that component extension can't be blocklisted, besides the camera app
-// that can be disabled by extension policy. This is a temporary solution until
-// there's a dedicated policy to disable the camera, at which point the special
-// check should be removed.
-// TODO(http://crbug.com/1002935)
+// Check that component extension can't be blocklisted.
 IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
                        ExtensionInstallBlocklistComponentApps) {
-  extensions::ExtensionPrefs* extension_prefs =
-      extensions::ExtensionPrefs::Get(browser()->profile());
-
   // Load all component extensions.
   extensions::ComponentLoader::EnableBackgroundExtensionsForTesting();
   extension_service()->component_loader()->AddDefaultComponentExtensions(false);
@@ -410,31 +396,17 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
 
   extensions::ExtensionRegistry* registry = extension_registry();
   ASSERT_TRUE(
-      registry->enabled_extensions().GetByID(extension_misc::kCameraAppId));
-  ASSERT_TRUE(
       registry->enabled_extensions().GetByID(extensions::kWebStoreAppId));
-  const size_t enabled_count = registry->enabled_extensions().size();
 
-  // Verify that only Camera app can be blocklisted.
   base::ListValue blocklist;
-  blocklist.AppendString(extension_misc::kCameraAppId);
   blocklist.AppendString(extensions::kWebStoreAppId);
   PolicyMap policies;
   policies.Set(key::kExtensionInstallBlacklist, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, blocklist.Clone(),
                nullptr);
   UpdateProviderPolicy(policies);
-
-  ASSERT_FALSE(
-      registry->enabled_extensions().GetByID(extension_misc::kCameraAppId));
-  ASSERT_TRUE(
-      registry->disabled_extensions().GetByID(extension_misc::kCameraAppId));
-  EXPECT_EQ(1u, registry->disabled_extensions().size());
-  EXPECT_EQ(extensions::disable_reason::DISABLE_BLOCKED_BY_POLICY,
-            extension_prefs->GetDisableReasons(extension_misc::kCameraAppId));
   ASSERT_TRUE(
       registry->enabled_extensions().GetByID(extensions::kWebStoreAppId));
-  EXPECT_EQ(enabled_count - 1, registry->enabled_extensions().size());
 }
 
 // Ensures that OS Settings can't be disabled by ExtensionInstallBlocklist

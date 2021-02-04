@@ -3975,9 +3975,6 @@ const FeatureEntry kFeatureEntries[] = {
      SINGLE_VALUE_TYPE(chromeos::switches::kEnableTouchCalibrationSetting)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"camera-system-web-app", flag_descriptions::kCameraSystemWebAppName,
-     flag_descriptions::kCameraSystemWebAppDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kCameraSystemWebApp)},
     {"prefer-constant-frame-rate",
      flag_descriptions::kPreferConstantFrameRateName,
      flag_descriptions::kPreferConstantFrameRateDescription, kOsCrOS,

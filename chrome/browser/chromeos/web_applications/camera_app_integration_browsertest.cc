@@ -13,16 +13,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 
-class CameraAppIntegrationTest : public SystemWebAppIntegrationTest {
- public:
-  CameraAppIntegrationTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kCameraSystemWebApp}, {});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using CameraAppIntegrationTest = SystemWebAppIntegrationTest;
 
 IN_PROC_BROWSER_TEST_P(CameraAppIntegrationTest, MainUrlNavigation) {
   WaitForTestSystemAppInstall();

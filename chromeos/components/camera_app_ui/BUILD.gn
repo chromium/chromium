@@ -52,7 +52,7 @@ static_library("camera_app_ui") {
 
 group("closure_compile") {
   testonly = true
-  deps = [ "resources:closure_compile" ]
+  deps = [ "resources/js:closure_compile" ]
 }
 
 mojom("mojo_bindings") {

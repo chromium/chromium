@@ -3839,10 +3839,6 @@ const char kBluetoothWbsDogfoodDescription[] =
     "or fully launched. Only on the few models that Bluetooth WBS is "
     "still stablizing this flag will take effect.";
 
-const char kCameraSystemWebAppName[] = "Camera System Web App";
-const char kCameraSystemWebAppDescription[] =
-    "Run the Chrome Camera App as a System Web App.";
-
 const char kDeprecateLowUsageCodecsName[] = "Deprecates low usage media codecs";
 const char kDeprecateLowUsageCodecsDescription[] =
     "Deprecates low usage codecs. Disable this feature to allow playback of "

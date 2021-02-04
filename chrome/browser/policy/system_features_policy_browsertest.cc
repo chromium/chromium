@@ -30,10 +30,7 @@ namespace policy {
 
 class SystemFeaturesPolicyTest : public PolicyTest {
  public:
-  SystemFeaturesPolicyTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        chromeos::features::kCameraSystemWebApp);
-  }
+  SystemFeaturesPolicyTest() = default;
 
  protected:
   base::string16 GetWebUITitle(const GURL& url) {
@@ -100,39 +97,7 @@ class SystemFeaturesPolicyTest : public PolicyTest {
           EXPECT_EQ(expected_visibility, update.ShowInShelf());
         });
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, DisableCameraBeforeInstall) {
-  base::Value system_features(base::Value::Type::LIST);
-  system_features.Append(kCameraFeature);
-  UpdateSystemFeaturesDisableList(std::move(system_features), nullptr);
-  EnableExtensions(false);
-  VerifyAppState(extension_misc::kCameraAppId,
-                 apps::mojom::Readiness::kDisabledByPolicy, true,
-                 apps::mojom::OptionalBool::kTrue);
-
-  UpdateSystemFeaturesDisableList(base::Value(), nullptr);
-  VerifyAppState(extension_misc::kCameraAppId, apps::mojom::Readiness::kReady,
-                 false, apps::mojom::OptionalBool::kTrue);
-}
-
-IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, DisableCameraAfterInstall) {
-  EnableExtensions(false);
-  base::Value system_features(base::Value::Type::LIST);
-  system_features.Append(kCameraFeature);
-  UpdateSystemFeaturesDisableList(std::move(system_features), nullptr);
-
-  VerifyAppState(extension_misc::kCameraAppId,
-                 apps::mojom::Readiness::kDisabledByPolicy, true,
-                 apps::mojom::OptionalBool::kTrue);
-
-  UpdateSystemFeaturesDisableList(base::Value(), nullptr);
-  VerifyAppState(extension_misc::kCameraAppId, apps::mojom::Readiness::kReady,
-                 false, apps::mojom::OptionalBool::kTrue);
-}
 
 IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, DisableWebStoreBeforeInstall) {
   base::Value system_features(base::Value::Type::LIST);
@@ -184,26 +149,6 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
                  apps::mojom::Readiness::kDisabledByPolicy, true,
                  apps::mojom::OptionalBool::kTrue);
   // Enable app
-  UpdateSystemFeaturesDisableList(base::Value(), nullptr);
-  VerifyAppState(extensions::kWebStoreAppId, apps::mojom::Readiness::kReady,
-                 false, apps::mojom::OptionalBool::kTrue);
-}
-
-IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
-                       DisableCameraAndWebStoreAfterInstall) {
-  EnableExtensions(false);
-  base::Value system_features(base::Value::Type::LIST);
-  system_features.Append(kWebStoreFeature);
-  system_features.Append(kCameraFeature);
-  UpdateSystemFeaturesDisableList(std::move(system_features), nullptr);
-
-  VerifyAppState(extensions::kWebStoreAppId,
-                 apps::mojom::Readiness::kDisabledByPolicy, true,
-                 apps::mojom::OptionalBool::kTrue);
-  VerifyAppState(extension_misc::kCameraAppId,
-                 apps::mojom::Readiness::kDisabledByPolicy, true,
-                 apps::mojom::OptionalBool::kTrue);
-
   UpdateSystemFeaturesDisableList(base::Value(), nullptr);
   VerifyAppState(extensions::kWebStoreAppId, apps::mojom::Readiness::kReady,
                  false, apps::mojom::OptionalBool::kTrue);

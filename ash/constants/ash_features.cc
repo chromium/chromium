@@ -159,10 +159,6 @@ const base::Feature kBluetoothFixA2dpPacketSize{
 const base::Feature kBluetoothPhoneFilter{"BluetoothPhoneFilter",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enable or disables running the Camera App as a System Web App.
-const base::Feature kCameraSystemWebApp{"CameraSystemWebApp",
-                                        base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables or disables the preference of using constant frame rate for camera
 // when streaming.
 const base::Feature kPreferConstantFrameRate{"PreferConstantFrameRate",

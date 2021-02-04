@@ -3,31 +3,7 @@
   "manifest_version": 2,
   "name": "__MSG_name__",
   "description": "__MSG_description__",
-  "version": "6.1.0",
+  "version": "6.2.0",
   "default_locale": "en",
-  "minimum_chrome_version": "60.0.0.0",
-  "icons": {
-    "48": "images/camera_app_icons_48.png",
-    "128": "images/camera_app_icons_128.png"
-  },
-  "permissions": [
-    "notifications",
-    "videoCapture",
-    "audioCapture",
-    "storage",
-    "system.display",
-    "unlimitedStorage",
-    "idle",
-    "chromeosInfoPrivate",
-    "metricsPrivate",
-    "fileManagerPrivate",
-    "fileSystem.requestDownloads",
-    {"fileSystem": ["write", "directory"]},
-    "https://www.google-analytics.com/"
-  ],
-  "app": {
-    "background": {
-      "page": "views/background.html"
-    }
-  }
+  "minimum_chrome_version": "60.0.0.0"
 }

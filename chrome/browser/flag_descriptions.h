@@ -2215,9 +2215,6 @@ extern const char kBluetoothFixA2dpPacketSizeDescription[];
 extern const char kBluetoothWbsDogfoodName[];
 extern const char kBluetoothWbsDogfoodDescription[];
 
-extern const char kCameraSystemWebAppName[];
-extern const char kCameraSystemWebAppDescription[];
-
 extern const char kDeprecateLowUsageCodecsName[];
 extern const char kDeprecateLowUsageCodecsDescription[];
 
