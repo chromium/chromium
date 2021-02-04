@@ -97,7 +97,6 @@ class CastWebContentsImpl : public CastWebContents,
       content::RenderFrameHost* /* render_frame_host */,
       const std::string& interface_name,
       mojo::ScopedMessagePipeHandle* interface_pipe) override;
-  void RenderViewCreated(content::RenderViewHost* render_view_host) override;
   void RenderProcessGone(base::TerminationStatus status) override;
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;

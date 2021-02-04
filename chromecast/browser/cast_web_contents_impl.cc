@@ -454,38 +454,37 @@ void CastWebContentsImpl::OnClosePageTimeout() {
 }
 
 void CastWebContentsImpl::RenderFrameCreated(
-    content::RenderFrameHost* render_frame_host) {
+    content::RenderFrameHost* frame_host) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(render_frame_host);
+  DCHECK(frame_host);
 
-  auto* process = render_frame_host->GetProcess();
+  auto* process = frame_host->GetProcess();
   const int render_process_id = process->GetID();
-  const int render_frame_id = render_frame_host->GetRoutingID();
+  const int render_frame_id = frame_host->GetRoutingID();
 
   // Allow observers to use remote interfaces which are hosted by the new
   // RenderFrame.
   for (Observer& observer : observer_list_) {
-    observer.RenderFrameCreated(
-        render_process_id, render_frame_id,
-        render_frame_host->GetRemoteInterfaces(),
-        render_frame_host->GetRemoteAssociatedInterfaces());
+    observer.RenderFrameCreated(render_process_id, render_frame_id,
+                                frame_host->GetRemoteInterfaces(),
+                                frame_host->GetRemoteAssociatedInterfaces());
   }
 
   mojo::Remote<chromecast::shell::mojom::FeatureManager> feature_manager_remote;
-  render_frame_host->GetRemoteInterfaces()->GetInterface(
+  frame_host->GetRemoteInterfaces()->GetInterface(
       feature_manager_remote.BindNewPipeAndPassReceiver());
   feature_manager_remote->ConfigureFeatures(GetRendererFeatures());
 
   mojo::AssociatedRemote<components::media_control::mojom::MediaPlaybackOptions>
       media_playback_options;
-  render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
+  frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
       &media_playback_options);
   media_playback_options->SetRendererType(renderer_type_);
 
   // Send queryable values
   mojo::Remote<chromecast::shell::mojom::QueryableDataStore>
       queryable_data_store_remote;
-  render_frame_host->GetRemoteInterfaces()->GetInterface(
+  frame_host->GetRemoteInterfaces()->GetInterface(
       queryable_data_store_remote.BindNewPipeAndPassReceiver());
   for (const auto& value : QueryableData::GetValues()) {
     // base::Value is not copyable.
@@ -496,11 +495,25 @@ void CastWebContentsImpl::RenderFrameCreated(
   if (activity_url_filter_) {
     mojo::AssociatedRemote<chromecast::mojom::ActivityUrlFilterConfiguration>
         activity_filter_setter;
-    render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
+    frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
         &activity_filter_setter);
     activity_filter_setter->SetFilter(
         chromecast::mojom::ActivityUrlFilterCriteria::New(
             activity_url_filter_.value()));
+  }
+
+  // Set the background color for main frames.
+  if (!frame_host->GetParent()) {
+    if (view_background_color_ == BackgroundColor::WHITE) {
+      frame_host->GetView()->SetBackgroundColor(SK_ColorWHITE);
+    } else if (view_background_color_ == BackgroundColor::BLACK) {
+      frame_host->GetView()->SetBackgroundColor(SK_ColorBLACK);
+    } else if (view_background_color_ == BackgroundColor::TRANSPARENT) {
+      frame_host->GetView()->SetBackgroundColor(SK_ColorTRANSPARENT);
+    } else {
+      frame_host->GetView()->SetBackgroundColor(chromecast::GetSwitchValueColor(
+          switches::kCastAppBackgroundColor, SK_ColorBLACK));
+    }
   }
 }
 
@@ -529,24 +542,6 @@ void CastWebContentsImpl::OnInterfaceRequestFromFrame(
   if (!TryBindReceiver(receiver)) {
     // If binding was unsuccessful, give the caller its pipe back.
     *interface_pipe = receiver.PassPipe();
-  }
-}
-
-void CastWebContentsImpl::RenderViewCreated(
-    content::RenderViewHost* render_view_host) {
-  content::RenderWidgetHostView* view =
-      render_view_host->GetWidget()->GetView();
-  if (!view)
-    return;
-  if (view_background_color_ == BackgroundColor::WHITE) {
-    view->SetBackgroundColor(SK_ColorWHITE);
-  } else if (view_background_color_ == BackgroundColor::BLACK) {
-    view->SetBackgroundColor(SK_ColorBLACK);
-  } else if (view_background_color_ == BackgroundColor::TRANSPARENT) {
-    view->SetBackgroundColor(SK_ColorTRANSPARENT);
-  } else {
-    view->SetBackgroundColor(chromecast::GetSwitchValueColor(
-        switches::kCastAppBackgroundColor, SK_ColorBLACK));
   }
 }
 
