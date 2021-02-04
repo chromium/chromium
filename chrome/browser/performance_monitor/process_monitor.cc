@@ -115,8 +115,9 @@ ProcessMonitor::~ProcessMonitor() {
 
 void ProcessMonitor::StartGatherCycle() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
   repeating_timer_.Start(FROM_HERE, kGatherInterval, this,
-                         &ProcessMonitor::GatherMetricsMapOnUIThread);
+                         &ProcessMonitor::GatherProcesses);
 }
 
 void ProcessMonitor::AddObserver(Observer* observer) {
@@ -152,13 +153,11 @@ void ProcessMonitor::MarkProcessAsAlive(const ProcessMetadata& process_data,
   }
 }
 
-void ProcessMonitor::GatherMetricsMapOnUIThread() {
+// static
+std::vector<ProcessMetadata> ProcessMonitor::GatherProcessesOnUIThread() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  static int current_update_sequence = 0;
-  // Even in the "somewhat" unlikely event this wraps around,
-  // it doesn't matter. We just check it for inequality.
-  current_update_sequence++;
+  std::vector<ProcessMetadata> processes;
 
   // Find all render child processes; has to be done on the UI thread.
   for (content::RenderProcessHost::iterator rph_iter =
@@ -170,17 +169,18 @@ void ProcessMonitor::GatherMetricsMapOnUIThread() {
     data.handle = host->GetProcess().Handle();
 
     GatherMetricsForRenderProcess(host, &data);
-    MarkProcessAsAlive(data, current_update_sequence);
+
+    processes.push_back(data);
   }
 
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ProcessMonitor::GatherMetricsMapOnIOThread,
-                     base::Unretained(this), current_update_sequence));
+  return processes;
 }
 
-void ProcessMonitor::GatherMetricsMapOnIOThread(int current_update_sequence) {
+// static
+std::vector<ProcessMetadata> ProcessMonitor::GatherProcessesOnIOThread() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  std::vector<ProcessMetadata> processes;
 
   // Find all child processes (does not include renderers), which has to be
   // done on the IO thread.
@@ -193,17 +193,55 @@ void ProcessMonitor::GatherMetricsMapOnIOThread(int current_update_sequence) {
       child_process_data.process_subtype = kProcessSubtypePPAPIFlash;
     }
 
-    MarkProcessAsAlive(child_process_data, current_update_sequence);
+    processes.push_back(child_process_data);
   }
 
   // Add the current (browser) process.
   ProcessMetadata browser_process_data;
   browser_process_data.process_type = content::PROCESS_TYPE_BROWSER;
   browser_process_data.handle = base::GetCurrentProcessHandle();
-  MarkProcessAsAlive(browser_process_data, current_update_sequence);
+
+  processes.push_back(browser_process_data);
 
   // Update metrics for all watched processes; remove dead entries from the map.
 
+  return processes;
+}
+
+void ProcessMonitor::GatherProcesses() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  static uint32_t current_update_sequence = 0;
+  // Even in the "somewhat" unlikely event this wraps around,
+  // it doesn't matter. We just check it for inequality.
+  current_update_sequence++;
+
+  // This function is already running on the UI thread, so gather all ui thread
+  // processes.
+  std::vector<ProcessMetadata> ui_thread_processes =
+      GatherProcessesOnUIThread();
+
+  // Then retrieve IO thread processes and invoke GatherMetrics() with both
+  // set of processes.
+  content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&ProcessMonitor::GatherProcessesOnIOThread),
+      base::BindOnce(&ProcessMonitor::GatherMetrics,
+                     weak_ptr_factory_.GetWeakPtr(), current_update_sequence,
+                     std::move(ui_thread_processes)));
+}
+
+void ProcessMonitor::GatherMetrics(
+    int current_update_sequence,
+    std::vector<ProcessMetadata> ui_thread_processes,
+    std::vector<ProcessMetadata> io_thread_processes) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  for (const auto& process : ui_thread_processes)
+    MarkProcessAsAlive(process, current_update_sequence);
+  for (const auto& process : io_thread_processes)
+    MarkProcessAsAlive(process, current_update_sequence);
+
+  // Update metrics for all watched processes; remove dead entries from the map.
   Metrics aggregated_metrics;
   auto iter = metrics_map_.begin();
   while (iter != metrics_map_.end()) {

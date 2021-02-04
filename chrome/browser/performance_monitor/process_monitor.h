@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/process/process_handle.h"
 #include "base/timer/timer.h"
@@ -109,27 +110,40 @@ class ProcessMonitor {
   }
 
  private:
-  using MetricsMap =
-      std::map<base::ProcessHandle, std::unique_ptr<ProcessMetricsHistory>>;
-
   // Mark the given process as alive in the current update iteration.
   // This means adding an entry to the map of watched processes if it's not
   // already present.
   void MarkProcessAsAlive(const ProcessMetadata& process_data,
                           int current_update_sequence);
 
+  // Returns the ProcessMetadata for every Chrome processes accessible from the
+  // UI thread.
+  static std::vector<ProcessMetadata> GatherProcessesOnUIThread();
+
+  // Returns the ProcessMetadata for every Chrome processes accessible from the
+  // UI thread.
+  static std::vector<ProcessMetadata> GatherProcessesOnIOThread();
+
+  // Gather all the processes from both threads and then invokes GatherMetrics()
+  // back on the calling thread.
+  void GatherProcesses();
+
   // Updates the ProcessMetrics map with the current list of processes and
   // gathers metrics from each entry.
-  void GatherMetricsMapOnUIThread();
-  void GatherMetricsMapOnIOThread(int current_update_sequence);
+  void GatherMetrics(int current_update_sequence,
+                     std::vector<ProcessMetadata> ui_thread_processes,
+                     std::vector<ProcessMetadata> io_thread_processes);
 
   // A map of currently running ProcessHandles to ProcessMetrics.
-  MetricsMap metrics_map_;
+  std::map<base::ProcessHandle, std::unique_ptr<ProcessMetricsHistory>>
+      metrics_map_;
 
   // The timer to signal ProcessMonitor to perform its timed collections.
   base::RepeatingTimer repeating_timer_;
 
   base::ObserverList<Observer> observer_list_;
+
+  base::WeakPtrFactory<ProcessMonitor> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ProcessMonitor);
 };

@@ -18,8 +18,8 @@ void ChromeBrowserMainExtraPartsPerformanceMonitor::PreMainMessageLoopStart() {
   process_monitor_ = performance_monitor::ProcessMonitor::Create();
 
   process_metrics_recorder_ =
-      std::make_unique<performance_monitor::ProcessMetricsRecorder>();
-  process_monitor_->AddObserver(process_metrics_recorder_.get());
+      std::make_unique<performance_monitor::ProcessMetricsRecorder>(
+          process_monitor_.get());
 }
 
 void ChromeBrowserMainExtraPartsPerformanceMonitor::PostMainMessageLoopStart() {

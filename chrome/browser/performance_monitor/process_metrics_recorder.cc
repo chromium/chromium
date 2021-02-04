@@ -17,7 +17,11 @@ const float kHighCPUUtilizationThreshold = 90.0f;
 
 }  // namespace
 
-ProcessMetricsRecorder::ProcessMetricsRecorder() = default;
+ProcessMetricsRecorder::ProcessMetricsRecorder(
+    ProcessMonitor* process_monitor) {
+  process_monitor_observation_.Observe(process_monitor);
+}
+
 ProcessMetricsRecorder::~ProcessMetricsRecorder() = default;
 
 void ProcessMetricsRecorder::OnMetricsSampled(
