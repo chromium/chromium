@@ -69,7 +69,6 @@ no_check_targets = [
   "//chrome/browser/media/router:*",  # 225 errors
   "//chrome/browser/paint_preview:*",  # 4 errors
   "//chrome/browser/profiling_host:*",  # 13 errors
-  "//chrome/browser/resources/chromeos/zip_archiver/cpp:*",  # 2 errors
   "//chrome/browser/safe_browsing/android:*",  # 3 errors
   "//chrome/browser/safe_browsing:*",  # 85 errors
   "//chrome/browser/safety_check/android:*",  # 3 errors

@@ -37,8 +37,8 @@ static_library("zip_archiver_library") {
   ]
 
   visibility = [
-    ":ziparchiver_unittests",
     ":zip_archiver_pnacl",
+    ":ziparchiver_unittests",
   ]
 }
 
@@ -64,6 +64,7 @@ if (is_nacl) {
 
     deps = [
       ":zip_archiver_library",
+      "//base",
       "//ppapi/cpp",
       "//ppapi/native_client:ppapi_lib",
     ]
