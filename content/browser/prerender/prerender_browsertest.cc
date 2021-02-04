@@ -497,40 +497,6 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, PrerenderBlankIframe) {
   TestRenderFrameHostPrerenderingState(GetUrl("/page_with_blank_iframe.html"));
 }
 
-// Tests that prerendering pages can access cookies.
-IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, RestrictedCookieAccess) {
-  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
-  const GURL kPrerenderingUrl = GetUrl("/empty.html");
-  // Navigate to an initial page.
-  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-  // Set a cookie to the origin.
-  const std::string initial_cookie = "initial_cookie=exist";
-  const std::string prerender_cookie = "prerender_cookie=exist";
-  EvalJsResult result =
-      EvalJs(shell()->web_contents(),
-             "document.cookie='" + initial_cookie + "; path=/'");
-  EXPECT_TRUE(result.error.empty()) << result.error;
-
-  // Make a prerendered page.
-  AddPrerender(kPrerenderingUrl);
-  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
-  PrerenderHost* prerender_host =
-      registry.FindHostByUrlForTesting(kPrerenderingUrl);
-  ASSERT_TRUE(prerender_host);
-  WebContents* prerender_contents = WebContents::FromRenderFrameHost(
-      prerender_host->GetPrerenderedMainFrameHostForTesting());
-
-  // Verify the prerendered page can read the cookie.
-  EXPECT_EQ(initial_cookie, EvalJs(prerender_contents, "document.cookie"));
-
-  // Verify the prerendered page can update cookies.
-  EvalJsResult prerender_result = EvalJs(
-      prerender_contents, "document.cookie='" + prerender_cookie + "; path=/'");
-  EXPECT_TRUE(prerender_result.error.empty()) << prerender_result.error;
-  // Read the updated cookie from the initial page.
-  EXPECT_EQ(initial_cookie + "; " + prerender_cookie,
-            EvalJs(shell()->web_contents(), "document.cookie"));
-}
 
 class MojoCapabilityControlTestContentBrowserClient
     : public TestContentBrowserClient,
@@ -734,6 +700,8 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
 
 // Tests for feature restrictions in prerendered pages =========================
 
+// - Tests for feature-specific code methodology restrictions ==================
+
 // Tests that window.open() in a prerendering page fails.
 IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, FeatureRestriction_WindowOpen) {
   // Navigate to an initial page.
@@ -787,6 +755,83 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
     client_urls.push_back(result.GetString());
   EXPECT_TRUE(base::Contains(client_urls, kInitialUrl));
   EXPECT_TRUE(base::Contains(client_urls, kPrerenderingUrl));
+}
+
+// - Tests for Mojo capability control methodology restrictions ================
+
+// Tests that prerendering pages can access cookies.
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, CookieAccess) {
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html");
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  // Set a cookie to the origin.
+  const std::string initial_cookie = "initial_cookie=exist";
+  const std::string prerender_cookie = "prerender_cookie=exist";
+  EvalJsResult result =
+      EvalJs(shell()->web_contents(),
+             "document.cookie='" + initial_cookie + "; path=/'");
+  EXPECT_TRUE(result.error.empty()) << result.error;
+
+  // Make a prerendered page.
+  AddPrerender(kPrerenderingUrl);
+  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
+  PrerenderHost* prerender_host =
+      registry.FindHostByUrlForTesting(kPrerenderingUrl);
+  ASSERT_TRUE(prerender_host);
+  WebContents* prerender_contents = WebContents::FromRenderFrameHost(
+      prerender_host->GetPrerenderedMainFrameHostForTesting());
+
+  // Verify the prerendered page can read the cookie.
+  EXPECT_EQ(initial_cookie, EvalJs(prerender_contents, "document.cookie"));
+
+  // Verify the prerendered page can update cookies.
+  EvalJsResult prerender_result = EvalJs(
+      prerender_contents, "document.cookie='" + prerender_cookie + "; path=/'");
+  EXPECT_TRUE(prerender_result.error.empty()) << prerender_result.error;
+  // Read the updated cookie from the initial page.
+  EXPECT_EQ(initial_cookie + "; " + prerender_cookie,
+            EvalJs(shell()->web_contents(), "document.cookie"));
+}
+
+// Tests that prerendering pages can access local storage.
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, LocalStorageAccess) {
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html");
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  // Add an item to local storage from the initial page.
+  const std::string key = "set_by";
+  const std::string initial_value = "initial";
+  const std::string prerender_value = "prerender";
+  EvalJsResult result = EvalJs(
+      shell()->web_contents(),
+      JsReplace("window.localStorage.setItem($1, $2)", key, initial_value));
+  EXPECT_TRUE(result.error.empty()) << result.error;
+
+  // Make a prerendered page.
+  AddPrerender(kPrerenderingUrl);
+  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
+  PrerenderHost* prerender_host =
+      registry.FindHostByUrlForTesting(kPrerenderingUrl);
+  ASSERT_TRUE(prerender_host);
+  WebContents* prerender_contents = WebContents::FromRenderFrameHost(
+      prerender_host->GetPrerenderedMainFrameHostForTesting());
+
+  // Verify the prerendered page can read the item that the initial page wrote.
+  EXPECT_EQ(initial_value,
+            EvalJs(prerender_contents,
+                   JsReplace("window.localStorage.getItem($1)", key)));
+
+  // Verify the prerendered page can update local storage.
+  EvalJsResult prerender_result = EvalJs(
+      prerender_contents,
+      JsReplace("window.localStorage.setItem($1, $2)", key, prerender_value));
+  EXPECT_TRUE(prerender_result.error.empty()) << prerender_result.error;
+  // Read the updated item value from the initial page.
+  EXPECT_EQ(prerender_value,
+            EvalJs(shell()->web_contents(),
+                   JsReplace("window.localStorage.getItem($1)", key)));
 }
 
 }  // namespace
