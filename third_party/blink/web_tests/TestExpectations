@@ -754,8 +754,30 @@ crbug.com/1066577 external/wpt/css/css-lists/li-value-reversed-004.html [ Failur
 
 # [css-counter-styles-3]
 crbug.com/687225 fast/css/content-counter-large-negative-cjk.html [ Failure ]
+# Image symbols are not implemented yet
+crbug.com/687225 external/wpt/css/css-counter-styles/counter-style-prefix-suffix-syntax.html [ Failure ]
+crbug.com/687225 external/wpt/css/css-counter-styles/counter-style-symbols-syntax.html [ Failure ]
 # Missing ref files for these tests
-crbug.com/687225 external/wpt/css/css-counter-styles/* [ Skip ]
+crbug.com/687225 external/wpt/css/css-counter-styles/armenian/* [ Skip ]
+crbug.com/687225 external/wpt/css/css-counter-styles/cjk-earthly-branch/* [ Skip ]
+crbug.com/687225 external/wpt/css/css-counter-styles/cjk-heavenly-stem/* [ Skip ]
+crbug.com/687225 external/wpt/css/css-counter-styles/ethiopic-numeric/* [ Skip ]
+crbug.com/687225 external/wpt/css/css-counter-styles/hebrew/* [ Skip ]
+crbug.com/687225 external/wpt/css/css-counter-styles/hiragana/* [ Skip ]
+crbug.com/687225 external/wpt/css/css-counter-styles/hiragana-iroha/* [ Skip ]
+crbug.com/687225 external/wpt/css/css-counter-styles/japanese-formal/* [ Skip ]
+crbug.com/687225 external/wpt/css/css-counter-styles/japanese-informal/* [ Skip ]
+crbug.com/687225 external/wpt/css/css-counter-styles/katakana/* [ Skip ]
+crbug.com/687225 external/wpt/css/css-counter-styles/katakana-iroha/* [ Skip ]
+crbug.com/687225 external/wpt/css/css-counter-styles/korean-hangul-formal/* [ Skip ]
+crbug.com/687225 external/wpt/css/css-counter-styles/korean-hanja-formal/* [ Skip ]
+crbug.com/687225 external/wpt/css/css-counter-styles/korean-hanja-informal/* [ Skip ]
+crbug.com/687225 external/wpt/css/css-counter-styles/lower-armenian/* [ Skip ]
+crbug.com/687225 external/wpt/css/css-counter-styles/simp-chinese-formal/* [ Skip ]
+crbug.com/687225 external/wpt/css/css-counter-styles/simp-chinese-informal/* [ Skip ]
+crbug.com/687225 external/wpt/css/css-counter-styles/trad-chinese-formal/* [ Skip ]
+crbug.com/687225 external/wpt/css/css-counter-styles/trad-chinese-informal/* [ Skip ]
+crbug.com/687225 external/wpt/css/css-counter-styles/upper-armenian/* [ Skip ]
 
 # [css-overflow]
 # Incorrect WPT tests.
