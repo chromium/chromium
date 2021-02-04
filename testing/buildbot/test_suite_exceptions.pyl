@@ -502,12 +502,6 @@
       },
       'Mac ASan 64 Tests (1)': {
         'swarming': {
-          'dimension_sets': [
-            {
-              # These shards are liable to time out when running on minis.
-              'cores': '8',
-            }
-          ],
           'shards': 30,
         },
       },
