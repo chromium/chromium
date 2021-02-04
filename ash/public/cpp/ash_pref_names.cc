@@ -32,8 +32,8 @@ const char kAccessibilityScreenMagnifierEnabled[] =
 // is enabled.
 const char kAccessibilityScreenMagnifierFocusFollowingEnabled[] =
     "settings.a11y.screen_magnifier_focus_following";
-// An integer pref which indicates the mouse following mode for screen magnifier.
-// This maps to AccessibilityController::MagnifierMouseFollowingMode.
+// An integer pref which indicates the mouse following mode for screen
+// magnifier. This maps to AccessibilityController::MagnifierMouseFollowingMode.
 const char kAccessibilityScreenMagnifierMouseFollowingMode[] =
     "settings.a11y.screen_magnifier_mouse_following_mode";
 // A boolean pref which determines whether screen magnifier should center
@@ -134,6 +134,10 @@ const char kAccessibilitySwitchAccessAutoScanSpeedMs[] =
 // enabled).
 const char kAccessibilitySwitchAccessAutoScanKeyboardSpeedMs[] =
     "settings.a11y.switch_access.auto_scan.keyboard.speed_ms";
+// An integer pref which determines speed in dips per second that the gliding
+// point scan cursor in switch access moves across the screen.
+const char kAccessibilitySwitchAccessPointScanSpeedDipsPerSecond[] =
+    "settings.a11y.switch_access.point_scan.speed_dips_per_second";
 // A boolean pref which, if set, indicates that shelf navigation buttons (home,
 // back and overview button) should be shown in tablet mode. Note that shelf
 // buttons might be shown even if the pref value is false - for example, if

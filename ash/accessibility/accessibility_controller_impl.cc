@@ -191,6 +191,7 @@ constexpr const char* const kSwitchAccessPrefsCopiedToSignin[]{
     prefs::kAccessibilitySwitchAccessAutoScanEnabled,
     prefs::kAccessibilitySwitchAccessAutoScanKeyboardSpeedMs,
     prefs::kAccessibilitySwitchAccessAutoScanSpeedMs,
+    prefs::kAccessibilitySwitchAccessPointScanSpeedDipsPerSecond,
     prefs::kAccessibilitySwitchAccessEnabled,
     prefs::kAccessibilitySwitchAccessNextDeviceKeyCodes,
     prefs::kAccessibilitySwitchAccessPreviousDeviceKeyCodes,
@@ -712,6 +713,10 @@ void AccessibilityControllerImpl::RegisterProfilePrefs(
   registry->RegisterIntegerPref(
       prefs::kAccessibilitySwitchAccessAutoScanKeyboardSpeedMs,
       kDefaultSwitchAccessAutoScanSpeed.InMilliseconds(),
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterIntegerPref(
+      prefs::kAccessibilitySwitchAccessPointScanSpeedDipsPerSecond,
+      kDefaultSwitchAccessPointScanSpeedDipsPerSecond,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterBooleanPref(
       prefs::kAccessibilityVirtualKeyboardEnabled, false,
@@ -1475,6 +1480,11 @@ void AccessibilityControllerImpl::ObservePrefs(PrefService* prefs) {
                               UpdateSwitchAccessAutoScanKeyboardSpeedFromPref,
                           base::Unretained(this)));
   pref_change_registrar_->Add(
+      prefs::kAccessibilitySwitchAccessPointScanSpeedDipsPerSecond,
+      base::BindRepeating(&AccessibilityControllerImpl::
+                              UpdateSwitchAccessPointScanSpeedFromPref,
+                          base::Unretained(this)));
+  pref_change_registrar_->Add(
       prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled,
       base::BindRepeating(&AccessibilityControllerImpl::
                               UpdateTabletModeShelfNavigationButtonsFromPref,
@@ -1774,6 +1784,11 @@ void AccessibilityControllerImpl::
   base::UmaHistogramCustomCounts(
       "Accessibility.CrosSwitchAccess.AutoScan.KeyboardSpeedMs", speed_ms,
       1 /* min */, 10000 /* max */, 100 /* buckets */);
+  SyncSwitchAccessPrefsToSignInProfile();
+}
+
+void AccessibilityControllerImpl::UpdateSwitchAccessPointScanSpeedFromPref() {
+  // TODO(accessibility): Log histogram for point scan speed
   SyncSwitchAccessPrefsToSignInProfile();
 }
 

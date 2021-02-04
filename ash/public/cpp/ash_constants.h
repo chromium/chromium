@@ -41,6 +41,10 @@ ASH_PUBLIC_EXPORT extern const char kSwitchAccessUnknownDevice[];
 constexpr base::TimeDelta kDefaultSwitchAccessAutoScanSpeed =
     base::TimeDelta::FromMilliseconds(1200);
 
+// The default speed in dips per second that the gliding point scan cursor
+// in switch access moves across the screen.
+constexpr int kDefaultSwitchAccessPointScanSpeedDipsPerSecond = 50;
+
 // The default wait time between last mouse movement and sending autoclick.
 constexpr int kDefaultAutoclickDelayMs = 1000;
 

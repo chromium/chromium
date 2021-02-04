@@ -1157,6 +1157,7 @@ TEST_P(AccessibilityControllerSigninTest, SwitchAccessPrefsSyncToSignIn) {
   using prefs::kAccessibilitySwitchAccessAutoScanKeyboardSpeedMs;
   using prefs::kAccessibilitySwitchAccessAutoScanSpeedMs;
   using prefs::kAccessibilitySwitchAccessEnabled;
+  using prefs::kAccessibilitySwitchAccessPointScanSpeedDipsPerSecond;
 
   PrefService* signin_prefs = session->GetSigninScreenPrefService();
   EXPECT_FALSE(signin_prefs->GetBoolean(kAccessibilitySwitchAccessEnabled));
@@ -1191,6 +1192,11 @@ TEST_P(AccessibilityControllerSigninTest, SwitchAccessPrefsSyncToSignIn) {
   user_prefs->Set(kAccessibilitySwitchAccessAutoScanSpeedMs, base::Value(234));
   EXPECT_EQ(
       234, signin_prefs->GetInteger(kAccessibilitySwitchAccessAutoScanSpeedMs));
+
+  user_prefs->Set(kAccessibilitySwitchAccessPointScanSpeedDipsPerSecond,
+                  base::Value(345));
+  EXPECT_EQ(345, signin_prefs->GetInteger(
+                     kAccessibilitySwitchAccessPointScanSpeedDipsPerSecond));
 
   // The reverse is not true; turning off switch access in the signin profile
   // has no effect on the user profile.

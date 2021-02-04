@@ -500,6 +500,9 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)
       [ash::prefs::kAccessibilitySwitchAccessAutoScanKeyboardSpeedMs] =
           settings_api::PrefType::PREF_TYPE_NUMBER;
+  (*s_allowlist)
+      [ash::prefs::kAccessibilitySwitchAccessPointScanSpeedDipsPerSecond] =
+          settings_api::PrefType::PREF_TYPE_NUMBER;
   (*s_allowlist)[ash::prefs::kAccessibilityVirtualKeyboardEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[ash::prefs::kAccessibilityMonoAudioEnabled] =

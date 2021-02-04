@@ -432,6 +432,7 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   void UpdateSwitchAccessAutoScanEnabledFromPref();
   void UpdateSwitchAccessAutoScanSpeedFromPref();
   void UpdateSwitchAccessAutoScanKeyboardSpeedFromPref();
+  void UpdateSwitchAccessPointScanSpeedFromPref();
   void UpdateAccessibilityHighlightingFromPrefs();
   void UpdateShortcutsEnabledFromPref();
   void UpdateTabletModeShelfNavigationButtonsFromPref();
