@@ -210,7 +210,10 @@ ContrastInfo InspectorContrast::GetContrast(Element* top_element) {
 
   float text_opacity = 1.0f;
   Vector<Color> bgcolors = GetBackgroundColors(top_element, &text_opacity);
-  if (bgcolors.IsEmpty())
+  // TODO(crbug/1174511): Compute contrast only if the element has a single
+  // color background to be consistent with the current UI. In the future, we
+  // should return a range of contrast values.
+  if (bgcolors.size() != 1)
     return result;
 
   Color text_color =
