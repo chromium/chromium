@@ -445,6 +445,7 @@ polymer_modulizer("icons") {
   js_file = "icons.m.js"
   html_file = "icons.html"
   html_type = "iron-iconset"
+  preserve_url_scheme = true
 }
 
 js_library("xf_button") {
