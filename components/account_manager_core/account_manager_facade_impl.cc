@@ -127,6 +127,7 @@ void AccountManagerFacadeImpl::ShowReauthAccountDialog(
     LOG(WARNING) << "Found remote at: " << remote_version_
                  << ", expected: " << kMinVersionWithShowAddAccountDialog
                  << " for ShowReauthAccountDialog.";
+    return;
   }
 
   base::UmaHistogramEnumeration(kAccountAdditionSource, source);
