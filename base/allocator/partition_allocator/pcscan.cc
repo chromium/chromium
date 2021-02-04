@@ -459,10 +459,14 @@ class PCScan<thread_safe>::PCScanTask::ScanLoop final {
     PA_DCHECK(
         !((reinterpret_cast<char*>(end) - reinterpret_cast<char*>(begin)) %
           kAlignmentRequirement));
-
-    const __m128i vbase = _mm_set1_epi64x(normal_bucket_pool_base_);
-    const __m128d cage_mask =
-        _mm_set1_epi64x(PartitionAddressSpace::NormalBucketPoolBaseMask());
+    // For SSE3, since some integer instructions are not yet available (e.g.
+    // _mm_cmpeq_epi64), use packed doubles (not integers). Sticking to doubles
+    // helps to avoid latency caused by "domain crossing penalties" (see bypass
+    // delays in https://agner.org/optimize/microarchitecture.pdf).
+    const __m128d vbase =
+        _mm_castsi128_pd(_mm_set1_epi64x(normal_bucket_pool_base_));
+    const __m128d cage_mask = _mm_castsi128_pd(
+        _mm_set1_epi64x(PartitionAddressSpace::NormalBucketPoolBaseMask()));
 
     size_t quarantine_size = 0;
     for (uintptr_t* payload = begin; payload < end; payload += kWordsInVector) {
@@ -478,14 +482,15 @@ class PCScan<thread_safe>::PCScanTask::ScanLoop final {
       if (mask & 0b01) {
         quarantine_size +=
             pcscan_task_.TryMarkObjectInNormalBucketPool<BitmapLookupPolicy>(
-                _mm_cvtsi128_si64(maybe_ptrs));
+                _mm_cvtsi128_si64(_mm_castpd_si128(maybe_ptrs)));
       }
       if (mask & 0b10) {
         // Extraction intrinsics for qwords are only supported in SSE4.1, so
         // instead we reshuffle dwords with pshufd. The mask is used to move the
         // 4th and 3rd dwords into the second and first position.
         static constexpr int kSecondWordMask = (3 << 2) | (2 << 0);
-        const __m128i shuffled = _mm_shuffle_epi32(maybe_ptrs, kSecondWordMask);
+        const __m128i shuffled =
+            _mm_shuffle_epi32(_mm_castpd_si128(maybe_ptrs), kSecondWordMask);
         quarantine_size +=
             pcscan_task_.TryMarkObjectInNormalBucketPool<BitmapLookupPolicy>(
                 _mm_cvtsi128_si64(shuffled));
@@ -499,7 +504,10 @@ class PCScan<thread_safe>::PCScanTask::ScanLoop final {
     static constexpr size_t kAlignmentRequirement = 32;
     static constexpr size_t kWordsInVector = 4;
     PA_DCHECK(!(reinterpret_cast<uintptr_t>(begin) % kAlignmentRequirement));
-
+    // For AVX2, stick to integer instructions. This brings slightly better
+    // throughput. For example, according to the Intel docs, on Broadwell and
+    // Haswell the CPI of vmovdqa (_mm256_load_si256) is twice smaller (0.25)
+    // than that of vmovapd (_mm256_load_pd).
     const __m256i vbase = _mm256_set1_epi64x(normal_bucket_pool_base_);
     const __m256i cage_mask =
         _mm256_set1_epi64x(PartitionAddressSpace::NormalBucketPoolBaseMask());
@@ -507,11 +515,11 @@ class PCScan<thread_safe>::PCScanTask::ScanLoop final {
     size_t quarantine_size = 0;
     uintptr_t* payload = begin;
     for (; payload < (end - kWordsInVector); payload += kWordsInVector) {
-      const __m256d maybe_ptrs =
-          _mm256_load_pd(reinterpret_cast<double*>(payload));
-      const __m256d vand = _mm256_and_pd(maybe_ptrs, cage_mask);
+      const __m256i maybe_ptrs =
+          _mm256_load_si256(reinterpret_cast<__m256i*>(payload));
+      const __m256i vand = _mm256_and_si256(maybe_ptrs, cage_mask);
       const __m256i vcmp = _mm256_cmpeq_epi64(vand, vbase);
-      const int mask = _mm256_movemask_pd(vcmp);
+      const int mask = _mm256_movemask_pd(_mm256_castsi256_pd(vcmp));
       if (LIKELY(!mask))
         continue;
       // It's important to extract pointers from the already loaded vector to
