@@ -183,6 +183,14 @@ class WorkspaceWindowResizerTest : public AshTestBase {
         &touch_resize_delegate_, 0, bounds));
   }
 
+  bool IsDwellCountdownTimerRunning() {
+    return workspace_resizer_->dwell_countdown_timer_.IsRunning();
+  }
+
+  void DwellCountdownTimerFireNow() {
+    workspace_resizer_->dwell_countdown_timer_.FireNow();
+  }
+
   TestWindowDelegate delegate_;
   TestWindowDelegate delegate2_;
   TestWindowDelegate delegate3_;
@@ -1897,6 +1905,7 @@ TEST_F(WorkspaceWindowResizerTest, DragToSnapMaximize) {
   std::unique_ptr<WindowResizer> resizer = CreateResizerForTest(window_.get());
   resizer->Drag(gfx::PointF(400.f, 400.f), 0);
   resizer->Drag(gfx::PointF(400.f, 2.f), 0);
+  DwellCountdownTimerFireNow();
   resizer->CompleteDrag();
   auto* window_state = WindowState::Get(window_.get());
   ASSERT_TRUE(window_state->IsMaximized());
@@ -1915,6 +1924,7 @@ TEST_F(WorkspaceWindowResizerTest, DragToSnapMaximize) {
   // End the drag in the snap to maximize region. The window should be maximized
   // and sized to fit the whole work area.
   resizer->Drag(gfx::PointF(200.f, 2.f), 0);
+  DwellCountdownTimerFireNow();
   resizer->CompleteDrag();
   EXPECT_TRUE(window_state->IsMaximized());
   EXPECT_EQ(gfx::Rect(800, 600), window_->bounds());
@@ -1943,6 +1953,7 @@ TEST_F(WorkspaceWindowResizerTest, DragToMaximizeStartingInSnapRegion) {
   resizer = CreateResizerForTest(window_.get(), gfx::Point(400.f, 1.f));
   resizer->Drag(gfx::PointF(400.f, 400.f), 0);
   resizer->Drag(gfx::PointF(400.f, 5.f), 0);
+  DwellCountdownTimerFireNow();
   resizer->CompleteDrag();
   EXPECT_TRUE(WindowState::Get(window_.get())->IsMaximized());
 }
@@ -1997,6 +2008,7 @@ TEST_F(WorkspaceWindowResizerTest, MultiDisplayRestoreBounds) {
           gfx::Point(1200, 200)));
   resizer->Drag(gfx::PointF(1200.f, 200.f), 0);
   resizer->Drag(gfx::PointF(1200.f, 5.f), 0);
+  DwellCountdownTimerFireNow();
   resizer->CompleteDrag();
   ASSERT_TRUE(window_state->IsMaximized());
 
@@ -2124,4 +2136,51 @@ TEST_F(WorkspaceWindowResizerTest, TabDraggingHistogram) {
   }
 }
 
+// Test dwell time before snap to maximize.
+TEST_F(WorkspaceWindowResizerTest, SnapMaximizeDwellTime) {
+  UpdateDisplay("800x648");
+  window_->SetBounds(gfx::Rect(10, 10, 100, 100));
+  window_->SetProperty(aura::client::kResizeBehaviorKey,
+                       aura::client::kResizeBehaviorCanResize |
+                           aura::client::kResizeBehaviorCanMaximize);
+  std::unique_ptr<WindowResizer> resizer = CreateResizerForTest(window_.get());
+  // Ensure the timer is not running.
+  EXPECT_FALSE(IsDwellCountdownTimerRunning());
+  // Test when dwell timer finished countdown window is maximized.
+  resizer->Drag(gfx::PointF(400.f, 400.f), 0);
+  resizer->Drag(gfx::PointF(100.f, 3.f), 0);
+  // Timer is triggered.
+  EXPECT_TRUE(IsDwellCountdownTimerRunning());
+  DwellCountdownTimerFireNow();
+  resizer->CompleteDrag();
+  auto* window_state = WindowState::Get(window_.get());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(window_state->IsMaximized());
+
+  // If dwell timer doesn't finish countdown,
+  // Window will not be maximized.
+  resizer.reset();
+  resizer = CreateResizerForTest(window_.get());
+  resizer->Drag(gfx::PointF(400.f, 400.f), 0);
+  resizer->Drag(gfx::PointF(100.f, 3.f), 0);
+  // Timer is triggered.
+  EXPECT_TRUE(IsDwellCountdownTimerRunning());
+  resizer->CompleteDrag();
+  window_state = WindowState::Get(window_.get());
+  EXPECT_FALSE(window_state->IsMaximized());
+
+  // Once dwell timer starts, drag away the window
+  // will not maximize the window.
+  resizer.reset();
+  resizer = CreateResizerForTest(window_.get());
+  resizer->Drag(gfx::PointF(400.f, 400.f), 0);
+  resizer->Drag(gfx::PointF(100.f, 3.f), 0);
+  DwellCountdownTimerFireNow();
+  resizer->Drag(gfx::PointF(200.f, 3.f), 0);
+  // Timer is triggered.
+  EXPECT_TRUE(IsDwellCountdownTimerRunning());
+  resizer->CompleteDrag();
+  window_state = WindowState::Get(window_.get());
+  EXPECT_FALSE(window_state->IsMaximized());
+}
 }  // namespace ash

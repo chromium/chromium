@@ -200,6 +200,11 @@ class ASH_EXPORT WorkspaceWindowResizer : public WindowResizer {
   // of the snap region once. Used to reduce accidental snaps.
   bool can_snap_to_maximize_ = false;
 
+  // Timer for dwell time countdown.
+  base::OneShotTimer dwell_countdown_timer_;
+  // The location for drag maximize in screen.
+  gfx::PointF dwell_location_in_screen_;
+
   // The mouse location passed to Drag().
   gfx::PointF last_mouse_location_;
 
