@@ -29,6 +29,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.weblayer.SettingsTestUtils;
 import org.chromium.weblayer.SiteSettingsActivity;
 import org.chromium.weblayer.TestWebLayer;
@@ -82,6 +83,7 @@ public class SiteSettingsTest {
         onView(withText("Block JavaScript for a specific site.")).check(matches(isDisplayed()));
     }
 
+    @DisabledTest(message = "https://crbug.com/1174618")
     @Test
     @SmallTest
     public void testSingleSiteSoundPopupLaunches() throws InterruptedException {
