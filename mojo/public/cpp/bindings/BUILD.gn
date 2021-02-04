@@ -151,7 +151,6 @@ component("bindings") {
     "interface_endpoint_controller.h",
     "interface_ptr.h",
     "interface_ptr_info.h",
-    "interface_ptr_set.h",
     "interface_request.h",
     "lib/associated_binding.cc",
     "lib/associated_interface_ptr.cc",

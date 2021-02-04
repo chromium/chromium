@@ -13,7 +13,6 @@
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/unguessable_token.h"
-#include "mojo/public/cpp/bindings/interface_ptr_set.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/media_session/public/cpp/media_metadata.h"

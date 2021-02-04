@@ -11,7 +11,6 @@
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 #include "libassistant/shared/public/media_manager.h"
-#include "mojo/public/cpp/bindings/interface_ptr_set.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"

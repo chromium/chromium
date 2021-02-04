@@ -18,7 +18,6 @@
 #include "base/test/task_environment.h"
 #include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
 #include "content/public/test/browser_task_environment.h"
-#include "mojo/public/cpp/bindings/interface_ptr_set.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
