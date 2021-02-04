@@ -53,6 +53,30 @@ MediaSinkInternal CreateCastSinkFromDialSink(
   return MediaSinkInternal(sink, extra_data);
 }
 
+std::string EnumToString(MediaRouterChannelError error) {
+  switch (error) {
+    case MediaRouterChannelError::UNKNOWN:
+      return "UNKNOWN";
+    case MediaRouterChannelError::AUTHENTICATION:
+      return "AUTHENTICATION";
+    case MediaRouterChannelError::CONNECT:
+      return "CONNECT";
+    case MediaRouterChannelError::GENERAL_CERTIFICATE:
+      return "GENERAL_CERTIFICATE";
+    case MediaRouterChannelError::CERTIFICATE_TIMING:
+      return "CERTIFICATE_TIMING";
+    case MediaRouterChannelError::NETWORK:
+      return "NETWORK";
+    case MediaRouterChannelError::CONNECT_TIMEOUT:
+      return "CONNECT_TIMEOUT";
+    case MediaRouterChannelError::PING_TIMEOUT:
+      return "PING_TIMEOUT";
+    case MediaRouterChannelError::TOTAL_COUNT:
+      NOTREACHED();
+      return "";
+  }
+}
+
 MediaRouterChannelError RecordError(cast_channel::ChannelError channel_error,
                                     cast_channel::LastError last_error) {
   MediaRouterChannelError error_code = MediaRouterChannelError::UNKNOWN;
@@ -329,8 +353,8 @@ void CastMediaSinkServiceImpl::OnError(const cast_channel::CastSocket& socket,
   if (logger_.is_bound()) {
     auto sink_id = sink_it == sinks.end() ? "" : sink_it->first;
     logger_->LogError(mojom::LogCategory::kDiscovery, kLoggerComponent,
-                      base::StringPrintf("MediaRouterChannelError: %d",
-                                         static_cast<int>(error_code)),
+                      base::StrCat({"Media Router Channel Error: ",
+                                    EnumToString(error_code)}),
                       sink_id, "", "");
   }
   if (sink_it == sinks.end()) {

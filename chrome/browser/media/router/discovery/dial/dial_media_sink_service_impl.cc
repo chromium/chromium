@@ -24,6 +24,23 @@ constexpr char kLoggerComponent[] = "DialMediaSinkServiceImpl";
 static constexpr const char* kDiscoveryOnlyModelNames[3] = {
     "eureka dongle", "chromecast audio", "chromecast ultra"};
 
+std::string EnumToString(DialRegistry::DialErrorCode code) {
+  switch (code) {
+    case DialRegistry::DialErrorCode::DIAL_NO_LISTENERS:
+      return "DIAL_NO_LISTENERS";
+    case DialRegistry::DialErrorCode::DIAL_NO_INTERFACES:
+      return "DIAL_NO_INTERFACES";
+    case DialRegistry::DialErrorCode::DIAL_NETWORK_DISCONNECTED:
+      return "DIAL_NETWORK_DISCONNECTED";
+    case DialRegistry::DialErrorCode::DIAL_CELLULAR_NETWORK:
+      return "DIAL_CELLULAR_NETWORK";
+    case DialRegistry::DialErrorCode::DIAL_SOCKET_ERROR:
+      return "DIAL_SOCKET_ERROR";
+    case DialRegistry::DialErrorCode::DIAL_UNKNOWN:
+      return "DIAL_UNKNOWN";
+  }
+}
+
 // Returns true if DIAL (SSDP) was only used to discover this sink, and it is
 // not expected to support other DIAL features (app discovery, activity
 // discovery, etc.)
@@ -182,10 +199,9 @@ void DialMediaSinkServiceImpl::OnDialDeviceEvent(
 void DialMediaSinkServiceImpl::OnDialError(DialRegistry::DialErrorCode type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (logger_.is_bound()) {
-    logger_->LogError(
-        mojom::LogCategory::kDiscovery, kLoggerComponent,
-        base::StringPrintf("DialErrorCode: %d", static_cast<int>(type)), "", "",
-        "");
+    logger_->LogError(mojom::LogCategory::kDiscovery, kLoggerComponent,
+                      base::StrCat({"Dial Error: ", EnumToString(type)}), "",
+                      "", "");
   }
 }
 
