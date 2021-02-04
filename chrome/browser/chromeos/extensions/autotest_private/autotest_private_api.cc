@@ -78,6 +78,7 @@
 #include "chrome/browser/chromeos/login/lock/screen_locker.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_installer.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_installer_factory.h"
+#include "chrome/browser/chromeos/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager_factory.h"
@@ -488,6 +489,10 @@ std::string SetWhitelistedPref(Profile* profile,
     DCHECK(value.is_bool());
   } else if (pref_name == prefs::kLanguagePreloadEngines) {
     DCHECK(value.is_string());
+  } else if (pref_name == plugin_vm::prefs::kPluginVmCameraAllowed) {
+    DCHECK(value.is_bool());
+  } else if (pref_name == plugin_vm::prefs::kPluginVmMicAllowed) {
+    DCHECK(value.is_bool());
   } else {
     return "The pref " + pref_name + " is not whitelisted.";
   }
