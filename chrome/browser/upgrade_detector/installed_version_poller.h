@@ -93,9 +93,6 @@ class InstalledVersionPoller {
   void OnInstalledVersion(PollType poll_type,
                           InstalledAndCriticalVersion installed_version);
 
-  // Record |poll_type| if no PollType has previously been reported.
-  void RecordPollTypeOnce(PollType poll_type);
-
   SEQUENCE_CHECKER(sequence_checker_);
   BuildState* const build_state_;
   const GetInstalledVersionCallback get_installed_version_;
@@ -103,8 +100,6 @@ class InstalledVersionPoller {
 
   // Valid while observing modifications to the installation.
   std::unique_ptr<InstalledVersionMonitor> monitor_;
-
-  bool recorded_poll_type_ = false;
 
   base::WeakPtrFactory<InstalledVersionPoller> weak_ptr_factory_{this};
 };

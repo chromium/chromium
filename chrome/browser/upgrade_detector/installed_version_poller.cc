@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/location.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
@@ -210,20 +209,9 @@ void InstalledVersionPoller::OnInstalledVersion(
     // version) or differs from the running version. Report it accordingly.
     build_state_->SetUpdate(update_type, versions.installed_version,
                             versions.critical_version);
-    // Report the first type of poll that discovers an update.
-    RecordPollTypeOnce(poll_type);
   }
   // Poll again after the polling interval passes.
   timer_.Start(FROM_HERE, GetPollingInterval(),
                base::BindOnce(&InstalledVersionPoller::Poll,
                               base::Unretained(this), PollType::kPeriodic));
-}
-
-void InstalledVersionPoller::RecordPollTypeOnce(PollType poll_type) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (recorded_poll_type_)
-    return;
-
-  base::UmaHistogramEnumeration("UpgradeDetector.PollType", poll_type);
-  recorded_poll_type_ = true;
 }

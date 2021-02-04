@@ -10,8 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/strings/string_piece.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/upgrade_detector/build_state.h"
@@ -31,8 +29,6 @@ using ::testing::Property;
 using ::testing::Return;
 
 namespace {
-
-constexpr base::StringPiece kPollTypeHistogramName("UpgradeDetector.PollType");
 
 class FakeMonitor final : public InstalledVersionMonitor {
  public:
@@ -309,97 +305,4 @@ TEST_F(InstalledVersionPollerTest, TestMonitor) {
   // Expect a poll in ten seconds.
   EXPECT_CALL(callback, Run());
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(10));
-}
-
-// Tests that no metrics are reported if no poll finds an update.
-TEST_F(InstalledVersionPollerTest, NoOpNoMetrics) {
-  base::HistogramTester histogram_tester;
-  base::MockRepeatingCallback<InstalledAndCriticalVersion()> callback;
-  EXPECT_CALL(callback, Run())
-      .WillOnce(Return(ByMove(MakeNoUpdateVersions())))
-      .WillOnce(Return(ByMove(MakeNoUpdateVersions())))
-      .WillOnce(Return(ByMove(MakeNoUpdateVersions())));
-  InstalledVersionPoller poller(&build_state_, callback.Get(), MakeMonitor(),
-                                task_environment_.GetMockTickClock());
-  // First no-op: the startup task.
-  task_environment_.RunUntilIdle();
-  // Second no-op: the periodic task.
-  task_environment_.FastForwardBy(
-      InstalledVersionPoller::kDefaultPollingInterval);
-  // Third no-op: the monitor task.
-  TriggerMonitor();
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(10));
-  histogram_tester.ExpectTotalCount(kPollTypeHistogramName, 0);
-}
-
-// Tests that the PollType metric is recorded when the startup poll finds an
-// update.
-TEST_F(InstalledVersionPollerTest, StartupMetrics) {
-  base::HistogramTester histogram_tester;
-  base::MockRepeatingCallback<InstalledAndCriticalVersion()> callback;
-  EXPECT_CALL(callback, Run()).WillOnce(Return(ByMove(MakeUpgradeVersions())));
-  EXPECT_CALL(mock_observer_, OnUpdate(_));
-  InstalledVersionPoller poller(&build_state_, callback.Get(), MakeMonitor(),
-                                task_environment_.GetMockTickClock());
-  // Run the startup task.
-  task_environment_.RunUntilIdle();
-  histogram_tester.ExpectUniqueSample(kPollTypeHistogramName, 0, 1);
-}
-
-// Tests that the PollType metric is recorded when the monitor poll finds an
-// update.
-TEST_F(InstalledVersionPollerTest, MonitorMetrics) {
-  base::HistogramTester histogram_tester;
-  base::MockRepeatingCallback<InstalledAndCriticalVersion()> callback;
-  EXPECT_CALL(callback, Run())
-      .WillOnce(Return(ByMove(MakeNoUpdateVersions())))
-      .WillOnce(Return(ByMove(MakeUpgradeVersions())));
-  EXPECT_CALL(mock_observer_, OnUpdate(_));
-  InstalledVersionPoller poller(&build_state_, callback.Get(), MakeMonitor(),
-                                task_environment_.GetMockTickClock());
-  // Run the startup task.
-  task_environment_.RunUntilIdle();
-  // The monitor finds a change.
-  TriggerMonitor();
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(10));
-  histogram_tester.ExpectUniqueSample(kPollTypeHistogramName, 1, 1);
-}
-
-// Tests that the PollType metric is recorded when the periodic poll finds an
-// update.
-TEST_F(InstalledVersionPollerTest, PeriodicMetrics) {
-  base::HistogramTester histogram_tester;
-  base::MockRepeatingCallback<InstalledAndCriticalVersion()> callback;
-  EXPECT_CALL(callback, Run())
-      .WillOnce(Return(ByMove(MakeNoUpdateVersions())))
-      .WillOnce(Return(ByMove(MakeUpgradeVersions())));
-  EXPECT_CALL(mock_observer_, OnUpdate(_));
-  InstalledVersionPoller poller(&build_state_, callback.Get(), MakeMonitor(),
-                                task_environment_.GetMockTickClock());
-  // Run the startup task.
-  task_environment_.RunUntilIdle();
-  // Run the periodic task.
-  task_environment_.FastForwardBy(
-      InstalledVersionPoller::kDefaultPollingInterval);
-  histogram_tester.ExpectUniqueSample(kPollTypeHistogramName, 2, 1);
-}
-
-// Tests that the PollType metric is recorded only once even in case of multiple
-// polls.
-TEST_F(InstalledVersionPollerTest, MetricsOnlyOnce) {
-  base::HistogramTester histogram_tester;
-  base::MockRepeatingCallback<InstalledAndCriticalVersion()> callback;
-  EXPECT_CALL(callback, Run())
-      .WillOnce(Return(ByMove(MakeUpgradeVersions())))
-      .WillOnce(Return(ByMove(MakeUpgradeVersions())));
-  EXPECT_CALL(mock_observer_, OnUpdate(_));
-  InstalledVersionPoller poller(&build_state_, callback.Get(), MakeMonitor(),
-                                task_environment_.GetMockTickClock());
-  // Run the startup task.
-  task_environment_.RunUntilIdle();
-  // Run the periodic task.
-  task_environment_.FastForwardBy(
-      InstalledVersionPoller::kDefaultPollingInterval);
-  // Only the startup poll is recorded.
-  histogram_tester.ExpectUniqueSample(kPollTypeHistogramName, 0, 1);
 }

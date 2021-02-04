@@ -39260,6 +39260,9 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
 </enum>
 
 <enum name="InstalledVersionPollType">
+  <obsolete>
+    Removed in M90.
+  </obsolete>
   <int value="0" label="Process startup"/>
   <int value="1" label="InstalledVersionMonitor notification"/>
   <int value="2" label="Periodic poll"/>
