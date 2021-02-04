@@ -9,11 +9,10 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
-#include "chromeos/dbus/hermes/hermes_clients.h"
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/dbus/shill/fake_shill_device_client.h"
-#include "chromeos/dbus/shill/shill_clients.h"
+#include "chromeos/network/network_state_test_helper.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -51,7 +50,9 @@ class FakeObserver : public CellularESimProfileHandler::Observer {
 
 class CellularESimProfileHandlerImplTest : public testing::Test {
  protected:
-  CellularESimProfileHandlerImplTest() = default;
+  CellularESimProfileHandlerImplTest()
+      : helper_(/*use_default_devices_and_services=*/false) {}
+
   ~CellularESimProfileHandlerImplTest() override = default;
 
   // testing::Test:
@@ -59,18 +60,13 @@ class CellularESimProfileHandlerImplTest : public testing::Test {
     CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(
         device_prefs_.registry());
 
-    shill_clients::InitializeFakes();
-    hermes_clients::InitializeFakes();
-
-    ShillDeviceClient::Get()->GetTestInterface()->AddDevice(
-        kDefaultCellularDevicePath, shill::kTypeCellular, "cellular1");
+    helper_.device_test()->AddDevice(kDefaultCellularDevicePath,
+                                     shill::kTypeCellular, "cellular1");
   }
 
   void TearDown() override {
     handler_->RemoveObserver(&observer_);
     handler_.reset();
-    hermes_clients::Shutdown();
-    shill_clients::Shutdown();
   }
 
   void Init() {
@@ -88,7 +84,7 @@ class CellularESimProfileHandlerImplTest : public testing::Test {
   }
 
   void AddEuicc(int euicc_num) {
-    HermesManagerClient::Get()->GetTestInterface()->AddEuicc(
+    helper_.hermes_manager_test()->AddEuicc(
         dbus::ObjectPath(CreateTestEuiccPath(euicc_num)),
         CreateTestEid(euicc_num), true);
     base::RunLoop().RunUntilIdle();
@@ -97,10 +93,9 @@ class CellularESimProfileHandlerImplTest : public testing::Test {
   dbus::ObjectPath AddProfile(int euicc_num,
                               hermes::profile::State state,
                               const std::string& activation_code) {
-    dbus::ObjectPath path =
-        HermesEuiccClient::Get()->GetTestInterface()->AddFakeCarrierProfile(
-            dbus::ObjectPath(CreateTestEuiccPath(euicc_num)), state,
-            activation_code, /*service_only=*/false);
+    dbus::ObjectPath path = helper_.hermes_euicc_test()->AddFakeCarrierProfile(
+        dbus::ObjectPath(CreateTestEuiccPath(euicc_num)), state,
+        activation_code, /*service_only=*/false);
     base::RunLoop().RunUntilIdle();
     return path;
   }
@@ -113,6 +108,7 @@ class CellularESimProfileHandlerImplTest : public testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
+  NetworkStateTestHelper helper_;
   TestingPrefServiceSimple device_prefs_;
   FakeObserver observer_;
 

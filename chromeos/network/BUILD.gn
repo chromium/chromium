@@ -188,11 +188,16 @@ component("network") {
 
 source_set("test_support") {
   testonly = true
-  public_deps = [ ":network" ]
+  public_deps = [
+    ":network",
+    "//chromeos/dbus/hermes:hermes_fakes",
+    "//dbus",
+  ]
   deps = [
     "//base",
     "//chromeos:test_utils",
     "//chromeos/dbus:test_support",
+    "//chromeos/dbus/hermes:hermes_clients",
     "//chromeos/services/network_config/public/cpp",
     "//chromeos/services/network_config/public/mojom",
     "//components/sync_preferences:test_support",

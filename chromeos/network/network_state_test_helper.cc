@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
+#include "chromeos/dbus/hermes/hermes_clients.h"
 #include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/network/device_state.h"
 #include "chromeos/network/network_device_handler.h"
@@ -36,11 +37,21 @@ NetworkStateTestHelper::NetworkStateTestHelper(
     shill_clients::InitializeFakes();
     shill_clients_initialized_ = true;
   }
+
+  if (!HermesManagerClient::Get()) {
+    hermes_clients::InitializeFakes();
+    hermes_clients_initialized_ = true;
+  }
+
   manager_test_ = ShillManagerClient::Get()->GetTestInterface();
   profile_test_ = ShillProfileClient::Get()->GetTestInterface();
   device_test_ = ShillDeviceClient::Get()->GetTestInterface();
   service_test_ = ShillServiceClient::Get()->GetTestInterface();
   ip_config_test_ = ShillIPConfigClient::Get()->GetTestInterface();
+
+  hermes_euicc_test_ = HermesEuiccClient::Get()->GetTestInterface();
+  hermes_manager_test_ = HermesManagerClient::Get()->GetTestInterface();
+  hermes_profile_test_ = HermesProfileClient::Get()->GetTestInterface();
 
   profile_test_->AddProfile(NetworkProfileHandler::GetSharedProfilePath(),
                             std::string() /* shared profile */);
@@ -60,6 +71,8 @@ NetworkStateTestHelper::~NetworkStateTestHelper() {
   ShutdownNetworkState();
   if (shill_clients_initialized_)
     shill_clients::Shutdown();
+  if (hermes_clients_initialized_)
+    hermes_clients::Shutdown();
 }
 
 void NetworkStateTestHelper::ShutdownNetworkState() {

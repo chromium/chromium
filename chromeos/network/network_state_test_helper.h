@@ -9,6 +9,9 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "chromeos/dbus/hermes/hermes_euicc_client.h"
+#include "chromeos/dbus/hermes/hermes_manager_client.h"
+#include "chromeos/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
 #include "chromeos/dbus/shill/shill_ipconfig_client.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
@@ -105,10 +108,22 @@ class NetworkStateTestHelper {
     return ip_config_test_;
   }
 
+  HermesEuiccClient::TestInterface* hermes_euicc_test() {
+    return hermes_euicc_test_;
+  }
+  HermesManagerClient::TestInterface* hermes_manager_test() {
+    return hermes_manager_test_;
+  }
+  HermesProfileClient::TestInterface* hermes_profile_test() {
+    return hermes_profile_test_;
+  }
+
  private:
   void ConfigureCallback(const dbus::ObjectPath& result);
 
   bool shill_clients_initialized_ = false;
+  bool hermes_clients_initialized_ = false;
+
   std::string last_created_service_path_;
 
   ShillManagerClient::TestInterface* manager_test_;
@@ -116,6 +131,10 @@ class NetworkStateTestHelper {
   ShillDeviceClient::TestInterface* device_test_;
   ShillServiceClient::TestInterface* service_test_;
   ShillIPConfigClient::TestInterface* ip_config_test_;
+
+  HermesEuiccClient::TestInterface* hermes_euicc_test_;
+  HermesManagerClient::TestInterface* hermes_manager_test_;
+  HermesProfileClient::TestInterface* hermes_profile_test_;
 
   std::unique_ptr<NetworkStateHandler> network_state_handler_;
   std::unique_ptr<NetworkDeviceHandler> network_device_handler_;
