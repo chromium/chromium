@@ -215,6 +215,7 @@ class AssociatedReceiver {
   // and the AssociatedRemote will never be able to receive its expected
   // responses.
   PendingAssociatedReceiver<Interface> Unbind() WARN_UNUSED_RESULT {
+    DCHECK(is_bound());
     return PendingAssociatedReceiver<Interface>(binding_.Unbind().PassHandle());
   }
 
