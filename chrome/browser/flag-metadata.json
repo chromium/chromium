@@ -141,8 +141,8 @@
   },
   {
     "name": "arc-custom-tabs-experiment",
-    "owners": [ "hashimoto" ],
-    "expiry_milestone": 76
+    "owners": [ "hashimoto", "jschettler" ],
+    "expiry_milestone": 95
   },
   {
     "name": "arc-documents-provider",
