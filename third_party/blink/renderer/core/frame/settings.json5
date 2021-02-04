@@ -294,6 +294,10 @@
       initial: true,
     },
     {
+      name: "allowNonEmptyNavigatorPlugins",
+      initial: false,
+    },
+    {
       name: "cookieEnabled",
       initial: true,
     },

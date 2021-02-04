@@ -63,8 +63,13 @@ DOMPlugin* DOMPluginArray::item(unsigned index) {
   return dom_plugins_[index];
 }
 
+bool DOMPluginArray::ShouldReturnEmptyPluginData() const {
+  return DOMMimeTypeArray::ShouldReturnEmptyPluginData(
+      DomWindow() ? DomWindow()->GetFrame() : nullptr);
+}
+
 DOMPlugin* DOMPluginArray::namedItem(const AtomicString& property_name) {
-  if (base::FeatureList::IsEnabled(features::kNavigatorPluginsEmpty))
+  if (ShouldReturnEmptyPluginData())
     return nullptr;
   PluginData* data = GetPluginData();
   if (!data)
@@ -82,7 +87,7 @@ DOMPlugin* DOMPluginArray::namedItem(const AtomicString& property_name) {
 
 void DOMPluginArray::NamedPropertyEnumerator(Vector<String>& property_names,
                                              ExceptionState&) const {
-  if (base::FeatureList::IsEnabled(features::kNavigatorPluginsEmpty))
+  if (ShouldReturnEmptyPluginData())
     return;
   PluginData* data = GetPluginData();
   if (!data)
@@ -101,7 +106,7 @@ bool DOMPluginArray::NamedPropertyQuery(const AtomicString& property_name,
 }
 
 void DOMPluginArray::refresh(bool reload) {
-  if (base::FeatureList::IsEnabled(features::kNavigatorPluginsEmpty))
+  if (ShouldReturnEmptyPluginData())
     return;
   if (!DomWindow())
     return;
@@ -129,7 +134,7 @@ PluginData* DOMPluginArray::GetPluginData() const {
 }
 
 void DOMPluginArray::UpdatePluginData() {
-  if (base::FeatureList::IsEnabled(features::kNavigatorPluginsEmpty)) {
+  if (ShouldReturnEmptyPluginData()) {
     dom_plugins_.clear();
     return;
   }

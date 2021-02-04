@@ -189,6 +189,7 @@ struct WebPreferences {
   bool barrel_button_for_drag_enabled;
   bool sync_xhr_in_documents_enabled;
   bool target_blank_implies_no_opener_enabled_will_be_removed;
+  bool allow_non_empty_navigator_plugins;
   int32 number_of_cpu_cores;
   EditingBehavior editing_behavior;
   bool supports_multiple_windows;

@@ -365,6 +365,11 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.target_blank_implies_no_opener_enabled_will_be_removed;
   }
 
+  static bool allow_non_empty_navigator_plugins(
+      const blink::web_pref::WebPreferences& r) {
+    return r.allow_non_empty_navigator_plugins;
+  }
+
   static uint32_t number_of_cpu_cores(
       const blink::web_pref::WebPreferences& r) {
     return r.number_of_cpu_cores;

@@ -23,6 +23,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/plugin_data.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -57,8 +58,25 @@ DOMMimeType* DOMMimeTypeArray::item(unsigned index) {
   return dom_mime_types_[index];
 }
 
+bool DOMMimeTypeArray::ShouldReturnEmptyPluginData(Frame* frame) {
+  // See https://crbug.com/1171373 for more context. P/Nacl plugins will
+  // be supported on some platforms through at least June, 2022. Since
+  // some apps need to use feature detection, we need to continue returning
+  // plugin data for those.
+  if (frame && frame->GetSettings()->GetAllowNonEmptyNavigatorPlugins())
+    return false;
+  // Otherwise, depend on the feature flag, which can be disabled via
+  // Finch killswitch.
+  return base::FeatureList::IsEnabled(features::kNavigatorPluginsEmpty);
+}
+
+bool DOMMimeTypeArray::ShouldReturnEmptyPluginData() const {
+  return ShouldReturnEmptyPluginData(DomWindow() ? DomWindow()->GetFrame()
+                                                 : nullptr);
+}
+
 DOMMimeType* DOMMimeTypeArray::namedItem(const AtomicString& property_name) {
-  if (base::FeatureList::IsEnabled(features::kNavigatorPluginsEmpty))
+  if (ShouldReturnEmptyPluginData())
     return nullptr;
   PluginData* data = GetPluginData();
   if (!data)
@@ -75,7 +93,7 @@ DOMMimeType* DOMMimeTypeArray::namedItem(const AtomicString& property_name) {
 
 void DOMMimeTypeArray::NamedPropertyEnumerator(Vector<String>& property_names,
                                                ExceptionState&) const {
-  if (base::FeatureList::IsEnabled(features::kNavigatorPluginsEmpty))
+  if (ShouldReturnEmptyPluginData())
     return;
   PluginData* data = GetPluginData();
   if (!data)
@@ -101,7 +119,7 @@ PluginData* DOMMimeTypeArray::GetPluginData() const {
 }
 
 void DOMMimeTypeArray::UpdatePluginData() {
-  if (base::FeatureList::IsEnabled(features::kNavigatorPluginsEmpty)) {
+  if (ShouldReturnEmptyPluginData()) {
     dom_mime_types_.clear();
     return;
   }

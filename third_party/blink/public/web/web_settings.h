@@ -221,6 +221,8 @@ class WebSettings {
   virtual void SetSyncXHRInDocumentsEnabled(bool) = 0;
   // TODO(https://crbug.com/1163644): Remove once Chrome Apps are deprecated.
   virtual void SetTargetBlankImpliesNoOpenerEnabledWillBeRemoved(bool) = 0;
+  // TODO(https://crbug.com/1172495): Remove once Chrome Apps are deprecated.
+  virtual void SetAllowNonEmptyNavigatorPlugins(bool) = 0;
   virtual void SetTextAreasAreResizable(bool) = 0;
   virtual void SetTextAutosizingEnabled(bool) = 0;
   virtual void SetAccessibilityFontScaleFactor(float) = 0;

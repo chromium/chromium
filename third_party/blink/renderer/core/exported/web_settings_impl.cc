@@ -629,6 +629,10 @@ void WebSettingsImpl::SetTargetBlankImpliesNoOpenerEnabledWillBeRemoved(
   settings_->SetTargetBlankImpliesNoOpenerEnabledWillBeRemoved(enabled);
 }
 
+void WebSettingsImpl::SetAllowNonEmptyNavigatorPlugins(bool enabled) {
+  settings_->SetAllowNonEmptyNavigatorPlugins(enabled);
+}
+
 void WebSettingsImpl::SetCaretBrowsingEnabled(bool enabled) {
   settings_->SetCaretBrowsingEnabled(enabled);
 }
