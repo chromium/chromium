@@ -8,7 +8,13 @@
 #include "base/files/file_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
+#include "media/base/decoder_buffer.h"
+#include "media/base/encryption_scheme.h"
+#include "media/base/media_util.h"
 #include "media/base/test_data_util.h"
+#include "media/base/video_decoder_config.h"
+#include "media/base/video_transformation.h"
+#include "media/filters/dav1d_video_decoder.h"
 #include "media/gpu/test/video.h"
 #include "media/gpu/test/video_frame_file_writer.h"
 #include "media/gpu/test/video_frame_validator.h"
@@ -17,6 +23,7 @@
 #include "media/gpu/test/video_player/video_decoder_client.h"
 #include "media/gpu/test/video_player/video_player.h"
 #include "media/gpu/test/video_player/video_player_test_environment.h"
+#include "media/gpu/test/video_test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -28,7 +35,8 @@ namespace {
 // under docs/media/gpu/video_decoder_test_usage.md when making changes here.
 constexpr const char* usage_msg =
     "usage: video_decode_accelerator_tests\n"
-    "           [-v=<level>] [--vmodule=<config>] [--disable_validator]\n"
+    "           [-v=<level>] [--vmodule=<config>]\n"
+    "           [--validator_type=(none|md5|ssim)]\n"
     "           [--output_frames=(all|corrupt)] [--output_format=(png|yuv)]\n"
     "           [--output_limit=<number>] [--output_folder=<folder>]\n"
     "           ([--use_vd]|[--use_vd_vda]) [--gtest_help] [--help]\n"
@@ -46,7 +54,11 @@ constexpr const char* help_msg =
     "   -v                  enable verbose mode, e.g. -v=2.\n"
     "  --vmodule            enable verbose mode for the specified module,\n"
     "                       e.g. --vmodule=*media/gpu*=2.\n\n"
-    "  --disable_validator  disable frame validation.\n"
+    " --validator_type      validate decoded frames, possible values are \n"
+    "                       md5 (default, compare against md5hash of expected\n"
+    "                       frames), ssim (compute SSIM against expected\n"
+    "                       frames, currently allowed for AV1 streams only)\n"
+    "                       and none (disable frame validation).\n"
     "  --use_vd             use the new VD-based video decoders, instead of\n"
     "                       the default VDA-based video decoders.\n"
     "  --use_vd_vda         use the new VD-based video decoders with a\n"
@@ -108,13 +120,30 @@ class VideoDecoderTest : public ::testing::Test {
           g_env->Video()->BitDepth() != 10u) {
         LOG(ERROR) << "Unsupported bit depth: "
                    << base::strict_cast<int>(g_env->Video()->BitDepth());
-        return nullptr;
+        ADD_FAILURE();
       }
       const VideoPixelFormat validation_format =
           g_env->Video()->BitDepth() == 10 ? PIXEL_FORMAT_YUV420P10
                                            : PIXEL_FORMAT_I420;
-      frame_processors.push_back(media::test::MD5VideoFrameValidator::Create(
-          video->FrameChecksums(), validation_format, std::move(frame_writer)));
+      if (g_env->GetValidatorType() ==
+          VideoPlayerTestEnvironment::ValidatorType::kMD5) {
+        frame_processors.push_back(media::test::MD5VideoFrameValidator::Create(
+            video->FrameChecksums(), validation_format,
+            std::move(frame_writer)));
+      } else {
+        DCHECK_EQ(g_env->GetValidatorType(),
+                  VideoPlayerTestEnvironment::ValidatorType::kSSIM);
+        if (!CreateModelFrames(g_env->Video())) {
+          LOG(ERROR) << "Failed creating model frames";
+          ADD_FAILURE();
+        }
+        constexpr double kSSIMTolerance = 0.915;
+        frame_processors.push_back(media::test::SSIMVideoFrameValidator::Create(
+            base::BindRepeating(&VideoDecoderTest::GetModelFrame,
+                                base::Unretained(this)),
+            std::move(frame_writer),
+            VideoFrameValidator::ValidationMode::kThreshold, kSSIMTolerance));
+      }
     }
 
     config.implementation = g_env->GetDecoderImplementation();
@@ -132,6 +161,78 @@ class VideoDecoderTest : public ::testing::Test {
     }
     return video_player;
   }
+
+ private:
+  // TODO(hiroh): Move this to Video class or video_frame_helpers.h.
+  // TODO(hiroh): Create model frames once during the test.
+  bool CreateModelFrames(const Video* video) {
+    if (video->Codec() != VideoCodec::kCodecAV1) {
+      LOG(ERROR) << "Frame validation by SSIM is allowed for AV1 streams only";
+      return false;
+    }
+    Dav1dVideoDecoder decoder(
+        /*media_log=*/nullptr,
+        OffloadableVideoDecoder::OffloadState::kOffloaded);
+    VideoDecoderConfig decoder_config(
+        video->Codec(), video->Profile(),
+        VideoDecoderConfig::AlphaMode::kIsOpaque, VideoColorSpace(),
+        kNoTransformation, video->Resolution(), video->VisibleRect(),
+        video->VisibleRect().size(), EmptyExtraData(),
+        EncryptionScheme::kUnencrypted);
+
+    bool init_success = false;
+    VideoDecoder::InitCB init_cb = base::BindOnce(
+        [](bool* init_success, media::Status result) {
+          *init_success = result.is_ok();
+        },
+        &init_success);
+    decoder.Initialize(decoder_config, /*low_delay=*/false,
+                       /*cdm_context=*/nullptr, std::move(init_cb),
+                       base::BindRepeating(&VideoDecoderTest::AddModelFrame,
+                                           base::Unretained(this)),
+                       /*waiting_cb=*/base::NullCallback());
+    if (!init_success)
+      return false;
+    auto encoded_data_helper =
+        std::make_unique<EncodedDataHelper>(video->Data(), video->Profile());
+    DCHECK(encoded_data_helper);
+    while (!encoded_data_helper->ReachEndOfStream()) {
+      bool decode_success = false;
+      media::VideoDecoder::DecodeCB decode_cb = base::BindOnce(
+          [](bool* decode_success, media::Status status) {
+            *decode_success = status.is_ok();
+          },
+          &decode_success);
+      scoped_refptr<DecoderBuffer> bitstream_buffer =
+          encoded_data_helper->GetNextBuffer();
+      if (!bitstream_buffer) {
+        LOG(ERROR) << "Failed to get next video stream data";
+        return false;
+      }
+      decoder.Decode(std::move(bitstream_buffer), std::move(decode_cb));
+      if (!decode_success)
+        return false;
+    }
+    bool flush_success = false;
+    media::VideoDecoder::DecodeCB flush_cb = base::BindOnce(
+        [](bool* flush_success, media::Status status) {
+          *flush_success = status.is_ok();
+        },
+        &flush_success);
+    decoder.Decode(DecoderBuffer::CreateEOSBuffer(), std::move(flush_cb));
+
+    return flush_success && model_frames_.size() == video->NumFrames();
+  }
+
+  void AddModelFrame(scoped_refptr<VideoFrame> frame) {
+    model_frames_.push_back(std::move(frame));
+  }
+
+  scoped_refptr<const VideoFrame> GetModelFrame(size_t frame_index) {
+    CHECK_LT(frame_index, model_frames_.size());
+    return model_frames_[frame_index];
+  }
+  std::vector<scoped_refptr<VideoFrame>> model_frames_;
 };
 
 }  // namespace
@@ -430,7 +531,8 @@ int main(int argc, char** argv) {
       (args.size() >= 2) ? base::FilePath(args[1]) : base::FilePath();
 
   // Parse command line arguments.
-  bool enable_validator = true;
+  auto validator_type =
+      media::test::VideoPlayerTestEnvironment::ValidatorType::kMD5;
   media::test::FrameOutputConfig frame_output_config;
   base::FilePath::StringType output_folder = base::FilePath::kCurrentDirectory;
   bool use_vd = false;
@@ -445,8 +547,21 @@ int main(int argc, char** argv) {
       continue;
     }
 
-    if (it->first == "disable_validator") {
-      enable_validator = false;
+    if (it->first == "validator_type") {
+      if (it->second == "none") {
+        validator_type =
+            media::test::VideoPlayerTestEnvironment::ValidatorType::kNone;
+      } else if (it->second == "md5") {
+        validator_type =
+            media::test::VideoPlayerTestEnvironment::ValidatorType::kMD5;
+      } else if (it->second == "ssim") {
+        validator_type =
+            media::test::VideoPlayerTestEnvironment::ValidatorType::kSSIM;
+      } else {
+        std::cout << "unknown validator type \"" << it->second
+                  << "\", possible values are \"none|md5|ssim\"\n";
+        return EXIT_FAILURE;
+      }
     } else if (it->first == "output_frames") {
       if (it->second == "all") {
         frame_output_config.output_mode = media::test::FrameOutputMode::kAll;
@@ -502,7 +617,7 @@ int main(int argc, char** argv) {
   // Set up our test environment.
   media::test::VideoPlayerTestEnvironment* test_environment =
       media::test::VideoPlayerTestEnvironment::Create(
-          video_path, video_metadata_path, enable_validator, implementation,
+          video_path, video_metadata_path, validator_type, implementation,
           base::FilePath(output_folder), frame_output_config);
   if (!test_environment)
     return EXIT_FAILURE;
