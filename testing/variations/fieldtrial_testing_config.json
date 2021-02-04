@@ -2597,6 +2597,26 @@
             ]
         }
     ],
+    "DiscardableMemoryExperiments": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "SchedulePeriodicPurge_V2",
+                    "enable_features": [
+                        "SchedulePeriodicPurge"
+                    ]
+                }
+            ]
+        }
+    ],
     "DnsHttpssvc": [
         {
             "platforms": [
@@ -6008,26 +6028,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "SafetyCheckWeakPasswords"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SchedulePeriodicPurge": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "DiscardableMemoryExperiments",
-                    "enable_features": [
-                        "SchedulePeriodicPurge"
                     ]
                 }
             ]
