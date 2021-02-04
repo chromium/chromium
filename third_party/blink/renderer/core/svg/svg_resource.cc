@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/core/dom/id_target_observer.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
-#include "third_party/blink/renderer/core/layout/svg/svg_resources_cycle_solver.h"
 #include "third_party/blink/renderer/core/svg/svg_resource_document_content.h"
 #include "third_party/blink/renderer/core/svg/svg_uri_reference.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
@@ -80,9 +79,8 @@ LayoutSVGResourceContainer* SVGResource::ResourceContainer(
     return nullptr;
   ClientEntry& entry = it->value;
   if (entry.cached_cycle_check == kNeedCheck) {
-    SVGResourcesCycleSolver solver;
     entry.cached_cycle_check = kPerformingCheck;
-    bool has_cycle = container->FindCycle(solver);
+    bool has_cycle = container->FindCycle();
     DCHECK_EQ(entry.cached_cycle_check, kPerformingCheck);
     entry.cached_cycle_check = has_cycle ? kHasCycle : kNoCycle;
   }
@@ -92,8 +90,7 @@ LayoutSVGResourceContainer* SVGResource::ResourceContainer(
   return container;
 }
 
-bool SVGResource::FindCycle(SVGResourceClient& client,
-                            SVGResourcesCycleSolver& solver) const {
+bool SVGResource::FindCycle(SVGResourceClient& client) const {
   auto it = clients_.find(&client);
   if (it == clients_.end())
     return false;
@@ -104,7 +101,7 @@ bool SVGResource::FindCycle(SVGResourceClient& client,
   switch (entry.cached_cycle_check) {
     case kNeedCheck: {
       entry.cached_cycle_check = kPerformingCheck;
-      bool has_cycle = container->FindCycle(solver);
+      bool has_cycle = container->FindCycle();
       DCHECK_EQ(entry.cached_cycle_check, kPerformingCheck);
       // Update our cached state based on the result of FindCycle(), but don't
       // signal a cycle since ResourceContainer() will consider the resource

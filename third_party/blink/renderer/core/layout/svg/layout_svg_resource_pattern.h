@@ -62,7 +62,7 @@ class LayoutSVGResourcePattern final : public LayoutSVGResourcePaintServer {
   void WillBeDestroyed() override;
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 
-  bool FindCycleFromSelf(SVGResourcesCycleSolver&) const override;
+  bool FindCycleFromSelf() const override;
   std::unique_ptr<PatternData> BuildPatternData(
       const FloatRect& object_bounding_box);
   sk_sp<PaintRecord> AsPaintRecord(const FloatSize&,

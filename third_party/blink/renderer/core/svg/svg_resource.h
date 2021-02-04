@@ -20,7 +20,6 @@ class Element;
 class IdTargetObserver;
 class LayoutSVGResourceContainer;
 class SVGResourceDocumentContent;
-class SVGResourcesCycleSolver;
 class TreeScope;
 
 // A class tracking a reference to an SVG resource (an element that constitutes
@@ -76,7 +75,7 @@ class SVGResource : public GarbageCollected<SVGResource> {
   // Run cycle-checking for this SVGResourceClient -> SVGResource
   // reference. Used internally by the cycle-checking, and shouldn't be called
   // directly in general.
-  bool FindCycle(SVGResourceClient&, SVGResourcesCycleSolver&) const;
+  bool FindCycle(SVGResourceClient&) const;
 
   void AddClient(SVGResourceClient&);
   void RemoveClient(SVGResourceClient&);

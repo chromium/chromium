@@ -68,8 +68,7 @@ SVGUnitTypes::SVGUnitType LayoutSVGResourceFilter::PrimitiveUnits() const {
       ->CurrentEnumValue();
 }
 
-bool LayoutSVGResourceFilter::FindCycleFromSelf(
-    SVGResourcesCycleSolver& solver) const {
+bool LayoutSVGResourceFilter::FindCycleFromSelf() const {
   NOT_DESTROYED();
   // Traverse and check all <feImage> 'href' element references.
   for (auto& feimage_element :
@@ -80,7 +79,7 @@ bool LayoutSVGResourceFilter::FindCycleFromSelf(
     const LayoutObject* target_layout_object = target->GetLayoutObject();
     if (!target_layout_object)
       continue;
-    if (FindCycleInSubtree(solver, *target_layout_object))
+    if (FindCycleInSubtree(*target_layout_object))
       return true;
   }
   return false;

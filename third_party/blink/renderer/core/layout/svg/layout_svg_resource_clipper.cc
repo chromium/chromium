@@ -279,8 +279,7 @@ FloatRect LayoutSVGResourceClipper::ResourceBoundingBox(
   return CalculateClipTransform(reference_box).MapRect(local_clip_bounds_);
 }
 
-bool LayoutSVGResourceClipper::FindCycleFromSelf(
-    SVGResourcesCycleSolver& solver) const {
+bool LayoutSVGResourceClipper::FindCycleFromSelf() const {
   NOT_DESTROYED();
   // Check nested clip-path.
   if (auto* reference_clip =
@@ -288,11 +287,11 @@ bool LayoutSVGResourceClipper::FindCycleFromSelf(
     // The resource can be null if the reference is external but external
     // references are not allowed.
     if (SVGResource* resource = reference_clip->Resource()) {
-      if (resource->FindCycle(*SVGResources::GetClient(*this), solver))
+      if (resource->FindCycle(*SVGResources::GetClient(*this)))
         return true;
     }
   }
-  return LayoutSVGResourceContainer::FindCycleFromSelf(solver);
+  return LayoutSVGResourceContainer::FindCycleFromSelf();
 }
 
 void LayoutSVGResourceClipper::StyleDidChange(StyleDifference diff,

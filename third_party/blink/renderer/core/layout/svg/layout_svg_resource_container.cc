@@ -20,7 +20,6 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
 
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
-#include "third_party/blink/renderer/core/layout/svg/svg_resources_cycle_solver.h"
 #include "third_party/blink/renderer/core/style/reference_clip_path_operation.h"
 #include "third_party/blink/renderer/core/svg/svg_resource.h"
 #include "third_party/blink/renderer/core/svg/svg_tree_scope_resources.h"
@@ -86,16 +85,9 @@ void LayoutSVGResourceContainer::StyleDidChange(
   InvalidateClientsIfActiveResource();
 }
 
-bool LayoutSVGResourceContainer::FindCycle(
-    SVGResourcesCycleSolver& solver) const {
+bool LayoutSVGResourceContainer::FindCycle() const {
   NOT_DESTROYED();
-  if (solver.IsKnownAcyclic(this))
-    return false;
-  SVGResourcesCycleSolver::Scope scope(solver);
-  if (!scope.Enter(this) || FindCycleFromSelf(solver))
-    return true;
-  solver.AddAcyclicSubgraph(this);
-  return false;
+  return FindCycleFromSelf();
 }
 
 static HeapVector<Member<SVGResource>> CollectResources(
@@ -128,7 +120,6 @@ static HeapVector<Member<SVGResource>> CollectResources(
 }
 
 bool LayoutSVGResourceContainer::FindCycleInResources(
-    SVGResourcesCycleSolver& solver,
     const LayoutObject& layout_object) {
   if (!layout_object.IsSVG() || layout_object.IsText())
     return false;
@@ -143,23 +134,21 @@ bool LayoutSVGResourceContainer::FindCycleInResources(
   for (const auto& local_resource : resources) {
     // The resource can be null if the reference is external but external
     // references are not allowed.
-    if (local_resource && local_resource->FindCycle(*client, solver))
+    if (local_resource && local_resource->FindCycle(*client))
       return true;
   }
   return false;
 }
 
-bool LayoutSVGResourceContainer::FindCycleFromSelf(
-    SVGResourcesCycleSolver& solver) const {
+bool LayoutSVGResourceContainer::FindCycleFromSelf() const {
   NOT_DESTROYED();
   // Resources don't generally apply to other resources, so require
   // the specific cases that do (like <clipPath>) to implement an
   // override.
-  return FindCycleInDescendants(solver, *this);
+  return FindCycleInDescendants(*this);
 }
 
 bool LayoutSVGResourceContainer::FindCycleInDescendants(
-    SVGResourcesCycleSolver& solver,
     const LayoutObject& root) {
   LayoutObject* node = root.SlowFirstChild();
   while (node) {
@@ -169,7 +158,7 @@ bool LayoutSVGResourceContainer::FindCycleInDescendants(
       node = node->NextInPreOrderAfterChildren(&root);
       continue;
     }
-    if (FindCycleInResources(solver, *node))
+    if (FindCycleInResources(*node))
       return true;
     node = node->NextInPreOrder(&root);
   }
@@ -177,11 +166,10 @@ bool LayoutSVGResourceContainer::FindCycleInDescendants(
 }
 
 bool LayoutSVGResourceContainer::FindCycleInSubtree(
-    SVGResourcesCycleSolver& solver,
     const LayoutObject& root) {
-  if (FindCycleInResources(solver, root))
+  if (FindCycleInResources(root))
     return true;
-  return FindCycleInDescendants(solver, root);
+  return FindCycleInDescendants(root);
 }
 
 void LayoutSVGResourceContainer::MarkAllClientsForInvalidation(

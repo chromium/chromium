@@ -61,7 +61,7 @@ class LayoutSVGResourceClipper final : public LayoutSVGResourceContainer {
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 
   void CalculateLocalClipBounds();
-  bool FindCycleFromSelf(SVGResourcesCycleSolver&) const override;
+  bool FindCycleFromSelf() const override;
 
   // Cache of the clip path when using path clipping.
   enum ClipContentPathValidity {

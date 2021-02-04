@@ -102,8 +102,7 @@ const PatternAttributes& LayoutSVGResourcePattern::EnsureAttributes() const {
   return Attributes();
 }
 
-bool LayoutSVGResourcePattern::FindCycleFromSelf(
-    SVGResourcesCycleSolver& solver) const {
+bool LayoutSVGResourcePattern::FindCycleFromSelf() const {
   NOT_DESTROYED();
   const PatternAttributes& attributes = EnsureAttributes();
   const SVGPatternElement* content_element = attributes.PatternContentElement();
@@ -111,7 +110,7 @@ bool LayoutSVGResourcePattern::FindCycleFromSelf(
     return false;
   const LayoutObject* content_object = content_element->GetLayoutObject();
   DCHECK(content_object);
-  return FindCycleInDescendants(solver, *content_object);
+  return FindCycleInDescendants(*content_object);
 }
 
 std::unique_ptr<PatternData> LayoutSVGResourcePattern::BuildPatternData(
