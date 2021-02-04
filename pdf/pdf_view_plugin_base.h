@@ -136,14 +136,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
     background_color_ = background_color;
   }
 
-  int top_toolbar_height_in_viewport_coords() const {
-    return top_toolbar_height_in_viewport_coords_;
-  }
-
-  void set_top_toolbar_height_in_viewport_coords(int height) {
-    top_toolbar_height_in_viewport_coords_ = height;
-  }
-
   // Sets the new zoom scale.
   void SetZoom(double scale);
 
@@ -215,10 +207,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   // The background color of the PDF viewer.
   SkColor background_color_ = SK_ColorTRANSPARENT;
-
-  // The blank space above the first page of the document reserved for the
-  // toolbar.
-  int top_toolbar_height_in_viewport_coords_ = 0;
 
   // Current zoom factor.
   double zoom_ = 1.0;

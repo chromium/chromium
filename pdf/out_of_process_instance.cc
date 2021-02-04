@@ -643,11 +643,6 @@ bool OutOfProcessInstance::Init(uint32_t argc,
       if (!base::StringToUint(argv[i], &background_color))
         return false;
       SetBackgroundColor(background_color);
-    } else if (strcmp(argn[i], "top-toolbar-height") == 0) {
-      int toolbar_height;
-      if (!base::StringToInt(argv[i], &toolbar_height))
-        return false;
-      set_top_toolbar_height_in_viewport_coords(toolbar_height);
     } else if (strcmp(argn[i], "javascript") == 0) {
       if (strcmp(argv[i], "allow") != 0)
         script_option = PDFiumFormFiller::ScriptOption::kNoJavaScript;
@@ -837,14 +832,7 @@ void OutOfProcessInstance::DidChangeView(const pp::View& view) {
 
 void OutOfProcessInstance::UpdateScroll() {
   DCHECK(!stop_scrolling_);
-
-  // Because view messages come from the DOM, the coordinates of the viewport
-  // are 0-based (i.e. they do not correspond to the viewport's coordinates in
-  // JS), so we need to subtract the toolbar height to convert them into
-  // viewport coordinates.
-  gfx::PointF scroll_position_float(
-      scroll_position_.x(),
-      scroll_position_.y() - top_toolbar_height_in_viewport_coords());
+  gfx::PointF scroll_position_float(scroll_position_.x(), scroll_position_.y());
   scroll_position_float = BoundScrollPositionToDocument(scroll_position_float);
   engine()->ScrolledToXPosition(scroll_position_float.x() * device_scale());
   engine()->ScrolledToYPosition(scroll_position_float.y() * device_scale());
@@ -944,8 +932,7 @@ void OutOfProcessInstance::SendNextAccessibilityPage(int32_t page_index) {
 void OutOfProcessInstance::SendAccessibilityViewportInfo() {
   PP_PrivateAccessibilityViewportInfo viewport_info;
   viewport_info.scroll.x = -plugin_offset().x();
-  viewport_info.scroll.y =
-      -top_toolbar_height_in_viewport_coords() - plugin_offset().y();
+  viewport_info.scroll.y = -plugin_offset().y();
   viewport_info.offset.x = available_area().x() / (device_scale() * zoom());
   viewport_info.offset.y = available_area().y() / (device_scale() * zoom());
 
@@ -1200,14 +1187,10 @@ void OutOfProcessInstance::ScrollToX(int x_in_screen_coords) {
   PostMessage(position);
 }
 
-void OutOfProcessInstance::ScrollToY(int y_in_screen_coords,
-                                     bool compensate_for_toolbar) {
+void OutOfProcessInstance::ScrollToY(int y_in_screen_coords) {
   pp::VarDictionary position;
   position.Set(kType, kJSSetScrollPositionType);
   float new_y_viewport_coords = y_in_screen_coords / device_scale();
-  if (compensate_for_toolbar) {
-    new_y_viewport_coords -= top_toolbar_height_in_viewport_coords();
-  }
   position.Set(kJSPositionY, pp::Var(new_y_viewport_coords));
   PostMessage(position);
 }
@@ -2083,10 +2066,6 @@ void OutOfProcessInstance::EnteredEditMode() {
   PostMessage(message);
 }
 
-float OutOfProcessInstance::GetToolbarHeightInScreenCoords() {
-  return top_toolbar_height_in_viewport_coords() * device_scale();
-}
-
 void OutOfProcessInstance::DocumentFocusChanged(bool document_has_focus) {
   pp::VarDictionary message;
   message.Set(pp::Var(kType), pp::Var(kJSDocumentFocusChangedType));
@@ -2306,11 +2285,10 @@ gfx::PointF OutOfProcessInstance::BoundScrollPositionToDocument(
       document_size().width() * float{zoom()} - plugin_dip_size().width(),
       0.0f);
   float x = base::ClampToRange(scroll_position.x(), 0.0f, max_x);
-  float min_y = -top_toolbar_height_in_viewport_coords();
   float max_y = std::max(
       document_size().height() * float{zoom()} - plugin_dip_size().height(),
-      min_y);
-  float y = base::ClampToRange(scroll_position.y(), min_y, max_y);
+      0.0f);
+  float y = base::ClampToRange(scroll_position.y(), 0.0f, max_y);
   return gfx::PointF(x, y);
 }
 

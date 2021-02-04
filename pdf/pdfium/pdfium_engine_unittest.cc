@@ -1048,7 +1048,7 @@ class ScrollingTestClient : public TestClient {
 
   // Mock PDFEngine::Client methods.
   MOCK_METHOD(void, ScrollToX, (int), (override));
-  MOCK_METHOD(void, ScrollToY, (int, bool), (override));
+  MOCK_METHOD(void, ScrollToY, (int), (override));
 };
 
 TEST_F(PDFiumEngineTabbingTest, MaintainViewportWhenFocusIsUpdated) {
@@ -1062,7 +1062,7 @@ TEST_F(PDFiumEngineTabbingTest, MaintainViewportWhenFocusIsUpdated) {
   {
     InSequence sequence;
     static constexpr gfx::Point kScrollValue = {510, 478};
-    EXPECT_CALL(client, ScrollToY(kScrollValue.y(), false))
+    EXPECT_CALL(client, ScrollToY(kScrollValue.y()))
         .WillOnce(Invoke(
             [&engine]() { engine->ScrolledToYPosition(kScrollValue.y()); }));
     EXPECT_CALL(client, ScrollToX(kScrollValue.x()))
@@ -1117,7 +1117,7 @@ TEST_F(PDFiumEngineTabbingTest, ScrollFocusedAnnotationIntoView) {
     static constexpr gfx::Point kScrollValues[] = {{510, 478}, {510, 478}};
 
     for (const auto& scroll_value : kScrollValues) {
-      EXPECT_CALL(client, ScrollToY(scroll_value.y(), false))
+      EXPECT_CALL(client, ScrollToY(scroll_value.y()))
           .WillOnce(Invoke([&engine, &scroll_value]() {
             engine->ScrolledToYPosition(scroll_value.y());
           }));

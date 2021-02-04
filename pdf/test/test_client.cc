@@ -62,10 +62,6 @@ SkColor TestClient::GetBackgroundColor() {
   return SK_ColorTRANSPARENT;
 }
 
-float TestClient::GetToolbarHeightInScreenCoords() {
-  return 0;
-}
-
 void TestClient::SetSelectedText(const std::string& selected_text) {}
 
 void TestClient::SetLinkUnderCursor(const std::string& link_under_cursor) {}

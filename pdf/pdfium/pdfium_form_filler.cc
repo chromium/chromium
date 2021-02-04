@@ -405,9 +405,6 @@ void PDFiumFormFiller::Form_GetPageViewRect(FPDF_FORMFILLINFO* param,
 
   gfx::Rect page_view_rect = engine->GetPageContentsRect(page_index);
 
-  float toolbar_height_in_screen_coords =
-      engine->GetToolbarHeightInScreenCoords();
-
   float page_width = FPDF_GetPageWidth(page);
   float page_height = FPDF_GetPageHeight(page);
 
@@ -420,11 +417,10 @@ void PDFiumFormFiller::Form_GetPageViewRect(FPDF_FORMFILLINFO* param,
   // coords, we use (page_width * (x - base_x) / page_view_rect.width()).
   // For y positions, (page_height * (y - base_y) / page_view_rect.height()).
 
-  // The top-most y position that can be relied to be visible on the screen is
-  // the bottom of the toolbar, which is y = toolbar_height_in_screen_coords.
+  // The top-most x position that is visible on the screen is the top of the
+  // plugin area, which is y = 0.
   float screen_top_in_page_coords =
-      page_height * (toolbar_height_in_screen_coords - page_view_rect.y()) /
-      page_view_rect.height();
+      page_height * (0 - page_view_rect.y()) / page_view_rect.height();
   // The bottom-most y position that is visible on the screen is the bottom of
   // the plugin area, which is y = engine->plugin_size_.height().
   float screen_bottom_in_page_coords =

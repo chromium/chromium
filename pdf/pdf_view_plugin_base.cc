@@ -146,9 +146,7 @@ void PdfViewPluginBase::RecalculateAreas(double old_zoom,
 
   // The distance between top of the plugin and the bottom of the document in
   // pixels.
-  int bottom_of_document =
-      GetDocumentPixelHeight() +
-      (top_toolbar_height_in_viewport_coords() * device_scale());
+  int bottom_of_document = GetDocumentPixelHeight();
   if (bottom_of_document < plugin_size_.height())
     available_area_.set_height(bottom_of_document);
 

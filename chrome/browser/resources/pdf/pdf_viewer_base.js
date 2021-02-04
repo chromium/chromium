@@ -186,7 +186,6 @@ export class PDFViewerBaseElement extends PolymerElement {
     plugin.setAttribute('headers', headers);
 
     plugin.setAttribute('background-color', this.getBackgroundColor());
-    plugin.setAttribute('top-toolbar-height', 0);
 
     const javascript = this.browserApi.getStreamInfo().javascript || 'block';
     plugin.setAttribute('javascript', javascript);

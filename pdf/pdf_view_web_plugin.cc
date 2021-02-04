@@ -119,13 +119,6 @@ bool PdfViewWebPlugin::Initialize(blink::WebPluginContainer* container) {
         return false;
       }
       SetBackgroundColor(background_color);
-    } else if (initial_params_.attribute_names[i] == "top-toolbar-height") {
-      int toolbar_height;
-      if (!base::StringToInt(initial_params_.attribute_values[i].Utf8(),
-                             &toolbar_height)) {
-        return false;
-      }
-      set_top_toolbar_height_in_viewport_coords(toolbar_height);
     }
   }
 
@@ -204,8 +197,7 @@ void PdfViewWebPlugin::DidScroll(const gfx::Vector2d& offset) {}
 
 void PdfViewWebPlugin::ScrollToX(int x_in_screen_coords) {}
 
-void PdfViewWebPlugin::ScrollToY(int y_in_screen_coords,
-                                 bool compensate_for_toolbar) {}
+void PdfViewWebPlugin::ScrollToY(int y_in_screen_coords) {}
 
 void PdfViewWebPlugin::ScrollBy(const gfx::Vector2d& scroll_delta) {}
 
@@ -306,10 +298,6 @@ void PdfViewWebPlugin::SelectionChanged(const gfx::Rect& left,
                                         const gfx::Rect& right) {}
 
 void PdfViewWebPlugin::EnteredEditMode() {}
-
-float PdfViewWebPlugin::GetToolbarHeightInScreenCoords() {
-  return 0;
-}
 
 void PdfViewWebPlugin::DocumentFocusChanged(bool document_has_focus) {}
 

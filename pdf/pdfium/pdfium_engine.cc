@@ -2082,7 +2082,7 @@ bool PDFiumEngine::SelectFindResult(bool forward) {
     // Make the page centered.
     int new_y = CalculateCenterForZoom(center.y(), visible_rect.height(),
                                        current_zoom_);
-    client_->ScrollToY(new_y, /*compensate_for_toolbar=*/false);
+    client_->ScrollToY(new_y);
 
     // Only move horizontally if it's not visible.
     if (center.x() < visible_rect.x() || center.x() > visible_rect.right()) {
@@ -3855,10 +3855,6 @@ bool PDFiumEngine::IsPageCharacterIndexInBounds(
          pages_[index.page_index]->IsCharIndexInBounds(index.char_index);
 }
 
-float PDFiumEngine::GetToolbarHeightInScreenCoords() {
-  return client_->GetToolbarHeightInScreenCoords();
-}
-
 FPDF_BOOL PDFiumEngine::Pause_NeedToPauseNow(IFSDK_PAUSE* param) {
   PDFiumEngine* engine = static_cast<PDFiumEngine*>(param);
   return base::Time::Now() - engine->last_progressive_start_time_ >
@@ -3931,8 +3927,7 @@ void PDFiumEngine::ScrollAnnotationIntoView(FPDF_ANNOTATION annot,
   if (rect.y() < visible_rect.y() || rect.bottom() > visible_rect.bottom()) {
     // Scroll the viewport vertically to align the top of focus rect to
     // centre.
-    client_->ScrollToY(rect.y() * current_zoom_ - plugin_size_.height() / 2,
-                       /*compensate_for_toolbar=*/false);
+    client_->ScrollToY(rect.y() * current_zoom_ - plugin_size_.height() / 2);
   }
   if (rect.x() < visible_rect.x() || rect.right() > visible_rect.right()) {
     // Scroll the viewport horizontally to align the left of focus rect to

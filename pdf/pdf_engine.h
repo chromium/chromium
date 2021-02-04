@@ -155,11 +155,8 @@ class PDFEngine {
     // Scroll the horizontal/vertical scrollbars to a given position.
     // Values are in screen coordinates, where 0 is the top/left of the document
     // and a positive value is the distance in pixels from that line.
-    // For ScrollToY, setting |compensate_for_toolbar| will align the position
-    // with the bottom of the toolbar so the given position is always visible.
     virtual void ScrollToX(int x_in_screen_coords) {}
-    virtual void ScrollToY(int y_in_screen_coords,
-                           bool compensate_for_toolbar) {}
+    virtual void ScrollToY(int y_in_screen_coords) {}
 
     // Scroll by a given delta relative to the current position.
     virtual void ScrollBy(const gfx::Vector2d& scroll_delta) {}
@@ -280,10 +277,6 @@ class PDFEngine {
 
     // Notifies the client that the PDF has been edited.
     virtual void EnteredEditMode() {}
-
-    // Gets the height of the top toolbar in screen coordinates. This is
-    // independent of whether it is hidden or not at the moment.
-    virtual float GetToolbarHeightInScreenCoords() = 0;
 
     // Notifies the client about focus changes for the document.
     virtual void DocumentFocusChanged(bool document_has_focus) {}

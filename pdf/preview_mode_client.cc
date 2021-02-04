@@ -39,8 +39,7 @@ void PreviewModeClient::ScrollToX(int x_in_screen_coords) {
   NOTREACHED();
 }
 
-void PreviewModeClient::ScrollToY(int y_in_screen_coords,
-                                  bool compensate_for_toolbar) {
+void PreviewModeClient::ScrollToY(int y_in_screen_coords) {
   NOTREACHED();
 }
 
@@ -156,10 +155,6 @@ void PreviewModeClient::FormTextFieldFocusChange(bool in_focus) {
 
 bool PreviewModeClient::IsPrintPreview() {
   return true;
-}
-
-float PreviewModeClient::GetToolbarHeightInScreenCoords() {
-  return 0.0f;
 }
 
 SkColor PreviewModeClient::GetBackgroundColor() {

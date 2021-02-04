@@ -38,7 +38,6 @@ class TestClient : public PDFEngine::Client {
   pp::Instance* GetPluginInstance() override;
   bool IsPrintPreview() override;
   SkColor GetBackgroundColor() override;
-  float GetToolbarHeightInScreenCoords() override;
   void SetSelectedText(const std::string& selected_text) override;
   void SetLinkUnderCursor(const std::string& link_under_cursor) override;
   bool IsValidLink(const std::string& url) override;
