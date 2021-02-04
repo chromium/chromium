@@ -137,10 +137,10 @@ fuchsia_package_runner("cast_runner") {
 source_set("cast_runner_test_core") {
   testonly = true
   sources = [
+    "cast/fake_api_bindings.cc",
+    "cast/fake_api_bindings.h",
     "cast/fake_application_config_manager.cc",
     "cast/fake_application_config_manager.h",
-    "cast/test_api_bindings.cc",
-    "cast/test_api_bindings.h",
   ]
   deps = [ ":cast_runner_core" ]
   public_deps = [

@@ -20,8 +20,8 @@
 #include "fuchsia/engine/test/web_engine_browser_test.h"
 #include "fuchsia/runners/cast/api_bindings_client.h"
 #include "fuchsia/runners/cast/create_web_message.h"
+#include "fuchsia/runners/cast/fake_api_bindings.h"
 #include "fuchsia/runners/cast/named_message_port_connector_fuchsia.h"
-#include "fuchsia/runners/cast/test_api_bindings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -75,7 +75,7 @@ class ApiBindingsClientTest : public cr_fuchsia::WebEngineBrowserTest {
 
   fuchsia::web::FramePtr frame_;
   std::unique_ptr<NamedMessagePortConnectorFuchsia> connector_;
-  TestApiBindings api_service_;
+  FakeApiBindingsImpl api_service_;
   fidl::Binding<chromium::cast::ApiBindings> api_service_binding_;
   std::unique_ptr<ApiBindingsClient> client_;
   cr_fuchsia::TestNavigationListener navigation_listener_;
@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(ApiBindingsClientTest, EndToEnd) {
   fuchsia::web::WebMessage message;
   message.set_data(cr_fuchsia::MemBufferFromString("ping", "ping-msg"));
   fuchsia::web::MessagePortPtr port =
-      api_service_.RunUntilMessagePortReceived("echoService").Bind();
+      api_service_.RunAndReturnConnectedPort("echoService").Bind();
   port->PostMessage(std::move(message),
                     [&post_message_response_closure](
                         fuchsia::web::MessagePort_PostMessage_Result result) {

@@ -41,8 +41,8 @@
 #include "fuchsia/base/url_request_rewrite_test_util.h"
 #include "fuchsia/runners/cast/cast_runner.h"
 #include "fuchsia/runners/cast/cast_runner_switches.h"
+#include "fuchsia/runners/cast/fake_api_bindings.h"
 #include "fuchsia/runners/cast/fake_application_config_manager.h"
-#include "fuchsia/runners/cast/test_api_bindings.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -492,7 +492,7 @@ class CastRunnerIntegrationTest : public testing::Test {
 
   void WaitTestPort() {
     CHECK(!test_port_);
-    test_port_ = api_bindings_.RunUntilMessagePortReceived("testport").Bind();
+    test_port_ = api_bindings_.RunAndReturnConnectedPort("testport").Bind();
   }
 
   void CheckAppUrl(const GURL& app_url) {
@@ -552,7 +552,7 @@ class CastRunnerIntegrationTest : public testing::Test {
   fuchsia::sys::ComponentControllerPtr cast_runner_controller_;
 
   FakeApplicationConfigManager app_config_manager_;
-  TestApiBindings api_bindings_;
+  FakeApiBindingsImpl api_bindings_;
   std::unique_ptr<FakeUrlRequestRewriteRulesProvider>
       url_request_rewrite_rules_provider_;
 
@@ -737,7 +737,7 @@ TEST_F(CastRunnerIntegrationTest, ApplicationConfigAgentUrl) {
   // These are part of the secondary agent, and CastRunner will contact
   // the secondary agent for both of them.
   FakeUrlRequestRewriteRulesProvider dummy_url_request_rewrite_rules_provider;
-  TestApiBindings dummy_agent_api_bindings;
+  FakeApiBindingsImpl dummy_agent_api_bindings;
 
   // Indicate that this app is to get bindings from a secondary agent.
   auto app_config = FakeApplicationConfigManager::CreateConfig(
@@ -794,7 +794,8 @@ TEST_F(CastRunnerIntegrationTest, ApplicationConfigAgentUrl) {
 // created. Further validate that the primary agent does not provide ApiBindings
 // or RewriteRules.
 TEST_F(CastRunnerIntegrationTest, ApplicationConfigAgentUrlRewriteOptional) {
-  TestApiBindings dummy_agent_api_bindings;
+  FakeApiBindingsImpl dummy_agent_api_bindings;
+
   // Indicate that this app is to get bindings from a secondary agent.
   auto app_config = FakeApplicationConfigManager::CreateConfig(
       kTestAppId, test_server_.GetURL(kBlankAppUrl));
@@ -948,11 +949,11 @@ TEST_F(HeadlessCastRunnerIntegrationTest, Headless) {
       component_services_client_->Connect<fuchsia::ui::app::ViewProvider>();
   view_provider->CreateView(std::move(tokens.view_holder_token.value), {}, {});
 
-  api_bindings_.RunUntilMessagePortReceived("animation_finished");
+  api_bindings_.RunAndReturnConnectedPort("animation_finished");
 
   // Verify that dropped "view" EventPair is handled properly.
   tokens.view_token.value.reset();
-  api_bindings_.RunUntilMessagePortReceived("view_hidden");
+  api_bindings_.RunAndReturnConnectedPort("view_hidden");
 }
 
 // Isolated *and* headless? Doesn't sound like much fun!
