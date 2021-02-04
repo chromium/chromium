@@ -80,6 +80,7 @@ public class FeedStream implements Stream {
 
     @Override
     public void onHide() {
+        mAccumulatedDySinceLastLoadMore = 0;
         mScrollStateToRestore = null;
         if (mFeedStreamSurface.isOpened()) {
             mScrollStateToRestore = getSavedInstanceStateString();
@@ -263,6 +264,9 @@ public class FeedStream implements Stream {
         if (!mFeedStreamSurface.isOpened()) return;
 
         mAccumulatedDySinceLastLoadMore += dy;
+        if (mAccumulatedDySinceLastLoadMore < 0) {
+            mAccumulatedDySinceLastLoadMore = 0;
+        }
         if (mAccumulatedDySinceLastLoadMore < TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                     LOAD_MORE_TRIGGER_SCROLL_DISTANCE_DP,
                     mRecyclerView.getResources().getDisplayMetrics())) {

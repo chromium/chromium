@@ -235,6 +235,32 @@ public class FeedStreamTest {
     }
 
     @Test
+    public void testCheckScrollingForLoadMore_LoadMoreAfterHide() {
+        mFeedStream.onShow();
+        mFeedStream.setStreamContentVisibility(true);
+        final int triggerDistance = getLoadMoreTriggerScrollDistance();
+        final int itemCount = 10;
+
+        // loadMore triggered.
+        mLayoutManager.setLastVisiblePosition(itemCount - LOAD_MORE_TRIGGER_LOOKAHEAD + 1);
+        mLayoutManager.setItemCount(itemCount);
+        mFeedStream.checkScrollingForLoadMore(triggerDistance);
+        verify(mFeedStreamSurfaceJniMock)
+                .loadMore(anyLong(), any(FeedStreamSurface.class), any(Callback.class));
+
+        // loadMore triggered again after hide&show.
+        mFeedStream.checkScrollingForLoadMore(-triggerDistance);
+        mFeedStream.onHide();
+        mFeedStream.onShow();
+
+        mLayoutManager.setLastVisiblePosition(itemCount - LOAD_MORE_TRIGGER_LOOKAHEAD + 1);
+        mLayoutManager.setItemCount(itemCount);
+        mFeedStream.checkScrollingForLoadMore(triggerDistance);
+        verify(mFeedStreamSurfaceJniMock)
+                .loadMore(anyLong(), any(FeedStreamSurface.class), any(Callback.class));
+    }
+
+    @Test
     public void testSerializeScrollState() {
         FeedStream.ScrollState state = new FeedStream.ScrollState();
         state.position = 2;
