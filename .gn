@@ -108,7 +108,6 @@ no_check_targets = [
   "//extensions/browser/api/power:*",  # 3 errors
   "//extensions/browser/api/runtime:*",  # 6 errors
   "//extensions/browser/api/serial:*",  # 10 errors
-  "//extensions/browser/api/socket:*",  # 11 errors
   "//extensions/browser/api/sockets_tcp:*",  # 6 errors
   "//extensions/browser/api/sockets_tcp_server:*",  # 8 errors
   "//extensions/browser/api/sockets_udp:*",  # 9 errors

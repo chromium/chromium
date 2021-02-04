@@ -24,13 +24,6 @@ source_set("socket") {
     "udp_socket.h",
   ]
 
-  if (is_chromeos_ash) {
-    sources += [
-      "app_firewall_hole_manager.cc",
-      "app_firewall_hole_manager.h",
-    ]
-  }
-
   configs += [
     # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
     "//build/config/compiler:no_size_t_to_int_warning",
@@ -40,8 +33,22 @@ source_set("socket") {
     "//build:chromeos_buildflags",
     "//content/public/browser",
     "//content/public/common",
+    "//extensions/browser/api",
+    "//extensions/common",
     "//extensions/common/api",
   ]
+
+  if (is_chromeos_ash) {
+    sources += [
+      "app_firewall_hole_manager.cc",
+      "app_firewall_hole_manager.h",
+    ]
+
+    deps += [
+      "//chromeos/network",
+      "//components/keyed_service/content",
+    ]
+  }
 
   public_deps = [ "//extensions/browser:browser_sources" ]
 }

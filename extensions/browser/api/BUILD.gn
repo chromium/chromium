@@ -76,7 +76,6 @@ source_set("api") {
     "//extensions/browser/api/printer_provider",
     "//extensions/browser/api/runtime",
     "//extensions/browser/api/serial",
-    "//extensions/browser/api/socket",
     "//extensions/browser/api/sockets_tcp",
     "//extensions/browser/api/sockets_tcp_server",
     "//extensions/browser/api/sockets_udp",
