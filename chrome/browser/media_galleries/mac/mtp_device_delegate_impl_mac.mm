@@ -180,31 +180,32 @@ void MTPDeviceDelegateImplMac::CreateDirectory(
     const base::FilePath& directory_path,
     const bool exclusive,
     const bool recursive,
-    const CreateDirectorySuccessCallback& success_callback,
+    CreateDirectorySuccessCallback success_callback,
     ErrorCallback error_callback) {
   NOTREACHED();
 }
 
 void MTPDeviceDelegateImplMac::ReadDirectory(
     const base::FilePath& root,
-    const ReadDirectorySuccessCallback& success_callback,
+    ReadDirectorySuccessCallback success_callback,
     ErrorCallback error_callback) {
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&MTPDeviceDelegateImplMac::ReadDirectoryImpl,
-                                base::Unretained(this), root, success_callback,
-                                std::move(error_callback)));
+      FROM_HERE,
+      base::BindOnce(&MTPDeviceDelegateImplMac::ReadDirectoryImpl,
+                     base::Unretained(this), root, std::move(success_callback),
+                     std::move(error_callback)));
 }
 
 void MTPDeviceDelegateImplMac::CreateSnapshotFile(
     const base::FilePath& device_file_path,
     const base::FilePath& local_path,
-    const CreateSnapshotFileSuccessCallback& success_callback,
+    CreateSnapshotFileSuccessCallback success_callback,
     ErrorCallback error_callback) {
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&MTPDeviceDelegateImplMac::DownloadFile,
                      base::Unretained(this), device_file_path, local_path,
-                     success_callback, std::move(error_callback)));
+                     std::move(success_callback), std::move(error_callback)));
 }
 
 bool MTPDeviceDelegateImplMac::IsStreaming() {
@@ -230,7 +231,7 @@ void MTPDeviceDelegateImplMac::CopyFileLocal(
     const base::FilePath& device_file_path,
     const CreateTemporaryFileCallback& create_temporary_file_callback,
     const CopyFileProgressCallback& progress_callback,
-    const CopyFileLocalSuccessCallback& success_callback,
+    CopyFileLocalSuccessCallback success_callback,
     ErrorCallback error_callback) {
   NOTREACHED();
 }
@@ -239,7 +240,7 @@ void MTPDeviceDelegateImplMac::MoveFileLocal(
     const base::FilePath& source_file_path,
     const base::FilePath& device_file_path,
     const CreateTemporaryFileCallback& create_temporary_file_callback,
-    const MoveFileLocalSuccessCallback& success_callback,
+    MoveFileLocalSuccessCallback success_callback,
     ErrorCallback error_callback) {
   NOTREACHED();
 }
@@ -247,21 +248,21 @@ void MTPDeviceDelegateImplMac::MoveFileLocal(
 void MTPDeviceDelegateImplMac::CopyFileFromLocal(
     const base::FilePath& source_file_path,
     const base::FilePath& device_file_path,
-    const CopyFileFromLocalSuccessCallback& success_callback,
+    CopyFileFromLocalSuccessCallback success_callback,
     ErrorCallback error_callback) {
   NOTREACHED();
 }
 
 void MTPDeviceDelegateImplMac::DeleteFile(
     const base::FilePath& file_path,
-    const DeleteFileSuccessCallback& success_callback,
+    DeleteFileSuccessCallback success_callback,
     ErrorCallback error_callback) {
   NOTREACHED();
 }
 
 void MTPDeviceDelegateImplMac::DeleteDirectory(
     const base::FilePath& file_path,
-    const DeleteDirectorySuccessCallback& success_callback,
+    DeleteDirectorySuccessCallback success_callback,
     ErrorCallback error_callback) {
   NOTREACHED();
 }
@@ -307,11 +308,11 @@ void MTPDeviceDelegateImplMac::GetFileInfoImpl(
 
 void MTPDeviceDelegateImplMac::ReadDirectoryImpl(
     const base::FilePath& root,
-    const ReadDirectorySuccessCallback& success_callback,
+    ReadDirectorySuccessCallback success_callback,
     ErrorCallback error_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  read_dir_transactions_.emplace_back(root, success_callback,
+  read_dir_transactions_.emplace_back(root, std::move(success_callback),
                                       std::move(error_callback));
 
   if (received_all_files_) {
@@ -346,7 +347,7 @@ void MTPDeviceDelegateImplMac::ReadDirectoryTimeout(
 void MTPDeviceDelegateImplMac::DownloadFile(
     const base::FilePath& device_file_path,
     const base::FilePath& local_path,
-    const CreateSnapshotFileSuccessCallback& success_callback,
+    CreateSnapshotFileSuccessCallback success_callback,
     ErrorCallback error_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -363,7 +364,7 @@ void MTPDeviceDelegateImplMac::DownloadFile(
   root_path_.AppendRelativePath(device_file_path, &relative_path);
 
   read_file_transactions_.emplace_back(relative_path.value(), local_path,
-                                       success_callback,
+                                       std::move(success_callback),
                                        std::move(error_callback));
 
   camera_interface_->DownloadFile(relative_path.value(), local_path);
@@ -472,7 +473,8 @@ void MTPDeviceDelegateImplMac::NotifyReadDir() {
 
     if (found_path) {
       content::GetIOThreadTaskRunner({})->PostTask(
-          FROM_HERE, base::BindOnce(iter->success_callback, entry_list, false));
+          FROM_HERE,
+          base::BindOnce(std::move(iter->success_callback), entry_list, false));
     } else {
       content::GetIOThreadTaskRunner({})->PostTask(
           FROM_HERE, base::BindOnce(std::move(iter->error_callback),
@@ -520,8 +522,8 @@ void MTPDeviceDelegateImplMac::DownloadedFile(
 
   base::File::Info info = file_info_[item_filename.value()];
   content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(iter->success_callback, info, iter->snapshot_file));
+      FROM_HERE, base::BindOnce(std::move(iter->success_callback), info,
+                                iter->snapshot_file));
   read_file_transactions_.erase(iter);
 }
 
@@ -532,7 +534,7 @@ MTPDeviceDelegateImplMac::ReadFileRequest::ReadFileRequest(
     ErrorCallback error_cb)
     : request_file(file),
       snapshot_file(snapshot_filename),
-      success_callback(success_cb),
+      success_callback(std::move(success_cb)),
       error_callback(std::move(error_cb)) {}
 
 MTPDeviceDelegateImplMac::ReadFileRequest::ReadFileRequest() = default;
@@ -543,7 +545,7 @@ MTPDeviceDelegateImplMac::ReadDirectoryRequest::ReadDirectoryRequest(
     ReadDirectorySuccessCallback success_cb,
     ErrorCallback error_cb)
     : directory(dir),
-      success_callback(success_cb),
+      success_callback(std::move(success_cb)),
       error_callback(std::move(error_cb)) {}
 
 MTPDeviceDelegateImplMac::ReadDirectoryRequest::~ReadDirectoryRequest() {}

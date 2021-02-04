@@ -100,16 +100,15 @@ class MTPDeviceDelegateImplWin : public MTPDeviceAsyncDelegate {
   void CreateDirectory(const base::FilePath& directory_path,
                        const bool exclusive,
                        const bool recursive,
-                       const CreateDirectorySuccessCallback& success_callback,
+                       CreateDirectorySuccessCallback success_callback,
                        ErrorCallback error_callback) override;
   void ReadDirectory(const base::FilePath& root,
-                     const ReadDirectorySuccessCallback& success_callback,
+                     ReadDirectorySuccessCallback success_callback,
                      ErrorCallback error_callback) override;
-  void CreateSnapshotFile(
-      const base::FilePath& device_file_path,
-      const base::FilePath& local_path,
-      const CreateSnapshotFileSuccessCallback& success_callback,
-      ErrorCallback error_callback) override;
+  void CreateSnapshotFile(const base::FilePath& device_file_path,
+                          const base::FilePath& local_path,
+                          CreateSnapshotFileSuccessCallback success_callback,
+                          ErrorCallback error_callback) override;
   bool IsStreaming() override;
   void ReadBytes(const base::FilePath& device_file_path,
                  const scoped_refptr<net::IOBuffer>& buf,
@@ -123,24 +122,23 @@ class MTPDeviceDelegateImplWin : public MTPDeviceAsyncDelegate {
       const base::FilePath& device_file_path,
       const CreateTemporaryFileCallback& create_temporary_file_callback,
       const CopyFileProgressCallback& progress_callback,
-      const CopyFileLocalSuccessCallback& success_callback,
+      CopyFileLocalSuccessCallback success_callback,
       ErrorCallback error_callback) override;
   void MoveFileLocal(
       const base::FilePath& source_file_path,
       const base::FilePath& device_file_path,
       const CreateTemporaryFileCallback& create_temporary_file_callback,
-      const MoveFileLocalSuccessCallback& success_callback,
+      MoveFileLocalSuccessCallback success_callback,
       ErrorCallback error_callback) override;
-  void CopyFileFromLocal(
-      const base::FilePath& source_file_path,
-      const base::FilePath& device_file_path,
-      const CopyFileFromLocalSuccessCallback& success_callback,
-      ErrorCallback error_callback) override;
+  void CopyFileFromLocal(const base::FilePath& source_file_path,
+                         const base::FilePath& device_file_path,
+                         CopyFileFromLocalSuccessCallback success_callback,
+                         ErrorCallback error_callback) override;
   void DeleteFile(const base::FilePath& file_path,
-                  const DeleteFileSuccessCallback& success_callback,
+                  DeleteFileSuccessCallback success_callback,
                   ErrorCallback error_callback) override;
   void DeleteDirectory(const base::FilePath& file_path,
-                       const DeleteDirectorySuccessCallback& success_callback,
+                       DeleteDirectorySuccessCallback success_callback,
                        ErrorCallback error_callback) override;
   void AddWatcher(const GURL& origin,
                   const base::FilePath& file_path,
@@ -200,7 +198,7 @@ class MTPDeviceDelegateImplWin : public MTPDeviceAsyncDelegate {
   //
   // If the ReadDirectory() fails, |file_list| is not set and |error_callback|
   // is invoked to notify the caller about the platform file |error|.
-  void OnDidReadDirectory(const ReadDirectorySuccessCallback& success_callback,
+  void OnDidReadDirectory(ReadDirectorySuccessCallback success_callback,
                           ErrorCallback error_callback,
                           storage::AsyncFileUtil::EntryList* file_list,
                           base::File::Error error);

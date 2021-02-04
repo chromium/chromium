@@ -15,12 +15,11 @@
 SnapshotRequestInfo::SnapshotRequestInfo(
     const base::FilePath& device_file_path,
     const base::FilePath& snapshot_file_path,
-    const MTPDeviceAsyncDelegate::CreateSnapshotFileSuccessCallback&
-        success_callback,
+    MTPDeviceAsyncDelegate::CreateSnapshotFileSuccessCallback success_callback,
     MTPDeviceAsyncDelegate::ErrorCallback error_callback)
     : device_file_path(device_file_path),
       snapshot_file_path(snapshot_file_path),
-      success_callback(success_callback),
+      success_callback(std::move(success_callback)),
       error_callback(std::move(error_callback)) {}
 
 SnapshotRequestInfo::SnapshotRequestInfo(SnapshotRequestInfo&& other) = default;

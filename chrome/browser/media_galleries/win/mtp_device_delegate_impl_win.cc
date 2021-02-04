@@ -395,14 +395,14 @@ void MTPDeviceDelegateImplWin::CreateDirectory(
     const base::FilePath& directory_path,
     const bool exclusive,
     const bool recursive,
-    const CreateDirectorySuccessCallback& success_callback,
+    CreateDirectorySuccessCallback success_callback,
     ErrorCallback error_callback) {
   NOTREACHED();
 }
 
 void MTPDeviceDelegateImplWin::ReadDirectory(
     const base::FilePath& root,
-    const ReadDirectorySuccessCallback& success_callback,
+    ReadDirectorySuccessCallback success_callback,
     ErrorCallback error_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(!root.empty());
@@ -413,21 +413,23 @@ void MTPDeviceDelegateImplWin::ReadDirectory(
       base::BindOnce(&ReadDirectoryOnBlockingPoolThread, storage_device_info_,
                      root, base::Unretained(entries)),
       base::BindOnce(&MTPDeviceDelegateImplWin::OnDidReadDirectory,
-                     weak_ptr_factory_.GetWeakPtr(), success_callback,
-                     std::move(error_callback), base::Owned(entries))));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(success_callback), std::move(error_callback),
+                     base::Owned(entries))));
 }
 
 void MTPDeviceDelegateImplWin::CreateSnapshotFile(
     const base::FilePath& device_file_path,
     const base::FilePath& snapshot_file_path,
-    const CreateSnapshotFileSuccessCallback& success_callback,
+    CreateSnapshotFileSuccessCallback success_callback,
     ErrorCallback error_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(!device_file_path.empty());
   DCHECK(!snapshot_file_path.empty());
-  std::unique_ptr<SnapshotFileDetails> file_details(new SnapshotFileDetails(
-      SnapshotRequestInfo(device_file_path, snapshot_file_path,
-                          success_callback, std::move(error_callback))));
+  std::unique_ptr<SnapshotFileDetails> file_details(
+      new SnapshotFileDetails(SnapshotRequestInfo(
+          device_file_path, snapshot_file_path, std::move(success_callback),
+          std::move(error_callback))));
   // Passing a raw SnapshotFileDetails* to the blocking pool is safe, because
   // it is owned by |file_details| in the reply callback.
   EnsureInitAndRunTask(PendingTaskInfo(
@@ -461,7 +463,7 @@ void MTPDeviceDelegateImplWin::CopyFileLocal(
     const base::FilePath& device_file_path,
     const CreateTemporaryFileCallback& create_temporary_file_callback,
     const CopyFileProgressCallback& progress_callback,
-    const CopyFileLocalSuccessCallback& success_callback,
+    CopyFileLocalSuccessCallback success_callback,
     ErrorCallback error_callback) {
   NOTREACHED();
 }
@@ -470,7 +472,7 @@ void MTPDeviceDelegateImplWin::MoveFileLocal(
     const base::FilePath& source_file_path,
     const base::FilePath& device_file_path,
     const CreateTemporaryFileCallback& create_temporary_file_callback,
-    const MoveFileLocalSuccessCallback& success_callback,
+    MoveFileLocalSuccessCallback success_callback,
     ErrorCallback error_callback) {
   NOTREACHED();
 }
@@ -478,21 +480,21 @@ void MTPDeviceDelegateImplWin::MoveFileLocal(
 void MTPDeviceDelegateImplWin::CopyFileFromLocal(
     const base::FilePath& source_file_path,
     const base::FilePath& device_file_path,
-    const CopyFileFromLocalSuccessCallback& success_callback,
+    CopyFileFromLocalSuccessCallback success_callback,
     ErrorCallback error_callback) {
   NOTREACHED();
 }
 
 void MTPDeviceDelegateImplWin::DeleteFile(
     const base::FilePath& file_path,
-    const DeleteFileSuccessCallback& success_callback,
+    DeleteFileSuccessCallback success_callback,
     ErrorCallback error_callback) {
   NOTREACHED();
 }
 
 void MTPDeviceDelegateImplWin::DeleteDirectory(
     const base::FilePath& file_path,
-    const DeleteDirectorySuccessCallback& success_callback,
+    DeleteDirectorySuccessCallback success_callback,
     ErrorCallback error_callback) {
   NOTREACHED();
 }
@@ -606,14 +608,14 @@ void MTPDeviceDelegateImplWin::OnGetFileInfo(
 }
 
 void MTPDeviceDelegateImplWin::OnDidReadDirectory(
-    const ReadDirectorySuccessCallback& success_callback,
+    ReadDirectorySuccessCallback success_callback,
     ErrorCallback error_callback,
     storage::AsyncFileUtil::EntryList* file_list,
     base::File::Error error) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(file_list);
   if (error == base::File::FILE_OK)
-    success_callback.Run(*file_list, false /*no more entries*/);
+    std::move(success_callback).Run(*file_list, false /*no more entries*/);
   else
     std::move(error_callback).Run(error);
   task_in_progress_ = false;
@@ -672,9 +674,9 @@ void MTPDeviceDelegateImplWin::OnWroteDataChunkIntoSnapshotFile(
     return;
   }
   if (succeeded) {
-    current_snapshot_details_->request_info().success_callback.Run(
-        current_snapshot_details_->file_info(),
-        current_snapshot_details_->request_info().snapshot_file_path);
+    std::move(current_snapshot_details_->success_callback())
+        .Run(current_snapshot_details_->file_info(),
+             current_snapshot_details_->request_info().snapshot_file_path);
   } else {
     std::move(current_snapshot_details_->error_callback())
         .Run(base::File::FILE_ERROR_FAILED);

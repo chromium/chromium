@@ -71,7 +71,7 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
   // Maps file paths to file info.
   typedef std::map<base::FilePath, MTPDeviceTaskHelper::MTPEntry> FileInfoCache;
 
-  typedef base::Closure DeleteObjectSuccessCallback;
+  using DeleteObjectSuccessCallback = base::OnceClosure;
 
   // Should only be called by CreateMTPDeviceAsyncDelegate() factory call.
   // Defer the device initializations until the first file operation request.
@@ -89,16 +89,15 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
   void CreateDirectory(const base::FilePath& directory_path,
                        const bool exclusive,
                        const bool recursive,
-                       const CreateDirectorySuccessCallback& success_callback,
+                       CreateDirectorySuccessCallback success_callback,
                        ErrorCallback error_callback) override;
   void ReadDirectory(const base::FilePath& root,
-                     const ReadDirectorySuccessCallback& success_callback,
+                     ReadDirectorySuccessCallback success_callback,
                      ErrorCallback error_callback) override;
-  void CreateSnapshotFile(
-      const base::FilePath& device_file_path,
-      const base::FilePath& local_path,
-      const CreateSnapshotFileSuccessCallback& success_callback,
-      ErrorCallback error_callback) override;
+  void CreateSnapshotFile(const base::FilePath& device_file_path,
+                          const base::FilePath& local_path,
+                          CreateSnapshotFileSuccessCallback success_callback,
+                          ErrorCallback error_callback) override;
   bool IsStreaming() override;
   void ReadBytes(const base::FilePath& device_file_path,
                  const scoped_refptr<net::IOBuffer>& buf,
@@ -112,24 +111,23 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
       const base::FilePath& device_file_path,
       const CreateTemporaryFileCallback& create_temporary_file_callback,
       const CopyFileProgressCallback& progress_callback,
-      const CopyFileLocalSuccessCallback& success_callback,
+      CopyFileLocalSuccessCallback success_callback,
       ErrorCallback error_callback) override;
   void MoveFileLocal(
       const base::FilePath& source_file_path,
       const base::FilePath& device_file_path,
       const CreateTemporaryFileCallback& create_temporary_file_callback,
-      const MoveFileLocalSuccessCallback& success_callback,
+      MoveFileLocalSuccessCallback success_callback,
       ErrorCallback error_callback) override;
-  void CopyFileFromLocal(
-      const base::FilePath& source_file_path,
-      const base::FilePath& device_file_path,
-      const CopyFileFromLocalSuccessCallback& success_callback,
-      ErrorCallback error_callback) override;
+  void CopyFileFromLocal(const base::FilePath& source_file_path,
+                         const base::FilePath& device_file_path,
+                         CopyFileFromLocalSuccessCallback success_callback,
+                         ErrorCallback error_callback) override;
   void DeleteFile(const base::FilePath& file_path,
-                  const DeleteFileSuccessCallback& success_callback,
+                  DeleteFileSuccessCallback success_callback,
                   ErrorCallback error_callback) override;
   void DeleteDirectory(const base::FilePath& file_path,
-                       const DeleteDirectorySuccessCallback& success_callback,
+                       DeleteDirectorySuccessCallback success_callback,
                        ErrorCallback error_callback) override;
   void AddWatcher(const GURL& origin,
                   const base::FilePath& file_path,
@@ -148,19 +146,17 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
   void GetFileInfoInternal(const base::FilePath& file_path,
                            GetFileInfoSuccessCallback success_callback,
                            ErrorCallback error_callback);
-  void CreateDirectoryInternal(
-      const std::vector<base::FilePath>& components,
-      const bool exclusive,
-      const CreateDirectorySuccessCallback& success_callback,
-      ErrorCallback error_callback);
-  void ReadDirectoryInternal(
-      const base::FilePath& root,
-      const ReadDirectorySuccessCallback& success_callback,
-      ErrorCallback error_callback);
+  void CreateDirectoryInternal(const std::vector<base::FilePath>& components,
+                               const bool exclusive,
+                               CreateDirectorySuccessCallback success_callback,
+                               ErrorCallback error_callback);
+  void ReadDirectoryInternal(const base::FilePath& root,
+                             ReadDirectorySuccessCallback success_callback,
+                             ErrorCallback error_callback);
   void CreateSnapshotFileInternal(
       const base::FilePath& device_file_path,
       const base::FilePath& local_path,
-      const CreateSnapshotFileSuccessCallback& success_callback,
+      CreateSnapshotFileSuccessCallback success_callback,
       ErrorCallback error_callback);
   void ReadBytesInternal(const base::FilePath& device_file_path,
                          net::IOBuffer* buf,
@@ -172,38 +168,36 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
       const base::FilePath& source_file_path,
       const base::FilePath& device_file_path,
       const CreateTemporaryFileCallback& create_temporary_file_callback,
-      const MoveFileLocalSuccessCallback& success_callback,
+      MoveFileLocalSuccessCallback success_callback,
       ErrorCallback error_callback,
       const base::File::Info& source_file_info);
   void OnDidOpenFDToCopyFileFromLocal(
       const base::FilePath& device_file_path,
-      const CopyFileFromLocalSuccessCallback& success_callback,
+      CopyFileFromLocalSuccessCallback success_callback,
       ErrorCallback error_callback,
       const std::pair<int, base::File::Error>& open_fd_result);
   void DeleteFileInternal(const base::FilePath& file_path,
-                          const DeleteFileSuccessCallback& success_callback,
+                          DeleteFileSuccessCallback success_callback,
                           ErrorCallback error_callback,
                           const base::File::Info& file_info);
-  void DeleteDirectoryInternal(
-      const base::FilePath& file_path,
-      const DeleteDirectorySuccessCallback& success_callback,
-      ErrorCallback error_callback,
-      const base::File::Info& file_info);
+  void DeleteDirectoryInternal(const base::FilePath& file_path,
+                               DeleteDirectorySuccessCallback success_callback,
+                               ErrorCallback error_callback,
+                               const base::File::Info& file_info);
 
   // Creates a single directory to |directory_path|. The caller must ensure that
   // parent directory |directory_path.DirName()| already exists.
-  void CreateSingleDirectory(
-      const base::FilePath& directory_path,
-      const bool exclusive,
-      const CreateDirectorySuccessCallback& success_callback,
-      ErrorCallback error_callback);
+  void CreateSingleDirectory(const base::FilePath& directory_path,
+                             const bool exclusive,
+                             CreateDirectorySuccessCallback success_callback,
+                             ErrorCallback error_callback);
 
   // Called when ReadDirectoryInternal() completes for filling cache as part of
   // creating directories.
   void OnDidReadDirectoryToCreateDirectory(
       const std::vector<base::FilePath>& components,
       const bool exclusive,
-      const CreateDirectorySuccessCallback& success_callback,
+      CreateDirectorySuccessCallback success_callback,
       ErrorCallback error_callback,
       storage::AsyncFileUtil::EntryList entries,
       const bool has_more);
@@ -212,16 +206,15 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
   void OnDidCheckDirectoryEmptyToDeleteDirectory(
       const base::FilePath& directory_path,
       uint32_t directory_id,
-      const DeleteDirectorySuccessCallback& success_callback,
+      DeleteDirectorySuccessCallback success_callback,
       ErrorCallback error_callback,
       bool is_empty);
 
   // Calls DeleteObjectOnUIThread on UI thread.
-  void RunDeleteObjectOnUIThread(
-      const base::FilePath& object_path,
-      const uint32_t object_id,
-      const DeleteObjectSuccessCallback& success_callback,
-      ErrorCallback error_callback);
+  void RunDeleteObjectOnUIThread(const base::FilePath& object_path,
+                                 const uint32_t object_id,
+                                 DeleteObjectSuccessCallback success_callback,
+                                 ErrorCallback error_callback);
 
   // Notifies |chage_type| of |file_path| to watchers.
   void NotifyFileChange(const base::FilePath& file_path,
@@ -270,7 +263,7 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
   // path already exists.
   void OnPathAlreadyExistsForCreateSingleDirectory(
       const bool exclusive,
-      const CreateDirectorySuccessCallback& success_callback,
+      CreateDirectorySuccessCallback success_callback,
       ErrorCallback error_callback,
       const base::File::Info& file_info);
 
@@ -278,7 +271,7 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
   // already exists.
   void OnPathDoesNotExistForCreateSingleDirectory(
       const base::FilePath& directory_path,
-      const CreateDirectorySuccessCallback& success_callback,
+      CreateDirectorySuccessCallback success_callback,
       ErrorCallback error_callback,
       const base::File::Error error);
 
@@ -293,7 +286,7 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
   // caller about the file error and process the next pending request.
   void OnDidGetFileInfoToReadDirectory(
       uint32_t dir_id,
-      const ReadDirectorySuccessCallback& success_callback,
+      ReadDirectorySuccessCallback success_callback,
       ErrorCallback error_callback,
       const base::File::Info& file_info);
 
@@ -318,14 +311,14 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
   void OnGetDestFileInfoErrorToCopyFileFromLocal(
       const base::FilePath& source_file_path,
       const base::FilePath& device_file_path,
-      const CopyFileFromLocalSuccessCallback& success_callback,
+      CopyFileFromLocalSuccessCallback success_callback,
       ErrorCallback error_callback,
       const base::File::Error error);
 
   // Called when CreateSignleDirectory() succeeds.
   void OnDidCreateSingleDirectory(
       const base::FilePath& directory_path,
-      const CreateDirectorySuccessCallback& success_callback);
+      CreateDirectorySuccessCallback success_callback);
 
   // Called when parent directory |created_directory| is created as part of
   // CreateDirectory.
@@ -333,7 +326,7 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
       const base::FilePath& created_directory,
       const std::vector<base::FilePath>& components,
       const bool exclusive,
-      const CreateDirectorySuccessCallback& success_callback,
+      CreateDirectorySuccessCallback success_callback,
       ErrorCallback error_callback);
 
   // Called when it failed to create a parent directory. For creating parent
@@ -351,7 +344,7 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
   // |file_list| contains the directory file entries with their file ids.
   // |has_more| is true if there are more file entries to read.
   void OnDidReadDirectory(uint32_t dir_id,
-                          const ReadDirectorySuccessCallback& success_callback,
+                          ReadDirectorySuccessCallback success_callback,
                           const MTPDeviceTaskHelper::MTPEntries& mtp_entries,
                           bool has_more);
 
@@ -394,7 +387,7 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
       const base::FilePath& source_file_path,
       const base::FilePath& device_file_path,
       const CopyFileProgressCallback& progress_callback,
-      const CopyFileLocalSuccessCallback& success_callback,
+      CopyFileLocalSuccessCallback success_callback,
       ErrorCallback error_callback,
       const base::FilePath& temporary_file_path);
 
@@ -402,27 +395,26 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
   void OnDidCreateSnapshotFileOfCopyFileLocal(
       const base::FilePath& device_file_path,
       const CopyFileProgressCallback& progress_callback,
-      const CopyFileLocalSuccessCallback& success_callback,
+      CopyFileLocalSuccessCallback success_callback,
       ErrorCallback error_callback,
       const base::File::Info& file_info,
       const base::FilePath& temporary_file_path);
 
   // Called when CopyFileFromLocal() succeeds for CopyFileLocal.
   void OnDidCopyFileFromLocalOfCopyFileLocal(
-      const CopyFileFromLocalSuccessCallback success_callback,
+      CopyFileFromLocalSuccessCallback success_callback,
       const base::FilePath& temporary_file_path);
 
   // Called when MoveFileLocal() succeeds with rename operation.
   void OnDidMoveFileLocalWithRename(
-      const MoveFileLocalSuccessCallback& success_callback,
+      MoveFileLocalSuccessCallback success_callback,
       const base::FilePath& source_file_path,
       const uint32_t file_id);
 
   // Called when CopyFileFromLocal() succeeds.
-  void OnDidCopyFileFromLocal(
-      const CopyFileFromLocalSuccessCallback& success_callback,
-      const base::FilePath& file_path,
-      const int source_file_descriptor);
+  void OnDidCopyFileFromLocal(CopyFileFromLocalSuccessCallback success_callback,
+                              const base::FilePath& file_path,
+                              const int source_file_descriptor);
 
   // Called when CopyFileLocal() fails.
   void HandleCopyFileLocalError(ErrorCallback error_callback,
@@ -437,7 +429,7 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
   // Called when DeleteObject() succeeds.
   void OnDidDeleteObject(const base::FilePath& object_path,
                          const uint32_t object_id,
-                         const DeleteObjectSuccessCallback success_callback);
+                         DeleteObjectSuccessCallback success_callback);
 
   // Called when DeleteFileOrDirectory() fails.
   void HandleDeleteFileOrDirectoryError(ErrorCallback error_callback,
