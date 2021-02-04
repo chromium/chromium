@@ -37,9 +37,17 @@ std::unique_ptr<base::Value> BackoffEntrySerializer::SerializeToValue(
 
   serialized->AppendInteger(entry.failure_count());
 
-  // Can't use entry.GetTimeUntilRelease as it doesn't allow negative deltas.
-  base::TimeDelta backoff_duration =
-      entry.GetReleaseTime() - entry.GetTimeTicksNow();
+  // Convert both |base::TimeTicks| values into |base::TimeDelta| values by
+  // subtracting |kZeroTicks. This way, the top-level subtraction uses
+  // |base::TimeDelta::operator-|, which has clamping semantics.
+  const base::TimeTicks kZeroTicks;
+  base::TimeDelta backoff_duration = (entry.GetReleaseTime() - kZeroTicks) -
+                                     (entry.GetTimeTicksNow() - kZeroTicks);
+  // We cannot serialize infinity doubles as JSON values, so default to zero.
+  if (backoff_duration.is_inf()) {
+    backoff_duration = base::TimeDelta();
+  }
+
   // Redundantly stores both the remaining time delta and the absolute time.
   // The delta is used to work around some cases where wall clock time changes.
   serialized->AppendDouble(backoff_duration.InSecondsF());

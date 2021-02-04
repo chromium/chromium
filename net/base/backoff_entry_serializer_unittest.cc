@@ -41,6 +41,79 @@ class TestTickClock : public base::TickClock {
   TimeTicks now_ticks_;
 };
 
+// This test exercises the code that computes the "backoff duration" and tests
+// BackoffEntrySerializer::SerializeToValue computes the backoff duration of a
+// BackoffEntry by subtracting two base::TimeTicks values. Note that
+// base::TimeTicks::operator- does not protect against overflow. Because
+// SerializeToValue never returns null, its resolution strategy is to default to
+// a zero base::TimeDelta when the subtraction would overflow.
+TEST(BackoffEntrySerializerTest, CheckBackoffDurationOverflow) {
+  const base::TimeTicks kZeroTicks;
+
+  struct TestCase {
+    base::TimeTicks release_time;
+    base::TimeTicks timeticks_now;
+    base::TimeDelta expected_backoff_duration;
+  };
+  TestCase test_cases[] = {
+      // Non-overflowing subtraction works as expected.
+      {
+          .release_time = kZeroTicks + base::TimeDelta::FromMicroseconds(100),
+          .timeticks_now = kZeroTicks + base::TimeDelta::FromMicroseconds(75),
+          .expected_backoff_duration = base::TimeDelta::FromMicroseconds(25),
+      },
+      {
+          .release_time = kZeroTicks + base::TimeDelta::FromMicroseconds(25),
+          .timeticks_now = kZeroTicks + base::TimeDelta::FromMicroseconds(100),
+          .expected_backoff_duration = base::TimeDelta::FromMicroseconds(-75),
+      },
+      // Defaults to zero when one of the operands is +/- infinity.
+      {
+          .release_time = base::TimeTicks::Max(),
+          .timeticks_now = kZeroTicks,
+          .expected_backoff_duration = base::TimeDelta(),
+      },
+      {
+          .release_time = base::TimeTicks::Min(),
+          .timeticks_now = kZeroTicks,
+          .expected_backoff_duration = base::TimeDelta(),
+      },
+      {
+          .release_time = kZeroTicks,
+          .timeticks_now = base::TimeTicks::Min(),
+          .expected_backoff_duration = base::TimeDelta(),
+      },
+      // Defaults to zero when the subtraction would overflow, even when neither
+      // operand is infinity.
+      {
+          .release_time =
+              kZeroTicks + base::TimeDelta::FromMicroseconds(
+                               std::numeric_limits<int64_t>::max() - 1),
+          .timeticks_now = kZeroTicks + base::TimeDelta::FromMicroseconds(-1),
+          .expected_backoff_duration = base::TimeDelta(),
+      },
+  };
+
+  for (const TestCase& test_case : test_cases) {
+    Time original_time = base::Time::Now();
+    TestTickClock original_ticks;
+    original_ticks.set_now(test_case.timeticks_now);
+    BackoffEntry original(&base_policy, &original_ticks);
+    // Set the custom release time.
+    original.SetCustomReleaseTime(test_case.release_time);
+    std::unique_ptr<base::Value> serialized =
+        BackoffEntrySerializer::SerializeToValue(original, original_time);
+
+    // Check that the serialized backoff duration matches our expectation.
+    double serialized_backoff_duration_double;
+    EXPECT_TRUE(serialized->GetList()[2].GetAsDouble(
+        &serialized_backoff_duration_double));
+    base::TimeDelta serialized_backoff_duration =
+        base::TimeDelta::FromSecondsD(serialized_backoff_duration_double);
+    EXPECT_EQ(serialized_backoff_duration, test_case.expected_backoff_duration);
+  }
+}
+
 TEST(BackoffEntrySerializerTest, SerializeNoFailures) {
   Time original_time = Time::Now();
   TestTickClock original_ticks;
