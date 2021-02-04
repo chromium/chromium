@@ -1340,6 +1340,14 @@ class SearchByImageBrowserTest : public InProcessBrowserTest {
     RightClickImage();
   }
 
+  void AttemptLensImageSearch() {
+    // |menu_observer_| will cause the search lens for image menu item to be
+    // clicked.
+    menu_observer_ = std::make_unique<ContextMenuNotificationObserver>(
+        IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE);
+    RightClickImage();
+  }
+
   // Right-click where the image should be.
   void RightClickImage() {
     content::WebContents* tab =
@@ -1433,6 +1441,20 @@ IN_PROC_BROWSER_TEST_F(SearchByImageBrowserTest, ImageSearchWithCorruptImage) {
   // The browser should receive a response from the renderer, because the
   // renderer should not crash.
   ASSERT_TRUE(response_received);
+}
+
+IN_PROC_BROWSER_TEST_F(SearchByImageBrowserTest,
+                       LensImageSearchWithValidImage) {
+  static const char kValidImage[] = "/image_search/valid.png";
+  SetupAndLoadImagePage(kValidImage);
+
+  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
+  AttemptLensImageSearch();
+
+  // The browser should open a new tab for an image search.
+  content::WebContents* new_tab = add_tab.Wait();
+  content::WaitForLoadStop(new_tab);
+  EXPECT_EQ(GetImageSearchURL(), new_tab->GetURL());
 }
 
 IN_PROC_BROWSER_TEST_F(PdfPluginContextMenuBrowserTest,
