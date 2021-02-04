@@ -113,6 +113,12 @@ class TestExtensionsAPIClient : public ShellExtensionsAPIClient {
       content::WebContents* web_contents) const override {
     return std::make_unique<TestDevicePermissionsPrompt>(web_contents);
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  bool ShouldAllowDetachingUsb(int vid, int pid) const override {
+    return vid == 1 && pid == 2;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 class UsbApiTest : public ShellApiTest {
@@ -128,12 +134,10 @@ class UsbApiTest : public ShellApiTest {
     base::RunLoop().RunUntilIdle();
 
     std::vector<device::mojom::UsbConfigurationInfoPtr> configs;
-    auto config_1 = device::mojom::UsbConfigurationInfo::New();
-    config_1->configuration_value = 1;
-    configs.push_back(std::move(config_1));
-    auto config_2 = device::mojom::UsbConfigurationInfo::New();
-    config_2->configuration_value = 2;
-    configs.push_back(std::move(config_2));
+    configs.push_back(
+        device::FakeUsbDeviceInfo::CreateConfiguration(0xff, 0x00, 0x00, 1));
+    configs.push_back(
+        device::FakeUsbDeviceInfo::CreateConfiguration(0xff, 0x00, 0x00, 2));
 
     fake_device_ = base::MakeRefCounted<device::FakeUsbDeviceInfo>(
         0, 0, "Test Manufacturer", "Test Device", "ABC123", std::move(configs));
@@ -360,5 +364,39 @@ IN_PROC_BROWSER_TEST_F(UsbApiTest, GetUserSelectedDevices) {
   fake_usb_manager_.RemoveDevice(fake_device_);
   ASSERT_TRUE(result_listener.WaitUntilSatisfied());
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_F(UsbApiTest, MassStorage) {
+  ExtensionTestMessageListener ready_listener("ready", false);
+  ready_listener.set_failure_message("failure");
+  ExtensionTestMessageListener result_listener("success", false);
+  result_listener.set_failure_message("failure");
+
+  // Mass storage devices should be hidden unless allowed in policy.
+  // The TestExtensionsAPIClient allows only vid=1, pid=2.
+  TestExtensionsAPIClient test_api_client;
+  std::vector<device::mojom::UsbConfigurationInfoPtr> storage_configs;
+  auto storage_config = device::FakeUsbDeviceInfo::CreateConfiguration(
+      /* mass storage */ 0x08, 0x06, 0x50);
+  storage_configs.push_back(storage_config->Clone());
+  device::mojom::UsbDeviceInfoPtr device_1 =
+      fake_usb_manager_.CreateAndAddDevice(0x1, 0x2, 0x00,
+                                           std::move(storage_configs));
+
+  storage_configs.clear();
+  storage_configs.push_back(storage_config->Clone());
+  device::mojom::UsbDeviceInfoPtr device_2 =
+      fake_usb_manager_.CreateAndAddDevice(0x5, 0x6, 0x00,
+                                           std::move(storage_configs));
+
+  ASSERT_TRUE(LoadApp("api_test/usb/mass_storage"));
+  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+
+  fake_usb_manager_.RemoveDevice(device_2->guid);
+  fake_usb_manager_.RemoveDevice(device_1->guid);
+
+  ASSERT_TRUE(result_listener.WaitUntilSatisfied());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace extensions

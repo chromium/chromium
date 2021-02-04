@@ -155,6 +155,7 @@ const char* const kKnownSettings[] = {
     kTPMFirmwareUpdateSettings,
     kUnaffiliatedArcAllowed,
     kUpdateDisabled,
+    kUsbDetachableAllowlist,
     kVariationsRestrictParameter,
     kVirtualMachinesAllowed,
 };
@@ -1032,6 +1033,35 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
   }
   new_values_cache->SetBoolean(kDeviceShowLowDiskSpaceNotification,
                                show_low_disk_space_notification);
+
+  if (policy.has_usb_detachable_allowlist() &&
+      policy.usb_detachable_allowlist().id_size() > 0) {
+    const em::UsbDetachableAllowlistProto& container =
+        policy.usb_detachable_allowlist();
+    base::Value allowlist(base::Value::Type::LIST);
+    for (const auto& entry : container.id()) {
+      base::Value ids(base::Value::Type::DICTIONARY);
+      if (entry.has_vendor_id() && entry.has_product_id()) {
+        ids.SetIntKey(kUsbDetachableAllowlistKeyVid, entry.vendor_id());
+        ids.SetIntKey(kUsbDetachableAllowlistKeyPid, entry.product_id());
+      }
+      allowlist.Append(std::move(ids));
+    }
+    new_values_cache->SetValue(kUsbDetachableAllowlist, std::move(allowlist));
+  } else if (policy.has_usb_detachable_whitelist()) {
+    const em::UsbDetachableWhitelistProto& container =
+        policy.usb_detachable_whitelist();
+    base::Value allowlist(base::Value::Type::LIST);
+    for (const auto& entry : container.id()) {
+      base::Value ids(base::Value::Type::DICTIONARY);
+      if (entry.has_vendor_id() && entry.has_product_id()) {
+        ids.SetIntKey(kUsbDetachableAllowlistKeyVid, entry.vendor_id());
+        ids.SetIntKey(kUsbDetachableAllowlistKeyPid, entry.product_id());
+      }
+      allowlist.Append(std::move(ids));
+    }
+    new_values_cache->SetValue(kUsbDetachableAllowlist, std::move(allowlist));
+  }
 }
 
 void DecodeLogUploadPolicies(const em::ChromeDeviceSettingsProto& policy,

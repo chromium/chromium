@@ -14,6 +14,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
 #include "extensions/browser/api/device_permissions_manager.h"
+#include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/common/api/usb.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -28,6 +29,37 @@ using content::BrowserThread;
 namespace extensions {
 
 namespace {
+
+constexpr int kUsbClassMassStorage = 0x08;
+
+bool IsMassStorageInterface(const device::mojom::UsbInterfaceInfo& interface) {
+  for (auto& alternate : interface.alternates) {
+    if (alternate->class_code == kUsbClassMassStorage)
+      return true;
+  }
+  return false;
+}
+
+bool ShouldExposeDevice(const device::mojom::UsbDeviceInfo& device_info) {
+  // ChromeOS always allows mass storage devices to be detached, but chrome.usb
+  // only gets access when the specific vid/pid is listed in device policy.
+  // This means that reloading policy can change the result of this function.
+  for (auto& configuration : device_info.configurations) {
+    for (auto& interface : configuration->interfaces) {
+      if (!IsMassStorageInterface(*interface))
+        return true;
+    }
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (ExtensionsAPIClient::Get()->ShouldAllowDetachingUsb(
+          device_info.vendor_id, device_info.product_id)) {
+    return true;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  return false;
+}
 
 // Returns true if the given extension has permission to receive events
 // regarding this device.
@@ -223,6 +255,8 @@ void UsbDeviceManager::OnDeviceAdded(
   DCHECK(device_info);
   // Update the device list.
   DCHECK(!base::Contains(devices_, device_info->guid));
+  if (!ShouldExposeDevice(*device_info))
+    return;
   std::string guid = device_info->guid;
   auto result =
       devices_.insert(std::make_pair(std::move(guid), std::move(device_info)));
@@ -238,8 +272,12 @@ void UsbDeviceManager::OnDeviceAdded(
 void UsbDeviceManager::OnDeviceRemoved(
     device::mojom::UsbDeviceInfoPtr device_info) {
   DCHECK(device_info);
+
+  // Handle if ShouldExposeDevice() returned false when the device was added.
+  if (!base::Contains(devices_, device_info->guid))
+    return;
+
   // Update the device list.
-  DCHECK(base::Contains(devices_, device_info->guid));
   devices_.erase(device_info->guid);
 
   DispatchEvent(usb::OnDeviceRemoved::kEventName, *device_info);
@@ -281,6 +319,8 @@ void UsbDeviceManager::InitDeviceList(
     std::vector<device::mojom::UsbDeviceInfoPtr> devices) {
   for (auto& device_info : devices) {
     DCHECK(device_info);
+    if (!ShouldExposeDevice(*device_info))
+      continue;
     std::string guid = device_info->guid;
     devices_.insert(std::make_pair(guid, std::move(device_info)));
   }

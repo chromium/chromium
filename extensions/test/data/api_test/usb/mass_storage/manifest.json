@@ -1,0 +1,17 @@
+{
+  "name": "Mass storage devices in chrome.usb",
+  "manifest_version": 2,
+  "version": "0.1",
+  "description": "Mass storage devices in chrome.usb",
+  "app": {
+    "background": {
+      "scripts": ["background.js"]
+    }
+  },
+  "permissions": [
+    "usb",
+    // These are test devices emulated by the mocks enabled for the test.
+    { "usbDevices": [{ "vendorId": 1, "productId": 2 },
+                     { "vendorId": 5, "productId": 6 }]}
+  ]
+}

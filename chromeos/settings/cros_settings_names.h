@@ -278,6 +278,12 @@ extern const char kDeviceCrostiniArcAdbSideloadingAllowed[];
 
 COMPONENT_EXPORT(CHROMEOS_SETTINGS)
 extern const char kDeviceShowLowDiskSpaceNotification[];
+
+COMPONENT_EXPORT(CHROMEOS_SETTINGS) extern const char kUsbDetachableAllowlist[];
+COMPONENT_EXPORT(CHROMEOS_SETTINGS)
+extern const char kUsbDetachableAllowlistKeyVid[];
+COMPONENT_EXPORT(CHROMEOS_SETTINGS)
+extern const char kUsbDetachableAllowlistKeyPid[];
 }  // namespace chromeos
 
 // TODO(https://crbug.com/1164001): remove when migrated to ash/components/.

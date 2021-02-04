@@ -162,6 +162,11 @@ class ExtensionsAPIClient {
   virtual std::unique_ptr<DevicePermissionsPrompt>
   CreateDevicePermissionsPrompt(content::WebContents* web_contents) const;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Returns true if device policy allows detaching a given USB device.
+  virtual bool ShouldAllowDetachingUsb(int vid, int pid) const;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   // Returns a delegate for some of VirtualKeyboardAPI's behavior.
   virtual std::unique_ptr<VirtualKeyboardDelegate>
   CreateVirtualKeyboardDelegate(content::BrowserContext* browser_context) const;

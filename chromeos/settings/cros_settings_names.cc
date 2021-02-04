@@ -488,4 +488,9 @@ const char kDeviceCrostiniArcAdbSideloadingAllowed[] =
 // A boolean pref controlling showing the low disk space notification.
 const char kDeviceShowLowDiskSpaceNotification[] =
     "cros.device.show_low_disk_space_notification";
+
+// A list of dictionaries indicating USB devices that may be used by chrome.usb.
+const char kUsbDetachableAllowlist[] = "cros.device.usb_detachable_allowlist";
+const char kUsbDetachableAllowlistKeyVid[] = "vid";
+const char kUsbDetachableAllowlistKeyPid[] = "pid";
 }  // namespace chromeos
