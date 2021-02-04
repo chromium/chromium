@@ -54,6 +54,7 @@ The current status of existing standards and Abseil features is:
 <li><b>Abseil:</b> Initially supported July 31, 2020; see allowed/banned/TBD features below
 <ul>
 <li>absl::StatusOr: Initially supported September 3, 2020</li>
+<li>absl::Cleanup: Initially supported February 4, 2021</li>
 </ul></li>
 </ul></p>
 
@@ -399,6 +400,14 @@ the allowed or banned sections.</p>
 <td><a href="https://source.chromium.org/chromium/chromium/src/+/master:third_party/abseil-cpp/absl/functional/bind_front.h">bind_front.h</a>
 <br><a href="https://abseil.io/tips/108">Avoid std::bind</a></td>
 <td>Overlaps with <code>base::Bind</code>.</td>
+</tr>
+
+<tr>
+<td>Cleanup</td>
+<td><code>FILE* sink_file = fopen(sink_path, "w");<br>auto sink_closer = absl::MakeCleanup([sink_file] { fclose(sink_file); });</code></td>
+<td>Implements the scope guard idiom, invoking the contained callback's `operator()() &&` on scope exit.</td>
+<td><a href="https://source.chromium.org/chromium/chromium/src/+/master:third_party/abseil-cpp/absl/cleanup/cleanup.h">cleanup.h</a></td>
+<td>Similar to `defer` in Golang.</td>
 </tr>
 
 <tr>
