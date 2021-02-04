@@ -11,6 +11,8 @@ import android.os.Build;
 import android.os.IBinder;
 import android.webkit.WebViewFactory;
 
+import com.google.android.gms.common.GooglePlayServicesUtilLight;
+
 import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.annotations.UsedByReflection;
@@ -41,6 +43,11 @@ public final class ChildProcessServiceImpl extends IChildProcessService.Stub {
                 remoteContext, remoteContext);
         // Wrap the app context so that it can be used to load WebLayer implementation classes.
         appContext = ClassLoaderContextWrapperFactory.get(appContext);
+
+        // The GPU process may use GMS APIs using the host app's context. This is called in the
+        // browser process in GmsBridge.
+        GooglePlayServicesUtilLight.enableUsingApkIndependentContext();
+
         return new ChildProcessServiceImpl(service, appContext);
     }
 
