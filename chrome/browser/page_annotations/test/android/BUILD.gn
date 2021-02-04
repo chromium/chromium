@@ -16,6 +16,7 @@ java_library("junit") {
     "java/src/org/chromium/chrome/browser/page_annotations/PageAnnotationUtilsUnitTest.java",
     "java/src/org/chromium/chrome/browser/page_annotations/PageAnnotationsServiceUnitTest.java",
     "java/src/org/chromium/chrome/browser/page_annotations/PageAnnotationsTestUtils.java",
+    "java/src/org/chromium/chrome/browser/page_annotations/ProductPriceUpdatePageAnnotationUnitTest.java",
   ]
 
   deps = [

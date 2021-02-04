@@ -25,6 +25,10 @@ public class PageAnnotationUtils {
     private static final Map<Class<? extends PageAnnotation>, String> CLASS_TO_TYPE_MAP =
             new LinkedHashMap<Class<? extends PageAnnotation>, String>() {
                 { put(BuyableProductPageAnnotation.class, PageAnnotationType.BUYABLE_PRODUCT); }
+                {
+                    put(ProductPriceUpdatePageAnnotation.class,
+                            PageAnnotationType.PRODUCT_PRICE_UPDATE);
+                }
             };
 
     /**
@@ -41,6 +45,10 @@ public class PageAnnotationUtils {
             switch (type) {
                 case PageAnnotationType.BUYABLE_PRODUCT: {
                     return BuyableProductPageAnnotation.fromJson(json);
+                }
+
+                case PageAnnotationType.PRODUCT_PRICE_UPDATE: {
+                    return ProductPriceUpdatePageAnnotation.fromJson(json);
                 }
 
                 case PageAnnotationType.UNKNOWN:
@@ -82,5 +90,14 @@ public class PageAnnotationUtils {
         }
 
         return null;
+    }
+
+    /** @return a {@link Long} from the provided string or null in case of an unprasable input. */
+    static Long safeParseLong(String number) {
+        try {
+            return Long.parseLong(number);
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 }

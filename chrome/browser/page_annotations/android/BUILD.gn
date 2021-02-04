@@ -13,6 +13,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/page_annotations/PageAnnotationsServiceConfig.java",
     "java/src/org/chromium/chrome/browser/page_annotations/PageAnnotationsServiceFactory.java",
     "java/src/org/chromium/chrome/browser/page_annotations/PageAnnotationsServiceProxy.java",
+    "java/src/org/chromium/chrome/browser/page_annotations/ProductPriceUpdatePageAnnotation.java",
     "java/src/org/chromium/chrome/browser/page_annotations/SinglePageAnnotationsServiceResponse.java",
   ]
 

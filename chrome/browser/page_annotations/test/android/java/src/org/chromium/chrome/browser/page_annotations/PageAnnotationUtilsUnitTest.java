@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.page_annotations.PageAnnotation.PageAnnotationType;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -41,8 +42,16 @@ public class PageAnnotationUtilsUnitTest {
     @Test
     public void testCreateFromJsonBuyableProduct() throws JSONException {
         PageAnnotation annotation = PageAnnotationUtils.createPageAnnotationFromJson(
-                PageAnnotationsTestUtils.createFakeBuyableProductJson(true, 100L, "USD"));
+                PageAnnotationsTestUtils.createFakeBuyableProductJson(true, "100", "USD"));
         Assert.assertNotNull(annotation);
+    }
+
+    @Test
+    public void testCreateProductPriceUpdate() throws JSONException {
+        PageAnnotation annotation = PageAnnotationUtils.createPageAnnotationFromJson(
+                PageAnnotationsTestUtils.createFakeProductPriceUpdate("100", "USD", "10", "USD"));
+        Assert.assertNotNull(annotation);
+        Assert.assertEquals(annotation.getType(), PageAnnotationType.PRODUCT_PRICE_UPDATE);
     }
 
     @Test

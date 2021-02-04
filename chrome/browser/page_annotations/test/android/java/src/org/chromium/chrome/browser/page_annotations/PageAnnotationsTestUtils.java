@@ -18,13 +18,16 @@ class PageAnnotationsTestUtils {
     private static final String CURRENCY_CODE_KEY = "currencyCode";
     private static final String AMOUNT_MICROS_KEY = "amountMicros";
     private static final String TYPE_KEY = "type";
+    private static final String PRICE_UPDATE_KEY = "priceUpdate";
+    private static final String OLD_PRICE_KEY = "oldPrice";
+    private static final String NEW_PRICE_KEY = "newPrice";
 
-    static JSONObject createFakeBuyableProductJson() throws JSONException {
+    static JSONObject createEmptyBuyableProduct() throws JSONException {
         return createFakeBuyableProductJson(false, null, null);
     }
 
     static JSONObject createFakeBuyableProductJson(boolean includePriceMetadata,
-            @Nullable Long priceInMicros, @Nullable String currencyCode) throws JSONException {
+            @Nullable String priceInMicros, @Nullable String currencyCode) throws JSONException {
         JSONObject root = new JSONObject();
         JSONObject buyableProductJson = new JSONObject();
 
@@ -43,6 +46,42 @@ class PageAnnotationsTestUtils {
 
         root.put(BUYABLE_PRODUCT_KEY, buyableProductJson);
         root.put(TYPE_KEY, PageAnnotationType.BUYABLE_PRODUCT);
+        return root;
+    }
+
+    static JSONObject createEmptyProductPriceUpdate() throws JSONException {
+        return createFakeProductPriceUpdate(null, null, null, null);
+    }
+
+    static JSONObject createFakeProductPriceUpdate(@Nullable String oldPriceMicros,
+            @Nullable String oldCurrencyCode, @Nullable String newPriceMicros,
+            @Nullable String newCurrencyCode) throws JSONException {
+        JSONObject root = new JSONObject();
+        JSONObject productPriceUpdate = new JSONObject();
+
+        JSONObject oldPrice = new JSONObject();
+        if (oldPriceMicros != null) {
+            oldPrice.put(AMOUNT_MICROS_KEY, oldPriceMicros);
+        }
+
+        if (oldCurrencyCode != null) {
+            oldPrice.put(CURRENCY_CODE_KEY, oldCurrencyCode);
+        }
+
+        JSONObject newPrice = new JSONObject();
+        if (newPriceMicros != null) {
+            newPrice.put(AMOUNT_MICROS_KEY, newPriceMicros);
+        }
+
+        if (newCurrencyCode != null) {
+            newPrice.put(CURRENCY_CODE_KEY, newCurrencyCode);
+        }
+
+        productPriceUpdate.put(OLD_PRICE_KEY, oldPrice);
+        productPriceUpdate.put(NEW_PRICE_KEY, newPrice);
+
+        root.put(PRICE_UPDATE_KEY, productPriceUpdate);
+        root.put(TYPE_KEY, PageAnnotationType.PRODUCT_PRICE_UPDATE);
         return root;
     }
 

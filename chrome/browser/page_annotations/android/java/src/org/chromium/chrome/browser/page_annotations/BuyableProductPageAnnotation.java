@@ -47,9 +47,22 @@ public class BuyableProductPageAnnotation extends PageAnnotation {
         try {
             JSONObject metadata = object.getJSONObject(BUYABLE_PRODUCT_KEY);
             JSONObject priceMetadata = metadata.getJSONObject(CURRENT_PRICE_KEY);
+            if (priceMetadata == null || !priceMetadata.has(AMOUNT_MICROS_KEY)
+                    || priceMetadata.isNull(AMOUNT_MICROS_KEY)) {
+                Log.i(TAG, String.format(Locale.US, "Invalid price info."));
+                return null;
+            }
+
+            Long priceAmountMicros =
+                    PageAnnotationUtils.safeParseLong(priceMetadata.getString(AMOUNT_MICROS_KEY));
+
+            if (priceAmountMicros == null) {
+                Log.i(TAG, String.format(Locale.US, "Invalid price micros."));
+                return null;
+            }
+
             return new BuyableProductPageAnnotation(
-                    Long.parseLong(priceMetadata.getString(AMOUNT_MICROS_KEY)),
-                    priceMetadata.getString(CURRENCY_CODE_KEY));
+                    priceAmountMicros, priceMetadata.getString(CURRENCY_CODE_KEY));
         } catch (JSONException e) {
             Log.i(TAG,
                     String.format(Locale.US,
