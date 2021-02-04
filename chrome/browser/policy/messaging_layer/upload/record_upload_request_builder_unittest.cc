@@ -57,8 +57,6 @@ class RecordUploadRequestBuilderTest : public ::testing::TestWithParam<bool> {
 };
 
 TEST_P(RecordUploadRequestBuilderTest, AcceptEncryptedRecordsList) {
-  const std::vector<std::string> kEncryptedWrappedRecords{
-      "T", "E", "S", "T", "_", "I", "N", "F", "O"};
   static constexpr size_t kNumRecords = 10;
 
   std::vector<EncryptedRecord> records;
@@ -94,8 +92,6 @@ TEST_P(RecordUploadRequestBuilderTest, AcceptEncryptedRecordsList) {
 }
 
 TEST_P(RecordUploadRequestBuilderTest, BreakListOnSingleBadRecord) {
-  const std::vector<std::string> kEncryptedWrappedRecords{
-      "T", "E", "S", "T", "_", "I", "N", "F", "O"};
   static constexpr size_t kNumRecords = 10;
 
   std::vector<EncryptedRecord> records;

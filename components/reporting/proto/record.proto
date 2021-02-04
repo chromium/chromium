@@ -45,12 +45,12 @@ message WrappedRecord {
   // Record Digest (required)
   // SHA256 hash used to validate that the record has been retrieved without
   // being manipulated while it was on the device or during transfer.
-  optional string record_digest = 2;
+  optional bytes record_digest = 2;
 
   // Last record digest (required)
   // Created by client and used by server to verify that the sequence of records
   // has not been tampered with.
-  optional string last_record_digest = 3;
+  optional bytes last_record_digest = 3;
 }
 
 // Information about how the record was encrypted.
