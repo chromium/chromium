@@ -98,16 +98,24 @@ class BatteryView : public views::View {
         views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 4));
 
     SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+    SetVisible(delegate->ShouldShowBatteryStatus());
 
     icon_ = AddChildView(std::make_unique<views::ImageView>());
-    icon_->SetImage(delegate->GetBatteryImage());
 
-    if (delegate->IsBatteryLevelLow()) {
-      label_ = AddChildView(std::make_unique<views::Label>(
-          l10n_util::GetStringUTF16(IDS_ASH_STYLUS_BATTERY_LOW_LABEL)));
-      label_->SetEnabledColor(delegate->GetColorForBatteryLevel());
-      TrayPopupUtils::SetLabelFontList(label_,
-                                       TrayPopupUtils::FontStyle::kSmallTitle);
+    if (delegate->IsBatteryStatusStale()) {
+      icon_->SetImage(delegate->GetBatteryStatusUnknownImage());
+      icon_->SetTooltipText(l10n_util::GetStringUTF16(
+          IDS_ASH_STYLUS_BATTERY_STATUS_STALE_TOOLTIP));
+    } else {
+      icon_->SetImage(delegate->GetBatteryImage());
+
+      if (delegate->IsBatteryLevelLow()) {
+        label_ = AddChildView(std::make_unique<views::Label>(
+            l10n_util::GetStringUTF16(IDS_ASH_STYLUS_BATTERY_LOW_LABEL)));
+        label_->SetEnabledColor(delegate->GetColorForBatteryLevel());
+        TrayPopupUtils::SetLabelFontList(
+            label_, TrayPopupUtils::FontStyle::kSmallTitle);
+      }
     }
   }
 

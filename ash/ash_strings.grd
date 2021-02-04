@@ -1235,6 +1235,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_STYLUS_BATTERY_PERCENT_ACCESSIBLE" desc="The message used by accessibility to show stylus battery level.">
         Stylus battery at <ph name="percentage">$1<ex>56</ex></ph> percent.
       </message>
+      <message name="IDS_ASH_STYLUS_BATTERY_STATUS_STALE_TOOLTIP" desc="Tooltip message that indicates to the user that the stylus has not been used in over a week">
+        Stylus has not been used in over a week
+      </message>
       <message name="IDS_ASH_STYLUS_TOOLS_CAPTURE_REGION_ACTION" desc="Title of the capture region action in the stylus tools (a pop-up panel next to the status tray). This causes a partial screenshot to be taken (the user selects an area of the screen to take a screenshot of).">
         Capture region
       </message>

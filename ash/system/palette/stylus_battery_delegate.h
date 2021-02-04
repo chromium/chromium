@@ -9,6 +9,7 @@
 #include "ash/system/power/peripheral_battery_listener.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string16.h"
+#include "base/time/time.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace ash {
@@ -23,7 +24,10 @@ class ASH_EXPORT StylusBatteryDelegate
 
   SkColor GetColorForBatteryLevel() const;
   gfx::ImageSkia GetBatteryImage() const;
+  gfx::ImageSkia GetBatteryStatusUnknownImage() const;
   bool IsBatteryLevelLow() const;
+  bool IsBatteryStatusStale() const;
+  bool ShouldShowBatteryStatus() const;
 
   base::Optional<uint8_t> battery_level() const { return battery_level_; }
 
@@ -37,6 +41,7 @@ class ASH_EXPORT StylusBatteryDelegate
       const PeripheralBatteryListener::BatteryInfo& battery) override;
 
   base::Optional<uint8_t> battery_level_;
+  base::Optional<base::TimeTicks> last_update_timestamp_;
 
   base::ScopedObservation<PeripheralBatteryListener,
                           PeripheralBatteryListener::Observer>

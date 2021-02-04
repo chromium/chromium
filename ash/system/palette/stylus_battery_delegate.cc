@@ -4,19 +4,24 @@
 
 #include "ash/system/palette/stylus_battery_delegate.h"
 
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/power/power_status.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/strings/string16.h"
+#include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/paint_vector_icon.h"
 
 namespace ash {
 namespace {
 // Battery percentage threshold used to label the battery level as Low.
 constexpr int kStylusLowBatteryThreshold = 24;
+constexpr base::TimeDelta kStylusBatteryStatusStaleThreshold =
+    base::TimeDelta::FromDays(14);
 }  // namespace
 
 StylusBatteryDelegate::StylusBatteryDelegate() {
@@ -46,13 +51,33 @@ gfx::ImageSkia StylusBatteryDelegate::GetBatteryImage() const {
                                       icon_fg_color);
 }
 
+gfx::ImageSkia StylusBatteryDelegate::GetBatteryStatusUnknownImage() const {
+  const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kIconColorPrimary);
+
+  return gfx::CreateVectorIcon(kStylusBatteryStatusUnknownIcon, icon_color);
+}
+
 bool StylusBatteryDelegate::IsBatteryLevelLow() const {
   return battery_level_ <= kStylusLowBatteryThreshold;
+}
+
+bool StylusBatteryDelegate::ShouldShowBatteryStatus() const {
+  return last_update_timestamp_.has_value();
+}
+
+bool StylusBatteryDelegate::IsBatteryStatusStale() const {
+  if (!last_update_timestamp_.has_value())
+    return false;
+
+  return (base::TimeTicks::Now() - last_update_timestamp_.value()) >
+         kStylusBatteryStatusStaleThreshold;
 }
 
 void StylusBatteryDelegate::OnAddingBattery(
     const PeripheralBatteryListener::BatteryInfo& battery) {
   battery_level_ = battery.level;
+  last_update_timestamp_ = battery.last_update_timestamp;
 }
 
 void StylusBatteryDelegate::OnRemovingBattery(
@@ -61,6 +86,7 @@ void StylusBatteryDelegate::OnRemovingBattery(
 void StylusBatteryDelegate::OnUpdatedBatteryLevel(
     const PeripheralBatteryListener::BatteryInfo& battery) {
   battery_level_ = battery.level;
+  last_update_timestamp_ = battery.last_update_timestamp;
 }
 
 }  // namespace ash
