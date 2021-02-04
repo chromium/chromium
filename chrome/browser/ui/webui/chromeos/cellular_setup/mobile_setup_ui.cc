@@ -390,7 +390,7 @@ void MobileSetupHandler::OnActivationStateChanged(
   base::Value info = GetCellularNetworkInfoValue(network, device);
 
   // Add the current activation flow state.
-  info.SetKey(keys::kActivationState, base::Value(state));
+  info.SetKey(keys::kActivationState, base::Value(static_cast<int>(state)));
   info.SetKey(keys::kActivationErrorMessage,
               base::Value(GetActivationErrorMessage(
                   error, device ? device->operator_name() : "")));

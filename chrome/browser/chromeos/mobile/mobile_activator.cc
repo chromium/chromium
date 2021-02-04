@@ -66,7 +66,7 @@ bool IsSimpleActivationFlow(const chromeos::NetworkState* network) {
 //
 ////////////////////////////////////////////////////////////////////////////////
 MobileActivator::MobileActivator()
-    : state_(PLAN_ACTIVATION_PAGE_LOADING),
+    : state_(PlanActivationState::kPageLoading),
       terminated_(true),
       connection_retry_count_(0),
       initial_OTASP_attempts_(0),
@@ -95,7 +95,7 @@ void MobileActivator::TerminateActivation() {
   iccid_.clear();
   service_path_.clear();
   device_path_.clear();
-  state_ = PLAN_ACTIVATION_PAGE_LOADING;
+  state_ = PlanActivationState::kPageLoading;
   terminated_ = true;
 }
 
@@ -104,7 +104,7 @@ void MobileActivator::DefaultNetworkChanged(const NetworkState* network) {
 }
 
 void MobileActivator::NetworkPropertiesUpdated(const NetworkState* network) {
-  if (state_ == PLAN_ACTIVATION_PAGE_LOADING)
+  if (state_ == PlanActivationState::kPageLoading)
     return;
 
   if (!network || network->type() != shill::kTypeCellular)
@@ -165,7 +165,8 @@ void MobileActivator::InitiateActivation(const std::string& service_path) {
   service_path_ = service_path;
   device_path_ = network->device_path();
 
-  ChangeState(network, PLAN_ACTIVATION_PAGE_LOADING, ActivationError::kNone);
+  ChangeState(network, PlanActivationState::kPageLoading,
+              ActivationError::kNone);
 
   // We want shill to connect us after activations, so enable autoconnect.
   base::DictionaryValue auto_connect_property;
@@ -193,11 +194,11 @@ void MobileActivator::OnSetTransactionStatus(bool success) {
 void MobileActivator::HandleSetTransactionStatus(bool success) {
   // The payment is received, try to reconnect and check the status all over
   // again.
-  if (success && state_ == PLAN_ACTIVATION_SHOWING_PAYMENT) {
+  if (success && state_ == PlanActivationState::kShowingPayment) {
     SignalCellularPlanPayment();
     const NetworkState* network = GetNetworkState(service_path_);
     if (network && IsSimpleActivationFlow(network)) {
-      state_ = PLAN_ACTIVATION_DONE;
+      state_ = PlanActivationState::kDone;
       NetworkHandler::Get()->network_activation_handler()->CompleteActivation(
           network->path(), base::DoNothing(), network_handler::ErrorCallback());
     } else {
@@ -215,15 +216,15 @@ void MobileActivator::OnPortalLoaded(bool success) {
 void MobileActivator::HandlePortalLoaded(bool success) {
   const NetworkState* network = GetNetworkState(service_path_);
   if (!network) {
-    ChangeState(NULL, PLAN_ACTIVATION_ERROR,
+    ChangeState(NULL, PlanActivationState::kError,
                 ActivationError::kNoCellularService);
     return;
   }
-  if (state_ == PLAN_ACTIVATION_PAYMENT_PORTAL_LOADING ||
-      state_ == PLAN_ACTIVATION_SHOWING_PAYMENT) {
+  if (state_ == PlanActivationState::kPaymentPortalLoading ||
+      state_ == PlanActivationState::kShowingPayment) {
     if (success) {
       payment_reconnect_count_ = 0;
-      ChangeState(network, PLAN_ACTIVATION_SHOWING_PAYMENT,
+      ChangeState(network, PlanActivationState::kShowingPayment,
                   ActivationError::kNone);
     } else {
       // There is no point in forcing reconnecting the cellular network if the
@@ -233,13 +234,13 @@ void MobileActivator::HandlePortalLoaded(bool success) {
 
       payment_reconnect_count_++;
       if (payment_reconnect_count_ > kMaxPortalReconnectCount) {
-        ChangeState(NULL, PLAN_ACTIVATION_ERROR,
+        ChangeState(NULL, PlanActivationState::kError,
                     ActivationError::kNoCellularService);
         return;
       }
 
       // Reconnect and try and load the frame again.
-      ChangeState(network, PLAN_ACTIVATION_RECONNECTING,
+      ChangeState(network, PlanActivationState::kReconnecting,
                   ActivationError::kNone);
     }
   } else {
@@ -269,7 +270,7 @@ void MobileActivator::StartActivation() {
     } else {
       error = ActivationError::kNoCellularService;
     }
-    ChangeState(NULL, PLAN_ACTIVATION_ERROR, error);
+    ChangeState(NULL, PlanActivationState::kError, error);
     return;
   }
 
@@ -295,8 +296,8 @@ void MobileActivator::StartActivationOverNonCellularNetwork() {
 
   ChangeState(network,
               (network->activation_state() == shill::kActivationStateActivated)
-                  ? PLAN_ACTIVATION_DONE
-                  : PLAN_ACTIVATION_PAYMENT_PORTAL_LOADING,
+                  ? PlanActivationState::kDone
+                  : PlanActivationState::kPaymentPortalLoading,
               ActivationError::kNone);
 
   RefreshCellularNetworks();
@@ -318,7 +319,7 @@ void MobileActivator::StartActivationOTA() {
   if (!is_online_or_portal)
     ConnectNetwork(network);
 
-  ChangeState(network, PLAN_ACTIVATION_PAYMENT_PORTAL_LOADING,
+  ChangeState(network, PlanActivationState::kPaymentPortalLoading,
               ActivationError::kNone);
   RefreshCellularNetworks();
 }
@@ -334,16 +335,16 @@ void MobileActivator::StartActivationOTASP() {
       (network->activation_state() ==
        shill::kActivationStatePartiallyActivated)) {
     // Try to start with OTASP immediately if we have received payment recently.
-    state_ = PLAN_ACTIVATION_START_OTASP;
+    state_ = PlanActivationState::kStartOTASP;
   } else {
-    state_ = PLAN_ACTIVATION_START;
+    state_ = PlanActivationState::kStart;
   }
 
   EvaluateCellularNetwork(network);
 }
 
 void MobileActivator::RetryOTASP() {
-  DCHECK(state_ == PLAN_ACTIVATION_DELAY_OTASP);
+  DCHECK(state_ == PlanActivationState::kDelayOTASP);
   StartOTASP();
 }
 
@@ -354,7 +355,8 @@ void MobileActivator::StartOTASP() {
     return;
   }
 
-  ChangeState(network, PLAN_ACTIVATION_START_OTASP, ActivationError::kNone);
+  ChangeState(network, PlanActivationState::kStartOTASP,
+              ActivationError::kNone);
   EvaluateCellularNetwork(network);
 }
 
@@ -368,25 +370,25 @@ void MobileActivator::HandleOTASPTimeout() {
 
   // We're here because one of OTASP steps is taking too long to complete.
   // Usually, this means something bad has happened below us.
-  if (state_ == PLAN_ACTIVATION_INITIATING_ACTIVATION) {
+  if (state_ == PlanActivationState::kInitiatingActivation) {
     ++initial_OTASP_attempts_;
     if (initial_OTASP_attempts_ <= kMaxOTASPTries) {
-      ChangeState(network, PLAN_ACTIVATION_RECONNECTING,
+      ChangeState(network, PlanActivationState::kReconnecting,
                   ActivationError::kActivationFailed);
       return;
     }
-  } else if (state_ == PLAN_ACTIVATION_TRYING_OTASP) {
+  } else if (state_ == PlanActivationState::kTryingOTASP) {
     ++trying_OTASP_attempts_;
     if (trying_OTASP_attempts_ <= kMaxOTASPTries) {
-      ChangeState(network, PLAN_ACTIVATION_RECONNECTING,
+      ChangeState(network, PlanActivationState::kReconnecting,
                   ActivationError::kActivationFailed);
       return;
     }
-  } else if (state_ == PLAN_ACTIVATION_OTASP) {
+  } else if (state_ == PlanActivationState::kOTASP) {
     ++final_OTASP_attempts_;
     if (final_OTASP_attempts_ <= kMaxOTASPTries) {
       // Give the portal time to propagate all those magic bits.
-      ChangeState(network, PLAN_ACTIVATION_DELAY_OTASP,
+      ChangeState(network, PlanActivationState::kDelayOTASP,
                   ActivationError::kActivationFailed);
       return;
     }
@@ -394,7 +396,7 @@ void MobileActivator::HandleOTASPTimeout() {
     LOG(ERROR) << "OTASP timed out from a non-OTASP wait state?";
   }
   LOG(ERROR) << "OTASP failed too many times; aborting.";
-  ChangeState(network, PLAN_ACTIVATION_ERROR,
+  ChangeState(network, PlanActivationState::kError,
               ActivationError::kActivationFailed);
 }
 
@@ -437,7 +439,7 @@ void MobileActivator::ReconnectTimedOut() {
     return;
   }
 
-  ChangeState(network, PLAN_ACTIVATION_ERROR,
+  ChangeState(network, PlanActivationState::kError,
               ActivationError::kActivationFailed);
 }
 
@@ -466,8 +468,9 @@ void MobileActivator::ContinueConnecting() {
 }
 
 void MobileActivator::RefreshCellularNetworks() {
-  if (state_ == PLAN_ACTIVATION_PAGE_LOADING ||
-      state_ == PLAN_ACTIVATION_DONE || state_ == PLAN_ACTIVATION_ERROR) {
+  if (state_ == PlanActivationState::kPageLoading ||
+      state_ == PlanActivationState::kDone ||
+      state_ == PlanActivationState::kError) {
     return;
   }
 
@@ -478,7 +481,7 @@ void MobileActivator::RefreshCellularNetworks() {
   }
 
   if (IsSimpleActivationFlow(network)) {
-    bool waiting = (state_ == PLAN_ACTIVATION_WAITING_FOR_CONNECTION);
+    bool waiting = (state_ == PlanActivationState::kWaitingForConnection);
     // We're only interested in whether or not we have access to the payment
     // portal (regardless of which network we use to access it), so check
     // the default network connection state. The default network is the network
@@ -493,7 +496,7 @@ void MobileActivator::RefreshCellularNetworks() {
     if (waiting && is_online_or_portal) {
       ChangeState(network, post_reconnect_state_, ActivationError::kNone);
     } else if (!waiting && !is_online_or_portal) {
-      ChangeState(network, PLAN_ACTIVATION_WAITING_FOR_CONNECTION,
+      ChangeState(network, PlanActivationState::kWaitingForConnection,
                   ActivationError::kNone);
     }
   }
@@ -536,7 +539,7 @@ void MobileActivator::EvaluateCellularNetwork(const NetworkState* network) {
     return;
 
   PlanActivationState new_state = PickNextState(network);
-  ActivationError error = new_state == PLAN_ACTIVATION_ERROR
+  ActivationError error = new_state == PlanActivationState::kError
                               ? ActivationError::kActivationFailed
                               : ActivationError::kNone;
   ChangeState(network, new_state, error);
@@ -550,7 +553,7 @@ MobileActivator::PlanActivationState MobileActivator::PickNextState(
   else
     new_state = PickNextOnlineState(network);
 
-  if (new_state != PLAN_ACTIVATION_ERROR &&
+  if (new_state != PlanActivationState::kError &&
       network->connection_state() == shill::kStateActivationFailure) {
     // Check for this special case when we try to do activate partially
     // activated device. If that attempt failed, try to disconnect to clear the
@@ -563,28 +566,28 @@ MobileActivator::PlanActivationState MobileActivator::PickNextState(
       NET_LOG(EVENT) << "Activation failure detected for "
                      << NetworkId(network);
       switch (state_) {
-        case PLAN_ACTIVATION_OTASP:
-          new_state = PLAN_ACTIVATION_DELAY_OTASP;
+        case PlanActivationState::kOTASP:
+          new_state = PlanActivationState::kDelayOTASP;
           break;
-        case PLAN_ACTIVATION_INITIATING_ACTIVATION:
-        case PLAN_ACTIVATION_TRYING_OTASP:
-          new_state = PLAN_ACTIVATION_START;
+        case PlanActivationState::kInitiatingActivation:
+        case PlanActivationState::kTryingOTASP:
+          new_state = PlanActivationState::kStart;
           break;
-        case PLAN_ACTIVATION_START:
+        case PlanActivationState::kStart:
           // We are just starting, so this must be previous activation attempt
           // failure.
-          new_state = PLAN_ACTIVATION_TRYING_OTASP;
+          new_state = PlanActivationState::kTryingOTASP;
           break;
-        case PLAN_ACTIVATION_DELAY_OTASP:
+        case PlanActivationState::kDelayOTASP:
           new_state = state_;
           break;
         default:
-          new_state = PLAN_ACTIVATION_ERROR;
+          new_state = PlanActivationState::kError;
           break;
       }
     } else {
       LOG(WARNING) << "Unexpected activation failure for " << network->path();
-      new_state = PLAN_ACTIVATION_ERROR;
+      new_state = PlanActivationState::kError;
     }
   }
 
@@ -596,21 +599,21 @@ MobileActivator::PlanActivationState MobileActivator::PickNextOfflineState(
   PlanActivationState new_state = state_;
   const std::string& activation = network->activation_state();
   switch (state_) {
-    case PLAN_ACTIVATION_PAYMENT_PORTAL_LOADING:
-    case PLAN_ACTIVATION_SHOWING_PAYMENT:
+    case PlanActivationState::kPaymentPortalLoading:
+    case PlanActivationState::kShowingPayment:
       if (!IsSimpleActivationFlow(network))
-        new_state = PLAN_ACTIVATION_RECONNECTING;
+        new_state = PlanActivationState::kReconnecting;
       break;
-    case PLAN_ACTIVATION_START:
+    case PlanActivationState::kStart:
       if (activation == shill::kActivationStateActivated) {
         if (NetworkState::StateIsPortalled(network->connection_state()))
-          new_state = PLAN_ACTIVATION_PAYMENT_PORTAL_LOADING;
+          new_state = PlanActivationState::kPaymentPortalLoading;
         else
-          new_state = PLAN_ACTIVATION_DONE;
+          new_state = PlanActivationState::kDone;
       } else if (activation == shill::kActivationStatePartiallyActivated) {
-        new_state = PLAN_ACTIVATION_TRYING_OTASP;
+        new_state = PlanActivationState::kTryingOTASP;
       } else {
-        new_state = PLAN_ACTIVATION_INITIATING_ACTIVATION;
+        new_state = PlanActivationState::kInitiatingActivation;
       }
       break;
     default:
@@ -625,36 +628,36 @@ MobileActivator::PlanActivationState MobileActivator::PickNextOnlineState(
   PlanActivationState new_state = state_;
   const std::string& activation = network->activation_state();
   switch (state_) {
-    case PLAN_ACTIVATION_START:
+    case PlanActivationState::kStart:
       if (activation == shill::kActivationStateActivated) {
         if (network->connection_state() == shill::kStateOnline)
-          new_state = PLAN_ACTIVATION_DONE;
+          new_state = PlanActivationState::kDone;
         else
-          new_state = PLAN_ACTIVATION_PAYMENT_PORTAL_LOADING;
+          new_state = PlanActivationState::kPaymentPortalLoading;
       } else if (activation == shill::kActivationStatePartiallyActivated) {
-        new_state = PLAN_ACTIVATION_TRYING_OTASP;
+        new_state = PlanActivationState::kTryingOTASP;
       } else {
-        new_state = PLAN_ACTIVATION_INITIATING_ACTIVATION;
+        new_state = PlanActivationState::kInitiatingActivation;
       }
       break;
-    case PLAN_ACTIVATION_START_OTASP: {
+    case PlanActivationState::kStartOTASP: {
       if (activation == shill::kActivationStatePartiallyActivated) {
-        new_state = PLAN_ACTIVATION_OTASP;
+        new_state = PlanActivationState::kOTASP;
       } else if (activation == shill::kActivationStateActivated) {
-        new_state = PLAN_ACTIVATION_RECONNECTING;
+        new_state = PlanActivationState::kReconnecting;
       } else {
         LOG(WARNING) << "Unexpected activation state for device "
                      << network->path();
       }
       break;
     }
-    case PLAN_ACTIVATION_DELAY_OTASP:
+    case PlanActivationState::kDelayOTASP:
       // Just ignore any changes until the OTASP retry timer kicks in.
       break;
-    case PLAN_ACTIVATION_INITIATING_ACTIVATION: {
+    case PlanActivationState::kInitiatingActivation: {
       if (activation == shill::kActivationStateActivated ||
           activation == shill::kActivationStatePartiallyActivated) {
-        new_state = PLAN_ACTIVATION_START;
+        new_state = PlanActivationState::kStart;
       } else if (activation == shill::kActivationStateNotActivated ||
                  activation == shill::kActivationStateActivating) {
         // Wait in this state until activation state changes.
@@ -663,41 +666,41 @@ MobileActivator::PlanActivationState MobileActivator::PickNextOnlineState(
       }
       break;
     }
-    case PLAN_ACTIVATION_OTASP:
-    case PLAN_ACTIVATION_TRYING_OTASP:
+    case PlanActivationState::kOTASP:
+    case PlanActivationState::kTryingOTASP:
       if (activation == shill::kActivationStateNotActivated ||
           activation == shill::kActivationStateActivating) {
         VLOG(1) << "Waiting for the OTASP to finish and the service to "
                 << "come back online";
       } else if (activation == shill::kActivationStateActivated) {
-        new_state = PLAN_ACTIVATION_DONE;
+        new_state = PlanActivationState::kDone;
       } else {
-        new_state = PLAN_ACTIVATION_PAYMENT_PORTAL_LOADING;
+        new_state = PlanActivationState::kPaymentPortalLoading;
       }
       break;
-    case PLAN_ACTIVATION_RECONNECTING_PAYMENT:
+    case PlanActivationState::kReconnectingPayment:
       if (!NetworkState::StateIsPortalled(network->connection_state()) &&
           activation == shill::kActivationStateActivated)
         // We're not portalled, and we're already activated, so we're online!
-        new_state = PLAN_ACTIVATION_DONE;
+        new_state = PlanActivationState::kDone;
       else
-        new_state = PLAN_ACTIVATION_PAYMENT_PORTAL_LOADING;
+        new_state = PlanActivationState::kPaymentPortalLoading;
       break;
     // Initial state
-    case PLAN_ACTIVATION_PAGE_LOADING:
+    case PlanActivationState::kPageLoading:
       break;
     // Just ignore all signals until the site confirms payment.
-    case PLAN_ACTIVATION_PAYMENT_PORTAL_LOADING:
-    case PLAN_ACTIVATION_SHOWING_PAYMENT:
-    case PLAN_ACTIVATION_WAITING_FOR_CONNECTION:
+    case PlanActivationState::kPaymentPortalLoading:
+    case PlanActivationState::kShowingPayment:
+    case PlanActivationState::kWaitingForConnection:
       break;
     // Go where we decided earlier.
-    case PLAN_ACTIVATION_RECONNECTING:
+    case PlanActivationState::kReconnecting:
       new_state = post_reconnect_state_;
       break;
     // Activation completed/failed, ignore network changes.
-    case PLAN_ACTIVATION_DONE:
-    case PLAN_ACTIVATION_ERROR:
+    case PlanActivationState::kDone:
+    case PlanActivationState::kError:
       break;
   }
 
@@ -707,33 +710,33 @@ MobileActivator::PlanActivationState MobileActivator::PickNextOnlineState(
 // Debugging helper function, will take it out at the end.
 const char* MobileActivator::GetStateDescription(PlanActivationState state) {
   switch (state) {
-    case PLAN_ACTIVATION_PAGE_LOADING:
+    case PlanActivationState::kPageLoading:
       return "PAGE_LOADING";
-    case PLAN_ACTIVATION_START:
+    case PlanActivationState::kStart:
       return "ACTIVATION_START";
-    case PLAN_ACTIVATION_INITIATING_ACTIVATION:
+    case PlanActivationState::kInitiatingActivation:
       return "INITIATING_ACTIVATION";
-    case PLAN_ACTIVATION_TRYING_OTASP:
+    case PlanActivationState::kTryingOTASP:
       return "TRYING_OTASP";
-    case PLAN_ACTIVATION_PAYMENT_PORTAL_LOADING:
+    case PlanActivationState::kPaymentPortalLoading:
       return "PAYMENT_PORTAL_LOADING";
-    case PLAN_ACTIVATION_SHOWING_PAYMENT:
+    case PlanActivationState::kShowingPayment:
       return "SHOWING_PAYMENT";
-    case PLAN_ACTIVATION_RECONNECTING_PAYMENT:
+    case PlanActivationState::kReconnectingPayment:
       return "RECONNECTING_PAYMENT";
-    case PLAN_ACTIVATION_DELAY_OTASP:
+    case PlanActivationState::kDelayOTASP:
       return "DELAY_OTASP";
-    case PLAN_ACTIVATION_START_OTASP:
+    case PlanActivationState::kStartOTASP:
       return "START_OTASP";
-    case PLAN_ACTIVATION_OTASP:
+    case PlanActivationState::kOTASP:
       return "OTASP";
-    case PLAN_ACTIVATION_DONE:
+    case PlanActivationState::kDone:
       return "DONE";
-    case PLAN_ACTIVATION_ERROR:
+    case PlanActivationState::kError:
       return "ERROR";
-    case PLAN_ACTIVATION_RECONNECTING:
+    case PlanActivationState::kReconnecting:
       return "RECONNECTING";
-    case PLAN_ACTIVATION_WAITING_FOR_CONNECTION:
+    case PlanActivationState::kWaitingForConnection:
       return "WAITING FOR CONNECTION";
   }
   return "UNKNOWN";
@@ -746,24 +749,25 @@ void MobileActivator::CompleteActivation() {
 }
 
 bool MobileActivator::RunningActivation() const {
-  return !(state_ == PLAN_ACTIVATION_DONE || state_ == PLAN_ACTIVATION_ERROR ||
-           state_ == PLAN_ACTIVATION_PAGE_LOADING);
+  return !(state_ == PlanActivationState::kDone ||
+           state_ == PlanActivationState::kError ||
+           state_ == PlanActivationState::kPageLoading);
 }
 
 void MobileActivator::ChangeState(const NetworkState* network,
                                   PlanActivationState new_state,
                                   ActivationError error) {
-  // Report an error, by transitioning into a PLAN_ACTIVATION_ERROR state with
+  // Report an error, by transitioning into a kError state with
   // a "no service" error instead, if no network state is available (e.g. the
   // cellular service no longer exists) when we are transitioning into certain
   // plan activation state.
   if (!network) {
     switch (new_state) {
-      case PLAN_ACTIVATION_INITIATING_ACTIVATION:
-      case PLAN_ACTIVATION_TRYING_OTASP:
-      case PLAN_ACTIVATION_OTASP:
-      case PLAN_ACTIVATION_DONE:
-        new_state = PLAN_ACTIVATION_ERROR;
+      case PlanActivationState::kInitiatingActivation:
+      case PlanActivationState::kTryingOTASP:
+      case PlanActivationState::kOTASP:
+      case PlanActivationState::kDone:
+        new_state = PlanActivationState::kError;
         error = ActivationError::kNoCellularService;
         break;
       default:
@@ -792,9 +796,9 @@ void MobileActivator::ChangeState(const NetworkState* network,
 
   // Pick action that should happen on entering the new state.
   switch (new_state) {
-    case PLAN_ACTIVATION_START:
+    case PlanActivationState::kStart:
       break;
-    case PLAN_ACTIVATION_DELAY_OTASP: {
+    case PlanActivationState::kDelayOTASP: {
       UMA_HISTOGRAM_COUNTS_1M("Cellular.RetryOTASP", 1);
       content::GetUIThreadTaskRunner({})->PostDelayedTask(
           FROM_HERE,
@@ -803,50 +807,50 @@ void MobileActivator::ChangeState(const NetworkState* network,
           base::TimeDelta::FromMilliseconds(kOTASPRetryDelay));
       break;
     }
-    case PLAN_ACTIVATION_START_OTASP:
+    case PlanActivationState::kStartOTASP:
       break;
-    case PLAN_ACTIVATION_INITIATING_ACTIVATION:
-    case PLAN_ACTIVATION_TRYING_OTASP:
-    case PLAN_ACTIVATION_OTASP:
+    case PlanActivationState::kInitiatingActivation:
+    case PlanActivationState::kTryingOTASP:
+    case PlanActivationState::kOTASP:
       // This used to call Shill.Service.ActivateCellularModem, however that
       // method is no longer implemented. Instead this just starts the timer
       // waiting for activation state changes. https://crbug.com/1021688.
       StartOTASPTimer();
       break;
-    case PLAN_ACTIVATION_PAGE_LOADING:
+    case PlanActivationState::kPageLoading:
       return;
-    case PLAN_ACTIVATION_PAYMENT_PORTAL_LOADING:
-    case PLAN_ACTIVATION_SHOWING_PAYMENT:
-    case PLAN_ACTIVATION_RECONNECTING_PAYMENT:
+    case PlanActivationState::kPaymentPortalLoading:
+    case PlanActivationState::kShowingPayment:
+    case PlanActivationState::kReconnectingPayment:
       // Fix for fix SSL for the walled gardens where cert chain verification
       // might not work.
       break;
-    case PLAN_ACTIVATION_WAITING_FOR_CONNECTION:
+    case PlanActivationState::kWaitingForConnection:
       post_reconnect_state_ = old_state;
       break;
-    case PLAN_ACTIVATION_RECONNECTING: {
+    case PlanActivationState::kReconnecting: {
       PlanActivationState next_state = old_state;
       // Pick where we want to return to after we reconnect.
       switch (old_state) {
-        case PLAN_ACTIVATION_PAYMENT_PORTAL_LOADING:
-        case PLAN_ACTIVATION_SHOWING_PAYMENT:
+        case PlanActivationState::kPaymentPortalLoading:
+        case PlanActivationState::kShowingPayment:
           // We decide here what to do next based on the state of the modem.
-          next_state = PLAN_ACTIVATION_RECONNECTING_PAYMENT;
+          next_state = PlanActivationState::kReconnectingPayment;
           break;
-        case PLAN_ACTIVATION_INITIATING_ACTIVATION:
-        case PLAN_ACTIVATION_TRYING_OTASP:
-          next_state = PLAN_ACTIVATION_START;
+        case PlanActivationState::kInitiatingActivation:
+        case PlanActivationState::kTryingOTASP:
+          next_state = PlanActivationState::kStart;
           break;
-        case PLAN_ACTIVATION_START_OTASP:
-        case PLAN_ACTIVATION_OTASP:
+        case PlanActivationState::kStartOTASP:
+        case PlanActivationState::kOTASP:
           if (!network || !network->IsConnectedState()) {
-            next_state = PLAN_ACTIVATION_START_OTASP;
+            next_state = PlanActivationState::kStartOTASP;
           } else {
             // We're online, which means we've conspired with
             // PickNextOnlineState to reconnect after activation (that's the
             // only way we see this transition).  Thus, after we reconnect, we
             // should be done.
-            next_state = PLAN_ACTIVATION_DONE;
+            next_state = PlanActivationState::kDone;
           }
           break;
         default:
@@ -858,11 +862,11 @@ void MobileActivator::ChangeState(const NetworkState* network,
         ForceReconnect(network, next_state);
       break;
     }
-    case PLAN_ACTIVATION_DONE:
+    case PlanActivationState::kDone:
       DCHECK(network);
       CompleteActivation();
       break;
-    case PLAN_ACTIVATION_ERROR:
+    case PlanActivationState::kError:
       CompleteActivation();
       UMA_HISTOGRAM_COUNTS_1M("Cellular.PlanFailed", 1);
       break;

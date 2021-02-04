@@ -49,37 +49,37 @@ class TestMobileActivator;
 class MobileActivator : public NetworkStateHandlerObserver {
  public:
   // Activation state.
-  enum PlanActivationState {
+  enum class PlanActivationState {
     // Activation WebUI page is loading, activation not started.
-    PLAN_ACTIVATION_PAGE_LOADING            = -1,
+    kPageLoading = -1,
     // Activation process started.
-    PLAN_ACTIVATION_START                   = 0,
+    kStart = 0,
     // Initial over the air activation attempt.
-    PLAN_ACTIVATION_TRYING_OTASP            = 1,
+    kTryingOTASP = 1,
     // Performing pre-activation process.
-    PLAN_ACTIVATION_INITIATING_ACTIVATION   = 3,
+    kInitiatingActivation = 3,
     // Reconnecting to network. Used for networks activated over cellular
     // connection.
-    PLAN_ACTIVATION_RECONNECTING            = 4,
+    kReconnecting = 4,
     // Passively waiting for a network connection. Used for networks activated
     // over non-cellular network.
-    PLAN_ACTIVATION_WAITING_FOR_CONNECTION  = 5,
+    kWaitingForConnection = 5,
     // Loading payment portal page.
-    PLAN_ACTIVATION_PAYMENT_PORTAL_LOADING  = 6,
+    kPaymentPortalLoading = 6,
     // Showing payment portal page.
-    PLAN_ACTIVATION_SHOWING_PAYMENT         = 7,
+    kShowingPayment = 7,
     // Decides whether to load the portal again or call us done.
-    PLAN_ACTIVATION_RECONNECTING_PAYMENT    = 8,
+    kReconnectingPayment = 8,
     // Delaying activation until payment portal catches up.
-    PLAN_ACTIVATION_DELAY_OTASP             = 9,
+    kDelayOTASP = 9,
     // Starting post-payment activation attempt.
-    PLAN_ACTIVATION_START_OTASP             = 10,
+    kStartOTASP = 10,
     // Attempting activation.
-    PLAN_ACTIVATION_OTASP                   = 11,
+    kOTASP = 11,
     // Finished activation.
-    PLAN_ACTIVATION_DONE                    = 12,
-    // Error occured during activation process.
-    PLAN_ACTIVATION_ERROR                   = 0xFF,
+    kDone = 12,
+    // Error occurred during activation process.
+    kError = 0xFF,
   };
 
   // Set of errors encountered during activation.

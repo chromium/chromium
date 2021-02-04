@@ -148,7 +148,7 @@ TEST_F(MobileActivatorTest, OTAHasNetworkConnection) {
   set_network_activation_state(shill::kActivationStateNotActivated);
   mobile_activator_.InvokeStartActivation();
   EXPECT_EQ(mobile_activator_.state(),
-            MobileActivator::PLAN_ACTIVATION_PAYMENT_PORTAL_LOADING);
+            MobileActivator::PlanActivationState::kPaymentPortalLoading);
 }
 
 TEST_F(MobileActivatorTest, OTANoNetworkConnection) {
@@ -162,7 +162,7 @@ TEST_F(MobileActivatorTest, OTANoNetworkConnection) {
   set_network_activation_state(shill::kActivationStateNotActivated);
   mobile_activator_.InvokeStartActivation();
   EXPECT_EQ(mobile_activator_.state(),
-            MobileActivator::PLAN_ACTIVATION_WAITING_FOR_CONNECTION);
+            MobileActivator::PlanActivationState::kWaitingForConnection);
 }
 
 TEST_F(MobileActivatorTest, OTAActivationFlow) {
@@ -179,77 +179,79 @@ TEST_F(MobileActivatorTest, OTAActivationFlow) {
   set_network_activation_state(shill::kActivationStateNotActivated);
   mobile_activator_.InvokeStartActivation();
   EXPECT_EQ(mobile_activator_.state(),
-            MobileActivator::PLAN_ACTIVATION_PAYMENT_PORTAL_LOADING);
+            MobileActivator::PlanActivationState::kPaymentPortalLoading);
   mobile_activator_.InvokeHandlePortalLoaded(true);
   EXPECT_EQ(mobile_activator_.state(),
-            MobileActivator::PLAN_ACTIVATION_SHOWING_PAYMENT);
+            MobileActivator::PlanActivationState::kShowingPayment);
   mobile_activator_.InvokeHandleSetTransactionStatus(true);
-  EXPECT_EQ(mobile_activator_.state(), MobileActivator::PLAN_ACTIVATION_DONE);
+  EXPECT_EQ(mobile_activator_.state(),
+            MobileActivator::PlanActivationState::kDone);
 }
 
 TEST_F(MobileActivatorTest, OTASPBasicFlowForNewDevices) {
   // In a new device, we aren't connected to Verizon, we start at START
   // because we haven't paid Verizon (ever), and the modem isn't even partially
   // activated.
-  set_activator_state(MobileActivator::PLAN_ACTIVATION_START);
+  set_activator_state(MobileActivator::PlanActivationState::kStart);
   set_connection_state(shill::kStateIdle);
   set_network_activation_type(shill::kActivationTypeOTASP);
   set_network_activation_state(shill::kActivationStateNotActivated);
-  EXPECT_EQ(MobileActivator::PLAN_ACTIVATION_INITIATING_ACTIVATION,
+  EXPECT_EQ(MobileActivator::PlanActivationState::kInitiatingActivation,
             mobile_activator_.InvokePickNextState(&cellular_network_));
   // Now behave as if ChangeState() has initiated an activation.
-  set_activator_state(MobileActivator::PLAN_ACTIVATION_INITIATING_ACTIVATION);
+  set_activator_state(
+      MobileActivator::PlanActivationState::kInitiatingActivation);
   set_network_activation_state(shill::kActivationStateActivating);
   // We'll sit in this state while we wait for the OTASP to finish.
-  EXPECT_EQ(MobileActivator::PLAN_ACTIVATION_INITIATING_ACTIVATION,
+  EXPECT_EQ(MobileActivator::PlanActivationState::kInitiatingActivation,
             mobile_activator_.InvokePickNextState(&cellular_network_));
   set_network_activation_state(shill::kActivationStatePartiallyActivated);
   // We'll sit in this state until we go online as well.
-  EXPECT_EQ(MobileActivator::PLAN_ACTIVATION_INITIATING_ACTIVATION,
+  EXPECT_EQ(MobileActivator::PlanActivationState::kInitiatingActivation,
             mobile_activator_.InvokePickNextState(&cellular_network_));
   set_connection_state(shill::kStateNoConnectivity);
   // After we go online, we go back to START, which acts as a jumping off
   // point for the two types of initial OTASP.
-  EXPECT_EQ(MobileActivator::PLAN_ACTIVATION_START,
+  EXPECT_EQ(MobileActivator::PlanActivationState::kStart,
             mobile_activator_.InvokePickNextState(&cellular_network_));
-  set_activator_state(MobileActivator::PLAN_ACTIVATION_START);
-  EXPECT_EQ(MobileActivator::PLAN_ACTIVATION_TRYING_OTASP,
+  set_activator_state(MobileActivator::PlanActivationState::kStart);
+  EXPECT_EQ(MobileActivator::PlanActivationState::kTryingOTASP,
             mobile_activator_.InvokePickNextState(&cellular_network_));
   // Very similar things happen while we're trying OTASP.
-  set_activator_state(MobileActivator::PLAN_ACTIVATION_TRYING_OTASP);
+  set_activator_state(MobileActivator::PlanActivationState::kTryingOTASP);
   set_network_activation_state(shill::kActivationStateActivating);
-  EXPECT_EQ(MobileActivator::PLAN_ACTIVATION_TRYING_OTASP,
+  EXPECT_EQ(MobileActivator::PlanActivationState::kTryingOTASP,
             mobile_activator_.InvokePickNextState(&cellular_network_));
   set_network_activation_state(shill::kActivationStatePartiallyActivated);
   set_connection_state(shill::kStateNoConnectivity);
   // And when we come back online again and aren't activating, load the portal.
-  EXPECT_EQ(MobileActivator::PLAN_ACTIVATION_PAYMENT_PORTAL_LOADING,
+  EXPECT_EQ(MobileActivator::PlanActivationState::kPaymentPortalLoading,
             mobile_activator_.InvokePickNextState(&cellular_network_));
   // The JS drives us through the payment portal.
-  set_activator_state(MobileActivator::PLAN_ACTIVATION_SHOWING_PAYMENT);
+  set_activator_state(MobileActivator::PlanActivationState::kShowingPayment);
   // The JS also calls us to signal that the portal is done.  This triggers us
   // to start our final OTASP via the aptly named StartOTASP().
   EXPECT_CALL(mobile_activator_, SignalCellularPlanPayment());
-  EXPECT_CALL(mobile_activator_,
-              ChangeState(Eq(&cellular_network_),
-                          Eq(MobileActivator::PLAN_ACTIVATION_START_OTASP),
-                          _));
+  EXPECT_CALL(
+      mobile_activator_,
+      ChangeState(Eq(&cellular_network_),
+                  Eq(MobileActivator::PlanActivationState::kStartOTASP), _));
   EXPECT_CALL(mobile_activator_,
               EvaluateCellularNetwork(Eq(&cellular_network_)));
   mobile_activator_.InvokeHandleSetTransactionStatus(true);
   // Evaluate state will defer to PickNextState to select what to do now that
   // we're in START_ACTIVATION.  PickNextState should decide to start a final
   // OTASP.
-  set_activator_state(MobileActivator::PLAN_ACTIVATION_START_OTASP);
-  EXPECT_EQ(MobileActivator::PLAN_ACTIVATION_OTASP,
+  set_activator_state(MobileActivator::PlanActivationState::kStartOTASP);
+  EXPECT_EQ(MobileActivator::PlanActivationState::kOTASP,
             mobile_activator_.InvokePickNextState(&cellular_network_));
   // Similarly to TRYING_OTASP and INITIATING_OTASP above...
-  set_activator_state(MobileActivator::PLAN_ACTIVATION_OTASP);
+  set_activator_state(MobileActivator::PlanActivationState::kOTASP);
   set_network_activation_state(shill::kActivationStateActivating);
-  EXPECT_EQ(MobileActivator::PLAN_ACTIVATION_OTASP,
+  EXPECT_EQ(MobileActivator::PlanActivationState::kOTASP,
             mobile_activator_.InvokePickNextState(&cellular_network_));
   set_network_activation_state(shill::kActivationStateActivated);
-  EXPECT_EQ(MobileActivator::PLAN_ACTIVATION_DONE,
+  EXPECT_EQ(MobileActivator::PlanActivationState::kDone,
             mobile_activator_.InvokePickNextState(&cellular_network_));
 }
 
@@ -260,7 +262,8 @@ TEST_F(MobileActivatorTest, OTASPStartAtStart) {
   EXPECT_CALL(mobile_activator_,
               EvaluateCellularNetwork(Eq(&cellular_network_)));
   mobile_activator_.InvokeStartActivation();
-  EXPECT_EQ(mobile_activator_.state(), MobileActivator::PLAN_ACTIVATION_START);
+  EXPECT_EQ(mobile_activator_.state(),
+            MobileActivator::PlanActivationState::kStart);
 }
 
 TEST_F(MobileActivatorTest, ReconnectOnDisconnectFromPaymentPortal) {
@@ -273,11 +276,12 @@ TEST_F(MobileActivatorTest, ReconnectOnDisconnectFromPaymentPortal) {
   // offline.  Lets test for those cases.
   set_connection_state(shill::kStateFailure);
   set_network_activation_state(shill::kActivationStatePartiallyActivated);
-  set_activator_state(MobileActivator::PLAN_ACTIVATION_PAYMENT_PORTAL_LOADING);
-  EXPECT_EQ(MobileActivator::PLAN_ACTIVATION_RECONNECTING,
+  set_activator_state(
+      MobileActivator::PlanActivationState::kPaymentPortalLoading);
+  EXPECT_EQ(MobileActivator::PlanActivationState::kReconnecting,
             mobile_activator_.InvokePickNextState(&cellular_network_));
-  set_activator_state(MobileActivator::PLAN_ACTIVATION_SHOWING_PAYMENT);
-  EXPECT_EQ(MobileActivator::PLAN_ACTIVATION_RECONNECTING,
+  set_activator_state(MobileActivator::PlanActivationState::kShowingPayment);
+  EXPECT_EQ(MobileActivator::PlanActivationState::kReconnecting,
             mobile_activator_.InvokePickNextState(&cellular_network_));
 }
 
