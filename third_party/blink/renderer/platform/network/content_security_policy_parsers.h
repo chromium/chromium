@@ -35,6 +35,12 @@ PLATFORM_EXPORT bool IsMediaTypeCharacter(UChar);
 // positional and may only appear at the end of a Base64 encoded string.
 PLATFORM_EXPORT bool IsBase64EncodedCharacter(UChar);
 
+// Check if value matches
+// https://w3c.github.io/webappsec-csp/#grammardef-serialized-policy. We also
+// allow a trailing ';', repeated ';'s, and a trailing ';' followed by spaces.
+PLATFORM_EXPORT
+bool MatchesTheSerializedCSPGrammar(const String& value);
+
 }  // namespace blink
 
 #endif

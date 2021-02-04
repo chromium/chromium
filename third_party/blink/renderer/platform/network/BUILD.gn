@@ -78,6 +78,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "content_security_policy_parsers_test.cc",
     "encoded_form_data_test.cc",
     "http_parsers_test.cc",
     "mime/mime_type_registry_test.cc",

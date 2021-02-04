@@ -207,7 +207,8 @@ void HTMLIFrameElement::ParseAttribute(
       UpdateContainerPolicy();
     }
   } else if (name == html_names::kCspAttr) {
-    if (value.Contains('\n') || value.Contains('\r') || value.Contains(',')) {
+    if (value.Contains('\n') || value.Contains('\r') ||
+        !MatchesTheSerializedCSPGrammar(value.GetString())) {
       required_csp_ = g_null_atom;
       GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::blink::ConsoleMessageSource::kOther,

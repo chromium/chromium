@@ -1826,11 +1826,8 @@ void NavigationRequest::SetRequiredCSP(
     network::mojom::ContentSecurityPolicyPtr csp) {
   DCHECK(!required_csp_);
   required_csp_ = std::move(csp);
-  if (required_csp_) {
-    const std::string& header_value = required_csp_->header->header_value;
-    DCHECK(net::HttpUtil::IsValidHeaderValue(header_value));
-    SetRequestHeader("Sec-Required-CSP", header_value);
-  }
+  if (required_csp_)
+    SetRequestHeader("Sec-Required-CSP", required_csp_->header->header_value);
 }
 
 network::mojom::ContentSecurityPolicyPtr NavigationRequest::TakeRequiredCSP() {

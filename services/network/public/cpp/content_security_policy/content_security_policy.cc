@@ -40,8 +40,9 @@ bool IsDirectiveNameCharacter(char c) {
 }
 
 bool IsDirectiveValueCharacter(char c) {
+  // Whitespace + VCHAR, but not ',' and ';'
   return base::IsAsciiWhitespace(c) ||
-         base::IsAsciiPrintable(c);  // Whitespace + VCHAR
+         (base::IsAsciiPrintable(c) && c != ',' && c != ';');
 }
 
 std::string ElideURLForReportViolation(const GURL& url) {
@@ -1247,14 +1248,6 @@ bool IsValidRequiredCSPAttr(
   DCHECK(policy.size() == 1);
   if (!policy[0])
     return false;
-
-  if (!policy[0]->parsing_errors.empty()) {
-    error_message =
-        "Parsing the csp attribute into a Content-Security-Policy returned one "
-        "or more parsing errors: " +
-        base::JoinString(policy[0]->parsing_errors, " ");
-    return false;
-  }
 
   if (!policy[0]->report_endpoints.empty() ||
       // We really don't want any report directives, even with invalid/missing

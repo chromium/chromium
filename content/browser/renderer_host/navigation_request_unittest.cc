@@ -780,7 +780,7 @@ TEST_F(CSPEmbeddedEnforcementUnitTest, InvalidCspAndInheritFromParent) {
   NavigateWithRequiredCSP(&child_document, "script-src 'none'");
   TestRenderFrameHost* grand_child_document = AddChild(child_document);
   std::string sec_required_csp =
-      NavigateWithRequiredCSP(&grand_child_document, "invalid-directive");
+      NavigateWithRequiredCSP(&grand_child_document, "report-to group");
   EXPECT_EQ("script-src 'none'", sec_required_csp);
   EXPECT_TRUE(grand_child_document->required_csp());
   EXPECT_EQ("script-src 'none'",
@@ -794,7 +794,7 @@ TEST_F(CSPEmbeddedEnforcementUnitTest,
   NavigateWithRequiredCSP(&child_document, "script-src 'none'");
   TestRenderFrameHost* grand_child_document = AddChild(child_document);
   std::string sec_required_csp = NavigateWithRequiredCSP(
-      &grand_child_document, "script-src 'none'; invalid-directive");
+      &grand_child_document, "script-src 'none'; report-to group");
   EXPECT_EQ("script-src 'none'", sec_required_csp);
   EXPECT_TRUE(grand_child_document->required_csp());
   EXPECT_EQ("script-src 'none'",
@@ -808,7 +808,7 @@ TEST_F(CSPEmbeddedEnforcementUnitTest,
   NavigateWithRequiredCSP(&child_document, "script-src 'none'");
   TestRenderFrameHost* grand_child_document = AddChild(child_document);
   std::string sec_required_csp = NavigateWithRequiredCSP(
-      &grand_child_document, "sandbox; invalid-directive");
+      &grand_child_document, "sandbox; report-to group");
   EXPECT_EQ("script-src 'none'", sec_required_csp);
   EXPECT_TRUE(grand_child_document->required_csp());
   EXPECT_EQ("script-src 'none'",

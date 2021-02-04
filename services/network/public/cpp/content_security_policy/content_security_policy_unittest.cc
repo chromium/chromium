@@ -1481,14 +1481,14 @@ TEST(ContentSecurityPolicy, IsValidRequiredCSPAttr) {
     const char* csp;
     bool expected;
     std::string expected_error;
-  } cases[] = {{"script-src 'none'", true, ""},
-               {"script-src 'none'; invalid-directive", false,
-                "Parsing the csp attribute into a Content-Security-Policy "
-                "returned one or more parsing errors: Unrecognized "
-                "Content-Security-Policy directive 'invalid-directive'."},
-               {"script-src 'none'; report-uri https://www.example.com", false,
-                "The csp attribute cannot contain the directives 'report-to' "
-                "or 'report-uri'."}};
+  } cases[] = {
+      {"  script-src 'none'  https://www.google.com ;;  ; invalid-directive "
+       "invalid-value ;",
+       true, ""},
+      {"script-src 'none'; report-uri https://www.example.com", false,
+       "The csp attribute cannot contain the directives 'report-to' "
+       "or 'report-uri'."},
+  };
 
   for (auto& test : cases) {
     SCOPED_TRACE(test.csp);
@@ -1498,6 +1498,12 @@ TEST(ContentSecurityPolicy, IsValidRequiredCSPAttr) {
     required_csp_headers->SetHeader("Content-Security-Policy", test.csp);
     AddContentSecurityPolicyFromHeaders(*required_csp_headers,
                                         GURL("https://example.com/"), &csp);
+
+    // Overwrite the header_value artificially. At the moment, our header parser
+    // takes already care of some parts (like removing commas). But we want to
+    // be sure that header values with commas or other invalid header values are
+    // blocked by our validation mechanism anyway.
+    csp[0]->header->header_value = test.csp;
     std::string out;
     EXPECT_EQ(test.expected, IsValidRequiredCSPAttr(csp, nullptr, out));
     EXPECT_EQ(test.expected_error, out);

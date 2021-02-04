@@ -811,6 +811,16 @@ enum class VerifyDidCommitParamsDifference {
   kMaxValue = kGesture,
 };
 
+bool ValidateCSPAttribute(const std::string& value) {
+  if (!base::IsStringASCII(value))
+    return false;
+  if (value.find('\n') != std::string::npos ||
+      value.find('\r') != std::string::npos) {
+    return false;
+  }
+  return true;
+}
+
 }  // namespace
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -5070,6 +5080,13 @@ void RenderFrameHostImpl::DidChangeOpener(
 void RenderFrameHostImpl::DidChangeCSPAttribute(
     const base::UnguessableToken& child_frame_token,
     network::mojom::ContentSecurityPolicyPtr parsed_csp_attribute) {
+  if (parsed_csp_attribute &&
+      !ValidateCSPAttribute(parsed_csp_attribute->header->header_value)) {
+    bad_message::ReceivedBadMessage(GetProcess(),
+                                    bad_message::RFH_CSP_ATTRIBUTE);
+    return;
+  }
+
   auto* child =
       FindAndVerifyChild(child_frame_token, bad_message::RFH_CSP_ATTRIBUTE);
   if (!child)
