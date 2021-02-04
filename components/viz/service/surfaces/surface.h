@@ -252,6 +252,16 @@ class VIZ_SERVICE_EXPORT Surface final {
 
   base::WeakPtr<Surface> GetWeakPtr() { return weak_factory_.GetWeakPtr(); }
 
+  // Places the copy-of-output request on the render pass defined by
+  // |PendingCopyOutputRequest::subtree_capture_id| if such a render pass
+  // exists, otherwise the request will be ignored.
+  void RequestCopyOfOutput(
+      PendingCopyOutputRequest pending_copy_output_request);
+
+  // Always placed the given |copy_request| on the root render pass.
+  void RequestCopyOfOutputOnRootRenderPass(
+      std::unique_ptr<CopyOutputRequest> copy_request);
+
  private:
   struct FrameData {
     FrameData(CompositorFrame&& frame, uint64_t frame_index);
@@ -313,16 +323,6 @@ class VIZ_SERVICE_EXPORT Surface final {
   static void TakeLatencyInfoFromFrame(
       CompositorFrame* frame,
       std::vector<ui::LatencyInfo>* latency_info);
-
-  // Places the copy-of-output request on the render pass defined by
-  // |PendingCopyOutputRequest::subtree_capture_id| if such a render pass
-  // exists, otherwise the request will be ignored.
-  void RequestCopyOfOutput(
-      PendingCopyOutputRequest pending_copy_output_request);
-
-  // Always placed the given |copy_request| on the root render pass.
-  void RequestCopyOfOutputOnRootRenderPass(
-      std::unique_ptr<CopyOutputRequest> copy_request);
 
   const SurfaceInfo surface_info_;
   SurfaceId previous_frame_surface_id_;

@@ -44,6 +44,10 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrameStorage {
     if (!expiry_closure_.IsCancelled())
       ExpireSavedFrame();
   }
+  void CompleteForTesting() {
+    if (saved_frame_)
+      saved_frame_->CompleteSavedFrameForTesting();
+  }
 
  private:
   // This expires the saved frame, if any.

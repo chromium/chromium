@@ -79,6 +79,8 @@ class VIZ_COMMON_EXPORT CopyOutputResult {
     gpu::SyncToken sync_token;
     gfx::ColorSpace color_space;
 
+    TextureResult() = default;
+
     TextureResult(const gpu::Mailbox& mailbox,
                   const gpu::SyncToken& sync_token,
                   const gfx::ColorSpace& color_space)

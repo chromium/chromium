@@ -35,6 +35,10 @@ void SurfaceSavedFrameStorage::ProcessSaveDirective(
   // directive can only reference the root render pass.
   saved_frame_ = std::make_unique<SurfaceSavedFrame>(directive);
 
+  // Let the saved frame append copy output requests to the render pass list.
+  // This is how we save the pixel output of the frame.
+  saved_frame_->RequestCopyOfOutput(surface_);
+
   // Schedule an expiry callback.
   // Note that since the expiry_closure_ has a shorter lifetime than `this`, we
   // bind `this` as unretained.
@@ -42,12 +46,6 @@ void SurfaceSavedFrameStorage::ProcessSaveDirective(
       &SurfaceSavedFrameStorage::ExpireSavedFrame, base::Unretained(this)));
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, expiry_closure_.callback(), kExpiryTime);
-
-  // TODO(vmpstr): Ask surface for the active compositor frame and give it to
-  // `saved_frame_` so that it can add copy output requests for whatever is
-  // needed.
-  // For now use surface to silence the compiler warnings.
-  (void)surface_;
 }
 
 std::unique_ptr<SurfaceSavedFrame> SurfaceSavedFrameStorage::TakeSavedFrame() {
