@@ -99,7 +99,6 @@ no_check_targets = [
   "//extensions/browser/api/file_system:*",  # 1 error
   "//extensions/browser/api/hid:*",  # 12 errors
   "//extensions/browser/api/idle:*",  # 4 errors
-  "//extensions/browser/api/mime_handler_private:*",  # 1 error
   "//extensions/browser/api/networking_private:*",  # 14 errors
   "//extensions/browser/api/power:*",  # 3 errors
   "//extensions/browser/api/sockets_tcp:*",  # 6 errors
