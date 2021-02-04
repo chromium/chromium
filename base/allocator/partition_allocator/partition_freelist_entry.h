@@ -17,12 +17,8 @@
 // Enable free list hardening.
 //
 // Disabled on ARM64 Macs, as this crashes very early (crbug.com/1172236).
-// Enabled for DCHECK() builds only on Windows, as this causes issues in some
-// tests.
-//
 // TODO(lizeb): Enable in as many configurations as possible.
-#if !(defined(OS_MAC) && defined(ARCH_CPU_ARM64)) && \
-    (DCHECK_IS_ON() || !defined(OS_WIN))
+#if !(defined(OS_MAC) && defined(ARCH_CPU_ARM64))
 #define PA_HAS_FREELIST_HARDENING
 #endif
 
