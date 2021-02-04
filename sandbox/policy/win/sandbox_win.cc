@@ -58,8 +58,6 @@ namespace {
 
 BrokerServices* g_broker_services = NULL;
 
-HANDLE g_job_object_handle = NULL;
-
 // The DLLs listed here are known (or under strong suspicion) of causing crashes
 // when they are loaded in the renderer. Note: at runtime we generate short
 // versions of the dll name only if the dll has an extension.
@@ -933,24 +931,26 @@ ResultCode SandboxWin::StartSandboxedProcess(
       launcher_process_command_line.HasSwitch(switches::kNoSandbox)) {
     base::LaunchOptions options;
     options.handles_to_inherit = handles_to_inherit;
-    BOOL in_job = true;
-    // Prior to Windows 8 nested jobs aren't possible.
-    if (sandbox_type == SandboxType::kNetwork &&
-        (base::win::GetVersion() >= base::win::Version::WIN8 ||
-         (::IsProcessInJob(::GetCurrentProcess(), nullptr, &in_job) &&
-          !in_job))) {
-      // Launch the process in a job to ensure that the network process doesn't
-      // outlive the browser. This could happen if there is a lot of I/O on
-      // process shutdown, in which case TerminateProcess would fail.
-      // https://crbug.com/820996
-      if (!g_job_object_handle) {
-        Job job_obj;
-        DWORD result = job_obj.Init(JOB_UNPROTECTED, nullptr, 0, 0);
-        if (result != ERROR_SUCCESS)
-          return SBOX_ERROR_CANNOT_INIT_JOB;
-        g_job_object_handle = job_obj.Take().Take();
+    // Network process runs in a job even when unsandboxed. This is to ensure it
+    // does not outlive the browser, which could happen if there is a lot of I/O
+    // on process shutdown, in which case TerminateProcess can fail. See
+    // https://crbug.com/820996.
+    if (delegate->ShouldUnsandboxedRunInJob()) {
+      BOOL in_job = true;
+      // Prior to Windows 8 nested jobs aren't possible.
+      if (base::win::GetVersion() >= base::win::Version::WIN8 ||
+          (::IsProcessInJob(::GetCurrentProcess(), nullptr, &in_job) &&
+           !in_job)) {
+        static HANDLE job_object_handle = nullptr;
+        if (!job_object_handle) {
+          Job job_obj;
+          DWORD result = job_obj.Init(JOB_UNPROTECTED, nullptr, 0, 0);
+          if (result != ERROR_SUCCESS)
+            return SBOX_ERROR_CANNOT_INIT_JOB;
+          job_object_handle = job_obj.Take().Take();
+        }
+        options.job_handle = job_object_handle;
       }
-      options.job_handle = g_job_object_handle;
     }
     *process = base::LaunchProcess(*cmd_line, options);
     return SBOX_ALL_OK;
@@ -1002,10 +1002,6 @@ ResultCode SandboxWin::StartSandboxedProcess(
       sandbox_type == SandboxType::kIconReader) {
     mitigations |= MITIGATION_DYNAMIC_CODE_DISABLE;
   }
-  // TODO(wfh): Relax strict handle checks for network process until root cause
-  // for this crash can be resolved. See https://crbug.com/939590.
-  if (sandbox_type != SandboxType::kNetwork)
-    mitigations |= MITIGATION_STRICT_HANDLE_CHECKS;
 
   result = policy->SetDelayedProcessMitigations(mitigations);
   if (result != SBOX_ALL_OK)

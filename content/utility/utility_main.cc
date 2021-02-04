@@ -174,6 +174,13 @@ int UtilityMain(const MainFunctionParams& parameters) {
     // Ensure RtlGenRandom is warm before the token is lowered; otherwise,
     // base::RandBytes() will CHECK fail when v8 is initialized.
     base::RandBytes(&buffer, sizeof(buffer));
+
+    // Network service process needs FWPUCLNT.DLL to be loaded otherwise
+    // getaddrinfo fails.
+    if (sandbox_type == sandbox::policy::SandboxType::kNetwork) {
+      HMODULE fwpuclnt_pin = ::LoadLibrary(L"FWPUCLNT.DLL");
+      UNREFERENCED_PARAMETER(fwpuclnt_pin);
+    }
     g_utility_target_services->LowerToken();
   }
 #endif
