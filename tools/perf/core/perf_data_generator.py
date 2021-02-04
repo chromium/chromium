@@ -197,13 +197,18 @@ FYI_BUILDERS = {
         },
     },
     'fuchsia-perf-fyi': {
+        # TODO(rohpavone): Temporarily using telemetry_gpu_tests until custom
+        # test is created to run telemetry benchmarks, as this gets infra up.
         'tests': [{
             'isolate':
-            'performance_test_suite',
+            'fuchsia_telemetry_gpu_integration_test',
             'extra_args': [
-                '--output-format=histograms',
-                '--experimental-tbmv3-metrics',
+                'hardware_accelerated_feature', '--show-stdout',
+                '--browser=web-engine-shell', '--passthrough', '-v',
+                '--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc'
             ],
+            'type':
+            TEST_TYPES.GENERIC,
         }],
         'platform':
         'fuchsia',
