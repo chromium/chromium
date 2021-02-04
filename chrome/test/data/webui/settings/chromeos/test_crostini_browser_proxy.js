@@ -2,8 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
+// clang-format on
+
 /** @implements {settings.CrostiniBrowserProxy} */
-class TestCrostiniBrowserProxy extends TestBrowserProxy {
+/* #export */ class TestCrostiniBrowserProxy extends TestBrowserProxy {
   constructor() {
     super([
       'requestCrostiniInstallerView',
@@ -28,6 +32,8 @@ class TestCrostiniBrowserProxy extends TestBrowserProxy {
       'setCrostiniMicSharingEnabled',
       'getCrostiniMicSharingEnabled',
       'requestCrostiniInstallerStatus',
+      'requestArcAdbSideloadStatus',
+      'getCanChangeArcAdbSideloading',
     ]);
     this.crostiniMicSharingEnabled = false;
     this.crostiniIsRunning = true;
@@ -69,6 +75,16 @@ class TestCrostiniBrowserProxy extends TestBrowserProxy {
   /** override */
   requestRemoveCrostini() {
     this.methodCalled('requestRemoveCrostini');
+  }
+
+  /**override */
+  requestArcAdbSideloadStatus() {
+    this.methodCalled('requestArcAdbSideloadStatus');
+  }
+
+  /** override */
+  getCanChangeArcAdbSideloading() {
+    this.methodCalled('getCanChangeArcAdbSideloading');
   }
 
   /** @override */

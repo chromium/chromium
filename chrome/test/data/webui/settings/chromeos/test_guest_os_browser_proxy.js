@@ -9,7 +9,7 @@
 // clang-format on
 
 /** @implements {settings.GuestOsBrowserProxy} */
-class TestGuestOsBrowserProxy extends TestBrowserProxy {
+/* #export */ class TestGuestOsBrowserProxy extends TestBrowserProxy {
   constructor() {
     super([
       'getGuestOsSharedPathsDisplayText',

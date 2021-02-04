@@ -104,7 +104,6 @@ js_library("crostini_subpage") {
   ]
 }
 
-# TODO: Uncomment as the Polymer3 migration makes progress.
 js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
@@ -130,8 +129,12 @@ js_library("crostini_arc_adb.m") {
     "..:deep_linking_behavior.m",
     "..:metrics_recorder.m",
     "..:os_route.m",
+    "../..:router.m",
     "../localized_link:localized_link.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/policy:cr_policy_indicator.m",
+    "//ui/webui/resources/cr_elements/policy:cr_policy_indicator.m",
+    "//ui/webui/resources/cr_elements/policy:cr_policy_indicator_behavior.m",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
@@ -144,6 +147,8 @@ js_library("crostini_arc_adb_confirmation_dialog.m") {
   deps = [
     ":crostini_browser_proxy.m",
     "..:metrics_recorder.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
   extra_deps = [ ":crostini_arc_adb_confirmation_dialog_module" ]
@@ -237,7 +242,11 @@ js_library("crostini_page.m") {
     "..:os_route.m",
     "../..:router.m",
     "../../prefs:prefs_behavior.m",
+    "../guest_os:guest_os_shared_paths.m",
+    "../guest_os:guest_os_shared_usb_devices.m",
     "../localized_link:localized_link.m",
+    "//chrome/browser/resources/settings/settings_page:settings_animated_pages.m",
+    "//chrome/browser/resources/settings/settings_page:settings_subpage.m",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
     "//ui/webui/resources/cr_elements/policy:cr_policy_indicator.m",
@@ -252,6 +261,8 @@ js_library("crostini_port_forwarding.m") {
   deps = [
     ":crostini_browser_proxy.m",
     ":crostini_port_forwarding_add_port_dialog.m",
+    "..:metrics_recorder.m",
+    "../../controls:settings_toggle_button.m",
     "../../prefs:prefs_behavior.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
@@ -259,6 +270,7 @@ js_library("crostini_port_forwarding.m") {
     "//ui/webui/resources/cr_elements/cr_lazy_render:cr_lazy_render.m",
     "//ui/webui/resources/cr_elements/cr_toast:cr_toast.m",
     "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
   extra_deps = [ ":crostini_port_forwarding_module" ]
@@ -297,6 +309,7 @@ js_library("crostini_subpage.m") {
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_link_row:cr_link_row.m",
     "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
   extra_deps = [ ":crostini_subpage_module" ]

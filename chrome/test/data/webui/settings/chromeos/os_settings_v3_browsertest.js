@@ -11,6 +11,7 @@ GEN('#include "ash/public/cpp/ash_features.h"');
 GEN('#include "chrome/common/buildflags.h"');
 GEN('#include "build/branding_buildflags.h"');
 GEN('#include "content/public/test/browser_test.h"');
+GEN('#include "chrome/common/chrome_features.h"');
 GEN('#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"');
 
 /** Test fixture for shared Polymer 3 elements. */
@@ -28,6 +29,7 @@ var OSSettingsV3BrowserTest = class extends PolymerTest {
         'chromeos::features::kEnableHostnameSetting',
         'chromeos::features::kOsSettingsPolymer3',
         'chromeos::features::kUpdatedCellularActivationUi',
+        'features::kCrostini',
       ],
     };
   }
@@ -202,6 +204,7 @@ TEST_F(
  ['BluetoothPage', 'bluetooth_page_tests.m.js'],
  ['CellularNetworksList', 'cellular_networks_list_test.m.js'],
  ['CellularSetupDialog', 'cellular_setup_dialog_test.m.js'],
+ ['CrostiniPage', 'crostini_page_test.m.js'],
  ['CupsPrinterEntry', 'cups_printer_entry_tests.m.js'],
  ['CupsPrinterLandingPage', 'cups_printer_landing_page_tests.m.js'],
  ['CupsPrinterPage', 'cups_printer_page_tests.m.js'],
