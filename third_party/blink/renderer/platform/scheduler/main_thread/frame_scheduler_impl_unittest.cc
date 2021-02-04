@@ -27,6 +27,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
+#include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/platform/scheduler/common/features.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_task_queue_controller.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
@@ -1044,7 +1045,9 @@ class FrameSchedulerImplTestWithUnfreezableLoading
  public:
   FrameSchedulerImplTestWithUnfreezableLoading()
       : FrameSchedulerImplTest({blink::features::kLoadingTasksUnfreezable},
-                               {}) {}
+                               {}) {
+    WebRuntimeFeatures::EnableBackForwardCache(true);
+  }
 };
 
 TEST_F(FrameSchedulerImplTestWithUnfreezableLoading,

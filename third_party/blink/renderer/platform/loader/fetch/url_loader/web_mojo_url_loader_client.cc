@@ -19,6 +19,7 @@
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_mojo_url_loader_client_observer.h"
+#include "third_party/blink/renderer/platform/back_forward_cache_utils.h"
 
 namespace blink {
 namespace {
@@ -160,8 +161,7 @@ class WebMojoURLLoaderClient::BodyBuffer final
         writable_watcher_(FROM_HERE,
                           mojo::SimpleWatcher::ArmingPolicy::MANUAL,
                           std::move(task_runner)),
-        max_bytes_drained_(base::GetFieldTrialParamByFeatureAsInt(
-            blink::features::kLoadingTasksUnfreezable,
+        max_bytes_drained_(GetLoadingTasksUnfreezableParamAsInt(
             "max_buffered_bytes",
             kDefaultMaxBufferedBodyBytesPerRequest)) {
     pipe_drainer_ =
@@ -284,17 +284,16 @@ WebMojoURLLoaderClient::WebMojoURLLoaderClient(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     bool bypass_redirect_checks,
     const GURL& request_url)
-    : url_loader_client_observer_(url_loader_client_observer),
+    : back_forward_cache_timeout_(
+          base::TimeDelta::FromSeconds(GetLoadingTasksUnfreezableParamAsInt(
+              "grace_period_to_finish_loading_in_seconds",
+              static_cast<int>(
+                  kGracePeriodToFinishLoadingWhileInBackForwardCache
+                      .InSeconds())))),
+      url_loader_client_observer_(url_loader_client_observer),
       task_runner_(std::move(task_runner)),
       bypass_redirect_checks_(bypass_redirect_checks),
-      last_loaded_url_(request_url) {
-  back_forward_cache_timeout_ =
-      base::TimeDelta::FromSeconds(base::GetFieldTrialParamByFeatureAsInt(
-          blink::features::kLoadingTasksUnfreezable,
-          "grace_period_to_finish_loading_in_seconds",
-          static_cast<int>(
-              kGracePeriodToFinishLoadingWhileInBackForwardCache.InSeconds())));
-}
+      last_loaded_url_(request_url) {}
 
 WebMojoURLLoaderClient::~WebMojoURLLoaderClient() = default;
 
@@ -449,8 +448,7 @@ void WebMojoURLLoaderClient::OnStartLoadingResponseBody(
     return;
   }
 
-  DCHECK(
-      base::FeatureList::IsEnabled(blink::features::kLoadingTasksUnfreezable));
+  DCHECK(IsInflightNetworkRequestBackForwardCacheSupportEnabled());
   // We want to run loading tasks while deferred (but without dispatching the
   // messages). Drain the original pipe containing the response body into a
   // new pipe so that we won't block the network service if we're deferred for

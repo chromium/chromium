@@ -23,6 +23,7 @@
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_mojo_url_loader_client_observer.h"
+#include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 
 namespace blink {
@@ -187,6 +188,9 @@ class WebMojoURLLoaderClientTest : public ::testing::Test,
       scoped_feature_list_.InitAndEnableFeature(
           blink::features::kLoadingTasksUnfreezable);
     }
+
+    WebRuntimeFeatures::EnableBackForwardCache(
+        DeferWithBackForwardCacheEnabled());
 
     auto url_loader_factory =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(this);

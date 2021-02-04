@@ -9,6 +9,7 @@
 #include "base/auto_reset.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink.h"
+#include "third_party/blink/renderer/platform/back_forward_cache_utils.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_context.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader.h"
@@ -286,8 +287,7 @@ class ResponseBodyLoader::Buffer final
  public:
   explicit Buffer(ResponseBodyLoader* owner)
       : owner_(owner),
-        max_bytes_to_read_(base::GetFieldTrialParamByFeatureAsInt(
-            blink::features::kLoadingTasksUnfreezable,
+        max_bytes_to_read_(GetLoadingTasksUnfreezableParamAsInt(
             "max_buffered_bytes",
             kDefaultMaxBufferedBodyBytesPerRequest)) {}
 
@@ -482,7 +482,7 @@ void ResponseBodyLoader::Suspend(WebURLLoader::DeferType suspended_state) {
 
   suspended_state_ = suspended_state;
   if (IsSuspendedForBackForwardCache()) {
-    DCHECK(base::FeatureList::IsEnabled(features::kLoadingTasksUnfreezable));
+    DCHECK(IsInflightNetworkRequestBackForwardCacheSupportEnabled());
     // If we're already suspended (but not for back-forward cache), we might've
     // ignored some OnStateChange calls.
     if (was_suspended) {

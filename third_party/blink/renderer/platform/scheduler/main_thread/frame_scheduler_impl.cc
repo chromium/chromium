@@ -18,6 +18,7 @@
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/platform/blame_context.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/renderer/platform/back_forward_cache_utils.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/common/features.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/budget_pool.h"
@@ -393,7 +394,7 @@ QueueTraits FrameSchedulerImpl::CreateQueueTraitsForTaskType(TaskType type) {
     case TaskType::kNetworkingWithURLLoaderAnnotation:
       return LoadingTaskQueueTraits();
     case TaskType::kNetworkingUnfreezable:
-      return base::FeatureList::IsEnabled(features::kLoadingTasksUnfreezable)
+      return IsInflightNetworkRequestBackForwardCacheSupportEnabled()
                  ? UnfreezableLoadingTaskQueueTraits()
                  : LoadingTaskQueueTraits();
     case TaskType::kNetworkingControl:

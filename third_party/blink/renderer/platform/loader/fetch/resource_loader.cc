@@ -55,6 +55,7 @@
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/platform/web_url_response.h"
+#include "third_party/blink/renderer/platform/back_forward_cache_utils.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_request.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -441,7 +442,7 @@ ResourceLoader::ResourceLoader(ResourceFetcher* fetcher,
       // Only when this feature is turned on and the loading tasks keep being
       // processed and the data is queued up on the renderer, a page can stay in
       // BackForwardCache with network requests.
-      if (!base::FeatureList::IsEnabled(features::kLoadingTasksUnfreezable)) {
+      if (!IsInflightNetworkRequestBackForwardCacheSupportEnabled()) {
         feature_handle_for_scheduler_ =
             frame_or_worker_scheduler->RegisterFeature(
                 GetFeatureFromRequestContextType(request_context),

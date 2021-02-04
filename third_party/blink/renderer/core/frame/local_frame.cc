@@ -165,6 +165,7 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
 #include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
+#include "third_party/blink/renderer/platform/back_forward_cache_utils.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
@@ -227,10 +228,11 @@ constexpr size_t kDefaultMaxBufferedBodyBytesPerProcess = 512 * 1000;
 class BackForwardCacheBufferLimitTracker {
  public:
   BackForwardCacheBufferLimitTracker()
-      : max_buffered_bytes_per_process_(base::GetFieldTrialParamByFeatureAsInt(
-            blink::features::kLoadingTasksUnfreezable,
-            "max_buffered_bytes_per_process",
-            kDefaultMaxBufferedBodyBytesPerProcess)) {}
+      : max_buffered_bytes_per_process_(
+            blink::GetLoadingTasksUnfreezableParamAsInt(
+                "max_buffered_bytes_per_process",
+                kDefaultMaxBufferedBodyBytesPerProcess)) {}
+
   BackForwardCacheBufferLimitTracker(BackForwardCacheBufferLimitTracker&) =
       delete;
 
@@ -2432,7 +2434,7 @@ bool LocalFrame::SwapIn() {
 
 WebURLLoader::DeferType LocalFrame::GetLoadDeferType() {
   if (GetPage()->GetPageScheduler()->IsInBackForwardCache() &&
-      base::FeatureList::IsEnabled(features::kLoadingTasksUnfreezable)) {
+      IsInflightNetworkRequestBackForwardCacheSupportEnabled()) {
     return WebURLLoader::DeferType::kDeferredWithBackForwardCache;
   }
   if (paused_ || frozen_)
