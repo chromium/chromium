@@ -34,6 +34,10 @@ interface ServiceController {
   // Stop the service. Will be a noop if the service is already stopped.
   Stop();
 
+  // Stop the service, and erase all config files and user data.
+  // Will be a noop if the service is already stopped.
+  ResetAllDataAndStop();
+
   // Sets the locale override of the device. This field overrides the
   // value obtained from the user's assistant settings.
   SetLocaleOverride(string locale_override);

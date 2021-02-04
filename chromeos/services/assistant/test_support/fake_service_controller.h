@@ -75,6 +75,9 @@ class FakeServiceController : public libassistant::mojom::ServiceController {
   // |kNoValue| if an empty vector was passed in.
   std::string gaia_id();
 
+  // True if ResetAllDataAndStop() was called.
+  bool has_data_been_reset() const { return has_data_been_reset_; }
+
  private:
   // mojom::ServiceController implementation:
   void Initialize(libassistant::mojom::BootupConfigPtr config,
@@ -82,6 +85,7 @@ class FakeServiceController : public libassistant::mojom::ServiceController {
                       url_loader_factory) override;
   void Start() override;
   void Stop() override;
+  void ResetAllDataAndStop() override;
   void AddAndFireStateObserver(
       mojo::PendingRemote<libassistant::mojom::StateObserver> pending_observer)
       override;
@@ -97,6 +101,9 @@ class FakeServiceController : public libassistant::mojom::ServiceController {
 
   // Config passed to LibAssistant when it was started.
   libassistant::mojom::BootupConfig libassistant_config_;
+
+  // True if ResetAllDataAndStop() was called.
+  bool has_data_been_reset_ = false;
 
   // Authentication tokens passed to SetAuthenticationTokens().
   std::vector<libassistant::mojom::AuthenticationTokenPtr>

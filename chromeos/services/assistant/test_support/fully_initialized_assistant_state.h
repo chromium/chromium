@@ -17,6 +17,8 @@ class FullyInitializedAssistantState : public ash::AssistantState {
   FullyInitializedAssistantState();
   ~FullyInitializedAssistantState() override = default;
 
+  void SetAssistantEnabled(bool enabled);
+
  private:
   void InitializeAllValues();
 

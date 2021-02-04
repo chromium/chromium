@@ -182,6 +182,14 @@ void ServiceController::Stop() {
   DVLOG(1) << "Stopped Libassistant service";
 }
 
+void ServiceController::ResetAllDataAndStop() {
+  if (assistant_manager()) {
+    DVLOG(1) << "Resetting all Libassistant data";
+    assistant_manager()->ResetAllDataAndShutdown();
+  }
+  Stop();
+}
+
 void ServiceController::AddAndFireStateObserver(
     mojo::PendingRemote<mojom::StateObserver> pending_observer) {
   mojo::Remote<mojom::StateObserver> observer(std::move(pending_observer));

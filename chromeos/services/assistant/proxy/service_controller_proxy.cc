@@ -145,6 +145,10 @@ void ServiceControllerProxy::Stop() {
   service_controller_remote_->Stop();
 }
 
+void ServiceControllerProxy::ResetAllDataAndStop() {
+  service_controller_remote_->ResetAllDataAndStop();
+}
+
 void ServiceControllerProxy::UpdateInternalOptions(
     const std::string& locale,
     bool spoken_feedback_enabled) {

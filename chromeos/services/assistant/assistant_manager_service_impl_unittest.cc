@@ -237,7 +237,7 @@ class AssistantManagerServiceImplTest : public testing::Test {
     return assistant_manager_service_.get();
   }
 
-  ash::AssistantState* assistant_state() { return &assistant_state_; }
+  FullyInitializedAssistantState& assistant_state() { return assistant_state_; }
 
   FakeAssistantManager* fake_assistant_manager() {
     return assistant_manager_.get();
@@ -436,6 +436,30 @@ TEST_F(AssistantManagerServiceImplTest, ShouldAllowRestartingAfterStopping) {
 
   Start();
   WaitForState(AssistantManagerService::STARTED);
+}
+
+TEST_F(AssistantManagerServiceImplTest, ShouldNotResetDataWhenStopping) {
+  Start();
+  WaitForState(AssistantManagerService::STARTED);
+
+  assistant_manager_service()->Stop();
+  WaitForState(AssistantManagerService::STOPPED);
+  RunUntilIdle();
+
+  EXPECT_EQ(false, mojom_service_controller().has_data_been_reset());
+}
+
+TEST_F(AssistantManagerServiceImplTest,
+       ShouldResetDataWhenAssistantIsDisabled) {
+  Start();
+  WaitForState(AssistantManagerService::STARTED);
+
+  assistant_state().SetAssistantEnabled(false);
+  assistant_manager_service()->Stop();
+  WaitForState(AssistantManagerService::STOPPED);
+  RunUntilIdle();
+
+  EXPECT_EQ(true, mojom_service_controller().has_data_been_reset());
 }
 
 TEST_F(AssistantManagerServiceImplTest,

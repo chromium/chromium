@@ -99,6 +99,11 @@ void FakeServiceController::Stop() {
   SetState(State::kStopped);
 }
 
+void FakeServiceController::ResetAllDataAndStop() {
+  SetState(State::kStopped);
+  has_data_been_reset_ = true;
+}
+
 void FakeServiceController::AddAndFireStateObserver(
     mojo::PendingRemote<libassistant::mojom::StateObserver> pending_observer) {
   mojo::Remote<libassistant::mojom::StateObserver> observer(

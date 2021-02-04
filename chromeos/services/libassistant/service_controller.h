@@ -69,6 +69,7 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
                       url_loader_factory) override;
   void Start() override;
   void Stop() override;
+  void ResetAllDataAndStop() override;
   void AddAndFireStateObserver(
       mojo::PendingRemote<mojom::StateObserver> observer) override;
   void SetLocaleOverride(const std::string& value) override;
