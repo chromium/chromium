@@ -230,15 +230,12 @@ TEST_F(SigninProfileAttributesUpdaterTest,
 
 class SigninProfileAttributesUpdaterWithForceSigninTest
     : public SigninProfileAttributesUpdaterTest {
-  void SetUp() override {
-    signin_util::SetForceSigninForTesting(true);
-    SigninProfileAttributesUpdaterTest::SetUp();
-  }
+ public:
+  SigninProfileAttributesUpdaterWithForceSigninTest()
+      : forced_signin_setter_(true) {}
 
-  void TearDown() override {
-    SigninProfileAttributesUpdaterTest::TearDown();
-    signin_util::ResetForceSigninForTesting();
-  }
+ private:
+  signin_util::ScopedForceSigninSetterForTesting forced_signin_setter_;
 };
 
 TEST_F(SigninProfileAttributesUpdaterWithForceSigninTest, IsSigninRequired) {

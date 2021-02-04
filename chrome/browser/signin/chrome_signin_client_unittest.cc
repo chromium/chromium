@@ -146,10 +146,9 @@ class MockChromeSigninClient : public ChromeSigninClient {
 
 class ChromeSigninClientSignoutTest : public BrowserWithTestWindowTest {
  public:
+  ChromeSigninClientSignoutTest() : forced_signin_setter_(true) {}
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
-
-    signin_util::SetForceSigninForTesting(true);
     CreateClient(browser()->profile());
   }
 
@@ -170,6 +169,7 @@ class ChromeSigninClientSignoutTest : public BrowserWithTestWindowTest {
                         source_metric);
   }
 
+  signin_util::ScopedForceSigninSetterForTesting forced_signin_setter_;
   std::unique_ptr<MockChromeSigninClient> client_;
 };
 
@@ -193,7 +193,7 @@ TEST_F(ChromeSigninClientSignoutTest, SignOut) {
 }
 
 TEST_F(ChromeSigninClientSignoutTest, SignOutWithoutForceSignin) {
-  signin_util::SetForceSigninForTesting(false);
+  signin_util::ScopedForceSigninSetterForTesting signin_setter(false);
   CreateClient(browser()->profile());
 
   signin_metrics::ProfileSignout source_metric =

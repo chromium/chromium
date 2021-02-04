@@ -171,6 +171,15 @@ void SetForceSigninPolicy(bool enable) {
 
 }  // namespace
 
+ScopedForceSigninSetterForTesting::ScopedForceSigninSetterForTesting(
+    bool enable) {
+  SetForceSigninForTesting(enable);  // IN-TEST
+}
+
+ScopedForceSigninSetterForTesting::~ScopedForceSigninSetterForTesting() {
+  ResetForceSigninForTesting();  // IN-TEST
+}
+
 bool IsForceSigninEnabled() {
   if (g_is_force_signin_enabled_cache == NOT_CACHED) {
     PrefService* prefs = g_browser_process->local_state();

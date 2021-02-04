@@ -669,7 +669,7 @@ TEST_F(ProfileAttributesStorageTest, ChooseAvatarIconIndexForNewProfile) {
 }
 
 TEST_F(ProfileAttributesStorageTest, ProfileForceSigninLock) {
-  signin_util::SetForceSigninForTesting(true);
+  signin_util::ScopedForceSigninSetterForTesting signin_setter(true);
 
   AddTestingProfile();
 

@@ -217,6 +217,7 @@ class StartupBrowserCreatorCorruptProfileTest
   void TearDown() override {
     EXPECT_EQ(expect_test_body_to_run_, test_body_has_run_);
     InProcessBrowserTest::TearDown();
+    signin_util::ResetForceSigninForTesting();
   }
 
  private:

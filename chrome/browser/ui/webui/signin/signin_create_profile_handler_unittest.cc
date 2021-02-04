@@ -172,7 +172,7 @@ TEST_F(SigninCreateProfileHandlerTest, CreateProfile) {
 }
 
 TEST_F(SigninCreateProfileHandlerTest, CreateProfileWithForceSignin) {
-  signin_util::SetForceSigninForTesting(true);
+  signin_util::ScopedForceSigninSetterForTesting signin_setter(true);
   ASSERT_TRUE(signin_util::IsForceSigninEnabled());
 
   // Expect the call to create the profile.
@@ -200,6 +200,4 @@ TEST_F(SigninCreateProfileHandlerTest, CreateProfileWithForceSignin) {
   std::string callback_name;
   ASSERT_TRUE(web_ui()->call_data()[0]->arg1()->GetAsString(&callback_name));
   EXPECT_EQ("create-profile-success", callback_name);
-
-  signin_util::SetForceSigninForTesting(false);
 }

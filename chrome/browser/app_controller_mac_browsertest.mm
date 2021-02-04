@@ -525,10 +525,7 @@ class AppControllerProfilePickerBrowserTest
   AppControllerProfilePickerBrowserTest() {
     feature_list_.InitAndEnableFeature(features::kNewProfilePicker);
   }
-
-  ~AppControllerProfilePickerBrowserTest() override {
-    signin_util::ResetForceSigninForTesting();
-  }
+  ~AppControllerProfilePickerBrowserTest() override = default;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -551,7 +548,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
 // Test that for a locked last profile, a reopen event opens the ProfilePicker.
 IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
                        LockedProfileReopenWithNoWindows) {
-  signin_util::SetForceSigninForTesting(true);
+  signin_util::ScopedForceSigninSetterForTesting signin_setter(true);
   // The User Manager uses the system profile as its underlying profile. To
   // minimize flakiness due to the scheduling/descheduling of tasks on the
   // different threads, pre-initialize the guest profile before it is needed.

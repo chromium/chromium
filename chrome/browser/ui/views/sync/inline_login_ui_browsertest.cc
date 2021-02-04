@@ -416,13 +416,9 @@ IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, CanOfferNoSigninCookies) {
 
 class InlineLoginHelperBrowserTest : public InProcessBrowserTest {
  public:
-  InlineLoginHelperBrowserTest() {
-    signin_util::SetForceSigninForTesting(true);
-  }
+  InlineLoginHelperBrowserTest() : forced_signin_setter_(true) {}
 
-  ~InlineLoginHelperBrowserTest() override {
-    signin_util::ResetForceSigninForTesting();
-  }
+  ~InlineLoginHelperBrowserTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     create_services_subscription_ =
@@ -517,6 +513,7 @@ class InlineLoginHelperBrowserTest : public InProcessBrowserTest {
       identity_test_env_profile_adaptor_;
   base::CallbackListSubscription create_services_subscription_;
   Profile* profile_ = nullptr;
+  signin_util::ScopedForceSigninSetterForTesting forced_signin_setter_;
 
   DISALLOW_COPY_AND_ASSIGN(InlineLoginHelperBrowserTest);
 };

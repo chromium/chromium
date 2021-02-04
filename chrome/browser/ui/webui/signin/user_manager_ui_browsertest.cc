@@ -146,7 +146,7 @@ class UserManagerUIAuthenticatedUserBrowserTest
 
 IN_PROC_BROWSER_TEST_F(UserManagerUIAuthenticatedUserBrowserTest, Reauth) {
   Init();
-  signin_util::SetForceSigninForTesting(true);
+  signin_util::ScopedForceSigninSetterForTesting signin_setter(true);
   entry_->SetLocalAuthCredentials("1mock_credentials");
   // Consent profile's primary account.
   entry_->SetAuthInfo("gaia_id", base::string16(), true);
@@ -166,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(UserManagerUIAuthenticatedUserBrowserTest, Reauth) {
 IN_PROC_BROWSER_TEST_F(UserManagerUIAuthenticatedUserBrowserTest,
                        SigninButUnconsentedUserBlocked) {
   Init();
-  signin_util::SetForceSigninForTesting(true);
+  signin_util::ScopedForceSigninSetterForTesting signin_setter(true);
 
   // Unconsent profile's primary account is used locked due to force sign in.
   entry_->SetIsSigninRequired(true);
@@ -183,7 +183,6 @@ IN_PROC_BROWSER_TEST_F(UserManagerUIAuthenticatedUserBrowserTest,
   histogram_tester_.ExpectUniqueSample(
       kAuthenticatedLaunchUserEventMetricsName,
       AuthenticatedLaunchUserEvent::USED_PROFILE_BLOCKED_WARNING, 1);
-  signin_util::ResetForceSigninForTesting();
 }
 
 IN_PROC_BROWSER_TEST_F(UserManagerUIAuthenticatedUserBrowserTest,
@@ -205,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(UserManagerUIAuthenticatedUserBrowserTest,
 IN_PROC_BROWSER_TEST_F(UserManagerUIAuthenticatedUserBrowserTest,
                        NormalUserBlocked) {
   Init();
-  signin_util::SetForceSigninForTesting(true);
+  signin_util::ScopedForceSigninSetterForTesting signin_setter(true);
   entry_->SetIsSigninRequired(true);
   entry_->SetActiveTimeToNow();
   MockLoginUIService* service = static_cast<MockLoginUIService*>(
@@ -218,13 +217,12 @@ IN_PROC_BROWSER_TEST_F(UserManagerUIAuthenticatedUserBrowserTest,
   histogram_tester_.ExpectUniqueSample(
       kAuthenticatedLaunchUserEventMetricsName,
       AuthenticatedLaunchUserEvent::USED_PROFILE_BLOCKED_WARNING, 1);
-  signin_util::ResetForceSigninForTesting();
 }
 
 IN_PROC_BROWSER_TEST_F(UserManagerUIAuthenticatedUserBrowserTest,
                        ForcedPrimarySignin) {
   Init();
-  signin_util::SetForceSigninForTesting(true);
+  signin_util::ScopedForceSigninSetterForTesting signin_setter(true);
 
   LaunchAuthenticatedUser("");
 
