@@ -1714,6 +1714,23 @@ TEST_F(NGGridLayoutAlgorithmTest, PositionedOutOfFlowItems) {
         grid-column-start: 5;
         grid-column-end: 6;
       }
+
+      #fifthItem {
+        grid-column-start: auto;
+        grid-column-end: 1;
+        grid-row-start: 2;
+        grid-row-end: 3;
+        background-color: hotpink;
+      }
+
+      #sixthItem {
+        grid-column-start: 4;
+        grid-column-end: auto;
+        grid-row-start: 2;
+        grid-row-end: 3;
+        background-color: purple;
+      }
+
     </style>
     <div id="wrapper">
       <div id="grid">
@@ -1721,6 +1738,8 @@ TEST_F(NGGridLayoutAlgorithmTest, PositionedOutOfFlowItems) {
         <div class="absolute" id="secondItem"></div>
         <div class="absolute" id="thirdItem"></div>
         <div class="absolute" id="fourthItem"></div>
+        <div class="absolute" id="fifthItem"></div>
+        <div class="absolute" id="sixthItem"></div>
         <div class="item"></div>
         <div class="item"></div>
         <div class="item"></div>
@@ -1751,6 +1770,8 @@ TEST_F(NGGridLayoutAlgorithmTest, PositionedOutOfFlowItems) {
       offset:5,235 size:50x50
       offset:205,5 size:50x50
       offset:5,5 size:50x50
+      offset:5,110 size:50x50
+      offset:310,110 size:50x50
 )DUMP";
   EXPECT_EQ(expectation, dump);
 }

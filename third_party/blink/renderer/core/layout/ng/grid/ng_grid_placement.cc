@@ -328,6 +328,24 @@ bool NGGridPlacement::HasSparsePacking() const {
   return packing_behavior_ == PackingBehavior::kSparse;
 }
 
+namespace {
+
+bool IsStartLineAuto(const GridTrackSizingDirection track_direction,
+                     const ComputedStyle& out_of_flow_item_style) {
+  return (track_direction == kForColumns)
+             ? out_of_flow_item_style.GridColumnStart().IsAuto()
+             : out_of_flow_item_style.GridRowStart().IsAuto();
+}
+
+bool IsEndLineAuto(const GridTrackSizingDirection track_direction,
+                   const ComputedStyle& out_of_flow_item_style) {
+  return (track_direction == kForColumns)
+             ? out_of_flow_item_style.GridColumnEnd().IsAuto()
+             : out_of_flow_item_style.GridRowEnd().IsAuto();
+}
+
+}  // namespace
+
 void NGGridPlacement::ResolveOutOfFlowItemGridLines(
     const NGGridLayoutAlgorithmTrackCollection& track_collection,
     const ComputedStyle& out_of_flow_item_style,
@@ -347,29 +365,26 @@ void NGGridPlacement::ResolveOutOfFlowItemGridLines(
     return;
   }
 
-  if (span.UntranslatedStartLine() > -1) {
-    // TODO(ansollan): Handle out of flow positioned items with negative
-    // indexes.
-    span.Translate(StartOffset(track_direction));
+  // Handle the case where the start line is 'auto' and the end line is the
+  // first line of the grid.
+  // TODO(ansollan): Handle out of flow positioned items with negative indexes.
+  if (span.UntranslatedStartLine() < 0 &&
+      IsStartLineAuto(track_direction, out_of_flow_item_style)) {
+    *start_line = kNotFound;
+    *end_line = 0;
+    return;
   }
 
+  span.Translate(StartOffset(track_direction));
   *start_line = span.StartLine();
   *end_line = span.EndLine();
 
-  bool is_start_line_auto =
-      (track_direction == kForColumns)
-          ? out_of_flow_item_style.GridColumnStart().IsAuto()
-          : out_of_flow_item_style.GridRowStart().IsAuto();
-  if (is_start_line_auto ||
+  if (IsStartLineAuto(track_direction, out_of_flow_item_style) ||
       !track_collection.IsGridLineWithinImplicitGrid(*start_line)) {
     *start_line = kNotFound;
   }
-
-  bool is_end_line_auto = (track_direction == kForColumns)
-                              ? out_of_flow_item_style.GridColumnEnd().IsAuto()
-                              : out_of_flow_item_style.GridRowEnd().IsAuto();
-  if (is_end_line_auto ||
-      !track_collection.IsGridLineWithinImplicitGrid(*end_line - 1)) {
+  if (IsEndLineAuto(track_direction, out_of_flow_item_style) ||
+      !track_collection.IsGridLineWithinImplicitGrid(*end_line)) {
     *end_line = kNotFound;
   }
 }

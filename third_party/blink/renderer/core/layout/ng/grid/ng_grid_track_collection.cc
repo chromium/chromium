@@ -606,7 +606,7 @@ wtf_size_t NGGridLayoutAlgorithmTrackCollection::EndLineOfImplicitGrid() const {
 bool NGGridLayoutAlgorithmTrackCollection::IsGridLineWithinImplicitGrid(
     wtf_size_t grid_line) const {
   DCHECK_NE(grid_line, kInvalidRangeIndex);
-  return grid_line < EndLineOfImplicitGrid();
+  return grid_line <= EndLineOfImplicitGrid();
 }
 
 NGGridSet& NGGridLayoutAlgorithmTrackCollection::SetAt(wtf_size_t set_index) {

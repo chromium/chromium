@@ -38,8 +38,8 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   };
 
   struct ItemSetIndices {
-    wtf_size_t begin;
-    wtf_size_t end;
+    wtf_size_t begin = kNotFound;
+    wtf_size_t end = kNotFound;
   };
 
   struct GridItemData {
@@ -68,6 +68,8 @@ class CORE_EXPORT NGGridLayoutAlgorithm
     // For this item and track direction, computes and stores the pair of
     // indices "begin" and "end" such that the item spans every set from the
     // respective collection's |sets_| with an index in the range [begin, end).
+    // |grid_placement| is used to resolve the grid lines of out of flow items
+    // and it has a default nullptr value for grid items.
     ItemSetIndices SetIndices(
         const NGGridLayoutAlgorithmTrackCollection& track_collection,
         NGGridPlacement* grid_placement = nullptr);

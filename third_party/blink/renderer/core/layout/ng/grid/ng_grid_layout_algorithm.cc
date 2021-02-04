@@ -242,10 +242,16 @@ NGGridLayoutAlgorithm::GridItemData::SetIndices(
   if (cached_set_indices.has_value())
     return cached_set_indices.value();
 
+  // We only calculate the indexes if:
+  // 1. The item is in flow (it is a grid item) or
+  // 2. The item is out of flow, but the line was not defined as 'auto' and
+  // the line is within the bounds of the grid, since an out of flow item
+  // cannot create grid lines.
   wtf_size_t start_line, end_line;
   if (item_type == ItemType::kInGridFlow) {
     start_line = StartLine(track_direction);
     end_line = EndLine(track_direction);
+
     DCHECK_NE(start_line, kNotFound);
     DCHECK_NE(end_line, kNotFound);
   } else {
@@ -254,32 +260,36 @@ NGGridLayoutAlgorithm::GridItemData::SetIndices(
         track_collection, node.Style(), &start_line, &end_line);
   }
 
-  // We only calculate the indexes if:
-  // 1. The item is in flow (it is a grid item) or
-  // 2. The item is out of flow, but the line was not defined as 'auto' and
-  // the line is within the bounds of the grid, since an out of flow item
-  // cannot create grid lines.
-  // TODO(ansollan): The start line of an out of flow item can be the last
-  // line of the grid. If that is the case, |set_indices.begin| has to be
-  // computed as |set_indices.end|. Similarly, if an end line is the first line
-  // of the grid, |set_indices.end| has to be computed as |set_indices.begin|.
   ItemSetIndices set_indices;
-  set_indices.begin = kNotFound;
-  set_indices.end = kNotFound;
-
   if (start_line != kNotFound) {
-    wtf_size_t first_spanned_range =
-        track_collection.RangeIndexFromTrackNumber(start_line);
-    set_indices.begin =
-        track_collection.RangeStartingSetIndex(first_spanned_range);
+    DCHECK(track_collection.IsGridLineWithinImplicitGrid(start_line));
+    // If a start line of an out of flow item is the last line of the grid, then
+    // the |set_indices.begin| is the number of sets in the collection.
+    if (track_collection.EndLineOfImplicitGrid() == start_line) {
+      DCHECK_EQ(item_type, ItemType::kOutOfFlow);
+      set_indices.begin = track_collection.SetCount();
+    } else {
+      wtf_size_t first_spanned_range =
+          track_collection.RangeIndexFromTrackNumber(start_line);
+      set_indices.begin =
+          track_collection.RangeStartingSetIndex(first_spanned_range);
+    }
   }
 
   if (end_line != kNotFound) {
-    wtf_size_t last_spanned_range =
-        track_collection.RangeIndexFromTrackNumber(end_line - 1);
-    set_indices.end =
-        track_collection.RangeStartingSetIndex(last_spanned_range) +
-        track_collection.RangeSetCount(last_spanned_range);
+    DCHECK(track_collection.IsGridLineWithinImplicitGrid(end_line));
+    // If an end line of an out of flow item is the first line of the grid, then
+    // the |set_indices.end| is 0.
+    if (!end_line) {
+      DCHECK_EQ(item_type, ItemType::kOutOfFlow);
+      set_indices.end = 0;
+    } else {
+      wtf_size_t last_spanned_range =
+          track_collection.RangeIndexFromTrackNumber(end_line - 1);
+      set_indices.end =
+          track_collection.RangeStartingSetIndex(last_spanned_range) +
+          track_collection.RangeSetCount(last_spanned_range);
+    }
   }
 
 #if DCHECK_IS_ON()
@@ -287,7 +297,7 @@ NGGridLayoutAlgorithm::GridItemData::SetIndices(
     DCHECK_LE(set_indices.end, track_collection.SetCount());
     DCHECK_LT(set_indices.begin, set_indices.end);
   } else if (set_indices.begin != kNotFound) {
-    DCHECK_LT(set_indices.begin, track_collection.SetCount());
+    DCHECK_LE(set_indices.begin, track_collection.SetCount());
   } else if (set_indices.end != kNotFound) {
     DCHECK_LE(set_indices.end, track_collection.SetCount());
   }
@@ -2057,14 +2067,17 @@ void NGGridLayoutAlgorithm::ComputeOffsetAndSize(
     end_offset = set_offsets[end_index];
     *size = end_offset - *start_offset - gutter_size;
   }
+
+#if DCHECK_IS_ON()
   if (start_index != kNotFound && end_index != kNotFound) {
     DCHECK_LT(start_index, end_index);
     DCHECK_LT(end_index, set_offsets.size());
     DCHECK_GE(*size, 0);
   } else {
     // Only out of flow items can have an undefined ('auto') value for the start
-    // and/or end indices.
+    // and/or end |set_indices|.
     DCHECK_EQ(item.item_type, ItemType::kOutOfFlow);
   }
+#endif
 }
 }  // namespace blink
