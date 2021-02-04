@@ -38,6 +38,8 @@
 #include "content/public/renderer/render_thread.h"
 #include "services/service_manager/public/cpp/local_interface_provider.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
+#include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/web/web_security_policy.h"
 #endif
 
 namespace weblayer {
@@ -77,6 +79,10 @@ void ContentRendererClientImpl::RenderThreadStarted() {
     local_interface_provider_ = std::make_unique<SpellcheckInterfaceProvider>();
     spellcheck_ = std::make_unique<SpellCheck>(local_interface_provider_.get());
   }
+  // TODO(sky): refactor. This comes from chrome/common/url_constants.cc's
+  // kAndroidAppScheme.
+  blink::WebSecurityPolicy::RegisterURLSchemeAsAllowedForReferrer(
+      blink::WebString::FromUTF8("android-app"));
 #endif
 
   content::RenderThread* thread = content::RenderThread::Get();
