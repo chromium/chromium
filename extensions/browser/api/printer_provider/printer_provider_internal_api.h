@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_BROWSER_API_PRINTER_PROVIDER_INTERNAL_PRINTER_PROVIDER_INTERNAL_API_H_
-#define EXTENSIONS_BROWSER_API_PRINTER_PROVIDER_INTERNAL_PRINTER_PROVIDER_INTERNAL_API_H_
+#ifndef EXTENSIONS_BROWSER_API_PRINTER_PROVIDER_PRINTER_PROVIDER_INTERNAL_API_H_
+#define EXTENSIONS_BROWSER_API_PRINTER_PROVIDER_PRINTER_PROVIDER_INTERNAL_API_H_
 
 #include <string>
 
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "extensions/browser/api/printer_provider_internal/printer_provider_internal_api_observer.h"
+#include "extensions/browser/api/printer_provider/printer_provider_internal_api_observer.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/api/printer_provider_internal.h"
@@ -17,12 +17,12 @@
 namespace base {
 class DictionaryValue;
 class RefCountedMemory;
-}
+}  // namespace base
 
 namespace content {
 class BlobHandle;
 class BrowserContext;
-}
+}  // namespace content
 
 namespace extensions {
 class Extension;
@@ -176,4 +176,4 @@ class PrinterProviderInternalReportUsbPrinterInfoFunction
 
 }  // namespace extensions
 
-#endif  // EXTENSIONS_BROWSER_API_PRINTER_PROVIDER_INTERNAL_PRINTER_PROVIDER_INTERNAL_API_H_
+#endif  // EXTENSIONS_BROWSER_API_PRINTER_PROVIDER_PRINTER_PROVIDER_INTERNAL_API_H_

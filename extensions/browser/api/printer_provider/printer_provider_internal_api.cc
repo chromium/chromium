@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/api/printer_provider_internal/printer_provider_internal_api.h"
+#include "extensions/browser/api/printer_provider/printer_provider_internal_api.h"
 
 #include <memory>
 #include <string>
@@ -47,11 +47,9 @@ PrinterProviderInternalAPI::GetFactoryInstance() {
 }
 
 PrinterProviderInternalAPI::PrinterProviderInternalAPI(
-    content::BrowserContext* browser_context) {
-}
+    content::BrowserContext* browser_context) {}
 
-PrinterProviderInternalAPI::~PrinterProviderInternalAPI() {
-}
+PrinterProviderInternalAPI::~PrinterProviderInternalAPI() {}
 
 void PrinterProviderInternalAPI::AddObserver(
     PrinterProviderInternalAPIObserver* observer) {
@@ -96,12 +94,10 @@ void PrinterProviderInternalAPI::NotifyGetUsbPrinterInfoResult(
 }
 
 PrinterProviderInternalReportPrintResultFunction::
-    PrinterProviderInternalReportPrintResultFunction() {
-}
+    PrinterProviderInternalReportPrintResultFunction() {}
 
 PrinterProviderInternalReportPrintResultFunction::
-    ~PrinterProviderInternalReportPrintResultFunction() {
-}
+    ~PrinterProviderInternalReportPrintResultFunction() {}
 
 ExtensionFunction::ResponseAction
 PrinterProviderInternalReportPrintResultFunction::Run() {
@@ -116,12 +112,10 @@ PrinterProviderInternalReportPrintResultFunction::Run() {
 }
 
 PrinterProviderInternalReportPrinterCapabilityFunction::
-    PrinterProviderInternalReportPrinterCapabilityFunction() {
-}
+    PrinterProviderInternalReportPrinterCapabilityFunction() {}
 
 PrinterProviderInternalReportPrinterCapabilityFunction::
-    ~PrinterProviderInternalReportPrinterCapabilityFunction() {
-}
+    ~PrinterProviderInternalReportPrinterCapabilityFunction() {}
 
 ExtensionFunction::ResponseAction
 PrinterProviderInternalReportPrinterCapabilityFunction::Run() {
@@ -144,12 +138,10 @@ PrinterProviderInternalReportPrinterCapabilityFunction::Run() {
 }
 
 PrinterProviderInternalReportPrintersFunction::
-    PrinterProviderInternalReportPrintersFunction() {
-}
+    PrinterProviderInternalReportPrintersFunction() {}
 
 PrinterProviderInternalReportPrintersFunction::
-    ~PrinterProviderInternalReportPrintersFunction() {
-}
+    ~PrinterProviderInternalReportPrintersFunction() {}
 
 ExtensionFunction::ResponseAction
 PrinterProviderInternalReportPrintersFunction::Run() {
@@ -174,12 +166,10 @@ PrinterProviderInternalReportPrintersFunction::Run() {
 }
 
 PrinterProviderInternalGetPrintDataFunction::
-    PrinterProviderInternalGetPrintDataFunction() {
-}
+    PrinterProviderInternalGetPrintDataFunction() {}
 
 PrinterProviderInternalGetPrintDataFunction::
-    ~PrinterProviderInternalGetPrintDataFunction() {
-}
+    ~PrinterProviderInternalGetPrintDataFunction() {}
 
 ExtensionFunction::ResponseAction
 PrinterProviderInternalGetPrintDataFunction::Run() {
@@ -238,12 +228,10 @@ void PrinterProviderInternalGetPrintDataFunction::OnBlob(
 }
 
 PrinterProviderInternalReportUsbPrinterInfoFunction::
-    PrinterProviderInternalReportUsbPrinterInfoFunction() {
-}
+    PrinterProviderInternalReportUsbPrinterInfoFunction() {}
 
 PrinterProviderInternalReportUsbPrinterInfoFunction::
-    ~PrinterProviderInternalReportUsbPrinterInfoFunction() {
-}
+    ~PrinterProviderInternalReportUsbPrinterInfoFunction() {}
 
 ExtensionFunction::ResponseAction
 PrinterProviderInternalReportUsbPrinterInfoFunction::Run() {
