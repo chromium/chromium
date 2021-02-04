@@ -70,6 +70,7 @@ class TestBrowserThread {
   DISALLOW_COPY_AND_ASSIGN(TestBrowserThread);
 };
 
+// static
 std::unique_ptr<TestBrowserThread> TestBrowserThread::StartIOThread() {
   auto thread = base::WrapUnique(new TestBrowserThread(
       BrowserThread::IO, BrowserTaskExecutor::CreateIOThread()));
