@@ -199,8 +199,8 @@ class WebRtcSignalingMessengerImpl : public api::WebRtcSignalingMessenger {
     task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&WebRtcSignalingMessengerImpl::BindIncomingReceiver,
-                       base::Unretained(this), std::move(pending_receiver),
-                       std::move(callback)));
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(pending_receiver), std::move(callback)));
 
     receiving_messages_ = true;
     return true;
@@ -220,6 +220,7 @@ class WebRtcSignalingMessengerImpl : public api::WebRtcSignalingMessenger {
   connections::LocationHint location_hint_;
   mojo::SharedRemote<sharing::mojom::WebRtcSignalingMessenger> messenger_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  base::WeakPtrFactory<WebRtcSignalingMessengerImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace
