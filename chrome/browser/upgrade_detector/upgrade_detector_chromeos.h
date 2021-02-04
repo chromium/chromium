@@ -112,6 +112,9 @@ class UpgradeDetectorChromeos : public UpgradeDetector,
   base::OneShotTimer upgrade_notification_timer_;
   bool initialized_;
 
+  // Indicates whether the flag status has been sent to update engine.
+  bool toggled_update_flag_;
+
   base::WeakPtrFactory<UpgradeDetectorChromeos> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(UpgradeDetectorChromeos);

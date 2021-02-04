@@ -19,6 +19,8 @@ namespace features {
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kAccountManagementFlowsV2;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::Feature kAllowRepeatedUpdates;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kAllowScrollSettings;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kAmbientModeFeature;

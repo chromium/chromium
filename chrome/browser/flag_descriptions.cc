@@ -3747,6 +3747,12 @@ const char kAllowDisableMouseAccelerationName[] =
 const char kAllowDisableMouseAccelerationDescription[] =
     "Shows a setting to disable mouse acceleration.";
 
+const char kAllowRepeatedUpdatesName[] =
+    "Continue checking for updates before reboot and after initial update.";
+const char kAllowRepeatedUpdatesDescription[] =
+    "Continues checking to see if there is a more recent update, even if user"
+    "has not rebooted to apply the previous update.";
+
 const char kAllowScrollSettingsName[] =
     "Allow changes to scroll acceleration/sensitivity for mice/touchpads.";
 const char kAllowScrollSettingsDescription[] =

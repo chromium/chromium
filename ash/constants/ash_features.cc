@@ -24,6 +24,10 @@ const base::Feature kInstantTetheringBackgroundAdvertisementSupport{
 const base::Feature kAccountManagementFlowsV2{
     "AccountManagementFlowsV2", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether devices are updated before reboot after the first update.
+const base::Feature kAllowRepeatedUpdates{"AllowRepeatedUpdates",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Shows settings for adjusting scroll acceleration/sensitivity for
 // mouse/touchpad.
 const base::Feature kAllowScrollSettings{"AllowScrollSettings",

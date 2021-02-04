@@ -158,6 +158,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) UpdateEngineClient : public DBusClient {
   static bool IsTargetChannelMoreStable(const std::string& current_channel,
                                         const std::string& target_channel);
 
+  // Enables or disables the feature value in Update Engine.
+  virtual void ToggleFeature(const std::string& feature, bool enable) = 0;
+
  protected:
   // Create() should be used instead.
   UpdateEngineClient();

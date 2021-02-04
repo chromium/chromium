@@ -43730,6 +43730,7 @@ from previous Chrome versions.
   <int value="-1261263046"
       label="RemoveUsageOfDeprecatedGaiaSigninEndpoint:disabled"/>
   <int value="-1259901957" label="VrBrowserKeyboard:disabled"/>
+  <int value="-1259627326" label="AllowRepeatedUpdates:disabled"/>
   <int value="-1258141852" label="ScrollUnification:enabled"/>
   <int value="-1256823053" label="WebRtcHWVP9Encoding:enabled"/>
   <int value="-1256747007"
@@ -45165,6 +45166,7 @@ from previous Chrome versions.
   <int value="75207621" label="enable-stylus-virtual-keyboard:enabled"/>
   <int value="75237697" label="ash-enable-new-overview-ui"/>
   <int value="75747474" label="disable-webview-signin-flow"/>
+  <int value="77886794" label="AllowRepeatedUpdates:enabled"/>
   <int value="78998551" label="disable-hosted-app-shim-creation"/>
   <int value="79094339" label="VrLaunchIntents:enabled"/>
   <int value="79503461" label="disable-account-consistency"/>

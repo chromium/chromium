@@ -44,6 +44,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeUpdateEngineClient
       const std::string& target_version,
       int64_t target_size,
       UpdateOverCellularOneTimePermissionCallback callback) override;
+  void ToggleFeature(const std::string& feature, bool enable) override;
   // Pushes update_engine::StatusResult in the queue to test changing status.
   // GetLastStatus() returns the status set by this method in FIFO order.
   // See set_default_status().

@@ -5462,6 +5462,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAllowDisableMouseAccelerationDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAllowDisableMouseAcceleration)},
 
+    {"allow-repeated-updates", flag_descriptions::kAllowRepeatedUpdatesName,
+     flag_descriptions::kAllowRepeatedUpdatesDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kAllowRepeatedUpdates)},
+
     {"allow-scroll-settings", flag_descriptions::kAllowScrollSettingsName,
      flag_descriptions::kAllowScrollSettingsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kAllowScrollSettings)},

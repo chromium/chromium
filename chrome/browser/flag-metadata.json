@@ -85,6 +85,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "allow-repeated-updates",
+    "owners": [ "vyshu", "chromeos-core-services@google.com" ],
+    "expiry_milestone": 92
+  },
+  {
     "name": "allow-scroll-settings",
     "owners": [ "khorimoto", "zentaro" ],
     "expiry_milestone": 88

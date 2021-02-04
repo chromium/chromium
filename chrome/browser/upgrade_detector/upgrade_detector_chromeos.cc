@@ -8,6 +8,7 @@
 
 #include <algorithm>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -53,7 +54,8 @@ UpgradeDetectorChromeos::UpgradeDetectorChromeos(
     const base::TickClock* tick_clock)
     : UpgradeDetector(clock, tick_clock),
       upgrade_notification_timer_(tick_clock),
-      initialized_(false) {
+      initialized_(false),
+      toggled_update_flag_(false) {
   // Not all tests provide a PrefService for local_state().
   PrefService* local_state = g_browser_process->local_state();
   if (local_state) {
@@ -242,6 +244,14 @@ void UpgradeDetectorChromeos::UpdateStatusChanged(
     // Update engine broadcasts this state only when update is available but
     // downloading over cellular connection requires user's agreement.
     NotifyUpdateOverCellularAvailable();
+  }
+  if (!toggled_update_flag_) {
+    // Only send feature flag status one time.
+    toggled_update_flag_ = true;
+    DBusThreadManager::Get()->GetUpdateEngineClient()->ToggleFeature(
+        update_engine::kFeatureRepeatedUpdates,
+        base::FeatureList::IsEnabled(
+            chromeos::features::kAllowRepeatedUpdates));
   }
 }
 

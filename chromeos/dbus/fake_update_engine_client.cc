@@ -99,6 +99,9 @@ void FakeUpdateEngineClient::SetUpdateOverCellularOneTimePermission(
   std::move(callback).Run(true);
 }
 
+void FakeUpdateEngineClient::ToggleFeature(const std::string& feature,
+                                           bool enable) {}
+
 void FakeUpdateEngineClient::set_default_status(
     const update_engine::StatusResult& status) {
   default_status_ = status;
