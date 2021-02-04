@@ -226,7 +226,7 @@ class FileDescriptor(SimpleType):
     Derived class which represents a file descriptor.
     '''
     def __init__(self):
-        SimpleType.__init__(self, ('int'), 4, 'fd')
+        SimpleType.__init__(self, ('int', ), 4, 'fd')
         self.is_fd = True
 
     def fixed_size(self):

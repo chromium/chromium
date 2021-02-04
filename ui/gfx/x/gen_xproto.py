@@ -269,10 +269,6 @@ class GenXproto(FileWriter):
         return ''
 
     def rename_type(self, t, name):
-        # Work around a bug in xcbgen: ('int') should have been ('int',)
-        if name == 'int':
-            name = ('int', )
-
         name = list(name)
 
         if name[0] == 'xcb':

@@ -1,6 +1,6 @@
 diff -ru xcbproto/src/glx.xml src/src/glx.xml
---- xcbproto/src/glx.xml	2020-12-21 18:22:26.734179651 -0800
-+++ src/src/glx.xml	2020-09-11 12:56:21.295807897 -0700
+--- xcbproto/src/glx.xml	2021-02-04 11:25:08.667905628 -0800
++++ src/src/glx.xml	2020-12-21 18:22:26.910180633 -0800
 @@ -214,27 +214,27 @@
  
  	<!-- Enum for CopyContext: mask -->
@@ -64,8 +64,8 @@ diff -ru xcbproto/src/glx.xml src/src/glx.xml
  
  	<request name="Finish" opcode="108">
 diff -ru xcbproto/src/randr.xml src/src/randr.xml
---- xcbproto/src/randr.xml	2020-12-21 18:22:26.734179651 -0800
-+++ src/src/randr.xml	2020-09-04 10:01:19.913846980 -0700
+--- xcbproto/src/randr.xml	2021-02-04 11:25:08.667905628 -0800
++++ src/src/randr.xml	2020-12-21 18:22:26.910180633 -0800
 @@ -803,64 +803,6 @@
  		<item name="Lease">           <value>6</value></item>
  	</enum>
@@ -239,8 +239,8 @@ diff -ru xcbproto/src/randr.xml src/src/randr.xml
  	</event>
  </xcb>
 diff -ru xcbproto/src/shm.xml src/src/shm.xml
---- xcbproto/src/shm.xml	2020-12-21 18:22:26.738179673 -0800
-+++ src/src/shm.xml	2020-09-04 10:01:19.913846980 -0700
+--- xcbproto/src/shm.xml	2021-02-04 11:25:08.671905654 -0800
++++ src/src/shm.xml	2020-12-21 18:22:26.910180633 -0800
 @@ -78,7 +78,7 @@
      <field type="INT16" name="dst_x" />
      <field type="INT16" name="dst_y" />
@@ -251,8 +251,8 @@ diff -ru xcbproto/src/shm.xml src/src/shm.xml
      <pad bytes="1" />
      <field type="SEG" name="shmseg" />
 diff -ru xcbproto/src/xinput.xml src/src/xinput.xml
---- xcbproto/src/xinput.xml	2020-12-21 18:22:26.738179673 -0800
-+++ src/src/xinput.xml	2020-09-04 10:01:19.913846980 -0700
+--- xcbproto/src/xinput.xml	2021-02-04 11:25:08.671905654 -0800
++++ src/src/xinput.xml	2020-12-21 18:22:26.910180633 -0800
 @@ -200,7 +200,12 @@
              <list type="STR" name="names">
                  <fieldref>devices_len</fieldref>
@@ -278,8 +278,8 @@ diff -ru xcbproto/src/xinput.xml src/src/xinput.xml
          <item name="AllMaster"> <value>1</value> </item>
      </enum>
 diff -ru xcbproto/src/xproto.xml src/src/xproto.xml
---- xcbproto/src/xproto.xml	2020-12-21 18:22:26.746179718 -0800
-+++ src/src/xproto.xml	2020-12-21 16:25:54.279363149 -0800
+--- xcbproto/src/xproto.xml	2021-02-04 11:25:08.671905654 -0800
++++ src/src/xproto.xml	2021-01-05 13:44:12.841851263 -0800
 @@ -963,6 +963,7 @@
      <item name="CAP_HEIGHT">           <value>66</value> </item>
      <item name="WM_CLASS">             <value>67</value> </item>
@@ -312,4 +312,16 @@ Only in src/xcbgen: expr.pyc
 Only in src/xcbgen: __init__.pyc
 Only in src/xcbgen: matcher.pyc
 Only in src/xcbgen: state.pyc
+diff -ru xcbproto/xcbgen/xtypes.py src/xcbgen/xtypes.py
+--- xcbproto/xcbgen/xtypes.py	2021-02-04 11:25:08.671905654 -0800
++++ src/xcbgen/xtypes.py	2021-02-04 11:24:57.023830733 -0800
+@@ -226,7 +226,7 @@
+     Derived class which represents a file descriptor.
+     '''
+     def __init__(self):
+-        SimpleType.__init__(self, ('int'), 4, 'fd')
++        SimpleType.__init__(self, ('int', ), 4, 'fd')
+         self.is_fd = True
+ 
+     def fixed_size(self):
 Only in src/xcbgen: xtypes.pyc
