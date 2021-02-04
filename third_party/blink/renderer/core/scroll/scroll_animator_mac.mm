@@ -292,9 +292,11 @@ namespace blink {
 // sandboxed renderer process.
 class BlinkScrollbarPartAnimationTimer {
  public:
-  BlinkScrollbarPartAnimationTimer(BlinkScrollbarPartAnimation* animation,
-                                   CFTimeInterval duration)
-      : timer_(ThreadScheduler::Current()->CompositorTaskRunner(),
+  BlinkScrollbarPartAnimationTimer(
+      BlinkScrollbarPartAnimation* animation,
+      CFTimeInterval duration,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+      : timer_(std::move(task_runner),
                this,
                &BlinkScrollbarPartAnimationTimer::TimerFired),
         start_time_(0.0),
@@ -351,7 +353,8 @@ class BlinkScrollbarPartAnimationTimer {
        featureToAnimate:(FeatureToAnimate)featureToAnimate
             animateFrom:(CGFloat)startValue
               animateTo:(CGFloat)endValue
-               duration:(NSTimeInterval)duration;
+               duration:(NSTimeInterval)duration
+             taskRunner:(scoped_refptr<base::SingleThreadTaskRunner>)taskRunner;
 @end
 
 @implementation BlinkScrollbarPartAnimation
@@ -360,13 +363,15 @@ class BlinkScrollbarPartAnimationTimer {
        featureToAnimate:(FeatureToAnimate)featureToAnimate
             animateFrom:(CGFloat)startValue
               animateTo:(CGFloat)endValue
-               duration:(NSTimeInterval)duration {
+               duration:(NSTimeInterval)duration
+             taskRunner:
+                 (scoped_refptr<base::SingleThreadTaskRunner>)taskRunner {
   self = [super init];
   if (!self)
     return nil;
 
-  _timer =
-      std::make_unique<blink::BlinkScrollbarPartAnimationTimer>(self, duration);
+  _timer = std::make_unique<blink::BlinkScrollbarPartAnimationTimer>(
+      self, duration, std::move(taskRunner));
   _scrollbar = scrollbar;
   _featureToAnimate = featureToAnimate;
   _startValue = startValue;
@@ -441,6 +446,7 @@ class BlinkScrollbarPartAnimationTimer {
 
 @interface BlinkScrollbarPainterDelegate : NSObject<NSAnimationDelegate> {
   blink::Scrollbar* _scrollbar;
+  scoped_refptr<base::SingleThreadTaskRunner> _taskRunner;
 
   base::scoped_nsobject<BlinkScrollbarPartAnimation> _knobAlphaAnimation;
   base::scoped_nsobject<BlinkScrollbarPartAnimation> _trackAlphaAnimation;
@@ -450,19 +456,23 @@ class BlinkScrollbarPartAnimationTimer {
       _expansionTransitionAnimation;
   BOOL _hasExpandedSinceInvisible;
 }
-- (id)initWithScrollbar:(blink::Scrollbar*)scrollbar;
+- (id)initWithScrollbar:(blink::Scrollbar*)scrollbar
+             taskRunner:(scoped_refptr<base::SingleThreadTaskRunner>)taskRunner;
 - (void)updateVisibilityImmediately:(bool)show;
 - (void)cancelAnimations;
 @end
 
 @implementation BlinkScrollbarPainterDelegate
 
-- (id)initWithScrollbar:(blink::Scrollbar*)scrollbar {
+- (id)initWithScrollbar:(blink::Scrollbar*)scrollbar
+             taskRunner:
+                 (scoped_refptr<base::SingleThreadTaskRunner>)taskRunner {
   self = [super init];
   if (!self)
     return nil;
 
   _scrollbar = scrollbar;
+  _taskRunner = taskRunner;
   return self;
 }
 
@@ -539,7 +549,8 @@ class BlinkScrollbarPartAnimationTimer {
             animateFrom:part == blink::kThumbPart ? [scrollerPainter knobAlpha]
                                                   : [scrollerPainter trackAlpha]
               animateTo:newAlpha
-               duration:duration]);
+               duration:duration
+             taskRunner:_taskRunner]);
   [scrollbarPartAnimation startAnimation];
 }
 
@@ -598,7 +609,8 @@ class BlinkScrollbarPartAnimationTimer {
          featureToAnimate:UIStateTransition
               animateFrom:[scrollbarPainter uiStateTransitionProgress]
                 animateTo:1.0
-                 duration:duration]);
+                 duration:duration
+               taskRunner:_taskRunner]);
   else {
     // If we don't need to initialize the animation, just reset the values in
     // case they have changed.
@@ -634,7 +646,8 @@ class BlinkScrollbarPartAnimationTimer {
          featureToAnimate:ExpansionTransition
               animateFrom:[scrollbarPainter expansionTransitionProgress]
                 animateTo:1.0
-                 duration:duration]);
+                 duration:duration
+               taskRunner:_taskRunner]);
   } else {
     // If we don't need to initialize the animation, just reset the values in
     // case they have changed.
@@ -690,7 +703,7 @@ ScrollAnimatorBase* ScrollAnimatorBase::Create(
 
 ScrollAnimatorMac::ScrollAnimatorMac(blink::ScrollableArea* scrollable_area)
     : ScrollAnimatorBase(scrollable_area),
-      task_runner_(ThreadScheduler::Current()->CompositorTaskRunner()),
+      task_runner_(scrollable_area->GetCompositorTaskRunner()),
       have_scrolled_since_page_load_(false),
       needs_scroller_style_update_(false) {
   scroll_animation_helper_delegate_.reset(
@@ -890,7 +903,8 @@ void ScrollAnimatorMac::DidAddVerticalScrollbar(Scrollbar& scrollbar) {
 
   DCHECK(!vertical_scrollbar_painter_delegate_);
   vertical_scrollbar_painter_delegate_.reset(
-      [[BlinkScrollbarPainterDelegate alloc] initWithScrollbar:&scrollbar]);
+      [[BlinkScrollbarPainterDelegate alloc] initWithScrollbar:&scrollbar
+                                                    taskRunner:task_runner_]);
 
   [painter setDelegate:vertical_scrollbar_painter_delegate_];
   [scrollbar_painter_controller_ setVerticalScrollerImp:painter];
@@ -916,7 +930,8 @@ void ScrollAnimatorMac::DidAddHorizontalScrollbar(Scrollbar& scrollbar) {
 
   DCHECK(!horizontal_scrollbar_painter_delegate_);
   horizontal_scrollbar_painter_delegate_.reset(
-      [[BlinkScrollbarPainterDelegate alloc] initWithScrollbar:&scrollbar]);
+      [[BlinkScrollbarPainterDelegate alloc] initWithScrollbar:&scrollbar
+                                                    taskRunner:task_runner_]);
 
   [painter setDelegate:horizontal_scrollbar_painter_delegate_];
   [scrollbar_painter_controller_ setHorizontalScrollerImp:painter];

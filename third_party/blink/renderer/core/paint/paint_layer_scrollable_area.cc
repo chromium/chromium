@@ -121,7 +121,12 @@ PaintLayerScrollableAreaRareData::PaintLayerScrollableAreaRareData() = default;
 const int kResizerControlExpandRatioForTouch = 2;
 
 PaintLayerScrollableArea::PaintLayerScrollableArea(PaintLayer& layer)
-    : layer_(&layer),
+    : ScrollableArea(layer.GetLayoutBox()
+                         ->GetDocument()
+                         .GetPage()
+                         ->GetAgentGroupScheduler()
+                         .CompositorTaskRunner()),
+      layer_(&layer),
       in_resize_mode_(false),
       scrolls_overflow_(false),
       in_overflow_relayout_(false),

@@ -48,7 +48,9 @@ FloatRect GetUserScrollableRect(const ScrollableArea& area) {
 }  // namespace
 RootFrameViewport::RootFrameViewport(ScrollableArea& visual_viewport,
                                      ScrollableArea& layout_viewport)
-    : visual_viewport_(visual_viewport), should_restore_scroll_(false) {
+    : ScrollableArea(visual_viewport.GetCompositorTaskRunner()),
+      visual_viewport_(visual_viewport),
+      should_restore_scroll_(false) {
   SetLayoutViewport(layout_viewport);
 }
 

@@ -124,7 +124,9 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
       Page* opener,
       scheduler::WebAgentGroupScheduler& agent_group_scheduler);
 
-  explicit Page(PageClients&);
+  Page(PageClients&,
+       scheduler::WebAgentGroupScheduler& agent_group_scheduler,
+       bool is_ordinary);
   ~Page() override;
 
   void CloseSoon();
@@ -318,6 +320,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
 
   ScrollbarTheme& GetScrollbarTheme() const;
 
+  scheduler::WebAgentGroupScheduler& GetAgentGroupScheduler() const;
   PageScheduler* GetPageScheduler() const;
 
   // PageScheduler::Delegate implementation.
@@ -394,8 +397,6 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // Notify |plugins_changed_observers_| that plugins have changed.
   void NotifyPluginsChanged() const;
 
-  void SetPageScheduler(std::unique_ptr<PageScheduler>);
-
   void InvalidateColorScheme();
   void InvalidatePaint();
   // Typically, the main frame and Page should both be owned by the embedder,
@@ -412,6 +413,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // longer needed.
   Member<Frame> main_frame_;
 
+  scheduler::WebAgentGroupScheduler& agent_group_scheduler_;
   Member<PageAnimator> animator_;
   const Member<AutoscrollController> autoscroll_controller_;
   Member<ChromeClient> chrome_client_;

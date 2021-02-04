@@ -25,7 +25,8 @@ class ScrollableAreaStub : public GarbageCollected<ScrollableAreaStub>,
                            public ScrollableArea {
  public:
   ScrollableAreaStub(const IntSize& viewport_size, const IntSize& contents_size)
-      : user_input_scrollable_x_(true),
+      : ScrollableArea(blink::scheduler::GetSingleThreadTaskRunnerForTesting()),
+        user_input_scrollable_x_(true),
         user_input_scrollable_y_(true),
         viewport_size_(viewport_size),
         contents_size_(contents_size),

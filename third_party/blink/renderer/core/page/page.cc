@@ -155,20 +155,16 @@ float DeviceScaleFactorDeprecated(LocalFrame* frame) {
 Page* Page::CreateNonOrdinary(
     PageClients& page_clients,
     scheduler::WebAgentGroupScheduler& agent_group_scheduler) {
-  Page* page = MakeGarbageCollected<Page>(page_clients);
-  page->SetPageScheduler(
-      agent_group_scheduler.AsAgentGroupScheduler().CreatePageScheduler(page));
-  return page;
+  return MakeGarbageCollected<Page>(page_clients, agent_group_scheduler,
+                                    /*is_ordinary=*/false);
 }
 
 Page* Page::CreateOrdinary(
     PageClients& page_clients,
     Page* opener,
     scheduler::WebAgentGroupScheduler& agent_group_scheduler) {
-  Page* page = MakeGarbageCollected<Page>(page_clients);
-  page->is_ordinary_ = true;
-  page->SetPageScheduler(
-      agent_group_scheduler.AsAgentGroupScheduler().CreatePageScheduler(page));
+  Page* page = MakeGarbageCollected<Page>(page_clients, agent_group_scheduler,
+                                          /*is_ordinary=*/true);
 
   if (opener) {
     // Before: ... -> opener -> next -> ...
@@ -186,9 +182,12 @@ Page* Page::CreateOrdinary(
   return page;
 }
 
-Page::Page(PageClients& page_clients)
+Page::Page(PageClients& page_clients,
+           scheduler::WebAgentGroupScheduler& agent_group_scheduler,
+           bool is_ordinary)
     : SettingsDelegate(std::make_unique<Settings>()),
       main_frame_(nullptr),
+      agent_group_scheduler_(agent_group_scheduler),
       animator_(MakeGarbageCollected<PageAnimator>(*this)),
       autoscroll_controller_(MakeGarbageCollected<AutoscrollController>(*this)),
       chrome_client_(page_clients.chrome_client),
@@ -219,7 +218,7 @@ Page::Page(PageClients& page_clients)
       tab_key_cycles_through_elements_(true),
       device_scale_factor_(1),
       lifecycle_state_(mojom::blink::PageLifecycleState::New()),
-      is_ordinary_(false),
+      is_ordinary_(is_ordinary),
       is_cursor_visible_(true),
       subframe_count_(0),
       next_related_page_(this),
@@ -235,6 +234,15 @@ Page::Page(PageClients& page_clients)
   // ScrollbarTheme, if they don't this call will crash. To set a mock theme,
   // see ScopedMockOverlayScrollbars or WebScopedMockScrollbars.
   DCHECK(&GetScrollbarTheme());
+
+  page_scheduler_ =
+      agent_group_scheduler.AsAgentGroupScheduler().CreatePageScheduler(this);
+  // The scheduler should be set before the main frame.
+  DCHECK(!main_frame_);
+  history_navigation_virtual_time_pauser_ =
+      page_scheduler_->CreateWebScopedVirtualTimePauser(
+          "HistoryNavigation",
+          WebScopedVirtualTimePauser::VirtualTaskDuration::kInstant);
 }
 
 Page::~Page() {
@@ -1004,18 +1012,13 @@ ScrollbarTheme& Page::GetScrollbarTheme() const {
   return ScrollbarTheme::GetTheme();
 }
 
-PageScheduler* Page::GetPageScheduler() const {
-  return page_scheduler_.get();
+scheduler::WebAgentGroupScheduler& Page::GetAgentGroupScheduler() const {
+  return agent_group_scheduler_;
 }
 
-void Page::SetPageScheduler(std::unique_ptr<PageScheduler> page_scheduler) {
-  page_scheduler_ = std::move(page_scheduler);
-  // The scheduler should be set before the main frame.
-  DCHECK(!main_frame_);
-  history_navigation_virtual_time_pauser_ =
-      page_scheduler_->CreateWebScopedVirtualTimePauser(
-          "HistoryNavigation",
-          WebScopedVirtualTimePauser::VirtualTaskDuration::kInstant);
+PageScheduler* Page::GetPageScheduler() const {
+  DCHECK(page_scheduler_);
+  return page_scheduler_.get();
 }
 
 bool Page::IsOrdinary() const {

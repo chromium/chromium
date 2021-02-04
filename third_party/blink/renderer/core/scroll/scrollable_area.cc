@@ -96,7 +96,8 @@ mojom::blink::ScrollBehavior ScrollableArea::DetermineScrollBehavior(
   return mojom::blink::ScrollBehavior::kInstant;
 }
 
-ScrollableArea::ScrollableArea()
+ScrollableArea::ScrollableArea(
+    scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner)
     : scrollbar_overlay_color_theme_(kScrollbarOverlayColorThemeDark),
       horizontal_scrollbar_needs_paint_invalidation_(false),
       vertical_scrollbar_needs_paint_invalidation_(false),
@@ -106,7 +107,10 @@ ScrollableArea::ScrollableArea()
       mouse_over_scrollbar_(false),
       has_been_disposed_(false),
       needs_show_scrollbar_layers_(false),
-      uses_composited_scrolling_(false) {}
+      uses_composited_scrolling_(false),
+      compositor_task_runner_(std::move(compositor_task_runner)) {
+  DCHECK(compositor_task_runner_);
+}
 
 ScrollableArea::~ScrollableArea() = default;
 
@@ -771,18 +775,19 @@ void ScrollableArea::ShowNonMacOverlayScrollbars() {
   if (!fade_overlay_scrollbars_timer_) {
     fade_overlay_scrollbars_timer_ = MakeGarbageCollected<
         DisallowNewWrapper<HeapTaskRunnerTimer<ScrollableArea>>>(
-        GetLayoutBox()
-            ->GetFrame()
-            ->GetFrameScheduler()
-            ->GetAgentGroupScheduler()
-            ->CompositorTaskRunner(),
-        this, &ScrollableArea::FadeOverlayScrollbarsTimerFired);
+        GetCompositorTaskRunner(), this,
+        &ScrollableArea::FadeOverlayScrollbarsTimerFired);
   }
 
   if (!scrollbar_captured_ && !mouse_over_scrollbar_) {
     fade_overlay_scrollbars_timer_->Value().StartOneShot(time_until_disable,
                                                          FROM_HERE);
   }
+}
+
+scoped_refptr<base::SingleThreadTaskRunner>
+ScrollableArea::GetCompositorTaskRunner() {
+  return compositor_task_runner_;
 }
 
 Node* ScrollableArea::EventTargetNode() const {

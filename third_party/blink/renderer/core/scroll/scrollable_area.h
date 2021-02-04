@@ -552,6 +552,8 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   // box. GetLayoutBox()->GetNode() doesn't work in this case.
   Node* EventTargetNode() const;
 
+  scoped_refptr<base::SingleThreadTaskRunner> GetCompositorTaskRunner();
+
  protected:
   // Deduces the mojom::blink::ScrollBehavior based on the
   // element style and the parameter set by programmatic scroll into either
@@ -560,7 +562,8 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
       mojom::blink::ScrollBehavior behavior_from_style,
       mojom::blink::ScrollBehavior behavior_from_param);
 
-  ScrollableArea();
+  explicit ScrollableArea(
+      scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner);
 
   ScrollbarOrientation ScrollbarOrientationFromDirection(
       ScrollDirectionPhysical) const;
@@ -650,6 +653,8 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   // cc::Layer::ShowScrollbars() on our scroll layer. Ignored if not composited.
   unsigned needs_show_scrollbar_layers_ : 1;
   unsigned uses_composited_scrolling_ : 1;
+
+  scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
 };
 
 }  // namespace blink
