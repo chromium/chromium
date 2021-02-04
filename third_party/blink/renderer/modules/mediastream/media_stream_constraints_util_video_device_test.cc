@@ -1140,7 +1140,8 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest, MandatoryMaxFrameRate) {
   // MaxFrameRate greater than the maximum allowed.
   {
     constraint_factory_.Reset();
-    const double kMaxFrameRate = media::limits::kMaxFramesPerSecond + 0.1;
+    const double kMaxFrameRate =
+        static_cast<double>(media::limits::kMaxFramesPerSecond) + 0.1;
     constraint_factory_.basic().frame_rate.SetMax(kMaxFrameRate);
     auto result = SelectSettings();
     EXPECT_TRUE(result.HasValue());
