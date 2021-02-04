@@ -89,8 +89,7 @@ void ChromeNativeAppWindowViewsAuraAsh::InitializeWindow(
     const AppWindow::CreateParams& create_params) {
   ChromeNativeAppWindowViewsAura::InitializeWindow(app_window, create_params);
   aura::Window* window = GetNativeWindow();
-  window->SetProperty(aura::client::kAppType,
-                      static_cast<int>(ash::AppType::CHROME_APP));
+
   // Fullscreen doesn't always imply immersive mode (see
   // ShouldEnableImmersive()).
   window->SetProperty(chromeos::kImmersiveImpliedByFullscreen, false);
@@ -143,6 +142,8 @@ void ChromeNativeAppWindowViewsAuraAsh::OnBeforeWidgetInit(
       full_restore::kWindowIdKey, app_window()->session_id().id());
   init_params->init_properties_container.SetProperty(
       full_restore::kAppIdKey, app_window()->extension_id());
+  init_params->init_properties_container.SetProperty(
+      aura::client::kAppType, static_cast<int>(ash::AppType::CHROME_APP));
 }
 
 std::unique_ptr<views::NonClientFrameView>

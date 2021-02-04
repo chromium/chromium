@@ -3,11 +3,9 @@ specific_include_rules = {
   "browser_non_client_frame_view_chromeos\.*": [
     "+ash",
   ],
-  "browser_frame\.cc": [
-    "+components/full_restore/full_restore_utils.h",
-  ],
   "browser_frame_ash\.*": [
     "+ash",
+    "+components/full_restore/full_restore_utils.h",
   ],
   "dbus_appmenu\.*": [
     "+dbus",

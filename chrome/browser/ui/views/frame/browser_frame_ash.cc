@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/public/cpp/app_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wm/window_properties.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "components/full_restore/full_restore_utils.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -140,6 +142,19 @@ views::Widget::InitParams BrowserFrameAsh::GetWidgetParams() {
   views::Widget::InitParams params;
   params.native_widget = this;
   params.context = ash::Shell::GetPrimaryRootWindow();
+
+  Browser* browser = browser_view_->browser();
+  params.init_properties_container.SetProperty(full_restore::kWindowIdKey,
+                                               browser->session_id().id());
+  params.init_properties_container.SetProperty(
+      full_restore::kRestoreWindowIdKey, browser->create_params().restore_id);
+
+  // This is only needed for ash. For lacros, Exo tags the associated
+  // ShellSurface as being of AppType::LACROS.
+  params.init_properties_container.SetProperty(
+      aura::client::kAppType,
+      static_cast<int>(browser->deprecated_is_app() ? ash::AppType::CHROME_APP
+                                                    : ash::AppType::BROWSER));
   return params;
 }
 

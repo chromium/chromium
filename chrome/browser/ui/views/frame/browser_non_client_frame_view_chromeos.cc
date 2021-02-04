@@ -62,7 +62,6 @@
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/public/cpp/app_types.h"
 #include "ash/wm/window_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/ash/session_util.h"
@@ -136,22 +135,14 @@ void BrowserNonClientFrameViewChromeOS::Init() {
 
   UpdateProfileIcons();
 
-  aura::Window* window = frame()->GetNativeWindow();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // This is only needed for ash. For lacros, Exo tags the associated
-  // ShellSurface as being of AppType::LACROS.
-  window->SetProperty(
-      aura::client::kAppType,
-      static_cast<int>(browser->deprecated_is_app() ? ash::AppType::CHROME_APP
-                                                    : ash::AppType::BROWSER));
-#endif
-
   window_observation_.Observe(GetFrameWindow());
 
   // To preserve privacy, tag incognito windows so that they won't be included
   // in screenshot sent to assistant server.
-  if (browser->profile()->IsOffTheRecord())
-    window->SetProperty(chromeos::kBlockedForAssistantSnapshotKey, true);
+  if (browser->profile()->IsOffTheRecord()) {
+    frame()->GetNativeWindow()->SetProperty(
+        chromeos::kBlockedForAssistantSnapshotKey, true);
+  }
 
   display::Screen::GetScreen()->AddObserver(this);
 
