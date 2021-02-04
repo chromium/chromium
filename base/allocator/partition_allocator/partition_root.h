@@ -393,7 +393,7 @@ struct BASE_EXPORT PartitionRoot {
     // the granularity is super page size.
     size_t alignment = PageAllocationGranularity();
 #if defined(PA_HAS_64_BITS_POINTERS)
-    if (UsesGigaCage()) {
+    if (features::IsPartitionAllocGigaCageEnabled()) {
       alignment = kSuperPageSize;
     }
 #endif
