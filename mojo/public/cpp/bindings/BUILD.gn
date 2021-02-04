@@ -130,7 +130,6 @@ component("bindings_base") {
 component("bindings") {
   sources = [
     "associated_binding.h",
-    "associated_binding_set.h",
     "associated_interface_ptr.h",
     "associated_interface_ptr_info.h",
     "associated_interface_request.h",
@@ -141,7 +140,6 @@ component("bindings") {
     "async_flusher.h",
     "binder_map.h",
     "binding.h",
-    "binding_set.h",
     "callback_helpers.h",
     "connection_error_callback.h",
     "connector.h",
@@ -213,7 +211,6 @@ component("bindings") {
     "shared_remote.h",
     "strong_associated_binding.h",
     "strong_binding.h",
-    "strong_binding_set.h",
     "sync_call_restrictions.h",
     "sync_event_watcher.h",
     "sync_handle_registry.h",
