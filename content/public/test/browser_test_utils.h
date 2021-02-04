@@ -1249,19 +1249,13 @@ class WebContentsAddedObserver {
   // created since the constructor
   WebContents* GetWebContents();
 
-  // Will tell whether RenderViewCreated Callback has invoked
-  bool RenderViewCreatedCalled();
-
  private:
-  class RenderViewCreatedObserver;
-
   void WebContentsCreated(WebContents* web_contents);
 
   // Callback to WebContentCreated(). Cached so that we can unregister it.
   base::RepeatingCallback<void(WebContents*)> web_contents_created_callback_;
 
   WebContents* web_contents_;
-  std::unique_ptr<RenderViewCreatedObserver> child_observer_;
   base::OnceClosure quit_closure_;
 
   DISALLOW_COPY_AND_ASSIGN(WebContentsAddedObserver);

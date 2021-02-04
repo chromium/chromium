@@ -667,25 +667,6 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   EXPECT_EQ(4, delegate->loadingStateToDifferentDocumentCount());
 }
 
-IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
-                       RenderViewCreatedForChildWindow) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  EXPECT_TRUE(
-      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
-
-  WebContentsAddedObserver new_web_contents_observer;
-  ASSERT_TRUE(ExecuteScript(shell(),
-                            "var a = document.createElement('a');"
-                            "a.href='./title2.html';"
-                            "a.target = '_blank';"
-                            "document.body.appendChild(a);"
-                            "a.click();"));
-  WebContents* new_web_contents = new_web_contents_observer.GetWebContents();
-  EXPECT_TRUE(WaitForLoadStop(new_web_contents));
-  EXPECT_TRUE(new_web_contents_observer.RenderViewCreatedCalled());
-}
-
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, ResourceLoadComplete) {
   ResourceLoadObserver observer(shell());
   ASSERT_TRUE(embedded_test_server()->Start());
