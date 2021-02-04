@@ -49,6 +49,8 @@ import './os_about_page/channel_switcher_dialog.m.js';
 import './os_about_page/detailed_build_info.m.js';
 import './os_about_page/update_warning_dialog.m.js';
 import './os_search_page/os_search_page.m.js';
+import './os_icons.m.js';
+import './os_settings_icons_css.m.js';
 
 export {AboutPageBrowserProxyImpl, BrowserChannel, UpdateStatus} from '../about_page/about_page_browser_proxy.m.js';
 export {LifetimeBrowserProxy, LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.m.js';
@@ -89,3 +91,4 @@ export {routes} from './os_route.m.js';
 export {ParentalControlsBrowserProxy, ParentalControlsBrowserProxyImpl} from './parental_controls_page/parental_controls_browser_proxy.m.js';
 export {ChangePictureBrowserProxy, ChangePictureBrowserProxyImpl} from './personalization_page/change_picture_browser_proxy.m.js';
 export {WallpaperBrowserProxyImpl} from './personalization_page/wallpaper_browser_proxy.m.js';
+export {setSearchHandlerForTesting, getSearchHandler} from './search_handler.m.js';

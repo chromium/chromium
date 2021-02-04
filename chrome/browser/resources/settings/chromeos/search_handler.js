@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+// #import '../constants/routes.mojom-lite.js';
+
 /**
  * @fileoverview
  * Provides functions used for OS settings search.
@@ -16,7 +19,7 @@ cr.define('settings', function() {
    * @param {!chromeos.settings.mojom.SearchHandlerInterface}
    *     testSearchHandler A test search handler.
    */
-  function setSearchHandlerForTesting(testSearchHandler) {
+  /* #export */ function setSearchHandlerForTesting(testSearchHandler) {
     settingsSearchHandler = testSearchHandler;
   }
 

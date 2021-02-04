@@ -467,6 +467,7 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/personalization_page/wallpaper_subpage.m.js",
     "chromeos/pref_to_setting_metric_converter.m.js",
     "chromeos/route_origin_behavior.m.js",
+    "chromeos/search_handler.m.js",
     "controls/controlled_button.m.js",
     "controls/controlled_radio_button.m.js",
     "controls/extension_controlled_indicator.m.js",
@@ -1204,18 +1205,16 @@ js_type_check("closure_compile_local_module") {
   is_polymer3 = true
   deps = [
     ":metrics_recorder.m",
-
-    #  ":os_icons.m",
+    ":os_icons.m",
     ":os_page_visibility.m",
     ":os_route.m",
 
     #  ":os_settings.m",
-    #  ":os_settings_icons_css.m",
+    ":os_settings_icons_css.m",
     ":os_settings_routes.m",
     ":pref_to_setting_metric_converter.m",
     ":route_origin_behavior.m",
-
-    #":search_handler.m",
+    ":search_handler.m",
   ]
 }
 
@@ -1242,7 +1241,7 @@ js_library("os_icons.m") {
     "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_icons.m.js",
   ]
   deps = [
-    # TODO: Fill those in.
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":os_icons_module" ]
 }
@@ -1269,9 +1268,6 @@ js_library("os_route.m") {
 
 js_library("os_settings_icons_css.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_settings_icons_css.m.js" ]
-  deps = [
-    # TODO: Fill those in.
-  ]
   extra_deps = [ ":os_settings_icons_css_module" ]
 }
 
@@ -1298,9 +1294,6 @@ js_library("route_origin_behavior.m") {
 
 js_library("search_handler.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/search_handler.m.js" ]
-  deps = [
-    # TODO: Fill those in.
-  ]
   extra_deps = [ ":modulize" ]
 }
 
@@ -1369,12 +1362,16 @@ polymer_modulizer("os_icons") {
   js_file = "os_icons.m.js"
   html_file = "os_icons.html"
   html_type = "iron-iconset"
+  auto_imports = os_settings_auto_imports
+  namespace_rewrites = os_settings_namespace_rewrites
 }
 
 polymer_modulizer("os_settings_icons_css") {
   js_file = "os_settings_icons_css.m.js"
   html_file = "os_settings_icons_css.html"
   html_type = "style-module"
+  auto_imports = os_settings_auto_imports
+  namespace_rewrites = os_settings_namespace_rewrites
 }
 
 js_modulizer("modulize") {
