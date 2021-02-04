@@ -3035,6 +3035,11 @@ const char kPageInfoDiscoverabilityDescription[] =
     "After a permission decision is made, the page info icon in the address "
     "bar will show a brief animation.";
 
+const char kPageInfoHistoryName[] = "Page info history";
+const char kPageInfoHistoryDescription[] =
+    "Enable a history sub page to the page info menu, and a button to forget "
+    "a site, removing all preferences and history.";
+
 const char kPageInfoPerformanceHintsName[] = "Page info performance hints";
 const char kPageInfoPerformanceHintsDescription[] =
     "Show site performance information in the page info menu.";

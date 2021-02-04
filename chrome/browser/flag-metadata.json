@@ -3913,6 +3913,11 @@
     "expiry_milestone": 93
   },
   {
+    "name": "page-info-history",
+    "owners": [ "oroshiba", "dullweber" ],
+    "expiry_milestone": 93
+  },
+  {
     "name": "page-info-performance-hints",
     "owners": [ "jds" ],
     "expiry_milestone": 90

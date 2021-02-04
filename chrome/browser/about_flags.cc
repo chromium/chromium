@@ -6368,6 +6368,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPageInfoDiscoverabilityName,
      flag_descriptions::kPageInfoDiscoverabilityDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(page_info::kPageInfoDiscoverability)},
+    {"page-info-history", flag_descriptions::kPageInfoHistoryName,
+     flag_descriptions::kPageInfoHistoryDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(page_info::kPageInfoHistory)},
 #endif  // !defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

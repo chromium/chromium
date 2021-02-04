@@ -1761,6 +1761,9 @@ extern const char kOffliningRecentPagesDescription[];
 extern const char kPageInfoDiscoverabilityName[];
 extern const char kPageInfoDiscoverabilityDescription[];
 
+extern const char kPageInfoHistoryName[];
+extern const char kPageInfoHistoryDescription[];
+
 extern const char kPageInfoPerformanceHintsName[];
 extern const char kPageInfoPerformanceHintsDescription[];
 
