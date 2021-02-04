@@ -22,7 +22,7 @@ group("common") {
   }
 
   if (is_ios) {
-    public_deps += [ ":breakpad_running_ios" ]
+    public_deps += [ ":reporter_running_ios" ]
   }
 }
 
@@ -102,7 +102,7 @@ target(crash_key_target_type, "crash_key_lib") {
     if (is_ios) {
       sources += [ "crash_key_breakpad_ios.mm" ]
       deps += [
-        ":breakpad_running_ios",
+        ":reporter_running_ios",
         "//components/previous_session_info",
       ]
 
@@ -161,10 +161,10 @@ if (is_apple) {
 }
 
 if (is_ios) {
-  source_set("breakpad_running_ios") {
+  source_set("reporter_running_ios") {
     sources = [
-      "breakpad_running_ios.cc",
-      "breakpad_running_ios.h",
+      "reporter_running_ios.cc",
+      "reporter_running_ios.h",
     ]
   }
 }

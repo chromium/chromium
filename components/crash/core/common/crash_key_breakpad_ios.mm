@@ -7,8 +7,8 @@
 #include <dispatch/dispatch.h>
 
 #include "base/strings/sys_string_conversions.h"
-#include "components/crash/core/common/breakpad_running_ios.h"
 #include "components/crash/core/common/crash_key_base_support.h"
+#include "components/crash/core/common/reporter_running_ios.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "third_party/breakpad/breakpad/src/client/ios/Breakpad.h"
 #import "third_party/breakpad/breakpad/src/client/ios/BreakpadController.h"
@@ -28,7 +28,7 @@ namespace {
 
 // Accessing the BreakpadRef is done on an async queue, so serialize the
 // access to the current thread, as the CrashKeyString API is sync. This
-// matches //ios/chrome/browser/crash_report/breakpad_helper.mm.
+// matches //ios/chrome/browser/crash_report/crash_helper.mm.
 // When getting a value, wait until the value is received.
 // Note: This will block the current thread.
 void WithBreakpadRefSync(void (^block)(BreakpadRef ref)) {
