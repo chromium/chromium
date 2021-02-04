@@ -58,6 +58,8 @@ class ASH_EXPORT Desk {
 
   bool is_active() const { return is_active_; }
 
+  bool is_desk_being_removed() const { return is_desk_being_removed_; }
+
   bool should_notify_content_changed() const {
     return should_notify_content_changed_;
   }
