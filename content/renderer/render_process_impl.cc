@@ -189,7 +189,15 @@ RenderProcessImpl::RenderProcessImpl()
 #if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(ARCH_CPU_X86_64)
   if (base::FeatureList::IsEnabled(features::kWebAssemblyTrapHandler)) {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    if (!command_line->HasSwitch(switches::kDisableInProcessStackTraces)) {
+    if (!command_line->HasSwitch(switches::kEnableCrashReporter) &&
+        !command_line->HasSwitch(switches::kEnableCrashReporterForTesting)) {
+      // If we are using WebAssembly trap handling but both Breakpad and
+      // in-process stack traces are disabled then there will be no signal
+      // handler. In this case, we fall back on V8's default handler
+      // (https://crbug.com/798150).
+      v8::V8::EnableWebAssemblyTrapHandler(/*use_v8_signal_handler=*/true);
+    } else if (!command_line->HasSwitch(
+                   switches::kDisableInProcessStackTraces)) {
       // Only enable WebAssembly trap handler if we can set the callback.
       if (base::debug::SetStackDumpFirstChanceCallback(
               v8::TryHandleWebAssemblyTrapPosix)) {
@@ -198,14 +206,6 @@ RenderProcessImpl::RenderProcessImpl()
         // WebAssembly trap handler without using the V8 signal handler.
         v8::V8::EnableWebAssemblyTrapHandler(/*use_v8_signal_handler=*/false);
       }
-    } else if (!command_line->HasSwitch(switches::kEnableCrashReporter) &&
-               !command_line->HasSwitch(
-                   switches::kEnableCrashReporterForTesting)) {
-      // If we are using WebAssembly trap handling but both Breakpad and
-      // in-process stack traces are disabled then there will be no signal
-      // handler. In this case, we fall back on V8's default handler
-      // (https://crbug.com/798150).
-      v8::V8::EnableWebAssemblyTrapHandler(/*use_v8_signal_handler=*/true);
     }
   }
 #endif
