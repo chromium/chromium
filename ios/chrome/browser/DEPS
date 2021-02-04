@@ -11,6 +11,7 @@ include_rules = [
   "+components/content_settings/core",
   "+components/cookie_config",
   "+components/country_codes",
+  "+components/crash/core/app",
   "+components/crash/core/browser",
   "+components/crash/core/common",
   "+components/dom_distiller/core",

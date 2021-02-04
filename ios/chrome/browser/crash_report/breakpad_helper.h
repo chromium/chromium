@@ -7,9 +7,6 @@
 
 #include <string>
 
-@class NSString;
-@class NSArray;
-
 namespace breakpad_helper {
 
 // Starts the crash handlers. This must be run as soon as possible to catch

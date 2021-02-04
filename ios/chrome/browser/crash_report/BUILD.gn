@@ -6,6 +6,8 @@ source_set("crash_report") {
   sources = [
     "breakpad_helper.h",
     "breakpad_helper.mm",
+    "chrome_crash_reporter_client.cc",
+    "chrome_crash_reporter_client.h",
     "crash_keys_helper.h",
     "crash_keys_helper.mm",
     "crash_loop_detection_util.h",
@@ -30,7 +32,9 @@ source_set("crash_report") {
 
   deps = [
     "//base",
+    "//build:branding_buildflags",
     "//components/breadcrumbs/core",
+    "//components/crash/core/app",
     "//components/crash/core/common",
     "//components/previous_session_info",
     "//components/upload_list",
