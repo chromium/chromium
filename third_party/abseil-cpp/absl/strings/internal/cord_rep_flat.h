@@ -43,8 +43,9 @@ static constexpr size_t kMaxFlatSize = 4096;
 static constexpr size_t kMaxFlatLength = kMaxFlatSize - kFlatOverhead;
 static constexpr size_t kMinFlatLength = kMinFlatSize - kFlatOverhead;
 
-constexpr size_t AllocatedSizeToTagUnchecked(size_t size) {
-  return (size <= 1024) ? size / 8 : 128 + size / 32 - 1024 / 32;
+constexpr uint8_t AllocatedSizeToTagUnchecked(size_t size) {
+  return static_cast<uint8_t>((size <= 1024) ? size / 8
+                                             : 128 + size / 32 - 1024 / 32);
 }
 
 static_assert(kMinFlatSize / 8 >= FLAT, "");
@@ -65,7 +66,7 @@ inline size_t RoundUpForTag(size_t size) {
 // undefined if the size exceeds the maximum size that can be encoded in
 // a tag, i.e., if size is larger than TagToAllocatedSize(<max tag>).
 inline uint8_t AllocatedSizeToTag(size_t size) {
-  const size_t tag = AllocatedSizeToTagUnchecked(size);
+  const uint8_t tag = AllocatedSizeToTagUnchecked(size);
   assert(tag <= MAX_FLAT_TAG);
   return tag;
 }

@@ -22,6 +22,7 @@
 #include <type_traits>
 
 #include "absl/base/config.h"
+#include "absl/base/internal/endian.h"
 #include "absl/base/internal/invoke.h"
 #include "absl/base/optimization.h"
 #include "absl/container/internal/compressed_tuple.h"
@@ -31,6 +32,8 @@
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace cord_internal {
+
+class CordzInfo;
 
 // Default feature enable states for cord ring buffers
 enum CordFeatureDefaults {
@@ -193,26 +196,7 @@ struct CordRep {
   // --------------------------------------------------------------------
   // Memory management
 
-  // This internal routine is called from the cold path of Unref below. Keeping
-  // it in a separate routine allows good inlining of Unref into many profitable
-  // call sites. However, the call to this function can be highly disruptive to
-  // the register pressure in those callers. To minimize the cost to callers, we
-  // use a special LLVM calling convention that preserves most registers. This
-  // allows the call to this routine in cold paths to not disrupt the caller's
-  // register pressure. This calling convention is not available on all
-  // platforms; we intentionally allow LLVM to ignore the attribute rather than
-  // attempting to hardcode the list of supported platforms.
-#if defined(__clang__) && !defined(__i386__)
-#if !(defined(ABSL_HAVE_MEMORY_SANITIZER) ||  \
-      defined(ABSL_HAVE_THREAD_SANITIZER) ||  \
-      defined(ABSL_HAVE_ADDRESS_SANITIZER) || \
-      defined(UNDEFINED_BEHAVIOR_SANITIZER))
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wattributes"
-  __attribute__((preserve_most))
-#pragma clang diagnostic pop
-#endif  // *_SANITIZER
-#endif
+  // Destroys the provided `rep`.
   static void Destroy(CordRep* rep);
 
   // Increments the reference count of `rep`.
@@ -381,6 +365,26 @@ class InlineData {
   bool is_profiled() const {
     assert(is_tree());
     return as_tree_.cordz_info != kNullCordzInfo;
+  }
+
+  // Returns the cordz_info sampling instance for this instance, or nullptr
+  // if the current instance is not sampled and does not have CordzInfo data.
+  // Requires the current instance to hold a tree value.
+  CordzInfo* cordz_info() const {
+    assert(is_tree());
+    intptr_t info =
+        static_cast<intptr_t>(absl::big_endian::ToHost64(as_tree_.cordz_info));
+    assert(info & 1);
+    return reinterpret_cast<CordzInfo*>(info - 1);
+  }
+
+  // Sets the current cordz_info sampling instance for this instance, or nullptr
+  // if the current instance is not sampled and does not have CordzInfo data.
+  // Requires the current instance to hold a tree value.
+  void set_cordz_info(CordzInfo* cordz_info) {
+    assert(is_tree());
+    intptr_t info = reinterpret_cast<intptr_t>(cordz_info) | 1;
+    as_tree_.cordz_info = absl::big_endian::FromHost64(info);
   }
 
   // Returns a read only pointer to the character data inside this instance.

@@ -81,6 +81,23 @@ void DestroyElements(AllocatorType* alloc_ptr, Pointer destroy_first,
   }
 }
 
+// If kUseMemcpy is true, memcpy(dst, src, n); else do nothing.
+// Useful to avoid compiler warnings when memcpy() is used for T values
+// that are not trivially copyable in non-reachable code.
+template <bool kUseMemcpy>
+inline void MemcpyIfAllowed(void* dst, const void* src, size_t n);
+
+// memcpy when allowed.
+template <>
+inline void MemcpyIfAllowed<true>(void* dst, const void* src, size_t n) {
+  memcpy(dst, src, n);
+}
+
+// Do nothing for types that are not memcpy-able. This function is only
+// called from non-reachable branches.
+template <>
+inline void MemcpyIfAllowed<false>(void*, const void*, size_t) {}
+
 template <typename AllocatorType, typename Pointer, typename ValueAdapter,
           typename SizeType>
 void ConstructElements(AllocatorType* alloc_ptr, Pointer construct_first,
@@ -310,9 +327,14 @@ class Storage {
       : metadata_(alloc, /* size and is_allocated */ 0) {}
 
   ~Storage() {
-    pointer data = GetIsAllocated() ? GetAllocatedData() : GetInlinedData();
-    inlined_vector_internal::DestroyElements(GetAllocPtr(), data, GetSize());
-    DeallocateIfAllocated();
+    if (GetSizeAndIsAllocated() == 0) {
+      // Empty and not allocated; nothing to do.
+    } else if (IsMemcpyOk::value) {
+      // No destructors need to be run; just deallocate if necessary.
+      DeallocateIfAllocated();
+    } else {
+      DestroyContents();
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -369,6 +391,8 @@ class Storage {
   // ---------------------------------------------------------------------------
   // Storage Member Mutators
   // ---------------------------------------------------------------------------
+
+  ABSL_ATTRIBUTE_NOINLINE void InitFrom(const Storage& other);
 
   template <typename ValueAdapter>
   void Initialize(ValueAdapter values, size_type new_size);
@@ -452,6 +476,8 @@ class Storage {
   }
 
  private:
+  ABSL_ATTRIBUTE_NOINLINE void DestroyContents();
+
   using Metadata =
       container_internal::CompressedTuple<allocator_type, size_type>;
 
@@ -475,6 +501,40 @@ class Storage {
   Metadata metadata_;
   Data data_;
 };
+
+template <typename T, size_t N, typename A>
+void Storage<T, N, A>::DestroyContents() {
+  pointer data = GetIsAllocated() ? GetAllocatedData() : GetInlinedData();
+  inlined_vector_internal::DestroyElements(GetAllocPtr(), data, GetSize());
+  DeallocateIfAllocated();
+}
+
+template <typename T, size_t N, typename A>
+void Storage<T, N, A>::InitFrom(const Storage& other) {
+  const auto n = other.GetSize();
+  assert(n > 0);  // Empty sources handled handled in caller.
+  const_pointer src;
+  pointer dst;
+  if (!other.GetIsAllocated()) {
+    dst = GetInlinedData();
+    src = other.GetInlinedData();
+  } else {
+    // Because this is only called from the `InlinedVector` constructors, it's
+    // safe to take on the allocation with size `0`. If `ConstructElements(...)`
+    // throws, deallocation will be automatically handled by `~Storage()`.
+    size_type new_capacity = ComputeCapacity(GetInlinedCapacity(), n);
+    dst = AllocatorTraits::allocate(*GetAllocPtr(), new_capacity);
+    SetAllocatedData(dst, new_capacity);
+    src = other.GetAllocatedData();
+  }
+  if (IsMemcpyOk::value) {
+    MemcpyIfAllowed<IsMemcpyOk::value>(dst, src, sizeof(dst[0]) * n);
+  } else {
+    auto values = IteratorValueAdapter<const_pointer>(src);
+    inlined_vector_internal::ConstructElements(GetAllocPtr(), dst, &values, n);
+  }
+  GetSizeAndIsAllocated() = other.GetSizeAndIsAllocated();
+}
 
 template <typename T, size_t N, typename A>
 template <typename ValueAdapter>

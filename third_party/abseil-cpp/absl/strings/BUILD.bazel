@@ -286,6 +286,7 @@ cc_library(
         "//absl/base:base_internal",
         "//absl/base:config",
         "//absl/base:core_headers",
+        "//absl/base:endian",
         "//absl/base:raw_logging_internal",
         "//absl/base:throw_delegate",
         "//absl/container:compressed_tuple",

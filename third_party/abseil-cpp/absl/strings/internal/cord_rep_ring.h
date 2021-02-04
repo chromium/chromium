@@ -83,7 +83,7 @@ class CordRepRing : public CordRep {
   // `end_pos` which is the `end_pos` of the previous node (or `begin_pos`) plus
   // this node's length. The purpose is to allow for a binary search on this
   // position, while allowing O(1) prepend and append operations.
-  using pos_type = uint64_t;
+  using pos_type = size_t;
 
   // `index_type` is the type for the `head`, `tail` and `capacity` indexes.
   // Ring buffers are limited to having no more than four billion entries.

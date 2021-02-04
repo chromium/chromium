@@ -371,10 +371,10 @@ class ABSL_MUST_USE_RESULT Status final {
   Status();
 
   // Creates a status in the canonical error space with the specified
-  // `absl::StatusCode` and error message.  If `code == absl::StatusCode::kOk`,
+  // `absl::StatusCode` and error message.  If `code == absl::StatusCode::kOk`,  // NOLINT
   // `msg` is ignored and an object identical to an OK status is constructed.
   //
-  // The `msg` string must be in UTF-8. The implementation may complain (e.g.,
+  // The `msg` string must be in UTF-8. The implementation may complain (e.g.,  // NOLINT
   // by printing a warning) if it is not.
   Status(absl::StatusCode code, absl::string_view msg);
 
@@ -551,8 +551,9 @@ class ABSL_MUST_USE_RESULT Status final {
   status_internal::Payloads* GetPayloads();
 
   // Takes ownership of payload.
-  static uintptr_t NewRep(absl::StatusCode code, absl::string_view msg,
-                          std::unique_ptr<status_internal::Payloads> payload);
+  static uintptr_t NewRep(
+      absl::StatusCode code, absl::string_view msg,
+      std::unique_ptr<status_internal::Payloads> payload);
   static bool EqualsSlow(const absl::Status& a, const absl::Status& b);
 
   // MSVC 14.0 limitation requires the const.

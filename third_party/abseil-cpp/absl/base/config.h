@@ -722,4 +722,13 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #define ABSL_HAVE_ADDRESS_SANITIZER 1
 #endif
 
+// ABSL_HAVE_CLASS_TEMPLATE_ARGUMENT_DEDUCTION
+//
+// Class template argument deduction is a language feature added in C++17.
+#ifdef ABSL_HAVE_CLASS_TEMPLATE_ARGUMENT_DEDUCTION
+#error "ABSL_HAVE_CLASS_TEMPLATE_ARGUMENT_DEDUCTION cannot be directly set."
+#elif defined(__cpp_deduction_guides)
+#define ABSL_HAVE_CLASS_TEMPLATE_ARGUMENT_DEDUCTION 1
+#endif
+
 #endif  // ABSL_BASE_CONFIG_H_

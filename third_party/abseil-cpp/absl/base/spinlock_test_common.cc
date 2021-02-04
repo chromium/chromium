@@ -92,6 +92,7 @@ static void TestFunction(int thread_salt, SpinLock* spinlock) {
 
 static void ThreadedTest(SpinLock* spinlock) {
   std::vector<std::thread> threads;
+  threads.reserve(kNumThreads);
   for (int i = 0; i < kNumThreads; ++i) {
     threads.push_back(std::thread(TestFunction, i, spinlock));
   }

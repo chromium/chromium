@@ -184,6 +184,7 @@ if (build_with_chromium) {
         "absl/algorithm:algorithm_test",
         "absl/algorithm:container_test",
         "absl/base:config_test",
+        "absl/cleanup:cleanup_test",
         "absl/container:inlined_vector_test",
         "absl/memory:memory_test",
         "absl/meta:type_traits_test",
