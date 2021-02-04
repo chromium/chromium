@@ -45751,6 +45751,7 @@ from previous Chrome versions.
   <int value="634789085" label="LayeredAPI:disabled"/>
   <int value="635076832" label="MarkHttpAs:disabled"/>
   <int value="635533110" label="ReleaseNotes:disabled"/>
+  <int value="635947051" label="DesktopRestructuredLanguageSettings:enabled"/>
   <int value="635971109" label="PrintPdfAsImage:disabled"/>
   <int value="636341169" label="ExploreSites:disabled"/>
   <int value="636413416" label="OmniboxKeywordSearchButton:disabled"/>
@@ -46625,6 +46626,7 @@ from previous Chrome versions.
       label="OmniboxRemoveSuggestionsFromClipboard:disabled"/>
   <int value="1442798825" label="enable-quic"/>
   <int value="1442830837" label="MemoryAblation:disabled"/>
+  <int value="1446946673" label="DesktopRestructuredLanguageSettings:disabled"/>
   <int value="1447295459" label="SyncPseudoUSSApps:enabled"/>
   <int value="1448684258" label="TabHoverCardImages:enabled"/>
   <int value="1449177114"

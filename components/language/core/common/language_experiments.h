@@ -39,6 +39,10 @@ extern const base::Feature kUseButtonTranslateBubbleUi;
 // This feature enables setting the application language on Android.
 extern const base::Feature kDetailedLanguageSettings;
 
+// This feature enables the desktop version's redesigned language settings
+// layout.
+extern const base::Feature kDesktopRestructuredLanguageSettings;
+
 // This feature enables providing Translate data to Assistant.
 extern const base::Feature kTranslateAssistContent;
 

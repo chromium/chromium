@@ -865,6 +865,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "desktop-restructured-language-settings",
+    "owners": [ "joshsantana", "chrome-langauge@google.com"],
+    "expiry_milestone": 93
+  },
+  {
     "name": "desktop-version-default",
     "owners": [ "gambard", "bling-flags@google.com" ],
     "expiry_milestone": 92
