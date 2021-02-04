@@ -1476,20 +1476,78 @@ TEST_F(HarfBuzzShaperTest, MAYBE_SafeToBreakArabicCommonLigatures) {
   HarfBuzzShaper shaper(string);
   scoped_refptr<ShapeResult> result = shaper.Shape(&font, TextDirection::kRtl);
 
-  Vector<unsigned> safe_to_break_positions;
-
+  EXPECT_EQ(0u, result->NextSafeToBreakOffset(0));
+  EXPECT_EQ(3u, result->NextSafeToBreakOffset(1));
+  EXPECT_EQ(3u, result->NextSafeToBreakOffset(2));
+  EXPECT_EQ(3u, result->NextSafeToBreakOffset(3));
+  EXPECT_EQ(4u, result->NextSafeToBreakOffset(4));
 #if defined(OS_MAC)
-  safe_to_break_positions = {0, 2, 3, 4, 11};
+  EXPECT_EQ(12u, result->NextSafeToBreakOffset(5));
+  EXPECT_EQ(12u, result->NextSafeToBreakOffset(6));
+  EXPECT_EQ(12u, result->NextSafeToBreakOffset(7));
+  EXPECT_EQ(12u, result->NextSafeToBreakOffset(8));
+  EXPECT_EQ(12u, result->NextSafeToBreakOffset(9));
+  EXPECT_EQ(12u, result->NextSafeToBreakOffset(10));
+  EXPECT_EQ(12u, result->NextSafeToBreakOffset(11));
 #else
-  safe_to_break_positions = {0, 3, 4, 5, 7, 11};
+  EXPECT_EQ(5u, result->NextSafeToBreakOffset(5));
+  EXPECT_EQ(7u, result->NextSafeToBreakOffset(6));
+  EXPECT_EQ(7u, result->NextSafeToBreakOffset(7));
+  EXPECT_EQ(11u, result->NextSafeToBreakOffset(8));
+  EXPECT_EQ(11u, result->NextSafeToBreakOffset(9));
+  EXPECT_EQ(11u, result->NextSafeToBreakOffset(10));
+  EXPECT_EQ(11u, result->NextSafeToBreakOffset(11));
 #endif
-  unsigned compare_safe_to_break_position = 0;
-  for (unsigned i = 0; i < string.length() - 1; ++i) {
-    EXPECT_EQ(safe_to_break_positions[compare_safe_to_break_position],
-              result->NextSafeToBreakOffset(i));
-    if (i == safe_to_break_positions[compare_safe_to_break_position])
-      compare_safe_to_break_position++;
-  }
+  EXPECT_EQ(12u, result->NextSafeToBreakOffset(12));
+
+  EXPECT_EQ(0u, result->PreviousSafeToBreakOffset(0));
+  EXPECT_EQ(0u, result->PreviousSafeToBreakOffset(1));
+  EXPECT_EQ(0u, result->PreviousSafeToBreakOffset(2));
+  EXPECT_EQ(3u, result->PreviousSafeToBreakOffset(3));
+  EXPECT_EQ(4u, result->PreviousSafeToBreakOffset(4));
+#if defined(OS_MAC)
+  EXPECT_EQ(4u, result->PreviousSafeToBreakOffset(5));
+  EXPECT_EQ(4u, result->PreviousSafeToBreakOffset(6));
+  EXPECT_EQ(4u, result->PreviousSafeToBreakOffset(7));
+  EXPECT_EQ(4u, result->PreviousSafeToBreakOffset(8));
+  EXPECT_EQ(4u, result->PreviousSafeToBreakOffset(9));
+  EXPECT_EQ(4u, result->PreviousSafeToBreakOffset(10));
+  EXPECT_EQ(4u, result->PreviousSafeToBreakOffset(11));
+#else
+  EXPECT_EQ(5u, result->PreviousSafeToBreakOffset(5));
+  EXPECT_EQ(5u, result->PreviousSafeToBreakOffset(6));
+  EXPECT_EQ(7u, result->PreviousSafeToBreakOffset(7));
+  EXPECT_EQ(7u, result->PreviousSafeToBreakOffset(8));
+  EXPECT_EQ(7u, result->PreviousSafeToBreakOffset(9));
+  EXPECT_EQ(7u, result->PreviousSafeToBreakOffset(10));
+  EXPECT_EQ(11u, result->PreviousSafeToBreakOffset(11));
+#endif
+  EXPECT_EQ(12u, result->PreviousSafeToBreakOffset(12));
+}
+
+// http://crbug.com/1170334
+TEST_F(HarfBuzzShaperTest, SafeToBreakU0635) {
+  FontDescription::VariantLigatures ligatures;
+  ligatures.common = FontDescription::kEnabledLigaturesState;
+
+  // Five U+0635. This sequence should be rendered once.
+  String string(u"\u0635\u0635\u0635\u0635\u0635");
+  HarfBuzzShaper shaper(string);
+  scoped_refptr<ShapeResult> result = shaper.Shape(&font, TextDirection::kRtl);
+
+  EXPECT_EQ(0u, result->NextSafeToBreakOffset(0));
+  EXPECT_EQ(5u, result->NextSafeToBreakOffset(1));
+  EXPECT_EQ(5u, result->NextSafeToBreakOffset(2));
+  EXPECT_EQ(5u, result->NextSafeToBreakOffset(3));
+  EXPECT_EQ(5u, result->NextSafeToBreakOffset(4));
+  EXPECT_EQ(5u, result->NextSafeToBreakOffset(5));
+
+  EXPECT_EQ(0u, result->PreviousSafeToBreakOffset(0));
+  EXPECT_EQ(0u, result->PreviousSafeToBreakOffset(1));
+  EXPECT_EQ(0u, result->PreviousSafeToBreakOffset(2));
+  EXPECT_EQ(0u, result->PreviousSafeToBreakOffset(3));
+  EXPECT_EQ(0u, result->PreviousSafeToBreakOffset(4));
+  EXPECT_EQ(5u, result->PreviousSafeToBreakOffset(5));
 }
 
 // TODO(layout-dev): Expand RTL test coverage and add tests for mixed
