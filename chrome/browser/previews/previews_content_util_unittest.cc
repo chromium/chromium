@@ -59,7 +59,7 @@ blink::PreviewsState CallDetermineAllowedClientPreviewsState(
 }
 
 // A test implementation of PreviewsDecider that simply returns whether the
-// preview type feature is enabled (ignores ECT and blacklist considerations).
+// preview type feature is enabled (ignores ECT and blocklist considerations).
 class PreviewEnabledPreviewsDecider : public PreviewsDecider {
  public:
   PreviewEnabledPreviewsDecider() {}
