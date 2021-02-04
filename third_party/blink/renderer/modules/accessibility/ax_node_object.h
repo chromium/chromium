@@ -50,7 +50,9 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
  protected:
 #if DCHECK_IS_ON()
   bool initialized_ = false;
+  mutable bool getting_bounds_ = false;
 #endif
+
   // The accessibility role, not taking ARIA into account.
   ax::mojom::blink::Role native_role_;
 
