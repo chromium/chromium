@@ -182,7 +182,9 @@ void AttestationFlowIntegrated::StartCertificateRequest(
 
   request.set_certificate_profile(*profile_attestation_enum);
   request.set_request_origin(request_origin);
-  request.set_username(cryptohome::Identification(account_id).id());
+  if (GetKeyTypeForProfile(certificate_profile) == KEY_USER) {
+    request.set_username(cryptohome::Identification(account_id).id());
+  }
   request.set_key_label(key_name);
   request.set_shall_trigger_enrollment(true);
   request.set_forced(generate_new_key);

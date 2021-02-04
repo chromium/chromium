@@ -370,7 +370,7 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateAcaTypeFromCommandline) {
   EXPECT_FALSE(certificate.empty());
 }
 
-TEST_F(AttestationFlowIntegratedTest, GetCertificateAttestationEmptyAccountId) {
+TEST_F(AttestationFlowIntegratedTest, GetMachineCertificate) {
   chromeos::AttestationClient::Get()
       ->GetTestInterface()
       ->ConfigureEnrollmentPreparations(true);
@@ -378,7 +378,6 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateAttestationEmptyAccountId) {
   ::attestation::GetCertificateRequest request;
   request.set_certificate_profile(
       ::attestation::CertificateProfile::ENTERPRISE_MACHINE_CERTIFICATE);
-  request.set_username("");
   request.set_key_label("label");
   request.set_request_origin("origin");
 
@@ -401,6 +400,36 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateAttestationEmptyAccountId) {
   EXPECT_FALSE(certificate.empty());
 }
 
+TEST_F(AttestationFlowIntegratedTest, GetMachineCertificateWithAccountId) {
+  chromeos::AttestationClient::Get()
+      ->GetTestInterface()
+      ->ConfigureEnrollmentPreparations(true);
+
+  ::attestation::GetCertificateRequest request;
+  request.set_certificate_profile(
+      ::attestation::CertificateProfile::ENTERPRISE_MACHINE_CERTIFICATE);
+  request.set_key_label("label");
+  request.set_request_origin("origin");
+
+  AllowlistCertificateRequest(::attestation::ACAType::DEFAULT_ACA, request);
+
+  base::MockCallback<AttestationFlowIntegrated::CertificateCallback> callback;
+  std::string certificate;
+  EXPECT_CALL(callback, Run(AttestationStatus::ATTESTATION_SUCCESS, _))
+      .WillOnce(SaveArg<1>(&certificate));
+
+  AttestationFlowIntegrated flow;
+  flow.GetCertificate(
+      static_cast<AttestationCertificateProfile>(request.certificate_profile()),
+      AccountId::FromUserEmail("username@gmail.com"), request.request_origin(),
+      /*generate_new_key=*/true, request.key_label(),
+      base::BindOnce(
+          &AttestationFlowIntegratedTest::QuitRunLoopCertificateCallback,
+          base::Unretained(this), callback.Get()));
+  Run();
+  EXPECT_FALSE(certificate.empty());
+}
+
 TEST_F(AttestationFlowIntegratedTest,
        GetCertificateAttestationKeyNameFromProfile) {
   chromeos::AttestationClient::Get()
@@ -410,7 +439,6 @@ TEST_F(AttestationFlowIntegratedTest,
   ::attestation::GetCertificateRequest request;
   request.set_certificate_profile(
       ::attestation::CertificateProfile::ENTERPRISE_ENROLLMENT_CERTIFICATE);
-  request.set_username("");
   // Note: no key label is set.
   request.set_request_origin("origin");
 
