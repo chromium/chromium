@@ -980,8 +980,13 @@ TEST_F('OSSettingsDevicePageTest', 'MAYBE_DevicePageTest', () => {
   mocha.grep(assert(device_page_tests.TestNames.DevicePage)).run();
 });
 
-// Fails after https://chromium-review.googlesource.com/c/chromium/src/+/2640774
-TEST_F('OSSettingsDevicePageTest', 'DISABLED_DisplayTest', () => {
+// Flaky in debug. https://crbug.com/1003483
+GEN('#if !defined(NDEBUG)');
+GEN('#define MAYBE_DisplayTest DISABLED_DisplayTest');
+GEN('#else');
+GEN('#define MAYBE_DisplayTest DisplayTest');
+GEN('#endif');
+TEST_F('OSSettingsDevicePageTest', 'MAYBE_DisplayTest', () => {
   mocha.grep(assert(device_page_tests.TestNames.Display)).run();
 });
 
