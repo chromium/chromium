@@ -4,8 +4,13 @@
 
 package org.chromium.chrome.browser.autofill_assistant;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+import static org.hamcrest.Matchers.allOf;
 
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntil;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
@@ -217,6 +222,52 @@ public class PasswordChangeFixtureSingleRunTest
         // Should fail during login. Wait for error opening site settings.
         waitUntilViewMatchesCondition(withText("Sorry, could not open site settings"),
                 isDisplayed(), MAX_WAIT_TIME_IN_MS);
+
+        // Assert password store contains only one credential.
+        int countOfCredentials = mPasswordStoreBridge.getPasswordStoreCredentialsCount();
+        Assert.assertTrue("Store does not contain a single credential", countOfCredentials == 1);
+
+        // Assert initial credential has not changed.
+        PasswordStoreCredential[] credentials = mPasswordStoreBridge.getAllCredentials();
+        Assert.assertTrue("Initial credential was changed", credential.equals(credentials[0]));
+
+        logPasswordStoreCredentials(mPasswordStoreBridge, "Final password store state");
+    }
+
+    /**
+     * Checks the script does not introduce unexpected changes if the generated password is
+     * rejected.
+     */
+    @Test
+    @Manual
+    public void testUserDeclinesGeneratedPassword() throws Exception {
+        PasswordStoreCredential credential =
+                new PasswordStoreCredential(new GURL(mParameters.getDomainUrl()),
+                        mParameters.getUsername(), mParameters.getPassword());
+
+        // Insert credential into the password store.
+        mPasswordStoreBridge.insertPasswordCredential(credential);
+
+        // Wait until insert operation finishes.
+        waitUntil(() -> mPasswordStoreBridge.getPasswordStoreCredentialsCount() == 1);
+
+        // Run script.
+        runScriptForUser(credential.getUsername());
+
+        // Opening site settings.
+        waitUntilViewMatchesCondition(
+                withText("Opening site settings..."), isDisplayed(), MAX_WAIT_TIME_IN_MS);
+
+        // Filling out old password.
+        waitUntilViewMatchesCondition(
+                withText("Changing password..."), isDisplayed(), MAX_WAIT_TIME_IN_MS);
+
+        // Requesting authorization to change the password.
+        waitUntilViewMatchesCondition(
+                withText("Use suggested password?"), isDisplayed(), MAX_WAIT_TIME_IN_MS);
+
+        // Simulate the user declining the generated password.
+        onView(allOf(withContentDescription("Close"), isDisplayed())).perform(click());
 
         // Assert password store contains only one credential.
         int countOfCredentials = mPasswordStoreBridge.getPasswordStoreCredentialsCount();
