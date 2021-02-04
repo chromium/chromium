@@ -116,8 +116,7 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
  private:
   friend class DevToolsAgentHost;
 
-  static void UpdateRawHeadersAccess(RenderFrameHostImpl* old_rfh,
-                                     RenderFrameHostImpl* new_rfh);
+  static void UpdateRawHeadersAccess(RenderFrameHostImpl* rfh);
 
   RenderFrameDevToolsAgentHost(FrameTreeNode*, RenderFrameHostImpl*);
   ~RenderFrameDevToolsAgentHost() override;
