@@ -50,14 +50,13 @@ void ExtensionPage::InitializeWindow() {
       chromecast::VisibilityPriority::STICKY_ACTIVITY);
 }
 
-void ExtensionPage::RenderViewCreated(
-    content::RenderViewHost* render_view_host) {
-  content::RenderWidgetHostView* view =
-      render_view_host->GetWidget()->GetView();
-  if (view) {
-    view->SetBackgroundColor(SK_ColorTRANSPARENT);
+void ExtensionPage::RenderFrameCreated(content::RenderFrameHost* frame_host) {
+  // Set the initial top-level main frame to be transparent and focus it once
+  // the renderer frame is made.
+  if (frame_host == web_contents()->GetMainFrame()) {
+    frame_host->GetView()->SetBackgroundColor(SK_ColorTRANSPARENT);
+    web_contents()->Focus();
   }
-  web_contents()->Focus();
 }
 
 }  // namespace chromecast

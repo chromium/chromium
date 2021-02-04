@@ -34,7 +34,7 @@ class ExtensionPage : public content::WebContentsObserver {
 
  private:
   // WebContentsObserver implementation:
-  void RenderViewCreated(content::RenderViewHost* render_view_host) override;
+  void RenderFrameCreated(content::RenderFrameHost* frame_host) override;
 
   const std::unique_ptr<CastContentWindowAura> window_;
   const std::unique_ptr<CastExtensionHost> extension_host_;
