@@ -10,6 +10,9 @@ PowerModeVoter::Delegate::~Delegate() = default;
 
 PowerModeVoter::PowerModeVoter(Delegate* delegate) : delegate_(delegate) {}
 
+// static
+constexpr base::TimeDelta PowerModeVoter::kResponseTimeout;
+
 PowerModeVoter::~PowerModeVoter() {
   delegate_->OnVoterDestroyed(this);
 }

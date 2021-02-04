@@ -77,6 +77,7 @@ source_set("browser") {
     "//components/payments/core",
     "//components/payments/core:error_strings",
     "//components/payments/mojom",
+    "//components/power_scheduler",
     "//components/rappor",
     "//components/services/filesystem:lib",
     "//components/services/quarantine:quarantine",

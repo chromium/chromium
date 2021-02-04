@@ -27,6 +27,9 @@ class COMPONENT_EXPORT(POWER_SCHEDULER) PowerModeVoter {
                                        base::TimeDelta timeout) = 0;
   };
 
+  static constexpr base::TimeDelta kResponseTimeout =
+      base::TimeDelta::FromMilliseconds(100);
+
   ~PowerModeVoter();
 
   PowerModeVoter(const PowerModeVoter&) = delete;

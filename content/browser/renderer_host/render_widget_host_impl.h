@@ -33,6 +33,7 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "cc/mojom/render_frame_metadata.mojom.h"
+#include "components/power_scheduler/power_mode_voter.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "content/browser/renderer_host/event_with_latency_info.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
@@ -1382,6 +1383,9 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   mojo::AssociatedRemote<blink::mojom::Widget> blink_widget_;
 
   mojo::Remote<blink::mojom::WidgetCompositor> widget_compositor_;
+
+  std::unique_ptr<power_scheduler::PowerModeVoter> power_mode_input_voter_;
+  std::unique_ptr<power_scheduler::PowerModeVoter> power_mode_loading_voter_;
 
   base::WeakPtrFactory<RenderWidgetHostImpl> weak_factory_{this};
 
