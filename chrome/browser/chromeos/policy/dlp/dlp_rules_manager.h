@@ -29,7 +29,9 @@ class DlpRulesManager : public KeyedService {
                          // confidential content on the screen.
     kScreenShare = 5,    // Restricts screen sharing of confidential content
                          // through 3P extensions/websites.
-    kMaxValue = kScreenShare
+    kFiles = 6,          // Restricts file operations, like copying, uploading
+                         // or opening in an app.
+    kMaxValue = kFiles
   };
 
   // A representation of destinations to which sharing confidential data is
@@ -64,7 +66,7 @@ class DlpRulesManager : public KeyedService {
   // Returns the enforcement level for `restriction` given that data comes
   // from `source` and requested to be shared to `destination`. ALLOW is
   // returned if no restrictions should be applied. Requires `restriction` to be
-  // clipboard.
+  // clipboard or files.
   virtual Level IsRestrictedDestination(const GURL& source,
                                         const GURL& destination,
                                         Restriction restriction) const = 0;

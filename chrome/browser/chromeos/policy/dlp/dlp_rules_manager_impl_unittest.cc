@@ -14,6 +14,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/dbus/dlp/dlp_client.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_task_environment.h"
@@ -456,6 +457,37 @@ TEST_F(DlpRulesManagerImplTest, WarnPriority) {
                 GURL(base::StrCat({kHttpsPrefix, kDocsPattern})),
                 GURL(base::StrCat({kHttpsPrefix, kMailPattern})),
                 DlpRulesManager::Restriction::kClipboard));
+}
+
+TEST_F(DlpRulesManagerImplTest, FilesRestriction_DlpClientNotified) {
+  content::BrowserTaskEnvironment task_environment;
+  chromeos::DlpClient::InitializeFake();
+
+  EXPECT_EQ(0, chromeos::DlpClient::Get()
+                   ->GetTestInterface()
+                   ->GetSetDlpFilesPolicyCount());
+
+  base::Value rules(base::Value::Type::LIST);
+
+  base::Value src_urls(base::Value::Type::LIST);
+  src_urls.Append(kExampleUrl);
+
+  base::Value dst_urls(base::Value::Type::LIST);
+  dst_urls.Append(kExampleUrl);
+
+  base::Value restrictions(base::Value::Type::LIST);
+  restrictions.Append(dlp_test_util::CreateRestrictionWithLevel(
+      dlp::kFilesRestriction, dlp::kBlockLevel));
+
+  rules.Append(dlp_test_util::CreateRule(
+      "rule #1", "Block Files", std::move(src_urls), std::move(dst_urls),
+      /*dst_components=*/base::Value(base::Value::Type::LIST),
+      std::move(restrictions)));
+  UpdatePolicyPref(std::move(rules));
+
+  EXPECT_EQ(1, chromeos::DlpClient::Get()
+                   ->GetTestInterface()
+                   ->GetSetDlpFilesPolicyCount());
 }
 
 }  // namespace policy
