@@ -343,6 +343,34 @@ RTCD_EXTERN void (*av1_convolve_y_sr)(const uint8_t* src,
                                       const InterpFilterParams* filter_params_y,
                                       const int subpel_y_qn);
 
+int av1_denoiser_filter_c(const uint8_t* sig,
+                          int sig_stride,
+                          const uint8_t* mc_avg,
+                          int mc_avg_stride,
+                          uint8_t* avg,
+                          int avg_stride,
+                          int increase_denoising,
+                          BLOCK_SIZE bs,
+                          int motion_magnitude);
+int av1_denoiser_filter_neon(const uint8_t* sig,
+                             int sig_stride,
+                             const uint8_t* mc_avg,
+                             int mc_avg_stride,
+                             uint8_t* avg,
+                             int avg_stride,
+                             int increase_denoising,
+                             BLOCK_SIZE bs,
+                             int motion_magnitude);
+RTCD_EXTERN int (*av1_denoiser_filter)(const uint8_t* sig,
+                                       int sig_stride,
+                                       const uint8_t* mc_avg,
+                                       int mc_avg_stride,
+                                       uint8_t* avg,
+                                       int avg_stride,
+                                       int increase_denoising,
+                                       BLOCK_SIZE bs,
+                                       int motion_magnitude);
+
 void av1_dist_wtd_convolve_2d_c(const uint8_t* src,
                                 int src_stride,
                                 uint8_t* dst,
@@ -1871,6 +1899,9 @@ static void setup_rtcd_internal(void) {
   av1_convolve_y_sr = av1_convolve_y_sr_c;
   if (flags & HAS_NEON)
     av1_convolve_y_sr = av1_convolve_y_sr_neon;
+  av1_denoiser_filter = av1_denoiser_filter_c;
+  if (flags & HAS_NEON)
+    av1_denoiser_filter = av1_denoiser_filter_neon;
   av1_dist_wtd_convolve_2d = av1_dist_wtd_convolve_2d_c;
   if (flags & HAS_NEON)
     av1_dist_wtd_convolve_2d = av1_dist_wtd_convolve_2d_neon;

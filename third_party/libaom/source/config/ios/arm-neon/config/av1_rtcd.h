@@ -289,6 +289,26 @@ void av1_convolve_y_sr_neon(const uint8_t* src,
                             const int subpel_y_qn);
 #define av1_convolve_y_sr av1_convolve_y_sr_neon
 
+int av1_denoiser_filter_c(const uint8_t* sig,
+                          int sig_stride,
+                          const uint8_t* mc_avg,
+                          int mc_avg_stride,
+                          uint8_t* avg,
+                          int avg_stride,
+                          int increase_denoising,
+                          BLOCK_SIZE bs,
+                          int motion_magnitude);
+int av1_denoiser_filter_neon(const uint8_t* sig,
+                             int sig_stride,
+                             const uint8_t* mc_avg,
+                             int mc_avg_stride,
+                             uint8_t* avg,
+                             int avg_stride,
+                             int increase_denoising,
+                             BLOCK_SIZE bs,
+                             int motion_magnitude);
+#define av1_denoiser_filter av1_denoiser_filter_neon
+
 void av1_dist_wtd_convolve_2d_c(const uint8_t* src,
                                 int src_stride,
                                 uint8_t* dst,
