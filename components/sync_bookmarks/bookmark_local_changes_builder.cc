@@ -65,9 +65,7 @@ syncer::CommitRequestDataList BookmarkLocalChangesBuilder::BuildCommitRequests(
       // committed once the favicon is loaded in
       // BookmarkModelObserverImpl::BookmarkNodeFaviconChanged.
       if (!node->is_folder() && !node->is_favicon_loaded() &&
-          !node->is_permanent_node() &&
-          base::FeatureList::IsEnabled(
-              switches::kSyncDoNotCommitBookmarksWithoutFavicon)) {
+          !node->is_permanent_node()) {
         // Force the favicon to be loaded. The worker will be nudged for commit
         // in BookmarkModelObserverImpl::BookmarkNodeFaviconChanged() once
         // favicon is loaded.

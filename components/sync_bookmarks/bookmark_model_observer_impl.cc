@@ -12,10 +12,8 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/sync/base/hash_util.h"
 #include "components/sync/base/unique_position.h"
-#include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync_bookmarks/bookmark_specifics_conversions.h"
-#include "components/sync_bookmarks/switches.h"
 
 namespace sync_bookmarks {
 
@@ -243,9 +241,7 @@ void BookmarkModelObserverImpl::BookmarkNodeFaviconChanged(
 
   // The favicon content didn't actually change, which means this event is
   // almost certainly the result of favicon loading having completed.
-  if (entity->IsUnsynced() &&
-      base::FeatureList::IsEnabled(
-          switches::kSyncDoNotCommitBookmarksWithoutFavicon)) {
+  if (entity->IsUnsynced()) {
     // When kSyncDoNotCommitBookmarksWithoutFavicon is enabled, nudge for
     // commit once favicon is loaded. This is needed in case when unsynced
     // entity was skipped while building commit requests (since favicon wasn't

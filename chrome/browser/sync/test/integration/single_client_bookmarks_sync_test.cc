@@ -89,19 +89,6 @@ class SingleClientBookmarksSyncTest : public SyncTest {
   DISALLOW_COPY_AND_ASSIGN(SingleClientBookmarksSyncTest);
 };
 
-class SingleClientBookmarksSyncTestWithDisabledCommitWithoutFavicon
-    : public SyncTest {
- public:
-  SingleClientBookmarksSyncTestWithDisabledCommitWithoutFavicon()
-      : SyncTest(SINGLE_CLIENT) {
-    features_override_.InitAndEnableFeature(
-        switches::kSyncDoNotCommitBookmarksWithoutFavicon);
-  }
-
- private:
-  base::test::ScopedFeatureList features_override_;
-};
-
 class SingleClientBookmarksSyncTestWithEnabledReuploadRemoteBookmarks
     : public SingleClientBookmarksSyncTest {
  public:
@@ -1361,9 +1348,8 @@ IN_PROC_BROWSER_TEST_F(
           .Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(
-    SingleClientBookmarksSyncTestWithDisabledCommitWithoutFavicon,
-    PRE_ShouldUploadUnsyncedEntityAfterRestart) {
+IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
+                       PRE_ShouldUploadUnsyncedEntityAfterRestart) {
   ASSERT_TRUE(SetupSync());
 
   const std::string title = "Title";
@@ -1389,9 +1375,8 @@ IN_PROC_BROWSER_TEST_F(
   SetTitle(kSingleProfileIndex, bookmark, new_title);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    SingleClientBookmarksSyncTestWithDisabledCommitWithoutFavicon,
-    ShouldUploadUnsyncedEntityAfterRestart) {
+IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
+                       ShouldUploadUnsyncedEntityAfterRestart) {
   ASSERT_TRUE(SetupClients());
 
   const std::string title = "Title";

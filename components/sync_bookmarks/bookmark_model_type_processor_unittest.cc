@@ -676,10 +676,6 @@ TEST_F(BookmarkModelTypeProcessorTest,
 
 TEST_F(BookmarkModelTypeProcessorTest,
        ShouldNotCommitEntitiesWithoutLoadedFavicons) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(
-      switches::kSyncDoNotCommitBookmarksWithoutFavicon);
-
   const std::string kNodeId = "node_id1";
   const std::string kTitle = "title1";
   const std::string kUrl = "http://www.url1.com";

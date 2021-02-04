@@ -14,15 +14,12 @@
 #include "base/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/sync/base/time.h"
 #include "components/sync/base/unique_position.h"
-#include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync_bookmarks/bookmark_specifics_conversions.h"
-#include "components/sync_bookmarks/switches.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker.h"
 #include "components/undo/bookmark_undo_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -799,10 +796,6 @@ TEST_F(BookmarkModelObserverImplTest, ShouldCommitLocalFaviconChange) {
 
 TEST_F(BookmarkModelObserverImplTest,
        ShouldNudgeForCommitOnFaviconLoadAfterRestart) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      switches::kSyncDoNotCommitBookmarksWithoutFavicon);
-
   const GURL kBookmarkUrl("http://www.url.com");
   const GURL kIconUrl("http://www.url.com/favicon.ico");
   const SkColor kColor = SK_ColorRED;
