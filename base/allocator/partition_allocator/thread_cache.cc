@@ -307,6 +307,14 @@ void ThreadCache::Delete(void* tcache_ptr) {
   auto* root = tcache->root_;
   reinterpret_cast<ThreadCache*>(tcache_ptr)->~ThreadCache();
   root->RawFree(tcache_ptr);
+
+#if defined(OS_WIN)
+  // On Windows, allocations do occur during thread/process teardown, make sure
+  // they don't resurrect the thread cache.
+  //
+  // TODO(lizeb): Investigate whether this is needed on POSIX as well.
+  PartitionTlsSet(g_thread_cache_key, reinterpret_cast<void*>(kTombstone));
+#endif
 }
 
 void ThreadCache::FillBucket(size_t bucket_index) {

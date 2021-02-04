@@ -977,7 +977,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFreeWithThreadCache(
               slot_span->bucket <= &this->sentinel_bucket);
     size_t bucket_index = slot_span->bucket - this->buckets;
     auto* thread_cache = internal::ThreadCache::Get();
-    if (LIKELY(thread_cache &&
+    if (LIKELY(internal::ThreadCache::IsValid(thread_cache) &&
                thread_cache->MaybePutInCache(slot_start, bucket_index))) {
       return;
     }
@@ -1164,8 +1164,9 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
 
   uint16_t bucket_index = SizeToBucketIndex(raw_size);
   size_t usable_size;
-  bool is_already_zeroed;
+  bool is_already_zeroed = false;
   void* slot_start = nullptr;
+  size_t slot_size;
 
   // !thread_safe => !with_thread_cache, but adding the condition allows the
   // compiler to statically remove this branch for the thread-unsafe variant.
@@ -1174,32 +1175,42 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   // the thread cache.
   if (thread_safe && LIKELY(with_thread_cache)) {
     auto* tcache = internal::ThreadCache::Get();
-    if (UNLIKELY(!tcache)) {
-      // There is no per-thread ThreadCache allocated here yet, and this
-      // partition has a thread cache, allocate a new one.
-      //
-      // The thread cache allocation itself will not reenter here, as it
-      // sidesteps the thread cache by using placement new and
-      // |RawAlloc()|. However, internally to libc, allocations may happen to
-      // create a new TLS variable. This would end up here again, which is not
-      // what we want (and likely is not supported by libc).
-      //
-      // To avoid this sort of reentrancy, temporarily set this partition as not
-      // supporting a thread cache. so that reentering allocations will not end
-      // up allocating a thread cache. This value may be seen by other threads
-      // as well, in which case a few allocations will not use the thread
-      // cache. As it is purely an optimization, this is not a correctness
-      // issue.
-      //
-      // Note that there is no deadlock or data inconsistency concern, since we
-      // do not hold the lock, and has such haven't touched any internal data.
-      with_thread_cache = false;
-      tcache = internal::ThreadCache::Create(this);
-      with_thread_cache = true;
+    if (UNLIKELY(!internal::ThreadCache::IsValid(tcache))) {
+      if (internal::ThreadCache::IsTombstone(tcache)) {
+        // Thread is being terminated, don't try to use the thread cache, and
+        // don't try to resurrect it.
+      } else {
+        // There is no per-thread ThreadCache allocated here yet, and this
+        // partition has a thread cache, allocate a new one.
+        //
+        // The thread cache allocation itself will not reenter here, as it
+        // sidesteps the thread cache by using placement new and
+        // |RawAlloc()|. However, internally to libc, allocations may happen to
+        // create a new TLS variable. This would end up here again, which is not
+        // what we want (and likely is not supported by libc).
+        //
+        // To avoid this sort of reentrancy, temporarily set this partition as
+        // not supporting a thread cache. so that reentering allocations will
+        // not end up allocating a thread cache. This value may be seen by other
+        // threads as well, in which case a few allocations will not use the
+        // thread cache. As it is purely an optimization, this is not a
+        // correctness issue.
+        //
+        // Note that there is no deadlock or data inconsistency concern, since
+        // we do not hold the lock, and has such haven't touched any internal
+        // data.
+        with_thread_cache = false;
+        tcache = internal::ThreadCache::Create(this);
+        with_thread_cache = true;
+
+        // Cache is created empty, but at least this will trigger batch fill,
+        // which may be useful, and we are already in a slow path anyway (first
+        // small allocation of this thread).
+        slot_start = tcache->GetFromCache(bucket_index, &slot_size);
+      }
+    } else {
+      slot_start = tcache->GetFromCache(bucket_index, &slot_size);
     }
-    size_t slot_size;
-    slot_start = tcache->GetFromCache(bucket_index, &slot_size);
-    is_already_zeroed = false;
 
     // LIKELY: median hit rate in the thread cache is 95%, from metrics.
     if (LIKELY(slot_start)) {
