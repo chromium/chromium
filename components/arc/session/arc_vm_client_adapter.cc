@@ -315,7 +315,6 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
 
   // Add /run/imageloader/.../android_demo_apps.squash as /dev/block/vdc if
   // needed.
-  // TODO(b/144542975): Do this on upgrade instead.
   if (!demo_session_apps_path.empty()) {
     disk_image = request.add_disks();
     disk_image->set_path(demo_session_apps_path.value());
