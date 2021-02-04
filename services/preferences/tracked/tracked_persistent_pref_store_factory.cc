@@ -49,15 +49,14 @@ GetExternalVerificationPrefHashStorePair(
     const prefs::mojom::TrackedPersistentPrefStoreConfiguration& config,
     scoped_refptr<TempScopedDirCleaner> temp_dir_cleaner) {
 #if defined(OS_WIN)
-  return std::make_pair(std::make_unique<PrefHashStoreImpl>(
-                            config.registry_seed, config.legacy_device_id,
-                            false /* use_super_mac */),
-                        std::make_unique<RegistryHashStoreContentsWin>(
-                            config.registry_path,
-                            config.unprotected_pref_filename.DirName()
-                                .BaseName()
-                                .LossyDisplayName(),
-                            std::move(temp_dir_cleaner)));
+  return std::make_pair(
+      std::make_unique<PrefHashStoreImpl>(config.registry_seed,
+                                          config.legacy_device_id,
+                                          false /* use_super_mac */),
+      std::make_unique<RegistryHashStoreContentsWin>(
+          base::AsWString(config.registry_path),
+          config.unprotected_pref_filename.DirName().BaseName().value(),
+          std::move(temp_dir_cleaner)));
 #else
   return std::make_pair(nullptr, nullptr);
 #endif
@@ -92,11 +91,10 @@ PersistentPrefStore* CreateTrackedPersistentPrefStore(
   // object between the unprotected and protected hash filter's
   // RegistryHashStoreContentsWin which will clear the registry keys when
   // destroyed. (https://crbug.com/721245)
-  if (base::StartsWith(config->unprotected_pref_filename.DirName()
-                           .BaseName()
-                           .LossyDisplayName(),
-                       base::ScopedTempDir::GetTempDirPrefix(),
-                       base::CompareCase::INSENSITIVE_ASCII)) {
+  if (base::StartsWith(
+          config->unprotected_pref_filename.DirName().BaseName().value(),
+          base::ScopedTempDir::GetTempDirPrefix(),
+          base::CompareCase::INSENSITIVE_ASCII)) {
     temp_scoped_dir_cleaner =
         base::MakeRefCounted<TempScopedDirRegistryCleaner>();
   }

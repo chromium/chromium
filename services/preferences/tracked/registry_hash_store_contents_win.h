@@ -5,21 +5,22 @@
 #ifndef SERVICES_PREFERENCES_TRACKED_REGISTRY_HASH_STORE_CONTENTS_WIN_H_
 #define SERVICES_PREFERENCES_TRACKED_REGISTRY_HASH_STORE_CONTENTS_WIN_H_
 
+#include <string>
+
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "services/preferences/tracked/hash_store_contents.h"
 #include "services/preferences/tracked/temp_scoped_dir_cleaner.h"
 
 // Helper object to clear registry entries for scoped temporary pref stores.
 class TempScopedDirRegistryCleaner : public TempScopedDirCleaner {
  public:
-  void SetRegistryPath(const base::string16& registry_path);
+  void SetRegistryPath(const std::wstring& registry_path);
 
  private:
   friend class base::RefCountedThreadSafe<TempScopedDirRegistryCleaner>;
   ~TempScopedDirRegistryCleaner() override;
 
-  base::string16 registry_path_;
+  std::wstring registry_path_;
 };
 
 // Implements HashStoreContents by storing MACs in the Windows registry.
@@ -28,8 +29,8 @@ class RegistryHashStoreContentsWin : public HashStoreContents {
   // Constructs a RegistryHashStoreContents which acts on a registry entry
   // defined by |registry_path| and |store_key|.
   explicit RegistryHashStoreContentsWin(
-      const base::string16& registry_path,
-      const base::string16& store_key,
+      const std::wstring& registry_path,
+      const std::wstring& store_key,
       scoped_refptr<TempScopedDirCleaner> temp_dir_cleaner);
   ~RegistryHashStoreContentsWin() override;
 
@@ -59,7 +60,7 @@ class RegistryHashStoreContentsWin : public HashStoreContents {
   explicit RegistryHashStoreContentsWin(
       const RegistryHashStoreContentsWin& other);
 
-  const base::string16 preference_key_name_;
+  const std::wstring preference_key_name_;
   scoped_refptr<TempScopedDirCleaner> temp_dir_cleaner_;
 };
 
