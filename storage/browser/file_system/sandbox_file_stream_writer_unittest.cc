@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "storage/browser/file_system/sandbox_file_stream_writer.h"
+#include "base/test/bind.h"
 #include "storage/browser/file_system/file_stream_writer_test.h"
 
 #include <stdint.h>
@@ -22,6 +23,8 @@
 #include "storage/browser/file_system/file_stream_writer.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/test/async_file_test_helper.h"
+#include "storage/browser/test/mock_quota_manager_proxy.h"
+#include "storage/browser/test/mock_special_storage_policy.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "storage/common/file_system/file_system_types.h"
 
@@ -38,7 +41,14 @@ class SandboxFileStreamWriterTest : public FileStreamWriterTest {
   void SetUp() override {
     ASSERT_TRUE(dir_.CreateUniqueTempDir());
 
-    file_system_context_ = CreateFileSystemContext(dir_);
+    quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
+        is_incognito(), dir_.GetPath(), base::ThreadTaskRunnerHandle::Get(),
+        nullptr);
+    quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
+        quota_manager_.get(), base::ThreadTaskRunnerHandle::Get().get());
+
+    file_system_context_ =
+        CreateFileSystemContext(quota_manager_proxy_.get(), dir_);
 
     file_system_context_->OpenFileSystem(
         url::Origin::Create(GURL(kURLOrigin)), kFileSystemTypeTemporary,
@@ -47,19 +57,37 @@ class SandboxFileStreamWriterTest : public FileStreamWriterTest {
                           base::File::Error result) {
           ASSERT_EQ(base::File::FILE_OK, result);
         }));
+
+    SetQuota(1024 * 1024 * 100);
     base::RunLoop().RunUntilIdle();
   }
 
-  void TearDown() override { base::RunLoop().RunUntilIdle(); }
+  void TearDown() override {
+    quota_manager_proxy_->SimulateQuotaManagerDestroyed();
+    quota_manager_.reset();
+    base::RunLoop().RunUntilIdle();
+  }
 
  protected:
   base::ScopedTempDir dir_;
   scoped_refptr<FileSystemContext> file_system_context_;
+  scoped_refptr<MockQuotaManager> quota_manager_;
+  scoped_refptr<MockQuotaManagerProxy> quota_manager_proxy_;
+
+  struct quota_usage_and_info {
+    blink::mojom::QuotaStatusCode status;
+    int64_t usage;
+    int64_t quota;
+  };
 
   virtual FileSystemContext* CreateFileSystemContext(
+      QuotaManagerProxy* quota_manager_proxy,
       const base::ScopedTempDir& dir) {
-    return CreateFileSystemContextForTesting(nullptr, dir.GetPath());
+    return CreateFileSystemContextForTesting(quota_manager_proxy,
+                                             dir.GetPath());
   }
+
+  virtual bool is_incognito() { return false; }
 
   FileSystemURL GetFileSystemURL(const std::string& file_name) {
     return file_system_context_->CreateCrackedFileSystemURL(
@@ -107,7 +135,180 @@ class SandboxFileStreamWriterTest : public FileStreamWriterTest {
 
     return content;
   }
+
+  std::unique_ptr<SandboxFileStreamWriter> CreateSandboxWriter(
+      const std::string& name,
+      int64_t offset) {
+    auto writer = std::make_unique<SandboxFileStreamWriter>(
+        file_system_context_.get(), GetFileSystemURL(name), offset,
+        *file_system_context_->GetUpdateObservers(kFileSystemTypeTemporary));
+    return writer;
+  }
+
+  quota_usage_and_info GetUsageAndQuotaSync() {
+    quota_usage_and_info info;
+    quota_manager_->GetUsageAndQuota(
+        url::Origin::Create(GURL(kURLOrigin)),
+        blink::mojom::StorageType::kTemporary,
+        base::BindLambdaForTesting([&](blink::mojom::QuotaStatusCode status,
+                                       int64_t usage, int64_t quota) {
+          info.status = status;
+          info.usage = usage;
+          info.quota = quota;
+        }));
+    return info;
+  }
+
+  void SetQuota(int64_t quota) {
+    quota_manager_->SetQuota(url::Origin::Create(GURL(kURLOrigin)),
+                             blink::mojom::StorageType::kTemporary, quota);
+  }
+
+  int64_t GetFreeQuota() {
+    auto info = GetUsageAndQuotaSync();
+    return info.quota - info.usage;
+  }
+
+  void SetFreeQuota(int64_t free_quota) {
+    auto info = GetUsageAndQuotaSync();
+    SetQuota(info.usage + free_quota);
+  }
+
+  void Test_Quota_OK() {
+    std::string name = "file_a";
+    EXPECT_TRUE(CreateFileWithContent(name, "foo"));
+
+    SetFreeQuota(7);
+    std::unique_ptr<SandboxFileStreamWriter> writer(
+        CreateSandboxWriter(name, 3));
+    EXPECT_EQ(net::OK, WriteStringToWriter(writer.get(), "xxx"));
+    writer.reset();
+    base::RunLoop().RunUntilIdle();
+    EXPECT_TRUE(FilePathExists(name));
+    EXPECT_EQ(std::string("fooxxx", 6), GetFileContent(name));
+    EXPECT_EQ(GetFreeQuota(), 4);
+  }
+
+  void Test_Quota_WritePastEnd() {
+    std::string name = "file_a";
+    EXPECT_TRUE(CreateFileWithContent(name, "foo"));
+
+    SetFreeQuota(6);
+    std::unique_ptr<SandboxFileStreamWriter> writer(
+        CreateSandboxWriter(name, 6));
+    EXPECT_EQ(net::OK, WriteStringToWriter(writer.get(), "xxx"));
+    writer.reset();
+    base::RunLoop().RunUntilIdle();
+    EXPECT_TRUE(FilePathExists(name));
+    EXPECT_EQ(std::string("foo\0\0\0xxx", 9), GetFileContent(name));
+    EXPECT_EQ(GetFreeQuota(), 0);
+  }
+
+  void Test_Quota_NoSpace() {
+    std::string name = "file_a";
+    EXPECT_TRUE(CreateFileWithContent(name, "foo"));
+
+    SetFreeQuota(0);
+    std::unique_ptr<SandboxFileStreamWriter> writer(
+        CreateSandboxWriter(name, 3));
+    EXPECT_EQ(net::ERR_FILE_NO_SPACE, WriteStringToWriter(writer.get(), "xxx"));
+    writer.reset();
+    base::RunLoop().RunUntilIdle();
+    EXPECT_TRUE(FilePathExists(name));
+    EXPECT_EQ(std::string("foo", 3), GetFileContent(name));
+    EXPECT_EQ(GetFreeQuota(), 0);
+  }
+
+  void Test_Quota_NoSpace_PartialWrite() {
+    std::string name = "file_a";
+    EXPECT_TRUE(CreateFileWithContent(name, "foo"));
+
+    SetFreeQuota(5);
+    std::unique_ptr<SandboxFileStreamWriter> writer(
+        CreateSandboxWriter(name, 6));
+    EXPECT_EQ(net::ERR_FILE_NO_SPACE, WriteStringToWriter(writer.get(), "xxx"));
+    writer.reset();
+    base::RunLoop().RunUntilIdle();
+    EXPECT_TRUE(FilePathExists(name));
+    EXPECT_EQ(std::string("foo\0\0\0xx", 8), GetFileContent(name));
+    EXPECT_EQ(GetFreeQuota(), 0);
+  }
+
+  void Test_Quota_Negative() {
+    std::string name = "file_a";
+    EXPECT_TRUE(CreateFileWithContent(name, "foo"));
+
+    SetFreeQuota(-1);
+    std::unique_ptr<SandboxFileStreamWriter> writer(
+        CreateSandboxWriter(name, 3));
+    EXPECT_EQ(net::ERR_FILE_NO_SPACE, WriteStringToWriter(writer.get(), "xxx"));
+    writer.reset();
+    base::RunLoop().RunUntilIdle();
+    EXPECT_TRUE(FilePathExists(name));
+    EXPECT_EQ(std::string("foo", 3), GetFileContent(name));
+    EXPECT_EQ(GetFreeQuota(), -1);
+  }
+
+  void Test_Quota_WritePastEndTwice_OK() {
+    std::string name = "file_a";
+    EXPECT_TRUE(CreateFileWithContent(name, "foo"));
+
+    SetFreeQuota(9);
+    std::unique_ptr<SandboxFileStreamWriter> writer(
+        CreateSandboxWriter(name, 6));
+    EXPECT_EQ(net::OK, WriteStringToWriter(writer.get(), "xxx"));
+    EXPECT_EQ(net::OK, WriteStringToWriter(writer.get(), "yyy"));
+    writer.reset();
+    base::RunLoop().RunUntilIdle();
+    EXPECT_TRUE(FilePathExists(name));
+    EXPECT_EQ(std::string("foo\0\0\0xxxyyy", 12), GetFileContent(name));
+    EXPECT_EQ(GetFreeQuota(), 0);
+  }
+
+  void Test_Quota_WritePastEndTwice_NoSpace() {
+    std::string name = "file_a";
+    EXPECT_TRUE(CreateFileWithContent(name, "foo"));
+
+    SetFreeQuota(7);
+    std::unique_ptr<SandboxFileStreamWriter> writer(
+        CreateSandboxWriter(name, 6));
+    EXPECT_EQ(net::OK, WriteStringToWriter(writer.get(), "xxx"));
+    EXPECT_EQ(net::ERR_FILE_NO_SPACE, WriteStringToWriter(writer.get(), "yyy"));
+    writer.reset();
+    base::RunLoop().RunUntilIdle();
+    EXPECT_TRUE(FilePathExists(name));
+    EXPECT_EQ(std::string("foo\0\0\0xxxy", 10), GetFileContent(name));
+    EXPECT_EQ(GetFreeQuota(), 0);
+  }
 };
+
+TEST_F(SandboxFileStreamWriterTest, Quota_OK) {
+  Test_Quota_OK();
+}
+
+TEST_F(SandboxFileStreamWriterTest, Quota_WritePastEnd) {
+  Test_Quota_WritePastEnd();
+}
+
+TEST_F(SandboxFileStreamWriterTest, Quota_NoSpace) {
+  Test_Quota_NoSpace();
+}
+
+TEST_F(SandboxFileStreamWriterTest, Quota_NoSpace_PartialWrite) {
+  Test_Quota_NoSpace_PartialWrite();
+}
+
+TEST_F(SandboxFileStreamWriterTest, Quota_Negative) {
+  Test_Quota_Negative();
+}
+
+TEST_F(SandboxFileStreamWriterTest, Quota_WritePastEndTwice_OK) {
+  Test_Quota_WritePastEndTwice_OK();
+}
+
+TEST_F(SandboxFileStreamWriterTest, Quota_WritePastEndTwice_NoSpace) {
+  Test_Quota_WritePastEndTwice_NoSpace();
+}
 
 INSTANTIATE_TYPED_TEST_SUITE_P(Sandbox,
                                FileStreamWriterTypedTest,
@@ -120,12 +321,44 @@ class SandboxFileStreamWriterIncognitoTest
 
  protected:
   FileSystemContext* CreateFileSystemContext(
+      QuotaManagerProxy* quota_manager_proxy,
       const base::ScopedTempDir& dir) override {
     return CreateIncognitoFileSystemContextForTesting(
         base::ThreadTaskRunnerHandle::Get(),
-        base::ThreadTaskRunnerHandle::Get(), nullptr, dir.GetPath());
+        base::ThreadTaskRunnerHandle::Get(), quota_manager_proxy,
+        dir.GetPath());
   }
+
+  bool is_incognito() override { return true; }
 };
+
+TEST_F(SandboxFileStreamWriterIncognitoTest, Quota_OK) {
+  Test_Quota_OK();
+}
+
+TEST_F(SandboxFileStreamWriterIncognitoTest, Quota_WritePastEnd) {
+  Test_Quota_WritePastEnd();
+}
+
+TEST_F(SandboxFileStreamWriterIncognitoTest, Quota_NoSpace) {
+  Test_Quota_NoSpace();
+}
+
+TEST_F(SandboxFileStreamWriterIncognitoTest, Quota_NoSpace_PartialWrite) {
+  Test_Quota_NoSpace_PartialWrite();
+}
+
+TEST_F(SandboxFileStreamWriterIncognitoTest, Quota_Negative) {
+  Test_Quota_Negative();
+}
+
+TEST_F(SandboxFileStreamWriterIncognitoTest, Quota_WritePastEndTwice_OK) {
+  Test_Quota_WritePastEndTwice_OK();
+}
+
+TEST_F(SandboxFileStreamWriterIncognitoTest, Quota_WritePastEndTwice_NoSpace) {
+  Test_Quota_WritePastEndTwice_NoSpace();
+}
 
 INSTANTIATE_TYPED_TEST_SUITE_P(SandboxIncognito,
                                FileStreamWriterTypedTest,

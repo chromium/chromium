@@ -485,7 +485,7 @@ int ObfuscatedFileUtilMemoryDelegate::WriteFile(
 
   size_t offset_u = static_cast<size_t>(offset);
   // Fail if |offset| or |buf_len| not valid.
-  if (offset < 0 || buf_len < 0 || offset_u > dp->entry->file_content.size())
+  if (offset < 0 || buf_len < 0)
     return net::ERR_REQUEST_RANGE_NOT_SATISFIABLE;
 
   // Fail if result doesn't fit in a std::vector.
@@ -500,6 +500,8 @@ int ObfuscatedFileUtilMemoryDelegate::WriteFile(
     if (offset_u + buf_len > dp->entry->file_content.size())
       dp->entry->file_content.resize(offset_u + buf_len);
 
+    // if |offset_u| is larger than the original file size, there will be null
+    // bytes between the end of the file and |offset_u|.
     memcpy(dp->entry->file_content.data() + offset, buf->data(), buf_len);
   }
   return buf_len;

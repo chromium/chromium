@@ -29,18 +29,18 @@ namespace storage {
 
 namespace {
 
-// Adjust the |quota| value in overwriting case (i.e. |file_size| > 0 and
-// |file_offset| < |file_size|) to make the remaining quota calculation easier.
-// Specifically this widens the quota for overlapping range (so that we can
-// simply compare written bytes against the adjusted quota).
+// Adjust the |quota| value to make the remaining quota calculation easier. This
+// allows us to simply compare written bytes against the adjusted quota.
 int64_t AdjustQuotaForOverlap(int64_t quota,
                               int64_t file_offset,
                               int64_t file_size) {
-  DCHECK_LE(file_offset, file_size);
   if (quota < 0)
     quota = 0;
+  // |overlap| can be negative if |file_offset| is past the end of the file.
+  // Negative |overlap| ensures null bytes between the end of the file and the
+  // |file_offset| are counted towards the file's quota.
   int64_t overlap = file_size - file_offset;
-  if (std::numeric_limits<int64_t>::max() - overlap > quota)
+  if (overlap < 0 || std::numeric_limits<int64_t>::max() - overlap > quota)
     quota += overlap;
   return quota;
 }
@@ -141,11 +141,7 @@ void SandboxFileStreamWriter::DidCreateSnapshotFile(
     return;
   }
   file_size_ = file_info.size;
-  if (initial_offset_ > file_size_) {
-    // We should not be writing past the end of the file.
-    std::move(callback).Run(net::ERR_REQUEST_RANGE_NOT_SATISFIABLE);
-    return;
-  }
+
   DCHECK(!file_writer_.get());
 
   if (file_system_context_->is_incognito()) {
@@ -243,7 +239,10 @@ void SandboxFileStreamWriter::DidWrite(int write_response) {
 
   if (total_bytes_written_ + write_response + initial_offset_ > file_size_) {
     int overlapped = file_size_ - total_bytes_written_ - initial_offset_;
-    if (overlapped < 0)
+    // If writing past the end of a file, the distance seeked past the file
+    // needs to be accounted for. This adjustment should only be made for the
+    // first such write (when |total_bytes_written_| is 0).
+    if (overlapped < 0 && total_bytes_written_ != 0)
       overlapped = 0;
     observers_.Notify(&FileUpdateObserver::OnUpdate, url_,
                       write_response - overlapped);

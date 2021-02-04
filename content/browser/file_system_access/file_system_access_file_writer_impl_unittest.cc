@@ -504,15 +504,15 @@ TEST_P(FileSystemAccessFileWriterImplWriteTest, WriteWithOffsetInFile) {
 TEST_P(FileSystemAccessFileWriterImplWriteTest, WriteWithOffsetPastFile) {
   uint64_t bytes_written;
   FileSystemAccessStatus result = WriteSync(4, "abc", &bytes_written);
-  EXPECT_EQ(result, FileSystemAccessStatus::kFileError);
-  EXPECT_EQ(bytes_written, 0u);
+  EXPECT_EQ(result, FileSystemAccessStatus::kOk);
+  EXPECT_EQ(bytes_written, 3u);
 
   result = CloseSync();
   EXPECT_EQ(result, FileSystemAccessStatus::kOk);
   EXPECT_TRUE(base::Contains(quarantine_.paths, test_file_url_.path()));
 
   using std::string_literals::operator""s;
-  EXPECT_EQ(""s, ReadFile(test_file_url_));
+  EXPECT_EQ("\0\0\0\0abc"s, ReadFile(test_file_url_));
 }
 
 TEST_F(FileSystemAccessFileWriterImplTest, TruncateShrink) {
