@@ -4,5 +4,5 @@
 
 // https://wicg.github.io/file-system-access/#dictdef-directorypickeroptions
 dictionary DirectoryPickerOptions {
-  [RuntimeEnabled=FileSystemAccessAPIExperimental] WellKnownDirectory? startIn;
+  [RuntimeEnabled=FileSystemAccessAPIExperimental] (WellKnownDirectory or FileSystemHandle)? startIn;
 };

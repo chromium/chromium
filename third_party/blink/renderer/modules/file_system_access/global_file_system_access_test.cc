@@ -61,6 +61,7 @@ class MockFileSystemAccessManager
       mojom::ChooseFileSystemEntryType type,
       WTF::Vector<mojom::blink::ChooseFileSystemEntryAcceptsOptionPtr> accepts,
       mojom::WellKnownDirectory well_known_starting_directory,
+      mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken> token,
       bool include_accepts_all,
       ChooseEntriesCallback callback) override {
     if (choose_entries_response_callback_) {

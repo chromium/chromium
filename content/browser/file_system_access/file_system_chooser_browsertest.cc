@@ -1143,7 +1143,120 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
-                       StartInWellKnownDirectory_Nulled) {
+                       OpenFile_StartIn_FileHandle) {
+  // Ensure test file exists in a directory which could not be a default.
+  base::FilePath test_file_dir;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(base::CreateTemporaryDirInDir(
+        temp_dir_.GetPath(), FILE_PATH_LITERAL("handles"), &test_file_dir));
+  }
+  const base::FilePath test_file =
+      test_file_dir.Append(base::FilePath::FromUTF8Unsafe("file.txt"));
+
+  SelectFileDialogParams dialog_params;
+  ui::SelectFileDialog::SetFactory(
+      new FakeSelectFileDialogFactory({test_file}, &dialog_params));
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+  // Acquire a FileSystemHandle to the test_file.
+  EXPECT_EQ(test_file.BaseName().AsUTF8Unsafe(),
+            EvalJs(shell(),
+                   "(async () => {"
+                   "  let [e] = await self.showOpenFilePicker();"
+                   "  self.selected_entry = e;"
+                   "  return e.name; })()"));
+  EXPECT_EQ(ui::SelectFileDialog::SELECT_OPEN_FILE, dialog_params.type);
+  EXPECT_EQ(shell()->web_contents()->GetTopLevelNativeWindow(),
+            dialog_params.owning_window);
+
+  EXPECT_EQ(test_file.BaseName().AsUTF8Unsafe(),
+            EvalJs(shell(),
+                   "(async () => {"
+                   "  let [e] = await self.showOpenFilePicker({ startIn: "
+                   "              self.selected_entry });"
+                   "  self.selected_entry = e;"
+                   "  return e.name; })()"));
+  EXPECT_EQ(ui::SelectFileDialog::SELECT_OPEN_FILE, dialog_params.type);
+  EXPECT_EQ(test_file_dir, dialog_params.default_path);
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
+                       OpenFile_StartIn_DirectoryHandle) {
+  // Ensure test directory exists and could not be a default.
+  base::FilePath test_dir;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(base::CreateTemporaryDirInDir(
+        temp_dir_.GetPath(), FILE_PATH_LITERAL("handles"), &test_dir));
+  }
+
+  SelectFileDialogParams dialog_params;
+  ui::SelectFileDialog::SetFactory(
+      new FakeSelectFileDialogFactory({test_dir}, &dialog_params));
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+  // Acquire a FileSystemHandle to the test_dir.
+  EXPECT_EQ(test_dir.BaseName().AsUTF8Unsafe(),
+            EvalJs(shell(),
+                   "(async () => {"
+                   "  let e = await self.showDirectoryPicker();"
+                   "  self.selected_entry = e;"
+                   "  return e.name; })()"));
+  EXPECT_EQ(ui::SelectFileDialog::SELECT_FOLDER, dialog_params.type);
+  EXPECT_EQ(shell()->web_contents()->GetTopLevelNativeWindow(),
+            dialog_params.owning_window);
+
+  EXPECT_EQ(test_dir.BaseName().AsUTF8Unsafe(),
+            EvalJs(shell(),
+                   "(async () => {"
+                   "  let e = await self.showDirectoryPicker({ startIn: "
+                   "              self.selected_entry });"
+                   "  self.selected_entry = e;"
+                   "  return e.name; })()"));
+  EXPECT_EQ(ui::SelectFileDialog::SELECT_FOLDER, dialog_params.type);
+  EXPECT_EQ(test_dir, dialog_params.default_path);
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
+                       OpenFile_StartIn_FileHandle_External) {
+  const base::FilePath test_file = CreateTestFile("");
+  const base::FilePath virtual_path =
+      base::FilePath::FromUTF8Unsafe(kTestMountPoint)
+          .Append(test_file.BaseName());
+
+  ui::SelectedFileInfo selected_file = {base::FilePath(), base::FilePath()};
+  selected_file.virtual_path = virtual_path;
+
+  SelectFileDialogParams dialog_params;
+  ui::SelectFileDialog::SetFactory(
+      new FakeSelectFileDialogFactory({selected_file}, &dialog_params));
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+  // Acquire a FileSystemHandle to the test_file.
+  EXPECT_EQ(virtual_path.BaseName().AsUTF8Unsafe(),
+            EvalJs(shell(),
+                   "(async () => {"
+                   "  let [e] = await self.showOpenFilePicker();"
+                   "  self.selected_entry = e;"
+                   "  return e.name; })()"));
+  EXPECT_EQ(ui::SelectFileDialog::SELECT_OPEN_FILE, dialog_params.type);
+  EXPECT_EQ(shell()->web_contents()->GetTopLevelNativeWindow(),
+            dialog_params.owning_window);
+
+  EXPECT_EQ(virtual_path.BaseName().AsUTF8Unsafe(),
+            EvalJs(shell(),
+                   "(async () => {"
+                   "  let [e] = await self.showOpenFilePicker({ startIn: "
+                   "              self.selected_entry });"
+                   "  self.selected_entry = e;"
+                   "  return e.name; })()"));
+  EXPECT_EQ(ui::SelectFileDialog::SELECT_OPEN_FILE, dialog_params.type);
+  // temp_dir_.GetPath() maps to kTestMountPoint.
+  EXPECT_EQ(temp_dir_.GetPath(), dialog_params.default_path);
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, StartIn_Nulled) {
   SelectFileDialogParams dialog_params;
   ui::SelectFileDialog::SetFactory(
       new CancellingSelectFileDialogFactory(&dialog_params));

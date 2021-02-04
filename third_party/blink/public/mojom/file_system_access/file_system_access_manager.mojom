@@ -51,12 +51,20 @@ interface FileSystemAccessManager {
   // Prompts the user to select a file from the local filesystem. Returns an
   // error code if something failed, or a list of the selected entries on
   // success.
+  // |well_known_starting_directory| opens the file picker at a well-known
+  // directory.
+  // |starting_directory_token| is resolved into a file or directory by the
+  // FileSystemAccessManager to be used as the starting directory for the file
+  // picker. If the token is a file, its parent directory is used.
+  // See the FileSystemAccessManager's ResolveDefaultDirectory() method for
+  // how these fields are prioritized.
   // If |include_accepts_all| is true, a "all files" option is included in the
   // dialog displayed to the user. If no valid options are present in |accepts|
   // |include_accepts_all| is treated as if it was true.
   ChooseEntries(ChooseFileSystemEntryType type,
                 array<ChooseFileSystemEntryAcceptsOption> accepts,
                 WellKnownDirectory well_known_starting_directory,
+                pending_remote<FileSystemAccessTransferToken>? starting_directory_token,
                 bool include_accepts_all) =>
       (FileSystemAccessError result,
        array<FileSystemAccessEntry> entries);

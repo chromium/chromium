@@ -127,6 +127,8 @@ bindings_modules_generated_union_type_files = [
   "$bindings_modules_v8_output_dir/usv_string_or_usv_string_sequence.h",
   "$bindings_modules_v8_output_dir/webgl_rendering_context_or_webgl2_rendering_context.cc",
   "$bindings_modules_v8_output_dir/webgl_rendering_context_or_webgl2_rendering_context.h",
+  "$bindings_modules_v8_output_dir/well_known_directory_or_file_system_handle.cc",
+  "$bindings_modules_v8_output_dir/well_known_directory_or_file_system_handle.h",
   "$bindings_modules_v8_output_dir/worklet_animation_effect_or_worklet_group_effect.cc",
   "$bindings_modules_v8_output_dir/worklet_animation_effect_or_worklet_group_effect.h",
 ]

@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_file_picker_accept_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_open_file_picker_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_save_file_picker_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/well_known_directory_or_file_system_handle.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/fileapi/file_error.h"
@@ -196,6 +197,8 @@ ScriptPromise ShowFilePickerImpl(
     mojom::blink::ChooseFileSystemEntryType chooser_type,
     Vector<mojom::blink::ChooseFileSystemEntryAcceptsOptionPtr> accepts,
     mojom::blink::WellKnownDirectory well_known_starting_directory,
+    mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken>
+        starting_directory_token,
     bool accept_all,
     bool return_as_sequence) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
@@ -215,7 +218,7 @@ ScriptPromise ShowFilePickerImpl(
       RuntimeEnabledFeatures::FileSystemAccessAPIExperimentalEnabled()
           ? std::move(well_known_starting_directory)
           : mojom::blink::WellKnownDirectory::kDefault,
-      accept_all,
+      std::move(starting_directory_token), accept_all,
       WTF::Bind(
           [](ScriptPromiseResolver* resolver,
              mojo::Remote<mojom::blink::FileSystemAccessManager>,
@@ -285,11 +288,18 @@ ScriptPromise GlobalFileSystemAccess::showOpenFilePicker(
 
   auto well_known_starting_directory =
       mojom::blink::WellKnownDirectory::kDefault;
+  mojo::PendingRemote<blink::mojom::blink::FileSystemAccessTransferToken> token;
   if (options->hasStartInNonNull()) {
-    well_known_starting_directory = ConvertWellKnownDirectory(
-        IDLEnumAsString(options->startInNonNull()), exception_state);
-    if (exception_state.HadException())
-      return ScriptPromise();
+    if (options->startIn().IsWellKnownDirectory()) {
+      well_known_starting_directory = ConvertWellKnownDirectory(
+          options->startIn().GetAsWellKnownDirectory(), exception_state);
+      if (exception_state.HadException())
+        return ScriptPromise();
+    }
+
+    if (options->startIn().IsFileSystemHandle()) {
+      token = options->startIn().GetAsFileSystemHandle()->Transfer();
+    }
   }
 
   VerifyIsAllowedToShowFilePicker(window, exception_state);
@@ -302,7 +312,7 @@ ScriptPromise GlobalFileSystemAccess::showOpenFilePicker(
           ? mojom::blink::ChooseFileSystemEntryType::kOpenMultipleFiles
           : mojom::blink::ChooseFileSystemEntryType::kOpenFile,
       std::move(accepts), std::move(well_known_starting_directory),
-      !options->excludeAcceptAllOption(),
+      std::move(token), !options->excludeAcceptAllOption(),
       /*return_as_sequence=*/true);
 }
 
@@ -327,11 +337,18 @@ ScriptPromise GlobalFileSystemAccess::showSaveFilePicker(
 
   auto well_known_starting_directory =
       mojom::blink::WellKnownDirectory::kDefault;
+  mojo::PendingRemote<blink::mojom::blink::FileSystemAccessTransferToken> token;
   if (options->hasStartInNonNull()) {
-    well_known_starting_directory = ConvertWellKnownDirectory(
-        IDLEnumAsString(options->startInNonNull()), exception_state);
-    if (exception_state.HadException())
-      return ScriptPromise();
+    if (options->startIn().IsWellKnownDirectory()) {
+      well_known_starting_directory = ConvertWellKnownDirectory(
+          options->startIn().GetAsWellKnownDirectory(), exception_state);
+      if (exception_state.HadException())
+        return ScriptPromise();
+    }
+
+    if (options->startIn().IsFileSystemHandle()) {
+      token = options->startIn().GetAsFileSystemHandle()->Transfer();
+    }
   }
 
   VerifyIsAllowedToShowFilePicker(window, exception_state);
@@ -341,7 +358,7 @@ ScriptPromise GlobalFileSystemAccess::showSaveFilePicker(
   return ShowFilePickerImpl(
       script_state, window, mojom::blink::ChooseFileSystemEntryType::kSaveFile,
       std::move(accepts), std::move(well_known_starting_directory),
-      !options->excludeAcceptAllOption(),
+      std::move(token), !options->excludeAcceptAllOption(),
       /*return_as_sequence=*/false);
 }
 
@@ -355,12 +372,20 @@ ScriptPromise GlobalFileSystemAccess::showDirectoryPicker(
 
   auto well_known_starting_directory =
       mojom::blink::WellKnownDirectory::kDefault;
+  mojo::PendingRemote<blink::mojom::blink::FileSystemAccessTransferToken> token;
   if (options->hasStartInNonNull()) {
-    well_known_starting_directory = ConvertWellKnownDirectory(
-        IDLEnumAsString(options->startInNonNull()), exception_state);
-    if (exception_state.HadException())
-      return ScriptPromise();
+    if (options->startIn().IsWellKnownDirectory()) {
+      well_known_starting_directory = ConvertWellKnownDirectory(
+          options->startIn().GetAsWellKnownDirectory(), exception_state);
+      if (exception_state.HadException())
+        return ScriptPromise();
+    }
+
+    if (options->startIn().IsFileSystemHandle()) {
+      token = options->startIn().GetAsFileSystemHandle()->Transfer();
+    }
   }
+
   VerifyIsAllowedToShowFilePicker(window, exception_state);
   if (exception_state.HadException())
     return ScriptPromise();
@@ -368,7 +393,7 @@ ScriptPromise GlobalFileSystemAccess::showDirectoryPicker(
   return ShowFilePickerImpl(
       script_state, window,
       mojom::blink::ChooseFileSystemEntryType::kOpenDirectory, {},
-      std::move(well_known_starting_directory),
+      std::move(well_known_starting_directory), std::move(token),
       /*accept_all=*/true,
       /*return_as_sequence=*/false);
 }

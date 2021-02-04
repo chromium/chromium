@@ -4,6 +4,7 @@
 
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 
+#include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/files/file.h"
@@ -196,6 +197,30 @@ void GetDirectoryExistsFromUrl(
                std::move(reply_runner), std::move(callback)));
 }
 
+void HandleTransferTokenAsDefaultDirectory(
+    FileSystemAccessTransferTokenImpl* token,
+    PathInfo& info) {
+  auto token_url_type = token->url().type();
+  auto token_url_mount_type = token->url().mount_type();
+
+  // Ignore sandboxed file system URLs
+  if (token_url_type == storage::kFileSystemTypeTemporary ||
+      token_url_type == storage::kFileSystemTypePersistent)
+    return;
+
+  if (token_url_mount_type == storage::kFileSystemTypeExternal) {
+    info.type = FileSystemAccessPermissionContext::PathType::kExternal;
+    info.path = token->type() == HandleType::kFile
+                    ? token->url().virtual_path().DirName()
+                    : token->url().virtual_path();
+    return;
+  }
+
+  DCHECK(token_url_type == storage::kFileSystemTypeLocal);
+  info.path = token->type() == HandleType::kFile ? token->url().path().DirName()
+                                                 : token->url().path();
+}
+
 }  // namespace
 
 FileSystemAccessManagerImpl::SharedHandleState::SharedHandleState(
@@ -283,6 +308,8 @@ void FileSystemAccessManagerImpl::ChooseEntries(
     blink::mojom::ChooseFileSystemEntryType type,
     std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts,
     blink::mojom::WellKnownDirectory well_known_starting_directory,
+    mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
+        starting_directory_token,
     bool include_accepts_all,
     ChooseEntriesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -330,12 +357,39 @@ void FileSystemAccessManagerImpl::ChooseEntries(
     return;
   }
 
+  auto resolve_default_directory_callback = base::BindOnce(
+      &FileSystemAccessManagerImpl::ResolveDefaultDirectory,
+      weak_factory_.GetWeakPtr(), context, type, std::move(accepts),
+      std::move(well_known_starting_directory), include_accepts_all,
+      std::move(callback));
+
+  if (starting_directory_token.is_valid()) {
+    ResolveTransferToken(std::move(starting_directory_token),
+                         std::move(resolve_default_directory_callback));
+    return;
+  }
+
+  std::move(resolve_default_directory_callback).Run(/*token=*/nullptr);
+}
+
+void FileSystemAccessManagerImpl::ResolveDefaultDirectory(
+    const BindingContext& context,
+    blink::mojom::ChooseFileSystemEntryType type,
+    std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts,
+    blink::mojom::WellKnownDirectory well_known_starting_directory,
+    bool include_accepts_all,
+    ChooseEntriesCallback callback,
+    FileSystemAccessTransferTokenImpl* resolved_starting_directory_token) {
   PathInfo path_info;
-  if (permission_context_) {
+  if (resolved_starting_directory_token)
+    HandleTransferTokenAsDefaultDirectory(resolved_starting_directory_token,
+                                          path_info);
+
+  if (path_info.path.empty() && permission_context_) {
     if (well_known_starting_directory !=
         blink::mojom::WellKnownDirectory::kDefault) {
-      // Priotitize an explicitly stated starting directory over an implicitly
-      // remembered LastPicked directory.
+      // Prioritize an explicitly stated starting directory over an implicitly
+      // remembered last-picked directory.
       path_info.path = permission_context_->GetWellKnownDirectoryPath(
           well_known_starting_directory);
     } else { /*well_known_starting_directory ==
@@ -370,7 +424,7 @@ void FileSystemAccessManagerImpl::SetDefaultPathAndShowPicker(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (result != base::File::Error::FILE_OK) {
-    // |path| does not exist. Resort to the default.
+    // |default_directory| does not exist. Resort to the default.
     if (permission_context_)
       default_directory = permission_context_->GetWellKnownDirectoryPath(
           blink::mojom::WellKnownDirectory::kDefault);
