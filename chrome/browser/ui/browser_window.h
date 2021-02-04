@@ -465,12 +465,10 @@ class BrowserWindow : public ui::BaseWindow {
       signin_metrics::AccessPoint access_point,
       bool is_source_keyboard) = 0;
 
-  // Shows User Happiness Tracking Survey's invitation bubble when possible
-  // (such as having the proper anchor view).
-  // |site_id| is the site identification of the survey the bubble leads to.
-  // Note: |success_callback| and |failure_callback| are discarded for HaTS v1
-  // surveys, which are deprecated (crbug.com/1143176).
-  virtual void ShowHatsBubble(const std::string& site_id,
+  // Shows User Happiness Tracking Survey's dialog after the survey associated
+  // with |site_id| has been successfully loaded. Failure to load the survey
+  // will result in the dialog not being shown.
+  virtual void ShowHatsDialog(const std::string& site_id,
                               base::OnceClosure success_callback,
                               base::OnceClosure failure_callback) = 0;
 

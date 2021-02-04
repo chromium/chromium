@@ -15,7 +15,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/hats/hats_survey_status_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -187,8 +186,6 @@ class HatsService : public KeyedService {
 
   void SetSurveyMetadataForTesting(const SurveyMetadata& metadata);
   void GetSurveyMetadataForTesting(HatsService::SurveyMetadata* metadata) const;
-  void SetSurveyCheckerForTesting(
-      std::unique_ptr<HatsSurveyStatusChecker> checker);
   bool HasPendingTasks();
 
   // Whether the survey specified by |trigger| can be shown to the user. This
@@ -197,9 +194,15 @@ class HatsService : public KeyedService {
   // in network conditions, or intervening calls to this API.
   bool CanShowSurvey(const std::string& trigger) const;
 
+  // Returns whether a HaTS Next dialog currently exists, regardless of whether
+  // it is being shown or not.
+  bool hats_next_dialog_exists_for_testing() {
+    return hats_next_dialog_exists_;
+  }
+
  private:
   friend class DelayedSurveyTask;
-  FRIEND_TEST_ALL_PREFIXES(HatsServiceHatsNext, SingleHatsNextDialog);
+  FRIEND_TEST_ALL_PREFIXES(HatsServiceProbabilityOne, SingleHatsNextDialog);
 
   void LaunchSurveyForWebContents(const std::string& trigger,
                                   content::WebContents* web_contents);
@@ -220,17 +223,11 @@ class HatsService : public KeyedService {
                                      base::OnceClosure success_callback,
                                      base::OnceClosure failure_callback);
 
-  // Callbacks for survey capacity checking.
-  void ShowSurvey(Browser* browser, const std::string& trigger);
-
-  void OnSurveyStatusError(const std::string& trigger,
-                           HatsSurveyStatusChecker::Status error);
+  // Remove |task| from the set of |pending_tasks_|.
   void RemoveTask(const DelayedSurveyTask& task);
 
   // Profile associated with this service.
   Profile* const profile_;
-
-  std::unique_ptr<HatsSurveyStatusChecker> checker_;
 
   std::set<DelayedSurveyTask> pending_tasks_;
 

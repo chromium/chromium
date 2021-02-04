@@ -49,7 +49,6 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="prefetch_proxy_probe"/>
       <traffic_annotation unique_id="enterprise_safe_browsing_realtime_url_lookup"/>
       <traffic_annotation unique_id="remote_copy_message_handler"/>
-      <traffic_annotation unique_id="chrome_HaTS_service"/>
       <traffic_annotation unique_id="port_forwarding_controller_socket"/>
       <traffic_annotation unique_id="media_feeds"/>
       <traffic_annotation unique_id="receive_messages_express"/>
