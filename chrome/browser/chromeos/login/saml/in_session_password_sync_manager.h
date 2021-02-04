@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_reauth_dialogs.h"
 #include "chromeos/components/proximity_auth/screenlock_bridge.h"
+#include "chromeos/login/auth/auth_status_consumer.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -26,6 +27,7 @@ class User;
 
 namespace chromeos {
 class UserContext;
+class ExtendedAuthenticator;
 
 // Manages SAML password sync for multiple customer devices. Handles online
 // re-auth requests triggered by online signin policy or by checking validity
@@ -37,7 +39,8 @@ class UserContext;
 class InSessionPasswordSyncManager
     : public KeyedService,
       public session_manager::SessionManagerObserver,
-      public PasswordSyncTokenFetcher::Consumer {
+      public PasswordSyncTokenFetcher::Consumer,
+      public AuthStatusConsumer {
  public:
   enum class ReauthenticationReason {
     kNone,
@@ -82,6 +85,16 @@ class InSessionPasswordSyncManager
   void OnTokenVerified(bool is_valid) override;
   void OnApiCallFailed(PasswordSyncTokenFetcher::ErrorType error_type) override;
 
+  // Used when the user's credentials is correct.
+  void OnPasswordAuthSuccess(const UserContext& user_context);
+
+  // Checks user's credentials.
+  void CheckCredentials(const UserContext& user_context);
+
+  // AuthStatusConsumer:
+  void OnAuthFailure(const chromeos::AuthFailure& error) override;
+  void OnAuthSuccess(const UserContext& user_context) override;
+
   std::unique_ptr<LockScreenStartReauthDialog> lock_screen_start_reauth_dialog;
 
  private:
@@ -97,6 +110,9 @@ class InSessionPasswordSyncManager
       ReauthenticationReason::kNone;
   proximity_auth::ScreenlockBridge* screenlock_bridge_;
   std::unique_ptr<PasswordSyncTokenFetcher> password_sync_token_fetcher_;
+
+  // Used to authenticate the user.
+  scoped_refptr<ExtendedAuthenticator> extended_authenticator_;
 
   friend class InSessionPasswordSyncManagerTest;
   friend class InSessionPasswordSyncManagerFactory;

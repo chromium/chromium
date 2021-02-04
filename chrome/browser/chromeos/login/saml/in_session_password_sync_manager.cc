@@ -10,6 +10,7 @@
 #include "chrome/browser/chromeos/login/saml/password_sync_token_fetcher.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chromeos/components/proximity_auth/screenlock_bridge.h"
+#include "chromeos/login/auth/extended_authenticator.h"
 #include "chromeos/login/auth/user_context.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
@@ -177,6 +178,33 @@ void InSessionPasswordSyncManager::OnApiCallFailed(
     PasswordSyncTokenFetcher::ErrorType error_type) {
   // Ignore API errors since they are logged by TokenFetcher and will be
   // re-tried after the next verify interval.
+}
+
+void InSessionPasswordSyncManager::CheckCredentials(
+    const UserContext& user_context) {
+  extended_authenticator_ = ExtendedAuthenticator::Create(this);
+  extended_authenticator_.get()->AuthenticateToCheck(
+      user_context,
+      base::Bind(&InSessionPasswordSyncManager::OnPasswordAuthSuccess,
+                 weak_factory_.GetWeakPtr(), user_context));
+}
+
+void InSessionPasswordSyncManager::OnPasswordAuthSuccess(
+    const UserContext& user_context) {
+  OnAuthSucceeded(user_context);
+  lock_screen_start_reauth_dialog->Dismiss();
+}
+
+// TODO(crbug.com/1163777): Add UMA histograms for lockscreen online
+// re-authentication.
+void InSessionPasswordSyncManager::OnAuthFailure(
+    const chromeos::AuthFailure& error) {
+  NOTIMPLEMENTED();
+}
+
+void InSessionPasswordSyncManager::OnAuthSuccess(
+    const UserContext& user_context) {
+  NOTIMPLEMENTED();
 }
 
 }  // namespace chromeos

@@ -17,6 +17,11 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 
+const clearDataType = {
+  appcache: true,
+  cache: true,
+  cookies: true,
+};
 
 Polymer({
   is: 'lock-reauth',
@@ -62,6 +67,8 @@ Polymer({
   ready() {
     this.signinFrame_ = this.getSigninFrame_();
     this.authenticator_ = new cr.login.Authenticator(this.signinFrame_);
+    this.authenticator_.addEventListener(
+        'authCompleted', this.onAuthCompletedMessage_.bind(this));
     chrome.send('initialize');
   },
 
@@ -69,7 +76,7 @@ Polymer({
    * Loads the authentication parameter into the iframe.
    * @param {!Object} data authenticator parameters bag.
    */
-  LoadAuthenticatorParam(data) {
+  loadAuthenticator(data) {
     this.authenticator_.setWebviewPartition(data.webviewPartitionName);
     let params = {};
     for (let i in cr.login.Authenticator.SUPPORTED_PARAMS) {
@@ -82,6 +89,19 @@ Polymer({
     this.authenticatorParams_ = params;
     this.email_ = data.email;
     chrome.send('authenticatorLoaded');
+  },
+
+
+  /**
+   * This function is used when the wrong user is verified correctly
+   * It reset authenticator state and display error message.
+   */
+  resetAuthenticator() {
+    this.signinFrame_.clearData({since: 0}, clearDataType, () => {
+      this.authenticator_.resetStates();
+      this.isButtonsEnabled_ = true;
+      this.isErrorDisplayed_ = true;
+    });
   },
 
   /**
@@ -97,10 +117,19 @@ Polymer({
     return signinFrame;
   },
 
+  onAuthCompletedMessage_(e) {
+    let credentials = e.detail;
+    chrome.send('completeAuthentication', [
+      credentials.gaiaId, credentials.email, credentials.password,
+      credentials.usingSAML, credentials.services,
+      credentials.passwordAttributes
+    ]);
+  },
+
   /** @private */
   onVerify_() {
     this.authenticator_.load(
-      cr.login.Authenticator.AuthMode.DEFAULT, this.authenticatorParams_);
+        cr.login.Authenticator.AuthMode.DEFAULT, this.authenticatorParams_);
     this.isButtonsEnabled_ = false;
     this.isVerifyUser_ = false;
     this.isErrorDisplayed_ = false;

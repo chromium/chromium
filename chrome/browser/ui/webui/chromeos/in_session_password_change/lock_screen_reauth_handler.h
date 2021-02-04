@@ -20,7 +20,9 @@ class LockScreenReauthHandler : public content::WebUIMessageHandler {
 
   void RegisterMessages() override;
 
+  // WebUI message handlers.
   void HandleInitialize(const base::ListValue*);
+  void HandleCompleteAuthentication(const base::ListValue*);
 
   void HandleAuthenticatorLoaded(const base::ListValue*);
 
@@ -39,14 +41,24 @@ class LockScreenReauthHandler : public content::WebUIMessageHandler {
                                            const std::string& partition_name,
                                            net::CookieAccessResult result);
 
+  void OnCookieWaitTimeout();
+
+  void CheckCredentials(const UserContext& user_context);
+
   // True if the authenticator is still loading.
   bool authenticator_being_loaded_ = false;
 
   // User non-canonicalized email for display
   std::string email_;
 
+  std::string signin_partition_name_;
+
+  std::unique_ptr<UserContext> pending_user_context_;
+
   std::unique_ptr<LoginClientCertUsageObserver>
       extension_provided_client_cert_usage_observer_;
+
+  std::unique_ptr<OnlineLoginHelper> online_login_helper_;
 
   base::WeakPtrFactory<LockScreenReauthHandler> weak_factory_{this};
 };
