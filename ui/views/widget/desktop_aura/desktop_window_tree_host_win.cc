@@ -189,8 +189,7 @@ std::unique_ptr<corewm::Tooltip> DesktopWindowTreeHostWin::CreateTooltip() {
 }
 
 std::unique_ptr<aura::client::DragDropClient>
-DesktopWindowTreeHostWin::CreateDragDropClient(
-    DesktopNativeCursorManager* cursor_manager) {
+DesktopWindowTreeHostWin::CreateDragDropClient() {
   drag_drop_client_ = new DesktopDragDropClientWin(window(), GetHWND(), this);
   return base::WrapUnique(drag_drop_client_);
 }

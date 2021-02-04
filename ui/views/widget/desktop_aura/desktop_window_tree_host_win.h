@@ -72,8 +72,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   void OnActiveWindowChanged(bool active) override;
   void OnWidgetInitDone() override;
   std::unique_ptr<corewm::Tooltip> CreateTooltip() override;
-  std::unique_ptr<aura::client::DragDropClient> CreateDragDropClient(
-      DesktopNativeCursorManager* cursor_manager) override;
+  std::unique_ptr<aura::client::DragDropClient> CreateDragDropClient() override;
   void Close() override;
   void CloseNow() override;
   aura::WindowTreeHost* AsWindowTreeHost() override;

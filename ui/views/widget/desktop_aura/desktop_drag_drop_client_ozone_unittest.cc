@@ -21,7 +21,6 @@
 #include "ui/platform_window/wm/wm_drop_handler.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/views_delegate.h"
-#include "ui/views/widget/desktop_aura/desktop_native_cursor_manager.h"
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
 
@@ -253,18 +252,16 @@ class DesktopDragDropClientOzoneTest : public ViewsTestBase {
     dragdrop_delegate_ = std::make_unique<FakeDragDropDelegate>();
     aura::client::SetDragDropDelegate(window, dragdrop_delegate_.get());
 
-    cursor_manager_ = std::make_unique<DesktopNativeCursorManager>();
     platform_window_ = std::make_unique<FakePlatformWindow>();
     ui::WmDragHandler* drag_handler = ui::GetWmDragHandler(*(platform_window_));
     // Creates DesktopDragDropClientOzone with |window| and |drag_handler|.
-    client_ = std::make_unique<DesktopDragDropClientOzone>(
-        window, cursor_manager_.get(), drag_handler);
+    client_ =
+        std::make_unique<DesktopDragDropClientOzone>(window, drag_handler);
     SetWmDropHandler(platform_window_.get(), client_.get());
   }
 
   void TearDown() override {
     client_.reset();
-    cursor_manager_.reset();
     platform_window_.reset();
     widget_.reset();
     ViewsTestBase::TearDown();
@@ -276,7 +273,6 @@ class DesktopDragDropClientOzoneTest : public ViewsTestBase {
 
  private:
   std::unique_ptr<DesktopDragDropClientOzone> client_;
-  std::unique_ptr<DesktopNativeCursorManager> cursor_manager_;
 
   // The widget used to initiate drags.
   std::unique_ptr<Widget> widget_;
@@ -392,12 +388,11 @@ TEST_F(DesktopDragDropClientOzoneTest, TargetDestroyedDuringDrag) {
                                     another_dragdrop_delegate.get());
   another_dragdrop_delegate->SetOperation(ui::DragDropTypes::DRAG_COPY);
 
-  auto another_cursor_manager = std::make_unique<DesktopNativeCursorManager>();
   auto another_platform_window = std::make_unique<FakePlatformWindow>();
   ui::WmDragHandler* drag_handler =
       ui::GetWmDragHandler(*(another_platform_window));
   auto another_client = std::make_unique<DesktopDragDropClientOzone>(
-      another_window, another_cursor_manager.get(), drag_handler);
+      another_window, drag_handler);
   SetWmDropHandler(another_platform_window.get(), another_client.get());
 
   std::unique_ptr<ui::OSExchangeData> another_data =

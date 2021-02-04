@@ -19,13 +19,6 @@ DesktopNativeCursorManager::DesktopNativeCursorManager()
 
 DesktopNativeCursorManager::~DesktopNativeCursorManager() = default;
 
-gfx::NativeCursor DesktopNativeCursorManager::GetInitializedCursor(
-    ui::mojom::CursorType type) {
-  gfx::NativeCursor cursor(type);
-  cursor_loader_->SetPlatformCursor(&cursor);
-  return cursor;
-}
-
 void DesktopNativeCursorManager::AddHost(aura::WindowTreeHost* host) {
   hosts_.insert(host);
 }
