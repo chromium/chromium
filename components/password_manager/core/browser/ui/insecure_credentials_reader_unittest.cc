@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/ui/compromised_credentials_reader.h"
+#include "components/password_manager/core/browser/ui/insecure_credentials_reader.h"
 
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
@@ -22,12 +22,12 @@ using ::testing::UnorderedElementsAre;
 
 constexpr const char kTestWebRealm[] = "https://one.example.com/";
 
-class MockCompromisedCredentialsReaderObserver
-    : public CompromisedCredentialsReader::Observer {
+class MockInsecureCredentialsReaderObserver
+    : public InsecureCredentialsReader::Observer {
  public:
   MOCK_METHOD(void,
-              OnCompromisedCredentialsChanged,
-              (const std::vector<CompromisedCredentials>&),
+              OnInsecureCredentialsChanged,
+              (const std::vector<InsecureCredential>&),
               (override));
 };
 
@@ -41,14 +41,14 @@ PasswordForm MakeTestPassword(base::StringPiece username) {
   return form;
 }
 
-class CompromisedCredentialsReaderTest : public ::testing::Test {
+class InsecureCredentialsReaderTest : public ::testing::Test {
  protected:
-  CompromisedCredentialsReaderTest() {
+  InsecureCredentialsReaderTest() {
     profile_store_->Init(/*prefs=*/nullptr);
     account_store_->Init(/*prefs=*/nullptr);
   }
 
-  ~CompromisedCredentialsReaderTest() override {
+  ~InsecureCredentialsReaderTest() override {
     account_store_->ShutdownOnUIThread();
     profile_store_->ShutdownOnUIThread();
     task_env_.RunUntilIdle();
@@ -56,7 +56,7 @@ class CompromisedCredentialsReaderTest : public ::testing::Test {
 
   TestPasswordStore& profile_store() { return *profile_store_; }
   TestPasswordStore& account_store() { return *account_store_; }
-  CompromisedCredentialsReader& reader() { return reader_; }
+  InsecureCredentialsReader& reader() { return reader_; }
 
   void RunUntilIdle() { task_env_.RunUntilIdle(); }
 
@@ -66,77 +66,72 @@ class CompromisedCredentialsReaderTest : public ::testing::Test {
       base::MakeRefCounted<TestPasswordStore>(IsAccountStore(false));
   scoped_refptr<TestPasswordStore> account_store_ =
       base::MakeRefCounted<TestPasswordStore>(IsAccountStore(true));
-  CompromisedCredentialsReader reader_{profile_store_.get(),
-                                       account_store_.get()};
+  InsecureCredentialsReader reader_{profile_store_.get(), account_store_.get()};
 };
 
 }  // namespace
 
-TEST_F(CompromisedCredentialsReaderTest, AddCredentialsToBothStores) {
+TEST_F(InsecureCredentialsReaderTest, AddCredentialsToBothStores) {
   profile_store().AddLogin(MakeTestPassword("profile@gmail.com"));
   account_store().AddLogin(MakeTestPassword("account1@gmail.com"));
   account_store().AddLogin(MakeTestPassword("account2@gmail.com"));
   RunUntilIdle();
 
-  CompromisedCredentials profile_cred;
+  InsecureCredential profile_cred;
   profile_cred.signon_realm = kTestWebRealm;
   profile_cred.username = base::ASCIIToUTF16("profile@gmail.com");
   profile_cred.in_store = PasswordForm::Store::kProfileStore;
 
-  CompromisedCredentials account_cred1;
+  InsecureCredential account_cred1;
   account_cred1.signon_realm = kTestWebRealm;
   account_cred1.username = base::ASCIIToUTF16("account1@gmail.com");
   account_cred1.in_store = PasswordForm::Store::kAccountStore;
 
-  CompromisedCredentials account_cred2;
+  InsecureCredential account_cred2;
   account_cred2.signon_realm = kTestWebRealm;
   account_cred2.username = base::ASCIIToUTF16("account2@gmail.com");
   account_cred2.in_store = PasswordForm::Store::kAccountStore;
 
-  ::testing::NiceMock<MockCompromisedCredentialsReaderObserver> mock_observer;
+  ::testing::NiceMock<MockInsecureCredentialsReaderObserver> mock_observer;
   reader().AddObserver(&mock_observer);
 
-  EXPECT_CALL(mock_observer, OnCompromisedCredentialsChanged(
-                                 UnorderedElementsAre(profile_cred)));
+  EXPECT_CALL(mock_observer,
+              OnInsecureCredentialsChanged(UnorderedElementsAre(profile_cred)));
   profile_store().AddCompromisedCredentials(profile_cred);
   RunUntilIdle();
 
-  EXPECT_CALL(mock_observer,
-              OnCompromisedCredentialsChanged(
-                  UnorderedElementsAre(profile_cred, account_cred1)));
+  EXPECT_CALL(mock_observer, OnInsecureCredentialsChanged(UnorderedElementsAre(
+                                 profile_cred, account_cred1)));
   account_store().AddCompromisedCredentials(account_cred1);
   RunUntilIdle();
 
-  EXPECT_CALL(mock_observer,
-              OnCompromisedCredentialsChanged(UnorderedElementsAre(
-                  profile_cred, account_cred1, account_cred2)));
+  EXPECT_CALL(mock_observer, OnInsecureCredentialsChanged(UnorderedElementsAre(
+                                 profile_cred, account_cred1, account_cred2)));
   account_store().AddCompromisedCredentials(account_cred2);
   RunUntilIdle();
 
-  EXPECT_CALL(mock_observer,
-              OnCompromisedCredentialsChanged(
-                  UnorderedElementsAre(account_cred1, account_cred2)));
+  EXPECT_CALL(mock_observer, OnInsecureCredentialsChanged(UnorderedElementsAre(
+                                 account_cred1, account_cred2)));
   profile_store().RemoveCompromisedCredentials(
       profile_cred.signon_realm, profile_cred.username,
       RemoveInsecureCredentialsReason::kRemove);
   RunUntilIdle();
 
-  EXPECT_CALL(mock_observer,
-              OnCompromisedCredentialsChanged(UnorderedElementsAre(
-                  profile_cred, account_cred1, account_cred2)));
+  EXPECT_CALL(mock_observer, OnInsecureCredentialsChanged(UnorderedElementsAre(
+                                 profile_cred, account_cred1, account_cred2)));
   profile_store().AddCompromisedCredentials(profile_cred);
   RunUntilIdle();
 
   reader().RemoveObserver(&mock_observer);
 }
 
-TEST_F(CompromisedCredentialsReaderTest, GetAllCompromisedCredentials) {
-  CompromisedCredentials profile_cred;
+TEST_F(InsecureCredentialsReaderTest, GetAllInsecureCredentials) {
+  InsecureCredential profile_cred;
   profile_cred.signon_realm = kTestWebRealm;
   profile_cred.username = base::ASCIIToUTF16("profile@gmail.com");
   profile_cred.in_store = PasswordForm::Store::kProfileStore;
 
-  CompromisedCredentials account_cred;
+  InsecureCredential account_cred;
   account_cred.signon_realm = kTestWebRealm;
   account_cred.username = base::ASCIIToUTF16("account1@gmail.com");
   account_cred.in_store = PasswordForm::Store::kAccountStore;
@@ -144,15 +139,13 @@ TEST_F(CompromisedCredentialsReaderTest, GetAllCompromisedCredentials) {
   profile_store().AddCompromisedCredentials(profile_cred);
   account_store().AddCompromisedCredentials(account_cred);
 
-  base::MockCallback<
-      CompromisedCredentialsReader::GetCompromisedCredentialsCallback>
-      get_all_compromised_credentials_cb;
+  base::MockCallback<InsecureCredentialsReader::GetInsecureCredentialsCallback>
+      get_all_insecure_credentials_cb;
 
-  reader().GetAllCompromisedCredentials(
-      get_all_compromised_credentials_cb.Get());
+  reader().GetAllInsecureCredentials(get_all_insecure_credentials_cb.Get());
 
   // The callback is run only after the stores respond in RunUntilIdle().
-  EXPECT_CALL(get_all_compromised_credentials_cb,
+  EXPECT_CALL(get_all_insecure_credentials_cb,
               Run(UnorderedElementsAre(profile_cred, account_cred)));
   RunUntilIdle();
 }

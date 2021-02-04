@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/ui/compromised_credentials_reader.h"
+#include "components/password_manager/core/browser/ui/insecure_credentials_reader.h"
 
 #include <iterator>
 
@@ -11,7 +11,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 
 namespace password_manager {
-CompromisedCredentialsReader::CompromisedCredentialsReader(
+InsecureCredentialsReader::InsecureCredentialsReader(
     PasswordStore* profile_store,
     PasswordStore* account_store)
     : profile_store_(profile_store), account_store_(account_store) {
@@ -27,80 +27,80 @@ CompromisedCredentialsReader::CompromisedCredentialsReader(
   }
 }
 
-CompromisedCredentialsReader::~CompromisedCredentialsReader() = default;
+InsecureCredentialsReader::~InsecureCredentialsReader() = default;
 
-void CompromisedCredentialsReader::Init() {
+void InsecureCredentialsReader::Init() {
   profile_store_->GetAllCompromisedCredentials(this);
   if (account_store_)
     account_store_->GetAllCompromisedCredentials(this);
 }
 
-void CompromisedCredentialsReader::OnCompromisedCredentialsChanged() {
+void InsecureCredentialsReader::OnInsecureCredentialsChanged() {
   // This class overrides OnCompromisedCredentialsChangedIn() (the version of
   // this method that also receives the originating store), so the store-less
   // version never gets called.
   NOTREACHED();
 }
 
-void CompromisedCredentialsReader::OnCompromisedCredentialsChangedIn(
+void InsecureCredentialsReader::OnInsecureCredentialsChangedIn(
     PasswordStore* store) {
   store->GetAllCompromisedCredentials(this);
 }
 
-void CompromisedCredentialsReader::OnGetCompromisedCredentials(
-    std::vector<CompromisedCredentials> compromised_credentials) {
+void InsecureCredentialsReader::OnGetCompromisedCredentials(
+    std::vector<InsecureCredential> insecure_credentials) {
   // This class overrides OnGetCompromisedCredentialFrom() (the version of this
   // method that also receives the originating store), so the store-less version
   // never gets called.
   NOTREACHED();
 }
 
-void CompromisedCredentialsReader::OnGetCompromisedCredentialsFrom(
+void InsecureCredentialsReader::OnGetCompromisedCredentialsFrom(
     PasswordStore* store,
-    std::vector<CompromisedCredentials> compromised_credentials) {
+    std::vector<InsecureCredential> insecure_credentials) {
   profile_store_responded_ |= store == profile_store_;
   account_store_responded_ |= store == account_store_;
   // Remove all previously cached credentials from `store` and then insert
-  // the just received `compromised_credentials`.
+  // the just received `insecure_credentials`.
   PasswordForm::Store to_remove = store == profile_store_
                                       ? PasswordForm::Store::kProfileStore
                                       : PasswordForm::Store::kAccountStore;
 
-  base::EraseIf(compromised_credentials_, [to_remove](const auto& credential) {
+  base::EraseIf(insecure_credentials_, [to_remove](const auto& credential) {
     return credential.in_store == to_remove;
   });
 
-  base::ranges::move(compromised_credentials,
-                     std::back_inserter(compromised_credentials_));
+  base::ranges::move(insecure_credentials,
+                     std::back_inserter(insecure_credentials_));
 
   // Observers are reptitively notified of compromised credentials, and hence
   // vbservers can expect partial view of the compromised credentials, so inform
   // the observers directly.
   for (auto& observer : observers_)
-    observer.OnCompromisedCredentialsChanged(compromised_credentials_);
+    observer.OnInsecureCredentialsChanged(insecure_credentials_);
 
   // For the callbacks waiting for the results of
-  // `GetAllCompromisedCredentials()`, they should be notified only when both
+  // `GetAllInsecureCredentials()`, they should be notified only when both
   // stores responded.
   if (!profile_store_responded_ || !account_store_responded_)
     return;
 
   for (auto& callback :
-       std::exchange(get_all_compromised_credentials_callbacks_, {})) {
-    std::move(callback).Run(compromised_credentials_);
+       std::exchange(get_all_insecure_credentials_callbacks_, {})) {
+    std::move(callback).Run(insecure_credentials_);
   }
 }
 
-void CompromisedCredentialsReader::GetAllCompromisedCredentials(
-    GetCompromisedCredentialsCallback cb) {
+void InsecureCredentialsReader::GetAllInsecureCredentials(
+    GetInsecureCredentialsCallback cb) {
   if (profile_store_responded_ && account_store_responded_) {
-    std::move(cb).Run(compromised_credentials_);
+    std::move(cb).Run(insecure_credentials_);
     return;
   }
   // Add the callback *before* triggering any of the fetches. This ensures
   // that we don't miss a notitication if the fetches return synchronously
   // (which is the case in tests).
-  get_all_compromised_credentials_callbacks_.push_back(std::move(cb));
+  get_all_insecure_credentials_callbacks_.push_back(std::move(cb));
 
   if (!profile_store_responded_)
     profile_store_->GetAllCompromisedCredentials(this);
@@ -110,11 +110,11 @@ void CompromisedCredentialsReader::GetAllCompromisedCredentials(
   }
 }
 
-void CompromisedCredentialsReader::AddObserver(Observer* observer) {
+void InsecureCredentialsReader::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
 
-void CompromisedCredentialsReader::RemoveObserver(Observer* observer) {
+void InsecureCredentialsReader::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 

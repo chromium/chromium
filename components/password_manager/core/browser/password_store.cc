@@ -108,9 +108,9 @@ void PasswordStore::Observer::OnLoginsChangedIn(
   OnLoginsChanged(changes);
 }
 
-void PasswordStore::DatabaseCompromisedCredentialsObserver::
-    OnCompromisedCredentialsChangedIn(PasswordStore* store) {
-  OnCompromisedCredentialsChanged();
+void PasswordStore::DatabaseInsecureCredentialsObserver::
+    OnInsecureCredentialsChangedIn(PasswordStore* store) {
+  OnInsecureCredentialsChanged();
 }
 
 PasswordStore::CheckReuseRequest::CheckReuseRequest(
@@ -493,14 +493,14 @@ void PasswordStore::RemoveObserver(Observer* observer) {
   observers_->RemoveObserver(observer);
 }
 
-void PasswordStore::AddDatabaseCompromisedCredentialsObserver(
-    DatabaseCompromisedCredentialsObserver* observer) {
-  compromised_credentials_observers_->AddObserver(observer);
+void PasswordStore::AddDatabaseInsecureCredentialsObserver(
+    DatabaseInsecureCredentialsObserver* observer) {
+  insecure_credentials_observers_->AddObserver(observer);
 }
 
-void PasswordStore::RemoveDatabaseCompromisedCredentialsObserver(
-    DatabaseCompromisedCredentialsObserver* observer) {
-  compromised_credentials_observers_->RemoveObserver(observer);
+void PasswordStore::RemoveDatabaseInsecureCredentialsObserver(
+    DatabaseInsecureCredentialsObserver* observer) {
+  insecure_credentials_observers_->RemoveObserver(observer);
 }
 
 bool PasswordStore::ScheduleTask(base::OnceClosure task) {
@@ -812,10 +812,9 @@ void PasswordStore::InvokeAndNotifyAboutCompromisedPasswordsChange(
   DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
   PasswordStoreChangeList changes = std::move(callback).Run();
   if (!changes.empty()) {
-    compromised_credentials_observers_->Notify(
+    insecure_credentials_observers_->Notify(
         FROM_HERE,
-        &DatabaseCompromisedCredentialsObserver::
-            OnCompromisedCredentialsChangedIn,
+        &DatabaseInsecureCredentialsObserver::OnInsecureCredentialsChangedIn,
         base::RetainedRef(this));
     if (sync_bridge_)
       sync_bridge_->ActOnPasswordStoreChanges(changes);

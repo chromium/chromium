@@ -95,25 +95,25 @@ class PasswordStore : protected PasswordStoreSync,
     virtual ~Observer() = default;
   };
 
-  class DatabaseCompromisedCredentialsObserver {
+  class DatabaseInsecureCredentialsObserver {
     // An interface used to notify clients (observers) of this object that the
-    // list of compromised credentials in the password store has changed.
+    // list of insecure credentials in the password store has changed.
     // Register the observer via
-    // PasswordStore::AddDatabaseCompromisedCredentialsObserver.
+    // PasswordStore::AddDatabaseInsecureCredentialsObserver.
    public:
-    // Notifies the observer that the list of compromised credentials changed.
+    // Notifies the observer that the list of insecure credentials changed.
     // Will be called from the UI thread.
-    virtual void OnCompromisedCredentialsChanged() = 0;
+    virtual void OnInsecureCredentialsChanged() = 0;
 
-    // Like OnCompromisedCredentialsChanged(), but also receives the originating
+    // Like OnInsecureCredentialsChanged(), but also receives the originating
     // PasswordStore as a parameter. This is useful for observers that observe
     // changes in both the profile-scoped and the account-scoped store. The
-    // default implementation simply calls OnCompromisedCredentialsChanged(), so
+    // default implementation simply calls OnInsecureCredentialsChanged(), so
     // observers that don't care about the store can just ignore this.
-    virtual void OnCompromisedCredentialsChangedIn(PasswordStore* store);
+    virtual void OnInsecureCredentialsChangedIn(PasswordStore* store);
 
    protected:
-    virtual ~DatabaseCompromisedCredentialsObserver() = default;
+    virtual ~DatabaseInsecureCredentialsObserver() = default;
   };
 
   // Used to notify that unsynced credentials are about to be deleted.
@@ -327,12 +327,12 @@ class PasswordStore : protected PasswordStoreSync,
 
   // Adds an observer to be notified when the list of compromised passwords in
   // the password store changes.
-  void AddDatabaseCompromisedCredentialsObserver(
-      DatabaseCompromisedCredentialsObserver* observer);
+  void AddDatabaseInsecureCredentialsObserver(
+      DatabaseInsecureCredentialsObserver* observer);
 
   // Removes |observer| from the list of compromised credentials observer.
-  void RemoveDatabaseCompromisedCredentialsObserver(
-      DatabaseCompromisedCredentialsObserver* observer);
+  void RemoveDatabaseInsecureCredentialsObserver(
+      DatabaseInsecureCredentialsObserver* observer);
 
   // Schedules the given |task| to be run on the PasswordStore's TaskRunner.
   bool ScheduleTask(base::OnceClosure task);
@@ -852,10 +852,9 @@ class PasswordStore : protected PasswordStoreSync,
   // The observers.
   scoped_refptr<base::ObserverListThreadSafe<Observer>> observers_;
   scoped_refptr<
-      base::ObserverListThreadSafe<DatabaseCompromisedCredentialsObserver>>
-      compromised_credentials_observers_ =
-          base::MakeRefCounted<base::ObserverListThreadSafe<
-              DatabaseCompromisedCredentialsObserver>>();
+      base::ObserverListThreadSafe<DatabaseInsecureCredentialsObserver>>
+      insecure_credentials_observers_ = base::MakeRefCounted<
+          base::ObserverListThreadSafe<DatabaseInsecureCredentialsObserver>>();
 
   std::unique_ptr<PasswordSyncBridge> sync_bridge_;
 

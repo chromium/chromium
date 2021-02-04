@@ -116,8 +116,8 @@ class MockPasswordStoreConsumer : public PasswordStoreConsumer {
 };
 
 struct MockDatabaseCompromisedCredentialsObserver
-    : PasswordStore::DatabaseCompromisedCredentialsObserver {
-  MOCK_METHOD0(OnCompromisedCredentialsChanged, void());
+    : PasswordStore::DatabaseInsecureCredentialsObserver {
+  MOCK_METHOD0(OnInsecureCredentialsChanged, void());
 };
 
 class MockPasswordStoreSigninNotifier : public PasswordStoreSigninNotifier {
@@ -579,15 +579,15 @@ TEST_F(PasswordStoreTest,
   scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
   store->Init(nullptr);
   store->AddLogin(*FillPasswordFormWithData(kTestCredentials));
-  store->AddDatabaseCompromisedCredentialsObserver(&observer);
+  store->AddDatabaseInsecureCredentialsObserver(&observer);
 
   // Expect a notification after adding a credential.
-  EXPECT_CALL(observer, OnCompromisedCredentialsChanged);
+  EXPECT_CALL(observer, OnInsecureCredentialsChanged);
   store->AddCompromisedCredentials(compromised_credentials);
   WaitForPasswordStore();
 
   // Adding the same credential should not result in another notification.
-  EXPECT_CALL(observer, OnCompromisedCredentialsChanged).Times(0);
+  EXPECT_CALL(observer, OnInsecureCredentialsChanged).Times(0);
   store->AddCompromisedCredentials(compromised_credentials);
   WaitForPasswordStore();
 
@@ -620,17 +620,17 @@ TEST_F(PasswordStoreTest,
   store->AddCompromisedCredentials(compromised_credentials);
   WaitForPasswordStore();
 
-  store->AddDatabaseCompromisedCredentialsObserver(&observer);
+  store->AddDatabaseInsecureCredentialsObserver(&observer);
 
   // Expect a notification after removing a credential.
-  EXPECT_CALL(observer, OnCompromisedCredentialsChanged);
+  EXPECT_CALL(observer, OnInsecureCredentialsChanged);
   store->RemoveCompromisedCredentials(compromised_credentials.signon_realm,
                                       compromised_credentials.username,
                                       RemoveInsecureCredentialsReason::kRemove);
   WaitForPasswordStore();
 
   // Removing the same credential should not result in another notification.
-  EXPECT_CALL(observer, OnCompromisedCredentialsChanged).Times(0);
+  EXPECT_CALL(observer, OnInsecureCredentialsChanged).Times(0);
   store->RemoveCompromisedCredentials(compromised_credentials.signon_realm,
                                       compromised_credentials.username,
                                       RemoveInsecureCredentialsReason::kRemove);

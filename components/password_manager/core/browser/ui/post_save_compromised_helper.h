@@ -11,7 +11,7 @@
 #include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/insecure_credentials_table.h"
-#include "components/password_manager/core/browser/ui/compromised_credentials_reader.h"
+#include "components/password_manager/core/browser/ui/insecure_credentials_reader.h"
 
 class PrefService;
 
@@ -39,11 +39,10 @@ class PostSaveCompromisedHelper {
   // credentials in total should be still fixed.
   using BubbleCallback = base::OnceCallback<void(BubbleType, size_t)>;
 
-  // |compromised| contains all compromised credentials for the current site.
+  // |compromised| contains all insecure credentials for the current site.
   // |current_username| is the username that was just saved or updated.
-  PostSaveCompromisedHelper(
-      base::span<const CompromisedCredentials> compromised,
-      const base::string16& current_username);
+  PostSaveCompromisedHelper(base::span<const InsecureCredential> compromised,
+                            const base::string16& current_username);
   ~PostSaveCompromisedHelper();
 
   PostSaveCompromisedHelper(const PostSaveCompromisedHelper&) = delete;
@@ -61,11 +60,11 @@ class PostSaveCompromisedHelper {
   size_t compromised_count() const { return compromised_count_; }
 
  private:
-  void OnGetAllCompromisedCredentials(
-      std::vector<CompromisedCredentials> compromised_credentials);
+  void OnGetAllInsecureCredentials(
+      std::vector<InsecureCredential> insecure_credentials);
 
   // Contains the entry for the currently leaked credentials if it was leaked.
-  base::Optional<CompromisedCredentials> current_leak_;
+  base::Optional<InsecureCredential> current_leak_;
   // Profile prefs.
   PrefService* prefs_ = nullptr;
   // Callback to notify the caller about the bubble type.
@@ -75,7 +74,7 @@ class PostSaveCompromisedHelper {
   // Count of compromised credentials after the callback was executed.
   size_t compromised_count_ = 0;
 
-  std::unique_ptr<CompromisedCredentialsReader> compromised_credentials_reader_;
+  std::unique_ptr<InsecureCredentialsReader> insecure_credentials_reader_;
 };
 
 }  // namespace password_manager
