@@ -164,16 +164,4 @@ public class LevelDBPersistedTabDataStorageTest {
         ch.waitForCallback(chCount);
     }
 
-    static class LoadCallbackHelper extends CallbackHelper {
-        private byte[] mRes;
-
-        public void notifyCalled(byte[] res) {
-            mRes = res;
-            notifyCalled();
-        }
-
-        public byte[] getRes() {
-            return mRes;
-        }
-    }
 }
