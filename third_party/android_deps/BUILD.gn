@@ -1163,9 +1163,6 @@ android_aar_prebuilt("google_play_services_auth_java") {
     ":google_play_services_basement_java",
     ":google_play_services_tasks_java",
   ]
-
-  # Removing drawables from GMS .aars as they are unused bloat.
-  strip_drawables = true
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1177,9 +1174,6 @@ android_aar_prebuilt("google_play_services_auth_api_phone_java") {
     ":google_play_services_basement_java",
     ":google_play_services_tasks_java",
   ]
-
-  # Removing drawables from GMS .aars as they are unused bloat.
-  strip_drawables = true
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1192,9 +1186,6 @@ android_aar_prebuilt("google_play_services_auth_base_java") {
     ":google_play_services_basement_java",
     ":google_play_services_tasks_java",
   ]
-
-  # Removing drawables from GMS .aars as they are unused bloat.
-  strip_drawables = true
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1208,9 +1199,6 @@ android_aar_prebuilt("google_play_services_base_java") {
     ":google_play_services_basement_java",
     ":google_play_services_tasks_java",
   ]
-
-  # Removing drawables from GMS .aars as they are unused bloat.
-  strip_drawables = true
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1222,9 +1210,6 @@ android_aar_prebuilt("google_play_services_basement_java") {
     ":androidx_core_core_java",
     ":androidx_fragment_fragment_java",
   ]
-
-  # Removing drawables from GMS .aars as they are unused bloat.
-  strip_drawables = true
 
   # https://crbug.com/989505
   jar_excluded_patterns = [ "META-INF/proguard/*" ]
@@ -1245,9 +1230,6 @@ android_aar_prebuilt("google_play_services_cast_java") {
     ":google_play_services_flags_java",
     ":google_play_services_tasks_java",
   ]
-
-  # Removing drawables from GMS .aars as they are unused bloat.
-  strip_drawables = true
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1266,10 +1248,6 @@ android_aar_prebuilt("google_play_services_cast_framework_java") {
     ":google_play_services_basement_java",
     ":google_play_services_cast_java",
   ]
-
-  # Removing all resources from cast framework as they are unused bloat.
-  # Can only safely remove them when R8 will strip the path that accesses them.
-  strip_resources = !is_java_debug
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1281,9 +1259,6 @@ android_aar_prebuilt("google_play_services_fido_java") {
     ":google_play_services_basement_java",
     ":google_play_services_tasks_java",
   ]
-
-  # Removing drawables from GMS .aars as they are unused bloat.
-  strip_drawables = true
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1299,9 +1274,6 @@ android_aar_prebuilt("google_play_services_gcm_java") {
     ":google_play_services_iid_java",
     ":google_play_services_stats_java",
   ]
-
-  # Removing drawables from GMS .aars as they are unused bloat.
-  strip_drawables = true
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1316,9 +1288,6 @@ android_aar_prebuilt("google_play_services_iid_java") {
     ":google_play_services_stats_java",
     ":google_play_services_tasks_java",
   ]
-
-  # Removing drawables from GMS .aars as they are unused bloat.
-  strip_drawables = true
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1330,9 +1299,6 @@ android_aar_prebuilt("google_play_services_instantapps_java") {
     ":google_play_services_basement_java",
     ":google_play_services_tasks_java",
   ]
-
-  # Removing drawables from GMS .aars as they are unused bloat.
-  strip_drawables = true
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1345,9 +1311,6 @@ android_aar_prebuilt("google_play_services_location_java") {
     ":google_play_services_places_placereport_java",
     ":google_play_services_tasks_java",
   ]
-
-  # Removing drawables from GMS .aars as they are unused bloat.
-  strip_drawables = true
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1355,9 +1318,6 @@ android_aar_prebuilt("google_play_services_tasks_java") {
   aar_path = "libs/com_google_android_gms_play_services_tasks/play-services-tasks-17.0.0.aar"
   info_path = "libs/com_google_android_gms_play_services_tasks/com_google_android_gms_play_services_tasks.info"
   deps = [ ":google_play_services_basement_java" ]
-
-  # Removing drawables from GMS .aars as they are unused bloat.
-  strip_drawables = true
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1369,9 +1329,6 @@ android_aar_prebuilt("google_play_services_vision_java") {
     ":google_play_services_basement_java",
     ":google_play_services_vision_common_java",
   ]
-
-  # Removing drawables from GMS .aars as they are unused bloat.
-  strip_drawables = true
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1385,9 +1342,6 @@ android_aar_prebuilt("google_play_services_vision_common_java") {
     ":google_play_services_flags_java",
     ":google_play_services_phenotype_java",
   ]
-
-  # Removing drawables from GMS .aars as they are unused bloat.
-  strip_drawables = true
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1575,9 +1529,6 @@ android_aar_prebuilt("google_firebase_firebase_messaging_java") {
     ":google_play_services_stats_java",
     ":google_play_services_tasks_java",
   ]
-
-  # Removing drawables from GMS .aars as they are unused bloat.
-  strip_drawables = true
 
   # We removed the datatransport dependency to reduce binary size.
   # The library works without it as it's only used for logging.
@@ -2400,9 +2351,6 @@ android_aar_prebuilt("google_android_datatransport_transport_api_java") {
   # //third_party/android_deps/build.gradle.
   visibility = [ ":*" ]
   deps = [ ":androidx_annotation_annotation_java" ]
-
-  # Removing drawables from GMS .aars as they are unused bloat.
-  strip_drawables = true
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2420,9 +2368,6 @@ android_aar_prebuilt("google_play_services_clearcut_java") {
     ":google_play_services_phenotype_java",
     ":google_play_services_tasks_java",
   ]
-
-  # Removing drawables from GMS .aars as they are unused bloat.
-  strip_drawables = true
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2437,9 +2382,6 @@ android_aar_prebuilt("google_play_services_cloud_messaging_java") {
     ":google_play_services_basement_java",
     ":google_play_services_tasks_java",
   ]
-
-  # Removing drawables from GMS .aars as they are unused bloat.
-  strip_drawables = true
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2454,9 +2396,6 @@ android_aar_prebuilt("google_play_services_flags_java") {
     ":google_play_services_base_java",
     ":google_play_services_basement_java",
   ]
-
-  # Removing drawables from GMS .aars as they are unused bloat.
-  strip_drawables = true
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2473,9 +2412,6 @@ android_aar_prebuilt("google_play_services_phenotype_java") {
     ":google_play_services_basement_java",
     ":google_play_services_tasks_java",
   ]
-
-  # Removing drawables from GMS .aars as they are unused bloat.
-  strip_drawables = true
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2487,9 +2423,6 @@ android_aar_prebuilt("google_play_services_places_placereport_java") {
   # //third_party/android_deps/build.gradle.
   visibility = [ ":*" ]
   deps = [ ":google_play_services_basement_java" ]
-
-  # Removing drawables from GMS .aars as they are unused bloat.
-  strip_drawables = true
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2504,9 +2437,6 @@ android_aar_prebuilt("google_play_services_stats_java") {
     ":androidx_legacy_legacy_support_core_utils_java",
     ":google_play_services_basement_java",
   ]
-
-  # Removing drawables from GMS .aars as they are unused bloat.
-  strip_drawables = true
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2631,9 +2561,6 @@ android_aar_prebuilt("google_firebase_firebase_common_java") {
     ":google_play_services_tasks_java",
   ]
 
-  # Removing drawables from GMS .aars as they are unused bloat.
-  strip_drawables = true
-
   # Ignore missing kotlin.KotlinVersion definition in
   # com.google.firebase.platforminfo.KotlinDetector.
   enable_bytecode_checks = false
@@ -2651,9 +2578,6 @@ android_aar_prebuilt("google_firebase_firebase_components_java") {
     ":androidx_annotation_annotation_java",
     ":google_firebase_firebase_annotations_java",
   ]
-
-  # Removing drawables from GMS .aars as they are unused bloat.
-  strip_drawables = true
 
   # Can't find com.google.firebase.components.Component$ComponentType.
   enable_bytecode_checks = false
@@ -2684,9 +2608,6 @@ android_aar_prebuilt("google_firebase_firebase_encoders_json_java") {
     ":androidx_annotation_annotation_java",
     ":google_firebase_firebase_encoders_java",
   ]
-
-  # Removing drawables from GMS .aars as they are unused bloat.
-  strip_drawables = true
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2711,9 +2632,6 @@ android_aar_prebuilt("google_firebase_firebase_iid_java") {
     ":google_play_services_stats_java",
     ":google_play_services_tasks_java",
   ]
-
-  # Removing drawables from GMS .aars as they are unused bloat.
-  strip_drawables = true
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2728,9 +2646,6 @@ android_aar_prebuilt("google_firebase_firebase_iid_interop_java") {
     ":google_play_services_base_java",
     ":google_play_services_basement_java",
   ]
-
-  # Removing drawables from GMS .aars as they are unused bloat.
-  strip_drawables = true
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2747,9 +2662,6 @@ android_aar_prebuilt("google_firebase_firebase_installations_java") {
     ":google_firebase_firebase_installations_interop_java",
     ":google_play_services_tasks_java",
   ]
-
-  # Removing drawables from GMS .aars as they are unused bloat.
-  strip_drawables = true
 
   # Can't find com.google.auto.value.AutoValue$Builder.
   enable_bytecode_checks = false
@@ -2768,9 +2680,6 @@ android_aar_prebuilt("google_firebase_firebase_installations_interop_java") {
     ":google_play_services_tasks_java",
   ]
 
-  # Removing drawables from GMS .aars as they are unused bloat.
-  strip_drawables = true
-
   # Can't find com.google.auto.value.AutoValue$Builder.
   enable_bytecode_checks = false
 }
@@ -2784,9 +2693,6 @@ android_aar_prebuilt("google_firebase_firebase_measurement_connector_java") {
   # //third_party/android_deps/build.gradle.
   visibility = [ ":*" ]
   deps = [ ":google_play_services_basement_java" ]
-
-  # Removing drawables from GMS .aars as they are unused bloat.
-  strip_drawables = true
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
