@@ -38,33 +38,25 @@ export function scannerSelectTest() {
   });
 
   test('initializeScannerSelect', () => {
-    // Before options are added, the dropdown should be hidden and the throbber
-    // should be visible.
     const select = scannerSelect.$$('select');
     assertTrue(!!select);
-    assertTrue(select.hidden);
-    const throbber = scannerSelect.$$('.throbber-container');
-    assertTrue(!!throbber);
-    assertFalse(throbber.hidden);
 
-    // Verify that scanner connection help text is not visible before load.
+    // Verify that scanner connection help text is visible before adding
+    // scanners.
     const helpLink = scannerSelect.$$('#scanHelp');
     assertTrue(!!helpLink);
-    assertTrue(helpLink.hidden);
+    assertFalse(helpLink.hidden);
 
     const scannerArr = [
       createScanner(firstScannerId, firstScannerName),
       createScanner(secondScannerId, secondScannerName)
     ];
     scannerSelect.scanners = scannerArr;
-    scannerSelect.loaded = true;
     flush();
 
-    // Verify that adding scanners and setting loaded to true results in the
-    // dropdown becoming visible with the correct options.
+    // Verify that adding scanners results in the dropdown becoming visible
+    // with the correct options and the help text being hidden.
     assertFalse(select.disabled);
-    assertFalse(select.hidden);
-    assertTrue(throbber.hidden);
     assertTrue(helpLink.hidden);
     // The expected options are the 2 scanners + the hidden 'No scanners'
     // option.

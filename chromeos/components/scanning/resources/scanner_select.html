@@ -1,4 +1,4 @@
-<style include="throbber scanning-fonts scanning-shared">
+<style include="scanning-fonts scanning-shared">
   #scanHelp {
     color: var(--scanning-no-scanners-help-text-color);
     font-family: var(--scanning-no-scanners-help-text-font-family);
@@ -17,11 +17,8 @@
     [[i18n('scannerDropdownLabel')]]
   </span>
   <div slot="settings">
-    <div class="throbber-container" hidden$="[[loaded]]">
-      <div class="throbber"></div>
-    </div>
     <select id="scannerSelect" class="md-select"
-        value="{{selectedScannerId::change}}" hidden$="[[!loaded]]"
+        value="{{selectedScannerId::change}}"
         disabled="[[disabled]]" aria-labelledby="scannerLabel">
       <template is="dom-repeat" items="[[scanners]]" as="scanner">
         <option value="[[getTokenAsString_(scanner)]]">
@@ -34,7 +31,7 @@
     </select>
   </div>
   <div id="scanHelp" slot="error"
-      hidden$="[[shouldHideScanHelpLink_(loaded, scanners)]]">
+      hidden$="[[shouldHideScanHelpLink_(scanners)]]">
     [[i18n('noScannersHelpText')]]
     <a id="scanHelpLink" target="_blank"
         href="http://support.google.com/chromebook?p=chrome_scanning">

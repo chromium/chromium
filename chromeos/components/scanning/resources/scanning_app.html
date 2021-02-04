@@ -175,7 +175,8 @@
   }
 </style>
 <div id="scanningContainer">
-  <div id="panelContainer">
+  <loading-page hidden="[[scannersLoaded_]]"></loading-page>
+  <div id="panelContainer" hidden="[[!scannersLoaded_]]">
     <div id="leftPanel">
       <scan-preview id="scanPreview" app-state="[[appState_]]"
           object-urls="[[objectUrls_]]" page-number="[[pageNumber_]]"
@@ -187,7 +188,6 @@
         <div id="container" show-bottom-shadow>
           <template is="dom-if" if="[[!showDoneSection_]]">
             <scanner-select id="scannerSelect" scanners="[[scanners_]]"
-                loaded="[[scannersLoaded_]]"
                 disabled="[[settingsDisabled_]]"
                 selected-scanner-id="{{selectedScannerId}}"></scanner-select>
             <source-select id="sourceSelect" options="[[capabilities_.sources]]"

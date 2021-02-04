@@ -1,0 +1,31 @@
+<style include="scanning-fonts scanning-shared">
+  #loadingContainer {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - var(--panel-container-margin-top));
+    justify-content: center;
+    margin-top: var(--panel-container-margin-top);
+    text-align: center;
+  }
+
+  #loadingText {
+    color: var(--scanning-scanners-loading-text-color);
+    font-family: var(--scanning-scanners-loading-font-family);
+    font-size: var(--scanning-scanners-loading-font-size);
+    font-weight: var(--scanning-medium-font-weight);
+  }
+
+  paper-progress {
+    --paper-progress-active-color: var(--google-blue-600);
+    --paper-progress-container-color: var(--google-blue-200);
+    border-radius: 4px;
+    height: 4px;
+    margin-top: 12px;
+    width: 300px;
+  }
+</style>
+<div id="loadingContainer">
+  <h1 id="loadingText">[[i18n('scannersLoadingText')]]</h1>
+  <paper-progress indeterminate></paper-progress>
+</div>

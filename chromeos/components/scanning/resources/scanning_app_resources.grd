@@ -34,11 +34,12 @@
       <include name="IDR_SCANNING_APP_RESOLUTION_SELECT_HTML" file="resolution_select.html" type="BINDATA"/>
       <include name="IDR_SCANNING_APP_RESOLUTION_SELECT_JS" file="${root_gen_dir}/chromeos/components/scanning/resources/resolution_select.js" resource_path="resolution_select.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_SCANNING_APP_SCAN_SETTINGS_SECTION_JS" file="${root_gen_dir}/chromeos/components/scanning/resources/scan_settings_section.js" resource_path="scan_settings_section.js" use_base_dir="false" type="BINDATA"/>
-      <include name="IDR_SCANNING_APP_THROBBER_CSS_JS" file="${root_gen_dir}/chromeos/components/scanning/resources/throbber_css.js" resource_path="throbber_css.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_SCANNING_APP_SCANNING_SHARED_CSS_JS" file="${root_gen_dir}/chromeos/components/scanning/resources/scanning_shared_css.js" resource_path="scanning_shared_css.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_SCANNING_APP_SCANNING_FONTS_CSS_JS" file="${root_gen_dir}/chromeos/components/scanning/resources/scanning_fonts_css.js" resource_path="scanning_fonts_css.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_SCANNING_APP_SCAN_PREVIEW_HTML" file="scan_preview.html" type="BINDATA"/>
       <include name="IDR_SCANNING_APP_SCAN_PREVIEW_JS" file="${root_gen_dir}/chromeos/components/scanning/resources/scan_preview.js" resource_path="scan_preview.js" use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_SCANNING_APP_LOADING_PAGE_HTML" file="loading_page.html" type="BINDATA"/>
+      <include name="IDR_SCANNING_APP_LOADING_PAGE_JS" file="${root_gen_dir}/chromeos/components/scanning/resources/loading_page.js" resource_path="loading_page.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_SCANNING_APP_ICON_16" file="scanning_app_icon_16.png" type="BINDATA" />
       <include name="IDR_SCANNING_APP_ICON_32" file="scanning_app_icon_32.png" type="BINDATA" />
       <include name="IDR_SCANNING_APP_ICON_48" file="scanning_app_icon_48.png" type="BINDATA" />

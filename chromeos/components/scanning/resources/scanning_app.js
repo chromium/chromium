@@ -15,6 +15,7 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './file_path.mojom-lite.js';
 import './color_mode_select.js';
 import './file_type_select.js';
+import './loading_page.js';
 import './page_size_select.js';
 import './resolution_select.js';
 import './scan_done_section.js';

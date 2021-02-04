@@ -12,6 +12,7 @@ js_type_check("closure_compile_module") {
   deps = [
     ":color_mode_select",
     ":file_type_select",
+    ":loading_page",
     ":mojo_interface_provider",
     ":page_size_select",
     ":resolution_select",
@@ -33,6 +34,13 @@ js_library("color_mode_select") {
     ":scanning_app_util",
     ":select_behavior",
     "//chromeos/components/scanning/mojom:mojom_js_library_for_compile",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
+}
+
+js_library("loading_page") {
+  deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
@@ -105,6 +113,7 @@ js_library("scanning_app") {
   deps = [
     ":color_mode_select",
     ":file_type_select",
+    ":loading_page",
     ":mojo_interface_provider",
     ":page_size_select",
     ":resolution_select",
@@ -156,6 +165,7 @@ html_to_js("web_components") {
   js_files = [
     "color_mode_select.js",
     "file_type_select.js",
+    "loading_page.js",
     "page_size_select.js",
     "resolution_select.js",
     "scan_preview.js",
@@ -167,6 +177,5 @@ html_to_js("web_components") {
     "scanning_fonts_css.js",
     "scanning_shared_css.js",
     "source_select.js",
-    "throbber_css.js",
   ]
 }

@@ -8,7 +8,6 @@ import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-l
 import './scanning.mojom-lite.js';
 import './scan_settings_section.js';
 import './strings.m.js';
-import './throbber_css.js';
 
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -42,8 +41,6 @@ Polymer({
       type: String,
       notify: true,
     },
-
-    loaded: Boolean,
   },
 
   observers: ['onScannersChange_(scanners.*)'],
@@ -92,6 +89,6 @@ Polymer({
    * @protected
    */
   shouldHideScanHelpLink_() {
-    return !this.loaded || this.scanners.length !== 0;
+    return this.scanners.length !== 0;
   }
 });
