@@ -155,6 +155,10 @@ const char kDiscoverFeedUploadActionsNetworkDurationFailure[] =
 const char kDiscoverFeedNetworkDuration[] =
     "ContentSuggestions.Feed.Network.Duration";
 
+// Histogram name to measure opened URL's regardless of the surface they were
+// opened in.
+const char kDiscoverFeedURLOpened[] = "NewTabPage.ContentSuggestions.Opened";
+
 // Minimum scrolling amount to record a FeedEngagementType::kFeedEngaged due to
 // scrolling.
 const int kMinScrollThreshold = 160;
@@ -238,6 +242,7 @@ const int kMinutesBetweenSessions = 5;
       recordDiscoverFeedUserActionHistogram:FeedUserActionType::kTappedOnCard];
   base::RecordAction(
       base::UserMetricsAction(kDiscoverFeedUserActionOpenSameTab));
+  [self recordOpenURL];
 }
 
 - (void)recordOpenURLInNewTab {
@@ -245,6 +250,7 @@ const int kMinutesBetweenSessions = 5;
                                                   kTappedOpenInNewTab];
   base::RecordAction(
       base::UserMetricsAction(kDiscoverFeedUserActionOpenNewTab));
+  [self recordOpenURL];
 }
 
 - (void)recordOpenURLInIncognitoTab {
@@ -252,6 +258,7 @@ const int kMinutesBetweenSessions = 5;
                                                   kTappedOpenInNewIncognitoTab];
   base::RecordAction(
       base::UserMetricsAction(kDiscoverFeedUserActionOpenIncognitoTab));
+  [self recordOpenURL];
 }
 
 - (void)recordAddURLToReadLater {
@@ -470,6 +477,13 @@ const int kMinutesBetweenSessions = 5;
     (NSTimeInterval)durationInSeconds {
   UMA_HISTOGRAM_MEDIUM_TIMES(kDiscoverFeedNetworkDuration,
                              base::TimeDelta::FromSeconds(durationInSeconds));
+}
+
+// Records that a URL was opened regardless of the target surface (e.g. New Tab,
+// Same Tab, Incognito Tab, etc.)
+- (void)recordOpenURL {
+  // TODO(crbug.com/1174088): Add card Index and the max number of suggestions.
+  UMA_HISTOGRAM_EXACT_LINEAR(kDiscoverFeedURLOpened, 0, 1);
 }
 
 @end
