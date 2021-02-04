@@ -108,26 +108,6 @@ class Visitor;
   ThreadState::PrefinalizerRegistration<Class> prefinalizer_dummy_{this};    \
   using UsingPreFinalizerMacroNeedsTrailingSemiColon = char
 
-class PLATFORM_EXPORT BlinkGCObserver {
-  USING_FAST_MALLOC(BlinkGCObserver);
-
- public:
-  // The constructor automatically register this object to ThreadState's
-  // observer lists. The argument must not be null.
-  explicit BlinkGCObserver(ThreadState*);
-
-  // The destructor automatically unregister this object from ThreadState's
-  // observer lists.
-  virtual ~BlinkGCObserver();
-
-  virtual void OnGarbageCollection() = 0;
-
- private:
-  // As a ThreadState must live when a BlinkGCObserver lives, holding a raw
-  // pointer is safe.
-  ThreadState* thread_state_;
-};
-
 class PLATFORM_EXPORT ThreadState final {
   USING_FAST_MALLOC(ThreadState);
 
@@ -363,8 +343,6 @@ class PLATFORM_EXPORT ThreadState final {
                           WTF::GetCurrentStackPosition())));
   }
 
-  size_t GcAge() const { return gc_age_; }
-
   MarkingVisitor* CurrentVisitor() const {
     return current_gc_data_.visitor.get();
   }
@@ -568,16 +546,6 @@ class PLATFORM_EXPORT ThreadState final {
 
   void InvokePreFinalizers();
 
-  // Adds the given observer to the ThreadState's observer list. This doesn't
-  // take ownership of the argument. The argument must not be null. The argument
-  // must not be registered before calling this.
-  void AddObserver(BlinkGCObserver*);
-
-  // Removes the given observer from the ThreadState's observer list. This
-  // doesn't take ownership of the argument. The argument must not be null.
-  // The argument must be registered before calling this.
-  void RemoveObserver(BlinkGCObserver*);
-
   bool IsForcedGC() const { return IsForcedGC(current_gc_data_.reason); }
 
   // Returns whether stack scanning is forced. This is currently only used in
@@ -635,10 +603,6 @@ class PLATFORM_EXPORT ThreadState final {
   void* asan_fake_stack_;
 #endif
 
-  HashSet<BlinkGCObserver*> observers_;
-
-  size_t gc_age_ = 0;
-
   struct GCData {
     BlinkGC::CollectionType collection_type;
     BlinkGC::StackState stack_state;
@@ -664,7 +628,6 @@ class PLATFORM_EXPORT ThreadState final {
   base::TimeTicks last_concurrently_marked_bytes_update_;
   bool concurrent_marking_priority_increased_ = false;
 
-  friend class BlinkGCObserver;
   friend class incremental_marking_test::IncrementalMarkingScope;
   friend class HeapPointersOnStackScope;
   friend class IncrementalMarkingTestDriver;

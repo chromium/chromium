@@ -30,7 +30,6 @@ class ThreadStateSchedulingTest : public TestSupportingGC {
   void SetUp() override {
     state_ = ThreadState::Current();
     ClearOutOldGarbage();
-    initial_gc_age_ = state_->GcAge();
   }
 
   void TearDown() override {
@@ -48,14 +47,10 @@ class ThreadStateSchedulingTest : public TestSupportingGC {
     state_->RunScheduledGC(stack_state);
   }
 
-  // Counter that is incremented when sweep finishes.
-  int GCCount() { return state_->GcAge() - initial_gc_age_; }
-
   ThreadState* state() { return state_; }
 
  private:
   ThreadState* state_;
-  int initial_gc_age_;
 };
 
 TEST_F(ThreadStateSchedulingTest, RunIncrementalGCForTesting) {

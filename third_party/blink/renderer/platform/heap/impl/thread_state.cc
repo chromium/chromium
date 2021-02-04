@@ -758,15 +758,6 @@ void ThreadState::SynchronizeAndFinishConcurrentSweeping() {
   Heap().InvokeFinalizersOnSweptPages();
 }
 
-BlinkGCObserver::BlinkGCObserver(ThreadState* thread_state)
-    : thread_state_(thread_state) {
-  thread_state_->AddObserver(this);
-}
-
-BlinkGCObserver::~BlinkGCObserver() {
-  thread_state_->RemoveObserver(this);
-}
-
 namespace {
 
 // Update trace counters with statistics from the current and previous garbage
@@ -924,13 +915,6 @@ void ThreadState::PostSweep() {
   DCHECK(!in_atomic_pause());
   DCHECK(!IsSweepingInProgress());
 
-  gc_age_++;
-  WTF::Vector<BlinkGCObserver*> observers_to_notify;
-  CopyToVector(observers_, observers_to_notify);
-  for (auto* const observer : observers_to_notify) {
-    observer->OnGarbageCollection();
-  }
-
   Heap().stats_collector()->NotifySweepingCompleted();
 
   if (IsMainThread())
@@ -963,18 +947,6 @@ void ThreadState::PushRegistersAndVisitStack() {
   PushAllRegisters(this, ThreadState::VisitStackAfterPushingRegisters);
   // For builds that use safe stack, also visit the unsafe stack.
   VisitUnsafeStack(static_cast<MarkingVisitor*>(CurrentVisitor()));
-}
-
-void ThreadState::AddObserver(BlinkGCObserver* observer) {
-  DCHECK(observer);
-  DCHECK(!observers_.Contains(observer));
-  observers_.insert(observer);
-}
-
-void ThreadState::RemoveObserver(BlinkGCObserver* observer) {
-  DCHECK(observer);
-  DCHECK(observers_.Contains(observer));
-  observers_.erase(observer);
 }
 
 void ThreadState::InvokePreFinalizers() {

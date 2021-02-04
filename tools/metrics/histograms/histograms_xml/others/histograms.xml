@@ -4295,6 +4295,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Document.OutliveTimeAfterShutdown.DestroyedBeforeProcessDies"
     units="units" expires_after="M77">
+  <obsolete>
+    Removed in M90.
+  </obsolete>
   <owner>hajimehoshi@chromium.org</owner>
   <owner>keishi@chromium.org</owner>
   <summary>
@@ -4306,6 +4309,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Document.OutliveTimeAfterShutdown.GCCount" enum="GCCount"
     expires_after="M77">
+  <obsolete>
+    Removed in M90.
+  </obsolete>
   <owner>hajimehoshi@chromium.org</owner>
   <owner>keishi@chromium.org</owner>
   <summary>

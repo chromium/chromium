@@ -413,69 +413,6 @@ bool DefaultFaviconAllowedByCSP(const Document* document, const IconURL& icon) {
 
 }  // namespace
 
-class DocumentOutliveTimeReporter : public BlinkGCObserver {
- public:
-  explicit DocumentOutliveTimeReporter(Document* document)
-      : BlinkGCObserver(ThreadState::Current()), document_(document) {}
-
-  ~DocumentOutliveTimeReporter() override {
-    // As not all documents are destroyed before the process dies, this might
-    // miss some long-lived documents or leaked documents.
-    UMA_HISTOGRAM_EXACT_LINEAR(
-        "Document.OutliveTimeAfterShutdown.DestroyedBeforeProcessDies",
-        GetOutliveTimeCount() + 1, 101);
-  }
-
-  void OnGarbageCollection() override {
-    enum GCCount {
-      kGCCount5,
-      kGCCount10,
-      kGCCountMax,
-    };
-
-    // There are some cases that a document can live after shutting down because
-    // the document can still be referenced (e.g. a document opened via
-    // window.open can be referenced by the opener even after shutting down). To
-    // avoid such cases as much as possible, outlive time count is started after
-    // all DomWrapper of the document have disappeared.
-    if (!gc_age_when_document_detached_) {
-      if (document_->domWindow() &&
-          DOMWrapperWorld::HasWrapperInAnyWorldInMainThread(
-              document_->domWindow())) {
-        return;
-      }
-      gc_age_when_document_detached_ = ThreadState::Current()->GcAge();
-    }
-
-    int outlive_time_count = GetOutliveTimeCount();
-    if (outlive_time_count == 5 || outlive_time_count == 10) {
-      const char* kUMAString = "Document.OutliveTimeAfterShutdown.GCCount";
-
-      if (outlive_time_count == 5)
-        UMA_HISTOGRAM_ENUMERATION(kUMAString, kGCCount5, kGCCountMax);
-      else if (outlive_time_count == 10)
-        UMA_HISTOGRAM_ENUMERATION(kUMAString, kGCCount10, kGCCountMax);
-      else
-        NOTREACHED();
-    }
-
-    if (outlive_time_count == 5 || outlive_time_count == 10 ||
-        outlive_time_count == 20 || outlive_time_count == 50) {
-      document_->RecordUkmOutliveTimeAfterShutdown(outlive_time_count);
-    }
-  }
-
- private:
-  int GetOutliveTimeCount() const {
-    if (!gc_age_when_document_detached_)
-      return 0;
-    return ThreadState::Current()->GcAge() - gc_age_when_document_detached_;
-  }
-
-  WeakPersistent<Document> document_;
-  size_t gc_age_when_document_detached_ = 0;
-};
-
 static const unsigned kCMaxWriteRecursionDepth = 21;
 
 // This amount of time must have elapsed before we will even consider scheduling
@@ -811,7 +748,6 @@ Document::Document(const DocumentInit& initializer,
       ukm_source_id_(initializer.UkmSourceId() == ukm::kInvalidSourceId
                          ? ukm::UkmRecorder::GetNewSourceID()
                          : initializer.UkmSourceId()),
-      needs_to_record_ukm_outlive_time_(false),
       viewport_data_(MakeGarbageCollected<ViewportData>(*this)),
       is_for_external_handler_(initializer.IsForExternalHandler()),
       fragment_directive_(MakeGarbageCollected<FragmentDirective>()),
@@ -3146,12 +3082,6 @@ void Document::Shutdown() {
   lifecycle_.AdvanceTo(DocumentLifecycle::kStopped);
   DCHECK(!View()->IsAttached());
 
-  needs_to_record_ukm_outlive_time_ = IsInMainFrame();
-  if (needs_to_record_ukm_outlive_time_) {
-    // Ensure |ukm_recorder_| and |ukm_source_id_|.
-    UkmRecorder();
-  }
-
   // Don't create a |ukm_recorder_| and |ukm_source_id_| unless necessary.
   if (IdentifiabilityStudySettings::Get()->IsActive()) {
     IdentifiabilitySampleCollector::Get()->FlushSource(UkmRecorder(),
@@ -3169,9 +3099,6 @@ void Document::Shutdown() {
   // explicit in each of the callers of Document::detachLayoutTree().
   dom_window_ = nullptr;
   execution_context_ = nullptr;
-
-  document_outlive_time_reporter_ =
-      std::make_unique<DocumentOutliveTimeReporter>(this);
 }
 
 void Document::RemoveAllEventListeners() {
@@ -8232,18 +8159,6 @@ void Document::Trace(Visitor* visitor) const {
   Supplementable<Document>::Trace(visitor);
   TreeScope::Trace(visitor);
   ContainerNode::Trace(visitor);
-}
-
-void Document::RecordUkmOutliveTimeAfterShutdown(int outlive_time_count) {
-  if (!needs_to_record_ukm_outlive_time_)
-    return;
-
-  DCHECK(ukm_recorder_);
-  DCHECK(ukm_source_id_ != ukm::kInvalidSourceId);
-
-  ukm::builders::Document_OutliveTimeAfterShutdown(ukm_source_id_)
-      .SetGCCount(outlive_time_count)
-      .Record(ukm_recorder_.get());
 }
 
 bool Document::CurrentFrameHadRAF() const {

@@ -60,12 +60,6 @@ void ThreadState::SafePoint(BlinkGC::StackState stack_state) {
 
 void ThreadState::NotifyGarbageCollection(v8::GCType type,
                                           v8::GCCallbackFlags flags) {
-  gc_age_++;
-  WTF::Vector<BlinkGCObserver*> observers_to_notify;
-  CopyToVector(observers_, observers_to_notify);
-  for (auto* const observer : observers_to_notify) {
-    observer->OnGarbageCollection();
-  }
   if (flags & v8::kGCCallbackFlagForced) {
     // Forces a precise GC at the end of the current event loop. This is
     // required for testing code that cannot use GC internals but rather has
@@ -83,17 +77,6 @@ void ThreadState::NotifyGarbageCollection(v8::GCType type,
 
 void ThreadState::CollectAllGarbageForTesting(BlinkGC::StackState stack_state) {
   // TODO(1056170): Implement.
-}
-
-BlinkGCObserver::BlinkGCObserver(ThreadState* thread_state)
-    : thread_state_(thread_state) {
-  DCHECK(!thread_state_->observers_.Contains(this));
-  thread_state_->observers_.insert(this);
-}
-
-BlinkGCObserver::~BlinkGCObserver() {
-  DCHECK(thread_state_->observers_.Contains(this));
-  thread_state_->observers_.erase(this);
 }
 
 }  // namespace blink

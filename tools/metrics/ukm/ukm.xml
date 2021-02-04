@@ -4208,6 +4208,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Document.OutliveTimeAfterShutdown">
+  <obsolete>
+    Removed January 2021
+  </obsolete>
   <owner>hajimehoshi@chromium.org</owner>
   <owner>keishi@chromium.org</owner>
   <summary>

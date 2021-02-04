@@ -62,23 +62,6 @@ using V8BuildEmbedderGraphCallback = void (*)(v8::Isolate*,
                                               v8::EmbedderGraph*,
                                               void*);
 
-// Used to observe garbage collection events. The observer is imprecise wrt. to
-// garbage collection internals, i.e., it is not guaranteed that a garbage
-// collection is already finished. The observer guarantees that a full garbage
-// collection happens between two `OnGarbageCollection()` calls.
-//
-// The observer must outlive the corresponding ThreadState.
-class PLATFORM_EXPORT BlinkGCObserver {
- public:
-  explicit BlinkGCObserver(ThreadState*);
-  virtual ~BlinkGCObserver();
-
-  virtual void OnGarbageCollection() = 0;
-
- private:
-  ThreadState* thread_state_;
-};
-
 class PLATFORM_EXPORT ThreadState final {
  public:
   class NoAllocationScope;
@@ -132,8 +115,6 @@ class PLATFORM_EXPORT ThreadState final {
 
   void NotifyGarbageCollection(v8::GCType, v8::GCCallbackFlags);
 
-  size_t GcAge() const { return gc_age_; }
-
   bool InAtomicSweepingPause() const {
     auto& heap_handle = cpp_heap().GetHeapHandle();
     return cppgc::subtle::HeapState::IsInAtomicPause(heap_handle) &&
@@ -158,11 +139,7 @@ class PLATFORM_EXPORT ThreadState final {
   v8::CppHeap* cpp_heap_ = nullptr;
   v8::Isolate* isolate_ = nullptr;
   base::PlatformThreadId thread_id_;
-  size_t gc_age_ = 0;
-  WTF::HashSet<BlinkGCObserver*> observers_;
   bool forced_scheduled_gc_for_testing_ = false;
-
-  friend class BlinkGCObserver;
 };
 
 template <>
