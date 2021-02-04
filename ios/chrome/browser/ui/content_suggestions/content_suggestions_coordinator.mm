@@ -704,7 +704,7 @@
 
 // Creates, configures and returns a DiscoverFeed ViewController.
 - (UIViewController*)discoverFeed {
-  if (!IsDiscoverFeedEnabled())
+  if (!IsDiscoverFeedEnabled() || IsRefactoredNTP())
     return nil;
 
   UIViewController* discoverFeed = ios::GetChromeBrowserProvider()
