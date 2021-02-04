@@ -112,7 +112,6 @@ export class Background extends ChromeVoxState {
     FindHandler.init();
     DownloadHandler.init();
     PhoneticData.init();
-    UserAnnotationHandler.init();
 
     chrome.accessibilityPrivate.onAnnounceForAccessibility.addListener(
         (announceText) => {

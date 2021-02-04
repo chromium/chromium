@@ -30,8 +30,6 @@ chromevox_modules = [
   "../common/instance_checker.js",
   "../common/string_util.js",
   "../common/tree_walker.js",
-  "background/annotation/node_identifier.js",
-  "background/annotation/user_annotation_handler.js",
   "background/automation_object_constructor_installer.js",
   "background/base_automation_handler.js",
   "background/braille_background.js",
@@ -109,7 +107,6 @@ chromevox_modules = [
   "injected/script_installer.js",
   "learn_mode/kbexplorer.js",
   "options/options.js",
-  "panel/annotations_ui.js",
   "panel/i_search.js",
   "panel/panel.js",
   "panel/panel_menu.js",
@@ -411,8 +408,6 @@ if (is_chromeos_ash) {
   js2gtest("chromevox_extension_js_tests") {
     test_type = "extension"
     sources = [
-      "background/annotation/node_identifier_test.js",
-      "background/annotation/user_annotation_handler_test.js",
       "background/background_test.js",
       "background/braille_command_data_test.js",
       "background/color_test.js",

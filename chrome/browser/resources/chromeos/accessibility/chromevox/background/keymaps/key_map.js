@@ -755,10 +755,6 @@ KeyMap.BINDINGS_ = [
     }
   },
   {
-    'command': 'toggleAnnotationsWidget',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [65, 79]}}
-  },
-  {
     'command': 'logLanguageInformationForCurrentNode',
     'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [80, 76]}}
   }

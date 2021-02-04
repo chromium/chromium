@@ -75,7 +75,6 @@ PanelCommandType = {
   ADD_ANNOTATION_SPEECH: 'add_annotation_speech',
   CLOSE_CHROMEVOX: 'close_chromevox',
   UPDATE_BRAILLE: 'update_braille',
-  OPEN_ANNOTATIONS_UI: 'open_annotations_ui',
   OPEN_MENUS: 'open_menus',
   OPEN_MENUS_MOST_RECENT: 'open_menus_most_recent',
   SEARCH: 'search',

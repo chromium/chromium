@@ -22,7 +22,6 @@ goog.require('PhoneticData');
 goog.require('Spannable');
 goog.require('TextLog');
 goog.require('TtsCategory');
-goog.require('UserAnnotationHandler');
 goog.require('ValueSelectionSpan');
 goog.require('ValueSpan');
 goog.require('constants');
@@ -760,12 +759,10 @@ Output = class {
             options.annotation.push(new Output.SelectionSpan(0, 0));
           }
 
-          const nameOrAnnotation =
-              UserAnnotationHandler.getAnnotationForNode(node) || node.name;
           if (localStorage['languageSwitching'] === 'true') {
-            this.assignLocaleAndAppend_(nameOrAnnotation, node, buff, options);
+            this.assignLocaleAndAppend_(node.name, node, buff, options);
           } else {
-            this.append_(buff, nameOrAnnotation || '', options);
+            this.append_(buff, node.name || '', options);
           }
 
           ruleStr.writeTokenWithValue(token, node.name);
