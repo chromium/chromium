@@ -145,7 +145,8 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
             TextView view = (TextView) parent.findViewById(R.id.text);
             view.setText(model.get(ShareSheetItemViewProperties.LABEL));
         } else if (ShareSheetItemViewProperties.CLICK_LISTENER.equals(propertyKey)) {
-            parent.setOnClickListener(model.get(ShareSheetItemViewProperties.CLICK_LISTENER));
+            View layout = (View) parent.findViewById(R.id.layout);
+            layout.setOnClickListener(model.get(ShareSheetItemViewProperties.CLICK_LISTENER));
         } else if (ShareSheetItemViewProperties.SHOW_NEW_BADGE.equals(propertyKey)) {
             TextView newBadge = (TextView) parent.findViewById(R.id.display_new);
             newBadge.setVisibility(model.get(ShareSheetItemViewProperties.SHOW_NEW_BADGE)
