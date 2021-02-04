@@ -1807,6 +1807,8 @@ bool VaapiWrapper::CreateProtectedSession(
     const std::vector<uint8_t>& hw_config,
     std::vector<uint8_t>* hw_identifier_out) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  DCHECK_EQ(va_protected_config_id_, VA_INVALID_ID);
+  DCHECK_EQ(va_protected_session_id_, VA_INVALID_ID);
   DCHECK(hw_identifier_out);
   if (mode_ != kDecodeProtected) {
     LOG(ERROR) << "Cannot attached protected context if not in protected mode";
