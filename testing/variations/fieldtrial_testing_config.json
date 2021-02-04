@@ -3419,6 +3419,21 @@
             ]
         }
     ],
+    "IOSCrashpad": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "CrashpadIOS"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSDiscoverFeed": [
         {
             "platforms": [

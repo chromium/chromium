@@ -611,6 +611,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"start-surface", flag_descriptions::kStartSurfaceName,
      flag_descriptions::kStartSurfaceDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kStartSurface)},
+    {"ios-crashpad", flag_descriptions::kCrashpadIOSName,
+     flag_descriptions::kCrashpadIOSDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kCrashpadIOS)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

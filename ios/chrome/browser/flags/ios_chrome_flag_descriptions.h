@@ -93,6 +93,11 @@ extern const char kBreakpadNoDelayInitialUploadDescription[];
 extern const char kChangePasswordAffiliationInfoName[];
 extern const char kChangePasswordAffiliationInfoDescription[];
 
+// Title and description for the flag to control which crash generation tool
+// is used.
+extern const char kCrashpadIOSName[];
+extern const char kCrashpadIOSDescription[];
+
 // Title and description for the flag that controls whether Collections are
 // presented using the new iOS13 Card style or the custom legacy one.
 extern const char kCollectionsCardPresentationStyleName[];

@@ -108,6 +108,11 @@ const char kCollectionsCardPresentationStyleDescription[] =
     "When enabled collections are presented using the new iOS13 card "
     "style.";
 
+const char kCrashpadIOSName[] = "Use Crashpad for crash collection.";
+const char kCrashpadIOSDescription[] =
+    "When enabled use Crashpad to generate crash reports crash collection. "
+    "When disabled use Breakpad. This flag takes two restarts to take effect";
+
 #if defined(DCHECK_IS_CONFIGURABLE)
 const char kDcheckIsFatalName[] = "DCHECKs are fatal";
 const char kDcheckIsFatalDescription[] =

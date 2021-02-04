@@ -6,6 +6,9 @@
 
 #include "ios/chrome/browser/crash_report/breadcrumbs/features.h"
 
+const base::Feature kCrashpadIOS{"CrashpadIOS",
+                                 base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kSyntheticCrashReportsForUte{
     "SyntheticCrashReportsForUte", base::FEATURE_DISABLED_BY_DEFAULT};
 
