@@ -34,8 +34,6 @@ namespace gfx {
 class Rect;
 }
 
-struct IVirtualDesktopManagerInternal;
-
 namespace aura {
 
 // This class keeps track of whether any HWNDs are occluding any app windows.
@@ -136,10 +134,6 @@ class AURA_EXPORT NativeWindowOcclusionTrackerWin
     // their occlusion status has changed.
     void ComputeNativeWindowOcclusionStatus();
 
-    // Computes if virtual desktops are used. This is used as an optimization
-    // since IsWindowOnCurrentVirtualDesktop is a slow call.
-    void ComputeVirtualDesktopUsed();
-
     // Schedules an occlusion calculation |update_occlusion_delay_| time in the
     // future, if one isn't already scheduled.
     void ScheduleOcclusionCalculationIfNeeded();
@@ -223,9 +217,6 @@ class AURA_EXPORT NativeWindowOcclusionTrackerWin
     // Timer to delay occlusion update.
     base::OneShotTimer occlusion_update_timer_;
 
-    // Timer to check how many virtual desktops are present.
-    base::OneShotTimer virtual_desktop_update_timer_;
-
     // Used to keep track of whether we're in the middle of getting window move
     // events, in order to wait until the window move is complete before
     // calculating window occlusion.
@@ -253,17 +244,8 @@ class AURA_EXPORT NativeWindowOcclusionTrackerWin
     // ignore windows occluded by the dragged window.
     HWND moving_window_ = 0;
 
-    // By caching if virtual desktops are in use or not we can avoid calling
-    // IsWindowOnCurrentVirtualDesktop which is slow. Start with an initial
-    // value of true so that we only optimize after we get confirmation that
-    // there are no virtual desktops.
-    bool virtual_desktops_used_ = true;
-
     // Only used on Win10+.
     Microsoft::WRL::ComPtr<IVirtualDesktopManager> virtual_desktop_manager_;
-
-    Microsoft::WRL::ComPtr<IVirtualDesktopManagerInternal>
-        virtual_desktop_manager_internal_;
 
     SEQUENCE_CHECKER(sequence_checker_);
 

@@ -48,8 +48,6 @@ COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsUiGpuRasterizationEnabled();
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const base::Feature kCalculateNativeWinOcclusion;
 COMPONENT_EXPORT(UI_BASE_FEATURES)
-extern const base::Feature kCalculateNativeWinOcclusionCheckVirtualDesktopUsed;
-COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const base::Feature kElasticOverscrollWin;
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const base::Feature kInputPaneOnScreenKeyboard;
