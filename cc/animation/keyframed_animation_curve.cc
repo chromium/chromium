@@ -164,7 +164,7 @@ std::unique_ptr<FloatKeyframe> FloatKeyframe::Clone() const {
 
 std::unique_ptr<TransformKeyframe> TransformKeyframe::Create(
     base::TimeDelta time,
-    const TransformOperations& value,
+    const gfx::TransformOperations& value,
     std::unique_ptr<TimingFunction> timing_function) {
   return base::WrapUnique(
       new TransformKeyframe(time, value, std::move(timing_function)));
@@ -172,13 +172,13 @@ std::unique_ptr<TransformKeyframe> TransformKeyframe::Create(
 
 TransformKeyframe::TransformKeyframe(
     base::TimeDelta time,
-    const TransformOperations& value,
+    const gfx::TransformOperations& value,
     std::unique_ptr<TimingFunction> timing_function)
     : Keyframe(time, std::move(timing_function)), value_(value) {}
 
 TransformKeyframe::~TransformKeyframe() = default;
 
-const TransformOperations& TransformKeyframe::Value() const {
+const gfx::TransformOperations& TransformKeyframe::Value() const {
   return value_;
 }
 
@@ -378,7 +378,7 @@ std::unique_ptr<AnimationCurve> KeyframedTransformAnimationCurve::Clone()
   return std::move(to_return);
 }
 
-TransformOperations KeyframedTransformAnimationCurve::GetValue(
+gfx::TransformOperations KeyframedTransformAnimationCurve::GetValue(
     base::TimeDelta t) const {
   if (t <= (keyframes_.front()->Time() * scaled_duration()))
     return keyframes_.front()->Value();

@@ -18,8 +18,8 @@ class UiElement;
 std::unique_ptr<cc::KeyframeModel> CreateTransformAnimation(
     int id,
     int group,
-    const cc::TransformOperations& from,
-    const cc::TransformOperations& to,
+    const gfx::TransformOperations& from,
+    const gfx::TransformOperations& to,
     base::TimeDelta duration);
 
 std::unique_ptr<cc::KeyframeModel> CreateBoundsAnimation(

@@ -981,21 +981,21 @@ void BindIndicatorTranscienceForWin(
   std::unique_ptr<cc::KeyframedTransformAnimationCurve> curve(
       cc::KeyframedTransformAnimationCurve::Create());
 
-  cc::TransformOperations value_1;
+  gfx::TransformOperations value_1;
   value_1.AppendTranslate(0, kWebVrPermissionOffsetStart, 0);
   curve->AddKeyframe(cc::TransformKeyframe::Create(
       base::TimeDelta(), value_1,
       cc::CubicBezierTimingFunction::CreatePreset(
           cc::CubicBezierTimingFunction::EaseType::EASE)));
 
-  cc::TransformOperations value_2;
+  gfx::TransformOperations value_2;
   value_2.AppendTranslate(0, kWebVrPermissionOffsetOvershoot, 0);
   curve->AddKeyframe(cc::TransformKeyframe::Create(
       base::TimeDelta::FromMilliseconds(kWebVrPermissionOffsetMs), value_2,
       cc::CubicBezierTimingFunction::CreatePreset(
           cc::CubicBezierTimingFunction::EaseType::EASE)));
 
-  cc::TransformOperations value_3;
+  gfx::TransformOperations value_3;
   value_3.AppendTranslate(0, kWebVrPermissionOffsetFinal, 0);
   curve->AddKeyframe(cc::TransformKeyframe::Create(
       base::TimeDelta::FromMilliseconds(kWebVrPermissionAnimationDurationMs),
@@ -1067,21 +1067,21 @@ void BindIndicatorTranscience(
   std::unique_ptr<cc::KeyframedTransformAnimationCurve> curve(
       cc::KeyframedTransformAnimationCurve::Create());
 
-  cc::TransformOperations value_1;
+  gfx::TransformOperations value_1;
   value_1.AppendTranslate(0, kWebVrPermissionOffsetStart, 0);
   curve->AddKeyframe(cc::TransformKeyframe::Create(
       base::TimeDelta(), value_1,
       cc::CubicBezierTimingFunction::CreatePreset(
           cc::CubicBezierTimingFunction::EaseType::EASE)));
 
-  cc::TransformOperations value_2;
+  gfx::TransformOperations value_2;
   value_2.AppendTranslate(0, kWebVrPermissionOffsetOvershoot, 0);
   curve->AddKeyframe(cc::TransformKeyframe::Create(
       base::TimeDelta::FromMilliseconds(kWebVrPermissionOffsetMs), value_2,
       cc::CubicBezierTimingFunction::CreatePreset(
           cc::CubicBezierTimingFunction::EaseType::EASE)));
 
-  cc::TransformOperations value_3;
+  gfx::TransformOperations value_3;
   value_3.AppendTranslate(0, kWebVrPermissionOffsetFinal, 0);
   curve->AddKeyframe(cc::TransformKeyframe::Create(
       base::TimeDelta::FromMilliseconds(kWebVrPermissionAnimationDurationMs),

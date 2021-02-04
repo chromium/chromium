@@ -6,13 +6,13 @@
 
 #include "cc/animation/keyframed_animation_curve.h"
 #include "cc/animation/timing_function.h"
-#include "cc/animation/transform_operations.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "chrome/browser/vr/animation.h"
 #include "chrome/browser/vr/elements/ui_texture.h"
 #include "chrome/browser/vr/target_property.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/transform_operations.h"
 
 namespace vr {
 

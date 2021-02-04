@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CC_ANIMATION_TRANSFORM_OPERATIONS_H_
-#define CC_ANIMATION_TRANSFORM_OPERATIONS_H_
+#ifndef UI_GFX_TRANSFORM_OPERATIONS_H_
+#define UI_GFX_TRANSFORM_OPERATIONS_H_
 
 #include <memory>
 #include <unordered_map>
@@ -11,19 +11,17 @@
 
 #include "base/check_op.h"
 #include "base/gtest_prod_util.h"
-#include "cc/animation/animation_export.h"
-#include "cc/animation/transform_operation.h"
+#include "ui/gfx/geometry_skia_export.h"
 #include "ui/gfx/transform.h"
+#include "ui/gfx/transform_operation.h"
 
 namespace gfx {
+
 class BoxF;
 struct DecomposedTransform;
-}
-
-namespace cc {
 
 // Transform operations are a decomposed transformation matrix. It can be
-// applied to obtain a gfx::Transform at any time, and can be blended
+// applied to obtain a Transform at any time, and can be blended
 // intelligently with other transform operations, so long as they represent the
 // same decomposition. For example, if we have a transform that is made up of
 // a rotation followed by skew, it can be blended intelligently with another
@@ -31,7 +29,7 @@ namespace cc {
 // we have two dissimilar sets of transform operations, but the effect may not
 // be what was intended. For more information, see the comments for the blend
 // function below.
-class CC_ANIMATION_EXPORT TransformOperations {
+class GEOMETRY_SKIA_EXPORT TransformOperations {
  public:
   TransformOperations();
   TransformOperations(const TransformOperations& other);
@@ -40,11 +38,11 @@ class CC_ANIMATION_EXPORT TransformOperations {
   TransformOperations& operator=(const TransformOperations& other);
 
   // Returns a transformation matrix representing these transform operations.
-  gfx::Transform Apply() const;
+  Transform Apply() const;
 
   // Returns a transformation matrix representing the set of transform
   // operations from index |start| to the end of the list.
-  gfx::Transform ApplyRemaining(size_t start) const;
+  Transform ApplyRemaining(size_t start) const;
 
   // Given another set of transform operations and a progress in the range
   // [0, 1], returns a transformation matrix representing the intermediate
@@ -63,11 +61,11 @@ class CC_ANIMATION_EXPORT TransformOperations {
   // exist when it is transformed by the result of calling Blend on |from| and
   // with progress in the range [min_progress, max_progress]. If this region
   // cannot be computed, returns false.
-  bool BlendedBoundsForBox(const gfx::BoxF& box,
+  bool BlendedBoundsForBox(const BoxF& box,
                            const TransformOperations& from,
                            SkScalar min_progress,
                            SkScalar max_progress,
-                           gfx::BoxF* bounds) const;
+                           BoxF* bounds) const;
 
   // Returns true if these operations are only translations.
   bool IsTranslation() const;
@@ -102,7 +100,7 @@ class CC_ANIMATION_EXPORT TransformOperations {
   void AppendSkewY(SkScalar y);
   void AppendSkew(SkScalar x, SkScalar y);
   void AppendPerspective(SkScalar depth);
-  void AppendMatrix(const gfx::Transform& matrix);
+  void AppendMatrix(const Transform& matrix);
   void AppendIdentity();
   void Append(const TransformOperation& operation);
   bool IsIdentity() const;
@@ -133,10 +131,10 @@ class CC_ANIMATION_EXPORT TransformOperations {
   bool ComputeDecomposedTransform(size_t start_offset) const;
 
   // For efficiency, we cache the decomposed transforms.
-  mutable std::unordered_map<size_t, std::unique_ptr<gfx::DecomposedTransform>>
+  mutable std::unordered_map<size_t, std::unique_ptr<DecomposedTransform>>
       decomposed_transforms_;
 };
 
-}  // namespace cc
+}  // namespace gfx
 
-#endif  // CC_ANIMATION_TRANSFORM_OPERATIONS_H_
+#endif  // UI_GFX_TRANSFORM_OPERATIONS_H_

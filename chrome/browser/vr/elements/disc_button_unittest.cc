@@ -4,8 +4,6 @@
 
 #include "chrome/browser/vr/elements/disc_button.h"
 
-#include "cc/animation/transform_operation.h"
-#include "cc/animation/transform_operations.h"
 #include "cc/test/geometry_test_utils.h"
 #include "chrome/browser/vr/elements/rect.h"
 #include "chrome/browser/vr/elements/ui_element.h"
@@ -14,6 +12,8 @@
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/transform_operation.h"
+#include "ui/gfx/transform_operations.h"
 
 namespace vr {
 
@@ -23,19 +23,19 @@ TEST(DiscButton, HoverTest) {
   button.SetSize(1.0f, 1.0f);
   button.set_hover_offset(0.5f);
 
-  cc::TransformOperation foreground_op =
+  gfx::TransformOperation foreground_op =
       button.foreground()->GetTargetTransform().at(UiElement::kTranslateIndex);
-  cc::TransformOperation background_op =
+  gfx::TransformOperation background_op =
       button.background()->GetTargetTransform().at(UiElement::kTranslateIndex);
-  cc::TransformOperation hit_plane_op =
+  gfx::TransformOperation hit_plane_op =
       button.hit_plane()->GetTargetTransform().at(UiElement::kScaleIndex);
 
   button.OnHoverEnter(gfx::PointF(0.5f, 0.5f), base::TimeTicks());
-  cc::TransformOperation foreground_op_hover =
+  gfx::TransformOperation foreground_op_hover =
       button.foreground()->GetTargetTransform().at(UiElement::kTranslateIndex);
-  cc::TransformOperation background_op_hover =
+  gfx::TransformOperation background_op_hover =
       button.background()->GetTargetTransform().at(UiElement::kTranslateIndex);
-  cc::TransformOperation hit_plane_op_hover =
+  gfx::TransformOperation hit_plane_op_hover =
       button.hit_plane()->GetTargetTransform().at(UiElement::kScaleIndex);
 
   EXPECT_TRUE(background_op_hover.translate.z - background_op.translate.z >

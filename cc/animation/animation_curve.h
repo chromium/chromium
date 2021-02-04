@@ -13,6 +13,10 @@
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/transform.h"
 
+namespace gfx {
+class TransformOperations;
+}  // namespace gfx
+
 namespace cc {
 
 class ColorAnimationCurve;
@@ -21,7 +25,6 @@ class FloatAnimationCurve;
 class ScrollOffsetAnimationCurve;
 class SizeAnimationCurve;
 class TransformAnimationCurve;
-class TransformOperations;
 
 // An animation curve is a function that returns a value given a time.
 class CC_ANIMATION_EXPORT AnimationCurve {
@@ -75,7 +78,7 @@ class CC_ANIMATION_EXPORT TransformAnimationCurve : public AnimationCurve {
  public:
   ~TransformAnimationCurve() override {}
 
-  virtual TransformOperations GetValue(base::TimeDelta t) const = 0;
+  virtual gfx::TransformOperations GetValue(base::TimeDelta t) const = 0;
 
   // Returns true if this animation preserves axis alignment.
   virtual bool PreservesAxisAlignment() const = 0;

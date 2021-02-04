@@ -18,7 +18,6 @@
 #include "cc/animation/keyframe_effect.h"
 #include "cc/animation/scroll_offset_animation_curve.h"
 #include "cc/animation/scroll_timeline.h"
-#include "cc/animation/transform_operations.h"
 #include "cc/trees/property_animation_state.h"
 
 namespace cc {

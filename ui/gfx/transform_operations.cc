@@ -2,21 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "cc/animation/transform_operations.h"
+#include "ui/gfx/transform_operations.h"
 
 #include <stddef.h>
 
 #include <algorithm>
 #include <utility>
 
-#include "cc/base/math_util.h"
-#include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/box_f.h"
 #include "ui/gfx/geometry/vector3d_f.h"
 #include "ui/gfx/transform_util.h"
 
-namespace cc {
+namespace gfx {
 
 TransformOperations::TransformOperations() {}
 
@@ -32,12 +30,12 @@ TransformOperations& TransformOperations::operator=(
   return *this;
 }
 
-gfx::Transform TransformOperations::Apply() const {
+Transform TransformOperations::Apply() const {
   return ApplyRemaining(0);
 }
 
-gfx::Transform TransformOperations::ApplyRemaining(size_t start) const {
-  gfx::Transform to_return;
+Transform TransformOperations::ApplyRemaining(size_t start) const {
+  Transform to_return;
   for (size_t i = start; i < operations_.size(); i++) {
     to_return.PreconcatTransform(operations_[i].matrix);
   }
@@ -57,11 +55,11 @@ TransformOperations TransformOperations::Blend(const TransformOperations& from,
   return to_return;
 }
 
-bool TransformOperations::BlendedBoundsForBox(const gfx::BoxF& box,
+bool TransformOperations::BlendedBoundsForBox(const BoxF& box,
                                               const TransformOperations& from,
                                               SkScalar min_progress,
                                               SkScalar max_progress,
-                                              gfx::BoxF* bounds) const {
+                                              BoxF* bounds) const {
   *bounds = box;
 
   bool from_identity = from.IsIdentity();
@@ -80,7 +78,7 @@ bool TransformOperations::BlendedBoundsForBox(const gfx::BoxF& box,
   // not squashing them.
   for (size_t i = 0; i < num_operations; ++i) {
     size_t operation_index = num_operations - 1 - i;
-    gfx::BoxF bounds_for_operation;
+    BoxF bounds_for_operation;
     const TransformOperation* from_op =
         from_identity ? nullptr : &from.operations_[operation_index];
     const TransformOperation* to_op =
@@ -142,7 +140,7 @@ bool TransformOperations::IsTranslation() const {
 }
 
 static SkScalar TanDegrees(double degrees) {
-  return SkDoubleToScalar(std::tan(gfx::DegToRad(degrees)));
+  return SkDoubleToScalar(std::tan(DegToRad(degrees)));
 }
 
 bool TransformOperations::ScaleComponent(SkScalar* scale) const {
@@ -156,8 +154,8 @@ bool TransformOperations::ScaleComponent(SkScalar* scale) const {
       case TransformOperation::TRANSFORM_OPERATION_MATRIX: {
         if (operation.matrix.HasPerspective())
           return false;
-        gfx::Vector2dF scale_components =
-            MathUtil::ComputeTransform2dScaleComponents(operation.matrix, 1.f);
+        Vector2dF scale_components =
+            ComputeTransform2dScaleComponents(operation.matrix, 1.f);
         operations_scale *=
             std::max(scale_components.x(), scale_components.y());
         break;
@@ -216,8 +214,7 @@ size_t TransformOperations::MatchingPrefixLength(
   return std::max(operations_.size(), other.operations_.size());
 }
 
-bool TransformOperations::CanBlendWith(
-    const TransformOperations& other) const {
+bool TransformOperations::CanBlendWith(const TransformOperations& other) const {
   TransformOperations dummy;
   return BlendInternal(other, 0.5, &dummy);
 }
@@ -298,7 +295,7 @@ void TransformOperations::AppendPerspective(SkScalar depth) {
   decomposed_transforms_.clear();
 }
 
-void TransformOperations::AppendMatrix(const gfx::Transform& matrix) {
+void TransformOperations::AppendMatrix(const Transform& matrix) {
   TransformOperation to_add;
   to_add.matrix = matrix;
   to_add.type = TransformOperation::TRANSFORM_OPERATION_MATRIX;
@@ -362,7 +359,7 @@ bool TransformOperations::BlendInternal(const TransformOperations& from,
         !from.ComputeDecomposedTransform(matching_prefix_length)) {
       return false;
     }
-    gfx::DecomposedTransform matrix_transform = gfx::BlendDecomposedTransforms(
+    DecomposedTransform matrix_transform = BlendDecomposedTransforms(
         *decomposed_transforms_[matching_prefix_length].get(),
         *from.decomposed_transforms_[matching_prefix_length].get(), progress);
     result->AppendMatrix(ComposeTransform(matrix_transform));
@@ -374,14 +371,14 @@ bool TransformOperations::ComputeDecomposedTransform(
     size_t start_offset) const {
   auto it = decomposed_transforms_.find(start_offset);
   if (it == decomposed_transforms_.end()) {
-    std::unique_ptr<gfx::DecomposedTransform> decomposed_transform =
-        std::make_unique<gfx::DecomposedTransform>();
-    gfx::Transform transform = ApplyRemaining(start_offset);
-    if (!gfx::DecomposeTransform(decomposed_transform.get(), transform))
+    std::unique_ptr<DecomposedTransform> decomposed_transform =
+        std::make_unique<DecomposedTransform>();
+    Transform transform = ApplyRemaining(start_offset);
+    if (!DecomposeTransform(decomposed_transform.get(), transform))
       return false;
     decomposed_transforms_[start_offset] = std::move(decomposed_transform);
   }
   return true;
 }
 
-}  // namespace cc
+}  // namespace gfx

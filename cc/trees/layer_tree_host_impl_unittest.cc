@@ -26,7 +26,6 @@
 #include "build/build_config.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_id_provider.h"
-#include "cc/animation/transform_operations.h"
 #include "cc/base/features.h"
 #include "cc/base/histograms.h"
 #include "cc/document_transition/document_transition_request.h"
@@ -101,6 +100,7 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
+#include "ui/gfx/transform_operations.h"
 
 #define EXPECT_SCOPED(statements) \
   {                               \
@@ -3274,9 +3274,9 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
   CreateTransformNode(child);
 
   // Add a translate from 6,7 to 8,9.
-  TransformOperations start;
+  gfx::TransformOperations start;
   start.AppendTranslate(6, 7, 0);
-  TransformOperations end;
+  gfx::TransformOperations end;
   end.AppendTranslate(8, 9, 0);
   AddAnimatedTransformToElementWithAnimation(child->element_id(), timeline(),
                                              4.0, start, end);
@@ -3369,9 +3369,9 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
   CreateTransformNode(child);
 
   // Add a translate animation.
-  TransformOperations start;
+  gfx::TransformOperations start;
   start.AppendTranslate(6, 7, 0);
-  TransformOperations end;
+  gfx::TransformOperations end;
   end.AppendTranslate(8, 9, 0);
   AddAnimatedTransformToElementWithAnimation(child->element_id(), timeline(),
                                              4.0, start, end);
@@ -16407,9 +16407,9 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, UpdatedTilingsForNonDrawingLayers) {
   // Now add a transform animation to this layer. While we don't drawn layers
   // with non-invertible transforms, we still raster them if there is a
   // transform animation.
-  TransformOperations start_transform_operations;
+  gfx::TransformOperations start_transform_operations;
   start_transform_operations.AppendMatrix(singular);
-  TransformOperations end_transform_operations;
+  gfx::TransformOperations end_transform_operations;
   AddAnimatedTransformToElementWithAnimation(
       animated_transform_layer->element_id(), timeline(), 10.0,
       start_transform_operations, end_transform_operations);

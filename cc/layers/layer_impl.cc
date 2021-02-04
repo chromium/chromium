@@ -42,6 +42,7 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
+#include "ui/gfx/transform_util.h"
 
 namespace cc {
 LayerImpl::LayerImpl(LayerTreeImpl* tree_impl,
@@ -798,7 +799,7 @@ float LayerImpl::GetIdealContentsScale() const {
 
   const auto& transform = ScreenSpaceTransform();
   if (transform.HasPerspective()) {
-    float scale = MathUtil::ComputeApproximateMaxScale(transform);
+    float scale = gfx::ComputeApproximateMaxScale(transform);
 
     const int kMaxTilesToCoverLayerDimension = 5;
     // Cap the scale in a way that it should be covered by at most
@@ -828,7 +829,7 @@ float LayerImpl::GetIdealContentsScale() const {
   }
 
   gfx::Vector2dF transform_scales =
-      MathUtil::ComputeTransform2dScaleComponents(transform, default_scale);
+      gfx::ComputeTransform2dScaleComponents(transform, default_scale);
 
   return GetPreferredRasterScale(transform_scales);
 }

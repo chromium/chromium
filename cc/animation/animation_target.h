@@ -11,13 +11,13 @@
 namespace gfx {
 class ScrollOffset;
 class SizeF;
+class TransformOperations;
 }  // namespace gfx
 
 namespace cc {
 
 class FilterOperations;
 class KeyframeModel;
-class TransformOperations;
 
 // An AnimationTarget is an entity that can be affected by a ticking
 // cc:KeyframeModel. Any object that expects to have an opacity update, for
@@ -38,7 +38,7 @@ class CC_ANIMATION_EXPORT AnimationTarget {
                                          int target_property_id,
                                          KeyframeModel* keyframe_model) = 0;
   virtual void NotifyClientTransformOperationsAnimated(
-      const TransformOperations& operations,
+      const gfx::TransformOperations& operations,
       int target_property_id,
       KeyframeModel* keyframe_model) = 0;
   virtual void NotifyClientScrollOffsetAnimated(

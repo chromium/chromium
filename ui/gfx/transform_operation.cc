@@ -5,22 +5,23 @@
 #include <limits>
 #include <utility>
 
+#include "ui/gfx/transform_operation.h"
+
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/numerics/math_constants.h"
 #include "base/numerics/ranges.h"
-#include "cc/animation/transform_operation.h"
-#include "cc/animation/transform_operations.h"
 #include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/box_f.h"
 #include "ui/gfx/geometry/vector3d_f.h"
+#include "ui/gfx/transform_operations.h"
 #include "ui/gfx/transform_util.h"
 
 namespace {
 const SkScalar kAngleEpsilon = 1e-4f;
 }
 
-namespace cc {
+namespace gfx {
 
 bool TransformOperation::IsIdentity() const {
   return matrix.IsIdentity();
@@ -308,8 +309,7 @@ static void BoundingBoxForArc(const gfx::Point3F& point,
                               SkScalar max_progress,
                               gfx::BoxF* box) {
   const TransformOperation* exemplar = from ? from : to;
-  gfx::Vector3dF axis(exemplar->rotate.axis.x,
-                      exemplar->rotate.axis.y,
+  gfx::Vector3dF axis(exemplar->rotate.axis.x, exemplar->rotate.axis.y,
                       exemplar->rotate.axis.z);
 
   const bool x_is_zero = axis.x() == 0.f;
@@ -332,8 +332,8 @@ static void BoundingBoxForArc(const gfx::Point3F& point,
   // flip one of the angles. Note, if both |from| and |to| exist, then axis will
   // correspond to |from|.
   if (from && to) {
-    gfx::Vector3dF other_axis(
-        to->rotate.axis.x, to->rotate.axis.y, to->rotate.axis.z);
+    gfx::Vector3dF other_axis(to->rotate.axis.x, to->rotate.axis.y,
+                              to->rotate.axis.z);
     if (gfx::DotProduct(axis, other_axis) < 0.f)
       to_angle *= -1.f;
   }
@@ -361,14 +361,14 @@ static void BoundingBoxForArc(const gfx::Point3F& point,
   box->ExpandTo(point_rotated_to);
 
   if (x_is_zero && y_is_zero) {
-    FindCandidatesInPlane(
-        point.x(), point.y(), axis.z(), candidates, &num_candidates);
+    FindCandidatesInPlane(point.x(), point.y(), axis.z(), candidates,
+                          &num_candidates);
   } else if (x_is_zero && z_is_zero) {
-    FindCandidatesInPlane(
-        point.z(), point.x(), axis.y(), candidates, &num_candidates);
+    FindCandidatesInPlane(point.z(), point.x(), axis.y(), candidates,
+                          &num_candidates);
   } else if (y_is_zero && z_is_zero) {
-    FindCandidatesInPlane(
-        point.y(), point.z(), axis.x(), candidates, &num_candidates);
+    FindCandidatesInPlane(point.y(), point.z(), axis.x(), candidates,
+                          &num_candidates);
   } else {
     gfx::Vector3dF normal = axis;
     normal.Scale(1.f / normal.Length());
@@ -494,8 +494,8 @@ bool TransformOperation::BlendedBoundsForBox(const gfx::BoxF& box,
                                  i & 2 ? box.height() : 0.f,
                                  i & 4 ? box.depth() : 0.f);
         gfx::BoxF box_for_arc;
-        BoundingBoxForArc(
-            corner, from, to, min_progress, max_progress, &box_for_arc);
+        BoundingBoxForArc(corner, from, to, min_progress, max_progress,
+                          &box_for_arc);
         if (first_point)
           *bounds = box_for_arc;
         else
@@ -511,4 +511,4 @@ bool TransformOperation::BlendedBoundsForBox(const gfx::BoxF& box,
   return false;
 }
 
-}  // namespace cc
+}  // namespace gfx

@@ -273,9 +273,9 @@ TEST(UiElement, AnimationAffectsInheritableTransform) {
   UiElement* rect_ptr = rect.get();
   scene.AddUiElement(kRoot, std::move(rect));
 
-  cc::TransformOperations from_operations;
+  gfx::TransformOperations from_operations;
   from_operations.AppendTranslate(10, 100, 1000);
-  cc::TransformOperations to_operations;
+  gfx::TransformOperations to_operations;
   to_operations.AppendTranslate(20, 200, 2000);
   rect_ptr->AddKeyframeModel(CreateTransformAnimation(
       2, 2, from_operations, to_operations, MicrosecondsToDelta(10000)));

@@ -1,22 +1,21 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "cc/test/geometry_test_utils.h"
+#include "ui/gfx/geometry/test/transform_test_util.h"
 
 #include "base/check.h"
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/transform.h"
 
-namespace cc {
+namespace gfx {
 
 // NOTE: even though transform data types use double precision, we only check
 // for equality within single-precision error bounds because many transforms
 // originate from single-precision data types such as quads/rects/etc.
 
-void ExpectTransformationMatrixEq(const gfx::Transform& expected,
-                                  const gfx::Transform& actual) {
+void ExpectTransformationMatrixEq(const Transform& expected,
+                                  const Transform& actual) {
   for (int row = 0; row < 4; ++row) {
     for (int col = 0; col < 4; ++col) {
       EXPECT_FLOAT_EQ(expected.matrix().get(row, col),
@@ -26,8 +25,8 @@ void ExpectTransformationMatrixEq(const gfx::Transform& expected,
   }
 }
 
-void ExpectTransformationMatrixNear(const gfx::Transform& expected,
-                                    const gfx::Transform& actual,
+void ExpectTransformationMatrixNear(const Transform& expected,
+                                    const Transform& actual,
                                     float abs_error) {
   for (int row = 0; row < 4; ++row) {
     for (int col = 0; col < 4; ++col) {
@@ -38,11 +37,11 @@ void ExpectTransformationMatrixNear(const gfx::Transform& expected,
   }
 }
 
-gfx::Transform Inverse(const gfx::Transform& transform) {
-  gfx::Transform result(gfx::Transform::kSkipInitialization);
+Transform InvertAndCheck(const Transform& transform) {
+  Transform result(Transform::kSkipInitialization);
   bool inverted_successfully = transform.GetInverse(&result);
   DCHECK(inverted_successfully);
   return result;
 }
 
-}  // namespace cc
+}  // namespace gfx

@@ -19,12 +19,15 @@
 #include "ui/gfx/geometry/scroll_offset.h"
 #include "ui/gfx/transform.h"
 
+namespace gfx {
+class TransformOperations;
+}  // namespace gfx
+
 namespace cc {
 
 class AnimationHost;
 class FilterOperations;
 class KeyframeEffect;
-class TransformOperations;
 enum class ElementListType;
 
 // An ElementAnimations owns a list of all KeyframeEffects attached to a single
@@ -137,7 +140,7 @@ class CC_ANIMATION_EXPORT ElementAnimations
                                  int target_property_id,
                                  KeyframeModel* keyframe_model) override;
   void NotifyClientTransformOperationsAnimated(
-      const TransformOperations& operations,
+      const gfx::TransformOperations& operations,
       int target_property_id,
       KeyframeModel* keyframe_model) override;
   void NotifyClientScrollOffsetAnimated(const gfx::ScrollOffset& scroll_offset,

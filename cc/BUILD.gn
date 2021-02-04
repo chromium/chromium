@@ -515,7 +515,6 @@ cc_test_static_library("test_support") {
     "test/fake_ui_resource_layer_tree_host_impl.h",
     "test/fake_video_frame_provider.cc",
     "test/fake_video_frame_provider.h",
-    "test/geometry_test_utils.cc",
     "test/geometry_test_utils.h",
     "test/layer_test_common.cc",
     "test/layer_test_common.h",
@@ -800,7 +799,6 @@ cc_test("cc_unittests") {
     "animation/keyframed_animation_curve_unittest.cc",
     "animation/scroll_offset_animation_curve_unittest.cc",
     "animation/scroll_timeline_unittest.cc",
-    "animation/transform_operations_unittest.cc",
     "animation/worklet_animation_unittest.cc",
 
     # Setup.

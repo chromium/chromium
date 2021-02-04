@@ -55,7 +55,7 @@ constexpr char kCyan[] = "\x1b[36m";
 constexpr char kYellow[] = "\x1b[33m";
 constexpr char kReset[] = "\x1b[0m";
 
-void DumpTransformOperations(const cc::TransformOperations& ops,
+void DumpTransformOperations(const gfx::TransformOperations& ops,
                              std::ostringstream* os) {
   if (!ops.at(0).IsIdentity()) {
     const auto& translate = ops.at(0).translate;
@@ -380,8 +380,8 @@ void UiElement::SetLayoutOffset(float x, float y) {
     return;
   }
 
-  cc::TransformOperations operations = layout_offset_;
-  cc::TransformOperation& op = operations.at(0);
+  gfx::TransformOperations operations = layout_offset_;
+  gfx::TransformOperation& op = operations.at(0);
   op.translate = {x, y, 0};
   op.Bake();
   animation_.TransitionTransformOperationsTo(last_frame_time_, LAYOUT_OFFSET,
@@ -396,8 +396,8 @@ void UiElement::SetTranslate(float x, float y, float z) {
     return;
   }
 
-  cc::TransformOperations operations = transform_operations_;
-  cc::TransformOperation& op = operations.at(kTranslateIndex);
+  gfx::TransformOperations operations = transform_operations_;
+  gfx::TransformOperation& op = operations.at(kTranslateIndex);
   op.translate = {x, y, z};
   op.Bake();
   animation_.TransitionTransformOperationsTo(last_frame_time_, TRANSFORM,
@@ -415,8 +415,8 @@ void UiElement::SetRotate(float x, float y, float z, float radians) {
     return;
   }
 
-  cc::TransformOperations operations = transform_operations_;
-  cc::TransformOperation& op = operations.at(kRotateIndex);
+  gfx::TransformOperations operations = transform_operations_;
+  gfx::TransformOperation& op = operations.at(kRotateIndex);
   op.rotate.axis = {x, y, z};
   op.rotate.angle = degrees;
   op.Bake();
@@ -432,8 +432,8 @@ void UiElement::SetScale(float x, float y, float z) {
     return;
   }
 
-  cc::TransformOperations operations = transform_operations_;
-  cc::TransformOperation& op = operations.at(kScaleIndex);
+  gfx::TransformOperations operations = transform_operations_;
+  gfx::TransformOperation& op = operations.at(kScaleIndex);
   op.scale = {x, y, z};
   op.Bake();
   animation_.TransitionTransformOperationsTo(last_frame_time_, TRANSFORM,
@@ -455,7 +455,7 @@ gfx::SizeF UiElement::GetTargetSize() const {
   return animation_.GetTargetSizeValue(TargetProperty::BOUNDS, size_);
 }
 
-cc::TransformOperations UiElement::GetTargetTransform() const {
+gfx::TransformOperations UiElement::GetTargetTransform() const {
   return animation_.GetTargetTransformOperationsValue(TargetProperty::TRANSFORM,
                                                       transform_operations_);
 }
@@ -772,7 +772,7 @@ void UiElement::NotifyClientFloatAnimated(float value,
 }
 
 void UiElement::NotifyClientTransformOperationsAnimated(
-    const cc::TransformOperations& operations,
+    const gfx::TransformOperations& operations,
     int target_property_id,
     cc::KeyframeModel* keyframe_model) {
   if (target_property_id == TRANSFORM) {

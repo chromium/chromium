@@ -15,10 +15,10 @@
 #include "cc/animation/animation_host.h"
 #include "cc/animation/keyframe_effect.h"
 #include "cc/animation/keyframed_animation_curve.h"
-#include "cc/animation/transform_operations.h"
 #include "cc/paint/filter_operations.h"
 #include "cc/trees/mutator_host_client.h"
 #include "ui/gfx/geometry/box_f.h"
+#include "ui/gfx/transform_operations.h"
 
 namespace cc {
 
@@ -268,7 +268,7 @@ void ElementAnimations::NotifyClientColorAnimated(
 }
 
 void ElementAnimations::NotifyClientTransformOperationsAnimated(
-    const TransformOperations& operations,
+    const gfx::TransformOperations& operations,
     int target_property_id,
     KeyframeModel* keyframe_model) {
   gfx::Transform transform = operations.Apply();

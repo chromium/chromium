@@ -5,11 +5,7 @@
 #ifndef CC_TEST_GEOMETRY_TEST_UTILS_H_
 #define CC_TEST_GEOMETRY_TEST_UTILS_H_
 
-#include "cc/cc_export.h"
-
-namespace gfx {
-class Transform;
-}
+#include "ui/gfx/geometry/test/transform_test_util.h"
 
 namespace cc {
 
@@ -98,31 +94,15 @@ namespace cc {
     EXPECT_EQ((expected).height(), (actual).height()); \
   } while (false)
 
-// This is a function rather than a macro because when this is included as a
-// macro in bulk, it causes a significant slow-down in compilation time. This
-// problem exists with both gcc and clang, and bugs have been filed at
-// http://llvm.org/bugs/show_bug.cgi?id=13651
-// and http://gcc.gnu.org/bugzilla/show_bug.cgi?id=54337
-void ExpectTransformationMatrixEq(const gfx::Transform& expected,
-                                  const gfx::Transform& actual);
-
 #define EXPECT_TRANSFORMATION_MATRIX_EQ(expected, actual) \
   do {                                                    \
-    ExpectTransformationMatrixEq(expected, actual);       \
+    gfx::ExpectTransformationMatrixEq(expected, actual);  \
   } while (false)
-
-void ExpectTransformationMatrixNear(const gfx::Transform& expected,
-                                    const gfx::Transform& actual,
-                                    float abs_error);
 
 #define EXPECT_TRANSFORMATION_MATRIX_NEAR(expected, actual, abs_error) \
   do {                                                                 \
-    ExpectTransformationMatrixNear(expected, actual, abs_error);       \
+    gfx::ExpectTransformationMatrixNear(expected, actual, abs_error);  \
   } while (false)
-
-// Should be used in test code only, for convenience. Production code should use
-// the gfx::Transform::GetInverse() API.
-gfx::Transform Inverse(const gfx::Transform& transform);
 
 }  // namespace cc
 

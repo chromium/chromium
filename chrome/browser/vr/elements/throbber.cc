@@ -6,8 +6,8 @@
 
 #include "cc/animation/keyframed_animation_curve.h"
 #include "cc/animation/timing_function.h"
-#include "cc/animation/transform_operations.h"
 #include "chrome/browser/vr/target_property.h"
+#include "ui/gfx/transform_operations.h"
 
 namespace vr {
 

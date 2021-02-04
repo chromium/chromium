@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "cc/animation/animation_target.h"
-#include "cc/animation/transform_operations.h"
 #include "chrome/browser/vr/animation.h"
 #include "chrome/browser/vr/audio_delegate.h"
 #include "chrome/browser/vr/databinding/binding_base.h"
@@ -33,6 +32,7 @@
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector3d_f.h"
 #include "ui/gfx/transform.h"
+#include "ui/gfx/transform_operations.h"
 
 namespace base {
 class TimeTicks;
@@ -251,7 +251,7 @@ class VR_UI_EXPORT UiElement : public cc::AnimationTarget {
   // Returns the target value of the animation if the corresponding property is
   // being animated, or the current value otherwise.
   gfx::SizeF GetTargetSize() const;
-  cc::TransformOperations GetTargetTransform() const;
+  gfx::TransformOperations GetTargetTransform() const;
   float GetTargetOpacity() const;
 
   float opacity() const { return opacity_; }
@@ -395,7 +395,7 @@ class VR_UI_EXPORT UiElement : public cc::AnimationTarget {
                                  int target_property_id,
                                  cc::KeyframeModel* keyframe_model) override;
   void NotifyClientTransformOperationsAnimated(
-      const cc::TransformOperations& operations,
+      const gfx::TransformOperations& operations,
       int target_property_id,
       cc::KeyframeModel* keyframe_model) override;
   void NotifyClientSizeAnimated(const gfx::SizeF& size,
@@ -648,13 +648,13 @@ class VR_UI_EXPORT UiElement : public cc::AnimationTarget {
   // stored as a list of operations rather than a baked transform to make
   // transitions easier to implement (you may, for example, want to animate just
   // the translation, but leave the rotation and scale in tact).
-  cc::TransformOperations transform_operations_;
+  gfx::TransformOperations transform_operations_;
 
   // This is a cached version of the local transform.
   gfx::Transform local_transform_;
 
   // This is set by the parent and is combined into LocalTransform()
-  cc::TransformOperations layout_offset_;
+  gfx::TransformOperations layout_offset_;
 
   // This is the combined, local to world transform. It includes
   // |inheritable_transform_|, |transform_|, and anchoring adjustments.

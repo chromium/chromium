@@ -16,11 +16,11 @@
 
 namespace cc {
 class AnimationTarget;
-class TransformOperations;
 }  // namespace cc
 
 namespace gfx {
 class SizeF;
+class TransformOperations;
 }  // namespace gfx
 
 namespace vr {
@@ -74,8 +74,8 @@ class VR_UI_EXPORT Animation final {
                          float target);
   void TransitionTransformOperationsTo(base::TimeTicks monotonic_time,
                                        int target_property,
-                                       const cc::TransformOperations& current,
-                                       const cc::TransformOperations& target);
+                                       const gfx::TransformOperations& current,
+                                       const gfx::TransformOperations& target);
   void TransitionSizeTo(base::TimeTicks monotonic_time,
                         int target_property,
                         const gfx::SizeF& current,
@@ -88,9 +88,9 @@ class VR_UI_EXPORT Animation final {
   bool IsAnimatingProperty(int property) const;
 
   float GetTargetFloatValue(int target_property, float default_value) const;
-  cc::TransformOperations GetTargetTransformOperationsValue(
+  gfx::TransformOperations GetTargetTransformOperationsValue(
       int target_property,
-      const cc::TransformOperations& default_value) const;
+      const gfx::TransformOperations& default_value) const;
   gfx::SizeF GetTargetSizeValue(int target_property,
                                 const gfx::SizeF& default_value) const;
   SkColor GetTargetColorValue(int target_property, SkColor default_value) const;

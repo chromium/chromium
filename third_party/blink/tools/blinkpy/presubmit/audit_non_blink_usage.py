@@ -275,6 +275,8 @@ _CONFIG = [
 
             # Chromium geometry operations.
             'cc::MathUtil',
+            'gfx::ComputeApproximateMaxScale',
+            'gfx::ComputeTransform2dScaleComponents',
             'gfx::ToFlooredPoint',
 
             # Range type.

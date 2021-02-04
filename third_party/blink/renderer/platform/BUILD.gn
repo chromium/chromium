@@ -2203,6 +2203,7 @@ source_set("blink_platform_unittests_sources") {
     "//ui/base:features",
     "//ui/base/prediction",
     "//ui/gfx",
+    "//ui/gfx:test_support",
     "//ui/gfx/geometry",
     "//ui/gfx/geometry/mojom:test_interfaces_blink",
     "//ui/gfx/mojom:test_interfaces_blink",

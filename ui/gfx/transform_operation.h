@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CC_ANIMATION_TRANSFORM_OPERATION_H_
-#define CC_ANIMATION_TRANSFORM_OPERATION_H_
+#ifndef UI_GFX_TRANSFORM_OPERATION_H_
+#define UI_GFX_TRANSFORM_OPERATION_H_
 
-#include "cc/animation/animation_export.h"
+#include "ui/gfx/geometry_skia_export.h"
 #include "ui/gfx/transform.h"
 
 namespace gfx {
 class BoxF;
-}
 
-namespace cc {
-
-struct CC_ANIMATION_EXPORT TransformOperation {
+struct GEOMETRY_SKIA_EXPORT TransformOperation {
   enum Type {
     TRANSFORM_OPERATION_TRANSLATE,
     TRANSFORM_OPERATION_ROTATE,
@@ -77,6 +74,6 @@ struct CC_ANIMATION_EXPORT TransformOperation {
                                   gfx::BoxF* bounds);
 };
 
-}  // namespace cc
+}  // namespace gfx
 
-#endif  // CC_ANIMATION_TRANSFORM_OPERATION_H_
+#endif  // UI_GFX_TRANSFORM_OPERATION_H_

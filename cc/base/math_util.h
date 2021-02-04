@@ -235,13 +235,6 @@ class CC_BASE_EXPORT MathUtil {
                                      const gfx::PointF& point,
                                      bool* clipped);
 
-  static gfx::Vector2dF ComputeTransform2dScaleComponents(const gfx::Transform&,
-                                                          float fallbackValue);
-  // Returns an approximate max scale value of the transform even if it has
-  // perspective. Prefer to use ComputeTransform2dScaleComponents if there is no
-  // perspective, since it can produce more accurate results.
-  static float ComputeApproximateMaxScale(const gfx::Transform& transform);
-
   // Makes a rect that has the same relationship to input_outer_rect as
   // scale_inner_rect has to scale_outer_rect. scale_inner_rect should be
   // contained within scale_outer_rect, and likewise the rectangle that is

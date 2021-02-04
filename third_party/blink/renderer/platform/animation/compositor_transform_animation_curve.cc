@@ -6,8 +6,8 @@
 
 #include "cc/animation/keyframed_animation_curve.h"
 #include "cc/animation/timing_function.h"
-#include "cc/animation/transform_operations.h"
 #include "third_party/blink/renderer/platform/animation/compositor_transform_operations.h"
+#include "ui/gfx/transform_operations.h"
 
 namespace blink {
 

@@ -20,7 +20,6 @@
 #include "cc/animation/scroll_offset_animation_curve_factory.h"
 #include "cc/animation/scroll_offset_animations.h"
 #include "cc/animation/timing_function.h"
-#include "cc/animation/transform_operations.h"
 #include "cc/base/completion_event.h"
 #include "cc/layers/layer.h"
 #include "cc/layers/layer_impl.h"
@@ -33,6 +32,7 @@
 #include "cc/trees/target_property.h"
 #include "cc/trees/transform_node.h"
 #include "components/viz/common/quads/compositor_frame.h"
+#include "ui/gfx/transform_operations.h"
 
 namespace cc {
 namespace {
@@ -1421,9 +1421,9 @@ class LayerTreeHostAnimationTestPendingTreeAnimatesFirstCommit
 
   void BeginTest() override {
     // Add a translate from 6,7 to 8,9.
-    TransformOperations start;
+    gfx::TransformOperations start;
     start.AppendTranslate(6.f, 7.f, 0.f);
-    TransformOperations end;
+    gfx::TransformOperations end;
     end.AppendTranslate(8.f, 9.f, 0.f);
     AddAnimatedTransformToAnimation(animation_.get(), 4.0, start, end);
 
@@ -2262,9 +2262,9 @@ class LayerTreeHostAnimationTestChangeAnimation
     timeline_->DetachAnimation(animation_child_.get());
     animation_->AttachElement(layer_->element_id());
 
-    TransformOperations start;
+    gfx::TransformOperations start;
     start.AppendTranslate(5.f, 5.f, 0.f);
-    TransformOperations end;
+    gfx::TransformOperations end;
     end.AppendTranslate(5.f, 5.f, 0.f);
     AddAnimatedTransformToAnimation(animation_.get(), 1.0, start, end);
   }

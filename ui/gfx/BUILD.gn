@@ -50,6 +50,10 @@ component("geometry_skia") {
     "skia_util.h",
     "transform.cc",
     "transform.h",
+    "transform_operation.cc",
+    "transform_operation.h",
+    "transform_operations.cc",
+    "transform_operations.h",
     "transform_util.cc",
     "transform_util.h",
   ]
@@ -640,6 +644,8 @@ static_library("test_support") {
     "animation/test_animation_delegate.h",
     "geometry/test/rect_test_util.cc",
     "geometry/test/rect_test_util.h",
+    "geometry/test/transform_test_util.cc",
+    "geometry/test/transform_test_util.h",
     "image/image_unittest_util.cc",
     "image/image_unittest_util.h",
     "test/font_fallback_test_data.cc",
@@ -703,10 +709,13 @@ test("gfx_unittests") {
     "image/image_family_unittest.cc",
     "image/image_skia_unittest.cc",
     "image/image_unittest.cc",
+    "interpolated_transform_unittest.cc",
     "rrect_f_unittest.cc",
     "test/run_all_unittests.cc",
     "text_elider_unittest.cc",
     "text_utils_unittest.cc",
+    "transform_operations_unittest.cc",
+    "transform_unittest.cc",
   ]
   if (is_linux || is_chromeos) {
     sources += [
@@ -838,13 +847,6 @@ test("gfx_unittests") {
 
   if (is_mac) {
     deps += [ ":gfx_io_surface_hdr_metadata" ]
-  }
-
-  if (!is_apple) {
-    sources += [
-      "interpolated_transform_unittest.cc",
-      "transform_unittest.cc",
-    ]
   }
 
   if (is_android) {

@@ -13,8 +13,8 @@
 #include "cc/animation/animation_curve.h"
 #include "cc/animation/animation_export.h"
 #include "cc/animation/timing_function.h"
-#include "cc/animation/transform_operations.h"
 #include "ui/gfx/geometry/size_f.h"
+#include "ui/gfx/transform_operations.h"
 
 namespace cc {
 
@@ -82,20 +82,20 @@ class CC_ANIMATION_EXPORT TransformKeyframe : public Keyframe {
  public:
   static std::unique_ptr<TransformKeyframe> Create(
       base::TimeDelta time,
-      const TransformOperations& value,
+      const gfx::TransformOperations& value,
       std::unique_ptr<TimingFunction> timing_function);
   ~TransformKeyframe() override;
 
-  const TransformOperations& Value() const;
+  const gfx::TransformOperations& Value() const;
 
   std::unique_ptr<TransformKeyframe> Clone() const;
 
  private:
   TransformKeyframe(base::TimeDelta time,
-                    const TransformOperations& value,
+                    const gfx::TransformOperations& value,
                     std::unique_ptr<TimingFunction> timing_function);
 
-  TransformOperations value_;
+  gfx::TransformOperations value_;
 };
 
 class CC_ANIMATION_EXPORT FilterKeyframe : public Keyframe {
@@ -251,7 +251,7 @@ class CC_ANIMATION_EXPORT KeyframedTransformAnimationCurve
   std::unique_ptr<AnimationCurve> Clone() const override;
 
   // TransformAnimationCurve implementation
-  TransformOperations GetValue(base::TimeDelta t) const override;
+  gfx::TransformOperations GetValue(base::TimeDelta t) const override;
   bool PreservesAxisAlignment() const override;
   bool MaximumScale(float* max_scale) const override;
 

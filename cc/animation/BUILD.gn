@@ -42,10 +42,6 @@ cc_component("animation") {
     "scroll_timeline.h",
     "timing_function.cc",
     "timing_function.h",
-    "transform_operation.cc",
-    "transform_operation.h",
-    "transform_operations.cc",
-    "transform_operations.h",
     "worklet_animation.cc",
     "worklet_animation.h",
   ]

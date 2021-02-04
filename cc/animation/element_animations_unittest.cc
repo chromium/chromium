@@ -18,10 +18,10 @@
 #include "cc/animation/keyframed_animation_curve.h"
 #include "cc/animation/scroll_offset_animation_curve.h"
 #include "cc/animation/scroll_offset_animation_curve_factory.h"
-#include "cc/animation/transform_operations.h"
 #include "cc/test/animation_test_common.h"
 #include "cc/test/animation_timelines_test_common.h"
 #include "ui/gfx/geometry/box_f.h"
+#include "ui/gfx/transform_operations.h"
 
 namespace cc {
 namespace {
@@ -2242,7 +2242,7 @@ TEST_F(ElementAnimationsTest, MaximumAnimationScaleNotScaled) {
   std::unique_ptr<KeyframedTransformAnimationCurve> curve1(
       KeyframedTransformAnimationCurve::Create());
 
-  TransformOperations operations1;
+  gfx::TransformOperations operations1;
   curve1->AddKeyframe(
       TransformKeyframe::Create(base::TimeDelta(), operations1, nullptr));
   operations1.AppendTranslate(10.0, 15.0, 0.0);
@@ -2269,7 +2269,7 @@ TEST_F(ElementAnimationsTest, MaximumAnimationNonCalculatableScale) {
   std::unique_ptr<KeyframedTransformAnimationCurve> curve1(
       KeyframedTransformAnimationCurve::Create());
 
-  TransformOperations operations1;
+  gfx::TransformOperations operations1;
   operations1.AppendScale(2.0, 2.0, 2.0);
   operations1.AppendPerspective(100);
   curve1->AddKeyframe(
@@ -2299,7 +2299,7 @@ TEST_F(ElementAnimationsTest, MaximumAnimationPartialNonCalculatableScale) {
   std::unique_ptr<KeyframedTransformAnimationCurve> curve1(
       KeyframedTransformAnimationCurve::Create());
 
-  TransformOperations operations1;
+  gfx::TransformOperations operations1;
   operations1.AppendScale(2.0, 2.0, 2.0);
   curve1->AddKeyframe(
       TransformKeyframe::Create(base::TimeDelta(), operations1, nullptr));
@@ -2328,11 +2328,11 @@ TEST_F(ElementAnimationsTest, MaximumScale) {
   std::unique_ptr<KeyframedTransformAnimationCurve> curve1(
       KeyframedTransformAnimationCurve::Create());
 
-  TransformOperations operations1a;
+  gfx::TransformOperations operations1a;
   operations1a.AppendScale(2.0, 3.0, 4.0);
   curve1->AddKeyframe(
       TransformKeyframe::Create(base::TimeDelta(), operations1a, nullptr));
-  TransformOperations operations1b;
+  gfx::TransformOperations operations1b;
   operations1b.AppendScale(5.0, 4.0, 3.0);
   curve1->AddKeyframe(TransformKeyframe::Create(
       base::TimeDelta::FromSecondsD(1.0), operations1b, nullptr));
@@ -2356,11 +2356,11 @@ TEST_F(ElementAnimationsTest, MaximumScale) {
   std::unique_ptr<KeyframedTransformAnimationCurve> curve2(
       KeyframedTransformAnimationCurve::Create());
 
-  TransformOperations operations2a;
+  gfx::TransformOperations operations2a;
   operations2a.AppendScale(1.0, 2.0, 3.0);
   curve2->AddKeyframe(
       TransformKeyframe::Create(base::TimeDelta(), operations2a, nullptr));
-  TransformOperations operations2b;
+  gfx::TransformOperations operations2b;
   operations2b.AppendScale(6.0, 5.0, 4.0);
   curve2->AddKeyframe(TransformKeyframe::Create(
       base::TimeDelta::FromSecondsD(1.0), operations2b, nullptr));
@@ -2378,11 +2378,11 @@ TEST_F(ElementAnimationsTest, MaximumScale) {
   std::unique_ptr<KeyframedTransformAnimationCurve> curve3(
       KeyframedTransformAnimationCurve::Create());
 
-  TransformOperations operations3a;
+  gfx::TransformOperations operations3a;
   operations3a.AppendScale(5.0, 3.0, 1.0);
   curve3->AddKeyframe(
       TransformKeyframe::Create(base::TimeDelta(), operations3a, nullptr));
-  TransformOperations operations3b;
+  gfx::TransformOperations operations3b;
   operations3b.AppendScale(1.5, 2.5, 3.5);
   curve3->AddKeyframe(TransformKeyframe::Create(
       base::TimeDelta::FromSecondsD(1.0), operations3b, nullptr));
@@ -2421,11 +2421,11 @@ TEST_F(ElementAnimationsTest, MaximumAnimationScaleWithDirection) {
 
   std::unique_ptr<KeyframedTransformAnimationCurve> curve1(
       KeyframedTransformAnimationCurve::Create());
-  TransformOperations operations1;
+  gfx::TransformOperations operations1;
   operations1.AppendScale(1.0, 2.0, 3.0);
   curve1->AddKeyframe(
       TransformKeyframe::Create(base::TimeDelta(), operations1, nullptr));
-  TransformOperations operations2;
+  gfx::TransformOperations operations2;
   operations2.AppendScale(4.0, 5.0, 6.0);
   curve1->AddKeyframe(TransformKeyframe::Create(
       base::TimeDelta::FromSecondsD(1.0), operations2, nullptr));

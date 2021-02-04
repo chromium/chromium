@@ -16,8 +16,6 @@
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_id_provider.h"
 #include "cc/animation/keyframed_animation_curve.h"
-#include "cc/animation/transform_operations.h"
-#include "cc/base/math_util.h"
 #include "cc/layers/content_layer_client.h"
 #include "cc/layers/effect_tree_layer_list_iterator.h"
 #include "cc/layers/layer.h"
@@ -43,6 +41,8 @@
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 #include "ui/gfx/transform.h"
+#include "ui/gfx/transform_operations.h"
+#include "ui/gfx/transform_util.h"
 
 namespace cc {
 namespace {
@@ -286,8 +286,8 @@ TEST_F(DrawPropertiesTest, TransformsForSingleLayer) {
   // Case 5: The layer transform should occur with respect to the anchor point.
   gfx::Transform translation_to_anchor;
   translation_to_anchor.Translate(5.0, 0.0);
-  gfx::Transform expected_result =
-      translation_to_anchor * layer_transform * Inverse(translation_to_anchor);
+  gfx::Transform expected_result = translation_to_anchor * layer_transform *
+                                   gfx::InvertAndCheck(translation_to_anchor);
   SetTransformOrigin(layer, gfx::Point3F(5.f, 0.f, 0.f));
   UpdateActiveTreeDrawProperties();
   EXPECT_TRANSFORMATION_MATRIX_EQ(
@@ -301,7 +301,8 @@ TEST_F(DrawPropertiesTest, TransformsForSingleLayer) {
   // current implementation of CalculateDrawProperties does this implicitly, but
   // it is still worth testing to detect accidental regressions.
   expected_result = position_transform * translation_to_anchor *
-                    layer_transform * Inverse(translation_to_anchor);
+                    layer_transform *
+                    gfx::InvertAndCheck(translation_to_anchor);
   SetPostTranslation(layer, gfx::Vector2dF(0.f, 1.2f));
   UpdateActiveTreeDrawProperties();
   EXPECT_TRANSFORMATION_MATRIX_EQ(
@@ -460,7 +461,7 @@ TEST_F(DrawPropertiesTest, TransformsForSimpleHierarchy) {
   parent_translation_to_anchor.Translate(2.5, 3.0);
   gfx::Transform parent_composite_transform =
       parent_translation_to_anchor * parent_layer_transform *
-      Inverse(parent_translation_to_anchor);
+      gfx::InvertAndCheck(parent_translation_to_anchor);
   SetTransform(parent, parent_layer_transform);
   SetPostTranslation(parent, gfx::Vector2dF());
   UpdateActiveTreeDrawProperties();
@@ -492,15 +493,15 @@ TEST_F(DrawPropertiesTest, TransformsForSingleRenderSurface) {
 
   gfx::Transform parent_composite_transform =
       parent_translation_to_anchor * parent_layer_transform *
-      Inverse(parent_translation_to_anchor);
+      gfx::InvertAndCheck(parent_translation_to_anchor);
   gfx::Vector2dF parent_composite_scale =
-      MathUtil::ComputeTransform2dScaleComponents(parent_composite_transform,
-                                                  1.f);
+      gfx::ComputeTransform2dScaleComponents(parent_composite_transform, 1.f);
   gfx::Transform surface_sublayer_transform;
   surface_sublayer_transform.Scale(parent_composite_scale.x(),
                                    parent_composite_scale.y());
   gfx::Transform surface_sublayer_composite_transform =
-      parent_composite_transform * Inverse(surface_sublayer_transform);
+      parent_composite_transform *
+      gfx::InvertAndCheck(surface_sublayer_transform);
 
   root->SetBounds(gfx::Size(1, 2));
   parent->SetBounds(gfx::Size(100, 120));
@@ -581,11 +582,11 @@ TEST_F(DrawPropertiesTest, TransformsForRenderSurfaceHierarchy) {
   gfx::Transform layer_transform;
   layer_transform.Translate(1.0, 1.0);
 
-  gfx::Transform A =
-      translation_to_anchor * layer_transform * Inverse(translation_to_anchor);
+  gfx::Transform A = translation_to_anchor * layer_transform *
+                     gfx::InvertAndCheck(translation_to_anchor);
 
   gfx::Vector2dF surface1_parent_transform_scale =
-      MathUtil::ComputeTransform2dScaleComponents(A, 1.f);
+      gfx::ComputeTransform2dScaleComponents(A, 1.f);
   gfx::Transform surface1_sublayer_transform;
   surface1_sublayer_transform.Scale(surface1_parent_transform_scale.x(),
                                     surface1_parent_transform_scale.y());
@@ -594,10 +595,10 @@ TEST_F(DrawPropertiesTest, TransformsForRenderSurfaceHierarchy) {
   gfx::Transform SS1 = surface1_sublayer_transform;
   // S1 = transform to move from render_surface1 pixels to the layer space of
   // the owning layer
-  gfx::Transform S1 = Inverse(surface1_sublayer_transform);
+  gfx::Transform S1 = gfx::InvertAndCheck(surface1_sublayer_transform);
 
   gfx::Vector2dF surface2_parent_transform_scale =
-      MathUtil::ComputeTransform2dScaleComponents(SS1 * A, 1.f);
+      gfx::ComputeTransform2dScaleComponents(SS1 * A, 1.f);
   gfx::Transform surface2_sublayer_transform;
   surface2_sublayer_transform.Scale(surface2_parent_transform_scale.x(),
                                     surface2_parent_transform_scale.y());
@@ -606,7 +607,7 @@ TEST_F(DrawPropertiesTest, TransformsForRenderSurfaceHierarchy) {
   gfx::Transform SS2 = surface2_sublayer_transform;
   // S2 = transform to move from render_surface2 pixels to the layer space of
   // the owning layer
-  gfx::Transform S2 = Inverse(surface2_sublayer_transform);
+  gfx::Transform S2 = gfx::InvertAndCheck(surface2_sublayer_transform);
 
   root->SetBounds(gfx::Size(1, 2));
   parent->SetBounds(gfx::Size(10, 10));
@@ -2021,7 +2022,7 @@ TEST_F(DrawPropertiesDrawRectsTest, DrawRectsFor3dPerspectiveWhenClippedByW) {
 
 static bool ProjectionClips(const gfx::Transform& map_transform,
                             const gfx::RectF& mapped_rect) {
-  gfx::Transform inverse(Inverse(map_transform));
+  gfx::Transform inverse(gfx::InvertAndCheck(map_transform));
   bool clipped = false;
   if (!clipped)
     MathUtil::ProjectPoint(inverse, mapped_rect.top_right(), &clipped);
@@ -3232,14 +3233,14 @@ TEST_F(DrawPropertiesScalingTest, SurfaceLayerTransformsInHighDPI) {
   transform.Scale(device_scale_factor * page_scale_factor,
                   device_scale_factor * page_scale_factor);
   gfx::Vector2dF scales =
-      MathUtil::ComputeTransform2dScaleComponents(transform, 0.f);
+      gfx::ComputeTransform2dScaleComponents(transform, 0.f);
   float max_2d_scale = std::max(scales.x(), scales.y());
   EXPECT_FLOAT_EQ(max_2d_scale, scale_surface->GetIdealContentsScale());
 
   // The ideal scale will draw 1:1 with its render target space along
   // the larger-scale axis.
   gfx::Vector2dF target_space_transform_scales =
-      MathUtil::ComputeTransform2dScaleComponents(
+      gfx::ComputeTransform2dScaleComponents(
           scale_surface->draw_properties().target_space_transform, 0.f);
   EXPECT_FLOAT_EQ(max_2d_scale, std::max(target_space_transform_scales.x(),
                                          target_space_transform_scales.y()));
@@ -4633,9 +4634,9 @@ TEST_F(DrawPropertiesTest, ScrollSnappingWithAnimatedScreenSpaceTransform) {
 
   gfx::Transform end_scale;
   end_scale.Scale(2.f, 2.f);
-  TransformOperations start_operations;
+  gfx::TransformOperations start_operations;
   start_operations.AppendMatrix(start_scale);
-  TransformOperations end_operations;
+  gfx::TransformOperations end_operations;
   end_operations.AppendMatrix(end_scale);
 
   AddAnimatedTransformToElementWithAnimation(animated_layer->element_id(),
@@ -5487,7 +5488,7 @@ TEST_F(DrawPropertiesTest, MaximumAnimationScaleFactor) {
   EXPECT_FALSE(AnimationAffectedByInvalidScale(parent));
   EXPECT_FALSE(AnimationAffectedByInvalidScale(grand_parent));
 
-  TransformOperations translation;
+  gfx::TransformOperations translation;
   translation.AppendTranslate(1.f, 2.f, 3.f);
 
   scoped_refptr<Animation> grand_parent_animation =
@@ -5511,7 +5512,7 @@ TEST_F(DrawPropertiesTest, MaximumAnimationScaleFactor) {
   grand_child_animation->AttachElement(grand_child->element_id());
 
   AddAnimatedTransformToAnimation(parent_animation.get(), 1.0,
-                                  TransformOperations(), translation);
+                                  gfx::TransformOperations(), translation);
 
   // No layers have scale-affecting animations.
   EXPECT_EQ(1.f, MaximumAnimationToScreenScale(grand_child));
@@ -5524,11 +5525,11 @@ TEST_F(DrawPropertiesTest, MaximumAnimationScaleFactor) {
   EXPECT_FALSE(AnimationAffectedByInvalidScale(parent));
   EXPECT_FALSE(AnimationAffectedByInvalidScale(grand_parent));
 
-  TransformOperations scale;
+  gfx::TransformOperations scale;
   scale.AppendScale(5.f, 4.f, 3.f);
 
   AddAnimatedTransformToAnimation(child_animation.get(), 1.0,
-                                  TransformOperations(), scale);
+                                  gfx::TransformOperations(), scale);
   UpdateActiveTreeDrawProperties();
 
   // Only |child| has a scale-affecting animation.
@@ -5543,7 +5544,7 @@ TEST_F(DrawPropertiesTest, MaximumAnimationScaleFactor) {
   EXPECT_FALSE(AnimationAffectedByInvalidScale(grand_parent));
 
   AddAnimatedTransformToAnimation(grand_parent_animation.get(), 1.0,
-                                  TransformOperations(), scale);
+                                  gfx::TransformOperations(), scale);
   UpdateActiveTreeDrawProperties();
 
   // |grand_parent| and |child| have scale-affecting animations.
@@ -5560,7 +5561,7 @@ TEST_F(DrawPropertiesTest, MaximumAnimationScaleFactor) {
   EXPECT_FALSE(AnimationAffectedByInvalidScale(grand_parent));
 
   AddAnimatedTransformToAnimation(parent_animation.get(), 1.0,
-                                  TransformOperations(), scale);
+                                  gfx::TransformOperations(), scale);
   UpdateActiveTreeDrawProperties();
 
   // |grand_parent|, |parent|, and |child| have scale-affecting animations.
@@ -5589,7 +5590,7 @@ TEST_F(DrawPropertiesTest, MaximumAnimationScaleFactor) {
   timeline_impl()->AttachAnimation(child_animation);
   child_animation->AttachElement(child->element_id());
 
-  TransformOperations perspective;
+  gfx::TransformOperations perspective;
   perspective.AppendPerspective(10.f);
 
   AddAnimatedTransformToAnimation(child_animation.get(), 1.0, perspective,
@@ -5618,7 +5619,7 @@ TEST_F(DrawPropertiesTest, MaximumAnimationScaleFactor) {
   SetTransform(child, scale_matrix);
 
   AddAnimatedTransformToAnimation(parent_animation.get(), 1.0,
-                                  TransformOperations(), scale);
+                                  gfx::TransformOperations(), scale);
   UpdateActiveTreeDrawProperties();
 
   // |grand_parent|, |parent| and |child| each has scale 2.f. |parent| has a
@@ -5923,14 +5924,14 @@ TEST_F(DrawPropertiesTestWithLayerTree, DrawPropertyDeviceScale) {
   host()->SetRootLayer(root);
   host()->SetElementIdsForTesting();
 
-  TransformOperations scale;
+  gfx::TransformOperations scale;
   scale.AppendScale(5.f, 8.f, 3.f);
 
   child2->SetTransform(scale_transform_child2);
   child2->SetBounds(gfx::Size(1, 1));
   child2->SetIsDrawable(true);
-  AddAnimatedTransformToElementWithAnimation(child2->element_id(), timeline(),
-                                             1.0, TransformOperations(), scale);
+  AddAnimatedTransformToElementWithAnimation(
+      child2->element_id(), timeline(), 1.0, gfx::TransformOperations(), scale);
 
   CommitAndActivate();
 
@@ -5995,11 +5996,11 @@ TEST_F(DrawPropertiesTest, DrawPropertyScales) {
       page_scale->transform_tree_index();
   host()->RegisterViewportPropertyIds(viewport_property_ids);
 
-  TransformOperations scale;
+  gfx::TransformOperations scale;
   scale.AppendScale(5.f, 8.f, 3.f);
 
-  AddAnimatedTransformToElementWithAnimation(child2->element_id(), timeline(),
-                                             1.0, TransformOperations(), scale);
+  AddAnimatedTransformToElementWithAnimation(
+      child2->element_id(), timeline(), 1.0, gfx::TransformOperations(), scale);
 
   CommitAndActivate();
 
@@ -6066,11 +6067,12 @@ TEST_F(DrawPropertiesTest, AnimationScales) {
   CopyProperties(child1, child2);
   CreateTransformNode(child2).local = scale_transform_child2;
 
-  TransformOperations scale;
+  gfx::TransformOperations scale;
   scale.AppendScale(5.f, 8.f, 3.f);
 
-  AddAnimatedTransformToElementWithAnimation(
-      child2->element_id(), timeline_impl(), 1.0, TransformOperations(), scale);
+  AddAnimatedTransformToElementWithAnimation(child2->element_id(),
+                                             timeline_impl(), 1.0,
+                                             gfx::TransformOperations(), scale);
   UpdateActiveTreeDrawProperties();
 
   EXPECT_FLOAT_EQ(24.f, MaximumAnimationToScreenScale(child2));
@@ -6121,9 +6123,9 @@ TEST_F(DrawPropertiesTest, AnimationScaleFromSmallToOne) {
   CopyProperties(child, grandchild);
   CreateTransformNode(grandchild).local = small_scale;
 
-  TransformOperations small_scale_operations;
+  gfx::TransformOperations small_scale_operations;
   small_scale_operations.AppendMatrix(small_scale);
-  TransformOperations scale_one_operations;
+  gfx::TransformOperations scale_one_operations;
 
   // Both child and grandchild animate scale from 0.1x0.2 to 1.
   AddAnimatedTransformToElementWithAnimation(
@@ -6265,9 +6267,9 @@ TEST_F(DrawPropertiesTest,
   CreateEffectNode(surface).render_surface_reason = RenderSurfaceReason::kTest;
   CopyProperties(surface, descendant_of_keyframe_model);
 
-  TransformOperations start_transform_operations;
+  gfx::TransformOperations start_transform_operations;
   start_transform_operations.AppendMatrix(uninvertible_matrix);
-  TransformOperations end_transform_operations;
+  gfx::TransformOperations end_transform_operations;
 
   AddAnimatedTransformToElementWithAnimation(
       animated->element_id(), timeline_impl(), 10.0, start_transform_operations,
@@ -6599,11 +6601,11 @@ TEST_F(DrawPropertiesTestWithLayerTree, SkippingLayerImpl) {
 
   std::unique_ptr<KeyframedTransformAnimationCurve> curve(
       KeyframedTransformAnimationCurve::Create());
-  TransformOperations start;
+  gfx::TransformOperations start;
   start.AppendTranslate(1.f, 2.f, 3.f);
   gfx::Transform transform;
   transform.Scale3d(1.0, 2.0, 3.0);
-  TransformOperations operation;
+  gfx::TransformOperations operation;
   operation.AppendMatrix(transform);
   curve->AddKeyframe(
       TransformKeyframe::Create(base::TimeDelta(), start, nullptr));
@@ -6632,11 +6634,11 @@ TEST_F(DrawPropertiesTest, LayerSkippingInSubtreeOfSingularTransform) {
   // Set up a transform animation
   std::unique_ptr<KeyframedTransformAnimationCurve> curve(
       KeyframedTransformAnimationCurve::Create());
-  TransformOperations start;
+  gfx::TransformOperations start;
   start.AppendTranslate(1.f, 2.f, 3.f);
   gfx::Transform transform;
   transform.Scale3d(1.0, 2.0, 3.0);
-  TransformOperations operation;
+  gfx::TransformOperations operation;
   operation.AppendMatrix(transform);
   curve->AddKeyframe(
       TransformKeyframe::Create(base::TimeDelta(), start, nullptr));
@@ -7609,11 +7611,11 @@ TEST_F(DrawPropertiesTestWithLayerTree, TransformAnimationsTrackingTest) {
 
   std::unique_ptr<KeyframedTransformAnimationCurve> curve(
       KeyframedTransformAnimationCurve::Create());
-  TransformOperations start;
+  gfx::TransformOperations start;
   start.AppendTranslate(1.f, 2.f, 3.f);
   gfx::Transform transform;
   transform.Scale3d(1.0, 2.0, 3.0);
-  TransformOperations operation;
+  gfx::TransformOperations operation;
   operation.AppendMatrix(transform);
   curve->AddKeyframe(
       TransformKeyframe::Create(base::TimeDelta(), start, nullptr));

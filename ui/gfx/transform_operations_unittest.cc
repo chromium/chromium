@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "cc/animation/transform_operations.h"
+#include "ui/gfx/transform_operations.h"
 
 #include <stddef.h>
 
@@ -11,20 +11,20 @@
 #include <vector>
 
 #include "base/stl_util.h"
-#include "cc/test/geometry_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/box_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/test/transform_test_util.h"
 #include "ui/gfx/geometry/vector3d_f.h"
 
-namespace cc {
+namespace gfx {
 namespace {
 
 void ExpectTransformOperationEqual(const TransformOperation& lhs,
                                    const TransformOperation& rhs) {
   EXPECT_EQ(lhs.type, rhs.type);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(lhs.matrix, rhs.matrix);
+  ExpectTransformationMatrixEq(lhs.matrix, rhs.matrix);
   switch (lhs.type) {
     case TransformOperation::TRANSFORM_OPERATION_TRANSLATE:
       EXPECT_FLOAT_EQ(lhs.translate.x, rhs.translate.x);
@@ -235,7 +235,7 @@ TEST(TransformOperationTest, ApplyTranslate) {
   operations.AppendTranslate(x, y, z);
   gfx::Transform expected;
   expected.Translate3d(x, y, z);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected, operations.Apply());
+  ExpectTransformationMatrixEq(expected, operations.Apply());
 }
 
 TEST(TransformOperationTest, ApplyRotate) {
@@ -247,7 +247,7 @@ TEST(TransformOperationTest, ApplyRotate) {
   operations.AppendRotate(x, y, z, degrees);
   gfx::Transform expected;
   expected.RotateAbout(gfx::Vector3dF(x, y, z), degrees);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected, operations.Apply());
+  ExpectTransformationMatrixEq(expected, operations.Apply());
 }
 
 TEST(TransformOperationTest, ApplyScale) {
@@ -258,7 +258,7 @@ TEST(TransformOperationTest, ApplyScale) {
   operations.AppendScale(x, y, z);
   gfx::Transform expected;
   expected.Scale3d(x, y, z);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected, operations.Apply());
+  ExpectTransformationMatrixEq(expected, operations.Apply());
 }
 
 TEST(TransformOperationTest, ApplySkew) {
@@ -268,7 +268,7 @@ TEST(TransformOperationTest, ApplySkew) {
   operations.AppendSkew(x, y);
   gfx::Transform expected;
   expected.Skew(x, y);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected, operations.Apply());
+  ExpectTransformationMatrixEq(expected, operations.Apply());
 }
 
 TEST(TransformOperationTest, ApplyPerspective) {
@@ -277,7 +277,7 @@ TEST(TransformOperationTest, ApplyPerspective) {
   operations.AppendPerspective(depth);
   gfx::Transform expected;
   expected.ApplyPerspectiveDepth(depth);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected, operations.Apply());
+  ExpectTransformationMatrixEq(expected, operations.Apply());
 }
 
 TEST(TransformOperationTest, ApplyMatrix) {
@@ -288,7 +288,7 @@ TEST(TransformOperationTest, ApplyMatrix) {
   expected_matrix.Translate3d(dx, dy, dz);
   TransformOperations matrix_transform;
   matrix_transform.AppendMatrix(expected_matrix);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected_matrix, matrix_transform.Apply());
+  ExpectTransformationMatrixEq(expected_matrix, matrix_transform.Apply());
 }
 
 TEST(TransformOperationTest, ApplyOrder) {
@@ -313,7 +313,7 @@ TEST(TransformOperationTest, ApplyOrder) {
   gfx::Transform expected_combined_matrix = expected_scale_matrix;
   expected_combined_matrix.PreconcatTransform(expected_translate_matrix);
 
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected_combined_matrix, operations.Apply());
+  ExpectTransformationMatrixEq(expected_combined_matrix, operations.Apply());
 }
 
 TEST(TransformOperationTest, BlendOrder) {
@@ -379,8 +379,8 @@ TEST(TransformOperationTest, BlendOrder) {
 
   TransformOperations blended = operations_to.Blend(operations_from, progress);
 
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected, blended.Apply());
-  EXPECT_TRANSFORMATION_MATRIX_EQ(operations_expected.Apply(), blended.Apply());
+  ExpectTransformationMatrixEq(expected, blended.Apply());
+  ExpectTransformationMatrixEq(operations_expected.Apply(), blended.Apply());
   EXPECT_EQ(operations_expected.size(), blended.size());
   for (size_t i = 0; i < operations_expected.size(); ++i) {
     TransformOperation expected_op = operations_expected.at(i);
@@ -409,8 +409,8 @@ TEST(TransformOperationTest, BlendOrder) {
 
   blended = operations_to.Blend(operations_from, progress);
 
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected, blended.Apply());
-  EXPECT_TRANSFORMATION_MATRIX_EQ(operations_expected.Apply(), blended.Apply());
+  ExpectTransformationMatrixEq(expected, blended.Apply());
+  ExpectTransformationMatrixEq(operations_expected.Apply(), blended.Apply());
   EXPECT_EQ(operations_expected.size(), blended.size());
   for (size_t i = 0; i < operations_expected.size(); ++i) {
     TransformOperation expected_op = operations_expected.at(i);
@@ -438,8 +438,8 @@ TEST(TransformOperationTest, BlendOrder) {
   operations_expected = base_operations_expected;
   operations_expected.AppendMatrix(blended_matrix);
 
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected, blended.Apply());
-  EXPECT_TRANSFORMATION_MATRIX_EQ(operations_expected.Apply(), blended.Apply());
+  ExpectTransformationMatrixEq(expected, blended.Apply());
+  ExpectTransformationMatrixEq(operations_expected.Apply(), blended.Apply());
   EXPECT_EQ(operations_expected.size(), blended.size());
   for (size_t i = 0; i < operations_expected.size(); ++i) {
     TransformOperation expected_op = operations_expected.at(i);
@@ -456,7 +456,7 @@ static void CheckProgress(SkScalar progress,
                           const TransformOperations& to_transform) {
   gfx::Transform expected_matrix = to_matrix;
   expected_matrix.Blend(from_matrix, progress);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
+  ExpectTransformationMatrixEq(
       expected_matrix, to_transform.Blend(from_transform, progress).Apply());
 }
 
@@ -525,7 +525,7 @@ TEST(TransformOperationTest, BlendWhenTypesDoNotMatch) {
   gfx::Transform expected = to;
   expected.Blend(from, progress);
 
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
+  ExpectTransformationMatrixEq(
       expected, operations_to.Blend(operations_from, progress).Apply());
 }
 
@@ -541,7 +541,7 @@ TEST(TransformOperationTest, LargeRotationsWithSameAxis) {
   gfx::Transform expected;
   expected.RotateAbout(gfx::Vector3dF(0, 0, 1), 180);
 
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
+  ExpectTransformationMatrixEq(
       expected, operations_to.Blend(operations_from, progress).Apply());
 }
 
@@ -556,7 +556,7 @@ TEST(TransformOperationTest, LargeRotationsWithSameAxisInDifferentDirection) {
 
   gfx::Transform expected;
 
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
+  ExpectTransformationMatrixEq(
       expected, operations_to.Blend(operations_from, progress).Apply());
 }
 
@@ -577,7 +577,7 @@ TEST(TransformOperationTest, LargeRotationsWithDifferentAxes) {
   gfx::Transform expected = matrix_to;
   expected.Blend(matrix_from, progress);
 
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
+  ExpectTransformationMatrixEq(
       expected, operations_to.Blend(operations_from, progress).Apply());
 }
 
@@ -591,7 +591,7 @@ TEST(TransformOperationTest, RotationFromZeroDegDifferentAxes) {
   SkScalar progress = 0.5f;
   gfx::Transform expected;
   expected.RotateAbout(gfx::Vector3dF(0, 1, 0), 225);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
+  ExpectTransformationMatrixEq(
       expected, operations_to.Blend(operations_from, progress).Apply());
 }
 
@@ -605,7 +605,7 @@ TEST(TransformOperationTest, RotationFromZeroDegSameAxes) {
   SkScalar progress = 0.5f;
   gfx::Transform expected;
   expected.RotateAbout(gfx::Vector3dF(0, 0, 1), 225);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
+  ExpectTransformationMatrixEq(
       expected, operations_to.Blend(operations_from, progress).Apply());
 }
 
@@ -619,7 +619,7 @@ TEST(TransformOperationTest, RotationToZeroDegDifferentAxes) {
   SkScalar progress = 0.5f;
   gfx::Transform expected;
   expected.RotateAbout(gfx::Vector3dF(0, 1, 0), 225);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
+  ExpectTransformationMatrixEq(
       expected, operations_to.Blend(operations_from, progress).Apply());
 }
 
@@ -633,7 +633,7 @@ TEST(TransformOperationTest, RotationToZeroDegSameAxes) {
   SkScalar progress = 0.5f;
   gfx::Transform expected;
   expected.RotateAbout(gfx::Vector3dF(0, 0, 1), 225);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
+  ExpectTransformationMatrixEq(
       expected, operations_to.Blend(operations_from, progress).Apply());
 }
 
@@ -650,7 +650,7 @@ TEST(TransformOperationTest, BlendRotationFromIdentity) {
     gfx::Transform expected;
     expected.RotateAbout(gfx::Vector3dF(0, 0, 1), 45);
 
-    EXPECT_TRANSFORMATION_MATRIX_EQ(
+    ExpectTransformationMatrixEq(
         expected, operations.Blend(*identity_operations[i], progress).Apply());
 
     progress = -0.5f;
@@ -658,7 +658,7 @@ TEST(TransformOperationTest, BlendRotationFromIdentity) {
     expected.MakeIdentity();
     expected.RotateAbout(gfx::Vector3dF(0, 0, 1), -45);
 
-    EXPECT_TRANSFORMATION_MATRIX_EQ(
+    ExpectTransformationMatrixEq(
         expected, operations.Blend(*identity_operations[i], progress).Apply());
 
     progress = 1.5f;
@@ -666,7 +666,7 @@ TEST(TransformOperationTest, BlendRotationFromIdentity) {
     expected.MakeIdentity();
     expected.RotateAbout(gfx::Vector3dF(0, 0, 1), 135);
 
-    EXPECT_TRANSFORMATION_MATRIX_EQ(
+    ExpectTransformationMatrixEq(
         expected, operations.Blend(*identity_operations[i], progress).Apply());
   }
 }
@@ -684,7 +684,7 @@ TEST(TransformOperationTest, BlendTranslationFromIdentity) {
     gfx::Transform expected;
     expected.Translate3d(1, 1, 1);
 
-    EXPECT_TRANSFORMATION_MATRIX_EQ(
+    ExpectTransformationMatrixEq(
         expected, operations.Blend(*identity_operations[i], progress).Apply());
 
     progress = -0.5f;
@@ -692,7 +692,7 @@ TEST(TransformOperationTest, BlendTranslationFromIdentity) {
     expected.MakeIdentity();
     expected.Translate3d(-1, -1, -1);
 
-    EXPECT_TRANSFORMATION_MATRIX_EQ(
+    ExpectTransformationMatrixEq(
         expected, operations.Blend(*identity_operations[i], progress).Apply());
 
     progress = 1.5f;
@@ -700,7 +700,7 @@ TEST(TransformOperationTest, BlendTranslationFromIdentity) {
     expected.MakeIdentity();
     expected.Translate3d(3, 3, 3);
 
-    EXPECT_TRANSFORMATION_MATRIX_EQ(
+    ExpectTransformationMatrixEq(
         expected, operations.Blend(*identity_operations[i], progress).Apply());
   }
 }
@@ -718,7 +718,7 @@ TEST(TransformOperationTest, BlendScaleFromIdentity) {
     gfx::Transform expected;
     expected.Scale3d(2, 2, 2);
 
-    EXPECT_TRANSFORMATION_MATRIX_EQ(
+    ExpectTransformationMatrixEq(
         expected, operations.Blend(*identity_operations[i], progress).Apply());
 
     progress = -0.5f;
@@ -726,7 +726,7 @@ TEST(TransformOperationTest, BlendScaleFromIdentity) {
     expected.MakeIdentity();
     expected.Scale3d(0, 0, 0);
 
-    EXPECT_TRANSFORMATION_MATRIX_EQ(
+    ExpectTransformationMatrixEq(
         expected, operations.Blend(*identity_operations[i], progress).Apply());
 
     progress = 1.5f;
@@ -734,7 +734,7 @@ TEST(TransformOperationTest, BlendScaleFromIdentity) {
     expected.MakeIdentity();
     expected.Scale3d(4, 4, 4);
 
-    EXPECT_TRANSFORMATION_MATRIX_EQ(
+    ExpectTransformationMatrixEq(
         expected, operations.Blend(*identity_operations[i], progress).Apply());
   }
 }
@@ -750,7 +750,7 @@ TEST(TransformOperationTest, BlendSkewFromEmpty) {
   gfx::Transform expected;
   expected.Skew(1, 1);
 
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
+  ExpectTransformationMatrixEq(
       expected, operations.Blend(empty_operation, progress).Apply());
 
   progress = -0.5f;
@@ -758,7 +758,7 @@ TEST(TransformOperationTest, BlendSkewFromEmpty) {
   expected.MakeIdentity();
   expected.Skew(-1, -1);
 
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
+  ExpectTransformationMatrixEq(
       expected, operations.Blend(empty_operation, progress).Apply());
 
   progress = 1.5f;
@@ -766,7 +766,7 @@ TEST(TransformOperationTest, BlendSkewFromEmpty) {
   expected.MakeIdentity();
   expected.Skew(3, 3);
 
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
+  ExpectTransformationMatrixEq(
       expected, operations.Blend(empty_operation, progress).Apply());
 }
 
@@ -783,7 +783,7 @@ TEST(TransformOperationTest, BlendPerspectiveFromIdentity) {
     gfx::Transform expected;
     expected.ApplyPerspectiveDepth(2000);
 
-    EXPECT_TRANSFORMATION_MATRIX_EQ(
+    ExpectTransformationMatrixEq(
         expected, operations.Blend(*identity_operations[i], progress).Apply());
   }
 }
@@ -801,7 +801,7 @@ TEST(TransformOperationTest, BlendRotationToIdentity) {
     gfx::Transform expected;
     expected.RotateAbout(gfx::Vector3dF(0, 0, 1), 45);
 
-    EXPECT_TRANSFORMATION_MATRIX_EQ(
+    ExpectTransformationMatrixEq(
         expected, identity_operations[i]->Blend(operations, progress).Apply());
   }
 }
@@ -819,7 +819,7 @@ TEST(TransformOperationTest, BlendTranslationToIdentity) {
     gfx::Transform expected;
     expected.Translate3d(1, 1, 1);
 
-    EXPECT_TRANSFORMATION_MATRIX_EQ(
+    ExpectTransformationMatrixEq(
         expected, identity_operations[i]->Blend(operations, progress).Apply());
   }
 }
@@ -837,7 +837,7 @@ TEST(TransformOperationTest, BlendScaleToIdentity) {
     gfx::Transform expected;
     expected.Scale3d(2, 2, 2);
 
-    EXPECT_TRANSFORMATION_MATRIX_EQ(
+    ExpectTransformationMatrixEq(
         expected, identity_operations[i]->Blend(operations, progress).Apply());
   }
 }
@@ -853,7 +853,7 @@ TEST(TransformOperationTest, BlendSkewToEmpty) {
   gfx::Transform expected;
   expected.Skew(1, 1);
 
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
+  ExpectTransformationMatrixEq(
       expected, empty_operation.Blend(operations, progress).Apply());
 }
 
@@ -870,7 +870,7 @@ TEST(TransformOperationTest, BlendPerspectiveToIdentity) {
     gfx::Transform expected;
     expected.ApplyPerspectiveDepth(2000);
 
-    EXPECT_TRANSFORMATION_MATRIX_EQ(
+    ExpectTransformationMatrixEq(
         expected, identity_operations[i]->Blend(operations, progress).Apply());
   }
 }
@@ -885,14 +885,14 @@ TEST(TransformOperationTest, ExtrapolatePerspectiveBlending) {
   gfx::Transform expected;
   expected.ApplyPerspectiveDepth(400);
 
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected,
-                                  operations1.Blend(operations2, -0.5).Apply());
+  ExpectTransformationMatrixEq(expected,
+                               operations1.Blend(operations2, -0.5).Apply());
 
   expected.MakeIdentity();
   expected.ApplyPerspectiveDepth(2000);
 
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected,
-                                  operations1.Blend(operations2, 1.5).Apply());
+  ExpectTransformationMatrixEq(expected,
+                               operations1.Blend(operations2, 1.5).Apply());
 }
 
 TEST(TransformOperationTest, ExtrapolateMatrixBlending) {
@@ -907,12 +907,12 @@ TEST(TransformOperationTest, ExtrapolateMatrixBlending) {
   operations2.AppendMatrix(transform2);
 
   gfx::Transform expected;
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected,
-                                  operations1.Blend(operations2, 1.5).Apply());
+  ExpectTransformationMatrixEq(expected,
+                               operations1.Blend(operations2, 1.5).Apply());
 
   expected.Translate3d(4, 4, 4);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected,
-                                  operations1.Blend(operations2, -0.5).Apply());
+  ExpectTransformationMatrixEq(expected,
+                               operations1.Blend(operations2, -0.5).Apply());
 }
 
 TEST(TransformOperationTest, NonDecomposableBlend) {
@@ -925,18 +925,18 @@ TEST(TransformOperationTest, NonDecomposableBlend) {
   identity_transform.AppendMatrix(identity_matrix);
 
   // Before the half-way point, we should return the 'from' matrix.
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
+  ExpectTransformationMatrixEq(
       non_decomposible_matrix,
       identity_transform.Blend(non_decomposible_transform, 0.0f).Apply());
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
+  ExpectTransformationMatrixEq(
       non_decomposible_matrix,
       identity_transform.Blend(non_decomposible_transform, 0.49f).Apply());
 
   // After the half-way point, we should return the 'to' matrix.
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
+  ExpectTransformationMatrixEq(
       identity_matrix,
       identity_transform.Blend(non_decomposible_transform, 0.5f).Apply());
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
+  ExpectTransformationMatrixEq(
       identity_matrix,
       identity_transform.Blend(non_decomposible_transform, 1.0f).Apply());
 }
@@ -1001,13 +1001,13 @@ TEST(TransformOperationTest, BlendedBoundsForTranslate) {
             bounds.ToString());
 
   TransformOperations identity;
-  EXPECT_TRUE(operations_to.BlendedBoundsForBox(
-        box, identity, min_progress, max_progress, &bounds));
+  EXPECT_TRUE(operations_to.BlendedBoundsForBox(box, identity, min_progress,
+                                                max_progress, &bounds));
   EXPECT_EQ(gfx::BoxF(1.f, 2.f, 1.f, 11.f, 8.f, 6.f).ToString(),
             bounds.ToString());
 
-  EXPECT_TRUE(identity.BlendedBoundsForBox(
-        box, operations_from, min_progress, max_progress, &bounds));
+  EXPECT_TRUE(identity.BlendedBoundsForBox(box, operations_from, min_progress,
+                                           max_progress, &bounds));
   EXPECT_EQ(gfx::BoxF(1.f, -2.f, 3.f, 7.f, 8.f, 6.f).ToString(),
             bounds.ToString());
 }
@@ -1036,13 +1036,13 @@ TEST(TransformOperationTest, BlendedBoundsForScale) {
             bounds.ToString());
 
   TransformOperations identity;
-  EXPECT_TRUE(operations_to.BlendedBoundsForBox(
-        box, identity, min_progress, max_progress, &bounds));
+  EXPECT_TRUE(operations_to.BlendedBoundsForBox(box, identity, min_progress,
+                                                max_progress, &bounds));
   EXPECT_EQ(gfx::BoxF(1.f, 2.f, -14.f, 34.f, 22.f, 21.f).ToString(),
             bounds.ToString());
 
-  EXPECT_TRUE(identity.BlendedBoundsForBox(
-        box, operations_from, min_progress, max_progress, &bounds));
+  EXPECT_TRUE(identity.BlendedBoundsForBox(box, operations_from, min_progress,
+                                           max_progress, &bounds));
   EXPECT_EQ(gfx::BoxF(1.f, 1.f, 3.f, 14.f, 5.f, 11.f).ToString(),
             bounds.ToString());
 }
@@ -1058,18 +1058,18 @@ TEST(TransformOperationTest, BlendedBoundsWithZeroScale) {
 
   SkScalar min_progress = 0.f;
   SkScalar max_progress = 1.f;
-  EXPECT_TRUE(zero_scale.BlendedBoundsForBox(
-      box, non_zero_scale, min_progress, max_progress, &bounds));
+  EXPECT_TRUE(zero_scale.BlendedBoundsForBox(box, non_zero_scale, min_progress,
+                                             max_progress, &bounds));
   EXPECT_EQ(gfx::BoxF(0.f, -24.f, 0.f, 10.f, 24.f, 35.f).ToString(),
             bounds.ToString());
 
-  EXPECT_TRUE(non_zero_scale.BlendedBoundsForBox(
-      box, zero_scale, min_progress, max_progress, &bounds));
+  EXPECT_TRUE(non_zero_scale.BlendedBoundsForBox(box, zero_scale, min_progress,
+                                                 max_progress, &bounds));
   EXPECT_EQ(gfx::BoxF(0.f, -24.f, 0.f, 10.f, 24.f, 35.f).ToString(),
             bounds.ToString());
 
-  EXPECT_TRUE(zero_scale.BlendedBoundsForBox(
-      box, zero_scale, min_progress, max_progress, &bounds));
+  EXPECT_TRUE(zero_scale.BlendedBoundsForBox(box, zero_scale, min_progress,
+                                             max_progress, &bounds));
   EXPECT_EQ(gfx::BoxF().ToString(), bounds.ToString());
 }
 
@@ -1080,13 +1080,12 @@ TEST(TransformOperationTest, BlendedBoundsForRotationTrivial) {
   operations_to.AppendRotate(0.f, 0.f, 1.f, 360.f);
 
   float sqrt_2 = sqrt(2.f);
-  gfx::BoxF box(
-      -sqrt_2, -sqrt_2, 0.f, sqrt_2, sqrt_2, 0.f);
+  gfx::BoxF box(-sqrt_2, -sqrt_2, 0.f, sqrt_2, sqrt_2, 0.f);
   gfx::BoxF bounds;
 
   // Since we're rotating 360 degrees, any box with dimensions between 0 and
   // 2 * sqrt(2) should give the same result.
-  float sizes[] = { 0.f, 0.1f, sqrt_2, 2.f * sqrt_2 };
+  float sizes[] = {0.f, 0.1f, sqrt_2, 2.f * sqrt_2};
   for (size_t i = 0; i < base::size(sizes); ++i) {
     box.set_size(sizes[i], sizes[i], 0.f);
     SkScalar min_progress = 0.f;
@@ -1113,8 +1112,8 @@ TEST(TransformOperationTest, BlendedBoundsForRotationAllExtrema) {
   float min = -1.f / 3.f;
   float max = 1.f;
   float size = max - min;
-  EXPECT_TRUE(operations_to.BlendedBoundsForBox(
-      box, operations_from, 0.f, 1.f, &bounds));
+  EXPECT_TRUE(operations_to.BlendedBoundsForBox(box, operations_from, 0.f, 1.f,
+                                                &bounds));
   EXPECT_EQ(gfx::BoxF(min, min, min, size, size, size).ToString(),
             bounds.ToString());
 }
@@ -1135,12 +1134,12 @@ TEST(TransformOperationTest, BlendedBoundsForRotationDifferentAxes) {
   gfx::BoxF box(1.f, 0.f, 0.f, 0.f, 0.f, 0.f);
   gfx::BoxF bounds;
 
-  EXPECT_TRUE(operations_to_same.BlendedBoundsForBox(
-      box, operations_from, 0.f, 1.f, &bounds));
-  EXPECT_TRUE(operations_to_opposite.BlendedBoundsForBox(
-      box, operations_from, 0.f, 1.f, &bounds));
-  EXPECT_FALSE(operations_to_different.BlendedBoundsForBox(
-      box, operations_from, 0.f, 1.f, &bounds));
+  EXPECT_TRUE(operations_to_same.BlendedBoundsForBox(box, operations_from, 0.f,
+                                                     1.f, &bounds));
+  EXPECT_TRUE(operations_to_opposite.BlendedBoundsForBox(box, operations_from,
+                                                         0.f, 1.f, &bounds));
+  EXPECT_FALSE(operations_to_different.BlendedBoundsForBox(box, operations_from,
+                                                           0.f, 1.f, &bounds));
 }
 
 TEST(TransformOperationTest, BlendedBoundsForRotationPointOnAxis) {
@@ -1154,8 +1153,8 @@ TEST(TransformOperationTest, BlendedBoundsForRotationPointOnAxis) {
   gfx::BoxF box(1.f, 1.f, 1.f, 0.f, 0.f, 0.f);
   gfx::BoxF bounds;
 
-  EXPECT_TRUE(operations_to.BlendedBoundsForBox(
-      box, operations_from, 0.f, 1.f, &bounds));
+  EXPECT_TRUE(operations_to.BlendedBoundsForBox(box, operations_from, 0.f, 1.f,
+                                                &bounds));
   EXPECT_EQ(box.ToString(), bounds.ToString());
 }
 
@@ -1193,8 +1192,8 @@ TEST(TransformOperationTest, BlendedBoundsForRotationProblematicAxes) {
     gfx::BoxF box(1.f, 1.f, 1.f, 0.f, 0.f, 0.f);
     gfx::BoxF bounds;
 
-    EXPECT_TRUE(operations_to.BlendedBoundsForBox(
-        box, operations_from, 0.f, 1.f, &bounds));
+    EXPECT_TRUE(operations_to.BlendedBoundsForBox(box, operations_from, 0.f,
+                                                  1.f, &bounds));
     EXPECT_EQ(tests[i].expected.ToString(), bounds.ToString());
   }
 }
@@ -1244,11 +1243,9 @@ static void EmpiricallyTestBounds(const TransformOperations& from,
     // Convert to the screen space rects these boxes represent.
     gfx::Rect bounds_rect = ToEnclosingRect(
         gfx::RectF(bounds.x(), bounds.y(), bounds.width(), bounds.height()));
-    gfx::Rect unified_bounds_rect =
-        ToEnclosingRect(gfx::RectF(unified_bounds.x(),
-                                   unified_bounds.y(),
-                                   unified_bounds.width(),
-                                   unified_bounds.height()));
+    gfx::Rect unified_bounds_rect = ToEnclosingRect(
+        gfx::RectF(unified_bounds.x(), unified_bounds.y(),
+                   unified_bounds.width(), unified_bounds.height()));
     EXPECT_EQ(bounds_rect.ToString(), unified_bounds_rect.ToString());
   } else {
     // Our empirical estimate will be a little rough since we're only doing
@@ -1281,35 +1278,18 @@ TEST(TransformOperationTest, BlendedBoundsForRotationEmpiricalTests) {
     float x;
     float y;
     float z;
-  } axes[] = {{1.f, 1.f, 1.f},
-              {-1.f, -1.f, -1.f},
-              {-1.f, 2.f, 3.f},
-              {1.f, -2.f, 3.f},
-              {1.f, 2.f, -3.f},
-              {0.f, 0.f, 0.f},
-              {1.f, 0.f, 0.f},
-              {0.f, 1.f, 0.f},
-              {0.f, 0.f, 1.f},
-              {1.f, 1.f, 0.f},
-              {0.f, 1.f, 1.f},
-              {1.f, 0.f, 1.f},
-              {-1.f, 0.f, 0.f},
-              {0.f, -1.f, 0.f},
-              {0.f, 0.f, -1.f},
-              {-1.f, -1.f, 0.f},
-              {0.f, -1.f, -1.f},
-              {-1.f, 0.f, -1.f}};
+  } axes[] = {{1.f, 1.f, 1.f},   {-1.f, -1.f, -1.f}, {-1.f, 2.f, 3.f},
+              {1.f, -2.f, 3.f},  {1.f, 2.f, -3.f},   {0.f, 0.f, 0.f},
+              {1.f, 0.f, 0.f},   {0.f, 1.f, 0.f},    {0.f, 0.f, 1.f},
+              {1.f, 1.f, 0.f},   {0.f, 1.f, 1.f},    {1.f, 0.f, 1.f},
+              {-1.f, 0.f, 0.f},  {0.f, -1.f, 0.f},   {0.f, 0.f, -1.f},
+              {-1.f, -1.f, 0.f}, {0.f, -1.f, -1.f},  {-1.f, 0.f, -1.f}};
 
   struct {
     float theta_from;
     float theta_to;
-  } angles[] = {{5.f, 10.f},
-                {10.f, 5.f},
-                {0.f, 360.f},
-                {20.f, 180.f},
-                {-20.f, -180.f},
-                {180.f, -220.f},
-                {220.f, 320.f}};
+  } angles[] = {{5.f, 10.f},     {10.f, 5.f},     {0.f, 360.f},  {20.f, 180.f},
+                {-20.f, -180.f}, {180.f, -220.f}, {220.f, 320.f}};
 
   // We can go beyond the range [0, 1] (the bezier might slide out of this range
   // at either end), but since the first and last knots are at (0, 0) and (1, 1)
@@ -1318,8 +1298,9 @@ TEST(TransformOperationTest, BlendedBoundsForRotationEmpiricalTests) {
     float min_progress;
     float max_progress;
   } progress[] = {
-        {0.f, 1.f}, {-.25f, 1.25f},
-    };
+      {0.f, 1.f},
+      {-.25f, 1.25f},
+  };
 
   for (size_t i = 0; i < base::size(axes); ++i) {
     for (size_t j = 0; j < base::size(angles); ++j) {
@@ -1331,8 +1312,7 @@ TEST(TransformOperationTest, BlendedBoundsForRotationEmpiricalTests) {
         operations_from.AppendRotate(x, y, z, angles[j].theta_from);
         TransformOperations operations_to;
         operations_to.AppendRotate(x, y, z, angles[j].theta_to);
-        EmpiricallyTestBoundsContainment(operations_from,
-                                         operations_to,
+        EmpiricallyTestBoundsContainment(operations_from, operations_to,
                                          progress[k].min_progress,
                                          progress[k].max_progress);
       }
@@ -1341,30 +1321,30 @@ TEST(TransformOperationTest, BlendedBoundsForRotationEmpiricalTests) {
 }
 
 TEST(TransformOperationTest, PerspectiveMatrixAndTransformBlendingEquivalency) {
-    TransformOperations from_operations;
-    from_operations.AppendPerspective(200);
+  TransformOperations from_operations;
+  from_operations.AppendPerspective(200);
 
-    TransformOperations to_operations;
-    to_operations.AppendPerspective(1000);
+  TransformOperations to_operations;
+  to_operations.AppendPerspective(1000);
 
-    gfx::Transform from_transform;
-    from_transform.ApplyPerspectiveDepth(200);
+  gfx::Transform from_transform;
+  from_transform.ApplyPerspectiveDepth(200);
 
-    gfx::Transform to_transform;
-    to_transform.ApplyPerspectiveDepth(1000);
+  gfx::Transform to_transform;
+  to_transform.ApplyPerspectiveDepth(1000);
 
-    static const int steps = 20;
-    for (int i = 0; i < steps; ++i) {
-      double progress = static_cast<double>(i) / (steps - 1);
+  static const int steps = 20;
+  for (int i = 0; i < steps; ++i) {
+    double progress = static_cast<double>(i) / (steps - 1);
 
-      gfx::Transform blended_matrix = to_transform;
-      EXPECT_TRUE(blended_matrix.Blend(from_transform, progress));
+    gfx::Transform blended_matrix = to_transform;
+    EXPECT_TRUE(blended_matrix.Blend(from_transform, progress));
 
-      gfx::Transform blended_transform =
-          to_operations.Blend(from_operations, progress).Apply();
+    gfx::Transform blended_transform =
+        to_operations.Blend(from_operations, progress).Apply();
 
-      EXPECT_TRANSFORMATION_MATRIX_EQ(blended_matrix, blended_transform);
-    }
+    ExpectTransformationMatrixEq(blended_matrix, blended_transform);
+  }
 }
 
 TEST(TransformOperationTest, BlendedBoundsForPerspective) {
@@ -1372,17 +1352,18 @@ TEST(TransformOperationTest, BlendedBoundsForPerspective) {
     float from_depth;
     float to_depth;
   } perspective_depths[] = {
-        {600.f, 400.f},
-        {800.f, 1000.f},
-        {800.f, std::numeric_limits<float>::infinity()},
-    };
+      {600.f, 400.f},
+      {800.f, 1000.f},
+      {800.f, std::numeric_limits<float>::infinity()},
+  };
 
   struct {
     float min_progress;
     float max_progress;
   } progress[] = {
-        {0.f, 1.f}, {-0.1f, 1.1f},
-    };
+      {0.f, 1.f},
+      {-0.1f, 1.1f},
+  };
 
   for (size_t i = 0; i < base::size(perspective_depths); ++i) {
     for (size_t j = 0; j < base::size(progress); ++j) {
@@ -1390,8 +1371,7 @@ TEST(TransformOperationTest, BlendedBoundsForPerspective) {
       operations_from.AppendPerspective(perspective_depths[i].from_depth);
       TransformOperations operations_to;
       operations_to.AppendPerspective(perspective_depths[i].to_depth);
-      EmpiricallyTestBoundsEquality(operations_from,
-                                    operations_to,
+      EmpiricallyTestBoundsEquality(operations_from, operations_to,
                                     progress[j].min_progress,
                                     progress[j].max_progress);
     }
@@ -1405,15 +1385,17 @@ TEST(TransformOperationTest, BlendedBoundsForSkew) {
     float to_x;
     float to_y;
   } skews[] = {
-        {1.f, 0.5f, 0.5f, 1.f}, {2.f, 1.f, 0.5f, 0.5f},
-    };
+      {1.f, 0.5f, 0.5f, 1.f},
+      {2.f, 1.f, 0.5f, 0.5f},
+  };
 
   struct {
     float min_progress;
     float max_progress;
   } progress[] = {
-        {0.f, 1.f}, {-0.1f, 1.1f},
-    };
+      {0.f, 1.f},
+      {-0.1f, 1.1f},
+  };
 
   for (size_t i = 0; i < base::size(skews); ++i) {
     for (size_t j = 0; j < base::size(progress); ++j) {
@@ -1421,8 +1403,7 @@ TEST(TransformOperationTest, BlendedBoundsForSkew) {
       operations_from.AppendSkew(skews[i].from_x, skews[i].from_y);
       TransformOperations operations_to;
       operations_to.AppendSkew(skews[i].to_x, skews[i].to_y);
-      EmpiricallyTestBoundsEquality(operations_from,
-                                    operations_to,
+      EmpiricallyTestBoundsEquality(operations_from, operations_to,
                                     progress[j].min_progress,
                                     progress[j].max_progress);
     }
@@ -1481,13 +1462,13 @@ TEST(TransformOperationTest, BlendedBoundsForSequence) {
             bounds.ToString());
 
   TransformOperations identity;
-  EXPECT_TRUE(operations_to.BlendedBoundsForBox(
-        box, identity, min_progress, max_progress, &bounds));
+  EXPECT_TRUE(operations_to.BlendedBoundsForBox(box, identity, min_progress,
+                                                max_progress, &bounds));
   EXPECT_EQ(gfx::BoxF(-33.f, -13.f, 3.f, 57.f, 19.f, 52.f).ToString(),
             bounds.ToString());
 
-  EXPECT_TRUE(identity.BlendedBoundsForBox(
-        box, operations_from, min_progress, max_progress, &bounds));
+  EXPECT_TRUE(identity.BlendedBoundsForBox(box, operations_from, min_progress,
+                                           max_progress, &bounds));
   EXPECT_EQ(gfx::BoxF(-7.f, -3.f, 2.f, 15.f, 23.f, 20.f).ToString(),
             bounds.ToString());
 }
@@ -1828,4 +1809,4 @@ TEST(TransformOperationTest, BlendSkewMatch) {
   ExpectTransformOperationEqual(blended_ops.at(1), expected_ops.at(1));
 }
 
-}  // namespace cc
+}  // namespace gfx

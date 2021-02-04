@@ -4,19 +4,19 @@
 
 #include "third_party/blink/renderer/platform/animation/compositor_transform_operations.h"
 
-#include "cc/animation/transform_operation.h"
 #include "third_party/skia/include/core/SkMatrix44.h"
 #include "ui/gfx/transform.h"
+#include "ui/gfx/transform_operations.h"
 
 namespace blink {
 
-const cc::TransformOperations&
-CompositorTransformOperations::AsCcTransformOperations() const {
+const gfx::TransformOperations&
+CompositorTransformOperations::AsGfxTransformOperations() const {
   return transform_operations_;
 }
 
-cc::TransformOperations
-CompositorTransformOperations::ReleaseCcTransformOperations() {
+gfx::TransformOperations
+CompositorTransformOperations::ReleaseGfxTransformOperations() {
   return std::move(transform_operations_);
 }
 

@@ -14,7 +14,7 @@ CompositorTransformKeyframe::CompositorTransformKeyframe(
     const TimingFunction& timing_function)
     : transform_keyframe_(
           cc::TransformKeyframe::Create(base::TimeDelta::FromSecondsD(time),
-                                        value.ReleaseCcTransformOperations(),
+                                        value.ReleaseGfxTransformOperations(),
                                         timing_function.CloneToCC())) {}
 
 CompositorTransformKeyframe::~CompositorTransformKeyframe() = default;

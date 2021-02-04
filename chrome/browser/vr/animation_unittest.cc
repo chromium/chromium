@@ -28,8 +28,8 @@ class TestAnimationTarget : public cc::AnimationTarget {
   }
 
   const gfx::SizeF& size() const { return size_; }
-  const cc::TransformOperations& operations() const { return operations_; }
-  const cc::TransformOperations& layout_offset() const {
+  const gfx::TransformOperations& operations() const { return operations_; }
+  const gfx::TransformOperations& layout_offset() const {
     return layout_offset_;
   }
   float opacity() const { return opacity_; }
@@ -42,7 +42,7 @@ class TestAnimationTarget : public cc::AnimationTarget {
   }
 
   void NotifyClientTransformOperationsAnimated(
-      const cc::TransformOperations& operations,
+      const gfx::TransformOperations& operations,
       int target_property_id,
       cc::KeyframeModel* keyframe_model) override {
     if (target_property_id == LAYOUT_OFFSET) {
@@ -72,8 +72,8 @@ class TestAnimationTarget : public cc::AnimationTarget {
       cc::KeyframeModel* keyframe_model) override {}
 
  private:
-  cc::TransformOperations layout_offset_;
-  cc::TransformOperations operations_;
+  gfx::TransformOperations layout_offset_;
+  gfx::TransformOperations operations_;
   gfx::SizeF size_ = {10.0f, 10.0f};
   float opacity_ = 1.0f;
   SkColor background_color_ = SK_ColorRED;
@@ -89,9 +89,9 @@ TEST(AnimationTest, AddRemoveKeyframeModels) {
   EXPECT_EQ(1ul, animation.keyframe_models().size());
   EXPECT_EQ(BOUNDS, animation.keyframe_models()[0]->target_property_type());
 
-  cc::TransformOperations from_operations;
+  gfx::TransformOperations from_operations;
   from_operations.AppendTranslate(10, 100, 1000);
-  cc::TransformOperations to_operations;
+  gfx::TransformOperations to_operations;
   to_operations.AppendTranslate(20, 200, 2000);
   animation.AddKeyframeModel(CreateTransformAnimation(
       2, 2, from_operations, to_operations, MicrosecondsToDelta(10000)));
@@ -164,9 +164,9 @@ TEST(AnimationTest, AnimationQueue) {
                                                    gfx::SizeF(20, 200),
                                                    MicrosecondsToDelta(10000)));
 
-  cc::TransformOperations from_operations;
+  gfx::TransformOperations from_operations;
   from_operations.AppendTranslate(10, 100, 1000);
-  cc::TransformOperations to_operations;
+  gfx::TransformOperations to_operations;
   to_operations.AppendTranslate(20, 200, 2000);
   animation.AddKeyframeModel(CreateTransformAnimation(
       3, 2, from_operations, to_operations, MicrosecondsToDelta(10000)));
@@ -307,9 +307,9 @@ TEST(AnimationTest, LayoutOffsetTransitions) {
   base::TimeTicks start_time = MicrosecondsToTicks(1000000);
   animation.Tick(start_time);
 
-  cc::TransformOperations from = target.layout_offset();
+  gfx::TransformOperations from = target.layout_offset();
 
-  cc::TransformOperations to;
+  gfx::TransformOperations to;
   to.AppendTranslate(8, 0, 0);
 
   animation.TransitionTransformOperationsTo(start_time, LAYOUT_OFFSET, from,
@@ -320,7 +320,7 @@ TEST(AnimationTest, LayoutOffsetTransitions) {
 
   // Scheduling a redundant, approximately equal transition should be ignored.
   int keyframe_model_id = animation.keyframe_models().front()->id();
-  cc::TransformOperations nearby = to;
+  gfx::TransformOperations nearby = to;
   nearby.at(0).translate.x += kNoise;
   animation.TransitionTransformOperationsTo(start_time, LAYOUT_OFFSET, from,
                                             nearby);
@@ -347,9 +347,9 @@ TEST(AnimationTest, TransformTransitions) {
   base::TimeTicks start_time = MicrosecondsToTicks(1000000);
   animation.Tick(start_time);
 
-  cc::TransformOperations from = target.operations();
+  gfx::TransformOperations from = target.operations();
 
-  cc::TransformOperations to;
+  gfx::TransformOperations to;
   to.AppendTranslate(8, 0, 0);
   to.AppendRotate(1, 0, 0, 0);
   to.AppendScale(1, 1, 1);
@@ -361,7 +361,7 @@ TEST(AnimationTest, TransformTransitions) {
 
   // Scheduling a redundant, approximately equal transition should be ignored.
   int keyframe_model_id = animation.keyframe_models().front()->id();
-  cc::TransformOperations nearby = to;
+  gfx::TransformOperations nearby = to;
   nearby.at(0).translate.x += kNoise;
   animation.TransitionTransformOperationsTo(start_time, TRANSFORM, from,
                                             nearby);
@@ -388,9 +388,9 @@ TEST(AnimationTest, ReversedTransformTransitions) {
   base::TimeTicks start_time = MicrosecondsToTicks(1000000);
   animation.Tick(start_time);
 
-  cc::TransformOperations from = target.operations();
+  gfx::TransformOperations from = target.operations();
 
-  cc::TransformOperations to;
+  gfx::TransformOperations to;
   to.AppendTranslate(8, 0, 0);
   to.AppendRotate(1, 0, 0, 0);
   to.AppendScale(1, 1, 1);
@@ -401,7 +401,7 @@ TEST(AnimationTest, ReversedTransformTransitions) {
   animation.Tick(start_time);
 
   animation.Tick(start_time + MicrosecondsToDelta(1000));
-  cc::TransformOperations value_before_reversing = target.operations();
+  gfx::TransformOperations value_before_reversing = target.operations();
   EXPECT_LT(from.at(0).translate.x, target.operations().at(0).translate.x);
   EXPECT_GT(to.at(0).translate.x, target.operations().at(0).translate.x);
 
@@ -657,9 +657,9 @@ TEST(AnimationTest, CorrectTargetValue) {
   gfx::SizeF to_bounds = gfx::SizeF(20, 200);
   SkColor from_color = SK_ColorRED;
   SkColor to_color = SK_ColorGREEN;
-  cc::TransformOperations from_transform;
+  gfx::TransformOperations from_transform;
   from_transform.AppendTranslate(10, 100, 1000);
-  cc::TransformOperations to_transform;
+  gfx::TransformOperations to_transform;
   to_transform.AppendTranslate(20, 200, 2000);
 
   // Verify the default value is returned if there's no running animations.

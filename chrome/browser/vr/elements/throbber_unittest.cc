@@ -6,14 +6,14 @@
 
 #include <memory>
 
-#include "cc/animation/transform_operation.h"
-#include "cc/animation/transform_operations.h"
 #include "chrome/browser/vr/elements/ui_element.h"
 #include "chrome/browser/vr/target_property.h"
 #include "chrome/browser/vr/test/animation_utils.h"
 #include "chrome/browser/vr/test/constants.h"
 #include "chrome/browser/vr/ui_scene.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/transform_operation.h"
+#include "ui/gfx/transform_operations.h"
 
 namespace vr {
 

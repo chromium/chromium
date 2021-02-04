@@ -92,8 +92,8 @@ bool SufficientlyEqual(float lhs, float rhs) {
   return base::IsApproximatelyEqual(lhs, rhs, kTolerance);
 }
 
-bool SufficientlyEqual(const cc::TransformOperations& lhs,
-                       const cc::TransformOperations& rhs) {
+bool SufficientlyEqual(const gfx::TransformOperations& lhs,
+                       const gfx::TransformOperations& rhs) {
   return lhs.ApproximatelyEqual(rhs, kTolerance);
 }
 
@@ -129,7 +129,7 @@ struct AnimationTraits {};
   }
 
 DEFINE_ANIMATION_TRAITS(float, Float, Float);
-DEFINE_ANIMATION_TRAITS(cc::TransformOperations,
+DEFINE_ANIMATION_TRAITS(gfx::TransformOperations,
                         Transform,
                         TransformOperations);
 DEFINE_ANIMATION_TRAITS(gfx::SizeF, Size, Size);
@@ -232,10 +232,10 @@ void Animation::TransitionFloatTo(base::TimeTicks monotonic_time,
 void Animation::TransitionTransformOperationsTo(
     base::TimeTicks monotonic_time,
     int target_property,
-    const cc::TransformOperations& current,
-    const cc::TransformOperations& target) {
-  TransitionValueTo<cc::TransformOperations>(monotonic_time, target_property,
-                                             current, target);
+    const gfx::TransformOperations& current,
+    const gfx::TransformOperations& target) {
+  TransitionValueTo<gfx::TransformOperations>(monotonic_time, target_property,
+                                              current, target);
 }
 
 void Animation::TransitionSizeTo(base::TimeTicks monotonic_time,
@@ -266,11 +266,11 @@ float Animation::GetTargetFloatValue(int target_property,
   return GetTargetValue<float>(target_property, default_value);
 }
 
-cc::TransformOperations Animation::GetTargetTransformOperationsValue(
+gfx::TransformOperations Animation::GetTargetTransformOperationsValue(
     int target_property,
-    const cc::TransformOperations& default_value) const {
-  return GetTargetValue<cc::TransformOperations>(target_property,
-                                                 default_value);
+    const gfx::TransformOperations& default_value) const {
+  return GetTargetValue<gfx::TransformOperations>(target_property,
+                                                  default_value);
 }
 
 gfx::SizeF Animation::GetTargetSizeValue(

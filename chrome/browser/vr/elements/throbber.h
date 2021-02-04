@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_VR_ELEMENTS_THROBBER_H_
 #define CHROME_BROWSER_VR_ELEMENTS_THROBBER_H_
 
-#include "cc/animation/transform_operation.h"
 #include "chrome/browser/vr/elements/rect.h"
 #include "chrome/browser/vr/vr_ui_export.h"
+#include "ui/gfx/transform_operation.h"
 
 namespace vr {
 
@@ -25,7 +25,7 @@ class VR_UI_EXPORT Throbber : public Rect {
   void SetCircleGrowAnimationEnabled(bool enabled);
 
  private:
-  cc::TransformOperation scale_before_animation_;
+  gfx::TransformOperation scale_before_animation_;
   float opacity_before_animation_ = 0.f;
 
   DISALLOW_COPY_AND_ASSIGN(Throbber);

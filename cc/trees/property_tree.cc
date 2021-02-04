@@ -24,6 +24,7 @@
 #include "cc/trees/transform_node.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
+#include "ui/gfx/transform_util.h"
 
 namespace cc {
 
@@ -574,7 +575,7 @@ void TransformTree::SetRootScaleAndTransform(
     const gfx::Transform& device_transform) {
   device_scale_factor_ = device_scale_factor;
   gfx::Vector2dF device_transform_scale_components =
-      MathUtil::ComputeTransform2dScaleComponents(device_transform, 1.f);
+      gfx::ComputeTransform2dScaleComponents(device_transform, 1.f);
 
   // Not handling the rare case of different x and y device scale.
   device_transform_scale_factor_ =
@@ -589,8 +590,7 @@ void TransformTree::SetRootScaleAndTransform(
   gfx::Transform transform = device_transform;
   transform.Scale(device_scale_factor, device_scale_factor);
   gfx::Vector2dF screen_space_scale =
-      MathUtil::ComputeTransform2dScaleComponents(transform,
-                                                  device_scale_factor);
+      gfx::ComputeTransform2dScaleComponents(transform, device_scale_factor);
   DCHECK_NE(screen_space_scale.x(), 0.f);
   DCHECK_NE(screen_space_scale.y(), 0.f);
 
@@ -818,9 +818,8 @@ void EffectTree::UpdateSurfaceContentsScale(EffectNode* effect_node) {
     layer_scale_factor *= transform_tree.page_scale_factor();
 
   const gfx::Vector2dF old_scale = effect_node->surface_contents_scale;
-  effect_node->surface_contents_scale =
-      MathUtil::ComputeTransform2dScaleComponents(
-          transform_tree.ToScreen(transform_node->id), layer_scale_factor);
+  effect_node->surface_contents_scale = gfx::ComputeTransform2dScaleComponents(
+      transform_tree.ToScreen(transform_node->id), layer_scale_factor);
 
   // If surface contents scale changes, draw transforms are no longer valid.
   // Invalidates the draw transform cache and updates the clip for the surface.
@@ -2093,15 +2092,14 @@ const AnimationScaleData& PropertyTrees::GetAnimationScaleData(
     // Will use the parent's maximum_to_screen_scale.
   } else if (!node->to_screen_is_potentially_animated) {
     // No transform animations. Calculate the current to_screen scale.
-    gfx::Vector2dF to_screen_scales =
-        MathUtil::ComputeTransform2dScaleComponents(
-            transform_tree.ToScreen(transform_id), kInvalidScale);
+    gfx::Vector2dF to_screen_scales = gfx::ComputeTransform2dScaleComponents(
+        transform_tree.ToScreen(transform_id), kInvalidScale);
     animation_scale.maximum_to_screen_scale =
         std::max(to_screen_scales.x(), to_screen_scales.y());
     return animation_scale;
   } else if (!node->has_potential_animation) {
     gfx::Vector2dF local_scales =
-        MathUtil::ComputeTransform2dScaleComponents(node->local, 1.0f);
+        gfx::ComputeTransform2dScaleComponents(node->local, 1.0f);
     local_maximum_scale = std::max(local_scales.x(), local_scales.y());
   } else {
     DCHECK_NE(node->maximum_animation_scale, kInvalidScale);
