@@ -88,7 +88,7 @@ class ExtensionViewHost
                              const gfx::Size& new_size) override;
 
   // content::WebContentsObserver
-  void RenderViewCreated(content::RenderViewHost* render_view_host) override;
+  void RenderFrameCreated(content::RenderFrameHost* frame_host) override;
 
   // web_modal::WebContentsModalDialogManagerDelegate
   web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()

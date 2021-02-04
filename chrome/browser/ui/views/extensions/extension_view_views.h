@@ -12,10 +12,6 @@
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
 
-namespace content {
-class RenderViewHost;
-}
-
 namespace extensions {
 class ExtensionViewHost;
 }
@@ -55,7 +51,7 @@ class ExtensionViewViews : public views::WebView,
   gfx::NativeView GetNativeView() override;
   void ResizeDueToAutoResize(content::WebContents* web_contents,
                              const gfx::Size& new_size) override;
-  void RenderViewCreated(content::RenderViewHost* render_view_host) override;
+  void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
   bool HandleKeyboardEvent(
       content::WebContents* source,
       const content::NativeWebKeyboardEvent& event) override;

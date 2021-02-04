@@ -241,10 +241,10 @@ void ExtensionViewHost::ResizeDueToAutoResize(content::WebContents* source,
   view_->ResizeDueToAutoResize(source, new_size);
 }
 
-void ExtensionViewHost::RenderViewCreated(
-    content::RenderViewHost* render_view_host) {
-  ExtensionHost::RenderViewCreated(render_view_host);
-  view_->RenderViewCreated(render_view_host);
+void ExtensionViewHost::RenderFrameCreated(
+    content::RenderFrameHost* frame_host) {
+  ExtensionHost::RenderFrameCreated(frame_host);
+  view_->RenderFrameCreated(frame_host);
 }
 
 web_modal::WebContentsModalDialogHost*

@@ -13,7 +13,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "ipc/ipc_message.h"
@@ -90,13 +89,15 @@ void WebView::SetWebContents(content::WebContents* replacement) {
   DetachWebContentsNativeView();
   WebContentsObserver::Observe(replacement);
   // web_contents() now returns |replacement| from here onwards.
-  UpdateCrashedOverlayView();
   if (wc_owner_.get() != replacement)
     wc_owner_.reset();
   AttachWebContentsNativeView();
-  NotifyAccessibilityWebContentsChanged();
 
-  MaybeEnableAutoResize();
+  if (replacement && replacement->GetMainFrame()->IsRenderFrameCreated()) {
+    SetUpNewMainFrame(replacement->GetMainFrame());
+  } else {
+    LostMainFrame();
+  }
 }
 
 content::BrowserContext* WebView::GetBrowserContext() {
@@ -124,7 +125,8 @@ void WebView::EnableSizingFromWebContents(const gfx::Size& min_size,
   DCHECK(!max_size.IsEmpty());
   min_size_ = min_size;
   max_size_ = max_size;
-  MaybeEnableAutoResize();
+  if (web_contents() && web_contents()->GetMainFrame()->IsRenderFrameCreated())
+    MaybeEnableAutoResize(web_contents()->GetMainFrame());
 }
 
 void WebView::SetCrashedOverlayView(View* crashed_overlay_view) {
@@ -298,31 +300,37 @@ void WebView::OnAXModeAdded(ui::AXMode mode) {
 ////////////////////////////////////////////////////////////////////////////////
 // WebView, content::WebContentsObserver implementation:
 
-void WebView::RenderViewCreated(content::RenderViewHost* render_view_host) {
-  MaybeEnableAutoResize();
+void WebView::RenderFrameCreated(content::RenderFrameHost* render_frame_host) {
+  // Only handle the initial main frame, not speculative ones.
+  if (render_frame_host != web_contents()->GetMainFrame())
+    return;
+
+  SetUpNewMainFrame(render_frame_host);
 }
 
-void WebView::RenderViewReady() {
-  UpdateCrashedOverlayView();
-  NotifyAccessibilityWebContentsChanged();
+void WebView::RenderFrameDeleted(content::RenderFrameHost* render_frame_host) {
+  // Only handle the active main frame, not speculative ones.
+  if (render_frame_host != web_contents()->GetMainFrame())
+    return;
+
+  LostMainFrame();
 }
 
-void WebView::RenderViewDeleted(content::RenderViewHost* render_view_host) {
-  UpdateCrashedOverlayView();
-  NotifyAccessibilityWebContentsChanged();
-}
+void WebView::RenderFrameHostChanged(content::RenderFrameHost* old_host,
+                                     content::RenderFrameHost* new_host) {
+  // Since we skipped speculative main frames in RenderFrameCreated, we must
+  // watch for them being swapped in by watching for RenderFrameHostChanged().
+  if (new_host != web_contents()->GetMainFrame())
+    return;
+  // Ignore the initial main frame host, as there's no renderer frame for it
+  // yet. If the DCHECK fires, then we would need to handle the initial main
+  // frame when it its renderer frame is created.
+  if (!old_host) {
+    DCHECK(!new_host->IsRenderFrameCreated());
+    return;
+  }
 
-void WebView::RenderViewHostChanged(content::RenderViewHost* old_host,
-                                    content::RenderViewHost* new_host) {
-  MaybeEnableAutoResize();
-
-  if (HasFocus())
-    OnFocus();
-  NotifyAccessibilityWebContentsChanged();
-}
-
-void WebView::WebContentsDestroyed() {
-  NotifyAccessibilityWebContentsChanged();
+  SetUpNewMainFrame(new_host);
 }
 
 void WebView::DidToggleFullscreenModeForTab(bool entered_fullscreen,
@@ -336,11 +344,6 @@ void WebView::DidToggleFullscreenModeForTab(bool entered_fullscreen,
 void WebView::OnWebContentsFocused(
     content::RenderWidgetHost* render_widget_host) {
   RequestFocus();
-}
-
-void WebView::RenderProcessGone(base::TerminationStatus status) {
-  UpdateCrashedOverlayView();
-  NotifyAccessibilityWebContentsChanged();
 }
 
 void WebView::AXTreeIDForMainFrameHasChanged() {
@@ -425,15 +428,23 @@ std::unique_ptr<content::WebContents> WebView::CreateWebContents(
   return contents;
 }
 
-void WebView::MaybeEnableAutoResize() {
-  if (max_size_.IsEmpty() || !web_contents() ||
-      !web_contents()->GetRenderWidgetHostView()) {
-    return;
-  }
+void WebView::SetUpNewMainFrame(content::RenderFrameHost* frame_host) {
+  MaybeEnableAutoResize(frame_host);
+  UpdateCrashedOverlayView();
+  NotifyAccessibilityWebContentsChanged();
+  if (HasFocus())
+    OnFocus();
+}
 
-  content::RenderWidgetHostView* render_widget_host_view =
-      web_contents()->GetRenderWidgetHostView();
-  render_widget_host_view->EnableAutoResize(min_size_, max_size_);
+void WebView::LostMainFrame() {
+  UpdateCrashedOverlayView();
+  NotifyAccessibilityWebContentsChanged();
+}
+
+void WebView::MaybeEnableAutoResize(content::RenderFrameHost* frame_host) {
+  DCHECK(frame_host->IsRenderFrameCreated());
+  if (!max_size_.IsEmpty())
+    frame_host->GetView()->EnableAutoResize(min_size_, max_size_);
 }
 
 BEGIN_METADATA(WebView, View)

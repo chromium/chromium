@@ -335,12 +335,12 @@ TEST_F(WebViewUnitTest, CrashedOverlayView) {
   // Normally when a renderer crashes, the WebView will learn about it
   // automatically via WebContentsObserver. Since this is a test
   // WebContents, simulate that by calling SetIsCrashed and then
-  // explicitly calling RenderViewDeleted on the WebView to trigger it
+  // explicitly calling RenderFrameDeleted on the WebView to trigger it
   // to swap in the crashed overlay view.
   web_contents->SetIsCrashed(base::TERMINATION_STATUS_PROCESS_CRASHED, -1);
   EXPECT_TRUE(web_contents->IsCrashed());
   static_cast<content::WebContentsObserver*>(web_view.get())
-      ->RenderViewDeleted(nullptr);
+      ->RenderFrameDeleted(web_contents->GetMainFrame());
   EXPECT_TRUE(crashed_overlay_view->IsDrawn());
 }
 
@@ -362,7 +362,7 @@ TEST_F(WebViewUnitTest, CrashedOverlayViewOwnedbyClient) {
   web_contents->SetIsCrashed(base::TERMINATION_STATUS_PROCESS_CRASHED, -1);
   EXPECT_TRUE(web_contents->IsCrashed());
   static_cast<content::WebContentsObserver*>(web_view.get())
-      ->RenderViewDeleted(nullptr);
+      ->RenderFrameDeleted(web_contents->GetMainFrame());
   EXPECT_TRUE(crashed_overlay_view->IsDrawn());
 
   web_view->SetCrashedOverlayView(nullptr);

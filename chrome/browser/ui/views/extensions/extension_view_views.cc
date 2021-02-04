@@ -86,9 +86,9 @@ void ExtensionViewViews::ResizeDueToAutoResize(
   WebView::ResizeDueToAutoResize(web_contents, new_size);
 }
 
-void ExtensionViewViews::RenderViewCreated(
-    content::RenderViewHost* render_view_host) {
-  WebView::RenderViewCreated(render_view_host);
+void ExtensionViewViews::RenderFrameCreated(
+    content::RenderFrameHost* frame_host) {
+  WebView::RenderFrameCreated(frame_host);
 }
 
 bool ExtensionViewViews::HandleKeyboardEvent(
