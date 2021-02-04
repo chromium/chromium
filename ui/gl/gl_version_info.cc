@@ -169,13 +169,17 @@ void GLVersionInfo::ParseDriverInfo(const char* version_str) {
   if (pieces.size() == 1)
     return;
 
-  constexpr base::StringPiece kVendors[] = {"ANGLE",    "Mesa",  "INTEL",
-                                            "NVIDIA",   "ATI",   "FireGL",
-                                            "Chromium", "APPLE", "AMD"};
+  // Map key strings to driver vendors. We assume the key string is followed by
+  // the driver version.
+  const std::map<base::StringPiece, base::StringPiece> kVendors = {
+      {"ANGLE", "ANGLE"},       {"Mesa", "Mesa"},   {"INTEL", "INTEL"},
+      {"NVIDIA", "NVIDIA"},     {"ATI", "ATI"},     {"FireGL", "FireGL"},
+      {"Chromium", "Chromium"}, {"APPLE", "APPLE"}, {"AMD", "AMD"},
+      {"Metal", "Apple"}};
   for (size_t ii = 1; ii < pieces.size(); ++ii) {
     for (auto vendor : kVendors) {
-      if (pieces[ii] == vendor) {
-        driver_vendor.assign(vendor.data(), vendor.size());
+      if (pieces[ii] == vendor.first) {
+        driver_vendor.assign(vendor.second.data(), vendor.second.size());
         if (ii + 1 < pieces.size())
           driver_version.assign(pieces[ii + 1].data(), pieces[ii + 1].size());
         return;

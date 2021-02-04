@@ -95,6 +95,9 @@ TEST(GLVersionInfoTest, DriverVendorForANGLE) {
        "Profile) Mesa 20.2.4)",
        2, 0, true, true, false, false, "Mesa", "20.2.4"},
       {"OpenGL ES 2.0.0 (ANGLE 2.1.4875 git hash: 32e78475b1c0)",
+       "ANGLE (Apple, Apple A12Z, OpenGL 4.1 Metal - 70.12.7)", 2, 0, true,
+       true, false, false, "Apple", "70.12.7"},
+      {"OpenGL ES 2.0.0 (ANGLE 2.1.4875 git hash: 32e78475b1c0)",
        "ANGLE (NVIDIA Corporation, Quadro P1000/PCIe/SSE2, OpenGL 4.5.0 NVIDIA "
        "440.100)",
        2, 0, true, true, false, false, "NVIDIA", "440.100"},
