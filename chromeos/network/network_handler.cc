@@ -173,6 +173,10 @@ AutoConnectHandler* NetworkHandler::auto_connect_handler() {
   return auto_connect_handler_.get();
 }
 
+CellularESimProfileHandler* NetworkHandler::cellular_esim_profile_handler() {
+  return cellular_esim_profile_handler_.get();
+}
+
 CellularESimUninstallHandler*
 NetworkHandler::cellular_esim_uninstall_handler() {
   return cellular_esim_uninstall_handler_.get();

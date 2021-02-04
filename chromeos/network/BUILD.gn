@@ -52,6 +52,8 @@ component("network") {
     "cellular_inhibitor.h",
     "cellular_metrics_logger.cc",
     "cellular_metrics_logger.h",
+    "cellular_utils.cc",
+    "cellular_utils.h",
     "certificate_helper.cc",
     "certificate_helper.h",
     "client_cert_resolver.cc",
