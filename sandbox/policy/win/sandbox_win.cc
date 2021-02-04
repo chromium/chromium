@@ -975,6 +975,9 @@ ResultCode SandboxWin::StartSandboxedProcess(
       MITIGATION_IMAGE_LOAD_NO_LOW_LABEL |
       MITIGATION_RESTRICT_INDIRECT_BRANCH_PREDICTION;
 
+  if (base::FeatureList::IsEnabled(features::kWinSboxDisableKtmComponent))
+    mitigations |= MITIGATION_KTM_COMPONENT;
+
   if (sandbox_type == SandboxType::kRenderer &&
       !base::FeatureList::IsEnabled(sandbox::policy::kCetForRenderer)) {
     mitigations |= sandbox::MITIGATION_CET_DISABLED;

@@ -19,6 +19,11 @@ const base::Feature kNetworkServiceSandbox{"NetworkServiceSandbox",
 #endif  // !defined(OS_MAC)
 
 #if defined(OS_WIN)
+// Emergency "off switch" for new Windows KTM security mitigation,
+// sandbox::MITIGATION_KTM_COMPONENT.
+const base::Feature kWinSboxDisableKtmComponent{
+    "WinSboxDisableKtmComponent", base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Emergency "off switch" for new Windows sandbox security mitigation,
 // sandbox::MITIGATION_EXTENSION_POINT_DISABLE.
 const base::Feature kWinSboxDisableExtensionPoints{
