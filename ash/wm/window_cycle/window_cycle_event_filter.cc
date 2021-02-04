@@ -77,6 +77,74 @@ void WindowCycleEventFilter::OnKeyEvent(ui::KeyEvent* event) {
     Shell::Get()->window_cycle_controller()->CancelCycling();
 }
 
+void WindowCycleEventFilter::OnMouseEvent(ui::MouseEvent* event) {
+  if (!has_user_used_mouse_)
+    SetHasUserUsedMouse(event);
+
+  if (features::IsInteractiveWindowCycleListEnabled() && has_user_used_mouse_) {
+    WindowCycleController* window_cycle_controller =
+        Shell::Get()->window_cycle_controller();
+    const bool cycle_list_is_visible =
+        window_cycle_controller->IsWindowListVisible();
+    if (cycle_list_is_visible)
+      ProcessMouseEvent(event);
+
+    if (window_cycle_controller->IsEventInCycleView(event) ||
+        !cycle_list_is_visible) {
+      return;
+    }
+  }
+
+  // Prevent mouse clicks from doing anything while the Alt+Tab UI is active
+  // <crbug.com/641171> but don't interfere with drag and drop operations
+  // <crbug.com/660945>.
+  if (event->type() != ui::ET_MOUSE_DRAGGED &&
+      event->type() != ui::ET_MOUSE_RELEASED) {
+    event->StopPropagation();
+  }
+}
+
+void WindowCycleEventFilter::OnScrollEvent(ui::ScrollEvent* event) {
+  // ET_SCROLL_FLING_CANCEL means a touchpad swipe has started.
+  if (event->type() == ui::ET_SCROLL_FLING_CANCEL) {
+    scroll_data_ = ScrollData();
+    return;
+  }
+
+  // ET_SCROLL_FLING_START means a touchpad swipe has ended.
+  if (event->type() == ui::ET_SCROLL_FLING_START) {
+    scroll_data_.reset();
+    return;
+  }
+
+  DCHECK_EQ(ui::ET_SCROLL, event->type());
+
+  if (ProcessEventImpl(event->finger_count(), event->x_offset(),
+                       event->y_offset())) {
+    event->SetHandled();
+    event->StopPropagation();
+  }
+}
+
+void WindowCycleEventFilter::OnGestureEvent(ui::GestureEvent* event) {
+  if (features::IsInteractiveWindowCycleListEnabled() &&
+      Shell::Get()->window_cycle_controller()->IsEventInCycleView(event)) {
+    return;
+  }
+
+  // Prevent any form of tap from doing anything while the Alt+Tab UI is active.
+  if (event->type() == ui::ET_GESTURE_TAP ||
+      event->type() == ui::ET_GESTURE_DOUBLE_TAP ||
+      event->type() == ui::ET_GESTURE_TAP_CANCEL ||
+      event->type() == ui::ET_GESTURE_TAP_DOWN ||
+      event->type() == ui::ET_GESTURE_TAP_UNCONFIRMED ||
+      event->type() == ui::ET_GESTURE_TWO_FINGER_TAP ||
+      event->type() == ui::ET_GESTURE_LONG_PRESS ||
+      event->type() == ui::ET_GESTURE_LONG_TAP) {
+    event->StopPropagation();
+  }
+}
+
 void WindowCycleEventFilter::HandleTriggerKey(ui::KeyEvent* event) {
   const ui::KeyboardCode key_code = event->key_code();
   if (event->type() == ui::ET_KEY_RELEASED) {
@@ -253,74 +321,6 @@ WindowCycleEventFilter::GetKeyboardNavDirection(ui::KeyEvent* event) const {
     default:
       NOTREACHED();
       return WindowCycleController::INVALID;
-  }
-}
-
-void WindowCycleEventFilter::OnMouseEvent(ui::MouseEvent* event) {
-  if (!has_user_used_mouse_)
-    SetHasUserUsedMouse(event);
-
-  if (features::IsInteractiveWindowCycleListEnabled() && has_user_used_mouse_) {
-    WindowCycleController* window_cycle_controller =
-        Shell::Get()->window_cycle_controller();
-    const bool cycle_list_is_visible =
-        window_cycle_controller->IsWindowListVisible();
-    if (cycle_list_is_visible)
-      ProcessMouseEvent(event);
-
-    if (window_cycle_controller->IsEventInCycleView(event) ||
-        !cycle_list_is_visible) {
-      return;
-    }
-  }
-
-  // Prevent mouse clicks from doing anything while the Alt+Tab UI is active
-  // <crbug.com/641171> but don't interfere with drag and drop operations
-  // <crbug.com/660945>.
-  if (event->type() != ui::ET_MOUSE_DRAGGED &&
-      event->type() != ui::ET_MOUSE_RELEASED) {
-    event->StopPropagation();
-  }
-}
-
-void WindowCycleEventFilter::OnScrollEvent(ui::ScrollEvent* event) {
-  // ET_SCROLL_FLING_CANCEL means a touchpad swipe has started.
-  if (event->type() == ui::ET_SCROLL_FLING_CANCEL) {
-    scroll_data_ = ScrollData();
-    return;
-  }
-
-  // ET_SCROLL_FLING_START means a touchpad swipe has ended.
-  if (event->type() == ui::ET_SCROLL_FLING_START) {
-    scroll_data_.reset();
-    return;
-  }
-
-  DCHECK_EQ(ui::ET_SCROLL, event->type());
-
-  if (ProcessEventImpl(event->finger_count(), event->x_offset(),
-                       event->y_offset())) {
-    event->SetHandled();
-    event->StopPropagation();
-  }
-}
-
-void WindowCycleEventFilter::OnGestureEvent(ui::GestureEvent* event) {
-  if (features::IsInteractiveWindowCycleListEnabled() &&
-      Shell::Get()->window_cycle_controller()->IsEventInCycleView(event)) {
-    return;
-  }
-
-  // Prevent any form of tap from doing anything while the Alt+Tab UI is active.
-  if (event->type() == ui::ET_GESTURE_TAP ||
-      event->type() == ui::ET_GESTURE_DOUBLE_TAP ||
-      event->type() == ui::ET_GESTURE_TAP_CANCEL ||
-      event->type() == ui::ET_GESTURE_TAP_DOWN ||
-      event->type() == ui::ET_GESTURE_TAP_UNCONFIRMED ||
-      event->type() == ui::ET_GESTURE_TWO_FINGER_TAP ||
-      event->type() == ui::ET_GESTURE_LONG_PRESS ||
-      event->type() == ui::ET_GESTURE_LONG_TAP) {
-    event->StopPropagation();
   }
 }
 
