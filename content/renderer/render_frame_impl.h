@@ -1364,6 +1364,12 @@ class CONTENT_EXPORT RenderFrameImpl
   // navigation is either committed or cancelled.
   bool browser_side_navigation_pending_ = false;
 
+  // Set to true on the first time the RenderFrame started any navigation.
+  // Note that when a frame is created it will trigger a navigation (either
+  // synchronous to an empty document or asynchronous through the browser
+  // process), so this will only stay false until we triggered that navigation.
+  bool had_started_any_navigation_ = false;
+
   // A bitwise OR of bindings types that have been enabled for this RenderFrame.
   // See BindingsPolicy for details.
   int enabled_bindings_ = 0;
