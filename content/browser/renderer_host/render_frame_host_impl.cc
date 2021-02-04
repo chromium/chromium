@@ -431,6 +431,8 @@ class BackForwardCacheMessageFilter : public mojo::MessageFilter {
  private:
   // mojo::MessageFilter overrides.
   bool WillDispatch(mojo::Message* message) override {
+    if (!render_frame_host_->render_view_host())
+      return false;
     if (render_frame_host_->render_view_host()
             ->GetPageLifecycleStateManager()
             ->RendererExpectedToSendChannelAssociatedIpcs() ||
