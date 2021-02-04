@@ -182,6 +182,15 @@ void ClearReportsBetweenImpl(time_t begin, time_t end);
 void DumpProcessWithoutCrashing(task_t task_port);
 #endif
 
+#if defined(OS_IOS)
+// Convert intermediate dumps into minidumps and trigger an upload. Optional
+// |annotations| will be merged with any process annotations. These are useful
+// for adding annotations detected on the next run after a crash but before
+// upload.
+void ProcessIntermediateDumps(
+    const std::map<std::string, std::string>& annotations = {});
+#endif
+
 #if defined(OS_ANDROID)
 // This is used by WebView to generate a dump on behalf of the embedding app.
 // This function can only be called from the browser process. Returns `true` on

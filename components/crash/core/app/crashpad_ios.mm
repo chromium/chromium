@@ -59,6 +59,11 @@ const std::map<std::string, std::string>& GetProcessSimpleAnnotations() {
 
 }  // namespace
 
+void ProcessIntermediateDumps(
+    const std::map<std::string, std::string>& annotations) {
+  GetCrashpadClient().ProcessIntermediateDumps(annotations);
+}
+
 namespace internal {
 
 base::FilePath PlatformCrashpadInitialization(
