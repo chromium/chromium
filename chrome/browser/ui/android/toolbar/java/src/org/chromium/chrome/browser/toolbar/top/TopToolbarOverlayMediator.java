@@ -137,14 +137,11 @@ public class TopToolbarOverlayMediator {
             @Override
             public void onControlsOffsetChanged(int topOffset, int topControlsMinHeightOffset,
                     int bottomOffset, int bottomControlsMinHeightOffset, boolean needsAnimate) {
-                // The content offset is passed to the toolbar layer so that it can position itself
-                // at the bottom of the space available for top controls. The main reason for using
-                // content offset instead of top controls offset is that top controls can have a
-                // greater height than that of the toolbar, e.g. when status indicator is visible,
-                // and the toolbar needs to be positioned at the bottom of the top controls
-                // regardless of the total height.
-                mModel.set(TopToolbarOverlayProperties.CONTENT_OFFSET,
-                        mBrowserControlsStateProvider.getContentOffset());
+                // The toolbar layer is positioned below the minimum height (i.e. the top of the
+                // toolbar layer is set to the bottom of minimum height). Hence, the offset
+                // consists of the top controls offset plus top controls minimum height.
+                int yOffset = topOffset + mBrowserControlsStateProvider.getTopControlsMinHeight();
+                mModel.set(TopToolbarOverlayProperties.Y_OFFSET, yOffset);
 
                 updateVisibility();
                 updateShadowState();

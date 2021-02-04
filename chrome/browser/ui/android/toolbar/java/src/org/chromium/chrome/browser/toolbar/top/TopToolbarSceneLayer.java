@@ -43,7 +43,7 @@ class TopToolbarSceneLayer extends SceneOverlayLayer {
                 model.get(TopToolbarOverlayProperties.TOOLBAR_BACKGROUND_COLOR),
                 model.get(TopToolbarOverlayProperties.URL_BAR_RESOURCE_ID),
                 model.get(TopToolbarOverlayProperties.URL_BAR_COLOR),
-                model.get(TopToolbarOverlayProperties.CONTENT_OFFSET),
+                model.get(TopToolbarOverlayProperties.Y_OFFSET),
                 model.get(TopToolbarOverlayProperties.SHOW_SHADOW),
                 model.get(TopToolbarOverlayProperties.VISIBLE));
 

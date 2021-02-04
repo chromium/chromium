@@ -27,8 +27,8 @@ public class TopToolbarOverlayProperties {
     /** The color of the location/URL bar. */
     public static final WritableIntPropertyKey URL_BAR_COLOR = new WritableIntPropertyKey();
 
-    /** The current offset of the web content (as pushed down by the browser controls). */
-    public static final WritableFloatPropertyKey CONTENT_OFFSET = new WritableFloatPropertyKey();
+    /** The current offset of the top toolbar. */
+    public static final WritableFloatPropertyKey Y_OFFSET = new WritableFloatPropertyKey();
 
     /** Whether the shadow under the toolbar should be visible. */
     public static final WritableBooleanPropertyKey SHOW_SHADOW = new WritableBooleanPropertyKey();
@@ -42,5 +42,5 @@ public class TopToolbarOverlayProperties {
 
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {RESOURCE_ID, URL_BAR_RESOURCE_ID, TOOLBAR_BACKGROUND_COLOR,
-                    URL_BAR_COLOR, CONTENT_OFFSET, SHOW_SHADOW, VISIBLE, PROGRESS_BAR_INFO};
+                    URL_BAR_COLOR, Y_OFFSET, SHOW_SHADOW, VISIBLE, PROGRESS_BAR_INFO};
 }

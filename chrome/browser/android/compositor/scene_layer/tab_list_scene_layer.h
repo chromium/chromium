@@ -99,6 +99,7 @@ class TabListSceneLayer : public SceneLayer {
                    jint toolbar_textbox_background_color,
                    jfloat toolbar_alpha,
                    jfloat toolbar_y_offset,
+                   jfloat content_offset,
                    jfloat side_border_scale,
                    jboolean inset_border);
 

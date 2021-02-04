@@ -707,7 +707,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             public void onControlsOffsetChanged(int topOffset, int topControlsMinHeightOffset,
                     int bottomOffset, int bottomControlsMinHeightOffset, boolean needsAnimate) {
                 // Controls need to be offset to match the composited layer, which is
-                // anchored at the bottom of the controls container.
+                // anchored below the minimum height. In other words, the top of the toolbar
+                // composited layer is anchored at the bottom of the minimum height.
                 // https://crbug.com/1157859 wait until the background is cleared so that
                 // the height won't be measured by the background image.
                 if (mControlContainer.getBackground() == null) {
@@ -1471,14 +1472,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      * @return The extra Y offset for the toolbar in pixels.
      */
     private int getToolbarExtraYOffset() {
-        return mBrowserControlsSizer.getTopControlsHeight()
-                - getControlContainerHeightWithoutShadow();
-    }
-
-    private int getControlContainerHeightWithoutShadow() {
-        final View toolbarShadow = mControlContainer.findViewById(R.id.toolbar_shadow);
-        final int shadowHeight = toolbarShadow != null ? toolbarShadow.getHeight() : 0;
-        return mControlContainer.getHeight() - shadowHeight;
+        return mBrowserControlsSizer.getTopControlsMinHeight();
     }
 
     /**

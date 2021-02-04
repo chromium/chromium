@@ -122,6 +122,9 @@ public class TabListSceneLayer extends SceneLayer {
 
             int[] relatedTabIds = getRelatedTabIds(t.getId());
 
+            float toolbarYOffset = browserControls.getTopControlOffset()
+                    + browserControls.getTopControlsMinHeight();
+
             // TODO(dtrainor, clholgat): remove "* dpToPx" once the native part fully supports dp.
             TabListSceneLayerJni.get().putTabLayer(mNativePtr, TabListSceneLayer.this, t.getId(),
                     relatedTabIds, mUseAdditionalIds, R.id.control_container,
@@ -146,8 +149,8 @@ public class TabListSceneLayer extends SceneLayer {
                     t.getBrightness(), t.showToolbar(), defaultThemeColor,
                     t.getToolbarBackgroundColor(), closeButtonColor, t.anonymizeToolbar(),
                     t.isTitleNeeded(), urlBarBackgroundId, t.getTextBoxBackgroundColor(),
-                    t.getToolbarAlpha(), browserControls.getContentOffset(), t.getSideBorderScale(),
-                    t.insetBorderVertical());
+                    t.getToolbarAlpha(), toolbarYOffset, browserControls.getContentOffset(),
+                    t.getSideBorderScale(), t.insetBorderVertical());
         }
         TabListSceneLayerJni.get().finishBuildingFrame(mNativePtr, TabListSceneLayer.this);
     }
@@ -220,8 +223,8 @@ public class TabListSceneLayer extends SceneLayer {
                 float saturation, float brightness, boolean showToolbar, int defaultThemeColor,
                 int toolbarBackgroundColor, int closeButtonColor, boolean anonymizeToolbar,
                 boolean showTabTitle, int toolbarTextBoxResource, int toolbarTextBoxBackgroundColor,
-                float toolbarTextBoxAlpha, float contentOffset, float sideBorderScale,
-                boolean insetVerticalBorder);
+                float toolbarTextBoxAlpha, float toolbarYOffset, float contentOffset,
+                float sideBorderScale, boolean insetVerticalBorder);
 
         void putBackgroundLayer(long nativeTabListSceneLayer, TabListSceneLayer caller,
                 int resourceId, float alpha, int topOffset);

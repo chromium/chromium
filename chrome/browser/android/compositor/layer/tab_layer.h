@@ -96,6 +96,7 @@ class TabLayer : public Layer {
                      int toolbar_textbox_background_color,
                      float toolbar_alpha,
                      float toolbar_y_offset,
+                     float content_offset,
                      float side_border_scale,
                      bool inset_border);
 

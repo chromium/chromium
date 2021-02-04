@@ -51,8 +51,9 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
                          .with(TopToolbarOverlayProperties.URL_BAR_RESOURCE_ID,
                                  R.drawable.modern_location_bar)
                          .with(TopToolbarOverlayProperties.VISIBLE, true)
-                         .with(TopToolbarOverlayProperties.CONTENT_OFFSET,
-                                 browserControlsStateProvider.getContentOffset())
+                         .with(TopToolbarOverlayProperties.Y_OFFSET,
+                                 browserControlsStateProvider.getTopControlOffset()
+                                         + browserControlsStateProvider.getTopControlsMinHeight())
                          .build();
         mSceneLayer = new TopToolbarSceneLayer(resourceManagerSupplier);
         mChangeProcessor =
