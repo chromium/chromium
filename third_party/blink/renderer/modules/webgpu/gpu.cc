@@ -203,13 +203,11 @@ ScriptPromise GPU::requestAdapter(ScriptState* script_state,
     power_preference = gpu::webgpu::PowerPreference::kLowPower;
   }
 
-  if (!dawn_control_client_->GetInterface()->RequestAdapterAsync(
-          power_preference,
-          WTF::Bind(&GPU::OnRequestAdapterCallback, WrapPersistent(this),
-                    WrapPersistent(script_state), WrapPersistent(options),
-                    WrapPersistent(resolver)))) {
-    resolver->Resolve(v8::Null(script_state->GetIsolate()));
-  }
+  dawn_control_client_->GetInterface()->RequestAdapterAsync(
+      power_preference,
+      WTF::Bind(&GPU::OnRequestAdapterCallback, WrapPersistent(this),
+                WrapPersistent(script_state), WrapPersistent(options),
+                WrapPersistent(resolver)));
 
   return promise;
 }

@@ -58,7 +58,7 @@ class GPUDevice final : public EventTargetWithInlineData,
   explicit GPUDevice(ExecutionContext* execution_context,
                      scoped_refptr<DawnControlClientHolder> dawn_control_client,
                      GPUAdapter* adapter,
-                     uint64_t client_id,
+                     WGPUDevice dawn_device,
                      const GPUDeviceDescriptor* descriptor);
 
   void Trace(Visitor* visitor) const override;

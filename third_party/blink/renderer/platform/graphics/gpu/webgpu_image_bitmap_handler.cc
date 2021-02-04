@@ -135,9 +135,10 @@ uint64_t DawnTextureFormatBytesPerPixel(const WGPUTextureFormat color_type) {
 
 DawnTextureFromImageBitmap::DawnTextureFromImageBitmap(
     scoped_refptr<DawnControlClientHolder> dawn_control_client,
-    uint64_t device_client_id)
-    : dawn_control_client_(dawn_control_client),
-      device_client_id_(device_client_id) {}
+    WGPUDevice device)
+    : dawn_control_client_(dawn_control_client), device_(device) {
+  dawn_control_client_->GetProcs().deviceReference(device_);
+}
 
 DawnTextureFromImageBitmap::~DawnTextureFromImageBitmap() {
   // Ensure calls to ProduceDawnTextureFromImageBitmap
@@ -145,7 +146,8 @@ DawnTextureFromImageBitmap::~DawnTextureFromImageBitmap() {
   DCHECK_EQ(wire_texture_id_, 0u);
   DCHECK_EQ(wire_texture_generation_, 0u);
 
-  device_client_id_ = 0;
+  dawn_control_client_->GetProcs().deviceRelease(device_);
+  device_ = nullptr;
   dawn_control_client_.reset();
 }
 
@@ -155,8 +157,7 @@ WGPUTexture DawnTextureFromImageBitmap::ProduceDawnTextureFromImageBitmap(
 
   // Produce and inject image to WebGPU texture
   gpu::webgpu::WebGPUInterface* webgpu = dawn_control_client_->GetInterface();
-  gpu::webgpu::ReservedTexture reservation =
-      webgpu->ReserveTexture(device_client_id_);
+  gpu::webgpu::ReservedTexture reservation = webgpu->ReserveTexture(device_);
   DCHECK(reservation.texture);
 
   wire_texture_id_ = reservation.id;
@@ -164,8 +165,9 @@ WGPUTexture DawnTextureFromImageBitmap::ProduceDawnTextureFromImageBitmap(
 
   // This may fail because gl_backing resource cannot produce dawn
   // representation.
-  webgpu->AssociateMailbox(device_client_id_, 0, wire_texture_id_,
-                           wire_texture_generation_, WGPUTextureUsage_CopySrc,
+  webgpu->AssociateMailbox(reservation.deviceId, reservation.deviceGeneration,
+                           wire_texture_id_, wire_texture_generation_,
+                           WGPUTextureUsage_CopySrc,
                            reinterpret_cast<GLbyte*>(&associated_resource_));
 
   return reservation.texture;
@@ -175,8 +177,7 @@ void DawnTextureFromImageBitmap::FinishDawnTextureFromImageBitmapAccess() {
   DCHECK_NE(wire_texture_id_, 0u);
 
   gpu::webgpu::WebGPUInterface* webgpu = dawn_control_client_->GetInterface();
-  webgpu->DissociateMailbox(device_client_id_, wire_texture_id_,
-                            wire_texture_generation_);
+  webgpu->DissociateMailbox(wire_texture_id_, wire_texture_generation_);
   wire_texture_id_ = 0;
   wire_texture_generation_ = 0;
   associated_resource_.SetZero();

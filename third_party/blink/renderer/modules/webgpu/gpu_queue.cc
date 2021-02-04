@@ -129,7 +129,7 @@ bool CanUploadThroughGPU(StaticBitmapImage* image,
 GPUQueue::GPUQueue(GPUDevice* device, WGPUQueue queue)
     : DawnObject<WGPUQueue>(device, queue) {
   produce_dawn_texture_handler_ = base::AdoptRef(new DawnTextureFromImageBitmap(
-      GetDawnControlClient(), GetDeviceClientID()));
+      GetDawnControlClient(), device->GetHandle()));
 }
 
 void GPUQueue::submit(const HeapVector<Member<GPUCommandBuffer>>& buffers) {

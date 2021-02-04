@@ -10,61 +10,61 @@
 #include <memory>
 
 #include "gpu/command_buffer/client/transfer_buffer.h"
-#include "gpu/command_buffer/client/webgpu_interface.h"
 
 namespace gpu {
 
+struct SharedMemoryLimits;
 class TransferBuffer;
 
 namespace webgpu {
 
 class DawnClientMemoryTransferService;
 class WebGPUCmdHelper;
+class WebGPUImplementation;
 
 class DawnClientSerializer final : public dawn_wire::CommandSerializer {
  public:
-  DawnClientSerializer(DawnDeviceClientID device_client_id,
+  static std::unique_ptr<DawnClientSerializer> Create(
+      WebGPUImplementation* client,
+      WebGPUCmdHelper* helper,
+      DawnClientMemoryTransferService* memory_transfer_service,
+      const SharedMemoryLimits& limits);
+
+  DawnClientSerializer(WebGPUImplementation* client,
                        WebGPUCmdHelper* helper,
                        DawnClientMemoryTransferService* memory_transfer_service,
-                       std::unique_ptr<TransferBuffer> c2s_transfer_buffer);
+                       std::unique_ptr<TransferBuffer> transfer_buffer,
+                       uint32_t buffer_initial_size);
   ~DawnClientSerializer() override;
-
-  // Send WGPUDeviceProperties to the server side
-  // Note that this function should only be called once for each
-  // DawnClientSerializer object.
-  void RequestDeviceCreation(
-      uint32_t requested_adapter_id,
-      const WGPUDeviceProperties& requested_device_properties);
 
   // dawn_wire::CommandSerializer implementation
   size_t GetMaximumAllocationSize() const final;
   void* GetCmdSpace(size_t size) final;
   bool Flush() final;
 
-  void SetClientAwaitingFlush(bool awaiting_flush);
-  bool ClientAwaitingFlush() const { return client_awaiting_flush_; }
+  // Signal that it's important that the previously encoded commands are
+  // flushed. Calling |AwaitingFlush| will return whether or not a flush still
+  // needs to occur.
+  void SetAwaitingFlush(bool awaiting_flush);
 
-  // Called upon context lost.
-  void HandleGpuControlLostContext();
+  // Check if the serializer has commands that have been serialized but not
+  // flushed after |SetAwaitingFlush| was passed |true|.
+  bool AwaitingFlush() const { return awaiting_flush_; }
 
-  // For the WebGPUInterface implementation of WebGPUImplementation
-  WGPUDevice GetDevice() const;
-  ReservedTexture ReserveTexture();
-  bool HandleCommands(const char* commands, size_t command_size);
+  // Disconnect the serializer. Commands are forgotten and future calls to
+  // |GetCmdSpace| will do nothing.
+  void Disconnect();
 
  private:
-  DawnDeviceClientID device_client_id_;
+  WebGPUImplementation* client_;
   WebGPUCmdHelper* helper_;
   DawnClientMemoryTransferService* memory_transfer_service_;
+  uint32_t put_offset_ = 0;
+  std::unique_ptr<TransferBuffer> transfer_buffer_;
+  uint32_t buffer_initial_size_;
+  ScopedTransferBufferPtr buffer_;
 
-  std::unique_ptr<dawn_wire::WireClient> wire_client_;
-
-  uint32_t c2s_buffer_default_size_ = 0;
-  uint32_t c2s_put_offset_ = 0;
-  std::unique_ptr<TransferBuffer> c2s_transfer_buffer_;
-  ScopedTransferBufferPtr c2s_buffer_;
-
-  bool client_awaiting_flush_ = false;
+  bool awaiting_flush_ = false;
 };
 
 }  // namespace webgpu

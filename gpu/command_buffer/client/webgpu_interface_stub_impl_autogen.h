@@ -12,13 +12,12 @@
 #ifndef GPU_COMMAND_BUFFER_CLIENT_WEBGPU_INTERFACE_STUB_IMPL_AUTOGEN_H_
 #define GPU_COMMAND_BUFFER_CLIENT_WEBGPU_INTERFACE_STUB_IMPL_AUTOGEN_H_
 
-void WebGPUInterfaceStub::AssociateMailbox(GLuint64 /* device_client_id */,
+void WebGPUInterfaceStub::AssociateMailbox(GLuint /* device_id */,
                                            GLuint /* device_generation */,
                                            GLuint /* id */,
                                            GLuint /* generation */,
                                            GLuint /* usage */,
                                            const GLbyte* /* mailbox */) {}
-void WebGPUInterfaceStub::DissociateMailbox(GLuint64 /* device_client_id */,
-                                            GLuint /* texture_id */,
+void WebGPUInterfaceStub::DissociateMailbox(GLuint /* texture_id */,
                                             GLuint /* texture_generation */) {}
 #endif  // GPU_COMMAND_BUFFER_CLIENT_WEBGPU_INTERFACE_STUB_IMPL_AUTOGEN_H_

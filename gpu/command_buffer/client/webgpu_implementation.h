@@ -21,6 +21,10 @@
 #include "gpu/command_buffer/client/webgpu_interface.h"
 #include "ui/gl/buildflags.h"
 
+namespace dawn_wire {
+class WireClient;
+}
+
 namespace gpu {
 namespace webgpu {
 
@@ -111,44 +115,35 @@ class WEBGPU_EXPORT WebGPUImplementation final : public WebGPUInterface,
   // WebGPUInterface implementation
   const DawnProcTable& GetProcs() const override;
   void FlushCommands() override;
-  void FlushCommands(DawnDeviceClientID device_client_id) override;
-  void EnsureAwaitingFlush(DawnDeviceClientID device_client_id,
-                           bool* needs_flush) override;
-  void FlushAwaitingCommands(DawnDeviceClientID device_client_id) override;
+  void EnsureAwaitingFlush(bool* needs_flush) override;
+  void FlushAwaitingCommands() override;
   void DisconnectContextAndDestroyServer() override;
-  WGPUDevice GetDevice(DawnDeviceClientID device_client_id) override;
-  ReservedTexture ReserveTexture(DawnDeviceClientID device_client_id) override;
-  bool RequestAdapterAsync(
+  ReservedTexture ReserveTexture(WGPUDevice device) override;
+  void RequestAdapterAsync(
       PowerPreference power_preference,
       base::OnceCallback<void(int32_t,
                               const WGPUDeviceProperties&,
                               const char*)> request_adapter_callback) override;
-  bool RequestDeviceAsync(
+  void RequestDeviceAsync(
       uint32_t requested_adapter_id,
       const WGPUDeviceProperties& requested_device_properties,
-      base::OnceCallback<void(bool, DawnDeviceClientID)>
-          request_device_callback) override;
-  void RemoveDevice(DawnDeviceClientID device_client_id) override;
+      base::OnceCallback<void(WGPUDevice)> request_device_callback) override;
+
+  WGPUDevice DeprecatedEnsureDefaultDeviceSync() override;
 
  private:
   const char* GetLogPrefix() const { return "webgpu"; }
   void CheckGLError() {}
   DawnRequestAdapterSerial NextRequestAdapterSerial();
-  DawnDeviceClientID NextDeviceClientID();
+  DawnRequestDeviceSerial NextRequestDeviceSerial();
 
   WebGPUCmdHelper* helper_;
 #if BUILDFLAG(USE_DAWN)
   std::unique_ptr<DawnClientMemoryTransferService> memory_transfer_service_;
-
-  DawnClientSerializer* GetCommandSerializerWithDeviceClientID(
-      DawnDeviceClientID device_client_id) const;
-  void FlushAllCommandSerializers();
-  void ClearAllCommandSerializers();
-  bool AddNewCommandSerializer(DawnDeviceClientID device_client_id);
-  base::flat_map<DawnDeviceClientID, std::unique_ptr<DawnClientSerializer>>
-      command_serializers_;
+  std::unique_ptr<DawnClientSerializer> wire_serializer_;
+  std::unique_ptr<dawn_wire::WireClient> wire_client_;
 #endif
-  DawnProcTable procs_ = {};
+  WGPUDevice deprecated_default_device_ = nullptr;
 
   LogSettings log_settings_;
 
@@ -158,10 +153,9 @@ class WEBGPU_EXPORT WebGPUImplementation final : public WebGPUInterface,
       request_adapter_callback_map_;
   DawnRequestAdapterSerial request_adapter_serial_ = 0;
 
-  base::flat_map<DawnDeviceClientID,
-                 base::OnceCallback<void(bool, DawnDeviceClientID)>>
+  base::flat_map<DawnRequestDeviceSerial, base::OnceCallback<void(bool)>>
       request_device_callback_map_;
-  DawnDeviceClientID device_client_id_ = 0;
+  DawnRequestDeviceSerial request_device_serial_ = 0;
 
   std::atomic_bool lost_{false};
 

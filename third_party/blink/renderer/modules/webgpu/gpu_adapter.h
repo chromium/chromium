@@ -36,8 +36,7 @@ class GPUAdapter final : public ScriptWrappable, public DawnObjectBase {
  private:
   void OnRequestDeviceCallback(ScriptPromiseResolver* resolver,
                                const GPUDeviceDescriptor* descriptor,
-                               bool is_request_device_success,
-                               uint64_t device_client_id);
+                               WGPUDevice dawn_device);
   void InitializeExtensionNameList();
 
   String name_;

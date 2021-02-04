@@ -18,8 +18,7 @@ class GPUCanvasContext;
 class GPUDevice;
 class GPUTexture;
 
-class GPUSwapChain : public ScriptWrappable,
-                     public DeviceTreeObject,
+class GPUSwapChain : public DawnObjectImpl,
                      public WebGPUSwapBufferProvider::Client {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -48,7 +47,6 @@ class GPUSwapChain : public ScriptWrappable,
 
   scoped_refptr<WebGPUSwapBufferProvider> swap_buffers_;
 
-  Member<GPUDevice> device_;
   Member<GPUCanvasContext> context_;
   WGPUTextureUsage usage_;
   WGPUTextureFormat format_;

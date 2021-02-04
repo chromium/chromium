@@ -35,15 +35,6 @@
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/color_space.h"
 
-#if BUILDFLAG(SKIA_USE_DAWN)
-namespace {
-// TODO(senorblanco): This should be using RequestDeviceAsync(), but
-// those callbacks don't seem to work currently. Assume device 1
-// and use it in all the WebGPUInterface calls.  http://crbug.com/1078775
-constexpr uint64_t kWebGPUDeviceClientID = 1;
-}  // namespace
-#endif
-
 namespace blink {
 
 CanvasResource::CanvasResource(base::WeakPtr<CanvasResourceProvider> provider,
@@ -828,8 +819,10 @@ void CanvasResourceSkiaDawnSharedImage::WillDraw() {
 
 void CanvasResourceSkiaDawnSharedImage::BeginAccess() {
   auto* webgpu = WebGPUInterface();
+  // TODO(senorblanco): create an actual passed-in Device, rather than this
+  // default hacky one.  http://crbug.com/1078775
   gpu::webgpu::ReservedTexture reservation =
-      webgpu->ReserveTexture(kWebGPUDeviceClientID);
+      webgpu->ReserveTexture(webgpu->DeprecatedEnsureDefaultDeviceSync());
   DCHECK(reservation.texture);
 
   owning_thread_data().texture = wgpu::Texture(reservation.texture);
@@ -837,8 +830,8 @@ void CanvasResourceSkiaDawnSharedImage::BeginAccess() {
   owning_thread_data().generation = reservation.generation;
   webgpu->FlushCommands();
   webgpu->AssociateMailbox(
-      kWebGPUDeviceClientID, 0, owning_thread_data().id,
-      owning_thread_data().generation,
+      reservation.deviceId, reservation.deviceGeneration,
+      owning_thread_data().id, owning_thread_data().generation,
       WGPUTextureUsage_Sampled | WGPUTextureUsage_OutputAttachment,
       reinterpret_cast<GLbyte*>(&owning_thread_data().shared_image_mailbox));
 }
@@ -846,7 +839,7 @@ void CanvasResourceSkiaDawnSharedImage::BeginAccess() {
 void CanvasResourceSkiaDawnSharedImage::EndAccess() {
   auto* webgpu = WebGPUInterface();
   webgpu->FlushCommands();
-  webgpu->DissociateMailbox(kWebGPUDeviceClientID, owning_thread_data().id,
+  webgpu->DissociateMailbox(owning_thread_data().id,
                             owning_thread_data().generation);
 
   owning_thread_data().texture = nullptr;

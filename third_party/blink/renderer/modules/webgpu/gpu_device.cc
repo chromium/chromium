@@ -56,12 +56,10 @@ Vector<String> ToStringVector(
 GPUDevice::GPUDevice(ExecutionContext* execution_context,
                      scoped_refptr<DawnControlClientHolder> dawn_control_client,
                      GPUAdapter* adapter,
-                     uint64_t client_id,
+                     WGPUDevice dawn_device,
                      const GPUDeviceDescriptor* descriptor)
     : ExecutionContextClient(execution_context),
-      DawnObject(dawn_control_client,
-                 client_id,
-                 dawn_control_client->GetInterface()->GetDevice(client_id)),
+      DawnObject(dawn_control_client, dawn_device),
       adapter_(adapter),
 #ifdef USE_BLINK_V8_BINDING_NEW_IDL_DICTIONARY
       extension_name_list_(ToStringVector(descriptor->extensions())),
@@ -76,7 +74,7 @@ GPUDevice::GPUDevice(ExecutionContext* execution_context,
                                                 WrapWeakPersistent(this))),
       lost_callback_(BindDawnCallback(&GPUDevice::OnDeviceLostError,
                                       WrapWeakPersistent(this))) {
-  DCHECK(dawn_control_client->GetInterface()->GetDevice(client_id));
+  DCHECK(dawn_device);
   GetProcs().deviceSetUncapturedErrorCallback(
       GetHandle(), error_callback_->UnboundRepeatingCallback(),
       error_callback_->AsUserdata());

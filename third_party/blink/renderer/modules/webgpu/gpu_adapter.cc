@@ -61,13 +61,12 @@ Vector<String> GPUAdapter::extensions(ScriptState* script_state) const {
 
 void GPUAdapter::OnRequestDeviceCallback(ScriptPromiseResolver* resolver,
                                          const GPUDeviceDescriptor* descriptor,
-                                         bool is_request_device_success,
-                                         uint64_t device_client_id) {
-  if (is_request_device_success) {
+                                         WGPUDevice dawn_device) {
+  if (dawn_device) {
     ExecutionContext* execution_context = resolver->GetExecutionContext();
-    auto* device = MakeGarbageCollected<GPUDevice>(
-        execution_context, GetDawnControlClient(), this, device_client_id,
-        descriptor);
+    auto* device = MakeGarbageCollected<GPUDevice>(execution_context,
+                                                   GetDawnControlClient(), this,
+                                                   dawn_device, descriptor);
     resolver->Resolve(device);
     ukm::builders::ClientRenderingAPI(execution_context->UkmSourceID())
         .SetGPUDevice(static_cast<int>(true))
@@ -102,13 +101,10 @@ ScriptPromise GPUAdapter::requestDevice(ScriptState* script_state,
 
   WGPUDeviceProperties requested_device_properties = AsDawnType(descriptor);
 
-  if (!GetInterface()->RequestDeviceAsync(
-          adapter_service_id_, requested_device_properties,
-          WTF::Bind(&GPUAdapter::OnRequestDeviceCallback, WrapPersistent(this),
-                    WrapPersistent(resolver), WrapPersistent(descriptor)))) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kOperationError, "Unknown error creating GPUDevice"));
-  }
+  GetInterface()->RequestDeviceAsync(
+      adapter_service_id_, requested_device_properties,
+      WTF::Bind(&GPUAdapter::OnRequestDeviceCallback, WrapPersistent(this),
+                WrapPersistent(resolver), WrapPersistent(descriptor)));
 
   return promise;
 }

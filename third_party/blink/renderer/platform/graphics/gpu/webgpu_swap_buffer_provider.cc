@@ -29,12 +29,12 @@ viz::ResourceFormat WGPUFormatToViz(WGPUTextureFormat format) {
 WebGPUSwapBufferProvider::WebGPUSwapBufferProvider(
     Client* client,
     scoped_refptr<DawnControlClientHolder> dawn_control_client,
-    uint64_t device_client_id,
+    WGPUDevice device,
     WGPUTextureUsage usage,
     WGPUTextureFormat format)
     : dawn_control_client_(dawn_control_client),
       client_(client),
-      device_client_id_(device_client_id),
+      device_(device),
       usage_(usage),
       format_(WGPUFormatToViz(format)) {
   // Create a layer that will be used by the canvas and will ask for a
@@ -50,10 +50,14 @@ WebGPUSwapBufferProvider::WebGPUSwapBufferProvider(
   // paths to keep the rendering correct in that cases.
   layer_->SetContentsOpaque(true);
   layer_->SetPremultipliedAlpha(true);
+
+  dawn_control_client_->GetProcs().deviceReference(device_);
 }
 
 WebGPUSwapBufferProvider::~WebGPUSwapBufferProvider() {
   Neuter();
+  dawn_control_client_->GetProcs().deviceRelease(device_);
+  device_ = nullptr;
 }
 
 cc::Layer* WebGPUSwapBufferProvider::CcLayer() {
@@ -117,14 +121,14 @@ WGPUTexture WebGPUSwapBufferProvider::GetNewTexture(const IntSize& size) {
       current_swap_buffer_->access_finished_token.GetConstData());
 
   // Associate the mailbox to a dawn_wire client DawnTexture object
-  gpu::webgpu::ReservedTexture reservation =
-      webgpu->ReserveTexture(device_client_id_);
+  gpu::webgpu::ReservedTexture reservation = webgpu->ReserveTexture(device_);
   DCHECK(reservation.texture);
   wire_texture_id_ = reservation.id;
   wire_texture_generation_ = reservation.generation;
 
   webgpu->AssociateMailbox(
-      device_client_id_, 0, reservation.id, reservation.generation, usage_,
+      reservation.deviceId, reservation.deviceGeneration, reservation.id,
+      reservation.generation, usage_,
       reinterpret_cast<GLbyte*>(&current_swap_buffer_->mailbox));
 
   // When the page request a texture it means we'll need to present it on the
@@ -139,7 +143,6 @@ bool WebGPUSwapBufferProvider::PrepareTransferableResource(
     viz::TransferableResource* out_resource,
     std::unique_ptr<viz::SingleReleaseCallback>* out_release_callback) {
   DCHECK(!neutered_);
-
   if (!current_swap_buffer_ || neutered_) {
     return false;
   }
@@ -152,8 +155,7 @@ bool WebGPUSwapBufferProvider::PrepareTransferableResource(
   // to the texture are errors.
   gpu::webgpu::WebGPUInterface* webgpu = dawn_control_client_->GetInterface();
   DCHECK_NE(wire_texture_id_, 0u);
-  webgpu->DissociateMailbox(device_client_id_, wire_texture_id_,
-                            wire_texture_generation_);
+  webgpu->DissociateMailbox(wire_texture_id_, wire_texture_generation_);
 
   // Make the compositor wait on previous Dawn commands.
   webgpu->GenUnverifiedSyncTokenCHROMIUM(

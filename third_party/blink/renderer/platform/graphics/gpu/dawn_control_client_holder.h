@@ -35,7 +35,7 @@ class PLATFORM_EXPORT DawnControlClientHolder
 
   WebGraphicsContext3DProvider* GetContextProvider() const;
   gpu::webgpu::WebGPUInterface* GetInterface() const;
-  const DawnProcTable& GetProcs() const;
+  const DawnProcTable& GetProcs() const { return procs_; }
   void SetContextLost();
   bool IsContextLost() const;
   void SetLostContextCallback();
@@ -46,6 +46,7 @@ class PLATFORM_EXPORT DawnControlClientHolder
 
   std::unique_ptr<WebGraphicsContext3DProvider> context_provider_;
   gpu::webgpu::WebGPUInterface* interface_;
+  DawnProcTable procs_;
   bool lost_ = false;
 };
 

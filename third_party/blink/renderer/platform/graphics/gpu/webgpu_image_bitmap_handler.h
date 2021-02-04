@@ -41,7 +41,7 @@ class PLATFORM_EXPORT DawnTextureFromImageBitmap
  public:
   DawnTextureFromImageBitmap(
       scoped_refptr<DawnControlClientHolder> dawn_control_client,
-      uint64_t device_client_id);
+      WGPUDevice device);
 
   ~DawnTextureFromImageBitmap();
   WGPUTexture ProduceDawnTextureFromImageBitmap(
@@ -50,12 +50,12 @@ class PLATFORM_EXPORT DawnTextureFromImageBitmap
 
   uint32_t GetTextureIdForTest() { return wire_texture_id_; }
   uint32_t GetTextureGenerationForTest() { return wire_texture_generation_; }
-  uint64_t GetDeviceClientIdForTest() { return device_client_id_; }
+  WGPUDevice GetDeviceForTest() { return device_; }
 
  private:
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
   gpu::Mailbox associated_resource_;
-  uint64_t device_client_id_;
+  WGPUDevice device_;
   uint32_t wire_texture_id_ = 0;
   uint32_t wire_texture_generation_ = 0;
 };

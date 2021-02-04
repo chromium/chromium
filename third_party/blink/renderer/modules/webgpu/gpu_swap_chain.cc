@@ -16,14 +16,13 @@ GPUSwapChain::GPUSwapChain(GPUCanvasContext* context,
                            WGPUTextureUsage usage,
                            WGPUTextureFormat format,
                            SkFilterQuality filter_quality)
-    : DeviceTreeObject(device->GetDeviceClientSerializerHolder()),
-      device_(device),
+    : DawnObjectImpl(device),
       context_(context),
       usage_(usage),
       format_(format) {
   // TODO: Use label from GPUObjectDescriptorBase.
   swap_buffers_ = base::AdoptRef(new WebGPUSwapBufferProvider(
-      this, GetDawnControlClient(), GetDeviceClientID(), usage_, format));
+      this, GetDawnControlClient(), device->GetHandle(), usage_, format));
   swap_buffers_->SetFilterQuality(filter_quality);
 }
 
@@ -32,10 +31,9 @@ GPUSwapChain::~GPUSwapChain() {
 }
 
 void GPUSwapChain::Trace(Visitor* visitor) const {
-  visitor->Trace(device_);
   visitor->Trace(context_);
   visitor->Trace(texture_);
-  ScriptWrappable::Trace(visitor);
+  DawnObjectImpl::Trace(visitor);
 }
 
 void GPUSwapChain::Neuter() {

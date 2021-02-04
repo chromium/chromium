@@ -47,7 +47,7 @@ _FUNCTION_INFO = {
     'impl_func': False,
     'internal': True,
     'data_transfer_methods': ['shm'],
-    'cmd_args': 'uint64_t device_client_id, uint32_t commands_shm_id, '
+    'cmd_args': 'uint32_t commands_shm_id, '
                 'uint32_t commands_shm_offset, uint32_t size',
     'size_args': {
       'commands': 'size * sizeof(char)',
@@ -72,8 +72,10 @@ _FUNCTION_INFO = {
     'impl_func': False,
     'internal': True,
     'data_transfer_methods': ['shm'],
-    'cmd_args': 'uint64_t device_client_id, '
+    'cmd_args': 'uint64_t request_device_serial, '
                 'uint32_t adapter_service_id, '
+                'uint32_t device_id, '
+                'uint32_t device_generation, '
                 'uint32_t request_device_properties_shm_id, '
                 'uint32_t request_device_properties_shm_offset, '
                 'uint32_t request_device_properties_size',
@@ -81,11 +83,6 @@ _FUNCTION_INFO = {
       'request_device_properties':
         'request_device_properties_size * sizeof(char)',
     },
-  },
-  'RemoveDevice': {
-    'impl_func': False,
-    'internal': True,
-    'cmd_args': 'uint64_t device_client_id'
   },
 }
 
