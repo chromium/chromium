@@ -34,3 +34,7 @@ ZoomBubbleDialogTest.*
 -OutdatedUpgradeBubbleTest.InvokeUi_Critical
 # TODO(crbug.com/1108988): Fix this flakiness test.
 -BookmarkBubbleViewBrowserTest.InvokeUi_bookmark_details_signed_in
+
+# TODO(crbug.com/2666206): Flaky
+-ContentSettingBubbleDialogTest.InvokeUi_mediastream_camera
+-ContentSettingBubbleDialogTest.InvokeUi_mediastream_mic_and_camera
