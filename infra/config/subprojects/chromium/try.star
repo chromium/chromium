@@ -719,6 +719,12 @@ try_.chromium_chromiumos_builder(
 )
 
 try_.chromium_chromiumos_builder(
+    name = "linux-chromeos-js-code-coverage",
+    use_clang_coverage = True,
+    use_javascript_coverage = True,
+)
+
+try_.chromium_chromiumos_builder(
     name = "linux-lacros-rel",
     builderless = not settings.is_master,
     cores = 16,

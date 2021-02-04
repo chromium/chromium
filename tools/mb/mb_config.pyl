@@ -896,6 +896,7 @@
       'lacros-amd64-generic-rel': 'chromeos_amd64-generic_lacros_rel',
       'linux-chromeos-inverse-fieldtrials-fyi-rel': 'chromeos_with_codecs_release_trybot_invert_fieldtrials',
       'linux-chromeos-rel': 'chromeos_with_codecs_release_trybot_code_coverage',
+      'linux-chromeos-js-code-coverage': 'chromeos_with_codecs_release_trybot_js_cpp_code_coverage',
       'linux-chromeos-compile-dbg': 'chromeos_with_codecs_debug_bot',
       'linux-chromeos-dbg': 'chromeos_with_codecs_debug_bot',
       'linux-lacros-rel': 'lacros_on_linux_release_trybot',
@@ -1739,6 +1740,12 @@
     'chromeos_with_codecs_release_trybot_code_coverage': [
       'chromeos_with_codecs', 'release_trybot', 'no_symbols',
       'use_clang_coverage', 'partial_code_coverage_instrumentation',
+    ],
+
+    'chromeos_with_codecs_release_trybot_js_cpp_code_coverage': [
+      'chromeos_with_codecs', 'release_trybot', 'no_symbols',
+      'use_clang_coverage', 'partial_code_coverage_instrumentation',
+      'use_javascript_coverage', 'no_webui_optimize',
     ],
 
     'chromeos_with_codecs_release_trybot_invert_fieldtrials': [
@@ -3146,6 +3153,10 @@
 
     'no_keystone_registration_framework': {
       'gn_args': 'enable_keystone_registration_framework=false',
+    },
+
+    'no_webui_optimize': {
+      'gn_args': 'optimize_webui=false',
     },
 
     'no_resource_whitelisting': {
