@@ -27,6 +27,7 @@
 #include "content/public/renderer/render_view_observer.h"
 #include "content/public/renderer/render_view_visitor.h"
 #include "content/renderer/render_thread_impl.h"
+#include "content/renderer/render_view_impl.h"
 #include "content/web_test/common/web_test_constants.h"
 #include "content/web_test/common/web_test_string_util.h"
 #include "content/web_test/renderer/app_banner_service.h"
@@ -36,7 +37,6 @@
 #include "content/web_test/renderer/spell_check_client.h"
 #include "content/web_test/renderer/test_preferences.h"
 #include "content/web_test/renderer/web_frame_test_proxy.h"
-#include "content/web_test/renderer/web_view_test_proxy.h"
 #include "gin/arguments.h"
 #include "gin/array_buffer.h"
 #include "gin/handle.h"
@@ -1283,13 +1283,13 @@ void TestRunnerBindings::SetMockScreenOrientation(
     const std::string& orientation) {
   if (invalid_)
     return;
-  runner_->SetMockScreenOrientation(frame_->GetWebViewTestProxy(), orientation);
+  runner_->SetMockScreenOrientation(GetWebFrame()->View(), orientation);
 }
 
 void TestRunnerBindings::DisableMockScreenOrientation() {
   if (invalid_)
     return;
-  runner_->DisableMockScreenOrientation(frame_->GetWebViewTestProxy());
+  runner_->DisableMockScreenOrientation(GetWebFrame()->View());
 }
 
 void TestRunnerBindings::SetDisallowedSubresourcePathSuffixes(
@@ -2303,10 +2303,8 @@ void TestRunner::Install(WebFrameTestProxy* frame,
   fake_screen_orientation_impl_.OverrideAssociatedInterfaceProviderForFrame(
       frame->GetWebFrame());
   gamepad_controller_.Install(frame);
-  frame->GetWebViewTestProxy()
-      ->GetWebView()
-      ->SetScreenOrientationOverrideForTesting(
-          fake_screen_orientation_impl_.CurrentOrientationType());
+  frame->GetWebFrame()->View()->SetScreenOrientationOverrideForTesting(
+      fake_screen_orientation_impl_.CurrentOrientationType());
 }
 
 void TestRunner::Reset() {
@@ -2443,9 +2441,8 @@ bool TestRunner::CanDumpPixelsFromRenderer() const {
          web_test_runtime_flags_.is_printing();
 }
 
-SkBitmap TestRunner::DumpPixelsInRenderer(content::RenderView* render_view) {
-  auto* view_proxy = static_cast<WebViewTestProxy*>(render_view);
-  DCHECK(view_proxy->GetWebView()->MainFrame());
+SkBitmap TestRunner::DumpPixelsInRenderer(blink::WebLocalFrame* main_frame) {
+  DCHECK(!main_frame->Parent());
   DCHECK(CanDumpPixelsFromRenderer());
 
   if (web_test_runtime_flags_.dump_drag_image()) {
@@ -2460,13 +2457,11 @@ SkBitmap TestRunner::DumpPixelsInRenderer(content::RenderView* render_view) {
     return bitmap;
   }
 
-  blink::WebLocalFrame* frame =
-      view_proxy->GetWebView()->MainFrame()->ToWebLocalFrame();
-  blink::WebLocalFrame* target_frame = frame;
+  blink::WebLocalFrame* target_frame = main_frame;
   std::string frame_name = web_test_runtime_flags_.printing_frame();
   if (!frame_name.empty()) {
     blink::WebFrame* frame_to_print =
-        frame->FindFrameByName(blink::WebString::FromUTF8(frame_name));
+        main_frame->FindFrameByName(blink::WebString::FromUTF8(frame_name));
     if (frame_to_print && frame_to_print->IsWebLocalFrame())
       target_frame = frame_to_print->ToWebLocalFrame();
   }
@@ -2956,7 +2951,7 @@ void TestRunner::UseUnfortunateSynchronousResizeMode() {
   RenderView::ForEach(&visitor);
 }
 
-void TestRunner::SetMockScreenOrientation(WebViewTestProxy* view_proxy,
+void TestRunner::SetMockScreenOrientation(blink::WebView* view,
                                           const std::string& orientation_str) {
   blink::mojom::ScreenOrientation orientation;
 
@@ -2971,14 +2966,14 @@ void TestRunner::SetMockScreenOrientation(WebViewTestProxy* view_proxy,
     orientation = blink::mojom::ScreenOrientation::kLandscapeSecondary;
   }
 
-  bool changed = fake_screen_orientation_impl_.UpdateDeviceOrientation(
-      view_proxy, orientation);
+  bool changed =
+      fake_screen_orientation_impl_.UpdateDeviceOrientation(view, orientation);
   if (changed)
     GetWebTestControlHostRemote()->SetScreenOrientationChanged();
 }
 
-void TestRunner::DisableMockScreenOrientation(WebViewTestProxy* view_proxy) {
-  fake_screen_orientation_impl_.SetDisabled(view_proxy, true);
+void TestRunner::DisableMockScreenOrientation(blink::WebView* view) {
+  fake_screen_orientation_impl_.SetDisabled(view, true);
 }
 
 std::string TestRunner::GetAcceptLanguages() const {
@@ -3224,11 +3219,11 @@ void TestRunner::FocusWindow(RenderFrame* main_frame, bool focus) {
     // This path simulates losing focus on the window, without moving it to
     // another window.
     if (widget->HasFocus()) {
-      auto* view_proxy = frame_proxy->GetWebViewTestProxy();
+      auto* web_view = frame_proxy->GetWebFrame()->View();
       // TODO(dtapuska): We should call the exact IPC the browser
       // calls. ie. WebFrameWidgetImpl::SetActive but that isn't
       // exposed outside of blink.
-      view_proxy->GetWebView()->SetIsActive(false);
+      web_view->SetIsActive(false);
       widget->SetFocus(false);
     }
     return;
@@ -3240,11 +3235,11 @@ void TestRunner::FocusWindow(RenderFrame* main_frame, bool focus) {
       blink::WebFrameWidget* other_widget =
           other_main_frame->GetLocalRootWebFrameWidget();
       if (other_widget->HasFocus()) {
-        auto* other_view_proxy = other_main_frame->GetWebViewTestProxy();
+        auto* other_web_view = other_main_frame->GetWebFrame()->View();
         // TODO(dtapuska): We should call the exact IPC the browser
         // calls. ie. WebFrameWidgetImpl::SetActive but that isn't
         // exposed outside of blink.
-        other_view_proxy->GetWebView()->SetIsActive(false);
+        other_web_view->SetIsActive(false);
         other_widget->SetFocus(false);
       }
     }
@@ -3362,8 +3357,7 @@ void TestRunner::FinishTest() {
     if (pixel_result) {
       if (CanDumpPixelsFromRenderer()) {
         TRACE_EVENT0("shell", "TestRunner::CaptureLocalPixelsDump");
-        SkBitmap actual =
-            DumpPixelsInRenderer(main_frame->GetWebViewTestProxy());
+        SkBitmap actual = DumpPixelsInRenderer(web_frame);
         DCHECK_GT(actual.info().width(), 0);
         DCHECK_GT(actual.info().height(), 0);
 

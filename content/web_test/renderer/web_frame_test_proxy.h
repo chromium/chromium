@@ -28,7 +28,6 @@
 namespace content {
 class SpellCheckClient;
 class TestRunner;
-class WebViewTestProxy;
 
 // WebFrameTestProxy is used during running web tests instead of a
 // RenderFrameImpl to inject test-only behaviour by overriding methods in the
@@ -56,9 +55,6 @@ class WebFrameTestProxy : public RenderFrameImpl,
 
   // Returns the test helper of WebFrameWidget for the local root of this frame.
   blink::FrameWidgetTestHelper* GetLocalRootFrameWidgetTestHelper();
-  // Returns the test-subclass of RenderViewImpl that is hosting this frame's
-  // frame tree fragment.
-  WebViewTestProxy* GetWebViewTestProxy();
 
   // WebLocalFrameClient implementation.
   blink::WebPlugin* CreatePlugin(const blink::WebPluginParams& params) override;
@@ -105,14 +101,13 @@ class WebFrameTestProxy : public RenderFrameImpl,
 
   TestRunner* test_runner();
 
-  WebViewTestProxy* const web_view_test_proxy_;
   TestRunner* const test_runner_;
 
   std::unique_ptr<SpellCheckClient> spell_check_;
 
-  TextInputController text_input_controller_;
+  TextInputController text_input_controller_{this};
 
-  AccessibilityController accessibility_controller_;
+  AccessibilityController accessibility_controller_{this};
 
   mojo::AssociatedReceiver<mojom::WebTestRenderFrame>
       web_test_render_frame_receiver_{this};

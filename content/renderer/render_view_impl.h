@@ -105,12 +105,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   // the browser wishes the object to be destroyed.
   void Destroy();
 
-  // Used by web_test_support to hook into the creation of RenderViewImpls.
-  static void InstallCreateHook(RenderViewImpl* (*create_render_view_impl)(
-      AgentSchedulingGroup&,
-      CompositorDependencies*,
-      const mojom::CreateViewParams&));
-
   // Returns the RenderViewImpl for the given routing ID.
   static RenderViewImpl* FromRoutingID(int routing_id);
 

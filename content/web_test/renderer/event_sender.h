@@ -41,7 +41,6 @@ class Arguments;
 
 namespace content {
 class TestRunner;
-class WebViewTestProxy;
 
 // Key event location code introduced in DOM Level 3.
 // See also: http://www.w3.org/TR/DOM-Level-3-Events/#events-keyboardevents
@@ -108,7 +107,6 @@ class EventSender {
 
   enum class MouseScrollType { PIXEL, TICK };
 
-  WebViewTestProxy* web_view_proxy();
   const blink::WebView* view() const;
   blink::WebView* view();
   blink::WebWidget* widget();
@@ -261,7 +259,6 @@ class EventSender {
 #endif
 
   blink::WebFrameWidget* const web_frame_widget_;
-  WebViewTestProxy* const web_view_test_proxy_;
   TestRunner* const test_runner_;
 
   bool force_layout_on_events_;

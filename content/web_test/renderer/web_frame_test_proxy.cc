@@ -14,9 +14,9 @@
 #include "content/web_test/renderer/spell_check_client.h"
 #include "content/web_test/renderer/test_plugin.h"
 #include "content/web_test/renderer/test_runner.h"
-#include "content/web_test/renderer/web_view_test_proxy.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/common/unique_name/unique_name_helper.h"
+#include "third_party/blink/public/web/web_console_message.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
@@ -232,11 +232,7 @@ class TestRenderFrameObserver : public RenderFrameObserver {
 
 WebFrameTestProxy::WebFrameTestProxy(RenderFrameImpl::CreateParams params,
                                      TestRunner* test_runner)
-    : RenderFrameImpl(std::move(params)),
-      web_view_test_proxy_(static_cast<WebViewTestProxy*>(render_view())),
-      test_runner_(test_runner),
-      text_input_controller_(web_view_test_proxy_),
-      accessibility_controller_(web_view_test_proxy_) {}
+    : RenderFrameImpl(std::move(params)), test_runner_(test_runner) {}
 
 WebFrameTestProxy::~WebFrameTestProxy() {
   if (IsMainFrame())
@@ -738,10 +734,6 @@ void WebFrameTestProxy::OnReactivated() {
 blink::FrameWidgetTestHelper*
 WebFrameTestProxy::GetLocalRootFrameWidgetTestHelper() {
   return GetLocalRootWebFrameWidget()->GetFrameWidgetTestHelperForTesting();
-}
-
-WebViewTestProxy* WebFrameTestProxy::GetWebViewTestProxy() {
-  return web_view_test_proxy_;
 }
 
 void WebFrameTestProxy::SynchronouslyCompositeAfterTest(

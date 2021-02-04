@@ -66,11 +66,6 @@ static base::LazyInstance<RoutingIDViewMap>::Leaky g_routing_id_view_map =
 const int kDelaySecondsForContentStateSyncHidden = 5;
 const int kDelaySecondsForContentStateSync = 1;
 
-static RenderViewImpl* (*g_create_render_view_impl)(
-    AgentSchedulingGroup&,
-    CompositorDependencies*,
-    const mojom::CreateViewParams&) = nullptr;
-
 // static
 WindowOpenDisposition RenderViewImpl::NavigationPolicyToDisposition(
     WebNavigationPolicy policy) {
@@ -252,15 +247,8 @@ RenderViewImpl* RenderViewImpl::Create(
   DCHECK_NE(params->main_frame_routing_id != MSG_ROUTING_NONE,
             params->proxy_routing_id != MSG_ROUTING_NONE);
 
-  RenderViewImpl* render_view;
-  if (g_create_render_view_impl) {
-    render_view = g_create_render_view_impl(agent_scheduling_group,
-                                            compositor_deps, *params);
-  } else {
-    render_view =
-        new RenderViewImpl(agent_scheduling_group, compositor_deps, *params);
-  }
-
+  RenderViewImpl* render_view =
+      new RenderViewImpl(agent_scheduling_group, compositor_deps, *params);
   render_view->Initialize(compositor_deps, std::move(params),
                           was_created_by_renderer, std::move(task_runner));
   return render_view;
@@ -276,15 +264,6 @@ void RenderViewImpl::Destroy() {
   webview_ = nullptr;
 
   delete this;
-}
-
-// static
-void RenderViewImpl::InstallCreateHook(RenderViewImpl* (
-    *create_render_view_impl)(AgentSchedulingGroup&,
-                              CompositorDependencies*,
-                              const mojom::CreateViewParams&)) {
-  CHECK(!g_create_render_view_impl);
-  g_create_render_view_impl = create_render_view_impl;
 }
 
 void RenderViewImpl::AddObserver(RenderViewObserver* observer) {

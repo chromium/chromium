@@ -28,11 +28,11 @@ class WebView;
 
 namespace content {
 
-class WebViewTestProxy;
+class WebFrameTestProxy;
 
 class AccessibilityController {
  public:
-  explicit AccessibilityController(WebViewTestProxy* web_view_test_proxy);
+  explicit AccessibilityController(WebFrameTestProxy* web_frame_test_proxy);
   ~AccessibilityController();
 
   void Reset();
@@ -72,7 +72,7 @@ class AccessibilityController {
   v8::Persistent<v8::Function> notification_callback_;
 
   blink::WebView* web_view();
-  WebViewTestProxy* web_view_test_proxy_;
+  WebFrameTestProxy* web_frame_test_proxy_;
 
   std::unique_ptr<blink::WebAXContext> ax_context_;
 

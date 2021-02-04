@@ -5,7 +5,7 @@
 #include "content/web_test/renderer/accessibility_controller.h"
 
 #include "base/stl_util.h"
-#include "content/web_test/renderer/web_view_test_proxy.h"
+#include "content/web_test/renderer/web_frame_test_proxy.h"
 #include "gin/handle.h"
 #include "gin/object_template_builder.h"
 #include "gin/wrappable.h"
@@ -142,9 +142,9 @@ void AccessibilityControllerBindings::Reset() {
 }
 
 AccessibilityController::AccessibilityController(
-    WebViewTestProxy* web_view_test_proxy)
+    WebFrameTestProxy* web_frame_test_proxy)
     : log_accessibility_events_(false),
-      web_view_test_proxy_(web_view_test_proxy) {}
+      web_frame_test_proxy_(web_frame_test_proxy) {}
 
 AccessibilityController::~AccessibilityController() {
   // v8::Persistent will leak on destroy, due to the default
@@ -300,7 +300,7 @@ AccessibilityController::FindAccessibleElementByIdRecursive(
 }
 
 blink::WebView* AccessibilityController::web_view() {
-  return web_view_test_proxy_->GetWebView();
+  return web_frame_test_proxy_->GetWebFrame()->View();
 }
 
 blink::WebAXObject
