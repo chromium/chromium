@@ -39,8 +39,6 @@ RENAME = {
     'DIRECTFORMAT': 'DirectFormat',
     'DOTCLOCK': 'DotClock',
     'FBCONFIG': 'FbConfig',
-    'FLOAT32': 'float',
-    'FLOAT64': 'double',
     'FONTPROP': 'FontProperty',
     'GC': 'GraphicsContextAttribute',
     'GCONTEXT': 'GraphicsContext',
@@ -417,11 +415,8 @@ class GenXproto(FileWriter):
             self.write('%s value{};' % value_typename)
 
     def declare_simple(self, item, name):
-        # The underlying type of an enum must be integral, so avoid defining
-        # FLOAT32 or FLOAT64.  Usages are renamed to float and double instead.
         renamed = tuple(self.rename_type(item, name))
-        if (name[-1] in ('FLOAT32', 'FLOAT64')
-                or renamed in self.replace_with_enum):
+        if renamed in self.replace_with_enum:
             return
 
         xidunion = self.get_xidunion_element(name)
