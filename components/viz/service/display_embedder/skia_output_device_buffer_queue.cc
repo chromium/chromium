@@ -320,7 +320,13 @@ void SkiaOutputDeviceBufferQueue::ScheduleOverlays(
 void SkiaOutputDeviceBufferQueue::Submit(bool sync_cpu,
                                          base::OnceClosure callback) {
   // The current image may be missing, for example during WebXR presentation.
-  if (current_image_)
+  // The SkSurface may also be missing due to a rare edge case (seen at ~1CPM
+  // on CrOS)- if we end up skipping the swap for a frame and don't have
+  // damage in the next frame (e.g.fullscreen overlay),
+  // |current_image_->BeginWriteSkia| won't get called before |Submit|. In
+  // this case, we shouldn't call |PreGrContextSubmit| since there's no active
+  // surface to flush.
+  if (current_image_ && current_image_->sk_surface())
     current_image_->PreGrContextSubmit();
 
   SkiaOutputDevice::Submit(sync_cpu, std::move(callback));
