@@ -17,7 +17,6 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/child_accounts/secondary_account_consent_logger.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_device_id_helper.h"
@@ -140,12 +139,10 @@ class ChildSigninHelper : public SigninHelper {
     UMA_HISTOGRAM_ENUMERATION("Signin.SecondaryAccountConsentLog", result);
     secondary_account_consent_logger_.reset();
     if (result == SecondaryAccountConsentLogger::Result::kSuccess) {
-      // The EDU account has been added/reauthenticated. Mark migration to ARC++
-      // as completed.
-      if (arc::IsSecondaryAccountForChildEnabled()) {
-        pref_service_->SetBoolean(::prefs::kEduCoexistenceArcMigrationCompleted,
-                                  true);
-      }
+      // The EDU account has been added/re-authenticated. Mark migration to
+      // ARC++ as completed.
+      pref_service_->SetBoolean(::prefs::kEduCoexistenceArcMigrationCompleted,
+                                true);
 
       UpsertAccount(refresh_token);
     } else {
@@ -218,12 +215,10 @@ class EduCoexistenceChildSigninHelper : public SigninHelper {
 
   void OnConsentLogged(const std::string& refresh_token, bool success) {
     if (success) {
-      // The EDU account has been added/reauthenticated. Mark migration to ARC++
-      // as completed.
-      if (arc::IsSecondaryAccountForChildEnabled()) {
-        pref_service_->SetBoolean(::prefs::kEduCoexistenceArcMigrationCompleted,
-                                  true);
-      }
+      // The EDU account has been added/re-authenticated. Mark migration to
+      // ARC++ as completed.
+      pref_service_->SetBoolean(::prefs::kEduCoexistenceArcMigrationCompleted,
+                                true);
 
       UpsertAccount(refresh_token);
     } else {

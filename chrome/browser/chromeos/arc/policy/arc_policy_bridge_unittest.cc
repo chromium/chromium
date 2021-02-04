@@ -12,7 +12,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/arc/enterprise/arc_data_snapshotd_delegate.h"
 #include "chrome/browser/chromeos/arc/enterprise/arc_force_installed_apps_tracker.h"
@@ -678,10 +677,6 @@ TEST_F(ArcPolicyBridgeTest, VpnConfigAllowedTest) {
 }
 
 TEST_F(ArcPolicyBridgeTest, ManualChildUserPoliciesSet) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /* enabled_features */ {arc::kEnableSecondaryAccountsForChild},
-      /* disabled_features */ {});
   // Mark profile as supervised user.
   profile()->SetSupervisedUserId(::supervised_users::kChildAccountSUID);
   EXPECT_TRUE(profile()->IsChild());

@@ -542,14 +542,6 @@ void ArcAuthService::OnRefreshTokenUpdatedForAccount(
   if (!arc::IsArcProvisioned(profile_))
     return;
 
-  // For child device accounts do not allow the propagation of secondary
-  // accounts from Chrome OS Account Manager to ARC unless experimental feature
-  // is enabled.
-  if (!arc::IsSecondaryAccountForChildEnabled() && profile_->IsChild() &&
-      !IsPrimaryGaiaAccount(account_info.gaia)) {
-    return;
-  }
-
   if (identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
           account_info.account_id)) {
     VLOG(1) << "Ignoring account update due to lack of a valid token: "

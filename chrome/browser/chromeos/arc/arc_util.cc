@@ -620,10 +620,6 @@ bool IsPlayStoreAvailable() {
          chromeos::features::ShouldShowPlayStoreInDemoMode();
 }
 
-bool IsSecondaryAccountForChildEnabled() {
-  return base::FeatureList::IsEnabled(kEnableSecondaryAccountsForChild);
-}
-
 bool ShouldStartArcSilentlyForManagedProfile(const Profile* profile) {
   return IsArcPlayStoreEnabledPreferenceManagedForProfile(profile) &&
          (AreArcAllOptInPreferencesIgnorableForProfile(profile) ||
