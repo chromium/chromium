@@ -24,7 +24,6 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "components/services/storage/service_worker/service_worker_storage.h"
 #include "components/services/storage/service_worker/service_worker_storage_control_impl.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/loader/navigation_url_loader_impl.h"
@@ -1612,9 +1611,8 @@ void ServiceWorkerContextWrapper::BindStorageControl(
             {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
     storage_control_ =
         std::make_unique<storage::ServiceWorkerStorageControlImpl>(
-            storage::ServiceWorkerStorage::Create(
-                user_data_directory_, std::move(database_task_runner)));
-    storage_control_->Bind(std::move(receiver));
+            user_data_directory_, std::move(database_task_runner),
+            std::move(receiver));
   }
 }
 

@@ -77,19 +77,14 @@ class ServiceWorkerLiveVersionRefImpl
 };
 
 ServiceWorkerStorageControlImpl::ServiceWorkerStorageControlImpl(
-    std::unique_ptr<ServiceWorkerStorage> storage)
-    : storage_(std::move(storage)) {
-  DCHECK(storage_);
-}
+    const base::FilePath& user_data_directory,
+    scoped_refptr<base::SequencedTaskRunner> database_task_runner,
+    mojo::PendingReceiver<storage::mojom::ServiceWorkerStorageControl> receiver)
+    : storage_(ServiceWorkerStorage::Create(user_data_directory,
+                                            std::move(database_task_runner))),
+      receiver_(this, std::move(receiver)) {}
 
 ServiceWorkerStorageControlImpl::~ServiceWorkerStorageControlImpl() = default;
-
-void ServiceWorkerStorageControlImpl::Bind(
-    mojo::PendingReceiver<storage::mojom::ServiceWorkerStorageControl>
-        receiver) {
-  DCHECK(!receiver_.is_bound());
-  receiver_.Bind(std::move(receiver));
-}
 
 void ServiceWorkerStorageControlImpl::OnNoLiveVersion(int64_t version_id) {
   auto it = live_versions_.find(version_id);

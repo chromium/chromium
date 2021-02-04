@@ -8,7 +8,9 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequenced_task_runner.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
 #include "components/services/storage/service_worker/service_worker_storage.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -25,8 +27,11 @@ class ServiceWorkerLiveVersionRefImpl;
 class ServiceWorkerStorageControlImpl
     : public storage::mojom::ServiceWorkerStorageControl {
  public:
-  explicit ServiceWorkerStorageControlImpl(
-      std::unique_ptr<ServiceWorkerStorage> storage);
+  ServiceWorkerStorageControlImpl(
+      const base::FilePath& user_data_directory,
+      scoped_refptr<base::SequencedTaskRunner> database_task_runner,
+      mojo::PendingReceiver<storage::mojom::ServiceWorkerStorageControl>
+          receiver);
 
   ServiceWorkerStorageControlImpl(const ServiceWorkerStorageControlImpl&) =
       delete;
@@ -34,9 +39,6 @@ class ServiceWorkerStorageControlImpl
       const ServiceWorkerStorageControlImpl&) = delete;
 
   ~ServiceWorkerStorageControlImpl() override;
-
-  void Bind(mojo::PendingReceiver<storage::mojom::ServiceWorkerStorageControl>
-                receiver);
 
   void OnNoLiveVersion(int64_t version_id);
 
@@ -196,7 +198,7 @@ class ServiceWorkerStorageControlImpl
 
   const std::unique_ptr<ServiceWorkerStorage> storage_;
 
-  mojo::Receiver<storage::mojom::ServiceWorkerStorageControl> receiver_{this};
+  mojo::Receiver<storage::mojom::ServiceWorkerStorageControl> receiver_;
 
   base::flat_map<int64_t /*version_id*/,
                  std::unique_ptr<ServiceWorkerLiveVersionRefImpl>>

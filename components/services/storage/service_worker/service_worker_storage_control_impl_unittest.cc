@@ -15,7 +15,6 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "components/services/storage/service_worker/service_worker_storage.h"
 #include "components/services/storage/service_worker/service_worker_storage_test_utils.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
@@ -178,14 +177,14 @@ class ServiceWorkerStorageControlImplTest : public testing::Test {
   void TearDown() override { DestroyStorage(); }
 
   void SetUpStorage() {
-    auto storage = ServiceWorkerStorage::Create(
+    storage_impl_ = std::make_unique<ServiceWorkerStorageControlImpl>(
         user_data_directory_.GetPath(),
-        /*database_task_runner=*/base::ThreadTaskRunnerHandle::Get());
-    storage_impl_ =
-        std::make_unique<ServiceWorkerStorageControlImpl>(std::move(storage));
+        /*database_task_runner=*/base::ThreadTaskRunnerHandle::Get(),
+        remote_.BindNewPipeAndPassReceiver());
   }
 
   void DestroyStorage() {
+    remote_.reset();
     storage_impl_.reset();
     disk_cache::FlushCacheThreadForTesting();
     task_environment().RunUntilIdle();
@@ -684,6 +683,7 @@ class ServiceWorkerStorageControlImplTest : public testing::Test {
   base::ScopedTempDir user_data_directory_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<ServiceWorkerStorageControlImpl> storage_impl_;
+  mojo::Remote<mojom::ServiceWorkerStorageControl> remote_;
 };
 
 // Tests that FindRegistration methods don't find anything without having stored
