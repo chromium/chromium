@@ -22,6 +22,7 @@
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "components/services/storage/public/mojom/local_storage_control.mojom.h"
+#include "components/services/storage/public/mojom/storage_policy_update.mojom.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -83,7 +84,7 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
   void Flush(FlushCallback callback) override;
   void PurgeMemory() override;
   void ApplyPolicyUpdates(
-      std::vector<mojom::LocalStoragePolicyUpdatePtr> policy_updates) override;
+      std::vector<mojom::StoragePolicyUpdatePtr> policy_updates) override;
   void ForceKeepSessionState() override;
 
   // base::trace_event::MemoryDumpProvider implementation.

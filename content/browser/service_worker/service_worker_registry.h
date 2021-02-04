@@ -15,6 +15,7 @@
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "storage/browser/quota/storage_policy_observer.h"
 
 namespace storage {
 class QuotaManagerProxy;
@@ -418,13 +419,11 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
       uint64_t call_id,
       storage::mojom::ServiceWorkerDatabaseStatus status);
 
-  // TODO(bashi): Consider introducing a helper class that handles the below.
-  // These are almost the same as DOMStorageContextWrapper.
   void DidGetRegisteredOriginsOnStartup(
       const std::vector<url::Origin>& origins);
-  void EnsureRegisteredOriginIsTracked(const url::Origin& origin);
-  void OnStoragePolicyChanged();
-  bool ShouldPurgeOnShutdown(const url::Origin& origin);
+  void ApplyPolicyUpdates(
+      std::vector<storage::mojom::StoragePolicyUpdatePtr> policy_updates);
+  bool ShouldPurgeOnShutdownForTesting(const url::Origin& origin);
 
   void OnRemoteStorageDisconnected();
 
@@ -497,17 +496,7 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   // ServiceWorkerStorage once QuotaManager gets mojofied.
   const scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
   const scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy_;
-  class StoragePolicyObserver;
-  base::SequenceBound<StoragePolicyObserver> storage_policy_observer_;
-
-  // TODO(bashi): Avoid duplication. Merge this with LocalStorageOriginState.
-  struct StorageOriginState {
-    bool should_purge_on_shutdown = false;
-    bool will_purge_on_shutdown = false;
-  };
-  // IMPORTANT: Don't use this other than updating storage policies. This can
-  // be out of sync with |registered_origins_| in ServiceWorkerStorage.
-  std::map<url::Origin, StorageOriginState> tracked_origins_for_policy_update_;
+  base::Optional<storage::StoragePolicyObserver> storage_policy_observer_;
 
   // For finding registrations being installed or uninstalled.
   using RegistrationRefsById =

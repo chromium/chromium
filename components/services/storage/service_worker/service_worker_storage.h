@@ -23,6 +23,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/services/storage/public/mojom/local_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
+#include "components/services/storage/public/mojom/storage_policy_update.mojom.h"
 #include "components/services/storage/service_worker/service_worker_database.h"
 #include "components/services/storage/service_worker/service_worker_resource_ops.h"
 #include "url/gurl.h"
@@ -277,8 +278,7 @@ class ServiceWorkerStorage {
 
   // Applies |policy_updates|.
   void ApplyPolicyUpdates(
-      const std::vector<storage::mojom::LocalStoragePolicyUpdatePtr>&
-          policy_updates,
+      const std::vector<storage::mojom::StoragePolicyUpdatePtr>& policy_updates,
       DatabaseStatusCallback callback);
 
   void LazyInitializeForTest();

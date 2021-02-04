@@ -4,19 +4,11 @@
 
 module storage.mojom;
 
+import "components/services/storage/public/mojom/storage_policy_update.mojom";
 import "components/services/storage/public/mojom/storage_usage_info.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "third_party/blink/public/mojom/dom_storage/storage_area.mojom";
 import "url/mojom/origin.mojom";
-
-// Indicates a policy update for a specific origin.
-struct LocalStoragePolicyUpdate {
-  // The origin to which this policy applies.
-  url.mojom.Origin origin;
-
-  // Indicates whether data for this origin should be purged on shutdown.
-  bool purge_on_shutdown;
-};
 
 // Controls the state of Local Storage within a partition. This is a privileged
 // interface and must not be brokered to untrusted clients.
@@ -48,8 +40,8 @@ interface LocalStorageControl {
   PurgeMemory();
 
   // Applies changes to data retention policy which are relevant at shutdown.
-  // See LocalStoragePolicyUpdate.
-  ApplyPolicyUpdates(array<LocalStoragePolicyUpdate> policy_updates);
+  // See StoragePolicyUpdate.
+  ApplyPolicyUpdates(array<StoragePolicyUpdate> policy_updates);
 
   // Some origins may be configured to be purged at the end of a session rather
   // than persisted as in the default Local Storage behavior. If this is called,

@@ -831,9 +831,9 @@ TEST_F(LocalStorageImplTest, ShutdownClearsData) {
   // Make sure all data gets committed to the DB.
   RunUntilIdle();
 
-  std::vector<mojom::LocalStoragePolicyUpdatePtr> updates;
-  updates.push_back(mojom::LocalStoragePolicyUpdate::New(
-      origin1, /*purge_on_shutdown=*/true));
+  std::vector<mojom::StoragePolicyUpdatePtr> updates;
+  updates.emplace_back(
+      mojom::StoragePolicyUpdate::New(origin1, /*purge_on_shutdown=*/true));
   context()->ApplyPolicyUpdates(std::move(updates));
 
   // Data from origin2 should exist, including meta-data, but nothing should

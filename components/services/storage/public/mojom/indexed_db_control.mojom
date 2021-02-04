@@ -5,6 +5,7 @@
 module storage.mojom;
 
 import "components/services/storage/public/mojom/indexed_db_control_test.mojom";
+import "components/services/storage/public/mojom/storage_policy_update.mojom";
 import "components/services/storage/public/mojom/storage_usage_info.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/string16.mojom";
@@ -22,15 +23,6 @@ enum ForceCloseReason {
   FORCE_SCHEMA_DOWNGRADE_INTERNALS_PAGE = 4,
   // Append new values here and update IDBContextForcedCloseReason in
   // enums.xml.
-};
-
-// Indicates a policy update for a specific origin.
-struct IndexedDBStoragePolicyUpdate {
-  // The origin to which this policy applies.
-  url.mojom.Origin origin;
-
-  // Indicates whether data for this origin should be purged on shutdown.
-  bool purge_on_shutdown;
 };
 
 // Communicates with IndexedDB clients about changes in IndexedDB.
@@ -91,8 +83,8 @@ interface IndexedDBControl {
   AddObserver(pending_remote<IndexedDBObserver> observer);
 
   // Applies changes to data retention policy which are relevant at shutdown.
-  // See IndexedDBStoragePolicyUpdate.
-  ApplyPolicyUpdates(array<IndexedDBStoragePolicyUpdate> policy_updates);
+  // See StoragePolicyUpdate.
+  ApplyPolicyUpdates(array<StoragePolicyUpdate> policy_updates);
 
   // Binds the testing interface for extra functionality only available in
   // tests.

@@ -18,6 +18,7 @@ mojom("mojom") {
     "service_worker_database.mojom",
     "service_worker_storage_control.mojom",
     "session_storage_control.mojom",
+    "storage_policy_update.mojom",
     "storage_service.mojom",
     "storage_usage_info.mojom",
   ]

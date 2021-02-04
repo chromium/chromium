@@ -646,7 +646,7 @@ void LocalStorageImpl::PurgeMemory() {
 }
 
 void LocalStorageImpl::ApplyPolicyUpdates(
-    std::vector<mojom::LocalStoragePolicyUpdatePtr> policy_updates) {
+    std::vector<mojom::StoragePolicyUpdatePtr> policy_updates) {
   for (const auto& update : policy_updates) {
     GURL url = update->origin.GetURL();
     if (!update->purge_on_shutdown)

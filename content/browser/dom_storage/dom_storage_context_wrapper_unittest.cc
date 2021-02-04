@@ -28,8 +28,8 @@ class DOMStorageContextWrapperTest : public testing::Test {
   DOMStorageContextWrapperTest() = default;
 
   void SetUp() override {
-    context_ = new DOMStorageContextWrapper(
-        /*partition=*/nullptr, /*special_storage_policy=*/nullptr);
+    context_ = base::MakeRefCounted<DOMStorageContextWrapper>(
+        /*partition=*/nullptr);
 
     auto* security_policy = ChildProcessSecurityPolicyImpl::GetInstance();
     security_policy->Add(kTestProcessIdOrigin1, &browser_context_);

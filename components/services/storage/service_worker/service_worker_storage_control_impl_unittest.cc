@@ -1443,8 +1443,8 @@ TEST_F(ServiceWorkerStorageControlImplTest, ApplyPolicyUpdates) {
   ASSERT_EQ(status, DatabaseStatus::kOk);
 
   // Update policies to purge the registration for |kScope2| on shutdown.
-  std::vector<storage::mojom::LocalStoragePolicyUpdatePtr> updates;
-  updates.push_back(storage::mojom::LocalStoragePolicyUpdate::New(
+  std::vector<storage::mojom::StoragePolicyUpdatePtr> updates;
+  updates.emplace_back(storage::mojom::StoragePolicyUpdate::New(
       url::Origin::Create(kScope2.GetOrigin()), /*purge_on_shutdown=*/true));
   base::RunLoop loop;
   storage()->ApplyPolicyUpdates(

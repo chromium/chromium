@@ -1179,8 +1179,7 @@ void ServiceWorkerStorage::PurgeResources(
 }
 
 void ServiceWorkerStorage::ApplyPolicyUpdates(
-    const std::vector<storage::mojom::LocalStoragePolicyUpdatePtr>&
-        policy_updates,
+    const std::vector<storage::mojom::StoragePolicyUpdatePtr>& policy_updates,
     DatabaseStatusCallback callback) {
   switch (state_) {
     case STORAGE_STATE_DISABLED:
@@ -1189,8 +1188,7 @@ void ServiceWorkerStorage::ApplyPolicyUpdates(
     case STORAGE_STATE_INITIALIZING:
     case STORAGE_STATE_UNINITIALIZED: {
       // An explicit clone is needed to pass `policy_updates` to LazyInitialize.
-      std::vector<storage::mojom::LocalStoragePolicyUpdatePtr>
-          cloned_policy_updates;
+      std::vector<storage::mojom::StoragePolicyUpdatePtr> cloned_policy_updates;
       for (const auto& entry : policy_updates)
         cloned_policy_updates.push_back(entry.Clone());
 

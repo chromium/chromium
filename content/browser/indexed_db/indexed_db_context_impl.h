@@ -23,6 +23,7 @@
 #include "components/services/storage/public/mojom/file_system_access_context.mojom.h"
 #include "components/services/storage/public/mojom/indexed_db_control.mojom.h"
 #include "components/services/storage/public/mojom/indexed_db_control_test.mojom.h"
+#include "components/services/storage/public/mojom/storage_policy_update.mojom.h"
 #include "content/browser/indexed_db/indexed_db_backing_store.h"
 #include "content/browser/indexed_db/indexed_db_dispatcher_host.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -91,9 +92,8 @@ class CONTENT_EXPORT IndexedDBContextImpl
                           DownloadOriginDataCallback callback) override;
   void GetAllOriginsDetails(GetAllOriginsDetailsCallback callback) override;
   void SetForceKeepSessionState() override;
-  void ApplyPolicyUpdates(
-      std::vector<storage::mojom::IndexedDBStoragePolicyUpdatePtr>
-          policy_updates) override;
+  void ApplyPolicyUpdates(std::vector<storage::mojom::StoragePolicyUpdatePtr>
+                              policy_updates) override;
   void BindTestInterface(
       mojo::PendingReceiver<storage::mojom::IndexedDBControlTest> receiver)
       override;

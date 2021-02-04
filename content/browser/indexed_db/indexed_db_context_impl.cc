@@ -446,13 +446,12 @@ void IndexedDBContextImpl::SetForceKeepSessionState() {
 }
 
 void IndexedDBContextImpl::ApplyPolicyUpdates(
-    std::vector<storage::mojom::IndexedDBStoragePolicyUpdatePtr>
-        policy_updates) {
+    std::vector<storage::mojom::StoragePolicyUpdatePtr> policy_updates) {
   idb_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
           [](IndexedDBContextImpl* context,
-             std::vector<storage::mojom::IndexedDBStoragePolicyUpdatePtr>
+             std::vector<storage::mojom::StoragePolicyUpdatePtr>
                  policy_updates) {
             for (const auto& update : policy_updates) {
               if (!update->purge_on_shutdown)

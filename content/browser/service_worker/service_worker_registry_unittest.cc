@@ -1243,7 +1243,7 @@ TEST_F(ServiceWorkerRegistryTest, StoragePolicyChange) {
 
   ASSERT_EQ(StoreRegistration(registration, registration->waiting_version()),
             blink::ServiceWorkerStatusCode::kOk);
-  EXPECT_FALSE(registry()->ShouldPurgeOnShutdown(kOrigin));
+  EXPECT_FALSE(registry()->ShouldPurgeOnShutdownForTesting(kOrigin));
 
   {
     // Update storage policy to mark the origin should be purged on shutdown.
@@ -1252,7 +1252,7 @@ TEST_F(ServiceWorkerRegistryTest, StoragePolicyChange) {
     base::RunLoop().RunUntilIdle();
   }
 
-  EXPECT_TRUE(registry()->ShouldPurgeOnShutdown(kOrigin));
+  EXPECT_TRUE(registry()->ShouldPurgeOnShutdownForTesting(kOrigin));
 }
 
 // Tests that callbacks of storage operations are always called even when the
@@ -1818,7 +1818,7 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls_ApplyPolicyUpdates) {
 
   ASSERT_EQ(StoreRegistration(registration, registration->waiting_version()),
             blink::ServiceWorkerStatusCode::kOk);
-  EXPECT_FALSE(registry()->ShouldPurgeOnShutdown(kOrigin));
+  EXPECT_FALSE(registry()->ShouldPurgeOnShutdownForTesting(kOrigin));
 
   // Update storage policy to mark the origin should be purged on shutdown.
   special_storage_policy()->AddSessionOnly(kOrigin.GetURL());
@@ -1830,7 +1830,7 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls_ApplyPolicyUpdates) {
   // All Mojo calls must be done at this point.
   EXPECT_EQ(inflight_call_count(), 0U);
 
-  EXPECT_TRUE(registry()->ShouldPurgeOnShutdown(kOrigin));
+  EXPECT_TRUE(registry()->ShouldPurgeOnShutdownForTesting(kOrigin));
 }
 
 // Regression test for https://crbug.com/1165784.

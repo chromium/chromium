@@ -145,8 +145,7 @@ class ServiceWorkerStorageControlImpl
       ClearUserDataForAllRegistrationsByKeyPrefixCallback callback) override;
   void PerformStorageCleanup(PerformStorageCleanupCallback callback) override;
   void ApplyPolicyUpdates(
-      const std::vector<storage::mojom::LocalStoragePolicyUpdatePtr>
-          policy_updates,
+      const std::vector<storage::mojom::StoragePolicyUpdatePtr> policy_updates,
       ApplyPolicyUpdatesCallback callback) override;
   void GetPurgingResourceIdsForTest(
       GetPurgingResourceIdsForTestCallback callback) override;

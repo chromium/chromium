@@ -211,6 +211,8 @@ component("browser") {
     "quota/quota_temporary_storage_evictor.h",
     "quota/special_storage_policy.cc",
     "quota/special_storage_policy.h",
+    "quota/storage_policy_observer.cc",
+    "quota/storage_policy_observer.h",
     "quota/usage_tracker.cc",
     "quota/usage_tracker.h",
   ]

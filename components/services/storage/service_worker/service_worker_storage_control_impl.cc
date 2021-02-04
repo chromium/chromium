@@ -366,8 +366,7 @@ void ServiceWorkerStorageControlImpl::PerformStorageCleanup(
 }
 
 void ServiceWorkerStorageControlImpl::ApplyPolicyUpdates(
-    const std::vector<storage::mojom::LocalStoragePolicyUpdatePtr>
-        policy_updates,
+    const std::vector<storage::mojom::StoragePolicyUpdatePtr> policy_updates,
     ApplyPolicyUpdatesCallback callback) {
   storage_->ApplyPolicyUpdates(std::move(policy_updates), std::move(callback));
 }

@@ -97,9 +97,9 @@ class IndexedDBTest : public testing::Test {
             /*file_system_access_context=*/mojo::NullRemote(),
             base::SequencedTaskRunnerHandle::Get(),
             base::SequencedTaskRunnerHandle::Get())) {
-    std::vector<storage::mojom::IndexedDBStoragePolicyUpdatePtr> policy_updates;
+    std::vector<storage::mojom::StoragePolicyUpdatePtr> policy_updates;
     bool should_purge_on_shutdown = true;
-    policy_updates.push_back(storage::mojom::IndexedDBStoragePolicyUpdate::New(
+    policy_updates.emplace_back(storage::mojom::StoragePolicyUpdate::New(
         kSessionOnlyOrigin, should_purge_on_shutdown));
     context_->ApplyPolicyUpdates(std::move(policy_updates));
   }

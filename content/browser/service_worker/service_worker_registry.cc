@@ -12,7 +12,7 @@
 #include "base/stl_util.h"
 #include "base/task/post_task.h"
 #include "base/trace_event/trace_event.h"
-#include "components/services/storage/public/mojom/local_storage_control.mojom.h"
+#include "components/services/storage/public/mojom/storage_policy_update.mojom.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_info.h"
@@ -184,7 +184,7 @@ class ServiceWorkerRegistry::InflightCallApplyPolicyUpdates
     : public ServiceWorkerRegistry::InflightCall {
  public:
   InflightCallApplyPolicyUpdates(
-      std::vector<storage::mojom::LocalStoragePolicyUpdatePtr> policy_updates,
+      std::vector<storage::mojom::StoragePolicyUpdatePtr> policy_updates,
       base::RepeatingCallback<
           void(storage::mojom::ServiceWorkerDatabaseStatus status)> callback)
       : policy_updates_(std::move(policy_updates)),
@@ -194,8 +194,7 @@ class ServiceWorkerRegistry::InflightCallApplyPolicyUpdates
   void Run(ServiceWorkerRegistry* registry) override {
     DCHECK(registry);
     DCHECK(registry->GetRemoteStorageControl().is_connected());
-    std::vector<storage::mojom::LocalStoragePolicyUpdatePtr>
-        passed_policy_updates;
+    std::vector<storage::mojom::StoragePolicyUpdatePtr> passed_policy_updates;
     for (const auto& entry : policy_updates_)
       passed_policy_updates.push_back(entry.Clone());
 
@@ -204,46 +203,10 @@ class ServiceWorkerRegistry::InflightCallApplyPolicyUpdates
   }
 
  private:
-  std::vector<storage::mojom::LocalStoragePolicyUpdatePtr> policy_updates_;
+  std::vector<storage::mojom::StoragePolicyUpdatePtr> policy_updates_;
   base::RepeatingCallback<void(
       storage::mojom::ServiceWorkerDatabaseStatus status)>
       callback_;
-};
-
-// A helper class that runs on the IO thread to observe storage policy updates.
-class ServiceWorkerRegistry::StoragePolicyObserver
-    : public storage::SpecialStoragePolicy::Observer {
- public:
-  StoragePolicyObserver(
-      base::WeakPtr<ServiceWorkerRegistry> owner,
-      scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy)
-      : owner_(owner), special_storage_policy_(special_storage_policy) {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
-    DCHECK(special_storage_policy_);
-    special_storage_policy_->AddObserver(this);
-  }
-
-  StoragePolicyObserver(const StoragePolicyObserver&) = delete;
-  StoragePolicyObserver& operator=(const StoragePolicyObserver&) = delete;
-
-  ~StoragePolicyObserver() override {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
-    special_storage_policy_->RemoveObserver(this);
-  }
-
- private:
-  // storage::SpecialStoragePolicy::Observer:
-  void OnPolicyChanged() override {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
-    GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ServiceWorkerRegistry::OnStoragePolicyChanged, owner_));
-  }
-
-  // |owner_| is dereferenced on the UI thread. This shouldn't be dereferenced
-  // on the IO thread.
-  base::WeakPtr<ServiceWorkerRegistry> owner_;
-  const scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy_;
 };
 
 ServiceWorkerRegistry::ServiceWorkerRegistry(
@@ -261,13 +224,9 @@ ServiceWorkerRegistry::ServiceWorkerRegistry(
 ServiceWorkerRegistry::ServiceWorkerRegistry(
     ServiceWorkerContextCore* context,
     ServiceWorkerRegistry* old_registry)
-    : context_(context),
-      quota_manager_proxy_(old_registry->quota_manager_proxy_),
-      special_storage_policy_(old_registry->special_storage_policy_) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(context_);
-  Start();
-}
+    : ServiceWorkerRegistry(context,
+                            old_registry->quota_manager_proxy_.get(),
+                            old_registry->special_storage_policy_.get()) {}
 
 ServiceWorkerRegistry::~ServiceWorkerRegistry() = default;
 
@@ -820,16 +779,17 @@ void ServiceWorkerRegistry::DisableStorageForTesting(
 
 void ServiceWorkerRegistry::Start() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (special_storage_policy_) {
-    storage_policy_observer_ = base::SequenceBound<StoragePolicyObserver>(
-        base::CreateSequencedTaskRunner(BrowserThread::IO),
-        weak_factory_.GetWeakPtr(),
-        base::WrapRefCounted(special_storage_policy_.get()));
+  if (!special_storage_policy_)
+    return;
+  storage_policy_observer_.emplace(
+      base::BindRepeating(&ServiceWorkerRegistry::ApplyPolicyUpdates,
+                          weak_factory_.GetWeakPtr()),
+      base::CreateSequencedTaskRunner(BrowserThread::IO),
+      special_storage_policy_);
 
-    GetRegisteredOrigins(
-        base::BindOnce(&ServiceWorkerRegistry::DidGetRegisteredOriginsOnStartup,
-                       weak_factory_.GetWeakPtr()));
-  }
+  GetRegisteredOrigins(
+      base::BindOnce(&ServiceWorkerRegistry::DidGetRegisteredOriginsOnStartup,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void ServiceWorkerRegistry::FindRegistrationForIdInternal(
@@ -1309,10 +1269,8 @@ void ServiceWorkerRegistry::DidStoreRegistration(
   }
   context_->NotifyRegistrationStored(stored_registration_id, stored_scope);
 
-  if (special_storage_policy_) {
-    EnsureRegisteredOriginIsTracked(origin);
-    OnStoragePolicyChanged();
-  }
+  if (storage_policy_observer_)
+    storage_policy_observer_->StartTrackingOrigin(origin);
 
   std::move(callback).Run(status);
 }
@@ -1353,9 +1311,8 @@ void ServiceWorkerRegistry::DidDeleteRegistration(
       storage::mojom::ServiceWorkerStorageOriginState::kDelete) {
     context_->NotifyAllRegistrationsDeletedForOrigin(
         url::Origin::Create(origin));
-    if (special_storage_policy_) {
-      tracked_origins_for_policy_update_.erase(url::Origin::Create(origin));
-    }
+    if (storage_policy_observer_)
+      storage_policy_observer_->StopTrackingOrigin(url::Origin::Create(origin));
   }
 
   std::move(callback).Run(status);
@@ -1573,51 +1530,34 @@ void ServiceWorkerRegistry::DidApplyPolicyUpdates(
 void ServiceWorkerRegistry::DidGetRegisteredOriginsOnStartup(
     const std::vector<url::Origin>& origins) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!special_storage_policy_)
+    return;
   for (const auto& origin : origins)
-    EnsureRegisteredOriginIsTracked(origin);
-  OnStoragePolicyChanged();
+    storage_policy_observer_->StartTrackingOrigin(origin);
 }
 
-void ServiceWorkerRegistry::EnsureRegisteredOriginIsTracked(
-    const url::Origin& origin) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto it = tracked_origins_for_policy_update_.find(origin);
-  if (it == tracked_origins_for_policy_update_.end())
-    tracked_origins_for_policy_update_[origin] = {};
-}
-
-void ServiceWorkerRegistry::OnStoragePolicyChanged() {
+void ServiceWorkerRegistry::ApplyPolicyUpdates(
+    std::vector<storage::mojom::StoragePolicyUpdatePtr> policy_updates) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (is_storage_disabled_)
     return;
+  if (policy_updates.empty())
+    return;
 
-  std::vector<storage::mojom::LocalStoragePolicyUpdatePtr> policy_updates;
-  for (auto& entry : tracked_origins_for_policy_update_) {
-    const url::Origin& origin = entry.first;
-    StorageOriginState& state = entry.second;
-    state.should_purge_on_shutdown = ShouldPurgeOnShutdown(origin);
-    if (state.should_purge_on_shutdown != state.will_purge_on_shutdown) {
-      state.will_purge_on_shutdown = state.should_purge_on_shutdown;
-      policy_updates.push_back(storage::mojom::LocalStoragePolicyUpdate::New(
-          origin, state.should_purge_on_shutdown));
-    }
-  }
-
-  if (!policy_updates.empty()) {
-    uint64_t call_id = GetNextCallId();
-    auto call = std::make_unique<InflightCallApplyPolicyUpdates>(
-        std::move(policy_updates),
-        base::BindRepeating(&ServiceWorkerRegistry::DidApplyPolicyUpdates,
-                            weak_factory_.GetWeakPtr(), call_id));
-    StartRemoteCall(call_id, std::move(call));
-  }
+  uint64_t call_id = GetNextCallId();
+  auto call = std::make_unique<InflightCallApplyPolicyUpdates>(
+      std::move(policy_updates),
+      base::BindRepeating(&ServiceWorkerRegistry::DidApplyPolicyUpdates,
+                          weak_factory_.GetWeakPtr(), call_id));
+  StartRemoteCall(call_id, std::move(call));
 }
 
-bool ServiceWorkerRegistry::ShouldPurgeOnShutdown(const url::Origin& origin) {
-  if (!special_storage_policy_)
+bool ServiceWorkerRegistry::ShouldPurgeOnShutdownForTesting(
+    const url::Origin& origin) {
+  if (!storage_policy_observer_)
     return false;
-  return special_storage_policy_->IsStorageSessionOnly(origin.GetURL()) &&
-         !special_storage_policy_->IsStorageProtected(origin.GetURL());
+  return storage_policy_observer_->ShouldPurgeOnShutdownForTesting(  // IN-TEST
+      origin);
 }
 
 mojo::Remote<storage::mojom::ServiceWorkerStorageControl>&
