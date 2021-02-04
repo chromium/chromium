@@ -272,9 +272,6 @@ class UserSessionManager
 
   void ActiveUserChanged(user_manager::User* active_user) override;
 
-  // This method will be called when user have obtained oauth2 tokens.
-  void OnOAuth2TokensFetched(UserContext context);
-
   // Returns default IME state for user session.
   scoped_refptr<input_method::InputMethodManager::State> GetDefaultIMEState(
       Profile* profile);

@@ -1753,7 +1753,6 @@ void ExistingUserController::OnOAuth2TokensFetched(
     OnAuthFailure(AuthFailure(AuthFailure::FAILED_TO_INITIALIZE_TOKEN));
     return;
   }
-  UserSessionManager::GetInstance()->OnOAuth2TokensFetched(user_context);
   PerformLogin(user_context, LoginPerformer::AuthorizationMode::kExternal);
 }
 

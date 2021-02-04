@@ -1842,7 +1842,25 @@ void UserSessionManager::NotifyUserProfileLoaded(
 
   if (TokenHandlesEnabled() && user && user->HasGaiaAccount()) {
     CreateTokenUtilIfMissing();
-    UpdateTokenHandleIfRequired(profile, user->GetAccountId());
+    if (IsOnlineSignin(user_context_)) {
+      // If the user has gone through an online Gaia flow, then their LST is
+      // guaranteed to have changed/created. We need to update the token handle,
+      // regardless of the state of the previous token handle, if any.
+      if (!token_handle_util_->HasToken(user_context_.GetAccountId())) {
+        // New user.
+        token_handle_fetcher_ = std::make_unique<TokenHandleFetcher>(
+            token_handle_util_.get(), user_context_.GetAccountId());
+        token_handle_fetcher_->FillForNewUser(
+            user_context_.GetAccessToken(),
+            base::BindOnce(&UserSessionManager::OnTokenHandleObtained,
+                           weak_factory_.GetWeakPtr()));
+      } else {
+        // Existing user.
+        UpdateTokenHandle(profile, user->GetAccountId());
+      }
+    } else {
+      UpdateTokenHandleIfRequired(profile, user->GetAccountId());
+    }
   }
 }
 
@@ -2236,21 +2254,6 @@ void UserSessionManager::InjectAuthenticatorBuilder(
     std::unique_ptr<StubAuthenticatorBuilder> builder) {
   injected_authenticator_builder_ = std::move(builder);
   authenticator_.reset();
-}
-
-void UserSessionManager::OnOAuth2TokensFetched(UserContext context) {
-  if (!TokenHandlesEnabled())
-    return;
-
-  CreateTokenUtilIfMissing();
-  if (!token_handle_util_->HasToken(context.GetAccountId())) {
-    token_handle_fetcher_.reset(new TokenHandleFetcher(token_handle_util_.get(),
-                                                       context.GetAccountId()));
-    token_handle_fetcher_->FillForNewUser(
-        context.GetAccessToken(),
-        base::BindOnce(&UserSessionManager::OnTokenHandleObtained,
-                       weak_factory_.GetWeakPtr()));
-  }
 }
 
 void UserSessionManager::OnTokenHandleObtained(const AccountId& account_id,
