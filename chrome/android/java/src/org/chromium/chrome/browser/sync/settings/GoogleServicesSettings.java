@@ -402,9 +402,7 @@ public class GoogleServicesSettings
 
                             @Override
                             public void signOutComplete() {
-                                if (clearDataProgressDialog.isAdded()) {
-                                    clearDataProgressDialog.dismissAllowingStateLoss();
-                                }
+                                clearDataProgressDialog.dismissAllowingStateLoss();
                             }
                         },
                         forceWipeUserData);
