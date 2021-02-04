@@ -82,7 +82,21 @@ void ZWPTextInputWrapperV1::SetCursorRect(const gfx::Rect& rect) {
 void ZWPTextInputWrapperV1::SetSurroundingText(
     const base::string16& text,
     const gfx::Range& selection_range) {
+  static constexpr size_t kWaylandMessageDataMaxLength = 4000;
   const std::string text_utf8 = base::UTF16ToUTF8(text);
+  // The text length for set_surrounding_text can not be longer than the maximum
+  // length of wayland messages. The maximum length of the text is explicitly
+  // specified as 4000 in the protocol spec of text-input-unstable-v3.
+  // If the client is unware of the text around the cursor, we can skip sending
+  // set_surrounding_text requests. We fall back to this case when the text is
+  // too long.
+  // TODO(fukino): If the length of |text| doesn't fit into the 4000 bytes
+  // limitation, we should truncate the text and adjust indices of
+  // |selection_range| to make use of set_surrounding_text as much as possible.
+  // crbug.com/1173465.
+  if (text_utf8.size() > kWaylandMessageDataMaxLength)
+    return;
+
   zwp_text_input_v1_set_surrounding_text(obj_.get(), text_utf8.c_str(),
                                          selection_range.start(),
                                          selection_range.end());
