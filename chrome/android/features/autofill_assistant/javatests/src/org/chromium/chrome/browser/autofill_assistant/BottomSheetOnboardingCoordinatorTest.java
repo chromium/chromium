@@ -11,6 +11,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.CoreMatchers.allOf;
@@ -138,6 +139,11 @@ public class BottomSheetOnboardingCoordinatorTest {
     public void testOnboardingWithNoTabs() {
         BottomSheetOnboardingCoordinator coordinator = createCoordinator();
         showOnboardingAndWait(coordinator, mCallback);
+
+        onView(withId(R.id.button_init_not_ok))
+                .check(matches(withContentDescription(R.string.cancel)));
+        onView(withId(R.id.button_init_ok))
+                .check(matches(withContentDescription(R.string.init_ok)));
 
         onView(withId(R.id.button_init_ok)).perform(click());
 

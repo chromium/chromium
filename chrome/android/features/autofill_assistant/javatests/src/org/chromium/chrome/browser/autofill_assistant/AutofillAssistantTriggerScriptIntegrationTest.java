@@ -706,6 +706,10 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         onView(withText("Continue")).perform(click());
         // Wait for onboarding.
         waitUntilViewMatchesCondition(withId(R.id.button_init_not_ok), isCompletelyDisplayed());
+        onView(withId(R.id.button_init_not_ok))
+                .check(matches(withContentDescription(R.string.cancel)));
+        onView(withId(R.id.button_init_ok))
+                .check(matches(withContentDescription(R.string.init_ok)));
         // Cancel onboarding.
         onView(withId(R.id.button_init_not_ok)).perform(click());
         onView(withText("Continue")).perform(click());
