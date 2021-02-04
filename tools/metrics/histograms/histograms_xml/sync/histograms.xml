@@ -637,6 +637,42 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram base="true"
+    name="Sync.ModelTypeTimeUntilEncryptionKeyFound.Bookmarks"
+    units="GetUpdatesResponses" expires_after="2021-05-04">
+  <owner>victorvianna@google.com</owner>
+  <owner>mastiz@chromium.org</owner>
+  <summary>
+    See ModelTypeTimeUntilEncryptionKeyFound. This version serves only to
+    visualize M88 data, since the recording code for that version contains a
+    typo in the histogram suffix (cf. crbug.com/1173986).
+  </summary>
+</histogram>
+
+<histogram base="true"
+    name="Sync.ModelTypeTimeUntilEncryptionKeyFound.Passwords"
+    units="GetUpdatesResponses" expires_after="2021-05-04">
+  <owner>victorvianna@google.com</owner>
+  <owner>mastiz@chromium.org</owner>
+  <summary>
+    See ModelTypeTimeUntilEncryptionKeyFound. This version serves only to
+    visualize M88 data, since the recording code for that version contains a
+    typo in the histogram suffix (cf. crbug.com/1173986).
+  </summary>
+</histogram>
+
+<histogram base="true"
+    name="Sync.ModelTypeTimeUntilEncryptionKeyFound.Sessions"
+    units="GetUpdatesResponses" expires_after="2021-05-04">
+  <owner>victorvianna@google.com</owner>
+  <owner>mastiz@chromium.org</owner>
+  <summary>
+    See ModelTypeTimeUntilEncryptionKeyFound. This version serves only to
+    visualize M88 data, since the recording code for that version contains a
+    typo in the histogram suffix (cf. crbug.com/1173986).
+  </summary>
+</histogram>
+
 <histogram base="true" name="Sync.ModelTypeUndecryptablePendingUpdatesDropped"
     units="SyncEntity" expires_after="2021-06-05">
   <owner>victorvianna@google.com</owner>
