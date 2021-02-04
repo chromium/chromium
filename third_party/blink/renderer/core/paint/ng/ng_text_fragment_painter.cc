@@ -293,10 +293,6 @@ class SelectionPaintState {
 
   bool ShouldPaintSelectedTextOnly() const { return paint_selected_text_only_; }
 
-  bool ShouldPaintSelectedTextSeparately() const {
-    return paint_selected_text_separately_;
-  }
-
   void ComputeSelectionStyle(const Document& document,
                              const ComputedStyle& style,
                              Node* node,
@@ -306,8 +302,6 @@ class SelectionPaintState {
         document, style, node, paint_info, text_style);
     paint_selected_text_only_ =
         (paint_info.phase == PaintPhase::kSelectionDragImage);
-    paint_selected_text_separately_ =
-        !paint_selected_text_only_ && text_style != selection_style_;
   }
 
   PhysicalRect ComputeSelectionRect(const PhysicalOffset& box_offset) {
@@ -322,18 +316,35 @@ class SelectionPaintState {
   // Logic is copied from InlineTextBoxPainter::PaintSelection.
   // |selection_start| and |selection_end| should be between
   // [text_fragment.StartOffset(), text_fragment.EndOffset()].
-  void PaintSelectionBackground(GraphicsContext& context,
-                                Node* node,
-                                const Document& document,
-                                const ComputedStyle& style) {
+  void PaintSelectionBackground(
+      GraphicsContext& context,
+      Node* node,
+      const Document& document,
+      const ComputedStyle& style,
+      const base::Optional<AffineTransform>& rotation) {
     const Color color = SelectionBackgroundColor(document, style, node,
                                                  selection_style_.fill_color);
-    PaintRect(context, *selection_rect_, color);
+
+    if (!rotation) {
+      PaintRect(context, *selection_rect_, color);
+      return;
+    }
+
+    // PaintRect tries to pixel-snap the given rect, but if we’re painting in a
+    // non-horizontal writing mode, our context has been transformed, regressing
+    // tests like <paint/invalidation/repaint-across-writing-mode-boundary>. To
+    // fix this, we undo the transformation temporarily, then use the original
+    // physical coordinates (before MapSelectionRectIntoRotatedSpace).
+    DCHECK(selection_rect_before_rotation_);
+    context.ConcatCTM(rotation->Inverse());
+    PaintRect(context, *selection_rect_before_rotation_, color);
+    context.ConcatCTM(*rotation);
   }
 
   // Called before we paint vertical selected text under a rotation transform.
   void MapSelectionRectIntoRotatedSpace(const AffineTransform& rotation) {
     DCHECK(selection_rect_);
+    selection_rect_before_rotation_.emplace(*selection_rect_);
     *selection_rect_ = PhysicalRect::EnclosingRect(
         rotation.Inverse().MapRect(FloatRect(*selection_rect_)));
   }
@@ -370,9 +381,9 @@ class SelectionPaintState {
   TextPaintStyle selection_style_;
   const SelectionState state_;
   base::Optional<PhysicalRect> selection_rect_;
+  base::Optional<PhysicalRect> selection_rect_before_rotation_;
   const NGInlineCursor& containing_block_;
   bool paint_selected_text_only_;
-  bool paint_selected_text_separately_;
 };
 
 // Check if text-emphasis and ruby annotation text are on different sides.
@@ -533,22 +544,18 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   const SimpleFontData* font_data = font.PrimaryFont();
   DCHECK(font_data);
 
-  // 1. Paint backgrounds behind text if needed. Examples of such backgrounds
-  // include selection and composition highlights. They use physical coordinates
-  // so are painted before GraphicsContext rotation.
+  // 1. Paint backgrounds for document markers that don’t participate in the CSS
+  // highlight overlay system, such as composition highlights. They use physical
+  // coordinates, so are painted before GraphicsContext rotation.
   const DocumentMarkerVector& markers_to_paint =
       ComputeMarkersToPaint(node, text_item.IsEllipsis());
-  if (paint_info.phase != PaintPhase::kSelectionDragImage &&
-      paint_info.phase != PaintPhase::kTextClip && !is_printing) {
+  const bool paint_marker_backgrounds =
+      paint_info.phase != PaintPhase::kSelectionDragImage &&
+      paint_info.phase != PaintPhase::kTextClip && !is_printing;
+  if (paint_marker_backgrounds) {
     PaintDocumentMarkers(paint_info, text_item, cursor_.CurrentText(),
                          markers_to_paint, box_rect.offset, style,
                          DocumentMarkerPaintPhase::kBackground, nullptr);
-    if (UNLIKELY(selection)) {
-      auto selection_rect = selection->ComputeSelectionRect(box_rect.offset);
-      selection->PaintSelectionBackground(context, node, document, style);
-      if (recorder)
-        recorder->UniteVisualRect(EnclosingIntRect(selection_rect));
-    }
   }
 
   base::Optional<GraphicsContextStateSaver> state_saver;
@@ -567,7 +574,25 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
     context.ConcatCTM(*rotation);
   }
 
+  if (UNLIKELY(selection)) {
+    PhysicalRect before_rotation =
+        selection->ComputeSelectionRect(box_rect.offset);
+
+    // The selection rect is given in physical coordinates, so we need to map
+    // them into our now-possibly-rotated space before calling any methods
+    // that might rely on them. Best to do this immediately, because they are
+    // cached internally and could potentially affect any method.
+    if (rotation)
+      selection->MapSelectionRectIntoRotatedSpace(*rotation);
+
+    // We still need to use physical coordinates when invalidating.
+    if (paint_marker_backgrounds && recorder)
+      recorder->UniteVisualRect(EnclosingIntRect(before_rotation));
+  }
+
   // 2. Now paint the foreground, including text and decorations.
+  // TODO(dazabani@igalia.com): suppress text proper where one or more highlight
+  // overlays are active, but paint shadows in full <https://crbug.com/1147859>
   int ascent = font_data ? font_data->GetFontMetrics().Ascent() : 0;
   PhysicalOffset text_origin(box_rect.offset.left,
                              box_rect.offset.top + ascent);
@@ -616,7 +641,7 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
     unsigned start_offset = fragment_paint_info.from;
     unsigned end_offset = fragment_paint_info.to;
 
-    if (UNLIKELY(selection && selection->ShouldPaintSelectedTextSeparately())) {
+    if (UNLIKELY(selection)) {
       selection->PaintBeforeAndAfterSelectedText(
           text_painter, start_offset, end_offset, length, text_style, node_id);
     } else {
@@ -631,12 +656,20 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
     }
   }
 
-  if (UNLIKELY(selection && (selection->ShouldPaintSelectedTextOnly() ||
-                             selection->ShouldPaintSelectedTextSeparately()))) {
+  // 3. Paint CSS highlight overlays, such as ::selection and ::target-text.
+  // For each overlay, we paint its background, then its shadows, then the text
+  // with any decorations it defines, and all of the ::selection overlay parts
+  // are painted over any ::target-text overlay parts, and so on. The text
+  // proper (as opposed to shadows) is only painted by the topmost overlay
+  // applying to a piece of text (if any), and suppressed everywhere else.
+  // TODO(dazabani@igalia.com): implement this for the other highlight pseudos
+  if (UNLIKELY(selection)) {
+    if (paint_marker_backgrounds) {
+      selection->PaintSelectionBackground(context, node, document, style,
+                                          rotation);
+    }
+
     // Paint only the text that is selected.
-    selection->ComputeSelectionRect(box_rect.offset);
-    if (rotation)
-      selection->MapSelectionRectIntoRotatedSpace(*rotation);
     selection->PaintSelectedText(text_painter, length, text_style, node_id);
   }
 
