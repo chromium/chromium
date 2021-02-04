@@ -24,6 +24,8 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -41,6 +43,7 @@ using ArcAppConfirmCallback = base::OnceCallback<void(bool accept)>;
 class ArcAppDialogView : public views::DialogDelegateView,
                          public AppIconLoaderDelegate {
  public:
+  METADATA_HEADER(ArcAppDialogView);
   ArcAppDialogView(Profile* profile,
                    AppListControllerDelegate* controller,
                    const std::string& app_id,
@@ -50,6 +53,8 @@ class ArcAppDialogView : public views::DialogDelegateView,
                    const base::string16& confirm_button_text,
                    const base::string16& cancel_button_text,
                    ArcAppConfirmCallback confirm_callback);
+  ArcAppDialogView(const ArcAppDialogView&) = delete;
+  ArcAppDialogView& operator=(const ArcAppDialogView&) = delete;
   ~ArcAppDialogView() override;
 
   // Public method used for test only.
@@ -73,8 +78,6 @@ class ArcAppDialogView : public views::DialogDelegateView,
 
   const std::string app_id_;
   ArcAppConfirmCallback confirm_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppDialogView);
 };
 
 // Browsertest use only. Global pointer of currently shown ArcAppDialogView.
@@ -187,6 +190,9 @@ void ArcAppDialogView::OnAppImageUpdated(const std::string& app_id,
   icon_view_->SetImageSize(image.size());
   icon_view_->SetImage(image);
 }
+
+BEGIN_METADATA(ArcAppDialogView, views::DialogDelegateView)
+END_METADATA
 
 std::unique_ptr<ArcAppListPrefs::AppInfo> GetArcAppInfo(
     Profile* profile,

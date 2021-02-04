@@ -11,6 +11,7 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 class GURL;
@@ -36,15 +37,15 @@ class UserManagerProfileDialogDelegate
       public ChromeWebModalDialogManagerDelegate,
       public web_modal::WebContentsModalDialogHost {
  public:
+  METADATA_HEADER(UserManagerProfileDialogDelegate);
   UserManagerProfileDialogDelegate(UserManagerProfileDialogHost* host,
                                    std::unique_ptr<views::WebView> web_view,
                                    const GURL& url);
-  ~UserManagerProfileDialogDelegate() override;
-
   UserManagerProfileDialogDelegate(const UserManagerProfileDialogDelegate&) =
       delete;
   UserManagerProfileDialogDelegate& operator=(
       const UserManagerProfileDialogDelegate&) = delete;
+  ~UserManagerProfileDialogDelegate() override;
 
   void CloseDialog();
 

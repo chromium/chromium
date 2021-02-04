@@ -19,6 +19,7 @@
 #include "ui/views/bubble/tooltip_icon.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 
@@ -151,6 +152,9 @@ void CredentialLeakDialogView::InitWindow() {
   AddChildView(std::move(description_label));
   SetExtraView(CreateInfoIcon());
 }
+
+BEGIN_METADATA(CredentialLeakDialogView, views::DialogDelegateView)
+END_METADATA
 
 CredentialLeakPrompt* CreateCredentialLeakPromptView(
     CredentialLeakDialogController* controller,

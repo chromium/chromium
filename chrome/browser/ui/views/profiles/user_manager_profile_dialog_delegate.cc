@@ -15,6 +15,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 
 UserManagerProfileDialogDelegate::UserManagerProfileDialogDelegate(
@@ -117,3 +118,6 @@ void UserManagerProfileDialogDelegate::OnDialogDestroyed() {
     host_ = nullptr;
   }
 }
+
+BEGIN_METADATA(UserManagerProfileDialogDelegate, views::DialogDelegateView)
+END_METADATA

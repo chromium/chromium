@@ -33,6 +33,7 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
@@ -270,6 +271,9 @@ void SigninViewControllerDelegateViews::DisplayModal() {
 
   content_view_->RequestFocus();
 }
+
+BEGIN_METADATA(SigninViewControllerDelegateViews, views::DialogDelegateView)
+END_METADATA
 
 // --------------------------------------------------------------------
 // SigninViewControllerDelegate static methods

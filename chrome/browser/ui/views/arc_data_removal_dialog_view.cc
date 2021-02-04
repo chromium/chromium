@@ -22,6 +22,8 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -41,9 +43,13 @@ class DataRemovalConfirmationDialog : public views::DialogDelegateView,
                                       public AppIconLoaderDelegate,
                                       public ArcSessionManagerObserver {
  public:
+  METADATA_HEADER(DataRemovalConfirmationDialog);
   DataRemovalConfirmationDialog(
       Profile* profile,
       DataRemovalConfirmationCallback confirm_data_removal);
+  DataRemovalConfirmationDialog(const DataRemovalConfirmationDialog&) = delete;
+  DataRemovalConfirmationDialog& operator=(
+      const DataRemovalConfirmationDialog&) = delete;
   ~DataRemovalConfirmationDialog() override;
 
   // AppIconLoaderDelegate:
@@ -62,8 +68,6 @@ class DataRemovalConfirmationDialog : public views::DialogDelegateView,
   Profile* const profile_;
 
   DataRemovalConfirmationCallback confirm_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataRemovalConfirmationDialog);
 };
 
 DataRemovalConfirmationDialog* g_current_data_removal_confirmation = nullptr;
@@ -145,6 +149,9 @@ void DataRemovalConfirmationDialog::OnArcPlayStoreEnabledChanged(bool enabled) {
     return;
   CancelDialog();
 }
+
+BEGIN_METADATA(DataRemovalConfirmationDialog, views::DialogDelegateView)
+END_METADATA
 
 }  // namespace
 

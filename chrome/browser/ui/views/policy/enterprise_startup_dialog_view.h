@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/enterprise_startup_dialog.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -20,8 +21,12 @@ namespace policy {
 
 class EnterpriseStartupDialogView : public views::DialogDelegateView {
  public:
+  METADATA_HEADER(EnterpriseStartupDialogView);
   EnterpriseStartupDialogView(
       EnterpriseStartupDialog::DialogResultCallback callback);
+  EnterpriseStartupDialogView(const EnterpriseStartupDialogView&) = delete;
+  EnterpriseStartupDialogView& operator=(const EnterpriseStartupDialogView&) =
+      delete;
   ~EnterpriseStartupDialogView() override;
 
   void DisplayLaunchingInformationWithThrobber(
@@ -57,14 +62,15 @@ class EnterpriseStartupDialogView : public views::DialogDelegateView {
   bool can_show_browser_window_ = false;
 
   base::WeakPtrFactory<EnterpriseStartupDialogView> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EnterpriseStartupDialogView);
 };
 
 class EnterpriseStartupDialogImpl : public EnterpriseStartupDialog,
                                     public views::WidgetObserver {
  public:
   explicit EnterpriseStartupDialogImpl(DialogResultCallback callback);
+  EnterpriseStartupDialogImpl(const EnterpriseStartupDialogImpl&) = delete;
+  EnterpriseStartupDialogImpl& operator=(const EnterpriseStartupDialogImpl&) =
+      delete;
   ~EnterpriseStartupDialogImpl() override;
 
   // Override EnterpriseStartupDialog
@@ -81,8 +87,6 @@ class EnterpriseStartupDialogImpl : public EnterpriseStartupDialog,
  private:
   // The dialog_view_ is owned by itself.
   EnterpriseStartupDialogView* dialog_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(EnterpriseStartupDialogImpl);
 };
 
 }  // namespace policy

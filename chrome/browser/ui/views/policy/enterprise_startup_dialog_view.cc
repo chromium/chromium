@@ -30,6 +30,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 #if defined(OS_MAC)
 #include "base/task/current_thread.h"
@@ -233,6 +234,9 @@ void EnterpriseStartupDialogView::SetupLayout(
   GetWidget()->GetRootView()->Layout();
   GetWidget()->GetRootView()->SchedulePaint();
 }
+
+BEGIN_METADATA(EnterpriseStartupDialogView, views::DialogDelegateView)
+END_METADATA
 
 /*
  * EnterpriseStartupDialogImpl

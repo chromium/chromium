@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "components/javascript_dialogs/tab_modal_dialog_view.h"
 #include "content/public/browser/javascript_dialog_manager.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace views {
@@ -23,6 +24,11 @@ class JavaScriptTabModalDialogViewViews
     : public javascript_dialogs::TabModalDialogView,
       public views::DialogDelegateView {
  public:
+  METADATA_HEADER(JavaScriptTabModalDialogViewViews);
+  JavaScriptTabModalDialogViewViews(const JavaScriptTabModalDialogViewViews&) =
+      delete;
+  JavaScriptTabModalDialogViewViews& operator=(
+      const JavaScriptTabModalDialogViewViews&) = delete;
   ~JavaScriptTabModalDialogViewViews() override;
 
   // JavaScriptDialog:
@@ -63,8 +69,6 @@ class JavaScriptTabModalDialogViewViews
   views::MessageBoxView* message_box_view_;
 
   base::WeakPtrFactory<JavaScriptTabModalDialogViewViews> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(JavaScriptTabModalDialogViewViews);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_JAVASCRIPT_TAB_MODAL_DIALOG_VIEW_VIEWS_H_

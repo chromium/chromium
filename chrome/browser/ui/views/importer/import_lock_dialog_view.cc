@@ -22,6 +22,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 using base::UserMetricsAction;
@@ -82,3 +83,6 @@ ImportLockDialogView::ImportLockDialogView(
 }
 
 ImportLockDialogView::~ImportLockDialogView() = default;
+
+BEGIN_METADATA(ImportLockDialogView, views::DialogDelegateView)
+END_METADATA

@@ -14,6 +14,7 @@
 #include "ui/views/controls/message_box_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 JavaScriptTabModalDialogViewViews::~JavaScriptTabModalDialogViewViews() =
     default;
@@ -101,6 +102,9 @@ JavaScriptTabModalDialogViewViews::JavaScriptTabModalDialogViewViews(
   constrained_window::ShowWebModalDialogViews(this, parent_web_contents);
   chrome::RecordDialogCreation(chrome::DialogIdentifier::JAVA_SCRIPT);
 }
+
+BEGIN_METADATA(JavaScriptTabModalDialogViewViews, views::DialogDelegateView)
+END_METADATA
 
 // Creates a new JS dialog. Note the two callbacks; |dialog_callback| is for
 // user responses, while |dialog_force_closed_callback| is for when Views

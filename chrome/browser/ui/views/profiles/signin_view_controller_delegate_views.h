@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/signin_view_controller_delegate.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 class GURL;
@@ -38,6 +39,13 @@ class SigninViewControllerDelegateViews
       public content::WebContentsDelegate,
       public ChromeWebModalDialogManagerDelegate {
  public:
+  METADATA_HEADER(SigninViewControllerDelegateViews);
+
+  SigninViewControllerDelegateViews(const SigninViewControllerDelegateViews&) =
+      delete;
+  SigninViewControllerDelegateViews& operator=(
+      const SigninViewControllerDelegateViews&) = delete;
+
   static std::unique_ptr<views::WebView> CreateSyncConfirmationWebView(
       Browser* browser);
 
@@ -111,8 +119,6 @@ class SigninViewControllerDelegateViews
   views::Widget* modal_signin_widget_;  // Not owned.
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
   bool should_show_close_button_;
-
-  DISALLOW_COPY_AND_ASSIGN(SigninViewControllerDelegateViews);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_SIGNIN_VIEW_CONTROLLER_DELEGATE_VIEWS_H_
