@@ -26,17 +26,10 @@
 
     testcases.forEach(c => test(t => {
         let s = new Sanitizer(c.config_input);
-        var dom = document.implementation.createHTMLDocument();
-        dom.documentElement.innerHTML = c.value;
+        var dom = new DOMParser().parseFromString("<!DOCTYPE html><body>" + c.value, "text/html");
         let result = s.sanitizeToString(dom);
-        // Remove <html> and </html>
-        if (c.message != "document" && result.slice(0,12) == "<html><body>" && result.slice(result.length-14, result.length) == "</body></html>")
-          result = result.substr(12, result.length - 26);
-        if (c.message == "document") {
-          assert_equals(result, "<html><body>test</body></html>");
-        } else {
-          assert_equals(result, c.result);
-        }
+
+        assert_equals(result, c.result);
     }, "SanitizerAPI with config: " + c.message + ", sanitizeToString from document function for " + c.message));
 
     testcases.forEach(c => test(t => {

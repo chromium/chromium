@@ -10,13 +10,19 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_sanitizer_config.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
+#include "third_party/blink/renderer/core/dom/document_init.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/html/html_collection.h"
+#include "third_party/blink/renderer/core/html/html_head_element.h"
+#include "third_party/blink/renderer/core/html/parser/html_document_parser.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_html.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
+#include "third_party/blink/renderer/core/xml/dom_parser.h"
+#include "third_party/blink/renderer/core/xml/parse_from_string_options.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -131,16 +137,19 @@ DocumentFragment* Sanitizer::SanitizeImpl(
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);
   if (input.IsDocumentFragment()) {
     fragment = input.GetAsDocumentFragment();
-  } else if (window) {
-    Document* document = window->document();
-    if (input.IsString() || input.IsNull()) {
-      fragment = document->createDocumentFragment();
-      DCHECK(document->QuerySelector("body"));
-      fragment->ParseHTML(input.GetAsString(), document->QuerySelector("body"));
-    } else {
-      fragment = document->createDocumentFragment();
-      fragment->appendChild(input.GetAsDocument()->documentElement());
-    }
+  } else if (window && (input.IsString() || input.IsNull())) {
+    Document* document =
+        DOMParser::Create(script_state)
+            ->parseFromString("<!DOCTYPE html><body>" + input.GetAsString(),
+                              "text/html", ParseFromStringOptions::Create());
+    DCHECK(document->body());
+    fragment = document->createDocumentFragment();
+    fragment->CloneChildNodesFrom(*(document->body()),
+                                  CloneChildrenFlag::kClone);
+  } else if (input.IsDocument()) {
+    fragment = input.GetAsDocument()->createDocumentFragment();
+    fragment->CloneChildNodesFrom(*(input.GetAsDocument()->body()),
+                                  CloneChildrenFlag::kClone);
   } else {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Cannot find current DOM window.");
