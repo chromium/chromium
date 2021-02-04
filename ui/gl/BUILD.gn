@@ -31,6 +31,7 @@ buildflag_header("buildflags") {
     "ENABLE_SWIFTSHADER=$enable_swiftshader",
     "USE_DAWN=$use_dawn",
     "USE_STATIC_ANGLE=$use_static_angle",
+    "USE_OPENGL_APITRACE=$enable_opengl_apitrace",
   ]
 }
 

@@ -18,6 +18,15 @@ declare_args() {
   # TODO(petermcneeley): Backwards compatiblity support for VM images.
   # Remove when deprecated. (https://crbug.com/1122009)
   ozone_platform_gbm = -1
+
+  # Enable explicit apitrace (https://apitrace.github.io) loading.
+  # This requires apitrace library with additional bindings.
+  # See ChromeOS package for details:
+  # https://chromium-review.googlesource.com/c/chromiumos/overlays/chromiumos-overlay/+/2659419
+  # Chrome will not start without an apitrace.so library.
+  # Trace will be saved to /tmp/gltrace.dat file by default. You can
+  # override it at run time with TRACE_FILE=<path> environment variable.
+  enable_opengl_apitrace = false
 }
 
 declare_args() {
