@@ -181,6 +181,7 @@ class Receiver {
   // unbound those response callbacks are no longer valid and the Remote will
   // never be able to receive its expected responses.
   PendingReceiver<Interface> Unbind() WARN_UNUSED_RESULT {
+    DCHECK(is_bound());
     CHECK(!internal_state_.HasAssociatedInterfaces());
     return PendingReceiver<Interface>(
         internal_state_.Unbind().PassMessagePipe());
