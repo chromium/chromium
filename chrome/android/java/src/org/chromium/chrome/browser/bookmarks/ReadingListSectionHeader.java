@@ -9,6 +9,7 @@ import android.content.Context;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
 
 import java.util.Collections;
@@ -73,11 +74,18 @@ class ReadingListSectionHeader {
     private static void sort(List<BookmarkListEntry> listItems, int readingListStartIndex) {
         // TODO(crbug.com/1147259): Sort items by creation time possibly.
         Collections.sort(listItems.subList(readingListStartIndex, listItems.size()), (lhs, rhs) -> {
-            // Unread items are shown first.
+            // Unread items are shown first, then sorted based on creation time.
             boolean lhsRead = lhs.getBookmarkItem().isRead();
-            boolean rhsRead = rhs.getBookmarkItem().isRead();
-            if (lhsRead == rhsRead) return 0;
-            return lhsRead ? 1 : -1;
+            BookmarkItem lhsItem = lhs.getBookmarkItem();
+            BookmarkItem rhsItem = rhs.getBookmarkItem();
+
+            // Sort by read status first.
+            if (lhsItem.isRead() != rhsItem.isRead()) {
+                return lhsItem.isRead() ? 1 : -1;
+            }
+
+            // Sort by creation timestamp descending for items with the same read status.
+            return lhsItem.getDateAdded() <= rhsItem.getDateAdded() ? 1 : -1;
         });
     }
 
