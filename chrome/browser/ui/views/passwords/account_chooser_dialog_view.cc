@@ -33,6 +33,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/widget/widget.h"
 
@@ -145,6 +146,9 @@ void AccountChooserDialogView::CredentialsItemPressed(
         *form, password_manager::CredentialType::CREDENTIAL_TYPE_PASSWORD);
   }
 }
+
+BEGIN_METADATA(AccountChooserDialogView, views::BubbleDialogDelegateView)
+END_METADATA
 
 AccountChooserPrompt* CreateAccountChooserPromptView(
     CredentialManagerDialogController* controller,

@@ -37,6 +37,7 @@
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -589,3 +590,8 @@ void PluginVmInstallerView::StartInstallation() {
   if (failure_reason)
     OnError(failure_reason.value());
 }
+
+BEGIN_METADATA(PluginVmInstallerView, views::BubbleDialogDelegateView)
+ADD_READONLY_PROPERTY_METADATA(base::string16, Title)
+ADD_READONLY_PROPERTY_METADATA(base::string16, Message)
+END_METADATA

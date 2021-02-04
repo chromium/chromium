@@ -9,6 +9,7 @@
 
 #include "chrome/browser/ui/toolbar/toolbar_actions_bar_bubble_delegate.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget_observer.h"
 
 class ToolbarActionsBarBubbleViewsTest;
@@ -21,6 +22,7 @@ class Label;
 class ToolbarActionsBarBubbleViews : public views::BubbleDialogDelegateView,
                                      public views::WidgetObserver {
  public:
+  METADATA_HEADER(ToolbarActionsBarBubbleViews);
   // Creates the bubble anchored to |anchor_view|, which may not be nullptr.
   ToolbarActionsBarBubbleViews(
       views::View* anchor_view,
@@ -31,7 +33,7 @@ class ToolbarActionsBarBubbleViews : public views::BubbleDialogDelegateView,
       delete;
   ~ToolbarActionsBarBubbleViews() override;
 
-  std::string GetAnchorActionId();
+  std::string GetAnchorActionId() const;
 
   const views::Label* body_text() const { return body_text_; }
   const views::Label* item_list() const { return item_list_; }

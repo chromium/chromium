@@ -9,6 +9,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace content {
 class WebContents;
@@ -27,6 +28,8 @@ class Widget;
 class PageInfoBubbleViewBase : public views::BubbleDialogDelegateView,
                                public content::WebContentsObserver {
  public:
+  METADATA_HEADER(PageInfoBubbleViewBase);
+
   // Type of the bubble being displayed.
   enum BubbleType {
     BUBBLE_NONE,
@@ -55,10 +58,8 @@ class PageInfoBubbleViewBase : public views::BubbleDialogDelegateView,
   void OnWidgetDestroying(views::Widget* widget) override;
 
   PageInfoUI::SecurityDescriptionType GetSecurityDescriptionType() const;
-  void set_security_description_type(
-      const PageInfoUI::SecurityDescriptionType& type) {
-    security_description_type_ = type;
-  }
+  void SetSecurityDescriptionType(
+      const PageInfoUI::SecurityDescriptionType& type);
 
  private:
   friend class SafetyTipPageInfoBubbleViewBrowserTest;

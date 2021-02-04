@@ -25,6 +25,7 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 // static
@@ -147,6 +148,9 @@ PrintJobConfirmationDialogView::PrintJobConfirmationDialogView(
 }
 
 PrintJobConfirmationDialogView::~PrintJobConfirmationDialogView() = default;
+
+BEGIN_METADATA(PrintJobConfirmationDialogView, views::BubbleDialogDelegateView)
+END_METADATA
 
 namespace chrome {
 

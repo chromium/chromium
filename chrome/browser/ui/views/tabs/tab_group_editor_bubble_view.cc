@@ -50,6 +50,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 
 // static
@@ -351,6 +352,9 @@ void TabGroupEditorBubbleView::OnBubbleClose() {
   }
 }
 
+BEGIN_METADATA(TabGroupEditorBubbleView, views::BubbleDialogDelegateView)
+END_METADATA
+
 void TabGroupEditorBubbleView::TitleFieldController::ContentsChanged(
     views::Textfield* sender,
     const base::string16& new_contents) {
@@ -396,3 +400,6 @@ void TabGroupEditorBubbleView::TitleField::ShowContextMenu(
   }
   views::Textfield::ShowContextMenu(p, source_type);
 }
+
+BEGIN_METADATA(TabGroupEditorBubbleView, TitleField, views::Textfield)
+END_METADATA

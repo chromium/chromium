@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace views {
 class Button;
@@ -33,6 +34,7 @@ class ExtensionsMenuView : public views::BubbleDialogDelegateView,
                            public TabStripModelObserver,
                            public ToolbarActionsModel::Observer {
  public:
+  METADATA_HEADER(ExtensionsMenuView);
   ExtensionsMenuView(views::View* anchor_view,
                      Browser* browser,
                      ExtensionsContainer* extensions_container,

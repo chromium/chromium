@@ -29,6 +29,7 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
@@ -535,3 +536,6 @@ ExtensionsMenuView::GetSortedItemsForSectionForTesting(
     menu_item_views.push_back(GetAsMenuItemView(view));
   return menu_item_views;
 }
+
+BEGIN_METADATA(ExtensionsMenuView, views::BubbleDialogDelegateView)
+END_METADATA

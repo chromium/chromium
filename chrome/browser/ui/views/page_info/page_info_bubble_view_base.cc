@@ -10,6 +10,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/buildflags.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -68,6 +69,11 @@ PageInfoBubbleViewBase::GetSecurityDescriptionType() const {
   return security_description_type_;
 }
 
+void PageInfoBubbleViewBase::SetSecurityDescriptionType(
+    const PageInfoUI::SecurityDescriptionType& type) {
+  security_description_type_ = type;
+}
+
 void PageInfoBubbleViewBase::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
   if (render_frame_host == web_contents()->GetMainFrame()) {
@@ -91,3 +97,18 @@ void PageInfoBubbleViewBase::DidChangeVisibleSecurityState() {
   // Subclasses may update instead, but this the only safe general option.
   GetWidget()->Close();
 }
+
+DEFINE_ENUM_CONVERTERS(PageInfoUI::SecurityDescriptionType,
+                       {PageInfoUI::SecurityDescriptionType::CONNECTION,
+                        STRING16_LITERAL("CONNECTION")},
+                       {PageInfoUI::SecurityDescriptionType::INTERNAL,
+                        STRING16_LITERAL("INTERNAL")},
+                       {PageInfoUI::SecurityDescriptionType::SAFE_BROWSING,
+                        STRING16_LITERAL("SAFE_BROWSING")},
+                       {PageInfoUI::SecurityDescriptionType::SAFETY_TIP,
+                        STRING16_LITERAL("SAFETY_TIP")})
+
+BEGIN_METADATA(PageInfoBubbleViewBase, views::BubbleDialogDelegateView)
+ADD_PROPERTY_METADATA(PageInfoUI::SecurityDescriptionType,
+                      SecurityDescriptionType)
+END_METADATA

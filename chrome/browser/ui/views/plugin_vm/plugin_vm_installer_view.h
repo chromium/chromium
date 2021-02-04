@@ -9,6 +9,7 @@
 #include "base/macros.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_installer.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace views {
 class BoxLayout;
@@ -24,6 +25,7 @@ class Profile;
 class PluginVmInstallerView : public views::BubbleDialogDelegateView,
                               public plugin_vm::PluginVmInstaller::Observer {
  public:
+  METADATA_HEADER(PluginVmInstallerView);
   explicit PluginVmInstallerView(Profile* profile);
 
   static PluginVmInstallerView* GetActiveViewForTesting();

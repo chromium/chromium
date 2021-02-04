@@ -13,12 +13,15 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 class ToolbarActionView;
 
 // The dialog's view, owned by the views framework.
 class PrintJobConfirmationDialogView : public views::BubbleDialogDelegateView {
  public:
+  METADATA_HEADER(PrintJobConfirmationDialogView);
+
   static void Show(gfx::NativeWindow parent,
                    const std::string& extension_id,
                    const base::string16& extension_name,
@@ -33,13 +36,11 @@ class PrintJobConfirmationDialogView : public views::BubbleDialogDelegateView {
                                  const base::string16& print_job_title,
                                  const base::string16& printer_name,
                                  base::OnceCallback<void(bool)> callback);
-
-  ~PrintJobConfirmationDialogView() override;
-
   PrintJobConfirmationDialogView(const PrintJobConfirmationDialogView&) =
       delete;
   PrintJobConfirmationDialogView& operator=(
       const PrintJobConfirmationDialogView&) = delete;
+  ~PrintJobConfirmationDialogView() override;
 
  private:
   // The name of the extension we are showing the dialog for.

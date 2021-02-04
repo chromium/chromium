@@ -763,7 +763,7 @@ void PageInfoBubbleView::SetIdentityInfo(const IdentityInfo& identity_info) {
       GetSecurityDescription(identity_info);
 
   SetTitle(security_description->summary);
-  set_security_description_type(security_description->type);
+  SetSecurityDescriptionType(security_description->type);
   int text_style = views::style::STYLE_PRIMARY;
   switch (security_description->summary_style) {
     case SecuritySummaryColor::RED:

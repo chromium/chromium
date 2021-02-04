@@ -26,6 +26,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/widget/widget.h"
 
@@ -125,5 +126,9 @@ LocalCardMigrationDialog* CreateLocalCardMigrationErrorDialogView(
     content::WebContents* web_contents) {
   return new LocalCardMigrationErrorDialogView(controller, web_contents);
 }
+
+BEGIN_METADATA(LocalCardMigrationErrorDialogView,
+               views::BubbleDialogDelegateView)
+END_METADATA
 
 }  // namespace autofill
