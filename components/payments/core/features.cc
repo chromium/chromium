@@ -80,15 +80,6 @@ const base::Feature kPaymentHandlerSecurityIcon{
 const base::Feature kEnforceFullDelegation{"EnforceFullDelegation",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kSecurePaymentConfirmation {
-  "SecurePaymentConfirmation",
-#if defined(OS_MAC) || defined(OS_WIN)
-      base::FEATURE_ENABLED_BY_DEFAULT
-#else
-      base::FEATURE_DISABLED_BY_DEFAULT
-#endif  // OS_MAC
-};
-
 const base::Feature kGPayAppDynamicUpdate{"GPayAppDynamicUpdate",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 

@@ -573,6 +573,20 @@ const base::Feature kRunVideoCaptureServiceInBrowserProcess{
 const base::Feature kSavePageAsWebBundle{"SavePageAsWebBundle",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Browser-side feature flag for SecurePaymentConfirmation, which can be used to
+// disable the feature. Enabling the browser-side feature by itself does not
+// actually enable the feature by default. The feature is also controlled by the
+// Blink runtime feature "SecurePaymentConfirmation". Both have to be enabled
+// for SecurePaymentConfirmation to be available.
+const base::Feature kSecurePaymentConfirmation {
+  "SecurePaymentConfirmationBrowser",
+#if defined(OS_MAC) || defined(OS_WIN)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
+
 // Used to control whether to remove the restriction that PaymentCredential in
 // WebAuthn and secure payment confirmation method in PaymentRequest API must
 // use a user verifying platform authenticator. When enabled, this allows using

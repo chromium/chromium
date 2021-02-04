@@ -35,7 +35,7 @@ PaymentAppService::PaymentAppService(content::BrowserContext* context) {
 
   // SecurePaymentConfirmation is enabled if both the feature flag and the Blink
   // runtime feature "SecurePaymentConfirmation" are enabled.
-  if (base::FeatureList::IsEnabled(features::kSecurePaymentConfirmation)) {
+  if (base::FeatureList::IsEnabled(::features::kSecurePaymentConfirmation)) {
     factories_.push_back(
         std::make_unique<SecurePaymentConfirmationAppFactory>());
   }

@@ -456,6 +456,9 @@ struct PublicKeyCredentialCreationOptions {
   // The level of largeBlob support requested by the relying party.
   // https://w3c.github.io/webauthn/#sctn-large-blob-extension
   LargeBlobSupport large_blob_enable;
+
+  // Whether this request is for making a PaymentCredential.
+  bool is_payment_credential_creation;
 };
 
 enum PublicKeyCredentialType {
