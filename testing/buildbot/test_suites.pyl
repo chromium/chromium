@@ -2682,8 +2682,7 @@
       'dawn_end2end_validation_layers_tests': {
         'mixins': ['dawn_end2end_gpu_test'],
         'args': [
-          '--test-launcher-jobs=1',
-          '--enable-backend-validation',
+          '--enable-backend-validation=partial',
         ],
         'linux_args': [ '--no-xvfb' ],
         'test': 'dawn_end2end_tests',
