@@ -17,6 +17,7 @@
 #include "chromeos/network/network_device_handler_impl.h"
 #include "chromeos/network/network_handler_callbacks.h"
 #include "chromeos/network/network_state_handler.h"
+#include "chromeos/network/network_state_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -34,36 +35,20 @@ class CellularInhibitorTest : public testing::Test {
  protected:
   CellularInhibitorTest()
       : task_environment_(
-            base::test::SingleThreadTaskEnvironment::MainThreadType::UI) {}
+            base::test::SingleThreadTaskEnvironment::MainThreadType::UI),
+        helper_(/*use_default_devices_and_services=*/false) {}
   ~CellularInhibitorTest() override = default;
 
   // testing::Test:
   void SetUp() override {
-    shill_clients::InitializeFakes();
-    fake_device_client_ = ShillDeviceClient::Get();
-    fake_device_client_->GetTestInterface()->ClearDevices();
-
-    network_state_handler_ = NetworkStateHandler::InitializeForTest();
-    network_device_handler_ = NetworkDeviceHandler::InitializeForTesting(
-        network_state_handler_.get());
-
-    cellular_inhibitor_ = std::make_unique<CellularInhibitor>();
-    cellular_inhibitor_->Init(network_state_handler_.get(),
-                              network_device_handler_.get());
-  }
-
-  void TearDown() override {
-    cellular_inhibitor_.reset();
-    network_device_handler_.reset();
-    network_state_handler_.reset();
-    shill_clients::Shutdown();
+    helper_.device_test()->ClearDevices();
+    cellular_inhibitor_.Init(helper_.network_state_handler(),
+                             helper_.network_device_handler());
   }
 
   void AddCellularDevice() {
-    ShillDeviceClient::TestInterface* device_test =
-        fake_device_client_->GetTestInterface();
-    device_test->AddDevice(kDefaultCellularDevicePath, shill::kTypeCellular,
-                           "cellular1");
+    helper_.device_test()->AddDevice(kDefaultCellularDevicePath,
+                                     shill::kTypeCellular, "cellular1");
     base::RunLoop().RunUntilIdle();
   }
 
@@ -77,7 +62,7 @@ class CellularInhibitorTest : public testing::Test {
 
   GetInhibitedPropertyResult GetInhibitedProperty() {
     properties_.reset();
-    network_device_handler_->GetDeviceProperties(
+    helper_.network_device_handler()->GetDeviceProperties(
         kDefaultCellularDevicePath,
         base::BindOnce(&CellularInhibitorTest::GetPropertiesCallback,
                        base::Unretained(this)));
@@ -99,11 +84,11 @@ class CellularInhibitorTest : public testing::Test {
     on_result_closure_ = run_loop.QuitClosure();
 
     if (new_inhibit_value) {
-      cellular_inhibitor_->InhibitCellularScanning(
+      cellular_inhibitor_.InhibitCellularScanning(
           base::BindOnce(&CellularInhibitorTest::OnInhibitOrUninhibitResult,
                          base::Unretained(this)));
     } else {
-      cellular_inhibitor_->UninhibitCellularScanning(
+      cellular_inhibitor_.UninhibitCellularScanning(
           base::BindOnce(&CellularInhibitorTest::OnInhibitOrUninhibitResult,
                          base::Unretained(this)));
     }
@@ -129,11 +114,8 @@ class CellularInhibitorTest : public testing::Test {
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-
-  ShillDeviceClient* fake_device_client_ = nullptr;
-  std::unique_ptr<NetworkStateHandler> network_state_handler_;
-  std::unique_ptr<NetworkDeviceHandler> network_device_handler_;
-  std::unique_ptr<CellularInhibitor> cellular_inhibitor_;
+  NetworkStateTestHelper helper_;
+  CellularInhibitor cellular_inhibitor_;
 
   bool success_;
   std::unique_ptr<base::DictionaryValue> properties_;

@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/network/device_state.h"
+#include "chromeos/network/network_device_handler.h"
 #include "chromeos/network/network_profile_handler.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/onc/onc_utils.h"
@@ -47,12 +48,15 @@ NetworkStateTestHelper::NetworkStateTestHelper(
   base::RunLoop().RunUntilIdle();
 
   network_state_handler_ = NetworkStateHandler::InitializeForTest();
+  network_device_handler_ =
+      NetworkDeviceHandler::InitializeForTesting(network_state_handler_.get());
 
   if (!use_default_devices_and_services)
     ResetDevicesAndServices();
 }
 
 NetworkStateTestHelper::~NetworkStateTestHelper() {
+  network_device_handler_.reset();
   ShutdownNetworkState();
   if (shill_clients_initialized_)
     shill_clients::Shutdown();
