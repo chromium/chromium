@@ -234,8 +234,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
           host_view_parent));
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
-                       TestTextAtOffsetWithBoundaryCharacterAndEmbeddedObject) {
+IN_PROC_BROWSER_TEST_F(
+    AccessibilityAuraLinuxBrowserTest,
+    DISABLED_TestTextAtOffsetWithBoundaryCharacterAndEmbeddedObject) {
   LoadInitialAccessibilityTreeFromHtml(R"HTML(<!DOCTYPE html>
       <div contenteditable>
         Before<img alt="image">after.

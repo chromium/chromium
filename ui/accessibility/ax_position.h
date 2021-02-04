@@ -1409,7 +1409,7 @@ class AXPosition {
     // No need to check for "before text" positions here because they are only
     // present on leaf anchor nodes.
     AXPositionInstance text_position = AsTextPosition();
-    int adjusted_offset = text_position->text_offset_;
+    int offset_in_parent = text_position->text_offset_;
     do {
       AXPositionInstance child = text_position->CreateChildPositionAt(0);
       DCHECK(!child->IsNullPosition());
@@ -1422,11 +1422,13 @@ class AXPosition {
       // unignored position will turn into an ignored one after calling this
       // method.
       for (int i = 1;
-           i < text_position->AnchorChildCount() && adjusted_offset >= 0; ++i) {
-        const int child_length = child->MaxTextOffsetInParent();
-        const bool contributes_no_text_in_parent = !child_length;
+           i < text_position->AnchorChildCount() && offset_in_parent >= 0;
+           ++i) {
+        const int child_length_in_parent = child->MaxTextOffsetInParent();
+        const bool contributes_no_text_in_parent =
+            (child_length_in_parent == 0);
         const bool is_anchor_unignored = !child->GetAnchor()->IsIgnored();
-        if (adjusted_offset == 0 && contributes_no_text_in_parent &&
+        if (offset_in_parent == 0 && contributes_no_text_in_parent &&
             is_anchor_unignored) {
           // If the text offset corresponds to multiple child positions because
           // some of the children have no inner text or hypertext, the above
@@ -1435,11 +1437,11 @@ class AXPosition {
           break;
         }
 
-        if (adjusted_offset < child_length)
+        if (offset_in_parent < child_length_in_parent)
           break;
 
         if (affinity_ == ax::mojom::TextAffinity::kUpstream &&
-            adjusted_offset == child_length) {
+            offset_in_parent == child_length_in_parent) {
           // Maintain upstream affinity so that we'll be able to choose the
           // correct leaf anchor if the text offset is right on the boundary
           // between two leaves.
@@ -1448,14 +1450,30 @@ class AXPosition {
         }
 
         child = text_position->CreateChildPositionAt(i);
-        adjusted_offset -= child_length;
+        offset_in_parent -= child_length_in_parent;
+      }
+
+      // The text offset provided by our parent position might need to be
+      // adjusted, if this is an "after text" position and our anchor node is an
+      // embedded object (as determined by `IsEmbeddedObjectInParent()`).
+      // ++kRootWebArea "<embedded_object>"
+      // ++++kParagraph "Hello"
+      // TextPosition anchor=kRootWebArea text_offset=1
+      // should be translated into the following text position
+      // TextPosition anchor=kParagraph text_offset=5 annotated_text=Hello<>
+      // and not into the following one
+      // TextPosition anchor=kParagraph text_offset=1 annotated_text=<H>ello
+      if (child->IsEmbeddedObjectInParent() &&
+          offset_in_parent == child->MaxTextOffsetInParent()) {
+        offset_in_parent -= child->MaxTextOffsetInParent();
+        offset_in_parent += child->MaxTextOffset();
       }
 
       text_position = std::move(child);
     } while (!text_position->IsLeaf());
 
     DCHECK(text_position->IsLeafTextPosition());
-    text_position->text_offset_ = adjusted_offset;
+    text_position->text_offset_ = offset_in_parent;
     // A leaf Text position is always downstream since there is no ambiguity as
     // to whether it refers to the end of the current or the start of the next
     // line.

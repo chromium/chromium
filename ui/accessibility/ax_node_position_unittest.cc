@@ -3631,8 +3631,10 @@ TEST_F(AXPositionTest, AsLeafTextPositionWithTextPosition) {
 TEST_F(AXPositionTest, AsLeafTextPositionWithTextPositionAndEmptyTextSandwich) {
   // This test updates the tree structure to test a specific edge case -
   // `AsLeafTextPosition` when there is an empty leaf text node between
-  // two non-empty text nodes. Empty leaf nodes should be skipped when finding
-  // the leaf equivalent position.
+  // two non-empty text nodes. Empty leaf nodes should not be skipped when
+  // finding the leaf equivalent position, otherwise important controls (e.g.
+  // buttons) that are unlabelled could accidentally be skipped while
+  // navigating.
   AXNodeData root_data;
   root_data.id = 1;
   root_data.role = ax::mojom::Role::kRootWebArea;
@@ -3659,7 +3661,7 @@ TEST_F(AXPositionTest, AsLeafTextPositionWithTextPositionAndEmptyTextSandwich) {
 
   // Create a text position on the root pointing to just after the
   // first static text leaf node. Even though the button has empty inner text,
-  // still it should not be skipped when finding the leaf text position.
+  // still, it should not be skipped when finding the leaf text position.
   TestPositionType text_position = AXNodePosition::CreateTextPosition(
       GetTreeID(), root_data.id, 9 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
@@ -3685,6 +3687,156 @@ TEST_F(AXPositionTest, AsLeafTextPositionWithTextPositionAndEmptyTextSandwich) {
   EXPECT_EQ(text_data.id, test_position->anchor_id());
   EXPECT_EQ(9, test_position->text_offset());
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, test_position->affinity());
+}
+
+TEST_F(AXPositionTest, AsLeafTextPositionWithTextPositionAndEmbeddedObject) {
+  g_ax_embedded_object_behavior = AXEmbeddedObjectBehavior::kExposeCharacter;
+
+  // ++1 kRootWebArea "<embedded_object><embedded_object>"
+  // ++++2 kImage alt="Test image"
+  // ++++3 kParagraph "<embedded_object>"
+  // ++++++4 kLink "Hello"
+  // ++++++++5 kStaticText "Hello"
+  // ++++++++++6 kInlineTextBox "Hello"
+  AXNodeData root;
+  AXNodeData image;
+  AXNodeData paragraph;
+  AXNodeData link;
+  AXNodeData static_text;
+  AXNodeData inline_box;
+
+  root.id = 1;
+  image.id = 2;
+  paragraph.id = 3;
+  link.id = 4;
+  static_text.id = 5;
+  inline_box.id = 6;
+
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {image.id, paragraph.id};
+
+  image.role = ax::mojom::Role::kImage;
+  image.SetName("Test image");
+  // Alt text should not appear in the tree's text representation, so we need to
+  // set the right NameFrom.
+  image.SetNameFrom(ax::mojom::NameFrom::kAttribute);
+
+  paragraph.role = ax::mojom::Role::kParagraph;
+  paragraph.child_ids = {link.id};
+
+  link.role = ax::mojom::Role::kLink;
+  link.AddState(ax::mojom::State::kLinked);
+  link.child_ids = {static_text.id};
+
+  static_text.role = ax::mojom::Role::kStaticText;
+  static_text.SetName("Hello");
+  static_text.child_ids = {inline_box.id};
+
+  inline_box.role = ax::mojom::Role::kInlineTextBox;
+  inline_box.SetName("Hello");
+
+  SetTree(
+      CreateAXTree({root, image, paragraph, link, static_text, inline_box}));
+
+  TestPositionType before_root = AXNodePosition::CreateTextPosition(
+      GetTreeID(), root.id, 0 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, before_root);
+  TestPositionType middle_root = AXNodePosition::CreateTextPosition(
+      GetTreeID(), root.id, 1 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, middle_root);
+  TestPositionType middle_root_upstream = AXNodePosition::CreateTextPosition(
+      GetTreeID(), root.id, 1 /* text_offset */,
+      ax::mojom::TextAffinity::kUpstream);
+  ASSERT_NE(nullptr, middle_root_upstream);
+  TestPositionType after_root = AXNodePosition::CreateTextPosition(
+      GetTreeID(), root.id, 2 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, after_root);
+  // A position with an upstream affinity after the root should make no
+  // difference compared with a downstream affinity, but we'll test it for
+  // completeness.
+  TestPositionType after_root_upstream = AXNodePosition::CreateTextPosition(
+      GetTreeID(), root.id, 2 /* text_offset */,
+      ax::mojom::TextAffinity::kUpstream);
+  ASSERT_NE(nullptr, after_root_upstream);
+
+  TestPositionType before_image = AXNodePosition::CreateTextPosition(
+      GetTreeID(), image.id, 0 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, before_image);
+  // Alt text should not appear in the tree's text representation, but since the
+  // image is both a character and a word boundary it should be replaced by the
+  // "embedded object replacement character" in the text representation.
+  TestPositionType after_image = AXNodePosition::CreateTextPosition(
+      GetTreeID(), image.id, 1 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, after_image);
+
+  TestPositionType before_paragraph = AXNodePosition::CreateTextPosition(
+      GetTreeID(), paragraph.id, 0 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, before_paragraph);
+  // The paragraph has a link inside it, so it will only expose a single
+  // "embedded object replacement character".
+  TestPositionType after_paragraph = AXNodePosition::CreateTextPosition(
+      GetTreeID(), paragraph.id, 1 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, after_paragraph);
+  // A position with an upstream affinity after the paragraph should make no
+  // difference compared with a downstream affinity, but we'll test it for
+  // completeness.
+  TestPositionType after_paragraph_upstream =
+      AXNodePosition::CreateTextPosition(GetTreeID(), paragraph.id,
+                                         1 /* text_offset */,
+                                         ax::mojom::TextAffinity::kUpstream);
+  ASSERT_NE(nullptr, after_paragraph_upstream);
+
+  TestPositionType before_link = AXNodePosition::CreateTextPosition(
+      GetTreeID(), link.id, 0 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, before_link);
+  // The llink has the text "Hello" inside it.
+  TestPositionType after_link = AXNodePosition::CreateTextPosition(
+      GetTreeID(), link.id, 5 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, after_link);
+  // A position with an upstream affinity after the link should make no
+  // difference compared with a downstream affinity, but we'll test it for
+  // completeness.
+  TestPositionType after_link_upstream = AXNodePosition::CreateTextPosition(
+      GetTreeID(), link.id, 5 /* text_offset */,
+      ax::mojom::TextAffinity::kUpstream);
+  ASSERT_NE(nullptr, after_link_upstream);
+
+  TestPositionType before_inline_box = AXNodePosition::CreateTextPosition(
+      GetTreeID(), inline_box.id, 0 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, before_inline_box);
+  // The inline box has the text "Hello" inside it.
+  TestPositionType after_inline_box = AXNodePosition::CreateTextPosition(
+      GetTreeID(), inline_box.id, 5 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, after_inline_box);
+
+  EXPECT_EQ(*before_root->AsLeafTextPosition(), *before_image);
+  EXPECT_EQ(*middle_root->AsLeafTextPosition(), *before_inline_box);
+  // As mentioned above, alt text should not appear in the tree's text
+  // representation, but since the image is both a character and a word boundary
+  // it should be replaced by the "embedded object replacement character" in the
+  // text representation.
+  EXPECT_EQ(*middle_root_upstream->AsLeafTextPosition(), *after_image);
+  EXPECT_EQ(*after_root->AsLeafTextPosition(), *after_inline_box);
+  EXPECT_EQ(*after_root_upstream->AsLeafTextPosition(), *after_inline_box);
+
+  EXPECT_EQ(*before_paragraph->AsLeafTextPosition(), *before_inline_box);
+  EXPECT_EQ(*after_paragraph->AsLeafTextPosition(), *after_inline_box);
+  EXPECT_EQ(*after_paragraph_upstream->AsLeafTextPosition(), *after_inline_box);
+
+  EXPECT_EQ(*before_link->AsLeafTextPosition(), *before_inline_box);
+  EXPECT_EQ(*after_link->AsLeafTextPosition(), *after_inline_box);
+  EXPECT_EQ(*after_link_upstream->AsLeafTextPosition(), *after_inline_box);
 }
 
 TEST_F(AXPositionTest, AsUnignoredPosition) {

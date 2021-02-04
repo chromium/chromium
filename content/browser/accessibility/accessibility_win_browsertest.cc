@@ -3716,8 +3716,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
-                       TestTextAtOffsetWithBoundaryCharacterAndEmbeddedObject) {
+IN_PROC_BROWSER_TEST_F(
+    AccessibilityWinBrowserTest,
+    DISABLED_TestTextAtOffsetWithBoundaryCharacterAndEmbeddedObject) {
   LoadInitialAccessibilityTreeFromHtml(R"HTML(<!DOCTYPE html>
       <div contenteditable>
         Before<img alt="image">after.

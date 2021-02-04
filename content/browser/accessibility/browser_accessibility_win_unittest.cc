@@ -1491,7 +1491,8 @@ TEST_F(BrowserAccessibilityWinTest, TextBoundariesOnlyEmbeddedObjectsNoCrash) {
   }
 }
 
-TEST_F(BrowserAccessibilityWinTest, TestTextBoundariesEmbeddedCharacterText) {
+TEST_F(BrowserAccessibilityWinTest,
+       DISABLED_TestTextBoundariesEmbeddedCharacterText) {
   // Update the tree structure to test empty leaf text positions.
   //
   // +-1 root_data
