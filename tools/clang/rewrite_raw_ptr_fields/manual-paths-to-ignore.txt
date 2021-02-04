@@ -4,6 +4,9 @@
 # If a source file path contains any of the lines in the filter file below,
 # then such source file will not be rewritten.
 #
+# Lines prefixed with "!" can be used to force include files that matched a file
+# path to be ignored.
+#
 # Note that the rewriter has a hardcoded logic for a handful of path-based
 # exclusions that cannot be expressed as substring matches:
 # - Excluding paths containing "third_party/", but still covering
@@ -50,12 +53,17 @@ base/synchronization/lock_impl.h
 # elsewhere - for example "v8/" is excluded in another part of this
 # file.
 #
+# The common/ directories must be included in the rewrite as they contain code
+# that is also used from the browser process.
+#
 # Also, note that isInThirdPartyLocation AST matcher in
 # RewriteRawPtrFields.cpp explicitly includes third_party/blink
 # (because it is in the same git repository as the rest of Chromium),
 # but we go ahead and exclude it below.
 /renderer/  # (e.g. //content/renderer/ or //components/visitedlink/renderer/).
 third_party/blink/
+!third_party/blink/public/common/
+!third_party/blink/common/
 
 # Exclude paths in separate repositories - i.e. in directories that
 # 1. Contain a ".git" subdirectory

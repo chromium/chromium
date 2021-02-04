@@ -11,6 +11,10 @@
 # Next line contains a substring of the tests/path-filter-file-...cc file.
 th-filter-fi
 
+# Next line says to include a file if it contains "always-include" substring
+# (even if it also matches the "the-filter-fi" substring above)
+!always-include
+
 # The lines below don't match any test paths - these lines have been included to
 # exercise a bit further the regex # building code in
 # FilterFile::ContainsSubstringOf.

@@ -307,21 +307,35 @@ class FilterFile {
     return it != file_lines_.end();
   }
 
-  // Returns true if any of the filter file lines is a substring of
-  // |string_to_match|.
+  // Returns true if |string_to_match| matches based on the filter file lines.
+  // Filter file lines can contain both inclusions and exclusions in the filter.
+  // Only returns true if |string_to_match| both matches an inclusion filter and
+  // is *not* matched by an exclusion filter.
   bool ContainsSubstringOf(llvm::StringRef string_to_match) const {
-    if (!substring_regex_.hasValue()) {
-      std::vector<std::string> regex_escaped_file_lines;
-      regex_escaped_file_lines.reserve(file_lines_.size());
-      for (const llvm::StringRef& file_line : file_lines_.keys())
-        regex_escaped_file_lines.push_back(llvm::Regex::escape(file_line));
-      std::string substring_regex_pattern =
-          llvm::join(regex_escaped_file_lines.begin(),
-                     regex_escaped_file_lines.end(), "|");
-      substring_regex_.emplace(substring_regex_pattern);
+    if (!inclusion_substring_regex_.hasValue()) {
+      std::vector<std::string> regex_escaped_inclusion_file_lines;
+      std::vector<std::string> regex_escaped_exclusion_file_lines;
+      regex_escaped_inclusion_file_lines.reserve(file_lines_.size());
+      for (const llvm::StringRef& file_line : file_lines_.keys()) {
+        if (file_line.startswith("!")) {
+          regex_escaped_exclusion_file_lines.push_back(
+              llvm::Regex::escape(file_line.substr(1)));
+        } else {
+          regex_escaped_inclusion_file_lines.push_back(
+              llvm::Regex::escape(file_line));
+        }
+      }
+      std::string inclusion_substring_regex_pattern =
+          llvm::join(regex_escaped_inclusion_file_lines.begin(),
+                     regex_escaped_inclusion_file_lines.end(), "|");
+      inclusion_substring_regex_.emplace(inclusion_substring_regex_pattern);
+      std::string exclusion_substring_regex_pattern =
+          llvm::join(regex_escaped_exclusion_file_lines.begin(),
+                     regex_escaped_exclusion_file_lines.end(), "|");
+      exclusion_substring_regex_.emplace(exclusion_substring_regex_pattern);
     }
-
-    return substring_regex_->match(string_to_match);
+    return inclusion_substring_regex_->match(string_to_match) &&
+           !exclusion_substring_regex_->match(string_to_match);
   }
 
  private:
@@ -368,9 +382,16 @@ class FilterFile {
   // Stores all file lines (after stripping comments and blank lines).
   llvm::StringSet<> file_lines_;
 
+  // |file_lines_| is partitioned based on whether the line starts with a !
+  // (exclusion line) or not (inclusion line). Inclusion lines specify things to
+  // be matched by the filter. The exclusion lines specify what to force exclude
+  // from the filter. Lazily-constructed regex that matches strings that contain
+  // any of the inclusion lines in |file_lines_|.
+  mutable llvm::Optional<llvm::Regex> inclusion_substring_regex_;
+
   // Lazily-constructed regex that matches strings that contain any of the
-  // |file_lines_|.
-  mutable llvm::Optional<llvm::Regex> substring_regex_;
+  // exclusion lines in |file_lines_|.
+  mutable llvm::Optional<llvm::Regex> exclusion_substring_regex_;
 };
 
 AST_MATCHER_P(clang::FieldDecl,
