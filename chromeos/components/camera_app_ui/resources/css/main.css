@@ -839,8 +839,9 @@ body.streaming .preview-content {
   pointer-events: auto;
 }
 
-body.mirror .preview-content,
-body.mirror #preview-focus {
+body.mirror .preview-content ,
+body.mirror #preview-focus,
+body.mirror #preview-face-overlay {
   transform: scaleX(-1);
 }
 
@@ -855,6 +856,11 @@ body.mirror #preview-focus {
 #preview-focus-aim {
   position: absolute;
   transform: translate(-50%, -50%);
+}
+
+#preview-face-overlay {
+  pointer-events: none;
+  position: absolute;
 }
 
 #preview-video {

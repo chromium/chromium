@@ -318,6 +318,39 @@ export class DeviceOperator {
   }
 
   /**
+   * Gets the active array size for given device.
+   * @param {string} deviceId The renderer-facing device id of the target camera
+   *     which could be retrieved from MediaDeviceInfo.deviceId.
+   * @return {!Promise<!Resolution>} Promise of the active array size.
+   * @throws {!Error} Thrown when fail to parse the metadata or the device
+   *     operation is not supported.
+   */
+  async getActiveArraySize(deviceId) {
+    const activeArray = await this.getStaticMetadata(
+        deviceId,
+        cros.mojom.CameraMetadataTag.ANDROID_SENSOR_INFO_ACTIVE_ARRAY_SIZE);
+    assert(activeArray.length === 4);
+    const width = activeArray[2] - activeArray[0];
+    const height = activeArray[3] - activeArray[1];
+    return new Resolution(width, height);
+  }
+
+  /**
+   * Gets the sensor orientation for given device.
+   * @param {string} deviceId The renderer-facing device id of the target camera
+   *     which could be retrieved from MediaDeviceInfo.deviceId.
+   * @return {!Promise<number>} Promise of the sensor orientation.
+   * @throws {!Error} Thrown when fail to parse the metadata or the device
+   *     operation is not supported.
+   */
+  async getSensorOrientation(deviceId) {
+    const sensorOrientation = await this.getStaticMetadata(
+        deviceId, cros.mojom.CameraMetadataTag.ANDROID_SENSOR_ORIENTATION);
+    assert(sensorOrientation.length === 1);
+    return sensorOrientation[0];
+  }
+
+  /**
    * Sets the frame rate range in VCD. If the range is invalid (e.g. 0 fps), VCD
    * will fallback to use the default one.
    * @param {string} deviceId

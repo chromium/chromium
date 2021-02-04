@@ -39,6 +39,7 @@
       <structure name="IDR_CAMERA_DOM_JS" file="js/dom.js" type="chrome_html" />
       <structure name="IDR_CAMERA_DYNAMIC_IMPORT_JS" file="js/dynamic_import.js" type="chrome_html" />
       <structure name="IDR_CAMERA_ERROR_JS" file="js/error.js" type="chrome_html" />
+      <structure name="IDR_CAMERA_FACE_JS" file="js/face.js" type="chrome_html" />
       <structure name="IDR_CAMERA_FFMPEG_JS" file="js/lib/ffmpeg.js" type="chrome_html" />
       <structure name="IDR_CAMERA_FILE_NAMER_JS" file="js/models/file_namer.js" type="chrome_html" />
       <structure name="IDR_CAMERA_FILE_SYSTEM_ENTRY_JS" file="js/models/file_system_entry.js" type="chrome_html" />

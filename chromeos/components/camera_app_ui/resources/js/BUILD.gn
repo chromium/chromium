@@ -66,6 +66,7 @@ js_library("compile_resources") {
     "device/device_info_updater.js",
     "dom.js",
     "error.js",
+    "face.js",
     "gallerybutton.js",
     "h264.js",
     "init.js",
