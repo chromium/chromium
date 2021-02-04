@@ -2109,6 +2109,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     units="ms" expires_after="2021-06-06">
   <owner>maxlg@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
   <summary>
     Measures the time from navigation timing's navigation start to the time the
     largest content (text or image) is first painted, across all frames.
@@ -2119,6 +2120,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     releases. Note: This histogram is being replaced by
     PageLoad.PaintTiming.NavigationToLargestContentfulPaint2 and will become
     obsolete soon.
+
+    Do not modify this metric in any way without contacting
+    speed-metrics-dev@chromium.org AND chrome-analysis-team@google.com.
 
     Log of major changes: http://bit.ly/chrome-speed-metrics-changelog
   </summary>
