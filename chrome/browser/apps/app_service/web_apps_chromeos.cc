@@ -64,19 +64,6 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "url/origin.h"
 
-namespace {
-
-std::string GetDesktopPWAsAttentionBadgingFlag() {
-  const base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
-  if (cmdline->HasSwitch(switches::kDesktopPWAsAttentionBadgingCrOS)) {
-    return cmdline->GetSwitchValueASCII(
-        switches::kDesktopPWAsAttentionBadgingCrOS);
-  }
-  return switches::kDesktopPWAsAttentionBadgingCrOSApiOnly;
-}
-
-}  // namespace
-
 namespace apps {
 
 WebAppsChromeOs::BadgeManagerDelegate::BadgeManagerDelegate(
@@ -643,22 +630,25 @@ bool WebAppsChromeOs::Accepts(const std::string& app_id) {
 apps::mojom::OptionalBool WebAppsChromeOs::ShouldShowBadge(
     const std::string& app_id,
     apps::mojom::OptionalBool has_notification) {
-  std::string flag = GetDesktopPWAsAttentionBadgingFlag();
+  bool enabled =
+      base::FeatureList::IsEnabled(features::kDesktopPWAsAttentionBadgingCrOS);
+  std::string flag =
+      enabled ? features::kDesktopPWAsAttentionBadgingCrOSParam.Get() : "";
   if (flag == switches::kDesktopPWAsAttentionBadgingCrOSApiOnly) {
     // Show a badge based only on the Web Badging API.
     return badge_manager_ && badge_manager_->GetBadgeValue(app_id).has_value()
                ? apps::mojom::OptionalBool::kTrue
                : apps::mojom::OptionalBool::kFalse;
   } else if (flag ==
-             switches::kDesktopPWAsAttentionBadgingCrOSNotificationsOnly) {
-    // Show a badge only if a notification is showing.
-    return has_notification;
-  } else {
+             switches::kDesktopPWAsAttentionBadgingCrOSApiAndNotifications) {
     // When the flag is set to "api-and-notifications" we show a badge if either
     // a notification is showing or the Web Badging API has a badge set.
     return badge_manager_ && badge_manager_->GetBadgeValue(app_id).has_value()
                ? apps::mojom::OptionalBool::kTrue
                : has_notification;
+  } else {
+    // Show a badge only if a notification is showing.
+    return has_notification;
   }
 }
 }  // namespace apps

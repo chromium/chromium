@@ -239,6 +239,13 @@ const base::Feature kDesktopPWAsAppIconShortcutsMenu{
 // UI surfaces.
 const base::Feature kDesktopPWAsAppIconShortcutsMenuUI{
     "DesktopPWAsAppIconShortcutsMenuUI", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables attention badging for PWA icons in the shelf and launcher.
+const base::Feature kDesktopPWAsAttentionBadgingCrOS{
+    "DesktopPWAsAttentionBadgingCrOS", base::FEATURE_ENABLED_BY_DEFAULT};
+constexpr base::FeatureParam<std::string> kDesktopPWAsAttentionBadgingCrOSParam{
+    &kDesktopPWAsAttentionBadgingCrOS, "badge-source",
+    switches::kDesktopPWAsAttentionBadgingCrOSApiOnly};
 #endif
 
 // When installing default installed PWAs, we wait for service workers

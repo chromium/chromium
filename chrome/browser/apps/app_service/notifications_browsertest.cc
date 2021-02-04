@@ -27,7 +27,7 @@
 #include "chrome/browser/notifications/profile_notification.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/common/chrome_switches.h"
+#include "chrome/common/chrome_features.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/session/arc_bridge_service.h"
@@ -258,19 +258,19 @@ class AppNotificationsWebNotificationTest
   AppNotificationsWebNotificationTest() = default;
   ~AppNotificationsWebNotificationTest() override = default;
 
+  void SetUp() override {
+    base::test::ScopedFeatureList scoped_feature_list_;
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kDesktopPWAsAttentionBadgingCrOS);
+    extensions::PlatformAppBrowserTest::SetUp();
+  }
+
   // extensions::PlatformAppBrowserTest:
   void SetUpOnMainThread() override {
     extensions::PlatformAppBrowserTest::SetUpOnMainThread();
 
     https_server_.AddDefaultHandlers(GetChromeTestDataDir());
     ASSERT_TRUE(https_server_.Start());
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    extensions::PlatformAppBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(
-        switches::kDesktopPWAsAttentionBadgingCrOS,
-        switches::kDesktopPWAsAttentionBadgingCrOSApiAndNotifications);
   }
 
   std::string CreateWebApp(const GURL& url, const GURL& scope) const {

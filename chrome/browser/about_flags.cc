@@ -728,20 +728,33 @@ const FeatureEntry::Choice kForceTextDirectionChoices[] = {
      switches::kForceDirectionRTL},
 };
 
-const FeatureEntry::Choice kDesktopPWAsAttentionBadgingCrOSChoices[] = {
-    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
-    {flag_descriptions::kDesktopPWAsAttentionBadgingCrOSApiAndNotifications,
-     switches::kDesktopPWAsAttentionBadgingCrOS,
-     switches::kDesktopPWAsAttentionBadgingCrOSApiAndNotifications},
-    {flag_descriptions::kDesktopPWAsAttentionBadgingCrOSApiOnly,
-     switches::kDesktopPWAsAttentionBadgingCrOS,
-     switches::kDesktopPWAsAttentionBadgingCrOSApiOnly},
-    {flag_descriptions::kDesktopPWAsAttentionBadgingCrOSNotificationsOnly,
-     switches::kDesktopPWAsAttentionBadgingCrOS,
-     switches::kDesktopPWAsAttentionBadgingCrOSNotificationsOnly},
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const FeatureEntry::FeatureParam
+    kDesktopPWAsAttentionBadgingCrOSApiAndNotifications[] = {
+        {"badge-source",
+         switches::kDesktopPWAsAttentionBadgingCrOSApiAndNotifications}};
+const FeatureEntry::FeatureParam kDesktopPWAsAttentionBadgingCrOSApiOnly[] = {
+    {"badge-source", switches::kDesktopPWAsAttentionBadgingCrOSApiOnly}};
+const FeatureEntry::FeatureParam
+    kDesktopPWAsAttentionBadgingCrOSNotificationsOnly[] = {
+        {"badge-source",
+         switches::kDesktopPWAsAttentionBadgingCrOSNotificationsOnly}};
+
+const FeatureEntry::FeatureVariation
+    kDesktopPWAsAttentionBadgingCrOSVariations[] = {
+        {flag_descriptions::kDesktopPWAsAttentionBadgingCrOSApiAndNotifications,
+         kDesktopPWAsAttentionBadgingCrOSApiAndNotifications,
+         base::size(kDesktopPWAsAttentionBadgingCrOSApiAndNotifications),
+         nullptr},
+        {flag_descriptions::kDesktopPWAsAttentionBadgingCrOSApiOnly,
+         kDesktopPWAsAttentionBadgingCrOSApiOnly,
+         base::size(kDesktopPWAsAttentionBadgingCrOSApiOnly), nullptr},
+        {flag_descriptions::kDesktopPWAsAttentionBadgingCrOSNotificationsOnly,
+         kDesktopPWAsAttentionBadgingCrOSNotificationsOnly,
+         base::size(kDesktopPWAsAttentionBadgingCrOSNotificationsOnly),
+         nullptr},
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 const FeatureEntry::Choice kSchedulerConfigurationChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flag_descriptions::kSchedulerConfigurationConservative,
@@ -3354,10 +3367,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDesktopPWAsAppIconShortcutsMenuName,
      flag_descriptions::kDesktopPWAsAppIconShortcutsMenuDescription, kOsWin,
      FEATURE_VALUE_TYPE(features::kDesktopPWAsAppIconShortcutsMenu)},
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-desktop-pwas-attention-badging-cros",
      flag_descriptions::kDesktopPWAsAttentionBadgingCrOSName,
      flag_descriptions::kDesktopPWAsAttentionBadgingCrOSDescription, kOsCrOS,
-     MULTI_VALUE_TYPE(kDesktopPWAsAttentionBadgingCrOSChoices)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kDesktopPWAsAttentionBadgingCrOS,
+                                    kDesktopPWAsAttentionBadgingCrOSVariations,
+                                    "DesktopPWAsAttentionBadgingCrOS")},
+#endif
     {"enable-desktop-pwas-remove-status-bar",
      flag_descriptions::kDesktopPWAsRemoveStatusBarName,
      flag_descriptions::kDesktopPWAsRemoveStatusBarDescription, kOsDesktop,

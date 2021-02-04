@@ -658,11 +658,11 @@ extern const char kDesktopPWAsAttentionBadgingCrOSName[] =
 extern const char kDesktopPWAsAttentionBadgingCrOSDescription[] =
     "Enable attention badging for PWA icons in the shelf and launcher.";
 extern const char kDesktopPWAsAttentionBadgingCrOSApiAndNotifications[] =
-    "Enable for Badging API and notifications";
+    "for Badging API and notifications";
 extern const char kDesktopPWAsAttentionBadgingCrOSApiOnly[] =
-    "Enable for Badging API only";
+    "for Badging API only";
 extern const char kDesktopPWAsAttentionBadgingCrOSNotificationsOnly[] =
-    "Enable for notifications only";
+    "for notifications only";
 
 const char kDesktopPWAsRemoveStatusBarName[] = "Desktop PWAs remove status bar";
 const char kDesktopPWAsRemoveStatusBarDescription[] =
