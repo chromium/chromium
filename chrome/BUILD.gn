@@ -34,6 +34,7 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 } else if (is_linux || is_chromeos) {
   import("//build/linux/extract_symbols.gni")
+  import("//build/linux/strip_binary.gni")
 } else if (is_mac) {
   import("//build/apple/tweak_info_plist.gni")
   import("//build/compiled_action.gni")
@@ -1674,5 +1675,15 @@ if (is_linux || is_chromeos) {
       "//third_party/xdg-utils/scripts/xdg-settings",
     ]
     outputs = [ "$root_out_dir/{{source_file_part}}" ]
+  }
+}
+
+if (is_chromeos_lacros && is_official_build) {
+  # This will strip chrome binary and produce chrome.debug with symbols.
+  strip_binary("strip_chrome_binary") {
+    binary_input = "$root_out_dir/chrome"
+    symbol_output = "$root_out_dir/chrome.debug"
+    stripped_binary_output = "$root_out_dir/chrome.stripped"
+    deps = [ ":chrome" ]
   }
 }
