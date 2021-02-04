@@ -239,5 +239,7 @@ task setUpRepository(type: BuildConfigGenerator) {
     repositoryPath 'third_party/android_deps'
     chromiumSourceRoot '../..'
     cipdBucket 'chromium'
-    internalTargetVisibility = [ ':*' ]
+    internalTargetVisibility = [ ':*', '//third_party/androidx:*' ]
+    useDedicatedAndroidxDir true
+
 }

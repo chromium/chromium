@@ -1,4 +1,4 @@
-# File: ../../third_party/android_deps/androidx_fragment.flags
+# File: ../../third_party/androidx/androidx_fragment.flags
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -14,7 +14,7 @@
   static boolean isLoggingEnabled(...) return false;
 }
 
-# File: ../../third_party/android_deps/androidx_mediarouter.flags
+# File: ../../third_party/androidx/androidx_mediarouter.flags
 # Copyright 2019 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -477,7 +477,7 @@
   public boolean requiresSignIn();
 }
 
-# File: obj/third_party/android_deps/androidx_annotation_annotation_experimental_java/proguard.txt
+# File: obj/third_party/androidx/androidx_annotation_annotation_experimental_java/proguard.txt
 # Copyright (C) 2020 The Android Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -500,7 +500,7 @@
 -dontwarn kotlin.annotation.Retention
 -dontwarn kotlin.annotation.Target
 
-# File: obj/third_party/android_deps/androidx_appcompat_appcompat_java/proguard.txt
+# File: obj/third_party/androidx/androidx_appcompat_appcompat_java/proguard.txt
 # Copyright (C) 2018 The Android Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -524,7 +524,7 @@
   <methods>;
 }
 
-# File: obj/third_party/android_deps/androidx_fragment_fragment_java/proguard.txt
+# File: obj/third_party/androidx/androidx_fragment_fragment_java/proguard.txt
 # Copyright (C) 2020 The Android Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -545,7 +545,7 @@
     public <init>();
 }
 
-# File: obj/third_party/android_deps/androidx_lifecycle_lifecycle_viewmodel_savedstate_java/proguard.txt
+# File: obj/third_party/androidx/androidx_lifecycle_lifecycle_viewmodel_savedstate_java/proguard.txt
 -keepclassmembers,allowobfuscation class * extends androidx.lifecycle.ViewModel {
     <init>(androidx.lifecycle.SavedStateHandle);
 }
@@ -554,7 +554,7 @@
     <init>(android.app.Application,androidx.lifecycle.SavedStateHandle);
 }
 
-# File: obj/third_party/android_deps/androidx_media_media_java/proguard.txt
+# File: obj/third_party/androidx/androidx_media_media_java/proguard.txt
 # Copyright (C) 2017 The Android Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -579,7 +579,7 @@
     public static final android.os.Parcelable$Creator *;
 }
 
-# File: obj/third_party/android_deps/androidx_mediarouter_mediarouter_java/proguard.txt
+# File: obj/third_party/androidx/androidx_mediarouter_mediarouter_java/proguard.txt
 # Copyright 2019 The Android Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -597,7 +597,7 @@
 # Prevent MediaRouteActionProvider from being removed or renamed.
 -keep class androidx.mediarouter.app.MediaRouteActionProvider { public <init>(...); }
 
-# File: obj/third_party/android_deps/androidx_recyclerview_recyclerview_java/proguard.txt
+# File: obj/third_party/androidx/androidx_recyclerview_recyclerview_java/proguard.txt
 # Copyright (C) 2015 The Android Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -624,7 +624,7 @@
     public boolean isLayoutSuppressed();
 }
 
-# File: obj/third_party/android_deps/androidx_savedstate_savedstate_java/proguard.txt
+# File: obj/third_party/androidx/androidx_savedstate_savedstate_java/proguard.txt
 # Copyright (C) 2019 The Android Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -643,7 +643,7 @@
     <init>();
 }
 
-# File: obj/third_party/android_deps/androidx_transition_transition_java/proguard.txt
+# File: obj/third_party/androidx/androidx_transition_transition_java/proguard.txt
 # Copyright (C) 2017 The Android Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -663,7 +663,7 @@
   androidx.transition.ChangeBounds$ViewBounds mViewBounds;
 }
 
-# File: obj/third_party/android_deps/androidx_vectordrawable_vectordrawable_animated_java/proguard.txt
+# File: obj/third_party/androidx/androidx_vectordrawable_vectordrawable_animated_java/proguard.txt
 # Copyright (C) 2016 The Android Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -684,8 +684,8 @@
    *** get*();
 }
 
-# File: obj/third_party/android_deps/androidx_versionedparcelable_versionedparcelable_java/proguard.txt
--keep public class * implements androidx.versionedparcelable.VersionedParcelable
+# File: obj/third_party/androidx/androidx_versionedparcelable_versionedparcelable_java/proguard.txt
+-keep class * implements androidx.versionedparcelable.VersionedParcelable
 -keep public class android.support.**Parcelizer { *; }
 -keep public class androidx.**Parcelizer { *; }
 -keep public class androidx.versionedparcelable.ParcelImpl

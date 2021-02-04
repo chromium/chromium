@@ -1315,7 +1315,7 @@ if (!is_component_build) {
     depfile = "$target_gen_dir/$target_name.d"
     _zip_file = "$target_gen_dir/$target_name.zip"
     outputs = [ _zip_file ]
-    _annotations_jar = "$root_out_dir/lib.java/third_party/android_deps/androidx_annotation_annotation.jar"
+    _annotations_jar = "$root_out_dir/lib.java/third_party/androidx/androidx_annotation_annotation.jar"
     _src_jar = "$_package_dir/cronet_api-src.jar"
     inputs = [
       _annotations_jar,
@@ -1347,7 +1347,7 @@ if (!is_component_build) {
     ]
     deps = [
       ":jar_cronet_api_source",
-      "//third_party/android_deps:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
     ]
   }
 

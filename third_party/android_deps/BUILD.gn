@@ -154,756 +154,254 @@ android_aar_prebuilt("android_arch_lifecycle_viewmodel_java") {
   ignore_proguard_configs = true
 }
 
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_activity_activity_java") {
-  aar_path = "libs/androidx_activity_activity/activity-1.3.0-SNAPSHOT.aar"
-  info_path = "libs/androidx_activity_activity/androidx_activity_activity.info"
+java_group("androidx_activity_activity_java") {
+  deps = [ "//third_party/androidx:androidx_activity_activity_java" ]
+}
+
+java_group("androidx_annotation_annotation_java") {
+  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+}
+
+java_group("androidx_annotation_annotation_experimental_java") {
   deps = [
-    ":androidx_annotation_annotation_java",
-    ":androidx_collection_collection_java",
-    ":androidx_core_core_java",
-    ":androidx_lifecycle_lifecycle_runtime_java",
-    ":androidx_lifecycle_lifecycle_viewmodel_java",
-    ":androidx_lifecycle_lifecycle_viewmodel_savedstate_java",
-    ":androidx_savedstate_savedstate_java",
-    ":androidx_tracing_tracing_java",
-  ]
-  resource_overlay = true
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-java_prebuilt("androidx_annotation_annotation_java") {
-  jar_path = "libs/androidx_annotation_annotation/annotation-1.2.0-SNAPSHOT.jar"
-  output_name = "androidx_annotation_annotation"
-  supports_android = true
-
-  # https://crbug.com/989505
-  jar_excluded_patterns = [ "META-INF/proguard/*" ]
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_annotation_annotation_experimental_java") {
-  aar_path = "libs/androidx_annotation_annotation_experimental/annotation-experimental-1.1.0-SNAPSHOT.aar"
-  info_path = "libs/androidx_annotation_annotation_experimental/androidx_annotation_annotation_experimental.info"
-  resource_overlay = true
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_appcompat_appcompat_java") {
-  aar_path = "libs/androidx_appcompat_appcompat/appcompat-1.3.0-SNAPSHOT.aar"
-  info_path =
-      "libs/androidx_appcompat_appcompat/androidx_appcompat_appcompat.info"
-  deps = [
-    ":androidx_activity_activity_java",
-    ":androidx_annotation_annotation_java",
-    ":androidx_appcompat_appcompat_resources_java",
-    ":androidx_collection_collection_java",
-    ":androidx_core_core_java",
-    ":androidx_cursoradapter_cursoradapter_java",
-    ":androidx_drawerlayout_drawerlayout_java",
-    ":androidx_fragment_fragment_java",
-    ":androidx_lifecycle_lifecycle_runtime_java",
-    ":androidx_lifecycle_lifecycle_viewmodel_java",
-    ":androidx_savedstate_savedstate_java",
-  ]
-  resource_overlay = true
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_appcompat_appcompat_resources_java") {
-  aar_path = "libs/androidx_appcompat_appcompat_resources/appcompat-resources-1.3.0-SNAPSHOT.aar"
-  info_path = "libs/androidx_appcompat_appcompat_resources/androidx_appcompat_appcompat_resources.info"
-  deps = [
-    ":androidx_annotation_annotation_java",
-    ":androidx_collection_collection_java",
-    ":androidx_core_core_java",
-    ":androidx_vectordrawable_vectordrawable_animated_java",
-    ":androidx_vectordrawable_vectordrawable_java",
-  ]
-  resource_overlay = true
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-java_prebuilt("androidx_arch_core_core_common_java") {
-  jar_path =
-      "libs/androidx_arch_core_core_common/core-common-2.2.0-SNAPSHOT.jar"
-  output_name = "androidx_arch_core_core_common"
-  supports_android = true
-  deps = [ ":androidx_annotation_annotation_java" ]
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_asynclayoutinflater_asynclayoutinflater_java") {
-  aar_path = "libs/androidx_asynclayoutinflater_asynclayoutinflater/asynclayoutinflater-1.1.0-SNAPSHOT.aar"
-  info_path = "libs/androidx_asynclayoutinflater_asynclayoutinflater/androidx_asynclayoutinflater_asynclayoutinflater.info"
-  deps = [
-    ":androidx_annotation_annotation_java",
-    ":androidx_core_core_java",
-  ]
-  resource_overlay = true
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_cardview_cardview_java") {
-  aar_path = "libs/androidx_cardview_cardview/cardview-1.1.0-SNAPSHOT.aar"
-  info_path = "libs/androidx_cardview_cardview/androidx_cardview_cardview.info"
-  deps = [
-    ":androidx_annotation_annotation_java",
-    ":androidx_core_core_java",
-  ]
-  resource_overlay = true
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-java_prebuilt("androidx_collection_collection_java") {
-  jar_path = "libs/androidx_collection_collection/collection-1.2.0-SNAPSHOT.jar"
-  output_name = "androidx_collection_collection"
-  supports_android = true
-  deps = [ ":androidx_annotation_annotation_java" ]
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-java_prebuilt("androidx_concurrent_concurrent_futures_java") {
-  jar_path = "libs/androidx_concurrent_concurrent_futures/concurrent-futures-1.2.0-SNAPSHOT.jar"
-  output_name = "androidx_concurrent_concurrent_futures"
-  supports_android = true
-  deps = [
-    ":androidx_annotation_annotation_java",
-    ":com_google_guava_listenablefuture_java",
+    "//third_party/androidx:androidx_annotation_annotation_experimental_java",
   ]
 }
 
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_coordinatorlayout_coordinatorlayout_java") {
-  aar_path = "libs/androidx_coordinatorlayout_coordinatorlayout/coordinatorlayout-1.2.0-SNAPSHOT.aar"
-  info_path = "libs/androidx_coordinatorlayout_coordinatorlayout/androidx_coordinatorlayout_coordinatorlayout.info"
+java_group("androidx_appcompat_appcompat_java") {
+  deps = [ "//third_party/androidx:androidx_appcompat_appcompat_java" ]
+}
+
+java_group("androidx_appcompat_appcompat_resources_java") {
+  deps =
+      [ "//third_party/androidx:androidx_appcompat_appcompat_resources_java" ]
+}
+
+java_group("androidx_arch_core_core_common_java") {
+  deps = [ "//third_party/androidx:androidx_arch_core_core_common_java" ]
+}
+
+java_group("androidx_asynclayoutinflater_asynclayoutinflater_java") {
+  deps = [ "//third_party/androidx:androidx_asynclayoutinflater_asynclayoutinflater_java" ]
+}
+
+java_group("androidx_cardview_cardview_java") {
+  deps = [ "//third_party/androidx:androidx_cardview_cardview_java" ]
+}
+
+java_group("androidx_collection_collection_java") {
+  deps = [ "//third_party/androidx:androidx_collection_collection_java" ]
+}
+
+java_group("androidx_concurrent_concurrent_futures_java") {
+  deps =
+      [ "//third_party/androidx:androidx_concurrent_concurrent_futures_java" ]
+}
+
+java_group("androidx_coordinatorlayout_coordinatorlayout_java") {
   deps = [
-    ":androidx_annotation_annotation_java",
-    ":androidx_collection_collection_java",
-    ":androidx_core_core_java",
-    ":androidx_customview_customview_java",
-  ]
-  resource_overlay = true
-
-  # Reduce binary size. https:crbug.com/954584
-  ignore_proguard_configs = true
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_core_core_java") {
-  aar_path = "libs/androidx_core_core/core-1.5.0-SNAPSHOT.aar"
-  info_path = "libs/androidx_core_core/androidx_core_core.info"
-  deps = [
-    ":androidx_annotation_annotation_java",
-    ":androidx_collection_collection_java",
-    ":androidx_lifecycle_lifecycle_runtime_java",
-    ":androidx_versionedparcelable_versionedparcelable_java",
-  ]
-  resource_overlay = true
-
-  # Target has AIDL, but we do not support it yet: http://crbug.com/644439
-  ignore_aidl = true
-
-  # Manifest and proguard config have just one entry: Adding (and -keep'ing
-  # android:appComponentFactory="androidx.core.app.CoreComponentFactory"
-  # Chrome does not use this feature and it causes a scary stack trace to be
-  # shown when incremental_install=true.
-  ignore_manifest = true
-  ignore_proguard_configs = true
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_core_core_animation_java") {
-  aar_path =
-      "libs/androidx_core_core_animation/core-animation-1.0.0-SNAPSHOT.aar"
-  info_path =
-      "libs/androidx_core_core_animation/androidx_core_core_animation.info"
-  deps = [
-    ":androidx_annotation_annotation_java",
-    ":androidx_collection_collection_java",
-    ":androidx_core_core_java",
-  ]
-  resource_overlay = true
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_customview_customview_java") {
-  aar_path = "libs/androidx_customview_customview/customview-1.2.0-SNAPSHOT.aar"
-  info_path =
-      "libs/androidx_customview_customview/androidx_customview_customview.info"
-  deps = [
-    ":androidx_annotation_annotation_java",
-    ":androidx_collection_collection_java",
-    ":androidx_core_core_java",
-  ]
-  resource_overlay = true
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_drawerlayout_drawerlayout_java") {
-  aar_path =
-      "libs/androidx_drawerlayout_drawerlayout/drawerlayout-1.2.0-SNAPSHOT.aar"
-  info_path = "libs/androidx_drawerlayout_drawerlayout/androidx_drawerlayout_drawerlayout.info"
-  deps = [
-    ":androidx_annotation_annotation_java",
-    ":androidx_core_core_java",
-    ":androidx_customview_customview_java",
-  ]
-  resource_overlay = true
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_exifinterface_exifinterface_java") {
-  aar_path = "libs/androidx_exifinterface_exifinterface/exifinterface-1.4.0-SNAPSHOT.aar"
-  info_path = "libs/androidx_exifinterface_exifinterface/androidx_exifinterface_exifinterface.info"
-  deps = [ ":androidx_annotation_annotation_java" ]
-  resource_overlay = true
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_fragment_fragment_java") {
-  aar_path = "libs/androidx_fragment_fragment/fragment-1.4.0-SNAPSHOT.aar"
-  info_path = "libs/androidx_fragment_fragment/androidx_fragment_fragment.info"
-  deps = [
-    ":androidx_activity_activity_java",
-    ":androidx_annotation_annotation_experimental_java",
-    ":androidx_annotation_annotation_java",
-    ":androidx_collection_collection_java",
-    ":androidx_core_core_java",
-    ":androidx_lifecycle_lifecycle_livedata_core_java",
-    ":androidx_lifecycle_lifecycle_viewmodel_java",
-    ":androidx_lifecycle_lifecycle_viewmodel_savedstate_java",
-    ":androidx_loader_loader_java",
-    ":androidx_savedstate_savedstate_java",
-    ":androidx_viewpager_viewpager_java",
-  ]
-  resource_overlay = true
-  deps += [ "//third_party/android_deps/utils:java" ]
-
-  proguard_configs = [ "androidx_fragment.flags" ]
-
-  bytecode_rewriter_target =
-      "//build/android/bytecode:fragment_activity_replacer"
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_gridlayout_gridlayout_java") {
-  aar_path = "libs/androidx_gridlayout_gridlayout/gridlayout-1.1.0-SNAPSHOT.aar"
-  info_path =
-      "libs/androidx_gridlayout_gridlayout/androidx_gridlayout_gridlayout.info"
-  deps = [
-    ":androidx_annotation_annotation_java",
-    ":androidx_core_core_java",
-  ]
-  resource_overlay = true
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_interpolator_interpolator_java") {
-  aar_path =
-      "libs/androidx_interpolator_interpolator/interpolator-1.1.0-SNAPSHOT.aar"
-  info_path = "libs/androidx_interpolator_interpolator/androidx_interpolator_interpolator.info"
-  deps = [ ":androidx_annotation_annotation_java" ]
-  resource_overlay = true
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_leanback_leanback_java") {
-  aar_path = "libs/androidx_leanback_leanback/leanback-1.1.0-beta01.aar"
-  info_path = "libs/androidx_leanback_leanback/androidx_leanback_leanback.info"
-  deps = [
-    ":androidx_annotation_annotation_java",
-    ":androidx_appcompat_appcompat_java",
-    ":androidx_collection_collection_java",
-    ":androidx_core_core_java",
-    ":androidx_fragment_fragment_java",
-    ":androidx_interpolator_interpolator_java",
-    ":androidx_media_media_java",
-    ":androidx_recyclerview_recyclerview_java",
-  ]
-  resource_overlay = true
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_leanback_leanback_preference_java") {
-  aar_path = "libs/androidx_leanback_leanback_preference/leanback-preference-1.1.0-SNAPSHOT.aar"
-  info_path = "libs/androidx_leanback_leanback_preference/androidx_leanback_leanback_preference.info"
-  deps = [
-    ":androidx_annotation_annotation_java",
-    ":androidx_appcompat_appcompat_java",
-    ":androidx_collection_collection_java",
-    ":androidx_leanback_leanback_java",
-    ":androidx_preference_preference_java",
-    ":androidx_recyclerview_recyclerview_java",
-  ]
-  resource_overlay = true
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_legacy_legacy_support_core_utils_java") {
-  aar_path = "libs/androidx_legacy_legacy_support_core_utils/legacy-support-core-utils-1.1.0-SNAPSHOT.aar"
-  info_path = "libs/androidx_legacy_legacy_support_core_utils/androidx_legacy_legacy_support_core_utils.info"
-  deps = [
-    ":androidx_annotation_annotation_java",
-    ":androidx_core_core_java",
-    ":androidx_documentfile_documentfile_java",
-    ":androidx_loader_loader_java",
-    ":androidx_localbroadcastmanager_localbroadcastmanager_java",
-    ":androidx_print_print_java",
-  ]
-  resource_overlay = true
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_legacy_legacy_support_v4_java") {
-  aar_path =
-      "libs/androidx_legacy_legacy_support_v4/legacy-support-v4-1.0.0.aar"
-  info_path = "libs/androidx_legacy_legacy_support_v4/androidx_legacy_legacy_support_v4.info"
-  deps = [
-    ":androidx_core_core_java",
-    ":androidx_fragment_fragment_java",
-    ":androidx_legacy_legacy_support_core_ui_java",
-    ":androidx_legacy_legacy_support_core_utils_java",
-    ":androidx_media_media_java",
-  ]
-  resource_overlay = true
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-java_prebuilt("androidx_lifecycle_lifecycle_common_java") {
-  jar_path = "libs/androidx_lifecycle_lifecycle_common/lifecycle-common-2.4.0-SNAPSHOT.jar"
-  output_name = "androidx_lifecycle_lifecycle_common"
-  supports_android = true
-  deps = [ ":androidx_annotation_annotation_java" ]
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-java_prebuilt("androidx_lifecycle_lifecycle_common_java8_java") {
-  jar_path = "libs/androidx_lifecycle_lifecycle_common_java8/lifecycle-common-java8-2.4.0-SNAPSHOT.jar"
-  output_name = "androidx_lifecycle_lifecycle_common_java8"
-  supports_android = true
-  deps = [
-    ":androidx_annotation_annotation_java",
-    ":androidx_lifecycle_lifecycle_common_java",
+    "//third_party/androidx:androidx_coordinatorlayout_coordinatorlayout_java",
   ]
 }
 
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_lifecycle_lifecycle_livedata_java") {
-  aar_path = "libs/androidx_lifecycle_lifecycle_livedata/lifecycle-livedata-2.4.0-SNAPSHOT.aar"
-  info_path = "libs/androidx_lifecycle_lifecycle_livedata/androidx_lifecycle_lifecycle_livedata.info"
+java_group("androidx_core_core_java") {
+  deps = [ "//third_party/androidx:androidx_core_core_java" ]
+}
+
+java_group("androidx_core_core_animation_java") {
+  deps = [ "//third_party/androidx:androidx_core_core_animation_java" ]
+}
+
+java_group("androidx_customview_customview_java") {
+  deps = [ "//third_party/androidx:androidx_customview_customview_java" ]
+}
+
+java_group("androidx_drawerlayout_drawerlayout_java") {
+  deps = [ "//third_party/androidx:androidx_drawerlayout_drawerlayout_java" ]
+}
+
+java_group("androidx_exifinterface_exifinterface_java") {
+  deps = [ "//third_party/androidx:androidx_exifinterface_exifinterface_java" ]
+}
+
+java_group("androidx_fragment_fragment_java") {
+  deps = [ "//third_party/androidx:androidx_fragment_fragment_java" ]
+}
+
+java_group("androidx_gridlayout_gridlayout_java") {
+  deps = [ "//third_party/androidx:androidx_gridlayout_gridlayout_java" ]
+}
+
+java_group("androidx_interpolator_interpolator_java") {
+  deps = [ "//third_party/androidx:androidx_interpolator_interpolator_java" ]
+}
+
+java_group("androidx_leanback_leanback_java") {
+  deps = [ "//third_party/androidx:androidx_leanback_leanback_java" ]
+}
+
+java_group("androidx_leanback_leanback_preference_java") {
+  deps = [ "//third_party/androidx:androidx_leanback_leanback_preference_java" ]
+}
+
+java_group("androidx_legacy_legacy_support_core_utils_java") {
   deps = [
-    ":androidx_arch_core_core_common_java",
-    ":androidx_arch_core_core_runtime_java",
-    ":androidx_lifecycle_lifecycle_livedata_core_java",
+    "//third_party/androidx:androidx_legacy_legacy_support_core_utils_java",
   ]
-  resource_overlay = true
 }
 
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_lifecycle_lifecycle_livedata_core_java") {
-  aar_path = "libs/androidx_lifecycle_lifecycle_livedata_core/lifecycle-livedata-core-2.4.0-SNAPSHOT.aar"
-  info_path = "libs/androidx_lifecycle_lifecycle_livedata_core/androidx_lifecycle_lifecycle_livedata_core.info"
+java_group("androidx_legacy_legacy_support_v4_java") {
+  deps = [ "//third_party/androidx:androidx_legacy_legacy_support_v4_java" ]
+}
+
+java_group("androidx_lifecycle_lifecycle_common_java") {
+  deps = [ "//third_party/androidx:androidx_lifecycle_lifecycle_common_java" ]
+}
+
+java_group("androidx_lifecycle_lifecycle_common_java8_java") {
   deps = [
-    ":androidx_arch_core_core_common_java",
-    ":androidx_arch_core_core_runtime_java",
-    ":androidx_lifecycle_lifecycle_common_java",
+    "//third_party/androidx:androidx_lifecycle_lifecycle_common_java8_java",
   ]
-  resource_overlay = true
 }
 
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_lifecycle_lifecycle_runtime_java") {
-  aar_path = "libs/androidx_lifecycle_lifecycle_runtime/lifecycle-runtime-2.4.0-SNAPSHOT.aar"
-  info_path = "libs/androidx_lifecycle_lifecycle_runtime/androidx_lifecycle_lifecycle_runtime.info"
+java_group("androidx_lifecycle_lifecycle_livedata_java") {
+  deps = [ "//third_party/androidx:androidx_lifecycle_lifecycle_livedata_java" ]
+}
+
+java_group("androidx_lifecycle_lifecycle_livedata_core_java") {
   deps = [
-    ":androidx_annotation_annotation_java",
-    ":androidx_arch_core_core_common_java",
-    ":androidx_arch_core_core_runtime_java",
-    ":androidx_lifecycle_lifecycle_common_java",
+    "//third_party/androidx:androidx_lifecycle_lifecycle_livedata_core_java",
   ]
-  resource_overlay = true
-
-  # https://crbug.com/887942#c1
-  ignore_proguard_configs = true
 }
 
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_lifecycle_lifecycle_viewmodel_java") {
-  aar_path = "libs/androidx_lifecycle_lifecycle_viewmodel/lifecycle-viewmodel-2.4.0-SNAPSHOT.aar"
-  info_path = "libs/androidx_lifecycle_lifecycle_viewmodel/androidx_lifecycle_lifecycle_viewmodel.info"
-  deps = [ ":androidx_annotation_annotation_java" ]
-  resource_overlay = true
-
-  # https://crbug.com/887942#c1
-  ignore_proguard_configs = true
+java_group("androidx_lifecycle_lifecycle_runtime_java") {
+  deps = [ "//third_party/androidx:androidx_lifecycle_lifecycle_runtime_java" ]
 }
 
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt(
-    "androidx_localbroadcastmanager_localbroadcastmanager_java") {
-  aar_path = "libs/androidx_localbroadcastmanager_localbroadcastmanager/localbroadcastmanager-1.1.0-SNAPSHOT.aar"
-  info_path = "libs/androidx_localbroadcastmanager_localbroadcastmanager/androidx_localbroadcastmanager_localbroadcastmanager.info"
-  deps = [ ":androidx_annotation_annotation_java" ]
-  resource_overlay = true
+java_group("androidx_lifecycle_lifecycle_viewmodel_java") {
+  deps =
+      [ "//third_party/androidx:androidx_lifecycle_lifecycle_viewmodel_java" ]
 }
 
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_media_media_java") {
-  aar_path = "libs/androidx_media_media/media-1.3.0-SNAPSHOT.aar"
-  info_path = "libs/androidx_media_media/androidx_media_media.info"
-  deps = [
-    ":androidx_collection_collection_java",
-    ":androidx_core_core_java",
-  ]
-  resource_overlay = true
-
-  # Target has AIDL, but we do not support it yet: http://crbug.com/644439
-  ignore_aidl = true
+java_group("androidx_localbroadcastmanager_localbroadcastmanager_java") {
+  deps = [ "//third_party/androidx:androidx_localbroadcastmanager_localbroadcastmanager_java" ]
 }
 
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_mediarouter_mediarouter_java") {
-  aar_path =
-      "libs/androidx_mediarouter_mediarouter/mediarouter-1.3.0-SNAPSHOT.aar"
-  info_path = "libs/androidx_mediarouter_mediarouter/androidx_mediarouter_mediarouter.info"
-  deps = [
-    ":androidx_appcompat_appcompat_java",
-    ":androidx_appcompat_appcompat_resources_java",
-    ":androidx_media_media_java",
-    ":androidx_palette_palette_java",
-    ":androidx_recyclerview_recyclerview_java",
-    ":com_google_guava_listenablefuture_java",
-  ]
-  resource_overlay = true
-
-  # https://crbug.com/1000382
-  proguard_configs = [ "androidx_mediarouter.flags" ]
+java_group("androidx_media_media_java") {
+  deps = [ "//third_party/androidx:androidx_media_media_java" ]
 }
 
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_multidex_multidex_java") {
-  aar_path = "libs/androidx_multidex_multidex/multidex-2.0.0.aar"
-  info_path = "libs/androidx_multidex_multidex/androidx_multidex_multidex.info"
-  resource_overlay = true
+java_group("androidx_mediarouter_mediarouter_java") {
+  deps = [ "//third_party/androidx:androidx_mediarouter_mediarouter_java" ]
 }
 
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_preference_preference_java") {
-  aar_path = "libs/androidx_preference_preference/preference-1.2.0-SNAPSHOT.aar"
-  info_path =
-      "libs/androidx_preference_preference/androidx_preference_preference.info"
-  deps = [
-    ":androidx_annotation_annotation_java",
-    ":androidx_appcompat_appcompat_java",
-    ":androidx_collection_collection_java",
-    ":androidx_core_core_java",
-    ":androidx_fragment_fragment_java",
-    ":androidx_recyclerview_recyclerview_java",
-  ]
-  resource_overlay = true
-  bytecode_rewriter_target =
-      "//build/android/bytecode:fragment_activity_replacer"
-  ignore_proguard_configs = true
+java_group("androidx_multidex_multidex_java") {
+  deps = [ "//third_party/androidx:androidx_multidex_multidex_java" ]
 }
 
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_recyclerview_recyclerview_java") {
-  aar_path =
-      "libs/androidx_recyclerview_recyclerview/recyclerview-1.2.0-beta01.aar"
-  info_path = "libs/androidx_recyclerview_recyclerview/androidx_recyclerview_recyclerview.info"
-  deps = [
-    ":androidx_annotation_annotation_java",
-    ":androidx_collection_collection_java",
-    ":androidx_core_core_java",
-    ":androidx_customview_customview_java",
-  ]
-  resource_overlay = true
+java_group("androidx_preference_preference_java") {
+  deps = [ "//third_party/androidx:androidx_preference_preference_java" ]
 }
 
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_savedstate_savedstate_java") {
-  aar_path = "libs/androidx_savedstate_savedstate/savedstate-1.2.0-SNAPSHOT.aar"
-  info_path =
-      "libs/androidx_savedstate_savedstate/androidx_savedstate_savedstate.info"
-  deps = [
-    ":androidx_annotation_annotation_java",
-    ":androidx_arch_core_core_common_java",
-    ":androidx_lifecycle_lifecycle_common_java",
-  ]
-  resource_overlay = true
+java_group("androidx_recyclerview_recyclerview_java") {
+  deps = [ "//third_party/androidx:androidx_recyclerview_recyclerview_java" ]
 }
 
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_slice_slice_builders_java") {
-  aar_path =
-      "libs/androidx_slice_slice_builders/slice-builders-1.1.0-SNAPSHOT.aar"
-  info_path =
-      "libs/androidx_slice_slice_builders/androidx_slice_slice_builders.info"
-  deps = [
-    ":androidx_annotation_annotation_java",
-    ":androidx_collection_collection_java",
-    ":androidx_core_core_java",
-    ":androidx_remotecallback_remotecallback_java",
-    ":androidx_slice_slice_core_java",
-  ]
-  resource_overlay = true
+java_group("androidx_savedstate_savedstate_java") {
+  deps = [ "//third_party/androidx:androidx_savedstate_savedstate_java" ]
 }
 
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_slice_slice_core_java") {
-  aar_path = "libs/androidx_slice_slice_core/slice-core-1.1.0-SNAPSHOT.aar"
-  info_path = "libs/androidx_slice_slice_core/androidx_slice_slice_core.info"
-  deps = [
-    ":androidx_annotation_annotation_java",
-    ":androidx_appcompat_appcompat_java",
-    ":androidx_collection_collection_java",
-  ]
-  resource_overlay = true
+java_group("androidx_slice_slice_builders_java") {
+  deps = [ "//third_party/androidx:androidx_slice_slice_builders_java" ]
 }
 
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_swiperefreshlayout_swiperefreshlayout_java") {
-  aar_path = "libs/androidx_swiperefreshlayout_swiperefreshlayout/swiperefreshlayout-1.2.0-SNAPSHOT.aar"
-  info_path = "libs/androidx_swiperefreshlayout_swiperefreshlayout/androidx_swiperefreshlayout_swiperefreshlayout.info"
-  deps = [
-    ":androidx_annotation_annotation_java",
-    ":androidx_core_core_java",
-    ":androidx_interpolator_interpolator_java",
-  ]
-  resource_overlay = true
+java_group("androidx_slice_slice_core_java") {
+  deps = [ "//third_party/androidx:androidx_slice_slice_core_java" ]
 }
 
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_test_core_java") {
-  aar_path = "libs/androidx_test_core/core-1.2.0.aar"
-  info_path = "libs/androidx_test_core/androidx_test_core.info"
+java_group("androidx_swiperefreshlayout_swiperefreshlayout_java") {
+  deps = [ "//third_party/androidx:androidx_swiperefreshlayout_swiperefreshlayout_java" ]
+}
+
+java_group("androidx_test_core_java") {
+  deps = [ "//third_party/androidx:androidx_test_core_java" ]
   testonly = true
-  deps = [
-    ":androidx_annotation_annotation_java",
-    ":androidx_lifecycle_lifecycle_common_java",
-    ":androidx_test_monitor_java",
-  ]
-  resource_overlay = true
 }
 
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_test_espresso_espresso_contrib_java") {
-  aar_path =
-      "libs/androidx_test_espresso_espresso_contrib/espresso-contrib-3.2.0.aar"
-  info_path = "libs/androidx_test_espresso_espresso_contrib/androidx_test_espresso_espresso_contrib.info"
+java_group("androidx_test_espresso_espresso_contrib_java") {
+  deps =
+      [ "//third_party/androidx:androidx_test_espresso_espresso_contrib_java" ]
   testonly = true
-  deps = [
-    ":androidx_core_core_java",
-    ":androidx_drawerlayout_drawerlayout_java",
-    ":androidx_legacy_legacy_support_core_utils_java",
-    ":androidx_recyclerview_recyclerview_java",
-    ":androidx_test_espresso_espresso_core_java",
-    ":androidx_test_espresso_espresso_idling_resource_java",
-    ":androidx_viewpager_viewpager_java",
-    "$material_design_target",
-    "//third_party/accessibility_test_framework:accessibility_test_framework_java",
-  ]
-  resource_overlay = true
-  enable_bytecode_checks = false
 }
 
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_test_espresso_espresso_core_java") {
-  aar_path = "libs/androidx_test_espresso_espresso_core/espresso-core-3.2.0.aar"
-  info_path = "libs/androidx_test_espresso_espresso_core/androidx_test_espresso_espresso_core.info"
+java_group("androidx_test_espresso_espresso_core_java") {
+  deps = [ "//third_party/androidx:androidx_test_espresso_espresso_core_java" ]
   testonly = true
-  deps = [
-    ":androidx_test_espresso_espresso_idling_resource_java",
-    ":androidx_test_runner_java",
-    ":com_google_code_findbugs_jsr305_java",
-    ":com_squareup_javawriter_java",
-    ":javax_inject_javax_inject_java",
-    "//third_party/hamcrest:hamcrest_integration_java",
-    "//third_party/hamcrest:hamcrest_library_java",
-  ]
-  resource_overlay = true
 }
 
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_test_espresso_espresso_intents_java") {
-  aar_path =
-      "libs/androidx_test_espresso_espresso_intents/espresso-intents-3.2.0.aar"
-  info_path = "libs/androidx_test_espresso_espresso_intents/androidx_test_espresso_espresso_intents.info"
+java_group("androidx_test_espresso_espresso_intents_java") {
+  deps =
+      [ "//third_party/androidx:androidx_test_espresso_espresso_intents_java" ]
   testonly = true
-  deps = [
-    ":androidx_test_core_java",
-    ":androidx_test_espresso_espresso_core_java",
-    ":androidx_test_rules_java",
-  ]
-  resource_overlay = true
 }
 
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_test_espresso_espresso_web_java") {
-  aar_path = "libs/androidx_test_espresso_espresso_web/espresso-web-3.2.0.aar"
-  info_path = "libs/androidx_test_espresso_espresso_web/androidx_test_espresso_espresso_web.info"
+java_group("androidx_test_espresso_espresso_web_java") {
+  deps = [ "//third_party/androidx:androidx_test_espresso_espresso_web_java" ]
   testonly = true
-  deps = [
-    ":androidx_annotation_annotation_java",
-    ":androidx_test_espresso_espresso_core_java",
-    ":org_ccil_cowan_tagsoup_tagsoup_java",
-  ]
-  resource_overlay = true
-  enable_bytecode_checks = false
 }
 
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_test_ext_junit_java") {
-  aar_path = "libs/androidx_test_ext_junit/junit-1.1.1.aar"
-  info_path = "libs/androidx_test_ext_junit/androidx_test_ext_junit.info"
+java_group("androidx_test_ext_junit_java") {
+  deps = [ "//third_party/androidx:androidx_test_ext_junit_java" ]
   testonly = true
-  deps = [
-    ":androidx_annotation_annotation_java",
-    ":androidx_test_core_java",
-    ":androidx_test_monitor_java",
-    "//third_party/junit:junit",
-  ]
-  resource_overlay = true
 }
 
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_test_monitor_java") {
-  aar_path = "libs/androidx_test_monitor/monitor-1.2.0.aar"
-  info_path = "libs/androidx_test_monitor/androidx_test_monitor.info"
+java_group("androidx_test_monitor_java") {
+  deps = [ "//third_party/androidx:androidx_test_monitor_java" ]
   testonly = true
-  deps = [ ":androidx_annotation_annotation_java" ]
-  resource_overlay = true
 }
 
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_test_rules_java") {
-  aar_path = "libs/androidx_test_rules/rules-1.2.0.aar"
-  info_path = "libs/androidx_test_rules/androidx_test_rules.info"
+java_group("androidx_test_rules_java") {
+  deps = [ "//third_party/androidx:androidx_test_rules_java" ]
   testonly = true
-  deps = [ ":androidx_test_runner_java" ]
-  resource_overlay = true
-  deps += [
-    "//third_party/android_sdk:android_test_base_java",
-    "//third_party/android_sdk:android_test_mock_java",
-    "//third_party/android_sdk:android_test_runner_java",
-  ]
 }
 
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_test_runner_java") {
-  aar_path = "libs/androidx_test_runner/runner-1.2.0.aar"
-  info_path = "libs/androidx_test_runner/androidx_test_runner.info"
+java_group("androidx_test_runner_java") {
+  deps = [ "//third_party/androidx:androidx_test_runner_java" ]
   testonly = true
-  deps = [
-    ":androidx_annotation_annotation_java",
-    ":androidx_test_monitor_java",
-    ":net_sf_kxml_kxml2_java",
-    "//third_party/junit:junit",
-  ]
-  resource_overlay = true
 }
 
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_test_uiautomator_uiautomator_java") {
-  aar_path = "libs/androidx_test_uiautomator_uiautomator/uiautomator-2.2.0.aar"
-  info_path = "libs/androidx_test_uiautomator_uiautomator/androidx_test_uiautomator_uiautomator.info"
+java_group("androidx_test_uiautomator_uiautomator_java") {
+  deps = [ "//third_party/androidx:androidx_test_uiautomator_uiautomator_java" ]
   testonly = true
-  resource_overlay = true
-  deps = [ ":androidx_test_runner_java" ]
 }
 
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_transition_transition_java") {
-  aar_path = "libs/androidx_transition_transition/transition-1.5.0-SNAPSHOT.aar"
-  info_path =
-      "libs/androidx_transition_transition/androidx_transition_transition.info"
-  deps = [
-    ":androidx_annotation_annotation_java",
-    ":androidx_collection_collection_java",
-    ":androidx_core_core_java",
-  ]
-  resource_overlay = true
-  deps += [ ":androidx_fragment_fragment_java" ]
+java_group("androidx_transition_transition_java") {
+  deps = [ "//third_party/androidx:androidx_transition_transition_java" ]
 }
 
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_tvprovider_tvprovider_java") {
-  aar_path = "libs/androidx_tvprovider_tvprovider/tvprovider-1.1.0-SNAPSHOT.aar"
-  info_path =
-      "libs/androidx_tvprovider_tvprovider/androidx_tvprovider_tvprovider.info"
-  deps = [
-    ":androidx_annotation_annotation_java",
-    ":androidx_core_core_java",
-  ]
-  resource_overlay = true
+java_group("androidx_tvprovider_tvprovider_java") {
+  deps = [ "//third_party/androidx:androidx_tvprovider_tvprovider_java" ]
 }
 
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_vectordrawable_vectordrawable_java") {
-  aar_path = "libs/androidx_vectordrawable_vectordrawable/vectordrawable-1.2.0-SNAPSHOT.aar"
-  info_path = "libs/androidx_vectordrawable_vectordrawable/androidx_vectordrawable_vectordrawable.info"
-  deps = [
-    ":androidx_annotation_annotation_java",
-    ":androidx_collection_collection_java",
-    ":androidx_core_core_java",
-  ]
-  resource_overlay = true
+java_group("androidx_vectordrawable_vectordrawable_java") {
+  deps =
+      [ "//third_party/androidx:androidx_vectordrawable_vectordrawable_java" ]
 }
 
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_vectordrawable_vectordrawable_animated_java") {
-  aar_path = "libs/androidx_vectordrawable_vectordrawable_animated/vectordrawable-animated-1.2.0-SNAPSHOT.aar"
-  info_path = "libs/androidx_vectordrawable_vectordrawable_animated/androidx_vectordrawable_vectordrawable_animated.info"
-  deps = [
-    ":androidx_collection_collection_java",
-    ":androidx_interpolator_interpolator_java",
-    ":androidx_vectordrawable_vectordrawable_java",
-  ]
-  resource_overlay = true
+java_group("androidx_vectordrawable_vectordrawable_animated_java") {
+  deps = [ "//third_party/androidx:androidx_vectordrawable_vectordrawable_animated_java" ]
 }
 
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_viewpager2_viewpager2_java") {
-  aar_path = "libs/androidx_viewpager2_viewpager2/viewpager2-1.1.0-SNAPSHOT.aar"
-  info_path =
-      "libs/androidx_viewpager2_viewpager2/androidx_viewpager2_viewpager2.info"
-  deps = [
-    ":androidx_annotation_annotation_java",
-    ":androidx_collection_collection_java",
-    ":androidx_core_core_java",
-    ":androidx_fragment_fragment_java",
-    ":androidx_recyclerview_recyclerview_java",
-  ]
-  resource_overlay = true
+java_group("androidx_viewpager2_viewpager2_java") {
+  deps = [ "//third_party/androidx:androidx_viewpager2_viewpager2_java" ]
 }
 
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_viewpager_viewpager_java") {
-  aar_path = "libs/androidx_viewpager_viewpager/viewpager-1.1.0-SNAPSHOT.aar"
-  info_path =
-      "libs/androidx_viewpager_viewpager/androidx_viewpager_viewpager.info"
-  deps = [
-    ":androidx_annotation_annotation_java",
-    ":androidx_core_core_java",
-    ":androidx_customview_customview_java",
-  ]
-  resource_overlay = true
+java_group("androidx_viewpager_viewpager_java") {
+  deps = [ "//third_party/androidx:androidx_viewpager_viewpager_java" ]
 }
 
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_webkit_webkit_java") {
-  aar_path = "libs/androidx_webkit_webkit/webkit-1.3.0-rc01.aar"
-  info_path = "libs/androidx_webkit_webkit/androidx_webkit_webkit.info"
-  deps = [
-    ":androidx_annotation_annotation_java",
-    ":androidx_core_core_java",
-  ]
-  resource_overlay = true
-  visibility = [
-    "//android_webview/tools/system_webview_shell:*",
-    "//third_party/android_deps:*",
-  ]
+java_group("androidx_webkit_webkit_java") {
+  deps = [ "//third_party/androidx:androidx_webkit_webkit_java" ]
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1352,7 +850,10 @@ android_aar_prebuilt("com_google_android_material_material_java") {
 
   # Material Design is pulled in via Doubledown, thus this target should not
   # be directly depended on. Please use :material_design_java instead.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   deps = [
     ":androidx_annotation_annotation_experimental_java",
     ":androidx_annotation_annotation_java",
@@ -1616,7 +1117,10 @@ java_prebuilt("com_google_protobuf_protobuf_javalite_java") {
 
   # Protobuf runtime is pulled in via Doubledown, thus this target should not
   # be directly depended on. Please use :protobuf_lite_runtime_java instead.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
 
   # Prebuilt protos in the runtime library.
   # If you want to use these protos, you should create a proto_java_library
@@ -1821,7 +1325,10 @@ java_prebuilt("android_arch_core_common_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   deps = [ ":com_android_support_support_annotations_java" ]
 }
 
@@ -1832,7 +1339,10 @@ android_aar_prebuilt("android_arch_core_runtime_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   deps = [
     ":android_arch_core_common_java",
     ":com_android_support_support_annotations_java",
@@ -1846,7 +1356,10 @@ android_aar_prebuilt("android_arch_lifecycle_livedata_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   deps = [
     ":android_arch_core_common_java",
     ":android_arch_core_runtime_java",
@@ -1861,7 +1374,10 @@ android_aar_prebuilt("android_arch_lifecycle_livedata_core_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   deps = [
     ":android_arch_core_common_java",
     ":android_arch_core_runtime_java",
@@ -1869,204 +1385,61 @@ android_aar_prebuilt("android_arch_lifecycle_livedata_core_java") {
   ]
 }
 
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_arch_core_core_runtime_java") {
-  aar_path = "libs/androidx_arch_core_core_runtime/core-runtime-2.1.0.aar"
-  info_path = "libs/androidx_arch_core_core_runtime/androidx_arch_core_core_runtime.info"
+java_group("androidx_arch_core_core_runtime_java") {
+  deps = [ "//third_party/androidx:androidx_arch_core_core_runtime_java" ]
+}
 
-  # To remove visibility constraint, add this dependency to
-  # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+java_group("androidx_cursoradapter_cursoradapter_java") {
+  deps = [ "//third_party/androidx:androidx_cursoradapter_cursoradapter_java" ]
+}
+
+java_group("androidx_documentfile_documentfile_java") {
+  deps = [ "//third_party/androidx:androidx_documentfile_documentfile_java" ]
+}
+
+java_group("androidx_legacy_legacy_support_core_ui_java") {
+  deps =
+      [ "//third_party/androidx:androidx_legacy_legacy_support_core_ui_java" ]
+}
+
+java_group("androidx_lifecycle_lifecycle_viewmodel_savedstate_java") {
+  deps = [ "//third_party/androidx:androidx_lifecycle_lifecycle_viewmodel_savedstate_java" ]
+}
+
+java_group("androidx_loader_loader_java") {
+  deps = [ "//third_party/androidx:androidx_loader_loader_java" ]
+}
+
+java_group("androidx_palette_palette_java") {
+  deps = [ "//third_party/androidx:androidx_palette_palette_java" ]
+}
+
+java_group("androidx_print_print_java") {
+  deps = [ "//third_party/androidx:androidx_print_print_java" ]
+}
+
+java_group("androidx_remotecallback_remotecallback_java") {
+  deps =
+      [ "//third_party/androidx:androidx_remotecallback_remotecallback_java" ]
+}
+
+java_group("androidx_slidingpanelayout_slidingpanelayout_java") {
   deps = [
-    ":androidx_annotation_annotation_java",
-    ":androidx_arch_core_core_common_java",
+    "//third_party/androidx:androidx_slidingpanelayout_slidingpanelayout_java",
   ]
-  resource_overlay = true
 }
 
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_cursoradapter_cursoradapter_java") {
-  aar_path = "libs/androidx_cursoradapter_cursoradapter/cursoradapter-1.0.0.aar"
-  info_path = "libs/androidx_cursoradapter_cursoradapter/androidx_cursoradapter_cursoradapter.info"
-
-  # To remove visibility constraint, add this dependency to
-  # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
-  deps = [ ":androidx_annotation_annotation_java" ]
-  resource_overlay = true
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_documentfile_documentfile_java") {
-  aar_path =
-      "libs/androidx_documentfile_documentfile/documentfile-1.1.0-SNAPSHOT.aar"
-  info_path = "libs/androidx_documentfile_documentfile/androidx_documentfile_documentfile.info"
-
-  # To remove visibility constraint, add this dependency to
-  # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
-  deps = [ ":androidx_annotation_annotation_java" ]
-  resource_overlay = true
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_legacy_legacy_support_core_ui_java") {
-  aar_path = "libs/androidx_legacy_legacy_support_core_ui/legacy-support-core-ui-1.0.0.aar"
-  info_path = "libs/androidx_legacy_legacy_support_core_ui/androidx_legacy_legacy_support_core_ui.info"
-
-  # To remove visibility constraint, add this dependency to
-  # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
-  deps = [
-    ":androidx_annotation_annotation_java",
-    ":androidx_asynclayoutinflater_asynclayoutinflater_java",
-    ":androidx_coordinatorlayout_coordinatorlayout_java",
-    ":androidx_core_core_java",
-    ":androidx_cursoradapter_cursoradapter_java",
-    ":androidx_customview_customview_java",
-    ":androidx_drawerlayout_drawerlayout_java",
-    ":androidx_interpolator_interpolator_java",
-    ":androidx_legacy_legacy_support_core_utils_java",
-    ":androidx_slidingpanelayout_slidingpanelayout_java",
-    ":androidx_swiperefreshlayout_swiperefreshlayout_java",
-    ":androidx_viewpager_viewpager_java",
-  ]
-  resource_overlay = true
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_lifecycle_lifecycle_viewmodel_savedstate_java") {
-  aar_path = "libs/androidx_lifecycle_lifecycle_viewmodel_savedstate/lifecycle-viewmodel-savedstate-2.4.0-SNAPSHOT.aar"
-  info_path = "libs/androidx_lifecycle_lifecycle_viewmodel_savedstate/androidx_lifecycle_lifecycle_viewmodel_savedstate.info"
-
-  # To remove visibility constraint, add this dependency to
-  # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
-  deps = [
-    ":androidx_annotation_annotation_java",
-    ":androidx_lifecycle_lifecycle_livedata_core_java",
-    ":androidx_lifecycle_lifecycle_viewmodel_java",
-    ":androidx_savedstate_savedstate_java",
-  ]
-  resource_overlay = true
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_loader_loader_java") {
-  aar_path = "libs/androidx_loader_loader/loader-1.2.0-SNAPSHOT.aar"
-  info_path = "libs/androidx_loader_loader/androidx_loader_loader.info"
-
-  # To remove visibility constraint, add this dependency to
-  # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
-  deps = [
-    ":androidx_annotation_annotation_java",
-    ":androidx_collection_collection_java",
-    ":androidx_core_core_java",
-    ":androidx_lifecycle_lifecycle_livedata_core_java",
-    ":androidx_lifecycle_lifecycle_viewmodel_java",
-  ]
-  resource_overlay = true
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_palette_palette_java") {
-  aar_path = "libs/androidx_palette_palette/palette-1.0.0.aar"
-  info_path = "libs/androidx_palette_palette/androidx_palette_palette.info"
-
-  # To remove visibility constraint, add this dependency to
-  # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
-  deps = [
-    ":androidx_core_core_java",
-    ":androidx_legacy_legacy_support_core_utils_java",
-  ]
-  resource_overlay = true
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_print_print_java") {
-  aar_path = "libs/androidx_print_print/print-1.1.0-SNAPSHOT.aar"
-  info_path = "libs/androidx_print_print/androidx_print_print.info"
-
-  # To remove visibility constraint, add this dependency to
-  # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
-  deps = [ ":androidx_annotation_annotation_java" ]
-  resource_overlay = true
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_remotecallback_remotecallback_java") {
-  aar_path = "libs/androidx_remotecallback_remotecallback/remotecallback-1.0.0-SNAPSHOT.aar"
-  info_path = "libs/androidx_remotecallback_remotecallback/androidx_remotecallback_remotecallback.info"
-
-  # To remove visibility constraint, add this dependency to
-  # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
-  deps = [
-    ":androidx_annotation_annotation_java",
-    ":androidx_collection_collection_java",
-  ]
-  resource_overlay = true
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_slidingpanelayout_slidingpanelayout_java") {
-  aar_path = "libs/androidx_slidingpanelayout_slidingpanelayout/slidingpanelayout-1.0.0.aar"
-  info_path = "libs/androidx_slidingpanelayout_slidingpanelayout/androidx_slidingpanelayout_slidingpanelayout.info"
-
-  # To remove visibility constraint, add this dependency to
-  # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
-  deps = [
-    ":androidx_annotation_annotation_java",
-    ":androidx_core_core_java",
-    ":androidx_customview_customview_java",
-  ]
-  resource_overlay = true
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_test_espresso_espresso_idling_resource_java") {
-  aar_path = "libs/androidx_test_espresso_espresso_idling_resource/espresso-idling-resource-3.2.0.aar"
-  info_path = "libs/androidx_test_espresso_espresso_idling_resource/androidx_test_espresso_espresso_idling_resource.info"
-
-  # To remove visibility constraint, add this dependency to
-  # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+java_group("androidx_test_espresso_espresso_idling_resource_java") {
+  deps = [ "//third_party/androidx:androidx_test_espresso_espresso_idling_resource_java" ]
   testonly = true
-  resource_overlay = true
 }
 
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_tracing_tracing_java") {
-  aar_path = "libs/androidx_tracing_tracing/tracing-1.0.0.aar"
-  info_path = "libs/androidx_tracing_tracing/androidx_tracing_tracing.info"
-
-  # To remove visibility constraint, add this dependency to
-  # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
-  deps = [ ":androidx_annotation_annotation_java" ]
-  resource_overlay = true
+java_group("androidx_tracing_tracing_java") {
+  deps = [ "//third_party/androidx:androidx_tracing_tracing_java" ]
 }
 
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_versionedparcelable_versionedparcelable_java") {
-  aar_path = "libs/androidx_versionedparcelable_versionedparcelable/versionedparcelable-1.1.0.aar"
-  info_path = "libs/androidx_versionedparcelable_versionedparcelable/androidx_versionedparcelable_versionedparcelable.info"
-
-  # To remove visibility constraint, add this dependency to
-  # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
-  deps = [
-    ":androidx_annotation_annotation_java",
-    ":androidx_collection_collection_java",
-  ]
-  resource_overlay = true
-
-  # Target has AIDL, but we do not support it yet: http://crbug.com/644439
-  ignore_aidl = true
+java_group("androidx_versionedparcelable_versionedparcelable_java") {
+  deps = [ "//third_party/androidx:androidx_versionedparcelable_versionedparcelable_java" ]
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2077,7 +1450,10 @@ java_prebuilt("backport_util_concurrent_backport_util_concurrent_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   testonly = true
 }
 
@@ -2089,7 +1465,10 @@ java_prebuilt("classworlds_classworlds_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   testonly = true
 }
 
@@ -2100,7 +1479,10 @@ android_aar_prebuilt("com_android_support_animated_vector_drawable_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   deps = [
     ":com_android_support_support_core_ui_java",
     ":com_android_support_support_vector_drawable_java",
@@ -2115,7 +1497,10 @@ android_aar_prebuilt("com_android_support_appcompat_v7_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   deps = [
     ":com_android_support_animated_vector_drawable_java",
     ":com_android_support_collections_java",
@@ -2136,7 +1521,10 @@ android_aar_prebuilt("com_android_support_cardview_v7_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   deps = [ ":com_android_support_support_annotations_java" ]
   resource_overlay = true
 }
@@ -2148,7 +1536,10 @@ android_aar_prebuilt("com_android_support_cursoradapter_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   deps = [ ":com_android_support_support_annotations_java" ]
   resource_overlay = true
 }
@@ -2160,7 +1551,10 @@ android_aar_prebuilt("com_android_support_documentfile_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   deps = [ ":com_android_support_support_annotations_java" ]
   resource_overlay = true
 }
@@ -2172,7 +1566,10 @@ android_aar_prebuilt("com_android_support_loader_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   deps = [
     ":android_arch_lifecycle_livedata_java",
     ":android_arch_lifecycle_viewmodel_java",
@@ -2189,7 +1586,10 @@ android_aar_prebuilt("com_android_support_print_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   deps = [ ":com_android_support_support_annotations_java" ]
   resource_overlay = true
 }
@@ -2202,7 +1602,10 @@ android_aar_prebuilt("com_android_support_recyclerview_v7_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   deps = [
     ":com_android_support_support_annotations_java",
     ":com_android_support_support_compat_java",
@@ -2219,7 +1622,10 @@ android_aar_prebuilt("com_android_support_slidingpanelayout_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   deps = [
     ":com_android_support_customview_java",
     ":com_android_support_support_annotations_java",
@@ -2235,7 +1641,10 @@ android_aar_prebuilt("com_android_support_support_media_compat_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   deps = [
     ":com_android_support_support_annotations_java",
     ":com_android_support_support_compat_java",
@@ -2254,7 +1663,10 @@ android_aar_prebuilt("com_android_support_support_vector_drawable_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   deps = [
     ":com_android_support_support_annotations_java",
     ":com_android_support_support_compat_java",
@@ -2270,7 +1682,10 @@ android_aar_prebuilt("com_android_support_transition_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   deps = [
     ":com_android_support_support_annotations_java",
     ":com_android_support_support_compat_java",
@@ -2286,7 +1701,10 @@ android_aar_prebuilt("com_android_support_versionedparcelable_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   deps = [
     ":com_android_support_collections_java",
     ":com_android_support_support_annotations_java",
@@ -2309,7 +1727,10 @@ java_prebuilt("com_android_tools_build_jetifier_jetifier_core_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   deps = [
     ":com_google_code_gson_gson_java",
     ":org_jetbrains_kotlin_kotlin_stdlib_java",
@@ -2324,7 +1745,10 @@ java_prebuilt("com_github_ben_manes_caffeine_caffeine_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   deps = [
     ":com_google_errorprone_error_prone_annotations_java",
     ":org_checkerframework_checker_qual_java",
@@ -2339,7 +1763,10 @@ java_prebuilt("com_github_kevinstern_software_and_algorithms_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2349,7 +1776,10 @@ android_aar_prebuilt("google_android_datatransport_transport_api_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   deps = [ ":androidx_annotation_annotation_java" ]
 }
 
@@ -2360,7 +1790,10 @@ android_aar_prebuilt("google_play_services_clearcut_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   deps = [
     ":androidx_core_core_java",
     ":google_play_services_base_java",
@@ -2377,7 +1810,10 @@ android_aar_prebuilt("google_play_services_cloud_messaging_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   deps = [
     ":google_play_services_basement_java",
     ":google_play_services_tasks_java",
@@ -2391,7 +1827,10 @@ android_aar_prebuilt("google_play_services_flags_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   deps = [
     ":google_play_services_base_java",
     ":google_play_services_basement_java",
@@ -2405,7 +1844,10 @@ android_aar_prebuilt("google_play_services_phenotype_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   deps = [
     ":androidx_core_core_java",
     ":google_play_services_base_java",
@@ -2421,7 +1863,10 @@ android_aar_prebuilt("google_play_services_places_placereport_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   deps = [ ":google_play_services_basement_java" ]
 }
 
@@ -2432,7 +1877,10 @@ android_aar_prebuilt("google_play_services_stats_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   deps = [
     ":androidx_legacy_legacy_support_core_utils_java",
     ":google_play_services_basement_java",
@@ -2447,7 +1895,10 @@ java_prebuilt("com_google_auto_auto_common_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   deps = [ ":com_google_guava_guava_java" ]
 }
 
@@ -2459,7 +1910,10 @@ java_prebuilt("com_google_auto_value_auto_value_annotations_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2471,7 +1925,10 @@ java_prebuilt("com_google_code_findbugs_jFormatString_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2482,7 +1939,10 @@ java_prebuilt("com_google_dagger_dagger_producers_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   deps = [
     ":com_google_dagger_dagger_java",
     ":com_google_guava_failureaccess_java",
@@ -2500,7 +1960,10 @@ java_prebuilt("com_google_dagger_dagger_spi_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   deps = [
     ":com_google_code_findbugs_jsr305_java",
     ":com_google_dagger_dagger_java",
@@ -2520,7 +1983,10 @@ java_prebuilt("com_google_errorprone_error_prone_type_annotations_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2532,7 +1998,10 @@ java_prebuilt("com_google_errorprone_javac_shaded_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2543,7 +2012,10 @@ java_prebuilt("google_firebase_firebase_annotations_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2554,7 +2026,10 @@ android_aar_prebuilt("google_firebase_firebase_common_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   deps = [
     ":google_firebase_firebase_components_java",
     ":google_play_services_basement_java",
@@ -2573,7 +2048,10 @@ android_aar_prebuilt("google_firebase_firebase_components_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   deps = [
     ":androidx_annotation_annotation_java",
     ":google_firebase_firebase_annotations_java",
@@ -2592,7 +2070,10 @@ java_prebuilt("google_firebase_firebase_encoders_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   deps = [ ":androidx_annotation_annotation_java" ]
 }
 
@@ -2603,7 +2084,10 @@ android_aar_prebuilt("google_firebase_firebase_encoders_json_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   deps = [
     ":androidx_annotation_annotation_java",
     ":google_firebase_firebase_encoders_java",
@@ -2617,7 +2101,10 @@ android_aar_prebuilt("google_firebase_firebase_iid_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   deps = [
     ":androidx_collection_collection_java",
     ":androidx_core_core_java",
@@ -2641,7 +2128,10 @@ android_aar_prebuilt("google_firebase_firebase_iid_interop_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   deps = [
     ":google_play_services_base_java",
     ":google_play_services_basement_java",
@@ -2655,7 +2145,10 @@ android_aar_prebuilt("google_firebase_firebase_installations_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   deps = [
     ":google_firebase_firebase_common_java",
     ":google_firebase_firebase_components_java",
@@ -2674,7 +2167,10 @@ android_aar_prebuilt("google_firebase_firebase_installations_interop_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   deps = [
     ":google_firebase_firebase_annotations_java",
     ":google_play_services_tasks_java",
@@ -2691,7 +2187,10 @@ android_aar_prebuilt("google_firebase_firebase_measurement_connector_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   deps = [ ":google_play_services_basement_java" ]
 }
 
@@ -2703,7 +2202,10 @@ java_prebuilt("com_google_googlejavaformat_google_java_format_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   deps = [
     ":com_google_errorprone_javac_shaded_java",
     ":com_google_guava_guava_java",
@@ -2718,7 +2220,10 @@ java_prebuilt("com_google_protobuf_protobuf_java_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2729,7 +2234,10 @@ java_prebuilt("com_squareup_javawriter_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   testonly = true
 }
 
@@ -2741,7 +2249,10 @@ java_prebuilt("nekohtml_nekohtml_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   testonly = true
 }
 
@@ -2753,7 +2264,10 @@ java_prebuilt("nekohtml_xercesMinimal_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   testonly = true
 }
 
@@ -2765,7 +2279,10 @@ java_prebuilt("net_ltgt_gradle_incap_incap_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2776,7 +2293,10 @@ java_prebuilt("net_sf_kxml_kxml2_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   testonly = true
 
   # Target needs to exclude *xmlpull* files as already included in Android SDK.
@@ -2791,7 +2311,10 @@ java_prebuilt("org_apache_ant_ant_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   testonly = true
   deps = [ ":org_apache_ant_ant_launcher_java" ]
 }
@@ -2804,7 +2327,10 @@ java_prebuilt("org_apache_ant_ant_launcher_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   testonly = true
 }
 
@@ -2816,7 +2342,10 @@ java_prebuilt("org_apache_maven_maven_ant_tasks_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   testonly = true
   deps = [
     ":classworlds_classworlds_java",
@@ -2844,7 +2373,10 @@ java_prebuilt("org_apache_maven_maven_artifact_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   testonly = true
   deps = [ ":org_codehaus_plexus_plexus_utils_java" ]
 }
@@ -2857,7 +2389,10 @@ java_prebuilt("org_apache_maven_maven_artifact_manager_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   testonly = true
   deps = [
     ":backport_util_concurrent_backport_util_concurrent_java",
@@ -2877,7 +2412,10 @@ java_prebuilt("org_apache_maven_maven_error_diagnostics_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   testonly = true
   deps = [ ":org_codehaus_plexus_plexus_container_default_java" ]
 }
@@ -2890,7 +2428,10 @@ java_prebuilt("org_apache_maven_maven_model_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   testonly = true
   deps = [ ":org_codehaus_plexus_plexus_utils_java" ]
 }
@@ -2903,7 +2444,10 @@ java_prebuilt("org_apache_maven_maven_plugin_registry_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   testonly = true
   deps = [
     ":org_codehaus_plexus_plexus_container_default_java",
@@ -2919,7 +2463,10 @@ java_prebuilt("org_apache_maven_maven_profile_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   testonly = true
   deps = [
     ":org_apache_maven_maven_model_java",
@@ -2937,7 +2484,10 @@ java_prebuilt("org_apache_maven_maven_project_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   testonly = true
   deps = [
     ":org_apache_maven_maven_artifact_java",
@@ -2960,7 +2510,10 @@ java_prebuilt("org_apache_maven_maven_repository_metadata_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   testonly = true
   deps = [ ":org_codehaus_plexus_plexus_utils_java" ]
 }
@@ -2973,7 +2526,10 @@ java_prebuilt("org_apache_maven_maven_settings_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   testonly = true
   deps = [
     ":org_apache_maven_maven_model_java",
@@ -2991,7 +2547,10 @@ java_prebuilt("org_apache_maven_wagon_wagon_file_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   testonly = true
   deps = [ ":org_apache_maven_wagon_wagon_provider_api_java" ]
 }
@@ -3004,7 +2563,10 @@ java_prebuilt("org_apache_maven_wagon_wagon_http_lightweight_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   testonly = true
   deps = [
     ":org_apache_maven_wagon_wagon_http_shared_java",
@@ -3020,7 +2582,10 @@ java_prebuilt("org_apache_maven_wagon_wagon_http_shared_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   testonly = true
   deps = [
     ":nekohtml_nekohtml_java",
@@ -3037,7 +2602,10 @@ java_prebuilt("org_apache_maven_wagon_wagon_provider_api_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   testonly = true
   deps = [ ":org_codehaus_plexus_plexus_utils_java" ]
 }
@@ -3050,7 +2618,10 @@ java_prebuilt("org_checkerframework_checker_qual_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -3062,7 +2633,10 @@ java_prebuilt("org_checkerframework_dataflow_shaded_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -3073,7 +2647,10 @@ java_prebuilt("org_codehaus_plexus_plexus_container_default_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   testonly = true
   deps = [
     ":classworlds_classworlds_java",
@@ -3089,7 +2666,10 @@ java_prebuilt("org_codehaus_plexus_plexus_interpolation_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   testonly = true
 }
 
@@ -3101,7 +2681,10 @@ java_prebuilt("org_codehaus_plexus_plexus_utils_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   testonly = true
 }
 
@@ -3113,7 +2696,10 @@ java_prebuilt("org_jdom_jdom2_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -3124,7 +2710,10 @@ java_prebuilt("org_jetbrains_annotations_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -3135,7 +2724,10 @@ java_prebuilt("org_jetbrains_kotlin_kotlin_stdlib_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   deps = [
     ":org_jetbrains_annotations_java",
     ":org_jetbrains_kotlin_kotlin_stdlib_common_java",
@@ -3150,7 +2742,10 @@ java_prebuilt("org_jetbrains_kotlin_kotlin_stdlib_common_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -3161,7 +2756,10 @@ java_prebuilt("org_jetbrains_kotlinx_kotlinx_metadata_jvm_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   deps = [ ":org_jetbrains_kotlin_kotlin_stdlib_java" ]
 }
 
@@ -3173,7 +2771,10 @@ java_prebuilt("org_ow2_asm_asm_analysis_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   deps = [ ":org_ow2_asm_asm_tree_java" ]
 }
 
@@ -3185,7 +2786,10 @@ java_prebuilt("org_pcollections_pcollections_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -3196,7 +2800,10 @@ java_prebuilt("org_robolectric_annotations_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   testonly = true
   bypass_platform_checks = true
 }
@@ -3209,7 +2816,10 @@ java_prebuilt("org_robolectric_junit_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   testonly = true
   deps = [
     ":org_robolectric_annotations_java",
@@ -3229,7 +2839,10 @@ java_prebuilt("org_robolectric_pluginapi_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   testonly = true
   deps = [
     ":org_apache_ant_ant_java",
@@ -3247,7 +2860,10 @@ java_prebuilt("org_robolectric_plugins_maven_dependency_resolver_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   testonly = true
   deps = [
     ":org_apache_ant_ant_java",
@@ -3266,7 +2882,10 @@ java_prebuilt("org_robolectric_resources_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   testonly = true
   deps = [
     ":com_google_guava_guava_java",
@@ -3285,7 +2904,10 @@ java_prebuilt("org_robolectric_sandbox_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   testonly = true
   deps = [
     ":com_google_guava_guava_java",
@@ -3309,7 +2931,10 @@ java_prebuilt("org_robolectric_shadowapi_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   testonly = true
   deps = [ ":org_robolectric_annotations_java" ]
   bypass_platform_checks = true
@@ -3324,7 +2949,10 @@ java_prebuilt("org_robolectric_shadows_framework_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   testonly = true
   deps = [
     ":androidx_test_monitor_java",
@@ -3350,7 +2978,10 @@ java_prebuilt("org_robolectric_utils_reflector_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
   testonly = true
   deps = [
     ":org_ow2_asm_asm_commons_java",
@@ -3368,6 +2999,9 @@ java_prebuilt("org_threeten_threeten_extra_java") {
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//third_party/androidx:*",
+  ]
 }
 # === Generated Code End ===
