@@ -9,7 +9,6 @@
 #include "ash/constants/ash_features.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
-#include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/chromeos/login/oobe_screen.h"
 #include "chrome/browser/chromeos/login/screens/update_screen.h"
 #include "chrome/grit/chromium_strings.h"
@@ -24,11 +23,6 @@ constexpr StaticOobeScreenId UpdateView::kScreenId;
 UpdateScreenHandler::UpdateScreenHandler(JSCallsContainer* js_calls_container)
     : BaseScreenHandler(kScreenId, js_calls_container) {
   set_user_acted_method_path("login.UpdateScreen.userActed");
-  AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
-  CHECK(accessibility_manager);
-  accessibility_subscription_ = accessibility_manager->RegisterCallback(
-      base::BindRepeating(&UpdateScreenHandler::OnAccessibilityStatusChanged,
-                          base::Unretained(this)));
 }
 
 UpdateScreenHandler::~UpdateScreenHandler() {
@@ -54,18 +48,6 @@ void UpdateScreenHandler::Bind(UpdateScreen* screen) {
 void UpdateScreenHandler::Unbind() {
   screen_ = nullptr;
   BaseScreenHandler::SetBaseScreen(nullptr);
-}
-
-void UpdateScreenHandler::OnAccessibilityStatusChanged(
-    const AccessibilityStatusEventDetails& details) {
-  if (details.notification_type ==
-      AccessibilityNotificationType::kManagerShutdown) {
-    accessibility_subscription_ = {};
-    return;
-  }
-
-  CallJS("login.UpdateScreen.setAutoTransition",
-         !AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
 }
 
 void UpdateScreenHandler::SetUIState(UpdateView::UIState value) {
@@ -114,6 +96,10 @@ void UpdateScreenHandler::SetCancelUpdateShortcutEnabled(bool value) {
 
 void UpdateScreenHandler::ShowLowBatteryWarningMessage(bool value) {
   CallJS("login.UpdateScreen.showLowBatteryWarningMessage", value);
+}
+
+void UpdateScreenHandler::SetAutoTransition(bool value) {
+  CallJS("login.UpdateScreen.setAutoTransition", value);
 }
 
 void UpdateScreenHandler::DeclareLocalizedValues(

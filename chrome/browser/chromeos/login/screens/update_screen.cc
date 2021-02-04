@@ -154,6 +154,13 @@ bool UpdateScreen::MaybeSkip(WizardContext* context) {
 }
 
 void UpdateScreen::ShowImpl() {
+  // AccessibilityManager::Get() can be nullptr in unittests.
+  if (AccessibilityManager::Get()) {
+    AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
+    accessibility_subscription_ = accessibility_manager->RegisterCallback(
+        base::BindRepeating(&UpdateScreen::OnAccessibilityStatusChanged,
+                            weak_factory_.GetWeakPtr()));
+  }
   if (chromeos::features::IsBetterUpdateEnabled()) {
     DCHECK(!power_manager_subscription_);
     power_manager_subscription_ = std::make_unique<
@@ -176,6 +183,7 @@ void UpdateScreen::ShowImpl() {
 }
 
 void UpdateScreen::HideImpl() {
+  accessibility_subscription_ = {};
   power_manager_subscription_.reset();
   show_timer_.Stop();
   if (view_)
@@ -515,6 +523,11 @@ void UpdateScreen::MakeSureScreenIsShown() {
   is_shown_ = true;
   histogram_helper_->OnScreenShow();
 
+  // AccessibilityManager::Get() can be nullptr in unittests.
+  if (AccessibilityManager::Get()) {
+    view_->SetAutoTransition(
+        !AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
+  }
   view_->Show();
 }
 
@@ -529,6 +542,20 @@ void UpdateScreen::OnConnectRequested() {
       VersionUpdater::State::STATE_ERROR) {
     LOG(WARNING) << "Hiding error message since AP was reselected";
     version_updater_->StartUpdateCheck();
+  }
+}
+
+void UpdateScreen::OnAccessibilityStatusChanged(
+    const AccessibilityStatusEventDetails& details) {
+  if (details.notification_type ==
+      AccessibilityNotificationType::kManagerShutdown) {
+    accessibility_subscription_ = {};
+    return;
+  }
+  // AccessibilityManager::Get() can be nullptr in unittests.
+  if (view_ && AccessibilityManager::Get()) {
+    view_->SetAutoTransition(
+        !AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
   }
 }
 

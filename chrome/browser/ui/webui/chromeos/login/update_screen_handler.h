@@ -63,6 +63,7 @@ class UpdateView {
   virtual void SetRequiresPermissionForCellular(bool value) = 0;
   virtual void SetCancelUpdateShortcutEnabled(bool value) = 0;
   virtual void ShowLowBatteryWarningMessage(bool value) = 0;
+  virtual void SetAutoTransition(bool value) = 0;
 };
 
 class UpdateScreenHandler : public UpdateView, public BaseScreenHandler {
@@ -92,8 +93,8 @@ class UpdateScreenHandler : public UpdateView, public BaseScreenHandler {
   void SetRequiresPermissionForCellular(bool value) override;
   void SetCancelUpdateShortcutEnabled(bool value) override;
   void ShowLowBatteryWarningMessage(bool value) override;
+  void SetAutoTransition(bool value) override;
 
-  // Notification of a change in the accessibility settings.
   void OnAccessibilityStatusChanged(
       const AccessibilityStatusEventDetails& details);
 
@@ -104,8 +105,6 @@ class UpdateScreenHandler : public UpdateView, public BaseScreenHandler {
   void Initialize() override;
 
   UpdateScreen* screen_ = nullptr;
-
-  base::CallbackListSubscription accessibility_subscription_;
 
   // If true, Initialize() will call Show().
   bool show_on_init_ = false;

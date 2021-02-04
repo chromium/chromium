@@ -213,6 +213,9 @@ Polymer({
     this.userActed(USER_ACTION_CANCEL_UPDATE_SHORTCUT);
   },
 
+  /**
+   * Event handler that is invoked just before the screen is shown.
+   */
   onBeforeShow() {
     if (!this.betterUpdateScreenFeatureEnabled_) {
       cr.ui.login.invokePolymerMethod(

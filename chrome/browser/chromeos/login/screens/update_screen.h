@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/chromeos/login/screens/base_screen.h"
 #include "chrome/browser/chromeos/login/screens/error_screen.h"
 #include "chrome/browser/chromeos/login/version_updater/version_updater.h"
@@ -145,6 +146,10 @@ class UpdateScreen : public BaseScreen,
   // The user requested an attempt to connect to the network should be made.
   void OnConnectRequested();
 
+  // Notification of a change in the accessibility settings.
+  void OnAccessibilityStatusChanged(
+      const AccessibilityStatusEventDetails& details);
+
   // Callback passed to `error_screen_` when it's shown. Called when the error
   // screen gets hidden.
   void OnErrorScreenHidden();
@@ -220,6 +225,8 @@ class UpdateScreen : public BaseScreen,
   base::TimeDelta finalize_time_;
 
   base::CallbackListSubscription connect_request_subscription_;
+
+  base::CallbackListSubscription accessibility_subscription_;
 
   // PowerManagerClient::Observer is used only when screen is shown.
   std::unique_ptr<
