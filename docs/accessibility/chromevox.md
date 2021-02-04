@@ -64,6 +64,41 @@ ChromeVox options page with Search+Shift+o, o; then, substitute the
 “options.html” path with “background.html”, and then open up the
 inspector.
 
+### Debugging ChromeOS
+
+To debug ChromeVox in ChromeOS, you need to add the command-line flag to the
+config file in device under test(DUT) instead of starting chrome from command
+line.
+
+```
+(dut) $ echo " --remote-debugging-port=9222 " >> /etc/chrome_dev.conf
+(dut) $ restart ui
+```
+
+This is also written in
+[Simple Chrome Workflow Doc](https://chromium.googlesource.com/chromiumos/docs/+/HEAD/simple_chrome_workflow.md#command_line-flags-and-environment-variables).
+
+You need to ssh from your development device into your DUT forwarding port 9222
+to open ChromeVox extension background page in your dev device, for example
+```
+ssh my_crbook -L 3333:localhost:9222
+```
+
+Then open the forwarded port in the development device, http://localhost:3333 in
+the example.
+
+You may need to remove rootfs verification to write to `/etc/chrome_dev.conf`.
+
+```
+(dut) $ crossystem dev_boot_signed_only=0
+(dut) $ sudo /usr/share/vboot/bin/make_dev_ssd.sh --remove_rootfs_verification
+(dut) $ reboot
+```
+
+See
+[Chromium OS Doc](https://chromium.googlesource.com/chromiumos/docs/+/HEAD/developer_mode.md#disable-verity)
+for more information about removing rootfs verification.
+
 ### Running tests
 
 Build the browser_tests target. To run lots of tests in parallel, run it like
