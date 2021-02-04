@@ -215,7 +215,7 @@
   {
     "name": "ash-limit-shelf-items-to-active-desk",
     "owners": [ "afakhry", "tclaiborne" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 98
   },
   {
     "name": "ash-swap-side-volume-buttons-for-orientation",
