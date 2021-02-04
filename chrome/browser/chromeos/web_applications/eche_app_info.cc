@@ -22,7 +22,10 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForEcheApp() {
   // |title| should come from a resource string, but this is the Eche app, and
   // doesn't have one.
   info->title = base::UTF8ToUTF16("Eche App");
-  // TODO(b/178159012): create icon info for system web app.
+  web_app::CreateIconInfoForSystemWebApp(
+      info->start_url,
+      {{"eche_icon_256.png", 256, IDR_CHROMEOS_ECHE_APP_ECHE_ICON_256_PNG}},
+      *info);
   info->theme_color = 0xFF4285F4;
   info->background_color = 0xFFFFFFFF;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;

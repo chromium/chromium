@@ -46,6 +46,7 @@ generate_grd("build_grd") {
     "index.html",
     "app.js",
     "app.css",
+    "eche_icon_256.png",
   ]
   manifest_files = []
   grd_prefix = "chromeos_eche_app"
