@@ -10899,6 +10899,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_ALLOW_ATTESTATION" desc="Label on button to allow a website to see information that identifies the user's Security Key, such as make and model number. The 'make' of a device is the brand name of the manufacturer, e.g. Yubikey is a make of Security Key. The 'model' of a device is the specific product, e.g. Yubikey Neo is a model of Security Key.">
         Allow
       </message>
+      <message name="IDS_WEBAUTHN_DENY_ATTESTATION" desc="Label on button to deny a website's request to see information that identifies the user's Security Key, such as make and model number. The 'make' of a device is the brand name of the manufacturer, e.g. Yubikey is a make of Security Key. The 'model' of a device is the specific product, e.g. Yubikey Neo is a model of Security Key. This was previously the word 'Block', but that is used in contexts where the decision is persistent so we wanted a different word for this because it is a one-time decision: the user will be asked again if the website requests again. Thus the translation would hopefully be distinct from the translation for 'Block' as used, for example, in IDS_COLLECTED_COOKIES_BLOCK_BUTTON.">
+        Skip
+      </message>
       <message name="IDS_WEBAUTHN_RETRY" desc="Button text. The user clicks this to retry the authentication flow after an error happened, e.g. to try with a different Security Key.">
         Try again
       </message>
