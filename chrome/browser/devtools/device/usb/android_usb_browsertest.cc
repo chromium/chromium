@@ -141,7 +141,8 @@ class FakeAndroidUsbDeviceInfo : public FakeUsbDeviceInfo {
                           /*product_id=*/0,
                           kDeviceManufacturer,
                           kDeviceModel,
-                          kDeviceSerial),
+                          kDeviceSerial,
+                          std::vector<UsbConfigurationInfoPtr>()),
         broken_traits_(is_broken) {}
 
   bool broken_traits() const { return broken_traits_; }

@@ -9,6 +9,7 @@
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -1271,4 +1272,37 @@ TEST_F(UsbChooserContextTest,
                           /*vendor_id=*/6354,
                           /*product_id=*/1357,
                           /*name=*/"Unknown product 0x054D from vendor 0x18D2");
+}
+
+TEST_F(UsbChooserContextTest, MassStorageHidden) {
+  GURL url("https://www.google.com");
+  const auto origin = url::Origin::Create(url);
+
+  // Mass storage devices should be hidden.
+  std::vector<device::mojom::UsbConfigurationInfoPtr> storage_configs;
+  storage_configs.push_back(
+      device::FakeUsbDeviceInfo::CreateConfiguration(0x08, 0x06, 0x50));
+  UsbDeviceInfoPtr storage_device_info = device_manager_.CreateAndAddDevice(
+      0, 0, "vendor1", "storage", "123ABC", std::move(storage_configs));
+
+  // Composite devices with both mass storage and allowed interfaces should be
+  // shown.
+  std::vector<device::mojom::UsbConfigurationInfoPtr> complex_configs;
+  complex_configs.push_back(
+      device::FakeUsbDeviceInfo::CreateConfiguration(0x08, 0x06, 0x50, 1));
+  complex_configs.push_back(
+      device::FakeUsbDeviceInfo::CreateConfiguration(0xff, 0x42, 0x1, 2));
+  UsbDeviceInfoPtr complex_device_info = device_manager_.CreateAndAddDevice(
+      0, 0, "vendor2", "complex", "456DEF", std::move(complex_configs));
+
+  UsbChooserContext* chooser_context = GetChooserContext(profile());
+
+  base::RunLoop loop;
+  chooser_context->GetDevices(
+      base::BindLambdaForTesting([&](std::vector<UsbDeviceInfoPtr> devices) {
+        EXPECT_EQ(1u, devices.size());
+        EXPECT_EQ(complex_device_info->product_name, devices[0]->product_name);
+        loop.Quit();
+      }));
+  loop.Run();
 }

@@ -44,6 +44,7 @@ FakeUsbDeviceInfo::FakeUsbDeviceInfo(uint16_t usb_version,
   device_info_.manufacturer_name = base::UTF8ToUTF16(manufacturer_string);
   device_info_.product_name = base::UTF8ToUTF16(product_string);
   device_info_.serial_number = base::UTF8ToUTF16(serial_number);
+  AddConfig(CreateConfiguration(0xFF, 0x00, 0x00));
 }
 
 FakeUsbDeviceInfo::FakeUsbDeviceInfo(uint16_t vendor_id,
@@ -133,6 +134,27 @@ void FakeUsbDeviceInfo::RemoveObserver(Observer* observer) {
 void FakeUsbDeviceInfo::NotifyDeviceRemoved() {
   for (auto& observer : observer_list_)
     observer.OnDeviceRemoved(this);
+}
+
+mojom::UsbConfigurationInfoPtr FakeUsbDeviceInfo::CreateConfiguration(
+    uint8_t device_class,
+    uint8_t subclass_code,
+    uint8_t protocol_code,
+    uint8_t configuration_value) {
+  auto alternate = device::mojom::UsbAlternateInterfaceInfo::New();
+  alternate->alternate_setting = 0;
+  alternate->class_code = device_class;
+  alternate->subclass_code = subclass_code;
+  alternate->protocol_code = protocol_code;
+
+  auto interface = device::mojom::UsbInterfaceInfo::New();
+  interface->interface_number = 0;
+  interface->alternates.push_back(std::move(alternate));
+
+  auto config = device::mojom::UsbConfigurationInfo::New();
+  config->configuration_value = configuration_value;
+  config->interfaces.push_back(std::move(interface));
+  return config;
 }
 
 }  // namespace device

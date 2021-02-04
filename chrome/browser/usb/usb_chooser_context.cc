@@ -34,6 +34,7 @@ constexpr char kProductIdKey[] = "product-id";
 constexpr char kSerialNumberKey[] = "serial-number";
 constexpr char kVendorIdKey[] = "vendor-id";
 constexpr int kDeviceIdWildcard = -1;
+constexpr int kUsbClassMassStorage = 0x08;
 
 // Reasons a permission may be closed. These are used in histograms so do not
 // remove/reorder entries. Only add at the end just before
@@ -115,6 +116,28 @@ base::Value DeviceIdsToValue(int vendor_id, int product_id) {
   return device_value;
 }
 
+bool IsMassStorageInterface(const device::mojom::UsbInterfaceInfo& interface) {
+  for (auto& alternate : interface.alternates) {
+    if (alternate->class_code == kUsbClassMassStorage)
+      return true;
+  }
+  return false;
+}
+
+bool ShouldExposeDevice(const device::mojom::UsbDeviceInfo& device_info) {
+  // blink::USBDevice::claimInterface() disallows claiming mass storage
+  // interfaces, but explicitly prevent access in the browser process as
+  // ChromeOS would allow these interfaces to be claimed.
+
+  for (auto& configuration : device_info.configurations) {
+    for (auto& interface : configuration->interfaces) {
+      if (!IsMassStorageInterface(*interface))
+        return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 void UsbChooserContext::DeviceObserver::OnDeviceAdded(
@@ -158,7 +181,10 @@ void UsbChooserContext::InitDeviceList(
     std::vector<device::mojom::UsbDeviceInfoPtr> devices) {
   for (auto& device_info : devices) {
     DCHECK(device_info);
-    devices_.insert(std::make_pair(device_info->guid, std::move(device_info)));
+    if (ShouldExposeDevice(*device_info)) {
+      devices_.insert(
+          std::make_pair(device_info->guid, std::move(device_info)));
+    }
   }
   is_initialized_ = true;
 
@@ -542,6 +568,8 @@ void UsbChooserContext::OnDeviceAdded(
   DCHECK(device_info);
   // Update the device list.
   DCHECK(!base::Contains(devices_, device_info->guid));
+  if (!ShouldExposeDevice(*device_info))
+    return;
   devices_.insert(std::make_pair(device_info->guid, device_info->Clone()));
 
   // Notify all observers.
@@ -552,6 +580,12 @@ void UsbChooserContext::OnDeviceAdded(
 void UsbChooserContext::OnDeviceRemoved(
     device::mojom::UsbDeviceInfoPtr device_info) {
   DCHECK(device_info);
+
+  if (!ShouldExposeDevice(*device_info)) {
+    DCHECK(!base::Contains(devices_, device_info->guid));
+    return;
+  }
+
   // Update the device list.
   DCHECK(base::Contains(devices_, device_info->guid));
   devices_.erase(device_info->guid);
