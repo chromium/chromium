@@ -80,6 +80,12 @@ IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptPermissions) {
 
 // If failing, mark disabled and update http://crbug.com/84760.
 IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptFileAfterClose) {
+  // TODO(https://crbug.com/1166287): Flaky for Service Worker-based
+  // extension on ASAN bots.
+#if defined(ADDRESS_SANITIZER)
+  if (GetParam() == ContextType::kServiceWorker)
+    return;
+#endif
   ASSERT_TRUE(RunTest("executescript/file_after_close")) << message_;
 }
 
