@@ -14,7 +14,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "ui/events/platform_event.h"
 #include "ui/gfx/x/event.h"
 
@@ -142,9 +141,6 @@ class COMPONENT_EXPORT(UI_BASE) SelectionRequestor {
   // request is the request for which XConvertSelection() has been
   // called and for which we are waiting for a SelectionNotify response.
   size_t current_request_index_;
-
-  // Used to abort requests if the selection owner takes too long to respond.
-  base::RepeatingTimer abort_timer_;
 
   DISALLOW_COPY_AND_ASSIGN(SelectionRequestor);
 };

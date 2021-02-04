@@ -22,15 +22,8 @@ namespace {
 
 const char kChromeSelection[] = "CHROME_SELECTION";
 
-// The period of |abort_timer_|. Arbitrary but must be <= than
-// kRequestTimeoutMs.
-const int KSelectionRequestorTimerPeriodMs = 100;
-
 // The amount of time to wait for a request to complete before aborting it.
 const int kRequestTimeoutMs = 1000;
-
-static_assert(KSelectionRequestorTimerPeriodMs <= kRequestTimeoutMs,
-              "timer period must be <= request timeout");
 
 // Combines |data| into a single std::vector<uint8_t>.
 std::vector<uint8_t> CombineData(
@@ -81,9 +74,6 @@ bool SelectionRequestor::PerformBlockingConvertSelection(
     --current_request_index_;
   }
   requests_.erase(request_it);
-
-  if (requests_.empty())
-    abort_timer_.Stop();
 
   if (request.success) {
     if (out_data)
