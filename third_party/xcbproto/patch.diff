@@ -1,6 +1,6 @@
 diff -ru xcbproto/src/glx.xml src/src/glx.xml
---- xcbproto/src/glx.xml	2021-02-04 11:30:40.262036173 -0800
-+++ src/src/glx.xml	2021-02-04 11:29:38.201637753 -0800
+--- xcbproto/src/glx.xml	2021-02-04 11:48:33.020966626 -0800
++++ src/src/glx.xml	2021-02-04 11:45:17.119665200 -0800
 @@ -62,8 +62,6 @@
              <type>glx:WINDOW</type>
          </xidunion>
@@ -292,8 +292,8 @@ diff -ru xcbproto/src/glx.xml src/src/glx.xml
  			</list>
  		</reply>
 diff -ru xcbproto/src/randr.xml src/src/randr.xml
---- xcbproto/src/randr.xml	2021-02-04 11:30:40.262036173 -0800
-+++ src/src/randr.xml	2021-02-04 11:25:08.703905860 -0800
+--- xcbproto/src/randr.xml	2021-02-04 11:48:33.020966626 -0800
++++ src/src/randr.xml	2021-02-04 11:45:17.119665200 -0800
 @@ -803,64 +803,6 @@
  		<item name="Lease">           <value>6</value></item>
  	</enum>
@@ -467,8 +467,8 @@ diff -ru xcbproto/src/randr.xml src/src/randr.xml
  	</event>
  </xcb>
 diff -ru xcbproto/src/shm.xml src/src/shm.xml
---- xcbproto/src/shm.xml	2021-02-04 11:30:40.266036199 -0800
-+++ src/src/shm.xml	2021-02-04 11:25:08.703905860 -0800
+--- xcbproto/src/shm.xml	2021-02-04 11:48:33.024966653 -0800
++++ src/src/shm.xml	2021-02-04 11:45:17.119665200 -0800
 @@ -78,7 +78,7 @@
      <field type="INT16" name="dst_x" />
      <field type="INT16" name="dst_y" />
@@ -479,8 +479,8 @@ diff -ru xcbproto/src/shm.xml src/src/shm.xml
      <pad bytes="1" />
      <field type="SEG" name="shmseg" />
 diff -ru xcbproto/src/xinput.xml src/src/xinput.xml
---- xcbproto/src/xinput.xml	2021-02-04 11:30:40.266036199 -0800
-+++ src/src/xinput.xml	2021-02-04 11:25:08.703905860 -0800
+--- xcbproto/src/xinput.xml	2021-02-04 11:48:33.024966653 -0800
++++ src/src/xinput.xml	2021-02-04 11:48:09.768812279 -0800
 @@ -200,7 +200,12 @@
              <list type="STR" name="names">
                  <fieldref>devices_len</fieldref>
@@ -505,9 +505,184 @@ diff -ru xcbproto/src/xinput.xml src/src/xinput.xml
          <item name="All">       <value>0</value> </item>
          <item name="AllMaster"> <value>1</value> </item>
      </enum>
+@@ -2278,43 +2284,9 @@
+         <item name="PointerEmulated"> <bit>16</bit> </item>
+     </enum>
+ 
+-    <event name="ButtonPress" number="4" xge="true">
+-        <field type="DeviceId"  name="deviceid" altenum="Device" />
+-        <field type="TIMESTAMP" name="time" altenum="Time" />
+-        <!-- event specific fields -->
+-        <field type="CARD32"    name="detail" />
+-        <field type="WINDOW"    name="root" />
+-        <field type="WINDOW"    name="event" />
+-        <field type="WINDOW"    name="child" />
+-        <!-- 32 byte boundary -->
+-        <field type="FP1616"    name="root_x" />
+-        <field type="FP1616"    name="root_y" />
+-        <field type="FP1616"    name="event_x" />
+-        <field type="FP1616"    name="event_y" />
+-        <field type="CARD16"    name="buttons_len" />
+-        <field type="CARD16"    name="valuators_len" />
+-        <field type="DeviceId"  name="sourceid" altenum="Device" />
+-        <pad bytes="2" />
+-        <field type="CARD32"       name="flags" mask="PointerEventFlags" />
+-        <field type="ModifierInfo" name="mods" />
+-        <field type="GroupInfo"    name="group" />
+-        <list type="CARD32" name="button_mask">
+-            <fieldref>buttons_len</fieldref>
+-        </list>
+-        <list type="CARD32" name="valuator_mask">
+-            <fieldref>valuators_len</fieldref>
+-        </list>
+-        <list type="FP3232" name="axisvalues">
+-            <sumof ref="valuator_mask">
+-                <popcount>
+-                    <listelement-ref/>
+-                </popcount>
+-            </sumof>
+-        </list>
+-    </event>
+-
+-    <eventcopy name="ButtonRelease" number="5" ref="ButtonPress" />
+-    <eventcopy name="Motion"        number="6" ref="ButtonPress" />
++    <eventcopy name="ButtonPress"   number="4" ref="KeyPress" />
++    <eventcopy name="ButtonRelease" number="5" ref="KeyPress" />
++    <eventcopy name="Motion"        number="6" ref="KeyPress" />
+ 
+     <enum name="NotifyMode">
+         <item name="Normal">        <value>0</value> </item>
+@@ -2445,39 +2417,10 @@
+         </list>
+     </event>
+ 
+-    <eventcopy name="RawKeyRelease" number="14" ref="RawKeyPress" />
+-
+-    <event name="RawButtonPress" number="15" xge="true">
+-        <field type="DeviceId"  name="deviceid" altenum="Device" />
+-        <field type="TIMESTAMP" name="time" altenum="Time" />
+-        <!-- event specific fields -->
+-        <field type="CARD32"    name="detail" />
+-        <field type="DeviceId"  name="sourceid" />
+-        <field type="CARD16"    name="valuators_len" />
+-        <field type="CARD32"    name="flags" mask="PointerEventFlags"/>
+-        <pad bytes="4" />
+-        <!-- 32 byte boundary -->
+-        <list type="CARD32" name="valuator_mask">
+-            <fieldref>valuators_len</fieldref>
+-        </list>
+-        <list type="FP3232" name="axisvalues">
+-            <sumof ref="valuator_mask">
+-                <popcount>
+-                    <listelement-ref/>
+-                </popcount>
+-            </sumof>
+-        </list>
+-        <list type="FP3232" name="axisvalues_raw">
+-            <sumof ref="valuator_mask">
+-                <popcount>
+-                    <listelement-ref/>
+-                </popcount>
+-            </sumof>
+-        </list>
+-    </event>
+-
+-    <eventcopy name="RawButtonRelease" number="16" ref="RawButtonPress" />
+-    <eventcopy name="RawMotion"        number="17" ref="RawButtonPress" />
++    <eventcopy name="RawKeyRelease"    number="14" ref="RawKeyPress" />
++    <eventcopy name="RawButtonPress"   number="15" ref="RawKeyPress" />
++    <eventcopy name="RawButtonRelease" number="16" ref="RawKeyPress" />
++    <eventcopy name="RawMotion"        number="17" ref="RawKeyPress" />
+ 
+     <!-- ⋅⋅⋅ Events (v2.2) ⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅ -->
+ 
+@@ -2486,41 +2429,7 @@
+         <item name="TouchEmulatingPointer"> <bit>17</bit> </item>
+     </enum>
+ 
+-    <event name="TouchBegin" number="18" xge="true">
+-        <field type="DeviceId"  name="deviceid" altenum="Device" />
+-        <field type="TIMESTAMP" name="time" altenum="Time" />
+-        <!-- event specific fields -->
+-        <field type="CARD32"    name="detail" />
+-        <field type="WINDOW"    name="root" />
+-        <field type="WINDOW"    name="event" />
+-        <field type="WINDOW"    name="child" />
+-        <!-- 32 byte boundary -->
+-        <field type="FP1616"    name="root_x" />
+-        <field type="FP1616"    name="root_y" />
+-        <field type="FP1616"    name="event_x" />
+-        <field type="FP1616"    name="event_y" />
+-        <field type="CARD16"    name="buttons_len" />
+-        <field type="CARD16"    name="valuators_len" />
+-        <field type="DeviceId"  name="sourceid" altenum="Device" />
+-        <pad bytes="2" />
+-        <field type="CARD32"       name="flags" mask="TouchEventFlags" />
+-        <field type="ModifierInfo" name="mods" />
+-        <field type="GroupInfo"    name="group" />
+-        <list type="CARD32" name="button_mask">
+-            <fieldref>buttons_len</fieldref>
+-        </list>
+-        <list type="CARD32" name="valuator_mask">
+-            <fieldref>valuators_len</fieldref>
+-        </list>
+-        <list type="FP3232" name="axisvalues">
+-            <sumof ref="valuator_mask">
+-                <popcount>
+-                    <listelement-ref/>
+-                </popcount>
+-            </sumof>
+-        </list>
+-    </event>
+-
++    <eventcopy name="TouchBegin"  number="18" ref="KeyPress" />
+     <eventcopy name="TouchUpdate" number="19" ref="TouchBegin" />
+     <eventcopy name="TouchEnd"    number="20" ref="TouchBegin" />
+ 
+@@ -2544,37 +2453,9 @@
+         <pad bytes="8" />
+     </event>
+ 
+-    <event name="RawTouchBegin" number="22" xge="true">
+-        <field type="DeviceId"  name="deviceid" altenum="Device" />
+-        <field type="TIMESTAMP" name="time" altenum="Time" />
+-        <!-- event specific fields -->
+-        <field type="CARD32"    name="detail" />
+-        <field type="DeviceId"  name="sourceid" />
+-        <field type="CARD16"    name="valuators_len" />
+-        <field type="CARD32"    name="flags" mask="TouchEventFlags"/>
+-        <pad bytes="4" />
+-        <!-- 32 byte boundary -->
+-        <list type="CARD32" name="valuator_mask">
+-            <fieldref>valuators_len</fieldref>
+-        </list>
+-        <list type="FP3232" name="axisvalues">
+-            <sumof ref="valuator_mask">
+-                <popcount>
+-                    <listelement-ref/>
+-                </popcount>
+-            </sumof>
+-        </list>
+-        <list type="FP3232" name="axisvalues_raw">
+-            <sumof ref="valuator_mask">
+-                <popcount>
+-                    <listelement-ref/>
+-                </popcount>
+-            </sumof>
+-        </list>
+-    </event>
+-
+-    <eventcopy name="RawTouchUpdate" number="23" ref="RawTouchBegin" />
+-    <eventcopy name="RawTouchEnd"    number="24" ref="RawTouchBegin" />
++    <eventcopy name="RawTouchBegin"  number="22" ref="RawKeyPress" />
++    <eventcopy name="RawTouchUpdate" number="23" ref="RawKeyPress" />
++    <eventcopy name="RawTouchEnd"    number="24" ref="RawKeyPress" />
+ 
+     <!-- ⋅⋅⋅ Events (v2.3) ⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅ -->
+ 
 diff -ru xcbproto/src/xproto.xml src/src/xproto.xml
---- xcbproto/src/xproto.xml	2021-02-04 11:30:40.270036224 -0800
-+++ src/src/xproto.xml	2021-02-04 11:25:08.703905860 -0800
+--- xcbproto/src/xproto.xml	2021-02-04 11:48:33.024966653 -0800
++++ src/src/xproto.xml	2021-02-04 11:45:17.119665200 -0800
 @@ -963,6 +963,7 @@
      <item name="CAP_HEIGHT">           <value>66</value> </item>
      <item name="WM_CLASS">             <value>67</value> </item>
@@ -541,8 +716,8 @@ Only in src/xcbgen: __init__.pyc
 Only in src/xcbgen: matcher.pyc
 Only in src/xcbgen: state.pyc
 diff -ru xcbproto/xcbgen/xtypes.py src/xcbgen/xtypes.py
---- xcbproto/xcbgen/xtypes.py	2021-02-04 11:30:40.270036224 -0800
-+++ src/xcbgen/xtypes.py	2021-02-04 11:25:08.703905860 -0800
+--- xcbproto/xcbgen/xtypes.py	2021-02-04 11:48:33.028966679 -0800
++++ src/xcbgen/xtypes.py	2021-02-04 11:45:17.119665200 -0800
 @@ -226,7 +226,7 @@
      Derived class which represents a file descriptor.
      '''

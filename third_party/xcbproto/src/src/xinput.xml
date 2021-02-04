@@ -2284,43 +2284,9 @@ authorization from the authors.
         <item name="PointerEmulated"> <bit>16</bit> </item>
     </enum>
 
-    <event name="ButtonPress" number="4" xge="true">
-        <field type="DeviceId"  name="deviceid" altenum="Device" />
-        <field type="TIMESTAMP" name="time" altenum="Time" />
-        <!-- event specific fields -->
-        <field type="CARD32"    name="detail" />
-        <field type="WINDOW"    name="root" />
-        <field type="WINDOW"    name="event" />
-        <field type="WINDOW"    name="child" />
-        <!-- 32 byte boundary -->
-        <field type="FP1616"    name="root_x" />
-        <field type="FP1616"    name="root_y" />
-        <field type="FP1616"    name="event_x" />
-        <field type="FP1616"    name="event_y" />
-        <field type="CARD16"    name="buttons_len" />
-        <field type="CARD16"    name="valuators_len" />
-        <field type="DeviceId"  name="sourceid" altenum="Device" />
-        <pad bytes="2" />
-        <field type="CARD32"       name="flags" mask="PointerEventFlags" />
-        <field type="ModifierInfo" name="mods" />
-        <field type="GroupInfo"    name="group" />
-        <list type="CARD32" name="button_mask">
-            <fieldref>buttons_len</fieldref>
-        </list>
-        <list type="CARD32" name="valuator_mask">
-            <fieldref>valuators_len</fieldref>
-        </list>
-        <list type="FP3232" name="axisvalues">
-            <sumof ref="valuator_mask">
-                <popcount>
-                    <listelement-ref/>
-                </popcount>
-            </sumof>
-        </list>
-    </event>
-
-    <eventcopy name="ButtonRelease" number="5" ref="ButtonPress" />
-    <eventcopy name="Motion"        number="6" ref="ButtonPress" />
+    <eventcopy name="ButtonPress"   number="4" ref="KeyPress" />
+    <eventcopy name="ButtonRelease" number="5" ref="KeyPress" />
+    <eventcopy name="Motion"        number="6" ref="KeyPress" />
 
     <enum name="NotifyMode">
         <item name="Normal">        <value>0</value> </item>
@@ -2451,39 +2417,10 @@ authorization from the authors.
         </list>
     </event>
 
-    <eventcopy name="RawKeyRelease" number="14" ref="RawKeyPress" />
-
-    <event name="RawButtonPress" number="15" xge="true">
-        <field type="DeviceId"  name="deviceid" altenum="Device" />
-        <field type="TIMESTAMP" name="time" altenum="Time" />
-        <!-- event specific fields -->
-        <field type="CARD32"    name="detail" />
-        <field type="DeviceId"  name="sourceid" />
-        <field type="CARD16"    name="valuators_len" />
-        <field type="CARD32"    name="flags" mask="PointerEventFlags"/>
-        <pad bytes="4" />
-        <!-- 32 byte boundary -->
-        <list type="CARD32" name="valuator_mask">
-            <fieldref>valuators_len</fieldref>
-        </list>
-        <list type="FP3232" name="axisvalues">
-            <sumof ref="valuator_mask">
-                <popcount>
-                    <listelement-ref/>
-                </popcount>
-            </sumof>
-        </list>
-        <list type="FP3232" name="axisvalues_raw">
-            <sumof ref="valuator_mask">
-                <popcount>
-                    <listelement-ref/>
-                </popcount>
-            </sumof>
-        </list>
-    </event>
-
-    <eventcopy name="RawButtonRelease" number="16" ref="RawButtonPress" />
-    <eventcopy name="RawMotion"        number="17" ref="RawButtonPress" />
+    <eventcopy name="RawKeyRelease"    number="14" ref="RawKeyPress" />
+    <eventcopy name="RawButtonPress"   number="15" ref="RawKeyPress" />
+    <eventcopy name="RawButtonRelease" number="16" ref="RawKeyPress" />
+    <eventcopy name="RawMotion"        number="17" ref="RawKeyPress" />
 
     <!-- ⋅⋅⋅ Events (v2.2) ⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅ -->
 
@@ -2492,41 +2429,7 @@ authorization from the authors.
         <item name="TouchEmulatingPointer"> <bit>17</bit> </item>
     </enum>
 
-    <event name="TouchBegin" number="18" xge="true">
-        <field type="DeviceId"  name="deviceid" altenum="Device" />
-        <field type="TIMESTAMP" name="time" altenum="Time" />
-        <!-- event specific fields -->
-        <field type="CARD32"    name="detail" />
-        <field type="WINDOW"    name="root" />
-        <field type="WINDOW"    name="event" />
-        <field type="WINDOW"    name="child" />
-        <!-- 32 byte boundary -->
-        <field type="FP1616"    name="root_x" />
-        <field type="FP1616"    name="root_y" />
-        <field type="FP1616"    name="event_x" />
-        <field type="FP1616"    name="event_y" />
-        <field type="CARD16"    name="buttons_len" />
-        <field type="CARD16"    name="valuators_len" />
-        <field type="DeviceId"  name="sourceid" altenum="Device" />
-        <pad bytes="2" />
-        <field type="CARD32"       name="flags" mask="TouchEventFlags" />
-        <field type="ModifierInfo" name="mods" />
-        <field type="GroupInfo"    name="group" />
-        <list type="CARD32" name="button_mask">
-            <fieldref>buttons_len</fieldref>
-        </list>
-        <list type="CARD32" name="valuator_mask">
-            <fieldref>valuators_len</fieldref>
-        </list>
-        <list type="FP3232" name="axisvalues">
-            <sumof ref="valuator_mask">
-                <popcount>
-                    <listelement-ref/>
-                </popcount>
-            </sumof>
-        </list>
-    </event>
-
+    <eventcopy name="TouchBegin"  number="18" ref="KeyPress" />
     <eventcopy name="TouchUpdate" number="19" ref="TouchBegin" />
     <eventcopy name="TouchEnd"    number="20" ref="TouchBegin" />
 
@@ -2550,37 +2453,9 @@ authorization from the authors.
         <pad bytes="8" />
     </event>
 
-    <event name="RawTouchBegin" number="22" xge="true">
-        <field type="DeviceId"  name="deviceid" altenum="Device" />
-        <field type="TIMESTAMP" name="time" altenum="Time" />
-        <!-- event specific fields -->
-        <field type="CARD32"    name="detail" />
-        <field type="DeviceId"  name="sourceid" />
-        <field type="CARD16"    name="valuators_len" />
-        <field type="CARD32"    name="flags" mask="TouchEventFlags"/>
-        <pad bytes="4" />
-        <!-- 32 byte boundary -->
-        <list type="CARD32" name="valuator_mask">
-            <fieldref>valuators_len</fieldref>
-        </list>
-        <list type="FP3232" name="axisvalues">
-            <sumof ref="valuator_mask">
-                <popcount>
-                    <listelement-ref/>
-                </popcount>
-            </sumof>
-        </list>
-        <list type="FP3232" name="axisvalues_raw">
-            <sumof ref="valuator_mask">
-                <popcount>
-                    <listelement-ref/>
-                </popcount>
-            </sumof>
-        </list>
-    </event>
-
-    <eventcopy name="RawTouchUpdate" number="23" ref="RawTouchBegin" />
-    <eventcopy name="RawTouchEnd"    number="24" ref="RawTouchBegin" />
+    <eventcopy name="RawTouchBegin"  number="22" ref="RawKeyPress" />
+    <eventcopy name="RawTouchUpdate" number="23" ref="RawKeyPress" />
+    <eventcopy name="RawTouchEnd"    number="24" ref="RawKeyPress" />
 
     <!-- ⋅⋅⋅ Events (v2.3) ⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅ -->
 

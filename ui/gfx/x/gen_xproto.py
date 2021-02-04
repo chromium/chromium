@@ -1043,35 +1043,6 @@ class GenXproto(FileWriter):
     # all of these events under one structure with an additional opcode field
     # to indicate the type of event.
     def uniquify_events(self):
-        # Manually merge some events in XInput.  These groups of 8 events have
-        # idential structure, and are merged as XIDeviceEvent in Xlib.  To avoid
-        # duplication, and to ease the transition from Xlib to XProto, we merge
-        # the events here too.
-        # TODO(thomasanderson): We should avoid adding workarounds for xcbproto.
-        # Instead, the protocol files should be modified directly.  However,
-        # some of the changes we want to make change the API, so the changes
-        # should be made in a fork in //third_party rather than upstreamed.
-        MERGE = [
-            ([
-                'KeyPress', 'KeyRelease', 'ButtonPress', 'ButtonRelease',
-                'Motion', 'TouchBegin', 'TouchUpdate', 'TouchEnd'
-            ], []),
-            ([
-                'RawKeyPress', 'RawKeyRelease', 'RawButtonPress',
-                'RawButtonRelease', 'RawMotion', 'RawTouchBegin',
-                'RawTouchUpdate', 'RawTouchEnd'
-            ], []),
-        ]
-        for i, (name, t) in enumerate(self.module.all):
-            if t.is_event and name[1] == 'Input':
-                for names, event in MERGE:
-                    if name[-1] in names:
-                        if event:
-                            event[0].opcodes.update(t.opcodes)
-                            self.module.all[i] = name, event[0]
-                        else:
-                            event.append(t)
-
         types = []
         events = set()
         for name, t in self.module.all:
