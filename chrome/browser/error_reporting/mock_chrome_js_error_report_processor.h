@@ -9,8 +9,10 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/synchronization/lock.h"
 #include "base/test/scoped_path_override.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/error_reporting/chrome_js_error_report_processor.h"
@@ -53,15 +55,13 @@ class MockChromeJsErrorReportProcessor : public ChromeJsErrorReportProcessor {
 #endif
 
  protected:
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  std::vector<std::string> GetCrashReporterArgvStart() override;
+#else
+  // Always returns "7.20.1" (arbitrary).
+  std::string GetOsVersion() override;
   std::string GetCrashEndpoint() override;
   std::string GetCrashEndpointStaging() override;
-
-  // Always returns 7.20.1 (arbitrary).
-  void GetOsVersion(int32_t& os_major_version,
-                    int32_t& os_minor_version,
-                    int32_t& os_bugfix_version) override;
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
   void UpdateReportDatabase(std::string remote_report_id,
                             base::Time report_time) override;
 #endif

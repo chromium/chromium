@@ -1,0 +1,6 @@
+specific_include_rules = {
+  "mock_chromeos_crash_reporter.cc" : [
+    # For testing of crash uploads
+    "+third_party/breakpad/breakpad/src/common/linux/libcurl_wrapper.h",
+  ],
+}

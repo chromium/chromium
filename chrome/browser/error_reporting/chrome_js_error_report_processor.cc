@@ -6,43 +6,32 @@
 
 #include <tuple>
 #include <utility>
-#include <vector>
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/files/file.h"
-#include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
 #include "build/build_config.h"
-#include "chrome/common/chrome_paths.h"
 #include "components/crash/content/browser/error_reporting/javascript_error_report.h"
 #include "components/crash/core/app/client_upload_info.h"
 #include "components/crash/core/app/crashpad.h"
 #include "components/feedback/redaction_tool.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
-#include "components/upload_list/crash_upload_list.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/escape.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "services/network/public/cpp/simple_url_loader.h"
 
 namespace {
 
-constexpr char kCrashEndpointUrl[] = "https://clients2.google.com/cr/report";
-constexpr char kCrashEndpointStagingUrl[] =
-    "https://clients2.google.com/cr/staging_report";
 constexpr char kNoBrowserNoWindow[] = "NO_BROWSER";
 constexpr char kRegularTabbedWindow[] = "REGULAR_TABBED";
 constexpr char kWebAppWindow[] = "WEB_APP";
@@ -74,18 +63,6 @@ std::string RedactErrorMessage(const std::string& message) {
       .Redact(message);
 }
 
-using ParameterMap = std::map<std::string, std::string>;
-
-std::string BuildPostRequestQueryString(const ParameterMap& params) {
-  std::vector<std::string> query_parts;
-  for (const auto& kv : params) {
-    query_parts.push_back(base::StrCat(
-        {kv.first, "=",
-         net::EscapeQueryParamValue(kv.second, /*use_plus=*/false)}));
-  }
-  return base::JoinString(query_parts, "&");
-}
-
 std::string MapWindowTypeToString(WindowType window_type) {
   switch (window_type) {
     case WindowType::kRegularTabbed:
@@ -105,69 +82,19 @@ ChromeJsErrorReportProcessor::ChromeJsErrorReportProcessor()
     : clock_(base::DefaultClock::GetInstance()) {}
 ChromeJsErrorReportProcessor::~ChromeJsErrorReportProcessor() = default;
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
-void ChromeJsErrorReportProcessor::UpdateReportDatabase(
-    std::string remote_report_id,
-    base::Time report_time) {
-  // Uploads.log format is "seconds_since_epoch,crash_id\n"
-  base::FilePath crash_dir_path;
-  if (!base::PathService::Get(chrome::DIR_CRASH_DUMPS, &crash_dir_path)) {
-    VLOG(1) << "Nowhere to write uploads.log";
-    return;
-  }
-  base::FilePath upload_log_path =
-      crash_dir_path.AppendASCII(CrashUploadList::kReporterLogFilename);
-  base::File upload_log(upload_log_path,
-                        base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_APPEND);
-  if (!upload_log.IsValid()) {
-    VLOG(1) << "Could not open upload.log: "
-            << base::File::ErrorToString(upload_log.error_details());
-    return;
-  }
-  std::string line = base::StrCat({base::NumberToString(report_time.ToTimeT()),
-                                   ",", remote_report_id, "\n"});
-  // WriteAtCurrentPos because O_APPEND.
-  if (upload_log.WriteAtCurrentPos(line.c_str(), line.length()) !=
-      static_cast<int>(line.length())) {
-    VLOG(1) << "Could not write to upload.log";
-    return;
-  }
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
-
-void ChromeJsErrorReportProcessor::OnRequestComplete(
-    std::unique_ptr<network::SimpleURLLoader> url_loader,
-    base::ScopedClosureRunner callback_runner,
-    base::Time report_time,
-    std::unique_ptr<std::string> response_body) {
-  if (response_body) {
-    VLOG(1) << "Uploaded crash report. ID: " << *response_body;
-    // On Chrome OS, we use a different format than other platforms. Since we
-    // will soon not call this function at all on Chrome OS (crbug.com/986166),
-    // don't bother writing code to write to that format.
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
-    base::ThreadPool::PostTaskAndReply(
-        FROM_HERE, {base::MayBlock()},
-        base::BindOnce(&ChromeJsErrorReportProcessor::UpdateReportDatabase,
-                       this, *response_body, report_time),
-        callback_runner.Release());
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
-  } else {
-    LOG(ERROR) << "Failed to upload crash report";
-  }
-  // callback_runner may implicitly run the callback when we reach this line if
-  // we didn't add a task to update the report database.
-}
-
 // Returns the redacted, fixed-up error report if the user consented to have it
 // sent. Returns base::nullopt if the user did not consent or we otherwise
 // should not send the report. All the MayBlock work should be done in here.
 base::Optional<JavaScriptErrorReport>
 ChromeJsErrorReportProcessor::CheckConsentAndRedact(
     JavaScriptErrorReport error_report) {
+  // Consent is handled at the OS level by crash_reporter so we don't need to
+  // check it here for Chrome OS.
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
   if (!crash_reporter::GetClientCollectStatsConsent()) {
     return base::nullopt;
   }
+#endif
 
   // Remove error message from stack trace before redaction, since redaction
   // might change the error message enough that we don't find it.
@@ -186,7 +113,6 @@ struct ChromeJsErrorReportProcessor::PlatformInfo {
   std::string product_name;
   std::string version;
   std::string channel;
-  std::string os_version;
 };
 
 ChromeJsErrorReportProcessor::PlatformInfo
@@ -199,77 +125,7 @@ ChromeJsErrorReportProcessor::GetPlatformInfo() {
   crash_reporter::GetClientProductNameAndVersion(&info.product_name,
                                                  &info.version, &info.channel);
 #endif
-  int32_t os_major_version = 0;
-  int32_t os_minor_version = 0;
-  int32_t os_bugfix_version = 0;
-  GetOsVersion(os_major_version, os_minor_version, os_bugfix_version);
-  info.os_version = base::StringPrintf("%d.%d.%d", os_major_version,
-                                       os_minor_version, os_bugfix_version);
   return info;
-}
-
-void ChromeJsErrorReportProcessor::SendReport(
-    const GURL& url,
-    const std::string& body,
-    base::ScopedClosureRunner callback_runner,
-    base::Time report_time,
-    network::SharedURLLoaderFactory* loader_factory) {
-  auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->method = "POST";
-  resource_request->url = url;
-
-  const auto traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("javascript_report_error", R"(
-      semantics {
-        sender: "JavaScript error reporter"
-        description:
-          "Chrome can send JavaScript errors that occur within built-in "
-          "component extensions and chrome:// webpages. If enabled, the error "
-          "message, along with information about Chrome and the operating "
-          "system, is sent to Google for debugging."
-        trigger:
-          "A JavaScript error occurs in a Chrome component extension (an "
-          "extension bundled with the Chrome browser, not downloaded "
-          "separately) or in certain chrome:// webpages."
-        data:
-          "The JavaScript error message, the version and channel of Chrome, "
-          "the URL of the extension or webpage, the line and column number of "
-          "the JavaScript code where the error occurred, and a stack trace of "
-          "the error."
-        destination: GOOGLE_OWNED_SERVICE
-      }
-      policy {
-        cookies_allowed: NO
-        setting:
-          "You can enable or disable this feature via 'Automatically send "
-          "usage statistics and crash reports to Google' in Chromium's "
-          "settings under Advanced, Privacy. (This is in System Settings on "
-          "Chromebooks.) This feature is enabled by default."
-        chrome_policy {
-          MetricsReportingEnabled {
-            policy_options {mode: MANDATORY}
-            MetricsReportingEnabled: false
-          }
-        }
-      })");
-
-  VLOG(1) << "Sending crash report: " << resource_request->url;
-
-  auto url_loader = network::SimpleURLLoader::Create(
-      std::move(resource_request), traffic_annotation);
-
-  if (!body.empty()) {
-    url_loader->AttachStringForUpload(body, "text/plain");
-  }
-
-  constexpr int kCrashEndpointResponseMaxSizeInBytes = 1024;
-  network::SimpleURLLoader* loader = url_loader.get();
-  loader->DownloadToString(
-      loader_factory,
-      base::BindOnce(&ChromeJsErrorReportProcessor::OnRequestComplete, this,
-                     std::move(url_loader), std::move(callback_runner),
-                     report_time),
-      kCrashEndpointResponseMaxSizeInBytes);
 }
 
 // Finishes sending process once the MayBlock processing is done. On UI thread.
@@ -285,13 +141,7 @@ void ChromeJsErrorReportProcessor::OnConsentCheckCompleted(
     return;
   }
 
-  std::string crash_endpoint_string = error_report->send_to_production_servers
-                                          ? GetCrashEndpoint()
-                                          : GetCrashEndpointStaging();
-
-  // TODO(https://crbug.com/986166): Use crash_reporter for Chrome OS.
   const auto platform = GetPlatformInfo();
-
   const GURL source(error_report->url);
   const auto product = error_report->product.empty() ? platform.product_name
                                                      : error_report->product;
@@ -311,8 +161,8 @@ void ChromeJsErrorReportProcessor::OnConsentCheckCompleted(
   params["os"] = "ChromeOS";
 #else
   params["os"] = base::SysInfo::OperatingSystemName();
+  params["os_version"] = GetOsVersion();
 #endif
-  params["os_version"] = platform.os_version;
   params["full_url"] = source.spec();
   params["url"] = source.path();
   params["src"] = source.spec();
@@ -334,15 +184,10 @@ void ChromeJsErrorReportProcessor::OnConsentCheckCompleted(
   }
   if (error_report->app_locale)
     params["app_locale"] = std::move(*error_report->app_locale);
-  const GURL url(base::StrCat(
-      {crash_endpoint_string, "?", BuildPostRequestQueryString(params)}));
-  std::string body;
-  if (error_report->stack_trace) {
-    body = std::move(*error_report->stack_trace);
-  }
 
-  SendReport(url, body, std::move(callback_runner), report_time,
-             loader_factory.get());
+  SendReport(std::move(params), std::move(error_report->stack_trace),
+             error_report->send_to_production_servers,
+             std::move(callback_runner), report_time, loader_factory);
 }
 
 void ChromeJsErrorReportProcessor::CheckAndUpdateRecentErrorReports(
@@ -447,11 +292,14 @@ void ChromeJsErrorReportProcessor::SendErrorReport(
 
   base::ScopedClosureRunner callback_runner(std::move(completion_callback));
 
+  scoped_refptr<network::SharedURLLoaderFactory> loader_factory;
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
   // loader_factory must be created on UI thread. Get it now while we still
   // know the browser_context pointer is valid.
-  scoped_refptr<network::SharedURLLoaderFactory> loader_factory =
+  loader_factory =
       content::BrowserContext::GetDefaultStoragePartition(browser_context)
           ->GetURLLoaderFactoryForBrowserProcess();
+#endif
 
   // Get browser uptime before swapping threads to reduce lag time between the
   // error report occurring and sending it off.
@@ -469,19 +317,4 @@ void ChromeJsErrorReportProcessor::SendErrorReport(
                      this, std::move(callback_runner),
                      std::move(loader_factory), browser_process_uptime,
                      clock_->Now()));
-}
-
-std::string ChromeJsErrorReportProcessor::GetCrashEndpoint() {
-  return kCrashEndpointUrl;
-}
-
-std::string ChromeJsErrorReportProcessor::GetCrashEndpointStaging() {
-  return kCrashEndpointStagingUrl;
-}
-
-void ChromeJsErrorReportProcessor::GetOsVersion(int32_t& os_major_version,
-                                                int32_t& os_minor_version,
-                                                int32_t& os_bugfix_version) {
-  base::SysInfo::OperatingSystemVersionNumbers(
-      &os_major_version, &os_minor_version, &os_bugfix_version);
 }
