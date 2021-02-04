@@ -18,6 +18,7 @@
 #include "base/task/post_task.h"
 #include "chrome/browser/chromeos/drive/file_system_util.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_util.h"
+#include "chrome/browser/chromeos/file_manager/file_tasks_notifier.h"
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "chrome/browser/chromeos/file_manager/volume_manager.h"
 #include "chrome/browser/chromeos/smb_client/smb_service.h"
@@ -28,6 +29,7 @@
 #include "components/drive/event_logger.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/drive/task_util.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
 namespace extensions {
@@ -58,6 +60,21 @@ ExtensionFunction::ResponseAction FileManagerPrivateAddMountFunction::Run() {
 
   if (path.empty())
     return RespondNow(Error("Invalid path"));
+
+  if (auto* notifier =
+          file_manager::file_tasks::FileTasksNotifier::GetForProfile(
+              chrome_details_.GetProfile())) {
+    const scoped_refptr<storage::FileSystemContext> file_system_context =
+        file_manager::util::GetFileSystemContextForRenderFrameHost(
+            chrome_details_.GetProfile(), render_frame_host());
+
+    std::vector<storage::FileSystemURL> urls;
+    const storage::FileSystemURL url =
+        file_system_context->CrackURL(GURL(params->source));
+    urls.push_back(url);
+
+    notifier->NotifyFileTasks(urls);
+  }
 
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
