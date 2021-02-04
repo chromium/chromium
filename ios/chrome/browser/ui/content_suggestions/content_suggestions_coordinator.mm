@@ -341,6 +341,7 @@
   self.ntpMediator = nil;
   [self.contentSuggestionsMediator disconnect];
   self.contentSuggestionsMediator = nil;
+  self.suggestionsViewController = nil;
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;
   self.headerController = nil;
@@ -487,7 +488,7 @@
                   action:^{
                     [weakSelf setDiscoverFeedVisible:NO];
                     if (IsRefactoredNTP()) {
-                      [weakSelf.ntpCommandHandler setDiscoverFeedVisible:NO];
+                      [weakSelf.ntpCommandHandler updateDiscoverFeedVisibility];
                     }
                   }
                    style:UIAlertActionStyleDestructive];
@@ -498,7 +499,7 @@
                   action:^{
                     [weakSelf setDiscoverFeedVisible:YES];
                     if (IsRefactoredNTP()) {
-                      [weakSelf.ntpCommandHandler setDiscoverFeedVisible:YES];
+                      [weakSelf.ntpCommandHandler updateDiscoverFeedVisibility];
                     }
                   }
                    style:UIAlertActionStyleDefault];
