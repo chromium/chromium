@@ -1637,12 +1637,6 @@ source_set("unit_tests") {
 
   data_deps = [ ":unit_tests_data" ]
 
-  # FIXME: Enable mojo unittests on Android after fixing data dependency.
-  # crbug.com/741925
-  if (!is_android) {
-    deps += [ "//third_party/blink/renderer/core/mojo:unit_tests" ]
-  }
-
   if (!is_mac) {
     sources += [
       "scroll/scroll_animator_test.cc",
