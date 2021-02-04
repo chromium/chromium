@@ -11,8 +11,6 @@
         android:key="accounts_category"
         android:title="@string/account_management_title"/>
 
-    <Preference
-        android:layout="@layout/divider_preference"/>
 
     <PreferenceCategory
         android:key="parental_settings"
@@ -28,7 +26,6 @@
         android:title="@string/account_management_child_content_title"/>
 
     <Preference
-        android:key="child_content_divider"
         android:layout="@layout/divider_preference"/>
 
     <Preference
