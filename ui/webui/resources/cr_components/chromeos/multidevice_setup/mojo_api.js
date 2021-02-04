@@ -31,6 +31,7 @@ cr.define('multidevice_setup', function() {
 
   cr.addSingletonGetter(MojoInterfaceProviderImpl);
 
+  // #cr_define_end
   return {
     MojoInterfaceProvider: MojoInterfaceProvider,
     MojoInterfaceProviderImpl: MojoInterfaceProviderImpl,

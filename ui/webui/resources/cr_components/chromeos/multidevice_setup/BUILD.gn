@@ -3,6 +3,9 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
+import("../os_cr_components.gni")
 
 assert(is_chromeos, "MultiDevice UI is Chrome OS only.")
 
@@ -91,4 +94,148 @@ js_library("ui_page_container_behavior") {
     "//ui/webui/resources/js:cr",
     "//ui/webui/resources/js:i18n_behavior",
   ]
+}
+
+# Polymer 3 files
+
+# TODO: Uncomment as the Polymer3 migration makes progress.
+# js_type_check("closure_compile_module") {
+#   is_polymer3 = true
+#   deps = [
+#     ":button_bar.m",
+#     ":fake_mojo_service.m",
+#     ":mojo_api.m",
+#     ":multidevice_setup.m",
+#     ":multidevice_setup_browser_proxy.m",
+#     ":multidevice_setup_delegate.m",
+#     ":setup_succeeded_page.m",
+#     ":start_setup_page.m",
+#     ":ui_page_container_behavior.m",
+#     "//ui/webui/resources/js:web_ui_listener_behavior.m",
+#   ]
+# }
+
+js_library("button_bar.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/multidevice_setup/button_bar.m.js" ]
+  deps = []
+  extra_deps = [ ":button_bar_module" ]
+}
+
+js_library("fake_mojo_service.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/multidevice_setup/fake_mojo_service.m.js" ]
+  deps = []
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("mojo_api.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/multidevice_setup/mojo_api.m.js" ]
+  deps = []
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("multidevice_setup.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/multidevice_setup/multidevice_setup.m.js" ]
+  deps = []
+  extra_deps = [ ":multidevice_setup_module" ]
+}
+
+js_library("multidevice_setup_browser_proxy.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/multidevice_setup/multidevice_setup_browser_proxy.m.js" ]
+  deps = []
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("multidevice_setup_delegate.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/multidevice_setup/multidevice_setup_delegate.m.js" ]
+  deps = []
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("password_page.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/multidevice_setup/password_page.m.js" ]
+  deps = []
+  extra_deps = [ ":password_page_module" ]
+  externs_list = chrome_extension_public_externs +
+                 [ "$externs_path/quick_unlock_private.js" ]
+  extra_sources = [ "$interfaces_path/quick_unlock_private_interface.js" ]
+}
+
+js_library("setup_succeeded_page.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/multidevice_setup/setup_succeeded_page.m.js" ]
+  deps = []
+  extra_deps = [ ":setup_succeeded_page_module" ]
+}
+
+js_library("start_setup_page.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/multidevice_setup/start_setup_page.m.js" ]
+  deps = []
+  extra_deps = [ ":start_setup_page_module" ]
+}
+
+js_library("ui_page_container_behavior.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/multidevice_setup/ui_page_container_behavior.m.js" ]
+  deps = []
+  extra_deps = [ ":modulize" ]
+}
+
+group("polymer3_elements") {
+  public_deps = [
+    ":button_bar_module",
+    ":modulize",
+    ":multidevice_setup_module",
+    ":password_page_module",
+    ":setup_succeeded_page_module",
+    ":start_setup_page_module",
+  ]
+}
+
+polymer_modulizer("button_bar") {
+  js_file = "button_bar.js"
+  html_file = "button_bar.html"
+  html_type = "dom-module"
+  namespace_rewrites = cr_components_chromeos_namespace_rewrites
+  auto_imports = cr_components_chromeos_auto_imports
+}
+
+polymer_modulizer("multidevice_setup") {
+  js_file = "multidevice_setup.js"
+  html_file = "multidevice_setup.html"
+  html_type = "dom-module"
+  namespace_rewrites = cr_components_chromeos_namespace_rewrites
+  auto_imports = cr_components_chromeos_auto_imports
+}
+
+polymer_modulizer("password_page") {
+  js_file = "password_page.js"
+  html_file = "password_page.html"
+  html_type = "dom-module"
+  namespace_rewrites = cr_components_chromeos_namespace_rewrites
+  auto_imports = cr_components_chromeos_auto_imports
+}
+
+polymer_modulizer("setup_succeeded_page") {
+  js_file = "setup_succeeded_page.js"
+  html_file = "setup_succeeded_page.html"
+  html_type = "dom-module"
+  namespace_rewrites = cr_components_chromeos_namespace_rewrites
+  auto_imports = cr_components_chromeos_auto_imports
+}
+
+polymer_modulizer("start_setup_page") {
+  js_file = "start_setup_page.js"
+  html_file = "start_setup_page.html"
+  html_type = "dom-module"
+  namespace_rewrites = cr_components_chromeos_namespace_rewrites
+  auto_imports = cr_components_chromeos_auto_imports
+}
+
+js_modulizer("modulize") {
+  input_files = [
+    "fake_mojo_service.js",
+    "mojo_api.js",
+    "multidevice_setup_browser_proxy.js",
+    "multidevice_setup_delegate.js",
+    "ui_page_container_behavior.js",
+  ]
+  namespace_rewrites = cr_components_chromeos_namespace_rewrites
 }

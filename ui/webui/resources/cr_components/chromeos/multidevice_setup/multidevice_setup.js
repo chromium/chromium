@@ -368,6 +368,7 @@ cr.define('multidevice_setup', function() {
     },
   });
 
+  // #cr_define_end
   return {
     MultiDeviceSetup: MultiDeviceSetup,
     PageName: PageName,

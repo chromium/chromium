@@ -29,6 +29,7 @@ cr.define('multidevice_setup', function() {
     getStartSetupCancelButtonTextId() {}
   }
 
+  // #cr_define_end
   return {
     MultiDeviceSetupDelegate: MultiDeviceSetupDelegate,
   };

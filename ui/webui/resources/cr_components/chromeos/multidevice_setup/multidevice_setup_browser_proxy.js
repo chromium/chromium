@@ -34,6 +34,7 @@ cr.define('multidevice_setup', function() {
 
   cr.addSingletonGetter(BrowserProxyImpl);
 
+  // #cr_define_end
   return {
     BrowserProxy: BrowserProxy,
     BrowserProxyImpl: BrowserProxyImpl,
