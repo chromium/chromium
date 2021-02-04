@@ -27,10 +27,6 @@ goog.require('LocaleOutputHelper');
 goog.require('MathHandler');
 goog.require('NavBraille');
 goog.require('NodeIdentifier');
-
-// TODO: removed/unused.
-goog.require('Notifications');
-
 goog.require('Output');
 goog.require('Output.EventType');
 goog.require('PanelCommand');

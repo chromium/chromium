@@ -114,8 +114,6 @@ export class Background extends ChromeVoxState {
     PhoneticData.init();
     UserAnnotationHandler.init();
 
-    Notifications.onStartup();
-
     chrome.accessibilityPrivate.onAnnounceForAccessibility.addListener(
         (announceText) => {
           ChromeVox.tts.speak(announceText.join(' '), QueueMode.FLUSH);
