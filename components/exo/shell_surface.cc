@@ -106,7 +106,7 @@ ShellSurface::ShellSurface(Surface* surface)
 
 ShellSurface::~ShellSurface() {
   DCHECK(!scoped_configure_);
-  // Client is gone by now, so don't call callbask.
+  // Client is gone by now, so don't call callback.
   configure_callback_.Reset();
   if (widget_)
     ash::WindowState::Get(widget_->GetNativeWindow())->RemoveObserver(this);
