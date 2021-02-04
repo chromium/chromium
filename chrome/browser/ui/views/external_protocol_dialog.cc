@@ -28,6 +28,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/message_box_view.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 using content::WebContents;
@@ -188,3 +189,6 @@ void ExternalProtocolDialog::SetRememberSelectionCheckboxCheckedForTesting(
     bool checked) {
   message_box_view_->SetCheckBoxSelected(checked);
 }
+
+BEGIN_METADATA(ExternalProtocolDialog, views::DialogDelegateView)
+END_METADATA

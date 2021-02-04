@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -27,11 +28,14 @@ class MessageBoxView;
 class ExternalProtocolDialog : public views::DialogDelegateView,
                                public content::WebContentsObserver {
  public:
+  METADATA_HEADER(ExternalProtocolDialog);
   // Show by calling ExternalProtocolHandler::RunExternalProtocolDialog().
   ExternalProtocolDialog(content::WebContents* web_contents,
                          const GURL& url,
                          const base::string16& program_name,
                          const base::Optional<url::Origin>& initiating_origin);
+  ExternalProtocolDialog(const ExternalProtocolDialog&) = delete;
+  ExternalProtocolDialog& operator=(const ExternalProtocolDialog&) = delete;
   ~ExternalProtocolDialog() override;
 
   // views::DialogDelegateView:
@@ -54,8 +58,6 @@ class ExternalProtocolDialog : public views::DialogDelegateView,
 
   // The message box whose commands we handle.
   views::MessageBoxView* message_box_view_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalProtocolDialog);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTERNAL_PROTOCOL_DIALOG_H_

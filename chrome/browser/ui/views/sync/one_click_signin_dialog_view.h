@@ -15,12 +15,18 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/sync/one_click_signin_links_delegate.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 // This class allows users to confirm sync signin in cases where signin is
 // untrusted.
 class OneClickSigninDialogView : public views::DialogDelegateView {
  public:
+  METADATA_HEADER(OneClickSigninDialogView);
+
+  OneClickSigninDialogView(const OneClickSigninDialogView&) = delete;
+  OneClickSigninDialogView& operator=(const OneClickSigninDialogView&) = delete;
+
   // Show the one-click signin dialog if not already showing.
   static void ShowDialog(const base::string16& email,
                          std::unique_ptr<OneClickSigninLinksDelegate> delegate,
@@ -61,8 +67,6 @@ class OneClickSigninDialogView : public views::DialogDelegateView {
 
   // The bubble, if we're showing one.
   static OneClickSigninDialogView* dialog_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(OneClickSigninDialogView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SYNC_ONE_CLICK_SIGNIN_DIALOG_VIEW_H_

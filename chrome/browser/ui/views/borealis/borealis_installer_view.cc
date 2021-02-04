@@ -35,6 +35,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -453,3 +454,9 @@ void BorealisInstallerView::StartInstallation() {
   installer.AddObserver(this);
   installer.Start();
 }
+
+BEGIN_METADATA(BorealisInstallerView, views::DialogDelegateView)
+ADD_READONLY_PROPERTY_METADATA(base::string16, PrimaryMessage)
+ADD_READONLY_PROPERTY_METADATA(base::string16, SecondaryMessage)
+ADD_READONLY_PROPERTY_METADATA(int, CurrentDialogButtons)
+END_METADATA

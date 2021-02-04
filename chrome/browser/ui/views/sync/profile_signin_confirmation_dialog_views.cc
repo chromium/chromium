@@ -43,6 +43,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/grid_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/views_delegate.h"
 #include "ui/views/widget/widget.h"
 
@@ -361,3 +362,6 @@ void ProfileSigninConfirmationDialogViews::LearnMoreClicked(
   params.window_action = NavigateParams::SHOW_WINDOW;
   Navigate(&params);
 }
+
+BEGIN_METADATA(ProfileSigninConfirmationDialogViews, views::DialogDelegateView)
+END_METADATA

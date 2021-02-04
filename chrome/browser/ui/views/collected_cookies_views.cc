@@ -655,3 +655,6 @@ void CollectedCookiesViews::AddContentException(views::TreeView* tree_view,
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(CollectedCookiesViews)
+
+BEGIN_METADATA(CollectedCookiesViews, views::DialogDelegateView)
+END_METADATA

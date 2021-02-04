@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/web_applications/components/web_app_shortcut.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 class Profile;
@@ -28,6 +29,7 @@ class Checkbox;
 // app.
 class CreateChromeApplicationShortcutView : public views::DialogDelegateView {
  public:
+  METADATA_HEADER(CreateChromeApplicationShortcutView);
   CreateChromeApplicationShortcutView(
       Profile* profile,
       const extensions::Extension* app,
@@ -36,6 +38,10 @@ class CreateChromeApplicationShortcutView : public views::DialogDelegateView {
       Profile* profile,
       const std::string& web_app_id,
       base::OnceCallback<void(bool)> close_callback);
+  CreateChromeApplicationShortcutView(
+      const CreateChromeApplicationShortcutView&) = delete;
+  CreateChromeApplicationShortcutView& operator=(
+      const CreateChromeApplicationShortcutView&) = delete;
   ~CreateChromeApplicationShortcutView() override;
 
   // Initialize the controls on the dialog.
@@ -76,8 +82,6 @@ class CreateChromeApplicationShortcutView : public views::DialogDelegateView {
 
   base::WeakPtrFactory<CreateChromeApplicationShortcutView> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(CreateChromeApplicationShortcutView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_CREATE_APPLICATION_SHORTCUT_VIEW_H_

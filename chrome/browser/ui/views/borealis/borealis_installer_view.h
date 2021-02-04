@@ -9,6 +9,7 @@
 #include "base/macros.h"
 #include "chrome/browser/chromeos/borealis/borealis_installer.h"
 #include "chrome/browser/chromeos/borealis/borealis_metrics.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace views {
@@ -25,6 +26,8 @@ class Profile;
 class BorealisInstallerView : public views::DialogDelegateView,
                               public borealis::BorealisInstaller::Observer {
  public:
+  METADATA_HEADER(BorealisInstallerView);
+
   using InstallingState = borealis::BorealisInstaller::InstallingState;
 
   explicit BorealisInstallerView(Profile* profile);
@@ -69,6 +72,7 @@ class BorealisInstallerView : public views::DialogDelegateView,
   // Returns the dialog buttons that should be displayed, based on the current
   // |state_| and error |reason_| (if relevant).
   int GetCurrentDialogButtons() const;
+
   // Returns the label for a dialog |button|, based on the current |state_|
   // and error |reason_| (if relevant).
   base::string16 GetCurrentDialogButtonLabel(ui::DialogButton button) const;

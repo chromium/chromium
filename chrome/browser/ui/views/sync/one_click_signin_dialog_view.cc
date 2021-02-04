@@ -26,6 +26,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 // static
@@ -136,3 +137,6 @@ OneClickSigninDialogView::~OneClickSigninDialogView() {
   if (!confirmed_callback_.is_null())
     std::move(confirmed_callback_).Run(false);
 }
+
+BEGIN_METADATA(OneClickSigninDialogView, views::DialogDelegateView)
+END_METADATA

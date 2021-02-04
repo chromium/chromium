@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "chrome/browser/ui/sync/profile_signin_confirmation_helper.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 class Browser;
@@ -18,6 +19,8 @@ class Browser;
 // to create a new Chrome profile.
 class ProfileSigninConfirmationDialogViews : public views::DialogDelegateView {
  public:
+  METADATA_HEADER(ProfileSigninConfirmationDialogViews);
+
   // Create and show the dialog, which owns itself.
   static void Show(
       Browser* browser,
@@ -30,6 +33,10 @@ class ProfileSigninConfirmationDialogViews : public views::DialogDelegateView {
       const std::string& username,
       std::unique_ptr<ui::ProfileSigninConfirmationDelegate> delegate,
       bool prompt_for_new_profile);
+  ProfileSigninConfirmationDialogViews(
+      const ProfileSigninConfirmationDialogViews&) = delete;
+  ProfileSigninConfirmationDialogViews& operator=(
+      const ProfileSigninConfirmationDialogViews&) = delete;
   ~ProfileSigninConfirmationDialogViews() override;
 
  private:
@@ -62,8 +69,6 @@ class ProfileSigninConfirmationDialogViews : public views::DialogDelegateView {
   const bool prompt_for_new_profile_;
 
   const bool use_work_profile_wording_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileSigninConfirmationDialogViews);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SYNC_PROFILE_SIGNIN_CONFIRMATION_DIALOG_VIEWS_H_

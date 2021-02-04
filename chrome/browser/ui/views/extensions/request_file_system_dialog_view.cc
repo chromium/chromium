@@ -20,6 +20,7 @@
 #include "ui/gfx/range/range.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 
@@ -106,3 +107,6 @@ RequestFileSystemDialogView::RequestFileSystemDialogView(
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
 }
+
+BEGIN_METADATA(RequestFileSystemDialogView, views::DialogDelegateView)
+END_METADATA

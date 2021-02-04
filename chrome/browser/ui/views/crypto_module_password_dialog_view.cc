@@ -14,6 +14,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -144,6 +145,9 @@ void CryptoModulePasswordDialogView::Init(const std::string& hostname,
   password_label_ = layout->AddView(std::move(password_label));
   password_entry_ = layout->AddView(std::move(password_entry));
 }
+
+BEGIN_METADATA(CryptoModulePasswordDialogView, views::DialogDelegateView)
+END_METADATA
 
 void ShowCryptoModulePasswordDialog(const std::string& slot_name,
                                     bool retry,

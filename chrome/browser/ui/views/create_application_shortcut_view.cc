@@ -22,6 +22,7 @@
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 #if defined(OS_WIN)
 #include "base/win/shortcut.h"
@@ -273,3 +274,6 @@ void CreateChromeApplicationShortcutView::OnAppInfoLoaded(
   // make sure the accept button gets enabled.
   DialogModelChanged();
 }
+
+BEGIN_METADATA(CreateChromeApplicationShortcutView, views::DialogDelegateView)
+END_METADATA

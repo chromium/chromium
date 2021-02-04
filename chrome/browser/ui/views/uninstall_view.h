@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "ui/base/models/combobox_model.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace views {
@@ -26,8 +27,11 @@ class Label;
 class UninstallView : public views::DialogDelegateView,
                       public ui::ComboboxModel {
  public:
+  METADATA_HEADER(UninstallView);
   explicit UninstallView(int* user_selection,
                          const base::RepeatingClosure& quit_closure);
+  UninstallView(const UninstallView&) = delete;
+  UninstallView& operator=(const UninstallView&) = delete;
   ~UninstallView() override;
 
   // Overridden from ui::ComboboxModel:
@@ -50,8 +54,6 @@ class UninstallView : public views::DialogDelegateView,
   std::unique_ptr<BrowsersMap> browsers_;
   int& user_selection_;
   base::RepeatingClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(UninstallView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_UNINSTALL_VIEW_H_

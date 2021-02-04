@@ -18,6 +18,7 @@
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 UninstallView::UninstallView(int* user_selection,
@@ -168,6 +169,9 @@ base::string16 UninstallView::GetItemAt(int index) const {
   std::advance(i, index);
   return i->first;
 }
+
+BEGIN_METADATA(UninstallView, views::DialogDelegateView)
+END_METADATA
 
 namespace chrome {
 
