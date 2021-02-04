@@ -7,14 +7,15 @@
 #include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "dbus/object_path.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
 
 TEST(CellularESimProfileTest, ConvertToAndFromDictionary) {
   CellularESimProfile profile(
-      CellularESimProfile::State::kPending, "eid", "iccid",
-      base::UTF8ToUTF16("name"), base::UTF8ToUTF16("nickname"),
+      CellularESimProfile::State::kPending, dbus::ObjectPath("/test/path/123"),
+      "eid", "iccid", base::UTF8ToUTF16("name"), base::UTF8ToUTF16("nickname"),
       base::UTF8ToUTF16("serviceProvider"), "activationCode");
 
   base::Value dictionary = profile.ToDictionaryValue();
@@ -23,6 +24,7 @@ TEST(CellularESimProfileTest, ConvertToAndFromDictionary) {
   EXPECT_TRUE(from_dictionary);
 
   EXPECT_EQ(CellularESimProfile::State::kPending, from_dictionary->state());
+  EXPECT_EQ(dbus::ObjectPath("/test/path/123"), from_dictionary->path());
   EXPECT_EQ("eid", from_dictionary->eid());
   EXPECT_EQ("iccid", from_dictionary->iccid());
   EXPECT_EQ(base::UTF8ToUTF16("name"), from_dictionary->name());

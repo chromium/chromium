@@ -61,8 +61,8 @@ std::vector<CellularESimProfile> GenerateProfilesFromEuicc(
     HermesProfileClient::Properties* profile_properties =
         HermesProfileClient::Get()->GetProperties(profile_path);
     profiles.emplace_back(
-        FromProfileState(profile_properties->state().value()), eid,
-        profile_properties->iccid().value(),
+        FromProfileState(profile_properties->state().value()), profile_path,
+        eid, profile_properties->iccid().value(),
         base::UTF8ToUTF16(profile_properties->name().value()),
         base::UTF8ToUTF16(profile_properties->nick_name().value()),
         base::UTF8ToUTF16(profile_properties->service_provider().value()),

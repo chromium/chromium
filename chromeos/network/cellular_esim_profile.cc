@@ -5,12 +5,14 @@
 #include "chromeos/network/cellular_esim_profile.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "dbus/object_path.h"
 
 namespace chromeos {
 namespace {
 
 // Keys used by ToDictionaryValue() and FromDictionaryValue().
 const char kKeyState[] = "State";
+const char kKeyPath[] = "Path";
 const char kKeyEid[] = "Eid";
 const char kKeyIccid[] = "Iccid";
 const char kKeyName[] = "Name";
@@ -24,6 +26,10 @@ const char kKeyActivationCode[] = "ActivationCode";
 base::Optional<CellularESimProfile> CellularESimProfile::FromDictionaryValue(
     const base::Value& value) {
   if (!value.is_dict())
+    return base::nullopt;
+
+  const std::string* path = value.FindStringPath(kKeyPath);
+  if (!path)
     return base::nullopt;
 
   base::Optional<int> state = value.FindIntPath(kKeyState);
@@ -56,12 +62,13 @@ base::Optional<CellularESimProfile> CellularESimProfile::FromDictionaryValue(
     return base::nullopt;
 
   return CellularESimProfile(
-      static_cast<State>(*state), *eid, *iccid, base::UTF8ToUTF16(*name),
-      base::UTF8ToUTF16(*nickname), base::UTF8ToUTF16(*service_provider),
-      *activation_code);
+      static_cast<State>(*state), dbus::ObjectPath(*path), *eid, *iccid,
+      base::UTF8ToUTF16(*name), base::UTF8ToUTF16(*nickname),
+      base::UTF8ToUTF16(*service_provider), *activation_code);
 }
 
 CellularESimProfile::CellularESimProfile(State state,
+                                         const dbus::ObjectPath& path,
                                          const std::string& eid,
                                          const std::string& iccid,
                                          const base::string16& name,
@@ -69,6 +76,7 @@ CellularESimProfile::CellularESimProfile(State state,
                                          const base::string16& service_provider,
                                          const std::string& activation_code)
     : state_(state),
+      path_(path),
       eid_(eid),
       iccid_(iccid),
       name_(name),
@@ -86,6 +94,7 @@ CellularESimProfile::~CellularESimProfile() = default;
 base::Value CellularESimProfile::ToDictionaryValue() const {
   base::Value dictionary(base::Value::Type::DICTIONARY);
   dictionary.SetKey(kKeyState, base::Value(static_cast<int>(state_)));
+  dictionary.SetKey(kKeyPath, base::Value(path_.value()));
   dictionary.SetKey(kKeyEid, base::Value(eid_));
   dictionary.SetKey(kKeyIccid, base::Value(iccid_));
   dictionary.SetKey(kKeyName, base::Value(name_));
@@ -96,7 +105,7 @@ base::Value CellularESimProfile::ToDictionaryValue() const {
 }
 
 bool CellularESimProfile::operator==(const CellularESimProfile& other) const {
-  return state_ == other.state_ && eid_ == other.eid_ &&
+  return state_ == other.state_ && path_ == other.path_ && eid_ == other.eid_ &&
          iccid_ == other.iccid_ && name_ == other.name_ &&
          nickname_ == other.nickname_ &&
          service_provider_ == other.service_provider_ &&
