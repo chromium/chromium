@@ -19,3 +19,19 @@ source_set("android") {
 generate_jni("jni_headers") {
   sources = [ "internal/java/src/org/chromium/chrome/browser/password_entry_edit/CredentialEditBridge.java" ]
 }
+
+android_library("java") {
+  sources = [ "//chrome/browser/password_entry_edit/android/java/src/org/chromium/chrome/browser/password_entry_edit/CredentialEditFragmentView.java" ]
+
+  deps = [
+    ":java_resources",
+    "//third_party/android_deps:androidx_preference_preference_java",
+  ]
+
+  resources_package = "org.chromium.chrome.browser.password_entry_edit"
+}
+
+android_resources("java_resources") {
+  sources = []
+  deps = [ "//chrome/browser/ui/android/strings:ui_strings_grd" ]
+}

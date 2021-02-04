@@ -13,7 +13,9 @@
 // in order to launch or dismiss the edit UI.
 class CredentialEditBridge {
  public:
-  CredentialEditBridge();
+  CredentialEditBridge(
+      const base::android::JavaRef<jobject>& context,
+      const base::android::JavaRef<jobject>& settings_launcher);
   ~CredentialEditBridge();
 
   CredentialEditBridge(const CredentialEditBridge&) = delete;

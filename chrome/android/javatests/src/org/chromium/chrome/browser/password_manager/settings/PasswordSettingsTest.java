@@ -46,6 +46,7 @@ import static org.chromium.chrome.test.util.ViewUtils.waitForView;
 
 import android.app.Activity;
 import android.app.Instrumentation;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.ColorFilter;
@@ -106,6 +107,7 @@ import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.sync.ModelType;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -255,7 +257,7 @@ public class PasswordSettingsTest {
         }
 
         @Override
-        public void showPasswordEntryEditingView() {
+        public void showPasswordEntryEditingView(Context context, SettingsLauncher launcher) {
             assert false : "Define this method before starting to use it in tests.";
         }
     }

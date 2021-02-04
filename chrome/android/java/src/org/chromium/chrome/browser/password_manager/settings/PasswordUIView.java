@@ -4,12 +4,15 @@
 
 package org.chromium.chrome.browser.password_manager.settings;
 
+import android.content.Context;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.IntStringCallback;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 /**
  * Production implementation of PasswordManagerHandler, making calls to native C++ code to retrieve
@@ -96,9 +99,9 @@ public final class PasswordUIView implements PasswordManagerHandler {
     }
 
     @Override
-    public void showPasswordEntryEditingView() {
+    public void showPasswordEntryEditingView(Context context, SettingsLauncher settingsLauncher) {
         PasswordUIViewJni.get().handleShowPasswordEntryEditingView(
-                mNativePasswordUIViewAndroid, PasswordUIView.this);
+                mNativePasswordUIViewAndroid, context, settingsLauncher, PasswordUIView.this);
     }
 
     /**
@@ -145,7 +148,7 @@ public final class PasswordUIView implements PasswordManagerHandler {
         void handleSerializePasswords(long nativePasswordUIViewAndroid, PasswordUIView caller,
                 String targetPath, IntStringCallback successCallback,
                 Callback<String> errorCallback);
-        void handleShowPasswordEntryEditingView(
-                long nativePasswordUIViewAndroid, PasswordUIView caller);
+        void handleShowPasswordEntryEditingView(long nativePasswordUIViewAndroid, Context context,
+                SettingsLauncher launcher, PasswordUIView caller);
     }
 }

@@ -456,7 +456,7 @@ public class PasswordSettings
             // Launch preference activity with a PasswordEntryEditor fragment.
             PasswordManagerHandlerProvider.getInstance()
                     .getPasswordManagerHandler()
-                    .showPasswordEntryEditingView();
+                    .showPasswordEntryEditingView(getActivity(), new SettingsLauncherImpl());
         } else {
             // Launch preference activity with PasswordEntryViewer fragment with
             // intent extras specifying the object.
