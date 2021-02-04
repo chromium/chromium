@@ -5,12 +5,12 @@
 #ifndef CHROMEOS_COMPONENTS_PHONEHUB_PHONE_STATUS_PROCESSOR_H_
 #define CHROMEOS_COMPONENTS_PHONEHUB_PHONE_STATUS_PROCESSOR_H_
 
+#include <google/protobuf/repeated_field.h>
+
 #include "chromeos/components/phonehub/feature_status_provider.h"
 #include "chromeos/components/phonehub/message_receiver.h"
 #include "chromeos/components/phonehub/proto/phonehub_api.pb.h"
 #include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
-
-#include <google/protobuf/repeated_field.h>
 
 using google::protobuf::RepeatedPtrField;
 
@@ -21,7 +21,7 @@ class DoNotDisturbController;
 class FeatureStatusProvider;
 class FindMyDeviceController;
 class NotificationAccessManager;
-class NotificationManager;
+class NotificationProcessor;
 class MutablePhoneModel;
 
 // Responsible for receiving incoming protos and calling on clients to update
@@ -37,7 +37,7 @@ class PhoneStatusProcessor
       MessageReceiver* message_receiver,
       FindMyDeviceController* find_my_device_controller,
       NotificationAccessManager* notification_access_manager,
-      NotificationManager* notification_manager,
+      NotificationProcessor* notification_processor_,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
       MutablePhoneModel* phone_model);
   ~PhoneStatusProcessor() override;
@@ -46,6 +46,8 @@ class PhoneStatusProcessor
   PhoneStatusProcessor& operator=(const PhoneStatusProcessor&) = delete;
 
  private:
+  friend class PhoneStatusProcessorTest;
+
   // FeatureStatusProvider::Observer:
   void OnFeatureStatusChanged() override;
 
@@ -76,7 +78,7 @@ class PhoneStatusProcessor
   MessageReceiver* message_receiver_;
   FindMyDeviceController* find_my_device_controller_;
   NotificationAccessManager* notification_access_manager_;
-  NotificationManager* notification_manager_;
+  NotificationProcessor* notification_processor_;
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
   MutablePhoneModel* phone_model_;
 };

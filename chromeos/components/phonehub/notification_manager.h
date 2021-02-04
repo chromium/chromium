@@ -61,7 +61,8 @@ class NotificationManager {
   void RemoveObserver(Observer* observer);
 
  protected:
-  friend class PhoneStatusProcessor;
+  friend class FakeNotificationProcessor;
+  friend class NotificationProcessor;
   friend class NotificationManagerImplTest;
 
   NotificationManager();

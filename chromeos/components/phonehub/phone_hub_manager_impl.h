@@ -38,6 +38,7 @@ class MessageSender;
 class MessageReceiver;
 class MultideviceSetupStateUpdater;
 class MutablePhoneModel;
+class NotificationProcessor;
 class PhoneStatusProcessor;
 class UserActionRecorder;
 
@@ -84,6 +85,7 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
   std::unique_ptr<NotificationAccessManager> notification_access_manager_;
   std::unique_ptr<NotificationManager> notification_manager_;
   std::unique_ptr<OnboardingUiTracker> onboarding_ui_tracker_;
+  std::unique_ptr<NotificationProcessor> notification_processor_;
   std::unique_ptr<PhoneStatusProcessor> phone_status_processor_;
   std::unique_ptr<TetherController> tether_controller_;
   std::unique_ptr<BrowserTabsModelProvider> browser_tabs_model_provider_;

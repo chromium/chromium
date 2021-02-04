@@ -20,6 +20,7 @@
 #include "chromeos/components/phonehub/mutable_phone_model.h"
 #include "chromeos/components/phonehub/notification_access_manager_impl.h"
 #include "chromeos/components/phonehub/notification_manager_impl.h"
+#include "chromeos/components/phonehub/notification_processor.h"
 #include "chromeos/components/phonehub/onboarding_ui_tracker_impl.h"
 #include "chromeos/components/phonehub/phone_model.h"
 #include "chromeos/components/phonehub/phone_status_processor.h"
@@ -83,13 +84,15 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
           feature_status_provider_.get(),
           multidevice_setup_client,
           show_multidevice_setup_dialog_callback)),
+      notification_processor_(
+          std::make_unique<NotificationProcessor>(notification_manager_.get())),
       phone_status_processor_(std::make_unique<PhoneStatusProcessor>(
           do_not_disturb_controller_.get(),
           feature_status_provider_.get(),
           message_receiver_.get(),
           find_my_device_controller_.get(),
           notification_access_manager_.get(),
-          notification_manager_.get(),
+          notification_processor_.get(),
           multidevice_setup_client,
           phone_model_.get())),
       tether_controller_(
@@ -167,6 +170,7 @@ void PhoneHubManagerImpl::Shutdown() {
   browser_tabs_model_provider_.reset();
   tether_controller_.reset();
   phone_status_processor_.reset();
+  notification_processor_.reset();
   onboarding_ui_tracker_.reset();
   notification_manager_.reset();
   notification_access_manager_.reset();

@@ -10,5 +10,6 @@ include_rules = [
   "+components/session_manager/core",
   "+device/bluetooth",
   "+net",
+  "+services/data_decoder/public/cpp",
   "+ui/gfx",
 ]

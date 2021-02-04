@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/task_environment.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/components/phonehub/fake_do_not_disturb_controller.h"
 #include "chromeos/components/phonehub/fake_feature_status_provider.h"
@@ -19,6 +20,8 @@
 #include "chromeos/components/phonehub/fake_notification_manager.h"
 #include "chromeos/components/phonehub/mutable_phone_model.h"
 #include "chromeos/components/phonehub/notification_manager.h"
+#include "chromeos/components/phonehub/notification_processor.h"
+#include "chromeos/components/phonehub/phone_model_test_util.h"
 #include "chromeos/components/phonehub/phone_status_model.h"
 #include "chromeos/components/phonehub/proto/phonehub_api.pb.h"
 #include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
@@ -30,6 +33,30 @@ namespace phonehub {
 using multidevice_setup::mojom::Feature;
 using multidevice_setup::mojom::FeatureState;
 using multidevice_setup::mojom::HostStatus;
+
+// A fake processor that immediately adds or removes notifications.
+class FakeNotificationProcessor : public NotificationProcessor {
+ public:
+  FakeNotificationProcessor(NotificationManager* notification_manager)
+      : NotificationProcessor(notification_manager) {}
+
+  void AddNotifications(
+      const std::vector<proto::Notification>& notification_protos) override {
+    base::flat_set<Notification> notifications;
+    for (const auto& proto : notification_protos) {
+      notifications.emplace(
+          Notification(proto.id(), CreateFakeAppMetadata(), base::Time(),
+                       Notification::Importance::kDefault, 0, base::nullopt,
+                       base::nullopt, base::nullopt, base::nullopt));
+    }
+    notification_manager_->SetNotificationsInternal(notifications);
+  }
+
+  void RemoveNotifications(
+      const base::flat_set<int64_t>& notification_ids) override {
+    notification_manager_->RemoveNotificationsInternal(notification_ids);
+  }
+};
 
 class PhoneStatusProcessorTest : public testing::Test {
  protected:
@@ -51,6 +78,8 @@ class PhoneStatusProcessorTest : public testing::Test {
     fake_notification_access_manager_ =
         std::make_unique<FakeNotificationAccessManager>();
     fake_notification_manager_ = std::make_unique<FakeNotificationManager>();
+    fake_notification_processor_ = std::make_unique<FakeNotificationProcessor>(
+        fake_notification_manager_.get());
     mutable_phone_model_ = std::make_unique<MutablePhoneModel>();
     fake_multidevice_setup_client_ =
         std::make_unique<multidevice_setup::FakeMultiDeviceSetupClient>();
@@ -62,8 +91,8 @@ class PhoneStatusProcessorTest : public testing::Test {
         fake_feature_status_provider_.get(), fake_message_receiver_.get(),
         fake_find_my_device_controller_.get(),
         fake_notification_access_manager_.get(),
-        fake_notification_manager_.get(), fake_multidevice_setup_client_.get(),
-        mutable_phone_model_.get());
+        fake_notification_processor_.get(),
+        fake_multidevice_setup_client_.get(), mutable_phone_model_.get());
   }
 
   void InitializeNotificationProto(proto::Notification* notification,
@@ -97,6 +126,7 @@ class PhoneStatusProcessorTest : public testing::Test {
   std::unique_ptr<FakeNotificationAccessManager>
       fake_notification_access_manager_;
   std::unique_ptr<FakeNotificationManager> fake_notification_manager_;
+  std::unique_ptr<FakeNotificationProcessor> fake_notification_processor_;
   std::unique_ptr<MutablePhoneModel> mutable_phone_model_;
   std::unique_ptr<multidevice_setup::FakeMultiDeviceSetupClient>
       fake_multidevice_setup_client_;
