@@ -17,6 +17,10 @@
 
 namespace {
 
+// UMA histogram name.
+const char kAccountAdditionResultStatus[] =
+    "AccountManager.AccountAdditionResultStatus";
+
 // Interface versions in //chromeos/crosapi/mojom/account_manager.mojom:
 // MinVersion of crosapi::mojom::AccountManager::GetAccounts
 constexpr uint32_t kMinVersionWithGetAccounts = 2;
@@ -102,8 +106,10 @@ void AccountManagerFacadeImpl::ShowAddAccountDialog(
     LOG(WARNING) << "Found remote at: " << remote_version_
                  << ", expected: " << kMinVersionWithShowAddAccountDialog
                  << " for ShowAddAccountDialog.";
-    std::move(callback).Run(account_manager::AccountAdditionResult(
-        account_manager::AccountAdditionResult::Status::kUnexpectedResponse));
+    FinishAddAccount(std::move(callback),
+                     account_manager::AccountAdditionResult(
+                         account_manager::AccountAdditionResult::Status::
+                             kUnexpectedResponse));
     return;
   }
 
@@ -126,6 +132,12 @@ void AccountManagerFacadeImpl::ShowReauthAccountDialog(
   base::UmaHistogramEnumeration(kAccountAdditionSource, source);
 
   account_manager_remote_->ShowReauthAccountDialog(email, base::DoNothing());
+}
+
+// static
+std::string AccountManagerFacadeImpl::
+    GetAccountAdditionResultStatusHistogramNameForTesting() {
+  return kAccountAdditionResultStatus;
 }
 
 void AccountManagerFacadeImpl::OnReceiverReceived(
@@ -153,11 +165,21 @@ void AccountManagerFacadeImpl::OnShowAddAccountDialogFinished(
   base::Optional<account_manager::AccountAdditionResult> result =
       account_manager::FromMojoAccountAdditionResult(mojo_result);
   if (!result.has_value()) {
-    std::move(callback).Run(account_manager::AccountAdditionResult(
-        account_manager::AccountAdditionResult::Status::kUnexpectedResponse));
+    FinishAddAccount(std::move(callback),
+                     account_manager::AccountAdditionResult(
+                         account_manager::AccountAdditionResult::Status::
+                             kUnexpectedResponse));
     return;
   }
-  std::move(callback).Run(result.value());
+  FinishAddAccount(std::move(callback), result.value());
+}
+
+void AccountManagerFacadeImpl::FinishAddAccount(
+    base::OnceCallback<
+        void(const account_manager::AccountAdditionResult& result)> callback,
+    const account_manager::AccountAdditionResult& result) {
+  base::UmaHistogramEnumeration(kAccountAdditionResultStatus, result.status);
+  std::move(callback).Run(result);
 }
 
 void AccountManagerFacadeImpl::OnTokenUpserted(

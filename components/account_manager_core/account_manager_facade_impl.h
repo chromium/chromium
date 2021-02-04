@@ -57,7 +57,12 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
   FRIEND_TEST_ALL_PREFIXES(AccountManagerFacadeImplTest,
                            ShowAddAccountDialogCallsMojo);
   FRIEND_TEST_ALL_PREFIXES(AccountManagerFacadeImplTest,
+                           ShowAddAccountDialogUMA);
+  FRIEND_TEST_ALL_PREFIXES(AccountManagerFacadeImplTest,
                            ShowReauthAccountDialogCallsMojo);
+  FRIEND_TEST_ALL_PREFIXES(AccountManagerFacadeImplTest,
+                           ShowReauthAccountDialogUMA);
+  static std::string GetAccountAdditionResultStatusHistogramNameForTesting();
 
   void OnReceiverReceived(
       mojo::PendingReceiver<AccountManagerObserver> receiver);
@@ -67,6 +72,10 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
       base::OnceCallback<
           void(const account_manager::AccountAdditionResult& result)> callback,
       crosapi::mojom::AccountAdditionResultPtr mojo_result);
+  void FinishAddAccount(
+      base::OnceCallback<
+          void(const account_manager::AccountAdditionResult& result)> callback,
+      const account_manager::AccountAdditionResult& result);
 
   void FlushMojoForTesting();
 

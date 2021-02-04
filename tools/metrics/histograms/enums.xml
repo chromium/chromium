@@ -1018,6 +1018,14 @@ Unknown properties are collapsed to zero. -->
   </int>
 </enum>
 
+<enum name="AccountManagerAccountAdditionResultStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Already in progress"/>
+  <int value="2" label="Cancelled by user"/>
+  <int value="3" label="Network error"/>
+  <int value="4" label="Unexpected response"/>
+</enum>
+
 <enum name="AccountManagerAccountAdditionSource">
   <int value="0" label="Add account button in Settings"/>
   <int value="1" label="Re-auth account button in Settings"/>

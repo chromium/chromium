@@ -8,6 +8,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
@@ -58,9 +59,8 @@ class FakeAccountManager : public crosapi::mojom::AccountManager {
 
   void ShowAddAccountDialog(ShowAddAccountDialogCallback callback) override {
     show_add_account_dialog_calls_++;
-    std::move(callback).Run(account_manager::ToMojoAccountAdditionResult(
-        account_manager::AccountAdditionResult(
-            account_manager::AccountAdditionResult::Status::kCancelledByUser)));
+    std::move(callback).Run(
+        account_manager::ToMojoAccountAdditionResult(add_account_result_));
   }
 
   void ShowReauthAccountDialog(const std::string& email,
@@ -92,6 +92,11 @@ class FakeAccountManager : public crosapi::mojom::AccountManager {
     accounts_ = accounts;
   }
 
+  void SetAccountAdditionResult(
+      const account_manager::AccountAdditionResult& result) {
+    add_account_result_ = result;
+  }
+
   int show_add_account_dialog_calls() { return show_add_account_dialog_calls_; }
 
   int show_reauth_account_dialog_calls() {
@@ -103,6 +108,8 @@ class FakeAccountManager : public crosapi::mojom::AccountManager {
   int show_reauth_account_dialog_calls_ = 0;
   bool is_initialized_{false};
   std::vector<account_manager::Account> accounts_;
+  account_manager::AccountAdditionResult add_account_result_{
+      account_manager::AccountAdditionResult::Status::kUnexpectedResponse};
   mojo::ReceiverSet<crosapi::mojom::AccountManager> receivers_;
   mojo::RemoteSet<crosapi::mojom::AccountManagerObserver> observers_;
 };
@@ -311,6 +318,31 @@ TEST_F(AccountManagerFacadeImplTest, ShowAddAccountDialogCallsMojo) {
   EXPECT_EQ(1, account_manager().show_add_account_dialog_calls());
 }
 
+TEST_F(AccountManagerFacadeImplTest, ShowAddAccountDialogUMA) {
+  base::HistogramTester tester;
+  std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
+      CreateFacade();
+  auto result = account_manager::AccountAdditionResult(
+      account_manager::AccountAdditionResult::Status::kAlreadyInProgress);
+  account_manager().SetAccountAdditionResult(result);
+  auto source = account_manager::AccountManagerFacade::AccountAdditionSource::
+      kSettingsAddAccountButton;
+
+  account_manager_facade->ShowAddAccountDialog(
+      source, base::BindOnce(
+                  [](const account_manager::AccountAdditionResult& result) {}));
+  account_manager_facade->FlushMojoForTesting();
+
+  // Check that UMA stats were sent.
+  tester.ExpectUniqueSample(
+      account_manager::AccountManagerFacade::kAccountAdditionSource,
+      /*sample=*/source, /*expected_count=*/1);
+  tester.ExpectUniqueSample(
+      AccountManagerFacadeImpl::
+          GetAccountAdditionResultStatusHistogramNameForTesting(),
+      /*sample=*/result.status, /*expected_count=*/1);
+}
+
 TEST_F(AccountManagerFacadeImplTest, ShowReauthAccountDialogCallsMojo) {
   std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
       CreateFacade();
@@ -321,4 +353,20 @@ TEST_F(AccountManagerFacadeImplTest, ShowReauthAccountDialogCallsMojo) {
       kFakeEmail);
   account_manager_facade->FlushMojoForTesting();
   EXPECT_EQ(1, account_manager().show_reauth_account_dialog_calls());
+}
+
+TEST_F(AccountManagerFacadeImplTest, ShowReauthAccountDialogUMA) {
+  base::HistogramTester tester;
+  std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
+      CreateFacade();
+  auto source = account_manager::AccountManagerFacade::AccountAdditionSource::
+      kContentArea;
+
+  account_manager_facade->ShowReauthAccountDialog(source, kFakeEmail);
+  account_manager_facade->FlushMojoForTesting();
+
+  // Check that UMA stats were sent.
+  tester.ExpectUniqueSample(
+      account_manager::AccountManagerFacade::kAccountAdditionSource,
+      /*sample=*/source, /*expected_count=*/1);
 }

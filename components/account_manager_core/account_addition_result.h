@@ -13,6 +13,8 @@ namespace account_manager {
 
 // The result of account addition request.
 struct COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountAdditionResult {
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum class Status {
     // The account was added successfully.
     kSuccess = 0,
@@ -24,6 +26,7 @@ struct COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountAdditionResult {
     kNetworkError = 3,
     // Unexpected response (couldn't parse mojo struct).
     kUnexpectedResponse = 4,
+    kMaxValue = kUnexpectedResponse,
   };
 
   Status status;
