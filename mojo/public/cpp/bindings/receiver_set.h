@@ -358,6 +358,7 @@ class ReceiverSetBase {
                      PendingType receiver,
                      Context context,
                      scoped_refptr<base::SequencedTaskRunner> task_runner) {
+    DCHECK(receiver.is_valid());
     ReceiverId id = next_receiver_id_++;
     DCHECK_GE(next_receiver_id_, 0u);
     auto entry =
