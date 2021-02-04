@@ -10,8 +10,8 @@ GEN_INCLUDE([
   '//chrome/test/data/webui/polymer_browser_test_base.js',
 ]);
 
+GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
-GEN('#include "chromeos/constants/chromeos_features.h"');
 
 // This file bootstraps the other tests written in Javascript.
 class EmojiPickerBrowserTest extends PolymerTest {

@@ -16,6 +16,7 @@
 
 #include "ash/components/account_manager/account_manager.h"
 #include "ash/components/account_manager/account_manager_factory.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_features.h"
 #include "base/base_paths.h"
 #include "base/bind.h"
@@ -105,7 +106,6 @@
 #include "chrome/common/logging_chrome.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/assistant/buildflags.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/cryptohome/cryptohome_client.h"

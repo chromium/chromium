@@ -6,6 +6,7 @@
 
 #include <cmath>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -24,7 +25,6 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/power/auto_screen_brightness/utils.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"

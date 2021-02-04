@@ -6,10 +6,10 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/macros.h"
 #include "base/timer/mock_timer.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/device_sync/public/cpp/fake_device_sync_client.h"
 #include "chromeos/services/multidevice_setup/fake_host_backend_delegate.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"

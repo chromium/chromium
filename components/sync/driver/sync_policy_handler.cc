@@ -17,7 +17,7 @@
 #include "components/sync/base/user_selectable_type.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/constants/chromeos_features.h"
+#include "ash/constants/ash_features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace syncer {

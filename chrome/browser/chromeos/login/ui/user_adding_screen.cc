@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/login/ui/user_adding_screen.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/chromeos/login/ui/user_adding_screen_input_methods_controller.h"
 #include "chrome/browser/ui/ash/login_screen_client.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/gfx/geometry/rect.h"

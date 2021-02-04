@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chromeos/login/users/mock_user_manager.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/sync/driver/test_sync_service.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"

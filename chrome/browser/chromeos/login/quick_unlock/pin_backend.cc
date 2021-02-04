@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/login/quick_unlock/pin_backend.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/logging.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/account_id/account_id.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"

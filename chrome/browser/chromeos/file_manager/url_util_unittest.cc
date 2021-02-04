@@ -6,13 +6,13 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "extensions/common/constants.h"
 #include "net/base/escape.h"
 #include "testing/gtest/include/gtest/gtest.h"

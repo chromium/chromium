@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 
+#include "ash/constants/ash_features.h"
 #include "base/macros.h"
 #include "base/one_shot_event.h"
 #include "base/run_loop.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"

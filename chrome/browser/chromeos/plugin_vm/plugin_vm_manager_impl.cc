@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_manager_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -21,7 +22,6 @@
 #include "chrome/browser/ui/ash/launcher/shelf_spinner_item_controller.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"

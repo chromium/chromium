@@ -4,6 +4,7 @@
 
 #include "ash/system/phonehub/phone_hub_tray.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/system/phonehub/notification_opt_in_view.h"
 #include "ash/system/phonehub/phone_hub_ui_controller.h"
@@ -16,7 +17,6 @@
 #include "chromeos/components/phonehub/fake_notification_access_manager.h"
 #include "chromeos/components/phonehub/fake_phone_hub_manager.h"
 #include "chromeos/components/phonehub/phone_model_test_util.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/button/button.h"

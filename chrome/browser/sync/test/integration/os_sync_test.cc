@@ -4,7 +4,7 @@
 
 #include "chrome/browser/sync/test/integration/os_sync_test.h"
 
-#include "chromeos/constants/chromeos_features.h"
+#include "ash/constants/ash_features.h"
 
 OsSyncTest::OsSyncTest(TestType type) : SyncTest(type) {
   settings_feature_list_.InitAndEnableFeature(

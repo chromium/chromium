@@ -10,11 +10,11 @@ const BROWSER_SETTINGS_PATH = '../';
 // Polymer BrowserTest fixture.
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
+GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "ash/public/cpp/ash_features.h"');
 GEN('#include "build/branding_buildflags.h"');
 GEN('#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"');
 GEN('#include "chrome/common/chrome_features.h"');
-GEN('#include "chromeos/constants/chromeos_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 GEN('#include "ui/display/display_features.h"');
 

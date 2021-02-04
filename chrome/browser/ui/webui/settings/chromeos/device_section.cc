@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/chromeos/device_section.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/ash_interfaces.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/night_light_controller.h"
@@ -28,7 +29,6 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"

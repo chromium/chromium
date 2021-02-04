@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/i18n/number_formatting.h"
@@ -23,7 +24,6 @@
 #include "chrome/browser/ui/webui/chromeos/login/update_screen_handler.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/network/network_state.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"

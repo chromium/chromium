@@ -4,12 +4,12 @@
 
 #include "chrome/browser/chromeos/power/ml/smart_dim/builtin_worker.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/ref_counted_memory.h"
 #include "chrome/browser/chromeos/power/ml/smart_dim/ml_agent_util.h"
 #include "chrome/grit/browser_resources.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "components/assist_ranker/proto/example_preprocessor.pb.h"
 #include "ui/base/resource/resource_bundle.h"

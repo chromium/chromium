@@ -6,13 +6,13 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "chromeos/components/help_app_ui/help_app_page_handler.h"
 #include "chromeos/components/help_app_ui/help_app_untrusted_ui.h"
 #include "chromeos/components/help_app_ui/url_constants.h"
 #include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy_factory.h"
 #include "chromeos/components/local_search_service/public/mojom/types.mojom.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/grit/chromeos_help_app_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/content_settings/core/common/content_settings_types.h"

@@ -15,7 +15,7 @@ namespace switches {
 // with any code that is specific to the chromeos system). Chrome OS specific
 // UI should be in src/ash.
 //
-// Prefer adding Features over switches. Features go in chromeos_features.h.
+// Prefer adding Features over switches. Features go in ash_features.h.
 //
 // Note: If you add a switch, consider if it needs to be copied to a subsequent
 // command line if the process executes a new copy of itself.  (For example,

@@ -43,9 +43,9 @@
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
-#include "chromeos/constants/chromeos_features.h"
 #endif
 
 namespace exo {

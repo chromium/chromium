@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/metrics/histogram_tester.h"

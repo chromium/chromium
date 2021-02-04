@@ -22,8 +22,8 @@
 #include "content/public/test/browser_test.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/sync/test/integration/os_sync_test.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/browser_sync/browser_sync_switches.h"
 #endif
 

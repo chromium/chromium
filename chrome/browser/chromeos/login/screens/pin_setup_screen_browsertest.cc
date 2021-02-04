@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/login/screens/pin_setup_screen.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/chromeos/login/pin_setup_screen_handler.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "chromeos/login/auth/stub_authenticator_builder.h"

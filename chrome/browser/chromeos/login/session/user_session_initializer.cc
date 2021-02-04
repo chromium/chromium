@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/login/session/user_session_initializer.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/system/sys_info.h"
@@ -36,7 +37,6 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/media_client_impl.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/network/network_cert_loader.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "components/prefs/pref_service.h"

@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/resources/keyboard_resource_util.h"
 #include "ash/public/ash_interfaces.h"
 #include "ash/public/cpp/event_rewriter_controller.h"
@@ -153,7 +154,6 @@
 #include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy_factory.h"
 #include "chromeos/components/power/dark_resume_controller.h"
 #include "chromeos/components/sensors/sensor_hal_dispatcher.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/cryptohome/homedir_methods.h"

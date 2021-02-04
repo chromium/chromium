@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/release_notes/release_notes_storage.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/command_line.h"
 #include "base/version.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
@@ -13,7 +14,6 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"

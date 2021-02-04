@@ -7,12 +7,12 @@
 #include <cstddef>
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "base/metrics/field_trial_params.h"
 #include "chrome/browser/chromeos/power/ml/smart_dim/metrics.h"
 #include "chrome/browser/chromeos/power/ml/user_activity_ukm_logger_helpers.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/machine_learning/public/mojom/graph_executor.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/model.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/tensor.mojom.h"

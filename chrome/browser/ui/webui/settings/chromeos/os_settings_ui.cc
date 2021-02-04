@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/esim_manager.h"
 #include "ash/public/cpp/network_config_service.h"
 #include "base/metrics/histogram_functions.h"
@@ -25,7 +26,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/os_settings_resources.h"
 #include "chrome/grit/os_settings_resources_map.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/cellular_setup/cellular_setup_impl.h"
 #include "chromeos/services/cellular_setup/public/mojom/esim_manager.mojom.h"
 #include "components/pref_registry/pref_registry_syncable.h"

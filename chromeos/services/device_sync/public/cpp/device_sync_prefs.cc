@@ -4,8 +4,8 @@
 
 #include "chromeos/services/device_sync/public/cpp/device_sync_prefs.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/device_sync/cryptauth_device_manager.h"
 #include "chromeos/services/device_sync/cryptauth_device_registry_impl.h"
 #include "chromeos/services/device_sync/cryptauth_enrollment_manager_impl.h"

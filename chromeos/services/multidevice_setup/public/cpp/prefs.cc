@@ -4,7 +4,7 @@
 
 #include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
 
-#include "chromeos/constants/chromeos_features.h"
+#include "ash/constants/ash_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 

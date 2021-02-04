@@ -50,7 +50,6 @@ source_set("unit_tests") {
     ":disks",
     ":test_support",
     "//base/test:test_support",
-    "//chromeos/constants",
     "//chromeos/dbus:test_support",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",

@@ -5,11 +5,12 @@
 /** @fileoverview Tests for shared Polymer 3 elements. */
 // Polymer BrowserTest fixture.
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
+
+GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "ash/public/cpp/ash_features.h"');
 GEN('#include "chrome/common/buildflags.h"');
 GEN('#include "build/branding_buildflags.h"');
 GEN('#include "content/public/test/browser_test.h"');
-GEN('#include "chromeos/constants/chromeos_features.h"');
 GEN('#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"');
 
 /** Test fixture for shared Polymer 3 elements. */

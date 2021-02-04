@@ -4,6 +4,7 @@
 
 #include "ash/system/system_notification_controller.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/system/caps_lock_notification_controller.h"
 #include "ash/system/cast/cast_notification_controller.h"
 #include "ash/system/gesture_education/gesture_education_notification_controller.h"
@@ -15,7 +16,6 @@
 #include "ash/system/session/session_limit_notification_controller.h"
 #include "ash/system/tracing_notification_controller.h"
 #include "ash/system/update/update_notification_controller.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/message_center/message_center.h"
 
 namespace ash {

@@ -55,7 +55,7 @@
 #include "components/sync_user_events/user_event_model_type_controller.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/constants/chromeos_features.h"
+#include "ash/constants/ash_features.h"
 #endif
 
 using syncer::DataTypeController;

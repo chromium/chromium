@@ -6,8 +6,8 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/pref_names.h"

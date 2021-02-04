@@ -60,13 +60,13 @@
 #include "url/url_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/app_management/app_management_uma.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes_util.h"
 #include "chromeos/components/connectivity_diagnostics/url_constants.h"
-#include "chromeos/constants/chromeos_features.h"
 #else
 #include "chrome/browser/ui/signin_view_controller.h"
 #endif

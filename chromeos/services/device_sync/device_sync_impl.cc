@@ -4,6 +4,7 @@
 
 #include "chromeos/services/device_sync/device_sync_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
@@ -16,7 +17,6 @@
 #include "base/unguessable_token.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/multidevice/secure_message_delegate_impl.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/device_sync/cryptauth_client_impl.h"
 #include "chromeos/services/device_sync/cryptauth_device_activity_getter_impl.h"
 #include "chromeos/services/device_sync/cryptauth_device_manager_impl.h"

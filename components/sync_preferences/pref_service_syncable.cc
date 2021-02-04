@@ -23,7 +23,7 @@
 #include "components/sync_preferences/synced_pref_observer.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/constants/chromeos_features.h"
+#include "ash/constants/ash_features.h"
 #endif
 
 namespace sync_preferences {

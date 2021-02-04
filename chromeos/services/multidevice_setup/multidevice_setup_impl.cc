@@ -7,6 +7,7 @@
 
 #include "chromeos/services/multidevice_setup/multidevice_setup_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
@@ -14,7 +15,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_clock.h"
 #include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/multidevice_setup/account_status_change_delegate_notifier_impl.h"
 #include "chromeos/services/multidevice_setup/android_sms_app_installing_status_observer.h"
 #include "chromeos/services/multidevice_setup/device_reenroller.h"

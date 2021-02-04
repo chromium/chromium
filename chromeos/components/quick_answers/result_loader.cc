@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 #include "chromeos/components/quick_answers/result_loader.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/components/quick_answers/search_result_loader.h"
 #include "chromeos/components/quick_answers/translation_result_loader.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_metrics.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/chromeos/printing_section.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ui/webui/settings/chromeos/cups_printers_handler.h"
@@ -12,7 +13,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"

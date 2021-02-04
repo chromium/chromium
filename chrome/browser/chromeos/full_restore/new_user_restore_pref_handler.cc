@@ -4,11 +4,11 @@
 
 #include "chrome/browser/chromeos/full_restore/new_user_restore_pref_handler.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_prefs.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/constants/chromeos_features.h"
 
 namespace chromeos {
 namespace full_restore {

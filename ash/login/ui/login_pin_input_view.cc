@@ -4,6 +4,7 @@
 
 #include "ash/login/ui/login_pin_input_view.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/login/ui/access_code_input.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
@@ -11,7 +12,6 @@
 #include "base/callback_helpers.h"
 #include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"

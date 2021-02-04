@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "chrome/browser/browser_process.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_features.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/arc/arc_features.h"
 #include "components/prefs/pref_service.h"
 #include "dbus/bus.h"

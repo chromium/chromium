@@ -4,6 +4,7 @@
 
 #include "ash/system/unified/ime_mode_view.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -14,7 +15,6 @@
 #include "ash/system/tray/tray_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/border.h"

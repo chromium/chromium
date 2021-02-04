@@ -4,11 +4,11 @@
 
 #include "chromeos/services/device_sync/cryptauth_feature_type.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/base64url.h"
 #include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
 #include "base/stl_util.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "crypto/sha2.h"
 
 namespace chromeos {

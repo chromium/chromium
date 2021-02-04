@@ -7,11 +7,11 @@
 #include <memory>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/device_sync/fake_cryptauth_scheduler.h"
 #include "chromeos/services/device_sync/pref_names.h"
 #include "components/prefs/testing_pref_service.h"

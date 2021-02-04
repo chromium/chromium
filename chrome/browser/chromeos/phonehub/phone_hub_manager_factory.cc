@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/phonehub/phone_hub_manager_factory.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/system_tray.h"
 #include "chrome/browser/chromeos/device_sync/device_sync_client_factory.h"
 #include "chrome/browser/chromeos/multidevice_setup/multidevice_setup_client_factory.h"
@@ -22,7 +23,6 @@
 #include "chromeos/components/phonehub/onboarding_ui_tracker_impl.h"
 #include "chromeos/components/phonehub/phone_hub_manager_impl.h"
 #include "chromeos/components/phonehub/user_action_recorder_impl.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"

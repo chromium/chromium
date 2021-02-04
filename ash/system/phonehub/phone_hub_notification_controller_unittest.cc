@@ -4,6 +4,7 @@
 
 #include "ash/system/phonehub/phone_hub_notification_controller.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/shell.h"
 #include "ash/system/message_center/message_center_controller.h"
@@ -16,7 +17,6 @@
 #include "chromeos/components/phonehub/fake_phone_hub_manager.h"
 #include "chromeos/components/phonehub/mutable_phone_model.h"
 #include "chromeos/components/phonehub/notification.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/events/event.h"
 #include "ui/gfx/image/image_skia.h"

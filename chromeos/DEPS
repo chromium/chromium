@@ -2,6 +2,7 @@
 # low level Chrome OS system library that may be used by targets that need to
 # be kept as small as possible.
 include_rules = [
+  "+ash/constants",
   "+components/account_id/account_id.h",
   "+components/device_event_log",
   "+components/policy/proto",

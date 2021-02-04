@@ -41,7 +41,7 @@
 // component updated CDM on all desktop platforms and remove this.
 #include "widevine_cdm_version.h"  // In SHARED_INTERMEDIATE_DIR. // nogncheck
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC) && BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/constants/chromeos_features.h"
+#include "ash/constants/ash_features.h"
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC) && BUILDFLAG(IS_CHROMEOS_ASH)
 // The following must be after widevine_cdm_version.h.
 #if defined(WIDEVINE_CDM_MIN_GLIBC_VERSION)

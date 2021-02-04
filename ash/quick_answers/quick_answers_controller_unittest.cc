@@ -4,6 +4,7 @@
 
 #include "ash/quick_answers/quick_answers_controller_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/quick_answers/quick_answers_ui_controller.h"
 #include "ash/quick_answers/ui/quick_answers_view.h"
 #include "ash/quick_answers/ui/user_notice_view.h"
@@ -11,7 +12,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/components/quick_answers/quick_answers_client.h"
 #include "chromeos/components/quick_answers/quick_answers_notice.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "services/network/test/test_url_loader_factory.h"
 
 namespace ash {

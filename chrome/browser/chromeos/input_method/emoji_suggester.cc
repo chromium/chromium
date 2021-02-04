@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/input_method/emoji_suggester.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/files/file_util.h"
 #include "base/i18n/number_formatting.h"
 #include "base/metrics/field_trial_params.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_pref_names.h"
 #include "chromeos/services/ime/constants.h"
 #include "components/prefs/scoped_user_pref_update.h"

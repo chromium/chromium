@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/login_screen.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -68,7 +69,6 @@
 #include "chrome/installer/util/google_update_settings.h"
 #include "chromeos/components/security_token_pin/constants.h"
 #include "chromeos/components/security_token_pin/error_generator.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/constants/devicetype.h"
 #include "chromeos/dbus/util/version_loader.h"

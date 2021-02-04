@@ -7,6 +7,7 @@
 #include <fcntl.h>
 #include <stddef.h>
 
+#include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
@@ -17,7 +18,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "device/udev_linux/scoped_udev.h"
 #include "ui/base/ime/chromeos/ime_keyboard.h"

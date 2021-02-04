@@ -4,12 +4,12 @@
 
 #include "chromeos/services/assistant/proxy/service_controller_proxy.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/optional.h"
 #include "chromeos/assistant/internal/internal_util.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/assistant/proxy/libassistant_service_host.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/assistant/public/cpp/migration/assistant_manager_service_delegate.h"

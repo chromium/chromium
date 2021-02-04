@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
@@ -16,7 +17,6 @@
 #include "base/notreached.h"
 #include "base/sequenced_task_runner.h"
 #include "build/buildflag.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/ime/constants.h"
 #include "chromeos/services/ime/decoder/decoder_engine.h"
 #include "chromeos/services/ime/decoder/system_engine.h"

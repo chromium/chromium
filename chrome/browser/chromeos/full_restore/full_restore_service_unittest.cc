@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/full_restore/full_restore_service.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_features.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_string_value_serializer.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/account_id/account_id.h"
 #include "components/full_restore/full_restore_info.h"
 #include "components/full_restore/full_restore_utils.h"

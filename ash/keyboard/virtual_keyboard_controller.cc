@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
@@ -19,7 +20,6 @@
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/strings/string_util.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"

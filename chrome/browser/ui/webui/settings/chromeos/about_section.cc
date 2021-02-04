@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/chromeos/about_section.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/i18n/message_formatter.h"
@@ -24,7 +25,6 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_chromium_strings.h"

@@ -4,11 +4,11 @@
 
 #include "ash/quick_answers/ui/quick_answers_view.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/quick_answers/quick_answers_controller_impl.h"
 #include "ash/quick_answers/quick_answers_ui_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 
 namespace ash {
 

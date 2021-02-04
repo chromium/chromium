@@ -4,10 +4,10 @@
 
 #include "chromeos/services/ime/decoder/system_engine.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/ime/decoder/proto_conversion.h"
 #include "chromeos/services/ime/mock_input_channel.h"
 #include "chromeos/services/ime/public/proto/messages.pb.h"

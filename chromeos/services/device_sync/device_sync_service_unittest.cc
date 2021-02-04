@@ -7,6 +7,7 @@
 #include <tuple>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
@@ -22,7 +23,6 @@
 #include "base/timer/mock_timer.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/components/multidevice/secure_message_delegate.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/services/device_sync/cryptauth_device_manager_impl.h"
 #include "chromeos/services/device_sync/cryptauth_device_registry_impl.h"

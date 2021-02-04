@@ -11,6 +11,7 @@
 
 #include "ash/ambient/ambient_controller.h"
 #include "ash/ambient/util/ambient_util.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/ambient_client.h"
 #include "ash/public/cpp/ambient/ambient_metrics.h"
@@ -27,7 +28,6 @@
 #include "base/time/time.h"
 #include "chromeos/assistant/internal/ambient/backdrop_client_config.h"
 #include "chromeos/assistant/internal/proto/google3/backdrop/backdrop.pb.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #include "net/base/load_flags.h"

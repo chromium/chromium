@@ -6,10 +6,10 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "chromeos/components/help_app_ui/help_app_ui.h"
 #include "chromeos/components/help_app_ui/help_app_ui_delegate.h"
-#include "chromeos/constants/chromeos_features.h"
 
 HelpAppPageHandler::HelpAppPageHandler(
     chromeos::HelpAppUI* help_app_ui,

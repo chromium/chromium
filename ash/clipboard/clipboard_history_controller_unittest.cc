@@ -8,6 +8,7 @@
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/clipboard/clipboard_history.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/clipboard_image_model_factory.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -19,7 +20,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/unguessable_token.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard_buffer.h"

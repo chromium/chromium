@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_localized_strings_provider.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
@@ -16,7 +17,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/multidevice_setup_resources.h"
 #include "chrome/grit/multidevice_setup_resources_map.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/grit/chromeos_resources.h"
 #include "chromeos/services/multidevice_setup/public/cpp/url_provider.h"
 #include "components/login/localized_values_builder.h"

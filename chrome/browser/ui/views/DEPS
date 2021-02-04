@@ -22,6 +22,7 @@ specific_include_rules = {
   ],
   ".*test.*": [
    "!ash",
+   "+ash/constants",
    "+ash/public",
   ],
 }

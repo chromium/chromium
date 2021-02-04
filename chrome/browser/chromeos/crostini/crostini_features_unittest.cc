@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/crostini/crostini_features.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/callback.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"

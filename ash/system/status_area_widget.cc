@@ -5,6 +5,7 @@
 #include "ash/system/status_area_widget.h"
 
 #include "ash/capture_mode/stop_recording_button_tray.h"
+#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_switches.h"
@@ -34,7 +35,6 @@
 #include "base/containers/adapters.h"
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_macros.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "media/base/media_switches.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"

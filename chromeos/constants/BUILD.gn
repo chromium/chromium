@@ -13,10 +13,10 @@ component("constants") {
     "//build:branding_buildflags",
   ]
   sources = [
+    "../../ash/constants/ash_features.cc",
+    "../../ash/constants/ash_features.h",
     "chromeos_constants.cc",
     "chromeos_constants.h",
-    "chromeos_features.cc",
-    "chromeos_features.h",
     "chromeos_paths.cc",
     "chromeos_paths.h",
     "chromeos_pref_names.cc",

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/release_notes/release_notes_notification.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -16,7 +17,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/version_info/version_info.h"
 #include "ui/chromeos/devicetype_utils.h"

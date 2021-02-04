@@ -5,12 +5,12 @@
 #include "chrome/browser/net/net_error_diagnostics_dialog.h"
 
 #include "apps/launcher.h"
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chromeos/components/connectivity_diagnostics/url_constants.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "extensions/browser/extension_registry.h"
 
 bool CanShowNetworkDiagnosticsDialog(content::WebContents* web_contents) {

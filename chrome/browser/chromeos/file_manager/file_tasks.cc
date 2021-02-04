@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "apps/launcher.h"
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -47,7 +48,6 @@
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "components/drive/drive_api_util.h"
 #include "components/prefs/pref_service.h"

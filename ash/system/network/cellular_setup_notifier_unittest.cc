@@ -4,6 +4,7 @@
 
 #include "ash/system/network/cellular_setup_notifier.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -13,7 +14,6 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/mock_timer.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/hermes/hermes_clients.h"
 #include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/network/network_cert_loader.h"

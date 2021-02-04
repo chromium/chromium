@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_arc_tracker.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_types.h"
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
@@ -31,7 +32,6 @@
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/common/chrome_features.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/widget/widget.h"

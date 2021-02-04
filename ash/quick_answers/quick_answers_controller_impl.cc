@@ -4,13 +4,13 @@
 
 #include "ash/quick_answers/quick_answers_controller_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/quick_answers/quick_answers_ui_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "chromeos/components/quick_answers/quick_answers_notice.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 

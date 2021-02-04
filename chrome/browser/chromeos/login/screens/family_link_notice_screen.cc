@@ -4,11 +4,11 @@
 
 #include "chrome/browser/chromeos/login/screens/family_link_notice_screen.h"
 
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/chromeos/login/wizard_context.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/family_link_notice_screen_handler.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 

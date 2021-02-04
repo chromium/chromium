@@ -7,7 +7,7 @@
  */
 GEN('#include "chromeos/components/media_app_ui/test/media_app_ui_browsertest.h"');
 
-GEN('#include "chromeos/constants/chromeos_features.h"');
+GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 GEN('#include "third_party/blink/public/common/features.h"');
 

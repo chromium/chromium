@@ -4,6 +4,7 @@
 
 #include "chromeos/components/phonehub/connection_manager_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"

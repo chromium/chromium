@@ -93,10 +93,7 @@ source_set("identity_manager") {
     ]
     public_deps += [ "//ash/components/account_manager" ]
 
-    deps += [
-      "//chromeos/constants",
-      "//components/user_manager",
-    ]
+    deps += [ "//components/user_manager" ]
   } else {
     sources += [
       "primary_account_policy_manager_impl.cc",

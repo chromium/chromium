@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/webui/chromeos/cellular_setup/cellular_setup_dialog_launcher.h"
 
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/ui/ash/system_tray_client.h"
 #include "chrome/browser/ui/webui/chromeos/cellular_setup/mobile_setup_dialog.h"
-#include "chromeos/constants/chromeos_features.h"
 
 namespace chromeos {
 

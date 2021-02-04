@@ -4,11 +4,11 @@
 
 #include "ash/system/phonehub/quick_actions_view.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/system/phonehub/quick_action_item.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/components/phonehub/fake_phone_hub_manager.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/views/test/button_test_api.h"
 
 namespace ash {

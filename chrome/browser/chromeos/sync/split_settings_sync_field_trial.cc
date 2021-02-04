@@ -4,11 +4,11 @@
 
 #include "chrome/browser/chromeos/sync/split_settings_sync_field_trial.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/common/channel_info.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/variations_associated_data.h"

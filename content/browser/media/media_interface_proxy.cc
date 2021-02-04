@@ -53,7 +53,7 @@
 #endif  // defined(OS_MAC)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
-#include "chromeos/constants/chromeos_features.h"
+#include "ash/constants/ash_features.h"
 #endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)

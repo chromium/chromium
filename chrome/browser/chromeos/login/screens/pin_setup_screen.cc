@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/chromeos/login/wizard_context.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/pin_setup_screen_handler.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/login/auth/user_context.h"
 #include "components/prefs/pref_service.h"

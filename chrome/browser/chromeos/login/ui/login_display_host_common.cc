@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/login/ui/login_display_host_common.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
@@ -32,7 +33,6 @@
 #include "chrome/browser/ui/webui/chromeos/login/locale_switch_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/supervision_transition_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "content/public/browser/notification_service.h"
 #include "extensions/common/features/feature_session_type.h"

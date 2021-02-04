@@ -8,13 +8,13 @@
 #include <set>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/strings/strcat.h"
 #include "base/unguessable_token.h"
 #include "chromeos/components/drivefs/drivefs_bootstrap.h"
 #include "chromeos/components/drivefs/drivefs_host_observer.h"
 #include "chromeos/components/drivefs/drivefs_search.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/drive/drive_notification_manager.h"
 #include "components/drive/drive_notification_observer.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"

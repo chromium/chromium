@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/drive/drivefs_native_message_host.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/extensions/api/messaging/native_message_port.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/drive/file_errors.h"
 #include "extensions/browser/api/messaging/channel_endpoint.h"
 #include "extensions/browser/api/messaging/message_service.h"

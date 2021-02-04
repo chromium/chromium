@@ -4,10 +4,10 @@
 
 #include "ash/quick_answers/ui/quick_answers_view.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/quick_answers/quick_answers_controller_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_controller.h"

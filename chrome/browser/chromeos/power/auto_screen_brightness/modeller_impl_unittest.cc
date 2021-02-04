@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/power/auto_screen_brightness/modeller_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/chromeos/power/auto_screen_brightness/trainer.h"
 #include "chrome/browser/chromeos/power/auto_screen_brightness/utils.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/user_activity/user_activity_detector.h"

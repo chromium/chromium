@@ -6,8 +6,8 @@
  * @fileoverview Test suite for chrome://eche-app.
  */
 
+GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
-GEN('#include "chromeos/constants/chromeos_features.h"');
 
 const HOST_ORIGIN = 'chrome://eche-app';
 

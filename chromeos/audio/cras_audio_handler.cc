@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
@@ -23,7 +24,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/audio/audio_device.h"
 #include "chromeos/audio/audio_devices_pref_handler_stub.h"
-#include "chromeos/constants/chromeos_features.h"
 
 using std::max;
 using std::min;

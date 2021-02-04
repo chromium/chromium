@@ -10,6 +10,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
@@ -27,7 +28,6 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/crosapi/mojom/cert_database.mojom.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"

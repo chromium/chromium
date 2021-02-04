@@ -4,8 +4,8 @@
 
 #include "chrome/browser/chromeos/bluetooth/debug_logs_manager.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "device/bluetooth/dbus/bluetooth_debug_manager_client.h"

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/crostini/termina_installer.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -12,7 +13,6 @@
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/browser/component_updater/fake_cros_component_manager.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/dbus/dlcservice/fake_dlcservice_client.h"
 #include "services/network/test/test_network_connection_tracker.h"

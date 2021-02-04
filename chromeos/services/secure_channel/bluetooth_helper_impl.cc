@@ -4,13 +4,13 @@
 
 #include "chromeos/services/secure_channel/bluetooth_helper_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/components/multidevice/beacon_seed.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/multidevice/remote_device_cache.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/secure_channel/background_eid_generator.h"
 #include "chromeos/services/secure_channel/ble_advertisement_generator.h"
 #include "chromeos/services/secure_channel/ble_constants.h"

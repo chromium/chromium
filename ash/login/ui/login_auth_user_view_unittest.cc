@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "ash/login/ui/login_auth_user_view.h"
+
+#include "ash/constants/ash_features.h"
 #include "ash/login/mock_login_screen_client.h"
 #include "ash/login/ui/login_password_view.h"
 #include "ash/login/ui/login_pin_input_view.h"
@@ -16,7 +18,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"

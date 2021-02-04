@@ -4,6 +4,7 @@
 
 #include "chrome/browser/renderer_context_menu/quick_answers_menu_observer.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/quick_answers/controller/quick_answers_controller.h"
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
@@ -12,7 +13,6 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/components/quick_answers/test/test_helpers.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"

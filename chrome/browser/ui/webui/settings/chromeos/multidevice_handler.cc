@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/chromeos/multidevice_handler.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
@@ -18,7 +19,6 @@
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/phonehub/util/histogram_util.h"
 #include "chromeos/components/proximity_auth/proximity_auth_pref_names.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/prefs/pref_service.h"

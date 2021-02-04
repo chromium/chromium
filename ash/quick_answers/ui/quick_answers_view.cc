@@ -4,6 +4,7 @@
 
 #include "ash/quick_answers/ui/quick_answers_view.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/assistant/assistant_interface_binder.h"
 #include "ash/quick_answers/quick_answers_ui_controller.h"
 #include "ash/quick_answers/ui/quick_answers_pre_target_handler.h"
@@ -11,7 +12,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"

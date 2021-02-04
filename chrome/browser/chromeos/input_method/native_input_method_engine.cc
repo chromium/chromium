@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/input_method/native_input_method_engine.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "base/i18n/i18n_constants.h"
 #include "base/i18n/icu_string_conversions.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/common/unicode/urename.h"
 #include "third_party/icu/source/common/unicode/ustring.h"

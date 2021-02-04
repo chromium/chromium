@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "chromeos/services/assistant/public/cpp/features.h"
-#include "chromeos/constants/chromeos_features.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 
 namespace chromeos {
