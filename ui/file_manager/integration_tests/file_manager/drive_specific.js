@@ -729,12 +729,8 @@ testcase.driveLinkOpenFileThroughLinkedDirectory = async () => {
   chrome.test.assertTrue(
       await remoteCall.callRemoteTestUtil('openFile', appId, ['deep.jpg']));
 
-  // The Gallery window should open with the image in it.
-  const galleryAppId = await galleryApp.waitForWindow('gallery.html');
-  await galleryApp.waitForSlideImage(galleryAppId, 100, 100, 'deep');
-  chrome.test.assertTrue(
-      await galleryApp.closeWindowAndWait(galleryAppId),
-      'Failed to close Gallery window');
+  // The MediaApp window should open for the image.
+  await waitForMediaApp();
 };
 
 /**
@@ -763,12 +759,8 @@ testcase.driveLinkOpenFileThroughTransitiveLink = async () => {
   chrome.test.assertTrue(
       await remoteCall.callRemoteTestUtil('openFile', appId, ['deep.jpg']));
 
-  // The Gallery window should open with the image in it.
-  const galleryAppId = await galleryApp.waitForWindow('gallery.html');
-  await galleryApp.waitForSlideImage(galleryAppId, 100, 100, 'deep');
-  chrome.test.assertTrue(
-      await galleryApp.closeWindowAndWait(galleryAppId),
-      'Failed to close Gallery window');
+  // The MediaApp window should open for the image.
+  await waitForMediaApp();
 };
 
 /**

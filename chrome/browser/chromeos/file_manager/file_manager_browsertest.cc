@@ -338,13 +338,16 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
                       TestCase("audioRepeatOneModeMultipleFileDrive")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
-    OpenImageBacklight, /* open_image_backlight.js */
+    OpenImageMediaApp, /* open_image_media_app.js */
     FilesAppBrowserTest,
     ::testing::Values(
-        TestCase("imageOpenBacklight").MediaSwa().InGuestMode(),
-        TestCase("imageOpenBacklight").MediaSwa().DisableJsModules(),
-        TestCase("imageOpenBacklight").MediaSwa()));
+        TestCase("imageOpenMediaAppDownloads").MediaSwa().InGuestMode(),
+        TestCase("imageOpenMediaAppDownloads").MediaSwa().DisableJsModules(),
+        TestCase("imageOpenMediaAppDownloads").MediaSwa(),
+        TestCase("imageOpenMediaAppDrive").MediaSwa()));
 
+// TODO(crbug/1030935): Remove these tests when removing Gallery, the equivalent
+// coverage for MediaApp is provided by the tests above.
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     OpenImageFiles, /* open_image_files.js */
     FilesAppBrowserTest,
@@ -666,8 +669,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("driveAvailableOfflineDirectoryGearMenu"),
         TestCase("driveAvailableOfflineActionBar"),
         TestCase("driveLinkToDirectory"),
-        TestCase("driveLinkOpenFileThroughLinkedDirectory"),
-        TestCase("driveLinkOpenFileThroughTransitiveLink"),
+        TestCase("driveLinkOpenFileThroughLinkedDirectory").MediaSwa(),
+        TestCase("driveLinkOpenFileThroughTransitiveLink").MediaSwa(),
         TestCase("driveWelcomeBanner"),
         TestCase("driveOfflineInfoBanner").EnableDriveDssPin(),
         TestCase("driveOfflineInfoBannerWithoutFlag")));
@@ -992,7 +995,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     LauncherSearch, /* launcher_search.js */
     FilesAppBrowserTest,
-    ::testing::Values(TestCase("launcherOpenSearchResult"),
+    ::testing::Values(TestCase("launcherOpenSearchResult").MediaSwa(),
                       TestCase("launcherSearch"),
                       TestCase("launcherSearch").DisableJsModules(),
                       TestCase("launcherSearchOffline").Offline()));
