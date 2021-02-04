@@ -268,20 +268,7 @@ void ChromeRenderFrameObserver::DidClearWindowObject() {
 
 void ChromeRenderFrameObserver::DidMeaningfulLayout(
     blink::WebMeaningfulLayout layout_type) {
-  // Don't do any work for subframes.
-  if (!render_frame()->IsMainFrame())
-    return;
-
-  switch (layout_type) {
-    case blink::WebMeaningfulLayout::kFinishedParsing:
-      CapturePageText(PRELIMINARY_CAPTURE);
-      break;
-    case blink::WebMeaningfulLayout::kFinishedLoading:
-      CapturePageText(FINAL_CAPTURE);
-      break;
-    default:
-      break;
-  }
+  CapturePageText(layout_type);
 }
 
 void ChromeRenderFrameObserver::OnDestruct() {
@@ -428,61 +415,95 @@ void ChromeRenderFrameObserver::OnRenderFrameObserverRequest(
   receivers_.Add(this, std::move(receiver));
 }
 
-void ChromeRenderFrameObserver::CapturePageText(TextCaptureType capture_type) {
+bool ChromeRenderFrameObserver::ShouldCapturePageTextForTranslateOrPhishing(
+    blink::WebMeaningfulLayout layout_type) const {
   WebLocalFrame* frame = render_frame()->GetWebFrame();
-  if (!frame)
-    return;
+  if (!frame) {
+    return false;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Check |frame| for conditions shared by both Translate and Phishing.
+
+  if (!render_frame()->IsMainFrame()) {
+    return false;
+  }
+
+  // |kVisuallyNonEmpty| is ignored by Translate and Phishing.
+  switch (layout_type) {
+    case blink::WebMeaningfulLayout::kFinishedParsing:
+    case blink::WebMeaningfulLayout::kFinishedLoading:
+      break;
+    case blink::WebMeaningfulLayout::kVisuallyNonEmpty:
+    default:
+      return false;
+  }
 
   // Don't capture pages that have pending redirect or location change.
-  if (frame->IsNavigationScheduledWithin(kLocationChangeInterval))
-    return;
+  if (frame->IsNavigationScheduledWithin(kLocationChangeInterval)) {
+    return false;
+  }
 
-  // Don't index/capture pages that are in view source mode.
-  if (frame->IsViewSourceModeEnabled())
-    return;
+  // Don't capture pages that are in view source mode.
+  if (frame->IsViewSourceModeEnabled()) {
+    return false;
+  }
 
   // Don't capture text of the error pages.
   WebDocumentLoader* document_loader = frame->GetDocumentLoader();
-  if (document_loader && document_loader->HasUnreachableURL())
-    return;
+  if (document_loader && document_loader->HasUnreachableURL()) {
+    return false;
+  }
 
-  // Don't index/capture pages that are being no-state prefetched.
-  if (prerender::NoStatePrefetchHelper::IsPrefetching(render_frame()))
-    return;
+  // Don't capture pages that are being no-state prefetched.
+  if (prerender::NoStatePrefetchHelper::IsPrefetching(render_frame())) {
+    return false;
+  }
 
-    // Don't capture contents unless there is either a translate agent or a
-    // phishing classifier to consume them.
+  //////////////////////////////////////////////////////////////////////////////
+  // Translate specific checks.
+  bool should_capture_for_translate = !!translate_agent_;
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Phishing specific checks.
+  bool should_capture_for_phishing = false;
+
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  if (!translate_agent_ && !phishing_classifier_)
-    return;
-#else
-  if (!translate_agent_)
-    return;
+  should_capture_for_phishing = !!phishing_classifier_;
 #endif
 
-  base::TimeTicks capture_begin_time = base::TimeTicks::Now();
+  return should_capture_for_translate || should_capture_for_phishing;
+}
 
-  // Retrieve the frame's full text (up to kMaxIndexChars), and pass it to the
-  // translate helper for language detection and possible translation.
-  base::string16 contents =
-      WebFrameContentDumper::DumpFrameTreeAsText(frame, kMaxIndexChars).Utf16();
+void ChromeRenderFrameObserver::CapturePageText(
+    blink::WebMeaningfulLayout layout_type) {
+  if (!ShouldCapturePageTextForTranslateOrPhishing(layout_type)) {
+    return;
+  }
 
-  UMA_HISTOGRAM_TIMES(kTranslateCaptureText,
-                      base::TimeTicks::Now() - capture_begin_time);
+  base::string16 contents;
+  {
+    SCOPED_UMA_HISTOGRAM_TIMER(kTranslateCaptureText);
+    TRACE_EVENT0("renderer", "ChromeRenderFrameObserver::CapturePageText");
 
-  // We should run language detection only once. Parsing finishes before
-  // the page loads, so let's pick that timing.
-  if (translate_agent_ && capture_type == PRELIMINARY_CAPTURE) {
+    contents = WebFrameContentDumper::DumpFrameTreeAsText(
+                   render_frame()->GetWebFrame(), kMaxIndexChars)
+                   .Utf16();
+  }
+
+  // Language detection should run only once. Parsing finishes before the page
+  // loads, so let's pick that timing.
+  if (translate_agent_ &&
+      layout_type == blink::WebMeaningfulLayout::kFinishedParsing) {
     translate_agent_->PageCaptured(contents);
   }
 
-  TRACE_EVENT0("renderer", "ChromeRenderFrameObserver::CapturePageText");
-
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   // Will swap out the string.
-  if (phishing_classifier_)
-    phishing_classifier_->PageCaptured(&contents,
-                                       capture_type == PRELIMINARY_CAPTURE);
+  if (phishing_classifier_) {
+    phishing_classifier_->PageCaptured(
+        &contents, layout_type == blink::WebMeaningfulLayout::kFinishedParsing);
+  }
 #endif
 }
 
