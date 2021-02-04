@@ -323,7 +323,8 @@ class MockActionDelegate : public ActionDelegate {
   MOCK_METHOD1(SetOverlayBehavior,
                void(ConfigureUiStateProto::OverlayBehavior));
 
-  MOCK_METHOD0(MaybeShowSlowWebsiteWarning, void());
+  MOCK_METHOD1(MaybeShowSlowWebsiteWarning,
+               void(base::OnceCallback<void(bool)>));
   MOCK_METHOD0(MaybeShowSlowConnectionWarning, void());
 
   base::WeakPtr<ActionDelegate> GetWeakPtr() const override {

@@ -52,7 +52,7 @@ void ClickAction::OnWaitForElement(ProcessActionCallback callback,
                                    const Selector& selector,
                                    const ClientStatus& element_status) {
   if (!element_status.ok()) {
-    UpdateProcessedAction(element_status.proto_status());
+    UpdateProcessedAction(element_status);
     std::move(callback).Run(std::move(processed_action_proto_));
     return;
   }

@@ -96,8 +96,15 @@ struct ClientSettings {
   // Whether to show warnings related to a slow website to the user.
   bool enable_slow_website_warnings = false;
 
-  // If true, the slow connection or website warning will be only shown once.
+  // If true, only one warning will be shown to the user, i.e. either the slow
+  // connection or website, depending on which one triggers first.
   bool only_show_warning_once = true;
+
+  // If true, the slow connection warning will be shown only once.
+  bool only_show_connection_warning_once = true;
+
+  // If true, the website warning will be shown only once.
+  bool only_show_website_warning_once = true;
 
   // Defines the maximum wait on a dom find element operation before showing
   // the slow website warning.
