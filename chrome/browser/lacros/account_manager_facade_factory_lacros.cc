@@ -34,7 +34,7 @@ mojo::Remote<crosapi::mojom::AccountManager> GetAccountManagerRemote() {
 account_manager::AccountManagerFacade* GetAccountManagerFacade(
     const std::string& profile_path) {
   // Multi-Login is disabled with Lacros. Always return the same instance.
-  static base::NoDestructor<AccountManagerFacadeImpl> facade(
+  static base::NoDestructor<account_manager::AccountManagerFacadeImpl> facade(
       GetAccountManagerRemote(),
       chromeos::LacrosChromeServiceImpl::Get()->GetInterfaceVersion(
           crosapi::mojom::AccountManager::Uuid_));

@@ -34,8 +34,8 @@ crosapi::AccountManagerAsh* GetAccountManagerAsh(
 account_manager::AccountManagerFacade* GetAccountManagerFacade(
     const std::string& profile_path) {
   // Map from |profile_path| to AccountManagerFacade.
-  static base::NoDestructor<
-      std::map<std::string, std::unique_ptr<AccountManagerFacadeImpl>>>
+  static base::NoDestructor<std::map<
+      std::string, std::unique_ptr<account_manager::AccountManagerFacadeImpl>>>
       account_manager_facade_map;
 
   auto it = account_manager_facade_map->find(profile_path);
@@ -48,9 +48,11 @@ account_manager::AccountManagerFacade* GetAccountManagerFacade(
     // Calls within Ash are in the same process and don't need to check version
     // compatibility with itself.
     constexpr uint32_t remote_version = std::numeric_limits<uint32_t>::max();
+    auto account_manager_facade =
+        std::make_unique<account_manager::AccountManagerFacadeImpl>(
+            std::move(remote), remote_version);
     it = account_manager_facade_map
-             ->emplace(profile_path, std::make_unique<AccountManagerFacadeImpl>(
-                                         std::move(remote), remote_version))
+             ->emplace(profile_path, std::move(account_manager_facade))
              .first;
   }
 
