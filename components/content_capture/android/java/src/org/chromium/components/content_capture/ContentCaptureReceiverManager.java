@@ -85,6 +85,17 @@ public class ContentCaptureReceiverManager {
         if (sDump.booleanValue()) Log.i(TAG, "Removed Session: %s", frameSession.get(0));
     }
 
+    @CalledByNative
+    private void didUpdateTitle(ContentCaptureFrame mainFrame) {
+        String[] urls = buildUrls(null, mainFrame);
+        for (ContentCaptureConsumer consumer : mContentCaptureConsumers) {
+            if (consumer.shouldCapture(urls)) {
+                consumer.onTitleUpdated(mainFrame);
+            }
+        }
+        if (sDump.booleanValue()) Log.i(TAG, "Updated Title: %s", mainFrame);
+    }
+
     private FrameSession toFrameSession(Object[] session) {
         FrameSession frameSession = new FrameSession(session.length);
         for (Object s : session) frameSession.add((ContentCaptureFrame) s);

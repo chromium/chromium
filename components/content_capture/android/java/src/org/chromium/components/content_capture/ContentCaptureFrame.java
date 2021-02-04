@@ -46,12 +46,11 @@ public class ContentCaptureFrame extends ContentCaptureDataBase {
         sb.append(getUrl());
         sb.append(" Title:");
         sb.append(getTitle());
-        sb.append('\n');
         return sb.toString();
     }
 
     @Override
     public String getText() {
-        return getUrl();
+        return getTitle();
     }
 }

@@ -47,4 +47,9 @@ public class ExperimentContentCaptureConsumer extends ContentCaptureConsumer {
             FrameSession parentFrame, ContentCaptureFrame contentCaptureFrame) {
         if (sDump) Log.d(TAG, "onContentUpdated");
     }
+
+    @Override
+    public void onTitleUpdated(ContentCaptureFrame contentCaptureFrame) {
+        if (sDump) Log.d(TAG, "onTitleUpdated");
+    }
 }

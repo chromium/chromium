@@ -8,6 +8,7 @@
 
 #include "components/content_capture/browser/content_capture_receiver.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -108,6 +109,17 @@ void ContentCaptureReceiverManager::ReadyToCommitNavigation(
   }
 }
 
+void ContentCaptureReceiverManager::TitleWasSet(
+    content::NavigationEntry* entry) {
+  // Set the title to the mainframe.
+  if (auto* receiver =
+          ContentCaptureReceiverForFrame(web_contents()->GetMainFrame())) {
+    // To match what the user sees, intentionally get the title from WebContents
+    // instead of NavigationEntry, though they might be same.
+    receiver->SetTitle(web_contents()->GetTitle());
+  }
+}
+
 void ContentCaptureReceiverManager::DidCaptureContent(
     ContentCaptureReceiver* content_capture_receiver,
     const ContentCaptureFrame& data) {
@@ -153,6 +165,17 @@ void ContentCaptureReceiverManager::DidRemoveSession(
   if (!BuildContentCaptureSessionLastSeen(content_capture_receiver, &session))
     return;
   DidRemoveSession(session);
+}
+
+void ContentCaptureReceiverManager::DidUpdateTitle(
+    ContentCaptureReceiver* content_capture_receiver) {
+  ContentCaptureSession session;
+  BuildContentCaptureSession(content_capture_receiver,
+                             /*ancestor_only=*/false, &session);
+
+  // Shall only update mainframe's title.
+  DCHECK(session.size() == 1);
+  DidUpdateTitle(*session.begin());
 }
 
 void ContentCaptureReceiverManager::BuildContentCaptureSession(

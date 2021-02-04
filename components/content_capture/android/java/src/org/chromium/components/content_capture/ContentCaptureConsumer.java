@@ -29,8 +29,8 @@ public abstract class ContentCaptureConsumer {
      * @param parentFrame is the parent of the frame from that the content captured.
      * @param contentCaptureFrame is the captured content tree, its root is the frame.
      */
-    public void onContentUpdated(
-            FrameSession parentFrame, ContentCaptureFrame contentCaptureFrame) {}
+    public abstract void onContentUpdated(
+            FrameSession parentFrame, ContentCaptureFrame contentCaptureFrame);
 
     /**
      * Invoked when the session is removed
@@ -44,6 +44,12 @@ public abstract class ContentCaptureConsumer {
      * @param removedIds are array of removed content id.
      */
     public abstract void onContentRemoved(FrameSession session, long[] removedIds);
+
+    /**
+     * Invoked when the title is updated.
+     * @param mainFrame the frame whose title is updated.
+     */
+    public abstract void onTitleUpdated(ContentCaptureFrame mainFrame);
 
     public void onWebContentsChanged(WebContents current) {
         if (!ContentCaptureFeatures.isEnabled()) return;

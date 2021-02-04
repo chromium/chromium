@@ -48,6 +48,7 @@ android_library("java") {
     "java/src/org/chromium/components/content_capture/PlatformSession.java",
     "java/src/org/chromium/components/content_capture/ProcessContentCaptureDataTask.java",
     "java/src/org/chromium/components/content_capture/SessionRemovedTask.java",
+    "java/src/org/chromium/components/content_capture/TitleUpdateTask.java",
   ]
 }
 

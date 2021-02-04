@@ -29,6 +29,7 @@ class ContentCaptureReceiverManagerAndroid
   void DidRemoveContent(const ContentCaptureSession& session,
                         const std::vector<int64_t>& data) override;
   void DidRemoveSession(const ContentCaptureSession& session) override;
+  void DidUpdateTitle(const ContentCaptureFrame& main_frame) override;
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 

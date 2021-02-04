@@ -78,7 +78,7 @@ abstract class NotificationTask extends AsyncTask<Boolean> {
                 parentPlatformSessionData.contentCaptureSession,
                 parentPlatformSessionData.autofillId, data.getId());
 
-        if (!data.hasChildren()) viewStructure.setText(data.getText());
+        viewStructure.setText(data.getText());
         Rect rect = data.getBounds();
         // Always set scroll as (0, 0).
         viewStructure.setDimens(rect.left, rect.top, 0, 0, rect.width(), rect.height());

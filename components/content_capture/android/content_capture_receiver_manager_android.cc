@@ -66,8 +66,10 @@ ScopedJavaLocalRef<jobject> ToJavaObjectOfContentCaptureFrame(
     JNIEnv* env,
     const ContentCaptureFrame& data) {
   ScopedJavaLocalRef<jstring> jurl = ConvertUTF16ToJavaString(env, data.url);
-  ScopedJavaLocalRef<jstring> jtitle =
-      ConvertUTF16ToJavaString(env, data.title);
+  ScopedJavaLocalRef<jstring> jtitle;
+  if (!data.title.empty())
+    jtitle = ConvertUTF16ToJavaString(env, data.title);
+
   ScopedJavaLocalRef<jobject> jdata =
       Java_ContentCaptureFrame_createContentCaptureFrame(
           env, data.id, jurl, data.bounds.x(), data.bounds.y(),
@@ -86,7 +88,7 @@ ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfContentCaptureFrame(
   ScopedJavaLocalRef<jclass> object_clazz =
       base::android::GetClass(env, "java/lang/Object");
   jobjectArray joa =
-      env->NewObjectArray(session.size(), object_clazz.obj(), NULL);
+      env->NewObjectArray(session.size(), object_clazz.obj(), nullptr);
   jni_generator::CheckException(env);
 
   for (size_t i = 0; i < session.size(); ++i) {
@@ -164,6 +166,17 @@ void ContentCaptureReceiverManagerAndroid::DidRemoveSession(
   DCHECK(java_ref_.obj());
   Java_ContentCaptureReceiverManager_didRemoveSession(
       env, java_ref_, ToJavaArrayOfContentCaptureFrame(env, session));
+}
+
+void ContentCaptureReceiverManagerAndroid::DidUpdateTitle(
+    const ContentCaptureFrame& main_frame) {
+  JNIEnv* env = AttachCurrentThread();
+  DCHECK(java_ref_.obj());
+  ScopedJavaLocalRef<jobject> jdata =
+      ToJavaObjectOfContentCaptureFrame(env, main_frame);
+  if (jdata.is_null())
+    return;
+  Java_ContentCaptureReceiverManager_didUpdateTitle(env, java_ref_, jdata);
 }
 
 bool ContentCaptureReceiverManagerAndroid::ShouldCapture(const GURL& url) {

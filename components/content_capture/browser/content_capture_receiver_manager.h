@@ -21,6 +21,7 @@ class WebContents;
 namespace content_capture {
 
 class ContentCaptureReceiver;
+class NavigationEntry;
 
 // This class has an instance per WebContents, it is the base class of
 // ContentCaptureReceiverManager implementation which shall overrides the pure
@@ -50,12 +51,14 @@ class ContentCaptureReceiverManager : public content::WebContentsObserver,
   void DidRemoveContent(ContentCaptureReceiver* content_capture_receiver,
                         const std::vector<int64_t>& data);
   void DidRemoveSession(ContentCaptureReceiver* content_capture_receiver);
+  void DidUpdateTitle(ContentCaptureReceiver* content_capture_receiver);
 
   // content::WebContentsObserver:
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
   void ReadyToCommitNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void TitleWasSet(content::NavigationEntry* entry) override;
 
   size_t GetFrameMapSizeForTesting() const { return frame_map_.size(); }
 
@@ -75,6 +78,8 @@ class ContentCaptureReceiverManager : public content::WebContentsObserver,
                                 const std::vector<int64_t>& ids) = 0;
   // Invoked when the given |session| was removed.
   virtual void DidRemoveSession(const ContentCaptureSession& session) = 0;
+  // Invoked when the given |main_frame|'s title updated.
+  virtual void DidUpdateTitle(const ContentCaptureFrame& main_frame) = 0;
 
   virtual bool ShouldCapture(const GURL& url) = 0;
 

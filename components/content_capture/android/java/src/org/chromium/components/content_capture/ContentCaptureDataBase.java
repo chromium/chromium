@@ -51,13 +51,12 @@ public abstract class ContentCaptureDataBase {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("id:");
+        sb.append(" id:");
         sb.append(getId());
         sb.append(" bounds:");
         sb.append(getBounds());
-        sb.append('\n');
         if (hasChildren()) {
-            sb.append("children:");
+            sb.append(" children:");
             sb.append(getChildren().size());
             for (ContentCaptureDataBase child : getChildren()) {
                 sb.append(child.toString());

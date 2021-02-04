@@ -41,7 +41,6 @@ public class ContentCaptureData extends ContentCaptureDataBase {
         StringBuilder sb = new StringBuilder(super.toString());
         sb.append(" value:");
         sb.append(mValue);
-        sb.append('\n');
         return sb.toString();
     }
 

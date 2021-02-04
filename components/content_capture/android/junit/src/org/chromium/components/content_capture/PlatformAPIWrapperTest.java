@@ -223,10 +223,11 @@ public class PlatformAPIWrapperTest {
 
     private static final String MAIN_URL = "http://main.domain.com";
     private static final String MAIN_TITLE = "MAIN TITLE";
+    private static final String UPDATED_MAIN_TITLE = "MAIN TITLE UPDATE";
     private static final long MAIN_ID = 4;
     private static final Rect MAIN_FRAME_RECT = new Rect(0, 0, 200, 200);
     private static final String CHILD_URL = "http://test.domain.com";
-    private static final String CHILD_TITLE = "CHILD TITLE";
+    private static final String CHILD_TITLE = null;
     private static final long CHILD_FRAME_ID = 1;
     private static final Rect CHILD_FRAME_RECT = new Rect(0, 0, 100, 100);
     private static final long CHILD1_ID = 2;
@@ -336,6 +337,13 @@ public class PlatformAPIWrapperTest {
         return new SessionRemovedTask(createFrameSessionForRemoveTask(), mRootPlatformSession);
     }
 
+    private TitleUpdateTask createTitleUpdateTask() {
+        ContentCaptureFrame mainFrame = ContentCaptureFrame.createContentCaptureFrame(MAIN_ID,
+                MAIN_URL, MAIN_FRAME_RECT.left, MAIN_FRAME_RECT.top, MAIN_FRAME_RECT.width(),
+                MAIN_FRAME_RECT.height(), UPDATED_MAIN_TITLE);
+        return new TitleUpdateTask(mainFrame, mRootPlatformSession);
+    }
+
     private void runContentCapturedTask() throws Exception {
         runTaskAndVerifyCallback(createContentCapturedTask(),
                 toIntArray(PlatformAPIWrapperTestHelper.CREATE_CONTENT_CAPTURE_SESSION,
@@ -369,6 +377,7 @@ public class PlatformAPIWrapperTest {
         };
         return e;
     }
+
     @Test
     public void testTypicalLifecycle() throws Throwable {
         runContentCapturedTask();
@@ -386,7 +395,7 @@ public class PlatformAPIWrapperTest {
         inOrder.verify(mPlatformAPIWrapperTestHelperSpy)
                 .notifyViewAppeared(mMockedRootContentCaptureSession,
                         mPlatformAPIWrapperTestHelper.mCreatedViewStructures.get(0));
-        verifyVirtualViewStructure(MAIN_URL, MAIN_FRAME_RECT, 0);
+        verifyVirtualViewStructure(MAIN_TITLE, MAIN_FRAME_RECT, 0);
 
         // Verifies the child frame.
         inOrder.verify(mPlatformAPIWrapperTestHelperSpy)
@@ -457,6 +466,15 @@ public class PlatformAPIWrapperTest {
         inOrder.verify(mPlatformAPIWrapperTestHelperSpy)
                 .destroyContentCaptureSession(
                         mPlatformAPIWrapperTestHelper.mCreatedContentCaptureSessions.get(1));
+
+        // Updates the title.
+        runTaskAndVerifyCallback(createTitleUpdateTask(),
+                toIntArray(PlatformAPIWrapperTestHelper.NEW_AUTOFILL_ID,
+                        PlatformAPIWrapperTestHelper.NOTIFY_VIEW_TEXT_CHANGED));
+        inOrder.verify(mPlatformAPIWrapperTestHelperSpy)
+                .notifyViewTextChanged(mMockedRootContentCaptureSession,
+                        mPlatformAPIWrapperTestHelper.mCreatedAutofilIds.get(3),
+                        UPDATED_MAIN_TITLE);
     }
 
     // The below testFooException() tests mock the specific method to throw exception, then verify

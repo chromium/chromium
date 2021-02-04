@@ -7,7 +7,11 @@
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
+#include "base/time/time.h"
 #include "components/content_capture/browser/content_capture_receiver_manager.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -45,6 +49,7 @@ void ContentCaptureReceiver::BindPendingReceiver(
 
 void ContentCaptureReceiver::DidCaptureContent(const ContentCaptureData& data,
                                                bool first_data) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto* manager = GetContentCaptureReceiverManager(rfh_);
   if (!manager)
     return;
@@ -65,30 +70,29 @@ void ContentCaptureReceiver::DidCaptureContent(const ContentCaptureData& data,
     frame_content_capture_data_.bounds = data.bounds;
     has_session_ = true;
   }
-  // We can't avoid copy the data here, because id need to be overridden.
-  ContentCaptureFrame content(data);
-  content.id = id_;
+  // We can't avoid copy the data here because frame needs to be replaced.
   // Always have frame URL attached, since the ContentCaptureConsumer will
   // be reset once activity is resumed, URL is needed to rebuild session.
-  if (!first_data)
-    content.url = frame_content_capture_data_.url;
-  manager->DidCaptureContent(this, content);
+  ContentCaptureFrame frame(frame_content_capture_data_);
+  frame.children = data.children;
+  manager->DidCaptureContent(this, frame);
 }
 
 void ContentCaptureReceiver::DidUpdateContent(const ContentCaptureData& data) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto* manager = GetContentCaptureReceiverManager(rfh_);
   if (!manager)
     return;
 
-  // We can't avoid copy the data here, because id need to be overridden.
-  ContentCaptureFrame content(data);
-  content.id = id_;
-  content.url = frame_content_capture_data_.url;
-  manager->DidUpdateContent(this, content);
+  // We can't avoid copy the data here because frame needs to be replaced.
+  ContentCaptureFrame frame(frame_content_capture_data_);
+  frame.children = data.children;
+  manager->DidUpdateContent(this, frame);
 }
 
 void ContentCaptureReceiver::DidRemoveContent(
     const std::vector<int64_t>& data) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto* manager = GetContentCaptureReceiverManager(rfh_);
   if (!manager)
     return;
@@ -96,6 +100,7 @@ void ContentCaptureReceiver::DidRemoveContent(
 }
 
 void ContentCaptureReceiver::StartCapture() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (content_capture_enabled_)
     return;
 
@@ -106,6 +111,7 @@ void ContentCaptureReceiver::StartCapture() {
 }
 
 void ContentCaptureReceiver::StopCapture() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!content_capture_enabled_)
     return;
 
@@ -116,6 +122,7 @@ void ContentCaptureReceiver::StopCapture() {
 }
 
 void ContentCaptureReceiver::RemoveSession() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!has_session_)
     return;
 
@@ -128,6 +135,50 @@ void ContentCaptureReceiver::RemoveSession() {
     // used by GetFrameContentCaptureDataLastSeen(), has_session_ is used to
     // check if new session shall be created as needed.
   }
+
+  // Cancel the task if any.
+  if (notify_title_update_callback_) {
+    notify_title_update_callback_->Cancel();
+    notify_title_update_callback_ = nullptr;
+    title_update_task_runner_ = nullptr;
+  }
+  exponential_delay_ = 1;
+}
+
+void ContentCaptureReceiver::SetTitle(const base::string16& title) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  frame_content_capture_data_.title = title;
+  if (!has_session_)
+    return;
+
+  // Returns if there is the pending task.
+  if (notify_title_update_callback_)
+    return;
+
+  notify_title_update_callback_ =
+      std::make_unique<base::CancelableOnceClosure>(base::BindOnce(
+          &ContentCaptureReceiver::NotifyTitleUpdate, base::Unretained(this)));
+
+  if (!title_update_task_runner_)
+    title_update_task_runner_ = content::GetUIThreadTaskRunner({});
+
+  title_update_task_runner_->PostDelayedTask(
+      FROM_HERE, notify_title_update_callback_->callback(),
+      base::TimeDelta::FromSeconds(exponential_delay_));
+
+  exponential_delay_ =
+      exponential_delay_ < 256 ? exponential_delay_ * 2 : exponential_delay_;
+}
+
+void ContentCaptureReceiver::NotifyTitleUpdate() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (auto* manager = GetContentCaptureReceiverManager(rfh_))
+    manager->DidUpdateTitle(this);
+
+  // Reset the task after running.
+  notify_title_update_callback_ = nullptr;
+  title_update_task_runner_ = nullptr;
 }
 
 const mojo::AssociatedRemote<mojom::ContentCaptureSender>&
@@ -140,6 +191,7 @@ ContentCaptureReceiver::GetContentCaptureSender() {
 }
 
 const ContentCaptureFrame& ContentCaptureReceiver::GetContentCaptureFrame() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   base::string16 url = base::UTF8ToUTF16(rfh_->GetLastCommittedURL().spec());
   if (url == frame_content_capture_data_.url && has_session_)
     return frame_content_capture_data_;

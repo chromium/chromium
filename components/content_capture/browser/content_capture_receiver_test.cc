@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_mock_time_task_runner.h"
 #include "build/build_config.h"
 #include "components/content_capture/browser/content_capture_receiver_manager.h"
 #include "content/public/browser/content_browser_client.h"
@@ -112,6 +113,10 @@ class ContentCaptureReceiverManagerHelper
     removed_sessions_.push_back(data);
   }
 
+  void DidUpdateTitle(const ContentCaptureFrame& main_frame) override {
+    updated_title_ = main_frame.title;
+  }
+
   bool ShouldCapture(const GURL& url) override { return false; }
 
   const ContentCaptureSession& parent_session() const {
@@ -133,6 +138,7 @@ class ContentCaptureReceiverManagerHelper
   }
 
   const std::vector<int64_t>& removed_ids() const { return removed_ids_; }
+  const base::string16& updated_title() const { return updated_title_; }
 
   void Reset() { removed_sessions_.clear(); }
 
@@ -150,6 +156,7 @@ class ContentCaptureReceiverManagerHelper
   std::vector<int64_t> removed_ids_;
   std::vector<ContentCaptureSession> removed_sessions_;
   SessionRemovedTestHelper* session_removed_test_helper_;
+  base::string16 updated_title_;
 };
 
 }  // namespace
@@ -526,6 +533,57 @@ TEST_P(ContentCaptureReceiverTest, RenderFrameHostGone) {
   DidCaptureContent(test_data(), true /* first_data */);
   DidUpdateContent(test_data());
   DidRemoveContent(expected_removed_ids());
+}
+
+TEST_P(ContentCaptureReceiverTest, TitleUpdateTaskDelay) {
+  auto* receiver =
+      content_capture_receiver_manager_helper()->GetContentCaptureReceiver(
+          web_contents()->GetMainFrame());
+  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  // Uses TestMockTimeTaskRunner to check the task state.
+  receiver->title_update_task_runner_ = task_runner;
+
+  receiver->SetTitle(base::ASCIIToUTF16("title 1"));
+  // No task scheduled because no content has been captured.
+  EXPECT_FALSE(receiver->notify_title_update_callback_);
+  EXPECT_FALSE(task_runner->HasPendingTask());
+
+  // Capture content, then update the title.
+  DidCaptureContent(test_data(), /*first_data=*/true);
+  base::string16 title2 = base::ASCIIToUTF16("title 2");
+  receiver->SetTitle(title2);
+  // A task should be scheduled.
+  EXPECT_TRUE(receiver->notify_title_update_callback_);
+  EXPECT_TRUE(task_runner->HasPendingTask());
+  EXPECT_EQ(2u, receiver->exponential_delay_);
+  // Run the pending task.
+  task_runner->FastForwardBy(
+      base::TimeDelta::FromSeconds(receiver->exponential_delay_ / 2));
+  task_runner->RunUntilIdle();
+  // Verify the title is updated and the task is reset.
+  EXPECT_EQ(title2, content_capture_receiver_manager_helper()->updated_title());
+  EXPECT_FALSE(receiver->notify_title_update_callback_);
+  EXPECT_FALSE(task_runner->HasPendingTask());
+
+  // Set the task_runner again since it is reset after task runs.
+  receiver->title_update_task_runner_ = task_runner;
+
+  // Change title again and verify the result.
+  receiver->SetTitle(base::ASCIIToUTF16("title 3"));
+  EXPECT_TRUE(receiver->notify_title_update_callback_);
+  EXPECT_TRUE(task_runner->HasPendingTask());
+  EXPECT_EQ(4u, receiver->exponential_delay_);
+
+  // Remove the session to verify the pending task cancelled.
+  receiver->RemoveSession();
+  EXPECT_FALSE(receiver->notify_title_update_callback_);
+  // The cancelled task isn't removed from the TaskRunner, prune it.
+  task_runner->TakePendingTasks();
+  EXPECT_FALSE(task_runner->HasPendingTask());
+  // The delay time is reset after session is removed.
+  EXPECT_EQ(1u, receiver->exponential_delay_);
+  // Verify the latest task isn't run.
+  EXPECT_EQ(title2, content_capture_receiver_manager_helper()->updated_title());
 }
 
 // TODO(https://crbug.com/1010416): Fix flakes on win10_chromium_x64_rel_ng and

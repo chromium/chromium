@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/cancelable_callback.h"
 #include "base/gtest_prod_util.h"
 #include "components/content_capture/browser/content_capture_frame.h"
 #include "components/content_capture/common/content_capture.mojom.h"
@@ -53,8 +54,13 @@ class ContentCaptureReceiver : public mojom::ContentCaptureReceiver {
 
   void RemoveSession();
 
+  void SetTitle(const base::string16& title);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(ContentCaptureReceiverTest, RenderFrameHostGone);
+  FRIEND_TEST_ALL_PREFIXES(ContentCaptureReceiverTest, TitleUpdateTaskDelay);
+
+  void NotifyTitleUpdate();
 
   const mojo::AssociatedRemote<mojom::ContentCaptureSender>&
   GetContentCaptureSender();
@@ -77,6 +83,16 @@ class ContentCaptureReceiver : public mojom::ContentCaptureReceiver {
   // removed; the former is caused by either the content captured or the
   // |frame_content_capture_data_| required by child frame.
   bool has_session_ = false;
+
+  // The TaskRunner for |notify_title_update_callback_| task. It is also used by
+  // test to replace with TestMockTimeTaskRunner.
+  scoped_refptr<base::SingleThreadTaskRunner> title_update_task_runner_;
+  // Hold the task for cancelling on session end.
+  std::unique_ptr<base::CancelableOnceClosure> notify_title_update_callback_;
+  // The delay of |notify_title_update_callback_|, is increased exponentially to
+  // prevent running frequently.
+  unsigned exponential_delay_ = 1;
+
   mojo::AssociatedRemote<mojom::ContentCaptureSender> content_capture_sender_;
   DISALLOW_COPY_AND_ASSIGN(ContentCaptureReceiver);
 };
