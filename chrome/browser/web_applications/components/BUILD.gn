@@ -33,6 +33,8 @@ source_set("components") {
     "os_integration_manager.h",
     "pending_app_manager.cc",
     "pending_app_manager.h",
+    "policy/web_app_policy_constants.cc",
+    "policy/web_app_policy_constants.h",
     "protocol_handler_manager.cc",
     "protocol_handler_manager.h",
     "system_web_app_types.h",
