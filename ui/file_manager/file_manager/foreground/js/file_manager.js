@@ -19,6 +19,7 @@
 // #import {importerHistoryInterfaces} from '../../../externs/background/import_history.m.js';
 // #import {CommandHandlerDeps} from '../../../externs/command_handler_deps.m.js';
 // #import {ProgressItemState} from '../../common/js/progress_center_common.m.js';
+// #import {StorageAdapter} from '../../common/js/storage_adapter.m.js';
 // #import {crossoverSearchUtils} from './crossover_search_utils.m.js';
 // #import {FileTasks} from './file_tasks.m.js';
 // #import {CrostiniController} from './crostini_controller.m.js';
@@ -925,6 +926,10 @@
    * @private
    */
   initGeneral_() {
+    // For the SWA version we need the adapters set up before they get used.
+    if (window.isSWA) {
+      this.initAdapters_();
+    }
     // Initialize the application state.
     // TODO(mtomasz): Unify window.appState with location.search format.
     if (window.appState) {
@@ -1010,6 +1015,15 @@
     this.volumeManager_ = new FilteredVolumeManager(
         allowedPaths, writableOnly,
         this.fileBrowserBackground_.getVolumeManager());
+  }
+
+  /**
+   * One time initialization of the SWA adapters for chrome extension APIs.
+   * @private
+   */
+  initAdapters_() {
+    /** @suppress {checkTypes|const} */
+    window.chrome.storage = new StorageAdapter();
   }
 
   /**

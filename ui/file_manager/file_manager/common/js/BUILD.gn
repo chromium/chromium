@@ -34,6 +34,7 @@ js_type_check("closure_compile_module") {
     ":metrics_base",
     ":mock_entry",
     ":progress_center_common",
+    ":storage_adapter",
     ":trash",
     ":util",
     "//ui/file_manager/base/js:volume_manager_types",
@@ -53,6 +54,7 @@ js_type_check("closure_compile_jsmodules") {
     ":metrics_base.m",
     ":mock_entry.m",
     ":progress_center_common.m",
+    ":storage_adapter.m",
     ":trash.m",
     ":util.m",
   ]
@@ -306,6 +308,17 @@ js_library("progress_center_common.m") {
   extra_deps = [ ":modulize" ]
 }
 
+js_library("storage_adapter") {
+}
+
+js_library("storage_adapter.m") {
+  sources = [
+    "$root_gen_dir/ui/file_manager/file_manager/common/js/storage_adapter.m.js",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("trash") {
   deps = [
     "//ui/file_manager/base/js:volume_manager_types",
@@ -444,6 +457,7 @@ js_modulizer("modulize") {
     "metrics_base.js",
     "mock_entry.js",
     "progress_center_common.js",
+    "storage_adapter.js",
     "test_importer_common.js",
     "trash.js",
     "unittest_util.js",
