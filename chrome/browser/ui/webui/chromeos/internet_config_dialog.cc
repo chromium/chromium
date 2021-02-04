@@ -159,7 +159,9 @@ InternetConfigDialogUI::InternetConfigDialogUI(content::WebUI* web_ui)
   source->SetDefaultResource(IDR_INTERNET_CONFIG_DIALOG_VULCANIZED_HTML);
   source->AddResourcePath("crisper.js", IDR_INTERNET_CONFIG_DIALOG_CRISPER_JS);
 #else
-  source->SetDefaultResource(IDR_INTERNET_CONFIG_DIALOG_HTML);
+  source->SetDefaultResource(IDR_INTERNET_CONFIG_DIALOG_CONTAINER_HTML);
+  source->AddResourcePath("internet_config_dialog.html",
+                          IDR_INTERNET_CONFIG_DIALOG_HTML);
   source->AddResourcePath("internet_config_dialog.js",
                           IDR_INTERNET_CONFIG_DIALOG_JS);
 #endif

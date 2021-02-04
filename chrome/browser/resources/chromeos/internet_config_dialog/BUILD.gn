@@ -7,7 +7,7 @@ import("../../tools/optimize_webui.gni")
 
 optimize_webui("build") {
   host = "internet_config_dialog"
-  html_in_files = [ "internet_config_dialog.html" ]
+  html_in_files = [ "internet_config_dialog_container.html" ]
   html_out_files = [ "vulcanized.html" ]
   excludes = [ "chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom.html" ]
 
