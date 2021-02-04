@@ -45,6 +45,7 @@
 #include "content/browser/renderer_host/media/render_frame_audio_input_stream_factory.h"
 #include "content/browser/renderer_host/media/render_frame_audio_output_stream_factory.h"
 #include "content/browser/renderer_host/policy_container_host.h"
+#include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/should_swap_browsing_instance.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/webui/web_ui_impl.h"
@@ -226,7 +227,6 @@ class RenderFrameHostImpl;
 class RenderFrameProxyHost;
 class RenderProcessHost;
 class RenderViewHostImpl;
-class RenderWidgetHostImpl;
 class RenderWidgetHostView;
 class RenderWidgetHostViewBase;
 class ScreenEnumerationImpl;
@@ -307,6 +307,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   SiteInstanceImpl* GetSiteInstance() override;
   RenderProcessHost* GetProcess() override;
   GlobalFrameRoutingId GetGlobalFrameRoutingId() override;
+  RenderWidgetHostImpl* GetRenderWidgetHost() override;
   RenderWidgetHostView* GetView() override;
   RenderFrameHostImpl* GetParent() override;
   RenderFrameHostImpl* GetMainFrame() override;
@@ -682,18 +683,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // and painting for this frame and its contiguous local subtree in the
   // renderer process.
   bool is_local_root() const { return !!GetLocalRenderWidgetHost(); }
-
-  // Returns the RenderWidgetHostImpl attached to this frame or the nearest
-  // ancestor frame, which could potentially be the root. For most input
-  // and rendering related purposes, GetView() should be preferred and
-  // RenderWidgetHostViewBase methods used. GetRenderWidgetHost() will not
-  // return a nullptr, whereas GetView() potentially will (for instance,
-  // after a renderer crash).
-  //
-  // This method crashes if this RenderFrameHostImpl does not own a
-  // a RenderWidgetHost and nor does any of its ancestors. That would
-  // typically mean that the frame has been detached from the frame tree.
-  virtual RenderWidgetHostImpl* GetRenderWidgetHost();
 
   media::MediaMetricsProvider::RecordAggregateWatchTimeCallback
   GetRecordAggregateWatchTimeCallback();

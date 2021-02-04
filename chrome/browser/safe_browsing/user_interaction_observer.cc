@@ -85,19 +85,15 @@ SafeBrowsingUserInteractionObserver::SafeBrowsingUserInteractionObserver(
   mouse_event_callback_ = base::BindRepeating(
       &SafeBrowsingUserInteractionObserver::HandleMouseEvent,
       base::Unretained(this));
-  // Pass a callback to the render widget host instead of implementing
+  // Pass a callback to the RenderWidgetHost instead of implementing
   // WebContentsObserver::DidGetUserInteraction(). The reason for this is that
-  // render widget host handles keyboard events earlier and the callback can
+  // RenderWidgetHost handles keyboard events earlier and the callback can
   // indicate that it wants the key press to be ignored.
   // (DidGetUserInteraction() can only observe and not cancel the event.)
-  web_contents->GetMainFrame()
-      ->GetRenderViewHost()
-      ->GetWidget()
-      ->AddKeyPressEventCallback(key_press_callback_);
-  web_contents->GetMainFrame()
-      ->GetRenderViewHost()
-      ->GetWidget()
-      ->AddMouseEventCallback(mouse_event_callback_);
+  content::RenderWidgetHost* widget =
+      web_contents->GetMainFrame()->GetRenderWidgetHost();
+  widget->AddKeyPressEventCallback(key_press_callback_);
+  widget->AddMouseEventCallback(mouse_event_callback_);
 
   // Observe permission bubble events.
   permissions::PermissionRequestManager* permission_request_manager =
@@ -115,12 +111,10 @@ SafeBrowsingUserInteractionObserver::~SafeBrowsingUserInteractionObserver() {
     permission_request_manager->RemoveObserver(this);
   }
   web_contents_->GetMainFrame()
-      ->GetRenderViewHost()
-      ->GetWidget()
+      ->GetRenderWidgetHost()
       ->RemoveKeyPressEventCallback(key_press_callback_);
   web_contents_->GetMainFrame()
-      ->GetRenderViewHost()
-      ->GetWidget()
+      ->GetRenderWidgetHost()
       ->RemoveMouseEventCallback(mouse_event_callback_);
 }
 
@@ -151,17 +145,23 @@ SafeBrowsingUserInteractionObserver::FromWebContents(
       web_contents->GetUserData(kWebContentsUserDataKey));
 }
 
-void SafeBrowsingUserInteractionObserver::RenderViewHostChanged(
-    content::RenderViewHost* old_host,
-    content::RenderViewHost* new_host) {
-  // |old_host| can be nullptr if the old RVH was shut down.
-  if (old_host)
-    old_host->GetWidget()->RemoveKeyPressEventCallback(key_press_callback_);
-  new_host->GetWidget()->AddKeyPressEventCallback(key_press_callback_);
-
-  if (old_host)
-    old_host->GetWidget()->RemoveMouseEventCallback(mouse_event_callback_);
-  new_host->GetWidget()->AddMouseEventCallback(mouse_event_callback_);
+void SafeBrowsingUserInteractionObserver::RenderFrameHostChanged(
+    content::RenderFrameHost* old_frame,
+    content::RenderFrameHost* new_frame) {
+  // We currently only insert callbacks on the widget for the top-level main
+  // frame.
+  if (new_frame != web_contents()->GetMainFrame())
+    return;
+  // The `old_frame` is null when the `new_frame` is the initial
+  // RenderFrameHost, which we already attached to in the constructor.
+  if (!old_frame)
+    return;
+  content::RenderWidgetHost* old_widget = old_frame->GetRenderWidgetHost();
+  old_widget->RemoveKeyPressEventCallback(key_press_callback_);
+  old_widget->RemoveMouseEventCallback(mouse_event_callback_);
+  content::RenderWidgetHost* new_widget = new_frame->GetRenderWidgetHost();
+  new_widget->AddKeyPressEventCallback(key_press_callback_);
+  new_widget->AddMouseEventCallback(mouse_event_callback_);
 }
 
 void SafeBrowsingUserInteractionObserver::WebContentsDestroyed() {
@@ -376,14 +376,10 @@ void SafeBrowsingUserInteractionObserver::ShowInterstitial(
 }
 
 void SafeBrowsingUserInteractionObserver::CleanUp() {
-  web_contents_->GetMainFrame()
-      ->GetRenderViewHost()
-      ->GetWidget()
-      ->RemoveKeyPressEventCallback(key_press_callback_);
-  web_contents_->GetMainFrame()
-      ->GetRenderViewHost()
-      ->GetWidget()
-      ->RemoveMouseEventCallback(mouse_event_callback_);
+  content::RenderWidgetHost* widget =
+      web_contents_->GetMainFrame()->GetRenderWidgetHost();
+  widget->RemoveKeyPressEventCallback(key_press_callback_);
+  widget->RemoveMouseEventCallback(mouse_event_callback_);
 }
 
 }  // namespace safe_browsing

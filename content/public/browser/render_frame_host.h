@@ -78,6 +78,7 @@ namespace content {
 
 class RenderProcessHost;
 class RenderViewHost;
+class RenderWidgetHost;
 class RenderWidgetHostView;
 class SiteInstance;
 class BrowserContext;
@@ -167,9 +168,27 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // Associated BrowserContext never changes.
   virtual BrowserContext* GetBrowserContext() = 0;
 
-  // Returns the RenderWidgetHostView that can be used to control focus and
-  // visibility for this frame.
+  // Returns the RenderWidgetHostView for this frame or the nearest ancestor
+  // frame, which can be used to control input, focus, rendering and visibility
+  // for this frame.
+  // This returns null when there is no connection to a renderer process, which
+  // can be checked with IsRenderFrameLive().
+  // NOTE: Due to historical relationships between RenderViewHost and
+  // RenderWidgetHost, the main frame RenderWidgetHostView may initially exist
+  // before IsRenderFrameCreated() is true, but they would afterward change
+  // values together. It is better to not rely on this behaviour as it is
+  // intended to change. See https://crbug.com/419087.
   virtual RenderWidgetHostView* GetView() = 0;
+
+  // Returns the RenderWidgetHost attached to this frame or the nearest ancestor
+  // frame, which could potentially be the root. This allows access to the
+  // RenderWidgetHost without having to go through GetView() which can be null,
+  // so should be preferred to GetView()->GetRenderWidgetHost().
+  //
+  // This method is not valid to be called when the RenderFrameHost is detached
+  // from the frame tree, though this would only happen during destruction of
+  // the RenderFrameHost.
+  virtual RenderWidgetHost* GetRenderWidgetHost() = 0;
 
   // Returns the parent of this RenderFrameHost, or nullptr if this
   // RenderFrameHost is the main one and there is no parent.
