@@ -561,27 +561,6 @@ TEST_F('OSSettingsAppManagementUninstallButtonTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
-// Test fixture for the app management main view element.
-// eslint-disable-next-line no-var
-var OSSettingsAppManagementMainViewTest =
-    class extends OSSettingsAppManagementBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return super.browsePreload + 'app_management/main_view.html';
-  }
-
-  /** @override */
-  get extraLibraries() {
-    return super.extraLibraries.concat([
-      'app_management/main_view_test.js',
-    ]);
-  }
-};
-
-TEST_F('OSSettingsAppManagementMainViewTest', 'AllJsTests', () => {
-  mocha.run();
-});
-
 // Text fixture for the app management dom switch element.
 // eslint-disable-next-line no-var
 var OSSettingsAppManagementDomSwitchTest =
