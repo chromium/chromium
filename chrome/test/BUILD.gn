@@ -927,6 +927,7 @@ if (!is_android) {
       "//chrome/browser/page_load_metrics/integration_tests/data/",
       "//components/test/data/arc/",
       "//components/test/data/autofill/",
+      "//components/test/data/optimization_guide/",
       "//components/test/data/payments/",
       "//components/test/data/update_client/",
       "//content/test/data/",
