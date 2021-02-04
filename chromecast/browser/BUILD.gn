@@ -444,6 +444,7 @@ cast_source_set("browser_base") {
       "//components/zoom",
       "//extensions/browser",
       "//extensions/browser:core_api_provider",
+      "//extensions/browser/api/messaging",
       "//extensions/common",
       "//extensions/common/api",
       "//google_apis:google_apis",

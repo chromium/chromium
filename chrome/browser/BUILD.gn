@@ -6855,6 +6855,7 @@ static_library("test_support") {
       "//chromeos/disks",
       "//chromeos/login/auth",
       "//components/session_manager/core",
+      "//extensions/browser/api/messaging",
       "//ui/base:test_support",
       "//ui/base/ime/chromeos",
     ]
