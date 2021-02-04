@@ -73,13 +73,6 @@ IPC_STRUCT_TRAITS_BEGIN(content::SyntheticSmoothScrollGestureParams)
   IPC_STRUCT_TRAITS_MEMBER(modifiers)
 IPC_STRUCT_TRAITS_END()
 
-IPC_STRUCT_TRAITS_BEGIN(content::SyntheticPinchGestureParams)
-  IPC_STRUCT_TRAITS_PARENT(content::SyntheticGestureParams)
-  IPC_STRUCT_TRAITS_MEMBER(scale_factor)
-  IPC_STRUCT_TRAITS_MEMBER(anchor)
-  IPC_STRUCT_TRAITS_MEMBER(relative_pointer_speed_in_pixels_s)
-IPC_STRUCT_TRAITS_END()
-
 IPC_STRUCT_TRAITS_BEGIN(content::SyntheticTapGestureParams)
   IPC_STRUCT_TRAITS_PARENT(content::SyntheticGestureParams)
   IPC_STRUCT_TRAITS_MEMBER(position)

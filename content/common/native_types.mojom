@@ -28,9 +28,6 @@ struct SyntheticSmoothDrag;
 struct SyntheticSmoothScroll;
 
 [Native]
-struct SyntheticPinch;
-
-[Native]
 struct SyntheticTap;
 
 [Native]

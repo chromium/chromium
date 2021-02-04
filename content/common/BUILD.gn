@@ -95,6 +95,7 @@ source_set("common") {
     "input/input_event_ack_state.cc",
     "input/input_event_stream_validator.cc",
     "input/input_event_stream_validator.h",
+    "input/input_injector_mojom_traits.cc",
     "input/synthetic_gesture_params.cc",
     "input/synthetic_gesture_params.h",
     "input/synthetic_pinch_gesture_params.cc",
@@ -539,6 +540,7 @@ mojom("mojo_bindings") {
 
       traits_headers = [
         "//cc/input/touch_action.h",
+        "//content/common/input/input_injector_mojom_traits.h",
         "//content/common/input/synthetic_pinch_gesture_params.h",
         "//content/common/input/synthetic_pointer_action_list_params.h",
         "//content/common/input/synthetic_smooth_drag_gesture_params.h",

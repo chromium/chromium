@@ -5,6 +5,15 @@
 module content.mojom;
 
 import "content/common/native_types.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// The pinth parameters sent by the renderer to the browser, that are needed to
+// queue the synthetic pinch.
+struct SyntheticPinch {
+  float scale_factor;
+  gfx.mojom.PointF anchor;
+  float relative_pointer_speed_in_pixels_s;
+};
 
 // Host interface representing the ability to inject input
 // from a less priviledged application. Available when
