@@ -25,6 +25,8 @@ cr.define('nearby_share', function() {
       this.$ = {
         close() {},
       };
+      /** @type {boolean} */
+      this.downloadContactsCalled = false;
     }
 
     /**
@@ -38,6 +40,7 @@ cr.define('nearby_share', function() {
     downloadContacts() {
       // This does nothing intentionally, call failDownload() or
       // completeDownload() to simulate a response.
+      this.downloadContactsCalled = true;
     }
 
     /**

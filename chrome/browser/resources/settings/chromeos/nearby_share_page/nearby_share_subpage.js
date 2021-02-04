@@ -114,6 +114,11 @@ Polymer({
         });
     this.receiveObserver_ = nearby_share.observeReceiveManager(
         /** @type {!nearbyShare.mojom.ReceiveObserverInterface} */ (this));
+
+    // Trigger a contact sync whenever the Nearby subpage is opened to improve
+    // consistency. This should help avoid scenarios where a share is attempted
+    // and contacts are stale on the receiver.
+    nearby_share.getContactManager().downloadContacts();
   },
 
   /**

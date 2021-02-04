@@ -337,4 +337,9 @@ suite('NearbyShare', function() {
     // Restore mock
     performance.now = originalNow;
   });
+
+  test('download contacts on attach', () => {
+    // Ensure contacts download occurs when the subpage is attached.
+    assertTrue(fakeContactManager.downloadContactsCalled);
+  });
 });

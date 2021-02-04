@@ -316,6 +316,7 @@ nearby_shared_auto_imports_closure_fix = [
   # does not exist on disk there. The actual resources are in
   # c/b/r/nearby_share/shared and are re-hosted in the chrome://os-settings
   # webui at the chrome://os-settings/shared/* prefix.
+  "chrome/browser/resources/settings/shared/nearby_contact_manager.html|getContactManager",
   "chrome/browser/resources/settings/shared/nearby_share_settings.html|getNearbyShareSettings",
   "chrome/browser/resources/settings/shared/nearby_share_settings_behavior.html|NearbyShareSettingsBehavior,NearbySettings",
 ]
