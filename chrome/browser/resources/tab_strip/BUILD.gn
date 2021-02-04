@@ -170,6 +170,7 @@ js_library("tab_list") {
     ":tab_strip_embedder_proxy",
     ":tabs_api_proxy",
     "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:event_tracker.m",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:util.m",
     "//ui/webui/resources/js/cr/ui:focus_outline_manager.m",

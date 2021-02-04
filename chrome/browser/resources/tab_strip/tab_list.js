@@ -10,7 +10,7 @@ import 'chrome://resources/cr_elements/icons.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {addWebUIListener, removeWebUIListener, WebUIListener} from 'chrome://resources/js/cr.m.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {isRTL} from 'chrome://resources/js/util.m.js';
 
 import {CustomElement} from './custom_element.js';
@@ -204,6 +204,9 @@ export class TabListElement extends CustomElement {
     /** @private {number|undefined} Timestamp in ms */
     this.activatingTabIdTimestamp_;
 
+    /** @private @const {!EventTracker} */
+    this.eventTracker_ = new EventTracker();
+
     /** @private {!Element} */
     this.newTabButtonElement_ =
         /** @type {!Element} */ (this.$('#newTabButton'));
@@ -252,13 +255,14 @@ export class TabListElement extends CustomElement {
     this.addWebUIListener_(
         'tab-thumbnail-updated', this.tabThumbnailUpdated_.bind(this));
 
-    document.addEventListener('contextmenu', this.contextMenuListener_);
-    document.addEventListener(
-        'visibilitychange', this.documentVisibilityChangeListener_);
+    this.eventTracker_.add(
+        document, 'contextmenu', e => this.onContextMenu_(e));
+    this.eventTracker_.add(
+        document, 'visibilitychange', () => this.onDocumentVisibilityChange_());
+    this.eventTracker_.add(window, 'blur', () => this.onWindowBlur_());
+    this.eventTracker_.add(this, 'scroll', e => this.onScroll_(e));
     this.addWebUIListener_(
         'received-keyboard-focus', () => this.onReceivedKeyboardFocus_());
-    window.addEventListener('blur', this.windowBlurListener_);
-    this.addEventListener('scroll', this.scrollListener_);
 
     this.newTabButtonElement_.addEventListener('click', () => {
       this.tabsApi_.createNewTab();
@@ -391,12 +395,8 @@ export class TabListElement extends CustomElement {
   }
 
   disconnectedCallback() {
-    document.removeEventListener('contextmenu', this.contextMenuListener_);
-    document.removeEventListener(
-        'visibilitychange', this.documentVisibilityChangeListener_);
-    window.removeEventListener('blur', this.windowBlurListener_);
     this.webUIListeners_.forEach(removeWebUIListener);
-    this.removeEventListener('scroll', this.scrollListener_);
+    this.eventTracker_.removeAll();
   }
 
   /**
