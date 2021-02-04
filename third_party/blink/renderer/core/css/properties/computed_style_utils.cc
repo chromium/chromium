@@ -1340,6 +1340,8 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
                   : style.GridTemplateRows().LegacyTrackList();
   const Vector<GridTrackSize>& auto_repeat_track_sizes =
       is_row_axis ? style.GridAutoRepeatColumns() : style.GridAutoRepeatRows();
+
+  // TODO(crbug.com/1045599): Implement similar logic for GridNG.
   bool is_layout_grid = layout_object && layout_object->IsLayoutGrid();
 
   // Handle the 'none' case.

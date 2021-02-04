@@ -1732,6 +1732,7 @@ void InspectorHighlight::AppendNodeHighlight(
   if (highlight_config.css_grid != Color::kTransparent ||
       highlight_config.grid_highlight_config) {
     grid_info_ = protocol::ListValue::create();
+    // TODO(crbug.com/1045599): Implement |BuildGridInfo| for GridNG.
     if (layout_object->IsLayoutGrid()) {
       grid_info_->pushValue(
           BuildGridInfo(node, highlight_config, scale_, true));

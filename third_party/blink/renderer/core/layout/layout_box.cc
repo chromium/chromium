@@ -726,6 +726,8 @@ void LayoutBox::UpdateShapeOutsideInfoAfterStyleChange(
 void LayoutBox::UpdateGridPositionAfterStyleChange(
     const ComputedStyle* old_style) {
   NOT_DESTROYED();
+  // TODO(crbug.com/1045599): Implement similar logic for GridNG (trigger full
+  // layout).
   if (!old_style || !Parent() || !Parent()->IsLayoutGrid())
     return;
 
@@ -4171,7 +4173,8 @@ void LayoutBox::ComputeLogicalWidth(
           (computed_values.extent_ + computed_values.margins_.start_ +
            computed_values.margins_.end_) &&
       !IsFloating() && !IsInline() &&
-      !cb->IsFlexibleBoxIncludingDeprecatedAndNG() && !cb->IsLayoutGrid()) {
+      !cb->IsFlexibleBoxIncludingDeprecatedAndNG() &&
+      !cb->IsLayoutGridIncludingNG()) {
     LayoutUnit new_margin_total =
         container_logical_width - computed_values.extent_;
     bool has_inverted_direction = cb->StyleRef().IsLeftToRightDirection() !=
@@ -4833,7 +4836,8 @@ LayoutUnit LayoutBox::ComputeIntrinsicLogicalContentHeightUsing(
       logical_height_length.IsMaxContent() ||
       logical_height_length.IsMinIntrinsic() ||
       logical_height_length.IsFitContent()) {
-    if (IsAtomicInlineLevel() && !IsFlexibleBoxIncludingNG() && !IsLayoutGrid())
+    if (IsAtomicInlineLevel() && !IsFlexibleBoxIncludingNG() &&
+        !IsLayoutGridIncludingNG())
       return IntrinsicSize().Height();
     return intrinsic_content_height;
   }
@@ -4933,7 +4937,7 @@ bool LayoutBox::SkipContainingBlockForPercentHeightCalculation(
   return !containing_block->IsTableCell() &&
          !containing_block->IsOutOfFlowPositioned() &&
          !containing_block->HasOverridePercentageResolutionBlockSize() &&
-         !containing_block->IsLayoutGrid() &&
+         !containing_block->IsLayoutGridIncludingNG() &&
          !containing_block->IsFlexibleBoxIncludingDeprecatedAndNG() &&
          !containing_block->IsLayoutNGCustom();
 }

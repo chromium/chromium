@@ -901,6 +901,10 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectGrid);
   }
+  bool IsLayoutGridIncludingNG() const {
+    NOT_DESTROYED();
+    return IsOfType(kLayoutObjectGrid) || IsOfType(kLayoutObjectNGGrid);
+  }
   bool IsLayoutIFrame() const {
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectIFrame);

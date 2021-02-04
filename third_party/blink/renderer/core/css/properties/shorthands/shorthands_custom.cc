@@ -1667,7 +1667,7 @@ bool Grid::ParseShorthand(bool important,
 
 bool Grid::IsLayoutDependent(const ComputedStyle* style,
                              LayoutObject* layout_object) const {
-  return layout_object && layout_object->IsLayoutGrid();
+  return layout_object && layout_object->IsLayoutGridIncludingNG();
 }
 
 const CSSValue* Grid::CSSValueFromComputedStyleInternal(
@@ -1810,7 +1810,7 @@ bool GridTemplate::ParseShorthand(
 
 bool GridTemplate::IsLayoutDependent(const ComputedStyle* style,
                                      LayoutObject* layout_object) const {
-  return layout_object && layout_object->IsLayoutGrid();
+  return layout_object && layout_object->IsLayoutGridIncludingNG();
 }
 
 const CSSValue* GridTemplate::CSSValueFromComputedStyleInternal(
