@@ -17,6 +17,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/web_applications/components/externally_installed_web_app_prefs.h"
+#include "chrome/browser/web_applications/components/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_icon_generator.h"
@@ -180,6 +181,7 @@ class SystemWebAppManagerTest : public WebAppTest {
     install_manager_ = std::make_unique<WebAppInstallManager>(profile());
     test_pending_app_manager_impl_ =
         std::make_unique<TestPendingAppManagerImpl>(profile());
+    web_app_policy_manager_ = std::make_unique<WebAppPolicyManager>(profile());
     test_system_web_app_manager_ =
         std::make_unique<TestSystemWebAppManager>(profile());
     test_ui_manager_ = std::make_unique<TestWebAppUiManager>();
@@ -196,10 +198,14 @@ class SystemWebAppManagerTest : public WebAppTest {
         &controller().registrar(), &controller().os_integration_manager(),
         &ui_manager(), &install_finalizer(), &install_manager());
 
+    web_app_policy_manager().SetSubsystems(
+        &pending_app_manager(), &controller().registrar(),
+        &controller().sync_bridge(), &system_web_app_manager());
+
     system_web_app_manager().SetSubsystems(
         &pending_app_manager(), &controller().registrar(),
         &controller().sync_bridge(), &ui_manager(),
-        &controller().os_integration_manager());
+        &controller().os_integration_manager(), &web_app_policy_manager());
 
     install_manager().Start();
     install_finalizer().Start();
@@ -214,6 +220,7 @@ class SystemWebAppManagerTest : public WebAppTest {
     // The reverse order of creation:
     test_ui_manager_.reset();
     test_system_web_app_manager_.reset();
+    web_app_policy_manager_.reset();
     test_pending_app_manager_impl_.reset();
     install_manager_.reset();
     install_finalizer_.reset();
@@ -246,6 +253,10 @@ class SystemWebAppManagerTest : public WebAppTest {
   }
 
   TestWebAppUiManager& ui_manager() { return *test_ui_manager_; }
+
+  WebAppPolicyManager& web_app_policy_manager() {
+    return *web_app_policy_manager_;
+  }
 
   bool IsInstalled(const GURL& install_url) {
     return controller().registrar().IsInstalled(
@@ -313,6 +324,7 @@ class SystemWebAppManagerTest : public WebAppTest {
   std::unique_ptr<TestPendingAppManagerImpl> test_pending_app_manager_impl_;
   std::unique_ptr<TestSystemWebAppManager> test_system_web_app_manager_;
   std::unique_ptr<TestWebAppUiManager> test_ui_manager_;
+  std::unique_ptr<WebAppPolicyManager> web_app_policy_manager_;
 };
 
 // Test that System Apps do install with the feature enabled.
@@ -977,7 +989,7 @@ TEST_F(SystemWebAppManagerTest, IsSWABeforeSync) {
   unsynced_system_web_app_manager->SetSubsystems(
       &pending_app_manager(), &controller().registrar(),
       &controller().sync_bridge(), &ui_manager(),
-      &controller().os_integration_manager());
+      &controller().os_integration_manager(), &web_app_policy_manager());
 
   EXPECT_TRUE(unsynced_system_web_app_manager->IsSystemWebApp(
       GenerateAppIdFromURL(AppUrl1())));

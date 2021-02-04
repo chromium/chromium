@@ -13,6 +13,10 @@ group("web_app_test_group") {
 
 source_set("web_applications") {
   sources = [
+    "components/policy/web_app_policy_constants.cc",
+    "components/policy/web_app_policy_constants.h",
+    "components/policy/web_app_policy_manager.cc",
+    "components/policy/web_app_policy_manager.h",
     "daily_metrics_helper.cc",
     "daily_metrics_helper.h",
     "extension_status_utils.h",

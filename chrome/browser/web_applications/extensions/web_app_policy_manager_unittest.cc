@@ -22,12 +22,19 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/chromeos/policy/system_features_disable_list_policy_handler.h"
+#include "components/policy/core/common/policy_pref_names.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using sync_preferences::TestingPrefServiceSyncable;
 
@@ -165,7 +172,8 @@ ExternalInstallOptions GetCreateDesktopShorcutTrueInstallOptions() {
 
 class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness {
  public:
-  WebAppPolicyManagerTest() = default;
+  WebAppPolicyManagerTest()
+      : testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
   WebAppPolicyManagerTest(const WebAppPolicyManagerTest&) = delete;
   WebAppPolicyManagerTest& operator=(const WebAppPolicyManagerTest&) = delete;
   ~WebAppPolicyManagerTest() override = default;
@@ -203,6 +211,7 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness {
   }
 
   WebAppPolicyManager* policy_manager() { return web_app_policy_manager_; }
+  ScopedTestingLocalState testing_local_state_;
 
  private:
   TestAppRegistrar* test_app_registrar_ = nullptr;
@@ -521,5 +530,30 @@ TEST_F(WebAppPolicyManagerTest, InstallResultHistogram) {
         InstallResultCode::kCancelledOnWebAppProviderShuttingDown, 2);
   }
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(WebAppPolicyManagerTest, DisableWebApps) {
+  policy_manager()->Start();
+  base::RunLoop().RunUntilIdle();
+
+  auto disabled_apps = policy_manager()->GetDisabledSystemWebApps();
+  EXPECT_TRUE(disabled_apps.empty());
+
+  // Add camera to system features disable list policy.
+  auto disabled_apps_list =
+      std::make_unique<base::Value>(base::Value::Type::LIST);
+  disabled_apps_list->Append(policy::SystemFeature::kCamera);
+  testing_local_state_.Get()->SetUserPref(
+      policy::policy_prefs::kSystemFeaturesDisableList,
+      std::move(disabled_apps_list));
+  base::RunLoop().RunUntilIdle();
+
+  std::set<SystemAppType> expected_disabled_apps;
+  expected_disabled_apps.insert(SystemAppType::CAMERA);
+
+  disabled_apps = policy_manager()->GetDisabledSystemWebApps();
+  EXPECT_EQ(disabled_apps, expected_disabled_apps);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace web_app

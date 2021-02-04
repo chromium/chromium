@@ -27,6 +27,7 @@
 #include "chrome/browser/web_applications/components/app_registry_controller.h"
 #include "chrome/browser/web_applications/components/external_install_options.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
+#include "chrome/browser/web_applications/components/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_install_utils.h"
@@ -53,8 +54,6 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
-#include "base/values.h"
-#include "chrome/browser/chromeos/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/chromeos/web_applications/camera_system_web_app_info.h"
 #include "chrome/browser/chromeos/web_applications/connectivity_diagnostics_system_web_app_info.h"
 #include "chrome/browser/chromeos/web_applications/diagnostics_system_web_app_info.h"
@@ -72,7 +71,6 @@
 #include "chromeos/components/media_app_ui/url_constants.h"
 #include "chromeos/constants/chromeos_pref_names.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
-#include "components/policy/core/common/policy_pref_names.h"
 #include "extensions/common/constants.h"
 
 #if !defined(OFFICIAL_BUILD)
@@ -310,37 +308,6 @@ ExternalInstallOptions CreateInstallOptionsForSystemApp(
   return install_options;
 }
 
-std::set<SystemAppType> GetDisabledSystemWebApps() {
-  std::set<SystemAppType> disabled_system_apps;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  PrefService* const local_state = g_browser_process->local_state();
-  if (!local_state)  // Sometimes it's not available in tests.
-    return disabled_system_apps;
-
-  const base::ListValue* disabled_system_features_pref =
-      local_state->GetList(policy::policy_prefs::kSystemFeaturesDisableList);
-  if (!disabled_system_features_pref)
-    return disabled_system_apps;
-
-  for (const auto& entry : *disabled_system_features_pref) {
-    switch (entry.GetInt()) {
-      case policy::SystemFeature::kCamera:
-        disabled_system_apps.insert(SystemAppType::CAMERA);
-        break;
-      case policy::SystemFeature::kOsSettings:
-        disabled_system_apps.insert(SystemAppType::SETTINGS);
-        break;
-      case policy::SystemFeature::kScanning:
-        disabled_system_apps.insert(SystemAppType::SCANNING);
-        break;
-    }
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  return disabled_system_apps;
-}
-
 }  // namespace
 
 SystemAppInfo::SystemAppInfo(const std::string& internal_name,
@@ -451,12 +418,14 @@ void SystemWebAppManager::SetSubsystems(
     AppRegistrar* registrar,
     AppRegistryController* registry_controller,
     WebAppUiManager* ui_manager,
-    OsIntegrationManager* os_integration_manager) {
+    OsIntegrationManager* os_integration_manager,
+    WebAppPolicyManager* web_app_policy_manager) {
   pending_app_manager_ = pending_app_manager;
   registrar_ = registrar;
   registry_controller_ = registry_controller;
   ui_manager_ = ui_manager;
   os_integration_manager_ = os_integration_manager;
+  web_app_policy_manager_ = web_app_policy_manager;
 }
 
 void SystemWebAppManager::Start() {
@@ -485,7 +454,8 @@ void SystemWebAppManager::Start() {
     UpdateLastAttemptedInfo();
   }
 
-  const auto disabled_system_apps = GetDisabledSystemWebApps();
+  const auto disabled_system_apps =
+      web_app_policy_manager_->GetDisabledSystemWebApps();
 
   for (const auto& app : system_app_infos_) {
     install_options_list.push_back(CreateInstallOptionsForSystemApp(
@@ -502,21 +472,6 @@ void SystemWebAppManager::Start() {
                        weak_ptr_factory_.GetWeakPtr(),
                        should_force_install_apps, install_start_time));
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  PrefService* const local_state = g_browser_process->local_state();
-  if (local_state) {  // Sometimes it's not available in tests.
-    local_state_pref_change_registrar_.Init(local_state);
-
-    // Sometimes this function gets called twice in tests.
-    if (!local_state_pref_change_registrar_.IsObserved(
-            policy::policy_prefs::kSystemFeaturesDisableList)) {
-      local_state_pref_change_registrar_.Add(
-          policy::policy_prefs::kSystemFeaturesDisableList,
-          base::BindRepeating(&SystemWebAppManager::OnAppsPolicyChanged,
-                              base::Unretained(this)));
-    }
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void SystemWebAppManager::InstallSystemAppsForTesting() {
@@ -855,7 +810,7 @@ void SystemWebAppManager::OnAppsSynchronized(
   // May be called more than once in tests.
   if (!on_apps_synchronized_->is_signaled()) {
     on_apps_synchronized_->Signal();
-    OnAppsPolicyChanged();
+    web_app_policy_manager_->OnAppsPolicyChanged();
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -924,25 +879,6 @@ bool SystemWebAppManager::CheckAndIncrementRetryAttempts() {
     return false;
   }
   return true;
-}
-
-void SystemWebAppManager::OnAppsPolicyChanged() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!on_apps_synchronized_->is_signaled())
-    return;
-
-  auto disabled_system_apps = GetDisabledSystemWebApps();
-
-  for (const auto& app_type_to_app_info : system_app_infos_) {
-    const bool is_disabled =
-        base::Contains(disabled_system_apps, app_type_to_app_info.first);
-    base::Optional<AppId> app_id =
-        GetAppIdForSystemApp(app_type_to_app_info.first);
-    if (app_id.has_value()) {
-      registry_controller_->SetAppIsDisabled(app_id.value(), is_disabled);
-    }
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace web_app

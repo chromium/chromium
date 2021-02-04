@@ -21,6 +21,9 @@ class PrefRegistrySyncable;
 
 namespace web_app {
 
+class AppRegistryController;
+class SystemWebAppManager;
+
 // Policy installation allows enterprise admins to control and manage
 // Web Apps on behalf of their managed users. This class tracks the policy that
 // affects Web Apps and also tracks which Web Apps are currently installed based
@@ -39,13 +42,23 @@ class WebAppPolicyManager {
   WebAppPolicyManager& operator=(const WebAppPolicyManager&) = delete;
   ~WebAppPolicyManager();
 
-  void SetSubsystems(PendingAppManager* pending_app_manager);
+  void SetSubsystems(PendingAppManager* pending_app_manager,
+                     AppRegistrar* app_registrar,
+                     AppRegistryController* app_registry_controller,
+                     SystemWebAppManager* web_app_manager);
 
   void Start();
 
   void ReinstallPlaceholderAppIfNecessary(const GURL& url);
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+
+  // Used for handling SystemFeaturesDisableList policy. Checks if the app is
+  // disabled and notifies app_registry_controller_ about the current app state.
+  void OnAppsPolicyChanged();
+
+  // Gets system web apps disabled by SystemFeaturesDisableList policy.
+  std::set<SystemAppType> GetDisabledSystemWebApps() const;
 
  private:
   void InitChangeRegistrarAndRefreshPolicyInstalledApps();
@@ -55,19 +68,28 @@ class WebAppPolicyManager {
       std::map<GURL, PendingAppManager::InstallResult> install_results,
       std::map<GURL, bool> uninstall_results);
 
+  void ObserveSystemDisableListPolicy();
+
+  // Gets ids of web apps disabled by SystemFeaturesDisableList policy.
+  std::set<AppId> GetDisabledWebAppsIds() const;
+
   Profile* profile_;
   PrefService* pref_service_;
 
-  // Used to install, uninstall, and update apps. Should outlive this class.
+  // Used to install, uninstall, and update apps. Should outlive this class
+  // (owned by WebAppProvider).
   PendingAppManager* pending_app_manager_ = nullptr;
+  AppRegistrar* app_registrar_ = nullptr;
+  AppRegistryController* app_registry_controller_ = nullptr;
+  SystemWebAppManager* web_app_manager_ = nullptr;
 
   PrefChangeRegistrar pref_change_registrar_;
+  PrefChangeRegistrar local_state_pref_change_registrar_;
 
   bool is_refreshing_ = false;
   bool needs_refresh_ = false;
 
   base::WeakPtrFactory<WebAppPolicyManager> weak_ptr_factory_{this};
-
 };
 
 }  // namespace web_app

@@ -18,7 +18,6 @@
 #include "chrome/browser/web_applications/components/pending_app_manager.h"
 #include "chrome/browser/web_applications/components/system_web_app_types.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
-#include "components/prefs/pref_change_registrar.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -43,6 +42,7 @@ namespace web_app {
 class WebAppUiManager;
 class OsIntegrationManager;
 class AppRegistryController;
+class WebAppPolicyManager;
 
 using OriginTrialsMap = std::map<url::Origin, std::vector<std::string>>;
 using WebApplicationInfoFactory =
@@ -139,7 +139,8 @@ class SystemWebAppManager {
                      AppRegistrar* registrar,
                      AppRegistryController* registry_controller,
                      WebAppUiManager* ui_manager,
-                     OsIntegrationManager* os_integration_manager);
+                     OsIntegrationManager* os_integration_manager,
+                     WebAppPolicyManager* web_app_policy_manager);
 
   void Start();
 
@@ -220,9 +221,6 @@ class SystemWebAppManager {
 
   void ResetOnAppsSynchronizedForTesting();
 
-  // Updates each system app either disabled/not disabled.
-  void OnAppsPolicyChanged();
-
   void Shutdown();
 
  protected:
@@ -281,7 +279,7 @@ class SystemWebAppManager {
 
   OsIntegrationManager* os_integration_manager_ = nullptr;
 
-  PrefChangeRegistrar local_state_pref_change_registrar_;
+  WebAppPolicyManager* web_app_policy_manager_ = nullptr;
 
   base::WeakPtrFactory<SystemWebAppManager> weak_ptr_factory_{this};
 };
