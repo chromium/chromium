@@ -12,26 +12,6 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/common/mac/app_shim.mojom.h"
 
-namespace {
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class UpdateAppBadgeResult : int {
-  kSuccess = 0,
-  kNoShimManager = 1,
-  kNoShimHost = 2,
-  kNoAppShim = 3,
-  kMaxValue = kNoAppShim
-};
-
-constexpr const char* kBadgeMetricName = "Badging.AppBadgeUpdate.Mac.Result";
-
-// Records UMA metric for updating app badge.
-void RecordUpdateAppBadge(const UpdateAppBadgeResult result) {
-  UMA_HISTOGRAM_ENUMERATION(kBadgeMetricName, result);
-}
-
-}  // namespace
-
 namespace badging {
 
 BadgeManagerDelegateMac::BadgeManagerDelegateMac(Profile* profile,
@@ -47,25 +27,22 @@ void BadgeManagerDelegateMac::OnAppBadgeUpdated(const web_app::AppId& app_id) {
 void BadgeManagerDelegateMac::SetAppBadgeLabel(const std::string& app_id,
                                                const std::string& badge_label) {
   auto* shim_manager = apps::AppShimManager::Get();
-  if (!shim_manager) {
-    RecordUpdateAppBadge(UpdateAppBadgeResult::kNoShimManager);
+  if (!shim_manager)
     return;
-  }
 
   // On macOS all app instances share a dock icon, so we only need to set the
   // badge label once.
+  // We only get the app shim host when the app is running. If Badging API is
+  // called when the app is not running this will fail as expected.
   AppShimHost* shim_host = shim_manager->FindHost(profile(), app_id);
-  if (!shim_host) {
-    RecordUpdateAppBadge(UpdateAppBadgeResult::kNoShimHost);
+  if (!shim_host)
     return;
-  }
+
   chrome::mojom::AppShim* shim = shim_host->GetAppShim();
-  if (!shim) {
-    RecordUpdateAppBadge(UpdateAppBadgeResult::kNoAppShim);
+  if (!shim)
     return;
-  }
+
   shim->SetBadgeLabel(badge_label);
-  RecordUpdateAppBadge(UpdateAppBadgeResult::kSuccess);
 }
 
 }  // namespace badging

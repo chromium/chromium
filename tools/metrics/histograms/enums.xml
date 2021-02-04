@@ -75989,6 +75989,9 @@ Full version information for the fingerprint enum values:
 </enum>
 
 <enum name="UpdateAppBadgeMacResult">
+  <obsolete>
+    Removed in M88 as it's no longer needed.
+  </obsolete>
   <summary>The result from updating App Badge on macOS.</summary>
   <int value="0" label="success"/>
   <int value="1" label="No app shim manager"/>

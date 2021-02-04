@@ -1217,6 +1217,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Badging.AppBadgeUpdate.Mac.Result"
     enum="UpdateAppBadgeMacResult" expires_after="M88">
+  <obsolete>
+    Removed in M88 as it's no longer needed.
+  </obsolete>
   <owner>phillis@chromium.org</owner>
   <owner>cmumford@chromium.org</owner>
   <summary>The result from updating the app badge on macOS.</summary>
