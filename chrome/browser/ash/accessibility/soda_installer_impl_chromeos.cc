@@ -88,8 +88,7 @@ void SodaInstallerImplChromeOS::InstallLanguage(PrefService* prefs) {
 
 bool SodaInstallerImplChromeOS::IsSodaInstalled() const {
   DCHECK(base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption));
-  // TODO(crbug.com/1111002): Return whether SODA is installed.
-  return soda_binary_installed_;
+  return soda_binary_installed_ && language_installed_;
 }
 
 void SodaInstallerImplChromeOS::SetSodaBinaryPath(base::FilePath new_path) {
