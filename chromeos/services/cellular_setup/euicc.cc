@@ -9,6 +9,8 @@
 
 #include "base/optional.h"
 #include "base/strings/strcat.h"
+#include "chromeos/network/cellular_esim_profile.h"
+#include "chromeos/services/cellular_setup/esim_manager.h"
 #include "chromeos/services/cellular_setup/esim_mojo_utils.h"
 #include "chromeos/services/cellular_setup/esim_profile.h"
 #include "chromeos/services/cellular_setup/public/mojom/esim_manager.mojom-shared.h"
@@ -118,19 +120,37 @@ void Euicc::GetEidQRCode(GetEidQRCodeCallback callback) {
   std::move(callback).Run(std::move(qr_code));
 }
 
-void Euicc::UpdateProfileList() {
-  HermesEuiccClient::Properties* euicc_properties =
-      HermesEuiccClient::Get()->GetProperties(path_);
-  std::set<dbus::ObjectPath> new_profile_paths;
-  for (auto& path : euicc_properties->installed_carrier_profiles().value()) {
-    GetOrCreateESimProfile(path);
-    new_profile_paths.insert(path);
+void Euicc::UpdateProfileList(
+    const std::vector<CellularESimProfile>& esim_profile_states) {
+  std::vector<ESimProfile*> newly_created_profiles;
+  bool profile_list_changed = false;
+  for (auto esim_profile_state : esim_profile_states) {
+    if (esim_profile_state.eid() != properties_->eid) {
+      continue;
+    }
+    ESimProfile* new_profile = UpdateOrCreateESimProfile(esim_profile_state);
+    if (new_profile) {
+      profile_list_changed = true;
+      newly_created_profiles.push_back(new_profile);
+    }
   }
-  for (auto& path : euicc_properties->pending_carrier_profiles().value()) {
-    GetOrCreateESimProfile(path);
-    new_profile_paths.insert(path);
+  profile_list_changed |= RemoveUntrackedProfiles(esim_profile_states);
+  if (profile_list_changed) {
+    esim_manager_->NotifyESimProfileListChanged(this);
+
+    // Run any install callbacks that are pending creation of new ESimProfile
+    // object.
+    for (ESimProfile* esim_profile : newly_created_profiles) {
+      auto it = install_calls_pending_create_.find(esim_profile->path());
+      if (it == install_calls_pending_create_.end()) {
+        continue;
+      }
+      std::move(it->second)
+          .Run(mojom::ProfileInstallResult::kSuccess,
+               esim_profile->CreateRemote());
+      install_calls_pending_create_.erase(it);
+    }
   }
-  RemoveUntrackedProfiles(new_profile_paths);
 }
 
 void Euicc::UpdateProperties() {
@@ -167,9 +187,17 @@ void Euicc::OnProfileInstallResult(
     return;
   }
 
-  ESimProfile* profile_info = GetOrCreateESimProfile(*object_path);
+  ESimProfile* esim_profile = GetProfileFromPath(*object_path);
+  if (!esim_profile) {
+    // An ESimProfile may not exist for the newly created esim profile object
+    // path if ESimProfileHandler has not updated profile lists yet. Save the
+    // callback until an UpdateProfileList call creates an ESimProfile
+    // object for this path
+    install_calls_pending_create_.emplace(*object_path, std::move(callback));
+    return;
+  }
   std::move(callback).Run(mojom::ProfileInstallResult::kSuccess,
-                          profile_info->CreateRemote());
+                          esim_profile->CreateRemote());
 }
 
 void Euicc::OnRequestPendingEventsResult(
@@ -205,27 +233,40 @@ mojom::ProfileInstallResult Euicc::GetPendingProfileInfoFromActivationCode(
   return mojom::ProfileInstallResult::kSuccess;
 }
 
-ESimProfile* Euicc::GetOrCreateESimProfile(
-    const dbus::ObjectPath& carrier_profile_path) {
-  ESimProfile* profile_info = GetProfileFromPath(carrier_profile_path);
-  if (profile_info)
-    return profile_info;
+ESimProfile* Euicc::UpdateOrCreateESimProfile(
+    const CellularESimProfile& esim_profile_state) {
+  ESimProfile* esim_profile = GetProfileFromPath(esim_profile_state.path());
+  if (esim_profile) {
+    esim_profile->UpdateProperties(esim_profile_state, /*notify=*/true);
+    return nullptr;
+  }
   esim_profiles_.push_back(
-      std::make_unique<ESimProfile>(carrier_profile_path, this, esim_manager_));
+      std::make_unique<ESimProfile>(esim_profile_state, this, esim_manager_));
   return esim_profiles_.back().get();
 }
 
-void Euicc::RemoveUntrackedProfiles(
-    const std::set<dbus::ObjectPath>& new_profile_paths) {
+bool Euicc::RemoveUntrackedProfiles(
+    const std::vector<CellularESimProfile>& esim_profile_states) {
+  std::set<std::string> new_iccids;
+  for (auto esim_profile_state : esim_profile_states) {
+    if (esim_profile_state.eid() != properties_->eid) {
+      continue;
+    }
+    new_iccids.insert(esim_profile_state.iccid());
+  }
+
+  bool removed = false;
   for (auto it = esim_profiles_.begin(); it != esim_profiles_.end();) {
     ESimProfile* profile = (*it).get();
-    if (new_profile_paths.find(profile->path()) == new_profile_paths.end()) {
+    if (new_iccids.find(profile->properties()->iccid) == new_iccids.end()) {
       profile->OnProfileRemove();
       it = esim_profiles_.erase(it);
+      removed = true;
     } else {
       it++;
     }
   }
+  return removed;
 }
 
 }  // namespace cellular_setup

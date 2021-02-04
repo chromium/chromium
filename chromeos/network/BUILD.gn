@@ -225,6 +225,8 @@ source_set("test_support") {
     "onc/onc_test_utils.h",
     "portal_detector/mock_network_portal_detector.cc",
     "portal_detector/mock_network_portal_detector.h",
+    "test_cellular_esim_profile_handler.cc",
+    "test_cellular_esim_profile_handler.h",
   ]
 }
 

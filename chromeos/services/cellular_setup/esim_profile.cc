@@ -6,26 +6,44 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
+#include "chromeos/network/cellular_esim_profile.h"
 #include "chromeos/network/cellular_esim_uninstall_handler.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/services/cellular_setup/esim_manager.h"
 #include "chromeos/services/cellular_setup/esim_mojo_utils.h"
 #include "chromeos/services/cellular_setup/euicc.h"
 #include "chromeos/services/cellular_setup/public/mojom/esim_manager.mojom-shared.h"
+#include "chromeos/services/cellular_setup/public/mojom/esim_manager.mojom.h"
 #include "components/device_event_log/device_event_log.h"
 #include "dbus/object_path.h"
 
 namespace chromeos {
 namespace cellular_setup {
 
-ESimProfile::ESimProfile(const dbus::ObjectPath& path,
+namespace {
+
+bool IsESimProfilePropertiesEqualToState(
+    const mojom::ESimProfilePropertiesPtr& properties,
+    const CellularESimProfile& esim_profile_state) {
+  return esim_profile_state.iccid() == properties->iccid &&
+         esim_profile_state.name() == properties->name &&
+         esim_profile_state.nickname() == properties->nickname &&
+         esim_profile_state.service_provider() ==
+             properties->service_provider &&
+         ProfileStateToMojo(esim_profile_state.state()) == properties->state &&
+         esim_profile_state.activation_code() == properties->activation_code;
+}
+
+}  // namespace
+
+ESimProfile::ESimProfile(const CellularESimProfile& esim_profile_state,
                          Euicc* euicc,
                          ESimManager* esim_manager)
     : euicc_(euicc),
       esim_manager_(esim_manager),
       properties_(mojom::ESimProfileProperties::New()),
-      path_(path) {
-  UpdateProperties();
+      path_(esim_profile_state.path()) {
+  UpdateProperties(esim_profile_state, /*notify=*/false);
   properties_->eid = euicc->properties()->eid;
 }
 
@@ -119,16 +137,22 @@ void ESimProfile::SetProfileNickname(const base::string16& nickname,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void ESimProfile::UpdateProperties() {
-  HermesProfileClient::Properties* properties =
-      HermesProfileClient::Get()->GetProperties(path_);
-  properties_->iccid = properties->iccid().value();
-  properties_->name = base::UTF8ToUTF16(properties->name().value());
-  properties_->nickname = base::UTF8ToUTF16(properties->nick_name().value());
-  properties_->service_provider =
-      base::UTF8ToUTF16(properties->service_provider().value());
-  properties_->state = ProfileStateToMojo(properties->state().value());
-  properties_->activation_code = properties->activation_code().value();
+void ESimProfile::UpdateProperties(
+    const CellularESimProfile& esim_profile_state,
+    bool notify) {
+  if (IsESimProfilePropertiesEqualToState(properties_, esim_profile_state)) {
+    return;
+  }
+
+  properties_->iccid = esim_profile_state.iccid();
+  properties_->name = esim_profile_state.name();
+  properties_->nickname = esim_profile_state.nickname();
+  properties_->service_provider = esim_profile_state.service_provider();
+  properties_->state = ProfileStateToMojo(esim_profile_state.state());
+  properties_->activation_code = esim_profile_state.activation_code();
+  if (notify) {
+    esim_manager_->NotifyESimProfileChanged(this);
+  }
 }
 
 void ESimProfile::OnProfileRemove() {

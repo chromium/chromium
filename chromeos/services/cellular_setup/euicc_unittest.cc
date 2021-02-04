@@ -133,7 +133,7 @@ TEST_F(EuiccTest, InstallProfileFromActivationCode) {
   mojom::ESimProfilePropertiesPtr mojo_properties =
       GetESimProfileProperties(esim_profile);
   EXPECT_EQ(dbus_properties->iccid().value(), mojo_properties->iccid);
-  EXPECT_EQ(3u, observer()->profile_list_change_calls().size());
+  EXPECT_EQ(1u, observer()->profile_list_change_calls().size());
 }
 
 TEST_F(EuiccTest, RequestPendingProfiles) {

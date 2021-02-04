@@ -4,7 +4,7 @@
 
 #include "chromeos/services/cellular_setup/esim_test_base.h"
 
-#include <memory.h>
+#include <memory>
 
 #include "chromeos/dbus/hermes/hermes_clients.h"
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
@@ -17,6 +17,7 @@
 #include "chromeos/network/network_configuration_handler.h"
 #include "chromeos/network/network_device_handler.h"
 #include "chromeos/network/network_state_handler.h"
+#include "chromeos/network/test_cellular_esim_profile_handler.h"
 #include "chromeos/services/cellular_setup/esim_manager.h"
 #include "chromeos/services/cellular_setup/esim_test_utils.h"
 #include "chromeos/services/cellular_setup/public/mojom/esim_manager.mojom-forward.h"
@@ -57,9 +58,13 @@ void ESimTestBase::SetUp() {
   cellular_esim_uninstall_handler_->Init(
       cellular_inhibitor_.get(), network_configuration_handler_.get(),
       network_connection_handler_.get(), network_state_handler_.get());
+  cellular_esim_profile_handler_ =
+      std::make_unique<TestCellularESimProfileHandler>();
+  cellular_esim_profile_handler_->Init();
 
   esim_manager_ =
-      std::make_unique<ESimManager>(cellular_esim_uninstall_handler_.get());
+      std::make_unique<ESimManager>(cellular_esim_profile_handler_.get(),
+                                    cellular_esim_uninstall_handler_.get());
   observer_ = std::make_unique<ESimManagerTestObserver>();
   esim_manager_->AddObserver(observer_->GenerateRemote());
 }

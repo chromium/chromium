@@ -9,6 +9,7 @@
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/dbus/hermes/hermes_profile_client.h"
+#include "chromeos/network/cellular_esim_profile_handler.h"
 #include "chromeos/services/cellular_setup/public/mojom/esim_manager.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -32,13 +33,13 @@ class ESimProfile;
 // eSIM management methods. ESimManager mojo interface is provided
 // in WebUI for cellular settings and eSIM setup.
 class ESimManager : public mojom::ESimManager,
+                    CellularESimProfileHandler::Observer,
                     HermesManagerClient::Observer,
-                    HermesEuiccClient::Observer,
-                    HermesProfileClient::Observer {
+                    HermesEuiccClient::Observer {
  public:
   ESimManager();
-  explicit ESimManager(
-      CellularESimUninstallHandler* cellular_esim_uninstall_handler);
+  ESimManager(CellularESimProfileHandler* cellular_esim_profile_handler,
+              CellularESimUninstallHandler* cellular_esim_uninstall_handler);
   ESimManager(const ESimManager&) = delete;
   ESimManager& operator=(const ESimManager&) = delete;
   ~ESimManager() override;
@@ -55,10 +56,8 @@ class ESimManager : public mojom::ESimManager,
   void OnEuiccPropertyChanged(const dbus::ObjectPath& euicc_path,
                               const std::string& property_name) override;
 
-  // HermesProfileClient::Observer:
-  void OnCarrierProfilePropertyChanged(
-      const dbus::ObjectPath& carrier_profile_path,
-      const std::string& property_name) override;
+  // CellularESimProfileHandler::Observer:
+  void OnESimProfileListUpdated() override;
 
   // Binds receiver to this instance.
   void BindReceiver(mojo::PendingReceiver<mojom::ESimManager> receiver);
@@ -66,17 +65,24 @@ class ESimManager : public mojom::ESimManager,
   // Notifies observers of changes to ESimProfiles.
   void NotifyESimProfileChanged(ESimProfile* esim_profile);
 
+  // Notifies observers of changes to ESimProfile Lists.
+  void NotifyESimProfileListChanged(Euicc* euicc);
+
   CellularESimUninstallHandler* cellular_esim_uninstall_handler() {
     return cellular_esim_uninstall_handler_;
   }
 
  private:
   void UpdateAvailableEuiccs();
-  void RemoveUntrackedEuiccs(const std::set<dbus::ObjectPath> new_euicc_paths);
+  // Removes Euicc objects in |available_euiiccs_| that are not in
+  // |new_euicc_paths|. Returns true if any euicc objects were removed.
+  bool RemoveUntrackedEuiccs(const std::set<dbus::ObjectPath> new_euicc_paths);
   Euicc* GetEuiccFromPath(const dbus::ObjectPath& path);
-  ESimProfile* GetESimProfileFromPath(const dbus::ObjectPath& path);
-  Euicc* GetOrCreateEuicc(const dbus::ObjectPath& euicc_path);
+  // Creates a new Euicc object in |available_euiccs_| if it doesn't already
+  // exist. Returns true if a new object was created.
+  bool CreateEuiccIfNew(const dbus::ObjectPath& euicc_path);
 
+  CellularESimProfileHandler* cellular_esim_profile_handler_;
   CellularESimUninstallHandler* cellular_esim_uninstall_handler_;
   std::vector<std::unique_ptr<Euicc>> available_euiccs_;
   mojo::RemoteSet<mojom::ESimManagerObserver> observers_;

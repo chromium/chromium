@@ -16,6 +16,9 @@ class ObjectPath;
 }  // namespace dbus
 
 namespace chromeos {
+
+class CellularESimProfile;
+
 namespace cellular_setup {
 
 class Euicc;
@@ -25,7 +28,7 @@ class ESimManager;
 // eSIM profile installed on an EUICC.
 class ESimProfile : public mojom::ESimProfile {
  public:
-  ESimProfile(const dbus::ObjectPath& path,
+  ESimProfile(const CellularESimProfile& esim_profile_state,
               Euicc* euicc,
               ESimManager* esim_manager);
   ESimProfile(const ESimProfile&) = delete;
@@ -43,7 +46,8 @@ class ESimProfile : public mojom::ESimProfile {
                           SetProfileNicknameCallback callback) override;
 
   // Update properties for this ESimProfile from D-Bus.
-  void UpdateProperties();
+  void UpdateProperties(const CellularESimProfile& esim_profile_state,
+                        bool notify);
 
   // Called before profile is removed from the euicc.
   void OnProfileRemove();
