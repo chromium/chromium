@@ -4449,6 +4449,7 @@ static_library("ui") {
       "//components/drive",
       "//components/guest_view/browser",
       "//extensions/browser",
+      "//extensions/browser/api/management",
       "//extensions/common:mojom",
       "//extensions/components/native_app_window",
       "//extensions/strings",
