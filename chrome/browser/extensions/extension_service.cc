@@ -824,10 +824,8 @@ bool ExtensionService::UninstallExtension(
   if (!external_uninstall &&
       (!by_policy->UserMayModifySettings(extension.get(), error) ||
        by_policy->MustRemainInstalled(extension.get(), error))) {
-    content::NotificationService::current()->Notify(
-        NOTIFICATION_EXTENSION_UNINSTALL_NOT_ALLOWED,
-        content::Source<Profile>(profile_),
-        content::Details<const Extension>(extension.get()));
+    ExtensionRegistry::Get(profile_)->TriggerOnUninstallationDenied(
+        extension.get());
     return false;
   }
 

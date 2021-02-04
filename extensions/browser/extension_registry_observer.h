@@ -100,6 +100,11 @@ class ExtensionRegistryObserver {
                                       const Extension* extension,
                                       UninstallReason reason) {}
 
+  // Called after the uninstallation of an extension is denied.
+  virtual void OnExtensionUninstallationDenied(
+      content::BrowserContext* browser_context,
+      const Extension* extension) {}
+
   // Notifies observers that the observed object is going away.
   virtual void OnShutdown(ExtensionRegistry* registry) {}
 };

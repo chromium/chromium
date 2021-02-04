@@ -323,12 +323,10 @@ class ExtensionPolicyTest : public PolicyTest {
           id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
       observer.WaitForExtensionUninstalled();
     } else {
-      content::WindowedNotificationObserver observer(
-          extensions::NOTIFICATION_EXTENSION_UNINSTALL_NOT_ALLOWED,
-          content::NotificationService::AllSources());
+      extensions::TestExtensionRegistryObserver observer(extension_registry());
       extension_service()->UninstallExtension(
           id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
-      observer.Wait();
+      observer.WaitForExtensionUninstallationDenied();
     }
   }
 

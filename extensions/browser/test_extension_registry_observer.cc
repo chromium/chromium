@@ -46,6 +46,7 @@ TestExtensionRegistryObserver::TestExtensionRegistryObserver(
     : will_be_installed_waiter_(std::make_unique<Waiter>()),
       installed_waiter_(std::make_unique<Waiter>()),
       uninstalled_waiter_(std::make_unique<Waiter>()),
+      uninstallation_denied_waiter_(std::make_unique<Waiter>()),
       loaded_waiter_(std::make_unique<Waiter>()),
       ready_waiter_(std::make_unique<Waiter>()),
       unloaded_waiter_(std::make_unique<Waiter>()),
@@ -59,6 +60,11 @@ TestExtensionRegistryObserver::~TestExtensionRegistryObserver() {
 scoped_refptr<const Extension>
 TestExtensionRegistryObserver::WaitForExtensionUninstalled() {
   return Wait(&uninstalled_waiter_);
+}
+
+scoped_refptr<const Extension>
+TestExtensionRegistryObserver::WaitForExtensionUninstallationDenied() {
+  return Wait(&uninstallation_denied_waiter_);
 }
 
 scoped_refptr<const Extension>
@@ -109,6 +115,13 @@ void TestExtensionRegistryObserver::OnExtensionUninstalled(
     extensions::UninstallReason reason) {
   if (extension_id_.empty() || extension->id() == extension_id_)
     uninstalled_waiter_->OnObserved(extension);
+}
+
+void TestExtensionRegistryObserver::OnExtensionUninstallationDenied(
+    content::BrowserContext* browser_context,
+    const Extension* extension) {
+  if (extension_id_.empty() || extension->id() == extension_id_)
+    uninstallation_denied_waiter_->OnObserved(extension);
 }
 
 void TestExtensionRegistryObserver::OnExtensionLoaded(

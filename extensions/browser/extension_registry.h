@@ -131,6 +131,9 @@ class ExtensionRegistry : public KeyedService {
   // not be any installed extension with |extension|'s ID.
   void TriggerOnUninstalled(const Extension* extension, UninstallReason reason);
 
+  // Invokes the observer method OnExtensionUninstallationDenied().
+  void TriggerOnUninstallationDenied(const Extension* extension);
+
   // Find an extension by ID using |include_mask| to pick the sets to search:
   //  * enabled_extensions()     --> ExtensionRegistry::ENABLED
   //  * disabled_extensions()    --> ExtensionRegistry::DISABLED

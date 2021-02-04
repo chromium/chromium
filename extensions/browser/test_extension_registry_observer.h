@@ -30,6 +30,7 @@ class TestExtensionRegistryObserver : public ExtensionRegistryObserver {
   scoped_refptr<const Extension> WaitForExtensionWillBeInstalled();
   scoped_refptr<const Extension> WaitForExtensionInstalled();
   scoped_refptr<const Extension> WaitForExtensionUninstalled();
+  scoped_refptr<const Extension> WaitForExtensionUninstallationDenied();
   scoped_refptr<const Extension> WaitForExtensionLoaded();
   scoped_refptr<const Extension> WaitForExtensionReady();
   scoped_refptr<const Extension> WaitForExtensionUnloaded();
@@ -48,6 +49,8 @@ class TestExtensionRegistryObserver : public ExtensionRegistryObserver {
   void OnExtensionUninstalled(content::BrowserContext* browser_context,
                               const Extension* extension,
                               extensions::UninstallReason reason) override;
+  void OnExtensionUninstallationDenied(content::BrowserContext* browser_context,
+                                       const Extension* extension) override;
   void OnExtensionLoaded(content::BrowserContext* browser_context,
                          const Extension* extension) override;
   void OnExtensionReady(content::BrowserContext* browser_context,
@@ -61,6 +64,7 @@ class TestExtensionRegistryObserver : public ExtensionRegistryObserver {
   std::unique_ptr<Waiter> will_be_installed_waiter_;
   std::unique_ptr<Waiter> installed_waiter_;
   std::unique_ptr<Waiter> uninstalled_waiter_;
+  std::unique_ptr<Waiter> uninstallation_denied_waiter_;
   std::unique_ptr<Waiter> loaded_waiter_;
   std::unique_ptr<Waiter> ready_waiter_;
   std::unique_ptr<Waiter> unloaded_waiter_;
