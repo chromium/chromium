@@ -19,6 +19,23 @@
 
 namespace blink {
 
+class HeapPointersOnStackScope final {
+  STACK_ALLOCATED();
+
+ public:
+  explicit HeapPointersOnStackScope(ThreadState* state) : state_(state) {
+    DCHECK(!state_->heap_pointers_on_stack_forced_);
+    state_->heap_pointers_on_stack_forced_ = true;
+  }
+  ~HeapPointersOnStackScope() {
+    DCHECK(state_->heap_pointers_on_stack_forced_);
+    state_->heap_pointers_on_stack_forced_ = false;
+  }
+
+ private:
+  ThreadState* const state_;
+};
+
 class TestSupportingGC : public testing::Test {
  public:
   // Performs a precise garbage collection with eager sweeping.

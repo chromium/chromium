@@ -77,23 +77,6 @@ class ThreadState::AtomicPauseScope final {
   GCForbiddenScope gc_forbidden_scope;
 };
 
-class ThreadState::HeapPointersOnStackScope final {
-  STACK_ALLOCATED();
-
- public:
-  explicit HeapPointersOnStackScope(ThreadState* state) : state_(state) {
-    DCHECK(!state_->heap_pointers_on_stack_forced_);
-    state_->heap_pointers_on_stack_forced_ = true;
-  }
-  ~HeapPointersOnStackScope() {
-    DCHECK(state_->heap_pointers_on_stack_forced_);
-    state_->heap_pointers_on_stack_forced_ = false;
-  }
-
- private:
-  ThreadState* const state_;
-};
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_IMPL_THREAD_STATE_SCOPES_H_

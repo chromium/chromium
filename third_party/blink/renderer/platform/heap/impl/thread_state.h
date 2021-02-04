@@ -192,7 +192,6 @@ class PLATFORM_EXPORT ThreadState final {
   class StatisticsCollector;
   struct Statistics;
   class SweepForbiddenScope;
-  class HeapPointersOnStackScope;
 
   using V8BuildEmbedderGraphCallback = void (*)(v8::Isolate*,
                                                 v8::EmbedderGraph*,
@@ -667,6 +666,7 @@ class PLATFORM_EXPORT ThreadState final {
 
   friend class BlinkGCObserver;
   friend class incremental_marking_test::IncrementalMarkingScope;
+  friend class HeapPointersOnStackScope;
   friend class IncrementalMarkingTestDriver;
   friend class HeapAllocator;
   template <typename T>

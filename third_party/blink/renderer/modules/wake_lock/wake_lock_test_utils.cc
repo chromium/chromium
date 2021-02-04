@@ -18,7 +18,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/modules/wake_lock/wake_lock_type.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
-#include "third_party/blink/renderer/platform/heap/thread_state_scopes.h"
+#include "third_party/blink/renderer/platform/heap/heap_test_utilities.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -30,7 +30,7 @@ using mojom::blink::PermissionStatus;
 namespace {
 
 void RunWithStack(base::RunLoop* run_loop) {
-  ThreadState::HeapPointersOnStackScope scan_stack(ThreadState::Current());
+  HeapPointersOnStackScope scan_stack(ThreadState::Current());
   run_loop->Run();
 }
 

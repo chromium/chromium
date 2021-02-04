@@ -26,17 +26,6 @@ class ThreadState::NoAllocationScope final {
   const cppgc::subtle::DisallowGarbageCollectionScope disallow_gc_;
 };
 
-// TODO(1056170): Implement, if necessary for testing.
-class ThreadState::HeapPointersOnStackScope final {
-  STACK_ALLOCATED();
-
- public:
-  explicit HeapPointersOnStackScope(ThreadState* state) {}
-
-  HeapPointersOnStackScope(const HeapPointersOnStackScope&) = delete;
-  HeapPointersOnStackScope& operator=(const HeapPointersOnStackScope&) = delete;
-};
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_V8_WRAPPER_THREAD_STATE_SCOPES_H_
