@@ -382480,6 +382480,13 @@
       {}
      ]
     ],
+    "display-change-with-transform.html": [
+     "36aa438b6e81f0ec7cfc10aa09d7fd9ac4b8645c",
+     [
+      null,
+      {}
+     ]
+    ],
     "fixed-position-move.html": [
      "877c2ba4b34615c41a5b21dbf114df69eef04352",
      [
@@ -392903,7 +392910,7 @@
      ]
     ],
     "pointerevent_mouse_capture_change_hover.html": [
-     "10b19f8474a95126302f824390302007a4f63fea",
+     "ef824dafd963bc97f59283d833d0e0cb4fe97fc8",
      [
       null,
       {
