@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_CRASH_REPORT_BREAKPAD_HELPER_H_
-#define IOS_CHROME_BROWSER_CRASH_REPORT_BREAKPAD_HELPER_H_
+#ifndef IOS_CHROME_BROWSER_CRASH_REPORT_CRASH_HELPER_H_
+#define IOS_CHROME_BROWSER_CRASH_REPORT_CRASH_HELPER_H_
 
 #include <string>
 
-namespace breakpad_helper {
+namespace crash_helper {
 
 // Starts the crash handlers. This must be run as soon as possible to catch
 // early crashes.
@@ -52,6 +52,6 @@ void StartUploadingReportsInRecoveryMode();
 // Resets the Breakpad configuration from the main bundle.
 void RestoreDefaultConfiguration();
 
-}  // namespace breakpad_helper
+}  // namespace crash_helper
 
-#endif  // IOS_CHROME_BROWSER_CRASH_REPORT_BREAKPAD_HELPER_H_
+#endif  // IOS_CHROME_BROWSER_CRASH_REPORT_CRASH_HELPER_H_

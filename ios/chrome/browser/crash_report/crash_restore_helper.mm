@@ -22,7 +22,7 @@
 #include "components/strings/grit/components_google_chrome_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/crash_report/breakpad_helper.h"
+#import "ios/chrome/browser/crash_report/crash_helper.h"
 #include "ios/chrome/browser/infobars/confirm_infobar_metrics_recorder.h"
 #include "ios/chrome/browser/infobars/infobar_ios.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
@@ -397,7 +397,7 @@ int SessionCrashedInfoBarDelegate::GetIconId() const {
 
   BrowserList* browserList =
       BrowserListFactory::GetForBrowserState(browserState);
-  breakpad_helper::WillStartCrashRestoration();
+  crash_helper::WillStartCrashRestoration();
   BOOL success = NO;
   // First restore all conected sessions.
   NSFileManager* fileManager = [NSFileManager defaultManager];

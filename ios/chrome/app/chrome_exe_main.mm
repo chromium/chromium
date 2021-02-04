@@ -9,7 +9,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "ios/chrome/app/startup/ios_chrome_main.h"
 #include "ios/chrome/app/startup/ios_enable_sandbox_dump_buildflags.h"
-#include "ios/chrome/browser/crash_report/breakpad_helper.h"
+#include "ios/chrome/browser/crash_report/crash_helper.h"
 #include "ios/chrome/common/channel_info.h"
 #include "ios/testing/perf/startupLoggers.h"
 
@@ -27,7 +27,7 @@ NSString* const kUIApplicationDelegateInfoKey = @"UIApplicationDelegate";
 
 void StartCrashController() {
   @autoreleasepool {
-    breakpad_helper::Start(GetChannelString());
+    crash_helper::Start(GetChannelString());
   }
 }
 

@@ -20,7 +20,7 @@
 #include "ios/chrome/browser/application_context.h"
 #import "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_persistent_storage_manager.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/features.h"
-#include "ios/chrome/browser/crash_report/breakpad_helper.h"
+#include "ios/chrome/browser/crash_report/crash_helper.h"
 #include "ios/chrome/browser/crash_report/features.h"
 #include "ios/chrome/browser/crash_report/main_thread_freeze_detector.h"
 #include "ios/chrome/browser/crash_report/synthetic_crash_report_util.h"
@@ -456,7 +456,7 @@ bool MobileSessionShutdownMetricsProvider::IsFirstLaunchAfterUpgrade() {
 }
 
 bool MobileSessionShutdownMetricsProvider::HasCrashLogs() {
-  return breakpad_helper::HasReportToUpload();
+  return crash_helper::HasReportToUpload();
 }
 
 bool MobileSessionShutdownMetricsProvider::LastSessionEndedFrozen() {

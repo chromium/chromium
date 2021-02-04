@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/crash_report/breakpad_helper.h"
+#import "ios/chrome/browser/crash_report/crash_helper.h"
 
 #include "base/strings/sys_string_conversions.h"
 #include "components/breadcrumbs/core/crash_reporter_breadcrumb_constants.h"
@@ -47,7 +47,7 @@ class BreakpadHelperTest : public PlatformTest {
 
   void TearDown() override {
     [[mock_breakpad_controller_ stub] stop];
-    breakpad_helper::SetEnabled(false);
+    crash_helper::SetEnabled(false);
 
     PlatformTest::TearDown();
   }
@@ -89,50 +89,50 @@ TEST_F(BreakpadHelperTest, CrashReportUserApplicationStateAllKeys) {
 TEST_F(BreakpadHelperTest, GetCrashReportCount) {
   [mock_breakpad_controller_ cr_expectGetCrashReportCount:kCrashReportCount];
 
-  // Verify that breakpad_helper::GetCrashReportCount() returns the
+  // Verify that crash_helper::GetCrashReportCount() returns the
   // crash report count that we arranged to pass to the result block that was
   // passed to -[BreakpadController getCrashReportCount:].
-  EXPECT_EQ(kCrashReportCount, breakpad_helper::GetCrashReportCount());
+  EXPECT_EQ(kCrashReportCount, crash_helper::GetCrashReportCount());
   EXPECT_OCMOCK_VERIFY(mock_breakpad_controller_);
 }
 
 TEST_F(BreakpadHelperTest, HasReportToUpload) {
   [mock_breakpad_controller_ cr_expectGetCrashReportCount:kCrashReportCount];
-  EXPECT_TRUE(breakpad_helper::HasReportToUpload());
+  EXPECT_TRUE(crash_helper::HasReportToUpload());
   EXPECT_OCMOCK_VERIFY(mock_breakpad_controller_);
 
   [mock_breakpad_controller_ cr_expectGetCrashReportCount:0];
-  EXPECT_FALSE(breakpad_helper::HasReportToUpload());
+  EXPECT_FALSE(crash_helper::HasReportToUpload());
   EXPECT_OCMOCK_VERIFY(mock_breakpad_controller_);
 }
 
 TEST_F(BreakpadHelperTest, IsUploadingEnabled) {
-  breakpad_helper::SetUserEnabledUploading(true);
-  EXPECT_TRUE(breakpad_helper::UserEnabledUploading());
-  breakpad_helper::SetEnabled(false);
-  EXPECT_TRUE(breakpad_helper::UserEnabledUploading());
+  crash_helper::SetUserEnabledUploading(true);
+  EXPECT_TRUE(crash_helper::UserEnabledUploading());
+  crash_helper::SetEnabled(false);
+  EXPECT_TRUE(crash_helper::UserEnabledUploading());
   [[mock_breakpad_controller_ expect] start:NO];
-  breakpad_helper::SetEnabled(true);
-  EXPECT_TRUE(breakpad_helper::UserEnabledUploading());
+  crash_helper::SetEnabled(true);
+  EXPECT_TRUE(crash_helper::UserEnabledUploading());
 
-  breakpad_helper::SetUserEnabledUploading(false);
-  EXPECT_FALSE(breakpad_helper::UserEnabledUploading());
+  crash_helper::SetUserEnabledUploading(false);
+  EXPECT_FALSE(crash_helper::UserEnabledUploading());
   [[mock_breakpad_controller_ expect] stop];
-  breakpad_helper::SetEnabled(false);
-  EXPECT_FALSE(breakpad_helper::UserEnabledUploading());
+  crash_helper::SetEnabled(false);
+  EXPECT_FALSE(crash_helper::UserEnabledUploading());
   [[mock_breakpad_controller_ expect] start:NO];
-  breakpad_helper::SetEnabled(true);
-  EXPECT_FALSE(breakpad_helper::UserEnabledUploading());
+  crash_helper::SetEnabled(true);
+  EXPECT_FALSE(crash_helper::UserEnabledUploading());
 }
 
 TEST_F(BreakpadHelperTest, StartUploadingReportsInRecoveryMode) {
   // Test when crash reporter is disabled.
-  breakpad_helper::SetEnabled(false);
-  breakpad_helper::StartUploadingReportsInRecoveryMode();
+  crash_helper::SetEnabled(false);
+  crash_helper::StartUploadingReportsInRecoveryMode();
 
   // Test when crash reporter is enabled.
   [[mock_breakpad_controller_ expect] start:NO];
-  breakpad_helper::SetEnabled(true);
+  crash_helper::SetEnabled(true);
   EXPECT_OCMOCK_VERIFY(mock_breakpad_controller_);
 
   [[mock_breakpad_controller_ expect] stop];
@@ -146,25 +146,25 @@ TEST_F(BreakpadHelperTest, StartUploadingReportsInRecoveryMode) {
   [[mock_breakpad_controller_ expect] setUploadInterval:1];
   [[mock_breakpad_controller_ expect] start:NO];
   [[mock_breakpad_controller_ expect] setUploadingEnabled:YES];
-  breakpad_helper::StartUploadingReportsInRecoveryMode();
+  crash_helper::StartUploadingReportsInRecoveryMode();
   EXPECT_OCMOCK_VERIFY(mock_breakpad_controller_);
 }
 
 TEST_F(BreakpadHelperTest, RestoreDefaultConfiguration) {
   // Test when crash reporter is disabled.
-  breakpad_helper::SetEnabled(false);
-  breakpad_helper::RestoreDefaultConfiguration();
+  crash_helper::SetEnabled(false);
+  crash_helper::RestoreDefaultConfiguration();
 
   // Test when crash reporter is enabled.
   [[mock_breakpad_controller_ expect] start:NO];
-  breakpad_helper::SetEnabled(true);
+  crash_helper::SetEnabled(true);
   EXPECT_OCMOCK_VERIFY(mock_breakpad_controller_);
 
   [[mock_breakpad_controller_ expect] stop];
   [[mock_breakpad_controller_ expect] resetConfiguration];
   [[mock_breakpad_controller_ expect] start:NO];
   [[mock_breakpad_controller_ expect] setUploadingEnabled:NO];
-  breakpad_helper::RestoreDefaultConfiguration();
+  crash_helper::RestoreDefaultConfiguration();
   EXPECT_OCMOCK_VERIFY(mock_breakpad_controller_);
 }
 

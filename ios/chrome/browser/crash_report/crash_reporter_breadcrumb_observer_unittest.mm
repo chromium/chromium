@@ -12,7 +12,7 @@
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
-#import "ios/chrome/browser/crash_report/breakpad_helper.h"
+#import "ios/chrome/browser/crash_report/crash_helper.h"
 #include "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #import "ios/chrome/test/ocmock/OCMockObject+BreakpadControllerTesting.h"
 #import "ios/testing/scoped_block_swizzler.h"
@@ -77,7 +77,7 @@ class CrashReporterBreadcrumbObserverTest : public PlatformTest {
 
   void TearDown() override {
     [[mock_breakpad_controller_ stub] stop];
-    breakpad_helper::SetEnabled(false);
+    crash_helper::SetEnabled(false);
     PlatformTest::TearDown();
   }
 
@@ -95,7 +95,7 @@ class CrashReporterBreadcrumbObserverTest : public PlatformTest {
 // reports.
 TEST_F(CrashReporterBreadcrumbObserverTest, EventsAttachedToCrashReport) {
   [[mock_breakpad_controller_ expect] start:NO];
-  breakpad_helper::SetEnabled(true);
+  crash_helper::SetEnabled(true);
 
   BreadcrumbManagerKeyedService* breadcrumb_service =
       BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
@@ -129,7 +129,7 @@ TEST_F(CrashReporterBreadcrumbObserverTest, EventsAttachedToCrashReport) {
 // Tests that breadcrumbs string is cut when it exceeds the max allowed length.
 TEST_F(CrashReporterBreadcrumbObserverTest, ProductDataOverflow) {
   [[mock_breakpad_controller_ expect] start:NO];
-  breakpad_helper::SetEnabled(true);
+  crash_helper::SetEnabled(true);
 
   BreadcrumbManagerKeyedService* breadcrumb_service =
       BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
@@ -165,7 +165,7 @@ TEST_F(CrashReporterBreadcrumbObserverTest, ProductDataOverflow) {
 TEST_F(CrashReporterBreadcrumbObserverTest,
        MultipleBrowserStatesAttachedToCrashReport) {
   [[mock_breakpad_controller_ expect] start:NO];
-  breakpad_helper::SetEnabled(true);
+  crash_helper::SetEnabled(true);
 
   const std::string event = std::string("Breadcrumb Event");
   NSString* event_nsstring = base::SysUTF8ToNSString(event);

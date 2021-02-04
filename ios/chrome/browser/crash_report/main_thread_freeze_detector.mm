@@ -7,7 +7,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "ios/chrome/app/tests_hook.h"
-#include "ios/chrome/browser/crash_report/breakpad_helper.h"
+#include "ios/chrome/browser/crash_report/crash_helper.h"
 #import "third_party/breakpad/breakpad/src/client/ios/Breakpad.h"
 #import "third_party/breakpad/breakpad/src/client/ios/BreakpadController.h"
 

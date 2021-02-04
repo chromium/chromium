@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/crash_report/breakpad_helper.h"
+#include "ios/chrome/browser/crash_report/crash_helper.h"
 
 #import <UIKit/UIKit.h>
 #include <stddef.h>
@@ -25,17 +25,13 @@
 #include "ios/chrome/browser/chrome_paths.h"
 #import "ios/chrome/browser/crash_report/crash_report_user_application_state.h"
 #import "ios/chrome/browser/crash_report/main_thread_freeze_detector.h"
-
-// TODO(stuartmorgan): Move this up where it belongs once
-// https://crbug.com/google-breakpad/487 is fixed. For now, put it at the end to
-// avoid compiler errors.
 #import "third_party/breakpad/breakpad/src/client/ios/BreakpadController.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-namespace breakpad_helper {
+namespace crash_helper {
 
 namespace {
 
@@ -232,8 +228,8 @@ void WillStartCrashRestoration() {
     time_t processStartTimeSeconds =
         [processStartTimeSecondsString longLongValue];
     time_t processUptimeSeconds = tv.tv_sec - processStartTimeSeconds;
-    unsigned long long processUptimeMilliseconds =
-        static_cast<unsigned long long>(processUptimeSeconds) *
+    int64_t processUptimeMilliseconds =
+        static_cast<int64_t>(processUptimeSeconds) *
         base::Time::kMillisecondsPerSecond;
     BreakpadAddUploadParameter(
         ref, kUptimeAtRestoreInMs,
@@ -245,9 +241,8 @@ void StartUploadingReportsInRecoveryMode() {
   if (!crash_reporter::IsBreakpadRunning())
     return;
   [[BreakpadController sharedInstance] stop];
-  [[BreakpadController sharedInstance] setParametersToAddAtUploadTime:@{
-    kUploadedInRecoveryMode : @"yes"
-  }];
+  [[BreakpadController sharedInstance]
+      setParametersToAddAtUploadTime:@{kUploadedInRecoveryMode : @"yes"}];
   [[BreakpadController sharedInstance] setUploadInterval:1];
   [[BreakpadController sharedInstance] start:NO];
   [[BreakpadController sharedInstance] setUploadingEnabled:YES];
@@ -262,4 +257,4 @@ void RestoreDefaultConfiguration() {
   [[BreakpadController sharedInstance] setUploadingEnabled:NO];
 }
 
-}  // namespace breakpad_helper
+}  // namespace crash_helper

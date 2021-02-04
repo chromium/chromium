@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/safe_mode/safe_mode_view_controller.h"
 #import "base/test/ios/wait_util.h"
-#import "ios/chrome/browser/crash_report/breakpad_helper.h"
+#import "ios/chrome/browser/crash_report/crash_helper.h"
 #import "ios/chrome/browser/crash_report/main_thread_freeze_detector.h"
 #import "ios/chrome/test/ocmock/OCMockObject+BreakpadControllerTesting.h"
 #import "ios/testing/scoped_block_swizzler.h"
@@ -42,7 +42,7 @@ class SafeModeViewControllerTest : public PlatformTest {
 
   void TearDown() override {
     [[mock_breakpad_controller_ stub] stop];
-    breakpad_helper::SetEnabled(false);
+    crash_helper::SetEnabled(false);
 
     PlatformTest::TearDown();
   }
@@ -56,8 +56,8 @@ class SafeModeViewControllerTest : public PlatformTest {
 // Verify that +[SafeModeViewController hasSuggestions] returns YES if and only
 // if crash reporting is enabled by the user and there are multiple crash
 // reports to upload. +[SafeModeViewController hasSuggestions] does not depend
-// on the value of breakpad_helper::IsEnabled or
-// breakpad_helper::IsUploadingEnabled.
+// on the value of crash_helper::IsEnabled or
+// crash_helper::IsUploadingEnabled.
 // TODO(crbug.com/1173776): The test fails on device.
 #if TARGET_IPHONE_SIMULATOR
 #define MAYBE_HasSuggestions HasSuggestions
@@ -66,10 +66,10 @@ class SafeModeViewControllerTest : public PlatformTest {
 #endif
 TEST_F(SafeModeViewControllerTest, MAYBE_HasSuggestions) {
   // Test when crash reporter is disabled.
-  breakpad_helper::SetUserEnabledUploading(false);
+  crash_helper::SetUserEnabledUploading(false);
   EXPECT_FALSE([SafeModeViewController hasSuggestions]);
 
-  breakpad_helper::SetUploadingEnabled(false);
+  crash_helper::SetUploadingEnabled(false);
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       // Calling SetUploadingEnabled() for the first time kicks off several
       // asynchronous calls that ultimately result in MainThreadFreezeDetector's
@@ -87,12 +87,12 @@ TEST_F(SafeModeViewControllerTest, MAYBE_HasSuggestions) {
   EXPECT_OCMOCK_VERIFY(mock_breakpad_controller_);
   EXPECT_FALSE([SafeModeViewController hasSuggestions]);
 
-  breakpad_helper::SetUploadingEnabled(true);
+  crash_helper::SetUploadingEnabled(true);
   EXPECT_OCMOCK_VERIFY(mock_breakpad_controller_);
   EXPECT_FALSE([SafeModeViewController hasSuggestions]);
 
   // Test when crash reporter is enabled.
-  breakpad_helper::SetUserEnabledUploading(true);
+  crash_helper::SetUserEnabledUploading(true);
   EXPECT_OCMOCK_VERIFY(mock_breakpad_controller_);
   [mock_breakpad_controller_ cr_expectGetCrashReportCount:0];
   EXPECT_FALSE([SafeModeViewController hasSuggestions]);
@@ -103,10 +103,10 @@ TEST_F(SafeModeViewControllerTest, MAYBE_HasSuggestions) {
   EXPECT_OCMOCK_VERIFY(mock_breakpad_controller_);
 
   [[mock_breakpad_controller_ expect] start:NO];
-  breakpad_helper::SetEnabled(true);
+  crash_helper::SetEnabled(true);
 
   [[mock_breakpad_controller_ expect] setUploadingEnabled:NO];
-  breakpad_helper::SetUploadingEnabled(false);
+  crash_helper::SetUploadingEnabled(false);
   EXPECT_OCMOCK_VERIFY(mock_breakpad_controller_);
   [mock_breakpad_controller_ cr_expectGetCrashReportCount:0];
   EXPECT_FALSE([SafeModeViewController hasSuggestions]);
@@ -121,7 +121,7 @@ TEST_F(SafeModeViewControllerTest, MAYBE_HasSuggestions) {
   [[mock_breakpad_controller_ expect]
       setUploadCallback:reinterpret_cast<BreakpadUploadCompletionCallback>(
                             [OCMArg anyPointer])];
-  breakpad_helper::SetUploadingEnabled(true);
+  crash_helper::SetUploadingEnabled(true);
   EXPECT_OCMOCK_VERIFY(mock_breakpad_controller_);
 
   [mock_breakpad_controller_ cr_expectGetCrashReportCount:0];
