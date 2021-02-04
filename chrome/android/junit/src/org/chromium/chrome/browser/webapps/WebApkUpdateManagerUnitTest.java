@@ -38,6 +38,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.PathUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ShortcutHelper;
@@ -1123,6 +1124,7 @@ public class WebApkUpdateManagerUnitTest {
      * there wasn't a previous request for this ShellAPK version.
      */
     @Test
+    @DisabledTest(message = "crbug.com/1173970")
     public void testShellApkOutOfDate() {
         registerWebApk(WEBAPK_PACKAGE_NAME, defaultManifestData(),
                 REQUEST_UPDATE_FOR_SHELL_APK_VERSION - 1);
