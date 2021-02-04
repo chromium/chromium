@@ -30,14 +30,10 @@ struct AXEvent;
 namespace arc {
 class AXTreeSourceArcTest;
 
-using AXTreeArcSerializer = ui::AXTreeSerializer<AccessibilityInfoDataWrapper*,
-                                                 ui::AXNodeData,
-                                                 ui::AXTreeData>;
+using AXTreeArcSerializer = ui::AXTreeSerializer<AccessibilityInfoDataWrapper*>;
 
 // This class represents the accessibility tree from the focused ARC window.
-class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*,
-                                                ui::AXNodeData,
-                                                ui::AXTreeData>,
+class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*>,
                         public ui::AXActionHandler {
  public:
   class Delegate {

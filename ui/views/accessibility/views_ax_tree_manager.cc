@@ -157,8 +157,7 @@ void ViewsAXTreeManager::SerializeTreeUpdates() {
     ui::AXTreeUpdate update;
     if (!tree_serializer_.SerializeChanges(wrapper, &update)) {
       std::string error;
-      ui::AXTreeSourceChecker<AXAuraObjWrapper*, ui::AXNodeData, ui::AXTreeData>
-          checker(&tree_source_);
+      ui::AXTreeSourceChecker<AXAuraObjWrapper*> checker(&tree_source_);
       checker.CheckAndGetErrorString(&error);
       NOTREACHED() << error << '\n' << update.ToString();
       return;

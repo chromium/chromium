@@ -69,6 +69,7 @@ component("ax_base") {
     "ax_tree_id.h",
     "ax_tree_id_registry.cc",
     "ax_tree_id_registry.h",
+    "ax_tree_update.cc",
     "ax_tree_update.h",
     "ax_tree_update_forward.h",
   ]

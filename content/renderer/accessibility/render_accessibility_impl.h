@@ -53,8 +53,7 @@ class AXImageAnnotator;
 class RenderFrameImpl;
 class RenderAccessibilityManager;
 
-using BlinkAXTreeSerializer =
-    ui::AXTreeSerializer<blink::WebAXObject, ui::AXNodeData, ui::AXTreeData>;
+using BlinkAXTreeSerializer = ui::AXTreeSerializer<blink::WebAXObject>;
 
 // The browser process implements native accessibility APIs, allowing assistive
 // technology (e.g., screen readers, magnifiers) to access and control the web
@@ -257,9 +256,7 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // The serializer that sends accessibility messages to the browser process.
   std::unique_ptr<BlinkAXTreeSerializer> serializer_;
 
-  using PluginAXTreeSerializer = ui::AXTreeSerializer<const ui::AXNode*,
-                                                      ui::AXNodeData,
-                                                      ui::AXTreeData>;
+  using PluginAXTreeSerializer = ui::AXTreeSerializer<const ui::AXNode*>;
   std::unique_ptr<PluginAXTreeSerializer> plugin_serializer_;
   PluginAXTreeSource* plugin_tree_source_;
   blink::WebAXObject plugin_host_node_;

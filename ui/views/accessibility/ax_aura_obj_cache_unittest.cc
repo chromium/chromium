@@ -129,14 +129,12 @@ TEST_F(AXAuraObjCacheTest, ValidTree) {
   ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
   AXTreeSourceViews tree_source(
       cache.GetOrCreate(parent_widget->GetNativeWindow()), tree_id, &cache);
-  ui::AXTreeSerializer<AXAuraObjWrapper*, ui::AXNodeData, ui::AXTreeData>
-      serializer(&tree_source);
+  ui::AXTreeSerializer<AXAuraObjWrapper*> serializer(&tree_source);
   ui::AXTreeUpdate serialized_tree;
   serializer.SerializeChanges(tree_source.GetRoot(), &serialized_tree);
 
   // Verify tree is valid.
-  ui::AXTreeSourceChecker<AXAuraObjWrapper*, ui::AXNodeData, ui::AXTreeData>
-      checker(&tree_source);
+  ui::AXTreeSourceChecker<AXAuraObjWrapper*> checker(&tree_source);
   std::string error_string;
   EXPECT_TRUE(checker.CheckAndGetErrorString(&error_string)) << error_string;
   ui::AXTree ax_tree(serialized_tree);

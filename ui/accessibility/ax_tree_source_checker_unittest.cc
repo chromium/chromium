@@ -13,8 +13,6 @@
 namespace ui {
 namespace {
 
-struct FakeAXTreeData {};
-
 struct FakeAXNode {
   int32_t id;
   ax::mojom::Role role;
@@ -33,8 +31,7 @@ void CleanAXNodeDataString(std::string* error_str) {
 // explicit. This allows us to test that AXTreeSourceChecker properly warns
 // about errors in accessibility trees that have inconsistent parent/child
 // links.
-class FakeAXTreeSource
-    : public AXTreeSource<const FakeAXNode*, ui::AXNodeData, FakeAXTreeData> {
+class FakeAXTreeSource : public AXTreeSource<const FakeAXNode*> {
  public:
   FakeAXTreeSource(std::vector<FakeAXNode> nodes, int32_t root_id)
       : nodes_(nodes), root_id_(root_id) {
@@ -43,7 +40,7 @@ class FakeAXTreeSource
   }
 
   // AXTreeSource overrides.
-  bool GetTreeData(FakeAXTreeData* data) const override { return true; }
+  bool GetTreeData(AXTreeData* data) const override { return true; }
 
   const FakeAXNode* GetRoot() const override { return GetFromId(root_id_); }
 
@@ -94,8 +91,7 @@ class FakeAXTreeSource
 
 }  // namespace
 
-using FakeAXTreeSourceChecker =
-    AXTreeSourceChecker<const FakeAXNode*, ui::AXNodeData, FakeAXTreeData>;
+using FakeAXTreeSourceChecker = AXTreeSourceChecker<const FakeAXNode*>;
 
 TEST(AXTreeSourceCheckerTest, SimpleValidTree) {
   std::vector<FakeAXNode> nodes = {

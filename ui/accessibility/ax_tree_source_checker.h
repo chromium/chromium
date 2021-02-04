@@ -13,11 +13,10 @@
 
 namespace ui {
 
-template <typename AXSourceNode, typename AXNodeData, typename AXTreeData>
+template <typename AXSourceNode>
 class AXTreeSourceChecker {
  public:
-  explicit AXTreeSourceChecker(
-      AXTreeSource<AXSourceNode, AXNodeData, AXTreeData>* tree);
+  explicit AXTreeSourceChecker(AXTreeSource<AXSourceNode>* tree);
   ~AXTreeSourceChecker();
 
   // Returns true if everything reachable from the root of the tree is
@@ -29,25 +28,24 @@ class AXTreeSourceChecker {
   bool Check(AXSourceNode node, std::string indent, std::string* output);
   std::string NodeToString(AXSourceNode node);
 
-  AXTreeSource<AXSourceNode, AXNodeData, AXTreeData>* tree_;
+  AXTreeSource<AXSourceNode>* tree_;
 
   std::map<int32_t, int32_t> node_id_to_parent_id_map_;
 
   DISALLOW_COPY_AND_ASSIGN(AXTreeSourceChecker);
 };
 
-template <typename AXSourceNode, typename AXNodeData, typename AXTreeData>
-AXTreeSourceChecker<AXSourceNode, AXNodeData, AXTreeData>::AXTreeSourceChecker(
-    AXTreeSource<AXSourceNode, AXNodeData, AXTreeData>* tree)
+template <typename AXSourceNode>
+AXTreeSourceChecker<AXSourceNode>::AXTreeSourceChecker(
+    AXTreeSource<AXSourceNode>* tree)
     : tree_(tree) {}
 
-template <typename AXSourceNode, typename AXNodeData, typename AXTreeData>
-AXTreeSourceChecker<AXSourceNode, AXNodeData, AXTreeData>::
-    ~AXTreeSourceChecker() = default;
+template <typename AXSourceNode>
+AXTreeSourceChecker<AXSourceNode>::~AXTreeSourceChecker() = default;
 
-template <typename AXSourceNode, typename AXNodeData, typename AXTreeData>
-bool AXTreeSourceChecker<AXSourceNode, AXNodeData, AXTreeData>::
-    CheckAndGetErrorString(std::string* error_string) {
+template <typename AXSourceNode>
+bool AXTreeSourceChecker<AXSourceNode>::CheckAndGetErrorString(
+    std::string* error_string) {
   node_id_to_parent_id_map_.clear();
 
   AXSourceNode root = tree_->GetRoot();
@@ -62,10 +60,8 @@ bool AXTreeSourceChecker<AXSourceNode, AXNodeData, AXTreeData>::
   return Check(root, "", error_string);
 }
 
-template <typename AXSourceNode, typename AXNodeData, typename AXTreeData>
-std::string
-AXTreeSourceChecker<AXSourceNode, AXNodeData, AXTreeData>::NodeToString(
-    AXSourceNode node) {
+template <typename AXSourceNode>
+std::string AXTreeSourceChecker<AXSourceNode>::NodeToString(AXSourceNode node) {
   AXNodeData node_data;
   tree_->SerializeNode(node, &node_data);
 
@@ -93,11 +89,10 @@ AXTreeSourceChecker<AXSourceNode, AXNodeData, AXTreeData>::NodeToString(
                             children_str.c_str(), parent_id);
 }
 
-template <typename AXSourceNode, typename AXNodeData, typename AXTreeData>
-bool AXTreeSourceChecker<AXSourceNode, AXNodeData, AXTreeData>::Check(
-    AXSourceNode node,
-    std::string indent,
-    std::string* output) {
+template <typename AXSourceNode>
+bool AXTreeSourceChecker<AXSourceNode>::Check(AXSourceNode node,
+                                              std::string indent,
+                                              std::string* output) {
   *output += indent + NodeToString(node);
 
   int32_t node_id = tree_->GetId(node);

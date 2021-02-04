@@ -321,9 +321,7 @@ void AutomationManagerAura::PerformHitTest(
 void AutomationManagerAura::OnSerializeFailure(ax::mojom::Event event_type,
                                                const ui::AXTreeUpdate& update) {
   std::string error_string;
-  ui::AXTreeSourceChecker<views::AXAuraObjWrapper*, ui::AXNodeData,
-                          ui::AXTreeData>
-      checker(tree_.get());
+  ui::AXTreeSourceChecker<views::AXAuraObjWrapper*> checker(tree_.get());
   checker.CheckAndGetErrorString(&error_string);
 
   // Add a crash key so we can figure out why this is happening.

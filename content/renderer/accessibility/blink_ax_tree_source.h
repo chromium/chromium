@@ -39,8 +39,7 @@ class ScopedFreezeBlinkAXTreeSource {
 };
 
 class CONTENT_EXPORT BlinkAXTreeSource
-    : public ui::
-          AXTreeSource<blink::WebAXObject, ui::AXNodeData, ui::AXTreeData> {
+    : public ui::AXTreeSource<blink::WebAXObject> {
  public:
   BlinkAXTreeSource(RenderFrameImpl* render_frame, ui::AXMode mode);
   ~BlinkAXTreeSource() override;
