@@ -2337,21 +2337,36 @@ static void AssertLayoutTreeUpdated(Node& root) {
 
 void Document::UpdateStyleAndLayoutTree() {
   DCHECK(IsMainThread());
-  if (Lifecycle().LifecyclePostponed())
+  if (!IsActive() || !View() || View()->ShouldThrottleRendering() ||
+      Lifecycle().LifecyclePostponed()) {
     return;
+  }
 
   HTMLFrameOwnerElement::PluginDisposeSuspendScope suspend_plugin_dispose;
   ScriptForbiddenScope forbid_script;
 
-  if (HTMLFrameOwnerElement* owner = LocalOwner()) {
+  if (HTMLFrameOwnerElement* owner = LocalOwner())
     owner->GetDocument().UpdateStyleAndLayoutTree();
+
+  UpdateStyleAndLayoutTreeForThisDocument();
+}
+
+void Document::UpdateStyleAndLayoutTreeForThisDocument() {
+  DCHECK(IsMainThread());
+  if (!IsActive() || !View() || View()->ShouldThrottleRendering() ||
+      Lifecycle().LifecyclePostponed()) {
+    return;
   }
 
-  if (!View() || !IsActive())
-    return;
-
-  if (View()->ShouldThrottleRendering())
-    return;
+#if DCHECK_IS_ON()
+  if (HTMLFrameOwnerElement* owner = LocalOwner()) {
+    DCHECK(!owner->GetDocument()
+                .GetSlotAssignmentEngine()
+                .HasPendingSlotAssignmentRecalc());
+    DCHECK(!owner->GetDocument().NeedsLayoutTreeUpdate());
+    AssertLayoutTreeUpdated(owner->GetDocument());
+  }
+#endif
 
   // RecalcSlotAssignments should be done before checking
   // NeedsLayoutTreeUpdate().
@@ -2722,7 +2737,7 @@ void Document::UpdateStyleAndLayout(DocumentUpdateReason reason) {
   if (HTMLFrameOwnerElement* owner = LocalOwner())
     owner->GetDocument().UpdateStyleAndLayout(reason);
 
-  UpdateStyleAndLayoutTree();
+  UpdateStyleAndLayoutTreeForThisDocument();
 
   if (!IsActive()) {
     if (reason != DocumentUpdateReason::kBeginMainFrame && frame_view)

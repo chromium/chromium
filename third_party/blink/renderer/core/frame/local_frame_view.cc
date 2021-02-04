@@ -640,7 +640,7 @@ void LocalFrameView::PerformPreLayoutTasks() {
     document->EvaluateMediaQueryList();
   }
 
-  document->UpdateStyleAndLayoutTree();
+  document->UpdateStyleAndLayoutTreeForThisDocument();
 
   // Update style for all embedded SVG documents underneath this frame, so
   // that intrinsic size computation for any embedded objects has up-to-date
@@ -648,7 +648,7 @@ void LocalFrameView::PerformPreLayoutTasks() {
   ForAllChildLocalFrameViews([](LocalFrameView& view) {
     Document& document = *view.GetFrame().GetDocument();
     if (document.IsSVGDocument())
-      document.UpdateStyleAndLayoutTree();
+      document.UpdateStyleAndLayoutTreeForThisDocument();
   });
 
   Lifecycle().AdvanceTo(DocumentLifecycle::kStyleClean);
@@ -3289,7 +3289,7 @@ void LocalFrameView::UpdateStyleAndLayoutIfNeededRecursive() {
   {
     SCOPED_UMA_AND_UKM_TIMER(EnsureUkmAggregator(),
                              LocalFrameUkmAggregator::kStyle);
-    frame_->GetDocument()->UpdateStyleAndLayoutTree();
+    frame_->GetDocument()->UpdateStyleAndLayoutTreeForThisDocument();
 
     // Update style for all embedded SVG documents underneath this frame, so
     // that intrinsic size computation for any embedded objects has up-to-date
@@ -3297,7 +3297,7 @@ void LocalFrameView::UpdateStyleAndLayoutIfNeededRecursive() {
     ForAllChildLocalFrameViews([](LocalFrameView& view) {
       Document& document = *view.GetFrame().GetDocument();
       if (document.IsSVGDocument())
-        document.UpdateStyleAndLayoutTree();
+        document.UpdateStyleAndLayoutTreeForThisDocument();
     });
   }
 
