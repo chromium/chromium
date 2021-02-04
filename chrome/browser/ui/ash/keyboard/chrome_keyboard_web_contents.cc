@@ -209,14 +209,16 @@ void ChromeKeyboardWebContents::SetInitialContentsSize(const gfx::Size& size) {
   web_contents_->GetNativeView()->SetBounds(bounds);
 }
 
-void ChromeKeyboardWebContents::RenderViewCreated(
-    content::RenderViewHost* render_view_host) {
-  content::RenderProcessHost* render_process_host =
-      render_view_host->GetProcess();
-  content::HostZoomMap::GetDefaultForBrowserContext(
-      render_process_host->GetBrowserContext())
-      ->SetTemporaryZoomLevel(render_process_host->GetID(),
-                              render_view_host->GetRoutingID(), 0 /* level */);
+void ChromeKeyboardWebContents::RenderFrameCreated(
+    content::RenderFrameHost* frame_host) {
+  if (frame_host->GetParent())
+    return;
+  content::HostZoomMap* zoom_map =
+      content::HostZoomMap::GetDefaultForBrowserContext(
+          frame_host->GetBrowserContext());
+  zoom_map->SetTemporaryZoomLevel(
+      frame_host->GetProcess()->GetID(),
+      frame_host->GetRenderViewHost()->GetRoutingID(), 0 /* level */);
 }
 
 void ChromeKeyboardWebContents::DidStopLoading() {

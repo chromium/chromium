@@ -58,7 +58,7 @@ class ChromeKeyboardWebContents : public content::WebContentsObserver,
 
  private:
   // content::WebContentsObserver overrides
-  void RenderViewCreated(content::RenderViewHost* render_view_host) override;
+  void RenderFrameCreated(content::RenderFrameHost* frame_host) override;
   void DidStopLoading() override;
 
   // Loads the web contents for the given |url|.
