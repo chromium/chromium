@@ -21673,7 +21673,7 @@
       }],
       'features': {
         'dynamic_refresh': True,
-        'per_profile': False,
+        'per_profile': True,
         'cloud_only': True,
       },
       'id': 696,
@@ -21808,7 +21808,7 @@
       }],
       'features': {
         'dynamic_refresh': True,
-        'per_profile': False,
+        'per_profile': True,
         'cloud_only': True,
       },
       'id': 693,
@@ -21941,7 +21941,7 @@
       }],
       'features': {
         'dynamic_refresh': True,
-        'per_profile': False,
+        'per_profile': True,
         'cloud_only': True,
       },
       'id': 697,
@@ -21988,7 +21988,7 @@
       }],
       'features': {
         'dynamic_refresh': True,
-        'per_profile': False,
+        'per_profile': True,
         'cloud_only': True,
       },
       'id': 699,
@@ -22028,7 +22028,7 @@
       ],
       'features': {
         'dynamic_refresh': True,
-        'per_profile': False,
+        'per_profile': True,
         'cloud_only': True,
       },
       'default': 0,
