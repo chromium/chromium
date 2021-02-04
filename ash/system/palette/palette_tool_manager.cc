@@ -10,7 +10,6 @@
 #include "ash/system/palette/palette_tool.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
-#include "chromeos/constants/chromeos_switches.h"
 
 namespace ash {
 

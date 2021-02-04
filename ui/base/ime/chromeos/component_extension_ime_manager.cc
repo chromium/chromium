@@ -10,7 +10,6 @@
 #include "base/command_line.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "ui/base/ime/chromeos/extension_ime_util.h"
 
 namespace chromeos {

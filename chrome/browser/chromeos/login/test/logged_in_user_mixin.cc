@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "chrome/browser/chromeos/login/wizard_controller.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/login/auth/stub_authenticator_builder.h"
 #include "chromeos/login/auth/user_context.h"
 #include "components/account_id/account_id.h"

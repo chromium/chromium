@@ -10,7 +10,6 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/ash_features.h"
 #include "base/macros.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "ui/gfx/color_palette.h"
 
 namespace ash {
