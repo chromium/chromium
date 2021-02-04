@@ -1245,7 +1245,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/signin/SigninHelperProvider.java",
   "java/src/org/chromium/chrome/browser/signin/SigninManagerImpl.java",
   "java/src/org/chromium/chrome/browser/signin/SyncPromoView.java",
-  "java/src/org/chromium/chrome/browser/signin/account_picker/AccountPickerDelegateImpl.java",
   "java/src/org/chromium/chrome/browser/site_settings/ChromeSiteSettingsDelegate.java",
   "java/src/org/chromium/chrome/browser/site_settings/CookieControlsServiceBridge.java",
   "java/src/org/chromium/chrome/browser/site_settings/ManageSpaceActivity.java",
