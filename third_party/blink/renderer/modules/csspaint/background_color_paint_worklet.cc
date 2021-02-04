@@ -182,7 +182,8 @@ bool GetBGColorPaintWorkletParamsInternal(Element* element,
             Animation::CompareAnimationsOrdering::kPointerOrder))
       composited_animation = animation.key;
   }
-  DCHECK(composited_animation);
+  if (!composited_animation)
+    return false;
 
   // If we are here, then this element must have one background color animation
   // only. Fall back to the main thread if it is not composite:replace.

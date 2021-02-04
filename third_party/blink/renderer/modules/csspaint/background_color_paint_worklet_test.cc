@@ -36,6 +36,56 @@ TEST_F(BackgroundColorPaintWorkletTest, FallbackToMainNoAnimation) {
       element, &animated_colors, &offsets));
 }
 
+// Test that when an element has other animations but no background color
+// animation, then we fall back to the main thread. Also testing that calling
+// BackgroundColorPaintWorklet::GetBGColorPaintWorkletParams do not crash.
+TEST_F(BackgroundColorPaintWorkletTest, NoBGColorAnimationFallback) {
+  ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
+  SetBodyInnerHTML(R"HTML(
+    <div id ="target" style="width: 100px; height: 100px">
+    </div>
+  )HTML");
+
+  Timing timing;
+  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(30);
+
+  CSSPropertyID property_id = CSSPropertyID::kColor;
+  Persistent<StringKeyframe> start_keyframe =
+      MakeGarbageCollected<StringKeyframe>();
+  start_keyframe->SetCSSPropertyValue(
+      property_id, "red", SecureContextMode::kInsecureContext, nullptr);
+  Persistent<StringKeyframe> end_keyframe =
+      MakeGarbageCollected<StringKeyframe>();
+  end_keyframe->SetCSSPropertyValue(
+      property_id, "green", SecureContextMode::kInsecureContext, nullptr);
+
+  StringKeyframeVector keyframes;
+  keyframes.push_back(start_keyframe);
+  keyframes.push_back(end_keyframe);
+
+  auto* model = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
+  model->SetComposite(EffectModel::kCompositeAccumulate);
+
+  Element* element = GetElementById("target");
+  NonThrowableExceptionState exception_state;
+  DocumentTimeline* timeline =
+      MakeGarbageCollected<DocumentTimeline>(&GetDocument());
+  Animation* animation = Animation::Create(
+      MakeGarbageCollected<KeyframeEffect>(element, model, timing), timeline,
+      exception_state);
+  UpdateAllLifecyclePhasesForTest();
+  animation->play();
+
+  EXPECT_TRUE(element->GetElementAnimations());
+  EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 1u);
+  Vector<Color> animated_colors;
+  Vector<double> offsets;
+  EXPECT_FALSE(BackgroundColorPaintWorklet::GetBGColorPaintWorkletParams(
+      element, &animated_colors, &offsets));
+  EXPECT_TRUE(animated_colors.IsEmpty());
+  EXPECT_TRUE(offsets.IsEmpty());
+}
+
 // Test the case where the composite mode is not replace.
 TEST_F(BackgroundColorPaintWorkletTest, FallbackToMainCompositeAccumulate) {
   ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
