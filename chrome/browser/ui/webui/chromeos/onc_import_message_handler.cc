@@ -8,7 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/net/nss_context.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/network/onc/onc_certificate_importer_impl.h"

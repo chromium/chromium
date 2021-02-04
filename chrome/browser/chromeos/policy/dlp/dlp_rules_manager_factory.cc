@@ -5,9 +5,9 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 
 #include "base/no_destructor.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_impl.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"

@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/borealis/borealis_app_launcher.h"
 
 #include "base/bind.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/borealis/borealis_context.h"
 #include "chrome/browser/chromeos/borealis/borealis_context_manager.h"
 #include "chrome/browser/chromeos/borealis/borealis_features.h"
@@ -12,7 +13,6 @@
 #include "chrome/browser/chromeos/borealis/borealis_util.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service_factory.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/dbus/cicerone/cicerone_service.pb.h"
 #include "chromeos/dbus/cicerone_client.h"

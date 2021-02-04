@@ -34,8 +34,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/files/file_path.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/device_identity/device_identity_provider.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "components/user_manager/user_manager.h"

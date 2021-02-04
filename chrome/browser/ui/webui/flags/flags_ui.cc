@@ -41,10 +41,10 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/command_line.h"
 #include "base/system/sys_info.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/login/session/user_session_manager.h"
 #include "chrome/browser/chromeos/ownership/owner_settings_service_chromeos.h"
 #include "chrome/browser/chromeos/ownership/owner_settings_service_chromeos_factory.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chrome/browser/chromeos/settings/owner_flags_storage.h"
 #include "chrome/browser/infobars/infobar_service.h"

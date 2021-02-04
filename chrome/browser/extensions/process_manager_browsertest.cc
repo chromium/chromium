@@ -58,7 +58,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chromeos/constants/chromeos_switches.h"
 #endif
 

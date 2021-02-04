@@ -5,8 +5,8 @@
 #include "chrome/browser/chromeos/bluetooth/debug_logs_manager_factory.h"
 
 #include "base/memory/singleton.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/bluetooth/debug_logs_manager.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"

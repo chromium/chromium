@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/chromeos/user_image_source.h"

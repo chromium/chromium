@@ -4,7 +4,7 @@
 
 #include "chrome/browser/chromeos/crosapi/cert_database_ash.h"
 
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/crosapi/mojom/cert_database.mojom.h"
 #include "chromeos/login/login_state/login_state.h"

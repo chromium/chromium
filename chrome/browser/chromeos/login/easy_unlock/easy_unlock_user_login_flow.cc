@@ -5,8 +5,8 @@
 #include "chrome/browser/chromeos/login/easy_unlock/easy_unlock_user_login_flow.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/login/easy_unlock/easy_unlock_service.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 
 namespace chromeos {
 

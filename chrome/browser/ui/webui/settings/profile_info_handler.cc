@@ -15,7 +15,7 @@
 #include "ui/base/webui/web_ui_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/webui/chromeos/user_image_source.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_manager.h"

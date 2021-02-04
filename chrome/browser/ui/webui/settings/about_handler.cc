@@ -52,10 +52,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/i18n/time_formatting.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/ownership/owner_settings_service_chromeos.h"
 #include "chrome/browser/chromeos/ownership/owner_settings_service_chromeos_factory.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chrome/browser/chromeos/tpm_firmware_update.h"
 #include "chrome/browser/profiles/profile.h"

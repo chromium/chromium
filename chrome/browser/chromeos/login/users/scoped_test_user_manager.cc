@@ -4,8 +4,8 @@
 
 #include "chrome/browser/chromeos/login/users/scoped_test_user_manager.h"
 
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/login/users/chrome_user_manager_impl.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 
 namespace chromeos {
 

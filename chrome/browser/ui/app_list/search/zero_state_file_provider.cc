@@ -15,7 +15,7 @@
 #include "base/task/thread_pool.h"
 #include "base/task_runner_util.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/file_chip_result.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/recurrence_ranker.h"

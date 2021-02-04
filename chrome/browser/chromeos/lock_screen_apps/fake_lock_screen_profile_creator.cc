@@ -8,7 +8,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/test/base/testing_profile_manager.h"
 

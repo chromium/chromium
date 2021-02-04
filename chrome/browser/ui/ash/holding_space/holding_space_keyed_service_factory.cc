@@ -5,9 +5,9 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 
 #include "ash/public/cpp/ash_features.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/file_manager/volume_manager_factory.h"
 #include "chrome/browser/chromeos/fileapi/file_change_service_factory.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"

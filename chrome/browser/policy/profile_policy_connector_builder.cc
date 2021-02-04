@@ -17,9 +17,9 @@
 #include "components/policy/core/common/policy_service_impl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/policy/active_directory_policy_manager.h"
 #include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #else  // Non-ChromeOS.
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #endif

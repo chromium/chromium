@@ -17,7 +17,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/shell_window_ids.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/ash_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"

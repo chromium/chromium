@@ -19,7 +19,7 @@
 #include "base/scoped_observation.h"
 #include "base/scoped_observer.h"
 #include "base/test/bind.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_window.h"

@@ -44,10 +44,10 @@
 #elif defined(OS_MAC)
 #include "chrome/browser/password_manager/password_manager_util_mac.h"
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/login/quick_unlock/auth_token.h"
 #include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_storage.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chromeos/login/auth/password_visibility_utils.h"
 #include "components/user_manager/user.h"
 #endif

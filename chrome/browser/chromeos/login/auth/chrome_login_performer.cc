@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/login/easy_unlock/easy_unlock_user_login_flow.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/chromeos/login/users/chrome_user_manager.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/chromeos/policy/device_local_account_policy_service.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "components/account_id/account_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"

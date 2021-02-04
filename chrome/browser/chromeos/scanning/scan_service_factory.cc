@@ -5,9 +5,9 @@
 #include "chrome/browser/chromeos/scanning/scan_service_factory.h"
 
 #include "base/memory/singleton.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/drive/drive_integration_service.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/scanning/lorgnette_scanner_manager_factory.h"
 #include "chrome/browser/chromeos/scanning/scan_service.h"
 #include "chrome/browser/profiles/incognito_helpers.h"

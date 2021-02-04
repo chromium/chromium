@@ -7,11 +7,11 @@
 #include <memory>
 
 #include "base/time/default_tick_clock.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/authpolicy/authpolicy_credentials_manager.h"
 #include "chrome/browser/chromeos/file_manager/volume_manager_factory.h"
 #include "chrome/browser/chromeos/file_system_provider/service_factory.h"
 #include "chrome/browser/chromeos/kerberos/kerberos_credentials_manager_factory.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/smb_client/smb_service.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/common/pref_names.h"

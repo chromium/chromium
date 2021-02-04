@@ -13,7 +13,7 @@
 #include "base/json/json_writer.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"

@@ -28,7 +28,7 @@
 #include "content/public/browser/browser_context.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/nearby_sharing/power_client_chromeos.h"
 #else  // !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/nearby_sharing/power_client.h"

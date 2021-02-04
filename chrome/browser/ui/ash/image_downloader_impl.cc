@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/ash/image_downloader_impl.h"
 
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_delegate.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"

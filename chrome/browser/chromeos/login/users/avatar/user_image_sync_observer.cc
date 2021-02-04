@@ -6,11 +6,11 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/login/users/avatar/user_image_manager.h"
 #include "chrome/browser/chromeos/login/users/chrome_user_manager.h"
 #include "chrome/browser/chromeos/login/users/default_user_image/default_user_images.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"

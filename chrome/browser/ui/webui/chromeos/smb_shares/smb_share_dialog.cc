@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/smb_shares/smb_share_dialog.h"
 
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/smb_client/smb_service.h"
 #include "chrome/browser/chromeos/smb_client/smb_service_factory.h"
 #include "chrome/browser/profiles/profile.h"

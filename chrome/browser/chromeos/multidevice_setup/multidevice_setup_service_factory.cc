@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/no_destructor.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/android_sms/android_sms_app_manager.h"
 #include "chrome/browser/chromeos/android_sms/android_sms_pairing_state_tracker_impl.h"
 #include "chrome/browser/chromeos/android_sms/android_sms_service_factory.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/chromeos/multidevice_setup/auth_token_validator_factory.h"
 #include "chrome/browser/chromeos/multidevice_setup/auth_token_validator_impl.h"
 #include "chrome/browser/chromeos/multidevice_setup/oobe_completion_tracker_factory.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/services/multidevice_setup/multidevice_setup_service.h"
 #include "chromeos/services/multidevice_setup/public/cpp/prefs.h"

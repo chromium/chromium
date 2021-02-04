@@ -6,8 +6,8 @@
 
 #include "base/command_line.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/enterprise/reporting/extension_info.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"

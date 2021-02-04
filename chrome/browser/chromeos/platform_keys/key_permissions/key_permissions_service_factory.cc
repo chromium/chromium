@@ -4,12 +4,12 @@
 
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service_factory.h"
 
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager_impl.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service_impl.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/user_private_token_kpm_service_factory.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service_factory.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"

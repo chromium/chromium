@@ -33,8 +33,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/account_manager/account_manager_factory.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #endif
 
 #if defined(OS_WIN)

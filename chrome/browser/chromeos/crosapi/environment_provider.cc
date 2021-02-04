@@ -6,8 +6,8 @@
 
 #include "base/files/file_util.h"
 #include "base/system/sys_info.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"

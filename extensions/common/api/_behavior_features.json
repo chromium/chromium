@@ -57,7 +57,7 @@
     // Explicitly allowlist extensions that should always be available
     // on a sign-in screen. Mind that some of them will be closed when signin is
     // performed. See for reference |kNonRiskyExtensionsIdsHashes| in
-    // chrome/browser/chromeos/profiles/profile_helper.cc.
+    // chrome/browser/ash/profiles/profile_helper.cc.
     "channel": "stable",
     "component_extensions_auto_granted": false,
     "platforms": ["chromeos"],

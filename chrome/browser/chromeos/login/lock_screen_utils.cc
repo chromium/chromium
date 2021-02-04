@@ -6,9 +6,9 @@
 
 #include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/ash_pref_names.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/login/login_pref_names.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/ime_controller_client.h"

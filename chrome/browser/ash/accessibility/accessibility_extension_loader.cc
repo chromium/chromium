@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/accessibility/accessibility_extension_loader.h"
 
 #include "base/callback.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"

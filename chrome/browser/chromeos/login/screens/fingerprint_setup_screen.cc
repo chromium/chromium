@@ -5,9 +5,9 @@
 #include "chrome/browser/chromeos/login/screens/fingerprint_setup_screen.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/chromeos/login/users/chrome_user_manager_util.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/fingerprint_setup_screen_handler.h"

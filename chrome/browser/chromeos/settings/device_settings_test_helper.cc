@@ -6,9 +6,9 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/ownership/owner_settings_service_chromeos.h"
 #include "chrome/browser/chromeos/ownership/owner_settings_service_chromeos_factory.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/settings/device_settings_service.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"

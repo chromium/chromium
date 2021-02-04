@@ -6,11 +6,11 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/system_tray.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/device_sync/device_sync_client_factory.h"
 #include "chrome/browser/chromeos/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/chromeos/phonehub/browser_tabs_metadata_fetcher_impl.h"
 #include "chrome/browser/chromeos/phonehub/browser_tabs_model_provider_impl.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/secure_channel/nearby_connector_factory.h"
 #include "chrome/browser/chromeos/secure_channel/secure_channel_client_provider.h"
 #include "chrome/browser/favicon/history_ui_favicon_request_handler_factory.h"

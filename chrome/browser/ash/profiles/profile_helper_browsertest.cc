@@ -6,8 +6,8 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"

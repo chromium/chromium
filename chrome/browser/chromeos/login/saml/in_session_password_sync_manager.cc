@@ -5,10 +5,10 @@
 #include "chrome/browser/chromeos/login/saml/in_session_password_sync_manager.h"
 
 #include "base/time/default_clock.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/login/lock/screen_locker.h"
 #include "chrome/browser/chromeos/login/login_pref_names.h"
 #include "chrome/browser/chromeos/login/saml/password_sync_token_fetcher.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chromeos/components/proximity_auth/screenlock_bridge.h"
 #include "chromeos/login/auth/extended_authenticator.h"
 #include "chromeos/login/auth/user_context.h"

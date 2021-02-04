@@ -10,12 +10,12 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/borealis/borealis_context.h"
 #include "chrome/browser/chromeos/borealis/borealis_context_manager.h"
 #include "chrome/browser/chromeos/borealis/borealis_metrics.h"
 #include "chrome/browser/chromeos/borealis/borealis_task.h"
 #include "chrome/browser/chromeos/borealis/infra/described.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 
 namespace {

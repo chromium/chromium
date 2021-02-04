@@ -44,7 +44,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #else
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #endif

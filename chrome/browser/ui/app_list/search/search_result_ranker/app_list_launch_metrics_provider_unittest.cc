@@ -18,7 +18,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/app_list_launch_recorder.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/app_list_launch_recorder_util.h"

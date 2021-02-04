@@ -67,11 +67,11 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_update_install_gate.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/extensions/device_local_account_management_policy_provider.h"
 #include "chrome/browser/chromeos/extensions/extensions_permissions_tracker.h"
 #include "chrome/browser/chromeos/extensions/signin_screen_policy_provider.h"
 #include "chrome/browser/chromeos/policy/device_local_account.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "components/user_manager/user_manager.h"

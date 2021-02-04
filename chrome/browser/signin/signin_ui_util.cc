@@ -43,7 +43,7 @@
 #include "ui/gfx/text_elider.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

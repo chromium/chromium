@@ -4,8 +4,8 @@
 
 #include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_factory.h"
 
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_storage.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/user_manager/user.h"

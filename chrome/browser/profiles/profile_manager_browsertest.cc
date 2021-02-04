@@ -46,7 +46,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/path_service.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/constants/chromeos_switches.h"

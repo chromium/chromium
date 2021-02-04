@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/ash/media_notification_provider_impl.h"
 
 #include "ash/public/cpp/media_notification_provider_observer.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service_factory.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_container_impl_view.h"

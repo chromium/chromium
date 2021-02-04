@@ -11,7 +11,7 @@
 #include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chromeos/dbus/shill/fake_shill_third_party_vpn_driver_client.h"

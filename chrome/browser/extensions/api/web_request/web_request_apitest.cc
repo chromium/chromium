@@ -126,7 +126,7 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chromeos/login/login_state/login_state.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

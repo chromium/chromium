@@ -5,7 +5,7 @@
 #include "chrome/browser/chromeos/scanning/lorgnette_scanner_manager_factory.h"
 
 #include "base/memory/singleton.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/scanning/lorgnette_scanner_manager.h"
 #include "chrome/browser/chromeos/scanning/zeroconf_scanner_detector.h"
 #include "chrome/browser/profiles/profile.h"

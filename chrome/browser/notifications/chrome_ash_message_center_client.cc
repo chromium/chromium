@@ -8,7 +8,7 @@
 #include "ash/public/cpp/notifier_settings_observer.h"
 #include "base/i18n/string_compare.h"
 #include "base/stl_util.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/notifications/arc_application_notifier_controller.h"
 #include "chrome/browser/notifications/extension_notifier_controller.h"
 #include "chrome/browser/notifications/web_page_notifier_controller.h"

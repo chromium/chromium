@@ -14,7 +14,7 @@
 #include "base/optional.h"
 #include "base/rand_util.h"
 #include "base/time/default_tick_clock.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/storage_partition.h"

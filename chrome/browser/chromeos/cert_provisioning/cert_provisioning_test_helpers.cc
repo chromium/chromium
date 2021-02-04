@@ -7,7 +7,7 @@
 #include "base/optional.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "net/test/cert_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
