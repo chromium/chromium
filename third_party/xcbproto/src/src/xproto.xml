@@ -5538,13 +5538,13 @@ The specified `resource` does not exist.
     </list>
   </request>
 
-  <enum name="ScreenSaver">
+  <enum name="ScreenSaverMode">
     <item name="Reset"> <value>0</value></item>
     <item name="Active"><value>1</value></item>
   </enum>
 
   <request name="ForceScreenSaver" opcode="115">
-    <field type="CARD8" name="mode" enum="ScreenSaver" />
+    <field type="CARD8" name="mode" enum="ScreenSaverMode" />
   </request>
 
   <!-- Reply from SetPointerMapping or SetModifierMapping -->

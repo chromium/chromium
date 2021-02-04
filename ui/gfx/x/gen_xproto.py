@@ -1077,13 +1077,7 @@ class GenXproto(FileWriter):
 
         self.uniquify_events()
 
-        for i, (name, t) in enumerate(self.module.all):
-            # Work around a name conflict: the type ScreenSaver has the same
-            # name as the extension, so rename the type.
-            if name == ('xcb', 'ScreenSaver'):
-                name = ('xcb', 'ScreenSaverMode')
-                t.name = name
-                self.module.all[i] = (name, t)
+        for name, t in self.module.all:
             self.resolve_type(t, name)
 
         for enum, types in list(self.enum_types.items()):
