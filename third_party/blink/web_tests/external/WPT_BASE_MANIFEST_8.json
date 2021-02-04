@@ -51597,6 +51597,58 @@
        {}
       ]
      ],
+     "background-size-041.html": [
+      "6eb8e59eeac9cf0f4340ab0bd273da94134a9197",
+      [
+       null,
+       [
+        [
+         "/css/css-backgrounds/reference/background-size-041-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "background-size-042.html": [
+      "383bc5333d6d664e66cc9bf86b3a526cc41d48d6",
+      [
+       null,
+       [
+        [
+         "/css/css-backgrounds/reference/background-size-041-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "background-size-043.html": [
+      "35b691aadfab744ca9c5e8ca1efa23642e3646dd",
+      [
+       null,
+       [
+        [
+         "/css/css-backgrounds/reference/background-size-043-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "background-size-044.html": [
+      "ac2ef2ab3ad71ccd5cbdd00fdee663d01d53cb50",
+      [
+       null,
+       [
+        [
+         "/css/css-backgrounds/reference/background-size-043-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "background-size-contain-001.html": [
       "145d5abfcfd3f11ea019e15a818684a849b2460e",
       [
@@ -98239,6 +98291,32 @@
        [
         [
          "/css/css-pseudo/grammar-error-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "grammar-spelling-errors-001.html": [
+      "f97d898e9a87266570f73961351a355f2b06a81e",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/reference/grammar-spelling-errors-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "grammar-spelling-errors-002.html": [
+      "242a3af9afb829f5dbda4edc9fe5b742ce1cb56c",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/reference/grammar-spelling-errors-002-ref.html",
          "=="
         ]
        ],
@@ -177419,7 +177497,7 @@
        []
       ],
       "echo-required-csp.py": [
-       "90fc1d1176334b8d1608bc6fbd9a6ba2dea72f76",
+       "b704dfe92f560268dbee01746e6f3d32c5f4dbc8",
        []
       ],
       "executor.html": [
@@ -185150,6 +185228,14 @@
        "ea0dd78ba0e46ee2044128db8d44002ddac77ec7",
        []
       ],
+      "background-size-041-ref.html": [
+       "fe66052ebf28f6b978b4339806f3a449b8513000",
+       []
+      ],
+      "background-size-043-ref.html": [
+       "bf60e2183d89d32b1233b099cc1a6a7e10d99188",
+       []
+      ],
       "background-size-one-value-1x1-image-ref.html": [
        "0a0404a9b5c29cd8d84615485064bd8dda4fdd51",
        []
@@ -185592,6 +185678,10 @@
       ],
       "new-red-diamond-27x27.png": [
        "859cbc33d216aa454ede2702b1c6ac7f39e6ca02",
+       []
+      ],
+      "orange-intrinsic-none.svg": [
+       "d63fb9ef70b35e23ce97198ffc3e3d542b536abd",
        []
       ],
       "orange_color.png": [
@@ -202022,6 +202112,14 @@
       ],
       "first-line-with-inline-block-ref.html": [
        "31717d4171bad4c98b272e4ce70ee6578780b10b",
+       []
+      ],
+      "grammar-spelling-errors-001-ref.html": [
+       "48498e688f219ecf39e5e4efcb39526ca3b1675d",
+       []
+      ],
+      "grammar-spelling-errors-002-ref.html": [
+       "b3c89177591ad83476edd3616f135f1cd65700d8",
        []
       ],
       "placeholder-excluded-properties-ref.html": [
@@ -220876,7 +220974,7 @@
         []
        ],
        "not-cors-safelisted.json": [
-        "20a162f92c13b3d7fa8bcefab49c98cdd4b42a4c",
+        "945dc0f93ba4a304bdfa63268073b084c657e023",
         []
        ]
       }
@@ -221305,7 +221403,7 @@
        []
       ],
       "utils.js": [
-       "213d01a8bbf56f65692c9d4cd04aef42c41fd109",
+       "dfd5c1404cb9b63b212bc4194ca3f67716fbf62e",
        []
       ]
      },
@@ -221707,6 +221805,14 @@
      }
     },
     "h1-parsing": {
+     "README.md": [
+      "487a892dcffb09acb8bfa8e369757ed51fa17947",
+      []
+     ],
+     "lone-cr.window-expected.txt": [
+      "3e0842adad246eca8359f1e47368b961291dc16c",
+      []
+     ],
      "resources": {
       "README.md": [
        "2175d274088bdaeb2ee636765cc31a2fa6f3b132",
@@ -221718,6 +221824,10 @@
       ],
       "document-with-0x00-in-header.py": [
        "223b3c4027826f2bba1394db465c93ec7cbbe001",
+       []
+      ],
+      "message.py": [
+       "640080c18bc24be65631113e7bd225f6d4a674bd",
        []
       ],
       "script-with-0x00-in-header.py": [
@@ -226392,6 +226502,10 @@
        "imagebitmap": {
         "common.sub.js": [
          "aa1e382a2088fee541a1020a03a4299a3b18d6cd",
+         []
+        ],
+        "createImageBitmap-bounds-expected.txt": [
+         "d53e6b509c27312205578c932cdd8d184645d24d",
          []
         ],
         "createImageBitmap-worker.js": [
@@ -238910,6 +239024,10 @@
     ],
     "storage-access.idl": [
      "fff583e0982399d7ebdd001653d4bf338a14243a",
+     []
+    ],
+    "storage-buckets.tentative.idl": [
+     "f44595c0763bbf52e30d391b6a4501e246f6cb9d",
      []
     ],
     "storage.idl": [
@@ -278310,14 +278428,14 @@
       ]
      ],
      "required-csp-header-cascade.html": [
-      "f130b1714e73cc4bfb5174732529c3ee49e4797e",
+      "92fe2dd431050f314d260a184600d4481e78a40c",
       [
        null,
        {}
       ]
      ],
      "required_csp-header-crlf.html": [
-      "ae121899023a4d33e27c262d9b208abb97583a1b",
+      "414f9b73f5aeddf1250ae660f38a2c16c2f260fb",
       [
        null,
        {
@@ -278326,7 +278444,7 @@
       ]
      ],
      "required_csp-header.html": [
-      "fbaa42d56ee4da3ee45fd8b25dadadf6db909d23",
+      "a9ad787408786e594ccb554d2bd9186a9e8e7c1e",
       [
        null,
        {
@@ -309579,7 +309697,7 @@
       ]
      ],
      "focus-visible-006.html": [
-      "a5256c107a7fd967cde60d2f67b2154a5c8145cf",
+      "c203c06f6eaaf5f388237f3f1b792c3708c8a089",
       [
        null,
        {
@@ -331540,7 +331658,7 @@
      },
      "credentials": {
       "authentication-basic.any.js": [
-       "babc5d003b108e6d2499e0e0ed0cc27f4130af18",
+       "31ccc3869775fe0be5b5e403fdc3304054b399a5",
        [
         "fetch/api/credentials/authentication-basic.any.html",
         {
@@ -331548,10 +331666,6 @@
           [
            "global",
            "window,worker"
-          ],
-          [
-           "script",
-           "../resources/utils.js"
           ]
          ]
         }
@@ -331563,10 +331677,6 @@
           [
            "global",
            "window,worker"
-          ],
-          [
-           "script",
-           "../resources/utils.js"
           ]
          ]
         }
@@ -331578,10 +331688,6 @@
           [
            "global",
            "window,worker"
-          ],
-          [
-           "script",
-           "../resources/utils.js"
           ]
          ]
         }
@@ -331593,10 +331699,6 @@
           [
            "global",
            "window,worker"
-          ],
-          [
-           "script",
-           "../resources/utils.js"
           ]
          ]
         }
@@ -336702,6 +336804,13 @@
      ]
     },
     "h1-parsing": {
+     "lone-cr.window.js": [
+      "6b46ed632f43771fac527dc65c5e3d9dd0d197e6",
+      [
+       "fetch/h1-parsing/lone-cr.window.html",
+       {}
+      ]
+     ],
      "resources-with-0x00-in-header.window.js": [
       "f1afeeb740b1d77bd392e23afb1c5abdf5687302",
       [
@@ -347442,7 +347551,7 @@
          ]
         ],
         "createImageBitmap-bounds.html": [
-         "d179f080bf5b05d1ed8bb29e3c222095cd894936",
+         "9c4f1401e2d4078776a4e24b67e51a2db84d0d22",
          [
           null,
           {}
@@ -434070,7 +434179,7 @@
      ]
     ],
     "RTCPeerConnection-capture-video.https.html": [
-     "8d2579602a8deb8cec4335d1a804f2ce0d8bb403",
+     "ed12e68e598e09880b7004ec0c52be30f41fbab8",
      [
       null,
       {

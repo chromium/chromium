@@ -2424,6 +2424,13 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-206.xht [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/background-size-043.html [ Failure ]
+crbug.com/626703 [ Mac10.13 ] external/wpt/webxr/xrSession_requestReferenceSpace_features.https.html [ Timeout ]
+crbug.com/626703 external/wpt/css/css-pseudo/grammar-spelling-errors-001.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-backgrounds/background-size-043.html [ Failure ]
+crbug.com/626703 virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/background-size-044.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-backgrounds/background-size-044.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-pseudo/grammar-spelling-errors-002.html [ Failure ]
 crbug.com/626703 virtual/system-color-compute/external/wpt/css/css-color/rec2020-004.html [ Failure ]
 crbug.com/626703 virtual/system-color-compute/external/wpt/css/css-color/a98rgb-004.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-color/a98rgb-004.html [ Failure ]
