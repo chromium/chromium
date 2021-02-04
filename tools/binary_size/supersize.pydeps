@@ -35,7 +35,7 @@
 ../grit/grit/node/structure.py
 ../grit/grit/node/variant.py
 ../grit/grit/pseudo.py
-../grit/grit/pseudo_rtl.py
+../grit/grit/pseudolocales.py
 ../grit/grit/tclib.py
 ../grit/grit/util.py
 ../grit/grit/xtb_reader.py
