@@ -242,8 +242,6 @@ Panel = class {
       case PanelCommandType.TUTORIAL:
         Panel.onTutorial();
         break;
-      case PanelCommandType.UPDATE_NOTES:
-        break;
       case PanelCommandType.OPEN_ANNOTATIONS_UI:
         if (typeof command.data === 'string') {
           Panel.openAnnotationsUI(command.data);

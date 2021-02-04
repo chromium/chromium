@@ -80,5 +80,4 @@ PanelCommandType = {
   OPEN_MENUS_MOST_RECENT: 'open_menus_most_recent',
   SEARCH: 'search',
   TUTORIAL: 'tutorial',
-  UPDATE_NOTES: 'update_notes',
 };

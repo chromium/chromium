@@ -513,10 +513,6 @@ KeyMap.BINDINGS_ = [
     'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [79, 84]}}
   },
   {
-    'command': 'showNextUpdatePage',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [79, 78]}}
-  },
-  {
     'command': 'toggleEarcons',
     'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [65, 69]}}
   },

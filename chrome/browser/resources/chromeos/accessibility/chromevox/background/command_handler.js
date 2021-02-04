@@ -245,10 +245,6 @@ CommandHandler.onCommand = function(command) {
     case 'help':
       (new PanelCommand(PanelCommandType.TUTORIAL)).send();
       return false;
-    case 'showNextUpdatePage':
-      (new PanelCommand(PanelCommandType.UPDATE_NOTES)).send();
-      localStorage['notifications_update_notification_shown'] = true;
-      return false;
     case 'toggleDarkScreen':
       const oldState = sessionStorage.getItem('darkScreen');
       const newState = (oldState === 'true') ? false : true;
