@@ -21,10 +21,6 @@
 
 class SkRegion;
 
-namespace content {
-class RenderViewHost;
-}
-
 namespace views {
 class WebView;
 }
@@ -106,9 +102,7 @@ class NativeAppWindowViews : public extensions::NativeAppWindow,
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
 
   // WebContentsObserver:
-  void RenderViewCreated(content::RenderViewHost* render_view_host) override;
-  void RenderViewHostChanged(content::RenderViewHost* old_host,
-                             content::RenderViewHost* new_host) override;
+  void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
 
   // views::View:
   gfx::Size GetMinimumSize() const override;

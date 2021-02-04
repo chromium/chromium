@@ -4,7 +4,7 @@
 
 #include "extensions/components/native_app_window/native_app_window_views.h"
 
-#include "content/public/browser/render_view_host.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -242,28 +242,19 @@ void NativeAppWindowViews::OnWidgetActivationChanged(views::Widget* widget,
 
 // WebContentsObserver implementation.
 
-void NativeAppWindowViews::RenderViewCreated(
-    content::RenderViewHost* render_view_host) {
+void NativeAppWindowViews::RenderFrameCreated(
+    content::RenderFrameHost* render_frame_host) {
+  if (render_frame_host->GetParent())
+    return;
+
   if (app_window_->requested_alpha_enabled() && CanHaveAlphaEnabled()) {
-    content::RenderWidgetHostView* view =
-        render_view_host->GetWidget()->GetView();
-    DCHECK(view);
-    view->SetBackgroundColor(SK_ColorTRANSPARENT);
+    render_frame_host->GetView()->SetBackgroundColor(SK_ColorTRANSPARENT);
   } else if (app_window_->show_on_lock_screen()) {
-    content::RenderWidgetHostView* view =
-        render_view_host->GetWidget()->GetView();
-    DCHECK(view);
     // When shown on the lock screen, app windows will be shown on top of black
     // background - to avoid a white flash while launching the app window,
     // initialize it with black background color.
-    view->SetBackgroundColor(SK_ColorBLACK);
+    render_frame_host->GetView()->SetBackgroundColor(SK_ColorBLACK);
   }
-}
-
-void NativeAppWindowViews::RenderViewHostChanged(
-    content::RenderViewHost* old_host,
-    content::RenderViewHost* new_host) {
-  OnViewWasResized();
 }
 
 // views::View implementation.
