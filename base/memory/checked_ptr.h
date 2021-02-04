@@ -109,23 +109,46 @@ struct BackupRefPtrImpl {
   // Use |const volatile| to prevent compiler error. These will be dropped
   // anyway when casting to uintptr_t and brought back upon pointer extraction.
   static ALWAYS_INLINE uintptr_t WrapRawPtr(const volatile void* cv_ptr) {
-    void* ptr = const_cast<void*>(cv_ptr);
-    uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+    void* orig_ptr = const_cast<void*>(cv_ptr);
+    uintptr_t addr = reinterpret_cast<uintptr_t>(orig_ptr);
 
-    // This check already covers the nullptr case.
-    if (IsManagedByPartitionAllocNormalBuckets(ptr))
-      AcquireInternal(ptr);
+    // Adjust the pointer so that pointers right past the allocation don't fall
+    // under GigaCage. Subtracting 1 will bring it back into the original
+    // allocation. Pointers inside GigaCage won't be adjusted out of it,
+    // because of guard pages prevent pointers to its very beginning.
+    // This check covers the nullptr case too, as 0xff...ff is expected to be
+    // outside of GigaCage.
+    // TODO(bartekn): Verify the last statement on all OSes.
+    void* adjusted_ptr = reinterpret_cast<void*>(addr - 1);
+    if (IsManagedByPartitionAllocNormalBuckets(adjusted_ptr)) {
+      DCHECK(orig_ptr != nullptr);
+      // Pass the original, not the adjusted pointer, because
+      // PartitionAllocGetSlotStart() has its own adjustment that works slightly
+      // differently.
+      AcquireInternal(orig_ptr);
+    }
 
     return addr;
   }
 
   // Notifies the allocator when a wrapped pointer is being removed or replaced.
   static ALWAYS_INLINE void ReleaseWrappedPtr(uintptr_t wrapped_ptr) {
-    void* ptr = reinterpret_cast<void*>(wrapped_ptr);
-
-    // This check already covers the nullptr case.
-    if (IsManagedByPartitionAllocNormalBuckets(ptr))
-      ReleaseInternal(ptr);
+    void* orig_ptr = reinterpret_cast<void*>(wrapped_ptr);
+    // Adjust the pointer so that pointers right past the allocation don't fall
+    // under GigaCage. Subtracting 1 will bring it back into the original
+    // allocation. Pointers inside GigaCage won't be adjusted out of it,
+    // because of guard pages prevent pointers to its very beginning.
+    // This check covers the nullptr case too, as 0xff...ff is expected to be
+    // outside of GigaCage.
+    // TODO(bartekn): Verify the last statement on all OSes.
+    void* adjusted_ptr = reinterpret_cast<void*>(wrapped_ptr - 1);
+    if (IsManagedByPartitionAllocNormalBuckets(adjusted_ptr)) {
+      DCHECK(orig_ptr != nullptr);
+      // Pass the original, not the adjusted pointer, because
+      // PartitionAllocGetSlotStart() has its own adjustment that works slightly
+      // differently.
+      ReleaseInternal(orig_ptr);
+    }
   }
 
   // Returns equivalent of |WrapRawPtr(nullptr)|. Separated out to make it a
@@ -141,9 +164,22 @@ struct BackupRefPtrImpl {
   static ALWAYS_INLINE void* SafelyUnwrapPtrForDereference(
       uintptr_t wrapped_ptr) {
 #if DCHECK_IS_ON()
-    void* ptr = reinterpret_cast<void*>(wrapped_ptr);
-    if (IsManagedByPartitionAllocNormalBuckets(ptr))
-      DCHECK(IsPointeeAlive(ptr));
+    void* orig_ptr = reinterpret_cast<void*>(wrapped_ptr);
+    // Adjust the pointer so that pointers right past the allocation don't fall
+    // under GigaCage. Subtracting 1 will bring it back into the original
+    // allocation. Pointers inside GigaCage won't be adjusted out of it,
+    // because of guard pages prevent pointers to its very beginning.
+    // This check covers the nullptr case too, as 0xff...ff is expected to be
+    // outside of GigaCage.
+    // TODO(bartekn): Verify the last statement on all OSes.
+    void* adjusted_ptr = reinterpret_cast<void*>(wrapped_ptr - 1);
+    if (IsManagedByPartitionAllocNormalBuckets(adjusted_ptr)) {
+      DCHECK(orig_ptr != nullptr);
+      // Pass the original, not the adjusted pointer, because
+      // PartitionAllocGetSlotStart() has its own adjustment that works slightly
+      // differently.
+      DCHECK(IsPointeeAlive(orig_ptr));
+    }
 #endif
     return reinterpret_cast<void*>(wrapped_ptr);
   }

@@ -114,27 +114,6 @@ struct PartitionBucket {
   // This is where the guts of the bucket maintenance is done!
   bool SetNewActiveSlotSpan();
 
-  // Returns an offset within an allocation slot.
-  ALWAYS_INLINE size_t GetSlotOffset(size_t offset_in_slot_span) {
-    // Knowing that slots are tightly packed in a slot span, calculate an offset
-    // using an equivalent of a modulo operation.
-
-    // See the static assertion for `kReciprocalShift` above.
-    PA_DCHECK(offset_in_slot_span <= kMaxBucketed);
-    PA_DCHECK(slot_size <= kMaxBucketed);
-
-    // Calculate `decimal_part{offset_in_slot / size} * (2 ** M)` first.
-    uint64_t offset_in_slot =
-        (offset_in_slot_span * slot_size_reciprocal) & kReciprocalMask;
-
-    // (decimal_part * size) * (2 ** M) == offset_in_slot_span % size * (2 ** M)
-    // Divide by `2 ** M` using a bit shift.
-    offset_in_slot = (offset_in_slot * slot_size) >> kReciprocalShift;
-    PA_DCHECK(offset_in_slot_span % slot_size == offset_in_slot);
-
-    return static_cast<size_t>(offset_in_slot);
-  }
-
   // Returns a slot number starting from the beginning of the slot span.
   ALWAYS_INLINE size_t GetSlotNumber(size_t offset_in_slot_span) {
     // See the static assertion for `kReciprocalShift` above.

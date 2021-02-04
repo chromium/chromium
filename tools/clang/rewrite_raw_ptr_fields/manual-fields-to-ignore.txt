@@ -133,10 +133,6 @@ sandbox::SharedMemIPCServer::client_control_
 sandbox::SharedMemIPCServer::thread_provider_
 sandbox::SharedMemIPCServer::call_dispatcher_
 
-# Populated manually - pointing past the end of a non-PA allocation might point
-# to PA memory
-cc::PaintOpWriter::memory_ # https://crbug.com/1169579
-
 # Populated manually - pointer to stale non-PA allocation could be confused as a
 # pointer to PA memory when that address space is reused https://crbug.com/1173851
 base::PersistentMemoryAllocator::mem_base_ # https://crbug.com/1169582

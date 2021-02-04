@@ -890,16 +890,14 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndOffsetAndStart) {
   actual_capacity = allocator.root()->AllocationCapacityFromPtr(ptr);
   EXPECT_EQ(predicted_capacity, actual_capacity);
   EXPECT_LT(requested_size, actual_capacity);
-#if defined(PA_HAS_64_BITS_POINTERS)
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
   if (features::IsPartitionAllocGigaCageEnabled()) {
     for (size_t offset = 0; offset < requested_size; ++offset) {
-      EXPECT_EQ(PartitionAllocGetSlotOffset(static_cast<char*>(ptr) + offset),
-                offset + allocator.root()->extras_offset);
       EXPECT_EQ(PartitionAllocGetSlotStart(static_cast<char*>(ptr) + offset),
                 slot_start);
     }
   }
-#endif
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   allocator.root()->Free(ptr);
 
   // Allocate a size that should be a perfect match for a bucket, because it
@@ -913,16 +911,14 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndOffsetAndStart) {
   actual_capacity = allocator.root()->AllocationCapacityFromPtr(ptr);
   EXPECT_EQ(predicted_capacity, actual_capacity);
   EXPECT_EQ(requested_size, actual_capacity);
-#if defined(PA_HAS_64_BITS_POINTERS)
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
   if (features::IsPartitionAllocGigaCageEnabled()) {
     for (size_t offset = 0; offset < requested_size; offset += 877) {
-      EXPECT_EQ(PartitionAllocGetSlotOffset(static_cast<char*>(ptr) + offset),
-                offset + allocator.root()->extras_offset);
       EXPECT_EQ(PartitionAllocGetSlotStart(static_cast<char*>(ptr) + offset),
                 slot_start);
     }
   }
-#endif
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   allocator.root()->Free(ptr);
 
   // Allocate a size that is a system page smaller than a bucket.
@@ -941,16 +937,14 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndOffsetAndStart) {
   actual_capacity = allocator.root()->AllocationCapacityFromPtr(ptr);
   EXPECT_EQ(predicted_capacity, actual_capacity);
   EXPECT_EQ(requested_size + SystemPageSize(), actual_capacity);
-#if defined(PA_HAS_64_BITS_POINTERS)
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
   if (features::IsPartitionAllocGigaCageEnabled()) {
     for (size_t offset = 0; offset < requested_size; offset += 4999) {
-      EXPECT_EQ(PartitionAllocGetSlotOffset(static_cast<char*>(ptr) + offset),
-                offset + allocator.root()->extras_offset);
       EXPECT_EQ(PartitionAllocGetSlotStart(static_cast<char*>(ptr) + offset),
                 slot_start);
     }
   }
-#endif
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
   // Allocate the maximum allowed bucketed size.
   requested_size = kMaxBucketed - kExtraAllocSize;
@@ -962,16 +956,14 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndOffsetAndStart) {
   actual_capacity = allocator.root()->AllocationCapacityFromPtr(ptr);
   EXPECT_EQ(predicted_capacity, actual_capacity);
   EXPECT_EQ(requested_size, actual_capacity);
-#if defined(PA_HAS_64_BITS_POINTERS)
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
   if (features::IsPartitionAllocGigaCageEnabled()) {
     for (size_t offset = 0; offset < requested_size; offset += 4999) {
-      EXPECT_EQ(PartitionAllocGetSlotOffset(static_cast<char*>(ptr) + offset),
-                offset + allocator.root()->extras_offset);
       EXPECT_EQ(PartitionAllocGetSlotStart(static_cast<char*>(ptr) + offset),
                 slot_start);
     }
   }
-#endif
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
   // Check that we can write at the end of the reported size too.
   char* char_ptr = reinterpret_cast<char*>(ptr);
@@ -1001,8 +993,8 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndOffsetAndStart) {
   EXPECT_EQ(requested_size, predicted_capacity);
 }
 
-#if defined(PA_HAS_64_BITS_POINTERS)
-TEST_F(PartitionAllocTest, GetOffsetMultiplePages) {
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
+TEST_F(PartitionAllocTest, GetSlotStartMultiplePages) {
   if (!features::IsPartitionAllocGigaCageEnabled())
     return;
 
@@ -1024,16 +1016,17 @@ TEST_F(PartitionAllocTest, GetOffsetMultiplePages) {
   }
   for (size_t i = 0; i < num_slots; ++i) {
     char* ptr = static_cast<char*>(ptrs[i]);
+    EXPECT_EQ(allocator.root()->AllocationCapacityFromPtr(ptr), requested_size);
+    char* slot_start =
+        reinterpret_cast<char*>(ptr) - allocator.root()->extras_offset;
     for (size_t offset = 0; offset < requested_size; offset += 13) {
-      EXPECT_EQ(allocator.root()->AllocationCapacityFromPtr(ptr),
-                requested_size);
-      EXPECT_EQ(PartitionAllocGetSlotOffset(static_cast<char*>(ptr) + offset),
-                offset + allocator.root()->extras_offset);
+      EXPECT_EQ(PartitionAllocGetSlotStart(static_cast<char*>(ptr) + offset),
+                slot_start);
     }
     allocator.root()->Free(ptr);
   }
 }
-#endif  // defined(PA_HAS_64_BITS_POINTERS)
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
 // Test the realloc() contract.
 TEST_F(PartitionAllocTest, Realloc) {
@@ -2700,19 +2693,6 @@ TEST_F(PartitionAllocTest, AlignedAllocations) {
       ASSERT_TRUE(ptr);
       EXPECT_EQ(reinterpret_cast<uintptr_t>(ptr) % alignment, 0ull);
       allocator.root()->Free(ptr);
-    }
-  }
-}
-
-// Test that the optimized `GetSlotOffset` implementation produces valid
-// results.
-TEST_F(PartitionAllocTest, OptimizedGetSlotOffset) {
-  auto* current_bucket = allocator.root()->buckets;
-
-  for (size_t i = 0; i < kNumBuckets; ++i, ++current_bucket) {
-    for (size_t offset = 0; offset <= kMaxBucketed; offset += 4999) {
-      EXPECT_EQ(offset % current_bucket->slot_size,
-                current_bucket->GetSlotOffset(offset));
     }
   }
 }

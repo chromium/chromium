@@ -6,6 +6,7 @@
 
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_page.h"
+#include "base/partition_alloc_buildflags.h"
 
 namespace base {
 

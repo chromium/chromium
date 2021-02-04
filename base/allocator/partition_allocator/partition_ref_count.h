@@ -149,13 +149,8 @@ static_assert(base::kAlignment % alignof(PartitionRefCount) == 0,
 // Allocate extra space for the reference count to satisfy the alignment
 // requirement.
 static constexpr size_t kInSlotRefCountBufferSize = sizeof(PartitionRefCount);
-
-#if DCHECK_IS_ON()
-static constexpr size_t kPartitionRefCountOffset = kCookieSize;
-#else
-static constexpr size_t kPartitionRefCountOffset = 0;
-#endif
 constexpr size_t kPartitionRefCountOffsetAdjustment = 0;
+constexpr size_t kPartitionPastAllocationAdjustment = 0;
 
 BASE_EXPORT PartitionRefCount* PartitionRefCountPointer(void* slot_start);
 
@@ -164,14 +159,12 @@ BASE_EXPORT PartitionRefCount* PartitionRefCountPointer(void* slot_start);
 // Allocate extra space for the reference count to satisfy the alignment
 // requirement.
 static constexpr size_t kInSlotRefCountBufferSize = base::kAlignment;
-
-#if DCHECK_IS_ON()
-static constexpr size_t kPartitionRefCountOffset =
-    kInSlotRefCountBufferSize + kCookieSize;
-#else
-static constexpr size_t kPartitionRefCountOffset = kInSlotRefCountBufferSize;
-#endif
 constexpr size_t kPartitionRefCountOffsetAdjustment = kInSlotRefCountBufferSize;
+
+// This is for adjustment of pointers right past the allocation, which may point
+// to the next slot. First subtract 1 to bring them to the intended slot, and
+// only then we'll be able to find ref-count in that slot.
+constexpr size_t kPartitionPastAllocationAdjustment = 1;
 
 ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointer(void* slot_start) {
   DCheckGetSlotOffsetIsZero(slot_start);
@@ -186,7 +179,6 @@ static_assert(sizeof(PartitionRefCount) <= kInSlotRefCountBufferSize,
 #else  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
 static constexpr size_t kInSlotRefCountBufferSize = 0;
-static constexpr size_t kPartitionRefCountOffset = 0;
 constexpr size_t kPartitionRefCountOffsetAdjustment = 0;
 
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)

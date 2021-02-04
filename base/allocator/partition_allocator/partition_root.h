@@ -44,6 +44,7 @@
 #include "base/allocator/partition_allocator/partition_lock.h"
 #include "base/allocator/partition_allocator/partition_oom.h"
 #include "base/allocator/partition_allocator/partition_page.h"
+#include "base/allocator/partition_allocator/partition_ref_count.h"
 #include "base/allocator/partition_allocator/partition_stats.h"
 #include "base/allocator/partition_allocator/pcscan.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
@@ -650,60 +651,35 @@ PartitionAllocGetSlotSpanForSizeQuery(void* ptr) {
   return slot_span;
 }
 
-// Gets the offset from the beginning of the allocated slot.
-//
-// CAUTION! Use only for normal buckets. Using on direct-mapped allocations may
-// lead to undefined behavior.
-//
-// This function is not a template, and can be used on either variant
-// (thread-safe or not) of the allocator. This relies on the two PartitionRoot<>
-// having the same layout, which is enforced by static_assert().
-ALWAYS_INLINE size_t PartitionAllocGetSlotOffset(void* ptr) {
-  internal::DCheckIfManagedByPartitionAllocNormalBuckets(ptr);
-  auto* slot_span =
-      internal::PartitionAllocGetSlotSpanForSizeQuery<internal::ThreadSafe>(
-          ptr);
-  auto* root = PartitionRoot<internal::ThreadSafe>::FromSlotSpan(slot_span);
-  // The only allocations that don't use ref-count are allocated outside of
-  // GigaCage, hence we'd never get here in the `allow_ref_count = false` case.
-  PA_DCHECK(root->allow_ref_count);
-
-  // Get the offset from the beginning of the slot span.
-  uintptr_t ptr_addr = reinterpret_cast<uintptr_t>(ptr);
-  uintptr_t slot_span_start = reinterpret_cast<uintptr_t>(
-      internal::SlotSpanMetadata<internal::ThreadSafe>::ToSlotSpanStartPtr(
-          slot_span));
-  size_t offset_in_slot_span = ptr_addr - slot_span_start;
-
-  return slot_span->bucket->GetSlotOffset(offset_in_slot_span);
-}
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
 
 // Gets the pointer to the beginning of the allocated slot.
 //
-// CAUTION! Use only for normal buckets. Using on direct-mapped allocations may
-// lead to undefined behavior.
+// This isn't a general pupose function, it is used specifically for obtaining
+// BackupRefPtr's ref-count. The caller is responsible for ensuring that the
+// ref-count is in place for this allocation.
 //
 // This function is not a template, and can be used on either variant
 // (thread-safe or not) of the allocator. This relies on the two PartitionRoot<>
 // having the same layout, which is enforced by static_assert().
 ALWAYS_INLINE void* PartitionAllocGetSlotStart(void* ptr) {
-#if BUILDFLAG(USE_BACKUP_REF_PTR)
   // Adjust to support pointers right past the end of an allocation, which in
   // some cases appear to point outside the designated allocation slot.
-  // There is no risk of going too far i.e. confusing |ptr -
-  // kPartitionRefCountOffset| with the previous allocation because |ptr|, which
-  // is a pointer within the user-accessible area, is at least
-  // |kPartitionRefCountOffset| bytes away from the beginning of its slot.
-  ptr = reinterpret_cast<char*>(ptr) - kPartitionRefCountOffset;
-#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
+  //
+  // If ref-count is present before the allocation, then adjusting a valid
+  // pointer down will not cause us to go down to the previous slot. If
+  // ref-count is present after the allocation, then adjust no adjustment is
+  // needed (and likely wouldn't be correct as there is a risk of going down to
+  // the previous slot). Either way, kPartitionPastAllocationAdjustment takes
+  // care of that detail.
+  ptr = reinterpret_cast<char*>(ptr) - kPartitionPastAllocationAdjustment;
 
   internal::DCheckIfManagedByPartitionAllocNormalBuckets(ptr);
   auto* slot_span =
       internal::PartitionAllocGetSlotSpanForSizeQuery<internal::ThreadSafe>(
           ptr);
   auto* root = PartitionRoot<internal::ThreadSafe>::FromSlotSpan(slot_span);
-  // The only allocations that don't use ref-count are allocated outside of
-  // GigaCage, hence we'd never get here in the `allow_ref_count = false` case.
+  // Double check that ref-count is indeed present.
   PA_DCHECK(root->allow_ref_count);
 
   // Get the offset from the beginning of the slot span.
@@ -719,7 +695,6 @@ ALWAYS_INLINE void* PartitionAllocGetSlotStart(void* ptr) {
       bucket->slot_size * bucket->GetSlotNumber(offset_in_slot_span));
 }
 
-#if BUILDFLAG(USE_BACKUP_REF_PTR)
 // TODO(glazunov): Simplify the function once the non-thread-safe PartitionRoot
 // is no longer used.
 ALWAYS_INLINE void PartitionAllocFreeForRefCounting(void* slot_start) {
