@@ -37,6 +37,8 @@ std::ostream& operator<<(std::ostream& out,
       return out << "kSessionRestore";
     case ProfileKeepAliveOrigin::kChromeViewsDelegate:
       return out << "kChromeViewsDelegate";
+    case ProfileKeepAliveOrigin::kDevToolsWindow:
+      return out << "kDevToolsWindow";
   }
   NOTREACHED();
   return out << static_cast<int>(origin);

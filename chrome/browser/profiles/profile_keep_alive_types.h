@@ -68,7 +68,10 @@ enum class ProfileKeepAliveOrigin {
   // a dropdown menu is active.
   kChromeViewsDelegate = 13,
 
-  kMaxValue = kChromeViewsDelegate,
+  // A DevTools window is open.
+  kDevToolsWindow = 14,
+
+  kMaxValue = kDevToolsWindow,
 };
 
 std::ostream& operator<<(std::ostream& out,

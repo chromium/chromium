@@ -25,6 +25,9 @@
 #include "chrome/browser/file_select_helper.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -397,6 +400,9 @@ class DevToolsWindow::OwnedMainWebContents {
       std::unique_ptr<content::WebContents> web_contents)
       : keep_alive_(KeepAliveOrigin::DEVTOOLS_WINDOW,
                     KeepAliveRestartOption::DISABLED),
+        profile_keep_alive_(
+            Profile::FromBrowserContext(web_contents->GetBrowserContext()),
+            ProfileKeepAliveOrigin::kDevToolsWindow),
         web_contents_(std::move(web_contents)) {}
 
   static std::unique_ptr<content::WebContents> TakeWebContents(
@@ -406,6 +412,7 @@ class DevToolsWindow::OwnedMainWebContents {
 
  private:
   ScopedKeepAlive keep_alive_;
+  ScopedProfileKeepAlive profile_keep_alive_;
   std::unique_ptr<content::WebContents> web_contents_;
 };
 
