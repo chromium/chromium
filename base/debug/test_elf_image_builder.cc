@@ -65,8 +65,8 @@ TestElfImageBuilder& TestElfImageBuilder::AddNoteSegment(
     span<const uint8_t> desc) {
   const size_t name_with_null_size = name.size() + 1;
   std::vector<uint8_t> buffer(sizeof(Nhdr) +
-                                  bits::Align(name_with_null_size, 4) +
-                                  bits::Align(desc.size(), 4),
+                                  bits::AlignUp(name_with_null_size, 4) +
+                                  bits::AlignUp(desc.size(), 4),
                               '\0');
   uint8_t* loc = &buffer.front();
   Nhdr* nhdr = reinterpret_cast<Nhdr*>(loc);
@@ -77,10 +77,10 @@ TestElfImageBuilder& TestElfImageBuilder::AddNoteSegment(
 
   memcpy(loc, name.data(), name.size());
   *(loc + name.size()) = '\0';
-  loc += bits::Align(name_with_null_size, 4);
+  loc += bits::AlignUp(name_with_null_size, 4);
 
   memcpy(loc, &desc.front(), desc.size());
-  loc += bits::Align(desc.size(), 4);
+  loc += bits::AlignUp(desc.size(), 4);
 
   DCHECK_EQ(&buffer.front() + buffer.size(), loc);
 
@@ -135,13 +135,13 @@ TestElfImageBuilder::ImageMeasures TestElfImageBuilder::MeasureSizesAndOffsets()
   size_t offset = sizeof(Ehdr);
 
   // Add space for the program header table.
-  offset = bits::Align(offset, kPhdrAlign);
+  offset = bits::AlignUp(offset, kPhdrAlign);
   offset += sizeof(Phdr) * measures.phdrs_required;
 
   // Add space for the notes.
   measures.note_start = offset;
   if (!note_contents_.empty())
-    offset = bits::Align(offset, kNoteAlign);
+    offset = bits::AlignUp(offset, kNoteAlign);
   for (const std::vector<uint8_t>& contents : note_contents_)
     offset += contents.size();
   measures.note_size = offset - measures.note_start;
@@ -155,7 +155,7 @@ TestElfImageBuilder::ImageMeasures TestElfImageBuilder::MeasureSizesAndOffsets()
       size = offset + it->size;
       measures.load_segment_start.push_back(0);
     } else {
-      offset = bits::Align(offset, kLoadAlign);
+      offset = bits::AlignUp(offset, kLoadAlign);
       size = it->size;
       measures.load_segment_start.push_back(offset);
     }
@@ -163,7 +163,7 @@ TestElfImageBuilder::ImageMeasures TestElfImageBuilder::MeasureSizesAndOffsets()
   }
 
   // Add space for the dynamic segment.
-  measures.dynamic_start = bits::Align(offset, kDynamicAlign);
+  measures.dynamic_start = bits::AlignUp(offset, kDynamicAlign);
   offset += sizeof(Dyn) * (soname_ ? 2 : 1);
   measures.strtab_start = offset;
 
@@ -188,14 +188,14 @@ TestElfImage TestElfImageBuilder::Build() {
   std::vector<uint8_t> buffer(load_bias + (kPageSize - 1) + measures.total_size,
                               '\0');
   uint8_t* const elf_start =
-      bits::Align(&buffer.front() + load_bias, kPageSize);
+      bits::AlignUp(&buffer.front() + load_bias, kPageSize);
   uint8_t* loc = elf_start;
 
   // Add the ELF header.
   loc = AppendHdr(CreateEhdr(measures.phdrs_required), loc);
 
   // Add the program header table.
-  loc = bits::Align(loc, kPhdrAlign);
+  loc = bits::AlignUp(loc, kPhdrAlign);
   loc = AppendHdr(
       CreatePhdr(PT_PHDR, PF_R, kPhdrAlign, loc - elf_start,
                  GetVirtualAddressForOffset(loc - elf_start, elf_start),
@@ -232,7 +232,7 @@ TestElfImage TestElfImageBuilder::Build() {
   }
 
   // Add the notes.
-  loc = bits::Align(loc, kNoteAlign);
+  loc = bits::AlignUp(loc, kNoteAlign);
   for (const std::vector<uint8_t>& contents : note_contents_) {
     memcpy(loc, &contents.front(), contents.size());
     loc += contents.size();
@@ -241,12 +241,12 @@ TestElfImage TestElfImageBuilder::Build() {
   // Add the load segments.
   for (auto it = load_segments_.begin(); it != load_segments_.end(); ++it) {
     if (it != load_segments_.begin())
-      loc = bits::Align(loc, kLoadAlign);
+      loc = bits::AlignUp(loc, kLoadAlign);
     memset(loc, 0, it->size);
     loc += it->size;
   }
 
-  loc = bits::Align(loc, kDynamicAlign);
+  loc = bits::AlignUp(loc, kDynamicAlign);
 
   // Add the soname state.
   if (soname_) {

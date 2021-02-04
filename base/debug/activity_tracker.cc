@@ -468,9 +468,9 @@ void* ActivityUserData::Set(StringPiece name,
     // following field will be aligned properly.
     size_t name_size = name.length();
     size_t name_extent =
-        bits::Align(sizeof(FieldHeader) + name_size, kMemoryAlignment) -
+        bits::AlignUp(sizeof(FieldHeader) + name_size, kMemoryAlignment) -
         sizeof(FieldHeader);
-    size_t value_extent = bits::Align(size, kMemoryAlignment);
+    size_t value_extent = bits::AlignUp(size, kMemoryAlignment);
 
     // The "base size" is the size of the header and (padded) string key. Stop
     // now if there's not room enough for even this.
@@ -566,8 +566,8 @@ void ActivityUserData::ImportExistingData() const {
     if (header->record_size > available_)
       return;
 
-    size_t value_offset =
-        bits::Align(sizeof(FieldHeader) + header->name_size, kMemoryAlignment);
+    size_t value_offset = bits::AlignUp(sizeof(FieldHeader) + header->name_size,
+                                        kMemoryAlignment);
     if (header->record_size == value_offset &&
         header->value_size.load(std::memory_order_relaxed) == 1) {
       value_offset -= 1;

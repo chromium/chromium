@@ -952,7 +952,7 @@ bool AllocateFileRegion(File* file, int64_t offset, size_t size) {
 
   // Write starting at the next block boundary after the old file length.
   const int64_t extension_start =
-      base::bits::Align(original_file_len, block_size);
+      base::bits::AlignUp(original_file_len, block_size);
   for (int64_t i = extension_start; i < new_file_len; i += block_size) {
     char existing_byte;
     if (HANDLE_EINTR(pread(file->GetPlatformFile(), &existing_byte, 1, i)) !=

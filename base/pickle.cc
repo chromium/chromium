@@ -41,7 +41,7 @@ inline bool PickleIterator::ReadBuiltinType(Type* result) {
 }
 
 inline void PickleIterator::Advance(size_t size) {
-  size_t aligned_size = bits::Align(size, sizeof(uint32_t));
+  size_t aligned_size = bits::AlignUp(size, sizeof(uint32_t));
   if (end_index_ - read_index_ < aligned_size) {
     read_index_ = end_index_;
   } else {
@@ -237,7 +237,7 @@ Pickle::Pickle()
 
 Pickle::Pickle(int header_size)
     : header_(nullptr),
-      header_size_(bits::Align(header_size, sizeof(uint32_t))),
+      header_size_(bits::AlignUp(header_size, sizeof(uint32_t))),
       capacity_after_header_(0),
       write_offset_(0) {
   DCHECK_GE(static_cast<size_t>(header_size), sizeof(Header));
@@ -257,7 +257,7 @@ Pickle::Pickle(const char* data, size_t data_len)
   if (header_size_ > static_cast<unsigned int>(data_len))
     header_size_ = 0;
 
-  if (header_size_ != bits::Align(header_size_, sizeof(uint32_t)))
+  if (header_size_ != bits::AlignUp(header_size_, sizeof(uint32_t)))
     header_size_ = 0;
 
   // If there is anything wrong with the data, we're not going to use it.
@@ -320,7 +320,7 @@ void Pickle::WriteBytes(const void* data, int length) {
 }
 
 void Pickle::Reserve(size_t length) {
-  size_t data_len = bits::Align(length, sizeof(uint32_t));
+  size_t data_len = bits::AlignUp(length, sizeof(uint32_t));
   DCHECK_GE(data_len, length);
 #ifdef ARCH_CPU_64_BITS
   DCHECK_LE(data_len, std::numeric_limits<uint32_t>::max());
@@ -346,7 +346,7 @@ bool Pickle::HasAttachments() const {
 
 void Pickle::Resize(size_t new_capacity) {
   CHECK_NE(capacity_after_header_, kCapacityReadOnly);
-  capacity_after_header_ = bits::Align(new_capacity, kPayloadUnit);
+  capacity_after_header_ = bits::AlignUp(new_capacity, kPayloadUnit);
   void* p = realloc(header_, GetTotalAllocatedSize());
   CHECK(p);
   header_ = reinterpret_cast<Header*>(p);
@@ -384,7 +384,7 @@ bool Pickle::PeekNext(size_t header_size,
                       const char* start,
                       const char* end,
                       size_t* pickle_size) {
-  DCHECK_EQ(header_size, bits::Align(header_size, sizeof(uint32_t)));
+  DCHECK_EQ(header_size, bits::AlignUp(header_size, sizeof(uint32_t)));
   DCHECK_GE(header_size, sizeof(Header));
   DCHECK_LE(header_size, static_cast<size_t>(kPayloadUnit));
 
@@ -413,7 +413,7 @@ template void Pickle::WriteBytesStatic<8>(const void* data);
 inline void* Pickle::ClaimUninitializedBytesInternal(size_t length) {
   DCHECK_NE(kCapacityReadOnly, capacity_after_header_)
       << "oops: pickle is readonly";
-  size_t data_len = bits::Align(length, sizeof(uint32_t));
+  size_t data_len = bits::AlignUp(length, sizeof(uint32_t));
   DCHECK_GE(data_len, length);
 #ifdef ARCH_CPU_64_BITS
   DCHECK_LE(data_len, std::numeric_limits<uint32_t>::max());
@@ -423,8 +423,10 @@ inline void* Pickle::ClaimUninitializedBytesInternal(size_t length) {
   if (new_size > capacity_after_header_) {
     size_t new_capacity = capacity_after_header_ * 2;
     const size_t kPickleHeapAlign = 4096;
-    if (new_capacity > kPickleHeapAlign)
-      new_capacity = bits::Align(new_capacity, kPickleHeapAlign) - kPayloadUnit;
+    if (new_capacity > kPickleHeapAlign) {
+      new_capacity =
+          bits::AlignUp(new_capacity, kPickleHeapAlign) - kPayloadUnit;
+    }
     Resize(std::max(new_capacity, new_size));
   }
 

@@ -68,7 +68,7 @@ std::pair<size_t, size_t> GetTextRange() {
   // Set the end to the page on which the beginning of the last symbol is. The
   // actual symbol may spill into the next page by a few bytes, but this is
   // outside of the executable code range anyway.
-  size_t end_page = base::bits::Align(kEndOfText, kPageSize);
+  size_t end_page = base::bits::AlignUp(kEndOfText, kPageSize);
   return {start_page, end_page};
 }
 
@@ -78,7 +78,7 @@ std::pair<size_t, size_t> GetOrderedTextRange() {
   size_t start_page = kStartOfOrderedText - kStartOfOrderedText % kPageSize;
   // kEndOfUnorderedText is not considered ordered, but the byte immediately
   // before is considered ordered and so can not be contained in the start page.
-  size_t end_page = base::bits::Align(kEndOfOrderedText, kPageSize);
+  size_t end_page = base::bits::AlignUp(kEndOfOrderedText, kPageSize);
   return {start_page, end_page};
 }
 

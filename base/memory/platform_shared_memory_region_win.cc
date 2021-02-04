@@ -227,7 +227,7 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
   }
 
   // Aligning may overflow so check that the result doesn't decrease.
-  size_t rounded_size = bits::Align(size, kSectionSize);
+  size_t rounded_size = bits::AlignUp(size, kSectionSize);
   if (rounded_size < size ||
       rounded_size > static_cast<size_t>(std::numeric_limits<int>::max())) {
     return {};

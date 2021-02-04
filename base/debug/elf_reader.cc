@@ -85,8 +85,8 @@ size_t ReadElfBuildId(const void* elf_mapped_base,
         }
       }
 
-      size_t section_size = bits::Align(current_note->n_namesz, 4) +
-                            bits::Align(current_note->n_descsz, 4) +
+      size_t section_size = bits::AlignUp(current_note->n_namesz, 4) +
+                            bits::AlignUp(current_note->n_descsz, 4) +
                             sizeof(Nhdr);
       if (section_size > static_cast<size_t>(section_end - current_section))
         return 0;
@@ -104,7 +104,7 @@ size_t ReadElfBuildId(const void* elf_mapped_base,
     // Write out the build ID as a null-terminated hex string.
     const uint8_t* build_id_raw =
         reinterpret_cast<const uint8_t*>(current_note) + sizeof(Nhdr) +
-        bits::Align(current_note->n_namesz, 4);
+        bits::AlignUp(current_note->n_namesz, 4);
     size_t i = 0;
     for (i = 0; i < current_note->n_descsz; ++i) {
       strings::SafeSNPrintf(&build_id[i * 2], 3, (uppercase ? "%02X" : "%02x"),
