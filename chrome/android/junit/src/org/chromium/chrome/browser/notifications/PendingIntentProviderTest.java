@@ -81,4 +81,15 @@ public class PendingIntentProviderTest {
                 PendingIntentProvider.getBroadcast(mContext, 0, contentIntent, 0, /*mutable=*/true);
         Assert.assertEquals(msg, 0, pendingIntentProvider.getFlags());
     }
+
+    @Test
+    public void testRequestCode() {
+        Intent contentIntent = new Intent(TEST_ACTION);
+        PendingIntentProvider pendingIntentProvider = PendingIntentProvider.getBroadcast(
+                mContext, /*requestCode=*/0, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        Assert.assertEquals(0, pendingIntentProvider.getRequestCode());
+        pendingIntentProvider = PendingIntentProvider.getBroadcast(
+                mContext, /*requestCode=*/1, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        Assert.assertEquals(1, pendingIntentProvider.getRequestCode());
+    }
 }

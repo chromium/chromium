@@ -134,7 +134,9 @@ public class NotificationIntentInterceptor {
             intent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
         }
         // Use request code to distinguish different PendingIntents on Android.
-        int requestCode = computeHashCode(metadata, intentType, intentId);
+        int originalRequestCode =
+                pendingIntentProvider != null ? pendingIntentProvider.getRequestCode() : 0;
+        int requestCode = computeHashCode(metadata, intentType, intentId, originalRequestCode);
         return PendingIntent.getBroadcast(applicationContext, requestCode, intent, flags);
     }
 
@@ -178,16 +180,18 @@ public class NotificationIntentInterceptor {
      * @param intentType The type of the {@link PendingIntent}.
      * @param intentId The unique ID of the {@link PendingIntent}, used to distinguish action
      *                 intents.
+     * @param requestCode The request code of the {@link PendingIntent}.
      * @return The hashcode for the intercept {@link PendingIntent}.
      */
-    private static int computeHashCode(
-            NotificationMetadata metadata, @IntentType int intentType, int intentId) {
+    private static int computeHashCode(NotificationMetadata metadata, @IntentType int intentType,
+            int intentId, int requestCode) {
         assert metadata != null;
         int hashcode = metadata.type;
         hashcode = hashcode * 31 + intentType;
         hashcode = hashcode * 31 + intentId;
         hashcode = hashcode * 31 + (metadata.tag == null ? 0 : metadata.tag.hashCode());
         hashcode = hashcode * 31 + metadata.id;
+        hashcode = hashcode * 31 + requestCode;
         return hashcode;
     }
 }

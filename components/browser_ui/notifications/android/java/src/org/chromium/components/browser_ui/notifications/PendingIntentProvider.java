@@ -16,6 +16,7 @@ import org.chromium.base.IntentUtils;
 public class PendingIntentProvider {
     private PendingIntent mPendingIntent;
     private final int mFlags;
+    private final int mRequestCode;
 
     /**
      * Creates {@link PendingIntent}that triggers {@link android.content.BroadcastReceiver}.
@@ -25,7 +26,8 @@ public class PendingIntentProvider {
             Context context, int requestCode, Intent intent, int flags, boolean mutable) {
         flags = ensureCorrectFlags(flags, mutable);
         return new PendingIntentProvider(
-                PendingIntent.getBroadcast(context, requestCode, intent, flags), flags);
+                PendingIntent.getBroadcast(context, requestCode, intent, flags), flags,
+                requestCode);
     }
 
     /**
@@ -44,7 +46,7 @@ public class PendingIntentProvider {
             Context context, int requestCode, Intent intent, int flags, boolean mutable) {
         flags = ensureCorrectFlags(flags, mutable);
         return new PendingIntentProvider(
-                PendingIntent.getService(context, requestCode, intent, flags), flags);
+                PendingIntent.getService(context, requestCode, intent, flags), flags, requestCode);
     }
 
     /**
@@ -63,7 +65,7 @@ public class PendingIntentProvider {
             Context context, int requestCode, Intent intent, int flags, boolean mutable) {
         flags = ensureCorrectFlags(flags, mutable);
         return new PendingIntentProvider(
-                PendingIntent.getActivity(context, requestCode, intent, flags), flags);
+                PendingIntent.getActivity(context, requestCode, intent, flags), flags, requestCode);
     }
 
     /**
@@ -78,10 +80,12 @@ public class PendingIntentProvider {
      * Creates a pending intent wrapper.
      * @param pendingIntent The actual {@link PendingIntent} wrapped in this class.
      * @param flags The flags for the {@link PendingIntent}.
+     * @param requestCode The request code for the {@link PendingIntent}.
      */
-    public PendingIntentProvider(PendingIntent pendingIntent, int flags) {
+    public PendingIntentProvider(PendingIntent pendingIntent, int flags, int requestCode) {
         mPendingIntent = pendingIntent;
         mFlags = flags;
+        mRequestCode = requestCode;
     }
 
     /**
@@ -96,6 +100,13 @@ public class PendingIntentProvider {
      */
     public int getFlags() {
         return mFlags;
+    }
+
+    /**
+     * Returns the request code for the {@link PendingIntent}.
+     */
+    public int getRequestCode() {
+        return mRequestCode;
     }
 
     private static int ensureCorrectFlags(int flags, boolean mutable) {
