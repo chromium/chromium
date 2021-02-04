@@ -68,6 +68,8 @@ class WaylandConnection {
 
   wl_display* display() const { return display_.get(); }
   wl_compositor* compositor() const { return compositor_.get(); }
+  // The server version of the compositor interface (might be higher than the
+  // version binded).
   uint32_t compositor_version() const { return compositor_version_; }
   wl_subcompositor* subcompositor() const { return subcompositor_.get(); }
   wp_viewporter* viewporter() const { return viewporter_.get(); }
