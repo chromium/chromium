@@ -8,6 +8,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/test/test_simple_task_runner.h"
+#include "base/time/time.h"
 #include "chromecast/base/task_runner_impl.h"
 #include "chromecast/media/base/cast_decoder_buffer_impl.h"
 #include "chromecast/media/cma/backend/proxy/cast_runtime_audio_channel_broker.h"
@@ -20,6 +21,16 @@
 namespace chromecast {
 namespace media {
 namespace {
+
+ACTION_P(CompareTimestampInfos, buffer_id, timestamp) {
+  const CastRuntimeAudioChannelBroker::TimestampInfo& result = arg0;
+  EXPECT_EQ(result.buffer_id(), buffer_id);
+  const int64_t micros =
+      result.system_timestamp().seconds() * base::Time::kMicrosecondsPerSecond +
+      result.system_timestamp().nanos() /
+          base::Time::kNanosecondsPerMicrosecond;
+  EXPECT_EQ(micros, timestamp);
+}
 
 class MockTranslatorClient : public CmaProxyHandler::Client {
  public:
@@ -112,8 +123,16 @@ TEST_F(ProxyCallTranslatorTest, TestExternalInitialize) {
 
 TEST_F(ProxyCallTranslatorTest, TestExternalStart) {
   constexpr int64_t start_pts = 42;
-  EXPECT_CALL(*decoder_channel_, StartAsync(start_pts, testing::_));
-  translator_.Start(start_pts);
+  ProxyCallTranslator::TargetBufferInfo target_buffer_info;
+  static constexpr int64_t timestamp = 112358;
+  static constexpr BufferIdManager::BufferId buffer_id = 12481516;
+  target_buffer_info.buffer_id = buffer_id;
+  target_buffer_info.timestamp_micros = timestamp;
+
+  EXPECT_CALL(*decoder_channel_, StartAsync(start_pts, testing::_))
+      .WillOnce(
+          testing::WithArgs<1>(CompareTimestampInfos(buffer_id, timestamp)));
+  translator_.Start(start_pts, target_buffer_info);
 }
 
 TEST_F(ProxyCallTranslatorTest, TestExternalStop) {
@@ -127,8 +146,16 @@ TEST_F(ProxyCallTranslatorTest, TestExternalPause) {
 }
 
 TEST_F(ProxyCallTranslatorTest, TestExternalResume) {
-  EXPECT_CALL(*decoder_channel_, ResumeAsync(testing::_));
-  translator_.Resume();
+  ProxyCallTranslator::TargetBufferInfo target_buffer_info;
+  static constexpr int64_t timestamp = 112358;
+  static constexpr BufferIdManager::BufferId buffer_id = 12481516;
+  target_buffer_info.buffer_id = buffer_id;
+  target_buffer_info.timestamp_micros = timestamp;
+
+  EXPECT_CALL(*decoder_channel_, ResumeAsync(testing::_))
+      .WillOnce(
+          testing::WithArgs<0>(CompareTimestampInfos(buffer_id, timestamp)));
+  translator_.Resume(target_buffer_info);
 }
 
 TEST_F(ProxyCallTranslatorTest, TestExternalSetPlaybackRate) {
@@ -149,15 +176,17 @@ TEST_F(ProxyCallTranslatorTest, TestExternalPushBuffer) {
   buffer->writable_data()[0] = 1;
   buffer->writable_data()[1] = 2;
   buffer->writable_data()[2] = 3;
-  EXPECT_TRUE(translator_.PushBuffer(buffer));
+  EXPECT_TRUE(translator_.PushBuffer(buffer, 1));
 
-  EXPECT_TRUE(translator_.PushBuffer(CastDecoderBufferImpl::CreateEOSBuffer()));
+  EXPECT_TRUE(
+      translator_.PushBuffer(CastDecoderBufferImpl::CreateEOSBuffer(), 2));
 
   ASSERT_TRUE(translator_as_handler_->HasBufferedData());
   auto result = translator_as_handler_->GetBufferedData();
   ASSERT_TRUE(result.has_value());
   EXPECT_FALSE(result.value().has_audio_config());
   ASSERT_TRUE(result.value().has_buffer());
+  EXPECT_EQ(result.value().buffer().id(), 1);
   EXPECT_FALSE(result.value().buffer().end_of_stream());
   EXPECT_EQ(result.value().buffer().data().size(), size_t{3});
   EXPECT_EQ(result.value().buffer().data()[0], 1);
@@ -169,6 +198,7 @@ TEST_F(ProxyCallTranslatorTest, TestExternalPushBuffer) {
   ASSERT_TRUE(result.has_value());
   EXPECT_FALSE(result.value().has_audio_config());
   ASSERT_TRUE(result.value().has_buffer());
+  EXPECT_EQ(result.value().buffer().id(), 2);
   EXPECT_TRUE(result.value().buffer().end_of_stream());
   EXPECT_EQ(result.value().buffer().data().size(), size_t{0});
 }

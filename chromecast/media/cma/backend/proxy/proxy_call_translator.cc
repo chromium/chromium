@@ -141,9 +141,11 @@ cast::media::CastAudioDecoderMode ToGrpcTypes(
 }
 
 CastRuntimeAudioChannelBroker::Handler::PushBufferRequest ToGrpcTypes(
-    scoped_refptr<DecoderBufferBase> buffer) {
+    scoped_refptr<DecoderBufferBase> buffer,
+    BufferIdManager::BufferId buffer_id) {
   auto* decode_buffer = new cast::media::AudioDecoderBuffer;
 
+  decode_buffer->set_id(buffer_id);
   decode_buffer->set_end_of_stream(buffer->end_of_stream());
   if (!buffer->end_of_stream()) {
     decode_buffer->set_pts_micros(buffer->timestamp());
@@ -181,6 +183,16 @@ CastRuntimeAudioChannelBroker::Handler::PushBufferRequest ToGrpcTypes(
   request.set_allocated_audio_config(audio_config_internal);
 
   return request;
+}
+
+CastRuntimeAudioChannelBroker::TimestampInfo ToGrpcTypes(
+    const CmaProxyHandler::TargetBufferInfo& target_buffer) {
+  CastRuntimeAudioChannelBroker::TimestampInfo ts_info;
+  ts_info.set_buffer_id(target_buffer.buffer_id);
+  *ts_info.mutable_system_timestamp() =
+      google::protobuf::util::TimeUtil::MicrosecondsToDuration(
+          target_buffer.timestamp_micros);
+  return ts_info;
 }
 
 // Helper to convert from Chromium callback type (OnceCallback) to Chromecast's
@@ -235,8 +247,9 @@ void ProxyCallTranslator::Initialize(
   decoder_channel_->InitializeAsync(cast_session_id, ToGrpcTypes(decoder_mode));
 }
 
-void ProxyCallTranslator::Start(int64_t start_pts) {
-  decoder_channel_->StartAsync(start_pts, {});
+void ProxyCallTranslator::Start(int64_t start_pts,
+                                const TargetBufferInfo& target_buffer) {
+  decoder_channel_->StartAsync(start_pts, ToGrpcTypes(target_buffer));
 }
 
 void ProxyCallTranslator::Stop() {
@@ -247,8 +260,8 @@ void ProxyCallTranslator::Pause() {
   decoder_channel_->PauseAsync();
 }
 
-void ProxyCallTranslator::Resume() {
-  decoder_channel_->ResumeAsync({});
+void ProxyCallTranslator::Resume(const TargetBufferInfo& target_buffer) {
+  decoder_channel_->ResumeAsync(ToGrpcTypes(target_buffer));
 }
 
 void ProxyCallTranslator::SetPlaybackRate(float rate) {
@@ -263,8 +276,10 @@ bool ProxyCallTranslator::SetConfig(const AudioConfig& config) {
   return push_buffer_queue_.PushBuffer(ToGrpcTypes(config));
 }
 
-bool ProxyCallTranslator::PushBuffer(scoped_refptr<DecoderBufferBase> buffer) {
-  return push_buffer_queue_.PushBuffer(ToGrpcTypes(std::move(buffer)));
+bool ProxyCallTranslator::PushBuffer(scoped_refptr<DecoderBufferBase> buffer,
+                                     BufferIdManager::BufferId buffer_id) {
+  return push_buffer_queue_.PushBuffer(
+      ToGrpcTypes(std::move(buffer), buffer_id));
 }
 
 base::Optional<ProxyCallTranslator::PushBufferRequest>

@@ -6,6 +6,7 @@
 #define CHROMECAST_MEDIA_CMA_BACKEND_PROXY_CMA_PROXY_HANDLER_H_
 
 #include "base/memory/ref_counted.h"
+#include "chromecast/media/cma/backend/proxy/buffer_id_manager.h"
 
 namespace chromecast {
 
@@ -38,6 +39,16 @@ class CmaProxyHandler {
     kPaused = 3,
   };
 
+  // Timing information about a buffer to be targeted for playback changes.
+  struct TargetBufferInfo {
+    // The ID associated with the target buffer.
+    BufferIdManager::BufferId buffer_id;
+
+    // The timestamp at which the target buffer is expected to play in
+    // microseconds, as returned by MonotonicClock::Now().
+    int64_t timestamp_micros;
+  };
+
   // Observer for changes on the remote client.
   class Client {
    public:
@@ -67,10 +78,11 @@ class CmaProxyHandler {
   // any thread.
   virtual void Initialize(const std::string& cast_session_id,
                           AudioDecoderOperationMode decoder_mode) = 0;
-  virtual void Start(int64_t start_pts) = 0;
+  virtual void Start(int64_t start_pts,
+                     const TargetBufferInfo& target_buffer) = 0;
   virtual void Stop() = 0;
   virtual void Pause() = 0;
-  virtual void Resume() = 0;
+  virtual void Resume(const TargetBufferInfo& target_buffer) = 0;
   virtual void SetPlaybackRate(float rate) = 0;
   virtual void SetVolume(float multiplier) = 0;
 
@@ -84,7 +96,8 @@ class CmaProxyHandler {
   // - SetConfig may be called later on as-well, after which time the new config
   //   will be used for all following PushBuffer calls.
   virtual bool SetConfig(const AudioConfig& config) = 0;
-  virtual bool PushBuffer(scoped_refptr<DecoderBufferBase> buffer) = 0;
+  virtual bool PushBuffer(scoped_refptr<DecoderBufferBase> buffer,
+                          BufferIdManager::BufferId buffer_id) = 0;
 };
 
 }  // namespace media

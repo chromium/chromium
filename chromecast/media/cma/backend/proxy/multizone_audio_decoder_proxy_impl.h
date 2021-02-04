@@ -10,6 +10,7 @@
 #include "base/memory/ref_counted.h"
 #include "chromecast/media/api/cma_backend.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
+#include "chromecast/media/cma/backend/proxy/buffer_id_manager.h"
 #include "chromecast/media/cma/backend/proxy/cma_proxy_handler.h"
 #include "chromecast/media/cma/backend/proxy/multizone_audio_decoder_proxy.h"
 
@@ -18,6 +19,7 @@ namespace media {
 
 struct AudioConfig;
 struct MediaPipelineDeviceParams;
+class MonotonicClock;
 
 // This class is used to proxy audio data to an external
 // CmaBackend::AudioDecoder over gRPC.
@@ -58,6 +60,9 @@ class MultizoneAudioDecoderProxyImpl : public MultizoneAudioDecoderProxy,
   void GetStatistics(CmaBackend::AudioDecoder::Statistics* statistics) override;
 
  private:
+  // Helper for creating TargetBufferInfo types.
+  CmaProxyHandler::TargetBufferInfo CreateTargetBufferInfo();
+
   // CmaProxyHandler::Client overrides:
   void OnError() override;
   void OnPipelineStateChange(CmaProxyHandler::PipelineState state) override;
@@ -79,6 +84,11 @@ class MultizoneAudioDecoderProxyImpl : public MultizoneAudioDecoderProxy,
   // public method calls should call into this instance to proxy the call to
   // the remote backend.
   std::unique_ptr<CmaProxyHandler> proxy_handler_;
+
+  // Clock used for timing information.
+  std::unique_ptr<MonotonicClock> clock_;
+
+  BufferIdManager buffer_id_manager_;
 };
 
 }  // namespace media

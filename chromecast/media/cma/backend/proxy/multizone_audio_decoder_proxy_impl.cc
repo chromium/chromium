@@ -5,6 +5,7 @@
 #include "chromecast/media/cma/backend/proxy/multizone_audio_decoder_proxy_impl.h"
 
 #include "base/notreached.h"
+#include "chromecast/media/api/monotonic_clock.h"
 #include "chromecast/public/media/decoder_config.h"
 #include "chromecast/public/media/media_pipeline_device_params.h"
 
@@ -17,8 +18,11 @@ MultizoneAudioDecoderProxyImpl::MultizoneAudioDecoderProxyImpl(
     : MultizoneAudioDecoderProxy(downstream_decoder),
       cast_session_id_(params.session_id),
       decoder_mode_(CmaProxyHandler::AudioDecoderOperationMode::kMultiroomOnly),
-      proxy_handler_(CmaProxyHandler::Create(params.task_runner, this)) {
+      proxy_handler_(CmaProxyHandler::Create(params.task_runner, this)),
+      clock_(MonotonicClock::Create()),
+      buffer_id_manager_(this) {
   DCHECK(proxy_handler_);
+  DCHECK(clock_);
 }
 
 MultizoneAudioDecoderProxyImpl::MultizoneAudioDecoderProxyImpl(
@@ -37,7 +41,7 @@ void MultizoneAudioDecoderProxyImpl::Initialize() {
 
 void MultizoneAudioDecoderProxyImpl::Start(int64_t start_pts) {
   CheckCalledOnCorrectThread();
-  proxy_handler_->Start(start_pts);
+  proxy_handler_->Start(start_pts, CreateTargetBufferInfo());
 }
 
 void MultizoneAudioDecoderProxyImpl::Stop() {
@@ -52,7 +56,7 @@ void MultizoneAudioDecoderProxyImpl::Pause() {
 
 void MultizoneAudioDecoderProxyImpl::Resume() {
   CheckCalledOnCorrectThread();
-  proxy_handler_->Resume();
+  proxy_handler_->Resume(CreateTargetBufferInfo());
 }
 
 void MultizoneAudioDecoderProxyImpl::SetPlaybackRate(float rate) {
@@ -78,10 +82,16 @@ int64_t MultizoneAudioDecoderProxyImpl::GetCurrentPts() const {
   return pts_offset_;
 }
 
+CmaProxyHandler::TargetBufferInfo
+MultizoneAudioDecoderProxyImpl::CreateTargetBufferInfo() {
+  return {buffer_id_manager_.GetCurrentlyProcessingBuffer(), clock_->Now()};
+}
+
 MultizoneAudioDecoderProxy::BufferStatus
 MultizoneAudioDecoderProxyImpl::PushBuffer(
     scoped_refptr<DecoderBufferBase> buffer) {
-  if (!proxy_handler_->PushBuffer(buffer)) {
+  if (!proxy_handler_->PushBuffer(
+          buffer, buffer_id_manager_.AssignBufferId(buffer->data_size()))) {
     return BufferStatus::kBufferFailed;
   }
 

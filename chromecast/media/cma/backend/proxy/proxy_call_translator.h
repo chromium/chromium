@@ -10,6 +10,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
+#include "chromecast/media/cma/backend/proxy/buffer_id_manager.h"
 #include "chromecast/media/cma/backend/proxy/cast_runtime_audio_channel_broker.h"
 #include "chromecast/media/cma/backend/proxy/cma_proxy_handler.h"
 #include "chromecast/media/cma/backend/proxy/push_buffer_queue.h"
@@ -39,14 +40,15 @@ class ProxyCallTranslator : public CmaProxyHandler,
   void Initialize(
       const std::string& cast_session_id,
       CmaProxyHandler::AudioDecoderOperationMode decoder_mode) override;
-  void Start(int64_t start_pts) override;
+  void Start(int64_t start_pts, const TargetBufferInfo& target_buffer) override;
   void Stop() override;
   void Pause() override;
-  void Resume() override;
+  void Resume(const TargetBufferInfo& target_buffer) override;
   void SetPlaybackRate(float rate) override;
   void SetVolume(float multiplier) override;
   bool SetConfig(const AudioConfig& config) override;
-  bool PushBuffer(scoped_refptr<DecoderBufferBase> buffer) override;
+  bool PushBuffer(scoped_refptr<DecoderBufferBase> buffer,
+                  BufferIdManager::BufferId buffer_id) override;
 
  private:
   friend class ProxyCallTranslatorTest;

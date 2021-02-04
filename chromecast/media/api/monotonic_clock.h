@@ -7,12 +7,16 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 namespace chromecast {
 namespace media {
 
 // Interface that provides the monotonic time.
 class MonotonicClock {
  public:
+  static std::unique_ptr<MonotonicClock> Create();
+
   virtual ~MonotonicClock() = default;
   // Returns the monotonic time in microseconds.
   virtual int64_t Now() const = 0;

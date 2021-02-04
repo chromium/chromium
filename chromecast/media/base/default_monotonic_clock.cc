@@ -6,6 +6,8 @@
 
 #include <time.h>
 
+#include <memory>
+
 #include "base/time/time.h"
 #include "build/build_config.h"
 
@@ -19,6 +21,11 @@
 
 namespace chromecast {
 namespace media {
+
+// static
+std::unique_ptr<MonotonicClock> MonotonicClock::Create() {
+  return std::make_unique<DefaultMonotonicClock>();
+}
 
 #if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 int64_t MonotonicClockNow() {
