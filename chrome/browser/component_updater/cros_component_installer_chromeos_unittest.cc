@@ -362,15 +362,6 @@ class CrOSComponentInstallerTest : public testing::Test {
   DISALLOW_COPY_AND_ASSIGN(CrOSComponentInstallerTest);
 };
 
-class MockCrOSComponentInstallerPolicy : public CrOSComponentInstallerPolicy {
- public:
-  explicit MockCrOSComponentInstallerPolicy(const ComponentConfig& config)
-      : CrOSComponentInstallerPolicy(config, nullptr) {}
-  MOCK_METHOD2(IsCompatible,
-               bool(const std::string& env_version_str,
-                    const std::string& min_env_version_str));
-};
-
 TEST_F(CrOSComponentInstallerTest, CompatibleCrOSComponent) {
   scoped_refptr<CrOSComponentInstaller> cros_component_manager =
       base::MakeRefCounted<CrOSComponentInstaller>(nullptr, nullptr);
@@ -389,44 +380,81 @@ TEST_F(CrOSComponentInstallerTest, CompatibleCrOSComponent) {
 }
 
 TEST_F(CrOSComponentInstallerTest, CompatibilityOK) {
-  ComponentConfig config{"a", "2.1", ""};
-  MockCrOSComponentInstallerPolicy policy(config);
-  EXPECT_CALL(policy, IsCompatible(testing::_, testing::_)).Times(1);
+  auto update_service = std::make_unique<MockComponentUpdateService>();
+  auto installer = base::MakeRefCounted<CrOSComponentInstaller>(
+      nullptr, update_service.get());
+  ComponentConfig config{"component", ComponentConfig::PolicyType::kEnvVersion,
+                         "2.1", ""};
+  EnvVersionInstallerPolicy policy(config, installer.get());
   base::Version version;
-  base::FilePath path;
+  base::FilePath path("/path");
   std::unique_ptr<base::DictionaryValue> manifest =
       std::make_unique<base::DictionaryValue>();
   manifest->SetString("min_env_version", "2.1");
   policy.ComponentReady(version, path, std::move(manifest));
+  // Component is compatible and was registered.
+  EXPECT_EQ(path, installer->GetCompatiblePath("component"));
 }
 
 TEST_F(CrOSComponentInstallerTest, CompatibilityMissingManifest) {
-  ComponentConfig config{"a", "2.1", ""};
-  MockCrOSComponentInstallerPolicy policy(config);
-  EXPECT_CALL(policy, IsCompatible(testing::_, testing::_)).Times(0);
+  auto update_service = std::make_unique<MockComponentUpdateService>();
+  auto installer = base::MakeRefCounted<CrOSComponentInstaller>(
+      nullptr, update_service.get());
+  ComponentConfig config{"component", ComponentConfig::PolicyType::kEnvVersion,
+                         "2.1", ""};
+  EnvVersionInstallerPolicy policy(config, installer.get());
   base::Version version;
-  base::FilePath path;
+  base::FilePath path("/path");
   std::unique_ptr<base::DictionaryValue> manifest =
       std::make_unique<base::DictionaryValue>();
   policy.ComponentReady(version, path, std::move(manifest));
+  // No compatible path was registered.
+  EXPECT_EQ(base::FilePath(), installer->GetCompatiblePath("component"));
 }
 
 TEST_F(CrOSComponentInstallerTest, IsCompatibleOrNot) {
-  ComponentConfig config{"", "", ""};
-  CrOSComponentInstallerPolicy policy(config, nullptr);
-  EXPECT_TRUE(policy.IsCompatible("1.0", "1.0"));
-  EXPECT_TRUE(policy.IsCompatible("1.1", "1.0"));
-  EXPECT_FALSE(policy.IsCompatible("1.0", "1.1"));
-  EXPECT_FALSE(policy.IsCompatible("1.0", "2.0"));
-  EXPECT_FALSE(policy.IsCompatible("1.c", "1.c"));
-  EXPECT_FALSE(policy.IsCompatible("1", "1.1"));
-  EXPECT_TRUE(policy.IsCompatible("1.1.1", "1.1"));
+  EXPECT_TRUE(EnvVersionInstallerPolicy::IsCompatible("1.0", "1.0"));
+  EXPECT_TRUE(EnvVersionInstallerPolicy::IsCompatible("1.1", "1.0"));
+  EXPECT_FALSE(EnvVersionInstallerPolicy::IsCompatible("1.0", "1.1"));
+  EXPECT_FALSE(EnvVersionInstallerPolicy::IsCompatible("1.0", "2.0"));
+  EXPECT_FALSE(EnvVersionInstallerPolicy::IsCompatible("1.c", "1.c"));
+  EXPECT_FALSE(EnvVersionInstallerPolicy::IsCompatible("1", "1.1"));
+  EXPECT_TRUE(EnvVersionInstallerPolicy::IsCompatible("1.1.1", "1.1"));
+}
+
+TEST_F(CrOSComponentInstallerTest, LacrosMinVersion) {
+  // Use a fixed version, so the test doesn't need to change as chrome
+  // versions advance.
+  LacrosInstallerPolicy::SetAshVersionForTest("10.0.0.0");
+
+  // Create policy object under test.
+  auto update_service = std::make_unique<MockComponentUpdateService>();
+  auto installer = base::MakeRefCounted<CrOSComponentInstaller>(
+      nullptr, update_service.get());
+  ComponentConfig config{"lacros-fishfood",
+                         ComponentConfig::PolicyType::kLacros, "", ""};
+  LacrosInstallerPolicy policy(config, installer.get());
+
+  // Simulate finding an incompatible existing install.
+  policy.ComponentReady(base::Version("8.0.0.0"),
+                        base::FilePath("/lacros/8.0.0.0"),
+                        /*manifest=*/nullptr);
+  EXPECT_TRUE(installer->GetCompatiblePath("lacros-fishfood").empty());
+
+  // Simulate finding a compatible existing install.
+  policy.ComponentReady(base::Version("9.0.0.0"),
+                        base::FilePath("/lacros/9.0.0.0"),
+                        /*manifest=*/nullptr);
+  EXPECT_EQ("/lacros/9.0.0.0",
+            installer->GetCompatiblePath("lacros-fishfood").MaybeAsASCII());
+
+  LacrosInstallerPolicy::SetAshVersionForTest(nullptr);
 }
 
 TEST_F(CrOSComponentInstallerTest, RegisterComponent) {
   auto cus = std::make_unique<MockComponentUpdateService>();
   ComponentConfig config{
-      "star-cups-driver", "1.1",
+      "star-cups-driver", ComponentConfig::PolicyType::kEnvVersion, "1.1",
       "6d24de30f671da5aee6d463d9e446cafe9ddac672800a9defe86877dcde6c466"};
   EXPECT_CALL(*cus, RegisterComponent(testing::_)).Times(1);
   scoped_refptr<CrOSComponentInstaller> cros_component_manager =
