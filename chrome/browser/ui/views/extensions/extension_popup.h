@@ -18,6 +18,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "url/gurl.h"
 
 #if defined(USE_AURA)
@@ -48,6 +49,8 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
                        public TabStripModelObserver,
                        public content::DevToolsAgentHostObserver {
  public:
+  METADATA_HEADER(ExtensionPopup);
+
   enum ShowAction {
     SHOW,
     SHOW_AND_INSPECT,
@@ -72,6 +75,8 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
                         views::BubbleBorder::Arrow arrow,
                         ShowAction show_action);
 
+  ExtensionPopup(const ExtensionPopup&) = delete;
+  ExtensionPopup& operator=(const ExtensionPopup&) = delete;
   ~ExtensionPopup() override;
 
   extensions::ExtensionViewHost* host() const { return host_.get(); }
@@ -140,8 +145,6 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
   ShowAction show_action_;
 
   content::NotificationRegistrar registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionPopup);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_POPUP_H_

@@ -16,12 +16,15 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 
 class RemoveSuggestionBubbleDialogDelegateView
     : public views::BubbleDialogDelegateView {
  public:
+  METADATA_HEADER(RemoveSuggestionBubbleDialogDelegateView);
   RemoveSuggestionBubbleDialogDelegateView(
       TemplateURLService* template_url_service,
       views::View* anchor_view,
@@ -98,6 +101,10 @@ class RemoveSuggestionBubbleDialogDelegateView
   AutocompleteMatch match_;
   base::OnceClosure remove_closure_;
 };
+
+BEGIN_METADATA(RemoveSuggestionBubbleDialogDelegateView,
+               views::BubbleDialogDelegateView)
+END_METADATA
 
 }  // namespace
 

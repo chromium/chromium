@@ -9,6 +9,7 @@
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace lock_screen_apps {
 
@@ -17,8 +18,11 @@ namespace lock_screen_apps {
 // the user closes it.
 class ToastDialogView : public views::BubbleDialogDelegateView {
  public:
+  METADATA_HEADER(ToastDialogView);
   ToastDialogView(const base::string16& app_name,
                   base::OnceClosure dismissed_callback);
+  ToastDialogView(const ToastDialogView&) = delete;
+  ToastDialogView& operator=(const ToastDialogView&) = delete;
   ~ToastDialogView() override;
 
   // views::BubbleDialogDelegateView:
@@ -29,8 +33,6 @@ class ToastDialogView : public views::BubbleDialogDelegateView {
  private:
   // Callback to be called when the user closes the dialog.
   base::OnceClosure dismissed_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ToastDialogView);
 };
 
 }  // namespace lock_screen_apps

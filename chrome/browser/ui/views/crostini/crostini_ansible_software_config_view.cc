@@ -16,6 +16,7 @@
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -182,3 +183,8 @@ void CrostiniAnsibleSoftwareConfigView::OnStateChanged() {
   if (GetWidget())
     GetWidget()->SetSize(GetWidget()->non_client_view()->GetPreferredSize());
 }
+
+BEGIN_METADATA(CrostiniAnsibleSoftwareConfigView,
+               views::BubbleDialogDelegateView)
+ADD_READONLY_PROPERTY_METADATA(base::string16, SubtextLabel)
+END_METADATA

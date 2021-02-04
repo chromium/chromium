@@ -20,6 +20,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 
@@ -81,3 +82,6 @@ CrostiniUpdateComponentView::CrostiniUpdateComponentView() {
 CrostiniUpdateComponentView::~CrostiniUpdateComponentView() {
   g_crostini_upgrade_view = nullptr;
 }
+
+BEGIN_METADATA(CrostiniUpdateComponentView, views::BubbleDialogDelegateView)
+END_METADATA

@@ -23,6 +23,7 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
@@ -32,6 +33,7 @@ namespace {
 
 class HomePageUndoBubble : public views::BubbleDialogDelegateView {
  public:
+  METADATA_HEADER(HomePageUndoBubble);
   HomePageUndoBubble(const HomePageUndoBubble&) = delete;
   HomePageUndoBubble& operator=(const HomePageUndoBubble&) = delete;
 
@@ -138,6 +140,9 @@ void HomePageUndoBubble::WindowClosing() {
   DCHECK_EQ(this, home_page_undo_bubble_);
   home_page_undo_bubble_ = nullptr;
 }
+
+BEGIN_METADATA(HomePageUndoBubble, views::BubbleDialogDelegateView)
+END_METADATA
 
 }  // namespace
 

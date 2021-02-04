@@ -19,6 +19,7 @@
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace lock_screen_apps {
 
@@ -92,5 +93,8 @@ void ToastDialogView::OnBeforeBubbleWidgetInit(
   ash_util::SetupWidgetInitParamsForContainer(
       params, ash::kShellWindowId_SettingBubbleContainer);
 }
+
+BEGIN_METADATA(ToastDialogView, views::BubbleDialogDelegateView)
+END_METADATA
 
 }  // namespace lock_screen_apps

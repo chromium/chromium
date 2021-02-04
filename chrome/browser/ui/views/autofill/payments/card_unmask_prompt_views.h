@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace content {
@@ -34,8 +35,11 @@ class CardUnmaskPromptViews : public CardUnmaskPromptView,
                               public views::BubbleDialogDelegateView,
                               public views::TextfieldController {
  public:
+  METADATA_HEADER(CardUnmaskPromptViews);
   CardUnmaskPromptViews(CardUnmaskPromptController* controller,
                         content::WebContents* web_contents);
+  CardUnmaskPromptViews(const CardUnmaskPromptViews&) = delete;
+  CardUnmaskPromptViews& operator=(const CardUnmaskPromptViews&) = delete;
   ~CardUnmaskPromptViews() override;
 
   // CardUnmaskPromptView:
@@ -108,8 +112,6 @@ class CardUnmaskPromptViews : public CardUnmaskPromptView,
   views::Throbber* progress_throbber_ = nullptr;
 
   base::WeakPtrFactory<CardUnmaskPromptViews> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CardUnmaskPromptViews);
 };
 
 }  // namespace autofill

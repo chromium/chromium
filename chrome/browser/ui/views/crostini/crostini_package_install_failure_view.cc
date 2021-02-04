@@ -15,6 +15,7 @@
 #include "ui/views/controls/message_box_view.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace crostini {
 
@@ -62,3 +63,7 @@ CrostiniPackageInstallFailureView::CrostiniPackageInstallFailureView(
 
 CrostiniPackageInstallFailureView::~CrostiniPackageInstallFailureView() =
     default;
+
+BEGIN_METADATA(CrostiniPackageInstallFailureView,
+               views::BubbleDialogDelegateView)
+END_METADATA

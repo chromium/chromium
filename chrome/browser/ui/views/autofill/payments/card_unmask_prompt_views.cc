@@ -40,6 +40,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/widget/widget.h"
 
@@ -469,5 +470,8 @@ CardUnmaskPromptView* CreateCardUnmaskPromptView(
     content::WebContents* web_contents) {
   return new CardUnmaskPromptViews(controller, web_contents);
 }
+
+BEGIN_METADATA(CardUnmaskPromptViews, views::BubbleDialogDelegateView)
+END_METADATA
 
 }  // namespace autofill

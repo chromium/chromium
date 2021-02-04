@@ -22,6 +22,7 @@
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 
@@ -153,3 +154,6 @@ void CrostiniUninstallerView::RecordUninstallResultHistogram(
                                 UninstallResult::kCount);
   has_logged_result_ = true;
 }
+
+BEGIN_METADATA(CrostiniUninstallerView, views::BubbleDialogDelegateView)
+END_METADATA

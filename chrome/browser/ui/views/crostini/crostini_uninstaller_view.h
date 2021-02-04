@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_CROSTINI_CROSTINI_UNINSTALLER_VIEW_H_
 
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace views {
 class Label;
@@ -22,6 +23,8 @@ class Profile;
 // uninstalls Crostinin if the user chooses to do so.
 class CrostiniUninstallerView : public views::BubbleDialogDelegateView {
  public:
+  METADATA_HEADER(CrostiniUninstallerView);
+
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class UninstallResult {
@@ -30,6 +33,9 @@ class CrostiniUninstallerView : public views::BubbleDialogDelegateView {
     kSuccess = 2,
     kCount
   };
+
+  CrostiniUninstallerView(const CrostiniUninstallerView&) = delete;
+  CrostiniUninstallerView& operator=(const CrostiniUninstallerView&) = delete;
 
   static void Show(Profile* profile);
 
@@ -66,8 +72,6 @@ class CrostiniUninstallerView : public views::BubbleDialogDelegateView {
   base::ScopedClosureRunner destructor_callback_for_testing_;
 
   base::WeakPtrFactory<CrostiniUninstallerView> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniUninstallerView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_CROSTINI_CROSTINI_UNINSTALLER_VIEW_H_

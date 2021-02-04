@@ -12,6 +12,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace crostini {
@@ -89,3 +90,6 @@ CrostiniForceCloseView::CrostiniForceCloseView(
 }
 
 CrostiniForceCloseView::~CrostiniForceCloseView() = default;
+
+BEGIN_METADATA(CrostiniForceCloseView, views::BubbleDialogDelegateView)
+END_METADATA

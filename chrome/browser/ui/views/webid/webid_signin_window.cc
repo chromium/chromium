@@ -22,6 +22,8 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 #include "ui/views/layout/box_layout.h"
@@ -39,6 +41,7 @@ constexpr int kHeaderHeight = 50;
 // +----------------+
 class TitleAndOriginView : public views::View {
  public:
+  METADATA_HEADER(TitleAndOriginView);
   TitleAndOriginView(const base::string16& page_title, const GURL& origin) {
     // The logic here is mostly based on Payments UI used for
     // `PaymentHandlerWebFlowViewController`.
@@ -76,12 +79,16 @@ class TitleAndOriginView : public views::View {
   ~TitleAndOriginView() override = default;
 };
 
+BEGIN_METADATA(TitleAndOriginView, views::View)
+END_METADATA
+
 // The view for IDP sign in page.
 // It observes the loaded web contents to update header information as the load
 // progresses and in case it navigates.
 class SigninDialogView : public views::BubbleDialogDelegateView,
                          public content::WebContentsObserver {
  public:
+  METADATA_HEADER(SigninDialogView);
   SigninDialogView(content::WebContents* initiator_web_contents,
                    content::WebContents* idp_web_contents,
                    const GURL& provider)
@@ -194,6 +201,9 @@ class SigninDialogView : public views::BubbleDialogDelegateView,
   // The contents of the dialog, owned by the view hierarchy.
   views::WebView* web_view_;
 };
+
+BEGIN_METADATA(SigninDialogView, views::BubbleDialogDelegateView)
+END_METADATA
 
 WebIdSigninWindow::WebIdSigninWindow(
     content::WebContents* initiator_web_contents,

@@ -19,6 +19,7 @@
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/widget/widget.h"
 
@@ -278,3 +279,6 @@ void ExtensionPopup::CloseUnlessUnderInspection() {
   if (show_action_ != SHOW_AND_INSPECT)
     GetWidget()->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
 }
+
+BEGIN_METADATA(ExtensionPopup, views::BubbleDialogDelegateView)
+END_METADATA

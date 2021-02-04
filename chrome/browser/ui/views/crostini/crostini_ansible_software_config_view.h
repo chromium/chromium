@@ -10,6 +10,7 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/progress_bar.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 class Profile;
 
@@ -20,6 +21,8 @@ class CrostiniAnsibleSoftwareConfigView
     : public views::BubbleDialogDelegateView,
       public crostini::AnsibleManagementService::Observer {
  public:
+  METADATA_HEADER(CrostiniAnsibleSoftwareConfigView);
+
   // views::DialogDelegateView:
   bool Accept() override;
 

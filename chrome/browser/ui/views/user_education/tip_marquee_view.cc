@@ -30,6 +30,7 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
@@ -164,6 +165,7 @@ constexpr int kTipMarqueeViewOverflowTextWidth = 250;
 
 class TipMarqueeOverflowBubbleView : public views::BubbleDialogDelegateView {
  public:
+  METADATA_HEADER(TipMarqueeOverflowBubbleView);
   TipMarqueeOverflowBubbleView(TipMarqueeView* tip_marquee_view,
                                const base::string16& text)
       : BubbleDialogDelegateView(tip_marquee_view,
@@ -194,6 +196,9 @@ class TipMarqueeOverflowBubbleView : public views::BubbleDialogDelegateView {
 
   TipMarqueeView* const tip_marquee_view_;
 };
+
+BEGIN_METADATA(TipMarqueeOverflowBubbleView, views::BubbleDialogDelegateView)
+END_METADATA
 
 }  // namespace
 
