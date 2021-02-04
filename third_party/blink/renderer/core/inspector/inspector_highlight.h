@@ -102,6 +102,17 @@ struct CORE_EXPORT InspectorFlexContainerHighlightConfig {
   base::Optional<LineStyle> cross_alignment;
 };
 
+struct CORE_EXPORT InspectorFlexItemHighlightConfig {
+  USING_FAST_MALLOC(InspectorFlexItemHighlightConfig);
+
+ public:
+  InspectorFlexItemHighlightConfig();
+
+  base::Optional<BoxStyle> base_size_box;
+  base::Optional<LineStyle> base_size_border;
+  base::Optional<LineStyle> flexibility_arrow;
+};
+
 struct CORE_EXPORT InspectorHighlightConfig {
   USING_FAST_MALLOC(InspectorHighlightConfig);
 
@@ -131,6 +142,7 @@ struct CORE_EXPORT InspectorHighlightConfig {
   std::unique_ptr<InspectorGridHighlightConfig> grid_highlight_config;
   std::unique_ptr<InspectorFlexContainerHighlightConfig>
       flex_container_highlight_config;
+  std::unique_ptr<InspectorFlexItemHighlightConfig> flex_item_highlight_config;
 };
 
 struct InspectorHighlightContrastInfo {
@@ -199,6 +211,7 @@ class CORE_EXPORT InspectorHighlight : public InspectorHighlightBase {
   static InspectorHighlightConfig DefaultConfig();
   static InspectorGridHighlightConfig DefaultGridConfig();
   static InspectorFlexContainerHighlightConfig DefaultFlexContainerConfig();
+  static InspectorFlexItemHighlightConfig DefaultFlexItemConfig();
   void AppendEventTargetQuads(Node* event_target_node,
                               const InspectorHighlightConfig&);
   std::unique_ptr<protocol::DictionaryValue> AsProtocolValue() const override;
@@ -223,7 +236,8 @@ class CORE_EXPORT InspectorHighlight : public InspectorHighlightBase {
   std::unique_ptr<protocol::DictionaryValue> distance_info_;
   std::unique_ptr<protocol::DictionaryValue> element_info_;
   std::unique_ptr<protocol::ListValue> grid_info_;
-  std::unique_ptr<protocol::ListValue> flex_info_;
+  std::unique_ptr<protocol::ListValue> flex_container_info_;
+  std::unique_ptr<protocol::ListValue> flex_item_info_;
   bool show_rulers_;
   bool show_extension_lines_;
   bool show_accessibility_info_;

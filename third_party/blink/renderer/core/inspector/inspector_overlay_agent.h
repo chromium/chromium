@@ -149,6 +149,8 @@ class CORE_EXPORT InspectorOverlayAgent final
   static std::unique_ptr<InspectorFlexContainerHighlightConfig>
   ToFlexContainerHighlightConfig(
       protocol::Overlay::FlexContainerHighlightConfig*);
+  static std::unique_ptr<InspectorFlexItemHighlightConfig>
+  ToFlexItemHighlightConfig(protocol::Overlay::FlexItemHighlightConfig*);
   static base::Optional<LineStyle> ToLineStyle(protocol::Overlay::LineStyle*);
   static base::Optional<BoxStyle> ToBoxStyle(protocol::Overlay::BoxStyle*);
   static std::unique_ptr<InspectorHighlightConfig> ToHighlightConfig(
