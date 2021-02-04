@@ -250,6 +250,12 @@ SK_API void SkDebugf_FileLine(const char* file,
 #define SK_USE_LEGACY_VK_ALLOCATOR_USAGE_NAMES
 #endif
 
+// Remove once we have imported the functionality we need into chrome
+// SkDrawLooper is unsupported in skia
+#ifndef SK_SUPPORT_LEGACY_DRAWLOOPER
+#define SK_SUPPORT_LEGACY_DRAWLOOPER
+#endif
+
 ///////////////////////// Imported from BUILD.gn and skia_common.gypi
 
 /* In some places Skia can use static initializers for global initialization,
