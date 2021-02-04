@@ -12,7 +12,6 @@ cast_shell_android_manifest =
     "$root_gen_dir/cast_shell_manifest/AndroidManifest.xml"
 
 manifest_variables = [
-  "cast_build_enable_background_activities=$enable_background_activities",
   "is_android_things=$is_android_things",
   "is_android_things_non_public=$is_android_things_non_public",
 ]

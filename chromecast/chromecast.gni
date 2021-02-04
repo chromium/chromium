@@ -60,10 +60,6 @@ declare_args() {
   # volume streams to a single one.
   is_single_volume = false
 
-  # Set to true to keep Android activities alive when they are moved to the
-  # background.
-  enable_background_activities = false
-
   # Set to true to use CastWebContentsFragment instead of CastWebContentsActivity
   # to run cast receiver app.
   # TODO(thoren) merge this flag with display_web_contents_in_service
