@@ -1032,16 +1032,6 @@ mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal = class {
     return this.connectionErrorEventRouter_;
   }
 
-  /**
-   * @return {!Promise}
-   * @export
-   */
-  async flush() {
-    for (let endpoint of this.endpoints_) {
-      await endpoint.flushForTesting();
-    }
-  }
-
   /** @override */
   onMessageReceived(endpoint, header, buffer, handles) {
     if (header.flags & mojo.internal.kMessageFlagIsResponse)
@@ -1150,14 +1140,6 @@ mojo.internal.interfaceSupport.InterfaceReceiverHelper = class {
   /** @export */
   close() {
     this.helper_internal_.closeBindings();
-  }
-
-  /**
-   * @return {!Promise}
-   * @export
-   */
-  flush() {
-    return this.helper_internal_.flush();
   }
 }
 

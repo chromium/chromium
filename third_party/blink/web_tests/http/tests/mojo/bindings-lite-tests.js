@@ -214,24 +214,6 @@ promise_test(() => {
   });
 }, 'can use generated flushForTesting API for synchronization in tests');
 
-promise_test(async () => {
-  let clientRouter = new liteJsTest.mojom.SubinterfaceClientCallbackRouter;
-  let clientRemote = clientRouter.$.bindNewPipeAndPassRemote();
-
-  let actualDidFlushes = 0;
-  clientRouter.didFlush.addListener(values => {
-    actualDidFlushes++;
-  });
-
-  const kExpectedDidFlushes = 10000;
-  for (let i = 0; i < kExpectedDidFlushes; i++) {
-    clientRemote.didFlush([]);
-  }
-
-  await clientRouter.$.flush();
-  assert_equals(actualDidFlushes, kExpectedDidFlushes);
-}, 'can use generated flush API of callbackrouter/receiver for synchronization');
-
 promise_test(async(t) => {
   const impl = new TargetImpl;
   const remote = impl.target.$.bindNewPipeAndPassRemote();
