@@ -107,7 +107,6 @@ source_set("ntp_internal") {
     "//components/keyed_service/core",
     "//components/metrics",
     "//components/ntp_tiles",
-    "//components/rappor",
     "//components/search_engines",
     "//components/strings",
     "//components/suggestions",

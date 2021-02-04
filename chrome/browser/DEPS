@@ -244,7 +244,6 @@ include_rules = [
   "+components/query_parser",
   "+components/query_tiles",
   "+components/quirks",
-  "+components/rappor",
   "+components/reading_list/core",
   "+components/reading_list/features",
   "+components/remote_cocoa/app_shim",

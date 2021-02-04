@@ -18,8 +18,8 @@ class WebState;
 namespace security_interstitials {
 
 // This class provides a concrete implementation for iOS to the
-// security_interstitials::MetricsHelper class. Together, they record UMA,
-// Rappor, and experience sampling metrics.
+// security_interstitials::MetricsHelper class. Together, they record UMA and
+// experience sampling metrics.
 class IOSBlockingPageMetricsHelper
     : public security_interstitials::MetricsHelper {
  public:

@@ -51,10 +51,6 @@ namespace network_time {
 class NetworkTimeTracker;
 }
 
-namespace rappor {
-class RapporServiceImpl;
-}
-
 namespace ukm {
 class UkmRecorder;
 }
@@ -124,9 +120,6 @@ class ApplicationContext {
 
   // Gets the VariationsService used by this application.
   virtual variations::VariationsService* GetVariationsService() = 0;
-
-  // Gets the RapporServiceImpl. May return null.
-  virtual rappor::RapporServiceImpl* GetRapporServiceImpl() = 0;
 
   // Gets the NetLog.
   virtual net::NetLog* GetNetLog() = 0;

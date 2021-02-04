@@ -47,7 +47,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/download/public/common/download_stats.h"
-#include "components/rappor/public/rappor_utils.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/bad_message.h"
@@ -8406,16 +8405,6 @@ void WebContentsImpl::RemoveReceiverSet(const std::string& interface_name) {
   auto it = receiver_sets_.find(interface_name);
   if (it != receiver_sets_.end())
     receiver_sets_.erase(it);
-}
-
-bool WebContentsImpl::AddDomainInfoToRapporSample(rappor::Sample* sample) {
-  OPTIONAL_TRACE_EVENT0("content",
-                        "WebContentsImpl::AddDomainInfoToRapporSample");
-  // Here we associate this metric to the main frame URL regardless of what
-  // caused it.
-  sample->SetStringField("Domain", ::rappor::GetDomainAndRegistrySampleFromGURL(
-                                       GetLastCommittedURL()));
-  return true;
 }
 
 void WebContentsImpl::ShowInsecureLocalhostWarningIfNeeded() {

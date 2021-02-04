@@ -300,7 +300,6 @@ source_set("chromeos") {
     "//components/printing/common:mojo_interfaces",
     "//components/proxy_config",
     "//components/quirks",
-    "//components/rappor",
     "//components/renderer_context_menu",
     "//components/reporting/util:status",
     "//components/reporting/util:task_runner_context",

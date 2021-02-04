@@ -131,7 +131,6 @@ test("components_unittests") {
     "//components/proxy_config:unit_tests",
     "//components/qr_code_generator:unit_tests",
     "//components/query_parser:unit_tests",
-    "//components/rappor:unit_tests",
     "//components/reading_list/core:unit_tests",
     "//components/reporting/encryption:unit_tests",
     "//components/reporting/storage:unit_tests",

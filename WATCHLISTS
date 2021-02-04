@@ -1301,7 +1301,6 @@
                   '|chromecast/browser/metrics/'\
                   '|components/metrics/'\
                   '|components/metrics_services_manager/'\
-                  '|components/rappor/'\
                   '|components/variations/'\
                   # Exclude XML files; in particular, histograms.xml.
                   '|tools/metrics/[^.]*([.](?!xml$).*)?$',

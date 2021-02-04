@@ -37,10 +37,6 @@ namespace content {
 class WebContents;
 }
 
-namespace rappor {
-class RapporServiceImpl;
-}
-
 namespace ui {
 class Event;
 }
@@ -223,12 +219,6 @@ class ContentSettingBubbleModel {
   // Cast this bubble into ContentSettingNotificationsBubbleModel if possible.
   virtual ContentSettingNotificationsBubbleModel* AsNotificationsBubbleModel();
 
-  // Sets the Rappor service used for testing.
-  void SetRapporServiceImplForTesting(
-      rappor::RapporServiceImpl* rappor_service) {
-    rappor_service_ = rappor_service;
-  }
-
  protected:
   // |web_contents| must outlive this.
   ContentSettingBubbleModel(Delegate* delegate,
@@ -281,15 +271,12 @@ class ContentSettingBubbleModel {
   void set_cancel_button_text(const base::string16& cancel_button_text) {
     bubble_content_.cancel_button_text = cancel_button_text;
   }
-  rappor::RapporServiceImpl* rappor_service() const { return rappor_service_; }
 
  private:
   content::WebContents* web_contents_;
   Owner* owner_;
   Delegate* delegate_;
   BubbleContent bubble_content_;
-  // The service used to record Rappor metrics. Can be set for testing.
-  rappor::RapporServiceImpl* rappor_service_;
 
   DISALLOW_COPY_AND_ASSIGN(ContentSettingBubbleModel);
 };

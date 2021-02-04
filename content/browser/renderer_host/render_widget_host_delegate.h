@@ -34,10 +34,6 @@ class Rect;
 class Size;
 }
 
-namespace rappor {
-class Sample;
-}
-
 namespace content {
 
 class BrowserAccessibilityManager;
@@ -286,11 +282,6 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // the focused WebContents.
   virtual void FocusOwningWebContents(
       RenderWidgetHostImpl* render_widget_host) {}
-
-  // Augment a Rappor sample with eTLD+1 context. The caller is still
-  // responsible for logging the sample to the RapporService. Returns false
-  // if the eTLD+1 is not known for |render_widget_host|.
-  virtual bool AddDomainInfoToRapporSample(rappor::Sample* sample);
 
   // Return this object cast to a WebContents, if it is one. If the object is
   // not a WebContents, returns nullptr.

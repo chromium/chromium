@@ -28,7 +28,6 @@
 #include "components/metrics/enabled_state_provider.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/prefs/pref_service.h"
-#include "components/rappor/rappor_service_impl.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/version_info/version_info.h"
@@ -230,13 +229,6 @@ void ChromeMetricsServicesManagerClient::OnCrosSettingsCreated() {
 const metrics::EnabledStateProvider&
 ChromeMetricsServicesManagerClient::GetEnabledStateProviderForTesting() {
   return *enabled_state_provider_;
-}
-
-std::unique_ptr<rappor::RapporServiceImpl>
-ChromeMetricsServicesManagerClient::CreateRapporServiceImpl() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return std::make_unique<rappor::RapporServiceImpl>(
-      local_state_, base::BindRepeating(&chrome::IsOffTheRecordSessionActive));
 }
 
 std::unique_ptr<variations::VariationsService>

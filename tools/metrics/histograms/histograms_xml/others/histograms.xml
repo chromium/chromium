@@ -12541,12 +12541,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Rappor.DailyEvent.IntervalType" enum="DailyEventIntervalType"
     expires_after="M85">
+  <obsolete>
+    Removed in M90
+  </obsolete>
   <owner>holte@chromium.org</owner>
   <summary>Counts how often daily interval events were fired.</summary>
 </histogram>
 
 <histogram name="Rappor.DiscardReason" enum="RapporDiscardReason"
     expires_after="M77">
+  <obsolete>
+    Removed in M90
+  </obsolete>
   <owner>holte@chromium.org</owner>
   <summary>
     For each Rappor log that is discarded, the reason that it was discarded.
@@ -12555,12 +12561,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Rappor.FailedUploadErrorCode" enum="NetErrorCodes"
     expires_after="M77">
+  <obsolete>
+    Removed in M90
+  </obsolete>
   <owner>holte@chromium.org</owner>
   <summary>Net error codes for failed Rappor uploads.</summary>
 </histogram>
 
 <histogram name="Rappor.LoadCohortResult" enum="RapporLoadResultType"
     expires_after="M77">
+  <obsolete>
+    Removed in M90
+  </obsolete>
   <owner>holte@chromium.org</owner>
   <summary>
     Success or errors encountered when loading Rappor cohort pref.
@@ -12569,6 +12581,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Rappor.LoadSecretResult" enum="RapporLoadResultType"
     expires_after="M77">
+  <obsolete>
+    Removed in M90
+  </obsolete>
   <owner>holte@chromium.org</owner>
   <summary>
     Success or errors encountered when loading Rappor secret pref.
@@ -12577,6 +12592,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Rappor.UploadResponseCode" enum="HttpResponseCode"
     expires_after="M77">
+  <obsolete>
+    Removed in M90
+  </obsolete>
   <owner>holte@chromium.org</owner>
   <summary>
     For each upload to the Rappor server, log the response received from the

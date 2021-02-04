@@ -19,7 +19,6 @@ source_set("security_interstitials") {
     "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/prefs",
-    "//components/rappor",
     "//components/resources",
     "//components/security_interstitials/core",
     "//ios/components/ui_util",

@@ -105,8 +105,6 @@
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "components/rappor/public/rappor_utils.h"
-#include "components/rappor/rappor_service_impl.h"
 #include "components/safe_browsing/core/safe_browsing_service_interface.h"
 #include "components/sessions/core/session_id_generator.h"
 #include "components/subresource_filter/content/browser/ruleset_service.h"
@@ -218,12 +216,6 @@ static constexpr base::TimeDelta kEndSessionTimeout =
 using content::BrowserThread;
 using content::ChildProcessSecurityPolicy;
 
-rappor::RapporService* GetBrowserRapporService() {
-  if (g_browser_process != nullptr)
-    return g_browser_process->rappor_service();
-  return nullptr;
-}
-
 BrowserProcessImpl::BrowserProcessImpl(StartupData* startup_data)
     : startup_data_(startup_data),
       browser_policy_connector_(startup_data->chrome_feature_list_creator()
@@ -255,8 +247,6 @@ void BrowserProcessImpl::Init() {
 #endif
 
   download_status_updater_ = std::make_unique<DownloadStatusUpdater>();
-
-  rappor::SetDefaultServiceAccessor(&GetBrowserRapporService);
 
 #if BUILDFLAG(ENABLE_PRINTING)
   // Must be created after the NotificationService.
@@ -654,11 +644,6 @@ BrowserProcessImpl::GetMetricsServicesManager() {
 metrics::MetricsService* BrowserProcessImpl::metrics_service() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetMetricsServicesManager()->GetMetricsService();
-}
-
-rappor::RapporServiceImpl* BrowserProcessImpl::rappor_service() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetMetricsServicesManager()->GetRapporServiceImpl();
 }
 
 SystemNetworkContextManager*

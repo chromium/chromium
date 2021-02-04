@@ -482,7 +482,6 @@ static_library("ui") {
     "//components/previews/core",
     "//components/proxy_config",
     "//components/query_parser",
-    "//components/rappor",
     "//components/reading_list/core",
     "//components/reading_list/features:flags",
     "//components/renderer_context_menu",

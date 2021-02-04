@@ -13,7 +13,6 @@
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/metrics/metrics_pref_names.h"
-#include "components/rappor/rappor_pref_names.h"
 #include "components/reading_list/core/reading_list_pref_names.h"
 #include "components/ukm/ukm_pref_names.h"
 
@@ -143,12 +142,6 @@ const char* const kPersistentPrefNames[] = {
     // should be written to the regular profile when changed in incognito mode.
     prefs::kUseCustomChromeFrame,
 #endif
-
-    // Rappor preferences are not used in incognito mode, but they are written
-    // in startup if they don't exist. So if the startup would be in incognito,
-    // they need to be persisted.
-    rappor::prefs::kRapporCohortSeed,
-    rappor::prefs::kRapporSecret,
 
     // Reading list preferences are common between incognito and regular mode.
     reading_list::prefs::kReadingListHasUnseenEntries,

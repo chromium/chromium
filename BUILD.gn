@@ -718,7 +718,6 @@ group("gn_all") {
       "//chrome/tools/convert_dict",
       "//components/constrained_window:unit_tests",
       "//components/metrics:serialization",
-      "//components/rappor:unit_tests",
       "//components/services/filesystem:filesystem_service_unittests",
       "//components/sessions:unit_tests",
       "//media/blink:media_blink_unittests",

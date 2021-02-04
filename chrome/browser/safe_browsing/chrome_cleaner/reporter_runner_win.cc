@@ -98,7 +98,7 @@ const char kEngineErrorCodeMetricName[] = "SoftwareReporter.EngineErrorCode";
 // SoftwareReporterLogsUploadResult enum defined in the histograms.xml file.
 const int kSwReporterLogsUploadResultMax = 30;
 
-// Reports metrics about the software reporter via UMA (and sometimes Rappor).
+// Reports metrics about the software reporter via UMA.
 class UMAHistogramReporter {
  public:
   UMAHistogramReporter() : UMAHistogramReporter(std::string()) {}
@@ -171,7 +171,7 @@ class UMAHistogramReporter {
     reporter_key.DeleteValue(chrome_cleaner::kEngineErrorCodeValueName);
   }
 
-  // Reports UwS found by the software reporter tool via UMA and RAPPOR.
+  // Reports UwS found by the software reporter tool via UMA.
   void ReportFoundUwS() const {
     base::win::RegKey reporter_key;
     std::vector<base::string16> found_uws_strings;

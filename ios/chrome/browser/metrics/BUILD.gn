@@ -63,7 +63,6 @@ source_set("metrics") {
     "//components/omnibox/browser",
     "//components/prefs",
     "//components/previous_session_info",
-    "//components/rappor",
     "//components/signin/core/browser",
     "//components/sync",
     "//components/sync_device_info",

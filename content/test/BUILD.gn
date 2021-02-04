@@ -2203,7 +2203,6 @@ test("content_unittests") {
     "//components/network_session_configurator/common",
     "//components/offline_pages/buildflags",
     "//components/payments/mojom",
-    "//components/rappor:test_support",
     "//components/services/quarantine/public/mojom",
     "//components/services/storage",
     "//components/services/storage:test_support",

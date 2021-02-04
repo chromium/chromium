@@ -28,7 +28,6 @@ include_rules = [
   "+components/offline_pages/buildflags/buildflags.h",
   "+components/offline_pages/core/request_header",
   "+components/payments",
-  "+components/rappor/public",
   "+components/services/heap_profiling/public",
   "+components/system_media_controls",
   "+components/tracing",

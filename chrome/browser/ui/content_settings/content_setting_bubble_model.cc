@@ -370,7 +370,6 @@ void ContentSettingMixedScriptBubbleModel::OnLearnMoreClicked() {
 }
 
 void ContentSettingMixedScriptBubbleModel::OnCustomLinkClicked() {
-  DCHECK(rappor_service());
   MixedContentSettingsTabHelper* mixed_content_settings =
       MixedContentSettingsTabHelper::FromWebContents(web_contents());
   if (mixed_content_settings) {
@@ -1677,10 +1676,7 @@ ContentSettingBubbleModel::CreateContentSettingBubbleModel(
 
 ContentSettingBubbleModel::ContentSettingBubbleModel(Delegate* delegate,
                                                      WebContents* web_contents)
-    : web_contents_(web_contents),
-      owner_(nullptr),
-      delegate_(delegate),
-      rappor_service_(g_browser_process->rappor_service()) {
+    : web_contents_(web_contents), owner_(nullptr), delegate_(delegate) {
   DCHECK(web_contents_);
 }
 

@@ -101,10 +101,6 @@ class PrintJobManager;
 class PrintPreviewDialogController;
 }
 
-namespace rappor {
-class RapporServiceImpl;
-}
-
 namespace resource_coordinator {
 class ResourceCoordinatorParts;
 class TabManager;
@@ -134,7 +130,6 @@ class BrowserProcess {
 
   // Services: any of these getters may return NULL
   virtual metrics::MetricsService* metrics_service() = 0;
-  virtual rappor::RapporServiceImpl* rappor_service() = 0;
   virtual ProfileManager* profile_manager() = 0;
   virtual PrefService* local_state() = 0;
   virtual scoped_refptr<network::SharedURLLoaderFactory>

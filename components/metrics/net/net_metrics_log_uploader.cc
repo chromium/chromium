@@ -40,9 +40,6 @@ const base::Feature kHttpRetryFeature{"UMAHttpRetry",
 // ablate a clients upload of all logs that use |metrics::ReportingService|
 // to upload logs. This include |metrics::MetricsReportingService| for uploading
 // UMA logs. |ukm::UKMReportionService| for uploading UKM logs.
-// Rappor service use |rappor::LogUploader| which is not a
-// |metrics::ReportingService| so, it won't be ablated.
-// similar frequency.
 // To restrict the study to UMA or UKM, set the "service-affected" param.
 const base::Feature kAblateMetricsLogUploadFeature{
     "AblateMetricsLogUpload", base::FEATURE_DISABLED_BY_DEFAULT};

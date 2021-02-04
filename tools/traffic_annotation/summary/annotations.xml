@@ -269,7 +269,6 @@ Refer to README.md for content description and update process.
  <item id="quic_chromium_incoming_session" added_in_milestone="66" hash_code="87635401" type="0" content_hash_code="78573093" os_list="linux,windows" file_path="net/quic/quic_chromium_client_session.cc"/>
  <item id="quic_chromium_packet_writer" added_in_milestone="66" hash_code="20153177" type="0" content_hash_code="29657765" os_list="linux,windows" file_path="net/quic/quic_chromium_packet_writer.cc"/>
  <item id="ranker_url_fetcher" added_in_milestone="62" hash_code="95682324" type="0" content_hash_code="45958626" os_list="linux,windows" file_path="components/assist_ranker/ranker_url_fetcher.cc"/>
- <item id="rappor_report" added_in_milestone="62" hash_code="44606780" type="0" content_hash_code="111287826" os_list="linux,windows" file_path="components/rappor/log_uploader.cc"/>
  <item id="receive_messages_express" added_in_milestone="85" hash_code="29506140" type="0" deprecated="2020-09-21" content_hash_code="38581365" file_path=""/>
  <item id="refresh_token_annotation_request" added_in_milestone="62" hash_code="7433837" type="1" second_id="29188932" deprecated="2018-01-17" content_hash_code="137103383" file_path=""/>
  <item id="remote_copy_message_handler" added_in_milestone="80" hash_code="80255301" type="0" content_hash_code="117673331" os_list="linux,windows" file_path="chrome/browser/sharing/shared_clipboard/remote_copy_message_handler.cc"/>

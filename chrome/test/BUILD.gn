@@ -233,7 +233,6 @@ static_library("test_support") {
     "//components/performance_manager/test_support",
     "//components/permissions:test_support",
     "//components/prefs:test_support",
-    "//components/rappor:test_support",
     "//components/safe_browsing/core/db:v4_test_util",
     "//components/search_engines:test_support",
     "//components/sessions:test_support",

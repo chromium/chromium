@@ -4,24 +4,18 @@
 
 package org.chromium.chrome.browser.customtabs;
 
-import android.text.TextUtils;
-
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
-import org.chromium.chrome.browser.gsa.GSAState;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.rappor.RapporServiceBridge;
 import org.chromium.chrome.browser.webapps.WebappCustomTabTimeSpentLogger;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import javax.inject.Inject;
 
@@ -98,19 +92,8 @@ public class CustomTabActivityLifecycleUmaTracker implements PauseResumeWithNati
 
     @Override
     public void onFinishNativeInitialization() {
-        String clientName =
-                mConnection.getClientPackageNameForSession(mIntentDataProvider.getSession());
-        if (TextUtils.isEmpty(clientName)) clientName = mIntentDataProvider.getClientPackageName();
-        final String packageName = clientName;
-        if (TextUtils.isEmpty(packageName) || packageName.contains(mActivity.getPackageName())) {
-            return;
+        if (mWebappTimeSpentLogger != null) {
+            mWebappTimeSpentLogger.onPause();
         }
-
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
-            RapporServiceBridge.sampleString("CustomTabs.ServiceClient.PackageName", packageName);
-            if (GSAState.isGsaPackageName(packageName)) return;
-            RapporServiceBridge.sampleString(
-                    "CustomTabs.ServiceClient.PackageNameThirdParty", packageName);
-        });
     }
 }

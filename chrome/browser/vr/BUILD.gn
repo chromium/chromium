@@ -259,7 +259,6 @@ component("vr_common") {
     "//chrome/common:constants",
     "//components/omnibox/browser",
     "//components/omnibox/browser",
-    "//components/rappor/public:public",
     "//components/ukm/content",
     "//content/public/browser",
     "//device/base",
@@ -386,7 +385,6 @@ component("vr_base") {
   deps = [
     "//base",
     "//chrome/app:generated_resources",
-    "//components/rappor:rappor",
     "//components/security_state/core",
     "//components/ukm/content",
     "//components/url_formatter",

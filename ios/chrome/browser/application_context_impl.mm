@@ -364,11 +364,6 @@ variations::VariationsService* ApplicationContextImpl::GetVariationsService() {
   return GetMetricsServicesManager()->GetVariationsService();
 }
 
-rappor::RapporServiceImpl* ApplicationContextImpl::GetRapporServiceImpl() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  return GetMetricsServicesManager()->GetRapporServiceImpl();
-}
-
 net::NetLog* ApplicationContextImpl::GetNetLog() {
   DCHECK(thread_checker_.CalledOnValidThread());
   return net::NetLog::Get();

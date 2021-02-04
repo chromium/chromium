@@ -81,7 +81,6 @@ class TestingBrowserProcess : public BrowserProcess {
   metrics_services_manager::MetricsServicesManager* GetMetricsServicesManager()
       override;
   metrics::MetricsService* metrics_service() override;
-  rappor::RapporServiceImpl* rappor_service() override;
   SystemNetworkContextManager* system_network_context_manager() override;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory()
       override;
@@ -165,7 +164,6 @@ class TestingBrowserProcess : public BrowserProcess {
       std::unique_ptr<NotificationPlatformBridge> notification_platform_bridge);
   void SetSystemNotificationHelper(
       std::unique_ptr<SystemNotificationHelper> system_notification_helper);
-  void SetRapporServiceImpl(rappor::RapporServiceImpl* rappor_service);
   void SetShuttingDown(bool is_shutting_down);
   void ShutdownBrowserPolicyConnector();
   TestingBrowserProcessPlatformPart* GetTestPlatformPart();
@@ -214,7 +212,6 @@ class TestingBrowserProcess : public BrowserProcess {
   // The following objects are not owned by TestingBrowserProcess:
   PrefService* local_state_ = nullptr;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
-  rappor::RapporServiceImpl* rappor_service_ = nullptr;
 
   std::unique_ptr<TestingBrowserProcessPlatformPart> platform_part_;
   std::unique_ptr<network::TestNetworkConnectionTracker>
