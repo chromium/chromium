@@ -129,12 +129,12 @@ class MediaCodecUtil {
      * @param name The codec name, e.g. from MediaCodecInfo.getName().
      */
     public static boolean isSoftwareCodec(String name) {
-        // This is structured identically to libstagefright/OMXCodec.cpp .
+        // This is taken from libstagefright/OMXCodec.cpp for pre codec2.
         if (name.startsWith("OMX.google.")) return true;
+        // Codec2 names sw decoders this way. See hardware/google/av/codec2/vndk/C2Store.cpp .
+        if (name.startsWith("c2.google.")) return true;
 
-        if (name.startsWith("OMX.")) return false;
-
-        return true;
+        return false;
     }
 
     /**
