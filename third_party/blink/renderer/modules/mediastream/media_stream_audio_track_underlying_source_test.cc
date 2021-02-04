@@ -131,8 +131,9 @@ TEST_F(MediaStreamAudioTrackUnderlyingSourceTest,
   EXPECT_FALSE(source->Track());
 }
 
+// TODO(crbug.com/1174118): Fix and re-enable.
 TEST_F(MediaStreamAudioTrackUnderlyingSourceTest,
-       DropOldFramesWhenQueueIsFull) {
+       DISABLED_DropOldFramesWhenQueueIsFull) {
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
   const wtf_size_t buffer_size = 5;
