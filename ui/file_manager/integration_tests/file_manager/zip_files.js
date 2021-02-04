@@ -117,6 +117,29 @@ testcase.zipFileOpenDownloads = async () => {
 };
 
 /**
+ * Tests that Files app's zip implementation notify FileTasks when mounted.
+ */
+testcase.zipNotifyFileTasks = async () => {
+  await sendTestMessage({
+    name: 'expectFileTask',
+    fileNames: [ENTRIES.zipArchive.targetPath],
+    openType: 'launch'
+  });
+
+  // Open Files app on Downloads containing a zip file.
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.zipArchive], []);
+
+  // Open the zip file.
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil('openFile', appId, ['archive.zip']),
+      'openFile failed');
+
+  // Wait for the zip archive to mount.
+  await remoteCall.waitForElement(appId, `[scan-completed="archive.zip"]`);
+};
+
+/**
  * Tests zip file, with absolute paths, open (aka unzip) from Downloads.
  */
 testcase.zipFileOpenDownloadsWithAbsolutePaths = async () => {

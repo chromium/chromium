@@ -379,6 +379,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesAppBrowserTest,
     ::testing::Values(ZipCase("zipFileOpenDownloads").InGuestMode(),
                       ZipCase("zipFileOpenDownloads"),
+                      ZipCase("zipNotifyFileTasks").ZipNoNaCl(),
                       ZipCase("zipFileOpenDownloadsShiftJIS"),
                       ZipCase("zipFileOpenDownloadsMacOs"),
                       ZipCase("zipFileOpenDownloadsWithAbsolutePaths"),
