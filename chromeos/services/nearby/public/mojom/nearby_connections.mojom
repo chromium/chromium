@@ -339,6 +339,14 @@ interface NearbyConnections {
 
   // Sends a request to initiate connection bandwidth upgrade.
   //
+  // Important note: Bandwidth upgrades may expose stable identifiers,
+  // which are only safe to expose after the caller has verified
+  // the sender's identity. If the caller is already performing
+  // high-visibility advertising (and thus already leaking the device
+  // name), then calling this method introduces no further privacy
+  // leaks -- in fact, the caller should consider instead requesting
+  // to auto-upgrade bandwidth when invoking StartAdvertising().
+  //
   // service_id  - Service ID used to discover the endpoint.
   // endpoint_id - The identifier for the remote endpoint which will be
   //               switching to a higher connection data rate and possibly

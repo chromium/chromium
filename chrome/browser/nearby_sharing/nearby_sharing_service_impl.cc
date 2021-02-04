@@ -2032,6 +2032,10 @@ void NearbySharingServiceImpl::OnPayloadPathsRegistered(
 
   base::Optional<std::string> endpoint_id = info->endpoint_id();
   if (endpoint_id) {
+    // Upgrade bandwidth regardless of advertising visibility because either
+    // the system or the user has verified the sender's identity; the
+    // stable identifiers potentially exposed by performing a bandwidth
+    // upgrade are no longer a concern.
     nearby_connections_manager_->UpgradeBandwidth(*endpoint_id);
   } else {
     NS_LOG(WARNING) << __func__
@@ -2637,6 +2641,10 @@ void NearbySharingServiceImpl::OnIncomingConnectionKeyVerificationDone(
       NS_LOG(VERBOSE) << __func__
                       << ": Paired key handshake succeeded for target - "
                       << share_target.id;
+      // Upgrade bandwidth regardless of advertising visibility because the
+      // sender's identity has been confirmed; the stable identifiers
+      // potentially exposed by performing a bandwidth upgrade are no longer a
+      // concern.
       nearby_connections_manager_->UpgradeBandwidth(*info->endpoint_id());
       ReceiveIntroduction(share_target, /*four_digit_token=*/base::nullopt);
       break;
@@ -2647,6 +2655,9 @@ void NearbySharingServiceImpl::OnIncomingConnectionKeyVerificationDone(
                          "receiving connection from target - "
                       << share_target.id;
       if (advertising_power_level_ == PowerLevel::kHighPower)
+        // Upgrade bandwidth if advertising at high-visibility. Bandwidth
+        // upgrades may expose stable identifiers, but this isn't a concern
+        // here because high-visibility already leaks the device name.
         nearby_connections_manager_->UpgradeBandwidth(*info->endpoint_id());
 
       if (four_digit_token)

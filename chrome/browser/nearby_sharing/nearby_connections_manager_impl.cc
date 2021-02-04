@@ -126,12 +126,21 @@ void NearbyConnectionsManagerImpl::StartAdvertising(
   connection_lifecycle_listeners_.Add(
       this, lifecycle_listener.InitWithNewPipeAndPassReceiver());
 
+  // Only auto-upgrade bandwidth if advertising at high-visibility.
+  // This acts as a privacy safeguard when advertising in the background.
+  // Bandwidth upgrades may expose stable identifiers, and so they're
+  // only safe to expose after we've verified the sender's identity.
+  // Once we have verified their identity, we will manually trigger
+  // a bandwidth upgrade. This isn't a concern in the foreground
+  // because high-visibility already leaks the device name.
+  bool auto_upgrade_bandwidth = is_high_power;
+
   incoming_connection_listener_ = listener;
   nearby_connections_->StartAdvertising(
       kServiceId, endpoint_info,
       AdvertisingOptions::New(
           kStrategy, std::move(allowed_mediums),
-          /*auto_upgrade_bandwidth=*/is_high_power,
+          auto_upgrade_bandwidth,
           /*enforce_topology_constraints=*/true,
           /*enable_bluetooth_listening=*/use_ble,
           /*fast_advertisement_service_uuid=*/
