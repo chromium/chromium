@@ -125,6 +125,9 @@ InspectorContrast::InspectorContrast(Document* document) {
 }
 
 void InspectorContrast::CollectNodesAndBuildRTreeIfNeeded() {
+  TRACE_EVENT0("devtools.contrast",
+               "InspectorContrast::CollectNodesAndBuildRTreeIfNeeded");
+
   if (rtree_built_)
     return;
 
@@ -158,6 +161,8 @@ void InspectorContrast::CollectNodesAndBuildRTreeIfNeeded() {
 
 std::vector<ContrastInfo> InspectorContrast::GetElementsWithContrastIssues(
     size_t max_elements = 0) {
+  TRACE_EVENT0("devtools.contrast",
+               "InspectorContrast::GetElementsWithContrastIssues");
   CollectNodesAndBuildRTreeIfNeeded();
   std::vector<ContrastInfo> result;
   for (Node* node : elements_) {
@@ -190,6 +195,8 @@ static bool IsLargeFont(const TextInfo& text_info) {
 }
 
 ContrastInfo InspectorContrast::GetContrast(Element* top_element) {
+  TRACE_EVENT0("devtools.contrast", "InspectorContrast::GetContrast");
+
   ContrastInfo result;
   const LayoutObject* layout_object = top_element->GetLayoutObject();
   const CSSValue* text_color_value = ComputedStyleUtils::ComputedPropertyValue(

@@ -65,6 +65,7 @@
   X("content_capture")                                                   \
   X("device")                                                            \
   X("devtools")                                                          \
+  X("devtools.contrast")                                                 \
   X("devtools.timeline")                                                 \
   X("disk_cache")                                                        \
   X("download")                                                          \
