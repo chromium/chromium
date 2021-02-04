@@ -138,13 +138,14 @@ using SlotSpan = SlotSpanMetadata<ThreadSafe>;
 
 const size_t kTestAllocSize = 16;
 #if !DCHECK_IS_ON()
-const size_t kPointerOffset = kInSlotRefCountBufferSize;
+const size_t kPointerOffset = kPartitionRefCountOffsetAdjustment;
 const size_t kExtraAllocSize = kInSlotRefCountBufferSize;
 #else
-const size_t kPointerOffset = kCookieSize + kInSlotRefCountBufferSize;
+const size_t kPointerOffset = kCookieSize + kPartitionRefCountOffsetAdjustment;
 const size_t kExtraAllocSize = kCookieSize * 2 + kInSlotRefCountBufferSize;
 #endif
-const size_t kRealAllocSize = kTestAllocSize + kExtraAllocSize;
+const size_t kRealAllocSize =
+    bits::AlignUp(kTestAllocSize + kExtraAllocSize, kAlignment);
 
 const char* type_name = nullptr;
 
@@ -697,22 +698,32 @@ TEST_F(PartitionAllocTest, Alloc) {
   EXPECT_TRUE(ptr);
   allocator.root()->Free(ptr);
 
-  ptr = allocator.root()->Alloc(1, type_name);
+  // To make both alloc(x + 1) and alloc(x + kSmallestBucket) to allocate from
+  // the same bucket, bits::AlignUp(1 + x + kExtraAllocSize, base::kAlignment)
+  // == bits::AlignUp(kSmallestBucket + x + kExtraAllocSize, base::kAlignment),
+  // because slot_size is multiples of base::kAlignment.
+  // So (x + kExtraAllocSize) must be multiples of base::kAlignment.
+  // x = bits::AlignUp(kExtraAllocSize, base::kAlignment) - kExtraAllocSize;
+  size_t base_size =
+      bits::AlignUp(kExtraAllocSize, base::kAlignment) - kExtraAllocSize;
+  ptr = allocator.root()->Alloc(base_size + 1, type_name);
   EXPECT_TRUE(ptr);
   void* orig_ptr = ptr;
   char* char_ptr = static_cast<char*>(ptr);
   *char_ptr = 'A';
 
   // Change the size of the realloc, remaining inside the same bucket.
-  void* new_ptr = allocator.root()->Realloc(ptr, 2, type_name);
+  void* new_ptr = allocator.root()->Realloc(ptr, base_size + 2, type_name);
   EXPECT_EQ(ptr, new_ptr);
-  new_ptr = allocator.root()->Realloc(ptr, 1, type_name);
+  new_ptr = allocator.root()->Realloc(ptr, base_size + 1, type_name);
   EXPECT_EQ(ptr, new_ptr);
-  new_ptr = allocator.root()->Realloc(ptr, kSmallestBucket, type_name);
+  new_ptr =
+      allocator.root()->Realloc(ptr, base_size + kSmallestBucket, type_name);
   EXPECT_EQ(ptr, new_ptr);
 
   // Change the size of the realloc, switching buckets.
-  new_ptr = allocator.root()->Realloc(ptr, kSmallestBucket + 1, type_name);
+  new_ptr = allocator.root()->Realloc(ptr, base_size + kSmallestBucket + 1,
+                                      type_name);
   EXPECT_NE(new_ptr, ptr);
   // Check that the realloc copied correctly.
   char* new_char_ptr = static_cast<char*>(new_ptr);
@@ -728,13 +739,13 @@ TEST_F(PartitionAllocTest, Alloc) {
   // The realloc moved. To check that the old allocation was freed, we can
   // do an alloc of the old allocation size and check that the old allocation
   // address is at the head of the freelist and reused.
-  void* reused_ptr = allocator.root()->Alloc(1, type_name);
+  void* reused_ptr = allocator.root()->Alloc(base_size + 1, type_name);
   EXPECT_EQ(reused_ptr, orig_ptr);
   allocator.root()->Free(reused_ptr);
 
   // Downsize the realloc.
   ptr = new_ptr;
-  new_ptr = allocator.root()->Realloc(ptr, 1, type_name);
+  new_ptr = allocator.root()->Realloc(ptr, base_size + 1, type_name);
   EXPECT_EQ(new_ptr, orig_ptr);
   new_char_ptr = static_cast<char*>(new_ptr);
   EXPECT_EQ(*new_char_ptr, 'B');
@@ -762,7 +773,7 @@ TEST_F(PartitionAllocTest, Alloc) {
 
   // Downsize the realloc to inside the partition.
   ptr = new_ptr;
-  new_ptr = allocator.root()->Realloc(ptr, 1, type_name);
+  new_ptr = allocator.root()->Realloc(ptr, base_size + 1, type_name);
   EXPECT_NE(new_ptr, ptr);
   EXPECT_EQ(new_ptr, orig_ptr);
   new_char_ptr = static_cast<char*>(new_ptr);
@@ -2653,9 +2664,23 @@ TEST_F(PartitionAllocTest, FundamentalAlignment) {
     EXPECT_EQ(reinterpret_cast<uintptr_t>(ptr3) % fundamental_alignment,
               static_cast<uintptr_t>(0));
 
+#if BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
+    // The capacity(C) is slot size - kExtraAllocSize.
+    // Since slot size is multiples of base::kAlignment,
+    // C % kAlignment == (slot_size - kExtraAllocSize) % kAlignment.
+    // C % kAlignment == (-kExtraAllocSize) % kAlignment.
+    // Since kCookieSize * 2 is multiples of kAlignment,
+    // C % kAlignment == (-kInSlotRefCountBufferSize) % kAlignment
+    // == (kAlignment - kInSlotRefCountBufferSize) % kAlignment.
+    EXPECT_EQ(allocator.root()->AllocationCapacityFromPtr(ptr) %
+                  fundamental_alignment,
+              static_cast<uintptr_t>(fundamental_alignment -
+                                     kInSlotRefCountBufferSize));
+#else
     EXPECT_EQ(allocator.root()->AllocationCapacityFromPtr(ptr) %
                   fundamental_alignment,
               static_cast<uintptr_t>(0));
+#endif
 
     allocator.root()->Free(ptr);
     allocator.root()->Free(ptr2);

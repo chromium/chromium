@@ -803,7 +803,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFromBucket(
 
     *usable_size = slot_span->GetUsableSize(this);
   }
-
+  PA_DCHECK(slot_span->GetUtilizedSlotSize() <= slot_span->bucket->slot_size);
   return slot_start;
 }
 
@@ -1274,8 +1274,27 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   //   to save raw_size, i.e. only for large allocations. For small allocations,
   //   we have no other choice than putting the cookie at the very end of the
   //   slot, thus creating the "empty" space.
+  //
+  // If BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION) is true, Layout inside the
+  // slot:
+  //  |[cookie]|...data...|[empty]|[cookie]|[align]|[refcnt]|[unused]|
+  //           <---(a)---->
+  //           <-------(b)-------->
+  //  <--(c)--->                  <---(c)-->   +   <--(c)--->
+  //  <--(d)-------------->   +   <---(d)-->   +   <--(d)--->
+  //  <---------------------(e)----------------------------->
+  //  <-------------------------(f)---------------------------------->
+  //
+  // [refcnt] is put just after the object instead of the end of the slot. This
+  // is important to keep the system pages at the end of the slot empty and thus
+  // decommittable.
+  //
+  // - The size is larger than or equal to utilized_slot_size => the situation
+  // is the same when BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION) is not set.
+  // - refcnt needs to be aligned with alignof(refcnt).
 
-  // The value given to the application is just after the ref-count and cookie.
+  // The value given to the application is just after the ref-count and cookie,
+  // or the cookie (BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION) is true).
   void* ret = AdjustPointerForExtrasAdd(slot_start);
 
 #if DCHECK_IS_ON()

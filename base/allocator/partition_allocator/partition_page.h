@@ -19,6 +19,10 @@
 #include "base/check_op.h"
 #include "base/thread_annotations.h"
 
+#if BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
+#include "base/allocator/partition_allocator/partition_ref_count.h"
+#endif
+
 namespace base {
 namespace internal {
 
@@ -131,7 +135,11 @@ struct __attribute__((packed)) SlotSpanMetadata {
     if (LIKELY(!CanStoreRawSize())) {
       return bucket->slot_size;
     }
+#if BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
+    return bits::AlignUp(GetRawSize(), alignof(PartitionRefCount));
+#else
     return GetRawSize();
+#endif
   }
 
   // Returns the size available to the app. It can be equal or higher than the

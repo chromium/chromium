@@ -616,12 +616,40 @@ void* PartitionRoot<thread_safe>::ReallocFlags(int flags,
     // determine it is a win.
     if (AllocationCapacityFromRequestedSize(new_size) ==
         AllocationCapacityFromPtr(ptr)) {
-      // Trying to allocate |new_size| would use the same amount of underlying
-      // memory as we're already using, so re-use the allocation after updating
-      // statistics (and cookies, if present).
+#if BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
+      void* slot_start = AdjustPointerForExtrasSubtract(ptr);
+      internal::PartitionRefCount* old_ref_count =
+          internal::PartitionRefCountPointer(slot_start);
+#endif  // BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
+      // Trying to allocate |new_size| would use the same amount of
+      // underlying memory as we're already using, so re-use the allocation
+      // after updating statistics (and cookies, if present).
       if (slot_span->CanStoreRawSize()) {
         size_t new_raw_size = AdjustSizeForExtrasAdd(new_size);
         slot_span->SetRawSize(new_raw_size);
+#if BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
+        // SetRawSize() makes PartitionRefCountPointer change its result,
+        // because SetRawSize() changes the result of GetUtilizedSlotSize, and
+        // PartitionRefCountPointer depends on GetUtilizedSlotSize.
+        internal::PartitionRefCount* new_ref_count =
+            internal::PartitionRefCountPointer(slot_start);
+        if (allow_ref_count && new_ref_count != old_ref_count) {
+#if DCHECK_IS_ON()
+          // new_ref_count must not overlap old_ref_count.
+          const char* new_ref_count_ptr =
+              reinterpret_cast<const char*>(new_ref_count);
+          const char* old_ref_count_ptr =
+              reinterpret_cast<const char*>(old_ref_count);
+          PA_DCHECK(new_ref_count_ptr + sizeof(internal::PartitionRefCount) <=
+                        old_ref_count_ptr ||
+                    new_ref_count_ptr >=
+                        old_ref_count_ptr +
+                            sizeof(internal::PartitionRefCount));
+#endif
+          new (new_ref_count)
+              internal::PartitionRefCount(std::move(*old_ref_count));
+        }
+#endif  // BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
 #if DCHECK_IS_ON()
         // Write a new trailing cookie only when it is possible to keep track
         // raw size (otherwise we wouldn't know where to look for it later).

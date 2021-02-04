@@ -73,8 +73,10 @@ declare_args() {
 
   # Set to true to use BackupRefPtr as the implementation of CheckedPtr.
   # Optionally can be controlled (partially disabled) at run-time.
+  # Optionally can place ref count at the end of each allocation.
   use_backup_ref_ptr = false
   enable_runtime_backup_ref_ptr_control = false
+  is_ref_count_at_end_of_allocation = false
 }
 
 # Mutex priority inheritance is disabled by default due to security
@@ -89,6 +91,12 @@ assert(!enable_mutex_priority_inheritance || is_chromecast,
 # is true.
 assert(use_backup_ref_ptr || !enable_runtime_backup_ref_ptr_control,
        "Can't control BackupRefPtr at run-time if it isn't enabled at all")
+
+# is_ref_count_at_end_of_allocation can only be used if use_backup_ref_ptr
+# is true.
+assert(
+    use_backup_ref_ptr || !is_ref_count_at_end_of_allocation,
+    "Can't place ref count at the end of each allocation if BackupRefPtr isn't enabled at all")
 
 # Determines whether libevent should be dep.
 dep_libevent =
@@ -1831,6 +1839,7 @@ component("base") {
         "allocator/partition_allocator/partition_oom.h",
         "allocator/partition_allocator/partition_page.cc",
         "allocator/partition_allocator/partition_page.h",
+        "allocator/partition_allocator/partition_ref_count.cc",
         "allocator/partition_allocator/partition_ref_count.h",
         "allocator/partition_allocator/partition_root.cc",
         "allocator/partition_allocator/partition_root.h",
@@ -2361,6 +2370,8 @@ should_use_backup_ref_ptr =
     use_backup_ref_ptr && use_partition_alloc && !is_nacl
 should_enable_runtime_backup_ref_ptr_control =
     enable_runtime_backup_ref_ptr_control && use_partition_alloc && !is_nacl
+should_place_ref_count_at_end_of_allocation =
+    is_ref_count_at_end_of_allocation && use_partition_alloc && !is_nacl
 
 buildflag_header("partition_alloc_buildflags") {
   header = "partition_alloc_buildflags.h"
@@ -2370,6 +2381,7 @@ buildflag_header("partition_alloc_buildflags") {
     "USE_PARTITION_ALLOC=$use_partition_alloc",
     "USE_BACKUP_REF_PTR=$should_use_backup_ref_ptr",
     "ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL=$should_enable_runtime_backup_ref_ptr_control",
+    "REF_COUNT_AT_END_OF_ALLOCATION=$should_place_ref_count_at_end_of_allocation",
   ]
 }
 
