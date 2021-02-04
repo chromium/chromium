@@ -45,8 +45,8 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   // PaintManager::Client
   void OnPaint(const std::vector<gfx::Rect>& paint_rects,
-               std::vector<PaintReadyRect>* ready,
-               std::vector<gfx::Rect>* pending) override;
+               std::vector<PaintReadyRect>& ready,
+               std::vector<gfx::Rect>& pending) override;
 
  protected:
   struct BackgroundPart {
@@ -170,12 +170,12 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Paints the given invalid area of the plugin to the given graphics device.
   // PaintManager::Client::OnPaint() should be its only caller.
   void DoPaint(const std::vector<gfx::Rect>& paint_rects,
-               std::vector<PaintReadyRect>* ready,
-               std::vector<gfx::Rect>* pending);
+               std::vector<PaintReadyRect>& ready,
+               std::vector<gfx::Rect>& pending);
 
   // The preparation when painting on the image data buffer for the first
   // time.
-  void PrepareForFirstPaint(std::vector<PaintReadyRect>* ready);
+  void PrepareForFirstPaint(std::vector<PaintReadyRect>& ready);
 
   // Callback to clear deferred invalidates after painting finishes.
   void ClearDeferredInvalidates(int32_t /*unused_but_required*/);

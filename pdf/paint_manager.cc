@@ -214,7 +214,7 @@ void PaintManager::DoPaint() {
   }
 
   PaintAggregator::PaintUpdate update = aggregator_.GetPendingUpdate();
-  client_->OnPaint(update.paint_rects, &ready_rects, &pending_rects);
+  client_->OnPaint(update.paint_rects, ready_rects, pending_rects);
 
   if (ready_rects.empty() && pending_rects.empty())
     return;  // Nothing was painted, don't schedule a flush.

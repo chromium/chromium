@@ -69,8 +69,8 @@ class PaintManager {
     //
     // Calling Invalidate/Scroll is not allowed while inside an OnPaint
     virtual void OnPaint(const std::vector<gfx::Rect>& paint_rects,
-                         std::vector<PaintReadyRect>* ready,
-                         std::vector<gfx::Rect>* pending) = 0;
+                         std::vector<PaintReadyRect>& ready,
+                         std::vector<gfx::Rect>& pending) = 0;
 
     // Schedules work to be executed on a main thread after a specific delay.
     // The `result` parameter will be passed as the argument to the `callback`.

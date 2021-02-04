@@ -86,8 +86,8 @@ void PdfViewPluginBase::HandleMessage(const base::Value& message) {
 }
 
 void PdfViewPluginBase::OnPaint(const std::vector<gfx::Rect>& paint_rects,
-                                std::vector<PaintReadyRect>* ready,
-                                std::vector<gfx::Rect>* pending) {
+                                std::vector<PaintReadyRect>& ready,
+                                std::vector<gfx::Rect>& pending) {
   base::AutoReset<bool> auto_reset_in_paint(&in_paint_, true);
   DoPaint(paint_rects, ready, pending);
 }
@@ -238,8 +238,8 @@ void PdfViewPluginBase::HandleSetTwoUpViewMessage(const base::Value& message) {
 }
 
 void PdfViewPluginBase::DoPaint(const std::vector<gfx::Rect>& paint_rects,
-                                std::vector<PaintReadyRect>* ready,
-                                std::vector<gfx::Rect>* pending) {
+                                std::vector<PaintReadyRect>& ready,
+                                std::vector<gfx::Rect>& pending) {
   if (image_data_.drawsNothing()) {
     DCHECK(plugin_size_.IsEmpty());
     return;
@@ -269,11 +269,11 @@ void PdfViewPluginBase::DoPaint(const std::vector<gfx::Rect>& paint_rects,
       engine()->Paint(pdf_rect, image_data_, pdf_ready, pdf_pending);
       for (gfx::Rect& ready_rect : pdf_ready) {
         ready_rect.Offset(available_area_.OffsetFromOrigin());
-        ready->push_back(PaintReadyRect(ready_rect, GetPluginImageData()));
+        ready.push_back(PaintReadyRect(ready_rect, GetPluginImageData()));
       }
       for (gfx::Rect& pending_rect : pdf_pending) {
         pending_rect.Offset(available_area_.OffsetFromOrigin());
-        pending->push_back(pending_rect);
+        pending.push_back(pending_rect);
       }
     }
 
@@ -284,7 +284,7 @@ void PdfViewPluginBase::DoPaint(const std::vector<gfx::Rect>& paint_rects,
     if (rect.y() < first_page_ypos) {
       gfx::Rect region = gfx::IntersectRects(
           rect, gfx::Rect(gfx::Size(plugin_size_.width(), first_page_ypos)));
-      ready->push_back(PaintReadyRect(region, GetPluginImageData()));
+      ready.push_back(PaintReadyRect(region, GetPluginImageData()));
       image_data_.erase(background_color_, gfx::RectToSkIRect(region));
     }
 
@@ -295,7 +295,7 @@ void PdfViewPluginBase::DoPaint(const std::vector<gfx::Rect>& paint_rects,
       if (!intersection.IsEmpty()) {
         image_data_.erase(background_part.color,
                           gfx::RectToSkIRect(intersection));
-        ready->push_back(PaintReadyRect(intersection, GetPluginImageData()));
+        ready.push_back(PaintReadyRect(intersection, GetPluginImageData()));
       }
     }
   }
@@ -306,7 +306,7 @@ void PdfViewPluginBase::DoPaint(const std::vector<gfx::Rect>& paint_rects,
 }
 
 void PdfViewPluginBase::PrepareForFirstPaint(
-    std::vector<PaintReadyRect>* ready) {
+    std::vector<PaintReadyRect>& ready) {
   if (!first_paint_)
     return;
 
@@ -314,7 +314,7 @@ void PdfViewPluginBase::PrepareForFirstPaint(
   first_paint_ = false;
   image_data_.eraseColor(background_color_);
   gfx::Rect rect(gfx::SkISizeToSize(image_data_.dimensions()));
-  ready->push_back(
+  ready.push_back(
       PaintReadyRect(rect, GetPluginImageData(), /*flush_now=*/true));
 }
 
