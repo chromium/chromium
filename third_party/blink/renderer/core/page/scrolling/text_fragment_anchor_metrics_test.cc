@@ -266,8 +266,9 @@ TEST_F(TextFragmentAnchorMetricsTest, UMAMetricsCollectedSearchEngineReferrer) {
                                        1);
 }
 
-// Test UMA metrics collection when there is no match found
-TEST_F(TextFragmentAnchorMetricsTest, NoMatchFound) {
+// Test UMA metrics collection when there is no match found with an unknown
+// referrer.
+TEST_F(TextFragmentAnchorMetricsTest, NoMatchFoundWithUnknownSource) {
   SimRequest request("https://example.com/test.html#:~:text=cat", "text/html");
   LoadURL("https://example.com/test.html#:~:text=cat");
   request.Complete(R"HTML(
@@ -343,6 +344,93 @@ TEST_F(TextFragmentAnchorMetricsTest, NoMatchFound) {
 
   histogram_tester_.ExpectTotalCount("TextFragmentAnchor.LinkOpenSource", 1);
   histogram_tester_.ExpectUniqueSample("TextFragmentAnchor.LinkOpenSource", 0,
+                                       1);
+}
+
+// Test UMA metrics collection when there is no match found with a Search Engine
+// referrer.
+TEST_F(TextFragmentAnchorMetricsTest, NoMatchFoundWithSearchEngineSource) {
+  // Set the referrer to a known search engine URL. This should cause metrics
+  // to be reported for the SearchEngine variant of histograms.
+  SimRequest::Params params;
+  params.referrer = "https://www.bing.com";
+  SimRequest request("https://example.com/test.html#:~:text=cat", "text/html",
+                     params);
+  LoadURL("https://example.com/test.html#:~:text=cat");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      body {
+        height: 1200px;
+      }
+      p {
+        position: absolute;
+        top: 1000px;
+      }
+    </style>
+    <p>This is a test page</p>
+  )HTML");
+  RunAsyncMatchingTasks();
+
+  // Render two frames to handle the async step added by the beforematch event.
+  Compositor().BeginFrame();
+  BeginEmptyFrame();
+
+  histogram_tester_.ExpectTotalCount(
+      "TextFragmentAnchor.SearchEngine.SelectorCount", 1);
+  histogram_tester_.ExpectUniqueSample(
+      "TextFragmentAnchor.SearchEngine.SelectorCount", 1, 1);
+
+  histogram_tester_.ExpectTotalCount(
+      "TextFragmentAnchor.SearchEngine.MatchRate", 1);
+  histogram_tester_.ExpectUniqueSample(
+      "TextFragmentAnchor.SearchEngine.MatchRate", 0, 1);
+
+  histogram_tester_.ExpectTotalCount(
+      "TextFragmentAnchor.SearchEngine.AmbiguousMatch", 1);
+  histogram_tester_.ExpectUniqueSample(
+      "TextFragmentAnchor.SearchEngine.AmbiguousMatch", 0, 1);
+
+  histogram_tester_.ExpectTotalCount(
+      "TextFragmentAnchor.SearchEngine.ScrollCancelled", 1);
+  histogram_tester_.ExpectUniqueSample(
+      "TextFragmentAnchor.SearchEngine.ScrollCancelled", 0, 1);
+
+  histogram_tester_.ExpectTotalCount(
+      "TextFragmentAnchor.SearchEngine.DidScrollIntoView", 0);
+
+  histogram_tester_.ExpectTotalCount(
+      "TextFragmentAnchor.SearchEngine.TimeToScrollIntoView", 0);
+
+  histogram_tester_.ExpectTotalCount(
+      "TextFragmentAnchor.SearchEngine.DirectiveLength", 1);
+  histogram_tester_.ExpectUniqueSample(
+      "TextFragmentAnchor.SearchEngine.DirectiveLength", 8, 1);
+
+  histogram_tester_.ExpectTotalCount(
+      "TextFragmentAnchor.SearchEngine.ExactTextLength", 0);
+
+  histogram_tester_.ExpectTotalCount(
+      "TextFragmentAnchor.SearchEngine.RangeMatchLength", 0);
+  histogram_tester_.ExpectTotalCount(
+      "TextFragmentAnchor.SearchEngine.StartTextLength", 0);
+  histogram_tester_.ExpectTotalCount(
+      "TextFragmentAnchor.SearchEngine.EndTextLength", 0);
+
+  histogram_tester_.ExpectTotalCount(
+      "TextFragmentAnchor.SearchEngine.Parameters", 0);
+
+  histogram_tester_.ExpectTotalCount(
+      "TextFragmentAnchor.SearchEngine.TimeToScrollToTop", 0);
+
+  histogram_tester_.ExpectTotalCount(
+      "TextFragmentAnchor.SearchEngine.ListItemMatch", 0);
+
+  histogram_tester_.ExpectTotalCount(
+      "TextFragmentAnchor.SearchEngine.TableCellMatch", 0);
+
+  histogram_tester_.ExpectTotalCount("TextFragmentAnchor.LinkOpenSource", 1);
+  histogram_tester_.ExpectUniqueSample("TextFragmentAnchor.LinkOpenSource", 1,
                                        1);
 }
 

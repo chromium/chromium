@@ -378,7 +378,6 @@ void TextFragmentAnchor::DidFindMatch(
   did_find_match_ = true;
 
   if (first_match_needs_scroll_) {
-    metrics_->SetSearchEngineSource(HasSearchEngineSource());
     first_match_needs_scroll_ = false;
 
     PhysicalRect bounding_box(ComputeTextRect(range));
@@ -435,6 +434,7 @@ void TextFragmentAnchor::DidFinishSearch() {
   DCHECK(!search_finished_);
   search_finished_ = true;
 
+  metrics_->SetSearchEngineSource(HasSearchEngineSource());
   metrics_->ReportMetrics();
 
   if (!did_find_match_) {
