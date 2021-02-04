@@ -87,8 +87,6 @@ class CORE_EXPORT NGGridLayoutAlgorithm
     bool is_inline_axis_stretched;
     bool is_block_axis_stretched;
 
-    bool has_baseline_alignment;
-
     TrackSpanProperties column_span_properties;
     TrackSpanProperties row_span_properties;
 

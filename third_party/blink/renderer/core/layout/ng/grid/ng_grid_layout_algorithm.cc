@@ -819,10 +819,6 @@ NGGridLayoutAlgorithm::GridItemData NGGridLayoutAlgorithm::MeasureGridItem(
   grid_item.item_type = node.IsOutOfFlowPositioned() ? ItemType::kOutOfFlow
                                                      : ItemType::kInGridFlow;
 
-  grid_item.has_baseline_alignment =
-      (item_style.ResolvedAlignSelf(normal_behaviour, &container_style)
-           .GetPosition() == ItemPosition::kBaseline);
-
   return grid_item;
 }
 
@@ -1962,7 +1958,7 @@ void NGGridLayoutAlgorithm::PlaceGridItems(
     };
 
     LayoutUnit baseline = fragment.BaselineOrSynthesize() + offset.block_offset;
-    if (grid_item.has_baseline_alignment) {
+    if (grid_item.block_axis_alignment == AxisEdge::kBaseline) {
       if (!alignment_baseline ||
           IsBeforeInGridOrder(grid_item.resolved_position,
                               alignment_baseline->resolved_position)) {
