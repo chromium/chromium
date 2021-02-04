@@ -297,9 +297,9 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
   // depends on computed values.
   virtual void FlushPendingUpdates() const {}
 
-  void SetDidBGColorAnimFallBack() { did_bgcolor_anim_fall_back_ = true; }
-  void ResetDidBGColorAnimFallBack() { did_bgcolor_anim_fall_back_ = false; }
-  bool DidBGColorAnimFallBack() const { return did_bgcolor_anim_fall_back_; }
+  void SetCanCompositeBGColorAnim() { can_composite_bgcolor_anim_ = true; }
+  void ResetCanCompositeBGColorAnim() { can_composite_bgcolor_anim_ = false; }
+  bool CanCompositeBGColorAnim() const { return can_composite_bgcolor_anim_; }
 
  protected:
   DispatchEventResult DispatchEventInternal(Event&) override;
@@ -521,13 +521,13 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
 
   bool effect_suppressed_;
 
-  // True if the background color animation needs to fall back to the main
-  // thread. We keep it here instead of ElementAnimations such that when we
-  // create a compositor animation, we know which animation should fall back.
-  // Note that when we extend the native paint worklet to composite other types
-  // of animations in the future, we might need to extend this to be a fall back
-  // reasons.
-  bool did_bgcolor_anim_fall_back_ = false;
+  // True if the background color animation can be composited. Set by the
+  // BackgroundColorPaintWorklet::GetBGColorPaintWorkletParams. We keep it here
+  // instead of ElementAnimations such that when we create a compositor
+  // animation, we know which animation should fall back. Note that when we
+  // extend the native paint worklet to composite other types of animations in
+  // the future, we might need to extend this to be a fall back reasons.
+  bool can_composite_bgcolor_anim_ = false;
 
   FRIEND_TEST_ALL_PREFIXES(AnimationAnimationTestCompositeAfterPaint,
                            NoCompositeWithoutCompositedElementId);

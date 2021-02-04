@@ -175,7 +175,7 @@ bool GetBGColorPaintWorkletParamsInternal(Element* element,
     if (animation.key->CalculateAnimationPlayState() == Animation::kIdle ||
         !animation.key->Affects(*element, GetCSSPropertyBackgroundColor()))
       continue;
-    animation.key->SetDidBGColorAnimFallBack();
+    animation.key->ResetCanCompositeBGColorAnim();
     if (!composited_animation ||
         Animation::HasLowerCompositeOrdering(
             composited_animation, animation.key,
@@ -207,7 +207,7 @@ bool GetBGColorPaintWorkletParamsInternal(Element* element,
     }
     GetCompositorKeyframeOffset(frame, offsets);
   }
-  composited_animation->ResetDidBGColorAnimFallBack();
+  composited_animation->SetCanCompositeBGColorAnim();
   return true;
 }
 

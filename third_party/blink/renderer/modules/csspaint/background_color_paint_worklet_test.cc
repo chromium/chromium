@@ -123,6 +123,7 @@ TEST_F(BackgroundColorPaintWorkletTest, FallbackToMainCompositeAccumulate) {
       exception_state);
   UpdateAllLifecyclePhasesForTest();
   animation->play();
+  EXPECT_FALSE(animation->CanCompositeBGColorAnim());
 
   EXPECT_TRUE(element->GetElementAnimations());
   EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 1u);
@@ -130,6 +131,7 @@ TEST_F(BackgroundColorPaintWorkletTest, FallbackToMainCompositeAccumulate) {
   Vector<double> offsets;
   EXPECT_FALSE(BackgroundColorPaintWorklet::GetBGColorPaintWorkletParams(
       element, &animated_colors, &offsets));
+  EXPECT_FALSE(animation->CanCompositeBGColorAnim());
 }
 
 // Test that when there are multiple bgcolor animations on an Element, we
@@ -181,6 +183,8 @@ TEST_F(BackgroundColorPaintWorkletTest, MultipleAnimationsNotFallback) {
   UpdateAllLifecyclePhasesForTest();
   animation1->play();
   animation2->play();
+  EXPECT_FALSE(animation1->CanCompositeBGColorAnim());
+  EXPECT_FALSE(animation2->CanCompositeBGColorAnim());
 
   // Two active background-color animations, fall back to main.
   EXPECT_TRUE(element->GetElementAnimations());
@@ -189,6 +193,8 @@ TEST_F(BackgroundColorPaintWorkletTest, MultipleAnimationsNotFallback) {
   Vector<double> offsets;
   EXPECT_TRUE(BackgroundColorPaintWorklet::GetBGColorPaintWorkletParams(
       element, &animated_colors, &offsets));
+  EXPECT_FALSE(animation1->CanCompositeBGColorAnim());
+  EXPECT_TRUE(animation2->CanCompositeBGColorAnim());
   EXPECT_EQ(animated_colors.size(), 2u);
   // The animated_colors should be blue and yellow.
   EXPECT_EQ(animated_colors[0].Red(), 0);

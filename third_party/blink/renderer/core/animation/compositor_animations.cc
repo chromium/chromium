@@ -285,7 +285,7 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
           break;
         case CSSPropertyID::kBackgroundColor:
           if (!RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() ||
-              animation_to_add->DidBGColorAnimFallBack()) {
+              !animation_to_add->CanCompositeBGColorAnim()) {
             DefaultToUnsupportedProperty(unsupported_properties, property,
                                          &reasons);
           }
