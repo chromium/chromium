@@ -511,6 +511,7 @@ void SearchPrefetchService::AddCacheEntry(const GURL& navigation_url,
                           std::make_pair(prefetch_url, base::Time::Now()));
 
   if (prefetch_cache_.size() <= SearchPrefetchMaxCacheEntries()) {
+    SaveToPrefs();
     return;
   }
 

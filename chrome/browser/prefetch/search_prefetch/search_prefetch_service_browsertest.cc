@@ -1328,6 +1328,57 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
+                       BackPrefetchServedAfterPrefsNoOverflow) {
+  // This test prefetches and serves two SRP responses. It then navigates back
+  // then forward, the back navigation should not be cached, due to cache limit
+  // size of 1, the second navigation should be cached.
+
+  base::HistogramTester histogram_tester;
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_NE(nullptr, search_prefetch_service);
+
+  std::string search_terms = "prefetch_content";
+  GURL prefetch_url = GetSearchServerQueryURL(search_terms + "&pf=cs");
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+  WaitUntilStatusChangesTo(base::ASCIIToUTF16(search_terms),
+                           SearchPrefetchStatus::kComplete);
+  ui_test_utils::NavigateToURL(browser(),
+                               GetSearchServerQueryURL(search_terms));
+
+  // The prefetch should be served, and only 1 request should be issued.
+  EXPECT_EQ(1u, search_server_requests().size());
+  auto inner_html = GetDocumentInnerHTML();
+  EXPECT_FALSE(base::Contains(inner_html, "regular"));
+  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+
+  search_terms = "prefetch_content_2";
+  ui_test_utils::NavigateToURL(browser(),
+                               GetSearchServerQueryURL(search_terms));
+
+  // No prefetch request started, and only 1 request (now the second total
+  // request) should be issued.
+  EXPECT_EQ(2u, search_server_requests().size());
+  inner_html = GetDocumentInnerHTML();
+  EXPECT_TRUE(base::Contains(inner_html, "regular"));
+  EXPECT_FALSE(base::Contains(inner_html, "prefetch"));
+
+  // Reload the map from prefs.
+  EXPECT_FALSE(search_prefetch_service->LoadFromPrefsForTesting());
+
+  content::TestNavigationObserver back_load_observer(GetWebContents());
+  GetWebContents()->GetController().GoBack();
+  back_load_observer.Wait();
+
+  // There should be a cached prefetch request, so there should not be a new
+  // network request.
+  EXPECT_EQ(2u, search_server_requests().size());
+  inner_html = GetDocumentInnerHTML();
+  EXPECT_FALSE(base::Contains(inner_html, "regular"));
+  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+}
+
+IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
                        EvictedCacheFallsback) {
   // This test prefetches and serves a SRP responses. It then navigates to a
   // different URL. Then it clears cache as if it was evicted. Then it navigates
