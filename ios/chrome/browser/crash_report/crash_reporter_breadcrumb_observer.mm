@@ -5,10 +5,10 @@
 #include "ios/chrome/browser/crash_report/crash_reporter_breadcrumb_observer.h"
 
 #include "base/strings/sys_string_conversions.h"
+#include "components/breadcrumbs/core/crash_reporter_breadcrumb_constants.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager.h"
 #import "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_observer_bridge.h"
 #include "ios/chrome/browser/crash_report/crash_keys_helper.h"
-#include "ios/chrome/browser/crash_report/crash_reporter_breadcrumb_constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -89,10 +89,10 @@
 }
 
 - (void)updateBreadcrumbEventsCrashKey {
-  if (_breadcrumbs.length > kMaxBreadcrumbsDataLength) {
+  if (_breadcrumbs.length > breadcrumbs::kMaxDataLength) {
     NSRange trimRange =
-        NSMakeRange(kMaxBreadcrumbsDataLength,
-                    _breadcrumbs.length - kMaxBreadcrumbsDataLength);
+        NSMakeRange(breadcrumbs::kMaxDataLength,
+                    _breadcrumbs.length - breadcrumbs::kMaxDataLength);
     [_breadcrumbs deleteCharactersInRange:trimRange];
   }
 

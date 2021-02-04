@@ -227,7 +227,7 @@ void BreadcrumbPersistentStorageManager::RewriteAllExistingBreadcrumbs() {
       const int event_with_seperator_size =
           event_it->size() + strlen(kEventSeparator);
       if (event_with_seperator_size + current_mapped_file_position_.value() >=
-          kMaxBreadcrumbsDataLength) {
+          breadcrumbs::kMaxDataLength) {
         break;
       }
 

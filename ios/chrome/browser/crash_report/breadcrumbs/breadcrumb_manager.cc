@@ -6,8 +6,8 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "components/breadcrumbs/core/crash_reporter_breadcrumb_constants.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_observer.h"
-#include "ios/chrome/browser/crash_report/crash_reporter_breadcrumb_constants.h"
 
 namespace {
 
@@ -19,7 +19,7 @@ namespace {
 // upper limit of useful events. (Most events + timestamp breadcrumbs are
 // currently longer than 10 characters.)
 constexpr unsigned long kMaxUsefulBreadcrumbEvents =
-    kMaxBreadcrumbsDataLength / 10;
+    breadcrumbs::kMaxDataLength / 10;
 
 // The minimum number of event buckets to keep, even if they are expired.
 const int kMinEventsBuckets = 2;

@@ -7,13 +7,13 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/task_environment.h"
+#include "components/breadcrumbs/core/crash_reporter_breadcrumb_constants.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
 #import "ios/chrome/browser/crash_report/breakpad_helper.h"
 #include "ios/chrome/browser/crash_report/crash_keys_helper.h"
-#include "ios/chrome/browser/crash_report/crash_reporter_breadcrumb_constants.h"
 #import "ios/chrome/test/ocmock/OCMockObject+BreakpadControllerTesting.h"
 #import "ios/testing/scoped_block_swizzler.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -141,14 +141,14 @@ TEST_F(CrashReporterBreadcrumbObserverTest, ProductDataOverflow) {
 
   // Build a sample breadcrumbs string greater than the maximum allowed size.
   NSMutableString* breadcrumbs = [[NSMutableString alloc] init];
-  while (breadcrumbs.length < kMaxBreadcrumbsDataLength) {
+  while (breadcrumbs.length < breadcrumbs::kMaxDataLength) {
     [breadcrumbs appendString:@"12:01 Fake Breadcrumb Event/n"];
   }
   [breadcrumbs appendString:@"12:01 Fake Breadcrumb Event/n"];
-  ASSERT_GT([breadcrumbs length], kMaxBreadcrumbsDataLength);
+  ASSERT_GT([breadcrumbs length], breadcrumbs::kMaxDataLength);
 
   id validation_block = [OCMArg checkWithBlock:^(id value) {
-    EXPECT_EQ(kMaxBreadcrumbsDataLength, [value length]);
+    EXPECT_EQ(breadcrumbs::kMaxDataLength, [value length]);
     return YES;
   }];
   [[mock_breakpad_controller_ expect]

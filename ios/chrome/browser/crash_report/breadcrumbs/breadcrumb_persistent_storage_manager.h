@@ -11,15 +11,15 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/timer/timer.h"
+#include "components/breadcrumbs/core/crash_reporter_breadcrumb_constants.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_observer.h"
-#include "ios/chrome/browser/crash_report/crash_reporter_breadcrumb_constants.h"
 
 // The filesize for the file at |breadcrumbs_file_path_|. The file will always
 // be this constant size because it is accessed using a memory mapped file. The
-// file is twice as large as |kMaxBreadcrumbsDataLength| which leaves room for
-// appending breadcrumb events. Once the file is full of events, the contents
-// will be reduced to kMaxBreadcrumbsDataLength.
-constexpr size_t kPersistedFilesizeInBytes = kMaxBreadcrumbsDataLength * 2;
+// file is twice as large as |kMaxDataLength| which leaves room for appending
+// breadcrumb events. Once the file is full of events, the contents will be
+// reduced to kMaxDataLength.
+constexpr size_t kPersistedFilesizeInBytes = breadcrumbs::kMaxDataLength * 2;
 
 namespace base {
 class FilePath;
