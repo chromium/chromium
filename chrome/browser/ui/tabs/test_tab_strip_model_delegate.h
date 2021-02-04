@@ -37,7 +37,7 @@ class TestTabStripModelDelegate : public TabStripModelDelegate {
   void DuplicateContentsAt(int index) override;
   void MoveToExistingWindow(const std::vector<int>& indices,
                             int browser_index) override;
-  std::vector<base::string16> GetExistingWindowsForMoveMenu() const override;
+  std::vector<base::string16> GetExistingWindowsForMoveMenu() override;
   bool CanMoveTabsToWindow(const std::vector<int>& indices) override;
   void MoveTabsToNewWindow(const std::vector<int>& indices) override;
   void MoveGroupToNewWindow(const tab_groups::TabGroupId& group) override;

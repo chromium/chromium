@@ -51,7 +51,7 @@ void TestTabStripModelDelegate::MoveToExistingWindow(
     int browser_index) {}
 
 std::vector<base::string16>
-TestTabStripModelDelegate::GetExistingWindowsForMoveMenu() const {
+TestTabStripModelDelegate::GetExistingWindowsForMoveMenu() {
   std::vector<base::string16> existing_windows;
   return existing_windows;
 }

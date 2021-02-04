@@ -13,6 +13,7 @@
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tab_helpers.h"
@@ -113,12 +114,37 @@ void BrowserTabStripModelDelegate::DuplicateContentsAt(int index) {
 void BrowserTabStripModelDelegate::MoveToExistingWindow(
     const std::vector<int>& indices,
     int browser_index) {
-  browser_->MoveTabsToExistingWindow(indices, browser_index);
+  size_t existing_browser_count = existing_browsers_for_menu_list_.size();
+  if (static_cast<size_t>(browser_index) < existing_browser_count &&
+      existing_browsers_for_menu_list_[browser_index]) {
+    chrome::MoveTabsToExistingWindow(
+        browser_, existing_browsers_for_menu_list_[browser_index].get(),
+        indices);
+  }
 }
 
 std::vector<base::string16>
-BrowserTabStripModelDelegate::GetExistingWindowsForMoveMenu() const {
-  return browser_->GetExistingWindowsForMoveMenu();
+BrowserTabStripModelDelegate::GetExistingWindowsForMoveMenu() {
+  static constexpr int kWindowTitleForMenuMaxWidth = 400;
+  std::vector<base::string16> window_titles;
+  existing_browsers_for_menu_list_.clear();
+
+  const BrowserList* browser_list = BrowserList::GetInstance();
+  for (BrowserList::const_reverse_iterator it =
+           browser_list->begin_last_active();
+       it != browser_list->end_last_active(); ++it) {
+    Browser* browser = *it;
+
+    // We can only move into a tabbed view of the same profile, and not the same
+    // window we're currently in.
+    if (browser != browser_ && browser->is_type_normal() &&
+        browser->profile() == browser_->profile()) {
+      existing_browsers_for_menu_list_.push_back(browser->AsWeakPtr());
+      window_titles.push_back(
+          browser->GetWindowTitleForMaxWidth(kWindowTitleForMenuMaxWidth));
+    }
+  }
+  return window_titles;
 }
 
 bool BrowserTabStripModelDelegate::CanMoveTabsToWindow(
