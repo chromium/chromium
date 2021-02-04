@@ -51,6 +51,8 @@ class MODULES_EXPORT Sanitizer final : public ScriptWrappable {
   HashMap<String, Vector<String>> allow_attributes_ = {};
   HashMap<String, Vector<String>> drop_attributes_ = {};
 
+  bool allow_custom_elements_ = false;
+
   bool has_allow_elements_ = false;
   bool has_allow_attributes_ = false;
 

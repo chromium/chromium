@@ -64,6 +64,7 @@ void MakeConfiguration(SanitizerConfig* sanitizer_config,
     }
     sanitizer_config->setDropAttributes(drop_attributes);
   }
+  sanitizer_config->setAllowCustomElements(proto.allow_custom_elements());
 }
 
 void TextProtoFuzzer(const SanitizerConfigProto& proto,

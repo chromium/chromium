@@ -14,4 +14,5 @@ message SanitizerConfigProto {
 
   map<string, Elements> allow_attributes = 5;
   map<string, Elements> drop_attributes = 6;
+  optional bool allow_custom_elements = 7;
 }

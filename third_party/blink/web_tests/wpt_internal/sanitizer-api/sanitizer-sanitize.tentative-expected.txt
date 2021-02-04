@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 119 tests; 118 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 131 tests; 130 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS SanitizerAPI sanitize function without argument should throw an error.
 PASS SanitizerAPI sanitize function for null.
 PASS SanitizerAPI with config: string, sanitize from string function for string
@@ -21,14 +21,18 @@ PASS SanitizerAPI with config: malformed HTML, sanitize from string function for
 PASS SanitizerAPI with config: invalid config_input, sanitize from string function for invalid config_input
 PASS SanitizerAPI with config: empty dropElements list, sanitize from string function for empty dropElements list
 PASS SanitizerAPI with config: test html without close tag with dropElements list ['div'], sanitize from string function for test html without close tag with dropElements list ['div']
-PASS SanitizerAPI with config: test custom element with dropElements list ['div'], sanitize from string function for test custom element with dropElements list ['div']
+PASS SanitizerAPI with config: default behavior for custom elements, sanitize from string function for default behavior for custom elements
+PASS SanitizerAPI with config: allow custom elements, sanitize from string function for allow custom elements
+PASS SanitizerAPI with config: disallow custom elements, sanitize from string function for disallow custom elements
+PASS SanitizerAPI with config: allow custom elements with drop list contains ["custom-element"], sanitize from string function for allow custom elements with drop list contains ["custom-element"]
 PASS SanitizerAPI with config: test script with ["script"] as dropElements list, sanitize from string function for test script with ["script"] as dropElements list
-PASS SanitizerAPI with config: dropElements list ["test", "i"]}, sanitize from string function for dropElements list ["test", "i"]}
-PASS SanitizerAPI with config: dropElements list ["I", "AM"]}, sanitize from string function for dropElements list ["I", "AM"]}
-PASS SanitizerAPI with config: dropElements list ["am", "p"]}, sanitize from string function for dropElements list ["am", "p"]}
+PASS SanitizerAPI with config: dropElements list ["test-element", "i"]}, sanitize from string function for dropElements list ["test-element", "i"]}
+PASS SanitizerAPI with config: dropElements list ["I", "DL"]}, sanitize from string function for dropElements list ["I", "DL"]}
+PASS SanitizerAPI with config: dropElements list ["dl", "p"]}, sanitize from string function for dropElements list ["dl", "p"]}
 PASS SanitizerAPI with config: dropElements list with invalid values, sanitize from string function for dropElements list with invalid values
 PASS SanitizerAPI with config: blockElements list with invalid values, sanitize from string function for blockElements list with invalid values
 PASS SanitizerAPI with config: allowElements list ["p"], sanitize from string function for allowElements list ["p"]
+PASS SanitizerAPI with config: allowElements list ["p", "test"], sanitize from string function for allowElements list ["p", "test"]
 PASS SanitizerAPI with config: allowElements list has no influence to dropElements, sanitize from string function for allowElements list has no influence to dropElements
 PASS SanitizerAPI with config: dropAttributes list {"style": ["p"]} with style attribute, sanitize from string function for dropAttributes list {"style": ["p"]} with style attribute
 PASS SanitizerAPI with config: dropAttributes list {"*": ["a"]} with style attribute, sanitize from string function for dropAttributes list {"*": ["a"]} with style attribute
@@ -60,14 +64,18 @@ PASS SanitizerAPI with config: malformed HTML, sanitize from document function f
 PASS SanitizerAPI with config: invalid config_input, sanitize from document function for invalid config_input
 PASS SanitizerAPI with config: empty dropElements list, sanitize from document function for empty dropElements list
 PASS SanitizerAPI with config: test html without close tag with dropElements list ['div'], sanitize from document function for test html without close tag with dropElements list ['div']
-PASS SanitizerAPI with config: test custom element with dropElements list ['div'], sanitize from document function for test custom element with dropElements list ['div']
+PASS SanitizerAPI with config: default behavior for custom elements, sanitize from document function for default behavior for custom elements
+PASS SanitizerAPI with config: allow custom elements, sanitize from document function for allow custom elements
+PASS SanitizerAPI with config: disallow custom elements, sanitize from document function for disallow custom elements
+PASS SanitizerAPI with config: allow custom elements with drop list contains ["custom-element"], sanitize from document function for allow custom elements with drop list contains ["custom-element"]
 PASS SanitizerAPI with config: test script with ["script"] as dropElements list, sanitize from document function for test script with ["script"] as dropElements list
-PASS SanitizerAPI with config: dropElements list ["test", "i"]}, sanitize from document function for dropElements list ["test", "i"]}
-PASS SanitizerAPI with config: dropElements list ["I", "AM"]}, sanitize from document function for dropElements list ["I", "AM"]}
-PASS SanitizerAPI with config: dropElements list ["am", "p"]}, sanitize from document function for dropElements list ["am", "p"]}
+PASS SanitizerAPI with config: dropElements list ["test-element", "i"]}, sanitize from document function for dropElements list ["test-element", "i"]}
+PASS SanitizerAPI with config: dropElements list ["I", "DL"]}, sanitize from document function for dropElements list ["I", "DL"]}
+PASS SanitizerAPI with config: dropElements list ["dl", "p"]}, sanitize from document function for dropElements list ["dl", "p"]}
 PASS SanitizerAPI with config: dropElements list with invalid values, sanitize from document function for dropElements list with invalid values
 PASS SanitizerAPI with config: blockElements list with invalid values, sanitize from document function for blockElements list with invalid values
 PASS SanitizerAPI with config: allowElements list ["p"], sanitize from document function for allowElements list ["p"]
+PASS SanitizerAPI with config: allowElements list ["p", "test"], sanitize from document function for allowElements list ["p", "test"]
 PASS SanitizerAPI with config: allowElements list has no influence to dropElements, sanitize from document function for allowElements list has no influence to dropElements
 PASS SanitizerAPI with config: dropAttributes list {"style": ["p"]} with style attribute, sanitize from document function for dropAttributes list {"style": ["p"]} with style attribute
 PASS SanitizerAPI with config: dropAttributes list {"*": ["a"]} with style attribute, sanitize from document function for dropAttributes list {"*": ["a"]} with style attribute
@@ -98,14 +106,18 @@ FAIL SanitizerAPI with config: malformed HTML, sanitize from document fragment f
 PASS SanitizerAPI with config: invalid config_input, sanitize from document fragment function for invalid config_input
 PASS SanitizerAPI with config: empty dropElements list, sanitize from document fragment function for empty dropElements list
 PASS SanitizerAPI with config: test html without close tag with dropElements list ['div'], sanitize from document fragment function for test html without close tag with dropElements list ['div']
-PASS SanitizerAPI with config: test custom element with dropElements list ['div'], sanitize from document fragment function for test custom element with dropElements list ['div']
+PASS SanitizerAPI with config: default behavior for custom elements, sanitize from document fragment function for default behavior for custom elements
+PASS SanitizerAPI with config: allow custom elements, sanitize from document fragment function for allow custom elements
+PASS SanitizerAPI with config: disallow custom elements, sanitize from document fragment function for disallow custom elements
+PASS SanitizerAPI with config: allow custom elements with drop list contains ["custom-element"], sanitize from document fragment function for allow custom elements with drop list contains ["custom-element"]
 PASS SanitizerAPI with config: test script with ["script"] as dropElements list, sanitize from document fragment function for test script with ["script"] as dropElements list
-PASS SanitizerAPI with config: dropElements list ["test", "i"]}, sanitize from document fragment function for dropElements list ["test", "i"]}
-PASS SanitizerAPI with config: dropElements list ["I", "AM"]}, sanitize from document fragment function for dropElements list ["I", "AM"]}
-PASS SanitizerAPI with config: dropElements list ["am", "p"]}, sanitize from document fragment function for dropElements list ["am", "p"]}
+PASS SanitizerAPI with config: dropElements list ["test-element", "i"]}, sanitize from document fragment function for dropElements list ["test-element", "i"]}
+PASS SanitizerAPI with config: dropElements list ["I", "DL"]}, sanitize from document fragment function for dropElements list ["I", "DL"]}
+PASS SanitizerAPI with config: dropElements list ["dl", "p"]}, sanitize from document fragment function for dropElements list ["dl", "p"]}
 PASS SanitizerAPI with config: dropElements list with invalid values, sanitize from document fragment function for dropElements list with invalid values
 PASS SanitizerAPI with config: blockElements list with invalid values, sanitize from document fragment function for blockElements list with invalid values
 PASS SanitizerAPI with config: allowElements list ["p"], sanitize from document fragment function for allowElements list ["p"]
+PASS SanitizerAPI with config: allowElements list ["p", "test"], sanitize from document fragment function for allowElements list ["p", "test"]
 PASS SanitizerAPI with config: allowElements list has no influence to dropElements, sanitize from document fragment function for allowElements list has no influence to dropElements
 PASS SanitizerAPI with config: dropAttributes list {"style": ["p"]} with style attribute, sanitize from document fragment function for dropAttributes list {"style": ["p"]} with style attribute
 PASS SanitizerAPI with config: dropAttributes list {"*": ["a"]} with style attribute, sanitize from document fragment function for dropAttributes list {"*": ["a"]} with style attribute

@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/html/custom/custom_element.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_document_parser.h"
@@ -36,7 +37,8 @@ Sanitizer* Sanitizer::Create(const SanitizerConfig* config,
   return MakeGarbageCollected<Sanitizer>(config);
 }
 
-Sanitizer::Sanitizer(const SanitizerConfig* config) {
+Sanitizer::Sanitizer(const SanitizerConfig* config)
+    : allow_custom_elements_(config->allowCustomElements()) {
   // Format dropElements to uppercase.
   drop_elements_ = default_drop_elements_;
   if (config->hasDropElements()) {
@@ -169,7 +171,10 @@ DocumentFragment* Sanitizer::SanitizeImpl(
     String node_name = node->nodeName().UpperASCII();
     // If the current element is dropped, remove current element entirely and
     // proceed to its next sibling.
-    if (drop_elements_.Contains(node_name)) {
+    if (drop_elements_.Contains(node_name) ||
+        (!allow_custom_elements_ &&
+         CustomElement::IsValidName(AtomicString(node_name.LowerASCII()),
+                                    false))) {
       Node* tmp = node;
       node = NodeTraversal::NextSkippingChildren(*node, fragment);
       tmp->remove();

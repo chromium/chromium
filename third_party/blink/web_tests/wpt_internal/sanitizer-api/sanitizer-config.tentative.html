@@ -37,10 +37,10 @@
 
       let s = new Sanitizer(options);
       assert_true(s instanceof Sanitizer);
-      assert_equals(s.sanitizeToString("<div>balabala</div><test>test</test>"), "<div>balabala</div>test");
+      assert_equals(s.sanitizeToString("<div>balabala</div><p>test</p>"), "<div>balabala</div>test");
 
-      options.allowElements.push("test");
-      assert_equals(s.sanitizeToString("<div>balabala</div><test>test</test>"), "<div>balabala</div>test");
+      options.allowElements.push("p");
+      assert_equals(s.sanitizeToString("<div>balabala</div><p>test</p>"), "<div>balabala</div>test");
     }, "SanitizerAPI config allowElements is not editable.");
 
     test(t => {
@@ -48,10 +48,10 @@
 
       let s = new Sanitizer(options);
       assert_true(s instanceof Sanitizer);
-      assert_equals(s.sanitizeToString("<div>balabala</div><test>test</test>"), "balabala<test>test</test>");
+      assert_equals(s.sanitizeToString("<div>balabala</div><p>test</p>"), "balabala<p>test</p>");
 
-      options.blockElements.push("test");
-      assert_equals(s.sanitizeToString("<div>balabala</div><test>test</test>"), "balabala<test>test</test>");
+      options.blockElements.push("p");
+      assert_equals(s.sanitizeToString("<div>balabala</div><p>test</p>"), "balabala<p>test</p>");
     }, "SanitizerAPI config blockElements is not editable.");
 
     test(t => {
@@ -59,10 +59,10 @@
 
       let s = new Sanitizer(options);
       assert_true(s instanceof Sanitizer);
-      assert_equals(s.sanitizeToString("<div>balabala</div><test>test</test>"), "<test>test</test>");
+      assert_equals(s.sanitizeToString("<div>balabala</div><p>test</p>"), "<p>test</p>");
 
-      options.dropElements.push("test");
-      assert_equals(s.sanitizeToString("<div>balabala</div><test>test</test>"), "<test>test</test>");
+      options.dropElements.push("p");
+      assert_equals(s.sanitizeToString("<div>balabala</div><p>test</p>"), "<p>test</p>");
     }, "SanitizerAPI config dropElements is not editable.");
 
     test(t => {
