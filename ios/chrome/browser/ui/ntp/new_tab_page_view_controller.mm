@@ -67,6 +67,13 @@ const CGFloat kOffsetToPinOmnibox = 100;
 @property(nonatomic, strong)
     NSArray<NSLayoutConstraint*>* fakeOmniboxConstraints;
 
+// Whether or not the content suggestions have been laid out. Used to avoid
+// laying out the content suggestions unnecessarily.
+@property(nonatomic, assign) BOOL didLayoutContentSuggestions;
+
+// Whether or not this ViewController's view has appeared.
+@property(nonatomic, assign) BOOL viewDidAppear;
+
 @end
 
 @implementation NewTabPageViewController
@@ -194,17 +201,6 @@ const CGFloat kOffsetToPinOmnibox = 100;
   [super viewWillAppear:animated];
 
   [self updateContentSuggestionForCurrentLayout];
-
-  // If fake omnibox should be stuck to top of NTP, lays out the content
-  // suggestions. This ensures that the sticky omnibox is present when
-  // navigating back to the NTP.
-  // TODO(crbug.com/1173610): This should only be called if needed. Should be
-  // fixed by Mulder allowing us to add a custom header to the feed.
-  if (self.discoverFeedWrapperViewController.feedCollectionView.contentOffset
-          .y > -kOffsetToPinOmnibox) {
-    [self.contentSuggestionsViewController.view setNeedsLayout];
-    [self.contentSuggestionsViewController.view layoutIfNeeded];
-  }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -213,6 +209,7 @@ const CGFloat kOffsetToPinOmnibox = 100;
   // Updates omnibox to ensure that the dimensions are correct when navigating
   // back to the NTP.
   [self.headerSynchronizer updateFakeOmniboxForScrollPosition];
+  self.viewDidAppear = YES;
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -228,6 +225,8 @@ const CGFloat kOffsetToPinOmnibox = 100;
   insets.bottom = self.view.safeAreaInsets.bottom;
   self.discoverFeedWrapperViewController.feedCollectionView.contentInset =
       insets;
+
+  [self updateHeaderSynchronizerOffset];
 
   [self.headerSynchronizer
       updateFakeOmniboxOnNewWidth:self.collectionView.bounds.size.width];
@@ -374,8 +373,7 @@ const CGFloat kOffsetToPinOmnibox = 100;
          ntp_header::kFakeOmniboxScrolledToTopMargin -
          ToolbarExpandedHeight(
              [UIApplication sharedApplication].preferredContentSizeCategory) -
-         self.discoverFeedWrapperViewController.feedCollectionView
-             .safeAreaInsets.top;
+         self.view.safeAreaInsets.top;
 }
 
 #pragma mark - Private
@@ -392,6 +390,20 @@ const CGFloat kOffsetToPinOmnibox = 100;
 // Lets this view own the fake omnibox and sticks it to the top of the NTP.
 - (void)stickFakeOmniboxToTop {
   [self setIsScrolledIntoFeed:YES];
+
+  // Ensures that content suggestions have been laid out before sticking omnibox
+  // to top of NTP. This ensures that the fake omnibox is visible when opening
+  // the NTP when the scroll offset is below the content suggestions, such as
+  // when navigating back from a feed article.
+  // |didLayoutContentSuggestions| checks if it has already been forced laid out
+  // in the block below. |viewDidAppear| checks if the view has appeared, in
+  // which case the content suggestions would have been laid out through the
+  // natural view's lifecycle.
+  if (!self.didLayoutContentSuggestions && !self.viewDidAppear) {
+    [self.contentSuggestionsViewController.view setNeedsLayout];
+    [self.contentSuggestionsViewController.view layoutIfNeeded];
+    self.didLayoutContentSuggestions = YES;
+  }
 
   [self.headerController removeFromParentViewController];
   [self.headerController.view removeFromSuperview];
@@ -483,9 +495,17 @@ const CGFloat kOffsetToPinOmnibox = 100;
                  contentSuggestionsHeight);
   self.discoverFeedWrapperViewController.feedCollectionView.contentInset =
       UIEdgeInsetsMake([self adjustedContentSuggestionsHeight], 0, 0, 0);
-  self.headerSynchronizer.additionalOffset = contentSuggestionsHeight;
   self.contentSuggestionsHeightConstraint.constant =
       self.contentSuggestionsViewController.collectionView.contentSize.height;
+  [self updateHeaderSynchronizerOffset];
+}
+
+// Updates headerSynchronizer's additionalOffset using the content suggestions
+// content height and the safe area top insets.
+- (void)updateHeaderSynchronizerOffset {
+  self.headerSynchronizer.additionalOffset =
+      self.contentSuggestionsViewController.collectionView.contentSize.height +
+      self.view.safeAreaInsets.top;
 }
 
 // Content suggestions height adjusted with the safe area top insets.
