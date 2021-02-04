@@ -126,6 +126,11 @@ GPUSwapChain* GPUCanvasContext::configureSwapChain(
 
   swapchain_ = MakeGarbageCollected<GPUSwapChain>(
       this, descriptor->device(), usage, format, filter_quality_);
+
+  // If we don't notify the host that something has changed it may never check
+  // for the new cc::Layer.
+  Host()->SetNeedsCompositingUpdate();
+
   return swapchain_;
 }
 
