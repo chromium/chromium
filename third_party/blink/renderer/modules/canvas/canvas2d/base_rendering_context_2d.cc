@@ -565,7 +565,7 @@ void BaseRenderingContext2D::translate(double tx, double ty) {
   path_.Transform(AffineTransform().Translate(-ftx, -fty));
 }
 
-void BaseRenderingContext2D::translate3d(double tx, double ty, double tz) {
+void BaseRenderingContext2D::translate(double tx, double ty, double tz) {
   cc::PaintCanvas* c = GetOrCreatePaintCanvas();
   if (!c)
     return;

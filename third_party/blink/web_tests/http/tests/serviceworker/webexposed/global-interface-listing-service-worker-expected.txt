@@ -1034,7 +1034,6 @@ interface OffscreenCanvasRenderingContext2D
     method strokeText
     method transform
     method translate
-    method translate3d
     setter direction
     setter fillStyle
     setter filter
