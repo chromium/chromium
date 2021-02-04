@@ -2143,6 +2143,10 @@
       name: "WebAuth",
       status: "stable",
     },
+    // A more subtle UI for WebAuthn that is web exposed. Under development.
+    {
+      name: "WebAuthenticationConditionalUI",
+    },
     {
       name: "WebAuthenticationGetAssertionFeaturePolicy",
       status: "experimental",

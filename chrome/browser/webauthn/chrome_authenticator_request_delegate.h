@@ -101,6 +101,7 @@ class ChromeAuthenticatorRequestDelegate
       device::FidoTransportProtocol transport) override;
   void DisableUI() override;
   bool IsWebAuthnUIEnabled() override;
+  void SetConditionalRequest(bool is_conditional) override;
 
   // device::FidoRequestHandlerBase::Observer:
   void OnTransportAvailabilityEnumerated(
@@ -167,6 +168,10 @@ class ChromeAuthenticatorRequestDelegate
   // disable_embedder_ui is set, this will be set to true. No UI must be
   // rendered and all request handler callbacks will be ignored.
   bool disable_ui_ = false;
+
+  // If true, show a more subtle UI unless the user has platform discoverable
+  // credentials on the device.
+  bool is_conditional_ = false;
 
   base::WeakPtrFactory<ChromeAuthenticatorRequestDelegate> weak_ptr_factory_{
       this};

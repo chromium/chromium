@@ -901,7 +901,7 @@ ScriptPromise CredentialsContainer::get(
 
   auto required_origin_type = RequiredOriginType::kSecureAndSameWithAncestors;
   // hasPublicKey() implies that this is a WebAuthn request.
-  if (options->hasPublicKey() &&
+  if ((options->hasPublicKey() || options->hasConditionalPublicKey()) &&
       RuntimeEnabledFeatures::
           WebAuthenticationGetAssertionFeaturePolicyEnabled()) {
     required_origin_type = RequiredOriginType::
@@ -915,7 +915,17 @@ ScriptPromise CredentialsContainer::get(
     return promise;
   }
 
-  if (options->hasPublicKey()) {
+  if (options->hasPublicKey() || options->hasConditionalPublicKey()) {
+    PublicKeyCredentialRequestOptions* public_key_options;
+    bool is_conditional_ui_request;
+    if (options->hasPublicKey()) {
+      public_key_options = options->publicKey();
+      is_conditional_ui_request = false;
+    } else {
+      public_key_options = options->conditionalPublicKey();
+      is_conditional_ui_request = true;
+    }
+
     auto cryptotoken_origin = SecurityOrigin::Create(KURL(kCryptotokenOrigin));
     if (!cryptotoken_origin->IsSameOriginWith(
             resolver->GetExecutionContext()->GetSecurityOrigin())) {
@@ -924,22 +934,23 @@ ScriptPromise CredentialsContainer::get(
       UseCounter::Count(resolver->GetExecutionContext(),
                         WebFeature::kCredentialManagerGetPublicKeyCredential);
     }
+
 #if defined(OS_ANDROID)
-    if (options->publicKey()->hasExtensions() &&
-        options->publicKey()->extensions()->hasUvm()) {
+    if (public_key_options->hasExtensions() &&
+        public_key_options->extensions()->hasUvm()) {
       UseCounter::Count(resolver->GetExecutionContext(),
                         WebFeature::kCredentialManagerGetWithUVM);
     }
 #endif
-    if (!IsArrayBufferOrViewBelowSizeLimit(options->publicKey()->challenge())) {
+    if (!IsArrayBufferOrViewBelowSizeLimit(public_key_options->challenge())) {
       resolver->Reject(DOMException::Create(
           "The `challenge` attribute exceeds the maximum allowed size.",
           "RangeError"));
       return promise;
     }
-    if (options->publicKey()->hasExtensions()) {
-      if (options->publicKey()->extensions()->hasAppid()) {
-        const auto& appid = options->publicKey()->extensions()->appid();
+    if (public_key_options->hasExtensions()) {
+      if (public_key_options->extensions()->hasAppid()) {
+        const auto& appid = public_key_options->extensions()->appid();
         if (!appid.IsEmpty()) {
           KURL appid_url(appid);
           if (!appid_url.IsValid()) {
@@ -951,24 +962,24 @@ ScriptPromise CredentialsContainer::get(
           }
         }
       }
-      if (options->publicKey()->extensions()->hasCableRegistration()) {
+      if (public_key_options->extensions()->hasCableRegistration()) {
         resolver->Reject(MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kNotSupportedError,
             "The 'cableRegistration' extension is only valid when creating "
             "a credential"));
         return promise;
       }
-      if (options->publicKey()->extensions()->credProps()) {
+      if (public_key_options->extensions()->credProps()) {
         resolver->Reject(MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kNotSupportedError,
             "The 'credProps' extension is only valid when creating "
             "a credential"));
         return promise;
       }
-      if (options->publicKey()->extensions()->hasLargeBlob()) {
+      if (public_key_options->extensions()->hasLargeBlob()) {
         DCHECK(RuntimeEnabledFeatures::
                    WebAuthenticationLargeBlobExtensionEnabled());
-        if (options->publicKey()->extensions()->largeBlob()->hasSupport()) {
+        if (public_key_options->extensions()->largeBlob()->hasSupport()) {
           resolver->Reject(MakeGarbageCollected<DOMException>(
               DOMExceptionCode::kNotSupportedError,
               "The 'largeBlob' extension's 'support' parameter is only valid "
@@ -978,7 +989,7 @@ ScriptPromise CredentialsContainer::get(
       }
     }
 
-    if (!options->publicKey()->hasUserVerification()) {
+    if (!public_key_options->hasUserVerification()) {
       resolver->DomWindow()->AddConsoleMessage(
           MakeGarbageCollected<ConsoleMessage>(
               mojom::blink::ConsoleMessageSource::kJavaScript,
@@ -1003,9 +1014,19 @@ ScriptPromise CredentialsContainer::get(
           WTF::Bind(&AbortPublicKeyRequest, WrapPersistent(script_state)));
     }
 
+    if (is_conditional_ui_request &&
+        public_key_options->hasAllowCredentials() &&
+        !public_key_options->allowCredentials().IsEmpty()) {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotAllowedError,
+          "allowCredentials is not supported for conditionalPublicKey"));
+      return promise;
+    }
+
     auto mojo_options =
-        MojoPublicKeyCredentialRequestOptions::From(*options->publicKey());
+        MojoPublicKeyCredentialRequestOptions::From(*public_key_options);
     if (mojo_options) {
+      mojo_options->is_conditional = is_conditional_ui_request;
       if (!mojo_options->relying_party_id) {
         mojo_options->relying_party_id =
             resolver->GetExecutionContext()->GetSecurityOrigin()->Domain();

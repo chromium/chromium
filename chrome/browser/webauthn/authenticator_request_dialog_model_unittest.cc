@@ -85,8 +85,6 @@ class AuthenticatorRequestDialogModelTest : public ::testing::Test {
 
   AuthenticatorRequestDialogModelTest() = default;
 
-  ~AuthenticatorRequestDialogModelTest() override {}
-
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -305,7 +303,8 @@ TEST_F(AuthenticatorRequestDialogModelTest, TransportAutoSelection) {
       model.set_cable_transport_info(true, false, base::nullopt);
     }
 
-    model.StartFlow(std::move(transports_info), test_case.last_used_transport);
+    model.StartFlow(std::move(transports_info), test_case.last_used_transport,
+                    /*is_conditional=*/false);
     EXPECT_EQ(test_case.expected_first_step, model.current_step());
 
     if (!model.offer_try_again_in_ui()) {
@@ -323,9 +322,10 @@ TEST_F(AuthenticatorRequestDialogModelTest, TransportList) {
     transports_info.available_transports = kAllTransports;
     AuthenticatorRequestDialogModel model(/*relying_party_id=*/"example.com");
     model.set_cable_transport_info(cable_extension_provided,
-                                   /*have_paired_phones=*/false,
-                                   /*qr_generator_key=*/base::nullopt);
-    model.StartFlow(std::move(transports_info), base::nullopt);
+                                   /*has_paired_phones=*/false,
+                                   /*cable_qr_string=*/base::nullopt);
+    model.StartFlow(std::move(transports_info), base::nullopt,
+                    /*is_conditional=*/false);
     EXPECT_THAT(model.available_transports(),
                 ::testing::UnorderedElementsAre(
                     AuthenticatorTransport::kUsbHumanInterfaceDevice,
@@ -342,7 +342,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, NoAvailableTransports) {
 
   EXPECT_CALL(mock_observer, OnStepTransition());
   model.StartFlow(TransportAvailabilityInfo(),
-                  AuthenticatorTransport::kInternal);
+                  AuthenticatorTransport::kInternal, /*is_conditional=*/false);
   EXPECT_EQ(Step::kErrorNoAvailableTransports, model.current_step());
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
@@ -379,7 +379,8 @@ TEST_F(AuthenticatorRequestDialogModelTest, AwaitingAcknowledgement) {
     transports_info.available_transports = kAllTransportsWithoutCable;
 
     EXPECT_CALL(mock_observer, OnStepTransition());
-    model.StartFlow(std::move(transports_info), base::nullopt);
+    model.StartFlow(std::move(transports_info), base::nullopt,
+                    /*is_conditional=*/false);
     EXPECT_EQ(Step::kTransportSelection, model.current_step());
     testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
@@ -417,7 +418,8 @@ TEST_F(AuthenticatorRequestDialogModelTest, BleAdapterAlreadyPowered) {
     AuthenticatorRequestDialogModel model(/*relying_party_id=*/"example.com");
     model.SetBluetoothAdapterPowerOnCallback(power_receiver.GetCallback());
     model.set_cable_transport_info(true, false, base::nullopt);
-    model.StartFlow(std::move(transports_info), base::nullopt);
+    model.StartFlow(std::move(transports_info), base::nullopt,
+                    /*is_conditional=*/false);
     EXPECT_EQ(test_case.expected_final_step, model.current_step());
     EXPECT_TRUE(model.ble_adapter_is_powered());
     EXPECT_FALSE(power_receiver.was_called());
@@ -445,7 +447,8 @@ TEST_F(AuthenticatorRequestDialogModelTest, BleAdapterNeedToBeManuallyPowered) {
     model.AddObserver(&mock_observer);
     model.SetBluetoothAdapterPowerOnCallback(power_receiver.GetCallback());
     model.set_cable_transport_info(true, false, base::nullopt);
-    model.StartFlow(std::move(transports_info), base::nullopt);
+    model.StartFlow(std::move(transports_info), base::nullopt,
+                    /*is_conditional=*/false);
 
     EXPECT_EQ(Step::kBlePowerOnManual, model.current_step());
     EXPECT_FALSE(model.ble_adapter_is_powered());
@@ -484,7 +487,8 @@ TEST_F(AuthenticatorRequestDialogModelTest,
     AuthenticatorRequestDialogModel model(/*relying_party_id=*/"example.com");
     model.SetBluetoothAdapterPowerOnCallback(power_receiver.GetCallback());
     model.set_cable_transport_info(true, false, base::nullopt);
-    model.StartFlow(std::move(transports_info), base::nullopt);
+    model.StartFlow(std::move(transports_info), base::nullopt,
+                    /*is_conditional=*/false);
 
     EXPECT_EQ(Step::kBlePowerOnAutomatic, model.current_step());
 
@@ -519,7 +523,8 @@ TEST_F(AuthenticatorRequestDialogModelTest,
       AuthenticatorReference("authenticator" /* authenticator_id */,
                              AuthenticatorTransport::kInternal));
 
-  model.StartFlow(std::move(transports_info), base::nullopt);
+  model.StartFlow(std::move(transports_info), base::nullopt,
+                  /*is_conditional=*/false);
   EXPECT_EQ(AuthenticatorRequestDialogModel::Step::kTransportSelection,
             model.current_step());
   EXPECT_EQ(0, num_called);
@@ -561,7 +566,8 @@ TEST_F(AuthenticatorRequestDialogModelTest,
       },
       &dispatched_authenticator_ids));
 
-  model.StartFlow(std::move(transports_info), base::nullopt);
+  model.StartFlow(std::move(transports_info), base::nullopt,
+                  /*is_conditional=*/false);
 
   EXPECT_TRUE(model.should_dialog_be_hidden());
   task_environment_.FastForwardUntilNoTasksRemain();

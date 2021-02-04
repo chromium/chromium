@@ -47,6 +47,10 @@ class AuthenticatorRequestDialogModel {
     // The UX flow has not started yet, the dialog should still be hidden.
     kNotStarted,
 
+    // A more subtle version of the dialog is being shown as an icon or bubble
+    // on the omnibox, prompting the user to tap their security key.
+    kSubtleUI,
+
     kTransportSelection,
 
     // The request errored out before completing. Error will only be sent
@@ -179,7 +183,8 @@ class AuthenticatorRequestDialogModel {
   // Valid action when at step: kNotStarted.
   void StartFlow(
       TransportAvailabilityInfo transport_availability,
-      base::Optional<device::FidoTransportProtocol> last_used_transport);
+      base::Optional<device::FidoTransportProtocol> last_used_transport,
+      bool is_conditional);
 
   // Restarts the UX flow.
   void StartOver();

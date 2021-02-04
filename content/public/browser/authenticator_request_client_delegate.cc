@@ -111,6 +111,9 @@ bool AuthenticatorRequestClientDelegate::IsWebAuthnUIEnabled() {
   return false;
 }
 
+void AuthenticatorRequestClientDelegate::SetConditionalRequest(
+    bool is_conditional) {}
+
 void AuthenticatorRequestClientDelegate::OnTransportAvailabilityEnumerated(
     device::FidoRequestHandlerBase::TransportAvailabilityInfo data) {}
 

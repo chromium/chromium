@@ -277,6 +277,11 @@ struct PRFValues {
 
 // Parameters passed into calls to GetAssertion.
 struct PublicKeyCredentialRequestOptions {
+  // If true, indicates that this request should prioritize showing a UI only if
+  // there are discoverable credentials available in this device's platform
+  // authenticator.
+  bool is_conditional;
+
   // An indefinite-length blob passed from the the relying party server,
   // to be sent to an authenticator for signing.
   array<uint8> challenge;

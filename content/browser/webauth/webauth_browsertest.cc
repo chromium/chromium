@@ -541,9 +541,10 @@ class WebAuthLocalClientBrowserTest : public WebAuthBrowserTestBase {
 
     std::vector<uint8_t> kTestChallenge{0, 0, 0};
     auto mojo_options = blink::mojom::PublicKeyCredentialRequestOptions::New(
-        kTestChallenge, base::TimeDelta::FromSeconds(30), "acme.com",
-        std::move(credentials), device::UserVerificationRequirement::kPreferred,
-        base::nullopt, std::vector<device::CableDiscoveryData>(), /*prf=*/false,
+        /*is_conditional=*/false, kTestChallenge,
+        base::TimeDelta::FromSeconds(30), "acme.com", std::move(credentials),
+        device::UserVerificationRequirement::kPreferred, base::nullopt,
+        std::vector<device::CableDiscoveryData>(), /*prf=*/false,
         /*prf_inputs=*/std::vector<blink::mojom::PRFValuesPtr>(),
         /*large_blob_read=*/false, /*large_blob_write=*/base::nullopt);
     return mojo_options;
@@ -661,6 +662,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthLocalClientBrowserTest,
 
           if (behavior == AttestationCallbackBehavior::BEFORE_NAVIGATION) {
             std::move(callback).Run(false);
+            // Silence the erroneous bugprone-use-after-move.
+            callback = base::OnceCallback<void(bool)>();
           }
           EXPECT_TRUE(NavigateToURL(
               shell(), GetHttpsURL("www.acme.com", "/title2.html")));
@@ -1310,6 +1313,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
 
           if (behavior == AttestationCallbackBehavior::BEFORE_NAVIGATION) {
             std::move(callback).Run(true);
+            // Silence the erroneous bugprone-use-after-move.
+            callback = base::OnceCallback<void(bool)>();
           }
           // Can't use NavigateIframeToURL here because in the
           // BEFORE_NAVIGATION case we are racing AuthenticatorImpl and

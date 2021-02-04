@@ -505,6 +505,11 @@ bool ChromeAuthenticatorRequestDelegate::IsWebAuthnUIEnabled() {
   return !disable_ui_;
 }
 
+void ChromeAuthenticatorRequestDelegate::SetConditionalRequest(
+    bool is_conditional) {
+  is_conditional_ = is_conditional;
+}
+
 #if defined(OS_MAC)
 base::Optional<ChromeAuthenticatorRequestDelegate::TouchIdAuthenticatorConfig>
 ChromeAuthenticatorRequestDelegate::GetTouchIdAuthenticatorConfig() {
@@ -521,8 +526,8 @@ void ChromeAuthenticatorRequestDelegate::OnTransportAvailabilityEnumerated(
 
   weak_dialog_model_->AddObserver(this);
 
-  weak_dialog_model_->StartFlow(std::move(data), GetLastTransportUsed());
-
+  weak_dialog_model_->StartFlow(std::move(data), GetLastTransportUsed(),
+                                is_conditional_);
   ShowAuthenticatorRequestDialog(
       content::WebContents::FromRenderFrameHost(render_frame_host()),
       std::move(transient_dialog_model_holder_));
@@ -535,7 +540,7 @@ bool ChromeAuthenticatorRequestDelegate::EmbedderControlsAuthenticatorDispatch(
   // discovered, or whether the embedder/UI takes charge of that by
   // invoking its RequestCallback.
   auto transport = authenticator.AuthenticatorTransport();
-  return IsWebAuthnUIEnabled() &&
+  return (is_conditional_ || IsWebAuthnUIEnabled()) &&
          (!transport ||  // Windows
           *transport == device::FidoTransportProtocol::kInternal);
 }

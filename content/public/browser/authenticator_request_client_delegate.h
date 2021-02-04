@@ -219,6 +219,10 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
 
   virtual bool IsWebAuthnUIEnabled();
 
+  // Set to true to enable a mode where a prominent UI is only show for
+  // discoverable platform credentials.
+  virtual void SetConditionalRequest(bool is_conditional);
+
   // device::FidoRequestHandlerBase::Observer:
   void OnTransportAvailabilityEnumerated(
       device::FidoRequestHandlerBase::TransportAvailabilityInfo data) override;
