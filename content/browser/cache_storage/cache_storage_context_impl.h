@@ -39,7 +39,6 @@ class Origin;
 
 namespace content {
 
-class ChromeBlobStorageContext;
 class CacheStorageDispatcherHost;
 class CacheStorageManager;
 
@@ -72,7 +71,9 @@ class CONTENT_EXPORT CacheStorageContextImpl
   // storagepartition is being setup and torn down.
   void Init(const base::FilePath& user_data_directory,
             scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
-            scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy);
+            scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
+            mojo::PendingRemote<storage::mojom::BlobStorageContext>
+                blob_storage_context);
   void Shutdown();
 
   void Bind(mojo::PendingReceiver<storage::mojom::CacheStorageControl> control);
@@ -103,13 +104,6 @@ class CONTENT_EXPORT CacheStorageContextImpl
 
   bool is_incognito() const { return is_incognito_; }
 
-  // This function must be called after this object is created but before any
-  // CacheStorageCache operations. It must be called on the UI thread. If
-  // |blob_storage_context| is NULL the function immediately returns without
-  // forwarding to the CacheStorageManager.
-  void SetBlobParametersForCache(
-      ChromeBlobStorageContext* blob_storage_context);
-
  protected:
   ~CacheStorageContextImpl() override;
 
@@ -117,16 +111,11 @@ class CONTENT_EXPORT CacheStorageContextImpl
   void CreateCacheStorageManagerOnTaskRunner(
       const base::FilePath& user_data_directory,
       scoped_refptr<base::SequencedTaskRunner> cache_task_runner,
-      scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy);
+      scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
+      mojo::PendingRemote<storage::mojom::BlobStorageContext>
+          blob_storage_context);
 
   void ShutdownOnTaskRunner();
-
-  void BindBlobStorageMojoContextOnIOThread(
-      ChromeBlobStorageContext* blob_storage_context,
-      mojo::PendingReceiver<storage::mojom::BlobStorageContext> receiver);
-
-  void SetBlobParametersForCacheOnTaskRunner(
-      mojo::PendingRemote<storage::mojom::BlobStorageContext> remote);
 
   void CreateQuotaClientsOnIOThread(
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy);

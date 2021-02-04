@@ -55,8 +55,6 @@ class CONTENT_EXPORT CrossSequenceCacheStorageManager
                         storage::mojom::CacheStorageOwner owner) override;
   void AddObserver(mojo::PendingRemote<storage::mojom::CacheStorageObserver>
                        observer) override;
-  void SetBlobParametersForCache(
-      scoped_refptr<BlobStorageContextWrapper> blob_storage_context) override;
 
  private:
   ~CrossSequenceCacheStorageManager() override;

@@ -209,7 +209,7 @@ void CodeCacheHostTestcase::SetUpOnUIThread() {
       base::MakeRefCounted<content::CacheStorageContextImpl>();
   cache_storage_context_->Init(browser_context_->GetPath(),
                                browser_context_->GetSpecialStoragePolicy(),
-                               nullptr);
+                               nullptr, mojo::NullRemote());
   cache_storage_context_->Bind(
       cache_storage_control_.BindNewPipeAndPassReceiver());
 

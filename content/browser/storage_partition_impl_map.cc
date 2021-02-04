@@ -469,9 +469,6 @@ void StoragePartitionImplMap::PostCreateInitialization(
 
   // Check first to avoid memory leak in unittests.
   if (BrowserThread::IsThreadInitialized(BrowserThread::IO)) {
-    partition->GetCacheStorageContext()->SetBlobParametersForCache(
-        ChromeBlobStorageContext::GetFor(browser_context_));
-
     // Use PostTask() instead of RunOrPostTaskOnThread() because not posting a
     // task causes it to run before the CacheStorageManager has been
     // initialized, and then CacheStorageContextImpl::CacheManager() ends up

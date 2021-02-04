@@ -244,7 +244,8 @@ scoped_refptr<LegacyCacheStorageManager> LegacyCacheStorageManager::Create(
     const base::FilePath& path,
     scoped_refptr<base::SequencedTaskRunner> cache_task_runner,
     scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
-    scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy) {
+    scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
+    scoped_refptr<BlobStorageContextWrapper> blob_storage_context) {
   base::FilePath root_path = path;
   if (!path.empty()) {
     root_path = path.Append(storage::kServiceWorkerDirectory)
@@ -253,7 +254,7 @@ scoped_refptr<LegacyCacheStorageManager> LegacyCacheStorageManager::Create(
 
   return base::WrapRefCounted(new LegacyCacheStorageManager(
       root_path, std::move(cache_task_runner), std::move(scheduler_task_runner),
-      std::move(quota_manager_proxy)));
+      std::move(quota_manager_proxy), std::move(blob_storage_context)));
 }
 
 // static
@@ -264,8 +265,8 @@ LegacyCacheStorageManager::CreateForTesting(
       new LegacyCacheStorageManager(old_manager->root_path(),
                                     old_manager->cache_task_runner(),
                                     old_manager->scheduler_task_runner(),
-                                    old_manager->quota_manager_proxy_.get()));
-  manager->SetBlobParametersForCache(old_manager->blob_storage_context_);
+                                    old_manager->quota_manager_proxy_,
+                                    old_manager->blob_storage_context_));
   return manager;
 }
 
@@ -298,15 +299,6 @@ CacheStorageHandle LegacyCacheStorageManager::OpenCacheStorage(
     return cache_storage->CreateHandle();
   }
   return it->second.get()->CreateHandle();
-}
-
-void LegacyCacheStorageManager::SetBlobParametersForCache(
-    scoped_refptr<BlobStorageContextWrapper> blob_storage_context) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(cache_storage_map_.empty());
-  DCHECK(!blob_storage_context_ ||
-         blob_storage_context_ == blob_storage_context);
-  blob_storage_context_ = std::move(blob_storage_context);
 }
 
 void LegacyCacheStorageManager::NotifyCacheListChanged(
@@ -530,11 +522,13 @@ LegacyCacheStorageManager::LegacyCacheStorageManager(
     const base::FilePath& path,
     scoped_refptr<base::SequencedTaskRunner> cache_task_runner,
     scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
-    scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy)
+    scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
+    scoped_refptr<BlobStorageContextWrapper> blob_storage_context)
     : root_path_(path),
       cache_task_runner_(std::move(cache_task_runner)),
       scheduler_task_runner_(std::move(scheduler_task_runner)),
-      quota_manager_proxy_(std::move(quota_manager_proxy)) {}
+      quota_manager_proxy_(std::move(quota_manager_proxy)),
+      blob_storage_context_(std::move(blob_storage_context)) {}
 
 // static
 base::FilePath LegacyCacheStorageManager::ConstructOriginPath(
