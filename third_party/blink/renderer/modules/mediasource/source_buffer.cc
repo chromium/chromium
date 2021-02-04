@@ -1805,8 +1805,6 @@ void SourceBuffer::NotifyParseWarning(const ParseWarning warning) {
   switch (warning) {
     case WebSourceBufferClient::kKeyframeTimeGreaterThanDependant:
       // Report this problematic GOP structure to help inform follow-up work.
-      // Media engine also records RAPPOR for these, up to once per track, at
-      // Media.OriginUrl.MSE.KeyframeTimeGreaterThanDependant.
       // TODO(wolenetz): Use the data to scope additional work. See
       // https://crbug.com/739931.
       UseCounter::Count(
@@ -1815,8 +1813,6 @@ void SourceBuffer::NotifyParseWarning(const ParseWarning warning) {
       break;
     case WebSourceBufferClient::kMuxedSequenceMode:
       // Report this problematic API usage to help inform follow-up work.
-      // Media engine also records RAPPOR for these, up to once per
-      // SourceBuffer, at Media.OriginUrl.MSE.MuxedSequenceModeSourceBuffer.
       // TODO(wolenetz): Use the data to scope additional work. See
       // https://crbug.com/737757.
       UseCounter::Count(GetExecutionContext(),

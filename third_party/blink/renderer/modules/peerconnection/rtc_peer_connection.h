@@ -566,8 +566,6 @@ class MODULES_EXPORT RTCPeerConnection final
 
   void CloseInternal();
 
-  void RecordRapporMetrics();
-
   DOMException* checkSdpForStateErrors(ExecutionContext*,
                                        const ParsedSessionDescription&);
   void RecordSdpCategoryAndMaybeEmitWarnings(
@@ -662,7 +660,7 @@ class MODULES_EXPORT RTCPeerConnection final
   String last_answer_;
 
   Member<RTCSctpTransport> sctp_transport_;
-  bool has_data_channels_;  // For RAPPOR metrics
+
   // In Plan B, senders and receivers are added or removed independently of one
   // another. In Unified Plan, senders and receivers are created in pairs as
   // transceivers. Transceivers may become inactive, but are never removed.

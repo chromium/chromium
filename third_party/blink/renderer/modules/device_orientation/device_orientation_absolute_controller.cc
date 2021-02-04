@@ -59,8 +59,6 @@ void DeviceOrientationAbsoluteController::DidAddEventListener(
                     WebFeature::kDeviceOrientationAbsoluteSecureOrigin);
 
   if (!has_event_listener_) {
-    // TODO: add rappor url logging as in DeviceOrientationController.
-
     if (!CheckPolicyFeatures(
             {mojom::blink::FeaturePolicyFeature::kAccelerometer,
              mojom::blink::FeaturePolicyFeature::kGyroscope,
