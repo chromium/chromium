@@ -33,7 +33,7 @@ const base::Feature kAutofillAssistantFeedbackChip{
     "AutofillAssistantFeedbackChip", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kAutofillAssistantProactiveHelp{
-    "AutofillAssistantProactiveHelp", base::FEATURE_DISABLED_BY_DEFAULT};
+    "AutofillAssistantProactiveHelp", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Use Chrome's TabHelper system to deal with the life cycle of WebContent's
 // depending Autofill Assistant objects.
@@ -46,7 +46,7 @@ const base::Feature kAutofillAssistantWithTabHelper{
 // base64-injected trigger scripts can be shown even in the absence of MSBB.
 const base::Feature kAutofillAssistantDisableProactiveHelpTiedToMSBB{
     "AutofillAssistantDisableProactiveHelpTiedToMSBB",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Whether autofill assistant should load the DFM for trigger scripts when
 // necessary. Without this feature, trigger scripts will exit if the DFM is not

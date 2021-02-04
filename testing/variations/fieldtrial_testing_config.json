@@ -832,23 +832,6 @@
             ]
         }
     ],
-    "AutofillAssistantProactiveHelp": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "//1": "This launch is gated external to Chrome.",
-                    "name": "Enabled_20201215",
-                    "enable_features": [
-                        "AutofillAssistantDisableProactiveHelpTiedToMSBB",
-                        "AutofillAssistantProactiveHelp"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillConcurrentExperiments": [
         {
             "platforms": [
