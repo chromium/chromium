@@ -137,6 +137,14 @@ void StatusAreaWidget::Initialize() {
   for (TrayBackgroundView* tray_button : tray_buttons_)
     tray_button->Initialize();
 
+  // Move the |stop_recording_button_tray_| to the front so that it's more
+  // visible. This ensure the |stop_recording_button_tray_| always sticks to
+  // the left most side.
+  if (features::IsCaptureModeEnabled()) {
+    status_area_widget_delegate_->ReorderChildView(
+        stop_recording_button_tray_.get(), 1);
+  }
+
   UpdateAfterLoginStatusChange(
       Shell::Get()->session_controller()->login_status());
   UpdateLayout(/*animate=*/false);
@@ -308,12 +316,21 @@ void StatusAreaWidget::CalculateButtonVisibilityForCollapsedState() {
   bool force_collapsible = base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kAshForceStatusAreaCollapsible);
 
+  // If |stop_recording_button_tray_| is visible, make some space in tray for
+  // it.
+  const int stop_recording_button_width =
+      stop_recording_button_tray_->visible_preferred()
+          ? stop_recording_button_tray_->GetPreferredSize().width()
+          : 0;
+
   // We update visibility of each tray button based on the available width.
   const int shelf_width =
       shelf_->shelf_widget()->GetClientAreaBoundsInScreen().width();
   const int available_width =
-      force_collapsible ? kStatusAreaForceCollapseAvailableWidth
-                        : shelf_width / 2 - kStatusAreaLeftPaddingForOverflow;
+      (force_collapsible
+           ? kStatusAreaForceCollapseAvailableWidth
+           : shelf_width / 2 - kStatusAreaLeftPaddingForOverflow) -
+      stop_recording_button_width;
 
   // First, reset all tray button to be hidden.
   overflow_button_tray_->ResetStateToCollapsed();
@@ -328,6 +345,9 @@ void StatusAreaWidget::CalculateButtonVisibilityForCollapsedState() {
   for (TrayBackgroundView* tray : base::Reversed(tray_buttons_)) {
     // Skip non-enabled tray buttons.
     if (!tray->visible_preferred())
+      continue;
+    // Skip |stop_recording_button_tray_| since it's always visible.
+    if (tray == stop_recording_button_tray_.get())
       continue;
 
     // Show overflow button once available width is exceeded.
@@ -347,6 +367,10 @@ void StatusAreaWidget::CalculateButtonVisibilityForCollapsedState() {
     previous_tray = tray;
     used_width += tray_width;
   }
+
+  // Skip |stop_recording_button_tray_| so it's always visible.
+  if (stop_recording_button_tray_->visible_preferred())
+    stop_recording_button_tray_->set_show_when_collapsed(true);
 
   overflow_button_tray_->SetVisiblePreferred(show_overflow_button);
   overflow_button_tray_->UpdateAfterStatusAreaCollapseChange();
