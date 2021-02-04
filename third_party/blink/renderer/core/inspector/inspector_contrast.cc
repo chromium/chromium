@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/css/css_gradient_value.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -200,12 +201,15 @@ ContrastInfo InspectorContrast::GetContrast(Element* top_element) {
   if (!text_node || top_element->firstChild()->nextSibling())
     return result;
 
-  Vector<Color> bgcolors = GetBackgroundColors(top_element);
+  float text_opacity = 1.0f;
+  Vector<Color> bgcolors = GetBackgroundColors(top_element, &text_opacity);
   if (bgcolors.IsEmpty())
     return result;
 
   Color text_color =
       static_cast<const cssvalue::CSSColorValue*>(text_color_value)->Value();
+
+  text_color = text_color.CombineWithAlpha(text_opacity);
 
   float contrast_ratio = color_utils::GetContrastRatio(
       SkColor(bgcolors.at(0).Blend(text_color)), SkColor(bgcolors.at(0)));
@@ -239,7 +243,8 @@ TextInfo InspectorContrast::GetTextInfo(Element* element) {
   return info;
 }
 
-Vector<Color> InspectorContrast::GetBackgroundColors(Element* element) {
+Vector<Color> InspectorContrast::GetBackgroundColors(Element* element,
+                                                     float* text_opacity) {
   Vector<Color> colors;
   // TODO: only support the single text child node here.
   // Follow up with a larger fix post-merge.
@@ -256,7 +261,8 @@ Vector<Color> InspectorContrast::GetBackgroundColors(Element* element) {
   // Start with the "default" page color (typically white).
   colors.push_back(view->BaseBackgroundColor());
 
-  GetColorsFromRect(content_bounds, text_node->GetDocument(), element, colors);
+  GetColorsFromRect(content_bounds, text_node->GetDocument(), element, colors,
+                    text_opacity);
 
   return colors;
 }
@@ -274,12 +280,15 @@ std::vector<Member<Node>> InspectorContrast::ElementsFromRect(
 bool InspectorContrast::GetColorsFromRect(PhysicalRect rect,
                                           Document& document,
                                           Element* top_element,
-                                          Vector<Color>& colors) {
+                                          Vector<Color>& colors,
+                                          float* text_opacity) {
   std::vector<Member<Node>> elements_under_rect =
       ElementsFromRect(rect, document);
 
   bool found_opaque_color = false;
   bool found_top_element = false;
+
+  *text_opacity = 1.0f;
 
   for (auto e = elements_under_rect.begin();
        !found_top_element && e != elements_under_rect.end(); ++e) {
@@ -313,6 +322,12 @@ bool InspectorContrast::GetColorsFromRect(PhysicalRect rect,
     if (style->HasOpacity()) {
       background_color = background_color.CombineWithAlpha(
           background_color.Alpha() / 255 * style->Opacity());
+      // If the background element is the ancestor of the top element or is the
+      // top element, the opacity affects the text color of the top element.
+      if (element == top_element ||
+          FlatTreeTraversal::IsDescendantOf(*top_element, *element)) {
+        *text_opacity *= style->Opacity();
+      }
     }
 
     bool found_non_transparent_color = false;

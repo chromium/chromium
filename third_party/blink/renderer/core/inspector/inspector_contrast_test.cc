@@ -38,9 +38,11 @@ TEST_F(InspectorContrastTest, GetBackgroundColors) {
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   Element* target = GetDocument().getElementById("target");
   InspectorContrast contrast(&GetDocument());
-  Vector<Color> colors = contrast.GetBackgroundColors(target);
+  float fg_opacity = 1.0f;
+  Vector<Color> colors = contrast.GetBackgroundColors(target, &fg_opacity);
   EXPECT_EQ(1u, colors.size());
   EXPECT_EQ("#ff0000", colors.at(0).Serialized());
+  EXPECT_EQ(1.0f, fg_opacity);
 }
 
 TEST_F(InspectorContrastTest, GetBackgroundColorsNoText) {
@@ -55,8 +57,10 @@ TEST_F(InspectorContrastTest, GetBackgroundColorsNoText) {
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   Element* target = GetDocument().getElementById("target");
   InspectorContrast contrast(&GetDocument());
-  Vector<Color> colors = contrast.GetBackgroundColors(target);
+  float fg_opacity = 1.0f;
+  Vector<Color> colors = contrast.GetBackgroundColors(target, &fg_opacity);
   EXPECT_EQ(0u, colors.size());
+  EXPECT_EQ(1.0f, fg_opacity);
 }
 
 TEST_F(InspectorContrastTest, GetBackgroundColorsBgOpacity) {
@@ -69,9 +73,11 @@ TEST_F(InspectorContrastTest, GetBackgroundColorsBgOpacity) {
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   Element* target = GetDocument().getElementById("target");
   InspectorContrast contrast(&GetDocument());
-  Vector<Color> colors = contrast.GetBackgroundColors(target);
+  float fg_opacity = 1.0f;
+  Vector<Color> colors = contrast.GetBackgroundColors(target, &fg_opacity);
   EXPECT_EQ(1u, colors.size());
   EXPECT_EQ("#e5e5e5", colors.at(0).Serialized());
+  EXPECT_EQ(1.0f, fg_opacity);
 }
 
 TEST_F(InspectorContrastTest, GetBackgroundColorsBgOpacityParent) {
@@ -83,9 +89,25 @@ TEST_F(InspectorContrastTest, GetBackgroundColorsBgOpacityParent) {
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   Element* target = GetDocument().getElementById("target");
   InspectorContrast contrast(&GetDocument());
-  Vector<Color> colors = contrast.GetBackgroundColors(target);
+  float fg_opacity = 1.0f;
+  Vector<Color> colors = contrast.GetBackgroundColors(target, &fg_opacity);
   EXPECT_EQ(1u, colors.size());
   EXPECT_EQ("#e5e5e5", colors.at(0).Serialized());
+  EXPECT_EQ(0.1f, fg_opacity);
+}
+
+TEST_F(InspectorContrastTest, GetBackgroundColorsElementWithOpacity) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <div id="target" style="opacity: 0.1; color: black;">test</div>
+  )HTML");
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  Element* target = GetDocument().getElementById("target");
+  InspectorContrast contrast(&GetDocument());
+  float fg_opacity = 1.0f;
+  Vector<Color> colors = contrast.GetBackgroundColors(target, &fg_opacity);
+  EXPECT_EQ(1u, colors.size());
+  EXPECT_EQ("#ffffff", colors.at(0).Serialized());
+  EXPECT_EQ(0.1f, fg_opacity);
 }
 
 TEST_F(InspectorContrastTest, GetBackgroundColorsBgHidden) {
@@ -98,9 +120,11 @@ TEST_F(InspectorContrastTest, GetBackgroundColorsBgHidden) {
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   Element* target = GetDocument().getElementById("target");
   InspectorContrast contrast(&GetDocument());
-  Vector<Color> colors = contrast.GetBackgroundColors(target);
+  float fg_opacity = 1.0f;
+  Vector<Color> colors = contrast.GetBackgroundColors(target, &fg_opacity);
   EXPECT_EQ(1u, colors.size());
   EXPECT_EQ("#ffffff", colors.at(0).Serialized());
+  EXPECT_EQ(1.0f, fg_opacity);
 }
 
 TEST_F(InspectorContrastTest, GetBackgroundColorsWithOpacity) {
@@ -116,9 +140,11 @@ TEST_F(InspectorContrastTest, GetBackgroundColorsWithOpacity) {
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   Element* target = GetDocument().getElementById("target");
   InspectorContrast contrast(&GetDocument());
-  Vector<Color> colors = contrast.GetBackgroundColors(target);
+  float fg_opacity = 1.0f;
+  Vector<Color> colors = contrast.GetBackgroundColors(target, &fg_opacity);
   EXPECT_EQ(1u, colors.size());
   EXPECT_EQ("#040404", colors.at(0).Serialized());
+  EXPECT_EQ(1.0f, fg_opacity);
 }
 
 TEST_F(InspectorContrastTest, GetContrast) {
@@ -127,6 +153,9 @@ TEST_F(InspectorContrastTest, GetContrast) {
       test
     </div>
     <div id="target2" style="color: hsla(200,0%,0%,0.701960784313725); background-color: white;">
+      test
+    </div>
+    <div id="target3" style="color: black; opacity: 0.1;">
       test
     </div>
   )HTML");
@@ -139,11 +168,11 @@ TEST_F(InspectorContrastTest, GetContrast) {
   EXPECT_EQ(7.0, contrast_info_1.threshold_aaa);
   EXPECT_FLOAT_EQ(1, contrast_info_1.contrast_ratio);
   ContrastInfo contrast_info_2 =
-      contrast.GetContrast(GetDocument().getElementById("target2"));
+      contrast.GetContrast(GetDocument().getElementById("target3"));
   EXPECT_EQ(true, contrast_info_2.able_to_compute_contrast);
   EXPECT_EQ(4.5, contrast_info_2.threshold_aa);
   EXPECT_EQ(7.0, contrast_info_2.threshold_aaa);
-  EXPECT_FLOAT_EQ(8.58742, contrast_info_2.contrast_ratio);
+  EXPECT_NEAR(1.25, contrast_info_2.contrast_ratio, 0.01);
 }
 
 }  // namespace blink

@@ -2332,7 +2332,8 @@ void InspectorCSSAgent::GetBackgroundColors(Element* element,
                                             String* computed_font_size,
                                             String* computed_font_weight) {
   InspectorContrast contrast(&element->GetDocument());
-  *colors = contrast.GetBackgroundColors(element);
+  float text_opacity = 1.0f;
+  *colors = contrast.GetBackgroundColors(element, &text_opacity);
   auto text_info = contrast.GetTextInfo(element);
   *computed_font_size = text_info.font_size;
   *computed_font_weight = text_info.font_weight;

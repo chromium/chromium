@@ -39,7 +39,7 @@ class CORE_EXPORT InspectorContrast {
   explicit InspectorContrast(Document*);
   ContrastInfo GetContrast(Element*);
   std::vector<ContrastInfo> GetElementsWithContrastIssues(size_t max_elements);
-  Vector<Color> GetBackgroundColors(Element*);
+  Vector<Color> GetBackgroundColors(Element*, float* text_opacity);
   TextInfo GetTextInfo(Element*);
 
  private:
@@ -49,7 +49,8 @@ class CORE_EXPORT InspectorContrast {
   bool GetColorsFromRect(PhysicalRect rect,
                          Document& document,
                          Element* top_element,
-                         Vector<Color>& colors);
+                         Vector<Color>& colors,
+                         float* text_opacity);
   void CollectNodesAndBuildRTreeIfNeeded();
 
   cc::RTree<Member<Node>> rtree_;
