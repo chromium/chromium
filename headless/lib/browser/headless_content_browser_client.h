@@ -71,6 +71,8 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
   std::string GetProduct() override;
   std::string GetUserAgent() override;
 
+  bool CanAcceptUntrustedExchangesIfNeeded() override;
+
  private:
   class StubBadgeService;
 

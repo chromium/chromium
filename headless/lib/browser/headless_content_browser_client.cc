@@ -367,4 +367,11 @@ void HeadlessContentBrowserClient::BindBadgeService(
   stub_badge_service_->Bind(std::move(receiver));
 }
 
+bool HeadlessContentBrowserClient::CanAcceptUntrustedExchangesIfNeeded() {
+  // We require --user-data-dir flag too so that no dangerous changes are made
+  // in the user's regular profile.
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kUserDataDir);
+}
+
 }  // namespace headless
