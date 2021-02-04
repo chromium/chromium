@@ -692,7 +692,8 @@ void NodeChannel::OnChannelMessage(const void* payload,
 
     case MessageType::REQUEST_INTRODUCTION: {
       IntroductionData data;
-      if (GetMessagePayload(payload, payload_size, &data)) {
+      if (GetMessagePayloadMinimumSized<IntroductionData, IntroductionDataV0>(
+              payload, payload_size, &data)) {
         delegate_->OnRequestIntroduction(remote_node_name_, data.name);
         return;
       }
@@ -816,7 +817,8 @@ void NodeChannel::OnChannelMessage(const void* payload,
       return;
   }
 
-  DLOG(ERROR) << "Received invalid message. Closing channel.";
+  DLOG(ERROR) << "Received invalid message type: "
+              << static_cast<int>(header->type) << " closing channel.";
   if (process_error_callback_)
     process_error_callback_.Run("NodeChannel received a malformed message");
   delegate_->OnChannelError(remote_node_name_, this);
