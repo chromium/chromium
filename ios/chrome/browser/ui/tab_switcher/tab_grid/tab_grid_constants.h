@@ -48,10 +48,6 @@ extern const CGFloat kTabGridFloatingButtonHorizontalInset;
 extern const CGFloat kTabGridTopToolbarHeight;
 extern const CGFloat kTabGridBottomToolbarHeight;
 
-// The delay (in milliseconds) after closing the last incognito tab and before
-// automatically scrolling to the regular tabs panel.
-extern const int64_t kTabGridScrollAnimationDelayInMilliseconds;
-
 // The distance travelled by the thumb strip thumbnails during the slide-in
 // animation of the thumb strip reveal transition.
 extern const CGFloat kThumbStripSlideInHeight;

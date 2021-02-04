@@ -2441,14 +2441,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   if (self.tabSwitcherIsActive || !self.currentInterface.incognito) {
     return;
   }
-
-  WebStateList* currentWebStateList =
-      self.currentInterface.browser->GetWebStateList();
-  if (currentWebStateList->empty()) {
-    [self showTabSwitcher];
-  } else {
-    [self setCurrentInterfaceForMode:ApplicationMode::NORMAL];
-  }
+  [self showTabSwitcher];
 }
 
 // Called when the last regular tab was closed.
