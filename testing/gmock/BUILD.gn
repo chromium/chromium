@@ -13,7 +13,7 @@ source_set("gmock") {
     "include/gmock/gmock-matchers.h",
     "include/gmock/gmock.h",
   ]
-  deps = [ "//third_party/googletest:gmock" ]
+  public_deps = [ "//third_party/googletest:gmock" ]
 
   public_configs = [
     "//third_party/googletest:gmock_config",

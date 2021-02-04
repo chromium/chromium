@@ -171,7 +171,6 @@ no_check_targets = [
   "//sandbox/linux:*",  # 13 errors
   "//sandbox/win:*",  # 7 errors
 
-  "//third_party/crashpad/crashpad/client:*",  # 1 error
   "//third_party/crashpad/crashpad/compat:*",  # 2 errors
   "//third_party/crashpad/crashpad/snapshot:*",  # 1 error
   "//third_party/crashpad/crashpad/test:*",  # 2 errors
