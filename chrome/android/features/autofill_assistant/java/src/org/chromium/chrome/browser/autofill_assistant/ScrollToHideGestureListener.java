@@ -45,10 +45,32 @@ public class ScrollToHideGestureListener implements GestureStateListenerWithScro
     /** This animator moves the sheet to its final position after scrolling ended. */
     private ValueAnimator mAnimator;
 
+    /**
+     * The offset the animator is moving towards. Only relevant when {@code mAnimator} is active.
+     */
+    private int mAnimatorGoalOffsetPx;
+
     public ScrollToHideGestureListener(
             BottomSheetController bottomSheetController, AssistantBottomSheetContent content) {
         mBottomSheetController = bottomSheetController;
         mContent = content;
+    }
+
+    /** True while scrolling. */
+    public boolean isScrolling() {
+        return mScrolling;
+    }
+
+    /** True if the sheet was hidden. */
+    public boolean isSheetHidden() {
+        return mBottomSheetController.getSheetState() == SheetState.FULL
+                && mBottomSheetController.getCurrentOffset() == 0;
+    }
+
+    /** True if the sheet is currently hiding or expanding after a scroll. */
+    public boolean isSheetSettling() {
+        return mBottomSheetController.getSheetState() == SheetState.FULL && mAnimator != null
+                && mAnimator.isStarted();
     }
 
     @Override
@@ -98,8 +120,8 @@ public class ScrollToHideGestureListener implements GestureStateListenerWithScro
             // It's possible for the scroll offset to reset to 0 outside of a scroll, if the page or
             // viewport size change. Scrolling up is not possible so if the sheet is hidden or about
             // to be hidden, show it.
-            if (scrollOffsetY == 0 && mBottomSheetController.getSheetState() == SheetState.FULL
-                    && (mBottomSheetController.getCurrentOffset() == 0 || mAnimator != null)) {
+            if (scrollOffsetY == 0
+                    && (isSheetHidden() || (isSheetSettling() && mAnimatorGoalOffsetPx == 0))) {
                 animateTowards(getMaxOffsetPx());
             }
             return;
@@ -182,7 +204,9 @@ public class ScrollToHideGestureListener implements GestureStateListenerWithScro
                 offsetController.onResult((Integer) animator.getAnimatedValue());
             }
         });
+
         mAnimator = animator;
+        mAnimatorGoalOffsetPx = goalOffsetPx;
         mAnimator.start();
     }
 

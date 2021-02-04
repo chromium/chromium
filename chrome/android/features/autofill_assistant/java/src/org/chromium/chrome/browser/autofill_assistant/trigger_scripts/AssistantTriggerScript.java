@@ -115,8 +115,8 @@ public class AssistantTriggerScript {
     }
 
     private void createBottomSheetContents() {
-        mContent =
-                new AssistantBottomSheetContent(mContext, () -> new AssistantBottomBarDelegate() {
+        mContent = new AssistantBottomSheetContent(
+                mContext, () -> new AssistantBottomBarDelegate() {
                     @Override
                     public boolean onBackButtonPressed() {
                         return mDelegate.onBackButtonPressed();
@@ -130,7 +130,26 @@ public class AssistantTriggerScript {
                         assert false : "This should never happen";
                         mDelegate.onBottomSheetClosedWithSwipe();
                     }
+                }) {
+            @Override
+            public boolean setContentSizeListener(@Nullable ContentSizeListener listener) {
+                return super.setContentSizeListener(new ContentSizeListener() {
+                    @Override
+                    public void onSizeChanged(int width, int height, int oldWidth, int oldHeight) {
+                        if (mGestureListener != null
+                                && (mGestureListener.isScrolling()
+                                        || mGestureListener.isSheetHidden()
+                                        || mGestureListener.isSheetSettling())) {
+                            // Prevent the bottom sheet from being reset and moving back
+                            // to its normal position while scrolling or running a settle
+                            // animation controlled by the scroll-to-hide gesture listener.
+                            return;
+                        }
+                        listener.onSizeChanged(width, height, oldWidth, oldHeight);
+                    }
                 });
+            }
+        };
         // Allow swipe-to-dismiss.
         mContent.setPeekModeDisabled(true);
 
