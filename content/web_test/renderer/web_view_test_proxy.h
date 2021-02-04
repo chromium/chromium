@@ -23,12 +23,7 @@
 #include "third_party/blink/public/web/web_navigation_policy.h"
 #include "third_party/blink/public/web/web_view_client.h"
 
-namespace blink {
-class WebString;
-}  // namespace blink
-
 namespace content {
-class TestRunner;
 
 // WebViewTestProxy is used to run web tests. This class is a partial fake
 // implementation of RenderViewImpl that overrides the minimal necessary
@@ -49,37 +44,13 @@ class TestRunner;
 // architecture should be revisited.
 class WebViewTestProxy : public RenderViewImpl {
  public:
-  explicit WebViewTestProxy(AgentSchedulingGroup& agent_scheduling_group,
-                            CompositorDependencies* compositor_deps,
-                            const mojom::CreateViewParams& params,
-                            TestRunner* test_runner);
-
-  // Convert the provided relative path into an absolute path.
-  blink::WebString GetAbsoluteWebStringFromUTF8Path(const std::string& path);
-
-  // Called on each RenderView that is part of the main test window, to give
-  // the test configuration, indicate to the RenderView that it is part of the
-  // main window, as well as to start the test.
-  void SetTestConfiguration(mojom::WebTestRunTestConfigurationPtr params,
-                            bool starting_test);
-
-  // True if the RenderView is hosting a frame tree fragment that is part of the
-  // web test harness' main window.
-  bool is_main_window() const { return is_main_window_; }
-  const mojom::WebTestRunTestConfiguration& test_config() const {
-    return test_config_;
-  }
+  WebViewTestProxy(AgentSchedulingGroup& agent_scheduling_group,
+                   CompositorDependencies* compositor_deps,
+                   const mojom::CreateViewParams& params);
 
  private:
   // RenderViewImpl has no public destructor.
   ~WebViewTestProxy() override;
-
-  TestRunner* const test_runner_;
-
-  // True if the RenderView is hosting a frame tree fragment that is part of the
-  // web test harness' main window.
-  bool is_main_window_ = false;
-  mojom::WebTestRunTestConfiguration test_config_;
 
   DISALLOW_COPY_AND_ASSIGN(WebViewTestProxy);
 };

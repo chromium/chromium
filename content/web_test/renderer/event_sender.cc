@@ -1938,7 +1938,7 @@ void EventSender::BeginDragWithFiles(const std::vector<std::string>& files) {
     WebDragData::Item item;
     item.storage_type = WebDragData::Item::kStorageTypeFilename;
     item.filename_data =
-        web_view_proxy()->GetAbsoluteWebStringFromUTF8Path(file_path);
+        test_runner_->GetAbsoluteWebStringFromUTF8Path(file_path);
     items.emplace_back(item);
   }
 

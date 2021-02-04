@@ -246,9 +246,24 @@ class TestRunner {
     return effective_connection_type_;
   }
 
+  // Determine the the frame is considered in the main window.
+  bool IsFrameInMainWindow(blink::WebLocalFrame* frame);
+
+  // Set the main window and test configuration.
+  void SetMainWindowAndTestConfiguration(
+      blink::WebLocalFrame* initial_local_root,
+      mojom::WebTestRunTestConfigurationPtr config);
+  const mojom::WebTestRunTestConfiguration& TestConfig() const;
+
+  // Returns an asbsolute file path. This depends on the current test
+  // configuration so it should only be called while a test is running.
+  blink::WebString GetAbsoluteWebStringFromUTF8Path(
+      const std::string& utf8_path);
+
  private:
   friend class TestRunnerBindings;
   friend class WorkQueue;
+  class MainWindowTracker;
 
   // Helper class for managing events queued by methods like QueueLoad or
   // QueueScript.
@@ -543,6 +558,9 @@ class TestRunner {
 
   base::flat_set<WebFrameTestProxy*> main_frames_;
 
+  // Keeps track of which WebViews that are main windows.
+  std::vector<std::unique_ptr<MainWindowTracker>> main_windows_;
+
   // This is non empty when a load is in progress.
   std::vector<blink::WebFrame*> loading_frames_;
   // We do not want the test to end until the main frame finishes loading. This
@@ -579,6 +597,8 @@ class TestRunner {
   // and this tracks that the navigation is in progress, and is called to inform
   // the browser that the reset is complete.
   base::OnceClosure waiting_for_reset_navigation_to_about_blank_;
+
+  mojom::WebTestRunTestConfiguration test_config_;
 
   base::WeakPtrFactory<TestRunner> weak_factory_{this};
 

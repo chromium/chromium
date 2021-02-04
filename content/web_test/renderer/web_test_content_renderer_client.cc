@@ -54,9 +54,7 @@ RenderViewImpl* CreateWebViewTestProxy(
     AgentSchedulingGroup& agent_scheduling_group,
     CompositorDependencies* compositor_deps,
     const mojom::CreateViewParams& params) {
-  return new WebViewTestProxy(
-      agent_scheduling_group, compositor_deps, params,
-      WebTestRenderThreadObserver::GetInstance()->test_runner());
+  return new WebViewTestProxy(agent_scheduling_group, compositor_deps, params);
 }
 
 RenderFrameImpl* CreateWebFrameTestProxy(RenderFrameImpl::CreateParams params) {

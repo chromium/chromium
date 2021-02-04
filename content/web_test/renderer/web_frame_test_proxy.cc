@@ -473,7 +473,7 @@ void WebFrameTestProxy::WillSendRequest(blink::WebURLRequest& request,
         ((site_for_cookies.scheme() != url::kHttpScheme &&
           site_for_cookies.scheme() != url::kHttpsScheme) ||
          IsLocalHost(site_for_cookies.registrable_domain())) &&
-        !web_view_test_proxy_->test_config().allow_external_pages) {
+        !test_runner_->TestConfig().allow_external_pages) {
       test_runner()->PrintMessage(
           std::string("Blocked access to external URL ") +
           url.possibly_invalid_spec() + "\n");
@@ -762,7 +762,16 @@ void WebFrameTestProxy::DumpFrameLayout(DumpFrameLayoutCallback callback) {
 void WebFrameTestProxy::SetTestConfiguration(
     mojom::WebTestRunTestConfigurationPtr config,
     bool starting_test) {
-  web_view_test_proxy_->SetTestConfiguration(std::move(config), starting_test);
+  blink::WebLocalFrame* frame = GetWebFrame();
+  test_runner_->SetMainWindowAndTestConfiguration(frame, std::move(config));
+  if (starting_test) {
+    // This should only be called on the main frame.
+    DCHECK(!frame->Parent());
+    // If focus was in a child frame, it gets lost when we navigate to the next
+    // test, but we want to start with focus in the main frame for every test.
+    // Focus is controlled by the renderer, so we must do the reset here.
+    frame->View()->SetFocusedFrame(frame);
+  }
 }
 
 void WebFrameTestProxy::BindReceiver(
