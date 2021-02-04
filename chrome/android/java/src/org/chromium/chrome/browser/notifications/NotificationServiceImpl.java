@@ -39,7 +39,7 @@ public class NotificationServiceImpl extends NotificationService.Impl {
         public void onReceive(Context context, Intent intent) {
             int actionIndex = intent.getIntExtra(
                     NotificationConstants.EXTRA_NOTIFICATION_INFO_ACTION_INDEX, -1);
-            boolean isActionButton = actionIndex != 0;
+            boolean isActionButton = actionIndex != -1;
             WebPlatformNotificationMetrics.getInstance().onNotificationClicked(isActionButton);
 
             Log.i(TAG, "Received a notification intent in the NotificationService's receiver.");
