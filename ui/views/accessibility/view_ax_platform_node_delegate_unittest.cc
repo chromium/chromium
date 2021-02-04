@@ -706,7 +706,7 @@ TEST_F(ViewAXPlatformNodeDelegateMenuTest, MenuTest) {
 
   ViewAXPlatformNodeDelegate* submenu = submenu_accessibility();
   EXPECT_FALSE(submenu->GetData().HasState(ax::mojom::State::kFocusable));
-  EXPECT_EQ(submenu->GetChildCount(), 7);
+  EXPECT_EQ(submenu->GetChildCount(), 8);
   EXPECT_EQ(submenu->GetData().role, ax::mojom::Role::kMenu);
   EXPECT_EQ(submenu->GetData().GetHasPopup(), ax::mojom::HasPopup::kMenu);
 
@@ -811,8 +811,8 @@ TEST_F(ViewAXPlatformNodeDelegateMenuTest, MenuTest) {
   EXPECT_FALSE(separator_item->GetData().IsSelectable());
   EXPECT_FALSE(separator_item->GetData().GetBoolAttribute(
       ax::mojom::BoolAttribute::kSelected));
-  EXPECT_TRUE(separator_item->IsInvisibleOrIgnored());
-  EXPECT_TRUE(separator_item->GetData().IsInvisibleOrIgnored());
+  EXPECT_FALSE(separator_item->IsInvisibleOrIgnored());
+  EXPECT_FALSE(separator_item->GetData().IsInvisibleOrIgnored());
   EXPECT_EQ(separator_item->GetData().role, ax::mojom::Role::kSplitter);
   EXPECT_EQ(separator_item->GetData().GetHasPopup(),
             ax::mojom::HasPopup::kFalse);
@@ -821,7 +821,7 @@ TEST_F(ViewAXPlatformNodeDelegateMenuTest, MenuTest) {
   EXPECT_FALSE(separator_item->GetData().HasIntAttribute(
       ax::mojom::IntAttribute::kSetSize));
   EXPECT_EQ(separator_item->GetChildCount(), 0);
-  EXPECT_EQ(separator_item->GetIndexInParent(), -1);
+  EXPECT_EQ(separator_item->GetIndexInParent(), 5);
 
   // MenuItemView::Type::kHighlighted
   ViewAXPlatformNodeDelegate* highlighted_item = view_accessibility(items[6]);
@@ -838,7 +838,7 @@ TEST_F(ViewAXPlatformNodeDelegateMenuTest, MenuTest) {
   EXPECT_EQ(highlighted_item->GetPosInSet(), 6);
   EXPECT_EQ(highlighted_item->GetSetSize(), 7);
   EXPECT_EQ(highlighted_item->GetChildCount(), 0);
-  EXPECT_EQ(highlighted_item->GetIndexInParent(), 5);
+  EXPECT_EQ(highlighted_item->GetIndexInParent(), 6);
 
   // MenuItemView::Type::kTitle
   ViewAXPlatformNodeDelegate* title_item = view_accessibility(items[7]);
@@ -853,7 +853,7 @@ TEST_F(ViewAXPlatformNodeDelegateMenuTest, MenuTest) {
   EXPECT_EQ(title_item->GetPosInSet(), 7);
   EXPECT_EQ(title_item->GetSetSize(), 7);
   EXPECT_EQ(title_item->GetChildCount(), 0);
-  EXPECT_EQ(title_item->GetIndexInParent(), 6);
+  EXPECT_EQ(title_item->GetIndexInParent(), 7);
 }
 
 #if defined(USE_AURA)

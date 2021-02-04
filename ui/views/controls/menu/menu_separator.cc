@@ -105,7 +105,6 @@ void MenuSeparator::SetType(ui::MenuSeparatorType type) {
 
 void MenuSeparator::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kSplitter;
-  node_data->AddState(ax::mojom::State::kIgnored);
 }
 
 BEGIN_METADATA(MenuSeparator, View)
