@@ -62,8 +62,6 @@ class SpyReconcilorDelegate : public signin::AccountReconcilorDelegate {
 
   bool IsReconcileEnabled() const override { return true; }
 
-  bool IsAccountConsistencyEnforced() const override { return true; }
-
   gaia::GaiaSource GetGaiaApiSource() const override {
     return gaia::GaiaSource::kChrome;
   }
@@ -690,7 +688,6 @@ class BaseAccountReconcilorTestTable : public AccountReconcilorTest {
     ASSERT_TRUE(reconcilor->first_execution_);
     reconcilor->first_execution_ =
         is_first_reconcile_ == IsFirstReconcile::kFirst;
-    ASSERT_TRUE(reconcilor->delegate_->IsAccountConsistencyEnforced());
     reconcilor->StartReconcile();
     for (int i = 0; gaia_api_calls_[i] != '\0'; ++i) {
       if (gaia_api_calls_[i] == 'X') {
@@ -2828,7 +2825,6 @@ TEST_F(AccountReconcilorTest, MultiloginLogout) {
   // Delegate implementation always returning UPDATE mode with no accounts.
   class MultiloginLogoutDelegate : public signin::AccountReconcilorDelegate {
     bool IsReconcileEnabled() const override { return true; }
-    bool IsAccountConsistencyEnforced() const override { return true; }
     std::vector<CoreAccountId> GetChromeAccountsForReconcile(
         const std::vector<CoreAccountId>& chrome_accounts,
         const CoreAccountId& primary_account,

@@ -84,7 +84,6 @@ bool RevokeAllSecondaryTokens(
     signin::IdentityManager* identity_manager,
     signin::AccountReconcilorDelegate::RevokeTokenOption revoke_option,
     const CoreAccountId& primary_account,
-    bool is_account_consistency_enforced,
     signin_metrics::SourceForRefreshTokenOperation source) {
   bool token_revoked = false;
   if (revoke_option ==
@@ -106,9 +105,7 @@ bool RevokeAllSecondaryTokens(
         break;
       case AccountReconcilorDelegate::RevokeTokenOption::kRevoke:
         VLOG(1) << "Revoke token for " << account;
-        if (is_account_consistency_enforced) {
-          should_revoke = true;
-        }
+        should_revoke = true;
         break;
       case AccountReconcilorDelegate::RevokeTokenOption::kDoNotRevoke:
         NOTREACHED();
@@ -117,10 +114,8 @@ bool RevokeAllSecondaryTokens(
     if (should_revoke) {
       token_revoked = true;
       VLOG(1) << "Revoke token for " << account;
-      if (is_account_consistency_enforced) {
-        auto* accounts_mutator = identity_manager->GetAccountsMutator();
-        accounts_mutator->RemoveAccount(account, source);
-      }
+      auto* accounts_mutator = identity_manager->GetAccountsMutator();
+      accounts_mutator->RemoveAccount(account, source);
     }
   }
   return token_revoked;
@@ -394,10 +389,6 @@ void AccountReconcilor::OnErrorStateOfRefreshTokenUpdatedForAccount(
 
 void AccountReconcilor::PerformMergeAction(const CoreAccountId& account_id) {
   reconcile_is_noop_ = false;
-  if (!delegate_->IsAccountConsistencyEnforced()) {
-    MarkAccountAsAddedToCookie(account_id);
-    return;
-  }
   VLOG(1) << "AccountReconcilor::PerformMergeAction: " << account_id;
   identity_manager_->GetAccountsCookieMutator()->AddAccountToCookie(
       account_id, delegate_->GetGaiaApiSource(),
@@ -408,11 +399,6 @@ void AccountReconcilor::PerformMergeAction(const CoreAccountId& account_id) {
 void AccountReconcilor::PerformSetCookiesAction(
     const signin::MultiloginParameters& parameters) {
   reconcile_is_noop_ = false;
-  if (!delegate_->IsAccountConsistencyEnforced()) {
-    OnSetAccountsInCookieCompleted(signin::SetAccountsInCookieResult::kSuccess);
-    return;
-  }
-
   VLOG(1) << "AccountReconcilor::PerformSetCookiesAction: "
           << base::JoinString(ToStringList(parameters.accounts_to_send), " ");
   // TODO (https://crbug.com/890321): pass mode to GaiaCookieManagerService.
@@ -427,8 +413,6 @@ void AccountReconcilor::PerformSetCookiesAction(
 
 void AccountReconcilor::PerformLogoutAllAccountsAction() {
   reconcile_is_noop_ = false;
-  if (!delegate_->IsAccountConsistencyEnforced())
-    return;
   VLOG(1) << "AccountReconcilor::PerformLogoutAllAccountsAction";
   identity_manager_->GetAccountsCookieMutator()->LogOutAllAccounts(
       delegate_->GetGaiaApiSource(),
@@ -536,7 +520,6 @@ void AccountReconcilor::FinishReconcileWithMultiloginEndpoint(
     RevokeAllSecondaryTokens(
         identity_manager_,
         AccountReconcilorDelegate::RevokeTokenOption::kRevoke, primary_account,
-        /*is_account_consistency_enforced=*/true,
         signin_metrics::SourceForRefreshTokenOperation::
             kAccountReconcilor_Reconcile);
   } else {
@@ -652,7 +635,6 @@ void AccountReconcilor::OnAccountsInCookieUpdated(
       delegate_->ShouldRevokeSecondaryTokensBeforeReconcile(
           verified_gaia_accounts);
   RevokeAllSecondaryTokens(identity_manager_, revoke_option, primary_account,
-                           true,
                            signin_metrics::SourceForRefreshTokenOperation::
                                kAccountReconcilor_GaiaCookiesUpdated);
 
@@ -691,7 +673,7 @@ void AccountReconcilor::OnAccountsCookieDeletedByUserAction() {
   // Revoke secondary tokens.
   RevokeAllSecondaryTokens(
       identity_manager_, AccountReconcilorDelegate::RevokeTokenOption::kRevoke,
-      primary_account, /*account_consistency_enforced=*/true,
+      primary_account,
       signin_metrics::SourceForRefreshTokenOperation::
           kAccountReconcilor_GaiaCookiesDeletedByUser);
   if (primary_account.empty())
@@ -789,7 +771,6 @@ void AccountReconcilor::FinishReconcile(
             : AccountReconcilorDelegate::RevokeTokenOption::kDoNotRevoke;
     reconcile_is_noop_ = !RevokeAllSecondaryTokens(
         identity_manager_, revoke_option, primary_account,
-        delegate_->IsAccountConsistencyEnforced(),
         signin_metrics::SourceForRefreshTokenOperation::
             kAccountReconcilor_Reconcile);
   } else {

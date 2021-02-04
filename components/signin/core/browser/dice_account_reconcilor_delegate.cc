@@ -35,10 +35,6 @@ bool DiceAccountReconcilorDelegate::IsMultiloginEndpointEnabled() const {
   return base::FeatureList::IsEnabled(kUseMultiloginEndpoint);
 }
 
-bool DiceAccountReconcilorDelegate::IsAccountConsistencyEnforced() const {
-  return true;
-}
-
 DiceAccountReconcilorDelegate::InconsistencyReason
 DiceAccountReconcilorDelegate::GetInconsistencyReason(
     const CoreAccountId& primary_account,

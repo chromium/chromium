@@ -28,10 +28,6 @@ bool MirrorAccountReconcilorDelegate::IsReconcileEnabled() const {
   return reconcile_enabled_;
 }
 
-bool MirrorAccountReconcilorDelegate::IsAccountConsistencyEnforced() const {
-  return true;
-}
-
 gaia::GaiaSource MirrorAccountReconcilorDelegate::GetGaiaApiSource() const {
   return gaia::GaiaSource::kAccountReconcilorMirror;
 }

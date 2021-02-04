@@ -20,7 +20,6 @@ class ActiveDirectoryAccountReconcilorDelegate
   ~ActiveDirectoryAccountReconcilorDelegate() override;
 
   // AccountReconcilorDelegate:
-  bool IsAccountConsistencyEnforced() const override;
   gaia::GaiaSource GetGaiaApiSource() const override;
   bool IsReconcileEnabled() const override;
   CoreAccountId GetFirstGaiaAccountForReconcile(

@@ -13,6 +13,7 @@
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/signin/public/identity_manager/set_accounts_in_cookie_result.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,6 +29,25 @@ class StubAccountReconcilorDelegate : public signin::AccountReconcilorDelegate {
   bool ShouldAbortReconcileIfPrimaryHasError() const override { return true; }
 };
 
+class StubAccountReconcilor : public AccountReconcilor {
+ public:
+  StubAccountReconcilor(signin::IdentityManager* identity_manager,
+                        SigninClient* client)
+      : AccountReconcilor(identity_manager,
+                          client,
+                          std::make_unique<StubAccountReconcilorDelegate>()) {}
+  ~StubAccountReconcilor() override {}
+
+  void PerformLogoutAllAccountsAction() override {
+    OnLogOutFromCookieCompleted(GoogleServiceAuthError::AuthErrorNone());
+  }
+
+  void PerformSetCookiesAction(
+      const signin::MultiloginParameters& parameters) override {
+    OnSetAccountsInCookieCompleted(signin::SetAccountsInCookieResult::kSuccess);
+  }
+};
+
 class WebSigninBridgeTest : public ::testing::Test {
  public:
   WebSigninBridgeTest()
@@ -36,9 +56,8 @@ class WebSigninBridgeTest : public ::testing::Test {
                            &prefs_,
                            signin::AccountConsistencyMethod::kDisabled,
                            &signin_client_) {
-    account_reconcilor_ = std::make_unique<AccountReconcilor>(
-        identity_test_env_.identity_manager(), &signin_client_,
-        std::make_unique<StubAccountReconcilorDelegate>());
+    account_reconcilor_ = std::make_unique<StubAccountReconcilor>(
+        identity_test_env_.identity_manager(), &signin_client_);
   }
 
   ~WebSigninBridgeTest() override { account_reconcilor_->Shutdown(); }
