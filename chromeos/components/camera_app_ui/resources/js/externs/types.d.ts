@@ -10,7 +10,12 @@ type MojomNamespace = {
 
 declare var arc: MojomNamespace;
 declare var blink: MojomNamespace;
+declare var chromeosCamera: MojomNamespace;
 declare var cros: MojomNamespace;
+
+// TODO(b/172340451): Remove this once we fully removed the legacy Chrome app
+// support.
+declare var chrome: any;
 
 // This is currently a Chrome only API, and the spec is still in working draft
 // stage.
