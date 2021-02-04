@@ -443,3 +443,22 @@
     @assert canvasTransform.m41 = 2 * dx;
     @assert canvasTransform.m42 = 2 * dy;
     @assert canvasTransform.m43 = 2 * dz;
+
+- name: 2d.transformation.scale.3d
+  desc: scale() function with three arguments modifies the underlying matrix appropriately
+  testing:
+  - 2d.transformation.scale.3d
+  code: |
+    const sx = 2;
+    const sy = 3;
+    const sz = 4;
+    ctx.scale(sx, sy, sz);
+    let canvasTransform = ctx.getTransform();
+    @assert canvasTransform.m11 = sx;
+    @assert canvasTransform.m22 = sy;
+    @assert canvasTransform.m33 = sz;
+    ctx.scale(sx, sy, sz);
+    canvasTransform = ctx.getTransform();
+    @assert canvasTransform.m11 = 2 * sx;
+    @assert canvasTransform.m22 = 2 * sy;
+    @assert canvasTransform.m33 = 2 * sz;

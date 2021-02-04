@@ -21,6 +21,7 @@
 
     // transformations (default transform is the identity matrix)
     void scale(unrestricted double x, unrestricted double y);
+    [RuntimeEnabled=NewCanvas2DAPI] void scale(unrestricted double x, unrestricted double y, unrestricted double z);
     void rotate(unrestricted double angle);
     void translate(unrestricted double x, unrestricted double y);
     [RuntimeEnabled=NewCanvas2DAPI] void translate(unrestricted double x, unrestricted double y, unrestricted double z);
