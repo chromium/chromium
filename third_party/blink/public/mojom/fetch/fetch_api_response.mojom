@@ -93,19 +93,6 @@ struct FetchAPIResponse {
   // ALPN negotiated protocol of the socket which fetched this resource.
   string alpn_negotiated_protocol = "unknown";
 
-  // True if the response was loaded with a Request where the credentials mode
-  // would potentially send cookies to the server:
-  //
-  //  https://fetch.spec.whatwg.org/#requestcredentials
-  //
-  // For example, if RequestCredentials is 'include' this field will be true.
-  // If RequestCredentials is 'same-origin', but the Response was loaded
-  // cross-origin then this field will be false.
-  //
-  // This field may be true even if there were no cookies actually available
-  // to send.
-  bool loaded_with_credentials = false;
-
   // True if the response was originally loaded via a request fetched over a
   // SPDY channel.
   bool was_fetched_via_spdy = false;

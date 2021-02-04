@@ -49,7 +49,7 @@ message CacheResponse {
   optional int64 response_time = 6;
   repeated string cors_exposed_header_names = 7;
   repeated string url_list = 8;
-  optional bool loaded_with_credentials = 9;
+  optional bool loaded_with_credentials = 9 [deprecated = true];
   // Mapped to net::HttpResponseInfo::ConnectionInfo via static casting.
   optional int32 connection_info = 10;
   optional string alpn_negotiated_protocol = 11;

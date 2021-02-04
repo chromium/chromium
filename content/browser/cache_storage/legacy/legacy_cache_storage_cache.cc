@@ -467,8 +467,7 @@ blink::mojom::FetchAPIResponsePtr CreateResponse(
       // Default proto value of 0 maps to CONNECTION_INFO_UNKNOWN.
       static_cast<net::HttpResponseInfo::ConnectionInfo>(
           metadata.response().connection_info()),
-      alpn_negotiated_protocol, metadata.response().loaded_with_credentials(),
-      metadata.response().was_fetched_via_spdy(),
+      alpn_negotiated_protocol, metadata.response().was_fetched_via_spdy(),
       /*has_range_requested=*/false);
 }
 
@@ -1916,8 +1915,6 @@ void LegacyCacheStorageCache::PutDidCreateEntry(
       put_context->response->response_type));
   for (const auto& url : put_context->response->url_list)
     response_metadata->add_url_list(url.spec());
-  response_metadata->set_loaded_with_credentials(
-      put_context->response->loaded_with_credentials);
   response_metadata->set_connection_info(
       put_context->response->connection_info);
   response_metadata->set_alpn_negotiated_protocol(

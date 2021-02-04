@@ -39,8 +39,8 @@ blink::mojom::FetchAPIResponsePtr BackgroundFetchSettledFetch::CloneResponse(
       CloneSerializedBlob(response->side_data_blob),
       CloneSerializedBlob(response->side_data_blob_for_cache_put),
       mojo::Clone(response->parsed_headers), response->connection_info,
-      response->alpn_negotiated_protocol, response->loaded_with_credentials,
-      response->was_fetched_via_spdy, response->has_range_requested);
+      response->alpn_negotiated_protocol, response->was_fetched_via_spdy,
+      response->has_range_requested);
 }
 
 // static

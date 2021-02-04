@@ -670,17 +670,16 @@ class CacheStorageCacheTest : public testing::Test {
         network::mojom::FetchResponseSource::kUnspecified,
         base::flat_map<std::string, std::string>(kHeaders.cbegin(),
                                                  kHeaders.cend()),
-        base::nullopt /* mime_type */, net::HttpRequestHeaders::kGetMethod,
-        nullptr /* blob */, blink::mojom::ServiceWorkerResponseError::kUnknown,
-        response_time_, std::string() /* cache_storage_cache_name */,
-        std::vector<std::string>() /* cors_exposed_header_names */,
-        nullptr /* side_data_blob */,
-        nullptr /* side_data_blob_for_cache_put */,
+        /*mime_type=*/base::nullopt, net::HttpRequestHeaders::kGetMethod,
+        /*blob=*/nullptr, blink::mojom::ServiceWorkerResponseError::kUnknown,
+        response_time_, /*cache_storage_cache_name=*/std::string(),
+        /*cors_exposed_header_names=*/std::vector<std::string>(),
+        /*side_data_blob=*/nullptr,
+        /*side_data_blob_cache_put=*/nullptr,
         network::mojom::ParsedHeaders::New(),
         net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN,
-        "unknown" /* alpn_negotiated_protocol */,
-        false /* loaded_with_credentials */, false /* was_fetched_via_spdy */,
-        false /* has_range_requested */);
+        /*alpn_negotiated_protocol=*/"unknown",
+        /*was_fetched_via_spdy=*/false, /*has_range_requested=*/false);
   }
 
   void CopySideDataToResponse(const std::string& uuid,

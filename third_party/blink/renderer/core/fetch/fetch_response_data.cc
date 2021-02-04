@@ -206,7 +206,6 @@ FetchResponseData* FetchResponseData::Clone(ScriptState* script_state,
   new_response->cors_exposed_header_names_ = cors_exposed_header_names_;
   new_response->connection_info_ = connection_info_;
   new_response->alpn_negotiated_protocol_ = alpn_negotiated_protocol_;
-  new_response->loaded_with_credentials_ = loaded_with_credentials_;
   new_response->was_fetched_via_spdy_ = was_fetched_via_spdy_;
   new_response->has_range_requested_ = has_range_requested_;
 
@@ -281,7 +280,6 @@ mojom::blink::FetchAPIResponsePtr FetchResponseData::PopulateFetchAPIResponse(
       HeaderSetToVector(cors_exposed_header_names_);
   response->connection_info = connection_info_;
   response->alpn_negotiated_protocol = alpn_negotiated_protocol_;
-  response->loaded_with_credentials = loaded_with_credentials_;
   response->was_fetched_via_spdy = was_fetched_via_spdy_;
   response->has_range_requested = has_range_requested_;
   for (const auto& header : HeaderList()->List())
@@ -343,14 +341,6 @@ void FetchResponseData::InitFromResourceResponse(
 
   SetWasFetchedViaSpdy(response.WasFetchedViaSPDY());
 
-  SetLoadedWithCredentials(
-      request_credentials == network::mojom::CredentialsMode::kInclude ||
-      (request_credentials == network::mojom::CredentialsMode::kSameOrigin &&
-       (response.GetType() ==
-            network::mojom::blink::FetchResponseType::kBasic ||
-        response.GetType() ==
-            network::mojom::blink::FetchResponseType::kDefault)));
-
   SetHasRangeRequested(response.HasRangeRequested());
 
   // Use the explicit padding in the response provided by a service worker
@@ -383,7 +373,6 @@ FetchResponseData::FetchResponseData(Type type,
       response_time_(base::Time::Now()),
       connection_info_(net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN),
       alpn_negotiated_protocol_("unknown"),
-      loaded_with_credentials_(false),
       was_fetched_via_spdy_(false),
       has_range_requested_(false) {}
 

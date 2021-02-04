@@ -118,9 +118,6 @@ class CORE_EXPORT FetchResponseData final
   void SetAlpnNegotiatedProtocol(AtomicString alpn_negotiated_protocol) {
     alpn_negotiated_protocol_ = alpn_negotiated_protocol;
   }
-  void SetLoadedWithCredentials(bool loaded_with_credentials) {
-    loaded_with_credentials_ = loaded_with_credentials;
-  }
   void SetWasFetchedViaSpdy(bool was_fetched_via_spdy) {
     was_fetched_via_spdy_ = was_fetched_via_spdy;
   }
@@ -167,7 +164,6 @@ class CORE_EXPORT FetchResponseData final
   HTTPHeaderSet cors_exposed_header_names_;
   net::HttpResponseInfo::ConnectionInfo connection_info_;
   AtomicString alpn_negotiated_protocol_;
-  bool loaded_with_credentials_;
   bool was_fetched_via_spdy_;
   bool has_range_requested_;
 
