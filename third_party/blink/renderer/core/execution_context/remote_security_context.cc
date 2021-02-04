@@ -29,13 +29,11 @@ void RemoteSecurityContext::SetReplicatedOrigin(
     scoped_refptr<SecurityOrigin> origin) {
   DCHECK(origin);
   SetSecurityOrigin(std::move(origin));
-  GetContentSecurityPolicy()->SetupSelf(*GetSecurityOrigin());
 }
 
 void RemoteSecurityContext::ResetReplicatedContentSecurityPolicy() {
   DCHECK(GetSecurityOrigin());
   SetContentSecurityPolicy(MakeGarbageCollected<ContentSecurityPolicy>());
-  GetContentSecurityPolicy()->SetupSelf(*GetSecurityOrigin());
 }
 
 void RemoteSecurityContext::ResetAndEnforceSandboxFlags(

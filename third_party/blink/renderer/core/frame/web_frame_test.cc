@@ -313,16 +313,16 @@ class WebFrameTest : public testing::Test {
   void RegisterMockedHttpURLLoadWithCSP(const std::string& file_name,
                                         const std::string& csp,
                                         bool report_only = false) {
-    WebURLResponse response;
+    std::string full_string = base_url_ + file_name;
+    KURL url = ToKURL(full_string);
+    WebURLResponse response = WebURLResponse(url);
     response.SetMimeType("text/html");
     response.AddHttpHeaderField(
         report_only ? WebString("Content-Security-Policy-Report-Only")
                     : WebString("Content-Security-Policy"),
         WebString::FromUTF8(csp));
-    std::string full_string = base_url_ + file_name;
     RegisterMockedURLLoadWithCustomResponse(
-        ToKURL(full_string),
-        test::CoreTestDataPath(WebString::FromUTF8(file_name)), response);
+        url, test::CoreTestDataPath(WebString::FromUTF8(file_name)), response);
   }
 
   void RegisterMockedHttpURLLoadWithMimeType(const std::string& file_name,

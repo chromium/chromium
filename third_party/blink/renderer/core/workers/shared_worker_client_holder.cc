@@ -111,9 +111,9 @@ void SharedWorkerClientHolder::Connect(
 
   auto info = mojom::blink::SharedWorkerInfo::New(
       url, std::move(options),
-      worker->GetExecutionContext()
-          ->GetContentSecurityPolicy()
-          ->GetParsedPolicies(),
+      mojo::Clone(worker->GetExecutionContext()
+                      ->GetContentSecurityPolicy()
+                      ->GetParsedPolicies()),
       worker->GetExecutionContext()->AddressSpace(),
       mojom::blink::FetchClientSettingsObject::New(
           outside_fetch_client_settings_object->GetReferrerPolicy(),

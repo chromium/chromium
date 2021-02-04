@@ -448,7 +448,9 @@ DedicatedWorker::CreateGlobalScopeCreationParams(
       GetExecutionContext()->UserAgent(),
       GetExecutionContext()->GetUserAgentMetadata(),
       CreateWebWorkerFetchContext(),
-      GetExecutionContext()->GetContentSecurityPolicy()->GetParsedPolicies(),
+      mojo::Clone(GetExecutionContext()
+                      ->GetContentSecurityPolicy()
+                      ->GetParsedPolicies()),
       referrer_policy, GetExecutionContext()->GetSecurityOrigin(),
       GetExecutionContext()->IsSecureContext(),
       GetExecutionContext()->GetHttpsState(),

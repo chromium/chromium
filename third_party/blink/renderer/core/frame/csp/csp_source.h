@@ -30,7 +30,6 @@ bool CSPSourceMatches(const network::mojom::blink::CSPSource& source,
 
 CORE_EXPORT
 bool CSPSourceMatchesAsSelf(const network::mojom::blink::CSPSource& source,
-                            const String& self_protocol,
                             const KURL& url);
 
 }  // namespace blink

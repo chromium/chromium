@@ -217,13 +217,11 @@ TEST_F(PageTestBase, CSPForWorld) {
   // Set a CSP for the main world.
   const char* kMainWorldCSP = "connect-src https://google.com;";
   GetFrame().DomWindow()->GetContentSecurityPolicy()->DidReceiveHeader(
-      kMainWorldCSP, ContentSecurityPolicyType::kEnforce,
-      ContentSecurityPolicySource::kHTTP);
-  Vector<network::mojom::blink::ContentSecurityPolicyPtr>
-      parsed_main_world_csp = GetFrame()
-                                  .DomWindow()
-                                  ->GetContentSecurityPolicy()
-                                  ->GetParsedPolicies();
+      kMainWorldCSP, *(GetFrame().DomWindow()->GetSecurityOrigin()),
+      ContentSecurityPolicyType::kEnforce, ContentSecurityPolicySource::kHTTP);
+  const Vector<
+      network::mojom::blink::ContentSecurityPolicyPtr>& parsed_main_world_csp =
+      GetFrame().DomWindow()->GetContentSecurityPolicy()->GetParsedPolicies();
 
   LocalFrame* frame = &GetFrame();
   ScriptState* main_world_script_state = ToScriptStateForMainWorld(frame);
@@ -248,7 +246,8 @@ TEST_F(PageTestBase, CSPForWorld) {
       SecurityOrigin::Create(KURL("chrome-extension://123")));
 
   // Returns the csp headers being used for the current world.
-  auto get_csp = [this]() {
+  auto get_csp = [this]()
+      -> const Vector<network::mojom::blink::ContentSecurityPolicyPtr>& {
     auto* csp =
         GetFrame().DomWindow()->GetContentSecurityPolicyForCurrentWorld();
     return csp->GetParsedPolicies();

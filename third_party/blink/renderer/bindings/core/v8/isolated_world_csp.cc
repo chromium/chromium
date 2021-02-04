@@ -182,10 +182,10 @@ ContentSecurityPolicy* IsolatedWorldCSP::CreateIsolatedWorldCSP(
 
   IsolatedWorldCSPDelegate* delegate =
       MakeGarbageCollected<IsolatedWorldCSPDelegate>(
-          window, std::move(self_origin), world_id,
+          window, self_origin, world_id,
           policy.IsEmpty() ? CSPType::kEmpty : CSPType::kNonEmpty);
   csp->BindToDelegate(*delegate);
-  csp->DidReceiveHeader(policy,
+  csp->DidReceiveHeader(policy, *self_origin,
                         network::mojom::ContentSecurityPolicyType::kEnforce,
                         network::mojom::ContentSecurityPolicySource::kHTTP);
 

@@ -258,8 +258,8 @@ void SharedWorkerGlobalScope::DidFetchClassicScript(
   Initialize(classic_script_loader->ResponseURL(), response_referrer_policy,
              classic_script_loader->ResponseAddressSpace(),
              classic_script_loader->GetContentSecurityPolicy()
-                 ? classic_script_loader->GetContentSecurityPolicy()
-                       ->GetParsedPolicies()
+                 ? mojo::Clone(classic_script_loader->GetContentSecurityPolicy()
+                                   ->GetParsedPolicies())
                  : Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
              classic_script_loader->OriginTrialTokens(),
              classic_script_loader->AppCacheID());

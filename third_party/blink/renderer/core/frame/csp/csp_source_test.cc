@@ -443,7 +443,7 @@ TEST(CSPSourceTest, MatchingAsSelf) {
         test.self_source.path, test.self_source.host_wildcard,
         test.self_source.port_wildcard);
     EXPECT_EQ(test.expected,
-              CSPSourceMatchesAsSelf(*self_source, "", KURL(base, test.url)));
+              CSPSourceMatchesAsSelf(*self_source, KURL(base, test.url)));
   }
 }
 

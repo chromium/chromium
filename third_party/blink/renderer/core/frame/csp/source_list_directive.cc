@@ -546,8 +546,7 @@ bool CSPSourceListAllows(
     return HasSourceMatchInList(source_list.sources, self_source.scheme, url,
                                 redirect_status);
   }
-  if (source_list.allow_self &&
-      CSPSourceMatchesAsSelf(self_source, self_source.scheme, url)) {
+  if (source_list.allow_self && CSPSourceMatchesAsSelf(self_source, url)) {
     return true;
   }
 

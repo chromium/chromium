@@ -160,9 +160,11 @@ TEST_F(BaseFetchContextTest, CanRequest) {
   ContentSecurityPolicy* policy =
       execution_context_->GetContentSecurityPolicy();
   policy->DidReceiveHeader("script-src https://foo.test",
+                           *(execution_context_->GetSecurityOrigin()),
                            network::mojom::ContentSecurityPolicyType::kEnforce,
                            network::mojom::ContentSecurityPolicySource::kHTTP);
   policy->DidReceiveHeader("script-src https://bar.test",
+                           *(execution_context_->GetSecurityOrigin()),
                            network::mojom::ContentSecurityPolicyType::kReport,
                            network::mojom::ContentSecurityPolicySource::kHTTP);
 
@@ -185,9 +187,11 @@ TEST_F(BaseFetchContextTest, CheckCSPForRequest) {
   ContentSecurityPolicy* policy =
       execution_context_->GetContentSecurityPolicy();
   policy->DidReceiveHeader("script-src https://foo.test",
+                           *(execution_context_->GetSecurityOrigin()),
                            network::mojom::ContentSecurityPolicyType::kEnforce,
                            network::mojom::ContentSecurityPolicySource::kHTTP);
   policy->DidReceiveHeader("script-src https://bar.test",
+                           *(execution_context_->GetSecurityOrigin()),
                            network::mojom::ContentSecurityPolicyType::kReport,
                            network::mojom::ContentSecurityPolicySource::kHTTP);
 
@@ -301,6 +305,7 @@ TEST_F(BaseFetchContextTest, UACSSTest_BypassCSP) {
   ContentSecurityPolicy* policy =
       execution_context_->GetContentSecurityPolicy();
   policy->DidReceiveHeader("default-src 'self'",
+                           *(execution_context_->GetSecurityOrigin()),
                            network::mojom::ContentSecurityPolicyType::kEnforce,
                            network::mojom::ContentSecurityPolicySource::kHTTP);
 

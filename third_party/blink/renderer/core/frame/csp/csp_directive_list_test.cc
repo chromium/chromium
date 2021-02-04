@@ -29,8 +29,6 @@ class CSPDirectiveListTest : public testing::Test {
   CSPDirectiveListTest() : csp(MakeGarbageCollected<ContentSecurityPolicy>()) {}
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures({network::features::kReporting}, {});
-    csp->SetupSelf(
-        *SecurityOrigin::CreateFromString("https://example.test/image.png"));
   }
 
   network::mojom::blink::ContentSecurityPolicyPtr CreateList(
@@ -42,7 +40,10 @@ class CSPDirectiveListTest : public testing::Test {
     const UChar* begin = characters.data();
     const UChar* end = begin + characters.size();
 
-    return CSPDirectiveListParse(csp.Get(), begin, end, type, source);
+    scoped_refptr<SecurityOrigin> self_origin =
+        SecurityOrigin::Create(KURL("https://example.test/index.html"));
+    return CSPDirectiveListParse(csp.Get(), begin, end, *self_origin, type,
+                                 source);
   }
 
  protected:

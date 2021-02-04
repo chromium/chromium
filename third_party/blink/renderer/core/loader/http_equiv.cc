@@ -101,12 +101,14 @@ void HttpEquiv::ProcessHttpEquivContentSecurityPolicy(
     return;
   if (EqualIgnoringASCIICase(equiv, "content-security-policy")) {
     window->GetContentSecurityPolicy()->DidReceiveHeader(
-        content, network::mojom::ContentSecurityPolicyType::kEnforce,
+        content, *(window->GetSecurityOrigin()),
+        network::mojom::ContentSecurityPolicyType::kEnforce,
         network::mojom::ContentSecurityPolicySource::kMeta);
   } else if (EqualIgnoringASCIICase(equiv,
                                     "content-security-policy-report-only")) {
     window->GetContentSecurityPolicy()->DidReceiveHeader(
-        content, network::mojom::ContentSecurityPolicyType::kReport,
+        content, *(window->GetSecurityOrigin()),
+        network::mojom::ContentSecurityPolicyType::kReport,
         network::mojom::ContentSecurityPolicySource::kMeta);
   } else {
     NOTREACHED();

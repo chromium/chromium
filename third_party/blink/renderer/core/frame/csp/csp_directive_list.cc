@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/network/content_security_policy_parsers.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/weborigin/known_ports.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/blink/renderer/platform/wtf/text/parsing_utilities.h"
@@ -243,6 +244,7 @@ void ParseReportTo(const String& name,
 
 void ParseReportURI(const String& name,
                     const String& value,
+                    const SecurityOrigin& self_origin,
                     network::mojom::blink::ContentSecurityPolicy& csp,
                     ContentSecurityPolicy* policy) {
   // report-to supersedes report-uri
@@ -262,14 +264,9 @@ void ParseReportURI(const String& name,
                     ? WebFeature::kReportUriMultipleEndpoints
                     : WebFeature::kReportUriSingleEndpoint);
 
-  // Ignore right away report-uri endpoints which would be blocked later when
-  // reporting because of Mixed Content and report a warning.
-  if (!policy->GetSelfSource()) {
-    return;
-  }
   csp.report_endpoints.erase(
       std::remove_if(csp.report_endpoints.begin(), csp.report_endpoints.end(),
-                     [policy](const String& endpoint) {
+                     [policy, &self_origin](const String& endpoint) {
                        KURL parsed_endpoint = KURL(endpoint);
                        if (!parsed_endpoint.IsValid()) {
                          // endpoint is not absolute, so it cannot violate
@@ -277,8 +274,7 @@ void ParseReportURI(const String& name,
                          return false;
                        }
                        if (MixedContentChecker::IsMixedContent(
-                               policy->GetSelfSource()->scheme,
-                               parsed_endpoint)) {
+                               self_origin.Protocol(), parsed_endpoint)) {
                          policy->ReportMixedContentReportURI(endpoint);
                          return true;
                        }
@@ -353,6 +349,7 @@ void ParseUpgradeInsecureRequests(
 
 void AddDirective(const String& name,
                   const String& value,
+                  const SecurityOrigin& self_origin,
                   network::mojom::blink::ContentSecurityPolicy& csp,
                   ContentSecurityPolicy* policy) {
   DCHECK(!name.IsEmpty());
@@ -419,7 +416,7 @@ void AddDirective(const String& name,
       ParseReportTo(name, value, csp, policy);
       return;
     case CSPDirectiveName::ReportURI:
-      ParseReportURI(name, value, csp, policy);
+      ParseReportURI(name, value, self_origin, csp, policy);
       return;
     case CSPDirectiveName::RequireTrustedTypesFor:
       csp.require_trusted_types_for =
@@ -519,6 +516,7 @@ bool ParseDirective(const UChar* begin,
 //
 void Parse(const UChar* begin,
            const UChar* end,
+           const SecurityOrigin& self_origin,
            bool should_parse_wasm_eval,
            network::mojom::blink::ContentSecurityPolicy& csp,
            ContentSecurityPolicy* policy) {
@@ -531,11 +529,11 @@ void Parse(const UChar* begin,
     SkipUntil<UChar>(position, end, ';');
 
     // |name| and |value| must always be initialized in order to avoid mojo
-    // |serialization errors.
+    // serialization errors.
     String name, value = "";
     if (ParseDirective(directive_begin, position, &name, &value, policy)) {
       DCHECK(!name.IsEmpty());
-      AddDirective(name, value, csp, policy);
+      AddDirective(name, value, self_origin, csp, policy);
     }
 
     DCHECK(position == end || *position == ';');
@@ -684,6 +682,7 @@ bool AreAllMatchingHashesPresent(
 
 bool CheckSource(ContentSecurityPolicy* policy,
                  const network::mojom::blink::CSPSourceList* directive,
+                 const network::mojom::blink::CSPSource& self_origin,
                  const KURL& url,
                  ResourceRequest::RedirectStatus redirect_status) {
   // If |url| is empty, fall back to the policy URL to ensure that <object>'s
@@ -693,7 +692,7 @@ bool CheckSource(ContentSecurityPolicy* policy,
     return true;
 
   return CSPSourceListAllows(
-      *directive, *(policy->GetSelfSource()),
+      *directive, self_origin,
       url.IsEmpty() ? policy->FallbackUrlForPlugin() : url, redirect_status);
 }
 
@@ -862,7 +861,8 @@ bool CheckSourceAndReportViolation(
     return true;
 
   // We ignore URL-based allowlists if we're allowing dynamic script injection.
-  if (CheckSource(policy, directive.source_list, url, redirect_status) &&
+  if (CheckSource(policy, directive.source_list, *csp.self_origin, url,
+                  redirect_status) &&
       !CheckDynamic(directive.source_list, effective_type))
     return true;
 
@@ -936,12 +936,31 @@ bool AllowDynamicWorker(
   return CheckDynamic(worker_src, CSPDirectiveName::WorkerSrc);
 }
 
+network::mojom::blink::CSPSourcePtr ComputeSelfOrigin(
+    const SecurityOrigin& self_origin) {
+  DCHECK(self_origin.Protocol());
+  return network::mojom::blink::CSPSource::New(
+      self_origin.Protocol(),
+      // Forget the host for file schemes. Host can anyway only be `localhost`
+      // or empty and this is platform dependent.
+      //
+      // TODO(antoniosartori): Consider returning mojom::CSPSource::New() for
+      // file: urls, so that 'self' for file: would match nothing.
+      self_origin.Protocol() == "file" ? "" : self_origin.Host(),
+      self_origin.Port() == DefaultPortForProtocol(self_origin.Protocol())
+          ? url::PORT_UNSPECIFIED
+          : self_origin.Port(),
+      "",
+      /*is_host_wildcard=*/false, /*is_port_wildcard=*/false);
+}
+
 }  // namespace
 
 network::mojom::blink::ContentSecurityPolicyPtr CSPDirectiveListParse(
     ContentSecurityPolicy* policy,
     const UChar* begin,
     const UChar* end,
+    const SecurityOrigin& self_origin,
     ContentSecurityPolicyType type,
     ContentSecurityPolicySource source,
     bool should_parse_wasm_eval) {
@@ -950,7 +969,11 @@ network::mojom::blink::ContentSecurityPolicyPtr CSPDirectiveListParse(
       String(begin, static_cast<wtf_size_t>(end - begin)).StripWhiteSpace(),
       type, source);
 
-  Parse(begin, end, should_parse_wasm_eval, *csp, policy);
+  const SecurityOrigin& real_self_origin =
+      *(self_origin.GetOriginOrPrecursorOriginIfOpaque());
+  csp->self_origin = ComputeSelfOrigin(real_self_origin);
+
+  Parse(begin, end, real_self_origin, should_parse_wasm_eval, *csp, policy);
   return csp;
 }
 
@@ -1191,11 +1214,12 @@ bool CSPDirectiveListAllowFromSource(
       reporting_disposition == ReportingDisposition::kReport
           ? CheckSourceAndReportViolation(csp, policy, directive, url, type,
                                           url_before_redirects, redirect_status)
-          : CheckSource(policy, directive.source_list, url, redirect_status);
+          : CheckSource(policy, directive.source_list, *csp.self_origin, url,
+                        redirect_status);
 
   if (type == CSPDirectiveName::BaseURI) {
-    if (result &&
-        !CheckSource(policy, directive.source_list, url, redirect_status)) {
+    if (result && !CheckSource(policy, directive.source_list, *csp.self_origin,
+                               url, redirect_status)) {
       policy->Count(WebFeature::kBaseWouldBeBlockedByDefaultSrc);
     }
   }

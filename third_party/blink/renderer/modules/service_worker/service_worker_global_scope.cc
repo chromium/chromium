@@ -466,8 +466,8 @@ void ServiceWorkerGlobalScope::DidFetchClassicScript(
       classic_script_loader->ResponseURL(), referrer_policy,
       classic_script_loader->ResponseAddressSpace(),
       classic_script_loader->GetContentSecurityPolicy()
-          ? classic_script_loader->GetContentSecurityPolicy()
-                ->GetParsedPolicies()
+          ? mojo::Clone(classic_script_loader->GetContentSecurityPolicy()
+                            ->GetParsedPolicies())
           : Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
       classic_script_loader->OriginTrialTokens(),
       classic_script_loader->SourceText(),

@@ -47,13 +47,14 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
             : network::mojom::ContentSecurityPolicySource::kOriginPolicy;
   }
 
+  scoped_refptr<SecurityOrigin> self_origin = SecurityOrigin::Create(KURL(url));
+
   // Construct a policy from the string.
   auto* csp = MakeGarbageCollected<ContentSecurityPolicy>();
-  csp->DidReceiveHeader(header, header_type, header_source);
-  csp->SetupSelf(*SecurityOrigin::Create(KURL(url)));
+  csp->DidReceiveHeader(header, *self_origin, header_type, header_source);
 
-  Vector<network::mojom::blink::ContentSecurityPolicyPtr> parsed_policies =
-      csp->GetParsedPolicies();
+  const Vector<network::mojom::blink::ContentSecurityPolicyPtr>&
+      parsed_policies = csp->GetParsedPolicies();
   if (parsed_policies.size() > 0) {
     network::mojom::blink::ContentSecurityPolicyPtr converted_csp =
         ConvertToMojoBlink(ConvertToPublic(parsed_policies[0]->Clone()));

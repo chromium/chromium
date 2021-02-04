@@ -40,7 +40,7 @@ InstalledScriptsManager::ScriptData::ScriptData(
 
 ContentSecurityPolicyResponseHeaders
 InstalledScriptsManager::ScriptData::GetContentSecurityPolicyResponseHeaders() {
-  return ContentSecurityPolicyResponseHeaders(headers_);
+  return ContentSecurityPolicyResponseHeaders(headers_, script_url_);
 }
 
 String InstalledScriptsManager::ScriptData::GetReferrerPolicy() {

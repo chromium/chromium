@@ -380,6 +380,7 @@ TEST_F(QuicTransportTest, FailByCSP) {
   scope.GetExecutionContext()
       ->GetContentSecurityPolicyForCurrentWorld()
       ->DidReceiveHeader("connect-src 'none'",
+                         *(scope.GetExecutionContext()->GetSecurityOrigin()),
                          network::mojom::ContentSecurityPolicyType::kEnforce,
                          network::mojom::ContentSecurityPolicySource::kHTTP);
   QuicTransport::Create(scope.GetScriptState(),
@@ -401,6 +402,7 @@ TEST_F(QuicTransportTest, PassCSP) {
   scope.GetExecutionContext()
       ->GetContentSecurityPolicyForCurrentWorld()
       ->DidReceiveHeader("connect-src quic-transport://example.com",
+                         *(scope.GetExecutionContext()->GetSecurityOrigin()),
                          network::mojom::ContentSecurityPolicyType::kEnforce,
                          network::mojom::ContentSecurityPolicySource::kHTTP);
   QuicTransport::Create(scope.GetScriptState(),

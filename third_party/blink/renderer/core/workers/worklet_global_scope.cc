@@ -278,20 +278,6 @@ KURL WorkletGlobalScope::CompleteURL(const String& url) const {
   return KURL(BaseURL(), url);
 }
 
-void WorkletGlobalScope::BindContentSecurityPolicyToExecutionContext() {
-  WorkerOrWorkletGlobalScope::BindContentSecurityPolicyToExecutionContext();
-
-  // CSP checks should resolve self based on the 'fetch client settings object'
-  // (i.e., the document's origin), not the 'module map settings object' (i.e.,
-  // the opaque origin of this worklet global scope). The current implementation
-  // doesn't have separate CSP objects for these two contexts. Therefore,
-  // we initialize the worklet global scope's CSP object (which would naively
-  // appear to be a CSP object for the 'module map settings object') entirely
-  // based on state from the document (the origin and CSP headers it passed
-  // here), and use the document's origin for 'self' CSP checks.
-  GetContentSecurityPolicy()->SetupSelf(*document_security_origin_);
-}
-
 ukm::UkmRecorder* WorkletGlobalScope::UkmRecorder() {
   if (ukm_recorder_)
     return ukm_recorder_.get();

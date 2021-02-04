@@ -98,11 +98,13 @@ class ThreadedWorkletThreadForTest : public WorkerThread {
   void TestContentSecurityPolicy() {
     EXPECT_TRUE(IsCurrentThread());
     ContentSecurityPolicy* csp = GlobalScope()->GetContentSecurityPolicy();
+    KURL main_document_url = KURL("https://example.com/script.js");
 
-    // The "script-src 'self'" directive allows this.
+    // The "script-src 'self'" directive allows |main_document_url| since it is
+    // same-origin with the main document.
     EXPECT_TRUE(csp->AllowScriptFromSource(
-        GlobalScope()->Url(), String(), IntegrityMetadataSet(), kParserInserted,
-        GlobalScope()->Url(), RedirectStatus::kNoRedirect));
+        main_document_url, String(), IntegrityMetadataSet(), kParserInserted,
+        main_document_url, RedirectStatus::kNoRedirect));
 
     // The "script-src https://allowed.example.com" should allow this.
     EXPECT_TRUE(csp->AllowScriptFromSource(
@@ -125,7 +127,7 @@ class ThreadedWorkletThreadForTest : public WorkerThread {
     EXPECT_TRUE(IsCurrentThread());
 
     // At this point check that the CSP that was set is indeed invalid.
-    Vector<network::mojom::blink::ContentSecurityPolicyPtr> csp =
+    const Vector<network::mojom::blink::ContentSecurityPolicyPtr>& csp =
         GlobalScope()->GetContentSecurityPolicy()->GetParsedPolicies();
     EXPECT_EQ(1ul, csp.size());
     EXPECT_EQ("invalid-csp", csp[0]->header->header_value);
@@ -209,9 +211,9 @@ class ThreadedWorkletMessagingProxyForTest
                 ->Loader()
                 .UserAgentMetadata(),
             nullptr /* web_worker_fetch_context */,
-            GetExecutionContext()
-                ->GetContentSecurityPolicy()
-                ->GetParsedPolicies(),
+            mojo::Clone(GetExecutionContext()
+                            ->GetContentSecurityPolicy()
+                            ->GetParsedPolicies()),
             GetExecutionContext()->GetReferrerPolicy(),
             GetExecutionContext()->GetSecurityOrigin(),
             GetExecutionContext()->IsSecureContext(),
@@ -309,6 +311,7 @@ TEST_F(ThreadedWorkletTest, ContentSecurityPolicy) {
   // ThreadedWorklet inherits the owner Document's CSP.
   auto* csp = MakeGarbageCollected<ContentSecurityPolicy>();
   csp->DidReceiveHeader("script-src 'self' https://allowed.example.com",
+                        *(GetExecutionContext()->GetSecurityOrigin()),
                         network::mojom::ContentSecurityPolicyType::kEnforce,
                         network::mojom::ContentSecurityPolicySource::kHTTP);
   GetExecutionContext()->GetSecurityContext().SetContentSecurityPolicy(csp);
@@ -326,6 +329,7 @@ TEST_F(ThreadedWorkletTest, ContentSecurityPolicy) {
 TEST_F(ThreadedWorkletTest, InvalidContentSecurityPolicy) {
   auto* csp = MakeGarbageCollected<ContentSecurityPolicy>();
   csp->DidReceiveHeader("invalid-csp",
+                        *(GetExecutionContext()->GetSecurityOrigin()),
                         network::mojom::ContentSecurityPolicyType::kEnforce,
                         network::mojom::ContentSecurityPolicySource::kHTTP);
   GetExecutionContext()->GetSecurityContext().SetContentSecurityPolicy(csp);

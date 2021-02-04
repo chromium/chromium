@@ -46,13 +46,15 @@ class MainThreadWorkletTest : public PageTestBase {
   }
   void SetUpScope(const String& csp_header) {
     PageTestBase::SetUp(IntSize());
-    NavigateTo(KURL("https://example.com/"));
+    KURL url = KURL("https://example.com/");
+    NavigateTo(url);
     LocalDOMWindow* window = GetFrame().DomWindow();
 
     // Set up the CSP for Document before starting MainThreadWorklet because
     // MainThreadWorklet inherits the owner Document's CSP.
     auto* csp = MakeGarbageCollected<ContentSecurityPolicy>();
-    csp->DidReceiveHeader(csp_header,
+    scoped_refptr<SecurityOrigin> self_origin = SecurityOrigin::Create(url);
+    csp->DidReceiveHeader(csp_header, *(self_origin),
                           network::mojom::ContentSecurityPolicyType::kEnforce,
                           network::mojom::ContentSecurityPolicySource::kHTTP);
     window->GetSecurityContext().SetContentSecurityPolicy(csp);
@@ -63,7 +65,7 @@ class MainThreadWorkletTest : public PageTestBase {
         window->Url(), mojom::blink::ScriptType::kModule, "MainThreadWorklet",
         window->UserAgent(), window->GetFrame()->Loader().UserAgentMetadata(),
         nullptr /* web_worker_fetch_context */,
-        window->GetContentSecurityPolicy()->GetParsedPolicies(),
+        mojo::Clone(window->GetContentSecurityPolicy()->GetParsedPolicies()),
         window->GetReferrerPolicy(), window->GetSecurityOrigin(),
         window->IsSecureContext(), window->GetHttpsState(),
         nullptr /* worker_clients */, nullptr /* content_settings_client */,
@@ -166,7 +168,7 @@ TEST_F(MainThreadWorkletTest, TaskRunner) {
 // Test that having an invalid CSP does not result in an exception.
 // See bugs: 844383,844317
 TEST_F(MainThreadWorkletInvalidCSPTest, InvalidContentSecurityPolicy) {
-  Vector<network::mojom::blink::ContentSecurityPolicyPtr> csp =
+  const Vector<network::mojom::blink::ContentSecurityPolicyPtr>& csp =
       global_scope_->GetContentSecurityPolicy()->GetParsedPolicies();
 
   // At this point check that the CSP that was set is indeed invalid.

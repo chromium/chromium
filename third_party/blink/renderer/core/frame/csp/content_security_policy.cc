@@ -184,32 +184,8 @@ void ContentSecurityPolicy::BindToDelegate(
   ApplyPolicySideEffectsToDelegate();
 }
 
-void ContentSecurityPolicy::SetupSelf(const SecurityOrigin& security_origin) {
-  // Ensure that 'self' processes correctly.
-  self_protocol_ = security_origin.Protocol();
-  self_source_ = network::mojom::blink::CSPSource::New(
-      self_protocol_, security_origin.Host(),
-      security_origin.Port() == DefaultPortForProtocol(self_protocol_)
-          ? url::PORT_UNSPECIFIED
-          : security_origin.Port(),
-      "", /*is_host_wildcard=*/false, /*is_port_wildcard=*/false);
-}
-
-void ContentSecurityPolicy::SetupSelf(const ContentSecurityPolicy& other) {
-  self_protocol_ = other.self_protocol_;
-  if (other.self_source_) {
-    self_source_ = other.self_source_.Clone();
-  }
-}
-
 void ContentSecurityPolicy::ApplyPolicySideEffectsToDelegate() {
   DCHECK(delegate_);
-
-  const SecurityOrigin* self_origin =
-      delegate_->GetSecurityOrigin()->GetOriginOrPrecursorOriginIfOpaque();
-  DCHECK(self_origin);
-
-  SetupSelf(*self_origin);
 
   // Set mixed content checking and sandbox flags, then dump all the parsing
   // error messages, then poke at histograms.
@@ -307,7 +283,6 @@ void ContentSecurityPolicy::Trace(Visitor* visitor) const {
 
 void ContentSecurityPolicy::CopyStateFrom(const ContentSecurityPolicy* other) {
   DCHECK(policies_.IsEmpty());
-  SetupSelf(*other);
   policies_ = mojo::Clone(other->policies_);
   for (const auto& policy : policies_)
     ComputeInternalStateForParsedPolicy(*policy);
@@ -319,7 +294,14 @@ void ContentSecurityPolicy::CopyPluginTypesFrom(
     const ContentSecurityPolicy* other) {
   for (const auto& policy : other->policies_) {
     if (policy->plugin_types) {
-      DidReceiveHeader(CSPDirectiveListPluginTypesText(*policy),
+      KURL url;
+      url.SetProtocol(policy->self_origin->scheme);
+      url.SetHost(policy->self_origin->host);
+      url.SetPort(policy->self_origin->port == url::PORT_UNSPECIFIED
+                      ? 0
+                      : policy->self_origin->port);
+      scoped_refptr<SecurityOrigin> self_origin = SecurityOrigin::Create(url);
+      DidReceiveHeader(CSPDirectiveListPluginTypesText(*policy), *self_origin,
                        policy->header->type, policy->header->source);
     }
   }
@@ -327,18 +309,20 @@ void ContentSecurityPolicy::CopyPluginTypesFrom(
 
 void ContentSecurityPolicy::DidReceiveHeaders(
     const ContentSecurityPolicyResponseHeaders& headers) {
+  scoped_refptr<SecurityOrigin> self_origin =
+      SecurityOrigin::Create(headers.ResponseUrl());
   if (headers.ShouldParseWasmEval())
     supports_wasm_eval_ = true;
 
   Vector<network::mojom::blink::ContentSecurityPolicyPtr> parsed_policies;
   if (!headers.ContentSecurityPolicy().IsEmpty()) {
-    parsed_policies = Parse(headers.ContentSecurityPolicy(),
+    parsed_policies = Parse(headers.ContentSecurityPolicy(), *self_origin,
                             ContentSecurityPolicyType::kEnforce,
                             ContentSecurityPolicySource::kHTTP);
   }
   if (!headers.ContentSecurityPolicyReportOnly().IsEmpty()) {
     for (auto& policy : Parse(headers.ContentSecurityPolicyReportOnly(),
-                              ContentSecurityPolicyType::kReport,
+                              *self_origin, ContentSecurityPolicyType::kReport,
                               ContentSecurityPolicySource::kHTTP)) {
       parsed_policies.push_back(std::move(policy));
     }
@@ -358,18 +342,17 @@ ContentSecurityPolicy::ParseHeaders(
 
 void ContentSecurityPolicy::DidReceiveHeader(
     const String& header,
+    const SecurityOrigin& self_origin,
     ContentSecurityPolicyType type,
     ContentSecurityPolicySource source) {
-  AddPolicies(Parse(header, type, source));
+  AddPolicies(Parse(header, self_origin, type, source));
 }
 
 void ContentSecurityPolicy::AddPolicies(
     Vector<network::mojom::blink::ContentSecurityPolicyPtr> policies) {
   Vector<network::mojom::blink::ContentSecurityPolicyPtr> policies_to_report;
   if (delegate_) {
-    for (const auto& policy : policies) {
-      policies_to_report.push_back(FillInSelf(policy));
-    }
+    policies_to_report = mojo::Clone(policies);
   }
 
   for (network::mojom::blink::ContentSecurityPolicyPtr& policy : policies) {
@@ -396,6 +379,7 @@ void ContentSecurityPolicy::AddPolicies(
 
 Vector<network::mojom::blink::ContentSecurityPolicyPtr>
 ContentSecurityPolicy::Parse(const String& header,
+                             const SecurityOrigin& self_origin,
                              ContentSecurityPolicyType type,
                              ContentSecurityPolicySource source) {
   Vector<network::mojom::blink::ContentSecurityPolicyPtr> policies;
@@ -422,10 +406,8 @@ ContentSecurityPolicy::Parse(const String& header,
 
     // header1,header2 OR header1
     //        ^                  ^
-    network::mojom::blink::ContentSecurityPolicyPtr policy =
-        CSPDirectiveListParse(this, begin, position, type, source);
-
-    policies.push_back(std::move(policy));
+    policies.push_back(CSPDirectiveListParse(this, begin, position, self_origin,
+                                             type, source));
 
     // Skip the comma, and begin the next header from the current position.
     DCHECK(position == end || *position == ',');
@@ -483,28 +465,12 @@ void ContentSecurityPolicy::ComputeInternalStateForParsedPolicy(
 }
 
 void ContentSecurityPolicy::ReportAccumulatedHeaders() const {
-  WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr> policies;
-  for (const auto& policy : policies_)
-    policies.push_back(FillInSelf(policy));
-
   DCHECK(delegate_);
-  delegate_->DidAddContentSecurityPolicies(std::move(policies));
+  delegate_->DidAddContentSecurityPolicies(mojo::Clone(GetParsedPolicies()));
 }
 
 void ContentSecurityPolicy::SetOverrideAllowInlineStyle(bool value) {
   override_inline_style_allowed_ = value;
-}
-
-void ContentSecurityPolicy::SetOverrideURLForSelf(const KURL& url) {
-  // Create a temporary CSPSource so that 'self' expressions can be resolved
-  // before we bind to an execution context (for 'frame-ancestor' resolution,
-  // for example). This CSPSource will be overwritten when we bind this object
-  // to an execution context.
-  scoped_refptr<const SecurityOrigin> origin = SecurityOrigin::Create(url);
-  self_protocol_ = origin->Protocol();
-  self_source_ = network::mojom::blink::CSPSource::New(
-      self_protocol_, origin->Host(), origin->Port(), "",
-      /*is_host_wildcard=*/false, /*is_port_wildcard=*/false);
 }
 
 // static
@@ -1570,19 +1536,6 @@ bool ContentSecurityPolicy::ShouldSendCSPHeader(ResourceType type) const {
   return false;
 }
 
-bool ContentSecurityPolicy::UrlMatchesSelf(const KURL& url) const {
-  DCHECK(self_source_);
-  return CSPSourceMatchesAsSelf(*self_source_, self_protocol_, url);
-}
-
-bool ContentSecurityPolicy::ProtocolEqualsSelf(const String& protocol) const {
-  return EqualIgnoringASCIICase(protocol, self_protocol_);
-}
-
-const String& ContentSecurityPolicy::GetSelfProtocol() const {
-  return self_protocol_;
-}
-
 // static
 bool ContentSecurityPolicy::ShouldBypassMainWorld(
     const ExecutionContext* context) {
@@ -1770,20 +1723,9 @@ bool ContentSecurityPolicy::ShouldBypassContentSecurityPolicy(
   return should_bypass_csp;
 }
 
-WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr>
+const WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr>&
 ContentSecurityPolicy::GetParsedPolicies() const {
-  WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr> list;
-  for (const auto& policy : policies_)
-    list.push_back(FillInSelf(policy));
-  return list;
-}
-
-network::mojom::blink::ContentSecurityPolicyPtr
-ContentSecurityPolicy::FillInSelf(
-    const network::mojom::blink::ContentSecurityPolicyPtr& csp) const {
-  network::mojom::blink::ContentSecurityPolicyPtr clone = csp->Clone();
-  clone->self_origin = GetSelfSource() ? GetSelfSource()->Clone() : nullptr;
-  return clone;
+  return policies_;
 }
 
 bool ContentSecurityPolicy::HasPolicyFromSource(

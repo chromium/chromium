@@ -136,6 +136,7 @@ namespace blink {
 namespace {
 
 void ApplyOriginPolicy(ContentSecurityPolicy* csp,
+                       const KURL& response_url,
                        const WebOriginPolicy& origin_policy) {
   // When this function is called. The following lines of code happen
   // consecutively:
@@ -151,16 +152,23 @@ void ApplyOriginPolicy(ContentSecurityPolicy* csp,
   DCHECK(!csp->HasPolicyFromSource(
       network::mojom::ContentSecurityPolicySource::kOriginPolicy));
 
+  DCHECK(response_url.ProtocolIsInHTTPFamily());
+
+  scoped_refptr<SecurityOrigin> self_origin =
+      SecurityOrigin::Create(response_url);
+
   for (const auto& policy : origin_policy.content_security_policies) {
     csp->DidReceiveHeader(
-        policy, network::mojom::ContentSecurityPolicyType::kEnforce,
+        policy, *self_origin,
+        network::mojom::ContentSecurityPolicyType::kEnforce,
         network::mojom::ContentSecurityPolicySource::kOriginPolicy);
   }
 
   for (const auto& policy :
        origin_policy.content_security_policies_report_only) {
     csp->DidReceiveHeader(
-        policy, network::mojom::ContentSecurityPolicyType::kReport,
+        policy, *self_origin,
+        network::mojom::ContentSecurityPolicyType::kReport,
         network::mojom::ContentSecurityPolicySource::kOriginPolicy);
   }
 }
@@ -730,7 +738,7 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
                            ->ExperimentalFeaturesEnabled()) {
     ContentSecurityPolicy* origin_window_csp =
         origin_window->GetContentSecurityPolicy();
-    initiator_csp = origin_window_csp->GetParsedPolicies();
+    initiator_csp = mojo::Clone(origin_window_csp->GetParsedPolicies());
     NavigationInitiatorImpl::From(*origin_window)
         .BindReceiver(navigation_initiator.InitWithNewPipeAndPassReceiver());
   }
@@ -1036,8 +1044,10 @@ void FrameLoader::CommitNavigation(
   DCHECK(content_security_policy);
 
   for (auto& csp : navigation_params->forced_content_security_policies) {
+    scoped_refptr<SecurityOrigin> self_origin =
+        SecurityOrigin::Create(navigation_params->url);
     content_security_policy->DidReceiveHeader(
-        csp, network::mojom::ContentSecurityPolicyType::kEnforce,
+        csp, *self_origin, network::mojom::ContentSecurityPolicyType::kEnforce,
         network::mojom::ContentSecurityPolicySource::kHTTP);
   }
 
@@ -1802,7 +1812,6 @@ ContentSecurityPolicy* FrameLoader::CreateCSP(
   // iframe/popup's script at a fine-grained level.
 
   ContentSecurityPolicy* csp = MakeGarbageCollected<ContentSecurityPolicy>();
-  csp->SetOverrideURLForSelf(response.CurrentRequestUrl());
 
   if (frame_->GetSettings()->GetBypassCSP())
     return csp;  // Empty CSP.
@@ -1812,7 +1821,7 @@ ContentSecurityPolicy* FrameLoader::CreateCSP(
 
   // Retrieve CSP stored in the OriginPolicy.
   if (origin_policy)
-    ApplyOriginPolicy(csp, origin_policy.value());
+    ApplyOriginPolicy(csp, url, origin_policy.value());
 
   // Plugin inherits plugin's CSP from their navigation initiator.
   DocumentInit::Type document_type =

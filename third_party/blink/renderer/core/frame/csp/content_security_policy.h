@@ -194,13 +194,12 @@ class CORE_EXPORT ContentSecurityPolicy final
 
   bool IsBound();
   void BindToDelegate(ContentSecurityPolicyDelegate&);
-  void SetupSelf(const SecurityOrigin&);
-  void SetupSelf(const ContentSecurityPolicy&);
   void CopyStateFrom(const ContentSecurityPolicy*);
   void CopyPluginTypesFrom(const ContentSecurityPolicy*);
 
   void DidReceiveHeaders(const ContentSecurityPolicyResponseHeaders&);
   void DidReceiveHeader(const String&,
+                        const SecurityOrigin& self_origin,
                         network::mojom::ContentSecurityPolicyType,
                         network::mojom::ContentSecurityPolicySource);
   void ReportAccumulatedHeaders() const;
@@ -398,17 +397,9 @@ class CORE_EXPORT ContentSecurityPolicy final
     return insecure_request_policy_;
   }
 
-  bool UrlMatchesSelf(const KURL&) const;
-  bool ProtocolEqualsSelf(const String&) const;
-  const String& GetSelfProtocol() const;
-
   bool ExperimentalFeaturesEnabled() const;
 
   bool ShouldSendCSPHeader(ResourceType) const;
-
-  network::mojom::blink::CSPSource* GetSelfSource() const {
-    return self_source_.get();
-  }
 
   // Whether the main world's CSP should be bypassed based on the current
   // javascript world we are in.
@@ -438,10 +429,8 @@ class CORE_EXPORT ContentSecurityPolicy final
   bool SupportsWasmEval() const { return supports_wasm_eval_; }
   void SetSupportsWasmEval(bool value) { supports_wasm_eval_ = value; }
 
-  // Retrieve a copy of the parsed policies.
-  // TODO(antoniosartori): Make this return a const reference once we remove
-  // SetupSelf and this does not need to modify anything in the parsed policies.
-  WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr>
+  // Retrieve the parsed policies.
+  const WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr>&
   GetParsedPolicies() const;
 
   // Retrieves the parsed sandbox flags. A lot of the time the execution
@@ -482,6 +471,7 @@ class CORE_EXPORT ContentSecurityPolicy final
 
   Vector<network::mojom::blink::ContentSecurityPolicyPtr> Parse(
       const String&,
+      const SecurityOrigin& self_origin,
       network::mojom::ContentSecurityPolicyType,
       network::mojom::ContentSecurityPolicySource);
   void ApplyPolicySideEffectsToDelegate();
@@ -537,12 +527,6 @@ class CORE_EXPORT ContentSecurityPolicy final
       LocalFrame* = nullptr,
       Element* = nullptr);
 
-  // Clone |csp| and set the self_origin to SelfOrigin().
-  // TODO(antoniosartori): Get rid of this when we will correctly track
-  // self_origin inside network::mojom::blink::ContentSecurityPolicy.
-  network::mojom::blink::ContentSecurityPolicyPtr FillInSelf(
-      const network::mojom::blink::ContentSecurityPolicyPtr& csp) const;
-
   Member<ContentSecurityPolicyDelegate> delegate_;
   bool override_inline_style_allowed_ = false;
   Vector<network::mojom::blink::ContentSecurityPolicyPtr> policies_;
@@ -563,7 +547,6 @@ class CORE_EXPORT ContentSecurityPolicy final
   String disable_eval_error_message_;
   mojom::blink::InsecureRequestPolicy insecure_request_policy_;
 
-  network::mojom::blink::CSPSourcePtr self_source_;
   String self_protocol_;
 
   bool supports_wasm_eval_ = false;
