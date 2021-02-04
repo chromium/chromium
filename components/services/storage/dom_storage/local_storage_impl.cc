@@ -18,6 +18,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
@@ -428,13 +429,13 @@ class LocalStorageImpl::StorageAreaHolder final
         LocalStorageImpl::LegacyDatabaseFileNameFromOrigin(origin_));
   }
 
-  LocalStorageImpl* context_;
+  CheckedPtr<LocalStorageImpl> context_;
   url::Origin origin_;
   // Holds the same value as |area_|. The reason for this is that
   // during destruction of the StorageAreaImpl instance we might still get
   // called and need access  to the StorageAreaImpl instance. The unique_ptr
   // could already be null, but this field should still be valid.
-  StorageAreaImpl* area_ptr_;
+  CheckedPtr<StorageAreaImpl> area_ptr_;
   std::unique_ptr<StorageAreaImpl> area_;
   bool deleted_old_data_ = false;
   bool has_bindings_ = false;

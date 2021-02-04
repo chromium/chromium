@@ -17,6 +17,7 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
@@ -275,7 +276,7 @@ class ShowPopupWidgetWaiter
   gfx::Rect initial_rect_;
   int32_t routing_id_ = MSG_ROUTING_NONE;
   int32_t process_id_ = 0;
-  RenderFrameHostImpl* frame_host_;
+  CheckedPtr<RenderFrameHostImpl> frame_host_;
 
   DISALLOW_COPY_AND_ASSIGN(ShowPopupWidgetWaiter);
 };
@@ -337,7 +338,7 @@ class UnresponsiveRendererObserver : public WebContentsObserver {
   // WebContentsObserver:
   void OnRendererUnresponsive(RenderProcessHost* render_process_host) override;
 
-  RenderProcessHost* captured_render_process_host_ = nullptr;
+  CheckedPtr<RenderProcessHost> captured_render_process_host_ = nullptr;
   base::RunLoop run_loop_;
 
   DISALLOW_COPY_AND_ASSIGN(UnresponsiveRendererObserver);
@@ -379,7 +380,7 @@ class BeforeUnloadBlockingDelegate : public JavaScriptDialogManager,
   void CancelDialogs(WebContents* web_contents, bool reset_state) override {}
 
  private:
-  WebContentsImpl* web_contents_;
+  CheckedPtr<WebContentsImpl> web_contents_;
 
   DialogClosedCallback callback_;
 

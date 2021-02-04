@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/guid.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
@@ -210,8 +211,8 @@ class ScheduledNotificationManagerTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  MockNotificationStore* notification_store_;
-  MockIconStore* icon_store_;
+  CheckedPtr<MockNotificationStore> notification_store_;
+  CheckedPtr<MockIconStore> icon_store_;
   std::vector<SchedulerClientType> clients_;
   std::unique_ptr<ScheduledNotificationManager> manager_;
   SchedulerConfig config_;

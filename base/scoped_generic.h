@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/memory/checked_ptr.h"
 // TODO(crbug.com/1010217) Remove once no #includers are getting base/macros.h
 // by including this header.
 #include "base/macros.h"
@@ -254,7 +255,7 @@ class ScopedGeneric {
 
    private:
     T value_ = Traits::InvalidValue();
-    ScopedGeneric* scoped_generic_;
+    CheckedPtr<ScopedGeneric<T, Traits>> scoped_generic_;
     bool used_ = false;
   };
 

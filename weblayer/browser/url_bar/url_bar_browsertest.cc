@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/callback_forward.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "weblayer/browser/browser_impl.h"
@@ -46,8 +47,8 @@ class UrlBarBrowserTest : public WebLayerBrowserTest {
   void SetActiveTab(TabImpl* tab) { shell()->browser()->SetActiveTab(tab); }
 
  protected:
-  TabImpl* tab_ = nullptr;
-  TabImpl* another_tab_ = nullptr;
+  CheckedPtr<TabImpl> tab_ = nullptr;
+  CheckedPtr<TabImpl> another_tab_ = nullptr;
 
  private:
   BrowserImpl* browser_impl() {

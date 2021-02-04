@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -95,9 +96,9 @@ class ContentSettingImageView : public IconLabelBubbleView,
   // Updates the image and tooltip to match the current model state.
   void UpdateImage();
 
-  Delegate* delegate_;  // Weak.
+  CheckedPtr<Delegate> delegate_;  // Weak.
   std::unique_ptr<ContentSettingImageModel> content_setting_image_model_;
-  views::BubbleDialogDelegateView* bubble_view_;
+  CheckedPtr<views::BubbleDialogDelegateView> bubble_view_;
   base::Optional<SkColor> icon_color_;
 
   // Observes destruction of bubble's Widgets spawned by this ImageView.

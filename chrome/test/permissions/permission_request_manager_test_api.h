@@ -6,6 +6,7 @@
 #define CHROME_TEST_PERMISSIONS_PERMISSION_REQUEST_MANAGER_TEST_API_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request_manager.h"
 
@@ -44,7 +45,7 @@ class PermissionRequestManagerTestApi {
   void SimulateWebContentsDestroyed();
 
  private:
-  permissions::PermissionRequestManager* manager_;
+  CheckedPtr<permissions::PermissionRequestManager> manager_;
 
   DISALLOW_COPY_AND_ASSIGN(PermissionRequestManagerTestApi);
 };

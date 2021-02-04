@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
@@ -112,14 +113,14 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
 #endif  // defined(OS_ANDROID)
 
  private:
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
   ChromeAutocompleteSchemeClassifier scheme_classifier_;
   std::unique_ptr<OmniboxPedalProvider> pedal_provider_;
   std::unique_ptr<unified_consent::UrlKeyedDataCollectionConsentHelper>
       url_consent_helper_;
 
   // Injectable storage partitiion, used for testing.
-  content::StoragePartition* storage_partition_;
+  CheckedPtr<content::StoragePartition> storage_partition_;
 
   std::unique_ptr<OmniboxTriggeredFeatureService>
       omnibox_triggered_feature_service_;

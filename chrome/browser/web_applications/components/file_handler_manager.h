@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_shortcut_manager.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
@@ -116,8 +117,8 @@ class FileHandlerManager {
   bool disable_os_integration_for_testing_ = false;
   base::RepeatingCallback<void()> on_file_handling_expiry_updated_for_testing_;
 
-  Profile* const profile_;
-  AppRegistrar* registrar_ = nullptr;
+  const CheckedPtr<Profile> profile_;
+  CheckedPtr<AppRegistrar> registrar_ = nullptr;
 
   void OnOriginTrialExpiryTimeReceived(
       mojo::AssociatedRemote<blink::mojom::FileHandlingExpiry> /*interface*/,

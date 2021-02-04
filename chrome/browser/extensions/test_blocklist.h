@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/extensions/blocklist.h"
 #include "chrome/browser/extensions/blocklist_state_fetcher.h"
 
@@ -77,7 +78,7 @@ class TestBlocklist {
   const BlocklistStateFetcherMock* fetcher() { return &state_fetcher_mock_; }
 
  private:
-  Blocklist* blocklist_;
+  CheckedPtr<Blocklist> blocklist_;
 
   // The BlocklistStateFetcher object is normally managed by Blocklist. Because
   // of this, we need to prevent this object from being deleted with Blocklist.

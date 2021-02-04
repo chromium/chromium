@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/stl_util.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -34,7 +35,7 @@ class CaptureSchedulerTest : public testing::Test {
         base::TimeDelta::FromMilliseconds(kMinumumFrameIntervalMs));
     scheduler_->SetTickClockForTest(&tick_clock_);
     capture_timer_ = new base::MockOneShotTimer();
-    scheduler_->SetTimerForTest(base::WrapUnique(capture_timer_));
+    scheduler_->SetTimerForTest(base::WrapUnique(capture_timer_.get()));
     scheduler_->Start();
   }
 
@@ -80,7 +81,7 @@ class CaptureSchedulerTest : public testing::Test {
   base::SimpleTestTickClock tick_clock_;
 
   // Owned by |scheduler_|.
-  base::MockOneShotTimer* capture_timer_;
+  CheckedPtr<base::MockOneShotTimer> capture_timer_;
 
   bool capture_called_;
 };

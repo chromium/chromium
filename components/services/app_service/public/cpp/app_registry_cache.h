@@ -10,6 +10,7 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
@@ -67,7 +68,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
     void Observe(AppRegistryCache* cache);
 
    private:
-    AppRegistryCache* cache_ = nullptr;
+    CheckedPtr<AppRegistryCache> cache_ = nullptr;
 
     DISALLOW_COPY_AND_ASSIGN(Observer);
   };

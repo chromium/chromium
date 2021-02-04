@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/containers/adapters.h"
 #include "base/feature_list.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -127,7 +128,7 @@ class MediaInternals::MediaInternalLogRecordsImpl
   void Log(const std::vector<::media::MediaLogRecord>& arr) override;
 
  private:
-  content::MediaInternals* const media_internals_;
+  const CheckedPtr<content::MediaInternals> media_internals_;
   const int render_process_id_;
   DISALLOW_COPY_AND_ASSIGN(MediaInternalLogRecordsImpl);
 };
@@ -183,7 +184,7 @@ class MediaInternals::AudioLogImpl : public media::mojom::AudioLog,
 
   const int owner_id_;
   const media::AudioLogFactory::AudioComponent component_;
-  content::MediaInternals* const media_internals_;
+  const CheckedPtr<content::MediaInternals> media_internals_;
   const int component_id_;
   const int render_process_id_;
   const int render_frame_id_;

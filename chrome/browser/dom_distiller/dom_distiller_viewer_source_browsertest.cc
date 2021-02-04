@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/guid.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -166,7 +167,7 @@ class DomDistillerViewerSourceBrowserTest : public InProcessBrowserTest {
   // Database entries.
   bool expect_distillation_ = false;
   bool expect_distiller_page_ = false;
-  MockDistillerFactory* distiller_factory_ = nullptr;
+  CheckedPtr<MockDistillerFactory> distiller_factory_ = nullptr;
 };
 
 // The DomDistillerViewerSource renders untrusted content, so ensure no bindings

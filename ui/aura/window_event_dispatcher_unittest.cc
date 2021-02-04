@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -329,7 +330,7 @@ class TestEventClient : public client::EventClient {
 
   ui::EventTarget* GetToplevelEventTarget() override { return NULL; }
 
-  Window* root_window_;
+  CheckedPtr<Window> root_window_;
   bool lock_;
 
   DISALLOW_COPY_AND_ASSIGN(TestEventClient);
@@ -1034,8 +1035,8 @@ class HoldPointerOnScrollHandler : public ui::test::TestEventHandler {
     }
   }
 
-  WindowEventDispatcher* dispatcher_;
-  EventFilterRecorder* filter_;
+  CheckedPtr<WindowEventDispatcher> dispatcher_;
+  CheckedPtr<EventFilterRecorder> filter_;
   bool holding_moves_;
 
   DISALLOW_COPY_AND_ASSIGN(HoldPointerOnScrollHandler);
@@ -1449,7 +1450,7 @@ class DeletingWindowDelegate : public test::TestWindowDelegate {
     got_event_ = true;
   }
 
-  Window* window_;
+  CheckedPtr<Window> window_;
   bool delete_during_handle_;
   bool got_event_;
 
@@ -1571,7 +1572,7 @@ class NestedGestureDelegate : public test::TestWindowDelegate {
     }
   }
 
-  ui::test::EventGenerator* generator_;
+  CheckedPtr<ui::test::EventGenerator> generator_;
   const gfx::Point tap_location_;
   int gesture_end_count_;
   DISALLOW_COPY_AND_ASSIGN(NestedGestureDelegate);
@@ -1645,7 +1646,8 @@ class RepostGestureEventRecorder : public EventFilterRecorder {
   }
 
   void OnGestureEvent(ui::GestureEvent* event) override {
-    EXPECT_EQ(done_cleanup_ ? repost_target_ : repost_source_, event->target());
+    EXPECT_EQ(done_cleanup_ ? repost_target_.get() : repost_source_.get(),
+              event->target());
     if (event->type() == ui::ET_GESTURE_TAP_DOWN) {
       if (!reposted_) {
         EXPECT_NE(repost_target_, event->target());
@@ -1665,8 +1667,8 @@ class RepostGestureEventRecorder : public EventFilterRecorder {
   void OnMouseEvent(ui::MouseEvent* event) override {}
 
  private:
-  aura::Window* repost_source_;
-  aura::Window* repost_target_;
+  CheckedPtr<aura::Window> repost_source_;
+  CheckedPtr<aura::Window> repost_target_;
   // set to true if we reposted the ET_GESTURE_TAP_DOWN event.
   bool reposted_;
   // set true if we're done cleaning up after hiding repost_source_;
@@ -1764,7 +1766,7 @@ class OnMouseExitDeletingEventFilter : public EventFilterRecorder {
 
   // Closure that is run prior to |object_to_delete_| being deleted.
   base::OnceClosure delete_closure_;
-  T* object_to_delete_;
+  CheckedPtr<T> object_to_delete_;
 
   DISALLOW_COPY_AND_ASSIGN(OnMouseExitDeletingEventFilter);
 };
@@ -1883,8 +1885,8 @@ class ValidRootDuringDestructionWindowObserver : public aura::WindowObserver {
   }
 
  private:
-  bool* got_destroying_;
-  bool* has_valid_root_;
+  CheckedPtr<bool> got_destroying_;
+  CheckedPtr<bool> has_valid_root_;
 
   DISALLOW_COPY_AND_ASSIGN(ValidRootDuringDestructionWindowObserver);
 };
@@ -1933,7 +1935,7 @@ class DontResetHeldEventWindowDelegate : public test::TestWindowDelegate {
   }
 
  private:
-  Window* root_;
+  CheckedPtr<Window> root_;
   int mouse_event_count_;
 
   DISALLOW_COPY_AND_ASSIGN(DontResetHeldEventWindowDelegate);
@@ -1988,7 +1990,7 @@ class DeleteHostFromHeldMouseEventDelegate : public test::TestWindowDelegate {
   void OnWindowDestroyed(Window* window) override { got_destroy_ = true; }
 
  private:
-  WindowTreeHost* host_;
+  CheckedPtr<WindowTreeHost> host_;
   bool got_mouse_event_;
   bool got_destroy_;
 
@@ -2262,7 +2264,7 @@ class RunLoopHandler : public ui::EventHandler {
   bool running_ = false;
   int num_scroll_updates_ = 0;
 
-  aura::Window* target_;
+  CheckedPtr<aura::Window> target_;
 
   DISALLOW_COPY_AND_ASSIGN(RunLoopHandler);
 };
@@ -2626,7 +2628,7 @@ class StaticFocusClient : public client::FocusClient {
   void ResetFocusWithinActiveWindow(Window* window) override {}
   Window* GetFocusedWindow() override { return focused_; }
 
-  Window* focused_;
+  CheckedPtr<Window> focused_;
 
   DISALLOW_COPY_AND_ASSIGN(StaticFocusClient);
 };
@@ -2674,7 +2676,7 @@ class DispatchEventHandler : public ui::EventHandler {
     ui::EventHandler::OnMouseEvent(mouse);
   }
 
-  Window* target_;
+  CheckedPtr<Window> target_;
   bool dispatched_;
 
   DISALLOW_COPY_AND_ASSIGN(DispatchEventHandler);
@@ -2696,8 +2698,8 @@ class MoveWindowHandler : public ui::EventHandler {
     ui::EventHandler::OnMouseEvent(mouse);
   }
 
-  Window* window_to_move_;
-  Window* root_window_to_move_to_;
+  CheckedPtr<Window> window_to_move_;
+  CheckedPtr<Window> root_window_to_move_to_;
 
   DISALLOW_COPY_AND_ASSIGN(MoveWindowHandler);
 };
@@ -2869,7 +2871,7 @@ class AsyncWindowDelegate : public test::TestWindowDelegate {
  private:
   void OnTouchEvent(ui::TouchEvent* event) override {
     // Convert touch event back to root window coordinates.
-    event->ConvertLocationToTarget(window_, window_->GetRootWindow());
+    event->ConvertLocationToTarget(window_.get(), window_->GetRootWindow());
     event->DisableSynchronousHandling();
     dispatcher_->ProcessedTouchEvent(
         event->unique_event_id(), window_, ui::ER_UNHANDLED,
@@ -2877,8 +2879,8 @@ class AsyncWindowDelegate : public test::TestWindowDelegate {
     event->StopPropagation();
   }
 
-  WindowEventDispatcher* dispatcher_;
-  Window* window_;
+  CheckedPtr<WindowEventDispatcher> dispatcher_;
+  CheckedPtr<Window> window_;
 
   DISALLOW_COPY_AND_ASSIGN(AsyncWindowDelegate);
 };
@@ -3170,7 +3172,7 @@ TEST_F(WindowEventDispatcherTest, TargetIsDestroyedByHeldEvent) {
     }
 
    private:
-    aura::Window* focused_;
+    CheckedPtr<aura::Window> focused_;
   };
   Handler mouse_handler(focused);
   mouse_target->AddPostTargetHandler(&mouse_handler);

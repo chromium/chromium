@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/synchronization/lock.h"
 
@@ -31,7 +32,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MayAutoLock {
   }
 
  private:
-  base::Lock* lock_;
+  CheckedPtr<base::Lock> lock_;
   DISALLOW_COPY_AND_ASSIGN(MayAutoLock);
 };
 
@@ -53,7 +54,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MayAutoUnlock {
   }
 
  private:
-  base::Lock* lock_;
+  CheckedPtr<base::Lock> lock_;
   DISALLOW_COPY_AND_ASSIGN(MayAutoUnlock);
 };
 

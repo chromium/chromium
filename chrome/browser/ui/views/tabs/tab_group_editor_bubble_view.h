@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_EDITOR_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_EDITOR_BUBBLE_VIEW_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
@@ -69,7 +70,7 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
 
   void OnBubbleClose();
 
-  const Browser* const browser_;
+  const CheckedPtr<const Browser> browser_;
   const tab_groups::TabGroupId group_;
 
   class TitleFieldController : public views::TextfieldController {
@@ -85,7 +86,7 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
                         const ui::KeyEvent& key_event) override;
 
    private:
-    TabGroupEditorBubbleView* const parent_;
+    const CheckedPtr<TabGroupEditorBubbleView> parent_;
   };
 
   TitleFieldController title_field_controller_;
@@ -108,10 +109,10 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
     bool stop_context_menu_propagation_;
   };
 
-  TitleField* title_field_;
+  CheckedPtr<TitleField> title_field_;
 
   Colors colors_;
-  ColorPickerView* color_selector_;
+  CheckedPtr<ColorPickerView> color_selector_;
 
   // If true will use the |anchor_rect_| provided in the constructor, otherwise
   // fall back to using the anchor view bounds.

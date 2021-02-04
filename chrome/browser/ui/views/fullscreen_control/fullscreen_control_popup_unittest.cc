@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/checked_ptr.h"
 #include "ui/views/widget/widget.h"
 
 #include <memory>
@@ -62,7 +63,7 @@ class FullscreenControlPopupTest : public views::test::WidgetTest {
 
  private:
   std::unique_ptr<gfx::AnimationTestApi> animation_api_;
-  views::Widget* parent_widget_ = nullptr;
+  CheckedPtr<views::Widget> parent_widget_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(FullscreenControlPopupTest);
 };

@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/views/window/dialog_delegate.h"
 
 class ConfirmBubbleModel;
@@ -44,7 +45,7 @@ class ConfirmBubbleViews : public views::DialogDelegateView {
   // The model to customize this bubble view.
   std::unique_ptr<ConfirmBubbleModel> model_;
 
-  views::Label* label_;
+  CheckedPtr<views::Label> label_;
 
   DISALLOW_COPY_AND_ASSIGN(ConfirmBubbleViews);
 };

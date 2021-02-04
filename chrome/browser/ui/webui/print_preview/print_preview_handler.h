@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
@@ -288,7 +289,7 @@ class PrintPreviewHandler : public content::WebUIMessageHandler,
 
   // Pointer to the identity manager service so that print preview can listen
   // for GAIA cookie changes.
-  signin::IdentityManager* identity_manager_ = nullptr;
+  CheckedPtr<signin::IdentityManager> identity_manager_ = nullptr;
 
   // Handles requests for extension printers. Created lazily by calling
   // GetPrinterHandler().

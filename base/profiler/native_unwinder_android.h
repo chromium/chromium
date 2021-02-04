@@ -5,6 +5,7 @@
 #ifndef BASE_PROFILER_NATIVE_UNWINDER_ANDROID_H_
 #define BASE_PROFILER_NATIVE_UNWINDER_ANDROID_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/profiler/unwinder.h"
 #include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Maps.h"
 #include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Memory.h"
@@ -68,9 +69,9 @@ class NativeUnwinderAndroid : public Unwinder,
 
   // InitializeModules() registers self as an AuxiliaryModuleProvider. A pointer
   // to the ModuleCache is saved to unregister self in destructor.
-  ModuleCache* module_cache_ = nullptr;
-  unwindstack::Maps* const memory_regions_map_;
-  unwindstack::Memory* const process_memory_;
+  CheckedPtr<ModuleCache> module_cache_ = nullptr;
+  const CheckedPtr<unwindstack::Maps> memory_regions_map_;
+  const CheckedPtr<unwindstack::Memory> process_memory_;
   const uintptr_t exclude_module_with_base_address_;
 };
 

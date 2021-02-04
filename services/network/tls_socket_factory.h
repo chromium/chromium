@@ -10,6 +10,7 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
@@ -85,8 +86,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TLSSocketFactory {
   std::unique_ptr<net::CTPolicyEnforcer> no_verification_ct_policy_enforcer_;
 
   net::SSLClientContext ssl_client_context_;
-  net::ClientSocketFactory* client_socket_factory_;
-  net::SSLConfigService* const ssl_config_service_;
+  CheckedPtr<net::ClientSocketFactory> client_socket_factory_;
+  const CheckedPtr<net::SSLConfigService> ssl_config_service_;
   mojo::UniqueReceiverSet<mojom::TLSClientSocket> tls_socket_receivers_;
 
   DISALLOW_COPY_AND_ASSIGN(TLSSocketFactory);

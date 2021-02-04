@@ -4,6 +4,7 @@
 
 #include "net/reporting/reporting_delegate.h"
 
+#include "base/memory/checked_ptr.h"
 #include "net/base/network_delegate.h"
 #include "net/url_request/url_request_context.h"
 
@@ -54,7 +55,7 @@ class ReportingDelegateImpl : public ReportingDelegate {
     return request_context_->network_delegate();
   }
 
-  URLRequestContext* request_context_;
+  CheckedPtr<URLRequestContext> request_context_;
 };
 
 }  // namespace

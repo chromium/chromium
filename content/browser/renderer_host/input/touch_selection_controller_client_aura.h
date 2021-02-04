@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
@@ -98,7 +99,7 @@ class CONTENT_EXPORT TouchSelectionControllerClientAura
   base::string16 GetSelectedText() override;
 
   // Not owned, non-null for the lifetime of this object.
-  RenderWidgetHostViewAura* rwhva_;
+  CheckedPtr<RenderWidgetHostViewAura> rwhva_;
 
   class InternalClient final : public TouchSelectionControllerClient {
    public:
@@ -118,12 +119,12 @@ class CONTENT_EXPORT TouchSelectionControllerClientAura
     void DidScroll() override;
 
    private:
-    RenderWidgetHostViewAura* rwhva_;
+    CheckedPtr<RenderWidgetHostViewAura> rwhva_;
   } internal_client_;
 
   // Keep track of which client interface to use.
-  TouchSelectionControllerClient* active_client_;
-  TouchSelectionMenuClient* active_menu_client_;
+  CheckedPtr<TouchSelectionControllerClient> active_client_;
+  CheckedPtr<TouchSelectionMenuClient> active_menu_client_;
   gfx::SelectionBound manager_selection_start_;
   gfx::SelectionBound manager_selection_end_;
 

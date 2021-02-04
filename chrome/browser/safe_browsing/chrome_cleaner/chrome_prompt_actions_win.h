@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "components/chrome_cleaner/public/proto/chrome_prompt.pb.h"

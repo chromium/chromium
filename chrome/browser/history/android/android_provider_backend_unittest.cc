@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -259,7 +260,7 @@ class AndroidProviderBackendTest : public testing::Test {
   base::FilePath favicon_db_name_;
 
   TestingProfileManager profile_manager_;
-  BookmarkModel* bookmark_model_;
+  CheckedPtr<BookmarkModel> bookmark_model_;
   std::unique_ptr<history::HistoryClient> history_client_;
   std::unique_ptr<history::HistoryBackendClient> history_backend_client_;
 

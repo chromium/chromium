@@ -8,6 +8,7 @@
 #include <memory>
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/optional.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -78,13 +79,13 @@ class AdaptiveQuietNotificationPermissionUiEnabler : public KeyedService {
   // before M88.
   void BackfillEnablingMethodIfMissing();
 
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   bool is_enabling_adaptively_ = false;
 
   // The clock to use as a source of time, materialized so that a mock clock can
   // be injected for tests.
-  base::Clock* clock_;
+  CheckedPtr<base::Clock> clock_;
 
   DISALLOW_IMPLICIT_CONSTRUCTORS(AdaptiveQuietNotificationPermissionUiEnabler);
 };

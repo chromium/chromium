@@ -1086,7 +1086,7 @@ void SafeBrowsingPrivateEventRouter::ReportRealtimeEventCallback(
   base::Value event_list(base::Value::Type::LIST);
   event_list.Append(std::move(wrapper));
 
-  auto* client = settings.per_profile ? profile_client_ : browser_client_;
+  auto* client = settings.per_profile ? profile_client_.get() : browser_client_.get();
   client->UploadSecurityEventReport(
       context_,
       /* include_device_info */ !settings.per_profile,

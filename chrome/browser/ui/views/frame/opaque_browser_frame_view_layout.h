@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/frame/opaque_browser_frame_view.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/window/frame_buttons.h"
@@ -145,7 +146,7 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   virtual TopAreaPadding GetTopAreaPadding(bool has_leading_buttons,
                                            bool has_trailing_buttons) const;
 
-  OpaqueBrowserFrameViewLayoutDelegate* delegate_;
+  CheckedPtr<OpaqueBrowserFrameViewLayoutDelegate> delegate_;
 
   // The leading and trailing x positions of the empty space available for
   // laying out titlebar elements.
@@ -204,15 +205,15 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   int forced_window_caption_spacing_;
 
   // Window controls.
-  views::Button* minimize_button_;
-  views::Button* maximize_button_;
-  views::Button* restore_button_;
-  views::Button* close_button_;
+  CheckedPtr<views::Button> minimize_button_;
+  CheckedPtr<views::Button> maximize_button_;
+  CheckedPtr<views::Button> restore_button_;
+  CheckedPtr<views::Button> close_button_;
 
-  views::View* window_icon_;
-  views::Label* window_title_;
+  CheckedPtr<views::View> window_icon_;
+  CheckedPtr<views::Label> window_title_;
 
-  WebAppFrameToolbarView* web_app_frame_toolbar_ = nullptr;
+  CheckedPtr<WebAppFrameToolbarView> web_app_frame_toolbar_ = nullptr;
 
   std::vector<views::FrameButton> leading_buttons_;
   std::vector<views::FrameButton> trailing_buttons_;

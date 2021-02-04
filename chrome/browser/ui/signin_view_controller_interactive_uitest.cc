@@ -5,6 +5,7 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -81,7 +82,7 @@ class SigninDialogClosedObserver
   }
 
   base::RunLoop dialog_closed_run_loop_;
-  SigninViewControllerDelegate* delegate_;
+  CheckedPtr<SigninViewControllerDelegate> delegate_;
 };
 
 }  // namespace

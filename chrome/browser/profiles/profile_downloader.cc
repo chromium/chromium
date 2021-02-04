@@ -46,7 +46,7 @@ ProfileDownloader::ProfileDownloader(ProfileDownloaderDelegate* delegate)
       identity_manager_(delegate_->GetIdentityManager()),
       identity_manager_observer_(this) {
   DCHECK(delegate_);
-  identity_manager_observer_.Add(identity_manager_);
+  identity_manager_observer_.Add(identity_manager_.get());
 }
 
 void ProfileDownloader::Start() {
@@ -146,7 +146,7 @@ void ProfileDownloader::StartFetchingOAuth2AccessToken() {
 
 ProfileDownloader::~ProfileDownloader() {
   oauth2_access_token_fetcher_.reset();
-  identity_manager_observer_.Remove(identity_manager_);
+  identity_manager_observer_.Remove(identity_manager_.get());
 }
 
 void ProfileDownloader::FetchImageData() {

@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 
 namespace cc {
@@ -36,7 +37,7 @@ class EventsMetricsManager::ScopedMonitorImpl
   void set_save_metrics() { save_metrics_ = true; }
 
  private:
-  EventsMetricsManager* const manager_;
+  const CheckedPtr<EventsMetricsManager> manager_;
   DoneCallback done_callback_;
   bool save_metrics_ = false;
 };

@@ -15,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "net/base/address_list.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
@@ -144,7 +145,7 @@ class TCPSocketWin::Core : public base::RefCounted<Core> {
     void OnObjectSignaled(HANDLE object) override;
 
    private:
-    Core* const core_;
+    const CheckedPtr<Core> core_;
   };
 
   class WriteDelegate : public base::win::ObjectWatcher::Delegate {
@@ -156,13 +157,13 @@ class TCPSocketWin::Core : public base::RefCounted<Core> {
     void OnObjectSignaled(HANDLE object) override;
 
    private:
-    Core* const core_;
+    const CheckedPtr<Core> core_;
   };
 
   ~Core();
 
   // The socket that created this object.
-  TCPSocketWin* socket_;
+  CheckedPtr<TCPSocketWin> socket_;
 
   // |reader_| handles the signals from |read_watcher_|.
   ReadDelegate reader_;

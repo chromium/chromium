@@ -13,6 +13,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
@@ -134,7 +135,7 @@ class RapporServiceImpl : public RapporService {
                              const RapporParameters& parameters);
 
   // A weak pointer to the PrefService used to read and write preferences.
-  PrefService* pref_service_;
+  CheckedPtr<PrefService> pref_service_;
 
   // A callback for testing if incognito mode is active;
   const base::RepeatingCallback<bool(void)> is_incognito_callback_;

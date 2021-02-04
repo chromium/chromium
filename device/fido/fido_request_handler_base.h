@@ -18,6 +18,7 @@
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/strings/string_piece_forward.h"
@@ -293,7 +294,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
 
   AuthenticatorMap active_authenticators_;
   std::vector<std::unique_ptr<FidoDiscoveryBase>> discoveries_;
-  Observer* observer_ = nullptr;
+  CheckedPtr<Observer> observer_ = nullptr;
   TransportAvailabilityInfo transport_availability_info_;
   base::RepeatingClosure notify_observer_callback_;
   std::unique_ptr<BleAdapterManager> bluetooth_adapter_manager_;

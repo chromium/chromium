@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_AVATAR_BUTTON_ERROR_CONTROLLER_H_
 #define CHROME_BROWSER_UI_AVATAR_BUTTON_ERROR_CONTROLLER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/ui/avatar_button_error_controller_delegate.h"
 #include "components/signin/core/browser/signin_error_controller.h"
@@ -42,8 +43,8 @@ class AvatarButtonErrorController {
     bool HasSigninError();
 
    private:
-    Profile* profile_;
-    AvatarButtonErrorController* avatar_button_error_controller_;
+    CheckedPtr<Profile> profile_;
+    CheckedPtr<AvatarButtonErrorController> avatar_button_error_controller_;
 
     DISALLOW_COPY_AND_ASSIGN(SigninErrorObserver);
   };
@@ -64,8 +65,8 @@ class AvatarButtonErrorController {
     bool HasSyncError();
 
    private:
-    Profile* profile_;
-    AvatarButtonErrorController* avatar_button_error_controller_;
+    CheckedPtr<Profile> profile_;
+    CheckedPtr<AvatarButtonErrorController> avatar_button_error_controller_;
 
     ScopedObserver<syncer::SyncService, syncer::SyncServiceObserver>
         sync_observer_{this};
@@ -76,7 +77,7 @@ class AvatarButtonErrorController {
   void UpdateSigninError(bool has_signin_error);
   void UpdateSyncError(bool has_sync_error);
 
-  AvatarButtonErrorControllerDelegate* delegate_;
+  CheckedPtr<AvatarButtonErrorControllerDelegate> delegate_;
 
   SigninErrorObserver avatar_signin_error_controller_;
   SyncErrorObserver avatar_sync_error_controller_;

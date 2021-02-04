@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_CAPTIONS_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_CAPTIONS_HANDLER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/accessibility/soda_installer.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
@@ -35,7 +36,7 @@ class CaptionsHandler : public SettingsPageUIHandler,
   void OnSodaError() override;
   void OnSodaProgress(int progress) override;
 
-  PrefService* prefs_;
+  CheckedPtr<PrefService> prefs_;
 };
 
 }  // namespace settings

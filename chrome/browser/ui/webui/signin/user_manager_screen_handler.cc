@@ -13,6 +13,7 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/single_thread_task_runner.h"
@@ -139,8 +140,8 @@ class UrlHashHelper : public BrowserListObserver {
   void OnBrowserRemoved(Browser* browser) override;
 
  private:
-  Browser* browser_;
-  Profile* profile_;
+  CheckedPtr<Browser> browser_;
+  CheckedPtr<Profile> profile_;
   std::string hash_;
 
   DISALLOW_COPY_AND_ASSIGN(UrlHashHelper);
@@ -261,9 +262,9 @@ class UserManagerScreenHandler::ProfileUpdateObserver
     user_manager_handler_->SendUserList();
   }
 
-  ProfileManager* profile_manager_;
+  CheckedPtr<ProfileManager> profile_manager_;
 
-  UserManagerScreenHandler* user_manager_handler_;  // Weak; owns us.
+  CheckedPtr<UserManagerScreenHandler> user_manager_handler_;  // Weak; owns us.
 
   DISALLOW_COPY_AND_ASSIGN(ProfileUpdateObserver);
 };

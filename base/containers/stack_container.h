@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 
 namespace base {

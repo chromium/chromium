@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "cc/test/geometry_test_utils.h"
 #include "chrome/browser/vr/test/animation_utils.h"
@@ -50,7 +51,7 @@ class ResizerTest : public testing::Test {
   void CheckScale(float scale) { EXPECT_FLOAT_EQ(scale, ComputeScale()); }
 
  protected:
-  Resizer* resizer_ = nullptr;
+  CheckedPtr<Resizer> resizer_ = nullptr;
   UiScene scene_;
 };
 

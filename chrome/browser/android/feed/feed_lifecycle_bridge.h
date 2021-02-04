@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "components/history/core/browser/history_service.h"
+#include "base/memory/checked_ptr.h"
 #include "components/history/core/browser/history_service_observer.h"
 
 class Profile;
@@ -39,7 +40,7 @@ class FeedLifecycleBridge : public history::HistoryServiceObserver {
   // Reference to the Java half of this bridge. Always valid.
   base::android::ScopedJavaGlobalRef<jobject> j_this_;
 
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>

@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "components/gcm_driver/gcm_client.h"
@@ -118,7 +119,7 @@ class FakeGCMClient : public GCMClient {
   void SendAcknowledgement(const std::string& app_id,
                            const std::string& message_id);
 
-  Delegate* delegate_;
+  CheckedPtr<Delegate> delegate_;
   std::string product_category_for_subtypes_;
   bool started_;
   StartMode start_mode_;

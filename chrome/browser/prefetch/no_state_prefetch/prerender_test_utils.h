@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observer.h"
@@ -121,7 +122,7 @@ class TestNoStatePrefetchContents : public NoStatePrefetchContents,
   ScopedObserver<content::RenderWidgetHost, content::RenderWidgetHostObserver>
       observer_;
   // The RenderViewHost created for the prerender, if any.
-  content::RenderViewHost* new_render_view_host_;
+  CheckedPtr<content::RenderViewHost> new_render_view_host_;
   // Set to true when the prerendering RenderWidget is hidden.
   bool was_hidden_;
   // Set to true when the prerendering RenderWidget is shown, after having been
@@ -169,7 +170,7 @@ class TestPrerender : public NoStatePrefetchContents::Observer,
   void OnPrefetchStop(NoStatePrefetchContents* contents) override;
 
  private:
-  TestNoStatePrefetchContents* contents_;
+  CheckedPtr<TestNoStatePrefetchContents> contents_;
   FinalStatus final_status_;
   int number_of_loads_;
 
@@ -216,7 +217,7 @@ class DestructionWaiter {
     void OnPrefetchStop(NoStatePrefetchContents* contents) override;
 
    private:
-    DestructionWaiter* waiter_;
+    CheckedPtr<DestructionWaiter> waiter_;
 
     DISALLOW_COPY_AND_ASSIGN(DestructionMarker);
   };
@@ -350,7 +351,7 @@ class PrerenderInProcessBrowserTest : virtual public InProcessBrowserTest {
   void set_browser(Browser* browser) { explicitly_set_browser_ = browser; }
 
   Browser* current_browser() const {
-    return explicitly_set_browser_ ? explicitly_set_browser_ : browser();
+    return explicitly_set_browser_ ? explicitly_set_browser_.get() : browser();
   }
 
   const base::HistogramTester& histogram_tester() { return histogram_tester_; }
@@ -401,8 +402,9 @@ class PrerenderInProcessBrowserTest : virtual public InProcessBrowserTest {
       external_protocol_handler_delegate_;
   std::unique_ptr<safe_browsing::TestSafeBrowsingServiceFactory>
       safe_browsing_factory_;
-  TestNoStatePrefetchContentsFactory* no_state_prefetch_contents_factory_;
-  Browser* explicitly_set_browser_;
+  CheckedPtr<TestNoStatePrefetchContentsFactory>
+      no_state_prefetch_contents_factory_;
+  CheckedPtr<Browser> explicitly_set_browser_;
   bool autostart_test_server_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<net::EmbeddedTestServer> https_src_server_;

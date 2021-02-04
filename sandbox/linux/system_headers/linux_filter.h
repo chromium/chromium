@@ -9,6 +9,8 @@
 
 // The following structs and macros are taken from linux/filter.h,
 // as some toolchain does not expose them.
+#include "base/memory/checked_ptr.h"
+
 struct sock_filter {
   uint16_t code;
   uint8_t jt;
@@ -18,7 +20,7 @@ struct sock_filter {
 
 struct sock_fprog {
   uint16_t len;
-  struct sock_filter *filter;
+  CheckedPtr<struct sock_filter> filter;
 };
 
 #ifndef BPF_CLASS

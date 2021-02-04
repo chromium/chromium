@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "chrome/browser/ui/views/web_apps/web_app_integration_browsertest_base.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"

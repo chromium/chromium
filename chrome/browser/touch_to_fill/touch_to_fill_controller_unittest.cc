@@ -7,6 +7,7 @@
 #include <memory>
 #include <tuple>
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -95,7 +96,7 @@ class TouchToFillControllerTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  MockTouchToFillView* mock_view_ = nullptr;
+  CheckedPtr<MockTouchToFillView> mock_view_ = nullptr;
   MockPasswordManagerDriver driver_;
   base::HistogramTester histogram_tester_;
   ukm::TestAutoSetUkmRecorder test_recorder_;

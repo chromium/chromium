@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/ancestor_throttle.h"
 
 #include "base/feature_list.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"

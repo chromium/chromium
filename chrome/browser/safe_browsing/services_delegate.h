@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
@@ -140,10 +141,10 @@ class ServicesDelegate {
       Profile* profile);
 
   // Unowned pointer
-  SafeBrowsingService* const safe_browsing_service_;
+  const CheckedPtr<SafeBrowsingService> safe_browsing_service_;
 
   // Unowned pointer
-  ServicesCreator* const services_creator_;
+  const CheckedPtr<ServicesCreator> services_creator_;
 
   std::unique_ptr<ProxyConfigMonitor> proxy_config_monitor_;
 

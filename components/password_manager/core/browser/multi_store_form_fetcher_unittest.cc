@@ -6,6 +6,7 @@
 #include <memory>
 #include <type_traits>
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -61,8 +62,8 @@ class FakePasswordManagerClient : public StubPasswordManagerClient {
     return account_store_;
   }
 
-  PasswordStore* profile_store_ = nullptr;
-  PasswordStore* account_store_ = nullptr;
+  CheckedPtr<PasswordStore> profile_store_ = nullptr;
+  CheckedPtr<PasswordStore> account_store_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(FakePasswordManagerClient);
 };
