@@ -64,7 +64,15 @@ bool IsEnabledForEarlyAccess(Profile* profile) {
        "yusukes@google.com",       "nrpeter@google.com",
        "miersh@managedchrome.com", "omrilio@google.com",
        "thomasriedl@google.com",   "kuscher@google.com",
-       "andrewgray@google.com"}};
+       "andrewgray@google.com",    "acostinas@google.com",
+       "amraboelkher@google.com",  "anastasiian@google.com",
+       "anqing@google.com",        "apotapchuk@google.com",
+       "asumaneev@google.com",     "djmm@google.com",
+       "emaxx@google.com",         "hendrich@google.com",
+       "marcgrimme@google.com",    "maxkirsch@google.com",
+       "mslus@google.com",         "okalitova@google.com",
+       "omorsi@google.com"}};
+
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   return base::Contains(*allowlist, identity_manager
