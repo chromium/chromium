@@ -12,6 +12,7 @@
 #include "base/location.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/chromeos/arc/fileapi/arc_content_file_system_file_stream_reader.h"
+#include "chrome/browser/chromeos/arc/fileapi/arc_content_file_system_size_util.h"
 #include "chrome/browser/chromeos/arc/fileapi/arc_file_system_operation_runner.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/arc/arc_service_manager.h"
@@ -36,6 +37,14 @@ constexpr char kArcUrlFile[] = "content://org.chromium.foo/file";
 
 // URL which returns a file descriptor of a pipe's read end.
 constexpr char kArcUrlPipe[] = "content://org.chromium.foo/pipe";
+
+// URL which returns a file descriptor of a regular file with unknown size.
+constexpr char kArcUrlFileUnknownSize[] =
+    "content://org.chromium.foo/file-unknown-size";
+
+// URL which returns a file descriptor of a pipe's read end with unknown size.
+constexpr char kArcUrlPipeUnknownSize[] =
+    "content://org.chromium.foo/pipe-unknown-size";
 
 constexpr char kData[] = "abcdefghijklmnopqrstuvwxyz";
 
@@ -77,6 +86,10 @@ class ArcContentFileSystemFileStreamReaderTest : public testing::Test {
         File(kArcUrlFile, kData, kMimeType, File::Seekable::YES));
     fake_file_system_.AddFile(
         File(kArcUrlPipe, kData, kMimeType, File::Seekable::NO));
+    fake_file_system_.AddFile(File(kArcUrlFileUnknownSize, kData, kMimeType,
+                                   File::Seekable::YES, -1));
+    fake_file_system_.AddFile(
+        File(kArcUrlPipeUnknownSize, kData, kMimeType, File::Seekable::NO, -1));
 
     arc_service_manager_ = std::make_unique<ArcServiceManager>();
     profile_ = std::make_unique<TestingProfile>();
@@ -150,6 +163,23 @@ TEST_F(ArcContentFileSystemFileStreamReaderTest, GetLength) {
 
   net::TestInt64CompletionCallback callback;
   EXPECT_EQ(static_cast<int64_t>(strlen(kData)),
+            callback.GetResult(reader.GetLength(callback.callback())));
+}
+
+TEST_F(ArcContentFileSystemFileStreamReaderTest, GetLengthUnknownSizeSeekable) {
+  ArcContentFileSystemFileStreamReader reader(GURL(kArcUrlFileUnknownSize), 0);
+
+  net::TestInt64CompletionCallback callback;
+  EXPECT_EQ(static_cast<int64_t>(strlen(kData)),
+            callback.GetResult(reader.GetLength(callback.callback())));
+}
+
+TEST_F(ArcContentFileSystemFileStreamReaderTest,
+       GetLengthUnknownSizeNotSeekable) {
+  ArcContentFileSystemFileStreamReader reader(GURL(kArcUrlPipeUnknownSize), 0);
+
+  net::TestInt64CompletionCallback callback;
+  EXPECT_EQ(static_cast<int64_t>(net::ERR_FAILED),
             callback.GetResult(reader.GetLength(callback.callback())));
 }
 

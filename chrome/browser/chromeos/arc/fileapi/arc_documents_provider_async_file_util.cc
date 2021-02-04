@@ -106,7 +106,8 @@ void GetFileInfoOnUIThread(
   }
 
   root->GetFileInfo(
-      path, base::BindOnce(&OnGetFileInfoOnUIThread, std::move(callback)));
+      path, fields,
+      base::BindOnce(&OnGetFileInfoOnUIThread, std::move(callback)));
 }
 
 void ReadDirectoryOnUIThread(

@@ -87,8 +87,12 @@ class ArcDocumentsProviderRoot : public ArcFileSystemOperationRunner::Observer {
                            const std::vector<std::string>& mime_types);
   ~ArcDocumentsProviderRoot() override;
 
-  // Queries information of a file just like AsyncFileUtil.GetFileInfo().
-  void GetFileInfo(const base::FilePath& path, GetFileInfoCallback callback);
+  // Queries information of a file just like AsyncFileUtil.GetFileInfo(). If the
+  // file metadata reports unknown size, it will attempt to open the file and
+  // read the size from the file descriptor.
+  void GetFileInfo(const base::FilePath& path,
+                   int fields,
+                   GetFileInfoCallback callback);
 
   // Queries a list of files under a directory just like
   // AsyncFileUtil.ReadDirectory().
@@ -228,6 +232,8 @@ class ArcDocumentsProviderRoot : public ArcFileSystemOperationRunner::Observer {
                               const mojom::DocumentPtr& document)>;
 
   void GetFileInfoFromDocument(GetFileInfoCallback callback,
+                               const base::FilePath& path,
+                               int fields,
                                base::File::Error error,
                                const mojom::DocumentPtr& document);
 

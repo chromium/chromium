@@ -73,6 +73,17 @@ FakeFileSystemInstance::File::File(const std::string& url,
                                    Seekable seekable)
     : url(url), content(content), mime_type(mime_type), seekable(seekable) {}
 
+FakeFileSystemInstance::File::File(const std::string& url,
+                                   const std::string& content,
+                                   const std::string& mime_type,
+                                   Seekable seekable,
+                                   int64_t size_override)
+    : url(url),
+      content(content),
+      mime_type(mime_type),
+      seekable(seekable),
+      size_override(size_override) {}
+
 FakeFileSystemInstance::File::File(const File& that) = default;
 
 FakeFileSystemInstance::File::~File() = default;
@@ -318,7 +329,7 @@ void FakeFileSystemInstance::GetFileSize(const std::string& url,
   }
   const File& file = iter->second;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), file.content.size()));
+      FROM_HERE, base::BindOnce(std::move(callback), file.size()));
 }
 
 void FakeFileSystemInstance::GetMimeType(const std::string& url,

@@ -15,6 +15,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "chrome/browser/chromeos/arc/fileapi/arc_content_file_system_size_util.h"
 #include "chrome/browser/chromeos/arc/fileapi/arc_file_system_operation_runner_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
@@ -40,6 +41,13 @@ int SeekFile(base::File* file, size_t offset) {
   // lseek() instead of |file|'s method for errno.
   off_t result = lseek(file->GetPlatformFile(), offset, SEEK_SET);
   return result < 0 ? errno : 0;
+}
+
+void OnGetSizeFromFileHandle(net::Int64CompletionOnceCallback callback,
+                             base::File::Error error,
+                             int64_t size) {
+  std::move(callback).Run(error == base::File::FILE_OK ? size
+                                                       : net::ERR_FAILED);
 }
 
 }  // namespace
@@ -114,7 +122,13 @@ void ArcContentFileSystemFileStreamReader::OnGetFileSize(
     net::Int64CompletionOnceCallback callback,
     int64_t size) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  std::move(callback).Run(size < 0 ? net::ERR_FAILED : size);
+  if (size == kUnknownFileSize) {
+    GetFileSizeFromOpenFileOnIOThread(
+        arc_url_,
+        base::BindOnce(&OnGetSizeFromFileHandle, std::move(callback)));
+  } else {
+    std::move(callback).Run(size < 0 ? net::ERR_FAILED : size);
+  }
 }
 
 void ArcContentFileSystemFileStreamReader::OnOpenFile(

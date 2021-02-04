@@ -667,6 +667,8 @@ source_set("chromeos") {
     "arc/fileapi/arc_content_file_system_file_stream_reader.h",
     "arc/fileapi/arc_content_file_system_file_stream_writer.cc",
     "arc/fileapi/arc_content_file_system_file_stream_writer.h",
+    "arc/fileapi/arc_content_file_system_size_util.cc",
+    "arc/fileapi/arc_content_file_system_size_util.h",
     "arc/fileapi/arc_content_file_system_url_util.cc",
     "arc/fileapi/arc_content_file_system_url_util.h",
     "arc/fileapi/arc_documents_provider_async_file_util.cc",
