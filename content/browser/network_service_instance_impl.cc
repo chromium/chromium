@@ -48,6 +48,17 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
 
+#if !defined(OS_MAC)
+#include "sandbox/policy/features.h"
+#endif
+
+#if defined(OS_WIN)
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/string16.h"
+#include "base/win/registry.h"
+#include "base/win/windows_version.h"
+#endif  // defined(OS_WIN)
+
 namespace content {
 
 namespace {
@@ -234,6 +245,39 @@ net::NetLogCaptureMode GetNetCaptureModeFromCommandLine(
 
   return net::NetLogCaptureMode::kDefault;
 }
+
+#if defined(OS_WIN)
+// This enum is used to record a histogram and should not be renumbered.
+enum class ServiceStatus {
+  kUnknown = 0,
+  kNotFound = 1,
+  kFound = 2,
+  kMaxValue = kFound
+};
+
+ServiceStatus DetectSecurityProviders() {
+  // https://docs.microsoft.com/en-us/windows/win32/secauthn/writing-and-installing-a-security-support-provider
+  base::win::RegKey key(HKEY_LOCAL_MACHINE,
+                        L"SYSTEM\\CurrentControlSet\\Control\\Lsa", KEY_READ);
+  if (!key.Valid())
+    return ServiceStatus::kUnknown;
+
+  std::vector<base::string16> packages;
+  if (key.ReadValues(L"Security Packages", &packages) != ERROR_SUCCESS)
+    return ServiceStatus::kUnknown;
+
+  for (const auto& package : packages) {
+    // Security Packages can be empty or just "". Anything else indicates
+    // there is potentially a third party SSP/APs DLL installed, and network
+    // sandbox should not be engaged.
+    if (package.empty())
+      continue;
+    if (package != L"\"\"")
+      return ServiceStatus::kFound;
+  }
+  return ServiceStatus::kNotFound;
+}
+#endif  // defined(OS_WIN)
 
 static NetworkServiceClient* g_client = nullptr;
 
@@ -603,6 +647,29 @@ network::mojom::CertVerifierParamsPtr GetCertVerifierParams(
 void SetCertVerifierServiceFactoryForTesting(
     cert_verifier::mojom::CertVerifierServiceFactory* service_factory) {
   g_cert_verifier_service_factory_for_testing = service_factory;
+}
+
+bool IsNetworkSandboxEnabled() {
+#if defined(OS_MAC)
+  return true;
+#else
+#if defined(OS_WIN)
+  if (base::win::GetVersion() < base::win::Version::WIN10)
+    return false;
+  auto ssp_status = DetectSecurityProviders();
+  base::UmaHistogramEnumeration("Windows.ServiceStatus.SSP", ssp_status);
+  switch (ssp_status) {
+    case ServiceStatus::kUnknown:
+      return false;
+    case ServiceStatus::kNotFound:
+      break;
+    case ServiceStatus::kFound:
+      return false;
+  }
+#endif  // defined(OS_WIN)
+  return base::FeatureList::IsEnabled(
+      sandbox::policy::features::kNetworkServiceSandbox);
+#endif  // defined(OS_MAC)
 }
 
 }  // namespace content

@@ -81688,6 +81688,12 @@ Called by update_scheduler_enums.py.-->
   <int value="1247871240" label="Windows 10 2004 (Build 19041.264)"/>
 </enum>
 
+<enum name="WindowsServiceStatus">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Not Found"/>
+  <int value="2" label="Found"/>
+</enum>
+
 <enum name="WindowsToastActivatorCLSIDMismatchReason">
   <obsolete>
     Deprecated 12/2018 as this is no longer needed.

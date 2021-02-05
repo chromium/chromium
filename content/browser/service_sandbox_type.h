@@ -6,36 +6,11 @@
 #define CONTENT_BROWSER_SERVICE_SANDBOX_TYPE_H_
 
 #include "build/build_config.h"
+#include "content/browser/network_service_instance_impl.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/common/content_client.h"
 #include "sandbox/policy/sandbox_type.h"
-
-#if !defined(OS_MAC)
-#include "base/feature_list.h"
-#include "sandbox/policy/features.h"
-#endif
-
-#if defined(OS_WIN)
-#include "base/win/windows_version.h"
-#endif
-
-namespace {
-
-bool isNetworkSandboxEnabled() {
-#if defined(OS_MAC)
-  return true;
-#else
-#if defined(OS_WIN)
-  if (base::win::GetVersion() < base::win::Version::WIN10)
-    return false;
-#endif  // defined(OS_WIN)
-  return base::FeatureList::IsEnabled(
-      sandbox::policy::features::kNetworkServiceSandbox);
-#endif  // defined(OS_MAC)
-}
-
-}  // namespace
 
 // This file maps service classes to sandbox types.  Services which
 // require a non-utility sandbox can be added here.  See
@@ -76,7 +51,7 @@ class NetworkService;
 template <>
 inline sandbox::policy::SandboxType
 content::GetServiceSandboxType<network::mojom::NetworkService>() {
-  return isNetworkSandboxEnabled() ? sandbox::policy::SandboxType::kNetwork
+  return IsNetworkSandboxEnabled() ? sandbox::policy::SandboxType::kNetwork
                                    : sandbox::policy::SandboxType::kNoSandbox;
 }
 

@@ -331,6 +331,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Windows.ServiceStatus.SSP" units="WindowsServiceStatus"
+    expires_after="2021-08-01">
+  <owner>wfh@chromium.org</owner>
+  <owner>ajgo@chromium.org</owner>
+  <summary>
+    This records whether any SSP/AD providers are registered on the system. If
+    there are any then this typically means the network sandbox cannot
+    successfully engage. Recorded each time the browser attempts to start the
+    network service process. This metric is only recorded on Windows 10+.
+  </summary>
+</histogram>
+
 <histogram name="Windows.Tablet" enum="BooleanTablet" expires_after="M77">
   <owner>zturner@chromium.org</owner>
   <summary>Count of browser launches from a Windows tablet pc.</summary>
