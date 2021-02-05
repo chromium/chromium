@@ -4885,7 +4885,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"enable-layout-ng", flag_descriptions::kEnableLayoutNGName,
      flag_descriptions::kEnableLayoutNGDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kLayoutNGTable)},
+     FEATURE_VALUE_TYPE(blink::features::kLayoutNG)},
 
     {"enable-table-ng", flag_descriptions::kEnableLayoutNGTableName,
      flag_descriptions::kEnableLayoutNGTableDescription, kOsAll,
