@@ -1484,12 +1484,13 @@ uint32_t V4L2Device::VideoCodecProfileToV4L2PixFmt(VideoCodecProfile profile,
   }
 }
 
-// static
-VideoCodecProfile V4L2Device::V4L2ProfileToVideoCodecProfile(VideoCodec codec,
-                                                             uint32_t profile) {
+namespace {
+
+VideoCodecProfile V4L2ProfileToVideoCodecProfile(VideoCodec codec,
+                                                 uint32_t v4l2_profile) {
   switch (codec) {
     case kCodecH264:
-      switch (profile) {
+      switch (v4l2_profile) {
         case V4L2_MPEG_VIDEO_H264_PROFILE_BASELINE:
         case V4L2_MPEG_VIDEO_H264_PROFILE_CONSTRAINED_BASELINE:
           return H264PROFILE_BASELINE;
@@ -1506,7 +1507,7 @@ VideoCodecProfile V4L2Device::V4L2ProfileToVideoCodecProfile(VideoCodec codec,
       }
       break;
     case kCodecVP8:
-      switch (profile) {
+      switch (v4l2_profile) {
         case V4L2_MPEG_VIDEO_VP8_PROFILE_0:
         case V4L2_MPEG_VIDEO_VP8_PROFILE_1:
         case V4L2_MPEG_VIDEO_VP8_PROFILE_2:
@@ -1515,23 +1516,22 @@ VideoCodecProfile V4L2Device::V4L2ProfileToVideoCodecProfile(VideoCodec codec,
       }
       break;
     case kCodecVP9:
-      switch (profile) {
+      switch (v4l2_profile) {
+        // VP9 Profile 1 and 3 are not tested and the use is minuscule, skip.
         case V4L2_MPEG_VIDEO_VP9_PROFILE_0:
           return VP9PROFILE_PROFILE0;
-        case V4L2_MPEG_VIDEO_VP9_PROFILE_1:
-          return VP9PROFILE_PROFILE1;
         case V4L2_MPEG_VIDEO_VP9_PROFILE_2:
           return VP9PROFILE_PROFILE2;
-        case V4L2_MPEG_VIDEO_VP9_PROFILE_3:
-          return VP9PROFILE_PROFILE3;
       }
       break;
     default:
-      VLOGF(2) << "Unknown codec: " << codec;
+      VLOGF(2) << "Unsupported codec: " << GetCodecName(codec);
   }
-  VLOGF(2) << "Unknown profile: " << profile;
+  VLOGF(2) << "Unsupported V4L2 profile: " << v4l2_profile;
   return VIDEO_CODEC_PROFILE_UNKNOWN;
 }
+
+}  // namespace
 
 std::vector<VideoCodecProfile> V4L2Device::V4L2PixFmtToVideoCodecProfiles(
     uint32_t pix_fmt) {
@@ -1556,9 +1556,9 @@ std::vector<VideoCodecProfile> V4L2Device::V4L2PixFmtToVideoCodecProfiles(
     v4l2_queryctrl query_ctrl;
     memset(&query_ctrl, 0, sizeof(query_ctrl));
     query_ctrl.id = query_id;
-    if (Ioctl(VIDIOC_QUERYCTRL, &query_ctrl) != 0) {
+    if (Ioctl(VIDIOC_QUERYCTRL, &query_ctrl) != 0)
       return false;
-    }
+
     v4l2_querymenu query_menu;
     memset(&query_menu, 0, sizeof(query_menu));
     query_menu.id = query_ctrl.id;
@@ -1567,7 +1567,7 @@ std::vector<VideoCodecProfile> V4L2Device::V4L2PixFmtToVideoCodecProfiles(
          query_menu.index++) {
       if (Ioctl(VIDIOC_QUERYMENU, &query_menu) == 0) {
         const VideoCodecProfile profile =
-            V4L2Device::V4L2ProfileToVideoCodecProfile(codec, query_menu.index);
+            V4L2ProfileToVideoCodecProfile(codec, query_menu.index);
         if (profile != VIDEO_CODEC_PROFILE_UNKNOWN)
           profiles->push_back(profile);
       }

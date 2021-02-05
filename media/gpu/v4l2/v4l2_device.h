@@ -599,8 +599,6 @@ class MEDIA_GPU_EXPORT V4L2Device
   // If there is no corresponding single- or multi-planar format, returns 0.
   static uint32_t VideoCodecProfileToV4L2PixFmt(VideoCodecProfile profile,
                                                 bool slice_based);
-  static VideoCodecProfile V4L2ProfileToVideoCodecProfile(VideoCodec codec,
-                                                          uint32_t profile);
   std::vector<VideoCodecProfile> V4L2PixFmtToVideoCodecProfiles(
       uint32_t pix_fmt);
   static uint32_t V4L2PixFmtToDrmFormat(uint32_t format);
