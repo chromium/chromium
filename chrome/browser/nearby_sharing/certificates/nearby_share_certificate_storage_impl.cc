@@ -225,7 +225,7 @@ void NearbyShareCertificateStorageImpl::Initialize() {
                       << num_initialize_attempts_;
       db_->Init(base::BindOnce(
           &NearbyShareCertificateStorageImpl::OnDatabaseInitialized,
-          base::Unretained(this)));
+          weak_ptr_factory_.GetWeakPtr()));
       break;
     case InitStatus::kInitialized:
       NOTREACHED();
@@ -240,7 +240,7 @@ void NearbyShareCertificateStorageImpl::DestroyAndReinitialize() {
   init_status_ = InitStatus::kUninitialized;
   db_->Destroy(base::BindOnce(
       &NearbyShareCertificateStorageImpl::OnDatabaseDestroyedReinitialize,
-      base::Unretained(this)));
+      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void NearbyShareCertificateStorageImpl::OnDatabaseInitialized(
@@ -336,7 +336,7 @@ void NearbyShareCertificateStorageImpl::
       /*keys_to_remove=*/std::make_unique<std::vector<std::string>>(),
       base::BindOnce(&NearbyShareCertificateStorageImpl::
                          ReplacePublicCertificatesUpdateEntriesCallback,
-                     base::Unretained(this), std::move(expirations),
+                     weak_ptr_factory_.GetWeakPtr(), std::move(expirations),
                      std::move(callback)));
 }
 
@@ -495,7 +495,8 @@ void NearbyShareCertificateStorageImpl::ReplacePublicCertificates(
   NS_LOG(VERBOSE) << __func__ << ": Clearing public certificate database.";
   db_->Destroy(base::BindOnce(&NearbyShareCertificateStorageImpl::
                                   ReplacePublicCertificatesDestroyCallback,
-                              base::Unretained(this), std::move(new_entries),
+                              weak_ptr_factory_.GetWeakPtr(),
+                              std::move(new_entries),
                               std::move(new_expirations), std::move(callback)));
 }
 
@@ -534,7 +535,7 @@ void NearbyShareCertificateStorageImpl::AddPublicCertificates(
       std::move(new_entries), std::make_unique<std::vector<std::string>>(),
       base::BindOnce(
           &NearbyShareCertificateStorageImpl::AddPublicCertificatesCallback,
-          base::Unretained(this), std::move(new_expirations),
+          weak_ptr_factory_.GetWeakPtr(), std::move(new_expirations),
           std::move(callback)));
 }
 
@@ -587,8 +588,8 @@ void NearbyShareCertificateStorageImpl::RemoveExpiredPublicCertificates(
       std::move(ids_to_add), std::move(ids_to_remove),
       base::BindOnce(&NearbyShareCertificateStorageImpl::
                          RemoveExpiredPublicCertificatesCallback,
-                     base::Unretained(this), std::move(ids_to_remove_set),
-                     std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(ids_to_remove_set), std::move(callback)));
 }
 
 void NearbyShareCertificateStorageImpl::ClearPublicCertificates(
@@ -609,7 +610,7 @@ void NearbyShareCertificateStorageImpl::ClearPublicCertificates(
                   << ": Calling Destroy on public certificate database.";
   db_->Destroy(
       base::BindOnce(&NearbyShareCertificateStorageImpl::OnDatabaseDestroyed,
-                     base::Unretained(this), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 bool NearbyShareCertificateStorageImpl::FetchPublicCertificateExpirations() {
