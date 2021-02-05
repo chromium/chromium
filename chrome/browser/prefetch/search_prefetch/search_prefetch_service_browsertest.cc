@@ -2430,7 +2430,8 @@ class SearchPrefetchServiceBFCacheTest : public SearchPrefetchBaseBrowserTest {
           {{"stream_responses", "true"}, {"cache_size", "1"}}},
          {{kSearchPrefetchService}, {}},
          {{features::kBackForwardCache}, {{"enable_same_site", "true"}}}},
-        {});
+        // Allow BackForwardCache for all devices regardless of their memory.
+        {features::kBackForwardCacheMemoryControl});
   }
 
  private:

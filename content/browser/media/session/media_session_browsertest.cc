@@ -215,7 +215,8 @@ class MediaSessionBrowserTestWithBackForwardCache
         {{features::kBackForwardCache,
           {{"TimeToLiveInBackForwardCacheInSeconds", "3600"}}},
          {media::kInternalMediaSession, {}}},
-        /*disabled_features=*/{});
+        // Allow BackForwardCache for all devices regardless of their memory.
+        /*disabled_features=*/{features::kBackForwardCacheMemoryControl});
   }
 
   void SetUpOnMainThread() override {

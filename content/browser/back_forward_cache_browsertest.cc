@@ -84,6 +84,7 @@
 #include "services/device/public/mojom/vibration_manager.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/device_memory/approximated_device_memory.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/mojom/app_banner/app_banner.mojom.h"
@@ -166,6 +167,9 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
     EnableFeatureAndSetParams(features::kBackForwardCache,
                               "process_binding_strength", "NORMAL");
 #endif
+    // Allow BackForwardCache for all devices regardless of their memory.
+    DisableFeature(features::kBackForwardCacheMemoryControl);
+
     SetupFeaturesAndParameters();
 
     command_line->AppendSwitchASCII(
@@ -7068,22 +7072,56 @@ IN_PROC_BROWSER_TEST_F(
       FROM_HERE);
 }
 
+// Check BackForwardCache is enabled and works for devices with very low memory.
+// Navigate from A -> B and go back.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       BackForwardCacheEnabledOnLowMemoryDevices) {
+  // Set device physical memory to 10 MB.
+  blink::ApproximatedDeviceMemory::SetPhysicalMemoryMBForTesting(10);
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameDeletedObserver delete_observer_rfh_a(current_frame_host());
+  RenderFrameHostImpl* rfh_a = current_frame_host();
+
+  // 2) Navigate to B. A should be in BackForwardCache.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  RenderFrameHostImpl* rfh_b = current_frame_host();
+  RenderFrameDeletedObserver delete_observer_rfh_b(rfh_b);
+  EXPECT_FALSE(delete_observer_rfh_a.deleted());
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // 3) Go back to A. B should be in BackForwardCache.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  EXPECT_FALSE(delete_observer_rfh_b.deleted());
+  EXPECT_TRUE(rfh_b->IsInBackForwardCache());
+}
+
 // Test for functionality of memory controls in back-forward cache for low
 // memory devices.
 class BackForwardCacheBrowserTestForLowMemoryDevices
     : public BackForwardCacheBrowserTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+
     // Set the value of memory threshold more than the physical memory and check
     // if back-forward cache is disabled or not.
     std::string memory_threshold =
         base::NumberToString(base::SysInfo::AmountOfPhysicalMemoryMB() + 1);
-    EnableFeatureAndSetParams(features::kBackForwardCacheMemoryControl,
-                              "memory_threshold_for_back_forward_cache_in_mb",
-                              memory_threshold);
-
-    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kBackForwardCacheMemoryControl,
+          {{"memory_threshold_for_back_forward_cache_in_mb",
+            memory_threshold}}}},
+        {});
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Navigate from A to B and go back.

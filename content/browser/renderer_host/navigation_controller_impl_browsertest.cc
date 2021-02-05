@@ -13343,7 +13343,8 @@ class SandboxedNavigationControllerWithBfcacheBrowserTest
         {{features::kBackForwardCache,
           {{"TimeToLiveInBackForwardCacheInSeconds", "3600"}}},
          {features::kHistoryPreventSandboxedNavigation, {}}},
-        {});
+        // Allow BackForwardCache for all devices regardless of their memory.
+        {features::kBackForwardCacheMemoryControl});
     NavigationControllerBrowserTest::SetUp();
   }
 

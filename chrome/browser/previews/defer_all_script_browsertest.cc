@@ -57,7 +57,8 @@ class DeferAllScriptBrowserTest : public InProcessBrowserTest {
          previews::features::kDeferAllScriptPreviews,
          optimization_guide::features::kOptimizationHints,
          features::kBackForwardCache},
-        {});
+        // Allow BackForwardCache for all devices regardless of their memory.
+        {features::kBackForwardCacheMemoryControl});
   }
 
   ~DeferAllScriptBrowserTest() override = default;

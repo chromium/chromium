@@ -114,6 +114,9 @@ class ChromeBackForwardCacheBrowserTest : public InProcessBrowserTest {
                               "TimeToLiveInBackForwardCacheInSeconds", "3600");
     EnableFeatureAndSetParams(features::kBackForwardCache, "enable_same_site",
                               "true");
+    // Allow BackForwardCache for all devices regardless of their memory.
+    DisableFeature(features::kBackForwardCacheMemoryControl);
+
     SetupFeaturesAndParameters();
 
     InProcessBrowserTest::SetUpCommandLine(command_line);
@@ -135,13 +138,18 @@ class ChromeBackForwardCacheBrowserTest : public InProcessBrowserTest {
       enabled_features.emplace_back(feature_param.first, feature_param.second);
     }
 
-    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features_);
   }
 
   void EnableFeatureAndSetParams(base::Feature feature,
                                  std::string param_name,
                                  std::string param_value) {
     features_with_params_[feature][param_name] = param_value;
+  }
+
+  void DisableFeature(base::Feature feature) {
+    disabled_features_.push_back(feature);
   }
 
   std::unique_ptr<base::HistogramTester> histogram_tester_;
@@ -154,6 +162,7 @@ class ChromeBackForwardCacheBrowserTest : public InProcessBrowserTest {
                      FeatureHash,
                      FeatureEqualOperator>
       features_with_params_;
+  std::vector<base::Feature> disabled_features_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeBackForwardCacheBrowserTest);
 };

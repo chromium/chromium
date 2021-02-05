@@ -210,9 +210,11 @@ class PermissionRequestManagerWithBackForwardCacheBrowserTest
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     PermissionRequestManagerBrowserTest::SetUpCommandLine(command_line);
-    feature_list_.InitAndEnableFeatureWithParameters(
-        features::kBackForwardCache,
-        {{"TimeToLiveInBackForwardCacheInSeconds", "3600"}});
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kBackForwardCache,
+          {{"TimeToLiveInBackForwardCacheInSeconds", "3600"}}}},
+        // Allow BackForwardCache for all devices regardless of their memory.
+        {features::kBackForwardCacheMemoryControl});
   }
 
  private:

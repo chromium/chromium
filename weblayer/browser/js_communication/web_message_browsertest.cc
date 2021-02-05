@@ -139,7 +139,14 @@ class WebMessageTestWithBfCache : public WebLayerBrowserTest {
  public:
   // WebLayerBrowserTest:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kBackForwardCache);
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kBackForwardCache,
+          {// Set a very long TTL before expiration (longer than the test
+           // timeout) so tests that are expecting deletion don't pass when
+           // they shouldn't.
+           {"TimeToLiveInBackForwardCacheInSeconds", "3600"}}}},
+        // Allow BackForwardCache for all devices regardless of their memory.
+        {features::kBackForwardCacheMemoryControl});
     WebLayerBrowserTest::SetUp();
   }
 

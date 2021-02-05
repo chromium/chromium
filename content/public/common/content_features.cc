@@ -65,6 +65,9 @@ const base::Feature kBackgroundFetch{"BackgroundFetch",
                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable using the BackForwardCache.
+// Please note that while enabling BackForwardCache feature for tests, disable
+// BackForwardCacheMemoryControl to allow BackForwardCache for all devices
+// regardless of their memory.
 const base::Feature kBackForwardCache{"BackForwardCache",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 

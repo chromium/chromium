@@ -97,8 +97,11 @@ class CrossOriginOpenerPolicyBrowserTest
                                        std::get<0>(GetParam()));
     // Enable BackForwardCache:
     if (std::get<1>(GetParam())) {
-      feature_list_for_back_forward_cache_.InitWithFeatures(
-          {features::kBackForwardCache}, {});
+      feature_list_for_back_forward_cache_.InitWithFeaturesAndParameters(
+          {{features::kBackForwardCache,
+            {{"TimeToLiveInBackForwardCacheInSeconds", "3600"}}}},
+          // Allow BackForwardCache for all devices regardless of their memory.
+          {features::kBackForwardCacheMemoryControl});
     } else {
       feature_list_for_back_forward_cache_.InitWithFeatures(
           {}, {features::kBackForwardCache});

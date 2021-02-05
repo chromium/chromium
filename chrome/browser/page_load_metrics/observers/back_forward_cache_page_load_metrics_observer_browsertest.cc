@@ -35,7 +35,8 @@ class BackForwardCachePageLoadMetricsObserverBrowserTest
         {{features::kBackForwardCache,
           {{"TimeToLiveInBackForwardCacheInSeconds", "3600"}}},
          {internal::kBackForwardCacheEmitZeroSamplesForKeyMetrics, {{}}}},
-        {});
+        // Allow BackForwardCache for all devices regardless of their memory.
+        {features::kBackForwardCacheMemoryControl});
 
     MetricIntegrationTest::SetUpCommandLine(command_line);
   }
