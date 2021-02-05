@@ -9,9 +9,12 @@
 
 namespace crash_helper {
 
+// Sync the kCrashpadIOS feature to kCrashpadStartOnNextRun NSUserDefault.
+void SyncCrashpadEnabledOnNextRun();
+
 // Starts the crash handlers. This must be run as soon as possible to catch
 // early crashes.
-void Start(const std::string& channel_name);
+void Start();
 
 // Enables/Disables crash handling.
 void SetEnabled(bool enabled);
@@ -26,8 +29,9 @@ void SetUserEnabledUploading(bool enabled);
 // Returns true if uploading crash reports is enabled in the settings.
 bool UserEnabledUploading();
 
-// Cleans up all stored crash reports.
-void CleanupCrashReports();
+// For breakpad, if |after_upgrade| is true, delete all pending reports.  For
+// crashpad, regardless of |after_upgrade|, process pending intermediate dumps.
+void CleanupCrashReports(bool after_upgrade);
 
 // Returns the number of crash reports waiting to send to the server. This
 // function will wait for an operation to complete on a background thread.

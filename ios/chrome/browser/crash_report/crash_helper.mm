@@ -6,10 +6,13 @@
 
 #import <UIKit/UIKit.h>
 #include <stddef.h>
+#include <stdint.h>
+#include <sys/sysctl.h>
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/debug/crash_logging.h"
+#include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -20,11 +23,15 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+#include "components/crash/core/app/crashpad.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/crash/core/common/reporter_running_ios.h"
 #include "ios/chrome/browser/chrome_paths.h"
+#include "ios/chrome/browser/crash_report/chrome_crash_reporter_client.h"
 #import "ios/chrome/browser/crash_report/crash_report_user_application_state.h"
+#include "ios/chrome/browser/crash_report/features.h"
 #import "ios/chrome/browser/crash_report/main_thread_freeze_detector.h"
+#include "ios/chrome/common/channel_info.h"
 #import "third_party/breakpad/breakpad/src/client/ios/BreakpadController.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -40,8 +47,12 @@ namespace {
 NSString* const kCrashReportsUploadingEnabledKey =
     @"CrashReportsUploadingEnabled";
 
-NSString* const kUptimeAtRestoreInMs = @"uptime_at_restore_in_ms";
-NSString* const kUploadedInRecoveryMode = @"uploaded_in_recovery_mode";
+// Key in NSUserDefaults for a Boolean value that stores the last feature
+// value of kCrashpadIOS.
+NSString* const kCrashpadStartOnNextRun = @"CrashpadStartOnNextRun";
+
+const char kUptimeAtRestoreInMs[] = "uptime_at_restore_in_ms";
+const char kUploadedInRecoveryMode[] = "uploaded_in_recovery_mode";
 
 void DeleteAllReportsInDirectory(base::FilePath directory) {
   base::FileEnumerator enumerator(directory, false,
@@ -51,6 +62,12 @@ void DeleteAllReportsInDirectory(base::FilePath directory) {
     if (cur_file.BaseName().value() != kReporterLogFilename)
       base::DeleteFile(cur_file);
   }
+}
+
+// Tells crashpad to start processing previously created intermediate dumps and
+// begin uploading when possible.
+void ProcessIntermediateDumps() {
+  crash_reporter::ProcessIntermediateDumps();
 }
 
 // Callback for logging::SetLogMessageHandler
@@ -95,19 +112,42 @@ void UploadResultHandler(NSString* report_id, NSError* error) {
   base::UmaHistogramSparse("CrashReport.BreakpadIOSUploadOutcome", error.code);
 }
 
+// Check and cache the NSUserDefault value synced from the associated
+// kCrashpadIOS feature.
+bool CanCrashpadStart() {
+  static bool can_crashpad_start = [[NSUserDefaults standardUserDefaults]
+      boolForKey:kCrashpadStartOnNextRun];
+  return can_crashpad_start;
+}
+
+// Returns the uptime, the difference between now and start time.
+int64_t GetUptimeMilliseconds() {
+  struct timeval tv;
+  gettimeofday(&tv, NULL);
+
+  kinfo_proc kern_proc_info;
+  int mib[] = {CTL_KERN, KERN_PROC, KERN_PROC_PID, getpid()};
+  size_t len = sizeof(kern_proc_info);
+  if (sysctl(mib, base::size(mib), &kern_proc_info, &len, nullptr, 0) != 0)
+    return 0;
+  time_t process_uptime_seconds =
+      tv.tv_sec - kern_proc_info.kp_proc.p_starttime.tv_sec;
+  return static_cast<const int64_t>(process_uptime_seconds) *
+         base::Time::kMillisecondsPerSecond;
+}
+
 }  // namespace
 
-void Start(const std::string& channel_name) {
+void SyncCrashpadEnabledOnNextRun() {
+  [[NSUserDefaults standardUserDefaults]
+      setBool:base::FeatureList::IsEnabled(kCrashpadIOS) ? YES : NO
+       forKey:kCrashpadStartOnNextRun];
+}
+
+void Start() {
   DCHECK(!crash_reporter::IsBreakpadRunning());
-  [[BreakpadController sharedInstance] start:YES];
-  [[MainThreadFreezeDetector sharedInstance] start];
-  logging::SetLogMessageHandler(&FatalMessageHandler);
-  crash_reporter::SetBreakpadRunning(true);
-  // Register channel information.
-  if (channel_name.length()) {
-    static crash_reporter::CrashKeyString<64> key("channel");
-    key.Set(channel_name);
-  }
+  DCHECK(!crash_reporter::IsCrashpadRunning());
+
   // Notifying the PathService on the location of the crashes so that crashes
   // can be displayed to the user on the about:crashes page.
   NSArray* cachesDirectories = NSSearchPathForDirectoriesInDomains(
@@ -118,12 +158,37 @@ void Start(const std::string& channel_name) {
   base::PathService::Override(
       ios::DIR_CRASH_DUMPS,
       base::FilePath(base::SysNSStringToUTF8(dumpDirectory)));
+
+  logging::SetLogMessageHandler(&FatalMessageHandler);
+  if (CanCrashpadStart()) {
+    ChromeCrashReporterClient::Create();
+    crash_reporter::InitializeCrashpad(true, "");
+    crash_reporter::SetCrashpadRunning(true);
+  } else {
+    [[BreakpadController sharedInstance] start:YES];
+    crash_reporter::SetBreakpadRunning(true);
+
+    // Register channel information (Breakpad only, crashpad does this
+    // automatically).
+    std::string channel_name = GetChannelString();
+    if (channel_name.length()) {
+      static crash_reporter::CrashKeyString<64> key("channel");
+      key.Set(channel_name);
+    }
+  }
+  [[MainThreadFreezeDetector sharedInstance] start];
 }
 
 void SetEnabled(bool enabled) {
   // It is necessary to always call |MainThreadFreezeDetector setEnabled| as
   // the function will update its preference based on finch.
   [[MainThreadFreezeDetector sharedInstance] setEnabled:enabled];
+
+  // Crashpad is always running, don't shut it off.
+  if (crash_reporter::IsCrashpadRunning()) {
+    return;
+  }
+
   if (crash_reporter::IsBreakpadRunning() == enabled)
     return;
   crash_reporter::SetBreakpadRunning(enabled);
@@ -134,6 +199,7 @@ void SetEnabled(bool enabled) {
   }
 }
 
+// Breakpad only.
 void SetBreakpadUploadingEnabled(bool enabled) {
   if (!crash_reporter::IsBreakpadRunning())
     return;
@@ -160,6 +226,12 @@ void SetUploadingEnabled(bool enabled) {
                      UIApplicationStateInactive) {
     return;
   }
+
+  if (crash_reporter::IsCrashpadRunning()) {
+    crash_reporter::SetUploadConsent(enabled);
+    return;
+  }
+
   if ([MainThreadFreezeDetector sharedInstance].canUploadBreakpadCrashReports) {
     SetBreakpadUploadingEnabled(enabled);
   } else {
@@ -175,15 +247,38 @@ bool UserEnabledUploading() {
       boolForKey:kCrashReportsUploadingEnabledKey];
 }
 
-void CleanupCrashReports() {
-  base::FilePath crash_directory;
-  base::PathService::Get(ios::DIR_CRASH_DUMPS, &crash_directory);
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&DeleteAllReportsInDirectory, crash_directory));
+void CleanupCrashReports(BOOL after_upgrade) {
+  if (crash_reporter::IsCrashpadRunning()) {
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(&ProcessIntermediateDumps));
+    return;
+  }
+
+  if (after_upgrade) {
+    base::FilePath crash_directory;
+    base::PathService::Get(ios::DIR_CRASH_DUMPS, &crash_directory);
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(&DeleteAllReportsInDirectory, crash_directory));
+  }
 }
 
 int GetCrashReportCount() {
+  if (crash_reporter::IsCrashpadRunning()) {
+    int count = 0;
+    std::vector<crash_reporter::Report> reports;
+    crash_reporter::GetReports(&reports);
+    for (auto& report : reports) {
+      if (report.state == crash_reporter::ReportUploadState::Pending ||
+          report.state ==
+              crash_reporter::ReportUploadState::Pending_UserRequested) {
+        count++;
+      }
+    }
+    return count;
+  }
+
   dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
   __block int outerCrashReportCount = 0;
   [[BreakpadController sharedInstance] getCrashReportCount:^(int count) {
@@ -195,6 +290,10 @@ int GetCrashReportCount() {
 }
 
 void GetCrashReportCount(void (^callback)(int)) {
+  if (crash_reporter::IsCrashpadRunning()) {
+    callback(GetCrashReportCount());
+  }
+
   [[BreakpadController sharedInstance] getCrashReportCount:callback];
 }
 
@@ -202,11 +301,19 @@ bool HasReportToUpload() {
   return GetCrashReportCount() > 0;
 }
 
-// Records the current process uptime in the "uptime_at_restore_in_ms". This
+// Records the current process uptime in the kUptimeAtRestoreInMs. This
 // will allow engineers to dremel crash logs to find crash whose delta between
 // process uptime at crash and process uptime at restore is smaller than X
 // seconds and find insta-crashers.
 void WillStartCrashRestoration() {
+  if (crash_reporter::IsCrashpadRunning()) {
+    const int64_t uptime_milliseconds = GetUptimeMilliseconds();
+    if (uptime_milliseconds > 0) {
+      static crash_reporter::CrashKeyString<16> key(kUptimeAtRestoreInMs);
+      key.Set(base::NumberToString((uptime_milliseconds)));
+    }
+    return;
+  }
   if (!crash_reporter::IsBreakpadRunning())
     return;
   // We use gettimeofday and BREAKPAD_PROCESS_START_TIME to compute the
@@ -228,27 +335,38 @@ void WillStartCrashRestoration() {
     time_t processStartTimeSeconds =
         [processStartTimeSecondsString longLongValue];
     time_t processUptimeSeconds = tv.tv_sec - processStartTimeSeconds;
-    int64_t processUptimeMilliseconds =
-        static_cast<int64_t>(processUptimeSeconds) *
+    const int64_t processUptimeMilliseconds =
+        static_cast<const int64_t>(processUptimeSeconds) *
         base::Time::kMillisecondsPerSecond;
     BreakpadAddUploadParameter(
-        ref, kUptimeAtRestoreInMs,
+        ref, base::SysUTF8ToNSString(kUptimeAtRestoreInMs),
         [NSString stringWithFormat:@"%llu", processUptimeMilliseconds]);
   }];
 }
 
 void StartUploadingReportsInRecoveryMode() {
+  if (crash_reporter::IsCrashpadRunning()) {
+    crash_reporter::ProcessIntermediateDumps(
+        {{kUploadedInRecoveryMode, "yes"}});
+    return;
+  }
+
   if (!crash_reporter::IsBreakpadRunning())
     return;
   [[BreakpadController sharedInstance] stop];
-  [[BreakpadController sharedInstance]
-      setParametersToAddAtUploadTime:@{kUploadedInRecoveryMode : @"yes"}];
+  [[BreakpadController sharedInstance] setParametersToAddAtUploadTime:@{
+    base::SysUTF8ToNSString(kUploadedInRecoveryMode) : @"yes"
+  }];
   [[BreakpadController sharedInstance] setUploadInterval:1];
   [[BreakpadController sharedInstance] start:NO];
   [[BreakpadController sharedInstance] setUploadingEnabled:YES];
 }
 
 void RestoreDefaultConfiguration() {
+  if (crash_reporter::IsCrashpadRunning()) {
+    return;
+  }
+
   if (!crash_reporter::IsBreakpadRunning())
     return;
   [[BreakpadController sharedInstance] stop];

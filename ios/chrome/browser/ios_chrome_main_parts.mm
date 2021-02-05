@@ -43,6 +43,7 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
 #include "ios/chrome/browser/chrome_paths.h"
+#include "ios/chrome/browser/crash_report/crash_helper.h"
 #import "ios/chrome/browser/first_run/first_run.h"
 #include "ios/chrome/browser/flags/about_flags.h"
 #include "ios/chrome/browser/install_time_util.h"
@@ -185,6 +186,9 @@ void IOSChromeMainParts::PreCreateThreads() {
   // initialization which happens in BrowserProcess:PreCreateThreads. Metrics
   // initialization is handled in PreMainMessageLoopRun since it posts tasks.
   SetupFieldTrials();
+
+  // Sync the crashpad field tral state to NSUserDefaults.
+  crash_helper::SyncCrashpadEnabledOnNextRun();
 
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
   // Do not install allocator shim on iOS 13.4 due to high crash volume on this

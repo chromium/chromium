@@ -219,9 +219,9 @@ const NSTimeInterval kUploadTotalTime = 5;
   [self centerView:_startButton afterView:description];
   [_innerView addSubview:_startButton];
 
+  crash_helper::StartUploadingReportsInRecoveryMode();
   UIView* lastView = _startButton;
   if ([SafeModeViewController hasReportToUpload]) {
-    crash_helper::StartUploadingReportsInRecoveryMode();
 
     // If there are no jailbreak modifications, then present the "Sending crash
     // report..." UI.

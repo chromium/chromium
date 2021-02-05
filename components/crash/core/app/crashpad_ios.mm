@@ -43,13 +43,12 @@ const std::map<std::string, std::string>& GetProcessSimpleAnnotations() {
       if (!allow_empty_channel && (!channel || !channel.length))
         channel = @"developer";
       process_annotations["channel"] = base::SysNSStringToUTF8(channel);
-
       NSString* version =
           base::mac::ObjCCast<NSString>([base::mac::FrameworkBundle()
               objectForInfoDictionaryKey:@"CFBundleShortVersionString"]);
       process_annotations["ver"] = base::SysNSStringToUTF8(version);
-
       process_annotations["plat"] = std::string("iOS");
+      process_annotations["crashpad"] = std::string("yes");
     }  // @autoreleasepool
     return process_annotations;
   }

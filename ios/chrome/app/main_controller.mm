@@ -803,7 +803,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   [[DeferredInitializationRunner sharedInstance]
       enqueueBlockNamed:kCleanupCrashReports
                   block:^{
-                    crash_helper::CleanupCrashReports();
+                    bool afterUpgrade = [self isFirstLaunchAfterUpgrade];
+                    crash_helper::CleanupCrashReports(afterUpgrade);
                   }];
 }
 
@@ -824,10 +825,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 }
 
 - (void)scheduleStartupCleanupTasks {
-  // Cleanup crash reports if this is the first run after an update.
-  if ([self isFirstLaunchAfterUpgrade]) {
-    [self scheduleCrashReportCleanup];
-  }
+  [self scheduleCrashReportCleanup];
 
   // ClearSessionCookies() is not synchronous.
   if (cookie_util::ShouldClearSessionCookies()) {

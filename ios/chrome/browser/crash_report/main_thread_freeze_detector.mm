@@ -6,6 +6,9 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "components/crash/core/app/crashpad.h"
+#include "components/crash/core/common/crash_key.h"
+#include "components/crash/core/common/reporter_running_ios.h"
 #include "ios/chrome/app/tests_hook.h"
 #include "ios/chrome/browser/crash_report/crash_helper.h"
 #import "third_party/breakpad/breakpad/src/client/ios/Breakpad.h"
@@ -183,6 +186,13 @@ enum class IOSMainThreadFreezeDetectionNotRunningAfterReportBlock {
   }
   if ([[NSDate date] timeIntervalSinceDate:self.lastSeenMainThread] >
       self.delay) {
+    if (crash_reporter::IsCrashpadRunning()) {
+      static crash_reporter::CrashKeyString<4> key("hang-report");
+      crash_reporter::ScopedCrashKeyString auto_clear(&key, "yes");
+      crash_reporter::DumpWithoutCrashing();
+      return;
+    }
+
     [[BreakpadController sharedInstance]
         withBreakpadRef:^(BreakpadRef breakpadRef) {
           if (!self.running) {
