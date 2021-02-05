@@ -31,6 +31,7 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/signin/profile_colors_util.h"
 #include "chrome/common/pref_names.h"
@@ -106,7 +107,7 @@ SigninInterceptGuestAvailability GetGuestOptionAvailablity() {
   if (!Profile::IsEphemeralGuestProfileEnabled())
     return SigninInterceptGuestAvailability::kEphemeralGuestDisabled;
 
-  if (ProfileManager::GuestProfileExists())
+  if (BrowserList::GetGuestBrowserCount())
     return SigninInterceptGuestAvailability::kGuestAlreadyOpen;
 
   if (!g_browser_process->local_state()->GetBoolean(

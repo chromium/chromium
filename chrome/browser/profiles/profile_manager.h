@@ -198,9 +198,6 @@ class ProfileManager : public content::NotificationObserver,
   // Returns the full path to be used for guest profiles.
   static base::FilePath GetGuestProfilePath();
 
-  // Returns true if Guest profile exists.
-  static bool GuestProfileExists();
-
   // Returns the full path to be used for system profiles.
   static base::FilePath GetSystemProfilePath();
 
