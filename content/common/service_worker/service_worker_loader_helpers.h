@@ -36,7 +36,9 @@ class ServiceWorkerLoaderHelpers {
                                network::mojom::URLResponseHead* out_head);
 
   // Returns a redirect info if |response_head| is an redirect response.
-  // Otherwise returns base::nullopt.
+  // Otherwise returns base::nullopt. Note, if the location URL fails to parse,
+  // this function will return a RedirectInfo with an invalid |new_url|
+  // (is_valid() will return false).
   static base::Optional<net::RedirectInfo> ComputeRedirectInfo(
       const network::ResourceRequest& original_request,
       const network::mojom::URLResponseHead& response_head);
