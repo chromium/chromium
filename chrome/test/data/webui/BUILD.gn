@@ -421,7 +421,7 @@ if (include_js_tests) {
     test_type = "mojo_lite_webui"
 
     sources = [
-      "bluetooth_internals_browsertest.js",
+      "bluetooth_internals/bluetooth_internals_browsertest.js",
       "media/media_engagement_browsertest.js",
       "media/media_feeds_webui_browsertest.js",
       "media/media_history_webui_browsertest.js",
