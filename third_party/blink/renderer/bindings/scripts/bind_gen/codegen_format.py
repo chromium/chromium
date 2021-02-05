@@ -27,6 +27,7 @@ class _TemplateFormatter(string.Formatter):
             return args[key]
         assert isinstance(key, str)
         if not key:
+            # TODO(crbug.com/1174969):
             # Prior to Python 3.1, when a positional argument specifier is
             # omitted, |format_string="{}"| produces |key=""|.  Should be
             # removed once Python2 gets retired.

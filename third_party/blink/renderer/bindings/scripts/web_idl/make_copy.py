@@ -5,7 +5,7 @@
 
 import sys
 
-# TODO: Remove this once Python2 is obsoleted.
+# TODO(crbug.com/1174969): Remove this once Python2 is obsoleted.
 if sys.version_info.major != 2:
     long = int
     basestring = str
