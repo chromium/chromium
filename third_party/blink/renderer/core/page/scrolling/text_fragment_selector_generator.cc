@@ -174,6 +174,7 @@ constexpr int kNoContextMinChars = 20;
 constexpr int kMaxContextWords = 10;
 constexpr int kMaxRangeWords = 10;
 constexpr int kMaxIterationCountToRecord = 10;
+constexpr int kMinWordCount_ = 3;
 
 void TextFragmentSelectorGenerator::UpdateSelection(
     LocalFrame* selection_frame,
@@ -297,10 +298,8 @@ void TextFragmentSelectorGenerator::GenerateSelector(
   max_available_suffix_ = "";
   max_available_range_start_ = "";
   max_available_range_end_ = "";
-  num_prefix_words_ = 0;
-  num_suffix_words_ = 0;
-  num_range_start_words_ = 0;
-  num_range_end_words_ = 0;
+  num_context_words_ = 0;
+  num_range_words_ = 0;
   iteration_ = 0;
   selector_ = nullptr;
 
@@ -477,13 +476,12 @@ void TextFragmentSelectorGenerator::ExtendRangeSelector() {
   DCHECK_EQ(kRange, step_);
   DCHECK_EQ(kNeedsNewCandidate, state_);
   // Give up if range is already too long.
-  if (num_range_start_words_ == kMaxRangeWords ||
-      num_range_end_words_ == kMaxRangeWords) {
+  if (num_range_words_ > kMaxRangeWords) {
     step_ = kContext;
     return;
   }
 
-  // Initialize range start and end, if needed.
+  // Initialize range start/end and word min count, if needed.
   if (max_available_range_start_.IsEmpty() &&
       max_available_range_end_.IsEmpty()) {
     EphemeralRangeInFlatTree ephemeral_range(selection_range_);
@@ -518,12 +516,15 @@ void TextFragmentSelectorGenerator::ExtendRangeSelector() {
       max_available_range_end_ =
           GetPreviousTextBlock(selection_range_->EndPosition());
     }
+
+    // Use at least 3 words from both sides for more robust link to text.
+    num_range_words_ = kMinWordCount_;
   }
 
   String start =
-      GetWordsFromStart(max_available_range_start_, ++num_range_start_words_);
-  String end =
-      GetWordsFromEnd(max_available_range_end_, ++num_range_end_words_);
+      GetWordsFromStart(max_available_range_start_, num_range_words_);
+  String end = GetWordsFromEnd(max_available_range_end_, num_range_words_);
+  num_range_words_++;
 
   // If the start and end didn't change, it means we exhausted the selected
   // text and should try adding context.
@@ -542,8 +543,7 @@ void TextFragmentSelectorGenerator::ExtendContext() {
   DCHECK(selector_);
 
   // Give up if context is already too long.
-  if (num_prefix_words_ == kMaxContextWords ||
-      num_prefix_words_ == kMaxContextWords) {
+  if (num_context_words_ == kMaxContextWords) {
     state_ = kFailure;
     error_ = LinkGenerationError::kContextLimitReached;
     return;
@@ -554,6 +554,9 @@ void TextFragmentSelectorGenerator::ExtendContext() {
     max_available_prefix_ =
         GetPreviousTextBlock(selection_range_->StartPosition());
     max_available_suffix_ = GetNextTextBlock(selection_range_->EndPosition());
+
+    // Use at least 3 words from both sides for more robust link to text.
+    num_context_words_ = kMinWordCount_;
   }
 
   if (max_available_prefix_.IsEmpty() && max_available_suffix_.IsEmpty()) {
@@ -562,8 +565,9 @@ void TextFragmentSelectorGenerator::ExtendContext() {
     return;
   }
 
-  String prefix = GetWordsFromEnd(max_available_prefix_, ++num_prefix_words_);
-  String suffix = GetWordsFromStart(max_available_suffix_, ++num_suffix_words_);
+  String prefix = GetWordsFromEnd(max_available_prefix_, num_context_words_);
+  String suffix = GetWordsFromStart(max_available_suffix_, num_context_words_);
+  num_context_words_++;
 
   // Give up if we were unable to get new prefix and suffix.
   if (prefix == selector_->Prefix() && suffix == selector_->Suffix()) {

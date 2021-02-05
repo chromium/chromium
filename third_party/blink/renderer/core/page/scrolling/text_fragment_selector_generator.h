@@ -140,11 +140,9 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
 
   // Indicates a number of words used from |max_available_prefix_| and
   // |max_available_suffix_| for the current |selector_|.
-  int num_prefix_words_ = 0;
-  int num_suffix_words_ = 0;
+  int num_context_words_ = 0;
 
-  int num_range_start_words_ = 0;
-  int num_range_end_words_ = 0;
+  int num_range_words_ = 0;
 
   int iteration_ = 0;
   base::TimeTicks generation_start_time_;

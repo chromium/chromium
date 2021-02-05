@@ -208,7 +208,8 @@ TEST_F(TextFragmentSelectorGeneratorTest,
   ASSERT_EQ("unique snippet",
             PlainText(EphemeralRange(selected_start, selected_end)));
 
-  VerifySelector(selected_start, selected_end, "to-,unique%20snippet,-of");
+  VerifySelector(selected_start, selected_end,
+                 "paragraph%20prefix%20to-,unique%20snippet,-of%20text.");
 }
 
 // Exact selector with context test. Case when only one word for prefix and
@@ -230,7 +231,7 @@ TEST_F(TextFragmentSelectorGeneratorTest,
             PlainText(EphemeralRange(selected_start, selected_end)));
 
   VerifySelector(selected_start, selected_end,
-                 "First-,paragraph%20text%20that%20is,-longer");
+                 "First-,paragraph%20text%20that%20is,-longer%20than%2020");
 }
 
 // Exact selector with context test. Case when multiple words for prefix and
@@ -431,7 +432,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, ExactTextSelector_PrevNodePrefix) {
             PlainText(EphemeralRange(selected_start, selected_end)));
 
   VerifySelector(selected_start, selected_end,
-                 "snippet-,not%20unique%20snippet,-of");
+                 "not%20unique%20snippet-,not%20unique%20snippet,-of%20text");
 }
 
 // Exact selector with context test. Case when available prefix is the
@@ -454,7 +455,7 @@ TEST_F(TextFragmentSelectorGeneratorTest,
             PlainText(EphemeralRange(selected_start, selected_end)));
 
   VerifySelector(selected_start, selected_end,
-                 "text-,not%20unique%20snippet,-of");
+                 "text-,not%20unique%20snippet,-of%20text");
 }
 
 // Exact selector with context test. Case when available suffix is the next
@@ -475,7 +476,8 @@ TEST_F(TextFragmentSelectorGeneratorTest, ExactTextSelector_NextNodeSuffix) {
             PlainText(EphemeralRange(selected_start, selected_end)));
 
   VerifySelector(selected_start, selected_end,
-                 "with-,not%20unique%20snippet,-not");
+                 "First%20paragraph%20with-,not%20unique%20snippet,-not%"
+                 "20unique%20snippet");
 }
 
 // Exact selector with context test. Case when available suffix is the next
@@ -498,7 +500,7 @@ TEST_F(TextFragmentSelectorGeneratorTest,
             PlainText(EphemeralRange(selected_start, selected_end)));
 
   VerifySelector(selected_start, selected_end,
-                 "with-,not%20unique%20snippet,-text");
+                 "First%20paragraph%20with-,not%20unique%20snippet,-text");
 }
 
 TEST_F(TextFragmentSelectorGeneratorTest, RangeSelector) {
@@ -517,7 +519,8 @@ TEST_F(TextFragmentSelectorGeneratorTest, RangeSelector) {
   ASSERT_EQ("First paragraph text that is longer than 20 chars\n\nSecond",
             PlainText(EphemeralRange(selected_start, selected_end)));
 
-  VerifySelector(selected_start, selected_end, "First,Second");
+  VerifySelector(selected_start, selected_end,
+                 "First%20paragraph%20text,Second");
 }
 
 // It should be more than 300 characters selected from the same node so that
@@ -545,7 +548,8 @@ text text text text text text text text text text text text text \
 text text text text text text text text text and last text",
       PlainText(EphemeralRange(selected_start, selected_end)));
 
-  VerifySelector(selected_start, selected_end, "First%20paragraph,last%20text");
+  VerifySelector(selected_start, selected_end,
+                 "First%20paragraph%20text,and%20last%20text");
 }
 
 // It should be more than 300 characters selected from the same node so that
@@ -576,7 +580,8 @@ text text text text text text text text text text and last text",
   ASSERT_EQ(309u,
             PlainText(EphemeralRange(selected_start, selected_end)).length());
 
-  VerifySelector(selected_start, selected_end, "First%20paragraph,last%20text");
+  VerifySelector(selected_start, selected_end,
+                 "First%20paragraph%20text,and%20last%20text");
 
   scoped_ukm_recorder_.ResetRecorder();
 
@@ -594,7 +599,7 @@ text text text text text text text text text text and last text",
                       .length());
 
   VerifySelector(second_selected_start, second_selected_end,
-                 "paragraph%20text,last%20text");
+                 "paragraph%20text%20text,and%20last%20text");
 }
 
 // When using all the selected text for the range is not enough for unique
@@ -615,7 +620,8 @@ TEST_F(TextFragmentSelectorGeneratorTest, RangeSelector_RangeNotUnique) {
   ASSERT_EQ("paragraph\n\ntext",
             PlainText(EphemeralRange(selected_start, selected_end)));
 
-  VerifySelector(selected_start, selected_end, "First-,paragraph,text,-Second");
+  VerifySelector(selected_start, selected_end,
+                 "First-,paragraph,text,-Second%20paragraph");
 }
 
 // When using all the selected text for the range is not enough for unique
@@ -746,7 +752,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, StartsWithImage) {
   const auto& end = Position(first_paragraph, 5);
   ASSERT_EQ("\nFirst", PlainText(EphemeralRange(start, end)));
 
-  VerifySelector(start, end, "page-,First,-paragraph");
+  VerifySelector(start, end, "Test%20page-,First,-paragraph%20text%20that");
 }
 
 // Check the case when selections starts with an non text node.
@@ -767,7 +773,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, StartsWithBlockWithImage) {
   const auto& end = Position(first_paragraph, 5);
   ASSERT_EQ("\nFirst", PlainText(EphemeralRange(start, end)));
 
-  VerifySelector(start, end, "page-,First,-paragraph");
+  VerifySelector(start, end, "Test%20page-,First,-paragraph%20text%20that");
 }
 
 // Check the case when selections starts with a node nested in "inline-block"
@@ -804,7 +810,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, StartsWithInlineBlockChild) {
   const auto& end = Position(first_paragraph, 5);
   ASSERT_EQ("  \nFirst", PlainText(EphemeralRange(start, end)));
 
-  VerifySelector(start, end, "page-,First,-paragraph");
+  VerifySelector(start, end, "Test%20page-,First,-paragraph%20text%20that");
 }
 
 // Check the case when selections ends with an non text node.
@@ -824,7 +830,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, EndswithImage) {
   const auto& end = Position(img, 0);
   ASSERT_EQ("chars\n\n", PlainText(EphemeralRange(start, end)));
 
-  VerifySelector(start, end, "20-,chars");
+  VerifySelector(start, end, "longer%20than%2020-,chars");
 }
 
 // Check the case when selections starts at the end of the previous block.
@@ -842,7 +848,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, StartIsEndofPrevBlock) {
   const auto& end = Position(second_paragraph, 6);
   ASSERT_EQ("\nSecond", PlainText(EphemeralRange(start, end)));
 
-  VerifySelector(start, end, "paragraph-,Second,-paragraph");
+  VerifySelector(start, end, "First%20paragraph-,Second,-paragraph");
 }
 
 // Check the case when selections starts at the end of the previous block.
@@ -860,7 +866,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, EndIsStartofNextBlock) {
   const auto& end = Position(second_paragraph, 2);
   ASSERT_EQ("First paragraph\n\n", PlainText(EphemeralRange(start, end)));
 
-  VerifySelector(start, end, "First%20paragraph,-Second");
+  VerifySelector(start, end, "First%20paragraph,-Second%20paragraph");
 }
 
 // Check the case when parent of selection start is a sibling of a node where
@@ -893,7 +899,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, PrevNodeIsSiblingsChild) {
   const auto& end = Position(second_paragraph, 0);
   ASSERT_EQ("First paragraph\n\n", PlainText(EphemeralRange(start, end)));
 
-  VerifySelector(start, end, "First%20paragraph,-Second");
+  VerifySelector(start, end, "First%20paragraph,-Second%20paragraph");
 }
 
 // Check the case when parent of selection start is a sibling of a node where
@@ -926,7 +932,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, PrevPrevNodeIsSiblingsChild) {
   const auto& end = Position(second_paragraph, 0);
   ASSERT_EQ("First paragraph\n\n", PlainText(EphemeralRange(start, end)));
 
-  VerifySelector(start, end, "First%20paragraph,-Second");
+  VerifySelector(start, end, "First%20paragraph,-Second%20paragraph");
 }
 
 // Checks that for short selection that have nested block element range selector
@@ -947,6 +953,47 @@ TEST_F(TextFragmentSelectorGeneratorTest, RangeSelector_SameNode_Interrupted) {
   VerifySelector(start, end, "First,paragraph");
 }
 
+// Check min number of words is used for context if possible.
+TEST_F(TextFragmentSelectorGeneratorTest, MultiwordContext) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <div>Test page</div>
+    <p id='first'>First paragraph text that is longer than 20 chars</p>
+    <p id='second'>Second paragraph text that is short</p>
+  )HTML");
+  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  const auto& selected_start = Position(first_paragraph, 6);
+  const auto& selected_end = Position(first_paragraph, 28);
+  ASSERT_EQ("paragraph text that is",
+            PlainText(EphemeralRange(selected_start, selected_end)));
+
+  VerifySelector(selected_start, selected_end,
+                 "First-,paragraph%20text%20that%20is,-longer%20than%2020");
+}
+
+// Check min number of words is used for range if possible.
+TEST_F(TextFragmentSelectorGeneratorTest, MultiWordRangeSelector) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <div>Test page</div>
+    <p id='first'>First paragraph text that is longer than 20 chars</p>
+    <p id='second'>Second paragraph text</p>
+  )HTML");
+  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* second_paragraph = GetDocument().getElementById("second")->firstChild();
+  const auto& selected_start = Position(first_paragraph, 0);
+  const auto& selected_end = Position(second_paragraph, 6);
+  ASSERT_EQ("First paragraph text that is longer than 20 chars\n\nSecond",
+            PlainText(EphemeralRange(selected_start, selected_end)));
+
+  VerifySelector(selected_start, selected_end,
+                 "First%20paragraph%20text,Second");
+}
+
 // Checks the case when selection end position is a non text node.
 TEST_F(TextFragmentSelectorGeneratorTest, SelectionEndsWithNonText) {
   SimRequest request("https://example.com/test.html", "text/html");
@@ -965,7 +1012,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, SelectionEndsWithNonText) {
   const auto& end = Position(div, 2);
   ASSERT_EQ("First paragraph\n\n", PlainText(EphemeralRange(start, end)));
 
-  VerifySelector(start, end, "First%20paragraph,-Second");
+  VerifySelector(start, end, "First%20paragraph,-Second%20paragraph");
 }
 
 // Checks the case when selection end position is a non text node which doesn't
