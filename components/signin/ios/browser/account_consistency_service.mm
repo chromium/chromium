@@ -259,10 +259,6 @@ void AccountConsistencyHandler::ShouldAllowResponse(
                                    kGaiaCookieAbsentOnAddSessionNavigation);
         if (base::FeatureList::IsEnabled(
                 signin::kRestoreGaiaCookiesOnUserAction)) {
-          // Reset boolean that tracks displaying the sign-in notification
-          // infobar. This ensures that only the most recent navigation will
-          // trigger an infobar.
-          gaia_cookies_restored_ = false;
           GURL continue_url = GURL(params.continue_url);
           DLOG_IF(ERROR,
                   !params.continue_url.empty() && !continue_url.is_valid())
@@ -310,10 +306,10 @@ void AccountConsistencyHandler::MarkGaiaCookiesRestored() {
 }
 
 void AccountConsistencyHandler::NavigateToURL(GURL url) {
-  gaia_cookies_restored_ = true;
   web_state_->OpenURL(web::WebState::OpenURLParams(
       url, web::Referrer(), WindowOpenDisposition::CURRENT_TAB,
       ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false));
+  [delegate_ onRestoreGaiaCookies];
 }
 
 void AccountConsistencyHandler::PageLoaded(
