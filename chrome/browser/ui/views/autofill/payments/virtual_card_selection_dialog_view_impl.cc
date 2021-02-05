@@ -19,6 +19,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 
@@ -106,5 +107,8 @@ views::View* VirtualCardSelectionDialogViewImpl::GetContentsView() {
 base::string16 VirtualCardSelectionDialogViewImpl::GetWindowTitle() const {
   return controller_->GetContentTitle();
 }
+
+BEGIN_METADATA(VirtualCardSelectionDialogViewImpl, views::DialogDelegateView)
+END_METADATA
 
 }  // namespace autofill

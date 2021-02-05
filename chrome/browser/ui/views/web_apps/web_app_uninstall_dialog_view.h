@@ -21,6 +21,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 #include "url/gurl.h"
 
@@ -35,6 +36,7 @@ class Checkbox;
 // The dialog's view, owned by the views framework.
 class WebAppUninstallDialogDelegateView : public views::DialogDelegateView {
  public:
+  METADATA_HEADER(WebAppUninstallDialogDelegateView);
   // Constructor for view component of dialog.
   WebAppUninstallDialogDelegateView(
       Profile* profile,

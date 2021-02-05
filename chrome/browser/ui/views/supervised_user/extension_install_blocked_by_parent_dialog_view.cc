@@ -29,6 +29,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace chrome {
 
@@ -137,9 +138,14 @@ void ExtensionInstallBlockedByParentDialogView::CreateContents() {
 }
 
 base::string16
-ExtensionInstallBlockedByParentDialogView::GetExtensionTypeString() {
+ExtensionInstallBlockedByParentDialogView::GetExtensionTypeString() const {
   return l10n_util::GetStringUTF16(
       extension_->is_app()
           ? IDS_PARENT_PERMISSION_PROMPT_EXTENSION_TYPE_APP
           : IDS_PARENT_PERMISSION_PROMPT_EXTENSION_TYPE_EXTENSION);
 }
+
+BEGIN_METADATA(ExtensionInstallBlockedByParentDialogView,
+               views::DialogDelegateView)
+ADD_READONLY_PROPERTY_METADATA(base::string16, ExtensionTypeString)
+END_METADATA

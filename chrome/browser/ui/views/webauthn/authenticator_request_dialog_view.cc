@@ -23,6 +23,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/vector_icons.h"
 
 // static
@@ -348,3 +349,6 @@ void AuthenticatorRequestDialogView::OnDialogClosing() {
   if (!model_->should_dialog_be_closed())
     Cancel();
 }
+
+BEGIN_METADATA(AuthenticatorRequestDialogView, views::DialogDelegateView)
+END_METADATA

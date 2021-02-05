@@ -30,6 +30,7 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/table/table_view.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -299,5 +300,8 @@ void CertificateSelector::OnDoubleClick() {
   if (GetSelectedCert())
     AcceptDialog();
 }
+
+BEGIN_METADATA(CertificateSelector, views::DialogDelegateView)
+END_METADATA
 
 }  // namespace chrome

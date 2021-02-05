@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace extensions {
@@ -23,6 +24,7 @@ class Extension;
 class ExtensionInstallBlockedByParentDialogView
     : public views::DialogDelegateView {
  public:
+  METADATA_HEADER(ExtensionInstallBlockedByParentDialogView);
   // Constructor for dialog shown when a parent blocks extension/app
   // installation for a child.  Do not call this directly. Instead,
   // use ShowExtensionInstallBlockedByParentDialog in browser_dialogs.h.
@@ -43,7 +45,7 @@ class ExtensionInstallBlockedByParentDialogView
  private:
   void ConfigureTitle();
   void CreateContents();
-  base::string16 GetExtensionTypeString();
+  base::string16 GetExtensionTypeString() const;
 
   const extensions::Extension* extension_ = nullptr;
   chrome::ExtensionInstalledBlockedByParentDialogAction action_;

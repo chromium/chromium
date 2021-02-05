@@ -24,6 +24,7 @@
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "url/gurl.h"
 
 namespace {
@@ -182,5 +183,9 @@ void FileSystemSigninDialogDelegate::OnGotOAuthTokens(
   GetWidget()->Close();
 }
 
+BEGIN_METADATA(FileSystemSigninDialogDelegate, views::DialogDelegateView)
+END_METADATA
+
 // TODO(https://crbug.com/1159185): add browser_tests for this delegate.
+
 }  // namespace enterprise_connectors

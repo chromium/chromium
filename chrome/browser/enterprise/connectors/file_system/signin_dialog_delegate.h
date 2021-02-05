@@ -13,6 +13,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher_impl.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace enterprise_connectors {
@@ -25,6 +26,8 @@ class FileSystemSigninDialogDelegate
       public web_modal::WebContentsModalDialogHost,
       public content::WebContentsObserver {
  public:
+  METADATA_HEADER(FileSystemSigninDialogDelegate);
+
   // Called with success or failure of this authorization attempt.
   using AuthorizationCompletedCallback = base::OnceCallback<void(bool)>;
 

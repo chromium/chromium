@@ -25,6 +25,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace chrome {
@@ -214,3 +215,6 @@ void ChromeCleanerDialog::LogsPermissionCheckboxPressed() {
   if (dialog_controller_)
     dialog_controller_->SetLogsEnabled(logs_permission_checkbox_->GetChecked());
 }
+
+BEGIN_METADATA(ChromeCleanerDialog, views::DialogDelegateView)
+END_METADATA

@@ -33,6 +33,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -198,6 +199,9 @@ void WebAppUninstallDialogDelegateView::ProcessAutoConfirmValue() {
       break;
   }
 }
+
+BEGIN_METADATA(WebAppUninstallDialogDelegateView, views::DialogDelegateView)
+END_METADATA
 
 WebAppUninstallDialogViews::WebAppUninstallDialogViews(Profile* profile,
                                                        gfx::NativeWindow parent)

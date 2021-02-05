@@ -15,6 +15,7 @@
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 using HandleType = content::FileSystemAccessPermissionContext::HandleType;
 
@@ -79,6 +80,10 @@ FileSystemAccessRestrictedDirectoryDialogView::
           : IDS_FILE_SYSTEM_ACCESS_RESTRICTED_FILE_TEXT,
       origin, views::style::CONTEXT_DIALOG_BODY_TEXT, /*show_emphasis=*/true));
 }
+
+BEGIN_METADATA(FileSystemAccessRestrictedDirectoryDialogView,
+               views::DialogDelegateView)
+END_METADATA
 
 void ShowFileSystemAccessRestrictedDirectoryDialog(
     const url::Origin& origin,

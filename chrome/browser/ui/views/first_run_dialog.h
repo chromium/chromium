@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 class Profile;
@@ -17,6 +18,11 @@ class Checkbox;
 
 class FirstRunDialog : public views::DialogDelegateView {
  public:
+  METADATA_HEADER(FirstRunDialog);
+
+  FirstRunDialog(const FirstRunDialog&) = delete;
+  FirstRunDialog& operator=(const FirstRunDialog&) = delete;
+
   // Displays the first run UI for reporting opt-in, import data etc.
   static void Show(Profile* profile);
 
@@ -36,8 +42,6 @@ class FirstRunDialog : public views::DialogDelegateView {
   views::Checkbox* make_default_ = nullptr;
   views::Checkbox* report_crashes_ = nullptr;
   base::RepeatingClosure quit_runloop_;
-
-  DISALLOW_COPY_AND_ASSIGN(FirstRunDialog);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FIRST_RUN_DIALOG_H_

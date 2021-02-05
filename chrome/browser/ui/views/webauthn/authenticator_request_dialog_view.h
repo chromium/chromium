@@ -12,6 +12,7 @@
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace content {
@@ -38,6 +39,11 @@ class AuthenticatorRequestDialogView
       public AuthenticatorRequestDialogModel::Observer,
       public content::WebContentsObserver {
  public:
+  METADATA_HEADER(AuthenticatorRequestDialogView);
+  AuthenticatorRequestDialogView(const AuthenticatorRequestDialogView&) =
+      delete;
+  AuthenticatorRequestDialogView& operator=(
+      const AuthenticatorRequestDialogView&) = delete;
   ~AuthenticatorRequestDialogView() override;
 
  protected:
@@ -105,8 +111,6 @@ class AuthenticatorRequestDialogView
   // attach to is currently hidden. In this case, the dialog won't be shown
   // when requested, but will wait until the WebContents is visible again.
   bool web_contents_hidden_;
-
-  DISALLOW_COPY_AND_ASSIGN(AuthenticatorRequestDialogView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_REQUEST_DIALOG_VIEW_H_

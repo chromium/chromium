@@ -26,6 +26,7 @@
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -129,3 +130,6 @@ void FirstRunDialog::WindowClosing() {
   first_run::SetShouldShowWelcomePage();
   Done();
 }
+
+BEGIN_METADATA(FirstRunDialog, views::DialogDelegateView)
+END_METADATA

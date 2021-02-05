@@ -16,6 +16,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 SettingsOverriddenDialogView::SettingsOverriddenDialogView(
     std::unique_ptr<SettingsOverriddenDialogController> controller)
@@ -98,6 +99,9 @@ void SettingsOverriddenDialogView::NotifyControllerOfResult(
   result_ = result;
   controller_->HandleDialogResult(result);
 }
+
+BEGIN_METADATA(SettingsOverriddenDialogView, views::DialogDelegateView)
+END_METADATA
 
 namespace chrome {
 

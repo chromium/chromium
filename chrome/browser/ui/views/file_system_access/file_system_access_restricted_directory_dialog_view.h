@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "content/public/browser/file_system_access_permission_context.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace base {
@@ -31,9 +32,15 @@ class Widget;
 class FileSystemAccessRestrictedDirectoryDialogView
     : public views::DialogDelegateView {
  public:
+  METADATA_HEADER(FileSystemAccessRestrictedDirectoryDialogView);
+
   using SensitiveDirectoryResult =
       content::FileSystemAccessPermissionContext::SensitiveDirectoryResult;
 
+  FileSystemAccessRestrictedDirectoryDialogView(
+      const FileSystemAccessRestrictedDirectoryDialogView&) = delete;
+  FileSystemAccessRestrictedDirectoryDialogView& operator=(
+      const FileSystemAccessRestrictedDirectoryDialogView&) = delete;
   ~FileSystemAccessRestrictedDirectoryDialogView() override;
 
   // Creates and shows the dialog. The |callback| is called when the dialog is
@@ -54,8 +61,6 @@ class FileSystemAccessRestrictedDirectoryDialogView
 
   const content::FileSystemAccessPermissionContext::HandleType handle_type_;
   base::OnceCallback<void(SensitiveDirectoryResult)> callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileSystemAccessRestrictedDirectoryDialogView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_RESTRICTED_DIRECTORY_DIALOG_VIEW_H_
