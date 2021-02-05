@@ -85,12 +85,14 @@ gav1_dsp_sources = [
 ]
 
 gav1_dsp_avx2_sources = [
+  "//third_party/libgav1/src/src/dsp/x86/cdef_avx2.cc",
   "//third_party/libgav1/src/src/dsp/x86/convolve_avx2.cc",
   "//third_party/libgav1/src/src/dsp/x86/loop_restoration_10bit_avx2.cc",
   "//third_party/libgav1/src/src/dsp/x86/loop_restoration_avx2.cc",
 ]
 
 gav1_dsp_avx2_headers_sources = [
+  "//third_party/libgav1/src/src/dsp/x86/cdef_avx2.h",
   "//third_party/libgav1/src/src/dsp/x86/common_avx2.h",
   "//third_party/libgav1/src/src/dsp/x86/convolve_avx2.h",
   "//third_party/libgav1/src/src/dsp/x86/loop_restoration_avx2.h",
@@ -143,7 +145,6 @@ gav1_dsp_sse4_sources = [
   "//third_party/libgav1/src/src/dsp/x86/cdef_sse4.cc",
   "//third_party/libgav1/src/src/dsp/x86/convolve_sse4.cc",
   "//third_party/libgav1/src/src/dsp/x86/distance_weighted_blend_sse4.cc",
-  "//third_party/libgav1/src/src/dsp/x86/film_grain_sse4.cc",
   "//third_party/libgav1/src/src/dsp/x86/intra_edge_sse4.cc",
   "//third_party/libgav1/src/src/dsp/x86/intrapred_cfl_sse4.cc",
   "//third_party/libgav1/src/src/dsp/x86/intrapred_smooth_sse4.cc",
@@ -167,7 +168,6 @@ gav1_dsp_sse4_headers_sources = [
   "//third_party/libgav1/src/src/dsp/x86/common_sse4.h",
   "//third_party/libgav1/src/src/dsp/x86/convolve_sse4.h",
   "//third_party/libgav1/src/src/dsp/x86/distance_weighted_blend_sse4.h",
-  "//third_party/libgav1/src/src/dsp/x86/film_grain_sse4.h",
   "//third_party/libgav1/src/src/dsp/x86/intra_edge_sse4.h",
   "//third_party/libgav1/src/src/dsp/x86/intrapred_sse4.h",
   "//third_party/libgav1/src/src/dsp/x86/inverse_transform_sse4.h",

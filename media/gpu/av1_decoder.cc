@@ -415,11 +415,9 @@ bool AV1Decoder::CheckAndCleanUpReferenceFrames() {
   DCHECK(state_);
   DCHECK(current_frame_header_);
   for (size_t i = 0; i < libgav1::kNumReferenceFrameTypes; ++i) {
-    if (state_->reference_valid[i] &&
-        (!state_->reference_frame[i] || !ref_frames_[i])) {
+    if (state_->reference_frame[i] && !ref_frames_[i])
       return false;
-    }
-    if (!state_->reference_valid[i] && ref_frames_[i])
+    if (!state_->reference_frame[i] && ref_frames_[i])
       ref_frames_[i].reset();
   }
 
