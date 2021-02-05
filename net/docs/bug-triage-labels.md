@@ -132,6 +132,9 @@ they fall largely outside the purview of the network stack team:
 
 * **UI>Browser>Navigation**
 
+    Despite the name, this covers all issues related to page navigation, not
+    just UI issues.
+
 * **UI>Browser>History**
 
     Issues which only appear with forward/back navigation.
