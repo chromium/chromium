@@ -44,20 +44,4 @@ fidl::InterfaceHandle<::fuchsia::io::Directory> OpenDirectoryHandle(
   return fidl::InterfaceHandle<::fuchsia::io::Directory>(std::move(channel));
 }
 
-// TODO(crbug.com/1073821): Remove this block when out-of-tree callers have been
-// changed to use the non-fuchsia-sub-namespace version.
-namespace fuchsia {
-
-const char kPersistedDataDirectoryPath[] = "/data";
-const char kPersistedCacheDirectoryPath[] = "/cache";
-const char kServiceDirectoryPath[] = "/svc";
-const char kPackageRootDirectoryPath[] = "/pkg";
-
-fidl::InterfaceHandle<::fuchsia::io::Directory> OpenDirectory(
-    const base::FilePath& path) {
-  return ::base::OpenDirectoryHandle(path);
-}
-
-}  // namespace fuchsia
-
 }  // namespace base

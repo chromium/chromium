@@ -45,14 +45,6 @@ class ServiceDirectoryTestBase : public testing::Test {
   DISALLOW_COPY_AND_ASSIGN(ServiceDirectoryTestBase);
 };
 
-// TODO(crbug.com/1073821): Remove this block when all callers have been changed
-// to use the non-fuchsia-sub-namespace version.
-namespace fuchsia {
-
-using ServiceDirectoryTestBase = ::base::ServiceDirectoryTestBase;
-
-}  // namespace fuchsia
-
 }  // namespace base
 
 #endif  // BASE_FUCHSIA_SERVICE_DIRECTORY_TEST_BASE_H_

@@ -69,14 +69,6 @@ class BASE_EXPORT FuchsiaIntlProfileWatcher {
   const ProfileChangeCallback on_profile_changed_;
 };
 
-// TODO(crbug.com/1073821): Remove this block when out-of-tree callers have been
-// changed to use the non-fuchsia-sub-namespace version.
-namespace fuchsia {
-
-using IntlProfileWatcher = ::base::FuchsiaIntlProfileWatcher;
-
-}  // namespace fuchsia
-
 }  // namespace base
 
 #endif  // BASE_FUCHSIA_INTL_PROFILE_WATCHER_H_
