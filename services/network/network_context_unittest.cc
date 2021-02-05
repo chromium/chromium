@@ -6474,6 +6474,14 @@ class NetworkContextSplitCacheTest : public NetworkContextTest {
       request.trusted_params = ResourceRequest::TrustedParams();
       request.trusted_params->isolation_info = isolation_info;
       params->is_trusted = true;
+      // These params must be individually set, to be consistent with the
+      // IsolationInfo if its request type is a main frame navigation.
+      // TODO(crbug.com/1172314): Unify these to avoid inconsistencies.
+      if (isolation_info.request_type() ==
+          net::IsolationInfo::RequestType::kMainFrame) {
+        request.is_main_frame = true;
+        request.update_first_party_url_on_redirect = true;
+      }
     }
 
     params->automatically_assign_isolation_info =

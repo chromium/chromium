@@ -83,21 +83,49 @@ bool SaturatedTimeFromUTCExploded(const base::Time::Exploded& exploded,
   return false;
 }
 
+// This function consolidates the common logic for computing SameSite cookie
+// access context in various situations (HTTP vs JS; get vs set).
+//
+// `is_http` is whether the current cookie access request is associated with a
+// network request (as opposed to a non-HTTP API, i.e., JavaScript).
+//
+// `compute_schemefully` is whether the current computation is for a
+// schemeful_context, i.e. whether scheme should be considered when comparing
+// two sites.
+//
+// See documentation of `ComputeSameSiteContextForRequest` for explanations of
+// other parameters.
 ContextType ComputeSameSiteContext(const GURL& url,
                                    const SiteForCookies& site_for_cookies,
                                    const base::Optional<url::Origin>& initiator,
+                                   bool is_http,
+                                   bool is_main_frame_navigation,
                                    bool compute_schemefully) {
-  if (site_for_cookies.IsFirstPartyWithSchemefulMode(url,
-                                                     compute_schemefully)) {
+  bool site_for_cookies_is_same_site =
+      site_for_cookies.IsFirstPartyWithSchemefulMode(url, compute_schemefully);
+
+  // If the request is a main frame navigation, site_for_cookies must either be
+  // null (for opaque origins, e.g., data: origins) or same-site with the
+  // request URL (both schemefully and schemelessly), and the URL cannot be
+  // ws/wss (these schemes are not navigable).
+  DCHECK(!is_main_frame_navigation || site_for_cookies_is_same_site ||
+         site_for_cookies.IsNull());
+  DCHECK(!is_main_frame_navigation || !url.SchemeIsWSOrWSS());
+
+  if (site_for_cookies_is_same_site) {
     // Create a SiteForCookies object from the initiator so that we can reuse
     // IsFirstPartyWithSchemefulMode().
     if (!initiator ||
         SiteForCookies::FromOrigin(initiator.value())
             .IsFirstPartyWithSchemefulMode(url, compute_schemefully)) {
       return ContextType::SAME_SITE_STRICT;
-    } else {
-      return ContextType::SAME_SITE_LAX;
     }
+    // Preserve old behavior if the bugfix is disabled.
+    if (!base::FeatureList::IsEnabled(features::kSameSiteCookiesBugfix1166211))
+      return ContextType::SAME_SITE_LAX;
+
+    if (!is_http || is_main_frame_navigation)
+      return ContextType::SAME_SITE_LAX;
   }
   return ContextType::CROSS_SITE;
 }
@@ -105,23 +133,26 @@ ContextType ComputeSameSiteContext(const GURL& url,
 CookieOptions::SameSiteCookieContext ComputeSameSiteContextForSet(
     const GURL& url,
     const SiteForCookies& site_for_cookies,
-    bool force_ignore_site_for_cookies) {
-  if (force_ignore_site_for_cookies)
-    return CookieOptions::SameSiteCookieContext::MakeInclusiveForSet();
+    const base::Optional<url::Origin>& initiator,
+    bool is_http,
+    bool is_main_frame_navigation) {
+  CookieOptions::SameSiteCookieContext same_site_context;
 
-  // Schemeless check
-  if (!site_for_cookies.IsFirstPartyWithSchemefulMode(url, false)) {
-    return CookieOptions::SameSiteCookieContext(ContextType::CROSS_SITE,
-                                                ContextType::CROSS_SITE);
-  }
+  same_site_context.set_context(ComputeSameSiteContext(
+      url, site_for_cookies, initiator, is_http, is_main_frame_navigation,
+      false /* compute_schemefully */));
+  same_site_context.set_schemeful_context(ComputeSameSiteContext(
+      url, site_for_cookies, initiator, is_http, is_main_frame_navigation,
+      true /* compute_schemefully */));
 
-  // Schemeful check
-  if (!site_for_cookies.IsFirstPartyWithSchemefulMode(url, true)) {
-    return CookieOptions::SameSiteCookieContext(ContextType::SAME_SITE_LAX,
-                                                ContextType::CROSS_SITE);
-  }
+  // Setting any SameSite={Strict,Lax} cookie only requires a LAX context, so
+  // normalize any strictly same-site contexts to Lax for cookie writes.
+  if (same_site_context.context() == ContextType::SAME_SITE_STRICT)
+    same_site_context.set_context(ContextType::SAME_SITE_LAX);
+  if (same_site_context.schemeful_context() == ContextType::SAME_SITE_STRICT)
+    same_site_context.set_schemeful_context(ContextType::SAME_SITE_LAX);
 
-  return CookieOptions::SameSiteCookieContext::MakeInclusiveForSet();
+  return same_site_context;
 }
 
 }  // namespace
@@ -470,22 +501,24 @@ CookieOptions::SameSiteCookieContext ComputeSameSiteContextForRequest(
     const GURL& url,
     const SiteForCookies& site_for_cookies,
     const base::Optional<url::Origin>& initiator,
+    bool is_main_frame_navigation,
     bool force_ignore_site_for_cookies) {
-  // Set SameSiteCookieMode according to the rules laid out in
-  // https://tools.ietf.org/html/draft-ietf-httpbis-rfc6265bis-02:
+  // Set SameSiteCookieContext according to the rules laid out in
+  // https://tools.ietf.org/html/draft-ietf-httpbis-rfc6265bis:
   //
   // * Include both "strict" and "lax" same-site cookies if the request's
   //   |url|, |initiator|, and |site_for_cookies| all have the same
   //   registrable domain. Note: this also covers the case of a request
   //   without an initiator (only happens for browser-initiated main frame
-  //   navigations).
+  //   navigations). If computing schemefully, the schemes must also match.
   //
   // * Include only "lax" same-site cookies if the request's |URL| and
   //   |site_for_cookies| have the same registrable domain, _and_ the
-  //   request's |http_method| is "safe" ("GET" or "HEAD").
+  //   request's |http_method| is "safe" ("GET" or "HEAD"), and the request
+  //   is a main frame navigation.
   //
-  //   This case should generally occur only for cross-site requests which
-  //   target a top-level browsing context.
+  //   This case should occur only for cross-site requests which
+  //   target a top-level browsing context, with a "safe" method.
   //
   // * Include both "strict" and "lax" same-site cookies if the request is
   //   tagged with a flag allowing it.
@@ -501,10 +534,12 @@ CookieOptions::SameSiteCookieContext ComputeSameSiteContextForRequest(
 
   CookieOptions::SameSiteCookieContext same_site_context;
 
-  same_site_context.set_context(
-      ComputeSameSiteContext(url, site_for_cookies, initiator, false));
-  same_site_context.set_schemeful_context(
-      ComputeSameSiteContext(url, site_for_cookies, initiator, true));
+  same_site_context.set_context(ComputeSameSiteContext(
+      url, site_for_cookies, initiator, true /* is_http */,
+      is_main_frame_navigation, false /* compute_schemefully */));
+  same_site_context.set_schemeful_context(ComputeSameSiteContext(
+      url, site_for_cookies, initiator, true /* is_http */,
+      is_main_frame_navigation, true /* compute_schemefully */));
 
   // If the method is safe, the context is Lax. Otherwise, make a note that
   // the method is unsafe.
@@ -531,10 +566,12 @@ ComputeSameSiteContextForScriptGet(const GURL& url,
 
   CookieOptions::SameSiteCookieContext same_site_context;
 
-  same_site_context.set_context(
-      ComputeSameSiteContext(url, site_for_cookies, initiator, false));
-  same_site_context.set_schemeful_context(
-      ComputeSameSiteContext(url, site_for_cookies, initiator, true));
+  same_site_context.set_context(ComputeSameSiteContext(
+      url, site_for_cookies, initiator, false /* is_http */,
+      false /* is_main_frame_navigation */, false /* compute_schemefully */));
+  same_site_context.set_schemeful_context(ComputeSameSiteContext(
+      url, site_for_cookies, initiator, false /* is_http */,
+      false /* is_main_frame_navigation */, true /* compute_schemefully */));
 
   return same_site_context;
 }
@@ -543,20 +580,39 @@ CookieOptions::SameSiteCookieContext ComputeSameSiteContextForResponse(
     const GURL& url,
     const SiteForCookies& site_for_cookies,
     const base::Optional<url::Origin>& initiator,
+    bool is_main_frame_navigation,
     bool force_ignore_site_for_cookies) {
-  // |initiator| is here in case it'll be decided to ignore |site_for_cookies|
-  // for entirely browser-side requests (see https://crbug.com/958335).
+  if (force_ignore_site_for_cookies)
+    return CookieOptions::SameSiteCookieContext::MakeInclusiveForSet();
 
-  return ComputeSameSiteContextForSet(url, site_for_cookies,
-                                      force_ignore_site_for_cookies);
+  if (is_main_frame_navigation && !site_for_cookies.IsNull()) {
+    // If the request is a main frame navigation, site_for_cookies must either
+    // be null (for opaque origins, e.g., data: origins) or same-site with the
+    // request URL (both schemefully and schemelessly), and the URL cannot be
+    // ws/wss (these schemes are not navigable).
+    DCHECK(site_for_cookies.IsFirstPartyWithSchemefulMode(url, true));
+    DCHECK(!url.SchemeIsWSOrWSS());
+    return CookieOptions::SameSiteCookieContext::MakeInclusiveForSet();
+  }
+
+  return ComputeSameSiteContextForSet(url, site_for_cookies, initiator,
+                                      true /* is_http */,
+                                      is_main_frame_navigation);
 }
 
 CookieOptions::SameSiteCookieContext ComputeSameSiteContextForScriptSet(
     const GURL& url,
     const SiteForCookies& site_for_cookies,
     bool force_ignore_site_for_cookies) {
-  return ComputeSameSiteContextForSet(url, site_for_cookies,
-                                      force_ignore_site_for_cookies);
+  if (force_ignore_site_for_cookies)
+    return CookieOptions::SameSiteCookieContext::MakeInclusiveForSet();
+
+  // It doesn't matter what initiator origin we pass here. Either way, the
+  // context will be considered same-site iff the site_for_cookies is same-site
+  // with the url.
+  return ComputeSameSiteContextForSet(
+      url, site_for_cookies, base::nullopt /* initiator */, false /* is_http */,
+      false /* is_main_frame_navigation */);
 }
 
 CookieOptions::SameSiteCookieContext ComputeSameSiteContextForSubresource(

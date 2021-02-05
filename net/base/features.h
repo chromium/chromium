@@ -294,6 +294,15 @@ NET_EXPORT extern const base::Feature kFirstPartySets;
 // feature.
 NET_EXPORT extern const base::FeatureParam<bool> kFirstPartySetsIsDogfooder;
 
+// Controls whether the fix for crbug.com/1166211 is enabled. When this is
+// enabled, SameSite=Lax cookies may only be accessed for cross-site requests if
+// they are top-level navigations. When it is disabled, the (incorrect) previous
+// behavior that allows SameSite=Lax cookies on cross-site, non-top-level
+// requests if all frame ancestors are same-site with the request URL is used
+// instead. This fix is implemented behind a flag (kill switch) due to potential
+// compatibility risk.
+NET_EXPORT extern const base::Feature kSameSiteCookiesBugfix1166211;
+
 }  // namespace features
 }  // namespace net
 

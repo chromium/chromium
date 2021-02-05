@@ -199,5 +199,8 @@ constexpr base::Feature kFirstPartySets{"FirstPartySets",
 const base::FeatureParam<bool> kFirstPartySetsIsDogfooder{
     &kFirstPartySets, "FirstPartySetsIsDogfooder", false};
 
+const base::Feature kSameSiteCookiesBugfix1166211{
+    "SameSiteCookiesBugfix1166211", base::FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace net

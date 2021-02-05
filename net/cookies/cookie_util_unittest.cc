@@ -351,18 +351,29 @@ MATCHER_P2(ContextTypeIsWithSchemefulMode, context_type, schemeful, "") {
   return context_type == (schemeful ? arg.schemeful_context() : arg.context());
 }
 
-// Tests for the various ComputeSameSiteContextFor*() functions. The test param
-// is whether the results of the computations are evaluated schemefully.
+// Tests for the various ComputeSameSiteContextFor*() functions. The first
+// boolean test param is whether the results of the computations are evaluated
+// schemefully. The second boolean test param is whether the fix for
+// crbug.com/1166211 is enabled.
 class CookieUtilComputeSameSiteContextTest
-    : public ::testing::TestWithParam<bool> {
+    : public ::testing::TestWithParam<std::tuple<bool, bool>> {
  public:
-  CookieUtilComputeSameSiteContextTest() = default;
+  CookieUtilComputeSameSiteContextTest() {
+    // No need to explicitly enable the feature because it is enabled by
+    // default.
+    if (!IsBugfix1166211Enabled()) {
+      feature_list_.InitAndDisableFeature(
+          features::kSameSiteCookiesBugfix1166211);
+    }
+  }
   ~CookieUtilComputeSameSiteContextTest() override = default;
 
   using SameSiteCookieContext = CookieOptions::SameSiteCookieContext;
   using ContextType = CookieOptions::SameSiteCookieContext::ContextType;
 
-  bool IsSchemeful() const { return GetParam(); }
+  bool IsSchemeful() const { return std::get<0>(GetParam()); }
+
+  bool IsBugfix1166211Enabled() const { return std::get<1>(GetParam()); }
 
   // Returns the proper gtest matcher to use for the schemeless/schemeful mode.
   auto ContextTypeIs(ContextType context_type) const {
@@ -456,6 +467,23 @@ class CookieUtilComputeSameSiteContextTest
     return cross_site_initiators;
   }
 
+  // Computes possible values of is_main_frame_navigation that are consistent
+  // with the DCHECKs.
+  bool CanBeMainFrameNavigation(const GURL& url,
+                                const SiteForCookies& site_for_cookies) const {
+    return (site_for_cookies.IsNull() ||
+            site_for_cookies.IsFirstPartyWithSchemefulMode(url, true)) &&
+           !url.SchemeIsWSOrWSS();
+  }
+
+  std::vector<bool> IsMainFrameNavigationPossibleValues(
+      const GURL& url,
+      const SiteForCookies& site_for_cookies) const {
+    return CanBeMainFrameNavigation(url, site_for_cookies)
+               ? std::vector<bool>{false, true}
+               : std::vector<bool>{false};
+  }
+
   // Request URL.
   const GURL kSiteUrl{"http://example.test/"};
   const GURL kSiteUrlWithPath{"http://example.test/path"};
@@ -493,6 +521,9 @@ class CookieUtilComputeSameSiteContextTest
       base::make_optional(url::Origin::Create(kSecureSubdomainUrl));
   const base::Optional<url::Origin> kUnrelatedInitiator =
       base::make_optional(url::Origin::Create(GURL("https://unrelated.test/")));
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_P(CookieUtilComputeSameSiteContextTest, UrlAndSiteForCookiesCrossSite) {
@@ -511,14 +542,19 @@ TEST_P(CookieUtilComputeSameSiteContextTest, UrlAndSiteForCookiesCrossSite) {
                           url, site_for_cookies,
                           false /* force_ignore_site_for_cookies */),
                       ContextTypeIs(ContextType::CROSS_SITE));
-          EXPECT_THAT(cookie_util::ComputeSameSiteContextForRequest(
-                          method, url, site_for_cookies, initiator,
-                          false /* force_ignore_site_for_cookies */),
-                      ContextTypeIs(ContextType::CROSS_SITE));
-          EXPECT_THAT(cookie_util::ComputeSameSiteContextForResponse(
-                          url, site_for_cookies, initiator,
-                          false /* force_ignore_site_for_cookies */),
-                      ContextTypeIs(ContextType::CROSS_SITE));
+          for (bool is_main_frame_navigation :
+               IsMainFrameNavigationPossibleValues(url, site_for_cookies)) {
+            EXPECT_THAT(cookie_util::ComputeSameSiteContextForRequest(
+                            method, url, site_for_cookies, initiator,
+                            is_main_frame_navigation,
+                            false /* force_ignore_site_for_cookies */),
+                        ContextTypeIs(ContextType::CROSS_SITE));
+            EXPECT_THAT(
+                cookie_util::ComputeSameSiteContextForResponse(
+                    url, site_for_cookies, initiator, is_main_frame_navigation,
+                    false /* force_ignore_site_for_cookies */),
+                ContextTypeIs(ContextType::CROSS_SITE));
+          }
           EXPECT_THAT(cookie_util::ComputeSameSiteContextForSubresource(
                           url, site_for_cookies,
                           false /* force_ignore_site_for_cookies */),
@@ -552,14 +588,20 @@ TEST_P(CookieUtilComputeSameSiteContextTest, SiteForCookiesNotSchemefullySame) {
                           url, site_for_cookies,
                           false /* force_ignore_site_for_cookies */),
                       ContextTypeIs(ContextType::CROSS_SITE));
+
+          // If the site-for-cookies isn't schemefully_same, this cannot be a
+          // main frame navigation.
           EXPECT_THAT(cookie_util::ComputeSameSiteContextForRequest(
                           method, url, site_for_cookies, initiator,
+                          false /* is_main_frame_navigation */,
                           false /* force_ignore_site_for_cookies */),
                       ContextTypeIs(ContextType::CROSS_SITE));
           EXPECT_THAT(cookie_util::ComputeSameSiteContextForResponse(
                           url, site_for_cookies, initiator,
+                          false /* is_main_frame_navigation */,
                           false /* force_ignore_site_for_cookies */),
                       ContextTypeIs(ContextType::CROSS_SITE));
+
           EXPECT_THAT(cookie_util::ComputeSameSiteContextForSubresource(
                           url, site_for_cookies,
                           false /* force_ignore_site_for_cookies */),
@@ -653,29 +695,67 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForRequest) {
       for (const base::Optional<url::Origin>& initiator :
            GetSameSiteInitiators()) {
         for (const std::string& method : {"GET", "POST", "PUT", "HEAD"}) {
-          EXPECT_THAT(cookie_util::ComputeSameSiteContextForRequest(
-                          method, url, site_for_cookies, initiator,
-                          false /* force_ignore_site_for_cookies */),
-                      ContextTypeIs(ContextType::SAME_SITE_STRICT));
+          for (bool is_main_frame_navigation :
+               IsMainFrameNavigationPossibleValues(url, site_for_cookies)) {
+            EXPECT_THAT(cookie_util::ComputeSameSiteContextForRequest(
+                            method, url, site_for_cookies, initiator,
+                            is_main_frame_navigation,
+                            false /* force_ignore_site_for_cookies */),
+                        ContextTypeIs(ContextType::SAME_SITE_STRICT));
+          }
         }
       }
 
       // Cross-Site initiator -> it's same-site lax iff the method is safe.
-      // TODO(crbug.com/1166211): This should take into account whether the
-      // request is a main frame navigation.
       for (const base::Optional<url::Origin>& initiator :
            GetCrossSiteInitiators()) {
+        // For main frame navigations, the context is Lax (or Lax-unsafe).
         for (const std::string& method : {"GET", "HEAD"}) {
+          if (!CanBeMainFrameNavigation(url, site_for_cookies))
+            break;
           EXPECT_THAT(cookie_util::ComputeSameSiteContextForRequest(
                           method, url, site_for_cookies, initiator,
+                          true /* is_main_frame_navigation */,
                           false /* force_ignore_site_for_cookies */),
                       ContextTypeIs(ContextType::SAME_SITE_LAX));
         }
         for (const std::string& method : {"POST", "PUT"}) {
+          if (!CanBeMainFrameNavigation(url, site_for_cookies))
+            break;
           EXPECT_THAT(cookie_util::ComputeSameSiteContextForRequest(
                           method, url, site_for_cookies, initiator,
+                          true /* is_main_frame_navigation */,
                           false /* force_ignore_site_for_cookies */),
                       ContextTypeIs(ContextType::SAME_SITE_LAX_METHOD_UNSAFE));
+        }
+
+        // For non-main-frame-navigation requests, the context should be
+        // cross-site, or (if the old incorrect behavior is in effect) lax or
+        // lax-unsafe.
+        if (IsBugfix1166211Enabled()) {
+          for (const std::string& method : {"GET", "POST", "PUT", "HEAD"}) {
+            EXPECT_THAT(cookie_util::ComputeSameSiteContextForRequest(
+                            method, url, site_for_cookies, initiator,
+                            false /* is_main_frame_navigation */,
+                            false /* force_ignore_site_for_cookies */),
+                        ContextTypeIs(ContextType::CROSS_SITE));
+          }
+        } else {
+          for (const std::string& method : {"GET", "HEAD"}) {
+            EXPECT_THAT(cookie_util::ComputeSameSiteContextForRequest(
+                            method, url, site_for_cookies, initiator,
+                            false /* is_main_frame_navigation */,
+                            false /* force_ignore_site_for_cookies */),
+                        ContextTypeIs(ContextType::SAME_SITE_LAX));
+          }
+          for (const std::string& method : {"POST", "PUT"}) {
+            EXPECT_THAT(
+                cookie_util::ComputeSameSiteContextForRequest(
+                    method, url, site_for_cookies, initiator,
+                    false /* is_main_frame_navigation */,
+                    false /* force_ignore_site_for_cookies */),
+                ContextTypeIs(ContextType::SAME_SITE_LAX_METHOD_UNSAFE));
+          }
         }
       }
     }
@@ -686,85 +766,125 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForRequest_SchemefulDowngrade) {
   // Some test cases where the context is downgraded when computed schemefully.
   // (Should already be covered above, but just to be explicit.)
 
-  // Strict -> cross downgrade.
+  // Cross-scheme URL and site-for-cookies with (schemelessly) same-site
+  // initiator.
+  // (The request cannot be a main frame navigation if the site-for-cookies is
+  // not schemefully same-site).
   for (const std::string& method : {"GET", "POST"}) {
     EXPECT_EQ(SameSiteCookieContext(ContextType::SAME_SITE_STRICT,
                                     ContextType::CROSS_SITE),
               cookie_util::ComputeSameSiteContextForRequest(
                   method, kSecureSiteUrl, kSiteForCookies, kSiteInitiator,
+                  false /* is_main_frame_navigation */,
                   false /* force_ignore_site_for_cookies */));
     EXPECT_EQ(SameSiteCookieContext(ContextType::SAME_SITE_STRICT,
                                     ContextType::CROSS_SITE),
               cookie_util::ComputeSameSiteContextForRequest(
                   method, kSiteUrl, kSecureSiteForCookies, kSiteInitiator,
+                  false /* is_main_frame_navigation */,
                   false /* force_ignore_site_for_cookies */));
   }
 
-  // Strict -> lax downgrade.
-  EXPECT_EQ(SameSiteCookieContext(ContextType::SAME_SITE_STRICT,
-                                  ContextType::SAME_SITE_LAX),
-            cookie_util::ComputeSameSiteContextForRequest(
-                "GET", kSecureSiteUrl, kSecureSiteForCookies, kSiteInitiator,
-                false /* force_ignore_site_for_cookies */));
-  EXPECT_EQ(SameSiteCookieContext(ContextType::SAME_SITE_STRICT,
-                                  ContextType::SAME_SITE_LAX),
-            cookie_util::ComputeSameSiteContextForRequest(
-                "GET", kSiteUrl, kSiteForCookies, kSecureSiteInitiator,
-                false /* force_ignore_site_for_cookies */));
-  EXPECT_EQ(SameSiteCookieContext(ContextType::SAME_SITE_STRICT,
-                                  ContextType::SAME_SITE_LAX_METHOD_UNSAFE),
-            cookie_util::ComputeSameSiteContextForRequest(
-                "POST", kSecureSiteUrl, kSecureSiteForCookies, kSiteInitiator,
-                false /* force_ignore_site_for_cookies */));
-  EXPECT_EQ(SameSiteCookieContext(ContextType::SAME_SITE_STRICT,
-                                  ContextType::SAME_SITE_LAX_METHOD_UNSAFE),
-            cookie_util::ComputeSameSiteContextForRequest(
-                "POST", kSiteUrl, kSiteForCookies, kSecureSiteInitiator,
-                false /* force_ignore_site_for_cookies */));
+  // Schemefully same-site URL and site-for-cookies with cross-scheme
+  // initiator.
+  for (bool is_main_frame_navigation : {false, true}) {
+    ContextType lax_if_main_frame =
+        is_main_frame_navigation || !IsBugfix1166211Enabled()
+            ? ContextType::SAME_SITE_LAX
+            : ContextType::CROSS_SITE;
+    ContextType lax_unsafe_if_main_frame =
+        is_main_frame_navigation || !IsBugfix1166211Enabled()
+            ? ContextType::SAME_SITE_LAX_METHOD_UNSAFE
+            : ContextType::CROSS_SITE;
 
-  // Lax -> cross downgrade.
-  EXPECT_EQ(SameSiteCookieContext(ContextType::SAME_SITE_LAX,
-                                  ContextType::CROSS_SITE),
+    EXPECT_EQ(
+        SameSiteCookieContext(ContextType::SAME_SITE_STRICT, lax_if_main_frame),
+        cookie_util::ComputeSameSiteContextForRequest(
+            "GET", kSecureSiteUrl, kSecureSiteForCookies, kSiteInitiator,
+            is_main_frame_navigation,
+            false /* force_ignore_site_for_cookies */));
+    EXPECT_EQ(
+        SameSiteCookieContext(ContextType::SAME_SITE_STRICT, lax_if_main_frame),
+        cookie_util::ComputeSameSiteContextForRequest(
+            "GET", kSiteUrl, kSiteForCookies, kSecureSiteInitiator,
+            is_main_frame_navigation,
+            false /* force_ignore_site_for_cookies */));
+    EXPECT_EQ(SameSiteCookieContext(ContextType::SAME_SITE_STRICT,
+                                    lax_unsafe_if_main_frame),
+              cookie_util::ComputeSameSiteContextForRequest(
+                  "POST", kSecureSiteUrl, kSecureSiteForCookies, kSiteInitiator,
+                  is_main_frame_navigation,
+                  false /* force_ignore_site_for_cookies */));
+    EXPECT_EQ(SameSiteCookieContext(ContextType::SAME_SITE_STRICT,
+                                    lax_unsafe_if_main_frame),
+              cookie_util::ComputeSameSiteContextForRequest(
+                  "POST", kSiteUrl, kSiteForCookies, kSecureSiteInitiator,
+                  is_main_frame_navigation,
+                  false /* force_ignore_site_for_cookies */));
+  }
+
+  // Cross-scheme URL and site-for-cookies with cross-site initiator.
+  // (The request cannot be a main frame navigation if the site-for-cookies is
+  // not schemefully same-site).
+  ContextType incorrectly_lax = IsBugfix1166211Enabled()
+                                    ? ContextType::CROSS_SITE
+                                    : ContextType::SAME_SITE_LAX;
+  ContextType incorrectly_lax_unsafe =
+      IsBugfix1166211Enabled() ? ContextType::CROSS_SITE
+                               : ContextType::SAME_SITE_LAX_METHOD_UNSAFE;
+  EXPECT_EQ(SameSiteCookieContext(incorrectly_lax, ContextType::CROSS_SITE),
             cookie_util::ComputeSameSiteContextForRequest(
                 "GET", kSiteUrl, kSecureSiteForCookies, kCrossSiteInitiator,
+                false /* is_main_frame_navigation */,
                 false /* force_ignore_site_for_cookies */));
-  EXPECT_EQ(SameSiteCookieContext(ContextType::SAME_SITE_LAX,
-                                  ContextType::CROSS_SITE),
+  EXPECT_EQ(SameSiteCookieContext(incorrectly_lax, ContextType::CROSS_SITE),
             cookie_util::ComputeSameSiteContextForRequest(
                 "GET", kSecureSiteUrl, kSiteForCookies, kCrossSiteInitiator,
+                false /* is_main_frame_navigation */,
                 false /* force_ignore_site_for_cookies */));
-  EXPECT_EQ(SameSiteCookieContext(ContextType::SAME_SITE_LAX_METHOD_UNSAFE,
-                                  ContextType::CROSS_SITE),
-            cookie_util::ComputeSameSiteContextForRequest(
-                "POST", kSiteUrl, kSecureSiteForCookies, kCrossSiteInitiator,
-                false /* force_ignore_site_for_cookies */));
-  EXPECT_EQ(SameSiteCookieContext(ContextType::SAME_SITE_LAX_METHOD_UNSAFE,
-                                  ContextType::CROSS_SITE),
-            cookie_util::ComputeSameSiteContextForRequest(
-                "POST", kSecureSiteUrl, kSiteForCookies, kCrossSiteInitiator,
-                false /* force_ignore_site_for_cookies */));
+  EXPECT_EQ(
+      SameSiteCookieContext(incorrectly_lax_unsafe, ContextType::CROSS_SITE),
+      cookie_util::ComputeSameSiteContextForRequest(
+          "POST", kSiteUrl, kSecureSiteForCookies, kCrossSiteInitiator,
+          false /* is_main_frame_navigation */,
+          false /* force_ignore_site_for_cookies */));
+  EXPECT_EQ(
+      SameSiteCookieContext(incorrectly_lax_unsafe, ContextType::CROSS_SITE),
+      cookie_util::ComputeSameSiteContextForRequest(
+          "POST", kSecureSiteUrl, kSiteForCookies, kCrossSiteInitiator,
+          false /* is_main_frame_navigation */,
+          false /* force_ignore_site_for_cookies */));
 }
 
 TEST_P(CookieUtilComputeSameSiteContextTest, ForRequest_WebSocketSchemes) {
   // wss/https and http/ws are considered the same for schemeful purposes.
+  // (ws/wss requests cannot be main frame navigations.)
+  ContextType incorrectly_lax = IsBugfix1166211Enabled()
+                                    ? ContextType::CROSS_SITE
+                                    : ContextType::SAME_SITE_LAX;
+
   EXPECT_THAT(cookie_util::ComputeSameSiteContextForRequest(
                   "GET", kWssUrl, kSecureSiteForCookies, kSecureSiteInitiator,
+                  false /* is_main_frame_navigation */,
                   false /* force_ignore_site_for_cookies */),
               ContextTypeIs(ContextType::SAME_SITE_STRICT));
   EXPECT_THAT(
       cookie_util::ComputeSameSiteContextForRequest(
           "GET", kWssUrl, kSecureSiteForCookies, kSecureCrossSiteInitiator,
+          false /* is_main_frame_navigation */,
           false /* force_ignore_site_for_cookies */),
-      ContextTypeIs(ContextType::SAME_SITE_LAX));
+      ContextTypeIs(incorrectly_lax));
 
   EXPECT_THAT(cookie_util::ComputeSameSiteContextForRequest(
                   "GET", kWsUrl, kSiteForCookies, kSiteInitiator,
+                  false /* is_main_frame_navigation */,
                   false /* force_ignore_site_for_cookies */),
               ContextTypeIs(ContextType::SAME_SITE_STRICT));
   EXPECT_THAT(cookie_util::ComputeSameSiteContextForRequest(
                   "GET", kWsUrl, kSiteForCookies, kCrossSiteInitiator,
+                  false /* is_main_frame_navigation */,
                   false /* force_ignore_site_for_cookies */),
-              ContextTypeIs(ContextType::SAME_SITE_LAX));
+              ContextTypeIs(incorrectly_lax));
 }
 
 TEST_P(CookieUtilComputeSameSiteContextTest, ForScriptSet) {
@@ -814,15 +934,39 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForResponse) {
     // (Cross-site cases covered above in UrlAndSiteForCookiesCrosSite test.)
     for (const SiteForCookies& site_for_cookies :
          GetSameSiteSitesForCookies()) {
-      // The initiator doesn't matter. If the Site for cookies and URL are
-      // same-site, then the context is Lax.
-      // TODO(crbug.com/1166211): This should take the initiator into account
-      // when the request is not a main frame navigation.
+      // For main frame navigations, setting all SameSite cookies is allowed
+      // regardless of initiator.
       for (const base::Optional<url::Origin>& initiator : GetAllInitiators()) {
+        if (!CanBeMainFrameNavigation(url, site_for_cookies))
+          break;
         EXPECT_THAT(cookie_util::ComputeSameSiteContextForResponse(
                         url, site_for_cookies, initiator,
+                        true /* is_main_frame_navigation */,
                         false /* force_ignore_site_for_cookies */),
                     ContextTypeIs(ContextType::SAME_SITE_LAX));
+      }
+
+      // For non-main-frame-navigation requests, the context should be lax iff
+      // the initiator is same-site, and cross-site otherwise. If the old
+      // (incorrect) behavior is in effect, it is always lax.
+      for (const base::Optional<url::Origin>& initiator :
+           GetSameSiteInitiators()) {
+        EXPECT_THAT(cookie_util::ComputeSameSiteContextForResponse(
+                        url, site_for_cookies, initiator,
+                        false /* is_main_frame_navigation */,
+                        false /* force_ignore_site_for_cookies */),
+                    ContextTypeIs(ContextType::SAME_SITE_LAX));
+      }
+      for (const base::Optional<url::Origin>& initiator :
+           GetCrossSiteInitiators()) {
+        ContextType incorrectly_lax = IsBugfix1166211Enabled()
+                                          ? ContextType::CROSS_SITE
+                                          : ContextType::SAME_SITE_LAX;
+        EXPECT_THAT(cookie_util::ComputeSameSiteContextForResponse(
+                        url, site_for_cookies, initiator,
+                        false /* is_main_frame_navigation */,
+                        false /* force_ignore_site_for_cookies */),
+                    ContextTypeIs(incorrectly_lax));
       }
     }
   }
@@ -831,33 +975,83 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForResponse) {
 TEST_P(CookieUtilComputeSameSiteContextTest, ForResponse_SchemefulDowngrade) {
   // Some test cases where the context is downgraded when computed schemefully.
   // (Should already be covered above, but just to be explicit.)
-  // TODO(crbug.com/1166211): This should take the initiator into account when
-  // the request is not a main frame navigation.
-  for (const base::Optional<url::Origin>& initiator : GetAllInitiators()) {
-    EXPECT_EQ(SameSiteCookieContext(ContextType::SAME_SITE_LAX,
-                                    ContextType::CROSS_SITE),
-              cookie_util::ComputeSameSiteContextForResponse(
-                  kSiteUrl, kSecureSiteForCookies, initiator,
-                  false /* force_ignore_site_for_cookies */));
-    EXPECT_EQ(SameSiteCookieContext(ContextType::SAME_SITE_LAX,
-                                    ContextType::CROSS_SITE),
-              cookie_util::ComputeSameSiteContextForResponse(
-                  kSecureSiteUrl, kSiteForCookies, initiator,
-                  false /* force_ignore_site_for_cookies */));
+
+  // URL and site-for-cookies are cross-scheme.
+  // (If the URL and site-for-cookies are not schemefully same-site, this cannot
+  // be a main frame navigation.)
+  // With same-site initiator:
+  EXPECT_EQ(SameSiteCookieContext(ContextType::SAME_SITE_LAX,
+                                  ContextType::CROSS_SITE),
+            cookie_util::ComputeSameSiteContextForResponse(
+                kSiteUrl, kSecureSiteForCookies, kSiteInitiator,
+                false /* is_main_frame_navigation */,
+                false /* force_ignore_site_for_cookies */));
+  EXPECT_EQ(SameSiteCookieContext(ContextType::SAME_SITE_LAX,
+                                  ContextType::CROSS_SITE),
+            cookie_util::ComputeSameSiteContextForResponse(
+                kSecureSiteUrl, kSiteForCookies, kSecureSiteInitiator,
+                false /* is_main_frame_navigation */,
+                false /* force_ignore_site_for_cookies */));
+  // With cross-site initiator:
+  ContextType incorrectly_lax = IsBugfix1166211Enabled()
+                                    ? ContextType::CROSS_SITE
+                                    : ContextType::SAME_SITE_LAX;
+  EXPECT_EQ(SameSiteCookieContext(incorrectly_lax, ContextType::CROSS_SITE),
+            cookie_util::ComputeSameSiteContextForResponse(
+                kSiteUrl, kSecureSiteForCookies, kCrossSiteInitiator,
+                false /* is_main_frame_navigation */,
+                false /* force_ignore_site_for_cookies */));
+  EXPECT_EQ(SameSiteCookieContext(incorrectly_lax, ContextType::CROSS_SITE),
+            cookie_util::ComputeSameSiteContextForResponse(
+                kSecureSiteUrl, kSiteForCookies, kCrossSiteInitiator,
+                false /* is_main_frame_navigation */,
+                false /* force_ignore_site_for_cookies */));
+
+  // Schemefully same-site URL and site-for-cookies with cross-scheme
+  // initiator.
+  for (bool is_main_frame_navigation : {false, true}) {
+    ContextType lax_if_main_frame =
+        is_main_frame_navigation || !IsBugfix1166211Enabled()
+            ? ContextType::SAME_SITE_LAX
+            : ContextType::CROSS_SITE;
+    EXPECT_EQ(
+        SameSiteCookieContext(ContextType::SAME_SITE_LAX, lax_if_main_frame),
+        cookie_util::ComputeSameSiteContextForResponse(
+            kSiteUrl, kSiteForCookies, kSecureSiteInitiator,
+            is_main_frame_navigation,
+            false /* force_ignore_site_for_cookies */));
+    EXPECT_EQ(
+        SameSiteCookieContext(ContextType::SAME_SITE_LAX, lax_if_main_frame),
+        cookie_util::ComputeSameSiteContextForResponse(
+            kSecureSiteUrl, kSecureSiteForCookies, kSiteInitiator,
+            is_main_frame_navigation,
+            false /* force_ignore_site_for_cookies */));
   }
 }
 
 TEST_P(CookieUtilComputeSameSiteContextTest, ForResponse_WebSocketSchemes) {
   // wss/https and http/ws are considered the same for schemeful purposes.
-  for (const base::Optional<url::Origin>& initiator : GetAllInitiators()) {
-    EXPECT_THAT(cookie_util::ComputeSameSiteContextForResponse(
-                    kWssUrl, kSecureSiteForCookies, initiator,
-                    false /* force_ignore_site_for_cookies */),
-                ContextTypeIs(ContextType::SAME_SITE_LAX));
+  // (ws/wss requests cannot be main frame navigations.)
+
+  // Same-site initiators.
+  for (const base::Optional<url::Origin>& initiator : GetSameSiteInitiators()) {
     EXPECT_THAT(cookie_util::ComputeSameSiteContextForResponse(
                     kWsUrl, kSiteForCookies, initiator,
+                    false /* is_main_frame_navigation */,
                     false /* force_ignore_site_for_cookies */),
                 ContextTypeIs(ContextType::SAME_SITE_LAX));
+  }
+  // Cross-site initiators.
+  for (const base::Optional<url::Origin>& initiator :
+       GetCrossSiteInitiators()) {
+    ContextType incorrectly_lax = IsBugfix1166211Enabled()
+                                      ? ContextType::CROSS_SITE
+                                      : ContextType::SAME_SITE_LAX;
+    EXPECT_THAT(cookie_util::ComputeSameSiteContextForResponse(
+                    kWsUrl, kSiteForCookies, initiator,
+                    false /* is_main_frame_navigation */,
+                    false /* force_ignore_site_for_cookies */),
+                ContextTypeIs(incorrectly_lax));
   }
 }
 
@@ -918,14 +1112,19 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForceIgnoreSiteForCookies) {
                           url, site_for_cookies,
                           true /* force_ignore_site_for_cookies */),
                       ContextTypeIs(ContextType::SAME_SITE_LAX));
-          EXPECT_THAT(cookie_util::ComputeSameSiteContextForRequest(
-                          method, url, site_for_cookies, initiator,
-                          true /* force_ignore_site_for_cookies */),
-                      ContextTypeIs(ContextType::SAME_SITE_STRICT));
-          EXPECT_THAT(cookie_util::ComputeSameSiteContextForResponse(
-                          url, site_for_cookies, initiator,
-                          true /* force_ignore_site_for_cookies */),
-                      ContextTypeIs(ContextType::SAME_SITE_LAX));
+          for (bool is_main_frame_navigation :
+               IsMainFrameNavigationPossibleValues(url, site_for_cookies)) {
+            EXPECT_THAT(cookie_util::ComputeSameSiteContextForRequest(
+                            method, url, site_for_cookies, initiator,
+                            is_main_frame_navigation,
+                            true /* force_ignore_site_for_cookies */),
+                        ContextTypeIs(ContextType::SAME_SITE_STRICT));
+            EXPECT_THAT(
+                cookie_util::ComputeSameSiteContextForResponse(
+                    url, site_for_cookies, initiator, is_main_frame_navigation,
+                    true /* force_ignore_site_for_cookies */),
+                ContextTypeIs(ContextType::SAME_SITE_LAX));
+          }
           EXPECT_THAT(cookie_util::ComputeSameSiteContextForSubresource(
                           url, site_for_cookies,
                           true /* force_ignore_site_for_cookies */),
@@ -938,7 +1137,8 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForceIgnoreSiteForCookies) {
 
 INSTANTIATE_TEST_SUITE_P(/* no label */,
                          CookieUtilComputeSameSiteContextTest,
-                         ::testing::Bool());
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool()));
 
 TEST(CookieUtilTest, AdaptCookieAccessResultToBool) {
   bool result_out = true;

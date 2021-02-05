@@ -140,25 +140,29 @@ NET_EXPORT void ParseRequestCookieLine(const std::string& header_value,
 NET_EXPORT std::string SerializeRequestCookieLine(
     const ParsedRequestCookies& parsed_cookies);
 
-// Determines which of the cookies for |url| can be accessed, with respect to
-// the SameSite attribute. This applies to looking up existing cookies; for
-// setting new ones, see ComputeSameSiteContextForResponse and
-// ComputeSameSiteContextForScriptSet.
+// Determines which of the cookies for `url` can be accessed, with respect to
+// the SameSite attribute. This applies to looking up existing cookies for HTTP
+// requests. For looking up cookies for non-HTTP APIs (i.e., JavaScript), see
+// ComputeSameSiteContextForScriptGet. For setting new cookies, see
+// ComputeSameSiteContextForResponse and ComputeSameSiteContextForScriptSet.
 //
-// |site_for_cookies| is the currently navigated to site that should be
+// `site_for_cookies` is the currently navigated to site that should be
 // considered "first-party" for cookies.
 //
-// |initiator| is the origin ultimately responsible for getting the request
-// issued; it may be different from |site_for_cookies| in that it may be some
-// other website that caused the navigation to |site_for_cookies| to occur.
+// `initiator` is the origin ultimately responsible for getting the request
+// issued. It may be different from `site_for_cookies`.
 //
-// base::nullopt for |initiator| denotes that the navigation was initiated by
+// base::nullopt for `initiator` denotes that the navigation was initiated by
 // the user directly interacting with the browser UI, e.g. entering a URL
 // or selecting a bookmark.
 //
-// If |force_ignore_site_for_cookies| is specified, all SameSite cookies will be
+// `is_main_frame_navigation` is whether the request is for a navigation that
+// targets the main frame or top-level browsing context. These requests may
+// sometimes send SameSite=Lax cookies but not SameSite=Strict cookies.
+//
+// If `force_ignore_site_for_cookies` is specified, all SameSite cookies will be
 // attached, i.e. this will return SAME_SITE_STRICT. This flag is set to true
-// when the |site_for_cookies| is a chrome:// URL embedding a secure origin,
+// when the `site_for_cookies` is a chrome:// URL embedding a secure origin,
 // among other scenarios.
 // This is *not* set when the *initiator* is chrome-extension://,
 // which is intentional, since it would be bad to let an extension arbitrarily
@@ -166,7 +170,7 @@ NET_EXPORT std::string SerializeRequestCookieLine(
 //
 // See also documentation for corresponding methods on net::URLRequest.
 //
-// |http_method| is used to enforce the requirement that, in a context that's
+// `http_method` is used to enforce the requirement that, in a context that's
 // lax same-site but not strict same-site, SameSite=lax cookies be only sent
 // when the method is "safe" in the RFC7231 section 4.2.1 sense.
 NET_EXPORT CookieOptions::SameSiteCookieContext
@@ -174,33 +178,38 @@ ComputeSameSiteContextForRequest(const std::string& http_method,
                                  const GURL& url,
                                  const SiteForCookies& site_for_cookies,
                                  const base::Optional<url::Origin>& initiator,
+                                 bool is_main_frame_navigation,
                                  bool force_ignore_site_for_cookies);
 
-// As above, but applying for scripts. |initiator| here should be the initiator
+// As above, but applying for scripts. `initiator` here should be the initiator
 // used when fetching the document.
-// If |force_ignore_site_for_cookies| is true, this returns SAME_SITE_STRICT.
+// If `force_ignore_site_for_cookies` is true, this returns SAME_SITE_STRICT.
 NET_EXPORT CookieOptions::SameSiteCookieContext
 ComputeSameSiteContextForScriptGet(const GURL& url,
                                    const SiteForCookies& site_for_cookies,
                                    const base::Optional<url::Origin>& initiator,
                                    bool force_ignore_site_for_cookies);
 
-// Determines which of the cookies for |url| can be set from a network response,
+// Determines which of the cookies for `url` can be set from a network response,
 // with respect to the SameSite attribute. This will only return CROSS_SITE or
 // SAME_SITE_LAX (cookie sets of SameSite=strict cookies are permitted in same
 // contexts that sets of SameSite=lax cookies are).
-// If |force_ignore_site_for_cookies| is true, this returns SAME_SITE_LAX.
+// `is_main_frame_navigation` is whether the request was for a navigation that
+// targets the main frame or top-level browsing context. Both SameSite=Lax and
+// SameSite=Strict cookies may be set by any main frame navigation.
+// If `force_ignore_site_for_cookies` is true, this returns SAME_SITE_LAX.
 NET_EXPORT CookieOptions::SameSiteCookieContext
 ComputeSameSiteContextForResponse(const GURL& url,
                                   const SiteForCookies& site_for_cookies,
                                   const base::Optional<url::Origin>& initiator,
+                                  bool is_main_frame_navigation,
                                   bool force_ignore_site_for_cookies);
 
-// Determines which of the cookies for |url| can be set from a script context,
+// Determines which of the cookies for `url` can be set from a script context,
 // with respect to the SameSite attribute. This will only return CROSS_SITE or
 // SAME_SITE_LAX (cookie sets of SameSite=strict cookies are permitted in same
 // contexts that sets of SameSite=lax cookies are).
-// If |force_ignore_site_for_cookies| is true, this returns SAME_SITE_LAX.
+// If `force_ignore_site_for_cookies` is true, this returns SAME_SITE_LAX.
 NET_EXPORT CookieOptions::SameSiteCookieContext
 ComputeSameSiteContextForScriptSet(const GURL& url,
                                    const SiteForCookies& site_for_cookies,
