@@ -4,7 +4,7 @@
 
 #include "build/build_config.h"
 #include "pdf/accessibility_structs.h"
-#include "pdf/pdf_engine.h"
+#include "pdf/document_metadata.h"
 #include "pdf/ppapi_migration/input_event_conversions.h"
 #include "ppapi/c/pp_input_event.h"
 #include "ppapi/c/private/ppb_pdf.h"
@@ -298,15 +298,12 @@ STATIC_ASSERT_ENUM(chrome_pdf::AccessibilityTextRenderMode::kClip,
 STATIC_ASSERT_ENUM(chrome_pdf::AccessibilityTextRenderMode::kMaxValue,
                    PP_TEXTRENDERINGMODE_LAST);
 
-STATIC_ASSERT_ENUM(chrome_pdf::PDFEngine::FormType::kNone, FORMTYPE_NONE);
-STATIC_ASSERT_ENUM(chrome_pdf::PDFEngine::FormType::kAcroForm,
-                   FORMTYPE_ACRO_FORM);
-STATIC_ASSERT_ENUM(chrome_pdf::PDFEngine::FormType::kXFAFull,
-                   FORMTYPE_XFA_FULL);
-STATIC_ASSERT_ENUM(chrome_pdf::PDFEngine::FormType::kXFAForeground,
+STATIC_ASSERT_ENUM(chrome_pdf::FormType::kNone, FORMTYPE_NONE);
+STATIC_ASSERT_ENUM(chrome_pdf::FormType::kAcroForm, FORMTYPE_ACRO_FORM);
+STATIC_ASSERT_ENUM(chrome_pdf::FormType::kXFAFull, FORMTYPE_XFA_FULL);
+STATIC_ASSERT_ENUM(chrome_pdf::FormType::kXFAForeground,
                    FORMTYPE_XFA_FOREGROUND);
-STATIC_ASSERT_ENUM(chrome_pdf::PDFEngine::FormType::kMaxValue,
-                   FORMTYPE_COUNT - 1);
+STATIC_ASSERT_ENUM(chrome_pdf::FormType::kMaxValue, FORMTYPE_COUNT - 1);
 
 STATIC_ASSERT_ENUM(PP_PRIVATEBUTTON_PUSHBUTTON, FPDF_FORMFIELD_PUSHBUTTON);
 STATIC_ASSERT_ENUM(PP_PRIVATEBUTTON_CHECKBOX, FPDF_FORMFIELD_CHECKBOX);

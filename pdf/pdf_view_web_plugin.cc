@@ -269,8 +269,7 @@ PdfViewWebPlugin::SearchString(const base::char16* string,
   return {};
 }
 
-void PdfViewWebPlugin::DocumentLoadComplete(
-    const PDFEngine::DocumentFeatures& document_features) {
+void PdfViewWebPlugin::DocumentLoadComplete() {
   NOTIMPLEMENTED();
 }
 

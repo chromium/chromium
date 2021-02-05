@@ -1484,14 +1484,14 @@ OutOfProcessInstance::SearchString(const base::char16* string,
   return results;
 }
 
-void OutOfProcessInstance::DocumentLoadComplete(
-    const PDFEngine::DocumentFeatures& document_features) {
+void OutOfProcessInstance::DocumentLoadComplete() {
   // Clear focus state for OSK.
   FormTextFieldFocusChange(false);
 
   DCHECK_EQ(LOAD_STATE_LOADING, document_load_state_);
   document_load_state_ = LOAD_STATE_COMPLETE;
   UserMetricsRecordAction("PDF.LoadSuccess");
+  RecordDocumentMetrics();
 
   // Note: If we are in print preview mode the scroll location is retained
   // across document loads so we don't want to scroll again and override it.
@@ -1533,16 +1533,6 @@ void OutOfProcessInstance::DocumentLoadComplete(
   }
 
   pp::PDF::SetContentRestriction(this, content_restrictions);
-  HistogramCustomCounts("PDF.PageCount", document_features.page_count, 1,
-                        1000000, 50);
-  HistogramEnumeration("PDF.HasAttachment", document_features.has_attachments
-                                                ? PdfHasAttachment::kYes
-                                                : PdfHasAttachment::kNo);
-  HistogramEnumeration("PDF.IsTagged", document_features.is_tagged
-                                           ? PdfIsTagged::kYes
-                                           : PdfIsTagged::kNo);
-  HistogramEnumeration("PDF.FormType", document_features.form_type);
-  HistogramEnumeration("PDF.Version", engine()->GetDocumentMetadata().version);
 }
 
 void OutOfProcessInstance::RotateClockwise() {
@@ -2275,6 +2265,20 @@ void OutOfProcessInstance::SendThumbnail(const std::string& message_id,
   reply.Set(pp::Var(kJSGetThumbnailHeight), bitmap.height());
 
   PostMessage(reply);
+}
+
+void OutOfProcessInstance::RecordDocumentMetrics() {
+  const DocumentMetadata& document_metadata = engine()->GetDocumentMetadata();
+  HistogramEnumeration("PDF.Version", document_metadata.version);
+  HistogramCustomCounts("PDF.PageCount", document_metadata.page_count, 1,
+                        1000000, 50);
+  HistogramEnumeration("PDF.HasAttachment", document_metadata.has_attachments
+                                                ? PdfHasAttachment::kYes
+                                                : PdfHasAttachment::kNo);
+  HistogramEnumeration("PDF.IsTagged", document_metadata.tagged
+                                           ? PdfIsTagged::kYes
+                                           : PdfIsTagged::kNo);
+  HistogramEnumeration("PDF.FormType", document_metadata.form_type);
 }
 
 void OutOfProcessInstance::UserMetricsRecordAction(const std::string& action) {

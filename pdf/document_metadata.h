@@ -28,22 +28,46 @@ enum class PdfVersion {
   kMaxValue = k2_0
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class FormType {
+  kNone = 0,
+  kAcroForm = 1,
+  kXFAFull = 2,
+  kXFAForeground = 3,
+  kMaxValue = kXFAForeground
+};
+
 // Document properties, including those specified in the document information
 // dictionary (see section 14.3.3 "Document Information Dictionary" of the ISO
-// 32000-1 standard), as well as other properties about the file.
-// TODO(crbug.com/93619): Finish adding fields like `size_bytes` and
-// `is_encrypted`.
+// 32000-1 standard).
+// TODO(crbug.com/93619): Add `size_bytes`.
 struct DocumentMetadata {
   DocumentMetadata();
   DocumentMetadata(const DocumentMetadata&) = delete;
   DocumentMetadata& operator=(const DocumentMetadata&) = delete;
   ~DocumentMetadata();
 
-  // Version of the document
+  // Version of the document.
   PdfVersion version = PdfVersion::kUnknown;
 
-  // Whether the document is optimized by linearization.
+  // Number of pages in the document.
+  size_t page_count = 0;
+
+  // Whether the document is optimized by linearization (see annex F "Linearized
+  // PDF" of the ISO 32000-1 standard).
   bool linearized = false;
+
+  // Whether the document contains file attachments (see section 12.5.6.15 "File
+  // Attachment Annotations" of the ISO 32000-1 standard).
+  bool has_attachments = false;
+
+  // Whether the document is tagged (see section 14.8 "Tagged PDF" of the ISO
+  // 32000-1 standard).
+  bool tagged = false;
+
+  // The type of form contained in the document.
+  FormType form_type = FormType::kNone;
 
   // The document's title.
   std::string title;
@@ -67,7 +91,7 @@ struct DocumentMetadata {
   // The date and time the document was created.
   base::Time creation_date;
 
-  // The date and time the document was most recently modified
+  // The date and time the document was most recently modified.
   base::Time mod_date;
 };
 

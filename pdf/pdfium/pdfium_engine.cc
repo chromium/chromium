@@ -884,15 +884,7 @@ void PDFiumEngine::FinishLoadingDocument() {
     FORM_DoPageAAction(new_page, form(), FPDFPAGE_AACTION_OPEN);
   }
 
-  if (doc()) {
-    DocumentFeatures document_features;
-    document_features.page_count = pages_.size();
-    document_features.has_attachments = !doc_attachment_info_list_.empty();
-    document_features.is_tagged = FPDFCatalog_IsTagged(doc());
-    document_features.form_type =
-        static_cast<FormType>(FPDF_GetFormType(doc()));
-    client_->DocumentLoadComplete(document_features);
-  }
+  client_->DocumentLoadComplete();
 }
 
 void PDFiumEngine::UnsupportedFeature(const std::string& feature) {
@@ -4055,7 +4047,11 @@ void PDFiumEngine::LoadDocumentMetadata() {
   DCHECK(document_loaded_);
 
   doc_metadata_.version = GetDocumentVersion();
+  doc_metadata_.page_count = pages_.size();
   doc_metadata_.linearized = IsLinearized();
+  doc_metadata_.has_attachments = !doc_attachment_info_list_.empty();
+  doc_metadata_.tagged = FPDFCatalog_IsTagged(doc());
+  doc_metadata_.form_type = static_cast<FormType>(FPDF_GetFormType(doc()));
 
   // Document information dictionary entries
   doc_metadata_.title = GetTrimmedMetadataByField("Title");
