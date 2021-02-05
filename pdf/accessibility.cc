@@ -136,16 +136,17 @@ std::vector<AccessibilityHighlightInfo> GetAccessibilityHighlightInfo(
   return highlight_infos;
 }
 
-void GetAccessibilityTextFieldInfo(
+std::vector<AccessibilityTextFieldInfo> GetAccessibilityTextFieldInfo(
     PDFEngine* engine,
     int32_t page_index,
-    uint32_t text_run_count,
-    std::vector<pp::PDF::PrivateAccessibilityTextFieldInfo>* text_fields) {
-  std::vector<PDFEngine::AccessibilityTextFieldInfo> engine_text_field_info =
+    uint32_t text_run_count) {
+  std::vector<PDFEngine::AccessibilityTextFieldInfo> engine_text_field_infos =
       engine->GetTextFieldInfo(page_index);
-  for (size_t i = 0; i < engine_text_field_info.size(); ++i) {
-    auto& cur_text_field_info = engine_text_field_info[i];
-    pp::PDF::PrivateAccessibilityTextFieldInfo text_field_info;
+  std::vector<AccessibilityTextFieldInfo> text_field_infos;
+  text_field_infos.reserve(engine_text_field_infos.size());
+  for (size_t i = 0; i < engine_text_field_infos.size(); ++i) {
+    auto& cur_text_field_info = engine_text_field_infos[i];
+    AccessibilityTextFieldInfo text_field_info;
     text_field_info.name = std::move(cur_text_field_info.name);
     text_field_info.value = std::move(cur_text_field_info.value);
     text_field_info.index_in_page = i;
@@ -155,9 +156,26 @@ void GetAccessibilityTextFieldInfo(
     // TODO(crbug.com/1030242): Update text run index to nearest text run to
     // text field bounds.
     text_field_info.text_run_index = text_run_count;
-    text_field_info.bounds = PPFloatRectFromRectF(cur_text_field_info.bounds);
-    text_fields->push_back(std::move(text_field_info));
+    text_field_info.bounds = cur_text_field_info.bounds;
+    text_field_infos.push_back(std::move(text_field_info));
   }
+  return text_field_infos;
+}
+
+std::vector<pp::PDF::PrivateAccessibilityTextFieldInfo>
+ToPrivateAccessibilityTextFieldInfo(
+    const std::vector<AccessibilityTextFieldInfo>& text_field_infos) {
+  std::vector<pp::PDF::PrivateAccessibilityTextFieldInfo> pp_text_field_infos;
+  pp_text_field_infos.reserve(text_field_infos.size());
+  for (const auto& text_field_info : text_field_infos) {
+    pp_text_field_infos.push_back(
+        {text_field_info.name, text_field_info.value,
+         text_field_info.is_read_only, text_field_info.is_required,
+         text_field_info.is_password, text_field_info.index_in_page,
+         text_field_info.text_run_index,
+         PPFloatRectFromRectF(text_field_info.bounds)});
+  }
+  return pp_text_field_infos;
 }
 
 void GetAccessibilityFormFieldInfo(
@@ -165,8 +183,8 @@ void GetAccessibilityFormFieldInfo(
     int32_t page_index,
     uint32_t text_run_count,
     pp::PDF::PrivateAccessibilityFormFieldInfo* form_fields) {
-  GetAccessibilityTextFieldInfo(engine, page_index, text_run_count,
-                                &form_fields->text_fields);
+  form_fields->text_fields = ToPrivateAccessibilityTextFieldInfo(
+      GetAccessibilityTextFieldInfo(engine, page_index, text_run_count));
 }
 
 std::vector<pp::PDF::PrivateAccessibilityLinkInfo>

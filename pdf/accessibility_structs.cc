@@ -93,4 +93,28 @@ AccessibilityHighlightInfo::AccessibilityHighlightInfo(
 
 AccessibilityHighlightInfo::~AccessibilityHighlightInfo() = default;
 
+AccessibilityTextFieldInfo::AccessibilityTextFieldInfo() = default;
+
+AccessibilityTextFieldInfo::AccessibilityTextFieldInfo(const std::string& name,
+                                                       const std::string& value,
+                                                       bool is_read_only,
+                                                       bool is_required,
+                                                       bool is_password,
+                                                       uint32_t index_in_page,
+                                                       uint32_t text_run_index,
+                                                       const gfx::RectF& bounds)
+    : name(name),
+      value(value),
+      is_read_only(is_read_only),
+      is_required(is_required),
+      is_password(is_password),
+      index_in_page(index_in_page),
+      text_run_index(text_run_index),
+      bounds(bounds) {}
+
+AccessibilityTextFieldInfo::AccessibilityTextFieldInfo(
+    const AccessibilityTextFieldInfo& other) = default;
+
+AccessibilityTextFieldInfo::~AccessibilityTextFieldInfo() = default;
+
 }  // namespace chrome_pdf

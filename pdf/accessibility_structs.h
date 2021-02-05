@@ -161,6 +161,39 @@ struct AccessibilityHighlightInfo {
   AccessibilityTextRunRangeInfo text_range;
 };
 
+struct AccessibilityTextFieldInfo {
+  AccessibilityTextFieldInfo();
+  AccessibilityTextFieldInfo(const std::string& name,
+                             const std::string& value,
+                             bool is_read_only,
+                             bool is_required,
+                             bool is_password,
+                             uint32_t index_in_page,
+                             uint32_t text_run_index,
+                             const gfx::RectF& bounds);
+  AccessibilityTextFieldInfo(const AccessibilityTextFieldInfo& other);
+  ~AccessibilityTextFieldInfo();
+
+  // Represents the name property of text field, if present.
+  std::string name;
+  // Represents the value property of text field, if present.
+  std::string value;
+  // Represents if the text field is non-editable.
+  bool is_read_only = false;
+  // Represents if the field should have value at the time it is exported by a
+  // submit form action.
+  bool is_required = false;
+  // Represents if the text field is a password text field type.
+  bool is_password = false;
+  // Index of this text field in the collection of text fields in the page.
+  uint32_t index_in_page = 0;
+  // We anchor the text field to a text run index, this denotes the text run
+  // before which the text field should be inserted in the accessibility tree.
+  uint32_t text_run_index = 0;
+  // Bounding box of the text field.
+  gfx::RectF bounds;
+};
+
 }  // namespace chrome_pdf
 
 #endif  // PDF_ACCESSIBILITY_STRUCTS_H_

@@ -528,17 +528,7 @@ TEST_F(AccessibilityTest, GetAccessibilityHighlightInfo) {
 }
 
 TEST_F(AccessibilityTest, GetAccessibilityTextFieldInfo) {
-  // Clone of pp::PDF::PrivateAccessibilityTextFieldInfo.
-  static const struct {
-    std::string name;
-    std::string value;
-    bool is_read_only;
-    bool is_required;
-    bool is_password;
-    uint32_t index_in_page;
-    uint32_t text_run_index;
-    gfx::RectF bounds;
-  } kExpectedTextFieldInfo[] = {
+  static const AccessibilityTextFieldInfo kExpectedTextFieldInfo[] = {
       {"Text Box", "Text", false, false, false, 0, 5, {138, 230, 135, 41}},
       {"ReadOnly", "Elephant", true, false, false, 1, 5, {138, 163, 135, 41}},
       {"Required",
