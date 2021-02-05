@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 
+#include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -363,6 +364,13 @@ class BookmarkBarView : public views::AccessiblePaneView,
   // or size_t{-1} if |button| is not a bookmark button from this bar.
   size_t GetIndexForButton(views::View* button);
 
+  // Returns a callback that fetches the content::PageNavigator for
+  // opening bookmarks. This callback is passed to menus, eventually
+  // used by chrome::OpenAllIfAllowed(). A callback is used since
+  // opening many bookmarks is asynchronous and |page_navigator_| may
+  // change in the meantime.
+  base::RepeatingCallback<content::PageNavigator*()> GetPageNavigatorGetter();
+
   // Needed to react to kShowAppsShortcutInBookmarkBar changes.
   PrefChangeRegistrar profile_pref_registrar_;
 
@@ -432,6 +440,10 @@ class BookmarkBarView : public views::AccessiblePaneView,
 
   // Factory used to delay showing of the drop menu.
   base::WeakPtrFactory<BookmarkBarView> show_folder_method_factory_{this};
+
+  // Returns WeakPtrs used in GetPageNavigatorGetter(). Used to ensure
+  // safety if BookmarkBarView is deleted after getting the callback.
+  base::WeakPtrFactory<BookmarkBarView> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_BOOKMARKS_BOOKMARK_BAR_VIEW_H_

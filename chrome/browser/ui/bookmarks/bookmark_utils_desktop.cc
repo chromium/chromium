@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/simple_message_box.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -63,21 +64,6 @@ std::vector<GURL> GetURLsToOpen(
   return urls;
 }
 
-#if !defined(OS_ANDROID)
-bool ShouldOpenAll(gfx::NativeWindow parent,
-                   const std::vector<const BookmarkNode*>& nodes) {
-  size_t child_count = GetURLsToOpen(nodes).size();
-  if (child_count < kNumBookmarkUrlsBeforePrompting)
-    return true;
-
-  return ShowQuestionMessageBox(
-             parent, l10n_util::GetStringUTF16(IDS_PRODUCT_NAME),
-             l10n_util::GetStringFUTF16(IDS_BOOKMARK_BAR_SHOULD_OPEN_ALL,
-                                        base::NumberToString16(child_count))) ==
-         MESSAGE_BOX_RESULT_YES;
-}
-#endif
-
 // Returns the total number of descendants nodes.
 int ChildURLCountTotal(const BookmarkNode* node) {
   const auto count_children = [](int total, const auto& child) {
@@ -102,34 +88,17 @@ void GetURLsForOpenTabs(Browser* browser,
 }
 #endif
 
-}  // namespace
-
-#if !defined(OS_ANDROID)
-void OpenAll(gfx::NativeWindow parent,
-             content::PageNavigator* navigator,
-             const std::vector<const BookmarkNode*>& nodes,
-             WindowOpenDisposition initial_disposition,
-             content::BrowserContext* browser_context) {
-  if (!ShouldOpenAll(parent, nodes))
-    return;
-
-  // Opens all |nodes| of type URL and any children of |nodes| that are of type
-  // URL. |navigator| is the PageNavigator used to open URLs. After the first
-  // url is opened |navigator| is set to the PageNavigator of the last active
-  // tab. This is done to handle a window disposition of new window, in which
-  // case we want subsequent tabs to open in that window.
-
-  std::vector<GURL> urls = GetURLsToOpen(
-      nodes, browser_context,
-      initial_disposition == WindowOpenDisposition::OFF_THE_RECORD);
-
+void OpenAllHelper(content::PageNavigator* navigator,
+                   std::vector<GURL> bookmark_urls,
+                   WindowOpenDisposition initial_disposition,
+                   content::BrowserContext* browser_context) {
   WindowOpenDisposition disposition = initial_disposition;
-  for (std::vector<GURL>::const_iterator url_it = urls.begin();
-       url_it != urls.end(); ++url_it) {
+  for (std::vector<GURL>::const_iterator url_it = bookmark_urls.begin();
+       url_it != bookmark_urls.end(); ++url_it) {
     content::WebContents* opened_tab = navigator->OpenURL(
         content::OpenURLParams(*url_it, content::Referrer(), disposition,
                                ui::PAGE_TRANSITION_AUTO_BOOKMARK, false));
-    if (url_it == urls.begin()) {
+    if (url_it == bookmark_urls.begin()) {
       // We opened the first URL which may have opened a new window or clobbered
       // the current page, reset the navigator just to be sure. |opened_tab| may
       // be null in tests.
@@ -140,15 +109,72 @@ void OpenAll(gfx::NativeWindow parent,
   }
 }
 
-void OpenAll(gfx::NativeWindow parent,
-             content::PageNavigator* navigator,
-             const BookmarkNode* node,
-             WindowOpenDisposition initial_disposition,
-             content::BrowserContext* browser_context) {
-  std::vector<const BookmarkNode*> nodes;
-  nodes.push_back(node);
-  OpenAll(parent, navigator, std::vector<const bookmarks::BookmarkNode*>{node},
-          initial_disposition, browser_context);
+}  // namespace
+
+#if !defined(OS_ANDROID)
+void OpenAllIfAllowed(
+    Browser* browser,
+    base::OnceCallback<content::PageNavigator*()> get_navigator,
+    const std::vector<const bookmarks::BookmarkNode*>& nodes,
+    WindowOpenDisposition initial_disposition) {
+  std::vector<GURL> urls = GetURLsToOpen(
+      nodes, browser->profile(),
+      initial_disposition == WindowOpenDisposition::OFF_THE_RECORD);
+
+  auto do_open = [](Browser* browser,
+                    base::OnceCallback<content::PageNavigator*()> get_navigator,
+                    std::vector<GURL> urls,
+                    WindowOpenDisposition initial_disposition,
+                    chrome::MessageBoxResult result) {
+    if (result != chrome::MESSAGE_BOX_RESULT_YES)
+      return;
+    if (!get_navigator)
+      return;
+    content::PageNavigator* navigator = std::move(get_navigator).Run();
+    if (!navigator)
+      return;
+
+    return OpenAllHelper(navigator, std::move(urls), initial_disposition,
+                         browser->profile());
+  };
+
+  // Skip the prompt if there are few bookmarks.
+  size_t child_count = urls.size();
+  if (child_count < kNumBookmarkUrlsBeforePrompting) {
+    do_open(browser, std::move(get_navigator), std::move(urls),
+            initial_disposition, chrome::MESSAGE_BOX_RESULT_YES);
+    return;
+  }
+
+  // The callback passed contains the pointer |browser|. This is safe
+  // since if |browser| is closed, the message box will be destroyed
+  // before the user can answer "Yes".
+
+  ShowQuestionMessageBox(
+      browser->window()->GetNativeWindow(),
+      l10n_util::GetStringUTF16(IDS_PRODUCT_NAME),
+      l10n_util::GetStringFUTF16(IDS_BOOKMARK_BAR_SHOULD_OPEN_ALL,
+                                 base::NumberToString16(child_count)),
+      base::BindOnce(do_open, browser, std::move(get_navigator),
+                     std::move(urls), initial_disposition));
+}
+
+void OpenAllNow(content::PageNavigator* navigator,
+                const std::vector<const BookmarkNode*>& nodes,
+                WindowOpenDisposition initial_disposition,
+                content::BrowserContext* browser_context) {
+  // Opens all |nodes| of type URL and any children of |nodes| that are of type
+  // URL. |navigator| is the PageNavigator used to open URLs. After the first
+  // url is opened |navigator| is set to the PageNavigator of the last active
+  // tab. This is done to handle a window disposition of new window, in which
+  // case we want subsequent tabs to open in that window.
+
+  std::vector<GURL> urls = GetURLsToOpen(
+      nodes, browser_context,
+      initial_disposition == WindowOpenDisposition::OFF_THE_RECORD);
+
+  OpenAllHelper(navigator, std::move(urls), initial_disposition,
+                browser_context);
 }
 
 int OpenCount(gfx::NativeWindow parent,
@@ -170,12 +196,11 @@ int OpenCount(gfx::NativeWindow parent,
 bool ConfirmDeleteBookmarkNode(const BookmarkNode* node,
                                gfx::NativeWindow window) {
   DCHECK(node && node->is_folder() && !node->children().empty());
-  return ShowQuestionMessageBox(
+  return ShowQuestionMessageBoxSync(
              window, l10n_util::GetStringUTF16(IDS_PRODUCT_NAME),
              l10n_util::GetPluralStringFUTF16(
                  IDS_BOOKMARK_EDITOR_CONFIRM_DELETE,
-                 ChildURLCountTotal(node))) ==
-         MESSAGE_BOX_RESULT_YES;
+                 ChildURLCountTotal(node))) == MESSAGE_BOX_RESULT_YES;
 }
 
 void ShowBookmarkAllTabsDialog(Browser* browser) {
