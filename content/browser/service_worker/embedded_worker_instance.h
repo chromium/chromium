@@ -274,6 +274,10 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
                                ServiceWorkerNewScriptLoaderTest,
                            AccessedNetwork);
 
+  // Timeout for the worker to stop.
+  static constexpr base::TimeDelta kThrottledStopWorkerThreshold =
+      base::TimeDelta::FromSeconds(1);
+
   void OnProcessAllocated(std::unique_ptr<WorkerProcessHandle> handle,
                           ServiceWorkerMetrics::StartSituation start_situation);
   void OnRegisteredToDevToolsManager(
@@ -326,6 +330,11 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle> script_bundle);
 
   void BindCacheStorageInternal();
+
+  // Utility method to restrict calling |client_|'s StopWorker() method at
+  // most once per second.
+  void ThrottledStopWorker();
+  void StopWorkerInternal();
 
   base::WeakPtr<ServiceWorkerContextCore> context_;
   ServiceWorkerVersion* owner_version_;
@@ -400,6 +409,11 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
   // This token is set every time the worker starts, and is plumbed through to
   // the corresponding ServiceWorkerGlobalScope in the renderer process.
   base::Optional<blink::ServiceWorkerToken> token_;
+
+  // Used to throttle the rate at which we call |client_|'s StopWorker()
+  // method.
+  base::Time last_stop_time_;
+  base::OneShotTimer stop_timer_;
 
   base::WeakPtrFactory<EmbeddedWorkerInstance> weak_factory_{this};
 
