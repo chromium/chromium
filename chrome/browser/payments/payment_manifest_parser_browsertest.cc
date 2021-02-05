@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -91,22 +92,22 @@ class PaymentManifestParserTest : public InProcessBrowserTest {
  private:
   // Called after the utility process has parsed the web app manifest.
   void OnWebAppManifestParsed(
-      const base::Closure& resume_test,
+      base::OnceClosure resume_test,
       const std::vector<WebAppManifestSection>& web_app_manifest) {
     web_app_manifest_ = std::move(web_app_manifest);
     DCHECK(!resume_test.is_null());
-    resume_test.Run();
+    std::move(resume_test).Run();
   }
 
   // Called after the utility process has parsed the payment method manifest.
   void OnPaymentMethodManifestParsed(
-      const base::Closure& resume_test,
+      base::OnceClosure resume_test,
       const std::vector<GURL>& web_app_manifest_urls,
       const std::vector<url::Origin>& supported_origins) {
     web_app_manifest_urls_ = web_app_manifest_urls;
     supported_origins_ = supported_origins;
     DCHECK(!resume_test.is_null());
-    resume_test.Run();
+    std::move(resume_test).Run();
   }
 
   PaymentManifestParser parser_;
