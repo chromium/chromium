@@ -1013,6 +1013,25 @@ TEST_F(TextFragmentSelectorGeneratorTest, SelectionEndsWithImageDiv) {
   VerifySelector(start, end, "First%20paragraph,Second%20paragraph");
 }
 
+// Checks the case when selected range contains a range with same start and end.
+// The problematic case should have both range end and suffix.
+TEST_F(TextFragmentSelectorGeneratorTest, OverlappingRange) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <div id='first'>First <div>block text</div>text suffix</div>
+  )HTML");
+  GetDocument().UpdateStyleAndLayoutTree();
+  Node* start_node = GetDocument().getElementById("first")->firstChild();
+  Node* end_node = GetDocument().getElementById("first")->lastChild();
+  const auto& start = Position(start_node, 0);
+  const auto& end = Position(end_node, 4);
+  ASSERT_EQ("First\nblock text\ntext", PlainText(EphemeralRange(start, end)));
+
+  VerifySelector(start, end, "First,text,-suffix");
+}
+
 // Basic test case for |GetNextTextBlock|.
 TEST_F(TextFragmentSelectorGeneratorTest, GetPreviousTextBlock) {
   SimRequest request("https://example.com/test.html", "text/html");

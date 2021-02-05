@@ -185,46 +185,60 @@ EphemeralRangeInFlatTree FindMatchInRangeWithContext(
       search_start = FirstWordBoundaryAfter(potential_match.StartPosition());
     }
 
-    // If we've gotten here, we've found a |prefix| (if one was specified)
-    // that's followed by the |start_text|. We'll now try to expand that into a
-    // range match if |end_text| is specified.
-    if (!end_text.IsEmpty()) {
-      EphemeralRangeInFlatTree text_end_range(potential_match.EndPosition(),
-                                              search_end);
-      const bool end_at_word_boundary = suffix.IsEmpty();
+    PositionInFlatTree range_end_search_start = potential_match.EndPosition();
+    while (range_end_search_start != search_end) {
+      // If we've gotten here, we've found a |prefix| (if one was specified)
+      // that's followed by the |start_text|. We'll now try to expand that into
+      // a range match if |end_text| is specified.
+      if (!end_text.IsEmpty()) {
+        EphemeralRangeInFlatTree text_end_range(range_end_search_start,
+                                                search_end);
+        const bool end_at_word_boundary = suffix.IsEmpty();
 
-      EphemeralRangeInFlatTree text_end_match =
-          FindMatchInRange(end_text, text_end_range.StartPosition(),
-                           text_end_range.EndPosition(),
-                           /*word_start_bounded=*/true, end_at_word_boundary);
+        EphemeralRangeInFlatTree text_end_match =
+            FindMatchInRange(end_text, text_end_range.StartPosition(),
+                             text_end_range.EndPosition(),
+                             /*word_start_bounded=*/true, end_at_word_boundary);
 
-      if (text_end_match.IsNull())
+        if (text_end_match.IsNull())
+          return EphemeralRangeInFlatTree();
+
+        potential_match = EphemeralRangeInFlatTree(
+            potential_match.StartPosition(), text_end_match.EndPosition());
+      }
+
+      DCHECK(!potential_match.IsNull());
+      if (suffix.IsEmpty())
+        return potential_match;
+
+      // Now we just have to ensure the match is followed by the |suffix|.
+      EphemeralRangeInFlatTree suffix_range(
+          NextTextPosition(potential_match.EndPosition(), search_end),
+          search_end);
+
+      EphemeralRangeInFlatTree suffix_match = FindMatchInRange(
+          suffix, suffix_range.StartPosition(), suffix_range.EndPosition(),
+          /*word_start_bounded=*/false, /*word_end_bounded=*/true);
+
+      // If no suffix appears in what follows the match, there's no way we can
+      // possibly satisfy the constraints so bail.
+      if (suffix_match.IsNull())
         return EphemeralRangeInFlatTree();
 
-      potential_match = EphemeralRangeInFlatTree(
-          potential_match.StartPosition(), text_end_match.EndPosition());
+      if (suffix_match.StartPosition() == suffix_range.StartPosition())
+        return potential_match;
+
+      // If this is an exact match(e.g. |end_text| is not specified), and we
+      // didn't match on suffix, continue searching for a new potential_match
+      // from it's start.
+      if (end_text.IsEmpty())
+        break;
+
+      // If this is a range match(e.g. |end_text| is specified), it is possible
+      // that we found the correct range start, but not the correct range end.
+      // Continue searching for it, without restarting the range start search.
+      range_end_search_start = potential_match.EndPosition();
     }
-
-    DCHECK(!potential_match.IsNull());
-    if (suffix.IsEmpty())
-      return potential_match;
-
-    // Now we just have to ensure the match is followed by the |suffix|.
-    EphemeralRangeInFlatTree suffix_range(
-        NextTextPosition(potential_match.EndPosition(), search_end),
-        search_end);
-
-    EphemeralRangeInFlatTree suffix_match = FindMatchInRange(
-        suffix, suffix_range.StartPosition(), suffix_range.EndPosition(),
-        /*word_start_bounded=*/false, /*word_end_bounded=*/true);
-
-    // If no suffix appears in what follows the match, there's no way we can
-    // possibly satisfy the constraints so bail.
-    if (suffix_match.IsNull())
-      return EphemeralRangeInFlatTree();
-
-    if (suffix_match.StartPosition() == suffix_range.StartPosition())
-      return potential_match;
   }
 
   return EphemeralRangeInFlatTree();
