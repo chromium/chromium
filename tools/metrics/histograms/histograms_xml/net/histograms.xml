@@ -3981,6 +3981,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.QuicSession.UnexpectedNotGoingAway"
     enum="QuicSessionLocations" expires_after="2021-05-11">
+  <obsolete>
+    This histogram was removed in Feb 2021, because the corresponded crash has
+    been fixed.
+  </obsolete>
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3991,6 +3995,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.QuicSession.UnexpectedObservers"
     enum="QuicSessionLocations" expires_after="2021-05-11">
+  <obsolete>
+    This histogram was removed in Feb 2021, because the corresponded crash has
+    been fixed.
+  </obsolete>
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4001,6 +4009,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.QuicSession.UnexpectedOpenStreams"
     enum="QuicSessionLocations" expires_after="2021-05-11">
+  <obsolete>
+    This histogram was removed in Feb 2021, because the corresponded crash has
+    been fixed.
+  </obsolete>
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
