@@ -62,10 +62,10 @@ bool NotifyWatcherMac::Watch(const char* key, const CallbackType& callback) {
 
 void NotifyWatcherMac::Cancel() {
   if (notify_fd_ >= 0) {
+    watcher_.reset();
     notify_cancel(notify_token_);  // Also closes |notify_fd_|.
     notify_fd_ = -1;
     callback_.Reset();
-    watcher_.reset();
   }
 }
 
