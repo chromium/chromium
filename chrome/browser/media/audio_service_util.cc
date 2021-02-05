@@ -21,7 +21,10 @@
 
 bool IsAudioServiceSandboxEnabled() {
   base::Optional<bool> force_enable_audio_sandbox;
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+// TODO(crbug.com/1052397): Remove !IS_CHROMEOS_LACROS once lacros starts being
+// built with OS_CHROMEOS instead of OS_LINUX.
+#if defined(OS_WIN) || defined(OS_MAC) || \
+    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
   const policy::PolicyMap& policies =
       g_browser_process->browser_policy_connector()
           ->GetPolicyService()

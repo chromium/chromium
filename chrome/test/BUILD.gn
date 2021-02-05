@@ -3061,9 +3061,13 @@ if (!is_android) {
         "../browser/browser_switcher/browser_switcher_service_browsertest.cc",
         "../browser/browser_switcher/ieem_sitelist_parser_browsertest.cc",
         "../browser/extensions/api/image_writer_private/image_writer_utility_client_browsertest.cc",
-        "../browser/policy/audio_sandbox_enabled_browsertest.cc",
         "../browser/profiles/profile_statistics_browsertest.cc",
       ]
+
+      # Audio sandbox is disabled for lacros-chrome.
+      if (!is_chromeos_lacros) {
+        sources += [ "../browser/policy/audio_sandbox_enabled_browsertest.cc" ]
+      }
     }
     if (is_mac || is_win || is_chromeos_ash) {
       sources += [ "../browser/extensions/api/networking_cast_private/networking_cast_private_apitest.cc" ]
