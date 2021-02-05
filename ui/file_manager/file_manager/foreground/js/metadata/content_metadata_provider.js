@@ -49,6 +49,9 @@
      */
     this.dispatcher_ = this.createSharedWorker_(opt_messagePort);
     this.dispatcher_.onmessage = this.onMessage_.bind(this);
+    this.dispatcher_.onmessageerror = (error) => {
+      console.error('ContentMetadataProvider worker msg error:', error);
+    };
     this.dispatcher_.postMessage({verb: 'init'});
     this.dispatcher_.start();
   }
@@ -72,7 +75,13 @@
     const options =
         ContentMetadataProvider.loadAsModule_ ? {type: 'module'} : {};
 
-    return new SharedWorker(script, options).port;
+    const worker = new SharedWorker(script, options);
+    worker.onerror = () => {
+      console.error(
+          'Error to initialize the ContentMetadataProvider ' +
+          'SharedWorker: ' + script);
+    };
+    return worker.port;
   }
 
   /**
