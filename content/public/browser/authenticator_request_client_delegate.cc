@@ -62,9 +62,6 @@ bool AuthenticatorRequestClientDelegate::SupportsResidentKeys() {
   return false;
 }
 
-void AuthenticatorRequestClientDelegate::SetMightCreateResidentCredential(
-    bool v) {}
-
 void AuthenticatorRequestClientDelegate::ConfigureCable(
     const url::Origin& origin,
     base::span<const device::CableDiscoveryData> pairings_from_extension,

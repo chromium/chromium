@@ -10,6 +10,7 @@
 
 #include "base/check_op.h"
 #include "base/i18n/number_formatting.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -22,6 +23,7 @@
 #include "components/url_formatter/elide_url.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/features.h"
+#include "device/fido/fido_types.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/text_utils.h"
@@ -33,9 +35,16 @@ namespace {
 // needed.
 base::string16 PossibleResidentKeyWarning(
     AuthenticatorRequestDialogModel* dialog_model) {
-  if (dialog_model->might_create_resident_credential()) {
-    return l10n_util::GetStringUTF16(IDS_WEBAUTHN_RESIDENT_KEY_PRIVACY);
+  switch (dialog_model->resident_key_requirement()) {
+    case device::ResidentKeyRequirement::kDiscouraged:
+      return base::string16();
+    case device::ResidentKeyRequirement::kPreferred:
+      return l10n_util::GetStringUTF16(
+          IDS_WEBAUTHN_RESIDENT_KEY_PREFERRED_PRIVACY);
+    case device::ResidentKeyRequirement::kRequired:
+      return l10n_util::GetStringUTF16(IDS_WEBAUTHN_RESIDENT_KEY_PRIVACY);
   }
+  NOTREACHED();
   return base::string16();
 }
 
@@ -1105,7 +1114,6 @@ void AuthenticatorSelectAccountSheetModel::OnAccept() {
 const gfx::VectorIcon&
 AuthenticatorSelectAccountSheetModel::GetStepIllustration(
     ImageColorScheme color_scheme) const {
-  // TODO: this is likely the wrong image.
   return color_scheme == ImageColorScheme::kDark ? kWebauthnWelcomeDarkIcon
                                                  : kWebauthnWelcomeIcon;
 }

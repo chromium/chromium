@@ -621,14 +621,6 @@ void ChromeAuthenticatorRequestDelegate::OnRetryUserVerification(int attempts) {
   weak_dialog_model_->OnRetryUserVerification(attempts);
 }
 
-void ChromeAuthenticatorRequestDelegate::SetMightCreateResidentCredential(
-    bool v) {
-  if (!weak_dialog_model_) {
-    return;
-  }
-  weak_dialog_model_->set_might_create_resident_credential(v);
-}
-
 void ChromeAuthenticatorRequestDelegate::OnStartOver() {
   DCHECK(start_over_callback_);
   start_over_callback_.Run();

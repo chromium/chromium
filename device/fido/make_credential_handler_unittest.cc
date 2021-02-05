@@ -150,8 +150,22 @@ class FidoMakeCredentialHandlerTest : public ::testing::Test {
 TEST_F(FidoMakeCredentialHandlerTest, TransportAvailabilityInfo) {
   auto request_handler = CreateMakeCredentialHandler();
 
-  EXPECT_EQ(FidoRequestHandlerBase::RequestType::kMakeCredential,
-            request_handler->transport_availability_info().request_type);
+  EXPECT_EQ(request_handler->transport_availability_info().request_type,
+            FidoRequestHandlerBase::RequestType::kMakeCredential);
+}
+
+TEST_F(FidoMakeCredentialHandlerTest, TransportAvailabilityInfoRk) {
+  for (const auto rk : {ResidentKeyRequirement::kDiscouraged,
+                        ResidentKeyRequirement::kPreferred,
+                        ResidentKeyRequirement::kRequired}) {
+    auto request_handler =
+        CreateMakeCredentialHandler(AuthenticatorSelectionCriteria(
+            AuthenticatorAttachment::kAny, rk,
+            UserVerificationRequirement::kPreferred));
+    EXPECT_EQ(
+        request_handler->transport_availability_info().resident_key_requirement,
+        rk);
+  }
 }
 
 TEST_F(FidoMakeCredentialHandlerTest, TestCtap2MakeCredential) {

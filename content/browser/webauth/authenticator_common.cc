@@ -708,10 +708,6 @@ void AuthenticatorCommon::StartMakeCredentialRequest(
       base::BindRepeating(
           &device::FidoRequestHandlerBase::PowerOnBluetoothAdapter,
           request_->GetWeakPtr()) /* bluetooth_adapter_power_on_callback */);
-  if (make_credential_options_->resident_key !=
-      device::ResidentKeyRequirement::kDiscouraged) {
-    request_delegate_->SetMightCreateResidentCredential(true);
-  }
   request_->set_observer(request_delegate_.get());
 }
 

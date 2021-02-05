@@ -141,12 +141,6 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
   // |SelectAccount| will never be called.
   virtual bool SupportsResidentKeys();
 
-  // SetMightCreateResidentCredential indicates whether activating an
-  // authenticator may cause a resident credential to be created. A resident
-  // credential may be discovered by someone with physical access to the
-  // authenticator and thus has privacy implications.
-  void SetMightCreateResidentCredential(bool v) override;
-
   // ConfigureCable optionally configures Cloud-assisted Bluetooth Low Energy
   // transports. |origin| is the origin of the calling site and
   // |pairings_from_extension| are caBLEv1 pairings that have been provided in

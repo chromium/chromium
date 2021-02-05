@@ -10875,6 +10875,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_RESIDENT_KEY_PRIVACY" desc="A message included in dialogs when activating a security key (an external physical device for user authentication) may cause information about a site visit to be recorded on that security key. Since this is a privacy concern, a message is shown to the user.">
         A record of your visit to this site will be kept on your security key.
       </message>
+      <message name="IDS_WEBAUTHN_RESIDENT_KEY_PREFERRED_PRIVACY" desc="A message included in dialogs when activating a security key (an external physical device for user authentication) may cause information about a site visit to be recorded on that security key. Since this is a privacy concern, a message is shown to the user. Whether the information is actually kept depends on which type of security key the user presents in response to this prompt. The translation of this message should mirror TC ID 6581223593622729386 (but 'may' replaces 'will').">
+        A record of your visit to this site may be kept on your security key.
+      </message>
       <message name="IDS_WEBAUTHN_ERROR_MISSING_CAPABILITY_TITLE" desc="Title of the dialog informing the user that the security key (an external physical device for user authentication) that they selected does not support some capability that the site requested.">
         Your security key can't be used with this site
       </message>

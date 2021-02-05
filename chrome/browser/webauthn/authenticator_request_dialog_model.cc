@@ -230,7 +230,8 @@ void AuthenticatorRequestDialogModel::
 void AuthenticatorRequestDialogModel::StartWinNativeApi() {
   DCHECK(transport_availability_.has_win_native_api_authenticator);
 
-  if (might_create_resident_credential_ &&
+  if (resident_key_requirement() !=
+          device::ResidentKeyRequirement::kDiscouraged &&
       !transport_availability_.win_native_ui_shows_resident_credential_notice) {
     SetCurrentStep(Step::kResidentCredentialConfirmation);
   } else {

@@ -120,7 +120,6 @@ class ChromeAuthenticatorRequestDelegate
   void OnSampleCollected(int bio_samples_remaining) override;
   void FinishCollectToken() override;
   void OnRetryUserVerification(int attempts) override;
-  void SetMightCreateResidentCredential(bool v) override;
 
   // AuthenticatorRequestDialogModel::Observer:
   void OnStartOver() override;

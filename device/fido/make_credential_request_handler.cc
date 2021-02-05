@@ -395,6 +395,8 @@ MakeCredentialRequestHandler::MakeCredentialRequestHandler(
       FidoRequestHandlerBase::RequestType::kMakeCredential;
   transport_availability_info().is_off_the_record_context =
       request_.is_off_the_record_context;
+  transport_availability_info().resident_key_requirement =
+      options_.resident_key;
 
   base::flat_set<FidoTransportProtocol> allowed_transports =
       GetTransportsAllowedByRP(options.authenticator_attachment);

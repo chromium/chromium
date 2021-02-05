@@ -5290,14 +5290,17 @@ class ResidentKeyTestAuthenticatorRequestDelegate
   ResidentKeyTestAuthenticatorRequestDelegate(
       std::string expected_accounts,
       std::vector<uint8_t> selected_user_id,
-      bool* might_create_resident_credential,
       base::Optional<InterestingFailureReason>* failure_reason,
       bool* is_conditional)
       : expected_accounts_(expected_accounts),
         selected_user_id_(selected_user_id),
-        might_create_resident_credential_(might_create_resident_credential),
         failure_reason_(failure_reason),
         is_conditional_(is_conditional) {}
+
+  ResidentKeyTestAuthenticatorRequestDelegate(
+      const ResidentKeyTestAuthenticatorRequestDelegate&) = delete;
+  ResidentKeyTestAuthenticatorRequestDelegate& operator=(
+      const ResidentKeyTestAuthenticatorRequestDelegate&) = delete;
 
   bool SupportsPIN() const override { return true; }
 
@@ -5346,10 +5349,6 @@ class ResidentKeyTestAuthenticatorRequestDelegate
         FROM_HERE, base::BindOnce(std::move(callback), std::move(*selected)));
   }
 
-  void SetMightCreateResidentCredential(bool v) override {
-    *might_create_resident_credential_ = v;
-  }
-
   bool DoesBlockRequestOnFailure(InterestingFailureReason reason) override {
     *failure_reason_ = reason;
     return AuthenticatorRequestClientDelegate::DoesBlockRequestOnFailure(
@@ -5363,10 +5362,8 @@ class ResidentKeyTestAuthenticatorRequestDelegate
  private:
   const std::string expected_accounts_;
   const std::vector<uint8_t> selected_user_id_;
-  bool* const might_create_resident_credential_;
   base::Optional<InterestingFailureReason>* const failure_reason_;
   bool* const is_conditional_;
-  DISALLOW_COPY_AND_ASSIGN(ResidentKeyTestAuthenticatorRequestDelegate);
 };
 
 class ResidentKeyTestAuthenticatorContentBrowserClient
@@ -5376,13 +5373,11 @@ class ResidentKeyTestAuthenticatorContentBrowserClient
   GetWebAuthenticationRequestDelegate(
       RenderFrameHost* render_frame_host) override {
     return std::make_unique<ResidentKeyTestAuthenticatorRequestDelegate>(
-        expected_accounts, selected_user_id, &might_create_resident_credential,
-        &failure_reason, &is_conditional);
+        expected_accounts, selected_user_id, &failure_reason, &is_conditional);
   }
 
   std::string expected_accounts;
   std::vector<uint8_t> selected_user_id;
-  bool might_create_resident_credential = false;
   bool is_conditional = false;
   base::Optional<AuthenticatorRequestClientDelegate::InterestingFailureReason>
       failure_reason;
@@ -5439,7 +5434,6 @@ class ResidentKeyAuthenticatorImplTest : public UVAuthenticatorImplTest {
 TEST_F(ResidentKeyAuthenticatorImplTest, MakeCredentialRkRequired) {
   for (const bool internal_uv : {false, true}) {
     SCOPED_TRACE(::testing::Message() << "internal_uv=" << internal_uv);
-    test_client_.might_create_resident_credential = false;
 
     if (internal_uv) {
       device::VirtualCtap2Device::Config config;
@@ -5453,7 +5447,6 @@ TEST_F(ResidentKeyAuthenticatorImplTest, MakeCredentialRkRequired) {
         AuthenticatorMakeCredential(make_credential_options());
 
     EXPECT_EQ(AuthenticatorStatus::SUCCESS, result.status);
-    EXPECT_TRUE(test_client_.might_create_resident_credential);
     EXPECT_TRUE(HasUV(result.response));
     ASSERT_EQ(1u,
               virtual_device_factory_->mutable_state()->registrations.size());
@@ -5473,7 +5466,6 @@ TEST_F(ResidentKeyAuthenticatorImplTest, MakeCredentialRkPreferred) {
   for (const bool supports_rk : {false, true}) {
     SCOPED_TRACE(::testing::Message() << "supports_rk=" << supports_rk);
     ResetVirtualDevice();
-    test_client_.might_create_resident_credential = false;
 
     device::VirtualCtap2Device::Config config;
     config.internal_uv_support = true;
@@ -5485,7 +5477,6 @@ TEST_F(ResidentKeyAuthenticatorImplTest, MakeCredentialRkPreferred) {
         make_credential_options(device::ResidentKeyRequirement::kPreferred));
 
     ASSERT_EQ(AuthenticatorStatus::SUCCESS, result.status);
-    EXPECT_TRUE(test_client_.might_create_resident_credential);
     EXPECT_TRUE(HasUV(result.response));
     ASSERT_EQ(1u,
               virtual_device_factory_->mutable_state()->registrations.size());
@@ -5500,7 +5491,6 @@ TEST_F(ResidentKeyAuthenticatorImplTest, MakeCredentialRkPreferredStorageFull) {
   // making a non-resident key.
   for (bool is_ctap_2_1 : {false, true}) {
     ResetVirtualDevice();
-    test_client_.might_create_resident_credential = false;
 
     size_t num_taps = 0;
     virtual_device_factory_->mutable_state()->simulate_press_callback =
@@ -5526,7 +5516,6 @@ TEST_F(ResidentKeyAuthenticatorImplTest, MakeCredentialRkPreferredStorageFull) {
         make_credential_options(device::ResidentKeyRequirement::kPreferred));
 
     ASSERT_EQ(AuthenticatorStatus::SUCCESS, result.status);
-    EXPECT_TRUE(test_client_.might_create_resident_credential);
     EXPECT_TRUE(HasUV(result.response));
     ASSERT_EQ(1u,
               virtual_device_factory_->mutable_state()->registrations.size());
@@ -5553,7 +5542,6 @@ TEST_F(ResidentKeyAuthenticatorImplTest, MakeCredentialRkPreferredSetsPIN) {
       make_credential_options(device::ResidentKeyRequirement::kPreferred));
 
   EXPECT_EQ(AuthenticatorStatus::SUCCESS, result.status);
-  EXPECT_TRUE(test_client_.might_create_resident_credential);
   EXPECT_TRUE(HasUV(result.response));
   ASSERT_EQ(1u, virtual_device_factory_->mutable_state()->registrations.size());
   const device::VirtualFidoDevice::RegistrationData& registration =

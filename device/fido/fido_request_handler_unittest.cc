@@ -115,8 +115,6 @@ class TestObserver : public FidoRequestHandlerBase::Observer {
     NOTREACHED();
   }
 
-  void SetMightCreateResidentCredential(bool v) override {}
-
   void OnRetryUserVerification(int attempts) override {}
 
   void StartBioEnrollment(base::OnceClosure next_callback) override {}
