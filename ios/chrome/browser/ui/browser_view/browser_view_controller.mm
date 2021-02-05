@@ -50,6 +50,7 @@
 #import "ios/chrome/browser/overscroll_actions/overscroll_actions_tab_helper.h"
 #import "ios/chrome/browser/passwords/password_controller.h"
 #include "ios/chrome/browser/passwords/password_tab_helper.h"
+#import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/prerender/preload_controller_delegate.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
@@ -3454,9 +3455,12 @@ NSString* const kBrowserViewControllerSnackbarCategory =
           };
         }
 
-        [_contextMenuCoordinator addItemWithTitle:title
-                                           action:action
-                                            style:UIAlertActionStyleDefault];
+        [_contextMenuCoordinator
+            addItemWithTitle:title
+                      action:action
+                       style:UIAlertActionStyleDefault
+                     enabled:!IsIncognitoModeDisabled(
+                                 self.browser->GetBrowserState()->GetPrefs())];
       }
     }
     if (link.SchemeIsHTTPOrHTTPS()) {

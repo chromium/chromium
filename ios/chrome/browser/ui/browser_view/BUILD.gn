@@ -61,6 +61,7 @@ source_set("browser_view") {
     "//ios/chrome/browser/overlays/public/web_content_area",
     "//ios/chrome/browser/overscroll_actions",
     "//ios/chrome/browser/passwords",
+    "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/prefs",
     "//ios/chrome/browser/prerender",
     "//ios/chrome/browser/reading_list",
