@@ -215,6 +215,7 @@ void PolicyTest::PerformClick(int x, int y) {
       click_event);
 }
 
+// static
 void PolicyTest::SetPolicy(PolicyMap* policies,
                            const char* key,
                            base::Optional<base::Value> value) {
