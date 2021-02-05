@@ -353,7 +353,7 @@ void TabStatsTracker::TabChangedAt(content::WebContents* web_contents,
                                    int index,
                                    TabChangeType change_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Ignore 'loading' and 'title' changes, we're only interested in audio here.
+  // Ignore 'loading' changes, we're only interested in audio here.
   if (change_type != TabChangeType::kAll)
     return;
   if (web_contents->IsCurrentlyAudible()) {
