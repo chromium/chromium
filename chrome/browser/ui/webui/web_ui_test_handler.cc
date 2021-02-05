@@ -14,7 +14,6 @@
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/test/test_utils.h"
@@ -22,21 +21,15 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
-using content::RenderViewHost;
+WebUITestHandler::WebUITestHandler() = default;
+WebUITestHandler::~WebUITestHandler() = default;
 
-WebUITestHandler::WebUITestHandler()
-    : test_done_(false),
-      test_succeeded_(false),
-      run_test_done_(false),
-      run_test_succeeded_(false) {}
-
-WebUITestHandler::~WebUITestHandler() {}
-
-void WebUITestHandler::PreloadJavaScript(const base::string16& js_text,
-                                         RenderViewHost* preload_host) {
-  DCHECK(preload_host);
+void WebUITestHandler::PreloadJavaScript(
+    const base::string16& js_text,
+    content::RenderFrameHost* preload_frame) {
+  DCHECK(preload_frame);
   mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> chrome_render_frame;
-  preload_host->GetMainFrame()->GetRemoteAssociatedInterfaces()->GetInterface(
+  preload_frame->GetRemoteAssociatedInterfaces()->GetInterface(
       &chrome_render_frame);
   chrome_render_frame->ExecuteWebUIJavaScript(js_text);
 }
