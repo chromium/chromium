@@ -122,7 +122,6 @@ enum ReferrerPolicySource { kPolicySourceHttpHeader, kPolicySourceMetaTag };
 // by an extension developer, but these share an ExecutionContext (the window)
 // in common.
 class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
-                                     public ContextLifecycleNotifier,
                                      public MojoBindingContext,
                                      public ConsoleLogger,
                                      public UseCounter,

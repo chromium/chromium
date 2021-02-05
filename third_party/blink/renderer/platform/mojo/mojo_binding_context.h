@@ -8,6 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_common.h"
+#include "third_party/blink/renderer/platform/context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace base {
@@ -21,7 +22,7 @@ class BrowserInterfaceBrokerProxy;
 // This class encapsulates the necessary information for binding Mojo
 // interfaces, to enable interfaces provided by the platform to be aware of the
 // context in which they are intended to be used.
-class PLATFORM_EXPORT MojoBindingContext {
+class PLATFORM_EXPORT MojoBindingContext : public ContextLifecycleNotifier {
  public:
   virtual const BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker()
       const = 0;
