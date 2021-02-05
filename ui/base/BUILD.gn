@@ -865,6 +865,7 @@ test("ui_base_unittests") {
 
   sources = [
     "class_property_unittest.cc",
+    "clipboard/file_info_unittest.cc",
     "ime/utf_offset_unittest.cc",
     "l10n/l10n_util_unittest.cc",
     "l10n/time_format_unittest.cc",
@@ -933,6 +934,7 @@ test("ui_base_unittests") {
     "//ui/base:ui_data_pack",
     "//ui/base/clipboard:clipboard_test",
     "//ui/base/clipboard:clipboard_types",
+    "//ui/base/clipboard:file_info",
     "//ui/base/cursor:unittests",
     "//ui/base/data_transfer_policy:unittests",
     "//ui/base/prediction:prediction",

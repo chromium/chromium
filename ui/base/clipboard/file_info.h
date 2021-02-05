@@ -5,8 +5,11 @@
 #ifndef UI_BASE_CLIPBOARD_FILE_INFO_H_
 #define UI_BASE_CLIPBOARD_FILE_INFO_H_
 
+#include <string>
+
 #include "base/component_export.h"
 #include "base/files/file_path.h"
+#include "base/strings/string_piece_forward.h"
 
 namespace ui {
 
@@ -20,6 +23,23 @@ struct COMPONENT_EXPORT(UI_BASE_FILE_INFO) FileInfo {
   base::FilePath path;
   base::FilePath display_name;  // Optional.
 };
+
+// Returns UTF8 file:// URL. |file_path| is expected to be an absolute path, and
+// will be encoded as one regardless. E.g. '/path' and 'path' both encode as
+// 'file:///path'.
+std::string COMPONENT_EXPORT(UI_BASE_FILE_INFO)
+    FilePathToFileURL(const base::FilePath& file_path);
+
+// Returns a list of ui::FileInfo from the text/uri-list CRLF-separated file://
+// URLs in |uri_list| as per
+// https://www.iana.org/assignments/media-types/text/uri-list
+// URLs which cannot be parsed are ignored.
+std::vector<FileInfo> COMPONENT_EXPORT(UI_BASE_FILE_INFO)
+    URIListToFileInfos(const base::StringPiece& uri_list);
+
+// Returns UTF8 text/uri-list CRLF-separated file:// URLs from filenames.
+std::string COMPONENT_EXPORT(UI_BASE_FILE_INFO)
+    FileInfosToURIList(const std::vector<FileInfo>& filenames);
 
 }  // namespace ui
 

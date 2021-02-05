@@ -261,7 +261,7 @@ TEST_F(ChromeDataExchangeDelegateTest, GetFilenames) {
   files = data_exchange_delegate.GetFilenames(
       ui::EndpointType::kPluginVm, Data("file:///C:/WINDOWS/notepad.exe"));
   EXPECT_EQ(1, files.size());
-  EXPECT_EQ("vmfile:PvmDefault:/C:/WINDOWS/notepad.exe", files[0].path.value());
+  EXPECT_EQ("vmfile:PvmDefault:C:/WINDOWS/notepad.exe", files[0].path.value());
 
   // Unshared paths should fail.
   files = data_exchange_delegate.GetFilenames(

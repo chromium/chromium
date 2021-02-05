@@ -51,8 +51,6 @@ namespace {
 
 constexpr char kMimeTypeArcUriList[] = "application/x-arc-uri-list";
 constexpr char kMimeTypeTextUriList[] = "text/uri-list";
-constexpr char kFileSchemePrefix[] = "file:";
-constexpr char kFileUrlPrefix[] = "file://";
 constexpr char kUriListSeparator[] = "\r\n";
 constexpr char kVmFileScheme[] = "vmfile";
 
@@ -62,63 +60,6 @@ constexpr base::char16 kFilesAppTagExo[] = STRING16_LITERAL("exo");
 constexpr base::char16 kFilesAppMimeSources[] = STRING16_LITERAL("fs/sources");
 constexpr char kFilesAppSeparator[] = "\n";
 constexpr base::char16 kFilesAppSeparator16[] = STRING16_LITERAL("\n");
-
-// We implement our own URLToPath() and PathToURL() rather than use
-// net::FileUrlToFilePath() or net::FilePathToFileURL() since //net code does
-// not support Windows network paths such as //ChromeOS/MyFiles on OS_CHROMEOS.
-bool URLToPath(const base::StringPiece& url, std::string* path) {
-  // Must start with 'file://' with at least 1 more char.
-  std::string prefix(kFileUrlPrefix);
-  if (url.size() <= prefix.size() ||
-      !base::StartsWith(url, prefix, base::CompareCase::SENSITIVE)) {
-    return false;
-  }
-
-  // Skip slashes after 'file:' if needed:
-  int path_start;
-  if (url[prefix.size()] == '/') {
-    // file:///path => /path
-    path_start = prefix.size();
-  } else {
-    // file://host/path => //host/path
-    path_start = prefix.size() - 2;
-  }
-
-  *path = base::UnescapeBinaryURLComponent(url.substr(path_start));
-  return true;
-}
-
-std::string PathToURL(const std::string& path) {
-  std::string url;
-  url.reserve(sizeof(kFileSchemePrefix) + 3 + (3 * path.size()));
-  url += kFileSchemePrefix;
-
-  // Add slashes after 'file:' if needed:
-  //  //host/path    => file://host/path
-  //  /absolute/path => file:///absolute/path
-  //  relative/path  => file:///relative/path
-  if (path.size() > 1 && path[0] == '/' && path[1] == '/') {
-    // Do nothing.
-  } else if (path.size() > 0 && path[0] == '/') {
-    url += "//";
-  } else {
-    url += "///";
-  }
-
-  // Escape special characters `%;#?\ `
-  for (auto c : path) {
-    if (c == '%' || c == ';' || c == '#' || c == '?' || c == '\\' || c <= ' ') {
-      static const char kHexChars[] = "0123456789ABCDEF";
-      url += '%';
-      url += kHexChars[(c >> 4) & 0xf];
-      url += kHexChars[c & 0xf];
-    } else {
-      url += c;
-    }
-  }
-
-  return url;
-}
 
 storage::FileSystemContext* GetFileSystemContext() {
   Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
@@ -215,18 +156,11 @@ std::vector<FileInfo> GetFileInfo(ui::EndpointType source,
     vm_name = plugin_vm::kPluginVmName;
   }
 
-  std::string lines = std::string(data.begin(), data.end());
-  for (const base::StringPiece& line :
-       base::SplitStringPiece(lines, kUriListSeparator, base::TRIM_WHITESPACE,
-                              base::SPLIT_WANT_NONEMPTY)) {
-    if (line.empty() || line[0] == '#')
-      continue;
-    std::string path_str;
-    if (!URLToPath(line, &path_str)) {
-      LOG(WARNING) << "Invalid drop file path: " << line;
-      continue;
-    }
-    base::FilePath path(path_str);
+  std::vector<ui::FileInfo> filenames =
+      ui::URIListToFileInfos(std::string(data.begin(), data.end()));
+
+  for (const ui::FileInfo& file : filenames) {
+    base::FilePath path = std::move(file.path);
     storage::FileSystemURL url;
 
     // Convert the VM path to a path in the host if possible (in homedir or
@@ -240,7 +174,7 @@ std::vector<FileInfo> GetFileInfo(ui::EndpointType source,
         path = url.path();
         // Only allow write to clipboard for paths that are shared.
         if (!IsPathShared(primary_profile, vm_name, is_crostini, path)) {
-          LOG(WARNING) << "Unshared file path: " << line;
+          LOG(WARNING) << "Unshared file path: " << path;
           continue;
         }
       } else {
@@ -297,13 +231,13 @@ void ShareAndSend(ui::EndpointType target,
       // Check if it is a path inside the VM: 'vmfile:<vm_name>:'.
       if (base::StartsWith(info.path.value(), vm_prefix,
                            base::CompareCase::SENSITIVE)) {
-        line_to_send = PathToURL(
-            base::FilePath(info.path.value().substr(vm_prefix.size())).value());
+        line_to_send = ui::FilePathToFileURL(
+            base::FilePath(info.path.value().substr(vm_prefix.size())));
       } else if (file_manager::util::ConvertFileSystemURLToPathInsideVM(
                      primary_profile, info.url, vm_mount,
                      /*map_crostini_home=*/is_crostini, &path)) {
         // Convert to path inside the VM.
-        line_to_send = PathToURL(path.value());
+        line_to_send = ui::FilePathToFileURL(path);
         share_required = true;
       } else {
         LOG(WARNING) << "Could not convert into VM path " << info.path;
@@ -311,7 +245,7 @@ void ShareAndSend(ui::EndpointType target,
       }
     } else {
       // Use path without conversion as default.
-      line_to_send = PathToURL(info.path.value());
+      line_to_send = ui::FilePathToFileURL(info.path);
     }
     lines_to_send.push_back(std::move(line_to_send));
     if (share_required && !share_path->IsPathShared(vm_name, info.path))
