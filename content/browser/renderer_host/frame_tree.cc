@@ -30,6 +30,7 @@
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/common/content_switches_internal.h"
 #include "content/common/input_messages.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 
@@ -578,6 +579,11 @@ void FrameTree::DidAccessInitialMainDocument() {
   OPTIONAL_TRACE_EVENT0("content", "FrameTree::DidAccessInitialDocument");
   has_accessed_initial_main_document_ = true;
   controller().DidAccessInitialMainDocument();
+}
+
+void FrameTree::set_is_prerendering(bool is_prerendering) {
+  DCHECK(!is_prerendering_ || blink::features::IsPrerender2Enabled());
+  is_prerendering_ = is_prerendering;
 }
 
 }  // namespace content

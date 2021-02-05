@@ -183,10 +183,6 @@ class NavigationController {
     // important for tracking whether to display pending URLs.
     bool is_renderer_initiated;
 
-    // Prerender2:
-    // True for prerendering navigations.
-    bool is_prerendering = false;
-
     // Whether a navigation in a new window has the opener suppressed. False if
     // the navigation is not in a new window. Can only be true when
     // |is_renderer_initiated| is true.

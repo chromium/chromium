@@ -116,6 +116,10 @@ class CONTENT_EXPORT FrameTree {
 
   FrameTreeNode* root() const { return root_; }
 
+  void set_is_prerendering(bool is_prerendering);
+
+  bool is_prerendering() const { return is_prerendering_; }
+
   // Delegates for RenderFrameHosts, RenderViewHosts, RenderWidgetHosts and
   // RenderFrameHostManagers. These can be kept centrally on the FrameTree
   // because they are expected to be the same for all frames on a given
@@ -316,6 +320,16 @@ class CONTENT_EXPORT FrameTree {
  private:
   friend class FrameTreeTest;
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBrowserTest, RemoveFocusedFrame);
+
+  // Prerender2:
+  // Indicates whether this frame tree is being prerendered.
+  // Set to true when frame tree is created (PrerenderHost()) and to false once
+  // the prerendered page is activated
+  // (PrerenderHost::ActivatePrerenderedContents()).
+  // TODO(https://crbug.com/1174926): Migrate this parameter to FrameTreeType
+  // once activation path is migrated onto MPArch and WebContents-swap-based
+  // activation logic is removed.
+  bool is_prerendering_ = false;
 
   // Returns a range to iterate over all FrameTreeNodes in the frame tree in
   // breadth-first traversal order, skipping the subtree rooted at

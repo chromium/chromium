@@ -1498,7 +1498,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Prerender2:
   // Returns true if this frame is for a prerendering page.
-  // This should be called after CommitNavigation().
   bool IsPrerendering() const;
 
   // Prerender2:
@@ -3437,14 +3436,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Note that it is the initiator RenderFrameHost that stores these receivers.
   mojo::UniqueReceiverSet<blink::mojom::PrerenderProcessor>
       prerender_processor_receivers_;
-
-  // Prerender2:
-  // Indicates whether this frame is being prerendered. Updated at commit
-  // navigation time (CommitNavigation()), and when the prerendered page is
-  // activated (OnPrerenderedPageActivated()).
-  // TODO(https://crbug.com/1160611): Update the flag when a prerendering
-  // navigation failed.
-  bool is_prerendering_ = false;
 
   // NOTE: This must be the last member.
   base::WeakPtrFactory<RenderFrameHostImpl> weak_ptr_factory_{this};

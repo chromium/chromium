@@ -9,6 +9,7 @@
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_conversion_helper.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "third_party/blink/public/common/features.h"
@@ -25,8 +26,8 @@ PrerenderHost::PrerenderHost(blink::mojom::PrerenderAttributesPtr attributes,
   // TODO(https://crbug.com/1132746): Set up other fields of
   // `web_contents_params` as well, and add tests for them.
   prerendered_contents_ = WebContents::Create(web_contents_params);
-  frame_tree_node_id_ =
-      prerendered_contents_->GetMainFrame()->GetFrameTreeNodeId();
+  frame_tree_node_id_ = GetPrerenderedFrameTree()->root()->frame_tree_node_id();
+  GetPrerenderedFrameTree()->set_is_prerendering(true);
 }
 
 // TODO(https://crbug.com/1132746): Abort ongoing prerendering and notify the
@@ -47,7 +48,6 @@ void PrerenderHost::StartPrerendering() {
   // Start prerendering navigation.
   NavigationController::LoadURLParams load_url_params(attributes_->url);
   load_url_params.initiator_origin = initiator_origin_;
-  load_url_params.is_prerendering = true;
   // TODO(https://crbug.com/1132746): Set up other fields of `load_url_params`
   // as well, and add tests for them.
   prerendered_contents_->GetController().LoadURLWithParams(load_url_params);
@@ -87,6 +87,8 @@ bool PrerenderHost::ActivatePrerenderedContents(
   WebContentsDelegate* delegate = current_web_contents->GetDelegate();
   DCHECK(delegate);
   DCHECK(prerendered_contents_);
+  DCHECK(GetPrerenderedFrameTree()->is_prerendering());
+  GetPrerenderedFrameTree()->set_is_prerendering(false);
   static_cast<RenderFrameHostImpl*>(prerendered_contents_->GetMainFrame())
       ->OnPrerenderedPageActivated();
   // Tentatively use Portal's activation function.
@@ -112,6 +114,12 @@ RenderFrameHostImpl* PrerenderHost::GetPrerenderedMainFrameHostForTesting() {
   DCHECK(prerendered_contents_);
   return static_cast<RenderFrameHostImpl*>(
       prerendered_contents_->GetMainFrame());
+}
+
+FrameTree* PrerenderHost::GetPrerenderedFrameTree() {
+  DCHECK(prerendered_contents_);
+  return static_cast<WebContentsImpl*>(prerendered_contents_.get())
+      ->GetFrameTree();
 }
 
 void PrerenderHost::RecordFinalStatus(FinalStatus status) {

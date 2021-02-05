@@ -6372,8 +6372,7 @@ void RenderFrameHostImpl::CommitNavigation(
   DCHECK(navigation_request);
 
   if (blink::features::IsPrerender2Enabled()) {
-    is_prerendering_ = commit_params->is_prerendering;
-    if (is_prerendering_) {
+    if (IsPrerendering()) {
       broker_.ApplyMojoBinderPolicies(
           MojoBinderPolicyApplier::CreateForPrerendering(
               base::BindOnce(&RenderFrameHostImpl::CancelPrerendering,
@@ -7889,7 +7888,7 @@ void RenderFrameHostImpl::CancelPrerendering() {
   // active during prerendering. It would be an error to call this while not
   // prerendering, as it could mean an interface request is never resolved for
   // an active page.
-  DCHECK(is_prerendering_);
+  DCHECK(IsPrerendering());
   auto* storage_partition_impl =
       static_cast<StoragePartitionImpl*>(GetStoragePartition());
   PrerenderHostRegistry* prerender_host_registry =
@@ -7900,16 +7899,13 @@ void RenderFrameHostImpl::CancelPrerendering() {
 }
 
 bool RenderFrameHostImpl::IsPrerendering() const {
-  DCHECK(!is_prerendering_ || blink::features::IsPrerender2Enabled());
-  return is_prerendering_;
+  return frame_tree()->is_prerendering();
 }
 
 void RenderFrameHostImpl::OnPrerenderedPageActivated() {
   // TODO(crbug.com/1174506): Temporary until we understand the cause of the
   // crash. Return to DCHECKs after the bug is fixed.
   CHECK(blink::features::IsPrerender2Enabled());
-  CHECK(is_prerendering_);
-  is_prerendering_ = false;
   broker_.ReleaseMojoBinderPolicies();
   for (auto& child : children_)
     child->current_frame_host()->OnPrerenderedPageActivated();
@@ -8856,8 +8852,7 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     // This is a special case that does not go through CommitNavigation path.
     if (blink::features::IsPrerender2Enabled() && is_initial_empty_commit &&
         !is_main_frame()) {
-      is_prerendering_ = parent_->IsPrerendering();
-      if (is_prerendering_) {
+      if (IsPrerendering()) {
         broker_.ApplyMojoBinderPolicies(
             MojoBinderPolicyApplier::CreateForPrerendering(
                 base::BindOnce(&RenderFrameHostImpl::CancelPrerendering,
