@@ -24,7 +24,6 @@ namespace content {
 
 namespace {
 
-using AudioCodec = media::AudioCodec;
 using VideoCodec = media::VideoCodec;
 using EncryptionScheme = media::EncryptionScheme;
 using CdmSessionType = media::CdmSessionType;
@@ -48,9 +47,6 @@ bool StlEquals(const Container a, std::initializer_list<T> b) {
   do {                                        \
     EXPECT_TRUE(StlEquals(a, {__VA_ARGS__})); \
   } while (false)
-
-#define EXPECT_AUDIO_CODECS(...) \
-  EXPECT_STL_EQ(cdm.capability.audio_codecs, __VA_ARGS__)
 
 #define EXPECT_VIDEO_CODECS(...) \
   EXPECT_STL_EQ(cdm.capability.video_codecs, __VA_ARGS__)
@@ -76,8 +72,7 @@ class CdmRegistryImplTest : public testing::Test {
         kTestCdmName, kTestCdmGuid, base::Version(kVersion1),
         base::FilePath::FromUTF8Unsafe(kTestPath), kTestFileSystemId,
         CdmCapability(
-            {media::kCodecVorbis}, {media::kCodecVP8, media::kCodecVP9},
-            {EncryptionScheme::kCenc},
+            {media::kCodecVP8, media::kCodecVP9}, {EncryptionScheme::kCenc},
             {CdmSessionType::kTemporary, CdmSessionType::kPersistentLicense}),
         kTestKeySystem, /*supports_sub_key_systems=*/true);
   }
@@ -117,7 +112,6 @@ TEST_F(CdmRegistryImplTest, Register) {
   EXPECT_EQ(kVersion1, cdm.version.GetString());
   EXPECT_EQ(kTestPath, cdm.path.MaybeAsASCII());
   EXPECT_EQ(kTestFileSystemId, cdm.file_system_id);
-  EXPECT_AUDIO_CODECS(AudioCodec::kCodecVorbis);
   EXPECT_VIDEO_CODECS(VideoCodec::kCodecVP8, VideoCodec::kCodecVP9);
   EXPECT_ENCRYPTION_SCHEMES(EncryptionScheme::kCenc);
   EXPECT_SESSION_TYPES(CdmSessionType::kTemporary,

@@ -141,42 +141,18 @@ static void AddExternalClearKey(
 
 #if BUILDFLAG(ENABLE_WIDEVINE)
 static SupportedCodecs GetSupportedCodecs(
-    const std::vector<media::AudioCodec>& supported_audio_codecs,
     const std::vector<media::VideoCodec>& supported_video_codecs,
     bool supports_vp9_profile2,
     bool is_secure) {
   SupportedCodecs supported_codecs = media::EME_CODEC_NONE;
 
-  if (is_secure) {
-    // Secure audio codecs are only determined by what was registered for
-    // the CDM.
-    for (const auto& codec : supported_audio_codecs) {
-      switch (codec) {
-        case media::AudioCodec::kCodecOpus:
-          supported_codecs |= media::EME_CODEC_OPUS;
-          break;
-        case media::AudioCodec::kCodecVorbis:
-          supported_codecs |= media::EME_CODEC_VORBIS;
-          break;
-        case media::AudioCodec::kCodecFLAC:
-          supported_codecs |= media::EME_CODEC_FLAC;
-          break;
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
-        case media::AudioCodec::kCodecAAC:
-          supported_codecs |= media::EME_CODEC_AAC;
-          break;
-#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
-        default:
-          DVLOG(1) << "Unexpected supported codec: " << GetCodecName(codec);
-          break;
-      }
-    }
-  } else {
-    // Non-secure audio codecs are always supported because the CDM only does
-    // decrypt-only for audio.
-    // TODO(crbug.com/1173278): Decrypt-only should be allowed for all audio
-    // codecs supported by Chrome.
-
+  // Audio codecs are always supported because the CDM only does decrypt-only
+  // for audio. The only exception is when |is_secure| is true and there's no
+  // secure video decoder available, which is a signal that secure hardware
+  // decryption is not available either.
+  // TODO(sandersd): Distinguish these from those that are directly supported,
+  // as those may offer a higher level of protection.
+  if (!supported_video_codecs.empty() || !is_secure) {
     supported_codecs |= media::EME_CODEC_OPUS;
     supported_codecs |= media::EME_CODEC_VORBIS;
     supported_codecs |= media::EME_CODEC_FLAC;
@@ -284,10 +260,9 @@ static void AddWidevine(
   }
 
   // Codecs and encryption schemes.
-  auto codecs =
-      GetSupportedCodecs(capability->audio_codecs, capability->video_codecs,
-                         capability->supports_vp9_profile2,
-                         /*is_secure=*/false);
+  auto codecs = GetSupportedCodecs(capability->video_codecs,
+                                   capability->supports_vp9_profile2,
+                                   /*is_secure=*/false);
   const auto& encryption_schemes = capability->encryption_schemes;
 #if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
   const bool hw_supports_vp9_profile2 = true;
@@ -295,8 +270,7 @@ static void AddWidevine(
   // TODO(xhwang): Investigate whether hardware VP9 profile 2 is supported.
   const bool hw_supports_vp9_profile2 = false;
 #endif
-  auto hw_secure_codecs = GetSupportedCodecs(capability->hw_secure_audio_codecs,
-                                             capability->hw_secure_video_codecs,
+  auto hw_secure_codecs = GetSupportedCodecs(capability->hw_secure_video_codecs,
                                              hw_supports_vp9_profile2,
                                              /*is_secure=*/true);
   const auto& hw_secure_encryption_schemes =

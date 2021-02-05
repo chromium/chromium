@@ -35,7 +35,6 @@
 #include "content/public/common/page_visibility_state.h"
 #include "content/public/common/window_container_type.mojom-forward.h"
 #include "device/vr/buildflags/buildflags.h"
-#include "media/base/audio_codecs.h"
 #include "media/base/video_codecs.h"
 #include "media/mojo/mojom/media_service.mojom-forward.h"
 #include "media/mojo/mojom/remoting.mojom-forward.h"
@@ -1176,13 +1175,11 @@ class CONTENT_EXPORT ContentBrowserClient {
   // returns a non-null value.
   virtual bool OverridesAudioManager();
 
-  // Gets supported hardware secure |audio_codecs|, |video_codecs|, and
-  // |encryption_schemes| for the purpose of decrypting encrypted media using a
-  // Content Decryption Module (CDM) and a CdmProxy associated with
-  // |key_system|.
+  // Gets supported hardware secure |video_codecs| and |encryption_schemes| for
+  // the purpose of decrypting encrypted media using a Content Decryption Module
+  // (CDM) associated with |key_system|.
   virtual void GetHardwareSecureDecryptionCaps(
       const std::string& key_system,
-      base::flat_set<media::AudioCodec>* audio_codecs,
       base::flat_set<media::VideoCodec>* video_codecs,
       base::flat_set<media::EncryptionScheme>* encryption_schemes);
 
