@@ -186,8 +186,8 @@ class MDnsAPITest : public extensions::ExtensionServiceTestBase {
     ASSERT_TRUE(MDnsAPI::Get(browser_context()));      // constructs MDnsAPI
     ASSERT_TRUE(EventRouter::Get(browser_context()));  // constructs EventRouter
 
-    registry_ =
-        std::make_unique<MockDnsSdRegistry>(MDnsAPI::Get(browser_context()));
+    registry_ = std::make_unique<testing::NiceMock<MockDnsSdRegistry>>(
+        MDnsAPI::Get(browser_context()));
     EXPECT_CALL(*dns_sd_registry(),
                 AddObserver(MDnsAPI::Get(browser_context())))
         .Times(1);
@@ -243,7 +243,7 @@ class MDnsAPITest : public extensions::ExtensionServiceTestBase {
   }
 
  private:
-  std::unique_ptr<MockDnsSdRegistry> registry_;
+  std::unique_ptr<testing::NiceMock<MockDnsSdRegistry>> registry_;
 
   std::unique_ptr<content::RenderProcessHost> render_process_host_;
 };

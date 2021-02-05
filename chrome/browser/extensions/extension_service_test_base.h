@@ -169,7 +169,7 @@ class ExtensionServiceTestBase : public testing::Test {
 
   // Provides policies for the PolicyService below, so this must be created
   // before it.
-  policy::MockConfigurationPolicyProvider policy_provider_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 
   // PolicyService for the testing profile, so unit tests can use custom
   // policies.

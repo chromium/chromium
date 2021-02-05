@@ -18,7 +18,8 @@
 
 namespace extensions {
 
-class MockExtensionDownloaderDelegate : public ExtensionDownloaderDelegate {
+class MockExtensionDownloaderDelegate
+    : public testing::NiceMock<ExtensionDownloaderDelegate> {
  public:
   MockExtensionDownloaderDelegate();
 

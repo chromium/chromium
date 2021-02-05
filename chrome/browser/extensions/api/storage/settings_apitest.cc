@@ -50,9 +50,10 @@ using settings_namespace::MANAGED;
 using settings_namespace::Namespace;
 using settings_namespace::SYNC;
 using settings_namespace::ToString;
-using testing::Mock;
-using testing::Return;
 using testing::_;
+using testing::Mock;
+using testing::NiceMock;
+using testing::Return;
 
 namespace {
 
@@ -132,7 +133,7 @@ class ExtensionSettingsApiTest : public ExtensionApiTest {
                 kModelType, syncer::SyncDataList(),
                 std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
                     sync_processor),
-                std::make_unique<syncer::SyncErrorFactoryMock>())
+                std::make_unique<NiceMock<syncer::SyncErrorFactoryMock>>())
             .has_value());
   }
 
@@ -461,7 +462,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest, MAYBE_ExtensionsSchemas) {
   EXPECT_FALSE(registry->schema_map()->GetSchema(policy::PolicyNamespace(
       policy::POLICY_DOMAIN_EXTENSIONS, kManagedStorageExtensionId)));
 
-  MockSchemaRegistryObserver observer;
+  NiceMock<MockSchemaRegistryObserver> observer;
   registry->AddObserver(&observer);
 
   // Install a managed extension.

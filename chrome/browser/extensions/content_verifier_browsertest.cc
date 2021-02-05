@@ -188,7 +188,7 @@ class ContentVerifierTest : public ExtensionBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   base::AutoReset<bool> scoped_use_update_service_ =
       ExtensionUpdater::GetScopedUseUpdateServiceForTesting();
-  MockUpdateService update_service_;
+  testing::NiceMock<MockUpdateService> update_service_;
 };
 
 IN_PROC_BROWSER_TEST_F(ContentVerifierTest, DotSlashPaths) {

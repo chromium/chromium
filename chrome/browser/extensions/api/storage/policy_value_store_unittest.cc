@@ -26,6 +26,7 @@
 
 using testing::_;
 using testing::Mock;
+using testing::NiceMock;
 
 namespace extensions {
 
@@ -128,7 +129,7 @@ class PolicyValueStoreTest : public testing::Test {
   base::ScopedTempDir scoped_temp_dir_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<PolicyValueStore> store_;
-  MockSettingsObserver observer_;
+  NiceMock<MockSettingsObserver> observer_;
   scoped_refptr<SettingsObserverList> observers_;
 };
 

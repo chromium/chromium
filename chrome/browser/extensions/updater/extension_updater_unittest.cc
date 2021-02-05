@@ -101,14 +101,15 @@
 using base::Time;
 using base::TimeDelta;
 using content::BrowserThread;
-using update_client::UpdateQueryParams;
+using testing::_;
 using testing::DoAll;
 using testing::Invoke;
 using testing::InvokeWithoutArgs;
 using testing::Mock;
+using testing::NiceMock;
 using testing::Return;
 using testing::SetArgPointee;
-using testing::_;
+using update_client::UpdateQueryParams;
 
 namespace extensions {
 
@@ -2640,7 +2641,7 @@ TEST_F(ExtensionUpdaterTest, TestUpdatingDisabledExtensions) {
                            kUpdateFrequencySecs,
                            NULL,
                            service.GetDownloaderFactory());
-  MockUpdateService update_service;
+  NiceMock<MockUpdateService> update_service;
   OverrideUpdateService(&updater, &update_service);
 
   // Non-internal non-external extensions should be rejected.
@@ -2674,7 +2675,7 @@ TEST_F(ExtensionUpdaterTest, TestUpdatingRemotelyDisabledExtensions) {
                            service.pref_service(), service.profile(),
                            kUpdateFrequencySecs, nullptr,
                            service.GetDownloaderFactory());
-  MockUpdateService update_service;
+  NiceMock<MockUpdateService> update_service;
   OverrideUpdateService(&updater, &update_service);
 
   ExtensionList enabled_extensions;
