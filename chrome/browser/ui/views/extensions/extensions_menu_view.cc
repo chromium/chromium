@@ -21,6 +21,7 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop_host_view.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
@@ -91,6 +92,7 @@ ExtensionsMenuView::ExtensionsMenuView(
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetShowCloseButton(true);
   SetTitle(IDS_EXTENSIONS_MENU_TITLE);
+  GetViewAccessibility().OverrideName(GetAccessibleWindowTitle());
 
   SetEnableArrowKeyTraversal(true);
 
@@ -397,6 +399,11 @@ void ExtensionsMenuView::SanityCheck() {
     DCHECK(base::Contains(action_ids, item->view_controller()->GetId()));
   }
 #endif
+}
+
+base::string16 ExtensionsMenuView::GetAccessibleWindowTitle() const {
+  // The title is already spoken via the call to SetTitle().
+  return base::string16();
 }
 
 void ExtensionsMenuView::TabChangedAt(content::WebContents* contents,
