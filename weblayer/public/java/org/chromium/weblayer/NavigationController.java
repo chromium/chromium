@@ -313,9 +313,7 @@ public class NavigationController {
         @Override
         public void readyToCommitNavigation(IClientNavigation navigation) {
             StrictModeWorkaround.apply();
-            for (NavigationCallback callback : mCallbacks) {
-                callback.onReadyToCommitNavigation((Navigation) navigation);
-            }
+            // Functionality removed from NavigationCallback in M90. See crbug.com/1174193
         }
 
         @Override

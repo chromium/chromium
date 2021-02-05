@@ -446,12 +446,12 @@ void NavigationControllerImpl::DidRedirectNavigation(
 
 void NavigationControllerImpl::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
+#if defined(OS_ANDROID)
   if (!navigation_handle->IsInMainFrame())
     return;
 
   DCHECK(navigation_map_.find(navigation_handle) != navigation_map_.end());
   auto* navigation = navigation_map_[navigation_handle].get();
-#if defined(OS_ANDROID)
   if (java_controller_) {
     TRACE_EVENT0("weblayer",
                  "Java_NavigationControllerImpl_readyToCommitNavigation");
@@ -459,8 +459,6 @@ void NavigationControllerImpl::ReadyToCommitNavigation(
         AttachCurrentThread(), java_controller_, navigation->java_navigation());
   }
 #endif
-  for (auto& observer : observers_)
-    observer.ReadyToCommitNavigation(navigation);
 }
 
 void NavigationControllerImpl::DidFinishNavigation(

@@ -103,7 +103,7 @@ public class BrowserFragmentLifecycleTest {
             NavigationController navigationController = activity.getTab().getNavigationController();
             navigationController.registerNavigationCallback(new NavigationCallback() {
                 @Override
-                public void onReadyToCommitNavigation(@NonNull Navigation navigation) {
+                public void onNavigationStarted(@NonNull Navigation navigation) {
                     destroyFragment(helper);
                 }
             });

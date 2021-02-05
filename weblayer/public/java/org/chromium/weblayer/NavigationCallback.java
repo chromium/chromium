@@ -15,9 +15,8 @@ import androidx.annotation.NonNull;
  * The lifecycle of a navigation:
  * 1) navigationStarted()
  * 2) 0 or more navigationRedirected()
- * 3) 0 or 1 readyToCommitNavigation()
- * 4) navigationCompleted() or navigationFailed()
- * 5) onFirstContentfulPaint().
+ * 3) navigationCompleted() or navigationFailed()
+ * 4) onFirstContentfulPaint().
  */
 public abstract class NavigationCallback {
     /**
@@ -49,21 +48,6 @@ public abstract class NavigationCallback {
      * @param navigation the unique object for this navigation.
      */
     public void onNavigationRedirected(@NonNull Navigation navigation) {}
-
-    /**
-     * Called when the navigation is ready to be committed in a renderer. This occurs when the
-     * response code isn't 204/205 (which tell the browser that the request is successful but
-     * there's no content that follows) or a download (either from a response header or based on
-     * mime sniffing the response). The browser then is ready to switch rendering the new document.
-     * Most observers should use NavigationCompleted or NavigationFailed instead, which happens
-     * right after the navigation commits. This method is for observers that want to initialize
-     * renderer-side state just before the Tab commits the navigation.
-     *
-     * This is the first point in time where a Tab is associated with the navigation.
-     *
-     * @param navigation the unique object for this navigation.
-     */
-    public void onReadyToCommitNavigation(@NonNull Navigation navigation) {}
 
     /**
      * Called when a navigation completes successfully in the Tab.

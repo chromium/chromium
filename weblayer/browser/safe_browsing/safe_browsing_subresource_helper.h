@@ -25,7 +25,7 @@ class SafeBrowsingSubresourceHelper
  public:
   ~SafeBrowsingSubresourceHelper() override;
 
-  // WebContentsObserver::
+  // WebContentsObserver:
   void ReadyToCommitNavigation(
       content::NavigationHandle* navigation_handle) override;
 
