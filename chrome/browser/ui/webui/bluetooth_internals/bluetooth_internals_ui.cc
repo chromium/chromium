@@ -13,6 +13,7 @@
 #include "chrome/grit/bluetooth_internals_resources.h"
 #include "chrome/grit/bluetooth_internals_resources_map.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/bluetooth/debug_logs_manager_factory.h"
@@ -23,6 +24,10 @@ BluetoothInternalsUI::BluetoothInternalsUI(content::WebUI* web_ui)
   // Set up the chrome://bluetooth-internals source.
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::Create(chrome::kChromeUIBluetoothInternalsHost);
+  html_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ScriptSrc,
+      "script-src chrome://resources chrome://test 'self';");
+  html_source->DisableTrustedTypesCSP();
 
   // Add required resources.
   webui::AddResourcePathsBulk(

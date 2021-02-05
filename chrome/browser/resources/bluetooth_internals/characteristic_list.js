@@ -7,12 +7,16 @@
  *     chrome://bluetooth-internals/.
  */
 
-cr.define('characteristic_list', function() {
-  const ArrayDataModel = cr.ui.ArrayDataModel;
-  const ExpandableList = expandable_list.ExpandableList;
-  const ExpandableListItem = expandable_list.ExpandableListItem;
-  const Snackbar = snackbar.Snackbar;
-  const SnackbarType = snackbar.SnackbarType;
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {define as crUiDefine} from 'chrome://resources/js/cr/ui.m.js';
+import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
+import {connectToDevice} from './device_broker.js';
+import {Snackbar, SnackbarType} from './snackbar.js';
+import {ExpandableList, ExpandableListItem} from './expandable_list.js';
+import {ObjectFieldSet} from './object_fieldset.js';
+import {ValueControl} from './value_control.js';
+import {DescriptorList} from './descriptor_list.js';
+
 
   /** Property names for the CharacteristicInfo fieldset */
   const INFO_PROPERTY_NAMES = {
@@ -47,9 +51,9 @@ cr.define('characteristic_list', function() {
    * @param {!bluetooth.mojom.CharacteristicInfo} characteristicInfo
    * @param {string} deviceAddress
    * @param {string} serviceId
-   * @extends {expandable_list.ExpandableListItem}
+   * @extends {ExpandableListItem}
    */
-  function CharacteristicListItem(
+  export function CharacteristicListItem(
       characteristicInfo, deviceAddress, serviceId) {
     const listItem = new ExpandableListItem();
     listItem.__proto__ = CharacteristicListItem.prototype;
@@ -76,16 +80,16 @@ cr.define('characteristic_list', function() {
     decorate() {
       this.classList.add('characteristic-list-item');
 
-      /** @private {!object_fieldset.ObjectFieldSet} */
-      this.characteristicFieldSet_ = new object_fieldset.ObjectFieldSet();
+      /** @private {!ObjectFieldSet} */
+      this.characteristicFieldSet_ = new ObjectFieldSet();
       this.characteristicFieldSet_.setPropertyDisplayNames(INFO_PROPERTY_NAMES);
       this.characteristicFieldSet_.setObject({
         id: this.info.id,
         'uuid.uuid': this.info.uuid.uuid,
       });
 
-      /** @private {!object_fieldset.ObjectFieldSet} */
-      this.propertiesFieldSet_ = new object_fieldset.ObjectFieldSet();
+      /** @private {!ObjectFieldSet} */
+      this.propertiesFieldSet_ = new ObjectFieldSet();
       this.propertiesFieldSet_.setPropertyDisplayNames(
           PROPERTIES_PROPERTY_NAMES);
       const Property = bluetooth.mojom.Property;
@@ -113,8 +117,8 @@ cr.define('characteristic_list', function() {
             (this.info.properties & Property.WRITE_ENCRYPTED_AUTHENTICATED) > 0,
       });
 
-      /** @private {!value_control.ValueControl} */
-      this.valueControl_ = new value_control.ValueControl();
+      /** @private {!ValueControl} */
+      this.valueControl_ = new ValueControl();
 
       this.valueControl_.load({
         deviceAddress: this.deviceAddress_,
@@ -124,8 +128,8 @@ cr.define('characteristic_list', function() {
       });
       this.valueControl_.setValue(this.info.lastKnownValue);
 
-      /** @private {!descriptor_list.DescriptorList} */
-      this.descriptorList_ = new descriptor_list.DescriptorList();
+      /** @private {!DescriptorList} */
+      this.descriptorList_ = new DescriptorList();
 
       // Create content for display in brief content container.
       const characteristicHeaderText = document.createElement('div');
@@ -196,9 +200,9 @@ cr.define('characteristic_list', function() {
   /**
    * A list that displays CharacteristicListItems.
    * @constructor
-   * @extends {expandable_list.ExpandableList}
+   * @extends {ExpandableList}
    */
-  const CharacteristicList = cr.ui.define('list');
+  export const CharacteristicList = crUiDefine('list');
 
   CharacteristicList.prototype = {
     __proto__: ExpandableList.prototype,
@@ -239,7 +243,7 @@ cr.define('characteristic_list', function() {
       this.serviceId_ = serviceId;
       this.characteristicsRequested_ = true;
 
-      device_broker.connectToDevice(deviceAddress)
+      connectToDevice(deviceAddress)
           .then(function(device) {
             return device.getCharacteristics(serviceId);
           }.bind(this))
@@ -258,9 +262,3 @@ cr.define('characteristic_list', function() {
           }.bind(this));
     },
   };
-
-  return {
-    CharacteristicList: CharacteristicList,
-    CharacteristicListItem: CharacteristicListItem,
-  };
-});

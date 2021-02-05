@@ -2,13 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-cr.define('cr.ui.pageManager', function() {
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {Page} from './page.js';
+import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
+import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
+
   /**
    * PageManager contains a list of root Page objects and handles "navigation"
    * by showing and hiding these pages. On initial load, PageManager can use
    * the path to open the correct hierarchy of pages.
    */
-  class PageManager {
+  export class PageManager {
     constructor() {
       /**
        * True if page is served from a dialog.
@@ -18,34 +22,34 @@ cr.define('cr.ui.pageManager', function() {
 
       /**
        * Root pages. Maps lower-case page names to the respective page object.
-       * @type {!Map<string, !cr.ui.pageManager.Page>}
+       * @type {!Map<string, !Page>}
        */
       this.registeredPages = new Map();
 
       /**
        * Observers will be notified when opening and closing overlays.
-       * @private {!Array<!cr.ui.pageManager.PageManagerObserver>}
+       * @private {!Array<!PageManagerObserver>}
        */
       this.observers_ = [];
 
-      /** @private {?cr.ui.pageManager.Page} */
+      /** @private {?Page} */
       this.defaultPage_ = null;
     }
 
     /**
      * Initializes the complete page.
-     * @param {cr.ui.pageManager.Page} defaultPage The page to be shown when no
+     * @param {Page} defaultPage The page to be shown when no
      *     page is specified in the path.
      */
     initialize(defaultPage) {
       this.defaultPage_ = defaultPage;
 
-      cr.ui.FocusOutlineManager.forDocument(document);
+      FocusOutlineManager.forDocument(document);
     }
 
     /**
      * Registers new page.
-     * @param {!cr.ui.pageManager.Page} page Page to register.
+     * @param {!Page} page Page to register.
      */
     register(page) {
       this.registeredPages.set(page.name.toLowerCase(), page);
@@ -57,7 +61,7 @@ cr.define('cr.ui.pageManager', function() {
 
     /**
      * Unregisters an existing page.
-     * @param {!cr.ui.pageManager.Page} page Page to unregister.
+     * @param {!Page} page Page to unregister.
      */
     unregister(page) {
       this.registeredPages.delete(page.name.toLowerCase());
@@ -70,7 +74,7 @@ cr.define('cr.ui.pageManager', function() {
      */
     showDefaultPage(opt_updateHistory) {
       assert(
-          this.defaultPage_ instanceof cr.ui.pageManager.Page,
+          this.defaultPage_ instanceof Page,
           'PageManager must be initialized with a default page.');
       this.showPageByName(this.defaultPage_.name, opt_updateHistory);
     }
@@ -186,8 +190,8 @@ cr.define('cr.ui.pageManager', function() {
     /**
      * Checks whether one page is an ancestor of the other page in terms of
      * subpage nesting.
-     * @param {cr.ui.pageManager.Page} potentialAncestor Potential ancestor.
-     * @param {cr.ui.pageManager.Page} potentialDescendent Potential descendent.
+     * @param {Page} potentialAncestor Potential ancestor.
+     * @param {Page} potentialDescendent Potential descendent.
      * @return {boolean} True if |potentialDescendent| is nested under
      *     |potentialAncestor|.
      */
@@ -208,15 +212,14 @@ cr.define('cr.ui.pageManager', function() {
      * @param {!CustomEvent} e
      */
     onPageHashChanged_(e) {
-      const page = /** @type {!cr.ui.pageManager.Page} */ (e.target);
+      const page = /** @type {!Page} */ (e.target);
       if (page == this.getTopmostVisiblePage()) {
         this.updateHistoryState_(false);
       }
     }
 
     /**
-     * @param {!cr.ui.pageManager.PageManagerObserver} observer The observer to
-     *     register.
+     * @param {!PageManagerObserver} observer The observer to register.
      */
     addObserver(observer) {
       this.observers_.push(observer);
@@ -224,7 +227,7 @@ cr.define('cr.ui.pageManager', function() {
 
     /**
      * Returns the topmost visible page.
-     * @return {cr.ui.pageManager.Page}
+     * @return {Page}
      * @private
      */
     getTopmostVisiblePage() {
@@ -290,7 +293,7 @@ cr.define('cr.ui.pageManager', function() {
   /**
    * An observer of PageManager.
    */
-  class PageManagerObserver {
+  export class PageManagerObserver {
     /**
      * Called when a new title should be set.
      * @param {string} title The title to set.
@@ -305,8 +308,4 @@ cr.define('cr.ui.pageManager', function() {
     updateHistory(path, replace) {}
   }
 
-  // Export
-  return {PageManager: PageManager, PageManagerObserver: PageManagerObserver};
-});
-
-cr.addSingletonGetter(cr.ui.pageManager.PageManager);
+addSingletonGetter(PageManager);

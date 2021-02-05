@@ -6,14 +6,16 @@
  * Javascript for Sidebar, served from chrome://bluetooth-internals/.
  */
 
-cr.define('sidebar', function() {
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {PageManager, PageManagerObserver} from './page_manager.js';
+
   /** @typedef {{pageName: string, text: string}} */
   let SidebarItem;
 
   /**
    * A side menu that lists the currently navigable pages.
    */
-  class Sidebar extends cr.ui.pageManager.PageManagerObserver {
+  export class Sidebar extends PageManagerObserver {
     /** @param {!Element} sidebarDiv The div corresponding to the sidebar. */
     constructor(sidebarDiv) {
       super();
@@ -104,10 +106,7 @@ cr.define('sidebar', function() {
      */
     onItemClick_(event) {
       this.close();
-      cr.ui.pageManager.PageManager.getInstance().showPageByName(
+      PageManager.getInstance().showPageByName(
           event.target.parentNode.dataset.pageName);
     }
   }
-
-  return {Sidebar: Sidebar};
-});

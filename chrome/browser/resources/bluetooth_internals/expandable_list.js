@@ -2,22 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
+import {define as crUiDefine} from 'chrome://resources/js/cr/ui.m.js';
+import {List} from 'chrome://resources/js/cr/ui/list.m.js';
+import {ListItem} from 'chrome://resources/js/cr/ui/list_item.m.js';
+
 /**
  * Javascript for ExpandableList and ExpandableListItem, served from
  *     chrome://bluetooth-internals/.
  */
 
-cr.define('expandable_list', function() {
-  const List = cr.ui.List;
-  const ListItem = cr.ui.ListItem;
-
   /**
    * A list item that has expandable content that toggles when the item is
    * clicked.
    * @constructor
-   * @extends {cr.ui.ListItem}
+   * @extends {ListItem}
    */
-  const ExpandableListItem = cr.ui.define('li');
+  export const ExpandableListItem = crUiDefine('li');
 
   ExpandableListItem.prototype = {
     __proto__: ListItem.prototype,
@@ -57,9 +58,9 @@ cr.define('expandable_list', function() {
   /**
    * A list that contains expandable list items.
    * @constructor
-   * @extends {cr.ui.List}
+   * @extends {List}
    */
-  const ExpandableList = cr.ui.define('list');
+  export const ExpandableList = crUiDefine('list');
 
   ExpandableList.prototype = {
     __proto__: List.prototype,
@@ -89,7 +90,7 @@ cr.define('expandable_list', function() {
 
     /**
      * Sets the data model of the list.
-     * @param {cr.ui.ArrayDataModel} data
+     * @param {ArrayDataModel} data
      */
     setData(data) {
       if (this.dataModel) {
@@ -134,9 +135,3 @@ cr.define('expandable_list', function() {
       this.emptyMessage_.hidden = this.dataModel.length > 0;
     },
   };
-
-  return {
-    ExpandableListItem: ExpandableListItem,
-    ExpandableList: ExpandableList,
-  };
-});

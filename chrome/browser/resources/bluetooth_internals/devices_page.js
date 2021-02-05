@@ -7,12 +7,15 @@
  *     chrome://bluetooth-internals/.
  */
 
-cr.define('devices_page', function() {
+import {Page} from './page.js';
+import {DeviceCollection} from './device_collection.js';
+import {DeviceTable} from './device_table.js';
+
   /**
    * Enum of scan status for the devices page.
    * @enum {number}
    */
-  const ScanStatus = {
+  export const ScanStatus = {
     OFF: 0,
     STARTING: 1,
     ON: 2,
@@ -23,11 +26,11 @@ cr.define('devices_page', function() {
   /**
    * Page that contains a header and a DevicesView.
    */
-  class DevicesPage extends cr.ui.pageManager.Page {
+  export class DevicesPage extends Page {
     constructor() {
       super('devices', 'Devices', 'devices');
 
-      this.deviceTable = new device_table.DeviceTable();
+      this.deviceTable = new DeviceTable();
       this.pageDiv.appendChild(this.deviceTable);
       this.scanBtn_ = this.pageDiv.querySelector('#scan-btn');
       this.scanBtn_.addEventListener('click', event => {
@@ -37,7 +40,7 @@ cr.define('devices_page', function() {
 
     /**
      * Sets the device collection for the page's device table.
-     * @param {!device_collection.DeviceCollection} devices
+     * @param {!DeviceCollection} devices
      */
     setDevices(devices) {
       this.deviceTable.setDevices(devices);
@@ -73,9 +76,3 @@ cr.define('devices_page', function() {
       }
     }
   }
-
-  return {
-    DevicesPage: DevicesPage,
-    ScanStatus: ScanStatus,
-  };
-});

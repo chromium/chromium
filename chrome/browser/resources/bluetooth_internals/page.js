@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-cr.define('cr.ui.pageManager', function() {
+import {dispatchPropertyChange} from 'chrome://resources/js/cr.m.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+import {getRequiredElement} from 'chrome://resources/js/util.m.js';
+
   /**
    * Finds a good place to set initial focus. Generally called when UI is shown.
    * @param {!Element} root Where to start looking for focusable controls.
@@ -32,7 +35,7 @@ cr.define('cr.ui.pageManager', function() {
    * as an overlay. The host of the root Page(s) should provide a container div
    * for each nested level to enforce the stack order of overlays.
    */
-  class Page extends cr.EventTarget {
+  export class Page extends EventTarget {
     /**
      * @param {string} name Page name.
      * @param {string} title Page title, used for history.
@@ -55,7 +58,7 @@ cr.define('cr.ui.pageManager', function() {
 
       /**
        * The parent page of this page; or null for root pages.
-       * @type {cr.ui.pageManager.Page}
+       * @type {Page}
        */
       this.parentPage = null;
 
@@ -146,10 +149,6 @@ cr.define('cr.ui.pageManager', function() {
       this.pageDiv.page = this;
       this.pageDiv.hidden = !visible;
 
-      cr.dispatchPropertyChange(this, 'visible', visible, !visible);
+      dispatchPropertyChange(this, 'visible', visible, !visible);
     }
   }
-
-  // Export
-  return {Page: Page};
-});

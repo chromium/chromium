@@ -2,17 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {define as crUiDefine} from 'chrome://resources/js/cr/ui.m.js';
+import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
+
+import {connectToDevice} from './device_broker.js';
+import {CharacteristicList} from './characteristic_list.js';
+import {Snackbar, SnackbarType} from './snackbar.js';
+import {ExpandableList, ExpandableListItem} from './expandable_list.js';
+import {ObjectFieldSet} from './object_fieldset.js';
+
 /**
  * Javascript for ServiceList and ServiceListItem, served from
  *     chrome://bluetooth-internals/.
  */
-
-cr.define('service_list', function() {
-  const ArrayDataModel = cr.ui.ArrayDataModel;
-  const ExpandableList = expandable_list.ExpandableList;
-  const ExpandableListItem = expandable_list.ExpandableListItem;
-  const Snackbar = snackbar.Snackbar;
-  const SnackbarType = snackbar.SnackbarType;
 
   /**
    * Property names that will be displayed in the ObjectFieldSet which contains
@@ -32,10 +35,10 @@ cr.define('service_list', function() {
    * expanded for the first time.
    * @param {!bluetooth.mojom.ServiceInfo} serviceInfo
    * @param {string} deviceAddress
-   * @extends {expandable_list.ExpandableListItem}
+   * @extends {ExpandableListItem}
    * @constructor
    */
-  function ServiceListItem(serviceInfo, deviceAddress) {
+  export function ServiceListItem(serviceInfo, deviceAddress) {
     const listItem = new ExpandableListItem();
     listItem.__proto__ = ServiceListItem.prototype;
 
@@ -59,8 +62,8 @@ cr.define('service_list', function() {
     decorate() {
       this.classList.add('service-list-item');
 
-      /** @private {!object_fieldset.ObjectFieldSet} */
-      this.serviceFieldSet_ = new object_fieldset.ObjectFieldSet();
+      /** @private {!ObjectFieldSet} */
+      this.serviceFieldSet_ = new ObjectFieldSet();
       this.serviceFieldSet_.setPropertyDisplayNames(PROPERTY_NAMES);
       this.serviceFieldSet_.setObject({
         id: this.info.id,
@@ -90,7 +93,7 @@ cr.define('service_list', function() {
 
       const characteristicsListHeader = document.createElement('h4');
       characteristicsListHeader.textContent = 'Characteristics';
-      this.characteristicList_ = new characteristic_list.CharacteristicList();
+      this.characteristicList_ = new CharacteristicList();
 
       const infoDiv = document.createElement('div');
       infoDiv.classList.add('info-container');
@@ -111,9 +114,9 @@ cr.define('service_list', function() {
   /**
    * A list that displays ServiceListItems.
    * @constructor
-   * @extends {expandable_list.ExpandableList}
+   * @extends {ExpandableList}
    */
-  const ServiceList = cr.ui.define('list');
+  export const ServiceList = crUiDefine('list');
 
   ServiceList.prototype = {
     __proto__: ExpandableList.prototype,
@@ -150,7 +153,7 @@ cr.define('service_list', function() {
       this.deviceAddress_ = deviceAddress;
       this.servicesRequested_ = true;
 
-      device_broker.connectToDevice(this.deviceAddress_)
+      connectToDevice(this.deviceAddress_)
           .then(function(device) {
             return device.getServices();
           }.bind(this))
@@ -169,9 +172,3 @@ cr.define('service_list', function() {
           }.bind(this));
     },
   };
-
-  return {
-    ServiceList: ServiceList,
-    ServiceListItem: ServiceListItem,
-  };
-});

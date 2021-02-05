@@ -9,7 +9,8 @@
  * Served from chrome://bluetooth-internals/.
  */
 
-cr.define('object_fieldset', function() {
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {define as crUiDefine} from 'chrome://resources/js/cr/ui.m.js';
 
   /**
    * A fieldset that lists the properties of a given object. These properties
@@ -21,7 +22,7 @@ cr.define('object_fieldset', function() {
    * @constructor
    * @extends {HTMLFieldSetElement}
    */
-  const ObjectFieldSet = cr.ui.define('fieldset');
+  export const ObjectFieldSet = crUiDefine('fieldset');
 
   ObjectFieldSet.prototype = {
     __proto__: HTMLFieldSetElement.prototype,
@@ -100,8 +101,3 @@ cr.define('object_fieldset', function() {
       }, this);
     },
   };
-
-  return {
-    ObjectFieldSet: ObjectFieldSet,
-  };
-});

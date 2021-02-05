@@ -2,11 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import './uuid.mojom-lite.js';
+import './device.mojom-lite.js';
+import './adapter.mojom-lite.js';
+import './bluetooth_internals.mojom-lite.js';
+
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+
 /**
  * Javascript for AdapterBroker, served from
  *     chrome://bluetooth-internals/.
  */
-cr.define('adapter_broker', function() {
   /** @typedef {bluetooth.mojom.AdapterRemote} */
   let AdapterRemote;
   /** @typedef {bluetooth.mojom.DeviceRemote} */
@@ -18,7 +25,7 @@ cr.define('adapter_broker', function() {
    * Enum of adapter property names. Used for adapterchanged events.
    * @enum {string}
    */
-  const AdapterProperty = {
+  export const AdapterProperty = {
     DISCOVERABLE: 'discoverable',
     DISCOVERING: 'discovering',
     POWERED: 'powered',
@@ -34,7 +41,7 @@ cr.define('adapter_broker', function() {
    *
    * @implements {bluetooth.mojom.AdapterObserverInterface}
    */
-  class AdapterBroker extends cr.EventTarget {
+  export class AdapterBroker extends EventTarget {
     /** @param {!AdapterRemote} adapter */
     constructor(adapter) {
       super();
@@ -156,10 +163,10 @@ cr.define('adapter_broker', function() {
    * Initializes an AdapterBroker if one doesn't exist.
    * @param {!mojom.BluetoothInternalsHandlerRemote=}
    *     opt_bluetoothInternalsHandler
-   * @return {!Promise<!adapter_broker.AdapterBroker>} resolves with
+   * @return {!Promise<!AdapterBroker>} resolves with
    *     AdapterBroker, rejects if Bluetooth is not supported.
    */
-  function getAdapterBroker(opt_bluetoothInternalsHandler) {
+  export function getAdapterBroker(opt_bluetoothInternalsHandler) {
     if (adapterBroker) {
       return Promise.resolve(adapterBroker);
     }
@@ -178,10 +185,3 @@ cr.define('adapter_broker', function() {
       return adapterBroker;
     });
   }
-
-  return {
-    AdapterBroker: AdapterBroker,
-    AdapterProperty: AdapterProperty,
-    getAdapterBroker: getAdapterBroker,
-  };
-});

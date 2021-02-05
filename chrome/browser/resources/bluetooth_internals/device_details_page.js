@@ -8,9 +8,13 @@
  * served from chrome://bluetooth-internals/.
  */
 
-cr.define('device_details_page', function() {
-  const Snackbar = snackbar.Snackbar;
-  const SnackbarType = snackbar.SnackbarType;
+import {$} from 'chrome://resources/js/util.m.js';
+import {connectToDevice} from './device_broker.js';
+import {ConnectionStatus} from './device_collection.js';
+import {Page} from './page.js';
+import {Snackbar, SnackbarType} from './snackbar.js';
+import {ObjectFieldSet} from './object_fieldset.js';
+import {ServiceList} from './service_list.js';
 
   /**
    * Property names that will be displayed in the ObjectFieldSet which contains
@@ -31,7 +35,7 @@ cr.define('device_details_page', function() {
    * the DeviceInfo object and the Services section contains a ServiceList
    * compononent that lists all of the active services on the device.
    */
-  class DeviceDetailsPage extends cr.ui.pageManager.Page {
+  export class DeviceDetailsPage extends Page {
     /**
      * @param {string} id
      * @param {!bluetooth.mojom.DeviceInfo} deviceInfo
@@ -48,15 +52,15 @@ cr.define('device_details_page', function() {
       /** @private {?bluetooth.mojom.DeviceRemote} */
       this.device_ = null;
 
-      /** @private {!object_fieldset.ObjectFieldSet} */
-      this.deviceFieldSet_ = new object_fieldset.ObjectFieldSet();
+      /** @private {!ObjectFieldSet} */
+      this.deviceFieldSet_ = new ObjectFieldSet();
       this.deviceFieldSet_.setPropertyDisplayNames(PROPERTY_NAMES);
 
-      /** @private {!service_list.ServiceList} */
-      this.serviceList_ = new service_list.ServiceList();
+      /** @private {!ServiceList} */
+      this.serviceList_ = new ServiceList();
 
-      /** @private {!device_collection.ConnectionStatus} */
-      this.status_ = device_collection.ConnectionStatus.DISCONNECTED;
+      /** @private {!ConnectionStatus} */
+      this.status_ = ConnectionStatus.DISCONNECTED;
 
       /** @private {?Element} */
       this.connectBtn_ = null;
@@ -88,19 +92,19 @@ cr.define('device_details_page', function() {
 
     /** Creates a connection to the Bluetooth device. */
     connect() {
-      if (this.status_ !== device_collection.ConnectionStatus.DISCONNECTED) {
+      if (this.status_ !== ConnectionStatus.DISCONNECTED) {
         return;
       }
 
       this.updateConnectionStatus_(
-          device_collection.ConnectionStatus.CONNECTING);
+          ConnectionStatus.CONNECTING);
 
-      device_broker.connectToDevice(this.deviceInfo.address)
+      connectToDevice(this.deviceInfo.address)
           .then(function(device) {
             this.device_ = device;
 
             this.updateConnectionStatus_(
-                device_collection.ConnectionStatus.CONNECTED);
+                ConnectionStatus.CONNECTED);
 
             // Fetch services asynchronously.
             return this.device_.getServices();
@@ -124,7 +128,7 @@ cr.define('device_details_page', function() {
                 SnackbarType.ERROR, 'Retry', this.connect.bind(this));
 
             this.updateConnectionStatus_(
-                device_collection.ConnectionStatus.DISCONNECTED);
+                ConnectionStatus.DISCONNECTED);
           }.bind(this));
     }
 
@@ -137,7 +141,7 @@ cr.define('device_details_page', function() {
       this.device_.disconnect();
       this.device_ = null;
       this.updateConnectionStatus_(
-          device_collection.ConnectionStatus.DISCONNECTED);
+          ConnectionStatus.DISCONNECTED);
     }
 
     /** Redraws the contents of the page with the current |deviceInfo|. */
@@ -204,7 +208,7 @@ cr.define('device_details_page', function() {
      * Updates the current connection status. Caches the latest status, updates
      * the connection button message, and fires a 'connectionchanged' event when
      * finished.
-     * @param {!device_collection.ConnectionStatus} status
+     * @param {!ConnectionStatus} status
      * @private
      */
     updateConnectionStatus_(status) {
@@ -213,10 +217,10 @@ cr.define('device_details_page', function() {
       }
 
       this.status_ = status;
-      if (status === device_collection.ConnectionStatus.DISCONNECTED) {
+      if (status === ConnectionStatus.DISCONNECTED) {
         this.connectBtn_.textContent = 'Connect';
         this.connectBtn_.disabled = false;
-      } else if (status === device_collection.ConnectionStatus.CONNECTING) {
+      } else if (status === ConnectionStatus.CONNECTING) {
         this.connectBtn_.textContent = 'Connecting';
         this.connectBtn_.disabled = true;
       } else {
@@ -233,8 +237,3 @@ cr.define('device_details_page', function() {
       }));
     }
   }
-
-  return {
-    DeviceDetailsPage: DeviceDetailsPage,
-  };
-});

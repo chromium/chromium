@@ -2,13 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {TestBrowserProxy} from '../test_browser_proxy.m.js';
+
 /**
  * A mojom.BluetoothInternalsHandler for the chrome://bluetooth-internals
  * page. Provides a fake BluetoothInternalsHandler::GetAdapter
  * implementation and acts as a root of all Test* classes by containing an
  * adapter member.
  */
-class TestBluetoothInternalsHandler extends TestBrowserProxy {
+export class TestBluetoothInternalsHandler extends TestBrowserProxy {
   /**
    * @param {!MojoHandle} handle
    */
@@ -46,7 +49,7 @@ class TestBluetoothInternalsHandler extends TestBrowserProxy {
  * A bluetooth.mojom.Adapter implementation for the
  * chrome://bluetooth-internals page.
  */
-class TestAdapter extends TestBrowserProxy {
+export class TestAdapter extends TestBrowserProxy {
   constructor(adapterInfo) {
     super([
       'getInfo',
@@ -140,7 +143,7 @@ class TestAdapter extends TestBrowserProxy {
  * TestAdapter which provides the DeviceInfo.
  * @param {!device.DeviceInfo} info
  */
-class TestDevice extends TestBrowserProxy {
+export class TestDevice extends TestBrowserProxy {
   constructor(info) {
     super([
       'getInfo',
@@ -178,7 +181,7 @@ class TestDevice extends TestBrowserProxy {
  * Returns a copy of fake adapter info object.
  * @return {!Object}
  */
-function fakeAdapterInfo() {
+export function fakeAdapterInfo() {
   return {
     address: '02:1C:7E:6A:11:5A',
     discoverable: false,
@@ -195,7 +198,7 @@ function fakeAdapterInfo() {
  * Returns a copy of a fake device info object (variant 1).
  * @return {!Object}
  */
-function fakeDeviceInfo1() {
+export function fakeDeviceInfo1() {
   return {
     address: 'AA:AA:84:96:92:84',
     name: 'AAA',
@@ -211,7 +214,7 @@ function fakeDeviceInfo1() {
  * Returns a copy of a fake device info object (variant 2).
  * @return {!Object}
  */
-function fakeDeviceInfo2() {
+export function fakeDeviceInfo2() {
   return {
     address: 'BB:BB:84:96:92:84',
     name: 'BBB',
@@ -228,7 +231,7 @@ function fakeDeviceInfo2() {
  * rssi and services properties.
  * @return {!Object}
  */
-function fakeDeviceInfo3() {
+export function fakeDeviceInfo3() {
   return {
     address: 'CC:CC:84:96:92:84',
     name: 'CCC',
@@ -242,7 +245,7 @@ function fakeDeviceInfo3() {
  * Returns a copy of fake service info object (variant 1).
  * @return {!Object}
  */
-function fakeServiceInfo1() {
+export function fakeServiceInfo1() {
   return {
     id: 'service1',
     uuid: {uuid: '00002a05-0000-1000-8000-00805f9b34fb'},
@@ -254,7 +257,7 @@ function fakeServiceInfo1() {
  * Returns a copy of fake service info object (variant 2).
  * @return {!Object}
  */
-function fakeServiceInfo2() {
+export function fakeServiceInfo2() {
   return {
     id: 'service2',
     uuid: {uuid: '0000180d-0000-1000-8000-00805f9b34fb'},
@@ -267,7 +270,7 @@ function fakeServiceInfo2() {
  * and all permissions bits set.
  * @return {!Object}
  */
-function fakeCharacteristicInfo1() {
+export function fakeCharacteristicInfo1() {
   return {
     id: 'characteristic1',
     uuid: '00002a19-0000-1000-8000-00805f9b34fb',

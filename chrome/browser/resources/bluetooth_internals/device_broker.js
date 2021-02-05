@@ -9,15 +9,16 @@
  * DeviceRemote being shared among all requesters.
  */
 
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import './device.mojom-lite.js';
+import {getAdapterBroker} from './adapter_broker.js';
+
 // Expose for testing.
 /**
- * @type {?Map<string,
+ * @type {Map<string,
  *     !bluetooth.mojom.DeviceRemote|!Promise<!bluetooth.mojom.DeviceRemote>>}
  */
-let connectedDevices = null;
-
-cr.define('device_broker', function() {
-  connectedDevices = new Map();
+export const connectedDevices = new Map();
 
   /**
    * Creates a GATT connection to the device with |address|. If a connection to
@@ -27,14 +28,14 @@ cr.define('device_broker', function() {
    * @param {string} address
    * @return {!Promise<!bluetooth.mojom.DeviceRemote>}
    */
-  function connectToDevice(address) {
+  export function connectToDevice(address) {
     const deviceOrPromise = connectedDevices.get(address) || null;
     if (deviceOrPromise !== null) {
       return Promise.resolve(deviceOrPromise);
     }
 
     const promise = /** @type {!Promise<!bluetooth.mojom.DeviceRemote>} */ (
-        adapter_broker.getAdapterBroker()
+        getAdapterBroker()
             .then(function(adapterBroker) {
               return adapterBroker.connectToDevice(address);
             })
@@ -54,6 +55,3 @@ cr.define('device_broker', function() {
     connectedDevices.set(address, promise);
     return promise;
   }
-
-  return {connectToDevice: connectToDevice};
-});

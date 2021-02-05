@@ -6,9 +6,10 @@
  * Javascript for ValueControl, served from chrome://bluetooth-internals/.
  */
 
-cr.define('value_control', function() {
-  const Snackbar = snackbar.Snackbar;
-  const SnackbarType = snackbar.SnackbarType;
+import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {connectToDevice} from './device_broker.js';
+import {define as crUiDefine} from 'chrome://resources/js/cr/ui.m.js';
+import {Snackbar, SnackbarType} from './snackbar.js';
 
   /**
    * @typedef {{
@@ -22,7 +23,7 @@ cr.define('value_control', function() {
   let ValueLoadOptions;
 
   /** @enum {string}  */
-  const ValueDataType = {
+  export const ValueDataType = {
     HEXADECIMAL: 'Hexadecimal',
     UTF8: 'UTF-8',
     DECIMAL: 'Decimal',
@@ -32,22 +33,21 @@ cr.define('value_control', function() {
    * A container for an array value that needs to be converted to multiple
    * display formats. Internally, the value is stored as an array and converted
    * to the needed display type at runtime.
-   * @constructor
-   * @param {!Array<number>} initialValue
    */
-  function Value(initialValue) {
-    /** @private {!Array<number>} */
-    this.value_ = initialValue;
-  }
+  export class Value {
+    /** @param {!Array<number>} initialValue */
+    constructor(initialValue) {
+      /** @private {!Array<number>} */
+      this.value_ = initialValue;
+    }
 
-  Value.prototype = {
     /**
      * Gets the backing array value.
      * @return {!Array<number>}
      */
     getArray() {
       return this.value_;
-    },
+    }
 
     /**
      * Sets the backing array value.
@@ -55,12 +55,12 @@ cr.define('value_control', function() {
      */
     setArray(newValue) {
       this.value_ = newValue;
-    },
+    }
 
     /**
      * Sets the value by converting the |newValue| string using the formatting
      * specified by |valueDataType|.
-     * @param {!value_control.ValueDataType} valueDataType
+     * @param {!ValueDataType} valueDataType
      * @param {string} newValue
      */
     setAs(valueDataType, newValue) {
@@ -77,11 +77,11 @@ cr.define('value_control', function() {
           this.setValueFromDecimal_(newValue);
           break;
       }
-    },
+    }
 
     /**
      * Gets the value as a string representing the given |valueDataType|.
-     * @param {!value_control.ValueDataType} valueDataType
+     * @param {!ValueDataType} valueDataType
      * @return {string}
      */
     getAs(valueDataType) {
@@ -97,7 +97,7 @@ cr.define('value_control', function() {
       }
       assertNotReached();
       return '';
-    },
+    }
 
     /**
      * Converts the value to a hex string.
@@ -112,7 +112,7 @@ cr.define('value_control', function() {
       return this.value_.reduce(function(result, value, index) {
         return result + ('0' + value.toString(16)).substr(-2);
       }, '0x');
-    },
+    }
 
     /**
      * Sets the value from a hex string.
@@ -135,7 +135,7 @@ cr.define('value_control', function() {
       }
 
       this.value_ = result;
-    },
+    }
 
     /**
      * Converts the value to a UTF-8 encoded text string.
@@ -146,7 +146,7 @@ cr.define('value_control', function() {
       return this.value_.reduce(function(result, value) {
         return result + String.fromCharCode(value);
       }, '');
-    },
+    }
 
     /**
      * Sets the value from a UTF-8 encoded text string.
@@ -162,7 +162,7 @@ cr.define('value_control', function() {
       this.value_ = Array.from(newValue).map(function(char) {
         return char.charCodeAt(0);
       });
-    },
+    }
 
     /**
      * Converts the value to a decimal string with numbers delimited by '-'.
@@ -171,7 +171,7 @@ cr.define('value_control', function() {
      */
     toDecimal_() {
       return this.value_.join('-');
-    },
+    }
 
     /**
      * Sets the value from a decimal string delimited by '-'.
@@ -191,8 +191,8 @@ cr.define('value_control', function() {
       this.value_ = newValue.split('-').map(function(val) {
         return parseInt(val, 10);
       });
-    },
-  };
+    }
+  }
 
   /**
    * A set of inputs that allow a user to request reads and writes of values.
@@ -203,7 +203,7 @@ cr.define('value_control', function() {
    * @constructor
    * @extends {HTMLDivElement}
    */
-  const ValueControl = cr.ui.define('div');
+  export const ValueControl = crUiDefine('div');
 
   ValueControl.prototype = {
     __proto__: HTMLDivElement.prototype,
@@ -351,7 +351,7 @@ cr.define('value_control', function() {
     readValue_() {
       this.readBtn_.disabled = true;
 
-      device_broker.connectToDevice(assert(this.deviceAddress_))
+      connectToDevice(assert(this.deviceAddress_))
           .then(function(device) {
             if (this.descriptorId_) {
               return device.readValueForDescriptor(
@@ -389,7 +389,7 @@ cr.define('value_control', function() {
     writeValue_() {
       this.writeBtn_.disabled = true;
 
-      device_broker.connectToDevice(assert(this.deviceAddress_))
+      connectToDevice(assert(this.deviceAddress_))
           .then(function(device) {
             if (this.descriptorId_) {
               return device.writeValueForDescriptor(
@@ -418,9 +418,3 @@ cr.define('value_control', function() {
           }.bind(this));
     },
   };
-
-  return {
-    ValueControl: ValueControl,
-    ValueDataType: ValueDataType,
-  };
-});

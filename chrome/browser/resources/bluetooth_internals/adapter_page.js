@@ -6,7 +6,10 @@
  * Javascript for AdapterPage, served from chrome://bluetooth-internals/.
  */
 
-cr.define('adapter_page', function() {
+import {$} from 'chrome://resources/js/util.m.js';
+import {ObjectFieldSet} from './object_fieldset.js';
+import {Page} from './page.js';
+
   const PROPERTY_NAMES = {
     address: 'Address',
     name: 'Name',
@@ -21,11 +24,11 @@ cr.define('adapter_page', function() {
   /**
    * Page that contains an ObjectFieldSet that displays the latest AdapterInfo.
    */
-  class AdapterPage extends cr.ui.pageManager.Page {
+  export class AdapterPage extends Page {
     constructor() {
       super('adapter', 'Adapter', 'adapter');
 
-      this.adapterFieldSet = new object_fieldset.ObjectFieldSet();
+      this.adapterFieldSet = new ObjectFieldSet();
       this.adapterFieldSet.setPropertyDisplayNames(PROPERTY_NAMES);
       this.pageDiv.appendChild(this.adapterFieldSet);
 
@@ -59,8 +62,3 @@ cr.define('adapter_page', function() {
       this.refreshBtn_.disabled = false;
     }
   }
-
-  return {
-    AdapterPage: AdapterPage,
-  };
-});

@@ -7,12 +7,14 @@
  *     chrome://bluetooth-internals/.
  */
 
-cr.define('descriptor_list', function() {
-  const ArrayDataModel = cr.ui.ArrayDataModel;
-  const ExpandableList = expandable_list.ExpandableList;
-  const ExpandableListItem = expandable_list.ExpandableListItem;
-  const Snackbar = snackbar.Snackbar;
-  const SnackbarType = snackbar.SnackbarType;
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {connectToDevice} from './device_broker.js';
+import {define as crUiDefine} from 'chrome://resources/js/cr/ui.m.js';
+import {Snackbar, SnackbarType} from './snackbar.js';
+import {ExpandableList, ExpandableListItem} from './expandable_list.js';
+import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
+import {ObjectFieldSet} from './object_fieldset.js';
+import {ValueControl} from './value_control.js';
 
   /** Property names for the DescriptorInfo fieldset */
   const INFO_PROPERTY_NAMES = {
@@ -29,9 +31,9 @@ cr.define('descriptor_list', function() {
    * @param {string} deviceAddress
    * @param {string} serviceId
    * @param {string} characteristicId
-   * @extends {expandable_list.ExpandableListItem}
+   * @extends {ExpandableListItem}
    */
-  function DescriptorListItem(
+  export function DescriptorListItem(
       descriptorInfo, deviceAddress, serviceId, characteristicId) {
     const listItem = new ExpandableListItem();
     listItem.__proto__ = DescriptorListItem.prototype;
@@ -60,16 +62,16 @@ cr.define('descriptor_list', function() {
     decorate() {
       this.classList.add('descriptor-list-item');
 
-      /** @private {!object_fieldset.ObjectFieldSet} */
-      this.descriptorFieldSet_ = new object_fieldset.ObjectFieldSet();
+      /** @private {!ObjectFieldSet} */
+      this.descriptorFieldSet_ = new ObjectFieldSet();
       this.descriptorFieldSet_.setPropertyDisplayNames(INFO_PROPERTY_NAMES);
       this.descriptorFieldSet_.setObject({
         id: this.info.id,
         'uuid.uuid': this.info.uuid.uuid,
       });
 
-      /** @private {!value_control.ValueControl} */
-      this.valueControl_ = new value_control.ValueControl();
+      /** @private {!ValueControl} */
+      this.valueControl_ = new ValueControl();
       this.valueControl_.load({
         deviceAddress: this.deviceAddress_,
         serviceId: this.serviceId_,
@@ -114,9 +116,9 @@ cr.define('descriptor_list', function() {
   /**
    * A list that displays DescriptorListItems.
    * @constructor
-   * @extends {expandable_list.ExpandableList}
+   * @extends {ExpandableList}
    */
-  const DescriptorList = cr.ui.define('list');
+  export const DescriptorList = crUiDefine('list');
 
   DescriptorList.prototype = {
     __proto__: ExpandableList.prototype,
@@ -163,7 +165,7 @@ cr.define('descriptor_list', function() {
       this.characteristicId_ = characteristicId;
       this.descriptorsRequested_ = true;
 
-      device_broker.connectToDevice(deviceAddress)
+      connectToDevice(deviceAddress)
           .then(function(device) {
             return device.getDescriptors(serviceId, characteristicId);
           }.bind(this))
@@ -182,9 +184,3 @@ cr.define('descriptor_list', function() {
           }.bind(this));
     },
   };
-
-  return {
-    DescriptorList: DescriptorList,
-    DescriptorListItem: DescriptorListItem,
-  };
-});

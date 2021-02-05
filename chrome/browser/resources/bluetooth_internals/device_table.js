@@ -5,8 +5,12 @@
 /**
  * Javascript for DeviceTable UI, served from chrome://bluetooth-internals/.
  */
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {define as crUiDefine} from 'chrome://resources/js/cr/ui.m.js';
+import {$} from 'chrome://resources/js/util.m.js';
 
-cr.define('device_table', function() {
+import {DeviceCollection} from './device_collection.js';
+
   const COLUMNS = {
     NAME: 0,
     ADDRESS: 1,
@@ -23,16 +27,15 @@ cr.define('device_table', function() {
    * @constructor
    * @extends {HTMLTableElement}
    */
-  const DeviceTable = cr.ui.define(function() {
-    /** @private {?Array<bluetooth.mojom.DeviceInfo>} */
-    this.devices_ = null;
-
-    return document.importNode(
-        $('table-template').content.children[0], true /* deep */);
+  export const DeviceTable = crUiDefine(function() {
+    return document.importNode($('table-template').content.children[0], true);
   });
 
   DeviceTable.prototype = {
     __proto__: HTMLTableElement.prototype,
+
+    /** @private {?DeviceCollection} */
+    devices_: null,
 
     /**
      * Decorates an element as a UI element class. Caches references to the
@@ -49,7 +52,7 @@ cr.define('device_table', function() {
 
     /**
      * Sets the tables device collection.
-     * @param {!device_collection.DeviceCollection} deviceCollection
+     * @param {!DeviceCollection} deviceCollection
      */
     setDevices(deviceCollection) {
       assert(!this.devices_, 'Devices can only be set once.');
@@ -95,7 +98,10 @@ cr.define('device_table', function() {
      * @private
      */
     handleChange_(event) {
-      this.updateRow_(this.devices_.item(event.index), event.index);
+      this.updateRow_(
+          /** @type {!bluetooth.mojom.DeviceInfo} */ (
+              this.devices_.item(event.index)),
+          event.index);
     },
 
     /**
@@ -175,11 +181,13 @@ cr.define('device_table', function() {
     redraw_() {
       this.removeChild(this.body_);
       this.appendChild(document.createElement('tbody'));
-      this.body_ = this.tBodies[0];
+      this.body_ = this.querySelector('tbody');
       this.body_.classList.add('table-body');
 
       for (let i = 0; i < this.devices_.length; i++) {
-        this.insertRow_(this.devices_.item(i), null);
+        this.insertRow_(
+            /** @type {!bluetooth.mojom.DeviceInfo} */ (this.devices_.item(i)),
+            null);
       }
     },
 
@@ -230,8 +238,3 @@ cr.define('device_table', function() {
       }
     },
   };
-
-  return {
-    DeviceTable: DeviceTable,
-  };
-});

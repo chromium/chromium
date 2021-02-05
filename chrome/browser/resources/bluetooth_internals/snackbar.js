@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {define as crUiDefine} from 'chrome://resources/js/cr/ui.m.js';
+import {$, ensureTransitionEndEvent, listenOnce} from 'chrome://resources/js/util.m.js';
+
 /**
  * Javascript for Snackbar controls, served from chrome://bluetooth-internals/.
  */
 
-cr.define('snackbar', function() {
   /** @typedef {{
    *    message: string,
    *    type: string,
@@ -24,7 +26,7 @@ cr.define('snackbar', function() {
    * Snackbar.
    * @enum {string}
    */
-  const SnackbarType = {
+  export const SnackbarType = {
     INFO: 'info',
     SUCCESS: 'success',
     WARNING: 'warning',
@@ -39,7 +41,7 @@ cr.define('snackbar', function() {
    * @constructor
    * @extends {HTMLDivElement}
    */
-  const Snackbar = cr.ui.define('div');
+  export const Snackbar = crUiDefine('div');
 
   Snackbar.prototype = {
     __proto__: HTMLDivElement.prototype,
@@ -148,10 +150,10 @@ cr.define('snackbar', function() {
     },
   };
 
-  /** @private {?snackbar.Snackbar} */
+  /** @private {?Snackbar} */
   Snackbar.current_ = null;
 
-  /** @private {!Array<!snackbar.Snackbar>} */
+  /** @private {!Array<!Snackbar>} */
   Snackbar.queue_ = [];
 
   /** @private {boolean} */
@@ -177,7 +179,7 @@ cr.define('snackbar', function() {
    * @param {string=} opt_actionText The text to display for the action link.
    * @param {function()=} opt_action A function to be called when the user
    *     presses the action link.
-   * @return {!snackbar.Snackbar}
+   * @return {!Snackbar}
    */
   Snackbar.show = function(message, opt_type, opt_actionText, opt_action) {
     const options = {
@@ -202,7 +204,7 @@ cr.define('snackbar', function() {
   /**
    * TODO(crbug.com/675299): Add ability to specify parent element to Snackbar.
    * Creates a Snackbar and sets events for queuing the next Snackbar to show.
-   * @param {!snackbar.Snackbar} newSnackbar
+   * @param {!Snackbar} newSnackbar
    * @private
    */
   Snackbar.show_ = function(newSnackbar) {
@@ -242,11 +244,3 @@ cr.define('snackbar', function() {
     }
     return Promise.resolve();
   };
-
-
-
-  return {
-    Snackbar: Snackbar,
-    SnackbarType: SnackbarType,
-  };
-});

@@ -2,17 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * Javascript for DebugLogPage, served from chrome://bluetooth-internals/.
- */
-cr.define('debug_log_page', function() {
+import {$} from 'chrome://resources/js/util.m.js';
+
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import './uuid.mojom-lite.js';
+import './device.mojom-lite.js';
+import './adapter.mojom-lite.js';
+import './bluetooth_internals.mojom-lite.js';
+import {Page} from './page.js';
+
   /** @const {string} */
   const LOGS_NOT_SUPPORTED_STRING = 'Debug logs not supported';
 
   /**
    * Page that allows user to enable/disable debug logs.
    */
-  class DebugLogPage extends cr.ui.pageManager.Page {
+  export class DebugLogPage extends Page {
     /**
      * @param {!mojom.BluetoothInternalsHandlerRemote} bluetoothInternalsHandler
      */
@@ -61,8 +66,3 @@ cr.define('debug_log_page', function() {
           this.inputElement_.checked);
     }
   }
-
-  return {
-    DebugLogPage: DebugLogPage,
-  };
-});

@@ -7,12 +7,16 @@
  *     chrome://bluetooth-internals/.
  */
 
-cr.define('device_collection', function() {
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import './device.mojom-lite.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
+
   /**
    * Enum of connection status for a device.
    * @enum {number}
    */
-  const ConnectionStatus = {
+  export const ConnectionStatus = {
     DISCONNECTED: 0,
     CONNECTING: 1,
     CONNECTED: 2,
@@ -22,7 +26,7 @@ cr.define('device_collection', function() {
    * Collection of devices. Extends ArrayDataModel which provides a set of
    * functions and events that notifies observers when the collection changes.
    */
-  class DeviceCollection extends cr.ui.ArrayDataModel {
+  export class DeviceCollection extends ArrayDataModel {
     /**
      * @param {!Array<!bluetooth.mojom.DeviceInfo>} array The starting
      *     collection of devices.
@@ -92,9 +96,3 @@ cr.define('device_collection', function() {
       return !!this.removedDevices_[deviceInfo.address];
     }
   }
-
-  return {
-    ConnectionStatus: ConnectionStatus,
-    DeviceCollection: DeviceCollection,
-  };
-});

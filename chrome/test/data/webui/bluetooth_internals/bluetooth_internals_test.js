@@ -2,7 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {adapterBroker, devices, initializeViews, pageManager, sidebarObj} from 'chrome://bluetooth-internals/bluetooth_internals.js';
+import {connectedDevices} from 'chrome://bluetooth-internals/device_broker.js';
+import {Snackbar} from 'chrome://bluetooth-internals/snackbar.js';
+import {ValueControl, ValueDataType} from 'chrome://bluetooth-internals/value_control.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {$} from 'chrome://resources/js/util.m.js';
+
+import {fakeAdapterInfo, fakeCharacteristicInfo1, fakeDeviceInfo1, fakeDeviceInfo2, fakeDeviceInfo3, fakeServiceInfo1, fakeServiceInfo2, TestAdapter, TestBluetoothInternalsHandler, TestDevice} from './test_utils.js';
+
 suite('bluetooth_internals', function() {
+  const whenSetupDone = new PromiseResolver();
   let internalsHandler = null;
   let adapterFieldSet = null;
   let deviceTable = null;
@@ -11,8 +22,30 @@ suite('bluetooth_internals', function() {
   const EXPECTED_DEVICES = 2;
 
   suiteSetup(async function() {
-    internalsHandler = window.internalsHandler;
-    await window.setupPromise;
+    let internalsHandlerInterceptor = new MojoInterfaceInterceptor(
+        mojom.BluetoothInternalsHandler.$interfaceName);
+    internalsHandlerInterceptor.oninterfacerequest = (e) => {
+      internalsHandler = new TestBluetoothInternalsHandler(e.handle);
+
+      const testAdapter = new TestAdapter(fakeAdapterInfo());
+      testAdapter.setTestDevices([
+        fakeDeviceInfo1(),
+        fakeDeviceInfo2(),
+      ]);
+
+      const testServices = [fakeServiceInfo1(), fakeServiceInfo2()];
+
+      testAdapter.setTestServicesForTestDevice(
+          fakeDeviceInfo1(), Object.assign({}, testServices));
+      testAdapter.setTestServicesForTestDevice(
+          fakeDeviceInfo2(), Object.assign({}, testServices));
+
+      internalsHandler.setAdapterForTesting(testAdapter);
+      whenSetupDone.resolve();
+    };
+    internalsHandlerInterceptor.start();
+    initializeViews();
+    await whenSetupDone.promise;
     await Promise.all([
       internalsHandler.whenCalled('getAdapter'),
       internalsHandler.adapter.whenCalled('getInfo'),
@@ -22,7 +55,6 @@ suite('bluetooth_internals', function() {
   });
 
   setup(function() {
-    pageManager = cr.ui.pageManager.PageManager.getInstance();
     adapterFieldSet = document.querySelector('#adapter fieldset');
     deviceTable = document.querySelector('#devices table');
     sidebarNode = document.querySelector('#sidebar');
@@ -34,7 +66,7 @@ suite('bluetooth_internals', function() {
   teardown(function() {
     internalsHandler.reset();
     sidebarObj.close();
-    snackbar.Snackbar.dismiss(true);
+    Snackbar.dismiss(true);
     connectedDevices.clear();
 
     pageManager.registeredPages.get('adapter').setAdapterInfo(
@@ -277,14 +309,14 @@ suite('bluetooth_internals', function() {
       // Let event queue finish.
       setTimeout(function() {
         expectEquals(0, $('snackbar-container').children.length);
-        expectFalse(!!snackbar.Snackbar.current_);
+        expectFalse(!!Snackbar.current_);
         resolve();
       }, 50);
     });
   }
 
   test('Snackbar_ShowTimeout', function(done) {
-    var snackbar1 = snackbar.Snackbar.show('Message 1');
+    var snackbar1 = Snackbar.show('Message 1');
     assertEquals(1, $('snackbar-container').children.length);
 
     snackbar1.addEventListener('dismissed', function() {
@@ -293,12 +325,12 @@ suite('bluetooth_internals', function() {
   });
 
   test('Snackbar_ShowDismiss', function() {
-    var snackbar1 = snackbar.Snackbar.show('Message 1');
+    var snackbar1 = Snackbar.show('Message 1');
     assertEquals(1, $('snackbar-container').children.length);
 
     return whenSnackbarShows(snackbar1)
         .then(function() {
-          return snackbar.Snackbar.dismiss();
+          return Snackbar.dismiss();
         })
         .then(finishSnackbarTest);
   });
@@ -307,16 +339,16 @@ suite('bluetooth_internals', function() {
     var expectedCalls = 3;
     var actualCalls = 0;
 
-    var snackbar1 = snackbar.Snackbar.show('Message 1');
-    var snackbar2 = snackbar.Snackbar.show('Message 2');
-    var snackbar3 = snackbar.Snackbar.show('Message 3');
+    var snackbar1 = Snackbar.show('Message 1');
+    var snackbar2 = Snackbar.show('Message 2');
+    var snackbar3 = Snackbar.show('Message 3');
 
     assertEquals(1, $('snackbar-container').children.length);
-    expectEquals(2, snackbar.Snackbar.queue_.length);
+    expectEquals(2, Snackbar.queue_.length);
 
     function next() {
       actualCalls++;
-      return snackbar.Snackbar.dismiss();
+      return Snackbar.dismiss();
     }
 
     whenSnackbarShows(snackbar1).then(next);
@@ -333,12 +365,12 @@ suite('bluetooth_internals', function() {
     var expectedCalls = 1;
     var actualCalls = 0;
 
-    var snackbar1 = snackbar.Snackbar.show('Message 1');
-    var snackbar2 = snackbar.Snackbar.show('Message 2');
-    var snackbar3 = snackbar.Snackbar.show('Message 3');
+    var snackbar1 = Snackbar.show('Message 1');
+    var snackbar2 = Snackbar.show('Message 2');
+    var snackbar3 = Snackbar.show('Message 3');
 
     assertEquals(1, $('snackbar-container').children.length);
-    expectEquals(2, snackbar.Snackbar.queue_.length);
+    expectEquals(2, Snackbar.queue_.length);
 
     function next() {
       assertTrue(false);
@@ -351,11 +383,11 @@ suite('bluetooth_internals', function() {
 
     return whenSnackbarShows(snackbar1)
         .then(function() {
-          return snackbar.Snackbar.dismiss(true);
+          return Snackbar.dismiss(true);
         })
         .then(function() {
-          expectEquals(0, snackbar.Snackbar.queue_.length);
-          expectFalse(!!snackbar.Snackbar.current_);
+          expectEquals(0, Snackbar.queue_.length);
+          expectFalse(!!Snackbar.current_);
         })
         .then(finishSnackbarTest);
   });
@@ -515,9 +547,9 @@ suite('BluetoothInternalsUnitTests', function() {
   var valueControl = null;
 
   setup(function() {
-    valueControl = new value_control.ValueControl();
+    valueControl = new ValueControl();
     valueControl.load(device1.address, service1.id, characteristic1);
-    valueControl.typeSelect_.value = value_control.ValueDataType.HEXADECIMAL;
+    valueControl.typeSelect_.value = ValueDataType.HEXADECIMAL;
   });
 
   test('ValueControl_SetValue_Hexadecimal_EmptyArray', function() {
@@ -536,89 +568,86 @@ suite('BluetoothInternalsUnitTests', function() {
   });
 
   test('ValueControl_SetValue_UTF8_EmptyArray', function() {
-    valueControl.typeSelect_.value = value_control.ValueDataType.UTF8;
+    valueControl.typeSelect_.value = ValueDataType.UTF8;
     valueControl.setValue([]);
     expectEquals('', valueControl.valueInput_.value);
   });
 
   test('ValueControl_SetValue_UTF8_OneValue', function() {
-    valueControl.typeSelect_.value = value_control.ValueDataType.UTF8;
+    valueControl.typeSelect_.value = ValueDataType.UTF8;
     valueControl.setValue([aCode]);
     expectEquals('a', valueControl.valueInput_.value);
   });
 
   test('ValueControl_SetValue_UTF8_ThreeValues', function() {
-    valueControl.typeSelect_.value = value_control.ValueDataType.UTF8;
+    valueControl.typeSelect_.value = ValueDataType.UTF8;
     valueControl.setValue([aCode, bCode, cCode]);
     expectEquals('abc', valueControl.valueInput_.value);
   });
 
   test('ValueControl_SetValue_Decimal_EmptyArray', function() {
-    valueControl.typeSelect_.value = value_control.ValueDataType.DECIMAL;
+    valueControl.typeSelect_.value = ValueDataType.DECIMAL;
     valueControl.setValue([]);
     expectEquals('', valueControl.valueInput_.value);
   });
 
   test('ValueControl_SetValue_Decimal_OneValue', function() {
-    valueControl.typeSelect_.value = value_control.ValueDataType.DECIMAL;
+    valueControl.typeSelect_.value = ValueDataType.DECIMAL;
     valueControl.setValue([aCode]);
     expectEquals(String(aCode), valueControl.valueInput_.value);
   });
 
   test('ValueControl_SetValue_Decimal_ThreeValues', function() {
-    valueControl.typeSelect_.value = value_control.ValueDataType.DECIMAL;
+    valueControl.typeSelect_.value = ValueDataType.DECIMAL;
     valueControl.setValue([aCode, bCode, cCode]);
     expectEquals('97-98-99', valueControl.valueInput_.value);
   });
 
   test('ValueControl_ConvertValue_Hexadecimal_EmptyString', function() {
-    valueControl.value_.setAs(value_control.ValueDataType.HEXADECIMAL, '');
+    valueControl.value_.setAs(ValueDataType.HEXADECIMAL, '');
     expectEquals(0, valueControl.value_.getArray().length);
   });
 
   test('ValueControl_ConvertValue_Hexadecimal_BadHexPrefix', function() {
     expectThrows(function() {
-      valueControl.value_.setAs(value_control.ValueDataType.HEXADECIMAL, 'd0x');
+      valueControl.value_.setAs(ValueDataType.HEXADECIMAL, 'd0x');
     }, 'Expected new value to start with "0x"');
   });
 
   test('ValueControl_ConvertValue_Hexadecimal_ThreeValues', function() {
-    valueControl.value_.setAs(
-        value_control.ValueDataType.HEXADECIMAL, '0x616263');
+    valueControl.value_.setAs(ValueDataType.HEXADECIMAL, '0x616263');
     expectDeepEquals([aCode, bCode, cCode], valueControl.value_.getArray());
   });
 
   test('ValueControl_ConvertValue_UTF8_EmptyString', function() {
-    valueControl.typeSelect_.value = value_control.ValueDataType.UTF8;
-    valueControl.value_.setAs(value_control.ValueDataType.UTF8, '');
+    valueControl.typeSelect_.value = ValueDataType.UTF8;
+    valueControl.value_.setAs(ValueDataType.UTF8, '');
     expectEquals(0, valueControl.value_.getArray().length);
   });
 
   test('ValueControl_ConvertValue_UTF8_ThreeValues', function() {
-    valueControl.typeSelect_.value = value_control.ValueDataType.UTF8;
-    valueControl.value_.setAs(value_control.ValueDataType.UTF8, 'abc');
+    valueControl.typeSelect_.value = ValueDataType.UTF8;
+    valueControl.value_.setAs(ValueDataType.UTF8, 'abc');
     expectDeepEquals([aCode, bCode, cCode], valueControl.value_.getArray());
   });
 
   test('ValueControl_ConvertValue_Decimal_EmptyString', function() {
-    valueControl.typeSelect_.value = value_control.ValueDataType.DECIMAL;
-    valueControl.value_.setAs(value_control.ValueDataType.DECIMAL, '');
+    valueControl.typeSelect_.value = ValueDataType.DECIMAL;
+    valueControl.value_.setAs(ValueDataType.DECIMAL, '');
     expectEquals(0, valueControl.value_.getArray().length);
   });
 
   test('ValueControl_ConvertValue_Decimal_ThreeValues_Fail', function() {
-    valueControl.typeSelect_.value = value_control.ValueDataType.DECIMAL;
+    valueControl.typeSelect_.value = ValueDataType.DECIMAL;
 
     expectThrows(function() {
-      valueControl.value_.setAs(
-          value_control.ValueDataType.DECIMAL, '97-+-99' /* a-+-c */);
+      valueControl.value_.setAs(ValueDataType.DECIMAL, '97-+-99' /* a-+-c */);
     }, 'New value can only contain numbers and hyphens');
   });
 
   test('ValueControl_ConvertValue_Decimal_ThreeValues', function() {
-    valueControl.typeSelect_.value = value_control.ValueDataType.DECIMAL;
-    valueControl.value_.setAs(
-        value_control.ValueDataType.DECIMAL, '97-98-99' /* abc */);
+    valueControl.typeSelect_.value = ValueDataType.DECIMAL;
+    valueControl.value_.setAs(ValueDataType.DECIMAL, '97-98-99' /* abc */);
     expectDeepEquals([aCode, bCode, cCode], valueControl.value_.getArray());
   });
 });
