@@ -64,15 +64,15 @@ query_parser::MatchingAlgorithm GetMatchingAlgorithm(AutocompleteInput input) {
   //   don't allow short input words to prefix match.
   // If |IsShortBookmarkSuggestionsEnabled()| is enabled, allow short input
   //   words to prefix match.
-  // If |IsShortBookmarkSuggestionsForLongInputsEnabled()| is enabled, allow
-  //   short input words to prefix match only if the total input length is
-  //   longer than |ShortBookmarkSuggestionsByTotalInputLength()|.
+  // If |IsShortBookmarkSuggestionsByTotalInputLengthEnabled()| is enabled,
+  //   allow short input words to prefix match only if the total input length is
+  //   longer than |ShortBookmarkSuggestionsByTotalInputLengthThreshold()|.
   return OmniboxFieldTrial::IsShortBookmarkSuggestionsEnabled() ||
                  (OmniboxFieldTrial::
-                      IsShortBookmarkSuggestionsForLongInputsEnabled() &&
+                      IsShortBookmarkSuggestionsByTotalInputLengthEnabled() &&
                   input.text().length() >=
                       OmniboxFieldTrial::
-                          ShortBookmarkSuggestionsByTotalInputLength())
+                          ShortBookmarkSuggestionsByTotalInputLengthThreshold())
              ? query_parser::MatchingAlgorithm::ALWAYS_PREFIX_SEARCH
              : query_parser::MatchingAlgorithm::DEFAULT;
 }
@@ -117,7 +117,8 @@ void BookmarkProvider::DoAutocomplete(const AutocompleteInput& input) {
   //  - Terms must be at least three characters in length in order to perform
   //    partial word matches. Any term of lesser length will only be used as an
   //    exact match. 'def' will match against 'define' but 'de' will not match.
-  //    (Unless IsShortBookmarkSuggestionsEnabled is true.)
+  //    (Unless either |IsShortBookmarkSuggestionsEnabled()| or
+  //    |IsShortBookmarkSuggestionsByTotalInputLengthEnabled()| is true.)
   //  - A search containing multiple terms will return results with those words
   //    occurring in any order.
   //  - Terms enclosed in quotes comprises a phrase that must match exactly.

@@ -535,7 +535,7 @@ TEST_F(BookmarkProviderTest, ShortBookmarks) {
     SCOPED_TRACE("Short bookmarks for long inputs enabled.");
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeature(
-        omnibox::kShortBookmarkSuggestionsForLongInputs);
+        omnibox::kShortBookmarkSuggestionsByTotalInputLength);
     test("te", false);
     test("te ", true);
     test("tes", true);
@@ -546,8 +546,9 @@ TEST_F(BookmarkProviderTest, ShortBookmarks) {
     SCOPED_TRACE("Short bookmarks for long inputs enabled with length 5.");
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeatureWithParameters(
-        omnibox::kShortBookmarkSuggestionsForLongInputs,
-        {{OmniboxFieldTrial::kShortBookmarkSuggestionsByTotalInputLengthParam,
+        omnibox::kShortBookmarkSuggestionsByTotalInputLength,
+        {{OmniboxFieldTrial::
+              kShortBookmarkSuggestionsByTotalInputLengthThresholdParam,
           "5"}});
     test("te", false);
     test("te ", false);

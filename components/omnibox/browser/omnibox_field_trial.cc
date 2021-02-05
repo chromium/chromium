@@ -635,21 +635,22 @@ bool OmniboxFieldTrial::IsShortBookmarkSuggestionsEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kShortBookmarkSuggestions);
 }
 
-bool OmniboxFieldTrial::IsShortBookmarkSuggestionsForLongInputsEnabled() {
+bool OmniboxFieldTrial::IsShortBookmarkSuggestionsByTotalInputLengthEnabled() {
   return base::FeatureList::IsEnabled(
-             omnibox::kShortBookmarkSuggestionsForLongInputs) ||
+             omnibox::kShortBookmarkSuggestionsByTotalInputLength) ||
          (IsRichAutocompletionEnabled() &&
           (RichAutocompletionAutocompleteTitles() ||
            RichAutocompletionAutocompleteNonPrefixAll()));
 }
 
-size_t OmniboxFieldTrial::ShortBookmarkSuggestionsByTotalInputLength() {
+size_t
+OmniboxFieldTrial::ShortBookmarkSuggestionsByTotalInputLengthThreshold() {
   // The rich autocompletion feature requires this feature to be enabled. If
   // short bookmarks is enabled transitively; i.e. rich autocompletion is
   // enabled, but short bookmarks isn't explicitly enabled, then use the rich
   // autocompletion min char limit.
   if (!base::FeatureList::IsEnabled(
-          omnibox::kShortBookmarkSuggestionsForLongInputs) &&
+          omnibox::kShortBookmarkSuggestionsByTotalInputLength) &&
       IsRichAutocompletionEnabled()) {
     if (RichAutocompletionAutocompleteTitles() &&
         RichAutocompletionAutocompleteNonPrefixAll()) {
@@ -662,8 +663,8 @@ size_t OmniboxFieldTrial::ShortBookmarkSuggestionsByTotalInputLength() {
   }
 
   return base::GetFieldTrialParamByFeatureAsInt(
-      omnibox::kShortBookmarkSuggestionsForLongInputs,
-      kShortBookmarkSuggestionsByTotalInputLengthParam, 3);
+      omnibox::kShortBookmarkSuggestionsByTotalInputLength,
+      kShortBookmarkSuggestionsByTotalInputLengthThresholdParam, 3);
 }
 
 bool OmniboxFieldTrial::IsSuggestionButtonRowEnabled() {
@@ -963,9 +964,9 @@ const char OmniboxFieldTrial::kOnDeviceHeadSuggestDemoteMode[] =
 
 int OmniboxFieldTrial::kDefaultMinimumTimeBetweenSuggestQueriesMs = 100;
 
-const char
-    OmniboxFieldTrial::kShortBookmarkSuggestionsByTotalInputLengthParam[] =
-        "ShortBookmarkSuggestionsByTotalInputLength";
+const char OmniboxFieldTrial::
+    kShortBookmarkSuggestionsByTotalInputLengthThresholdParam[] =
+        "ShortBookmarkSuggestionsByTotalInputLengthThreshold";
 
 const char OmniboxFieldTrial::kRichAutocompletionAutocompleteTitlesParam[] =
     "RichAutocompletionAutocompleteTitles";

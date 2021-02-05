@@ -280,13 +280,13 @@ const base::Feature kNativeVoiceSuggestProvider{
 //   won't match bookmark text 'abc xyz'.
 // If |kShortBookmarkSuggestions()| is enabled, this limitation is lifted and
 //   both inputs 'abc x' and 'x' can match bookmark text 'abc xyz'.
-// If |kShortBookmarkSuggestionsForLongInputs()| is enabled, matching is limited
-//   by input length rather than input word length. Input 'abc x' can but input
-//   'x' can't match bookmark text 'abc xyz'.
+// If |kShortBookmarkSuggestionsByTotalInputLength()| is enabled, matching is
+//   limited by input length rather than input word length. Input 'abc x' can
+//   but input 'x' can't match bookmark text 'abc xyz'.
 const base::Feature kShortBookmarkSuggestions{
     "OmniboxShortBookmarkSuggestions", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kShortBookmarkSuggestionsForLongInputs{
-    "OmniboxShortBookmarkSuggestionsForLongInputs",
+const base::Feature kShortBookmarkSuggestionsByTotalInputLength{
+    "OmniboxShortBookmarkSuggestionsByTotalInputLength",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
 // If enabled, inputs may match bookmark paths. These path matches won't

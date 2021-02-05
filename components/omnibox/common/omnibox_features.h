@@ -72,7 +72,7 @@ extern const base::Feature kHistoryQuickProviderAblateInMemoryURLIndexCacheFile;
 extern const base::Feature kDisableCGIParamMatching;
 extern const base::Feature kNativeVoiceSuggestProvider;
 extern const base::Feature kShortBookmarkSuggestions;
-extern const base::Feature kShortBookmarkSuggestionsForLongInputs;
+extern const base::Feature kShortBookmarkSuggestionsByTotalInputLength;
 
 // Suggestions UI - these affect the UI or function of the suggestions popup.
 extern const base::Feature kAdaptiveSuggestionsCount;
