@@ -108,12 +108,15 @@ TEST_F(MediaStreamTrackProcessorTest, VideoFramesAreExposed) {
                                       pushable_video_source),
           exception_state);
   EXPECT_FALSE(exception_state.HadException());
-  EXPECT_EQ(track_processor->input_track()->Source()->GetPlatformSource(),
+  EXPECT_EQ(track_processor->input_track()
+                ->Component()
+                ->Source()
+                ->GetPlatformSource(),
             pushable_video_source);
 
   MockMediaStreamVideoSink mock_video_sink;
   mock_video_sink.ConnectToTrack(
-      WebMediaStreamTrack(track_processor->input_track()));
+      WebMediaStreamTrack(track_processor->input_track()->Component()));
   EXPECT_EQ(mock_video_sink.number_of_frames(), 0);
   EXPECT_EQ(mock_video_sink.last_frame(), nullptr);
 
@@ -156,12 +159,12 @@ TEST_F(MediaStreamTrackProcessorTest, AudioFramesAreExposed) {
                                       std::move(pushable_audio_source)),
           exception_state);
   EXPECT_FALSE(exception_state.HadException());
-  EXPECT_EQ(track_processor->input_track()->Source()->GetPlatformSource(),
-            pushable_source_ptr);
+  MediaStreamComponent* component = track_processor->input_track()->Component();
+  EXPECT_EQ(component->Source()->GetPlatformSource(), pushable_source_ptr);
 
   MockMediaStreamAudioSink mock_audio_sink;
-  WebMediaStreamAudioSink::AddToAudioTrack(
-      &mock_audio_sink, WebMediaStreamTrack(track_processor->input_track()));
+  WebMediaStreamAudioSink::AddToAudioTrack(&mock_audio_sink,
+                                           WebMediaStreamTrack(component));
 
   auto* reader =
       track_processor->readable(script_state)
@@ -185,8 +188,8 @@ TEST_F(MediaStreamTrackProcessorTest, AudioFramesAreExposed) {
   EXPECT_TRUE(read_tester.Value().IsObject());
   sink_loop.Run();
 
-  WebMediaStreamAudioSink::RemoveFromAudioTrack(
-      &mock_audio_sink, WebMediaStreamTrack(track_processor->input_track()));
+  WebMediaStreamAudioSink::RemoveFromAudioTrack(&mock_audio_sink,
+                                                WebMediaStreamTrack(component));
 }
 
 TEST_F(MediaStreamTrackProcessorTest, CanceledReadableDisconnects) {
@@ -204,12 +207,12 @@ TEST_F(MediaStreamTrackProcessorTest, CanceledReadableDisconnects) {
 
   // Initially the track has no sinks.
   MediaStreamVideoTrack* video_track =
-      MediaStreamVideoTrack::From(track_processor->input_track());
+      MediaStreamVideoTrack::From(track_processor->input_track()->Component());
   EXPECT_EQ(video_track->CountSinks(), 0u);
 
   MockMediaStreamVideoSink mock_video_sink;
   mock_video_sink.ConnectToTrack(
-      WebMediaStreamTrack(track_processor->input_track()));
+      WebMediaStreamTrack(track_processor->input_track()->Component()));
   EXPECT_EQ(mock_video_sink.number_of_frames(), 0);
   EXPECT_EQ(mock_video_sink.last_frame(), nullptr);
   EXPECT_EQ(video_track->CountSinks(), 1u);
@@ -311,6 +314,44 @@ TEST_F(MediaStreamTrackProcessorTest, EndedTrack) {
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(static_cast<ESErrorType>(v8_scope.GetExceptionState().Code()),
             ESErrorType::kTypeError);
+}
+
+TEST_F(MediaStreamTrackProcessorTest, CloseOnTrackEnd) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  ExceptionState& exception_state = v8_scope.GetExceptionState();
+  PushableMediaStreamVideoSource* pushable_video_source =
+      CreatePushableVideoSource();
+  MediaStreamTrack* track = CreateVideoMediaStreamTrack(
+      v8_scope.GetExecutionContext(), pushable_video_source);
+
+  MediaStreamTrackProcessor* track_processor =
+      MediaStreamTrackProcessor::Create(script_state, track, exception_state);
+  ReadableStream* readable = track_processor->readable(script_state);
+  EXPECT_FALSE(readable->IsClosed());
+
+  track->stopTrack(v8_scope.GetExecutionContext());
+
+  EXPECT_TRUE(readable->IsClosed());
+}
+
+TEST_F(MediaStreamTrackProcessorTest, NoCloseOnTrackDisable) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  ExceptionState& exception_state = v8_scope.GetExceptionState();
+  PushableMediaStreamVideoSource* pushable_video_source =
+      CreatePushableVideoSource();
+  MediaStreamTrack* track = CreateVideoMediaStreamTrack(
+      v8_scope.GetExecutionContext(), pushable_video_source);
+
+  MediaStreamTrackProcessor* track_processor =
+      MediaStreamTrackProcessor::Create(script_state, track, exception_state);
+  ReadableStream* readable = track_processor->readable(script_state);
+  EXPECT_FALSE(readable->IsClosed());
+
+  track->setEnabled(false);
+
+  EXPECT_FALSE(readable->IsClosed());
 }
 
 }  // namespace blink

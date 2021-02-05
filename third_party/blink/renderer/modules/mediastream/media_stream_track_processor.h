@@ -12,7 +12,6 @@
 
 namespace blink {
 
-class MediaStreamComponent;
 class MediaStreamVideoTrackUnderlyingSource;
 class MediaStreamAudioTrackUnderlyingSource;
 class ScriptState;
@@ -24,13 +23,14 @@ class MODULES_EXPORT MediaStreamTrackProcessor : public ScriptWrappable {
  public:
   static MediaStreamTrackProcessor* Create(ScriptState*,
                                            MediaStreamTrack*,
+
                                            uint16_t buffer_size,
                                            ExceptionState&);
   static MediaStreamTrackProcessor* Create(ScriptState*,
                                            MediaStreamTrack*,
                                            ExceptionState&);
   MediaStreamTrackProcessor(ScriptState*,
-                            MediaStreamComponent*,
+                            MediaStreamTrack*,
                             uint16_t buffer_size);
   MediaStreamTrackProcessor(const MediaStreamTrackProcessor&) = delete;
   MediaStreamTrackProcessor& operator=(const MediaStreamTrackProcessor&) =
@@ -39,7 +39,7 @@ class MODULES_EXPORT MediaStreamTrackProcessor : public ScriptWrappable {
   // MediaStreamTrackProcessor interface
   ReadableStream* readable(ScriptState* script_state);
 
-  MediaStreamComponent* input_track() { return input_track_; }
+  MediaStreamTrack* input_track() { return input_track_; }
 
   void Trace(Visitor* visitor) const override;
 
@@ -47,10 +47,13 @@ class MODULES_EXPORT MediaStreamTrackProcessor : public ScriptWrappable {
   void CreateVideoSourceStream(ScriptState* script_state);
   void CreateAudioSourceStream(ScriptState* script_state);
 
-  Member<MediaStreamComponent> input_track_;
+  class UnderlyingSourceCloser;
+
+  Member<MediaStreamTrack> input_track_;
   Member<MediaStreamVideoTrackUnderlyingSource> video_underlying_source_;
   Member<MediaStreamAudioTrackUnderlyingSource> audio_underlying_source_;
   Member<ReadableStream> source_stream_;
+  Member<UnderlyingSourceCloser> source_closer_;
   uint16_t buffer_size_;
 };
 

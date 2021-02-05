@@ -402,12 +402,27 @@ String MediaStreamTrack::readyState() const {
   return String();
 }
 
+void MediaStreamTrack::setReadyState(
+    MediaStreamSource::ReadyState ready_state) {
+  if (ready_state_ != MediaStreamSource::kReadyStateEnded &&
+      ready_state_ != ready_state) {
+    ready_state_ = ready_state;
+
+    // Observers may dispatch events which create and add new Observers;
+    // take a snapshot so as to safely iterate.
+    HeapVector<Member<Observer>> observers;
+    CopyToVector(observers_, observers);
+    for (auto observer : observers)
+      observer->TrackChangedState();
+  }
+}
+
 void MediaStreamTrack::stopTrack(ExecutionContext* execution_context) {
   SendLogMessage(base::StringPrintf("stopTrack([id=%s])", id().Utf8().c_str()));
   if (Ended())
     return;
 
-  ready_state_ = MediaStreamSource::kReadyStateEnded;
+  setReadyState(MediaStreamSource::kReadyStateEnded);
   feature_handle_for_scheduler_.reset();
   UserMediaController* user_media =
       UserMediaController::From(To<LocalDOMWindow>(execution_context));
@@ -743,7 +758,7 @@ void MediaStreamTrack::SourceChangedState() {
   // Note that both 'live' and 'muted' correspond to a 'live' ready state in the
   // web API, hence the following logic around |feature_handle_for_scheduler_|.
 
-  ready_state_ = component_->Source()->GetReadyState();
+  setReadyState(component_->Source()->GetReadyState());
   switch (ready_state_) {
     case MediaStreamSource::kReadyStateLive:
       component_->SetMuted(false);
@@ -826,6 +841,7 @@ void MediaStreamTrack::Trace(Visitor* visitor) const {
   visitor->Trace(component_);
   visitor->Trace(image_capture_);
   visitor->Trace(execution_context_);
+  visitor->Trace(observers_);
   EventTargetWithInlineData::Trace(visitor);
 }
 
@@ -844,6 +860,10 @@ void MediaStreamTrack::EnsureFeatureHandleForScheduler() {
       window->GetFrame()->GetFrameScheduler()->RegisterFeature(
           SchedulingPolicy::Feature::kWebRTC,
           SchedulingPolicy::DisableAggressiveThrottling());
+}
+
+void MediaStreamTrack::AddObserver(MediaStreamTrack::Observer* observer) {
+  observers_.insert(observer);
 }
 
 }  // namespace blink
