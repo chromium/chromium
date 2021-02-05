@@ -336,7 +336,6 @@ _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
   '^chrome/browser/media_galleries/',
   "^chrome/browser/metrics/",
   '^chrome/browser/payments/payment_manifest_parser_browsertest.cc',
-  '^chrome/browser/portal/portal_browsertest.cc',
   "^chrome/browser/prefetch/no_state_prefetch/",
   '^chrome/browser/previews/',
   '^chrome/browser/profiling_host/profiling_process_host.cc',

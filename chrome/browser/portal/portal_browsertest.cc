@@ -207,7 +207,8 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, TaskManagerUpdatesAfterActivation) {
 
   // Check that both tasks appear.
   chrome::ShowTaskManager(browser());
-  auto tester = task_manager::TaskManagerTester::Create(base::Closure());
+  auto tester =
+      task_manager::TaskManagerTester::Create(base::RepeatingClosure());
   task_manager::browsertest_util::WaitForTaskManagerRows(
       1, expected_tab_title_before_activation);
   task_manager::browsertest_util::WaitForTaskManagerRows(1,
@@ -280,7 +281,8 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, TaskManagerOrderingOfDependentRows) {
 
   // Check that the tasks are grouped in the UI as expected.
   chrome::ShowTaskManager(browser());
-  auto tester = task_manager::TaskManagerTester::Create(base::Closure());
+  auto tester =
+      task_manager::TaskManagerTester::Create(base::RepeatingClosure());
   task_manager::browsertest_util::WaitForTaskManagerRows(kNumTabs,
                                                          expected_tab_title);
   task_manager::browsertest_util::WaitForTaskManagerRows(
