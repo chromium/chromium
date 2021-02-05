@@ -1,6 +1,11 @@
 # Please prefer to use more specific OWNERS if possible.
 # For example, core/rendering/OWNERS for rendering changes.
 
+# New owners should be proposed by email to blink-core-owners-discuss@chromium.org,
+# similar to the committer nomination process.
+# Once accepted, new owners should also be added to blink-core-owners-discuss@chromium.org.
+# https://groups.google.com/a/chromium.org/g/blink-core-owners-discuss
+
 # Reviewers (comments indicate areas of expertise):
 alexis.menard@intel.com
 # bokan reviews changes around viewport behavior, scrolling, cc/blink interaction, co-ordinate spaces and input events
@@ -9,13 +14,13 @@ cbiesinger@chromium.org
 chrishtr@chromium.org
 clamy@chromium.org
 dcheng@chromium.org
-# dtapuska reviews input-related changes
-dtapuska@chromium.org
 dgozman@chromium.org
 # drott reviews font specific changes.
 drott@chromium.org
 dsinclair@chromium.org
 dstockwell@chromium.org
+# dtapuska reviews input-related changes
+dtapuska@chromium.org
 enne@chromium.org
 # flackr reviews animation- and scrolling-related changes.
 flackr@chromium.org
