@@ -128,12 +128,12 @@ void CacheStorageContextImpl::AddReceiver(
   if (!dispatcher_host_) {
     dispatcher_host_ =
         base::SequenceBound<CacheStorageDispatcherHost>(task_runner_);
-    dispatcher_host_.Post(FROM_HERE, &CacheStorageDispatcherHost::Init,
-                          base::RetainedRef(this));
+    dispatcher_host_.AsyncCall(&CacheStorageDispatcherHost::Init)
+        .WithArgs(base::RetainedRef(this));
   }
-  dispatcher_host_.Post(FROM_HERE, &CacheStorageDispatcherHost::AddReceiver,
-                        cross_origin_embedder_policy, std::move(coep_reporter),
-                        origin, owner, std::move(receiver));
+  dispatcher_host_.AsyncCall(&CacheStorageDispatcherHost::AddReceiver)
+      .WithArgs(cross_origin_embedder_policy, std::move(coep_reporter), origin,
+                owner, std::move(receiver));
 }
 
 scoped_refptr<CacheStorageManager> CacheStorageContextImpl::CacheManager() {

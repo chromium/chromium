@@ -788,8 +788,8 @@ TEST_F(SessionStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
         open_loop->Quit();
 
         // Ensure that this database also always fails to write data.
-        session_storage_impl()->GetDatabaseForTesting().Post(
-            FROM_HERE, &DomStorageDatabase::MakeAllCommitsFailForTesting);
+        session_storage_impl()->GetDatabaseForTesting().AsyncCall(
+            &DomStorageDatabase::MakeAllCommitsFailForTesting);
       }));
 
   // Repeatedly write data to the database, to trigger enough commit errors.
