@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_fence.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_image_bitmap_handler.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
@@ -128,8 +129,6 @@ bool CanUploadThroughGPU(StaticBitmapImage* image,
 
 GPUQueue::GPUQueue(GPUDevice* device, WGPUQueue queue)
     : DawnObject<WGPUQueue>(device, queue) {
-  produce_dawn_texture_handler_ = base::AdoptRef(new DawnTextureFromImageBitmap(
-      GetDawnControlClient(), device->GetHandle()));
 }
 
 void GPUQueue::submit(const HeapVector<Member<GPUCommandBuffer>>& buffers) {
@@ -472,12 +471,12 @@ bool GPUQueue::CopyContentFromGPU(StaticBitmapImage* image,
                                   const WGPUOrigin3D& origin,
                                   const WGPUExtent3D& copy_size,
                                   const WGPUTextureCopyView& destination) {
-  WGPUTexture src_texture =
-      produce_dawn_texture_handler_->ProduceDawnTextureFromImageBitmap(image);
-  // Failed to produceDawnTexture.
-  if (!src_texture) {
-    return false;
-  }
+  scoped_refptr<WebGPUMailboxTexture> mailbox_texture = base::AdoptRef(
+      new WebGPUMailboxTexture(GetDawnControlClient(), device_->GetHandle(),
+                               image, WGPUTextureUsage_CopySrc));
+
+  WGPUTexture src_texture = mailbox_texture->GetTexture();
+  DCHECK(src_texture != nullptr);
 
   WGPUTextureCopyView src = {};
   src.texture = src_texture;
@@ -499,7 +498,6 @@ bool GPUQueue::CopyContentFromGPU(StaticBitmapImage* image,
   GetProcs().commandBufferRelease(commands);
   GetProcs().commandEncoderRelease(encoder);
 
-  produce_dawn_texture_handler_->FinishDawnTextureFromImageBitmapAccess();
   return true;
 }
 

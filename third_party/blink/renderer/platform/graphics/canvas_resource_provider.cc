@@ -958,6 +958,20 @@ CanvasResourceProvider::CreateSharedImageProvider(
 }
 
 std::unique_ptr<CanvasResourceProvider>
+CanvasResourceProvider::CreateWebGPUImageProvider(
+    const IntSize& size,
+    SkFilterQuality filter_quality,
+    const CanvasResourceParams& params,
+    ShouldInitialize initialize_provider,
+    base::WeakPtr<WebGraphicsContext3DProviderWrapper>
+        context_provider_wrapper) {
+  return CreateSharedImageProvider(
+      size, filter_quality, params, initialize_provider,
+      std::move(context_provider_wrapper), RasterMode::kGPU,
+      true /* is_origin_top_left */, gpu::SHARED_IMAGE_USAGE_WEBGPU);
+}
+
+std::unique_ptr<CanvasResourceProvider>
 CanvasResourceProvider::CreatePassThroughProvider(
     const IntSize& size,
     SkFilterQuality filter_quality,

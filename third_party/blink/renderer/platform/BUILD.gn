@@ -955,6 +955,8 @@ component("platform") {
     "graphics/gpu/webgl_image_conversion.h",
     "graphics/gpu/webgpu_image_bitmap_handler.cc",
     "graphics/gpu/webgpu_image_bitmap_handler.h",
+    "graphics/gpu/webgpu_mailbox_texture.cc",
+    "graphics/gpu/webgpu_mailbox_texture.h",
     "graphics/gpu/webgpu_swap_buffer_provider.cc",
     "graphics/gpu/webgpu_swap_buffer_provider.h",
     "graphics/gpu/xr_frame_transport.cc",

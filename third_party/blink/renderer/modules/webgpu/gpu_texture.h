@@ -6,13 +6,17 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_TEXTURE_H_
 
 #include "third_party/blink/renderer/modules/webgpu/dawn_object.h"
+#include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 
 namespace blink {
 
 class ExceptionState;
+class HTMLVideoElement;
 class GPUTextureDescriptor;
 class GPUTextureView;
 class GPUTextureViewDescriptor;
+class StaticBitmapImage;
+class WebGPUMailboxTexture;
 
 class GPUTexture : public DawnObject<WGPUTexture> {
   DEFINE_WRAPPERTYPEINFO();
@@ -21,9 +25,15 @@ class GPUTexture : public DawnObject<WGPUTexture> {
   static GPUTexture* Create(GPUDevice* device,
                             const GPUTextureDescriptor* webgpu_desc,
                             ExceptionState& exception_state);
-  explicit GPUTexture(GPUDevice* device,
-                      WGPUTexture texture,
-                      WGPUTextureFormat format);
+  static GPUTexture* FromVideo(GPUDevice* device,
+                               HTMLVideoElement* video,
+                               WGPUTextureUsage usage,
+                               ExceptionState& exception_state);
+
+  GPUTexture(GPUDevice* device, WGPUTexture texture, WGPUTextureFormat format);
+  GPUTexture(GPUDevice* device,
+             WGPUTextureFormat format,
+             scoped_refptr<WebGPUMailboxTexture> mailbox_texture);
 
   // gpu_texture.idl
   GPUTextureView* createView(const GPUTextureViewDescriptor* webgpu_desc);
@@ -33,6 +43,7 @@ class GPUTexture : public DawnObject<WGPUTexture> {
 
  private:
   WGPUTextureFormat format_;
+  scoped_refptr<WebGPUMailboxTexture> mailbox_texture_;
   DISALLOW_COPY_AND_ASSIGN(GPUTexture);
 };
 

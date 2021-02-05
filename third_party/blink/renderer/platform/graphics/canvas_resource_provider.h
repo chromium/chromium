@@ -112,6 +112,13 @@ class PLATFORM_EXPORT CanvasResourceProvider
       bool is_origin_top_left,
       uint32_t shared_image_usage_flags);
 
+  static std::unique_ptr<CanvasResourceProvider> CreateWebGPUImageProvider(
+      const IntSize& size,
+      SkFilterQuality filter_quality,
+      const CanvasResourceParams& params,
+      ShouldInitialize initialize_provider,
+      base::WeakPtr<WebGraphicsContext3DProviderWrapper>);
+
   static std::unique_ptr<CanvasResourceProvider> CreatePassThroughProvider(
       const IntSize& size,
       SkFilterQuality filter_quality,

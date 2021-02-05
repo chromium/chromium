@@ -11,7 +11,6 @@
 
 namespace blink {
 
-class DawnTextureFromImageBitmap;
 class ExceptionState;
 class GPUBuffer;
 class GPUCommandBuffer;
@@ -98,8 +97,6 @@ class GPUQueue : public DawnObject<WGPUQueue> {
       GPUTextureDataLayout* data_layout,
       UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict& write_size,
       ExceptionState& exception_state);
-
-  scoped_refptr<DawnTextureFromImageBitmap> produce_dawn_texture_handler_;
 
   DISALLOW_COPY_AND_ASSIGN(GPUQueue);
 };

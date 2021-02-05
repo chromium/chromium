@@ -17,6 +17,7 @@
 
     GPUBuffer createBuffer(GPUBufferDescriptor descriptor);
     [RaisesException] GPUTexture createTexture(GPUTextureDescriptor descriptor);
+    [RuntimeEnabled=WebGPUImportTexture, RaisesException] GPUTexture experimentalImportTexture(HTMLVideoElement video, GPUTextureUsageFlags usage);
     GPUSampler createSampler(optional GPUSamplerDescriptor descriptor = {});
 
     [RaisesException] GPUBindGroup createBindGroup(GPUBindGroupDescriptor descriptor);

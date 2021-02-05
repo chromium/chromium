@@ -2216,6 +2216,11 @@
       name: "WebGPU",
     },
     {
+      // Requires both WebGPU and --enable-experimental-web-platform-features
+      name: "WebGPUImportTexture",
+      status: "experimental",
+    },
+    {
       name: "WebHID",
       status: {"Android": "", "default": "stable"},
     },

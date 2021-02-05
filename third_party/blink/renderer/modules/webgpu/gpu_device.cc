@@ -232,6 +232,14 @@ GPUTexture* GPUDevice::createTexture(const GPUTextureDescriptor* descriptor,
   return GPUTexture::Create(this, descriptor, exception_state);
 }
 
+GPUTexture* GPUDevice::experimentalImportTexture(
+    HTMLVideoElement* video,
+    unsigned int usage_flags,
+    ExceptionState& exception_state) {
+  return GPUTexture::FromVideo(
+      this, video, static_cast<WGPUTextureUsage>(usage_flags), exception_state);
+}
+
 GPUSampler* GPUDevice::createSampler(const GPUSamplerDescriptor* descriptor) {
   return GPUSampler::Create(this, descriptor);
 }

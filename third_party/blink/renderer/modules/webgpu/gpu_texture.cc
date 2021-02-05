@@ -6,10 +6,15 @@
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_view_descriptor.h"
+#include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture_usage.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture_view.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
+#include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 
 namespace blink {
 
@@ -101,10 +106,113 @@ GPUTexture* GPUTexture::Create(GPUDevice* device,
       dawn_desc.format);
 }
 
+// static
+GPUTexture* GPUTexture::FromVideo(GPUDevice* device,
+                                  HTMLVideoElement* video,
+                                  WGPUTextureUsage usage,
+                                  ExceptionState& exception_state) {
+  if (!video || !video->videoWidth() || !video->videoHeight()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
+                                      "Missing video source");
+    return nullptr;
+  }
+
+  if (video->WouldTaintOrigin()) {
+    exception_state.ThrowSecurityError(
+        "Video element contains cross-origin data and may not be loaded.");
+    return nullptr;
+  }
+
+  // Create a CanvasResourceProvider for producing WebGPU-compatible shared
+  // images.
+  std::unique_ptr<CanvasResourceProvider> resource_provider =
+      CanvasResourceProvider::CreateWebGPUImageProvider(
+          IntSize(video->videoWidth(), video->videoHeight()),
+          kLow_SkFilterQuality,
+          CanvasResourceParams(CanvasColorSpace::kSRGB, kN32_SkColorType,
+                               kPremul_SkAlphaType),
+          CanvasResourceProvider::ShouldInitialize::kNo,
+          SharedGpuContext::ContextProviderWrapper());
+
+  if (!resource_provider) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
+                                      "Failed to import texture from video");
+    return nullptr;
+  }
+
+  // Copy the video frame into the shared image.
+  video->PaintCurrentFrame(
+      resource_provider->Canvas(),
+      IntRect(IntPoint(), IntSize(video->videoWidth(), video->videoHeight())),
+      nullptr);
+
+  // Acquire the CanvasResource wrapping the shared image.
+  scoped_refptr<CanvasResource> canvas_resource =
+      resource_provider->ProduceCanvasResource();
+  DCHECK(canvas_resource->IsValid());
+  DCHECK(canvas_resource->IsAccelerated());
+
+  scoped_refptr<StaticBitmapImage> image = canvas_resource->Bitmap();
+
+  // Set origin to be clean. This was checked above.
+  image->SetOriginClean(true);
+
+  DCHECK(image->IsTextureBacked());
+  SkImageInfo image_info = image->PaintImageForCurrentFrame().GetSkImageInfo();
+
+  // Extract the format. This is only used to validate copyImageBitmapToTexture
+  // right now. We may want to reflect it from this function or validate it
+  // against some input parameters.
+  WGPUTextureFormat format;
+  switch (image_info.colorType()) {
+    case SkColorType::kRGBA_8888_SkColorType:
+      format = WGPUTextureFormat_RGBA8Unorm;
+      break;
+    case SkColorType::kBGRA_8888_SkColorType:
+      format = WGPUTextureFormat_BGRA8Unorm;
+      break;
+    case SkColorType::kRGBA_1010102_SkColorType:
+      format = WGPUTextureFormat_RGB10A2Unorm;
+      break;
+    case SkColorType::kRGBA_F16_SkColorType:
+      format = WGPUTextureFormat_RGBA16Float;
+      break;
+    case SkColorType::kRGBA_F32_SkColorType:
+      format = WGPUTextureFormat_RGBA32Float;
+      break;
+    case SkColorType::kR8G8_unorm_SkColorType:
+      format = WGPUTextureFormat_RG8Unorm;
+      break;
+    case SkColorType::kR16G16_float_SkColorType:
+      format = WGPUTextureFormat_RG16Float;
+      break;
+    default:
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kOperationError,
+          "Failed to import texture from video. Unsupported format.");
+      return nullptr;
+  }
+
+  scoped_refptr<WebGPUMailboxTexture> mailbox_texture = base::AdoptRef(
+      new WebGPUMailboxTexture(device->GetDawnControlClient(),
+                               device->GetHandle(), image.get(), usage));
+  DCHECK(mailbox_texture->GetTexture() != nullptr);
+
+  return MakeGarbageCollected<GPUTexture>(device, format,
+                                          std::move(mailbox_texture));
+}
+
 GPUTexture::GPUTexture(GPUDevice* device,
                        WGPUTexture texture,
                        WGPUTextureFormat format)
     : DawnObject<WGPUTexture>(device, texture), format_(format) {}
+
+GPUTexture::GPUTexture(GPUDevice* device,
+                       WGPUTextureFormat format,
+                       scoped_refptr<WebGPUMailboxTexture> mailbox_texture)
+    : DawnObject<WGPUTexture>(device, mailbox_texture->GetTexture()),
+      format_(format),
+      mailbox_texture_(std::move(mailbox_texture)) {}
 
 GPUTextureView* GPUTexture::createView(
     const GPUTextureViewDescriptor* webgpu_desc) {
@@ -118,6 +226,7 @@ GPUTextureView* GPUTexture::createView(
 
 void GPUTexture::destroy() {
   GetProcs().textureDestroy(GetHandle());
+  mailbox_texture_.reset();
 }
 
 }  // namespace blink
