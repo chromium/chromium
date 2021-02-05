@@ -48,8 +48,9 @@ bool GetTestFilePath(const std::string& file_name, base::FilePath* path) {
 
 class TestTemplateUrlFetcher : public TemplateURLFetcher {
  public:
-  TestTemplateUrlFetcher(TemplateURLService* template_url_service,
-                         const base::Closure& request_completed_callback)
+  TestTemplateUrlFetcher(
+      TemplateURLService* template_url_service,
+      const base::RepeatingClosure& request_completed_callback)
       : TemplateURLFetcher(template_url_service),
         callback_(request_completed_callback) {}
   ~TestTemplateUrlFetcher() override {}
@@ -62,7 +63,7 @@ class TestTemplateUrlFetcher : public TemplateURLFetcher {
 
  private:
   // Callback to be run when a request completes.
-  base::Closure callback_;
+  base::RepeatingClosure callback_;
 
   DISALLOW_COPY_AND_ASSIGN(TestTemplateUrlFetcher);
 };
@@ -75,8 +76,8 @@ class TemplateURLFetcherTest : public testing::Test {
   void SetUp() override {
     template_url_fetcher_.reset(new TestTemplateUrlFetcher(
         test_util_.model(),
-        base::Bind(&TemplateURLFetcherTest::RequestCompletedCallback,
-                   base::Unretained(this))));
+        base::BindRepeating(&TemplateURLFetcherTest::RequestCompletedCallback,
+                            base::Unretained(this))));
   }
 
   // Called when a request completes.

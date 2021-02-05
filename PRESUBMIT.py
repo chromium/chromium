@@ -345,7 +345,6 @@ _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
   '^chrome/browser/recovery/recovery_install_global_error.cc',
   '^chrome/browser/resources/chromeos/accessibility/',
   '^chrome/browser/rlz/chrome_rlz_tracker_delegate.cc',
-  '^chrome/browser/search_engines/',
   '^chrome/browser/signin/',
   '^chrome/browser/site_isolation/site_per_process_text_input_browsertest.cc',
   '^chrome/browser/sync_file_system/',

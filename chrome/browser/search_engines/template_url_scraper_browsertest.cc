@@ -76,7 +76,8 @@ std::unique_ptr<net::test_server::HttpResponse> SendResponse(
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(TemplateURLScraperTest, ScrapeWithOnSubmit) {
-  embedded_test_server()->RegisterRequestHandler(base::Bind(&SendResponse));
+  embedded_test_server()->RegisterRequestHandler(
+      base::BindRepeating(&SendResponse));
   ASSERT_TRUE(embedded_test_server()->Start());
 
   TemplateURLService* template_urls =
