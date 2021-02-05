@@ -3358,11 +3358,16 @@ void NavigationRequest::CommitNavigation() {
 
   AddOldPageInfoToCommitParamsIfNeeded();
 
+  // For urn: resources served from WebBundles, use the Bundle's origin.
+  url::Origin origin =
+      (common_params_->url.SchemeIs("urn") && GetWebBundleURL().is_valid())
+          ? url::Origin::Create(GetWebBundleURL())
+          : GetOriginForURLLoaderFactory();
   // TODO(crbug.com/979296): Consider changing this code to copy an origin
   // instead of creating one from a URL which lacks opacity information.
   isolation_info_for_subresources_ =
       render_frame_host_->ComputeIsolationInfoForSubresourcesForPendingCommit(
-          GetOriginForURLLoaderFactory());
+          origin);
   DCHECK(!isolation_info_for_subresources_.IsEmpty());
 
   if (IsServedFromBackForwardCache()) {

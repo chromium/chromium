@@ -16,6 +16,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
+#include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -87,6 +88,7 @@ class LinkWebBundleBrowserTest : public ContentBrowserTest {
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
     original_client_ = SetBrowserClientForTesting(&browser_client_);
+    host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
@@ -258,6 +260,22 @@ IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest,
   run_loop.Run();
   EXPECT_EQ(net::ERR_ABORTED, *finish_navigation_observer.error_code());
   EXPECT_EQ(GURL(kUrnUuidURL), GetObservedUnknownSchemeUrl());
+}
+
+IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, NetworkIsolationKey) {
+  GURL bundle_url(
+      embedded_test_server()->GetURL("bundle.com", "/web_bundle/urn-uuid.wbn"));
+  GURL page_url(embedded_test_server()->GetURL(
+      "page.com", "/web_bundle/frame_parent.html?wbn=" + bundle_url.spec()));
+  EXPECT_TRUE(NavigateToURL(shell(), page_url));
+  base::string16 expected_title(base::UTF8ToUTF16("OK"));
+  TitleWatcher title_watcher(shell()->web_contents(), expected_title);
+  EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
+
+  RenderFrameHost* main_frame = shell()->web_contents()->GetMainFrame();
+  RenderFrameHost* urn_frame = ChildFrameAt(main_frame, 0);
+  EXPECT_EQ("http://page.com http://bundle.com",
+            urn_frame->GetNetworkIsolationKey().ToString());
 }
 
 }  // namespace content

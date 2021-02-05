@@ -2759,12 +2759,18 @@ void RenderFrameHostImpl::DidNavigate(
   frame_tree_node_->SetCurrentURL(params.url);
   SetLastCommittedOrigin(params.origin);
 
+  // For urn: resources served from WebBundles, use the Bundle's origin.
+  url::Origin origin =
+      (params.url.SchemeIs("urn") &&
+       navigation_request->GetWebBundleURL().is_valid())
+          ? url::Origin::Create(navigation_request->GetWebBundleURL())
+          : GetLastCommittedOrigin();
   // TODO(https://crbug.com/1164508): Remove this check once origin is computed
   // correctly by the browser side.
-  if (!GetLastCommittedOrigin().IsSameOriginWith(
+  if (!origin.IsSameOriginWith(
           GetIsolationInfoForSubresources().frame_origin().value())) {
-    isolation_info_ = ComputeIsolationInfoInternal(
-        GetLastCommittedOrigin(), isolation_info_.request_type());
+    isolation_info_ =
+        ComputeIsolationInfoInternal(origin, isolation_info_.request_type());
   }
 
   // Separately, update the frame's last successful URL except for net error
