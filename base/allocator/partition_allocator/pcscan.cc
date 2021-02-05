@@ -133,8 +133,9 @@ void ReportStats(size_t swept_bytes, size_t last_size, size_t new_size) {
 }
 
 template <bool thread_safe>
-uintptr_t GetObjectStartInSuperPage(uintptr_t maybe_ptr,
-                                    const PartitionRoot<thread_safe>& root) {
+ALWAYS_INLINE uintptr_t
+GetObjectStartInSuperPage(uintptr_t maybe_ptr,
+                          const PartitionRoot<thread_safe>& root) {
   char* allocation_start =
       GetSlotStartInSuperPage<thread_safe>(reinterpret_cast<char*>(maybe_ptr));
   if (!allocation_start) {
