@@ -212,6 +212,7 @@ aom_av1_encoder_intrin_sse2 = [
   "//third_party/libaom/source/libaom/av1/encoder/x86/av1_quantize_sse2.c",
   "//third_party/libaom/source/libaom/av1/encoder/x86/encodetxb_sse2.c",
   "//third_party/libaom/source/libaom/av1/encoder/x86/temporal_filter_sse2.c",
+  "//third_party/libaom/source/libaom/av1/encoder/x86/av1_k_means_sse2.c",
   "//third_party/libaom/source/libaom/av1/encoder/x86/wedge_utils_sse2.c",
   "//third_party/libaom/source/libaom/av1/encoder/x86/av1_temporal_denoiser_sse2.c",
 ]
@@ -351,6 +352,7 @@ aom_av1_encoder_sources = [
   "//third_party/libaom/source/libaom/av1/encoder/tx_search.h",
   "//third_party/libaom/source/libaom/av1/encoder/txb_rdopt.c",
   "//third_party/libaom/source/libaom/av1/encoder/txb_rdopt.h",
+  "//third_party/libaom/source/libaom/av1/encoder/txb_rdopt_utils.h",
   "//third_party/libaom/source/libaom/av1/encoder/var_based_part.c",
   "//third_party/libaom/source/libaom/av1/encoder/var_based_part.h",
   "//third_party/libaom/source/libaom/av1/encoder/wedge_utils.c",
