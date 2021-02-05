@@ -8,12 +8,16 @@
    based on ../cmake-zipconf.h.in.
  */
 
+#include "build/build_config.h"
+
 #define LIBZIP_VERSION "1.7.3"
 #define LIBZIP_VERSION_MAJOR 1
 #define LIBZIP_VERSION_MINOR 7
 #define LIBZIP_VERSION_MICRO 3
 
-/* #undef ZIP_STATIC */
+#if defined(OS_WIN)
+#define ZIP_STATIC
+#endif
 
 #define _Nullable
 #define _Nonnull
@@ -31,6 +35,10 @@ typedef int32_t zip_int32_t;
 typedef uint32_t zip_uint32_t;
 typedef int64_t zip_int64_t;
 typedef uint64_t zip_uint64_t;
+
+#if defined(OS_WIN)
+typedef int mode_t;
+#endif
 
 #define ZIP_INT8_MIN (-ZIP_INT8_MAX - 1)
 #define ZIP_INT8_MAX 0x7f
