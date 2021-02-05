@@ -13,6 +13,20 @@
 
 namespace blink {
 
+PhysicalSize PhysicalRect::DistanceAsSize(PhysicalOffset target) const {
+  target -= offset;
+  PhysicalSize distance;
+  if (target.left < 0)
+    distance.width = -target.left;
+  else if (target.left > size.width)
+    distance.width = target.left - size.width;
+  if (target.top < 0)
+    distance.height = -target.top;
+  else if (target.top > size.height)
+    distance.height = target.top - size.height;
+  return distance;
+}
+
 bool PhysicalRect::Contains(const PhysicalRect& other) const {
   return offset.left <= other.offset.left && offset.top <= other.offset.top &&
          Right() >= other.Right() && Bottom() >= other.Bottom();

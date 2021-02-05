@@ -1453,10 +1453,7 @@ PositionWithAffinity LayoutBlock::PositionForPoint(
 
   if (IsLayoutNGObject() && PhysicalFragmentCount() &&
       RuntimeEnabledFeatures::LayoutNGFullPositionForPointEnabled()) {
-    // Layout engine boundary. Enter NG PositionForPoint(). Assert
-    // that we're not block-fragmented here.
-    DCHECK_EQ(PhysicalFragmentCount(), 1u);
-    return GetPhysicalFragment(0)->PositionForPoint(point);
+    return PositionForPointInFragments(point);
   }
 
   if (IsTable())

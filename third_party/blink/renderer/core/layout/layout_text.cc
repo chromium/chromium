@@ -843,12 +843,18 @@ PositionWithAffinity LayoutText::PositionForPoint(
     const PhysicalOffset& point) const {
   NOT_DESTROYED();
   if (IsInLayoutNGInlineFormattingContext()) {
+    // TODO(crbug.com/1150362): The optimized codepath below does not support
+    // the block fragmentation yet. Use the slow codepath for now if block
+    // fragmented.
+    const LayoutBlockFlow* containing_block_flow = ContainingNGBlockFlow();
+    if (UNLIKELY(containing_block_flow->PhysicalFragmentCount() > 1))
+      return containing_block_flow->PositionForPoint(point);
+
     // Because of Texts in "position:relative" can be outside of line box, we
     // attempt to find a fragment containing |point|.
     // See All/LayoutViewHitTestTest.HitTestHorizontal/* and
     // All/LayoutViewHitTestTest.HitTestVerticalRL/*
     NGInlineCursor cursor;
-    const LayoutBlockFlow* containing_block_flow = ContainingNGBlockFlow();
     PhysicalOffset point_in_contents = point;
     if (containing_block_flow->IsScrollContainer()) {
       point_in_contents += PhysicalOffset(

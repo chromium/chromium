@@ -211,9 +211,8 @@ class CORE_EXPORT NGPhysicalBoxFragment final
   const LayoutBox* OwnerLayoutBox() const;
   LayoutBox* MutableOwnerLayoutBox() const;
 
-  // When |this| is block fragmented, returns the offset from its first
-  // fragment. Otherwise returns (0,0).
-  PhysicalOffset OffsetFromFirstFragment() const;
+  // Returns the offset in the |OwnerLayoutBox| coordinate system.
+  PhysicalOffset OffsetFromOwnerLayoutBox() const;
 
   PhysicalRect ScrollableOverflow(TextHeightType height_type) const;
   PhysicalRect ScrollableOverflowFromChildren(TextHeightType height_type) const;

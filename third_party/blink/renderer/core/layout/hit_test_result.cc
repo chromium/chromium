@@ -153,7 +153,7 @@ void HitTestResult::SetNodeAndPosition(
     const PhysicalOffset& position) {
   if (box_fragment) {
     box_fragment_local_point_ = position;
-    local_point_ = position + box_fragment->OffsetFromFirstFragment();
+    local_point_ = position + box_fragment->OffsetFromOwnerLayoutBox();
   } else {
     local_point_ = position;
   }
@@ -200,15 +200,6 @@ PositionWithAffinity HitTestResult::GetPosition() const {
         MostForwardCaretPosition(Position::FirstPositionInNode(*inner_node_)));
   }
 
-  // TODO(crbug.com/1152696): We have to use PostLayout() here, but maybe it
-  // should rather be illegal to call GetPosition() on a HitTestResult after
-  // relayout?
-  if (box_fragment_ &&
-      RuntimeEnabledFeatures::LayoutNGFullPositionForPointEnabled() &&
-      !box_fragment_->IsLayoutObjectDestroyedOrMoved()) {
-    if (const NGPhysicalBoxFragment* fragment = box_fragment_->PostLayout())
-      return fragment->PositionForPoint(box_fragment_local_point_);
-  }
   return layout_object->PositionForPoint(LocalPoint());
 }
 
@@ -232,13 +223,7 @@ PositionWithAffinity HitTestResult::GetPositionForInnerNodeOrImageMapImage()
   if (layout_object->ChildPaintBlockedByDisplayLock())
     return PositionWithAffinity(Position(*node, 0), TextAffinity::kDefault);
 
-  PositionWithAffinity position;
-  if (box_fragment_ &&
-      RuntimeEnabledFeatures::LayoutNGFullPositionForPointEnabled() &&
-      layout_object == InnerPossiblyPseudoNode()->GetLayoutObject())
-    position = box_fragment_->PositionForPoint(LocalPoint());
-  else
-    position = layout_object->PositionForPoint(LocalPoint());
+  PositionWithAffinity position = layout_object->PositionForPoint(LocalPoint());
   if (position.IsNull())
     return PositionWithAffinity(FirstPositionInOrBeforeNode(*node));
   return position;

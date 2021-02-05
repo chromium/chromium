@@ -78,6 +78,10 @@ struct CORE_EXPORT PhysicalRect {
   }
   bool operator!=(const PhysicalRect& other) const { return !(*this == other); }
 
+  // Returns the distance to |target| in horizontal and vertical directions.
+  // Each distance is zero if |this| contains |target| in that direction.
+  PhysicalSize DistanceAsSize(PhysicalOffset target) const;
+
   bool Contains(const PhysicalRect&) const;
   bool Contains(LayoutUnit px, LayoutUnit py) const {
     return px >= offset.left && px < Right() && py >= offset.top &&

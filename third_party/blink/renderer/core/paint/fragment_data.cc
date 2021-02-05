@@ -42,6 +42,10 @@ FragmentData& FragmentData::LastFragment() {
   }
 }
 
+const FragmentData& FragmentData::LastFragment() const {
+  return const_cast<FragmentData*>(this)->LastFragment();
+}
+
 FragmentData::RareData& FragmentData::EnsureRareData() {
   if (!rare_data_)
     rare_data_ = std::make_unique<RareData>();

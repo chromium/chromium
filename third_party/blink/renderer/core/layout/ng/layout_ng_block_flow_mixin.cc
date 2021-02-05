@@ -228,8 +228,9 @@ PositionWithAffinity LayoutNGBlockFlowMixin<Base>::PositionForPoint(
 
   if (!Base::ChildrenInline())
     return LayoutBlock::PositionForPoint(point);
-  if (const NGPhysicalBoxFragment* fragment = CurrentFragment())
-    return fragment->PositionForPoint(point);
+
+  if (Base::PhysicalFragmentCount())
+    return Base::PositionForPointInFragments(point);
 
   return Base::CreatePositionWithAffinity(0);
 }

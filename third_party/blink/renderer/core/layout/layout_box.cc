@@ -6704,6 +6704,42 @@ PositionWithAffinity LayoutBox::PositionForPoint(
   return FirstPositionInOrBeforeThis();
 }
 
+PositionWithAffinity LayoutBox::PositionForPointInFragments(
+    const PhysicalOffset& target) const {
+  NOT_DESTROYED();
+  DCHECK_GT(PhysicalFragmentCount(), 0u);
+
+  if (PhysicalFragmentCount() == 1) {
+    const NGPhysicalBoxFragment* fragment = GetPhysicalFragment(0);
+    return fragment->PositionForPoint(target);
+  }
+
+  // When |this| is block fragmented, find the closest fragment.
+  const NGPhysicalBoxFragment* closest_fragment = nullptr;
+  PhysicalOffset closest_fragment_offset;
+  NGLink closest_link;
+  LayoutUnit shortest_square_distance = LayoutUnit::Max();
+  for (const NGPhysicalBoxFragment& fragment : PhysicalFragments()) {
+    // If |fragment| contains |target|, call its |PositionForPoint|.
+    const PhysicalOffset fragment_offset = fragment.OffsetFromOwnerLayoutBox();
+    const PhysicalSize distance =
+        PhysicalRect(fragment_offset, fragment.Size()).DistanceAsSize(target);
+    if (distance.IsZero())
+      return fragment.PositionForPoint(target - fragment_offset);
+
+    // Otherwise find the closest fragment.
+    const LayoutUnit square_distance =
+        distance.width * distance.width + distance.height * distance.height;
+    if (square_distance < shortest_square_distance) {
+      shortest_square_distance = square_distance;
+      closest_fragment = &fragment;
+      closest_fragment_offset = fragment_offset;
+    }
+  }
+  DCHECK(closest_fragment);
+  return closest_fragment->PositionForPoint(target - closest_fragment_offset);
+}
+
 DISABLE_CFI_PERF
 bool LayoutBox::ShrinkToAvoidFloats() const {
   NOT_DESTROYED();

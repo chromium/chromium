@@ -187,7 +187,7 @@ TEST_F(NGPhysicalBoxFragmentTest, ReplacedBlock) {
   EXPECT_EQ(fragment.BoxType(), NGPhysicalFragment::kBlockFlowRoot);
 }
 
-TEST_F(NGPhysicalBoxFragmentTest, OffsetFromFirstFragmentColumnBox) {
+TEST_F(NGPhysicalBoxFragmentTest, OffsetFromOwnerLayoutBoxColumnBox) {
   ScopedLayoutNGBlockFragmentationForTest enable_ng_block_fragmentation(true);
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -207,18 +207,18 @@ TEST_F(NGPhysicalBoxFragmentTest, OffsetFromFirstFragmentColumnBox) {
   const auto* flow_thread = To<LayoutBox>(columns->SlowFirstChild());
   EXPECT_EQ(flow_thread->PhysicalFragmentCount(), 3u);
   const NGPhysicalBoxFragment* fragment0 = flow_thread->GetPhysicalFragment(0);
-  EXPECT_EQ(fragment0->OffsetFromFirstFragment(), PhysicalOffset());
+  EXPECT_EQ(fragment0->OffsetFromOwnerLayoutBox(), PhysicalOffset());
   const NGPhysicalBoxFragment* fragment1 = flow_thread->GetPhysicalFragment(1);
-  EXPECT_EQ(fragment1->OffsetFromFirstFragment(), PhysicalOffset(110, 0));
+  EXPECT_EQ(fragment1->OffsetFromOwnerLayoutBox(), PhysicalOffset(110, 0));
   const NGPhysicalBoxFragment* fragment2 = flow_thread->GetPhysicalFragment(2);
-  EXPECT_EQ(fragment2->OffsetFromFirstFragment(), PhysicalOffset(220, 0));
+  EXPECT_EQ(fragment2->OffsetFromOwnerLayoutBox(), PhysicalOffset(220, 0));
 
   // Check running another layout does not crash.
   GetElementById("block")->appendChild(GetDocument().createTextNode("a"));
   RunDocumentLifecycle();
 }
 
-TEST_F(NGPhysicalBoxFragmentTest, OffsetFromFirstFragmentFloat) {
+TEST_F(NGPhysicalBoxFragmentTest, OffsetFromOwnerLayoutBoxFloat) {
   ScopedLayoutNGBlockFragmentationForTest enable_ng_block_fragmentation(true);
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -246,12 +246,12 @@ TEST_F(NGPhysicalBoxFragmentTest, OffsetFromFirstFragmentFloat) {
   const auto* target = GetLayoutBoxByElementId("float");
   EXPECT_EQ(target->PhysicalFragmentCount(), 2u);
   const NGPhysicalBoxFragment* fragment0 = target->GetPhysicalFragment(0);
-  EXPECT_EQ(fragment0->OffsetFromFirstFragment(), PhysicalOffset());
+  EXPECT_EQ(fragment0->OffsetFromOwnerLayoutBox(), PhysicalOffset());
   const NGPhysicalBoxFragment* fragment1 = target->GetPhysicalFragment(1);
-  EXPECT_EQ(fragment1->OffsetFromFirstFragment(), PhysicalOffset(110, -300));
+  EXPECT_EQ(fragment1->OffsetFromOwnerLayoutBox(), PhysicalOffset(110, -300));
 }
 
-TEST_F(NGPhysicalBoxFragmentTest, OffsetFromFirstFragmentNested) {
+TEST_F(NGPhysicalBoxFragmentTest, OffsetFromOwnerLayoutBoxNested) {
   ScopedLayoutNGBlockFragmentationForTest enable_ng_block_fragmentation(true);
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -286,11 +286,11 @@ TEST_F(NGPhysicalBoxFragmentTest, OffsetFromFirstFragmentNested) {
   const auto* target = GetLayoutBoxByElementId("target");
   EXPECT_EQ(target->PhysicalFragmentCount(), 3u);
   const NGPhysicalBoxFragment* fragment0 = target->GetPhysicalFragment(0);
-  EXPECT_EQ(fragment0->OffsetFromFirstFragment(), PhysicalOffset());
+  EXPECT_EQ(fragment0->OffsetFromOwnerLayoutBox(), PhysicalOffset());
   const NGPhysicalBoxFragment* fragment1 = target->GetPhysicalFragment(1);
-  EXPECT_EQ(fragment1->OffsetFromFirstFragment(), PhysicalOffset(55, -300));
+  EXPECT_EQ(fragment1->OffsetFromOwnerLayoutBox(), PhysicalOffset(55, -300));
   const NGPhysicalBoxFragment* fragment2 = target->GetPhysicalFragment(2);
-  EXPECT_EQ(fragment2->OffsetFromFirstFragment(), PhysicalOffset(110, -300));
+  EXPECT_EQ(fragment2->OffsetFromOwnerLayoutBox(), PhysicalOffset(110, -300));
 }
 
 }  // namespace blink
