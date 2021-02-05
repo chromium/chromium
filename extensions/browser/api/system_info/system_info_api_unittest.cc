@@ -13,7 +13,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "extensions/browser/api/system_display/display_info_provider.h"
-#include "extensions/browser/api/system_storage/storage_info_provider.h"
+#include "extensions/browser/api/system_info/system_info_provider.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/test_extensions_browser_client.h"

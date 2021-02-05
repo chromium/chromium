@@ -15,7 +15,26 @@ namespace base {
 class SequencedTaskRunner;
 }
 
+namespace storage_monitor {
+class StorageInfo;
+}
+
 namespace extensions {
+
+namespace api {
+namespace system_storage {
+struct StorageUnitInfo;
+}  // namespace system_storage
+}  // namespace api
+
+namespace systeminfo {
+
+// Build StorageUnitInfo struct from StorageInfo instance. The |unit|
+// parameter is the output value.
+void BuildStorageUnitInfo(const storage_monitor::StorageInfo& info,
+                          api::system_storage::StorageUnitInfo* unit);
+
+}  // namespace systeminfo
 
 // An abstract base class for all kinds of system information providers. Each
 // kind of SystemInfoProvider is a single shared instance. It is created if

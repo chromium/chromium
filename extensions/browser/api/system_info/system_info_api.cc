@@ -20,7 +20,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/system_display/display_info_provider.h"
-#include "extensions/browser/api/system_storage/storage_info_provider.h"
+#include "extensions/browser/api/system_info/system_info_provider.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/api/system_display.h"
 #include "extensions/common/api/system_storage.h"
