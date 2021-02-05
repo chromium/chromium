@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBID_WEB_ID_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBID_WEB_ID_H_
 
-#include "mojo/public/cpp/bindings/binding.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_response.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"

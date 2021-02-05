@@ -21,7 +21,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/bindings/tests/bindings_test_base.h"
 #include "mojo/public/cpp/bindings/tests/receiver_unittest.test-mojom.h"
 #include "mojo/public/cpp/system/functions.h"
@@ -745,9 +745,9 @@ TEST_P(ReceiverSerializationTest, NullGenericPendingReceiver) {
   EXPECT_FALSE(binder.connected());
 }
 
-using StrongBindingTest = BindingsTestBase;
+using SelfOwnedReceiverTest = BindingsTestBase;
 
-TEST_P(StrongBindingTest, CloseDestroysImplAndPipe) {
+TEST_P(SelfOwnedReceiverTest, CloseDestroysImplAndPipe) {
   base::RunLoop run_loop;
   bool disconnected = false;
   bool was_deleted = false;
@@ -760,7 +760,7 @@ TEST_P(StrongBindingTest, CloseDestroysImplAndPipe) {
   bool called = false;
   base::RunLoop run_loop2;
 
-  auto binding = MakeStrongBinding<sample::Service>(
+  auto binding = MakeSelfOwnedReceiver<sample::Service>(
       std::make_unique<ServiceImpl>(&was_deleted), std::move(receiver));
   remote->Frobinate(nullptr, sample::Service::BazOptions::REGULAR, NullRemote(),
                     base::BindLambdaForTesting([&](int32_t) {
@@ -772,21 +772,21 @@ TEST_P(StrongBindingTest, CloseDestroysImplAndPipe) {
   EXPECT_FALSE(disconnected);
   binding->Close();
 
-  // Now that the StrongBinding is closed we should detect an error on the other
-  // end of the pipe.
+  // Now that the SelfOwnedReceiver is closed we should detect an error on the
+  // other end of the pipe.
   run_loop.Run();
   EXPECT_TRUE(disconnected);
 
-  // Destroying the StrongBinding also destroys the impl.
+  // Destroying the SelfOwnedReceiver also destroys the impl.
   ASSERT_TRUE(was_deleted);
 }
 
-TEST_P(StrongBindingTest, DisconnectDestroysImplAndPipe) {
+TEST_P(SelfOwnedReceiverTest, DisconnectDestroysImplAndPipe) {
   Remote<sample::Service> remote;
   bool was_deleted = false;
   base::RunLoop run_loop;
 
-  MakeStrongBinding<sample::Service>(
+  MakeSelfOwnedReceiver<sample::Service>(
       std::make_unique<ServiceImpl>(base::BindLambdaForTesting([&] {
         was_deleted = true;
         run_loop.Quit();
@@ -803,7 +803,7 @@ TEST_P(StrongBindingTest, DisconnectDestroysImplAndPipe) {
 }
 
 INSTANTIATE_MOJO_BINDINGS_TEST_SUITE_P(ReceiverTest);
-INSTANTIATE_MOJO_BINDINGS_TEST_SUITE_P(StrongBindingTest);
+INSTANTIATE_MOJO_BINDINGS_TEST_SUITE_P(SelfOwnedReceiverTest);
 
 // These tests only make sense for serialized messages.
 INSTANTIATE_TEST_SUITE_P(
