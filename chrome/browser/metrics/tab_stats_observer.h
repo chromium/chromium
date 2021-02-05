@@ -17,29 +17,30 @@ namespace metrics {
 // Defines an interface for a class used to handle tab and window related stats.
 // Handling the events can be either storing them for logging purposes,
 // forwarding them to another class or taking reactive measures when certain
-// criteria are met.
+// criteria are met. Subclasses do not have to react to all events so default
+// noop functions are provided.
 class TabStatsObserver : public base::CheckedObserver {
  public:
   // Functions used to update the window/tab count.
-  virtual void OnWindowAdded() = 0;
-  virtual void OnWindowRemoved() = 0;
-  virtual void OnTabAdded(content::WebContents* web_contents) = 0;
-  virtual void OnTabRemoved(content::WebContents* web_contents) = 0;
+  virtual void OnWindowAdded() {}
+  virtual void OnWindowRemoved() {}
+  virtual void OnTabAdded(content::WebContents* web_contents) {}
+  virtual void OnTabRemoved(content::WebContents* web_contents) {}
   virtual void OnTabReplaced(content::WebContents* old_contents,
-                             content::WebContents* new_contents) = 0;
+                             content::WebContents* new_contents) {}
 
   // Records that there's been a direct user interaction with a tab, see the
   // comment for |DidGetUserInteraction| in
   // content/public/browser/web_contents_observer.h for a list of the possible
   // type of interactions.
-  virtual void OnTabInteraction(content::WebContents* web_contents) = 0;
+  virtual void OnTabInteraction(content::WebContents* web_contents) {}
 
   // Records that a tab became audible.
-  virtual void OnTabAudible(content::WebContents* web_contents) = 0;
+  virtual void OnTabAudible(content::WebContents* web_contents) {}
 
   // Records that a tab's visibility changed.
   virtual void OnTabVisibilityChanged(content::WebContents* web_contents,
-                                      content::Visibility visibility) = 0;
+                                      content::Visibility visibility) {}
 };
 
 }  // namespace metrics
