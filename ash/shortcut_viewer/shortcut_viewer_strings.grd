@@ -745,6 +745,9 @@
   <message name="IDS_KSV_DESCRIPTION_OPEN_GET_HELP" desc="Description of the command in keyboard shortcut viewer.">
     Open Help Center
   </message>
+  <message name="IDS_KSV_DESCRIPTION_OPEN_DIAGNOSTICS" desc="Description of the command in keyboard shortcut viewer.">
+    Open Diagnostics App
+  </message>
   <message name="IDS_KSV_DESCRIPTION_OPEN_FEEDBACK_PAGE" desc="Description of the command in keyboard shortcut viewer.">
     Submit feedback
   </message>

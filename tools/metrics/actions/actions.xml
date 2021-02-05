@@ -901,6 +901,13 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="Accel_Open_Diagnostics">
+  <owner>cros-peripherals@google.com</owner>
+  <description>
+    Records how often diagnostics is launched from accelerator.
+  </description>
+</action>
+
 <action name="Accel_Open_Feedback_Page">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

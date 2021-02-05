@@ -567,6 +567,11 @@ void HandleSwitchToNextIme(const ui::Accelerator& accelerator) {
   Shell::Get()->ime_controller()->SwitchToNextIme();
 }
 
+void HandleDiagnostics() {
+  base::RecordAction(UserMetricsAction("Accel_Open_Diagnostics"));
+  NewWindowDelegate::GetInstance()->OpenDiagnostics();
+}
+
 void HandleOpenFeedbackPage() {
   base::RecordAction(UserMetricsAction("Accel_Open_Feedback_Page"));
   NewWindowDelegate::GetInstance()->OpenFeedbackPage();
@@ -2063,6 +2068,7 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case NEW_TAB:
     case NEW_WINDOW:
     case OPEN_CROSH:
+    case OPEN_DIAGNOSTICS:
     case OPEN_FEEDBACK_PAGE:
     case OPEN_FILE_MANAGER:
     case OPEN_GET_HELP:
@@ -2283,6 +2289,9 @@ void AcceleratorControllerImpl::PerformAction(
       break;
     case OPEN_CROSH:
       HandleCrosh();
+      break;
+    case OPEN_DIAGNOSTICS:
+      HandleDiagnostics();
       break;
     case OPEN_FEEDBACK_PAGE:
       HandleOpenFeedbackPage();

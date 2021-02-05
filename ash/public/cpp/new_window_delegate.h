@@ -38,6 +38,9 @@ class ASH_PUBLIC_EXPORT NewWindowDelegate {
   // Invoked when the user opens Crosh.
   virtual void OpenCrosh() = 0;
 
+  // Invoked when an accelerator is used to open diagnostics.
+  virtual void OpenDiagnostics() = 0;
+
   // Invoked when an accelerator is used to open help center.
   virtual void OpenGetHelp() = 0;
 

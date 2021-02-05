@@ -24,6 +24,7 @@ class ASH_PUBLIC_EXPORT TestNewWindowDelegate : public NewWindowDelegate {
   void OpenFileManager() override;
   void OpenDownloadsFolder() override;
   void OpenCrosh() override;
+  void OpenDiagnostics() override;
   void OpenGetHelp() override;
   void RestoreTab() override;
   void ShowKeyboardShortcutViewer() override;

@@ -16,6 +16,7 @@ void TestNewWindowDelegate::NewWindow(bool incognito) {}
 void TestNewWindowDelegate::OpenFileManager() {}
 void TestNewWindowDelegate::OpenDownloadsFolder() {}
 void TestNewWindowDelegate::OpenCrosh() {}
+void TestNewWindowDelegate::OpenDiagnostics() {}
 void TestNewWindowDelegate::OpenGetHelp() {}
 void TestNewWindowDelegate::RestoreTab() {}
 void TestNewWindowDelegate::ShowKeyboardShortcutViewer() {}

@@ -7,11 +7,13 @@
 #include <utility>
 
 #include "apps/launcher.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/keyboard_shortcut_viewer.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "base/feature_list.h"
 #include "base/macros.h"
 #include "chrome/browser/apps/app_service/app_service_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -463,6 +465,11 @@ void ChromeNewWindowClient::ShowKeyboardShortcutViewer() {
 
 void ChromeNewWindowClient::ShowTaskManager() {
   chrome::OpenTaskManager(nullptr);
+}
+
+void ChromeNewWindowClient::OpenDiagnostics() {
+  if (base::FeatureList::IsEnabled(chromeos::features::kDiagnosticsApp))
+    chrome::ShowDiagnosticsApp(ProfileManager::GetActiveUserProfile());
 }
 
 void ChromeNewWindowClient::OpenFeedbackPage(bool from_assistant) {

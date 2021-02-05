@@ -4,11 +4,13 @@
 
 #include "ash/shortcut_viewer/keyboard_shortcut_viewer_metadata.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/shortcut_viewer/keyboard_shortcut_item.h"
 #include "ash/shortcut_viewer/strings/grit/shortcut_viewer_strings.h"
 #include "ash/shortcut_viewer/vector_icons/vector_icons.h"
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -1453,6 +1455,19 @@ const std::vector<KeyboardShortcutItem>& GetKeyboardShortcutItemList() {
   // string.
   if (!is_initialized) {
     is_initialized = true;
+
+    // Include diagnostics shortcuts only when experiment flag is enabled.
+    if (base::FeatureList::IsEnabled(chromeos::features::kDiagnosticsApp)) {
+      const KeyboardShortcutItem diagnostics_shortcut = {
+          // |categories|
+          {ShortcutCategory::kSystemAndDisplay},
+          IDS_KSV_DESCRIPTION_OPEN_DIAGNOSTICS,
+          {},
+          // |accelerator_ids|
+          {{ui::VKEY_ESCAPE, ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN}}};
+      item_list->emplace_back(diagnostics_shortcut);
+    }
+
     for (auto& item : *item_list) {
       // Capture mode is an improved screenshot and video recording tool, and
       // the shortuct messages reflect the differences. If capture mode is
