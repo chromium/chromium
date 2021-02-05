@@ -45,12 +45,6 @@ export class Background extends ChromeVoxState {
            }).bind(this)
     });
 
-    Object.defineProperty(ChromeVox, 'modKeyStr', {
-      get() {
-        return 'Search';
-      }
-    });
-
     Object.defineProperty(ChromeVox, 'typingEcho', {
       get() {
         return parseInt(localStorage['typingEcho'], 10);
