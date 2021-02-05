@@ -38,6 +38,8 @@ component("test_support") {
     "fake_assistant_manager_service_delegate.h",
     "fake_platform_api.cc",
     "fake_platform_api.h",
+    "fake_platform_delegate.cc",
+    "fake_platform_delegate.h",
   ]
 
   deps = [
@@ -45,6 +47,7 @@ component("test_support") {
     "//base",
     "//chromeos/assistant/internal:test_support",
     "//chromeos/assistant/internal/proto/google3",
+    "//chromeos/services/libassistant/public/mojom",
     "//libassistant/shared/public",
   ]
 }

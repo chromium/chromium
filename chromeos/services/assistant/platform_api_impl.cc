@@ -47,7 +47,7 @@ PlatformApiImpl::PlatformApiImpl(
   std::unique_ptr<PowerManagerProviderImpl> provider;
   if (features::IsPowerManagerEnabled()) {
     provider = std::make_unique<PowerManagerProviderImpl>(
-        std::move(main_thread_task_runner));
+        std::move(main_thread_task_runner), platform_delegate);
   }
   system_provider_ = std::make_unique<SystemProviderImpl>(
       std::move(provider), std::move(battery_monitor));

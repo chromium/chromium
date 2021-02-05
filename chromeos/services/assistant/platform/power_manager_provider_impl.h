@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chromeos/dbus/power/native_timer.h"
+#include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom-forward.h"
 #include "libassistant/shared/public/platform_system.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
@@ -37,8 +38,9 @@ namespace assistant {
 class COMPONENT_EXPORT(ASSISTANT_SERVICE) PowerManagerProviderImpl
     : public assistant_client::PowerManagerProvider {
  public:
-  explicit PowerManagerProviderImpl(
-      scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner);
+  PowerManagerProviderImpl(
+      scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner,
+      chromeos::libassistant::mojom::PlatformDelegate* delegate);
   ~PowerManagerProviderImpl() override;
 
   // assistant_client::PowerManagerProvider overrides. These are called from
@@ -102,6 +104,9 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) PowerManagerProviderImpl
   // Used to post tasks from a libassistant thread on to the main thread in
   // order to use Chrome APIs safely.
   const scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner_;
+
+  // Owned by |AssistantManagerServiceImpl|. Used to initialize |wake_lock_|.
+  chromeos::libassistant::mojom::PlatformDelegate* const platform_delegate_;
 
   // Clock to use to calculate time ticks. Set and used only for testing.
   const base::TickClock* tick_clock_ = nullptr;

@@ -9,7 +9,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
-#include "chromeos/services/assistant/public/cpp/assistant_client.h"
+#include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 
@@ -39,8 +39,10 @@ base::TimeDelta ClockNow(clockid_t clk_id) {
 }  // namespace
 
 PowerManagerProviderImpl::PowerManagerProviderImpl(
-    scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner,
+    chromeos::libassistant::mojom::PlatformDelegate* delegate)
     : main_thread_task_runner_(std::move(main_thread_task_runner)),
+      platform_delegate_(delegate),
       weak_factory_(this) {}
 
 PowerManagerProviderImpl::~PowerManagerProviderImpl() = default;
@@ -132,7 +134,7 @@ void PowerManagerProviderImpl::AcquireWakeLockOnMainThread() {
   // type kPreventAppSuspension.
   if (!wake_lock_) {
     mojo::Remote<device::mojom::WakeLockProvider> provider;
-    AssistantClient::Get()->RequestWakeLockProvider(
+    platform_delegate_->BindWakeLockProvider(
         provider.BindNewPipeAndPassReceiver());
     provider->GetWakeLockWithoutContext(
         device::mojom::WakeLockType::kPreventAppSuspension,

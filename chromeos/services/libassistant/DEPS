@@ -5,6 +5,7 @@ include_rules = [
   "+media/audio",
   "+media/base",
   "+services/audio/public",
+  "+services/device/public/mojom",
   "+services/network/public",
   "+services/network/test",
 ]

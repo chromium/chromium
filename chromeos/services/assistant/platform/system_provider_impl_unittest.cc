@@ -9,7 +9,7 @@
 
 #include "base/test/task_environment.h"
 #include "chromeos/services/assistant/platform/power_manager_provider_impl.h"
-#include "chromeos/services/assistant/test_support/scoped_assistant_client.h"
+#include "chromeos/services/assistant/public/cpp/migration/fake_platform_delegate.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/device/public/mojom/battery_monitor.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -55,9 +55,9 @@ class FakeBatteryMonitor : device::mojom::BatteryMonitor {
   DISALLOW_COPY_AND_ASSIGN(FakeBatteryMonitor);
 };
 
-class SystemProviderImplTest : public testing::Test {
+class AssistantSystemProviderImplTest : public testing::Test {
  public:
-  SystemProviderImplTest()
+  AssistantSystemProviderImplTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {
     battery_monitor_.SetStatus(device::mojom::BatteryStatus::New(
         false /* charging */, 0 /* charging_time */, 0 /* discharging_time */,
@@ -65,7 +65,7 @@ class SystemProviderImplTest : public testing::Test {
 
     system_provider_impl_ = std::make_unique<SystemProviderImpl>(
         std::make_unique<PowerManagerProviderImpl>(
-            task_environment_.GetMainThreadTaskRunner()),
+            task_environment_.GetMainThreadTaskRunner(), &platform_delegate),
         battery_monitor_.CreateRemoteAndBind());
     FlushForTesting();
   }
@@ -79,13 +79,13 @@ class SystemProviderImplTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   FakeBatteryMonitor battery_monitor_;
-  ScopedAssistantClient assistant_client_;
+  FakePlatformDelegate platform_delegate;
   std::unique_ptr<SystemProviderImpl> system_provider_impl_;
 
-  DISALLOW_COPY_AND_ASSIGN(SystemProviderImplTest);
+  DISALLOW_COPY_AND_ASSIGN(AssistantSystemProviderImplTest);
 };
 
-TEST_F(SystemProviderImplTest, GetBatteryStateReturnsLastState) {
+TEST_F(AssistantSystemProviderImplTest, GetBatteryStateReturnsLastState) {
   SystemProviderImpl::BatteryState state;
   // Initial level is 0
   system_provider()->GetBatteryState(&state);

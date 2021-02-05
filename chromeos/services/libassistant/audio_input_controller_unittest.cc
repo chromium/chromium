@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
+#include "chromeos/services/assistant/public/cpp/migration/fake_platform_delegate.h"
 #include "chromeos/services/libassistant/audio/audio_input_impl.h"
 #include "chromeos/services/libassistant/public/mojom/audio_input_controller.mojom.h"
 #include "media/audio/audio_device_description.h"
@@ -34,36 +35,6 @@ class FakeAudioInputObserver : public assistant_client::AudioInput::Observer {
                               int64_t timestamp) override {}
   void OnAudioError(assistant_client::AudioInput::Error error) override {}
   void OnAudioStopped() override {}
-};
-
-class FakePlatformDelegate : public mojom::PlatformDelegate {
- public:
-  FakePlatformDelegate() = default;
-  FakePlatformDelegate(FakePlatformDelegate&) = delete;
-  FakePlatformDelegate& operator=(FakePlatformDelegate&) = delete;
-  ~FakePlatformDelegate() override = default;
-
-  // mojom::PlatformDelegate implementation:
-  void BindAudioStreamFactory(
-      mojo::PendingReceiver<::audio::mojom::StreamFactory> receiver) override {
-    stream_factory_receiver_ = std::move(receiver);
-  }
-  void BindAudioDecoderFactory(
-      mojo::PendingReceiver<
-          ::chromeos::assistant::mojom::AssistantAudioDecoderFactory> receiver)
-      override {}
-  void BindAssistantVolumeControl(
-      mojo::PendingReceiver<::ash::mojom::AssistantVolumeControl> receiver)
-      override {}
-
-  // Return the pending receiver passed to the last BindAudioStreamFactory call.
-  mojo::PendingReceiver<::audio::mojom::StreamFactory>
-  stream_factory_receiver() {
-    return std::move(stream_factory_receiver_);
-  }
-
- private:
-  mojo::PendingReceiver<::audio::mojom::StreamFactory> stream_factory_receiver_;
 };
 
 class AssistantAudioInputControllerTest : public testing::Test {
@@ -165,7 +136,7 @@ class AssistantAudioInputControllerTest : public testing::Test {
   mojo::Remote<mojom::AudioInputController> client_;
   AudioInputController controller_;
   FakeAudioInputObserver audio_input_observer_;
-  FakePlatformDelegate platform_delegate_;
+  assistant::FakePlatformDelegate platform_delegate_;
 };
 
 }  // namespace

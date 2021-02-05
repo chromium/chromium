@@ -40,7 +40,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) SystemProviderImpl
                                const std::string& locale) override;
 
  private:
-  friend class SystemProviderImplTest;
+  friend class AssistantSystemProviderImplTest;
   void OnBatteryStatus(device::mojom::BatteryStatusPtr battery_status);
 
   void FlushForTesting();

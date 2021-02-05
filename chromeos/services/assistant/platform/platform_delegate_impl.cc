@@ -32,5 +32,10 @@ void PlatformDelegateImpl::BindAssistantVolumeControl(
   AssistantClient::Get()->RequestAssistantVolumeControl(std::move(receiver));
 }
 
+void PlatformDelegateImpl::BindWakeLockProvider(
+    mojo::PendingReceiver<::device::mojom::WakeLockProvider> receiver) {
+  AssistantClient::Get()->RequestWakeLockProvider(std::move(receiver));
+}
+
 }  // namespace assistant
 }  // namespace chromeos
