@@ -399,7 +399,7 @@ void RenderFrameHostManager::CommitPendingIfNecessary(
     // navigation finishes, we show it if the delegate is shown. CommitPending()
     // takes care of this in the cross-process case, as well as other cases
     // where a RenderFrameHost is swapped in.
-    if (!delegate_->IsHidden())
+    if (!frame_tree_node_->frame_tree()->IsHidden())
       render_frame_host_->GetView()->Show();
   }
 }
@@ -3204,7 +3204,7 @@ void RenderFrameHostManager::CommitPending(
   if (render_frame_host_->is_local_root() && new_view) {
     // RenderFrames are created with a hidden RenderWidgetHost. When navigation
     // finishes, we show it if the delegate is shown.
-    if (!delegate_->IsHidden())
+    if (!frame_tree_node_->frame_tree()->IsHidden())
       new_view->Show();
   }
 
@@ -3432,9 +3432,10 @@ void RenderFrameHostManager::ExecuteRemoteFramesBroadcastMethod(
 
 void RenderFrameHostManager::EnsureRenderFrameHostVisibilityConsistent() {
   RenderWidgetHostView* view = GetRenderWidgetHostView();
-  if (view && static_cast<RenderWidgetHostImpl*>(view->GetRenderWidgetHost())
-                      ->is_hidden() != delegate_->IsHidden()) {
-    if (delegate_->IsHidden()) {
+  if (view &&
+      static_cast<RenderWidgetHostImpl*>(view->GetRenderWidgetHost())
+              ->is_hidden() != frame_tree_node_->frame_tree()->IsHidden()) {
+    if (frame_tree_node_->frame_tree()->IsHidden()) {
       view->Hide();
     } else {
       view->Show();

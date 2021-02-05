@@ -180,6 +180,16 @@ FrameTreeNode::~FrameTreeNode() {
   }
 
   frame_tree_->FrameRemoved(this);
+
+  // Do not dispatch notification for the root frame as ~WebContentsImpl already
+  // dispatches it for now.
+  // TODO(https://crbug.com/1170277): This is only needed because the FrameTree
+  // is a member of WebContentsImpl and we would call back into it during
+  // destruction. We should clean up the FrameTree destruction code and call the
+  // delegate unconditionally.
+  if (parent())
+    render_manager_.delegate()->OnFrameTreeNodeDestroyed(this);
+
   for (auto& observer : observers_)
     observer.OnFrameTreeNodeDestroyed(this);
   observers_.Clear();

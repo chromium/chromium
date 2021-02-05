@@ -410,11 +410,6 @@ void FrameTree::SetFocusedFrame(FrameTreeNode* node, SiteInstance* source) {
   root()->current_frame_host()->GetOutermostMainFrame()->UpdateAXTreeData();
 }
 
-void FrameTree::SetFrameRemoveListener(
-    base::RepeatingCallback<void(RenderFrameHost*)> on_frame_removed) {
-  on_frame_removed_ = std::move(on_frame_removed);
-}
-
 scoped_refptr<RenderViewHostImpl> FrameTree::CreateRenderViewHost(
     SiteInstance* site_instance,
     int32_t main_frame_routing_id,
@@ -462,16 +457,6 @@ void FrameTree::FrameUnloading(FrameTreeNode* frame) {
 void FrameTree::FrameRemoved(FrameTreeNode* frame) {
   if (frame->frame_tree_node_id() == focused_frame_tree_node_id_)
     focused_frame_tree_node_id_ = FrameTreeNode::kFrameTreeNodeInvalidId;
-
-  // No notification for the root frame.
-  if (!frame->parent()) {
-    CHECK_EQ(frame, root_);
-    return;
-  }
-
-  // Notify observers of the frame removal.
-  if (!on_frame_removed_.is_null())
-    on_frame_removed_.Run(frame->current_frame_host());
 }
 
 void FrameTree::ResetLoadProgress() {

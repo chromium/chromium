@@ -49,8 +49,6 @@ class NavigationControllerDelegate {
   // embedder for NavigationController will be a WebContents object.
   virtual WebContents* GetWebContents() = 0;
 
-  virtual bool IsHidden() = 0;
-
   virtual void UpdateOverridingUserAgent() = 0;
 };
 

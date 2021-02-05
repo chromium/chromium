@@ -150,10 +150,6 @@ class CONTENT_EXPORT RenderFrameHostManager
     // to see what it should do.
     virtual bool FocusLocationBarByDefault() = 0;
 
-    // Returns true if views created for this delegate should be created in a
-    // hidden state.
-    virtual bool IsHidden() = 0;
-
     // If the delegate is an inner WebContents, this method returns the
     // FrameTreeNode ID of the frame in the outer WebContents which hosts
     // the inner WebContents. Returns FrameTreeNode::kFrameTreeNodeInvalidId
@@ -163,6 +159,10 @@ class CONTENT_EXPORT RenderFrameHostManager
     // If the delegate is an inner WebContents, reattach it to the outer
     // WebContents.
     virtual void ReattachOuterDelegateIfNeeded() = 0;
+
+    // Called when a FrameTreeNode is destoryed. Only called for subframes for
+    // now.
+    virtual void OnFrameTreeNodeDestroyed(FrameTreeNode* node) = 0;
 
    protected:
     virtual ~Delegate() = default;
@@ -549,6 +549,8 @@ class CONTENT_EXPORT RenderFrameHostManager
   // and current |frame_tree_node_| & |render_frame_host_| info.
   CoopCoepCrossOriginIsolatedInfo GetCoopCoepCrossOriginIsolationInfo(
       NavigationRequest* navigation_request);
+
+  Delegate* delegate() { return delegate_; }
 
  private:
   friend class NavigatorTest;

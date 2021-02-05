@@ -956,9 +956,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool IsWidgetForMainFrame(RenderWidgetHostImpl* render_widget_host) override;
   bool IsShowingContextMenuOnPage() const override;
   void DidChangeScreenOrientation() override;
-  // The following function is already listed under RenderViewHostDelegate
-  // overrides:
-  // FrameTree* GetFrameTree() override;
 
   // RenderFrameHostManager::Delegate ------------------------------------------
 
@@ -985,6 +982,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool FocusLocationBarByDefault() override;
   bool IsHidden() override;
   int GetOuterDelegateFrameTreeNodeId() override;
+  void OnFrameTreeNodeDestroyed(FrameTreeNode* node) override;
 
   // blink::mojom::ColorChooserFactory ---------------------------------------
 
@@ -1620,8 +1618,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   // Returns the size that the main frame should be sized to.
   gfx::Size GetSizeForMainFrame();
-
-  void OnFrameRemoved(RenderFrameHost* render_frame_host);
 
   // Helper method that's called whenever |preferred_size_| or
   // |preferred_size_for_capture_| changes, to propagate the new value to the

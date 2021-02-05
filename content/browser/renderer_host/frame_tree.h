@@ -111,6 +111,9 @@ class CONTENT_EXPORT FrameTree {
 
     // The load progress was changed.
     virtual void DidChangeLoadProgress() = 0;
+
+    // Returns true when the active RenderWidgetHostView should be hidden.
+    virtual bool IsHidden() = 0;
   };
 
   // A set of delegates are remembered here so that we can create
@@ -243,12 +246,6 @@ class CONTENT_EXPORT FrameTree {
   // SiteInstance (e.g., this happens for cross-process window.focus() calls).
   void SetFocusedFrame(FrameTreeNode* node, SiteInstance* source);
 
-  // Allows a client to listen for frame removal.  The listener should expect
-  // to receive the RenderViewHostImpl containing the frame and the renderer-
-  // specific frame routing ID of the removed frame.
-  void SetFrameRemoveListener(
-      base::RepeatingCallback<void(RenderFrameHost*)> on_frame_removed);
-
   // Creates a RenderViewHostImpl for a given |site_instance| in the tree.
   //
   // The RenderFrameHostImpls and the RenderFrameProxyHosts will share ownership
@@ -343,6 +340,8 @@ class CONTENT_EXPORT FrameTree {
     has_accessed_initial_main_document_ = false;
   }
 
+  bool IsHidden() const { return delegate_->IsHidden(); }
+
   // Stops all ongoing navigations in each of the nodes of this FrameTree.
   void StopLoading();
 
@@ -393,8 +392,6 @@ class CONTENT_EXPORT FrameTree {
   FrameTreeNode* root_;
 
   int focused_frame_tree_node_id_;
-
-  base::RepeatingCallback<void(RenderFrameHost*)> on_frame_removed_;
 
   // Overall load progress.
   double load_progress_;

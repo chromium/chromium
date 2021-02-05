@@ -859,8 +859,6 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
       showing_context_menu_(false),
       text_autosizer_page_info_({0, 0, 1.f}) {
   TRACE_EVENT0("content", "WebContentsImpl::WebContentsImpl");
-  frame_tree_.SetFrameRemoveListener(base::BindRepeating(
-      &WebContentsImpl::OnFrameRemoved, base::Unretained(this)));
 #if BUILDFLAG(ENABLE_PLUGINS)
   pepper_playback_observer_ = std::make_unique<PepperPlaybackObserver>(this);
 #endif
@@ -7835,12 +7833,13 @@ gfx::Size WebContentsImpl::GetSizeForMainFrame() {
   return GetContainerBounds().size();
 }
 
-void WebContentsImpl::OnFrameRemoved(RenderFrameHost* render_frame_host) {
-  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::OnFrameRemoved",
-                        "render_frame_host",
-                        base::trace_event::ToTracedValue(render_frame_host));
+void WebContentsImpl::OnFrameTreeNodeDestroyed(FrameTreeNode* node) {
+  OPTIONAL_TRACE_EVENT1(
+      "content", "WebContentsImpl::OnFrameTreeNodeDestroyed",
+      "render_frame_host",
+      base::trace_event::ToTracedValue(node->current_frame_host()));
   observers_.NotifyObservers(&WebContentsObserver::FrameDeleted,
-                             render_frame_host);
+                             node->current_frame_host());
 }
 
 void WebContentsImpl::OnPreferredSizeChanged(const gfx::Size& old_size) {
