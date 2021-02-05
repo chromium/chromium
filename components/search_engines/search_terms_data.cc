@@ -19,10 +19,9 @@ std::string SearchTermsData::GoogleBaseURLValue() const {
 
 std::string SearchTermsData::GoogleBaseSearchByImageURLValue() const {
   const std::string kGoogleHomepageURLPath = std::string("searchbyimage/");
-  constexpr char kLensHomepageURL[] = "https://lens.google.com/";
 
   if (base::FeatureList::IsEnabled(lens::features::kLensStandalone)) {
-    return kLensHomepageURL;
+    return lens::features::GetHomepageURL();
   }
   return google_util::kGoogleHomepageURL + kGoogleHomepageURLPath;
 }

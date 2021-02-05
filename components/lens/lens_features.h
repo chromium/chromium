@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_LENS_LENS_FEATURES_H_
 #define COMPONENTS_LENS_LENS_FEATURES_H_
 
+#include <string>
+
 #include "base/feature_list.h"
 
 namespace lens {
@@ -12,6 +14,7 @@ namespace features {
 
 extern const base::Feature kLensStandalone;
 extern int GetMaxPixels();
+extern std::string GetHomepageURL();
 
 }  // namespace features
 }  // namespace lens

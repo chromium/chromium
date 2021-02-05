@@ -15,8 +15,15 @@ const base::Feature kLensStandalone{"LensStandalone",
 constexpr base::FeatureParam<int> kMaxPixels{&kLensStandalone,
                                              "dimensions-max-pixels", 1000};
 
+constexpr base::FeatureParam<std::string> kHomepageURL{
+    &kLensStandalone, "lens-homepage-url", "https://lens.google.com/"};
+
 int GetMaxPixels() {
   return kMaxPixels.Get();
+}
+
+std::string GetHomepageURL() {
+  return kHomepageURL.Get();
 }
 
 }  // namespace features
