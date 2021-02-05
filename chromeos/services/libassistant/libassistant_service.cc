@@ -29,9 +29,9 @@ LibassistantService::LibassistantService(
     : receiver_(this, std::move(receiver)),
       platform_api_(std::make_unique<PlatformApi>()),
       fake_auth_provider_(std::make_unique<FakeAuthProvider>()),
+      audio_input_controller_(std::make_unique<AudioInputController>()),
       service_controller_(
           std::make_unique<ServiceController>(delegate, platform_api_.get())),
-      audio_input_controller_(std::make_unique<AudioInputController>()),
       conversation_controller_(
           std::make_unique<ConversationController>(service_controller_.get())),
       conversation_state_listener_(
@@ -64,6 +64,9 @@ LibassistantService::LibassistantService(
 }
 
 LibassistantService::~LibassistantService() {
+  // We explicitly stop the Libassistant service before destroying anything,
+  // to prevent use-after-free bugs.
+  service_controller_->Stop();
   service_controller_->RemoveAssistantManagerObserver(
       display_controller_.get());
   service_controller_->RemoveAssistantManagerObserver(

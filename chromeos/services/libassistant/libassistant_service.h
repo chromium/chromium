@@ -79,10 +79,16 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) LibassistantService
   mojo::RemoteSet<mojom::SpeechRecognitionObserver>
       speech_recognition_observers_;
 
+  // These controllers are part of the platform api which is called from
+  // Libassistant, and thus they must outlive |service_controller_|.
   std::unique_ptr<PlatformApi> platform_api_;
   std::unique_ptr<FakeAuthProvider> fake_auth_provider_;
-  std::unique_ptr<ServiceController> service_controller_;
   std::unique_ptr<AudioInputController> audio_input_controller_;
+
+  std::unique_ptr<ServiceController> service_controller_;
+
+  // These controllers call Libassistant, and thus they must *not* outlive
+  // |service_controller_|.
   std::unique_ptr<ConversationController> conversation_controller_;
   std::unique_ptr<ConversationStateListenerImpl> conversation_state_listener_;
   std::unique_ptr<DisplayController> display_controller_;
