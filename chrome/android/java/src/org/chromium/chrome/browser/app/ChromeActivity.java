@@ -436,7 +436,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                         getStatusBarColorController(), ScreenOrientationProvider.getInstance(),
                         this::getNotificationManagerProxy, getTabContentManagerSupplier(),
                         this::getActivityTabStartupMetricsTracker,
-                        /* CompositorViewHolder.Initializer */ this)
+                        /* CompositorViewHolder.Initializer */ this,
+                        /* ChromeActivityNativeDelegate */ this, getModalDialogManagerSupplier(),
+                        getBrowserControlsManager())
                 : overridenCommonsFactory.create(this, mRootUiCoordinator::getBottomSheetController,
                         mTabModelSelectorSupplier, getBrowserControlsManager(),
                         getBrowserControlsManager(), getBrowserControlsManager(),
@@ -447,7 +449,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                         getStatusBarColorController(), ScreenOrientationProvider.getInstance(),
                         this::getNotificationManagerProxy, getTabContentManagerSupplier(),
                         this::getActivityTabStartupMetricsTracker,
-                        /* CompositorViewHolder.Initializer */ this);
+                        /* CompositorViewHolder.Initializer */ this,
+                        /* ChromeActivityNativeDelegate */ this, getModalDialogManagerSupplier(),
+                        getBrowserControlsManager());
 
         return createComponent(commonsModule);
     }

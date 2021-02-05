@@ -18,12 +18,14 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.metrics.ActivityTabStartupMetricsTracker;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -36,6 +38,7 @@ import org.chromium.components.browser_ui.notifications.NotificationManagerProxy
 import org.chromium.content_public.browser.ScreenOrientationProvider;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import javax.inject.Named;
 
@@ -71,6 +74,9 @@ public class ChromeActivityCommonsModule {
     private final Supplier<ActivityTabStartupMetricsTracker>
             mActivityTabStartupMetricsTrackerSupplier;
     private final CompositorViewHolder.Initializer mCompositorViewHolderInitializer;
+    private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private final ChromeActivityNativeDelegate mChromeActivityNativeDelegate;
+    private final BrowserControlsStateProvider mBrowserControlsStateProvider;
 
     /** See {@link ModuleFactoryOverrides} */
     public interface Factory {
@@ -93,7 +99,10 @@ public class ChromeActivityCommonsModule {
                 Supplier<NotificationManagerProxy> notificationManagerProxySupplier,
                 ObservableSupplier<TabContentManager> tabContentManagerSupplier,
                 Supplier<ActivityTabStartupMetricsTracker> activityTabStartupMetricsTrackerSupplier,
-                CompositorViewHolder.Initializer compositorViewHolderInitializer);
+                CompositorViewHolder.Initializer compositorViewHolderInitializer,
+                ChromeActivityNativeDelegate chromeActivityNativeDelegate,
+                Supplier<ModalDialogManager> modalDialogManagerSupplier,
+                BrowserControlsStateProvider browserControlsStateProvider);
     }
 
     public ChromeActivityCommonsModule(ChromeActivity activity,
@@ -115,7 +124,10 @@ public class ChromeActivityCommonsModule {
             Supplier<NotificationManagerProxy> notificationManagerProxySupplier,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             Supplier<ActivityTabStartupMetricsTracker> activityTabStartupMetricsTrackerSupplier,
-            CompositorViewHolder.Initializer compositorViewHolderInitializer) {
+            CompositorViewHolder.Initializer compositorViewHolderInitializer,
+            ChromeActivityNativeDelegate chromeActivityNativeDelegate,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            BrowserControlsStateProvider browserControlsStateProvider) {
         mActivity = activity;
         mBottomSheetControllerSupplier = bottomSheetControllerSupplier;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
@@ -139,6 +151,9 @@ public class ChromeActivityCommonsModule {
         mTabContentManagerSupplier = tabContentManagerSupplier;
         mActivityTabStartupMetricsTrackerSupplier = activityTabStartupMetricsTrackerSupplier;
         mCompositorViewHolderInitializer = compositorViewHolderInitializer;
+        mModalDialogManagerSupplier = modalDialogManagerSupplier;
+        mChromeActivityNativeDelegate = chromeActivityNativeDelegate;
+        mBrowserControlsStateProvider = browserControlsStateProvider;
     }
 
     @Provides
@@ -149,6 +164,11 @@ public class ChromeActivityCommonsModule {
     @Provides
     public TabModelSelector provideTabModelSelector() {
         return mTabModelSelectorSupplier.get();
+    }
+
+    @Provides
+    public Supplier<TabModelSelector> provideTabModelSelectorSupplier() {
+        return mTabModelSelectorSupplier;
     }
 
     @Provides
@@ -241,6 +261,11 @@ public class ChromeActivityCommonsModule {
     }
 
     @Provides
+    public Supplier<CompositorViewHolder> provideCompositorViewHolderSupplier() {
+        return mCompositorViewHolderSupplier;
+    }
+
+    @Provides
     public TabCreatorManager provideTabCreatorManager() {
         return mTabCreatorManager;
     }
@@ -284,5 +309,20 @@ public class ChromeActivityCommonsModule {
     @Provides
     public CompositorViewHolder.Initializer provideCompositorViewHolderInitializer() {
         return mCompositorViewHolderInitializer;
+    }
+
+    @Provides
+    public Supplier<ModalDialogManager> provideModalDialogManagerSupplier() {
+        return mModalDialogManagerSupplier;
+    }
+
+    @Provides
+    public ChromeActivityNativeDelegate provideChromeActivityNativeDelegate() {
+        return mChromeActivityNativeDelegate;
+    }
+
+    @Provides
+    public BrowserControlsStateProvider provideBrowserControlsStateProvider() {
+        return mBrowserControlsStateProvider;
     }
 }

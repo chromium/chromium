@@ -1694,7 +1694,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     getAppBrowserControlsVisibilityDelegate(), getShareDelegateSupplier(),
                     mEphemeralTabCoordinatorSupplier,
                     ((TabbedRootUiCoordinator) mRootUiCoordinator)::onContextMenuCopyLink,
-                    mRootUiCoordinator.getBottomSheetController());
+                    mRootUiCoordinator.getBottomSheetController(),
+                    /* ChromeActivityNativeDelegate */ this, /* isCustomTab= */ false,
+                    getBrowserControlsManager(), getFullscreenManager(),
+                    /* TabCreatorManager */ this, mTabModelSelectorSupplier,
+                    this::getCompositorViewHolder, getModalDialogManagerSupplier());
         }
         return mTabDelegateFactory;
     }

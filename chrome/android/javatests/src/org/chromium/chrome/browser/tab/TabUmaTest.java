@@ -22,9 +22,11 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
 import org.chromium.cc.input.BrowserControlsState;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.TabbedModeTabDelegateFactory;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
@@ -72,12 +74,17 @@ public class TabUmaTest {
     private TabbedModeTabDelegateFactory createTabDelegateFactory() {
         BrowserControlsVisibilityDelegate visibilityDelegate =
                 new BrowserControlsVisibilityDelegate(BrowserControlsState.BOTH) {};
+        ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        RootUiCoordinator rootUiCoordinator = cta.getRootUiCoordinatorForTesting();
         // clang-format off
         return new TabbedModeTabDelegateFactory(sActivityTestRule.getActivity(), visibilityDelegate,
                 new ObservableSupplierImpl<ShareDelegate>(), null,
-                () -> {}, sActivityTestRule.getActivity()
-                        .getRootUiCoordinatorForTesting()
-                        .getBottomSheetController());
+                () -> {}, rootUiCoordinator.getBottomSheetController(),
+                /* ChromeActivityNativeDelegate */ cta, /* isCustomTab= */ false,
+                rootUiCoordinator.getBrowserControlsManager(),
+                cta.getFullscreenManager(), /* TabCreatorManager */ cta,
+                cta::getTabModelSelector, cta::getCompositorViewHolder,
+                cta.getModalDialogManagerSupplier());
         // clang-format on
     }
 
