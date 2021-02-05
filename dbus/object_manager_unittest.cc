@@ -383,7 +383,8 @@ TEST_F(ObjectManagerTest, OwnershipLostAndRegained) {
   ASSERT_EQ(1U, object_paths.size());
 }
 
-TEST_F(ObjectManagerTest, PropertiesChangedAsObjectsReceived) {
+// Flaky: crbug.com/1174515
+TEST_F(ObjectManagerTest, DISABLED_PropertiesChangedAsObjectsReceived) {
   // Remove the existing object manager.
   object_manager_->UnregisterInterface("org.chromium.TestInterface");
   run_loop_.reset(new base::RunLoop);
