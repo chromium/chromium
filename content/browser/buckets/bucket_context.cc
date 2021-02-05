@@ -4,6 +4,9 @@
 
 #include "content/browser/buckets/bucket_context.h"
 
+#include "base/location.h"
+#include "base/memory/scoped_refptr.h"
+#include "content/browser/buckets/bucket_manager.h"
 #include "content/browser/buckets/bucket_manager_host.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -22,24 +25,42 @@ BucketContext::~BucketContext() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 }
 
+void BucketContext::Initialize() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#if DCHECK_IS_ON()
+  DCHECK(!initialize_called_) << __func__ << " called twice";
+  initialize_called_ = true;
+#endif  // DCHECK_IS_ON()
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&BucketContext::InitializeOnIOThread, this));
+}
+
 void BucketContext::BindBucketManagerHost(
     const url::Origin& origin,
     mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#if DCHECK_IS_ON()
+  DCHECK(initialize_called_) << __func__ << " called before Initialize()";
+#endif  // DCHECK_IS_ON()
+
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&BucketContext::BindBucketManagerHostOnIOThread,
                                 scoped_refptr<BucketContext>(this), origin,
                                 std::move(receiver)));
 }
 
+void BucketContext::InitializeOnIOThread() {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK(!bucket_manager_) << __func__ << "  called more than once";
+
+  bucket_manager_ = std::make_unique<BucketManager>();
+}
+
 void BucketContext::BindBucketManagerHostOnIOThread(
     const url::Origin& origin,
     mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  auto bucket_manager_host = std::make_unique<BucketManagerHost>(origin);
-  auto* bucket_manager_host_ptr = bucket_manager_host.get();
-  receivers_.Add(bucket_manager_host_ptr, std::move(receiver),
-                 std::move(bucket_manager_host));
+  bucket_manager_->BindReceiver(origin, std::move(receiver));
 }
 
 }  // namespace content

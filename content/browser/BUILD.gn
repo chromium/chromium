@@ -550,6 +550,8 @@ source_set("browser") {
     "buckets/bucket_context.h",
     "buckets/bucket_host.cc",
     "buckets/bucket_host.h",
+    "buckets/bucket_manager.cc",
+    "buckets/bucket_manager.h",
     "buckets/bucket_manager_host.cc",
     "buckets/bucket_manager_host.h",
     "byte_stream.cc",

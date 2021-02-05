@@ -1301,6 +1301,7 @@ void StoragePartitionImpl::Initialize(
   cookie_store_context_->Initialize(service_worker_context_, base::DoNothing());
 
   bucket_context_ = base::MakeRefCounted<BucketContext>();
+  bucket_context_->Initialize();
 
   // The Conversion Measurement API is not available in Incognito mode.
   if (!is_in_memory_ &&

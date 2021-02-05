@@ -4,11 +4,29 @@
 
 #include "content/browser/buckets/bucket_manager_host.h"
 
+#include "base/types/pass_key.h"
+#include "content/browser/buckets/bucket_manager.h"
+
 namespace content {
 
-BucketManagerHost::BucketManagerHost(const url::Origin& origin)
-    : origin_(origin) {}
+BucketManagerHost::BucketManagerHost(BucketManager* manager, url::Origin origin)
+    : manager_(manager), origin_(std::move(origin)) {
+  DCHECK(manager != nullptr);
+
+  // base::Unretained is safe here because this BucketManagerHost owns
+  // `receivers_`. So, the unretained BucketManagerHost is guaranteed to
+  // outlive |receivers_| and the closure that it uses.
+  receivers_.set_disconnect_handler(base::BindRepeating(
+      &BucketManagerHost::OnReceiverDisconnect, base::Unretained(this)));
+}
+
 BucketManagerHost::~BucketManagerHost() = default;
+
+void BucketManagerHost::BindReceiver(
+    mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  receivers_.Add(this, std::move(receiver));
+}
 
 void BucketManagerHost::OpenBucket(const std::string& name,
                                    blink::mojom::BucketPoliciesPtr policy,
@@ -41,6 +59,11 @@ void BucketManagerHost::DeleteBucket(const std::string& name,
 void BucketManagerHost::RemoveBucketHost(const std::string& bucket_name) {
   DCHECK(base::Contains(bucket_map_, bucket_name));
   bucket_map_.erase(bucket_name);
+}
+
+void BucketManagerHost::OnReceiverDisconnect() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  manager_->OnHostReceiverDisconnect(this, base::PassKey<BucketManagerHost>());
 }
 
 }  // namespace content

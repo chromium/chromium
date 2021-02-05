@@ -5,14 +5,20 @@
 #ifndef CONTENT_BROWSER_BUCKETS_BUCKET_CONTEXT_H_
 #define CONTENT_BROWSER_BUCKETS_BUCKET_CONTEXT_H_
 
+#include <memory>
+
+#include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
+#include "base/sequence_checker.h"
+#include "base/sequenced_task_runner_helpers.h"
+#include "base/thread_annotations.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/mojom/buckets/bucket_manager_host.mojom-forward.h"
 #include "url/origin.h"
 
 namespace content {
 
+class BucketManager;
 class BucketManagerHost;
 
 // One instance of this exists per StoragePartition, and services multiple
@@ -31,6 +37,8 @@ class BucketContext : public base::RefCountedDeleteOnSequence<BucketContext> {
   BucketContext(const BucketContext&) = delete;
   BucketContext& operator=(const BucketContext&) = delete;
 
+  void Initialize();
+
   // Posts task on IO thread and calls BindBucketManagerHostOnIOThread to create
   // BucketManagerHost and bind blink::mojom::BucketManagerHost receiver.
   void BindBucketManagerHost(
@@ -43,17 +51,23 @@ class BucketContext : public base::RefCountedDeleteOnSequence<BucketContext> {
 
   ~BucketContext();
 
+  void InitializeOnIOThread();
+
   // Must be called on the IO thread. This will create a BucketManagerHost
   // and bind the blink::mojom::BucketManagerHost receiver.
   void BindBucketManagerHostOnIOThread(
       const url::Origin& origin,
       mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver);
 
-  mojo::ReceiverSet<blink::mojom::BucketManagerHost,
-                    std::unique_ptr<BucketManagerHost>>
-      receivers_;
-
   SEQUENCE_CHECKER(sequence_checker_);
+
+#if DCHECK_IS_ON()
+  // Only accessed on the UI thread.
+  bool initialize_called_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+#endif  // DCHECK_IS_ON()
+
+  // Must be accessed on the IO thread.
+  std::unique_ptr<BucketManager> bucket_manager_;
 };
 
 }  // namespace content

@@ -5,33 +5,43 @@
 #ifndef CONTENT_BROWSER_BUCKETS_BUCKET_MANAGER_HOST_H_
 #define CONTENT_BROWSER_BUCKETS_BUCKET_MANAGER_HOST_H_
 
+#include "base/sequence_checker.h"
 #include "content/browser/buckets/bucket_host.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/buckets/bucket_manager_host.mojom.h"
 #include "url/origin.h"
 
 namespace content {
 
+class BucketManager;
+
 // Implements the Storage Buckets API for a single origin.
 //
-// BucketContext owns all BucketManagerHost instances associated with
-// a StorageParititon. A new instance is created for every incoming
-// connection from a frame or worker. Instances are destroyed when
-// their corresponding mojo connection is closed, or when BucketContext
-// is destroyed.
-//
-// TODO(ayui): In the future the BucketManagerHost will be expected to be unique
-// per origin, so all of an origin's frame and workers would be connected to
-// the same Host. We will need a singleton BucketManagerHost so an origin's
-// I/O operations (bucket creation / open / querying) are serialized, and so
-// that we can notify all frames & workers when a bucket is deleted, and have
-// them mark their Bucket instance as closed.
+// BucketManager owns all BucketManagerHost instances associated with
+// a StorageParititon. A new instance is created for every origin.
+// Instances are destroyed when all their corresponding mojo connection are
+// closed, or when BucketManager is destroyed.
 class BucketManagerHost : public blink::mojom::BucketManagerHost {
  public:
-  explicit BucketManagerHost(const url::Origin& origin);
+  explicit BucketManagerHost(BucketManager* manager, url::Origin origin);
   ~BucketManagerHost() override;
 
   BucketManagerHost(const BucketManagerHost&) = delete;
   BucketManagerHost& operator=(const BucketManagerHost&) = delete;
+
+  // Binds |receiver| to the BucketManagerHost. The |receiver| must belong to
+  // the frame or worker from this host's origin.
+  void BindReceiver(
+      mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver);
+
+  // The origin served by this host.
+  const url::Origin& origin() const { return origin_; }
+
+  // Returns true if there are no receivers connected to this host.
+  //
+  // The BucketManager that owns this host is expected to destroy the host when
+  // it is not serving any receivers.
+  bool has_connected_receivers() const { return !receivers_.empty(); }
 
   // blink::mojom::BucketsManagerHost:
   void OpenBucket(const std::string& name,
@@ -44,12 +54,25 @@ class BucketManagerHost : public blink::mojom::BucketManagerHost {
   void RemoveBucketHost(const std::string& name);
 
  private:
+  // Called when a receiver in the receiver set is disconnected.
+  void OnReceiverDisconnect();
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  // Raw pointer is safe because BucketManager owns this BucketManagerHost, and
+  // is therefore guaranteed to outlive it.
+  BucketManager* const manager_;
+
   // The origin of the frame or worker connected to this BucketManagerHost.
   const url::Origin origin_;
 
   // TODO(ayui): Temporary map of buckets. This will eventually be stored in its
   // own database and connect to IndexDB, Cache, Blob Storage, etc.
   std::map<std::string, std::unique_ptr<BucketHost>> bucket_map_;
+
+  // Add receivers for frames & workers for `origin_` associated with
+  // the StoragePartition that owns `manager_`.
+  mojo::ReceiverSet<blink::mojom::BucketManagerHost> receivers_;
 };
 
 }  // namespace content
