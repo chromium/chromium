@@ -79859,6 +79859,7 @@ Called by update_scheduler_enums.py.-->
   <int value="8030578" label="/crostini/sharedUsbDevices"/>
   <int value="8530592" label="/syncSetup/advanced"/>
   <int value="16287984" label="/languages/details"/>
+  <int value="53341592" label="/privacySandbox"/>
   <int value="60238454" label="/content/ads"/>
   <int value="104900992" label="/content/insecureContent"/>
   <int value="223791833" label="/help/about"/>

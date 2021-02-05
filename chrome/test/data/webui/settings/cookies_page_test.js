@@ -288,7 +288,10 @@ suite('PrivacySandboxEnabled', function() {
 
     // Disabling all cookies should display the privacy sandbox toast.
     page.$$('#blockAll').click();
-    await flushTasks();
+    assertEquals(
+        'Settings.PrivacySandbox.Block3PCookies',
+        await testMetricsBrowserProxy.whenCalled('recordAction'));
+    testMetricsBrowserProxy.resetResolver('recordAction');
     assertTrue(page.$$('#toast').open);
 
     // Clicking the toast link should be recorded in UMA and should dismiss
@@ -297,12 +300,14 @@ suite('PrivacySandboxEnabled', function() {
     assertEquals(
         'Settings.PrivacySandbox.OpenedFromCookiesPageToast',
         await testMetricsBrowserProxy.whenCalled('recordAction'));
+    testMetricsBrowserProxy.resetResolver('recordAction');
     assertFalse(page.$$('#toast').open);
 
     // Renabling 3P cookies for regular sessions should not display the toast.
     page.$$('#blockThirdPartyIncognito').click();
     await flushTasks();
     assertFalse(page.$$('#toast').open);
+    assertEquals(0, testMetricsBrowserProxy.getCallCount('recordAction'));
 
     // The toast should not be displayed if the user has the privacy sandbox
     // APIs disabled.
@@ -310,12 +315,15 @@ suite('PrivacySandboxEnabled', function() {
     page.$$('#blockAll').click();
     await flushTasks();
     assertFalse(page.$$('#toast').open);
+    assertEquals(0, testMetricsBrowserProxy.getCallCount('recordAction'));
 
     // Disabling only 3P cookies should display the toast.
     page.set('prefs.privacy_sandbox.apis_enabled.value', true);
     page.set('prefs.generated.cookie_primary_setting.value', 0);
     page.$$('#blockThirdParty').click();
-    await flushTasks();
+    assertEquals(
+        'Settings.PrivacySandbox.Block3PCookies',
+        await testMetricsBrowserProxy.whenCalled('recordAction'));
     assertTrue(page.$$('#toast').open);
   });
 });

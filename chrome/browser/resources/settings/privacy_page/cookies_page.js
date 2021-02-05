@@ -230,6 +230,8 @@ Polymer({
         (selection === CookiePrimarySetting.BLOCK_THIRD_PARTY ||
          selection === CookiePrimarySetting.BLOCK_ALL)) {
       this.$.toast.show();
+      this.metricsBrowserProxy_.recordAction(
+          'Settings.PrivacySandbox.Block3PCookies');
     }
 
     this.$.primarySettingGroup.sendPrefChange();

@@ -21250,6 +21250,19 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.PrivacySandbox.Block3PCookies">
+  <owner>rainhard@chromium.org</owner>
+  <owner>sauski@google.com</owner>
+  <owner>msramek@chromium.org</owner>
+  <description>
+    User changes cookie setting and moves from a state where 3P cookies are
+    enabled, to one where 3P cookies are disabled. Only recorded if the privacy
+    sandox feature is enabled, and the privacy sandbox API preference is
+    enabled. A toast linking the provacy sandbox page is shown immediately
+    following this action.
+  </description>
+</action>
+
 <action name="Settings.PrivacySandbox.OpenedFromCookiesPageToast">
   <owner>rainhard@chromium.org</owner>
   <owner>sauski@google.com</owner>

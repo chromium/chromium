@@ -30,6 +30,8 @@ Polymer({
   /** @override */
   ready() {
     this.metricsBrowserProxy_ = MetricsBrowserProxyImpl.getInstance();
+    chrome.metricsPrivate.recordSparseHashable(
+        'WebUI.Settings.PathVisited', '/privacySandbox');
   },
 
   /** @private */
