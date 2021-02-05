@@ -15,6 +15,7 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 FolderUploadConfirmationView::FolderUploadConfirmationView(
     const base::FilePath& path,
@@ -83,6 +84,9 @@ views::Widget* FolderUploadConfirmationView::ShowDialog(
 views::View* FolderUploadConfirmationView::GetInitiallyFocusedView() {
   return GetCancelButton();
 }
+
+BEGIN_METADATA(FolderUploadConfirmationView, views::DialogDelegateView)
+END_METADATA
 
 void ShowFolderUploadConfirmationDialog(
     const base::FilePath& path,

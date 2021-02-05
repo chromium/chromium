@@ -20,6 +20,7 @@
 #include "ui/gfx/text_constants.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace chrome {
@@ -116,3 +117,6 @@ gfx::Rect ChromeCleanerRebootDialog::GetDialogBounds(Browser* browser) const {
       browser_bounds.x() + (browser_bounds.width() - kDialogWidth) / 2,
       browser_bounds.y() + kDialogYOffset, kDialogWidth, kDialogHeight);
 }
+
+BEGIN_METADATA(ChromeCleanerRebootDialog, views::DialogDelegateView)
+END_METADATA

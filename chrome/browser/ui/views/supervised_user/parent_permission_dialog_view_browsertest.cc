@@ -221,7 +221,7 @@ class ParentPermissionDialogViewTest
   }
 
   void CheckInvalidCredentialWasReceived() {
-    EXPECT_TRUE(view_->invalid_credential_received());
+    EXPECT_TRUE(view_->GetInvalidCredentialReceived());
   }
 
  protected:

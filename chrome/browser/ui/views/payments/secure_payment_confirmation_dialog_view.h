@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/secure_payment_confirmation_view.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace gfx {
@@ -28,6 +29,8 @@ class SecurePaymentConfirmationDialogView
     : public SecurePaymentConfirmationView,
       public views::DialogDelegateView {
  public:
+  METADATA_HEADER(SecurePaymentConfirmationDialogView);
+
   class ObserverForTest {
    public:
     virtual void OnDialogOpened() = 0;
@@ -76,7 +79,7 @@ class SecurePaymentConfirmationDialogView
   void OnDialogCancelled();
   void OnDialogClosed();
 
-  const gfx::VectorIcon& GetFingerprintIcon();
+  const gfx::VectorIcon& GetFingerprintIcon() const;
 
   void InitChildViews();
 

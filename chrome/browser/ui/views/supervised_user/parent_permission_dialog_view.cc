@@ -56,6 +56,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 constexpr int kPermissionSectionPaddingTop = 20;
@@ -132,8 +133,7 @@ class ParentPermissionInputSection : public views::TextfieldController {
           parent_0_radio_button->AddCheckedChangedCallback(base::BindRepeating(
               [](ParentPermissionDialogView* main_view,
                  const base::string16& parent_email) {
-                main_view->set_selected_parent_permission_email_address(
-                    parent_email);
+                main_view->SetSelectedParentPermissionEmail(parent_email);
               },
               main_view, parent_permission_email_addresses[0]));
 
@@ -149,15 +149,14 @@ class ParentPermissionInputSection : public views::TextfieldController {
           parent_1_radio_button->AddCheckedChangedCallback(base::BindRepeating(
               [](ParentPermissionDialogView* main_view,
                  const base::string16& parent_email) {
-                main_view->set_selected_parent_permission_email_address(
-                    parent_email);
+                main_view->SetSelectedParentPermissionEmail(parent_email);
               },
               main_view, parent_permission_email_addresses[1]));
 
       view->AddChildView(std::move(parent_1_radio_button));
 
       // Default to first parent in the response.
-      main_view_->set_selected_parent_permission_email_address(
+      main_view_->SetSelectedParentPermissionEmail(
           parent_permission_email_addresses[0]);
     } else {
       // If there is just one parent, show a label with that parent's email.
@@ -179,7 +178,7 @@ class ParentPermissionInputSection : public views::TextfieldController {
       view->AddChildView(std::move(parent_email_label));
       // Since there is only one parent, just set the output value of selected
       // parent email address here..
-      main_view->set_selected_parent_permission_email_address(
+      main_view->SetSelectedParentPermissionEmail(
           parent_permission_email_addresses[0]);
     }
 
@@ -217,7 +216,7 @@ class ParentPermissionInputSection : public views::TextfieldController {
   // views::TextfieldController
   void ContentsChanged(views::Textfield* sender,
                        const base::string16& new_contents) override {
-    main_view_->set_parent_permission_credential(new_contents);
+    main_view_->SetParentPermissionCredential(new_contents);
   }
 
   void ClearCredentialInputField() {
@@ -228,7 +227,7 @@ class ParentPermissionInputSection : public views::TextfieldController {
  private:
   void OnParentRadioButtonSelected(ParentPermissionDialogView* main_view,
                                    const base::string16& parent_email) {
-    main_view->set_selected_parent_permission_email_address(parent_email);
+    main_view->SetSelectedParentPermissionEmail(parent_email);
   }
 
   base::CallbackListSubscription parent_0_subscription_;
@@ -309,7 +308,15 @@ void ParentPermissionDialogView::SetIdentityManagerForTesting(
 
 void ParentPermissionDialogView::SetRepromptAfterIncorrectCredential(
     bool reprompt) {
+  if (reprompt_after_incorrect_credential_ == reprompt)
+    return;
   reprompt_after_incorrect_credential_ = reprompt;
+  OnPropertyChanged(&reprompt_after_incorrect_credential_,
+                    views::kPropertyEffectsNone);
+}
+
+bool ParentPermissionDialogView::GetRepromptAfterIncorrectCredential() const {
+  return reprompt_after_incorrect_credential_;
 }
 
 base::string16 ParentPermissionDialogView::GetActiveUserFirstName() const {
@@ -510,6 +517,38 @@ void ParentPermissionDialogView::CloseDialog() {
 
 void ParentPermissionDialogView::RemoveObserver() {
   observer_ = nullptr;
+}
+
+void ParentPermissionDialogView::SetSelectedParentPermissionEmail(
+    const base::string16& email_address) {
+  if (selected_parent_permission_email_ == email_address)
+    return;
+  selected_parent_permission_email_ = email_address;
+  OnPropertyChanged(&selected_parent_permission_email_,
+                    views::kPropertyEffectsNone);
+}
+
+base::string16 ParentPermissionDialogView::GetSelectedParentPermissionEmail()
+    const {
+  return selected_parent_permission_email_;
+}
+
+void ParentPermissionDialogView::SetParentPermissionCredential(
+    const base::string16& credential) {
+  if (parent_permission_credential_ == credential)
+    return;
+  parent_permission_credential_ = credential;
+  OnPropertyChanged(&parent_permission_credential_,
+                    views::kPropertyEffectsNone);
+}
+
+base::string16 ParentPermissionDialogView::GetParentPermissionCredential()
+    const {
+  return parent_permission_credential_;
+}
+
+bool ParentPermissionDialogView::GetInvalidCredentialReceived() const {
+  return invalid_credential_received_;
 }
 
 void ParentPermissionDialogView::ShowDialogInternal() {
@@ -739,6 +778,14 @@ void ParentPermissionDialogView::InitializeExtensionData(
 
   LoadExtensionIcon();
 }
+
+BEGIN_METADATA(ParentPermissionDialogView, views::DialogDelegateView)
+ADD_PROPERTY_METADATA(base::string16, SelectedParentPermissionEmail)
+ADD_PROPERTY_METADATA(base::string16, ParentPermissionCredential)
+ADD_READONLY_PROPERTY_METADATA(bool, InvalidCredentialReceived)
+ADD_PROPERTY_METADATA(bool, RepromptAfterIncorrectCredential)
+ADD_READONLY_PROPERTY_METADATA(base::string16, ActiveUserFirstName)
+END_METADATA
 
 class ParentPermissionDialogImpl : public ParentPermissionDialog,
                                    public ParentPermissionDialogView::Observer {

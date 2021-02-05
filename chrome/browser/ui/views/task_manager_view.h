@@ -15,6 +15,7 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/table/table_grouper.h"
 #include "ui/views/controls/table/table_view_observer.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 class Browser;
@@ -34,6 +35,9 @@ class TaskManagerView : public TableViewDelegate,
                         public views::ContextMenuController,
                         public ui::SimpleMenuModel::Delegate {
  public:
+  METADATA_HEADER(TaskManagerView);
+  TaskManagerView(const TaskManagerView&) = delete;
+  TaskManagerView& operator=(const TaskManagerView&) = delete;
   ~TaskManagerView() override;
 
   // Shows the Task Manager window, or re-activates an existing one.
@@ -119,8 +123,6 @@ class TaskManagerView : public TableViewDelegate,
 
   // True when the Task Manager window should be shown on top of other windows.
   bool is_always_on_top_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskManagerView);
 };
 
 }  // namespace task_manager

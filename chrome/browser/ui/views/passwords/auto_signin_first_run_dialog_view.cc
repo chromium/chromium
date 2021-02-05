@@ -16,6 +16,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 AutoSigninFirstRunDialogView::AutoSigninFirstRunDialogView(
@@ -85,6 +86,9 @@ void AutoSigninFirstRunDialogView::InitWindow() {
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   AddChildView(label.release());
 }
+
+BEGIN_METADATA(AutoSigninFirstRunDialogView, views::DialogDelegateView)
+END_METADATA
 
 AutoSigninFirstRunPrompt* CreateAutoSigninPromptView(
     CredentialManagerDialogController* controller,

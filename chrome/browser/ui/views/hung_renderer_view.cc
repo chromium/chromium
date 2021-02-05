@@ -42,6 +42,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 #if defined(OS_WIN)
@@ -475,3 +476,6 @@ void HungRendererDialogView::CloseDialogWithNoAction() {
   hung_pages_table_model_->Reset();
   GetWidget()->Close();
 }
+
+BEGIN_METADATA(HungRendererDialogView, views::DialogDelegateView)
+END_METADATA

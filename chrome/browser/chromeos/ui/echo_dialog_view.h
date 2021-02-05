@@ -8,6 +8,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace views {
@@ -29,6 +30,8 @@ class EchoDialogListener;
 // about this.
 class EchoDialogView : public views::DialogDelegateView {
  public:
+  METADATA_HEADER(EchoDialogView);
+
   struct Params {
     bool echo_enabled = false;
     base::string16 service_name;
@@ -36,6 +39,8 @@ class EchoDialogView : public views::DialogDelegateView {
   };
 
   EchoDialogView(EchoDialogListener* listener, const Params& params);
+  EchoDialogView(const EchoDialogView&) = delete;
+  EchoDialogView& operator=(const EchoDialogView&) = delete;
   ~EchoDialogView() override;
 
   // Shows the dialog.
@@ -62,8 +67,6 @@ class EchoDialogView : public views::DialogDelegateView {
   // Sets the border and label view.
   void SetBorderAndLabel(std::unique_ptr<views::View> label,
                          const gfx::FontList& label_font_list);
-
-  DISALLOW_COPY_AND_ASSIGN(EchoDialogView);
 };
 
 }  // namespace chromeos

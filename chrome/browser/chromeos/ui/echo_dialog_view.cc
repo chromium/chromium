@@ -18,6 +18,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace chromeos {
@@ -123,5 +124,8 @@ void EchoDialogView::SetBorderAndLabel(std::unique_ptr<views::View> label,
 
   AddChildView(std::move(label));
 }
+
+BEGIN_METADATA(EchoDialogView, views::DialogDelegateView)
+END_METADATA
 
 }  // namespace chromeos

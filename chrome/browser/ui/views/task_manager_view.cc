@@ -32,6 +32,7 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/table/table_view.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -378,6 +379,9 @@ void TaskManagerView::RetrieveSavedAlwaysOnTopState() {
   if (dictionary)
     dictionary->GetBoolean("always_on_top", &is_always_on_top_);
 }
+
+BEGIN_METADATA(TaskManagerView, views::DialogDelegateView)
+END_METADATA
 
 }  // namespace task_manager
 

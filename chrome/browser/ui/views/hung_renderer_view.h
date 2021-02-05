@@ -20,6 +20,7 @@
 #include "ui/base/models/table_model.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/table/table_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace content {
@@ -49,6 +50,8 @@ class HungPagesTableModel : public ui::TableModel,
   };
 
   explicit HungPagesTableModel(Delegate* delegate);
+  HungPagesTableModel(const HungPagesTableModel&) = delete;
+  HungPagesTableModel& operator=(const HungPagesTableModel&) = delete;
   ~HungPagesTableModel() override;
 
   void InitForWebContents(content::WebContents* hung_contents,
@@ -89,6 +92,8 @@ class HungPagesTableModel : public ui::TableModel,
    public:
     WebContentsObserverImpl(HungPagesTableModel* model,
                             content::WebContents* tab);
+    WebContentsObserverImpl(const WebContentsObserverImpl&) = delete;
+    WebContentsObserverImpl& operator=(const WebContentsObserverImpl&) = delete;
 
     favicon::FaviconDriver* favicon_driver() {
       return favicon::ContentFaviconDriver::FromWebContents(web_contents());
@@ -101,8 +106,6 @@ class HungPagesTableModel : public ui::TableModel,
 
    private:
     HungPagesTableModel* model_;
-
-    DISALLOW_COPY_AND_ASSIGN(WebContentsObserverImpl);
   };
 
   // Invoked when a WebContents is destroyed. Cleans up |tab_observers_| and
@@ -129,8 +132,6 @@ class HungPagesTableModel : public ui::TableModel,
 
   ScopedObserver<content::RenderWidgetHost, content::RenderWidgetHostObserver>
       widget_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HungPagesTableModel);
 };
 
 // This class displays a dialog which contains information about a hung
@@ -138,6 +139,11 @@ class HungPagesTableModel : public ui::TableModel,
 class HungRendererDialogView : public views::DialogDelegateView,
                                public HungPagesTableModel::Delegate {
  public:
+  METADATA_HEADER(HungRendererDialogView);
+
+  HungRendererDialogView(const HungRendererDialogView&) = delete;
+  HungRendererDialogView& operator=(const HungRendererDialogView&) = delete;
+
   // Factory function for creating an instance of the HungRendererDialogView
   // class. At any given point only one instance can be active.
   static HungRendererDialogView* Create(gfx::NativeWindow context);
@@ -202,8 +208,6 @@ class HungRendererDialogView : public views::DialogDelegateView,
   // The model that provides the contents of the table that shows a list of
   // pages affected by the hang.
   std::unique_ptr<HungPagesTableModel> hung_pages_table_model_;
-
-  DISALLOW_COPY_AND_ASSIGN(HungRendererDialogView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_HUNG_RENDERER_VIEW_H_

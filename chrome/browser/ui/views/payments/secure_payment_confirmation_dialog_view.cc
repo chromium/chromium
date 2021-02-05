@@ -19,6 +19,7 @@
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace payments {
 namespace {
@@ -203,8 +204,8 @@ SecurePaymentConfirmationDialogView::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-const gfx::VectorIcon&
-SecurePaymentConfirmationDialogView::GetFingerprintIcon() {
+const gfx::VectorIcon& SecurePaymentConfirmationDialogView::GetFingerprintIcon()
+    const {
   return GetNativeTheme()->ShouldUseDarkColors() ? kWebauthnFingerprintDarkIcon
                                                  : kWebauthnFingerprintIcon;
 }
@@ -423,5 +424,8 @@ std::unique_ptr<views::View> SecurePaymentConfirmationDialogView::CreateRowView(
 
   return row;
 }
+
+BEGIN_METADATA(SecurePaymentConfirmationDialogView, views::DialogDelegateView)
+END_METADATA
 
 }  // namespace payments

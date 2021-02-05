@@ -42,6 +42,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/grid_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace payments {
 
@@ -635,5 +636,10 @@ void PaymentRequestDialogView::ResizeDialogWindow() {
                          ->GetWebContentsModalDialogHost());
   }
 }
+
+BEGIN_METADATA(PaymentRequestDialogView, views::DialogDelegateView)
+ADD_READONLY_PROPERTY_METADATA(int, ActualPaymentHandlerDialogHeight)
+ADD_READONLY_PROPERTY_METADATA(int, ActualDialogWidth)
+END_METADATA
 
 }  // namespace payments

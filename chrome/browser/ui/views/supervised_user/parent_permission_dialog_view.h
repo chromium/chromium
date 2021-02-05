@@ -16,6 +16,7 @@
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -44,6 +45,8 @@ class ParentPermissionInputSection;
 class ParentPermissionDialogView : public views::DialogDelegateView,
                                    public GaiaAuthConsumer {
  public:
+  METADATA_HEADER(ParentPermissionDialogView);
+
   class Observer {
    public:
     // Tells observers that their references to the view are becoming invalid.
@@ -53,12 +56,10 @@ class ParentPermissionDialogView : public views::DialogDelegateView,
 
   ParentPermissionDialogView(std::unique_ptr<Params> params,
                              Observer* observer);
-
-  ~ParentPermissionDialogView() override;
-
   ParentPermissionDialogView(const ParentPermissionDialogView&) = delete;
   ParentPermissionDialogView& operator=(const ParentPermissionDialogView&) =
       delete;
+  ~ParentPermissionDialogView() override;
 
   // Closes the dialog.
   void CloseDialog();
@@ -69,18 +70,18 @@ class ParentPermissionDialogView : public views::DialogDelegateView,
   // Removes the observer reference.
   void RemoveObserver();
 
-  void set_selected_parent_permission_email_address(
-      const base::string16& email_address) {
-    selected_parent_permission_email_ = email_address;
-  }
+  void SetSelectedParentPermissionEmail(const base::string16& email_address);
+  base::string16 GetSelectedParentPermissionEmail() const;
 
-  void set_parent_permission_credential(const base::string16& credential) {
-    parent_permission_credential_ = credential;
-  }
+  void SetParentPermissionCredential(const base::string16& credential);
+  base::string16 GetParentPermissionCredential() const;
 
-  bool invalid_credential_received() { return invalid_credential_received_; }
+  bool GetInvalidCredentialReceived() const;
+
   void SetIdentityManagerForTesting(signin::IdentityManager* identity_manager);
+
   void SetRepromptAfterIncorrectCredential(bool reprompt);
+  bool GetRepromptAfterIncorrectCredential() const;
 
  private:
   base::string16 GetActiveUserFirstName() const;
