@@ -48,6 +48,10 @@ js_type_check("closure_compile") {
 
     #":zoom_manager_test",
   ]
+
+  if (is_chromeos) {
+    deps += [ ":material_elements_cros_test" ]
+  }
 }
 
 js_library("basic_plugin_test") {
@@ -97,6 +101,13 @@ js_library("material_elements_test") {
     "//ui/webui/resources/js:cr.m",
   ]
   externs_list = [ "$externs_path/test.js" ]
+}
+
+if (is_chromeos) {
+  js_library("material_elements_cros_test") {
+    deps = [ "//chrome/browser/resources/pdf:pdf_viewer_wrapper" ]
+    externs_list = [ "$externs_path/test.js" ]
+  }
 }
 
 js_library("download_controls_test") {

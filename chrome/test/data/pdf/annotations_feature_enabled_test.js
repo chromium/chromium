@@ -89,8 +89,8 @@ chrome.test.runTests([
     // Selected size and color.
     const penOptions = viewerAnnotationsBar.shadowRoot.querySelector(
         '#pen viewer-pen-options');
-    penOptions.$$('#sizes [value="1"]').click();
-    penOptions.$$('#colors [value="#00b0ff"]').click();
+    penOptions.shadowRoot.querySelector('#sizes [value="1"]').click();
+    penOptions.shadowRoot.querySelector('#colors [value="#00b0ff"]').click();
     await animationFrame();
     chrome.test.assertEq('pen', tool.tool);
     chrome.test.assertEq(1, tool.size);
@@ -121,13 +121,15 @@ chrome.test.runTests([
     // Need to expand to use this color.
     const highlighterOptions = viewerAnnotationsBar.shadowRoot.querySelector(
         '#highlighter viewer-pen-options');
-    highlighterOptions.$$('#colors [value="#d1c4e9"]').click();
+    highlighterOptions.shadowRoot.querySelector('#colors [value="#d1c4e9"]')
+        .click();
     chrome.test.assertEq('#ffbc00', tool.color);
 
     // Selected size and expanded color.
-    highlighterOptions.$$('#sizes [value="1"]').click();
-    highlighterOptions.$$('#colors #expand').click();
-    highlighterOptions.$$('#colors [value="#d1c4e9"]').click();
+    highlighterOptions.shadowRoot.querySelector('#sizes [value="1"]').click();
+    highlighterOptions.shadowRoot.querySelector('#colors #expand').click();
+    highlighterOptions.shadowRoot.querySelector('#colors [value="#d1c4e9"]')
+        .click();
     chrome.test.assertEq('highlighter', tool.tool);
     chrome.test.assertEq(1, tool.size);
     chrome.test.assertEq('#d1c4e9', tool.color);

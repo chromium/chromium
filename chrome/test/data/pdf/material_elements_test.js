@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {ViewerPageSelectorElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {isChromeOS} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {createBookmarksForTest} from './test_util.js';
@@ -121,36 +120,5 @@ const tests = [
     chrome.test.succeed();
   },
 ];
-
-if (isChromeOS) {
-  tests.push(
-      /**
-       * Test that clicking the dropdown icon opens/closes the dropdown.
-       */
-      function testToolbarDropdownShowHide() {
-        document.body.innerHTML = '';
-        const dropdown = /** @type {!ViewerToolbarDropdownElement} */ (
-            document.createElement('viewer-toolbar-dropdown'));
-        dropdown.header = 'Test Menu';
-        dropdown.closedIcon = 'closedIcon';
-        dropdown.openIcon = 'openIcon';
-        document.body.appendChild(dropdown);
-
-        const button = dropdown.$.button;
-        chrome.test.assertFalse(dropdown.dropdownOpen);
-        chrome.test.assertEq('closedIcon,cr:arrow-drop-down', button.ironIcon);
-
-        button.click();
-
-        chrome.test.assertTrue(dropdown.dropdownOpen);
-        chrome.test.assertEq('openIcon,cr:arrow-drop-down', button.ironIcon);
-
-        button.click();
-
-        chrome.test.assertFalse(dropdown.dropdownOpen);
-
-        chrome.test.succeed();
-      });
-}
 
 chrome.test.runTests(tests);

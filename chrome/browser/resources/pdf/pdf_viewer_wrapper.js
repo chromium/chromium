@@ -23,3 +23,7 @@ export {getFilenameFromURL, PDFViewerElement} from './pdf_viewer.js';
 export {shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
 export {LayoutOptions, PAGE_SHADOW, Viewport} from './viewport.js';
 export {ZoomManager} from './zoom_manager.js';
+
+// <if expr="chromeos">
+export {ViewerToolbarDropdownElement} from './elements/viewer-toolbar-dropdown.js';
+// </if>
