@@ -162,6 +162,24 @@ the pathname.)
 OS, and perhaps Fuchsia (?). Views for macOS is increasingly a thing, but Cocoa
 code (e.g. `ui/message_center/cocoa`) is particular to macOS.
 
+## After the bug is fixed: Merge labels {#TOC-Merge-labels}
+
+Once you've landed a complete fix for a security bug, please immediately
+mark the bug as Fixed. Do not request merges: Sheriffbot will request
+appropriate merges to beta or stable according to our guidelines.
+However, it is really helpful if you comment upon any unusual stability or
+compatibility risks of merging.
+
+(Some Chromium teams traditionally deal with merges _before_ marking bugs as
+Fixed. Please don't do that for security bugs.)
+
+Please take the opportunity to consider whether there are any variants
+or related problems. It's very common for attackers to tweak working attack code
+to exploit a similar situation elsewhere. If you've even the remotest thought
+that there _might_ be equivalent patterns or variants elsewhere, file a bug
+with type=Bug-Security. It can be nearly blank. The important thing is to record
+the fact that something may need doing.
+
 ## Sheriffbot automation
 
 Security labels guide the actions taken by
