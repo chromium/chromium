@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/enterprise_reporting_private/device_info_fetcher_mac.h"
+#include "chrome/browser/enterprise/signals/device_info_fetcher_mac.h"
 
 #import <Foundation/Foundation.h>
 
@@ -24,11 +24,9 @@
 #include "base/system/sys_info.h"
 #include "net/base/network_interfaces.h"
 
-namespace enterprise_reporting_private =
-    ::extensions::api::enterprise_reporting_private;
+using SettingValue = enterprise_signals::DeviceInfo::SettingValue;
 
-namespace extensions {
-namespace enterprise_reporting {
+namespace enterprise_signals {
 
 namespace {
 
@@ -48,39 +46,37 @@ std::string GetSerialNumber() {
   return base::mac::GetPlatformSerialNumber();
 }
 
-enterprise_reporting_private::SettingValue GetScreenlockSecured() {
+SettingValue GetScreenlockSecured() {
   CFStringRef screen_saver_application = CFSTR("com.apple.screensaver");
   CFStringRef ask_for_password_key = CFSTR("askForPassword");
   base::ScopedCFTypeRef<CFTypeRef> ask_for_password(CFPreferencesCopyAppValue(
       ask_for_password_key, screen_saver_application));
 
   if (!ask_for_password || !base::mac::CFCast<CFBooleanRef>(ask_for_password))
-    return enterprise_reporting_private::SETTING_VALUE_UNKNOWN;
+    return SettingValue::UNKNOWN;
 
   bool screen_lock_enabled =
       base::mac::CFCastStrict<CFBooleanRef>(ask_for_password) == kCFBooleanTrue;
-  return screen_lock_enabled
-             ? enterprise_reporting_private::SETTING_VALUE_ENABLED
-             : enterprise_reporting_private::SETTING_VALUE_DISABLED;
+  return screen_lock_enabled ? SettingValue::ENABLED : SettingValue::DISABLED;
 }
 
-enterprise_reporting_private::SettingValue GetDiskEncrypted() {
+SettingValue GetDiskEncrypted() {
   base::FilePath fdesetup_path("/usr/bin/fdesetup");
   if (!base::PathExists(fdesetup_path))
-    return enterprise_reporting_private::SETTING_VALUE_UNKNOWN;
+    return SettingValue::UNKNOWN;
 
   base::CommandLine command(fdesetup_path);
   command.AppendArg("status");
   std::string output;
   if (!base::GetAppOutput(command, &output))
-    return enterprise_reporting_private::SETTING_VALUE_UNKNOWN;
+    return SettingValue::UNKNOWN;
 
   if (output.find("FileVault is On") != std::string::npos)
-    return enterprise_reporting_private::SETTING_VALUE_ENABLED;
+    return SettingValue::ENABLED;
   if (output.find("FileVault is Off") != std::string::npos)
-    return enterprise_reporting_private::SETTING_VALUE_DISABLED;
+    return SettingValue::DISABLED;
 
-  return enterprise_reporting_private::SETTING_VALUE_UNKNOWN;
+  return SettingValue::UNKNOWN;
 }
 
 std::vector<std::string> GetMacAddresses() {
@@ -111,9 +107,9 @@ std::vector<std::string> GetMacAddresses() {
 
 }  // namespace
 
-DeviceInfoFetcherMac::DeviceInfoFetcherMac() {}
+DeviceInfoFetcherMac::DeviceInfoFetcherMac() = default;
 
-DeviceInfoFetcherMac::~DeviceInfoFetcherMac() {}
+DeviceInfoFetcherMac::~DeviceInfoFetcherMac() = default;
 
 DeviceInfo DeviceInfoFetcherMac::Fetch() {
   DeviceInfo device_info;
@@ -128,5 +124,4 @@ DeviceInfo DeviceInfoFetcherMac::Fetch() {
   return device_info;
 }
 
-}  // namespace enterprise_reporting
-}  // namespace extensions
+}  // namespace enterprise_signals

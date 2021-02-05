@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/enterprise_reporting_private/device_info_fetcher_win.h"
+#include "chrome/browser/enterprise/signals/device_info_fetcher_win.h"
 
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
@@ -18,11 +18,9 @@
 #include <propsys.h>       // NOLINT(build/include_order)
 #include <shobjidl.h>      // NOLINT(build/include_order)
 
-namespace enterprise_reporting_private =
-    ::extensions::api::enterprise_reporting_private;
+using SettingValue = enterprise_signals::DeviceInfo::SettingValue;
 
-namespace extensions {
-namespace enterprise_reporting {
+namespace enterprise_signals {
 
 namespace {
 
@@ -122,20 +120,20 @@ base::Optional<bool> GetConsoleLockStatus() {
 
 // Gets cumulative screen locking policy based on the screen saver and console
 // lock status.
-enterprise_reporting_private::SettingValue GetScreenlockSecured() {
+SettingValue GetScreenlockSecured() {
   const base::Optional<bool> screen_lock_status = GetScreenLockStatus();
   if (screen_lock_status.value_or(false))
-    return enterprise_reporting_private::SETTING_VALUE_ENABLED;
+    return SettingValue::ENABLED;
 
   const base::Optional<bool> console_lock_status = GetConsoleLockStatus();
   if (console_lock_status.value_or(false))
-    return enterprise_reporting_private::SETTING_VALUE_ENABLED;
+    return SettingValue::ENABLED;
 
   if (screen_lock_status.has_value() || console_lock_status.has_value()) {
-    return enterprise_reporting_private::SETTING_VALUE_DISABLED;
+    return SettingValue::DISABLED;
   }
 
-  return enterprise_reporting_private::SETTING_VALUE_UNKNOWN;
+  return SettingValue::UNKNOWN;
 }
 
 // Returns the volume where the Windows OS is installed.
@@ -192,39 +190,39 @@ bool GetPropVariantAsInt64(PROPVARIANT variant, int64_t* out_value) {
 // I directly tested and validated this strategy on a Windows 10 machine.
 // The values given in the BitLockerStatus enum contain the relevant values
 // for the shell property. I also directly validated them.
-enterprise_reporting_private::SettingValue GetDiskEncrypted() {
+SettingValue GetDiskEncrypted() {
   // |volume| has to be a |wstring| because SHCreateItemFromParsingName() only
   // accepts |PCWSTR| which is |wchar_t*|.
   base::Optional<std::wstring> volume = GetOsVolume();
   if (!volume.has_value())
-    return enterprise_reporting_private::SETTING_VALUE_UNKNOWN;
+    return SettingValue::UNKNOWN;
 
   PROPERTYKEY key;
   const HRESULT property_key_result =
       PSGetPropertyKeyFromName(L"System.Volume.BitLockerProtection", &key);
   if (FAILED(property_key_result))
-    return enterprise_reporting_private::SETTING_VALUE_UNKNOWN;
+    return SettingValue::UNKNOWN;
 
   Microsoft::WRL::ComPtr<IShellItem2> item;
   const HRESULT create_item_result = SHCreateItemFromParsingName(
       volume.value().c_str(), nullptr, IID_IShellItem2, &item);
   if (FAILED(create_item_result) || !item)
-    return enterprise_reporting_private::SETTING_VALUE_UNKNOWN;
+    return SettingValue::UNKNOWN;
 
   PROPVARIANT prop_status;
   const HRESULT property_result = item->GetProperty(key, &prop_status);
   int64_t status;
   if (FAILED(property_result) || !GetPropVariantAsInt64(prop_status, &status))
-    return enterprise_reporting_private::SETTING_VALUE_UNKNOWN;
+    return SettingValue::UNKNOWN;
 
   // Note that we are not considering BitLockerStatus::Suspended as ENABLED.
   if (status == static_cast<int64_t>(BitLockerStatus::kOn) ||
       status == static_cast<int64_t>(BitLockerStatus::kEncryptionInProgress) ||
       status == static_cast<int64_t>(BitLockerStatus::kLocked)) {
-    return enterprise_reporting_private::SETTING_VALUE_ENABLED;
+    return SettingValue::ENABLED;
   }
 
-  return enterprise_reporting_private::SETTING_VALUE_DISABLED;
+  return SettingValue::DISABLED;
 }
 
 std::vector<std::string> GetMacAddresses() {
@@ -281,5 +279,4 @@ DeviceInfo DeviceInfoFetcherWin::Fetch() {
   return device_info;
 }
 
-}  // namespace enterprise_reporting
-}  // namespace extensions
+}  // namespace enterprise_signals

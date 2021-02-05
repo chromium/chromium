@@ -1120,8 +1120,6 @@ static_library("extensions") {
       "api/enterprise_reporting_private/chrome_desktop_report_request_helper.h",
       "api/enterprise_reporting_private/context_info_fetcher.cc",
       "api/enterprise_reporting_private/context_info_fetcher.h",
-      "api/enterprise_reporting_private/device_info_fetcher.cc",
-      "api/enterprise_reporting_private/device_info_fetcher.h",
       "api/enterprise_reporting_private/enterprise_reporting_private_api.cc",
       "api/enterprise_reporting_private/enterprise_reporting_private_api.h",
       "api/enterprise_reporting_private/keychain_data_helper_mac.h",
@@ -1143,11 +1141,8 @@ static_library("extensions") {
       "//components/keep_alive_registry",
     ]
     if (is_linux || is_chromeos) {
-      sources += [
-        "api/enterprise_reporting_private/device_info_fetcher_linux.cc",
-        "api/enterprise_reporting_private/device_info_fetcher_linux.h",
-        "api/image_writer_private/removable_storage_provider_linux.cc",
-      ]
+      sources +=
+          [ "api/image_writer_private/removable_storage_provider_linux.cc" ]
     }
     if (is_posix) {
       sources += [ "api/messaging/native_process_launcher_posix.cc" ]
@@ -1171,8 +1166,6 @@ static_library("extensions") {
 
   if (is_mac) {
     sources += [
-      "api/enterprise_reporting_private/device_info_fetcher_mac.h",
-      "api/enterprise_reporting_private/device_info_fetcher_mac.mm",
       "api/image_writer_private/removable_storage_provider_mac.cc",
       "global_shortcut_listener_mac.h",
       "global_shortcut_listener_mac.mm",
@@ -1222,8 +1215,6 @@ static_library("extensions") {
 
   if (is_win) {
     sources += [
-      "api/enterprise_reporting_private/device_info_fetcher_win.cc",
-      "api/enterprise_reporting_private/device_info_fetcher_win.h",
       "api/image_writer_private/removable_storage_provider_win.cc",
       "api/messaging/native_process_launcher_win.cc",
       "external_registry_loader_win.cc",

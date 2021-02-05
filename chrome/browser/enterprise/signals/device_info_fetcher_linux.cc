@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/enterprise_reporting_private/device_info_fetcher_linux.h"
+#include "chrome/browser/enterprise/signals/device_info_fetcher_linux.h"
 
 #if defined(USE_GIO)
 #include <gio/gio.h>
@@ -23,11 +23,9 @@
 #include "base/system/sys_info.h"
 #include "net/base/network_interfaces.h"
 
-namespace enterprise_reporting_private =
-    ::extensions::api::enterprise_reporting_private;
+using SettingValue = enterprise_signals::DeviceInfo::SettingValue;
 
-namespace extensions {
-namespace enterprise_reporting {
+namespace enterprise_signals {
 
 namespace {
 
@@ -65,16 +63,16 @@ std::string GetSerialNumber() {
 // setting value straight from gsettings but picks the schema relevant to the
 // currently active desktop environment.
 // The current implementation support Gnone and Cinnamon only.
-enterprise_reporting_private::SettingValue GetScreenlockSecured() {
+SettingValue GetScreenlockSecured() {
 #if defined(USE_GIO)
-  constexpr char kLockScreenKey[] = "lock-enabled";
+  static constexpr char kLockScreenKey[] = "lock-enabled";
 
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   const base::nix::DesktopEnvironment desktop_env =
       base::nix::GetDesktopEnvironment(env.get());
   if (desktop_env != base::nix::DESKTOP_ENVIRONMENT_CINNAMON &&
       desktop_env != base::nix::DESKTOP_ENVIRONMENT_GNOME) {
-    return enterprise_reporting_private::SETTING_VALUE_UNKNOWN;
+    return SettingValue::UNKNOWN;
   }
 
   const std::string settings_schema = base::StringPrintf(
@@ -87,30 +85,28 @@ enterprise_reporting_private::SettingValue GetScreenlockSecured() {
   GSettings* screensaver_settings = nullptr;
   if (!screensaver_schema ||
       !g_settings_schema_has_key(screensaver_schema, kLockScreenKey)) {
-    return enterprise_reporting_private::SETTING_VALUE_UNKNOWN;
+    return SettingValue::UNKNOWN;
   }
   screensaver_settings = g_settings_new(settings_schema.c_str());
   if (!screensaver_settings)
-    return enterprise_reporting_private::SETTING_VALUE_UNKNOWN;
+    return SettingValue::UNKNOWN;
   gboolean lock_screen_enabled =
       g_settings_get_boolean(screensaver_settings, kLockScreenKey);
   g_object_unref(screensaver_settings);
 
-  return lock_screen_enabled
-             ? enterprise_reporting_private::SETTING_VALUE_ENABLED
-             : enterprise_reporting_private::SETTING_VALUE_DISABLED;
+  return lock_screen_enabled ? SettingValue::ENABLED : SettingValue::DISABLED;
 #else
-  return enterprise_reporting_private::SETTING_VALUE_UNKNOWN;
+  return SettingValue::UNKNOWN;
 #endif  // defined(USE_GIO)
 }
 
 // Implements the logic from the native host installation script. First find the
 // root device identifier, then locate its parent and get its type.
-enterprise_reporting_private::SettingValue GetDiskEncrypted() {
+SettingValue GetDiskEncrypted() {
   struct stat info;
   // First figure out the device identifier. Fail fast if this fails.
   if (stat("/", &info) != 0)
-    return enterprise_reporting_private::SETTING_VALUE_UNKNOWN;
+    return SettingValue::UNKNOWN;
   int dev_major = major(info.st_dev);
   // The parent identifier will have the same major and minor 0. If and only if
   // it is a dm device can it also be an encrypted device (as evident from the
@@ -124,13 +120,11 @@ enterprise_reporting_private::SettingValue GetDiskEncrypted() {
       // is the "crypt" driver then it is an encrypted device.
       bool is_encrypted = base::StartsWith(
           uuid, "crypt-", base::CompareCase::INSENSITIVE_ASCII);
-      return is_encrypted
-                 ? enterprise_reporting_private::SETTING_VALUE_ENABLED
-                 : enterprise_reporting_private::SETTING_VALUE_DISABLED;
+      return is_encrypted ? SettingValue::ENABLED : SettingValue::DISABLED;
     }
-    return enterprise_reporting_private::SETTING_VALUE_UNKNOWN;
+    return SettingValue::UNKNOWN;
   }
-  return enterprise_reporting_private::SETTING_VALUE_DISABLED;
+  return SettingValue::DISABLED;
 }
 
 std::vector<std::string> GetMacAddresses() {
@@ -179,5 +173,4 @@ DeviceInfo DeviceInfoFetcherLinux::Fetch() {
   return device_info;
 }
 
-}  // namespace enterprise_reporting
-}  // namespace extensions
+}  // namespace enterprise_signals
