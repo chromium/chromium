@@ -10,13 +10,14 @@ import argparse
 import csv
 import re
 
-# We skip attributes that are already implemented in print preview.
+# Skip attributes that are already implemented in print preview plus job-priority (b/172208667).
 NOOP_ATTRS = [
     'copies',
     'job-hold-until',
     'job-copies',
     'job-password',
     'job-password-encryption',
+    'job-priority',
     'media',
     'media-col',
     'multiple-document-handling',
