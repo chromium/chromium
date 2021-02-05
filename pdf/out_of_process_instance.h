@@ -304,11 +304,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   template <typename T>
   void HistogramEnumeration(const char* name, T sample);
 
-  // Add a sample to an enumerated legacy histogram and filter out print preview
-  // usage.
-  template <typename T>
-  void HistogramEnumeration(const char* name, T sample, T enum_size);
-
   // Add a sample to a custom counts histogram and filter out print preview
   // usage.
   void HistogramCustomCounts(const char* name,

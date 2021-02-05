@@ -83,14 +83,14 @@ class PDFEngine {
     PERMISSION_PRINT_HIGH_QUALITY,
   };
 
-  // Values other then |kCount| are persisted to logs as part of metric
-  // collection, so should not be changed.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum class FormType {
     kNone = 0,
     kAcroForm = 1,
     kXFAFull = 2,
     kXFAForeground = 3,
-    kCount = 4,
+    kMaxValue = kXFAForeground
   };
 
   // Maximum number of parameters a nameddest view can contain.

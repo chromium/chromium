@@ -1541,8 +1541,7 @@ void OutOfProcessInstance::DocumentLoadComplete(
   HistogramEnumeration("PDF.IsTagged", document_features.is_tagged
                                            ? PdfIsTagged::kYes
                                            : PdfIsTagged::kNo);
-  HistogramEnumeration("PDF.FormType", document_features.form_type,
-                       PDFEngine::FormType::kCount);
+  HistogramEnumeration("PDF.FormType", document_features.form_type);
   HistogramEnumeration("PDF.Version", engine()->GetDocumentMetadata().version);
 }
 
@@ -2338,15 +2337,6 @@ void OutOfProcessInstance::HistogramEnumeration(const char* name, T sample) {
   if (IsPrintPreview())
     return;
   base::UmaHistogramEnumeration(name, sample);
-}
-
-template <typename T>
-void OutOfProcessInstance::HistogramEnumeration(const char* name,
-                                                T sample,
-                                                T enum_size) {
-  if (IsPrintPreview())
-    return;
-  base::UmaHistogramEnumeration(name, sample, enum_size);
 }
 
 void OutOfProcessInstance::HistogramCustomCounts(const char* name,
