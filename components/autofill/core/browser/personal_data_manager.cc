@@ -1274,8 +1274,6 @@ std::vector<Suggestion> PersonalDataManager::GetProfileSuggestions(
   return unique_suggestions;
 }
 
-// TODO(crbug.com/613187): Investigate if it would be more efficient to dedupe
-// with a vector instead of a list.
 const std::vector<CreditCard*> PersonalDataManager::GetCreditCardsToSuggest(
     bool include_server_cards) const {
   if (!IsAutofillCreditCardEnabled())
