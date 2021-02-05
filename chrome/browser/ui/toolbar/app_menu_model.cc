@@ -1016,10 +1016,5 @@ void AppMenuModel::UpdateSettingsItemState() {
   int index = GetIndexOfCommandId(IDC_OPTIONS);
   if (index != -1)
     SetEnabledAt(index, is_enabled);
-
-  // About page leads to chrome://settings/help.
-  index = GetIndexOfCommandId(IDC_ABOUT);
-  if (index != -1)
-    SetEnabledAt(index, is_enabled);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

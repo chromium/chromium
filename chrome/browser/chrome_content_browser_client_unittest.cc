@@ -79,12 +79,7 @@
 
 using content::BrowsingDataFilterBuilder;
 using testing::_;
-
-class ChromeContentBrowserClientTest : public testing::Test {
- protected:
-  content::BrowserTaskEnvironment task_environment_;
-  TestingProfile profile_;
-};
+using ChromeContentBrowserClientTest = testing::Test;
 
 TEST_F(ChromeContentBrowserClientTest, ShouldAssignSiteForURL) {
   ChromeContentBrowserClient client;
@@ -433,32 +428,32 @@ class TestChromeContentBrowserClient : public ChromeContentBrowserClient {
   using ChromeContentBrowserClient::HandleWebUIReverse;
 };
 
-TEST_F(ChromeContentBrowserClientTest, HandleWebUI) {
+TEST(ChromeContentBrowserClientTest, HandleWebUI) {
   TestChromeContentBrowserClient test_content_browser_client;
   const GURL http_help("http://help/");
   GURL should_not_redirect = http_help;
-  test_content_browser_client.HandleWebUI(&should_not_redirect, &profile_);
+  test_content_browser_client.HandleWebUI(&should_not_redirect, nullptr);
   EXPECT_EQ(http_help, should_not_redirect);
 
   const GURL chrome_help(chrome::kChromeUIHelpURL);
   GURL should_redirect = chrome_help;
-  test_content_browser_client.HandleWebUI(&should_redirect, &profile_);
+  test_content_browser_client.HandleWebUI(&should_redirect, nullptr);
   EXPECT_NE(chrome_help, should_redirect);
 
   // Confirm that the deprecated cookies settings URL is rewritten.
   GURL cookies_url = GURL(chrome::kChromeUICookieSettingsDeprecatedURL);
-  test_content_browser_client.HandleWebUI(&cookies_url, &profile_);
+  test_content_browser_client.HandleWebUI(&cookies_url, nullptr);
   EXPECT_EQ(GURL(chrome::kChromeUICookieSettingsURL), cookies_url);
 }
 
-TEST_F(ChromeContentBrowserClientTest, HandleWebUIReverse) {
+TEST(ChromeContentBrowserClientTest, HandleWebUIReverse) {
   TestChromeContentBrowserClient test_content_browser_client;
   GURL http_settings("http://settings/");
-  EXPECT_FALSE(test_content_browser_client.HandleWebUIReverse(&http_settings,
-                                                              &profile_));
+  EXPECT_FALSE(
+      test_content_browser_client.HandleWebUIReverse(&http_settings, nullptr));
   GURL chrome_settings(chrome::kChromeUISettingsURL);
   EXPECT_TRUE(test_content_browser_client.HandleWebUIReverse(&chrome_settings,
-                                                             &profile_));
+                                                             nullptr));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -473,7 +468,9 @@ class ChromeContentSettingsRedirectTest
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+  content::BrowserTaskEnvironment task_environment_;
   ScopedTestingLocalState testing_local_state_;
+  TestingProfile profile_;
 };
 
 TEST_F(ChromeContentSettingsRedirectTest, RedirectOSSettingsURL) {
@@ -550,23 +547,6 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectCameraAppURL) {
   EXPECT_EQ(GURL(chrome::kChromeUIAppDisabledURL), dest_url);
 }
 
-TEST_F(ChromeContentSettingsRedirectTest, RedirectHelpURL) {
-  TestChromeContentBrowserClient test_content_browser_client;
-  const GURL help_url(chrome::kChromeUIHelpURL);
-  GURL dest_url = help_url;
-  test_content_browser_client.HandleWebUI(&dest_url, &profile_);
-  EXPECT_EQ(GURL("chrome://settings/help"), dest_url);
-
-  base::Value list(base::Value::Type::LIST);
-  list.Append(policy::SystemFeature::kBrowserSettings);
-  testing_local_state_.Get()->Set(
-      policy::policy_prefs::kSystemFeaturesDisableList, std::move(list));
-
-  dest_url = help_url;
-  test_content_browser_client.HandleWebUI(&dest_url, &profile_);
-  EXPECT_EQ(GURL(chrome::kChromeUIAppDisabledURL), dest_url);
-}
-
 namespace {
 constexpr char kEmail[] = "test@test.com";
 std::unique_ptr<KeyedService> CreateTestPolicyCertService(
@@ -608,8 +588,10 @@ class ChromeContentSettingsPolicyTrustAnchor
   void TearDown() override { scoped_user_manager_.reset(); }
 
  protected:
+  content::BrowserTaskEnvironment task_environment_;
   ScopedTestingLocalState testing_local_state_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  TestingProfile profile_;
 };
 
 TEST_F(ChromeContentSettingsPolicyTrustAnchor, PolicyTrustAnchor) {
