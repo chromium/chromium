@@ -5,12 +5,15 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -25,6 +28,8 @@ import java.lang.ref.WeakReference;
 class PriceWelcomeMessageCardView extends FrameLayout {
     private static WeakReference<Bitmap> sCloseButtonBitmapWeakRef;
 
+    private final Context mContext;
+    private final int mLandscapeSidePadding;
     private PriceCardView mPriceInfoBox;
     private TextView mTitle;
     private TextView mContent;
@@ -33,6 +38,9 @@ class PriceWelcomeMessageCardView extends FrameLayout {
 
     public PriceWelcomeMessageCardView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mContext = context;
+        mLandscapeSidePadding = (int) context.getResources().getDimension(
+                R.dimen.tab_grid_large_message_side_padding_landscape);
     }
 
     @Override
@@ -53,6 +61,12 @@ class PriceWelcomeMessageCardView extends FrameLayout {
                     Bitmap.createScaledBitmap(bitmap, closeButtonSize, closeButtonSize, true));
         }
         mCloseButton.setImageBitmap(sCloseButtonBitmapWeakRef.get());
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        updateWidthWithOrientation(mContext.getResources().getConfiguration().orientation);
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
     /**
@@ -108,6 +122,15 @@ class PriceWelcomeMessageCardView extends FrameLayout {
      */
     void setPriceInfoBoxStrings(ShoppingPersistedTabData.PriceDrop priceDrop) {
         mPriceInfoBox.setPriceStrings(priceDrop.price, priceDrop.previousPrice);
+    }
+
+    @VisibleForTesting
+    void updateWidthWithOrientation(int orientation) {
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            setPadding(0, 0, 0, 0);
+        } else {
+            setPadding(mLandscapeSidePadding, 0, mLandscapeSidePadding, 0);
+        }
     }
 
     // TODO(crbug.com/1166704): This method has little to do with this view. Move this function to a

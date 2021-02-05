@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import android.content.res.Configuration;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -59,7 +60,7 @@ public class PriceWelcomeMessageCardViewBinderTest extends DummyUiActivityTestCa
     private TextView mDescription;
     private ButtonCompat mActionButton;
     private ChromeImageView mCloseButton;
-    private ViewGroup mItemView;
+    private PriceWelcomeMessageCardView mItemView;
     private PropertyModel mItemViewModel;
     private PropertyModelChangeProcessor mItemMCP;
 
@@ -72,7 +73,7 @@ public class PriceWelcomeMessageCardViewBinderTest extends DummyUiActivityTestCa
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             getActivity().setContentView(view);
 
-            mItemView = (ViewGroup) getActivity().getLayoutInflater().inflate(
+            mItemView = (PriceWelcomeMessageCardView) getActivity().getLayoutInflater().inflate(
                     R.layout.price_welcome_message_card_item, null);
             view.addView(mItemView);
 
@@ -152,6 +153,27 @@ public class PriceWelcomeMessageCardViewBinderTest extends DummyUiActivityTestCa
         mCloseButton.performClick();
         assertTrue(mDismissButtonClicked.get());
         assertTrue(mMessageServiceDismissCallbackRan.get());
+    }
+
+    @Test
+    @UiThreadTest
+    @SmallTest
+    public void testUpdateWidthWithOrientation() {
+        mItemView.setPadding(0, 0, 0, 0);
+        mItemView.updateWidthWithOrientation(Configuration.ORIENTATION_PORTRAIT);
+        assertEquals(0, mItemView.getPaddingLeft());
+        assertEquals(0, mItemView.getPaddingTop());
+        assertEquals(0, mItemView.getPaddingRight());
+        assertEquals(0, mItemView.getPaddingBottom());
+
+        int landscapeSidePadding = (int) getActivity().getResources().getDimension(
+                R.dimen.tab_grid_large_message_side_padding_landscape);
+        mItemView.setPadding(0, 0, 0, 0);
+        mItemView.updateWidthWithOrientation(Configuration.ORIENTATION_LANDSCAPE);
+        assertEquals(landscapeSidePadding, mItemView.getPaddingLeft());
+        assertEquals(0, mItemView.getPaddingTop());
+        assertEquals(landscapeSidePadding, mItemView.getPaddingRight());
+        assertEquals(0, mItemView.getPaddingBottom());
     }
 
     @Override
