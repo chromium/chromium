@@ -63,6 +63,7 @@ dependencies {
     compile "androidx.arch.core:core-common:{{androidx_dependency_version}}"
     compile "androidx.annotation:annotation-experimental:{{androidx_dependency_version}}"
     compile "androidx.annotation:annotation:{{androidx_dependency_version}}"
+    compile "androidx.emoji:emoji:{{androidx_dependency_version}}"
     compile "androidx.legacy:legacy-support-core-utils:{{androidx_dependency_version}}"
     compile "androidx.lifecycle:lifecycle-runtime:{{androidx_dependency_version}}"
     compile "androidx.transition:transition:{{androidx_dependency_version}}"
