@@ -10186,9 +10186,16 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(foo_url, web_contents()->GetMainFrame()->GetLastCommittedURL());
 }
 
+// The test is flaky on lacros, cf https://crbug.com/1170583.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_CrossProcessInertSubframe DISABLED_CrossProcessInertSubframe
+#else
+#define MAYBE_CrossProcessInertSubframe CrossProcessInertSubframe
+#endif
 // Tests that when a frame contains a modal <dialog> element, out-of-process
 // iframe children cannot take focus, because they are inert.
-IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, CrossProcessInertSubframe) {
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
+                       MAYBE_CrossProcessInertSubframe) {
   // This uses a(b,b) instead of a(b) to preserve the b.com process even when
   // the first subframe is navigated away from it.
   GURL main_url(embedded_test_server()->GetURL(
