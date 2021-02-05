@@ -7,7 +7,7 @@
 namespace enterprise_connectors {
 const char kFileSystemBoxEndpointApi[] = "https://api.box.com/";
 const char kFileSystemBoxEndpointOAuth2Authorization[] =
-    "https://account.box.com/api/oauth2/authorize/?client_id";
+    "https://account.box.com/api/oauth2/authorize/?client_id=";
 const char kFileSystemBoxEndpointOAuth2Token[] =
     "https://api.box.com/oauth2/token";
 const char kFileSystemBoxEndpointWholeFileUpload[] =

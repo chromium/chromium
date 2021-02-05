@@ -50,6 +50,19 @@ if (is_win) {
   import("//build/config/win/manifest.gni")
 }
 
+declare_args() {
+  # You can set the variable 'use_official_enterprise_connectors_api_keys' to
+  # true to use the Google-internal file containing official API keys
+  # for enterprise connector partners even in a developer build.  Setting this
+  # variable explicitly to true will cause your build to fail if the
+  # internal file is missing.
+  #
+  # Note that official builds always behave as if the variable
+  # was explicitly set to true, i.e. they always use official keys,
+  # and will fail to build if the internal file is missing.
+  use_official_enterprise_connectors_api_keys = false
+}
+
 additional_modules_list_file =
     "$root_gen_dir/chrome/browser/internal/additional_modules_list.txt"
 
@@ -1885,6 +1898,11 @@ static_library("browser") {
     "//build/config:precompiled_headers",
   ]
   defines = [ "ZLIB_CONST" ]
+
+  if (is_chrome_branded || use_official_enterprise_connectors_api_keys) {
+    defines += [ "USE_OFFICIAL_ENTERPRISE_CONNECTORS_API_KEYS=1" ]
+  }
+
   libs = []
   ldflags = []
 
@@ -3540,8 +3558,6 @@ static_library("browser") {
       "enterprise/connectors/connectors_service.h",
       "enterprise/connectors/enterprise_connectors_policy_handler.cc",
       "enterprise/connectors/enterprise_connectors_policy_handler.h",
-      "enterprise/connectors/file_system/authorization_client_info.cc",
-      "enterprise/connectors/file_system/authorization_client_info.h",
       "enterprise/connectors/file_system/box_access_token_fetcher.cc",
       "enterprise/connectors/file_system/box_access_token_fetcher.h",
       "enterprise/connectors/file_system/box_api_call_endpoints.cc",
