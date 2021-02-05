@@ -633,6 +633,12 @@ const CGFloat kButtonHorizontalPadding = 30.0;
     return nil;
   }
 
+  if (indexPath.section ==
+      [self.tableViewModel
+          sectionForSectionIdentifier:kEntriesStatusSectionIdentifier]) {
+    return nil;
+  }
+
   HistoryEntryItem* entry = base::mac::ObjCCastStrict<HistoryEntryItem>(
       [self.tableViewModel itemAtIndexPath:indexPath]);
   UIView* cell = [self.tableView cellForRowAtIndexPath:indexPath];
