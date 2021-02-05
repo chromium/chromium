@@ -846,8 +846,9 @@ def CreateMetadata(args, linker_name, build_config):
     metadata[models.METADATA_APK_FILENAME] = shorten_path(
         args.minimal_apks_file)
     if args.split_name and args.split_name != 'base':
-      metadata[models.METADATA_APK_SPLIT_NAME] = args.split_name
       metadata[models.METADATA_APK_SIZE] = os.path.getsize(args.apk_file)
+      metadata[models.METADATA_APK_SPLIT_NAME] = args.split_name
+      metadata[models.METADATA_APK_SPLIT_ON_DEMAND] = _IsOnDemand(args.apk_file)
     else:
       sizes_by_module = _CollectModuleSizes(args.minimal_apks_file)
       for name, size in sizes_by_module.items():
@@ -2007,8 +2008,12 @@ def ParseSsargs(lines):
   return sub_args_list
 
 
-def _DeduceNativeInfo(tentative_output_dir, apk_path, elf_path, map_path,
-                      on_config_error):
+def _DeduceNativeInfo(tentative_output_dir,
+                      apk_path,
+                      elf_path,
+                      map_path,
+                      on_config_error,
+                      allow_missing_linker_map=False):
   apk_so_path = None
   if apk_path:
     with zipfile.ZipFile(apk_path) as z:
@@ -2045,6 +2050,12 @@ def _DeduceNativeInfo(tentative_output_dir, apk_path, elf_path, map_path,
       map_path += '.gz'
 
   if not os.path.exists(map_path):
+    # Consider a missing linker map fatal only for the base module. For .so
+    # files in feature modules, allow skipping breakdowns.
+    if allow_missing_linker_map:
+      logging.warning('No linker map found for %s. Skipping native breakdown.',
+                      elf_path)
+      return None, None, None
     on_config_error(
         'Could not find .map(.gz)? file. Ensure you have built with '
         'is_official_build=true and generate_linker_map=true, or use '
@@ -2114,9 +2125,14 @@ def _ProcessContainerArgs(top_args, sub_args, container_name, on_config_error):
       sub_args, apk_prefix)
   linker_name = None
   if opts.analyze_native:
+    is_base_module = sub_args.split_name in (None, 'base')
     sub_args.elf_file, sub_args.map_file, apk_so_path = _DeduceNativeInfo(
-        top_args.output_directory, sub_args.apk_file, sub_args.elf_file
-        or sub_args.aux_elf_file, sub_args.map_file, on_config_error)
+        top_args.output_directory,
+        sub_args.apk_file,
+        sub_args.elf_file or sub_args.aux_elf_file,
+        sub_args.map_file,
+        on_config_error,
+        allow_missing_linker_map=not is_base_module)
     if not (sub_args.elf_file or sub_args.map_file or apk_so_path):
       opts.analyze_native = False
   if opts.analyze_native:
@@ -2218,8 +2234,6 @@ def _IterSubArgs(top_args, on_config_error):
         with zip_util.UnzipToTemp(
             sub_args.minimal_apks_file,
             'splits/{}-master.apk'.format(module_name)) as temp:
-          if _IsOnDemand(temp):
-            continue
           module_sub_args = copy.copy(sub_args)
           module_sub_args.apk_file = temp
           module_sub_args.split_name = module_name
