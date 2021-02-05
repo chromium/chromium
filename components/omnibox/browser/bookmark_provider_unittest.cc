@@ -18,13 +18,16 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/titled_url_match.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/browser/titled_url_match_utils.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/omnibox_focus_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -41,39 +44,41 @@ struct BookmarksTestInfo {
   std::string title;
   std::string url;
 } bookmark_provider_test_data[] = {
-  { "abc def", "http://www.catsanddogs.com/a" },
-  { "abcde", "http://www.catsanddogs.com/b" },
-  { "abcdef", "http://www.catsanddogs.com/c" },
-  { "carry carbon carefully", "http://www.catsanddogs.com/d" },
-  { "a definition", "http://www.catsanddogs.com/e" },
-  { "ghi jkl", "http://www.catsanddogs.com/f" },
-  { "jkl ghi", "http://www.catsanddogs.com/g" },
-  { "frankly frankly frank", "http://www.catsanddogs.com/h" },
-  { "foobar foobar", "http://www.foobar.com/" },
-  { "domain", "http://www.domain.com/http/" },
-  { "repeat", "http://www.repeat.com/1/repeat/2/" },
-  // For testing inline_autocompletion.
-  { "http://blah.com/", "http://blah.com/" },
-  { "http://fiddle.com/", "http://fiddle.com/" },
-  { "http://www.www.com/", "http://www.www.com/" },
-  { "chrome://version", "chrome://version" },
-  { "chrome://omnibox", "chrome://omnibox" },
-  // For testing ranking with different URLs.
-  { "achlorhydric featherheads resuscitates mockingbirds",
-    "http://www.manylongwords.com/1a" },
-  { "achlorhydric mockingbirds resuscitates featherhead",
-    "http://www.manylongwords.com/2b" },
-  { "featherhead resuscitates achlorhydric mockingbirds",
-    "http://www.manylongwords.com/3c" },
-  { "mockingbirds resuscitates featherheads achlorhydric",
-    "http://www.manylongwords.com/4d" },
-  // For testing URL boosting.  (URLs referenced multiple times are boosted.)
-  { "burning worms #1",  "http://www.burns.com/" },
-  { "burning worms #2",  "http://www.worms.com/" },
-  { "worming burns #10", "http://www.burns.com/" },
-  // For testing strange spacing in bookmark titles.
-  { " hello1  hello2  ", "http://whatever.com/" },
-  { "",                  "http://emptytitle.com/" },
+    {"abc def", "http://www.catsanddogs.com/a"},
+    {"abcde", "http://www.catsanddogs.com/b"},
+    {"abcdef", "http://www.catsanddogs.com/c"},
+    {"carry carbon carefully", "http://www.catsanddogs.com/d"},
+    {"a definition", "http://www.catsanddogs.com/e"},
+    {"ghi jkl", "http://www.catsanddogs.com/f"},
+    {"jkl ghi", "http://www.catsanddogs.com/g"},
+    {"frankly frankly frank", "http://www.catsanddogs.com/h"},
+    {"foobar foobar", "http://www.foobar.com/"},
+    {"domain", "http://www.domain.com/http/"},
+    {"repeat", "http://www.repeat.com/1/repeat/2/"},
+    // For testing inline_autocompletion.
+    {"http://blah.com/", "http://blah.com/"},
+    {"http://fiddle.com/", "http://fiddle.com/"},
+    {"http://www.www.com/", "http://www.www.com/"},
+    {"chrome://version", "chrome://version"},
+    {"chrome://omnibox", "chrome://omnibox"},
+    // For testing ranking with different URLs.
+    {"achlorhydric featherheads resuscitates mockingbirds",
+     "http://www.manylongwords.com/1a"},
+    {"achlorhydric mockingbirds resuscitates featherhead",
+     "http://www.manylongwords.com/2b"},
+    {"featherhead resuscitates achlorhydric mockingbirds",
+     "http://www.manylongwords.com/3c"},
+    {"mockingbirds resuscitates featherheads achlorhydric",
+     "http://www.manylongwords.com/4d"},
+    // For testing URL boosting.  (URLs referenced multiple times are boosted.)
+    {"burning worms #1", "http://www.burns.com/"},
+    {"burning worms #2", "http://www.worms.com/"},
+    {"worming burns #10", "http://www.burns.com/"},
+    // For testing strange spacing in bookmark titles.
+    {" hello1  hello2  ", "http://whatever.com/"},
+    {"", "http://emptytitle.com/"},
+    // For testing short bookmarks.
+    {"testing short bookmarks", "https://zzz.com"},
 };
 
 // Structures and functions supporting the BookmarkProviderTest.Positions
@@ -490,4 +495,146 @@ TEST_F(BookmarkProviderTest, DoesNotProvideMatchesOnFocus) {
   input.set_focus_type(OmniboxFocusType::ON_FOCUS);
   provider_->Start(input, false);
   EXPECT_TRUE(provider_->matches().empty());
+}
+
+TEST_F(BookmarkProviderTest, ShortBookmarks) {
+  // Test the 2 short bookmark features that determine when short inputs should
+  // be allowed to prefix match.
+  auto test = [&](std::string input_text, bool expected_match) {
+    SCOPED_TRACE("[" + input_text + "]");  // Wrap |input_text| in `[]` to make
+                                           // trailing whitespace apparent.
+    AutocompleteInput input(base::UTF8ToUTF16(input_text),
+                            metrics::OmniboxEventProto::OTHER,
+                            TestSchemeClassifier());
+    provider_->Start(input, false);
+    EXPECT_NE(provider_->matches().empty(), expected_match);
+  };
+
+  // These tests are trying to match the mock bookmark "testing short
+  // bookmarks".
+
+  {
+    SCOPED_TRACE("Default.");
+    test("te", false);
+    test("te ", false);
+    test("tes", true);
+    test("te sh bo", false);
+  }
+
+  {
+    SCOPED_TRACE("Short bookmarks enabled.");
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(omnibox::kShortBookmarkSuggestions);
+    test("te", true);
+    test("te ", true);
+    test("tes", true);
+    test("te sh bo", true);
+  }
+
+  {
+    SCOPED_TRACE("Short bookmarks for long inputs enabled.");
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(
+        omnibox::kShortBookmarkSuggestionsForLongInputs);
+    test("te", false);
+    test("te ", true);
+    test("tes", true);
+    test("te sh bo", true);
+  }
+
+  {
+    SCOPED_TRACE("Short bookmarks for long inputs enabled with length 5.");
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        omnibox::kShortBookmarkSuggestionsForLongInputs,
+        {{OmniboxFieldTrial::kShortBookmarkSuggestionsByTotalInputLengthParam,
+          "5"}});
+    test("te", false);
+    test("te ", false);
+    test("te   ", true);
+    test("tes", true);
+    test("te sh bo", true);
+  }
+
+  {
+    SCOPED_TRACE("Shortcut non-prefix rich autocompletion enabled.");
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        omnibox::kRichAutocompletion,
+        {{OmniboxFieldTrial::kRichAutocompletionAutocompleteTitlesMinCharParam,
+          "4"},
+         {OmniboxFieldTrial::
+              kRichAutocompletionAutocompleteNonPrefixMinCharParam,
+          "5"},
+         {OmniboxFieldTrial::
+              kRichAutocompletionAutocompleteNonPrefixShortcutProviderParam,
+          "true"}});
+    test("te", false);
+    test("te ", false);
+    test("te   ", false);
+    test("tes", true);
+    test("te sh bo", false);
+  }
+
+  {
+    SCOPED_TRACE("Non-prefix rich autocompletion enabled with limit 5.");
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        omnibox::kRichAutocompletion,
+        {{OmniboxFieldTrial::kRichAutocompletionAutocompleteTitlesMinCharParam,
+          "4"},
+         {OmniboxFieldTrial::
+              kRichAutocompletionAutocompleteNonPrefixMinCharParam,
+          "5"},
+         {OmniboxFieldTrial::kRichAutocompletionAutocompleteNonPrefixAllParam,
+          "true"}});
+    test("te", false);
+    test("te ", false);
+    test("te   ", true);
+    test("tes", true);
+    test("te sh bo", true);
+  }
+
+  {
+    SCOPED_TRACE("Title rich autocompletion enabled with limit 4.");
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        omnibox::kRichAutocompletion,
+        {{OmniboxFieldTrial::kRichAutocompletionAutocompleteTitlesMinCharParam,
+          "4"},
+         {OmniboxFieldTrial::
+              kRichAutocompletionAutocompleteNonPrefixMinCharParam,
+          "5"},
+         {OmniboxFieldTrial::kRichAutocompletionAutocompleteTitlesParam,
+          "true"}});
+    test("te", false);
+    test("te ", false);
+    test("te  ", true);
+    test("tes", true);
+    test("te sh bo", true);
+  }
+
+  {
+    SCOPED_TRACE(
+        "Title and non-prefix rich autocompletion enabled with limits 4 and "
+        "5.");
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        omnibox::kRichAutocompletion,
+        {{OmniboxFieldTrial::kRichAutocompletionAutocompleteTitlesMinCharParam,
+          "4"},
+         {OmniboxFieldTrial::
+              kRichAutocompletionAutocompleteNonPrefixMinCharParam,
+          "5"},
+         {OmniboxFieldTrial::
+              kRichAutocompletionAutocompleteNonPrefixMinCharParam,
+          "true"},
+         {OmniboxFieldTrial::kRichAutocompletionAutocompleteTitlesParam,
+          "true"}});
+    test("te", false);
+    test("te ", false);
+    test("te  ", true);
+    test("tes", true);
+    test("te sh bo", true);
+  }
 }

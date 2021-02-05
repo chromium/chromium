@@ -13,7 +13,6 @@ namespace omnibox {
 // Instead, use the categorized and alphabetized lists below this "big blob".
 // You can create a new category if none of the existing ones fit.
 extern const base::Feature kHideFileUrlScheme;
-extern const base::Feature kOmniboxShortBookmarkSuggestions;
 extern const base::Feature kOmniboxTailSuggestions;
 extern const base::Feature kOmniboxTabSwitchSuggestions;
 extern const base::Feature kExperimentalKeywordMode;
@@ -72,6 +71,8 @@ extern const base::Feature kOmniboxExperimentalSuggestScoring;
 extern const base::Feature kHistoryQuickProviderAblateInMemoryURLIndexCacheFile;
 extern const base::Feature kDisableCGIParamMatching;
 extern const base::Feature kNativeVoiceSuggestProvider;
+extern const base::Feature kShortBookmarkSuggestions;
+extern const base::Feature kShortBookmarkSuggestionsForLongInputs;
 
 // Suggestions UI - these affect the UI or function of the suggestions popup.
 extern const base::Feature kAdaptiveSuggestionsCount;

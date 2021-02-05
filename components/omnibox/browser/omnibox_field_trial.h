@@ -373,8 +373,13 @@ EmphasizeTitlesCondition GetEmphasizeTitlesConditionForInput(
 // ---------------------------------------------------------
 // For UI experiments.
 
-// Returns true if the short bookmark suggestions flag is enabled.
+// Short bookmarks.
+// Determine whether bookmarks should look for exact matches only or prefix
+// matches as well when the input is short.
 bool IsShortBookmarkSuggestionsEnabled();
+bool IsShortBookmarkSuggestionsForLongInputsEnabled();
+// Returns the minimum input length to enable prefix matches.
+size_t ShortBookmarkSuggestionsByTotalInputLength();
 
 // Whether a single row of buttons is shown on suggestions with actionable
 // elements like keywords, tab-switch buttons, and Pedals.
@@ -534,6 +539,9 @@ extern const char kOnDeviceHeadSuggestDemoteMode[];
 // previous one unless overridden by a field trial parameter.
 // Non-const because some unittests modify this value.
 extern int kDefaultMinimumTimeBetweenSuggestQueriesMs;
+
+// Parameter names used for short bookmarks variations.
+extern const char kShortBookmarkSuggestionsByTotalInputLengthParam[];
 
 // Parameter names used for rich autocompletion variations.
 extern const char kRichAutocompletionAutocompleteTitlesParam[];

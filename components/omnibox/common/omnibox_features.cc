@@ -58,10 +58,6 @@ const base::Feature kHideFileUrlScheme{
     // need to show the file scheme.
     enabled_by_default_desktop_only};
 
-// Feature used to enable matching short words to bookmarks for suggestions.
-const base::Feature kOmniboxShortBookmarkSuggestions{
-    "OmniboxShortBookmarkSuggestions", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Feature used to force on the experiment of transmission of tail suggestions
 // from GWS to this client, currently testing for desktop.
 const base::Feature kOmniboxTailSuggestions{"OmniboxTailSuggestions",
@@ -277,6 +273,21 @@ const base::Feature kDisableCGIParamMatching{"OmniboxDisableCGIParamMatching",
 // If enabled, uses the native VoiceSuggestProvider. Android-specific.
 const base::Feature kNativeVoiceSuggestProvider{
     "OmniboxNativeVoiceSuggestProvider", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Features used to enable matching short inputs to bookmarks for suggestions.
+// By default, if both of the following are disabled, input words shorter than 3
+//   characters won't prefix match bookmarks. E.g., the inputs 'abc x' or 'x'
+//   won't match bookmark text 'abc xyz'.
+// If |kShortBookmarkSuggestions()| is enabled, this limitation is lifted and
+//   both inputs 'abc x' and 'x' can match bookmark text 'abc xyz'.
+// If |kShortBookmarkSuggestionsForLongInputs()| is enabled, matching is limited
+//   by input length rather than input word length. Input 'abc x' can but input
+//   'x' can't match bookmark text 'abc xyz'.
+const base::Feature kShortBookmarkSuggestions{
+    "OmniboxShortBookmarkSuggestions", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kShortBookmarkSuggestionsForLongInputs{
+    "OmniboxShortBookmarkSuggestionsForLongInputs",
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 // If enabled, inputs may match bookmark paths. These path matches won't
 // contribute to scoring. E.g. 'planets jupiter' can suggest a bookmark titled
