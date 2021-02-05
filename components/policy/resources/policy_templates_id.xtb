@@ -408,7 +408,7 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
           Jika kebijakan ini dinonaktifkan atau tidak disetel, Setelan akun Kerberos akan dinonaktifkan. Tidak ada akun Kerberos yang dapat ditambahkan dan autentikasi Kerberos tidak dapat digunakan. Semua akun Kerberos yang ada dan sandi yang disimpan telah dihapus.</translation>
 <translation id="1561424797596341174">Penggantian kebijakan untuk versi Debug host akses jarak jauh</translation>
 <translation id="1561967320164410511">U2F ditambah beberapa ekstensi untuk masing-masing pengesahan</translation>
-<translation id="1575015449587326319">Kebijakan konfigurasi untuk Konektor Chrome Enterprise OnFileDownloaded</translation>
+<translation id="1575015449587326319">Kebijakan konfigurasi untuk Chrome Enterprise Connector OnFileDownloaded</translation>
 <translation id="1576684007051137182">Mengonfigurasi kamera, setelan browser, setelan OS, serta fitur pemindaian dan Web Store untuk dinonaktifkan</translation>
 <translation id="1583248206450240930">Gunakan <ph name="PRODUCT_FRAME_NAME" /> jika tidak diubah</translation>
 <translation id="1588240398285670601">Setelan Browser</translation>
@@ -1716,7 +1716,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="3302829897293005699">Jika kebijakan disetel ke Aktif atau tidak disetel, perangkat yang terdaftar akan melaporkan informasi sesi kios yang aktif seperti ID dan versi aplikasi.
 
       Jika kebijakan disetel ke Nonaktif, perangkat yang terdaftar tidak akan melaporkan informasi sesi kios.</translation>
-<translation id="3303911765031636277">Kebijakan konfigurasi untuk Konektor Chrome Enterprise OnFileAttached</translation>
+<translation id="3303911765031636277">Kebijakan konfigurasi untuk Chrome Enterprise Connector OnFileAttached</translation>
 <translation id="3304662785258434098">Memungkinkan Anda menetapkan apakah pengguna dapat menambahkan pengecualian untuk mengizinkan konten campuran bagi situs tertentu.
 
           Kebijakan ini dapat diganti dengan pola URL tertentu menggunakan kebijakan 'InsecureContentAllowedForUrls' dan 'InsecureContentBlockedForUrls'.
@@ -2960,7 +2960,7 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
           Jika setelan ini diaktifkan, <ph name="PRODUCT_NAME" /> akan mengabaikan semua opsi terkait proxy yang ditentukan dari command line.
 
           Jika kebijakan ini tidak ditetapkan, pengguna dapat memilih sendiri setelan proxy.</translation>
-<translation id="5177260184597743704">Kebijakan konfigurasi untuk Konektor Chrome Enterprise OnSecurityEvent</translation>
+<translation id="5177260184597743704">Kebijakan konfigurasi untuk Chrome Enterprise Connector OnSecurityEvent</translation>
 <translation id="5178479074002209469">Tanda boolean menunjukkan apakah sesi pengguna yang tidak dikelola harus menerima notifikasi dan memaksa logout jika update diperlukan sesuai kebijakan ini.</translation>
 <translation id="5182055907976889880">Konfigurasi Google Drive di <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="5182483318861266793">Posisikan rak di sisi kanan layar</translation>
@@ -3309,7 +3309,7 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 
       Catatan: Pisahkan beberapa nama server dengan koma. Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.</translation>
 <translation id="5645779841392247734">Izinkan cookie di situs ini</translation>
-<translation id="5646234199535103501">Kebijakan konfigurasi untuk Konektor Chrome Enterprise OnBulkDataEntry</translation>
+<translation id="5646234199535103501">Kebijakan konfigurasi untuk Chrome Enterprise Connector OnBulkDataEntry</translation>
 <translation id="5649046890958064703">Jika <ph name="PRINTERS_BLACKLIST" /> dipilih untuk <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, menyetel <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST_POLICY_NAME" /> akan menentukan printer yang tidak dapat digunakan oleh pengguna. Semua printer diberikan kepada pengguna kecuali ID yang tercantum dalam kebijakan ini. ID harus sesuai dengan kolom <ph name="ID_FIELD" /> atau <ph name="GUID_FIELD" /> dalam file yang ditentukan di <ph name="DEVICE_PRINTERS_POLICY_NAME" />.
 
       Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.</translation>

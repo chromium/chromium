@@ -1775,7 +1775,7 @@
 <translation id="7976214039405368314">Həddən çox sorğu var</translation>
 <translation id="7977538094055660992">Çıxış cihazı</translation>
 <translation id="7977894662897852582">Edp</translation>
-<translation id="79859296434321399">Təkmilləşdirilmiş virtual reallıq kontentinə baxmaq üçün ARCore'u quraşdırın</translation>
+<translation id="79859296434321399">Artırılmış virtual reallıq kontentinə baxmaq üçün ARCore quraşdırın</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">Uclarını qovuşdurun</translation>
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" /> ilə ekran paylaşımı davam etdirilib</translation>
@@ -1824,7 +1824,7 @@
 <translation id="8175796834047840627">Daxil olduğunuza görə Chrome kartları Google Hesabında yadda saxlamağı təklif edir. Bunu ayarlarda dəyişə bilərsiniz.</translation>
 <translation id="8184538546369750125">Qlobal defoltdan istifadə edin (İcazə verin)</translation>
 <translation id="8194797478851900357">&amp;Ləğv edin</translation>
-<translation id="8201077131113104583">"<ph name="EXTENSION_ID" />" ID ilə artırma üçün yanlış güncəlləşmə linki</translation>
+<translation id="8201077131113104583">"<ph name="EXTENSION_ID" />" identifikasiyalı artırma üçün güncəllənmə linki yanlışdır</translation>
 <translation id="8202097416529803614">Sifariş xülasəsi</translation>
 <translation id="8202370299023114387">Ziddiyət</translation>
 <translation id="8206978196348664717">Prc4 (Zərf)</translation>
@@ -1912,7 +1912,7 @@
 <translation id="8542014550340843547">Aşağıdan üçlü ştapel vurun</translation>
 <translation id="8543181531796978784"><ph name="BEGIN_ERROR_LINK" />Aşkarlama problemini bildirə<ph name="END_ERROR_LINK" /> bilərsiniz, təhlükəsizliyiniz ilə bağlı riski başa düşürsünüzsə, <ph name="BEGIN_LINK" />bu təhlükəli sayta daxil ola bilərsiniz<ph name="END_LINK" />.</translation>
 <translation id="8557066899867184262">CVC kartın arxasında yerləşir.</translation>
-<translation id="8558485628462305855">Təkmilləşdirilmiş virtual reallıq kontentinə baxmaq üçün ARCore'u yeniləyin</translation>
+<translation id="8558485628462305855">Artırılmış virtual reallıq kontentinə baxmaq üçün ARCore'u güncəlləyin</translation>
 <translation id="8559762987265718583">Cihazınızın tarixi və vaxtı (<ph name="DATE_AND_TIME" />) yanlış olduğundan, <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> domeninə şəxsi bağlantı yaradıla bilməz.</translation>
 <translation id="8564182942834072828">Ayrıca sənədlər/Sıralanmamış nüsxələr</translation>
 <translation id="8564985650692024650">Parolunuzdan digər saytlarda təkrar istifadə etmisinizsə, Chromium <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> parolunuzu sıfırlamağı tövsiyə edir.</translation>

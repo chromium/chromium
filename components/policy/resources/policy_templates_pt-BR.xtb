@@ -5625,10 +5625,10 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
       não se aplicam.
 
       O objetivo é permitir que organizações coloquem origens na lista de permissões para aplicativos
-      legados que não implantam TLS, ou que elas configurem um servidor temporário para o
+      legados que não implantam TLS, ou que elas configurem um servidor de preparo para o
       desenvolvimento interno da Web, de modo que os desenvolvedores delas possam testar recursos
       que exigem contextos seguros sem precisar implantar TLS no servidor
-      temporário. Esta política também impedirá que a origem seja rotulada
+      de preparo. Esta política também impedirá que a origem seja rotulada
       como "Não segura" na omnibox.
 
       Definir uma lista de URLs nesta política tem o mesmo efeito que definir a
@@ -5642,8 +5642,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
       política.
 
       Para ver mais informações sobre contextos seguros, acesse
-      https://www.w3.org/TR/secure-contexts/
-      </translation>
+      https://www.w3.org/TR/secure-contexts/</translation>
 <translation id="8940519618730206658">A definição da política concede acesso aos URLs listados, como exceções à <ph name="URL_BLOCKLIST_POLICY_NAME" />. Consulte a descrição da política para ver o formato das entradas dessa lista. Por exemplo, se <ph name="URL_BLOCKLIST_POLICY_NAME" /> for definida como "*", todas as solicitações serão bloqueadas, e você poderá usar a política para permitir o acesso a uma lista de URLs limitada. Ela pode servir para abrir exceções para alguns esquemas, subdomínios de outros domínios, portas ou caminhos específicos usando o formato especificado em https://www.chromium.org/administrators/url-blacklist-filter-format. O filtro mais específico determina se um URL será bloqueado ou permitido. A política <ph name="URL_ALLOWLIST_POLICY_NAME" /> tem precedência sobre a <ph name="URL_BLOCKLIST_POLICY_NAME" />. Esta política tem um limite de 1.000 entradas.
 
       Ela também permite que o navegador invoque automaticamente aplicativos externos registrados como gerenciadores de protocolo para os protocolos listados, como "tel:" ou "ssh:".
