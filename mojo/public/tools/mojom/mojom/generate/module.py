@@ -407,7 +407,8 @@ class Field(object):
 
 
 class StructField(Field):
-  pass
+  def __hash__(self):
+    return super(Field, self).__hash__()
 
 
 class UnionField(Field):
