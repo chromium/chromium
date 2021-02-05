@@ -1,6 +1,16 @@
 // Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+// clang-format off
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// #import {Action} from 'chrome://resources/js/cr/ui/store.m.js';
+// #import {BrowserProxy} from './browser_proxy.m.js';
+// #import {createInitialState} from './util.m.js';
+// #import {AppManagementStore} from './store.m.js';
+// #import {addApp, changeApp, removeApp, updateArcSupported} from './actions.m.js';
+// clang-format on
+
 cr.define('app_management.apiListener', function() {
   let initialized = false;
 

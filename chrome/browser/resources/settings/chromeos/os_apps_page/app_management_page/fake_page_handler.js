@@ -2,11 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {createPermission} from './util.m.js';
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// #import {AppManagementStore} from "./store.m.js";
+// #import {AppType, PwaPermissionType, TriState, PermissionValueType, Bool, ArcPermissionType, OptionalBool} from "./constants.m.js";
+// clang-format on
+
 cr.define('app_management', function() {
   /**
    * @implements {appManagement.mojom.PageHandlerInterface}
    */
-  class FakePageHandler {
+  /* #export */ class FakePageHandler {
     /**
      * @param {Object=} options
      * @return {!Object<number, Permission>}

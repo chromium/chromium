@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// clang-format on
+
 /**
  * @fileoverview Module of functions which produce a new page state in response
  * to an action. Reducers (in the same sense as Array.prototype.reduce) must be
@@ -118,7 +122,7 @@ cr.define('app_management', function() {
    * @param {Object} action
    * @return {!AppManagementPageState}
    */
-  function reduceAction(state, action) {
+  /* #export */ function reduceAction(state, action) {
     return {
       apps: AppState.updateApps(state.apps, action),
       arcSupported: ArcSupported.updateArcSupported(state.arcSupported, action),

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Load api_listener after other assets have initialized.
+
 Polymer({
   is: 'settings-app-management-page',
 
