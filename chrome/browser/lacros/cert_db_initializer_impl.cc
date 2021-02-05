@@ -71,7 +71,7 @@ bool IsEnabledForEarlyAccess(Profile* profile) {
        "emaxx@google.com",         "hendrich@google.com",
        "marcgrimme@google.com",    "maxkirsch@google.com",
        "mslus@google.com",         "okalitova@google.com",
-       "omorsi@google.com"}};
+       "omorsi@google.com",        "roddis@google.com"}};
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
