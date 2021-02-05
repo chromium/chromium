@@ -14,6 +14,8 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/sessions/session_restore_test_helper.h"
 #include "chrome/browser/sessions/tab_loader_tester.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
@@ -804,9 +806,11 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreOnStartup) {
 // same thing.
 IN_PROC_BROWSER_TEST_F(TabRestoreTest,
                        RestoreFirstBrowserWhenSessionServiceEnabled) {
-  // Do not exit from test when last browser is closed.
+  // Do not exit from test or delete the Profile* when last browser is closed.
   ScopedKeepAlive keep_alive(KeepAliveOrigin::SESSION_RESTORE,
                              KeepAliveRestartOption::DISABLED);
+  ScopedProfileKeepAlive profile_keep_alive(
+      browser()->profile(), ProfileKeepAliveOrigin::kSessionRestore);
 
   // Enable session service.
   SessionStartupPref pref(SessionStartupPref::LAST);

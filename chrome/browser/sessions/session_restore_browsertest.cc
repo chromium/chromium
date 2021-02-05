@@ -1960,6 +1960,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreAllBrowsers) {
   EXPECT_NE(first_profile_browser_one, first_profile_browser_two);
 
   Profile* second_profile = CreateSecondaryProfile(1);
+  base::FilePath second_profile_path = second_profile->GetPath();
   profiles::FindOrCreateNewWindowForProfile(
       second_profile, chrome::startup::IS_NOT_PROCESS_STARTUP,
       chrome::startup::IS_NOT_FIRST_RUN, false);
@@ -1999,10 +2000,11 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreAllBrowsers) {
   // Clean up now stale pointers.
   second_profile_browser_one = nullptr;
   second_profile_browser_two = nullptr;
+  second_profile = nullptr;  // See DestroyProfileOnBrowserClose flag.
 
   // Reopen the second profile and trigger session restore.
   MultiBrowserObserver added_observer(2, MultiBrowserObserver::Event::kAdded);
-  chrome::NewEmptyWindow(second_profile);
+  profiles::SwitchToProfile(second_profile_path, false, {});
   std::vector<Browser*> browsers = added_observer.Wait();
 
   // Verify that the correct URLs where restored.
