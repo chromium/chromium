@@ -801,7 +801,8 @@ IN_PROC_BROWSER_TEST_F(
 #else
 #define MAYBE_HintsFetcherClearFetchedHints HintsFetcherClearFetchedHints
 #endif  // defined(OS_WIN) || defined(OS_LINUX)
-IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherClearFetchedHints) {
+IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
+                       MAYBE_HintsFetcherClearFetchedHints) {
   const base::HistogramTester* histogram_tester = GetHistogramTester();
   GURL url = https_url();
 
