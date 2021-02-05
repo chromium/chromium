@@ -83,7 +83,7 @@ void ThreadCacheRegistry::DumpStats(bool my_thread_only,
   PartitionAutoLock scoped_locker(GetLock());
   if (my_thread_only) {
     auto* tcache = ThreadCache::Get();
-    if (!tcache)
+    if (!ThreadCache::IsValid(tcache))
       return;
     tcache->AccumulateStats(stats);
   } else {
@@ -106,6 +106,7 @@ void ThreadCacheRegistry::PurgeAll() {
     PartitionAutoLock scoped_locker(GetLock());
     ThreadCache* tcache = list_head_;
     while (tcache) {
+      PA_DCHECK(ThreadCache::IsValid(tcache));
       // Cannot purge directly, need to ask the other thread to purge "at some
       // point".
       // Note that this will not work if the other thread is sleeping forever.
@@ -117,7 +118,7 @@ void ThreadCacheRegistry::PurgeAll() {
   }
 
   // May take a while, don't hold the lock while purging.
-  if (current_thread_tcache)
+  if (ThreadCache::IsValid(current_thread_tcache))
     current_thread_tcache->Purge();
 }
 
@@ -151,7 +152,7 @@ void ThreadCacheRegistry::PostDelayedPurgeTask() {
 void ThreadCacheRegistry::PeriodicPurge() {
   has_pending_purge_task_ = false;
   ThreadCache* tcache = ThreadCache::Get();
-  PA_DCHECK(tcache);
+  PA_DCHECK(ThreadCache::IsValid(tcache));
   uint64_t allocations = tcache->stats_.alloc_count;
   uint64_t allocations_since_last_purge =
       allocations - allocations_at_last_purge_;
@@ -185,7 +186,8 @@ void ThreadCacheRegistry::OnDeallocation() {
   deallocations_++;
   if (deallocations_ > kMinMainThreadAllocationsForPurging) {
     ThreadCache* tcache = ThreadCache::Get();
-    PA_DCHECK(tcache);
+    if (!ThreadCache::IsValid(tcache))
+      return;
 
     deallocations_ = 0;
     tcache->SetNotifiesRegistry(false);
