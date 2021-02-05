@@ -13,12 +13,66 @@
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_network_context.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+
+using testing::_;
+using testing::Invoke;
+using testing::StrictMock;
 
 namespace chromeos {
 namespace attestation {
+
+namespace {
+class MockNetworkContext : public network::TestNetworkContext {
+ public:
+  MockNetworkContext() {
+    ON_CALL(*this, LookUpProxyForURL(_, _, _))
+        .WillByDefault(
+            Invoke(this, &MockNetworkContext::LookUpProxyForURLInternal));
+  }
+  ~MockNetworkContext() override = default;
+  MOCK_METHOD(void,
+              LookUpProxyForURL,
+              (const GURL& url,
+               const net::NetworkIsolationKey& network_isolation_key,
+               mojo::PendingRemote<::network::mojom::ProxyLookupClient>
+                   proxy_lookup_client),
+              (override));
+
+  void SetProxyPresence(const GURL& url, bool is_present) {
+    proxy_presence_table_[url] = is_present;
+  }
+
+ private:
+  void LookUpProxyForURLInternal(
+      const GURL& url,
+      const net::NetworkIsolationKey& network_isolation_key,
+      mojo::PendingRemote<::network::mojom::ProxyLookupClient>
+          proxy_lookup_client) {
+    mojo::Remote<::network::mojom::ProxyLookupClient> client(
+        std::move(proxy_lookup_client));
+    if (proxy_presence_table_.count(url) == 0) {
+      client->OnProxyLookupComplete(net::ERR_FAILED,
+                                    /*proxy_info=*/base::nullopt);
+      return;
+    }
+    net::ProxyInfo proxy_info;
+    if (proxy_presence_table_[url]) {
+      proxy_info.UseNamedProxy("named.proxy.com");
+    } else {
+      proxy_info.UseDirect();
+    }
+    client->OnProxyLookupComplete(net::OK, std::move(proxy_info));
+  }
+
+  std::map<GURL, bool> proxy_presence_table_;
+};
+}  // namespace
 
 class AttestationCAClientTest : public ::testing::Test {
  public:
@@ -218,6 +272,118 @@ TEST_F(AttestationCAClientAttestationServerTest, TestCertificateRequest) {
   EXPECT_EQ(1, num_invocations_);
   EXPECT_TRUE(result_);
   EXPECT_EQ("certificate_response", data_);
+}
+
+TEST_F(AttestationCAClientAttestationServerTest, ProxyPresentForDefaultCA) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      chromeos::switches::kAttestationServer, "default");
+  StrictMock<MockNetworkContext> network_context;
+  network_context.SetProxyPresence(GURL("https://chromeos-ca.gstatic.com"),
+                                   true);
+  EXPECT_CALL(network_context,
+              LookUpProxyForURL(GURL("https://chromeos-ca.gstatic.com"), _, _));
+  AttestationCAClient client;
+  client.set_network_context_for_testing(&network_context);
+  bool is_proxy_present = false;
+  client.CheckIfAnyProxyPresent(base::BindOnce(
+      [](bool* result, bool is_present) { *result = is_present; },
+      &is_proxy_present));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(is_proxy_present);
+}
+
+TEST_F(AttestationCAClientAttestationServerTest, ProxyPresentForTestCA) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      chromeos::switches::kAttestationServer, "test");
+  StrictMock<MockNetworkContext> network_context;
+  network_context.SetProxyPresence(GURL("https://asbestos-qa.corp.google.com"),
+                                   true);
+  EXPECT_CALL(
+      network_context,
+      LookUpProxyForURL(GURL("https://asbestos-qa.corp.google.com"), _, _));
+  AttestationCAClient client;
+  client.set_network_context_for_testing(&network_context);
+  bool is_proxy_present = false;
+  client.CheckIfAnyProxyPresent(base::BindOnce(
+      [](bool* result, bool is_present) { *result = is_present; },
+      &is_proxy_present));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(is_proxy_present);
+}
+
+TEST_F(AttestationCAClientAttestationServerTest, ProxyNotPresentForDefaultCA) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      chromeos::switches::kAttestationServer, "default");
+  StrictMock<MockNetworkContext> network_context;
+  network_context.SetProxyPresence(GURL("https://chromeos-ca.gstatic.com"),
+                                   false);
+  EXPECT_CALL(network_context,
+              LookUpProxyForURL(GURL("https://chromeos-ca.gstatic.com"), _, _));
+  AttestationCAClient client;
+  client.set_network_context_for_testing(&network_context);
+  bool is_proxy_present = true;
+  client.CheckIfAnyProxyPresent(base::BindOnce(
+      [](bool* result, bool is_present) { *result = is_present; },
+      &is_proxy_present));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(is_proxy_present);
+}
+
+TEST_F(AttestationCAClientAttestationServerTest, ProxyNotPresentForTestCA) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      chromeos::switches::kAttestationServer, "test");
+  StrictMock<MockNetworkContext> network_context;
+  network_context.SetProxyPresence(GURL("https://asbestos-qa.corp.google.com"),
+                                   false);
+  EXPECT_CALL(
+      network_context,
+      LookUpProxyForURL(GURL("https://asbestos-qa.corp.google.com"), _, _));
+  AttestationCAClient client;
+  client.set_network_context_for_testing(&network_context);
+  bool is_proxy_present = true;
+  client.CheckIfAnyProxyPresent(base::BindOnce(
+      [](bool* result, bool is_present) { *result = is_present; },
+      &is_proxy_present));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(is_proxy_present);
+}
+
+TEST_F(AttestationCAClientAttestationServerTest,
+       ProxyAssumedToBePresentUponError) {
+  StrictMock<MockNetworkContext> network_context;
+  EXPECT_CALL(network_context, LookUpProxyForURL(_, _, _));
+  AttestationCAClient client;
+  client.set_network_context_for_testing(&network_context);
+  bool is_proxy_present = false;
+  client.CheckIfAnyProxyPresent(base::BindOnce(
+      [](bool* result, bool is_present) { *result = is_present; },
+      &is_proxy_present));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(is_proxy_present);
+}
+
+TEST_F(AttestationCAClientAttestationServerTest, CheckProxyMultipleCalls) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      chromeos::switches::kAttestationServer, "default");
+  StrictMock<MockNetworkContext> network_context;
+  network_context.SetProxyPresence(GURL("https://chromeos-ca.gstatic.com"),
+                                   true);
+  EXPECT_CALL(network_context,
+              LookUpProxyForURL(GURL("https://chromeos-ca.gstatic.com"), _, _))
+      .Times(2);
+  AttestationCAClient client;
+  client.set_network_context_for_testing(&network_context);
+  bool is_proxy_present1 = false;
+  bool is_proxy_present2 = false;
+  client.CheckIfAnyProxyPresent(base::BindOnce(
+      [](bool* result, bool is_present) { *result = is_present; },
+      &is_proxy_present1));
+  client.CheckIfAnyProxyPresent(base::BindOnce(
+      [](bool* result, bool is_present) { *result = is_present; },
+      &is_proxy_present2));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(is_proxy_present1);
+  EXPECT_TRUE(is_proxy_present2);
 }
 
 }  // namespace attestation
