@@ -2,15 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/crash_upload_list/crash_upload_list_crashpad.h"
-
-#include <stddef.h>
-
-#include <utility>
+#include "components/crash/core/browser/crash_upload_list_crashpad.h"
 
 #include "base/time/time.h"
-#include "build/build_config.h"
-#include "chrome/common/chrome_constants.h"
 #include "components/crash/core/app/crashpad.h"
 
 namespace {

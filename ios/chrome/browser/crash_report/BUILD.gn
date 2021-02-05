@@ -35,6 +35,7 @@ source_set("crash_report") {
     "//build:branding_buildflags",
     "//components/breadcrumbs/core",
     "//components/crash/core/app",
+    "//components/crash/core/browser",
     "//components/crash/core/common",
     "//components/previous_session_info",
     "//components/upload_list",

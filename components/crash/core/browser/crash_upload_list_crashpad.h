@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CRASH_UPLOAD_LIST_CRASH_UPLOAD_LIST_CRASHPAD_H_
-#define CHROME_BROWSER_CRASH_UPLOAD_LIST_CRASH_UPLOAD_LIST_CRASHPAD_H_
+#ifndef COMPONENTS_CRASH_CORE_BROWSER_CRASH_UPLOAD_LIST_CRASHPAD_H_
+#define COMPONENTS_CRASH_CORE_BROWSER_CRASH_UPLOAD_LIST_CRASHPAD_H_
 
 #include "base/macros.h"
 #include "components/upload_list/upload_list.h"
@@ -25,7 +25,8 @@ class CrashUploadListCrashpad : public UploadList {
   void ClearUploadList(const base::Time& begin, const base::Time& end) override;
   void RequestSingleUpload(const std::string& local_id) override;
 
-  DISALLOW_COPY_AND_ASSIGN(CrashUploadListCrashpad);
+  CrashUploadListCrashpad(const CrashUploadListCrashpad&) = delete;
+  CrashUploadListCrashpad& operator=(const CrashUploadListCrashpad&) = delete;
 };
 
-#endif  // CHROME_BROWSER_CRASH_UPLOAD_LIST_CRASH_UPLOAD_LIST_CRASHPAD_H_
+#endif  // COMPONENTS_CRASH_CORE_BROWSER_CRASH_UPLOAD_LIST_CRASHPAD_H_
