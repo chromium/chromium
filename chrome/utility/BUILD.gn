@@ -123,27 +123,10 @@ static_library("utility") {
   }
 
   if (enable_extensions) {
-    sources += [
-      "image_writer/error_message_strings.cc",
-      "image_writer/error_message_strings.h",
-      "image_writer/image_writer.cc",
-      "image_writer/image_writer.h",
-      "image_writer/image_writer_handler.cc",
-      "image_writer/image_writer_handler.h",
-    ]
-    if (is_mac) {
-      sources += [
-        "image_writer/disk_unmounter_mac.cc",
-        "image_writer/disk_unmounter_mac.h",
-        "image_writer/image_writer_mac.cc",
-      ]
-    } else if (is_win) {
-      sources += [ "image_writer/image_writer_win.cc" ]
-    }
-
     deps += [
       "//chrome/common/extensions/api",
       "//chrome/services/removable_storage_writer:lib",
+      "//chrome/utility/image_writer",
     ]
 
     public_deps += [
@@ -165,8 +148,6 @@ static_library("utility") {
 
     if (is_win || is_mac) {
       deps += [ "//components/wifi" ]
-    } else {
-      sources += [ "image_writer/image_writer_stub.cc" ]
     }
   }
 

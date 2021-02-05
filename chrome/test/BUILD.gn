@@ -5486,7 +5486,6 @@ test("unit_tests") {
       "../renderer/extensions/i18n_hooks_delegate_unittest.cc",
       "../renderer/extensions/renderer_permissions_policy_delegate_unittest.cc",
       "../renderer/extensions/tabs_hooks_delegate_unittest.cc",
-      "../utility/image_writer/image_writer_unittest.cc",
     ]
 
     if (is_mac) {
@@ -5520,6 +5519,7 @@ test("unit_tests") {
       "//chrome/browser/web_applications:web_applications_unit_tests",
       "//chrome/browser/web_applications/extensions:unit_tests",
       "//chrome/common/extensions/api",
+      "//chrome/utility/image_writer:unit_tests",
       "//components/enterprise:test_support",
       "//components/safe_browsing:buildflags",
       "//components/services/unzip:in_process",
