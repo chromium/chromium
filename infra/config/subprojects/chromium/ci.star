@@ -2800,6 +2800,8 @@ ci.fuzz_libfuzzer_builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 3,
     ),
+    # crbug.com/1175182: Temporarily increase timeout
+    execution_timeout = 4 * time.hour,
 )
 
 ci.fyi_builder(
