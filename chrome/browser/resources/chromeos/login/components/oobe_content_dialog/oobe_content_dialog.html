@@ -57,6 +57,9 @@
         height: var(--oobe-adaptive-dialog-height);
         width: var(--oobe-adaptive-dialog-width);
         @apply --oobe-default-font;
+        --oobe-adaptive-dialog-content-width: calc(
+            var(--oobe-adaptive-dialog-width) -
+            2 * var(--oobe-adaptive-dialog-content-padding));
       }
 
       :host-context([orientation=vertical]) {

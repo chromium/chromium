@@ -224,10 +224,6 @@ Polymer({
     }
   },
 
-  onBeforeShow() {
-    this.$.gaiaDialog.onBeforeShow();
-  },
-
   show() {
     this.getFrame().focus();
   },

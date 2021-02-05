@@ -9,6 +9,7 @@
 <link rel="import" href="/components/common_styles.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
 <link rel="import" href="/components/oobe_dialog.html">
+<link rel="import" href="/components/oobe_content_dialog.html">
 
 <!--
   Element which handles Gaia webview. Including action buttons, back button
@@ -25,6 +26,40 @@
 <dom-module id="gaia-dialog">
   <template>
     <style include="oobe-dialog-host cr-shared-style">
+      /* -- WebviewScrollShadowsHelper --
+       * Variables that are used for displaying scroll shadows.
+       **/
+      :host {
+        --scroll-shadow-common: {
+          content: '';
+          height: 100%;
+          opacity: 0.3;
+          pointer-events: none;
+          position: absolute;
+          width: 100%;
+        };
+
+        --scroll-shadow-bottom: {
+          @apply --scroll-shadow-common;
+          background: linear-gradient(0deg, var(--google-grey-400) 0,
+                                            transparent 8px);
+        };
+
+        --scroll-shadow-top-and-bottom: {
+          @apply --scroll-shadow-common;
+          background: linear-gradient(0deg,   var(--google-grey-400) 0,
+                                              transparent 8px),
+                      linear-gradient(180deg, var(--google-grey-400) 0,
+                                              transparent 8px);
+        };
+
+        --scroll-shadow-top: {
+          @apply --scroll-shadow-common;
+          background: linear-gradient(180deg, var(--google-grey-400) 0,
+                                            transparent 8px);
+        };
+      }
+
       #saml-close-button {
         --cr-icon-button-margin-end: 0;
         --cr-icon-button-margin-start: 0;
@@ -55,6 +90,10 @@
          * border-top-right-radius: 4px; */
         display: flex;
         overflow: hidden;
+        /* Position relative is needed for proper size calculation of
+         * ::before element which is responsible for scrolling shadow.
+         **/
+        position: relative;
       }
 
       #signin-frame-container {
@@ -63,22 +102,22 @@
 
       /* WebviewScrollShadowsHelper */
       #signin-frame-container:not([hideshadows]) #signin-frame.can-scroll:not(.is-scrolled):not(.scrolled-to-bottom)::before {
-        @apply --oobe-scroll-shadow-bottom;
+        @apply --scroll-shadow-bottom;
       }
       #signin-frame-container:not([hideshadows]) #signin-frame.can-scroll.is-scrolled:not(.scrolled-to-bottom)::before {
-        @apply --oobe-scroll-shadow-top-and-bottom;
+        @apply --scroll-shadow-top-and-bottom;
       }
       #signin-frame-container:not([hideshadows]) #signin-frame.is-scrolled.scrolled-to-bottom::before {
-        @apply --oobe-scroll-shadow-top;
+        @apply --scroll-shadow-top;
       }
     </style>
     <link rel="stylesheet" href="oobe_popup_overlay.css">
     <!-- As this dialog have pre-loading logic that require access to elements,
          dialog is marked as no-lazy. -->
-    <oobe-dialog role="dialog" id="gaiaDialog"
+    <oobe-content-dialog role="dialog" id="gaiaDialog"
         has-buttons$="[[!isSamlSsoVisible]]"
-        no-header no-footer-padding no-lazy>
-      <div slot="footer" id="signin-frame-container"
+        no-footer-padding no-lazy>
+      <div slot="content" id="signin-frame-container"
           hideshadows$="[[isPopUpOverlayVisible_]]"
           class="flex layout vertical">
         <div id="saml-notice-container" class="layout horizontal center"
@@ -125,7 +164,7 @@
           <div slot="text">[[primaryActionButtonLabel_]]</div>
         </oobe-text-button>
       </div>
-    </oobe-dialog>
+    </oobe-content-dialog>
     <div class="popup-overlay"
         hidden="[[!isPopUpOverlayVisible_]]">
     </div>
