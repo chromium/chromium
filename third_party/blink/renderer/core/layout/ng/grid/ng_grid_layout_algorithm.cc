@@ -33,10 +33,9 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
 
   NGGridLayoutAlgorithmTrackCollection column_track_collection;
   NGGridLayoutAlgorithmTrackCollection row_track_collection;
-  NGGridPlacement grid_placement(
-      Style(),
-      ComputeAutomaticRepetitions(kForColumns, LengthResolvePhase::kLayout),
-      ComputeAutomaticRepetitions(kForRows, LengthResolvePhase::kLayout));
+  NGGridPlacement grid_placement(Style(),
+                                 ComputeAutomaticRepetitions(kForColumns),
+                                 ComputeAutomaticRepetitions(kForRows));
 
   BuildAlgorithmTrackCollections(&grid_items, &column_track_collection,
                                  &row_track_collection, &grid_placement);
@@ -102,10 +101,9 @@ MinMaxSizesResult NGGridLayoutAlgorithm::ComputeMinMaxSizes(
 
   NGGridLayoutAlgorithmTrackCollection column_track_collection_for_min_size;
   NGGridLayoutAlgorithmTrackCollection row_track_collection;
-  NGGridPlacement grid_placement(
-      Style(),
-      ComputeAutomaticRepetitions(kForColumns, LengthResolvePhase::kIntrinsic),
-      ComputeAutomaticRepetitions(kForRows, LengthResolvePhase::kIntrinsic));
+  NGGridPlacement grid_placement(Style(),
+                                 ComputeAutomaticRepetitions(kForColumns),
+                                 ComputeAutomaticRepetitions(kForRows));
 
   BuildAlgorithmTrackCollections(&grid_items,
                                  &column_track_collection_for_min_size,
@@ -479,11 +477,11 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
 
               contribution = ResolveMinInlineLength(
                   space, item_style, border_padding, MinMaxSizesFunc,
-                  item_style.LogicalMinWidth(), LengthResolvePhase::kLayout);
+                  item_style.LogicalMinWidth());
             } else {
-              contribution = ResolveMinBlockLength(
-                  space, item_style, border_padding,
-                  item_style.LogicalMinHeight(), LengthResolvePhase::kLayout);
+              contribution =
+                  ResolveMinBlockLength(space, item_style, border_padding,
+                                        item_style.LogicalMinHeight());
             }
             break;
           }
@@ -560,8 +558,7 @@ void NGGridLayoutAlgorithm::ConstructAndAppendGridItems(
 
 // https://drafts.csswg.org/css-grid-2/#auto-repeat
 wtf_size_t NGGridLayoutAlgorithm::ComputeAutomaticRepetitions(
-    GridTrackSizingDirection track_direction,
-    LengthResolvePhase phase) const {
+    GridTrackSizingDirection track_direction) const {
   const NGGridTrackList& track_list =
       (track_direction == kForColumns)
           ? Style().GridTemplateColumns().NGTrackList()
@@ -592,23 +589,23 @@ wtf_size_t NGGridLayoutAlgorithm::ComputeAutomaticRepetitions(
 
       // A style of "min-width: min-content" isn't resolvable in the intrinsic
       // phase as it'd be a circular definition.
-      if (min_length.IsAuto() || InlineLengthUnresolvable(min_length, phase) ||
-          (phase == LengthResolvePhase::kIntrinsic &&
-           min_length.IsContentOrIntrinsic())) {
+      if (min_length.IsAuto() ||
+          InlineLengthUnresolvable(ConstraintSpace(), min_length) ||
+          min_length.IsContentOrIntrinsic()) {
         return 1;
       }
       available_size = ResolveMinInlineLength(
           ConstraintSpace(), Style(), container_builder_.BorderPadding(),
-          base::Optional<MinMaxSizes>(), min_length, phase);
+          base::Optional<MinMaxSizes>(), min_length);
     } else {
       const Length& min_length = Style().LogicalMinHeight();
 
-      if (BlockLengthUnresolvable(ConstraintSpace(), min_length, phase))
+      if (BlockLengthUnresolvable(ConstraintSpace(), min_length))
         return 1;
 
-      available_size = ResolveMinBlockLength(ConstraintSpace(), Style(),
-                                             container_builder_.BorderPadding(),
-                                             min_length, phase);
+      available_size =
+          ResolveMinBlockLength(ConstraintSpace(), Style(),
+                                container_builder_.BorderPadding(), min_length);
     }
   }
 
@@ -862,15 +859,13 @@ void NGGridLayoutAlgorithm::BuildAlgorithmTrackCollections(
                              &row_block_track_collection, grid_placement);
 
   // Build algorithm track collections from the block track collections.
-  DCHECK_NE(child_percentage_size_.inline_size, kIndefiniteSize);
   *column_track_collection = NGGridLayoutAlgorithmTrackCollection(
       column_block_track_collection,
-      /* is_content_box_size_indefinite */ false);
+      child_percentage_size_.inline_size == kIndefiniteSize);
 
-  bool is_content_box_block_size_indefinite =
-      child_percentage_size_.block_size == kIndefiniteSize;
   *row_track_collection = NGGridLayoutAlgorithmTrackCollection(
-      row_block_track_collection, is_content_box_block_size_indefinite);
+      row_block_track_collection,
+      child_percentage_size_.block_size == kIndefiniteSize);
 }
 
 void NGGridLayoutAlgorithm::SetSpecifiedTracks(

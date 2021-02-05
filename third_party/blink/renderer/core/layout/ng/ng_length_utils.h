@@ -27,11 +27,6 @@ class NGConstraintSpace;
 class NGBlockNode;
 class NGLayoutInputNode;
 
-// LengthResolvePhase indicates what type of layout pass we are currently in.
-// This changes how lengths are resolved. kIntrinsic must be used during the
-// intrinsic sizes pass, and kLayout must be used during the layout pass.
-enum class LengthResolvePhase { kIntrinsic, kLayout };
-
 inline bool NeedMinMaxSize(const ComputedStyle& style) {
   return style.LogicalWidth().IsContentOrIntrinsic() ||
          style.LogicalMinWidth().IsContentOrIntrinsic() ||
@@ -50,14 +45,14 @@ LayoutUnit BlockSizeFromAspectRatio(const NGBoxStrut& border_padding,
                                     LayoutUnit inline_size);
 
 // Returns if the given |Length| is unresolvable, e.g. the length is %-based
-// during the intrinsic phase. For block lengths we also consider 'auto',
-// 'min-content', 'max-content', 'fit-content' and 'none' (for max-block-size)
-// as unresolvable.
-CORE_EXPORT bool InlineLengthUnresolvable(const Length&, LengthResolvePhase);
+// and resolving against an indefinite size. For block lengths we also consider
+// 'auto', 'min-content', 'max-content', 'fit-content' and 'none' (for
+// max-block-size) as unresolvable.
+CORE_EXPORT bool InlineLengthUnresolvable(const NGConstraintSpace&,
+                                          const Length&);
 CORE_EXPORT bool BlockLengthUnresolvable(
     const NGConstraintSpace&,
     const Length&,
-    LengthResolvePhase,
     const LayoutUnit* opt_percentage_resolution_block_size_for_min_max =
         nullptr);
 
@@ -94,9 +89,9 @@ inline LayoutUnit ResolveMinInlineLength(
     const ComputedStyle& style,
     const NGBoxStrut& border_padding,
     const MinMaxSizesFunc& min_max_sizes_func,
-    const Length& length,
-    LengthResolvePhase phase) {
-  if (LIKELY(length.IsAuto() || InlineLengthUnresolvable(length, phase)))
+    const Length& length) {
+  if (LIKELY(length.IsAuto() ||
+             InlineLengthUnresolvable(constraint_space, length)))
     return border_padding.InlineSum();
 
   base::Optional<MinMaxSizes> min_max_sizes;
@@ -117,9 +112,9 @@ inline LayoutUnit ResolveMinInlineLength<base::Optional<MinMaxSizes>>(
     const ComputedStyle& style,
     const NGBoxStrut& border_padding,
     const base::Optional<MinMaxSizes>& min_max_sizes,
-    const Length& length,
-    LengthResolvePhase phase) {
-  if (LIKELY(length.IsAuto() || InlineLengthUnresolvable(length, phase)))
+    const Length& length) {
+  if (LIKELY(length.IsAuto() ||
+             InlineLengthUnresolvable(constraint_space, length)))
     return border_padding.InlineSum();
 
   return ResolveInlineLengthInternal(constraint_space, style, border_padding,
@@ -133,9 +128,9 @@ inline LayoutUnit ResolveMaxInlineLength(
     const ComputedStyle& style,
     const NGBoxStrut& border_padding,
     const MinMaxSizesFunc& min_max_sizes_func,
-    const Length& length,
-    LengthResolvePhase phase) {
-  if (LIKELY(length.IsNone() || InlineLengthUnresolvable(length, phase)))
+    const Length& length) {
+  if (LIKELY(length.IsNone() ||
+             InlineLengthUnresolvable(constraint_space, length)))
     return LayoutUnit::Max();
 
   base::Optional<MinMaxSizes> min_max_sizes;
@@ -156,9 +151,9 @@ inline LayoutUnit ResolveMaxInlineLength<base::Optional<MinMaxSizes>>(
     const ComputedStyle& style,
     const NGBoxStrut& border_padding,
     const base::Optional<MinMaxSizes>& min_max_sizes,
-    const Length& length,
-    LengthResolvePhase phase) {
-  if (LIKELY(length.IsNone() || InlineLengthUnresolvable(length, phase)))
+    const Length& length) {
+  if (LIKELY(length.IsNone() ||
+             InlineLengthUnresolvable(constraint_space, length)))
     return LayoutUnit::Max();
 
   return ResolveInlineLengthInternal(constraint_space, style, border_padding,
@@ -204,12 +199,11 @@ inline LayoutUnit ResolveMinBlockLength(
     const ComputedStyle& style,
     const NGBoxStrut& border_padding,
     const Length& length,
-    LengthResolvePhase phase,
     LayoutUnit available_block_size_adjustment = LayoutUnit(),
     const LayoutUnit* opt_percentage_resolution_block_size_for_min_max =
         nullptr) {
   if (LIKELY(BlockLengthUnresolvable(
-          constraint_space, length, phase,
+          constraint_space, length,
           opt_percentage_resolution_block_size_for_min_max)))
     return border_padding.BlockSum();
 
@@ -225,12 +219,11 @@ inline LayoutUnit ResolveMaxBlockLength(
     const ComputedStyle& style,
     const NGBoxStrut& border_padding,
     const Length& length,
-    LengthResolvePhase phase,
     LayoutUnit available_block_size_adjustment = LayoutUnit(),
     const LayoutUnit* opt_percentage_resolution_block_size_for_min_max =
         nullptr) {
   if (LIKELY(BlockLengthUnresolvable(
-          constraint_space, length, phase,
+          constraint_space, length,
           opt_percentage_resolution_block_size_for_min_max)))
     return LayoutUnit::Max();
 
@@ -247,14 +240,13 @@ inline LayoutUnit ResolveMainBlockLength(
     const NGBoxStrut& border_padding,
     const Length& length,
     LayoutUnit intrinsic_size,
-    LengthResolvePhase phase,
     LayoutUnit available_block_size_adjustment = LayoutUnit(),
     const LayoutUnit* opt_percentage_resolution_block_size_for_min_max =
         nullptr) {
   DCHECK(!length.IsAuto());
   if (UNLIKELY((length.IsPercentOrCalc() || length.IsFillAvailable()) &&
                BlockLengthUnresolvable(
-                   constraint_space, length, phase,
+                   constraint_space, length,
                    opt_percentage_resolution_block_size_for_min_max)))
     return intrinsic_size;
 
@@ -271,14 +263,13 @@ inline LayoutUnit ResolveMainBlockLength(
     const NGBoxStrut& border_padding,
     const Length& length,
     const IntrinsicBlockSizeFunc& intrinsic_block_size_func,
-    LengthResolvePhase phase,
     LayoutUnit available_block_size_adjustment = LayoutUnit(),
     const LayoutUnit* opt_percentage_resolution_block_size_for_min_max =
         nullptr) {
   DCHECK(!length.IsAuto());
   if (UNLIKELY((length.IsPercentOrCalc() || length.IsFillAvailable()) &&
                BlockLengthUnresolvable(
-                   constraint_space, length, phase,
+                   constraint_space, length,
                    opt_percentage_resolution_block_size_for_min_max)))
     return intrinsic_block_size_func();
 
@@ -350,8 +341,7 @@ MinMaxSizes ComputeTransferredMinMaxInlineSizes(
 MinMaxSizes ComputeMinMaxInlineSizesFromAspectRatio(
     const NGConstraintSpace&,
     const ComputedStyle&,
-    const NGBoxStrut& border_padding,
-    LengthResolvePhase);
+    const NGBoxStrut& border_padding);
 
 // Tries to compute the inline size of a node from its block size and
 // aspect ratio. If there is no aspect ratio or the block size is indefinite,
@@ -514,6 +504,7 @@ inline NGLineBoxStrut ComputeLineMarginsForVisualContainer(
 }
 
 // Compute margins for a child during the min-max size calculation.
+// TODO(ikilpatrick): Replace this function with ComputeMarginsFor.
 CORE_EXPORT NGBoxStrut ComputeMinMaxMargins(const ComputedStyle& parent_style,
                                             NGLayoutInputNode child);
 

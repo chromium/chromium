@@ -47,11 +47,8 @@ class NGGridLayoutAlgorithmTest
     algorithm.ConstructAndAppendGridItems(&grid_items_, &out_of_flow_items_);
 
     NGGridPlacement grid_placement(
-        algorithm.Style(),
-        algorithm.ComputeAutomaticRepetitions(kForColumns,
-                                              LengthResolvePhase::kLayout),
-        algorithm.ComputeAutomaticRepetitions(kForRows,
-                                              LengthResolvePhase::kLayout));
+        algorithm.Style(), algorithm.ComputeAutomaticRepetitions(kForColumns),
+        algorithm.ComputeAutomaticRepetitions(kForRows));
 
     algorithm.BuildAlgorithmTrackCollections(
         &grid_items_, &column_track_collection_, &row_track_collection_,

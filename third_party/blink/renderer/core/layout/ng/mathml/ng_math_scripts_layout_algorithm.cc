@@ -423,9 +423,9 @@ MinMaxSizesResult NGMathScriptsLayoutAlgorithm::ComputeMinMaxSizes(
   MinMaxSizes sizes;
   bool depends_on_percentage_block_size = false;
 
-  ChildAndMetrics base_metrics = LayoutAndGetMetrics(base);
-  LayoutUnit base_italic_correction = std::min(
-      base_metrics.inline_size, base_metrics.result->MathItalicCorrection());
+  // TODO(layout-dev): Determine the italic-correction without calling layout
+  // within ComputeMinMaxSizes, (or setup in an interoperable constraint-space).
+  LayoutUnit base_italic_correction;
   MinMaxSizesResult base_result =
       ComputeMinAndMaxContentContribution(Style(), base, child_input);
   base_result.sizes += ComputeMinMaxMargins(Style(), base).InlineSum();

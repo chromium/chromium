@@ -387,19 +387,18 @@ void ComputeOutOfFlowInlineDimensions(
     min_inline_length = Length::MinIntrinsic();
     min_size_minmax = minmax_intrinsic_sizes_for_ar;
   }
-  LayoutUnit min_inline_size =
-      ResolveMinInlineLength(space, style, border_padding, min_size_minmax,
-                             min_inline_length, LengthResolvePhase::kLayout);
-  LayoutUnit max_inline_size = ResolveMaxInlineLength(
-      space, style, border_padding, minmax_content_sizes,
-      style.LogicalMaxWidth(), LengthResolvePhase::kLayout);
+  LayoutUnit min_inline_size = ResolveMinInlineLength(
+      space, style, border_padding, min_size_minmax, min_inline_length);
+  LayoutUnit max_inline_size =
+      ResolveMaxInlineLength(space, style, border_padding, minmax_content_sizes,
+                             style.LogicalMaxWidth());
 
   // This implements the transferred min/max sizes per
   // https://drafts.csswg.org/css-sizing-4/#aspect-ratio
   if (!style.AspectRatio().IsAuto() &&
       dimensions->size.block_size == kIndefiniteSize) {
-    MinMaxSizes sizes = ComputeMinMaxInlineSizesFromAspectRatio(
-        space, style, border_padding, LengthResolvePhase::kLayout);
+    MinMaxSizes sizes =
+        ComputeMinMaxInlineSizesFromAspectRatio(space, style, border_padding);
     min_inline_size = std::max(sizes.min_size, min_inline_size);
     max_inline_size = std::min(sizes.max_size, max_inline_size);
   }
@@ -465,11 +464,9 @@ void ComputeOutOfFlowBlockDimensions(
       child_block_size.value_or(kIndefiniteSize);
 
   LayoutUnit min_block_size = ResolveMinBlockLength(
-      space, style, border_padding, style.LogicalMinHeight(),
-      LengthResolvePhase::kLayout);
+      space, style, border_padding, style.LogicalMinHeight());
   LayoutUnit max_block_size = ResolveMaxBlockLength(
-      space, style, border_padding, style.LogicalMaxHeight(),
-      LengthResolvePhase::kLayout);
+      space, style, border_padding, style.LogicalMaxHeight());
 
   // Tables are never allowed to go below their "auto" block-size.
   const bool is_table = node.IsTable();
@@ -478,9 +475,9 @@ void ComputeOutOfFlowBlockDimensions(
 
   base::Optional<LayoutUnit> block_size;
   if (!style.LogicalHeight().IsAuto()) {
-    block_size = ResolveMainBlockLength(
-        space, style, border_padding, style.LogicalHeight(),
-        child_block_size_or_indefinite, LengthResolvePhase::kLayout);
+    block_size = ResolveMainBlockLength(space, style, border_padding,
+                                        style.LogicalHeight(),
+                                        child_block_size_or_indefinite);
   } else if (replaced_size.has_value()) {
     block_size = replaced_size->block_size;
   }

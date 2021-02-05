@@ -199,8 +199,7 @@ bool NGFlexLayoutAlgorithm::IsItemFlexBasisDefinite(
          "support.";
   if (!is_column_)
     return true;
-  return !BlockLengthUnresolvable(BuildSpaceForFlexBasis(child), flex_basis,
-                                  LengthResolvePhase::kLayout);
+  return !BlockLengthUnresolvable(BuildSpaceForFlexBasis(child), flex_basis);
 }
 
 // This behavior is under discussion: the item's pre-flexing main size
@@ -222,8 +221,7 @@ bool NGFlexLayoutAlgorithm::IsItemMainSizeDefinite(
   // space for flex-basis is sufficient, even though it has some unnecessary
   // stuff (ShrinkToFit and fixed cross sizes).
   return !BlockLengthUnresolvable(BuildSpaceForFlexBasis(child),
-                                  child.Style().LogicalHeight(),
-                                  LengthResolvePhase::kLayout);
+                                  child.Style().LogicalHeight());
 }
 
 bool NGFlexLayoutAlgorithm::IsItemCrossAxisLengthDefinite(
@@ -237,8 +235,7 @@ bool NGFlexLayoutAlgorithm::IsItemCrossAxisLengthDefinite(
   if (!MainAxisIsInlineAxis(child))
     return true;
   // If we get here, cross axis is block axis.
-  return !BlockLengthUnresolvable(BuildSpaceForFlexBasis(child), length,
-                                  LengthResolvePhase::kLayout);
+  return !BlockLengthUnresolvable(BuildSpaceForFlexBasis(child), length);
 }
 
 bool NGFlexLayoutAlgorithm::DoesItemCrossSizeComputeToAuto(
@@ -582,26 +579,23 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
     if (MainAxisIsInlineAxis(child)) {
       min_max_sizes_in_main_axis_direction.max_size = ResolveMaxInlineLength(
           flex_basis_space, child_style, border_padding_in_child_writing_mode,
-          MinMaxSizesFunc, max_property_in_main_axis,
-          LengthResolvePhase::kLayout);
+          MinMaxSizesFunc, max_property_in_main_axis);
       min_max_sizes_in_cross_axis_direction.max_size = ResolveMaxBlockLength(
           flex_basis_space, child_style, border_padding_in_child_writing_mode,
-          max_property_in_cross_axis, LengthResolvePhase::kLayout);
+          max_property_in_cross_axis);
       min_max_sizes_in_cross_axis_direction.min_size = ResolveMinBlockLength(
           flex_basis_space, child_style, border_padding_in_child_writing_mode,
-          min_property_in_cross_axis, LengthResolvePhase::kLayout);
+          min_property_in_cross_axis);
     } else {
       min_max_sizes_in_main_axis_direction.max_size = ResolveMaxBlockLength(
           flex_basis_space, child_style, border_padding_in_child_writing_mode,
-          max_property_in_main_axis, LengthResolvePhase::kLayout);
+          max_property_in_main_axis);
       min_max_sizes_in_cross_axis_direction.max_size = ResolveMaxInlineLength(
           flex_basis_space, child_style, border_padding_in_child_writing_mode,
-          MinMaxSizesFunc, max_property_in_cross_axis,
-          LengthResolvePhase::kLayout);
+          MinMaxSizesFunc, max_property_in_cross_axis);
       min_max_sizes_in_cross_axis_direction.min_size = ResolveMinInlineLength(
           flex_basis_space, child_style, border_padding_in_child_writing_mode,
-          MinMaxSizesFunc, min_property_in_cross_axis,
-          LengthResolvePhase::kLayout);
+          MinMaxSizesFunc, min_property_in_cross_axis);
     }
 
     base::Optional<LayoutUnit> calculated_intrinsic_block_size;
@@ -664,10 +658,10 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
           cross_size = CalculateFixedCrossSize(
               min_max_sizes_in_cross_axis_direction, margins);
         } else if (MainAxisIsInlineAxis(child)) {
-          cross_size = ResolveMainBlockLength(
-              flex_basis_space, child_style,
-              border_padding_in_child_writing_mode, cross_axis_length,
-              kIndefiniteSize, LengthResolvePhase::kLayout);
+          cross_size =
+              ResolveMainBlockLength(flex_basis_space, child_style,
+                                     border_padding_in_child_writing_mode,
+                                     cross_axis_length, kIndefiniteSize);
         } else {
           cross_size =
               ResolveMainInlineLength(flex_basis_space, child_style,
@@ -745,8 +739,7 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
         // flex basis is in child's block direction.
         flex_base_border_box = ResolveMainBlockLength(
             flex_basis_space, child_style, border_padding_in_child_writing_mode,
-            length_to_resolve, IntrinsicBlockSizeFunc,
-            LengthResolvePhase::kLayout);
+            length_to_resolve, IntrinsicBlockSizeFunc);
       }
     }
 
@@ -767,13 +760,11 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
             RuntimeEnabledFeatures::FlexAspectRatioEnabled()) {
           base::Optional<LayoutUnit> definite_block_size;
           if (!BlockLengthUnresolvable(flex_basis_space,
-                                       child_style.LogicalHeight(),
-                                       LengthResolvePhase::kLayout)) {
+                                       child_style.LogicalHeight())) {
             definite_block_size = ResolveMainBlockLength(
                 flex_basis_space, child_style,
                 border_padding_in_child_writing_mode,
-                child_style.LogicalHeight(), IntrinsicBlockSizeFunc,
-                LengthResolvePhase::kLayout);
+                child_style.LogicalHeight(), IntrinsicBlockSizeFunc);
           }
 
           content_size_suggestion =
@@ -841,12 +832,10 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
               specified_length_in_main_axis);
         }
       } else if (!BlockLengthUnresolvable(flex_basis_space,
-                                          specified_length_in_main_axis,
-                                          LengthResolvePhase::kLayout)) {
+                                          specified_length_in_main_axis)) {
         specified_size_suggestion = ResolveMainBlockLength(
             flex_basis_space, child_style, border_padding_in_child_writing_mode,
-            specified_length_in_main_axis, IntrinsicBlockSizeFunc,
-            LengthResolvePhase::kLayout);
+            specified_length_in_main_axis, IntrinsicBlockSizeFunc);
         DCHECK_NE(specified_size_suggestion, kIndefiniteSize);
       }
 
@@ -860,10 +849,10 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
           // This entire IsItemCrossAxisLengthDefinite block may be unnecessary
           // after enabling RuntimeEnabledFeatures::FlexAspectRatioEnabled().
           if (MainAxisIsInlineAxis(child)) {
-            cross_axis_size = ResolveMainBlockLength(
-                flex_basis_space, child_style,
-                border_padding_in_child_writing_mode, cross_axis_length,
-                kIndefiniteSize, LengthResolvePhase::kLayout);
+            cross_axis_size =
+                ResolveMainBlockLength(flex_basis_space, child_style,
+                                       border_padding_in_child_writing_mode,
+                                       cross_axis_length, kIndefiniteSize);
             DCHECK_NE(cross_axis_size, kIndefiniteSize);
           } else {
             cross_axis_size =
@@ -899,11 +888,11 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
     } else if (MainAxisIsInlineAxis(child)) {
       min_max_sizes_in_main_axis_direction.min_size = ResolveMinInlineLength(
           flex_basis_space, child_style, border_padding_in_child_writing_mode,
-          MinMaxSizesFunc, min, LengthResolvePhase::kLayout);
+          MinMaxSizesFunc, min);
     } else {
-      min_max_sizes_in_main_axis_direction.min_size = ResolveMinBlockLength(
-          flex_basis_space, child_style, border_padding_in_child_writing_mode,
-          min, LengthResolvePhase::kLayout);
+      min_max_sizes_in_main_axis_direction.min_size =
+          ResolveMinBlockLength(flex_basis_space, child_style,
+                                border_padding_in_child_writing_mode, min);
     }
     // Flex needs to never give a table a flexed main size that is less than its
     // min-content size, so floor min-width by min-content size.
@@ -1084,8 +1073,7 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
         // the |WillChildCrossSizeBeContainerCrossSize| calls below.
         if (cross_axis_length.IsAuto() ||
             (MainAxisIsInlineAxis(flex_item.ng_input_node_) &&
-             BlockLengthUnresolvable(flex_basis_space, cross_axis_length,
-                                     LengthResolvePhase::kLayout))) {
+             BlockLengthUnresolvable(flex_basis_space, cross_axis_length))) {
           fixed_aspect_ratio_cross_size =
               flex_item.min_max_cross_sizes_->ClampSizeToMinAndMax(
                   flex_item.cross_axis_border_padding_ +

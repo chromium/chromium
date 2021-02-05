@@ -328,9 +328,9 @@ NGBreakStatus NGFieldsetLayoutAlgorithm::LayoutFieldsetContent(
   // - The intrinsic block-size of the content is larger than the
   //   max-block-size.
   if (adjusted_padding_box_size.block_size == kIndefiniteSize) {
-    LayoutUnit max_content_block_size = ResolveMaxBlockLength(
-        ConstraintSpace(), Style(), BorderPadding(), Style().LogicalMaxHeight(),
-        LengthResolvePhase::kLayout);
+    LayoutUnit max_content_block_size =
+        ResolveMaxBlockLength(ConstraintSpace(), Style(), BorderPadding(),
+                              Style().LogicalMaxHeight());
     if (max_content_block_size != LayoutUnit::Max()) {
       max_content_block_size -= BorderPadding().BlockSum();
 

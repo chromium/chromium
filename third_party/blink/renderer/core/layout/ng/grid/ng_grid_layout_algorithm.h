@@ -143,8 +143,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       GridItemContributionType contribution_type) const;
 
   wtf_size_t ComputeAutomaticRepetitions(
-      GridTrackSizingDirection track_direction,
-      LengthResolvePhase phase) const;
+      GridTrackSizingDirection track_direction) const;
 
   void ConstructAndAppendGridItems(
       Vector<GridItemData>* grid_items,

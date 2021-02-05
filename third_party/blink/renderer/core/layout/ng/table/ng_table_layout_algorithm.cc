@@ -546,8 +546,7 @@ void NGTableLayoutAlgorithm::ComputeRows(
   // sections/rows into this space. Pass a definite intrinsic block-size into
   // |ComputeBlockSizeForFragment| to force it to resolve.
   const LayoutUnit intrinsic_block_size =
-      BlockLengthUnresolvable(ConstraintSpace(), Style().LogicalMinHeight(),
-                              LengthResolvePhase::kLayout)
+      BlockLengthUnresolvable(ConstraintSpace(), Style().LogicalMinHeight())
           ? kIndefiniteSize
           : table_border_padding.BlockSum();
 

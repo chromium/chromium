@@ -902,8 +902,7 @@ scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::FinishLayout(
     //  - The block-size differs from the intrinsic size.
     //  - The parent has computed block-size != auto.
     if (border_box_size.block_size != intrinsic_block_size_ ||
-        !BlockLengthUnresolvable(ConstraintSpace(), Style().LogicalHeight(),
-                                 LengthResolvePhase::kLayout)) {
+        !BlockLengthUnresolvable(ConstraintSpace(), Style().LogicalHeight())) {
       end_margin_strut = NGMarginStrut();
     }
   }

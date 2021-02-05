@@ -96,9 +96,8 @@ class CORE_EXPORT NGConstraintSpace final {
     kRareDataPercentage
   };
 
-  // To ensure that the bfc_offset_, rare_data_ union doesn't get polluted,
-  // always initialize the bfc_offset_.
-  NGConstraintSpace() : bfc_offset_() {}
+  NGConstraintSpace()
+      : NGConstraintSpace({WritingMode::kHorizontalTb, TextDirection::kLtr}) {}
 
   NGConstraintSpace(const NGConstraintSpace& other)
       : available_size_(other.available_size_),
@@ -1377,8 +1376,12 @@ class CORE_EXPORT NGConstraintSpace final {
     unsigned replaced_percentage_block_storage : 2;   // NGPercentageStorage
   };
 
+  // To ensure that the bfc_offset_, rare_data_ union doesn't get polluted,
+  // always initialize the bfc_offset_.
   explicit NGConstraintSpace(WritingDirectionMode writing_direction)
-      : bfc_offset_(), bitfields_(writing_direction) {}
+      : available_size_(kIndefiniteSize, kIndefiniteSize),
+        bfc_offset_(),
+        bitfields_(writing_direction) {}
 
   inline bool HasRareData() const { return bitfields_.has_rare_data; }
 

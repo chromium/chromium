@@ -223,19 +223,21 @@ NGConstraintSpace CreateConstraintSpaceForMinMax(
   NGConstraintSpaceBuilder builder(node.Style().GetWritingMode(),
                                    node.Style().GetWritingDirection(),
                                    node.CreatesNewFormattingContext());
-  builder.SetAvailableSize(LogicalSize());
+  builder.SetAvailableSize({kIndefiniteSize, kIndefiniteSize});
   builder.SetPercentageResolutionSize(
-      {LayoutUnit(), input.percentage_resolution_block_size});
+      {kIndefiniteSize, input.percentage_resolution_block_size});
   return builder.ToConstraintSpace();
 }
 
 LayoutUnit CalculateAvailableInlineSizeForLegacy(
     const LayoutBox& box,
     const NGConstraintSpace& space) {
-  if (box.ShouldComputeSizeAsReplaced())
-    return space.ReplacedPercentageResolutionInlineSize();
+  if (box.ShouldComputeSizeAsReplaced()) {
+    return space.ReplacedPercentageResolutionInlineSize()
+        .ClampIndefiniteToZero();
+  }
 
-  return space.PercentageResolutionInlineSize();
+  return space.PercentageResolutionInlineSize().ClampIndefiniteToZero();
 }
 
 LayoutUnit CalculateAvailableBlockSizeForLegacy(
@@ -864,14 +866,12 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
       result.depends_on_percentage_block_size;
 
   if (!Style().AspectRatio().IsAuto() &&
-      BlockLengthUnresolvable(*constraint_space, Style().LogicalHeight(),
-                              LengthResolvePhase::kLayout)) {
+      BlockLengthUnresolvable(*constraint_space, Style().LogicalHeight())) {
     // If the block size will be computed from the aspect ratio, we need
     // to take the max-block-size into account.
     // https://drafts.csswg.org/css-sizing-4/#aspect-ratio
     MinMaxSizes min_max = ComputeMinMaxInlineSizesFromAspectRatio(
-        *constraint_space, Style(), border_padding,
-        LengthResolvePhase::kIntrinsic);
+        *constraint_space, Style(), border_padding);
     result.sizes.min_size = min_max.ClampSizeToMinAndMax(result.sizes.min_size);
     result.sizes.max_size = min_max.ClampSizeToMinAndMax(result.sizes.max_size);
     depends_on_percentage_block_size =
