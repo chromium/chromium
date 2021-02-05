@@ -132,7 +132,7 @@ struct FormFieldData {
   mojo_base.mojom.TextDirection text_direction;
   bool is_enabled;
   bool is_readonly;
-  mojo_base.mojom.String16 typed_value;
+  mojo_base.mojom.String16 user_input;
 
   array<mojo_base.mojom.String16> option_values;
   array<mojo_base.mojom.String16> option_contents;

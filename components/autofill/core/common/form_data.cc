@@ -145,7 +145,7 @@ bool FormData::IdentityComparator::operator()(const FormData& a,
 bool FormHasNonEmptyPasswordField(const FormData& form) {
   for (const auto& field : form.fields) {
     if (field.IsPasswordInputElement()) {
-      if (!field.value.empty() || !field.typed_value.empty())
+      if (!field.value.empty() || !field.user_input.empty())
         return true;
     }
   }

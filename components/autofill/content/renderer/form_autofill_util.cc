@@ -1851,15 +1851,15 @@ void WebFormControlElementToFormField(
   if (field_data_manager &&
       field->properties_mask & (FieldPropertiesFlags::kUserTyped |
                                 FieldPropertiesFlags::kAutofilled)) {
-    const base::string16 typed_value = field_data_manager->GetUserTypedValue(
+    const base::string16 user_input = field_data_manager->GetUserInput(
         FieldRendererId(element.UniqueRendererFormControlId()));
 
     // The typed value is preserved for all passwords. It is also preserved for
     // potential usernames, as long as the |value| is not deemed acceptable.
     if (field->form_control_type == "password" ||
-        !ScriptModifiedUsernameAcceptable(value, typed_value,
+        !ScriptModifiedUsernameAcceptable(value, user_input,
                                           field_data_manager)) {
-      field->typed_value = typed_value;
+      field->user_input = user_input;
     }
   }
 }

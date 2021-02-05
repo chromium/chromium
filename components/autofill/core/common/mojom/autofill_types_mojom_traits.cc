@@ -90,7 +90,7 @@ bool StructTraits<
 
   out->is_enabled = data.is_enabled();
   out->is_readonly = data.is_readonly();
-  if (!data.ReadTypedValue(&out->typed_value))
+  if (!data.ReadUserInput(&out->user_input))
     return false;
 
   if (!data.ReadOptionValues(&out->option_values))

@@ -20,7 +20,7 @@ bool FieldDataManager::HasFieldData(FieldRendererId id) const {
          field_value_and_properties_map_.end();
 }
 
-base::string16 FieldDataManager::GetUserTypedValue(FieldRendererId id) const {
+base::string16 FieldDataManager::GetUserInput(FieldRendererId id) const {
   DCHECK(HasFieldData(id));
   return field_value_and_properties_map_.at(id).first.value_or(
       base::string16());

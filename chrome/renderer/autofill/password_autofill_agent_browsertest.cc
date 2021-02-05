@@ -283,7 +283,7 @@ bool FormHasFieldWithValue(const autofill::FormData& form,
   for (const auto& field : form.fields) {
     if (field.value == value_16)
       return true;
-    if (field.typed_value == value_16)
+    if (field.user_input == value_16)
       return true;
   }
   return false;

@@ -71,7 +71,7 @@ struct FieldDataDescription {
       FieldPropertiesFlags::kNoFlags;
   const char* autocomplete_attribute = nullptr;
   const char* value = kNonimportantValue;
-  const char* typed_value = nullptr;
+  const char* user_input = nullptr;
   const char* name = kNonimportantValue;
   const char* form_control_type = "text";
   PasswordFieldPrediction prediction = {.type = autofill::MAX_VALID_FIELD_TYPE};
@@ -197,8 +197,8 @@ FormData GetFormDataAndExpectation(const FormParsingTestCase& test_case,
     }
     if (field_description.autocomplete_attribute)
       field.autocomplete_attribute = field_description.autocomplete_attribute;
-    if (field_description.typed_value)
-      field.typed_value = ASCIIToUTF16(field_description.typed_value);
+    if (field_description.user_input)
+      field.user_input = ASCIIToUTF16(field_description.user_input);
     form_data.fields.push_back(field);
     if (field_description.role == ElementRole::NONE) {
       UpdateResultWithIdByRole(fill_result, renderer_id,
@@ -273,7 +273,7 @@ void CheckField(const std::vector<FormFieldData>& fields,
 #endif
 
   base::string16 expected_value =
-      field_it->typed_value.empty() ? field_it->value : field_it->typed_value;
+      field_it->user_input.empty() ? field_it->value : field_it->user_input;
 
   if (element_value)
     EXPECT_EQ(expected_value, *element_value);
@@ -2499,17 +2499,17 @@ TEST(FormParserTest, TypedValues) {
                   {.role = ElementRole::USERNAME,
                    .autocomplete_attribute = "username",
                    .value = "js_username",
-                   .typed_value = "typed_username",
+                   .user_input = "typed_username",
                    .form_control_type = "text"},
                   {.role = ElementRole::CURRENT_PASSWORD,
                    .autocomplete_attribute = "current-password",
                    .value = "js_password",
-                   .typed_value = "typed_password",
+                   .user_input = "typed_password",
                    .form_control_type = "password"},
                   {.role = ElementRole::NEW_PASSWORD,
                    .autocomplete_attribute = "new-password",
                    .value = "js_new_password",
-                   .typed_value = "typed_new_password",
+                   .user_input = "typed_new_password",
                    .form_control_type = "password"},
               },
       },
@@ -2522,17 +2522,17 @@ TEST(FormParserTest, TypedValues) {
                   {.role = ElementRole::USERNAME,
                    .autocomplete_attribute = "username",
                    .value = "",
-                   .typed_value = "typed_username",
+                   .user_input = "typed_username",
                    .form_control_type = "text"},
                   {.role = ElementRole::CURRENT_PASSWORD,
                    .autocomplete_attribute = "current-password",
                    .value = "",
-                   .typed_value = "typed_password",
+                   .user_input = "typed_password",
                    .form_control_type = "password"},
                   {.role = ElementRole::NEW_PASSWORD,
                    .autocomplete_attribute = "new-password",
                    .value = "",
-                   .typed_value = "typed_new_password",
+                   .user_input = "typed_new_password",
                    .form_control_type = "password"},
               },
       },

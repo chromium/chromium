@@ -187,7 +187,7 @@ void ExpectFormFieldData(const FormFieldData& expected,
                          const FormFieldData& passed) {
   EXPECT_TRUE(EquivalentData(expected, passed));
   EXPECT_EQ(expected.value, passed.value);
-  EXPECT_EQ(expected.typed_value, passed.typed_value);
+  EXPECT_EQ(expected.user_input, passed.user_input);
   std::move(closure).Run();
 }
 
@@ -256,7 +256,7 @@ TEST_F(AutofillTypeTraitsTestImpl, PassFormFieldData) {
   input.role = FormFieldData::RoleAttribute::kPresentation;
   input.text_direction = base::i18n::RIGHT_TO_LEFT;
   input.properties_mask = FieldPropertiesFlags::kHadFocus;
-  input.typed_value = base::ASCIIToUTF16("TestTypedValue");
+  input.user_input = base::ASCIIToUTF16("TestTypedValue");
   input.bounds = gfx::RectF(1, 2, 10, 100);
 
   base::RunLoop loop;
@@ -286,7 +286,7 @@ TEST_F(AutofillTypeTraitsTestImpl, PassDataListFormFieldData) {
   input.role = FormFieldData::RoleAttribute::kPresentation;
   input.text_direction = base::i18n::RIGHT_TO_LEFT;
   input.properties_mask = FieldPropertiesFlags::kHadFocus;
-  input.typed_value = base::ASCIIToUTF16("TestTypedValue");
+  input.user_input = base::ASCIIToUTF16("TestTypedValue");
   input.bounds = gfx::RectF(1, 2, 10, 100);
 
   base::RunLoop loop;

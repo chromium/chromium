@@ -248,8 +248,8 @@ constexpr char kCommandPrefix[] = "passwordForm";
 - (void)extractKnownFieldData:(FormData&)form {
   for (auto& field : form.fields) {
     if (self.fieldDataManager->HasFieldData(field.unique_renderer_id)) {
-      field.typed_value =
-          self.fieldDataManager->GetUserTypedValue(field.unique_renderer_id);
+      field.user_input =
+          self.fieldDataManager->GetUserInput(field.unique_renderer_id);
       field.properties_mask = self.fieldDataManager->GetFieldPropertiesMask(
           field.unique_renderer_id);
     }

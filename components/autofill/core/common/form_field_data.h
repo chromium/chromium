@@ -173,7 +173,9 @@ struct FormFieldData {
   // serialised for storage.
   bool is_enabled = false;
   bool is_readonly = false;
-  base::string16 typed_value;
+  // Contains value that was either manually typed or autofilled on user
+  // trigger.
+  base::string16 user_input;
 
   // For the HTML snippet |<option value="US">United States</option>|, the
   // value is "US" and the contents are "United States".

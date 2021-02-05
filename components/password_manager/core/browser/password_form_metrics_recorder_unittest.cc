@@ -610,7 +610,7 @@ TEST(PasswordFormMetricsRecorder, FormChangeBitmapRecordedMultipleTimes) {
 
 struct TestCaseFieldInfo {
   std::string value;
-  std::string typed_value;
+  std::string user_input;
   bool user_typed = false;
   bool automatically_filled = false;
   bool manually_filled = false;
@@ -637,7 +637,7 @@ FormData ConvertToFormData(const std::vector<TestCaseFieldInfo>& fields) {
   for (const auto& field : fields) {
     FormFieldData form_field;
     form_field.value = ASCIIToUTF16(field.value);
-    form_field.typed_value = ASCIIToUTF16(field.typed_value);
+    form_field.user_input = ASCIIToUTF16(field.user_input);
 
     if (field.user_typed)
       form_field.properties_mask |= FieldPropertiesFlags::kUserTyped;
@@ -943,7 +943,7 @@ TEST(PasswordFormMetricsRecorder, FillingAssistanceUserTypedPassword) {
   CheckFillingAssistanceTestCase(
       {.description_for_logging = "The user typed into password field",
        .fields = {{.value = "user2", .automatically_filled = true},
-                  {.typed_value = "password2",
+                  {.user_input = "password2",
                    .user_typed = true,
                    .automatically_filled = true,
                    .is_password = true}},
@@ -958,7 +958,7 @@ TEST(PasswordFormMetricsRecorder, FillingAssistanceUserTypedUsername) {
   CheckFillingAssistanceTestCase(
       {.description_for_logging = "The user typed into password field",
        .fields = {{.value = "user2", .user_typed = true},
-                  {.typed_value = "password2",
+                  {.user_input = "password2",
                    .automatically_filled = true,
                    .is_password = true}},
        .saved_usernames = {"user1", "user2"},
@@ -975,7 +975,7 @@ TEST(PasswordFormMetricsRecorder, FillingAssistanceUserTypedNewCredentials) {
                       .value = "user2",
                       .automatically_filled = true,
                   },
-                  {.typed_value = "password3",
+                  {.user_input = "password3",
                    .user_typed = true,
                    .automatically_filled = true,
                    .is_password = true}},

@@ -579,7 +579,7 @@ void PasswordFormManager::UpdateObservedFormDataWithFieldDataManagerInfo(
     FieldRendererId field_id = field.unique_renderer_id;
     if (!field_data_manager->HasFieldData(field_id))
       continue;
-    field.typed_value = field_data_manager->GetUserTypedValue(field_id);
+    field.user_input = field_data_manager->GetUserInput(field_id);
     field.properties_mask =
         field_data_manager->GetFieldPropertiesMask(field_id);
   }

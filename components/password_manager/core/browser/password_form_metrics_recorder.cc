@@ -112,7 +112,7 @@ UsernamePasswordsState CalculateUsernamePasswordsState(
 
   for (const FormFieldData& field : submitted_form.fields) {
     const base::string16& value =
-        field.typed_value.empty() ? field.value : field.typed_value;
+        field.user_input.empty() ? field.value : field.user_input;
 
     bool user_typed = field.properties_mask & FieldPropertiesFlags::kUserTyped;
     bool manually_filled =
@@ -178,7 +178,7 @@ bool BlocklistedBySmartBubble(
       password_bubble_experiment::GetSmartBubbleDismissalThreshold();
   for (const FormFieldData& field : submitted_form.fields) {
     const base::string16& value =
-        field.typed_value.empty() ? field.value : field.typed_value;
+        field.user_input.empty() ? field.value : field.user_input;
     for (const InteractionsStats& stat : interactions_stats) {
       if (stat.username_value == value &&
           stat.dismissal_count >= show_threshold)

@@ -153,8 +153,8 @@ struct StructTraits<autofill::mojom::FormFieldDataDataView,
     return r.is_readonly;
   }
 
-  static const base::string16& typed_value(const autofill::FormFieldData& r) {
-    return r.typed_value;
+  static const base::string16& user_input(const autofill::FormFieldData& r) {
+    return r.user_input;
   }
 
   static const std::vector<base::string16>& option_values(

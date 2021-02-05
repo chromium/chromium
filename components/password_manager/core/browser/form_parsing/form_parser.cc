@@ -184,9 +184,9 @@ bool IsProbablyNotUsername(const base::string16& s) {
   return s.empty() || (s.size() < 3 && DoesStringContainOnlyDigits(s));
 }
 
-// Returns |typed_value| if it is not empty, |value| otherwise.
+// Returns |user_input| if it is not empty, |value| otherwise.
 const base::string16& GetFieldValue(const FormFieldData& field) {
-  return field.typed_value.empty() ? field.value : field.typed_value;
+  return field.user_input.empty() ? field.value : field.user_input;
 }
 
 // A helper struct that is used to capture significant fields to be used for

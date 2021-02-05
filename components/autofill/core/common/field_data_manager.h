@@ -38,7 +38,9 @@ class FieldDataManager : public base::RefCounted<FieldDataManager> {
   void UpdateFieldDataMapWithNullValue(FieldRendererId id,
                                        FieldPropertiesMask mask);
 
-  base::string16 GetUserTypedValue(FieldRendererId id) const;
+  // Returns value that was either typed or manually autofilled into the field.
+  base::string16 GetUserInput(FieldRendererId id) const;
+
   FieldPropertiesMask GetFieldPropertiesMask(FieldRendererId id) const;
 
   // Check if the string |value| is saved in |field_value_and_properties_map_|.

@@ -2079,12 +2079,12 @@ TEST_P(PasswordFormManagerTest, iOSUsingFieldDataManagerData) {
   form_manager_->UpdateObservedFormDataWithFieldDataManagerInfo(
       field_data_manager.get());
 
-  EXPECT_EQ(form_manager_->observed_form()->fields[1].typed_value,
+  EXPECT_EQ(form_manager_->observed_form()->fields[1].user_input,
             base::UTF8ToUTF16("typed_username"));
   EXPECT_EQ(form_manager_->observed_form()->fields[1].properties_mask,
             FieldPropertiesFlags::kUserTyped);
 
-  EXPECT_EQ(form_manager_->observed_form()->fields[2].typed_value,
+  EXPECT_EQ(form_manager_->observed_form()->fields[2].user_input,
             base::UTF8ToUTF16("autofilled_pw"));
   EXPECT_EQ(form_manager_->observed_form()->fields[2].properties_mask,
             FieldPropertiesFlags::kAutofilledOnUserTrigger);
