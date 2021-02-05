@@ -157,7 +157,6 @@ const char kUrlHandlerTitle[] = "title";
 const char kUsbPrinters[] = "usb_printers";
 const char kVersion[] = "version";
 const char kVersionName[] = "version_name";
-const char kWebAccessibleResources[] = "web_accessible_resources";
 const char kWebAppFileHandlers[] = "web_app_file_handlers";
 const char kWebAppFileHandlerAccept[] = "accept";
 const char kWebAppFileHandlerAction[] = "action";

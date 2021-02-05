@@ -20,6 +20,7 @@
 #include "extensions/browser/device_local_account_util.h"
 #include "extensions/common/api/incognito.h"
 #include "extensions/common/api/shared_module.h"
+#include "extensions/common/api/web_accessible_resources.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
@@ -33,6 +34,7 @@ namespace chromeos {
 namespace {
 
 namespace emk = extensions::manifest_keys;
+namespace ext_api = extensions::api;
 
 // List of manifest entries from https://developer.chrome.com/apps/manifest.
 // Unsafe entries are commented out and special cases too.
@@ -115,7 +117,7 @@ const char* const kSafeManifestEntries[] = {
     // emk::kEventRules,
 
     // Shared Modules configuration: Allow other extensions to access resources.
-    ::extensions::api::shared_module::ManifestKeys::kExport,
+    ext_api::shared_module::ManifestKeys::kExport,
 
     emk::kExternallyConnectable,
 
@@ -133,9 +135,9 @@ const char* const kSafeManifestEntries[] = {
     emk::kIcons,
 
     // Shared Modules configuration: Import resources from another extension.
-    ::extensions::api::shared_module::ManifestKeys::kImport,
+    ext_api::shared_module::ManifestKeys::kImport,
 
-    ::extensions::api::incognito::ManifestKeys::kIncognito,
+    ext_api::incognito::ManifestKeys::kIncognito,
 
     // Keylogging.
     // emk::kInputComponents,
@@ -187,7 +189,7 @@ const char* const kSafeManifestEntries[] = {
     // A bit risky as the extensions sees all keystrokes entered into the
     // omnibox after the search key matches, but generally we deem URLs fair
     // game.
-    ::extensions::api::omnibox::ManifestKeys::kOmnibox,
+    ext_api::omnibox::ManifestKeys::kOmnibox,
 
     // Special-cased in IsSafeForPublicSession(). Subject to permission
     // restrictions.
@@ -260,7 +262,7 @@ const char* const kSafeManifestEntries[] = {
     // Just a display string.
     emk::kVersionName,
 
-    emk::kWebAccessibleResources,
+    ext_api::web_accessible_resources::ManifestKeys::kWebAccessibleResources,
 
     // Webview has no special privileges or capabilities.
     emk::kWebview,

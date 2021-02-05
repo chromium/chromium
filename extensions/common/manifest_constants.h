@@ -159,7 +159,6 @@ extern const char kUrlHandlerTitle[];
 extern const char kUsbPrinters[];
 extern const char kVersion[];
 extern const char kVersionName[];
-extern const char kWebAccessibleResources[];
 extern const char kWebAppFileHandlers[];
 extern const char kWebAppFileHandlerAccept[];
 extern const char kWebAppFileHandlerAction[];
