@@ -16,8 +16,6 @@ limitations under the License.
 #ifndef TENSORFLOW_LITE_SUPPORT_CC_TASK_CORE_TFLITE_ENGINE_H_
 #define TENSORFLOW_LITE_SUPPORT_CC_TASK_CORE_TFLITE_ENGINE_H_
 
-#include <sys/mman.h>
-
 #include <memory>
 
 #include "absl/memory/memory.h"

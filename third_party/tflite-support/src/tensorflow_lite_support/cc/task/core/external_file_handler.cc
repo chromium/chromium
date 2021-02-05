@@ -18,9 +18,6 @@ limitations under the License.
 #include <errno.h>
 #include <fcntl.h>
 #include <stddef.h>
-#include <sys/mman.h>
-#include <unistd.h>
-
 #include <memory>
 #include <string>
 
@@ -39,18 +36,6 @@ using ::absl::StatusCode;
 using ::tflite::support::CreateStatusWithPayload;
 using ::tflite::support::StatusOr;
 using ::tflite::support::TfLiteSupportStatus;
-
-// Gets the offset aligned to page size for mapping given files into memory by
-// file descriptor correctly, as according to mmap(2), the offset used in mmap
-// must be a multiple of sysconf(_SC_PAGE_SIZE).
-int64 GetPageSizeAlignedOffset(int64 offset) {
-  int64 aligned_offset = offset;
-  int64 page_size = sysconf(_SC_PAGE_SIZE);
-  if (offset % page_size != 0) {
-    aligned_offset = offset / page_size * page_size;
-  }
-  return aligned_offset;
-}
 
 }  // namespace
 
@@ -71,103 +56,11 @@ absl::Status ExternalFileHandler::MapExternalFile() {
   if (!external_file_.file_content().empty()) {
     return absl::OkStatus();
   }
-  if (external_file_.file_name().empty() &&
-      !external_file_.has_file_descriptor_meta()) {
-    return CreateStatusWithPayload(
-        StatusCode::kInvalidArgument,
-        "ExternalFile must specify at least one of 'file_content', file_name' "
-        "or 'file_descriptor_meta'.",
-        TfLiteSupportStatus::kInvalidArgumentError);
-  }
-  // Obtain file descriptor, offset and size.
-  int fd = -1;
-  if (!external_file_.file_name().empty()) {
-    owned_fd_ = open(external_file_.file_name().c_str(), O_RDONLY);
-    if (owned_fd_ < 0) {
-      const std::string error_message = absl::StrFormat(
-          "Unable to open file at %s", external_file_.file_name());
-      switch (errno) {
-        case ENOENT:
-          return CreateStatusWithPayload(
-              StatusCode::kNotFound, error_message,
-              TfLiteSupportStatus::kFileNotFoundError);
-        case EACCES:
-        case EPERM:
-          return CreateStatusWithPayload(
-              StatusCode::kPermissionDenied, error_message,
-              TfLiteSupportStatus::kFilePermissionDeniedError);
-        case EINTR:
-          return CreateStatusWithPayload(StatusCode::kUnavailable,
-                                         error_message,
-                                         TfLiteSupportStatus::kFileReadError);
-        case EBADF:
-          return CreateStatusWithPayload(StatusCode::kFailedPrecondition,
-                                         error_message,
-                                         TfLiteSupportStatus::kFileReadError);
-        default:
-          return CreateStatusWithPayload(
-              StatusCode::kUnknown,
-              absl::StrFormat("%s, errno=%d", error_message, errno),
-              TfLiteSupportStatus::kFileReadError);
-      }
-    }
-    fd = owned_fd_;
-  } else {
-    fd = external_file_.file_descriptor_meta().fd();
-    if (fd < 0) {
-      return CreateStatusWithPayload(
-          StatusCode::kInvalidArgument,
-          absl::StrFormat("Provided file descriptor is invalid: %d < 0", fd),
-          TfLiteSupportStatus::kInvalidArgumentError);
-    }
-    buffer_offset_ = external_file_.file_descriptor_meta().offset();
-    buffer_size_ = external_file_.file_descriptor_meta().length();
-  }
-  // Get actual file size. Always use 0 as offset to lseek(2) to get the actual
-  // file size, as SEEK_END returns the size of the file *plus* offset.
-  size_t file_size = lseek(fd, /*offset=*/0, SEEK_END);
-  if (file_size <= 0) {
-    return CreateStatusWithPayload(
-        StatusCode::kUnknown,
-        absl::StrFormat("Unable to get file size, errno=%d", errno),
-        TfLiteSupportStatus::kFileReadError);
-  }
-  // Deduce buffer size if not explicitly provided through file descriptor.
-  if (buffer_size_ <= 0) {
-    buffer_size_ = file_size - buffer_offset_;
-  }
-  // Check for out of range issues.
-  if (file_size <= buffer_offset_) {
-    return CreateStatusWithPayload(
-        StatusCode::kInvalidArgument,
-        absl::StrFormat("Provided file offset (%d) exceeds or matches actual "
-                        "file length (%d)",
-                        buffer_offset_, file_size),
-        TfLiteSupportStatus::kInvalidArgumentError);
-  }
-  if (file_size < buffer_size_ + buffer_offset_) {
-    return CreateStatusWithPayload(
-        StatusCode::kInvalidArgument,
-        absl::StrFormat("Provided file length + offset (%d) exceeds actual "
-                        "file length (%d)",
-                        buffer_size_ + buffer_offset_, file_size),
-        TfLiteSupportStatus::kInvalidArgumentError);
-  }
-  // If buffer_offset_ is not multiple of sysconf(_SC_PAGE_SIZE), align with
-  // extra leading bytes and adjust buffer_size_ to account for the extra
-  // leading bytes.
-  buffer_aligned_offset_ = GetPageSizeAlignedOffset(buffer_offset_);
-  buffer_aligned_size_ = buffer_size_ + buffer_offset_ - buffer_aligned_offset_;
-  // Map into memory.
-  buffer_ = mmap(/*addr=*/nullptr, buffer_aligned_size_, PROT_READ, MAP_SHARED,
-                 fd, buffer_aligned_offset_);
-  if (buffer_ == MAP_FAILED) {
-    return CreateStatusWithPayload(
-        StatusCode::kUnknown,
-        absl::StrFormat("Unable to map file to memory buffer, errno=%d", errno),
-        TfLiteSupportStatus::kFileMmapError);
-  }
-  return absl::OkStatus();
+  return CreateStatusWithPayload(
+      StatusCode::kInvalidArgument,
+      "ExternalFile must have 'file_content' set, loading from"
+      "'file_name' is not supported.",
+      TfLiteSupportStatus::kInvalidArgumentError);
 }
 
 absl::string_view ExternalFileHandler::GetFileContent() {
@@ -180,14 +73,7 @@ absl::string_view ExternalFileHandler::GetFileContent() {
   }
 }
 
-ExternalFileHandler::~ExternalFileHandler() {
-  if (buffer_ != MAP_FAILED) {
-    munmap(buffer_, buffer_aligned_size_);
-  }
-  if (owned_fd_ >= 0) {
-    close(owned_fd_);
-  }
-}
+ExternalFileHandler::~ExternalFileHandler() = default;
 
 }  // namespace core
 }  // namespace task

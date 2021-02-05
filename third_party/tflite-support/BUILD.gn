@@ -24,9 +24,14 @@ config("tflite_support_flags") {
   cflags = [
     "-Wno-comment",
     "-Wno-extern-c-compat",
+    "-Wno-implicit-function-declaration",
     "-Wno-sign-compare",
   ]
-  cflags_cc = [ "-frtti" ]
+  if (!is_win) {
+    cflags_cc = [ "-frtti" ]
+  } else {
+    cflags_cc = [ "/GR" ]
+  }
 }
 
 flatbuffer("metadata_schema") {

@@ -15,8 +15,6 @@ limitations under the License.
 
 #include "tensorflow_lite_support/cc/task/core/tflite_engine.h"
 
-#include <unistd.h>
-
 #include "absl/strings/match.h"
 #include "absl/strings/str_cat.h"
 #include "tensorflow/lite/builtin_ops.h"

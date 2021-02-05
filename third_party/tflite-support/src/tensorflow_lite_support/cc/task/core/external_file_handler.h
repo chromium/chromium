@@ -65,10 +65,6 @@ class ExternalFileHandler {
   // Reference to the input ExternalFile.
   const ExternalFile& external_file_;
 
-  // The file descriptor of the ExternalFile if provided by path, as it is
-  // opened and owned by this class. Set to -1 otherwise.
-  int owned_fd_{-1};
-
   // Points to the memory buffer mapped from the file descriptor of the
   // ExternalFile, if provided by path or file descriptor.
   void* buffer_{};
@@ -82,9 +78,6 @@ class ExternalFileHandler {
 
   // The aligned mapped memory buffer offset, if any.
   int64 buffer_aligned_offset_{};
-  // The aligned mapped memory buffer size in bytes taking into account the
-  // offset shift introduced by buffer_aligned_memory_offset_, if any.
-  int64 buffer_aligned_size_{};
 };
 
 }  // namespace core

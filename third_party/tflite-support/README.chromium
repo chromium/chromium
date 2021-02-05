@@ -21,6 +21,8 @@ Modifications:
   is unused code but required for presubmit checks. (0001-use-SysNSStringToUTF8.patch)
 - Remove usage of absl::Cord in tflite::support::CreateStatusWithPayload (0001-no-absl-cord.patch)
 - Use _Exit instead of _exit to work on all platforms (0001-use-exit.patch)
+- Remove external file handlers support for memory mapping files to support Windows
+  (0001-remove-unsupported-memory-map-from-file-handler.patch)
 
 Third party dependencies:
 - tflite
