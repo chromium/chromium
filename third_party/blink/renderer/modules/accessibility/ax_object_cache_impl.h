@@ -188,7 +188,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   // Used for objects without backing DOM nodes, layout objects, etc.
   AXObject* CreateAndInit(ax::mojom::blink::Role, AXObject* parent);
 
-  AXObject* GetOrCreate(AccessibleNode*, AXObject* parent_if_known);
+  AXObject* GetOrCreate(AccessibleNode*, AXObject* parent);
   AXObject* GetOrCreate(LayoutObject*, AXObject* parent_if_known) override;
   AXObject* GetOrCreate(LayoutObject* layout_object);
   AXObject* GetOrCreate(const Node*, AXObject* parent_if_known);

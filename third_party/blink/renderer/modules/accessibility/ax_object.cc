@@ -643,7 +643,7 @@ void AXObject::Init(AXObject* parent_if_known) {
   // Note: in order to avoid reentrancy, the role computation cannot use the
   // ParentObject(), although it can use the DOM parent.
   role_ = DetermineAccessibilityRole();
-  DCHECK(role_ != ax::mojom::blink::Role::kUnknown)
+  DCHECK(role_ != ax::mojom::blink::Role::kUnknown || IsVirtualObject())
       << "Illegal Role::kUnknown for " << GetNode() << " " << GetLayoutObject();
 
   // Determine the parent as soon as possible.
@@ -720,6 +720,13 @@ AXObject* AXObject::ComputeParentImpl() const {
   if (IsA<Document>(current_node)) {
     LocalFrame* frame = GetLayoutObject()->GetFrame();
     return AXObjectCache().GetOrCreate(frame->PagePopupOwner());
+  }
+
+  if (IsVirtualObject()) {
+    NOTREACHED()
+        << "A virtual object must have a parent, and cannot exist without one. "
+           "The parent is set when the object is constructed.";
+    return nullptr;
   }
 
   // If no node, or a pseudo element, use the layout parent.
@@ -3660,6 +3667,9 @@ AXObject* AXObject::ParentObject() const {
   // a <select size="1"> changes to <select size="2">, where the
   // Role::kMenuListPopup is detached.
   if (!parent_) {
+    DCHECK(!IsVirtualObject())
+        << "A virtual object must have a parent, and cannot exist without one. "
+           "The parent is set when the object is constructed.";
     parent_ = ComputeParent();
     DCHECK(parent_ || IsA<Document>(GetNode()))
         << "The following node should have a parent: " << GetNode();

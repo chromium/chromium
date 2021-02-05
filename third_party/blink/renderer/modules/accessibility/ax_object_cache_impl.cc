@@ -736,16 +736,20 @@ AXObject* AXObjectCacheImpl::CreateFromInlineTextBox(
 }
 
 AXObject* AXObjectCacheImpl::GetOrCreate(AccessibleNode* accessible_node,
-                                         AXObject* parent_if_known) {
+                                         AXObject* parent) {
   if (AXObject* obj = Get(accessible_node))
     return obj;
+
+  DCHECK(parent)
+      << "A virtual object must have a parent, and cannot exist without one. "
+         "The parent is set when the object is constructed.";
 
   AXObject* new_obj =
       MakeGarbageCollected<AXVirtualObject>(*this, accessible_node);
   const AXID ax_id = AssociateAXID(new_obj);
   accessible_node_mapping_.Set(accessible_node, ax_id);
 
-  new_obj->Init(parent_if_known);
+  new_obj->Init(parent);
   return new_obj;
 }
 
