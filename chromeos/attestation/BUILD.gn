@@ -21,6 +21,8 @@ component("attestation") {
   sources = [
     "attestation_flow.cc",
     "attestation_flow.h",
+    "attestation_flow_adaptive.cc",
+    "attestation_flow_adaptive.h",
     "attestation_flow_factory.cc",
     "attestation_flow_factory.h",
     "attestation_flow_integrated.cc",
@@ -65,6 +67,7 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
   sources = [
+    "attestation_flow_adaptive_unittest.cc",
     "attestation_flow_integrated_unittest.cc",
     "attestation_flow_type_decider_unittest.cc",
     "attestation_flow_unittest.cc",
