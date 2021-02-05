@@ -191,7 +191,6 @@ base::Value GetSettingsOnBlockingTaskRunner(
     PrinterSemanticCapsAndDefaults::Papers user_defined_papers,
     bool has_secure_protocol,
     scoped_refptr<PrintBackend> print_backend) {
-  SCOPED_UMA_HISTOGRAM_TIMER("Printing.PrinterCapabilities");
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
