@@ -142,5 +142,10 @@ const char kHasCameraAppMigratedToSWA[] = "camera.has_migrated_to_swa";
 const char kLauncherSearchNormalizerParameters[] =
     "launcher.search_normalizer_parameters";
 
+// Boolean pref indicating whether system-wide trace collection using the
+// Perfetto system tracing service is allowed.
+const char kDeviceSystemWideTracingEnabled[] =
+    "device_system_wide_tracing_enabled";
+
 }  // namespace prefs
 }  // namespace chromeos

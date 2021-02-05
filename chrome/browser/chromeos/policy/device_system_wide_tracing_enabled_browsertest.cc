@@ -1,0 +1,86 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "base/run_loop.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/chromeos/policy/device_policy_builder.h"
+#include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
+#include "chrome/browser/tracing/chrome_tracing_delegate.h"
+#include "chromeos/constants/chromeos_pref_names.h"
+#include "chromeos/tpm/stub_install_attributes.h"
+#include "components/policy/proto/chrome_device_policy.pb.h"
+#include "components/prefs/pref_observer.h"
+#include "components/prefs/pref_service.h"
+#include "content/public/browser/tracing_delegate.h"
+#include "content/public/test/browser_test.h"
+
+namespace em = enterprise_management;
+
+namespace chromeos {
+
+class DeviceSystemWideTracingEnabledPolicyTest
+    : public policy::DevicePolicyCrosBrowserTest {
+ protected:
+  DeviceSystemWideTracingEnabledPolicyTest() = default;
+  ~DeviceSystemWideTracingEnabledPolicyTest() override = default;
+
+  void OnPreferenceChanged(const std::string& pref_name) {
+    if (run_loop_)
+      run_loop_->Quit();
+  }
+
+  // Updates the device policy in |device_system_wide_tracing_enabled.enabled|.
+  void UpdatePolicy(bool device_system_wide_tracing_enabled) {
+    policy::DevicePolicyBuilder* builder = device_policy();
+    ASSERT_TRUE(builder);
+    em::ChromeDeviceSettingsProto& proto(builder->payload());
+    proto.mutable_device_system_wide_tracing_enabled()->set_enabled(
+        device_system_wide_tracing_enabled);
+  }
+
+  // Refreshes device policy and waits for it to be applied.
+  void SyncRefreshDevicePolicy() {
+    PrefChangeRegistrar pref_change_registrar;
+    pref_change_registrar.Init(g_browser_process->local_state());
+    base::RepeatingCallback<void(const std::string&)> pref_changed_callback =
+        base::BindRepeating(
+            &DeviceSystemWideTracingEnabledPolicyTest::OnPreferenceChanged,
+            base::Unretained(this));
+    pref_change_registrar.Add(chromeos::prefs::kDeviceSystemWideTracingEnabled,
+                              pref_changed_callback);
+
+    run_loop_ = std::make_unique<base::RunLoop>();
+
+    RefreshDevicePolicy();
+    run_loop_->Run();
+
+    run_loop_.reset();
+  }
+
+  std::unique_ptr<base::RunLoop> run_loop_;
+};
+
+// Test that system-wide tracing is enabled by default for an unmanaged device
+// and can then be updated by the policy.
+IN_PROC_BROWSER_TEST_F(DeviceSystemWideTracingEnabledPolicyTest,
+                       PolicyApplied) {
+  auto tracing_delegate = std::make_unique<ChromeTracingDelegate>();
+  ASSERT_FALSE(g_browser_process->local_state()->IsManagedPreference(
+      chromeos::prefs::kDeviceSystemWideTracingEnabled));
+  ASSERT_TRUE(tracing_delegate->IsSystemWideTracingEnabled());
+
+  UpdatePolicy(true);
+  SyncRefreshDevicePolicy();
+  ASSERT_TRUE(g_browser_process->local_state()->IsManagedPreference(
+      chromeos::prefs::kDeviceSystemWideTracingEnabled));
+  ASSERT_TRUE(tracing_delegate->IsSystemWideTracingEnabled());
+
+  UpdatePolicy(false);
+  SyncRefreshDevicePolicy();
+  ASSERT_TRUE(g_browser_process->local_state()->IsManagedPreference(
+      chromeos::prefs::kDeviceSystemWideTracingEnabled));
+  ASSERT_FALSE(tracing_delegate->IsSystemWideTracingEnabled());
+}
+
+}  // namespace chromeos

@@ -1750,6 +1750,12 @@ message DeviceArcDataSnapshotHoursProto {
   optional string arc_data_snapshot_hours = 1;
 }
 
+// Setting that controls whether system-wide trace collection using the Perfetto
+// system tracing service is allowed.
+message DeviceSystemWideTracingEnabledProto {
+  optional bool enabled = 1 [default = true];
+}
+
 message ChromeDeviceSettingsProto {
   reserved 61, 90;
   optional DevicePolicyRefreshRateProto device_policy_refresh_rate = 1;
@@ -1898,4 +1904,6 @@ message ChromeDeviceSettingsProto {
   optional DeviceArcDataSnapshotHoursProto arc_data_snapshot_hours = 115;
   optional BooleanPolicyProto device_allow_mgs_to_store_display_properties =
       116;
+  optional DeviceSystemWideTracingEnabledProto
+      device_system_wide_tracing_enabled = 117;
 }

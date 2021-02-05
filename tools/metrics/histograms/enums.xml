@@ -23462,6 +23462,7 @@ Called by update_document_policy_enum.py.-->
   <int value="820" label="WebXRImmersiveArEnabled"/>
   <int value="821" label="GaiaOfflineSigninTimeLimitDays"/>
   <int value="822" label="FileSystemEnterpriseConnector"/>
+  <int value="823" label="DeviceSystemWideTracingEnabled"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

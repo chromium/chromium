@@ -41,6 +41,10 @@
 #include "chrome/browser/ui/browser_list.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/constants/chromeos_pref_names.h"
+#endif
+
 namespace {
 
 const int kMinDaysUntilNextUpload = 7;
@@ -266,6 +270,26 @@ bool ChromeTracingDelegate::IsAllowedToEndBackgroundScenario(
 
 bool ChromeTracingDelegate::IsProfileLoaded() {
   return GetProfile() != nullptr;
+}
+
+bool ChromeTracingDelegate::IsSystemWideTracingEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  PrefService* local_state = g_browser_process->local_state();
+  DCHECK(local_state);
+
+  const auto* pref = local_state->FindPreference(
+      chromeos::prefs::kDeviceSystemWideTracingEnabled);
+  DCHECK(pref);
+  // For a managed device, disable by default if unspecified or use the value
+  // specified by the device policy.
+  // For an unmanaged device, always enable.
+  return pref->GetValue()->GetBool() || !pref->IsManaged();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(crbug.com/1173395): Enable for Lacros-Chrome.
+  return false;
+#else
+  return false;
+#endif
 }
 
 std::unique_ptr<base::DictionaryValue>

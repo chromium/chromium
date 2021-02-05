@@ -25,6 +25,10 @@ bool TracingDelegate::IsProfileLoaded() {
   return false;
 }
 
+bool TracingDelegate::IsSystemWideTracingEnabled() {
+  return false;
+}
+
 std::unique_ptr<base::DictionaryValue> TracingDelegate::GenerateMetadataDict() {
   return nullptr;
 }

@@ -174,6 +174,8 @@ void Preferences::RegisterPrefs(PrefRegistrySimple* registry) {
       enterprise_management::SystemTimezoneProto::USERS_DECIDE);
   registry->RegisterStringPref(::prefs::kMinimumAllowedChromeVersion, "");
   registry->RegisterBooleanPref(::prefs::kLacrosAllowed, true);
+  registry->RegisterBooleanPref(
+      chromeos::prefs::kDeviceSystemWideTracingEnabled, false);
 
   ash::RegisterLocalStatePrefs(registry);
   split_settings_sync_field_trial::RegisterLocalStatePrefs(registry);

@@ -62,6 +62,8 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kHasCameraAppMigratedToSWA[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kLauncherSearchNormalizerParameters[];
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const char kDeviceSystemWideTracingEnabled[];
 
 }  // namespace prefs
 }  // namespace chromeos

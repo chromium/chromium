@@ -591,6 +591,17 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
                     nullptr);
     }
   }
+
+  if (policy.has_device_system_wide_tracing_enabled()) {
+    const em::DeviceSystemWideTracingEnabledProto& container(
+        policy.device_system_wide_tracing_enabled());
+    if (container.has_enabled()) {
+      policies->Set(key::kDeviceSystemWideTracingEnabled,
+                    POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                    POLICY_SOURCE_CLOUD, base::Value(container.enabled()),
+                    nullptr);
+    }
+  }
 }
 
 void DecodeNetworkPolicies(const em::ChromeDeviceSettingsProto& policy,

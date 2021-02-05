@@ -2690,6 +2690,7 @@ if (!is_android) {
         "../browser/chromeos/policy/device_policy_cros_browser_test.h",
         "../browser/chromeos/policy/device_quirks_policy_browsertest.cc",
         "../browser/chromeos/policy/device_system_use_24hour_clock_browsertest.cc",
+        "../browser/chromeos/policy/device_system_wide_tracing_enabled_browsertest.cc",
         "../browser/chromeos/policy/display_resolution_handler_browsertest.cc",
         "../browser/chromeos/policy/display_rotation_default_handler_browsertest.cc",
         "../browser/chromeos/policy/dlp/data_transfer_dlp_controller_browsertest.cc",
