@@ -1862,7 +1862,6 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
   // Deferred offscreen canvases might have recorded commands, make sure
   // that those get drawn here
   FinalizeFrame();
-  scoped_refptr<StaticBitmapImage> snapshot = GetImage();
 
   // TODO(crbug.com/1101055): Remove the check for NewCanvas2DAPI flag once
   // released.
@@ -1879,6 +1878,8 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
                                     GPUFallbackToCPUScenario::kGetImageData);
     }
   }
+
+  scoped_refptr<StaticBitmapImage> snapshot = GetImage();
 
   // Compute the ImageData's SkImageInfo;
   SkImageInfo image_info;
