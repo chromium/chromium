@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/quiche/common/platform/impl/quiche_time_utils_impl.h"
+#include "net/third_party/quiche/overrides/quiche_platform_impl/quiche_time_utils_impl.h"
 
 #include "base/time/time.h"
 
