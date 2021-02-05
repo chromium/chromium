@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMECAST_RENDERER_IDENTIFICATION_SETTINGS_MANAGER_H_
-#define CHROMECAST_RENDERER_IDENTIFICATION_SETTINGS_MANAGER_H_
+#ifndef CHROMECAST_COMMON_IDENTIFICATION_SETTINGS_MANAGER_H_
+#define CHROMECAST_COMMON_IDENTIFICATION_SETTINGS_MANAGER_H_
 
 #include <memory>
 #include <string>
@@ -17,11 +17,9 @@
 #include "base/values.h"
 #include "chromecast/common/cast_url_loader_throttle.h"
 #include "chromecast/common/mojom/identification_settings.mojom.h"
-#include "content/public/renderer/render_frame_observer.h"
-#include "mojo/public/cpp/bindings/associated_receiver.h"
-#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_request_headers.h"
-#include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "url/gurl.h"
 
 namespace chromecast {
@@ -29,8 +27,7 @@ namespace chromecast {
 // Receives messages from the browser process and stores identification settings
 // to feed into URLLoaderThrottles for throttling url requests in renderers.
 class IdentificationSettingsManager
-    : public content::RenderFrameObserver,
-      public mojom::IdentificationSettingsManager,
+    : public mojom::IdentificationSettingsManager,
       public CastURLLoaderThrottle::Delegate {
  public:
   using RequestCompletionCallback = base::OnceCallback<
@@ -38,18 +35,28 @@ class IdentificationSettingsManager
   using DoneSigningCallback = base::OnceCallback<void()>;
   using EnsureCertsCallback = base::OnceCallback<void()>;
 
-  IdentificationSettingsManager(content::RenderFrame* render_frame,
-                                base::OnceCallback<void()> on_removed_callback);
-  ~IdentificationSettingsManager() override;
+  IdentificationSettingsManager();
   IdentificationSettingsManager(const IdentificationSettingsManager&) = delete;
   IdentificationSettingsManager& operator=(
       const IdentificationSettingsManager&) = delete;
+  ~IdentificationSettingsManager() override;
 
   // CastURLLoaderThrottle::Delegate implementation:
   // |callback| will only be run if net::IO_PENDING is returned.
   int WillStartResourceRequest(network::ResourceRequest* request,
                                const std::string& /* session_id */,
                                RequestCompletionCallback callback) override;
+
+  // chromecast::mojom::IdentificationSettingsManager implementation:
+  void SetSubstitutableParameters(
+      std::vector<mojom::SubstitutableParameterPtr> params) override;
+  void SetClientAuth(mojo::PendingRemote<mojom::ClientAuthDelegate>
+                         client_auth_delegate) override;
+  void UpdateAppSettings(mojom::AppSettingsPtr app_settings) override;
+  void UpdateDeviceSettings(mojom::DeviceSettingsPtr device_settings) override;
+  void UpdateSubstitutableParamValues(
+      std::vector<mojom::IndexValuePairPtr> updated_values) override;
+  void UpdateBackgroundMode(bool background_mode) override;
 
  private:
   struct RequestInfo;
@@ -78,27 +85,6 @@ class IdentificationSettingsManager
 
   SubstitutableParameter ConvertSubstitutableParameterFromMojom(
       mojom::SubstitutableParameterPtr mojo_param);
-
-  // content::RenderFrameObserver implementation:
-  bool OnAssociatedInterfaceRequestForFrame(
-      const std::string& interface_name,
-      mojo::ScopedInterfaceEndpointHandle* handle) override;
-  void OnDestruct() override;
-
-  // chromecast::mojom::IdentificationSettingsManager implementation:
-  void SetSubstitutableParameters(
-      std::vector<mojom::SubstitutableParameterPtr> params) override;
-  void SetClientAuth(
-      mojom::ClientAuthDelegatePtr client_auth_delegate) override;
-  void UpdateAppSettings(mojom::AppSettingsPtr app_settings) override;
-  void UpdateDeviceSettings(mojom::DeviceSettingsPtr device_settings) override;
-  void UpdateSubstitutableParamValues(
-      std::vector<mojom::IndexValuePairPtr> updated_values) override;
-  void UpdateBackgroundMode(bool background_mode) override;
-
-  void OnIdentificationSettingsManagerAssociatedRequest(
-      mojo::PendingAssociatedReceiver<mojom::IdentificationSettingsManager>
-          request);
 
   void MoveCorsExemptHeaders(net::HttpRequestHeaders* headers,
                              net::HttpRequestHeaders* cors_exempt_headers);
@@ -144,12 +130,6 @@ class IdentificationSettingsManager
       std::vector<SubstitutableParameter>* params);
   void AddHttpHeaders(const std::vector<SubstitutableParameter>& parameters,
                       net::HttpRequestHeaders* headers) const;
-  void UpdateAuthHeaders(
-      std::vector<chromecast::mojom::IndexValuePairPtr> auth_headers);
-
-  std::string GetAuthHeader(uint32_t index) const;
-
-  base::OnceCallback<void()> on_removed_callback_;
 
   // A list of parameters used to replace some patterns in the template strings
   // i.e. JWT template. It is also used to fill in http headers.
@@ -191,17 +171,13 @@ class IdentificationSettingsManager
 
   base::Clock* const clock_ GUARDED_BY(lock_);
 
-  blink::AssociatedInterfaceRegistry associated_interfaces_;
-
   // TODO(b/159910473): Remove the lock if possible.
   mutable base::Lock lock_;
 
-  mojom::ClientAuthDelegatePtr client_auth_delegate_;
+  mojo::Remote<mojom::ClientAuthDelegate> client_auth_delegate_;
   std::vector<std::unique_ptr<RequestInfo>> pending_requests_;
-  mojo::AssociatedReceiver<mojom::IdentificationSettingsManager>
-      associated_receiver_{this};
 };
 
 }  // namespace chromecast
 
-#endif  // CHROMECAST_RENDERER_IDENTIFICATION_SETTINGS_MANAGER_H_
+#endif  // CHROMECAST_COMMON_IDENTIFICATION_SETTINGS_MANAGER_H_

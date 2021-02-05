@@ -9,8 +9,8 @@
 #include "base/memory/ptr_util.h"
 #include "chromecast/common/activity_filtering_url_loader_throttle.h"
 #include "chromecast/common/cast_url_loader_throttle.h"
+#include "chromecast/common/identification_settings_manager.h"
 #include "chromecast/renderer/cast_activity_url_filter_manager.h"
-#include "chromecast/renderer/identification_settings_manager.h"
 #include "chromecast/renderer/identification_settings_manager_store.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 

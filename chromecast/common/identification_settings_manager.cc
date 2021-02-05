@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromecast/renderer/identification_settings_manager.h"
+#include "chromecast/common/identification_settings_manager.h"
 
 #include <utility>
 
@@ -17,7 +17,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/default_clock.h"
 #include "chromecast/chromecast_buildflags.h"
-#include "content/public/renderer/render_frame.h"
 #include "net/base/escape.h"
 #include "net/base/net_errors.h"
 #include "net/base/url_util.h"
@@ -133,26 +132,11 @@ struct IdentificationSettingsManager::RequestInfo {
   RequestCompletionCallback callback;
 };
 
-IdentificationSettingsManager::IdentificationSettingsManager(
-    content::RenderFrame* render_frame,
-    base::OnceCallback<void()> on_removed_callback)
-    : content::RenderFrameObserver(render_frame),
-      on_removed_callback_(std::move(on_removed_callback)),
-      next_refresh_time_(base::Time()),
-      clock_(base::DefaultClock::GetInstance()) {
-  // base::Unretained is safe here since |this| won't get more binding requests
-  // after |render_frame| is gone.
-  render_frame->GetAssociatedInterfaceRegistry()->AddInterface(
-      base::BindRepeating(&IdentificationSettingsManager::
-                              OnIdentificationSettingsManagerAssociatedRequest,
-                          base::Unretained(this)));
-}
+IdentificationSettingsManager::IdentificationSettingsManager()
+    : next_refresh_time_(base::Time()),
+      clock_(base::DefaultClock::GetInstance()) {}
 
-IdentificationSettingsManager::~IdentificationSettingsManager() {
-  if (on_removed_callback_) {
-    std::move(on_removed_callback_).Run();
-  }
-}
+IdentificationSettingsManager::~IdentificationSettingsManager() {}
 
 int IdentificationSettingsManager::WillStartResourceRequest(
     network::ResourceRequest* request,
@@ -210,17 +194,6 @@ int IdentificationSettingsManager::WillStartResourceRequest(
   return err;
 }
 
-bool IdentificationSettingsManager::OnAssociatedInterfaceRequestForFrame(
-    const std::string& interface_name,
-    mojo::ScopedInterfaceEndpointHandle* handle) {
-  return associated_interfaces_.TryBindInterface(interface_name, handle);
-}
-
-void IdentificationSettingsManager::OnDestruct() {
-  DCHECK(on_removed_callback_);
-  std::move(on_removed_callback_).Run();
-}
-
 void IdentificationSettingsManager::SetSubstitutableParameters(
     std::vector<mojom::SubstitutableParameterPtr> params) {
   DCHECK_LE(params.size(), 32u);
@@ -239,9 +212,12 @@ void IdentificationSettingsManager::SetSubstitutableParameters(
 }
 
 void IdentificationSettingsManager::SetClientAuth(
-    mojom::ClientAuthDelegatePtr client_auth_delegate) {
+    mojo::PendingRemote<mojom::ClientAuthDelegate> client_auth_delegate) {
   DCHECK(client_auth_delegate);
-  client_auth_delegate_ = std::move(client_auth_delegate);
+  if (client_auth_delegate_.is_bound()) {
+    return;
+  }
+  client_auth_delegate_.Bind(std::move(client_auth_delegate));
 }
 
 void IdentificationSettingsManager::UpdateAppSettings(
@@ -279,13 +255,6 @@ void IdentificationSettingsManager::UpdateSubstitutableParamValues(
 
 void IdentificationSettingsManager::UpdateBackgroundMode(bool background_mode) {
   background_mode_ = background_mode;
-}
-
-void IdentificationSettingsManager::
-    OnIdentificationSettingsManagerAssociatedRequest(
-        mojo::PendingAssociatedReceiver<mojom::IdentificationSettingsManager>
-            receiver) {
-  associated_receiver_.Bind(std::move(receiver));
 }
 
 void IdentificationSettingsManager::MoveCorsExemptHeaders(

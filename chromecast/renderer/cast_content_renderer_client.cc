@@ -18,7 +18,7 @@
 #include "chromecast/public/media/media_capabilities_shlib.h"
 #include "chromecast/renderer/cast_url_loader_throttle_provider.h"
 #include "chromecast/renderer/cast_websocket_handshake_throttle_provider.h"
-#include "chromecast/renderer/identification_settings_manager.h"
+#include "chromecast/renderer/identification_settings_manager_renderer.h"
 #include "chromecast/renderer/js_channel_bindings.h"
 #include "chromecast/renderer/media/key_systems_cast.h"
 #include "chromecast/renderer/media/media_caps_observer_impl.h"
@@ -208,7 +208,7 @@ void CastContentRendererClient::RenderFrameCreated(
   // CastContentRendererClient should be alive.
   settings_managers_.emplace(
       render_frame->GetRoutingID(),
-      std::make_unique<IdentificationSettingsManager>(
+      std::make_unique<IdentificationSettingsManagerRenderer>(
           render_frame,
           base::BindOnce(&CastContentRendererClient::OnRenderFrameRemoved,
                          base::Unretained(this),

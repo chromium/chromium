@@ -120,7 +120,7 @@ interface IdentificationSettingsManager {
   SetSubstitutableParameters(array<SubstitutableParameter> params);
 
   // Sets the ClientAuthDelegate.
-  SetClientAuth(ClientAuthDelegate client_auth_delegate);
+  SetClientAuth(pending_remote<ClientAuthDelegate> client_auth_delegate);
 
   // Updates app specific settings.
   UpdateAppSettings(AppSettings app_settings);

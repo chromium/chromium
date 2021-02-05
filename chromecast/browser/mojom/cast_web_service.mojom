@@ -5,6 +5,7 @@
 module chromecast.mojom;
 
 import "chromecast/browser/webui/mojom/webui.mojom";
+import "chromecast/common/mojom/identification_settings.mojom";
 
 // Service interface for creating/managing web pages in the Cast Browser. The
 // only user of this interface is the Cast Service, which will eventually live
@@ -15,5 +16,35 @@ interface CastWebService {
   // for details on how Web UIs are used in the Cast Browser.
   RegisterWebUiClient(pending_remote<WebUiClient> client,
                       array<string> hosts);
+
+  // Creates a session and sets the list of possible substitutable parameters.
+  // This may only be called once per session; once called, the list of
+  // parameters is fixed. Values associated with each substitutable parameter
+  // can later be updated with a call to `UpdateSubstitutableParamValues`.
+  // Note: This moethod needs to be called before any navigation request is
+  // made from a session.
+  CreateSessionWithSubstitutions(string session_id,
+                                 array<SubstitutableParameter> params);
+
+  // Sets the ClientAuthDelegate.
+  SetClientAuthForSession(string session_id,
+                          pending_remote<ClientAuthDelegate> client_auth_delegate);
+
+  // Updates app specific settings.
+  UpdateAppSettingsForSession(string session_id, AppSettings app_settings);
+
+  // Updates device specific settings.
+  UpdateDeviceSettingsForSession(string session_id,
+                                 DeviceSettings device_settings);
+
+  // Updates user tokens.
+  UpdateSubstitutableParamValuesForSession(string session_id,
+                                           array<IndexValuePair> updated_values);
+
+  // Updates the app's background mode.
+  UpdateBackgroundModeForSession(string session_id, bool background_mode);
+
+  // Called when the session has ended.
+  OnSessionDestroyed(string session_id);
 };
 

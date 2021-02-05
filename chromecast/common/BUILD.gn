@@ -64,6 +64,8 @@ cast_source_set("common") {
     "cast_url_loader_throttle.cc",
     "cast_url_loader_throttle.h",
     "global_descriptors.h",
+    "identification_settings_manager.cc",
+    "identification_settings_manager.h",
   ]
 
   deps = [
@@ -72,7 +74,9 @@ cast_source_set("common") {
     "//chromecast/base",
     "//chromecast/base:cast_version",
     "//chromecast/common/media",
+    "//chromecast/common/mojom",
     "//content/public/common",
+    "//mojo/public/cpp/bindings",
     "//net",
     "//services/network/public/cpp:cpp",
     "//ui/base",
