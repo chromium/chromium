@@ -3479,17 +3479,17 @@
   {
     "name": "nearby-sharing",
     "owners": [ "vecore@google.com", "cros-system-services@google.com", "cross-device-team@google.com" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 90
   },
   {
     "name": "nearby-sharing-device-contacts",
     "owners": [ "vecore@google.com", "cros-system-services@google.com", "cross-device-team@google.com" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 90
   },
   {
     "name": "nearby-sharing-webrtc",
     "owners": [ "vecore@google.com", "cros-system-services@google.com", "cross-device-team@google.com" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 90
   },
   {
     "name": "new-canvas-2d-api",
