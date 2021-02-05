@@ -375,13 +375,21 @@ AlignedDataHelper::AlignedDataHelper(
     const gfx::Size& dst_coded_size,
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
+    uint32_t frame_rate,
     VideoFrame::StorageType storage_type,
     gpu::GpuMemoryBufferFactory* const gpu_memory_buffer_factory)
     : num_frames_(num_frames),
       storage_type_(storage_type),
       gpu_memory_buffer_factory_(gpu_memory_buffer_factory),
       visible_rect_(visible_rect),
-      natural_size_(natural_size) {
+      natural_size_(natural_size),
+      time_stamp_interval_(base::TimeDelta::FromSeconds(/*secs=*/0u)),
+      elapsed_frame_time_(base::TimeDelta::FromSeconds(/*secs=*/0u)) {
+  // If the frame_rate is passed in, then use that timing information
+  // to generate timestamps that increment according the frame_rate.
+  // Otherwise timestamps will be generated when GetNextFrame() is called
+  UpdateFrameRate(frame_rate);
+
   if (storage_type_ == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
     LOG_ASSERT(gpu_memory_buffer_factory_ != nullptr);
     InitializeGpuMemoryBufferFrames(stream, pixel_format, src_coded_size,
@@ -409,8 +417,26 @@ bool AlignedDataHelper::AtEndOfStream() const {
   return frame_index_ == num_frames_;
 }
 
+void AlignedDataHelper::UpdateFrameRate(uint32_t frame_rate) {
+  if (frame_rate == 0) {
+    time_stamp_interval_ = base::TimeDelta::FromSeconds(/*secs=*/0u);
+  } else {
+    time_stamp_interval_ =
+        base::TimeDelta::FromSeconds(/*secs=*/1u) / frame_rate;
+  }
+}
+
 scoped_refptr<VideoFrame> AlignedDataHelper::GetNextFrame() {
   LOG_ASSERT(!AtEndOfStream());
+  base::TimeDelta frame_timestamp;
+
+  if (time_stamp_interval_.is_zero())
+    frame_timestamp = base::TimeTicks::Now().since_origin();
+  else
+    frame_timestamp = elapsed_frame_time_;
+
+  elapsed_frame_time_ += time_stamp_interval_;
+
   if (storage_type_ == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
     const auto& gmb_handle = video_frame_data_[frame_index_++].gmb_handle;
     auto dup_handle = gmb_handle.Clone();
@@ -442,7 +468,7 @@ scoped_refptr<VideoFrame> AlignedDataHelper::GetNextFrame() {
     return media::VideoFrame::WrapExternalGpuMemoryBuffer(
         visible_rect_, natural_size_, std::move(gpu_memory_buffer),
         dummy_mailbox, base::DoNothing() /* mailbox_holder_release_cb_ */,
-        base::TimeTicks::Now().since_origin());
+        frame_timestamp);
   } else {
     const auto& mojo_handle = video_frame_data_[frame_index_++].mojo_handle;
     auto dup_handle =
@@ -463,7 +489,7 @@ scoped_refptr<VideoFrame> AlignedDataHelper::GetNextFrame() {
     return MojoSharedBufferVideoFrame::Create(
         layout_->format(), layout_->coded_size(), visible_rect_, natural_size_,
         std::move(dup_handle), video_frame_size, offsets, strides,
-        base::TimeTicks::Now().since_origin());
+        frame_timestamp);
   }
 }
 

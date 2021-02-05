@@ -170,6 +170,7 @@ class AlignedDataHelper {
       const gfx::Size& dst_coded_size,
       const gfx::Rect& visible_rect,
       const gfx::Size& natural_size,
+      uint32_t frame_rate,
       VideoFrame::StorageType storage_type,
       gpu::GpuMemoryBufferFactory* const gpu_memory_buffer_factory);
   ~AlignedDataHelper();
@@ -183,6 +184,8 @@ class AlignedDataHelper {
   bool AtHeadOfStream() const;
   // Check whether we are at the end of the video stream.
   bool AtEndOfStream() const;
+  // Change the timing between frames.
+  void UpdateFrameRate(uint32_t frame_rate);
 
  private:
   struct VideoFrameData;
@@ -219,6 +222,9 @@ class AlignedDataHelper {
   base::Optional<VideoFrameLayout> layout_;
   const gfx::Rect visible_rect_;
   const gfx::Size natural_size_;
+
+  base::TimeDelta time_stamp_interval_;
+  base::TimeDelta elapsed_frame_time_;
 
   // The frame data returned by GetNextFrame().
   std::vector<VideoFrameData> video_frame_data_;
