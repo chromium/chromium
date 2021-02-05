@@ -126,29 +126,6 @@ export class Background extends ChromeVoxState {
     // ChromeVox starts.
     sessionStorage.setItem('darkScreen', 'false');
 
-    // A self-contained class to start and stop progress sounds before any
-    // speech has been generated on startup. This is important in cases where
-    // speech is severely delayed.
-    /** @implements {TtsCapturingEventListener} */
-    const ProgressPlayer = class {
-      constructor() {
-        ChromeVox.tts.addCapturingEventListener(this);
-        ChromeVox.earcons.playEarcon(Earcon.CHROMEVOX_LOADING);
-      }
-
-      /** @override */
-      onTtsStart() {
-        ChromeVox.earcons.playEarcon(Earcon.CHROMEVOX_LOADED);
-        ChromeVox.tts.removeCapturingEventListener(this);
-      }
-
-      /** @override */
-      onTtsEnd() {}
-      /** @override */
-      onTtsInterrupted() {}
-    };
-    new ProgressPlayer();
-
     chrome.loginState.getSessionState((sessionState) => {
       // If starting ChromeVox from OOBE, start the tutorial.
       if (sessionState === chrome.loginState.SessionState.IN_OOBE_SCREEN) {
