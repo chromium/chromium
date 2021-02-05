@@ -57,7 +57,6 @@ public class PwaBottomSheetControllerProvider {
     /**
      * Makes a request to show the PWA Bottom Sheet Installer UI.
      * @param webContents The WebContents the UI is associated with.
-     * @param showExpanded Whether to show the UI in expanded mode or not.
      * @param icon The icon of the app represented by the UI.
      * @param isAdaptiveIcon Whether the app icon is adaptive or not.
      * @param title The title of the app represented by the UI.
@@ -66,12 +65,23 @@ public class PwaBottomSheetControllerProvider {
      */
     @CalledByNative
     private static void showPwaBottomSheetInstaller(long nativePwaBottomSheetController,
-            WebContents webContents, boolean showExpanded, Bitmap icon, boolean isAdaptiveIcon,
-            String title, String origin, String description) {
+            WebContents webContents, Bitmap icon, boolean isAdaptiveIcon, String title,
+            String origin, String description) {
         PwaBottomSheetController controller = fromWebContents(webContents);
         if (controller == null) return;
         controller.requestBottomSheetInstaller(nativePwaBottomSheetController,
-                webContents.getTopLevelNativeWindow(), webContents, showExpanded, icon,
-                isAdaptiveIcon, title, origin, description);
+                webContents.getTopLevelNativeWindow(), webContents, icon, isAdaptiveIcon, title,
+                origin, description);
+    }
+
+    /**
+     * Makes a request to expand the PWA Bottom Sheet Installer UI.
+     * @param webContents The WebContents the UI is associated with.
+     */
+    @CalledByNative
+    private static void expandPwaBottomSheetInstaller(WebContents webContents) {
+        PwaBottomSheetController controller = fromWebContents(webContents);
+        if (controller == null) return;
+        controller.expandBottomSheetInstaller();
     }
 }

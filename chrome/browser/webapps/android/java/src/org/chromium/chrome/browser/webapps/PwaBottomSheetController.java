@@ -159,7 +159,6 @@ public class PwaBottomSheetController
      *         requests to.
      * @param windowAndroid The window the UI is associated with.
      * @param webContents The WebContents the UI is associated with.
-     * @param showExpanded Whether to show the UI in expanded mode or not.
      * @param icon The icon of the app represented by the UI.
      * @param isAdaptiveIcon Whether the app icon is adaptive or not.
      * @param title The title of the app represented by the UI.
@@ -167,7 +166,7 @@ public class PwaBottomSheetController
      * @param description The app description.
      */
     public void requestBottomSheetInstaller(long nativePwaBottomSheetController,
-            WindowAndroid windowAndroid, WebContents webContents, boolean showExpanded, Bitmap icon,
+            WindowAndroid windowAndroid, WebContents webContents, Bitmap icon,
             boolean isAdaptiveIcon, String title, String origin, String description) {
         mNativePwaBottomSheetController = nativePwaBottomSheetController;
         mWebContents = webContents;
@@ -198,13 +197,22 @@ public class PwaBottomSheetController
             return;
         }
 
-        if (showExpanded) {
-            mBottomSheetController.expandSheet();
-        }
-
         if (webContents != null) {
             createWebContentsObserver(webContents);
         }
+    }
+
+    /**
+     * Makes a request to expand the Bottom Sheet Installer UI if visible already.
+     * @return Whether the Bottom Sheet Installer UI was expanded.
+     */
+    public boolean expandBottomSheetInstaller() {
+        if (mPwaBottomSheetContent != null
+                && mBottomSheetController.getCurrentSheetContent() == mPwaBottomSheetContent) {
+            mBottomSheetController.expandSheet();
+            return true;
+        }
+        return false;
     }
 
     // onClickListener:
@@ -230,12 +238,7 @@ public class PwaBottomSheetController
      * @param webContents The WebContents the UI is associated with.
      */
     public void requestOrExpandBottomSheetInstaller(WebContents webContents) {
-        if (mPwaBottomSheetContent != null
-                && mBottomSheetController.getCurrentSheetContent() == mPwaBottomSheetContent) {
-            mBottomSheetController.expandSheet();
-            return;
-        }
-
+        if (expandBottomSheetInstaller()) return;
         PwaBottomSheetControllerJni.get().createAndShowBottomSheetInstaller(webContents);
     }
 

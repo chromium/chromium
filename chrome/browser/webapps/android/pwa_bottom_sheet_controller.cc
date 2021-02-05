@@ -140,12 +140,16 @@ void PwaBottomSheetController::ShowBottomSheetInstaller(
 
   Java_PwaBottomSheetControllerProvider_showPwaBottomSheetInstaller(
       env, reinterpret_cast<intptr_t>(this), web_contents->GetJavaWebContents(),
-      show_expanded_, j_bitmap, is_primary_icon_maskable_, j_user_title, j_url,
-      j_description);
+      j_bitmap, is_primary_icon_maskable_, j_user_title, j_url, j_description);
 
   for (const auto& screenshot : screenshots_) {
     if (!screenshot.isNull())
       UpdateScreenshot(screenshot, web_contents);
+  }
+
+  if (show_expanded_) {
+    Java_PwaBottomSheetControllerProvider_expandPwaBottomSheetInstaller(
+        env, web_contents->GetJavaWebContents());
   }
 }
 
