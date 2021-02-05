@@ -20,7 +20,12 @@ source_set("sockets_udp") {
     "//build/config/compiler:no_size_t_to_int_warning",
   ]
 
-  deps = [ "//extensions/common/api" ]
+  deps = [
+    "//extensions/browser/api",
+    "//extensions/browser/api/socket",
+    "//extensions/common",
+    "//extensions/common/api",
+  ]
 
   public_deps = [ "//extensions/browser:browser_sources" ]
 }
