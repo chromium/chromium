@@ -16,6 +16,8 @@ js_type_check("closure_compile") {
     ":os_a11y_page_browser_proxy",
     ":switch_access_action_assignment_dialog",
     ":switch_access_constants",
+    ":switch_access_constants",
+    ":switch_access_setup_guide_dialog",
     ":switch_access_subpage",
     ":switch_access_subpage_browser_proxy",
     ":tts_subpage",
@@ -79,6 +81,17 @@ js_library("switch_access_action_assignment_dialog") {
 js_library("switch_access_constants") {
 }
 
+js_library("switch_access_setup_guide_dialog") {
+  deps = [
+    "//chrome/browser/resources/settings/prefs:prefs_behavior",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
+    "//ui/webui/resources/js:i18n_behavior",
+    "//ui/webui/resources/js:load_time_data",
+    "//ui/webui/resources/js:web_ui_listener_behavior",
+  ]
+}
+
 js_library("switch_access_subpage_browser_proxy") {
   deps = [ "//ui/webui/resources/js:cr" ]
   externs_list = [ "$externs_path/chrome_send.js" ]
@@ -133,6 +146,7 @@ js_type_check("closure_compile_module") {
     ":os_a11y_page_browser_proxy.m",
     ":switch_access_action_assignment_dialog.m",
     ":switch_access_constants.m",
+    ":switch_access_setup_guide_dialog.m",
     ":switch_access_subpage.m",
     ":switch_access_subpage_browser_proxy.m",
     ":tts_subpage.m",
@@ -216,6 +230,21 @@ js_library("switch_access_constants.m") {
   extra_deps = [ ":modulize" ]
 }
 
+js_library("switch_access_setup_guide_dialog.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_a11y_page/switch_access_setup_guide_dialog.m.js" ]
+  deps = [
+    ":switch_access_constants.m",
+    "//chrome/browser/resources/settings/prefs:prefs_behavior.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
+  ]
+  extra_deps = [ ":switch_access_setup_guide_dialog_module" ]
+}
+
 js_library("switch_access_subpage.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_a11y_page/switch_access_subpage.m.js" ]
   deps = [
@@ -272,6 +301,7 @@ group("polymer3_elements") {
     ":modulize",
     ":os_a11y_page_module",
     ":switch_access_action_assignment_dialog_module",
+    ":switch_access_setup_guide_dialog_module",
     ":switch_access_subpage_module",
     ":tts_subpage_module",
   ]
@@ -296,6 +326,14 @@ polymer_modulizer("os_a11y_page") {
 polymer_modulizer("switch_access_action_assignment_dialog") {
   js_file = "switch_access_action_assignment_dialog.js"
   html_file = "switch_access_action_assignment_dialog.html"
+  html_type = "dom-module"
+  auto_imports = os_settings_auto_imports
+  namespace_rewrites = os_settings_namespace_rewrites
+}
+
+polymer_modulizer("switch_access_setup_guide_dialog") {
+  js_file = "switch_access_setup_guide_dialog.js"
+  html_file = "switch_access_setup_guide_dialog.html"
   html_type = "dom-module"
   auto_imports = os_settings_auto_imports
   namespace_rewrites = os_settings_namespace_rewrites

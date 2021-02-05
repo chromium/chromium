@@ -14,6 +14,7 @@
 <link rel="import" href="../../settings_shared_css.html">
 <link rel="import" href="switch_access_action_assignment_dialog.html">
 <link rel="import" href="switch_access_constants.html">
+<link rel="import" href="switch_access_setup_guide_dialog.html">
 <link rel="import" href="switch_access_subpage_browser_proxy.html">
 
 <dom-module id="settings-switch-access-subpage">
@@ -28,6 +29,16 @@
         text-align: end;
       }
     </style>
+    <cr-link-row hidden="[[!showSetupGuide_()]]" on-click="onSetupGuideClick_"
+        label="$i18n{switchAccessSetupGuideLabel}" id="setupGuideLink">
+    </cr-link-row>
+    <template is="dom-if"
+        if="[[showSwitchAccessSetupGuideDialog_]]" restamp>
+      <settings-switch-access-setup-guide-dialog
+          id="switchAccessSetupGuideDialog"
+          on-close="onSwitchAccessSetupGuideDialogClose_">
+      </settings-switch-access-action-assignment-dialog>
+    </template>
     <h2>$i18n{switchAssignmentHeading}</h2>
     <div class="list-frame">
         <cr-link-row on-click="onSelectAssignClick_"

@@ -353,6 +353,11 @@ bool IsSwitchAccessTextAllowed() {
       ::switches::kEnableExperimentalAccessibilitySwitchAccessText);
 }
 
+bool IsSwitchAccessSetupGuideAllowed() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ::switches::kEnableExperimentalAccessibilitySwitchAccessSetupGuide);
+}
+
 bool AreTabletNavigationButtonsAllowed() {
   return ash::features::IsHideShelfControlsInTabletModeEnabled() &&
          ash::TabletMode::IsBoardTypeMarkedAsTabletCapable();
@@ -520,6 +525,8 @@ void AccessibilitySection::AddLoadTimeData(
       {"manageSwitchAccessSettings",
        IDS_SETTINGS_MANAGE_SWITCH_ACCESS_SETTINGS},
       {"switchAssignmentHeading", IDS_SETTINGS_SWITCH_ASSIGNMENT_HEADING},
+      {"switchAccessSetupGuideLabel",
+       IDS_SETTINGS_SWITCH_ACCESS_SETUP_GUIDE_LABEL},
       {"assignSwitchSubLabel0Switches",
        IDS_SETTINGS_ASSIGN_SWITCH_SUB_LABEL_0_SWITCHES},
       {"assignSwitchSubLabel1Switch",
@@ -571,8 +578,7 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_DIALOG_WARN_CANNOT_REMOVE_LAST_SELECT_SWITCH},
       {"switchAndDeviceType", IDS_SETTINGS_SWITCH_AND_DEVICE_TYPE},
       {"noSwitchesAssigned", IDS_SETTINGS_NO_SWITCHES_ASSIGNED},
-      {"switchAccessActionAssignmentDialogExit",
-       IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_DIALOG_EXIT},
+      {"switchAccessDialogExit", IDS_SETTINGS_SWITCH_ACCESS_DIALOG_EXIT},
       {"switchAccessAutoScanHeading",
        IDS_SETTINGS_SWITCH_ACCESS_AUTO_SCAN_HEADING},
       {"switchAccessAutoScanLabel", IDS_SETTINGS_SWITCH_ACCESS_AUTO_SCAN_LABEL},
@@ -657,6 +663,9 @@ void AccessibilitySection::AddLoadTimeData(
   html_source->AddBoolean(
       "showExperimentalAccessibilitySwitchAccessImprovedTextInput",
       IsSwitchAccessTextAllowed());
+
+  html_source->AddBoolean("showSwitchAccessSetupGuide",
+                          IsSwitchAccessSetupGuideAllowed());
 
   html_source->AddBoolean("showExperimentalA11yLabels",
                           AreExperimentalA11yLabelsAllowed());

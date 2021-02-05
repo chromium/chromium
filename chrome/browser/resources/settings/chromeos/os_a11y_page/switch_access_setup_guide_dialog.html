@@ -1,0 +1,28 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/html/load_time_data.html">
+<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
+<link rel="import" href="../../prefs/prefs_behavior.html">
+<link rel="import" href="../os_icons.html">
+<link rel="import" href="switch_access_constants.html">
+<link rel="import" href="switch_access_subpage_browser_proxy.html">
+
+<dom-module id="settings-switch-access-setup-guide-dialog">
+  <template>
+    <cr-dialog id="switchAccessSetupGuideDialog" show-on-attach>
+      <div slot="title">Coming Soon</div>
+      <div slot="body"></div>
+      <div id="button-container" slot="button-container">
+        <cr-button class="exit-button" on-click="onExitClick_"
+            id="exit">
+          $i18n{switchAccessDialogExit}
+        </cr-button>
+      </div>
+    </cr-dialog>
+  </template>
+  <script src="switch_access_setup_guide_dialog.js"></script>
+</dom-module>

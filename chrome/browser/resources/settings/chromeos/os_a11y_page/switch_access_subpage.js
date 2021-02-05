@@ -130,8 +130,14 @@ Polymer({
       ]),
     },
 
-    /** @private {boolean} */
+    /** @private */
     showSwitchAccessActionAssignmentDialog_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /** @private */
+    showSwitchAccessSetupGuideDialog_: {
       type: Boolean,
       value: false,
     },
@@ -175,6 +181,13 @@ Polymer({
   },
 
   /** @private */
+  onSetupGuideClick_() {
+    if (this.showSetupGuide_()) {
+      this.showSwitchAccessSetupGuideDialog_ = true;
+    }
+  },
+
+  /** @private */
   onSelectAssignClick_() {
     this.action_ = SwitchAccessCommand.SELECT;
     this.showSwitchAccessActionAssignmentDialog_ = true;
@@ -193,6 +206,12 @@ Polymer({
     this.action_ = SwitchAccessCommand.PREVIOUS;
     this.showSwitchAccessActionAssignmentDialog_ = true;
     this.focusAfterDialogClose_ = this.$.previousLinkRow;
+  },
+
+  /** @private */
+  onSwitchAccessSetupGuideDialogClose_() {
+    this.showSwitchAccessSetupGuideDialog_ = false;
+    this.$.setupGuideLink.focus();
   },
 
   /** @private */
@@ -260,6 +279,14 @@ Polymer({
     const autoScanEnabled = /** @type {boolean} */
         (this.getPref(PREFIX + 'auto_scan.enabled').value);
     return improvedTextInputEnabled && autoScanEnabled;
+  },
+
+  /**
+   * @return {boolean} Whether to show the Switch Access setup guide.
+   * @private
+   */
+  showSetupGuide_() {
+    return loadTimeData.getBoolean('showSwitchAccessSetupGuide');
   },
 
   /**

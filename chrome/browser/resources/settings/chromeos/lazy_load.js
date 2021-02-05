@@ -9,6 +9,7 @@ import './os_a11y_page/os_a11y_page.m.js';
 import './on_startup_page/on_startup_page.m.js';
 import './os_a11y_page/manage_a11y_page.m.js';
 import './os_a11y_page/switch_access_action_assignment_dialog.m.js';
+import './os_a11y_page/switch_access_setup_guide_dialog.m.js';
 import './os_a11y_page/switch_access_subpage.m.js';
 import './os_files_page/os_files_page.m.js';
 import './os_languages_page/input_method_options_page.m.js';
