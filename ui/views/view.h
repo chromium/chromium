@@ -1616,6 +1616,12 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   FRIEND_TEST_ALL_PREFIXES(ViewTest, PaintWithMovedViewUsesCacheInRTL);
   FRIEND_TEST_ALL_PREFIXES(ViewTest, PaintWithUnknownInvalidation);
 
+  // http://crbug.com/1162949 : Instrumentation that indicates if this is alive.
+  enum class LifeCycleState : uint32_t {
+    kAlive = 0x600D600D,
+    kDestroyed = 0xBAADBAAD,
+  };
+
   // This is the default view layout. It is a very simple version of FillLayout,
   // which merely sets the bounds of the children to the content bounds. The
   // actual FillLayout isn't used here because it supports a couple of features
@@ -2114,6 +2120,9 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Property Changed Callbacks ------------------------------------------------
   PropertyChangedVectors property_changed_vectors_;
+
+  // http://crbug.com/1162949 : Instrumentation that indicates if this is alive.
+  LifeCycleState life_cycle_state_ = LifeCycleState::kAlive;
 
   DISALLOW_COPY_AND_ASSIGN(View);
 };

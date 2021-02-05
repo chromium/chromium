@@ -249,6 +249,8 @@ View::~View() {
   // called at the end so observers can examine properties inside
   // OnViewIsDeleting(), for instance.
   ClearProperties();
+
+  life_cycle_state_ = LifeCycleState::kDestroyed;
 }
 
 // Tree operations -------------------------------------------------------------
@@ -1058,6 +1060,8 @@ void View::SchedulePaintInRect(const gfx::Rect& rect) {
 }
 
 void View::Paint(const PaintInfo& parent_paint_info) {
+  CHECK_EQ(life_cycle_state_, LifeCycleState::kAlive);
+
   if (!ShouldPaint())
     return;
 
@@ -1156,6 +1160,8 @@ void View::Paint(const PaintInfo& parent_paint_info) {
     // Delegate painting the contents of the View to the virtual OnPaint method.
     OnPaint(canvas);
   }
+
+  CHECK_EQ(life_cycle_state_, LifeCycleState::kAlive);
 
   // View::Paint() recursion over the subtree.
   PaintChildren(paint_info);
