@@ -186,8 +186,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
 
 // Checks that both the signin web view and the main picker view are able to
 // process a back keyboard event.
+// Flaky on all platforms. http://crbug.com/1173544
 IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
-                       NavigateBackWithKeyboard) {
+                       DISABLED_NavigateBackWithKeyboard) {
   // Simulate walking through the flow starting at the picker so that navigating
   // back to the picker makes sense.
   ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
