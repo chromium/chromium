@@ -51,6 +51,7 @@
 #endif
 
 using signin_metrics::AccountReconcilorState;
+using testing::_;
 
 namespace {
 
@@ -1205,6 +1206,7 @@ TEST_P(AccountReconcilorTestDiceMultilogin, TableRowTest) {
 
   // Setup expectations.
   testing::InSequence mock_sequence;
+  bool should_logout;
   if (GetParam().gaia_api_calls_multilogin[0] != '\0') {
     gaia::MultiloginMode mode =
         GetParam().gaia_api_calls_multilogin[0] == 'U'
@@ -1219,9 +1221,10 @@ TEST_P(AccountReconcilorTestDiceMultilogin, TableRowTest) {
     }
     const signin::MultiloginParameters params(mode, accounts_to_send);
     cookies_after_reconcile = FakeSetAccountsInCookie(params, cookies);
-    if (accounts_to_send.empty() &&
-        (mode ==
-         gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER)) {
+    should_logout =
+        accounts_to_send.empty() &&
+        (mode == gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER);
+    if (should_logout) {
       EXPECT_CALL(*GetMockReconcilor(), PerformLogoutAllAccountsAction())
           .Times(1);
     } else {
@@ -1236,9 +1239,15 @@ TEST_P(AccountReconcilorTestDiceMultilogin, TableRowTest) {
   reconcilor->first_execution_ =
       GetParam().is_first_reconcile == IsFirstReconcile::kFirst ? true : false;
   reconcilor->StartReconcile();
-
-  SimulateSetAccountsInCookieCompleted(
-      reconcilor, signin::SetAccountsInCookieResult::kSuccess);
+  if (GetParam().gaia_api_calls_multilogin[0] != '\0') {
+    if (should_logout) {
+      SimulateLogOutFromCookieCompleted(
+          reconcilor, GoogleServiceAuthError::AuthErrorNone());
+    } else {
+      SimulateSetAccountsInCookieCompleted(
+          reconcilor, signin::SetAccountsInCookieResult::kSuccess);
+    }
+  }
 
   ASSERT_FALSE(reconcilor->is_reconcile_started_);
   if (GetParam().tokens == GetParam().tokens_after_reconcile_multilogin) {
@@ -1842,15 +1851,15 @@ TEST_P(AccountReconcilorTestActiveDirectory, TableRowTestMultilogin) {
       std::make_unique<signin::ActiveDirectoryAccountReconcilorDelegate>());
 
   // Setup expectations.
-  bool logout_action = false;
-  for (int i = 0; GetParam().gaia_api_calls[i] != '\0'; ++i) {
-    if (GetParam().gaia_api_calls[i] == 'X') {
-      logout_action = true;
+  bool should_logout;
+  if (GetParam().gaia_api_calls[0] != '\0') {
+    if (GetParam().gaia_api_calls[0] == 'X') {
+      should_logout = true;
       EXPECT_CALL(*reconcilor, PerformLogoutAllAccountsAction()).Times(1);
+      EXPECT_CALL(*reconcilor, PerformSetCookiesAction(_)).Times(0);
       cookies.clear();
-      continue;
-    }
-    if (GetParam().gaia_api_calls[i] == 'U') {
+    } else if (GetParam().gaia_api_calls[0] == 'U') {
+      should_logout = false;
       std::vector<CoreAccountId> accounts_to_send;
       for (int i = 0; GetParam().cookies_after_reconcile[i] != '\0'; ++i) {
         char cookie = GetParam().cookies_after_reconcile[i];
@@ -1863,10 +1872,8 @@ TEST_P(AccountReconcilorTestActiveDirectory, TableRowTestMultilogin) {
           gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
           accounts_to_send);
       EXPECT_CALL(*reconcilor, PerformSetCookiesAction(params)).Times(1);
+      EXPECT_CALL(*reconcilor, PerformLogoutAllAccountsAction()).Times(0);
     }
-  }
-  if (!logout_action) {
-    EXPECT_CALL(*reconcilor, PerformLogoutAllAccountsAction()).Times(0);
   }
 
   // Reconcile.
@@ -1875,9 +1882,15 @@ TEST_P(AccountReconcilorTestActiveDirectory, TableRowTestMultilogin) {
   reconcilor->first_execution_ =
       GetParam().is_first_reconcile == IsFirstReconcile::kFirst ? true : false;
   reconcilor->StartReconcile();
-
-  SimulateSetAccountsInCookieCompleted(
-      reconcilor, signin::SetAccountsInCookieResult::kSuccess);
+  if (GetParam().gaia_api_calls[0] != '\0') {
+    if (should_logout) {
+      SimulateLogOutFromCookieCompleted(
+          reconcilor, GoogleServiceAuthError::AuthErrorNone());
+    } else {
+      SimulateSetAccountsInCookieCompleted(
+          reconcilor, signin::SetAccountsInCookieResult::kSuccess);
+    }
+  }
 
   ASSERT_FALSE(reconcilor->is_reconcile_started_);
   ASSERT_EQ(signin_metrics::ACCOUNT_RECONCILOR_OK, reconcilor->GetState());
@@ -2857,6 +2870,8 @@ TEST_F(AccountReconcilorTest, MultiloginLogout) {
   reconcilor->StartReconcile();
   ASSERT_TRUE(reconcilor->is_reconcile_started_);
   base::RunLoop().RunUntilIdle();
+  SimulateLogOutFromCookieCompleted(reconcilor,
+                                    GoogleServiceAuthError::AuthErrorNone());
   EXPECT_FALSE(reconcilor->is_reconcile_started_);
   ASSERT_EQ(signin_metrics::ACCOUNT_RECONCILOR_OK, reconcilor->GetState());
 }

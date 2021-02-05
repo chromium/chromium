@@ -36,16 +36,35 @@ class StubAccountReconcilor : public AccountReconcilor {
       : AccountReconcilor(identity_manager,
                           client,
                           std::make_unique<StubAccountReconcilorDelegate>()) {}
-  ~StubAccountReconcilor() override {}
+  ~StubAccountReconcilor() override {
+    EXPECT_FALSE(perform_logout_all_accounts_called_);
+    EXPECT_FALSE(perform_set_cookies_called_);
+  }
 
   void PerformLogoutAllAccountsAction() override {
-    OnLogOutFromCookieCompleted(GoogleServiceAuthError::AuthErrorNone());
+    perform_logout_all_accounts_called_ = true;
   }
 
   void PerformSetCookiesAction(
       const signin::MultiloginParameters& parameters) override {
+    perform_set_cookies_called_ = true;
+  }
+
+  void SimulateLogoutAllAccountsFinished() {
+    EXPECT_TRUE(perform_logout_all_accounts_called_);
+    perform_logout_all_accounts_called_ = false;
+    OnLogOutFromCookieCompleted(GoogleServiceAuthError::AuthErrorNone());
+  }
+
+  void SimulateSetCookiesFinished() {
+    EXPECT_TRUE(perform_set_cookies_called_);
+    perform_set_cookies_called_ = false;
     OnSetAccountsInCookieCompleted(signin::SetAccountsInCookieResult::kSuccess);
   }
+
+ private:
+  bool perform_set_cookies_called_ = false;
+  bool perform_logout_all_accounts_called_ = false;
 };
 
 class WebSigninBridgeTest : public ::testing::Test {
@@ -75,7 +94,7 @@ class WebSigninBridgeTest : public ::testing::Test {
   sync_preferences::TestingPrefServiceSyncable prefs_;
   TestSigninClient signin_client_;
   signin::IdentityTestEnvironment identity_test_env_;
-  std::unique_ptr<AccountReconcilor> account_reconcilor_;
+  std::unique_ptr<StubAccountReconcilor> account_reconcilor_;
 
   DISALLOW_COPY_AND_ASSIGN(WebSigninBridgeTest);
 };
@@ -120,6 +139,7 @@ TEST_F(
   identity_test_env_.SetRefreshTokenForAccount(account.account_id);
   signin::CookieParamsForTest cookie_params{account.email, account.gaia};
   identity_test_env_.SetCookieAccounts({cookie_params});
+  account_reconcilor_->SimulateLogoutAllAccountsFinished();
 }
 
 TEST_F(WebSigninBridgeTest,

@@ -276,6 +276,8 @@ void AccountReconcilor::DisableReconcile(bool logout_all_accounts) {
 
 void AccountReconcilor::Shutdown() {
   VLOG(1) << "AccountReconcilor::Shutdown";
+  if (WasShutDown())
+    return;
   was_shut_down_ = true;
   DisableReconcile(false /* logout_all_accounts */);
   delegate_.reset();
@@ -388,6 +390,7 @@ void AccountReconcilor::OnErrorStateOfRefreshTokenUpdatedForAccount(
 }
 
 void AccountReconcilor::PerformMergeAction(const CoreAccountId& account_id) {
+  DCHECK(!IsMultiloginEndpointEnabled());
   reconcile_is_noop_ = false;
   VLOG(1) << "AccountReconcilor::PerformMergeAction: " << account_id;
   identity_manager_->GetAccountsCookieMutator()->AddAccountToCookie(
@@ -398,6 +401,7 @@ void AccountReconcilor::PerformMergeAction(const CoreAccountId& account_id) {
 
 void AccountReconcilor::PerformSetCookiesAction(
     const signin::MultiloginParameters& parameters) {
+  DCHECK(IsMultiloginEndpointEnabled());
   reconcile_is_noop_ = false;
   VLOG(1) << "AccountReconcilor::PerformSetCookiesAction: "
           << base::JoinString(ToStringList(parameters.accounts_to_send), " ");
@@ -531,12 +535,8 @@ void AccountReconcilor::FinishReconcileWithMultiloginEndpoint(
     if (parameters_for_multilogin == kLogoutParameters) {
       // UPDATE mode does not support empty list of accounts, call logout
       // instead.
+      log_out_in_progress_ = true;
       PerformLogoutAllAccountsAction();
-      gaia_accounts.clear();
-      // TODO(alexilin): Asynchronously wait until the logout is complete.
-      OnSetAccountsInCookieCompleted(
-          signin::SetAccountsInCookieResult::kSuccess);
-      DCHECK(!is_reconcile_started_);
     } else {
       // Reconcilor has to do some calls to gaia. is_reconcile_started_ is true
       // and any StartReconcile() calls that are made in the meantime will be
@@ -547,12 +547,9 @@ void AccountReconcilor::FinishReconcileWithMultiloginEndpoint(
     }
   } else {
     // Nothing to do, accounts already match.
-    OnSetAccountsInCookieCompleted(signin::SetAccountsInCookieResult::kSuccess);
-    DCHECK(!is_reconcile_started_);
-  }
+    error_during_last_reconcile_ = GoogleServiceAuthError::AuthErrorNone();
+    CalculateIfMultiloginReconcileIsDone();
 
-  signin_metrics::RecordAccountsPerProfile(chrome_accounts.size());
-  if (!is_reconcile_started_) {
     // TODO(droger): investigate if |is_reconcile_started_| is still needed for
     // multilogin.
 
@@ -560,12 +557,16 @@ void AccountReconcilor::FinishReconcileWithMultiloginEndpoint(
     // is consistent). If it is not the case, second reconcile is expected to be
     // triggered after changes are made. For that one the state is supposed to
     // be already consistent.
-    DCHECK(!CookieNeedsUpdate(parameters_for_multilogin, gaia_accounts));
-    DCHECK_NE(AccountReconcilorState::ACCOUNT_RECONCILOR_RUNNING, state_);
+    DCHECK(!is_reconcile_started_);
+    DCHECK_NE(AccountReconcilorState::ACCOUNT_RECONCILOR_OK, state_);
+
     CoreAccountId first_gaia_account_after_reconcile =
         PickFirstGaiaAccount(parameters_for_multilogin, gaia_accounts);
     delegate_->OnReconcileFinished(first_gaia_account_after_reconcile);
+    ScheduleStartReconcileIfChromeAccountsChanged();
   }
+
+  signin_metrics::RecordAccountsPerProfile(chrome_accounts.size());
   first_execution_ = false;
 }
 
@@ -728,6 +729,7 @@ void AccountReconcilor::FinishReconcile(
     const CoreAccountId& primary_account,
     const std::vector<CoreAccountId>& chrome_accounts,
     std::vector<gaia::ListedAccount>&& gaia_accounts) {
+  DCHECK(!IsMultiloginEndpointEnabled());
   VLOG(1) << "AccountReconcilor::FinishReconcile";
   DCHECK(add_to_cookie_.empty());
   DCHECK(delegate_->IsUnknownInvalidAccountInCookieAllowed())
@@ -812,7 +814,7 @@ void AccountReconcilor::FinishReconcile(
       chrome_accounts.size(), added_to_cookie, removed_from_cookie,
       !first_account_mismatch, first_execution_, number_gaia_accounts);
   first_execution_ = false;
-  CalculateIfReconcileIsDone();
+  CalculateIfMergeSessionReconcileIsDone();
   if (!is_reconcile_started_)
     delegate_->OnReconcileFinished(first_account);
   ScheduleStartReconcileIfChromeAccountsChanged();
@@ -821,14 +823,20 @@ void AccountReconcilor::FinishReconcile(
 void AccountReconcilor::AbortReconcile() {
   VLOG(1) << "AccountReconcilor::AbortReconcile: try again later";
   log_out_in_progress_ = false;
-  add_to_cookie_.clear();
-  CalculateIfReconcileIsDone();
+  if (IsMultiloginEndpointEnabled()) {
+    set_accounts_in_progress_ = false;
+    CalculateIfMultiloginReconcileIsDone();
+  } else {
+    add_to_cookie_.clear();
+    CalculateIfMergeSessionReconcileIsDone();
+  }
 
   DCHECK(!is_reconcile_started_);
   DCHECK(!timer_->IsRunning());
 }
 
-void AccountReconcilor::CalculateIfReconcileIsDone() {
+void AccountReconcilor::CalculateIfMergeSessionReconcileIsDone() {
+  DCHECK(!IsMultiloginEndpointEnabled());
   base::TimeDelta duration = base::Time::Now() - reconcile_start_time_;
   // Record the duration if reconciliation was underway and now it is over.
   if (is_reconcile_started_ && add_to_cookie_.empty() &&
@@ -856,7 +864,8 @@ void AccountReconcilor::CalculateIfReconcileIsDone() {
 
   is_reconcile_started_ = !add_to_cookie_.empty() || log_out_in_progress_;
   if (!is_reconcile_started_)
-    VLOG(1) << "AccountReconcilor::CalculateIfReconcileIsDone: done";
+    VLOG(1)
+        << "AccountReconcilor::CalculateIfMergeSessionReconcileIsDone: done";
 }
 
 void AccountReconcilor::ScheduleStartReconcileIfChromeAccountsChanged() {
@@ -900,34 +909,58 @@ bool AccountReconcilor::IsIdentityManagerReady() {
 
 void AccountReconcilor::OnSetAccountsInCookieCompleted(
     signin::SetAccountsInCookieResult result) {
+  DCHECK(IsMultiloginEndpointEnabled());
   VLOG(1) << "AccountReconcilor::OnSetAccountsInCookieCompleted: "
           << "Error was " << static_cast<int>(result);
-  if (is_reconcile_started_) {
-    if (result != signin::SetAccountsInCookieResult::kSuccess &&
-        !error_during_last_reconcile_.IsPersistentError()) {
+
+  if (!set_accounts_in_progress_ || !is_reconcile_started_)
+    return;
+  set_accounts_in_progress_ = false;
+  switch (result) {
+    case signin::SetAccountsInCookieResult::kSuccess:
+      error_during_last_reconcile_ = GoogleServiceAuthError::AuthErrorNone();
+      break;
+    case signin::SetAccountsInCookieResult::kTransientError:
+      if (!error_during_last_reconcile_.IsPersistentError())
+        error_during_last_reconcile_ =
+            GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED);
+      break;
+    case signin::SetAccountsInCookieResult::kPersistentError:
       error_during_last_reconcile_ =
-          result == signin::SetAccountsInCookieResult::kTransientError
-              ? GoogleServiceAuthError(
-                    GoogleServiceAuthError::CONNECTION_FAILED)
-              : GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_ERROR);
-      delegate_->OnReconcileError(error_during_last_reconcile_);
-    }
-
-    set_accounts_in_progress_ = false;
-    is_reconcile_started_ = false;
-
-    timer_->Stop();
-    base::TimeDelta duration = base::Time::Now() - reconcile_start_time_;
-    signin_metrics::LogSigninAccountReconciliationDuration(
-        duration, (error_during_last_reconcile_.state() ==
-                   GoogleServiceAuthError::State::NONE));
-    ScheduleStartReconcileIfChromeAccountsChanged();
+          GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_ERROR);
+      break;
   }
+  CalculateIfMultiloginReconcileIsDone();
+  ScheduleStartReconcileIfChromeAccountsChanged();
+}
+
+void AccountReconcilor::CalculateIfMultiloginReconcileIsDone() {
+  DCHECK(IsMultiloginEndpointEnabled());
+  DCHECK(!set_accounts_in_progress_);
+  DCHECK(!log_out_in_progress_);
+  VLOG(1) << "AccountReconcilor::CalculateIfMultiloginReconcileIsDone: "
+          << "Error was " << error_during_last_reconcile_.ToString();
+
+  if (!is_reconcile_started_)
+    return;
+
+  bool was_last_reconcile_successful = error_during_last_reconcile_.state() ==
+                                       GoogleServiceAuthError::State::NONE;
+
+  if (!was_last_reconcile_successful)
+    delegate_->OnReconcileError(error_during_last_reconcile_);
+
+  is_reconcile_started_ = false;
+  timer_->Stop();
+  base::TimeDelta duration = base::Time::Now() - reconcile_start_time_;
+  signin_metrics::LogSigninAccountReconciliationDuration(
+      duration, was_last_reconcile_successful);
 }
 
 void AccountReconcilor::OnAddAccountToCookieCompleted(
     const CoreAccountId& account_id,
     const GoogleServiceAuthError& error) {
+  DCHECK(!IsMultiloginEndpointEnabled());
   VLOG(1) << "AccountReconcilor::OnAddAccountToCookieCompleted: "
           << "Account added: " << account_id << ", "
           << "Error was " << error.ToString();
@@ -940,7 +973,7 @@ void AccountReconcilor::OnAddAccountToCookieCompleted(
         !error_during_last_reconcile_.IsPersistentError()) {
       error_during_last_reconcile_ = error;
     }
-    CalculateIfReconcileIsDone();
+    CalculateIfMergeSessionReconcileIsDone();
     ScheduleStartReconcileIfChromeAccountsChanged();
   }
 }
@@ -951,14 +984,18 @@ void AccountReconcilor::OnLogOutFromCookieCompleted(
           << "Error was " << error.ToString();
 
   if (is_reconcile_started_) {
+    log_out_in_progress_ = false;
     if (error.state() != GoogleServiceAuthError::State::NONE &&
         !error_during_last_reconcile_.IsPersistentError()) {
       error_during_last_reconcile_ = error;
     }
-
-    log_out_in_progress_ = false;
-    CalculateIfReconcileIsDone();
-    ScheduleStartReconcileIfChromeAccountsChanged();
+    if (IsMultiloginEndpointEnabled()) {
+      CalculateIfMultiloginReconcileIsDone();
+      ScheduleStartReconcileIfChromeAccountsChanged();
+    } else {
+      CalculateIfMergeSessionReconcileIsDone();
+      ScheduleStartReconcileIfChromeAccountsChanged();
+    }
   }
 }
 
@@ -1020,7 +1057,8 @@ void AccountReconcilor::HandleReconcileTimeout() {
   }
 
   // Will stop reconciliation and inform |delegate_| about
-  // |error_during_last_reconcile_|, through |CalculateIfReconcileIsDone|.
+  // |error_during_last_reconcile_|, through
+  // |CalculateIfMergeSessionReconcileIsDone|.
   AbortReconcile();
   DCHECK(!timer_->IsRunning());
 }

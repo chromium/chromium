@@ -258,7 +258,7 @@ class AccountReconcilor : public KeyedService,
                        const std::vector<CoreAccountId>& chrome_accounts,
                        std::vector<gaia::ListedAccount>&& gaia_accounts);
   void AbortReconcile();
-  void CalculateIfReconcileIsDone();
+  void CalculateIfMergeSessionReconcileIsDone();
   void ScheduleStartReconcileIfChromeAccountsChanged();
 
   // Returns the list of valid accounts from the TokenService.
@@ -290,6 +290,7 @@ class AccountReconcilor : public KeyedService,
       const CoreAccountId& primary_account,
       const std::vector<CoreAccountId>& chrome_accounts,
       std::vector<gaia::ListedAccount>&& gaia_accounts);
+  void CalculateIfMultiloginReconcileIsDone();
 
   // Lock related methods.
   void IncrementLockCount();
