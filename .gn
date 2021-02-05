@@ -81,7 +81,6 @@ no_check_targets = [
   "//extensions/browser/api/app_current_window_internal:*",  # 3 errors
   "//extensions/browser/api/app_runtime:*",  # 3 errors
   "//extensions/browser/api/app_window:*",  # 5 errors
-  "//extensions/browser/api/audio:*",  # 3 errors
   "//extensions/browser/api/automation_internal:*",  # 37 errors
   "//extensions/browser/api/bluetooth_low_energy:*",  # 22 errors
   "//extensions/browser/api/bluetooth_socket:*",  # 12 errors
