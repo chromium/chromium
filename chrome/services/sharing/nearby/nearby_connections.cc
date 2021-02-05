@@ -185,15 +185,16 @@ NearbyConnections::NearbyConnections(
       on_disconnect_(std::move(on_disconnect)),
       service_controller_(std::move(service_controller)),
       thread_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
-  nearby_connections_.set_disconnect_handler(base::BindOnce(
-      &NearbyConnections::OnDisconnect, weak_ptr_factory_.GetWeakPtr()));
+  nearby_connections_.set_disconnect_handler(
+      base::BindOnce(&NearbyConnections::OnDisconnect,
+                     weak_ptr_factory_.GetWeakPtr(), "Nearby Connections"));
 
   if (dependencies->bluetooth_adapter) {
     bluetooth_adapter_.Bind(std::move(dependencies->bluetooth_adapter),
                             io_task_runner);
     bluetooth_adapter_.set_disconnect_handler(
         base::BindOnce(&NearbyConnections::OnDisconnect,
-                       weak_ptr_factory_.GetWeakPtr()),
+                       weak_ptr_factory_.GetWeakPtr(), "Bluetooth Adapter"),
         base::SequencedTaskRunnerHandle::Get());
   }
 
@@ -202,7 +203,7 @@ NearbyConnections::NearbyConnections(
       io_task_runner);
   socket_manager_.set_disconnect_handler(
       base::BindOnce(&NearbyConnections::OnDisconnect,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(), "Socket Manager"),
       base::SequencedTaskRunnerHandle::Get());
 
   mdns_responder_.Bind(
@@ -210,7 +211,7 @@ NearbyConnections::NearbyConnections(
       io_task_runner);
   mdns_responder_.set_disconnect_handler(
       base::BindOnce(&NearbyConnections::OnDisconnect,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(), "MDNS Responder"),
       base::SequencedTaskRunnerHandle::Get());
 
   ice_config_fetcher_.Bind(
@@ -218,14 +219,15 @@ NearbyConnections::NearbyConnections(
       io_task_runner);
   ice_config_fetcher_.set_disconnect_handler(
       base::BindOnce(&NearbyConnections::OnDisconnect,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(), "Ice Config Fetcher"),
       base::SequencedTaskRunnerHandle::Get());
 
   webrtc_signaling_messenger_.Bind(
       std::move(dependencies->webrtc_dependencies->messenger), io_task_runner);
   webrtc_signaling_messenger_.set_disconnect_handler(
       base::BindOnce(&NearbyConnections::OnDisconnect,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(),
+                     "WebRTC Signaling Messenger"),
       base::SequencedTaskRunnerHandle::Get());
 
   // There should only be one instance of NearbyConnections in a process.
@@ -249,7 +251,9 @@ NearbyConnections::~NearbyConnections() {
   g_instance = nullptr;
 }
 
-void NearbyConnections::OnDisconnect() {
+void NearbyConnections::OnDisconnect(const std::string dependency_name) {
+  LOG(WARNING) << "Nearby dependency mojo disconnected: [" << dependency_name
+               << "]";
   if (on_disconnect_)
     std::move(on_disconnect_).Run();
   // Note: |this| might be destroyed here.

@@ -156,7 +156,7 @@ class NearbyConnections : public mojom::NearbyConnections {
  private:
   Core* GetCore(const std::string& service_id);
 
-  void OnDisconnect();
+  void OnDisconnect(const std::string dependency_name);
 
   mojo::Receiver<mojom::NearbyConnections> nearby_connections_;
   base::OnceClosure on_disconnect_;
