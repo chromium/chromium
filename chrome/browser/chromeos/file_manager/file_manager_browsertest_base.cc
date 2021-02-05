@@ -71,7 +71,6 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/components/drivefs/drivefs_host.h"
 #include "chromeos/components/drivefs/fake_drivefs.h"
-#include "chromeos/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/components/smbfs/smbfs_host.h"
 #include "chromeos/components/smbfs/smbfs_mounter.h"
 #include "chromeos/constants/chromeos_switches.h"
@@ -1165,16 +1164,6 @@ class DriveFsTestVolume : public TestVolume {
     ASSERT_TRUE(UpdateModifiedTime(entry));
   }
 
-  void DisplayConfirmDialog(drivefs::mojom::DialogReasonPtr reason) {
-    fake_drivefs_helper_->fake_drivefs().DisplayConfirmDialog(
-        std::move(reason), base::BindOnce(&DriveFsTestVolume::OnDialogResult,
-                                          base::Unretained(this)));
-  }
-
-  drivefs::mojom::DialogResult last_dialog_result() {
-    return last_dialog_result_;
-  }
-
  private:
   base::RepeatingCallback<std::unique_ptr<drivefs::DriveFsBootstrapListener>()>
   CreateDriveFsBootstrapListener() {
@@ -1269,12 +1258,6 @@ class DriveFsTestVolume : public TestVolume {
   base::FilePath GetComputerPath(const std::string& computer_name) {
     return GetComputerGrandRoot().Append(computer_name);
   }
-
-  void OnDialogResult(drivefs::mojom::DialogResult result) {
-    last_dialog_result_ = result;
-  }
-
-  drivefs::mojom::DialogResult last_dialog_result_;
 
   // Profile associated with this volume: not owned.
   Profile* profile_ = nullptr;
@@ -2728,21 +2711,6 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
         ->DropFailedPluginVmDirectoryNotShared();
     return;
   }
-
-  if (name == "displayEnableDocsOfflineDialog") {
-    drive_volume_->DisplayConfirmDialog(drivefs::mojom::DialogReason::New(
-        drivefs::mojom::DialogReason::Type::kEnableDocsOffline,
-        base::FilePath()));
-    return;
-  }
-
-  if (name == "getLastDriveDialogResult") {
-    base::JSONWriter::Write(
-        base::Value(static_cast<int32_t>(drive_volume_->last_dialog_result())),
-        output);
-    return;
-  }
-
   FAIL() << "Unknown test message: " << name;
 }
 

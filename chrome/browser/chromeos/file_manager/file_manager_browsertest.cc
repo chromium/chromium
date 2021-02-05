@@ -674,10 +674,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("driveLinkOpenFileThroughTransitiveLink").MediaSwa(),
         TestCase("driveWelcomeBanner"),
         TestCase("driveOfflineInfoBanner").EnableDriveDssPin(),
-        TestCase("driveOfflineInfoBannerWithoutFlag"),
-        TestCase("driveEnableDocsOfflineDialog"),
-        TestCase("driveEnableDocsOfflineDialogWithoutWindow"),
-        TestCase("driveEnableDocsOfflineDialogMultipleWindows")));
+        TestCase("driveOfflineInfoBannerWithoutFlag")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     HoldingSpace, /* holding_space.js */

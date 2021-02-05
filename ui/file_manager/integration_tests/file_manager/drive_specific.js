@@ -24,16 +24,6 @@ const SEARCH_RESULTS_ENTRY_SET = [
 ];
 
 /**
- * Expected text shown in the Enable Docs Offline dialog.
- *
- * @type {string}
- * @const
- */
-const ENABLE_DOCS_OFFLINE_MESSAGE =
-    'Enable Google Docs Offline to make Docs, Sheets and Slides ' +
-    'available offline.';
-
-/**
  * Returns the steps to start a search for 'hello' and wait for the
  * autocomplete results to appear.
  */
@@ -64,22 +54,6 @@ async function startDriveSearchWithAutoComplete() {
         pending(caller, 'Current auto complete list: %j.', list);
   });
   return appId;
-}
-
-/**
- * Opens the Enable Docs Offline dialog and waits for it to appear in the given
- * |appId| window.
- *
- * @param {string} appId
- */
-async function openAndWaitForEnableDocsOfflineDialog(appId) {
-  // Simulate Drive signalling Files App to open a dialog.
-  await sendTestMessage({name: 'displayEnableDocsOfflineDialog'});
-
-  // Check: the Enable Docs Offline dialog should appear.
-  const dialogText = await remoteCall.waitForElement(
-      appId, '.cr-dialog-container.shown .cr-dialog-text');
-  chrome.test.assertEq(ENABLE_DOCS_OFFLINE_MESSAGE, dialogText.text);
 }
 
 /**
@@ -842,97 +816,4 @@ testcase.driveOfflineInfoBannerWithoutFlag = async () => {
   // Check: the Drive Offline info banner should not appear.
   await remoteCall.waitForElementLost(
       appId, '#offline-info-banner:not([hidden])');
-};
-
-/**
- * Tests that the Enable Docs Offline dialog appears in the Files App.
- */
-testcase.driveEnableDocsOfflineDialog = async () => {
-  // Open Files app on Drive.
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, []);
-
-  // Open the Enable Docs Offline dialog.
-  await openAndWaitForEnableDocsOfflineDialog(appId);
-
-  // Click on the ok button.
-  await remoteCall.waitAndClickElement(
-      appId, '.cr-dialog-container.shown .cr-dialog-ok');
-
-  // Check: the last dialog result should be 1 (accept).
-  let lastResult = await sendTestMessage({name: 'getLastDriveDialogResult'});
-  chrome.test.assertEq('1', lastResult);
-
-  // Open the Enable Docs Offline dialog.
-  await openAndWaitForEnableDocsOfflineDialog(appId);
-
-  // Click on the cancel button.
-  await remoteCall.waitAndClickElement(
-      appId, '.cr-dialog-container.shown .cr-dialog-cancel');
-
-  // Check: the last dialog result should be 2 (reject).
-  lastResult = await sendTestMessage({name: 'getLastDriveDialogResult'});
-  chrome.test.assertEq('2', lastResult);
-
-  // Open the Enable Docs Offline dialog.
-  await openAndWaitForEnableDocsOfflineDialog(appId);
-
-  // Close Files App.
-  await remoteCall.closeWindowAndWait(appId);
-
-  // Check: the last dialog result should be 3 (dismiss).
-  lastResult = await sendTestMessage({name: 'getLastDriveDialogResult'});
-  chrome.test.assertEq('3', lastResult);
-};
-
-/**
- * Tests that the Enable Docs Offline dialog launches a Files App window if
- * there are none open.
- */
-testcase.driveEnableDocsOfflineDialogWithoutWindow = async () => {
-  // Wait for the background page to listen to events from the browser.
-  await remoteCall.callRemoteTestUtil('waitForBackgroundReady', null, []);
-
-  // Simulate Drive signalling Files App to open a dialog.
-  await sendTestMessage({name: 'displayEnableDocsOfflineDialog'});
-
-  // Check: A Files App window should appear.
-  const appId = await remoteCall.waitForWindow('files#');
-
-  // Check: the Enable Docs Offline dialog should appear.
-  const dialogText = await remoteCall.waitForElement(
-      appId, '.cr-dialog-container.shown .cr-dialog-text');
-  chrome.test.assertEq(ENABLE_DOCS_OFFLINE_MESSAGE, dialogText.text);
-
-  // Click on the ok button.
-  await remoteCall.waitAndClickElement(
-      appId, '.cr-dialog-container.shown .cr-dialog-ok');
-
-  // Check: the last dialog result should be 1 (accept).
-  const lastResult = await sendTestMessage({name: 'getLastDriveDialogResult'});
-  chrome.test.assertEq('1', lastResult);
-};
-
-/**
- * Tests that the Enable Docs Offline dialog appears in the focused window if
- * there are more than one Files App windows open.
- */
-testcase.driveEnableDocsOfflineDialogMultipleWindows = async () => {
-  // Open two Files app windows on Drive, and the second one should be focused.
-  const appId1 = await setupAndWaitUntilReady(RootPath.DRIVE, []);
-  const appId2 = await setupAndWaitUntilReady(RootPath.DRIVE, []);
-
-  // Open the Enable Docs Offline dialog and check that it appears in the second
-  // window.
-  await openAndWaitForEnableDocsOfflineDialog(appId2);
-
-  // Check: there should be no dialog shown in the first window.
-  await remoteCall.waitForElementLost(appId1, '.cr-dialog-container.shown');
-
-  // Click on the ok button in the second window.
-  await remoteCall.waitAndClickElement(
-      appId2, '.cr-dialog-container.shown .cr-dialog-ok');
-
-  // Check: the last dialog result should be 1 (accept).
-  const lastResult = await sendTestMessage({name: 'getLastDriveDialogResult'});
-  chrome.test.assertEq('1', lastResult);
 };

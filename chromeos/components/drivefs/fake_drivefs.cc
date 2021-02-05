@@ -291,13 +291,6 @@ void FakeDriveFs::SetMetadata(const base::FilePath& path,
   }
 }
 
-void FakeDriveFs::DisplayConfirmDialog(
-    drivefs::mojom::DialogReasonPtr reason,
-    drivefs::mojom::DriveFsDelegate::DisplayConfirmDialogCallback callback) {
-  DCHECK(delegate_);
-  delegate_->DisplayConfirmDialog(std::move(reason), std::move(callback));
-}
-
 void FakeDriveFs::Init(
     drivefs::mojom::DriveFsConfigurationPtr config,
     mojo::PendingReceiver<drivefs::mojom::DriveFs> receiver,
