@@ -9,7 +9,7 @@
 Polymer({
   is: 'auto-enrollment-check-element',
 
-  behaviors: [OobeI18nBehavior, LoginScreenBehavior],
+  behaviors: [OobeI18nBehavior, LoginScreenBehavior, OobeDialogHostBehavior],
 
   ready() {
     this.initializeLoginScreen('AutoEnrollmentCheckScreen', {

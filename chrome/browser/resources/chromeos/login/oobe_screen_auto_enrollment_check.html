@@ -2,32 +2,12 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
+<link rel="import" href="/components/oobe_loading_dialog.html">
+<link rel="import" href="/components/oobe_dialog_host_behavior.html">
+
 <dom-module id="auto-enrollment-check-element">
   <template>
-    <link rel="stylesheet" href="chrome://resources/css/throbber.css">
-    <link rel="stylesheet" href="../../../../../ui/login/oobe.css">
-    <style>
-      #auto-enrollment-check {
-        min-height: 395px;
-        padding: 70px 17px 21px;
-      }
-
-      #auto-enrollment-check #auto-enrollment-check-progress {
-        color: #9c9c9c;
-        display: flex;
-        justify-content: center;
-        margin-top: 130px;
-        min-height: 0;
-      }
-    </style>
-    <div id="auto-enrollment-check" role="group"
-        i18n-values="aria-label:autoEnrollmentCheckScreenHeader">
-      <div class="step-contents">
-        <div id="auto-enrollment-check-progress" aria-live="polite">
-          <div class="throbber"></div>
-          [[i18nDynamic(locale, 'autoEnrollmentCheckMessage')]]
-        </div>
-      </div>
-    </div>
+    <oobe-loading-dialog text-key="autoEnrollmentCheckMessage">
+    </oobe-loading-dialog>
   </template>
 </dom-module>
