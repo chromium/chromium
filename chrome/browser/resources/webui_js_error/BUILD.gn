@@ -65,10 +65,12 @@ grit("resources") {
 }
 
 js_type_check("closure_compile") {
-  uses_js_modules = true
   deps = [ ":webui_js_error" ]
 }
 
 js_library("webui_js_error") {
-  deps = [ "//ui/webui/resources/js:util.m" ]
+  deps = [
+    "//ui/webui/resources/js:assert",
+    "//ui/webui/resources/js:util",
+  ]
 }

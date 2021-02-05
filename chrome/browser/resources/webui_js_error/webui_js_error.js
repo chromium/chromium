@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {$} from 'chrome://resources/js/util.m.js';
-
 /**
  * @fileoverview This JavaScript prints an error message, throws uncaught
  * exceptions, and otherwise does erroneous things for testing.
