@@ -15,7 +15,6 @@
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/sequence_checker.h"
 #include "base/single_thread_task_runner.h"
-#include "base/synchronization/waitable_event.h"
 
 namespace base {
 
@@ -76,10 +75,6 @@ class BASE_EXPORT FileDescriptorWatcher {
     // task posted to the MessageLoopForIO. This ensures that |watcher_| isn't
     // deleted while it is being used by the MessageLoopForIO.
     std::unique_ptr<Watcher> watcher_;
-
-    // An event for the watcher to notify controller that it's destroyed.
-    // As the |watcher_| is owned by Controller, always outlives the Watcher.
-    base::WaitableEvent on_watcher_destroyed_;
 
     // Validates that the Controller is used on the sequence on which it was
     // instantiated.
