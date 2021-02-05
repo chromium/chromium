@@ -438,7 +438,6 @@ bool WebGLWebCodecsVideoFrame::releaseVideoFrame(
     WebGLWebCodecsVideoFrameHandle* handle,
     ExceptionState& exception_state) {
   DCHECK(handle);
-  DCHECK(handle->hasTextureInfoArray());
   WebGLExtensionScopedContext scoped(this);
   auto* gl = scoped.Context()->ContextGL();
   auto& info_array = handle->textureInfoArray();

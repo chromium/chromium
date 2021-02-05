@@ -5,7 +5,7 @@
 // https://www.khronos.org/registry/webgl/extensions/proposals/WEBGL_webcodecs_video_frame/
 
 dictionary WebGLWebCodecsVideoFrameHandle {
-  FrozenArray<WebGLWebCodecsTextureInfo>? textureInfoArray;
+  required FrozenArray<WebGLWebCodecsTextureInfo> textureInfoArray;
 
   // The GLSL extension to be enabled in the shader.
   // {"GL_NV_EGL_stream_consumer_external", "GL_OES_EGL_image_external", ...}
