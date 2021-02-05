@@ -5,6 +5,7 @@
 if (is_android) {
   import("//build/config/android/rules.gni")
 }
+import("//components/optimization_guide/features.gni")
 
 static_library("core") {
   sources = [
@@ -82,6 +83,19 @@ static_library("core") {
     "//third_party/smhasher:murmurhash3",
     "//url:url",
   ]
+}
+
+if (build_with_tflite_lib) {
+  static_library("machine_learning") {
+    sources = [
+      "tflite_op_resolver.cc",
+      "tflite_op_resolver.h",
+    ]
+    deps = [
+      "//third_party/tflite",
+      "//third_party/tflite:tflite_public_headers",
+    ]
+  }
 }
 
 static_library("test_support") {

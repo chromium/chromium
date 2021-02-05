@@ -9,14 +9,9 @@
 #include <string>
 
 #include "base/memory/ptr_util.h"
-#include "chrome/common/buildflags.h"
-#include "chrome/services/machine_learning/machine_learning_tflite_buildflags.h"
-
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 #include "third_party/tflite/src/tensorflow/lite/c/common.h"
 #include "third_party/tflite/src/tensorflow/lite/interpreter.h"
 #include "third_party/tflite/src/tensorflow/lite/model.h"
-#endif
 
 namespace machine_learning {
 

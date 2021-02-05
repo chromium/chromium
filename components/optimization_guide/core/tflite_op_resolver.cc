@@ -1,15 +1,15 @@
 // Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "chrome/services/machine_learning/chrome_tflite_op_resolver.h"
+#include "components/optimization_guide/core/tflite_op_resolver.h"
 
 #include "third_party/tflite/src/tensorflow/lite/c/common.h"
 #include "third_party/tflite/src/tensorflow/lite/kernels/builtin_op_kernels.h"
 #include "third_party/tflite/src/tensorflow/lite/schema/schema_generated.h"
 
-namespace machine_learning {
+namespace optimization_guide {
 
-ChromeTFLiteOpResolver::ChromeTFLiteOpResolver() {
+TFLiteOpResolver::TFLiteOpResolver() {
   AddBuiltin(tflite::BuiltinOperator_ABS, tflite::ops::builtin::Register_ABS());
   AddBuiltin(tflite::BuiltinOperator_HARD_SWISH,
              tflite::ops::builtin::Register_HARD_SWISH());
@@ -373,4 +373,4 @@ ChromeTFLiteOpResolver::ChromeTFLiteOpResolver() {
              /* max_version = */ 2);
 }
 
-}  // namespace machine_learning
+}  // namespace optimization_guide
