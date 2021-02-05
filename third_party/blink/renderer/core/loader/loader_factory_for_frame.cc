@@ -28,12 +28,18 @@ LoaderFactoryForFrame::LoaderFactoryForFrame(DocumentLoader& document_loader,
     : document_loader_(document_loader),
       window_(window),
       prefetched_signed_exchange_manager_(
-          document_loader.GetPrefetchedSignedExchangeManager()) {}
+          document_loader.GetPrefetchedSignedExchangeManager()),
+      keep_alive_handle_factory_(&window) {
+  window.GetFrame()->GetLocalFrameHostRemote().GetKeepAliveHandleFactory(
+      keep_alive_handle_factory_.BindNewPipeAndPassReceiver(
+          window.GetTaskRunner(TaskType::kNetworking)));
+}
 
 void LoaderFactoryForFrame::Trace(Visitor* visitor) const {
   visitor->Trace(document_loader_);
   visitor->Trace(window_);
   visitor->Trace(prefetched_signed_exchange_manager_);
+  visitor->Trace(keep_alive_handle_factory_);
   LoaderFactory::Trace(visitor);
 }
 
@@ -143,8 +149,10 @@ void LoaderFactoryForFrame::IssueKeepAliveHandleIfRequested(
     mojom::blink::LocalFrameHost& local_frame_host,
     mojo::PendingReceiver<mojom::blink::KeepAliveHandle> pending_receiver) {
   DCHECK(pending_receiver);
-  if (request.GetKeepalive())
-    local_frame_host.IssueKeepAliveHandle(std::move(pending_receiver));
+  if (request.GetKeepalive()) {
+    keep_alive_handle_factory_->IssueKeepAliveHandle(
+        std::move(pending_receiver));
+  }
 }
 
 }  // namespace blink

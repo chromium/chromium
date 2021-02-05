@@ -96,7 +96,6 @@
 #include "content/browser/renderer_host/input/input_router.h"
 #include "content/browser/renderer_host/input/timeout_monitor.h"
 #include "content/browser/renderer_host/ipc_utils.h"
-#include "content/browser/renderer_host/keep_alive_handle_factory.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -1044,7 +1043,8 @@ RenderFrameHostImpl::RenderFrameHostImpl(
           base::OnTaskRunnerDeleter(base::CreateSequencedTaskRunner(
               {ServiceWorkerContext::GetCoreThreadId()}))),
       frame_token_(frame_token),
-      keep_alive_timeout_(base::TimeDelta::FromSeconds(30)),
+      keep_alive_handle_factory_(agent_scheduling_group_.GetProcess(),
+                                 base::TimeDelta::FromSeconds(30)),
       subframe_unload_timeout_(RenderViewHostImpl::kUnloadTimeout),
       media_device_id_salt_base_(
           BrowserContext::CreateRandomMediaDeviceIDSalt()),
@@ -5161,9 +5161,7 @@ void RenderFrameHostImpl::BindDomOperationControllerHostReceiver(
 
 void RenderFrameHostImpl::SetKeepAliveTimeoutForTesting(
     base::TimeDelta timeout) {
-  keep_alive_timeout_ = timeout;
-  if (keep_alive_handle_factory_)
-    keep_alive_handle_factory_->SetTimeout(keep_alive_timeout_);
+  keep_alive_handle_factory_.set_timeout(timeout);
 }
 
 void RenderFrameHostImpl::UpdateState(const blink::PageState& state) {
@@ -5636,8 +5634,8 @@ void RenderFrameHostImpl::CreateNewPopupWidget(
     create_new_popup_widget_callback_.Run(widget);
 }
 
-void RenderFrameHostImpl::IssueKeepAliveHandle(
-    mojo::PendingReceiver<blink::mojom::KeepAliveHandle> receiver) {
+void RenderFrameHostImpl::GetKeepAliveHandleFactory(
+    mojo::PendingReceiver<blink::mojom::KeepAliveHandleFactory> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (GetProcess()->IsKeepAliveRefCountDisabled())
     return;
@@ -5646,12 +5644,7 @@ void RenderFrameHostImpl::IssueKeepAliveHandle(
     return;
   }
 
-  if (!keep_alive_handle_factory_) {
-    keep_alive_handle_factory_ =
-        std::make_unique<KeepAliveHandleFactory>(GetProcess());
-    keep_alive_handle_factory_->SetTimeout(keep_alive_timeout_);
-  }
-  keep_alive_handle_factory_->Create(std::move(receiver));
+  keep_alive_handle_factory_.Bind(std::move(receiver));
 }
 
 // TODO(ahemery): Move checks to mojo bad message reporting.

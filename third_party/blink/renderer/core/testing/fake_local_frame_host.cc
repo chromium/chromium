@@ -204,8 +204,8 @@ void FakeLocalFrameHost::CapturePaintPreviewOfSubframe(
 
 void FakeLocalFrameHost::Detach() {}
 
-void FakeLocalFrameHost::IssueKeepAliveHandle(
-    mojo::PendingReceiver<mojom::blink::KeepAliveHandle> receiver) {}
+void FakeLocalFrameHost::GetKeepAliveHandleFactory(
+    mojo::PendingReceiver<mojom::blink::KeepAliveHandleFactory> receiver) {}
 
 void FakeLocalFrameHost::DidAddMessageToConsole(
     mojom::ConsoleMessageLevel log_level,

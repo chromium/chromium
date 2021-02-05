@@ -42,6 +42,7 @@
 #include "content/browser/idle/idle_manager_impl.h"
 #include "content/browser/net/cross_origin_opener_policy_reporter.h"
 #include "content/browser/renderer_host/back_forward_cache_metrics.h"
+#include "content/browser/renderer_host/keep_alive_handle_factory.h"
 #include "content/browser/renderer_host/media/render_frame_audio_input_stream_factory.h"
 #include "content/browser/renderer_host/media/render_frame_audio_output_stream_factory.h"
 #include "content/browser/renderer_host/policy_container_host.h"
@@ -212,7 +213,6 @@ class CrossOriginEmbedderPolicyReporter;
 class FrameTree;
 class FrameTreeNode;
 class GeolocationServiceImpl;
-class KeepAliveHandleFactory;
 class MediaInterfaceProxy;
 class NavigationEntryImpl;
 class NavigationRequest;
@@ -2116,8 +2116,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
           blink_widget_host,
       mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget)
       override;
-  void IssueKeepAliveHandle(
-      mojo::PendingReceiver<blink::mojom::KeepAliveHandle> receiver) override;
+  void GetKeepAliveHandleFactory(
+      mojo::PendingReceiver<blink::mojom::KeepAliveHandleFactory> receiver)
+      override;
   void DidCommitProvisionalLoad(
       mojom::DidCommitProvisionalLoadParamsPtr params,
       mojom::DidCommitProvisionalLoadInterfaceParamsPtr interface_params)
@@ -3167,8 +3168,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       pepper_hung_detectors_;
 #endif
 
-  std::unique_ptr<KeepAliveHandleFactory> keep_alive_handle_factory_;
-  base::TimeDelta keep_alive_timeout_;
+  KeepAliveHandleFactory keep_alive_handle_factory_;
 
   // For observing Network Service connection errors only. Will trigger
   // |OnNetworkServiceConnectionError()| and push updated factories to

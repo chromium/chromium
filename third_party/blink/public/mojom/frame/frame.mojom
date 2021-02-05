@@ -157,6 +157,14 @@ struct TextAutosizerPageInfo {
 // the frame is detached. Used by resource requests with "keepalive" specified.
 interface KeepAliveHandle {};
 
+// A factory interface for KeepAliveHandle. This is separate from LocalFrameHost
+// because LocalFrameHost may not be usable when the frame is about to be gone.
+interface KeepAliveHandleFactory {
+  // Creates and returns a KeepAliveHandle.
+  IssueKeepAliveHandle(
+      pending_receiver<blink.mojom.KeepAliveHandle> keep_alive_handle);
+};
+
 // Implemented in Browser, this interface defines frame-specific methods that
 // will be invoked from the render process (e.g. content::RenderFrameHostImpl).
 //
@@ -467,9 +475,9 @@ interface LocalFrameHost {
   // Notifies the browser that a child frame is detached from the DOM.
   Detach();
 
-   // Creates and returns a KeepAliveHandle.
-  IssueKeepAliveHandle(
-      pending_receiver<blink.mojom.KeepAliveHandle> keep_alive_handle);
+  // Returns the associated KeepAliveHandleFactory.
+  GetKeepAliveHandleFactory(
+      pending_receiver<blink.mojom.KeepAliveHandleFactory> factory);
 
   // Blink and JavaScript error messages to log to the console, debugger UI, or
   // error reporting service. |source_id| is usually a URL.
