@@ -13,11 +13,13 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_observer.h"
+#include "ui/message_center/public/cpp/notification_delegate.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #define SYSTEM_APP_NAME "Chrome OS"
@@ -384,6 +386,15 @@ TEST_F(UpdateNotificationControllerTest, VisibilityAfterLacrosUpdate) {
   EXPECT_EQ("Device restart is required to apply the update.",
             GetNotificationMessage());
   EXPECT_EQ("Restart to update", GetNotificationButton(0));
+
+  // Click the "Restart to update" button.
+  message_center::MessageCenter::Get()
+      ->FindVisibleNotificationById(kNotificationId)
+      ->delegate()
+      ->Click(/*button_index=*/0, /*reply=*/base::nullopt);
+
+  // Controller tried to restart chrome.
+  EXPECT_EQ(1, GetSessionControllerClient()->attempt_restart_chrome_count());
 }
 
 }  // namespace ash

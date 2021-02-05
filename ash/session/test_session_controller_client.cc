@@ -214,7 +214,9 @@ void TestSessionControllerClient::RequestSignOut() {
   ++request_sign_out_count_;
 }
 
-void TestSessionControllerClient::AttemptRestartChrome() {}
+void TestSessionControllerClient::AttemptRestartChrome() {
+  ++attempt_restart_chrome_count_;
+}
 
 void TestSessionControllerClient::SwitchActiveUser(
     const AccountId& account_id) {

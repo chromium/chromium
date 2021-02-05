@@ -6,7 +6,9 @@
 
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/system_tray_client.h"
+#include "ash/public/cpp/update_types.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
@@ -167,6 +169,13 @@ base::string16 UpdateNotificationController::GetNotificationTitle() const {
 
 void UpdateNotificationController::RestartForUpdate() {
   confirmation_dialog_ = nullptr;
+  if (model_->update_type() == UpdateType::kLacros) {
+    // Lacros only needs to restart the browser to cause the component updater
+    // to use the new lacros component.
+    Shell::Get()->session_controller()->AttemptRestartChrome();
+    return;
+  }
+  // System updates require restarting the device.
   Shell::Get()->system_tray_model()->client()->RequestRestartForUpdate();
   Shell::Get()->metrics()->RecordUserMetricsAction(
       UMA_STATUS_AREA_OS_UPDATE_DEFAULT_SELECTED);
