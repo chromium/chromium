@@ -27,16 +27,12 @@ void VideoFrameReceiverOnTaskRunner::OnNewBuffer(
 }
 
 void VideoFrameReceiverOnTaskRunner::OnFrameReadyInBuffer(
-    int buffer_id,
-    int frame_feedback_id,
-    std::unique_ptr<VideoCaptureDevice::Client::Buffer::ScopedAccessPermission>
-        buffer_read_permission,
-    mojom::VideoFrameInfoPtr frame_info) {
+    ReadyFrameInBuffer frame,
+    std::vector<ReadyFrameInBuffer> scaled_frames) {
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&VideoFrameReceiver::OnFrameReadyInBuffer, receiver_,
-                     buffer_id, frame_feedback_id,
-                     std::move(buffer_read_permission), std::move(frame_info)));
+                     std::move(frame), std::move(scaled_frames)));
 }
 
 void VideoFrameReceiverOnTaskRunner::OnBufferRetired(int buffer_id) {

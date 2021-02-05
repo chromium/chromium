@@ -814,9 +814,12 @@ void VideoCaptureDeviceMac::ReceiveExternalGpuMemoryBufferFrame(
                      ", and expected " + capture_format_.frame_size.ToString());
     return;
   }
-  client_->OnIncomingCapturedExternalBuffer(std::move(handle), format,
-                                            color_space, base::TimeTicks::Now(),
-                                            timestamp);
+  // TODO(https://crbug.com/1157072): Update this codepath so allow passing
+  // scaled video frames.
+  client_->OnIncomingCapturedExternalBuffer(
+      media::CapturedExternalVideoBuffer(std::move(handle), format,
+                                         color_space),
+      {}, base::TimeTicks::Now(), timestamp);
 }
 
 void VideoCaptureDeviceMac::OnPhotoTaken(const uint8_t* image_data,

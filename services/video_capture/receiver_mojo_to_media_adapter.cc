@@ -27,20 +27,20 @@ void ReceiverMojoToMediaAdapter::OnNewBuffer(
 }
 
 void ReceiverMojoToMediaAdapter::OnFrameReadyInBuffer(
-    int buffer_id,
-    int frame_feedback_id,
-    std::unique_ptr<
-        media::VideoCaptureDevice::Client::Buffer::ScopedAccessPermission>
-        access_permission,
-    media::mojom::VideoFrameInfoPtr frame_info) {
+    media::ReadyFrameInBuffer frame,
+    std::vector<media::ReadyFrameInBuffer> scaled_frames) {
   mojo::PendingRemote<mojom::ScopedAccessPermission> access_permission_proxy;
   mojo::MakeSelfOwnedReceiver<mojom::ScopedAccessPermission>(
       std::make_unique<ScopedAccessPermissionMediaToMojoAdapter>(
-          std::move(access_permission)),
+          std::move(frame.buffer_read_permission)),
       access_permission_proxy.InitWithNewPipeAndPassReceiver());
-  video_frame_handler_->OnFrameReadyInBuffer(buffer_id, frame_feedback_id,
-                                             std::move(access_permission_proxy),
-                                             std::move(frame_info));
+  // Scaled frames are currently not passed along.
+  // TODO(https://crbug.com/1157072): When video_frame_handler.mojom is updated
+  // to support scaled frames, update this code to pass along scaled frames.
+  // This will achieve passing frames from Capture Process to Browser Process.
+  video_frame_handler_->OnFrameReadyInBuffer(
+      frame.buffer_id, frame.frame_feedback_id,
+      std::move(access_permission_proxy), std::move(frame.frame_info));
 }
 
 void ReceiverMojoToMediaAdapter::OnBufferRetired(int buffer_id) {

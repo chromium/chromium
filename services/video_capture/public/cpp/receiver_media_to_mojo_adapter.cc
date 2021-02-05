@@ -43,11 +43,15 @@ void ReceiverMediaToMojoAdapter::OnFrameReadyInBuffer(
     int32_t frame_feedback_id,
     mojo::PendingRemote<mojom::ScopedAccessPermission> access_permission,
     media::mojom::VideoFrameInfoPtr frame_info) {
+  // TODO(https://crbug.com/1157072): When video_frame_handler.mojom is updated
+  // to support scaled frames, update this code to pass along scaled frames.
   receiver_->OnFrameReadyInBuffer(
-      buffer_id, frame_feedback_id,
-      std::make_unique<ScopedAccessPermissionMojoToMediaAdapter>(
-          std::move(access_permission)),
-      std::move(frame_info));
+      media::ReadyFrameInBuffer(
+          buffer_id, frame_feedback_id,
+          std::make_unique<ScopedAccessPermissionMojoToMediaAdapter>(
+              std::move(access_permission)),
+          std::move(frame_info)),
+      {});
 }
 
 void ReceiverMediaToMojoAdapter::OnBufferRetired(int32_t buffer_id) {

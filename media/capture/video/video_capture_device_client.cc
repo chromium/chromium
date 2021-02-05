@@ -465,16 +465,31 @@ void VideoCaptureDeviceClient::OnIncomingCapturedGfxBuffer(
 }
 
 void VideoCaptureDeviceClient::OnIncomingCapturedExternalBuffer(
-    gfx::GpuMemoryBufferHandle handle,
-    const VideoCaptureFormat& format,
-    const gfx::ColorSpace& color_space,
+    CapturedExternalVideoBuffer buffer,
+    std::vector<CapturedExternalVideoBuffer> scaled_buffers,
+    base::TimeTicks reference_time,
+    base::TimeDelta timestamp) {
+  auto ready_frame = CreateReadyFrameFromExternalBuffer(
+      std::move(buffer), reference_time, timestamp);
+  std::vector<ReadyFrameInBuffer> scaled_ready_frames;
+  scaled_ready_frames.reserve(scaled_buffers.size());
+  for (auto& scaled_buffer : scaled_buffers) {
+    scaled_ready_frames.push_back(CreateReadyFrameFromExternalBuffer(
+        std::move(scaled_buffer), reference_time, timestamp));
+  }
+  receiver_->OnFrameReadyInBuffer(std::move(ready_frame),
+                                  std::move(scaled_ready_frames));
+}
+
+ReadyFrameInBuffer VideoCaptureDeviceClient::CreateReadyFrameFromExternalBuffer(
+    CapturedExternalVideoBuffer buffer,
     base::TimeTicks reference_time,
     base::TimeDelta timestamp) {
   // Reserve an ID for this buffer that will not conflict with any of the IDs
   // used by |buffer_pool_|.
   int buffer_id_to_drop = VideoCaptureBufferPool::kInvalidId;
-  int buffer_id =
-      buffer_pool_->ReserveIdForExternalBuffer(handle, &buffer_id_to_drop);
+  int buffer_id = buffer_pool_->ReserveIdForExternalBuffer(buffer.handle,
+                                                           &buffer_id_to_drop);
 
   // If a buffer to retire was specified, retire one.
   if (buffer_id_to_drop != VideoCaptureBufferPool::kInvalidId) {
@@ -491,30 +506,30 @@ void VideoCaptureDeviceClient::OnIncomingCapturedExternalBuffer(
   if (!base::Contains(buffer_ids_known_by_receiver_, buffer_id)) {
     media::mojom::VideoBufferHandlePtr buffer_handle =
         media::mojom::VideoBufferHandle::New();
-    buffer_handle->set_gpu_memory_buffer_handle(std::move(handle));
+    buffer_handle->set_gpu_memory_buffer_handle(std::move(buffer.handle));
     receiver_->OnNewBuffer(buffer_id, std::move(buffer_handle));
     buffer_ids_known_by_receiver_.push_back(buffer_id);
   }
 
-  // Tell |receiver_| that the frame has been received.
-  {
-    mojom::VideoFrameInfoPtr info = mojom::VideoFrameInfo::New();
-    info->timestamp = timestamp;
-    info->pixel_format = format.pixel_format;
-    info->color_space = color_space;
-    info->coded_size = format.frame_size;
-    info->visible_rect = gfx::Rect(format.frame_size);
-    info->metadata.frame_rate = format.frame_rate;
-    info->metadata.reference_time = reference_time;
+  // Construct the ready frame, to be passed on to the |receiver_| by the caller
+  // of this method.
+  mojom::VideoFrameInfoPtr info = mojom::VideoFrameInfo::New();
+  info->timestamp = timestamp;
+  info->pixel_format = buffer.format.pixel_format;
+  info->color_space = buffer.color_space;
+  info->coded_size = buffer.format.frame_size;
+  info->visible_rect = gfx::Rect(buffer.format.frame_size);
+  info->metadata.frame_rate = buffer.format.frame_rate;
+  info->metadata.reference_time = reference_time;
 
-    buffer_pool_->HoldForConsumers(buffer_id, 1);
-    buffer_pool_->RelinquishProducerReservation(buffer_id);
-    receiver_->OnFrameReadyInBuffer(
-        buffer_id, 0 /* frame_feedback_id */,
-        std::make_unique<ScopedBufferPoolReservation<ConsumerReleaseTraits>>(
-            buffer_pool_, buffer_id),
-        std::move(info));
-  }
+  buffer_pool_->HoldForConsumers(buffer_id, 1);
+  buffer_pool_->RelinquishProducerReservation(buffer_id);
+
+  return ReadyFrameInBuffer(
+      buffer_id, 0 /* frame_feedback_id */,
+      std::make_unique<ScopedBufferPoolReservation<ConsumerReleaseTraits>>(
+          buffer_pool_, buffer_id),
+      std::move(info));
 }
 
 VideoCaptureDevice::Client::ReserveResult
@@ -614,10 +629,12 @@ void VideoCaptureDeviceClient::OnIncomingCapturedBufferExt(
 
   buffer_pool_->HoldForConsumers(buffer.id, 1);
   receiver_->OnFrameReadyInBuffer(
-      buffer.id, buffer.frame_feedback_id,
-      std::make_unique<ScopedBufferPoolReservation<ConsumerReleaseTraits>>(
-          buffer_pool_, buffer.id),
-      std::move(info));
+      ReadyFrameInBuffer(
+          buffer.id, buffer.frame_feedback_id,
+          std::make_unique<ScopedBufferPoolReservation<ConsumerReleaseTraits>>(
+              buffer_pool_, buffer.id),
+          std::move(info)),
+      {});
 }
 
 void VideoCaptureDeviceClient::OnError(VideoCaptureError error,

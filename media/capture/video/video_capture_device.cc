@@ -13,6 +13,30 @@
 
 namespace media {
 
+CapturedExternalVideoBuffer::CapturedExternalVideoBuffer(
+    gfx::GpuMemoryBufferHandle handle,
+    VideoCaptureFormat format,
+    gfx::ColorSpace color_space)
+    : handle(std::move(handle)),
+      format(std::move(format)),
+      color_space(std::move(color_space)) {}
+
+CapturedExternalVideoBuffer::CapturedExternalVideoBuffer(
+    CapturedExternalVideoBuffer&& other)
+    : handle(std::move(other.handle)),
+      format(std::move(other.format)),
+      color_space(std::move(other.color_space)) {}
+
+CapturedExternalVideoBuffer::~CapturedExternalVideoBuffer() = default;
+
+CapturedExternalVideoBuffer& CapturedExternalVideoBuffer::operator=(
+    CapturedExternalVideoBuffer&& other) {
+  handle = std::move(other.handle);
+  format = std::move(other.format);
+  color_space = std::move(other.color_space);
+  return *this;
+}
+
 VideoCaptureDevice::Client::Buffer::Buffer() : id(0), frame_feedback_id(0) {}
 
 VideoCaptureDevice::Client::Buffer::Buffer(

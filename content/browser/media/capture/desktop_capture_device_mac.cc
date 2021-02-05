@@ -137,8 +137,9 @@ class DesktopCaptureDeviceMac : public media::VideoCaptureDevice {
       first_frame_time_ = now;
 
     client_->OnIncomingCapturedExternalBuffer(
-        std::move(handle), requested_format_, gfx::ColorSpace::CreateSRGB(),
-        now, now - first_frame_time_);
+        media::CapturedExternalVideoBuffer(std::move(handle), requested_format_,
+                                           gfx::ColorSpace::CreateSRGB()),
+        {}, now, now - first_frame_time_);
 
     // Reset |min_frame_rate_enforcement_timer_|.
     if (!min_frame_rate_enforcement_timer_) {

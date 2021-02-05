@@ -12,6 +12,26 @@
 
 namespace media {
 
+struct CAPTURE_EXPORT ReadyFrameInBuffer {
+  ReadyFrameInBuffer(
+      int buffer_id,
+      int frame_feedback_id,
+      std::unique_ptr<
+          VideoCaptureDevice::Client::Buffer::ScopedAccessPermission>
+          buffer_read_permission,
+      mojom::VideoFrameInfoPtr frame_info);
+  ReadyFrameInBuffer(ReadyFrameInBuffer&& other);
+  ~ReadyFrameInBuffer();
+
+  ReadyFrameInBuffer& operator=(ReadyFrameInBuffer&& other);
+
+  int buffer_id;
+  int frame_feedback_id;
+  std::unique_ptr<VideoCaptureDevice::Client::Buffer::ScopedAccessPermission>
+      buffer_read_permission;
+  mojom::VideoFrameInfoPtr frame_info;
+};
+
 // Callback interface for VideoCaptureDeviceClient to communicate with its
 // clients. On some platforms, VideoCaptureDeviceClient calls these methods from
 // OS or capture driver provided threads which do not have a task runner and
@@ -40,12 +60,8 @@ class CAPTURE_EXPORT VideoFrameReceiver {
   // alive and unchanged until VideoFrameReceiver releases the given
   // |buffer_read_permission|.
   virtual void OnFrameReadyInBuffer(
-      int buffer_id,
-      int frame_feedback_id,
-      std::unique_ptr<
-          VideoCaptureDevice::Client::Buffer::ScopedAccessPermission>
-          buffer_read_permission,
-      mojom::VideoFrameInfoPtr frame_info) = 0;
+      ReadyFrameInBuffer frame,
+      std::vector<ReadyFrameInBuffer> scaled_frames) = 0;
 
   // Tells the VideoFrameReceiver that the producer is no longer going to use
   // the buffer with id |buffer_id| for frame delivery. This may be called even
