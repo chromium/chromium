@@ -40,8 +40,9 @@ RecoveryInstallGlobalError::RecoveryInstallGlobalError(Profile* profile)
   pref_registrar_.Init(pref);
   pref_registrar_.Add(
       prefs::kRecoveryComponentNeedsElevation,
-      base::Bind(&RecoveryInstallGlobalError::OnElevationRequirementChanged,
-                 base::Unretained(this)));
+      base::BindRepeating(
+          &RecoveryInstallGlobalError::OnElevationRequirementChanged,
+          base::Unretained(this)));
 }
 
 RecoveryInstallGlobalError::~RecoveryInstallGlobalError() {}
