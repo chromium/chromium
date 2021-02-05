@@ -4,8 +4,10 @@
 
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/platform_thread.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -23,6 +25,8 @@
 class ChromeWebPlatformSecurityMetricsBrowserTest
     : public InProcessBrowserTest {
  public:
+  using WebFeature = blink::mojom::WebFeature;
+
   ChromeWebPlatformSecurityMetricsBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS),
         http_server_(net::EmbeddedTestServer::TYPE_HTTP) {
@@ -39,7 +43,7 @@ class ChromeWebPlatformSecurityMetricsBrowserTest
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  void set_monitored_feature(blink::mojom::WebFeature feature) {
+  void set_monitored_feature(WebFeature feature) {
     monitored_feature_ = feature;
   }
 
@@ -64,6 +68,23 @@ class ChromeWebPlatformSecurityMetricsBrowserTest
   net::EmbeddedTestServer& https_server() { return https_server_; }
   net::EmbeddedTestServer& http_server() { return http_server_; }
 
+  // Fetch the Blink.UseCounter.Features histogram in every renderer process
+  // until reaching, but not exceeding, |expected_count|.
+  void CheckCounter(WebFeature feature, int expected_count) {
+    while (true) {
+      content::FetchHistogramsFromChildProcesses();
+      metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+
+      int count =
+          histogram_.GetBucketCount("Blink.UseCounter.Features", feature);
+      CHECK_LE(count, expected_count);
+      if (count == expected_count)
+        return;
+
+      base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(5));
+    }
+  }
+
  private:
   void SetUpOnMainThread() final {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -84,7 +105,7 @@ class ChromeWebPlatformSecurityMetricsBrowserTest
   net::EmbeddedTestServer http_server_;
   int expected_count_ = 0;
   base::HistogramTester histogram_;
-  blink::mojom::WebFeature monitored_feature_;
+  WebFeature monitored_feature_;
   base::test::ScopedFeatureList features_;
 };
 
@@ -92,8 +113,7 @@ class ChromeWebPlatformSecurityMetricsBrowserTest
 // count.
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
                        CrossOriginOpenerPolicyReportingNoHeader) {
-  set_monitored_feature(
-      blink::mojom::WebFeature::kCrossOriginOpenerPolicyReporting);
+  set_monitored_feature(WebFeature::kCrossOriginOpenerPolicyReporting);
   GURL url = https_server().GetURL("a.com", "/title1.html");
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
   ExpectHistogramIncreasedBy(0);
@@ -103,8 +123,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 // HTTP => 0 count.
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
                        CrossOriginOpenerPolicyReportingReportOnlyHTTP) {
-  set_monitored_feature(
-      blink::mojom::WebFeature::kCrossOriginOpenerPolicyReporting);
+  set_monitored_feature(WebFeature::kCrossOriginOpenerPolicyReporting);
   GURL url = http_server().GetURL("a.com",
                                   "/set-header?"
                                   "Cross-Origin-Opener-Policy-Report-Only: "
@@ -117,8 +136,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 // HTTPS => 1 count.
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
                        CrossOriginOpenerPolicyReportingReportOnlyHTTPS) {
-  set_monitored_feature(
-      blink::mojom::WebFeature::kCrossOriginOpenerPolicyReporting);
+  set_monitored_feature(WebFeature::kCrossOriginOpenerPolicyReporting);
   GURL url = https_server().GetURL("a.com",
                                    "/set-header?"
                                    "Cross-Origin-Opener-Policy-Report-Only: "
@@ -131,8 +149,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 // count.
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
                        CrossOriginOpenerPolicyReportingCOOPHTTPS) {
-  set_monitored_feature(
-      blink::mojom::WebFeature::kCrossOriginOpenerPolicyReporting);
+  set_monitored_feature(WebFeature::kCrossOriginOpenerPolicyReporting);
   GURL url = https_server().GetURL("a.com",
                                    "/set-header?"
                                    "Cross-Origin-Opener-Policy: "
@@ -145,8 +162,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 // HTTPS => 1 count.
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
                        CrossOriginOpenerPolicyReportingCOOPAndReportOnly) {
-  set_monitored_feature(
-      blink::mojom::WebFeature::kCrossOriginOpenerPolicyReporting);
+  set_monitored_feature(WebFeature::kCrossOriginOpenerPolicyReporting);
   GURL url = https_server().GetURL("a.com",
                                    "/set-header?"
                                    "Cross-Origin-Opener-Policy: "
@@ -161,8 +177,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 // endpoints defined => 0 count.
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
                        CrossOriginOpenerPolicyReportingNoEndpoint) {
-  set_monitored_feature(
-      blink::mojom::WebFeature::kCrossOriginOpenerPolicyReporting);
+  set_monitored_feature(WebFeature::kCrossOriginOpenerPolicyReporting);
   GURL url = https_server().GetURL(
       "a.com",
       "/set-header?"
@@ -176,8 +191,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 // (COOP-RO), subframe (COOP-RO) => 1 count.
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
                        CrossOriginOpenerPolicyReportingMainFrameAndSubframe) {
-  set_monitored_feature(
-      blink::mojom::WebFeature::kCrossOriginOpenerPolicyReporting);
+  set_monitored_feature(WebFeature::kCrossOriginOpenerPolicyReporting);
   GURL url = https_server().GetURL("a.com",
                                    "/set-header?"
                                    "Cross-Origin-Opener-Policy-Report-Only: "
@@ -191,8 +205,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 // (no-headers), subframe (COOP-RO) => 0 count.
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
                        CrossOriginOpenerPolicyReportingUsageSubframeOnly) {
-  set_monitored_feature(
-      blink::mojom::WebFeature::kCrossOriginOpenerPolicyReporting);
+  set_monitored_feature(WebFeature::kCrossOriginOpenerPolicyReporting);
   GURL main_document_url = https_server().GetURL("a.com", "/title1.html");
   GURL sub_document_url =
       https_server().GetURL("a.com",
@@ -209,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
                        CrossOriginSubframeWithoutEmbeddingControlSameOrigin) {
   set_monitored_feature(
-      blink::mojom::WebFeature::kCrossOriginSubframeWithoutEmbeddingControl);
+      WebFeature::kCrossOriginSubframeWithoutEmbeddingControl);
   GURL url = https_server().GetURL("a.com", "/title1.html");
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
   LoadIFrame(url);
@@ -221,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
                        CrossOriginSubframeWithoutEmbeddingControlNoHeaders) {
   set_monitored_feature(
-      blink::mojom::WebFeature::kCrossOriginSubframeWithoutEmbeddingControl);
+      WebFeature::kCrossOriginSubframeWithoutEmbeddingControl);
   GURL main_document_url = https_server().GetURL("a.com", "/title1.html");
   GURL sub_document_url = https_server().GetURL("b.com", "/title1.html");
   EXPECT_TRUE(content::NavigateToURL(web_contents(), main_document_url));
@@ -235,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(
     ChromeWebPlatformSecurityMetricsBrowserTest,
     CrossOriginSubframeWithoutEmbeddingControlFrameAncestors) {
   set_monitored_feature(
-      blink::mojom::WebFeature::kCrossOriginSubframeWithoutEmbeddingControl);
+      WebFeature::kCrossOriginSubframeWithoutEmbeddingControl);
   GURL main_document_url = https_server().GetURL("a.com", "/title1.html");
   url::Origin main_document_origin = url::Origin::Create(main_document_url);
   std::string csp_header = "Content-Security-Policy: frame-ancestors 'self' *;";
@@ -251,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
                        CrossOriginSubframeWithoutEmbeddingControlNoEmbedding) {
   set_monitored_feature(
-      blink::mojom::WebFeature::kCrossOriginSubframeWithoutEmbeddingControl);
+      WebFeature::kCrossOriginSubframeWithoutEmbeddingControl);
   GURL main_document_url = https_server().GetURL("a.com", "/title1.html");
   GURL sub_document_url =
       https_server().GetURL("b.com",
@@ -267,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
                        CrossOriginSubframeWithoutEmbeddingControlOtherCSP) {
   set_monitored_feature(
-      blink::mojom::WebFeature::kCrossOriginSubframeWithoutEmbeddingControl);
+      WebFeature::kCrossOriginSubframeWithoutEmbeddingControl);
   GURL main_document_url = https_server().GetURL("a.com", "/title1.html");
   GURL sub_document_url =
       https_server().GetURL("b.com",
@@ -284,8 +297,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
                        EmbeddingOptIn) {
   set_monitored_feature(
-      blink::mojom::WebFeature::
-          kEmbeddedCrossOriginFrameWithoutFrameAncestorsOrXFO);
+      WebFeature::kEmbeddedCrossOriginFrameWithoutFrameAncestorsOrXFO);
   GURL main_document_url = https_server().GetURL("a.com", "/title1.html");
 
   struct TestCase {
@@ -342,6 +354,49 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 
     ExpectHistogramIncreasedBy(test.expect_counter ? 1 : 0);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       NonCrossOriginIsolatedCheckSabConstructor) {
+  GURL url = https_server().GetURL("a.com", "/empty.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), url));
+  EXPECT_EQ(true, content::EvalJs(web_contents(),
+                                  "'SharedArrayBuffer' in globalThis"));
+  CheckCounter(WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation, 0);
+  CheckCounter(WebFeature::kV8SharedArrayBufferConstructed, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       NonCrossOriginIsolatedSabSizeZero) {
+  GURL url = https_server().GetURL("a.com", "/empty.html");
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
+  EXPECT_EQ(true, content::ExecJs(web_contents(), "new SharedArrayBuffer(0)"));
+  CheckCounter(WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation, 1);
+  CheckCounter(WebFeature::kV8SharedArrayBufferConstructed, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       NonCrossOriginIsolatedSab) {
+  GURL url = https_server().GetURL("a.com", "/empty.html");
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
+  EXPECT_EQ(true,
+            content::ExecJs(web_contents(), "new SharedArrayBuffer(8192)"));
+  CheckCounter(WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation, 1);
+  CheckCounter(WebFeature::kV8SharedArrayBufferConstructed, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       CrossOriginIsolatedSab) {
+  GURL url =
+      https_server().GetURL("a.com",
+                            "/set-header"
+                            "?Cross-Origin-Opener-Policy: same-origin"
+                            "&Cross-Origin-Embedder-Policy: require-corp");
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
+  EXPECT_EQ(true,
+            content::ExecJs(web_contents(), "new SharedArrayBuffer(8192)"));
+  CheckCounter(WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation, 0);
+  CheckCounter(WebFeature::kV8SharedArrayBufferConstructed, 1);
 }
 
 // TODO(arthursonzogni): Add basic test(s) for the WebFeatures:
