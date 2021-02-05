@@ -1911,6 +1911,9 @@ static_library("browser") {
     "//chrome/browser/ui",
     "//chrome/browser/ui/webui/bluetooth_internals",
     "//chrome/browser/safe_browsing",
+    "//chrome/browser/safe_browsing:verdict_cache_manager_factory",
+    "//chrome/browser/safe_browsing:advanced_protection",
+    "//chrome/browser/safe_browsing:metrics_collector",
   ]
 
   public_deps = [
@@ -1992,6 +1995,8 @@ static_library("browser") {
     "//chrome/browser/resource_coordinator:tab_manager_features",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/safe_browsing:advanced_protection",
+    "//chrome/browser/safe_browsing:metrics_collector",
+    "//chrome/browser/safe_browsing:verdict_cache_manager_factory",
     "//chrome/browser/search/drive:mojo_bindings",
     "//chrome/browser/search/task_module:mojo_bindings",
     "//chrome/browser/sharing:buildflags",
