@@ -72529,11 +72529,15 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 </enum>
 
 <enum name="StructuredMetricsInternalError">
-  <int value="0" label="Missing key"/>
+  <int value="0" label="Missing key (deprecated)"/>
   <int value="1" label="Wrong key length"/>
   <int value="2" label="Missing last rotation"/>
   <int value="3" label="Missing rotation period"/>
   <int value="4" label="Failed uint conversion"/>
+  <int value="5" label="Failed key read error"/>
+  <int value="6" label="Failed key parse error"/>
+  <int value="7" label="Failed key write error"/>
+  <int value="8" label="Failed key serialization"/>
 </enum>
 
 <enum name="StructuredMetricsKeyValidationState">

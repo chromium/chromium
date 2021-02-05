@@ -87,6 +87,8 @@ int StructuredMetricsProvider::kMaxEventsPerUpload = 100;
 
 char StructuredMetricsProvider::kStorageFileName[] = "structured_metrics.json";
 
+char StructuredMetricsProvider::kStorageDirectory[] = "structured_metrics";
+
 StructuredMetricsProvider::StructuredMetricsProvider() = default;
 
 StructuredMetricsProvider::~StructuredMetricsProvider() {
@@ -206,8 +208,8 @@ void StructuredMetricsProvider::OnRecord(const EventBase& event) {
   // ID that will eventually be used as the profile_event_id of this event.
   base::Value event_value(base::Value::Type::DICTIONARY);
   event_value.SetStringKey("name", base::NumberToString(event.name_hash()));
-  event_value.SetStringKey("id", base::NumberToString(key_data_->UserProjectId(
-                                     event.project_name_hash())));
+  event_value.SetStringKey(
+      "id", base::NumberToString(key_data_->Id(event.project_name_hash())));
   event_value.SetKey("metrics", std::move(metrics));
 
   // Add the event to |storage_|.
@@ -234,7 +236,11 @@ void StructuredMetricsProvider::OnInitializationCompleted(const bool success) {
   if (!success)
     return;
   DCHECK(!storage_->ReadOnly());
-  key_data_ = std::make_unique<internal::KeyData>(storage_.get());
+  // TODO(crbug.com/1148168): Replace storage_directory with a member once we
+  // use it for StructuredMetricsProvider as well as KeyData.
+  const base::FilePath storage_directory(kStorageDirectory);
+  key_data_ = std::make_unique<KeyData>(storage_directory.Append("keys"),
+                                        base::DoNothing());
   initialized_ = true;
 }
 
