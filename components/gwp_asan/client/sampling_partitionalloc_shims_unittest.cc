@@ -55,7 +55,7 @@ constexpr int kFailure = 1;
 constexpr base::PartitionOptions kAllocatorOptions = {
     base::PartitionOptions::Alignment::kRegular,
     base::PartitionOptions::ThreadCache::kDisabled,
-    base::PartitionOptions::PCScan::kAlwaysDisabled,
+    base::PartitionOptions::Quarantine::kDisallowed,
     base::PartitionOptions::RefCount::kDisabled};
 
 static void HandleOOM(size_t unused_size) {

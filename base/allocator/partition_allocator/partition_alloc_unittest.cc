@@ -190,11 +190,11 @@ class PartitionAllocTest : public testing::Test {
     PartitionAllocGlobalInit(HandleOOM);
     allocator.init({PartitionOptions::Alignment::kRegular,
                     PartitionOptions::ThreadCache::kDisabled,
-                    PartitionOptions::PCScan::kAlwaysDisabled,
+                    PartitionOptions::Quarantine::kDisallowed,
                     PartitionOptions::RefCount::kEnabled});
     aligned_allocator.init({PartitionOptions::Alignment::kAlignedAlloc,
                             PartitionOptions::ThreadCache::kDisabled,
-                            PartitionOptions::PCScan::kAlwaysDisabled,
+                            PartitionOptions::Quarantine::kDisallowed,
                             PartitionOptions::RefCount::kDisabled});
     test_bucket_index_ = SizeToIndex(kRealAllocSize);
   }

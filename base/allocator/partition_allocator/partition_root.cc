@@ -29,25 +29,6 @@
 namespace base {
 
 namespace {
-template <bool thread_safe>
-typename PartitionRoot<thread_safe>::PCScanMode PartitionOptionsToPCScanMode(
-    PartitionOptions::PCScan opt) {
-  using Root = PartitionRoot<thread_safe>;
-  // Mark partitions non-scannable unconditionally when PCScan isn't allowed, so
-  // that address space for quarantine bitmaps doesn't get reserved.
-#if PA_ALLOW_PCSCAN
-  switch (opt) {
-    case PartitionOptions::PCScan::kAlwaysDisabled:
-      return Root::PCScanMode::kNonScannable;
-    case PartitionOptions::PCScan::kDisabledByDefault:
-      return Root::PCScanMode::kDisabled;
-    case PartitionOptions::PCScan::kForcedEnabledForTesting:
-      return Root::PCScanMode::kEnabled;
-  }
-#else
-  return Root::PCScanMode::kNonScannable;
-#endif
-}
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
@@ -509,13 +490,14 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
     }
 #endif
 
-    pcscan_mode = PartitionOptionsToPCScanMode<thread_safe>(opts.pcscan);
-    if (pcscan_mode == PCScanMode::kEnabled) {
-      // Concurrent freeing in PCScan can only safely work on thread-safe
-      // partitions.
-      PA_CHECK(thread_safe);
-      PCScan::Instance().RegisterRoot(this);
-    }
+    quarantine_mode =
+#if PA_ALLOW_PCSCAN
+        (opts.quarantine == PartitionOptions::Quarantine::kDisallowed
+             ? QuarantineMode::kAlwaysDisabled
+             : QuarantineMode::kDisabledByDefault);
+#else
+        QuarantineMode::kAlwaysDisabled;
+#endif
 
     // We mark the sentinel slot span as free to make sure it is skipped by our
     // logic to find a new active slot span.

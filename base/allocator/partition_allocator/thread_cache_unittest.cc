@@ -74,7 +74,7 @@ class DeltaCounter {
 NoDestructor<ThreadSafePartitionRoot> g_root{
     PartitionOptions{PartitionOptions::Alignment::kAlignedAlloc,
                      PartitionOptions::ThreadCache::kEnabled,
-                     PartitionOptions::PCScan::kAlwaysDisabled,
+                     PartitionOptions::Quarantine::kAllowed,
                      PartitionOptions::RefCount::kDisabled}};
 
 size_t FillThreadCacheAndReturnIndex(size_t size, size_t count = 1) {
@@ -203,7 +203,7 @@ TEST_F(ThreadCacheTest, Purge) {
 TEST_F(ThreadCacheTest, NoCrossPartitionCache) {
   ThreadSafePartitionRoot root{{PartitionOptions::Alignment::kAlignedAlloc,
                                 PartitionOptions::ThreadCache::kDisabled,
-                                PartitionOptions::PCScan::kAlwaysDisabled,
+                                PartitionOptions::Quarantine::kAllowed,
                                 PartitionOptions::RefCount::kDisabled}};
 
   size_t bucket_index = FillThreadCacheAndReturnIndex(kSmallSize);

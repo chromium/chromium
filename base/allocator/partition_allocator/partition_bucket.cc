@@ -256,12 +256,10 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSuperPage(
 
   root->next_super_page = super_page + kSuperPageSize;
   char* quarantine_bitmaps = super_page + PartitionPageSize();
-  size_t quarantine_bitmaps_reserved_size = 0;
-  size_t quarantine_bitmaps_size_to_commit = 0;
-  if (root->IsScannable()) {
-    quarantine_bitmaps_reserved_size = ReservedQuarantineBitmapsSize();
-    quarantine_bitmaps_size_to_commit = CommittedQuarantineBitmapsSize();
-  }
+  const size_t quarantine_bitmaps_reserved_size =
+      root->IsQuarantineAllowed() ? ReservedQuarantineBitmapsSize() : 0;
+  const size_t quarantine_bitmaps_size_to_commit =
+      root->IsQuarantineAllowed() ? CommittedQuarantineBitmapsSize() : 0;
   PA_DCHECK(quarantine_bitmaps_reserved_size % PartitionPageSize() == 0);
   PA_DCHECK(quarantine_bitmaps_size_to_commit % SystemPageSize() == 0);
   PA_DCHECK(quarantine_bitmaps_size_to_commit <=
@@ -269,7 +267,8 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSuperPage(
   char* ret = quarantine_bitmaps + quarantine_bitmaps_reserved_size;
   root->next_partition_page = ret;
   root->next_partition_page_end = root->next_super_page - PartitionPageSize();
-  PA_DCHECK(ret == SuperPagePayloadBegin(super_page, root->IsScannable()));
+  PA_DCHECK(ret ==
+            SuperPagePayloadBegin(super_page, root->IsQuarantineAllowed()));
   PA_DCHECK(root->next_partition_page_end == SuperPagePayloadEnd(super_page));
 
   // Keep the first partition page in the super page inaccessible to serve as a
@@ -280,8 +279,7 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSuperPage(
 
   // If PCScan is used, commit the quarantine bitmap. Otherwise, leave it
   // uncommitted and let PartitionRoot::EnablePCScan commit it when needed.
-  if (root->IsScanEnabled()) {
-    PA_DCHECK(root->IsScannable());
+  if (root->IsQuarantineEnabled()) {
     RecommitSystemPages(quarantine_bitmaps, quarantine_bitmaps_size_to_commit,
                         PageReadWrite, PageUpdatePermissions);
   }

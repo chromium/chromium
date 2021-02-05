@@ -114,36 +114,29 @@ struct PartitionOptions {
     kEnabled,
   };
 
-  enum class PCScan {
-    // Should be used for value partitions, i.e. partitions that are known to
-    // not have pointers. No metadata (quarantine bitmaps) is allocated for such
-    // partitions.
-    kAlwaysDisabled,
-    // PCScan is disabled by default, but can be enabled by calling
-    // PartitionRoot::EnablePCScan().
-    kDisabledByDefault,
-    // PCScan is always enabled.
-    kForcedEnabledForTesting,
-  };
-
   enum class RefCount {
     kDisabled,
     kEnabled,
   };
 
+  enum class Quarantine {
+    kDisallowed,
+    kAllowed,
+  };
+
   // Constructor to suppress aggregate initialization.
   constexpr PartitionOptions(Alignment alignment,
                              ThreadCache thread_cache,
-                             PCScan pcscan,
+                             Quarantine quarantine,
                              RefCount ref_count)
       : alignment(alignment),
         thread_cache(thread_cache),
-        pcscan(pcscan),
+        quarantine(quarantine),
         ref_count(ref_count) {}
 
   Alignment alignment;
   ThreadCache thread_cache;
-  PCScan pcscan;
+  Quarantine quarantine;
   RefCount ref_count;
 };
 
@@ -159,11 +152,18 @@ struct BASE_EXPORT PartitionRoot {
   using ScopedGuard = internal::ScopedGuard<thread_safe>;
   using PCScan = internal::PCScan<thread_safe>;
 
-  enum class PCScanMode : uint8_t {
-    kNonScannable,
+  // Defines whether objects should be quarantined for this root.
+  enum class QuarantineMode : uint8_t {
+    kAlwaysDisabled,
+    kDisabledByDefault,
+    kEnabled,
+  } quarantine_mode = QuarantineMode::kAlwaysDisabled;
+
+  // Defines whether the root should be scanned.
+  enum class ScanMode : uint8_t {
     kDisabled,
     kEnabled,
-  } pcscan_mode = PCScanMode::kNonScannable;
+  } scan_mode = ScanMode::kDisabled;
 
   // Flags accessed on fast paths.
   //
@@ -340,23 +340,18 @@ struct BASE_EXPORT PartitionRoot {
         ;
   }
 
-  ALWAYS_INLINE bool IsScannable() const {
-    return pcscan_mode != PCScanMode::kNonScannable;
+  ALWAYS_INLINE bool IsQuarantineAllowed() const {
+    return quarantine_mode != QuarantineMode::kAlwaysDisabled;
+  }
+
+  ALWAYS_INLINE bool IsQuarantineEnabled() const {
+    return quarantine_mode == QuarantineMode::kEnabled;
   }
 
   ALWAYS_INLINE bool IsScanEnabled() const {
-    return pcscan_mode == PCScanMode::kEnabled;
-  }
-
-  // Enables PCScan for this root.
-  void EnablePCScan() {
-    PA_CHECK(thread_safe);
-    ScopedGuard guard{lock_};
-    PA_CHECK(IsScannable());
-    if (IsScanEnabled())
-      return;
-    PCScan::Instance().RegisterRoot(this);
-    pcscan_mode = PCScanMode::kEnabled;
+    // Enabled scan implies enabled quarantine.
+    PA_DCHECK(scan_mode != ScanMode::kEnabled || IsQuarantineEnabled());
+    return scan_mode == ScanMode::kEnabled;
   }
 
   static PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
@@ -831,7 +826,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* ptr) {
 
   // TODO(bikineev): Change the first condition to LIKELY once PCScan is enabled
   // by default.
-  if (UNLIKELY(root->IsScanEnabled()) &&
+  if (UNLIKELY(root->IsQuarantineEnabled()) &&
       LIKELY(!slot_span->bucket->is_direct_mapped())) {
     PCScan::Instance().MoveToQuarantine(ptr, slot_span);
     return;

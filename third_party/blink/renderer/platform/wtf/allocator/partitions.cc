@@ -74,11 +74,10 @@ void Partitions::Initialize() {
 bool Partitions::InitializeOnce() {
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   static base::NoDestructor<base::PartitionAllocator> fast_malloc_allocator{};
-  fast_malloc_allocator->init(
-      {base::PartitionOptions::Alignment::kRegular,
-       base::PartitionOptions::ThreadCache::kEnabled,
-       base::PartitionOptions::PCScan::kDisabledByDefault,
-       base::PartitionOptions::RefCount::kDisabled});
+  fast_malloc_allocator->init({base::PartitionOptions::Alignment::kRegular,
+                               base::PartitionOptions::ThreadCache::kEnabled,
+                               base::PartitionOptions::Quarantine::kAllowed,
+                               base::PartitionOptions::RefCount::kDisabled});
 
   fast_malloc_root_ = fast_malloc_allocator->root();
 #endif  // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
@@ -92,15 +91,15 @@ bool Partitions::InitializeOnce() {
 
   array_buffer_allocator->init({base::PartitionOptions::Alignment::kRegular,
                                 base::PartitionOptions::ThreadCache::kDisabled,
-                                base::PartitionOptions::PCScan::kAlwaysDisabled,
+                                base::PartitionOptions::Quarantine::kAllowed,
                                 base::PartitionOptions::RefCount::kDisabled});
   buffer_allocator->init({base::PartitionOptions::Alignment::kRegular,
                           base::PartitionOptions::ThreadCache::kDisabled,
-                          base::PartitionOptions::PCScan::kDisabledByDefault,
+                          base::PartitionOptions::Quarantine::kAllowed,
                           base::PartitionOptions::RefCount::kDisabled});
   layout_allocator->init({base::PartitionOptions::Alignment::kRegular,
                           base::PartitionOptions::ThreadCache::kDisabled,
-                          base::PartitionOptions::PCScan::kAlwaysDisabled,
+                          base::PartitionOptions::Quarantine::kAllowed,
                           base::PartitionOptions::RefCount::kDisabled});
 
   array_buffer_root_ = array_buffer_allocator->root();
@@ -110,10 +109,13 @@ bool Partitions::InitializeOnce() {
 #if PA_ALLOW_PCSCAN
   if (base::FeatureList::IsEnabled(base::features::kPartitionAllocPCScan) ||
       base::FeatureList::IsEnabled(kPCScanBlinkPartitions)) {
+    auto& pcscan =
+        base::internal::PCScan<base::internal::ThreadSafe>::Instance();
+    pcscan.RegisterNonScannableRoot(array_buffer_root_);
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-    fast_malloc_root_->EnablePCScan();
+    pcscan.RegisterScannableRoot(fast_malloc_root_);
 #endif
-    buffer_root_->EnablePCScan();
+    pcscan.RegisterScannableRoot(buffer_root_);
   }
 #endif
 

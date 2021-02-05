@@ -22,8 +22,9 @@ class PCScanTest : public testing::Test {
     PartitionAllocGlobalInit([](size_t) { LOG(FATAL) << "Out of memory"; });
     allocator_.init({PartitionOptions::Alignment::kRegular,
                      PartitionOptions::ThreadCache::kDisabled,
-                     PartitionOptions::PCScan::kForcedEnabledForTesting,
+                     PartitionOptions::Quarantine::kAllowed,
                      PartitionOptions::RefCount::kDisabled});
+    PCScan<ThreadSafe>::Instance().RegisterScannableRoot(allocator_.root());
   }
   ~PCScanTest() override {
     allocator_.root()->PurgeMemory(PartitionPurgeDecommitEmptySlotSpans |
@@ -169,13 +170,11 @@ template <typename SourceList, typename ValueList>
 void TestDanglingReference(PCScanTest& test,
                            SourceList* source,
                            ValueList* value) {
-  auto* source_root = ThreadSafePartitionRoot::FromPointerInNormalBucketPool(
-      reinterpret_cast<char*>(source));
   auto* value_root = ThreadSafePartitionRoot::FromPointerInNormalBucketPool(
       reinterpret_cast<char*>(value));
   {
     // Free |value| and leave the dangling reference in |source|.
-    ValueList::Destroy(*source_root, value);
+    ValueList::Destroy(*value_root, value);
     // Check that |value| is in the quarantine now.
     EXPECT_TRUE(test.IsInQuarantine(value));
     // Run PCScan.
@@ -313,22 +312,81 @@ TEST_F(PCScanTest, DanglingInterPartitionReference) {
   using SourceList = List<64>;
   using ValueList = SourceList;
 
-  ThreadSafePartitionRoot source_root(
-      {PartitionOptions::Alignment::kRegular,
-       PartitionOptions::ThreadCache::kDisabled,
-       PartitionOptions::PCScan::kForcedEnabledForTesting,
-       PartitionOptions::RefCount::kDisabled});
-  ThreadSafePartitionRoot value_root(
-      {PartitionOptions::Alignment::kRegular,
-       PartitionOptions::ThreadCache::kDisabled,
-       PartitionOptions::PCScan::kForcedEnabledForTesting,
-       PartitionOptions::RefCount::kDisabled});
+  ThreadSafePartitionRoot source_root({PartitionOptions::Alignment::kRegular,
+                                       PartitionOptions::ThreadCache::kDisabled,
+                                       PartitionOptions::Quarantine::kAllowed,
+                                       PartitionOptions::RefCount::kDisabled});
+  ThreadSafePartitionRoot value_root({PartitionOptions::Alignment::kRegular,
+                                      PartitionOptions::ThreadCache::kDisabled,
+                                      PartitionOptions::Quarantine::kAllowed,
+                                      PartitionOptions::RefCount::kDisabled});
+
+  PCScan<ThreadSafe>::Instance().RegisterScannableRoot(&source_root);
+  PCScan<ThreadSafe>::Instance().RegisterScannableRoot(&value_root);
 
   auto* source = SourceList::Create(source_root);
   auto* value = ValueList::Create(value_root);
   source->next = value;
 
   TestDanglingReference(*this, source, value);
+}
+
+TEST_F(PCScanTest, DanglingReferenceToNonScannablePartition) {
+  using SourceList = List<64>;
+  using ValueList = SourceList;
+
+  ThreadSafePartitionRoot source_root({PartitionOptions::Alignment::kRegular,
+                                       PartitionOptions::ThreadCache::kDisabled,
+                                       PartitionOptions::Quarantine::kAllowed,
+                                       PartitionOptions::RefCount::kDisabled});
+  ThreadSafePartitionRoot value_root({PartitionOptions::Alignment::kRegular,
+                                      PartitionOptions::ThreadCache::kDisabled,
+                                      PartitionOptions::Quarantine::kAllowed,
+                                      PartitionOptions::RefCount::kDisabled});
+
+  PCScan<ThreadSafe>::Instance().RegisterScannableRoot(&source_root);
+  PCScan<ThreadSafe>::Instance().RegisterNonScannableRoot(&value_root);
+
+  auto* source = SourceList::Create(source_root);
+  auto* value = ValueList::Create(value_root);
+  source->next = value;
+
+  TestDanglingReference(*this, source, value);
+}
+
+TEST_F(PCScanTest, DanglingReferenceFromNonScannablePartition) {
+  using SourceList = List<64>;
+  using ValueList = SourceList;
+
+  ThreadSafePartitionRoot source_root(
+      {PartitionOptions::Alignment::kRegular,
+       PartitionOptions::ThreadCache::kDisabled,
+       base::PartitionOptions::Quarantine::kAllowed,
+       PartitionOptions::RefCount::kDisabled});
+  ThreadSafePartitionRoot value_root(
+      {PartitionOptions::Alignment::kRegular,
+       PartitionOptions::ThreadCache::kDisabled,
+       base::PartitionOptions::Quarantine::kAllowed,
+       PartitionOptions::RefCount::kDisabled});
+
+  PCScan<ThreadSafe>::Instance().RegisterNonScannableRoot(&source_root);
+  PCScan<ThreadSafe>::Instance().RegisterScannableRoot(&value_root);
+
+  auto* source = SourceList::Create(source_root);
+  auto* value = ValueList::Create(value_root);
+  source->next = value;
+
+  // Free |value| and leave the dangling reference in |source|.
+  ValueList::Destroy(source_root, value);
+  // Check that |value| is in the quarantine now.
+  EXPECT_TRUE(IsInQuarantine(value));
+  // Run PCScan.
+  RunPCScan();
+  // Check that the object is no longer in the quarantine since the pointer to
+  // it was not scanned from the non-scannable partition.
+  EXPECT_FALSE(IsInQuarantine(value));
+  // Check that the object is in the freelist now.
+  EXPECT_TRUE(IsInFreeList(value_root.AdjustPointerForExtrasSubtract(value)));
 }
 
 }  // namespace internal

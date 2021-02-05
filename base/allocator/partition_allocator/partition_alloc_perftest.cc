@@ -92,7 +92,7 @@ class PartitionAllocator : public Allocator {
  private:
   ThreadSafePartitionRoot alloc_{{PartitionOptions::Alignment::kRegular,
                                   PartitionOptions::ThreadCache::kDisabled,
-                                  PartitionOptions::PCScan::kAlwaysDisabled,
+                                  PartitionOptions::Quarantine::kDisallowed,
                                   PartitionOptions::RefCount::kDisabled}};
 };
 
@@ -105,7 +105,7 @@ class PartitionAllocatorWithThreadCache : public Allocator {
       g_partition_root = new ThreadSafePartitionRoot(
           {PartitionOptions::Alignment::kRegular,
            PartitionOptions::ThreadCache::kEnabled,
-           PartitionOptions::PCScan::kAlwaysDisabled,
+           PartitionOptions::Quarantine::kDisallowed,
            PartitionOptions::RefCount::kDisabled});
     }
     internal::ThreadCacheRegistry::Instance().PurgeAll();

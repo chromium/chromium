@@ -107,7 +107,7 @@ base::ThreadSafePartitionRoot* Allocator() {
         // is true.)
         base::PartitionOptions::ThreadCache::kDisabled,
 #endif
-        base::PartitionOptions::PCScan::kDisabledByDefault,
+        base::PartitionOptions::Quarantine::kAllowed,
         base::PartitionOptions::RefCount::kEnabled,
   });
   g_root_.store(new_root, std::memory_order_release);
@@ -122,7 +122,7 @@ base::ThreadSafePartitionRoot* AlignedAllocator() {
   static base::NoDestructor<base::ThreadSafePartitionRoot> aligned_allocator(
       base::PartitionOptions{base::PartitionOptions::Alignment::kAlignedAlloc,
                              base::PartitionOptions::ThreadCache::kDisabled,
-                             base::PartitionOptions::PCScan::kDisabledByDefault,
+                             base::PartitionOptions::Quarantine::kAllowed,
                              base::PartitionOptions::RefCount::kDisabled});
   return aligned_allocator.get();
 }
@@ -333,7 +333,7 @@ void ConfigurePartitionRefCountSupport(bool enable_ref_count) {
       base::ThreadSafePartitionRoot({
           base::PartitionOptions::Alignment::kRegular,
           base::PartitionOptions::ThreadCache::kEnabled,
-          base::PartitionOptions::PCScan::kDisabledByDefault,
+          base::PartitionOptions::Quarantine::kAllowed,
           enable_ref_count ? base::PartitionOptions::RefCount::kEnabled
                            : base::PartitionOptions::RefCount::kDisabled,
       });
@@ -343,8 +343,9 @@ void ConfigurePartitionRefCountSupport(bool enable_ref_count) {
 
 #if PA_ALLOW_PCSCAN
 void EnablePCScan() {
-  Allocator()->EnablePCScan();
-  AlignedAllocator()->EnablePCScan();
+  auto& pcscan = internal::PCScan<internal::ThreadSafe>::Instance();
+  pcscan.RegisterScannableRoot(Allocator());
+  pcscan.RegisterScannableRoot(AlignedAllocator());
 }
 #endif
 
