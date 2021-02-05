@@ -279,6 +279,7 @@
   self.suggestionsViewController.discoverFeedMetricsRecorder =
       self.discoverFeedMetricsRecorder;
   self.suggestionsViewController.panGestureHandler = self.panGestureHandler;
+  self.suggestionsViewController.bubblePresenter = self.bubblePresenter;
 
   self.discoverFeedHeaderDelegate =
       self.suggestionsViewController.discoverFeedHeaderDelegate;

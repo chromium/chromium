@@ -2465,7 +2465,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
           viewController;
       [_ntpCoordinatorsForWebStates[webState]
           constrainDiscoverHeaderMenuButtonNamedGuide];
-      [self.bubblePresenter presentDiscoverFeedHeaderTipBubble];
     } else {
       self.browserContainerViewController.contentView =
           [self viewForWebState:webState];
@@ -5185,11 +5184,13 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                                 forWebState:(web::WebState*)webState {
   if (NTPHelper->IsActive()) {
     DCHECK(!_ntpCoordinatorsForWebStates[webState]);
+    // TODO(crbug.com/1173610): Have BrowserCoordinator manage the NTP.
     NewTabPageCoordinator* newTabPageCoordinator =
         [[NewTabPageCoordinator alloc] initWithBrowser:self.browser];
     newTabPageCoordinator.panGestureHandler = self.thumbStripPanHandler;
     newTabPageCoordinator.toolbarDelegate = self.toolbarInterface;
     newTabPageCoordinator.webState = webState;
+    newTabPageCoordinator.bubblePresenter = self.bubblePresenter;
     _ntpCoordinatorsForWebStates[webState] = newTabPageCoordinator;
   } else {
     NewTabPageCoordinator* newTabPageCoordinator =

@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_controlling.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
 
+@class BubblePresenter;
 @class ContentSuggestionsSectionInformation;
 @protocol ContentSuggestionsActionHandler;
 @protocol ContentSuggestionsCommands;
@@ -85,6 +86,9 @@ extern NSString* const
 
 // The pan gesture handler for the hider view controller.
 @property(nonatomic, weak) ViewRevealingVerticalPanHandler* panGestureHandler;
+
+// Bubble presenter for displaying IPH bubbles relating to the NTP.
+@property(nonatomic, strong) BubblePresenter* bubblePresenter;
 
 - (void)setDataSource:(id<ContentSuggestionsDataSource>)dataSource;
 - (void)setDispatcher:(id<SnackbarCommands>)dispatcher;

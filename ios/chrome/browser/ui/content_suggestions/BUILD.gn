@@ -161,6 +161,7 @@ source_set("content_suggestions_ui") {
     "//components/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/bubble",
     "//ios/chrome/browser/ui/collection_view",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/content_suggestions/cells",

@@ -11,6 +11,7 @@ namespace web {
 class WebState;
 }
 
+@class BubblePresenter;
 @class ContentSuggestionsHeaderViewController;
 @protocol NewTabPageCommands;
 @protocol NewTabPageControllerDelegate;
@@ -46,6 +47,9 @@ class WebState;
 
 // Command handler for NTP related commands.
 @property(nonatomic, weak) id<NewTabPageCommands> ntpCommandHandler;
+
+// Bubble presenter for displaying IPH bubbles relating to the NTP.
+@property(nonatomic, strong) BubblePresenter* bubblePresenter;
 
 // Dismisses all modals owned by the NTP mediator.
 - (void)dismissModals;
