@@ -76264,6 +76264,7 @@ Full version information for the fingerprint enum values:
   <int value="61" label="kErrorCodeDeviceCorrupted"/>
   <int value="62" label="kErrorCodePackageExcludedFromUpdate"/>
   <int value="63" label="kErrorCodeDownloadCancelledPerPolicy"/>
+  <int value="64" label="kErrorCodeRepeatedFpFromOmahaError"/>
 </enum>
 
 <enum name="UpdateEngineInstallDateProvisioningSource">
