@@ -2630,6 +2630,17 @@
     "expiry_milestone": -1
   },
   {
+    "name": "external-pci-devices-allowed",
+    "owners": [ "rajatja@google.com", "czajka@google.com",
+                "cros-peripherals@google.com" ],
+    "expiry_milestone": 94
+  },
+  {
+    "name": "feed-v2-hearts",
+    "owners": [ "//chrome/android/feed/OWNERS", "feed@chromium.org" ],
+    "expiry_milestone": 96
+  },
+  {
     "name": "file-handling-api",
     "owners": [ "huangdarwin", "mgiuca", "cmp" ],
     "expiry_milestone": 94

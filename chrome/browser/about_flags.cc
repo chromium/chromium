@@ -5580,6 +5580,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"print-server-scaling", flag_descriptions::kPrintServerScalingName,
      flag_descriptions::kPrintServerScalingDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kPrintServerScaling)},
+
+    {"external-pci-devices-allowed",
+     flag_descriptions::kExternalPciDevicesAllowedName,
+     flag_descriptions::kExternalPciDevicesAllowedDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kExternalPciDevicesAllowed)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"enable-portals", flag_descriptions::kEnablePortalsName,

@@ -1136,6 +1136,12 @@ const char kEffectiveConnectionType2GDescription[] = "2G";
 const char kEffectiveConnectionType3GDescription[] = "3G";
 const char kEffectiveConnectionType4GDescription[] = "4G";
 
+const char kExternalPciDevicesAllowedName[] = "Allow external PCI devices";
+const char kExternalPciDevicesAllowedDescription[] =
+    "Enables the use of "
+    "External PCI devices (including some thunderbolt and SD Express devices "
+    "that use PCI tunneling)";
+
 const char kFileHandlingAPIName[] = "File Handling API";
 const char kFileHandlingAPIDescription[] =
     "Enables the file handling API, allowing websites to register as file "

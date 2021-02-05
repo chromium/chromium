@@ -488,6 +488,9 @@ extern const char kEnableTranslateSubFramesDescription[];
 extern const char kEnableWindowsGamingInputDataFetcherName[];
 extern const char kEnableWindowsGamingInputDataFetcherDescription[];
 
+extern const char kExternalPciDevicesAllowedName[];
+extern const char kExternalPciDevicesAllowedDescription[];
+
 extern const char kBlockInsecurePrivateNetworkRequestsName[];
 extern const char kBlockInsecurePrivateNetworkRequestsDescription[];
 

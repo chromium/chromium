@@ -42542,6 +42542,7 @@ from previous Chrome versions.
   <int value="-2026156288"
       label="LookalikeUrlNavigationSuggestionsUI:disabled"/>
   <int value="-2025367104" label="enable-material-design-ntp"/>
+  <int value="-2022956008" label="ExternalPciDevicesAllowed:disabled"/>
   <int value="-2021954068" label="TapVisualizerApp:disabled"/>
   <int value="-2020721975" label="smart-virtual-keyboard"/>
   <int value="-2020024440" label="scroll-end-effect"/>
@@ -43797,6 +43798,7 @@ from previous Chrome versions.
   <int value="-920204598" label="ScrollAnchorSerialization:enabled"/>
   <int value="-918900957" label="AutofillCreditCardAssist:disabled"/>
   <int value="-918618075" label="enable-service-worker"/>
+  <int value="-916780902" label="ExternalPciDevicesAllowed:enabled"/>
   <int value="-915328316" label="CupsIppPrintingBackend:disabled"/>
   <int value="-915035507" label="ArcPrintSpoolerExperiment:enabled"/>
   <int value="-914210146" label="enable-web-based-signin"/>
