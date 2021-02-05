@@ -273,7 +273,8 @@ IN_PROC_BROWSER_TEST_F(ZoomBrowserTest, ZoomPreservedOnReload) {
       0.01);
 }
 
-IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, SubframesZoomProperly) {
+// http://crbug.com/1174371
+IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, DISABLED_SubframesZoomProperly) {
   std::string top_level_host("a.com");
   GURL main_url(embedded_test_server()->GetURL(
       top_level_host, "/cross_site_iframe_factory.html?a(b(a))"));
