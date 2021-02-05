@@ -103,12 +103,12 @@ android_library("service_java") {
     "java/src/org/chromium/components/payments/PaymentAddressTypeConverter.java",
     "java/src/org/chromium/components/payments/PaymentDetailsUpdateService.java",
     "java/src/org/chromium/components/payments/PaymentDetailsUpdateServiceHelper.java",
-    "java/src/org/chromium/components/payments/PaymentFeatureList.java",
     "java/src/org/chromium/components/payments/PaymentRequestUpdateEventListener.java",
     "java/src/org/chromium/components/payments/intent/WebPaymentIntentHelper.java",
     "java/src/org/chromium/components/payments/intent/WebPaymentIntentHelperType.java",
   ]
   deps = [
+    ":feature_list_java",
     "//base:base_java",
     "//base:jni_java",
     "//components/payments/mojom:mojom_java",
@@ -118,6 +118,16 @@ android_library("service_java") {
   srcjar_deps = [
     ":error_strings_generated_srcjar",
     ":payment_details_update_service_aidl",
+  ]
+}
+
+android_library("feature_list_java") {
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  sources =
+      [ "java/src/org/chromium/components/payments/PaymentFeatureList.java" ]
+  deps = [
+    "//base:base_java",
+    "//base:jni_java",
   ]
 }
 
@@ -157,6 +167,7 @@ android_library("full_java") {
   ]
   resources_package = "org.chromium.components.payments"
   deps = [
+    ":feature_list_java",
     ":java_resources",
     ":minimal_java",
     ":service_java",
@@ -223,6 +234,7 @@ android_library("minimal_java") {
 
 java_group("java") {
   deps = [
+    ":feature_list_java",
     ":full_java",
     ":minimal_java",
   ]
