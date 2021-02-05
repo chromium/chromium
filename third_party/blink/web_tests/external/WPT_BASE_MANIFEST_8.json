@@ -54857,6 +54857,97 @@
        {}
       ]
      ],
+     "background-color-hsl-001.html": [
+      "2b8c7d313c7ffe74ca62d8f1c177e9c66b73d998",
+      [
+       null,
+       [
+        [
+         "/css/css-color/background-color-hsl-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "background-color-hsl-002.html": [
+      "a1e9a0127e345270d107fc9724a84a101f425f84",
+      [
+       null,
+       [
+        [
+         "/css/css-color/background-color-hsl-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "background-color-hsl-003.html": [
+      "f9c256e1773d5b3e98557f61cce22959025af680",
+      [
+       null,
+       [
+        [
+         "/css/css-color/background-color-hsl-003-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "background-color-hsl-004.html": [
+      "1cd6684c710343f6ee967c2fe2bcc561a0efd5eb",
+      [
+       null,
+       [
+        [
+         "/css/css-color/background-color-hsl-004-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "background-color-rgb-001.html": [
+      "061eeac2fac9b38389c3b60e8203f789187927e0",
+      [
+       null,
+       [
+        [
+         "/css/css-color/background-color-rgb-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "background-color-rgb-002.html": [
+      "8919f0ea3e49ebada41217e16e8b87ed7556798d",
+      [
+       null,
+       [
+        [
+         "/css/css-color/background-color-rgb-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "background-color-rgb-003.html": [
+      "6a22ba0dbbbb0323a291a7b31b55d641448714e5",
+      [
+       null,
+       [
+        [
+         "/css/css-color/background-color-rgb-003-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "border-bottom-color.xht": [
       "994bb4e904ccc28fb54865031ffe55c7ec50bac2",
       [
@@ -160462,99 +160553,6 @@
     "vendor-imports": {
      "mozilla": {
       "mozilla-central-reftests": {
-       "color4": {
-        "background-color-hsl-001.html": [
-         "2b8c7d313c7ffe74ca62d8f1c177e9c66b73d998",
-         [
-          null,
-          [
-           [
-            "/css/vendor-imports/mozilla/mozilla-central-reftests/color4/background-color-hsl-001-ref.html",
-            "=="
-           ]
-          ],
-          {}
-         ]
-        ],
-        "background-color-hsl-002.html": [
-         "a1e9a0127e345270d107fc9724a84a101f425f84",
-         [
-          null,
-          [
-           [
-            "/css/vendor-imports/mozilla/mozilla-central-reftests/color4/background-color-hsl-002-ref.html",
-            "=="
-           ]
-          ],
-          {}
-         ]
-        ],
-        "background-color-hsl-003.html": [
-         "f9c256e1773d5b3e98557f61cce22959025af680",
-         [
-          null,
-          [
-           [
-            "/css/vendor-imports/mozilla/mozilla-central-reftests/color4/background-color-hsl-003-ref.html",
-            "=="
-           ]
-          ],
-          {}
-         ]
-        ],
-        "background-color-hsl-004.html": [
-         "1cd6684c710343f6ee967c2fe2bcc561a0efd5eb",
-         [
-          null,
-          [
-           [
-            "/css/vendor-imports/mozilla/mozilla-central-reftests/color4/background-color-hsl-004-ref.html",
-            "=="
-           ]
-          ],
-          {}
-         ]
-        ],
-        "background-color-rgb-001.html": [
-         "061eeac2fac9b38389c3b60e8203f789187927e0",
-         [
-          null,
-          [
-           [
-            "/css/vendor-imports/mozilla/mozilla-central-reftests/color4/background-color-rgb-001-ref.html",
-            "=="
-           ]
-          ],
-          {}
-         ]
-        ],
-        "background-color-rgb-002.html": [
-         "8919f0ea3e49ebada41217e16e8b87ed7556798d",
-         [
-          null,
-          [
-           [
-            "/css/vendor-imports/mozilla/mozilla-central-reftests/color4/background-color-rgb-002-ref.html",
-            "=="
-           ]
-          ],
-          {}
-         ]
-        ],
-        "background-color-rgb-003.html": [
-         "6a22ba0dbbbb0323a291a7b31b55d641448714e5",
-         [
-          null,
-          [
-           [
-            "/css/vendor-imports/mozilla/mozilla-central-reftests/color4/background-color-rgb-003-ref.html",
-            "=="
-           ]
-          ],
-          {}
-         ]
-        ]
-       },
        "contain": {
         "contain-layout-containing-block-absolute-001.html": [
          "036cf7d8dd6f6de18e5aa4cf9f1df25799b10094",
@@ -189670,6 +189668,34 @@
      ],
      "a98rgb-004-ref.html": [
       "3b8771a704a5f79e7062f790c04f0bbd24efb05b",
+      []
+     ],
+     "background-color-hsl-001-ref.html": [
+      "f37a73d1707f056962baad29a2198fd3b271e362",
+      []
+     ],
+     "background-color-hsl-002-ref.html": [
+      "90284b999f1d059ab989e79e17a0fd8f41b9089c",
+      []
+     ],
+     "background-color-hsl-003-ref.html": [
+      "e0db417c99c9ca0d7e7da0142d25207fcd15d7b5",
+      []
+     ],
+     "background-color-hsl-004-ref.html": [
+      "f630740fae145f992bd99752e5196234ee93cf7f",
+      []
+     ],
+     "background-color-rgb-001-ref.html": [
+      "b03f0a3fb2a41ad2636de56dee8035a79ff6d85d",
+      []
+     ],
+     "background-color-rgb-002-ref.html": [
+      "be29c86ca7269ca16c238b6513c9bf523faee9b4",
+      []
+     ],
+     "background-color-rgb-003-ref.html": [
+      "70227ad3820b803bec2cb92eb1fe188d84ad0e28",
       []
      ],
      "blacksquare-ref.html": [
@@ -220383,36 +220409,6 @@
        "break3": {
         "moz-block-fragmentation-001-print-ref.html": [
          "cf345b59638f28ddf423ed343a269178ab47f1b9",
-         []
-        ]
-       },
-       "color4": {
-        "background-color-hsl-001-ref.html": [
-         "f37a73d1707f056962baad29a2198fd3b271e362",
-         []
-        ],
-        "background-color-hsl-002-ref.html": [
-         "90284b999f1d059ab989e79e17a0fd8f41b9089c",
-         []
-        ],
-        "background-color-hsl-003-ref.html": [
-         "e0db417c99c9ca0d7e7da0142d25207fcd15d7b5",
-         []
-        ],
-        "background-color-hsl-004-ref.html": [
-         "f630740fae145f992bd99752e5196234ee93cf7f",
-         []
-        ],
-        "background-color-rgb-001-ref.html": [
-         "b03f0a3fb2a41ad2636de56dee8035a79ff6d85d",
-         []
-        ],
-        "background-color-rgb-002-ref.html": [
-         "be29c86ca7269ca16c238b6513c9bf523faee9b4",
-         []
-        ],
-        "background-color-rgb-003-ref.html": [
-         "70227ad3820b803bec2cb92eb1fe188d84ad0e28",
          []
         ]
        },
