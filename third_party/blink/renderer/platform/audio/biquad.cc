@@ -870,6 +870,12 @@ double Biquad::TailFrame(int coef_index, double max_frame) {
       // Double pole at 0.  This just delays the signal by 2 frames,
       // so set the tail frame to 2.
       tail_frame = 2;
+    } else if (std::abs(r) >= 1) {
+      // Double pole at 1 or -1 (or outside the unit circle in general).  In any
+      // case, the impulse response grows without bound since the pole is on or
+      // outside the unit circle.  Return infinity and let the caller clamp it
+      // to something more reasonable.
+      tail_frame = std::numeric_limits<double>::infinity();
     } else {
       double c1 = (b0 * r * r + b1 * r + b2) / (r * r);
       double c2 = b1 * r + 2 * b2;
