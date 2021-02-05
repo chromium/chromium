@@ -71,11 +71,6 @@ inline void NoBarrier_Store(volatile AtomicWord *ptr, AtomicWord value) {
       reinterpret_cast<volatile Atomic32*>(ptr), value);
 }
 
-inline void Acquire_Store(volatile AtomicWord* ptr, AtomicWord value) {
-  return base::subtle::Acquire_Store(
-      reinterpret_cast<volatile Atomic32*>(ptr), value);
-}
-
 inline void Release_Store(volatile AtomicWord* ptr, AtomicWord value) {
   return base::subtle::Release_Store(
       reinterpret_cast<volatile Atomic32*>(ptr), value);

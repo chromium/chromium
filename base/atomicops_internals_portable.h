@@ -107,11 +107,6 @@ inline void NoBarrier_Store(volatile Atomic32* ptr, Atomic32 value) {
   ((AtomicLocation32)ptr)->store(value, std::memory_order_relaxed);
 }
 
-inline void Acquire_Store(volatile Atomic32* ptr, Atomic32 value) {
-  ((AtomicLocation32)ptr)->store(value, std::memory_order_relaxed);
-  std::atomic_thread_fence(std::memory_order_seq_cst);
-}
-
 inline void Release_Store(volatile Atomic32* ptr, Atomic32 value) {
   ((AtomicLocation32)ptr)->store(value, std::memory_order_release);
 }
@@ -188,11 +183,6 @@ inline Atomic64 Release_CompareAndSwap(volatile Atomic64* ptr,
 
 inline void NoBarrier_Store(volatile Atomic64* ptr, Atomic64 value) {
   ((AtomicLocation64)ptr)->store(value, std::memory_order_relaxed);
-}
-
-inline void Acquire_Store(volatile Atomic64* ptr, Atomic64 value) {
-  ((AtomicLocation64)ptr)->store(value, std::memory_order_relaxed);
-  std::atomic_thread_fence(std::memory_order_seq_cst);
 }
 
 inline void Release_Store(volatile Atomic64* ptr, Atomic64 value) {
