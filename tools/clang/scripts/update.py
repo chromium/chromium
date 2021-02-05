@@ -38,13 +38,11 @@ import zipfile
 # https://chromium.googlesource.com/chromium/src/+/master/docs/updating_clang.md
 # Reverting problematic clang rolls is safe, though.
 # This is the output of `git describe` and is usable as a commit-ish.
-CLANG_REVISION = 'llvmorg-12-init-17251-g6de48655'
-CLANG_SUB_REVISION = 2
+CLANG_REVISION = 'llvmorg-13-init-794-g83e2710e'
+CLANG_SUB_REVISION = 1
 
 PACKAGE_VERSION = '%s-%s' % (CLANG_REVISION, CLANG_SUB_REVISION)
-RELEASE_VERSION = '12.0.0'
-# TODO(crbug.com/1171687): Bump to 13.0.0 in the next Clang roll.
-
+RELEASE_VERSION = '13.0.0'
 
 CDS_URL = os.environ.get('CDS_CLANG_BUCKET_OVERRIDE',
     'https://commondatastorage.googleapis.com/chromium-browser-clang')
