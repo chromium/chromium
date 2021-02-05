@@ -27,6 +27,8 @@ std::unique_ptr<content::NavigationUIData> NavigationUIDataImpl::Clone() {
   auto rv = std::make_unique<NavigationUIDataImpl>();
   rv->disable_network_error_auto_reload_ = disable_network_error_auto_reload_;
 #if defined(OS_ANDROID)
+  rv->intent_launches_allowed_in_background_ =
+      intent_launches_allowed_in_background_;
   rv->response_holder_ = response_holder_;
 #endif  // OS_ANDROID
   return rv;
