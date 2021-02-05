@@ -16,6 +16,11 @@ void EmitAppOpenDuration(const base::TimeDelta& time_elapsed) {
                                  time_elapsed);
 }
 
+void EmitMemoryRoutineDuration(const base::TimeDelta& memory_routine_duration) {
+  base::UmaHistogramLongTimes100("ChromeOS.DiagnosticsUi.MemoryRoutineDuration",
+                                 memory_routine_duration);
+}
+
 void EmitRoutineRunCount(uint16_t routine_count) {
   base::UmaHistogramCounts100("ChromeOS.DiagnosticsUi.RoutineCount",
                               routine_count);

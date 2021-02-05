@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chromeos/components/diagnostics_ui/mojom/system_routine_controller.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -129,6 +130,10 @@ class SystemRoutineController : public mojom::SystemRoutineController {
   // Records the number of routines that a user attempts to run during one
   // session in the app. Emitted when the app is closed.
   uint16_t routine_count_ = 0;
+
+  // Timestamp of when the memory routine was started. Undefined if the memory
+  // routine is not running.
+  base::Time memory_routine_start_timestamp_;
 
   mojo::Remote<mojom::RoutineRunner> inflight_routine_runner_;
   std::unique_ptr<base::OneShotTimer> inflight_routine_timer_;

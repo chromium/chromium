@@ -319,6 +319,7 @@ void SystemRoutineController::ExecuteRoutine(mojom::RoutineType routine_type) {
       diagnostics_service_->RunMemoryRoutine(
           base::BindOnce(&SystemRoutineController::OnRoutineStarted,
                          base::Unretained(this), routine_type));
+      memory_routine_start_timestamp_ = base::Time::Now();
       break;
   }
   if (IsLoggingEnabled()) {
@@ -623,6 +624,10 @@ void SystemRoutineController::OnStandardRoutineResult(
       ConstructStandardRoutineResultInfoPtr(routine_type, result);
   SendRoutineResult(std::move(result_info));
   metrics::EmitRoutineResult(routine_type, result);
+  if (routine_type == mojom::RoutineType::kMemory) {
+    metrics::EmitMemoryRoutineDuration(base::Time::Now() -
+                                       memory_routine_start_timestamp_);
+  }
   if (IsLoggingEnabled()) {
     routine_log_ptr_->LogRoutineCompleted(routine_type, result);
   }

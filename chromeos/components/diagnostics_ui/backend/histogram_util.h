@@ -19,6 +19,8 @@ namespace metrics {
 
 void EmitAppOpenDuration(const base::TimeDelta& time_elapsed);
 
+void EmitMemoryRoutineDuration(const base::TimeDelta& memory_routine_duration);
+
 void EmitRoutineRunCount(uint16_t routine_count);
 
 void EmitRoutineResult(mojom::RoutineType routine_type,

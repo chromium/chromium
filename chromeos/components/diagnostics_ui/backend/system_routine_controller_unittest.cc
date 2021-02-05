@@ -750,5 +750,38 @@ TEST_F(SystemRoutineControllerTest, RoutineResultEmitted) {
                                       /*expected_count=*/1);
 }
 
+TEST_F(SystemRoutineControllerTest, MemoryRuntimeEmitted) {
+  // Run the CpuStress routine.
+  SetRunRoutineResponse(/*id=*/1,
+                        healthd::DiagnosticRoutineStatusEnum::kRunning);
+
+  base::HistogramTester histogram_tester;
+
+  FakeRoutineRunner routine_runner;
+  system_routine_controller_->RunRoutine(
+      mojom::RoutineType::kMemory,
+      routine_runner.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+
+  // Assert that the first routine is not complete.
+  EXPECT_TRUE(routine_runner.result.is_null());
+
+  // Update the status on cros_healthd.
+  SetNonInteractiveRoutineUpdateResponse(
+      /*percent_complete=*/100, healthd::DiagnosticRoutineStatusEnum::kPassed,
+      mojo::ScopedHandle());
+
+  // After the update interval, the update is fetched and processed.
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1000));
+  EXPECT_FALSE(routine_runner.result.is_null());
+  VerifyRoutineResult(*routine_runner.result, mojom::RoutineType::kMemory,
+                      mojom::StandardRoutineResult::kTestPassed);
+
+  histogram_tester.ExpectUniqueTimeSample(
+      "ChromeOS.DiagnosticsUi.MemoryRoutineDuration",
+      base::TimeDelta::FromSeconds(1000),
+      /*expected_count=*/1);
+}
+
 }  // namespace diagnostics
 }  // namespace chromeos
