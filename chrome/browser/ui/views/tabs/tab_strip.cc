@@ -1314,6 +1314,10 @@ void TabStrip::AddTabAt(int model_index, TabRendererData data, bool is_active) {
   SwapLayoutIfNecessary();
   UpdateAccessibleTabIndices();
 
+  // Need to ensure an old cached preferred size isn't used before the first
+  // tick of the animation. See crbug.com/1172910.
+  PreferredSizeChanged();
+
   for (TabStripObserver& observer : observers_)
     observer.OnTabAdded(model_index);
 
