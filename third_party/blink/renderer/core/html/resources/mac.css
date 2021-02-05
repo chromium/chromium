@@ -42,6 +42,6 @@ button {
     box-shadow: none !important
 }
 
-:focus {
+:focus-visible {
     outline: auto 5px -webkit-focus-ring-color
 }

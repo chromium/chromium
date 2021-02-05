@@ -171,6 +171,7 @@ static void ExtractSelectorValues(const CSSSelector* selector,
         case CSSSelector::kPseudoWebkitAnyLink:
         case CSSSelector::kPseudoAnyLink:
         case CSSSelector::kPseudoFocus:
+        case CSSSelector::kPseudoFocusVisible:
         case CSSSelector::kPseudoPlaceholder:
         case CSSSelector::kPseudoFileSelectorButton:
         case CSSSelector::kPseudoHost:
@@ -262,6 +263,9 @@ bool RuleSet::FindBestRuleSetAndAdd(const CSSSelector& component,
       return true;
     case CSSSelector::kPseudoFocus:
       focus_pseudo_class_rules_.push_back(rule_data);
+      return true;
+    case CSSSelector::kPseudoFocusVisible:
+      focus_visible_pseudo_class_rules_.push_back(rule_data);
       return true;
     case CSSSelector::kPseudoPlaceholder:
     case CSSSelector::kPseudoFileSelectorButton:
@@ -484,6 +488,7 @@ void RuleSet::CompactRules() {
   link_pseudo_class_rules_.ShrinkToFit();
   cue_pseudo_rules_.ShrinkToFit();
   focus_pseudo_class_rules_.ShrinkToFit();
+  focus_visible_pseudo_class_rules_.ShrinkToFit();
   spatial_navigation_interest_class_rules_.ShrinkToFit();
   universal_rules_.ShrinkToFit();
   shadow_host_rules_.ShrinkToFit();
@@ -557,6 +562,7 @@ void RuleSet::Trace(Visitor* visitor) const {
   visitor->Trace(link_pseudo_class_rules_);
   visitor->Trace(cue_pseudo_rules_);
   visitor->Trace(focus_pseudo_class_rules_);
+  visitor->Trace(focus_visible_pseudo_class_rules_);
   visitor->Trace(spatial_navigation_interest_class_rules_);
   visitor->Trace(universal_rules_);
   visitor->Trace(shadow_host_rules_);

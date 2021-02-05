@@ -911,7 +911,7 @@ select:-internal-list-box hr {
     margin-block-end: 0;
 }
 
-select:-internal-list-box:focus option:-internal-multi-select-focus {
+select:-internal-list-box:focus-visible option:-internal-multi-select-focus {
     outline: auto 1px -webkit-focus-ring-color;
     outline-offset: -1px;
 }
@@ -1079,31 +1079,31 @@ nobr {
     box-shadow: none !important
 }
 
-:focus {
+:focus-visible {
     outline: auto 1px -webkit-focus-ring-color
 }
 
-html:focus, body:focus {
+html:focus-visible, body:focus-visible {
     outline: none
 }
 
-embed:focus, iframe:focus, object:focus {
+embed:focus-visible, iframe:focus-visible, object:focus-visible {
     outline: none
 }
 
-input:focus, textarea:focus, select:focus {
+input:focus-visible, textarea:focus-visible, select:focus-visible {
     outline-offset: -2px
 }
 
-input[type="button" i]:focus,
-input[type="checkbox" i]:focus,
-input[type="file" i]:focus,
-input[type="hidden" i]:focus,
-input[type="image" i]:focus,
-input[type="radio" i]:focus,
-input[type="reset" i]:focus,
-input[type="submit" i]:focus,
-input[type="file" i]:focus::-webkit-file-upload-button {
+input[type="button" i]:focus-visible,
+input[type="checkbox" i]:focus-visible,
+input[type="file" i]:focus-visible,
+input[type="hidden" i]:focus-visible,
+input[type="image" i]:focus-visible,
+input[type="radio" i]:focus-visible,
+input[type="reset" i]:focus-visible,
+input[type="submit" i]:focus-visible,
+input[type="file" i]:focus-visible::-webkit-file-upload-button {
     outline-offset: 0
 }
 

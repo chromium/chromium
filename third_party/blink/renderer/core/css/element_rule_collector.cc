@@ -286,6 +286,10 @@ void ElementRuleCollector::CollectMatchingRules(
     CollectMatchingRulesForList(match_request.rule_set->FocusPseudoClassRules(),
                                 match_request);
   }
+  if (SelectorChecker::MatchesFocusVisiblePseudoClass(element)) {
+    CollectMatchingRulesForList(
+        match_request.rule_set->FocusVisiblePseudoClassRules(), match_request);
+  }
   if (SelectorChecker::MatchesSpatialNavigationInterestPseudoClass(element)) {
     CollectMatchingRulesForList(
         match_request.rule_set->SpatialNavigationInterestPseudoClassRules(),
