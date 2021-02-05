@@ -125,7 +125,6 @@ TEST_F(CounterStyleTest, FixedAlgorithm) {
   // Fallback to decimal
   EXPECT_EQ("-1", eb.GenerateRepresentation(-1));
   EXPECT_EQ("0", eb.GenerateRepresentation(0));
-  EXPECT_EQ("13", eb.GenerateRepresentation(13));
 }
 
 TEST_F(CounterStyleTest, SymbolicAlgorithm) {

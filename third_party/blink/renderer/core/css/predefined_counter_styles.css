@@ -270,14 +270,14 @@
 /* https://drafts.csswg.org/css-counter-styles-3/#simple-fixed */
 
 @counter-style cjk-earthly-branch {
-  system: fixed;
+  system: alphabetic;
   symbols: "\5B50" "\4E11" "\5BC5" "\536F" "\8FB0" "\5DF3" "\5348" "\672A" "\7533" "\9149" "\620C" "\4EA5";
   /* 子 丑 寅 卯 辰 巳 午 未 申 酉 戌 亥 */
   suffix: "\3001";
 }
 
 @counter-style cjk-heavenly-stem {
-  system: fixed;
+  system: alphabetic;
   symbols: "\7532" "\4E59" "\4E19" "\4E01" "\620A" "\5DF1" "\5E9A" "\8F9B" "\58EC" "\7678";
   /* 甲 乙 丙 丁 戊 己 庚 辛 壬 癸 */
   suffix: "\3001";
