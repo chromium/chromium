@@ -308,6 +308,8 @@ std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
         }
       }
     }
+    // Always reset android_id if ARC data snapshot update is in progress.
+    filtered_policies.SetBoolKey("resetAndroidIdEnabled", true);
   }
 
   if (profile->IsSupervised() &&

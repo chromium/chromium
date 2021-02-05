@@ -763,11 +763,11 @@ TEST_F(ArcPolicyBridgeTest, DisableAppsInSnapshot) {
                                            kFalse, kFalse, kFalse),
                         "}"})),
                    nullptr);
-  GetPoliciesAndVerifyResult(
-      base::StrCat({"{\"apkCacheEnabled\":true,",
-                    base::StringPrintf(kDisabledApplicationsPolicyFormat, kTrue,
-                                       kTrue, kFalse),
-                    ",\"guid\":\"", instance_guid(), "\"}"}));
+  GetPoliciesAndVerifyResult(base::StrCat(
+      {"{\"apkCacheEnabled\":true,",
+       base::StringPrintf(kDisabledApplicationsPolicyFormat, kTrue, kTrue,
+                          kFalse),
+       ",\"guid\":\"", instance_guid(), "\",\"resetAndroidIdEnabled\":true}"}));
 
   manager.reset();
   upstart_client.reset();
