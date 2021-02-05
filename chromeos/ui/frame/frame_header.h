@@ -124,6 +124,9 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader {
   // Updates the frame header painting to reflect a change in frame colors.
   virtual void UpdateFrameColors() = 0;
 
+  // Returns window mask for the rounded corner of the frame header.
+  virtual SkPath GetWindowMaskForFrameHeader(const gfx::Size& size);
+
   // Sets text to display in place of the window's title. This will be shown
   // regardless of what ShouldShowWindowTitle() returns.
   void SetFrameTextOverride(const base::string16& frame_text_override);

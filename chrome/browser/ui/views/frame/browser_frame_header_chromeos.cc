@@ -18,6 +18,7 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/views/view.h"
@@ -72,16 +73,9 @@ void PaintThemedFrame(gfx::Canvas* canvas,
     canvas->Restore();
 }
 
-// Tiles |frame_image| and |frame_overlay_image| into an area, rounding the top
-// corners.
-void PaintFrameImagesInRoundRect(gfx::Canvas* canvas,
-                                 const gfx::ImageSkia& frame_image,
-                                 const gfx::ImageSkia& frame_overlay_image,
-                                 SkColor background_color,
-                                 const gfx::Rect& bounds,
-                                 int image_inset_x,
-                                 int image_inset_y,
-                                 int corner_radius) {
+// Returns the frame path with the given |bounds| and |corner_radius|
+// for the rounded corner of the frame header.
+SkPath GetFrameHeaderPath(const gfx::Rect& bounds, int corner_radius) {
   const SkScalar sk_corner_radius = SkIntToScalar(corner_radius);
   const SkScalar radii[8] = {sk_corner_radius,
                              sk_corner_radius,  // top-left
@@ -94,13 +88,32 @@ void PaintFrameImagesInRoundRect(gfx::Canvas* canvas,
   SkPath frame_path;
   frame_path.addRoundRect(gfx::RectToSkRect(bounds), radii,
                           SkPathDirection::kCW);
+  return frame_path;
+}
+
+// Tiles |frame_image| and |frame_overlay_image| into an area, rounding the top
+// corners.
+void PaintFrameImagesInRoundRect(gfx::Canvas* canvas,
+                                 const gfx::ImageSkia& frame_image,
+                                 const gfx::ImageSkia& frame_overlay_image,
+                                 SkColor background_color,
+                                 const gfx::Rect& bounds,
+                                 int image_inset_x,
+                                 int image_inset_y,
+                                 int corner_radius) {
   bool antialias = corner_radius > 0;
 
   gfx::ScopedCanvas scoped_save(canvas);
-  canvas->ClipPath(frame_path, antialias);
+  canvas->ClipPath(GetFrameHeaderPath(bounds, corner_radius), antialias);
 
   PaintThemedFrame(canvas, frame_image, frame_overlay_image, background_color,
                    bounds, image_inset_x, image_inset_y);
+}
+
+int GetCornerRadius(chromeos::WindowStateType state_type) {
+  return chromeos::IsNormalWindowStateType(state_type)
+             ? chromeos::kTopCornerRadiusWhenRestored
+             : 0;
 }
 
 }  // namespace
@@ -166,6 +179,14 @@ void BrowserFrameHeaderChromeOS::UpdateFrameColors() {
   view()->SchedulePaint();
 }
 
+SkPath BrowserFrameHeaderChromeOS::GetWindowMaskForFrameHeader(
+    const gfx::Size& size) {
+  chromeos::WindowStateType state_type =
+      target_widget()->GetNativeWindow()->GetProperty(
+          chromeos::kWindowStateTypeKey);
+  return GetFrameHeaderPath(gfx::Rect(size), GetCornerRadius(state_type));
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserFrameHeaderChromeOS, private:
 
@@ -180,13 +201,10 @@ void BrowserFrameHeaderChromeOS::PaintFrameImages(gfx::Canvas* canvas) {
   chromeos::WindowStateType state_type =
       target_widget()->GetNativeWindow()->GetProperty(
           chromeos::kWindowStateTypeKey);
-  int corner_radius = chromeos::IsNormalWindowStateType(state_type)
-                          ? chromeos::kTopCornerRadiusWhenRestored
-                          : 0;
 
   PaintFrameImagesInRoundRect(canvas, frame_image, frame_overlay_image,
                               appearance_provider_->GetFrameHeaderColor(active),
                               GetPaintedBounds(), GetThemeBackgroundXInset(),
                               appearance_provider_->GetFrameHeaderImageYInset(),
-                              corner_radius);
+                              GetCornerRadius(state_type));
 }

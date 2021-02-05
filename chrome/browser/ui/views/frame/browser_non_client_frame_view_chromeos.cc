@@ -286,7 +286,12 @@ int BrowserNonClientFrameViewChromeOS::NonClientHitTest(
 
 void BrowserNonClientFrameViewChromeOS::GetWindowMask(const gfx::Size& size,
                                                       SkPath* window_mask) {
-  // Aura does not use window masks.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // The opaque region of surface should be set exactly same as the frame header
+  // path in BrowserFrameHeader.
+  if (frame()->ShouldDrawFrameHeader())
+    *window_mask = frame_header_->GetWindowMaskForFrameHeader(size);
+#endif
 }
 
 void BrowserNonClientFrameViewChromeOS::ResetWindowControls() {

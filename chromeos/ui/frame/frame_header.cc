@@ -266,6 +266,10 @@ void FrameHeader::SetFrameTextOverride(
   SchedulePaintForTitle();
 }
 
+SkPath FrameHeader::GetWindowMaskForFrameHeader(const gfx::Size& size) {
+  return SkPath();
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // FrameHeader, protected:
 
