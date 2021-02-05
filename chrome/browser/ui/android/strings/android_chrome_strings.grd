@@ -782,6 +782,12 @@ For example, some websites may respond to this request by showing you ads that a
       <message name="IDS_PREFS_PRIVACY_SANDBOX" desc="Title for the 'Privacy sandbox' page.">
         Privacy sandbox
       </message>
+      <message name="IDS_PRIVACY_SANDBOX_STATUS_ENABLED" desc="Status text, displayed when the Privacy sandbox APIs are enabled.">
+        Trial is enabled
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_STATUS_DISABLED" desc="Status text, displayed when the Privacy sandbox APIs are disabled.">
+        Trial is disabled
+      </message>
       <message name="IDS_PRIVACY_SANDBOX_DESCRIPTION" desc="">
         Privacy Sandbox is a set of new technologies that will eventually protect people from cross-site tracking mechanisms, like third-party cookies, while preserving web content and services that depend on those mechanisms today. Chrome is working with website developers, publishers, advertisers, and other browsers to develop this new technology.
       </message>

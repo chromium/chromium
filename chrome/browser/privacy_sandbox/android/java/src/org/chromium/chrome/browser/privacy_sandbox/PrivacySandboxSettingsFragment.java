@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,7 +29,11 @@ public class PrivacySandboxSettingsFragment
     public static final String TRIAL_DESCRIPTION_PREFERENCE = "privacy_sandbox_trial_description";
     public static final String TOGGLE_PREFERENCE = "privacy_sandbox_toggle";
 
-    private PrivacySandboxBridge mBridge;
+    public static CharSequence getStatusString(Context context) {
+        return context.getString(PrivacySandboxBridge.isPrivacySandboxEnabled()
+                        ? R.string.privacy_sandbox_status_enabled
+                        : R.string.privacy_sandbox_status_disabled);
+    }
 
     /**
      * Initializes all the objects related to the preferences page.
@@ -45,11 +50,10 @@ public class PrivacySandboxSettingsFragment
                         new SpanInfo("<li1>", "</li1>", new ChromeBulletSpan(getContext())),
                         new SpanInfo("<li2>", "</li2>", new ChromeBulletSpan(getContext()))));
 
-        mBridge = new PrivacySandboxBridge();
         ChromeSwitchPreference privacySandboxToggle =
                 (ChromeSwitchPreference) findPreference(TOGGLE_PREFERENCE);
         privacySandboxToggle.setOnPreferenceChangeListener(this);
-        privacySandboxToggle.setChecked(mBridge.isPrivacySandboxEnabled());
+        privacySandboxToggle.setChecked(PrivacySandboxBridge.isPrivacySandboxEnabled());
     }
 
     @Override
@@ -59,7 +63,7 @@ public class PrivacySandboxSettingsFragment
         boolean enabled = (boolean) newValue;
         RecordUserAction.record(enabled ? "Settings.PrivacySandbox.ApisEnabled"
                                         : "Settings.PrivacySandbox.ApisDisabled");
-        mBridge.setPrivacySandboxEnabled(enabled);
+        PrivacySandboxBridge.setPrivacySandboxEnabled(enabled);
         return true;
     }
 
