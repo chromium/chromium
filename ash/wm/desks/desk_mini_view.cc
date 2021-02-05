@@ -398,13 +398,13 @@ void DeskMiniView::OnViewBlurred(views::View* observed_view) {
   desk_name_view_->UpdateViewAppearance();
 
   // When committing the name, do not allow an empty desk name. Revert back to
-  // the default name.
+  // the default name if the desk is not being removed.
   // TODO(afakhry): Make this more robust. What if user renames a previously
   // user-modified desk name, say from "code" to "Desk 2", and that desk
   // happened to be in the second position. Since the new name matches the
   // default one for this position, should we revert it (i.e. consider it
   // `set_by_user = false`?
-  if (desk_->name().empty()) {
+  if (!desk_->is_desk_being_removed() && desk_->name().empty()) {
     DesksController::Get()->RevertDeskNameToDefault(desk_);
     return;
   }

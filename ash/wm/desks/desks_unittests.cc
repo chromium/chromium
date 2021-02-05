@@ -469,6 +469,29 @@ TEST_F(DesksTest, DesksBarViewDeskCreation) {
   EXPECT_TRUE(GetNewDeskButton(desks_bar_view)->GetEnabled());
 }
 
+TEST_F(DesksTest, RemoveDeskWithEmptyName) {
+  auto* controller = DesksController::Get();
+
+  auto* overview_controller = Shell::Get()->overview_controller();
+  overview_controller->StartOverview();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+
+  auto* overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+
+  const auto* desks_bar_view = overview_grid->desks_bar_view();
+
+  auto* event_generator = GetEventGenerator();
+
+  // Create a new desk by using button with empty name.
+  controller->NewDesk(DesksCreationRemovalSource::kButton);
+  EXPECT_EQ(2u, controller->desks().size());
+
+  // Close the newly created desk with the close button.
+  auto* mini_view = desks_bar_view->mini_views().back();
+  CloseDeskFromMiniView(mini_view, event_generator);
+  EXPECT_EQ(1u, controller->desks().size());
+}
+
 // Test that gesture taps do not reset the button state to normal when the
 // button is disabled. https://crbug.com/1084241.
 TEST_F(DesksTest, GestureTapOnNewDeskButton) {
