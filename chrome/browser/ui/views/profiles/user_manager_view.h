@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/profiles/user_manager_profile_dialog_host.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 class ScopedKeepAlive;
@@ -33,8 +34,11 @@ class WebView;
 // Dialog widget that contains the Desktop User Manager webui.
 class UserManagerView : public views::DialogDelegateView {
  public:
+  METADATA_HEADER(UserManagerView);
   // Do not call directly. To display the User Manager, use UserManager::Show().
   UserManagerView();
+  UserManagerView(const UserManagerView&) = delete;
+  UserManagerView& operator=(const UserManagerView&) = delete;
 
   // Creates a new UserManagerView instance for the |system_profile| and shows
   // the |url|.
@@ -68,7 +72,7 @@ class UserManagerView : public views::DialogDelegateView {
 
   // Getter of the path of profile which is selected in user manager for first
   // time signin.
-  base::FilePath GetSigninProfilePath();
+  base::FilePath GetSigninProfilePath() const;
 
  private:
   friend class UserManagerProfileDialogDelegate;
@@ -92,8 +96,6 @@ class UserManagerView : public views::DialogDelegateView {
   base::Time user_manager_started_showing_;
 
   UserManagerProfileDialogHost dialog_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserManagerView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_USER_MANAGER_VIEW_H_

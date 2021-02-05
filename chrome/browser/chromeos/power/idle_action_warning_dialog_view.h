@@ -9,6 +9,7 @@
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace chromeos {
@@ -18,7 +19,12 @@ namespace chromeos {
 // the warning is hard-coded to warn about logout.
 class IdleActionWarningDialogView : public views::DialogDelegateView {
  public:
+  METADATA_HEADER(IdleActionWarningDialogView);
   explicit IdleActionWarningDialogView(base::TimeTicks idle_action_time);
+  IdleActionWarningDialogView(const IdleActionWarningDialogView&) = delete;
+  IdleActionWarningDialogView& operator=(const IdleActionWarningDialogView&) =
+      delete;
+
   void CloseDialog();
 
   void Update(base::TimeTicks idle_action_time);
@@ -33,8 +39,6 @@ class IdleActionWarningDialogView : public views::DialogDelegateView {
 
   base::TimeTicks idle_action_time_;
   base::RepeatingTimer update_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(IdleActionWarningDialogView);
 };
 
 }  // namespace chromeos

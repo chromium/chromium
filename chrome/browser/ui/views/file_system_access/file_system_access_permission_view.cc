@@ -20,6 +20,7 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 using AccessType = FileSystemAccessPermissionRequestManager::Access;
@@ -142,6 +143,9 @@ base::string16 FileSystemAccessPermissionView::GetWindowTitle() const {
 views::View* FileSystemAccessPermissionView::GetInitiallyFocusedView() {
   return GetCancelButton();
 }
+
+BEGIN_METADATA(FileSystemAccessPermissionView, views::DialogDelegateView)
+END_METADATA
 
 void ShowFileSystemAccessPermissionDialog(
     const FileSystemAccessPermissionView::Request& request,

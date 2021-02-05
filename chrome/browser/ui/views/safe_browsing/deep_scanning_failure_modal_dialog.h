@@ -10,6 +10,7 @@
 #include "base/timer/timer.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace content {
@@ -22,6 +23,8 @@ namespace safe_browsing {
 // prompt for deep scanning.
 class DeepScanningFailureModalDialog : public views::DialogDelegateView {
  public:
+  METADATA_HEADER(DeepScanningFailureModalDialog);
+
   // Show this dialog for the given |web_contents|.
   static void ShowForWebContents(content::WebContents* web_contents,
                                  base::OnceClosure accept_callback,

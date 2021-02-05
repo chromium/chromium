@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace content {
@@ -26,8 +27,14 @@ class Widget;
 // File System Access API.
 class FileSystemAccessPermissionView : public views::DialogDelegateView {
  public:
+  METADATA_HEADER(FileSystemAccessPermissionView);
+
   using Request = FileSystemAccessPermissionRequestManager::RequestData;
 
+  FileSystemAccessPermissionView(const FileSystemAccessPermissionView&) =
+      delete;
+  FileSystemAccessPermissionView& operator=(
+      const FileSystemAccessPermissionView&) = delete;
   ~FileSystemAccessPermissionView() override;
 
   // Shows a dialog asking the user if they want to give write access to the
@@ -50,8 +57,6 @@ class FileSystemAccessPermissionView : public views::DialogDelegateView {
 
   const Request request_;
   base::OnceCallback<void(permissions::PermissionAction result)> callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileSystemAccessPermissionView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_PERMISSION_VIEW_H_

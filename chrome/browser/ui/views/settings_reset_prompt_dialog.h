@@ -9,6 +9,7 @@
 #include "base/strings/string16.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 class Browser;
@@ -24,9 +25,13 @@ class SettingsResetPromptController;
 //    operation.
 class SettingsResetPromptDialog : public views::DialogDelegateView {
  public:
+  METADATA_HEADER(SettingsResetPromptDialog);
   SettingsResetPromptDialog(
       Browser* browser,
       safe_browsing::SettingsResetPromptController* controller);
+  SettingsResetPromptDialog(const SettingsResetPromptDialog&) = delete;
+  SettingsResetPromptDialog& operator=(const SettingsResetPromptDialog&) =
+      delete;
   ~SettingsResetPromptDialog() override;
 
   void Show();
@@ -37,8 +42,6 @@ class SettingsResetPromptDialog : public views::DialogDelegateView {
  private:
   Browser* const browser_;
   safe_browsing::SettingsResetPromptController* controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(SettingsResetPromptDialog);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SETTINGS_RESET_PROMPT_DIALOG_H_

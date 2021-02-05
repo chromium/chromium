@@ -20,6 +20,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -106,3 +107,6 @@ void SettingsResetPromptDialog::Show() {
 base::string16 SettingsResetPromptDialog::GetWindowTitle() const {
   return controller_ ? controller_->GetWindowTitle() : base::string16();
 }
+
+BEGIN_METADATA(SettingsResetPromptDialog, views::DialogDelegateView)
+END_METADATA

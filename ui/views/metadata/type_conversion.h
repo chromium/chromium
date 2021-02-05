@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "base/optional.h"
 #include "base/ranges/algorithm.h"
@@ -168,6 +169,7 @@ DECLARE_CONVERSIONS(uint64_t)
 DECLARE_CONVERSIONS(float)
 DECLARE_CONVERSIONS(double)
 DECLARE_CONVERSIONS(const char*)
+DECLARE_CONVERSIONS(base::FilePath)
 DECLARE_CONVERSIONS(base::string16)
 DECLARE_CONVERSIONS(base::TimeDelta)
 DECLARE_CONVERSIONS(gfx::Insets)

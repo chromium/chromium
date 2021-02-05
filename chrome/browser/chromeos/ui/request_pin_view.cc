@@ -24,6 +24,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace chromeos {
@@ -236,5 +237,8 @@ void RequestPinView::SetErrorMessage(security_token_pin::ErrorLabel error_label,
   error_label_->SizeToPreferredSize();
   textfield_->SetInvalid(true);
 }
+
+BEGIN_METADATA(RequestPinView, views::DialogDelegateView)
+END_METADATA
 
 }  // namespace chromeos

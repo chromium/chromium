@@ -43,6 +43,7 @@
 #include "ui/display/screen.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -417,6 +418,10 @@ void UserManagerView::WindowClosing() {
     g_user_manager_view = nullptr;
 }
 
-base::FilePath UserManagerView::GetSigninProfilePath() {
+base::FilePath UserManagerView::GetSigninProfilePath() const {
   return dialog_host_.GetForceSigninProfilePath();
 }
+
+BEGIN_METADATA(UserManagerView, views::DialogDelegateView)
+ADD_READONLY_PROPERTY_METADATA(base::FilePath, SigninProfilePath)
+END_METADATA

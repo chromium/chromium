@@ -29,6 +29,7 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 using views::BoxLayout;
 
@@ -302,5 +303,8 @@ WarningUIType PasswordReuseModalWarningDialog::GetObserverType() {
 void PasswordReuseModalWarningDialog::WebContentsDestroyed() {
   GetWidget()->Close();
 }
+
+BEGIN_METADATA(PasswordReuseModalWarningDialog, views::DialogDelegateView)
+END_METADATA
 
 }  // namespace safe_browsing

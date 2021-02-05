@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace views {
@@ -23,8 +24,11 @@ class RadioButton;
 class WebAppConfirmationView : public views::DialogDelegateView,
                                public views::TextfieldController {
  public:
+  METADATA_HEADER(WebAppConfirmationView);
   WebAppConfirmationView(std::unique_ptr<WebApplicationInfo> web_app_info,
                          chrome::AppInstallationAcceptanceCallback callback);
+  WebAppConfirmationView(const WebAppConfirmationView&) = delete;
+  WebAppConfirmationView& operator=(const WebAppConfirmationView&) = delete;
   ~WebAppConfirmationView() override;
 
  private:
@@ -61,8 +65,6 @@ class WebAppConfirmationView : public views::DialogDelegateView,
 
   // Textfield showing the title of the app.
   views::Textfield* title_tf_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(WebAppConfirmationView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_CONFIRMATION_VIEW_H_

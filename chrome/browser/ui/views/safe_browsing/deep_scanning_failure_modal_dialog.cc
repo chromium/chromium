@@ -13,6 +13,7 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace safe_browsing {
@@ -88,5 +89,8 @@ bool DeepScanningFailureModalDialog::IsDialogButtonEnabled(
 bool DeepScanningFailureModalDialog::ShouldShowCloseButton() const {
   return false;
 }
+
+BEGIN_METADATA(DeepScanningFailureModalDialog, views::DialogDelegateView)
+END_METADATA
 
 }  // namespace safe_browsing

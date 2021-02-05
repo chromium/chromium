@@ -22,6 +22,7 @@
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace safe_browsing {
@@ -118,5 +119,8 @@ bool PromptForScanningModalDialog::IsDialogButtonEnabled(
 bool PromptForScanningModalDialog::ShouldShowCloseButton() const {
   return false;
 }
+
+BEGIN_METADATA(PromptForScanningModalDialog, views::DialogDelegateView)
+END_METADATA
 
 }  // namespace safe_browsing

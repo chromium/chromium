@@ -27,6 +27,8 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 #include "url/gurl.h"
 
@@ -41,6 +43,7 @@ class DownloadDangerPromptViews : public DownloadDangerPrompt,
                                   public download::DownloadItem::Observer,
                                   public views::DialogDelegateView {
  public:
+  METADATA_HEADER(DownloadDangerPromptViews);
   DownloadDangerPromptViews(download::DownloadItem* item,
                             Profile* profile,
                             bool show_context,
@@ -281,6 +284,10 @@ void DownloadDangerPromptViews::RunDone(Action action) {
   if (done)
     std::move(done).Run(action);
 }
+
+BEGIN_METADATA(DownloadDangerPromptViews, views::DialogDelegateView)
+ADD_READONLY_PROPERTY_METADATA(base::string16, MessageBody)
+END_METADATA
 
 }  // namespace
 

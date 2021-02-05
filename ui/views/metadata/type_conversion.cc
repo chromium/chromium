@@ -83,6 +83,11 @@ base::string16 TypeConverter<const char*>::ToString(const char* source_value) {
   return base::UTF8ToUTF16(source_value);
 }
 
+base::string16 TypeConverter<base::FilePath>::ToString(
+    const base::FilePath& source_value) {
+  return source_value.AsUTF16Unsafe();
+}
+
 base::string16 TypeConverter<base::string16>::ToString(
     const base::string16& source_value) {
   return source_value;
@@ -251,6 +256,11 @@ base::Optional<bool> TypeConverter<bool>::FromString(
 base::Optional<base::string16> TypeConverter<base::string16>::FromString(
     const base::string16& source_value) {
   return source_value;
+}
+
+base::Optional<base::FilePath> TypeConverter<base::FilePath>::FromString(
+    const base::string16& source_value) {
+  return base::FilePath::FromUTF16Unsafe(source_value);
 }
 
 base::Optional<base::TimeDelta> TypeConverter<base::TimeDelta>::FromString(

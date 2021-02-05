@@ -29,6 +29,7 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/grid_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -201,6 +202,10 @@ base::string16 WebAppConfirmationView::GetTrimmedTitle() const {
   base::TrimWhitespace(title, base::TRIM_ALL, &title);
   return title;
 }
+
+BEGIN_METADATA(WebAppConfirmationView, views::DialogDelegateView)
+ADD_READONLY_PROPERTY_METADATA(base::string16, TrimmedTitle)
+END_METADATA
 
 namespace chrome {
 

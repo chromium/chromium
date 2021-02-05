@@ -34,7 +34,7 @@ void UserManagerProfileDialogHost::HideDialog() {
   force_signin_profile_path_.clear();
 }
 
-base::FilePath UserManagerProfileDialogHost::GetForceSigninProfilePath() {
+base::FilePath UserManagerProfileDialogHost::GetForceSigninProfilePath() const {
   return force_signin_profile_path_;
 }
 

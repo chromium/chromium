@@ -43,7 +43,7 @@ class UserManagerProfileDialogHost {
 
   // Getter of the path of profile which is selected in profile picker for force
   // signin.
-  base::FilePath GetForceSigninProfilePath();
+  base::FilePath GetForceSigninProfilePath() const;
 
  private:
   friend class UserManagerProfileDialogDelegate;

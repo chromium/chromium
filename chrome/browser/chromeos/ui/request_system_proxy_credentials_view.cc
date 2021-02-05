@@ -27,6 +27,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace chromeos {
@@ -169,5 +170,11 @@ void RequestSystemProxyCredentialsView::Init() {
       ui::NativeTheme::kColorId_AlertSeverityHigh));
   error_label_ = layout->AddView(std::move(error_label));
 }
+
+BEGIN_METADATA(RequestSystemProxyCredentialsView, views::DialogDelegateView)
+ADD_READONLY_PROPERTY_METADATA(std::string, ProxyServer)
+ADD_READONLY_PROPERTY_METADATA(base::string16, Username)
+ADD_READONLY_PROPERTY_METADATA(base::string16, Password)
+END_METADATA
 
 }  // namespace chromeos

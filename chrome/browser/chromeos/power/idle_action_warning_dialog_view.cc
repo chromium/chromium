@@ -20,6 +20,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace chromeos {
@@ -86,5 +87,8 @@ IdleActionWarningDialogView::~IdleActionWarningDialogView() = default;
 void IdleActionWarningDialogView::UpdateTitle() {
   GetWidget()->UpdateWindowTitle();
 }
+
+BEGIN_METADATA(IdleActionWarningDialogView, views::DialogDelegateView)
+END_METADATA
 
 }  // namespace chromeos

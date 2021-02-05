@@ -10,6 +10,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace content {
@@ -26,11 +27,15 @@ class PasswordReuseModalWarningDialog
       public ChromePasswordProtectionService::Observer,
       public content::WebContentsObserver {
  public:
+  METADATA_HEADER(PasswordReuseModalWarningDialog);
   PasswordReuseModalWarningDialog(content::WebContents* web_contents,
                                   ChromePasswordProtectionService* service,
                                   ReusedPasswordAccountType password_type,
                                   OnWarningDone done_callback);
-
+  PasswordReuseModalWarningDialog(const PasswordReuseModalWarningDialog&) =
+      delete;
+  PasswordReuseModalWarningDialog& operator=(
+      const PasswordReuseModalWarningDialog&) = delete;
   ~PasswordReuseModalWarningDialog() override;
 
   void CreateSavedPasswordReuseModalWarningDialog(
@@ -63,8 +68,6 @@ class PasswordReuseModalWarningDialog
 
   // Records the start time when modal warning is constructed.
   base::TimeTicks modal_construction_start_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordReuseModalWarningDialog);
 };
 
 }  // namespace safe_browsing

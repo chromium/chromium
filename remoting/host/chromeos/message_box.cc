@@ -9,6 +9,8 @@
 #include "base/macros.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/message_box_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -25,12 +27,15 @@ namespace remoting {
 // invalidated when either side are destroyed.
 class MessageBox::Core : public views::DialogDelegateView {
  public:
+  METADATA_HEADER(Core);
   Core(const base::string16& title_label,
        const base::string16& message_label,
        const base::string16& ok_label,
        const base::string16& cancel_label,
        ResultCallback result_callback,
        MessageBox* message_box);
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
 
   // Mirrors the public MessageBox interface.
   void Show();
@@ -54,8 +59,6 @@ class MessageBox::Core : public views::DialogDelegateView {
 
   // Owned by the native widget hierarchy.
   views::MessageBoxView* message_box_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 MessageBox::Core::Core(const base::string16& title_label,
@@ -135,6 +138,9 @@ void MessageBox::Core::OnMessageBoxDestroyed() {
   // The callback should not be invoked after MessageBox is destroyed.
   result_callback_.Reset();
 }
+
+BEGIN_METADATA(MessageBox, Core, views::DialogDelegateView)
+END_METADATA
 
 MessageBox::MessageBox(const base::string16& title_label,
                        const base::string16& message_label,
