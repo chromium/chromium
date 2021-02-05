@@ -357,7 +357,7 @@
       name: {
         valid_type: "str",
         valid_values: ["border", "border-color", "border-radius",
-                       "border-style", "border-width", "inset", 
+                       "border-style", "border-width", "inset",
                        "margin", "max-size", "min-size", "overflow", "padding",
                        "scroll-margin", "scroll-padding", "size",
                        "visited-border-color"],
@@ -1806,11 +1806,12 @@
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       interpolable: true,
       field_group: "*",
-      field_template: "pointer",
+      field_template: "external",
       include_paths: ["third_party/blink/renderer/core/style/clip_path_operation.h"],
       wrapper_pointer_name: "scoped_refptr",
       default_value: "nullptr",
       type_name: "ClipPathOperation",
+      computed_style_custom_functions: ["getter", "setter"],
       converter: "ConvertClipPath",
       keywords: ["none"],
       typedom_types: ["Keyword"]

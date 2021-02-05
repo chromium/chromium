@@ -1647,7 +1647,7 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   }
   bool HasClipPath() const {
     NOT_DESTROYED();
-    return StyleRef().ClipPath();
+    return StyleRef().HasClipPath();
   }
   bool HasHiddenBackface() const {
     NOT_DESTROYED();

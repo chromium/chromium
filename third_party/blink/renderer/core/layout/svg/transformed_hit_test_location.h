@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_TRANSFORMED_HIT_TEST_LOCATION_H_
 
 #include "base/optional.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 
 namespace blink {
@@ -17,7 +18,7 @@ class AffineTransform;
 //
 // Encapsulates logic to avoid creating/copying the HitTestLocation for example
 // if the AffineTransform is the identity.
-class TransformedHitTestLocation {
+class CORE_EXPORT TransformedHitTestLocation {
   DISALLOW_NEW();
 
  public:

@@ -983,7 +983,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransform() {
 static bool MayNeedClipPathClip(const LayoutObject& object) {
   // We only apply clip-path if the LayoutObject has a layer or is an SVG
   // child. See NeedsEffect() for additional information on the former.
-  return !object.IsText() && object.StyleRef().ClipPath() &&
+  return !object.IsText() && object.StyleRef().HasClipPath() &&
          (object.HasLayer() || object.IsSVGChild());
 }
 
@@ -1068,7 +1068,7 @@ static bool NeedsEffect(const LayoutObject& object,
   if (object.StyleRef().HasMask())
     return true;
 
-  if (object.StyleRef().ClipPath() &&
+  if (object.StyleRef().HasClipPath() &&
       object.FirstFragment().ClipPathBoundingBox() &&
       !object.FirstFragment().ClipPathPath()) {
     // If the object has a valid clip-path but can't use path-based clip-path,
@@ -1125,7 +1125,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
       base::Optional<IntRect> mask_clip = CSSMaskPainter::MaskBoundingBox(
           object_, context_.current.paint_offset);
       bool has_clip_path =
-          style.ClipPath() && fragment_data_.ClipPathBoundingBox();
+          style.HasClipPath() && fragment_data_.ClipPathBoundingBox();
       bool has_mask_based_clip_path =
           has_clip_path && !fragment_data_.ClipPathPath();
       base::Optional<IntRect> clip_path_clip;

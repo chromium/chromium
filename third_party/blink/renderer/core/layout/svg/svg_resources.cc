@@ -360,7 +360,7 @@ void SVGResourceInvalidator::InvalidateEffects() {
     if (SVGElementResourceClient* client = SVGResources::GetClient(object_))
       client->InvalidateFilterData();
   }
-  if (style.ClipPath()) {
+  if (style.HasClipPath()) {
     object_.SetShouldDoFullPaintInvalidation();
     object_.InvalidateClipPathCache();
   }

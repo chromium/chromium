@@ -34,8 +34,6 @@ const BasicShape* GetBasicShape(const CSSProperty& property,
         return nullptr;
       return style.ShapeOutside()->Shape();
     case CSSPropertyID::kClipPath: {
-      if (!style.ClipPath())
-        return nullptr;
       auto* clip_path_operation =
           DynamicTo<ShapeClipPathOperation>(style.ClipPath());
       if (!clip_path_operation)

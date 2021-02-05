@@ -129,6 +129,7 @@ include_rules = [
 specific_include_rules = {
     # Additional allowed includes for tests.
     ".*_test(_.*)?\.(cc|h|mm)" : [
+        "+base/timer/lap_timer.h",
         "+base/message_loop/message_loop.h",
         "+base/test/test_mock_time_task_runner.h",
         # Test harness may use cc directly instead of going through WebViewImpl etc.
@@ -139,6 +140,7 @@ specific_include_rules = {
 	# that the Web abstraction can go away.
         "+content/renderer/compositor",
         "+content/test",
+        "+testing/perf/perf_result_reporter.h",
         "+third_party/blink/renderer/core/frame/web_local_frame_impl.h",
         "+third_party/blink/renderer/core/frame/web_remote_frame_impl.h",
         "+gin",

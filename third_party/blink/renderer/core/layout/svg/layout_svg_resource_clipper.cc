@@ -45,7 +45,7 @@ enum class ClipStrategy { kNone, kMask, kPath };
 ClipStrategy ModifyStrategyForClipPath(const ComputedStyle& style,
                                        ClipStrategy strategy) {
   // If the shape in the clip-path gets clipped too then fallback to masking.
-  if (strategy != ClipStrategy::kPath || !style.ClipPath())
+  if (strategy != ClipStrategy::kPath || !style.HasClipPath())
     return strategy;
   return ClipStrategy::kMask;
 }
@@ -132,7 +132,7 @@ base::Optional<Path> LayoutSVGResourceClipper::AsPath() {
   clip_content_path_validity_ = kClipContentPathInvalid;
   // If the current clip-path gets clipped itself, we have to fallback to
   // masking.
-  if (StyleRef().ClipPath())
+  if (StyleRef().HasClipPath())
     return base::nullopt;
 
   unsigned op_count = 0;

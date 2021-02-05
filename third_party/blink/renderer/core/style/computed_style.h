@@ -586,6 +586,20 @@ class ComputedStyle : public ComputedStyleBase,
     return DataEquivalent(BoxShadow(), other.BoxShadow());
   }
 
+  // clip-path
+  ClipPathOperation* ClipPath() const {
+    // This method is accessed frequently during SVG Hit Testing, but the
+    // cumulative cost of calling |ClipPathInternal| can be fairly high due to
+    // multiple rare data pointer indirections. |HasClipPath| was added as a way
+    // to reduce the cost of these expensive indirections by placing a bit
+    // in more easily accessible memory.
+    return HasClipPath() ? ClipPathInternal().get() : nullptr;
+  }
+  void SetClipPath(scoped_refptr<ClipPathOperation> clip_path) {
+    SetHasClipPath(clip_path.get());
+    SetClipPathInternal(std::move(clip_path));
+  }
+
   // clip
   void SetClip(const LengthBox& box) {
     SetHasAutoClipInternal(false);
@@ -2398,7 +2412,7 @@ class ComputedStyle : public ComputedStyleBase,
       return true;
     if (has_box_reflection)
       return true;
-    if (ClipPath())
+    if (HasClipPath())
       return true;
     if (HasIsolation())
       return true;
@@ -2433,7 +2447,7 @@ class ComputedStyle : public ComputedStyleBase,
   // Return true if this style has properties ('filter', 'clip-path' and 'mask')
   // that applies an effect to SVG elements.
   bool HasSVGEffect() const {
-    return HasFilter() || ClipPath() || SvgStyle().HasMasker();
+    return HasFilter() || HasClipPath() || SvgStyle().HasMasker();
   }
 
   // Paint utility functions.

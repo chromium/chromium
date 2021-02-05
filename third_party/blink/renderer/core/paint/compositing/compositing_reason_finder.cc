@@ -64,7 +64,7 @@ CompositingReasonFinder::PotentialCompositingReasonsFromStyle(
           (!style.HasAutoClip() && style.HasOutOfFlowPosition()) ||
           style.HasIsolation()) == layout_object.CreatesGroup());
 
-  if (style.HasMask() || style.ClipPath())
+  if (style.HasMask() || style.HasClipPath())
     reasons |= CompositingReason::kMaskWithCompositedDescendants;
 
   if (style.HasFilterInducingProperty())

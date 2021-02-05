@@ -67,7 +67,7 @@ FloatRect ClipPathClipper::LocalReferenceBox(const LayoutObject& object) {
 
 base::Optional<FloatRect> ClipPathClipper::LocalClipPathBoundingBox(
     const LayoutObject& object) {
-  if (object.IsText() || !object.StyleRef().ClipPath())
+  if (object.IsText() || !object.StyleRef().HasClipPath())
     return base::nullopt;
 
   FloatRect reference_box = LocalReferenceBox(object);
@@ -193,7 +193,7 @@ void ClipPathClipper::PaintClipPathAsMaskImage(
     else
       context.BeginLayer(1.f, SkBlendMode::kDstIn);
 
-    if (resource_clipper->StyleRef().ClipPath()) {
+    if (resource_clipper->StyleRef().HasClipPath()) {
       // Try to apply nested clip-path as path-based clip.
       if (const base::Optional<Path>& path = PathBasedClipInternal(
               *resource_clipper, uses_zoomed_reference_box, reference_box)) {
@@ -217,7 +217,7 @@ void ClipPathClipper::PaintClipPathAsMaskImage(
 }
 
 bool ClipPathClipper::ShouldUseMaskBasedClip(const LayoutObject& object) {
-  if (object.IsText())
+  if (object.IsText() || !object.StyleRef().HasClipPath())
     return false;
   const auto* reference_clip =
       DynamicTo<ReferenceClipPathOperation>(object.StyleRef().ClipPath());

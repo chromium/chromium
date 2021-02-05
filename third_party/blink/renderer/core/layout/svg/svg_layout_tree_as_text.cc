@@ -753,15 +753,17 @@ void WriteResources(WTF::TextStream& ts,
                                     tree_scope, indent);
     ts << " " << masker->ResourceBoundingBox(reference_box, 1) << "\n";
   }
-  if (LayoutSVGResourceClipper* clipper =
-          GetSVGResourceAsType(*client, style.ClipPath())) {
-    DCHECK(style.ClipPath());
-    DCHECK_EQ(style.ClipPath()->GetType(), ClipPathOperation::REFERENCE);
-    const auto& clip_path_reference =
-        To<ReferenceClipPathOperation>(*style.ClipPath());
-    WriteSVGResourceReferencePrefix(
-        ts, "clipPath", clipper, clip_path_reference.Url(), tree_scope, indent);
-    ts << " " << clipper->ResourceBoundingBox(reference_box) << "\n";
+  if (const ClipPathOperation* clip_path = style.ClipPath()) {
+    if (LayoutSVGResourceClipper* clipper =
+            GetSVGResourceAsType(*client, clip_path)) {
+      DCHECK_EQ(clip_path->GetType(), ClipPathOperation::REFERENCE);
+      const auto& clip_path_reference =
+          To<ReferenceClipPathOperation>(*clip_path);
+      WriteSVGResourceReferencePrefix(ts, "clipPath", clipper,
+                                      clip_path_reference.Url(), tree_scope,
+                                      indent);
+      ts << " " << clipper->ResourceBoundingBox(reference_box) << "\n";
+    }
   }
   // TODO(fs): Only handles the single url(...) case. Do we care?
   if (LayoutSVGResourceFilter* filter =

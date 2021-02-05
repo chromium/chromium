@@ -1675,7 +1675,10 @@ group("js_files_for_form_controls_web_tests") {
 
 source_set("perf_tests") {
   testonly = true
-  sources = [ "layout/visual_rect_mapping_perftest.cc" ]
+  sources = [
+    "layout/svg/svg_hit_test_perftest.cc",
+    "layout/visual_rect_mapping_perftest.cc",
+  ]
 
   configs += [
     ":blink_core_pch",

@@ -283,6 +283,13 @@
       computed_style_custom_functions: ["getter", "setter"],
     },
     {
+      name: "HasClipPath",
+      field_template: "primitive",
+      type_name: "bool",
+      default_value: "false",
+      field_group: "visual",
+    },
+    {
       name: "HasAutoClip",
       field_template: "primitive",
       type_name: "bool",
