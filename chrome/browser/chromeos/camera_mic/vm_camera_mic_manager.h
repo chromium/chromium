@@ -16,7 +16,7 @@
 #include "base/scoped_observation.h"
 #include "chromeos/audio/cras_audio_handler.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
+#include "media/capture/video/chromeos/ash/camera_hal_dispatcher_impl.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 

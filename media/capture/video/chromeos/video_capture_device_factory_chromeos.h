@@ -36,7 +36,9 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryChromeOS final
       const VideoCaptureDeviceDescriptor& device_descriptor) final;
   void GetDevicesInfo(GetDevicesInfoCallback callback) override;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   bool IsSupportedCameraAppDeviceBridge() override;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   static gpu::GpuMemoryBufferManager* GetBufferManager();
   static void SetGpuBufferManager(gpu::GpuMemoryBufferManager* buffer_manager);
