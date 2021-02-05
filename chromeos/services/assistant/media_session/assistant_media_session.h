@@ -10,15 +10,11 @@
 #include "base/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
-#include "libassistant/shared/public/media_manager.h"
+#include "chromeos/services/libassistant/public/mojom/media_controller.mojom-forward.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
-
-namespace assistant_client {
-struct MediaStatus;
-}  // namespace assistant_client
 
 namespace chromeos {
 namespace assistant {
@@ -64,7 +60,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantMediaSession
   void AbandonAudioFocusIfNeeded();
 
   void NotifyMediaSessionMetadataChanged(
-      const assistant_client::MediaStatus& status);
+      const libassistant::mojom::MediaState& status);
 
   base::WeakPtr<AssistantMediaSession> GetWeakPtr();
 
@@ -81,6 +77,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantMediaSession
   base::UnguessableToken internal_audio_focus_id() {
     return internal_audio_focus_id_;
   }
+
+  void SetInternalAudioFocusIdForTesting(const base::UnguessableToken& token);
 
  private:
   // Ensures that |audio_focus_ptr_| is connected.
@@ -108,8 +106,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantMediaSession
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
   // Binding for Mojo pointer to |this| held by AudioFocusManager.
   mojo::Receiver<media_session::mojom::MediaSession> receiver_{this};
-
-  assistant_client::TrackType current_track_;
 
   mojo::RemoteSet<media_session::mojom::MediaSessionObserver> observers_;
 

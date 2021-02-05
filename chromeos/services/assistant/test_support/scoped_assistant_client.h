@@ -22,6 +22,13 @@ class ScopedAssistantClient : AssistantClient {
   ScopedAssistantClient();
   ~ScopedAssistantClient() override;
 
+  AssistantClient& Get();
+
+  // Set the MediaControllerManager receiver that will be bound to the remote
+  // passed into RequestMediaControllerManager().
+  void SetMediaControllerManager(
+      mojo::Receiver<media_session::mojom::MediaControllerManager>* receiver);
+
   // AssistantClient implementation:
   void OnAssistantStatusChanged(AssistantStatus status) override {}
   void RequestAssistantVolumeControl(
@@ -42,10 +49,14 @@ class ScopedAssistantClient : AssistantClient {
       override {}
   void RequestMediaControllerManager(
       mojo::PendingReceiver<media_session::mojom::MediaControllerManager>
-          receiver) override {}
+          receiver) override;
   void RequestNetworkConfig(
       mojo::PendingReceiver<network_config::mojom::CrosNetworkConfig> receiver)
       override {}
+
+ private:
+  mojo::Receiver<media_session::mojom::MediaControllerManager>*
+      media_controller_manager_receiver_ = nullptr;
 };
 
 }  // namespace assistant

@@ -26,6 +26,10 @@ component("lib") {
     "fake_assistant_manager_service_impl.h",
     "fake_assistant_settings_impl.cc",
     "fake_assistant_settings_impl.h",
+    "media_host.cc",
+    "media_host.h",
+    "media_session/assistant_media_session.cc",
+    "media_session/assistant_media_session.h",
     "platform/audio_devices.cc",
     "platform/audio_devices.h",
     "platform/audio_input_host_impl.cc",
@@ -53,6 +57,7 @@ component("lib") {
     "//components/user_manager",
     "//media",
     "//services/device/public/mojom",
+    "//services/media_session/public/cpp",
     "//services/network/public/cpp:cpp",
     "//ui/accessibility:ax_assistant",
   ]
@@ -78,10 +83,6 @@ component("lib") {
       "assistant_settings_impl.h",
       "libassistant_service_host_impl.cc",
       "libassistant_service_host_impl.h",
-      "media_host.cc",
-      "media_host.h",
-      "media_session/assistant_media_session.cc",
-      "media_session/assistant_media_session.h",
       "platform/audio_device_owner.cc",
       "platform/audio_device_owner.h",
       "platform/audio_input_impl.cc",
@@ -133,7 +134,6 @@ component("lib") {
       "//libassistant/shared/public",
       "//libassistant/shared/public:export",
       "//net",
-      "//services/media_session/public/cpp",
       "//services/media_session/public/mojom",
       "//services/network/public/cpp",
       "//services/network/public/mojom",
@@ -166,6 +166,7 @@ source_set("tests") {
     "//components/signin/public/identity_manager:test_support",
     "//mojo/public/cpp/bindings:bindings",
     "//services/device/public/mojom",
+    "//services/media_session/public/mojom",
     "//services/network:test_support",
     "//services/network/public/cpp:cpp",
     "//testing/gmock",
@@ -173,6 +174,8 @@ source_set("tests") {
   ]
 
   sources = [
+    "media_host_unittest.cc",
+    "media_session/assistant_media_session_unittest.cc",
     "platform/audio_devices_unittest.cc",
     "platform/audio_input_host_unittest.cc",
     "service_unittest.cc",
@@ -188,15 +191,12 @@ source_set("tests") {
     sources += [
       "assistant_device_settings_delegate_unittest.cc",
       "assistant_manager_service_impl_unittest.cc",
-      "media_session/assistant_media_session_unittest.cc",
       "platform/audio_output_provider_impl_unittest.cc",
       "platform/network_provider_impl_unittest.cc",
       "platform/power_manager_provider_impl_unittest.cc",
       "platform/system_provider_impl_unittest.cc",
       "test_support/fake_service_context.cc",
       "test_support/fake_service_context.h",
-      "test_support/mock_media_manager.cc",
-      "test_support/mock_media_manager.h",
     ]
 
     deps += [
@@ -212,7 +212,6 @@ source_set("tests") {
       "//chromeos/services/network_config/public/mojom",
       "//services/audio/public/cpp:test_support",
       "//services/device/public/cpp:test_support",
-      "//services/media_session/public/mojom",
     ]
   }
 }
@@ -224,6 +223,8 @@ static_library("test_support") {
     "test_support/fake_libassistant_service.h",
     "test_support/fake_service_controller.cc",
     "test_support/fake_service_controller.h",
+    "test_support/libassistant_media_controller_mock.cc",
+    "test_support/libassistant_media_controller_mock.h",
     "test_support/mock_assistant.cc",
     "test_support/mock_assistant.h",
     "test_support/mock_assistant_interaction_subscriber.cc",

@@ -26,6 +26,16 @@ void FakeLibassistantService::Unbind() {
   service_controller().Unbind();
 }
 
+mojo::PendingReceiver<libassistant::mojom::MediaController>
+FakeLibassistantService::GetMediaControllerPendingReceiver() {
+  return std::move(media_controller_pending_receiver_);
+}
+
+mojo::PendingRemote<libassistant::mojom::MediaDelegate>
+FakeLibassistantService::GetMediaDelegatePendingRemote() {
+  return std::move(media_delegate_pending_remote_);
+}
+
 void FakeLibassistantService::Bind(
     mojo::PendingReceiver<libassistant::mojom::AudioInputController>
         audio_input_controller,
@@ -41,6 +51,8 @@ void FakeLibassistantService::Bind(
     mojo::PendingRemote<libassistant::mojom::PlatformDelegate>
         platform_delegate) {
   service_controller_.Bind(std::move(service_controller));
+  media_controller_pending_receiver_ = std::move(media_controller);
+  media_delegate_pending_remote_ = std::move(media_delegate);
 }
 
 }  // namespace assistant

@@ -80,17 +80,16 @@ void AssistantProxy::BindControllers(
         pending_url_loader_factory) {
   mojo::PendingRemote<AudioInputControllerMojom>
       pending_audio_input_controller_remote;
-  mojo::PendingRemote<PlatformDelegateMojom> pending_platform_delegate_remote;
-  mojo::PendingRemote<ServiceControllerMojom> pending_service_controller_remote;
   mojo::PendingRemote<ConversationControllerMojom>
       pending_conversation_controller_remote;
+  mojo::PendingRemote<MediaDelegateMojom> pending_media_delegate_remote;
+  mojo::PendingRemote<PlatformDelegateMojom> pending_platform_delegate_remote;
+  mojo::PendingRemote<ServiceControllerMojom> pending_service_controller_remote;
 
+  mojo::PendingReceiver<MediaDelegateMojom> pending_media_delegate =
+      pending_media_delegate_remote.InitWithNewPipeAndPassReceiver();
   mojo::PendingReceiver<PlatformDelegateMojom> pending_platform_delegate =
       pending_platform_delegate_remote.InitWithNewPipeAndPassReceiver();
-
-  mojo::PendingRemote<MediaDelegateMojom> pending_media_delegate_remote;
-  pending_media_delegate_receiver_ =
-      pending_media_delegate_remote.InitWithNewPipeAndPassReceiver();
 
   libassistant_service_remote_->Bind(
       pending_audio_input_controller_remote.InitWithNewPipeAndPassReceiver(),
@@ -109,6 +108,7 @@ void AssistantProxy::BindControllers(
       std::move(pending_service_controller_remote));
 
   audio_input_controller_ = std::move(pending_audio_input_controller_remote);
+  media_delegate_ = std::move(pending_media_delegate);
   platform_delegate_ = std::move(pending_platform_delegate);
 }
 
@@ -126,6 +126,12 @@ mojo::PendingRemote<chromeos::libassistant::mojom::AudioInputController>
 AssistantProxy::ExtractAudioInputController() {
   DCHECK(audio_input_controller_.is_valid());
   return std::move(audio_input_controller_);
+}
+
+mojo::PendingReceiver<chromeos::libassistant::mojom::MediaDelegate>
+AssistantProxy::ExtractMediaDelegate() {
+  DCHECK(media_delegate_.is_valid());
+  return std::move(media_delegate_);
 }
 
 mojo::PendingReceiver<chromeos::libassistant::mojom::PlatformDelegate>

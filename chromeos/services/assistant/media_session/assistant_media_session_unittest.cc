@@ -7,12 +7,9 @@
 #include <memory>
 
 #include "base/test/task_environment.h"
-#include "chromeos/assistant/internal/test_support/fake_assistant_manager.h"
-#include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
 #include "chromeos/services/assistant/media_host.h"
 #include "chromeos/services/assistant/public/cpp/assistant_client.h"
-#include "chromeos/services/assistant/public/cpp/migration/libassistant_v1_api.h"
-#include "chromeos/services/assistant/test_support/mock_media_manager.h"
+#include "chromeos/services/assistant/test_support/libassistant_media_controller_mock.h"
 #include "chromeos/services/assistant/test_support/scoped_assistant_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,22 +23,18 @@ using media_session::mojom::MediaSession;
 using media_session::mojom::MediaSessionAction;
 using media_session::mojom::MediaSessionInfo;
 
-class FakeLibassistantV1Api : public LibassistantV1Api {
- public:
-  explicit FakeLibassistantV1Api(FakeAssistantManager* assistant_manager)
-      : LibassistantV1Api(assistant_manager,
-                          &assistant_manager->assistant_manager_internal()) {}
-};
-
 }  // namespace
 
 class AssistantMediaSessionTest : public testing::Test {
  public:
-  AssistantMediaSessionTest()
-      : media_host_(AssistantClient::Get(),
-                    /*interaction_subscribers=*/nullptr),
-        assistant_media_session_(&media_host_) {}
+  AssistantMediaSessionTest() = default;
   ~AssistantMediaSessionTest() override = default;
+
+  void SetUp() override {
+    media_host().Initialize(
+        &libassistant_media_controller_,
+        libassistant_media_delegate_.BindNewPipeAndPassReceiver());
+  }
 
   AssistantMediaSession* assistant_media_session() {
     return &assistant_media_session_;
@@ -49,10 +42,8 @@ class AssistantMediaSessionTest : public testing::Test {
 
   MediaHost& media_host() { return media_host_; }
 
-  void StartMediaHost(MockMediaManager& media_manager_mock) {
-    assistant_manager_.SetMediaManager(&media_manager_mock);
-    EXPECT_CALL(media_manager_mock, AddListener);
-    media_host().Start(&assistant_manager_.assistant_manager_internal());
+  LibassistantMediaControllerMock& libassistant_media_controller_mock() {
+    return libassistant_media_controller_;
   }
 
  private:
@@ -61,10 +52,12 @@ class AssistantMediaSessionTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   ScopedAssistantClient client;
-  MediaHost media_host_;
-  FakeAssistantManager assistant_manager_;
-  FakeLibassistantV1Api libassistant_v1_api_{&assistant_manager_};
-  AssistantMediaSession assistant_media_session_;
+  testing::StrictMock<LibassistantMediaControllerMock>
+      libassistant_media_controller_;
+  mojo::Remote<libassistant::mojom::MediaDelegate> libassistant_media_delegate_;
+  MediaHost media_host_{AssistantClient::Get(),
+                        /*interaction_subscribers=*/nullptr};
+  AssistantMediaSession assistant_media_session_{&media_host_};
 };
 
 TEST_F(AssistantMediaSessionTest, ShouldUpdateSessionStateOnStartStopDucking) {
@@ -77,21 +70,18 @@ TEST_F(AssistantMediaSessionTest, ShouldUpdateSessionStateOnStartStopDucking) {
 
 TEST_F(AssistantMediaSessionTest,
        ShouldUpdateSessionStateAndSendActionOnSuspendResumePlaying) {
-  testing::StrictMock<MockMediaManager> media_manager;
-  StartMediaHost(media_manager);
-
   // Suspend.
-  EXPECT_CALL(media_manager, Pause);
+  EXPECT_CALL(libassistant_media_controller_mock(), PauseInternalMediaPlayer);
   assistant_media_session()->Suspend(MediaSession::SuspendType::kSystem);
   EXPECT_TRUE(assistant_media_session()->IsSessionStateSuspended());
 
   // Then resume.
-  EXPECT_CALL(media_manager, Resume);
+  EXPECT_CALL(libassistant_media_controller_mock(), ResumeInternalMediaPlayer);
   assistant_media_session()->Resume(MediaSession::SuspendType::kSystem);
   EXPECT_TRUE(assistant_media_session()->IsSessionStateActive());
 
   // And pause again.
-  EXPECT_CALL(media_manager, Pause);
+  EXPECT_CALL(libassistant_media_controller_mock(), PauseInternalMediaPlayer);
   assistant_media_session()->Suspend(MediaSession::SuspendType::kSystem);
   EXPECT_TRUE(assistant_media_session()->IsSessionStateSuspended());
 }

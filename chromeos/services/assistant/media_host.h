@@ -7,17 +7,11 @@
 
 #include "base/component_export.h"
 #include "base/unguessable_token.h"
+#include "chromeos/services/libassistant/public/mojom/media_controller.mojom-forward.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
-
-namespace assistant_client {
-class AssistantManager;
-class AssistantManagerInternal;
-class MediaManager;
-struct MediaStatus;
-}  // namespace assistant_client
 
 namespace chromeos {
 namespace assistant {
@@ -40,11 +34,12 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) MediaHost {
   MediaHost& operator=(const MediaHost&) = delete;
   ~MediaHost();
 
-  // Start handling media.
-  void Start(
-      assistant_client::AssistantManagerInternal* assistant_manager_internal);
+  void Initialize(
+      libassistant::mojom::MediaController* libassistant_controller,
+      mojo::PendingReceiver<chromeos::libassistant::mojom::MediaDelegate>
+          media_delegate);
 
-  // Stop handling media.
+  // Stop observing ChromeOS media state.
   void Stop();
 
   // Pause/resume playback of Libassistant media player (which plays podcasts
@@ -59,34 +54,35 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) MediaHost {
   AssistantMediaSession& media_session() { return *media_session_; }
 
  private:
-  class LibassistantMediaStateObserver;
+  class LibassistantMediaDelegate;
   class ChromeosMediaStateObserver;
 
-  assistant_client::MediaManager* media_manager();
+  libassistant::mojom::MediaController& libassistant_media_controller();
 
   void UpdateMediaState(const base::UnguessableToken& media_session_id,
-                        const assistant_client::MediaStatus& media_status);
+                        libassistant::mojom::MediaStatePtr media_state);
   void ResetMediaState();
 
   void StartObservingMediaController();
   void StopObservingMediaController();
 
-  assistant_client::AssistantManager* assistant_manager();
-
   // Owned by our parent |AssistantManagerServiceImpl|.
   const base::ObserverList<AssistantInteractionSubscriber>* const
       interaction_subscribers_;
+  // Owned by our parent |AssistantManagerServiceImpl|.
+  libassistant::mojom::MediaController* libassistant_media_controller_ =
+      nullptr;
 
   std::unique_ptr<AssistantMediaSession> media_session_;
-  mojo::Remote<media_session::mojom::MediaController> media_controller_;
+  mojo::Remote<media_session::mojom::MediaController>
+      chromeos_media_controller_;
 
   // Helper class that will observe media changes on ChromeOS and sync them
   // to Libassistant.
   std::unique_ptr<ChromeosMediaStateObserver> chromeos_media_state_observer_;
   // Helper class that will observe media changes in Libassistant and
   // sync/apply them in ChromeOS.
-  std::unique_ptr<LibassistantMediaStateObserver>
-      libassistant_media_state_observer_;
+  std::unique_ptr<LibassistantMediaDelegate> libassistant_media_delegate_;
 };
 
 }  // namespace assistant

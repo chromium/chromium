@@ -301,6 +301,9 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
   audio_input_host_ = delegate_->CreateAudioInputHost(
       assistant_proxy_->ExtractAudioInputController());
 
+  media_host_->Initialize(&assistant_proxy_->media_controller(),
+                          assistant_proxy_->ExtractMediaDelegate());
+
   settings_delegate_ =
       std::make_unique<AssistantDeviceSettingsDelegate>(context);
 }
@@ -993,8 +996,6 @@ void AssistantManagerServiceImpl::OnServiceRunning() {
   SyncDeviceAppsStatus();
 
   SetAssistantContextEnabled(assistant_state()->IsScreenContextAllowed());
-
-  media_host_->Start(assistant_manager_internal());
 
   RegisterAlarmsTimersListener();
 

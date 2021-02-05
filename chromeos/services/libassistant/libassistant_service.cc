@@ -44,11 +44,8 @@ LibassistantService::LibassistantService(
       display_controller_.get());
   service_controller_->AddAndFireAssistantManagerObserver(
       conversation_state_listener_.get());
-  // TODO(b/178408299): media_controller_ is kept offline until the browser side
-  // has been removed, as Libassistant only supports a single fallback media
-  // handler.
-  // service_controller_->AddAndFireAssistantManagerObserver(
-  //     media_controller_.get());
+  service_controller_->AddAndFireAssistantManagerObserver(
+      media_controller_.get());
 
   // |platform_api| can be null during unittests.
   if (platform_api) {
@@ -71,11 +68,7 @@ LibassistantService::~LibassistantService() {
       display_controller_.get());
   service_controller_->RemoveAssistantManagerObserver(
       conversation_state_listener_.get());
-  // TODO(b/178408299): media_controller_ is kept offline until the browser side
-  // has been removed, as Libassistant only supports a single fallback media
-  // handler.
-  // service_controller_->RemoveAssistantManagerObserver(
-  //     media_controller_.get());
+  service_controller_->RemoveAssistantManagerObserver(media_controller_.get());
 }
 
 void LibassistantService::Bind(
@@ -92,11 +85,8 @@ void LibassistantService::Bind(
                                 platform_delegate_.get());
   conversation_controller_->Bind(std::move(conversation_controller));
   display_controller_->Bind(std::move(display_controller));
-  // TODO(b/178408299): media_controller_ is kept offline until the browser side
-  // has been removed, as Libassistant only supports a single fallback media
-  // handler.
-  // media_controller_->Bind(std::move(media_controller),
-  //                         std::move(media_delegate));
+  media_controller_->Bind(std::move(media_controller),
+                          std::move(media_delegate));
   service_controller_->Bind(std::move(service_controller));
 }
 

@@ -31,8 +31,8 @@
 #include "chromeos/services/assistant/test_support/fake_libassistant_service.h"
 #include "chromeos/services/assistant/test_support/fake_service_context.h"
 #include "chromeos/services/assistant/test_support/fully_initialized_assistant_state.h"
+#include "chromeos/services/assistant/test_support/libassistant_media_controller_mock.h"
 #include "chromeos/services/assistant/test_support/mock_assistant_interaction_subscriber.h"
-#include "chromeos/services/assistant/test_support/mock_media_manager.h"
 #include "chromeos/services/assistant/test_support/scoped_assistant_client.h"
 #include "chromeos/services/assistant/test_support/scoped_device_actions.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
@@ -231,6 +231,10 @@ class AssistantManagerServiceImplTest : public testing::Test {
 
   FakeServiceController& mojom_service_controller() {
     return libassistant_service_.service_controller();
+  }
+
+  FakeLibassistantService& mojom_libassistant_service() {
+    return libassistant_service_;
   }
 
   AssistantManagerServiceImpl* assistant_manager_service() {
@@ -554,32 +558,35 @@ TEST_F(AssistantManagerServiceImplTest,
 }
 
 TEST_F(AssistantManagerServiceImplTest, ShouldPauseMediaManagerOnPause) {
-  StrictMock<MockMediaManager> mock;
-  EXPECT_CALL(mock, AddListener);
-  fake_assistant_manager()->SetMediaManager(&mock);
+  StrictMock<LibassistantMediaControllerMock> mock;
+  mock.Bind(mojom_libassistant_service().GetMediaControllerPendingReceiver());
 
   StartAndWaitForRunning();
 
-  EXPECT_CALL(mock, Pause);
+  EXPECT_CALL(mock, PauseInternalMediaPlayer);
 
   assistant_manager_service()->UpdateInternalMediaPlayerStatus(
       MediaSessionAction::kPause);
+  mock.FlushForTesting();
 }
 
 TEST_F(AssistantManagerServiceImplTest, ShouldResumeMediaManagerOnPlay) {
-  StrictMock<MockMediaManager> mock;
-  EXPECT_CALL(mock, AddListener);
-  fake_assistant_manager()->SetMediaManager(&mock);
+  StrictMock<LibassistantMediaControllerMock> mock;
+  mock.Bind(mojom_libassistant_service().GetMediaControllerPendingReceiver());
 
   StartAndWaitForRunning();
 
-  EXPECT_CALL(mock, Resume);
+  EXPECT_CALL(mock, ResumeInternalMediaPlayer);
 
   assistant_manager_service()->UpdateInternalMediaPlayerStatus(
       MediaSessionAction::kPlay);
+  mock.FlushForTesting();
 }
 
 TEST_F(AssistantManagerServiceImplTest, ShouldIgnoreOtherMediaManagerActions) {
+  StrictMock<LibassistantMediaControllerMock> mock;
+  mock.Bind(mojom_libassistant_service().GetMediaControllerPendingReceiver());
+
   const auto unsupported_media_session_actions = {
       MediaSessionAction::kPreviousTrack, MediaSessionAction::kNextTrack,
       MediaSessionAction::kSeekBackward,  MediaSessionAction::kSeekForward,
@@ -587,16 +594,14 @@ TEST_F(AssistantManagerServiceImplTest, ShouldIgnoreOtherMediaManagerActions) {
       MediaSessionAction::kSeekTo,        MediaSessionAction::kScrubTo,
   };
 
-  StrictMock<MockMediaManager> mock;
-  EXPECT_CALL(mock, AddListener);
-  fake_assistant_manager()->SetMediaManager(&mock);
-
   StartAndWaitForRunning();
 
   for (auto action : unsupported_media_session_actions) {
     // If this is not ignored, |mock| will complain about an uninterested call.
     assistant_manager_service()->UpdateInternalMediaPlayerStatus(action);
   }
+
+  mock.FlushForTesting();
 }
 
 TEST_F(AssistantManagerServiceImplTest,

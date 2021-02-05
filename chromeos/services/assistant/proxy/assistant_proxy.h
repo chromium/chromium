@@ -70,12 +70,10 @@ class AssistantProxy {
 
   mojo::PendingRemote<chromeos::libassistant::mojom::AudioInputController>
   ExtractAudioInputController();
-  mojo::PendingReceiver<chromeos::libassistant::mojom::PlatformDelegate>
-  ExtractPlatformDelegate();
-
-  // Extract the |MediaDelegate| binding so it can be bound and used.
   mojo::PendingReceiver<chromeos::libassistant::mojom::MediaDelegate>
   ExtractMediaDelegate();
+  mojo::PendingReceiver<chromeos::libassistant::mojom::PlatformDelegate>
+  ExtractPlatformDelegate();
 
  private:
   using AudioInputControllerMojom =
@@ -106,6 +104,7 @@ class AssistantProxy {
 
   // Owned by |AssistantManagerServiceImpl|.
   LibassistantServiceHost* libassistant_service_host_ = nullptr;
+
   mojo::Remote<LibassistantServiceMojom> libassistant_service_remote_;
   mojo::Remote<DisplayControllerMojom> display_controller_remote_;
   mojo::Remote<MediaControllerMojom> media_controller_remote_;
@@ -115,10 +114,9 @@ class AssistantProxy {
 
   // Will be unbound after they are extracted.
   mojo::PendingRemote<AudioInputControllerMojom> audio_input_controller_;
+  mojo::PendingReceiver<MediaDelegateMojom> media_delegate_;
   mojo::PendingReceiver<PlatformDelegateMojom> platform_delegate_;
 
-  // Will be unbound after ExtractMediaDelegate() is called.
-  mojo::PendingReceiver<MediaDelegateMojom> pending_media_delegate_receiver_;
 
   // The thread on which the Libassistant service runs.
   // Warning: must be the last object, so it is destroyed (and flushed) first.

@@ -29,6 +29,12 @@ class FakeLibassistantService
 
   FakeServiceController& service_controller() { return service_controller_; }
 
+  // Return the receiver that was passed into the last Bind() call.
+  mojo::PendingReceiver<libassistant::mojom::MediaController>
+  GetMediaControllerPendingReceiver();
+  mojo::PendingRemote<libassistant::mojom::MediaDelegate>
+  GetMediaDelegatePendingRemote();
+
   // mojom::LibassistantService implementation:
   void Bind(
       mojo::PendingReceiver<libassistant::mojom::AudioInputController>
@@ -50,6 +56,11 @@ class FakeLibassistantService
 
  private:
   mojo::Receiver<libassistant::mojom::LibassistantService> receiver_;
+
+  mojo::PendingReceiver<libassistant::mojom::MediaController>
+      media_controller_pending_receiver_;
+  mojo::PendingRemote<libassistant::mojom::MediaDelegate>
+      media_delegate_pending_remote_;
 
   FakeServiceController service_controller_;
 };

@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/services/assistant/media_host.h"
 #include "chromeos/services/assistant/public/cpp/assistant_client.h"
+#include "chromeos/services/libassistant/public/mojom/media_controller.mojom.h"
 #include "services/media_session/public/cpp/features.h"
 
 // A macro which ensures we are running on the main thread.
@@ -138,22 +139,20 @@ void AssistantMediaSession::AbandonAudioFocusIfNeeded() {
 }
 
 void AssistantMediaSession::NotifyMediaSessionMetadataChanged(
-    const assistant_client::MediaStatus& status) {
-  ENSURE_MAIN_THREAD(&AssistantMediaSession::NotifyMediaSessionMetadataChanged,
-                     status);
+    const libassistant::mojom::MediaState& status) {
   media_session::MediaMetadata metadata;
 
-  metadata.title = base::UTF8ToUTF16(status.metadata.title);
-  metadata.artist = base::UTF8ToUTF16(status.metadata.artist);
-  metadata.album = base::UTF8ToUTF16(status.metadata.album);
+  if (!status.metadata.is_null()) {
+    metadata.title = base::UTF8ToUTF16(status.metadata->title);
+    metadata.artist = base::UTF8ToUTF16(status.metadata->artist);
+    metadata.album = base::UTF8ToUTF16(status.metadata->album);
+  }
 
   bool metadata_changed = metadata_ != metadata;
   if (!metadata_changed)
     return;
 
   metadata_ = metadata;
-
-  current_track_ = status.track_type;
 
   for (auto& observer : observers_)
     observer->MediaSessionMetadataChanged(this->metadata_);
@@ -177,6 +176,11 @@ bool AssistantMediaSession::IsSessionStateSuspended() const {
 
 bool AssistantMediaSession::IsSessionStateInactive() const {
   return session_info_.state == MediaSessionInfo::SessionState::kInactive;
+}
+
+void AssistantMediaSession::SetInternalAudioFocusIdForTesting(
+    const base::UnguessableToken& token) {
+  internal_audio_focus_id_ = token;
 }
 
 void AssistantMediaSession::EnsureServiceConnection() {
