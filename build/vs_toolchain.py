@@ -443,7 +443,7 @@ def _GetDesiredVsToolchainHashes():
   # d3dcompiler_47.dll, with ARM64 libraries and UWP support.
   # See go/chromium-msvc-toolchain for instructions about how to update the
   # toolchain.
-  toolchain_hash = 'a687d8e2e4114d9015eb550e1b156af21381faac'
+  toolchain_hash = '20d5f2553f'
   # Third parties that do not have access to the canonical toolchain can map
   # canonical toolchain version to their own toolchain versions.
   toolchain_hash_mapping_key = 'GYP_MSVS_HASH_%s' % toolchain_hash
