@@ -560,6 +560,45 @@ BUILDERS = {
             'device_os_flavor': 'google',
         },
     },
+    'android-pixel4_webview-perf': {
+        'tests': [{
+            'isolate': 'performance_webview_test_suite',
+        }],
+        'platform': 'android-webview-google',
+        'dimension': {
+            'pool': 'chrome.tests.perf',
+            'os': 'Android',
+            'device_type': 'flame',
+            'device_os': 'R',
+            'device_os_flavor': 'google',
+        },
+    },
+    'android-pixel4_weblayer-perf': {
+        'tests': [{
+            'isolate': 'performance_weblayer_test_suite',
+        }],
+        'platform': 'android-weblayer',
+        'dimension': {
+            'pool': 'chrome.tests.perf',
+            'os': 'Android',
+            'device_type': 'flame',
+            'device_os': 'R',
+            'device_os_flavor': 'google',
+        },
+    },
+    'android-pixel4-perf': {
+        'tests': [{
+            'isolate': 'performance_test_suite',
+        }],
+        'platform': 'android-chrome-64-bundle',
+        'dimension': {
+            'pool': 'chrome.tests.perf',
+            'os': 'Android',
+            'device_type': 'flame',
+            'device_os': 'R',
+            'device_os_flavor': 'google',
+        },
+    },
     'android-pixel4a_power-perf': {
         'tests': [{
             'isolate': 'performance_test_suite',

@@ -388,7 +388,7 @@ _ANDROID_NEXUS_5X_WEBVIEW_BENCHMARK_CONFIGS = PerfSuite(
         'system_health.weblayer_startup',
         'v8.browsing_mobile-future',
     ])
-_ANDROID_PIXEL2_BENCHMARK_CONFIGS = _OFFICIAL_EXCEPT_DISPLAY_LOCKING.Remove(
+_ANDROID_PIXEL2_BENCHMARK_CONFIGS = PerfSuite(_OFFICIAL_EXCEPT_DISPLAY_LOCKING).Remove(
     ['system_health.weblayer_startup'])
 _ANDROID_PIXEL2_EXECUTABLE_CONFIGS = frozenset([
     _components_perftests(60),
@@ -401,6 +401,24 @@ _ANDROID_PIXEL2_WEBVIEW_BENCHMARK_CONFIGS = PerfSuite(
         'v8.browsing_mobile-future',
     ])
 _ANDROID_PIXEL2_WEBLAYER_BENCHMARK_CONFIGS = PerfSuite([
+    _GetBenchmarkConfig('system_health.common_mobile', True),
+    _GetBenchmarkConfig('system_health.memory_mobile', True),
+    _GetBenchmarkConfig('startup.mobile'),
+    _GetBenchmarkConfig('system_health.weblayer_startup')
+])
+_ANDROID_PIXEL4_BENCHMARK_CONFIGS = PerfSuite(_OFFICIAL_EXCEPT_DISPLAY_LOCKING).Remove(
+    ['system_health.weblayer_startup'])
+_ANDROID_PIXEL4_EXECUTABLE_CONFIGS = frozenset([
+    _components_perftests(60),
+])
+_ANDROID_PIXEL4_WEBVIEW_BENCHMARK_CONFIGS = PerfSuite(
+    OFFICIAL_BENCHMARK_CONFIGS).Remove([
+        'blink_perf.display_locking',
+        'jetstream2',
+        'system_health.weblayer_startup',
+        'v8.browsing_mobile-future',
+    ])
+_ANDROID_PIXEL4_WEBLAYER_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('system_health.common_mobile', True),
     _GetBenchmarkConfig('system_health.memory_mobile', True),
     _GetBenchmarkConfig('startup.mobile'),
@@ -517,6 +535,18 @@ ANDROID_PIXEL2_WEBVIEW = PerfPlatform(
 ANDROID_PIXEL2_WEBLAYER = PerfPlatform(
     'android-pixel2_weblayer-perf', 'Android OPM1.171019.021',
     _ANDROID_PIXEL2_WEBLAYER_BENCHMARK_CONFIGS, 4, 'android')
+ANDROID_PIXEL4 = PerfPlatform('android-pixel4-perf',
+                              'Android R',
+                              _ANDROID_PIXEL4_BENCHMARK_CONFIGS,
+                              28,
+                              'android',
+                              executables=_ANDROID_PIXEL4_EXECUTABLE_CONFIGS)
+ANDROID_PIXEL4_WEBVIEW = PerfPlatform(
+    'android-pixel4_webview-perf', 'Android R',
+    _ANDROID_PIXEL4_WEBVIEW_BENCHMARK_CONFIGS, 21, 'android')
+ANDROID_PIXEL4_WEBLAYER = PerfPlatform(
+    'android-pixel4_weblayer-perf', 'Android R',
+    _ANDROID_PIXEL4_WEBLAYER_BENCHMARK_CONFIGS, 4, 'android')
 ANDROID_PIXEL4A_POWER = PerfPlatform('android-pixel4a_power-perf',
                                      'Android QD4A.200102.001.A1',
                                      _ANDROID_PIXEL4A_POWER_BENCHMARK_CONFIGS,
