@@ -217,132 +217,20 @@ export const UserAction = {
   NUMBER_OF_ACTIONS: 65,
 };
 
+/** @return {!Map<!UserAction, !UserAction>} */
+function createFirstMap() {
+  const entries = Object.entries(UserAction).sort((a, b) => a[1] - b[1]);
+  // Exclude the first and last entries (DOCUMENT_OPENED, and NUMBER_OF_ACTIONS)
+  // which don't have an equivalent "_FIRST" UserAction.
+  const entriesWithFirst = entries.slice(1, entries.length - 1);
+  const map = new Map();
+  for (let i = 0; i < entriesWithFirst.length; i += 2) {
+    map.set(entriesWithFirst[i + 1][1], entriesWithFirst[i][1]);
+  }
+  return map;
+}
+
 // Map from UserAction to the 'FIRST' action. These metrics are recorded
 // by PDFMetrics.log the first time each corresponding action occurs.
 /** @type {!Map<!UserAction, !UserAction>} */
-const firstMap = new Map([
-  [
-    UserAction.ROTATE,
-    UserAction.ROTATE_FIRST,
-  ],
-  [
-    UserAction.FIT_TO_WIDTH,
-    UserAction.FIT_TO_WIDTH_FIRST,
-  ],
-  [
-    UserAction.FIT_TO_PAGE,
-    UserAction.FIT_TO_PAGE_FIRST,
-  ],
-  [
-    UserAction.FOLLOW_BOOKMARK,
-    UserAction.FOLLOW_BOOKMARK_FIRST,
-  ],
-  [
-    UserAction.PAGE_SELECTOR_NAVIGATE,
-    UserAction.PAGE_SELECTOR_NAVIGATE_FIRST,
-  ],
-  [
-    UserAction.SAVE,
-    UserAction.SAVE_FIRST,
-  ],
-  [
-    UserAction.SAVE_WITH_ANNOTATION,
-    UserAction.SAVE_WITH_ANNOTATION_FIRST,
-  ],
-  [
-    UserAction.PRINT,
-    UserAction.PRINT_FIRST,
-  ],
-  [
-    UserAction.ENTER_ANNOTATION_MODE,
-    UserAction.ENTER_ANNOTATION_MODE_FIRST,
-  ],
-  [
-    UserAction.EXIT_ANNOTATION_MODE,
-    UserAction.EXIT_ANNOTATION_MODE_FIRST,
-  ],
-  [
-    UserAction.ANNOTATE_STROKE_TOOL_PEN,
-    UserAction.ANNOTATE_STROKE_TOOL_PEN_FIRST,
-  ],
-  [
-    UserAction.ANNOTATE_STROKE_TOOL_ERASER,
-    UserAction.ANNOTATE_STROKE_TOOL_ERASER_FIRST,
-  ],
-  [
-    UserAction.ANNOTATE_STROKE_TOOL_HIGHLIGHTER,
-    UserAction.ANNOTATE_STROKE_TOOL_HIGHLIGHTER_FIRST,
-  ],
-  [
-    UserAction.ANNOTATE_STROKE_DEVICE_TOUCH,
-    UserAction.ANNOTATE_STROKE_DEVICE_TOUCH_FIRST,
-  ],
-  [
-    UserAction.ANNOTATE_STROKE_DEVICE_MOUSE,
-    UserAction.ANNOTATE_STROKE_DEVICE_MOUSE_FIRST,
-  ],
-  [
-    UserAction.ANNOTATE_STROKE_DEVICE_PEN,
-    UserAction.ANNOTATE_STROKE_DEVICE_PEN_FIRST,
-  ],
-  [
-    UserAction.TWO_UP_VIEW_ENABLE,
-    UserAction.TWO_UP_VIEW_ENABLE_FIRST,
-  ],
-  [
-    UserAction.TWO_UP_VIEW_DISABLE,
-    UserAction.TWO_UP_VIEW_DISABLE_FIRST,
-  ],
-  [
-    UserAction.ZOOM_IN,
-    UserAction.ZOOM_IN_FIRST,
-  ],
-  [
-    UserAction.ZOOM_OUT,
-    UserAction.ZOOM_OUT_FIRST,
-  ],
-  [
-    UserAction.ZOOM_CUSTOM,
-    UserAction.ZOOM_CUSTOM_FIRST,
-  ],
-  [
-    UserAction.THUMBNAIL_NAVIGATE,
-    UserAction.THUMBNAIL_NAVIGATE_FIRST,
-  ],
-  [
-    UserAction.SAVE_ORIGINAL_ONLY,
-    UserAction.SAVE_ORIGINAL_ONLY_FIRST,
-  ],
-  [
-    UserAction.SAVE_ORIGINAL,
-    UserAction.SAVE_ORIGINAL_FIRST,
-  ],
-  [
-    UserAction.SAVE_EDITED,
-    UserAction.SAVE_EDITED_FIRST,
-  ],
-  [
-    UserAction.TOGGLE_SIDENAV,
-    UserAction.TOGGLE_SIDENAV_FIRST,
-  ],
-  [
-    UserAction.SELECT_SIDENAV_THUMBNAILS,
-    UserAction.SELECT_SIDENAV_THUMBNAILS_FIRST,
-  ],
-  [
-    UserAction.SELECT_SIDENAV_OUTLINE,
-    UserAction.SELECT_SIDENAV_OUTLINE_FIRST,
-  ],
-  [
-    UserAction.TOGGLE_DISPLAY_ANNOTATIONS,
-    UserAction.TOGGLE_DISPLAY_ANNOTATIONS_FIRST,
-  ],
-  [
-    UserAction.PRESENT,
-    UserAction.PRESENT_FIRST,
-  ],
-  [
-    UserAction.PROPERTIES,
-    UserAction.PROPERTIES_FIRST,
-  ],
-]);
+const firstMap = createFirstMap();
