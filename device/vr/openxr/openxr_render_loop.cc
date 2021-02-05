@@ -221,10 +221,6 @@ void OpenXrRenderLoop::OnSessionStart() {
   LogViewerType(VrViewerType::OPENXR_UNKNOWN);
 }
 
-bool OpenXrRenderLoop::PreComposite() {
-  return true;
-}
-
 bool OpenXrRenderLoop::HasSessionEnded() {
   return openxr_ && openxr_->UpdateAndGetSessionEnded();
 }

@@ -34,7 +34,6 @@ class XRDeviceAbstraction {
   virtual bool StartRuntime() = 0;
   virtual void StopRuntime() = 0;
   virtual void OnSessionStart();
-  virtual bool PreComposite();
   virtual bool HasSessionEnded();
   virtual bool SubmitCompositedFrame() = 0;
   virtual void HandleDeviceLost();

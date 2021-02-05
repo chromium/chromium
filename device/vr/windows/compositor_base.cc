@@ -37,9 +37,6 @@ mojom::XRFrameDataPtr XRDeviceAbstraction::GetNextFrameData() {
 }
 void XRDeviceAbstraction::OnSessionStart() {}
 void XRDeviceAbstraction::HandleDeviceLost() {}
-bool XRDeviceAbstraction::PreComposite() {
-  return true;
-}
 bool XRDeviceAbstraction::HasSessionEnded() {
   return false;
 }
@@ -539,7 +536,7 @@ void XRCompositorCommon::MaybeCompositeAndSubmit() {
     texture_helper_.CleanupNoSubmit();
   } else {
     copy_successful = texture_helper_.UpdateBackbufferSizes() &&
-                      PreComposite() && texture_helper_.CompositeToBackBuffer();
+                      texture_helper_.CompositeToBackBuffer();
     if (copy_successful) {
       pending_frame_->frame_ready_time_ = base::TimeTicks::Now();
       if (!SubmitCompositedFrame()) {
