@@ -11,6 +11,7 @@
 #include "chrome/browser/chromeos/bluetooth/debug_logs_manager_factory.h"
 #include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_scheduler_user_service.h"
 #include "chrome/browser/chromeos/crostini/crostini_engagement_metrics_service.h"
+#include "chrome/browser/chromeos/eche_app/eche_app_manager_factory.h"
 #include "chrome/browser/chromeos/extensions/file_manager/event_router_factory.h"
 #include "chrome/browser/chromeos/extensions/input_method_api.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login_state/session_state_changed_event_dispatcher.h"
@@ -71,6 +72,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   CupsPrintersManagerFactory::GetInstance();
   CupsPrintJobManagerFactory::GetInstance();
   EasyUnlockServiceFactory::GetInstance();
+  eche_app::EcheAppManagerFactory::GetInstance();
   extensions::InputMethodAPI::GetFactoryInstance();
   extensions::MediaPlayerAPI::GetFactoryInstance();
 #if defined(USE_CUPS)

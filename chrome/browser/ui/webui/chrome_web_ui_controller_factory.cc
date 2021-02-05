@@ -804,9 +804,9 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       base::FeatureList::IsEnabled(chromeos::features::kImeSystemEmojiPicker)) {
     return &NewWebUI<chromeos::EmojiPicker>;
   }
-  if (url.host_piece() == chromeos::kChromeUIEcheAppHost &&
+  if (url.host_piece() == chromeos::eche_app::kChromeUIEcheAppHost &&
       base::FeatureList::IsEnabled(chromeos::features::kEcheSWA)) {
-    return &NewWebUI<chromeos::EcheAppUI>;
+    return &NewWebUI<chromeos::eche_app::EcheAppUI>;
   }
 
 #if !defined(OFFICIAL_BUILD)

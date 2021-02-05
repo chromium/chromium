@@ -8,6 +8,7 @@
 #define CHROMEOS_COMPONENTS_ECHE_APP_UI_ECHE_APP_UI_H_
 
 namespace chromeos {
+namespace eche_app {
 
 // The WebUI for chrome://eche-app/.
 class EcheAppUI : public ui::MojoWebUIController {
@@ -18,6 +19,7 @@ class EcheAppUI : public ui::MojoWebUIController {
   ~EcheAppUI() override;
 };
 
+}  // namespace eche_app
 }  // namespace chromeos
 
 #endif  // CHROMEOS_COMPONENTS_ECHE_APP_UI_ECHE_APP_UI_H_

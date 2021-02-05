@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_ECHE_APP_UI_URL_CONSTANTS_H_
-#define CHROMEOS_COMPONENTS_ECHE_APP_UI_URL_CONSTANTS_H_
+#include "chromeos/components/eche_app_ui/eche_app_manager.h"
 
 namespace chromeos {
 namespace eche_app {
 
-extern const char kChromeUIEcheAppHost[];
-extern const char kChromeUIEcheAppURL[];
+EcheAppManager::EcheAppManager() = default;
+
+EcheAppManager::~EcheAppManager() = default;
+
+void EcheAppManager::Shutdown() {}
 
 }  // namespace eche_app
 }  // namespace chromeos
-
-#endif  // CHROMEOS_COMPONENTS_ECHE_APP_UI_URL_CONSTANTS_H_

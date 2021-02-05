@@ -17,8 +17,8 @@
 std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForEcheApp() {
   std::unique_ptr<WebApplicationInfo> info =
       std::make_unique<WebApplicationInfo>();
-  info->start_url = GURL(chromeos::kChromeUIEcheAppURL);
-  info->scope = GURL(chromeos::kChromeUIEcheAppURL);
+  info->start_url = GURL(chromeos::eche_app::kChromeUIEcheAppURL);
+  info->scope = GURL(chromeos::eche_app::kChromeUIEcheAppURL);
   // |title| should come from a resource string, but this is the Eche app, and
   // doesn't have one.
   info->title = base::UTF8ToUTF16("Eche App");

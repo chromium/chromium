@@ -10,6 +10,8 @@ assert(is_chromeos, "Eche App is Chrome OS only")
 
 static_library("eche_app_ui") {
   sources = [
+    "eche_app_manager.cc",
+    "eche_app_manager.h",
     "eche_app_ui.cc",
     "eche_app_ui.h",
     "url_constants.cc",

@@ -13,6 +13,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 
 namespace chromeos {
+namespace eche_app {
 
 EcheAppUI::EcheAppUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   auto html_source =
@@ -28,4 +29,5 @@ EcheAppUI::EcheAppUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
 
 EcheAppUI::~EcheAppUI() = default;
 
+}  // namespace eche_app
 }  // namespace chromeos

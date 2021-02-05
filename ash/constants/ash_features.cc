@@ -758,6 +758,10 @@ bool IsDiagnosticsAppEnabled() {
   return base::FeatureList::IsEnabled(kDiagnosticsApp);
 }
 
+bool IsEcheSWAEnabled() {
+  return base::FeatureList::IsEnabled(kEcheSWA);
+}
+
 bool IsPeripheralDataAccessProtectionEnabled() {
   return !base::FeatureList::IsEnabled(kDisablePeripheralDataAccessProtection);
 }

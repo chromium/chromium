@@ -1246,6 +1246,8 @@ source_set("chromeos") {
     "drive/fileapi/drivefs_async_file_util.h",
     "drive/fileapi/drivefs_file_system_backend_delegate.cc",
     "drive/fileapi/drivefs_file_system_backend_delegate.h",
+    "eche_app/eche_app_manager_factory.cc",
+    "eche_app/eche_app_manager_factory.h",
     "eol_notification.cc",
     "eol_notification.h",
     "events/event_rewriter_delegate_impl.cc",
