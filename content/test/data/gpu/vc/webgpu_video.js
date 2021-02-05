@@ -4,8 +4,6 @@
 
 async function webGpuInit() {
   const canvas = document.createElement('canvas');
-  canvas.width = 1600;
-  canvas.height = 900;
 
   if (!navigator.gpu) {
     console.warn('Webgpu not supported. navigator.gpu fails!');
@@ -64,29 +62,56 @@ fn main() -> void {
 `,
   };
 
-async function webGpuLoadVideo(video, canvas, context, device) {
-  const swapChainFormat = 'bgra8unorm';
+function createVertexBuffer(device, videoRows, videoColumns) {
+  // Each video takes 6 vertices (2 triangles). Each vertice has 5 floats.
+  // Therefore, each video needs 30 floats.
+  const rectVerts = new Float32Array(videoRows * videoColumns * 30);
 
-  const rectVerts = new Float32Array([
-    1.0, 1.0, 0.0, 1.0, 0.0,
-    1.0, -1.0, 0.0, 1.0, 1.0,
-    -1.0, -1.0, 0.0, 0.0, 1.0,
-    1.0, 1.0, 0.0, 1.0, 0.0,
-    -1.0, -1.0, 0.0, 0.0, 1.0,
-    -1.0, 1.0, 0.0, 0.0, 0.0,
-  ]);
+  for (let row = 0; row < videoRows; row++) {
+    for (let column = 0; column < videoColumns; column++) {
+      const index = (row * videoColumns + column) * 30;
+      const w = 2.0 / videoColumns;
+      const h = 2.0 / videoRows;
+      const x = -1.0 + w * column;
+      const y = 1.0 - h * row;
+
+      rectVerts.set([
+        (x + w), y, 0.0, 1.0, 0.0,
+        (x + w), (y - h), 0.0, 1.0, 1.0,
+        x, (y - h), 0.0, 0.0, 1.0,
+        (x + w), y, 0.0, 1.0, 0.0,
+        x, (y - h), 0.0, 0.0, 1.0,
+        x, y, 0.0, 0.0, 0.0,
+      ], index);
+    }
+  }
 
   const verticesBuffer = device.createBuffer({
     size: rectVerts.byteLength,
     usage: GPUBufferUsage.VERTEX,
     mappedAtCreation: true,
   });
+
   new Float32Array(verticesBuffer.getMappedRange()).set(rectVerts);
   verticesBuffer.unmap();
 
+  return verticesBuffer;
+}
+
+function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns) {
+  const { canvas, context, device } = gpuSetting;
+  const container = document.getElementById('container');
+  canvas.width = videos[0].width * videoColumns;
+  canvas.height = videos[0].height * videoRows;
+  container.appendChild(canvas);
+
+  const verticesBuffer = createVertexBuffer(device, videoRows, videoColumns);
+
+  const swapChainFormat = 'bgra8unorm';
   const swapChain = context.configureSwapChain({
     device,
     format: swapChainFormat,
+    usage: GPUTextureUsage.OUTPUT_ATTACHMENT,
   });
 
   const pipeline = device.createRenderPipeline({
@@ -137,40 +162,38 @@ async function webGpuLoadVideo(video, canvas, context, device) {
     minFilter: 'linear',
   });
 
-  const videoTexture = device.createTexture({
-    size: {
-      width: video.videoWidth,
-      height: video.videoHeight,
-      depth: 1,
-    },
-    format: 'rgba8unorm',
-    usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.SAMPLED,
-  });
-
-  const uniformBindGroup = device.createBindGroup({
-    layout: pipeline.getBindGroupLayout(0),
-    entries: [
-      {
-        binding: 0,
-        resource: sampler,
+  const videoTextures = [];
+  for (let i = 0; i < videoRows * videoColumns; ++i) {
+    videoTextures[i] = device.createTexture({
+      size: {
+        width: videos[i].videoWidth,
+        height: videos[i].videoHeight,
+        depth: 1,
       },
-      {
-        binding: 1,
-        resource: videoTexture.createView(),
-      },
-    ],
-  });
+      format: 'rgba8unorm',
+      usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.SAMPLED,
+    });
+  }
 
-  createImageBitmap(video).then((videoFrame) => {
-    device.queue.copyImageBitmapToTexture(
-      { imageBitmap: videoFrame, origin: { x: 0, y: 0 } },
-      { texture: videoTexture },
-      { width: video.videoWidth, height: video.videoHeight, depth: 1 }
-    );
+  const bindGroups = [];
+  for (let i = 0; i < videoRows * videoColumns; ++i) {
+    bindGroups[i] = device.createBindGroup({
+      layout: pipeline.getBindGroupLayout(0),
+      entries: [
+        {
+          binding: 0,
+          resource: sampler,
+        },
+        {
+          binding: 1,
+          resource: videoTextures[i].createView(),
+        },
+      ],
+    });
+  }
 
-    const commandEncoder = device.createCommandEncoder();
+  const drawOneFrame = () => {
     const textureView = swapChain.getCurrentTexture().createView();
-
     const renderPassDescriptor = {
       colorAttachments: [
         {
@@ -180,16 +203,34 @@ async function webGpuLoadVideo(video, canvas, context, device) {
       ],
     };
 
-    const passEncoder = commandEncoder.beginRenderPass(renderPassDescriptor);
+    const commandEncoder = device.createCommandEncoder();
+    const passEncoder =
+      commandEncoder.beginRenderPass(renderPassDescriptor);
     passEncoder.setPipeline(pipeline);
     passEncoder.setVertexBuffer(0, verticesBuffer);
-    passEncoder.setBindGroup(0, uniformBindGroup);
-    passEncoder.draw(6);
-    passEncoder.endPass();
-    device.queue.submit([commandEncoder.finish()]);
-  });
 
-  container.appendChild(canvas);
+    Promise.all(videos.map(video => createImageBitmap(video))).
+      then((videoFrames) => {
+      for (let i = 0; i < videoRows * videoColumns; ++i) {
+        const firstVertex = i * 6;
+        device.queue.copyImageBitmapToTexture(
+          { imageBitmap: videoFrames[i], origin: { x: 0, y: 0 } },
+          { texture: videoTextures[i] },
+          { width: videos[i].videoWidth, height: videos[i].videoHeight, depth: 1 }
+        );
+
+        passEncoder.setBindGroup(0, bindGroups[i]);
+        passEncoder.draw(6, 1, firstVertex, 0);
+      }
+      passEncoder.endPass();
+      device.queue.submit([commandEncoder.finish()]);
+
+      window.requestAnimationFrame(drawOneFrame);
+    });
+  }
+  window.requestAnimationFrame(drawOneFrame);
 }
+
+
 
 
