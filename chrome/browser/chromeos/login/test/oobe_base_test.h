@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chromeos/login/oobe_screen.h"
 #include "chrome/browser/chromeos/login/test/embedded_test_server_mixin.h"
 #include "chrome/browser/chromeos/login/test/js_checker.h"
@@ -84,6 +85,8 @@ class OobeBaseTest : public MixinBasedInProcessBrowserTest {
 
   std::unique_ptr<content::WindowedNotificationObserver>
       login_screen_load_observer_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(OobeBaseTest);
 };

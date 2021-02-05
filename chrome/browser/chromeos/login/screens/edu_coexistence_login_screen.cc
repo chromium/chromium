@@ -54,13 +54,17 @@ EduCoexistenceLoginScreen::EduCoexistenceLoginScreen(
 EduCoexistenceLoginScreen::~EduCoexistenceLoginScreen() {}
 
 bool EduCoexistenceLoginScreen::MaybeSkip(WizardContext* context) {
-  if (ProfileManager::GetActiveUserProfile()->IsChild() &&
-      base::FeatureList::IsEnabled(supervised_users::kEduCoexistenceFlowV2)) {
-    return false;
+  if (!base::FeatureList::IsEnabled(supervised_users::kEduCoexistenceFlowV2)) {
+    exit_callback_.Run(Result::SKIPPED);
+    return true;
   }
 
-  exit_callback_.Run(Result::SKIPPED);
-  return true;
+  if (!ProfileManager::GetActiveUserProfile()->IsChild()) {
+    exit_callback_.Run(Result::SKIPPED);
+    return true;
+  }
+
+  return false;
 }
 
 void EduCoexistenceLoginScreen::ShowImpl() {

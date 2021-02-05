@@ -46,6 +46,7 @@ namespace {
 
 static const char* kExampleHost = "www.example.com";
 static const char* kExampleHost2 = "www.example2.com";
+static const char* kFamiliesHost = "families.google.com";
 static const char* kIframeHost1 = "www.iframe1.com";
 static const char* kIframeHost2 = "www.iframe2.com";
 
@@ -267,40 +268,25 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationThrottleTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationThrottleTest,
-                       AllowEDUCoexistenceInnerWebContents) {
-  BlockHost(kExampleHost2);
-  GURL manually_blocked_url = embedded_test_server()->GetURL(
-      kExampleHost2, "/supervised_user/with_iframes.html");
+                       AllowFamiliesDotGoogleDotComAccess) {
+  // Simulate families.google.com being set in the blocklist.
+  BlockHost(kFamiliesHost);
+  // TODO(https://crbug.com/1174695): This test is relying on a production
+  // service being available.  It should be probably be a TAST test instead of a
+  // browsertest.
+  const GURL kFamiliesDotGoogleDotComUrl =
+      GURL("https://families.google.com/families");
 
-  ui_test_utils::NavigateToURL(
-      browser(), GURL(SupervisedUserService::GetEduCoexistenceLoginUrl()));
+  ui_test_utils::NavigateToURL(browser(), kFamiliesDotGoogleDotComUrl);
+
   // Get the top level WebContents.
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_EQ(contents->GetURL(),
-            GURL(SupervisedUserService::GetEduCoexistenceLoginUrl()));
 
-  InnerWebContentsAttachedWaiter web_contents_attached_waiter(
-      browser()->tab_strip_model()->GetActiveWebContents());
-  web_contents_attached_waiter.WaitForInnerWebContentsAttached();
+  EXPECT_EQ(contents->GetLastCommittedURL(), kFamiliesDotGoogleDotComUrl);
 
-  // Get the inner WebContents.
-  std::vector<content::WebContents*> inner_web_contents =
-      contents->GetInnerWebContents();
-
-  // There is only one inner web content in EDUCoexistence flow.
-  EXPECT_EQ(inner_web_contents.size(), 1u);
-
-  content::WebContents* webview_element = inner_web_contents[0];
-  NavigationFinishedWaiter waiter(webview_element, manually_blocked_url);
-  webview_element->GetController().LoadURLWithParams(
-      NavigationController::LoadURLParams(manually_blocked_url));
-  waiter.Wait();
-
-  // Make sure that there is no error page in the inner web content.
-  EXPECT_NE(
-      webview_element->GetController().GetLastCommittedEntry()->GetPageType(),
-      content::PAGE_TYPE_ERROR);
+  // families.google.com should not be blocked.
+  EXPECT_FALSE(IsInterstitialBeingShownInMainFrame(browser()));
 }
 
 class SupervisedUserIframeFilterTest
