@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_page_control.h"
+#import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -18,6 +19,7 @@
 @implementation TabGridTopToolbar {
   UIBarButtonItem* _centralItem;
   UIBarButtonItem* _spaceItem;
+  UIBarButtonItem* _newTabButton;
 }
 
 - (void)hide {
@@ -28,6 +30,15 @@
 - (void)show {
   self.backgroundColor = UIColor.clearColor;
   self.pageControl.alpha = 1.0;
+}
+
+- (void)setNewTabButtonTarget:(id)target action:(SEL)action {
+  _newTabButton.target = target;
+  _newTabButton.action = action;
+}
+
+- (void)setNewTabButtonEnabled:(BOOL)enabled {
+  _newTabButton.enabled = enabled;
 }
 
 #pragma mark - UIView
@@ -63,9 +74,18 @@
       traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact) {
     [self setItems:@[ _spaceItem, _centralItem, _spaceItem ]];
   } else {
-    [self setItems:@[
-      _leadingButton, _spaceItem, _centralItem, _spaceItem, _trailingButton
-    ]];
+    // The new tab button is only used if the thumb strip is enabled. In other
+    // cases, there is a floating new tab button on the bottom.
+    if (ShowThumbStripInTraitCollection(traitCollection)) {
+      [self setItems:@[
+        _leadingButton, _spaceItem, _centralItem, _spaceItem, _newTabButton,
+        _trailingButton
+      ]];
+    } else {
+      [self setItems:@[
+        _leadingButton, _spaceItem, _centralItem, _spaceItem, _trailingButton
+      ]];
+    }
   }
 }
 
@@ -88,6 +108,12 @@
   _trailingButton = [[UIBarButtonItem alloc] init];
   _trailingButton.style = UIBarButtonItemStyleDone;
   _trailingButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
+
+  _newTabButton = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
+                           target:nil
+                           action:nil];
+  _newTabButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
 
   _spaceItem = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace

@@ -993,6 +993,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       kTabGridDoneButtonIdentifier;
   topToolbar.trailingButton.target = self;
   topToolbar.trailingButton.action = @selector(doneButtonTapped:);
+  [topToolbar setNewTabButtonTarget:self action:@selector(newTabButtonTapped:)];
 
   // Configure and initialize the page control.
   [topToolbar.pageControl addTarget:self
@@ -1107,10 +1108,13 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)configureNewTabButtonBasedOnContentPermissions {
-  BOOL allowNewTab =
+  BOOL isRecentTabPage = self.currentPage == TabGridPageRemoteTabs;
+  BOOL allowedByContentAuthentication =
       !((self.currentPage == TabGridPageIncognitoTabs) &&
         self.incognitoTabsViewController.contentNeedsAuthentication);
+  BOOL allowNewTab = !isRecentTabPage && allowedByContentAuthentication;
   [self.bottomToolbar setNewTabButtonEnabled:allowNewTab];
+  [self.topToolbar setNewTabButtonEnabled:allowNewTab];
 }
 
 - (void)configureDoneButtonBasedOnPage:(TabGridPage)page {
