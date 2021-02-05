@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "ash/public/cpp/login_screen_test_api.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
@@ -52,6 +53,8 @@ using ::testing::Return;
 
 namespace chromeos {
 namespace {
+
+const test::UIPath kOfflineLoginBackButton = {"offline-login", "backButton"};
 
 class LoginUserTest : public InProcessBrowserTest {
  protected:
@@ -260,6 +263,21 @@ IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest, FullEmailDontMatchProvided) {
       managed_user_id_.GetUserEmail(), LoginManagerTest::kPassword,
       true /* wait for sign-in */);
   TestSystemTrayIsVisible(false);
+}
+
+IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest, BackButtonTest) {
+  std::string domain = gaia::ExtractDomainName(managed_user_id_.GetUserEmail());
+
+  ConfigurePolicy(domain);
+
+  OobeScreenWaiter(GaiaView::kScreenId).Wait();
+  offline_login_test_mixin_.GoOffline();
+  offline_login_test_mixin_.InitOfflineLogin(managed_user_id_,
+                                             LoginManagerTest::kPassword);
+
+  test::OobeJS().ClickOnPath(kOfflineLoginBackButton);
+  OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
+  EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
 }
 
 }  // namespace chromeos
