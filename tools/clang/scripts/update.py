@@ -315,11 +315,6 @@ def main():
                       help='Verify that clang has the passed-in version.')
   args = parser.parse_args()
 
-  # TODO(crbug.com/1171687): Remove in the next Clang roll.
-  if args.llvm_force_head_revision:
-    global RELEASE_VERSION
-    RELEASE_VERSION = '13.0.0'
-
   if args.force_local_build:
     print(('update.py --force-local-build is no longer used to build clang; '
            'use build.py instead.'))
