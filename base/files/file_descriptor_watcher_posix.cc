@@ -36,7 +36,10 @@ class FileDescriptorWatcher::Controller::Watcher
     : public MessagePumpForIO::FdWatcher,
       public CurrentThread::DestructionObserver {
  public:
-  Watcher(WeakPtr<Controller> controller, MessagePumpForIO::Mode mode, int fd);
+  Watcher(WeakPtr<Controller> controller,
+          base::WaitableEvent& on_destroyed,
+          MessagePumpForIO::Mode mode,
+          int fd);
   Watcher(const Watcher&) = delete;
   Watcher& operator=(const Watcher&) = delete;
   ~Watcher() override;
@@ -66,6 +69,10 @@ class FileDescriptorWatcher::Controller::Watcher
   // |callback_task_runner_|.
   WeakPtr<Controller> controller_;
 
+  // WaitableEvent to signal to ensure that the Watcher is always destroyed
+  // before the Controller.
+  base::WaitableEvent& on_destroyed_;
+
   // Whether this Watcher is notified when |fd_| becomes readable or writable
   // without blocking.
   const MessagePumpForIO::Mode mode_;
@@ -84,10 +91,12 @@ class FileDescriptorWatcher::Controller::Watcher
 
 FileDescriptorWatcher::Controller::Watcher::Watcher(
     WeakPtr<Controller> controller,
+    base::WaitableEvent& on_destroyed,
     MessagePumpForIO::Mode mode,
     int fd)
     : fd_watch_controller_(FROM_HERE),
       controller_(controller),
+      on_destroyed_(on_destroyed),
       mode_(mode),
       fd_(fd) {
   DCHECK(callback_task_runner_);
@@ -97,6 +106,7 @@ FileDescriptorWatcher::Controller::Watcher::Watcher(
 FileDescriptorWatcher::Controller::Watcher::~Watcher() {
   DCHECK(thread_checker_.CalledOnValidThread());
   CurrentIOThread::Get()->RemoveDestructionObserver(this);
+  on_destroyed_.Signal();
 }
 
 void FileDescriptorWatcher::Controller::Watcher::StartWatching() {
@@ -161,7 +171,8 @@ FileDescriptorWatcher::Controller::Controller(MessagePumpForIO::Mode mode,
       io_thread_task_runner_(GetTlsFdWatcher().Get()->io_thread_task_runner()) {
   DCHECK(!callback_.is_null());
   DCHECK(io_thread_task_runner_);
-  watcher_ = std::make_unique<Watcher>(weak_factory_.GetWeakPtr(), mode, fd);
+  watcher_ = std::make_unique<Watcher>(weak_factory_.GetWeakPtr(),
+                                       on_watcher_destroyed_, mode, fd);
   StartWatching();
 }
 
@@ -194,19 +205,16 @@ FileDescriptorWatcher::Controller::~Controller() {
     //               Incorrectly starts watching fd = 6 which now refers to a
     //               different file than when WatchReadable() was called.
     WaitableEvent done;
-    io_thread_task_runner_->PostTask(
-        FROM_HERE, BindOnce(
-                       [](Watcher* watcher, ScopedClosureRunner closure) {
-                         // Since |watcher| is a raw pointer, it isn't deleted
-                         // if this callback is deleted before it gets to run.
-                         delete watcher;
-                         // |closure| runs at the end of this scope.
-                       },
-                       Unretained(watcher_.release()),
-                       ScopedClosureRunner(BindOnce(&WaitableEvent::Signal,
-                                                    Unretained(&done)))));
+    auto delete_task = BindOnce(
+        [](Watcher* watcher) {
+          // Since |watcher| is a raw pointer, it isn't deleted if this callback
+          // is deleted before it gets to run.
+          delete watcher;
+        },
+        Unretained(watcher_.release()));
+    io_thread_task_runner_->PostTask(FROM_HERE, std::move(delete_task));
     ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow;
-    done.Wait();
+    on_watcher_destroyed_.Wait();
   }
 
   // Since WeakPtrs are invalidated by the destructor, any pending RunCallback()
