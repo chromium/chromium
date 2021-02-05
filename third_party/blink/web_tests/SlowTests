@@ -553,7 +553,6 @@ crbug.com/1073296 external/wpt/service-workers/service-worker/activation.https.h
 crbug.com/678346 [ Debug ] fast/dom/shadow/selections-in-shadow.html [ Slow ]
 crbug.com/678346 [ Mac Debug ] storage/indexeddb/index-cursor.html [ Slow ]
 crbug.com/678346 [ Win7 Debug ] storage/indexeddb/index-cursor.html [ Slow ]
-crbug.com/747751 http/tests/devtools/application-panel/storage-view-reports-quota.js [ Slow ]
 crbug.com/725542 [ Debug ] editing/selection/doubleclick-beside-cr-span.html [ Slow ]
 crbug.com/757955 [ Win7 Debug ] http/tests/devtools/sources/debugger-pause/pause-on-elements-panel.js [ Slow ]
 crbug.com/799619 [ Debug ] http/tests/devtools/profiler/heap-snapshot-inspect-dom-wrapper.js [ Slow ]
