@@ -8,7 +8,7 @@ namespace features {
 
 // Enables Nearby Sharing functionality.
 const base::Feature kNearbySharing{"NearbySharing",
-                                   base::FEATURE_DISABLED_BY_DEFAULT};
+                                   base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables use of device contacts in Nearby Share. The Nearby server returns
 // both Google contacts and device contacts in ListContactPeople RPC responses.
