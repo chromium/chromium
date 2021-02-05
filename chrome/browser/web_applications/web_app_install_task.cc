@@ -187,6 +187,9 @@ void WebAppInstallTask::LoadAndInstallWebAppFromManifestWithFallback(
   CheckInstallPreconditions();
 
   Observe(contents);
+  if (ShouldStopInstall())
+    return;
+
   background_installation_ = true;
   install_callback_ = std::move(install_callback);
   install_source_ = install_source;
@@ -272,6 +275,9 @@ void WebAppInstallTask::UpdateWebAppFromInfo(
     InstallManager::OnceInstallCallback callback) {
   CheckInstallPreconditions();
   Observe(web_contents);
+  if (ShouldStopInstall())
+    return;
+
   install_callback_ = std::move(callback);
   background_installation_ = true;
 
@@ -655,6 +661,9 @@ void WebAppInstallTask::InstallWebAppFromInfoRetrieveIcons(
   CheckInstallPreconditions();
 
   Observe(web_contents);
+  if (ShouldStopInstall())
+    return;
+
   install_callback_ = std::move(callback);
   install_source_ = finalize_options.install_source;
   background_installation_ = true;
