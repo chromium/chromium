@@ -33,6 +33,7 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.vr.rules.XrActivityRestriction;
@@ -89,6 +90,7 @@ public class WebXrVrInputTest {
      * Tests that screen touches are not registered when in an immersive session. Disabled on
      * standalones because they don't have touchscreens.
      */
+    @DisabledTest(message = "https://crbug.com/1174845")
     @Test
     @MediumTest
     @DisableIf
@@ -162,6 +164,7 @@ public class WebXrVrInputTest {
      * XRInputSource in an immersive session and that button clicks and touchpad
      * movements are registered.
      */
+    @DisabledTest(message = "https://crbug.com/1174845")
     @Test
     @MediumTest
     @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM_OR_STANDALONE)
@@ -343,6 +346,7 @@ public class WebXrVrInputTest {
      * Tests that focus is locked to the device with an immersive session for the purposes of
      * VR input.
      */
+    @DisabledTest(message = "https://crbug.com/1174845")
     @Test
     @MediumTest
     @CommandLineFlags.Add({"enable-features=WebXR"})
@@ -393,6 +397,7 @@ public class WebXrVrInputTest {
      * source instead of the navigator array when using WebXR and a Daydream
      * headset.
      */
+    @DisabledTest(message = "https://crbug.com/1174845")
     @Test
     @MediumTest
     @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM_OR_STANDALONE)
@@ -453,6 +458,7 @@ public class WebXrVrInputTest {
      * Tests that long pressing the app button shows a toast indicating which permissions are in
      * use, and that it disappears at the correct time.
      */
+    @DisabledTest(message = "https://crbug.com/1174845")
     @Test
     @LargeTest
     @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM_OR_STANDALONE)
