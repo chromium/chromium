@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "base/test/task_environment.h"
-#include "chromeos/services/assistant/test_support/scoped_assistant_client.h"
+#include "chromeos/services/assistant/public/cpp/migration/fake_platform_delegate.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom-forward.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,10 +21,10 @@ using network_config::mojom::ConnectionStateType;
 using network_config::mojom::NetworkStatePropertiesPtr;
 using ConnectionStatus = NetworkProviderImpl::ConnectionStatus;
 
-class NetworkProviderImplTest : public ::testing::Test {
+class AssistantNetworkProviderImplTest : public ::testing::Test {
  public:
-  NetworkProviderImplTest() = default;
-  ~NetworkProviderImplTest() override = default;
+  AssistantNetworkProviderImplTest() = default;
+  ~AssistantNetworkProviderImplTest() override = default;
 
   void PublishConnectionStateType(ConnectionStateType connection_type) {
     std::vector<NetworkStatePropertiesPtr> active_networks;
@@ -60,18 +60,19 @@ class NetworkProviderImplTest : public ::testing::Test {
   }
 
  protected:
-  ScopedAssistantClient assistant_client_;
   base::test::TaskEnvironment task_environment;
-  NetworkProviderImpl network_provider_;
+  FakePlatformDelegate platform_delegate_;
+  NetworkProviderImpl network_provider_{&platform_delegate_};
 
-  DISALLOW_COPY_AND_ASSIGN(NetworkProviderImplTest);
+  DISALLOW_COPY_AND_ASSIGN(AssistantNetworkProviderImplTest);
 };
 
-TEST_F(NetworkProviderImplTest, StartWithStatusUnknown) {
+TEST_F(AssistantNetworkProviderImplTest, StartWithStatusUnknown) {
   EXPECT_EQ(ConnectionStatus::UNKNOWN, network_provider_.GetConnectionStatus());
 }
 
-TEST_F(NetworkProviderImplTest, ChangeStateBasedOnConnectionStateType) {
+TEST_F(AssistantNetworkProviderImplTest,
+       ChangeStateBasedOnConnectionStateType) {
   for (const auto& test : GetStatusPairs()) {
     ConnectionStateType input = test.first;
     ConnectionStatus expected = test.second;
@@ -83,7 +84,8 @@ TEST_F(NetworkProviderImplTest, ChangeStateBasedOnConnectionStateType) {
   }
 }
 
-TEST_F(NetworkProviderImplTest, IsOnlineIfOneOfTheActiveNetworksIsOnline) {
+TEST_F(AssistantNetworkProviderImplTest,
+       IsOnlineIfOneOfTheActiveNetworksIsOnline) {
   std::vector<NetworkStatePropertiesPtr> active_networks{};
   active_networks.push_back(
       CreateNetworkState(ConnectionStateType::kNotConnected));
@@ -95,7 +97,7 @@ TEST_F(NetworkProviderImplTest, IsOnlineIfOneOfTheActiveNetworksIsOnline) {
             network_provider_.GetConnectionStatus());
 }
 
-TEST_F(NetworkProviderImplTest, IsOfflineIfThereAreNoNetworks) {
+TEST_F(AssistantNetworkProviderImplTest, IsOfflineIfThereAreNoNetworks) {
   PublishActiveNetworks({});
 
   EXPECT_EQ(ConnectionStatus::DISCONNECTED_FROM_INTERNET,

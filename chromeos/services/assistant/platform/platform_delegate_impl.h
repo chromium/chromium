@@ -29,6 +29,9 @@ class PlatformDelegateImpl
       mojo::PendingReceiver<
           ::chromeos::assistant::mojom::AssistantAudioDecoderFactory> receiver)
       override;
+  void BindNetworkConfig(mojo::PendingReceiver<
+                         ::chromeos::network_config::mojom::CrosNetworkConfig>
+                             receiver) override;
   void BindAssistantVolumeControl(
       mojo::PendingReceiver<::ash::mojom::AssistantVolumeControl> receiver)
       override;

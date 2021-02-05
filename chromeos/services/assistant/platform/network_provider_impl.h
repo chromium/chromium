@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom-forward.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "libassistant/shared/public/platform_net.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -20,7 +21,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) NetworkProviderImpl
     : public assistant_client::NetworkProvider,
       public network_config::mojom::CrosNetworkConfigObserver {
  public:
-  NetworkProviderImpl();
+  explicit NetworkProviderImpl(
+      chromeos::libassistant::mojom::PlatformDelegate* delegate);
   ~NetworkProviderImpl() override;
 
   // assistant_client::NetworkProvider:

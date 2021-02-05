@@ -27,6 +27,12 @@ void PlatformDelegateImpl::BindAudioDecoderFactory(
   AssistantClient::Get()->RequestAudioDecoderFactory(std::move(receiver));
 }
 
+void PlatformDelegateImpl::BindNetworkConfig(
+    mojo::PendingReceiver<::chromeos::network_config::mojom::CrosNetworkConfig>
+        receiver) {
+  AssistantClient::Get()->RequestNetworkConfig(std::move(receiver));
+}
+
 void PlatformDelegateImpl::BindAssistantVolumeControl(
     mojo::PendingReceiver<::ash::mojom::AssistantVolumeControl> receiver) {
   AssistantClient::Get()->RequestAssistantVolumeControl(std::move(receiver));

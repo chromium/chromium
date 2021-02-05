@@ -42,7 +42,8 @@ PlatformApiImpl::PlatformApiImpl(
     : audio_output_provider_(media_session,
                              platform_delegate,
                              background_task_runner,
-                             media::AudioDeviceDescription::kDefaultDeviceId) {
+                             media::AudioDeviceDescription::kDefaultDeviceId),
+      network_provider_(platform_delegate) {
   // Only enable native power features if they are supported by the UI.
   std::unique_ptr<PowerManagerProviderImpl> provider;
   if (features::IsPowerManagerEnabled()) {

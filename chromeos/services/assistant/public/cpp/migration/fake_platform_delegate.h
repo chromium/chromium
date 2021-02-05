@@ -27,6 +27,9 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_MIGRATION_TEST_SUPPORT)
       mojo::PendingReceiver<
           ::chromeos::assistant::mojom::AssistantAudioDecoderFactory> receiver)
       override {}
+  void BindNetworkConfig(mojo::PendingReceiver<
+                         ::chromeos::network_config::mojom::CrosNetworkConfig>
+                             receiver) override {}
   void BindAssistantVolumeControl(
       mojo::PendingReceiver<::ash::mojom::AssistantVolumeControl> receiver)
       override {}
