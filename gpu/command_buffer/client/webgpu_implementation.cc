@@ -308,15 +308,21 @@ void WebGPUImplementation::OnGpuControlReturnData(
       const volatile char* deserialized_buffer =
           reinterpret_cast<const volatile char*>(
               returned_adapter_info->deserialized_buffer);
-      if (returned_adapter_info->adapter_properties_size > 0) {
-        dawn_wire::DeserializeWGPUDeviceProperties(&adapter_properties,
-                                                   deserialized_buffer);
-      }
       const char* error_message =
           returned_adapter_info->deserialized_buffer +
           returned_adapter_info->adapter_properties_size;
       if (strlen(error_message) == 0) {
         error_message = nullptr;
+      }
+      if (returned_adapter_info->adapter_properties_size > 0) {
+        if (!dawn_wire::DeserializeWGPUDeviceProperties(
+                &adapter_properties,
+                deserialized_buffer,
+                returned_adapter_info->adapter_properties_size)) {
+          adapter_service_id = -1;
+          adapter_properties = {};
+          error_message = "Request adapter failed";
+        }
       }
       std::move(request_callback)
           .Run(adapter_service_id, adapter_properties, error_message);
