@@ -94,7 +94,6 @@ RemoteDebuggingServer::RemoteDebuggingServer() {
   if (command_line.HasSwitch(switches::kRemoteDebuggingPipe)) {
     content::DevToolsAgentHost::StartRemoteDebuggingPipeHandler(
         base::BindOnce(&ChromeDevToolsManagerDelegate::CloseBrowserSoon));
-    return;
   }
 
   std::string port_str =
