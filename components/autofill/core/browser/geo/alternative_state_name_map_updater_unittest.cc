@@ -248,28 +248,4 @@ TEST_F(AlternativeStateNameMapUpdaterTest, ContainsState) {
       AlternativeStateNameMap::StateName(ASCIIToUTF16("California"))));
 }
 
-// Tests the |AlternativeStateNameMapUpdater::PopulateAlternativeStateNameMap()|
-// functionality.
-TEST_F(AlternativeStateNameMapUpdaterTest,
-       CheckPopulateAlternativeStateNameMap) {
-  test::ClearAlternativeStateNameMapForTesting();
-  WritePathToPref(GetPath());
-  base::WriteFile(GetPath().AppendASCII("DE"),
-                  test::CreateStatesProtoAsString());
-
-  AutofillProfile profile;
-  profile.SetInfo(ADDRESS_HOME_STATE, base::ASCIIToUTF16("Bavaria"), "en-US");
-  profile.SetInfo(ADDRESS_HOME_COUNTRY, base::ASCIIToUTF16("DE"), "en-US");
-  personal_data_manager_.AddProfile(profile);
-
-  base::RunLoop run_loop;
-  personal_data_manager_.PopulateAlternativeStateNameMap(
-      run_loop.QuitClosure());
-  run_loop.Run();
-
-  EXPECT_NE(AlternativeStateNameMap::GetCanonicalStateName(
-                "DE", base::ASCIIToUTF16("Bavaria")),
-            base::nullopt);
-}
-
 }  // namespace autofill
