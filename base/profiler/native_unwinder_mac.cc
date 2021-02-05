@@ -151,7 +151,6 @@ bool NativeUnwinderMac::CanUnwindFrom(const Frame& current_frame) const {
 
 UnwindResult NativeUnwinderMac::TryUnwind(RegisterContext* thread_context,
                                           uintptr_t stack_top,
-                                          ModuleCache* module_cache,
                                           std::vector<Frame>* stack) const {
 #if !defined(ARCH_CPU_ARM64)
   // We expect the frame correponding to the |thread_context| register state to
@@ -186,8 +185,8 @@ UnwindResult NativeUnwinderMac::TryUnwind(RegisterContext* thread_context,
     unw_word_t prev_rsp;
     unw_get_reg(&unwind_cursor, UNW_REG_SP, &prev_rsp);
 
-    int step_result = UnwindStep(&unwind_context, &unwind_cursor,
-                                 stack->size() == 1, module_cache);
+    int step_result =
+        UnwindStep(&unwind_context, &unwind_cursor, stack->size() == 1);
 
     unw_word_t rip;
     unw_get_reg(&unwind_cursor, UNW_REG_IP, &rip);
@@ -199,7 +198,7 @@ UnwindResult NativeUnwinderMac::TryUnwind(RegisterContext* thread_context,
                                  &successfully_unwound);
 
     if (successfully_unwound) {
-      stack->emplace_back(rip, module_cache->GetModuleForAddress(rip));
+      stack->emplace_back(rip, module_cache()->GetModuleForAddress(rip));
 
       // Save the relevant register state back into the thread context.
       unw_word_t rbp;
@@ -272,8 +271,7 @@ Optional<UnwindResult> NativeUnwinderMac::CheckPreconditions(
 // value.
 int NativeUnwinderMac::UnwindStep(unw_context_t* unwind_context,
                                   unw_cursor_t* unwind_cursor,
-                                  bool at_first_frame,
-                                  ModuleCache* module_cache) const {
+                                  bool at_first_frame) const {
   int step_result = unw_step(unwind_cursor);
 
   if (step_result == 0 && at_first_frame) {
@@ -288,7 +286,7 @@ int NativeUnwinderMac::UnwindStep(unw_context_t* unwind_context,
     // function in libsystem_kernel.
     uint64_t& rsp = unwind_context->data[7];
     uint64_t& rip = unwind_context->data[16];
-    if (module_cache->GetModuleForAddress(rip) == libsystem_kernel_module_) {
+    if (module_cache()->GetModuleForAddress(rip) == libsystem_kernel_module_) {
       rip = *reinterpret_cast<uint64_t*>(rsp);
       rsp += 8;
       // Reset the cursor.

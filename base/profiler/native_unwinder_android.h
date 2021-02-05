@@ -50,11 +50,10 @@ class NativeUnwinderAndroid : public Unwinder,
   NativeUnwinderAndroid& operator=(const NativeUnwinderAndroid&) = delete;
 
   // Unwinder
-  void InitializeModules(ModuleCache* module_cache) override;
+  void InitializeModules() override;
   bool CanUnwindFrom(const Frame& current_frame) const override;
   UnwindResult TryUnwind(RegisterContext* thread_context,
                          uintptr_t stack_top,
-                         ModuleCache* module_cache,
                          std::vector<Frame>* stack) const override;
 
   // ModuleCache::AuxiliaryModuleProvider
@@ -63,12 +62,8 @@ class NativeUnwinderAndroid : public Unwinder,
 
  private:
   void EmitDexFrame(uintptr_t dex_pc,
-                    ModuleCache* module_cache,
                     std::vector<Frame>* stack) const;
 
-  // InitializeModules() registers self as an AuxiliaryModuleProvider. A pointer
-  // to the ModuleCache is saved to unregister self in destructor.
-  ModuleCache* module_cache_ = nullptr;
   unwindstack::Maps* const memory_regions_map_;
   unwindstack::Memory* const process_memory_;
   const uintptr_t exclude_module_with_base_address_;

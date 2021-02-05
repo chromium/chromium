@@ -44,10 +44,10 @@ TEST(UnwinderArm64Test, UnwindValidStack) {
   FillFrames(fp, kMaxFrameCount);
 
   UnwinderArm64 unwinder;
+  unwinder.Initialize(&module_cache);
   std::vector<base::Frame> stack;
-  EXPECT_EQ(
-      base::UnwindResult::COMPLETED,
-      unwinder.TryUnwind(&register_context, stack_top, &module_cache, &stack));
+  EXPECT_EQ(base::UnwindResult::COMPLETED,
+            unwinder.TryUnwind(&register_context, stack_top, &stack));
 
   ASSERT_EQ(kMaxFrameCount, stack.size());
   for (size_t i = 0; i < kMaxFrameCount; ++i) {
@@ -71,10 +71,10 @@ TEST(UnwinderArm64Test, UnwindInvalidFirstFrame) {
   FillFrames(fp, kMaxFrameCount);
 
   UnwinderArm64 unwinder;
+  unwinder.Initialize(&module_cache);
   std::vector<base::Frame> stack;
-  EXPECT_EQ(
-      base::UnwindResult::COMPLETED,
-      unwinder.TryUnwind(&register_context, stack_top, &module_cache, &stack));
+  EXPECT_EQ(base::UnwindResult::COMPLETED,
+            unwinder.TryUnwind(&register_context, stack_top, &stack));
 
   // One extra frame is added when scanning starts.
   ASSERT_EQ(kMaxFrameCount + 1, stack.size());
@@ -102,10 +102,10 @@ TEST(UnwinderArm64Test, UnwindInvalidFp) {
   FillFrames(fp, kMaxFrameCount);
 
   UnwinderArm64 unwinder;
+  unwinder.Initialize(&module_cache);
   std::vector<base::Frame> stack;
-  EXPECT_EQ(
-      base::UnwindResult::COMPLETED,
-      unwinder.TryUnwind(&register_context, stack_top, &module_cache, &stack));
+  EXPECT_EQ(base::UnwindResult::COMPLETED,
+            unwinder.TryUnwind(&register_context, stack_top, &stack));
 
   // One extra frame is added when scanning starts.
   ASSERT_EQ(kMaxFrameCount + 1, stack.size());

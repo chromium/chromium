@@ -467,7 +467,7 @@ class TestAuxUnwinder : public Unwinder {
   TestAuxUnwinder(const TestAuxUnwinder&) = delete;
   TestAuxUnwinder& operator=(const TestAuxUnwinder&) = delete;
 
-  void InitializeModules(ModuleCache* module_cache) override {
+  void InitializeModules() override {
     if (add_initial_modules_callback_)
       add_initial_modules_callback_.Run();
   }
@@ -475,7 +475,6 @@ class TestAuxUnwinder : public Unwinder {
 
   UnwindResult TryUnwind(RegisterContext* thread_context,
                          uintptr_t stack_top,
-                         ModuleCache* module_cache,
                          std::vector<Frame>* stack) const override {
     stack->push_back(frame_to_report_);
     return UnwindResult::ABORTED;

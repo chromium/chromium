@@ -15,7 +15,6 @@ bool UnwinderArm64::CanUnwindFrom(const base::Frame& current_frame) const {
 base::UnwindResult UnwinderArm64::TryUnwind(
     base::RegisterContext* thread_context,
     uintptr_t stack_top,
-    base::ModuleCache* module_cache,
     std::vector<base::Frame>* stack) const {
   uintptr_t fp = thread_context->regs[29];
   constexpr size_t kMaxDepth = 40;
@@ -29,7 +28,7 @@ base::UnwindResult UnwinderArm64::TryUnwind(
       fp, stack_top, out_trace, kMaxDepth, 0, /*enable_scanning=*/true);
   for (size_t i = 0; i < depth; ++i) {
     uintptr_t pc = reinterpret_cast<uintptr_t>(out_trace[i]);
-    stack->push_back(base::Frame(pc, module_cache->GetModuleForAddress(pc)));
+    stack->push_back(base::Frame(pc, module_cache()->GetModuleForAddress(pc)));
   }
   return base::UnwindResult::COMPLETED;
 }

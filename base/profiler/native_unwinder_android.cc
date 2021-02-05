@@ -128,13 +128,12 @@ NativeUnwinderAndroid::NativeUnwinderAndroid(
       exclude_module_with_base_address_(exclude_module_with_base_address) {}
 
 NativeUnwinderAndroid::~NativeUnwinderAndroid() {
-  if (module_cache_)
-    module_cache_->UnregisterAuxiliaryModuleProvider(this);
+  if (module_cache())
+    module_cache()->UnregisterAuxiliaryModuleProvider(this);
 }
 
-void NativeUnwinderAndroid::InitializeModules(ModuleCache* module_cache) {
-  module_cache_ = module_cache;
-  module_cache_->RegisterAuxiliaryModuleProvider(this);
+void NativeUnwinderAndroid::InitializeModules() {
+  module_cache()->RegisterAuxiliaryModuleProvider(this);
 }
 
 bool NativeUnwinderAndroid::CanUnwindFrom(const Frame& current_frame) const {
@@ -145,7 +144,6 @@ bool NativeUnwinderAndroid::CanUnwindFrom(const Frame& current_frame) const {
 
 UnwindResult NativeUnwinderAndroid::TryUnwind(RegisterContext* thread_context,
                                               uintptr_t stack_top,
-                                              ModuleCache* module_cache,
                                               std::vector<Frame>* stack) const {
   auto regs = CreateFromRegisterContext(thread_context);
   DCHECK(regs);
@@ -200,7 +198,7 @@ UnwindResult NativeUnwinderAndroid::TryUnwind(RegisterContext* thread_context,
 
     if (regs->dex_pc() != 0) {
       // Add a frame to represent the dex file.
-      EmitDexFrame(regs->dex_pc(), module_cache, stack);
+      EmitDexFrame(regs->dex_pc(), stack);
 
       // Clear the dex pc so that we don't repeat this frame later.
       regs->set_dex_pc(0);
@@ -210,7 +208,7 @@ UnwindResult NativeUnwinderAndroid::TryUnwind(RegisterContext* thread_context,
     // GetExistingModuleForAddress because the unwound-to address may be in a
     // module associated with a different unwinder.
     const ModuleCache::Module* module =
-        module_cache->GetModuleForAddress(regs->pc());
+        module_cache()->GetModuleForAddress(regs->pc());
     stack->emplace_back(regs->pc(), module);
   } while (CanUnwindFrom(stack->back()));
 
@@ -230,12 +228,11 @@ NativeUnwinderAndroid::TryCreateModuleForAddress(uintptr_t address) {
 }
 
 void NativeUnwinderAndroid::EmitDexFrame(uintptr_t dex_pc,
-                                         ModuleCache* module_cache,
                                          std::vector<Frame>* stack) const {
   const ModuleCache::Module* module =
-      module_cache->GetExistingModuleForAddress(dex_pc);
+      module_cache()->GetExistingModuleForAddress(dex_pc);
   if (!module) {
-    // The region containing |dex_pc| may not be in |module_cache| since it's
+    // The region containing |dex_pc| may not be in module_cache() since it's
     // usually not executable (.dex file). Since non-executable regions
     // are used much less commonly, it's lazily added here instead of from
     // AddInitialModulesFromMaps().
@@ -243,7 +240,7 @@ void NativeUnwinderAndroid::EmitDexFrame(uintptr_t dex_pc,
     if (map_info) {
       auto new_module = std::make_unique<NonElfModule>(map_info);
       module = new_module.get();
-      module_cache->AddCustomNativeModule(std::move(new_module));
+      module_cache()->AddCustomNativeModule(std::move(new_module));
     }
   }
   stack->emplace_back(dex_pc, module);

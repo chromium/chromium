@@ -121,7 +121,6 @@ class TestUnwinder : public Unwinder {
 
   UnwindResult TryUnwind(RegisterContext* thread_context,
                          uintptr_t stack_top,
-                         ModuleCache* module_cache,
                          std::vector<Frame>* stack) const override {
     if (stack_copy_) {
       auto* bottom = reinterpret_cast<uintptr_t*>(
@@ -145,15 +144,12 @@ class CallRecordingUnwinder : public Unwinder {
  public:
   void OnStackCapture() override { on_stack_capture_was_invoked_ = true; }
 
-  void UpdateModules(ModuleCache*) override {
-    update_modules_was_invoked_ = true;
-  }
+  void UpdateModules() override { update_modules_was_invoked_ = true; }
 
   bool CanUnwindFrom(const Frame& current_frame) const override { return true; }
 
   UnwindResult TryUnwind(RegisterContext* thread_context,
                          uintptr_t stack_top,
-                         ModuleCache* module_cache,
                          std::vector<Frame>* stack) const override {
     return UnwindResult::UNRECOGNIZED_FRAME;
   }
@@ -251,7 +247,6 @@ class FakeTestUnwinder : public Unwinder {
 
   UnwindResult TryUnwind(RegisterContext* thread_context,
                          uintptr_t stack_top,
-                         ModuleCache* module_cache,
                          std::vector<Frame>* stack) const override {
     CHECK_LT(current_unwind_, results_.size());
     const Result& current_result = results_[current_unwind_];
@@ -260,7 +255,7 @@ class FakeTestUnwinder : public Unwinder {
     for (const auto instruction_pointer : current_result.instruction_pointers)
       stack->emplace_back(
           instruction_pointer,
-          module_cache->GetModuleForAddress(instruction_pointer));
+          module_cache()->GetModuleForAddress(instruction_pointer));
     return current_result.result;
   }
 
@@ -389,6 +384,7 @@ TEST(StackSamplerImplTest, WalkStack_Completed) {
   module_cache.AddCustomNativeModule(std::make_unique<TestModule>(1u, 1u));
   auto native_unwinder =
       WrapUnique(new FakeTestUnwinder({{UnwindResult::COMPLETED, {1u}}}));
+  native_unwinder->Initialize(&module_cache);
 
   std::vector<Frame> stack = StackSamplerImpl::WalkStackForTesting(
       &module_cache, &thread_context, 0u,
@@ -406,6 +402,7 @@ TEST(StackSamplerImplTest, WalkStack_Aborted) {
   module_cache.AddCustomNativeModule(std::make_unique<TestModule>(1u, 1u));
   auto native_unwinder =
       WrapUnique(new FakeTestUnwinder({{UnwindResult::ABORTED, {1u}}}));
+  native_unwinder->Initialize(&module_cache);
 
   std::vector<Frame> stack = StackSamplerImpl::WalkStackForTesting(
       &module_cache, &thread_context, 0u,
@@ -422,6 +419,7 @@ TEST(StackSamplerImplTest, WalkStack_NotUnwound) {
       GetTestInstructionPointer();
   auto native_unwinder = WrapUnique(
       new FakeTestUnwinder({{UnwindResult::UNRECOGNIZED_FRAME, {}}}));
+  native_unwinder->Initialize(&module_cache);
 
   std::vector<Frame> stack = StackSamplerImpl::WalkStackForTesting(
       &module_cache, &thread_context, 0u,
@@ -444,6 +442,7 @@ TEST(StackSamplerImplTest, WalkStack_AuxUnwind) {
 
   auto aux_unwinder =
       WrapUnique(new FakeTestUnwinder({{UnwindResult::ABORTED, {1u}}}));
+  aux_unwinder->Initialize(&module_cache);
   std::vector<Frame> stack = StackSamplerImpl::WalkStackForTesting(
       &module_cache, &thread_context, 0u,
       MakeUnwinderCircularDeque(nullptr, std::move(aux_unwinder)));
@@ -467,8 +466,10 @@ TEST(StackSamplerImplTest, WalkStack_AuxThenNative) {
 
   auto aux_unwinder = WrapUnique(
       new FakeTestUnwinder({{UnwindResult::UNRECOGNIZED_FRAME, {1u}}, false}));
+  aux_unwinder->Initialize(&module_cache);
   auto native_unwinder =
       WrapUnique(new FakeTestUnwinder({{UnwindResult::COMPLETED, {2u}}}));
+  native_unwinder->Initialize(&module_cache);
 
   std::vector<Frame> stack = StackSamplerImpl::WalkStackForTesting(
       &module_cache, &thread_context, 0u,
@@ -497,9 +498,11 @@ TEST(StackSamplerImplTest, WalkStack_NativeThenAux) {
 
   auto aux_unwinder = WrapUnique(new FakeTestUnwinder(
       {{false}, {UnwindResult::UNRECOGNIZED_FRAME, {2u}}, {false}}));
+  aux_unwinder->Initialize(&module_cache);
   auto native_unwinder =
       WrapUnique(new FakeTestUnwinder({{UnwindResult::UNRECOGNIZED_FRAME, {1u}},
                                        {UnwindResult::COMPLETED, {3u}}}));
+  native_unwinder->Initialize(&module_cache);
 
   std::vector<Frame> stack = StackSamplerImpl::WalkStackForTesting(
       &module_cache, &thread_context, 0u,
