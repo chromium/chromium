@@ -217,7 +217,7 @@ TEST_F(WebAccessibleResourcesManifestTest, WebAccessibleResourcesV3Invalid) {
         ])",
        "Invalid value for 'web_accessible_resources[0]'. Invalid extension "
        "id."},
-      {"Error if any match in matches is more than just an origin.",
+      {"Error if any match in matches includes a path after the origin.",
        R"([
             {
               "resources": ["test"],
