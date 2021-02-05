@@ -33,6 +33,7 @@ js_library("fake_settings_search_handler") {
 js_modulizer("modulize") {
   input_files = [
     "ambient_mode_page_test.js",
+    "app_management/app_detail_view_test.js",
     "app_management/app_item_test.js",
     "app_management/app_management_page_tests.js",
     "app_management/chrome_app_detail_view_test.js",

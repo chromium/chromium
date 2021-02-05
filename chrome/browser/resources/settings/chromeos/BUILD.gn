@@ -401,6 +401,7 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/os_about_page/update_warning_dialog.m.js",
     "chromeos/os_apps_page/app_management_page/actions.m.js",
     "chromeos/os_apps_page/app_management_page/api_listener.m.js",
+    "chromeos/os_apps_page/app_management_page/app_detail_view.m.js",
     "chromeos/os_apps_page/app_management_page/app_item.m.js",
     "chromeos/os_apps_page/app_management_page/app_management_page.m.js",
     "chromeos/os_apps_page/app_management_page/arc_detail_view.m.js",
