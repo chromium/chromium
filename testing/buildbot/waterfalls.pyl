@@ -2879,6 +2879,15 @@
           'isolated_scripts': 'ios14_sdk_simulator_tests'
         },
       },
+      'lacros-amd64-generic-rel-fyi': {
+        'additional_compile_targets': [
+          'chrome',
+        ],
+        'test_suites': {
+          'gtest_tests': 'lacros_tast_tests_amd64_generic',
+        },
+        'os_type': 'chromeos'
+      },
       'linux-annotator-rel': {
         'test_suites': {
           'scripts': 'test_traffic_annotation_auditor_script',

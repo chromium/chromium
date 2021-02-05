@@ -2915,6 +2915,14 @@ ci.fyi_builder(
 )
 
 ci.fyi_builder(
+    name = "lacros-amd64-generic-rel-fyi",
+    console_view_entry = consoles.console_view_entry(
+        category = "lacros",
+        short_name = "lcr",
+    ),
+)
+
+ci.fyi_builder(
     name = "linux-annotator-rel",
     console_view_entry = consoles.console_view_entry(
         category = "network|traffic|annotations",

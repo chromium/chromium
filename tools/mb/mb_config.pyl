@@ -292,6 +292,7 @@
       'Linux TSan Builder (goma cache silo)': 'tsan_disable_nacl_release_bot',
       'Linux TSan Builder (reclient)': 'tsan_disable_nacl_release_bot_reclient',
       'Linux Viz': 'release_trybot',
+      'lacros-amd64-generic-rel-fyi': 'chromeos_amd64-generic_lacros_rel',
       'linux-ash-chromium-builder-fyi-rel': 'chromeos_with_codecs_release_bot',
       'linux-lacros-builder-fyi-rel': 'lacros_on_linux_release_bot',
       'linux-lacros-tester-fyi-rel': 'lacros_on_linux_release_bot',
