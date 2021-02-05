@@ -32,12 +32,12 @@ void ChromeExtensionHostDelegate::OnExtensionHostCreated(
   apps::AudioFocusWebContentsObserver::CreateForWebContents(web_contents);
 }
 
-void ChromeExtensionHostDelegate::OnRenderViewCreatedForBackgroundPage(
+void ChromeExtensionHostDelegate::OnMainFrameCreatedForBackgroundPage(
     ExtensionHost* host) {
   ExtensionService* service =
       ExtensionSystem::Get(host->browser_context())->extension_service();
   if (service)
-    service->DidCreateRenderViewForBackgroundPage(host);
+    service->DidCreateMainFrameForBackgroundPage(host);
 }
 
 content::JavaScriptDialogManager*

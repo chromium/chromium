@@ -92,7 +92,6 @@ ExtensionViewHost::ExtensionViewHost(const Extension* extension,
     zoom_map->SetTemporaryZoomLevel(
         host_contents()
             ->GetMainFrame()
-            ->GetRenderViewHost()
             ->GetProcess()
             ->GetID(),
         host_contents()->GetMainFrame()->GetRenderViewHost()->GetRoutingID(),

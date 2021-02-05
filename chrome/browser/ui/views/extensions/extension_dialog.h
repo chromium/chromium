@@ -80,8 +80,8 @@ class ExtensionDialog : public views::DialogDelegate,
   // be sent notifications.
   void ObserverDestroyed();
 
-  // Focus to the render view if possible.
-  void MaybeFocusRenderView();
+  // Focus to the renderer if possible.
+  void MaybeFocusRenderer();
 
   // Sets minimum contents size in pixels and makes the window resizable.
   void SetMinimumContentsSize(int width, int height);

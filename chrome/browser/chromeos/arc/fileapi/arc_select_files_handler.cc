@@ -27,7 +27,6 @@
 #include "components/arc/arc_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_view_host.h"
 #include "content/public/common/url_constants.h"
 #include "net/base/filename_util.h"
 #include "net/base/mime_util.h"
@@ -409,11 +408,9 @@ bool SelectFileDialogHolder::SelectFile(
 void SelectFileDialogHolder::ExecuteJavaScript(
     const std::string& script,
     content::RenderFrameHost::JavaScriptResultCallback callback) {
-  content::RenderViewHost* view_host = select_file_dialog_->GetRenderViewHost();
-  content::RenderFrameHost* frame_host =
-      view_host ? view_host->GetMainFrame() : nullptr;
+  content::RenderFrameHost* frame_host = select_file_dialog_->GetMainFrame();
 
-  if (!frame_host) {
+  if (!frame_host || !frame_host->IsRenderFrameLive()) {
     LOG(ERROR) << "Can't execute a script. SelectFileDialog is not ready.";
     if (callback)
       std::move(callback).Run(base::Value());

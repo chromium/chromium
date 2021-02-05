@@ -1949,9 +1949,9 @@ bool ExtensionService::OnExternalExtensionFileFound(
   return true;
 }
 
-void ExtensionService::DidCreateRenderViewForBackgroundPage(
+void ExtensionService::DidCreateMainFrameForBackgroundPage(
     ExtensionHost* host) {
-  extension_registrar_.DidCreateRenderViewForBackgroundPage(host);
+  extension_registrar_.DidCreateMainFrameForBackgroundPage(host);
 }
 
 void ExtensionService::Observe(int type,

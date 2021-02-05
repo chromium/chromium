@@ -295,9 +295,9 @@ void SelectFileDialogExtension::OnFileSelectionCanceled(RoutingID routing_id) {
   dialog->selection_index_ = 0;
 }
 
-content::RenderViewHost* SelectFileDialogExtension::GetRenderViewHost() {
-  if (extension_dialog_.get())
-    return extension_dialog_->host()->render_view_host();
+content::RenderFrameHost* SelectFileDialogExtension::GetMainFrame() {
+  if (extension_dialog_)
+    return extension_dialog_->host()->main_frame_host();
   return nullptr;
 }
 

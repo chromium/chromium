@@ -18,8 +18,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "content/public/browser/notification_details.h"
 #include "content/public/browser/notification_source.h"
-#include "content/public/browser/render_view_host.h"
-#include "content/public/browser/render_widget_host.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/base_window.h"
@@ -63,7 +62,7 @@ void ExtensionDialog::ObserverDestroyed() {
   observer_ = nullptr;
 }
 
-void ExtensionDialog::MaybeFocusRenderView() {
+void ExtensionDialog::MaybeFocusRenderer() {
   views::FocusManager* focus_manager = GetWidget()->GetFocusManager();
   DCHECK(focus_manager);
 
@@ -71,8 +70,7 @@ void ExtensionDialog::MaybeFocusRenderView() {
   if (focus_manager->GetFocusedView())
     return;
 
-  content::RenderWidgetHostView* view =
-      host()->render_view_host()->GetWidget()->GetView();
+  content::RenderWidgetHostView* view = host()->main_frame_host()->GetView();
   if (!view)
     return;
 
@@ -127,7 +125,7 @@ void ExtensionDialog::Observe(int type,
       // The render view is created during the LoadURL(), so we should
       // set the focus to the view if nobody else takes the focus.
       if (content::Details<extensions::ExtensionHost>(host()) == details)
-        MaybeFocusRenderView();
+        MaybeFocusRenderer();
       break;
     case extensions::NOTIFICATION_EXTENSION_HOST_VIEW_SHOULD_CLOSE:
       // If we aren't the host of the popup, then disregard the notification.

@@ -199,8 +199,7 @@ class BaseSelectFileDialogExtensionBrowserTest
   }
 
   void CheckJavascriptErrors() {
-    content::RenderFrameHost* host =
-        dialog_->GetRenderViewHost()->GetMainFrame();
+    content::RenderFrameHost* host = dialog_->GetMainFrame();
     base::Value value =
         content::ExecuteScriptAndGetValue(host, "window.JSErrorCount");
     int js_error_count = value.GetInt();
@@ -208,8 +207,7 @@ class BaseSelectFileDialogExtensionBrowserTest
   }
 
   void ClickElement(const std::string& selector) {
-    content::RenderFrameHost* frame_host =
-        dialog_->GetRenderViewHost()->GetMainFrame();
+    content::RenderFrameHost* frame_host = dialog_->GetMainFrame();
 
     auto* web_contents = content::WebContents::FromRenderFrameHost(frame_host);
     CHECK(web_contents);
@@ -306,7 +304,7 @@ class BaseSelectFileDialogExtensionBrowserTest
   void CloseDialog(DialogButtonType button_type,
                    const gfx::NativeWindow& owning_window) {
     // Inject JavaScript into the dialog to click the dialog |button_type|.
-    content::RenderViewHost* host = dialog_->GetRenderViewHost();
+    content::RenderFrameHost* frame_host = dialog_->GetMainFrame();
     std::string button_class =
         (button_type == DIALOG_BTN_OK) ? ".button-panel .ok" :
                                          ".button-panel .cancel";
@@ -315,8 +313,7 @@ class BaseSelectFileDialogExtensionBrowserTest
         "document.querySelector(\'" + button_class + "\').click();");
     // The file selection handler code closes the dialog but does not return
     // control to JavaScript, so do not wait for the script return value.
-    host->GetMainFrame()->ExecuteJavaScriptForTests(script,
-                                                    base::NullCallback());
+    frame_host->ExecuteJavaScriptForTests(script, base::NullCallback());
 
     // Instead, wait for Listener notification that the window has closed.
     LOG(INFO) << "Waiting for window close notification.";
@@ -621,8 +618,7 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionFlagTest, DialogColoredTitle) {
   // Open the file dialog on the default path.
   ASSERT_NO_FATAL_FAILURE(OpenDialog(ui::SelectFileDialog::SELECT_OPEN_FILE,
                                      base::FilePath(), owning_window, ""));
-  content::RenderFrameHost* frame_host =
-      dialog_->GetRenderViewHost()->GetMainFrame();
+  content::RenderFrameHost* frame_host = dialog_->GetMainFrame();
   aura::Window* dialog_window =
       frame_host->GetNativeView()->GetToplevelWindow();
   SkColor active_color =

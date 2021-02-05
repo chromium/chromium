@@ -577,7 +577,7 @@ void BackgroundContentsService::LoadBackgroundContents(
       SiteInstance::CreateForURL(profile_, url), nullptr, true, frame_name,
       application_id, std::string(), nullptr);
 
-  contents->CreateRenderViewSoon(url);
+  contents->CreateRendererSoon(url);
 }
 
 BackgroundContents* BackgroundContentsService::CreateBackgroundContents(

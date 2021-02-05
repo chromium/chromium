@@ -398,7 +398,7 @@ bool ProcessManager::CreateBackgroundHost(const Extension* extension,
   ExtensionHost* host =
       new ExtensionHost(extension, GetSiteInstanceForURL(url).get(), url,
                         VIEW_TYPE_EXTENSION_BACKGROUND_PAGE);
-  host->CreateRenderViewSoon();
+  host->CreateRendererSoon();
   OnBackgroundHostCreated(host);
   return true;
 }

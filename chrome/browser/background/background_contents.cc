@@ -83,7 +83,7 @@ const GURL& BackgroundContents::GetURL() const {
   return web_contents_.get() ? web_contents_->GetURL() : GURL::EmptyGURL();
 }
 
-void BackgroundContents::CreateRenderViewSoon(const GURL& url) {
+void BackgroundContents::CreateRendererSoon(const GURL& url) {
   initial_url_ = url;
   extensions::ExtensionHostQueue::GetInstance().Add(this);
 }
@@ -132,7 +132,7 @@ void BackgroundContents::RenderProcessGone(base::TerminationStatus status) {
   // |this| is deleted.
 }
 
-void BackgroundContents::CreateRenderViewNow() {
+void BackgroundContents::CreateRendererNow() {
   web_contents()->GetController().LoadURL(initial_url_, content::Referrer(),
                                           ui::PAGE_TRANSITION_LINK,
                                           std::string());

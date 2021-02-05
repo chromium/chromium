@@ -71,8 +71,9 @@ class BackgroundContents : public extensions::DeferredStartRenderHost,
   content::WebContents* web_contents() const { return web_contents_.get(); }
   virtual const GURL& GetURL() const;
 
-  // Adds this BackgroundContents to the queue of RenderViews to create.
-  void CreateRenderViewSoon(const GURL& url);
+  // Adds this BackgroundContents to the queue of renderer main frames to create
+  // and navigate.
+  void CreateRendererSoon(const GURL& url);
 
   // content::WebContentsDelegate implementation:
   void CloseContents(content::WebContents* source) override;
@@ -96,7 +97,7 @@ class BackgroundContents : public extensions::DeferredStartRenderHost,
 
  private:
   // extensions::DeferredStartRenderHost implementation:
-  void CreateRenderViewNow() override;
+  void CreateRendererNow() override;
 
   // The delegate for this BackgroundContents.
   Delegate* delegate_;

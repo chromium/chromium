@@ -10,7 +10,7 @@
 #include "chrome/browser/ash/accessibility/event_handler_common.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/render_view_host.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/event_router.h"
@@ -61,9 +61,9 @@ void SelectToSpeakEventHandlerDelegate::DispatchMouseEvent(
   if (!host)
     return;
 
-  content::RenderViewHost* rvh = host->render_view_host();
-  if (!rvh)
-    return;
+  content::RenderFrameHost* main_frame = host->main_frame_host();
+  DCHECK(main_frame);
 
-  rvh->GetWidget()->ForwardMouseEvent(ui::MakeWebMouseEvent(event));
+  main_frame->GetRenderWidgetHost()->ForwardMouseEvent(
+      ui::MakeWebMouseEvent(event));
 }

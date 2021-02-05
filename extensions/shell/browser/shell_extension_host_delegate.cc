@@ -11,20 +11,16 @@
 
 namespace extensions {
 
-ShellExtensionHostDelegate::ShellExtensionHostDelegate() {
-}
-
-ShellExtensionHostDelegate::~ShellExtensionHostDelegate() {
-}
+ShellExtensionHostDelegate::ShellExtensionHostDelegate() = default;
+ShellExtensionHostDelegate::~ShellExtensionHostDelegate() = default;
 
 void ShellExtensionHostDelegate::OnExtensionHostCreated(
     content::WebContents* web_contents) {
   ShellExtensionWebContentsObserver::CreateForWebContents(web_contents);
 }
 
-void ShellExtensionHostDelegate::OnRenderViewCreatedForBackgroundPage(
-    ExtensionHost* host) {
-}
+void ShellExtensionHostDelegate::OnMainFrameCreatedForBackgroundPage(
+    ExtensionHost* host) {}
 
 content::JavaScriptDialogManager*
 ShellExtensionHostDelegate::GetJavaScriptDialogManager() {

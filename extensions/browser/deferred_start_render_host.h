@@ -18,8 +18,8 @@ class DeferredStartRenderHost {
   virtual ~DeferredStartRenderHost() {}
 
   // DO NOT CALL THIS unless you're implementing an ExtensionHostQueue.
-  // Called by the ExtensionHostQueue to create the RenderView.
-  virtual void CreateRenderViewNow() = 0;
+  // Called by the ExtensionHostQueue to create the renderer frame tree.
+  virtual void CreateRendererNow() = 0;
 };
 
 }  // namespace extensions

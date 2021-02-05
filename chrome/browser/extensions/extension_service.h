@@ -346,9 +346,9 @@ class ExtensionService : public ExtensionServiceInterface,
   // Checks for delayed installation for all pending installs.
   void MaybeFinishDelayedInstallations();
 
-  // ExtensionHost of background page calls this method right after its render
-  // view has been created.
-  void DidCreateRenderViewForBackgroundPage(ExtensionHost* host);
+  // ExtensionHost of background page calls this method right after its renderer
+  // main frame has been created.
+  void DidCreateMainFrameForBackgroundPage(ExtensionHost* host);
 
   // Record a histogram using the PermissionMessage enum values for each
   // permission in |e|.

@@ -6,7 +6,7 @@
 
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "content/public/browser/render_view_host.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_registry.h"
@@ -38,19 +38,16 @@ extensions::ExtensionHost* GetAccessibilityExtensionHost(
 void ForwardKeyToExtension(const ui::KeyEvent& key_event,
                            extensions::ExtensionHost* host) {
   if (!host) {
-    LOG(ERROR) << "Unable to forward key to extension";
+    VLOG(2) << "Unable to forward key to extension";
     return;
   }
 
-  content::RenderViewHost* rvh = host->render_view_host();
-  if (!rvh) {
-    LOG(ERROR) << "Unable to forward key to extension";
-    return;
-  }
+  content::RenderFrameHost* main_frame = host->main_frame_host();
+  DCHECK(main_frame);
 
   const content::NativeWebKeyboardEvent web_event(key_event);
   // Don't forward latency info, as these are getting forwarded to an extension.
-  rvh->GetWidget()->ForwardKeyboardEvent(web_event);
+  main_frame->GetRenderWidgetHost()->ForwardKeyboardEvent(web_event);
 }
 
 void ForwardMouseToExtension(const ui::MouseEvent& mouse_event,
@@ -60,11 +57,8 @@ void ForwardMouseToExtension(const ui::MouseEvent& mouse_event,
     return;
   }
 
-  content::RenderViewHost* rvh = host->render_view_host();
-  if (!rvh) {
-    VLOG(3) << "Unable to forward mouse to extension";
-    return;
-  }
+  content::RenderFrameHost* main_frame = host->main_frame_host();
+  DCHECK(main_frame);
 
   if (mouse_event.type() == ui::ET_MOUSE_EXITED) {
     VLOG(3) << "Couldn't forward unsupported mouse event to extension";
@@ -79,5 +73,5 @@ void ForwardMouseToExtension(const ui::MouseEvent& mouse_event,
   }
 
   // Don't forward latency info, as these are getting forwarded to an extension.
-  rvh->GetWidget()->ForwardMouseEvent(web_event);
+  main_frame->GetRenderWidgetHost()->ForwardMouseEvent(web_event);
 }

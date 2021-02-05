@@ -17,8 +17,8 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/notification_types.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/common/url_constants.h"
@@ -100,12 +100,11 @@ class ExtensionCrashRecoveryTest : public extensions::ExtensionBrowserTest {
     ASSERT_NE(frames.end(),
               frames.find(extension_host->host_contents()->GetMainFrame()));
     ASSERT_FALSE(GetProcessManager()->GetAllFrames().empty());
-    ASSERT_TRUE(extension_host->IsRenderViewLive());
+    ASSERT_TRUE(extension_host->IsRendererLive());
     extensions::ProcessMap* process_map =
         extensions::ProcessMap::Get(browser()->profile());
     ASSERT_TRUE(process_map->Contains(
-        extension_id,
-        extension_host->render_view_host()->GetProcess()->GetID()));
+        extension_id, extension_host->render_process_host()->GetID()));
   }
 
   void LoadTestExtension() {

@@ -40,7 +40,7 @@ CastWebContents* ExtensionPage::cast_web_contents() {
 }
 
 void ExtensionPage::Launch() {
-  extension_host_->CreateRenderViewSoon();
+  extension_host_->CreateRendererSoon();
 }
 
 void ExtensionPage::InitializeWindow() {
