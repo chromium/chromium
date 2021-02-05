@@ -29,9 +29,8 @@ class MockVideoCaptureDeviceAVFoundationFrameReceiver
 
   MOCK_METHOD(void,
               ReceiveExternalGpuMemoryBufferFrame,
-              (gfx::GpuMemoryBufferHandle handle,
-               const VideoCaptureFormat& frame_format,
-               const gfx::ColorSpace color_space,
+              (CapturedExternalVideoBuffer frame,
+               std::vector<CapturedExternalVideoBuffer> scaled_frames,
                base::TimeDelta timestamp),
               (override));
 

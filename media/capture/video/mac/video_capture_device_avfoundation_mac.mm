@@ -701,7 +701,9 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
 
   _lock.AssertAcquired();
   _frameReceiver->ReceiveExternalGpuMemoryBufferFrame(
-      std::move(handle), captureFormat, overriddenColorSpace, timestamp);
+      media::CapturedExternalVideoBuffer(std::move(handle), captureFormat,
+                                         overriddenColorSpace),
+      {}, timestamp);
 }
 
 // |captureOutput| is called by the capture device to deliver a new frame.
