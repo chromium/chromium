@@ -133,11 +133,13 @@ VaapiVideoDecoderDelegate::SetupDecryptDecode(
   DCHECK_EQ(protected_session_state_, ProtectedSessionState::kCreated);
 
   if (encryption_scheme_ == EncryptionScheme::kCenc) {
-    crypto_params->encryption_type =
-        full_sample ? VA_ENCRYPTION_TYPE_CENC_CTR : VA_ENCRYPTION_TYPE_CTR_128;
+    crypto_params->encryption_type = full_sample
+                                         ? VA_ENCRYPTION_TYPE_FULLSAMPLE_CTR
+                                         : VA_ENCRYPTION_TYPE_SUBSAMPLE_CTR;
   } else {
-    crypto_params->encryption_type =
-        full_sample ? VA_ENCRYPTION_TYPE_CENC_CBC : VA_ENCRYPTION_TYPE_CBC;
+    crypto_params->encryption_type = full_sample
+                                         ? VA_ENCRYPTION_TYPE_FULLSAMPLE_CBC
+                                         : VA_ENCRYPTION_TYPE_SUBSAMPLE_CBC;
   }
 
   // For multi-slice we may already have segment information in here, so
@@ -224,6 +226,7 @@ VaapiVideoDecoderDelegate::SetupDecryptDecode(
   memcpy(crypto_params->wrapped_decrypt_blob,
          hw_key_data_map_[decrypt_config_->key_id()].data(),
          DecryptConfig::kDecryptionKeySize);
+  crypto_params->key_blob_size = DecryptConfig::kDecryptionKeySize;
   crypto_params->segment_info = &segments->front();
 #else  // if BUILDFLAG(IS_CHROMEOS_ASH)
   protected_session_state_ = ProtectedSessionState::kFailed;

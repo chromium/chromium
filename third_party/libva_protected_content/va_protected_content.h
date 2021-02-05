@@ -46,6 +46,7 @@ extern "C" {
  * @{
  */
 
+#ifdef LEGACY_UPSTREAM_PROTECTED_LIBVA
 /**
  *
  * A protected content function for processing cipher protected content.
@@ -97,16 +98,19 @@ extern "C" {
 /** \brief Encryption parameters buffer for content protection usage */
 #define VAEncryptionParameterBufferType ((VABufferType)0x20001)
 
+#endif  // LEGACY_UPSTREAM_PROTECTED_LIBVA
+
 /**\brief CENC status paramter, used for vendor content protection only.
  * The buffer corresponds to #VACencStatusParameters for va/cp*/
 #define VACencStatusParameterBufferType ((VABufferType)0x20002)
 
+#ifdef LEGACY_UPSTREAM_PROTECTED_LIBVA
 /** attribute values for VAConfigAttribEncryption */
 #define VA_ENCRYPTION_TYPE_NONE 0x00000000
-#define VA_ENCRYPTION_TYPE_CENC_CBC 0x00000002
-#define VA_ENCRYPTION_TYPE_CENC_CTR 0x00000008
-#define VA_ENCRYPTION_TYPE_CTR_128 0x00000010
-#define VA_ENCRYPTION_TYPE_CBC 0x00000020
+#define VA_ENCRYPTION_TYPE_FULLSAMPLE_CBC 0x00000002
+#define VA_ENCRYPTION_TYPE_FULLSAMPLE_CTR 0x00000008
+#define VA_ENCRYPTION_TYPE_SUBSAMPLE_CTR 0x00000010
+#define VA_ENCRYPTION_TYPE_SUBSAMPLE_CBC 0x00000020
 
 /** attribute values for VAConfigAttribContentProtectionSessionMode */
 #define VA_PC_SESSION_MODE_NONE 0x00000000
@@ -132,18 +136,11 @@ extern "C" {
 #define VA_PC_SAMPLE_TYPE_FULLSAMPLE 0x00000001
 #define VA_PC_SAMPLE_TYPE_SUBSAMPLE 0x00000002
 
+#endif  // LEGACY_UPSTREAM_PROTECTED_LIBVA
+
 /** \brief TeeExec Function Codes. */
-typedef enum _VA_TEE_EXEC_FUNCTION_ID {
-  VA_TEE_EXEC_TEE_FUNCID_PASS_THROUGH_NONE = 0x0,
-
-  // 0x40000000~0x400000FFF reserved for TEE Exec GPU function
-  VA_TEE_EXEC_GPU_FUNCID_ENCRYPTION_BLT = 0x40000000,
-  VA_TEE_EXEC_GPU_FUNCID_DECRYPTION_BLT = 0x40000001,
-
-  // 0x40001000~0x400001FFF reserved for TEE Exec TEE function
-  VA_TEE_EXEC_TEE_FUNCID_PASS_THROUGH = 0x40001000,
-
-} VA_TEE_EXEC_FUNCTION_ID;
+#define VA_TEE_EXEC_TEE_FUNCID_HW_UPDATE 0x40000002
+#define VA_TEE_EXEC_TEE_FUNCID_IS_SESSION_ALIVE 0x40000103
 
 /** \brief values for the encryption return status. */
 typedef enum {
@@ -159,6 +156,7 @@ typedef enum {
   VA_ENCRYPTION_STATUS_UNSUPPORT
 } VAEncryptionStatus;
 
+#ifdef LEGACY_UPSTREAM_PROTECTED_LIBVA
 /** \brief structure for encrypted segment info. */
 typedef struct _VAEncryptionSegmentInfo {
   /** \brief  The offset relative to the start of the bitstream input in
@@ -212,23 +210,12 @@ typedef struct _VAEncryptionParameters {
    *  encrypted, i.e. the CENC or CBC1 scheme is being used.
    */
   uint32_t blocks_stripe_clear;
+  /* Forwards compatibility */
+  uint32_t key_blob_size;
   /** \brief Reserved bytes for future use, must be zero */
-  uint32_t va_reserved[VA_PADDING_MEDIUM];
+  uint32_t va_reserved[VA_PADDING_MEDIUM - sizeof(uint32_t)];
 } VAEncryptionParameters;
-
-/** \brief structure for VA_TEE_EXEC_GPU_FUNCID_ENCRYPTION_BLT */
-typedef struct _VA_PROTECTED_BLT_PARAMS {
-  uint8_t* src_resource;  // The source resource which contains the clear data.
-  uint8_t*
-      dst_resource;  // The Destination resource. This resource will contain the
-                     // encrypted data. It should be allocated by the caller.
-  uint32_t width;    // The width of the surface in Bytes.
-  uint32_t height;   // The height of the surface in Bytes (pay attention that
-                     // for NV12 the height(Bytes) = 1.5*height(Pixel)).
-  VAEncryptionParameters*
-      enc_params;  // The encryption parameters as defined by application
-  void* reserved_extension;  // The reserved extension for future BLT operations
-} VA_PROTECTED_BLT_PARAMS;
+#endif  // LEGACY_UPSTREAM_PROTECTED_LIBVA
 
 /** \brief cenc status parameters, corresponding to
  * #VACencStatusParameterBufferType*/
@@ -310,184 +297,6 @@ typedef struct _VACencSliceParameterBufferH264 {
   /** \brief Reserved bytes for future use, must be zero */
   uint32_t va_reserved[VA_PADDING_MEDIUM];
 } VACencSliceParameterBufferH264;
-
-/**
- * \brief Slice parameter for HEVC cenc decode in main & main 10 profiles.
- *
- * This structure holds information for \c
- * slice_segment_header() and nal_unit_header() of the slice as
- * defined by the HEVC specification.
- *
- */
-typedef struct _VACencSliceParameterBufferHEVC {
-  /** \brief Same as the HEVC bitstream syntax element. */
-  uint8_t nal_unit_type;
-  /** \brief Corresponds to the HEVC bitstream syntax element.
-   * Same as nuh_temporal_id_plus1 - 1*/
-  uint8_t nuh_temporal_id;
-  /** \brief Slice type.
-   *  Corresponds to HEVC syntax element of the same name. */
-  uint8_t slice_type;
-  /** \brief Same as the HEVC bitstream syntax element. */
-  uint16_t slice_pic_order_cnt_lsb;
-  /** \brief Indicates EOS_NUT or EOB_NUT is detected in picture. */
-  uint16_t has_eos_or_eob;
-
-  union {
-    struct {
-      /** \brief Same as the HEVC bitstream syntax element */
-      uint32_t no_output_of_prior_pics_flag : 1;
-      /** \brief Same as the HEVC bitstream syntax element */
-      uint32_t pic_output_flag : 1;
-      /** \brief Same as the HEVC bitstream syntax element */
-      uint32_t colour_plane_id : 2;
-      /** \brief Reserved for future use, must be zero */
-      uint32_t reserved : 19;
-    } bits;
-    uint32_t value;
-  } slice_fields;
-
-  /** \brief  Parameters for driver reference frame set */
-  /**@{*/
-
-  /** \brief number of entries as current before in short-term rps
-   * Corresponds to NumPocStCurrBefore as the HEVC specification. */
-  uint8_t num_of_curr_before;
-  /** \brief number of entries as current after in short-term rps
-   * Corresponds to NumPocStCurrAfter as the HEVC specification. */
-  uint8_t num_of_curr_after;
-  /** \brief number of entries as current total in short-term rps*/
-  uint8_t num_of_curr_total;
-  /** \brief number of entries as foll in short-term rps
-   * Corresponds to NumPocStFoll as the HEVC specification.*/
-  uint8_t num_of_foll_st;
-  /** \brief number of entries as current in long-term rps
-   * Corresponds to NumPocLtCurr as the HEVC specification. */
-  uint8_t num_of_curr_lt;
-  /** \brief number of entries as foll in long-term rps
-   * Corresponds to NumPocLtFoll as the HEVC specification.*/
-  uint8_t num_of_foll_lt;
-  /** \brief delta poc as short-term current before
-   * Corresponds to PocStCurrBefore as the HEVC specification. */
-  int32_t delta_poc_curr_before[8];
-  /** \brief delta poc as short-term current after
-   * Corresponds to PocStCurrAfter, as the HEVC specification.*/
-  int32_t delta_poc_curr_after[8];
-  /** \brief delta poc as short-term current total */
-  int32_t delta_poc_curr_total[8];
-  /** \brief delta poc as short-term foll
-   * Corresponds to PocStFoll as the HEVC specification.*/
-  int32_t delta_poc_foll_st[16];
-  /** \brief delta poc as long-term current
-   * Corresponds to PocLtCurr as the HEVC specification.*/
-  int32_t delta_poc_curr_lt[8];
-  /** \brief delta poc as long-term foll
-   * Corresponds to PocLtFoll, as the HEVC specification.*/
-  int32_t delta_poc_foll_lt[16];
-  /** \brief delta poc msb present flag
-   * Same as the HEVC bitstream syntax element. */
-  uint8_t delta_poc_msb_present_flag[16];
-  /** \brief long-term reference RPS is used for reference by current picture*/
-  uint8_t is_lt_curr_total[8];
-  /** \brief index of reference picture list. [0] is for P and B slice, [1] is
-   * for B slice*/
-  uint8_t ref_list_idx[2][16];
-  /**@}*/
-  /** \brief Pointer to the next #VACencSliceParameterBufferHEVC element,
-   * or \c nullptr if there is none.*/
-  void* next;
-
-  /** \brief Reserved bytes for future use, must be zero */
-  uint32_t va_reserved[VA_PADDING_MEDIUM];
-} VACencSliceParameterBufferHEVC;
-
-/**
- * \brief uncompressed header for VP9 cenc decode
- *
- * This structure holds information for \c
- * uncompressed_header() as defined by the VP9 specification.
- *
- */
-typedef struct _VACencSliceParameterBufferVP9 {
-  union {
-    struct {
-      /** \brief Same as the VP9 bitstream syntax element. */
-      uint32_t profile : 2;
-      /** \brief Same as the VP9 bitstream syntax element. */
-      uint32_t show_existing_frame_flag : 1;
-      /** \brief Same as the VP9 bitstream syntax element. */
-      uint32_t frame_to_show_map_idx : 3;
-      /** \brief Same as the VP9 bitstream syntax element. */
-      uint32_t frame_type : 1;
-      /** \brief Same as the VP9 bitstream syntax element. */
-      uint32_t show_frame : 1;
-      /** \brief Same as the VP9 bitstream syntax element. */
-      uint32_t error_resilient_mode : 1;
-      /** \brief Same as the VP9 bitstream syntax element. */
-      uint32_t intra_only : 1;
-      /** \brief Same as the VP9 bitstream syntax element. */
-      uint32_t ten_or_twelve_bit : 1;
-      /** \brief Same as the VP9 bitstream syntax element. */
-      uint32_t color_space : 3;
-      /** \brief Same as the VP9 bitstream syntax element. */
-      uint32_t color_range : 1;
-      /** \brief Same as the VP9 bitstream syntax element. */
-      uint32_t subsampling_x : 1;
-      /** \brief Same as the VP9 bitstream syntax element. */
-      uint32_t subsampling_y : 1;
-      /** \brief Corresponds to ref_frame_idx[0]
-       * as the VP9 specification */
-      uint32_t ref_frame_idx0 : 3;
-      /** \brief Corresponds to ref_frame_sign_bias[LAST_FRAME]
-       * as the VP9 specification */
-      uint32_t ref_frame_sign_bias0 : 1;
-      /** \brief Corresponds to ref_frame_idx[1]
-       * as the VP9 specification */
-      uint32_t ref_frame_idx1 : 3;
-      /** \brief Corresponds to ref_frame_sign_bias[GOLDEN_FRAME]
-       * as the VP9 specification */
-      uint32_t ref_frame_sign_bias1 : 1;
-      /** \brief Corresponds to ref_frame_idx[2]
-       * as the VP9 specification */
-      uint32_t ref_frame_idx2 : 3;
-      /** \brief Corresponds to ref_frame_sign_bias[ALTREF_FRAME]
-       * as the VP9 specification */
-      uint32_t ref_frame_sign_bias2 : 1;
-      /** \brief Same as the VP9 bitstream syntax element. */
-      uint32_t frame_parallel_decoding_mode : 1;
-      /** \brief Same as the VP9 bitstream syntax element. */
-      uint32_t render_and_frame_size_different : 1;
-      /** \brief Reserved for future use, must be zero */
-      uint32_t reserved : 1;
-    } bits;
-    uint32_t value;
-  } header_fields;
-  /** \brief Same as the VP9 bitstream syntax element. */
-  uint16_t frame_width_minus1;
-  /** \brief Same as the VP9 bitstream syntax element. */
-  uint16_t frame_height_minus1;
-  /** \brief Same as the VP9 bitstream syntax element. */
-  uint16_t render_width_minus1;
-  /** \brief Same as the VP9 bitstream syntax element. */
-  uint16_t render_height_minus1;
-  /** \brief Same as the VP9 bitstream syntax element. */
-  uint8_t refresh_frame_flags;
-  /** \brief  Parameters for super frame*/
-  /**@{*/
-  /** \brief Superframe index, from 0 to frames_in_superframe_minus_1.
-   * as the VP9 specification */
-  uint8_t sf_index;
-  /** \brief Superframe size, corresponds to frame_sizes[ sf_index ]
-   * as the VP9 specification */
-  uint32_t sf_frame_size;
-  /**@}*/
-  /** \brief Pointer to the next #VACencSliceParameterBufferVP9 element,
-   * or \c nullptr if there is none.*/
-  void* next;
-
-  /** \brief Reserved bytes for future use, must be zero */
-  uint32_t va_reserved[VA_PADDING_MEDIUM];
-} VACencSliceParameterBufferVP9;
 
 /** \brief Cenc Slice Buffer Type*/
 typedef enum {
