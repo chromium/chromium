@@ -489,8 +489,8 @@ SSLInterstitialTimerObserver::SSLInterstitialTimerObserver(
     content::WebContents* web_contents)
     : web_contents_(web_contents),
       message_loop_runner_(new content::MessageLoopRunner) {
-  callback_ = base::Bind(&SSLInterstitialTimerObserver::OnTimerStarted,
-                         base::Unretained(this));
+  callback_ = base::BindRepeating(&SSLInterstitialTimerObserver::OnTimerStarted,
+                                  base::Unretained(this));
   SSLErrorHandler::SetInterstitialTimerStartedCallbackForTesting(&callback_);
 }
 
