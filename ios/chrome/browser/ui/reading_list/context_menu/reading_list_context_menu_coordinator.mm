@@ -10,7 +10,9 @@
 #include "base/metrics/user_metrics_action.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/reading_list/context_menu/reading_list_context_menu_delegate.h"
 #import "ios/chrome/browser/ui/reading_list/context_menu/reading_list_context_menu_params.h"
@@ -79,18 +81,26 @@ enum UMAContextMenuAction {
 
   __weak id<ReadingListContextMenuDelegate> weakDelegate = self.delegate;
   __weak ReadingListContextMenuParams* weakParams = self.params;
+  __weak __typeof(self) weakSelf = self;
 
   // Add "Open In New Tab" option.
   NSString* openInNewTabTitle =
       l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWTAB);
   [self addItemWithTitle:openInNewTabTitle
                   action:^{
+                    if (!weakSelf)
+                      return;
+                    __typeof(self) strongSelf = weakSelf;
+                    if ([strongSelf isIncognitoForced])
+                      return;
+
                     [weakDelegate
                         openURLInNewTabForContextMenuWithParams:weakParams];
                     UMA_HISTOGRAM_ENUMERATION("ReadingList.ContextMenu",
                                               NEW_TAB, ENUM_MAX);
                   }
-                   style:UIAlertActionStyleDefault];
+                   style:UIAlertActionStyleDefault
+                 enabled:![self isIncognitoForced]];
 
   if (base::ios::IsMultipleScenesSupported()) {
     // Add "Open In New Window" option.
@@ -110,13 +120,20 @@ enum UMAContextMenuAction {
       l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWINCOGNITOTAB);
   [self addItemWithTitle:openInNewTabIncognitoTitle
                   action:^{
+                    if (!weakSelf)
+                      return;
+                    __typeof(self) strongSelf = weakSelf;
+                    if (![strongSelf isIncognitoAvailable])
+                      return;
+
                     [weakDelegate
                         openURLInNewIncognitoTabForContextMenuWithParams:
                             weakParams];
                     UMA_HISTOGRAM_ENUMERATION("ReadingList.ContextMenu",
                                               NEW_INCOGNITO_TAB, ENUM_MAX);
                   }
-                   style:UIAlertActionStyleDefault];
+                   style:UIAlertActionStyleDefault
+                 enabled:[self isIncognitoAvailable]];
 
   // Add "Copy Link URL" option.
   NSString* copyLinkTitle =
@@ -154,6 +171,18 @@ enum UMAContextMenuAction {
 
   [super start];
   self.started = YES;
+}
+
+#pragma mark - Private
+
+// Returns whether the incognito mode is forced.
+- (BOOL)isIncognitoForced {
+  return IsIncognitoModeForced(self.browser->GetBrowserState()->GetPrefs());
+}
+
+// Returns whether the incognito mode is available.
+- (BOOL)isIncognitoAvailable {
+  return !IsIncognitoModeDisabled(self.browser->GetBrowserState()->GetPrefs());
 }
 
 @end

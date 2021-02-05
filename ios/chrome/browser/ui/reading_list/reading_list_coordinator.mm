@@ -12,12 +12,14 @@
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/reading_list/core/reading_list_entry.h"
+#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #include "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
 #include "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #include "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
+#import "ios/chrome/browser/policy/policy_util.h"
 #include "ios/chrome/browser/reading_list/offline_url_utils.h"
 #include "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/ui/activity_services/activity_params.h"
@@ -32,6 +34,7 @@
 #import "ios/chrome/browser/ui/reading_list/context_menu/reading_list_context_menu_params.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_item.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_item_factory.h"
+#import "ios/chrome/browser/ui/reading_list/reading_list_list_item_factory_delegate.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_view_controller_audience.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_mediator.h"
@@ -61,6 +64,7 @@
 
 @interface ReadingListCoordinator () <ReadingListContextMenuDelegate,
                                       ReadingListMenuProvider,
+                                      ReadingListListItemFactoryDelegate,
                                       ReadingListListViewControllerAudience,
                                       ReadingListListViewControllerDelegate,
                                       UIViewControllerTransitioningDelegate>
@@ -245,7 +249,7 @@
   [self loadEntryURL:params.entryURL
       withOfflineURL:params.offlineURL
             inNewTab:YES
-           incognito:NO];
+           incognito:[self isIncognitoForced]];
 }
 
 #pragma mark - ReadingListTableViewControllerDelegate
@@ -481,20 +485,34 @@ animationControllerForDismissedController:(UIViewController*)dismissed {
         NSMutableArray<UIMenuElement*>* menuElements =
             [[NSMutableArray alloc] init];
 
-        [menuElements addObject:[actionFactory actionToOpenInNewTabWithBlock:^{
-                        [weakSelf loadEntryURL:item.entryURL
-                                withOfflineURL:GURL::EmptyGURL()
-                                      inNewTab:YES
-                                     incognito:NO];
-                      }]];
+        UIAction* openInNewTab = [actionFactory actionToOpenInNewTabWithBlock:^{
+          if ([weakSelf isIncognitoForced])
+            return;
 
-        [menuElements
-            addObject:[actionFactory actionToOpenInNewIncognitoTabWithBlock:^{
+          [weakSelf loadEntryURL:item.entryURL
+                  withOfflineURL:GURL::EmptyGURL()
+                        inNewTab:YES
+                       incognito:NO];
+        }];
+        if ([self isIncognitoForced]) {
+          openInNewTab.attributes = UIMenuElementAttributesDisabled;
+        }
+        [menuElements addObject:openInNewTab];
+
+        UIAction* openInNewIncognitoTab =
+            [actionFactory actionToOpenInNewIncognitoTabWithBlock:^{
+              if (![weakSelf isIncognitoAvailable])
+                return;
+
               [weakSelf loadEntryURL:item.entryURL
                       withOfflineURL:GURL::EmptyGURL()
                             inNewTab:YES
                            incognito:YES];
-            }]];
+            }];
+        if (![self isIncognitoAvailable]) {
+          openInNewIncognitoTab.attributes = UIMenuElementAttributesDisabled;
+        }
+        [menuElements addObject:openInNewIncognitoTab];
 
         const ReadingListEntry* entry = [self.mediator entryFromItem:item];
         if (entry->DistilledState() == ReadingListEntry::PROCESSED) {
@@ -506,7 +524,7 @@ animationControllerForDismissedController:(UIViewController*)dismissed {
                               [weakSelf loadEntryURL:item.entryURL
                                       withOfflineURL:offlineURL
                                             inNewTab:YES
-                                           incognito:NO];
+                                           incognito:[self isIncognitoForced]];
                             }]];
         }
 
@@ -568,6 +586,16 @@ animationControllerForDismissedController:(UIViewController*)dismissed {
                           params:params
                       originView:view];
   [self.sharingCoordinator start];
+}
+
+#pragma mark - ReadingListListItemFactoryDelegate
+
+- (BOOL)isIncognitoForced {
+  return IsIncognitoModeForced(self.browser->GetBrowserState()->GetPrefs());
+}
+
+- (BOOL)isIncognitoAvailable {
+  return !IsIncognitoModeDisabled(self.browser->GetBrowserState()->GetPrefs());
 }
 
 @end

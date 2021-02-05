@@ -47,6 +47,14 @@
   return self.customActionFactory.accessibilityDelegate;
 }
 
+- (void)setDelegate:(id<ReadingListListItemFactoryDelegate>)delegate {
+  self.customActionFactory.incognitoDelegate = delegate;
+}
+
+- (id<ReadingListListItemFactoryDelegate>)delegate {
+  return self.customActionFactory.incognitoDelegate;
+}
+
 #pragma mark Public
 
 - (ListItem<ReadingListListItem>*)cellItemForReadingListEntry:
