@@ -292,6 +292,7 @@ public class RootUiCoordinator
         mActivity.getLayoutManagerSupplier().removeObserver(mLayoutManagerSupplierCallback);
 
         if (mMessageDispatcher != null) {
+            mMessageDispatcher.dismissAllMessages();
             MessagesFactory.detachMessageDispatcher(mMessageDispatcher);
             mMessageDispatcher = null;
         }
