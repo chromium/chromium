@@ -24,6 +24,7 @@
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/attestation/attestation_flow_adaptive.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/attestation/attestation_client.h"
 #include "chromeos/dbus/attestation/interface.pb.h"
@@ -125,7 +126,7 @@ std::string GetKeyNameWithDefault(AttestationKeyType key_type,
 }  // namespace
 
 TpmChallengeKeySubtleImpl::TpmChallengeKeySubtleImpl()
-    : default_attestation_flow_(std::make_unique<AttestationFlow>(
+    : default_attestation_flow_(std::make_unique<AttestationFlowAdaptive>(
           std::make_unique<AttestationCAClient>())),
       attestation_flow_(default_attestation_flow_.get()) {
   policy::DeviceCloudPolicyManagerChromeOS* manager =

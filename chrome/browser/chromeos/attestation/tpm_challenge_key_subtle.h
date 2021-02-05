@@ -28,6 +28,7 @@ class Profile;
 namespace chromeos {
 namespace attestation {
 
+class AttestationFlowAdaptive;
 class MachineCertificateUploader;
 
 //==================== TpmChallengeKeySubtleFactory ============================
@@ -218,7 +219,7 @@ class TpmChallengeKeySubtleImpl final : public TpmChallengeKeySubtle {
   // |this| may be destructed during the |callback_| run.
   void RunCallback(const TpmChallengeKeyResult& result);
 
-  std::unique_ptr<AttestationFlow> default_attestation_flow_;
+  std::unique_ptr<AttestationFlowAdaptive> default_attestation_flow_;
   AttestationFlow* attestation_flow_ = nullptr;
   // Can be nullptr.
   MachineCertificateUploader* machine_certificate_uploader_ = nullptr;

@@ -59,7 +59,7 @@
 #include "chrome/browser/policy/device_management_service_configuration.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/attestation/attestation_flow.h"
+#include "chromeos/attestation/attestation_flow_adaptive.h"
 #include "chromeos/constants/chromeos_paths.h"
 #include "chromeos/cryptohome/system_salt_getter.h"
 #include "chromeos/dbus/cryptohome/cryptohome_client.h"
@@ -526,7 +526,7 @@ void BrowserPolicyConnectorChromeOS::RestartDeviceCloudPolicyInitializer() {
 
 std::unique_ptr<chromeos::attestation::AttestationFlow>
 BrowserPolicyConnectorChromeOS::CreateAttestationFlow() {
-  return std::make_unique<chromeos::attestation::AttestationFlow>(
+  return std::make_unique<chromeos::attestation::AttestationFlowAdaptive>(
       std::make_unique<chromeos::attestation::AttestationCAClient>());
 }
 

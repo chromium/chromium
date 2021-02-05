@@ -19,6 +19,7 @@
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/attestation/attestation_flow.h"
+#include "chromeos/attestation/attestation_flow_adaptive.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/attestation/attestation.pb.h"
@@ -142,7 +143,7 @@ PlatformVerificationFlow::PlatformVerificationFlow()
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::unique_ptr<ServerProxy> attestation_ca_client(new AttestationCAClient());
   default_attestation_flow_.reset(
-      new AttestationFlow(std::move(attestation_ca_client)));
+      new AttestationFlowAdaptive(std::move(attestation_ca_client)));
   attestation_flow_ = default_attestation_flow_.get();
   default_delegate_.reset(new DefaultDelegate());
   delegate_ = default_delegate_.get();

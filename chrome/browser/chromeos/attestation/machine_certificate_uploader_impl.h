@@ -23,6 +23,7 @@ namespace chromeos {
 namespace attestation {
 
 class AttestationFlow;
+class AttestationFlowAdaptive;
 
 // A class which uploads enterprise machine certificates.
 class MachineCertificateUploaderImpl : public MachineCertificateUploader {
@@ -101,7 +102,7 @@ class MachineCertificateUploaderImpl : public MachineCertificateUploader {
 
   policy::CloudPolicyClient* policy_client_ = nullptr;
   AttestationFlow* attestation_flow_ = nullptr;
-  std::unique_ptr<AttestationFlow> default_attestation_flow_;
+  std::unique_ptr<AttestationFlowAdaptive> default_attestation_flow_;
   bool refresh_certificate_ = false;
   std::vector<UploadCallback> callbacks_;
   int num_retries_ = {};

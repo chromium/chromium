@@ -24,6 +24,7 @@ namespace chromeos {
 namespace attestation {
 
 class AttestationFlow;
+class AttestationFlowAdaptive;
 
 // A class which uploads enterprise enrollment certificates.
 class EnrollmentCertificateUploaderImpl : public EnrollmentCertificateUploader {
@@ -77,7 +78,7 @@ class EnrollmentCertificateUploaderImpl : public EnrollmentCertificateUploader {
 
   policy::CloudPolicyClient* policy_client_;
   AttestationFlow* attestation_flow_;
-  std::unique_ptr<AttestationFlow> default_attestation_flow_;
+  std::unique_ptr<AttestationFlowAdaptive> default_attestation_flow_;
   // Callbacks to run when a certificate is uploaded (or we fail to).
   std::queue<UploadCallback> callbacks_;
   // Values for retries.
