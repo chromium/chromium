@@ -3154,6 +3154,21 @@
             ]
         }
     ],
+    "FeedShare": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20210204",
+                    "enable_features": [
+                        "FeedShare"
+                    ]
+                }
+            ]
+        }
+    ],
     "FillingPasswordsFromAnyOrigin": [
         {
             "platforms": [
