@@ -124,6 +124,10 @@ void WaitForViewFocus(Browser* browser, ViewID vid, bool focused) {
                           browser->window()->GetNativeWindow())
                           ->GetContentsView()
                           ->GetViewByID(vid);
+  WaitForViewFocus(browser, view, focused);
+}
+
+void WaitForViewFocus(Browser* browser, views::View* view, bool focused) {
   ASSERT_TRUE(view);
   ViewFocusWaiter(view, focused).Wait();
 }

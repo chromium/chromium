@@ -143,6 +143,7 @@ gfx::Point GetCenterInScreenCoordinates(const views::View* view);
 // Blocks until the given view is focused (or not focused, depending on
 // |focused|). Returns immediately if the state is already correct.
 void WaitForViewFocus(Browser* browser, ViewID vid, bool focused);
+void WaitForViewFocus(Browser* browser, views::View* view, bool focused);
 #endif
 
 #if defined(OS_MAC)

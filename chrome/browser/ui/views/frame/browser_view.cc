@@ -1601,6 +1601,11 @@ bool BrowserView::ActivateFirstInactiveBubbleForAccessibility() {
         toolbar_->app_menu_button()->GetProperty(views::kAnchoredDialogKey);
     if (!bubble && GetLocationBarView())
       bubble = GetLocationBarView()->GetProperty(views::kAnchoredDialogKey);
+    if (!bubble && toolbar_button_provider_ &&
+        toolbar_button_provider_->GetAvatarToolbarButton()) {
+      bubble = toolbar_button_provider_->GetAvatarToolbarButton()->GetProperty(
+          views::kAnchoredDialogKey);
+    }
 
     if (bubble) {
       View* focusable = bubble->GetInitiallyFocusedView();

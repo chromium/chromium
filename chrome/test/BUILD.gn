@@ -6875,6 +6875,7 @@ if (!is_android) {
 
     if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
       sources += [
+        "../browser/ui/views/profiles/profile_bubble_interactive_uitest.cc",
         "../browser/ui/views/profiles/profile_picker_interactive_uitest.cc",
       ]
     }

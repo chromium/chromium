@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_CUSTOMIZATION_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_CUSTOMIZATION_BUBBLE_VIEW_H_
 
+#include "base/gtest_prod_util.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 
@@ -27,6 +28,9 @@ class ProfileCustomizationBubbleView : public views::BubbleDialogDelegateView {
   static void CreateBubble(Profile* profile, views::View* anchor_view);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(ProfileBubbleInteractiveUiTest,
+                           CustomizationBubbleFocus);
+
   ProfileCustomizationBubbleView(Profile* profile, views::View* anchor_view);
 
   // Called when the "Done" button is clicked in the inner WebUI.
