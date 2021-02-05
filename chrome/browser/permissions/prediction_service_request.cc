@@ -25,7 +25,7 @@ PredictionServiceRequest::~PredictionServiceRequest() = default;
 void PredictionServiceRequest::LookupReponseReceived(
     bool lookup_succesful,
     bool response_from_cache,
-    std::unique_ptr<permissions::GetSuggestionsResponse> response) {
+    std::unique_ptr<permissions::GeneratePredictionsResponse> response) {
   std::move(callback_).Run(lookup_succesful, response_from_cache,
                            std::move(response));
 }

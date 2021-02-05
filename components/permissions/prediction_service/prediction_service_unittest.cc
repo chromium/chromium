@@ -68,22 +68,22 @@ const permissions::PredictionRequestFeatures kFeaturesDifferentCounts = {
     {50, 50, 50, 50}};
 
 // A proto request that has all ratios and total counts 0. With user gesture.
-permissions::GetSuggestionsRequest kRequestAllCountsZero;
+permissions::GeneratePredictionsRequest kRequestAllCountsZero;
 // A proto request that has all ratios 0.24 (~5/21) except for "grants" which
 // are 0.29 (~6/21). Without user gesture.
-permissions::GetSuggestionsRequest kRequestRoundedCounts;
+permissions::GeneratePredictionsRequest kRequestRoundedCounts;
 // A proto request that has all ratios .25 and total count 100. With user
 // gesture.
-permissions::GetSuggestionsRequest kRequestEqualCountsTotal100;
+permissions::GeneratePredictionsRequest kRequestEqualCountsTotal100;
 // A proot request that has generic ratios .25 and total count 100 and
 // notifications ratios and counts 0. Without user gesture.
-permissions::GetSuggestionsRequest kRequestDifferentCounts;
+permissions::GeneratePredictionsRequest kRequestDifferentCounts;
 
 // A response that has a likelihood of DiscretizedLikelihood::LIKELY.
-permissions::GetSuggestionsResponse kResponseLikely;
+permissions::GeneratePredictionsResponse kResponseLikely;
 
 // A response that has a likelihood of DiscretizedLikelihood::UNLIKELY.
-permissions::GetSuggestionsResponse kResponseUnlikely;
+permissions::GeneratePredictionsResponse kResponseUnlikely;
 
 void InitializeProtoHelperObjects() {
   kRequestAllCountsZero.mutable_client_features()
@@ -198,15 +198,15 @@ void InitializeProtoHelperObjects() {
   permission_feature->mutable_permission_stats()->set_prompts_count(0);
   permission_feature->mutable_notification_permission()->Clear();
 
-  auto* prediction = kResponseLikely.mutable_suggestion()->Add();
+  auto* prediction = kResponseLikely.mutable_prediction()->Add();
   prediction->mutable_grant_likelihood()->set_discretized_likelihood(
       permissions::
-          PermissionSuggestion_Likelihood_DiscretizedLikelihood_LIKELY);
+          PermissionPrediction_Likelihood_DiscretizedLikelihood_LIKELY);
 
-  prediction = kResponseUnlikely.mutable_suggestion()->Add();
+  prediction = kResponseUnlikely.mutable_prediction()->Add();
   prediction->mutable_grant_likelihood()->set_discretized_likelihood(
       permissions::
-          PermissionSuggestion_Likelihood_DiscretizedLikelihood_UNLIKELY);
+          PermissionPrediction_Likelihood_DiscretizedLikelihood_UNLIKELY);
 }
 
 }  // namespace
@@ -261,7 +261,7 @@ class PredictionServiceTest : public testing::Test {
   }
 
   void RequestCallback(base::RunLoop* request_loop,
-                       std::unique_ptr<GetSuggestionsRequest> request,
+                       std::unique_ptr<GeneratePredictionsRequest> request,
                        std::string access_token) {
     received_requests_.emplace_back(std::move(request));
     if (request_loop)
@@ -274,7 +274,7 @@ class PredictionServiceTest : public testing::Test {
   void ResponseCallback(base::RunLoop* response_loop,
                         bool lookup_successful,
                         bool response_from_cache,
-                        std::unique_ptr<GetSuggestionsResponse> response) {
+                        std::unique_ptr<GeneratePredictionsResponse> response) {
     received_responses_.emplace_back(std::move(response));
     if (response_loop)
       response_loop->Quit();
@@ -284,8 +284,8 @@ class PredictionServiceTest : public testing::Test {
   }
 
  protected:
-  std::vector<std::unique_ptr<GetSuggestionsRequest>> received_requests_;
-  std::vector<std::unique_ptr<GetSuggestionsResponse>> received_responses_;
+  std::vector<std::unique_ptr<GeneratePredictionsRequest>> received_requests_;
+  std::vector<std::unique_ptr<GeneratePredictionsResponse>> received_responses_;
   std::unique_ptr<PredictionService> prediction_service_;
 
   // Different paths to simulate different server behaviours.
@@ -316,7 +316,7 @@ class PredictionServiceTest : public testing::Test {
 TEST_F(PredictionServiceTest, BuiltProtoRequestIsCorrect) {
   struct {
     PredictionRequestFeatures entity;
-    GetSuggestionsRequest expected_request;
+    GeneratePredictionsRequest expected_request;
   } kTests[] = {
       {kFeaturesAllCountsZero, kRequestAllCountsZero},
       {kFeaturesCountsNeedingRounding, kRequestRoundedCounts},
@@ -343,18 +343,19 @@ TEST_F(PredictionServiceTest, BuiltProtoRequestIsCorrect) {
 TEST_F(PredictionServiceTest, ResponsesAreCorrect) {
   struct {
     GURL url;
-    base::Optional<GetSuggestionsResponse> expected_response;
+    base::Optional<GeneratePredictionsResponse> expected_response;
     double delay_in_seconds;
     int err_code;
   } kTests[] = {
       // Test different responses.
-      {kUrl_Likely, base::Optional<GetSuggestionsResponse>(kResponseLikely)},
+      {kUrl_Likely,
+       base::Optional<GeneratePredictionsResponse>(kResponseLikely)},
       {kUrl_Unlikely,
-       base::Optional<GetSuggestionsResponse>(kResponseUnlikely)},
+       base::Optional<GeneratePredictionsResponse>(kResponseUnlikely)},
 
       // Test the response's timeout.
-      {kUrl_Likely, base::Optional<GetSuggestionsResponse>(kResponseLikely),
-       0.5},
+      {kUrl_Likely,
+       base::Optional<GeneratePredictionsResponse>(kResponseLikely), 0.5},
       {kUrl_Likely, base::nullopt, 2},
 
       // Test error code responses.
@@ -389,7 +390,7 @@ TEST_F(PredictionServiceTest, FeatureParamAndCommandLineCanOverrideDefaultUrl) {
     base::Optional<std::string> command_line_switch_value;
     base::Optional<std::string> url_override_param_value;
     GURL expected_request_url;
-    permissions::GetSuggestionsResponse expected_response;
+    permissions::GeneratePredictionsResponse expected_response;
   } kTests[] = {
       // Test without any overrides.
       {base::nullopt, base::nullopt, GURL(kDefaultPredictionServiceUrl),
@@ -502,6 +503,82 @@ TEST_F(PredictionServiceTest, InvalidResponse) {
   Respond(GURL(kUrl_Invalid));
   response_loop.Run();
   EXPECT_FALSE(received_responses_[0]);
+}
+
+TEST_F(PredictionServiceTest, TestJsonConversions) {
+  auto round_counts =
+      GeneratePredictionsRequestMessageToJson(kRequestRoundedCounts);
+  auto equal_counts =
+      GeneratePredictionsRequestMessageToJson(kRequestEqualCountsTotal100);
+  auto different_counts =
+      GeneratePredictionsRequestMessageToJson(kRequestDifferentCounts);
+  auto zero_counts =
+      GeneratePredictionsRequestMessageToJson(kRequestAllCountsZero);
+
+  std::string kPlatformName =
+      ClientFeatures_Platform_Name(permissions::GetCurrentPlatformProto());
+
+  std::string expected_round_counts =
+      "{\"clientFeatures\":{\"clientStats\":{\"avgDenyRate\":0."
+      "23999999463558197,\"avgDismissRate\":0.23999999463558197,"
+      "\"avgGrantRate\":0.28999999165534973,\"avgIgnoreRate\":0."
+      "23999999463558197,\"promptsCount\":21},\"gesture\":\"NO_GESTURE\","
+      "\"platform\":\"" +
+      kPlatformName +
+      "\"},\"permissionFeatures\":[{\"notificationPermission\":{},"
+      "\"permissionStats\":{\"avgDenyRate\":0.23999999463558197,"
+      "\"avgDismissRate\":0.23999999463558197,\"avgGrantRate\":0."
+      "28999999165534973,\"avgIgnoreRate\":0.23999999463558197,"
+      "\"promptsCount\":21}}]}";
+
+  std::string expected_equal_counts =
+      "{\"clientFeatures\":{\"clientStats\":{\"avgDenyRate\":0.25,"
+      "\"avgDismissRate\":0.25,\"avgGrantRate\":0.25,\"avgIgnoreRate\":0.25,"
+      "\"promptsCount\":100},\"gesture\":\"GESTURE\",\"platform\":\"" +
+      kPlatformName +
+      "\"},\"permissionFeatures\":[{\"notificationPermission\":{},"
+      "\"permissionStats\":{\"avgDenyRate\":0.25,\"avgDismissRate\":0.25,"
+      "\"avgGrantRate\":0.25,\"avgIgnoreRate\":0.25,\"promptsCount\":100}}]}";
+
+  std::string expected_different_counts =
+      "{\"clientFeatures\":{\"clientStats\":{\"avgDenyRate\":0.25,"
+      "\"avgDismissRate\":0.25,\"avgGrantRate\":0.25,\"avgIgnoreRate\":0.25,"
+      "\"promptsCount\":100},\"gesture\":\"NO_GESTURE\",\"platform\":\"" +
+      kPlatformName +
+      "\"},\"permissionFeatures\":[{\"notificationPermission\":{},"
+      "\"permissionStats\":{\"avgDenyRate\":0.0,\"avgDismissRate\":0.0,"
+      "\"avgGrantRate\":0.0,\"avgIgnoreRate\":0.0,\"promptsCount\":0}}]}";
+
+  std::string expected_zero_counts =
+      "{\"clientFeatures\":{\"clientStats\":{\"avgDenyRate\":0.0,"
+      "\"avgDismissRate\":0.0,\"avgGrantRate\":0.0,\"avgIgnoreRate\":0.0,"
+      "\"promptsCount\":0},\"gesture\":\"GESTURE\",\"platform\":\"" +
+      kPlatformName +
+      "\"},\"permissionFeatures\":[{\"notificationPermission\":{},"
+      "\"permissionStats\":{\"avgDenyRate\":0.0,\"avgDismissRate\":0.0,"
+      "\"avgGrantRate\":0.0,\"avgIgnoreRate\":0.0,\"promptsCount\":0}}]}";
+
+  EXPECT_EQ(round_counts, expected_round_counts);
+  EXPECT_EQ(equal_counts, expected_equal_counts);
+  EXPECT_EQ(different_counts, expected_different_counts);
+  EXPECT_EQ(zero_counts, expected_zero_counts);
+
+  EXPECT_EQ(
+      GeneratePredictionsResponseJsonToMessage(
+          "{\"prediction\":[{\"notificationPrediction\":{},\"grantLikelihood\":"
+          "{\"discretizedLikelihood\":\"LIKELY\"}}]}")
+          ->prediction()[0]
+          .grant_likelihood()
+          .discretized_likelihood(),
+      PermissionPrediction_Likelihood_DiscretizedLikelihood_LIKELY);
+  EXPECT_EQ(
+      GeneratePredictionsResponseJsonToMessage(
+          "{\"prediction\":[{\"notificationPrediction\":{},\"grantLikelihood\":"
+          "{\"discretizedLikelihood\":\"UNLIKELY\"}}]}")
+          ->prediction()[0]
+          .grant_likelihood()
+          .discretized_likelihood(),
+      PermissionPrediction_Likelihood_DiscretizedLikelihood_UNLIKELY);
 }
 
 }  // namespace permissions

@@ -15,7 +15,7 @@ class Profile;
 
 namespace permissions {
 struct PredictionRequestFeatures;
-class GetSuggestionsResponse;
+class GeneratePredictionsResponse;
 }  // namespace permissions
 
 // Each instance of this class is long-lived and can support multiple requests,
@@ -49,7 +49,7 @@ class PredictionBasedPermissionUiSelector
   void LookupReponseReceived(
       bool lookup_succesful,
       bool response_from_cache,
-      std::unique_ptr<permissions::GetSuggestionsResponse> response);
+      std::unique_ptr<permissions::GeneratePredictionsResponse> response);
   bool IsAllowedToUseAssistedPrompts();
 
   void set_likelihood_override(PredictionGrantLikelihood mock_likelihood) {

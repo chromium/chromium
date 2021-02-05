@@ -23,6 +23,7 @@ namespace feature_params {
 extern const base::FeatureParam<bool> kOkButtonBehavesAsAllowAlways;
 extern const base::FeatureParam<std::string>
     kPermissionPredictionServiceUrlOverride;
+extern const base::FeatureParam<bool> kPermissionPredictionServiceUseJson;
 
 }  // namespace feature_params
 }  // namespace permissions

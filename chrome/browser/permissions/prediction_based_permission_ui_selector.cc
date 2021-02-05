@@ -26,7 +26,7 @@ using QuietUiReason = PredictionBasedPermissionUiSelector::QuietUiReason;
 using Decision = PredictionBasedPermissionUiSelector::Decision;
 
 constexpr auto VeryUnlikely = permissions::
-    PermissionSuggestion_Likelihood_DiscretizedLikelihood_VERY_UNLIKELY;
+    PermissionPrediction_Likelihood_DiscretizedLikelihood_VERY_UNLIKELY;
 
 // The data we consider can only be at most 28 days old to match the data that
 // the ML model is built on.
@@ -37,23 +37,23 @@ constexpr char kPermissionActionEntryActionKey[] = "action";
 constexpr char kPermissionActionEntryTimestampKey[] = "time";
 
 base::Optional<
-    permissions::PermissionSuggestion_Likelihood_DiscretizedLikelihood>
+    permissions::PermissionPrediction_Likelihood_DiscretizedLikelihood>
 ParsePredictionServiceMockLikelihood(const std::string& value) {
   if (value == "very-unlikely") {
     return permissions::
-        PermissionSuggestion_Likelihood_DiscretizedLikelihood_VERY_UNLIKELY;
+        PermissionPrediction_Likelihood_DiscretizedLikelihood_VERY_UNLIKELY;
   } else if (value == "unlikely") {
     return permissions::
-        PermissionSuggestion_Likelihood_DiscretizedLikelihood_UNLIKELY;
+        PermissionPrediction_Likelihood_DiscretizedLikelihood_UNLIKELY;
   } else if (value == "neutral") {
     return permissions::
-        PermissionSuggestion_Likelihood_DiscretizedLikelihood_NEUTRAL;
+        PermissionPrediction_Likelihood_DiscretizedLikelihood_NEUTRAL;
   } else if (value == "likely") {
     return permissions::
-        PermissionSuggestion_Likelihood_DiscretizedLikelihood_LIKELY;
+        PermissionPrediction_Likelihood_DiscretizedLikelihood_LIKELY;
   } else if (value == "very-likely") {
     return permissions::
-        PermissionSuggestion_Likelihood_DiscretizedLikelihood_VERY_LIKELY;
+        PermissionPrediction_Likelihood_DiscretizedLikelihood_VERY_LIKELY;
   }
 
   return base::nullopt;
@@ -180,15 +180,15 @@ PredictionBasedPermissionUiSelector::BuildPredictionRequestFeatures(
 void PredictionBasedPermissionUiSelector::LookupReponseReceived(
     bool lookup_succesful,
     bool response_from_cache,
-    std::unique_ptr<permissions::GetSuggestionsResponse> response) {
+    std::unique_ptr<permissions::GeneratePredictionsResponse> response) {
   request_.reset();
-  if (!lookup_succesful || !response || response->suggestion_size() == 0) {
+  if (!lookup_succesful || !response || response->prediction_size() == 0) {
     std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
     return;
   }
 
   last_request_grant_likelihood_ =
-      response->suggestion(0).grant_likelihood().discretized_likelihood();
+      response->prediction(0).grant_likelihood().discretized_likelihood();
 
   if (ShouldPredictionTriggerQuietUi(last_request_grant_likelihood_.value())) {
     std::move(callback_).Run(Decision(

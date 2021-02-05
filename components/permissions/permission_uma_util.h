@@ -194,7 +194,7 @@ enum class PermissionAutoRevocationHistory {
 class PermissionUmaUtil {
  public:
   using PredictionGrantLikelihood =
-      PermissionSuggestion_Likelihood_DiscretizedLikelihood;
+      PermissionPrediction_Likelihood_DiscretizedLikelihood;
 
   static const char kPermissionsPromptShown[];
   static const char kPermissionsPromptShownGesture[];

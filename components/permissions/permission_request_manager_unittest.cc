@@ -883,9 +883,9 @@ TEST_P(PermissionRequestManagerTest, SelectorsPredictionLikelihood) {
   using QuietUiReason = NotificationPermissionUiSelector::QuietUiReason;
   using PredictionLikelihood = PermissionUmaUtil::PredictionGrantLikelihood;
   const auto VeryLikely = PredictionLikelihood::
-      PermissionSuggestion_Likelihood_DiscretizedLikelihood_VERY_LIKELY;
+      PermissionPrediction_Likelihood_DiscretizedLikelihood_VERY_LIKELY;
   const auto Neutral = PredictionLikelihood::
-      PermissionSuggestion_Likelihood_DiscretizedLikelihood_NEUTRAL;
+      PermissionPrediction_Likelihood_DiscretizedLikelihood_NEUTRAL;
 
   const struct {
     std::vector<bool> enable_quiet_uis;

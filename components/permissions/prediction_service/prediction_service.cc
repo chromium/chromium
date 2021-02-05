@@ -37,13 +37,13 @@ permissions::ClientFeatures_Gesture ConvertToProtoGesture(
     case permissions::PermissionRequestGestureType::NO_GESTURE:
       return permissions::ClientFeatures_Gesture_NO_GESTURE;
     case permissions::PermissionRequestGestureType::UNKNOWN:
-      return permissions::ClientFeatures_Gesture_UNKNOWN_GESTURE;
+      return permissions::ClientFeatures_Gesture_GESTURE_UNSPECIFIED;
     case permissions::PermissionRequestGestureType::NUM:
       break;
   }
 
   NOTREACHED();
-  return permissions::ClientFeatures_Gesture_UNKNOWN_GESTURE;
+  return permissions::ClientFeatures_Gesture_GESTURE_UNSPECIFIED;
 }
 
 inline float GetRatioRoundedToTwoDecimals(int numerator, int denominator) {
@@ -106,6 +106,10 @@ net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag() {
     })");
 }
 
+bool ShouldUseJson() {
+  return permissions::feature_params::kPermissionPredictionServiceUseJson.Get();
+}
+
 }  // namespace
 
 namespace permissions {
@@ -121,7 +125,12 @@ void PredictionService::StartLookup(const PredictionRequestFeatures& entity,
   auto request = GetResourceRequest();
   auto proto_request = GetPredictionRequestProto(entity);
   std::string request_data;
-  proto_request->SerializeToString(&request_data);
+  if (ShouldUseJson()) {
+    request_data =
+        GeneratePredictionsRequestMessageToJson(*proto_request.get());
+  } else {
+    proto_request->SerializeToString(&request_data);
+  }
 
   SendRequestInternal(std::move(request), request_data, entity,
                       std::move(response_callback));
@@ -175,10 +184,10 @@ PredictionService::GetResourceRequest() {
   return request;
 }
 
-std::unique_ptr<GetSuggestionsRequest>
+std::unique_ptr<GeneratePredictionsRequest>
 PredictionService::GetPredictionRequestProto(
     const PredictionRequestFeatures& entity) {
-  auto proto_request = std::make_unique<GetSuggestionsRequest>();
+  auto proto_request = std::make_unique<GeneratePredictionsRequest>();
 
   ClientFeatures* client_features = proto_request->mutable_client_features();
   client_features->set_platform(GetCurrentPlatformProto());
@@ -211,7 +220,9 @@ void PredictionService::SendRequestInternal(
   std::unique_ptr<network::SimpleURLLoader> owned_loader =
       network::SimpleURLLoader::Create(std::move(request),
                                        GetTrafficAnnotationTag());
-  owned_loader->AttachStringForUpload(request_data, "application/x-protobuf");
+  owned_loader->AttachStringForUpload(
+      request_data,
+      ShouldUseJson() ? "application/json" : "application/x-protobuf");
 
   owned_loader->SetTimeoutDuration(kURLLookupTimeout);
   owned_loader->DownloadToString(
@@ -249,7 +260,7 @@ void PredictionService::OnURLLoaderComplete(
   NOTREACHED() << "Unexpected loader callback.";
 }
 
-std::unique_ptr<GetSuggestionsResponse>
+std::unique_ptr<GeneratePredictionsResponse>
 PredictionService::CreatePredictionsResponse(network::SimpleURLLoader* loader,
                                              const std::string* response_body) {
   if (!response_body || loader->NetError() != net::OK ||
@@ -257,13 +268,19 @@ PredictionService::CreatePredictionsResponse(network::SimpleURLLoader* loader,
     return nullptr;
   }
 
-  auto predictions_response = std::make_unique<GetSuggestionsResponse>();
-
-  if (predictions_response->ParseFromString(*response_body)) {
-    return predictions_response;
+  std::string mime_type;
+  if (loader->ResponseInfo()->headers->GetMimeType(&mime_type) &&
+      mime_type == "application/json") {
+    return GeneratePredictionsResponseJsonToMessage(*response_body);
   }
 
-  return nullptr;
+  std::unique_ptr<GeneratePredictionsResponse> predictions_response;
+  predictions_response = std::make_unique<GeneratePredictionsResponse>();
+  if (!predictions_response->ParseFromString(*response_body)) {
+    return nullptr;
+  }
+
+  return predictions_response;
 }
 
 }  // namespace permissions
