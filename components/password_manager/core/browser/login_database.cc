@@ -979,20 +979,6 @@ void LoginDatabase::ReportSyncingAccountStateMetrics(
                             4);
 }
 
-void LoginDatabase::ReportEmptyUsernamesMetrics() {
-  sql::Statement empty_usernames_statement(db_.GetCachedStatement(
-      SQL_FROM_HERE,
-      "SELECT COUNT(*) FROM logins "
-      "WHERE blacklisted_by_user=0 AND username_value=''"));
-  if (empty_usernames_statement.Step()) {
-    int empty_forms = empty_usernames_statement.ColumnInt(0);
-    base::UmaHistogramCounts100(
-        base::StrCat({kPasswordManager, GetMetricsSuffixForStore(),
-                      ".EmptyUsernames.CountInDatabase"}),
-        empty_forms);
-  }
-}
-
 void LoginDatabase::ReportLoginsWithSchemesMetrics() {
   sql::Statement logins_with_schemes_statement(db_.GetUniqueStatement(
       "SELECT signon_realm, origin_url, blacklisted_by_user FROM logins;"));
@@ -1127,7 +1113,6 @@ void LoginDatabase::ReportMetrics(const std::string& sync_username,
   ReportNumberOfAccountsMetrics(custom_passphrase_sync_enabled);
   ReportLoginsWithSchemesMetrics();
   ReportTimesPasswordUsedMetrics(custom_passphrase_sync_enabled);
-  ReportEmptyUsernamesMetrics();
   ReportInaccessiblePasswordsMetrics();
 
   // The remaining metrics are not recorded for the account store:

@@ -999,7 +999,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.DeleteUndecryptableLoginsReturnValue"
-    enum="DeleteCorruptedPasswordsResult" expires_after="M89">
+    enum="DeleteCorruptedPasswordsResult" expires_after="M93">
   <owner>vasilii@chromium.org</owner>
   <owner>jdoerrie@chromium.org</owner>
   <summary>
@@ -1045,6 +1045,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PasswordManager.EmptyUsernames.CountInDatabase" units="units"
     expires_after="M89">
+  <obsolete>
+    Obsolete since M90.
+  </obsolete>
   <owner>vasilii@chromium.org</owner>
   <owner>jdoerrie@chromium.org</owner>
   <summary>

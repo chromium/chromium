@@ -1624,8 +1624,6 @@ TEST_F(LoginDatabaseTest, ReportMetricsTest) {
       "PasswordManager.TimesPasswordUsed.Overall.WithoutCustomPassphrase", 3,
       2);
 
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.EmptyUsernames.CountInDatabase", 1, 1);
   histogram_tester.ExpectUniqueSample("PasswordManager.InaccessiblePasswords",
                                       0, 1);
 #if !defined(OS_IOS) && !defined(OS_ANDROID)
@@ -1745,8 +1743,6 @@ TEST_F(LoginDatabaseTest, ReportAccountStoreMetricsTest) {
       "WithoutCustomPassphrase",
       3, 2);
 
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.AccountStore.EmptyUsernames.CountInDatabase", 1, 1);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.AccountStore.InaccessiblePasswords", 0, 1);
 }
