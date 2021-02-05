@@ -83,6 +83,7 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
     dbus::Property<std::vector<dbus::ObjectPath>>& pending_carrier_profiles() {
       return pending_carrier_profiles_;
     }
+    dbus::Property<uint32_t>& physical_slot() { return physical_slot_; }
 
    private:
     // EID of the Euicc.
@@ -97,6 +98,9 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
     // List of pending carrier profiles from SMDS available for
     // installation on this device.
     dbus::Property<std::vector<dbus::ObjectPath>> pending_carrier_profiles_;
+
+    // Physical slot number of the Euicc.
+    dbus::Property<uint32_t> physical_slot_;
   };
 
   // Interface for observing Hermes Euicc changes.

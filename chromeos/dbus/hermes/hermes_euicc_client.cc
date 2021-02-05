@@ -34,6 +34,7 @@ HermesEuiccClient::Properties::Properties(
                    &installed_carrier_profiles_);
   RegisterProperty(hermes::euicc::kPendingProfilesProperty,
                    &pending_carrier_profiles_);
+  RegisterProperty(hermes::euicc::kPhysicalSlotProperty, &physical_slot_);
 }
 
 HermesEuiccClient::Properties::~Properties() = default;
