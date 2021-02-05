@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 #
 # Copyright 2019 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -9,8 +9,9 @@ __author__ = "dalecurtis@chromium.org (Dale Curtis)"
 
 import datetime
 import glob
+import os
 
-COPYRIGHT = """# Copyright %d The Chromium Authors. All rights reserved.
+_COPYRIGHT = """# Copyright %d The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -20,14 +21,19 @@ COPYRIGHT = """# Copyright %d The Chromium Authors. All rights reserved.
     datetime.datetime.now().year)
 
 # .c files which don't need -DBIT_DEPTH specified for each compilation.
-DAV1D_ENTRY_POINT_SOURCES = [
+_DAV1D_ENTRY_POINT_SOURCES = [
     "libdav1d/src/lib.c",
     "libdav1d/src/thread_task.c",
     "libdav1d/src/thread_task.h",
 ]
 
 
-def WriteArray(fd, var_name, array, filter_list=[], last_entry=False):
+def _Glob(pattern):
+  # Replace path separator. Needed when running on Windows.
+  return  [i.replace(os.sep, '/') for i in glob.glob(pattern)]
+
+
+def _WriteArray(fd, var_name, array, filter_list=[], last_entry=False):
   if len(array) == 0:
     fd.write("var_name = []\n")
     return
@@ -41,31 +47,33 @@ def WriteArray(fd, var_name, array, filter_list=[], last_entry=False):
     fd.write("\n")
 
 
-def WriteGn(fd):
-  fd.write(COPYRIGHT)
-  WriteArray(fd, "x86_asm_sources", glob.glob("libdav1d/src/x86/*.asm"))
-  WriteArray(fd, "x86_template_sources", glob.glob("libdav1d/src/x86/*_tmpl.c"))
+def _WriteGn(fd):
+  fd.write(_COPYRIGHT)
+  _WriteArray(fd, "x86_asm_sources", _Glob("libdav1d/src/x86/*.asm"))
+  _WriteArray(fd, "x86_template_sources", _Glob("libdav1d/src/x86/*_tmpl.c"))
 
   # TODO(dalecurtis): May want to exclude "util.S" here.
-  WriteArray(fd, "arm32_asm_sources", glob.glob("libdav1d/src/arm/32/*.S"))
-  WriteArray(fd, "arm64_asm_sources", glob.glob("libdav1d/src/arm/64/*.S"))
-  WriteArray(fd, "arm_template_sources", glob.glob("libdav1d/src/arm/*_tmpl.c"))
+  _WriteArray(fd, "arm32_asm_sources", _Glob("libdav1d/src/arm/32/*.S"))
+  _WriteArray(fd, "arm64_asm_sources", _Glob("libdav1d/src/arm/64/*.S"))
+  _WriteArray(fd, "arm_template_sources", _Glob("libdav1d/src/arm/*_tmpl.c"))
 
-  template_sources = glob.glob("libdav1d/src/*_tmpl.c")
-  WriteArray(fd, "template_sources", template_sources)
+  template_sources = _Glob("libdav1d/src/*_tmpl.c")
+  _WriteArray(fd, "template_sources", template_sources)
 
   # Generate list of sources which need to be compiled multiple times with the
   # correct -DBIT_DEPTH=8|10 option specified each time.
-  WriteArray(fd, "c_sources", glob.glob("libdav1d/src/*.[c|h]"),
-             DAV1D_ENTRY_POINT_SOURCES + template_sources)
+  _WriteArray(fd, "c_headers", _Glob("libdav1d/src/*.h"),
+             _DAV1D_ENTRY_POINT_SOURCES + template_sources)
+  _WriteArray(fd, "c_sources", _Glob("libdav1d/src/*.c"),
+             _DAV1D_ENTRY_POINT_SOURCES + template_sources)
 
-  WriteArray(
-      fd, "entry_point_sources", DAV1D_ENTRY_POINT_SOURCES, last_entry=True)
+  _WriteArray(
+      fd, "entry_point_sources", _DAV1D_ENTRY_POINT_SOURCES, last_entry=True)
 
 
 def main():
-  with open("dav1d_generated.gni", "w") as fd:
-    WriteGn(fd)
+  with open("dav1d_generated.gni", "wb") as fd:
+    _WriteGn(fd)
 
 
 if __name__ == "__main__":

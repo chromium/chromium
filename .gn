@@ -162,7 +162,6 @@ no_check_targets = [
   "//third_party/crashpad/crashpad/snapshot:*",  # 1 error
   "//third_party/crashpad/crashpad/test:*",  # 2 errors
   "//third_party/crashpad/crashpad/util:*",  # 2 errors
-  "//third_party/dav1d:*",  # 95 errors
   "//third_party/ffmpeg:*",  # 1 error
   "//third_party/icu/*",
   "//third_party/libvpx:*",  # 164 errors

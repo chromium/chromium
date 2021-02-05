@@ -152,6 +152,16 @@ if (enable_nasm) {
   }
 }
 
+source_set("dav1d_headers") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    ":dav1d_config",
+  ]
+
+  sources = c_headers
+}
+
 static_library("dav1d_entrypoints") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
@@ -168,6 +178,8 @@ static_library("dav1d_entrypoints") {
   if (needs_stack_alignment) {
     cflags += [ stackrealign_flag ]
   }
+
+  deps = [ ":dav1d_headers" ]
 }
 
 static_library("dav1d_8bit") {
@@ -188,6 +200,8 @@ static_library("dav1d_8bit") {
 
   cflags = dav1d_copts
   cflags += [ "-DBITDEPTH=8" ]
+
+  deps = [ ":dav1d_headers" ]
 }
 
 static_library("dav1d_10bit") {
@@ -216,6 +230,8 @@ static_library("dav1d_10bit") {
 
   cflags = dav1d_copts
   cflags += [ "-DBITDEPTH=16" ]
+
+  deps = [ ":dav1d_headers" ]
 }
 
 if (current_cpu == "x86" || current_cpu == "x64") {
@@ -237,6 +253,9 @@ if (current_cpu == "x86" || current_cpu == "x64") {
       ":dav1d_config",
     ]
     cflags = dav1d_copts
+
+    deps = [ ":dav1d_headers" ]
+    allow_circular_includes_from = [ ":dav1d_headers" ]
   }
 } else if (current_cpu == "arm" || current_cpu == "arm64") {
   static_library("dav1d_arm") {
@@ -264,6 +283,9 @@ if (current_cpu == "x86" || current_cpu == "x64") {
     }
 
     cflags = dav1d_copts
+
+    deps = [ ":dav1d_headers" ]
+    allow_circular_includes_from = [ ":dav1d_headers" ]
   }
 }
 
@@ -281,6 +303,7 @@ static_library("dav1d") {
     ":dav1d_10bit",
     ":dav1d_8bit",
     ":dav1d_entrypoints",
+    ":dav1d_headers",
   ]
 
   public_configs = [ ":public_dav1d_config" ]
