@@ -21,6 +21,13 @@ export const EMOJI_BUTTON_EVENT = 'emoji-button';
 /**
  * @typedef {!CustomEvent}
  */
+export let ShowVariantsEvent;
+
+export const SHOW_VARIANTS_EVENT = 'emoji-variants-event';
+
+/**
+ * @typedef {!CustomEvent}
+ */
 export let DataLoadedEvent;
 
 export const DATA_LOADED_EVENT = 'data-loaded';

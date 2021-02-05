@@ -10,7 +10,8 @@ import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {createCustomEvent, DATA_LOADED_EVENT, EMOJI_BUTTON_EVENT, GROUP_BUTTON_EVENT} from './events.js';
+import {EmojiButton} from './emoji_button.js';
+import {createCustomEvent, DATA_LOADED_EVENT, EMOJI_BUTTON_EVENT, GROUP_BUTTON_EVENT, SHOW_VARIANTS_EVENT} from './events.js';
 import {RecentEmojiStore} from './store.js';
 import {Codepoints, Emoji, EmojiData, EmojiGroup} from './types.js';
 
@@ -79,6 +80,9 @@ export class EmojiPicker extends PolymerElement {
 
     /** @type {?number} */
     this.scrollTimeout = null;
+
+    /** @type {?EmojiButton} */
+    this.activeVariant = null;
   }
 
   ready() {
@@ -93,6 +97,9 @@ export class EmojiPicker extends PolymerElement {
         GROUP_BUTTON_EVENT, ev => this.selectGroup(ev.detail.group));
     this.addEventListener(
         EMOJI_BUTTON_EVENT, ev => this.insertEmoji(ev.detail.emoji));
+    this.addEventListener(
+        SHOW_VARIANTS_EVENT, ev => this.onShowEmojiVariants(ev));
+    this.addEventListener('click', () => this.hideEmojiVariants());
   }
 
   /**
@@ -152,6 +159,21 @@ export class EmojiPicker extends PolymerElement {
     this.shadowRoot
         .querySelector(`emoji-group-button[data-group="${activeGroupId}"]`)
         .scrollIntoView();
+  }
+
+
+  hideEmojiVariants() {
+    if (this.activeVariant) {
+      this.activeVariant.variantsVisible = false;
+      this.activeVariant = null;
+    }
+  }
+
+  onShowEmojiVariants(ev) {
+    const el = ev.path[0];
+    assert(el.tagName === 'EMOJI-BUTTON');
+    this.hideEmojiVariants();
+    this.activeVariant = el;
   }
 
 

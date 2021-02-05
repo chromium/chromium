@@ -46,7 +46,7 @@ function partitionArray(array, subarrayLengths) {
   return subarrays;
 }
 
-class EmojiVariants extends PolymerElement {
+export class EmojiVariants extends PolymerElement {
   static get is() {
     return 'emoji-variants';
   }

@@ -36,16 +36,25 @@ export function deepQuerySelector(root, path) {
  * Constructs a promise which resolves when the given condition function
  * evaluates to a truthy value.
  * @param {!function(): T} condition condition function to check.
- * @param {number=} interval polling interval in milliseconds.
+ * @param {string=} message error message to show when maxWait reached.
+ * @param {number=} maxWait maximum wait time in ms.
  * @return {!Promise<T>} promise resolving to truthy return value of condition.
  * @template T return type of condition function.
  */
-export async function waitForCondition(condition, interval = 10) {
+export async function waitForCondition(condition, message, maxWait = 5000) {
+  const interval = 10;
+  let waiting = 0;
+
   /** @type {T} */
   let result;
-  while (!(result = condition())) {
+  while (!(result = condition()) && waiting < maxWait) {
     await timeout(interval);
+    waiting += interval;
   }
+  assert(
+      result,
+      message || 'waitForCondition timed out after ' + maxWait + ' ms.');
+
   return result;
 }
 
@@ -56,4 +65,22 @@ export async function waitForCondition(condition, interval = 10) {
  */
 export function timeout(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+/**
+ * Simulates a mouse click event on the given element.
+ * @param {!Element} element element to right click.
+ * @param {!number} button button number for event.
+ * @param {!string=} eventType event type to dispatch.
+ */
+export function dispatchMouseEvent(element, button, eventType = 'mouseup') {
+  element.dispatchEvent(new MouseEvent(eventType, {
+    bubbles: true,
+    cancelable: true,
+    view: window,
+    button: button,
+    buttons: 0,
+    clientX: element.getBoundingClientRect().x,
+    clientY: element.getBoundingClientRect().y
+  }));
 }

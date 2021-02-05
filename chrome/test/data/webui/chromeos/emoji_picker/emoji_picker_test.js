@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {EmojiButton} from 'chrome://emoji-picker/emoji_button.js';
 import {EmojiPicker} from 'chrome://emoji-picker/emoji_picker.js';
+import {EmojiVariants} from 'chrome://emoji-picker/emoji_variants.js';
 import {DATA_LOADED_EVENT} from 'chrome://emoji-picker/events.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertGT} from '../../chai_assert.js';
 
-import {deepQuerySelector, waitForCondition} from './emoji_picker_test_util.js';
+import {assertGT} from '../../chai_assert.js';
+import {deepQuerySelector, dispatchMouseEvent, waitForCondition} from './emoji_picker_test_util.js';
 
 const ACTIVE_CLASS = 'emoji-group-active';
 
@@ -111,5 +113,62 @@ suite('<emoji-picker>', () => {
     // check text is correct.
     const recentText = recentlyUsed.innerText;
     assert(recentText.includes(String.fromCodePoint(128512)));
+  });
+
+
+  suite('<emoji-variants>', () => {
+    /** @type {!EmojiButton} */
+    let emojiButton;
+    /** @type {function(!EmojiButton): ?EmojiVariants} */
+    const findEmojiVariants = el => {
+      const variants =
+          /** @type {?EmojiVariants} */ (el.querySelector('emoji-variants'));
+      return variants && variants.style.display !== 'none' ? variants : null;
+    };
+
+    setup(async () => {
+      emojiButton = await waitForCondition(
+          () => findInEmojiPicker(
+              ['[data-group="0"] > emoji-group', 'emoji-button:nth-child(2)']));
+
+      // right click and wait for variants to appear.
+      dispatchMouseEvent(emojiButton.querySelector('button'), 2);
+      await waitForCondition(
+          () => findEmojiVariants(emojiButton),
+          'emoji-variants failed to appear.');
+    });
+
+    test('right clicking emoji again should close popup', async () => {
+      // right click again and variants should disappear.
+      dispatchMouseEvent(emojiButton.querySelector('button'), 2);
+      await waitForCondition(
+          () => !findEmojiVariants(emojiButton),
+          'emoji-variants failed to disappear.');
+    });
+
+    test('clicking elsewhere should close popup', async () => {
+      // click in some empty space of main emoji picker.
+      emojiPicker.click();
+
+      await waitForCondition(
+          () => !findEmojiVariants(emojiButton),
+          'emoji-variants failed to disappear.');
+    });
+
+    test('opening different variants should close first variants', async () => {
+      const emojiButton2 = await waitForCondition(
+          () => findInEmojiPicker(
+              ['[data-group="0"] > emoji-group', 'emoji-button:nth-child(3)']));
+
+      // right click on second emoji button
+      dispatchMouseEvent(emojiButton2.querySelector('button'), 2);
+      // ensure first popup disappears and second popup appears.
+      await waitForCondition(
+          () => !findEmojiVariants(emojiButton),
+          'first emoji-variants failed to disappear.');
+      await waitForCondition(
+          () => findEmojiVariants(emojiButton2),
+          'second emoji-variants failed to appear.');
+    });
   });
 });
