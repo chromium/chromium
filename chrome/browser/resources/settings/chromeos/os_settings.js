@@ -60,6 +60,7 @@ import './os_apps_page/app_management_page/icons.m.js';
 import './os_apps_page/app_management_page/main_view.m.js';
 import './os_apps_page/app_management_page/permission_item.m.js';
 import './os_apps_page/app_management_page/pin_to_shelf_item.m.js';
+import './os_apps_page/app_management_page/plugin_vm_page/plugin_vm_detail_view.m.js';
 import './os_apps_page/app_management_page/pwa_detail_view.m.js';
 import './os_apps_page/app_management_page/shared_style.m.js';
 import './os_apps_page/app_management_page/shared_vars.m.js';
@@ -106,6 +107,7 @@ export {FakePageHandler} from './os_apps_page/app_management_page/fake_page_hand
 export {reduceAction} from './os_apps_page/app_management_page/reducers.m.js';
 export {AppManagementStore} from './os_apps_page/app_management_page/store.m.js';
 export {convertOptionalBoolToBool, createEmptyState, createPermission, getPermissionValueBool} from './os_apps_page/app_management_page/util.m.js';
+export {PluginVmBrowserProxyImpl} from './os_apps_page/app_management_page/plugin_vm_page/plugin_vm_browser_proxy.m.js';
 export {OsSyncBrowserProxyImpl} from './os_people_page/os_sync_browser_proxy.m.js';
 export {OsResetBrowserProxyImpl} from './os_reset_page/os_reset_browser_proxy.m.js';
 export {routes} from './os_route.m.js';

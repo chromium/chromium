@@ -413,6 +413,8 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/os_apps_page/app_management_page/main_view.m.js",
     "chromeos/os_apps_page/app_management_page/permission_item.m.js",
     "chromeos/os_apps_page/app_management_page/pin_to_shelf_item.m.js",
+    "chromeos/os_apps_page/app_management_page/plugin_vm_page/plugin_vm_browser_proxy.m.js",
+    "chromeos/os_apps_page/app_management_page/plugin_vm_page/plugin_vm_detail_view.m.js",
     "chromeos/os_apps_page/app_management_page/pwa_detail_view.m.js",
     "chromeos/os_apps_page/app_management_page/reducers.m.js",
     "chromeos/os_apps_page/app_management_page/shared_style.m.js",
@@ -1209,8 +1211,7 @@ group("closure_compile_module") {
     "os_a11y_page:closure_compile_module",
     "os_about_page:closure_compile_module",
     "os_apps_page/app_management_page:closure_compile_module",
-
-    # "os_apps_page/app_management_page/plugin_vm_page:closure_compile_module",
+    "os_apps_page/app_management_page/plugin_vm_page:closure_compile_module",
     "os_files_page:closure_compile_module",
     "os_languages_page:closure_compile_module",
     "os_people_page:closure_compile_module",

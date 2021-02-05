@@ -204,7 +204,7 @@ os_settings_auto_imports = settings_auto_imports +
                              "chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/util.html|getSelectedApp,openMainPage,recordAppManagementUserAction,openAppDetailPage,getAppIcon,getPermission,getPermissionValueBool,createPermission,permissionTypeHandle,toggleOptionalBool,convertOptionalBoolToBool,alphabeticalSort",
                              "chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/store_client.html|AppManagementStoreClient",
                              "chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/store.html|AppManagementStore",
-                             "chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/plugin_vm_page/plugin_vm_browser_proxy.html|PluginVmBrowserProxyImpl,PluginVmSharedUsbDevice,PluginVmBrowserProxy",
+                             "chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/plugin_vm_page/plugin_vm_browser_proxy.html|PluginVmBrowserProxyImpl,PluginVmBrowserProxy",
                              "chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/constants.html|Bool,PwaPermissionType,PluginVmPermissionType,ArcPermissionType,AppType,OptionalBool,PermissionValueType,TriState,InstallSource,AppManagementUserAction,AppManagementEntryPointsHistogramName,AppManagementEntryPoint",
                            ]
 

@@ -210,6 +210,7 @@ TEST_F(
  ['AppManagementPwaDetailView', 'pwa_detail_view_test.m.js'],
  ['AppManagementPermissionItem', 'permission_item_test.m.js'],
  ['AppManagementPinToShelfItem', 'pin_to_shelf_item_test.m.js'],
+ ['AppManagementPluginVmDetailView', 'plugin_vm_detail_view_test.m.js'],
  ['AppManagementToggleRow', 'toggle_row_test.m.js'],
  ['AppManagementUninstallButton', 'uninstall_button_test.m.js'],
  ['AppManagementManagedApp', 'managed_apps_test.m.js'],

@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {sendWithPromise, addSingletonGetter} from 'chrome://resources/js/cr.m.js';
+// clang-format on
+
 /**
  * These values should remain consistent with their C++ counterpart
  * (chrome/browser/chromeos/plugin_vm/plugin_vm_manager.h).
@@ -24,7 +28,7 @@ let PermissionSetting;
  */
 cr.define('settings', function() {
   /** @interface */
-  class PluginVmBrowserProxy {
+  /* #export */ class PluginVmBrowserProxy {
     /**
      * @return {!Promise<boolean>} Whether Plugin VM needs to be relaunched for
      *     permissions to take effect.
@@ -38,7 +42,7 @@ cr.define('settings', function() {
   }
 
   /** @implements {settings.PluginVmBrowserProxy} */
-  class PluginVmBrowserProxyImpl {
+  /* #export */ class PluginVmBrowserProxyImpl {
     /** @override */
     isRelaunchNeededForNewPermissions() {
       return cr.sendWithPromise('isRelaunchNeededForNewPermissions');
