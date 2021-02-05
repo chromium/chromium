@@ -153,6 +153,11 @@ void PersonalDataManagerCleaner::RemoveOrphanAutofillTableRows() {
 }
 
 bool PersonalDataManagerCleaner::ApplyDedupingRoutine() {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillEnableProfileDeduplication)) {
+    return false;
+  }
+
   // Check if de-duplication has already been performed on this major version.
   if (!is_autofill_profile_cleanup_pending_) {
     DVLOG(1)

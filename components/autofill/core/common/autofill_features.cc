@@ -141,6 +141,11 @@ const base::Feature kAutofillEnablePasswordInfoBarAccountIndicationFooter{
     "AutofillEnablePasswordInfoBarAccountIndicationFooter",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// When enabled, the address profile deduplication logic runs after the browser
+// startup, once per chrome version.
+const base::Feature kAutofillEnableProfileDeduplication{
+    "AutofillEnableProfileDeduplication", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls if Autofill supports new structure in names.
 // TODO(crbug.com/1098943): Remove once launched.
 const base::Feature kAutofillEnableSupportForMoreStructureInNames{

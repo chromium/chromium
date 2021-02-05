@@ -4762,6 +4762,9 @@ TEST_F(PersonalDataManagerTest, UpdateCardsBillingAddressReference) {
 // based on the deduped profiles.
 TEST_F(PersonalDataManagerTest,
        ApplyDedupingRoutine_CardsBillingAddressIdUpdated) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(features::kAutofillEnableProfileDeduplication);
+
   // A set of 6 profiles will be created. They should merge in this way:
   //  1 -> 2 -> 3
   //  4 -> 5
@@ -4899,6 +4902,9 @@ TEST_F(PersonalDataManagerTest,
 // never lose information and keep the syntax of the profile with the higher
 // frecency score.
 TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MergedProfileValues) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(features::kAutofillEnableProfileDeduplication);
+
   // Create a profile with a higher frecency score.
   AutofillProfile profile1(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(&profile1, "Homer", "J", "Simpson",
@@ -4984,6 +4990,9 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MergedProfileValues) {
 // original data when deduping with similar profiles, even if it has a higher
 // frecency score.
 TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_VerifiedProfileFirst) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(features::kAutofillEnableProfileDeduplication);
+
   // Create a verified profile with a higher frecency score.
   AutofillProfile profile1(base::GenerateGUID(), kSettingsOrigin);
   test::SetProfileInfo(&profile1, "Homer", "Jay", "Simpson",
@@ -5045,6 +5054,9 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_VerifiedProfileFirst) {
 // original data when deduping with similar profiles, even if it has a lower
 // frecency score.
 TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_VerifiedProfileLast) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(features::kAutofillEnableProfileDeduplication);
+
   // Create a profile to dedupe with a higher frecency score.
   AutofillProfile profile1(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(&profile1, "Homer", "J", "Simpson",
@@ -5105,6 +5117,9 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_VerifiedProfileLast) {
 // Tests that ApplyDedupingRoutine does not merge unverified data into
 // a verified profile. Also tests that two verified profiles don't get merged.
 TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MultipleVerifiedProfiles) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(features::kAutofillEnableProfileDeduplication);
+
   // Create a profile to dedupe with a higher frecency score.
   AutofillProfile profile1(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(&profile1, "Homer", "J", "Simpson",
@@ -5175,6 +5190,9 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MultipleVerifiedProfiles) {
 // that the resulting profiles have the right values, has no effect on the other
 // profiles and that the data of verified profiles is not modified.
 TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MultipleDedupes) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(features::kAutofillEnableProfileDeduplication);
+
   // Create a Homer home profile with a higher frecency score than other Homer
   // profiles.
   AutofillProfile Homer1(base::GenerateGUID(), test::kEmptyOrigin);
@@ -5310,12 +5328,17 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MultipleDedupes) {
 }
 
 TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_NopIfZeroProfiles) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(features::kAutofillEnableProfileDeduplication);
   EXPECT_TRUE(personal_data_->GetProfiles().empty());
   EXPECT_FALSE(personal_data_->personal_data_manager_cleaner_for_testing()
                    ->ApplyDedupingRoutineForTesting());
 }
 
 TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_NopIfOneProfile) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(features::kAutofillEnableProfileDeduplication);
+
   // Create a profile to dedupe.
   AutofillProfile profile(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(&profile, "Homer", "J", "Simpson",
@@ -5332,6 +5355,9 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_NopIfOneProfile) {
 // Tests that ApplyDedupingRoutine is not run a second time on the same major
 // version.
 TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_OncePerVersion) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(features::kAutofillEnableProfileDeduplication);
+
   // Create a profile to dedupe.
   AutofillProfile profile1(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(&profile1, "Homer", "J", "Simpson",
