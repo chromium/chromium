@@ -30,9 +30,9 @@ InsecureCredentialsReader::InsecureCredentialsReader(
 InsecureCredentialsReader::~InsecureCredentialsReader() = default;
 
 void InsecureCredentialsReader::Init() {
-  profile_store_->GetAllCompromisedCredentials(this);
+  profile_store_->GetAllInsecureCredentials(this);
   if (account_store_)
-    account_store_->GetAllCompromisedCredentials(this);
+    account_store_->GetAllInsecureCredentials(this);
 }
 
 void InsecureCredentialsReader::OnInsecureCredentialsChanged() {
@@ -44,7 +44,7 @@ void InsecureCredentialsReader::OnInsecureCredentialsChanged() {
 
 void InsecureCredentialsReader::OnInsecureCredentialsChangedIn(
     PasswordStore* store) {
-  store->GetAllCompromisedCredentials(this);
+  store->GetAllInsecureCredentials(this);
 }
 
 void InsecureCredentialsReader::OnGetCompromisedCredentials(
@@ -103,10 +103,10 @@ void InsecureCredentialsReader::GetAllInsecureCredentials(
   get_all_insecure_credentials_callbacks_.push_back(std::move(cb));
 
   if (!profile_store_responded_)
-    profile_store_->GetAllCompromisedCredentials(this);
+    profile_store_->GetAllInsecureCredentials(this);
   if (!account_store_responded_) {
     DCHECK(account_store_);
-    account_store_->GetAllCompromisedCredentials(this);
+    account_store_->GetAllInsecureCredentials(this);
   }
 }
 

@@ -613,7 +613,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestReauthOnGetPlaintextCompPassword) {
   compromised_credentials.signon_realm = form.signon_realm;
   compromised_credentials.username = form.username_value;
   store_->AddLogin(form);
-  store_->AddCompromisedCredentials(compromised_credentials);
+  store_->AddInsecureCredential(compromised_credentials);
   base::RunLoop().RunUntilIdle();
 
   api::passwords_private::InsecureCredential credential =

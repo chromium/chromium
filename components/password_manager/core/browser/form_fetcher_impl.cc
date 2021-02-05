@@ -123,8 +123,8 @@ void FormFetcherImpl::Fetch() {
   password_store->GetSiteStats(form_digest_.url.GetOrigin(), this);
 
   // The desktop bubble needs this information.
-  password_store->GetMatchingCompromisedCredentials(form_digest_.signon_realm,
-                                                    this);
+  password_store->GetMatchingInsecureCredentials(form_digest_.signon_realm,
+                                                 this);
 #endif
 }
 

@@ -153,7 +153,7 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
   void ChangePasswordCheckState(PasswordCheckUIState state) {
     PasswordsTableViewController* passwords_controller =
         static_cast<PasswordsTableViewController*>(controller());
-    NSInteger count = GetTestStore().compromised_credentials().size();
+    NSInteger count = GetTestStore().insecure_credentials().size();
     [passwords_controller setPasswordCheckUIState:state
                         compromisedPasswordsCount:count];
   }
@@ -240,7 +240,7 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
   }
 
   void AddCompromisedCredential1() {
-    GetTestStore().AddCompromisedCredentials(
+    GetTestStore().AddInsecureCredential(
         MakeCompromised("http://www.example.com/", "test@egmail.com"));
     RunUntilIdle();
   }

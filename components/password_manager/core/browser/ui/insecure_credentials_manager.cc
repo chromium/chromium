@@ -262,7 +262,7 @@ void InsecureCredentialsManager::SaveCompromisedCredential(
         CanonicalizeUsername(saved_password.username_value) ==
             canonicalized_username) {
       GetStoreFor(saved_password)
-          .AddCompromisedCredentials(InsecureCredential(
+          .AddInsecureCredential(InsecureCredential(
               saved_password.signon_realm, saved_password.username_value,
               base::Time::Now(), InsecureType::kLeaked, IsMuted(false)));
     }

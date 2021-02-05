@@ -275,7 +275,7 @@ TEST_F(PasswordCheckManagerTest, OnCompromisedCredentialsChanged) {
   RunUntilIdle();
 
   EXPECT_CALL(mock_observer(), OnCompromisedCredentialsChanged(1));
-  store().AddCompromisedCredentials(MakeCompromised(kExampleCom, kUsername1));
+  store().AddInsecureCredential(MakeCompromised(kExampleCom, kUsername1));
   RunUntilIdle();
 }
 
@@ -341,7 +341,7 @@ TEST_F(PasswordCheckManagerTest,
 TEST_F(PasswordCheckManagerTest, CorrectlyCreatesUIStructForSiteCredential) {
   InitializeManager();
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1));
-  store().AddCompromisedCredentials(MakeCompromised(kExampleCom, kUsername1));
+  store().AddInsecureCredential(MakeCompromised(kExampleCom, kUsername1));
   RunUntilIdle();
   EXPECT_THAT(
       manager().GetCompromisedCredentials(),
@@ -361,9 +361,9 @@ TEST_F(PasswordCheckManagerTest, CorrectlyCreatesUIStructForAppCredentials) {
   // A credential for which affiliation information is known.
   store().AddLogin(MakeSavedAndroidPassword(kExampleApp, kUsername2,
                                             "Example App", kExampleCom));
-  store().AddCompromisedCredentials(
+  store().AddInsecureCredential(
       MakeCompromised(MakeAndroidRealm(kExampleApp), kUsername1));
-  store().AddCompromisedCredentials(
+  store().AddInsecureCredential(
       MakeCompromised(MakeAndroidRealm(kExampleApp), kUsername2));
 
   RunUntilIdle();
@@ -424,7 +424,7 @@ TEST_F(PasswordCheckManagerTest,
        password_manager::features::kPasswordChangeInSettings},
       {});
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1));
-  store().AddCompromisedCredentials(MakeCompromised(kExampleCom, kUsername1));
+  store().AddInsecureCredential(MakeCompromised(kExampleCom, kUsername1));
 
   RunUntilIdle();
   // To have precise metrics, scripts are not requested for users who cannot
@@ -455,7 +455,7 @@ TEST_F(PasswordCheckManagerTest,
        password_manager::features::kPasswordChangeInSettings},
       {});
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1));
-  store().AddCompromisedCredentials(MakeCompromised(kExampleCom, kUsername1));
+  store().AddInsecureCredential(MakeCompromised(kExampleCom, kUsername1));
 
   RunUntilIdle();
   EXPECT_CALL(fetcher(), RefreshScriptsIfNecessary)
@@ -486,7 +486,7 @@ TEST_F(PasswordCheckManagerTest,
        password_manager::features::kPasswordChangeInSettings},
       {});
   store().AddLogin(MakeSavedPassword(kExampleCom, ""));
-  store().AddCompromisedCredentials(MakeCompromised(kExampleCom, ""));
+  store().AddInsecureCredential(MakeCompromised(kExampleCom, ""));
 
   RunUntilIdle();
   EXPECT_CALL(fetcher(), RefreshScriptsIfNecessary)
@@ -520,7 +520,7 @@ TEST_F(PasswordCheckManagerTest,
       /*disabled_features=*/{
           password_manager::features::kPasswordChangeInSettings});
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1));
-  store().AddCompromisedCredentials(MakeCompromised(kExampleCom, kUsername1));
+  store().AddInsecureCredential(MakeCompromised(kExampleCom, kUsername1));
 
   RunUntilIdle();
   EXPECT_CALL(fetcher(), RefreshScriptsIfNecessary)
@@ -553,7 +553,7 @@ TEST_F(PasswordCheckManagerTest,
        password_manager::features::kPasswordChangeInSettings},
       {});
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1));
-  store().AddCompromisedCredentials(MakeCompromised(kExampleCom, kUsername1));
+  store().AddInsecureCredential(MakeCompromised(kExampleCom, kUsername1));
 
   RunUntilIdle();
   EXPECT_CALL(fetcher(), RefreshScriptsIfNecessary)

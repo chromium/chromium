@@ -346,8 +346,7 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
       {"https://example.test", base::ASCIIToUTF16("username1")}};
   service->set_saved_passwords_matching_reused_credentials({credentials});
 
-  EXPECT_CALL(*password_store, RemoveCompromisedCredentialsImpl(_, _, _))
-      .Times(1);
+  EXPECT_CALL(*password_store, RemoveInsecureCredentialsImpl(_, _, _)).Times(1);
   // Simulates clicking on "Mark site legitimate". Site is no longer dangerous.
   service->OnUserAction(web_contents, account_type, RequestOutcome::UNKNOWN,
                         LoginReputationClientResponse::VERDICT_TYPE_UNSPECIFIED,

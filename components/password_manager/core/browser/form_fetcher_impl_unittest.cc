@@ -494,7 +494,7 @@ TEST_P(FormFetcherImplTest, FetchCompromised) {
       base::Time::FromTimeT(1), InsecureType::kLeaked, IsMuted(false));
   std::vector<CompromisedCredentials> list = {credentials};
   EXPECT_CALL(*mock_store_,
-              GetMatchingCompromisedCredentialsImpl(form_digest_.signon_realm))
+              GetMatchingInsecureCredentialsImpl(form_digest_.signon_realm))
       .WillOnce(Return(list));
   form_fetcher_->Fetch();
   task_environment_.RunUntilIdle();
@@ -511,7 +511,7 @@ TEST_P(FormFetcherImplTest, DontFetchStatistics) {
 }
 
 TEST_P(FormFetcherImplTest, DontFetchCompromised) {
-  EXPECT_CALL(*mock_store_, GetMatchingCompromisedCredentialsImpl).Times(0);
+  EXPECT_CALL(*mock_store_, GetMatchingInsecureCredentialsImpl).Times(0);
   form_fetcher_->Fetch();
   task_environment_.RunUntilIdle();
 }

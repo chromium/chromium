@@ -157,7 +157,7 @@ void ManagePasswordsTest::SetupMoreToFixState() {
       "https://somesite.com/", ASCIIToUTF16(kTestUsername), base::Time(),
       password_manager::InsecureType::kLeaked,
       password_manager::IsMuted(false));
-  password_store->AddCompromisedCredentials(compromised);
+  password_store->AddInsecureCredential(compromised);
   SetupPendingPassword();
   GetController()->SavePassword(password_form_.username_value,
                                 password_form_.password_value);
@@ -181,8 +181,8 @@ void ManagePasswordsTest::SetupUnsafeState() {
       password_form_.signon_realm, password_form_.username_value, base::Time(),
       password_manager::InsecureType::kLeaked,
       password_manager::IsMuted(false));
-  password_store->AddCompromisedCredentials(some_compromised);
-  password_store->AddCompromisedCredentials(current_compromised);
+  password_store->AddInsecureCredential(some_compromised);
+  password_store->AddInsecureCredential(current_compromised);
   SetupPendingPassword();
   GetController()->SavePassword(password_form_.username_value,
                                 password_form_.password_value);

@@ -565,7 +565,7 @@ base::Optional<syncer::ModelError> PasswordSyncBridge::MergeSyncData(
                 password_manager::features::kSyncingCompromisedCredentials)) {
           // Check if compromised credentials changed before updating.
           if (!remote_and_local_compromised_credentials_equal) {
-            password_store_sync_->UpdateCompromisedCredentialsSync(
+            password_store_sync_->UpdateInsecureCredentialsSync(
                 form, remote_compromised_credentials);
           }
         }
@@ -610,7 +610,7 @@ base::Optional<syncer::ModelError> PasswordSyncBridge::MergeSyncData(
           &add_login_error);
       if (base::FeatureList::IsEnabled(
               password_manager::features::kSyncingCompromisedCredentials)) {
-        password_store_sync_->AddCompromisedCredentialsSync(
+        password_store_sync_->AddInsecureCredentialsSync(
             CompromisedCredentialsFromEntityChange(*entity_change));
       }
       base::UmaHistogramEnumeration(
@@ -730,7 +730,7 @@ base::Optional<syncer::ModelError> PasswordSyncBridge::ApplySyncChanges(
               &add_login_error);
           if (base::FeatureList::IsEnabled(
                   password_manager::features::kSyncingCompromisedCredentials)) {
-            password_store_sync_->AddCompromisedCredentialsSync(
+            password_store_sync_->AddInsecureCredentialsSync(
                 CompromisedCredentialsFromEntityChange(*entity_change));
           }
           base::UmaHistogramEnumeration(
@@ -800,7 +800,7 @@ base::Optional<syncer::ModelError> PasswordSyncBridge::ApplySyncChanges(
                     FormPrimaryKey(primary_key));
             if (!base::ranges::is_permutation(remote_compromised_credentials,
                                               local_compromised_credentials)) {
-              password_store_sync_->UpdateCompromisedCredentialsSync(
+              password_store_sync_->UpdateInsecureCredentialsSync(
                   form, remote_compromised_credentials);
             }
           }

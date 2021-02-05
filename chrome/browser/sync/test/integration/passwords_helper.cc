@@ -182,7 +182,7 @@ void AddCompromisedCredentials(PasswordStore* store,
   base::WaitableEvent wait_event(
       base::WaitableEvent::ResetPolicy::MANUAL,
       base::WaitableEvent::InitialState::NOT_SIGNALED);
-  store->AddCompromisedCredentials(issue);
+  store->AddInsecureCredential(issue);
   store->ScheduleTask(base::BindOnce(&PasswordStoreCallback, &wait_event));
   wait_event.Wait();
 }
@@ -229,7 +229,7 @@ std::vector<CompromisedCredentials> GetAllCompromisedCredentials(
     PasswordStore* store) {
   DCHECK(store);
   CompromisedCredentialsConsumerHelper consumer;
-  store->GetAllCompromisedCredentials(&consumer);
+  store->GetAllInsecureCredentials(&consumer);
   return consumer.WaitForResult();
 }
 
@@ -256,7 +256,7 @@ void RemoveCompromisedCredentials(PasswordStore* store,
   base::WaitableEvent wait_event(
       base::WaitableEvent::ResetPolicy::MANUAL,
       base::WaitableEvent::InitialState::NOT_SIGNALED);
-  store->RemoveCompromisedCredentials(
+  store->RemoveInsecureCredentials(
       credential.signon_realm, credential.username,
       // kRemove used for arbitrary reason just for test.
       password_manager::RemoveInsecureCredentialsReason::kRemove);

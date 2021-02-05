@@ -1514,7 +1514,7 @@ TEST_F(ManagePasswordsUIControllerTest, OpenSafeStateBubble) {
   controller()->OnBubbleHidden();
   saved = {};
   EXPECT_CALL(*client().GetProfilePasswordStore(),
-              GetAllCompromisedCredentialsImpl)
+              GetAllInsecureCredentialsImpl)
       .WillOnce(Return(saved));
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
   WaitForPasswordStore();
@@ -1548,7 +1548,7 @@ TEST_F(ManagePasswordsUIControllerTest, OpenMoreToFixBubble) {
   // There are more compromised credentials to fix.
   saved[0].username = base::ASCIIToUTF16("another username");
   EXPECT_CALL(*client().GetProfilePasswordStore(),
-              GetAllCompromisedCredentialsImpl)
+              GetAllInsecureCredentialsImpl)
       .WillOnce(Return(saved));
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
   WaitForPasswordStore();
@@ -1578,7 +1578,7 @@ TEST_F(ManagePasswordsUIControllerTest, OpenUnsafeStateBubble) {
   // There are compromised credentials to fix.
   saved = {CreateCompromised(test_local_form())};
   EXPECT_CALL(*client().GetProfilePasswordStore(),
-              GetAllCompromisedCredentialsImpl)
+              GetAllInsecureCredentialsImpl)
       .WillOnce(Return(saved));
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
   WaitForPasswordStore();
@@ -1606,7 +1606,7 @@ TEST_F(ManagePasswordsUIControllerTest, NoUnsafeStateBubbleIfPromoStillOpen) {
   // There are compromised credentials to fix.
   saved = {CreateCompromised(test_local_form())};
   EXPECT_CALL(*client().GetProfilePasswordStore(),
-              GetAllCompromisedCredentialsImpl)
+              GetAllInsecureCredentialsImpl)
       .Times(testing::AtMost(1))
       .WillOnce(Return(saved));
   WaitForPasswordStore();

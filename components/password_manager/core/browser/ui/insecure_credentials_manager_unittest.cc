@@ -190,37 +190,37 @@ TEST_F(InsecureCredentialsManagerTest,
 
   // Adding a compromised credential should notify observers.
   EXPECT_CALL(observer, OnCompromisedCredentialsChanged);
-  store().AddCompromisedCredentials(credentials[0]);
+  store().AddInsecureCredential(credentials[0]);
   RunUntilIdle();
-  EXPECT_THAT(store().compromised_credentials(), ElementsAreArray(credentials));
+  EXPECT_THAT(store().insecure_credentials(), ElementsAreArray(credentials));
 
   // Adding the exact same credential should not result in a notification, as
   // the database is not actually modified.
   EXPECT_CALL(observer, OnCompromisedCredentialsChanged).Times(0);
-  store().AddCompromisedCredentials(credentials[0]);
+  store().AddInsecureCredential(credentials[0]);
   RunUntilIdle();
 
   // Remove should notify, and observers should be passed an empty list.
   EXPECT_CALL(observer, OnCompromisedCredentialsChanged(IsEmpty()));
-  store().RemoveCompromisedCredentials(
-      credentials[0].signon_realm, credentials[0].username,
-      RemoveInsecureCredentialsReason::kRemove);
+  store().RemoveInsecureCredentials(credentials[0].signon_realm,
+                                    credentials[0].username,
+                                    RemoveInsecureCredentialsReason::kRemove);
   RunUntilIdle();
-  EXPECT_THAT(store().compromised_credentials(), IsEmpty());
+  EXPECT_THAT(store().insecure_credentials(), IsEmpty());
 
   // Similarly to repeated add, a repeated remove should not notify either.
   EXPECT_CALL(observer, OnCompromisedCredentialsChanged).Times(0);
-  store().RemoveCompromisedCredentials(
-      credentials[0].signon_realm, credentials[0].username,
-      RemoveInsecureCredentialsReason::kRemove);
+  store().RemoveInsecureCredentials(credentials[0].signon_realm,
+                                    credentials[0].username,
+                                    RemoveInsecureCredentialsReason::kRemove);
   RunUntilIdle();
 
   // After an observer is removed it should no longer receive notifications.
   provider().RemoveObserver(&observer);
   EXPECT_CALL(observer, OnCompromisedCredentialsChanged).Times(0);
-  store().AddCompromisedCredentials(credentials[0]);
+  store().AddInsecureCredential(credentials[0]);
   RunUntilIdle();
-  EXPECT_THAT(store().compromised_credentials(), ElementsAreArray(credentials));
+  EXPECT_THAT(store().insecure_credentials(), ElementsAreArray(credentials));
 }
 
 // Tests whether adding and removing an observer works as expected.
@@ -267,7 +267,7 @@ TEST_F(InsecureCredentialsManagerTest, JoinSingleCredentials) {
   CompromisedCredentials credential = MakeCompromised(kExampleCom, kUsername1);
 
   store().AddLogin(password);
-  store().AddCompromisedCredentials(credential);
+  store().AddInsecureCredential(credential);
   RunUntilIdle();
 
   CredentialWithPassword expected =
@@ -287,8 +287,8 @@ TEST_F(InsecureCredentialsManagerTest, JoinPhishedAndLeaked) {
       MakeCompromised(kExampleCom, kUsername1, InsecureType::kPhished);
 
   store().AddLogin(password);
-  store().AddCompromisedCredentials(leaked);
-  store().AddCompromisedCredentials(phished);
+  store().AddInsecureCredential(leaked);
+  store().AddInsecureCredential(phished);
   RunUntilIdle();
 
   CredentialWithPassword expected = MakeCompromisedCredential(password, leaked);
@@ -318,7 +318,7 @@ TEST_F(InsecureCredentialsManagerTest, ReactToChangesInBothTables) {
   RunUntilIdle();
   EXPECT_THAT(provider().GetCompromisedCredentials(), IsEmpty());
 
-  store().AddCompromisedCredentials(credentials[0]);
+  store().AddInsecureCredential(credentials[0]);
   RunUntilIdle();
   EXPECT_THAT(provider().GetCompromisedCredentials(), ElementsAre(expected[0]));
 
@@ -326,7 +326,7 @@ TEST_F(InsecureCredentialsManagerTest, ReactToChangesInBothTables) {
   RunUntilIdle();
   EXPECT_THAT(provider().GetCompromisedCredentials(), ElementsAre(expected[0]));
 
-  store().AddCompromisedCredentials(credentials[1]);
+  store().AddInsecureCredential(credentials[1]);
   RunUntilIdle();
   EXPECT_THAT(provider().GetCompromisedCredentials(),
               ElementsAreArray(expected));
@@ -353,8 +353,8 @@ TEST_F(InsecureCredentialsManagerTest, JoinMultipleCredentials) {
 
   store().AddLogin(passwords[0]);
   store().AddLogin(passwords[1]);
-  store().AddCompromisedCredentials(credentials[0]);
-  store().AddCompromisedCredentials(credentials[1]);
+  store().AddInsecureCredential(credentials[0]);
+  store().AddInsecureCredential(credentials[1]);
   RunUntilIdle();
 
   CredentialWithPassword expected1 =
@@ -377,7 +377,7 @@ TEST_F(InsecureCredentialsManagerTest, JoinWitDifferentUsername) {
 
   store().AddLogin(passwords[0]);
   store().AddLogin(passwords[1]);
-  store().AddCompromisedCredentials(credential);
+  store().AddInsecureCredential(credential);
   RunUntilIdle();
 
   EXPECT_THAT(provider().GetCompromisedCredentials(), IsEmpty());
@@ -394,7 +394,7 @@ TEST_F(InsecureCredentialsManagerTest, JoinWitDifferentSignonRealm) {
 
   store().AddLogin(passwords[0]);
   store().AddLogin(passwords[1]);
-  store().AddCompromisedCredentials(credential);
+  store().AddInsecureCredential(credential);
   RunUntilIdle();
 
   EXPECT_THAT(provider().GetCompromisedCredentials(), IsEmpty());
@@ -412,7 +412,7 @@ TEST_F(InsecureCredentialsManagerTest, JoinWithMultipleDistinctPasswords) {
 
   store().AddLogin(passwords[0]);
   store().AddLogin(passwords[1]);
-  store().AddCompromisedCredentials(credential);
+  store().AddInsecureCredential(credential);
   RunUntilIdle();
 
   CredentialWithPassword expected1 =
@@ -435,7 +435,7 @@ TEST_F(InsecureCredentialsManagerTest, JoinWithMultipleRepeatedPasswords) {
 
   store().AddLogin(passwords[0]);
   store().AddLogin(passwords[1]);
-  store().AddCompromisedCredentials(credential);
+  store().AddInsecureCredential(credential);
   RunUntilIdle();
 
   CredentialWithPassword expected =
@@ -464,8 +464,8 @@ TEST_F(InsecureCredentialsManagerTest, MapCompromisedPasswordsToPasswords) {
   store().AddLogin(passwords[0]);
   store().AddLogin(passwords[1]);
   store().AddLogin(passwords[2]);
-  store().AddCompromisedCredentials(credentials[0]);
-  store().AddCompromisedCredentials(credentials[1]);
+  store().AddInsecureCredential(credentials[0]);
+  store().AddInsecureCredential(credentials[1]);
 
   RunUntilIdle();
   EXPECT_THAT(provider().GetSavedPasswordsFor(credentials_with_password[0]),
@@ -642,8 +642,8 @@ TEST_F(InsecureCredentialsManagerTest, BothWeakAndCompromisedCredentialsExist) {
 
   store().AddLogin(passwords[0]);
   store().AddLogin(passwords[1]);
-  store().AddCompromisedCredentials(compromised_credentials[0]);
-  store().AddCompromisedCredentials(compromised_credentials[1]);
+  store().AddInsecureCredential(compromised_credentials[0]);
+  store().AddInsecureCredential(compromised_credentials[1]);
 
   RunUntilIdle();
   provider().StartWeakCheck();
@@ -684,7 +684,7 @@ TEST_F(InsecureCredentialsManagerTest, SingleCredentialIsWeakAndCompromised) {
       MakeCompromised(kExampleCom, kUsername1)};
 
   store().AddLogin(passwords[0]);
-  store().AddCompromisedCredentials(compromised_credentials[0]);
+  store().AddInsecureCredential(compromised_credentials[0]);
 
   RunUntilIdle();
   provider().StartWeakCheck();
@@ -751,7 +751,7 @@ TEST_F(InsecureCredentialsManagerTest, UpdateCompromisedPassword) {
   CompromisedCredentials credential = MakeCompromised(kExampleCom, kUsername1);
 
   store().AddLogin(password_form);
-  store().AddCompromisedCredentials(credential);
+  store().AddInsecureCredential(credential);
 
   RunUntilIdle();
   CredentialWithPassword expected =
@@ -821,7 +821,7 @@ TEST_F(InsecureCredentialsManagerTest, UpdateInsecurePassword) {
   CompromisedCredentials credential = MakeCompromised(kExampleCom, kUsername1);
 
   store().AddLogin(password_form);
-  store().AddCompromisedCredentials(credential);
+  store().AddInsecureCredential(credential);
   RunUntilIdle();
   provider().StartWeakCheck();
   RunUntilIdle();
@@ -844,7 +844,7 @@ TEST_F(InsecureCredentialsManagerTest, RemoveCompromisedCredential) {
       MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
 
   store().AddLogin(password);
-  store().AddCompromisedCredentials(credential);
+  store().AddInsecureCredential(credential);
   RunUntilIdle();
 
   CredentialWithPassword expected =
@@ -879,7 +879,7 @@ TEST_F(InsecureCredentialsManagerTest, RemoveInsecureCredential) {
   CompromisedCredentials credential = MakeCompromised(kExampleCom, kUsername1);
 
   store().AddLogin(password_form);
-  store().AddCompromisedCredentials(credential);
+  store().AddInsecureCredential(credential);
   RunUntilIdle();
   provider().StartWeakCheck();
   RunUntilIdle();
@@ -972,9 +972,9 @@ TEST_F(InsecureCredentialsManagerWithTwoStoresTest,
 
   // Mark `kPassword1` to be compromised in the profile store, and `kPassword2`
   // to be compromised in the account store.
-  profile_store().AddCompromisedCredentials(
+  profile_store().AddInsecureCredential(
       MakeCompromised(kExampleCom, kUsername1));
-  account_store().AddCompromisedCredentials(
+  account_store().AddInsecureCredential(
       MakeCompromised(kExampleOrg, kUsername1));
 
   RunUntilIdle();
@@ -1007,8 +1007,8 @@ TEST_F(InsecureCredentialsManagerWithTwoStoresTest,
 // Test verifies that saving LeakCheckCredential via provider adds expected
 // compromised credential to the correct store.
 TEST_F(InsecureCredentialsManagerWithTwoStoresTest, SaveCompromisedPassword) {
-  ASSERT_TRUE(profile_store().compromised_credentials().empty());
-  ASSERT_TRUE(account_store().compromised_credentials().empty());
+  ASSERT_TRUE(profile_store().insecure_credentials().empty());
+  ASSERT_TRUE(account_store().insecure_credentials().empty());
   // Add `kUsername1`,`kPassword1` to both stores.
   // And add `kUsername1`,`kPassword2` to the account store only.
   profile_store().AddLogin(
@@ -1027,8 +1027,8 @@ TEST_F(InsecureCredentialsManagerWithTwoStoresTest, SaveCompromisedPassword) {
       MakeLeakCredential(kUsername1, kPassword1));
   RunUntilIdle();
 
-  EXPECT_EQ(1U, profile_store().compromised_credentials().size());
-  EXPECT_EQ(1U, account_store().compromised_credentials().size());
+  EXPECT_EQ(1U, profile_store().insecure_credentials().size());
+  EXPECT_EQ(1U, account_store().insecure_credentials().size());
 
   // Now, mark `kUsername1`, `kPassword2` as compromised, a new entry should be
   // added only to the account store.
@@ -1036,8 +1036,8 @@ TEST_F(InsecureCredentialsManagerWithTwoStoresTest, SaveCompromisedPassword) {
       MakeLeakCredential(kUsername1, kPassword2));
   RunUntilIdle();
 
-  EXPECT_EQ(1U, profile_store().compromised_credentials().size());
-  EXPECT_EQ(2U, account_store().compromised_credentials().size());
+  EXPECT_EQ(1U, profile_store().insecure_credentials().size());
+  EXPECT_EQ(2U, account_store().insecure_credentials().size());
 }
 
 TEST_F(InsecureCredentialsManagerWithTwoStoresTest,
@@ -1049,9 +1049,9 @@ TEST_F(InsecureCredentialsManagerWithTwoStoresTest,
       MakeSavedPassword(kExampleCom, kUsername1, kPassword1));
 
   // Mark `kUsername1` and `kPassword1` to be compromised in both stores.
-  profile_store().AddCompromisedCredentials(
+  profile_store().AddInsecureCredential(
       MakeCompromised(kExampleCom, kUsername1));
-  account_store().AddCompromisedCredentials(
+  account_store().AddInsecureCredential(
       MakeCompromised(kExampleCom, kUsername1));
   RunUntilIdle();
 

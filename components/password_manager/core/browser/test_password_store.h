@@ -45,22 +45,22 @@ class TestPasswordStore : public PasswordStore {
                                std::vector<PasswordForm>,
                                std::less<>>;
 
-  struct CompromisedCredentialsLess {
-    bool operator()(const CompromisedCredentials& lhs,
-                    const CompromisedCredentials& rhs) const {
+  struct InsecureCredentialLess {
+    bool operator()(const InsecureCredential& lhs,
+                    const InsecureCredential& rhs) const {
       // Only compare members that are part of the unique key in the database.
       return std::tie(lhs.signon_realm, lhs.username, lhs.compromise_type) <
              std::tie(rhs.signon_realm, rhs.username, rhs.compromise_type);
     }
   };
 
-  using CompromisedCredentialsStorage =
-      base::flat_set<CompromisedCredentials, CompromisedCredentialsLess>;
+  using InsecureCredentialsStorage =
+      base::flat_set<InsecureCredential, InsecureCredentialLess>;
 
   const PasswordMap& stored_passwords() const;
 
-  const CompromisedCredentialsStorage& compromised_credentials() const {
-    return compromised_credentials_;
+  const InsecureCredentialsStorage& insecure_credentials() const {
+    return insecure_credentials_;
   }
 
   void Clear();
@@ -116,15 +116,14 @@ class TestPasswordStore : public PasswordStore {
   void AddSiteStatsImpl(const InteractionsStats& stats) override;
   void RemoveSiteStatsImpl(const GURL& origin_domain) override;
   std::vector<InteractionsStats> GetAllSiteStatsImpl() override;
-  PasswordStoreChangeList AddCompromisedCredentialsImpl(
-      const CompromisedCredentials& compromised_credentials) override;
-  PasswordStoreChangeList RemoveCompromisedCredentialsImpl(
+  PasswordStoreChangeList AddInsecureCredentialImpl(
+      const InsecureCredential& insecure_credentials) override;
+  PasswordStoreChangeList RemoveInsecureCredentialsImpl(
       const std::string& signon_realm,
       const base::string16& username,
       RemoveInsecureCredentialsReason reason) override;
-  std::vector<CompromisedCredentials> GetAllCompromisedCredentialsImpl()
-      override;
-  std::vector<CompromisedCredentials> GetMatchingCompromisedCredentialsImpl(
+  std::vector<InsecureCredential> GetAllInsecureCredentialsImpl() override;
+  std::vector<InsecureCredential> GetMatchingInsecureCredentialsImpl(
       const std::string& signon_realm) override;
   void AddFieldInfoImpl(const FieldInfo& field_info) override;
   std::vector<FieldInfo> GetAllFieldInfoImpl() override;
@@ -137,7 +136,7 @@ class TestPasswordStore : public PasswordStore {
   bool CommitTransaction() override;
   FormRetrievalResult ReadAllLogins(
       PrimaryKeyToFormMap* key_to_form_map) override;
-  std::vector<CompromisedCredentials> ReadSecurityIssues(
+  std::vector<InsecureCredential> ReadSecurityIssues(
       FormPrimaryKey parent_key) override;
   PasswordStoreChangeList RemoveLoginByPrimaryKeySync(int primary_key) override;
   PasswordStoreSync::MetadataStore* GetMetadataStore() override;
@@ -148,7 +147,7 @@ class TestPasswordStore : public PasswordStore {
   const password_manager::IsAccountStore is_account_store_;
 
   PasswordMap stored_passwords_;
-  CompromisedCredentialsStorage compromised_credentials_;
+  InsecureCredentialsStorage insecure_credentials_;
 
   const std::unique_ptr<PasswordStoreSync::MetadataStore> metadata_store_;
 

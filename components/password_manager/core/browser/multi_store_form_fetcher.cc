@@ -56,7 +56,7 @@ void MultiStoreFormFetcher::Fetch() {
     account_password_store->GetLogins(form_digest_, this);
 #if !defined(OS_IOS) && !defined(OS_ANDROID)
     // The desktop bubble needs this information.
-    account_password_store->GetMatchingCompromisedCredentials(
+    account_password_store->GetMatchingInsecureCredentials(
         form_digest_.signon_realm, this);
 #endif
   }

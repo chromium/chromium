@@ -189,9 +189,9 @@ class IOSChromePasswordCheckManagerTest : public PlatformTest {
 TEST_F(IOSChromePasswordCheckManagerTest, GetCompromisedCredentials) {
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1));
 
-  store().AddCompromisedCredentials(
-      MakeCompromised(kExampleCom, kUsername1, base::TimeDelta::FromMinutes(1),
-                      InsecureType::kLeaked));
+  store().AddInsecureCredential(MakeCompromised(kExampleCom, kUsername1,
+                                                base::TimeDelta::FromMinutes(1),
+                                                InsecureType::kLeaked));
   RunUntilIdle();
   EXPECT_THAT(
       manager().GetCompromisedCredentials(),
@@ -284,16 +284,16 @@ TEST_F(IOSChromePasswordCheckManagerTest,
       CompromisedCredentialsChanged(ElementsAre(ExpectCompromisedCredential(
           kExampleCom, kUsername1, kPassword1, base::TimeDelta::FromMinutes(1),
           InsecureCredentialTypeFlags::kCredentialLeaked))));
-  store().AddCompromisedCredentials(MakeCompromised(
+  store().AddInsecureCredential(MakeCompromised(
       kExampleCom, kUsername1, base::TimeDelta::FromMinutes(1)));
   RunUntilIdle();
 
   // After an observer is removed it should no longer receive notifications.
   manager().RemoveObserver(&observer);
   EXPECT_CALL(observer, CompromisedCredentialsChanged).Times(0);
-  store().AddCompromisedCredentials(
-      MakeCompromised(kExampleCom, kUsername1, base::TimeDelta::FromMinutes(1),
-                      InsecureType::kPhished));
+  store().AddInsecureCredential(MakeCompromised(kExampleCom, kUsername1,
+                                                base::TimeDelta::FromMinutes(1),
+                                                InsecureType::kPhished));
   RunUntilIdle();
 }
 
@@ -326,9 +326,9 @@ TEST_F(IOSChromePasswordCheckManagerTest, DeletePassword) {
   store().AddLogin(form);
   RunUntilIdle();
 
-  store().AddCompromisedCredentials(
-      MakeCompromised(kExampleCom, kUsername1, base::TimeDelta::FromMinutes(1),
-                      InsecureType::kLeaked));
+  store().AddInsecureCredential(MakeCompromised(kExampleCom, kUsername1,
+                                                base::TimeDelta::FromMinutes(1),
+                                                InsecureType::kLeaked));
   RunUntilIdle();
   EXPECT_THAT(
       manager().GetCompromisedCredentials(),
@@ -409,9 +409,9 @@ TEST_F(IOSChromePasswordCheckManagerTest, EditCompromisedPassword) {
   store().AddLogin(form);
   RunUntilIdle();
 
-  store().AddCompromisedCredentials(
-      MakeCompromised(kExampleCom, kUsername1, base::TimeDelta::FromMinutes(1),
-                      InsecureType::kLeaked));
+  store().AddInsecureCredential(MakeCompromised(kExampleCom, kUsername1,
+                                                base::TimeDelta::FromMinutes(1),
+                                                InsecureType::kLeaked));
   RunUntilIdle();
 
   manager().EditCompromisedPasswordForm(form, kPassword2);

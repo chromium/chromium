@@ -18,8 +18,9 @@ namespace password_manager {
 
 namespace {
 
-// Generates PasswordStoreChangeList for affected signon_realm and username.
-PasswordStoreChangeList BuildPasswordChangeListForCompromisedCredentialUpdate(
+// Generates PasswordStoreChangeList for affected forms during
+// InsecureCredentials update.
+PasswordStoreChangeList BuildPasswordChangeListForInsecureCredentialsUpdate(
     PrimaryKeyToFormMap key_to_form_map) {
   PasswordStoreChangeList changes;
   changes.reserve(key_to_form_map.size());
@@ -240,26 +241,26 @@ std::vector<InteractionsStats> PasswordStoreImpl::GetSiteStatsImpl(
                    : std::vector<InteractionsStats>();
 }
 
-PasswordStoreChangeList PasswordStoreImpl::AddCompromisedCredentialsImpl(
-    const CompromisedCredentials& credentials) {
+PasswordStoreChangeList PasswordStoreImpl::AddInsecureCredentialImpl(
+    const InsecureCredential& credential) {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   if (!login_db_ ||
-      !login_db_->insecure_credentials_table().AddRow(credentials)) {
+      !login_db_->insecure_credentials_table().AddRow(credential)) {
     return {};
   }
 
   PrimaryKeyToFormMap key_to_form_map;
   if (login_db_->GetLoginsBySignonRealmAndUsername(
-          credentials.signon_realm, credentials.username, key_to_form_map) !=
+          credential.signon_realm, credential.username, key_to_form_map) !=
       FormRetrievalResult::kSuccess) {
     return {};
   }
 
-  return BuildPasswordChangeListForCompromisedCredentialUpdate(
+  return BuildPasswordChangeListForInsecureCredentialsUpdate(
       std::move(key_to_form_map));
 }
 
-PasswordStoreChangeList PasswordStoreImpl::RemoveCompromisedCredentialsImpl(
+PasswordStoreChangeList PasswordStoreImpl::RemoveInsecureCredentialsImpl(
     const std::string& signon_realm,
     const base::string16& username,
     RemoveInsecureCredentialsReason reason) {
@@ -276,37 +277,37 @@ PasswordStoreChangeList PasswordStoreImpl::RemoveCompromisedCredentialsImpl(
     return {};
   }
 
-  return BuildPasswordChangeListForCompromisedCredentialUpdate(
+  return BuildPasswordChangeListForInsecureCredentialsUpdate(
       std::move(key_to_form_map));
 }
 
-std::vector<CompromisedCredentials>
-PasswordStoreImpl::GetAllCompromisedCredentialsImpl() {
+std::vector<InsecureCredential>
+PasswordStoreImpl::GetAllInsecureCredentialsImpl() {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
-  std::vector<CompromisedCredentials> compromised_credentials =
+  std::vector<InsecureCredential> insecure_credentials =
       login_db_ ? login_db_->insecure_credentials_table().GetAllRows()
-                : std::vector<CompromisedCredentials>();
+                : std::vector<InsecureCredential>();
   PasswordForm::Store store = IsAccountStore()
                                   ? PasswordForm::Store::kAccountStore
                                   : PasswordForm::Store::kProfileStore;
-  for (CompromisedCredentials& cred : compromised_credentials)
+  for (InsecureCredential& cred : insecure_credentials)
     cred.in_store = store;
-  return compromised_credentials;
+  return insecure_credentials;
 }
 
-std::vector<CompromisedCredentials>
-PasswordStoreImpl::GetMatchingCompromisedCredentialsImpl(
+std::vector<InsecureCredential>
+PasswordStoreImpl::GetMatchingInsecureCredentialsImpl(
     const std::string& signon_realm) {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
-  std::vector<CompromisedCredentials> compromised_credentials =
+  std::vector<InsecureCredential> insecure_credentials =
       login_db_ ? login_db_->insecure_credentials_table().GetRows(signon_realm)
-                : std::vector<CompromisedCredentials>();
+                : std::vector<InsecureCredential>();
   PasswordForm::Store store = IsAccountStore()
                                   ? PasswordForm::Store::kAccountStore
                                   : PasswordForm::Store::kProfileStore;
-  for (CompromisedCredentials& cred : compromised_credentials)
+  for (InsecureCredential& cred : insecure_credentials)
     cred.in_store = store;
-  return compromised_credentials;
+  return insecure_credentials;
 }
 
 void PasswordStoreImpl::AddFieldInfoImpl(const FieldInfo& field_info) {
@@ -356,7 +357,7 @@ FormRetrievalResult PasswordStoreImpl::ReadAllLogins(
   return login_db_->GetAllLogins(key_to_form_map);
 }
 
-std::vector<CompromisedCredentials> PasswordStoreImpl::ReadSecurityIssues(
+std::vector<InsecureCredential> PasswordStoreImpl::ReadSecurityIssues(
     FormPrimaryKey parent_key) {
   if (!login_db_)
     return {};

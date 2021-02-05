@@ -97,29 +97,29 @@ TEST_F(InsecureCredentialsReaderTest, AddCredentialsToBothStores) {
 
   EXPECT_CALL(mock_observer,
               OnInsecureCredentialsChanged(UnorderedElementsAre(profile_cred)));
-  profile_store().AddCompromisedCredentials(profile_cred);
+  profile_store().AddInsecureCredential(profile_cred);
   RunUntilIdle();
 
   EXPECT_CALL(mock_observer, OnInsecureCredentialsChanged(UnorderedElementsAre(
                                  profile_cred, account_cred1)));
-  account_store().AddCompromisedCredentials(account_cred1);
+  account_store().AddInsecureCredential(account_cred1);
   RunUntilIdle();
 
   EXPECT_CALL(mock_observer, OnInsecureCredentialsChanged(UnorderedElementsAre(
                                  profile_cred, account_cred1, account_cred2)));
-  account_store().AddCompromisedCredentials(account_cred2);
+  account_store().AddInsecureCredential(account_cred2);
   RunUntilIdle();
 
   EXPECT_CALL(mock_observer, OnInsecureCredentialsChanged(UnorderedElementsAre(
                                  account_cred1, account_cred2)));
-  profile_store().RemoveCompromisedCredentials(
+  profile_store().RemoveInsecureCredentials(
       profile_cred.signon_realm, profile_cred.username,
       RemoveInsecureCredentialsReason::kRemove);
   RunUntilIdle();
 
   EXPECT_CALL(mock_observer, OnInsecureCredentialsChanged(UnorderedElementsAre(
                                  profile_cred, account_cred1, account_cred2)));
-  profile_store().AddCompromisedCredentials(profile_cred);
+  profile_store().AddInsecureCredential(profile_cred);
   RunUntilIdle();
 
   reader().RemoveObserver(&mock_observer);
@@ -136,8 +136,8 @@ TEST_F(InsecureCredentialsReaderTest, GetAllInsecureCredentials) {
   account_cred.username = base::ASCIIToUTF16("account1@gmail.com");
   account_cred.in_store = PasswordForm::Store::kAccountStore;
 
-  profile_store().AddCompromisedCredentials(profile_cred);
-  account_store().AddCompromisedCredentials(account_cred);
+  profile_store().AddInsecureCredential(profile_cred);
+  account_store().AddInsecureCredential(account_cred);
 
   base::MockCallback<InsecureCredentialsReader::GetInsecureCredentialsCallback>
       get_all_insecure_credentials_cb;

@@ -19,11 +19,8 @@ class Database;
 
 namespace password_manager {
 
-struct CompromisedCredentials;
-
 using BulkCheckDone = base::StrongAlias<class BulkCheckDoneTag, bool>;
 using IsMuted = base::StrongAlias<class IsMutedTag, bool>;
-using InsecureCredential = CompromisedCredentials;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

@@ -596,7 +596,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
   std::vector<password_manager::MatchingReusedCredential> credentials = {
       {"http://example.test"}, {"http://2.example.com"}};
 
-  EXPECT_CALL(*password_store_, AddCompromisedCredentialsImpl(_)).Times(2);
+  EXPECT_CALL(*password_store_, AddInsecureCredentialImpl(_)).Times(2);
   service_->PersistPhishedSavedPasswordCredential(credentials);
 }
 
@@ -609,7 +609,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
       {"http://2.example.test", base::ASCIIToUTF16("username2")}};
 
   EXPECT_CALL(*password_store_,
-              RemoveCompromisedCredentialsImpl(
+              RemoveInsecureCredentialsImpl(
                   _, _,
                   password_manager::RemoveInsecureCredentialsReason::
                       kMarkSiteAsLegitimate))
@@ -1566,8 +1566,7 @@ TEST_F(ChromePasswordProtectionServiceWithAccountPasswordStoreTest,
       {.signon_realm = "http://2.example.test",
        .in_store = password_manager::PasswordForm::Store::kAccountStore}};
 
-  EXPECT_CALL(*account_password_store_, AddCompromisedCredentialsImpl(_))
-      .Times(2);
+  EXPECT_CALL(*account_password_store_, AddInsecureCredentialImpl(_)).Times(2);
   service_->PersistPhishedSavedPasswordCredential(credentials);
 }
 
@@ -1582,7 +1581,7 @@ TEST_F(ChromePasswordProtectionServiceWithAccountPasswordStoreTest,
        password_manager::PasswordForm::Store::kAccountStore}};
 
   EXPECT_CALL(*account_password_store_,
-              RemoveCompromisedCredentialsImpl(
+              RemoveInsecureCredentialsImpl(
                   _, _,
                   password_manager::RemoveInsecureCredentialsReason::
                       kMarkSiteAsLegitimate))

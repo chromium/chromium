@@ -115,7 +115,7 @@ class MockPasswordStoreConsumer : public PasswordStoreConsumer {
   DISALLOW_COPY_AND_ASSIGN(MockPasswordStoreConsumer);
 };
 
-struct MockDatabaseCompromisedCredentialsObserver
+struct MockDatabaseInsecureCredentialsObserver
     : PasswordStore::DatabaseInsecureCredentialsObserver {
   MOCK_METHOD0(OnInsecureCredentialsChanged, void());
 };
@@ -193,10 +193,10 @@ PasswordForm MakePasswordForm(const std::string& signon_realm) {
   return form;
 }
 
-CompromisedCredentials MakeCompromisedCredentials(const PasswordForm& form,
-                                                  const InsecureType& type) {
-  return CompromisedCredentials(form.signon_realm, form.username_value,
-                                base::Time(), type, IsMuted(false));
+InsecureCredential MakeInsecureCredential(const PasswordForm& form,
+                                          const InsecureType& type) {
+  return InsecureCredential(form.signon_realm, form.username_value,
+                            base::Time(), type, IsMuted(false));
 }
 
 }  // namespace
@@ -440,9 +440,9 @@ TEST_F(PasswordStoreTest, RemoveLoginsCreatedBetweenCallbackIsCalled) {
 }
 
 // Verify that when a login is removed that the corresponding row is also
-// removed from the compromised credentials table.
-TEST_F(PasswordStoreTest, CompromisedCredentialsObserverOnRemoveLogin) {
-  CompromisedCredentials compromised_credentials(
+// removed from the insecure credentials table.
+TEST_F(PasswordStoreTest, InsecureCredentialsObserverOnRemoveLogin) {
+  InsecureCredential insecure_credential(
       kTestWebRealm1, base::ASCIIToUTF16("username_value_1"),
       base::Time::FromTimeT(1), InsecureType::kLeaked, IsMuted(false));
 
@@ -462,7 +462,7 @@ TEST_F(PasswordStoreTest, CompromisedCredentialsObserverOnRemoveLogin) {
   std::unique_ptr<PasswordForm> test_form(
       FillPasswordFormWithData(kTestCredential));
   store->AddLogin(*test_form);
-  store->AddCompromisedCredentials(compromised_credentials);
+  store->AddInsecureCredential(insecure_credential);
   WaitForPasswordStore();
 
   MockCompromisedCredentialsConsumer consumer;
@@ -473,16 +473,16 @@ TEST_F(PasswordStoreTest, CompromisedCredentialsObserverOnRemoveLogin) {
   run_loop.Run();
 
   EXPECT_CALL(consumer, OnGetCompromisedCredentials(testing::IsEmpty()));
-  store->GetAllCompromisedCredentials(&consumer);
+  store->GetAllInsecureCredentials(&consumer);
   WaitForPasswordStore();
 
   store->ShutdownOnUIThread();
 }
 
 // Verify that when a login password is updated that the corresponding row is
-// removed from the compromised credentials table.
-TEST_F(PasswordStoreTest, CompromisedCredentialsObserverOnLoginUpdated) {
-  CompromisedCredentials compromised_credentials(
+// removed from the insecure credentials table.
+TEST_F(PasswordStoreTest, InsecureCredentialsObserverOnLoginUpdated) {
+  InsecureCredential insecure_credential(
       kTestWebRealm1, base::ASCIIToUTF16("username_value_1"),
       base::Time::FromTimeT(1), InsecureType::kLeaked, IsMuted(false));
   scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
@@ -501,7 +501,7 @@ TEST_F(PasswordStoreTest, CompromisedCredentialsObserverOnLoginUpdated) {
   std::unique_ptr<PasswordForm> test_form(
       FillPasswordFormWithData(kTestCredential));
   store->AddLogin(*test_form);
-  store->AddCompromisedCredentials(compromised_credentials);
+  store->AddInsecureCredential(insecure_credential);
   WaitForPasswordStore();
 
   MockCompromisedCredentialsConsumer consumer;
@@ -512,16 +512,16 @@ TEST_F(PasswordStoreTest, CompromisedCredentialsObserverOnLoginUpdated) {
   WaitForPasswordStore();
 
   EXPECT_CALL(consumer, OnGetCompromisedCredentials(testing::IsEmpty()));
-  store->GetAllCompromisedCredentials(&consumer);
+  store->GetAllInsecureCredentials(&consumer);
   WaitForPasswordStore();
 
   store->ShutdownOnUIThread();
 }
 
 // Verify that when a login password is added with the password changed that the
-// corresponding row is removed from the compromised credentials table.
-TEST_F(PasswordStoreTest, CompromisedCredentialsObserverOnLoginAdded) {
-  CompromisedCredentials compromised_credentials(
+// corresponding row is removed from the insecure credentials table.
+TEST_F(PasswordStoreTest, InsecureCredentialsObserverOnLoginAdded) {
+  InsecureCredential insecure_credential(
       kTestWebRealm1, base::ASCIIToUTF16("username_value_1"),
       base::Time::FromTimeT(1), InsecureType::kLeaked, IsMuted(false));
   scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
@@ -540,7 +540,7 @@ TEST_F(PasswordStoreTest, CompromisedCredentialsObserverOnLoginAdded) {
   std::unique_ptr<PasswordForm> test_form(
       FillPasswordFormWithData(kTestCredential));
   store->AddLogin(*test_form);
-  store->AddCompromisedCredentials(compromised_credentials);
+  store->AddInsecureCredential(insecure_credential);
   WaitForPasswordStore();
 
   MockCompromisedCredentialsConsumer consumer;
@@ -551,15 +551,14 @@ TEST_F(PasswordStoreTest, CompromisedCredentialsObserverOnLoginAdded) {
   WaitForPasswordStore();
 
   EXPECT_CALL(consumer, OnGetCompromisedCredentials(testing::IsEmpty()));
-  store->GetAllCompromisedCredentials(&consumer);
+  store->GetAllInsecureCredentials(&consumer);
   WaitForPasswordStore();
 
   store->ShutdownOnUIThread();
 }
 
-TEST_F(PasswordStoreTest,
-       CompromisedPasswordObserverOnCompromisedCredentialAdded) {
-  MockDatabaseCompromisedCredentialsObserver observer;
+TEST_F(PasswordStoreTest, InsecurePasswordObserverOnInsecureCredentialAdded) {
+  MockDatabaseInsecureCredentialsObserver observer;
 
   constexpr PasswordFormData kTestCredentials = {PasswordForm::Scheme::kHtml,
                                                  kTestWebRealm1,
@@ -572,7 +571,7 @@ TEST_F(PasswordStoreTest,
                                                  L"password",
                                                  kTestLastUsageTime,
                                                  1};
-  CompromisedCredentials compromised_credentials(
+  InsecureCredential insecure_credential(
       kTestWebRealm1, base::ASCIIToUTF16("username_value_1"),
       base::Time::FromTimeT(1), InsecureType::kLeaked, IsMuted(false));
 
@@ -583,20 +582,19 @@ TEST_F(PasswordStoreTest,
 
   // Expect a notification after adding a credential.
   EXPECT_CALL(observer, OnInsecureCredentialsChanged);
-  store->AddCompromisedCredentials(compromised_credentials);
+  store->AddInsecureCredential(insecure_credential);
   WaitForPasswordStore();
 
   // Adding the same credential should not result in another notification.
   EXPECT_CALL(observer, OnInsecureCredentialsChanged).Times(0);
-  store->AddCompromisedCredentials(compromised_credentials);
+  store->AddInsecureCredential(insecure_credential);
   WaitForPasswordStore();
 
   store->ShutdownOnUIThread();
 }
 
-TEST_F(PasswordStoreTest,
-       CompromisedPasswordObserverOnCompromisedCredentialRemoved) {
-  MockDatabaseCompromisedCredentialsObserver observer;
+TEST_F(PasswordStoreTest, InsecurePasswordObserverOnInsecureCredentialRemoved) {
+  MockDatabaseInsecureCredentialsObserver observer;
 
   constexpr PasswordFormData kTestCredentials = {PasswordForm::Scheme::kHtml,
                                                  kTestWebRealm1,
@@ -610,30 +608,30 @@ TEST_F(PasswordStoreTest,
                                                  kTestLastUsageTime,
                                                  1};
 
-  CompromisedCredentials compromised_credentials(
+  InsecureCredential insecure_credential(
       kTestWebRealm1, base::ASCIIToUTF16("username_value_1"),
       base::Time::FromTimeT(1), InsecureType::kLeaked, IsMuted(false));
 
   scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
   store->Init(nullptr);
   store->AddLogin(*FillPasswordFormWithData(kTestCredentials));
-  store->AddCompromisedCredentials(compromised_credentials);
+  store->AddInsecureCredential(insecure_credential);
   WaitForPasswordStore();
 
   store->AddDatabaseInsecureCredentialsObserver(&observer);
 
   // Expect a notification after removing a credential.
   EXPECT_CALL(observer, OnInsecureCredentialsChanged);
-  store->RemoveCompromisedCredentials(compromised_credentials.signon_realm,
-                                      compromised_credentials.username,
-                                      RemoveInsecureCredentialsReason::kRemove);
+  store->RemoveInsecureCredentials(insecure_credential.signon_realm,
+                                   insecure_credential.username,
+                                   RemoveInsecureCredentialsReason::kRemove);
   WaitForPasswordStore();
 
   // Removing the same credential should not result in another notification.
   EXPECT_CALL(observer, OnInsecureCredentialsChanged).Times(0);
-  store->RemoveCompromisedCredentials(compromised_credentials.signon_realm,
-                                      compromised_credentials.username,
-                                      RemoveInsecureCredentialsReason::kRemove);
+  store->RemoveInsecureCredentials(insecure_credential.signon_realm,
+                                   insecure_credential.username,
+                                   RemoveInsecureCredentialsReason::kRemove);
   WaitForPasswordStore();
 
   store->ShutdownOnUIThread();
@@ -1543,7 +1541,7 @@ TEST_F(PasswordStoreTest, ReportMetricsForNonSyncPassword) {
   store->ShutdownOnUIThread();
 }
 
-TEST_F(PasswordStoreTest, GetAllCompromisedCredentials) {
+TEST_F(PasswordStoreTest, GetAllInsecureCredentials) {
   constexpr PasswordFormData kTestCredentials[] = {
       {PasswordForm::Scheme::kHtml, "https://example.com/",
        "https://example.com/", "", L"", L"", L"", L"username", L"password",
@@ -1556,37 +1554,36 @@ TEST_F(PasswordStoreTest, GetAllCompromisedCredentials) {
 
   for (const auto& data : kTestCredentials)
     store->AddLogin(*FillPasswordFormWithData(data));
-  CompromisedCredentials compromised_credentials(
+  InsecureCredential insecure_credential(
       "https://example.com/", base::ASCIIToUTF16("username"),
       base::Time::FromTimeT(1), InsecureType::kLeaked, IsMuted(false));
-  CompromisedCredentials compromised_credentials2(
+  InsecureCredential insecure_credential2(
       "https://2.example.com/", base::ASCIIToUTF16("username2"),
       base::Time::FromTimeT(2), InsecureType::kLeaked, IsMuted(false));
 
-  store->AddCompromisedCredentials(compromised_credentials);
-  store->AddCompromisedCredentials(compromised_credentials2);
+  store->AddInsecureCredential(insecure_credential);
+  store->AddInsecureCredential(insecure_credential2);
   MockCompromisedCredentialsConsumer consumer;
-  EXPECT_CALL(consumer,
-              OnGetCompromisedCredentials(UnorderedElementsAre(
-                  compromised_credentials, compromised_credentials2)));
-  store->GetAllCompromisedCredentials(&consumer);
+  EXPECT_CALL(consumer, OnGetCompromisedCredentials(UnorderedElementsAre(
+                            insecure_credential, insecure_credential2)));
+  store->GetAllInsecureCredentials(&consumer);
   WaitForPasswordStore();
   testing::Mock::VerifyAndClearExpectations(&consumer);
 
-  store->RemoveCompromisedCredentials(compromised_credentials.signon_realm,
-                                      compromised_credentials.username,
-                                      RemoveInsecureCredentialsReason::kRemove);
+  store->RemoveInsecureCredentials(insecure_credential.signon_realm,
+                                   insecure_credential.username,
+                                   RemoveInsecureCredentialsReason::kRemove);
   EXPECT_CALL(consumer, OnGetCompromisedCredentials(
-                            UnorderedElementsAre(compromised_credentials2)));
-  store->GetAllCompromisedCredentials(&consumer);
+                            UnorderedElementsAre(insecure_credential2)));
+  store->GetAllInsecureCredentials(&consumer);
   WaitForPasswordStore();
 
   store->ShutdownOnUIThread();
 }
 
-// Test GetMatchingCompromisedCredentials when affiliation service isn't
+// Test GetMatchingInsecureCredentials when affiliation service isn't
 // available.
-TEST_F(PasswordStoreTest, GetMatchingCompromisedWithoutAffiliations) {
+TEST_F(PasswordStoreTest, GetMatchingInsecureWithoutAffiliations) {
   scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
   store->Init(nullptr);
 
@@ -1598,27 +1595,27 @@ TEST_F(PasswordStoreTest, GetMatchingCompromisedWithoutAffiliations) {
   for (const auto& data : kTestCredentials)
     store->AddLogin(*FillPasswordFormWithData(data));
 
-  CompromisedCredentials credentials1(
+  InsecureCredential credential1(
       kTestWebRealm1, base::ASCIIToUTF16("username_value"),
       base::Time::FromTimeT(1), InsecureType::kLeaked, IsMuted(false));
-  CompromisedCredentials credentials2(
+  InsecureCredential credential2(
       kTestWebRealm2, base::ASCIIToUTF16("username_value"),
       base::Time::FromTimeT(2), InsecureType::kLeaked, IsMuted(false));
-  for (const auto& credentials : {credentials1, credentials2})
-    store->AddCompromisedCredentials(credentials);
+  for (const auto& credential : {credential1, credential2})
+    store->AddInsecureCredential(credential);
 
   MockCompromisedCredentialsConsumer consumer;
   EXPECT_CALL(consumer,
-              OnGetCompromisedCredentials(UnorderedElementsAre(credentials1)));
-  store->GetMatchingCompromisedCredentials(kTestWebRealm1, &consumer);
+              OnGetCompromisedCredentials(UnorderedElementsAre(credential1)));
+  store->GetMatchingInsecureCredentials(kTestWebRealm1, &consumer);
   WaitForPasswordStore();
 
   store->ShutdownOnUIThread();
 }
 
-// Test GetMatchingCompromisedCredentials with some matching Android
+// Test GetMatchingInsecureCredentials with some matching Android
 // credentials.
-TEST_F(PasswordStoreTest, GetMatchingCompromisedWithAffiliations) {
+TEST_F(PasswordStoreTest, GetMatchingInsecureWithAffiliations) {
   scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
   store->Init(nullptr);
 
@@ -1632,17 +1629,17 @@ TEST_F(PasswordStoreTest, GetMatchingCompromisedWithAffiliations) {
   for (const auto& data : kTestCredentials)
     store->AddLogin(*FillPasswordFormWithData(data));
 
-  CompromisedCredentials credentials1(
+  InsecureCredential credential1(
       kTestWebRealm1, base::ASCIIToUTF16("username_value"),
       base::Time::FromTimeT(1), InsecureType::kLeaked, IsMuted(false));
-  CompromisedCredentials credentials2(
+  InsecureCredential credential2(
       kTestAndroidRealm1, base::ASCIIToUTF16("username_value_1"),
       base::Time::FromTimeT(2), InsecureType::kPhished, IsMuted(false));
-  CompromisedCredentials credentials3(
+  InsecureCredential credential3(
       kTestWebRealm2, base::ASCIIToUTF16("username_value_2"),
       base::Time::FromTimeT(3), InsecureType::kLeaked, IsMuted(false));
-  for (const auto& credentials : {credentials1, credentials2, credentials3})
-    store->AddCompromisedCredentials(credentials);
+  for (const auto& credentials : {credential1, credential2, credential3})
+    store->AddInsecureCredential(credentials);
 
   PasswordStore::FormDigest observed_form = {
       PasswordForm::Scheme::kHtml, kTestWebRealm1, GURL(kTestWebRealm1)};
@@ -1654,22 +1651,22 @@ TEST_F(PasswordStoreTest, GetMatchingCompromisedWithAffiliations) {
 
   MockCompromisedCredentialsConsumer consumer;
   EXPECT_CALL(consumer, OnGetCompromisedCredentials(
-                            UnorderedElementsAre(credentials1, credentials2)));
-  store->GetMatchingCompromisedCredentials(kTestWebRealm1, &consumer);
+                            UnorderedElementsAre(credential1, credential2)));
+  store->GetMatchingInsecureCredentials(kTestWebRealm1, &consumer);
   WaitForPasswordStore();
 
   store->ShutdownOnUIThread();
 }
 
 // Test that updating a password in the store deletes the corresponding
-// compromised record synchronously.
-TEST_F(PasswordStoreTest, RemoveCompromisedCredentialsSyncOnUpdate) {
+// insecure credential synchronously.
+TEST_F(PasswordStoreTest, RemoveInsecureCredentialsSyncOnUpdate) {
   scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
   store->Init(nullptr);
 
-  CompromisedCredentials compromised_credentials(
-      kTestWebRealm1, base::ASCIIToUTF16("username1"),
-      base::Time::FromTimeT(100), InsecureType::kLeaked, IsMuted(false));
+  InsecureCredential credential(kTestWebRealm1, base::ASCIIToUTF16("username1"),
+                                base::Time::FromTimeT(100),
+                                InsecureType::kLeaked, IsMuted(false));
   constexpr PasswordFormData kTestCredential = {PasswordForm::Scheme::kHtml,
                                                 kTestWebRealm1,
                                                 kTestWebOrigin1,
@@ -1683,14 +1680,14 @@ TEST_F(PasswordStoreTest, RemoveCompromisedCredentialsSyncOnUpdate) {
                                                 5};
   std::unique_ptr<PasswordForm> form(FillPasswordFormWithData(kTestCredential));
   store->AddLogin(*form);
-  store->AddCompromisedCredentials(compromised_credentials);
+  store->AddInsecureCredential(credential);
   WaitForPasswordStore();
 
-  // Update the password value and immediately get the compromised passwords.
+  // Update the password value and immediately get the insecure passwords.
   form->password_value = base::ASCIIToUTF16("new_password");
   store->UpdateLogin(*form);
   MockCompromisedCredentialsConsumer consumer;
-  store->GetAllCompromisedCredentials(&consumer);
+  store->GetAllInsecureCredentials(&consumer);
   EXPECT_CALL(consumer, OnGetCompromisedCredentials(IsEmpty()));
   WaitForPasswordStore();
 
@@ -1698,14 +1695,14 @@ TEST_F(PasswordStoreTest, RemoveCompromisedCredentialsSyncOnUpdate) {
 }
 
 // Test that deleting a password in the store deletes the corresponding
-// compromised record synchronously.
-TEST_F(PasswordStoreTest, RemoveCompromisedCredentialsSyncOnDelete) {
+// insecure credential synchronously.
+TEST_F(PasswordStoreTest, RemoveInsecureCredentialsSyncOnDelete) {
   scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
   store->Init(nullptr);
 
-  CompromisedCredentials compromised_credentials(
-      kTestWebRealm1, base::ASCIIToUTF16("username1"),
-      base::Time::FromTimeT(100), InsecureType::kLeaked, IsMuted(false));
+  InsecureCredential credential(kTestWebRealm1, base::ASCIIToUTF16("username1"),
+                                base::Time::FromTimeT(100),
+                                InsecureType::kLeaked, IsMuted(false));
   constexpr PasswordFormData kTestCredential = {PasswordForm::Scheme::kHtml,
                                                 kTestWebRealm1,
                                                 kTestWebOrigin1,
@@ -1719,13 +1716,13 @@ TEST_F(PasswordStoreTest, RemoveCompromisedCredentialsSyncOnDelete) {
                                                 5};
   std::unique_ptr<PasswordForm> form(FillPasswordFormWithData(kTestCredential));
   store->AddLogin(*form);
-  store->AddCompromisedCredentials(compromised_credentials);
+  store->AddInsecureCredential(credential);
   WaitForPasswordStore();
 
-  // Delete the password and immediately get the compromised passwords.
+  // Delete the password and immediately get the insecure passwords.
   store->RemoveLogin(*form);
   MockCompromisedCredentialsConsumer consumer;
-  store->GetAllCompromisedCredentials(&consumer);
+  store->GetAllInsecureCredentials(&consumer);
   EXPECT_CALL(consumer, OnGetCompromisedCredentials(IsEmpty()));
   WaitForPasswordStore();
 
@@ -1795,7 +1792,7 @@ TEST_F(PasswordStoreTest, RemoveFieldInfo) {
 }
 #endif  // !defined(OS_ANDROID)
 
-TEST_F(PasswordStoreTest, AddCompromisedCredentialsSync) {
+TEST_F(PasswordStoreTest, AddInsecureCredentialsSync) {
   scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
   store->Init(/*prefs=*/nullptr);
 
@@ -1816,35 +1813,32 @@ TEST_F(PasswordStoreTest, AddCompromisedCredentialsSync) {
   std::unique_ptr<PasswordForm> test_form =
       FillPasswordFormWithData(kTestCredential);
 
-  const std::vector<CompromisedCredentials> compromised_credentials = {
-      CompromisedCredentials(test_form->signon_realm, test_form->username_value,
-                             base::Time(), InsecureType::kLeaked,
-                             IsMuted(false)),
-      CompromisedCredentials(test_form->signon_realm, test_form->username_value,
-                             base::Time(), InsecureType::kReused,
-                             IsMuted(false))};
+  const std::vector<InsecureCredential> credentials = {
+      InsecureCredential(test_form->signon_realm, test_form->username_value,
+                         base::Time(), InsecureType::kLeaked, IsMuted(false)),
+      InsecureCredential(test_form->signon_realm, test_form->username_value,
+                         base::Time(), InsecureType::kReused, IsMuted(false))};
 
   AddLoginError add_login_error = AddLoginError::kDbError;
   store->ScheduleTask(base::BindOnce(IgnoreResult(&PasswordStore::AddLoginSync),
                                      store, *test_form, &add_login_error));
-  store->ScheduleTask(base::BindOnce(
-      IgnoreResult(&PasswordStore::AddCompromisedCredentialsSync), store,
-      compromised_credentials));
+  store->ScheduleTask(
+      base::BindOnce(IgnoreResult(&PasswordStore::AddInsecureCredentialsSync),
+                     store, credentials));
 
   WaitForPasswordStore();
   EXPECT_EQ(add_login_error, AddLoginError::kNone);
 
   MockCompromisedCredentialsConsumer consumer;
-  EXPECT_CALL(consumer,
-              OnGetCompromisedCredentials(UnorderedElementsAre(
-                  compromised_credentials[0], compromised_credentials[1])));
-  store->GetAllCompromisedCredentials(&consumer);
+  EXPECT_CALL(consumer, OnGetCompromisedCredentials(UnorderedElementsAre(
+                            credentials[0], credentials[1])));
+  store->GetAllInsecureCredentials(&consumer);
   WaitForPasswordStore();
 
   store->ShutdownOnUIThread();
 }
 
-TEST_F(PasswordStoreTest, UpdateCompromisedCredentialsSync) {
+TEST_F(PasswordStoreTest, UpdateInsecureCredentialsSync) {
   scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
   store->Init(/*prefs=*/nullptr);
 
@@ -1867,34 +1861,33 @@ TEST_F(PasswordStoreTest, UpdateCompromisedCredentialsSync) {
   store->AddLogin(*test_form);
   WaitForPasswordStore();
 
-  // Add one compromised credentials that is of typed Leaked and is NOT muted.
-  CompromisedCredentials credential(test_form->signon_realm,
-                                    test_form->username_value, base::Time(),
-                                    InsecureType::kLeaked, IsMuted(false));
-  store->AddCompromisedCredentials(credential);
+  // Add one insecure credentials that is of typed Leaked and is NOT muted.
+  InsecureCredential credential(test_form->signon_realm,
+                                test_form->username_value, base::Time(),
+                                InsecureType::kLeaked, IsMuted(false));
+  store->AddInsecureCredential(credential);
   WaitForPasswordStore();
 
-  std::vector<CompromisedCredentials> new_compromised_credentials;
-  new_compromised_credentials.push_back(credential);
+  std::vector<InsecureCredential> new_credentials;
+  new_credentials.push_back(credential);
   // Make that "Leaked" credentials muted
-  new_compromised_credentials[0].is_muted = IsMuted(true);
-  // Add another compromised credentials of type "Reused"
-  new_compromised_credentials.emplace_back(CompromisedCredentials(
-      test_form->signon_realm, test_form->username_value, base::Time(),
-      InsecureType::kReused, IsMuted(false)));
+  new_credentials[0].is_muted = IsMuted(true);
+  // Add another insecure credentials of type "Reused"
+  new_credentials.emplace_back(
+      InsecureCredential(test_form->signon_realm, test_form->username_value,
+                         base::Time(), InsecureType::kReused, IsMuted(false)));
 
-  // Update the password store with the new compromised credentials.
+  // Update the password store with the new insecure credentials.
   store->ScheduleTask(base::BindOnce(
-      IgnoreResult(&PasswordStore::UpdateCompromisedCredentialsSync), store,
-      *test_form, new_compromised_credentials));
+      IgnoreResult(&PasswordStore::UpdateInsecureCredentialsSync), store,
+      *test_form, new_credentials));
   WaitForPasswordStore();
 
   MockCompromisedCredentialsConsumer consumer;
   // Verify the password store has been updated.
   EXPECT_CALL(consumer, OnGetCompromisedCredentials(UnorderedElementsAre(
-                            new_compromised_credentials[0],
-                            new_compromised_credentials[1])));
-  store->GetAllCompromisedCredentials(&consumer);
+                            new_credentials[0], new_credentials[1])));
+  store->GetAllInsecureCredentials(&consumer);
   WaitForPasswordStore();
 
   store->ShutdownOnUIThread();
@@ -1909,7 +1902,7 @@ TEST_F(PasswordStoreTest, TestSyncMetaDataDroppedToSyncPhishedCredentials) {
     const PasswordForm form = MakePasswordForm(kTestWebRealm1);
     ASSERT_EQ(AddChangeForForm(form), db->AddLogin(form, nullptr));
     db->insecure_credentials_table().AddRow(
-        MakeCompromisedCredentials(form, InsecureType::kPhished));
+        MakeInsecureCredential(form, InsecureType::kPhished));
   }
   // The LoginDatabase gets destroyed here, later it will be initialized with
   // data.
@@ -1936,9 +1929,9 @@ TEST_F(PasswordStoreTest, TestDoNotDropMetaDataWhenNoPhishedCredentials) {
     const PasswordForm form = MakePasswordForm(kTestWebRealm1);
     ASSERT_EQ(AddChangeForForm(form), db->AddLogin(form, nullptr));
     db->insecure_credentials_table().AddRow(
-        MakeCompromisedCredentials(form, InsecureType::kLeaked));
+        MakeInsecureCredential(form, InsecureType::kLeaked));
     db->insecure_credentials_table().AddRow(
-        MakeCompromisedCredentials(form, InsecureType::kReused));
+        MakeInsecureCredential(form, InsecureType::kReused));
   }
   // The LoginDatabase gets destroyed here, later it will be initialized with
   // data.
@@ -1965,7 +1958,7 @@ TEST_F(PasswordStoreTest, TestDoNotDropMetaDataWhenAlreadyUploaded) {
     const PasswordForm form = MakePasswordForm(kTestWebRealm1);
     ASSERT_EQ(AddChangeForForm(form), db->AddLogin(form, nullptr));
     db->insecure_credentials_table().AddRow(
-        MakeCompromisedCredentials(form, InsecureType::kPhished));
+        MakeInsecureCredential(form, InsecureType::kPhished));
   }
   // The LoginDatabase gets destroyed here, later it will be initialized with
   // data.

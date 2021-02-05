@@ -72,15 +72,14 @@ class PasswordStoreImpl : public PasswordStore {
   std::vector<InteractionsStats> GetAllSiteStatsImpl() override;
   std::vector<InteractionsStats> GetSiteStatsImpl(
       const GURL& origin_domain) override;
-  PasswordStoreChangeList AddCompromisedCredentialsImpl(
-      const CompromisedCredentials& compromised_credentials) override;
-  PasswordStoreChangeList RemoveCompromisedCredentialsImpl(
+  PasswordStoreChangeList AddInsecureCredentialImpl(
+      const InsecureCredential& insecure_credential) override;
+  PasswordStoreChangeList RemoveInsecureCredentialsImpl(
       const std::string& signon_realm,
       const base::string16& username,
       RemoveInsecureCredentialsReason reason) override;
-  std::vector<CompromisedCredentials> GetAllCompromisedCredentialsImpl()
-      override;
-  std::vector<CompromisedCredentials> GetMatchingCompromisedCredentialsImpl(
+  std::vector<InsecureCredential> GetAllInsecureCredentialsImpl() override;
+  std::vector<InsecureCredential> GetMatchingInsecureCredentialsImpl(
       const std::string& signon_realm) override;
 
   void AddFieldInfoImpl(const FieldInfo& field_info) override;
@@ -96,7 +95,7 @@ class PasswordStoreImpl : public PasswordStore {
   bool CommitTransaction() override;
   FormRetrievalResult ReadAllLogins(
       PrimaryKeyToFormMap* key_to_form_map) override;
-  std::vector<CompromisedCredentials> ReadSecurityIssues(
+  std::vector<InsecureCredential> ReadSecurityIssues(
       FormPrimaryKey parent_key) override;
   PasswordStoreChangeList RemoveLoginByPrimaryKeySync(int primary_key) override;
   PasswordStoreSync::MetadataStore* GetMetadataStore() override;
