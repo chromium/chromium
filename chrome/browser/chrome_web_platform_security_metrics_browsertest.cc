@@ -18,6 +18,10 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/cross_origin_opener_policy.mojom.h"
 
+namespace {
+const int kWasmPageSize = 1 << 16;
+}  // namespace
+
 // Web platform security features are implemented by content/ and blink/.
 // However, since ContentBrowserClientImpl::LogWebFeatureForCurrentPage() is
 // currently left blank in content/, metrics logging can't be tested from
@@ -395,6 +399,248 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
   EXPECT_EQ(true,
             content::ExecJs(web_contents(), "new SharedArrayBuffer(8192)"));
+  CheckCounter(WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation, 0);
+  CheckCounter(WebFeature::kV8SharedArrayBufferConstructed, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       WasmMemorySharingCrossSite) {
+  GURL main_url = https_server().GetURL("a.com", "/empty.html");
+  GURL sub_url = https_server().GetURL("b.com", "/empty.html");
+
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
+  LoadIFrame(sub_url);
+
+  content::RenderFrameHost* main_document = web_contents()->GetAllFrames()[0];
+  content::RenderFrameHost* sub_document = web_contents()->GetAllFrames()[1];
+
+  EXPECT_EQ(true, content::ExecJs(main_document, R"(
+    received_memory = undefined;
+    addEventListener("message", event => {
+      received_memory = event.data;
+    });
+  )"));
+
+  EXPECT_EQ(true, content::ExecJs(sub_document, R"(
+    const memory = new WebAssembly.Memory({
+      initial:1,
+      maximum:1,
+      shared:true
+    });
+    parent.postMessage(memory, "*");
+  )"));
+
+  // It doesn't exist yet a warning or an error being dispatched for failing to
+  // send a WebAssembly.Memory. This test simply wait.
+  EXPECT_EQ("Success: Nothing received", content::EvalJs(main_document, R"(
+    new Promise(async resolve => {
+      await new Promise(r => setTimeout(r, 1000));
+      if (received_memory)
+        resolve("Failure: Received Webassembly Memory");
+      else
+        resolve("Success: Nothing received");
+    });
+  )"));
+
+  CheckCounter(WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation, 1);
+  CheckCounter(WebFeature::kV8SharedArrayBufferConstructed, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       WasmMemorySharingCrossOrigin) {
+  GURL main_url = https_server().GetURL("a.a.com", "/empty.html");
+  GURL sub_url = https_server().GetURL("b.a.com", "/empty.html");
+
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
+  LoadIFrame(sub_url);
+
+  content::RenderFrameHost* main_document = web_contents()->GetAllFrames()[0];
+  content::RenderFrameHost* sub_document = web_contents()->GetAllFrames()[1];
+
+  EXPECT_EQ(true, content::ExecJs(main_document, R"(
+    addEventListener("message", event => {
+      received_memory = event.data;
+    });
+  )"));
+
+  EXPECT_EQ(true, content::ExecJs(sub_document, R"(
+    const memory = new WebAssembly.Memory({
+      initial:1,
+      maximum:1,
+      shared:true
+    });
+    parent.postMessage(memory, "*");
+  )"));
+
+  EXPECT_EQ(1 * kWasmPageSize, content::EvalJs(main_document, R"(
+    new Promise(async resolve => {
+      while (!received_memory)
+        await new Promise(r => setTimeout(r, 10));
+      resolve(received_memory.buffer.byteLength);
+    });
+  )"));
+
+  CheckCounter(WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation, 1);
+  CheckCounter(WebFeature::kV8SharedArrayBufferConstructed, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       WasmMemorySharingSameOrigin) {
+  GURL main_url = https_server().GetURL("a.com", "/empty.html");
+  GURL sub_url = https_server().GetURL("a.com", "/empty.html");
+
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
+  LoadIFrame(sub_url);
+
+  content::RenderFrameHost* main_document = web_contents()->GetAllFrames()[0];
+  content::RenderFrameHost* sub_document = web_contents()->GetAllFrames()[1];
+
+  EXPECT_EQ(true, content::ExecJs(main_document, R"(
+    received_memory = undefined;
+    addEventListener("message", event => {
+      received_memory = event.data;
+    });
+  )"));
+
+  EXPECT_EQ(true, content::ExecJs(sub_document, R"(
+    const memory = new WebAssembly.Memory({
+      initial:1,
+      maximum:1,
+      shared:true
+    });
+    parent.postMessage(memory, "*");
+  )"));
+
+  EXPECT_EQ(1 * kWasmPageSize, content::EvalJs(main_document, R"(
+    new Promise(async resolve => {
+      while (!received_memory)
+        await new Promise(r => setTimeout(r, 10));
+      resolve(received_memory.buffer.byteLength);
+    });
+  )"));
+
+  CheckCounter(WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation, 1);
+  CheckCounter(WebFeature::kV8SharedArrayBufferConstructed, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       WasmMemorySharingCrossOriginBeforeSetDocumentDomain) {
+  GURL main_url = https_server().GetURL("sub.a.com", "/empty.html");
+  GURL sub_url = https_server().GetURL("a.com", "/empty.html");
+
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
+  LoadIFrame(sub_url);
+
+  content::RenderFrameHost* main_document = web_contents()->GetAllFrames()[0];
+  content::RenderFrameHost* sub_document = web_contents()->GetAllFrames()[1];
+
+  EXPECT_EQ(true, content::ExecJs(main_document, R"(
+    document.domain = "a.com";
+    received_memory = undefined;
+    addEventListener("message", event => {
+      received_memory = event.data;
+    });
+  )"));
+
+  EXPECT_EQ(true, content::ExecJs(sub_document, R"(
+    document.domain = "a.com";
+    const memory = new WebAssembly.Memory({
+      initial:1,
+      maximum:1,
+      shared:true
+    });
+    parent.postMessage(memory, "*");
+  )"));
+
+  EXPECT_EQ(1 * kWasmPageSize, content::EvalJs(main_document, R"(
+    new Promise(async resolve => {
+      while (!received_memory)
+        await new Promise(r => setTimeout(r, 10));
+      resolve(received_memory.buffer.byteLength);
+    });
+  )"));
+
+  CheckCounter(WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation, 1);
+  CheckCounter(WebFeature::kV8SharedArrayBufferConstructed, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       WasmMemorySharingCrossOriginAfterSetDocumentDomain) {
+  GURL main_url = https_server().GetURL("sub.a.com", "/empty.html");
+  GURL sub_url = https_server().GetURL("sub.a.com", "/empty.html");
+
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
+  LoadIFrame(sub_url);
+
+  content::RenderFrameHost* main_document = web_contents()->GetAllFrames()[0];
+  content::RenderFrameHost* sub_document = web_contents()->GetAllFrames()[1];
+
+  EXPECT_EQ(true, content::ExecJs(main_document, R"(
+    document.domain = "a.com";
+    received_memory = undefined;
+    addEventListener("message", event => {
+      received_memory = event.data;
+    });
+  )"));
+
+  EXPECT_EQ(true, content::ExecJs(sub_document, R"(
+    document.domain = "sub.a.com";
+    const memory = new WebAssembly.Memory({
+      initial:1,
+      maximum:1,
+      shared:true
+    });
+    parent.postMessage(memory, "*");
+  )"));
+
+  EXPECT_EQ(1 * kWasmPageSize, content::EvalJs(main_document, R"(
+    new Promise(async resolve => {
+      while (!received_memory)
+        await new Promise(r => setTimeout(r, 10));
+      resolve(received_memory.buffer.byteLength);
+    });
+  )"));
+
+  CheckCounter(WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation, 1);
+  CheckCounter(WebFeature::kV8SharedArrayBufferConstructed, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       WasmMemorySharingCrossOriginIsolated) {
+  GURL url =
+      https_server().GetURL("a.com",
+                            "/set-header"
+                            "?Cross-Origin-Opener-Policy: same-origin"
+                            "&Cross-Origin-Embedder-Policy: require-corp");
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
+  LoadIFrame(url);
+
+  content::RenderFrameHost* main_document = web_contents()->GetAllFrames()[0];
+  content::RenderFrameHost* sub_document = web_contents()->GetAllFrames()[1];
+
+  EXPECT_EQ(true, content::ExecJs(main_document, R"(
+    addEventListener("message", event => {
+      received_memory = event.data;
+    });
+  )"));
+
+  EXPECT_EQ(true, content::ExecJs(sub_document, R"(
+    const memory = new WebAssembly.Memory({
+      initial:1,
+      maximum:1,
+      shared:true
+    });
+    parent.postMessage(memory, "*");
+  )"));
+
+  EXPECT_EQ(1 * kWasmPageSize, content::EvalJs(main_document, R"(
+    new Promise(async resolve => {
+      while (!received_memory)
+        await new Promise(r => setTimeout(r, 10));
+      resolve(received_memory.buffer.byteLength);
+    });
+  )"));
+
   CheckCounter(WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation, 0);
   CheckCounter(WebFeature::kV8SharedArrayBufferConstructed, 1);
 }
