@@ -2256,3 +2256,16 @@ crbug.com/626703 external/wpt/pointerevents/pointerevent_pointerId_scope-manual.
 http/tests/eye-dropper/color-picker-show-eye-dropper.html [ Skip ]
 virtual/eye-dropper/http/tests/eye-dropper/color-picker-show-eye-dropper.html [ Pass ]
 virtual/dark-color-scheme/http/tests/eye-dropper/color-picker-show-eye-dropper.html [ Pass ]
+
+# Predefined counter styles that we support a larger range than the spec.
+external/wpt/css/css-counter-styles/armenian/css3-counter-styles-008.html [ Skip ]
+external/wpt/css/css-counter-styles/hebrew/css3-counter-styles-016a.html [ Skip ]
+external/wpt/css/css-counter-styles/korean-hangul-formal/css3-counter-styles-054.html [ Skip ]
+external/wpt/css/css-counter-styles/korean-hanja-formal/css3-counter-styles-064.html [ Skip ]
+external/wpt/css/css-counter-styles/korean-hanja-informal/css3-counter-styles-059.html [ Skip ]
+external/wpt/css/css-counter-styles/simp-chinese-formal/css3-counter-styles-078.html [ Skip ]
+external/wpt/css/css-counter-styles/simp-chinese-informal/css3-counter-styles-073.html [ Skip ]
+external/wpt/css/css-counter-styles/trad-chinese-formal/css3-counter-styles-088.html [ Skip ]
+external/wpt/css/css-counter-styles/trad-chinese-informal/css3-counter-styles-083.html [ Skip ]
+external/wpt/css/css-counter-styles/lower-armenian/css3-counter-styles-114.html [ Skip ]
+external/wpt/css/css-counter-styles/upper-armenian/css3-counter-styles-109.html [ Skip ]
