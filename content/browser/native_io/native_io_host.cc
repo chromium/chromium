@@ -19,6 +19,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/task_runner.h"
+#include "build/build_config.h"
 #include "content/browser/native_io/native_io_file_host.h"
 #include "content/browser/native_io/native_io_manager.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -195,12 +196,18 @@ NativeIOErrorPtr DoRenameFile(const base::FilePath& root_path,
 
 }  // namespace
 
-NativeIOHost::NativeIOHost(NativeIOManager* manager,
-                           const url::Origin& origin,
-                           base::FilePath root_path)
-    : root_path_(std::move(root_path)),
+NativeIOHost::NativeIOHost(const url::Origin& origin,
+                           base::FilePath root_path,
+#if defined(OS_MAC)
+                           bool allow_set_length_ipc,
+#endif  // defined(OS_MAC)
+                           NativeIOManager* manager)
+    : origin_(origin),
+      root_path_(std::move(root_path)),
+#if defined(OS_MAC)
+      allow_set_length_ipc_(allow_set_length_ipc),
+#endif  // defined(OS_MAC)
       manager_(manager),
-      origin_(origin),
       file_task_runner_(CreateFileTaskRunner()) {
   DCHECK(!root_path_.empty());
   DCHECK(manager != nullptr);
@@ -382,9 +389,13 @@ void NativeIOHost::DidOpenFile(
     return;
   }
 
-  open_file_hosts_.insert(
-      {name, std::make_unique<NativeIOFileHost>(std::move(file_host_receiver),
-                                                this, name)});
+  open_file_hosts_.insert({
+    name, std::make_unique<NativeIOFileHost>(this, name,
+#if defined(OS_MAC)
+                                             allow_set_length_ipc_,
+#endif  // defined(OS_MAC)
+                                             std::move(file_host_receiver))
+  });
 
   std::move(callback).Run(
       std::move(file), NativeIOManager::FileErrorToNativeIOError(open_error));

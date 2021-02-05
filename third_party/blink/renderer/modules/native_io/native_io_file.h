@@ -9,6 +9,7 @@
 
 #include "base/files/file.h"
 #include "base/memory/scoped_refptr.h"
+#include "build/build_config.h"
 #include "third_party/blink/public/mojom/native_io/native_io.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -48,7 +49,7 @@ class NativeIOFile final : public ScriptWrappable {
 
   ScriptPromise close(ScriptState*);
   ScriptPromise getLength(ScriptState*, ExceptionState&);
-  ScriptPromise setLength(ScriptState*, uint64_t length, ExceptionState&);
+  ScriptPromise setLength(ScriptState*, uint64_t new_length, ExceptionState&);
   ScriptPromise read(ScriptState*,
                      MaybeShared<DOMArrayBufferView> buffer,
                      uint64_t file_offset,
@@ -96,10 +97,23 @@ class NativeIOFile final : public ScriptWrappable {
                     int64_t length,
                     base::File::Error get_length_error);
 
+  // Performs the file I/O part of getLength(), off the main thread.
+  static void DoSetLength(
+      CrossThreadPersistent<NativeIOFile> native_io_file,
+      CrossThreadPersistent<ScriptPromiseResolver> resolver,
+      NativeIOFile::FileState* file_state,
+      scoped_refptr<base::SequencedTaskRunner> file_task_runner,
+      uint64_t new_length);
   // Performs the post file I/O part of setLength(), on the main thread.
-  void DidSetLength(ScriptPromiseResolver* resolver,
-                    base::File backing_file,
-                    mojom::blink::NativeIOErrorPtr set_length_result);
+  void DidSetLengthIo(CrossThreadPersistent<ScriptPromiseResolver> resolver,
+                      uint64_t new_length,
+                      base::File::Error set_length_result);
+#if defined(OS_MAC)
+  // Performs the post IPC part of setLength(), on the main thread.
+  void DidSetLengthIpc(ScriptPromiseResolver* resolver,
+                       base::File backing_file,
+                       mojom::blink::NativeIOErrorPtr set_length_result);
+#endif  // defined(OS_MAC)
 
   // Performs the file I/O part of read(), off the main thread.
   static void DoRead(

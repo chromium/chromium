@@ -1963,6 +1963,7 @@ source_set("browser") {
       "media/desktop_media_window_registry_mac.mm",
       "memory/swap_metrics_driver_impl_mac.cc",
       "memory/swap_metrics_driver_impl_mac.h",
+      "native_io/native_io_file_host_mac.cc",
       "renderer_host/clipboard_host_impl_mac.mm",
       "renderer_host/input/fling_scheduler_mac.h",
       "renderer_host/input/fling_scheduler_mac.mm",

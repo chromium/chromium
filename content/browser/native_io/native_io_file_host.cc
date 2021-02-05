@@ -8,50 +8,27 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/files/file.h"
 #include "base/sequence_checker.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
+#include "build/build_config.h"
 #include "content/browser/native_io/native_io_host.h"
 #include "content/browser/native_io/native_io_manager.h"
-#include "third_party/blink/public/common/native_io/native_io_utils.h"
 #include "third_party/blink/public/mojom/native_io/native_io.mojom.h"
-
-using blink::mojom::NativeIOError;
-using blink::mojom::NativeIOErrorPtr;
-using blink::mojom::NativeIOErrorType;
 
 namespace content {
 
-namespace {
-
-// Performs the file I/O work in SetLength().
-std::pair<base::File, base::File::Error> DoSetLength(const int64_t length,
-                                                     base::File file) {
-  DCHECK_GE(length, 0) << "The file length should not be negative";
-  base::File::Error set_length_error;
-  bool success = file.SetLength(length);
-  set_length_error = success ? base::File::FILE_OK : file.GetLastFileError();
-
-  return {std::move(file), set_length_error};
-}
-
-void DidSetLength(blink::mojom::NativeIOFileHost::SetLengthCallback callback,
-                  std::pair<base::File, base::File::Error> result) {
-  NativeIOErrorPtr error =
-      NativeIOManager::FileErrorToNativeIOError(result.second);
-  std::move(callback).Run(std::move(result.first), std::move(error));
-}
-
-}  // namespace
-
 NativeIOFileHost::NativeIOFileHost(
-    mojo::PendingReceiver<blink::mojom::NativeIOFileHost> file_host_receiver,
     NativeIOHost* origin_host,
-    std::string file_name)
+    std::string file_name,
+#if defined(OS_MAC)
+    bool allow_set_length_ipc,
+#endif  // defined(OS_MAC)
+    mojo::PendingReceiver<blink::mojom::NativeIOFileHost> file_host_receiver)
     : origin_host_(origin_host),
-      receiver_(this, std::move(file_host_receiver)),
-      file_name_(std::move(file_name)) {
+      file_name_(std::move(file_name)),
+#if defined(OS_MAC)
+      allow_set_length_ipc_(allow_set_length_ipc),
+#endif  // defined(OS_MAC)
+      receiver_(this, std::move(file_host_receiver)) {
   // base::Unretained is safe here because this NativeIOFileHost owns
   // |receiver_|. So, the unretained NativeIOFileHost is guaranteed to outlive
   // |receiver_| and the closure that it uses.
@@ -66,50 +43,6 @@ void NativeIOFileHost::Close(CloseCallback callback) {
 
   std::move(callback).Run();
   origin_host_->OnFileClose(this);  // Deletes |this|.
-}
-
-void NativeIOFileHost::SetLength(const int64_t length,
-                                 base::File file,
-                                 SetLengthCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (length < 0) {
-    mojo::ReportBadMessage("The file length cannot be negative.");
-    // No error message is specified as the ReportBadMessage() call should close
-    // the pipe and kill the renderer.
-    std::move(callback).Run(
-        std::move(file), NativeIOError::New(NativeIOErrorType::kUnknown, ""));
-    return;
-  }
-  // file.IsValid() does not interact with the file system, so we may call it on
-  // this thread.
-  if (!file.IsValid()) {
-    mojo::ReportBadMessage("The file is invalid.");
-    // No error message is specified as the ReportBadMessage() call should close
-    // the pipe and kill the renderer.
-    std::move(callback).Run(
-        std::move(file), NativeIOError::New(NativeIOErrorType::kUnknown, ""));
-    return;
-  }
-
-  // The NativeIO specification says that calling I/O methods on a file
-  // concurrently should result in errors. This check is done in the
-  // renderer. We don't need to replicate the check in the browser because
-  // performing operations concurrently is not a security issue. A misbehaving
-  // renderer would merely be exposed to OS-specific behavior.
-  //
-  // TaskTraits mirror those of the TaskRunner in NativeIOHost, i.e.,
-  // base::MayBlock() for file I/O, base::TaskPriority::USER_VISIBLE as some
-  // database operations might be blocking, and
-  // base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN, as blocking shutdown is not
-  // appropriate, yet CONTINUE_ON_SHUTDOWN might require more careful analysis.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&DoSetLength, length, std::move(file)),
-      base::BindOnce(&DidSetLength, std::move(callback)));
-  return;
 }
 
 void NativeIOFileHost::OnReceiverDisconnect() {

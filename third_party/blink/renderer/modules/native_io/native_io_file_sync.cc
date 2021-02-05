@@ -7,6 +7,7 @@
 #include <limits>
 
 #include "base/numerics/safe_conversions.h"
+#include "build/build_config.h"
 #include "third_party/blink/public/mojom/native_io/native_io.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -19,6 +20,10 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+
+#if defined(OS_MAC)
+#include "base/mac/mac_util.h"
+#endif
 
 namespace blink {
 
@@ -84,20 +89,31 @@ void NativeIOFileSync::setLength(uint64_t length,
                                "NativeIOHost backend went away"));
     return;
   }
-  mojom::blink::NativeIOErrorPtr set_length_result;
 
-  // Calls to setLength are routed through the browser process, see
-  // crbug.com/1084565.
-  //
-  // We keep a single handle per file, so this handle is passed to the backend
-  // and is then given back to the renderer afterwards.
-  backend_file_->SetLength(base::as_signed(length), std::move(backing_file_),
-                           &backing_file_, &set_length_result);
-  DCHECK(backing_file_.IsValid()) << "browser returned closed file";
-  if (set_length_result->type != mojom::blink::NativeIOErrorType::kSuccess) {
-    ThrowNativeIOWithError(exception_state, std::move(set_length_result));
+#if defined(OS_MAC)
+  // On macOS < 10.15, a sandboxing limitation causes failures in ftruncate()
+  // syscalls issued from renderers. For this reason, base::File::SetLength()
+  // fails in the renderer. We work around this problem by calling ftruncate()
+  // in the browser process. See crbug.com/1084565.
+  if (!base::mac::IsAtLeastOS10_15()) {
+    // Our system has at most one handle to a file, so we can avoid reasoning
+    // through the implications of multiple handles pointing to the same file.
+    //
+    // To preserve this invariant, we pass this file's handle to the browser
+    // process during the SetLength() mojo call, and the browser passes it back
+    // when the call completes.
+    mojom::blink::NativeIOErrorPtr set_length_result;
+    backend_file_->SetLength(base::as_signed(length), std::move(backing_file_),
+                             &backing_file_, &set_length_result);
+    DCHECK(backing_file_.IsValid()) << "browser returned closed file";
+    if (set_length_result->type != mojom::blink::NativeIOErrorType::kSuccess)
+      ThrowNativeIOWithError(exception_state, std::move(set_length_result));
+    return;
   }
-  return;
+#endif  // defined(OS_MAC)
+
+  if (!backing_file_.SetLength(base::as_signed(length)))
+    ThrowNativeIOWithError(exception_state, backing_file_.GetLastFileError());
 }
 
 uint64_t NativeIOFileSync::read(MaybeShared<DOMArrayBufferView> buffer,
@@ -150,12 +166,8 @@ void NativeIOFileSync::flush(ExceptionState& exception_state) {
                                "The file was already closed"));
     return;
   }
-  bool success = backing_file_.Flush();
-  if (!success) {
+  if (!backing_file_.Flush())
     ThrowNativeIOWithError(exception_state, backing_file_.GetLastFileError());
-    return;
-  }
-  return;
 }
 
 void NativeIOFileSync::Trace(Visitor* visitor) const {

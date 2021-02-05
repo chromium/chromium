@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/files/file_path.h"
+#include "build/build_config.h"
 #include "content/browser/native_io/native_io_host.h"
 #include "content/browser/native_io/native_io_quota_client.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -32,9 +33,15 @@ constexpr base::FilePath::CharType kNativeIODirectoryName[] =
 
 NativeIOManager::NativeIOManager(
     const base::FilePath& profile_root,
+#if defined(OS_MAC)
+    bool allow_set_length_ipc,
+#endif  // defined(OS_MAC)
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy)
     : root_path_(GetNativeIORootPath(profile_root)),
+#if defined(OS_MAC)
+      allow_set_length_ipc_(allow_set_length_ipc),
+#endif  // defined(OS_MAC)
       special_storage_policy_(std::move(special_storage_policy)),
       quota_manager_proxy_(std::move(quota_manager_proxy)),
       quota_client_receiver_(&quota_client_) {
@@ -77,9 +84,14 @@ void NativeIOManager::BindReceiver(
         << "Per-origin data should be in a sub-directory of NativeIO/";
 
     bool insert_succeeded;
-    std::tie(it, insert_succeeded) =
-        hosts_.insert({origin, std::make_unique<NativeIOHost>(
-                                   this, origin, std::move(origin_root_path))});
+    std::tie(it, insert_succeeded) = hosts_.insert({
+      origin,
+          std::make_unique<NativeIOHost>(origin, std::move(origin_root_path),
+#if defined(OS_MAC)
+                                         allow_set_length_ipc_,
+#endif  // defined(OS_MAC)
+                                         this)
+    });
   }
 
   it->second->BindReceiver(std::move(receiver));

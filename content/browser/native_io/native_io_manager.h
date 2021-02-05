@@ -11,6 +11,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
+#include "build/build_config.h"
 #include "components/services/storage/public/mojom/quota_client.mojom-forward.h"
 #include "content/browser/native_io/native_io_quota_client.h"
 #include "content/common/content_export.h"
@@ -38,8 +39,15 @@ class CONTENT_EXPORT NativeIOManager {
   // `profile_root` is empty for in-memory (Incognito) profiles. Otherwise,
   // `profile_root` must point to an existing directory. NativeIO will store its
   // data in a subdirectory of the profile root.
+  //
+  // `allow_set_length_ipc` gates NativeIOFileHost::SetLength(), which works
+  // around a sandboxing limitation on macOS < 10.15. This is plumbed as a flag
+  // all the from NativeIOManager to facilitate testing.
   explicit NativeIOManager(
       const base::FilePath& profile_root,
+#if defined(OS_MAC)
+      bool allow_set_length_ipc,
+#endif  // defined(OS_MAC)
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy);
 
@@ -77,17 +85,21 @@ class CONTENT_EXPORT NativeIOManager {
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
-  std::map<url::Origin, std::unique_ptr<NativeIOHost>> hosts_;
-
   // Points to the root directory for NativeIO files.
   //
   // This path is empty for in-memory (Incognito) profiles.
   const base::FilePath root_path_;
 
+#if defined(OS_MAC)
+  const bool allow_set_length_ipc_;
+#endif  // defined(OS_MAC)
+
   // Tracks special rights for apps and extensions, may be null.
   const scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy_;
 
   const scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
+
+  std::map<url::Origin, std::unique_ptr<NativeIOHost>> hosts_;
 
   NativeIOQuotaClient quota_client_;
 
