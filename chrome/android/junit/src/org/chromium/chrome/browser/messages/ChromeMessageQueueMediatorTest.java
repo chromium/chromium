@@ -150,4 +150,26 @@ public class ChromeMessageQueueMediatorTest {
         observer.getValue().onLastDialogDismissed();
         verify(mMessageDispatcher).resume(EXPECTED_TOKEN);
     }
+
+    /**
+     * Test NPE is not thrown when supplier offers a null value.
+     */
+    @Test
+    public void testThrowNothingWhenModalDialogManagerIsNull() {
+        OneshotSupplierImpl<LayoutStateProvider> layoutStateProviderOneShotSupplier =
+                new OneshotSupplierImpl<>();
+        ObservableSupplierImpl<TabModelSelector> tabModelSelectorSupplier =
+                new ObservableSupplierImpl<>();
+        ObservableSupplierImpl<ModalDialogManager> modalDialogManagerSupplier =
+                new ObservableSupplierImpl<>();
+        mMediator = new ChromeMessageQueueMediator(mBrowserControlsManager,
+                mMessageContainerCoordinator, mFullscreenManager,
+                layoutStateProviderOneShotSupplier, tabModelSelectorSupplier,
+                modalDialogManagerSupplier, mMessageDispatcher);
+        layoutStateProviderOneShotSupplier.set(mLayoutStateProvider);
+        tabModelSelectorSupplier.set(mTabModelSelector);
+        // To offer a null value, we have to offer a value other than null first.
+        modalDialogManagerSupplier.set(mModalDialogManager);
+        modalDialogManagerSupplier.set(null);
+    }
 }

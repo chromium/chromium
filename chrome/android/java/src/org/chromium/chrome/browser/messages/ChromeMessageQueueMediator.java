@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.messages;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.cc.input.BrowserControlsState;
@@ -39,8 +41,11 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate {
     private FullscreenManager mFullscreenManager;
     private int mBrowserControlsToken = TokenHolder.INVALID_TOKEN;
     private BrowserControlsObserver mBrowserControlsObserver;
+    @Nullable
     private LayoutStateProvider mLayoutStateProvider;
+    @Nullable
     private TabModelSelector mTabModelSelector;
+    @Nullable
     private ModalDialogManager mModalDialogManager;
 
     private FullscreenManager.Observer mFullScreenObserver = new Observer() {
@@ -210,25 +215,26 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate {
             mLayoutStateProvider.removeObserver(mLayoutStateObserver);
         }
         mLayoutStateProvider = layoutStateProvider;
+        if (layoutStateProvider == null) return;
         mLayoutStateProvider.addObserver(mLayoutStateObserver);
     }
 
     private void setTabModelSelector(TabModelSelector tabModelSelector) {
-        if (tabModelSelector == null) return;
         if (mTabModelSelector != null) {
             mTabModelSelector.getTabModelFilterProvider().removeTabModelFilterObserver(
                     mTabModelObserver);
         }
         mTabModelSelector = tabModelSelector;
+        if (tabModelSelector == null) return;
         mTabModelSelector.getTabModelFilterProvider().addTabModelFilterObserver(mTabModelObserver);
     }
 
     private void setModalDialogManager(ModalDialogManager modalDialogManager) {
-        if (modalDialogManager == null) return;
         if (mModalDialogManager != null) {
             mModalDialogManager.removeObserver(mModalDialogManagerObserver);
         }
         mModalDialogManager = modalDialogManager;
+        if (modalDialogManager == null) return;
         mModalDialogManager.addObserver(mModalDialogManagerObserver);
     }
 
