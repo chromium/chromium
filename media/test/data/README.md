@@ -178,13 +178,14 @@ has support for OPUS in MP4 as experimental.
 
 #### av1-svc-L2T2.ivf
 AV1 data that has spatial and temporal layers.
-This is the same as av1-1-b8-22-svc-L2T2.ivf in
-[libaom test vectors]:https://aomedia.googlesource.com/aom/+/master/test/test_vectors.cc
+This is the same as av1-1-b8-22-svc-L2T2.ivf in [libaom test vectors].
+The video license is [libaom LICENSE].
 
 #### av1-show_existing_frame.ivf
 AV1 data that contains frames with `show_existing_frame=1`.
 This is the same as 00000592.ivf in
-https://people.xiph.org/~tterribe/av1/samples-all/
+https://people.xiph.org/~tterribe/av1/samples-all/.
+The video license is [libaom LICENSE].
 
 #### blackwhite\_yuv444p-frame.av1.ivf
 The first frame of blackwhite\_yuv444p.mp4 coded in AV1 by the following command.
@@ -192,8 +193,8 @@ The first frame of blackwhite\_yuv444p.mp4 coded in AV1 by the following command
 
 #### av1-film\_grain.ivf
 AV1 data where film grain feature is used.
-This is the same as av1-1-b8-23-film\_grain-50.ivf in
-[libaom test vectors]:https://aomedia.googlesource.com/aom/+/master/test/test_vectors.cc
+This is the same as av1-1-b8-23-film\_grain-50.ivf in [libaom test vectors].
+The video license is [libaom LICENSE].
 
 ### Alpha Channel
 
@@ -1189,3 +1190,6 @@ https://people.xiph.org/~greg/opus_testvectors/
 * opus-trimming-test.mp4
 * opus-trimming-test.ogg
 * opus-trimming-test.webm
+
+[libaom test vectors]: https://aomedia.googlesource.com/aom/+/master/test/test_vectors.cc
+[libaom LICENSE]: https://source.chromium.org/chromium/chromium/src/+/master:media/test/data/licenses/AOM-LICENSE
