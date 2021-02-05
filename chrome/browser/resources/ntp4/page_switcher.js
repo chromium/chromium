@@ -14,148 +14,146 @@ import {getCurrentlyDraggingTile} from './tile_page.js';
  * between pages.
  */
 
+/**
+ * @constructor
+ * @extends {HTMLButtonElement}
+ */
+export function PageSwitcher() {}
+
+PageSwitcher.prototype = {
+  __proto__: HTMLButtonElement.prototype,
+
   /**
-   * @constructor
-   * @extends {HTMLButtonElement}
+   * Activate the switcher (go to the next card).
+   * @private
    */
-  export function PageSwitcher() {}
+  activate_() {
+    getCardSlider().selectCard(this.nextCardIndex_(), true);
+  },
 
-  PageSwitcher.prototype = {
-    __proto__: HTMLButtonElement.prototype,
+  /**
+   * Calculate the index of the card that this button will switch to.
+   * @private
+   */
+  nextCardIndex_() {
+    const cardSlider = getCardSlider();
+    const index = cardSlider.currentCard + this.direction_;
+    const numCards = cardSlider.cardCount - 1;
+    return Math.max(0, Math.min(index, numCards));
+  },
 
-    /**
-     * Activate the switcher (go to the next card).
-     * @private
-     */
-    activate_() {
-      getCardSlider().selectCard(this.nextCardIndex_(), true);
-    },
+  /**
+   * Update the accessible label attribute of this button, based on the
+   * current position in the card slider and the names of the cards.
+   * @param {NodeList} dots The dot elements which display the names of the
+   *     cards.
+   */
+  updateButtonAccessibleLabel(dots) {
+    const currentIndex = getCardSlider().currentCard;
+    const nextCardIndex = this.nextCardIndex_();
+    if (nextCardIndex == currentIndex) {
+      this.setAttribute('aria-label', '');  // No next card.
+      return;
+    }
 
-    /**
-     * Calculate the index of the card that this button will switch to.
-     * @private
-     */
-    nextCardIndex_() {
-      const cardSlider = getCardSlider();
-      const index = cardSlider.currentCard + this.direction_;
-      const numCards = cardSlider.cardCount - 1;
-      return Math.max(0, Math.min(index, numCards));
-    },
+    const currentDot = dots[currentIndex];
+    const nextDot = dots[nextCardIndex];
+    if (!currentDot || !nextDot) {
+      this.setAttribute('aria-label', '');  // Dots not initialised yet.
+      return;
+    }
 
-    /**
-     * Update the accessible label attribute of this button, based on the
-     * current position in the card slider and the names of the cards.
-     * @param {NodeList} dots The dot elements which display the names of the
-     *     cards.
-     */
-    updateButtonAccessibleLabel(dots) {
-      const currentIndex = getCardSlider().currentCard;
-      const nextCardIndex = this.nextCardIndex_();
-      if (nextCardIndex == currentIndex) {
-        this.setAttribute('aria-label', '');  // No next card.
-        return;
-      }
+    const currentPageTitle = currentDot.displayTitle;
+    const nextPageTitle = nextDot.displayTitle;
+    const msgName = (currentPageTitle == nextPageTitle) ?
+        'page_switcher_same_title' :
+        'page_switcher_change_title';
+    const ariaLabel = loadTimeData.getStringF(msgName, nextPageTitle);
+    this.setAttribute('aria-label', ariaLabel);
+  },
 
-      const currentDot = dots[currentIndex];
-      const nextDot = dots[nextCardIndex];
-      if (!currentDot || !nextDot) {
-        this.setAttribute('aria-label', '');  // Dots not initialised yet.
-        return;
-      }
+  shouldAcceptDrag(e) {
+    // Only allow page switching when a drop could happen on the page being
+    // switched to.
+    const nextPage = getCardSlider().getCardAtIndex(this.nextCardIndex_());
+    return nextPage.shouldAcceptDrag(e);
+  },
 
-      const currentPageTitle = currentDot.displayTitle;
-      const nextPageTitle = nextDot.displayTitle;
-      const msgName = (currentPageTitle == nextPageTitle) ?
-          'page_switcher_same_title' :
-          'page_switcher_change_title';
-      const ariaLabel = loadTimeData.getStringF(msgName, nextPageTitle);
-      this.setAttribute('aria-label', ariaLabel);
-    },
+  doDragEnter(e) {
+    this.scheduleDelayedSwitch_(e);
+    this.doDragOver(e);
+  },
 
-    shouldAcceptDrag(e) {
-      // Only allow page switching when a drop could happen on the page being
-      // switched to.
-      const nextPage =
-          getCardSlider().getCardAtIndex(this.nextCardIndex_());
-      return nextPage.shouldAcceptDrag(e);
-    },
+  doDragLeave(e) {
+    this.cancelDelayedSwitch_();
+  },
 
-    doDragEnter(e) {
-      this.scheduleDelayedSwitch_(e);
-      this.doDragOver(e);
-    },
+  doDragOver(e) {
+    e.preventDefault();
+    const targetPage = getCardSlider().currentCardValue;
+    if (targetPage.shouldAcceptDrag(e)) {
+      targetPage.setDropEffect(e.dataTransfer);
+    }
+  },
 
-    doDragLeave(e) {
-      this.cancelDelayedSwitch_();
-    },
+  doDrop(e) {
+    e.stopPropagation();
+    this.cancelDelayedSwitch_();
 
-    doDragOver(e) {
-      e.preventDefault();
-      const targetPage = getCardSlider().currentCardValue;
-      if (targetPage.shouldAcceptDrag(e)) {
-        targetPage.setDropEffect(e.dataTransfer);
-      }
-    },
+    const tile = getCurrentlyDraggingTile();
+    if (!tile) {
+      return;
+    }
 
-    doDrop(e) {
-      e.stopPropagation();
-      this.cancelDelayedSwitch_();
+    const sourcePage = tile.tilePage;
+    const targetPage = getCardSlider().currentCardValue;
+    if (targetPage == sourcePage || !targetPage.shouldAcceptDrag(e)) {
+      return;
+    }
 
-      const tile = getCurrentlyDraggingTile();
-      if (!tile) {
-        return;
-      }
+    targetPage.appendDraggingTile();
+  },
 
-      const sourcePage = tile.tilePage;
-      const targetPage = getCardSlider().currentCardValue;
-      if (targetPage == sourcePage || !targetPage.shouldAcceptDrag(e)) {
-        return;
-      }
+  /**
+   * Starts a timer to activate the switcher. The timer repeats until
+   * cancelled by cancelDelayedSwitch_.
+   * @private
+   */
+  scheduleDelayedSwitch_(e) {
+    // Stop switching when the next page can't be dropped onto.
+    const nextPage = getCardSlider().getCardAtIndex(this.nextCardIndex_());
+    if (!nextPage.shouldAcceptDrag(e)) {
+      return;
+    }
 
-      targetPage.appendDraggingTile();
-    },
+    const self = this;
+    function navPageClearTimeout() {
+      self.activate_();
+      self.dragNavTimeout_ = null;
+      self.scheduleDelayedSwitch_(e);
+    }
+    this.dragNavTimeout_ = window.setTimeout(navPageClearTimeout, 500);
+  },
 
-    /**
-     * Starts a timer to activate the switcher. The timer repeats until
-     * cancelled by cancelDelayedSwitch_.
-     * @private
-     */
-    scheduleDelayedSwitch_(e) {
-      // Stop switching when the next page can't be dropped onto.
-      const nextPage =
-          getCardSlider().getCardAtIndex(this.nextCardIndex_());
-      if (!nextPage.shouldAcceptDrag(e)) {
-        return;
-      }
+  /**
+   * Cancels the timer that activates the switcher while dragging.
+   * @private
+   */
+  cancelDelayedSwitch_() {
+    if (this.dragNavTimeout_) {
+      window.clearTimeout(this.dragNavTimeout_);
+      this.dragNavTimeout_ = null;
+    }
+  },
 
-      const self = this;
-      function navPageClearTimeout() {
-        self.activate_();
-        self.dragNavTimeout_ = null;
-        self.scheduleDelayedSwitch_(e);
-      }
-      this.dragNavTimeout_ = window.setTimeout(navPageClearTimeout, 500);
-    },
+};
 
-    /**
-     * Cancels the timer that activates the switcher while dragging.
-     * @private
-     */
-    cancelDelayedSwitch_() {
-      if (this.dragNavTimeout_) {
-        window.clearTimeout(this.dragNavTimeout_);
-        this.dragNavTimeout_ = null;
-      }
-    },
+export function initializePageSwitcher(el) {
+  el.__proto__ = PageSwitcher.prototype;
 
-  };
+  el.addEventListener('click', el.activate_);
 
-  export function initializePageSwitcher(el) {
-    el.__proto__ = PageSwitcher.prototype;
+  el.direction_ = el.id == 'page-switcher-start' ? -1 : 1;
 
-    el.addEventListener('click', el.activate_);
-
-    el.direction_ = el.id == 'page-switcher-start' ? -1 : 1;
-
-    el.dragWrapper_ = new DragWrapper(el, el);
-  }
+  el.dragWrapper_ = new DragWrapper(el, el);
+}

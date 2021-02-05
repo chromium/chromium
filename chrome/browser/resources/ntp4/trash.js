@@ -11,63 +11,61 @@ import {getCurrentlyDraggingTile, setCurrentDropEffect} from './tile_page.js';
  */
 
 
+/**
+ * @constructor
+ * @extends {HTMLDivElement}
+ * @implements {DragWrapperDelegate}
+ */
+export function Trash(trash) {
+  trash.__proto__ = Trash.prototype;
+  trash.initialize();
+  return trash;
+}
+
+Trash.prototype = {
+  __proto__: HTMLDivElement.prototype,
+
+  initialize(element) {
+    this.dragWrapper_ = new DragWrapper(this, this);
+  },
+
   /**
-   * @constructor
-   * @extends {HTMLDivElement}
-   * @implements {DragWrapperDelegate}
+   * Determines whether we are interested in the drag data for |e|.
+   * @param {Event} e The event from drag enter.
+   * @return {boolean} True if we are interested in the drag data for |e|.
    */
-  export function Trash(trash) {
-    trash.__proto__ = Trash.prototype;
-    trash.initialize();
-    return trash;
-  }
+  shouldAcceptDrag(e) {
+    const tile = getCurrentlyDraggingTile();
+    if (!tile) {
+      return false;
+    }
 
-  Trash.prototype = {
-    __proto__: HTMLDivElement.prototype,
+    return tile.firstChild.canBeRemoved();
+  },
 
-    initialize(element) {
-      this.dragWrapper_ = new DragWrapper(this, this);
-    },
+  /** @override */
+  doDragOver(e) {
+    getCurrentlyDraggingTile().dragClone.classList.add('hovering-on-trash');
+    setCurrentDropEffect(e.dataTransfer, 'move');
+    e.preventDefault();
+  },
 
-    /**
-     * Determines whether we are interested in the drag data for |e|.
-     * @param {Event} e The event from drag enter.
-     * @return {boolean} True if we are interested in the drag data for |e|.
-     */
-    shouldAcceptDrag(e) {
-      const tile = getCurrentlyDraggingTile();
-      if (!tile) {
-        return false;
-      }
+  /** @override */
+  doDragEnter(e) {
+    this.doDragOver(e);
+  },
 
-      return tile.firstChild.canBeRemoved();
-    },
+  /** @override */
+  doDrop(e) {
+    e.preventDefault();
 
-    /** @override */
-    doDragOver(e) {
-      getCurrentlyDraggingTile().dragClone.classList.add(
-          'hovering-on-trash');
-      setCurrentDropEffect(e.dataTransfer, 'move');
-      e.preventDefault();
-    },
+    const tile = getCurrentlyDraggingTile();
+    tile.firstChild.removeFromChrome();
+    tile.landedOnTrash = true;
+  },
 
-    /** @override */
-    doDragEnter(e) {
-      this.doDragOver(e);
-    },
-
-    /** @override */
-    doDrop(e) {
-      e.preventDefault();
-
-      const tile = getCurrentlyDraggingTile();
-      tile.firstChild.removeFromChrome();
-      tile.landedOnTrash = true;
-    },
-
-    /** @override */
-    doDragLeave(e) {
-      getCurrentlyDraggingTile().dragClone.classList.remove(
-          'hovering-on-trash');
-    },
-  };
+  /** @override */
+  doDragLeave(e) {
+    getCurrentlyDraggingTile().dragClone.classList.remove('hovering-on-trash');
+  },
+};
