@@ -65,8 +65,6 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
  protected:
   LayoutObject* layout_object_;
 
-  LayoutBoxModelObject* GetLayoutBoxModelObject() const override;
-
   //
   // Overridden from AXObject.
   //

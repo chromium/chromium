@@ -264,10 +264,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   // Inline text boxes.
   void LoadInlineTextBoxes() override;
 
-  virtual LayoutBoxModelObject* GetLayoutBoxModelObject() const {
-    return nullptr;
-  }
-
   //
   // Layout object specific methods.
   //

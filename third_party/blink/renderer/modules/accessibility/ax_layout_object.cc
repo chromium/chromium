@@ -113,10 +113,6 @@ AXLayoutObject::~AXLayoutObject() {
   DCHECK(IsDetached());
 }
 
-LayoutBoxModelObject* AXLayoutObject::GetLayoutBoxModelObject() const {
-  return DynamicTo<LayoutBoxModelObject>(layout_object_);
-}
-
 bool IsProgrammaticallyScrollable(LayoutBox* box) {
   if (!box->IsScrollContainer())
     return false;
@@ -154,8 +150,9 @@ ScrollableArea* AXLayoutObject::GetScrollableAreaIfScrollable() const {
   return nullptr;
 }
 
-static bool IsImageOrAltText(LayoutBoxModelObject* box, Node* node) {
-  if (box && box->IsImage())
+static bool IsImageOrAltText(LayoutObject* layout_object, Node* node) {
+  DCHECK(layout_object);
+  if (layout_object->IsImage())
     return true;
   if (IsA<HTMLImageElement>(node))
     return true;
@@ -167,12 +164,12 @@ static bool IsImageOrAltText(LayoutBoxModelObject* box, Node* node) {
 
 ax::mojom::blink::Role AXLayoutObject::RoleFromLayoutObject(
     ax::mojom::blink::Role dom_role) const {
+  DCHECK(layout_object_);
   // Markup did not provide a specific role, so attempt to determine one
   // from the computed style.
-  Node* node = layout_object_->GetNode();
-  LayoutBoxModelObject* css_box = GetLayoutBoxModelObject();
+  Node* node = GetNode();
 
-  if ((css_box && css_box->IsListItem()) || IsA<HTMLLIElement>(node))
+  if (layout_object_->IsListItem() || IsA<HTMLLIElement>(node))
     return ax::mojom::blink::Role::kListItem;
   if (layout_object_->IsListMarkerIncludingAll())
     return ax::mojom::blink::Role::kListMarker;
@@ -194,7 +191,7 @@ ax::mojom::blink::Role AXLayoutObject::RoleFromLayoutObject(
   if (layout_object_->IsTableCell() && node)
     return DetermineTableCellRole();
 
-  if (css_box && IsImageOrAltText(css_box, node)) {
+  if (IsImageOrAltText(layout_object_, node)) {
     if (node && node->IsLink())
       return ax::mojom::blink::Role::kImageMap;
     if (IsA<HTMLInputElement>(node))
@@ -206,7 +203,7 @@ ax::mojom::blink::Role AXLayoutObject::RoleFromLayoutObject(
   if (IsA<HTMLCanvasElement>(node))
     return ax::mojom::blink::Role::kCanvas;
 
-  if (IsA<LayoutView>(css_box))
+  if (IsA<LayoutView>(layout_object_))
     return ax::mojom::blink::Role::kRootWebArea;
 
   if (layout_object_->IsSVGImage())
@@ -1131,11 +1128,9 @@ String AXLayoutObject::StringValue() const {
   if (!layout_object_)
     return String();
 
-  LayoutBoxModelObject* css_box = GetLayoutBoxModelObject();
-
   auto* select_element =
       DynamicTo<HTMLSelectElement>(layout_object_->GetNode());
-  if (css_box && select_element && select_element->UsesMenuList()) {
+  if (select_element && select_element->UsesMenuList()) {
     // LayoutMenuList will go straight to the text() of its selected item.
     // This has to be overridden in the case where the selected item has an ARIA
     // label.
@@ -1420,16 +1415,15 @@ bool AXLayoutObject::OnNativeSetValueAction(const String& string) {
   if (!layout_object_ || !layout_object_->IsBoxModelObject())
     return false;
 
-  auto* layout_object = To<LayoutBoxModelObject>(layout_object_);
   auto* html_input_element = DynamicTo<HTMLInputElement>(*GetNode());
-  if (html_input_element && layout_object->IsTextFieldIncludingNG()) {
+  if (html_input_element && layout_object_->IsTextFieldIncludingNG()) {
     html_input_element->setValue(
         string, TextFieldEventBehavior::kDispatchInputAndChangeEvent);
     return true;
   }
 
   if (auto* text_area_element = DynamicTo<HTMLTextAreaElement>(*GetNode())) {
-    DCHECK(layout_object->IsTextAreaIncludingNG());
+    DCHECK(layout_object_->IsTextAreaIncludingNG());
     text_area_element->setValue(
         string, TextFieldEventBehavior::kDispatchInputAndChangeEvent);
     return true;
@@ -1692,7 +1686,7 @@ bool AXLayoutObject::IsDataTable() const {
       if (row < 5 && row == alternating_row_color_count) {
         LayoutObject* layout_row = cell_layout_block->Parent();
         if (!layout_row || !layout_row->IsBoxModelObject() ||
-            !To<LayoutBoxModelObject>(layout_row)->IsTableRow())
+            !layout_row->IsTableRow())
           continue;
         const ComputedStyle* row_computed_style = layout_row->Style();
         if (!row_computed_style)
