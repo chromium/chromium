@@ -158,7 +158,7 @@ void TemplateURLFetcherTest::StartDownload(
       content::BrowserContext::GetDefaultStoragePartition(profile)
           ->GetURLLoaderFactoryForBrowserProcess()
           .get(),
-      0 /* render_frame_id */, 0 /* resource_type */, kRequestID);
+      0 /* render_frame_id */, kRequestID);
 }
 
 void TemplateURLFetcherTest::WaitForDownloadToFinish() {

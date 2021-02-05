@@ -195,18 +195,15 @@ void SearchEngineTabHelper::AddTemplateURLByOSDD(const GURL& page_url,
     return;
 
   // Download the OpenSearch description document. If this is successful, a
-  // new keyword will be created when done. For the last two args:
-  //   1. Used by newwork::ResourceRequest::render_frame_id. We don't use Blink
-  //   so leave it to be the default value defined here:
-  //      https://cs.chromium.org/chromium/src/services/network/public/cpp/resource_request.h?rcl=39c6fbea496641a6514e34c0ab689871d14e6d52&l=194;
-  //   2. Used by network::ResourceRequest::resource_type. It's a design defect:
-  //      https://cs.chromium.org/chromium/src/services/network/public/cpp/resource_request.h?rcl=39c6fbea496641a6514e34c0ab689871d14e6d52&l=100
-  //      Use the same value as the SearchEngineTabHelper for Desktop.
+  // new keyword will be created when done. For |render_frame_id| arg, it's used
+  // by network::ResourceRequest::render_frame_id, we don't use Blink so leave
+  // it to be the default value defined here:
+  //   https://cs.chromium.org/chromium/src/services/network/public/cpp/resource_request.h?rcl=39c6fbea496641a6514e34c0ab689871d14e6d52&l=194;
   ios::TemplateURLFetcherFactory::GetForBrowserState(browser_state)
       ->ScheduleDownload(keyword, osdd_url, item->GetFavicon().url,
                          url::Origin::Create(web_state_->GetLastCommittedURL()),
-                         browser_state->GetURLLoaderFactory(), MSG_ROUTING_NONE,
-                         /* content::ResourceType::kSubResource */ 6,
+                         browser_state->GetURLLoaderFactory(),
+                         /* render_frame_id */ MSG_ROUTING_NONE,
                          /* request_id */ 0);
 }
 
