@@ -286,7 +286,7 @@ TEST_F(BluetoothClassicMediumTest, TestConnectToService_Success) {
       kDeviceAddress1, kNearbySharingServiceUuid);
 
   auto bluetooth_socket = bluetooth_classic_medium_->ConnectToService(
-      *last_device_discovered_, kNearbySharingServiceUuid.value());
+      *last_device_discovered_, kNearbySharingServiceUuid.value(), nullptr);
   EXPECT_EQ(last_device_discovered_, bluetooth_socket->GetRemoteDevice());
 
   EXPECT_TRUE(bluetooth_socket->Close().Ok());
@@ -303,7 +303,7 @@ TEST_F(BluetoothClassicMediumTest, TestConnectToService_Failure) {
       kDeviceAddress1, kNearbySharingServiceUuid);
 
   EXPECT_FALSE(bluetooth_classic_medium_->ConnectToService(
-      *last_device_discovered_, kNearbySharingServiceUuid.value()));
+      *last_device_discovered_, kNearbySharingServiceUuid.value(), nullptr));
 }
 
 TEST_F(BluetoothClassicMediumTest, TestListenForService_Success) {

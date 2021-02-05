@@ -48,7 +48,8 @@ class BleMedium : public api::BleMedium,
   bool StopAcceptingConnections(const std::string& service_id) override;
   std::unique_ptr<api::BleSocket> Connect(
       api::BlePeripheral& ble_peripheral,
-      const std::string& service_id) override;
+      const std::string& service_id,
+      CancellationFlag* cancellation_flag) override;
 
  private:
   // bluetooth::mojom::AdapterObserver:

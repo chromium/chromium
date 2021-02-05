@@ -41,7 +41,8 @@ class BluetoothClassicMedium : public api::BluetoothClassicMedium,
   bool StopDiscovery() override;
   std::unique_ptr<api::BluetoothSocket> ConnectToService(
       api::BluetoothDevice& remote_device,
-      const std::string& service_uuid) override;
+      const std::string& service_uuid,
+      CancellationFlag* cancellation_flag) override;
   std::unique_ptr<api::BluetoothServerSocket> ListenForService(
       const std::string& service_name,
       const std::string& service_uuid) override;

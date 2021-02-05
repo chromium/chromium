@@ -360,7 +360,7 @@ TEST_F(BleMediumTest, TestConnect) {
           std::string, device::BluetoothUUID>());
 
   // Connect() should do nothing and not return a valid api::BleSocket.
-  EXPECT_FALSE(ble_medium_->Connect(ble_peripheral, kServiceId1));
+  EXPECT_FALSE(ble_medium_->Connect(ble_peripheral, kServiceId1, nullptr));
 }
 
 }  // namespace chrome

@@ -65,6 +65,7 @@ source_set("platform_api_comm") {
   public_deps = [
     ":offline_wire_formats_proto",
     ":platform_base",
+    ":platform_base_cancellation_flag",
     "//third_party/abseil-cpp:absl",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
