@@ -233,7 +233,7 @@ bool NGGridLayoutAlgorithm::GridItemData::IsSpanningIntrinsicTrack(
 NGGridLayoutAlgorithm::ItemSetIndices
 NGGridLayoutAlgorithm::GridItemData::SetIndices(
     const NGGridLayoutAlgorithmTrackCollection& track_collection,
-    NGGridPlacement* grid_placement) {
+    const NGGridPlacement* grid_placement) {
   const GridTrackSizingDirection track_direction = track_collection.Direction();
 
   // If the set indices are already computed, we can just return them.
@@ -1792,9 +1792,12 @@ void NGGridLayoutAlgorithm::PlaceItems(
                  column_track_alignment_geometry.gutter_size,
                  row_track_alignment_geometry.gutter_size);
 
-  // TODO(ansollan): This block will probably need to be moved to include the
-  // computation of the indices of out of flow descendants.
-  // Cache set indices for out of flow items, as all of them will be used.
+  PlaceOutOfFlowDescendants(column_track_collection, row_track_collection,
+                            column_set_offsets, row_set_offsets,
+                            *grid_placement, *block_size,
+                            column_track_alignment_geometry.gutter_size,
+                            row_track_alignment_geometry.gutter_size);
+
   for (GridItemData& out_of_flow_item : *out_of_flow_items) {
     out_of_flow_item.SetIndices(column_track_collection, grid_placement);
     out_of_flow_item.SetIndices(row_track_collection, grid_placement);
@@ -1911,21 +1914,18 @@ void NGGridLayoutAlgorithm::PlaceGridItems(
     DCHECK(grid_item.column_set_indices.has_value());
     DCHECK(grid_item.row_set_indices.has_value());
 
-    LogicalOffset offset;
-    LogicalSize size;
-    ComputeOffsetAndSize(grid_item, column_set_offsets, column_gutter_size,
-                         &offset.inline_offset, &size.inline_size);
-    ComputeOffsetAndSize(grid_item, row_set_offsets, row_gutter_size,
-                         &offset.block_offset, &size.block_size, kForRows,
-                         block_size);
+    LogicalRect containing_grid_area = ComputeContainingGridAreaRect(
+        grid_item, column_set_offsets, row_set_offsets, block_size,
+        column_gutter_size, row_gutter_size);
+
     const auto& item_style = grid_item.node.Style();
     NGConstraintSpaceBuilder builder(ConstraintSpace(),
                                      item_style.GetWritingDirection(),
                                      /* is_new_fc */ true);
     SetOrthogonalFallbackInlineSizeIfNeeded(Style(), grid_item.node, &builder);
     builder.SetIsPaintedAtomically(true);
-    builder.SetAvailableSize(size);
-    builder.SetPercentageResolutionSize(size);
+    builder.SetAvailableSize(containing_grid_area.size);
+    builder.SetPercentageResolutionSize(containing_grid_area.size);
 
     builder.SetStretchInlineSizeIfAuto(grid_item.is_inline_axis_stretched);
     builder.SetStretchBlockSizeIfAuto(grid_item.is_block_axis_stretched);
@@ -1938,17 +1938,17 @@ void NGGridLayoutAlgorithm::PlaceGridItems(
     // Apply the grid-item's alignment (if any).
     NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
                            physical_fragment);
-    offset +=
-        LogicalOffset(AlignmentOffset(size.inline_size, fragment.InlineSize(),
-                                      grid_item.margins.inline_start,
-                                      grid_item.margins.inline_end,
-                                      grid_item.inline_axis_alignment),
-                      AlignmentOffset(size.block_size, fragment.BlockSize(),
-                                      grid_item.margins.block_start,
-                                      grid_item.margins.block_end,
-                                      grid_item.block_axis_alignment));
+    containing_grid_area.offset += LogicalOffset(
+        AlignmentOffset(containing_grid_area.size.inline_size,
+                        fragment.InlineSize(), grid_item.margins.inline_start,
+                        grid_item.margins.inline_end,
+                        grid_item.inline_axis_alignment),
+        AlignmentOffset(containing_grid_area.size.block_size,
+                        fragment.BlockSize(), grid_item.margins.block_start,
+                        grid_item.margins.block_end,
+                        grid_item.block_axis_alignment));
 
-    container_builder_.AddChild(physical_fragment, offset);
+    container_builder_.AddChild(physical_fragment, containing_grid_area.offset);
 
     // Compares GridArea objects in row-major grid order for baseline
     // precedence. Returns 'true' if |a| < |b| and 'false' otherwise.
@@ -1957,7 +1957,8 @@ void NGGridLayoutAlgorithm::PlaceGridItems(
       return (a.rows < b.rows) || (a.rows == b.rows && (a.columns < b.columns));
     };
 
-    LayoutUnit baseline = fragment.BaselineOrSynthesize() + offset.block_offset;
+    LayoutUnit baseline = fragment.BaselineOrSynthesize() +
+                          containing_grid_area.offset.block_offset;
     if (grid_item.block_axis_alignment == AxisEdge::kBaseline) {
       if (!alignment_baseline ||
           IsBeforeInGridOrder(grid_item.resolved_position,
@@ -1996,15 +1997,9 @@ void NGGridLayoutAlgorithm::PlaceOutOfFlowItems(
     DCHECK(out_of_flow_item.column_set_indices.has_value());
     DCHECK(out_of_flow_item.row_set_indices.has_value());
 
-    LogicalRect containing_block_rect;
-    ComputeOffsetAndSize(out_of_flow_item, column_set_offsets,
-                         column_gutter_size,
-                         &containing_block_rect.offset.inline_offset,
-                         &containing_block_rect.size.inline_size);
-    ComputeOffsetAndSize(out_of_flow_item, row_set_offsets, row_gutter_size,
-                         &containing_block_rect.offset.block_offset,
-                         &containing_block_rect.size.block_size, kForRows,
-                         block_size);
+    LogicalRect containing_block_rect = ComputeContainingGridAreaRect(
+        out_of_flow_item, column_set_offsets, row_set_offsets, block_size,
+        column_gutter_size, row_gutter_size);
     NGLogicalStaticPosition::InlineEdge inline_edge;
     NGLogicalStaticPosition::BlockEdge block_edge;
     LogicalOffset child_offset = containing_block_rect.offset;
@@ -2019,14 +2014,64 @@ void NGGridLayoutAlgorithm::PlaceOutOfFlowItems(
   }
 }
 
+void NGGridLayoutAlgorithm::PlaceOutOfFlowDescendants(
+    const NGGridLayoutAlgorithmTrackCollection& column_track_collection,
+    const NGGridLayoutAlgorithmTrackCollection& row_track_collection,
+    const Vector<LayoutUnit>& column_set_offsets,
+    const Vector<LayoutUnit>& row_set_offsets,
+    const NGGridPlacement& grid_placement,
+    LayoutUnit block_size,
+    LayoutUnit column_gutter_size,
+    LayoutUnit row_gutter_size) {
+  // At this point, we'll have a list of OOF candidates from any inflow children
+  // of the grid (which have been propagated up). These might have an assigned
+  // 'grid-area', so we need to assign their correct 'containing block rect'.
+  Vector<NGLogicalOutOfFlowPositionedNode>* out_of_flow_descendants =
+      container_builder_.MutableOutOfFlowPositionedCandidates();
+  DCHECK(out_of_flow_descendants);
+
+  for (auto& out_of_flow_descendant : *out_of_flow_descendants) {
+    // TODO(ansollan): We don't need all parameters from |GridItemData| for out
+    // of flow items. Implement a reduced version in |MeasureGridItem| or only
+    // fill what is needed here.
+    GridItemData out_of_flow_item =
+        MeasureGridItem(out_of_flow_descendant.node);
+
+    out_of_flow_item.SetIndices(column_track_collection, &grid_placement);
+    out_of_flow_item.SetIndices(row_track_collection, &grid_placement);
+
+    out_of_flow_descendant.containing_block_rect =
+        ComputeContainingGridAreaRect(out_of_flow_item, column_set_offsets,
+                                      row_set_offsets, block_size,
+                                      column_gutter_size, row_gutter_size);
+  }
+}
+
+LogicalRect NGGridLayoutAlgorithm::ComputeContainingGridAreaRect(
+    const GridItemData& item,
+    const Vector<LayoutUnit>& column_set_offsets,
+    const Vector<LayoutUnit>& row_set_offsets,
+    LayoutUnit block_size,
+    LayoutUnit column_gutter_size,
+    LayoutUnit row_gutter_size) {
+  LogicalRect rect;
+  ComputeOffsetAndSize(item, column_set_offsets, kForColumns, block_size,
+                       column_gutter_size, &rect.offset.inline_offset,
+                       &rect.size.inline_size);
+  ComputeOffsetAndSize(item, row_set_offsets, kForRows, block_size,
+                       row_gutter_size, &rect.offset.block_offset,
+                       &rect.size.block_size);
+  return rect;
+}
+
 void NGGridLayoutAlgorithm::ComputeOffsetAndSize(
     const GridItemData& item,
     const Vector<LayoutUnit>& set_offsets,
+    const GridTrackSizingDirection track_direction,
+    LayoutUnit block_size,
     LayoutUnit gutter_size,
     LayoutUnit* start_offset,
-    LayoutUnit* size,
-    GridTrackSizingDirection track_direction,
-    LayoutUnit block_size) const {
+    LayoutUnit* size) const {
   wtf_size_t start_index, end_index;
   LayoutUnit border;
   // The default padding box value of the |size| will only be used in out of

@@ -512,6 +512,9 @@ virtual/layout_ng_block_frag/* [ Skip ]
 ### virtual/layout_ng_fragment_traversal/
 virtual/layout_ng_fragment_traversal/* [ Skip ]
 
+### virtual/layout-ng-grid/
+virtual/layout-ng-grid/* [ Skip ]
+
 ### virtual/layout-ng-grid/external/wpt/css/css-grid/abspos/
 crbug.com/591099 virtual/layout-ng-grid/external/wpt/css/css-grid/abspos/orthogonal-positioned-grid-descendants-001.html [ Failure ]
 

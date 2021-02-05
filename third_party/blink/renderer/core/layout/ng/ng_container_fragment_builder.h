@@ -157,6 +157,11 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
     return !multicols_with_pending_oofs_.IsEmpty();
   }
 
+  Vector<NGLogicalOutOfFlowPositionedNode>*
+  MutableOutOfFlowPositionedCandidates() {
+    return &oof_positioned_candidates_;
+  }
+
   // This method should only be used within the inline layout algorithm. It is
   // used to convert all OOF-positioned candidates to descendants.
   //

@@ -1731,6 +1731,17 @@ TEST_F(NGGridLayoutAlgorithmTest, PositionedOutOfFlowItems) {
         background-color: purple;
       }
 
+      .descendant {
+        background: blue;
+        grid-column: 3;
+        grid-row: 3;
+      }
+
+      #positioned {
+        left: 0;
+        top: 0;
+      }
+
     </style>
     <div id="wrapper">
       <div id="grid">
@@ -1740,8 +1751,12 @@ TEST_F(NGGridLayoutAlgorithmTest, PositionedOutOfFlowItems) {
         <div class="absolute" id="fourthItem"></div>
         <div class="absolute" id="fifthItem"></div>
         <div class="absolute" id="sixthItem"></div>
-        <div class="item"></div>
-        <div class="item"></div>
+        <div class="item">
+          <div class="absolute descendant"></div>
+        </div>
+        <div class="item">
+          <div class="absolute descendant" id="positioned"></div>
+        </div>
         <div class="item"></div>
         <div class="item"></div>
         <div class="item"></div>
@@ -1766,6 +1781,8 @@ TEST_F(NGGridLayoutAlgorithmTest, PositionedOutOfFlowItems) {
       offset:10,210 size:100x100
       offset:110,210 size:100x100
       offset:210,210 size:100x100
+      offset:10,10 size:50x50
+      offset:210,210 size:50x50
       offset:160,135 size:50x50
       offset:5,235 size:50x50
       offset:205,5 size:50x50

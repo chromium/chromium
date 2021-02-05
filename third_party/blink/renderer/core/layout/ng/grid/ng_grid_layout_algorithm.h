@@ -72,7 +72,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
     // and it has a default nullptr value for grid items.
     ItemSetIndices SetIndices(
         const NGGridLayoutAlgorithmTrackCollection& track_collection,
-        NGGridPlacement* grid_placement = nullptr);
+        const NGGridPlacement* grid_placement = nullptr);
 
     const NGBlockNode node;
     GridArea resolved_position;
@@ -221,8 +221,8 @@ class CORE_EXPORT NGGridLayoutAlgorithm
                       const Vector<LayoutUnit>& column_set_offsets,
                       const Vector<LayoutUnit>& row_set_offsets,
                       LayoutUnit block_size,
-                      LayoutUnit column_grid_gap,
-                      LayoutUnit row_grid_gap);
+                      LayoutUnit column_gutter_size,
+                      LayoutUnit row_gutter_size);
 
   // Computes the static position, grid area and its offset of out of flow
   // elements in the grid.
@@ -230,18 +230,39 @@ class CORE_EXPORT NGGridLayoutAlgorithm
                            const Vector<LayoutUnit>& column_set_offsets,
                            const Vector<LayoutUnit>& row_set_offsets,
                            LayoutUnit block_size,
-                           LayoutUnit column_grid_gap,
-                           LayoutUnit row_grid_gap);
+                           LayoutUnit column_gutter_size,
+                           LayoutUnit row_gutter_size);
+
+  // Gets the out of flow descendants from the container builder and computes
+  // their containing block rect.
+  void PlaceOutOfFlowDescendants(
+      const NGGridLayoutAlgorithmTrackCollection& column_track_collection,
+      const NGGridLayoutAlgorithmTrackCollection& row_track_collection,
+      const Vector<LayoutUnit>& column_set_offsets,
+      const Vector<LayoutUnit>& row_set_offsets,
+      const NGGridPlacement& grid_placement,
+      LayoutUnit block_size,
+      LayoutUnit column_gutter_size,
+      LayoutUnit row_gutter_size);
+
+  // Helper method to compute the containing grid area for grid items or the
+  // containing block rect for out of flow elements.
+  LogicalRect ComputeContainingGridAreaRect(
+      const GridItemData& item,
+      const Vector<LayoutUnit>& column_set_offsets,
+      const Vector<LayoutUnit>& row_set_offsets,
+      LayoutUnit block_size,
+      LayoutUnit column_gutter_size,
+      LayoutUnit row_gutter_size);
 
   // Helper method that computes the offset and size of an item.
-  void ComputeOffsetAndSize(
-      const GridItemData& item,
-      const Vector<LayoutUnit>& set_offsets,
-      LayoutUnit grid_gap,
-      LayoutUnit* start_offset,
-      LayoutUnit* size,
-      GridTrackSizingDirection track_direction = kForColumns,
-      const LayoutUnit block_size = LayoutUnit()) const;
+  void ComputeOffsetAndSize(const GridItemData& item,
+                            const Vector<LayoutUnit>& set_offsets,
+                            const GridTrackSizingDirection track_direction,
+                            LayoutUnit block_size,
+                            LayoutUnit gutter_size,
+                            LayoutUnit* start_offset,
+                            LayoutUnit* size) const;
 
   // Determines the position of the out of flow item's container.
   void DeterminePositionOfOutOfFlowContainer(
