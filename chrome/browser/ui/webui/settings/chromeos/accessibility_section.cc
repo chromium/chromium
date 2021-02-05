@@ -301,11 +301,11 @@ const std::vector<SearchConcept>& GetA11yLabelsSearchConcepts() {
 const std::vector<SearchConcept>& GetA11yLiveCaptionSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_A11Y_LIVE_CAPTION,
-       mojom::kManageAccessibilitySubpagePath,
+       mojom::kCaptionsSubpagePath,
        mojom::SearchResultIcon::kA11y,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kLiveCaptions}},
+       {.setting = mojom::Setting::kLiveCaption}},
   });
   return *tags;
 }
@@ -340,7 +340,7 @@ bool AreExperimentalA11yLabelsAllowed() {
       ::features::kExperimentalAccessibilityLabels);
 }
 
-bool AreLiveCaptionsAllowed() {
+bool IsLiveCaptionEnabled() {
   return base::FeatureList::IsEnabled(media::kLiveCaption);
 }
 
@@ -764,7 +764,6 @@ void AccessibilitySection::RegisterHierarchy(
       mojom::Setting::kTabletNavigationButtons,
       mojom::Setting::kMonoAudio,
       mojom::Setting::kStartupSound,
-      mojom::Setting::kLiveCaptions,
       mojom::Setting::kEnableCursorColor,
   };
   RegisterNestedSettingBulk(mojom::Subpage::kManageAccessibility,
@@ -802,6 +801,11 @@ void AccessibilitySection::RegisterHierarchy(
       IDS_SETTINGS_CAPTIONS, mojom::Subpage::kCaptions,
       mojom::SearchResultIcon::kA11y, mojom::SearchResultDefaultRank::kMedium,
       mojom::kCaptionsSubpagePath);
+  static constexpr mojom::Setting kCaptionsSettings[] = {
+      mojom::Setting::kLiveCaption,
+  };
+  RegisterNestedSettingBulk(mojom::Subpage::kCaptions, kCaptionsSettings,
+                            generator);
 }
 
 void AccessibilitySection::OnVoicesChanged() {
@@ -861,7 +865,7 @@ void AccessibilitySection::UpdateSearchTags() {
   updater.RemoveSearchTags(GetA11ySwitchAccessOnSearchConcepts());
   updater.RemoveSearchTags(GetA11ySwitchAccessKeyboardSearchConcepts());
 
-  if (AreLiveCaptionsAllowed()) {
+  if (IsLiveCaptionEnabled()) {
     updater.AddSearchTags(GetA11yLiveCaptionSearchConcepts());
   } else {
     updater.RemoveSearchTags(GetA11yLiveCaptionSearchConcepts());

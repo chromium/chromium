@@ -208,6 +208,15 @@ Polymer({
   },
 
   /**
+   * Returns the Live Caption toggle element.
+   * @return {?CrToggleElement}
+   */
+  getLiveCaptionToggle() {
+    return /** @type {?CrToggleElement} */ (
+        this.$$('#liveCaptionToggleButton'));
+  },
+
+  /**
    * @param {!FontsData} response A list of fonts.
    * @private
    */
