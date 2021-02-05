@@ -475,11 +475,13 @@ MAC_M1_MINI_2020 = PerfPlatform('mac-m1_mini_2020-perf', 'Mac M1 Mini 2020',
 WIN_10_LOW_END = PerfPlatform(
     'win-10_laptop_low_end-perf',
     'Low end windows 10 HP laptops. HD Graphics 5500, x86-64-i3-5005U, '
-    'SSD, 4GB RAM.', _WIN_10_LOW_END_BENCHMARK_CONFIGS,
+    'SSD, 4GB RAM.',
+    _WIN_10_LOW_END_BENCHMARK_CONFIGS,
     # TODO(crbug.com/998161): Increase the number of shards once you
     # have enough test data to make a shard map and when more devices
     # are added to the data center.
-    26, 'win')
+    46,
+    'win')
 WIN_10 = PerfPlatform(
     'win-10-perf',
     'Windows Intel HD 630 towers, Core i7-7700 3.6 GHz, 16GB RAM,'
