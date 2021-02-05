@@ -191,6 +191,7 @@ source_set("browser_impl") {
     "//components/component_updater",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
+    "//components/crash/core/common:reporter_running_ios",
     "//components/flags_ui",
     "//components/gcm_driver",
     "//components/history/core/browser",

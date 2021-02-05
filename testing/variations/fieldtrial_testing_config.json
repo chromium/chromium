@@ -3479,7 +3479,7 @@
                 {
                     "name": "Disabled",
                     "disable_features": [
-                        "CrashpadIOS"
+                        "CrashpadIOSEnabler"
                     ]
                 }
             ]

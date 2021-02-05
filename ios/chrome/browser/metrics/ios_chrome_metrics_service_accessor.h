@@ -33,6 +33,7 @@ class IOSChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
 
   friend class CrashesDOMHandler;
   friend class IOSChromeDataReductionProxySettings;
+  friend class IOSChromeMainParts;
 
   FRIEND_TEST_ALL_PREFIXES(IOSChromeMetricsServiceAccessorTest,
                            MetricsReportingEnabled);
