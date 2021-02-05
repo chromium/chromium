@@ -245,10 +245,6 @@ span.bold {
   z-index: 1;
 }
 
-html[screen=user-adding] #version-labels {
-  color: white;
-}
-
 #bluetooth-name {
   background: rgba(255,255,255,.17);
   border-radius: 4px;

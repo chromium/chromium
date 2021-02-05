@@ -72,7 +72,6 @@ enum class OobeDialogState {
 };
 
 // Supported multi-profile user behavior values.
-// Keep in sync with the enum in chromeos_user_pod_row.js and user_pod_row.js
 // TODO(estade): change all the enums to use kCamelCase.
 enum class MultiProfileUserBehavior {
   UNRESTRICTED = 0,

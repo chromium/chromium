@@ -64,11 +64,6 @@ void ChromeUserSelectionScreen::Init(const user_manager::UserList& users) {
   }
 }
 
-void ChromeUserSelectionScreen::SendUserList() {
-  UserSelectionScreen::SendUserList();
-  users_loaded_ = true;
-}
-
 void ChromeUserSelectionScreen::OnPolicyUpdated(const std::string& user_id) {
   policy::DeviceLocalAccountPolicyBroker* broker =
       device_local_account_policy_service_->GetBrokerForUser(user_id);

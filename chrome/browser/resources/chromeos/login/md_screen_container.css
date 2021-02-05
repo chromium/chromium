@@ -94,15 +94,6 @@ html[new-layout] #oobe {
   width: 100%;
 }
 
-#oobe.account-picker {
-  max-height: unset;
-  max-width: unset;
-  padding-bottom: unset;
-  padding-inline-end: unset;
-  padding-inline-start: unset;
-  padding-top: unset;
-}
-
 html:not([new-layout]) #outer-container.fullscreen,
 html:not([new-layout]) #outer-container.fullscreen #oobe,
 html:not([new-layout]) #inner-container,

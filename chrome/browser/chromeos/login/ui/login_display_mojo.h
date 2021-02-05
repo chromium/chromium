@@ -54,12 +54,8 @@ class LoginDisplayMojo : public LoginDisplay,
   void ShowWrongHWIDScreen() override;
   void CancelUserAdding() override;
   void SetWebUIHandler(LoginDisplayWebUIHandler* webui_handler) override;
-  bool IsShowUsers() const override;
-  bool ShowUsersHasChanged() const override;
   bool AllowNewUserChanged() const override;
   bool IsUserSigninCompleted() const override;
-  void HandleGetUsers() override;
-  void CheckUserStatus(const AccountId& account_id) override;
 
   // user_manager::UserManager::Observer:
   void OnUserImageChanged(const user_manager::User& user) override;

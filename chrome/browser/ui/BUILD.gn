@@ -2386,8 +2386,6 @@ static_library("ui") {
       "webui/chromeos/login/update_required_screen_handler.h",
       "webui/chromeos/login/update_screen_handler.cc",
       "webui/chromeos/login/update_screen_handler.h",
-      "webui/chromeos/login/user_board_screen_handler.cc",
-      "webui/chromeos/login/user_board_screen_handler.h",
       "webui/chromeos/login/user_creation_screen_handler.cc",
       "webui/chromeos/login/user_creation_screen_handler.h",
       "webui/chromeos/login/welcome_screen_handler.cc",

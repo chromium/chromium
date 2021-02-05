@@ -87,7 +87,6 @@
 #include "chrome/browser/ui/webui/chromeos/login/tpm_error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/update_required_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/update_screen_handler.h"
-#include "chrome/browser/ui/webui/chromeos/login/user_board_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/wrong_hwid_screen_handler.h"
@@ -127,11 +126,9 @@ namespace chromeos {
 
 namespace {
 
-const char* kKnownDisplayTypes[] = {OobeUI::kAppLaunchSplashDisplay,
-                                    OobeUI::kGaiaSigninDisplay,
-                                    OobeUI::kLoginDisplay,
-                                    OobeUI::kOobeDisplay,
-                                    OobeUI::kUserAddingDisplay};
+const char* kKnownDisplayTypes[] = {
+    OobeUI::kAppLaunchSplashDisplay, OobeUI::kGaiaSigninDisplay,
+    OobeUI::kLoginDisplay, OobeUI::kOobeDisplay};
 
 // Sorted
 constexpr char kArcAssistantLogoPath[] = "assistant_logo.png";
@@ -421,7 +418,6 @@ const char OobeUI::kGaiaSigninDisplay[] = "gaia-signin";
 const char OobeUI::kLockDisplay[] = "lock";
 const char OobeUI::kLoginDisplay[] = "login";
 const char OobeUI::kOobeDisplay[] = "oobe";
-const char OobeUI::kUserAddingDisplay[] = "user-adding";
 
 void OobeUI::ConfigureOobeDisplay() {
   network_state_informer_ = new NetworkStateInformer();
@@ -497,9 +493,6 @@ void OobeUI::ConfigureOobeDisplay() {
 
   AddScreenHandler(
       std::make_unique<AppDownloadingScreenHandler>(js_calls_container_.get()));
-
-  AddScreenHandler(
-      std::make_unique<UserBoardScreenHandler>(js_calls_container_.get()));
 
   AddScreenHandler(
       std::make_unique<DemoSetupScreenHandler>(js_calls_container_.get()));

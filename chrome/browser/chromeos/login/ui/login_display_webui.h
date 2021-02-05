@@ -16,12 +16,7 @@
 #include "ui/base/user_activity/user_activity_observer.h"
 #include "ui/views/widget/widget.h"
 
-class AccountId;
-
 namespace chromeos {
-
-class UserBoardView;
-class UserSelectionScreen;
 
 // WebUI-based login UI implementation.
 class LoginDisplayWebUI : public LoginDisplay,
@@ -54,25 +49,13 @@ class LoginDisplayWebUI : public LoginDisplay,
   void ShowKioskAutolaunchScreen() override;
   void ShowWrongHWIDScreen() override;
   void SetWebUIHandler(LoginDisplayWebUIHandler* webui_handler) override;
-  bool IsShowUsers() const override;
-  bool ShowUsersHasChanged() const override;
   bool AllowNewUserChanged() const override;
   bool IsUserSigninCompleted() const override;
-
-  void HandleGetUsers() override;
-  void CheckUserStatus(const AccountId& account_id) override;
 
   // ui::UserActivityDetector implementation:
   void OnUserActivity(const ui::Event* event) override;
 
  private:
-  // Whether to show the user pods or a GAIA sign in.
-  // Public sessions are always shown.
-  bool show_users_ = false;
-
-  // Whether the create new account option in GAIA is enabled by the setting.
-  bool show_users_changed_ = false;
-
   // Whether to show add new user.
   bool allow_new_user_ = false;
 
@@ -81,10 +64,6 @@ class LoginDisplayWebUI : public LoginDisplay,
 
   // Reference to the WebUI handling layer for the login screen
   LoginDisplayWebUIHandler* webui_handler_ = nullptr;
-
-  // Used only for the "user-adding" (aka "multiprofile") flow.
-  std::unique_ptr<UserSelectionScreen> user_selection_screen_;
-  base::WeakPtr<UserBoardView> user_board_view_;
 
   DISALLOW_COPY_AND_ASSIGN(LoginDisplayWebUI);
 };

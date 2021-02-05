@@ -28,7 +28,6 @@ class ChromeUserSelectionScreen
 
   // UserSelectionScreen:
   void Init(const user_manager::UserList& users) override;
-  void SendUserList() override;
 
   // policy::DeviceLocalAccountPolicyService::Observer:
   void OnPolicyUpdated(const std::string& user_id) override;

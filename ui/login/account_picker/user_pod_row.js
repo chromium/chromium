@@ -1276,9 +1276,7 @@ cr.define('login', function() {
      * @type {boolean}
      */
     get multiProfilesPolicyApplied() {
-      var isMultiProfilesUI =
-        (Oobe.getInstance().displayType == DISPLAY_TYPE.USER_ADDING);
-      return isMultiProfilesUI && !this.user_.isMultiProfilesAllowed;
+      return false;
     },
 
     /**
@@ -3352,15 +3350,6 @@ cr.define('login', function() {
       this.disabled = false;
       if (this.activatedPod_)
         this.activatedPod_.reset(takeFocus);
-    },
-
-    /**
-     * Restores input focus to current selected pod, if there is any.
-     */
-    refocusCurrentPod: function() {
-      if (this.focusedPod_ && !this.focusedPod_.multiProfilesPolicyApplied) {
-        this.focusedPod_.focusInput();
-      }
     },
 
     /**

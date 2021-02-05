@@ -492,11 +492,6 @@ cr.define('cr.ui.login.debug', function() {
       kind: ScreenKind.OTHER,
     },
     {
-      id: 'account-picker',
-      kind: ScreenKind.OTHER,
-      suffix: 'multiuser',
-    },
-    {
       id: 'gaia-signin',
       kind: ScreenKind.NORMAL,
       handledSteps: 'allowlist-error',

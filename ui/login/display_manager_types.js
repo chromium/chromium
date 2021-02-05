@@ -29,7 +29,6 @@ var DISPLAY_TYPE = {
   OOBE: 'oobe',
   LOGIN: 'login',
   LOCK: 'lock',
-  USER_ADDING: 'user-adding',
   APP_LAUNCH_SPLASH: 'app-launch-splash',
   DESKTOP_USER_MANAGER: 'login-add-user',
   GAIA_SIGNIN: 'gaia-signin'

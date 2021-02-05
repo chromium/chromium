@@ -89,18 +89,14 @@ void ErrorScreenHandler::SetUIState(NetworkError::UIState ui_state) {
   CallJS("login.ErrorMessageScreen.setUIState", static_cast<int>(ui_state));
 }
 
+// TODO (crbug.com/1168114): We need to handle that fully in C++ once
+// all error screen logic is migrated to Screen object.
 void ErrorScreenHandler::OnCancelButtonClicked() {
   CallJS("cr.ui.Oobe.showUserPods");
 }
 
 void ErrorScreenHandler::OnReloadGaiaClicked() {
   CallJS("login.GaiaSigninScreen.doReload");
-}
-
-void ErrorScreenHandler::RegisterMessages() {
-  AddCallback("hideCaptivePortal",
-              &ErrorScreenHandler::HandleHideCaptivePortal);
-  BaseScreenHandler::RegisterMessages();
 }
 
 void ErrorScreenHandler::DeclareLocalizedValues(
@@ -155,11 +151,6 @@ void ErrorScreenHandler::Initialize() {
     Show();
     show_on_init_ = false;
   }
-}
-
-void ErrorScreenHandler::HandleHideCaptivePortal() {
-  if (screen_)
-    screen_->HideCaptivePortal();
 }
 
 }  // namespace chromeos

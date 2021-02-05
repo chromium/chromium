@@ -238,16 +238,6 @@ void LoginDisplayMojo::SetWebUIHandler(
   webui_handler_ = webui_handler;
 }
 
-bool LoginDisplayMojo::IsShowUsers() const {
-  NOTIMPLEMENTED();
-  return false;
-}
-
-bool LoginDisplayMojo::ShowUsersHasChanged() const {
-  NOTIMPLEMENTED();
-  return false;
-}
-
 bool LoginDisplayMojo::AllowNewUserChanged() const {
   NOTIMPLEMENTED();
   return false;
@@ -255,14 +245,6 @@ bool LoginDisplayMojo::AllowNewUserChanged() const {
 
 bool LoginDisplayMojo::IsUserSigninCompleted() const {
   return is_signin_completed();
-}
-
-void LoginDisplayMojo::HandleGetUsers() {
-  NOTIMPLEMENTED();
-}
-
-void LoginDisplayMojo::CheckUserStatus(const AccountId& account_id) {
-  NOTIMPLEMENTED();
 }
 
 void LoginDisplayMojo::OnUserImageChanged(const user_manager::User& user) {

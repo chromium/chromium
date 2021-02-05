@@ -6,7 +6,6 @@
 
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/chromeos/login/lock/screen_locker.h"
-#include "chrome/browser/chromeos/login/screens/chrome_user_selection_screen.h"
 #include "chrome/browser/chromeos/login/startup_utils.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/login/ui/user_adding_screen.h"
@@ -16,7 +15,6 @@
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/chromeos/login/update_required_screen_handler.h"
-#include "chrome/browser/ui/webui/chromeos/login/user_board_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/wrong_hwid_screen_handler.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/account_id/account_id.h"
@@ -57,20 +55,6 @@ void LoginDisplayWebUI::Init(const user_manager::UserList& users,
 
   OobeUI* oobe_ui = LoginDisplayHost::default_host()->GetOobeUI();
   const std::string display_type = oobe_ui->display_type();
-  if (display_type == OobeUI::kUserAddingDisplay && !user_selection_screen_) {
-    user_selection_screen_ = std::make_unique<ChromeUserSelectionScreen>(
-        DisplayedScreen::USER_ADDING_SCREEN);
-    user_board_view_ = oobe_ui->GetView<UserBoardScreenHandler>()->GetWeakPtr();
-    user_selection_screen_->SetView(user_board_view_.get());
-    // TODO(jdufault): Bind and Unbind should be controlled by either the
-    // Model/View which are then each responsible for automatically unbinding
-    // the other associated View/Model instance. Then we can eliminate this
-    // exposed WeakPtr logic. See crbug.com/685287.
-    user_board_view_->Bind(user_selection_screen_.get());
-    user_selection_screen_->Init(users);
-  }
-  show_users_changed_ = (show_users_ != show_users);
-  show_users_ = show_users;
   allow_new_user_changed_ = (allow_new_user_ != allow_new_user);
   allow_new_user_ = allow_new_user;
 
@@ -80,18 +64,6 @@ void LoginDisplayWebUI::Init(const user_manager::UserList& users,
 }
 
 // ---- Common methods
-
-// ---- User selection screen methods
-
-void LoginDisplayWebUI::HandleGetUsers() {
-  if (user_selection_screen_)
-    user_selection_screen_->HandleGetUsers();
-}
-
-void LoginDisplayWebUI::CheckUserStatus(const AccountId& account_id) {
-  if (user_selection_screen_)
-    user_selection_screen_->CheckUserStatus(account_id);
-}
 
 // ---- Gaia screen methods
 
@@ -187,9 +159,6 @@ void LoginDisplayWebUI::Login(const UserContext& user_context,
 }
 
 void LoginDisplayWebUI::OnSigninScreenReady() {
-  if (user_selection_screen_)
-    user_selection_screen_->InitEasyUnlock();
-
   if (delegate_)
     delegate_->OnSigninScreenReady();
 }
@@ -211,16 +180,6 @@ void LoginDisplayWebUI::ShowWrongHWIDScreen() {
 void LoginDisplayWebUI::SetWebUIHandler(
     LoginDisplayWebUIHandler* webui_handler) {
   webui_handler_ = webui_handler;
-  if (user_selection_screen_)
-    user_selection_screen_->SetHandler(webui_handler_);
-}
-
-bool LoginDisplayWebUI::IsShowUsers() const {
-  return show_users_;
-}
-
-bool LoginDisplayWebUI::ShowUsersHasChanged() const {
-  return show_users_changed_;
 }
 
 bool LoginDisplayWebUI::AllowNewUserChanged() const {

@@ -29,22 +29,19 @@
 #include "components/user_manager/user.h"
 #include "ui/base/ime/chromeos/ime_keyboard.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
-#include "ui/base/user_activity/user_activity_observer.h"
 
 class AccountId;
 
 namespace chromeos {
 
 class EasyUnlockService;
-class LoginDisplayWebUIHandler;
 class UserBoardView;
 
 enum class DisplayedScreen { SIGN_IN_SCREEN, USER_ADDING_SCREEN, LOCK_SCREEN };
 
 // This class represents User Selection screen: user pod-based login screen.
 class UserSelectionScreen
-    : public ui::UserActivityObserver,
-      public proximity_auth::ScreenlockBridge::LockHandler,
+    : public proximity_auth::ScreenlockBridge::LockHandler,
       public BaseScreen,
       public session_manager::SessionManagerObserver,
       public PasswordSyncTokenLoginChecker::Observer {
@@ -52,7 +49,6 @@ class UserSelectionScreen
   explicit UserSelectionScreen(DisplayedScreen display_type);
   ~UserSelectionScreen() override;
 
-  void SetHandler(LoginDisplayWebUIHandler* handler);
   void SetView(UserBoardView* view);
 
   static const user_manager::UserList PrepareUserListForSending(
@@ -61,25 +57,15 @@ class UserSelectionScreen
       bool is_signin_to_add);
 
   virtual void Init(const user_manager::UserList& users);
-  void OnUserImageChanged(const user_manager::User& user);
 
-  void OnPasswordClearTimerExpired();
-
-  void HandleGetUsers();
   void CheckUserStatus(const AccountId& account_id);
   void HandleFocusPod(const AccountId& account_id);
   void HandleNoPodFocused();
   void OnBeforeShow();
 
-  // Build list of users and send it to the webui.
-  virtual void SendUserList();
-
   // Methods for easy unlock support.
   void HardLockPod(const AccountId& account_id);
   void AttemptEasyUnlock(const AccountId& account_id);
-
-  // ui::UserActivityDetector implementation:
-  void OnUserActivity(const ui::Event* event) override;
 
   void InitEasyUnlock();
 
@@ -113,20 +99,6 @@ class UserSelectionScreen
   // PasswordSyncTokenLoginChecker::Observer
   void OnInvalidSyncToken(const AccountId& account_id) override;
 
-  // Fills `user_dict` with information about `user`.
-  static void FillUserDictionary(
-      const user_manager::User* user,
-      bool is_owner,
-      bool is_signin_to_add,
-      proximity_auth::mojom::AuthType auth_type,
-      const std::vector<std::string>* public_session_recommended_locales,
-      base::DictionaryValue* user_dict);
-
-  // Fills `user_dict` with `user` multi-profile related preferences.
-  static void FillMultiProfileUserPrefs(const user_manager::User* user,
-                                        base::DictionaryValue* user_dict,
-                                        bool is_signin_to_add);
-
   // Determines if user auth status requires online sign in.
   static bool ShouldForceOnlineSignIn(const user_manager::User* user);
 
@@ -134,7 +106,6 @@ class UserSelectionScreen
   static ash::UserAvatar BuildAshUserAvatarForUser(
       const user_manager::User& user);
 
-  std::unique_ptr<base::ListValue> UpdateAndReturnUserListForWebUI();
   std::vector<ash::LoginUserInfo> UpdateAndReturnUserListForAsh();
   void SetUsersLoaded(bool loaded);
 
@@ -164,8 +135,6 @@ class UserSelectionScreen
   void OnUserStatusChecked(const AccountId& account_id,
                            TokenHandleUtil::TokenHandleStatus status);
   void OnAllowedInputMethodsChanged();
-
-  LoginDisplayWebUIHandler* handler_ = nullptr;
 
   // Purpose of the screen.
   const DisplayedScreen display_type_;

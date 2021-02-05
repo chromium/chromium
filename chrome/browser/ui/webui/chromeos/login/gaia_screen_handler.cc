@@ -867,11 +867,6 @@ void GaiaScreenHandler::HandleSamlChallengeMachineKey(
 void GaiaScreenHandler::HandleGaiaUIReady() {
   VLOG(1) << "Gaia is loaded";
 
-  // As we could miss and window.onload could already be called, restore
-  // focus to current pod (see crbug/175243).
-  if (gaia_silent_load_)
-    signin_screen_handler_->RefocusCurrentPod();
-
   frame_error_ = net::OK;
   frame_state_ = FRAME_STATE_LOADED;
 

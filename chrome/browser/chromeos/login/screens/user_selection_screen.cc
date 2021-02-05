@@ -40,7 +40,6 @@
 #include "chrome/browser/chromeos/system/system_clock.h"
 #include "chrome/browser/ui/ash/login_screen_client.h"
 #include "chrome/browser/ui/webui/chromeos/login/l10n_util.h"
-#include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/components/proximity_auth/screenlock_bridge.h"
@@ -66,10 +65,11 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 
 namespace chromeos {
+
+constexpr StaticOobeScreenId UserBoardView::kScreenId;
 
 namespace {
 
@@ -78,33 +78,9 @@ bool g_skip_force_online_signin_for_testing = false;
 const char kWakeLockReason[] = "TPMLockedIssue";
 const int kWaitingOvertimeInSeconds = 1;
 
-// User dictionary keys.
-const char kKeyUsername[] = "username";
-const char kKeyDisplayName[] = "displayName";
-const char kKeyEmailAddress[] = "emailAddress";
-const char kKeyEnterpriseDomainManager[] = "enterpriseDomainManager";
-const char kKeyPublicAccount[] = "publicAccount";
-const char kKeyLegacySupervisedUser[] = "legacySupervisedUser";
-const char kKeyChildUser[] = "childUser";
-const char kKeyDesktopUser[] = "isDesktopUser";
-const char kKeySignedIn[] = "signedIn";
-const char kKeyCanRemove[] = "canRemove";
-const char kKeyIsOwner[] = "isOwner";
-const char kKeyIsActiveDirectory[] = "isActiveDirectory";
-const char kKeyInitialAuthType[] = "initialAuthType";
-const char kKeyMultiProfilesAllowed[] = "isMultiProfilesAllowed";
-const char kKeyMultiProfilesPolicy[] = "multiProfilesPolicy";
-const char kKeyInitialLocales[] = "initialLocales";
-const char kKeyInitialLocale[] = "initialLocale";
-const char kKeyInitialMultipleRecommendedLocales[] =
-    "initialMultipleRecommendedLocales";
-const char kKeyAllowFingerprint[] = "allowFingerprint";
-
 // Max number of users to show.
 // Please keep synced with one in signin_userlist_unittest.cc.
 const size_t kMaxUsers = 50;
-
-const int kPasswordClearTimeoutSec = 60;
 
 // Returns true if we have enterprise domain information.
 // `out_manager`:  Output value of the manager of the device's domain. Can be
@@ -148,34 +124,6 @@ std::unique_ptr<base::ListValue> GetPublicSessionLocales(
 
   *out_multiple_locales = recommended_locales.size() >= 2;
   return available_locales;
-}
-
-void AddPublicSessionDetailsToUserDictionaryEntry(
-    base::DictionaryValue* user_dict,
-    const std::vector<std::string>* public_session_recommended_locales) {
-  std::string manager;
-  if (GetDeviceManager(&manager))
-    user_dict->SetString(kKeyEnterpriseDomainManager, manager);
-
-  std::string selected_locale;
-  bool has_multiple_locales;
-  std::unique_ptr<base::ListValue> available_locales =
-      GetPublicSessionLocales(public_session_recommended_locales,
-                              &selected_locale, &has_multiple_locales);
-
-  // Set `kKeyInitialLocales` to the list of available locales.
-  user_dict->Set(kKeyInitialLocales, std::move(available_locales));
-
-  // Set `kKeyInitialLocale` to the initially selected locale.
-  user_dict->SetString(kKeyInitialLocale, selected_locale);
-
-  // Set `kKeyInitialMultipleRecommendedLocales` to indicate whether the list
-  // of recommended locales contains at least two entries. This is used to
-  // decide whether the public session pod expands to its basic form (for zero
-  // or one recommended locales) or the advanced form (two or more recommended
-  // locales).
-  user_dict->SetBoolean(kKeyInitialMultipleRecommendedLocales,
-                        has_multiple_locales);
 }
 
 // Determines the initial fingerprint state for the given user.
@@ -505,9 +453,6 @@ UserSelectionScreen::UserSelectionScreen(DisplayedScreen display_type)
 
 UserSelectionScreen::~UserSelectionScreen() {
   proximity_auth::ScreenlockBridge::Get()->SetLockHandler(nullptr);
-  ui::UserActivityDetector* activity_detector = ui::UserActivityDetector::Get();
-  if (activity_detector && activity_detector->HasObserver(this))
-    activity_detector->RemoveObserver(this);
   session_manager::SessionManager::Get()->RemoveObserver(this);
 }
 
@@ -520,61 +465,6 @@ void UserSelectionScreen::SetTpmLockedState(bool is_locked,
   for (user_manager::User* user : users_) {
     view_->SetTpmLockedState(user->GetAccountId(), is_locked, time_left);
   }
-}
-
-// static
-void UserSelectionScreen::FillUserDictionary(
-    const user_manager::User* user,
-    bool is_owner,
-    bool is_signin_to_add,
-    proximity_auth::mojom::AuthType auth_type,
-    const std::vector<std::string>* public_session_recommended_locales,
-    base::DictionaryValue* user_dict) {
-  const bool is_public_session =
-      user->GetType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT;
-  const bool is_deprecated_supervised_user =
-      user->GetType() == user_manager::USER_TYPE_SUPERVISED_DEPRECATED;
-  const bool is_child_user = user->GetType() == user_manager::USER_TYPE_CHILD;
-
-  user_dict->SetString(kKeyUsername, user->GetAccountId().Serialize());
-  user_dict->SetString(kKeyEmailAddress, user->display_email());
-  user_dict->SetString(kKeyDisplayName, user->GetDisplayName());
-  user_dict->SetBoolean(kKeyPublicAccount, is_public_session);
-  user_dict->SetBoolean(kKeyLegacySupervisedUser,
-                        is_deprecated_supervised_user);
-  user_dict->SetBoolean(kKeyChildUser, is_child_user);
-  user_dict->SetBoolean(kKeyDesktopUser, false);
-  user_dict->SetInteger(kKeyInitialAuthType, static_cast<int>(auth_type));
-  user_dict->SetBoolean(kKeySignedIn, user->is_logged_in());
-  user_dict->SetBoolean(kKeyIsOwner, is_owner);
-  user_dict->SetBoolean(kKeyIsActiveDirectory, user->IsActiveDirectoryUser());
-  user_dict->SetBoolean(kKeyAllowFingerprint,
-                        GetInitialFingerprintState(user) ==
-                            ash::FingerprintState::AVAILABLE_DEFAULT);
-
-  FillMultiProfileUserPrefs(user, user_dict, is_signin_to_add);
-
-  if (is_public_session) {
-    AddPublicSessionDetailsToUserDictionaryEntry(
-        user_dict, public_session_recommended_locales);
-  }
-}
-
-// static
-void UserSelectionScreen::FillMultiProfileUserPrefs(
-    const user_manager::User* user,
-    base::DictionaryValue* user_dict,
-    bool is_signin_to_add) {
-  if (!is_signin_to_add) {
-    user_dict->SetBoolean(kKeyMultiProfilesAllowed, true);
-    return;
-  }
-
-  bool is_user_allowed;
-  ash::MultiProfileUserBehavior policy;
-  GetMultiProfilePolicy(user, &is_user_allowed, &policy);
-  user_dict->SetBoolean(kKeyMultiProfilesAllowed, is_user_allowed);
-  user_dict->SetInteger(kKeyMultiProfilesPolicy, static_cast<int>(policy));
 }
 
 // static
@@ -683,17 +573,6 @@ ash::UserAvatar UserSelectionScreen::BuildAshUserAvatarForUser(
   return avatar;
 }
 
-void UserSelectionScreen::SetHandler(LoginDisplayWebUIHandler* handler) {
-  handler_ = handler;
-
-  if (handler_) {
-    // Forcibly refresh all of the user images, as the `handler_` instance may
-    // have been reused.
-    for (user_manager::User* user : users_)
-      handler_->OnUserImageChanged(*user);
-  }
-}
-
 void UserSelectionScreen::SetView(UserBoardView* view) {
   view_ = view;
 }
@@ -701,9 +580,6 @@ void UserSelectionScreen::SetView(UserBoardView* view) {
 void UserSelectionScreen::Init(const user_manager::UserList& users) {
   users_ = users;
 
-  ui::UserActivityDetector* activity_detector = ui::UserActivityDetector::Get();
-  if (activity_detector && !activity_detector->HasObserver(this))
-    activity_detector->AddObserver(this);
   if (!ime_state_.get())
     ime_state_ = input_method::InputMethodManager::Get()->GetActiveIMEState();
 
@@ -720,27 +596,6 @@ void UserSelectionScreen::Init(const user_manager::UserList& users) {
 
   tpm_locked_checker_ = std::make_unique<TpmLockedChecker>(this);
   tpm_locked_checker_->Check();
-}
-
-void UserSelectionScreen::OnUserImageChanged(const user_manager::User& user) {
-  if (!handler_)
-    return;
-  handler_->OnUserImageChanged(user);
-  // TODO(antrim) : updateUserImage(user.email())
-}
-
-void UserSelectionScreen::OnPasswordClearTimerExpired() {
-  if (handler_)
-    handler_->ClearUserPodPassword();
-}
-
-void UserSelectionScreen::OnUserActivity(const ui::Event* event) {
-  if (!password_clear_timer_.IsRunning()) {
-    password_clear_timer_.Start(
-        FROM_HERE, base::TimeDelta::FromSeconds(kPasswordClearTimeoutSec), this,
-        &UserSelectionScreen::OnPasswordClearTimerExpired);
-  }
-  password_clear_timer_.Reset();
 }
 
 // static
@@ -773,16 +628,6 @@ const user_manager::UserList UserSelectionScreen::PrepareUserListForSending(
     }
   }
   return users_to_send;
-}
-
-void UserSelectionScreen::SendUserList() {
-  std::unique_ptr<base::ListValue> users_list =
-      UpdateAndReturnUserListForWebUI();
-  handler_->LoadUsers(users_to_send_, *users_list);
-}
-
-void UserSelectionScreen::HandleGetUsers() {
-  SendUserList();
 }
 
 void UserSelectionScreen::CheckUserStatus(const AccountId& account_id) {
@@ -1012,48 +857,6 @@ void UserSelectionScreen::AttemptEasyUnlock(const AccountId& account_id) {
   if (!service)
     return;
   service->AttemptAuth(account_id);
-}
-
-std::unique_ptr<base::ListValue>
-UserSelectionScreen::UpdateAndReturnUserListForWebUI() {
-  std::unique_ptr<base::ListValue> users_list =
-      std::make_unique<base::ListValue>();
-
-  // TODO(nkostylev): Move to a separate method in UserManager.
-  // http://crbug.com/230852
-  const AccountId owner = GetOwnerAccountId();
-  const bool is_signin_to_add = IsSigninToAdd();
-
-  users_to_send_ = PrepareUserListForSending(users_, owner, is_signin_to_add);
-
-  user_auth_type_map_.clear();
-
-  for (const user_manager::User* user : users_to_send_) {
-    const AccountId& account_id = user->GetAccountId();
-    bool is_owner = (account_id == owner);
-    const bool is_public_account =
-        user->GetType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT;
-    const proximity_auth::mojom::AuthType initial_auth_type =
-        is_public_account
-            ? proximity_auth::mojom::AuthType::EXPAND_THEN_USER_CLICK
-            : (ShouldForceOnlineSignIn(user)
-                   ? proximity_auth::mojom::AuthType::ONLINE_SIGN_IN
-                   : proximity_auth::mojom::AuthType::OFFLINE_PASSWORD);
-    user_auth_type_map_[account_id] = initial_auth_type;
-
-    auto user_dict = std::make_unique<base::DictionaryValue>();
-    const std::vector<std::string>* public_session_recommended_locales =
-        public_session_recommended_locales_.find(account_id) ==
-                public_session_recommended_locales_.end()
-            ? nullptr
-            : &public_session_recommended_locales_[account_id];
-    FillUserDictionary(user, is_owner, is_signin_to_add, initial_auth_type,
-                       public_session_recommended_locales, user_dict.get());
-    user_dict->SetBoolean(kKeyCanRemove, CanRemoveUser(user));
-    users_list->Append(std::move(user_dict));
-  }
-
-  return users_list;
 }
 
 std::vector<ash::LoginUserInfo>

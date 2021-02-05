@@ -142,6 +142,8 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override;
 
+  // TODO (crbug.com/1168114): remove whole observer hierarchy, it is not needed
+  // anymore.
   // ash::MultiUserWindowManagerObserver:
   void OnUserSwitchAnimationFinished() override;
 
@@ -151,7 +153,6 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
     RESTORE_UNKNOWN,
     RESTORE_WIZARD,
     RESTORE_SIGN_IN,
-    RESTORE_ADD_USER_INTO_SESSION,
   };
 
   // Type of animations to run after the login screen.
@@ -160,8 +161,6 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
     ANIMATION_WORKSPACE,  // Use initial workspace animation (drop and
                           // and fade in workspace). Used for user login.
     ANIMATION_FADE_OUT,   // Fade out login screen. Used for app launch.
-    ANIMATION_ADD_USER,   // Use UserSwitchAnimatorChromeOS animation when
-                          // adding a user into multi-profile session.
   };
 
   // Schedules workspace transition animation.

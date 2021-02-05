@@ -89,9 +89,6 @@ class ErrorScreenHandler : public BaseScreenHandler, public ErrorScreenView {
   void OnCancelButtonClicked() override;
   void OnReloadGaiaClicked() override;
 
-  // WebUIMessageHandler:
-  void RegisterMessages() override;
-
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;

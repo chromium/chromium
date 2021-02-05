@@ -38,51 +38,16 @@ class UserAddingScreenImpl : public UserAddingScreen {
 
  private:
   friend struct base::DefaultSingletonTraits<UserAddingScreenImpl>;
-  class LoadTimeReporterWebUi : public OobeUI::Observer {
+
+  class LoadTimeReporter : public LoginScreenShownObserver {
    public:
-    LoadTimeReporterWebUi() : start_time_(base::TimeTicks::Now()) {}
-    LoadTimeReporterWebUi(const LoadTimeReporterWebUi&) = delete;
-    LoadTimeReporterWebUi& operator=(const LoadTimeReporterWebUi&) = delete;
-
-    ~LoadTimeReporterWebUi() override {
-      if (remove_observer_)
-        oobe_ui_->RemoveObserver(this);
-      remove_observer_ = false;
-    }
-
-    void Observe(OobeUI* oobe_ui) {
-      oobe_ui_ = oobe_ui;
-      oobe_ui_->AddObserver(this);
-      remove_observer_ = true;
-    }
-
-   private:
-    // OobeUI::Observer:
-    void OnCurrentScreenChanged(OobeScreenId current_screen,
-                                OobeScreenId new_screen) override {
-      if (new_screen != OobeScreen::SCREEN_ACCOUNT_PICKER)
-        return;
-      const base::TimeDelta load_time = base::TimeTicks::Now() - start_time_;
-      UmaHistogramTimes("ChromeOS.UserAddingScreen.LoadTime", load_time);
-      remove_observer_ = false;
-      oobe_ui_->RemoveObserver(this);
-    }
-    void OnDestroyingOobeUI() override { remove_observer_ = false; }
-
-    const base::TimeTicks start_time_;
-    OobeUI* oobe_ui_ = nullptr;
-    bool remove_observer_ = false;
-  };
-
-  class LoadTimeReporterMojo : public LoginScreenShownObserver {
-   public:
-    LoadTimeReporterMojo() : start_time_(base::TimeTicks::Now()) {
+    LoadTimeReporter() : start_time_(base::TimeTicks::Now()) {
       LoginScreenClient::Get()->AddLoginScreenShownObserver(this);
     }
-    LoadTimeReporterMojo(const LoadTimeReporterMojo&) = delete;
-    LoadTimeReporterMojo& operator=(const LoadTimeReporterMojo&) = delete;
+    LoadTimeReporter(const LoadTimeReporter&) = delete;
+    LoadTimeReporter& operator=(const LoadTimeReporter&) = delete;
 
-    ~LoadTimeReporterMojo() override {
+    ~LoadTimeReporter() override {
       // In tests, LoginScreenClient's instance may be destroyed before
       // LoadTimeReporterMojo's destructor is called.
       if (LoginScreenClient::HasInstance())
@@ -101,8 +66,7 @@ class UserAddingScreenImpl : public UserAddingScreen {
     const base::TimeTicks start_time_;
   };
 
-  std::unique_ptr<LoadTimeReporterWebUi> reporter_web_ui_;
-  std::unique_ptr<LoadTimeReporterMojo> reporter_mojo_;
+  std::unique_ptr<LoadTimeReporter> reporter_;
 
   void OnDisplayHostCompletion();
 
@@ -117,16 +81,9 @@ class UserAddingScreenImpl : public UserAddingScreen {
 
 void UserAddingScreenImpl::Start() {
   CHECK(!IsRunning());
-  bool viewBasedEnabled =
-      chromeos::features::IsViewBasedMultiprofileLoginEnabled();
-  if (viewBasedEnabled) {
-    display_host_ =
-        new chromeos::LoginDisplayHostMojo(DisplayedScreen::USER_ADDING_SCREEN);
-    reporter_mojo_ = std::make_unique<LoadTimeReporterMojo>();
-  } else {
-    display_host_ = new chromeos::LoginDisplayHostWebUI();
-    reporter_web_ui_ = std::make_unique<LoadTimeReporterWebUi>();
-  }
+  display_host_ =
+      new chromeos::LoginDisplayHostMojo(DisplayedScreen::USER_ADDING_SCREEN);
+  reporter_ = std::make_unique<LoadTimeReporter>();
 
   // This triggers input method manager to filter login screen methods. This
   // should happen before setting user input method, which happens when focusing
@@ -138,16 +95,11 @@ void UserAddingScreenImpl::Start() {
       session_manager::SessionState::LOGIN_SECONDARY);
   display_host_->StartUserAdding(base::BindOnce(
       &UserAddingScreenImpl::OnDisplayHostCompletion, base::Unretained(this)));
-  if (!viewBasedEnabled) {
-    reporter_web_ui_->Observe(display_host_->GetOobeUI());
-  }
-
 }
 
 void UserAddingScreenImpl::Cancel() {
   CHECK(IsRunning());
-  reporter_web_ui_.reset();
-  reporter_mojo_.reset();
+  reporter_.reset();
 
   display_host_->CancelUserAdding();
 

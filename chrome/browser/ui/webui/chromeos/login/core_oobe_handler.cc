@@ -185,14 +185,6 @@ void CoreOobeHandler::ResetSignInUI(bool force_online) {
   CallJS("cr.ui.Oobe.resetSigninUI", force_online);
 }
 
-void CoreOobeHandler::ClearUserPodPassword() {
-  CallJS("cr.ui.Oobe.clearUserPodPassword");
-}
-
-void CoreOobeHandler::RefocusCurrentPod() {
-  CallJS("cr.ui.Oobe.refocusCurrentPod");
-}
-
 void CoreOobeHandler::ClearErrors() {
   CallJS("cr.ui.Oobe.clearErrors");
 }
