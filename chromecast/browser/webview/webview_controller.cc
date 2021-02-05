@@ -60,6 +60,14 @@ void UpdateWebkitPreferences(content::WebContents* web_contents,
 
 }  // namespace
 
+WebviewController::WebviewController(
+    std::unique_ptr<content::BrowserContext> browser_context,
+    Client* client,
+    bool enabled_for_dev)
+    : WebviewController(browser_context.get(), client, enabled_for_dev) {
+  owned_context_ = std::move(browser_context);
+}
+
 WebviewController::WebviewController(content::BrowserContext* browser_context,
                                      Client* client,
                                      bool enabled_for_dev)

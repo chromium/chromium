@@ -4,6 +4,9 @@
 
 #include "chromecast/browser/webview/webview_browser_context.h"
 #include "base/files/file_path.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/resource_context.h"
 
 namespace chromecast {
@@ -21,7 +24,15 @@ WebviewBrowserContext::WebviewBrowserContext(
     content::BrowserContext* main_browser_context)
     : main_browser_context_(main_browser_context),
       resource_context_(std::make_unique<ResourceContext>()) {}
-WebviewBrowserContext::~WebviewBrowserContext() {}
+
+WebviewBrowserContext::~WebviewBrowserContext() {
+  BrowserContext::NotifyWillBeDestroyed(this);
+  ShutdownStoragePartitions();
+  BrowserContextDependencyManager::GetInstance()->DestroyBrowserContextServices(
+      this);
+  content::GetIOThreadTaskRunner({})->DeleteSoon(FROM_HERE,
+                                                 resource_context_.release());
+}
 
 base::FilePath WebviewBrowserContext::GetPath() {
   return base::FilePath();

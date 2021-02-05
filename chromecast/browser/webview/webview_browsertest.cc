@@ -9,6 +9,7 @@
 #include "chromecast/base/chromecast_switches.h"
 #include "chromecast/browser/cast_browser_process.h"
 #include "chromecast/browser/extensions/cast_extension_system_factory.h"
+#include "chromecast/browser/webview/webview_browser_context.h"
 #include "chromecast/browser/webview/webview_controller.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -124,6 +125,31 @@ IN_PROC_BROWSER_TEST_F(WebviewTest, Navigate) {
         Quit();
       });
   WebviewController webview(context_.get(), &client_, true);
+
+  GURL test_url = embedded_test_server()->GetURL("foo.com", "/test");
+
+  webview::WebviewRequest nav;
+  nav.mutable_navigate()->set_url(test_url.spec());
+  webview.ProcessRequest(nav);
+
+  RunMessageLoop();
+}
+
+IN_PROC_BROWSER_TEST_F(WebviewTest, Incognito) {
+  auto check = [](const std::unique_ptr<webview::WebviewResponse>& response) {
+    return response->has_page_event() &&
+           response->page_event().current_page_state() ==
+               webview::AsyncPageEvent_State_LOADED;
+  };
+  EXPECT_CALL(client_, EnqueueSend(_)).Times(testing::AnyNumber());
+  EXPECT_CALL(client_, EnqueueSend(Truly(check)))
+      .Times(testing::AtLeast(1))
+      .WillOnce([this](std::unique_ptr<webview::WebviewResponse> response) {
+        Quit();
+      });
+  std::unique_ptr<content::BrowserContext> owned_context =
+      std::make_unique<WebviewBrowserContext>(context_.get());
+  WebviewController webview(std::move(owned_context), &client_, true);
 
   GURL test_url = embedded_test_server()->GetURL("foo.com", "/test");
 
