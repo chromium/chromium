@@ -494,22 +494,27 @@ LayoutUnit ComputeInlineSizeForFragmentInternal(
   const ComputedStyle& style = node.Style();
   Length logical_width = style.LogicalWidth();
   Length min_length = style.LogicalMinWidth();
-  // TODO(cbiesinger): Audit callers of ResolveMainInlineLength to see
-  // whether they need to respect aspect ratio and consider adding a helper
-  // function for that.
+
   // TODO(ikilpatrick): If we are stretching in both the inline-axis, and
   // block-axis, we shouldn't apply the aspect-ratio.
+  // TODO(cbiesinger): Should the if also check !node.IsReplaced()?
   LayoutUnit extent = kIndefiniteSize;
-  if (!style.AspectRatio().IsAuto() && logical_width.IsAuto())
-    extent = ComputeInlineSizeFromAspectRatio(space, style, border_padding);
-  if (UNLIKELY(extent != kIndefiniteSize)) {
-    // This means we successfully applied aspect-ratio and now need to check
-    // if we need to apply the implied minimum size:
-    // https://drafts.csswg.org/css-sizing-4/#aspect-ratio-minimum
-    if (style.OverflowInlineDirection() == EOverflow::kVisible &&
-        min_length.IsAuto())
-      min_length = Length::MinIntrinsic();
-  } else {
+  if (!style.AspectRatio().IsAuto()) {
+    if (logical_width.IsAuto() || logical_width.IsMinContent() ||
+        logical_width.IsMaxContent()) {
+      extent = ComputeInlineSizeFromAspectRatio(space, style, border_padding);
+    }
+    if (UNLIKELY(extent != kIndefiniteSize)) {
+      // This means we successfully applied aspect-ratio and now need to check
+      // if we need to apply the implied minimum size:
+      // https://drafts.csswg.org/css-sizing-4/#aspect-ratio-minimum
+      if (style.OverflowInlineDirection() == EOverflow::kVisible &&
+          min_length.IsAuto())
+        min_length = Length::MinIntrinsic();
+    }
+  }
+
+  if (LIKELY(extent == kIndefiniteSize)) {
     if (logical_width.IsAuto()) {
       logical_width = space.StretchInlineSizeIfAuto() ? Length::FillAvailable()
                                                       : Length::FitContent();

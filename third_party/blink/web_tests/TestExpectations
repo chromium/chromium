@@ -2622,7 +2622,6 @@ crbug.com/626703 external/wpt/css/css-scroll-snap/snap-after-initial-layout/scro
 crbug.com/626703 [ Mac10.13 ] virtual/threaded/external/wpt/web-animations/timing-model/animations/updating-the-finished-state.html [ Timeout ]
 crbug.com/626703 external/wpt/editing/other/typing-around-link-element-at-non-collapsed-selection.tentative.html?target=ContentEditable&parent=b [ Timeout ]
 crbug.com/626703 external/wpt/editing/other/typing-around-link-element-at-collapsed-selection.tentative.html?target=ContentEditable [ Timeout ]
-crbug.com/626703 external/wpt/css/css-sizing/aspect-ratio/intrinsic-size-010.html [ Failure ]
 crbug.com/626703 external/wpt/editing/other/typing-around-link-element-at-collapsed-selection.tentative.html?target=ContentEditable&parent=b [ Timeout ]
 crbug.com/626703 virtual/threaded/external/wpt/css/css-scroll-snap/snap-after-initial-layout/scroll-snap-writing-mode-000.html [ Failure ]
 crbug.com/626703 external/wpt/editing/other/typing-around-link-element-at-non-collapsed-selection.tentative.html?target=ContentEditable&child=b [ Timeout ]
