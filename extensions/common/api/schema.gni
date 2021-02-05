@@ -64,6 +64,8 @@ extensions_manifest_only_schema_files_ = [
   "extensions_manifest_types.json",
   "incognito.json",
   "shared_module.idl",
+  "web_accessible_resources.idl",
+  "web_accessible_resources_mv2.idl",
 ]
 
 if (is_chromeos_ash) {

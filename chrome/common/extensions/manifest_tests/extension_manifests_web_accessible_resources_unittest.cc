@@ -152,10 +152,11 @@ TEST_F(WebAccessibleResourcesManifestTest, WebAccessibleResourcesV3Invalid) {
     const char* expected_error;
   } test_cases[] = {
       {"Error if web_accessible_resources key is of incorrect type.", "{}",
-       "Invalid value for 'web_accessible_resources'."},
+       "Error at key 'web_accessible_resources'. Type is invalid. Expected "
+       "list, found dictionary."},
       {"Error if objects has no keys.", "[{}]",
-       "Invalid value for 'web_accessible_resources[0]'. Invalid "
-       "value for 'resources'."},
+       "Error at key 'web_accessible_resources'. Parsing array failed at index "
+       "0: 'resources' is required"},
       {"Error if entry only contains |resources|.",
        R"([
             {
@@ -182,8 +183,8 @@ TEST_F(WebAccessibleResourcesManifestTest, WebAccessibleResourcesV3Invalid) {
               "extension_ids": ["abcdefghijlkmnopabcdefghijklmnop"]
             }
         ])",
-       "Invalid value for 'web_accessible_resources[0]'. Invalid "
-       "value for 'matches'."},
+       "Error at key 'web_accessible_resources'. Parsing array failed at index "
+       "0: 'matches': expected list, got dictionary"},
       {"Error if incorrect keyed object type is present.",
        R"([
             {
@@ -192,8 +193,9 @@ TEST_F(WebAccessibleResourcesManifestTest, WebAccessibleResourcesV3Invalid) {
               "extension_ids": [1, 2, 3]
             }
         ])",
-       "Invalid value for 'web_accessible_resources[0]'. Invalid "
-       "match pattern."},
+       "Error at key 'web_accessible_resources'. Parsing array failed at index "
+       "0: Error at key 'matches': Parsing array failed at index 0: expected "
+       "string, got integer"},
       {"Error if extension id is invalid.",
        R"([
             {
@@ -202,8 +204,9 @@ TEST_F(WebAccessibleResourcesManifestTest, WebAccessibleResourcesV3Invalid) {
               "extension_ids": [-1]
             }
         ])",
-       "Invalid value for 'web_accessible_resources[0]'. Extension ID must be "
-       "a string."},
+       "Error at key 'web_accessible_resources'. Parsing array failed at index "
+       "0: Error at key 'extension_ids': Parsing array failed at index 0: "
+       "expected string, got integer"},
       {"Error if extension id is invalid.",
        R"([
             {
@@ -267,8 +270,8 @@ TEST_F(WebAccessibleResourcesManifestTest,
           }
       ])";
   LoadAndExpectError(GetManifestData(kWebAccessibleResources, 2),
-                     "Invalid value for 'web_accessible_resources[0]'. Value "
-                     "is not a string.");
+                     "Error at key 'web_accessible_resources'. Parsing array "
+                     "failed at index 0: expected string, got dictionary");
 }
 
 // Error if V2's web_accessible_resources key is composed of invalid type.
@@ -276,8 +279,8 @@ TEST_F(WebAccessibleResourcesManifestTest, WebAccessibleResourcesV2Type) {
   LoadAndExpectSuccess(GetManifestData(R"([])", 2));
   LoadAndExpectSuccess(GetManifestData(R"([""])", 2));
   LoadAndExpectError(GetManifestData(R"([{}])", 2),
-                     "Invalid value for 'web_accessible_resources[0]'. Value "
-                     "is not a string.");
+                     "Error at key 'web_accessible_resources'. Parsing array "
+                     "failed at index 0: expected string, got dictionary");
 }
 
 // Restrict resource access by specifying |extension_ids|.
