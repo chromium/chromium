@@ -825,7 +825,7 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
       render_view_host_delegate_view_(nullptr),
       created_with_opener_(false),
       node_(this),
-      frame_tree_(browser_context, this, this, this, this, this, this),
+      frame_tree_(browser_context, this, this, this, this, this, this, this),
       is_load_to_different_document_(false),
       crashed_status_(base::TERMINATION_STATUS_STILL_RUNNING),
       crashed_error_code_(0),
@@ -2661,8 +2661,7 @@ void WebContentsImpl::OnCookiesAccessed(RenderFrameHostImpl* rfh,
 
 void WebContentsImpl::Stop() {
   TRACE_EVENT0("content", "WebContentsImpl::Stop");
-  for (FrameTreeNode* node : frame_tree_.Nodes())
-    node->StopLoading();
+  frame_tree_.StopLoading();
   observers_.NotifyObservers(&WebContentsObserver::NavigationStopped);
 }
 
@@ -6106,8 +6105,6 @@ void WebContentsImpl::LoadingStateChanged(bool to_different_document,
     upload_position_ = 0;
   }
 
-  GetRenderManager()->SetIsLoading(is_loading);
-
   waiting_for_response_ = is_loading;
   is_load_to_different_document_ = to_different_document;
 
@@ -7046,14 +7043,6 @@ void WebContentsImpl::RegisterExistingOriginToPreventOptInIsolation(
     web_contents->GetFrameTree()->RegisterExistingOriginToPreventOptInIsolation(
         origin, navigation_request_to_exclude);
   }
-}
-
-void WebContentsImpl::DidCancelLoading() {
-  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::DidCancelLoading");
-  GetController().DiscardNonCommittedEntries();
-
-  // Update the URL display.
-  NotifyNavigationStateChanged(INVALIDATE_TYPE_URL);
 }
 
 void WebContentsImpl::DidChangeName(RenderFrameHost* render_frame_host,

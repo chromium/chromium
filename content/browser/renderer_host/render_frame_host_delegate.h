@@ -192,9 +192,6 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
       RenderFrameHost* source,
       std::vector<blink::mojom::FaviconURLPtr> candidates) {}
 
-  // The pending page load was canceled, so the address bar should be updated.
-  virtual void DidCancelLoading() {}
-
   // The frame changed its window.name property.
   virtual void DidChangeName(RenderFrameHost* render_frame_host,
                              const std::string& name) {}

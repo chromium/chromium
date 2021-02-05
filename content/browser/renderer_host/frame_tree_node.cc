@@ -554,15 +554,9 @@ void FrameTreeNode::DidStartLoading(bool to_different_document,
   TRACE_EVENT2("navigation", "FrameTreeNode::DidStartLoading",
                "frame_tree_node", frame_tree_node_id(), "to different document",
                to_different_document);
-  // Any main frame load to a new document should reset the load progress since
-  // it will replace the current page and any frames. The WebContents will
-  // be notified when DidChangeLoadProgress is called.
-  if (to_different_document && IsMainFrame())
-    frame_tree_->ResetLoadProgress();
 
-  // Notify the WebContents.
-  if (!was_previously_loading)
-    navigator().GetDelegate()->DidStartLoading(this, to_different_document);
+  frame_tree_->DidStartLoadingNode(*this, to_different_document,
+                                   was_previously_loading);
 
   // Set initial load progress and update overall progress. This will notify
   // the WebContents of the load progress change.
@@ -582,16 +576,13 @@ void FrameTreeNode::DidStopLoading() {
   // Notify the RenderFrameHostManager of the event.
   render_manager()->OnDidStopLoading();
 
-  // Notify the WebContents.
-  if (!frame_tree_->IsLoading())
-    navigator().GetDelegate()->DidStopLoading();
+  frame_tree_->DidStopLoadingNode(*this);
 }
 
 void FrameTreeNode::DidChangeLoadProgress(double load_progress) {
   DCHECK_GE(load_progress, kLoadingProgressMinimum);
   DCHECK_LE(load_progress, kLoadingProgressDone);
-  if (IsMainFrame())
-    frame_tree_->UpdateLoadProgress(load_progress);
+  frame_tree_->DidChangeLoadProgressForNode(*this, load_progress);
 }
 
 bool FrameTreeNode::StopLoading() {

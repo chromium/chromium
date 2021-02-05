@@ -3541,7 +3541,7 @@ void RenderFrameHostImpl::ProcessBeforeUnloadCompletedFromFrame(
   // OnDialogClosed, but there may be some cases that Blink returns !proceed
   // without showing the dialog. We also update the address bar here to be safe.
   if (!proceed)
-    delegate_->DidCancelLoading();
+    frame_tree_->DidCancelLoading();
 }
 
 bool RenderFrameHostImpl::IsWaitingForUnloadACK() const {

@@ -93,9 +93,30 @@ class CONTENT_EXPORT FrameTree {
     FrameTreeNode* const root_of_subtree_to_skip_;
   };
 
+  class CONTENT_EXPORT Delegate {
+   public:
+    // A RenderFrameHost in the specified |frame_tree_node| started loading a
+    // new document. This corresponds to browser UI starting to show a spinner
+    // or other visual indicator for loading. This method is only invoked if the
+    // FrameTree hadn't been previously loading. |to_different_document| will be
+    // true unless the load is a fragment navigation, or triggered by
+    // history.pushState/replaceState.
+    virtual void DidStartLoading(FrameTreeNode* frame_tree_node,
+                                 bool to_different_document) = 0;
+
+    // This is called when all nodes in the FrameTreestoppedloading. This
+    // corresponds to the browser UI stop showing a spinner or other visual
+    // indicator for loading.
+    virtual void DidStopLoading() = 0;
+
+    // The load progress was changed.
+    virtual void DidChangeLoadProgress() = 0;
+  };
+
   // A set of delegates are remembered here so that we can create
   // RenderFrameHostManagers.
   FrameTree(BrowserContext* browser_context,
+            Delegate* delegate,
             NavigationControllerDelegate* navigation_controller_delegate,
             NavigatorDelegate* navigator_delegate,
             RenderFrameHostDelegate* render_frame_delegate,
@@ -119,6 +140,8 @@ class CONTENT_EXPORT FrameTree {
   void set_is_prerendering(bool is_prerendering);
 
   bool is_prerendering() const { return is_prerendering_; }
+
+  Delegate* delegate() { return delegate_; }
 
   // Delegates for RenderFrameHosts, RenderViewHosts, RenderWidgetHosts and
   // RenderFrameHostManagers. These can be kept centrally on the FrameTree
@@ -271,9 +294,12 @@ class CONTENT_EXPORT FrameTree {
   // the listener installed by SetFrameRemoveListener.
   void FrameRemoved(FrameTreeNode* frame);
 
-  // Updates the overall load progress and notifies the WebContents.
-  // Set based on the main frame's progress only.
-  void UpdateLoadProgress(double progress);
+  void DidStartLoadingNode(FrameTreeNode& node,
+                           bool to_different_document,
+                           bool was_previously_loading);
+  void DidStopLoadingNode(FrameTreeNode& node);
+  void DidChangeLoadProgressForNode(FrameTreeNode& node, double load_progress);
+  void DidCancelLoading();
 
   // Returns this FrameTree's total load progress.
   double load_progress() const { return load_progress_; }
@@ -317,6 +343,9 @@ class CONTENT_EXPORT FrameTree {
     has_accessed_initial_main_document_ = false;
   }
 
+  // Stops all ongoing navigations in each of the nodes of this FrameTree.
+  void StopLoading();
+
  private:
   friend class FrameTreeTest;
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBrowserTest, RemoveFocusedFrame);
@@ -335,6 +364,8 @@ class CONTENT_EXPORT FrameTree {
   // breadth-first traversal order, skipping the subtree rooted at
   // |node|, but including |node| itself.
   NodeRange NodesExceptSubtree(FrameTreeNode* node);
+
+  Delegate* const delegate_;
 
   // These delegates are installed into all the RenderViewHosts and
   // RenderFrameHosts that we create.

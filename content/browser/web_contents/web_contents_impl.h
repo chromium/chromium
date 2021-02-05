@@ -166,6 +166,7 @@ WebContentsView* CreateWebContentsView(
     RenderViewHostDelegateView** render_view_host_delegate_view);
 
 class CONTENT_EXPORT WebContentsImpl : public WebContents,
+                                       public FrameTree::Delegate,
                                        public RenderFrameHostDelegate,
                                        public RenderViewHostDelegate,
                                        public RenderWidgetHostDelegate,
@@ -592,7 +593,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       RenderFrameHost* render_frame_host,
       bool is_reload,
       JavaScriptDialogCallback response_callback) override;
-  void DidCancelLoading() override;
   void DidChangeName(RenderFrameHost* render_frame_host,
                      const std::string& name) override;
   void DidReceiveFirstUserActivation(
@@ -866,10 +866,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool CanOverscrollContent() const override;
   void NotifyChangedNavigationState(InvalidateTypes changed_flags) override;
   bool ShouldTransferNavigation(bool is_main_frame_navigation) override;
-  void DidStartLoading(FrameTreeNode* frame_tree_node,
-                       bool to_different_document) override;
-  void DidStopLoading() override;
-  void DidChangeLoadProgress() override;
   std::vector<std::unique_ptr<NavigationThrottle>> CreateThrottlesForNavigation(
       NavigationHandle* navigation_handle) override;
   std::unique_ptr<NavigationUIData> GetNavigationUIData(
@@ -999,6 +995,13 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       mojo::PendingRemote<blink::mojom::ColorChooserClient> client,
       SkColor color,
       std::vector<blink::mojom::ColorSuggestionPtr> suggestions) override;
+
+  // FrameTree::Delegate -------------------------------------------------------
+
+  void DidStartLoading(FrameTreeNode* frame_tree_node,
+                       bool to_different_document) override;
+  void DidStopLoading() override;
+  void DidChangeLoadProgress() override;
 
   // NavigationControllerDelegate ----------------------------------------------
 
