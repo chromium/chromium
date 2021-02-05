@@ -264,6 +264,14 @@ void V8IsolateMemoryDumpProvider::DumpHeapStatistics(
       base::trace_event::MemoryAllocatorDump::kNameSize,
       base::trace_event::MemoryAllocatorDump::kUnitsBytes,
       heap_statistics.total_global_handles_size());
+  global_handles_dump->AddScalar(
+      "allocated_objects_size",
+      base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+      heap_statistics.used_global_handles_size());
+  if (system_allocator_name) {
+    process_memory_dump->AddSuballocation(global_handles_dump->guid(),
+                                          system_allocator_name);
+  }
 
   // Dump object statistics only for detailed dumps.
   if (args.level_of_detail !=

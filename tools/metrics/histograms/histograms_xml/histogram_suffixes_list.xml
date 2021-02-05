@@ -14760,7 +14760,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="V8.AllocatedObjects"
       label="Only counting objects allocated by V8 javascript engine."/>
   <suffix name="V8.Main.GlobalHandles"
-      label="Memory used by V8 global handles in the main isolate."/>
+      label="Total memory used by V8 global handles in the main isolate."/>
+  <suffix name="V8.Main.GlobalHandles.AllocatedObjects"
+      label="Allocated memory used by V8 global handles in the main isolate."/>
   <suffix name="V8.Main.Heap" label="Only counting memory used by V8 heap"/>
   <suffix name="V8.Main.Heap.AllocatedObjects"
       label="Only counting objects allocated in V8 heap"/>

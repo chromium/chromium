@@ -214,6 +214,10 @@ void PopulateRendererMetrics(GlobalMemoryDumpPtr& global_dump,
   SetAllocatorDumpMetric(
       pmd, "v8/main/global_handles", "effective_size",
       metrics_mb_or_count["V8.Main.GlobalHandles"] * 1024 * 1024);
+  SetAllocatorDumpMetric(
+      pmd, "v8/main/global_handles", "allocated_objects_size",
+      metrics_mb_or_count["V8.Main.GlobalHandles.AllocatedObjects"] * 1024 *
+          1024);
 
   SetAllocatorDumpMetric(pmd, "v8/main/heap", "effective_size",
                          metrics_mb_or_count["V8.Main.Heap"] * 1024 * 1024);
@@ -357,8 +361,9 @@ MetricMap GetExpectedRendererMetrics() {
         {"PartitionAlloc", 140}, {"BlinkGC", 150}, {"V8", 160},
         {"V8.AllocatedObjects", 70}, {"V8.Main", 100},
         {"V8.Main.AllocatedObjects", 30}, {"V8.Main.Heap", 98},
-        {"V8.Main.GlobalHandles", 3}, {"V8.Main.Heap.AllocatedObjects", 28},
-        {"V8.Main.Heap.CodeSpace", 11},
+        {"V8.Main.GlobalHandles", 3},
+        {"V8.Main.GlobalHandles.AllocatedObjects", 2},
+        {"V8.Main.Heap.AllocatedObjects", 28}, {"V8.Main.Heap.CodeSpace", 11},
         {"V8.Main.Heap.CodeSpace.AllocatedObjects", 1},
         {"V8.Main.Heap.LargeObjectSpace", 12},
         {"V8.Main.Heap.LargeObjectSpace.AllocatedObjects", 2},
