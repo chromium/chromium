@@ -118,9 +118,9 @@ void ProfilingProcessHost::Start() {
   // Developers can still manually upload via chrome://memory-internals.
   if (IsBackgroundHeapProfilingEnabled())
     background_triggers_.StartTimer();
-  metrics_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromHours(24),
-      base::Bind(&ProfilingProcessHost::ReportMetrics, base::Unretained(this)));
+  metrics_timer_.Start(FROM_HERE, base::TimeDelta::FromHours(24),
+                       base::BindRepeating(&ProfilingProcessHost::ReportMetrics,
+                                           base::Unretained(this)));
 }
 
 // static
