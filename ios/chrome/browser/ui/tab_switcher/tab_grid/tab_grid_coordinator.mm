@@ -212,8 +212,9 @@
 
   if (ShowThumbStripInTraitCollection(
           self.baseViewController.traitCollection)) {
-    [self.thumbStripCoordinator.panHandler setState:ViewRevealState::Revealed
-                                           animated:animated];
+    [self.thumbStripCoordinator.panHandler
+        setNextState:ViewRevealState::Revealed
+            animated:animated];
     [self.baseViewController contentWillAppearAnimated:animated];
     return;
   }
@@ -284,8 +285,9 @@
     [self.baseViewController setNeedsStatusBarAppearanceUpdate];
     if (shouldCloseTabGrid) {
       [self.baseViewController contentWillDisappearAnimated:YES];
-      [self.thumbStripCoordinator.panHandler setState:ViewRevealState::Hidden
-                                             animated:YES];
+      [self.thumbStripCoordinator.panHandler
+          setNextState:ViewRevealState::Hidden
+              animated:YES];
     }
 
     if (completion) {

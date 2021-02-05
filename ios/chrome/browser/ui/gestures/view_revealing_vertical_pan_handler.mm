@@ -142,8 +142,16 @@ enum class LayoutTransitionState {
   _remainingHeight = _revealedHeight - _peekedHeight;
 }
 
-- (void)setState:(ViewRevealState)state animated:(BOOL)animated {
+- (void)setNextState:(ViewRevealState)state animated:(BOOL)animated {
   self.nextState = state;
+
+  // If the layout is currently finishing its transition, a new transition
+  // cannot be started. Instead, re-call this method once the transition has
+  // finished.
+  if (self.layoutTransitionState == LayoutTransitionState::Finishing) {
+    return;
+  }
+
   [self createAnimatorIfNeeded];
   if (animated) {
     [self.animator startAnimation];
@@ -238,9 +246,29 @@ enum class LayoutTransitionState {
 
 // Notifies the layout switcher that a layout transition should happen.
 - (void)willTransitionToLayout:(LayoutSwitcherState)nextState {
+  // Don't do anything if there isn't a layout switcher available. Especially
+  // don't change the |layoutTransitionState|.
+  if (!self.layoutSwitcherProvider.layoutSwitcher) {
+    return;
+  }
   DCHECK_EQ(self.layoutTransitionState, LayoutTransitionState::Inactive);
   auto completion = ^(BOOL completed, BOOL finished) {
-    self.layoutTransitionState = LayoutTransitionState::Inactive;
+    if (self.nextState == self.currentState) {
+      self.layoutTransitionState = LayoutTransitionState::Inactive;
+      return;
+    }
+    // If current state doesn't match the next state, then next state has been
+    // changed while the transition is finishing. Start a new programmatic
+    // transition to the correct final state. Triggering a transiton from inside
+    // the completion block of a transition seems to cause the new transition's
+    // completion block to never fire, so do that on the next run loop.
+    dispatch_async(dispatch_get_main_queue(), ^{
+      self.layoutTransitionState = LayoutTransitionState::Inactive;
+      // Make sure the next state hasn't changed.
+      if (self.nextState != self.currentState) {
+        [self setNextState:self.nextState animated:YES];
+      }
+    });
   };
   [self.layoutSwitcherProvider.layoutSwitcher
       willTransitionToLayout:nextState
@@ -251,6 +279,11 @@ enum class LayoutTransitionState {
 // Notifies the layout switcher that a layout transition finished with
 // |success|.
 - (void)didTransitionToLayoutSuccessfully:(BOOL)success {
+  // Don't do anything if there isn't a layout switcher available. Especially
+  // don't change the |layoutTransitionState|.
+  if (!self.layoutSwitcherProvider.layoutSwitcher) {
+    return;
+  }
   DCHECK_EQ(self.layoutTransitionState, LayoutTransitionState::Active);
   self.layoutTransitionState = LayoutTransitionState::Finishing;
   [self.layoutSwitcherProvider.layoutSwitcher
@@ -395,6 +428,10 @@ enum class LayoutTransitionState {
   self.animator.reversed =
       (self.currentState == [self nextStateWithTranslation:translation
                                                   Velocity:velocity]);
+
+  if (self.animator.reversed) {
+    self.nextState = self.currentState;
+  }
 
   [self.animator continueAnimationWithTimingParameters:nil durationFactor:1];
 

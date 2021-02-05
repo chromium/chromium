@@ -752,11 +752,11 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       break;
   }
   auto completionBlock = ^(BOOL completed, BOOL finished) {
+    self.collectionView.scrollEnabled = YES;
+    self.currentLayout = nextLayout;
     if (completion) {
       completion(completed, finished);
     }
-    self.collectionView.scrollEnabled = YES;
-    self.currentLayout = nextLayout;
   };
   self.gridHorizontalTransitionLayout = [self.collectionView
       startInteractiveTransitionToCollectionViewLayout:nextLayout

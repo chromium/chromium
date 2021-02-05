@@ -227,11 +227,11 @@ TEST_F(ViewRevealingVerticalPanHandlerTest, ManualStateChange) {
   [pan_handler addAnimatee:fake_animatee];
   EXPECT_EQ(ViewRevealState::Hidden, fake_animatee.state);
 
-  [pan_handler setState:ViewRevealState::Revealed animated:NO];
+  [pan_handler setNextState:ViewRevealState::Revealed animated:NO];
   EXPECT_EQ(ViewRevealState::Revealed, fake_animatee.state);
   EXPECT_EQ(LayoutSwitcherState::Grid, fake_layout_switcher.state);
 
-  [pan_handler setState:ViewRevealState::Hidden animated:NO];
+  [pan_handler setNextState:ViewRevealState::Hidden animated:NO];
   EXPECT_EQ(ViewRevealState::Hidden, fake_animatee.state);
   EXPECT_EQ(LayoutSwitcherState::Horizontal, fake_layout_switcher.state);
 }
@@ -303,13 +303,13 @@ TEST_F(ViewRevealingVerticalPanHandlerTest, CurrentState) {
                 baseViewHeight:kBaseViewHeight];
   EXPECT_EQ(ViewRevealState::Hidden, pan_handler.currentState);
 
-  [pan_handler setState:ViewRevealState::Revealed animated:NO];
+  [pan_handler setNextState:ViewRevealState::Revealed animated:NO];
   EXPECT_EQ(ViewRevealState::Revealed, pan_handler.currentState);
 
-  [pan_handler setState:ViewRevealState::Peeked animated:NO];
+  [pan_handler setNextState:ViewRevealState::Peeked animated:NO];
   EXPECT_EQ(ViewRevealState::Peeked, pan_handler.currentState);
 
-  [pan_handler setState:ViewRevealState::Hidden animated:NO];
+  [pan_handler setNextState:ViewRevealState::Hidden animated:NO];
   EXPECT_EQ(ViewRevealState::Hidden, pan_handler.currentState);
 }
 

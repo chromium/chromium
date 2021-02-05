@@ -470,6 +470,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 #pragma mark - LayoutSwitcher
+
 - (void)willTransitionToLayout:(LayoutSwitcherState)nextState
                     completion:
                         (void (^)(BOOL completed, BOOL finished))completion {
@@ -478,12 +479,27 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   GridViewController* incognitoViewController =
       [self gridViewControllerForPage:TabGridPageIncognitoTabs];
 
+  __block NSMutableArray<NSNumber*>* completeds = [[NSMutableArray alloc] init];
+  __block NSMutableArray<NSNumber*>* finisheds = [[NSMutableArray alloc] init];
+
+  void (^combinedCompletion)(BOOL, BOOL) = ^(BOOL completed, BOOL finished) {
+    [completeds addObject:[NSNumber numberWithBool:completed]];
+    [finisheds addObject:[NSNumber numberWithBool:finished]];
+    if ([completeds count] != 2) {
+      return;
+    }
+    DCHECK(completeds[0] == completeds[1]);
+    DCHECK(finisheds[0] == finisheds[1]);
+    completion(completeds[0], finisheds[0]);
+  };
+
   // Each LayoutSwitcher method calls regular and icognito grid controller's
   // corresponding method. Thus, attaching the completion to only one of the
   // grid view controllers should suffice.
   [regularViewController willTransitionToLayout:nextState
-                                     completion:completion];
-  [incognitoViewController willTransitionToLayout:nextState completion:nil];
+                                     completion:combinedCompletion];
+  [incognitoViewController willTransitionToLayout:nextState
+                                       completion:combinedCompletion];
 }
 
 - (void)didUpdateTransitionLayoutProgress:(CGFloat)progress {

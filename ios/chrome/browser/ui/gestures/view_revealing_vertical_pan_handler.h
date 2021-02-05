@@ -45,9 +45,9 @@
 // to the animatees.
 - (void)addAnimatee:(id<ViewRevealingAnimatee>)animatee;
 
-// Manually sets the state of the pan handler to a specific state, optionally
-// animated.
-- (void)setState:(ViewRevealState)state animated:(BOOL)animated;
+// Requests the pan handler to transition to |state|. Depending on the
+// internals, this may not happen immediately.
+- (void)setNextState:(ViewRevealState)state animated:(BOOL)animated;
 
 // Height of the view that will be revealed after the transition to Peeked
 // state.
