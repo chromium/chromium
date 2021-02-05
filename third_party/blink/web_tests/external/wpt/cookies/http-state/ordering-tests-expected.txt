@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL ordering0001 - ordering0001 assert_equals: expected "key=val5; key=val1; key=val2; key=val4" but got "key=val0; key=val2"
-Harness: the test ran to completion.
-
