@@ -94,6 +94,7 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_widget_host_observer.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -7434,7 +7435,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
     load_observer.Wait();
 
   // The last successful url shouldn't be the blocked url.
-  EXPECT_EQ(old_subframe_url,
+  EXPECT_NE(blocked_url,
             root->child_at(0)->current_frame_host()->last_successful_url());
 
   // The blocked frame should go to an error page. Errors currently commit
@@ -7505,7 +7506,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
     load_observer2.Wait();
 
   // The last successful url shouldn't be the blocked url.
-  EXPECT_EQ(old_subframe_url,
+  EXPECT_NE(blocked_url,
             root->child_at(0)->current_frame_host()->last_successful_url());
 
   // The blocked frame should go to an error page. Errors currently commit
@@ -7574,7 +7575,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
     load_observer2.Wait();
 
   // The last successful url shouldn't be the blocked url.
-  EXPECT_EQ(old_subframe_url,
+  EXPECT_NE(blocked_url,
             navigating_frame->current_frame_host()->last_successful_url());
 
   // The blocked frame should go to an error page. Errors currently commit

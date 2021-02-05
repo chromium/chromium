@@ -3069,8 +3069,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginLongListTest, Test) {
 }
 
 // Check that navigating a subframe to an isolated origin error page puts the
-// subframe into an OOPIF and its own SiteInstance.  Also check that a
-// non-isolated error page in a subframe ends up in the correct SiteInstance.
+// subframe into an OOPIF and its own SiteInstance.  Also check that the error
+// page in a subframe ends up in the correct SiteInstance.
 IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, SubframeErrorPages) {
   GURL top_url(
       embedded_test_server()->GetURL("/frame_tree/page_with_two_frames.html"));
@@ -3096,8 +3096,16 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, SubframeErrorPages) {
 
     EXPECT_NE(root->current_frame_host()->GetSiteInstance(),
               child1->current_frame_host()->GetSiteInstance());
-    EXPECT_EQ(GURL("http://isolated.foo.com/"),
-              child1->current_frame_host()->GetSiteInstance()->GetSiteURL());
+    if (!SiteIsolationPolicy::IsErrorPageIsolationEnabled(
+            /*in_main_frame=*/false)) {
+      EXPECT_EQ(GURL("http://isolated.foo.com/"),
+                child1->current_frame_host()->GetSiteInstance()->GetSiteURL());
+    } else {
+      EXPECT_TRUE(child1->current_frame_host()
+                      ->GetSiteInstance()
+                      ->GetSiteInfo()
+                      .is_error_page());
+    }
   }
 
   {
@@ -3111,15 +3119,23 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, SubframeErrorPages) {
     if (AreStrictSiteInstancesEnabled()) {
       EXPECT_NE(root->current_frame_host()->GetSiteInstance(),
                 child2->current_frame_host()->GetSiteInstance());
-      EXPECT_EQ(SiteInstance::GetSiteForURL(web_contents()->GetBrowserContext(),
-                                            regular_url),
-                child2->current_frame_host()->GetSiteInstance()->GetSiteURL());
+      if (!SiteIsolationPolicy::IsErrorPageIsolationEnabled(
+              /*in_main_frame=*/false)) {
+        EXPECT_EQ(
+            SiteInstance::GetSiteForURL(web_contents()->GetBrowserContext(),
+                                        regular_url),
+            child2->current_frame_host()->GetSiteInstance()->GetSiteURL());
+      }
     } else {
       EXPECT_EQ(root->current_frame_host()->GetSiteInstance(),
                 child2->current_frame_host()->GetSiteInstance());
     }
-    EXPECT_NE(GURL(kUnreachableWebDataURL),
-              child2->current_frame_host()->GetSiteInstance()->GetSiteURL());
+    EXPECT_EQ(SiteIsolationPolicy::IsErrorPageIsolationEnabled(
+                  /*in_main_frame=*/false),
+              child2->current_frame_host()
+                  ->GetSiteInstance()
+                  ->GetSiteInfo()
+                  .is_error_page());
   }
 }
 

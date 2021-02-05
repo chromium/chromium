@@ -13,6 +13,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/origin_util.h"
@@ -1276,7 +1277,7 @@ IN_PROC_BROWSER_TEST_F(IsolateIcelandFrameTreeBrowserTest,
 
   // The navigation targets an invalid blob url; that's intentional to trigger
   // an error response. The response should commit in a process dedicated to
-  // http://b.is.
+  // http://b.is or error pages, depending on policy.
   EXPECT_EQ(
       "done",
       EvalJs(
@@ -1293,11 +1294,16 @@ IN_PROC_BROWSER_TEST_F(IsolateIcelandFrameTreeBrowserTest,
       AreDefaultSiteInstancesEnabled()
           ? SiteInstanceImpl::GetDefaultSiteURL().spec()
           : "http://a.com/";
+  const std::string kExpectedSubframeSiteURL =
+      SiteIsolationPolicy::IsErrorPageIsolationEnabled(/*in_main_frame*/ false)
+          ? "chrome-error://chromewebdata/"
+          : "http://b.is/";
   EXPECT_EQ(base::StringPrintf(" Site A ------------ proxies for B\n"
                                "   +--Site B ------- proxies for A\n"
                                "Where A = %s\n"
-                               "      B = http://b.is/",
-                               kExpectedSiteURL.c_str()),
+                               "      B = %s",
+                               kExpectedSiteURL.c_str(),
+                               kExpectedSubframeSiteURL.c_str()),
             DepictFrameTree(*root));
 }
 
