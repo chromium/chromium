@@ -357,6 +357,10 @@
     "label": "//fuchsia/runners:cast_runner_integration_tests",
     "type": "console_test_launcher",
   },
+  "cast_runner_pkg":{
+    "label": "//fuchsia/runners:cast_runner_pkg",
+    "type": "additonal_compile_target",
+  },
   "cast_runner_unittests": {
     "label": "//fuchsia/runners:cast_runner_unittests",
     "type": "console_test_launcher",
@@ -944,6 +948,10 @@
   "headless_unittests": {
     "label": "//headless:headless_unittests",
     "type": "console_test_launcher",
+  },
+  "http_pkg": {
+    "label": "//fuchsia/http:http_pkg",
+    "type": "additonal_compile_target",
   },
   "http_service_tests": {
     "label": "//fuchsia/http:http_service_tests",
@@ -1875,6 +1883,10 @@
   "web_runner_integration_tests": {
     "label": "//fuchsia/runners:web_runner_integration_tests",
     "type": "console_test_launcher",
+  },
+  "web_runner_pkg": {
+    "label": "//fuchsia/runners:web_runner_pkg",
+    "type": "additonal_compile_target",
   },
   "webapk_client_junit_tests": {
     "label": "//chrome/android/webapk/libs/client:webapk_client_junit_tests",

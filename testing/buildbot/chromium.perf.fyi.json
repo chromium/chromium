@@ -223,8 +223,9 @@
   "fuchsia-builder-perf-fyi": {
     "additional_compile_targets": [
       "web_engine_shell_pkg",
-      "web_engine_unittests",
-      "cast_runner_unittests",
+      "http_pkg",
+      "cast_runner_pkg",
+      "web_runner_pkg",
       "chromedriver",
       "chromium_builder_perf"
     ]
