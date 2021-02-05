@@ -2,19 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/tab_strip/chrome_content_browser_client_tab_strip_part.h"
+#include "chrome/browser/ui/webui/chrome_content_browser_client_webui_part.h"
 
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/url_constants.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
-ChromeContentBrowserClientTabStripPart::
-    ChromeContentBrowserClientTabStripPart() = default;
-ChromeContentBrowserClientTabStripPart::
-    ~ChromeContentBrowserClientTabStripPart() = default;
+ChromeContentBrowserClientWebUIPart::ChromeContentBrowserClientWebUIPart() =
+    default;
+ChromeContentBrowserClientWebUIPart::~ChromeContentBrowserClientWebUIPart() =
+    default;
 
-void ChromeContentBrowserClientTabStripPart::OverrideWebkitPrefs(
+void ChromeContentBrowserClientWebUIPart::OverrideWebkitPrefs(
     content::WebContents* web_contents,
     blink::web_pref::WebPreferences* web_prefs) {
   if (!web_contents)
@@ -24,16 +25,22 @@ void ChromeContentBrowserClientTabStripPart::OverrideWebkitPrefs(
       web_contents->GetController().GetVisibleEntry();
   GURL url = entry ? entry->GetURL() : GURL();
 
-  if (url.host_piece() != chrome::kChromeUITabStripHost) {
+  if (!url.SchemeIs(content::kChromeUIScheme)) {
     return;
   }
 
+  // Prevent font size preferences from affecting chrome:// WebUI pages.
   blink::web_pref::WebPreferences default_prefs;
   web_prefs->default_font_size = default_prefs.default_font_size;
   web_prefs->default_fixed_font_size = default_prefs.default_fixed_font_size;
   web_prefs->minimum_font_size = default_prefs.minimum_font_size;
   web_prefs->minimum_logical_font_size =
       default_prefs.minimum_logical_font_size;
-  web_prefs->touch_drag_drop_enabled = true;
-  web_prefs->touch_dragend_context_menu = true;
+
+#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
+  if (url.host_piece() == chrome::kChromeUITabStripHost) {
+    web_prefs->touch_drag_drop_enabled = true;
+    web_prefs->touch_dragend_context_menu = true;
+  }
+#endif
 }
