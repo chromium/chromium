@@ -155,8 +155,7 @@ void CustomFrameView::GetWindowMask(const gfx::Size& size,
   if (frame_->IsMaximized() || !ShouldShowTitleBarAndBorder())
     return;
 
-  GetDefaultWindowMask(size, frame_->GetCompositor()->device_scale_factor(),
-                       window_mask);
+  GetDefaultWindowMask(size, window_mask);
 }
 
 void CustomFrameView::ResetWindowControls() {

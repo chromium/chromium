@@ -308,8 +308,7 @@ void OpaqueBrowserFrameView::GetWindowMask(const gfx::Size& size,
   if (IsFrameCondensed())
     return;
 
-  views::GetDefaultWindowMask(
-      size, frame()->GetCompositor()->device_scale_factor(), window_mask);
+  views::GetDefaultWindowMask(size, window_mask);
 }
 
 void OpaqueBrowserFrameView::ResetWindowControls() {

@@ -746,7 +746,17 @@ int DesktopWindowTreeHostWin::GetNonClientComponent(
 void DesktopWindowTreeHostWin::GetWindowMask(const gfx::Size& size,
                                              SkPath* path) {
   if (GetWidget()->non_client_view()) {
-    GetWidget()->non_client_view()->GetWindowMask(size, path);
+    GetWidget()->non_client_view()->GetWindowMask(
+        display::win::ScreenWin::ScreenToDIPSize(GetHWND(), size), path);
+    // Convert path in DIPs to pixels.
+    if (!path->isEmpty()) {
+      const float scale =
+          display::win::ScreenWin::GetScaleFactorForHWND(GetHWND());
+      SkScalar sk_scale = SkFloatToScalar(scale);
+      SkMatrix matrix;
+      matrix.setScale(sk_scale, sk_scale);
+      path->transform(matrix);
+    }
   } else if (!window_enlargement_.IsZero()) {
     gfx::Rect bounds(WidgetSizeIsClientSize()
                          ? message_handler_->GetClientAreaBoundsInScreen()

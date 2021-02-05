@@ -756,8 +756,11 @@ SkPath DesktopWindowTreeHostPlatform::GetWindowMaskForWindowShapeInPixels() {
   SkPath window_mask;
   // Some frame views define a custom (non-rectanguar) window mask.
   // If so, use it to define the window shape. If not, fall through.
-  GetWidget()->non_client_view()->GetWindowMask(GetBoundsInPixels().size(),
-                                                &window_mask);
+  GetWidget()->non_client_view()->GetWindowMask(
+      GetWindowBoundsInScreen().size(), &window_mask);
+  // Convert SkPath in DIPs to pixels.
+  if (!window_mask.isEmpty())
+    window_mask.transform(SkMatrix(GetRootTransform().matrix()));
   return window_mask;
 }
 
