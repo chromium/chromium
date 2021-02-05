@@ -558,9 +558,21 @@ class DEVICE_BLUETOOTH_EXPORT TestBluetoothDeviceClient
     NOTIMPLEMENTED();
   }
 
+  void ConnectLE(const dbus::ObjectPath& object_path,
+                 base::OnceClosure callback,
+                 ErrorCallback error_callback) override {
+    NOTIMPLEMENTED();
+  }
+
   void Disconnect(const dbus::ObjectPath& object_path,
                   base::OnceClosure callback,
                   ErrorCallback error_callback) override {
+    NOTIMPLEMENTED();
+  }
+
+  void DisconnectLE(const dbus::ObjectPath& object_path,
+                    base::OnceClosure callback,
+                    ErrorCallback error_callback) override {
     NOTIMPLEMENTED();
   }
 

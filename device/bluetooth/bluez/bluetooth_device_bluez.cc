@@ -205,13 +205,24 @@ device::BluetoothTransport BluetoothDeviceBlueZ::GetType() const {
 
 void BluetoothDeviceBlueZ::CreateGattConnectionImpl(
     base::Optional<BluetoothUUID> service_uuid) {
+  if (num_connecting_calls_++ == 0)
+    adapter()->NotifyDeviceChanged(this);
+
+  auto success_callback = base::BindOnce(
+      &BluetoothDeviceBlueZ::OnConnect, weak_ptr_factory_.GetWeakPtr(),
+      base::BindOnce(&BluetoothDeviceBlueZ::DidConnectGatt,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  auto error_callback = base::BindOnce(
+      &BluetoothDeviceBlueZ::OnConnectError, weak_ptr_factory_.GetWeakPtr(),
+      base::BindOnce(&BluetoothDeviceBlueZ::DidFailToConnectGatt,
+                     weak_ptr_factory_.GetWeakPtr()));
+
   // TODO(crbug.com/630586): Until there is a way to create a reference counted
-  // GATT connection in bluetoothd, simply do a regular connect.
-  Connect(nullptr,
-          base::BindOnce(&BluetoothDeviceBlueZ::DidConnectGatt,
-                         weak_ptr_factory_.GetWeakPtr()),
-          base::BindOnce(&BluetoothDeviceBlueZ::DidFailToConnectGatt,
-                         weak_ptr_factory_.GetWeakPtr()));
+  // GATT connection in bluetoothd (i.e., specify a connection to a particular
+  // GATT service), simply perform a regular LE connect.
+  bluez::BluezDBusManager::Get()->GetBluetoothDeviceClient()->ConnectLE(
+      object_path_, std::move(success_callback), std::move(error_callback));
 }
 
 void BluetoothDeviceBlueZ::SetGattServicesDiscoveryComplete(bool complete) {
@@ -251,7 +262,17 @@ void BluetoothDeviceBlueZ::DisconnectGatt() {
     return;
   }
 
-  Disconnect(base::DoNothing(), base::DoNothing());
+  bluez::BluezDBusManager::Get()->GetBluetoothDeviceClient()->DisconnectLE(
+      object_path_, base::DoNothing(),
+      base::BindOnce(&BluetoothDeviceBlueZ::OnDisconnectLEError,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void BluetoothDeviceBlueZ::OnDisconnectLEError(
+    const std::string& error_name,
+    const std::string& error_message) {
+  BLUETOOTH_LOG(ERROR) << "DisconnectLE() failed with error name: "
+                       << error_name << " and error message: " << error_message;
 }
 
 std::string BluetoothDeviceBlueZ::GetAddress() const {
@@ -353,9 +374,12 @@ bool BluetoothDeviceBlueZ::IsConnected() const {
 }
 
 bool BluetoothDeviceBlueZ::IsGattConnected() const {
-  // Bluez uses the same attribute for GATT Connections and Classic BT
-  // Connections.
-  return IsConnected();
+  bluez::BluetoothDeviceClient::Properties* properties =
+      bluez::BluezDBusManager::Get()->GetBluetoothDeviceClient()->GetProperties(
+          object_path_);
+  DCHECK(properties);
+
+  return properties->connected_le.value();
 }
 
 bool BluetoothDeviceBlueZ::IsConnectable() const {

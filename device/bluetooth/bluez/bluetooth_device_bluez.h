@@ -243,6 +243,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceBlueZ
   void OnConnectError(ConnectErrorCallback error_callback,
                       const std::string& error_name,
                       const std::string& error_message);
+  void OnDisconnectLEError(const std::string& error_name,
+                           const std::string& error_message);
 
   // Called by dbus:: on completion of the D-Bus method call to pair the device,
   // made inside |Connect()|.

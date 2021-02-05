@@ -85,8 +85,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceClient : public BluezDBusClient {
     // Indicates that the device is currently paired. Read-only.
     dbus::Property<bool> paired;
 
-    // Indicates that the device is currently connected. Read-only.
+    // Indicates that the device is currently connected via any transports.
+    // Read-only.
     dbus::Property<bool> connected;
+
+    // Indicates that the device is currently connected via BLE. Read-only.
+    dbus::Property<bool> connected_le;
 
     // Whether the device is trusted, and connections should be always
     // accepted and attempted when the device is visible.
@@ -195,11 +199,26 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceClient : public BluezDBusClient {
                        base::OnceClosure callback,
                        ErrorCallback error_callback) = 0;
 
-  // Disconnects the device with object path |object_path|, terminating
-  // the low-level ACL connection and any profiles using it.
+  // Connects to the device with object path |object_path| via BLE,
+  // connecting any profiles that can be connected to and have been flagged as
+  // auto-connected; may be used to connect additional profiles for an already
+  // connected device, and succeeds if at least one profile is connected.
+  virtual void ConnectLE(const dbus::ObjectPath& object_path,
+                         base::OnceClosure callback,
+                         ErrorCallback error_callback) = 0;
+
+  // Disconnects all connections to the device with object path |object_path|,
+  // terminating the low-level ACL connection and any profiles using it.
   virtual void Disconnect(const dbus::ObjectPath& object_path,
                           base::OnceClosure callback,
                           ErrorCallback error_callback) = 0;
+
+  // Disconnects the BLE connection to the device with object path
+  // |object_path|, terminating the low-level ACL connection and any profiles
+  // using it.
+  virtual void DisconnectLE(const dbus::ObjectPath& object_path,
+                            base::OnceClosure callback,
+                            ErrorCallback error_callback) = 0;
 
   // Connects to the profile |uuid| on the device with object path
   // |object_path|, provided that the profile has been registered with a
