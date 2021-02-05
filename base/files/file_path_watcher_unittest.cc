@@ -129,15 +129,22 @@ class TestDelegate : public TestDelegateBase {
   TestDelegate& operator=(const TestDelegate&) = delete;
   ~TestDelegate() override = default;
 
+  // Configure this delegate so that it expects an error.
+  void set_expect_error() { expect_error_ = true; }
+
+  // TestDelegateBase:
   void OnFileChanged(const FilePath& path, bool error) override {
-    if (error)
-      ADD_FAILURE() << "Error " << path.value();
-    else
+    if (error != expect_error_) {
+      ADD_FAILURE() << "Unexpected change for \"" << path
+                    << "\" with |error| = " << (error ? "true" : "false");
+    } else {
       collector_->OnChange(this);
+    }
   }
 
  private:
   scoped_refptr<NotificationCollector> collector_;
+  bool expect_error_ = false;
 };
 
 class FilePathWatcherTest : public testing::Test {
@@ -945,6 +952,23 @@ TEST_F(FilePathWatcherTest, TrivialParentDirChange) {
   // There should be no notification for a change to |sub_dir2|'s parent.
   ASSERT_TRUE(Move(sub_dir1, tmp_dir.Append(FILE_PATH_LITERAL("over_here"))));
   ASSERT_FALSE(WaitForEvents());
+}
+
+// Do not crash when a directory is moved; https://crbug.com/1156603.
+TEST_F(FilePathWatcherTest, TrivialDirMove) {
+  const FilePath tmp_dir = temp_dir_.GetPath();
+  const FilePath sub_dir = tmp_dir.Append(FILE_PATH_LITERAL("subdir"));
+
+  ASSERT_TRUE(CreateDirectory(sub_dir));
+
+  FilePathWatcher watcher;
+  auto delegate = std::make_unique<TestDelegate>(collector());
+  delegate->set_expect_error();
+  ASSERT_TRUE(SetupWatch(sub_dir, &watcher, delegate.get(),
+                         FilePathWatcher::Type::kTrivial));
+
+  ASSERT_TRUE(Move(sub_dir, tmp_dir.Append(FILE_PATH_LITERAL("over_here"))));
+  ASSERT_TRUE(WaitForEvents());
 }
 
 #endif  // defined(OS_MAC)
