@@ -53,13 +53,11 @@ base::FilePath GetTestDataPath(const std::string& file_name) {
 void LoadDownloadableSmartDimComponent(const double& threshold) {
   const char json_string_template[] =
       "{"
-      "\"input_names\": [\"x\", \"y\"],"
-      "\"input_nodes\": [3, 4],"
-      "\"output_names\": [\"z\"],"
+      "\"input_nodes\": [3],"
       "\"output_nodes\": [5],"
       "\"threshold\": %f,"
       "\"expected_feature_size\": 343,"
-      "\"metrics_model_name\": \"smart_dim_model\""
+      "\"metrics_model_name\": \"SmartDimModel\""
       "}";
   const std::string json_string =
       base::StringPrintf(json_string_template, threshold);

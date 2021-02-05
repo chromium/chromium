@@ -4,6 +4,9 @@
 
 #include "chrome/browser/chromeos/power/ml/smart_dim/ml_agent_util.h"
 
+#include <string>
+#include <vector>
+
 #include "base/logging.h"
 #include "base/optional.h"
 
@@ -13,28 +16,30 @@ namespace ml {
 
 namespace {
 
-// Extracts node names and id, then inserts into the name_2_node_map.
+// Extracts node id and inserts into the name_2_node_map.
+// Both input and output should only contain 1 node id.
 bool PopulateMapFromNamesAndNodes(
-    const base::Value& names,
+    const std::vector<std::string>& names,
     const base::Value& nodes,
     base::flat_map<std::string, int>* name_2_node_map) {
-  if (names.GetList().size() != nodes.GetList().size()) {
-    DVLOG(1) << "names and nodes don't match";
+  if (names.size() != 1) {
+    DVLOG(1) << "names should contain only 1 string element.";
     return false;
   }
 
-  for (size_t i = 0; i < names.GetList().size(); i++) {
-    if (!names.GetList()[i].is_string() || !nodes.GetList()[i].is_int()) {
-      DVLOG(1) << i << " names and nodes have unexpected type";
-      return false;
-    }
-    name_2_node_map->emplace(names.GetList()[i].GetString(),
-                             nodes.GetList()[i].GetInt());
+  if (nodes.GetList().size() != 1 || !nodes.GetList()[0].is_int()) {
+    DVLOG(1) << "nodes should contain only 1 integer element.";
+    return false;
   }
+
+  name_2_node_map->emplace(names[0], nodes.GetList()[0].GetInt());
   return true;
 }
 
 }  // namespace
+
+constexpr char kSmartDimInputNodeName[] = "input";
+constexpr char kSmartDimOutputNodeName[] = "output";
 
 bool ParseMetaInfoFromJsonObject(const base::Value& root,
                                  std::string* metrics_model_name,
@@ -64,14 +69,14 @@ bool ParseMetaInfoFromJsonObject(const base::Value& root,
   *expected_feature_size =
       static_cast<size_t>(expected_feature_size_value.value());
 
-  const base::Value* input_names = root.FindListKey("input_names");
   const base::Value* input_nodes = root.FindListKey("input_nodes");
-  const base::Value* output_names = root.FindListKey("output_names");
   const base::Value* output_nodes = root.FindListKey("output_nodes");
 
-  if (!input_names || !input_nodes || !output_names || !output_nodes ||
-      !PopulateMapFromNamesAndNodes(*input_names, *input_nodes, inputs) ||
-      !PopulateMapFromNamesAndNodes(*output_names, *output_nodes, outputs)) {
+  if (!input_nodes || !output_nodes ||
+      !PopulateMapFromNamesAndNodes({kSmartDimInputNodeName}, *input_nodes,
+                                    inputs) ||
+      !PopulateMapFromNamesAndNodes({kSmartDimOutputNodeName}, *output_nodes,
+                                    outputs)) {
     DVLOG(1) << "Failed to load inputs and outputs maps from metadata_json";
     *metrics_model_name = "";
     *dim_threshold = 0.0;
