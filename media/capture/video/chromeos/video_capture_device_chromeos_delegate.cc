@@ -122,6 +122,8 @@ VideoCaptureDeviceChromeOSDelegate::VideoCaptureDeviceChromeOSDelegate(
       rotation_(0),
       camera_app_device_(camera_app_device),
       cleanup_callback_(std::move(cleanup_callback)),
+      device_closed_(base::WaitableEvent::ResetPolicy::MANUAL,
+                     base::WaitableEvent::InitialState::NOT_SIGNALED),
       power_manager_client_proxy_(
           base::MakeRefCounted<PowerManagerClientProxy>()) {
   power_manager_client_proxy_->Init(weak_ptr_factory_.GetWeakPtr(),
@@ -265,9 +267,12 @@ void VideoCaptureDeviceChromeOSDelegate::CloseDevice(
   // general we don't trust the camera HAL so if the device does not close in
   // time we simply terminate the Mojo channel by resetting
   // |camera_device_delegate_|.
-  base::WaitableEvent device_closed(
-      base::WaitableEvent::ResetPolicy::MANUAL,
-      base::WaitableEvent::InitialState::NOT_SIGNALED);
+  //
+  // VideoCaptureDeviceChromeOSDelegate owns both |camera_device_delegate_| and
+  // |device_closed_| and it stops |camera_device_ipc_thread_| in
+  // StopAndDeAllocate, so it's safe to pass |device_closed_| as unretained in
+  // the callback.
+  device_closed_.Reset();
   camera_device_ipc_thread_.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&CameraDeviceDelegate::StopAndDeAllocate,
                                 camera_device_delegate_->GetWeakPtr(),
@@ -275,9 +280,9 @@ void VideoCaptureDeviceChromeOSDelegate::CloseDevice(
                                     [](base::WaitableEvent* device_closed) {
                                       device_closed->Signal();
                                     },
-                                    base::Unretained(&device_closed))));
+                                    base::Unretained(&device_closed_))));
   base::TimeDelta kWaitTimeoutSecs = base::TimeDelta::FromSeconds(3);
-  device_closed.TimedWait(kWaitTimeoutSecs);
+  device_closed_.TimedWait(kWaitTimeoutSecs);
   if (!unblock_suspend_token.is_empty())
     power_manager_client_proxy_->UnblockSuspend(unblock_suspend_token);
 }

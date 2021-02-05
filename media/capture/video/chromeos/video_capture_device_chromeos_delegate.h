@@ -107,6 +107,8 @@ class CAPTURE_EXPORT VideoCaptureDeviceChromeOSDelegate final
 
   base::OnceClosure cleanup_callback_;
 
+  base::WaitableEvent device_closed_;
+
   scoped_refptr<PowerManagerClientProxy> power_manager_client_proxy_;
 
   base::WeakPtrFactory<VideoCaptureDeviceChromeOSDelegate> weak_ptr_factory_{
