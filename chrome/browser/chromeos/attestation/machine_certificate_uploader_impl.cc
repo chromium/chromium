@@ -17,7 +17,6 @@
 #include "chrome/browser/chromeos/attestation/attestation_key_payload.pb.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chromeos/attestation/attestation_flow.h"
-#include "chromeos/attestation/attestation_flow_adaptive.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/attestation/attestation_client.h"
 #include "chromeos/dbus/attestation/interface.pb.h"
@@ -118,7 +117,7 @@ void MachineCertificateUploaderImpl::Start() {
     std::unique_ptr<ServerProxy> attestation_ca_client(
         new AttestationCAClient());
     default_attestation_flow_.reset(
-        new AttestationFlowAdaptive(std::move(attestation_ca_client)));
+        new AttestationFlow(std::move(attestation_ca_client)));
     attestation_flow_ = default_attestation_flow_.get();
   }
 

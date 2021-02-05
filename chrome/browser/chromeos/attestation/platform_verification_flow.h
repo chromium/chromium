@@ -35,7 +35,6 @@ class AttestationClient;
 namespace attestation {
 
 class AttestationFlow;
-class AttestationFlowAdaptive;
 class PlatformVerificationFlowTest;
 
 // This class allows platform verification for the content protection use case.
@@ -237,7 +236,7 @@ class PlatformVerificationFlow
                                 const std::string& certificate_chain);
 
   AttestationFlow* attestation_flow_;
-  std::unique_ptr<AttestationFlowAdaptive> default_attestation_flow_;
+  std::unique_ptr<AttestationFlow> default_attestation_flow_;
   AttestationClient* const attestation_client_;
   Delegate* delegate_;
   std::unique_ptr<Delegate> default_delegate_;
