@@ -2,133 +2,16 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/locales.gni")
 import("//chrome/common/features.gni")
-import("//chromeos/components/camera_app_ui/camera_app_ui.gni")
 import("//tools/grit/grit_rule.gni")
 
 grit("strings") {
   source = "camera_strings.grd"
   defines = chrome_grit_defines
-  outputs = [
-    # Platform app usage
-    "$out_camera_app_dir/_locales/am/messages.json",
-    "$out_camera_app_dir/_locales/ar/messages.json",
-    "$out_camera_app_dir/_locales/bg/messages.json",
-    "$out_camera_app_dir/_locales/bn/messages.json",
-    "$out_camera_app_dir/_locales/ca/messages.json",
-    "$out_camera_app_dir/_locales/cs/messages.json",
-    "$out_camera_app_dir/_locales/da/messages.json",
-    "$out_camera_app_dir/_locales/de/messages.json",
-    "$out_camera_app_dir/_locales/el/messages.json",
-    "$out_camera_app_dir/_locales/en_GB/messages.json",
-    "$out_camera_app_dir/_locales/en/messages.json",
-    "$out_camera_app_dir/_locales/es/messages.json",
-    "$out_camera_app_dir/_locales/es_419/messages.json",
-    "$out_camera_app_dir/_locales/et/messages.json",
-    "$out_camera_app_dir/_locales/fa/messages.json",
-    "$out_camera_app_dir/_locales/fi/messages.json",
-    "$out_camera_app_dir/_locales/fil/messages.json",
-    "$out_camera_app_dir/_locales/fr/messages.json",
-    "$out_camera_app_dir/_locales/gu/messages.json",
-    "$out_camera_app_dir/_locales/he/messages.json",
-    "$out_camera_app_dir/_locales/hi/messages.json",
-    "$out_camera_app_dir/_locales/hr/messages.json",
-    "$out_camera_app_dir/_locales/hu/messages.json",
-    "$out_camera_app_dir/_locales/id/messages.json",
-    "$out_camera_app_dir/_locales/it/messages.json",
-    "$out_camera_app_dir/_locales/ja/messages.json",
-    "$out_camera_app_dir/_locales/kn/messages.json",
-    "$out_camera_app_dir/_locales/ko/messages.json",
-    "$out_camera_app_dir/_locales/lt/messages.json",
-    "$out_camera_app_dir/_locales/lv/messages.json",
-    "$out_camera_app_dir/_locales/ml/messages.json",
-    "$out_camera_app_dir/_locales/mr/messages.json",
-    "$out_camera_app_dir/_locales/ms/messages.json",
-    "$out_camera_app_dir/_locales/nl/messages.json",
-    "$out_camera_app_dir/_locales/nb/messages.json",
-    "$out_camera_app_dir/_locales/pl/messages.json",
-    "$out_camera_app_dir/_locales/pt_BR/messages.json",
-    "$out_camera_app_dir/_locales/pt_PT/messages.json",
-    "$out_camera_app_dir/_locales/ro/messages.json",
-    "$out_camera_app_dir/_locales/ru/messages.json",
-    "$out_camera_app_dir/_locales/sk/messages.json",
-    "$out_camera_app_dir/_locales/sl/messages.json",
-    "$out_camera_app_dir/_locales/sr/messages.json",
-    "$out_camera_app_dir/_locales/sv/messages.json",
-    "$out_camera_app_dir/_locales/sw/messages.json",
-    "$out_camera_app_dir/_locales/ta/messages.json",
-    "$out_camera_app_dir/_locales/te/messages.json",
-    "$out_camera_app_dir/_locales/th/messages.json",
-    "$out_camera_app_dir/_locales/tr/messages.json",
-    "$out_camera_app_dir/_locales/uk/messages.json",
-    "$out_camera_app_dir/_locales/vi/messages.json",
-    "$out_camera_app_dir/_locales/zh_CN/messages.json",
-    "$out_camera_app_dir/_locales/zh_TW/messages.json",
 
-    # SWA usage
-    "$gen_camera_app_dir/strings/grit/chromeos_camera_app_strings.h",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_am.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_ar.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_bg.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_bn.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_ca.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_cs.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_da.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_de.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_el.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_en-GB.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_en-US.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_es.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_es-419.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_et.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_fa.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_fake-bidi.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_fi.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_fil.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_fr.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_gu.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_he.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_hi.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_hr.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_hu.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_id.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_it.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_ja.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_kn.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_ko.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_lt.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_lv.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_ml.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_mr.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_ms.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_nl.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_nb.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_pl.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_pt-BR.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_pt-PT.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_ro.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_ru.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_sk.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_sl.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_sr.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_sv.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_sw.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_ta.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_te.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_th.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_tr.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_uk.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_vi.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_zh-CN.pak",
-    "$gen_camera_app_dir/strings/chromeos_camera_app_strings_zh-TW.pak",
-  ]
-
-  output_dir = root_out_dir
-
-  grit_flags = [
-    "-E",
-    "out_camera_app_dir=" + rebase_path(out_camera_app_dir, root_out_dir),
-    "-E",
-    "gen_camera_app_dir=" + rebase_path(gen_camera_app_dir, root_out_dir),
-  ]
+  outputs = [ "grit/chromeos_camera_app_strings.h" ]
+  foreach(locale, locales_with_fake_bidi) {
+    outputs += [ "chromeos_camera_app_strings_$locale.pak" ]
+  }
 }

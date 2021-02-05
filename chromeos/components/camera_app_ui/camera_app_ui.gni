@@ -1,9 +1,0 @@
-declare_args() {
-  # The directory where the platform app version of CCA lives.
-  out_camera_app_dir = "$root_out_dir/resources/chromeos/camera"
-
-  # The directory where to store generated resource files for strings. It is
-  # used by SWA version of CCA.
-  gen_camera_app_dir =
-      "$root_gen_dir/chromeos/components/camera_app_ui/resources"
-}
