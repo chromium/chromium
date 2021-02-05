@@ -721,4 +721,29 @@ export function routineSectionTestSuite() {
               loadTimeData.getStringF('routineNameText', getCurrentTestName()));
         });
   });
+
+  test('ReportButtonHiddenWithSingleRoutine', () => {
+    /** @type {!Array<!RoutineType>} */
+    const routines = [
+      chromeos.diagnostics.mojom.RoutineType.kCpuCache,
+    ];
+    return initializeRoutineSection(routines)
+        .then(() => clickRunTestsButton())
+        .then(() => {
+          assertFalse(isVisible(getToggleTestReportButton()));
+        });
+  });
+
+  test('ReportButtonShownWithMultipleRoutines', () => {
+    /** @type {!Array<!RoutineType>} */
+    const routines = [
+      chromeos.diagnostics.mojom.RoutineType.kCpuCache,
+      chromeos.diagnostics.mojom.RoutineType.kCpuStress,
+    ];
+    return initializeRoutineSection(routines)
+        .then(() => clickRunTestsButton())
+        .then(() => {
+          assertTrue(isVisible(getToggleTestReportButton()));
+        });
+  });
 }

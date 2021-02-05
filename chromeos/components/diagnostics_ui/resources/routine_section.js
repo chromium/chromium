@@ -205,7 +205,7 @@ Polymer({
 
   /** @protected */
   isResultButtonHidden_() {
-    return this.isPowerRoutine ||
+    return this.routines.length < 2 ||
         this.executionStatus_ === ExecutionProgress.kNotStarted;
   },
 
