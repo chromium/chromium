@@ -688,7 +688,7 @@ android_aar_prebuilt("google_play_services_auth_base_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 android_aar_prebuilt("google_play_services_base_java") {
-  aar_path = "libs/com_google_android_gms_play_services_base/play-services-base-17.1.0.aar"
+  aar_path = "libs/com_google_android_gms_play_services_base/play-services-base-17.5.0.aar"
   info_path = "libs/com_google_android_gms_play_services_base/com_google_android_gms_play_services_base.info"
   deps = [
     ":androidx_collection_collection_java",
@@ -697,11 +697,13 @@ android_aar_prebuilt("google_play_services_base_java") {
     ":google_play_services_basement_java",
     ":google_play_services_tasks_java",
   ]
+  bytecode_rewriter_target =
+      "//build/android/bytecode:fragment_activity_replacer"
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 android_aar_prebuilt("google_play_services_basement_java") {
-  aar_path = "libs/com_google_android_gms_play_services_basement/play-services-basement-17.1.0.aar"
+  aar_path = "libs/com_google_android_gms_play_services_basement/play-services-basement-17.5.0.aar"
   info_path = "libs/com_google_android_gms_play_services_basement/com_google_android_gms_play_services_basement.info"
   deps = [
     ":androidx_collection_collection_java",
@@ -750,7 +752,7 @@ android_aar_prebuilt("google_play_services_cast_framework_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 android_aar_prebuilt("google_play_services_fido_java") {
-  aar_path = "libs/com_google_android_gms_play_services_fido/play-services-fido-18.1.0.aar"
+  aar_path = "libs/com_google_android_gms_play_services_fido/play-services-fido-19.0.0-beta.aar"
   info_path = "libs/com_google_android_gms_play_services_fido/com_google_android_gms_play_services_fido.info"
   deps = [
     ":google_play_services_base_java",
@@ -813,7 +815,7 @@ android_aar_prebuilt("google_play_services_location_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 android_aar_prebuilt("google_play_services_tasks_java") {
-  aar_path = "libs/com_google_android_gms_play_services_tasks/play-services-tasks-17.0.0.aar"
+  aar_path = "libs/com_google_android_gms_play_services_tasks/play-services-tasks-17.2.0.aar"
   info_path = "libs/com_google_android_gms_play_services_tasks/com_google_android_gms_play_services_tasks.info"
   deps = [ ":google_play_services_basement_java" ]
 }

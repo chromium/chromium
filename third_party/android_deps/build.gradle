@@ -125,7 +125,7 @@ dependencies {
     compile "com.google.android.gms:play-services-location:${gmsVersion}"
     compile "com.google.android.gms:play-services-vision-common:18.0.0"
     compile "com.google.android.gms:play-services-vision:18.0.0"
-    compile "com.google.android.gms:play-services-fido:18.1.0"
+    compile "com.google.android.gms:play-services-fido:19.0.0-beta"
 
     // TODO (bjoyce): Remove after androidx migration crbug.com/896775
     // Support v4 libraries

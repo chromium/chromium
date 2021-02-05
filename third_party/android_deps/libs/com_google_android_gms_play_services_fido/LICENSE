@@ -147,7 +147,7 @@ This is the Android Software Development Kit License Agreement
 December 9, 2016
 
 
-AndroidX document file library., AndroidX print library.:
+AndroidX lifecycle common library, AndroidX lifecycle livedatacore library, AndroidX lifecycle runtime library:
 
 
    Copyright (c) 2005-2011, The Android Open Source Project
@@ -340,11 +340,10 @@ AndroidX document file library., AndroidX print library.:
    END OF TERMS AND CONDITIONS
 
 
+apksig:
 
-AndroidX versioned parcelable library.:
 
-
-   Copyright (c) 2005-2018, The Android Open Source Project
+   Copyright (c) 2005-2008, The Android Open Source Project
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -535,6 +534,31 @@ AndroidX versioned parcelable library.:
 
 
 
+Animal Sniffer:
+
+The MIT License
+
+Copyright (c) 2008 Kohsuke Kawaguchi and codehaus.org.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+
 Checker Framework Annotations:
 
 A few parts of the Checker Framework have more permissive licenses.
@@ -543,10 +567,11 @@ A few parts of the Checker Framework have more permissive licenses.
    license appears below.)  More specifically, all the parts of the Checker
    Framework that you might want to include with your own program use the
    MIT License.  This is the checker-qual.jar file and all the files that
-   appear in it:  every file in a qual/ directory, plus NullnessUtils.java
-   and RegexUtil.java.  In addition, the cleanroom implementations of
-   third-party annotations, which the Checker Framework recognizes as
-   aliases for its own annotations, are licensed under the MIT License.
+   appear in it:  every file in a qual/ directory, plus utility files such
+   as NullnessUtil.java, RegexUtil.java, SignednessUtil.java, etc.
+   In addition, the cleanroom implementations of third-party annotations,
+   which the Checker Framework recognizes as aliases for its own
+   annotations, are licensed under the MIT License.
 
 ===========================================================================
 
@@ -778,7 +803,7 @@ Error Prone:
    limitations under the License.
 
 
-Guava JDK5, J2ObjC, JSR 250, safeparcel:
+Guava JDK5, J2ObjC, SafeParcelable library:
 
 
                                  Apache License
@@ -1191,10 +1216,9 @@ Guava JDK7:
    
 
 
-FlatBuffers:
+JsInterop Annotations:
 
-
-                                 Apache License
+Apache License
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/
 
@@ -1382,7 +1406,7 @@ FlatBuffers:
       same "printed page" as the copyright notice for easier
       identification within third-party archives.
 
-   Copyright 2014 Google Inc.
+   Copyright 2017 Google Inc.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -1395,7 +1419,6 @@ FlatBuffers:
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-
 
 JSR 305:
 
