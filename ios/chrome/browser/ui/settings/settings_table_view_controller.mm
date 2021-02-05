@@ -251,6 +251,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   // Updatable Items.
   TableViewDetailIconItem* _voiceSearchDetailItem;
   TableViewDetailIconItem* _defaultSearchEngineItem;
+  TableViewInfoButtonItem* _managedSearchEngineItem;
   TableViewDetailIconItem* _passwordsDetailItem;
   TableViewDetailIconItem* _autoFillProfileDetailItem;
   TableViewDetailIconItem* _autoFillCreditCardDetailItem;
@@ -346,6 +347,9 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
         autofill::prefs::kAutofillCreditCardEnabled, &_prefChangeRegistrar);
     _prefObserverBridge->ObserveChangesForPreference(
         autofill::prefs::kAutofillProfileEnabled, &_prefChangeRegistrar);
+    _prefObserverBridge->ObserveChangesForPreference(
+        DefaultSearchManager::kDefaultSearchProviderDataPrefName,
+        &_prefChangeRegistrar);
 
     _dispatcher = dispatcher;
 
@@ -738,33 +742,20 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 }
 
 - (TableViewInfoButtonItem*)managedSearchEngineItem {
-  TableViewInfoButtonItem* managedDefaultSearchEngineItem =
-      [[TableViewInfoButtonItem alloc]
-          initWithType:SettingsItemTypeManagedDefaultSearchEngine];
-  managedDefaultSearchEngineItem.text =
+  _managedSearchEngineItem = [[TableViewInfoButtonItem alloc]
+      initWithType:SettingsItemTypeManagedDefaultSearchEngine];
+  _managedSearchEngineItem.text =
       l10n_util::GetNSString(IDS_IOS_SEARCH_ENGINE_SETTING_TITLE);
-  managedDefaultSearchEngineItem.image =
+  _managedSearchEngineItem.image =
       [UIImage imageNamed:kSettingsSearchEngineImageName];
-  managedDefaultSearchEngineItem.accessibilityHint =
+  _managedSearchEngineItem.accessibilityHint =
       l10n_util::GetNSString(IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
 
-  const base::DictionaryValue* dict = _browserState->GetPrefs()->GetDictionary(
-      DefaultSearchManager::kDefaultSearchProviderDataPrefName);
-  if (dict->FindBoolPath(DefaultSearchManager::kDisabledByPolicy)) {
-    // Default search engine is disabled by policy.
-    managedDefaultSearchEngineItem.statusText =
-        l10n_util::GetNSString(IDS_IOS_SEARCH_ENGINE_SETTING_DISABLED_STATUS);
-  } else {
-    // Default search engine is enabled and set by policy.
-    const std::string* status =
-        dict->FindStringPath(DefaultSearchManager::kShortName);
-    managedDefaultSearchEngineItem.statusText =
-        base::SysUTF8ToNSString(*status);
-  }
+  _managedSearchEngineItem.statusText = [self managedSearchEngineDetailText];
 
-  managedDefaultSearchEngineItem.accessibilityIdentifier =
+  _managedSearchEngineItem.accessibilityIdentifier =
       kSettingsManagedSearchEngineCellId;
-  return managedDefaultSearchEngineItem;
+  return _managedSearchEngineItem;
 }
 
 - (TableViewItem*)passwordsDetailItem {
@@ -1545,6 +1536,21 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   return NO;
 }
 
+// Returns the text to be displayed by the managed Search Engine item.
+- (NSString*)managedSearchEngineDetailText {
+  const base::DictionaryValue* dict = _browserState->GetPrefs()->GetDictionary(
+      DefaultSearchManager::kDefaultSearchProviderDataPrefName);
+  if (dict->FindBoolPath(DefaultSearchManager::kDisabledByPolicy)) {
+    // Default search engine is disabled by policy.
+    return l10n_util::GetNSString(
+        IDS_IOS_SEARCH_ENGINE_SETTING_DISABLED_STATUS);
+  }
+  // Default search engine is enabled and set by policy.
+  const std::string* status =
+      dict->FindStringPath(DefaultSearchManager::kShortName);
+  return base::SysUTF8ToNSString(*status);
+}
+
 #pragma mark - SigninPresenter
 
 - (void)showSignin:(ShowSigninCommand*)command {
@@ -1662,10 +1668,16 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 #pragma mark - SearchEngineObserverBridge
 
 - (void)searchEngineChanged {
-  _defaultSearchEngineItem.detailText =
-      base::SysUTF16ToNSString(GetDefaultSearchEngineName(
-          ios::TemplateURLServiceFactory::GetForBrowserState(_browserState)));
-  [self reconfigureCellsForItems:@[ _defaultSearchEngineItem ]];
+  if (_managedSearchEngineItem) {
+    _managedSearchEngineItem.statusText = [self managedSearchEngineDetailText];
+    [self reconfigureCellsForItems:@[ _managedSearchEngineItem ]];
+  } else {
+    // The two items are mutually exclusive.
+    _defaultSearchEngineItem.detailText =
+        base::SysUTF16ToNSString(GetDefaultSearchEngineName(
+            ios::TemplateURLServiceFactory::GetForBrowserState(_browserState)));
+    [self reconfigureCellsForItems:@[ _defaultSearchEngineItem ]];
+  }
 }
 
 #pragma mark ChromeIdentityServiceObserver
@@ -1750,6 +1762,13 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
                                : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
     _autoFillCreditCardDetailItem.detailText = detailText;
     [self reconfigureCellsForItems:@[ _autoFillCreditCardDetailItem ]];
+  }
+
+  if (preferenceName ==
+      DefaultSearchManager::kDefaultSearchProviderDataPrefName) {
+    // Reloading the data is needed because the item type and its class are
+    // changing.
+    [self reloadData];
   }
 }
 
