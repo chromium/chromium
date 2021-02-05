@@ -46,7 +46,8 @@ class CORE_EXPORT NGTextPainter : public TextPainterBase {
              unsigned end_offset,
              unsigned length,
              const TextPaintStyle&,
-             DOMNodeId);
+             DOMNodeId,
+             ShadowMode = kBothShadowsAndTextProper);
 
   void PaintSelectedText(unsigned start_offset,
                          unsigned end_offset,

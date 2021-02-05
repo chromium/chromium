@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/paint/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/svg_object_painter.h"
+#include "third_party/blink/renderer/core/paint/text_painter_base.h"
 #include "third_party/blink/renderer/core/style/applied_text_decoration.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
@@ -419,8 +420,8 @@ bool SVGInlineTextBoxPainter::SetupTextPaint(
   if (style.TextShadow() &&
       // Text shadows are disabled when printing. http://crbug.com/258321
       !InlineLayoutObject().GetDocument().Printing()) {
-    flags.setLooper(style.TextShadow()->CreateDrawLooper(
-        DrawLooperBuilder::kShadowRespectsAlpha,
+    flags.setLooper(TextPainterBase::CreateDrawLooper(
+        style.TextShadow(), DrawLooperBuilder::kShadowRespectsAlpha,
         style.VisitedDependentColor(GetCSSPropertyColor()),
         style.UsedColorScheme()));
   }

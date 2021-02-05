@@ -65,11 +65,6 @@ class ShadowList : public RefCounted<ShadowList> {
 
   void AdjustRectForShadow(FloatRect&) const;
 
-  sk_sp<SkDrawLooper> CreateDrawLooper(DrawLooperBuilder::ShadowAlphaMode,
-                                       const Color& current_color,
-                                       mojom::blink::ColorScheme color_scheme,
-                                       bool is_horizontal = true) const;
-
  private:
   ShadowList(ShadowDataVector& shadows) {
     // If we have no shadows, we use a null ShadowList

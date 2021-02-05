@@ -359,20 +359,29 @@ class SelectionPaintState {
                                    selection_style_, *selection_rect_, node_id);
   }
 
-  // Paint the text except selected parts. Does nothing if all is selected.
-  void PaintBeforeAndAfterSelectedText(NGTextPainter& text_painter,
-                                       unsigned start_offset,
-                                       unsigned end_offset,
-                                       unsigned length,
-                                       const TextPaintStyle& text_style,
-                                       DOMNodeId node_id) {
+  // Paint the given text range in the given style, suppressing the text proper
+  // (painting shadows only) where selected.
+  void PaintSuppressingTextProperWhereSelected(NGTextPainter& text_painter,
+                                               unsigned start_offset,
+                                               unsigned end_offset,
+                                               unsigned length,
+                                               const TextPaintStyle& text_style,
+                                               DOMNodeId node_id) {
+    // First paint the shadows for the whole range.
+    if (text_style.shadow) {
+      text_painter.Paint(start_offset, end_offset, length, text_style, node_id,
+                         NGTextPainter::kShadowsOnly);
+    }
+
+    // Then paint the text proper for any unselected parts in storage order, so
+    // that they’re always on top of the shadows.
     if (start_offset < selection_status_.start) {
       text_painter.Paint(start_offset, selection_status_.start, length,
-                         text_style, node_id);
+                         text_style, node_id, NGTextPainter::kTextProperOnly);
     }
     if (selection_status_.end < end_offset) {
       text_painter.Paint(selection_status_.end, end_offset, length, text_style,
-                         node_id);
+                         node_id, NGTextPainter::kTextProperOnly);
     }
   }
 
@@ -642,7 +651,7 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
     unsigned end_offset = fragment_paint_info.to;
 
     if (UNLIKELY(selection)) {
-      selection->PaintBeforeAndAfterSelectedText(
+      selection->PaintSuppressingTextProperWhereSelected(
           text_painter, start_offset, end_offset, length, text_style, node_id);
     } else {
       text_painter.Paint(start_offset, end_offset, length, text_style, node_id);

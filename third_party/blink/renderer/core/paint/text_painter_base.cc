@@ -78,7 +78,8 @@ void TextPainterBase::UpdateGraphicsContext(
     GraphicsContext& context,
     const TextPaintStyle& text_style,
     bool horizontal,
-    GraphicsContextStateSaver& state_saver) {
+    GraphicsContextStateSaver& state_saver,
+    ShadowMode shadow_mode) {
   TextDrawingModeFlags mode = context.TextDrawingMode();
   if (text_style.stroke_width > 0) {
     TextDrawingModeFlags new_mode = mode | kTextModeStroke;
@@ -99,12 +100,49 @@ void TextPainterBase::UpdateGraphicsContext(
       context.SetStrokeThickness(text_style.stroke_width);
   }
 
-  if (text_style.shadow) {
-    state_saver.SaveIfNeeded();
-    context.SetDrawLooper(text_style.shadow->CreateDrawLooper(
-        DrawLooperBuilder::kShadowIgnoresAlpha, text_style.current_color,
-        text_style.color_scheme, horizontal));
+  if (shadow_mode != kTextProperOnly) {
+    DCHECK(shadow_mode == kBothShadowsAndTextProper ||
+           shadow_mode == kShadowsOnly);
+
+    // If there are shadows, we definitely need an SkDrawLooper, but if there
+    // are no shadows (nullptr), we still need one iff we’re in kShadowsOnly
+    // mode, because we suppress text proper by omitting AddUnmodifiedContent
+    // when building a looper (cf. CRC2DState::ShadowAndForegroundDrawLooper).
+    if (text_style.shadow || shadow_mode == kShadowsOnly) {
+      state_saver.SaveIfNeeded();
+      context.SetDrawLooper(CreateDrawLooper(
+          text_style.shadow, DrawLooperBuilder::kShadowIgnoresAlpha,
+          text_style.current_color, text_style.color_scheme, horizontal,
+          shadow_mode));
+    }
   }
+}
+
+// static
+sk_sp<SkDrawLooper> TextPainterBase::CreateDrawLooper(
+    const ShadowList* shadow_list,
+    DrawLooperBuilder::ShadowAlphaMode alpha_mode,
+    const Color& current_color,
+    mojom::blink::ColorScheme color_scheme,
+    bool is_horizontal,
+    ShadowMode shadow_mode) {
+  DrawLooperBuilder draw_looper_builder;
+
+  // ShadowList nullptr means there are no shadows.
+  if (shadow_mode != kTextProperOnly && shadow_list) {
+    for (wtf_size_t i = shadow_list->Shadows().size(); i--;) {
+      const ShadowData& shadow = shadow_list->Shadows()[i];
+      float shadow_x = is_horizontal ? shadow.X() : shadow.Y();
+      float shadow_y = is_horizontal ? shadow.Y() : -shadow.X();
+      draw_looper_builder.AddShadow(
+          FloatSize(shadow_x, shadow_y), shadow.Blur(),
+          shadow.GetColor().Resolve(current_color, color_scheme),
+          DrawLooperBuilder::kShadowRespectsTransforms, alpha_mode);
+    }
+  }
+  if (shadow_mode != kShadowsOnly)
+    draw_looper_builder.AddUnmodifiedContent();
+  return draw_looper_builder.DetachDrawLooper();
 }
 
 Color TextPainterBase::TextColorForWhiteBackground(Color text_color) {

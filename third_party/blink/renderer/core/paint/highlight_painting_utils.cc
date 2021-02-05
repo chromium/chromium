@@ -288,6 +288,10 @@ TextPaintStyle HighlightPaintingUtils::HighlightPaintingStyle(
   bool uses_text_as_clip = paint_info.phase == PaintPhase::kTextClip;
   const GlobalPaintFlags global_paint_flags = paint_info.GetGlobalPaintFlags();
 
+  // Each highlight overlay’s shadows are completely independent of any shadows
+  // specified on the originating element (or the other highlight overlays).
+  highlight_style.shadow = nullptr;
+
   if (!uses_text_as_clip) {
     highlight_style.fill_color = HighlightForegroundColor(
         document, style, node, pseudo, global_paint_flags);
