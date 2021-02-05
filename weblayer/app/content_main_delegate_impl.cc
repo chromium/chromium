@@ -15,6 +15,7 @@
 #include "base/path_service.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/payments/core/features.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "content/public/browser/browser_main_runner.h"
 #include "content/public/common/content_features.h"
@@ -175,6 +176,7 @@ bool ContentMainDelegateImpl::BasicStartupComplete(int* exit_code) {
     // TODO(crbug.com/1131021): Support WebOTP Service on WebLayer.
     ::features::kWebOTP,
 #endif
+    payments::features::kGPayAppDynamicUpdate,
   };
 
 #if defined(OS_ANDROID)
