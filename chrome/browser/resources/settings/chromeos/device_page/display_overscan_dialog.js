@@ -54,25 +54,24 @@ Polymer({
   /** @private */
   displayIdChanged_(newValue, oldValue) {
     if (oldValue && !this.committed_) {
-      settings.display.systemDisplayApi.overscanCalibrationReset(oldValue);
-      settings.display.systemDisplayApi.overscanCalibrationComplete(oldValue);
+      settings.getDisplayApi().overscanCalibrationReset(oldValue);
+      settings.getDisplayApi().overscanCalibrationComplete(oldValue);
     }
     if (!newValue) {
       return;
     }
     this.committed_ = false;
-    settings.display.systemDisplayApi.overscanCalibrationStart(newValue);
+    settings.getDisplayApi().overscanCalibrationStart(newValue);
   },
 
   /** @private */
   onResetTap_() {
-    settings.display.systemDisplayApi.overscanCalibrationReset(this.displayId);
+    settings.getDisplayApi().overscanCalibrationReset(this.displayId);
   },
 
   /** @private */
   onSaveTap_() {
-    settings.display.systemDisplayApi.overscanCalibrationComplete(
-        this.displayId);
+    settings.getDisplayApi().overscanCalibrationComplete(this.displayId);
     this.committed_ = true;
     this.close();
   },
@@ -133,8 +132,7 @@ Polymer({
       right: x ? -x : 0,  // negating 0 will produce a double.
       bottom: y ? -y : 0,
     };
-    settings.display.systemDisplayApi.overscanCalibrationAdjust(
-        this.displayId, delta);
+    settings.getDisplayApi().overscanCalibrationAdjust(this.displayId, delta);
   },
 
   /**
@@ -149,7 +147,6 @@ Polymer({
       right: x,
       bottom: y,
     };
-    settings.display.systemDisplayApi.overscanCalibrationAdjust(
-        this.displayId, delta);
+    settings.getDisplayApi().overscanCalibrationAdjust(this.displayId, delta);
   }
 });

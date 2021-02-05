@@ -37,6 +37,7 @@ js_library("device_page") {
 
 js_library("device_page_browser_proxy") {
   deps = [ "//ui/webui/resources/js:cr" ]
+  externs_list = [ "$externs_path/system_display.js" ]
 }
 
 js_library("pointers") {
@@ -195,7 +196,10 @@ js_library("device_page.m") {
 js_library("device_page_browser_proxy.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/device_page/device_page_browser_proxy.m.js" ]
   deps = [ "//ui/webui/resources/js:cr.m" ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
+  externs_list = [
+    "$externs_path/chrome_send.js",
+    "$externs_path/system_display.js",
+  ]
   extra_deps = [ ":modulize" ]
 }
 

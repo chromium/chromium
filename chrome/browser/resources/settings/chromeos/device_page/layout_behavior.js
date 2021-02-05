@@ -180,7 +180,7 @@ const LayoutBehavior = {
     this.updateOrphans_(orphanIds);
 
     // Send the updated layouts.
-    settings.display.systemDisplayApi.setDisplayLayout(
+    settings.getDisplayApi().setDisplayLayout(
         this.layouts, function() {
           if (chrome.runtime.lastError) {
             console.error(

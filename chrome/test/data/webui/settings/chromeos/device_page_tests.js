@@ -444,7 +444,7 @@ cr.define('device_page_tests', function() {
 
     setup(function(done) {
       fakeSystemDisplay = new settings.FakeSystemDisplay();
-      settings.display.systemDisplayApi = fakeSystemDisplay;
+      settings.setDisplayApiForTesting(fakeSystemDisplay);
 
       PolymerTest.clearBody();
       settings.Router.getInstance().navigateTo(settings.routes.BASIC);

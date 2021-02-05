@@ -8,6 +8,20 @@
 // clang-format on
 
 cr.define('settings', function() {
+  let systemDisplayApi = null;
+
+  /* #export */ function setDisplayApiForTesting(testDisplayApi) {
+    systemDisplayApi = testDisplayApi;
+  }
+
+  /* #export */ function getDisplayApi() {
+    if (!systemDisplayApi) {
+      systemDisplayApi = chrome.system.display;
+    }
+    return systemDisplayApi;
+  }
+
+
   /**
    * @typedef {{
    *   id: string,
@@ -333,5 +347,7 @@ cr.define('settings', function() {
     NoteAppLockScreenSupport,
     PowerManagementSettings,
     PowerSource,
+    setDisplayApiForTesting,
+    getDisplayApi,
   };
 });
