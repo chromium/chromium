@@ -622,6 +622,17 @@ TEST_F(CloudPolicyClientTest, SetupRegistrationAndPolicyFetchWithOAuthToken) {
 #if defined(OS_WIN) || defined(OS_APPLE) || \
     (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 TEST_F(CloudPolicyClientTest, RegistrationWithTokenAndPolicyFetch) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kUploadBrowserDeviceIdentifier);
+
+#if !defined(OS_IOS)
+  em::RegisterBrowserRequest* enrollment_request =
+      enrollment_token_request_.mutable_register_browser_request();
+  enrollment_request->set_allocated_browser_device_identifier(
+      GetBrowserDeviceIdentifier().release());
+#endif
+
   const em::DeviceManagementResponse policy_response = GetPolicyResponse();
 
   ExpectAndCaptureJob(/*response=*/registration_response_);

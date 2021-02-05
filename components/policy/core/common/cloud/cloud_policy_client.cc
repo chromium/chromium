@@ -283,6 +283,11 @@ void CloudPolicyClient::RegisterWithToken(const std::string& token,
   // For iOS devices, the machine name is determined by server side logic using
   // the client ID and / or the device model.
   request->set_machine_name(GetMachineName());
+
+  if (base::FeatureList::IsEnabled(features::kUploadBrowserDeviceIdentifier)) {
+    request->set_allocated_browser_device_identifier(
+        GetBrowserDeviceIdentifier().release());
+  }
 #endif  // !defined(OS_IOS)
   request->set_os_platform(GetOSPlatform());
   request->set_os_version(GetOSVersion());
