@@ -1343,6 +1343,9 @@ extern const char kTabGroupsCollapseFreezingDescription[];
 extern const char kTabGroupsFeedbackName[];
 extern const char kTabGroupsFeedbackDescription[];
 
+extern const char kTabGroupsNewBadgePromoName[];
+extern const char kTabGroupsNewBadgePromoDescription[];
+
 extern const char kTabHoverCardsName[];
 extern const char kTabHoverCardsDescription[];
 

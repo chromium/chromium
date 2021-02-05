@@ -56,6 +56,8 @@ extern const base::Feature kTabGroupsCollapseFreezing;
 
 extern const base::Feature kTabGroupsFeedback;
 
+extern const base::Feature kTabGroupsNewBadgePromo;
+
 extern const base::Feature kTabHoverCards;
 extern const char kTabHoverCardsFeatureParameterName[];
 
