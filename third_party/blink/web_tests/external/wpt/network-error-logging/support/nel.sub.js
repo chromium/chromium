@@ -251,7 +251,7 @@ async function reportExists(expected) {
   var timeout =
     document.querySelector("meta[name=timeout][content=long]") ? 50 : 1;
   var reportLocation =
-    "/network-error-logging/support/report.py?op=retrieve_report&timeout=" +
+    "/reporting/resources/report.py?op=retrieve_report&timeout=" +
     timeout + "&reportID=" + reportID;
   const response = await fetch(reportLocation);
   const json = await response.json();
@@ -271,7 +271,7 @@ async function reportExists(expected) {
 async function reportsExist(expected_reports) {
   const timeout = 10;
   let reportLocation =
-    "/network-error-logging/support/report.py?op=retrieve_report&timeout=" +
+    "/reporting/resources/report.py?op=retrieve_report&timeout=" +
     timeout + "&reportID=" + reportID;
   // There must be the report of pass.png, so adding 1.
   const min_count = expected_reports.length + 1;
