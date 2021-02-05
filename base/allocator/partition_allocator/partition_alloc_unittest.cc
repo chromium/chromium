@@ -347,6 +347,8 @@ class PartitionAllocTest : public testing::Test {
     LOG(FATAL) << "DoReturnNullTest";
   }
 
+  void RunRefCountReallocSubtest(size_t orig_size, size_t new_size);
+
   base::test::ScopedFeatureList scoped_feature_list;
   PartitionAllocator<base::internal::ThreadSafe> allocator;
   PartitionAllocator<base::internal::ThreadSafe> aligned_allocator;
@@ -2908,6 +2910,57 @@ TEST_F(PartitionAllocTest, RefCountBasic) {
       allocator.root()->Alloc(alloc_size, type_name));
   EXPECT_EQ(ptr1, ptr3);
   allocator.root()->Free(ptr3);
+}
+
+void PartitionAllocTest::RunRefCountReallocSubtest(size_t orig_size,
+                                                   size_t new_size) {
+  void* ptr1 = allocator.root()->Alloc(orig_size, type_name);
+  EXPECT_TRUE(ptr1);
+
+  auto* ref_count1 =
+      PartitionRefCountPointer(reinterpret_cast<char*>(ptr1) - kPointerOffset);
+  EXPECT_TRUE(ref_count1->HasOneRef());
+
+  ref_count1->Acquire();
+  EXPECT_FALSE(ref_count1->HasOneRef());
+
+  void* ptr2 = allocator.root()->Realloc(ptr1, new_size, type_name);
+  EXPECT_TRUE(ptr2);
+
+  // Re-query ref-count. It may have moved within the slot, or if Realloc
+  // changed the slot.
+  auto* ref_count2 =
+      PartitionRefCountPointer(reinterpret_cast<char*>(ptr2) - kPointerOffset);
+
+  if (ptr1 == ptr2) {
+    // If the slot didn't change, ref-count may have moved within it, in which
+    // case the old location may have been trashed, but the new one should have
+    // the same value.
+    EXPECT_FALSE(ref_count2->HasOneRef());
+
+    EXPECT_FALSE(ref_count2->Release());
+  } else {
+    // If the allocation was moved to another slot, the old ref-count stayed
+    // and still has a reference. The new ref-count has no references.
+    EXPECT_FALSE(ref_count1->HasOneRef());
+    EXPECT_TRUE(ref_count2->HasOneRef());
+
+    EXPECT_TRUE(ref_count1->Release());
+  }
+
+  allocator.root()->Free(ptr2);
+}
+
+TEST_F(PartitionAllocTest, RefCountRealloc) {
+  size_t alloc_sizes[] = {500, 5000, 50000, 400000};
+
+  for (size_t alloc_size : alloc_sizes) {
+    alloc_size -= kExtraAllocSize;
+    RunRefCountReallocSubtest(alloc_size, alloc_size - 9);
+    RunRefCountReallocSubtest(alloc_size, alloc_size + 9);
+    RunRefCountReallocSubtest(alloc_size, alloc_size * 2);
+    RunRefCountReallocSubtest(alloc_size, alloc_size / 2);
+  }
 }
 
 #endif
