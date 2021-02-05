@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ui/app_list/search/score_normalizer/balanced_reservoir.h"
 #include "components/prefs/pref_service.h"
 
 namespace app_list {
@@ -23,13 +24,18 @@ class ScoreNormalizer {
  public:
   using Results = std::vector<std::unique_ptr<ChromeSearchResult>>;
 
-  ScoreNormalizer(const std::string& provider, Profile* profile);
+  ScoreNormalizer(const std::string& provider,
+                  Profile* profile,
+                  const int reservoir_size);
 
   ~ScoreNormalizer();
 
-  // Record the results from a provider. Results are first converted into a
-  // vector of doubles and the distribution is then updated.
-  void Record(const Results& search_results);
+  // Records a score and updates the distribution by splitting and merging bins
+  // if there is an improvement in the error.
+  void RecordScore(const double score);
+
+  // Records the results from a provider and updates the distribution.
+  void RecordResults(const Results& results);
 
   // Takes the score from the provider and uses the
   // distribution that has been learnt about that provider
@@ -40,32 +46,12 @@ class ScoreNormalizer {
   // score by normalizing the score.
   void NormalizeResults(Results* results);
 
-  std::string get_provider() const { return provider_; }
-
  private:
   friend class ScoreNormalizerTest;
 
-  // Convert Results to a vector of doubles (scores).
-  std::vector<double> ConvertResultsToScores(
-      const ScoreNormalizer::Results& results) const;
-
-  // Updates the mean of the distribution with the new scores.
-  void UpdateDistribution(const std::vector<double>& new_scores);
-
-  // Reads distribution parameters from prefs and updates member variables.
-  // If data in prefs does not exist no update occurs.
-  void ReadPrefs();
-
-  // Writes to the prefs with information on the distribution.
-  void WritePrefs();
-
-  const std::string provider_;
-
-  Profile* profile_;
-
   // Distribution information, these are updated with every Record().
-  int num_results_ = 0;
-  double mean_ = 0;
+  const int reservoir_size_;
+  BalancedReservoir reservoir_;
 };
 
 }  // namespace app_list

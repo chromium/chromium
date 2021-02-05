@@ -85,7 +85,7 @@ ZeroStateFileProvider::ZeroStateFileProvider(Profile* profile)
 
   if (base::FeatureList::IsEnabled(
           app_list_features::kEnableLauncherSearchNormalization)) {
-    normalizer_.emplace("zero_state_file_provider", profile);
+    normalizer_.emplace("zero_state_file_provider", profile, 25);
   }
 }
 
@@ -128,7 +128,7 @@ void ZeroStateFileProvider::SetSearchResults(
   }
 
   if (normalizer_.has_value()) {
-    normalizer_->Record(new_results);
+    normalizer_->RecordResults(new_results);
     normalizer_->NormalizeResults(&new_results);
   }
 

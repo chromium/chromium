@@ -40,7 +40,7 @@ OmniboxProvider::OmniboxProvider(Profile* profile,
   controller_->AddObserver(this);
   if (base::FeatureList::IsEnabled(
           app_list_features::kEnableLauncherSearchNormalization)) {
-    normalizer_.emplace("omnibox_provider", profile);
+    normalizer_.emplace("omnibox_provider", profile, 25);
   }
 }
 
@@ -93,7 +93,7 @@ void OmniboxProvider::PopulateFromACResult(const AutocompleteResult& result) {
   }
 
   if (normalizer_.has_value()) {
-    normalizer_->Record(new_results);
+    normalizer_->RecordResults(new_results);
     normalizer_->NormalizeResults(&new_results);
   }
 
