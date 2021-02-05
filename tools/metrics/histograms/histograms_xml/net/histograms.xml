@@ -810,7 +810,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Net.DNS.HTTPSSVC.RecordHttps.AnyProvider.ExpectNoerror.Parsable"
-    enum="BooleanValid" expires_after="2021-08-05">
+    enum="BooleanValid" expires_after="2021-09-14">
   <owner>ericorth@chromium.org</owner>
   <owner>dmcardle@chromium.org</owner>
   <summary>
@@ -822,7 +822,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Net.DNS.HTTPSSVC.RecordHttps.AnyProvider.ExpectNoerror.RecordWithError"
-    enum="Boolean" expires_after="2021-08-05">
+    enum="Boolean" expires_after="2021-09-14">
   <owner>ericorth@chromium.org</owner>
   <owner>dmcardle@chromium.org</owner>
   <summary>
@@ -833,7 +833,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Net.DNS.HTTPSSVC.RecordHttps.DnsRcode"
-    enum="HttpssvcDnsRcode" expires_after="2021-08-05">
+    enum="HttpssvcDnsRcode" expires_after="2021-09-14">
 <!-- Name completed by histogram_suffixes
   name="DohProviderId" and name="HttpssvcIntegrityExpectation" -->
 
@@ -849,7 +849,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true"
     name="Net.DNS.HTTPSSVC.RecordHttps.ExpectIntact.Parsable"
-    enum="BooleanValid" expires_after="2021-08-05">
+    enum="BooleanValid" expires_after="2021-09-14">
 <!-- Name completed by histogram_suffixes
   name="DohProviderId" -->
 
@@ -864,7 +864,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true"
     name="Net.DNS.HTTPSSVC.RecordHttps.ExpectIntact.RecordWithError"
-    units="records" expires_after="2021-08-05">
+    units="records" expires_after="2021-09-14">
 <!-- Name completed by histogram_suffixes
   name="DohProviderId" -->
 
@@ -879,7 +879,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true"
     name="Net.DNS.HTTPSSVC.RecordHttps.ResolveTimeHttpsRecord" units="ms"
-    expires_after="2021-08-05">
+    expires_after="2021-09-14">
 <!-- Name completed by histogram_suffixes
   name="DohProviderId" and name="HttpssvcIntegrityExpectation" -->
 
@@ -892,7 +892,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Net.DNS.HTTPSSVC.RecordHttps.ResolveTimeRatio"
-    units="scaled ratio (% / 10)" expires_after="2021-08-05">
+    units="scaled ratio (% / 10)" expires_after="2021-09-14">
 <!-- Name completed by histogram_suffixes
   name="DohProviderId" and name="HttpssvcIntegrityExpectation" -->
 
@@ -910,7 +910,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Net.DNS.HTTPSSVC.RecordIntegrity.DnsRcode"
-    enum="HttpssvcDnsRcode" expires_after="2021-03-14">
+    enum="HttpssvcDnsRcode" expires_after="2021-09-14">
 <!-- Name completed by histogram_suffixes
    name="DohProviderId" and name="HttpssvcIntegrityExpectation" -->
 
@@ -926,7 +926,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true"
     name="Net.DNS.HTTPSSVC.RecordIntegrity.ExpectIntact.Integrity"
-    enum="HttpssvcIntegrityJudgment" expires_after="2021-03-14">
+    enum="HttpssvcIntegrityJudgment" expires_after="2021-09-14">
 <!-- Name completed by histogram_suffixes
    name="DohProviderId" -->
 
@@ -941,7 +941,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true"
     name="Net.DNS.HTTPSSVC.RecordIntegrity.ExpectIntact.RecordWithError"
-    units="records" expires_after="2021-03-14">
+    units="records" expires_after="2021-09-14">
 <!-- Name completed by histogram_suffixes
    name="DohProviderId" -->
 
@@ -956,7 +956,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true"
     name="Net.DNS.HTTPSSVC.RecordIntegrity.ExpectNoerror.RecordReceived"
-    units="records" expires_after="2021-03-14">
+    units="records" expires_after="2021-09-14">
 <!-- Name completed by histogram_suffixes
    name="DohProviderId" -->
 
@@ -972,7 +972,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true"
     name="Net.DNS.HTTPSSVC.RecordIntegrity.ResolveTimeIntegrityRecord"
-    units="ms" expires_after="2021-03-14">
+    units="ms" expires_after="2021-09-14">
 <!-- Name completed by histogram_suffixes
    name="DohProviderId" and name="HttpssvcIntegrityExpectation" -->
 
@@ -986,7 +986,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true"
     name="Net.DNS.HTTPSSVC.RecordIntegrity.ResolveTimeNonIntegrityRecord"
-    units="ms" expires_after="2021-03-14">
+    units="ms" expires_after="2021-09-14">
 <!-- Name completed by histogram_suffixes
    name="DohProviderId" and name="HttpssvcIntegrityExpectation" -->
 
@@ -1000,7 +1000,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Net.DNS.HTTPSSVC.RecordIntegrity.ResolveTimeRatio"
-    units="%" expires_after="2021-03-14">
+    units="%" expires_after="2021-09-14">
 <!-- Name completed by histogram_suffixes
    name="DohProviderId" and name="HttpssvcIntegrityExpectation" -->
 
