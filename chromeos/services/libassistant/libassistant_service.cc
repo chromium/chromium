@@ -15,6 +15,7 @@
 #include "chromeos/services/libassistant/conversation_state_listener_impl.h"
 #include "chromeos/services/libassistant/display_controller.h"
 #include "chromeos/services/libassistant/fake_auth_provider.h"
+#include "chromeos/services/libassistant/media_controller.h"
 #include "chromeos/services/libassistant/platform_api.h"
 #include "chromeos/services/libassistant/service_controller.h"
 
@@ -37,11 +38,17 @@ LibassistantService::LibassistantService(
           std::make_unique<ConversationStateListenerImpl>(
               &speech_recognition_observers_)),
       display_controller_(
-          std::make_unique<DisplayController>(&speech_recognition_observers_)) {
+          std::make_unique<DisplayController>(&speech_recognition_observers_)),
+      media_controller_(std::make_unique<MediaController>()) {
   service_controller_->AddAndFireAssistantManagerObserver(
       display_controller_.get());
   service_controller_->AddAndFireAssistantManagerObserver(
       conversation_state_listener_.get());
+  // TODO(b/178408299): media_controller_ is kept offline until the browser side
+  // has been removed, as Libassistant only supports a single fallback media
+  // handler.
+  // service_controller_->AddAndFireAssistantManagerObserver(
+  //     media_controller_.get());
 
   // |platform_api| can be null during unittests.
   if (platform_api) {
@@ -61,6 +68,11 @@ LibassistantService::~LibassistantService() {
       display_controller_.get());
   service_controller_->RemoveAssistantManagerObserver(
       conversation_state_listener_.get());
+  // TODO(b/178408299): media_controller_ is kept offline until the browser side
+  // has been removed, as Libassistant only supports a single fallback media
+  // handler.
+  // service_controller_->RemoveAssistantManagerObserver(
+  //     media_controller_.get());
 }
 
 void LibassistantService::Bind(
@@ -77,6 +89,11 @@ void LibassistantService::Bind(
                                 platform_delegate_.get());
   conversation_controller_->Bind(std::move(conversation_controller));
   display_controller_->Bind(std::move(display_controller));
+  // TODO(b/178408299): media_controller_ is kept offline until the browser side
+  // has been removed, as Libassistant only supports a single fallback media
+  // handler.
+  // media_controller_->Bind(std::move(media_controller),
+  //                         std::move(media_delegate));
   service_controller_->Bind(std::move(service_controller));
 }
 

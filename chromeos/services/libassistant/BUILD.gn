@@ -56,6 +56,8 @@ source_set("internal") {
     "display_controller.h",
     "fake_auth_provider.cc",
     "fake_auth_provider.h",
+    "media_controller.cc",
+    "media_controller.h",
     "platform_api.cc",
     "platform_api.h",
     "service_controller.cc",
@@ -70,7 +72,7 @@ source_set("internal") {
     "//build/util:webkit_version",
     "//chromeos/assistant/internal",
     "//chromeos/assistant/internal:libassistant",
-    "//chromeos/assistant/internal/proto/google3",
+    "//chromeos/assistant/internal:support",
     "//chromeos/dbus",
     "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/assistant/public/cpp/migration",
@@ -123,6 +125,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "audio_input_controller_unittest.cc",
+    "media_controller_unittest.cc",
     "service_controller_unittest.cc",
     "speech_recognition_observer_unittest.cc",
   ]
@@ -134,8 +137,8 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chromeos/assistant/internal",
+    "//chromeos/assistant/internal:support",
     "//chromeos/assistant/internal:test_support",
-    "//chromeos/assistant/internal/proto/google3",
     "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/assistant/public/cpp/migration",
     "//chromeos/services/assistant/public/cpp/migration:test_support",

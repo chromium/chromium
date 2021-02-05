@@ -90,6 +90,7 @@ class AssistantManagerObserverMock : public AssistantManagerObserver {
       OnDestroyingAssistantManager,
       (assistant_client::AssistantManager * assistant_manager,
        assistant_client::AssistantManagerInternal* assistant_manager_internal));
+  MOCK_METHOD(void, OnAssistantManagerDestroyed, ());
 };
 
 class AssistantServiceControllerTest : public testing::Test {
@@ -594,6 +595,7 @@ TEST_F(AssistantServiceControllerTest,
         EXPECT_EQ(assistant_manager_internal,
                   expected_assistant_manager_internal);
       });
+  EXPECT_CALL(observer, OnAssistantManagerDestroyed);
 
   Stop();
 
@@ -609,6 +611,7 @@ TEST_F(AssistantServiceControllerTest,
   EXPECT_NO_CALLS(observer, OnAssistantManagerCreated);
   EXPECT_NO_CALLS(observer, OnAssistantManagerStarted);
   EXPECT_NO_CALLS(observer, OnDestroyingAssistantManager);
+  EXPECT_NO_CALLS(observer, OnAssistantManagerDestroyed);
 
   Initialize();
   Start();
@@ -628,6 +631,7 @@ TEST_F(AssistantServiceControllerTest,
   AddAndFireAssistantManagerObserver(&observer);
 
   EXPECT_CALL(observer, OnDestroyingAssistantManager);
+  EXPECT_CALL(observer, OnAssistantManagerDestroyed);
   DestroyServiceController();
 }
 
