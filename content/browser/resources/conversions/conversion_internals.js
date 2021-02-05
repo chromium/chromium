@@ -61,7 +61,7 @@ function createImpressionRow(impression) {
   const template = $('impressionrow').cloneNode(true);
   const td = template.content.querySelectorAll('td');
 
-  td[0].textContent = '0x' + impression.impressionData;
+  td[0].textContent = impression.impressionData;
   td[1].textContent = UrlToText(impression.impressionOrigin);
   td[2].textContent = UrlToText(impression.conversionDestination);
   td[3].textContent = UrlToText(impression.reportingOrigin);
@@ -79,8 +79,8 @@ function createReportRow(report) {
   const template = $('reportrow').cloneNode(true);
   const td = template.content.querySelectorAll('td');
 
-  td[0].textContent = '0x' + report.impressionData;
-  td[1].textContent = '0x' + report.conversionData;
+  td[0].textContent = report.impressionData;
+  td[1].textContent = report.conversionData;
   td[2].textContent = UrlToText(report.conversionOrigin);
   td[3].textContent = UrlToText(report.reportingOrigin);
   td[4].textContent = new Date(report.reportTime).toLocaleString();
