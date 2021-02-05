@@ -80,6 +80,25 @@ void AddIntListAttributeFromWebObjects(ax::mojom::IntListAttribute attr,
     dst->AddIntListAttribute(attr, ids);
 }
 
+#if DCHECK_IS_ON()
+WebAXObject ParentObjectUnignored(WebAXObject child) {
+  WebAXObject parent = child.ParentObject();
+  while (!parent.IsDetached() && !parent.AccessibilityIsIncludedInTree())
+    parent = parent.ParentObject();
+  return parent;
+}
+
+// Check that |parent| is the first unignored parent of |child|.
+void CheckParentUnignoredOf(WebAXObject parent, WebAXObject child) {
+  WebAXObject preexisting_parent = ParentObjectUnignored(child);
+  DCHECK(preexisting_parent.Equals(parent))
+      << "Child thinks it has a different preexisting parent:"
+      << "\nChild: " << child.ToString(true).Utf8()
+      << "\nPassed-in parent: " << parent.ToString(true).Utf8()
+      << "\nPreexisting parent: " << preexisting_parent.ToString(true).Utf8();
+}
+#endif
+
 // Helper function that searches in the subtree of |obj| to a max
 // depth of |max_depth| for an image.
 //
@@ -410,6 +429,10 @@ void BlinkAXTreeSource::GetChildren(
       NOTREACHED();
       continue;
     }
+
+#if DCHECK_IS_ON()
+    CheckParentUnignoredOf(parent, child);
+#endif
 
     // These should not be produced by Blink. They are only needed on Mac and
     // handled in AXTableInfo on the browser side.
