@@ -1794,4 +1794,9 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     public View getContainerViewForTesting() {
         return mControlContainer.getView();
     }
+
+    @VisibleForTesting
+    public ToolbarTabController getToolbarTabControllerForTesting() {
+        return mToolbarTabController;
+    }
 }

@@ -1156,7 +1156,6 @@ public class InstantStartTest {
 
     @Test
     @MediumTest
-    @Feature({"RenderTest"})
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
@@ -1167,7 +1166,7 @@ public class InstantStartTest {
                     "/start_surface_variation/single" +
                     "/exclude_mv_tiles/true" +
                     "/thumbnail_aspect_ratio/1"})
-    public void renderSingleAsHomepage_Landscape_TabSize() throws IOException{
+    public void testSingleAsHomepage_Landscape_TabSize() throws IOException{
         // clang-format on
         startMainActivityFromLauncher();
         CriteriaHelper.pollUiThread(
@@ -1202,18 +1201,22 @@ public class InstantStartTest {
         MatcherAssert.assertThat(
                 mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel().getCount(),
                 equalTo(1));
-        onView(withId(org.chromium.chrome.tab_ui.R.id.home_button)).perform(click());
+        pressHomePageButton();
 
         // Wait for thumbnail to show.
-        CriteriaHelper.pollUiThread(
-                mActivityTestRule.getActivity().getLayoutManager()::overviewVisible);
-        RecyclerView recyclerView =
-                mActivityTestRule.getActivity().findViewById(R.id.tab_list_view);
-        CriteriaHelper.pollUiThread(() -> allCardsHaveThumbnail(recyclerView));
+        onViewWaiting(allOf(withId(R.id.tab_thumbnail), isDisplayed()));
 
-        View surface =
-                mActivityTestRule.getActivity().findViewById(R.id.primary_tasks_surface_view);
-        mRenderTestRule.render(surface, "singlePane_landscape_tabSize");
+        View tabThumbnail = mActivityTestRule.getActivity().findViewById(R.id.tab_thumbnail);
+        assertEquals(tabThumbnail.getMeasuredHeight(), tabThumbnail.getMeasuredWidth());
+    }
+
+    private void pressHomePageButton() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mActivityTestRule.getActivity()
+                    .getToolbarManager()
+                    .getToolbarTabControllerForTesting()
+                    .openHomepage();
+        });
     }
 
     /**
