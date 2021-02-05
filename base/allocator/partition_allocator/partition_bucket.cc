@@ -38,11 +38,8 @@ PartitionDirectMap(PartitionRoot<thread_safe>* root, int flags, size_t raw_size)
   PA_DCHECK(slot_size <= map_size);
 
   char* ptr = nullptr;
-  // Allocate from GigaCage, if enabled. However, the exception to this is when
-  // ref-count isn't allowed, as CheckedPtr assumes that everything inside
-  // GigaCage uses ref-count (specifically, inside the GigaCage's normal bucket
-  // pool).
-  if (root->UsesGigaCage()) {
+  // Allocate from GigaCage, if enabled.
+  if (features::IsPartitionAllocGigaCageEnabled()) {
     ptr = internal::AddressPoolManager::GetInstance()->Reserve(
         GetDirectMapPool(), nullptr, reserved_size);
   } else {
