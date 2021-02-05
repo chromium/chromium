@@ -29,6 +29,10 @@ source_set("networking_private") {
 
   deps = [
     "//build:chromeos_buildflags",
+    "//components/keyed_service/content",
+    "//components/onc",
+    "//extensions/browser/api",
+    "//extensions/common",
     "//extensions/common/api",
     "//net",
   ]
@@ -58,6 +62,11 @@ source_set("networking_private") {
                 "networking_private_chromeos.h",
                 "networking_private_event_router_chromeos.cc",
               ]
+    deps += [
+      "//chromeos/login/login_state",
+      "//chromeos/network",
+      "//components/proxy_config",
+    ]
   } else {
     not_needed([ "default_sources" ])
     sources = [ "networking_private_stubs.cc" ]
