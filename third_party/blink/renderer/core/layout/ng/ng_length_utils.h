@@ -318,7 +318,7 @@ ComputeMinAndMaxContentContributionForTest(WritingMode writing_mode,
                                            const MinMaxSizes&);
 
 // Computes the min-block-size and max-block-size values for a node.
-MinMaxSizes ComputeMinMaxBlockSize(
+MinMaxSizes ComputeMinMaxBlockSizes(
     const NGConstraintSpace&,
     const ComputedStyle&,
     const NGBoxStrut& border_padding,
@@ -354,6 +354,34 @@ LayoutUnit ComputeInlineSizeFromAspectRatio(
     const ComputedStyle&,
     const NGBoxStrut& border_padding,
     LayoutUnit block_size = kIndefiniteSize);
+
+template <typename MinMaxSizesFunc>
+MinMaxSizes ComputeMinMaxInlineSizes(const NGConstraintSpace& space,
+                                     const ComputedStyle& style,
+                                     const NGBoxStrut& border_padding,
+                                     const MinMaxSizesFunc& min_max_sizes_func,
+                                     const Length* opt_min_length = nullptr) {
+  const Length& min_length =
+      opt_min_length ? *opt_min_length : style.LogicalMinWidth();
+  MinMaxSizes sizes = {
+      ResolveMinInlineLength(space, style, border_padding, min_max_sizes_func,
+                             min_length),
+      ResolveMaxInlineLength(space, style, border_padding, min_max_sizes_func,
+                             style.LogicalMaxWidth())};
+
+  // This implements the transferred min/max sizes per:
+  // https://drafts.csswg.org/css-sizing-4/#aspect-ratio-size-transfers
+  if (!style.AspectRatio().IsAuto() &&
+      BlockLengthUnresolvable(space, style.LogicalHeight())) {
+    MinMaxSizes transferred_sizes =
+        ComputeMinMaxInlineSizesFromAspectRatio(space, style, border_padding);
+    sizes.min_size = std::max(
+        sizes.min_size, std::min(transferred_sizes.min_size, sizes.max_size));
+    sizes.max_size = std::min(sizes.max_size, transferred_sizes.max_size);
+  }
+
+  return sizes;
+}
 
 // Returns inline size of the node's border box by resolving the computed value
 // in style.logicalWidth (Length) to a layout unit, adding border and padding,

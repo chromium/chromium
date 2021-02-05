@@ -519,21 +519,9 @@ LayoutUnit ComputeInlineSizeForFragmentInternal(
                                      MinMaxSizesFunc, logical_width);
   }
 
-  // This implements the transferred min/max sizes per
-  // https://drafts.csswg.org/css-sizing-4/#aspect-ratio
-  if (!style.AspectRatio().IsAuto() &&
-      BlockLengthUnresolvable(space, style.LogicalHeight())) {
-    MinMaxSizes transferred_min_max =
-        ComputeMinMaxInlineSizesFromAspectRatio(space, style, border_padding);
-    extent = transferred_min_max.ClampSizeToMinAndMax(extent);
-  }
-
-  MinMaxSizes min_max{
-      ResolveMinInlineLength(space, style, border_padding, MinMaxSizesFunc,
-                             min_length),
-      ResolveMaxInlineLength(space, style, border_padding, MinMaxSizesFunc,
-                             style.LogicalMaxWidth())};
-  return min_max.ClampSizeToMinAndMax(extent);
+  const MinMaxSizes min_max_sizes = ComputeMinMaxInlineSizes(
+      space, style, border_padding, MinMaxSizesFunc, &min_length);
+  return min_max_sizes.ClampSizeToMinAndMax(extent);
 }
 
 }  // namespace
@@ -563,23 +551,21 @@ LayoutUnit ComputeUsedInlineSizeForTableFragment(
                                               &table_grid_min_max_sizes);
 }
 
-MinMaxSizes ComputeMinMaxBlockSize(
+MinMaxSizes ComputeMinMaxBlockSizes(
     const NGConstraintSpace& constraint_space,
     const ComputedStyle& style,
     const NGBoxStrut& border_padding,
     LayoutUnit intrinsic_size,
     LayoutUnit available_block_size_adjustment,
     const LayoutUnit* opt_percentage_resolution_block_size_for_min_max) {
-  MinMaxSizes result;
-  result.min_size = ResolveMinBlockLength(
-      constraint_space, style, border_padding, style.LogicalMinHeight(),
-      available_block_size_adjustment,
-      opt_percentage_resolution_block_size_for_min_max);
-  result.max_size = ResolveMaxBlockLength(
-      constraint_space, style, border_padding, style.LogicalMaxHeight(),
-      available_block_size_adjustment,
-      opt_percentage_resolution_block_size_for_min_max);
-  return result;
+  return {ResolveMinBlockLength(
+              constraint_space, style, border_padding, style.LogicalMinHeight(),
+              available_block_size_adjustment,
+              opt_percentage_resolution_block_size_for_min_max),
+          ResolveMaxBlockLength(
+              constraint_space, style, border_padding, style.LogicalMaxHeight(),
+              available_block_size_adjustment,
+              opt_percentage_resolution_block_size_for_min_max)};
 }
 
 MinMaxSizes ComputeTransferredMinMaxInlineSizes(
@@ -618,8 +604,8 @@ MinMaxSizes ComputeMinMaxInlineSizesFromAspectRatio(
 
   LogicalSize ratio = style.LogicalAspectRatio();
   MinMaxSizes block_min_max =
-      ComputeMinMaxBlockSize(constraint_space, style, border_padding,
-                             /* intrinsic_size */ kIndefiniteSize);
+      ComputeMinMaxBlockSizes(constraint_space, style, border_padding,
+                              /* intrinsic_size */ kIndefiniteSize);
   return ComputeTransferredMinMaxInlineSizes(ratio, block_min_max,
                                              border_padding, style.BoxSizing());
 }
@@ -637,9 +623,9 @@ LayoutUnit ComputeBlockSizeForFragmentInternal(
     const LayoutUnit* opt_percentage_resolution_block_size_for_min_max =
         nullptr) {
   MinMaxSizes min_max =
-      ComputeMinMaxBlockSize(space, style, border_padding, intrinsic_size,
-                             available_block_size_adjustment,
-                             opt_percentage_resolution_block_size_for_min_max);
+      ComputeMinMaxBlockSizes(space, style, border_padding, intrinsic_size,
+                              available_block_size_adjustment,
+                              opt_percentage_resolution_block_size_for_min_max);
   Length logical_height = style.LogicalHeight();
   // Scrollable percentage-sized children of table cells, in the table
   // "measure" phase contribute nothing to the row height measurement.
