@@ -295,6 +295,11 @@ void TtsControllerImpl::OnTtsEvent(int utterance_id,
 
 void TtsControllerImpl::GetVoices(BrowserContext* browser_context,
                                   std::vector<VoiceData>* out_voices) {
+  if (browser_context && engine_delegate_ &&
+      engine_delegate_->IsBuiltInTtsEngineInitialized(browser_context)) {
+    engine_delegate_->GetVoices(browser_context, out_voices);
+  }
+
   TtsPlatform* tts_platform = GetTtsPlatform();
   DCHECK(tts_platform);
   // Ensure we have all built-in voices loaded. This is a no-op if already
@@ -302,11 +307,6 @@ void TtsControllerImpl::GetVoices(BrowserContext* browser_context,
   tts_platform->LoadBuiltInTtsEngine(browser_context);
   if (TtsPlatformReady())
     tts_platform->GetVoices(out_voices);
-
-  if (browser_context && engine_delegate_ &&
-      engine_delegate_->IsBuiltInTtsEngineInitialized(browser_context)) {
-    engine_delegate_->GetVoices(browser_context, out_voices);
-  }
 }
 
 bool TtsControllerImpl::IsSpeaking() {

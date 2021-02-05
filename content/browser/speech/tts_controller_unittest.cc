@@ -60,7 +60,8 @@ class MockTtsPlatformImpl : public TtsPlatform {
   void Pause() override { ++pause_called_; }
   void Resume() override { ++resume_called_; }
   void GetVoices(std::vector<VoiceData>* out_voices) override {
-    *out_voices = voices_;
+    for (const auto& voice : voices_)
+      out_voices->push_back(voice);
   }
   bool LoadBuiltInTtsEngine(BrowserContext* browser_context) override {
     return false;
@@ -133,7 +134,8 @@ class MockTtsEngineDelegate : public TtsEngineDelegate {
 
   void GetVoices(BrowserContext* browser_context,
                  std::vector<VoiceData>* out_voices) override {
-    *out_voices = voices_;
+    for (const auto& voice : voices_)
+      out_voices->push_back(voice);
   }
 
   // Unused (TtsEngineDelegate:)

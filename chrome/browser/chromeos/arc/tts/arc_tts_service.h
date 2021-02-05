@@ -40,6 +40,7 @@ class ArcTtsService : public KeyedService,
                   mojom::TtsEventType event_type,
                   uint32_t char_index,
                   const std::string& error_msg) override;
+  void OnVoicesChanged(std::vector<mojom::TtsVoicePtr> voices) override;
 
   void set_tts_controller_for_testing(content::TtsController* tts_controller) {
     tts_controller_ = tts_controller;

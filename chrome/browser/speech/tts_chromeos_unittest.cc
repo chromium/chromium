@@ -14,9 +14,17 @@ class TtsChromeosTest : public testing::Test {};
 TEST_F(TtsChromeosTest, TestGetVoices) {
   TtsPlatformImplChromeOs* tts_chromeos =
       TtsPlatformImplChromeOs::GetInstance();
+
+  // ARC++ (which supplies the voices for CHrome OS's tts platform), is
+  // unavailable here.
+  EXPECT_FALSE(tts_chromeos->PlatformImplSupported());
+
+  // Returns true to not interfere with tts controller queueing.
+  EXPECT_TRUE(tts_chromeos->PlatformImplInitialized());
+
   std::unique_ptr<std::vector<content::VoiceData>> voices =
       std::make_unique<std::vector<content::VoiceData>>();
   tts_chromeos->GetVoices(voices.get());
 
-  ASSERT_EQ(voices->size(), 1U);
+  EXPECT_TRUE(voices->empty());
 }

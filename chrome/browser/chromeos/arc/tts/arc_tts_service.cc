@@ -8,6 +8,8 @@
 
 #include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "base/strings/string_number_conversions.h"
+#include "chrome/browser/speech/tts_chromeos.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "content/public/browser/tts_controller.h"
@@ -88,6 +90,34 @@ void ArcTtsService::OnTtsEvent(uint32_t id,
       break;
   }
   tts_controller_->OnTtsEvent(id, chrome_event_type, char_index, -1, error_msg);
+}
+
+void ArcTtsService::OnVoicesChanged(std::vector<mojom::TtsVoicePtr> voices) {
+  std::vector<content::VoiceData> chrome_voices;
+  for (const auto& voice : voices) {
+    chrome_voices.emplace_back();
+    content::VoiceData& chrome_voice = chrome_voices.back();
+    chrome_voice.native = true;
+    chrome_voice.native_voice_identifier = base::NumberToString(voice->id);
+    chrome_voice.name = std::move(voice->name);
+    chrome_voice.lang = std::move(voice->locale);
+
+    // Normalizes _ to - (expected by Chrome's tts controller).
+    for (size_t i = 0; i < chrome_voice.lang.size(); i++) {
+      if (chrome_voice.lang[i] == '_')
+        chrome_voice.lang[i] = '-';
+    }
+
+    chrome_voice.remote = voice->is_network_connection_required;
+    chrome_voice.events.insert(content::TTS_EVENT_START);
+    chrome_voice.events.insert(content::TTS_EVENT_END);
+  }
+
+  TtsPlatformImplChromeOs* impl = TtsPlatformImplChromeOs::GetInstance();
+  DCHECK(impl);
+  impl->SetVoices(std::move(chrome_voices));
+
+  content::TtsController::GetInstance()->VoicesChanged();
 }
 
 }  // namespace arc

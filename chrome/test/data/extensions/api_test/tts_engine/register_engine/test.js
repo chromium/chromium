@@ -149,16 +149,16 @@ chrome.test.runTests([
     chrome.tts.getVoices(function(voices) {
       chrome.test.assertEq(4, voices.length);
 
-      chrome.test.assertEq('TestNativeVoice', voices[0].voiceName);
-      chrome.test.assertEq('en-GB', voices[0].lang);
+      chrome.test.assertEq('Alice', voices[0].voiceName);
+      chrome.test.assertEq('en-US', voices[0].lang);
 
-      chrome.test.assertEq('Alice', voices[1].voiceName);
+      chrome.test.assertEq('Pat', voices[1].voiceName);
       chrome.test.assertEq('en-US', voices[1].lang);
 
-      chrome.test.assertEq('Pat', voices[2].voiceName);
-      chrome.test.assertEq('en-US', voices[2].lang);
+      chrome.test.assertEq('Cat', voices[2].voiceName);
 
-      chrome.test.assertEq('Cat', voices[3].voiceName);
+      chrome.test.assertEq('TestNativeVoice', voices[3].voiceName);
+      chrome.test.assertEq('en-GB', voices[3].lang);
 
       chrome.test.assertEq(voices[0].gender, undefined);
       chrome.test.assertEq(voices[1].gender, undefined);

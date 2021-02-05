@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SPEECH_TTS_CHROMEOS_H_
 #define CHROME_BROWSER_SPEECH_TTS_CHROMEOS_H_
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "content/public/browser/tts_platform.h"
 
@@ -15,6 +14,9 @@ class TtsPlatformImplChromeOs : public content::TtsPlatform {
  public:
   TtsPlatformImplChromeOs(const TtsPlatformImplChromeOs&) = delete;
   TtsPlatformImplChromeOs& operator=(const TtsPlatformImplChromeOs&) = delete;
+
+  // Sets the voices exposed by this TtsPlatform.
+  void SetVoices(std::vector<content::VoiceData> voices);
 
   // TtsPlatform overrides:
   bool PlatformImplSupported() override;
@@ -47,6 +49,7 @@ class TtsPlatformImplChromeOs : public content::TtsPlatform {
  private:
   friend base::NoDestructor<TtsPlatformImplChromeOs>;
   TtsPlatformImplChromeOs();
+  ~TtsPlatformImplChromeOs();
 
   void ProcessSpeech(int utterance_id,
                      const std::string& lang,
@@ -56,6 +59,8 @@ class TtsPlatformImplChromeOs : public content::TtsPlatform {
                      const std::string& parsed_utterance);
 
   std::string error_;
+
+  std::vector<content::VoiceData> voices_;
 };
 
 #endif  // CHROME_BROWSER_SPEECH_TTS_CHROMEOS_H_
