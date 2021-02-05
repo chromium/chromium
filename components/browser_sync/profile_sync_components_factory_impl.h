@@ -81,7 +81,7 @@ class ProfileSyncComponentsFactoryImpl
       const std::string& name,
       invalidation::InvalidationService* invalidator,
       syncer::SyncInvalidationsService* sync_invalidation_service) override;
-  void DeleteLegacyDirectoryFilesAndNigoriStorage() override;
+  void ClearAllTransportDataExceptEncryptionBootstrapToken() override;
 
  private:
   // Factory function for ModelTypeController instances for models living on

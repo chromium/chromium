@@ -4,6 +4,7 @@
 
 #include "components/sync/driver/profile_sync_service.h"
 
+#include <map>
 #include <memory>
 #include <string>
 #include <utility>
@@ -112,8 +113,11 @@ class ProfileSyncServiceTest : public ::testing::Test {
          registered_types_and_transport_mode_support) {
       ModelType type = type_and_transport_mode_support.first;
       bool transport_mode_support = type_and_transport_mode_support.second;
-      controllers.push_back(std::make_unique<FakeDataTypeController>(
-          type, transport_mode_support));
+      auto controller = std::make_unique<FakeDataTypeController>(
+          type, transport_mode_support);
+      // Hold a raw pointer to directly interact with the controller.
+      controller_map_[type] = controller.get();
+      controllers.push_back(std::move(controller));
     }
 
     std::unique_ptr<SyncClientMock> sync_client =
@@ -224,11 +228,17 @@ class ProfileSyncServiceTest : public ::testing::Test {
     return profile_sync_service_bundle_.sync_invalidations_service();
   }
 
+  FakeDataTypeController* get_controller(ModelType type) {
+    return controller_map_[type];
+  }
+
  private:
   base::test::TaskEnvironment task_environment_;
   ProfileSyncServiceBundle profile_sync_service_bundle_;
   std::unique_ptr<ProfileSyncService> service_;
   SyncClientMock* sync_client_;  // Owned by |service_|.
+  // The controllers are owned by |service_|.
+  std::map<ModelType, FakeDataTypeController*> controller_map_;
 };
 
 class ProfileSyncServiceTestWithSyncInvalidationsServiceCreated
@@ -582,12 +592,11 @@ TEST_F(ProfileSyncServiceTest,
   InitializeForNthSync();
   ASSERT_TRUE(service()->GetUserSettings()->IsFirstSetupComplete());
   ASSERT_TRUE(service()->GetUserSettings()->IsSyncRequested());
+  ASSERT_EQ(0, component_factory()->clear_transport_data_call_count());
 
   // Sign-out.
   auto* account_mutator = identity_manager()->GetPrimaryAccountMutator();
   DCHECK(account_mutator) << "Account mutator should only be null on ChromeOS.";
-  EXPECT_CALL(*sync_client(), OnLocalSyncTransportDataCleared())
-      .Times(testing::AtLeast(1));
   account_mutator->ClearPrimaryAccount(
       signin_metrics::SIGNOUT_TEST,
       signin_metrics::SignoutDelete::IGNORE_METRIC);
@@ -596,6 +605,7 @@ TEST_F(ProfileSyncServiceTest,
   // These are specific to sync-the-feature and should be cleared.
   EXPECT_FALSE(service()->GetUserSettings()->IsFirstSetupComplete());
   EXPECT_FALSE(service()->GetUserSettings()->IsSyncRequested());
+  EXPECT_EQ(1, component_factory()->clear_transport_data_call_count());
 }
 
 TEST_F(ProfileSyncServiceTest, SyncRequestedSetToFalseIfStartsSignedOut) {
@@ -785,36 +795,30 @@ TEST_F(ProfileSyncServiceTest,
   InitializeForNthSync();
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
-  base::Time last_synced_time = service()->GetLastSyncedTimeForDebugging();
-  ASSERT_LT(base::Time::Now() - last_synced_time,
-            base::TimeDelta::FromMinutes(1));
-
-  EXPECT_CALL(*sync_client(), OnLocalSyncTransportDataCleared())
-      .Times(testing::AtLeast(1));
+  ASSERT_EQ(0, component_factory()->clear_transport_data_call_count());
 
   service()->StopAndClear();
 
   // Even though Sync-the-feature is disabled, there's still an (unconsented)
-  // signed-in account, so Sync-the-transport should still be running and
-  // should have updated the last synced time.
+  // signed-in account, so Sync-the-transport should still be running.
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
   EXPECT_FALSE(service()->IsSyncFeatureEnabled());
-
-  EXPECT_NE(service()->GetLastSyncedTimeForDebugging(), last_synced_time);
+  EXPECT_EQ(1, component_factory()->clear_transport_data_call_count());
 }
 
-// Verify that demographic prefs are cleared when the service is initializing
+// Verify that sync transport data is cleared when the service is initializing
 // and account is signed out.
-TEST_F(ProfileSyncServiceTest, ClearDemographicsOnInitializeWhenSignedOut) {
+TEST_F(ProfileSyncServiceTest, ClearTransportDataOnInitializeWhenSignedOut) {
   // Don't sign-in before creating the service.
   CreateService(ProfileSyncService::MANUAL_START);
 
-  // Local transport data should be cleared and the client notified.
-  EXPECT_CALL(*sync_client(), OnLocalSyncTransportDataCleared());
+  ASSERT_EQ(0, component_factory()->clear_transport_data_call_count());
 
   // Initialize when signed out to trigger clearing of prefs.
   InitializeForNthSync();
+
+  EXPECT_EQ(1, component_factory()->clear_transport_data_call_count());
 }
 
 TEST_F(ProfileSyncServiceTest, StopSyncAndClearTwiceDoesNotCrash) {
@@ -823,9 +827,6 @@ TEST_F(ProfileSyncServiceTest, StopSyncAndClearTwiceDoesNotCrash) {
   InitializeForNthSync();
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
-  base::Time last_synced_time = service()->GetLastSyncedTimeForDebugging();
-  ASSERT_LT(base::Time::Now() - last_synced_time,
-            base::TimeDelta::FromMinutes(1));
 
   // Disable sync.
   service()->StopAndClear();
@@ -1023,8 +1024,7 @@ TEST_F(ProfileSyncServiceTest, DisableSyncOnClient) {
 
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
-  ASSERT_LT(base::Time::Now() - service()->GetLastSyncedTimeForDebugging(),
-            base::TimeDelta::FromMinutes(1));
+  ASSERT_EQ(0, get_controller(BOOKMARKS)->model()->clear_metadata_call_count());
 
   SyncProtocolError client_cmd;
   client_cmd.action = DISABLE_SYNC_ON_CLIENT;
@@ -1050,6 +1050,8 @@ TEST_F(ProfileSyncServiceTest, DisableSyncOnClient) {
             service()->GetTransportState());
   EXPECT_TRUE(service()->GetLastSyncedTimeForDebugging().is_null());
 #endif
+
+  EXPECT_EQ(1, get_controller(BOOKMARKS)->model()->clear_metadata_call_count());
 
   EXPECT_FALSE(service()->IsSyncFeatureEnabled());
   EXPECT_FALSE(service()->IsSyncFeatureActive());

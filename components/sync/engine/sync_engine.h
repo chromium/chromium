@@ -99,6 +99,7 @@ class SyncEngine : public ModelTypeConfigurer {
   // Transport metadata getters.
   virtual std::string GetCacheGuid() const = 0;
   virtual std::string GetBirthday() const = 0;
+  virtual base::Time GetLastSyncedTimeForDebugging() const = 0;
 
   // Switches sync engine into configuration mode. In this mode only initial
   // data for newly enabled types is downloaded from server. No local changes

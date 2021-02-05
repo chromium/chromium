@@ -111,33 +111,6 @@ SyncTransportDataStartupState ValidateSyncTransportData(
   return SyncTransportDataStartupState::kValidData;
 }
 
-void ValidateOrInitSyncTransportData(const CoreAccountInfo& core_account_info,
-                                     SyncTransportDataPrefs* prefs) {
-  // The gaia ID in sync prefs was introduced with M81, so having an empty value
-  // is legitimate and should be populated as a one-off migration.
-  // TODO(mastiz): Clean up this migration code after a grace period (e.g. 1
-  // year).
-  if (prefs->GetGaiaId().empty()) {
-    prefs->SetGaiaId(core_account_info.gaia);
-  }
-
-  const SyncTransportDataStartupState state =
-      ValidateSyncTransportData(*prefs, core_account_info);
-
-  base::UmaHistogramEnumeration("Sync.LocalSyncTransportDataStartupState",
-                                state);
-
-  if (state != SyncTransportDataStartupState::kValidData) {
-    // Either the local data is uninitialized or corrupt, so let's throw
-    // everything away and start from scratch with a new cache GUID, which also
-    // cascades into datatypes throwing away their dangling sync metadata due to
-    // cache GUID mismatches.
-    prefs->ClearAllExceptEncryptionBootstrapToken();
-    prefs->SetCacheGuid(GenerateCacheGUID());
-    prefs->SetGaiaId(core_account_info.gaia);
-  }
-}
-
 }  // namespace
 
 SyncEngineImpl::SyncEngineImpl(
@@ -147,10 +120,12 @@ SyncEngineImpl::SyncEngineImpl(
     std::unique_ptr<ActiveDevicesProvider> active_devices_provider,
     std::unique_ptr<SyncTransportDataPrefs> prefs,
     const base::FilePath& sync_data_folder,
-    scoped_refptr<base::SequencedTaskRunner> sync_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> sync_task_runner,
+    const base::RepeatingClosure& sync_transport_data_cleared_cb)
     : sync_task_runner_(std::move(sync_task_runner)),
       name_(name),
       prefs_(std::move(prefs)),
+      sync_transport_data_cleared_cb_(sync_transport_data_cleared_cb),
       invalidator_(invalidator),
       sync_invalidations_service_(sync_invalidations_service),
 #if defined(OS_ANDROID)
@@ -172,8 +147,29 @@ void SyncEngineImpl::Initialize(InitParams params) {
   DCHECK(params.host);
   host_ = params.host;
 
-  ValidateOrInitSyncTransportData(params.authenticated_account_info,
-                                  prefs_.get());
+  // The gaia ID in sync prefs was introduced with M81, so having an empty value
+  // is legitimate and should be populated as a one-off migration.
+  // TODO(mastiz): Clean up this migration code after a grace period (e.g. 1
+  // year).
+  if (prefs_->GetGaiaId().empty()) {
+    prefs_->SetGaiaId(params.authenticated_account_info.gaia);
+  }
+
+  const SyncTransportDataStartupState state =
+      ValidateSyncTransportData(*prefs_, params.authenticated_account_info);
+
+  base::UmaHistogramEnumeration("Sync.LocalSyncTransportDataStartupState",
+                                state);
+
+  if (state != SyncTransportDataStartupState::kValidData) {
+    // The local data is either uninitialized or corrupt, so let's throw
+    // everything away and start from scratch with a new cache GUID, which also
+    // cascades into datatypes throwing away their dangling sync metadata due to
+    // cache GUID mismatches.
+    ClearLocalTransportDataAndNotify();
+    prefs_->SetCacheGuid(GenerateCacheGUID());
+    prefs_->SetGaiaId(params.authenticated_account_info.gaia);
+  }
 
   sync_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SyncEngineBackend::DoInitialize, backend_,
@@ -226,6 +222,10 @@ std::string SyncEngineImpl::GetCacheGuid() const {
 
 std::string SyncEngineImpl::GetBirthday() const {
   return prefs_->GetBirthday();
+}
+
+base::Time SyncEngineImpl::GetLastSyncedTimeForDebugging() const {
+  return prefs_->GetLastSyncedTime();
 }
 
 void SyncEngineImpl::StartConfiguration() {
@@ -330,6 +330,10 @@ void SyncEngineImpl::Shutdown(ShutdownReason reason) {
   // Ensure that |backend_| destroyed inside Sync sequence, not inside current
   // one.
   sync_task_runner_->ReleaseSoon(FROM_HERE, std::move(backend_));
+
+  if (reason == DISABLE_SYNC) {
+    ClearLocalTransportDataAndNotify();
+  }
 }
 
 void SyncEngineImpl::ConfigureDataTypes(ConfigureParams params) {
@@ -632,6 +636,11 @@ void SyncEngineImpl::OnActiveDevicesChanged() {
 
 void SyncEngineImpl::UpdateLastSyncedTime() {
   prefs_->SetLastSyncedTime(base::Time::Now());
+}
+
+void SyncEngineImpl::ClearLocalTransportDataAndNotify() {
+  prefs_->ClearAllExceptEncryptionBootstrapToken();
+  sync_transport_data_cleared_cb_.Run();
 }
 
 }  // namespace syncer

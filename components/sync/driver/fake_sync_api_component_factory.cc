@@ -4,6 +4,7 @@
 
 #include "components/sync/driver/fake_sync_api_component_factory.h"
 
+#include "base/test/bind.h"
 #include "components/sync/driver/data_type_manager_impl.h"
 #include "components/sync/test/engine/fake_sync_engine.h"
 
@@ -49,12 +50,17 @@ std::unique_ptr<SyncEngine> FakeSyncApiComponentFactory::CreateSyncEngine(
     syncer::SyncInvalidationsService* sync_invalidations_service) {
   auto engine = std::make_unique<FakeSyncEngine>(
       allow_fake_engine_init_completion_,
-      /*is_first_time_sync_configure=*/!is_first_time_sync_configure_done_);
+      /*is_first_time_sync_configure=*/!is_first_time_sync_configure_done_,
+      /*sync_transport_data_cleared_cb=*/base::BindLambdaForTesting([this]() {
+        ++clear_transport_data_call_count_;
+      }));
   last_created_engine_ = engine->AsWeakPtr();
   return engine;
 }
 
-void FakeSyncApiComponentFactory::DeleteLegacyDirectoryFilesAndNigoriStorage() {
+void FakeSyncApiComponentFactory::
+    ClearAllTransportDataExceptEncryptionBootstrapToken() {
+  ++clear_transport_data_call_count_;
 }
 
 }  // namespace syncer

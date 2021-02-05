@@ -68,6 +68,9 @@ void FakeSyncManager::WaitForSyncThread() {
 
 void FakeSyncManager::Init(InitArgs* args) {
   sync_task_runner_ = base::SequencedTaskRunnerHandle::Get();
+  cache_guid_ = args->cache_guid;
+  birthday_ = args->birthday;
+  bag_of_chips_ = args->bag_of_chips;
 
   for (auto& observer : observers_) {
     observer.OnInitializationComplete(WeakHandle<JsBackend>(),
@@ -142,16 +145,15 @@ FakeSyncManager::GetModelTypeConnectorProxy() {
 }
 
 std::string FakeSyncManager::cache_guid() {
-  return "fake_cache_guid";
+  return cache_guid_;
 }
 
 std::string FakeSyncManager::birthday() {
-  return "fake_birthday";
+  return birthday_;
 }
 
 std::string FakeSyncManager::bag_of_chips() {
-  NOTIMPLEMENTED();
-  return std::string();
+  return bag_of_chips_;
 }
 
 bool FakeSyncManager::HasUnsyncedItemsForTest() {

@@ -14,10 +14,13 @@ namespace syncer {
 
 constexpr char FakeSyncEngine::kTestBirthday[];
 
-FakeSyncEngine::FakeSyncEngine(bool allow_init_completion,
-                               bool is_first_time_sync_configure)
+FakeSyncEngine::FakeSyncEngine(
+    bool allow_init_completion,
+    bool is_first_time_sync_configure,
+    const base::RepeatingClosure& sync_transport_data_cleared_cb)
     : allow_init_completion_(allow_init_completion),
-      is_first_time_sync_configure_(is_first_time_sync_configure) {}
+      is_first_time_sync_configure_(is_first_time_sync_configure),
+      sync_transport_data_cleared_cb_(sync_transport_data_cleared_cb) {}
 
 FakeSyncEngine::~FakeSyncEngine() = default;
 
@@ -61,6 +64,10 @@ std::string FakeSyncEngine::GetBirthday() const {
   return kTestBirthday;
 }
 
+base::Time FakeSyncEngine::GetLastSyncedTimeForDebugging() const {
+  return base::Time();
+}
+
 void FakeSyncEngine::StartConfiguration() {}
 
 void FakeSyncEngine::StartSyncingWithServer() {}
@@ -82,7 +89,11 @@ void FakeSyncEngine::AddTrustedVaultDecryptionKeys(
 
 void FakeSyncEngine::StopSyncingForShutdown() {}
 
-void FakeSyncEngine::Shutdown(ShutdownReason reason) {}
+void FakeSyncEngine::Shutdown(ShutdownReason reason) {
+  if (reason == DISABLE_SYNC) {
+    sync_transport_data_cleared_cb_.Run();
+  }
+}
 
 void FakeSyncEngine::ConfigureDataTypes(ConfigureParams params) {
   std::move(params.ready_task)

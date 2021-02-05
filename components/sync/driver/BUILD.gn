@@ -154,6 +154,7 @@ static_library("test_support") {
   public_deps = [ "//components/sync/base:test_support" ]
 
   deps = [
+    "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//components/invalidation/impl:test_support",
     "//components/pref_registry",

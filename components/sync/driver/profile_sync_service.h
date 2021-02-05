@@ -362,9 +362,6 @@ class ProfileSyncService : public SyncService,
   // Called by SyncServiceCrypto when its required user action changes.
   void OnRequiredUserActionChanged();
 
-  // Helper function to prevent future bugs that avoid notyfing while clearing.
-  void ClearLocalTransportDataAndNotify();
-
   // This profile's SyncClient, which abstracts away non-Sync dependencies and
   // the Sync API component factory.
   const std::unique_ptr<SyncClient> sync_client_;

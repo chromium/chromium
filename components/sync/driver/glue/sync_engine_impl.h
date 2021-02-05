@@ -63,7 +63,8 @@ class SyncEngineImpl : public SyncEngine,
                  std::unique_ptr<ActiveDevicesProvider> active_devices_provider,
                  std::unique_ptr<SyncTransportDataPrefs> prefs,
                  const base::FilePath& sync_data_folder,
-                 scoped_refptr<base::SequencedTaskRunner> sync_task_runner);
+                 scoped_refptr<base::SequencedTaskRunner> sync_task_runner,
+                 const base::RepeatingClosure& sync_transport_data_cleared_cb);
   ~SyncEngineImpl() override;
 
   // SyncEngine implementation.
@@ -74,6 +75,7 @@ class SyncEngineImpl : public SyncEngine,
   void InvalidateCredentials() override;
   std::string GetCacheGuid() const override;
   std::string GetBirthday() const override;
+  base::Time GetLastSyncedTimeForDebugging() const override;
   void StartConfiguration() override;
   void StartSyncingWithServer() override;
   void SetEncryptionPassphrase(const std::string& passphrase) override;
@@ -178,6 +180,10 @@ class SyncEngineImpl : public SyncEngine,
   // Sets the last synced time to the current time.
   void UpdateLastSyncedTime();
 
+  // Helper function that clears SyncTransportDataPrefs and also notifies
+  // upper layers via |sync_transport_data_cleared_cb_|.
+  void ClearLocalTransportDataAndNotify();
+
   // The task runner where all the sync engine operations happen.
   scoped_refptr<base::SequencedTaskRunner> sync_task_runner_;
 
@@ -185,6 +191,8 @@ class SyncEngineImpl : public SyncEngine,
   const std::string name_;
 
   const std::unique_ptr<SyncTransportDataPrefs> prefs_;
+
+  const base::RepeatingClosure sync_transport_data_cleared_cb_;
 
   // Our backend, which communicates directly to the syncapi. Use refptr instead
   // of WeakHandle because |backend_| is created on UI loop but released on

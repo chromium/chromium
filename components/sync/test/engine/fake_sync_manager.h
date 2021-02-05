@@ -106,6 +106,10 @@ class FakeSyncManager : public SyncManager {
 
   base::ObserverList<SyncManager::Observer>::Unchecked observers_;
 
+  std::string cache_guid_;
+  std::string birthday_;
+  std::string bag_of_chips_;
+
   bool should_fail_on_init_;
   // Faked data state.
   ModelTypeSet initial_sync_ended_types_;

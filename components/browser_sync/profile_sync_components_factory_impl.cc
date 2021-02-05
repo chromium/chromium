@@ -424,16 +424,31 @@ ProfileSyncComponentsFactoryImpl::CreateSyncEngine(
       std::make_unique<syncer::SyncTransportDataPrefs>(
           sync_client_->GetPrefService()),
       sync_client_->GetModelTypeStoreService()->GetSyncDataPath(),
-      engines_and_directory_deletion_thread_);
+      engines_and_directory_deletion_thread_,
+      base::BindRepeating(&syncer::SyncClient::OnLocalSyncTransportDataCleared,
+                          base::Unretained(sync_client_)));
 }
 
 void ProfileSyncComponentsFactoryImpl::
-    DeleteLegacyDirectoryFilesAndNigoriStorage() {
-  engines_and_directory_deletion_thread_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &syncer::DeleteLegacyDirectoryFilesAndNigoriStorage,
-          sync_client_->GetModelTypeStoreService()->GetSyncDataPath()));
+    ClearAllTransportDataExceptEncryptionBootstrapToken() {
+  syncer::SyncTransportDataPrefs sync_transport_data_prefs(
+      sync_client_->GetPrefService());
+
+  // Clearing the Directory via DeleteLegacyDirectoryFilesAndNigoriStorage()
+  // means there's IO involved which may be considerable overhead if
+  // triggered consistently upon browser startup (which is the case for
+  // certain codepaths such as the user being signed out). To avoid that, prefs
+  // are used to determine whether it's worth it.
+  if (!sync_transport_data_prefs.GetCacheGuid().empty()) {
+    engines_and_directory_deletion_thread_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &syncer::DeleteLegacyDirectoryFilesAndNigoriStorage,
+            sync_client_->GetModelTypeStoreService()->GetSyncDataPath()));
+  }
+
+  sync_transport_data_prefs.ClearAllExceptEncryptionBootstrapToken();
+  sync_client_->OnLocalSyncTransportDataCleared();
 }
 
 std::unique_ptr<syncer::ModelTypeControllerDelegate>
