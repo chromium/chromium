@@ -645,6 +645,213 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   CheckCounter(WebFeature::kV8SharedArrayBufferConstructed, 1);
 }
 
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       WasmModuleSharingCrossSite) {
+  GURL main_url = https_server().GetURL("a.com", "/empty.html");
+  GURL sub_url = https_server().GetURL("b.com", "/empty.html");
+
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
+  LoadIFrame(sub_url);
+
+  content::RenderFrameHost* main_document = web_contents()->GetAllFrames()[0];
+  content::RenderFrameHost* sub_document = web_contents()->GetAllFrames()[1];
+
+  EXPECT_EQ(true, content::ExecJs(main_document, R"(
+    received_module = undefined;
+    addEventListener("message", event => {
+      received_module = event.data;
+    });
+  )"));
+
+  EXPECT_EQ(true, content::ExecJs(sub_document, R"(
+    let module = new WebAssembly.Module(new Uint8Array([
+      0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00]));
+    parent.postMessage(module, "*");
+  )"));
+
+  // It doesn't exist yet a warning or an error being dispatched for failing to
+  // send a WebAssembly.Module. This test simply wait.
+  EXPECT_EQ("Success: Nothing received", content::EvalJs(main_document, R"(
+    new Promise(async resolve => {
+      await new Promise(r => setTimeout(r, 1000));
+      if (received_module)
+        resolve("Failure: Received Webassembly module");
+      else
+        resolve("Success: Nothing received");
+    });
+  )"));
+
+  CheckCounter(WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation, 0);
+  CheckCounter(WebFeature::kV8SharedArrayBufferConstructed, 0);
+
+  // TODO(ahaas): Check the histogram for:
+  // - kWasmModuleSharing
+  // - kCrossOriginWasmModuleSharing
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       WasmModuleSharingSameSite) {
+  GURL main_url = https_server().GetURL("a.a.com", "/empty.html");
+  GURL sub_url = https_server().GetURL("b.a.com", "/empty.html");
+
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
+  LoadIFrame(sub_url);
+
+  content::RenderFrameHost* main_document = web_contents()->GetAllFrames()[0];
+  content::RenderFrameHost* sub_document = web_contents()->GetAllFrames()[1];
+
+  EXPECT_EQ(true, content::ExecJs(main_document, R"(
+    addEventListener("message", event => {
+      received_module = event.data;
+    });
+  )"));
+
+  EXPECT_EQ(true, content::ExecJs(sub_document, R"(
+    let module = new WebAssembly.Module(new Uint8Array([
+      0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00]));
+    parent.postMessage(module, "*");
+  )"));
+
+  EXPECT_EQ(true, content::EvalJs(main_document, R"(
+    new Promise(async resolve => {
+      while (!received_module)
+        await new Promise(r => setTimeout(r, 10));
+      resolve(true);
+    });
+  )"));
+
+  CheckCounter(WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation, 0);
+  CheckCounter(WebFeature::kV8SharedArrayBufferConstructed, 0);
+
+  // TODO(ahaas): Check the histogram for:
+  // - kWasmModuleSharing
+  // - kCrossOriginWasmModuleSharing
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       WasmModuleSharingSameOrigin) {
+  GURL main_url = https_server().GetURL("a.com", "/empty.html");
+  GURL sub_url = https_server().GetURL("a.com", "/empty.html");
+
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
+  LoadIFrame(sub_url);
+
+  content::RenderFrameHost* main_document = web_contents()->GetAllFrames()[0];
+  content::RenderFrameHost* sub_document = web_contents()->GetAllFrames()[1];
+
+  EXPECT_EQ(true, content::ExecJs(main_document, R"(
+    received_module = undefined;
+    addEventListener("message", event => {
+      received_module = event.data;
+    });
+  )"));
+
+  EXPECT_EQ(true, content::ExecJs(sub_document, R"(
+    let module = new WebAssembly.Module(new Uint8Array([
+      0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00]));
+    parent.postMessage(module, "*");
+  )"));
+
+  EXPECT_EQ(true, content::EvalJs(main_document, R"(
+    new Promise(async resolve => {
+      while (!received_module)
+        await new Promise(r => setTimeout(r, 10));
+      resolve(true);
+    });
+  )"));
+
+  CheckCounter(WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation, 0);
+  CheckCounter(WebFeature::kV8SharedArrayBufferConstructed, 0);
+
+  // TODO(ahaas): Check the histogram for:
+  // - kWasmModuleSharing
+  // - kCrossOriginWasmModuleSharing
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       WasmModuleSharingSameSiteBeforeSetDocumentDomain) {
+  GURL main_url = https_server().GetURL("sub.a.com", "/empty.html");
+  GURL sub_url = https_server().GetURL("a.com", "/empty.html");
+
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
+  LoadIFrame(sub_url);
+
+  content::RenderFrameHost* main_document = web_contents()->GetAllFrames()[0];
+  content::RenderFrameHost* sub_document = web_contents()->GetAllFrames()[1];
+
+  EXPECT_EQ(true, content::ExecJs(main_document, R"(
+    document.domain = "a.com";
+    received_module = undefined;
+    addEventListener("message", event => {
+      received_module = event.data;
+    });
+  )"));
+
+  EXPECT_EQ(true, content::ExecJs(sub_document, R"(
+    document.domain = "a.com";
+    let module = new WebAssembly.Module(new Uint8Array([
+      0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00]));
+    parent.postMessage(module, "*");
+  )"));
+
+  EXPECT_EQ(true, content::EvalJs(main_document, R"(
+    new Promise(async resolve => {
+      while (!received_module)
+        await new Promise(r => setTimeout(r, 10));
+      resolve(true);
+    });
+  )"));
+
+  CheckCounter(WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation, 0);
+  CheckCounter(WebFeature::kV8SharedArrayBufferConstructed, 0);
+
+  // TODO(ahaas): Check the histogram for:
+  // - kWasmModuleSharing
+  // - kCrossOriginWasmModuleSharing
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       WasmModuleSharingSameSiteAfterSetDocumentDomain) {
+  GURL main_url = https_server().GetURL("sub.a.com", "/empty.html");
+  GURL sub_url = https_server().GetURL("sub.a.com", "/empty.html");
+
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
+  LoadIFrame(sub_url);
+
+  content::RenderFrameHost* main_document = web_contents()->GetAllFrames()[0];
+  content::RenderFrameHost* sub_document = web_contents()->GetAllFrames()[1];
+
+  EXPECT_EQ(true, content::ExecJs(main_document, R"(
+    document.domain = "a.com";
+    received_module = undefined;
+    addEventListener("message", event => {
+      received_module = event.data;
+    });
+  )"));
+
+  EXPECT_EQ(true, content::ExecJs(sub_document, R"(
+    document.domain = "sub.a.com";
+    let module = new WebAssembly.Module(new Uint8Array([
+      0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00]));
+    parent.postMessage(module, "*");
+  )"));
+
+  EXPECT_EQ(true, content::EvalJs(main_document, R"(
+    new Promise(async resolve => {
+      while (!received_module)
+        await new Promise(r => setTimeout(r, 10));
+      resolve(true);
+    });
+  )"));
+
+  CheckCounter(WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation, 0);
+  CheckCounter(WebFeature::kV8SharedArrayBufferConstructed, 0);
+
+  // TODO(ahaas): Check the histogram for:
+  // - kWasmModuleSharing
+  // - kCrossOriginWasmModuleSharing
+}
+
 // TODO(arthursonzogni): Add basic test(s) for the WebFeatures:
 // - CrossOriginOpenerPolicySameOrigin
 // - CrossOriginOpenerPolicySameOriginAllowPopups
