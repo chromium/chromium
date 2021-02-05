@@ -1,0 +1,16 @@
+diff --git a/third_party/remote_config/common.bzl b/third_party/remote_config/common.bzl
+index d7e69326205..6f5a4f8c3e0 100644
+--- a/third_party/remote_config/common.bzl
++++ b/third_party/remote_config/common.bzl
+@@ -42,11 +42,6 @@ def get_python_bin(repository_ctx):
+     if python_bin != None:
+         return python_bin
+ 
+-    # First check for an explicit "python3"
+-    python_bin = which(repository_ctx, "python3")
+-    if python_bin != None:
+-        return python_bin
+-
+     # Some systems just call pythone3 "python"
+     python_bin = which(repository_ctx, "python")
+     if python_bin != None:

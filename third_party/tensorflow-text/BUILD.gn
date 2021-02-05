@@ -1,0 +1,36 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/sanitizers/sanitizers.gni")
+
+config("tensorflow-text-config") {
+  include_dirs = [ "src" ]
+}
+
+config("tensorflow-text-flags") {
+  cflags = [ "-Wno-comment" ]
+}
+
+static_library("tensorflow-text") {
+  sources = [
+    "src/tensorflow_text/core/kernels/regex_split.cc",
+    "src/tensorflow_text/core/kernels/regex_split.h",
+    "src/tensorflow_text/core/kernels/wordpiece_tokenizer.cc",
+    "src/tensorflow_text/core/kernels/wordpiece_tokenizer.h",
+  ]
+
+  deps = [
+    "//third_party/abseil-cpp:absl",
+    "//third_party/icu",
+    "//third_party/re2",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    ":tensorflow-text-flags",
+    "//build/config/compiler:no_chromium_code",
+  ]
+
+  public_configs = [ ":tensorflow-text-config" ]
+}

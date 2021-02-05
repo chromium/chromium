@@ -1,0 +1,9 @@
+include_rules = [
+    "+absl",
+    "+icu4c",
+    "+re2",
+    "+src",
+    "+tensorflow",
+    "+tensorflow_text",
+    "+third_party/icu",
+]
