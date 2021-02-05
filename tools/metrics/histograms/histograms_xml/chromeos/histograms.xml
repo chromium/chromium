@@ -542,6 +542,67 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Logging.{LogType}EntryCountPerDay"
+    units="log entries per day" expires_after="2021-07-31">
+  <owner>yoshiki@chromium.org</owner>
+  <owner>chromeos-velocity@chromium.org</owner>
+  <summary>
+    Metrics of the numbers of log entries recorded in {LogType}s. Recorded when
+    the daily job &quot;chromeos-cleanup-logs&quot; is executed.
+  </summary>
+  <token key="LogType">
+    <variant name="SystemLog"/>
+    <variant name="UserLog"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.Logging.{LogType}LogFileSizePerDay" units="MB"
+    expires_after="2021-07-31">
+  <owner>yoshiki@chromium.org</owner>
+  <owner>chromeos-velocity@chromium.org</owner>
+  <summary>
+    File sizes of {LogType} files in megabytes. Recorded when the daily job
+    &quot;chromeos-cleanup-logs&quot; is executed.
+  </summary>
+  <token key="LogType">
+    <variant name="SystemArc"/>
+    <variant name="SystemAudit"/>
+    <variant name="SystemChrome"/>
+    <variant name="SystemMessage"/>
+    <variant name="SystemNet"/>
+    <variant name="UserChrome"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.Logging.{LogType}MaxThroughputPerMin"
+    units="log entries per min" expires_after="2021-07-31">
+  <owner>yoshiki@chromium.org</owner>
+  <owner>chromeos-velocity@chromium.org</owner>
+  <summary>
+    Metrics of the number of maximum throughput (entries per minute) recorded in
+    {LogType}s within a day. Recorded when the daily job
+    &quot;chromeos-cleanup-logs&quot; is executed.
+  </summary>
+  <token key="LogType">
+    <variant name="SystemLog"/>
+    <variant name="UserLog"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.Logging.{LogType}TotalFileSize" units="MB"
+    expires_after="2021-07-31">
+  <owner>yoshiki@chromium.org</owner>
+  <owner>chromeos-velocity@chromium.org</owner>
+  <summary>
+    Total file sizes of {LogType} files in megabytes. Recorded when the daily
+    job &quot;chromeos-cleanup-logs&quot; is executed.
+  </summary>
+  <token key="LogType">
+    <variant name="SystemLog"/>
+    <variant name="UserLog"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.MachineIdRegen.AgeSeconds" units="seconds"
     expires_after="M77">
   <owner>zeuthen@chromium.org</owner>
