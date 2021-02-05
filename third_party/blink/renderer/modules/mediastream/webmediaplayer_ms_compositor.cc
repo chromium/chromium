@@ -56,8 +56,12 @@ scoped_refptr<media::VideoFrame> CopyFrame(
            frame->format() == media::PIXEL_FORMAT_XRGB ||
            frame->format() == media::PIXEL_FORMAT_I420 ||
            frame->format() == media::PIXEL_FORMAT_NV12);
+    new_frame = media::VideoFrame::CreateFrame(
+        media::PIXEL_FORMAT_I420, frame->coded_size(), frame->visible_rect(),
+        frame->natural_size(), frame->timestamp());
+
     auto provider = Platform::Current()->SharedMainThreadContextProvider();
-    if (!provider) {
+    if (!new_frame || !provider) {
       // Return a black frame (yuv = {0, 0x80, 0x80}).
       return media::VideoFrame::CreateColorFrame(
           frame->visible_rect().size(), 0u, 0x80, 0x80, frame->timestamp());
@@ -71,14 +75,27 @@ scoped_refptr<media::VideoFrame> CopyFrame(
     DCHECK(provider->RasterInterface());
     video_renderer->Copy(frame.get(), &paint_canvas, provider.get());
 
-    bitmap.setImmutable();
-    new_frame = media::CreateFromSkImage(
-        bitmap.asImage(), frame->coded_size(), frame->visible_rect(),
-        frame->natural_size(), frame->timestamp());
-    if (!new_frame) {
-      return media::VideoFrame::CreateColorFrame(
-          frame->visible_rect().size(), 0u, 0x80, 0x80, frame->timestamp());
-    }
+    SkPixmap pixmap;
+    const bool result = bitmap.peekPixels(&pixmap);
+    DCHECK(result) << "Error trying to access SkBitmap's pixels";
+
+#if SK_PMCOLOR_BYTE_ORDER(R, G, B, A)
+    const uint32_t source_pixel_format = libyuv::FOURCC_ABGR;
+#else
+    const uint32_t source_pixel_format = libyuv::FOURCC_ARGB;
+#endif
+    libyuv::ConvertToI420(static_cast<const uint8_t*>(pixmap.addr(0, 0)),
+                          pixmap.computeByteSize(),
+                          new_frame->visible_data(media::VideoFrame::kYPlane),
+                          new_frame->stride(media::VideoFrame::kYPlane),
+                          new_frame->visible_data(media::VideoFrame::kUPlane),
+                          new_frame->stride(media::VideoFrame::kUPlane),
+                          new_frame->visible_data(media::VideoFrame::kVPlane),
+                          new_frame->stride(media::VideoFrame::kVPlane),
+                          0 /* crop_x */, 0 /* crop_y */, pixmap.width(),
+                          pixmap.height(), new_frame->visible_rect().width(),
+                          new_frame->visible_rect().height(), libyuv::kRotate0,
+                          source_pixel_format);
   } else {
     DCHECK(frame->IsMappable());
     DCHECK(frame->format() == media::PIXEL_FORMAT_I420A ||
