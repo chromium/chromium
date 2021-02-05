@@ -90,6 +90,11 @@ class HoldingSpaceTrayChildBubble : public views::View,
   // Views owned by view hierarchy.
   std::vector<HoldingSpaceItemViewsSection*> sections_;
 
+  // Whether or not to ignore `ChildVisibilityChanged()` events. This is used
+  // when removing all holding space item views from `sections_` to prevent this
+  // view from inadvertently regaining visibility.
+  bool ignore_child_visibility_changed_ = false;
+
   // Whether or not this view is currently being animated out.
   bool is_animating_out_ = false;
 

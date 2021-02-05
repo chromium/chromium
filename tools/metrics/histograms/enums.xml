@@ -37422,6 +37422,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="3" label="kPin"/>
   <int value="4" label="kShowInFolder"/>
   <int value="5" label="kUnpin"/>
+  <int value="6" label="kRemove"/>
 </enum>
 
 <enum name="HoldingSpaceItemType">

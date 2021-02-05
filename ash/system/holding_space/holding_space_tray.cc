@@ -343,7 +343,7 @@ void HoldingSpaceTray::OnHoldingSpaceItemFinalized(
 
 void HoldingSpaceTray::ExecuteCommand(int command_id, int event_flags) {
   DCHECK(features::IsTemporaryHoldingSpacePreviewsEnabled());
-  switch (command_id) {
+  switch (static_cast<HoldingSpaceCommandId>(command_id)) {
     case HoldingSpaceCommandId::kHidePreviews:
       holding_space_metrics::RecordPodAction(
           holding_space_metrics::PodAction::kHidePreviews);
@@ -380,14 +380,14 @@ void HoldingSpaceTray::ShowContextMenuForViewImpl(
 
   if (previews_enabled) {
     context_menu_model_->AddItemWithIcon(
-        HoldingSpaceCommandId::kHidePreviews,
+        static_cast<int>(HoldingSpaceCommandId::kHidePreviews),
         l10n_util::GetStringUTF16(
             IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_HIDE_PREVIEWS),
         ui::ImageModel::FromVectorIcon(kVisibilityOffIcon, /*color_id=*/-1,
                                        kHoldingSpaceIconSize));
   } else {
     context_menu_model_->AddItemWithIcon(
-        HoldingSpaceCommandId::kShowPreviews,
+        static_cast<int>(HoldingSpaceCommandId::kShowPreviews),
         l10n_util::GetStringUTF16(
             IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_SHOW_PREVIEWS),
         ui::ImageModel::FromVectorIcon(kVisibilityIcon, /*color_id=*/-1,

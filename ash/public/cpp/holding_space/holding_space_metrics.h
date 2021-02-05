@@ -69,7 +69,8 @@ enum class ItemAction {
   kPin = 3,
   kShowInFolder = 4,
   kUnpin = 5,
-  kMaxValue = kUnpin,
+  kRemove = 6,
+  kMaxValue = kRemove,
 };
 
 // Records the specified `action` taken on a set of holding space `items`.

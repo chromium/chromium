@@ -248,6 +248,10 @@ views::View* HoldingSpaceBrowserTestBase::GetPreviewsTrayIcon() {
   return test_api_->GetPreviewsTrayIcon();
 }
 
+bool HoldingSpaceBrowserTestBase::RecentFilesBubbleShown() const {
+  return test_api_->RecentFilesBubbleShown();
+}
+
 void HoldingSpaceBrowserTestBase::RequestAndAwaitLockScreen() {
   if (session_manager::SessionManager::Get()->IsScreenLocked())
     return;

@@ -232,6 +232,9 @@ void HoldingSpaceTrayChildBubble::ChildPreferredSizeChanged(
 }
 
 void HoldingSpaceTrayChildBubble::ChildVisibilityChanged(views::View* child) {
+  if (ignore_child_visibility_changed_)
+    return;
+
   // This child bubble should be visible iff it has visible children.
   bool visible = false;
   for (const views::View* c : children()) {
@@ -351,8 +354,17 @@ void HoldingSpaceTrayChildBubble::OnAnimateOutCompleted(bool aborted) {
   // re-layout of its view hierarchy with this child bubble taking no space.
   SetVisible(false);
 
-  for (HoldingSpaceItemViewsSection* section : sections_)
-    section->RemoveAllHoldingSpaceItemViews();
+  {
+    // Removing all holding space items from a section will cause it to become
+    // invisible. When multiple sections exist, the `ChildVisibilityChanged()`
+    // event which results would normally cause this child bubble to regain
+    // visibility since some sections have not yet been hidden. To prevent this
+    // child bubble from becoming visible, ignore `ChildVisibilityChanged()`.
+    base::AutoReset<bool> scoped_ignore_child_visibility_changed(
+        &ignore_child_visibility_changed_, true);
+    for (HoldingSpaceItemViewsSection* section : sections_)
+      section->RemoveAllHoldingSpaceItemViews();
+  }
 
   HoldingSpaceModel* model = HoldingSpaceController::Get()->model();
   if (!model || model->items().empty())

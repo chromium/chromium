@@ -33,14 +33,14 @@ constexpr int kHoldingSpaceTrayIconSmallPreviewSize = 28;
 constexpr int kHoldingSpaceTrayIconSize = 20;
 
 // Context menu commands.
-enum HoldingSpaceCommandId {
+enum class HoldingSpaceCommandId {
   kCopyImageToClipboard,
   kHidePreviews,
+  kRemoveItem,
   kPinItem,
   kShowInFolder,
   kShowPreviews,
   kUnpinItem,
-  kMaxValue = kUnpinItem
 };
 
 // View IDs.

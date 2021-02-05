@@ -105,6 +105,9 @@ class HoldingSpaceBrowserTestBase : public InProcessBrowserTest {
   views::View* GetDefaultTrayIcon();
   views::View* GetPreviewsTrayIcon();
 
+  // Returns whether the recent files bubble is shown.
+  bool RecentFilesBubbleShown() const;
+
   // Requests lock screen, waiting to return until session state is locked.
   void RequestAndAwaitLockScreen();
 

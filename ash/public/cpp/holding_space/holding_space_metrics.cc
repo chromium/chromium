@@ -31,6 +31,8 @@ std::string ItemActionToString(ItemAction action) {
       return "Launch";
     case ItemAction::kPin:
       return "Pin";
+    case ItemAction::kRemove:
+      return "Remove";
     case ItemAction::kShowInFolder:
       return "ShowInFolder";
     case ItemAction::kUnpin:

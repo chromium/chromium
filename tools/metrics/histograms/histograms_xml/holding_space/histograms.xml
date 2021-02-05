@@ -67,7 +67,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="HoldingSpace.Item.Action"
     enum="HoldingSpaceItemType" expires_after="2021-09-24">
-<!-- Name completed by histogram_suffixes name="HoldingSpaceActionType" -->
+<!-- Name completed by histogram_suffixes name="HoldingSpaceItemAction" -->
 
   <owner>dmblack@google.com</owner>
   <owner>gzadina@google.com</owner>
@@ -149,6 +149,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Drag" label="The user dragged the item."/>
   <suffix name="Launch" label="The user launched the item."/>
   <suffix name="Pin" label="The user pinned the item."/>
+  <suffix name="Remove" label="The user removed the item."/>
   <suffix name="ShowInFolder" label="The user showed the item in its folder."/>
   <suffix name="Unpin" label="The user unpinned the item."/>
   <affected-histogram name="HoldingSpace.Item.Action"/>

@@ -334,11 +334,28 @@ void HoldingSpaceItemViewDelegate::ExecuteCommand(int command_id,
   std::vector<const HoldingSpaceItemView*> selection = GetSelection();
   DCHECK_GE(selection.size(), 1u);
 
-  switch (command_id) {
+  switch (static_cast<HoldingSpaceCommandId>(command_id)) {
     case HoldingSpaceCommandId::kCopyImageToClipboard:
       DCHECK_EQ(selection.size(), 1u);
       HoldingSpaceController::Get()->client()->CopyImageToClipboard(
           *selection.front()->item(), base::DoNothing());
+      break;
+    case HoldingSpaceCommandId::kRemoveItem:
+      HoldingSpaceController::Get()->model()->RemoveIf(base::BindRepeating(
+          [](const std::vector<const HoldingSpaceItemView*>& selection,
+             const HoldingSpaceItem* item) {
+            const bool remove =
+                std::any_of(selection.begin(), selection.end(),
+                            [item](const HoldingSpaceItemView* view) {
+                              return view->item() == item;
+                            });
+            if (remove) {
+              holding_space_metrics::RecordItemAction(
+                  {item}, holding_space_metrics::ItemAction::kRemove);
+            }
+            return remove;
+          },
+          std::cref(selection)));
       break;
     case HoldingSpaceCommandId::kPinItem:
       HoldingSpaceController::Get()->client()->PinItems(GetItems(selection));
@@ -350,6 +367,9 @@ void HoldingSpaceItemViewDelegate::ExecuteCommand(int command_id,
       break;
     case HoldingSpaceCommandId::kUnpinItem:
       HoldingSpaceController::Get()->client()->UnpinItems(GetItems(selection));
+      break;
+    default:
+      NOTREACHED();
       break;
   }
 }
@@ -364,7 +384,7 @@ ui::SimpleMenuModel* HoldingSpaceItemViewDelegate::BuildMenuModel() {
     // The "Show in folder" command should only be present if there is only one
     // holding space item selected.
     context_menu_model_->AddItemWithIcon(
-        HoldingSpaceCommandId::kShowInFolder,
+        static_cast<int>(HoldingSpaceCommandId::kShowInFolder),
         l10n_util::GetStringUTF16(
             IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_SHOW_IN_FOLDER),
         ui::ImageModel::FromVectorIcon(kFolderIcon, /*color_id=*/-1,
@@ -380,7 +400,7 @@ ui::SimpleMenuModel* HoldingSpaceItemViewDelegate::BuildMenuModel() {
       // The "Copy image" command should only be present if there is only one
       // holding space item selected and that item is backed by an image file.
       context_menu_model_->AddItemWithIcon(
-          HoldingSpaceCommandId::kCopyImageToClipboard,
+          static_cast<int>(HoldingSpaceCommandId::kCopyImageToClipboard),
           l10n_util::GetStringUTF16(
               IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_COPY_IMAGE_TO_CLIPBOARD),
           ui::ImageModel::FromVectorIcon(kCopyIcon, /*color_id=*/-1,
@@ -399,7 +419,7 @@ ui::SimpleMenuModel* HoldingSpaceItemViewDelegate::BuildMenuModel() {
     // unpinned. When executing this command, any holding space items that are
     // already pinned will be ignored.
     context_menu_model_->AddItemWithIcon(
-        HoldingSpaceCommandId::kPinItem,
+        static_cast<int>(HoldingSpaceCommandId::kPinItem),
         l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_PIN),
         ui::ImageModel::FromVectorIcon(views::kPinIcon, /*color_id=*/-1,
                                        kHoldingSpaceIconSize));
@@ -407,10 +427,23 @@ ui::SimpleMenuModel* HoldingSpaceItemViewDelegate::BuildMenuModel() {
     // The "Unpin" command should be present only if all selected holding space
     // items are already pinned.
     context_menu_model_->AddItemWithIcon(
-        HoldingSpaceCommandId::kUnpinItem,
+        static_cast<int>(HoldingSpaceCommandId::kUnpinItem),
         l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_UNPIN),
         ui::ImageModel::FromVectorIcon(views::kUnpinIcon, /*color_id=*/-1,
                                        kHoldingSpaceIconSize));
+  }
+
+  const bool is_removable = std::all_of(
+      selection.begin(), selection.end(), [](const HoldingSpaceItemView* view) {
+        return view->item()->type() != HoldingSpaceItem::Type::kPinnedFile;
+      });
+
+  if (is_removable) {
+    context_menu_model_->AddItemWithIcon(
+        static_cast<int>(HoldingSpaceCommandId::kRemoveItem),
+        l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_REMOVE),
+        ui::ImageModel::FromVectorIcon(kRemoveCircleOutlineIcon,
+                                       /*color_id=*/-1, kHoldingSpaceIconSize));
   }
 
   return context_menu_model_.get();

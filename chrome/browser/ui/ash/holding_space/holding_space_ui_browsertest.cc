@@ -33,6 +33,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/controls/menu/menu_controller.h"
+#include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/drag_controller.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -46,6 +47,14 @@ namespace {
 
 // Helpers ---------------------------------------------------------------------
 
+// Returns all holding space item types.
+std::vector<HoldingSpaceItem::Type> GetHoldingSpaceItemTypes() {
+  std::vector<HoldingSpaceItem::Type> types;
+  for (int i = 0; i <= static_cast<int>(HoldingSpaceItem::Type::kMaxValue); ++i)
+    types.push_back(static_cast<HoldingSpaceItem::Type>(i));
+  return types;
+}
+
 // Flushes the message loop by posting a task and waiting for it to run.
 void FlushMessageLoop() {
   base::RunLoop run_loop;
@@ -54,10 +63,11 @@ void FlushMessageLoop() {
   run_loop.Run();
 }
 
-// Performs a click on `view`.
-void Click(const views::View* view) {
+// Performs a click on `view` with optional `flags`.
+void Click(const views::View* view, int flags = ui::EF_NONE) {
   auto* root_window = HoldingSpaceBrowserTestBase::GetRootWindowForNewWindows();
   ui::test::EventGenerator event_generator(root_window);
+  event_generator.set_flags(flags);
   event_generator.MoveMouseTo(view->GetBoundsInScreen().CenterPoint());
   event_generator.ClickLeftButton();
 }
@@ -130,6 +140,37 @@ void RightClick(const views::View* view) {
   ui::test::EventGenerator event_generator(root_window);
   event_generator.MoveMouseTo(view->GetBoundsInScreen().CenterPoint());
   event_generator.ClickRightButton();
+}
+
+// Selects the menu item with the specified command ID. Returns the selected
+// menu item if successful, `nullptr` otherwise.
+views::MenuItemView* SelectMenuItemWithCommandId(
+    HoldingSpaceCommandId command_id) {
+  auto* menu_controller = views::MenuController::GetActiveInstance();
+  if (!menu_controller)
+    return nullptr;
+
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN);
+  auto* const first_selected_menu_item = menu_controller->GetSelectedMenuItem();
+  if (!first_selected_menu_item)
+    return nullptr;
+
+  auto* selected_menu_item = first_selected_menu_item;
+  do {
+    if (selected_menu_item->GetCommand() == static_cast<int>(command_id))
+      return selected_menu_item;
+
+    PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN);
+    selected_menu_item = menu_controller->GetSelectedMenuItem();
+
+    // It is expected that context menus loop selection traversal. If the
+    // currently `selected_menu_item` is the `first_selected_menu_item` then the
+    // context menu has been completely traversed.
+  } while (selected_menu_item != first_selected_menu_item);
+
+  // If this LOC is reached the menu has been completely traversed without
+  // finding a menu item for the desired `command_id`.
+  return nullptr;
 }
 
 // Mocks -----------------------------------------------------------------------
@@ -648,6 +689,148 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, OpenItem) {
     testing::Mock::VerifyAndClearExpectations(&mock);
     activation_client->DeactivateWindow(activation_client->GetActiveWindow());
   }
+}
+
+// Verifies that removing holding space items works as intended.
+IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, RemoveItem) {
+  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  // Populate holding space with items of all types.
+  for (HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes())
+    AddItem(GetProfile(), type, CreateFile());
+
+  Show();
+  ASSERT_TRUE(IsShowing());
+
+  std::vector<views::View*> pinned_file_chips = GetPinnedFileChips();
+  ASSERT_EQ(1u, pinned_file_chips.size());
+
+  // Right clicking a pinned item should cause a context menu to show.
+  ASSERT_FALSE(views::MenuController::GetActiveInstance());
+  RightClick(pinned_file_chips.front());
+  ASSERT_TRUE(views::MenuController::GetActiveInstance());
+
+  // There should be no `kRemoveItem` command for pinned items.
+  ASSERT_FALSE(SelectMenuItemWithCommandId(HoldingSpaceCommandId::kRemoveItem));
+
+  // Close the context menu.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
+  ASSERT_FALSE(views::MenuController::GetActiveInstance());
+
+  std::vector<views::View*> download_chips = GetDownloadChips();
+  ASSERT_GT(download_chips.size(), 1u);
+
+  // Add a download item to the selection and show the context menu.
+  Click(download_chips.front(), ui::EF_SHIFT_DOWN);
+  RightClick(download_chips.front());
+  ASSERT_TRUE(views::MenuController::GetActiveInstance());
+
+  // There should be no `kRemoveItem` command since a pinned item is selected.
+  ASSERT_FALSE(SelectMenuItemWithCommandId(HoldingSpaceCommandId::kRemoveItem));
+
+  // Close the context menu.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
+  ASSERT_FALSE(views::MenuController::GetActiveInstance());
+
+  // Unselect the pinned item and right click show the context menu.
+  Click(pinned_file_chips.front(), ui::EF_SHIFT_DOWN);
+  RightClick(download_chips.front());
+  ASSERT_TRUE(views::MenuController::GetActiveInstance());
+
+  // There should be a `kRemoveItem` command in the context menu.
+  ASSERT_TRUE(SelectMenuItemWithCommandId(HoldingSpaceCommandId::kRemoveItem));
+
+  // Bind an observer to watch for updates to the holding space model.
+  testing::NiceMock<MockHoldingSpaceModelObserver> mock;
+  base::ScopedObservation<HoldingSpaceModel, HoldingSpaceModelObserver>
+      observer{&mock};
+  observer.Observe(HoldingSpaceController::Get()->model());
+
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock, OnHoldingSpaceItemsRemoved)
+        .WillOnce([&](const std::vector<const HoldingSpaceItem*>& items) {
+          ASSERT_EQ(items.size(), 1u);
+          run_loop.Quit();
+        });
+
+    const size_t download_chips_size = download_chips.size();
+
+    // Press `ENTER` to remove the selected download item.
+    PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+    run_loop.Run();
+
+    // Verify a download chip has been removed.
+    download_chips = GetDownloadChips();
+    ASSERT_EQ(download_chips.size(), download_chips_size - 1);
+  }
+
+  std::vector<views::View*> screen_capture_views = GetScreenCaptureViews();
+  ASSERT_GT(screen_capture_views.size(), 1u);
+
+  // Select a screen capture item and show the context menu.
+  Click(screen_capture_views.front());
+  RightClick(screen_capture_views.front());
+  ASSERT_TRUE(views::MenuController::GetActiveInstance());
+
+  // There should be a `kRemoveItem` command in the context menu.
+  ASSERT_TRUE(SelectMenuItemWithCommandId(HoldingSpaceCommandId::kRemoveItem));
+
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock, OnHoldingSpaceItemsRemoved)
+        .WillOnce([&](const std::vector<const HoldingSpaceItem*>& items) {
+          ASSERT_EQ(items.size(), 1u);
+          run_loop.Quit();
+        });
+
+    const size_t screen_capture_views_size = screen_capture_views.size();
+
+    // Press `ENTER` to remove the selected screen capture item.
+    PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+    run_loop.Run();
+
+    // Verify a screen capture view has been removed.
+    screen_capture_views = GetScreenCaptureViews();
+    ASSERT_EQ(screen_capture_views.size(), screen_capture_views_size - 1);
+  }
+
+  // Select all download items.
+  for (views::View* download_chip : download_chips)
+    Click(download_chip, ui::EF_SHIFT_DOWN);
+
+  // Select all screen capture items.
+  for (views::View* screen_capture_view : screen_capture_views)
+    Click(screen_capture_view, ui::EF_SHIFT_DOWN);
+
+  // Show the context menu. There should be a `kRemoveItem` command.
+  RightClick(download_chips.front());
+  ASSERT_TRUE(views::MenuController::GetActiveInstance());
+  ASSERT_TRUE(SelectMenuItemWithCommandId(HoldingSpaceCommandId::kRemoveItem));
+
+  {
+    const size_t recent_files_size =
+        download_chips.size() + screen_capture_views.size();
+
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock, OnHoldingSpaceItemsRemoved)
+        .WillOnce([&](const std::vector<const HoldingSpaceItem*>& items) {
+          ASSERT_EQ(items.size(), recent_files_size);
+          run_loop.Quit();
+        });
+
+    // Press `ENTER` to remove the selected items.
+    PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+    run_loop.Run();
+
+    // Verify all download chips and screen capture views have been removed.
+    ASSERT_EQ(GetDownloadChips().size(), 0u);
+    ASSERT_EQ(GetScreenCaptureViews().size(), 0u);
+  }
+
+  // The recent files bubble should be empty and therefore hidden.
+  ASSERT_FALSE(RecentFilesBubbleShown());
 }
 
 // Verifies that unpinning a pinned holding space item works as intended.

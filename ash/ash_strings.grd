@@ -1041,6 +1041,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_PIN" desc="Title of the pin option in the holding space item context menu.">
         Pin
       </message>
+      <message name="IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_REMOVE" desc="Title of the remove option in the holding space item context menu.">
+        Remove
+      </message>
       <message name="IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_SHOW_IN_FOLDER" desc="Title of the option to show item in its folder in the holding space item context menu.">
         Show in folder
       </message>
