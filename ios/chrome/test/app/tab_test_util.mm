@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/main/scene_controller.h"
 #import "ios/chrome/browser/ui/main/scene_controller_testing.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_coordinator.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
@@ -52,7 +53,7 @@ BOOL IsIncognitoMode() {
 void OpenNewTab() {
   @autoreleasepool {  // Make sure that all internals are deallocated.
     OpenNewTabCommand* command = [OpenNewTabCommand command];
-    if (GetForegroundActiveSceneController().isTabSwitcherActive) {
+    if (GetForegroundActiveSceneController().mainCoordinator.isTabGridActive) {
       // The TabGrid is currently presented.
       Browser* browser =
           GetForegroundActiveScene().interfaceProvider.mainInterface.browser;
@@ -87,7 +88,7 @@ void SimulateAddAccountFromWeb() {
 void OpenNewIncognitoTab() {
   @autoreleasepool {  // Make sure that all internals are deallocated.
     OpenNewTabCommand* command = [OpenNewTabCommand incognitoTabCommand];
-    if (GetForegroundActiveSceneController().isTabSwitcherActive) {
+    if (GetForegroundActiveSceneController().mainCoordinator.isTabGridActive) {
       // The TabGrid is currently presented.
       Browser* browser = GetForegroundActiveScene()
                              .interfaceProvider.incognitoInterface.browser;

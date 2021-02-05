@@ -51,6 +51,10 @@ class Browser;
 @property(nonatomic, weak) id<ThumbStripAttacher> regularThumbStripAttacher;
 @property(nonatomic, weak) id<ThumbStripAttacher> incognitoThumbStripAttacher;
 
+// If this property is YES, it means the tab grid is the main user interface at
+// the moment. Returns NO if thumb strip is active.
+@property(nonatomic, readonly, getter=isTabGridActive) BOOL tabGridActive;
+
 // Stops all child coordinators then calls |completion|. |completion| is called
 // whether or not child coordinators exist.
 - (void)stopChildCoordinatorsWithCompletion:(ProceduralBlock)completion;

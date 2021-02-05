@@ -292,4 +292,21 @@ TEST_F(TabGridCoordinatorTest, TimeSpentInTabGrid) {
   histogram_tester_.ExpectTotalCount("IOS.TabSwitcher.TimeSpent", 1);
 }
 
+// Test that the tab grid coordinator reports the tab grid as the main interface
+// correctly.
+TEST_F(TabGridCoordinatorTest, tabGridActive) {
+  EXPECT_TRUE(coordinator_.tabGridActive);
+
+  [coordinator_ showTabViewController:normal_tab_view_controller_
+                   shouldCloseTabGrid:YES
+                           completion:nil];
+  EXPECT_FALSE(coordinator_.tabGridActive);
+
+  [coordinator_ showTabGrid];
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, ^bool() {
+        return coordinator_.tabGridActive;
+      }));
+}
+
 }  // namespace

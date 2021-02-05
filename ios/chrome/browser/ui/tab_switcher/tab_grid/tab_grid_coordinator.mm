@@ -191,6 +191,14 @@
   return self.baseViewController;
 }
 
+- (BOOL)isTabGridActive {
+  if (self.thumbStripCoordinator == nil) {
+    return self.bvcContainer == nil;
+  }
+  return self.thumbStripCoordinator.panHandler.currentState ==
+         ViewRevealState::Revealed;
+}
+
 - (void)prepareToShowTabGrid {
   // No-op if the BVC isn't being presented.
   if (!self.bvcContainer)
