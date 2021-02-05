@@ -90,9 +90,9 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "chrome/browser/chromeos/policy/system_features_disable_list_policy_handler.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #endif
 

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "apps/launcher.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/ash_switches.h"
 #include "ash/public/mojom/tray_action.mojom.h"
 #include "base/command_line.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/chromeos/note_taking_helper.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_test.h"

@@ -4,10 +4,10 @@
 
 #include "chrome/browser/chromeos/login/test/fake_eula_mixin.h"
 
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "url/gurl.h"
 
 using net::test_server::BasicHttpResponse;

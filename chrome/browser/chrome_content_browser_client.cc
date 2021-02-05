@@ -408,6 +408,7 @@
 #include "sandbox/mac/seatbelt_exec.h"
 #include "sandbox/policy/mac/sandbox_mac.h"
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "chrome/app/chrome_crash_reporter_client.h"
@@ -439,7 +440,6 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chromeos/components/scanning/url_constants.h"
 #include "chromeos/constants/chromeos_constants.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "components/crash/core/app/breakpad_linux.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"

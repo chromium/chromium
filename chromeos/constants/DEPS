@@ -1,6 +1,7 @@
 noparent = True
 
 include_rules = [
+  "+ash/constants",
   "+base",
   "+build/branding_buildflags.h",
   "+chromeos/chromeos_export.h",

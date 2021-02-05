@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -36,7 +37,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_test.h"

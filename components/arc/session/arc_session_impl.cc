@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/default_scale_factor_retriever.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -28,7 +29,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/memory/memory.h"
 #include "chromeos/system/scheduler_configuration_manager_base.h"

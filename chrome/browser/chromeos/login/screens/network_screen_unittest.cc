@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/optional.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/chromeos/login/mock_network_state_helper.h"
 #include "chrome/browser/chromeos/login/screens/mock_network_screen.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"

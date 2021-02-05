@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
@@ -35,7 +36,6 @@
 #include "base/values.h"
 #include "chromeos/constants/chromeos_constants.h"
 #include "chromeos/constants/chromeos_paths.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/system/kiosk_oem_manifest_parser.h"
 #include "chromeos/system/name_value_pairs_parser.h"
 

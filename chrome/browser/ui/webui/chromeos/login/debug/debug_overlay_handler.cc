@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/debug/debug_overlay_handler.h"
 
+#include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -17,7 +18,6 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/common/chrome_paths.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "ui/snapshot/snapshot.h"
 
 namespace chromeos {

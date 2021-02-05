@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/oobe_display_chooser.h"
 
+#include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "base/run_loop.h"
 #include "chrome/browser/chromeos/login/test/oobe_base_test.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "content/public/test/browser_test.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"

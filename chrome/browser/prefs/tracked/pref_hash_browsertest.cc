@@ -43,7 +43,7 @@
 #include "services/preferences/public/cpp/tracked/tracked_preference_histogram_names.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/constants/chromeos_switches.h"
+#include "ash/constants/ash_switches.h"
 #endif
 
 #if defined(OS_WIN)

@@ -5,6 +5,7 @@
 #include <map>
 #include <memory>
 
+#include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/macros.h"
@@ -13,7 +14,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/audio/chromeos_sounds.h"
 #include "chromeos/audio/cras_audio_handler.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "content/public/test/browser_test.h"
 #include "services/audio/public/cpp/sounds/sounds_manager.h"
 #include "ui/base/accelerators/accelerator.h"

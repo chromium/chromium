@@ -2,19 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_CONSTANTS_CHROMEOS_SWITCHES_H_
-#define CHROMEOS_CONSTANTS_CHROMEOS_SWITCHES_H_
+#ifndef ASH_CONSTANTS_ASH_SWITCHES_H_
+#define ASH_CONSTANTS_ASH_SWITCHES_H_
 
 #include "base/component_export.h"
 
 namespace chromeos {
 namespace switches {
 
-// Switches that are used in src/chromeos must go here.
-// Other switches that apply just to chromeos code should go here also (along
-// with any code that is specific to the chromeos system). Chrome OS specific
-// UI should be in src/ash.
-//
 // Prefer adding Features over switches. Features go in ash_features.h.
 //
 // Note: If you add a switch, consider if it needs to be copied to a subsequent
@@ -286,4 +281,4 @@ using namespace ::chromeos::switches;
 }
 }  // namespace ash
 
-#endif  // CHROMEOS_CONSTANTS_CHROMEOS_SWITCHES_H_
+#endif  // ASH_CONSTANTS_ASH_SWITCHES_H_

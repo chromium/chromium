@@ -3,7 +3,7 @@ include_rules = [
   "+chrome/grit",
   "+chrome/install_static",
   "+chrome/services/file_util/public",
-  "+chromeos",  # For chromeos_switches.h
+  "+chromeos/crosapi",
   "+components/autofill/content/common",
   "+components/autofill/core/common",
   "+components/bookmarks/common",
@@ -68,3 +68,9 @@ include_rules = [
   # FIXME - refactor code and remove these dependencies
   "+chrome/installer/util",
 ]
+
+specific_include_rules = {
+  "logging_chrome.cc": [
+    "+ash/constants/ash_switches.h",
+  ]
+}

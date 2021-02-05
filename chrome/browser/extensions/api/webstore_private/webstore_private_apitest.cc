@@ -60,7 +60,7 @@
 #include "extensions/common/extension_builder.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/constants/chromeos_switches.h"
+#include "ash/constants/ash_switches.h"
 #endif
 
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)

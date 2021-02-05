@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/hats/hats_notification_controller.h"
 
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -25,7 +26,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/network/network_state.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"

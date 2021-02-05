@@ -6,6 +6,7 @@
 
 #include <cstdio>
 
+#include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/strings/string_split.h"
@@ -13,7 +14,6 @@
 #include "base/system/sys_info.h"
 #include "build/branding_buildflags.h"
 #include "chrome/common/chrome_switches.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/system/statistics_provider.h"
 #include "content/public/common/content_switches.h"
 #include "third_party/re2/src/re2/re2.h"

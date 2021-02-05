@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/login/screens/arc_terms_of_service_screen.h"
 
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
@@ -42,7 +43,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/interactive_test_utils.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "components/arc/arc_prefs.h"
 #include "components/arc/arc_util.h"

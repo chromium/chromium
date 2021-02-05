@@ -7,13 +7,13 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_switches.h"
 #include "ash/system/bluetooth/tray_bluetooth_helper.h"
 #include "ash/test/ash_test_base.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/dbus/fake_bluetooth_adapter_client.h"

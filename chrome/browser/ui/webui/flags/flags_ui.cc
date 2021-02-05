@@ -39,6 +39,7 @@
 #include "ui/base/resource/resource_bundle.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -49,7 +50,6 @@
 #include "chrome/browser/chromeos/settings/owner_flags_storage.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "components/account_id/account_id.h"
 #include "components/infobars/core/simple_alert_infobar_delegate.h"
 #include "components/pref_registry/pref_registry_syncable.h"

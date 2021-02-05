@@ -4,10 +4,10 @@
 
 #include "chrome/browser/chromeos/policy/install_event_log_collector_base.h"
 
+#include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"

@@ -7,13 +7,13 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display_features.h"
 #include "ui/display/fake/fake_display_snapshot.h"

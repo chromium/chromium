@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/policy/arc_app_install_event_log_manager.h"
 
+#include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -13,7 +14,6 @@
 #include "base/task_runner_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
-#include "chromeos/constants/chromeos_switches.h"
 
 namespace em = enterprise_management;
 

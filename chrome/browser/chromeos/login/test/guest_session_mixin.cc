@@ -4,9 +4,9 @@
 
 #include "chrome/browser/chromeos/login/test/guest_session_mixin.h"
 
+#include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "chrome/common/chrome_switches.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_names.h"
 

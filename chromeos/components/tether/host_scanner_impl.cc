@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "chromeos/components/multidevice/logging/logging.h"
@@ -16,7 +17,6 @@
 #include "chromeos/components/tether/host_scan_cache.h"
 #include "chromeos/components/tether/tether_host_fetcher.h"
 #include "chromeos/components/tether/top_level_host_scan_cache.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/network/network_state.h"
 #include "components/session_manager/core/session_manager.h"
 

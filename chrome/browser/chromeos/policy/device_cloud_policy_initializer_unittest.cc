@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/policy/device_cloud_policy_initializer.h"
 
+#include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -15,7 +16,6 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/attestation/attestation_flow_utils.h"
 #include "chromeos/attestation/mock_attestation_flow.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/dbus/attestation/attestation_client.h"
 #include "chromeos/dbus/attestation/interface.pb.h"
 #include "chromeos/system/fake_statistics_provider.h"

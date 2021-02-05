@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/login/test/wizard_in_process_browser_test.h"
 
+#include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/run_loop.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_switches.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "content/public/browser/notification_service.h"
 
 namespace chromeos {

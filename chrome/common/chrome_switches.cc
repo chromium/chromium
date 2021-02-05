@@ -13,9 +13,9 @@ namespace switches {
 
 // -----------------------------------------------------------------------------
 // Can't find the switch you are looking for? Try looking in:
+// ash/constants/ash_switches.cc
 // ash/public/cpp/ash_switches.cc
 // base/base_switches.cc
-// chromeos/constants/chromeos_switches.cc
 // etc.
 //
 // When commenting your switch, please use the same voice as surrounding

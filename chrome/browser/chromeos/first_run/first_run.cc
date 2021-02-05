@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/first_run/first_run.h"
 
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/command_line.h"
 #include "base/macros.h"
@@ -25,7 +26,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "components/arc/arc_prefs.h"
 #include "components/arc/arc_service_manager.h"

@@ -4,10 +4,10 @@
 
 #include "chromeos/login/login_state/login_state.h"
 
+#include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/system/sys_info.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "components/device_event_log/device_event_log.h"
 
 namespace chromeos {

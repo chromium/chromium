@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_switches.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/chromeos/login/test/oobe_base_test.h"
 #include "chrome/browser/chromeos/login/test/test_condition_waiter.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "content/public/test/browser_test.h"
 
 namespace chromeos {

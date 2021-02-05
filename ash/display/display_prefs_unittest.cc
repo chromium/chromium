@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_switches.h"
 #include "ash/display/display_configuration_observer.h"
 #include "ash/display/display_util.h"
 #include "ash/display/resolution_notification_controller.h"
@@ -29,7 +30,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/user_type.h"

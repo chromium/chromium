@@ -5,6 +5,7 @@
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -13,7 +14,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
-#include "chromeos/constants/chromeos_switches.h"
 
 #include "device/base/features.h"
 

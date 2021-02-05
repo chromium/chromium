@@ -51,6 +51,7 @@
 #include "v8/include/v8-version-string.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_switches.h"
 #include "base/i18n/time_formatting.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
@@ -64,7 +65,6 @@
 #include "chrome/browser/ui/webui/help/help_utils_chromeos.h"
 #include "chrome/browser/ui/webui/help/version_updater_chromeos.h"
 #include "chrome/browser/ui/webui/webui_util.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/update_engine_client.h"
 #include "chromeos/dbus/util/version_loader.h"

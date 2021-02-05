@@ -4,6 +4,7 @@
 
 #include "chromeos/components/telemetry_extension_ui/test/telemetry_extension_ui_browsertest.h"
 
+#include "ash/constants/ash_switches.h"
 #include "base/base_paths.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/chromeos/wilco_dtc_supportd/mojo_utils.h"
 #include "chromeos/components/telemetry_extension_ui/url_constants.h"
 #include "chromeos/components/web_applications/test/sandboxed_web_ui_test_base.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
 #include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
 

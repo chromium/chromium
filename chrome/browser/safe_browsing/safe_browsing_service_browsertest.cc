@@ -103,7 +103,7 @@
 #include "url/url_canon.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/constants/chromeos_switches.h"
+#include "ash/constants/ash_switches.h"
 #endif
 
 #if !BUILDFLAG(SAFE_BROWSING_DB_LOCAL)

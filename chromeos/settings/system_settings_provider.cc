@@ -4,11 +4,11 @@
 
 #include "chromeos/settings/system_settings_provider.h"
 
+#include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/settings/cros_settings_names.h"
 

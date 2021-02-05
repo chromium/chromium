@@ -6,8 +6,8 @@
 
 #include <algorithm>
 
+#include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
-#include "chromeos/constants/chromeos_switches.h"
 
 namespace policy {
 

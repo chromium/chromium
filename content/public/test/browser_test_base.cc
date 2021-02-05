@@ -402,7 +402,7 @@ void BrowserTestBase::SetUp() {
   // //chrome/browser/chromeos/crosapi/test_mojo_connection_manager.h.
   {
     // TODO(crbug.com/1127581): Switch to use |kLacrosMojoSocketForTesting| in
-    // //chromeos/constants/chromeos_switches.h.
+    // //ash/constants/ash_switches.h.
     // Please refer to the CL comments for why it can't be done now:
     // http://crrev.com/c/2402580/2/content/public/test/browser_test_base.cc
     std::string socket_path =

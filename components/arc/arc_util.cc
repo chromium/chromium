@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cstdio>
 
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/app_types.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -15,7 +16,6 @@
 #include "base/optional.h"
 #include "base/process/launch.h"
 #include "base/strings/string_number_conversions.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"

@@ -15,14 +15,14 @@ component("constants") {
   sources = [
     "../../ash/constants/ash_features.cc",
     "../../ash/constants/ash_features.h",
+    "../../ash/constants/ash_switches.cc",
+    "../../ash/constants/ash_switches.h",
     "chromeos_constants.cc",
     "chromeos_constants.h",
     "chromeos_paths.cc",
     "chromeos_paths.h",
     "chromeos_pref_names.cc",
     "chromeos_pref_names.h",
-    "chromeos_switches.cc",
-    "chromeos_switches.h",
     "devicetype.cc",
     "devicetype.h",
   ]

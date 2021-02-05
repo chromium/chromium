@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_switches.h"
 #include "ash/login_status.h"
 #include "ash/public/cpp/ash_switches.h"
 #include "ash/public/cpp/ash_view_ids.h"
@@ -29,7 +30,6 @@
 #include "chrome/browser/chromeos/settings/device_settings_service.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "content/public/browser/notification_service.h"

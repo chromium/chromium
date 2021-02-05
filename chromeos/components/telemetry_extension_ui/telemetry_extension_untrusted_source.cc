@@ -4,6 +4,7 @@
 
 #include "chromeos/components/telemetry_extension_ui/telemetry_extension_untrusted_source.h"
 
+#include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -14,7 +15,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chromeos/components/telemetry_extension_ui/url_constants.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "net/base/mime_util.h"
 #include "ui/base/resource/resource_bundle.h"
 

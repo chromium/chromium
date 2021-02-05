@@ -9,10 +9,10 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "content/public/test/test_web_ui.h"
 #include "device/udev_linux/fake_udev_loader.h"
 #include "testing/gtest/include/gtest/gtest.h"
