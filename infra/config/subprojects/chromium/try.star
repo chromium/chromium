@@ -252,6 +252,7 @@ try_.chromium_builder(
     branch_selector = branches.STANDARD_MILESTONE,
     os = os.WINDOWS_DEFAULT,
     cores = 32,
+    execution_timeout = 6 * time.hour,
 )
 
 try_.chromium_builder(
@@ -259,6 +260,7 @@ try_.chromium_builder(
     branch_selector = branches.STANDARD_MILESTONE,
     os = os.WINDOWS_DEFAULT,
     cores = 32,
+    execution_timeout = 6 * time.hour,
 )
 
 try_.chromium_android_builder(
