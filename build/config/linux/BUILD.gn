@@ -24,9 +24,7 @@ config("compiler") {
 config("runtime_library") {
   # Set here because OS_CHROMEOS cannot be autodetected in build_config.h like
   # OS_LINUX and the like.
-  # TODO(crbug.com/1052397): Consider changing is_chromeos_ash to is_chromeos after
-  # lacros-chrome switches to target_os="chromeos".
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     defines = [ "OS_CHROMEOS" ]
   }
 
