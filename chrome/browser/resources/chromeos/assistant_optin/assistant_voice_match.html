@@ -63,7 +63,7 @@
       <div slot="subtitle">
         [[i18nDynamic(locale, 'assistantVoiceMatchFooter')]]
       </div>
-      <div slot="content" class="container">
+      <div slot="content">
         <div id="voice-match-entries">
           <voice-match-entry id="voice-entry-0">
             <div slot="entry-content">
@@ -113,8 +113,8 @@
         [[i18nDynamic(locale, 'assistantVoiceMatchAlreadySetupMessage')]]
       </div>
       <div slot="content" class="flex layout vertical center center-justified">
-        <img srcset="assistant_ready_1x.svg 1x, assistant_ready_2x.svg 2x"
-            class="oobe-illustration" aria-hidden="true">
+        <img id="ready-img" class="oobe-illustration" aria-hidden="true"
+            srcset="assistant_ready_1x.svg 1x, assistant_ready_2x.svg 2x">
       </div>
     </oobe-adaptive-dialog>
   </template>

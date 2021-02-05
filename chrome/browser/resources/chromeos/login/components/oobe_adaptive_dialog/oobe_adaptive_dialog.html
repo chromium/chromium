@@ -156,7 +156,7 @@
         flex-direction: column;
       }
 
-      .buttons-container {
+      .bottom-buttons-container {
         /* Always allocate height for buttons even a container is empty */
         min-height: var(--cr-button-height);
         padding-bottom: var(--oobe-adaptive-dialog-buttons-vertical-padding);
@@ -165,6 +165,19 @@
         padding-inline-start:
           var(--oobe-adaptive-dialog-buttons-horizontal-padding);
         padding-top: var(--oobe-adaptive-dialog-buttons-vertical-padding);
+        z-index: 1;
+      }
+
+      .back-button-container {
+        /* Always allocate height for buttons even a container is empty */
+        min-height: var(--cr-button-height);
+        padding-bottom:
+          var(--oobe-adaptive-dialog-back-button-vertical-padding);
+        padding-inline-end:
+          var(--oobe-adaptive-dialog-buttons-horizontal-padding);
+        padding-inline-start:
+          var(--oobe-adaptive-dialog-buttons-horizontal-padding);
+        padding-top: var(--oobe-adaptive-dialog-back-button-vertical-padding);
         z-index: 1;
       }
 
@@ -177,7 +190,7 @@
     </style>
     <cr-lazy-render id="lazy">
       <template>
-        <div class="buttons-container">
+        <div class="back-button-container">
           <slot name="back-navigation"></slot>
         </div>
         <div id="main-container" class="layout vertical flex">
@@ -202,7 +215,7 @@
             </div>
           </div>
         </div>
-        <div class="buttons-container vertical-mode-centering">
+        <div class="bottom-buttons-container vertical-mode-centering">
           <slot class="layout horizontal end-justified" name="bottom-buttons">
           </slot>
         </div>
