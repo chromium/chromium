@@ -2807,18 +2807,6 @@
       ]
     },
     {
-      "id": 297,
-      "cr_bugs": [938678],
-      "description": "Needed to pass dEQP-EGL.functional.robustness.reset_context.shaders.infinite_loop.*",
-      "os": {
-        "type" : "chromeos"
-      },
-      "vendor_id": "0x1002",
-      "features": [
-        "exit_on_context_lost"
-      ]
-    },
-    {
       "id": 299,
       "description": "Context lost recovery often fails on PowerVR Rogue GE8* GPUs on Android.",
       "cr_bugs": [942106],
