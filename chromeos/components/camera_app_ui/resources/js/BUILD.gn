@@ -101,6 +101,7 @@ js_library("compile_resources") {
     "sound.js",
     "state.js",
     "test_bridge.js",
+    "thumbnailer.js",
     "timer.js",
     "toast.js",
     "tooltip.js",

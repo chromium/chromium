@@ -57,4 +57,18 @@ export class WaitableEvent {
   wait() {
     return this.promise_;
   }
+
+  /**
+   * @param {number} timeout Timeout in ms.
+   * @return {!Promise<T>} Resolved when the event is signaled, or rejected when
+   *     timed out.
+   */
+  timedWait(timeout) {
+    const timeoutPromise = new Promise((_resolve, reject) => {
+      setTimeout(() => {
+        reject(new Error(`Timed out after ${timeout}ms`));
+      }, timeout);
+    });
+    return Promise.race([this.promise_, timeoutPromise]);
+  }
 }

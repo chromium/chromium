@@ -6,13 +6,10 @@ import * as animate from './animation.js';
 import {browserProxy} from './browser_proxy/browser_proxy.js';
 import {assertInstanceof} from './chrome_util.js';
 import * as dom from './dom.js';
-import {reportError} from './error.js';
 import * as Comlink from './lib/comlink.js';
 import * as state from './state.js';
 import * as tooltip from './tooltip.js';
 import {
-  ErrorLevel,
-  ErrorType,
   Facing,
   UntrustedOrigin,  // eslint-disable-line no-unused-vars
 } from './type.js';
@@ -137,108 +134,6 @@ export function blobToImage(blob) {
  */
 export function getDefaultFacing() {
   return state.get(state.State.TABLET) ? Facing.ENVIRONMENT : Facing.USER;
-}
-
-/**
- * Scales the input picture to target width and height with respect to original
- * aspect ratio.
- * @param {!Blob} blob Blob of photo or video to be scaled.
- * @param {boolean} isVideo Picture is a video.
- * @param {number} width Target width to be scaled to.
- * @param {number=} height Target height to be scaled to. In default, set to
- *     corresponding rounded height with respect to target width and aspect
- *     ratio of input picture.
- * @return {!Promise<!Blob>} Promise for the result.
- */
-export async function scalePicture(blob, isVideo, width, height = undefined) {
-  const element = isVideo ? dom.create('video', HTMLVideoElement) :
-                            dom.create('img', HTMLImageElement);
-  try {
-    let requestFrameTimeout = false;
-    if (isVideo) {
-      await new Promise((resolve, reject) => {
-        element.addEventListener('error', () => {
-          let msg = 'Failed to load video';
-          /**
-           * https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/error
-           * @type {?MediaError}
-           */
-          const err = element.error;
-          if (err !== null) {
-            msg += `: ${err.message}`;
-          }
-          reject(new Error(msg));
-        });
-        /**
-         * For resolving https://goo.gl/LdLk22 asynchronous play-pause problem.
-         * @type {!Promise}
-         */
-        let playing = Promise.resolve();
-        Promise
-            .race([
-              new Promise(
-                  (resolve) =>
-                      element.requestVideoFrameCallback(() => resolve(false))),
-              // The |requestVideoFrameCallback| may not be triggerred when
-              // playing malformatted video. Set 300ms timeout here to prevent
-              // UI be blocked forever.
-              new Promise((resolve) => setTimeout(() => resolve(true), 300)),
-            ])
-            .then((isTimeout) => {
-              requestFrameTimeout = isTimeout;
-              return playing;
-            })
-            .then(() => {
-              element.pause();
-              resolve();
-            });
-        element.preload = 'auto';
-        element.src = URL.createObjectURL(blob);
-        playing = assertInstanceof(element.play(), Promise);
-      });
-    } else {
-      await new Promise((resolve, reject) => {
-        element.addEventListener(
-            'error', () => reject(new Error('Failed to load image')));
-        element.addEventListener('load', resolve);
-        element.src = URL.createObjectURL(blob);
-      });
-    }
-    if (height === undefined) {
-      const ratio = isVideo ? element.videoHeight / element.videoWidth :
-                              element.height / element.width;
-      height = Math.round(width * ratio);
-    }
-    const {canvas, ctx} = newDrawingCanvas({width, height});
-    ctx.drawImage(element, 0, 0, width, height);
-
-    /**
-     * @type {!Uint8ClampedArray} A one-dimensional pixels array in RGBA order.
-     */
-    const data = ctx.getImageData(0, 0, width, height).data;
-    if (data.every((byte) => byte === 0)) {
-      let msg =
-          `The ${isVideo ? 'video' : 'photo'} thumbnail content is broken.`;
-      if (requestFrameTimeout) {
-        msg += ' ; while requestVideoFrameCallback is timeout.';
-      }
-      reportError(
-          ErrorType.BROKEN_THUMBNAIL,
-          ErrorLevel.ERROR,
-          new Error(msg),
-      );
-      // Do not throw an error here. A black thumbnail is still better than no
-      // thumbnail to let user open the corresponding picutre in gallery.
-    }
-
-    return new Promise((resolve) => {
-      // TODO(b/174190121): Patch important exif entries from input blob to
-      // result blob.
-      canvas.toBlob(resolve, 'image/jpeg');
-    });
-  } finally {
-    URL.revokeObjectURL(element.src);
-  }
 }
 
 /**
