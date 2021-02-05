@@ -84,7 +84,7 @@ source_set("api") {
     "//extensions/browser/api/system_storage",
     "//extensions/browser/api/test",
     "//extensions/browser/api/usb",
-    "//extensions/browser/api/virtual_keyboard_private",
+    "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate",
     "//extensions/browser/api/web_request",
   ]
 

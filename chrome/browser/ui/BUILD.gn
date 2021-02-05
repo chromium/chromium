@@ -2743,6 +2743,7 @@ static_library("ui") {
       "//components/session_manager/core",
       "//components/user_manager",
       "//extensions/browser/api/messaging",
+      "//extensions/browser/api/virtual_keyboard_private",
       "//extensions/browser/api/vpn_provider",
       "//google_apis/drive",
       "//media/capture:capture_lib",
