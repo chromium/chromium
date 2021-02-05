@@ -40,7 +40,6 @@
 <translation id="1041263367839475438">అందుబాటులో ఉన్న పరికరాలు</translation>
 <translation id="1042174272890264476">మీ కంప్యూటర్‌‍లో కూడా <ph name="SHORT_PRODUCT_NAME" /> యొక్క అంతర్గత RLZ లైబ్రరీ ఉంటుంది. RLZ శోధనలను మరియు నిర్దిష్ట ప్రమోషనల్ ప్రచారం ద్వారా ఉపయోగించబడిన <ph name="SHORT_PRODUCT_NAME" /> వినియోగాన్ని లెక్కించడానికి, ప్రత్యేకం కానటువంటి, వ్యక్తిగతంగా గుర్తించలేని ట్యాగ్‌ను సమర్పిస్తుంది. ఈ లేబుల్‌లు కొన్నిసార్లు <ph name="PRODUCT_NAME" />లోని Google శోధన ప్రశ్నలలో కనిపిస్తాయి.</translation>
 <translation id="1043818413152647937">అలాగే, ఈ యాప్‌ల నుండి డేటాను క్లియర్ చేయాలా?</translation>
-<translation id="1046635659603195359">మీరు ఇప్పటికే మరో పరికరంలో మీ Google అసిస్టెంట్‌ని ఉపయోగించి Voice Matchని సెటప్ చేసినట్టున్నారు. ఈ పరికరంలో వాయిస్ నమూనాని రూపొందించడం కోసం ఈ మునుపటి రికార్డింగ్‌లు ఉపయోగించబడతాయి. ఇందుకు నిమిషం కంటే తక్కువ సమయం పడుతుంది.</translation>
 <translation id="104710386808485638">Linuxను రీస్టార్ట్ చేయాలా?</translation>
 <translation id="1047431265488717055">లింక్ వచ&amp;నం కాపీ చేయి</translation>
 <translation id="1048286738600630630">ప్రదర్శనలు</translation>
@@ -88,7 +87,6 @@
 <translation id="109647177154844434">Parallels desktopను అన్‌ఇన్‌స్టాల్ చేస్తే మీ Windows యొక్క ఇమేజ్ తొలగించబడుతుంది. ఇందులో దాని యాప్‌లు, సెట్టింగ్‌లు, డేటా ఉంటాయి. మీరు ఖచ్చితంగా కొనసాగించాలనుకుంటున్నారా?</translation>
 <translation id="1097658378307015415">సైన్ ఇన్ చేయడానికి ముందుగా, దయచేసి <ph name="NETWORK_ID" /> నెట్‌వర్క్‌ను యాక్టివేట్ చేయడానికి అతిథి లాగా ప్రవేశించండి</translation>
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" /> నుండి కాపీ చేసిన ఇమేజ్</translation>
-<translation id="1102187190604780492">మీ స్క్రీన్‌పై ఉన్న అంశాల గురించిన సమాచారాన్ని ముందుగా చూపడానికి మీ Assistantను అనుమతించండి</translation>
 <translation id="1103523840287552314">ఎల్లప్పుడూ <ph name="LANGUAGE" />ను అనువదించు</translation>
 <translation id="1108600514891325577">&amp;ఆపు</translation>
 <translation id="1110155001042129815">వేచి ఉండండి</translation>
@@ -1179,7 +1177,6 @@
 <translation id="2307462900900812319">నెట్‌వర్క్‌ను కాన్ఫిగర్ చేయి</translation>
 <translation id="230927227160767054">సేవా హ్యాండ్ల‌ర్‌ను ఇన్‌స్టాల్ చేయాలని ఈ పేజీ కోరుతోంది.</translation>
 <translation id="2309620859903500144">మీ మోషన్ లేదా లైట్ సెన్సార్‌లను యాక్సెస్ చేయనీయకుండా ఈ సైట్ బ్లాక్ చేయబడింది.</translation>
-<translation id="2311497964614110326">Assistant సహాయంతో మెరుగైన, అలాగే త్వరిత సమాధానాలను పొందండి</translation>
 <translation id="2312219318583366810">పేజీ URL</translation>
 <translation id="2314165183524574721">ప్రస్తుత విజిబిలిటీ సెట్టింగ్, 'దాచబడింది'గా సెట్ చేయబడింది</translation>
 <translation id="2314774579020744484">పేజీలను అనువదిస్తున్నప్పుడు ఉపయోగించే భాష</translation>
@@ -1294,7 +1291,6 @@
 <translation id="2440604414813129000">&amp;సోర్స్‌ను చూడండి</translation>
 <translation id="244231003699905658">చిరునామా చెల్లదు. దయచేసి చిరునామాను తనిఖీ చేసి, ఆపై మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="2442916515643169563">వచన నీడ</translation>
-<translation id="2444469058037141906">మీకు కావాల్సింది చెప్పండి లేదా టైప్ చేయండి</translation>
 <translation id="2445081178310039857">ఎక్స్‌టెన్ష‌న్‌ మూలం డైరెక్టరీ అవసరం.</translation>
 <translation id="2445484935443597917">కొత్త ప్రొఫైల్‌ను సృష్టించు</translation>
 <translation id="2448312741937722512">రకం</translation>
@@ -2164,7 +2160,6 @@
 <translation id="343578350365773421">కాగితం లేదు</translation>
 <translation id="3435896845095436175">ప్రారంభించండి</translation>
 <translation id="3438633801274389918">నింజా</translation>
-<translation id="3438643033528947620">Google సర్వీస్‌లతో కనెక్ట్ చేయడం సాధ్యం కాలేదు. ఎర్రర్ కోడ్: <ph name="ERROR_CODE" />.</translation>
 <translation id="3439153939049640737">మీ మైక్రోఫోన్‌ను యాక్సెస్ చేయడానికి <ph name="HOST" />ని ఎల్లప్పుడూ అనుమతించండి</translation>
 <translation id="3439970425423980614">PDFను ప్రివ్యూలో తెరుస్తోంది</translation>
 <translation id="3440663250074896476"><ph name="BOOKMARK_NAME" /> కోసం మరిన్ని చర్యలు</translation>
@@ -2363,7 +2358,6 @@
 <translation id="3651488188562686558">Wi-Fi నుండి డిస్‌కనెక్ట్ చేయి</translation>
 <translation id="3652817283076144888">ప్రారంభిస్తోంది</translation>
 <translation id="3653160965917900914">నెట్‌వర్క్ ఫైల్ షేర్‌లు</translation>
-<translation id="3653842108912548333">మీ అసిస్టెంట్‌ని Voice Match సాయంతో యాక్సెస్ చేసుకోండి</translation>
 <translation id="3653999333232393305">మీ మైక్రోఫోన్‌ను యాక్సెస్ చేయడానికి <ph name="HOST" />కి అనుమతిని కొనసాగించండి</translation>
 <translation id="3654045516529121250">మీ యాక్సెస్‌ సెట్టింగ్‌లను చదవండి</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{ఇది ఒక ఫైల్‌కు శాశ్వత యాక్సెస్‌ను కలిగి ఉంది.}other{ఇది # ఫైల్‌లకు శాశ్వత యాక్సెస్‌ను కలిగి ఉంది.}}</translation>
@@ -3442,7 +3436,6 @@
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - ఇంటర్లేస్ చేయబడింది</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, కనెక్ట్ చేయండి</translation>
 <translation id="49027928311173603">సర్వర్ నుండి డౌన్‌లోడ్ చేసిన విధానం చెల్లదు: <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4904061654709986277">ప్రొఫైల్‌ను జోడించు</translation>
 <translation id="4906490889887219338">నెట్‌వర్క్ ఫైల్ షేర్‌లను సెటప్ చేయండి లేదా నిర్వహించండి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, ఫోన్ బ్యాటరీ <ph name="BATTERY_STATUS" />%, వివరాలు</translation>
 <translation id="4907161631261076876">ఈ ఫైల్ సాధారణ పద్ధతిలో డౌన్‌లోడ్ కాలేదు, ఇది అపాయకరమైనది కావచ్చు.</translation>
@@ -3583,7 +3576,6 @@
 <translation id="5086874064903147617">డిఫాల్ట్ హోమ్ పేజీని పునరుద్ధరించాలా?</translation>
 <translation id="5087249366037322692">మూడవ పక్షం ద్వారా జోడించబడింది</translation>
 <translation id="5087580092889165836">కార్డ్‌ను జోడించు</translation>
-<translation id="5087926280563932024">మీ ఖాతాను ధృవీకరించడం సాధ్యం కాలేదు. దయచేసి మళ్లీ ప్రయత్నించండి. లేదా మీ Chromebookను పునఃప్రారంభించండి.</translation>
 <translation id="5088534251099454936">RSA ఎన్‌క్రిప్షన్‌తో PKCS #1 SHA-512</translation>
 <translation id="5090637338841444533">మీ కెమెరా పొజిషన్‌ను ట్రాక్ చేయడానికి అనుమతించబడలేదు</translation>
 <translation id="5094721898978802975">సహకరిస్తున్న స్థానిక అనువర్తనాలతో కమ్యూనికేట్ చేయండి</translation>
@@ -3778,7 +3770,6 @@
 <translation id="5315738755890845852">అదనపు వంకర కలుపు: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">సేవ్ చేయి</translation>
 <translation id="5319359161174645648">Chromeను Google సిఫార్సు చేస్తోంది</translation>
-<translation id="5320112320661303273">మీరు ఇప్పటికే మరో పరికరంలో Assistantను సెటప్ చేసినట్టుగా అనిపిస్తోంది. కింది సెట్టింగ్‌ను ఆన్ చేయడం ద్వారా మీ Assistant నుండి ఇంకా మరిన్ని పొందండి.</translation>
 <translation id="5320135788267874712">కొత్త పరికరం పేరు</translation>
 <translation id="532247166573571973">సర్వర్ అందుబాటులో లేకపోవచ్చు. తర్వాత మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="5324300749339591280">యాప్‌ల లిస్ట్</translation>
@@ -5303,9 +5294,6 @@
 <translation id="7088434364990739311">అప్‌డేట్‌ తనిఖీ ప్రారంభం విఫలమైంది (ఎర్ర‌ర్‌ కోడ్ <ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">జిప్ ఆర్కైవర్ - ఫైల్‌ల‌ యాప్‌‌లో జిప్ ఫైల్‌లను తెరవండి మరియు ప్యాక్ చేయండి.</translation>
 <translation id="7088674813905715446">నిర్వాహకులు, ఈ పరికరాన్ని కేటాయించబడని స్థితిలో ఉంచారు. దీనిని నమోదు కోసం ప్రారంభించడానికి, ఈ పరికరాన్ని పెండింగ్ స్థితిలో ఉంచమని దయచేసి మీ నిర్వాహకులను కోరండి.</translation>
-<translation id="7092474863625458670">Voice Match మీ వాయిస్ ఉపయోగించడం ద్వారా నేరుగా మీ అసిస్టెంట్‌ని యాక్సెస్ చేయడానికి మిమ్మల్ని అనుమతిస్తుంది.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />గుర్తుంచుకోండి:<ph name="END_BOLD" /> ఇదేలా ఉండే వాయిస్ లేదా రికార్డింగ్‌తో కూడా మీ అసిస్టెంట్‌ను యాక్సెస్ చేయడం వీలుపడవచ్చు. మీరు Voice Match అనుమతిని తర్వాత అసిస్టెంట్ సెట్టింగ్‌లలో ఆఫ్ చేయడం ద్వారా కూడా తీసివేయవచ్చు.</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">ఈ పేర్లు గల పరికరాలతో డేటాను ఇచ్చిపుచ్చుకోవడానికి అనుమతి: <ph name="HOSTNAMES" /></translation>
 <translation id="7098389117866926363">USB-C పరికరం (వెనుక భాగంలో ఎడమ పోర్ట్)</translation>
@@ -5494,7 +5482,6 @@
 <translation id="7325209047678309347">పేపర్ జామ్ అయింది</translation>
 <translation id="7326004502692201767">ఈ <ph name="DEVICE_TYPE" />ను చిన్నారి కోసం సెటప్ చేయండి</translation>
 <translation id="7327989755579928735"><ph name="MANAGER" />, ADB డీబగ్గింగ్‌ను డిజేబుల్ చేసింది. ఒకసారి మీరు మీ <ph name="DEVICE_TYPE" />ను రీస్టార్ట్ చేశాక, మీరు యాప్‌లను సైడ్‌లోడ్ చేయలేరు.</translation>
-<translation id="7328699668338161242">ఇప్పటికే మీ వాయిస్‌ని మీ అసిస్టెంట్ గుర్తించగలదు</translation>
 <translation id="7328867076235380839">చెల్లని కాంబినేషన్</translation>
 <translation id="7329154610228416156">అసురక్షిత URL (<ph name="BLOCKED_URL" />)ను ఉపయోగించేలా కాన్ఫిగర్ చేయబడినందున సైన్-ఇన్ విఫలమైంది. దయచేసి మీ నిర్వాహకుడిని సంప్రదించండి.</translation>
 <translation id="7332053360324989309">డెడికేటెడ్ వర్కర్: <ph name="SCRIPT_URL" /></translation>
@@ -5643,7 +5630,6 @@
 <translation id="7493386493263658176"><ph name="EXTENSION_NAME" /> ఎక్స్‌టెన్ష‌న్‌, మీరు టైప్ చేసే పాస్‌వర్డ్‌లు, క్రెడిట్ కార్డ్‌ నంబర్‌ల వంటి వ్యక్తిగత డేటాతో సహా మొత్తం వచనాన్ని సేకరించవచ్చు. మీరు ఈ ఎక్స్‌టెన్ష‌న్‌ను ఉపయోగించాలనుకుంటున్నారా?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="7495778526395737099">మీ పాత పాస్‌వర్డ్‌ను మర్చిపోయారా?</translation>
-<translation id="7496732379142025470">బ్యాటరీని సేవ్ చేయడానికి, మీ పరికరాన్ని పవర్ సోర్స్‌కు కనెక్ట్ చేసినప్పుడు మాత్రమే “Ok Google” ఆన్ అయ్యేలా సెట్ చేయబడింది. మార్పులు చేయడానికి, సెట్టింగ్‌లకు వెళ్లండి.</translation>
 <translation id="7497981768003291373">మీ వద్ద ఇటీవల క్యాప్చర్ చేయబడిన WebRTC వచన లాగ్‌లు ఏవీ లేవు.</translation>
 <translation id="7498614236023455416">ఈ ట్యాబ్ కంటెంట్‌లను క్యాప్చర్ చేయడానికి <ph name="TARGET_NAME" /> అనుమతి అడుగుతుంది.</translation>
 <translation id="7503191893372251637">Netscape సర్టిఫికెట్ రకం</translation>

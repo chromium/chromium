@@ -683,7 +683,6 @@ Se você desativar a política, essa rolagem será desativada.</translation>
       Observação: a omissão de um campo significa que todos os valores correspondem. Por exemplo, a não especificação da conectividade faz com que a visualização da impressão inicie a detecção de todos os tipos de impressoras, <ph name="PRINTER_TYPE_LOCAL" /> e <ph name="PRINTER_TYPE_CLOUD" />. Os padrões de expressão regular precisam seguir a sintaxe RegExp do JavaScript. As correspondências diferenciam maiúsculas de minúsculas.</translation>
 <translation id="2005506794355327448">Ação a ser tomada quando a tampa for fechada.</translation>
 <translation id="2006530844219044261">Gerenciamento de energia</translation>
-<translation id="2011151221807385794">Usuários de Sessões de visitante gerenciadas podem armazenar configurações de tela para o dispositivo.</translation>
 <translation id="2013285471046373727">Especifica como um app é instalado. OPTIONAL: o app não será instalado automaticamente, mas o usuário poderá instalá-lo. Caso a política não seja especificada, esse será o valor padrão. PRELOAD: o app será instalado automaticamente, mas o usuário poderá desinstalá-lo. FORCE_INSTALLED: o app será instalado automaticamente, e o usuário não poderá desinstalá-lo. BLOCKED: o app fica bloqueado e não pode ser instalado. Se o app tiver sido instalado por uma política anterior, ele será desinstalado.</translation>
 <translation id="2014757022750736514">Controla o comportamento da tela de login, onde o usuário se conecta à própria conta. As configurações incluem quem pode fazer login, que tipo de conta é permitido, que métodos de autenticação precisam ser usados, além de configurações gerais de acessibilidade, método de entrada e localidade.</translation>
 <translation id="201557587962247231">Frequência de uploads de relatórios de status do dispositivo</translation>
@@ -905,7 +904,6 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 <translation id="2303795211377219696">Ativar o preenchimento automático para cartões de crédito</translation>
 <translation id="2307496301287881990">Informar status de tela e gráficos</translation>
 <translation id="2309390639296060546">Configuração padrão de geolocalização</translation>
-<translation id="2318651066908490266">Usuários de Sessões de visitante gerenciadas não podem armazenar configurações de tela para o dispositivo.</translation>
 <translation id="2327252517317514801">Definir os domínios autorizados a acessar o G Suite</translation>
 <translation id="2331354174913096226">O modelo de URI do resolvedor de DNS sobre HTTPS desejado. Para especificar vários resolvedores de DNS sobre HTTPS, separe os modelos de URI correspondentes com espaços.
 
@@ -5491,10 +5489,10 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
       não se aplicam.
 
       O objetivo é permitir que organizações coloquem origens na lista de permissões para aplicativos
-      legados que não implantam TLS, ou que elas configurem um servidor temporário para o
+      legados que não implantam TLS, ou que elas configurem um servidor de preparo para o
       desenvolvimento interno da Web, de modo que os desenvolvedores delas possam testar recursos
       que exigem contextos seguros sem precisar implantar TLS no servidor
-      temporário. Esta política também impedirá que a origem seja rotulada
+      de preparo. Esta política também impedirá que a origem seja rotulada
       como "Não segura" na omnibox.
 
       Definir uma lista de URLs nesta política tem o mesmo efeito que definir a
@@ -5508,8 +5506,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
       política.
 
       Para ver mais informações sobre contextos seguros, acesse
-      https://www.w3.org/TR/secure-contexts/
-      </translation>
+      https://www.w3.org/TR/secure-contexts/</translation>
 <translation id="8942616385591203339">Esta política controla se o consentimento de sincronização pode ser exibido para o usuário durante o primeiro login. É necessário defini-la como falsa se o consentimento de sincronização nunca for necessário para o usuário.
       Se definida como falsa, o consentimento de sincronização não será exibido.
       Se definida como verdadeira ou não definida, o consentimento de sincronização poderá ser exibido.</translation>

@@ -163,7 +163,6 @@ Sakatu bilatu nahi duzun hitza. Bilaketa mugatzeko, eduki testua sakatuta eta ha
 <translation id="2126426811489709554">Arakatzailea: Chrome</translation>
 <translation id="2131665479022868825"><ph name="DATA" /> aurreztu dira</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> itxi da</translation>
-<translation id="2139186145475833000">Gehitu hasierako pantailan</translation>
 <translation id="214888715418183969">Aukeratu zer partekatu nahi duzun Chrome-rekin. Chrome-ren eginbideak, funtzionamendua eta egonkortasuna hobetzen laguntzeko erabiliko dira partekatzen dituzun neurketak.</translation>
 <translation id="2154484045852737596">Editatu txartela</translation>
 <translation id="2154710561487035718">Kopiatu URLa</translation>
@@ -209,7 +208,6 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="2459390580524506445">Ahozko bilaketa doitua</translation>
 <translation id="246532703174860178">Partekatu</translation>
 <translation id="247737702124049222">Aktibatu dira irudien azalpenak</translation>
-<translation id="2478076885740497414">Instalatu aplikazioa</translation>
 <translation id="2482878487686419369">Jakinarazpenak</translation>
 <translation id="2494974097748878569">Chrome-rako Google-ren Laguntzailea</translation>
 <translation id="2496180316473517155">Arakatze-historia</translation>
@@ -393,7 +391,6 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="3773856050682458546">Oinarrizko datuak, eta bisitatzen dituzun webguneei eta erabiltzen dituzun aplikazioei buruzko informazioa</translation>
 <translation id="3775705724665058594">Bidali zure gailuetara</translation>
 <translation id="3778956594442850293">Gehitu da hasierako pantailan</translation>
-<translation id="3789841737615482174">Instalatu</translation>
 <translation id="3810838688059735925">Bideoa</translation>
 <translation id="3810973564298564668">Kudeatu</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> deskarga ezabatu dira</translation>
@@ -866,7 +863,6 @@ Ezkutuko moduko saioaren datuak <ph name="BEGIN_BOLD2" />ezkutuko moduko fitxa g
 <translation id="6979737339423435258">Guztiak</translation>
 <translation id="6981982820502123353">Erabilerraztasuna</translation>
 <translation id="6989267951144302301">Ezin izan da deskargatu</translation>
-<translation id="6990079615885386641">Eskuratu aplikazioa Google Play Store dendan: <ph name="APP_ACTION" /></translation>
 <translation id="6995899638241819463">Abisatu pasahitzak arriskuan badaude datuen isilpekotasuna urratu delako</translation>
 <translation id="7015203776128479407">Oraindik ez da amaitu hasierako sinkronizazioaren konfigurazioa. Sinkronizazioa desaktibatuta dago.</translation>
 <translation id="7022756207310403729">Ireki arakatzailean</translation>

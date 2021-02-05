@@ -40,7 +40,6 @@
 <translation id="1041263367839475438">可用的裝置</translation>
 <translation id="1042174272890264476">您的電腦也內置了 <ph name="SHORT_PRODUCT_NAME" /> 的 RLZ 資料庫。RLZ 可指定非重複、非個人的可識別標記，以評估特定宣傳廣告活動所提升的搜尋數量與 <ph name="SHORT_PRODUCT_NAME" /> 使用量。這些標籤有時也會顯示在 <ph name="PRODUCT_NAME" /> 的 Google 搜尋查詢中。</translation>
 <translation id="1043818413152647937">要清除這些裝置的資料嗎？</translation>
-<translation id="1046635659603195359">您似乎已在另一部裝置上透過「Google 助理」設定了 Voice Match 功能。先前的錄音可在此裝置上用於建立語音模型，過程需時少於一分鐘。</translation>
 <translation id="104710386808485638">要重新啟動 Linux 嗎？</translation>
 <translation id="1047431265488717055">複製連結文字(&amp;X)</translation>
 <translation id="1048286738600630630">顯示</translation>
@@ -88,7 +87,6 @@
 <translation id="109647177154844434">解除安裝 Parallels Desktop 將會刪除您的 Windows 映像檔，包括其應用程式、設定和資料。您確定要繼續嗎？</translation>
 <translation id="1097658378307015415">請在登入前以訪客身分進入，啟用網絡 <ph name="NETWORK_ID" /></translation>
 <translation id="1099962274138857708">從「<ph name="DEVICE_NAME" />」複製的圖片</translation>
-<translation id="1102187190604780492">允許「Google 助理」主動根據畫面上的內容顯示相關資料</translation>
 <translation id="1103523840287552314">永遠翻譯<ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">停止(&amp;S)</translation>
 <translation id="1110155001042129815">等一下</translation>
@@ -1182,7 +1180,6 @@
 <translation id="2307462900900812319">設定網絡</translation>
 <translation id="230927227160767054">這個網頁想要安裝服務處理常式。</translation>
 <translation id="2309620859903500144">系統已封鎖此網站存取您的動作或光線感應器。</translation>
-<translation id="2311497964614110326">Google 助理可更快為您準確解答問題</translation>
 <translation id="2312219318583366810">網頁網址</translation>
 <translation id="2314165183524574721">目前嘅分享設定係隱藏</translation>
 <translation id="2314774579020744484">翻譯網頁所使用的語言</translation>
@@ -1297,7 +1294,6 @@
 <translation id="2440604414813129000">檢視原始碼(&amp;O)</translation>
 <translation id="244231003699905658">地址無效。請檢查地址，然後再試一次。</translation>
 <translation id="2442916515643169563">文字陰影</translation>
-<translation id="2444469058037141906">只需說出或輸入所需資料</translation>
 <translation id="2445081178310039857">請指定擴充功能根目錄。</translation>
 <translation id="2445484935443597917">建立新的設定檔</translation>
 <translation id="2448312741937722512">類型</translation>
@@ -2171,7 +2167,6 @@
 <translation id="343578350365773421">紙張用完</translation>
 <translation id="3435896845095436175">啟用</translation>
 <translation id="3438633801274389918">忍者</translation>
-<translation id="3438643033528947620">無法連線至 Google 服務。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="3439153939049640737">永遠允許 <ph name="HOST" /> 存取您的麥克風</translation>
 <translation id="3439970425423980614">正在預覽中開啟 PDF</translation>
 <translation id="3440663250074896476">顯示可以對 <ph name="BOOKMARK_NAME" /> 執行嘅更多操作</translation>
@@ -2370,7 +2365,6 @@
 <translation id="3651488188562686558">中斷 Wi-Fi 連線</translation>
 <translation id="3652817283076144888">正在初始化</translation>
 <translation id="3653160965917900914">網絡檔案共用</translation>
-<translation id="3653842108912548333">透過 Voice Match 存取「Google 助理」</translation>
 <translation id="3653999333232393305">繼續允許 <ph name="HOST" /> 存取您的麥克風</translation>
 <translation id="3654045516529121250">讀取您的協助工具設定</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{應用程式可永久存取 1 個檔案。}other{應用程式可永久存取 # 個檔案。}}</translation>
@@ -3454,7 +3448,6 @@
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - 交錯顯示</translation>
 <translation id="4902546322522096650">第 <ph name="NETWORK_INDEX" /> 個網絡，一共有 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="NETWORK_NAME" />，<ph name="SECURITY_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />%，連接</translation>
 <translation id="49027928311173603">從伺服器下載的政策無效：<ph name="VALIDATION_ERROR" />。</translation>
-<translation id="4904061654709986277">新增設定檔</translation>
 <translation id="4906490889887219338">設定或管理網絡檔案共用功能。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301">第 <ph name="NETWORK_INDEX" /> 個網絡，一共有 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="PHONE_NAME" />，<ph name="PROVIDER_NAME" />，<ph name="CONNECTION_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />%，手機電量係 <ph name="BATTERY_STATUS" />%，詳情</translation>
 <translation id="4907161631261076876">此檔案不常下載，代表此檔案可能不安全。</translation>
@@ -3595,7 +3588,6 @@
 <translation id="5086874064903147617">要將首頁還原至預設值嗎？</translation>
 <translation id="5087249366037322692">由第三方新增</translation>
 <translation id="5087580092889165836">加入新卡</translation>
-<translation id="5087926280563932024">無法驗證您的帳戶，請再試一次，或重新啟動 Chromebook。</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 (使用 RSA 加密)</translation>
 <translation id="5090637338841444533">不允許追蹤攝錄機位置</translation>
 <translation id="5094721898978802975">與合作內置應用程式通訊</translation>
@@ -3791,7 +3783,6 @@
 <translation id="5315738755890845852">多餘的大括弧：<ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5319359161174645648">Google 建議使用 Chrome</translation>
-<translation id="5320112320661303273">您似乎已在其他裝置上設定「Google 助理」。請開啟以下設定，充分運用「Google 助理」的各項功能。</translation>
 <translation id="5320135788267874712">新的裝置名稱</translation>
 <translation id="532247166573571973">可能無法連接伺服器，請稍後再試。</translation>
 <translation id="5324300749339591280">應用程式清單</translation>
@@ -5324,9 +5315,6 @@
 <translation id="7088434364990739311">無法啟動更新檢查 (錯誤代碼 <ph name="ERROR" />)。</translation>
 <translation id="7088561041432335295">Zip Archiver - 在「檔案」應用程式開啟及封裝 ZIP 檔案。</translation>
 <translation id="7088674813905715446">管理員已將這部裝置設為取消佈建狀態。如要讓裝置符合註冊資格，請要求您的管理員將裝置設為等待處理狀態。</translation>
-<translation id="7092474863625458670">Voice Match 可讓您直接透過語音存取 「Google 助理」。
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />注意事項：<ph name="END_BOLD" />如果有人與您的聲音相似或有您的錄音，便可使用您的「Google 助理」。日後如需移除 Voice Match 的權限，只需在「Google 助理」設定中關閉此功能即可。</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">與名稱為「<ph name="HOSTNAMES" />」的裝置交換數據</translation>
 <translation id="7098389117866926363">USB-C 裝置 (後方左側連接埠)</translation>
@@ -5516,7 +5504,6 @@
 <translation id="7325209047678309347">打印機卡紙</translation>
 <translation id="7326004502692201767">為子女設定此 <ph name="DEVICE_TYPE" /></translation>
 <translation id="7327989755579928735"><ph name="MANAGER" /> 已停用 ADB 偵錯。重新啟動 <ph name="DEVICE_TYPE" /> 後，您將無法載入應用程式。</translation>
-<translation id="7328699668338161242">「Google 助理」已能識別您的聲音</translation>
 <translation id="7328867076235380839">無效的組合</translation>
 <translation id="7329154610228416156">由於設定使用的網址 (<ph name="BLOCKED_URL" />) 不安全，導致登入失敗。請與您的管理員聯絡。</translation>
 <translation id="7332053360324989309">專用工作程式：<ph name="SCRIPT_URL" /></translation>
@@ -5666,7 +5653,6 @@
 <translation id="7493386493263658176"><ph name="EXTENSION_NAME" /> 擴充程式可能會收集所有您輸入的文字，包括密碼和信用卡號碼等個人資料。您要使用這個擴充程式嗎？</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="7495778526395737099">忘記舊密碼了嗎？</translation>
-<translation id="7496732379142025470">為節省電量，系統只會在裝置連接到電源時才會啟動「Ok Google」。如要變更此設定，請前往「設定」。</translation>
 <translation id="7497981768003291373">您最近並未擷取 WebRTC 文字記錄。</translation>
 <translation id="7498614236023455416"><ph name="TARGET_NAME" /> 正在要求擷取此分頁內容的權限。</translation>
 <translation id="7503191893372251637">Netscape 憑證類型</translation>

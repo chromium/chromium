@@ -33,7 +33,6 @@
 <translation id="3259149966178251584">Резолуција камере</translation>
 <translation id="3517926952904427380">Снимање усправне слике није успело</translation>
 <translation id="3569311554794739032">Желите ли стварно да уклоните датотеку <ph name="FILE" />?</translation>
-<translation id="3750315947605636967">Друга апликација користи камеру</translation>
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3838931309141338733">Скенирај бар-код</translation>
 <translation id="3892148308691398805">Копирај текст</translation>
@@ -76,6 +75,7 @@
 <translation id="7337660886763914220">Грешке система датотека.</translation>
 <translation id="7450541714075000668">Текст је копиран</translation>
 <translation id="7557677699350329807">Пређи на следећу камеру</translation>
+<translation id="7607002721634913082">Паузирано</translation>
 <translation id="7608223098072244877">4 са 4</translation>
 <translation id="7649070708921625228">Помоћ</translation>
 <translation id="7658239707568436148">Откажи</translation>

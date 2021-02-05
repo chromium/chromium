@@ -40,7 +40,6 @@
 <translation id="1041263367839475438">Dispositivos disponibles</translation>
 <translation id="1042174272890264476">Tu computadora también tiene la biblioteca RLZ de <ph name="SHORT_PRODUCT_NAME" /> incorporada. RLZ asigna una etiqueta identificable, no exclusiva y no personal para medir las búsquedas y el uso de <ph name="SHORT_PRODUCT_NAME" /> impulsados por una determinada campaña de promoción. Estas etiquetas aparecen a veces en las consultas de la Búsqueda de Google en <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1043818413152647937">¿También quieres borrar los datos de estas apps?</translation>
-<translation id="1046635659603195359">Al parecer, ya configuraste Voice Match con tu Asistente de Google en otro dispositivo. Las grabaciones anteriores pueden usarse para crear un modelo de voz en este dispositivo. El proceso debería tomar menos de un minuto.</translation>
 <translation id="104710386808485638">¿Quieres reiniciar Linux?</translation>
 <translation id="1047431265488717055">Copiar texto del vínculo</translation>
 <translation id="1048286738600630630">Pantallas</translation>
@@ -88,7 +87,6 @@
 <translation id="109647177154844434">Si desinstalas Parallels Desktop, se borrará la imagen de Windows. Esto incluye sus aplicaciones, opciones de configuración y datos. ¿Confirmas que deseas continuar?</translation>
 <translation id="1097658378307015415">Antes de acceder, ingresa como Invitado para activar la red <ph name="NETWORK_ID" />.</translation>
 <translation id="1099962274138857708">Imagen copiada de <ph name="DEVICE_NAME" /></translation>
-<translation id="1102187190604780492">Permitir que el Asistente muestre de forma proactiva información relacionada con lo que aparece en tu pantalla</translation>
 <translation id="1103523840287552314">Siempre traducir <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Interrumpir</translation>
 <translation id="1110155001042129815">Esperar</translation>
@@ -1176,7 +1174,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2307462900900812319">Configurar red</translation>
 <translation id="230927227160767054">Esta página quiere instalar un controlador de servicios.</translation>
 <translation id="2309620859903500144">Este sitio no tiene permiso para acceder a los sensores de movimiento y luz.</translation>
-<translation id="2311497964614110326">Obtén respuestas más rápidas y personalizadas con Asistente</translation>
 <translation id="2312219318583366810">URL de la página</translation>
 <translation id="2314165183524574721">Se estableció la configuración de visibilidad actual en Oculta</translation>
 <translation id="2314774579020744484">El idioma que se usa cuando se traducen páginas</translation>
@@ -1291,7 +1288,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2440604414813129000">Ver códig&amp;o fuente</translation>
 <translation id="244231003699905658">La dirección no es válida. Verifica la dirección y vuelve a intentarlo.</translation>
 <translation id="2442916515643169563">Sombra del texto</translation>
-<translation id="2444469058037141906">Solo di o escribe lo que necesitas</translation>
 <translation id="2445081178310039857">Se requiere un directorio de raíz de la extensión.</translation>
 <translation id="2445484935443597917">Crear un perfil nuevo</translation>
 <translation id="2448312741937722512">Tipo</translation>
@@ -2161,7 +2157,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="343578350365773421">Se agotó el papel</translation>
 <translation id="3435896845095436175">Habilitar</translation>
 <translation id="3438633801274389918">Ninja</translation>
-<translation id="3438643033528947620">No se pudo establecer una conexión con los servicios de Google. Código de error: <ph name="ERROR_CODE" />.</translation>
 <translation id="3439153939049640737">Permitir siempre que <ph name="HOST" /> acceda al micrófono</translation>
 <translation id="3439970425423980614">Abriendo PDF en vista previa</translation>
 <translation id="3440663250074896476">Más acciones para <ph name="BOOKMARK_NAME" /></translation>
@@ -2360,7 +2355,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3651488188562686558">Se desconecta de Wi-Fi.</translation>
 <translation id="3652817283076144888">Inicializando</translation>
 <translation id="3653160965917900914">Sistema de archivos compartidos en red</translation>
-<translation id="3653842108912548333">Acceder a tu Asistente con "Voice Match"</translation>
 <translation id="3653999333232393305">Seguir permitiendo que <ph name="HOST" /> acceda al micrófono</translation>
 <translation id="3654045516529121250">Leer la configuración de accesibilidad</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Tiene acceso permanente a un archivo.}other{Tiene acceso permanente a # archivos.}}</translation>
@@ -3439,7 +3433,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz (entrelazado)</translation>
 <translation id="4902546322522096650">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />%, conectar</translation>
 <translation id="49027928311173603">La política descargada del servidor no es válida: <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4904061654709986277">Agregar perfil</translation>
 <translation id="4906490889887219338">Configura o administra archivos compartidos de red. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />%, nivel de la batería del teléfono: <ph name="BATTERY_STATUS" />%, detalles</translation>
 <translation id="4907161631261076876">Este archivo no se descarga con frecuencia y podría ser peligroso.</translation>
@@ -3580,7 +3573,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5086874064903147617">¿Deseas restaurar la página de inicio predeterminada?</translation>
 <translation id="5087249366037322692">Agregada por un tercero</translation>
 <translation id="5087580092889165836">Agregar tarjeta</translation>
-<translation id="5087926280563932024">No se pudo verificar la cuenta. Vuelve a intentarlo o reinicia la Chromebook.</translation>
 <translation id="5088534251099454936">PKCS N. º 1, SHA-512 con encriptación RSA</translation>
 <translation id="5090637338841444533">No puede realizar un seguimiento de la posición de la cámara</translation>
 <translation id="5094721898978802975">Comunicarse con aplicaciones nativas en cooperación</translation>
@@ -3775,7 +3767,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5315738755890845852">Llave adicional: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5319359161174645648">Google recomienda Chrome</translation>
-<translation id="5320112320661303273">Al parecer, ya configuraste Asistente en otro dispositivo. Activa la siguiente configuración para sacarle más provecho a tu Asistente.</translation>
 <translation id="5320135788267874712">Nombre del nuevo dispositivo</translation>
 <translation id="532247166573571973">Es posible que no se pueda acceder al servidor. Vuelve a intentarlo más tarde.</translation>
 <translation id="5324300749339591280">Lista de apps</translation>
@@ -5300,9 +5291,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7088434364990739311">Error al iniciar la verificación de actualizaciones (código de error <ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">Zip Archiver: Abre y crea archivos ZIP en la app de Archivos.</translation>
 <translation id="7088674813905715446">El administrador estableció el estado de desaprovisionamiento para este dispositivo. Para poder utilizarlo en el registro, el administrador debe actualizar el estado del dispositivo a pendiente.</translation>
-<translation id="7092474863625458670">Voice Match te permite acceder al Asistente directamente con tu voz.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Ten en cuenta lo siguiente:<ph name="END_BOLD" /> Una grabación o voz similar también podría acceder a tu Asistente. Para quitar el permiso de Voice Match, desactívalo en la configuración del Asistente.</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">Intercambiar datos con los siguientes dispositivos: <ph name="HOSTNAMES" /></translation>
 <translation id="7098389117866926363">Dispositivo USB-C (puerto izquierdo en la parte posterior)</translation>
@@ -5491,7 +5479,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7325209047678309347">El papel está atorado</translation>
 <translation id="7326004502692201767">Configura este dispositivo <ph name="DEVICE_TYPE" /> para un niño</translation>
 <translation id="7327989755579928735"><ph name="MANAGER" /> inhabilitó la depuración de ADB. Cuando reinicies tu <ph name="DEVICE_TYPE" />, no podrás transferir apps.</translation>
-<translation id="7328699668338161242">El Asistente ya puede reconocer tu voz</translation>
 <translation id="7328867076235380839">La combinación no es válida</translation>
 <translation id="7329154610228416156">Se produjo un error de acceso porque está configurado para usar una URL no segura (<ph name="BLOCKED_URL" />). Comunícate con el administrador.</translation>
 <translation id="7332053360324989309">Trabajador dedicado: <ph name="SCRIPT_URL" /></translation>
@@ -5640,7 +5627,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7493386493263658176">Es posible que la extensión <ph name="EXTENSION_NAME" /> recopile todo el texto que escribas, lo que incluye datos personales como contraseñas y número de tarjetas de crédito. ¿Deseas usar esta extensión?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> × <ph name="HEIGHT" /></translation>
 <translation id="7495778526395737099">¿Olvidaste la contraseña anterior?</translation>
-<translation id="7496732379142025470">Para ahorrar batería, "Ok Google" solo se activa cuando tu dispositivo está conectado a una fuente de energía. Para hacer cambios, ve a la configuración.</translation>
 <translation id="7497981768003291373">No capturaste ningún registro de texto de WebRTC recientemente.</translation>
 <translation id="7498614236023455416"><ph name="TARGET_NAME" /> pide permiso para capturar el contenido de esta pestaña.</translation>
 <translation id="7503191893372251637">Tipo de certificado Netscape</translation>

@@ -40,7 +40,6 @@
 <translation id="1041263367839475438">الأجهزة المتوفِّرة</translation>
 <translation id="1042174272890264476">‏يأتي جهاز الكمبيوتر أيضًا مزودًا بمكتبة RLZ مضمنة للمنتج <ph name="SHORT_PRODUCT_NAME" />. تعيّن RLZ علامة غير فريدة وغير متعلقة بتحديد الشخصية من أجل قياس عمليات البحث ومعدل استخدام <ph name="SHORT_PRODUCT_NAME" /> الذي تؤثر فيه حملة ترويجية محددة. تظهر هذه التصنيفات أحيانًا في طلبات بحث Google في <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1043818413152647937">هل تريد محو البيانات من هذه التطبيقات أيضًا؟</translation>
-<translation id="1046635659603195359">‏يبدو أنه سبق لك إعداد ميزة Voice Match في "مساعد Google "على جهاز آخر. ويمكن استخدام هذه التسجيلات السابقة لإنشاء نموذج صوتي على هذا الجهاز. ويستغرق ذلك أقل من دقيقة.</translation>
 <translation id="104710386808485638">‏هل تريد إعادة تشغيل نظام التشغيل Linux؟</translation>
 <translation id="1047431265488717055">نسخ ن&amp;ص الرابط</translation>
 <translation id="1048286738600630630">إعدادات العرض</translation>
@@ -88,7 +87,6 @@
 <translation id="109647177154844434">‏سيؤدي إلغاء تثبيت نظام Parallels Desktop إلى حذف صورة نظام التشغيل Windows، ويشمل هذا تطبيقاته وإعداداته وبياناته. هل أنت متأكّد من أنّك تريد المتابعة؟</translation>
 <translation id="1097658378307015415">قبل تسجيل الدخول، يُرجى الدخول كضيف لتفعيل الشبكة <ph name="NETWORK_ID" /></translation>
 <translation id="1099962274138857708">تم نسخ الصورة من <ph name="DEVICE_NAME" />.</translation>
-<translation id="1102187190604780492">‏السماح لـ "مساعد Google" بإظهار معلومات متعلّقة بالمحتوى المعروض على شاشتك</translation>
 <translation id="1103523840287552314">ترجمة اللغة <ph name="LANGUAGE" /> دائمًا</translation>
 <translation id="1108600514891325577">إي&amp;قاف</translation>
 <translation id="1110155001042129815">انتظار</translation>
@@ -1183,7 +1181,6 @@
 <translation id="2307462900900812319">إعداد الشبكة</translation>
 <translation id="230927227160767054">تريد هذه الصفحة تثبيت معالج الخدمة.</translation>
 <translation id="2309620859903500144">تم حظر هذا الموقع من الوصول إلى أجهزة استشعار الإضاءة أو الحركة.</translation>
-<translation id="2311497964614110326">‏احصل على إجابات أفضل وأسرع باستخدام "مساعد Google".</translation>
 <translation id="2312219318583366810">‏عنوان URL للصفحة</translation>
 <translation id="2314165183524574721">الإعداد الحالي لمستوى ظهور الجهاز هو "مخفي".</translation>
 <translation id="2314774579020744484">اللغة المستخدمة عند ترجمة الصفحات</translation>
@@ -1298,7 +1295,6 @@
 <translation id="2440604414813129000">عرض الم&amp;صدر</translation>
 <translation id="244231003699905658">العنوان غير صالح يُرجى التحقّق من العنوان وإعادة المحاولة.</translation>
 <translation id="2442916515643169563">ظل النص</translation>
-<translation id="2444469058037141906">ما عليك سوى قول أو كتابة ما تريد</translation>
 <translation id="2445081178310039857">دليل الجذر للإضافة مطلوب.</translation>
 <translation id="2445484935443597917">إنشاء ملف شخصي جديد</translation>
 <translation id="2448312741937722512">النوع</translation>
@@ -2170,7 +2166,6 @@
 <translation id="343578350365773421">نفد الورق</translation>
 <translation id="3435896845095436175">تفعيل الإضافات</translation>
 <translation id="3438633801274389918">النينجا</translation>
-<translation id="3438643033528947620">‏تعذَّر الاتصال بخدمات Google. رمز الخطأ: <ph name="ERROR_CODE" /></translation>
 <translation id="3439153939049640737">السماح دائمًا لـ <ph name="HOST" /> بالدخول إلى الميكروفون</translation>
 <translation id="3439970425423980614">‏جارٍ فتح ملف PDF في تطبيق المعاينة</translation>
 <translation id="3440663250074896476">مزيد من الإجراءات للإشارة المرجعية <ph name="BOOKMARK_NAME" /></translation>
@@ -2369,7 +2364,6 @@
 <translation id="3651488188562686558">‏قطع الاتصال بشبكة Wi-Fi</translation>
 <translation id="3652817283076144888">تجري التهيئة</translation>
 <translation id="3653160965917900914">مشاركات ملفات الشبكة</translation>
-<translation id="3653842108912548333">‏الوصول إلى "مساعد Google" باستخدام ميزة Voice Match</translation>
 <translation id="3653999333232393305">مواصلة السماح لـ <ph name="HOST" /> بالدخول إلى الميكروفون</translation>
 <translation id="3654045516529121250">الاطّلاع على إعدادات إمكانية الوصول</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{لديه حق الوصول الدائم إلى ملف واحد.}zero{لديه حق الوصول الدائم إلى # من الملفات.}two{لديه حق الوصول الدائم إلى ملفين (#).}few{ لديه حق الوصول الدائم إلى # ملفات.}many{لديه حق الوصول الدائم إلى # ملفًا.}other{لديه حق الوصول الدائم إلى # من الملفات.}}</translation>
@@ -3445,7 +3439,6 @@
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> هرتز - متداخل</translation>
 <translation id="4902546322522096650">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الشبكة <ph name="NETWORK_NAME" />، حالة الأمان <ph name="SECURITY_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، الاتصال</translation>
 <translation id="49027928311173603">السياسة التي تم تنزيلها من الخادم غير صالحة: <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4904061654709986277">إضافة ملف شخصي</translation>
 <translation id="4906490889887219338">إعداد خوادم مشاركة الملفات على الشبكة أو إدارتها <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، <ph name="PHONE_NAME" />، <ph name="PROVIDER_NAME" />، <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، بطارية الهاتف <ph name="BATTERY_STATUS" />%، التفاصيل</translation>
 <translation id="4907161631261076876">لا يتم تنزيل هذا الملف بشكل شائع وقد يكون ضارًا.</translation>
@@ -3586,7 +3579,6 @@
 <translation id="5086874064903147617">هل تريد استعادة الصفحة الرئيسية التلقائية؟</translation>
 <translation id="5087249366037322692">تمت الإضافة من قبل جهة خارجية</translation>
 <translation id="5087580092889165836">إضافة بطاقة</translation>
-<translation id="5087926280563932024">‏تعذّر التحقق من حسابك. يُرجى المحاولة مرة أخرى أو إعادة تشغيل Chromebook.</translation>
 <translation id="5088534251099454936">‏PKCS #1 SHA-512 مع ترميز RSA</translation>
 <translation id="5090637338841444533">المواقع الإلكترونية التي لا يُسمح لها بتتبّع موضع الكاميرا</translation>
 <translation id="5094721898978802975">الاتصال بتطبيقات التعاون الأصلية</translation>
@@ -3781,7 +3773,6 @@
 <translation id="5315738755890845852">قوس متعرج إضافي: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">حفظ</translation>
 <translation id="5319359161174645648">‏توصي Google باستخدام Chrome</translation>
-<translation id="5320112320661303273">‏يبدو أنه سبق لك إعداد "مساعد Google" على جهاز آخر. أنجِز مزيدًا من المهام باستخدام "مساعد Google" من خلال تفعيل الإعدادات التالية.</translation>
 <translation id="5320135788267874712">الاسم الجديد للجهاز</translation>
 <translation id="532247166573571973">قد يتعذر الوصول إلى الخادم. حاول مرة أخرى.</translation>
 <translation id="5324300749339591280">قائمة التطبيقات</translation>
@@ -5306,9 +5297,6 @@
 <translation id="7088434364990739311">تعذّر بدء التحقق من التحديثات (رمز الخطأ <ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">‏Zip Archiver - فتح ملفات ZIP وتجميعها في تطبيق "الملفات".</translation>
 <translation id="7088674813905715446">ألغى المشرف إدارة الحسابات لهذا الجهاز. لتمكينه من التسجيل، يُرجى أن تطلب من المشرف وضع الجهاز في حالة في انتظار المراجعة.</translation>
-<translation id="7092474863625458670">‏تتيح لك ميزة Voice Match الوصول إلى "مساعد Google" مباشرةً باستخدام صوتك.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />يُرجى الوضع في الاعتبار ما يلي:<ph name="END_BOLD" /> يمكن الوصول إلى "مساعد Google" أيضًا باستخدام صوت يشبه صوتك أو تسجيل له أيضًا. يمكنك إزالة إذن Voice Match لاحقًا عن طريق إيقافه في إعدادات "مساعد Google".</translation>
 <translation id="7093434536568905704">‏مظهر +GTK</translation>
 <translation id="7093866338626856921">تبادل البيانات مع الأجهزة المسماه: <ph name="HOSTNAMES" /></translation>
 <translation id="7098389117866926363">‏جهاز USB-C (المنفذ الأيسر في الخلف)</translation>
@@ -5497,7 +5485,6 @@
 <translation id="7325209047678309347">الورقة عالقة</translation>
 <translation id="7326004502692201767">إعداد جهاز <ph name="DEVICE_TYPE" /> هذا لطفل</translation>
 <translation id="7327989755579928735">‏أوقَف <ph name="MANAGER" /> إعداد "تصحيح الأخطاء عبر ADB". بعد إعادة تشغيل الجهاز <ph name="DEVICE_TYPE" />، لن تتمكّن من تثبيت تطبيقات من مصادر غير معروفة.</translation>
-<translation id="7328699668338161242">‏يستطيع "مساعد Google" التعرُّف على صوتك بالفعل</translation>
 <translation id="7328867076235380839">مجموعة غير صالحة</translation>
 <translation id="7329154610228416156">‏فشل تسجيل الدخول نظرًا لأنه قد تم ضبطه على استخدام عنوان URL غير آمن <ph name="BLOCKED_URL" />. يُرجى الاتصال بالمسؤول.</translation>
 <translation id="7332053360324989309">عامل مُخصّص: <ph name="SCRIPT_URL" /></translation>
@@ -5646,7 +5633,6 @@
 <translation id="7493386493263658176">يمكن أن تجمع إضافة <ph name="EXTENSION_NAME" /> كل النصوص التي تكتبها، بما في ذلك المعلومات الشخصية مثل كلمات المرور وأرقام بطاقات الائتمان. هل تريد استخدام هذه الإضافة؟</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> × <ph name="HEIGHT" /></translation>
 <translation id="7495778526395737099">هل نسيت كلمة المرور القديمة؟</translation>
-<translation id="7496732379142025470">‏لتوفير طاقة البطارية، يتم تفعيل “Ok Google” فقط عند اتِّصال جهازك بمصدر طاقة. لإجراء التغييرات، يُرجى الانتقال إلى "الإعدادات".</translation>
 <translation id="7497981768003291373">‏ليست لديك أي سجلَّات نصية WebRTC تم التقاطها مؤخرًا.</translation>
 <translation id="7498614236023455416">يطلُب <ph name="TARGET_NAME" /> الإذن لرقمنة محتوى علامة التبويب هذه.</translation>
 <translation id="7503191893372251637">‏نوع شهادات Netscape</translation>

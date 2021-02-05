@@ -163,7 +163,6 @@ Dodirnite bilo koju reč za pretragu. Da biste precizirali pretragu, dodirnite i
 <translation id="2126426811489709554">Omogućava Chrome</translation>
 <translation id="2131665479022868825">Sačuvano: <ph name="DATA" /></translation>
 <translation id="213279576345780926">Zatvorili ste karticu <ph name="TAB_TITLE" /></translation>
-<translation id="2139186145475833000">Dodaj na početni ekran</translation>
 <translation id="214888715418183969">Izaberite šta želite da delite sa Chrome-om. Pokazatelje koje delite koristimo za poboljšanje funkcija, performansi i stabilnosti Chrome-a.</translation>
 <translation id="2154484045852737596">Izmenite karticu</translation>
 <translation id="2154710561487035718">Kopiranje URL adrese</translation>
@@ -209,7 +208,6 @@ Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu,
 <translation id="2459390580524506445">Poboljšana glasovna pretraga</translation>
 <translation id="246532703174860178">Deli</translation>
 <translation id="247737702124049222">Opisi slika su uključeni</translation>
-<translation id="2478076885740497414">Instaliraj aplikaciju</translation>
 <translation id="2482878487686419369">Obaveštenja</translation>
 <translation id="2494974097748878569">Google pomoćnik u Chrome-u</translation>
 <translation id="2496180316473517155">Istorija pregledanja</translation>
@@ -393,7 +391,6 @@ Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu,
 <translation id="3773856050682458546">Osnovni podaci plus informacije o veb-sajtovima koje posećujete i aplikacijama koje koristite</translation>
 <translation id="3775705724665058594">Pošaljite na svoje uređaje</translation>
 <translation id="3778956594442850293">Dodato je na početni ekran</translation>
-<translation id="3789841737615482174">Instaliraj</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Promeni</translation>
 <translation id="3819178904835489326">Izbrisana preuzimanja: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
@@ -866,7 +863,6 @@ Podaci iz sesije bez arhiviranja se brišu iz Chrome-a samo kada <ph name="BEGIN
 <translation id="6979737339423435258">Oduvek</translation>
 <translation id="6981982820502123353">Pristupačnost</translation>
 <translation id="6989267951144302301">Preuzimanje nije uspelo</translation>
-<translation id="6990079615885386641">Preuzmite aplikaciju iz Google Play prodavnice: <ph name="APP_ACTION" /></translation>
 <translation id="6995899638241819463">Upozori me ako su lozinke otkrivene pri upadu u podatke</translation>
 <translation id="7015203776128479407">Početno podešavanje sinhronizacije nije završeno. Sinhronizacija je isključena.</translation>
 <translation id="7022756207310403729">Otvori u pregledaču</translation>

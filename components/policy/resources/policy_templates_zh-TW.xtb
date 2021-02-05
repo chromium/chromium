@@ -685,7 +685,6 @@
       注意：略過欄位即表示對相關值不設限。舉例來說，如果不指定連線能力，系統在執行預覽列印時會尋找所有類型的印表機，包括 <ph name="PRINTER_TYPE_LOCAL" /> 和 <ph name="PRINTER_TYPE_CLOUD" /> 印表機。規則運算式模式須符合 JavaScript RegExp 語法，且比對機制須區分大小寫。</translation>
 <translation id="2005506794355327448">機蓋蓋上時採取的動作</translation>
 <translation id="2006530844219044261">電源管理</translation>
-<translation id="2011151221807385794">受管理訪客工作階段的使用者可以儲存裝置通用的顯示設定。</translation>
 <translation id="2013285471046373727">指定應用程式的安裝方式。OPTIONAL：應用程式不會自動安裝，但使用者可自行安裝。如未指定這項政策，系統會預設採用這個值。PRELOAD：應用程式會自動安裝，但使用者可以解除安裝。FORCE_INSTALLED：應用程式會自動安裝，且使用者無法解除安裝。BLOCKED：應用程式遭到封鎖且無法安裝。如果應用程式是依據先前的政策而安裝，則會解除安裝。</translation>
 <translation id="2014757022750736514">控管登入畫面的行為，使用者會從該畫面登入帳戶。可調整的設定包含可登入的人員、系統允許的帳戶類型、應使用何種驗證方法，以及一般無障礙、輸入法和語言代碼設定。</translation>
 <translation id="201557587962247231">裝置狀態報告上傳頻率</translation>
@@ -893,7 +892,6 @@
 <translation id="2303795211377219696">啟用信用卡的自動填入功能</translation>
 <translation id="2307496301287881990">回報顯示狀態和圖形狀態</translation>
 <translation id="2309390639296060546">預設地理位置設定</translation>
-<translation id="2318651066908490266">受管理訪客工作階段的使用者無法儲存裝置通用的顯示設定。</translation>
 <translation id="2327252517317514801">定義可存取 G Suite 的網域</translation>
 <translation id="2331354174913096226">所需 DNS-over-HTTPS 解析器的 URI 範本。如要指定多個 DNS-over-HTTPS 解析器，請以半形空格分隔相應的 URI 範本。
 

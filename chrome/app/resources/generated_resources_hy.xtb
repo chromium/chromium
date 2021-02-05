@@ -40,7 +40,6 @@
 <translation id="1041263367839475438">Հասանելի սարքեր</translation>
 <translation id="1042174272890264476">Ձեր համակարգչում նաև առկա է <ph name="SHORT_PRODUCT_NAME" />-ի ներկառուցված RLZ գրադարանը: RLZ-ը նշանակում է ոչ եզակի, անձը չնույնացնող ներդիր` որոնումների և <ph name="SHORT_PRODUCT_NAME" />-ի օգտագործման չափումների համար՝ նախագծված հատուկ գովազդային արշավի կողմից: Այս պիտակները երբեմն ցուցադրվում են Google որոնման հարցումների մեջ <ph name="PRODUCT_NAME" />-ում:</translation>
 <translation id="1043818413152647937">Նաև մաքրե՞լ այս հավելվածների տվյալները</translation>
-<translation id="1046635659603195359">Դուք արդեն կարգավորել եք Voice Match-ը այլ սարքում: Նախորդ ձայնագրությունները կարող են օգտագործվել ձեր ձայնի նմուշն այս սարքում ստեղծելու համար: Կարգավորումը կխլի մոտ մեկ րոպե:</translation>
 <translation id="104710386808485638">Վերագործարկե՞լ Լինուքսը</translation>
 <translation id="1047431265488717055">Պատճենել հղման տեքստը</translation>
 <translation id="1048286738600630630">Էկրաններ</translation>
@@ -88,7 +87,6 @@
 <translation id="109647177154844434">Parallels Desktop-ը ապատեղադրելու դեպքում ձեր Windows-ի պատկերը, այդ թվում՝ դրա հավելվածները, կարգավորումները և տվյալները կջնջվեն։ Շարունակե՞լ։</translation>
 <translation id="1097658378307015415">Մինչ մուտք գործելը` <ph name="NETWORK_ID" /> ցանցն ակտիվացնելու համար մտեք որպես Հյուր</translation>
 <translation id="1099962274138857708">Պատկերը պատճենվեց «<ph name="DEVICE_NAME" />» սարքից</translation>
-<translation id="1102187190604780492">Թույլ տվեք ձեր Օգնականին առանց հարցման ցուցադրել էկրանի բովանդակությանն առնչվող տեղեկություններ</translation>
 <translation id="1103523840287552314">Միշտ թարգմանել <ph name="LANGUAGE" />-ից</translation>
 <translation id="1108600514891325577">&amp;Դադարեցնել</translation>
 <translation id="1110155001042129815">Սպասել</translation>
@@ -1184,7 +1182,6 @@
 <translation id="2307462900900812319">Կազմաձևել ցանցը</translation>
 <translation id="230927227160767054">Այս էջը ծառայության մշակիչ է ուզում տեղադրել:</translation>
 <translation id="2309620859903500144">Այս կայքին արգելված է օգտագործել շարժման և լույսի ձեր տվիչները:</translation>
-<translation id="2311497964614110326">Ստացեք ավելի ճշգրիտ և արագ պատասխաններ Օգնականից</translation>
 <translation id="2312219318583366810">Էջի URL</translation>
 <translation id="2314165183524574721">Տեսանելիության ընթացիկ կարգավորումը՝ «Թաքցված»</translation>
 <translation id="2314774579020744484">Լեզուն, որն օգտագործվում է էջերը թարգմանելու համար</translation>
@@ -1300,7 +1297,6 @@
 <translation id="2440604414813129000">Դիտել ա&amp;ղբյուրը</translation>
 <translation id="244231003699905658">Հասցեն անվավեր է։ Ստուգեք հասցեն և նորից փորձեք։</translation>
 <translation id="2442916515643169563">Տեքստի ստվերը</translation>
-<translation id="2444469058037141906">Պարզապես ասեք կամ մուտքագրեք այն, ինչ ձեզ պետք է</translation>
 <translation id="2445081178310039857">Հարկավոր է ընդլայնման արմատային գրացուցակը:</translation>
 <translation id="2445484935443597917">Ստեղծել նոր պրոֆիլ</translation>
 <translation id="2448312741937722512">Տեսակ</translation>
@@ -2174,7 +2170,6 @@
 <translation id="343578350365773421">Թուղթ չկա</translation>
 <translation id="3435896845095436175">Միացնել</translation>
 <translation id="3438633801274389918">Նինջա</translation>
-<translation id="3438643033528947620">Չհաջողվեց միանալ Google-ի ծառայություններին։ Սխալի կոդը՝ <ph name="ERROR_CODE" />։</translation>
 <translation id="3439153939049640737">Միշտ թույլ տալ <ph name="HOST" />-ին օգտագործել խոսափողը</translation>
 <translation id="3439970425423980614">PDF-ը բացվում է Նախադիտման ռեժիմում</translation>
 <translation id="3440663250074896476">Այլ գործողություններ <ph name="BOOKMARK_NAME" /> պանակի հետ</translation>
@@ -2373,7 +2368,6 @@
 <translation id="3651488188562686558">Դուրս գալ Wi-Fi ցանցից</translation>
 <translation id="3652817283076144888">Նախապատրաստվում է</translation>
 <translation id="3653160965917900914">Ցանցային պահեստ</translation>
-<translation id="3653842108912548333">Օգտագործեք Օգնականը Voice Match-ի միջոցով</translation>
 <translation id="3653999333232393305">Շարունակել թույլ տալ <ph name="HOST" />-ին օգտագործել ձեր խոսափողը</translation>
 <translation id="3654045516529121250">Կարդալ մատչելիության կարգավորումները</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Այն մեկ ֆայլի մշտական ​​հասանելիություն ունի:}one{Այն # ֆայլի մշտական ​​հասանելիություն ունի:}other{Այն # ֆայլի մշտական ​​հասանելիություն ունի:}}</translation>
@@ -3458,7 +3452,6 @@
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Հց, միահյուսված</translation>
 <translation id="4902546322522096650">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, կապակցում</translation>
 <translation id="49027928311173603">Սերվերից ներբեռնված քաղաքականությունն անվավեր է՝ <ph name="VALIDATION_ERROR" />:</translation>
-<translation id="4904061654709986277">Ավելացնել պրոֆիլ</translation>
 <translation id="4906490889887219338">Կարգավորել կամ կառավարել ցանցային պահեստը <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, մարտկոցի լիցքը՝ <ph name="BATTERY_STATUS" />%, մանրամասներ</translation>
 <translation id="4907161631261076876">Այս ֆայլը ոչ սովորական կերպով է ներբեռնվել և կարող է վտանգավոր լինել:</translation>
@@ -3599,7 +3592,6 @@
 <translation id="5086874064903147617">Վերականգնե՞լ կանխադրված գլխավոր էջը</translation>
 <translation id="5087249366037322692">Ավելացվել է այլ ծրագրի կողմից</translation>
 <translation id="5087580092889165836">Ավելացնել քարտ</translation>
-<translation id="5087926280563932024">Չհաջողվեց մուտք գործել։ Փորձեք նորից կամ վերաբեռնեք Chromebook-ը։</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512՝ RSA գաղտնագրումով</translation>
 <translation id="5090637338841444533">Չի թույլատրվում հետագծել ձեր տեսախցիկի դիրքը</translation>
 <translation id="5094721898978802975">Կապվել հարակից native հավելվածների հետ</translation>
@@ -3797,7 +3789,6 @@
 <translation id="5315738755890845852">Ավելորդ ձևավոր փակագիծ՝ <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Պահել</translation>
 <translation id="5319359161174645648">Google-ը խորհուրդ է տալիս Chrome դիտարկիչը</translation>
-<translation id="5320112320661303273">Դուք կարծես արդեն կարգավորել եք Google Օգնականը մեկ այլ սարքում։ Միացրեք այս կարգավորումը՝ Օգնականի ավելի շատ հնարավորություններից օգտվելու համար։</translation>
 <translation id="5320135788267874712">Սարքի նոր անվանումը</translation>
 <translation id="532247166573571973">Սերվերն անհասանելի է: Փորձեք մի փոքր ուշ:</translation>
 <translation id="5324300749339591280">Հավելվածների ցանկ</translation>
@@ -5329,9 +5320,6 @@
 <translation id="7088434364990739311">Չհաջողվեց սկսել թարմացումների ստուգումը (սխալի կոդ <ph name="ERROR" />):</translation>
 <translation id="7088561041432335295">Zip Archiver – «Ֆայլեր» հավելվածում բացեք և ստեղծեք ZIP ֆայլեր։</translation>
 <translation id="7088674813905715446">Այս սարքն անջատվել է ադմինիստրատորի կողմից: Գրանցումը կատարելու համար անհրաժեշտ է, որ սարքը լինի սպասման վիճակում:</translation>
-<translation id="7092474863625458670">Օգտագործելով ձեր ձայնը՝ Voice Match-ի միջոցով կարող եք դիմել ձեր Օգնականին։
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Նկատի ունեցեք, որ<ph name="END_BOLD" /> ձեր ձայնին նման ձայն կամ ձեր ձայնի ձայնագրությունն ունեցող օգտատերերը նույնպես կկարողանան օգտվել ձեր Օգնականից: Դուք ցանկացած ժամանակ կարող եք հեռացնել Voice Match-ի թույլտվությունը՝ անջատելով այն Օգնականի կարգավորումներում:</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">Փոխանակել տվյալները հետևյալ անուններով սարքերի հետ՝ <ph name="HOSTNAMES" /></translation>
 <translation id="7098389117866926363">USB-C սարք (հետևի ձախ միացք)</translation>
@@ -5521,7 +5509,6 @@
 <translation id="7325209047678309347">Թուղթը խցանվել է</translation>
 <translation id="7326004502692201767">Կարգավորեք <ph name="DEVICE_TYPE" /> սարքը երեխայի համար</translation>
 <translation id="7327989755579928735"><ph name="MANAGER" /> կայքն անջատել է ADB վրիպազերծումը։ Ձեր <ph name="DEVICE_TYPE" /> սարքը վերագործարկելուց հետո դուք չեք կարողանա բեռնել հավելվածներ անհայտ աղբյուրներից։</translation>
-<translation id="7328699668338161242">Օգնականն արդեն ճանաչում է ձեր ձայնը</translation>
 <translation id="7328867076235380839">Սխալ համադրություն</translation>
 <translation id="7329154610228416156">Մուտքը չհաջողվեց, քանի որ դրա կազմաձևումը թույլ է տալիս օգտագործել ոչ ապահով URL (<ph name="BLOCKED_URL" />): Կապվեք ձեր ադմինիստրատորի հետ:</translation>
 <translation id="7332053360324989309">Dedicated Worker` <ph name="SCRIPT_URL" /></translation>
@@ -5671,7 +5658,6 @@
 <translation id="7493386493263658176"><ph name="EXTENSION_NAME" /> ընդլայնումը կարող է հավաքել ձեր մուտքագրած ողջ տեքստը, այդ թվում անձնական տվյալները՝ գաղտնաբառերը և վարկային քարտերի համարները: Ուզո՞ւմ եք օգտագործել այս ընդլայնումը:</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="7495778526395737099">Չե՞ք հիշում հին գաղտնաբառը:</translation>
-<translation id="7496732379142025470">Մարտկոցի լիցքը տնտեսելու համար «Ok Google» գործառույթն ակտիվ է, միայն երբ սարքը միացված է սնուցման աղբյուրին: Փոփոխություններ անելու համար անցեք կարգավորումներ:</translation>
 <translation id="7497981768003291373">Վերջերս ստեղծված WebRTC տեքստային մատյաններ չկան:</translation>
 <translation id="7498614236023455416"><ph name="TARGET_NAME" /> կայքին անհրաժեշտ է թույլտվություն՝ ներդիրների բովանդակությունը առբերելու համար։</translation>
 <translation id="7503191893372251637">Netscape-ի վկայագրի տեսակ</translation>

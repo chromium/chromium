@@ -40,7 +40,6 @@
 <translation id="1041263367839475438">Pajisjet që ofrohen</translation>
 <translation id="1042174272890264476">Kompjuteri yt vjen po ashtu me bibliotekën RLZ të <ph name="SHORT_PRODUCT_NAME" /> të integruar. Parametri RLZ cakton një etiketë jo unike, jo personalisht të identifikueshme për të matur kërkimet dhe përdorimin e <ph name="SHORT_PRODUCT_NAME" /> të nxitur nga një fushatë promocionale të veçantë. Këto etiketa ndonjëherë shfaqen në pyetjet e "Kërko me Google" në <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1043818413152647937">Do të pastrosh po ashtu të dhënat nga këto aplikacione?</translation>
-<translation id="1046635659603195359">Me sa duket e ke konfiguruar tashmë Voice Match me "Asistentin tënd të Google" në një pajisje tjetër. Këto regjistrime të mëparshme mund të përdoren për të krijuar një model zanor në këtë pajisje. Kjo duhet të kërkojë më pak se një minutë.</translation>
 <translation id="104710386808485638">Do ta rinisësh Linux?</translation>
 <translation id="1047431265488717055">Kopjo tekstin e lidhjes</translation>
 <translation id="1048286738600630630">Ekranet</translation>
@@ -88,7 +87,6 @@
 <translation id="109647177154844434">Çinstalimi i Parallels Desktop do të fshijë imazhin e sistemit Windows. Kjo përfshin aplikacionet, cilësimet dhe të dhënat e saj. Je i sigurt që dëshiron të vazhdosh?</translation>
 <translation id="1097658378307015415">Para se të identifikohesh, hyr si vizitor për të aktivizuar rrjetin <ph name="NETWORK_ID" /></translation>
 <translation id="1099962274138857708">Imazhi u kopjua nga <ph name="DEVICE_NAME" /></translation>
-<translation id="1102187190604780492">Lejo që "Asistenti" yt të shfaqë në mënyrë proaktive informacione në lidhje me atë që ndodhet në ekran</translation>
 <translation id="1103523840287552314">Përkthe gjithmonë nga <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Ndalo</translation>
 <translation id="1110155001042129815">Prit</translation>
@@ -1179,7 +1177,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2307462900900812319">Konfiguro rrjetin</translation>
 <translation id="230927227160767054">kjo faqe dëshiron të instalojë një përpunues të shërbimit.</translation>
 <translation id="2309620859903500144">Kësaj faqeje i është bllokuar qasja te sensorët e lëvizjes ose të dritës.</translation>
-<translation id="2311497964614110326">Merr përgjigje më të mira dhe më të shpejta me "Asistentin"</translation>
 <translation id="2312219318583366810">URL-ja e faqes</translation>
 <translation id="2314165183524574721">Cilësimi aktual i dukshmërisë është "I fshehur"</translation>
 <translation id="2314774579020744484">Gjuha e përdorur kur përkthehen faqen</translation>
@@ -1295,7 +1292,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2440604414813129000">Shiko b&amp;urimin</translation>
 <translation id="244231003699905658">Adresë e pavlefshme. Kontrollo adresën dhe provo përsëri.</translation>
 <translation id="2442916515643169563">Hija e tekstit</translation>
-<translation id="2444469058037141906">Thjesht thuaje ose shkruaje atë që të nevojitet</translation>
 <translation id="2445081178310039857">Kërkohet direktoria rrënjë e shtesës.</translation>
 <translation id="2445484935443597917">Krijo një profil të ri</translation>
 <translation id="2448312741937722512">Shkruaj</translation>
@@ -2169,7 +2165,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="343578350365773421">Nuk ka letër</translation>
 <translation id="3435896845095436175">Aktivizo</translation>
 <translation id="3438633801274389918">Ninxha</translation>
-<translation id="3438643033528947620">Nuk mund të lidhej me shërbimet e Google. Kodi i gabimit: <ph name="ERROR_CODE" />.</translation>
 <translation id="3439153939049640737">Lejo gjithmonë që <ph name="HOST" /> të qaset te mikrofoni yt</translation>
 <translation id="3439970425423980614">Po hap PDF-në në "Pamje paraprake"</translation>
 <translation id="3440663250074896476">Më shumë veprime për <ph name="BOOKMARK_NAME" /></translation>
@@ -2368,7 +2363,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="3651488188562686558">Do të shkëputet nga Wi-Fi</translation>
 <translation id="3652817283076144888">Po fillon</translation>
 <translation id="3653160965917900914">Ndarjet e skedarëve në rrjet</translation>
-<translation id="3653842108912548333">Qasu tek "Asistenti" me Voice Match</translation>
 <translation id="3653999333232393305">Vazhdo të lejosh që <ph name="HOST" /> të qaset te mikrofoni yt</translation>
 <translation id="3654045516529121250">Lexo cilësimet e qasjes</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Ka qasje të përhershme te një skedar.}other{Ka qasje të përhershme te # skedarë.}}</translation>
@@ -3452,7 +3446,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - të gërshetuara</translation>
 <translation id="4902546322522096650">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, lidhu</translation>
 <translation id="49027928311173603">Politika e shkarkuar nga serveri është e pavlefshme: <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4904061654709986277">Shto profil</translation>
 <translation id="4906490889887219338">Konfiguro ose menaxho ndarjet e skedarëve në rrjet. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, bateria e telefonit <ph name="BATTERY_STATUS" />%, detaje</translation>
 <translation id="4907161631261076876">Ky skedar nuk shkarkohet zakonisht dhe mund të jetë i rrezikshëm.</translation>
@@ -3593,7 +3586,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="5086874064903147617">Të restaurohet faqja bazë e parazgjedhur?</translation>
 <translation id="5087249366037322692">Shtuar nga një palë e tretë</translation>
 <translation id="5087580092889165836">Shto kartë</translation>
-<translation id="5087926280563932024">Llogaria jote nuk mund të verifikohej. Provo sërish ose rinise pajisjen Chromebook.</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 me enkriptim RSA</translation>
 <translation id="5090637338841444533">Nuk lejohen të monitorojnë pozicionin e kamerës</translation>
 <translation id="5094721898978802975">Komuniko me aplikacionet origjinale bashkëpunuese</translation>
@@ -3789,7 +3781,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="5315738755890845852">Kllapë gjarpërushe shtesë: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Ruaj</translation>
 <translation id="5319359161174645648">Google rekomandon Chrome</translation>
-<translation id="5320112320661303273">Me sa duket e ke konfiguruar tashmë "Asistentin" në një pajisje tjetër. Përfito edhe më shumë nga "Asistenti" yt duke e aktivizuar këtë cilësim.</translation>
 <translation id="5320135788267874712">Emri i ri i pajisjes</translation>
 <translation id="532247166573571973">Serveri mund të jetë i paarritshëm. Provo përsëri më vonë.</translation>
 <translation id="5324300749339591280">Lista e aplikacioneve</translation>
@@ -5321,9 +5312,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="7088434364990739311">Kontrolli i përditësimit dështoi të niset (kodi i gabimit: <ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">Zip Archiver - Hap dhe paketo skedarët ZIP në aplikacionin "Skedarët".</translation>
 <translation id="7088674813905715446">Kjo pajisje është vendosur në gjendje jashtë shërbimi nga administratori. Për ta aktivizuar për regjistrim, kërkoji administratorit të vendosë pajisjen në gjendje pritjeje.</translation>
-<translation id="7092474863625458670">Voice Match të lejon të qasesh direkt tek "Asistenti" duke përdorur zërin tënd.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Ki parasysh:<ph name="END_BOLD" /> Edhe një regjistrim ose zë i ngjashëm mund të jetë në gjendje të ketë qasje në "Asistentin" tënd. Mund të heqësh më vonë autorizimin e Voice Match duke e çaktivizuar te "Cilësimet" e "Asistentit".</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">Shkëmbe të dhëna me pajisjet me emrin: <ph name="HOSTNAMES" /></translation>
 <translation id="7098389117866926363">Pajisja USB-C (porta majtas, prapa)</translation>
@@ -5513,7 +5501,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="7325209047678309347">Letra është bllokuar</translation>
 <translation id="7326004502692201767">Konfiguroje këtë <ph name="DEVICE_TYPE" /> për një fëmijë</translation>
 <translation id="7327989755579928735"><ph name="MANAGER" /> ka çaktivizuar korrigjimin e ADB-së. Pasi ta rinisësh <ph name="DEVICE_TYPE" />, nuk do të mund të ngarkosh paralelisht aplikacione.</translation>
-<translation id="7328699668338161242">"Asistenti" yt mund ta njohë tashmë zërin tënd</translation>
 <translation id="7328867076235380839">Kombinim i pavlefshëm</translation>
 <translation id="7329154610228416156">Identifikimi dështoi, sepse ishte i konfiguruar të përdorte një URL jo të sigurt <ph name="BLOCKED_URL" />. Kontakto me administratorin.</translation>
 <translation id="7332053360324989309">Procesi i posaçëm i punës: <ph name="SCRIPT_URL" /></translation>
@@ -5663,7 +5650,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="7493386493263658176">Shtesa <ph name="EXTENSION_NAME" /> mund të mbledhë të gjithë tekstin që shkruan, duke përfshirë të dhënat personale si fjalëkalime dhe numra kartash krediti. Dëshiron ta përdorësh këtë shtesë?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="7495778526395737099">Harrove fjalëkalimin e vjetër?</translation>
-<translation id="7496732379142025470">Për të kursyer bateri, “Ok Google” është aktiv vetëm kur pajisja jote është lidhur me një burim energjie. Për të bërë ndryshime, shko te "Cilësimet".</translation>
 <translation id="7497981768003291373">Nuk ke evidenca teksti WebRTC të regjistruara së fundi.</translation>
 <translation id="7498614236023455416"><ph name="TARGET_NAME" /> po kërkon leje për të regjistruar përmbajtjen e kësaj skede.</translation>
 <translation id="7503191893372251637">Lloji i certifikatës Netscape</translation>

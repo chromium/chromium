@@ -40,7 +40,6 @@
 <translation id="1041263367839475438">उपलब्ध डिवाइस</translation>
 <translation id="1042174272890264476">आपके कंप्यूटर में पहले से ही <ph name="SHORT_PRODUCT_NAME" /> की RLZ लाइब्रेरी होती है. किसी खास प्रचार कैंपेन में इस्तेमाल हुई खोजों और <ph name="SHORT_PRODUCT_NAME" /> के इस्तेमाल को मापने के लिए, RLZ एक बिना-विशिष्ट, बिना निजी तौर वाला टैग तय करता है. कभी-कभी ये लेबल <ph name="PRODUCT_NAME" /> में 'Google सर्च' क्वेरी में दिखाई देते हैं.</translation>
 <translation id="1043818413152647937">क्या आप इन ऐप्लिकेशन से डेटा भी मिटाना चाहते हैं?</translation>
-<translation id="1046635659603195359">ऐसा लगता है कि आपने पहले ही किसी दूसरे डिवाइस पर अपनी Google Assistant की मदद से Voice Match सेट अप कर लिया है. इस डिवाइस पर आवाज़ का नमूना बनाने के लिए इन पुरानी रिकॉर्डिंग का इस्तेमाल किया जा सकता है. इसमें एक मिनट से भी कम समय लगेगा.</translation>
 <translation id="104710386808485638">क्या आप Linux को रीस्टार्ट करना चाहते हैं?</translation>
 <translation id="1047431265488717055">लिंक ले&amp;ख को कॉपी करें</translation>
 <translation id="1048286738600630630">डिसप्ले</translation>
@@ -88,7 +87,6 @@
 <translation id="109647177154844434">Parallels Desktop को अनइंस्टॉल करने से आपकी Windows की इमेज मिट जाएगी. इसके ऐप्लिकेशन, सेटिंग, और डेटा इसमें शामिल हैं. क्या आप वाकई जारी रखना चाहते हैं?</translation>
 <translation id="1097658378307015415">प्रवेश करने से पहले, कृपया <ph name="NETWORK_ID" /> नेटवर्क सक्रिय करने के लिए अतिथि के रूप में प्रविष्ट हों</translation>
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" /> से इमेज कॉपी की गई</translation>
-<translation id="1102187190604780492">Assistant को अपनी स्क्रीन पर मौजूद कॉन्टेंट से जुड़ी जानकारी लगातार दिखाने दें</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> का हमेशा अनुवाद करें</translation>
 <translation id="1108600514891325577">&amp;रोकें</translation>
 <translation id="1110155001042129815">प्रतीक्षा करें</translation>
@@ -1180,7 +1178,6 @@
 <translation id="2307462900900812319">नेटवर्क कॉन्फ़िगर करें</translation>
 <translation id="230927227160767054">यह पेज सेवा हैंडलर इंस्टॉल करना चाहता है.</translation>
 <translation id="2309620859903500144">इस साइट को आपके डिवाइस के गति या रोशनी के सेंसर ऐक्सेस करने से ब्लॉक कर दिया गया है.</translation>
-<translation id="2311497964614110326">Assistant की मदद से बेहतर जवाब तुरंत पाएं</translation>
 <translation id="2312219318583366810">पेज का यूआरएल</translation>
 <translation id="2314165183524574721">'डिवाइस किसको दिखाई दे' सेटिंग अभी इस पर सेट है: छिपा हुआ</translation>
 <translation id="2314774579020744484">पेजों के अनुवाद के लिए इस्तेमाल की गई भाषा</translation>
@@ -1295,7 +1292,6 @@
 <translation id="2440604414813129000">स्रोत देखें</translation>
 <translation id="244231003699905658">अमान्य पता. कृपया पते की जांच करें और फिर से कोशिश करें.</translation>
 <translation id="2442916515643169563">टेक्स्ट शैडो</translation>
-<translation id="2444469058037141906">आपको जो भी चाहिए वह बोलें या टाइप करें</translation>
 <translation id="2445081178310039857">एक्‍सटेंशन मूल निर्देशिका आवश्यक है.</translation>
 <translation id="2445484935443597917">नई प्रोफ़ाइल बनाएं</translation>
 <translation id="2448312741937722512">प्रकार</translation>
@@ -1441,7 +1437,7 @@
 <translation id="2604255671529671813">नेटवर्क कनेक्शन गड़बड़ी</translation>
 <translation id="2606246518223360146">डेटा लिंक करें</translation>
 <translation id="2606454609872547359">नहीं, ChromeVox के बिना जारी रखें</translation>
-<translation id="2606568927909309675">लाइव कैप्शन की सुविधा से, अंग्रेज़ी ऑडियो और वीडियो के कैप्शन अपने-आप बनते हैं. आपके डिवाइस पर ऑडियो और कैप्शन हमेशा सुने और देखे जा सकते हैं.</translation>
+<translation id="2606568927909309675">लाइव कैप्शन की सुविधा में, अंग्रेज़ी ऑडियो और वीडियो के कैप्शन अपने-आप बनते हैं. आपके डिवाइस पर ऑडियो और कैप्शन हमेशा सुने और देखे जा सकते हैं.</translation>
 <translation id="2607101320794533334">विषय सार्वजनिक कुंजी जानकारी</translation>
 <translation id="2609896558069604090">शॉर्टकट बनाए...</translation>
 <translation id="2609980095400624569">डिवाइस को फ़ोन से कनेक्ट नहीं किया जा सका</translation>
@@ -2165,7 +2161,6 @@
 <translation id="343578350365773421">काग़ज़ खत्म हो गया है</translation>
 <translation id="3435896845095436175">चालू करें</translation>
 <translation id="3438633801274389918">निंजा</translation>
-<translation id="3438643033528947620">Google की सेवाओं से जोड़ा नहीं जा सका. गड़बड़ी कोड: <ph name="ERROR_CODE" />.</translation>
 <translation id="3439153939049640737"><ph name="HOST" /> को कभी भी अपना माइक्रोफ़ोन एक्सेस करने दें</translation>
 <translation id="3439970425423980614">PDF को 'झलक' में खोल रहे हैं</translation>
 <translation id="3440663250074896476"><ph name="BOOKMARK_NAME" /> के लिए और कार्रवाइयां</translation>
@@ -2364,7 +2359,6 @@
 <translation id="3651488188562686558">वाई-फ़ाई से डिसकनेक्ट करें</translation>
 <translation id="3652817283076144888">शुरू हो रहा है</translation>
 <translation id="3653160965917900914">नेटवर्क फ़ाइल शेयर</translation>
-<translation id="3653842108912548333">अपनी Assistant को Voice Match से ऐक्सेस करें</translation>
 <translation id="3653999333232393305"><ph name="HOST" /> को अपना माइक्रोफ़ोन एक्सेस करते रहने दें</translation>
 <translation id="3654045516529121250">अपनी सुलभता सेटिंग पढ़ें</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{उसे एक फ़ाइल की स्‍थायी एक्सेस मिली हुई है.}one{उसे # फ़ाइलों की स्‍थायी एक्सेस मिली हुई है.}other{उसे # फ़ाइलों की स्‍थायी एक्सेस मिली हुई है.}}</translation>
@@ -3442,7 +3436,6 @@
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> हर्ट्ज़ - साथ में स्कैन किया गया</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" /> में से <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, कनेक्ट करें</translation>
 <translation id="49027928311173603">सर्वर से डाउनलोड की गई नीति अमान्य है: <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4904061654709986277">प्रोफ़ाइल को जोड़ें</translation>
 <translation id="4906490889887219338">नेटवर्क फ़ाइल शेयर सेट अप या प्रबंधित करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301"><ph name="NETWORK_COUNT" /> में से नेटवर्क <ph name="NETWORK_INDEX" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />%, फ़ोन की बैटरी <ph name="BATTERY_STATUS" />%, जानकारी</translation>
 <translation id="4907161631261076876">यह फ़ाइल आमतौर पर डाउनलोड नहीं की जाती है और यह खतरनाक हो सकती है.</translation>
@@ -3583,7 +3576,6 @@
 <translation id="5086874064903147617">डिफ़ॉल्ट होमपेज को बहाल करना चाहते हैं?</translation>
 <translation id="5087249366037322692">किसी तृतीय-पक्ष द्वारा जोड़ा गया</translation>
 <translation id="5087580092889165836">कार्ड जोड़ें</translation>
-<translation id="5087926280563932024">आपके खाते की पुष्टि नहीं हो सकी. कृपया फिर से कोशिश करें या अपना Chromebook फिर से चालू करें.</translation>
 <translation id="5088534251099454936">RSA सुरक्षित करने के तरीके के साथ PKCS #1 SHA-512</translation>
 <translation id="5090637338841444533">कैमरे की स्थिति को ट्रैक करने की अनुमति नहीं है</translation>
 <translation id="5094721898978802975">स्थानीय ऐप्स  के साथ सहयोग करते हुए संचार करें</translation>
@@ -3778,7 +3770,6 @@
 <translation id="5315738755890845852">ज़्यादा कर्ली ब्रेस: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">सेव करें</translation>
 <translation id="5319359161174645648">Google, Chrome का सुझाव देता है</translation>
-<translation id="5320112320661303273">ऐसा लगता है कि आपने पहले ही किसी दूसरे डिवाइस पर Google Assistant को सेट अप कर लिया है. नीचे दी गई सेटिंग चालू करके, Assistant का और फ़ायदा पाएं.</translation>
 <translation id="5320135788267874712">नए डिवाइस का नाम</translation>
 <translation id="532247166573571973">हो सकता है कि सर्वर तक पहुंचा नहीं जा सकता हो. बाद में फिर से प्रयास करें.</translation>
 <translation id="5324300749339591280">ऐप्लिकेशन की सूची</translation>
@@ -5303,9 +5294,6 @@
 <translation id="7088434364990739311">अपडेट की जाँच शुरू नहीं की जा सकी (गड़बड़ी कोड <ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">Zip Archiver - Files ऐप्लिकेशन में ZIP फ़ाइलें खोलें और पैक करें.</translation>
 <translation id="7088674813905715446">इस डिवाइस को एडमिन ने इस्तेमाल से बाहर रखे जाने की स्थिति में रखा है. नाम दर्ज करने के लिए इसे चालू करने के लिए, कृपया अपने एडमिन से डिवाइस को 'मंज़ूरी बाकी' स्थिति में रहने दें.</translation>
-<translation id="7092474863625458670">Voice Match की मदद से, आप सीधे अपनी आवाज़ से अपनी Assistant को ऐक्सेस कर सकते हैं.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />ध्यान रखें:<ph name="END_BOLD" /> आपसे मिलती-जुलती किसी आवाज़ या रिकॉर्डिंग से भी आपकी Assistant को ऐक्सेस किया जा सकता है. आप बाद में Assistant की सेटिंग में जाकर, Voice Match को बंद करके इसको दी गई अनुमति हटा सकते हैं.</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921"><ph name="HOSTNAMES" /> नामक डिवाइस से डेटा का लेन-देन करें</translation>
 <translation id="7098389117866926363">USB-C डिवाइस (पीछे बायां पोर्ट)</translation>
@@ -5494,7 +5482,6 @@
 <translation id="7325209047678309347">कागज़ फंस गया है</translation>
 <translation id="7326004502692201767">अपने बच्चे के लिए <ph name="DEVICE_TYPE" /> को सेट अप करें</translation>
 <translation id="7327989755579928735"><ph name="MANAGER" /> ने ADB को डीबग करने की सुविधा बंद कर दी है. <ph name="DEVICE_TYPE" /> को रीस्टार्ट करने पर, आप ऐप्लिकेशन को अलग से लोड नहीं कर पाएंगे.</translation>
-<translation id="7328699668338161242">आपकी Assistant पहले ही आपकी आवाज़ पहचान सकती है</translation>
 <translation id="7328867076235380839">गलत संयोजन</translation>
 <translation id="7329154610228416156">साइन इन नहीं हो पाया क्‍योंकि उसे गैर-सुरक्षित URL (<ph name="BLOCKED_URL" />) का इस्तेमाल करने के लिए कॉन्‍फ़िगर किया गया था. कृपया अपने एडमिन से संपर्क करें.</translation>
 <translation id="7332053360324989309">खास तौर पर इसके लिए काम करने वाला वर्कर: <ph name="SCRIPT_URL" /></translation>
@@ -5643,7 +5630,6 @@
 <translation id="7493386493263658176"><ph name="EXTENSION_NAME" /> एक्सटेंशन,   लिखे जाने वाले सभी लेख को एकत्र कर सकता है, जिसमें पासवर्ड और क्रेडिट कार्ड नंबर जैसा व्यक्तिगत डेटा भी शामिल है. क्या आप इस एक्सटेंशन का उपयोग करना चाहते हैं?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="7495778526395737099">क्या आप अपना पुराना पासवर्ड भूल गए हैं?</translation>
-<translation id="7496732379142025470">बैटरी बचाने के लिए, “Ok Google” सिर्फ़ तब चालू होता है जब आपका डिवाइस चार्जिंग पर लगा होता है. बदलाव करने के लिए, सेटिंग पर जाएं.</translation>
 <translation id="7497981768003291373">आपके पास हाल ही में कैप्चर किया गया कोई WebRTC लेख लॉग नहीं है.</translation>
 <translation id="7498614236023455416">इस टैब के कॉन्टेंट को कैप्चर करने के लिए, <ph name="TARGET_NAME" /> अनुमति मांग रहा है.</translation>
 <translation id="7503191893372251637">Netscape प्रमाणपत्र प्रकार</translation>
@@ -7099,7 +7085,7 @@
 <translation id="9128870381267983090">नेटवर्क से कनेक्ट करें</translation>
 <translation id="9130015405878219958">गलत मोड डाला गया.</translation>
 <translation id="9131487537093447019">ब्लूटूथ डिवाइस से मैसेज भेजें और मैसेज पाएं.</translation>
-<translation id="9134119143784876218">लाइव कैप्शन की सुविधा से, अंग्रेज़ी ऑडियो और वीडियो के कैप्शन अपने-आप बनते हैं (फ़िलहाल, यह सुविधा सिर्फ़ Chrome ब्राउज़र में उपलब्ध है). आपके डिवाइस पर ऑडियो और कैप्शन हमेशा सुने और देखे जा सकते हैं.</translation>
+<translation id="9134119143784876218">लाइव कैप्शन की सुविधा में, अंग्रेज़ी ऑडियो और वीडियो के कैप्शन अपने-आप बनते हैं (फ़िलहाल, यह सुविधा सिर्फ़ Chrome ब्राउज़र में उपलब्ध है). आपके डिवाइस पर ऑडियो और कैप्शन हमेशा सुने और देखे जा सकते हैं.</translation>
 <translation id="9137013805542155359">मूल दिखाएं</translation>
 <translation id="9137157311132182254">पसंदीदा सर्च इंजन</translation>
 <translation id="9137248913990643158">इस ऐप्लिकेशन का उपयोग करने से पहले कृपया Chrome शुरू करके उसमें साइन इन करें.</translation>

@@ -163,7 +163,6 @@ Trokit te një fjalë për të kërkuar. Për ta përsosur kërkimin, preke dhe 
 <translation id="2126426811489709554">E mundësuar nga Chrome</translation>
 <translation id="2131665479022868825"><ph name="DATA" /> të kursyera</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> është mbyllur</translation>
-<translation id="2139186145475833000">Shtoje te ekrani "Faqja kryesore"</translation>
 <translation id="214888715418183969">Zgjidh se çfarë informacionesh ndihesh mirë të ndash me Chrome. Metrikat që ndan do të përdoren për të përmirësuar veçoritë, cilësinë e funksionimit dhe qëndrueshmërinë e Chrome.</translation>
 <translation id="2154484045852737596">Redakto kartën</translation>
 <translation id="2154710561487035718">Kopjo URL-në</translation>
@@ -209,7 +208,6 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="2459390580524506445">Kërkimi zanor i përmirësuar</translation>
 <translation id="246532703174860178">Ndaj</translation>
 <translation id="247737702124049222">Përshkrimet e imazheve janë aktive</translation>
-<translation id="2478076885740497414">Instalo aplikacionin</translation>
 <translation id="2482878487686419369">Njoftimet</translation>
 <translation id="2494974097748878569">"Asistenti i Google" në Chrome</translation>
 <translation id="2496180316473517155">Historiku i shfletimit</translation>
@@ -393,7 +391,6 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="3773856050682458546">Të dhëna bazë plus informacione rreth faqeve të internetit që viziton dhe aplikacioneve që përdor</translation>
 <translation id="3775705724665058594">Dërgo te pajisjet e tua</translation>
 <translation id="3778956594442850293">U shtua në ekranin bazë</translation>
-<translation id="3789841737615482174">Instalo</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Menaxho</translation>
 <translation id="3819178904835489326">U fshinë <ph name="NUMBER_OF_DOWNLOADS" /> shkarkime</translation>
@@ -866,7 +863,6 @@ Të dhënat nga sesioni yt "i fshehtë" do të pastrohen nga Chrome vetëm kur <
 <translation id="6979737339423435258">Gjatë të gjithë kohës</translation>
 <translation id="6981982820502123353">Qasja</translation>
 <translation id="6989267951144302301">Nuk mund të shkarkohej</translation>
-<translation id="6990079615885386641">Merr aplikacionin nga Dyqani i "Google Play": <ph name="APP_ACTION" /></translation>
 <translation id="6995899638241819463">Të të paralajmërojë nëse fjalëkalimet janë ekspozuar në një nxjerrje të paautorizuar të të dhënave</translation>
 <translation id="7015203776128479407">Konfigurimi i sinkronizimit fillestar nuk përfundoi. Sinkronizimi është joaktiv.</translation>
 <translation id="7022756207310403729">Hape në shfletues</translation>

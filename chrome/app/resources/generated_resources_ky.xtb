@@ -40,7 +40,6 @@
 <translation id="1041263367839475438">Жеткиликтүү түзмөктөр</translation>
 <translation id="1042174272890264476">Компьютериңизде <ph name="SHORT_PRODUCT_NAME" /> өнүмүнүн RLZ китепканасы камтылган. Белгилүү бир жарнамалык иш-чара башкарган издөө аракеттерин жана <ph name="SHORT_PRODUCT_NAME" /> колдонулушун талдап туруу үчүн RLZ кеңири кездешкен жалпы таанылуучу тегди дайындайт. Бул белгилер айрым учурларда Google Издөө сурамдарындагы <ph name="PRODUCT_NAME" /> өнүмүндө көрүнөт.</translation>
 <translation id="1043818413152647937">Дайын-даректер бул колдонмолордон да өчүрүлсүнбү?</translation>
-<translation id="1046635659603195359">Google Жардамчыңыздагы Voice Match'ти буга чейин башка түзмөктө жөндөп алган окшойсуз. Мурунку жаздырууларыңыздын негизинде үнүңүздүн үлгүсүн ушул түзмөктө даярдоого болот. Буга бир мүнөткө жетпеген убакыт керек.</translation>
 <translation id="104710386808485638">Linux өчүрүлүп күйгүзүлсүнбү?</translation>
 <translation id="1047431265488717055">Шилтеме тек&amp;стин көчүрүү</translation>
 <translation id="1048286738600630630">Дисплейлер</translation>
@@ -88,7 +87,6 @@
 <translation id="109647177154844434">Parallels Desktop чыгарылып салынса, Windows сүрөттөрү жок кылынат. Ага колдонмолор, жөндөөлөр жана дайын-даректер кирет. Чын эле улантасызбы?</translation>
 <translation id="1097658378307015415">Кирүүдөн мурун, Конок катары кирип <ph name="NETWORK_ID" /> тармагын иштетиңиз.</translation>
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" /> түзмөгүнөн көчүрүлгөн сүрөт</translation>
-<translation id="1102187190604780492">Жардамчыңызга экранда көрсөтүлгөн нерсеге ылайыктуу болгон маалыматты дайым көрсөтүүгө уруксат бериңиз</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> тилин ар дайым которуу</translation>
 <translation id="1108600514891325577">&amp;Токтотуу</translation>
 <translation id="1110155001042129815">Күтө туруңуз</translation>
@@ -1179,7 +1177,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2307462900900812319">Тармакты конфигурациялоо</translation>
 <translation id="230927227160767054">Бул баракча кызматты иштеткичти орнотоюн деп жатат.</translation>
 <translation id="2309620859903500144">Бул сайттын кыймыл же жарык сенсорлорун колдонуу мүмкүнчүлүгү бөгөттөлгөн.</translation>
-<translation id="2311497964614110326">Жардамчы менен ыкчам жоопторду алыңыз</translation>
 <translation id="2312219318583366810">Барактын URL'и</translation>
 <translation id="2314165183524574721">Учурдагы көрүнүү жөндөөлөрү жашырылган</translation>
 <translation id="2314774579020744484">Барактарды которууда колдонулган тилдер</translation>
@@ -1294,7 +1291,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2440604414813129000">&amp;Булакты карап көрүү</translation>
 <translation id="244231003699905658">Дарек жараксыз. Даректи текшерип, кайталап көрүңүз.</translation>
 <translation id="2442916515643169563">Текстти көлөкөлөтүү</translation>
-<translation id="2444469058037141906">Керек болгон нерсени айтыңыз же териңиз</translation>
 <translation id="2445081178310039857">Кеңейтүүнүн өзөктүк каталогу талап кылынат.</translation>
 <translation id="2445484935443597917">Жаңы профиль түзүү</translation>
 <translation id="2448312741937722512">Түрү</translation>
@@ -2164,7 +2160,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="343578350365773421">Кагаз түгөндү</translation>
 <translation id="3435896845095436175">Иштетүү</translation>
 <translation id="3438633801274389918">Ниндзя</translation>
-<translation id="3438643033528947620">Google кызматтарына туташпай калды. Ката коду: <ph name="ERROR_CODE" />.</translation>
 <translation id="3439153939049640737"><ph name="HOST" /> микрофонуңузду ар дайым колдоно берсин</translation>
 <translation id="3439970425423980614">PDF'ти алдыртан көрүү режиминде ачуу</translation>
 <translation id="3440663250074896476"><ph name="BOOKMARK_NAME" /> боюнча башка аракеттер</translation>
@@ -2363,7 +2358,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3651488188562686558">Wi-Fi тармагынан ажыратылат</translation>
 <translation id="3652817283076144888">Баштапкы мааниси берилүүдө</translation>
 <translation id="3653160965917900914">Тармактын жалпы файлдарды</translation>
-<translation id="3653842108912548333">Жардамчыңызга Voice Match аркылуу кайрылыңыз</translation>
 <translation id="3653999333232393305"><ph name="HOST" /> микрофонуңузду колдоно берсин</translation>
 <translation id="3654045516529121250">Атайын мүмкүнчүлүктөр жөндөөлөрүн окуңуз</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Бир файлды туруктуу пайдалана алат.}other{# файлды туруктуу пайдалана алат.}}</translation>
@@ -3442,7 +3436,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Герц – бириктирилген</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, Туташуу</translation>
 <translation id="49027928311173603">Серверден жүктөлүп алынган саясат жараксыз: <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4904061654709986277">Профиль кошуу</translation>
 <translation id="4906490889887219338">Тармактын жалпы файлдарын жөндөңүз же башкарыңыз. <ph name="LINK_BEGIN" />Кеңири маалымат<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, телефондун батареясы <ph name="BATTERY_STATUS" />%, чоо-жайы</translation>
 <translation id="4907161631261076876">Бул файл негизинен жүктөлүп алынбайт, ошондуктан коркунучтуу болушу мүмкүн.</translation>
@@ -3583,7 +3576,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5086874064903147617">Демейки башкы бет калыбына келтирилсинби?</translation>
 <translation id="5087249366037322692">Үчүнчү тарап кошкон</translation>
 <translation id="5087580092889165836">Карточка кошуу</translation>
-<translation id="5087926280563932024">Аккаунтуңуз ырасталбай калды. Кайталап көрүңүз же Chromebook'уңузду өчүрүп күйгүзүңүз.</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 RSA шифрлөөсү менен</translation>
 <translation id="5090637338841444533">Камераңыздын абалына көз сала албайт</translation>
 <translation id="5094721898978802975">Түпнуска колдонмолор менен кызматташып байланышуу</translation>
@@ -3778,7 +3770,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5315738755890845852">Ашыкча ийри кашаа: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Сактоо</translation>
 <translation id="5319359161174645648">Google Chrome'ду сунуштайт</translation>
-<translation id="5320112320661303273">Жардамчыны башка түзмөктө жөндөп алган окшойсуз. Төмөнкү жөндөөнү иштетип, Жардамчыңыздын бардык мүмкүнчүлүктөрүн колдонуңуз.</translation>
 <translation id="5320135788267874712">Түзмөктүн жаңы аталышы</translation>
 <translation id="532247166573571973">Серверге туташуу мүмкүн эмес окшойт. Бир аздан кийин кайталап көрүңүз.</translation>
 <translation id="5324300749339591280">Колдонмолор тизмеси</translation>
@@ -5302,9 +5293,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7088434364990739311">Жаңыртууну текшерүү башталбай калды (катанын коду <ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">Zip Archiver – ZIP файлдарын Файлдар колдонмосунда ачыңыз жана архивдеңиз.</translation>
 <translation id="7088674813905715446">Бул түзмөктү администратор чыгарып салган. Аны киргизүү үчүн, администраторуңуз түзмөктү күтүү абалына коюшу керек.</translation>
-<translation id="7092474863625458670">Voice Match менен Жардамчыңызга дароо кайрыла аласыз.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Көңүл буруңуз:<ph name="END_BOLD" /> Үнү сизге окшош же үнүңүздү жаздырып алган кимдир бирөө Жардамчыңызды колдоно алат. Voice Match'тин уруксаттарын кийинчерээк Жардамчынын жөндөөлөрүнөн алып салсаңыз болот.</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">Төмөнкүчө аталган түзмөктөр менен дайындарды алмашуу: <ph name="HOSTNAMES" /></translation>
 <translation id="7098389117866926363">USB-C түзмөгү (аркасындагы сол жактагы оюкча)</translation>
@@ -5493,7 +5481,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7325209047678309347">Кагаз чайналып калды</translation>
 <translation id="7326004502692201767"><ph name="DEVICE_TYPE" /> түзмөгүн балага жөндөп бериңиз</translation>
 <translation id="7327989755579928735"><ph name="MANAGER" /> ADB аркылуу мүчүлүштүктөрдү оңдоону өчүрдү. <ph name="DEVICE_TYPE" /> түзмөгүңүздү өчүрүп күйгүзгөндөн кийин, колдонмолорду белгисиз булактан жүктөй албай каласыз.</translation>
-<translation id="7328699668338161242">Жардамчыңыз үнүңүздү мурунтан эле тааныйт</translation>
 <translation id="7328867076235380839">Жараксыз айкалыш</translation>
 <translation id="7329154610228416156">Кооптуу URL (<ph name="BLOCKED_URL" />) дарегине конфигурациялангандыктан кирбей калды. Администраторуңузга кайрылыңыз.</translation>
 <translation id="7332053360324989309">Дайындалган жумушчу: <ph name="SCRIPT_URL" /></translation>
@@ -5642,7 +5629,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7493386493263658176"><ph name="EXTENSION_NAME" /> кеңейтүүсү терген текстиңиздин баарын, анын ичинде сырсөздөр жана насыя картаңыздын номерлери сыяктуу жеке дайын-даректериңизди топтошу мүмкүн. Бул кеңейтүүнү колдоносузбу?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="7495778526395737099">Эски сырсөзүңүздү унутуп койдуңузбу?</translation>
-<translation id="7496732379142025470">Батареяны үнөмдөө максатында, "Окей Google" буйругу түзмөгүңүз кубат булагына туташкан учурда гана иштейт. Өзгөртүү үчүн, Жөндөөлөргө өтүңүз.</translation>
 <translation id="7497981768003291373">Текст түрүндө сакталган акыркы WebRTC таржымалдары жок.</translation>
 <translation id="7498614236023455416"><ph name="TARGET_NAME" /> ушул өтмөктөгү мазмунду сүрөткө тартып алууга уруксат сурап жатат.</translation>
 <translation id="7503191893372251637">Netscape тастыктамасынын түрү</translation>

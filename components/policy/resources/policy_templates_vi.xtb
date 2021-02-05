@@ -691,7 +691,6 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
       Lưu ý: Việc bỏ qua một trường tức là mọi giá trị đều trùng khớp. Ví dụ: nếu bạn không chỉ định khả năng kết nối, chế độ Xem trước bản in sẽ bắt đầu tìm kiếm tất cả loại máy in, <ph name="PRINTER_TYPE_LOCAL" /> và <ph name="PRINTER_TYPE_CLOUD" />. Mẫu biểu thức chính quy phải tuân theo cú pháp JavaScript RegExp và kết quả trùng khớp có phân biệt chữ hoa/chữ thường.</translation>
 <translation id="2005506794355327448">Hành động cần thực hiện khi đóng nắp</translation>
 <translation id="2006530844219044261">Quản lý nguồn</translation>
-<translation id="2011151221807385794">Người dùng Phiên khách được quản lý có thể lưu trữ các chế độ cài đặt hiển thị trên toàn thiết bị.</translation>
 <translation id="2013285471046373727">Chỉ định cách một ứng dụng được đặt. OPTIONAL: Ứng dụng không được cài đặt tự động, nhưng người dùng có thể cài đặt. Đây là giá trị mặc định nếu bạn không chỉ định chính sách này. PRELOAD: Ứng dụng được cài đặt tự động nhưng người dùng có thể gỡ cài đặt. FORCE_INSTALLED: Ứng dụng được cài đặt tự động và người dùng không thể gỡ cài đặt. BLOCKED: Ứng dụng bị chặn và không cài đặt được. Nếu ứng dụng đã được cài đặt theo chính sách trước đó, thì ứng dụng sẽ bị gỡ cài đặt.</translation>
 <translation id="2014757022750736514">Kiểm soát hoạt động của màn hình đăng nhập, nơi người dùng đăng nhập vào tài khoản của họ. Các mục cài đặt bao gồm người có thể đăng nhập, loại tài khoản được cho phép, loại phương thức xác thực nên sử dụng, cũng như khả năng truy cập chung, phương thức nhập và cài đặt ngôn ngữ.</translation>
 <translation id="201557587962247231">Tần suất tải lên báo cáo trạng thái thiết bị</translation>
@@ -913,7 +912,6 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
 <translation id="2303795211377219696">Bật tính năng Tự động điền cho thẻ tín dụng</translation>
 <translation id="2307496301287881990">Báo cáo trạng thái đồ họa và hiển thị</translation>
 <translation id="2309390639296060546">Cài đặt vị trí địa lý mặc định</translation>
-<translation id="2318651066908490266">Người dùng Phiên khách được quản lý không thể lưu trữ các chế độ cài đặt hiển thị trên toàn thiết bị.</translation>
 <translation id="2327252517317514801">Xác định miền được phép truy cập vào G Suite</translation>
 <translation id="2331354174913096226">Mẫu URI của trình phân giải DNS qua HTTPS mà bạn muốn. Để chỉ định nhiều trình phân giải DNS qua HTTPS, hãy phân tách các mẫu URI tương ứng bằng dấu cách.
 

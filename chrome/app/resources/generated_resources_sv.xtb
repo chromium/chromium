@@ -40,7 +40,6 @@
 <translation id="1041263367839475438">Tillgängliga enheter</translation>
 <translation id="1042174272890264476">Datorn har även RLZ-biblioteket för <ph name="SHORT_PRODUCT_NAME" /> inbyggt. RLZ tilldelar en icke-unik, icke-personligt identifierbar tagg för att mäta antalet sökningar och användningen av <ph name="SHORT_PRODUCT_NAME" /> som drivs av en viss reklamkampanj. Dessa etiketter visas ibland vid sökningar på Google i <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1043818413152647937">Vill du även rensa data för dessa appar?</translation>
-<translation id="1046635659603195359">Du verkar redan ha konfigurerat Voice Match med Google Assistant på en annan enhet. Det går att skapa en röstmodell på den här enheten utifrån de tidigare inspelningarna. Detta tar knappt en minut.</translation>
 <translation id="104710386808485638">Vill du starta om Linux?</translation>
 <translation id="1047431265488717055">Kopiera länktext</translation>
 <translation id="1048286738600630630">Skärmar</translation>
@@ -88,7 +87,6 @@
 <translation id="109647177154844434">Om du avinstallerar Parallels Desktop tas Windows-avbildningen bort. Även appar, inställningar och data raderas. Vill du fortsätta?</translation>
 <translation id="1097658378307015415">Aktivera nätverket <ph name="NETWORK_ID" /> genom att logga in som gäst innan du loggar in</translation>
 <translation id="1099962274138857708">Bild kopierad från <ph name="DEVICE_NAME" /></translation>
-<translation id="1102187190604780492">Tillåt att assistenten ger information i förväg utifrån vad som visas på skärmen</translation>
 <translation id="1103523840287552314">Översätt alltid <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Stopp</translation>
 <translation id="1110155001042129815">Vänta</translation>
@@ -1182,7 +1180,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2307462900900812319">Konfigurera nätverk</translation>
 <translation id="230927227160767054">Den här sidan vill installera en tjänsthanterare.</translation>
 <translation id="2309620859903500144">Den här webbplatsen får inte använda enhetens rörelse- eller ljussensor.</translation>
-<translation id="2311497964614110326">Få bättre svar snabbare med assistenten</translation>
 <translation id="2312219318583366810">Sidans webbadress</translation>
 <translation id="2314165183524574721">Den aktuella synlighetsinställningen är Dold</translation>
 <translation id="2314774579020744484">Språk som sidor ska översättas till</translation>
@@ -1298,7 +1295,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2440604414813129000">Visa &amp;källa</translation>
 <translation id="244231003699905658">Adressen är ogiltig. Kontrollera webbadressen och försök igen.</translation>
 <translation id="2442916515643169563">Textskugga</translation>
-<translation id="2444469058037141906">Bara säg eller skriv vad du vill ha</translation>
 <translation id="2445081178310039857">Tilläggets rotkatalog måste anges.</translation>
 <translation id="2445484935443597917">Skapa en ny profil</translation>
 <translation id="2448312741937722512">Typ</translation>
@@ -2172,7 +2168,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="343578350365773421">Slut på papper</translation>
 <translation id="3435896845095436175">Aktivera</translation>
 <translation id="3438633801274389918">Ninja</translation>
-<translation id="3438643033528947620">Det gick inte att ansluta till Googles tjänster. Felkod: <ph name="ERROR_CODE" />.</translation>
 <translation id="3439153939049640737">Låt alltid <ph name="HOST" /> använda din mikrofon</translation>
 <translation id="3439970425423980614">Öppnar PDF i förhandsgranskning</translation>
 <translation id="3440663250074896476">Fler åtgärder för <ph name="BOOKMARK_NAME" /></translation>
@@ -2371,7 +2366,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3651488188562686558">Enheten kopplas från Wi-Fi</translation>
 <translation id="3652817283076144888">Initierar</translation>
 <translation id="3653160965917900914">Filresurser i nätverk</translation>
-<translation id="3653842108912548333">Få åtkomst till assistenten med Voice Match</translation>
 <translation id="3653999333232393305">Fortsätt tillåta <ph name="HOST" /> att använda din mikrofon</translation>
 <translation id="3654045516529121250">Läsa tillgänglighetsinställningarna</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Den har permanent åtkomst till en fil.}other{Den har permanent åtkomst till # filer.}}</translation>
@@ -3455,7 +3449,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz – med flätning</translation>
 <translation id="4902546322522096650">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, anslut</translation>
 <translation id="49027928311173603">Policyn som laddades ned från servern är ogiltig: <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4904061654709986277">Lägg till profil</translation>
 <translation id="4906490889887219338">Konfigurera eller hantera filresurser i nätverk. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, telefonens batterinivå <ph name="BATTERY_STATUS" /> %, information</translation>
 <translation id="4907161631261076876">Den här filen brukar inte laddas ned. Den kan vara skadlig.</translation>
@@ -3596,7 +3589,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="5086874064903147617">Vill du återställa standardinställningen för startsidan?</translation>
 <translation id="5087249366037322692">Har lagts till av tredje part</translation>
 <translation id="5087580092889165836">Lägg till kort</translation>
-<translation id="5087926280563932024">Det gick inte att verifiera kontot. Försök igen eller starta om Chromebook.</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 med RSA-kryptering</translation>
 <translation id="5090637338841444533">Får inte registrera kamerans position</translation>
 <translation id="5094721898978802975">Kommunicera med samverkande inbyggda appar</translation>
@@ -3792,7 +3784,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="5315738755890845852">Extra klammerparentes: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Spara</translation>
 <translation id="5319359161174645648">Google rekommenderar Chrome</translation>
-<translation id="5320112320661303273">Du verkar redan ha konfigurerat assistenten på en annan enhet. Få ut ännu mer av assistenten genom att aktivera följande inställning.</translation>
 <translation id="5320135788267874712">Nytt enhetsnamn</translation>
 <translation id="532247166573571973">Servern kanske inte kan nås. Försök igen senare.</translation>
 <translation id="5324300749339591280">Applista</translation>
@@ -5325,9 +5316,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="7088434364990739311">Det gick inte att starta uppdateringskontrollen (felkod <ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">Zip Archiver – öppna och komprimera ZIP-filer i appen Filer.</translation>
 <translation id="7088674813905715446">Den här enheten har avaktualiserats av administratören. Du måste be administratören sätta enheten som väntande innan du kan registrera den.</translation>
-<translation id="7092474863625458670">Med Voice Match får du åtkomst till assistenten direkt genom att använda rösten.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Tänk på detta:<ph name="END_BOLD" /> Det kan hända att en liknande röst eller en inspelning också kan använda Assistenten. Du kan ta bort behörigheten för Voice Match senare genom att inaktivera den i inställningarna för Google Assistent.</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">Utväxla data med enheterna <ph name="HOSTNAMES" /></translation>
 <translation id="7098389117866926363">USB-C-enhet (vänstra porten på baksidan)</translation>
@@ -5517,7 +5505,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="7325209047678309347">Papper har fastnat</translation>
 <translation id="7326004502692201767">Konfigurera denna <ph name="DEVICE_TYPE" /> åt ett barn</translation>
 <translation id="7327989755579928735"><ph name="MANAGER" /> har inaktiverat felsökning med ADB. Du kan inte sidladda appar när <ph name="DEVICE_TYPE" /> har startats om.</translation>
-<translation id="7328699668338161242">Assistenten kan redan känna igen din röst</translation>
 <translation id="7328867076235380839">Ogiltig kombination</translation>
 <translation id="7329154610228416156">Inloggningen misslyckades eftersom den har konfigurerats att använda en webbadress som inte är säker (<ph name="BLOCKED_URL" />). Kontakta administratören.</translation>
 <translation id="7332053360324989309">Dedicated Worker: <ph name="SCRIPT_URL" /></translation>
@@ -5667,7 +5654,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="7493386493263658176">Tillägget <ph name="EXTENSION_NAME" /> kan samla in all text du skriver, inklusive personlig information som lösenord och kreditkortsnummer. Vill du fortsätta att använda tillägget?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="7495778526395737099">Har du glömt ditt gamla lösenord?</translation>
-<translation id="7496732379142025470">För att spara batteri är ”Ok Google” bara aktiverat när enheten är ansluten till en strömkälla. Öppna Inställningar om du vill ändra något.</translation>
 <translation id="7497981768003291373">Du har inga nyligen registrerade WebRTC-textloggar.</translation>
 <translation id="7498614236023455416"><ph name="TARGET_NAME" /> ber om behörighet att ta en bild av innehållet på den här fliken.</translation>
 <translation id="7503191893372251637">Certifieringstyp för Netscape</translation>

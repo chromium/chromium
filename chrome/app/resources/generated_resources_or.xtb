@@ -40,7 +40,6 @@
 <translation id="1041263367839475438">ଉପଲବ୍ଧ ଥିବା ଡିଭାଇସ୍‍ଗୁଡ଼ିକ</translation>
 <translation id="1042174272890264476">ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟର୍‌ରେ ମଧ୍ୟ ପୂର୍ବରୁ<ph name="SHORT_PRODUCT_NAME" />ର RLZ ଲାଇବ୍ରେରୀ ଥାଏ। ଏକ ନିର୍ଦ୍ଧିଷ୍ଟ ପ୍ରଚାର ଅଭିଯାନରେ ବ୍ୟବହାର ହୋ‍ଇଥିବା ସନ୍ଧାନ ଏବଂ <ph name="SHORT_PRODUCT_NAME" />ର ବ୍ୟବହାର ମାପିବାକୁ RLZ ଏକ ସାଧାରଣ, ସାର୍ବଜନିକ ଚିହ୍ନିପାରିବା ପରି ଟାଗ୍‌ ନିରୂପଣ କରେ। Google ସର୍ଚ୍ଚ କ୍ୱେରୀର <ph name="PRODUCT_NAME" />ରେ ଏହି ଲେବଲ୍‌ଗୁଡ଼ିକ ବେଳେବେଳେ ଦେଖାଯାଏ।</translation>
 <translation id="1043818413152647937">ଏହି ଆପ୍ସରୁ ମଧ୍ୟ ଡାଟା ଖାଲି କରିବେ?</translation>
-<translation id="1046635659603195359">ଏହା ଜଣାପଡୁଛି ଯେ, ଆପଣ ପୂର୍ବରୁ ଅନ୍ୟ ଏକ ଡିଭାଇସ୍‍‍ରେ ଆପଣଙ୍କର Google ଆସିଷ୍ଟାଣ୍ଟ ସାହାଯ୍ୟରେ ଭଏସ୍ ମେଳ ସେଟ୍ କରିସାରିଛନ୍ତି। ଏହି ଡିଭାଇସ୍‍‍ରେ ଭଏସ୍‍ର ନମୁନା ତିଆରି କରିବା ପାଇଁ ଏହି ପୂର୍ବବର୍ତ୍ତୀ ରେକର୍ଡିଂଗୁଡ଼ିକୁ ବ୍ୟବହାର କରାଯାଇପାରିବ। ଏଥିରେ ଗୋଟିଏ ମିନିଟ୍‍ରୁ କମ୍ ସମୟ ଲାଗିବ।</translation>
 <translation id="104710386808485638">Linux ରିଷ୍ଟାର୍ଟ କରିବେ?</translation>
 <translation id="1047431265488717055">ଟେ&amp;କ୍ସଟ୍ ଲିଙ୍କ୍ କପି କରନ୍ତୁ</translation>
 <translation id="1048286738600630630">ଡିସ୍‌ପ୍ଲେ</translation>
@@ -88,7 +87,6 @@
 <translation id="109647177154844434">Parallels Desktop ଅନଇନଷ୍ଟଲ୍ କରିବା ଦ୍ଵାରା ଆପଣଙ୍କ Windowsର ଛବି ଡିଲିଟ୍ ହୋଇଯିବ। ଏହାର ଆପ୍ଲିକେସନ, ସେଟିଂସ୍ ଏବଂ ଡାଟା ଏଥିରେ ଅଛି। ଆପଣ ଜାରି ରଖିବାକୁ ଚାହୁଁଥିବା ନିଶ୍ଚିତ କି?</translation>
 <translation id="1097658378307015415">ସାଇନ୍‌ ଇନ୍‌ କରିବା ପୂର୍ବରୁ, ନେଟ୍‍ୱର୍କ <ph name="NETWORK_ID" /> ସକ୍ରିୟ କରିବାକୁ ଦୟାକରି ଅତିଥି ହିସାବରେ ପ୍ରବେଶ କରନ୍ତୁ</translation>
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" />ରୁ କପି କରାଯାଇଥିବା ଛବି</translation>
-<translation id="1102187190604780492">ଆପଣଙ୍କ Assistantକୁ ଆପଣଙ୍କ ସ୍କ୍ରିନରେ କଣ ଅଛି ସେ ସମ୍ବନ୍ଧିତ ସୂଚନା ସକ୍ରିୟ ଭାବରେ ଦେଖାଇବାକୁ ଦିଅନ୍ତୁ</translation>
 <translation id="1103523840287552314">ସର୍ବଦା <ph name="LANGUAGE" /> ଅନୁବାଦ କରନ୍ତୁ</translation>
 <translation id="1108600514891325577">&amp;ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="1110155001042129815">ଅପେକ୍ଷା କରନ୍ତୁ</translation>
@@ -1172,7 +1170,6 @@
 <translation id="2307462900900812319">ନେଟ୍‍ୱର୍କ କନ୍‌ଫିଗର୍ କରନ୍ତୁ</translation>
 <translation id="230927227160767054">ଏହି ପୃଷ୍ଠା ଏକ ସେବା ହ୍ୟାଣ୍ଡଲର୍ ଇନ୍‌ଷ୍ଟଲ୍ କରିବାକୁ ଚାହୁଁଛି।</translation>
 <translation id="2309620859903500144">ଏହି ସାଇଟ୍‍କୁ ଆପଣଙ୍କ ମୋସନ୍ ଏବଂ ଲାଇଟ୍ ସେନ୍‌ସର୍ ଆକ୍ସେସ୍ କରିବା ପାଇଁ ବ୍ଲକ୍ କରାଯାଇଛି।</translation>
-<translation id="2311497964614110326">Assistant ସାହାଯ୍ୟରେ ଆହୁରି ଭଲ ଉତ୍ତରଗୁଡ଼ିକ ଶୀଘ୍ର ପାଆନ୍ତୁ</translation>
 <translation id="2312219318583366810">ପୃଷ୍ଠା URL</translation>
 <translation id="2314165183524574721">ବର୍ତ୍ତମାନର ଭିଜିବିଲିଟୀ ସେଟିଂକୁ ଲୁଚାଯାଇଛି</translation>
 <translation id="2314774579020744484">ପୃଷ୍ଠାଗୁଡ଼ିକୁ ଅନୁବାଦ କରିବା ସମୟରେ ବ୍ୟବହାର କରାଯାଉଥିବା ଭାଷା</translation>
@@ -1286,7 +1283,6 @@
 <translation id="2440604414813129000">ଉ&amp;ତ୍ସ ଦର୍ଶନ୍ କରନ୍ତୁ</translation>
 <translation id="244231003699905658">ଅବୈଧ ଠିକଣା। ଦୟାକରି ଠିକଣା ଯାଞ୍ଚ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="2442916515643169563">ଟେକ୍ସଟ ଶାଡୋ</translation>
-<translation id="2444469058037141906">ଆପଣ ଯାହା ଆବଶ୍ୟକ କରନ୍ତି ତାହା କେବଳ କୁହନ୍ତୁ କିମ୍ବା ଟାଇପ୍ କରନ୍ତୁ</translation>
 <translation id="2445081178310039857">ଏକ୍ସଟେନ୍‍ସନ୍‍ ମୂଳ ଡିରେକ୍ଟୋରୀ ଆବଶ୍ୟକ ଅଟେ।</translation>
 <translation id="2445484935443597917">ଗୋଟିଏ ନୂତନ ପ୍ରୋଫାଇଲ୍ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="2448312741937722512">ପ୍ରକାର</translation>
@@ -2155,7 +2151,6 @@
 <translation id="343578350365773421">ପେପର୍‍ ଶେଷ ହୋଇଯାଇଛି</translation>
 <translation id="3435896845095436175">ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="3438633801274389918">ନିଞ୍ଜା</translation>
-<translation id="3438643033528947620">Google ସେବାଗୁଡ଼ିକ ସହିତ ସଂଯୋଗ କରାଯାଇପାରିଲା ନାହିଁ। ତ୍ରୁଟି କୋଡ୍: <ph name="ERROR_CODE" />।</translation>
 <translation id="3439153939049640737">ଆପଣଙ୍କର ମାଇକ୍ରୋଫୋନ୍‌କୁ ଆକ୍ସେସ୍‌ କରିବାକୁ ସର୍ବଦା <ph name="HOST" />କୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="3439970425423980614">ପ୍ରିଭ୍ୟୁରେ PDF ଖୋଲୁଛି</translation>
 <translation id="3440663250074896476"><ph name="BOOKMARK_NAME" /> ପାଇଁ ଅଧିକ ପଦକ୍ଷେପ</translation>
@@ -2354,7 +2349,6 @@
 <translation id="3651488188562686558">Wi-Fiରୁ ବିଚ୍ଛିନ୍ନ କରନ୍ତୁ</translation>
 <translation id="3652817283076144888">ଆରମ୍ଭ କରୁଛି</translation>
 <translation id="3653160965917900914">ନେଟ୍‌ୱାର୍କ ଫାଇଲ୍ ସେୟାର୍ କରେ</translation>
-<translation id="3653842108912548333">ଭଏସ୍ ମେଳ ମାଧ୍ୟମରେ ଆପଣଙ୍କର ଆସିଷ୍ଟାଣ୍ଟକୁ ଆକ୍‌ସେସ୍ କରନ୍ତୁ</translation>
 <translation id="3653999333232393305">ଆପଣଙ୍କର ମାଇକ୍ରୋଫୋନ୍‌କୁ ଆକ୍ସେସ୍ କରିବା ପାଇଁ <ph name="HOST" />କୁ ଅନୁମତି ଦେବା ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="3654045516529121250">ଆପଣଙ୍କର ଆକ୍ସେସିବିଲିଟୀ ସେଟିଂସ୍ ପଢ଼ନ୍ତୁ</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{ଏହାର ଗୋଟିଏ ଫାଇଲ୍‍‍ରେ ସ୍ଥାୟୀ ଆକ୍ସେସ୍ ରହିଛି।}other{ଏହାର #ଟି ଫାଇଲ୍‍‍ରେ ସ୍ଥାୟୀ ଆକ୍ସେସ୍ ରହିଛି।}}</translation>
@@ -3431,7 +3425,6 @@
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - ଇଣ୍ଟରଲେସ୍ ହୋଇଛି</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" />ଟିର <ph name="NETWORK_INDEX" /> ନେଟ୍‌ୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ସିଗ୍‌ନାଲ୍‌ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ସଂଯୋଗ କରନ୍ତୁ</translation>
 <translation id="49027928311173603">ସର୍ଭର୍‌ରୁ ଡାଉନ୍‌ଲୋଡ୍ ହୋଇଥିବା ନୀତି ଅବୈଧ ଅଟେ: <ph name="VALIDATION_ERROR" />।</translation>
-<translation id="4904061654709986277">ପ୍ରୋଫାଇଲ୍ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="4906490889887219338">ନେଟ୍‍ୱାର୍କ ଫାଇଲ୍ ସେୟାର୍ ସେଟ୍ ଅପ୍ କରନ୍ତୁ କିମ୍ବା ପରିଚାଳନା କରନ୍ତୁ। <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301"><ph name="NETWORK_COUNT" />ଟିରୁ <ph name="NETWORK_INDEX" /> ନମ୍ବର ନେଟୱାର୍କ, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, ସିଗନାଲର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ଫୋନ୍ ବ୍ୟାଟେରୀ <ph name="BATTERY_STATUS" />%, ବିବରଣୀ</translation>
 <translation id="4907161631261076876">ଏହି ଫାଇଲ୍ ସାଧାରଣତଃ ଡାଉନ୍‌ଲୋଡ୍ କରାଯାଏ ନାହିଁ ଏବଂ ଏହା ହୁଏତ ବିପଜ୍ଜନକ ହୋଇଥାଇପାରେ।</translation>
@@ -3572,7 +3565,6 @@
 <translation id="5086874064903147617">ଡିଫଲ୍ଟ ମୂଳପୃଷ୍ଠା ପୁନଃସ୍ଥାପନ କରିବେ?</translation>
 <translation id="5087249366037322692">ତୃତୀୟ ପକ୍ଷ ଦ୍ଵାରା ଯୋଗ କରାଗଲା</translation>
 <translation id="5087580092889165836">କାର୍ଡ ଯୋଗ କରନ୍ତୁ</translation>
-<translation id="5087926280563932024">ଆପଣଙ୍କର ଆକାଉଣ୍ଟ ଯାଞ୍ଚ କରିହେଲା ନାହିଁ। ଦୟାକରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କର Chromebook ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ।</translation>
 <translation id="5088534251099454936">RSA ଏନକ୍ରିପ୍ସନ୍ ସହିତ PKCS #1 SHA-512</translation>
 <translation id="5090637338841444533">ଆପଣଙ୍କ କ୍ୟାମେରାର ସ୍ଥିତିକୁ ଟ୍ରାକ୍ କରିବାକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
 <translation id="5094721898978802975">ସହଯୋଗୀ ସ୍ଥାନୀୟ ଆପ୍ଲିକେସନ୍‌ଗୁଡ଼ିକ ସହିତ ଯୋଗାଯୋଗ କରନ୍ତୁ</translation>
@@ -3767,7 +3759,6 @@
 <translation id="5315738755890845852">ଅତିରିକ୍ତ କୁଟିଳ ବନ୍ଧନୀ: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">ସଞ୍ଚୟ</translation>
 <translation id="5319359161174645648">Google Chromeକୁ ସୁପାରିଶ କରୁଛି</translation>
-<translation id="5320112320661303273">ଏପରି ଜଣାପଡୁଛି ଯେ, ଆପଣ ପୂର୍ବରୁ ଏକ ଭିନ୍ନ ଡିଭାଇସରେ Assistant ସେଟ୍ ଅପ୍ କରିସାରିଛନ୍ତି। ନିମ୍ନୋକ୍ତ ସେଟିଂକୁ ଚାଲୁ କରି ଆପଣଙ୍କ Assistantରୁ ଆହୁରି ଅଧିକ ସୁବିଧା ପାଆନ୍ତୁ।</translation>
 <translation id="5320135788267874712">ନୂଆ ଡିଭାଇସର ନାମ</translation>
 <translation id="532247166573571973">ସର୍ଭର୍ ହୁଏତ ପହଞ୍ଚଯୋଗ୍ୟ ନୁହେଁ। ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="5324300749339591280">ଆପଗୁଡ଼ିକର ତାଲିକା</translation>
@@ -5290,9 +5281,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7088434364990739311">ଅପ୍‍ଡେଟ୍‍ର ଯାଞ୍ଚ ପ୍ରକ୍ରିୟା ଆରମ୍ଭ କରିବାରେ ବିଫଳ ହେଲା (ତ୍ରୁଟି କୋଡ୍ <ph name="ERROR" />)।</translation>
 <translation id="7088561041432335295">ଜିପ୍‌ ଆର୍କାଇଭର୍‌ - ଫାଇଲ୍ ଆପ୍‌ରେ ZIP ଫାଇଲ୍ ଖୋଲନ୍ତୁ ଏବଂ ପ୍ୟାକ୍ କରନ୍ତୁ।</translation>
 <translation id="7088674813905715446">ବ୍ୟବସ୍ଥାପକଙ୍କ ଦ୍ୱାରା ଏହି ଡିଭାଇସ୍‌ ଏକ ଅବ୍ୟବସ୍ଥିତ ସ୍ଥିତିରେ ରଖାଯାଇଛି। ଏହାକୁ ନାମାଙ୍କନ ପାଇଁ ସକ୍ଷମ କରିବାକୁ, ଦୟାକରି ଆପଣଙ୍କର ବ୍ୟବସ୍ଥାପକଙ୍କ ଦ୍ୱାରା ଡିଭାଇସ୍‌କୁ ଏକ ବିଳମ୍ବିତ ସ୍ଥିତିରେ ରହିବାକୁ ଦିଅନ୍ତୁ।</translation>
-<translation id="7092474863625458670">ଭଏସ୍ ମ୍ୟାଚ୍ ଆପଣଙ୍କୁ ଆପଣଙ୍କର ଆସିଷ୍ଟାଣ୍ଟ ସିଧାସଳଖ ଭାବରେ ବ୍ୟବହାର କରିବାକୁ ଦେଇଥାଏ।
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />ମନେ ରଖନ୍ତୁ:<ph name="END_BOLD" /> ଗୋଟିଏ ସମାନ ପ୍ରକାରର ଭଏସ୍ କିମ୍ବା ରେକର୍ଡିଂରୁ ମଧ୍ୟ ଆପଣଙ୍କର ଆସିଷ୍ଟାଣ୍ଟକୁ ଆକ୍ସେସ୍ କରିବା ପାଇଁ ସକ୍ଷମ ହୋଇପାରେ। ଆପଣ ପରେ ଆସିଷ୍ଟାଣ୍ଟ ସେଟିଂସ୍‌ରେ ଯାଇ ଭଏସ୍ ମ୍ୟାଚ୍‌କୁ ବନ୍ଦ କରି ଏହାକୁ ଦିଆଯାଇଥିବା ଅନୁମତି କାଢ଼ି ପାରିବେ।</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">ଏହି ଡିଭାଇସ୍ ସହିତ ଡାଟା ବଦଳ କରନ୍ତୁ: <ph name="HOSTNAMES" /></translation>
 <translation id="7098389117866926363">USB-C ଡିଭାଇସ୍‌ (ବାମପଟ ପଛ ପୋର୍ଟ )</translation>
@@ -5481,7 +5469,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7325209047678309347">କାଗଜ ଅଟକି ଯାଇଛି</translation>
 <translation id="7326004502692201767">ଗୋଟିଏ ପିଲା ପାଇଁ ଏହି <ph name="DEVICE_TYPE" /> ସେଟ୍ ଅପ୍ କରନ୍ତୁ</translation>
 <translation id="7327989755579928735"><ph name="MANAGER" /> ADB ଡିବଗିଂକୁ ଅକ୍ଷମ କରିଛି। ଆପଣ ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />କୁ ରିଷ୍ଟାର୍ଟ କଲେ, ଆପଣ ଆପଗୁଡ଼ିକୁ ସାଇଡଲୋଡ୍ କରିବାକୁ ସକ୍ଷମ ହେବେ ନାହିଁ।</translation>
-<translation id="7328699668338161242">ଆପଣଙ୍କର ଆସିଷ୍ଟାଣ୍ଟ, ଆପଣଙ୍କର ଭଏସ୍‌କୁ ପୂର୍ବରୁ ଚିହ୍ନଟ କରିସାରିଛି</translation>
 <translation id="7328867076235380839">ଅବୈଧ ସଂଯୋଜନ</translation>
 <translation id="7329154610228416156">ସାଇନ୍-ଇନ୍ ବିଫଳ ହେଲା କାରଣ ଗୋଟିଏ ଅସୁରକ୍ଷିତ URL<ph name="BLOCKED_URL" />କୁ ବ୍ୟବହାର କରିବା ପାଇଁ ଏହାକୁ କନ୍‌ଫିଗର୍ କରାଯାଇଥିଲା। ଦୟାକରି ଆପଣଙ୍କର ଆଡ୍‍ମିନିଷ୍ଟ୍ରେଟର୍‍ଙ୍କ ସହିତ ଯୋଗାଯୋଗ କରନ୍ତୁ।</translation>
 <translation id="7332053360324989309">ଉତ୍ସର୍ଗୀକୃତ କର୍ମଚାରୀ: <ph name="SCRIPT_URL" /></translation>
@@ -5630,7 +5617,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7493386493263658176"><ph name="EXTENSION_NAME" /> ଏକ୍ସଟେନ୍‌ସନ୍ ଆପଣ ଟାଇପ୍ କରିଥିବା ସମସ୍ତ ଟେକ୍ସଟ୍‌କୁ ହୁଏତ ସଂଗୃହୀତ କରିପାରେ, ଯେଉଁଥିରେ ବ୍ୟକ୍ତିଗତ ଡାଟା ଯେପରିକି ପାସ୍‌ୱର୍ଡ ଏବଂ କ୍ରେଡିଟ୍ କାର୍ଡ ନମ୍ବର ଅନ୍ତର୍ଭୁକ୍ତ ଥାଏ। ଆପଣ ଏହି ଏକ୍ସଟେନ୍‌ସନ୍ ବ୍ୟବହାର କରିବାକୁ ଚାହୁଁଛନ୍ତି କି?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="7495778526395737099">ଆପଣଙ୍କର ପୁରୁଣା ପାସ୍‌ୱର୍ଡ ଭୁଲିଯାଇଛନ୍ତି କି?</translation>
-<translation id="7496732379142025470">ବ୍ୟାଟେରୀ ସେଭ୍ କରିବା ପାଇଁ, “Ok Google” କେବଳ ସେତେବେଳେ ଚାଲୁ ହୋଇଥାଏ, ଯେତେବେଳେ ଆପଣଙ୍କର ଡିଭାଇସ୍ ଗୋଟିଏ ପାୱାର୍ ଉତ୍ସ ସହ ସଂଯୁକ୍ତ ଥାଏ। ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ, ସେଟିଂସ୍‌କୁ ଯାଆନ୍ତୁ।</translation>
 <translation id="7497981768003291373">ଆପଣଙ୍କ ପାଖରେ ନିକଟରେ କ୍ୟାପଚର୍‌ କରାଯାଇଥିବା କୌଣସି WebRTC ଇଭେଣ୍ଟ ଲଗ୍‌ ନାହିଁ।</translation>
 <translation id="7498614236023455416"><ph name="TARGET_NAME" /> ଏହି ଟାବର ବିଷୟବସ୍ତୁଗୁଡ଼ିକୁ କ୍ୟାପଚର୍ କରିବା ପାଇଁ ଅନୁମତି ମାଗୁଛି।</translation>
 <translation id="7503191893372251637">Netscape ସାର୍ଟିଫିକେଟ୍ ପ୍ରକାର</translation>

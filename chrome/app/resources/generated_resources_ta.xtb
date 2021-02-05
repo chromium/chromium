@@ -40,7 +40,6 @@
 <translation id="1041263367839475438">கிடைக்கும் சாதனங்கள்</translation>
 <translation id="1042174272890264476">உள்ளிணைந்த <ph name="SHORT_PRODUCT_NAME" /> இன் RLZ நூலகமும் உங்கள் கம்ப்யூட்டரில் அமைந்துள்ளது. தேடல்களையும், குறிப்பிட்ட விளம்பரப் பிரச்சாரத்தால் இயக்கப்படும் <ph name="SHORT_PRODUCT_NAME" /> இன் ஆப்ஸையும் அளவிட தனிப்பட்டது அல்லாத, தனிப்பட்ட முறையில் அடையாளம் காண முடியாத குறியை RLZ ஒதுக்கும். சில சமயங்களில் இந்த லேபிள்கள் <ph name="PRODUCT_NAME" /> இன் Google தேடல் வினவல்களில் தோன்றும்.</translation>
 <translation id="1043818413152647937">இந்த ஆப்ஸிலிருந்தும் தரவை அழிக்க வேண்டுமா?</translation>
-<translation id="1046635659603195359">ஏற்கனவே வேறொரு சாதனத்தில் உங்கள் Google அசிஸ்டண்ட்டில் Voice Matchசை அமைத்துள்ளீர்கள் எனத் தோன்றுகிறது. இந்தச் சாதனத்தில் குரல் மாதிரியை உருவாக்குவதற்கு அந்த முந்தைய பதிவுகளைப் பயன்படுத்தலாம். இதற்கு ஒரு நிமிடத்திற்கும் குறைவாகவே ஆகும்.</translation>
 <translation id="104710386808485638">Linuxஸை மீண்டும் தொடங்கவா?</translation>
 <translation id="1047431265488717055">இணைப்பு &amp;உரையை நகலெடு</translation>
 <translation id="1048286738600630630">திரை அமைப்புகள்</translation>
@@ -88,7 +87,6 @@
 <translation id="109647177154844434">Parallels Desktopபை நிறுவல் நீக்கினால் உங்கள் Windows படம் நீக்கப்படும். இதன் ஆப்ஸ், அமைப்புகள், தரவு ஆகியவை இதில் அடங்கும். தொடர விரும்புகிறீர்களா?</translation>
 <translation id="1097658378307015415">உள்நுழைவதற்கு முன், <ph name="NETWORK_ID" /> என்ற நெட்வொர்க்கை இயக்க, கெஸ்டாக நுழைக</translation>
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" /> சாதனத்திலிருந்து நகலெடுக்கப்பட்ட படம்</translation>
-<translation id="1102187190604780492">உங்கள் திரையிலுள்ள உள்ளடக்கத்துடன் தொடர்புடைய தகவலை நீங்கள் கேட்கும் முன்னரே காட்ட Assistantடை அனுமதிக்கும்</translation>
 <translation id="1103523840287552314">எப்போதும் இந்த மொழியை மொழிபெயர் <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Stop</translation>
 <translation id="1110155001042129815">காத்திருங்கள்</translation>
@@ -1179,7 +1177,6 @@
 <translation id="2307462900900812319">நெட்வொர்க்கை உள்ளமை</translation>
 <translation id="230927227160767054">இந்தப் பக்கம் சேவை ஹேண்ட்லரை நிறுவ உள்ளது.</translation>
 <translation id="2309620859903500144">இந்தத் தளம் உங்கள் நகர்வு அல்லது ஒளி சென்சார்களை அணுகுவதிலிருந்து தடைசெய்யப்பட்டுள்ளது.</translation>
-<translation id="2311497964614110326">Assistant மூலம் இன்னும் சிறப்பான பதில்களை விரைவாகப் பெறுங்கள்</translation>
 <translation id="2312219318583366810">பக்கத்தின் URL</translation>
 <translation id="2314165183524574721">தற்போதைய தெரிவுநிலை அமைப்பு: மறைக்கப்பட்டுள்ளது</translation>
 <translation id="2314774579020744484">பக்கங்களை மொழிபெயர்க்கும்போது பயன்படுத்தப்படும் மொழி</translation>
@@ -1294,7 +1291,6 @@
 <translation id="2440604414813129000">ஆ&amp;தாரத்தைக் காண்பி</translation>
 <translation id="244231003699905658">தவறான முகவரி. முகவரியைச் சரிபார்த்துவிட்டு மீண்டும் முயலவும்.</translation>
 <translation id="2442916515643169563">டெக்ஸ்ட் ஷேடோ</translation>
-<translation id="2444469058037141906">தெரிந்துகொள்ள வேண்டியதைக் கூறுங்கள்/உள்ளிடுங்கள்</translation>
 <translation id="2445081178310039857">நீட்டிப்பு மூல கோப்பகம் தேவை.</translation>
 <translation id="2445484935443597917">ஒரு புதிய சுயவிவரத்தை உருவாக்கு</translation>
 <translation id="2448312741937722512">வகை</translation>
@@ -2164,7 +2160,6 @@
 <translation id="343578350365773421">காகிதம் தீர்ந்துவிட்டது</translation>
 <translation id="3435896845095436175">இயக்கு</translation>
 <translation id="3438633801274389918">நிஞ்சா</translation>
-<translation id="3438643033528947620">Google சேவைகளுடன் இணைக்க முடியவில்லை. பிழைக் குறியீடு: <ph name="ERROR_CODE" />.</translation>
 <translation id="3439153939049640737">உங்கள் மைக்ரோஃபோனை <ph name="HOST" /> எப்போதும் அணுக அனுமதிக்கவும்</translation>
 <translation id="3439970425423980614">PDF ஐ மாதிரிக்காட்சியில் திறக்கிறது</translation>
 <translation id="3440663250074896476"><ph name="BOOKMARK_NAME" />க்கான மேலும் செயல்கள்</translation>
@@ -2363,7 +2358,6 @@
 <translation id="3651488188562686558">வைஃபை இணைப்பைத் துண்டி</translation>
 <translation id="3652817283076144888">துவக்குகிறது</translation>
 <translation id="3653160965917900914">நெட்வொர்க் கோப்புப் பகிர்வுகள்</translation>
-<translation id="3653842108912548333">Voice Match மூலம் அசிஸ்டண்ட்டை அணுகுதல்</translation>
 <translation id="3653999333232393305">உங்கள் மைக்ரோஃபோனை அணுக <ph name="HOST" /> ஐத் தொடர்ந்து அனுமதிக்கவும்</translation>
 <translation id="3654045516529121250">உங்கள் அணுகல்தன்மை அமைப்புகளைப் படித்தல்</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{ஒரு கோப்பிற்கு நிரந்தர அணுகலைக் கொண்டுள்ளது.}other{# கோப்புகளுக்கு நிரந்தர அணுகலைக் கொண்டுள்ளது.}}</translation>
@@ -3442,7 +3436,6 @@
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - பிணைக்கப்பட்டுள்ளது</translation>
 <translation id="4902546322522096650">நெட்வொர்க்: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />%, இணை</translation>
 <translation id="49027928311173603">சேவையகத்திலிருந்து பதிவிறக்கிய கொள்கை தவறானது: <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4904061654709986277">சுயவிவரத்தைச் சேர்</translation>
 <translation id="4906490889887219338">நெட்வொர்க் கோப்புப் பகிர்வுகளை அமைத்தல் அல்லது நிர்வகித்தல். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301">நெட்வொர்க்: <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />%, மொபைல் பேட்டரி <ph name="BATTERY_STATUS" />%, விவரங்கள்</translation>
 <translation id="4907161631261076876">பொதுவாக இந்தக் கோப்புப் பதிவிறக்கப்படுவதில்லை, மேலும் ஆபத்தானதாக இருக்கக்கூடும்.</translation>
@@ -3583,7 +3576,6 @@
 <translation id="5086874064903147617">இயல்பு முகப்புப்பக்கத்தை மீட்டமைக்கவா?</translation>
 <translation id="5087249366037322692">மூன்றாம் தரப்பு சேர்த்தது</translation>
 <translation id="5087580092889165836">கார்டைச் சேர்</translation>
-<translation id="5087926280563932024">கணக்கைச் சரிபார்க்க முடியவில்லை. மீண்டும் முயலவும் அல்லது Chromebookகை மீண்டும் தொடங்கவும்.</translation>
 <translation id="5088534251099454936">RSA என்க்ரிப்ஷனுடன் PKCS #1 SHA-512</translation>
 <translation id="5090637338841444533">உங்கள் கேமராவின் நிலையைக் கண்காணிக்க அனுமதி இல்லாத தளங்கள்</translation>
 <translation id="5094721898978802975">ஒண்றிணைந்த குறிப்பிட்ட சாதனத்திற்கான பயன்பாடுகளுடன் தொடர்புகொள்ளவும்</translation>
@@ -3778,7 +3770,6 @@
 <translation id="5315738755890845852">கூடுதல் நெளி அடைப்புக்குறி: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">சேமி</translation>
 <translation id="5319359161174645648">Google ஆனது Chromeஐப் பரிந்துரைக்கிறது</translation>
-<translation id="5320112320661303273">நீங்கள் ஏற்கெனவே வேறொரு சாதனத்தில் Assistantடை அமைத்துள்ளதாகத் தெரிகிறது. பின்வரும் அமைப்பை இயக்கி, Assistantடிலிருந்து அதிகப் பலன்களைப் பெறுங்கள்.</translation>
 <translation id="5320135788267874712">புதிய சாதனத்தின் பெயர்</translation>
 <translation id="532247166573571973">சேவையகத்தைத் தொடர்புகொள்ள முடியாதிருக்கலாம். மீண்டும் முயலவும்.</translation>
 <translation id="5324300749339591280">ஆப்ஸ் பட்டியல்</translation>
@@ -5304,9 +5295,6 @@
 <translation id="7088434364990739311">புதுப்பிப்பு சரிபார்த்தலை துவங்குவதில் தோல்வி. (பிழை குறியீடு <ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">Zip Archiver - கோப்புகள் பயன்பாட்டில் ஜிப் ஃபைல்களைத் திறக்கலாம், தொகுக்கலாம்.</translation>
 <translation id="7088674813905715446">இந்தச் சாதனம் நிர்வாகியால் அணுகல் இல்லா தன்மையில் வைக்கப்பட்டுள்ளது. பதிவுசெய்வதற்காக அதை இயக்குவதற்கு, இந்தச் சாதனத்தை நிலுவை நிலையில் வைக்குமாறு உங்கள் நிர்வாகியிடம் கேட்கவும்.</translation>
-<translation id="7092474863625458670">உங்கள் குரலைப் பயன்படுத்தி அசிஸ்டண்ட்டை நேரடியாக அணுக Voice Match அனுமதிக்கிறது.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />நினைவில் கொள்க:<ph name="END_BOLD" /> அதே போன்ற குரல் அல்லது பதிவைப் பயன்படுத்தியும் அசிஸ்டண்ட்டை அணுகலாம். ’அசிஸ்டண்ட் அமைப்புகளில்’ Voice Matchசை முடக்குவதன் மூலம் அதன் அனுமதியை அகற்றலாம்.</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">பின்வரும் பெயரிடப்பட்ட எந்தச் சாதனங்களுடனும் தரவைப் பரிமாறவும்: <ph name="HOSTNAMES" /></translation>
 <translation id="7098389117866926363">USB-C சாதனம் (பின்பக்கம் உள்ள இடது போர்ட்)</translation>
@@ -5495,7 +5483,6 @@
 <translation id="7325209047678309347">காகிதம் சிக்கிக் கொண்டது</translation>
 <translation id="7326004502692201767">பிள்ளைக்காக இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை அமைத்தல்</translation>
 <translation id="7327989755579928735">ADB பிழைதிருத்தத்தை <ph name="MANAGER" /> முடக்கியுள்ளது. <ph name="DEVICE_TYPE" /> சாதனத்தை மீண்டும் தொடங்கியதும் உங்களால் ஆப்ஸை சைடுலோடு செய்ய முடியாது.</translation>
-<translation id="7328699668338161242">அசிஸ்டண்ட்டால் உங்கள் குரலை ஏற்கனவே அடையாளம் காண முடியும்</translation>
 <translation id="7328867076235380839">தவறான சேர்க்கை</translation>
 <translation id="7329154610228416156">பாதுகாப்பற்ற URLஐப் (<ph name="BLOCKED_URL" />) பயன்படுத்தும்படி உள்ளமைக்கப்பட்டதால் உள்நுழைவு தோல்வியானது. உங்கள் நிர்வாகியைத் தொடர்புகொள்ளவும்.</translation>
 <translation id="7332053360324989309">பிரத்தியேக வொர்க்கர்: <ph name="SCRIPT_URL" /></translation>
@@ -5644,7 +5631,6 @@
 <translation id="7493386493263658176">கடவுச்சொற்கள், கிரெடிட் கார்டு எண்கள் போன்ற தனிப்பட்ட தரவு உட்பட, நீங்கள் உள்ளிடும் எல்லா உரையையும் <ph name="EXTENSION_NAME" /> நீட்டிப்பு சேகரிக்கக்கூடும். இந்த நீட்டிப்பைப் பயன்படுத்த விரும்புகிறீர்களா?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="7495778526395737099">பழைய கடவுச்சொல் மறந்துவிட்டதா?</translation>
-<translation id="7496732379142025470">பேட்டரியைச் சேமிக்க, சாதனம் சார்ஜ் செய்யப்படும்போது மட்டுமே “Ok Google” அம்சம் கிடைக்கும். மாற்றங்களைச் செய்ய ‘அமைப்புகளுக்குச்’ செல்லவும்.</translation>
 <translation id="7497981768003291373">சமீபத்தில் எடுக்கப்பட்ட WebRTC உரைப் பதிவுகள் எதுவும் இல்லை.</translation>
 <translation id="7498614236023455416">இந்தத் தாவலின் உள்ளடக்கங்களைப் பெற <ph name="TARGET_NAME" /> அனுமதி கேட்கிறது.</translation>
 <translation id="7503191893372251637">Netscape சான்றிதழ் வகை</translation>

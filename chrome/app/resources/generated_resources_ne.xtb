@@ -40,7 +40,6 @@
 <translation id="1041263367839475438">उपलब्ध यन्त्रहरू</translation>
 <translation id="1042174272890264476">तपाइँको कम्प्युटर <ph name="SHORT_PRODUCT_NAME" /> को RLZ अन्तरनिर्मित पुस्तकालयसँग पनि आउँछ। एक विशेष वृद्धि जनक अभियानद्वारा चालू भएको खोजीहरू र <ph name="SHORT_PRODUCT_NAME" /> प्रयोगहरू नाप्नको लागि RLZ ले एउटा अद्वितीय नभएको, व्यक्तिगत नभएको ठम्याउन सकिने ट्याग तोक्छ। यी लेबुलहरू कहिलेकाही <ph name="PRODUCT_NAME" /> मा Google खोजी क्वेरीहरूमका देखा पर्छन्।</translation>
 <translation id="1043818413152647937">यी अनुप्रयोगहरूका डेटा पनि खाली गर्ने हो?</translation>
-<translation id="1046635659603195359">तपाईंले आफ्नो Google सहायकमार्फत अर्को यन्त्रमा Voice Match सेटअप गरिसक्नुभएको छ जस्तो देखिन्छ। यो यन्त्रमा आवाजको नमुना बनाउनका लागि ती अघिल्ला रेकर्डिङहरू प्रयोग गर्न सकिन्छ। यसो गर्न एक मिनेटभन्दा कम समय लाग्छ।</translation>
 <translation id="104710386808485638">Linux पुनः सुरु गर्ने हो?</translation>
 <translation id="1047431265488717055">लिंक पाठ प्रतिलिपि गर्नुहोस्</translation>
 <translation id="1048286738600630630">प्रदर्शनहरू</translation>
@@ -86,7 +85,6 @@
 <translation id="109647177154844434">Parallels Desktop अनइन्स्टल गर्नुले तपाईंको Windows इमेज मेटाउने छ। यसमा Windows का एप, सेटिङ र डेटा समावेश हुन्छन्। तपाईंले Parallels Desktop अनइन्स्टल गर्न खोज्नुभएकै हो?</translation>
 <translation id="1097658378307015415">साइन इन गर्नुअघि, कृपया सञ्जाल <ph name="NETWORK_ID" /> सक्रिय गर्नको लागि पाहुनाको रूपमा प्रवेश गर्नुहोस्</translation>
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" /> बाट छवि कपी गरियो</translation>
-<translation id="1102187190604780492">तपाईंको सहायकलाई तपाईंको स्क्रिनमा भएका कुरासँग सम्बन्धित जानकारी सक्रियतापूर्वक देखाउन दिनुहोस्</translation>
 <translation id="1103523840287552314">सँधै अनुवाद गर्नुहोस् <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;रोक्नुहोस्</translation>
 <translation id="1110155001042129815">प्रतिक्षा गर्नुहोस्</translation>
@@ -1175,7 +1173,6 @@
 <translation id="2307462900900812319">नेटवर्क कन्फिगर गर्नुहोस्</translation>
 <translation id="230927227160767054">यस पृष्ठले एक सेवा सञ्चालनकर्ता स्थापना गर्न चाहन्छ।</translation>
 <translation id="2309620859903500144">यो साइटलाई तपाईंको चाल वा प्रकाशसम्बन्धी सेन्सरहरूको पहुँच राख्नबाट रोक लागाइएको छ।</translation>
-<translation id="2311497964614110326">सहायक प्रयोग गरी अझ राम्रा जवाफहरू अझ छिटो प्राप्त गर्नुहोस्</translation>
 <translation id="2312219318583366810">पेजको URL</translation>
 <translation id="2314165183524574721">हालको भिजिबिलिटी सेटिङ यस प्रकार छ: लुकाइएको</translation>
 <translation id="2314774579020744484">पृष्ठहरू अनुवाद गर्दा प्रयोग हुने भाषा</translation>
@@ -1290,7 +1287,6 @@
 <translation id="2440604414813129000">स्रो&amp;त हेर्नुहोस्</translation>
 <translation id="244231003699905658">अमान्य ठेगाना कृपया उक्त ठेगानाको जाँच गरी फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="2442916515643169563">पाठको छायाँ</translation>
-<translation id="2444469058037141906">आफूले चाहेको कुरा भने वा टाइप गरे पुग्छ</translation>
 <translation id="2445081178310039857">एक्सटेन्सन मूल डाइरेक्टरी आवश्यक छ।</translation>
 <translation id="2445484935443597917">नयाँ प्रोफाइल बनाउनुहोस्</translation>
 <translation id="2448312741937722512">प्रकार</translation>
@@ -2161,7 +2157,6 @@
 <translation id="343578350365773421">पाना सकियो</translation>
 <translation id="3435896845095436175">सक्षम बनाउनुहोस्</translation>
 <translation id="3438633801274389918">निन्जा</translation>
-<translation id="3438643033528947620">Google का सेवाहरूमा कनेक्ट गर्न सकिएन। त्रुटिसम्बन्धी कोड: <ph name="ERROR_CODE" />।</translation>
 <translation id="3439153939049640737"><ph name="HOST" /> लाई जहिले पनि तपाइँको माइक्रोफोन पहुँच गर्ने अनुमति दिनुहोस्</translation>
 <translation id="3439970425423980614">पीडीएफलाई पूर्वावलोकनमा खोल्दै</translation>
 <translation id="3440663250074896476"><ph name="BOOKMARK_NAME" /> मा गर्न सकिने थप कारबाहीहरू</translation>
@@ -2360,7 +2355,6 @@
 <translation id="3651488188562686558">Wi-Fi बाट विच्छेद गर्नुहोस्</translation>
 <translation id="3652817283076144888">सुरुवात गर्दै</translation>
 <translation id="3653160965917900914">नेटवर्कको फाइल आदान प्रदान गर्ने कार्य</translation>
-<translation id="3653842108912548333">Voice Match मार्फत आफ्नो सहायकमाथि पहुँच राख्नुहोस्</translation>
 <translation id="3653999333232393305"><ph name="HOST" /> लाई तपाइँको माइक्रोफोन प्रयोग गर्न अनुमति दिन जारी राख्नुहोस्</translation>
 <translation id="3654045516529121250">तपाइँका पहुँच सेटिङहरू पढ्नुहोस्</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{ यसको एउटा फाइलमा स्थायी पहुँच छ।}other{ यसको # फाइलहरूमा स्थायी पहुँच छ।}}</translation>
@@ -3438,7 +3432,6 @@
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> हर्ज - इन्टरलेस गरिएको</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, जोड्नुहोस्</translation>
 <translation id="49027928311173603">सर्भरबाट डाउनलोड गरिएको नीति अवैध छ: <ph name="VALIDATION_ERROR" /></translation>
-<translation id="4904061654709986277">प्रोफाइल हाल्नुहोस्</translation>
 <translation id="4906490889887219338">नेटवर्कको फाइल आदान प्रदान गर्ने कार्य सेटअप वा व्यवस्थापन गर्नुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301"><ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, फोनको ब्याट्रीको स्तर <ph name="BATTERY_STATUS" />%, विवरणहरू</translation>
 <translation id="4907161631261076876">यो फाइल सामान्यत: डाउनलोड गरिँदैन र यो खतरनाक हुन सक्छ।</translation>
@@ -3579,7 +3572,6 @@
 <translation id="5086874064903147617">पूर्वनिर्धारित गृहपृष्ठलाई पुनर्स्थापना गर्ने हो?</translation>
 <translation id="5087249366037322692">तेस्रो-पक्षद्वारा थपिएको</translation>
 <translation id="5087580092889165836">कार्ड थप्नुहोस्</translation>
-<translation id="5087926280563932024">तपाईंको खातालाई प्रमाणित गर्न सकिएन। कृपया फेरि प्रयास गर्नुहोस् वा आफ्नो Chromebook लाई पुनः सुरु गर्नुहोस्।</translation>
 <translation id="5088534251099454936">RSA को साथमा PKCS #1 SHA-512 गुप्तलेखन</translation>
 <translation id="5090637338841444533">तपाईंको क्यामेराको स्थिति ट्र्याक गर्ने अनुमति नदिइएका साइटहरू</translation>
 <translation id="5094721898978802975">सहयोगी मुल अनुप्रयोगहरूसँग सञ्चार गर्नुहोस्</translation>
@@ -3774,7 +3766,6 @@
 <translation id="5315738755890845852">अतिरिक्त मझौला कोष्ठक: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">बचत गर्नुहोस्</translation>
 <translation id="5319359161174645648">Google ले Chrome प्रयोग गर्ने सुझाव दिन्छ</translation>
-<translation id="5320112320661303273">तपाईंले कुनै अर्को यन्त्रमा सहायक सेटअप गरिसक्नुभएको छ जस्तो देखिन्छ। निम्न सेटिङ अन गरी आफ्नो सहायकबाट अझ बढी फाइदा लिनुहोस्।</translation>
 <translation id="5320135788267874712">यन्त्रको नयाँ नाम</translation>
 <translation id="532247166573571973">सर्भर पहुँचयोग्य नहुन सक्छ। पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="5324300749339591280">एपको सूची</translation>
@@ -5297,9 +5288,6 @@
 <translation id="7088434364990739311">अद्यावधिक जाँच सुरु हुन असफल भयो (त्रुटि कोड <ph name="ERROR" />)।</translation>
 <translation id="7088561041432335295">Zip Archiver - फाइल अनुप्रयोगमार्फत जिप फाइलहरू खोल्नुहोस्‌ र प्याक गर्नुहोस्‌।</translation>
 <translation id="7088674813905715446">यस यन्त्रलाई प्रशासकद्वारा एक डिप्रोभिजन गरिएको स्थितिमा राखिएको छ। त्यसलाई भर्ती गर्न सक्षम गर्नको लागि, कृपया तपाइँको प्रशासकलाई यन्त्रलाई पेन्डिङ स्थितिमा राख्न लगाउनुहोस्।</translation>
-<translation id="7092474863625458670">Voice Match ले तपाईंलाई आफ्नो आवाज प्रयोग गरेर सोझै आफ्ना सहायकमाथि पहुँच गर्न दिन्छ।
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />स्मरण रहोस्:<ph name="END_BOLD" /> उस्तै किसिमको आवाज वा रेकर्डिङले पनि तपाईंको सहायकमाथि पहुँच गर्न सक्छ। तपाईं पछि सहायकका सेटिङहरूमा गई Voice Match का अनुमतिहरूलाई निष्क्रिय पारी तिनीहरूलाई हटाउन सक्नुहुन्छ।</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921"><ph name="HOSTNAMES" />: नामको यन्त्रमार्फत डेटा सेयर गर्नुहोस्</translation>
 <translation id="7098389117866926363">USB-C यन्त्र (पछाडिमा बाँया पोर्ट)</translation>
@@ -5488,7 +5476,6 @@
 <translation id="7325209047678309347">पाना अड्किएको छ</translation>
 <translation id="7326004502692201767">आफ्ना बच्चाका लागि यो <ph name="DEVICE_TYPE" /> सेटअप गर्नुहोस्</translation>
 <translation id="7327989755579928735"><ph name="MANAGER" /> ले ADB डिबग प्रक्रिया अफ गर्नुभएको छ। तपाईंले आफ्नो <ph name="DEVICE_TYPE" /> रिस्टार्ट गरेपछि तपाईं एपहरू प्ले स्टोर बाहेकका श्रोतबाट इन्स्टल सक्नु हुने छैन।</translation>
-<translation id="7328699668338161242">तपाईंको सहायकले पहिलेदेखि नै तपाईंको आवाज पहिचान गर्न सक्छ</translation>
 <translation id="7328867076235380839">अमान्य संयोजन</translation>
 <translation id="7329154610228416156">साइन इन विफल  भयो किनभने यसलाई एउटा गैर-सुरक्षित URL (<ph name="BLOCKED_URL" />) सँग कन्फिगर गरिएको थियो। कृपया तपाईँको प्रशासकसँग सम्पर्क गर्नुहोस्।</translation>
 <translation id="7332053360324989309">यसै कामको लागि तोकिएको कर्मचारी: <ph name="SCRIPT_URL" /></translation>
@@ -5637,7 +5624,6 @@
 <translation id="7493386493263658176"><ph name="EXTENSION_NAME" /> विस्तारले पासवर्ड र क्रेडिट कार्ड नम्बर जस्ता व्यक्तिगत डेटा लगायतका तपाईंले टाइप गर्ने सबै पाठलाई संग्रह गर्न सक्छ। तपाईं यस विस्तारको प्रयोग गर्न चाहनुहुन्छ?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> गुणा <ph name="HEIGHT" /></translation>
 <translation id="7495778526395737099">तपाईँले पुरानो पासवर्ड बिर्सनुभयो?</translation>
-<translation id="7496732379142025470">ब्याट्रीको खपत कम गर्न तपाईंको यन्त्र ऊर्जाको कुनै स्रोतमा जोडिएका बेलामा मात्र “Ok Google” सक्रिय हुन्छ। परिवर्तन गर्न सेटिङहरूमा जानुहोस्।</translation>
 <translation id="7497981768003291373">तपाईंसँग हालै क्याप्चर गरिएको WebRTC पाठको कुनै पनि लग छैन।</translation>
 <translation id="7498614236023455416"><ph name="TARGET_NAME" /> ले यो ट्याबमा रहेका सामग्री क्याप्चर गर्ने अनुमति माग्दै छ।</translation>
 <translation id="7503191893372251637">नेटस्केप प्रमाणपत्र प्रकार</translation>

@@ -33,7 +33,6 @@
 <translation id="3259149966178251584">Ανάλυση κάμερας</translation>
 <translation id="3517926952904427380">Δεν είναι δυνατή η λήψη φωτογραφίας πορτραίτου.</translation>
 <translation id="3569311554794739032">Είστε βέβαιοι ότι θέλετε να καταργήσετε το αρχείο <ph name="FILE" />;</translation>
-<translation id="3750315947605636967">Η κάμερά σας χρησιμοποιείται από άλλη εφαρμογή.</translation>
 <translation id="3810838688059735925">Βίντεο</translation>
 <translation id="3838931309141338733">Σάρωση γραμμωτού κώδικα</translation>
 <translation id="3892148308691398805">Αντιγραφή κειμένου</translation>
@@ -76,6 +75,7 @@
 <translation id="7337660886763914220">Σφάλματα συστήματος αρχείων.</translation>
 <translation id="7450541714075000668">Το κείμενο αντιγράφηκε</translation>
 <translation id="7557677699350329807">Μετάβαση στην επόμενη κάμερα</translation>
+<translation id="7607002721634913082">Έγινε παύση</translation>
 <translation id="7608223098072244877">4 επί 4</translation>
 <translation id="7649070708921625228">Βοήθεια</translation>
 <translation id="7658239707568436148">Ακύρωση</translation>

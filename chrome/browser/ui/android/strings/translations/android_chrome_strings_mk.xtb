@@ -163,7 +163,6 @@
 <translation id="2126426811489709554">Овозможено од Chrome</translation>
 <translation id="2131665479022868825">Зачувани: <ph name="DATA" /></translation>
 <translation id="213279576345780926">Се затвори <ph name="TAB_TITLE" /></translation>
-<translation id="2139186145475833000">Додај на почетен екран</translation>
 <translation id="214888715418183969">Изберете какви податоци за користењето сакате да споделувате со Chrome. Метриката што ја споделувате ќе се користи за подобрување на функциите, изведбата и стабилноста на Chrome.</translation>
 <translation id="2154484045852737596">Уредете ја картичката</translation>
 <translation id="2154710561487035718">Копирај URL</translation>
@@ -209,7 +208,6 @@
 <translation id="2459390580524506445">Подобрено гласовно пребарување</translation>
 <translation id="246532703174860178">Сподели</translation>
 <translation id="247737702124049222">Описите за слики се вклучени.</translation>
-<translation id="2478076885740497414">Инсталирај апликација</translation>
 <translation id="2482878487686419369">Известувања</translation>
 <translation id="2494974097748878569">„Помошникот на Google“ во Chrome</translation>
 <translation id="2496180316473517155">Историја на прелистување</translation>
@@ -393,7 +391,6 @@
 <translation id="3773856050682458546">Основни податоци плус информации за веб-сајтовите што ги посетувате и апликациите што ги користите</translation>
 <translation id="3775705724665058594">Испратете до вашите уреди</translation>
 <translation id="3778956594442850293">Додадено на почетен екран</translation>
-<translation id="3789841737615482174">Инсталирај</translation>
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3810973564298564668">Управувај</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> преземања се избришани</translation>
@@ -866,7 +863,6 @@
 <translation id="6979737339423435258">Целосната историја</translation>
 <translation id="6981982820502123353">Пристапност</translation>
 <translation id="6989267951144302301">Не може да се преземе</translation>
-<translation id="6990079615885386641">Преземете ја апликацијата од продавницата на Google Play: <ph name="APP_ACTION" /></translation>
 <translation id="6995899638241819463">Добијте предупредување ако лозинките се откриени при упад во податоците</translation>
 <translation id="7015203776128479407">Првичното поставување на синхронизацијата не беше завршено. Синхронизацијата е исклучена.</translation>
 <translation id="7022756207310403729">Отвори во прелистувач</translation>

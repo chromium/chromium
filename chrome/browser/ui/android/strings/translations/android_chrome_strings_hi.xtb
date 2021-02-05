@@ -163,7 +163,6 @@
 <translation id="2126426811489709554">Chrome के द्वारा संचालित</translation>
 <translation id="2131665479022868825"><ph name="DATA" /> बचाया गया</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> बंद है</translation>
-<translation id="2139186145475833000">होम स्क्रीन में जोड़ें</translation>
 <translation id="214888715418183969">चुनें कि Chrome के साथ आपकी क्या जानकारी शेयर की जाए. आप जो मेट्रिक शेयर करते हैं उसका इस्तेमाल, Chrome की सुविधाओं और परफ़ॉर्मेंस को बेहतर बनाने में किया जाएगा. साथ ही, इसका इस्तेमाल क्रैश होने जैसी दिक्कतों को ठीक करने में भी होगा.</translation>
 <translation id="2154484045852737596">कार्ड में बदलाव करें</translation>
 <translation id="2154710561487035718">URL की कॉपी बनाएं</translation>
@@ -209,7 +208,6 @@
 <translation id="2459390580524506445">वॉइस सर्च की बेहतर सुविधा</translation>
 <translation id="246532703174860178">शेयर करें</translation>
 <translation id="247737702124049222">इमेज की जानकारी जोड़ने की सुविधा चालू कर दी गई है</translation>
-<translation id="2478076885740497414">ऐप्स इंस्टॉल करें</translation>
 <translation id="2482878487686419369">सूचनाएं</translation>
 <translation id="2494974097748878569">Chrome में Google Assistant</translation>
 <translation id="2496180316473517155">ब्राउज़िंग इतिहास</translation>
@@ -393,7 +391,6 @@
 <translation id="3773856050682458546">इसमें बुनियादी डेटा और उन वेबसाइटों की जानकारी शामिल है जिन पर आप जाते हैं. इसमें आपके इस्तेमाल किए गए ऐप्लिकेशन की जानकारी भी शामिल है</translation>
 <translation id="3775705724665058594">अपने डिवाइस पर भेजें</translation>
 <translation id="3778956594442850293">होम स्‍क्रीन में जोड़ा गया</translation>
-<translation id="3789841737615482174">इंस्‍टॉल करें</translation>
 <translation id="3810838688059735925">वीडियो</translation>
 <translation id="3810973564298564668">प्रबंधित करें</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> डाउनलोड हटाए गए</translation>
@@ -866,7 +863,6 @@
 <translation id="6979737339423435258">हमेशा</translation>
 <translation id="6981982820502123353">सुलभता</translation>
 <translation id="6989267951144302301">डाउनलोड नहीं किया जा सका</translation>
-<translation id="6990079615885386641">Google Play स्‍टोर से ऐप्लिकेशन डाउनलोड करें: <ph name="APP_ACTION" /></translation>
 <translation id="6995899638241819463">डेटा का उल्लंघन होने पर अगर आपके पासवर्ड बिना अनुमति के सार्वजनिक हो जाते हैं, तो आपको चेतावनी मिलती है</translation>
 <translation id="7015203776128479407">शुरुआती सिंक सेटअप पूरा नहीं हुआ. सिंक बंद है.</translation>
 <translation id="7022756207310403729">ब्राउज़र में खोलें</translation>

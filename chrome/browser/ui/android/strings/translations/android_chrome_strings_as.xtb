@@ -163,7 +163,6 @@
 <translation id="2126426811489709554">Chromeৰ দ্বাৰা সঞ্চালিত</translation>
 <translation id="2131665479022868825"><ph name="DATA" /> ছেভ কৰা হৈছে</translation>
 <translation id="213279576345780926">বন্ধ <ph name="TAB_TITLE" /></translation>
-<translation id="2139186145475833000">গৃহ স্ক্ৰীণত যোগ কৰক</translation>
 <translation id="214888715418183969">আপুনি Chromeৰ সৈতে কি সহজে শ্বেয়াৰ কৰিব পাৰে সেয়া বাছনি কৰক। Chromeৰ সুবিধা, পাৰদৰ্শিতা আৰু স্থিৰতা উন্নত কৰাত সহায় কৰিবলৈ আপুনি শ্বেয়াৰ কৰা মেট্ৰিক্স ব্যৱহাৰ কৰা হ’ব।</translation>
 <translation id="2154484045852737596">কাৰ্ড সম্পাদনা কৰক</translation>
 <translation id="2154710561487035718">URL প্ৰতিলিপি কৰক</translation>
@@ -209,7 +208,6 @@
 <translation id="2459390580524506445">কণ্ঠধ্বনিৰদ্বাৰা সন্ধান কৰাৰ উচ্চখাপৰ সুবিধা</translation>
 <translation id="246532703174860178">শ্বেয়াৰ কৰক</translation>
 <translation id="247737702124049222">প্ৰতিচ্ছবিৰ বিৱৰণ অন আছে</translation>
-<translation id="2478076885740497414">এপ্‌ ইনষ্টল কৰক</translation>
 <translation id="2482878487686419369">জাননী</translation>
 <translation id="2494974097748878569">Chromeত Google Assistant</translation>
 <translation id="2496180316473517155">ব্ৰাউজিঙৰ ইতিহাস</translation>
@@ -393,7 +391,6 @@
 <translation id="3773856050682458546">প্ৰাথমিক ডেটাৰ লগতে আপুনি চোৱা ৱেবছাইট আৰু আপুনি ব্যৱহাৰ কৰা এপৰ বিষয়ে তথ্য</translation>
 <translation id="3775705724665058594">আপোনাৰ ডিভাইচসমূহলৈ পঠিয়াওক</translation>
 <translation id="3778956594442850293">গৃহ স্ক্ৰীণত যোগ কৰা হ’ল</translation>
-<translation id="3789841737615482174">ইনষ্টল কৰক</translation>
 <translation id="3810838688059735925">ভিডিঅ’</translation>
 <translation id="3810973564298564668">পৰিচালনা কৰক</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" />টা ডাউনল'ড মচা হ'ল</translation>
@@ -865,7 +862,6 @@
 <translation id="6979737339423435258">সকলো সময়তে</translation>
 <translation id="6981982820502123353">সাধ্য সুবিধাসমূহ</translation>
 <translation id="6989267951144302301">ডাউনল’ড কৰিব পৰা নগ’ল</translation>
-<translation id="6990079615885386641">Google Play Storeত এপটো পাওক: <ph name="APP_ACTION" /></translation>
 <translation id="6995899638241819463">ডেটা উলংঘনৰ ফলত পাছৱৰ্ডসমূহ ফাদিল হ’লে আপোনাক সকীয়নি দিয়ে</translation>
 <translation id="7015203776128479407">প্ৰাৰম্ভিক ছিংকৰ ছেটআপ সম্পূর্ণ হোৱা নাই। ছিংক কৰা সুবিধাটো অফ কৰা আছে।</translation>
 <translation id="7022756207310403729">ব্ৰাউজাৰত খোলক</translation>

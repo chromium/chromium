@@ -147,7 +147,6 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="1462951478840426066">Die Schriftarten auf Ihrem Computer verwenden, damit Sie High Fidelity-Inhalte erstellen können</translation>
 <translation id="1463543813647160932">5 x 7</translation>
 <translation id="1467432559032391204">Links</translation>
-<translation id="1468463683985534315">Parser-Dienst für Zuordnung des Web-App-Ursprungs</translation>
 <translation id="1472675084647422956">Mehr anzeigen</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
@@ -958,7 +957,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="473775607612524610">Aktualisieren</translation>
 <translation id="4738601419177586157">Suchvorschlag: <ph name="TEXT" /></translation>
 <translation id="4742407542027196863">Passwörter verwalten…</translation>
-<translation id="4744603770635761495">Pfad zur ausführbaren Datei</translation>
+<translation id="4744603770635761495">Programmdateipfad</translation>
 <translation id="4750917950439032686">Ihre Daten wie Passwörter oder Kreditkartennummern sind geschützt, wenn Sie sie an diese Website senden.</translation>
 <translation id="4756388243121344051">&amp;Verlauf</translation>
 <translation id="4758311279753947758">Kontaktdaten hinzufügen</translation>
@@ -1723,7 +1722,6 @@ Weitere Details:
 <translation id="7752995774971033316">Nicht verwaltet</translation>
 <translation id="7757555340166475417">Dai-Pa-Kai</translation>
 <translation id="7758069387465995638">Möglicherweise wurde die Verbindung von einer Firewall oder Antivirensoftware blockiert.</translation>
-<translation id="7759163816903619567">Anzeigedomain:</translation>
 <translation id="776110834126722255">Veraltet</translation>
 <translation id="7761701407923456692">Das Serverzertifikat stimmt nicht mit der URL überein.</translation>
 <translation id="7763386264682878361">Zahlungsmanifest-Parser</translation>

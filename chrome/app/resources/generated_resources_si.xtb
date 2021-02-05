@@ -40,7 +40,6 @@
 <translation id="1041263367839475438">තිබෙන උපාංග</translation>
 <translation id="1042174272890264476">ඔබේ පරිගණකය අැතුළතින් සවි කළ <ph name="SHORT_PRODUCT_NAME" />හි RLZ පුස්තකාලයද සමඟ පැමිණේ. RLZ විසින් විශේෂ ප්‍රවර්ධනාත්මක ව්‍යාපාරයක් මඟින් ධාවනය වන සෙවීම් සහ <ph name="SHORT_PRODUCT_NAME" /> භාවිතය මැනීම සදහා අසමසම නොවන, පුද්ගලික නොවන ලෙස හදුනාගත හැකි ටැග් ඒකක් පවරයි. මෙම ලේබල සමහර විට Google සෙවීම් විමසුම්වල දිස් වේ <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1043818413152647937">මෙම යෙදුම්වලින් ද දත්ත හිස් කරන්නේද?</translation>
-<translation id="1046635659603195359">ඔබ දැනටමත් ඔබේ Google සහායක සමඟ තවත් උපාංගයක කටහඬ ගැළපුම පිහිටුවා ඇති බව පෙනේ. මෙම පෙර පටිගත කිරීම් මෙම උපාංගයෙහි කටහඬ ආකෘතියක් සෑදීමට භාවිතා කළ හැකිය. මෙය මිනිත්තුවකට වඩා අඩුවෙන් ගනු ඇත.</translation>
 <translation id="104710386808485638">ලිනක්ස් යළි අරඹන්නේද?</translation>
 <translation id="1047431265488717055">සබැඳි පෙළ පිටපත් කරන්න</translation>
 <translation id="1048286738600630630">සංදර්ශක</translation>
@@ -88,7 +87,6 @@
 <translation id="109647177154844434">Parallels Desktop අස්ථාපනය කිරීම ඔබගේ Windows රූපය මකනු ඇත. මෙයට එහි යෙදුම්, සැකසීම්, සහ දත්ත ඇතුළත් වේ. ඔබ ඉදිරියට යාමට අදහස් කරන බව ඔබට විශ්වාසද?</translation>
 <translation id="1097658378307015415">ප්‍රවිෂ්ට වීමට පෙර, <ph name="NETWORK_ID" /> ජාලය සක්‍රීය කිරීම සඳහා ආගන්තුක ලෙස ඇතුළ් වන්න</translation>
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" /> වෙතින් පිටපත් කළ රූපය</translation>
-<translation id="1102187190604780492">ඔබේ තිරයේ තිබෙන දේට සම්බන්ධිත තොරතුරු ප්‍රගාමිව පෙන්වීමට ඔබේ සහායකට ඉඩ දෙන්න</translation>
 <translation id="1103523840287552314">සැමවිටම <ph name="LANGUAGE" /> පරිවර්තනය කරන්න</translation>
 <translation id="1108600514891325577">නවත්වන්න</translation>
 <translation id="1110155001042129815">රැඳී සිටින්න</translation>
@@ -1180,7 +1178,6 @@
 <translation id="2307462900900812319">ජාලය සකසන්න</translation>
 <translation id="230927227160767054">මෙම පිටුවට සේවා පාලකයක් ස්ථාපනය කිරීමට අවශ්‍යයි.</translation>
 <translation id="2309620859903500144">මෙම අඩවිය ඔබේ චලන හෝ ආලෝක සංවේදක වෙත පිවිසීමෙන් මෙම පිටුව අවහිර කර තිබේ.</translation>
-<translation id="2311497964614110326">සහායක සමඟ වඩා හොඳ, ඉක්මන් පිළිතුරු ලබා ගන්න</translation>
 <translation id="2312219318583366810">පිටු URL</translation>
 <translation id="2314165183524574721">වත්මන් දෘශ්‍යතා සැකසීම සඟවා ඇත</translation>
 <translation id="2314774579020744484">පිටු පරිවර්තනය කිරීමේදී භාවිත කරන භාෂාව</translation>
@@ -1296,7 +1293,6 @@
 <translation id="2440604414813129000">මූලය පෙන්වන්න (&amp;o)</translation>
 <translation id="244231003699905658">අවලංගු ලිපිනය. ලිපිනය පරික්‍ෂා කර, නැවත උත්සාහ කරන්න.</translation>
 <translation id="2442916515643169563">පාඨ ඡායාව</translation>
-<translation id="2444469058037141906">හුදෙක් ඔබට අවශ්‍ය දේ කියන්න හෝ ටයිප් කරන්න</translation>
 <translation id="2445081178310039857">දිගු මූල නාමාවලියක් අවශ්‍යයි</translation>
 <translation id="2445484935443597917">නව පැතිකඩක් සාදන්න</translation>
 <translation id="2448312741937722512">වර්ගය</translation>
@@ -2170,7 +2166,6 @@
 <translation id="343578350365773421">කඩදාසි නැත</translation>
 <translation id="3435896845095436175">සක්‍රිය කරන්න</translation>
 <translation id="3438633801274389918">නින්ජා</translation>
-<translation id="3438643033528947620">Google සේවා සමඟ සම්බන්ධ විය නොහැකිය. දෝෂ කේතය: <ph name="ERROR_CODE" />.</translation>
 <translation id="3439153939049640737">ඔබේ මයික්‍රෆෝනය වෙත පිවිසීමට<ph name="HOST" /> හට ඉඩ දෙන්න</translation>
 <translation id="3439970425423980614">PDF පෙරදසුන විවෘත කරමින්</translation>
 <translation id="3440663250074896476"><ph name="BOOKMARK_NAME" /> සඳහා තවත් ක්‍රියාවන්</translation>
@@ -2369,7 +2364,6 @@
 <translation id="3651488188562686558">Wi-Fi වෙතින් විසන්ධි කරන්න</translation>
 <translation id="3652817283076144888">මුල පුරමින්</translation>
 <translation id="3653160965917900914">ජාල ගොනු බෙදා ගැනීම්</translation>
-<translation id="3653842108912548333">Voice Match සමඟ ඔබේ සහකරු වෙත ප්‍රවේශ වන්න</translation>
 <translation id="3653999333232393305">ඔබේ මයික්‍රෆෝනය වෙත පිවිසීමට <ph name="HOST" /> හට ඉඩ දෙන්න</translation>
 <translation id="3654045516529121250">ඔබේ ප්‍රවේශ්‍යතා පසුතල කියවන්න</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{ එයට එක් ගොනුවක් වෙත ස්ථිර ප්රවේශය ඇත.}one{ එයට ගොනු # ට ස්ථිර ප්රවේශය ඇත.}other{ එයට ගොනු # ට ස්ථිර ප්රවේශය ඇත.}}</translation>
@@ -3454,7 +3448,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - එකිනෙකට ගොතන ලද</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, සබඳින්න</translation>
 <translation id="49027928311173603">සේවාදායකයෙන් බාගත් ප්‍රතිපත්තිය අවලංගුයි: <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4904061654709986277">පැතිකඩ එක් කරන්න</translation>
 <translation id="4906490889887219338">ජාල ගොනු බෙදා ගැනීම් සකසන්න කළමනා කරන්න. <ph name="LINK_BEGIN" />තවත් දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, දුරකථන බැටරිය <ph name="BATTERY_STATUS" />%, විස්තර</translation>
 <translation id="4907161631261076876">මෙම ගොනුව සුලබව බාගැනීම සිදු නොකරන අතර අනතුරුදායක විය හැක.</translation>
@@ -3595,7 +3588,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5086874064903147617">පෙරනිමි මුල් පිටුව ප්‍රතිසාධනය කරනවා ද?</translation>
 <translation id="5087249366037322692">තුන් වන පාර්ශ්වයක් විසින් එක් කර ඇත</translation>
 <translation id="5087580092889165836">කාඩ්පත එක් කරන්න</translation>
-<translation id="5087926280563932024">ඔබේ ගිණුම සත්‍යාපනය කළ නොහැකි විය. නැවත උත්සාහ කරන්න හෝ ඔබේ Chromebook යළි අරඹන්න.</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 With RSA සංකේතනය</translation>
 <translation id="5090637338841444533">ඔබගේ කැමරා පිහිටුම හඹා යාමට ඉඩ නොදේ</translation>
 <translation id="5094721898978802975">සහය දක්වන දේශීය යෙදුම් හා සන්නිවේදනය කරන්න</translation>
@@ -3791,7 +3783,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5315738755890845852">අධික රැළි කඹය: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">සුරකින්න</translation>
 <translation id="5319359161174645648">Google විසින් Chrome නිර්දේශ කරයි</translation>
-<translation id="5320112320661303273">ඔබ දැනටමත් වෙනත් උපාංගයක සහායක පිහිටුවා ඇති බව පෙනේ. පහත සැකසීම ක්‍රියාත්මක කිරීමෙන් ඔබගේ සහායකගෙන් තවත් බොහෝ දේ ලබා ගන්න.</translation>
 <translation id="5320135788267874712">නව උපාංග නම</translation>
 <translation id="532247166573571973">සේවාදායකය වෙත ළඟාවිය නොහැක. පසුව නැවත උත්සාහ කරන්න.</translation>
 <translation id="5324300749339591280">යෙදුම් ලැයිස්තුව</translation>
@@ -5322,9 +5313,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7088434364990739311">යාවත්කාලීන පරීක්ෂා කිරීම ඇරඹීම අසමත් විය (දෝෂ කේතය <ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">Zip සංරක්ෂකය - ගොනු යෙදුම තුළ ZIP ගොනු විවෘත කර අසුරන්න.</translation>
 <translation id="7088674813905715446">මෙම උපාංගය දැනට පරිපාලක විසින් බල රහිත තත්වයට පත්කර ඇත. එය ක්‍රියාකාරී තත්වයට සක්‍රීය කිරීමට. එය පොරොත්තු ප්‍රකාරයට යොදන ලෙසට පරිපාලකට දන්වන්න.</translation>
-<translation id="7092474863625458670">ඔබේ හඬ භාවිත කිරීමෙන් ඔබේ සහකරු වෙත සෘජුවම ප්‍රවේශ වීමට Voice Match ඔබට ඉඩ දෙයි.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />මතක තබා ගන්න:<ph name="END_BOLD" /> සමාන හඬකට හෝ පටිගත කිරීමකට ද ඔබේ සහකරු වෙත ප්‍රවේශ විය හැකි වීමට ඉඩ ඇත. පසුව සහකරු සැකසීම් තුළින් එය අක්‍රිය කිරීමෙන් ඔබට Voice Match අවසර ඉවත් කළ හැක.</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">මෙසේ නම්කළ උපාංගය සමඟ දත්ත හුවමාරු කරගන්න: <ph name="HOSTNAMES" /></translation>
 <translation id="7098389117866926363">USB-C උපාංගය (පිටුපස වම් තොට)</translation>
@@ -5514,7 +5502,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7325209047678309347">කඩදාසිය සිර විය</translation>
 <translation id="7326004502692201767">ළමයකු සඳහා මෙම <ph name="DEVICE_TYPE" /> පිහිටුවන්න</translation>
 <translation id="7327989755579928735"><ph name="MANAGER" /> ADB නිදොස් කිරීම අබල කර ඇත. ඔබ ඔබගේ <ph name="DEVICE_TYPE" /> යළි ආරම්භ කළ පසු, ඔබට යෙදුම් පැති පූරණය කිරීමට නොහැකි වනු ඇත.</translation>
-<translation id="7328699668338161242">ඔබේ සහායකට දැනටමත් ඔබේ කටහඬ හඳුනා ගත හැකිය</translation>
 <translation id="7328867076235380839">අවලංගු සංයෝජනයක්</translation>
 <translation id="7329154610228416156">එය ආරක්ෂිත නොවන URL (<ph name="BLOCKED_URL" />) එකක් භාවිත කිරීමට වින්‍යාස කර ඇති බැවින් පිරීම අසාර්ථක විය. කරුණාකර ඔබේ පරිපාලක අමතන්න.</translation>
 <translation id="7332053360324989309">කැප වූ සේවකයා: <ph name="SCRIPT_URL" /></translation>
@@ -5664,7 +5651,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7493386493263658176"><ph name="EXTENSION_NAME" /> දිගුව විසින් මුරපද සහ ණය කාඩ්පත් අංක වැනි පුද්ගලික දත්ත ඇතුළු, ඔබ ටයිප් කරන සියලු පෙළ එකතු කළ හැක. ඔබට මෙම දිගුව භාවිතා කිරීමට අවශ්‍යයි ද?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="7495778526395737099">ඔබගේ පැරැණි මුරපදය අමතකද?</translation>
-<translation id="7496732379142025470">බැටරිය සුරැකීමට, “Ok Google” සක්‍රීය වන්නේ ඔබේ උපාංගය බල මූලාශ්‍රයකට සම්බන්ධ කර තිබෙන විට පමණයි. වෙනස්කම් සිදු කිරීමට, සැකසීම් වෙත යන්න.</translation>
 <translation id="7497981768003291373">ඔබට මෑතකදී හසුකර ගත් WebRTC ලොග් නැත.</translation>
 <translation id="7498614236023455416"><ph name="TARGET_NAME" /> මෙම ටැබයේ අන්තර්ගතය ග්‍රහණය කිරීමට අවසරය ඉල්ලයි.</translation>
 <translation id="7503191893372251637">Netscape සහතික වර්ගය</translation>

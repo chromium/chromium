@@ -163,7 +163,6 @@
 <translation id="2126426811489709554">Предоставено от Chrome</translation>
 <translation id="2131665479022868825">Спестихте <ph name="DATA" /></translation>
 <translation id="213279576345780926">Затворихте „<ph name="TAB_TITLE" />“</translation>
-<translation id="2139186145475833000">Добавяне към началния екран</translation>
 <translation id="214888715418183969">Изберете какви данни сте готови да споделяте с Chrome. Показателите, които споделяте, ще се използват за подобряване на функциите, производителността и стабилността на Chrome.</translation>
 <translation id="2154484045852737596">Редактиране на картата</translation>
 <translation id="2154710561487035718">Копиране на URL адреса</translation>
@@ -209,7 +208,6 @@
 <translation id="2459390580524506445">Подобрено гласово търсене</translation>
 <translation id="246532703174860178">Споделяне</translation>
 <translation id="247737702124049222">Функцията за описания на изображенията е включена</translation>
-<translation id="2478076885740497414">Инсталиране на приложението</translation>
 <translation id="2482878487686419369">Известия</translation>
 <translation id="2494974097748878569">Google Асистент в Chrome</translation>
 <translation id="2496180316473517155">История на сърфирането</translation>
@@ -393,7 +391,6 @@
 <translation id="3773856050682458546">Основните данни плюс информация за посещаваните от вас уебсайтове и за приложенията, които използвате</translation>
 <translation id="3775705724665058594">Изпращане до устройствата ви</translation>
 <translation id="3778956594442850293">Добавено към началния екран</translation>
-<translation id="3789841737615482174">Инсталиране</translation>
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3810973564298564668">Управление</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> изтегляния бяха изтрити</translation>
@@ -866,7 +863,6 @@
 <translation id="6979737339423435258">За цялото време</translation>
 <translation id="6981982820502123353">Достъпност</translation>
 <translation id="6989267951144302301">Неуспешно изтегляне</translation>
-<translation id="6990079615885386641">Изтегляне на приложението от Google Play Магазин: <ph name="APP_ACTION" /></translation>
 <translation id="6995899638241819463">Предупреждение за разкрити пароли при нарушение на сигурността на данните</translation>
 <translation id="7015203776128479407">Първоначалното настройване на синхронизирането не бе завършено. Синхронизирането е изключено.</translation>
 <translation id="7022756207310403729">Отваряне в браузъра</translation>

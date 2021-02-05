@@ -33,7 +33,6 @@
 <translation id="3259149966178251584">Résolution de l'appareil photo</translation>
 <translation id="3517926952904427380">Impossible de prendre une photo en mode portrait</translation>
 <translation id="3569311554794739032">Voulez-vous vraiment supprimer <ph name="FILE" />?</translation>
-<translation id="3750315947605636967">Une autre application utilise votre caméra</translation>
 <translation id="3810838688059735925">Vidéo</translation>
 <translation id="3838931309141338733">Numériser le code-barres</translation>
 <translation id="3892148308691398805">Copier le texte</translation>
@@ -76,6 +75,7 @@ Si vos commentaires portaient sur la qualité de l'image ou de la vidéo, veuill
 <translation id="7337660886763914220">Erreurs de système de fichiers.</translation>
 <translation id="7450541714075000668">Texte copié</translation>
 <translation id="7557677699350329807">Passer à l'appareil photo suivant</translation>
+<translation id="7607002721634913082">Interrompu</translation>
 <translation id="7608223098072244877">4 par 4</translation>
 <translation id="7649070708921625228">Aide</translation>
 <translation id="7658239707568436148">Annuler</translation>

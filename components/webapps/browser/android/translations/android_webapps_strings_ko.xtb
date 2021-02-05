@@ -1,4 +1,8 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
+<translation id="2139186145475833000">홈 화면에 추가</translation>
+<translation id="2478076885740497414">앱 설치</translation>
+<translation id="3789841737615482174">설치</translation>
+<translation id="6990079615885386641">Google Play 스토어에서 앱 다운로드: <ph name="APP_ACTION" /></translation>
 </translationbundle>

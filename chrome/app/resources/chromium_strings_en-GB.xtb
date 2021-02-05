@@ -128,7 +128,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4994636714258228724">Add yourself to Chromium</translation>
 <translation id="5224391634244552924">No saved passwords. Chromium can check your passwords when you save them.</translation>
 <translation id="5277894862589591112">To apply your changes, relaunch Chromium</translation>
-<translation id="5357324149468831780">This account is managed. Your administrator requires a Chromium profile for access. This profile is completely separate from any personal profile. Chromium data that is generated during the use of this profile (such as the creation of bookmarks, history, passwords and other settings) can be removed by your admin. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="5358375970380395591">You are signing in with a managed account and giving its administrator control over your Chromium profile. Your Chromium data, such as your apps, bookmarks, history, passwords and other settings will become permanently tied to <ph name="USER_NAME" />. You will be able to delete this data via the Google Accounts Dashboard, but you will not be able to associate this data with another account. <ph name="LEARN_MORE" /></translation>
 <translation id="5386450000063123300">Updating Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Allow Chromium sign-in</translation>
@@ -143,7 +142,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="5623402015214259806">{0,plural, =0{A Chromium update is available}=1{A Chromium update is available}other{A Chromium update has been available for # days}}</translation>
 <translation id="5631814766731275228">Chromium name and picture</translation>
 <translation id="5634636535844844681">Chromium requires Windows 7 or higher.</translation>
-<translation id="5642268154044585431">Chromium profile required</translation>
 <translation id="5653831366781983928">Please restart Chromium now</translation>
 <translation id="5698481217667032250">Display Chromium in this language</translation>
 <translation id="5736967399513123100">To enable Chromium to play protected media, you need to install Rosetta. Do you want to install it now?</translation>
@@ -174,7 +172,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="6309712487085796862">Chromium is using your camera.</translation>
 <translation id="6333502561965082103">Another operation on Chromium is in progress. Please try again later.</translation>
 <translation id="6334986366598267305">Now it's easier to use Chromium with your Google Account and on shared computers.</translation>
-<translation id="6345021408165055322">This account is managed by <ph name="MANAGEMENT_DOMAIN" />. Your administrator requires a Chromium profile for access. This profile is completely separate from any personal profile. Chromium data that is generated during the use of this profile (such as the creation of bookmarks, history, passwords and other settings) can be removed by your admin. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="6373523479360886564">Are you sure you want to uninstall Chromium?</translation>
 <translation id="6403826409255603130">Chromium is a web browser that runs webpages and applications with lightning speed. It's fast, stable, and easy to use. Browse the web more safely with malware and phishing protection built into Chromium.</translation>
 <translation id="6434250628340475518">Chromium OS System</translation>

@@ -40,7 +40,6 @@
 <translation id="1041263367839475438">Налични устройства</translation>
 <translation id="1042174272890264476">Компютърът ви също се предлага с библиотеката RLZ на <ph name="SHORT_PRODUCT_NAME" />, която е вградена. Тя задава неуникален и непозволяващ лично идентифициране маркер за измерване на търсенията и използването на <ph name="SHORT_PRODUCT_NAME" />, стимулирани от определена промоционална кампания. Тези етикети понякога се показват в заявките за търсене с Google в <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1043818413152647937">Да се изчистят ли данните от следните приложения?</translation>
-<translation id="1046635659603195359">Изглежда, че вече сте настроили Voice Match за Google Асистент на друго устройство. Предишните записи могат да се използват за създаване на гласов модел на това устройство. Процесът следва да отнеме по-малко от минута.</translation>
 <translation id="104710386808485638">Искате ли да рестартирате Linux?</translation>
 <translation id="1047431265488717055">Копиране на тек&amp;ста на връзката</translation>
 <translation id="1048286738600630630">Дисплеи</translation>
@@ -88,7 +87,6 @@
 <translation id="109647177154844434">Ако деинсталирате Parallels Desktop, образът ви на Windows ще бъде изтрит. Това включва приложенията, настройките и данните в него. Наистина ли искате да продължите?</translation>
 <translation id="1097658378307015415">Преди да влезете в профила си, моля, влезте като гост, за да активирате мрежата <ph name="NETWORK_ID" /></translation>
 <translation id="1099962274138857708">Изображение, копирано от <ph name="DEVICE_NAME" /></translation>
-<translation id="1102187190604780492">Разрешаване на Асистент да ви показва информация автоматично въз основа на съдържанието на екрана ви</translation>
 <translation id="1103523840287552314">Винаги да се превежда от <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Стоп</translation>
 <translation id="1110155001042129815">Изчакване</translation>
@@ -1179,7 +1177,6 @@
 <translation id="2307462900900812319">Конфигуриране на мрежата</translation>
 <translation id="230927227160767054">Тази страница иска да инсталира манипулатор на услуги.</translation>
 <translation id="2309620859903500144">Достъпът на този сайт до сензорите ви за движение или светлина е блокиран.</translation>
-<translation id="2311497964614110326">Получавайте по-добри и по-бързи отговори с Асистент</translation>
 <translation id="2312219318583366810">URL адрес на страницата</translation>
 <translation id="2314165183524574721">Текущата настройка за видимост е „Скрито“</translation>
 <translation id="2314774579020744484">Език, който се използва при превод на страници</translation>
@@ -1295,7 +1292,6 @@
 <translation id="2440604414813129000">&amp;Преглед на изходния код</translation>
 <translation id="244231003699905658">Невалиден адрес. Моля, проверете адреса и опитайте отново.</translation>
 <translation id="2442916515643169563">Сянка на текста</translation>
-<translation id="2444469058037141906">Само кажете или въведете това, от което имате нужда</translation>
 <translation id="2445081178310039857">Необходима е основна директория на разширението.</translation>
 <translation id="2445484935443597917">Създаване на нов потребителски профил</translation>
 <translation id="2448312741937722512">Тип</translation>
@@ -2169,7 +2165,6 @@
 <translation id="343578350365773421">Няма хартия</translation>
 <translation id="3435896845095436175">Активиране</translation>
 <translation id="3438633801274389918">Нинджа</translation>
-<translation id="3438643033528947620">Не бе установена връзка с услугите на Google. Код на грешката: <ph name="ERROR_CODE" />.</translation>
 <translation id="3439153939049640737">Достъпът на <ph name="HOST" /> до микрофона ви винаги да е разрешен</translation>
 <translation id="3439970425423980614">Отваря се визуализация на PDF</translation>
 <translation id="3440663250074896476">Още действия за „<ph name="BOOKMARK_NAME" />“</translation>
@@ -2368,7 +2363,6 @@
 <translation id="3651488188562686558">прекрати връзката си с Wi-Fi</translation>
 <translation id="3652817283076144888">Подготвя се за работа</translation>
 <translation id="3653160965917900914">Споделени хранилища в мрежата</translation>
-<translation id="3653842108912548333">Работете със своя Асистент с помощта на Voice Match</translation>
 <translation id="3653999333232393305">Достъпът на <ph name="HOST" /> до микрофона ви да продължава да е разрешен</translation>
 <translation id="3654045516529121250">Четене на настройките ви за достъпност</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Има постоянен достъп до един файл.}other{Има постоянен достъп до # файла.}}</translation>
@@ -3453,7 +3447,6 @@
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Хц – презредова развивка</translation>
 <translation id="4902546322522096650">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, свързване</translation>
 <translation id="49027928311173603">Изтегленото от сървъра правило е невалидно: <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4904061654709986277">Добавяне на потребителски профил</translation>
 <translation id="4906490889887219338">Настройване или управление на споделени хранилища в мрежата. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, батерия на телефона <ph name="BATTERY_STATUS" />%, подробности</translation>
 <translation id="4907161631261076876">Този файл обикновено не се изтегля и може да е опасен.</translation>
@@ -3594,7 +3587,6 @@
 <translation id="5086874064903147617">Да се възстанови ли стандартната начална страница?</translation>
 <translation id="5087249366037322692">Добавено от трета страна</translation>
 <translation id="5087580092889165836">Добавяне на карта</translation>
-<translation id="5087926280563932024">Профилът ви не можа да бъде потвърден. Моля, опитайте отново или рестартирайте своя Chromebook.</translation>
 <translation id="5088534251099454936">PKCS 1 SHA-512 с RSA шифроване</translation>
 <translation id="5090637338841444533">Сайтове без разрешение за проследяване на позицията на камерата ви</translation>
 <translation id="5094721898978802975">Комуникация със съдействащи директно изпълнявани приложения</translation>
@@ -3790,7 +3782,6 @@
 <translation id="5315738755890845852">Излишна фигурна скоба: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Запазване</translation>
 <translation id="5319359161174645648">Google препоръчва Chrome</translation>
-<translation id="5320112320661303273">Изглежда, че вече сте настроили Асистент на друго устройство. Възползвайте се в още по-голяма степен от Асистент, като включите следната настройка.</translation>
 <translation id="5320135788267874712">Ново име на устройството</translation>
 <translation id="532247166573571973">Възможно е да няма достъп до сървъра. Опитайте отново по-късно.</translation>
 <translation id="5324300749339591280">Списък с приложения</translation>
@@ -5324,9 +5315,6 @@
 <translation id="7088434364990739311">Стартирането на проверката за актуализации не бе успешно (код на грешката <ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">Zip Archiver – отваряйте и пакетирайте ZIP файлове в приложението Файлове.</translation>
 <translation id="7088674813905715446">Администраторът е поставил това устройство в необезпечено състояние. За да го активирате за регистрация, моля, накарайте администратора да промени състоянието му на изчакващо.</translation>
-<translation id="7092474863625458670">Voice Match ви дава възможност да работите с Асистент директно, като използвате гласа си.
-    <ph name="BR" />
-<ph name="BEGIN_BOLD" />Имайте предвид следното:<ph name="END_BOLD" /> Достъп до Асистент може да бъде осъществен и от човек с подобен глас или чрез запис. Можете да премахнете разрешението за Voice Match по-късно, като го изключите от настройките на Асистент.</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">Обмен на данни с устройствата със следните имена: <ph name="HOSTNAMES" /></translation>
 <translation id="7098389117866926363">Устройство с USB-C (левият порт на гърба)</translation>
@@ -5516,7 +5504,6 @@
 <translation id="7325209047678309347">Заседнала хартия</translation>
 <translation id="7326004502692201767">Настройване на това устройство <ph name="DEVICE_TYPE" /> за дете</translation>
 <translation id="7327989755579928735"><ph name="MANAGER" /> деактивира отстраняването на грешки през ADB. След като рестартирате устройството си <ph name="DEVICE_TYPE" />, няма да можете да инсталирате локално приложения.</translation>
-<translation id="7328699668338161242">Асистент вече може да разпознава гласа ви</translation>
 <translation id="7328867076235380839">Невалидна комбинация</translation>
 <translation id="7329154610228416156">Влизането не бе успешно, тъй като е конфигурирано да се извършва през незащитен URL адрес (<ph name="BLOCKED_URL" />). Моля, свържете се с администратора си.</translation>
 <translation id="7332053360324989309">Специализиран изпълнител: <ph name="SCRIPT_URL" /></translation>
@@ -5666,7 +5653,6 @@
 <translation id="7493386493263658176"><ph name="EXTENSION_NAME" /> може да събира целия въведен от вас текст, включително лични данни, като пароли и номера на кредитни карти. Искате ли да използвате това разширение?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="7495778526395737099">Забравили сте старата си парола?</translation>
-<translation id="7496732379142025470">С цел икономия на батерия функцията „Ok Google“ е включена само когато устройството е свързано със захранващ източник. За да извършите промени, отворете настройките.</translation>
 <translation id="7497981768003291373">Нямате наскоро записани регистрационни файлове за предаване на текст с WebRTC.</translation>
 <translation id="7498614236023455416"><ph name="TARGET_NAME" /> иска разрешение да запише съдържанието на този раздел.</translation>
 <translation id="7503191893372251637">Тип на сертификата на Netscape</translation>

@@ -40,7 +40,6 @@
 <translation id="1041263367839475438">Tilgjengelige enheter</translation>
 <translation id="1042174272890264476">Datamaskinen din har <ph name="SHORT_PRODUCT_NAME" />s RLZ-bibliotek innebygget. RLZ tildeler en ikke-unik, ikke-personlig tagg for å måle søk og <ph name="SHORT_PRODUCT_NAME" />-bruk drevet av en bestemt markedsføringskampanje. Disse etikettene vises noen ganger i Google-søk i <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1043818413152647937">Vil du også slette data fra disse appene?</translation>
-<translation id="1046635659603195359">Det ser ut til at du allerede har konfigurert Voice Match med Google-assistenten din på en annen enhet. Disse tidligere opptakene kan brukes til å lage en stemmemodell på denne enheten. Dette burde ta mindre enn ett minutt.</translation>
 <translation id="104710386808485638">Vil du starte Linux på nytt?</translation>
 <translation id="1047431265488717055">Kopiér linkte&amp;kst</translation>
 <translation id="1048286738600630630">Skjermer</translation>
@@ -88,7 +87,6 @@
 <translation id="109647177154844434">Hvis du avinstallerer Parallels Desktop, blir Windows-avbildningen slettet. Dette inkluderer programmene, innstillingene og dataene i den. Er du sikker på at du vil fortsette?</translation>
 <translation id="1097658378307015415">Gå inn som gjest for å aktivere nettverket <ph name="NETWORK_ID" /> før du logger deg på.</translation>
 <translation id="1099962274138857708">Et bilde er kopiert fra <ph name="DEVICE_NAME" /></translation>
-<translation id="1102187190604780492">La assistenten proaktivt vise informasjon knyttet til det som er på skjermen din</translation>
 <translation id="1103523840287552314">Oversett alltid <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Stopp</translation>
 <translation id="1110155001042129815">Vent</translation>
@@ -1179,7 +1177,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2307462900900812319">Konfigurer nettverket</translation>
 <translation id="230927227160767054">Denne nettsiden ber om å få installere en behandlingssnarvei for en tjeneste.</translation>
 <translation id="2309620859903500144">Bevegelses- og lyssensorene er blokkert fra dette nettstedet.</translation>
-<translation id="2311497964614110326">Få bedre og raskere svar med assistenten</translation>
 <translation id="2312219318583366810">Sidens nettadresse</translation>
 <translation id="2314165183524574721">Den gjeldende synlighetsinnstillingen er skjult</translation>
 <translation id="2314774579020744484">Språket som brukes ved oversetting av sider</translation>
@@ -1295,7 +1292,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2440604414813129000">Vis &amp;kilde</translation>
 <translation id="244231003699905658">Ugyldig adresse. Kontrollér adressen og prøv igjen.</translation>
 <translation id="2442916515643169563">Tekstskygge</translation>
-<translation id="2444469058037141906">Bare si eller skriv det du trenger</translation>
 <translation id="2445081178310039857">Det kreves en rotkatalog for utvidelsen</translation>
 <translation id="2445484935443597917">Opprett en ny profil</translation>
 <translation id="2448312741937722512">Type</translation>
@@ -2169,7 +2165,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="343578350365773421">Tom for papir</translation>
 <translation id="3435896845095436175">Slå på</translation>
 <translation id="3438633801274389918">Ninja</translation>
-<translation id="3438643033528947620">Kunne ikke koble til Google-tjenester. Feilkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="3439153939049640737">Tillat alltid at <ph name="HOST" /> bruker mikrofonen din</translation>
 <translation id="3439970425423980614">Åpner PDF i forhåndsvisning</translation>
 <translation id="3440663250074896476">Flere handlinger for <ph name="BOOKMARK_NAME" /></translation>
@@ -2368,7 +2363,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3651488188562686558">koble fra Wi-Fi</translation>
 <translation id="3652817283076144888">Initialiserer</translation>
 <translation id="3653160965917900914">Fildelinger på nettverket</translation>
-<translation id="3653842108912548333">Få tilgang til assistenten med Voice Match</translation>
 <translation id="3653999333232393305">Fortsett å tillate <ph name="HOST" /> å bruke mikrofonen din</translation>
 <translation id="3654045516529121250">lese tilgjengelighetsinnstillingene dine</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Den har permanent tilgang til én fil.}other{Den har permanent tilgang til # filer.}}</translation>
@@ -3450,7 +3444,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz – linjefletting</translation>
 <translation id="4902546322522096650">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="SECURITY_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – koble til</translation>
 <translation id="49027928311173603">Innstillingene som ble lastet ned fra tjeneren er ugyldige: <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4904061654709986277">Legg til profil</translation>
 <translation id="4906490889887219338">Konfigurer eller administrer delte nettverksressurser. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="PHONE_NAME" /> – <ph name="PROVIDER_NAME" /> – <ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – telefonbatterinivå <ph name="BATTERY_STATUS" /> % – detaljer</translation>
 <translation id="4907161631261076876">Denne filen lastes sjelden ned, og den kan være farlig.</translation>
@@ -3591,7 +3584,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="5086874064903147617">Vil du gjenopprette standardstartsiden?</translation>
 <translation id="5087249366037322692">Lagt til av en tredjepart</translation>
 <translation id="5087580092889165836">Legg til et kort</translation>
-<translation id="5087926280563932024">Kunne ikke bekrefte kontoen din. Prøv igjen, eller start Chromebooken din på nytt.</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 med RSA-kryptering</translation>
 <translation id="5090637338841444533">Nettsteder som ikke har lov til å spore kameraposisjonen din</translation>
 <translation id="5094721898978802975">kommunisere med samarbeidende integrerte apper</translation>
@@ -3787,7 +3779,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="5315738755890845852">Overflødig krøllparentes: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Lagre</translation>
 <translation id="5319359161174645648">Google anbefaler Chrome</translation>
-<translation id="5320112320661303273">Ser ut til at du allerede har konfigurert assistenten på en annen enhet. Få enda mer ut av assistenten ved å slå på denne innstillingen.</translation>
 <translation id="5320135788267874712">Nytt enhetsnavn</translation>
 <translation id="532247166573571973">Det kan hende tjeneren ikke er tilgjengelig. Prøv igjen senere.</translation>
 <translation id="5324300749339591280">App-liste</translation>
@@ -5320,9 +5311,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="7088434364990739311">Kunne ikke starte søk etter oppdateringer (feilkode <ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">Zip Archiver – Åpne og pakk ZIP-filer i Filer-appen.</translation>
 <translation id="7088674813905715446">Administratoren har gitt denne enheten status som «ikke klargjort». For å aktivere den for registrering, må du be administratoren gi enheten status som «ventende».</translation>
-<translation id="7092474863625458670">Med Voice Match kan du åpne assistenten ved å bruke stemmen.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Vær oppmerksom på dette:<ph name="END_BOLD" /> Lignende stemmer eller opptak av stemmen din kan kanskje også brukes for å få tilgang til assistenten din. Du kan fjerne Voice Match-tillatelsen senere ved å slå den av i Assistent-innstillingene.</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">Utveksle data med enhetene <ph name="HOSTNAMES" /></translation>
 <translation id="7098389117866926363">USB-C-enhet (venstre port på baksiden)</translation>
@@ -5512,7 +5500,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="7325209047678309347">Papiret sitter fast</translation>
 <translation id="7326004502692201767">Konfigurer <ph name="DEVICE_TYPE" /> for et barn</translation>
 <translation id="7327989755579928735"><ph name="MANAGER" /> har slått av ADB-feilsøking. Når du starter <ph name="DEVICE_TYPE" /> på nytt, kan du ikke sideinnlaste apper lenger.</translation>
-<translation id="7328699668338161242">Assistenten gjenkjenner allerede stemmen din</translation>
 <translation id="7328867076235380839">Ugyldig kombinasjon</translation>
 <translation id="7329154610228416156">Påloggingen mislyktes fordi den var konfigurert til å bruke en usikret nettadresse (<ph name="BLOCKED_URL" />). Kontakt administratoren din.</translation>
 <translation id="7332053360324989309">Dedikert arbeider: <ph name="SCRIPT_URL" /></translation>
@@ -5662,7 +5649,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="7493386493263658176">Det kan hende at utvidelsen <ph name="EXTENSION_NAME" /> registrerer all tekst du skriver inn, deriblant personlige data som passord og kredittkortnumre. Vil du bruke denne utvidelsen?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="7495778526395737099">Har du glemt det gamle passordet?</translation>
-<translation id="7496732379142025470">For å spare batteri er «Ok Google» bare på når enheten er koblet til en strømkilde. For å gjøre endringer, gå til Innstillinger.</translation>
 <translation id="7497981768003291373">Du har ingen nylig lagrede WebRTC-tekstlogger.</translation>
 <translation id="7498614236023455416"><ph name="TARGET_NAME" /> spør om tillatelse til å ta bilde av innholdet på denne fanen.</translation>
 <translation id="7503191893372251637">Netscape sertifikattype</translation>

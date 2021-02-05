@@ -163,7 +163,6 @@
 <translation id="2126426811489709554">Chrome аркылуу иштетилүүдө</translation>
 <translation id="2131665479022868825"><ph name="DATA" /> үнөмдөлдү</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> жабылган</translation>
-<translation id="2139186145475833000">Башкы экранга кошуу</translation>
 <translation id="214888715418183969">Chrome менен бөлүшкүңүз келген нерселерди тандаңыз. Сиз бөлүшкөн маалымат Chrome'дун функцияларын, ишин жана туруктуулугун жакшыртууга жардам берет.</translation>
 <translation id="2154484045852737596">Карточканы түзөтүү</translation>
 <translation id="2154710561487035718">URL көчүрүү</translation>
@@ -209,7 +208,6 @@
 <translation id="2459390580524506445">Жакшыртылган оозеки издөө</translation>
 <translation id="246532703174860178">Бөлүшүү</translation>
 <translation id="247737702124049222">Сүрөттөмөлөр күйүк</translation>
-<translation id="2478076885740497414">Колдонмону орнотуу</translation>
 <translation id="2482878487686419369">Билдирмелер</translation>
 <translation id="2494974097748878569">Chrome'догу Google Жардамчы</translation>
 <translation id="2496180316473517155">Серептөө таржымалы</translation>
@@ -393,7 +391,6 @@
 <translation id="3773856050682458546">Сиз баш баккан вебсайттар менен пайдаланган колдонмолор тууралуу негизги маалымат</translation>
 <translation id="3775705724665058594">Түзмөктөрүңүзгө жөнөтүңүз</translation>
 <translation id="3778956594442850293">Башкы экранга кошулду</translation>
-<translation id="3789841737615482174">Орнотуу</translation>
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3810973564298564668">Башкаруу</translation>
 <translation id="3819178904835489326">Жүктөлүп алынган <ph name="NUMBER_OF_DOWNLOADS" /> нерсе өчүрүлдү</translation>
@@ -866,7 +863,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6979737339423435258">Бардыгы</translation>
 <translation id="6981982820502123353">Атайын мүмкүн-төр</translation>
 <translation id="6989267951144302301">Жүктөлүп алынган жок</translation>
-<translation id="6990079615885386641">Колдонмону Google Play Store'дон алыңыз: <ph name="APP_ACTION" /></translation>
 <translation id="6995899638241819463">Сырсөзүңүздү кимдир-бирөө билип алса, эскертүү жөнөтүлсүн</translation>
 <translation id="7015203776128479407">Баштапкы шайкештирүү жөндөөсү аяктаган жок. Шайкештештирүү өчүк.</translation>
 <translation id="7022756207310403729">Серепчиден ачуу</translation>

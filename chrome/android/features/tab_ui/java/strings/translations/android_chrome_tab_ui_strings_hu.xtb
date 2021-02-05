@@ -18,7 +18,6 @@
 <translation id="2759453070259087442">A következő, <ph name="NUMBER_OF_TABS" /> lapot tartalmazó lapcsoport kibontása: <ph name="TITLE_OF_GROUP" />.</translation>
 <translation id="2977480621796371840">Eltávolítás a csoportból</translation>
 <translation id="3328308545011660196">Javaslat: Úgy tűnik, <ph name="NUMBER_OF_TABS" /> lap kapcsolódik egymáshoz. Csoportosítja őket?</translation>
-<translation id="3340978935015468852">beállítások</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> lap összecsukása.}other{A következő, <ph name="TABS_COUNT_MANY" /> lapot tartalmazó lapcsoport összecsukása: <ph name="TITLE_OF_GROUP" />.}}</translation>
 <translation id="3940195383040445971">Árkövetés a megnyitott lapokon</translation>
 <translation id="3996880007329611795">Értesítések kérése</translation>
@@ -26,7 +25,6 @@
 <translation id="4212246570487010370">Böngészés folytatása</translation>
 <translation id="4450893287417543264">Ne jelenjen meg többé</translation>
 <translation id="4648718555153979859">A lapok itt vannak csoportosítva</translation>
-<translation id="4831000417970606741">Értesítést kap, ha alacsonyabb ár áll rendelkezésre az egyik megnyitott lapon. Az értesítéseket a <ph name="SETTINGS" /> között kapcsolhatja ki.</translation>
 <translation id="492284538114688557">Árcsökkenés észlelve</translation>
 <translation id="5007392906805964215">Áttekintés</translation>
 <translation id="5073204694187207510">Teljes képernyős rács elrejtése</translation>

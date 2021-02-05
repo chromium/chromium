@@ -33,7 +33,6 @@
 <translation id="3259149966178251584">Resolução da câmara</translation>
 <translation id="3517926952904427380">Não é possível tirar foto de retrato</translation>
 <translation id="3569311554794739032">Tem a certeza de que pretende remover <ph name="FILE" />?</translation>
-<translation id="3750315947605636967">A sua câmara está a ser utilizada por outra app.</translation>
 <translation id="3810838688059735925">Vídeo</translation>
 <translation id="3838931309141338733">Ler código de barras</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
@@ -76,6 +75,7 @@ Se o seu feedback for acerca da qualidade de imagem ou vídeo, anexe uma foto ou
 <translation id="7337660886763914220">Erros do sistema de ficheiros.</translation>
 <translation id="7450541714075000668">Texto copiado</translation>
 <translation id="7557677699350329807">Mudar para a câmara seguinte</translation>
+<translation id="7607002721634913082">Em pausa</translation>
 <translation id="7608223098072244877">4 por 4</translation>
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7658239707568436148">Cancelar</translation>

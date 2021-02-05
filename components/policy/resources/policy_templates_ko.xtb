@@ -687,7 +687,6 @@
       참고: 필드를 누락하면 모든 값이 일치한다는 의미입니다. 예를 들어, 연결을 지정하지 않으면 인쇄 미리보기에서 <ph name="PRINTER_TYPE_LOCAL" />, <ph name="PRINTER_TYPE_CLOUD" /> 등 모든 종류의 프린터를 검색하기 시작합니다. 정규 표현식 패턴은 자바스크립트 RegExp 구문을 따라야 하며 일치하는 항목은 대소문자를 구분합니다.</translation>
 <translation id="2005506794355327448">덮개를 닫을 경우 취할 작업입니다.</translation>
 <translation id="2006530844219044261">전력 관리</translation>
-<translation id="2011151221807385794">관리 게스트 세션 사용자는 기기 전체에 적용되는 화면 설정을 저장할 수 있음</translation>
 <translation id="2013285471046373727">앱 설치 방법을 지정합니다. OPTIONAL: 앱이 자동으로 설치되지 않으나 사용자가 설치할 수 있습니다. 정책을 지정하지 않을 경우 기본값으로 사용됩니다. PRELOAD: 앱이 자동으로 설치되나 사용자가 제거할 수 있습니다. FORCE_INSTALLED: 앱이 자동으로 설치되며 사용자가 제거할 수 없습니다. BLOCKED: 앱이 차단되어 설치할 수 없습니다. 이전 정책에서 앱이 설치된 경우 제거됩니다.</translation>
 <translation id="2014757022750736514">사용자가 계정에 로그인하는 로그인 화면의 동작을 제어합니다. 설정에는 로그인할 수 있는 사용자, 허용되는 계정 유형, 사용할 인증 수단뿐 아니라 일반 접근성, 입력 방법, 언어 설정이 포함됩니다.</translation>
 <translation id="201557587962247231">기기 상태 보고서 업로드 빈도</translation>
@@ -909,7 +908,6 @@
 <translation id="2303795211377219696">신용카드 정보 자동 완성 사용</translation>
 <translation id="2307496301287881990">디스플레이 및 그래픽 상태 보고</translation>
 <translation id="2309390639296060546">기본 위치정보 설정</translation>
-<translation id="2318651066908490266">관리 게스트 세션 사용자는 기기 전체에 적용되는 화면 설정을 저장할 수 없음</translation>
 <translation id="2327252517317514801">G Suite에 액세스할 수 있게 허용된 도메인 정의</translation>
 <translation id="2331354174913096226">원하는 DNS-over-HTTPS 리졸버의 URI 템플릿입니다. 여러 개의 DNS-over-HTTPS 리졸버를 지정하려면 해당하는 URI 템플릿을 공백으로 구분하세요.
 

@@ -40,7 +40,6 @@
 <translation id="1041263367839475438">Боломжтой байгаа төхөөрөмжүүд</translation>
 <translation id="1042174272890264476">Таны компьютер мөн <ph name="SHORT_PRODUCT_NAME" />-ын RLZ программын мэдээллийн сантай байдаг.  RLZ нь тодорхой кампанит ажлаар удирдуулсан хайлтууд болон <ph name="SHORT_PRODUCT_NAME" />-ын хэрэглээг хэмжих онцгой бус, мөн хувийн бус, тодорхойлох боломжтой цонхнуудыг ажиллуулдаг. Эдгээр хаягууд нь заримдаа <ph name="PRODUCT_NAME" /> дахь Google Хайлтын асуултуудад харагддаг.</translation>
 <translation id="1043818413152647937">Эдгээр аппаас мөн өгөгдлийг арилгах уу?</translation>
-<translation id="1046635659603195359">Та Google Туслахаараа Voice Match-г өөр төхөөрөмж дээр аль хэдийн тохируулсан бoлолтой. Эдгээр өмнөх бичлэгийг энэ төхөөрөмжид дуу хоолойн загвар үүсгэхэд ашиглаж болно. Үүнд нэг минутаас бага хугацаа зарцуулна.</translation>
 <translation id="104710386808485638">Linux-г дахин эхлүүлэх үү?</translation>
 <translation id="1047431265488717055">Текстийн холбоосыг хуулах</translation>
 <translation id="1048286738600630630">Дэлгэц</translation>
@@ -88,7 +87,6 @@
 <translation id="109647177154844434">Parallels Desktop-г устгаснаар таны Windows-н системийн хуулбарыг устгана. Үүнд үүний аппууд, тохиргоо болон өгөгдөл багтана. Та үргэлжлүүлэхдээ итгэлтэй байна уу?</translation>
 <translation id="1097658378307015415">Бүртгүүлэхээсээ өмнө сүлжээг идэвхжүүлэхийн тулд Зочны хувиар нэвтэрч орно уу <ph name="NETWORK_ID" /></translation>
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" />-с хуулсан зураг</translation>
-<translation id="1102187190604780492">Туслахдаа таны дэлгэц дээр байгаа зүйлтэй холбоотой мэдээллийг идэвхтэй харуулахыг зөвшөөрнө үү</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" />-ийг үргэлж орчуулах</translation>
 <translation id="1108600514891325577">&amp; Зогс</translation>
 <translation id="1110155001042129815">Хүлээх</translation>
@@ -1175,7 +1173,6 @@
 <translation id="2307462900900812319">Сүлжээг тохируулах</translation>
 <translation id="230927227160767054">Энэ хуудас нь үйлчилгээний зохицуулагчийг суулгахыг хүсч байна.</translation>
 <translation id="2309620859903500144">Энэ сайтад таны хөдөлгөөн болон гэрлийн мэдрэгчид хандахыг блоклосон байна.</translation>
-<translation id="2311497964614110326">Туслахыг ашиглан илүү сайн, шуурхай хариулт аваарай</translation>
 <translation id="2312219318583366810">Хуудасны URL</translation>
 <translation id="2314165183524574721">Одоогийн харагдцын тохиргоог нуусан байна</translation>
 <translation id="2314774579020744484">Хуудсыг орчуулахад ашигладаг хэл</translation>
@@ -1289,7 +1286,6 @@
 <translation id="2440604414813129000">Эх үүсвэрийг харуул</translation>
 <translation id="244231003699905658">Хаяг буруу байна. Хаягийг шалгаад дахин оролдоно уу.</translation>
 <translation id="2442916515643169563">Текстийн сүүдэр</translation>
-<translation id="2444469058037141906">Зүгээр л юу хэрэгтэйгээ хэл эсвэл бич</translation>
 <translation id="2445081178310039857">Өргөтгөлийн стандарт директор шаардлагатай байна.</translation>
 <translation id="2445484935443597917">Шинэ профайл үүсгэх</translation>
 <translation id="2448312741937722512">Төрөл</translation>
@@ -2159,7 +2155,6 @@
 <translation id="343578350365773421">Цаас дууссан</translation>
 <translation id="3435896845095436175">Идэвхжүүл</translation>
 <translation id="3438633801274389918">Нинжа</translation>
-<translation id="3438643033528947620">Google-н үйлчилгээнүүдэд холбогдож чадсангүй. Алдааны код: <ph name="ERROR_CODE" />.</translation>
 <translation id="3439153939049640737"><ph name="HOST" />-д таны микрофон руу нэвтрэхийг үргэлж зөвшөөрөх</translation>
 <translation id="3439970425423980614">PDF-ийг урьдчилан харах горимд нээж байна</translation>
 <translation id="3440663250074896476"><ph name="BOOKMARK_NAME" />-н бусад үйлдэл</translation>
@@ -2358,7 +2353,6 @@
 <translation id="3651488188562686558">Wi-Fi-с салгах</translation>
 <translation id="3652817283076144888">Эхлүүлж байна</translation>
 <translation id="3653160965917900914">Сүлжээний файлыг хуваалцах</translation>
-<translation id="3653842108912548333">Туслахдаа Voice Match-р хандах</translation>
 <translation id="3653999333232393305"><ph name="HOST" />-д таны микрофон руу нэвтрэхийг үргэлжүүлэн зөвшөөрөх</translation>
 <translation id="3654045516529121250">Өөрийн нэвтрэх боломжит байдлын тохиргоонуудыг унш</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Энэ нь нэг файл руу байнга нэвтрэх эрхтэй байна.}other{Энэ нь # файл руу байнга нэвтрэх эрхтэй байна.}}</translation>
@@ -3436,7 +3430,6 @@
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Гц - сүлжилдсэн</translation>
 <translation id="4902546322522096650">Сүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, дохионы хүч<ph name="SIGNAL_STRENGTH" />%, холбогдох</translation>
 <translation id="49027928311173603">Серверээс татсан бодлого хүчин төгөлдөр бус байна: <ph name="VALIDATION_ERROR" /> .</translation>
-<translation id="4904061654709986277">Профайл нэмэх</translation>
 <translation id="4906490889887219338">Сүлжээний файл хуваалцахыг тохируулах эсвэл удирдах. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301">Сүлжээ <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />%, утасны батарей <ph name="BATTERY_STATUS" />, дэлгэрэнгүй мэдээлэл</translation>
 <translation id="4907161631261076876">Энэ файлыг ихэвчлэн татдаггүй бөгөөд аюултай байж болзошгүй.</translation>
@@ -3577,7 +3570,6 @@
 <translation id="5086874064903147617">Өгөгдмөл нүүр хуудсыг идэвхжүүлэх үү?</translation>
 <translation id="5087249366037322692">Гуравдагч талаас нэмсэн</translation>
 <translation id="5087580092889165836">Карт нэмэх</translation>
-<translation id="5087926280563932024">Таны бүртгэлийг баталгаажуулж чадсангүй. Дахин оролдох эсвэл Chromebook-г дахин эхлүүлнэ үү.</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 With RSA Encryption</translation>
 <translation id="5090637338841444533">Таны камерын байрлалыг хянахыг зөвшөөрөөгүй</translation>
 <translation id="5094721898978802975">Хамтарч буй суурин апп-уудтай харилцах</translation>
@@ -3772,7 +3764,6 @@
 <translation id="5315738755890845852">Илүү хээтэй хаалт: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Хадгалах</translation>
 <translation id="5319359161174645648">Google нь Chrome-г санал болгож байна</translation>
-<translation id="5320112320661303273">Та Туслахыг өөр төхөөрөмж дээр аль хэдийн тохируулсан бололтой. Дараах тохиргоог асааж, Туслахаа илүү их ашиглаарай.</translation>
 <translation id="5320135788267874712">Шинэ төхөөрөмжийн нэр</translation>
 <translation id="532247166573571973">Энэ серверт холбогдох боломжгүй байна. Дараа дахин оролдоно уу.</translation>
 <translation id="5324300749339591280">Аппын жагсаалт</translation>
@@ -5296,9 +5287,6 @@
 <translation id="7088434364990739311">Шинэчлэлтийг шалгах ажиллагааг эхлүүлж чадсангүй (алдааны код <ph name="ERROR" /> ).</translation>
 <translation id="7088561041432335295">Зип архивлагч - ZIP файлыг нээж Файлс аппад багцалдаг.</translation>
 <translation id="7088674813905715446">Энэ нь төхөөрөмжийг админаас тодорхой нөхцөлгүй байдалд оруулсан байна. Үүнийг идэвхжүүлэхийн тулд админаас төхөөрөмжийг хүлээгдэж буй нөхцөл байдалд оруулах хэрэгтэй.</translation>
-<translation id="7092474863625458670">Voice Match таны дуу хоолойг ашиглан таныг Туслахад шууд хандахыг зөвшөөрдөг.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Санамж:<ph name="END_BOLD" /> Төстэй дуу хоолой эсвэл бичлэгээр таны Туслахад мөн адил хандаж болзошгүй. Та Voice Match-н зөвшөөрлийг дараа нь Туслахын тохиргоонд унтрааснаар устгах боломжтой.</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">: <ph name="HOSTNAMES" /> нэртэй төхөөрөмжүүдийг ашиглан мэдээлэл солилцоорой</translation>
 <translation id="7098389117866926363">USB-C төхөөрөмж (ард талын зүүн порт)</translation>
@@ -5487,7 +5475,6 @@
 <translation id="7325209047678309347">Цаас гацсан</translation>
 <translation id="7326004502692201767">Энэ <ph name="DEVICE_TYPE" />-г хүүхдэд зориулж тохируулах</translation>
 <translation id="7327989755579928735"><ph name="MANAGER" /> ADB дебагийг идэвхгүй болгосон. Та <ph name="DEVICE_TYPE" />-г дахин эхлүүлсний дараа аппуудыг хөндлөнгөөс ачаалах боломжгүй болно.</translation>
-<translation id="7328699668338161242">Та Туслахдаа дуу хоолойгоо аль хэдийн таниулсан байна</translation>
 <translation id="7328867076235380839">Буруу хослол</translation>
 <translation id="7329154610228416156">Аюултай URL (<ph name="BLOCKED_URL" />) ашигласан тул нэвтэрч чадсангүй. Та админтайгаа холбогдоно уу.</translation>
 <translation id="7332053360324989309">Зориулагдсан ажилтан: <ph name="SCRIPT_URL" /></translation>
@@ -5636,7 +5623,6 @@
 <translation id="7493386493263658176"><ph name="EXTENSION_NAME" /> өргөтгөл таны шивсэн бүх текстийг цуглуулах бөгөөд үүнд таны нууц үг, кредит картын дугаар зэрэг хувийн өгөгдөл багтана. Та энэ өргөтгөлийг ашиглах уу?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="7495778526395737099">Хуучин нууц үгээ мартсан уу?</translation>
-<translation id="7496732379142025470">Батарей хэмнэхийн тулд “Ok Google” зөвхөн таны төхөөрөмжийг тэжээлийн эх үүсвэрт залгасан үед асна. Өөрчлөхийн тулд Тохиргоо руу очно уу.</translation>
 <translation id="7497981768003291373">Танд саяхан авсан WebRTC текст лог алга.</translation>
 <translation id="7498614236023455416"><ph name="TARGET_NAME" /> энэ табын контентын зургийг авах зөвшөөрөл хүсэж байна.</translation>
 <translation id="7503191893372251637">Нэтскейпийн гэрчилгээний төрөл</translation>

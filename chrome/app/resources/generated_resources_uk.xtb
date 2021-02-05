@@ -40,7 +40,6 @@
 <translation id="1041263367839475438">Доступні пристрої</translation>
 <translation id="1042174272890264476">Ваш комп’ютер також має вбудовану бібліотеку RLZ у <ph name="SHORT_PRODUCT_NAME" />. Параметр RLZ призначає неунікальний тег, який не містить особисті дані, проте дозволяє вимірювати пошуки й користування <ph name="SHORT_PRODUCT_NAME" /> у рамках певної рекламної кампанії. Ці мітки інколи з’являються в пошукових запитах Google у <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1043818413152647937">Видалити дані з цих додатків?</translation>
-<translation id="1046635659603195359">Схоже, ви вже налаштували Voice Match для Google Асистента на іншому пристрої. За допомогою попередніх записів можна створити зразок голосу на цьому пристрої. Це займе менше хвилини.</translation>
 <translation id="104710386808485638">Перезапустити Linux?</translation>
 <translation id="1047431265488717055">Копіювати те&amp;кст посилання</translation>
 <translation id="1048286738600630630">Дисплеї</translation>
@@ -88,7 +87,6 @@
 <translation id="109647177154844434">Якщо ви видалите додаток Parallels Desktop, то також вилучите образ, додатки, налаштування й дані Windows. Продовжити?</translation>
 <translation id="1097658378307015415">Перш ніж увійти, розпочніть сеанс у режимі гостя, щоб активувати мережу <ph name="NETWORK_ID" /></translation>
 <translation id="1099962274138857708">Зображення скопійовано з пристрою <ph name="DEVICE_NAME" /></translation>
-<translation id="1102187190604780492">Дозвольте Асистенту активно показувати інформацію на основі контенту на екрані</translation>
 <translation id="1103523840287552314">Завжди перекладати з такої мови: <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Зупинити</translation>
 <translation id="1110155001042129815">Зачекайте</translation>
@@ -1182,7 +1180,6 @@
 <translation id="2307462900900812319">Установити параметри мережі</translation>
 <translation id="230927227160767054">Ця сторінка хоче встановити обробника служби.</translation>
 <translation id="2309620859903500144">Доступ цього сайту до датчиків руху чи світла заблоковано.</translation>
-<translation id="2311497964614110326">Отримуйте кращі та швидші відповіді з Асистентом</translation>
 <translation id="2312219318583366810">URL-адреса сторінки</translation>
 <translation id="2314165183524574721">Поточне налаштування видимості: "Приховано"</translation>
 <translation id="2314774579020744484">Мова, що використовується для перекладу сторінок</translation>
@@ -1297,7 +1294,6 @@
 <translation id="2440604414813129000">Див. д&amp;жерело</translation>
 <translation id="244231003699905658">Недійсна адреса. Перевірте адресу та повторіть спробу.</translation>
 <translation id="2442916515643169563">Тінь тексту</translation>
-<translation id="2444469058037141906">Скажіть або введіть свій запит</translation>
 <translation id="2445081178310039857">Потрібен кореневий каталог розширення.</translation>
 <translation id="2445484935443597917">Створити новий профіль</translation>
 <translation id="2448312741937722512">Тип</translation>
@@ -2167,7 +2163,6 @@
 <translation id="343578350365773421">Закінчився папір</translation>
 <translation id="3435896845095436175">Увімкнути</translation>
 <translation id="3438633801274389918">Ніндзя</translation>
-<translation id="3438643033528947620">Не вдалося підключитися до сервісів Google. Код помилки: <ph name="ERROR_CODE" />.</translation>
 <translation id="3439153939049640737">Завжди дозволяти хосту <ph name="HOST" /> доступ до вашого мікрофона</translation>
 <translation id="3439970425423980614">Відкривання файлу PDF у вікні попереднього перегляду</translation>
 <translation id="3440663250074896476">Інші дії для закладки <ph name="BOOKMARK_NAME" /></translation>
@@ -2366,7 +2361,6 @@
 <translation id="3651488188562686558">Відключитися від Wi-Fi</translation>
 <translation id="3652817283076144888">Ініціалізація</translation>
 <translation id="3653160965917900914">Мережеві файлообмінники</translation>
-<translation id="3653842108912548333">Відкривайте Асистент за допомогою Voice Match</translation>
 <translation id="3653999333232393305">Продовжити надавати хосту <ph name="HOST" /> доступ до вашого мікрофона</translation>
 <translation id="3654045516529121250">Переглядати налаштування доступності</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Має постійний доступ до одного файлу.}one{Має постійний доступ до # файлу.}few{Має постійний доступ до # файлів.}many{Має постійний доступ до # файлів.}other{Має постійний доступ до # файлу.}}</translation>
@@ -3445,7 +3439,6 @@
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Гц – з накладанням</translation>
 <translation id="4902546322522096650">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%. Підключитися</translation>
 <translation id="49027928311173603">Завантажене із сервера правило недійсне: <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4904061654709986277">Додати профіль</translation>
 <translation id="4906490889887219338">Налаштувати мережеві файлообмінники або керувати ними. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301">Мережа №<ph name="NETWORK_INDEX" />, загалом мереж: <ph name="NETWORK_COUNT" />, назва пристрою: <ph name="PHONE_NAME" />, оператор: <ph name="PROVIDER_NAME" />, стан з'єднання: <ph name="CONNECTION_STATUS" />, рівень сигналу: <ph name="SIGNAL_STRENGTH" />%, рівень заряду акумулятора телефона: <ph name="BATTERY_STATUS" />%, відомості</translation>
 <translation id="4907161631261076876">Цей файл рідко завантажують. Він може бути небезпечним.</translation>
@@ -3586,7 +3579,6 @@
 <translation id="5086874064903147617">Відновити головну сторінку за умовчанням?</translation>
 <translation id="5087249366037322692">Додано сторонньою програмою</translation>
 <translation id="5087580092889165836">Додати картку</translation>
-<translation id="5087926280563932024">Не вдалося підтвердити обліковий запис. Повторіть спробу або перезапустіть Chromebook.</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 із шифруванням RSA</translation>
 <translation id="5090637338841444533">Заборонено відстежувати положення камери</translation>
 <translation id="5094721898978802975">Підтримувати зв’язок із взаємодійними рідними програмами</translation>
@@ -3781,7 +3773,6 @@
 <translation id="5315738755890845852">Зайва фігурна дужка: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Зберегти</translation>
 <translation id="5319359161174645648">Google рекомендує Chrome</translation>
-<translation id="5320112320661303273">Схоже, ви вже налаштували Асистента на іншому пристрої. Отримайте ще більше функцій Асистента, увімкнувши налаштування нижче.</translation>
 <translation id="5320135788267874712">Нова назва пристрою</translation>
 <translation id="532247166573571973">Можливо, сервер недоступний. Спробуйте пізніше.</translation>
 <translation id="5324300749339591280">Список додатків</translation>
@@ -5306,9 +5297,6 @@
 <translation id="7088434364990739311">Не вдалося запустити перевірку наявності оновлень (код помилки: <ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">Zip Archiver – відкривайте та пакуйте ZIP-файли в додатку Файли.</translation>
 <translation id="7088674813905715446">Адміністратор активував на цьому пристрої стан деініціалізації. Щоб увімкнути його для реєстрації, попросіть адміністратора перевести пристрій у стан очікування.</translation>
-<translation id="7092474863625458670">Функція Voice Match дає змогу відкривати Асистент голосом.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Зверніть увагу:<ph name="END_BOLD" /> хтось зі схожим голосом або записом вашого голосу може отримати доступ до Асистента. Ви можете будь-коли видалити дозвіл для Voice Match. Для цього вимкніть цю функцію в налаштуваннях Асистента.</translation>
 <translation id="7093434536568905704">Тема GTK+</translation>
 <translation id="7093866338626856921">Обмінюватися даними з пристроями з назвами: <ph name="HOSTNAMES" /></translation>
 <translation id="7098389117866926363">Пристрій, під’єднаний до порту USB-C (ліворуч на задній панелі)</translation>
@@ -5497,7 +5485,6 @@
 <translation id="7325209047678309347">Застряг папір</translation>
 <translation id="7326004502692201767">Налаштуйте цей пристрій <ph name="DEVICE_TYPE" /> для дитини</translation>
 <translation id="7327989755579928735">Адміністратор домену <ph name="MANAGER" /> вимкнув налагодження ADB. Коли ви перезапустите пристрій <ph name="DEVICE_TYPE" />, то більше не зможете завантажувати додатки з невідомих джерел.</translation>
-<translation id="7328699668338161242">Тепер Асистент може розпізнавати ваш голос</translation>
 <translation id="7328867076235380839">Недійсна комбінація</translation>
 <translation id="7329154610228416156">Не вдалося ввійти, оскільки вас було переспрямовано на незахищену URL-адресу (<ph name="BLOCKED_URL" />). Зв’яжіться з адміністратором.</translation>
 <translation id="7332053360324989309">Dedicated Worker: <ph name="SCRIPT_URL" /></translation>
@@ -5646,7 +5633,6 @@
 <translation id="7493386493263658176">Розширення <ph name="EXTENSION_NAME" /> може запам’ятовувати весь текст, який ви вводите, зокрема паролі та номери кредитних карток. Використовувати це розширення?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" />x<ph name="HEIGHT" /></translation>
 <translation id="7495778526395737099">Забули старий пароль?</translation>
-<translation id="7496732379142025470">Щоб заощадити заряд акумулятора, команда "Ok Google" працюватиме, лише коли пристрій підключено до джерела живлення. Зміни можна внести в меню "Налаштування".</translation>
 <translation id="7497981768003291373">Немає нещодавно створених текстових журналів WebRTC.</translation>
 <translation id="7498614236023455416">Сайт <ph name="TARGET_NAME" /> просить дозвіл записувати контент цієї вкладки.</translation>
 <translation id="7503191893372251637">Тип сертифіката Netscape</translation>

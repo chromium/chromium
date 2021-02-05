@@ -163,7 +163,6 @@ Sök genom att trycka på ett ord. Du kan finjustera sökningen genom att trycka
 <translation id="2126426811489709554">Drivs av Chrome</translation>
 <translation id="2131665479022868825"><ph name="DATA" /> har sparats</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> har stängts</translation>
-<translation id="2139186145475833000">Lägg till på startskärmen</translation>
 <translation id="214888715418183969">Välj vad du vill dela med Chrome. Den statistik du delar används för att förbättra Chromes funktioner, prestanda och stabilitet.</translation>
 <translation id="2154484045852737596">Redigera kortet</translation>
 <translation id="2154710561487035718">Kopiera webbadress</translation>
@@ -209,7 +208,6 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="2459390580524506445">Förbättrad röstsökning</translation>
 <translation id="246532703174860178">Dela</translation>
 <translation id="247737702124049222">Bildbeskrivningar har aktiverats</translation>
-<translation id="2478076885740497414">Installera appen</translation>
 <translation id="2482878487686419369">Aviseringar</translation>
 <translation id="2494974097748878569">Google-assistenten i Chrome</translation>
 <translation id="2496180316473517155">Webbhistorik</translation>
@@ -393,7 +391,6 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="3773856050682458546">Grundläggande data samt information om webbplatser du besöker och appar du använder</translation>
 <translation id="3775705724665058594">Skicka till dina enheter</translation>
 <translation id="3778956594442850293">Tillagd på startskärmen</translation>
-<translation id="3789841737615482174">Installera</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Hantera</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> nedladdningar har raderats</translation>
@@ -866,7 +863,6 @@ Data från inkognitosessionen rensas bara från Chrome om du <ph name="BEGIN_BOL
 <translation id="6979737339423435258">Sedan kontot skapades</translation>
 <translation id="6981982820502123353">Tillgänglighet</translation>
 <translation id="6989267951144302301">Nedladdning misslyckades</translation>
-<translation id="6990079615885386641">Hämta appen från Google Play Butik: <ph name="APP_ACTION" /></translation>
 <translation id="6995899638241819463">En varning visas om lösenord har läckt ut vid ett dataintrång</translation>
 <translation id="7015203776128479407">Den initiala synkroniseringskonfigureringen avslutades inte. Synkroniseringen är inaktiverad.</translation>
 <translation id="7022756207310403729">Öppna i webbläsaren</translation>

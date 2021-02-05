@@ -40,7 +40,6 @@
 <translation id="1041263367839475438">Available devices</translation>
 <translation id="1042174272890264476">Your computer also comes with <ph name="SHORT_PRODUCT_NAME" />'s RLZ library built in. RLZ assigns a non-unique, non-personally identifiable tag to measure the searches and <ph name="SHORT_PRODUCT_NAME" /> usage driven by a particular promotional campaign. These labels sometimes appear in Google Search queries in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1043818413152647937">Also clear data from these apps?</translation>
-<translation id="1046635659603195359">It looks like you've already set up Voice Match with your Google Assistant on another device.These previous recordings can be used to make a voice model on this device. This should take less than a minute.</translation>
 <translation id="104710386808485638">Restart Linux?</translation>
 <translation id="1047431265488717055">Copy Link Te&amp;xt</translation>
 <translation id="1048286738600630630">Displays</translation>
@@ -88,7 +87,6 @@
 <translation id="109647177154844434">Uninstalling Parallels Desktop will delete your Windows image. This includes its applications, settings and data. Are you sure that you wish to continue?</translation>
 <translation id="1097658378307015415">Before signing in, please enter as Guest to activate the network <ph name="NETWORK_ID" /></translation>
 <translation id="1099962274138857708">Image copied from <ph name="DEVICE_NAME" /></translation>
-<translation id="1102187190604780492">Let your Assistant proactively show info related to what's on your screen</translation>
 <translation id="1103523840287552314">Always translate <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Stop</translation>
 <translation id="1110155001042129815">Wait</translation>
@@ -1182,7 +1180,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2307462900900812319">Configure network</translation>
 <translation id="230927227160767054">This page wants to install a service handler.</translation>
 <translation id="2309620859903500144">This site has been blocked from accessing your motion or light sensors.</translation>
-<translation id="2311497964614110326">Get better, quicker answers with Assistant</translation>
 <translation id="2312219318583366810">Page URL</translation>
 <translation id="2314165183524574721">Current visibility setting is hidden</translation>
 <translation id="2314774579020744484">Language used when translating pages</translation>
@@ -1298,7 +1295,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2440604414813129000">View s&amp;ource</translation>
 <translation id="244231003699905658">Invalid address. Please check the address and try again.</translation>
 <translation id="2442916515643169563">Text shadow</translation>
-<translation id="2444469058037141906">Just say or type what you need</translation>
 <translation id="2445081178310039857">Extension root directory is required.</translation>
 <translation id="2445484935443597917">Create a new profile</translation>
 <translation id="2448312741937722512">Types</translation>
@@ -2172,7 +2168,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="343578350365773421">Out of paper</translation>
 <translation id="3435896845095436175">Enable</translation>
 <translation id="3438633801274389918">Ninja</translation>
-<translation id="3438643033528947620">Couldn’t connect with Google services. Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="3439153939049640737">Always allow <ph name="HOST" /> to access your microphone</translation>
 <translation id="3439970425423980614">Opening PDF in Preview</translation>
 <translation id="3440663250074896476">More actions for <ph name="BOOKMARK_NAME" /></translation>
@@ -2371,7 +2366,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3651488188562686558">Disconnect from Wi-Fi</translation>
 <translation id="3652817283076144888">Initialising</translation>
 <translation id="3653160965917900914">Network file shares</translation>
-<translation id="3653842108912548333">Access your Assistant with Voice Match</translation>
 <translation id="3653999333232393305">Continue allowing <ph name="HOST" /> to access your microphone</translation>
 <translation id="3654045516529121250">Read your accessibility settings</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{It has permanent access to one file.}other{It has permanent access to # files.}}</translation>
@@ -3455,7 +3449,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz – interlaced</translation>
 <translation id="4902546322522096650">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, connect</translation>
 <translation id="49027928311173603">The policy downloaded from the server is invalid: <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4904061654709986277">Add profile</translation>
 <translation id="4906490889887219338">Set up or manage network file shares. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, phone battery <ph name="BATTERY_STATUS" />%, details</translation>
 <translation id="4907161631261076876">This file is not commonly downloaded and may be dangerous.</translation>
@@ -3596,7 +3589,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5086874064903147617">Restore default homepage?</translation>
 <translation id="5087249366037322692">Added by a third party</translation>
 <translation id="5087580092889165836">Add card</translation>
-<translation id="5087926280563932024">Couldn’t verify your account. Please try again or restart your Chromebook.</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 With RSA Encryption</translation>
 <translation id="5090637338841444533">Not allowed to track your camera position</translation>
 <translation id="5094721898978802975">Communicate with cooperating native applications</translation>
@@ -3792,7 +3784,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5315738755890845852">Extra curly bracket: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Save</translation>
 <translation id="5319359161174645648">Google recommends Chrome</translation>
-<translation id="5320112320661303273">Looks like you've already set up Assistant on a different device. Get even more out of your Assistant by turning on the following setting.</translation>
 <translation id="5320135788267874712">New device name</translation>
 <translation id="532247166573571973">The server may be unreachable. Try again later.</translation>
 <translation id="5324300749339591280">Apps list</translation>
@@ -5325,9 +5316,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7088434364990739311">Update check failed to start (error code <ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">Zip Archiver – Open and pack ZIP files in Files app.</translation>
 <translation id="7088674813905715446">This device has been placed into a deprovisioned state by the administrator. To enable it for enrolment, please have your administrator place the device into a pending state.</translation>
-<translation id="7092474863625458670">Voice Match lets you access your Assistant directly by using your voice.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Bear in mind:<ph name="END_BOLD" /> A similar voice or recording might also be able to access your Assistant. You can remove Voice Match permission later by turning it off in Assistant Settings.</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">Exchange data with the devices named: <ph name="HOSTNAMES" /></translation>
 <translation id="7098389117866926363">USB-C device (left port in the back)</translation>
@@ -5517,7 +5505,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7325209047678309347">Paper is jammed</translation>
 <translation id="7326004502692201767">Set up this <ph name="DEVICE_TYPE" /> for a child</translation>
 <translation id="7327989755579928735"><ph name="MANAGER" /> has disabled ADB debugging. Once you restart your <ph name="DEVICE_TYPE" />, you won't be able to sideload apps.</translation>
-<translation id="7328699668338161242">Your Assistant can already recognise your voice</translation>
 <translation id="7328867076235380839">Invalid combination</translation>
 <translation id="7329154610228416156">Sign-in failed because it was configured to use a non-secure URL (<ph name="BLOCKED_URL" />). Please contact your administrator.</translation>
 <translation id="7332053360324989309">Dedicated worker: <ph name="SCRIPT_URL" /></translation>
@@ -5667,7 +5654,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7493386493263658176"><ph name="EXTENSION_NAME" /> extension may collect all the text you type, including personal data like passwords and credit card numbers. Do you want to use this extension?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="7495778526395737099">Forgot your old password?</translation>
-<translation id="7496732379142025470">To save battery, “Ok Google” is on only when your device is connected to a power source. To make changes, go to Settings.</translation>
 <translation id="7497981768003291373">You have no recently captured WebRTC text logs.</translation>
 <translation id="7498614236023455416"><ph name="TARGET_NAME" /> is asking for permission to capture the contents of this tab.</translation>
 <translation id="7503191893372251637">Netscape Certificate Type</translation>

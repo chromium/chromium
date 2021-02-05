@@ -40,7 +40,6 @@
 <translation id="1041263367839475438">Даступныя прылады</translation>
 <translation id="1042174272890264476">Ваш камп'ютар пастаўляецца з убудаванай бібліятэкай RLZ для <ph name="SHORT_PRODUCT_NAME" />. RLZ прызначае неўнікальны цэтлік, які не дазваляе ідэнтыфікаваць асобу, для ацэнкі пошукавых запытаў і статыстыкі выкарыстання <ph name="SHORT_PRODUCT_NAME" />, якія з'яўляюцца вынікам пэўных рэкламных кампаній. Гэтыя меткі часам з'яўляюцца ў пошукавых запытах у Google у прадукце <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1043818413152647937">Таксама выдаліць даныя з гэтых праграм?</translation>
-<translation id="1046635659603195359">Здаецца, вы ўжо наладзілі функцыю Voice Match у Памочніку Google на іншай прыладзе. Зробленыя запісы можна выкарыстоўваць для стварэння галасавой мадэлі на гэтай прыладзе. Гэта зойме менш за хвіліну.</translation>
 <translation id="104710386808485638">Перазапусціць Linux?</translation>
 <translation id="1047431265488717055">Скапіраваць &amp;тэкст спасылкі</translation>
 <translation id="1048286738600630630">Дысплэі</translation>
@@ -88,7 +87,6 @@
 <translation id="109647177154844434">Пры выдаленні праграмы Parallels Desktop будзе выдалены вобраз Windows, у тым ліку праграмы, налады і даныя сістэмы. Сапраўды працягнуць?</translation>
 <translation id="1097658378307015415">Перш чым увайсці ва ўліковы запіс, увайдзіце ў рэжыме госця, каб актываваць сетку <ph name="NETWORK_ID" /></translation>
 <translation id="1099962274138857708">Відарыс скапіраваны з прылады "<ph name="DEVICE_NAME" />"</translation>
-<translation id="1102187190604780492">Дазволіць Памочніку без запыту паказваць інфармацыю, якая датычыцца змесціва на экране</translation>
 <translation id="1103523840287552314">Заўсёды перакладаць з мовы: <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Спыніць</translation>
 <translation id="1110155001042129815">Пачакаць</translation>
@@ -1181,7 +1179,6 @@
 <translation id="2307462900900812319">Наладзіць сетку</translation>
 <translation id="230927227160767054">Старонка спрабуе ўсталяваць апрацоўшчык сэрвісу.</translation>
 <translation id="2309620859903500144">Гэтаму сайту заблакіраваны доступ да датчыкаў руху або святла.</translation>
-<translation id="2311497964614110326">Атрымлівайце дакладнейшыя і хутчэйшыя адказы ад Памочніка</translation>
 <translation id="2312219318583366810">URL-адрас старонкі</translation>
 <translation id="2314165183524574721">Бягучая налада бачнасці: схавана</translation>
 <translation id="2314774579020744484">Мова, якая выкарыстоўваецца для перакладу</translation>
@@ -1296,7 +1293,6 @@
 <translation id="2440604414813129000">Паказаць зы&amp;ходны тэкст</translation>
 <translation id="244231003699905658">Несапраўдны адрас. Праверце адрас і паўтарыце спробу.</translation>
 <translation id="2442916515643169563">Цень ад тэксту</translation>
-<translation id="2444469058037141906">Вымавіце або ўвядзіце запыт</translation>
 <translation id="2445081178310039857">Патрабуецца каранёвы каталог пашырэння.</translation>
 <translation id="2445484935443597917">Стварыць новы профіль</translation>
 <translation id="2448312741937722512">Тып</translation>
@@ -2166,7 +2162,6 @@
 <translation id="343578350365773421">Скончылася папера</translation>
 <translation id="3435896845095436175">Уключыць</translation>
 <translation id="3438633801274389918">Ніндзя</translation>
-<translation id="3438643033528947620">Не ўдалося падключыцца да сэрвісаў Google. Код памылкі: <ph name="ERROR_CODE" />.</translation>
 <translation id="3439153939049640737">Заўсёды даваць сайту <ph name="HOST" /> доступ да мікрафона</translation>
 <translation id="3439970425423980614">PDF адкрываецца ў рэжыме перадпрагляду</translation>
 <translation id="3440663250074896476">Іншыя дзеянні для закладкі "<ph name="BOOKMARK_NAME" />"</translation>
@@ -2365,7 +2360,6 @@
 <translation id="3651488188562686558">Адключэнне ад Wi-Fi</translation>
 <translation id="3652817283076144888">Ініцыялізацыя</translation>
 <translation id="3653160965917900914">Сеткавае абагульванне файлаў</translation>
-<translation id="3653842108912548333">Узаемадзеянне з Памочнікам з дапамогай Voice Match</translation>
 <translation id="3653999333232393305">Працягваць даваць сайту <ph name="HOST" /> доступ да мікрафона</translation>
 <translation id="3654045516529121250">Чытанне налад спецыяльных магчымасцей</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Праграма мае пастаянны доступ да аднаго файла.}one{Праграма мае пастаянны доступ да # файла.}few{Праграма мае пастаянны доступ да # файлаў.}many{Праграма мае пастаянны доступ да # файлаў.}other{Праграма мае пастаянны доступ да # файла.}}</translation>
@@ -3444,7 +3438,6 @@
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Гц – празрадковая разгортка</translation>
 <translation id="4902546322522096650">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, падключыцца</translation>
 <translation id="49027928311173603">Палітыка, спампаваная з сервера, памылковая: <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4904061654709986277">Дадаць профіль</translation>
 <translation id="4906490889887219338">Наладка сеткавых файлаабменнікаў і кіраванне імі. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, зарад акумулятара тэлефона – <ph name="BATTERY_STATUS" />%, падрабязныя звесткі</translation>
 <translation id="4907161631261076876">Гэты файл звычайна не спампоўваецца і можа быць небяспечным.</translation>
@@ -3585,7 +3578,6 @@
 <translation id="5086874064903147617">Аднавіць стандартную галоўную старонку?</translation>
 <translation id="5087249366037322692">Дададзена старонняй праграмай</translation>
 <translation id="5087580092889165836">Дадаць картку</translation>
-<translation id="5087926280563932024">Не ўдалося спраўдзіць уліковы запіс. Паўтарыце спробу або перазапусціце Chromebook.</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 з шыфраваннем RSA</translation>
 <translation id="5090637338841444533">Не дазволена адсочваць становішча камеры</translation>
 <translation id="5094721898978802975">Абменьвацца данымі з уласнымі праграмамі, якія дазваляюць сумесную працу</translation>
@@ -3780,7 +3772,6 @@
 <translation id="5315738755890845852">Лішняя фігурная дужка: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Захаваць</translation>
 <translation id="5319359161174645648">Google рэкамендуе браўзер Chrome</translation>
-<translation id="5320112320661303273">Здаецца, вы ўжо наладзілі Памочніка на іншай прыладзе. Выкарыстоўвайце яго яшчэ больш эфектыўна, уключыўшы наступную наладу.</translation>
 <translation id="5320135788267874712">Новая назва прылады</translation>
 <translation id="532247166573571973">Сервер можа быць недаступны. Паўтарыце спробу пазней.</translation>
 <translation id="5324300749339591280">Спіс праграм</translation>
@@ -5305,9 +5296,6 @@
 <translation id="7088434364990739311">Не ўдалося запусціць праверку абнаўленняў (код памылкі <ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">Архіватар Zip – адкрывае і запакоўвае файлы ZIP у праграме "Файлы".</translation>
 <translation id="7088674813905715446">Ініцыялізацыя прылады была скасавана адміністратарам. Каб прыладу можна было зарэгістраваць, адміністратар павінен перавесці яе ў стан чакання.</translation>
-<translation id="7092474863625458670">Voice Match дае вам непасрэдны доступ да Памочніка з дапамогай голасу.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Майце на ўвазе:<ph name="END_BOLD" /> атрымаць доступ да Памочніка таксама зможа хтосьці з падобным да вашага голасам або запісам вашага голасу. Пазней выдаліць дазвол Voice Match можна будзе, выключыўшы гэту функцыю ў наладах Памочніка.</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">Абмен данымі з прыладамі з назвамі: <ph name="HOSTNAMES" /></translation>
 <translation id="7098389117866926363">Прылада USB-C (задні порт злева)</translation>
@@ -5496,7 +5484,6 @@
 <translation id="7325209047678309347">Папера захрасла</translation>
 <translation id="7326004502692201767">Наладзьце прыладу "<ph name="DEVICE_TYPE" />" для дзіцяці</translation>
 <translation id="7327989755579928735">Сайт <ph name="MANAGER" /> выключыў адладку ADB. Пасля перазапуску прылады <ph name="DEVICE_TYPE" /> вы не зможаце загружаць праграмы са старонняй крыніцы.</translation>
-<translation id="7328699668338161242">Памочнік ужо можа распазнаваць ваш голас.</translation>
 <translation id="7328867076235380839">Няправільнае спалучэнне</translation>
 <translation id="7329154610228416156">Адбыўся збой уваходу з-за выкарыстання небяспечнага URL-адраса (<ph name="BLOCKED_URL" />). Звяжыцеся з адміністратарам.</translation>
 <translation id="7332053360324989309">Вылучаны рабочы працэс: <ph name="SCRIPT_URL" /></translation>
@@ -5645,7 +5632,6 @@
 <translation id="7493386493263658176">Пашырэнне "<ph name="EXTENSION_NAME" />" можа збіраць увесь уведзены вамі тэкст, у тым ліку асабістыя даныя, такія як паролі і нумары крэдытных карт. Сапраўды выкарыстоўваць гэта пашырэнне?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> × <ph name="HEIGHT" /></translation>
 <translation id="7495778526395737099">Забылі стары пароль?</translation>
-<translation id="7496732379142025470">У мэтах эканоміі зараду акумулятара каманда "Ok Google" працуе, толькі калі прылада падключана да крыніцы сілкавання. Каб зрабіць патрэбныя змены, перайдзіце ў налады.</translation>
 <translation id="7497981768003291373">У вас няма апошніх тэкставых журналаў WebRTC.</translation>
 <translation id="7498614236023455416"><ph name="TARGET_NAME" /> запытвае дазвол зрабіць здымак змесціва гэтай укладкі.</translation>
 <translation id="7503191893372251637">Тып сертыфіката Netscape</translation>
