@@ -774,6 +774,8 @@ class InlineLoginUISafeIframeBrowserTest : public InProcessBrowserTest {
     content::WebUIControllerFactory::UnregisterFactoryForTesting(
         test_factory_.get());
     test_factory_.reset();
+    content::WebUIControllerFactory::RegisterFactory(
+        ChromeWebUIControllerFactory::GetInstance());
     EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
   }
 

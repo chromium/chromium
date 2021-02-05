@@ -609,6 +609,8 @@ TEST_F(PeopleHandlerTest, AcquireSyncBlockerWhenLoadingSyncSettingsSubpage) {
   EXPECT_TRUE(handler_->sync_blocker_);
   content::WebUIControllerFactory::UnregisterFactoryForTesting(
       test_factory_.get());
+  content::WebUIControllerFactory::RegisterFactory(
+      ChromeWebUIControllerFactory::GetInstance());
 }
 
 TEST_F(PeopleHandlerTest, UnrecoverableErrorInitializingSync) {
