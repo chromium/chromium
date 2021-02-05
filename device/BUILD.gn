@@ -99,6 +99,7 @@ test("device_unittests") {
       "bluetooth/bluetooth_task_manager_win_unittest.cc",
       "bluetooth/test/bluetooth_test_win.cc",
       "bluetooth/test/bluetooth_test_win.h",
+      "gamepad/wgi_data_fetcher_win_unittest.cc",
     ]
   }
 
