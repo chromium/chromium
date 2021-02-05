@@ -230,8 +230,10 @@ TEST_F(AppMenuModelTest, GlobalError) {
 TEST_F(AppMenuModelTest, DisableSettingsItem) {
   AppMenuModel model(this, browser());
   model.Init();
-  int index = model.GetIndexOfCommandId(IDC_OPTIONS);
-  EXPECT_TRUE(model.IsEnabledAt(index));
+  const int index_options = model.GetIndexOfCommandId(IDC_OPTIONS);
+  const int index_about = model.GetIndexOfCommandId(IDC_ABOUT);
+  EXPECT_TRUE(model.IsEnabledAt(index_options));
+  EXPECT_TRUE(model.IsEnabledAt(index_about));
 
   {
     ListPrefUpdate update(TestingBrowserProcess::GetGlobal()->local_state(),
@@ -239,7 +241,8 @@ TEST_F(AppMenuModelTest, DisableSettingsItem) {
     base::ListValue* list = update.Get();
     list->Append(policy::SystemFeature::kBrowserSettings);
   }
-  EXPECT_FALSE(model.IsEnabledAt(index));
+  EXPECT_FALSE(model.IsEnabledAt(index_options));
+  EXPECT_FALSE(model.IsEnabledAt(index_about));
 
   {
     ListPrefUpdate update(TestingBrowserProcess::GetGlobal()->local_state(),
@@ -247,6 +250,7 @@ TEST_F(AppMenuModelTest, DisableSettingsItem) {
     base::ListValue* list = update.Get();
     list->Clear();
   }
-  EXPECT_TRUE(model.IsEnabledAt(index));
+  EXPECT_TRUE(model.IsEnabledAt(index_options));
+  EXPECT_TRUE(model.IsEnabledAt(index_about));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

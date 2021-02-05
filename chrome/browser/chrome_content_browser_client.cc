@@ -5201,18 +5201,18 @@ void ChromeContentBrowserClient::RegisterRendererPreferenceWatcher(
 bool ChromeContentBrowserClient::HandleWebUI(
     GURL* url,
     content::BrowserContext* browser_context) {
+  DCHECK(browser_context);
+
   // Rewrite chrome://help to chrome://settings/help.
   if (url->SchemeIs(content::kChromeUIScheme) &&
       url->host() == chrome::kChromeUIHelpHost) {
     *url = ReplaceURLHostAndPath(*url, chrome::kChromeUISettingsHost,
                                  chrome::kChromeUIHelpHost);
-    return true;  // Return true to update the displayed URL.
   }
 
   // Replace deprecated cookie settings URL with the current version.
   if (*url == GURL(chrome::kChromeUICookieSettingsDeprecatedURL)) {
     *url = GURL(chrome::kChromeUICookieSettingsURL);
-    return true;
   }
 
 #if defined(OS_WIN)
