@@ -633,8 +633,7 @@ template("mojom") {
       enabled_features += [ "is_win" ]
     }
 
-    # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-    python2_action(parser_target_name) {
+    action(parser_target_name) {
       script = mojom_parser_script
       inputs = mojom_parser_sources + [ build_metadata_filename ]
       sources = sources_list
@@ -751,8 +750,7 @@ template("mojom") {
       }
     }
 
-    # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-    python2_action(generator_cpp_message_ids_target_name) {
+    action(generator_cpp_message_ids_target_name) {
       script = mojom_generator_script
       inputs = mojom_generator_sources + jinja2_sources
       sources = sources_list
@@ -792,8 +790,7 @@ template("mojom") {
 
     generator_shared_target_name = "${target_name}_shared__generator"
 
-    # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-    python2_action(generator_shared_target_name) {
+    action(generator_shared_target_name) {
       visibility = [ ":*" ]
       script = mojom_generator_script
       inputs = mojom_generator_sources + jinja2_sources
@@ -913,8 +910,7 @@ template("mojom") {
     generator_mojolpm_proto_target_name =
         "${target_name}_mojolpm_proto_generator"
 
-    # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-    python2_action(generator_mojolpm_proto_target_name) {
+    action(generator_mojolpm_proto_target_name) {
       script = mojom_generator_script
       inputs = mojom_generator_sources + jinja2_sources
       sources = invoker.sources
@@ -1104,8 +1100,7 @@ template("mojom") {
 
       generator_target_name = "${target_name}${variant_suffix}__generator"
 
-      # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-      python2_action(generator_target_name) {
+      action(generator_target_name) {
         visibility = [ ":*" ]
         script = mojom_generator_script
         inputs = mojom_generator_sources + jinja2_sources
@@ -1286,8 +1281,7 @@ template("mojom") {
     write_file(_typemap_config_filename, _rebased_typemap_configs, "json")
     _mojom_target_name = target_name
 
-    # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-    python2_action(_typemap_validator_target_name) {
+    action(_typemap_validator_target_name) {
       script = "$mojom_generator_root/validate_typemap_config.py"
       inputs = [ _typemap_config_filename ]
       outputs = [ _typemap_stamp_filename ]
@@ -1298,8 +1292,7 @@ template("mojom") {
       ]
     }
 
-    # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-    python2_action(type_mappings_target_name) {
+    action(type_mappings_target_name) {
       inputs =
           mojom_generator_sources + jinja2_sources + [ _typemap_stamp_filename ]
       outputs = [ type_mappings_path ]
@@ -1472,8 +1465,7 @@ template("mojom") {
 
       java_generator_target_name = target_name + "_java__generator"
       if (sources_list != []) {
-        # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-        python2_action(java_generator_target_name) {
+        action(java_generator_target_name) {
           script = mojom_generator_script
           inputs = mojom_generator_sources + jinja2_sources
           sources = sources_list
@@ -1513,8 +1505,7 @@ template("mojom") {
 
       java_srcjar_target_name = target_name + "_java_sources"
 
-      # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-      python2_action(java_srcjar_target_name) {
+      action(java_srcjar_target_name) {
         script = "//build/android/gyp/zip.py"
         inputs = []
         if (output_file_base_paths != []) {
@@ -1574,8 +1565,7 @@ template("mojom") {
     if (sources_list != []) {
       generator_js_target_name = "${target_name}_js__generator"
 
-      # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-      python2_action(generator_js_target_name) {
+      action(generator_js_target_name) {
         script = mojom_generator_script
         inputs = mojom_generator_sources + jinja2_sources
         sources = sources_list
@@ -1816,8 +1806,7 @@ template("mojom") {
       generator_ts_target_name =
           "${target_name}_${dependency_type.name}__ts__generator"
 
-      # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-      python2_action(generator_ts_target_name) {
+      action(generator_ts_target_name) {
         script = mojom_generator_script
         inputs = mojom_generator_sources + jinja2_sources
         sources = sources_list
@@ -1884,8 +1873,7 @@ template("mojom") {
           "${target_name}_${dependency_type.name}__js__generator"
       generator_js_target_names += [ generator_js_target_name ]
 
-      # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-      python2_action(generator_js_target_name) {
+      action(generator_js_target_name) {
         script = "$mojom_generator_root/compile_typescript.py"
         sources = ts_outputs
         outputs = js_outputs

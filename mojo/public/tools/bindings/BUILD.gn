@@ -6,8 +6,7 @@ import("//build/config/python.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//third_party/jinja2/jinja2.gni")
 
-# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-python2_action("precompile_templates") {
+action("precompile_templates") {
   sources = mojom_generator_sources
   sources += [
     "$mojom_generator_root/generators/cpp_templates/enum_macros.tmpl",
