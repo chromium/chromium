@@ -5682,3 +5682,6 @@ crbug.com/1173137 external/wpt/webxr/hit-test/ar_hittest_subscription_transientI
 # COEP reporting for PlzDedicatedWorker
 crbug.com/1060837 external/wpt/html/cross-origin-embedder-policy/reporting-to-owner.https.html [ Timeout ]
 crbug.com/1060837 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/reporting-to-owner.https.html [ Pass ]
+
+# Failing on Webkit Linux Leak
+crbug.com/1174806 external/wpt/css/selectors/focus-visible-006.html [ Pass Failure ]
