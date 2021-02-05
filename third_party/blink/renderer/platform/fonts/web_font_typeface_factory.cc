@@ -34,6 +34,11 @@ bool WebFontTypefaceFactory::CreateTypeface(sk_sp<SkData> sk_data,
 
   std::unique_ptr<SkStreamAsset> stream(new SkMemoryStream(sk_data));
 
+  // Reject COLRv1 for now until we have a feature flag to gate them and control
+  // the release process.
+  if (format_check.IsColrCpalColorFontV1())
+    return false;
+
   if (!format_check.IsVariableFont() && !format_check.IsColorFont()) {
     typeface = DefaultFontManager()->makeFromStream(std::move(stream));
     if (typeface) {
@@ -85,7 +90,7 @@ bool WebFontTypefaceFactory::CreateTypeface(sk_sp<SkData> sk_data,
     return typeface.get();
   }
 
-  if (format_check.IsColrCpalColorFont()) {
+  if (format_check.IsColrCpalColorFontV0()) {
     typeface = FontManagerForColrCpal()->makeFromStream(std::move(stream));
     if (typeface) {
       ReportInstantiationResult(InstantiationResult::kSuccessColrCpalFont);

@@ -1956,6 +1956,7 @@ source_set("blink_platform_unittests_sources") {
     "fonts/font_test.cc",
     "fonts/font_test_utilities.cc",
     "fonts/generic_font_family_settings_test.cc",
+    "fonts/opentype/font_format_check_test.cc",
     "fonts/opentype/font_settings_test.cc",
     "fonts/opentype/open_type_math_support_test.cc",
     "fonts/opentype/open_type_vertical_data_test.cc",
