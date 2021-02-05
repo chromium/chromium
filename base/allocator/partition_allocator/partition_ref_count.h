@@ -108,11 +108,12 @@ class BASE_EXPORT PartitionRefCount {
   }
 
   ALWAYS_INLINE bool IsAlive() {
+    bool alive = count_.load(std::memory_order_relaxed) & 1;
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-    CheckCookie();
+    if (alive)
+      CheckCookie();
 #endif
-
-    return count_.load(std::memory_order_relaxed) & 1;
+    return alive;
   }
 
  private:
