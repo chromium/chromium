@@ -109,7 +109,10 @@ public class NativePageFactory {
         }
 
         protected NativePage buildHistoryPage(Tab tab) {
-            return new HistoryPage(mActivity, new TabShim(tab, mActivity));
+            return new HistoryPage(mActivity, new TabShim(tab, mActivity),
+                    mActivity.getSnackbarManager(),
+                    mActivity.getTabModelSelector().isIncognitoSelected(),
+                    /* TabCreatorManager */ mActivity, mActivity.getActivityTabProvider());
         }
 
         protected NativePage buildRecentTabsPage(Tab tab) {

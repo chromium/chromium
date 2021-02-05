@@ -17,7 +17,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 import androidx.recyclerview.widget.LinearLayoutManager;
