@@ -379,7 +379,7 @@ vars = {
   'libunwind_revision':    'd999d54f4bca789543a2eb6c995af2d9b5a1f3ed',
 
   # resultdb CIPD package version.
-  'resultdb_version': 'git_revision:708b8c96ec364e58a15db4a9b5b89a9c7a78bcfb',
+  'resultdb_version': 'git_revision:b7e2ebc4a66838d4a66cd18a141360b5909bdf19',
 }
 
 # Only these hosts are allowed for dependencies in this DEPS file.
