@@ -95,6 +95,8 @@ blink_core_sources_style = [
   "svg_computed_style.h",
   "svg_computed_style_defs.cc",
   "svg_computed_style_defs.h",
+  "svg_paint.cc",
+  "svg_paint.h",
   "text_decoration_thickness.cc",
   "text_decoration_thickness.h",
   "text_size_adjust.h",

@@ -33,23 +33,6 @@
 
 namespace blink {
 
-SVGPaint::SVGPaint() = default;
-SVGPaint::SVGPaint(Color color) : color(color), type(SVG_PAINTTYPE_COLOR) {}
-SVGPaint::SVGPaint(const SVGPaint& paint) = default;
-
-SVGPaint::~SVGPaint() = default;
-
-SVGPaint& SVGPaint::operator=(const SVGPaint& paint) = default;
-
-bool SVGPaint::operator==(const SVGPaint& other) const {
-  return type == other.type && color == other.color &&
-         DataEquivalent(resource, other.resource);
-}
-
-const AtomicString& SVGPaint::GetUrl() const {
-  return Resource()->Url();
-}
-
 StyleFillData::StyleFillData()
     : opacity(SVGComputedStyle::InitialFillOpacity()),
       paint(SVGComputedStyle::InitialFillPaint()),

@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/style/style_path.h"
+#include "third_party/blink/renderer/core/style/svg_paint.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
@@ -42,14 +43,6 @@ namespace blink {
 class StyleSVGResource;
 
 typedef base::RefCountedData<WTF::Vector<Length>> SVGDashArray;
-
-enum SVGPaintType {
-  SVG_PAINTTYPE_COLOR,
-  SVG_PAINTTYPE_NONE,
-  SVG_PAINTTYPE_URI_NONE,
-  SVG_PAINTTYPE_URI_COLOR,
-  SVG_PAINTTYPE_URI
-};
 
 enum EBaselineShift { BS_LENGTH, BS_SUB, BS_SUPER };
 
@@ -116,36 +109,6 @@ enum EPaintOrder {
   kPaintOrderStrokeMarkersFill = 4,
   kPaintOrderMarkersFillStroke = 5,
   kPaintOrderMarkersStrokeFill = 6
-};
-
-struct SVGPaint {
-  CORE_EXPORT SVGPaint();
-  SVGPaint(Color color);
-  SVGPaint(const SVGPaint& paint);
-  CORE_EXPORT ~SVGPaint();
-  CORE_EXPORT SVGPaint& operator=(const SVGPaint& paint);
-
-  CORE_EXPORT bool operator==(const SVGPaint&) const;
-  bool operator!=(const SVGPaint& other) const { return !(*this == other); }
-
-  bool IsNone() const { return type == SVG_PAINTTYPE_NONE; }
-  bool IsColor() const { return type == SVG_PAINTTYPE_COLOR; }
-  // Used by CSSPropertyEquality::PropertiesEqual.
-  bool EqualTypeOrColor(const SVGPaint& other) const {
-    return type == other.type &&
-           (type != SVG_PAINTTYPE_COLOR || color == other.color);
-  }
-  bool HasColor() const { return IsColor() || type == SVG_PAINTTYPE_URI_COLOR; }
-  bool HasUrl() const { return type >= SVG_PAINTTYPE_URI_NONE; }
-  bool HasCurrentColor() const { return HasColor() && color.IsCurrentColor(); }
-  StyleSVGResource* Resource() const { return resource.get(); }
-
-  const StyleColor& GetColor() const { return color; }
-  const AtomicString& GetUrl() const;
-
-  scoped_refptr<StyleSVGResource> resource;
-  StyleColor color;
-  SVGPaintType type{SVG_PAINTTYPE_NONE};
 };
 
 // Inherited/Non-Inherited Style Datastructures
