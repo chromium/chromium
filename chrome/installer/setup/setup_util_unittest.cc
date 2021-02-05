@@ -107,7 +107,7 @@ TEST(SetupUtilTest, RegisterEventLogProvider) {
       FILE_PATH_LITERAL("c:\\some_path\\test"));
   installer::RegisterEventLogProvider(install_directory, version);
 
-  base::string16 reg_path(
+  std::wstring reg_path(
       L"SYSTEM\\CurrentControlSet\\Services\\EventLog\\Application\\");
   reg_path.append(install_static::InstallDetails::Get().install_full_name());
   base::win::RegKey key;
@@ -118,7 +118,7 @@ TEST(SetupUtilTest, RegisterEventLogProvider) {
   EXPECT_TRUE(key.HasValue(L"CategoryMessageFile"));
   EXPECT_TRUE(key.HasValue(L"EventMessageFile"));
   EXPECT_TRUE(key.HasValue(L"ParameterMessageFile"));
-  base::string16 value;
+  std::wstring value;
   EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(L"CategoryMessageFile", &value));
   const base::FilePath expected_directory(
       install_directory.AppendASCII(version.GetString()));
@@ -438,7 +438,7 @@ TEST(SetupUtilTest, ContainsUnsupportedSwitch) {
 }
 
 TEST(SetupUtilTest, GetRegistrationDataCommandKey) {
-  const base::string16 key = installer::GetCommandKey(L"test_name");
+  const std::wstring key = installer::GetCommandKey(L"test_name");
   EXPECT_TRUE(base::EndsWith(key, L"\\Commands\\test_name",
                              base::CompareCase::SENSITIVE));
 }
@@ -458,7 +458,7 @@ TEST(SetupUtilTest, DecodeDMTokenSwitchValue) {
   std::string encoded;
   base::Base64Encode(token, &encoded);
   EXPECT_EQ(token,
-            *installer::DecodeDMTokenSwitchValue(base::UTF8ToUTF16(encoded)));
+            *installer::DecodeDMTokenSwitchValue(base::UTF8ToWide(encoded)));
 }
 
 TEST(SetupUtilTest, StoreDMTokenToRegistrySuccess) {
@@ -549,8 +549,8 @@ class DeleteRegistryKeyPartialTest : public ::testing::Test {
   }
 
   const HKEY root_ = HKEY_CURRENT_USER;
-  base::string16 path_ = L"key_path";
-  std::vector<base::string16> to_preserve_;
+  std::wstring path_ = L"key_path";
+  std::vector<std::wstring> to_preserve_;
 
  private:
   registry_util::RegistryOverrideManager _registry_override_manager;
@@ -558,14 +558,14 @@ class DeleteRegistryKeyPartialTest : public ::testing::Test {
 
 TEST_F(DeleteRegistryKeyPartialTest, NoKey) {
   DeleteRegistryKeyPartial(root_, L"does_not_exist",
-                           std::vector<base::string16>());
+                           std::vector<std::wstring>());
   DeleteRegistryKeyPartial(root_, L"does_not_exist", to_preserve_);
 }
 
 TEST_F(DeleteRegistryKeyPartialTest, EmptyKey) {
   ASSERT_FALSE(RegKey(root_, path_.c_str(), KEY_READ).Valid());
   ASSERT_TRUE(RegKey(root_, path_.c_str(), KEY_WRITE).Valid());
-  DeleteRegistryKeyPartial(root_, path_.c_str(), std::vector<base::string16>());
+  DeleteRegistryKeyPartial(root_, path_.c_str(), std::vector<std::wstring>());
   ASSERT_FALSE(RegKey(root_, path_.c_str(), KEY_READ).Valid());
 
   ASSERT_TRUE(RegKey(root_, path_.c_str(), KEY_WRITE).Valid());
@@ -594,7 +594,7 @@ TEST_F(DeleteRegistryKeyPartialTest, NonEmptyKey) {
         base::win::RegistryValueIterator(root_, path_.c_str()).ValueCount());
   }
 
-  DeleteRegistryKeyPartial(root_, path_.c_str(), std::vector<base::string16>());
+  DeleteRegistryKeyPartial(root_, path_.c_str(), std::vector<std::wstring>());
   ASSERT_FALSE(RegKey(root_, path_.c_str(), KEY_READ).Valid());
 
   CreateSubKeys(false); /* !with_preserves */
@@ -635,7 +635,7 @@ TEST_F(DeleteRegistryKeyPartialTest, NonEmptyKeyWithPreserve) {
     for (; it.Valid(); ++it) {
       ASSERT_NE(to_preserve_.end(),
                 std::find_if(to_preserve_.begin(), to_preserve_.end(),
-                             [&it](const base::string16& key_name) {
+                             [&it](const std::wstring& key_name) {
                                return base::ToLowerASCII(it.Name()) ==
                                       base::ToLowerASCII(key_name);
                              }))
@@ -722,8 +722,8 @@ class LegacyCleanupsTest : public ::testing::Test {
   };
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  base::string16 GetChromeAppCommandPath(const wchar_t* command) const {
-    return base::string16(
+  std::wstring GetChromeAppCommandPath(const wchar_t* command) const {
+    return std::wstring(
                L"SOFTWARE\\Google\\Update\\Clients\\"
                L"{8A69D345-D564-463c-AFF1-A69D9E530F96}\\Commands\\") +
            command;

@@ -72,7 +72,7 @@ constexpr wchar_t kEventLogProvidersRegPath[] =
 // Remove the registration of the browser's DelegateExecute verb handler class.
 // This was once registered in support of "metro" mode on Windows 8.
 void RemoveLegacyIExecuteCommandKey(const InstallerState& installer_state) {
-  const base::string16 handler_class_uuid =
+  const std::wstring handler_class_uuid =
       install_static::GetLegacyCommandExecuteImplClsid();
 
   // No work to do if this mode of install never registered a DelegateExecute
@@ -81,7 +81,7 @@ void RemoveLegacyIExecuteCommandKey(const InstallerState& installer_state) {
     return;
 
   const HKEY root = installer_state.root_key();
-  base::string16 delegate_execute_path(L"Software\\Classes\\CLSID\\");
+  std::wstring delegate_execute_path(L"Software\\Classes\\CLSID\\");
   delegate_execute_path.append(handler_class_uuid);
 
   // Delete both 64 and 32 keys to handle 32->64 or 64->32 migration.
@@ -104,9 +104,9 @@ void RemoveProfileStatistics(const InstallerState& installer_state) {
   bool found = false;
   bool deleted = true;
   if (installer_state.system_install()) {
-    for (base::string16 key : {L"_NumAccounts", L"_NumSignedIn"}) {
-      base::string16 path(install_static::GetClientStateMediumKeyPath() +
-                          L"\\" + key);
+    for (std::wstring key : {L"_NumAccounts", L"_NumSignedIn"}) {
+      std::wstring path(install_static::GetClientStateMediumKeyPath() + L"\\" +
+                        key);
       if (base::win::RegKey(root, path.c_str(),
                             KEY_QUERY_VALUE | KEY_WOW64_32KEY)
               .Valid()) {
@@ -120,14 +120,13 @@ void RemoveProfileStatistics(const InstallerState& installer_state) {
     if (client_state.Open(root, install_static::GetClientStateKeyPath().c_str(),
                           KEY_QUERY_VALUE | KEY_SET_VALUE | KEY_WOW64_32KEY) ==
         ERROR_SUCCESS) {
-      for (const base::char16* value : {STRING16_LITERAL("_NumAccounts"),
-                                        STRING16_LITERAL("_NumSignedIn"})) {
-          if (!client_state.HasValue(value))
-            continue;
-          found = true;
-          if (client_state.DeleteValue(value) != ERROR_SUCCESS)
-            deleted = false;
-        }
+      for (const wchar_t* value : {L"_NumAccounts", L"_NumSignedIn"}) {
+        if (!client_state.HasValue(value))
+          continue;
+        found = true;
+        if (client_state.DeleteValue(value) != ERROR_SUCCESS)
+          deleted = false;
+      }
     }
   }
   if (found)
@@ -140,11 +139,11 @@ void RemoveProfileStatistics(const InstallerState& installer_state) {
 // stray bits in the registry leftover from such installs.
 void RemoveBinariesVersionKey(const InstallerState& installer_state) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  base::string16 path(install_static::GetClientsKeyPath(
+  std::wstring path(install_static::GetClientsKeyPath(
       L"{4DC8B4CA-1BDA-483e-B5FA-D3C12E15B62D}"));
 #else
   // Assume that non-Google is Chromium branding.
-  base::string16 path(L"Software\\Chromium Binaries");
+  std::wstring path(L"Software\\Chromium Binaries");
 #endif
   if (base::win::RegKey(installer_state.root_key(), path.c_str(),
                         KEY_QUERY_VALUE | KEY_WOW64_32KEY)
@@ -161,7 +160,7 @@ void RemoveAppLauncherVersionKey(const InstallerState& installer_state) {
   static constexpr wchar_t kLauncherGuid[] =
       L"{FDA71E6F-AC4C-4a00-8B70-9958A68906BF}";
 
-  base::string16 path = install_static::GetClientsKeyPath(kLauncherGuid);
+  std::wstring path = install_static::GetClientsKeyPath(kLauncherGuid);
   if (base::win::RegKey(installer_state.root_key(), path.c_str(),
                         KEY_QUERY_VALUE | KEY_WOW64_32KEY)
           .Valid()) {
@@ -176,7 +175,7 @@ void RemoveAppLauncherVersionKey(const InstallerState& installer_state) {
 void RemoveLegacyChromeAppCommands(const InstallerState& installer_state) {
 // These app commands were only registered for Google Chrome.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  base::string16 path(GetCommandKey(L"install-extension"));
+  std::wstring path(GetCommandKey(L"install-extension"));
 
   if (base::win::RegKey(installer_state.root_key(), path.c_str(),
                         KEY_QUERY_VALUE | KEY_WOW64_32KEY)
@@ -276,7 +275,7 @@ base::Version* GetMaxVersionFromArchiveDir(const base::FilePath& chrome_path) {
     VLOG(1) << "directory found: " << find_data.GetName().value();
 
     std::unique_ptr<base::Version> found_version(
-        new base::Version(base::UTF16ToASCII(find_data.GetName().value())));
+        new base::Version(base::WideToASCII(find_data.GetName().value())));
     if (found_version->IsValid() &&
         found_version->CompareTo(*max_version.get()) > 0) {
       max_version = std::move(found_version);
@@ -437,8 +436,8 @@ bool IsProcessorSupported() {
 #endif
 }
 
-base::string16 GetCommandKey(const wchar_t* name) {
-  base::string16 cmd_key = install_static::GetClientsKeyPath();
+std::wstring GetCommandKey(const wchar_t* name) {
+  std::wstring cmd_key = install_static::GetClientsKeyPath();
   cmd_key.append(1, base::FilePath::kSeparators[0])
       .append(google_update::kRegCommandsKey)
       .append(1, base::FilePath::kSeparators[0])
@@ -448,14 +447,14 @@ base::string16 GetCommandKey(const wchar_t* name) {
 
 void DeleteRegistryKeyPartial(
     HKEY root,
-    const base::string16& path,
-    const std::vector<base::string16>& keys_to_preserve) {
+    const std::wstring& path,
+    const std::vector<std::wstring>& keys_to_preserve) {
   // Downcase the list of keys to preserve (all must be ASCII strings).
-  std::set<base::string16> lowered_keys_to_preserve;
+  std::set<std::wstring> lowered_keys_to_preserve;
   std::transform(
       keys_to_preserve.begin(), keys_to_preserve.end(),
       std::inserter(lowered_keys_to_preserve, lowered_keys_to_preserve.begin()),
-      [](const base::string16& str) {
+      [](const std::wstring& str) {
         DCHECK(!str.empty());
         DCHECK(base::IsStringASCII(str));
         return base::ToLowerASCII(str);
@@ -475,10 +474,10 @@ void DeleteRegistryKeyPartial(
   // deleting one key may change the enumeration order of all remaining keys.
 
   // Subkeys or values to be skipped on subsequent passes.
-  std::set<base::string16> to_skip;
+  std::set<std::wstring> to_skip;
   DWORD index = 0;
   const size_t kMaxKeyNameLength = 256;  // MSDN says 255; +1 for terminator.
-  base::string16 name(kMaxKeyNameLength, base::char16());
+  std::wstring name(kMaxKeyNameLength, wchar_t());
   bool did_delete = false;  // True if at least one item was deleted.
   while (true) {
     DWORD name_length = base::saturated_cast<DWORD>(name.capacity());
@@ -635,7 +634,7 @@ void RecordUnPackMetrics(UnPackStatus unpack_status, UnPackConsumer consumer) {
 
 void RegisterEventLogProvider(const base::FilePath& install_directory,
                               const base::Version& version) {
-  base::string16 reg_path(kEventLogProvidersRegPath);
+  std::wstring reg_path(kEventLogProvidersRegPath);
   reg_path.append(install_static::InstallDetails::Get().install_full_name());
   VLOG(1) << "Registering Chrome's event log provider at " << reg_path;
 
@@ -677,7 +676,7 @@ void RegisterEventLogProvider(const base::FilePath& install_directory,
 }
 
 void DeRegisterEventLogProvider() {
-  base::string16 reg_path(kEventLogProvidersRegPath);
+  std::wstring reg_path(kEventLogProvidersRegPath);
   reg_path.append(install_static::InstallDetails::Get().install_full_name());
 
   // TODO(http://crbug.com/668120): If the Event Viewer is open the provider dll
@@ -732,7 +731,7 @@ base::Time GetConsoleSessionStartTime() {
 }
 
 base::Optional<std::string> DecodeDMTokenSwitchValue(
-    const base::string16& encoded_token) {
+    const std::wstring& encoded_token) {
   if (encoded_token.empty()) {
     LOG(ERROR) << "Empty DMToken specified on the command line";
     return base::nullopt;
@@ -742,7 +741,7 @@ base::Optional<std::string> DecodeDMTokenSwitchValue(
   // on Windows, it is passed in as a wide string containing base64 values only.
   std::string token;
   if (!base::IsStringASCII(encoded_token) ||
-      !base::Base64Decode(base::UTF16ToASCII(encoded_token), &token)) {
+      !base::Base64Decode(base::WideToASCII(encoded_token), &token)) {
     LOG(ERROR) << "DMToken passed on the command line is not correctly encoded";
     return base::nullopt;
   }

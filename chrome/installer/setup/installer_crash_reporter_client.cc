@@ -8,6 +8,7 @@
 #include "base/file_version_info.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
 #include "build/branding_buildflags.h"
@@ -25,30 +26,30 @@ InstallerCrashReporterClient::InstallerCrashReporterClient(
 InstallerCrashReporterClient::~InstallerCrashReporterClient() = default;
 
 bool InstallerCrashReporterClient::ShouldCreatePipeName(
-    const base::string16& process_type) {
+    const std::wstring& process_type) {
   return true;
 }
 
 bool InstallerCrashReporterClient::GetAlternativeCrashDumpLocation(
-    base::string16* crash_dir) {
+    std::wstring* crash_dir) {
   return false;
 }
 
 void InstallerCrashReporterClient::GetProductNameAndVersion(
-    const base::string16& exe_path,
-    base::string16* product_name,
-    base::string16* version,
-    base::string16* special_build,
-    base::string16* channel_name) {
+    const std::wstring& exe_path,
+    std::wstring* product_name,
+    std::wstring* version,
+    std::wstring* special_build,
+    std::wstring* channel_name) {
   // Report crashes under the same product name as the browser. This string
   // MUST match server-side configuration.
-  *product_name = base::ASCIIToUTF16(PRODUCT_SHORTNAME_STRING);
+  *product_name = base::ASCIIToWide(PRODUCT_SHORTNAME_STRING);
 
   std::unique_ptr<FileVersionInfo> version_info(
       FileVersionInfo::CreateFileVersionInfo(base::FilePath(exe_path)));
   if (version_info) {
-    *version = version_info->product_version();
-    *special_build = version_info->special_build();
+    *version = base::AsWString(version_info->product_version());
+    *special_build = base::AsWString(version_info->special_build());
   } else {
     *version = L"0.0.0.0-devel";
   }
@@ -57,8 +58,8 @@ void InstallerCrashReporterClient::GetProductNameAndVersion(
 }
 
 bool InstallerCrashReporterClient::ShouldShowRestartDialog(
-    base::string16* title,
-    base::string16* message,
+    std::wstring* title,
+    std::wstring* message,
     bool* is_rtl_locale) {
   // There is no UX associated with the installer, so no dialog should be shown.
   return false;
@@ -85,7 +86,7 @@ int InstallerCrashReporterClient::GetResultCodeRespawnFailed() {
 }
 
 bool InstallerCrashReporterClient::GetCrashDumpLocation(
-    base::string16* crash_dir) {
+    std::wstring* crash_dir) {
   base::FilePath crash_directory_path;
   bool ret =
       base::PathService::Get(chrome::DIR_CRASH_DUMPS, &crash_directory_path);

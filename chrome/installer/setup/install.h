@@ -7,7 +7,6 @@
 #ifndef CHROME_INSTALLER_SETUP_INSTALL_H_
 #define CHROME_INSTALLER_SETUP_INSTALL_H_
 
-#include "base/strings/string16.h"
 #include "chrome/installer/util/util_constants.h"
 
 namespace base {

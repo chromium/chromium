@@ -23,19 +23,19 @@ namespace {
 // should be executed again for all existing users.
 #define ACTIVE_SETUP_MAJOR_VERSION 43
 
-#define AsChar16String2(m) L#m
-#define AsChar16String(m) AsChar16String2(m)
+#define AsWString2(m) L#m
+#define AsWString(m) AsWString2(m)
 
-constexpr base::char16 kActiveSetupMajorVersion[] =
-    AsChar16String(ACTIVE_SETUP_MAJOR_VERSION);
+constexpr wchar_t kActiveSetupMajorVersion[] =
+    AsWString(ACTIVE_SETUP_MAJOR_VERSION);
 
-#undef AsChar16String
-#undef AsChar16String2
+#undef AsWString
+#undef AsWString2
 
 }  // namespace
 
 UpdateActiveSetupVersionWorkItem::UpdateActiveSetupVersionWorkItem(
-    const base::string16& active_setup_path,
+    const std::wstring& active_setup_path,
     Operation operation)
     : set_reg_value_work_item_(
           HKEY_LOCAL_MACHINE,
@@ -57,9 +57,9 @@ void UpdateActiveSetupVersionWorkItem::RollbackImpl() {
   set_reg_value_work_item_.Rollback();
 }
 
-base::string16 UpdateActiveSetupVersionWorkItem::GetUpdatedActiveSetupVersion(
-    const base::string16& existing_version) {
-  std::vector<base::string16> version_components = base::SplitString(
+std::wstring UpdateActiveSetupVersionWorkItem::GetUpdatedActiveSetupVersion(
+    const std::wstring& existing_version) {
+  std::vector<std::wstring> version_components = base::SplitString(
       existing_version, L",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   // If |existing_version| was empty or otherwise corrupted, turn it into a
@@ -79,7 +79,7 @@ base::string16 UpdateActiveSetupVersionWorkItem::GetUpdatedActiveSetupVersion(
   // needed for UPDATE_AND_BUMP_SELECTIVE_TRIGGER in this case since all
   // users will re-run active setup.
   if (ACTIVE_SETUP_MAJOR_VERSION > previous_major) {
-    std::fill_n(++version_components.begin(), 3, base::string16(L"0"));
+    std::fill_n(++version_components.begin(), 3, std::wstring(L"0"));
   } else if (operation_ == UPDATE_AND_BUMP_SELECTIVE_TRIGGER) {
     uint32_t previous_value;
     if (!base::StringToUint(version_components[SELECTIVE_TRIGGER],
@@ -90,7 +90,7 @@ base::string16 UpdateActiveSetupVersionWorkItem::GetUpdatedActiveSetupVersion(
       previous_value = 0;
     }
     version_components[SELECTIVE_TRIGGER] =
-        base::NumberToString16(previous_value + 1);
+        base::NumberToWString(previous_value + 1);
   }
 
   return base::JoinString(version_components, L",");

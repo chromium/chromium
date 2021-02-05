@@ -16,7 +16,6 @@
 #include <vector>
 
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "chrome/installer/util/lzma_util.h"
 #include "chrome/installer/util/util_constants.h"
@@ -102,15 +101,15 @@ bool ContainsUnsupportedSwitch(const base::CommandLine& cmd_line);
 bool IsProcessorSupported();
 
 // Returns the "...\\Commands\\|name|" registry key for a product's |reg_data|.
-base::string16 GetCommandKey(const wchar_t* name);
+std::wstring GetCommandKey(const wchar_t* name);
 
 // Deletes all values and subkeys of the key |path| under |root|, preserving
 // the keys named in |keys_to_preserve| (each of which must be an ASCII string).
 // The key itself is deleted if no subkeys are preserved.
 void DeleteRegistryKeyPartial(
     HKEY root,
-    const base::string16& path,
-    const std::vector<base::string16>& keys_to_preserve);
+    const std::wstring& path,
+    const std::vector<std::wstring>& keys_to_preserve);
 
 // Returns true if downgrade is allowed by installer data.
 bool IsDowngradeAllowed(const InitialPreferences& prefs);
@@ -141,7 +140,7 @@ base::Time GetConsoleSessionStartTime();
 // of a decoding error.  The returned DM token is an opaque binary blob and
 // should not be treated as an ASCII or UTF-8 string.
 base::Optional<std::string> DecodeDMTokenSwitchValue(
-    const base::string16& encoded_token);
+    const std::wstring& encoded_token);
 
 // Saves a DM token to a global location on the machine accessible to all
 // install modes of the browser (i.e., stable and all three side-by-side modes).

@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/command_line.h"
-#include "base/strings/string16.h"
 #include "base/win/registry.h"
 #include "chrome/install_static/install_constants.h"
 #include "chrome/install_static/install_details.h"
@@ -73,8 +72,8 @@ std::unique_ptr<install_static::PrimaryInstallDetails> MakeInstallDetails(
 
   // Cache the ap and cohort name values found in the registry for use in crash
   // keys.
-  base::string16 update_ap;
-  base::string16 update_cohort_name;
+  std::wstring update_ap;
+  std::wstring update_cohort_name;
 
   auto channel_from_cmd_line =
       command_line.GetSwitchValueNative(installer::switches::kChannel);

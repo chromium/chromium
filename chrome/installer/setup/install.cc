@@ -89,7 +89,7 @@ void LogShortcutOperation(ShellUtil::ShortcutLocation location,
     case ShellUtil::SHORTCUT_LOCATION_START_MENU_CHROME_APPS_DIR:
       message.append(
           "Start menu/" +
-          base::UTF16ToUTF8(InstallUtil::GetChromeAppsShortcutDirName()) + " ");
+          base::WideToUTF8(InstallUtil::GetChromeAppsShortcutDirName()) + " ");
       break;
     default:
       NOTREACHED();
@@ -97,15 +97,15 @@ void LogShortcutOperation(ShellUtil::ShortcutLocation location,
 
   message.push_back('"');
   if (properties.has_shortcut_name())
-    message.append(base::UTF16ToUTF8(properties.shortcut_name));
+    message.append(base::WideToUTF8(properties.shortcut_name));
   else
-    message.append(base::UTF16ToUTF8(InstallUtil::GetDisplayName()));
+    message.append(base::WideToUTF8(InstallUtil::GetDisplayName()));
   message.push_back('"');
 
   message.append(" shortcut to ");
-  message.append(base::UTF16ToUTF8(properties.target.value()));
+  message.append(base::WideToUTF8(properties.target.value()));
   if (properties.has_arguments())
-    message.append(base::UTF16ToUTF8(properties.arguments));
+    message.append(base::WideToUTF8(properties.arguments));
 
   if (properties.pin_to_taskbar && base::win::CanPinShortcutToTaskbar())
     message.append(" and pinning to the taskbar");
@@ -129,7 +129,7 @@ void ExecuteAndLogShortcutOperation(
 }
 
 void AddChromeToMediaPlayerList() {
-  base::string16 reg_path(kMediaPlayerRegPath);
+  std::wstring reg_path(kMediaPlayerRegPath);
   // registry paths can also be appended like file system path
   reg_path.push_back(base::FilePath::kSeparators[0]);
   reg_path.append(kChromeExe);
@@ -253,20 +253,20 @@ std::string GenerateVisualElementsManifest(const base::Version& version) {
       "</Application>\r\n";
 
   // Construct the relative path to the versioned VisualElements directory.
-  base::string16 elements_dir(base::ASCIIToUTF16(version.GetString()));
+  std::wstring elements_dir(base::ASCIIToWide(version.GetString()));
   elements_dir.push_back(base::FilePath::kSeparators[0]);
   elements_dir.append(kVisualElements);
 
-  const base::string16 manifest_template(base::ASCIIToUTF16(kManifestTemplate));
+  const std::wstring manifest_template(base::ASCIIToWide(kManifestTemplate));
 
   // Fill the manifest with the desired values.
-  const base::char16* logo_suffix =
+  const wchar_t* logo_suffix =
       install_static::InstallDetails::Get().logo_suffix();
-  base::string16 manifest16(base::StringPrintf(
+  std::wstring manifest(base::StringPrintf(
       manifest_template.c_str(), elements_dir.c_str(), logo_suffix,
       elements_dir.c_str(), logo_suffix, elements_dir.c_str(), logo_suffix));
 
-  return base::UTF16ToUTF8(manifest16);
+  return base::WideToUTF8(manifest);
 }
 
 // Whether VisualElements assets exist for this brand and mode.

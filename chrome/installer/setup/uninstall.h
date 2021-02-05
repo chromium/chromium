@@ -9,7 +9,8 @@
 
 #include <shlobj.h>
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "chrome/installer/util/util_constants.h"
 
 namespace base {
@@ -42,7 +43,7 @@ DeleteResult DeleteChromeDirectoriesIfEmpty(
 // suffix for default browser entry name in the registry (optional).
 bool DeleteChromeRegistrationKeys(const InstallerState& installer_state,
                                   HKEY root,
-                                  const base::string16& browser_entry_suffix,
+                                  const std::wstring& browser_entry_suffix,
                                   InstallStatus* exit_code);
 
 // Removes any legacy registry keys from earlier versions of Chrome that are no

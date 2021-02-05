@@ -173,7 +173,7 @@ void InstallerState::SetStage(InstallerStage stage) const {
 void InstallerState::WriteInstallerResult(
     InstallStatus status,
     int string_resource_id,
-    const base::string16* const launch_cmd) const {
+    const std::wstring* const launch_cmd) const {
   // Use a no-rollback list since this is a best-effort deal.
   std::unique_ptr<WorkItemList> install_list(WorkItem::CreateWorkItemList());
   install_list->set_log_message("Write Installer Result");

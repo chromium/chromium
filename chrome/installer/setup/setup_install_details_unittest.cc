@@ -458,7 +458,7 @@ class MakeInstallDetailsTest : public testing::TestWithParam<TestData> {
   }
 
   void SetUp() override {
-    base::string16 path;
+    std::wstring path;
     ASSERT_NO_FATAL_FAILURE(
         override_manager_.OverrideRegistry(root_key_, &path));
     nt::SetTestingOverride(nt_root_key_, path);
@@ -475,7 +475,7 @@ class MakeInstallDetailsTest : public testing::TestWithParam<TestData> {
   }
 
   void TearDown() override {
-    nt::SetTestingOverride(nt_root_key_, base::string16());
+    nt::SetTestingOverride(nt_root_key_, std::wstring());
   }
 
   const TestData& test_data() const { return test_data_; }

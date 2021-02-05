@@ -8,7 +8,8 @@
 #ifndef CHROME_INSTALLER_SETUP_INSTALL_WORKER_H_
 #define CHROME_INSTALLER_SETUP_INSTALL_WORKER_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "base/win/windows_types.h"
 
 class WorkItemList;
@@ -43,7 +44,7 @@ void AddUpdateBrandCodeWorkItem(const InstallerState& installer_state,
 // Checks to see if the given brand code is one that should be updated if
 // the current install is considered an enterprise install.  If so the updated
 // brand code is returned, otherwise an empty string is returned.
-base::string16 GetUpdatedBrandCode(const base::string16& brand_code);
+std::wstring GetUpdatedBrandCode(const std::wstring& brand_code);
 
 // After a successful copying of all the files, this function is called to
 // do a few post install tasks:

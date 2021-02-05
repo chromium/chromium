@@ -9,7 +9,6 @@
 #include <ostream>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,7 +18,7 @@ using testing::ValuesIn;
 namespace {
 
 const HKEY kActiveSetupRoot = HKEY_LOCAL_MACHINE;
-const base::char16 kActiveSetupPath[] = L"Active Setup\\test";
+const wchar_t kActiveSetupPath[] = L"Active Setup\\test";
 
 struct UpdateActiveSetupVersionWorkItemTestCase {
   // The initial value to be set in the registry prior to executing the
@@ -125,7 +124,7 @@ TEST_P(UpdateActiveSetupVersionWorkItemTest, Execute) {
   EXPECT_TRUE(active_setup_work_item.Do());
 
   {
-    base::string16 version_out;
+    std::wstring version_out;
     EXPECT_EQ(ERROR_SUCCESS, test_key.Open(kActiveSetupRoot, kActiveSetupPath,
                                            KEY_QUERY_VALUE));
     EXPECT_EQ(ERROR_SUCCESS, test_key.ReadValue(L"Version", &version_out));
@@ -138,7 +137,7 @@ TEST_P(UpdateActiveSetupVersionWorkItemTest, Execute) {
     EXPECT_EQ(ERROR_SUCCESS, test_key.Open(kActiveSetupRoot, kActiveSetupPath,
                                            KEY_QUERY_VALUE));
 
-    base::string16 version_out;
+    std::wstring version_out;
     LONG read_result = test_key.ReadValue(L"Version", &version_out);
     if (test_case.initial_value) {
       EXPECT_EQ(ERROR_SUCCESS, read_result);
