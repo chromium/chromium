@@ -38,8 +38,8 @@ Local Modifications:
  - codereview.settings has been excluded.
  - MultiprocessExec.MultiprocessExec is disabled when OS_POSIX and
    BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) are defined. crbug.com/1153544
-   (third_party/crashpad/crashpad/test/multiprocess_exec_test.cc)
+   (crashpad/test/BUILD.gn, crashpad/test/multiprocess_exec_test.cc)
  - MemoryMap.SelfLargeMapFile, SelfBasic, SelfLargeFiles are disabled when
    BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) are defined. crbug.com/1163794
-   (third_party/crashpad/crashpad/util/linux/memory_map_test.cc)
+   (crashpad/util/BUILD.gn, crashpad/util/linux/memory_map_test.cc)
  - Exclude //build/config/mac:sdk_inputs dependency from iOS builds

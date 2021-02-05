@@ -869,6 +869,12 @@ source_set("util_test") {
     deps += [ "../third_party/lss" ]
   }
 
+  if (crashpad_is_in_chromium && (crashpad_is_linux || crashpad_is_android)) {
+    # TODO(crbug.com/1163794): Disabling MemoryMap tests if PartitionAlloc is
+    # used for malloc.
+    deps += [ "//base/allocator:buildflags" ]
+  }
+
   if (crashpad_is_win) {
     libs = [
       "rpcrt4.lib",
