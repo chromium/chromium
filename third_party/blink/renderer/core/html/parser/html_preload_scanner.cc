@@ -170,6 +170,7 @@ class TokenPreloadScanner::StartTagScanner {
         referrer_policy_set_(false),
         referrer_policy_(network::mojom::ReferrerPolicy::kDefault),
         integrity_attr_set_(false),
+        is_async_(false),
         integrity_features_(features),
         loading_attr_value_(LoadingAttributeValue::kAuto),
         width_attr_dimension_type_(
@@ -326,9 +327,10 @@ class TokenPreloadScanner::StartTagScanner {
     if (!request)
       return nullptr;
 
-    if ((Match(tag_impl_, html_names::kScriptTag) &&
-         type_attribute_value_ == "module") ||
-        IsLinkRelModulePreload()) {
+    bool is_module = (type_attribute_value_ == "module");
+    bool is_script = Match(tag_impl_, html_names::kScriptTag);
+    if ((is_script && is_module) || IsLinkRelModulePreload()) {
+      is_module = true;
       request->SetScriptType(mojom::blink::ScriptType::kModule);
     }
 
@@ -337,8 +339,22 @@ class TokenPreloadScanner::StartTagScanner {
     request->SetNonce(nonce_);
     request->SetCharset(Charset());
     request->SetDefer(defer_);
-    request->SetInBodyStyle(treat_links_as_in_body &&
-                            type == ResourceType::kCSSStyleSheet);
+
+    RenderBlockingBehavior render_blocking_behavior =
+        RenderBlockingBehavior::kUnset;
+    if (is_script && (is_module || defer_ == FetchParameters::kLazyLoad)) {
+      render_blocking_behavior =
+          is_async_ ? RenderBlockingBehavior::kPotentiallyBlocking
+                    : RenderBlockingBehavior::kNonBlocking;
+    } else if (is_script || type == ResourceType::kCSSStyleSheet) {
+      // CSS here is render blocking, as non blocking doesn't get preloaded.
+      // JS here is a blocking one, as others would've been caught by the
+      // previous condition.
+      render_blocking_behavior =
+          treat_links_as_in_body ? RenderBlockingBehavior::kInBodyParserBlocking
+                                 : RenderBlockingBehavior::kBlocking;
+    }
+    request->SetRenderBlockingBehavior(render_blocking_behavior);
 
     if (type == ResourceType::kImage && Match(tag_impl_, html_names::kImgTag) &&
         IsLazyLoadImageDeferable(document_parameters)) {
@@ -373,6 +389,7 @@ class TokenPreloadScanner::StartTagScanner {
     } else if (Match(attribute_name, html_names::kNonceAttr)) {
       SetNonce(attribute_value);
     } else if (Match(attribute_name, html_names::kAsyncAttr)) {
+      is_async_ = true;
       SetDefer(FetchParameters::kLazyLoad);
     } else if (Match(attribute_name, html_names::kDeferAttr)) {
       SetDefer(FetchParameters::kLazyLoad);
@@ -770,7 +787,7 @@ class TokenPreloadScanner::StartTagScanner {
 
   void SetDefer(FetchParameters::DeferOption defer) { defer_ = defer; }
 
-  bool Defer() const { return defer_; }
+  bool Defer() const { return defer_ != FetchParameters::kNoDefer; }
 
   const StringImpl* tag_impl_;
   String url_to_load_;
@@ -803,6 +820,7 @@ class TokenPreloadScanner::StartTagScanner {
   bool referrer_policy_set_;
   network::mojom::ReferrerPolicy referrer_policy_;
   bool integrity_attr_set_;
+  bool is_async_;
   IntegrityMetadataSet integrity_metadata_;
   SubresourceIntegrity::IntegrityFeatures integrity_features_;
   LoadingAttributeValue loading_attr_value_;

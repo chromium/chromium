@@ -504,7 +504,8 @@ void WorkerOrWorkletGlobalScope::FetchModuleScript(
   ScriptFetchOptions options(
       nonce, IntegrityMetadataSet(), integrity_attribute, parser_state,
       credentials_mode, network::mojom::ReferrerPolicy::kDefault,
-      mojom::FetchImportanceMode::kImportanceAuto, reject_coep_unsafe_none);
+      mojom::blink::FetchImportanceMode::kImportanceAuto,
+      RenderBlockingBehavior::kNonBlocking, reject_coep_unsafe_none);
 
   Modulator* modulator = Modulator::From(ScriptController()->GetScriptState());
   // Step 3. "Perform the internal module script graph fetching procedure ..."

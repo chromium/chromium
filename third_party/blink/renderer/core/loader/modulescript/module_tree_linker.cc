@@ -453,7 +453,8 @@ void ModuleTreeLinker::FetchDescendants(const ModuleScript* module_script) {
                              module_script->FetchOptions().ParserState(),
                              module_script->FetchOptions().CredentialsMode(),
                              module_script->FetchOptions().GetReferrerPolicy(),
-                             mojom::FetchImportanceMode::kImportanceAuto);
+                             mojom::blink::FetchImportanceMode::kImportanceAuto,
+                             RenderBlockingBehavior::kNonBlocking);
 
   // <spec step="8">For each url in urls, ...</spec>
   //

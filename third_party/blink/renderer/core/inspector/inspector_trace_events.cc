@@ -795,6 +795,9 @@ std::unique_ptr<TracedValue> inspector_send_request_event::Data(
     case RenderBlockingBehavior::kInBodyParserBlocking:
       render_blocking_string = "in_body_parser_blocking";
       break;
+    case RenderBlockingBehavior::kPotentiallyBlocking:
+      render_blocking_string = "potentially_blocking";
+      break;
     default:
       NOTREACHED();
   }

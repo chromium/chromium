@@ -2,7 +2,6 @@ Tests various style traces.
 Recording started
 Tracing complete
 importer.css?body: in_body_parser_blocking
-render-blocking-frame.html: undefined
 style.css?body_print: non_blocking
 style.css?dynamicDocWriteBody: in_body_parser_blocking
 style.css?dynamicDocWriteHead: blocking

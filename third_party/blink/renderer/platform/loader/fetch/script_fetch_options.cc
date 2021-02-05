@@ -30,6 +30,7 @@ FetchParameters ScriptFetchOptions::CreateFetchParameters(
   FetchParameters params(std::move(resource_request), resource_loader_options);
   params.SetRequestContext(mojom::blink::RequestContextType::SCRIPT);
   params.SetRequestDestination(network::mojom::RequestDestination::kScript);
+  params.SetRenderBlockingBehavior(render_blocking_behavior_);
 
   // Step 1. ... and CORS setting. [spec text]
   if (cross_origin != kCrossOriginAttributeNotSet)

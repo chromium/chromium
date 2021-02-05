@@ -490,7 +490,8 @@ void PreloadHelper::ModulePreloadIfNeeded(
       ScriptFetchOptions(params.nonce, integrity_metadata, params.integrity,
                          kNotParserInserted, credentials_mode,
                          params.referrer_policy,
-                         mojom::FetchImportanceMode::kImportanceAuto),
+                         mojom::blink::FetchImportanceMode::kImportanceAuto,
+                         RenderBlockingBehavior::kNonBlocking),
       Referrer::NoReferrer(), TextPosition::MinimumPosition());
 
   // Step 11. "Fetch a single module script given url, settings object,

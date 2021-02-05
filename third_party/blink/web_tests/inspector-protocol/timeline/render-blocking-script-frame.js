@@ -1,13 +1,12 @@
 (async function(testRunner) {
-  // The number includes the frame, the 4 CSS files it loads directly, and the
-  // one imported by them.
-  const numberOfURLs = 10;
+  // The number includes the frame, and the 6 JS files that it loads directly.
+  const numberOfURLs = 7;
 
   var {page, session, dp} = await testRunner.startHTML(`
       <head></head>
       <body>
       </body>
-  `, 'Tests various style traces.');
+  `, 'Tests render-blocking status of HTML based script in traces.');
 
   var TracingHelper = await testRunner.loadScript('../resources/tracing-test.js');
   var tracingHelper = new TracingHelper(testRunner, session);
@@ -16,7 +15,7 @@
   session.evaluate(`
     (function performActions() {
       const frame = document.createElement("iframe");
-      frame.src = "../resources/render-blocking-frame.html";
+      frame.src = "../resources/render-blocking-frame-script.html";
       document.body.appendChild(frame);
     })();
   `);
@@ -33,7 +32,7 @@
     const data = e['args']['data'];
     const url_list = data['url'].split('/');
     const url = url_list[url_list.length - 1];
-    if (url.includes("css")) {
+    if (url.includes("js")) {
       resources.set(url, data['renderBlocking']);
     }
   }

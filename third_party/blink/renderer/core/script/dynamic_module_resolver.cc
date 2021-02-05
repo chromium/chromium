@@ -382,7 +382,8 @@ void DynamicModuleResolver::ResolveDynamically(
                              String(), referrer_info.ParserState(),
                              referrer_info.CredentialsMode(),
                              referrer_info.GetReferrerPolicy(),
-                             mojom::FetchImportanceMode::kImportanceAuto);
+                             mojom::blink::FetchImportanceMode::kImportanceAuto,
+                             RenderBlockingBehavior::kNonBlocking);
 
   // <spec label="fetch-an-import()-module-script-graph" step="3">Fetch a single
   // module script given url, settings object, "script", options, settings
