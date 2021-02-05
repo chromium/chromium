@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/observer_list_types.h"
 
 class BreadcrumbManager;
@@ -16,6 +15,10 @@ namespace breadcrumbs {
 
 class BreadcrumbManagerObserver : public base::CheckedObserver {
  public:
+  BreadcrumbManagerObserver(const BreadcrumbManagerObserver&) = delete;
+  BreadcrumbManagerObserver& operator=(const BreadcrumbManagerObserver&) =
+      delete;
+
   // Called when a new |event| has been added to |manager|. Similar to
   // |BreadcrumbManager::GetEvents|, |event| will have the timestamp at which it
   // was logged prepended to the string which was passed to
@@ -28,9 +31,6 @@ class BreadcrumbManagerObserver : public base::CheckedObserver {
 
  protected:
   BreadcrumbManagerObserver() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BreadcrumbManagerObserver);
 };
 
 }  // namespace breadcrumbs
