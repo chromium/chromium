@@ -202096,6 +202096,10 @@
       "f3193036766e428bf946e81b7df72bfc7f4901db",
       []
      ],
+     "empty-background-image-expected.txt": [
+      "212628293ecf91bd631a9b75c3b28a70b724fc79",
+      []
+     ],
      "gradient-border-box-ref.html": [
       "5b219cea6c20ba46ebba7d7bb890af3923d90a54",
       []
@@ -215751,6 +215755,10 @@
       ]
      },
      "urls": {
+      "empty-expected.txt": [
+       "be6382285df31614fe729b47267dbfd456cc444d",
+       []
+      ],
       "support": {
        "empty-urls.css": [
         "ceed358f348425ad82404b94551bb2a17e5eb533",
@@ -247052,6 +247060,14 @@
       "4ba512140dae5d9df8d1b1bd19178a34ff5b40c0",
       []
      ],
+     "opaque-origin1.sub.https.html": [
+      "f8a8c9d1adf3ed99789d101607eeb75093977430",
+      []
+     ],
+     "opaque-origin2.https.html": [
+      "73122ff7f6c496ee28414a7cd1504479d107b3ce",
+      []
+     ],
      "permissions-policy-allowedfeatures.html": [
       "f4b020273fd394fb8691b6eeb406c7b3773cbcb3",
       []
@@ -249964,7 +249980,7 @@
      []
     ],
     "testharness.js": [
-     "adfb692ccd9bf202cc5642558c588ab168af7906",
+     "c62f0917c173b0603262193fc66212d21ec09b27",
      []
     ],
     "testharness.js.headers": [
@@ -293180,7 +293196,7 @@
       ]
      ],
      "radiobutton-min-size.html": [
-      "5703861bf7333b765c3edce6627db5f64e741626",
+      "1dd84b0766c9b2db363b25d64b0fb57e65c6a110",
       [
        null,
        {}
@@ -297284,6 +297300,13 @@
      }
     },
     "css-images": {
+     "empty-background-image.html": [
+      "5192ff254c8a020638e1545baef07c20c07200ed",
+      [
+       null,
+       {}
+      ]
+     ],
      "gradient": {
       "color-stops-parsing.html": [
        "a8baa63a6765a4c6052752eb638156f0688b12f2",
@@ -310344,7 +310367,7 @@
      ],
      "urls": {
       "empty.html": [
-       "3ab7079396c517d7abd6334b0cfadf7eda471115",
+       "a3de129840f4d0f22b7c89d72eba918eea154e3d",
        [
         null,
         {}
@@ -396370,6 +396393,13 @@
       }
      ]
     ],
+    "permissions-policy-opaque-origin.https.html": [
+     "edb6e11a95799447359c161175ed1002ed948902",
+     [
+      null,
+      {}
+     ]
+    ],
     "picture-in-picture-allowed-by-permissions-policy-attribute-redirect-on-load.https.sub.html": [
      "d965fdc5fb15babaa348ab14a7e2c166ffe9b900",
      [
@@ -426537,6 +426567,13 @@
     ],
     "trusted-types-svg-script.tentative.html": [
      "946f825fa3eecd05247e1a2b16396ee4d3f7af11",
+     [
+      null,
+      {}
+     ]
+    ],
+    "trusted-types-tojson.tentative.html": [
+     "72c538309941389b1fad9a24d7db75f55138d855",
      [
       null,
       {}
