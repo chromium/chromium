@@ -982,6 +982,12 @@ void OverviewItem::OnPostWindowStateTypeChange(WindowState* window_state,
   if (!prepared_for_overview_)
     return;
 
+  // Minimizing an originally active window will activate and unminimize the
+  // window upon exiting, and the item window will be "moved" to fade out in
+  // 'RestoreWindow'.
+  if (!item_widget_)
+    return;
+
   WindowStateType new_type = window_state->GetStateType();
   if (chromeos::IsMinimizedWindowStateType(old_type) ==
       chromeos::IsMinimizedWindowStateType(new_type)) {

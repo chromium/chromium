@@ -491,6 +491,23 @@ TEST_F(OverviewSessionTest, ActivateMinimized) {
   EXPECT_EQ(WindowStateType::kNormal, window_state->GetStateType());
 }
 
+// A window can be minimized when losing a focus upon entering overview.
+// If such window was active, it will be unminimized when exiting overview.
+// b/163551595.
+TEST_F(OverviewSessionTest, MinimizeDuringOverview) {
+  std::unique_ptr<aura::Window> window(CreateTestWindow());
+
+  ToggleOverview();
+  WindowState* window_state = WindowState::Get(window.get());
+  WMEvent minimize_event(WM_EVENT_MINIMIZE);
+  window_state->OnWMEvent(&minimize_event);
+  EXPECT_FALSE(window->IsVisible());
+  EXPECT_EQ(0.f, window->layer()->GetTargetOpacity());
+  EXPECT_EQ(WindowStateType::kMinimized,
+            WindowState::Get(window.get())->GetStateType());
+  ToggleOverview();
+}
+
 // Tests that the ordering of windows is stable across different overview
 // sessions even when the windows have the same bounds.
 TEST_F(OverviewSessionTest, WindowsOrder) {
