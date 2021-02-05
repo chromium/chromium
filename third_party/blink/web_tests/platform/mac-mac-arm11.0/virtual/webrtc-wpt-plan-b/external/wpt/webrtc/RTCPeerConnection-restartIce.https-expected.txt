@@ -1,0 +1,16 @@
+This is a testharness.js-based test.
+FAIL restartIce() does not trigger negotiation ahead of initial negotiation assert_equals: No negotiationneeded event expected (undefined) undefined but got (object) object "[object Event]"
+FAIL restartIce() has no effect on initial negotiation promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
+FAIL restartIce() fires negotiationneeded after initial negotiation promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
+FAIL restartIce() causes fresh ufrags promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
+FAIL restartIce() works in have-local-offer promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
+FAIL restartIce() works in initial have-local-offer promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
+FAIL restartIce() works in have-remote-offer promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
+FAIL restartIce() does nothing in initial have-remote-offer promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
+FAIL restartIce() survives remote offer promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
+FAIL restartIce() is satisfied by remote ICE restart promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
+FAIL restartIce() trumps {iceRestart: false} promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
+FAIL restartIce() survives rollback promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
+FAIL restartIce() survives remote offer containing partial restart promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
+Harness: the test ran to completion.
+

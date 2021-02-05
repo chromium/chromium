@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL DTLS transport goes to connected state promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'sender' of undefined"
+FAIL close() causes the local transport to close immediately promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'sender' of undefined"
+FAIL close() causes the other end's DTLS transport to close promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'sender' of undefined"
+Harness: the test ran to completion.
+
