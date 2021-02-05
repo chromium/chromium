@@ -7921,6 +7921,21 @@
             ]
         }
     ],
+    "WifiSyncAndroid": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WifiSyncAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "WindowsNativeSpellChecker": [
         {
             "platforms": [
