@@ -374,7 +374,7 @@ void AssistantManagerServiceImpl::EnableAmbientMode(bool enabled) {
 }
 
 void AssistantManagerServiceImpl::RegisterAlarmsTimersListener() {
-  if (!assistant_manager_internal())
+  if (!IsServiceStarted())
     return;
 
   auto* alarm_timer_manager =
@@ -1022,7 +1022,7 @@ void AssistantManagerServiceImpl::OnAlarmTimerStateChanged() {
   // |assistant_manager_internal()| may not exist if we are receiving this event
   // as part of a shutdown sequence. When this occurs, we notify our alarm/timer
   // controller to clear its cache to remain in sync with LibAssistant.
-  if (!assistant_manager_internal()) {
+  if (!IsServiceStarted()) {
     assistant_alarm_timer_controller()->OnTimerStateChanged({});
     return;
   }
@@ -1095,7 +1095,7 @@ void AssistantManagerServiceImpl::OnDeviceAppsEnabled(bool enabled) {
 
 void AssistantManagerServiceImpl::AddTimeToTimer(const std::string& id,
                                                  base::TimeDelta duration) {
-  if (!assistant_manager_internal())
+  if (!IsServiceStarted())
     return;
 
   assistant_manager_internal()->GetAlarmTimerManager()->AddTimeToTimer(
