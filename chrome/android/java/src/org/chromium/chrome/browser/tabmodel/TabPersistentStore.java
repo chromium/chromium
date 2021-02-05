@@ -70,7 +70,7 @@ import java.util.Set;
 /**
  * This class handles saving and loading tab state from the persistent storage.
  */
-public class TabPersistentStore extends TabPersister {
+public class TabPersistentStore {
     private static final String TAG = "tabmodel";
 
     /**
@@ -162,7 +162,7 @@ public class TabPersistentStore extends TabPersister {
     private final TabPersistencePolicy mPersistencePolicy;
     private final TabModelSelector mTabModelSelector;
     private final TabCreatorManager mTabCreatorManager;
-    private ObserverList<TabPersistentStoreObserver> mObservers;
+    private final ObserverList<TabPersistentStoreObserver> mObservers;
 
     private final Deque<Tab> mTabsToSave;
     private final Deque<TabRestoreDetails> mTabsToRestore;
@@ -249,11 +249,6 @@ public class TabPersistentStore extends TabPersister {
                         .delete();
             }
         }
-    }
-
-    @Override
-    protected File getStateDirectory() {
-        return mPersistencePolicy.getOrCreateStateDirectory();
     }
 
     /**
@@ -1244,6 +1239,50 @@ public class TabPersistentStore extends TabPersister {
                 mMetadata = null;
             }
         }
+    }
+
+    private File getStateDirectory() {
+        return mPersistencePolicy.getOrCreateStateDirectory();
+    }
+
+    /**
+     * Returns a file pointing at the TabState corresponding to the given Tab.
+     * @param tabId ID of the TabState to locate.
+     * @param encrypted Whether or not the tab is encrypted.
+     * @return File pointing at the TabState for the Tab.
+     */
+    private File getTabStateFile(int tabId, boolean encrypted) {
+        return TabStateFileManager.getTabStateFile(getStateDirectory(), tabId, encrypted);
+    }
+
+    /**
+     * Saves the TabState with the given ID.
+     * @param tabId ID of the Tab.
+     * @param encrypted Whether or not the TabState is encrypted.
+     * @param state TabState for the Tab.
+     */
+    private boolean saveTabState(int tabId, boolean encrypted, TabState state) {
+        if (state == null) return false;
+
+        try {
+            TabStateFileManager.saveState(getTabStateFile(tabId, encrypted), state, encrypted);
+            return true;
+        } catch (OutOfMemoryError e) {
+            android.util.Log.e(
+                    TAG, "Out of memory error while attempting to save tab state.  Erasing.");
+            deleteTabState(tabId, encrypted);
+        }
+
+        return false;
+    }
+
+    /**
+     * Deletes the TabState corresponding to the given Tab.
+     * @param id ID of the TabState to delete.
+     * @param encrypted Whether or not the tab is encrypted.
+     */
+    private void deleteTabState(int id, boolean encrypted) {
+        TabStateFileManager.deleteTabState(getStateDirectory(), id, encrypted);
     }
 
     private void onStateLoaded() {
