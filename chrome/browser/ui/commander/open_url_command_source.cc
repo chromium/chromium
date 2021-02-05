@@ -2,20 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/commander/apps_command_source.h"
+#include "chrome/browser/ui/commander/open_url_command_source.h"
 
 #include "base/i18n/case_conversion.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/commander/fuzzy_finder.h"
 #include "url/gurl.h"
 
 namespace commander {
 
-AppsCommandSource::AppsCommandSource() = default;
-AppsCommandSource::~AppsCommandSource() = default;
+OpenURLCommandSource::OpenURLCommandSource() = default;
+OpenURLCommandSource::~OpenURLCommandSource() = default;
 
-CommandSource::CommandResults AppsCommandSource::GetCommands(
+CommandSource::CommandResults OpenURLCommandSource::GetCommands(
     const base::string16& input,
     Browser* browser) const {
   // TODO(lgrey): Strings are temporarily unlocalized since this is
@@ -24,11 +25,16 @@ CommandSource::CommandResults AppsCommandSource::GetCommands(
     const char* title;
     const char* url;
   } command_map[] = {
-      {"New Google Doc", "https://docs.new"},
-      {"New Google Sheet", "https://sheets.new"},
-      {"New Google Slides", "https://slides.new"},
-      {"New Google Form", "https://forms.new"},
-      {"New Google Meet", "https://meet.new"},
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    {"Chrome Help",
+     "https://support.google.com/chrome/?p=help&ctx=menu#topic=9796470"},
+    // GSuite
+    {"New Google Doc", "https://docs.new"},
+    {"New Google Sheet", "https://sheets.new"},
+    {"New Google Slides", "https://slides.new"},
+    {"New Google Form", "https://forms.new"},
+    {"New Google Meet", "https://meet.new"},
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   };
 
   CommandSource::CommandResults results;
