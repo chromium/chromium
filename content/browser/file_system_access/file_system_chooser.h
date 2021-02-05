@@ -42,7 +42,8 @@ class CONTENT_EXPORT FileSystemChooser : public ui::SelectFileDialog::Listener {
             std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr>
                 accepts,
             bool include_accepts_all,
-            base::FilePath default_directory);
+            base::FilePath default_directory,
+            base::FilePath suggested_name);
     Options(const Options&) = default;
     Options& operator=(const Options&) = default;
 
@@ -50,10 +51,14 @@ class CONTENT_EXPORT FileSystemChooser : public ui::SelectFileDialog::Listener {
     const ui::SelectFileDialog::FileTypeInfo& file_type_info() const {
       return file_types_;
     }
-    int default_file_type_index() const { return default_file_type_index_; }
     const base::FilePath& default_path() const { return default_path_; }
+    int default_file_type_index() const { return default_file_type_index_; }
 
    private:
+    base::FilePath ResolveSuggestedNameExtension(
+        base::FilePath suggested_name,
+        ui::SelectFileDialog::FileTypeInfo& file_types);
+
     blink::mojom::ChooseFileSystemEntryType type_;
     ui::SelectFileDialog::FileTypeInfo file_types_;
     int default_file_type_index_ = 0;

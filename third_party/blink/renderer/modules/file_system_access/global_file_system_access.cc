@@ -199,6 +199,7 @@ ScriptPromise ShowFilePickerImpl(
     mojom::blink::WellKnownDirectory well_known_starting_directory,
     mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken>
         starting_directory_token,
+    const String& suggested_name,
     bool accept_all,
     bool return_as_sequence) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
@@ -218,7 +219,8 @@ ScriptPromise ShowFilePickerImpl(
       RuntimeEnabledFeatures::FileSystemAccessAPIExperimentalEnabled()
           ? std::move(well_known_starting_directory)
           : mojom::blink::WellKnownDirectory::kDefault,
-      std::move(starting_directory_token), accept_all,
+      std::move(starting_directory_token), std::move(suggested_name),
+      accept_all,
       WTF::Bind(
           [](ScriptPromiseResolver* resolver,
              mojo::Remote<mojom::blink::FileSystemAccessManager>,
@@ -312,7 +314,8 @@ ScriptPromise GlobalFileSystemAccess::showOpenFilePicker(
           ? mojom::blink::ChooseFileSystemEntryType::kOpenMultipleFiles
           : mojom::blink::ChooseFileSystemEntryType::kOpenFile,
       std::move(accepts), std::move(well_known_starting_directory),
-      std::move(token), !options->excludeAcceptAllOption(),
+      std::move(token), /*suggested_name=*/"",
+      !options->excludeAcceptAllOption(),
       /*return_as_sequence=*/true);
 }
 
@@ -358,7 +361,12 @@ ScriptPromise GlobalFileSystemAccess::showSaveFilePicker(
   return ShowFilePickerImpl(
       script_state, window, mojom::blink::ChooseFileSystemEntryType::kSaveFile,
       std::move(accepts), std::move(well_known_starting_directory),
-      std::move(token), !options->excludeAcceptAllOption(),
+      std::move(token),
+      (options->hasSuggestedName() &&
+       RuntimeEnabledFeatures::FileSystemAccessAPIExperimentalEnabled())
+          ? options->suggestedName()
+          : "",
+      !options->excludeAcceptAllOption(),
       /*return_as_sequence=*/false);
 }
 
@@ -394,6 +402,7 @@ ScriptPromise GlobalFileSystemAccess::showDirectoryPicker(
       script_state, window,
       mojom::blink::ChooseFileSystemEntryType::kOpenDirectory, {},
       std::move(well_known_starting_directory), std::move(token),
+      /*suggested_name=*/"",
       /*accept_all=*/true,
       /*return_as_sequence=*/false);
 }

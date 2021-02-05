@@ -2,11 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+#include <vector>
+
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/build_config.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/file_system_access/file_system_chooser_test_helpers.h"
 #include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
@@ -1267,6 +1272,142 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, StartIn_Nulled) {
   EXPECT_TRUE(result.error.find("aborted") != std::string::npos)
       << result.error;
   EXPECT_EQ(ui::SelectFileDialog::SELECT_OPEN_FILE, dialog_params.type);
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, SuggestedName) {
+  const base::FilePath test_file = CreateTestFile("");
+  SelectFileDialogParams dialog_params;
+
+  struct info {
+    std::string suggested_name;
+    base::ListValue accepted_extensions;
+    bool exclude_accept_all_option = true;
+    std::string expected_result;
+    bool expected_exclude_accept_all_option = false;
+  };
+
+  std::vector<info> name_infos;
+  // Empty suggested name should be ok.
+  name_infos.push_back({"", ListValueOf(".txt"), true, "", true});
+  name_infos.push_back({"", ListValueOf(".txt"), false, "", false});
+  name_infos.push_back({"", ListValueOf(), true, "", false});
+
+  // Suggested extension listed as accepted extension.
+  name_infos.push_back(
+      {"ext_match.txt", ListValueOf(".txt"), true, "ext_match.txt", true});
+  name_infos.push_back(
+      {"ext_match.txt", ListValueOf(".txt"), false, "ext_match.txt", false});
+  name_infos.push_back(
+      {"ext_match.txt", ListValueOf(), true, "ext_match.txt", false});
+
+  // No suggested extension. Don't try to infer one, and behave as if
+  // |excludeAcceptAllOption| is false.
+  name_infos.push_back(
+      {"no_extension", ListValueOf(".txt"), true, "no_extension", false});
+  name_infos.push_back(
+      {"no_extension", ListValueOf(".txt"), false, "no_extension", false});
+  name_infos.push_back(
+      {"no_extension", ListValueOf(), true, "no_extension", false});
+
+  // Suggested extension not listed as an accepted extension. Allow extension,
+  // but behave as if |excludeAcceptAllOption| is false.
+  name_infos.push_back({"not_matching.jpg", ListValueOf(".txt"), true,
+                        "not_matching.jpg", false});
+  name_infos.push_back({"not_matching.jpg", ListValueOf(".txt"), false,
+                        "not_matching.jpg", false});
+
+#if defined(OS_WIN)
+  // ".local" and ".lnk" extensions should be sanitized on Windows.
+  name_infos.push_back({"dangerous_extension.local", ListValueOf(".local"),
+                        true, "dangerous_extension.download", false});
+  name_infos.push_back({"dangerous_extension.lnk", ListValueOf(".lnk"), true,
+                        "dangerous_extension.download", false});
+#else
+  // ".local" and ".lnk" extensions should be allowed on other OSes.
+  // TODO(https://crbug.com/1154757): `expected_exclude_accept_all_option` is
+  // false here because ".local" and ".lnk" extensions are not allowed in
+  // `accepts`, but are only sanitized by net::GenerateSafeFileName on Windows.
+  name_infos.push_back({"dangerous_extension.local", ListValueOf(".local"),
+                        true, "dangerous_extension.local", false});
+  name_infos.push_back({"dangerous_extension.lnk", ListValueOf(".lnk"), true,
+                        "dangerous_extension.lnk", false});
+#endif
+  // Invalid characters should be sanitized.
+  name_infos.push_back({R"(inv*l:d\\charבאמת!a<ters🤓.txt)",
+                        ListValueOf(".txt"), true,
+                        R"(inv_l_d__charבאמת!a_ters🤓.txt)", true});
+
+  for (const auto& name_info : name_infos) {
+    SCOPED_TRACE(name_info.suggested_name);
+    ui::SelectFileDialog::SetFactory(
+        new FakeSelectFileDialogFactory({test_file}, &dialog_params));
+    ASSERT_TRUE(
+        NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+    EXPECT_EQ(
+        test_file.BaseName().AsUTF8Unsafe(),
+        EvalJs(shell(), JsReplace("(async () => {"
+                                  "  let e = await self.showSaveFilePicker({"
+                                  "    suggestedName: $1,"
+                                  "    types: [{accept: {'text/custom': $2}}],"
+                                  "    excludeAcceptAllOption: $3"
+                                  "});"
+                                  "  return e.name; })()",
+                                  name_info.suggested_name,
+                                  name_info.accepted_extensions,
+                                  name_info.exclude_accept_all_option)));
+    EXPECT_EQ(ui::SelectFileDialog::SELECT_SAVEAS_FILE, dialog_params.type);
+    EXPECT_EQ(base::FilePath::FromUTF8Unsafe(name_info.expected_result),
+              dialog_params.default_path.BaseName());
+    EXPECT_NE(name_info.expected_exclude_accept_all_option,
+              dialog_params.file_types->include_all_files);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
+                       SuggestedName_CorrectIndex) {
+  const base::FilePath test_file = CreateTestFile("");
+  SelectFileDialogParams dialog_params;
+
+  struct info {
+    std::string suggested_name;
+    std::string expected_result;
+    bool expected_exclude_accept_all_option = false;
+    int expected_index;
+  };
+
+  std::vector<info> name_infos;
+  // There are valid accepted extensions, so default to index 1.
+  name_infos.push_back({"ext_no_match.foo", "ext_no_match.foo", false, 1});
+  name_infos.push_back({"ext_match.jpg", "ext_match.jpg", true, 1});
+  name_infos.push_back({"ext_match.txt", "ext_match.txt", true, 2});
+  name_infos.push_back({"ext_mime_match.text", "ext_mime_match.text", true, 2});
+
+  for (const auto& name_info : name_infos) {
+    SCOPED_TRACE(name_info.suggested_name);
+    ui::SelectFileDialog::SetFactory(
+        new FakeSelectFileDialogFactory({test_file}, &dialog_params));
+    ASSERT_TRUE(
+        NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+    EXPECT_EQ(
+        test_file.BaseName().AsUTF8Unsafe(),
+        EvalJs(shell(), JsReplace("(async () => {"
+                                  "  let e = await self.showSaveFilePicker({"
+                                  "    suggestedName: $1,"
+                                  "    types: ["
+                                  "     {accept: {'image/custom': ['.jpg']}},"
+                                  "     {accept: {'text/plain': ['.txt']}},"
+                                  "    ],"
+                                  "    excludeAcceptAllOption: true"
+                                  "});"
+                                  "  return e.name; })()",
+                                  name_info.suggested_name)));
+    EXPECT_EQ(ui::SelectFileDialog::SELECT_SAVEAS_FILE, dialog_params.type);
+    EXPECT_EQ(base::FilePath::FromUTF8Unsafe(name_info.expected_result),
+              dialog_params.default_path.BaseName());
+    EXPECT_NE(name_info.expected_exclude_accept_all_option,
+              dialog_params.file_types->include_all_files);
+    EXPECT_EQ(name_info.expected_index, dialog_params.file_type_index);
+  }
 }
 
 }  // namespace content

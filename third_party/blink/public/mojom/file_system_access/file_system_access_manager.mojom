@@ -65,6 +65,7 @@ interface FileSystemAccessManager {
                 array<ChooseFileSystemEntryAcceptsOption> accepts,
                 WellKnownDirectory well_known_starting_directory,
                 pending_remote<FileSystemAccessTransferToken>? starting_directory_token,
+                string suggested_name,  // Only allowed when type == kSaveFile.
                 bool include_accepts_all) =>
       (FileSystemAccessError result,
        array<FileSystemAccessEntry> entries);

@@ -1159,7 +1159,7 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenFile) {
   manager_remote->ChooseEntries(
       blink::mojom::ChooseFileSystemEntryType::kOpenFile, /*accepts=*/{},
       blink::mojom::WellKnownDirectory::kDefault,
-      /*starting_directory_token=*/mojo::NullRemote(),
+      /*starting_directory_token=*/mojo::NullRemote(), /*suggested_name=*/"",
       /*include_accepts_all=*/true,
       base::BindLambdaForTesting(
           [&](blink::mojom::FileSystemAccessErrorPtr result,
@@ -1229,7 +1229,7 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_SaveFile) {
   manager_remote->ChooseEntries(
       blink::mojom::ChooseFileSystemEntryType::kSaveFile, /*accepts=*/{},
       blink::mojom::WellKnownDirectory::kDefault,
-      /*starting_directory_token=*/mojo::NullRemote(),
+      /*starting_directory_token=*/mojo::NullRemote(), /*suggested_name=*/"",
       /*include_accepts_all=*/true,
       base::BindLambdaForTesting(
           [&](blink::mojom::FileSystemAccessErrorPtr result,
@@ -1295,7 +1295,8 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenDirectory) {
   manager_remote->ChooseEntries(
       blink::mojom::ChooseFileSystemEntryType::kOpenDirectory, {},
       blink::mojom::WellKnownDirectory::kDefault,
-      /*starting_directory_token=*/mojo::NullRemote(), true,
+      /*starting_directory_token=*/mojo::NullRemote(), /*suggested_name=*/"",
+      /*include_accepts_all=*/true,
       base::BindLambdaForTesting(
           [&](blink::mojom::FileSystemAccessErrorPtr result,
               std::vector<blink::mojom::FileSystemAccessEntryPtr> entries) {

@@ -3,17 +3,19 @@
 // found in the LICENSE file.
 
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
+#include <string>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
+#include "build/build_config.h"
 #include "content/browser/file_system_access/file_system_access.pb.h"
 #include "content/browser/file_system_access/file_system_access_directory_handle_impl.h"
 #include "content/browser/file_system_access/file_system_access_drag_drop_token_impl.h"
@@ -32,6 +34,7 @@
 #include "content/public/common/content_switches.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "net/base/escape.h"
+#include "net/base/filename_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
@@ -310,6 +313,7 @@ void FileSystemAccessManagerImpl::ChooseEntries(
     blink::mojom::WellKnownDirectory well_known_starting_directory,
     mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
         starting_directory_token,
+    const std::string& suggested_name,
     bool include_accepts_all,
     ChooseEntriesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -319,6 +323,13 @@ void FileSystemAccessManagerImpl::ChooseEntries(
   // anchor the picker to.
   if (context.is_worker()) {
     receivers_.ReportBadMessage("ChooseEntries called from a worker");
+    return;
+  }
+
+  if (!suggested_name.empty() &&
+      type != blink::mojom::ChooseFileSystemEntryType::kSaveFile) {
+    receivers_.ReportBadMessage(
+        "Suggested file name only allowed for save dialogs");
     return;
   }
 
@@ -360,8 +371,8 @@ void FileSystemAccessManagerImpl::ChooseEntries(
   auto resolve_default_directory_callback = base::BindOnce(
       &FileSystemAccessManagerImpl::ResolveDefaultDirectory,
       weak_factory_.GetWeakPtr(), context, type, std::move(accepts),
-      std::move(well_known_starting_directory), include_accepts_all,
-      std::move(callback));
+      std::move(well_known_starting_directory), std::move(suggested_name),
+      include_accepts_all, std::move(callback));
 
   if (starting_directory_token.is_valid()) {
     ResolveTransferToken(std::move(starting_directory_token),
@@ -377,6 +388,7 @@ void FileSystemAccessManagerImpl::ResolveDefaultDirectory(
     blink::mojom::ChooseFileSystemEntryType type,
     std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts,
     blink::mojom::WellKnownDirectory well_known_starting_directory,
+    const std::string& suggested_name,
     bool include_accepts_all,
     ChooseEntriesCallback callback,
     FileSystemAccessTransferTokenImpl* resolved_starting_directory_token) {
@@ -408,8 +420,8 @@ void FileSystemAccessManagerImpl::ResolveDefaultDirectory(
           base::BindOnce(
               &FileSystemAccessManagerImpl::SetDefaultPathAndShowPicker,
               weak_factory_.GetWeakPtr(), context, type, std::move(accepts),
-              include_accepts_all, std::move(url).url.path(),
-              std::move(callback)),
+              std::move(suggested_name), include_accepts_all,
+              std::move(url).url.path(), std::move(callback)),
           base::SequencedTaskRunnerHandle::Get()));
 }
 
@@ -417,6 +429,7 @@ void FileSystemAccessManagerImpl::SetDefaultPathAndShowPicker(
     const BindingContext& context,
     blink::mojom::ChooseFileSystemEntryType type,
     std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts,
+    const std::string& suggested_name,
     bool include_accepts_all,
     base::FilePath default_directory,
     ChooseEntriesCallback callback,
@@ -430,11 +443,15 @@ void FileSystemAccessManagerImpl::SetDefaultPathAndShowPicker(
           blink::mojom::WellKnownDirectory::kDefault);
   }
 
-  // TODO(https://crbug.com/1019408): Append suggested filename to
-  // default_directory.
-  FileSystemChooser::Options options(type, std::move(accepts),
-                                     include_accepts_all,
-                                     std::move(default_directory));
+  auto suggested_name_path =
+      !suggested_name.empty()
+          ? net::GenerateFileName(GURL(), std::string(), std::string(),
+                                  suggested_name, std::string(), std::string())
+          : base::FilePath();
+
+  FileSystemChooser::Options options(
+      type, std::move(accepts), include_accepts_all,
+      std::move(default_directory), std::move(suggested_name_path));
 
   if (auto_file_picker_result_for_test_) {
     DidChooseEntries(context, options, std::move(callback),

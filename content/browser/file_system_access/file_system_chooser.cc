@@ -14,12 +14,14 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "build/build_config.h"
+#include "content/browser/file_system_access/file_system_access_directory_handle_impl.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
+#include "net/base/filename_util.h"
 #include "net/base/mime_util.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/shell_dialogs/select_file_policy.h"
@@ -203,11 +205,48 @@ FileSystemChooser::Options::Options(
     blink::mojom::ChooseFileSystemEntryType type,
     std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts,
     bool include_accepts_all,
-    base::FilePath default_path)
+    base::FilePath default_directory,
+    base::FilePath suggested_name)
     : type_(type),
       file_types_(ConvertAcceptsToFileTypeInfo(accepts, include_accepts_all)),
+      // Set `default_file_type_index_` to a reasonable default value.
+      // This value will be updated if the extension of `suggested_name`
+      // matches an extension in `accepts`.
       default_file_type_index_(file_types_.extensions.empty() ? 0 : 1),
-      default_path_(std::move(default_path)) {}
+      default_path_(default_directory.Append(
+          ResolveSuggestedNameExtension(std::move(suggested_name),
+                                        file_types_))) {}
+
+base::FilePath FileSystemChooser::Options::ResolveSuggestedNameExtension(
+    base::FilePath suggested_name,
+    ui::SelectFileDialog::FileTypeInfo& file_types) {
+  if (suggested_name.empty())
+    return base::FilePath();
+
+  auto suggested_extension = suggested_name.Extension();
+
+  if (file_types.extensions.empty() || suggested_extension.empty()) {
+    file_types.include_all_files = true;
+    return suggested_name;
+  }
+
+  // Strip leading ".".
+  suggested_extension = suggested_extension.substr(1);
+
+  // Check if the suggested extension is an accepted extension.
+  for (auto i = 0u; i < file_types.extensions.size(); ++i) {
+    auto it = base::ranges::find(file_types.extensions[i], suggested_extension);
+    if (it != file_types.extensions[i].end()) {
+      // The suggested extension is an accepted extension. All is harmonious.
+      default_file_type_index_ = i + 1;  // NOTE: 1-based index.
+      return suggested_name;
+    }
+  }
+
+  // Suggested extension not found in non-empty |accepts|.
+  file_types.include_all_files = true;
+  return suggested_name;
+}
 
 // static
 void FileSystemChooser::CreateAndShow(
