@@ -6552,10 +6552,8 @@ grit("resources") {
   }
 
   if (is_chromeos_ash && optimize_webui) {
-    deps += [
-      "//chrome/browser/resources/chromeos/internet_config_dialog:build",
-      "//chrome/browser/resources/chromeos/internet_detail_dialog:build",
-    ]
+    deps +=
+        [ "//chrome/browser/resources/chromeos/internet_detail_dialog:build" ]
   }
 
   if (safe_browsing_mode == 1) {

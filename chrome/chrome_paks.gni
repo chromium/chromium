@@ -177,6 +177,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/bluetooth_pairing_dialog_resources.pak",
         "$root_gen_dir/chrome/browser/supervised_user/supervised_user_unscaled_resources.pak",
         "$root_gen_dir/chrome/emoji_picker_resources.pak",
+        "$root_gen_dir/chrome/internet_config_dialog_resources.pak",
         "$root_gen_dir/chrome/multidevice_internals_resources.pak",
         "$root_gen_dir/chrome/multidevice_setup_resources.pak",
         "$root_gen_dir/chrome/nearby_internals_resources.pak",
@@ -199,6 +200,7 @@ template("chrome_extra_paks") {
       deps += [
         "//ash/public/cpp/resources:ash_public_unscaled_resources",
         "//chrome/browser/resources:bluetooth_pairing_dialog_resources",
+        "//chrome/browser/resources:internet_config_dialog_resources",
         "//chrome/browser/resources/chromeos:multidevice_setup_resources",
         "//chrome/browser/resources/chromeos/emoji_picker:resources",
         "//chrome/browser/resources/chromeos/multidevice_internals:resources",

@@ -8,9 +8,12 @@
 #include "base/json/json_writer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/chromeos/network_element_localized_strings_provider.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/internet_config_dialog_resources.h"
+#include "chrome/grit/internet_config_dialog_resources_map.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
@@ -155,16 +158,12 @@ InternetConfigDialogUI::InternetConfigDialogUI(content::WebUI* web_ui)
   AddInternetStrings(source);
   source->AddLocalizedString("title", IDS_SETTINGS_INTERNET_CONFIG);
   source->UseStringsJs();
-#if BUILDFLAG(OPTIMIZE_WEBUI)
-  source->SetDefaultResource(IDR_INTERNET_CONFIG_DIALOG_VULCANIZED_HTML);
-  source->AddResourcePath("crisper.js", IDR_INTERNET_CONFIG_DIALOG_CRISPER_JS);
-#else
-  source->SetDefaultResource(IDR_INTERNET_CONFIG_DIALOG_CONTAINER_HTML);
-  source->AddResourcePath("internet_config_dialog.html",
-                          IDR_INTERNET_CONFIG_DIALOG_HTML);
-  source->AddResourcePath("internet_config_dialog.js",
-                          IDR_INTERNET_CONFIG_DIALOG_JS);
-#endif
+
+  webui::SetupWebUIDataSource(
+      source,
+      base::make_span(kInternetConfigDialogResources,
+                      kInternetConfigDialogResourcesSize),
+      IDR_INTERNET_CONFIG_DIALOG_INTERNET_CONFIG_DIALOG_CONTAINER_HTML);
 
   content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
 }

@@ -40,6 +40,7 @@ group("resources") {
   if (is_chromeos_ash) {
     public_deps += [
       ":bluetooth_pairing_dialog_resources",
+      ":internet_config_dialog_resources",
       "chromeos:multidevice_setup_resources",
       "chromeos/accessibility:build",
       "chromeos/emoji_picker:resources",
@@ -240,6 +241,27 @@ if (is_chromeos_ash) {
       "grit/bluetooth_pairing_dialog_resources_map.cc",
       "grit/bluetooth_pairing_dialog_resources_map.h",
       "bluetooth_pairing_dialog_resources.pak",
+    ]
+    output_dir = "$root_gen_dir/chrome"
+  }
+
+  grit("internet_config_dialog_resources") {
+    defines = chrome_grit_defines
+
+    # These arguments are needed since the grd is generated at build time.
+    enable_input_discovery_for_gn_analyze = false
+    internet_gen_dir =
+        "$root_gen_dir/chrome/browser/resources/chromeos/internet_config_dialog"
+    source = "$internet_gen_dir/internet_config_dialog_resources.grd"
+    deps = [
+      "//chrome/browser/resources/chromeos/internet_config_dialog:build_grd",
+    ]
+
+    outputs = [
+      "grit/internet_config_dialog_resources.h",
+      "grit/internet_config_dialog_resources_map.cc",
+      "grit/internet_config_dialog_resources_map.h",
+      "internet_config_dialog_resources.pak",
     ]
     output_dir = "$root_gen_dir/chrome"
   }
