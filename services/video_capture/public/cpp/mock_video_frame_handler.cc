@@ -38,14 +38,12 @@ void MockVideoFrameHandler::OnNewBuffer(
 }
 
 void MockVideoFrameHandler::OnFrameReadyInBuffer(
-    int32_t buffer_id,
-    int32_t frame_feedback_id,
-    mojo::PendingRemote<mojom::ScopedAccessPermission> access_permission,
-    media::mojom::VideoFrameInfoPtr frame_info) {
-  DoOnFrameReadyInBuffer(buffer_id, frame_feedback_id, access_permission,
-                         &frame_info);
+    mojom::ReadyFrameInBufferPtr buffer,
+    std::vector<mojom::ReadyFrameInBufferPtr> scaled_buffers) {
+  DoOnFrameReadyInBuffer(buffer->buffer_id, buffer->frame_feedback_id,
+                         buffer->access_permission, &buffer->frame_info);
   if (should_store_access_permissions_)
-    access_permissions_.emplace_back(std::move(access_permission));
+    access_permissions_.emplace_back(std::move(buffer->access_permission));
 }
 
 void MockVideoFrameHandler::OnBufferRetired(int32_t buffer_id) {

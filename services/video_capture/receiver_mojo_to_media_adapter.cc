@@ -29,18 +29,32 @@ void ReceiverMojoToMediaAdapter::OnNewBuffer(
 void ReceiverMojoToMediaAdapter::OnFrameReadyInBuffer(
     media::ReadyFrameInBuffer frame,
     std::vector<media::ReadyFrameInBuffer> scaled_frames) {
-  mojo::PendingRemote<mojom::ScopedAccessPermission> access_permission_proxy;
+  mojo::PendingRemote<mojom::ScopedAccessPermission> frame_permission_proxy;
   mojo::MakeSelfOwnedReceiver<mojom::ScopedAccessPermission>(
       std::make_unique<ScopedAccessPermissionMediaToMojoAdapter>(
           std::move(frame.buffer_read_permission)),
-      access_permission_proxy.InitWithNewPipeAndPassReceiver());
-  // Scaled frames are currently not passed along.
-  // TODO(https://crbug.com/1157072): When video_frame_handler.mojom is updated
-  // to support scaled frames, update this code to pass along scaled frames.
-  // This will achieve passing frames from Capture Process to Browser Process.
-  video_frame_handler_->OnFrameReadyInBuffer(
+      frame_permission_proxy.InitWithNewPipeAndPassReceiver());
+  mojom::ReadyFrameInBufferPtr mojom_frame = mojom::ReadyFrameInBuffer::New(
       frame.buffer_id, frame.frame_feedback_id,
-      std::move(access_permission_proxy), std::move(frame.frame_info));
+      std::move(frame_permission_proxy), std::move(frame.frame_info));
+
+  std::vector<mojom::ReadyFrameInBufferPtr> mojom_scaled_frames;
+  mojom_scaled_frames.reserve(scaled_frames.size());
+  for (auto& scaled_frame : scaled_frames) {
+    mojo::PendingRemote<mojom::ScopedAccessPermission>
+        scaled_frame_permission_proxy;
+    mojo::MakeSelfOwnedReceiver<mojom::ScopedAccessPermission>(
+        std::make_unique<ScopedAccessPermissionMediaToMojoAdapter>(
+            std::move(scaled_frame.buffer_read_permission)),
+        scaled_frame_permission_proxy.InitWithNewPipeAndPassReceiver());
+    mojom_scaled_frames.push_back(mojom::ReadyFrameInBuffer::New(
+        scaled_frame.buffer_id, scaled_frame.frame_feedback_id,
+        std::move(scaled_frame_permission_proxy),
+        std::move(scaled_frame.frame_info)));
+  }
+
+  video_frame_handler_->OnFrameReadyInBuffer(std::move(mojom_frame),
+                                             std::move(mojom_scaled_frames));
 }
 
 void ReceiverMojoToMediaAdapter::OnBufferRetired(int buffer_id) {

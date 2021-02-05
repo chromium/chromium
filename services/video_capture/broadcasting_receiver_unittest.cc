@@ -96,9 +96,11 @@ TEST_F(
       access_permission.InitWithNewPipeAndPassReceiver());
   media::mojom::VideoFrameInfoPtr frame_info =
       media::mojom::VideoFrameInfo::New();
-  broadcaster_.OnFrameReadyInBuffer(kArbiraryBufferId, kArbiraryFrameFeedbackId,
-                                    std::move(access_permission),
-                                    std::move(frame_info));
+  broadcaster_.OnFrameReadyInBuffer(
+      mojom::ReadyFrameInBuffer::New(
+          kArbiraryBufferId, kArbiraryFrameFeedbackId,
+          std::move(access_permission), std::move(frame_info)),
+      {});
 
   // mock_video_frame_handler_1_ finishes consuming immediately.
   // mock_video_frame_handler_2_ continues consuming.
@@ -158,13 +160,74 @@ TEST_F(BroadcastingReceiverTest,
       access_permission.InitWithNewPipeAndPassReceiver());
   media::mojom::VideoFrameInfoPtr frame_info =
       media::mojom::VideoFrameInfo::New();
-  broadcaster_.OnFrameReadyInBuffer(kArbiraryBufferId, kArbiraryFrameFeedbackId,
-                                    std::move(access_permission),
-                                    std::move(frame_info));
+  broadcaster_.OnFrameReadyInBuffer(
+      mojom::ReadyFrameInBuffer::New(
+          kArbiraryBufferId, kArbiraryFrameFeedbackId,
+          std::move(access_permission), std::move(frame_info)),
+      {});
 
   // expect that |access_permission| is released
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(access_permission_has_been_released);
+}
+
+TEST_F(BroadcastingReceiverTest, ForwardsScaledFrames) {
+  const int kBufferId = 10;
+  const int kScaledBufferId = 11;
+
+  media::mojom::VideoBufferHandlePtr buffer_handle =
+      media::mojom::VideoBufferHandle::New();
+  buffer_handle->set_shared_buffer_handle(mojo::WrapUnsafeSharedMemoryRegion(
+      base::UnsafeSharedMemoryRegion::Create(kArbitraryDummyBufferSize)));
+  broadcaster_.OnNewBuffer(kBufferId, std::move(buffer_handle));
+
+  media::mojom::VideoBufferHandlePtr scaled_buffer_handle =
+      media::mojom::VideoBufferHandle::New();
+  scaled_buffer_handle->set_shared_buffer_handle(
+      mojo::WrapUnsafeSharedMemoryRegion(
+          base::UnsafeSharedMemoryRegion::Create(kArbitraryDummyBufferSize)));
+  broadcaster_.OnNewBuffer(kScaledBufferId, std::move(scaled_buffer_handle));
+
+  base::RunLoop on_buffer_ready;
+  EXPECT_CALL(*mock_video_frame_handler_1_, DoOnFrameReadyInBuffer(_, _, _, _))
+      .WillOnce(
+          InvokeWithoutArgs([&on_buffer_ready]() { on_buffer_ready.Quit(); }));
+
+  mojo::PendingRemote<mojom::ScopedAccessPermission> buffer_access_permission;
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<FakeAccessPermission>(base::BindOnce([]() {})),
+      buffer_access_permission.InitWithNewPipeAndPassReceiver());
+  mojom::ReadyFrameInBufferPtr ready_buffer = mojom::ReadyFrameInBuffer::New(
+      kBufferId, kArbiraryFrameFeedbackId, std::move(buffer_access_permission),
+      media::mojom::VideoFrameInfo::New());
+
+  mojo::PendingRemote<mojom::ScopedAccessPermission>
+      scaled_buffer_access_permission;
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<FakeAccessPermission>(base::BindOnce([]() {})),
+      scaled_buffer_access_permission.InitWithNewPipeAndPassReceiver());
+  std::vector<mojom::ReadyFrameInBufferPtr> scaled_ready_buffers;
+  scaled_ready_buffers.push_back(
+      mojom::ReadyFrameInBuffer::New(kScaledBufferId, kArbiraryFrameFeedbackId,
+                                     std::move(scaled_buffer_access_permission),
+                                     media::mojom::VideoFrameInfo::New()));
+
+  broadcaster_.OnFrameReadyInBuffer(std::move(ready_buffer),
+                                    std::move(scaled_ready_buffers));
+  on_buffer_ready.Run();
+
+  base::RunLoop on_both_buffers_retired;
+  size_t num_buffers_retired = 0u;
+  EXPECT_CALL(*mock_video_frame_handler_1_, DoOnBufferRetired(_))
+      .WillRepeatedly(
+          InvokeWithoutArgs([&on_both_buffers_retired, &num_buffers_retired]() {
+            ++num_buffers_retired;
+            if (num_buffers_retired == 2u)
+              on_both_buffers_retired.Quit();
+          }));
+  broadcaster_.OnBufferRetired(kBufferId);
+  broadcaster_.OnBufferRetired(kScaledBufferId);
+  on_both_buffers_retired.Run();
 }
 
 }  // namespace video_capture

@@ -51,8 +51,10 @@ void TextureVirtualDeviceMojoAdapter::OnFrameReadyInBuffer(
   if (!video_frame_handler_.is_bound())
     return;
   video_frame_handler_->OnFrameReadyInBuffer(
-      buffer_id, 0 /* frame_feedback_id */, std::move(access_permission),
-      std::move(frame_info));
+      mojom::ReadyFrameInBuffer::New(buffer_id, 0 /* frame_feedback_id */,
+                                     std::move(access_permission),
+                                     std::move(frame_info)),
+      {});
 }
 
 void TextureVirtualDeviceMojoAdapter::OnBufferRetired(int buffer_id) {

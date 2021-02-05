@@ -7,6 +7,17 @@ module video_capture.mojom;
 import "media/capture/mojom/video_capture_types.mojom";
 import "services/video_capture/public/mojom/scoped_access_permission.mojom";
 
+// Describes a new frame that is ready for consumption in the buffer with id
+// |buffer_id| and allows it to read the data from the buffer. The producer
+// guarantees that the buffer and its contents stay alive and unchanged until
+// |access_permission| is released.
+struct ReadyFrameInBuffer {
+  int32 buffer_id;
+  int32 frame_feedback_id;
+  pending_remote<ScopedAccessPermission> access_permission;
+  media.mojom.VideoFrameInfo frame_info;
+};
+
 // Callback interface for receiving data and messages from a
 // video_capture.mojom.Device or
 // video_capture.mojom.PushVideoStreamSubscription.
@@ -19,13 +30,12 @@ interface VideoFrameHandler {
   // OnFrameReadyInBuffer().
   OnNewBuffer(int32 buffer_id, media.mojom.VideoBufferHandle buffer_handle);
 
-  // Indicates that a new frame is ready for consumption in the buffer with id
-  // |buffer_id| and allows it to read the data from the buffer. The producer
-  // guarantees that the buffer and its contents stay alive and unchanged until
-  // VideoFrameHandler releases the given |access_permission|.
-  OnFrameReadyInBuffer(int32 buffer_id, int32 frame_feedback_id,
-                       pending_remote<ScopedAccessPermission> access_permission,
-                       media.mojom.VideoFrameInfo frame_info);
+  // Indicates that a new frame is ready for consumption and optionally a set of
+  // scaled down versions of that frame. The producer guarantees that the
+  // buffer(s) and their contents stay alive and unchanged until
+  // VideoFrameHandler releases the |access_permission|s.
+  OnFrameReadyInBuffer(ReadyFrameInBuffer buffer,
+                       array<ReadyFrameInBuffer> scaled_buffers);
 
   // Indicates that the producer is no longer going to use the buffer with id
   // |buffer_id| for frame delivery. This may be called even while the handler
