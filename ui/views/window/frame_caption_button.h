@@ -11,6 +11,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/focus_ring.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/views_export.h"
 #include "ui/views/window/caption_button_types.h"
 
@@ -25,13 +26,14 @@ namespace views {
 // close).
 class VIEWS_EXPORT FrameCaptionButton : public views::Button {
  public:
+  METADATA_HEADER(FrameCaptionButton);
   enum Animate { ANIMATE_YES, ANIMATE_NO };
-
-  static const char kViewClassName[];
 
   FrameCaptionButton(PressedCallback callback,
                      CaptionButtonIcon icon,
                      int hit_test_type);
+  FrameCaptionButton(const FrameCaptionButton&) = delete;
+  FrameCaptionButton& operator=(const FrameCaptionButton&) = delete;
   ~FrameCaptionButton() override;
 
   // Gets the color to use for a frame caption button.
@@ -56,13 +58,13 @@ class VIEWS_EXPORT FrameCaptionButton : public views::Button {
   void SetAlpha(int alpha);
 
   // views::Button:
-  const char* GetClassName() const override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   views::PaintInfo::ScaleType GetPaintScaleType() const override;
   std::unique_ptr<views::InkDrop> CreateInkDrop() override;
   std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
 
   void SetBackgroundColor(SkColor background_color);
+  SkColor GetBackgroundColor() const;
 
   void set_paint_as_active(bool paint_as_active) {
     paint_as_active_ = paint_as_active;
@@ -70,12 +72,10 @@ class VIEWS_EXPORT FrameCaptionButton : public views::Button {
 
   bool paint_as_active() const { return paint_as_active_; }
 
-  void set_ink_drop_corner_radius(int ink_drop_corner_radius) {
-    ink_drop_corner_radius_ = ink_drop_corner_radius;
-  }
-  int ink_drop_corner_radius() const { return ink_drop_corner_radius_; }
+  void SetInkDropCornerRadius(int ink_drop_corner_radius);
+  int GetInkDropCornerRadius() const;
 
-  CaptionButtonIcon icon() const { return icon_; }
+  CaptionButtonIcon GetIcon() const { return icon_; }
 
   const gfx::ImageSkia& icon_image() const { return icon_image_; }
 
@@ -127,8 +127,6 @@ class VIEWS_EXPORT FrameCaptionButton : public views::Button {
   // Crossfade animation started when the button's images are changed by
   // SetImage().
   std::unique_ptr<gfx::SlideAnimation> swap_images_animation_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameCaptionButton);
 };
 
 }  // namespace views

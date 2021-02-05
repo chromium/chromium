@@ -8,6 +8,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/hit_test.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/views/test/view_metadata_test_utils.h"
 #include "ui/views/view.h"
 #include "ui/views/window/caption_button_types.h"
 
@@ -36,6 +37,12 @@ TEST(FrameCaptionButtonTest, DefaultAccessibilityFocus) {
   FrameCaptionButton button(Button::PressedCallback(),
                             CAPTION_BUTTON_ICON_MINIMIZE, HTMINBUTTON);
   EXPECT_EQ(View::FocusBehavior::ACCESSIBLE_ONLY, button.GetFocusBehavior());
+}
+
+TEST(FrameCaptionButtonTest, MetadataTest) {
+  FrameCaptionButton button(Button::PressedCallback(),
+                            CAPTION_BUTTON_ICON_MINIMIZE, HTMINBUTTON);
+  test::TestViewMetadata(&button);
 }
 
 }  // namespace views

@@ -441,7 +441,7 @@ void OpaqueBrowserFrameViewLayout::SetBoundsForButton(
                            views::kCaptionButtonInkDropDefaultCornerRadius);
     button_size = gfx::Size(views::kCaptionButtonWidth, height);
     button->SetPreferredSize(button_size);
-    static_cast<views::FrameCaptionButton*>(button)->set_ink_drop_corner_radius(
+    static_cast<views::FrameCaptionButton*>(button)->SetInkDropCornerRadius(
         corner_radius);
   } else if (delegate_->GetFrameButtonStyle() ==
              OpaqueBrowserFrameViewLayoutDelegate::FrameButtonStyle::
