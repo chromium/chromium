@@ -56,6 +56,21 @@ constexpr char kForceRemoteShellScale[] = "force-remote-shell-scale";
 
 }  // namespace switches
 
+Surface* FindRootSurface(aura::Window* window) {
+  if (!window)
+    return nullptr;
+  Surface* root = GetShellMainSurface(window);
+  if (root)
+    return root;
+  root = Surface::AsSurface(window);
+  for (aura::Window* parent = window->parent();
+       root && parent && Surface::AsSurface(parent);
+       parent = parent->parent()) {
+    root = Surface::AsSurface(parent);
+  }
+  return root;
+}
+
 using chromeos::WindowStateType;
 
 // We don't send configure immediately after tablet mode switch
@@ -855,14 +870,14 @@ class WaylandRemoteOutput : public WaylandDisplayObserver {
 // Implements remote shell interface and monitors workspace state needed
 // for the remote shell interface.
 class WaylandRemoteShell : public ash::TabletModeObserver,
-                           public wm::ActivationChangeObserver,
+                           public aura::client::FocusChangeObserver,
                            public display::DisplayObserver {
  public:
   WaylandRemoteShell(Display* display, wl_resource* remote_shell_resource)
       : display_(display), remote_shell_resource_(remote_shell_resource) {
     WMHelperChromeOS* helper = WMHelperChromeOS::GetInstance();
     helper->AddTabletModeObserver(this);
-    helper->AddActivationObserver(this);
+    helper->AddFocusObserver(this);
     display::Screen::GetScreen()->AddObserver(this);
     helper->AddFrameThrottlingObserver();
 
@@ -888,7 +903,7 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
   ~WaylandRemoteShell() override {
     WMHelperChromeOS* helper = WMHelperChromeOS::GetInstance();
     helper->RemoveTabletModeObserver(this);
-    helper->RemoveActivationObserver(this);
+    helper->RemoveFocusObserver(this);
     display::Screen::GetScreen()->RemoveObserver(this);
     helper->RemoveFrameThrottlingObserver();
   }
@@ -998,9 +1013,8 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
   void OnTabletModeEnded() override {}
 
   // Overridden from wm::ActivationChangeObserver:
-  void OnWindowActivated(ActivationReason reason,
-                         aura::Window* gained_active,
-                         aura::Window* lost_active) override {
+  void OnWindowFocused(aura::Window* gained_active,
+                       aura::Window* lost_active) override {
     SendActivated(gained_active, lost_active);
   }
 
@@ -1122,10 +1136,11 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
   }
 
   void SendActivated(aura::Window* gained_active, aura::Window* lost_active) {
-    Surface* gained_active_surface =
-        gained_active ? GetShellMainSurface(gained_active) : nullptr;
-    Surface* lost_active_surface =
-        lost_active ? GetShellMainSurface(lost_active) : nullptr;
+    Surface* gained_active_surface = FindRootSurface(gained_active);
+    Surface* lost_active_surface = FindRootSurface(lost_active);
+    if (gained_active_surface == lost_active_surface)
+      return;
+
     wl_resource* gained_active_surface_resource =
         gained_active_surface ? GetSurfaceResource(gained_active_surface)
                               : nullptr;

@@ -11,6 +11,7 @@
 #include "ash/shell.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#include "ash/wm/window_util.h"
 #include "base/auto_reset.h"
 #include "base/barrier_closure.h"
 #include "base/bind.h"
@@ -24,6 +25,7 @@
 #include "components/exo/drag_drop_operation.h"
 #include "components/exo/mime_utils.h"
 #include "components/exo/seat_observer.h"
+#include "components/exo/shell_surface_base.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
@@ -45,11 +47,19 @@ Surface* GetEffectiveFocus(aura::Window* window) {
   Surface* const surface = Surface::AsSurface(window);
   if (surface)
     return surface;
-  // Fallback to main surface.
-  aura::Window* const top_level_window = window->GetToplevelWindow();
-  if (!top_level_window)
-    return nullptr;
-  return GetShellMainSurface(top_level_window);
+  ShellSurfaceBase* shell_surface_base = nullptr;
+  for (auto* current = window; current && !shell_surface_base;
+       current = current->parent()) {
+    shell_surface_base = GetShellSurfaceBaseForWindow(current);
+  }
+  // Make sure the |window| is the toplevel or a host window, but not
+  // another window added to the toplevel.
+  if (shell_surface_base &&
+      (shell_surface_base->GetWidget()->GetNativeWindow() == window ||
+       shell_surface_base->host_window()->Contains(window))) {
+    return shell_surface_base->root_surface();
+  }
+  return nullptr;
 }
 
 }  // namespace

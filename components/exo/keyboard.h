@@ -76,6 +76,8 @@ class Keyboard : public ui::EventHandler,
   void OnCapsLockChanged(bool enabled) override;
   void OnKeyboardLayoutNameChanged(const std::string& layout_name) override;
 
+  Surface* focused_surface_for_testing() const { return focus_; }
+
  private:
   // Change keyboard focus to |surface|.
   void SetFocus(Surface* surface);

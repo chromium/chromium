@@ -313,6 +313,7 @@ source_set("unit_tests") {
       "//ash:test_support",
       "//ash/keyboard/ui",
       "//ash/public/cpp",
+      "//ash/public/cpp/external_arc",
       "//build:chromeos_buildflags",
       "//chromeos/constants",
       "//chromeos/ui/base",

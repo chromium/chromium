@@ -5,9 +5,11 @@
 #include "chrome/browser/chromeos/arc/accessibility/arc_accessibility_util.h"
 #include "chrome/browser/chromeos/arc/accessibility/accessibility_info_data_wrapper.h"
 
+#include "ash/public/cpp/app_types.h"
 #include "base/optional.h"
 #include "components/arc/mojom/accessibility_helper.mojom.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/aura/window.h"
 
 namespace arc {
 
@@ -211,6 +213,15 @@ std::string ToLiveStatusString(mojom::AccessibilityLiveRegionType type) {
       NOTREACHED();
   }
   return std::string();  // Placeholder.
+}
+
+aura::Window* FindArcWindow(aura::Window* window) {
+  while (window) {
+    if (ash::IsArcWindow(window))
+      return window;
+    window = window->parent();
+  }
+  return nullptr;
 }
 
 }  // namespace arc
