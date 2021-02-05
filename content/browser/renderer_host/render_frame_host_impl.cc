@@ -7912,8 +7912,10 @@ bool RenderFrameHostImpl::IsPrerendering() const {
 }
 
 void RenderFrameHostImpl::OnPrerenderedPageActivated() {
-  DCHECK(blink::features::IsPrerender2Enabled());
-  DCHECK(is_prerendering_);
+  // TODO(crbug.com/1174506): Temporary until we understand the cause of the
+  // crash. Return to DCHECKs after the bug is fixed.
+  CHECK(blink::features::IsPrerender2Enabled());
+  CHECK(is_prerendering_);
   is_prerendering_ = false;
   broker_.ReleaseMojoBinderPolicies();
   for (auto& child : children_)

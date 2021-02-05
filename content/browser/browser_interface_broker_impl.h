@@ -71,11 +71,16 @@ class BrowserInterfaceBrokerImpl : public blink::mojom::BrowserInterfaceBroker {
   // Resolves requests that were previously deferred and stops applying policies
   // to binding requests.
   void ReleaseMojoBinderPolicies() {
-    DCHECK(blink::features::IsPrerender2Enabled());
-    DCHECK(policy_applier_);
-    policy_applier_->GrantAll();
-    // Reset `policy_applier_` to disable capability control.
-    policy_applier_.reset();
+    // TODO(crbug.com/1174506): Temporary until we understand the cause of the
+    // crash. Return to a DCHECK after the bug is fixed.
+    CHECK(blink::features::IsPrerender2Enabled());
+    // TODO(crbug.com/1174506): Temporary until we understand the cause of the
+    // crash. Return to `DCHECK(policy_applier_)` after the bug is fixed.
+    if (policy_applier_) {
+      policy_applier_->GrantAll();
+      // Reset `policy_applier_` to disable capability control.
+      policy_applier_.reset();
+    }
   }
 
  private:
