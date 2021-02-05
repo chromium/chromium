@@ -107,15 +107,6 @@ void RecordCetAvailability() {
         USER_CET_ENVIRONMENT_WIN32_PROCESS);
   }
   base::UmaHistogramBoolean("Windows.CetAvailable", available);
-  if (available) {
-    PROCESS_MITIGATION_USER_SHADOW_STACK_POLICY policy = {0};
-    if (GetProcessMitigationPolicy(GetCurrentProcess(),
-                                   ProcessUserShadowStackPolicy, &policy,
-                                   sizeof(policy))) {
-      base::UmaHistogramBoolean("Windows.CetEnabled",
-                                policy.EnableUserShadowStack);
-    }
-  }
 }
 
 }  // namespace
