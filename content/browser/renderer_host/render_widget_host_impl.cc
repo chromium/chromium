@@ -2254,10 +2254,6 @@ void RenderWidgetHostImpl::Destroy(bool also_delete) {
   for (auto& observer : observers_)
     observer.RenderWidgetHostDestroyed(this);
 
-  NotificationService::current()->Notify(
-      NOTIFICATION_RENDER_WIDGET_HOST_DESTROYED, Source<RenderWidgetHost>(this),
-      NotificationService::NoDetails());
-
   // Tell the view to die.
   // Note that in the process of the view shutting down, it can call a ton
   // of other messages on us.  So if you do any other deinitialization here,

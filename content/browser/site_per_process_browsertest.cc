@@ -8451,16 +8451,14 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   run_loop1.Run();
 
   auto first_popup_global_id = GlobalRoutingID(process1->GetID(), routing_id1);
-  // Add an incerceptor for first popup widget so it doesn't get closed
+  // Add an interceptor for first popup widget so it doesn't get closed
   // immediately while the other one is being opened.
-  EXPECT_TRUE(base::Contains(web_contents()->pending_widget_views_,
-                             first_popup_global_id));
+  EXPECT_TRUE(
+      base::Contains(web_contents()->pending_widgets_, first_popup_global_id));
 
   RequestCloseWidgetInterceptor child1_popup_widget_interceptor(
       static_cast<RenderWidgetHostImpl*>(
-          web_contents()
-              ->pending_widget_views_[first_popup_global_id]
-              ->GetRenderWidgetHost()));
+          web_contents()->pending_widgets_[first_popup_global_id]));
 
   base::RunLoop run_loop2;
   int32_t routing_id2;
@@ -8476,9 +8474,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   run_loop2.Run();
 
   // At this point, we should have two pending widgets.
-  EXPECT_TRUE(base::Contains(web_contents()->pending_widget_views_,
-                             first_popup_global_id));
-  EXPECT_TRUE(base::Contains(web_contents()->pending_widget_views_,
+  EXPECT_TRUE(
+      base::Contains(web_contents()->pending_widgets_, first_popup_global_id));
+  EXPECT_TRUE(base::Contains(web_contents()->pending_widgets_,
                              GlobalRoutingID(process2->GetID(), routing_id2)));
 
   // Both subframes were set up in the same way, so the next routing ID for the
@@ -8489,9 +8487,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // Now simulate both widgets being shown.
   interceptor1.ResumeShowPopupWidget();
   interceptor2.ResumeShowPopupWidget();
-  EXPECT_FALSE(base::Contains(web_contents()->pending_widget_views_,
+  EXPECT_FALSE(base::Contains(web_contents()->pending_widgets_,
                               GlobalRoutingID(process1->GetID(), routing_id1)));
-  EXPECT_FALSE(base::Contains(web_contents()->pending_widget_views_,
+  EXPECT_FALSE(base::Contains(web_contents()->pending_widgets_,
                               GlobalRoutingID(process2->GetID(), routing_id2)));
 }
 #endif

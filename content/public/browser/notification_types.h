@@ -129,11 +129,6 @@ enum NotificationType {
   // TODO(https://crbug.com/1174769): Remove.
   NOTIFICATION_RENDER_WIDGET_HOST_HANG,
 
-  // This is sent when a RenderWidgetHost is being destroyed. The source is
-  // the RenderWidgetHost, the details are not used.
-  // DEPRECATED: Use RenderWidgetHostObserver::RenderWidgetHostDestroyed()
-  NOTIFICATION_RENDER_WIDGET_HOST_DESTROYED,
-
   // Sent after the renderer has updated visual properties on the main thread
   // and committed the change on the compositor thread. The source is the
   // RenderWidgetHost, the details are not used.

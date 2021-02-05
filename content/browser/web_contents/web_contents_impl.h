@@ -47,8 +47,6 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/mhtml_generation_result.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_receiver_set.h"
@@ -173,7 +171,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                                        public RenderWidgetHostDelegate,
                                        public RenderFrameHostManager::Delegate,
                                        public blink::mojom::ColorChooserFactory,
-                                       public NotificationObserver,
                                        public NavigationControllerDelegate,
                                        public NavigatorDelegate,
                                        public ui::NativeThemeObserver {
@@ -1003,12 +1000,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       SkColor color,
       std::vector<blink::mojom::ColorSuggestionPtr> suggestions) override;
 
-  // NotificationObserver ------------------------------------------------------
-
-  void Observe(int type,
-               const NotificationSource& source,
-               const NotificationDetails& details) override;
-
   // NavigationControllerDelegate ----------------------------------------------
 
   WebContents* GetWebContents() override;
@@ -1335,7 +1326,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // TODO(brettw) TestWebContents shouldn't exist!
   friend class TestWebContents;
 
-  class DestructionObserver;
+  class RenderWidgetHostDestructionObserver;
+  class WebContentsDestructionObserver;
 
   // Represents a WebContents node in a tree of WebContents structure.
   //
@@ -1459,13 +1451,27 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Clears a pending contents that has been closed before being shown.
   void OnWebContentsDestroyed(WebContentsImpl* web_contents);
 
-  // Creates and adds to the map a destruction observer watching |web_contents|.
+  // Clears a pending render widget host that has been closed before being
+  // shown.
+  void OnRenderWidgetHostDestroyed(RenderWidgetHost* render_widget_host);
+
+  // Creates and adds to the map a destruction observer watching `web_contents`.
   // No-op if such an observer already exists.
-  void AddDestructionObserver(WebContentsImpl* web_contents);
+  void AddWebContentsDestructionObserver(WebContentsImpl* web_contents);
 
   // Deletes and removes from the map a destruction observer
-  // watching |web_contents|. No-op if there is no such observer.
-  void RemoveDestructionObserver(WebContentsImpl* web_contents);
+  // watching `web_contents`. No-op if there is no such observer.
+  void RemoveWebContentsDestructionObserver(WebContentsImpl* web_contents);
+
+  // Creates and adds to the map a destruction observer watching
+  // `render_widget_host`. No-op if such an observer already exists.
+  void AddRenderWidgetHostDestructionObserver(
+      RenderWidgetHost* render_widget_host);
+
+  // Deletes and removes from the map a destruction observer
+  // watching `render_widget_host`. No-op if there is no such observer.
+  void RemoveRenderWidgetHostDestructionObserver(
+      RenderWidgetHost* render_widget_host);
 
   // Traverses all the RenderFrameHosts in the FrameTree and creates a set
   // all the unique RenderWidgetHostViews.
@@ -1706,12 +1712,18 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // identified by the process ID and routing ID passed to CreateNewWindow.
   std::map<GlobalRoutingID, CreatedWindow> pending_contents_;
 
+  // Watches for the destruction of items in `pending_contents_`.
+  std::map<WebContentsImpl*, std::unique_ptr<WebContentsDestructionObserver>>
+      web_contents_destruction_observers_;
+
   // This map holds widgets that were created on behalf of the renderer but
   // haven't been shown yet.
-  std::map<GlobalRoutingID, RenderWidgetHostView*> pending_widget_views_;
+  std::map<GlobalRoutingID, RenderWidgetHost*> pending_widgets_;
 
-  std::map<WebContentsImpl*, std::unique_ptr<DestructionObserver>>
-      destruction_observers_;
+  // Watches for the destruction of items in `pending_widgets_`.
+  std::map<RenderWidgetHost*,
+           std::unique_ptr<RenderWidgetHostDestructionObserver>>
+      render_widget_host_destruction_observers_;
 
   // A list of observers notified when page state changes. Weak references.
   // This MUST be listed above frame_tree_ since at destruction time the
@@ -1880,10 +1892,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Manages the guest state for browser plugin, if this WebContents is a guest;
   // NULL otherwise.
   std::unique_ptr<BrowserPluginGuest> browser_plugin_guest_;
-
-  // This must be at the end, or else we might get notifications and use other
-  // member variables that are gone.
-  NotificationRegistrar registrar_;
 
   // All live RenderWidgetHostImpls that are created by this object and may
   // outlive it.

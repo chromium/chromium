@@ -309,7 +309,7 @@ void TestWebContents::AddPendingContents(
   GlobalRoutingID key(
       contents->GetRenderViewHost()->GetProcess()->GetID(),
       contents->GetRenderViewHost()->GetWidget()->GetRoutingID());
-  AddDestructionObserver(contents.get());
+  AddWebContentsDestructionObserver(contents.get());
   pending_contents_[key] = CreatedWindow(std::move(contents), target_url);
 }
 
