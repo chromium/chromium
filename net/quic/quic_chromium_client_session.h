@@ -689,7 +689,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   void OnKeyUpdate(quic::KeyUpdateReason reason) override;
 
   // QuicChromiumPacketReader::Visitor methods:
-  void OnReadError(int result, const DatagramClientSocket* socket) override;
+  bool OnReadError(int result, const DatagramClientSocket* socket) override;
   bool OnPacket(const quic::QuicReceivedPacket& packet,
                 const quic::QuicSocketAddress& local_address,
                 const quic::QuicSocketAddress& peer_address) override;

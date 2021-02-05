@@ -721,7 +721,7 @@ TEST_F(HttpStreamFactoryJobControllerTest, CancelJobsBeforeBinding) {
   crypto_client_stream_factory_.set_handshake_mode(
       MockCryptoClientStream::COLD_START);
   quic_data_ = std::make_unique<MockQuicData>(version_);
-  quic_data_->AddRead(SYNCHRONOUS, OK);
+  quic_data_->AddRead(SYNCHRONOUS, ERR_CONNECTION_CLOSED);
 
   tcp_data_ = std::make_unique<SequencedSocketData>();
   tcp_data_->set_connect_data(MockConnect(ASYNC, OK));
@@ -1075,7 +1075,7 @@ TEST_F(HttpStreamFactoryJobControllerTest,
     quic_data_->AddWrite(SYNCHRONOUS,
                          client_maker_.MakeInitialSettingsPacket(1));
   }
-  quic_data_->AddRead(ASYNC, OK);
+  quic_data_->AddRead(ASYNC, ERR_CONNECTION_CLOSED);
 
   HttpRequestInfo request_info;
   request_info.method = "GET";
@@ -2062,7 +2062,7 @@ TEST_F(HttpStreamFactoryJobControllerTest, PreconnectToHostWithValidAltSvc) {
     quic_data_->AddWrite(SYNCHRONOUS,
                          client_maker_.MakeInitialSettingsPacket(1));
   }
-  quic_data_->AddRead(ASYNC, OK);
+  quic_data_->AddRead(ASYNC, ERR_CONNECTION_CLOSED);
 
   HttpRequestInfo request_info;
   request_info.method = "GET";
@@ -2749,7 +2749,7 @@ TEST_P(HttpStreamFactoryJobControllerMisdirectedRequestRetry,
       quic_data_->AddWrite(SYNCHRONOUS,
                            client_maker_.MakeInitialSettingsPacket(1));
     }
-    quic_data_->AddRead(ASYNC, OK);
+    quic_data_->AddRead(ASYNC, ERR_CONNECTION_CLOSED);
   }
   tcp_data_ = std::make_unique<SequencedSocketData>();
   tcp_data_->set_connect_data(MockConnect(SYNCHRONOUS, OK));

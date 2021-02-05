@@ -85,12 +85,18 @@ size_t QuicChromiumPacketReader::EstimateMemoryUsage() const {
 
 bool QuicChromiumPacketReader::ProcessReadResult(int result) {
   read_pending_ = false;
-  if (result == 0)
-    result = ERR_CONNECTION_CLOSED;
-
+  if (result == 0) {
+    // 0-length UDP packets are legal but useless, ignore them.
+    return true;
+  }
+  if (result == ERR_MSG_TOO_BIG) {
+    // This indicates that we received a UDP packet larger than our receive
+    // buffer, ignore it.
+    return true;
+  }
   if (result < 0) {
-    visitor_->OnReadError(result, socket_);
-    return false;
+    // Report all other errors to the visitor.
+    return visitor_->OnReadError(result, socket_);
   }
 
   quic::QuicReceivedPacket packet(read_buffer_->data(), result, clock_->Now());

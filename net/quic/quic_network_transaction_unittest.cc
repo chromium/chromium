@@ -1031,7 +1031,7 @@ TEST_P(QuicNetworkTransactionTest, WriteErrorHandshakeConfirmed) {
     mock_quic_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(1));
   mock_quic_data.AddWrite(SYNCHRONOUS, ERR_INTERNET_DISCONNECTED);
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
-  mock_quic_data.AddRead(ASYNC, OK);              // No more data to read
+  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
 
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
 
@@ -1062,7 +1062,7 @@ TEST_P(QuicNetworkTransactionTest, WriteErrorHandshakeConfirmedAsync) {
     mock_quic_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(1));
   mock_quic_data.AddWrite(ASYNC, ERR_INTERNET_DISCONNECTED);
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
-  mock_quic_data.AddRead(ASYNC, OK);              // No more data to read
+  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
 
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
 
@@ -1534,7 +1534,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxy) {
   mock_quic_data.AddWrite(SYNCHRONOUS,
                           ConstructClientAckPacket(packet_num++, 2, 1));
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
-  mock_quic_data.AddRead(ASYNC, 0);               // EOF
+  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
 
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
 
@@ -1586,7 +1586,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyWithCert) {
   mock_quic_data.AddWrite(SYNCHRONOUS,
                           ConstructClientAckPacket(packet_num++, 2, 1));
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
-  mock_quic_data.AddRead(ASYNC, 0);
+  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
 
   scoped_refptr<X509Certificate> cert(
@@ -1650,7 +1650,7 @@ TEST_P(QuicNetworkTransactionTest, AlternativeServicesDifferentHost) {
   mock_quic_data.AddWrite(SYNCHRONOUS,
                           ConstructClientAckPacket(packet_num++, 2, 1));
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
-  mock_quic_data.AddRead(ASYNC, 0);
+  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
 
   request_.url = GURL("https://" + origin.host());
@@ -1741,7 +1741,7 @@ TEST_P(QuicNetworkTransactionTest, DoNotUseQuicForUnsupportedVersion) {
   mock_quic_data.AddWrite(SYNCHRONOUS,
                           ConstructClientAckPacket(packet_num++, 2, 1));
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
-  mock_quic_data.AddRead(ASYNC, 0);               // EOF
+  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
 
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
 
@@ -1825,7 +1825,7 @@ TEST_P(QuicNetworkTransactionTest, RetryMisdirectedRequest) {
       ASYNC, ConstructServerResponseHeadersPacket(
                  1, GetNthClientInitiatedBidirectionalStreamId(0), false, true,
                  GetResponseHeaders("421")));
-  mock_quic_data.AddRead(ASYNC, OK);
+  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
 
   // Second try: The main job uses TCP, and there is no alternate job. Once the
@@ -1959,7 +1959,7 @@ TEST_P(QuicNetworkTransactionTest, UseAlternativeServiceForQuic) {
   mock_quic_data.AddWrite(SYNCHRONOUS,
                           ConstructClientAckPacket(packet_num++, 2, 1));
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
-  mock_quic_data.AddRead(ASYNC, 0);               // EOF
+  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
 
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
 
@@ -2006,7 +2006,7 @@ TEST_P(QuicNetworkTransactionTest, UseIetfAlternativeServiceForQuic) {
   mock_quic_data.AddWrite(SYNCHRONOUS,
                           ConstructClientAckPacket(packet_num++, 2, 1));
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
-  mock_quic_data.AddRead(ASYNC, 0);               // EOF
+  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
 
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
 
@@ -2083,7 +2083,7 @@ TEST_P(QuicNetworkTransactionTest,
   mock_quic_data.AddWrite(SYNCHRONOUS,
                           ConstructClientAckPacket(packet_num++, 2, 1));
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
-  mock_quic_data.AddRead(ASYNC, 0);               // EOF
+  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
 
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
 
@@ -2167,7 +2167,7 @@ TEST_P(QuicNetworkTransactionTest, UseAlternativeServiceWithVersionForQuic1) {
   mock_quic_data.AddWrite(SYNCHRONOUS,
                           ConstructClientAckPacket(packet_num++, 2, 1));
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
-  mock_quic_data.AddRead(ASYNC, 0);               // EOF
+  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
 
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
 
@@ -2263,7 +2263,7 @@ TEST_P(QuicNetworkTransactionTest,
   mock_quic_data.AddWrite(SYNCHRONOUS,
                           ConstructClientAckPacket(packet_num++, 2, 1));
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
-  mock_quic_data.AddRead(ASYNC, 0);               // EOF
+  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
 
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
 
@@ -2311,7 +2311,7 @@ TEST_P(QuicNetworkTransactionTest,
   mock_quic_data.AddWrite(SYNCHRONOUS,
                           ConstructClientAckPacket(packet_num++, 2, 1));
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
-  mock_quic_data.AddRead(ASYNC, 0);               // EOF
+  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
 
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
 
@@ -2438,7 +2438,7 @@ TEST_P(QuicNetworkTransactionTest,
   mock_quic_data.AddWrite(SYNCHRONOUS,
                           ConstructClientAckPacket(packet_num++, 2, 1));
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
-  mock_quic_data.AddRead(ASYNC, 0);               // EOF
+  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
 
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
 
@@ -2521,7 +2521,7 @@ TEST_P(QuicNetworkTransactionTest, UseAlternativeServiceAllSupportedVersion) {
   mock_quic_data.AddWrite(SYNCHRONOUS,
                           ConstructClientAckPacket(packet_num++, 2, 1));
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
-  mock_quic_data.AddRead(ASYNC, 0);               // EOF
+  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
 
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
 
@@ -2570,7 +2570,7 @@ TEST_P(QuicNetworkTransactionTest, GoAwayWithConnectionMigrationOnPortsOnly) {
           packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
           quic::QUIC_STREAM_CANCELLED, 3, 3));
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
-  mock_quic_data.AddRead(ASYNC, 0);               // EOF
+  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
 
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
 
@@ -3874,7 +3874,7 @@ TEST_P(QuicNetworkTransactionTest, RemoteAltSvcWorkingWhileLocalAltSvcBroken) {
   mock_quic_data.AddWrite(SYNCHRONOUS,
                           ConstructClientAckPacket(packet_num++, 2, 1));
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
-  mock_quic_data.AddRead(ASYNC, 0);               // EOF
+  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
 
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
   MockQuicData mock_quic_data2(version_);
@@ -4041,7 +4041,7 @@ TEST_P(QuicNetworkTransactionTest,
   }
 
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
-  mock_quic_data.AddRead(ASYNC, 0);               // EOF
+  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
 
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
 
@@ -4193,7 +4193,7 @@ TEST_P(QuicNetworkTransactionTest, UseExistingAlternativeServiceForQuic) {
   mock_quic_data.AddWrite(SYNCHRONOUS,
                           ConstructClientAckPacket(packet_num++, 4, 3));
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
-  mock_quic_data.AddRead(ASYNC, 0);               // EOF
+  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
 
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
 
@@ -4256,7 +4256,7 @@ TEST_P(QuicNetworkTransactionTest, PoolByOrigin) {
   mock_quic_data.AddWrite(SYNCHRONOUS,
                           ConstructClientAckPacket(packet_num++, 4, 3));
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
-  mock_quic_data.AddRead(ASYNC, 0);               // EOF
+  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
 
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
 
@@ -4353,7 +4353,7 @@ TEST_P(QuicNetworkTransactionTest, PoolByDestination) {
   mock_quic_data.AddWrite(SYNCHRONOUS,
                           ConstructClientAckPacket(packet_num++, 4, 3));
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
-  mock_quic_data.AddRead(ASYNC, 0);               // EOF
+  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
 
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
 
@@ -4486,7 +4486,7 @@ TEST_P(QuicNetworkTransactionTest,
   mock_quic_data.AddWrite(SYNCHRONOUS,
                           ConstructClientAckPacket(packet_num++, 4, 3));
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
-  mock_quic_data.AddRead(ASYNC, 0);               // EOF
+  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
 
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
 
@@ -4577,7 +4577,7 @@ TEST_P(QuicNetworkTransactionTest, ConfirmAlternativeService) {
   mock_quic_data.AddWrite(SYNCHRONOUS,
                           ConstructClientAckPacket(packet_num++, 2, 1));
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
-  mock_quic_data.AddRead(ASYNC, 0);               // EOF
+  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
 
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
 
@@ -4654,7 +4654,7 @@ TEST_P(QuicNetworkTransactionTest,
   mock_quic_data.AddWrite(SYNCHRONOUS,
                           ConstructClientAckPacket(packet_num++, 2, 1));
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
-  mock_quic_data.AddRead(ASYNC, 0);               // EOF
+  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
 
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
 
@@ -4808,7 +4808,7 @@ TEST_P(QuicNetworkTransactionTest, ZeroRTTWithHttpRace) {
   mock_quic_data.AddWrite(SYNCHRONOUS,
                           ConstructClientAckPacket(packet_num++, 2, 1));
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
-  mock_quic_data.AddRead(ASYNC, 0);               // EOF
+  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
 
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
 
@@ -4852,7 +4852,7 @@ TEST_P(QuicNetworkTransactionTest, ZeroRTTWithNoHttpRace) {
   mock_quic_data.AddWrite(SYNCHRONOUS,
                           ConstructClientAckPacket(packet_number++, 2, 1));
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
-  mock_quic_data.AddRead(ASYNC, 0);               // EOF
+  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
 
   // In order for a new QUIC session to be established via alternate-protocol
@@ -5013,7 +5013,7 @@ TEST_P(QuicNetworkTransactionTest, ZeroRTTWithTooEarlyResponse) {
   mock_quic_data.AddWrite(SYNCHRONOUS,
                           ConstructClientAckPacket(packet_number++, 3, 1));
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
-  mock_quic_data.AddRead(ASYNC, 0);               // EOF
+  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
 
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
 
@@ -5119,7 +5119,7 @@ TEST_P(QuicNetworkTransactionTest, ZeroRTTWithMultipleTooEarlyResponse) {
             quic::QUIC_STREAM_CANCELLED, 2, 1));
   }
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
-  mock_quic_data.AddRead(ASYNC, 0);               // EOF
+  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
 
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
 
@@ -5602,7 +5602,7 @@ TEST_P(QuicNetworkTransactionTest, DelayTCPOnStartWithQuicSupportOnSameIP) {
   mock_quic_data.AddWrite(SYNCHRONOUS,
                           ConstructClientAckPacket(packet_number++, 2, 1));
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
-  mock_quic_data.AddRead(ASYNC, 0);               // EOF
+  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
 
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
   // No HTTP data is mocked as TCP job never starts in this case.
@@ -5986,7 +5986,7 @@ TEST_P(QuicNetworkTransactionTest, QuicUpload) {
 
   MockQuicData mock_quic_data(version_);
   if (!VersionUsesHttp3(version_.transport_version))
-    mock_quic_data.AddRead(SYNCHRONOUS, OK);
+    mock_quic_data.AddRead(SYNCHRONOUS, ERR_CONNECTION_CLOSED);
   else
     mock_quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
   mock_quic_data.AddWrite(SYNCHRONOUS, ERR_FAILED);
@@ -6347,7 +6347,7 @@ TEST_P(QuicNetworkTransactionTest, QuicServerPush) {
                          GetNthServerInitiatedUnidirectionalStreamId(0)));
   }
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
-  mock_quic_data.AddRead(ASYNC, 0);               // EOF
+  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
 
   // The non-alternate protocol job needs to hang in order to guarantee that
@@ -6658,7 +6658,7 @@ TEST_P(QuicNetworkTransactionTest, CancelServerPushAfterConnectionClose) {
   // Write error for the third request.
   mock_quic_data.AddWrite(SYNCHRONOUS, ERR_FAILED);
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
-  mock_quic_data.AddRead(ASYNC, 0);               // EOF
+  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
 
   CreateSession();
@@ -6730,7 +6730,7 @@ TEST_P(QuicNetworkTransactionTest, QuicForceHolBlocking) {
                           ConstructClientAckPacket(write_packet_index++, 2, 1));
 
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
-  mock_quic_data.AddRead(ASYNC, 0);               // EOF
+  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
 
   // The non-alternate protocol job needs to hang in order to guarantee that
@@ -6818,7 +6818,7 @@ TEST_P(QuicNetworkTransactionTest, RawHeaderSizeSuccessfullRequest) {
   mock_quic_data.AddWrite(SYNCHRONOUS,
                           ConstructClientAckPacket(packet_num++, 2, 1));
 
-  mock_quic_data.AddRead(ASYNC, 0);  // EOF
+  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);  // EOF
 
   CreateSession();
 
@@ -7017,7 +7017,7 @@ TEST_P(QuicNetworkTransactionTest, HostInAllowlist) {
   mock_quic_data.AddWrite(SYNCHRONOUS,
                           ConstructClientAckPacket(packet_num++, 2, 1));
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
-  mock_quic_data.AddRead(ASYNC, 0);               // EOF
+  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
 
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
 
@@ -7318,7 +7318,7 @@ TEST_P(QuicNetworkTransactionWithDestinationTest, InvalidCertificate) {
 
   MockQuicData mock_quic_data(version_);
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);
-  mock_quic_data.AddRead(ASYNC, 0);
+  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
 
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
 
@@ -7409,7 +7409,7 @@ TEST_P(QuicNetworkTransactionWithDestinationTest, PoolIfCertificateValid) {
   mock_quic_data.AddWrite(
       SYNCHRONOUS, ConstructClientAckPacket(packet_num++, 4, 3, &client_maker));
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
-  mock_quic_data.AddRead(ASYNC, 0);               // EOF
+  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
 
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
 
@@ -7652,7 +7652,7 @@ TEST_P(QuicNetworkTransactionTest, QuicServerPushMatchesRequestWithBody) {
   mock_quic_data.AddWrite(
       SYNCHRONOUS, ConstructClientAckPacket(client_packet_number++, 7, 6));
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
-  mock_quic_data.AddRead(ASYNC, 0);               // EOF
+  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
 
   // The non-alternate protocol job needs to hang in order to guarantee that
@@ -7727,7 +7727,7 @@ TEST_P(QuicNetworkTransactionTest, QuicServerPushWithEmptyHostname) {
                  4, GetNthClientInitiatedBidirectionalStreamId(0), false, true,
                  ConstructDataFrame("hello!")));
 
-  mock_quic_data.AddRead(ASYNC, 0);
+  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
 
   // The non-alternate protocol job needs to hang in order to guarantee that
@@ -8939,7 +8939,7 @@ TEST_P(QuicNetworkTransactionTest, QuicServerPushUpdatesPriority) {
                                        ConstructDataFrame("and hello 1!")));
 
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
-  mock_quic_data.AddRead(ASYNC, 0);               // EOF
+  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
 
   // The non-alternate protocol job needs to hang in order to guarantee that
@@ -9455,7 +9455,7 @@ TEST_P(QuicNetworkTransactionTest, AllowHTTP1MockTest) {
                           ConstructClientAckPacket(write_packet_index++, 2, 1));
 
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
-  mock_quic_data.AddRead(ASYNC, 0);               // EOF
+  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
 
   // The non-alternate protocol job needs to hang in order to guarantee that
@@ -9503,7 +9503,7 @@ TEST_P(QuicNetworkTransactionTest, AllowHTTP1UploadPauseAndResume) {
   mock_quic_data.AddWrite(SYNCHRONOUS,
                           ConstructClientAckPacket(write_packet_index++, 2, 1));
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
-  mock_quic_data.AddRead(ASYNC, 0);               // EOF
+  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
   SequencedSocketData* socket_data = mock_quic_data.GetSequencedSocketData();
 
@@ -9571,7 +9571,7 @@ TEST_P(QuicNetworkTransactionTest, AllowHTTP1UploadFailH1AndResumeQuic) {
   mock_quic_data.AddWrite(SYNCHRONOUS,
                           ConstructClientAckPacket(write_packet_index++, 2, 1));
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
-  mock_quic_data.AddRead(ASYNC, 0);               // EOF
+  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
   SequencedSocketData* socket_data = mock_quic_data.GetSequencedSocketData();
 
@@ -9744,7 +9744,7 @@ TEST_P(QuicNetworkTransactionTest, RetryOnHttp3GoAway) {
   // Make socket hang to make sure connection stays in connection pool.
   // This should not prevent the retry from opening a new connection.
   mock_quic_data1.AddRead(ASYNC, ERR_IO_PENDING);
-  mock_quic_data1.AddRead(ASYNC, 0);  // EOF
+  mock_quic_data1.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
   mock_quic_data1.AddSocketDataToFactory(&socket_factory_);
 
   // Second request is retried on a new connection.

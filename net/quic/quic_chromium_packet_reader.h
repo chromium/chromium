@@ -31,7 +31,9 @@ class NET_EXPORT_PRIVATE QuicChromiumPacketReader {
   class NET_EXPORT_PRIVATE Visitor {
    public:
     virtual ~Visitor() {}
-    virtual void OnReadError(int result,
+    // Called when the read operation failed. The visitor returns
+    // whether the reader should keep reading.
+    virtual bool OnReadError(int result,
                              const DatagramClientSocket* socket) = 0;
     virtual bool OnPacket(const quic::QuicReceivedPacket& packet,
                           const quic::QuicSocketAddress& local_address,

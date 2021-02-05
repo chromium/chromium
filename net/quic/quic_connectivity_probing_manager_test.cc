@@ -45,7 +45,7 @@ class MockQuicChromiumClientSession
   ~MockQuicChromiumClientSession() override {}
 
   // QuicChromiumPacketReader::Visitor interface.
-  MOCK_METHOD(void,
+  MOCK_METHOD(bool,
               OnReadError,
               (int result, const DatagramClientSocket* socket),
               (override));

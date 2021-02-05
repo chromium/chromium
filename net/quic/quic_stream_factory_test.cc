@@ -11764,7 +11764,7 @@ TEST_P(QuicStreamFactoryTest, YieldAfterPackets) {
   client_maker_.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
   if (VersionUsesHttp3(version_.transport_version))
     socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
-  socket_data.AddRead(ASYNC, OK);
+  socket_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   crypto_client_stream_factory_.set_handshake_mode(
@@ -11817,7 +11817,7 @@ TEST_P(QuicStreamFactoryTest, YieldAfterDuration) {
   client_maker_.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
   if (VersionUsesHttp3(version_.transport_version))
     socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
-  socket_data.AddRead(ASYNC, OK);
+  socket_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
   crypto_client_stream_factory_.set_handshake_mode(
@@ -14285,6 +14285,117 @@ TEST_P(QuicStreamFactoryTest, Tag) {
   // Same tag should reuse session.
   EXPECT_TRUE(stream3->SharesSameSession(*stream1));
 #endif
+}
+
+TEST_P(QuicStreamFactoryTest, ReadErrorClosesConnection) {
+  Initialize();
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  MockQuicData socket_data(version_);
+  if (version_.UsesHttp3()) {
+    socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  }
+  socket_data.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  socket_data.AddRead(ASYNC, ERR_CONNECTION_REFUSED);
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  // Create request and QuicHttpStream to trigger creation of the session.
+  QuicStreamRequest request(factory_.get());
+  EXPECT_EQ(
+      ERR_IO_PENDING,
+      request.Request(
+          host_port_pair_, version_, privacy_mode_, DEFAULT_PRIORITY,
+          SocketTag(), NetworkIsolationKey(), /*disable_secure_dns=*/false,
+          /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
+          failed_on_default_network_callback_, callback_.callback()));
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  EXPECT_TRUE(stream.get());
+
+  // Ensure that the session is alive and active before we read the error.
+  QuicChromiumClientSession* session = GetActiveSession(host_port_pair_);
+  EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
+  EXPECT_TRUE(HasActiveSession(host_port_pair_));
+
+  // Resume the socket data to get the read error delivered.
+  socket_data.Resume();
+  // Ensure that the session is no longer active.
+  EXPECT_FALSE(HasActiveSession(host_port_pair_));
+}
+
+TEST_P(QuicStreamFactoryTest, MessageTooBigReadErrorDoesNotCloseConnection) {
+  Initialize();
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  MockQuicData socket_data(version_);
+  if (version_.UsesHttp3()) {
+    socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  }
+  socket_data.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  socket_data.AddRead(ASYNC, ERR_MSG_TOO_BIG);
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  // Create request and QuicHttpStream to trigger creation of the session.
+  QuicStreamRequest request(factory_.get());
+  EXPECT_EQ(
+      ERR_IO_PENDING,
+      request.Request(
+          host_port_pair_, version_, privacy_mode_, DEFAULT_PRIORITY,
+          SocketTag(), NetworkIsolationKey(), /*disable_secure_dns=*/false,
+          /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
+          failed_on_default_network_callback_, callback_.callback()));
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  EXPECT_TRUE(stream.get());
+
+  // Ensure that the session is alive and active before we read the error.
+  QuicChromiumClientSession* session = GetActiveSession(host_port_pair_);
+  EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
+  EXPECT_TRUE(HasActiveSession(host_port_pair_));
+
+  // Resume the socket data to get the read error delivered.
+  socket_data.Resume();
+  // Ensure that the session is still active.
+  EXPECT_TRUE(HasActiveSession(host_port_pair_));
+}
+
+TEST_P(QuicStreamFactoryTest, ZeroLengthReadDoesNotCloseConnection) {
+  Initialize();
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  MockQuicData socket_data(version_);
+  if (version_.UsesHttp3()) {
+    socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  }
+  socket_data.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  socket_data.AddRead(ASYNC, 0);
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  // Create request and QuicHttpStream to trigger creation of the session.
+  QuicStreamRequest request(factory_.get());
+  EXPECT_EQ(
+      ERR_IO_PENDING,
+      request.Request(
+          host_port_pair_, version_, privacy_mode_, DEFAULT_PRIORITY,
+          SocketTag(), NetworkIsolationKey(), /*disable_secure_dns=*/false,
+          /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
+          failed_on_default_network_callback_, callback_.callback()));
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  EXPECT_TRUE(stream.get());
+
+  // Ensure that the session is alive and active before we read the error.
+  QuicChromiumClientSession* session = GetActiveSession(host_port_pair_);
+  EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
+  EXPECT_TRUE(HasActiveSession(host_port_pair_));
+
+  // Resume the socket data to get the zero-length read delivered.
+  socket_data.Resume();
+  // Ensure that the session is still active.
+  EXPECT_TRUE(HasActiveSession(host_port_pair_));
 }
 
 }  // namespace test

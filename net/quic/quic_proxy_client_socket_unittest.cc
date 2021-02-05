@@ -801,7 +801,7 @@ TEST_P(QuicProxyClientSocketTest, ConnectFails) {
   }
   mock_quic_data_.AddWrite(SYNCHRONOUS,
                            ConstructConnectRequestPacket(packet_number++));
-  mock_quic_data_.AddRead(ASYNC, 0);  // EOF
+  mock_quic_data_.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
 
   Initialize();
 
@@ -846,7 +846,7 @@ TEST_P(QuicProxyClientSocketTest, GetPeerAddressReturnsCorrectValues) {
                            ConstructConnectRequestPacket(packet_number++));
   mock_quic_data_.AddRead(ASYNC, ConstructServerConnectReplyPacket(1, !kFin));
   mock_quic_data_.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
-  mock_quic_data_.AddRead(ASYNC, 0);               // EOF
+  mock_quic_data_.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
 
   Initialize();
 
@@ -1602,8 +1602,7 @@ TEST_P(QuicProxyClientSocketTest, ReadOnClosedSocketReturnsZero) {
                            ConstructConnectRequestPacket(packet_number++));
   mock_quic_data_.AddRead(ASYNC, ConstructServerConnectReplyPacket(1, !kFin));
   mock_quic_data_.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
-
-  mock_quic_data_.AddRead(ASYNC, 0);  // EOF
+  mock_quic_data_.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
 
   Initialize();
 
@@ -1629,8 +1628,7 @@ TEST_P(QuicProxyClientSocketTest, PendingReadOnCloseReturnsZero) {
                            ConstructConnectRequestPacket(packet_number++));
   mock_quic_data_.AddRead(ASYNC, ConstructServerConnectReplyPacket(1, !kFin));
   mock_quic_data_.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
-
-  mock_quic_data_.AddRead(ASYNC, 0);  // EOF
+  mock_quic_data_.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
 
   Initialize();
 
@@ -1717,8 +1715,7 @@ TEST_P(QuicProxyClientSocketTest, WriteOnClosedStream) {
                            ConstructConnectRequestPacket(packet_number++));
   mock_quic_data_.AddRead(ASYNC, ConstructServerConnectReplyPacket(1, !kFin));
   mock_quic_data_.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
-
-  mock_quic_data_.AddRead(ASYNC, 0);  // EOF
+  mock_quic_data_.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
 
   Initialize();
 
