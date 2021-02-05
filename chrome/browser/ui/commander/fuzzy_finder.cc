@@ -220,8 +220,10 @@ namespace commander {
 
 FuzzyFinder::FuzzyFinder(const base::string16& needle)
     : needle_(base::i18n::FoldCase(needle)) {
-  score_matrix_.reserve(needle_.size() * kMaxHaystack);
-  consecutive_matrix_.reserve(needle_.size() * kMaxHaystack);
+  if (needle_.size() <= kMaxNeedle) {
+    score_matrix_.reserve(needle_.size() * kMaxHaystack);
+    consecutive_matrix_.reserve(needle_.size() * kMaxHaystack);
+  }
 }
 
 FuzzyFinder::~FuzzyFinder() = default;
