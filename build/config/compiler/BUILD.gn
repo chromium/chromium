@@ -628,8 +628,8 @@ config("compiler") {
 
         # Experimentally determined to yield a reasonable trade-off between
         # build time, run-time performance, and binary size.
-        # Keep this in sync with the Linux value below.
-        "-mllvm:-import-instr-limit=10",
+        # Keep this in sync with the Android/Linux value below.
+        "-mllvm:-import-instr-limit=5",
 
         "/lldltocache:" +
             rebase_path("$root_out_dir/thinlto-cache", root_build_dir),
@@ -657,13 +657,9 @@ config("compiler") {
       if (thin_lto_enable_optimizations) {
         # TODO(gbiv): We ideally shouldn't need to specify this; ThinLTO
         # should be able to better manage binary size increases on its own.
-        import_instr_limit = -1
-        if (is_linux) {
-          # Keep this in sync with the Windows value above.
-          import_instr_limit = 10
-        } else if (is_android) {
-          import_instr_limit = 5
-        } else if (is_chromeos_ash) {
+        import_instr_limit = 5
+
+        if (is_chromeos_ash) {
           # Not much performance difference was noted between the default (100)
           # and these. ARM was originally set lower than x86 to keep the size
           # bloat of ThinLTO to <10%, but that's potentially no longer true.
@@ -675,9 +671,7 @@ config("compiler") {
           }
         }
 
-        if (import_instr_limit != -1) {
-          ldflags += [ "-Wl,-mllvm,-import-instr-limit=$import_instr_limit" ]
-        }
+        ldflags += [ "-Wl,-mllvm,-import-instr-limit=$import_instr_limit" ]
       }
     }
 
