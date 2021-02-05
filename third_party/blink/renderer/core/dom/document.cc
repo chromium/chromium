@@ -4967,7 +4967,8 @@ bool Document::SetFocusedElement(Element* new_focused_element,
     // Dispatch the blur event and let the node do any other blur related
     // activities (important for text fields)
     // If page lost focus, blur event will have already been dispatched
-    if (GetPage() && (GetPage()->GetFocusController().IsFocused())) {
+    if (!params.omit_blur_events && GetPage() &&
+        (GetPage()->GetFocusController().IsFocused())) {
       old_focused_element->DispatchBlurEvent(new_focused_element, params.type,
                                              params.source_capabilities);
       if (focused_element_) {

@@ -59,6 +59,7 @@
 #include "third_party/blink/renderer/core/dom/events/event_path.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_node_data.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
+#include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/mutation_observer_registration.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -2567,6 +2568,17 @@ ExecutionContext* Node::GetExecutionContext() const {
 
 void Node::WillMoveToNewDocument(Document& old_document,
                                  Document& new_document) {
+  // In rare situations, this node may be the focused element of the old
+  // document. In this case, we need to clear the focused element of the old
+  // document, and since we are currently in an event forbidden scope, we can't
+  // fire the blur event.
+  if (old_document.FocusedElement() == this) {
+    FocusParams params(SelectionBehaviorOnFocus::kNone,
+                       mojom::blink::FocusType::kNone, nullptr);
+    params.omit_blur_events = true;
+    old_document.SetFocusedElement(nullptr, params);
+  }
+
   if (!old_document.GetPage() ||
       old_document.GetPage() == new_document.GetPage())
     return;
