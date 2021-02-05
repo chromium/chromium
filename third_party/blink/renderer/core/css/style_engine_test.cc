@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
+#include "third_party/blink/renderer/core/layout/layout_counter.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/page/viewport_description.h"
@@ -4089,6 +4090,34 @@ TEST_F(StyleEngineTest, TargetTextUseCount) {
   UpdateAllLifecyclePhases();
   EXPECT_TRUE(IsUseCounted(WebFeature::kCSSSelectorTargetText));
   ClearUseCounter(WebFeature::kCSSSelectorTargetText);
+}
+
+// https://crbug.com/1172679
+TEST_F(StyleEngineTest, CounterContentNameCase) {
+  // Reproducible only with legacy counter styles
+  ScopedCSSAtRuleCounterStyleForTest disabled_scope(false);
+
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      body { counter-reset: a; }
+      #target::before {
+        counter-increment: a;
+        content: counter(a, Hiragana);
+      }
+    </style>
+    <p id="target"></p>
+  )HTML");
+
+  // Shouldn't crash
+  UpdateAllLifecyclePhases();
+
+  PseudoElement* before =
+      GetDocument().getElementById("target")->GetPseudoElement(kPseudoIdBefore);
+  LayoutCounter* counter =
+      To<LayoutCounter>(before->GetLayoutObject()->SlowFirstChild());
+
+  // Hiragana "A"
+  EXPECT_EQ(String(u"\u3042"), counter->GetText());
 }
 
 }  // namespace blink
