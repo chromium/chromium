@@ -119,6 +119,9 @@ constexpr int kSnapDragDwellTimeResetThreshold = 8;
 // Dwell time before snap to maximize. The countdown starts when window dragged
 // into snap region.
 constexpr base::TimeDelta kDwellTime = base::TimeDelta::FromMilliseconds(800);
+// The min amount of vertical movement needed for to trigger a snap to
+// maximize.
+constexpr int kSnapTriggerVerticalMoveThreshold = 64;
 
 // Current instance for use by the WorkspaceWindowResizerTest.
 WorkspaceWindowResizer* instance = nullptr;
@@ -560,7 +563,6 @@ void WorkspaceWindowResizer::Drag(const gfx::PointF& location_in_parent,
       return;
     }
   }
-
   last_mouse_location_ = location_in_parent;
 
   int sticky_size;
@@ -612,9 +614,15 @@ void WorkspaceWindowResizer::Drag(const gfx::PointF& location_in_parent,
   ::wm::ConvertPointToScreen(GetTarget()->parent(), &location_in_screen);
   SnapType snap_type = ::ash::GetSnapType(GetDisplay(), location_in_screen);
   if (!can_snap_to_maximize_) {
-    // Check if |location_in_screen| is outside the snap region. If it is,
-    // update |can_snap_to_maximize_| and skip this check on subsequent drags.
-    can_snap_to_maximize_ = snap_type != SnapType::kMaximize;
+    gfx::PointF initial_location_in_screen =
+        details().initial_location_in_parent;
+    ::wm::ConvertPointToScreen(GetTarget()->parent(),
+                               &initial_location_in_screen);
+    // When repositioning windows across the top of the screen, only trigger a
+    // snap when there is significant vertical movement.
+    can_snap_to_maximize_ =
+        std::abs(initial_location_in_screen.y() - location_in_screen.y()) >
+        kSnapTriggerVerticalMoveThreshold;
   }
 
   // Start dwell countdown if move window to the top of screen.

@@ -2179,6 +2179,32 @@ TEST_F(WorkspaceWindowResizerTest, SnapMaximizeDwellTime) {
   resizer->Drag(gfx::PointF(200.f, 3.f), 0);
   // Timer is triggered.
   EXPECT_TRUE(IsDwellCountdownTimerRunning());
+}
+
+// Test horizontal move won't trigger snap.
+TEST_F(WorkspaceWindowResizerTest, HorizontalMoveNotTriggerSnap) {
+  UpdateDisplay("800x648");
+  window_->SetBounds(gfx::Rect(10, 10, 100, 100));
+  window_->SetProperty(aura::client::kResizeBehaviorKey,
+                       aura::client::kResizeBehaviorCanResize |
+                           aura::client::kResizeBehaviorCanMaximize);
+  std::unique_ptr<WindowResizer> resizer =
+      CreateResizerForTest(window_.get(), gfx::Point(400.f, 67.f));
+  // Check if a horizontal move more than threshold will trigger snap.
+  resizer->Drag(gfx::PointF(400.f, 67.f), 0);
+  resizer->Drag(gfx::PointF(400.f, 2.f), 0);
+  DwellCountdownTimerFireNow();
+  resizer->CompleteDrag();
+  auto* window_state = WindowState::Get(window_.get());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(window_state->IsMaximized());
+
+  // Check if a horizontal move less than threshold won't trigger snap.
+  resizer.reset();
+  resizer = CreateResizerForTest(window_.get());
+  resizer->Drag(gfx::PointF(1.f, 1.f), 0);
+  resizer->Drag(gfx::PointF(100.f, 1.f), 0);
+  DwellCountdownTimerFireNow();
   resizer->CompleteDrag();
   window_state = WindowState::Get(window_.get());
   EXPECT_FALSE(window_state->IsMaximized());
