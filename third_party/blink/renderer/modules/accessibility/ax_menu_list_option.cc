@@ -36,25 +36,16 @@ namespace blink {
 
 AXMenuListOption::AXMenuListOption(HTMLOptionElement* element,
                                    AXObjectCacheImpl& ax_object_cache)
-    : AXNodeObject(element, ax_object_cache), element_(element) {}
-
-AXMenuListOption::~AXMenuListOption() {
-  DCHECK(!element_);
-}
-
-void AXMenuListOption::Detach() {
-  element_ = nullptr;
-  AXNodeObject::Detach();
-}
+    : AXNodeObject(element, ax_object_cache) {}
 
 LocalFrameView* AXMenuListOption::DocumentFrameView() const {
   if (IsDetached())
     return nullptr;
-  return element_->GetDocument().View();
+  return GetElement()->GetDocument().View();
 }
 
 Element* AXMenuListOption::ActionElement() const {
-  return element_;
+  return GetElement();
 }
 
 AXObject* AXMenuListOption::ComputeParentImpl() const {
@@ -117,19 +108,19 @@ AccessibilitySelectedState AXMenuListOption::IsSelected() const {
     return ((parent->ActiveDescendant() == this) ? kSelectedStateTrue
                                                  : kSelectedStateFalse);
   }
-  return ((element_ && element_->Selected()) ? kSelectedStateTrue
-                                             : kSelectedStateFalse);
+  return To<HTMLOptionElement>(GetNode())->Selected() ? kSelectedStateTrue
+                                                      : kSelectedStateFalse;
 }
 
 bool AXMenuListOption::OnNativeClickAction() {
-  if (!element_)
+  if (!GetNode())
     return false;
 
   if (IsA<AXMenuListPopup>(ParentObject())) {
     // Clicking on an option within a menu list should first select that item
     // (which should include firing `input` and `change` events), then toggle
     // whether the menu list is showing.
-    static_cast<HTMLElement*>(element_)->AccessKeyAction(true);
+    GetElement()->AccessKeyAction(true);
 
     // Calling OnNativeClickAction on the parent select element will toggle
     // it open or closed.
@@ -140,10 +131,10 @@ bool AXMenuListOption::OnNativeClickAction() {
 }
 
 bool AXMenuListOption::OnNativeSetSelectedAction(bool b) {
-  if (!element_ || !CanSetSelectedAttribute())
+  if (!GetElement() || !CanSetSelectedAttribute())
     return false;
 
-  element_->SetSelected(b);
+  To<HTMLOptionElement>(GetElement())->SetSelected(b);
   return true;
 }
 
@@ -215,7 +206,7 @@ String AXMenuListOption::TextAlternative(bool recursive,
     return text_alternative;
 
   name_from = ax::mojom::NameFrom::kContents;
-  text_alternative = element_->DisplayLabel();
+  text_alternative = To<HTMLOptionElement>(GetNode())->DisplayLabel();
   if (name_sources) {
     name_sources->push_back(NameSource(found_text_alternative));
     name_sources->back().type = name_from;
@@ -234,11 +225,6 @@ HTMLSelectElement* AXMenuListOption::ParentSelectNode() const {
     return option->OwnerSelectElement();
 
   return nullptr;
-}
-
-void AXMenuListOption::Trace(Visitor* visitor) const {
-  visitor->Trace(element_);
-  AXNodeObject::Trace(visitor);
 }
 
 }  // namespace blink

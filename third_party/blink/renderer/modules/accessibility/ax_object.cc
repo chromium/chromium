@@ -661,6 +661,7 @@ void AXObject::Init(AXObject* parent_if_known) {
 
 void AXObject::Detach() {
 #if DCHECK_IS_ON()
+  DCHECK(!IsDetached());
   DCHECK(!is_adding_children_) << ToString(true, true);
   DCHECK(ax_object_cache_);
   DCHECK(!ax_object_cache_->IsFrozen())

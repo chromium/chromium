@@ -358,12 +358,8 @@ void AXInlineTextBox::Init(AXObject* parent) {
 }
 
 void AXInlineTextBox::Detach() {
-  inline_text_box_ = nullptr;
   AXObject::Detach();
-}
-
-bool AXInlineTextBox::IsDetached() const {
-  return !inline_text_box_ || AXObject::IsDetached();
+  inline_text_box_ = nullptr;
 }
 
 bool AXInlineTextBox::IsAXInlineTextBox() const {

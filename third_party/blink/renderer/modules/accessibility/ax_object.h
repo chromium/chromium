@@ -360,7 +360,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // When the corresponding WebCore object that this AXObject
   // wraps is deleted, it must be detached.
   virtual void Detach();
-  virtual bool IsDetached() const;
+  bool IsDetached() const;
 
   // Updates the cached attribute values. This may be recursive, so to prevent
   // deadlocks, functions called here may only search up the tree (ancestors),

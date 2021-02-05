@@ -66,7 +66,6 @@ class AXInlineTextBox final : public AXObject {
  protected:
   void Init(AXObject* parent) override;
   void Detach() override;
-  bool IsDetached() const override;
   bool IsAXInlineTextBox() const override;
   bool IsLineBreakingObject() const override;
   int TextLength() const override;

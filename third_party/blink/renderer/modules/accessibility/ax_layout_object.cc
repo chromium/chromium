@@ -292,10 +292,6 @@ void AXLayoutObject::Detach() {
   layout_object_ = nullptr;
 }
 
-bool AXLayoutObject::IsDetached() const {
-  return !layout_object_ || AXObject::IsDetached();
-}
-
 bool AXLayoutObject::IsAXLayoutObject() const {
   return true;
 }

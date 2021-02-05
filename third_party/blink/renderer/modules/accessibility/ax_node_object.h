@@ -86,7 +86,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
 
   void Init(AXObject* parent_if_known) override;
   void Detach() override;
-  bool IsDetached() const override;
   bool IsAXNodeObject() const final;
 
   // Check object role or purpose.

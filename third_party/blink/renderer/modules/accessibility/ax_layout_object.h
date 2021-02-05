@@ -70,7 +70,6 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
   //
 
   void Detach() override;
-  bool IsDetached() const override;
   bool IsAXLayoutObject() const final;
 
   // Check object role or purpose.
