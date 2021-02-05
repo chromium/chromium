@@ -5537,10 +5537,13 @@ static_library("browser") {
 
   if (enable_paint_preview) {
     deps += [
-      "paint_preview:services",
+      "//chrome/browser/paint_preview:services",
       "//components/paint_preview/browser",
       "//components/paint_preview/common",
     ]
+
+    allow_circular_includes_from +=
+        [ "//chrome/browser/paint_preview:services" ]
 
     if (is_android) {
       deps += [ "//components/paint_preview/player/android" ]
