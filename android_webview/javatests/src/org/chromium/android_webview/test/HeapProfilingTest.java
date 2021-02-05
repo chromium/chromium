@@ -51,6 +51,7 @@ public class HeapProfilingTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1173304")
     public void testModeBrowserDynamicPseudoSampleEverything() {
         HeapProfilingTestShim shim = new HeapProfilingTestShim();
         Assert.assertTrue(shim.runTestForMode("browser", true, "pseudo", true, true));
