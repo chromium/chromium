@@ -222,8 +222,8 @@ void ElementStyleResources::LoadPendingImages(ComputedStyle& style) {
       case CSSPropertyID::kBackgroundImage: {
         for (FillLayer* background_layer = &style.AccessBackgroundLayers();
              background_layer; background_layer = background_layer->Next()) {
-          StyleImage* background_image = background_layer->GetImage();
-          if (background_image && background_image->IsPendingImage()) {
+          if (auto* pending_image =
+                  DynamicTo<StylePendingImage>(background_layer->GetImage())) {
             FetchParameters::ImageRequestBehavior image_request_behavior =
                 FetchParameters::kNone;
             if (!BackgroundLayerMayBeSprite(*background_layer)) {
@@ -235,8 +235,7 @@ void ElementStyleResources::LoadPendingImages(ComputedStyle& style) {
               }
             }
             StyleImage* new_image =
-                LoadPendingImage(style, To<StylePendingImage>(background_image),
-                                 image_request_behavior);
+                LoadPendingImage(style, pending_image, image_request_behavior);
             if (new_image && new_image->IsLazyloadPossiblyDeferred()) {
               LazyImageHelper::StartMonitoring(pseudo_element_ ? pseudo_element_
                                                                : &element_);
@@ -250,13 +249,11 @@ void ElementStyleResources::LoadPendingImages(ComputedStyle& style) {
         for (ContentData* content_data =
                  const_cast<ContentData*>(style.GetContentData());
              content_data; content_data = content_data->Next()) {
-          if (content_data->IsImage()) {
-            StyleImage* image = To<ImageContentData>(content_data)->GetImage();
-            if (image->IsPendingImage()) {
-              To<ImageContentData>(content_data)
-                  ->SetImage(LoadPendingImage(style,
-                                              To<StylePendingImage>(image),
-                                              FetchParameters::kNone));
+          if (auto* image_content =
+                  DynamicTo<ImageContentData>(*content_data)) {
+            if (auto* pending_image =
+                    DynamicTo<StylePendingImage>(*image_content->GetImage())) {
+              image_content->SetImage(LoadPendingImage(style, pending_image));
             }
           }
         }
@@ -264,45 +261,35 @@ void ElementStyleResources::LoadPendingImages(ComputedStyle& style) {
       }
       case CSSPropertyID::kCursor: {
         if (CursorList* cursor_list = style.Cursors()) {
-          for (wtf_size_t i = 0; i < cursor_list->size(); ++i) {
-            CursorData& current_cursor = cursor_list->at(i);
-            if (StyleImage* image = current_cursor.GetImage()) {
-              if (image->IsPendingImage()) {
-                current_cursor.SetImage(
-                    LoadPendingImage(style, To<StylePendingImage>(image),
-                                     FetchParameters::kNone));
-              }
+          for (CursorData& cursor : *cursor_list) {
+            if (auto* pending_image =
+                    DynamicTo<StylePendingImage>(cursor.GetImage())) {
+              cursor.SetImage(LoadPendingImage(style, pending_image));
             }
           }
         }
         break;
       }
       case CSSPropertyID::kListStyleImage: {
-        if (style.ListStyleImage() &&
-            style.ListStyleImage()->IsPendingImage()) {
-          style.SetListStyleImage(LoadPendingImage(
-              style, To<StylePendingImage>(style.ListStyleImage()),
-              FetchParameters::kNone));
+        if (auto* pending_image =
+                DynamicTo<StylePendingImage>(style.ListStyleImage())) {
+          style.SetListStyleImage(LoadPendingImage(style, pending_image));
         }
         break;
       }
       case CSSPropertyID::kBorderImageSource: {
-        if (style.BorderImageSource() &&
-            style.BorderImageSource()->IsPendingImage()) {
-          style.SetBorderImageSource(LoadPendingImage(
-              style, To<StylePendingImage>(style.BorderImageSource()),
-              FetchParameters::kNone));
+        if (auto* pending_image =
+                DynamicTo<StylePendingImage>(style.BorderImageSource())) {
+          style.SetBorderImageSource(LoadPendingImage(style, pending_image));
         }
         break;
       }
       case CSSPropertyID::kWebkitBoxReflect: {
         if (StyleReflection* reflection = style.BoxReflect()) {
           const NinePieceImage& mask_image = reflection->Mask();
-          if (mask_image.GetImage() &&
-              mask_image.GetImage()->IsPendingImage()) {
-            StyleImage* loaded_image = LoadPendingImage(
-                style, To<StylePendingImage>(mask_image.GetImage()),
-                FetchParameters::kNone);
+          if (auto* pending_image =
+                  DynamicTo<StylePendingImage>(mask_image.GetImage())) {
+            StyleImage* loaded_image = LoadPendingImage(style, pending_image);
             reflection->SetMask(NinePieceImage(
                 loaded_image, mask_image.ImageSlices(), mask_image.Fill(),
                 mask_image.BorderSlices(), mask_image.Outset(),
@@ -312,32 +299,32 @@ void ElementStyleResources::LoadPendingImages(ComputedStyle& style) {
         break;
       }
       case CSSPropertyID::kWebkitMaskBoxImageSource: {
-        if (style.MaskBoxImageSource() &&
-            style.MaskBoxImageSource()->IsPendingImage()) {
-          style.SetMaskBoxImageSource(LoadPendingImage(
-              style, To<StylePendingImage>(style.MaskBoxImageSource()),
-              FetchParameters::kNone));
+        if (auto* pending_image =
+                DynamicTo<StylePendingImage>(style.MaskBoxImageSource())) {
+          style.SetMaskBoxImageSource(LoadPendingImage(style, pending_image));
         }
         break;
       }
       case CSSPropertyID::kWebkitMaskImage: {
         for (FillLayer* mask_layer = &style.AccessMaskLayers(); mask_layer;
              mask_layer = mask_layer->Next()) {
-          if (mask_layer->GetImage() &&
-              mask_layer->GetImage()->IsPendingImage()) {
-            mask_layer->SetImage(LoadPendingImage(
-                style, To<StylePendingImage>(mask_layer->GetImage()),
-                FetchParameters::kNone, kCrossOriginAttributeAnonymous));
+          if (auto* pending_image =
+                  DynamicTo<StylePendingImage>(mask_layer->GetImage())) {
+            mask_layer->SetImage(
+                LoadPendingImage(style, pending_image, FetchParameters::kNone,
+                                 kCrossOriginAttributeAnonymous));
           }
         }
         break;
       }
       case CSSPropertyID::kShapeOutside:
-        if (style.ShapeOutside() && style.ShapeOutside()->GetImage() &&
-            style.ShapeOutside()->GetImage()->IsPendingImage()) {
-          style.ShapeOutside()->SetImage(LoadPendingImage(
-              style, To<StylePendingImage>(style.ShapeOutside()->GetImage()),
-              FetchParameters::kNone, kCrossOriginAttributeAnonymous));
+        if (ShapeValue* shape_value = style.ShapeOutside()) {
+          if (auto* pending_image =
+                  DynamicTo<StylePendingImage>(shape_value->GetImage())) {
+            shape_value->SetImage(
+                LoadPendingImage(style, pending_image, FetchParameters::kNone,
+                                 kCrossOriginAttributeAnonymous));
+          }
         }
         break;
       default:
