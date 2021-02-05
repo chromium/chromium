@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_observer.h"
+#include "components/breadcrumbs/core/breadcrumb_manager_observer.h"
 
 class BreadcrumbManager;
 class BreadcrumbManagerKeyedService;
@@ -23,7 +23,8 @@ class BreadcrumbManagerKeyedService;
 
 // A C++ bridge class to handle receiving notifications from the C++ class
 // that observes the connection type.
-class BreadcrumbManagerObserverBridge : public BreadcrumbManagerObserver {
+class BreadcrumbManagerObserverBridge
+    : public breadcrumbs::BreadcrumbManagerObserver {
  public:
   // Constructs a new bridge instance adding |observer| as an observer of
   // |breadcrumb_manager|.

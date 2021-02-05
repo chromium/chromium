@@ -41,7 +41,6 @@ source_set("breadcrumbs") {
     "breadcrumb_manager_keyed_service.h",
     "breadcrumb_manager_keyed_service_factory.cc",
     "breadcrumb_manager_keyed_service_factory.h",
-    "breadcrumb_manager_observer.h",
     "breadcrumb_manager_observer_bridge.h",
     "breadcrumb_manager_observer_bridge.mm",
     "breadcrumb_manager_tab_helper.h",

@@ -3,5 +3,10 @@
 # found in the LICENSE file.
 
 source_set("core") {
-  sources = [ "crash_reporter_breadcrumb_constants.h" ]
+  sources = [
+    "breadcrumb_manager_observer.h",
+    "crash_reporter_breadcrumb_constants.h",
+  ]
+
+  deps = [ "//base" ]
 }

@@ -11,8 +11,8 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/timer/timer.h"
+#include "components/breadcrumbs/core/breadcrumb_manager_observer.h"
 #include "components/breadcrumbs/core/crash_reporter_breadcrumb_constants.h"
-#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_observer.h"
 
 // The filesize for the file at |breadcrumbs_file_path_|. The file will always
 // be this constant size because it is accessed using a memory mapped file. The
@@ -30,7 +30,8 @@ class BreadcrumbManagerKeyedService;
 // Stores breadcrumb events to and retireves them from a file on disk.
 // Persisting these events allows access to breadcrumb events from previous
 // application sessions.
-class BreadcrumbPersistentStorageManager : public BreadcrumbManagerObserver {
+class BreadcrumbPersistentStorageManager
+    : public breadcrumbs::BreadcrumbManagerObserver {
  public:
   explicit BreadcrumbPersistentStorageManager(base::FilePath directory);
   ~BreadcrumbPersistentStorageManager() override;
