@@ -324,8 +324,6 @@ static_library("ui") {
     ]
   }
 
-  # TODO(crbug/925153): Remove this circular dependency.
-  allow_circular_includes_from = [ "//chrome/browser/safe_browsing" ]
   defines = []
   libs = []
 
@@ -597,8 +595,13 @@ static_library("ui") {
     "//ui/webui/resources/cr_components/customize_themes:mojom",
     "//v8:v8_version",
   ]
-  allow_circular_includes_from +=
-      [ "//chrome/browser/ui/webui/bluetooth_internals" ]
+
+  # TODO(crbug/925153): Remove this circular dependency.
+  allow_circular_includes_from = [
+    "//chrome/browser/safe_browsing",
+    "//chrome/browser/ui/webui/bluetooth_internals",
+    "//chrome/browser/profiling_host",
+  ]
 
   if (is_win || is_mac || is_linux || is_chromeos) {
     deps += [ "//chrome/browser/ui/webui/discards:mojo_bindings" ]

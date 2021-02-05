@@ -1907,6 +1907,7 @@ static_library("browser") {
   ldflags = []
 
   allow_circular_includes_from = [
+    "//chrome/browser/profiling_host",
     "//chrome/browser/ui",
     "//chrome/browser/ui/webui/bluetooth_internals",
     "//chrome/browser/safe_browsing",
