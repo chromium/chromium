@@ -79,24 +79,8 @@ void PointScanLayer::StartVerticalScanning() {
   is_moving_ = true;
 }
 
-void PointScanLayer::PauseHorizontalRangeScanning() {
+void PointScanLayer::Pause() {
   is_moving_ = false;
-}
-
-void PointScanLayer::PauseHorizontalScanning() {
-  is_moving_ = false;
-}
-
-void PointScanLayer::PauseVerticalRangeScanning() {
-  is_moving_ = false;
-}
-
-void PointScanLayer::PauseVerticalScanning() {
-  is_moving_ = false;
-}
-
-gfx::Rect PointScanLayer::GetBounds() const {
-  return bounds_;
 }
 
 bool PointScanLayer::IsMoving() const {

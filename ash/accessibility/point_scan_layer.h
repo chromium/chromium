@@ -25,13 +25,10 @@ class PointScanLayer : public AccessibilityLayer {
   void StartHorizontalScanning();
   void StartVerticalRangeScanning();
   void StartVerticalScanning();
-  void PauseHorizontalScanning();
-  void PauseHorizontalRangeScanning();
-  void PauseVerticalScanning();
-  void PauseVerticalRangeScanning();
+  void Pause();
 
-  gfx::Rect GetBounds() const;
   bool IsMoving() const;
+  gfx::Rect bounds() const { return bounds_; }
 
   // AccessibilityLayer overrides:
   bool CanAnimate() const override;

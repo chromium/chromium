@@ -35,13 +35,13 @@ void PointScanController::StartHorizontalRangeScan() {
   state_ = PointScanState::kHorizontalRangeScanning;
   horizontal_range_layer_.reset(new PointScanLayer(this));
   horizontal_range_layer_info_.offset_bound =
-      horizontal_range_layer_->GetBounds().width() - kDefaultRangeWidthDips;
+      horizontal_range_layer_->bounds().width() - kDefaultRangeWidthDips;
   horizontal_range_layer_->StartHorizontalRangeScanning();
 }
 
 void PointScanController::StartHorizontalLineScan() {
   state_ = PointScanState::kHorizontalScanning;
-  horizontal_range_layer_->PauseHorizontalRangeScanning();
+  horizontal_range_layer_->Pause();
   horizontal_line_layer_.reset(new PointScanLayer(this));
   horizontal_line_layer_info_.offset = horizontal_range_layer_info_.offset;
   horizontal_line_layer_info_.offset_start =
@@ -53,17 +53,17 @@ void PointScanController::StartHorizontalLineScan() {
 
 void PointScanController::StartVerticalRangeScan() {
   state_ = PointScanState::kVerticalRangeScanning;
-  horizontal_line_layer_->PauseHorizontalScanning();
+  horizontal_line_layer_->Pause();
   horizontal_range_layer_->SetOpacity(0);
   vertical_range_layer_.reset(new PointScanLayer(this));
   vertical_range_layer_info_.offset_bound =
-      vertical_range_layer_->GetBounds().height() - kDefaultRangeHeightDips;
+      vertical_range_layer_->bounds().height() - kDefaultRangeHeightDips;
   vertical_range_layer_->StartVerticalRangeScanning();
 }
 
 void PointScanController::StartVerticalLineScan() {
   state_ = PointScanState::kVerticalScanning;
-  vertical_range_layer_->PauseVerticalRangeScanning();
+  vertical_range_layer_->Pause();
   vertical_line_layer_.reset(new PointScanLayer(this));
   vertical_line_layer_info_.offset = vertical_range_layer_info_.offset;
   vertical_line_layer_info_.offset_start = vertical_range_layer_info_.offset;
@@ -74,7 +74,7 @@ void PointScanController::StartVerticalLineScan() {
 
 void PointScanController::Stop() {
   state_ = PointScanState::kOff;
-  vertical_line_layer_->PauseVerticalScanning();
+  vertical_line_layer_->Pause();
   vertical_range_layer_->SetOpacity(0);
 }
 
