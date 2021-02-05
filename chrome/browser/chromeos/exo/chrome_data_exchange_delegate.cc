@@ -179,6 +179,24 @@ struct FileInfo {
   storage::FileSystemURL url;
 };
 
+// Returns true if path is shared with the specified VM, or for crostini if path
+// is homedir or dir within.
+bool IsPathShared(Profile* profile,
+                  std::string vm_name,
+                  bool is_crostini,
+                  base::FilePath path) {
+  auto* share_path = guest_os::GuestOsSharePath::GetForProfile(profile);
+  if (share_path->IsPathShared(vm_name, path)) {
+    return true;
+  }
+  if (is_crostini) {
+    base::FilePath mount =
+        file_manager::util::GetCrostiniMountDirectory(profile);
+    return path == mount || mount.IsParent(path);
+  }
+  return false;
+}
+
 // Parse text/uri-list data into FilePath and FileSystemURL.
 std::vector<FileInfo> GetFileInfo(ui::EndpointType source,
                                   const std::vector<uint8_t>& data) {
@@ -220,6 +238,11 @@ std::vector<FileInfo> GetFileInfo(ui::EndpointType source,
               primary_profile, path, vm_mount,
               /*map_crostini_home=*/is_crostini, &url)) {
         path = url.path();
+        // Only allow write to clipboard for paths that are shared.
+        if (!IsPathShared(primary_profile, vm_name, is_crostini, path)) {
+          LOG(WARNING) << "Unshared file path: " << line;
+          continue;
+        }
       } else {
         path = base::FilePath(
             base::StrCat({kVmFileScheme, ":", vm_name, ":", path.value()}));

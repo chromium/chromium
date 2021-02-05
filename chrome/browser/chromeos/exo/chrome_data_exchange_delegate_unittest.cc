@@ -175,6 +175,13 @@ TEST_F(ChromeDataExchangeDelegateTest, GetDataTransferEndpointType) {
 
 TEST_F(ChromeDataExchangeDelegateTest, GetFilenames) {
   ChromeDataExchangeDelegate data_exchange_delegate;
+  base::FilePath shared_path = myfiles_dir_.Append("shared");
+  auto* guest_os_share_path =
+      guest_os::GuestOsSharePath::GetForProfile(profile());
+  guest_os_share_path->RegisterSharedPath(crostini::kCrostiniDefaultVmName,
+                                          shared_path);
+  guest_os_share_path->RegisterSharedPath(plugin_vm::kPluginVmName,
+                                          shared_path);
 
   // Multiple lines should be parsed.
   // Arc should not translate paths.
@@ -189,18 +196,34 @@ TEST_F(ChromeDataExchangeDelegateTest, GetFilenames) {
 
   // Crostini shared paths should be mapped.
   files = data_exchange_delegate.GetFilenames(
-      ui::EndpointType::kCrostini, Data("file:///mnt/chromeos/MyFiles/file"));
-  EXPECT_EQ(myfiles_dir_.Append("file"), files[0].path);
+      ui::EndpointType::kCrostini,
+      Data("file:///mnt/chromeos/MyFiles/shared/file"));
+  EXPECT_EQ(1, files.size());
+  EXPECT_EQ(shared_path.Append("file"), files[0].path);
 
   // Crostini homedir should be mapped.
   files = data_exchange_delegate.GetFilenames(
       ui::EndpointType::kCrostini, Data("file:///home/testuser/file"));
+  EXPECT_EQ(1, files.size());
   EXPECT_EQ(crostini_dir_.Append("file"), files[0].path);
 
   // Crostini internal paths should be mapped.
   files = data_exchange_delegate.GetFilenames(ui::EndpointType::kCrostini,
                                               Data("file:///etc/hosts"));
+  EXPECT_EQ(1, files.size());
   EXPECT_EQ("vmfile:termina:/etc/hosts", files[0].path.value());
+
+  // Unshared paths should fail.
+  files = data_exchange_delegate.GetFilenames(
+      ui::EndpointType::kCrostini,
+      Data("file:///mnt/chromeos/MyFiles/unshared/file"));
+  EXPECT_EQ(0, files.size());
+  files = data_exchange_delegate.GetFilenames(
+      ui::EndpointType::kCrostini,
+      Data("file:///mnt/chromeos/MyFiles/shared/file1\r\n"
+           "file:///mnt/chromeos/MyFiles/unshared/file2"));
+  EXPECT_EQ(1, files.size());
+  EXPECT_EQ(shared_path.Append("file1"), files[0].path);
 
   // file:/path should fail.
   files = data_exchange_delegate.GetFilenames(
@@ -220,6 +243,7 @@ TEST_F(ChromeDataExchangeDelegateTest, GetFilenames) {
   // file:/// maps to internal root.
   files = data_exchange_delegate.GetFilenames(ui::EndpointType::kCrostini,
                                               Data("file:///"));
+  EXPECT_EQ(1, files.size());
   EXPECT_EQ("vmfile:termina:/", files[0].path.value());
 
   // /path should fail.
@@ -229,13 +253,27 @@ TEST_F(ChromeDataExchangeDelegateTest, GetFilenames) {
 
   // Plugin VM shared paths should be mapped.
   files = data_exchange_delegate.GetFilenames(
-      ui::EndpointType::kPluginVm, Data("file://ChromeOS/MyFiles/file"));
-  EXPECT_EQ(myfiles_dir_.Append("file"), files[0].path);
+      ui::EndpointType::kPluginVm, Data("file://ChromeOS/MyFiles/shared/file"));
+  EXPECT_EQ(1, files.size());
+  EXPECT_EQ(shared_path.Append("file"), files[0].path);
 
   // Plugin VM internal paths should be mapped.
   files = data_exchange_delegate.GetFilenames(
       ui::EndpointType::kPluginVm, Data("file:///C:/WINDOWS/notepad.exe"));
+  EXPECT_EQ(1, files.size());
   EXPECT_EQ("vmfile:PvmDefault:/C:/WINDOWS/notepad.exe", files[0].path.value());
+
+  // Unshared paths should fail.
+  files = data_exchange_delegate.GetFilenames(
+      ui::EndpointType::kPluginVm,
+      Data("file://ChromeOS/MyFiles/unshared/file"));
+  EXPECT_EQ(0, files.size());
+  files = data_exchange_delegate.GetFilenames(
+      ui::EndpointType::kPluginVm,
+      Data("file://ChromeOS/MyFiles/shared/file1\r\n"
+           "file://ChromeOS/MyFiles/unshared/file2"));
+  EXPECT_EQ(1, files.size());
+  EXPECT_EQ(shared_path.Append("file1"), files[0].path);
 }
 
 TEST_F(ChromeDataExchangeDelegateTest, GetMimeTypeForUriList) {
@@ -399,18 +437,25 @@ TEST_F(ChromeDataExchangeDelegateTest, HasUrlsInPickle) {
 
 TEST_F(ChromeDataExchangeDelegateTest, ClipboardFilenamesPickle) {
   ChromeDataExchangeDelegate data_exchange_delegate;
+  base::FilePath shared_path = myfiles_dir_.Append("shared");
+  auto* guest_os_share_path =
+      guest_os::GuestOsSharePath::GetForProfile(profile());
+  guest_os_share_path->RegisterSharedPath(crostini::kCrostiniDefaultVmName,
+                                          shared_path);
   base::Pickle pickle = data_exchange_delegate.CreateClipboardFilenamesPickle(
-      ui::EndpointType::kCrostini, Data("file:///mnt/chromeos/MyFiles/file1\n"
-                                        "file:///mnt/chromeos/MyFiles/file2"));
+      ui::EndpointType::kCrostini,
+      Data("file:///mnt/chromeos/MyFiles/shared/file1\n"
+           "file:///mnt/chromeos/MyFiles/shared/file2"));
+
   std::unordered_map<base::string16, base::string16> m;
   ui::ReadCustomDataIntoMap(pickle.data(), pickle.size(), &m);
   EXPECT_EQ(2, m.size());
   EXPECT_EQ("exo", base::UTF16ToUTF8(m[STRING16_LITERAL("fs/tag")]));
   EXPECT_EQ(
       "filesystem:chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/external/"
-      "Downloads-test%2540example.com-hash/file1\n"
+      "Downloads-test%2540example.com-hash/shared/file1\n"
       "filesystem:chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/external/"
-      "Downloads-test%2540example.com-hash/file2",
+      "Downloads-test%2540example.com-hash/shared/file2",
       base::UTF16ToUTF8(m[STRING16_LITERAL("fs/sources")]));
 
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
@@ -427,8 +472,8 @@ TEST_F(ChromeDataExchangeDelegateTest, ClipboardFilenamesPickle) {
       data_exchange_delegate.ParseClipboardFilenamesPickle(
           ui::EndpointType::kDefault, *clipboard);
   EXPECT_EQ(2, file_info.size());
-  EXPECT_EQ(myfiles_dir_.Append("file1"), file_info[0].path);
-  EXPECT_EQ(myfiles_dir_.Append("file2"), file_info[1].path);
+  EXPECT_EQ(shared_path.Append("file1"), file_info[0].path);
+  EXPECT_EQ(shared_path.Append("file2"), file_info[1].path);
   EXPECT_EQ(base::FilePath(), file_info[0].display_name);
   EXPECT_EQ(base::FilePath(), file_info[1].display_name);
 
