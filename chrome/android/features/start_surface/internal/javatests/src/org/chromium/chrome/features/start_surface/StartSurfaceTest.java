@@ -27,6 +27,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -54,27 +55,21 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.action.GeneralLocation;
 import androidx.test.espresso.action.GeneralSwipeAction;
 import androidx.test.espresso.action.Press;
-import androidx.test.espresso.action.ScrollToAction;
 import androidx.test.espresso.action.Swipe;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.contrib.RecyclerViewActions;
-import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
 import com.google.android.material.appbar.AppBarLayout;
 
-import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-import org.hamcrest.Matchers;
-import org.hamcrest.TypeSafeMatcher;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -107,6 +102,7 @@ import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
+import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
 import org.chromium.chrome.start_surface.R;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -118,6 +114,7 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.io.IOException;
@@ -1659,65 +1656,37 @@ public class StartSurfaceTest {
                 activity, activity.getCurrentFocus());
     }
 
-    private static Matcher<View> isView(final View targetView) {
-        return new TypeSafeMatcher<View>() {
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("is the targetView: ");
-                description.appendValue(targetView);
-            }
-
-            @Override
-            public boolean matchesSafely(View view) {
-                return view == targetView;
-            }
-        };
-    }
-
     private void scrollToolbar() {
-        onViewWaiting(allOf(withId(R.id.feed_stream_recycler_view), isDisplayed()));
+        waitForTabModel();
+        TabUiTestHelper.verifyTabModelTabCount(mActivityTestRule.getActivity(), 1, 0);
 
-        // Default scrollTo() cannot be used for RecyclerView. Add a customized scrollTo for
-        // scrolling to the last item of Feed.
-        ViewAction customizedScrollTo = new ViewAction() {
-            @Override
-            public Matcher<View> getConstraints() {
-                return Matchers.allOf(
-                        ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE),
-                        ViewMatchers.isDescendantOfA(
-                                ViewMatchers.isAssignableFrom(RecyclerView.class)));
-            }
-
-            @Override
-            public String getDescription() {
-                return "scroll to";
-            }
-
-            @Override
-            public void perform(UiController uiController, View view) {
-                new ScrollToAction().perform(uiController, view);
-            }
-        };
-
-        RecyclerView feedView =
-                mActivityTestRule.getActivity().findViewById(R.id.feed_stream_recycler_view);
-        View lastChild = feedView.getLayoutManager().findViewByPosition(
-                feedView.getAdapter().getItemCount() - 1);
-
-        // Scroll to the last item of Feed. Somehow RecyclerViewActions#scrollToPosition couldn't be
-        // performed.
-        onView(isView(lastChild)).perform(customizedScrollTo, click());
+        /* Drag the {@link R.id.placeholders_layout} to scroll the toolbar to the top. */
+        int toY = -mActivityTestRule.getActivity().getResources().getDimensionPixelOffset(
+                R.dimen.toolbar_height_no_shadow);
+        TestTouchUtils.dragCompleteView(InstrumentationRegistry.getInstrumentation(),
+                mActivityTestRule.getActivity().findViewById(
+                        org.chromium.chrome.tab_ui.R.id.tab_switcher_title),
+                0, 0, 0, toY, 1);
 
         // The start surface toolbar should be scrolled up and not be displayed.
-        assertTrue(mActivityTestRule.getActivity()
+        assertThat(mActivityTestRule.getActivity()
                            .findViewById(R.id.tab_switcher_toolbar)
-                           .getTranslationY()
-                < -mActivityTestRule.getActivity().getResources().getDimensionPixelOffset(
-                        R.dimen.toolbar_height_no_shadow));
+                           .getTranslationY(),
+                lessThanOrEqualTo(
+                        (float) -mActivityTestRule.getActivity()
+                                .getResources()
+                                .getDimensionPixelOffset(R.dimen.toolbar_height_no_shadow)));
+
         onView(withId(R.id.tab_switcher_toolbar)).check(matches(not(isDisplayed())));
 
         // Toolbar container view should show.
         onView(withId(R.id.toolbar_container)).check(matches(isDisplayed()));
+
+        // Check the toolbar's background color.
+        ToolbarPhone toolbar =
+                mActivityTestRule.getActivity().findViewById(org.chromium.chrome.R.id.toolbar);
+        Assert.assertEquals(toolbar.getToolbarDataProvider().getPrimaryColor(),
+                toolbar.getBackgroundDrawable().getColor());
     }
 }
 
