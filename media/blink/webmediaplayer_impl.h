@@ -994,9 +994,13 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerImpl
 
   OverlayInfo overlay_info_;
 
-  // TODO(crbug.com/1141533): Convert to base::CancelableOnceClosure. Previous
-  // attempts to do so have led to test flakiness.
-  base::CancelableClosure update_background_status_cb_;
+  base::CancelableOnceClosure update_background_status_cb_;
+
+  // We cannot use `update_background_status_cb_.IsCancelled()` as that changes
+  // when the callback is run, even if not explicitly cancelled. This is
+  // initialized to true to keep in line with the existing behavior of
+  // base::CancellableOnceClosure.
+  bool is_background_status_change_cancelled_ = true;
 
   mojo::Remote<mojom::MediaMetricsProvider> media_metrics_provider_;
   mojo::Remote<mojom::PlaybackEventsRecorder> playback_events_recorder_;

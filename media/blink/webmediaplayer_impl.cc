@@ -3607,11 +3607,12 @@ void WebMediaPlayerImpl::UpdateBackgroundVideoOptimizationState() {
   if (IsHidden()) {
     if (ShouldPausePlaybackWhenHidden()) {
       PauseVideoIfNeeded();
-    } else if (update_background_status_cb_.IsCancelled()) {
+    } else if (is_background_status_change_cancelled_) {
       // Only trigger updates when we don't have one already scheduled.
       update_background_status_cb_.Reset(
           base::Bind(&WebMediaPlayerImpl::DisableVideoTrackIfNeeded,
                      base::Unretained(this)));
+      is_background_status_change_cancelled_ = false;
 
       // Defer disable track until we're sure the clip will be backgrounded for
       // some time. Resuming may take half a second, so frequent tab switches
@@ -3623,6 +3624,7 @@ void WebMediaPlayerImpl::UpdateBackgroundVideoOptimizationState() {
     }
   } else {
     update_background_status_cb_.Cancel();
+    is_background_status_change_cancelled_ = true;
     EnableVideoTrackIfNeeded();
   }
 }
