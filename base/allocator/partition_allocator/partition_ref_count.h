@@ -6,6 +6,7 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_REF_COUNT_H_
 
 #include <atomic>
+#include <cstdint>
 
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
@@ -122,9 +123,12 @@ class BASE_EXPORT PartitionRefCount {
   // 1) The reference count pointer calculation is correct.
   // 2) The returned allocation slot is not freed.
   ALWAYS_INLINE void CheckCookie() {
-    PA_CHECK(brp_cookie_ ==
-             (static_cast<uint32_t>(reinterpret_cast<uintptr_t>(this)) ^
-              kCookieSalt));
+    PA_CHECK(brp_cookie_ == CalculateCookie());
+  }
+
+  ALWAYS_INLINE uint32_t CalculateCookie() {
+    return static_cast<uint32_t>(reinterpret_cast<uintptr_t>(this)) ^
+           kCookieSalt;
   }
 
   static constexpr uint32_t kCookieSalt = 0xc01dbeef;
@@ -136,8 +140,7 @@ class BASE_EXPORT PartitionRefCount {
 
 ALWAYS_INLINE PartitionRefCount::PartitionRefCount()
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-    : brp_cookie_((static_cast<uint32_t>(reinterpret_cast<uintptr_t>(this)) ^
-                   kCookieSalt))
+    : brp_cookie_(CalculateCookie())
 #endif
 {
 }

@@ -22,6 +22,7 @@ PartitionRefCount::PartitionRefCount(PartitionRefCount&& other) {
   // relocation.
   count_.store(other.count_.load(std::memory_order_acquire),
                std::memory_order_release);
+  brp_cookie_ = CalculateCookie();
 }
 
 // TODO(tasak): Optimize this function. There's potential for optimization in
