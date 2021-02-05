@@ -63,15 +63,7 @@ void OutputPresenter::Image::BeginWriteSkia() {
       0 /* final_msaa_count */, surface_props, &begin_semaphores,
       &end_semaphores_,
       gpu::SharedImageRepresentation::AllowUnclearedAccess::kYes);
-  // TODO(crbug.com/1169364): On Chrome OS, we get a rare crash that's
-  // suspected to be from a null |scoped_skia_write_access_|, but the crash
-  // stack traces are a bit too mangled to confirm. For better logging,
-  // promote the DCHECK to a CHECK until we figure out the root cause.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  CHECK(scoped_skia_write_access_);
-#else
   DCHECK(scoped_skia_write_access_);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   if (!begin_semaphores.empty()) {
     scoped_skia_write_access_->surface()->wait(
         begin_semaphores.size(),
@@ -116,16 +108,7 @@ void OutputPresenter::Image::EndWriteSkia() {
 }
 
 void OutputPresenter::Image::PreGrContextSubmit() {
-  // TODO(crbug.com/1169364): On Chrome OS, this function crashes rarely
-  // (~1 CPM) and is hard to reproduce. The suspected root cause is a null
-  // |scoped_skia_write_access_|, but the crash stack traces are a bit too
-  // mangled to confirm. For better logging, promote the DCHECK to a CHECK
-  // until we figure out the root cause.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  CHECK(scoped_skia_write_access_);
-#else
   DCHECK(scoped_skia_write_access_);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   if (scoped_skia_write_access_->end_state()) {
     scoped_skia_write_access_->surface()->flush(
         {}, scoped_skia_write_access_->end_state());
