@@ -1501,9 +1501,14 @@ bool ScrollableShelfView::ShouldHandleGestures(const ui::GestureEvent& event) {
     if (!GetShelf()->IsHorizontalAlignment())
       std::swap(main_offset, cross_offset);
 
-    scroll_status_ = std::abs(main_offset) < std::abs(cross_offset)
-                         ? kAcrossMainAxisScroll
-                         : kAlongMainAxisScroll;
+    if (std::abs(main_offset) < std::abs(cross_offset)) {
+      scroll_status_ = kAcrossMainAxisScroll;
+    } else if (layout_strategy_ != kNotShowArrowButtons) {
+      // Note that if the scrollable shelf is not in overflow mode, scroll along
+      // the main axis should not make any UI differences. Do not handle scroll
+      // in this scenario.
+      scroll_status_ = kAlongMainAxisScroll;
+    }
   }
 
   bool should_handle_gestures = scroll_status_ == kAlongMainAxisScroll;
