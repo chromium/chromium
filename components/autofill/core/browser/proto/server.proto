@@ -229,7 +229,7 @@ message AutofillUploadContents {
 
   // The secondary form signature is calculated based on field types instead of
   // names and is used if the primary one is unstable, i.e. the field names
-  // change on every page load.
+  // change on every page load. Not used currently.
   optional fixed64 secondary_form_signature = 34;
 
   // True if the autofill feature was used to fill this form, false otherwise.
@@ -329,13 +329,14 @@ message AutofillUploadContents {
     message AutofillTypeValiditiesPair {
       // Type of the field, e.g. what type of personal data the user entered in
       // that field before form submission. A list of all data types can be
-      // found in:
+      // found in: components/autofill/core/browser/field_types.h
       required int32 type = 1;
       // The validity of the type, which is determined based on the validity of
       // the user's profile data. A list of all validity states can be found
-      // here: components/autofill/core/browser/field_types.h
+      // here: components/autofill/core/browser/data_model/autofill_data_model.h
       // The validity state of a type is used to experiment if only using valid
       // data would result in better predictions.
+      // TODO(crbug.com/1174203): Remove the validity.
       repeated int32 validity = 2;
     }
     // A list of possible types for the field with their corresponding validity
@@ -350,9 +351,9 @@ message AutofillUploadContents {
   // Signature of the form action host (e.g. Hash64Bit("example.com")).
   optional fixed64 action_signature = 13;
 
-  // Signature of the form which is used for password generation debugging.
-  // Currently is used when password generated on a password field of a
-  // registration form is used on a password field of a login form.
+  // Signature of the form. This is currently used when password generated on a
+  // password field of a registration form is used on a password field of a
+  // login form.
   optional fixed64 login_form_signature = 14;
 
   // Whether a form submission event was observed.
