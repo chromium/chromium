@@ -343,7 +343,6 @@ _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
   '^chrome/browser/site_isolation/site_per_process_text_input_browsertest.cc',
   '^chrome/browser/sync_file_system/',
   "^components/browsing_data/content/",
-  "^components/enterprise/browser/controller/chrome_browser_cloud_management_controller\\.cc", # pylint: disable=line-too-long
   "^components/feature_engagement/internal/",
   "^docs/callback\\.md",  # Intentional
   "^docs/webui_explainer\\.md",

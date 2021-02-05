@@ -223,9 +223,10 @@ void ChromeBrowserCloudManagementController::Init(
     // Not registered already, so do it now.
     cloud_management_registrar_->RegisterForCloudManagementWithEnrollmentToken(
         enrollment_token, client_id,
-        base::Bind(&ChromeBrowserCloudManagementController::
-                       RegisterForCloudManagementWithEnrollmentTokenCallback,
-                   base::Unretained(this)));
+        base::BindRepeating(
+            &ChromeBrowserCloudManagementController::
+                RegisterForCloudManagementWithEnrollmentTokenCallback,
+            base::Unretained(this)));
     // On Windows, if Chrome is installed on the user level, we can't store the
     // DM token in the registry at the end of enrollment. Hence Chrome needs to
     // re-enroll every launch.
