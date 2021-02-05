@@ -553,11 +553,12 @@ void WebUITabCounterButton::Init() {
 
   ink_drop_container_ =
       AddChildView(std::make_unique<views::InkDropContainerView>());
-  ink_drop_container_->SetBoundsRect(GetLocalBounds());
 
   throbber_ = AddChildView(std::make_unique<views::Throbber>());
+  throbber_->SetCanProcessEventsWithinSubtree(false);
 
   border_view_ = AddChildView(std::make_unique<views::View>());
+  border_view_->SetCanProcessEventsWithinSubtree(false);
 
   appearing_label_ =
       border_view_->AddChildView(std::make_unique<NumberLabel>());
@@ -624,7 +625,9 @@ void WebUITabCounterButton::OnThemeChanged() {
 void WebUITabCounterButton::Layout() {
   const gfx::Rect view_bounds = GetLocalBounds();
 
-  // Position views from the outside in (beacuse it's easier).
+  ink_drop_container_->SetBoundsRect(view_bounds);
+
+  // Position views from the outside in (because it's easier).
   // Start with the throbber.
   const int throbber_height = GetLayoutConstant(LOCATION_BAR_HEIGHT);
   gfx::Rect throbber_rect = view_bounds;
