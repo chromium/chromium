@@ -38,33 +38,6 @@ flatbuffer("metadata_schema") {
   sources = [ "src/tensorflow_lite_support/metadata/metadata_schema.fbs" ]
 }
 
-source_set("tflite-support_headers") {
-  public = [
-    "src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h",
-  ]
-
-  deps = [
-    ":tflite-support-proto",
-    "//third_party/abseil-cpp:absl",
-    "//third_party/flatbuffers",
-    "//third_party/libzip",
-    "//third_party/re2",
-    "//third_party/smhasher:murmurhash2",
-    "//third_party/tflite",
-    "//third_party/tflite:tflite-config-proto",
-    "//third_party/utf",
-  ]
-  configs -= [ "//build/config/compiler:chromium_code" ]
-
-  configs += [
-    ":tflite_support_flags",
-    ":tflite_support_config",
-    "//build/config/compiler:no_chromium_code",
-  ]
-
-  visibility = [ ":*" ]
-}
-
 static_library("tflite-support") {
   sources = [
     "src/tensorflow_lite_support/cc/common.cc",
@@ -87,6 +60,7 @@ static_library("tflite-support") {
     "src/tensorflow_lite_support/cc/task/core/tflite_engine.cc",
     "src/tensorflow_lite_support/cc/task/core/tflite_engine.h",
     "src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.cc",
+    "src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h",
     "src/tensorflow_lite_support/cc/text/tokenizers/regex_tokenizer.cc",
     "src/tensorflow_lite_support/cc/text/tokenizers/regex_tokenizer.h",
     "src/tensorflow_lite_support/cc/text/tokenizers/tokenizer.h",
@@ -110,8 +84,6 @@ static_library("tflite-support") {
     "//third_party/utf",
   ]
 
-  public_deps = [ ":tflite-support_headers" ]
-
   configs -= [ "//build/config/compiler:chromium_code" ]
 
   configs += [
@@ -120,5 +92,4 @@ static_library("tflite-support") {
   ]
 
   public_configs = [ ":tflite_support_config" ]
-  visibility = [ ":*" ]
 }
