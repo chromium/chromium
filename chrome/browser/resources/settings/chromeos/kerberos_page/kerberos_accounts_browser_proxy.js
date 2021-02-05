@@ -8,7 +8,7 @@
 
 /**
  * @fileoverview A helper object used from the "Kerberos Accounts" subsection of
- * the "People" section of Settings, to interact with the browser. Chrome OS
+ * the "Kerberos" section of Settings, to interact with the browser. Chrome OS
  * only.
  */
 

@@ -12,8 +12,6 @@ js_type_check("closure_compile") {
     ":account_manager",
     ":fingerprint_browser_proxy",
     ":fingerprint_list",
-    ":kerberos_accounts",
-    ":kerberos_accounts_browser_proxy",
     ":lock_screen",
     ":lock_screen_password_prompt_dialog",
     ":lock_state_behavior",
@@ -23,6 +21,8 @@ js_type_check("closure_compile") {
     ":user_list",
     ":users_add_user_dialog",
     ":users_page",
+    "../kerberos_page:kerberos_accounts",
+    "../kerberos_page:kerberos_accounts_browser_proxy",
     "//chrome/browser/resources/settings/people_page:account_manager_browser_proxy",
     "//chrome/browser/resources/settings/people_page:profile_info_browser_proxy",
     "//chrome/browser/resources/settings/people_page:signout_dialog",
@@ -64,36 +64,6 @@ js_library("fingerprint_list") {
     "//ui/webui/resources/js:i18n_behavior",
     "//ui/webui/resources/js:web_ui_listener_behavior",
     "//ui/webui/resources/js/cr/ui:focus_without_ink",
-  ]
-}
-
-js_library("kerberos_accounts") {
-  deps = [
-    ":kerberos_accounts_browser_proxy",
-    "..:deep_linking_behavior",
-    "..:metrics_recorder",
-    "..:os_route",
-    "../..:router",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js:icon",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-}
-
-js_library("kerberos_accounts_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr" ]
-}
-
-js_library("kerberos_add_account_dialog") {
-  deps = [
-    ":kerberos_accounts_browser_proxy",
-    "..:metrics_recorder",
-    "//chrome/browser/resources/settings/controls:settings_textarea",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
   ]
 }
 
@@ -145,6 +115,7 @@ js_library("os_people_page") {
     "..:os_route",
     "../..:router",
     "../../settings_page:settings_animated_pages",
+    "../kerberos_page:kerberos_accounts",
     "../localized_link:localized_link",
     "../parental_controls_page:parental_controls_page",
     "//chrome/browser/resources/settings/people_page:profile_info_browser_proxy",
@@ -239,9 +210,6 @@ js_type_check("closure_compile_module") {
     ":account_manager.m",
     ":fingerprint_browser_proxy.m",
     ":fingerprint_list.m",
-    ":kerberos_accounts.m",
-    ":kerberos_accounts_browser_proxy.m",
-    ":kerberos_add_account_dialog.m",
     ":lock_screen.m",
     ":lock_screen_password_prompt_dialog.m",
     ":lock_state_behavior.m",
@@ -304,48 +272,6 @@ js_library("fingerprint_list.m") {
   extra_deps = [ ":fingerprint_list_module" ]
 }
 
-js_library("kerberos_accounts.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_people_page/kerberos_accounts.m.js" ]
-  deps = [
-    ":kerberos_accounts_browser_proxy.m",
-    "..:deep_linking_behavior.m",
-    "..:metrics_recorder.m",
-    "..:os_route.m",
-    "../..:router.m",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:icon.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
-  ]
-  extra_deps = [ ":kerberos_accounts_module" ]
-}
-
-js_library("kerberos_accounts_browser_proxy.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_people_page/kerberos_accounts_browser_proxy.m.js" ]
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:cr.m",
-  ]
-  extra_deps = [ ":modulize" ]
-}
-
-js_library("kerberos_add_account_dialog.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_people_page/kerberos_add_account_dialog.m.js" ]
-  deps = [
-    ":kerberos_accounts_browser_proxy.m",
-    "..:metrics_recorder.m",
-    "//chrome/browser/resources/settings/controls:settings_textarea.m",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
-  ]
-  extra_deps = [ ":kerberos_add_account_dialog_module" ]
-}
-
 js_library("lock_screen.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_people_page/lock_screen.m.js" ]
   deps = [
@@ -404,6 +330,7 @@ js_library("os_people_page.m") {
     "..:os_route.m",
     "../..:router.m",
     "../../settings_page:settings_animated_pages.m",
+    "../kerberos_page:kerberos_accounts.m",
     "../localized_link:localized_link.m",
     "../parental_controls_page:parental_controls_page.m",
     "//chrome/browser/resources/settings/people_page:profile_info_browser_proxy.m",
@@ -522,8 +449,6 @@ group("polymer3_elements") {
   public_deps = [
     ":account_manager_module",
     ":fingerprint_list_module",
-    ":kerberos_accounts_module",
-    ":kerberos_add_account_dialog_module",
     ":lock_screen_module",
     ":lock_screen_password_prompt_dialog_module",
     ":modulize",
@@ -538,6 +463,7 @@ group("polymer3_elements") {
     "../../:icons_module",
     "../../people_page:polymer3_elements",
     "../../privacy_page:polymer3_elements",
+    "../kerberos_page:polymer3_elements",
   ]
 }
 
@@ -557,26 +483,6 @@ polymer_modulizer("fingerprint_list") {
   migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
   auto_imports = os_settings_auto_imports
-}
-
-polymer_modulizer("kerberos_accounts") {
-  js_file = "kerberos_accounts.js"
-  html_file = "kerberos_accounts.html"
-  html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports
-}
-
-polymer_modulizer("kerberos_add_account_dialog") {
-  js_file = "kerberos_add_account_dialog.js"
-  html_file = "kerberos_add_account_dialog.html"
-  html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports =
-      os_settings_auto_imports +
-      [ "ui/webui/resources/html/assert.html|assert,assertNotReached" ]
 }
 
 polymer_modulizer("lock_screen") {
@@ -669,7 +575,6 @@ polymer_modulizer("users_page") {
 js_modulizer("modulize") {
   input_files = [
     "fingerprint_browser_proxy.js",
-    "kerberos_accounts_browser_proxy.js",
     "lock_state_behavior.js",
     "os_sync_browser_proxy.js",
   ]

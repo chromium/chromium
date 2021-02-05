@@ -13,6 +13,7 @@
 <link rel="import" href="../../settings_page/settings_animated_pages.html">
 <link rel="import" href="../../settings_page/settings_subpage.html">
 <link rel="import" href="../../settings_shared_css.html">
+<link rel="import" href="kerberos_accounts.html">
 
 <dom-module id="settings-kerberos-page">
   <template>
@@ -20,20 +21,19 @@
     <settings-animated-pages id="pages" section="kerberos"
         focus-config="[[focusConfig_]]">
       <div route-path="default">
-        <cr-link-row id="kerberos-accounts-v2-subpage-trigger"
-            on-click="onKerberosAccountsV2Tap_"
+        <cr-link-row id="kerberos-accounts-subpage-trigger"
+            on-click="onKerberosAccountsTap_"
             label="$i18n{kerberosAccountsSubMenuLabel}"
             role-description="$i18n{subpageArrowRoleDescription}">
           <cr-policy-indicator indicator-type="userPolicy">
           </cr-policy-indicator>
         </cr-link-row>
       </div>
-
       <template is="dom-if" route-path="/kerberos/kerberosAccounts">
         <settings-subpage
-            associated-control="[[$$('#kerberos-accounts-v2-subpage-trigger')]]"
+            associated-control="[[$$('#kerberos-accounts-subpage-trigger')]]"
             page-title="$i18n{kerberosAccountsPageTitle}">
-          <!-- TODO(fsandrade): add kerberos accounts v2 subpage impl. -->
+          <settings-kerberos-accounts></settings-kerberos-accounts>
         </settings-subpage>
       </template>
     </settings-animated-pages>

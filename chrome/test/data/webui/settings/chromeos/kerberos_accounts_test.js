@@ -16,7 +16,7 @@
 // #import {waitAfterNextRender} from 'chrome://test/test_util.m.js';
 // clang-format on
 
-cr.define('settings_people_page_kerberos_accounts', function() {
+cr.define('settings_kerberos_accounts', function() {
   // Tests for the Kerberos Accounts settings page.
   suite('KerberosAccountsTests', function() {
     let browserProxy = null;
@@ -39,10 +39,10 @@ cr.define('settings_people_page_kerberos_accounts', function() {
 
     setup(function() {
       settings.routes.BASIC = new settings.Route('/'),
-      settings.routes.PEOPLE =
-          settings.routes.BASIC.createSection('/people', 'people');
-      settings.routes.KERBEROS_ACCOUNTS =
-          settings.routes.PEOPLE.createChild('/kerberosAccounts');
+      settings.routes.KERBEROS =
+          settings.routes.BASIC.createSection('/kerberos', 'kerberos');
+      settings.routes.KERBEROS_ACCOUNTS_V2 =
+          settings.routes.KERBEROS.createChild('/kerberos/kerberosAccounts');
 
       settings.Router.resetInstanceForTesting(
           new settings.Router(settings.routes));
@@ -168,7 +168,7 @@ cr.define('settings_people_page_kerberos_accounts', function() {
       const params = new URLSearchParams;
       params.append('kerberos_reauth', principal_name);
       settings.Router.getInstance().navigateTo(
-          settings.routes.KERBEROS_ACCOUNTS, params);
+          settings.routes.KERBEROS_ACCOUNTS_V2, params);
 
       // The flushTasks is necessary since the kerberos_reauth param would
       // otherwise be handled AFTER the callback below is executed.
@@ -230,9 +230,9 @@ cr.define('settings_people_page_kerberos_accounts', function() {
       loadTimeData.overrideValues({isDeepLinkingEnabled: true});
 
       const params = new URLSearchParams;
-      params.append('settingId', '311');
+      params.append('settingId', '1801');
       settings.Router.getInstance().navigateTo(
-          settings.routes.KERBEROS_ACCOUNTS, params);
+          settings.routes.KERBEROS_ACCOUNTS_V2, params);
 
       await browserProxy.whenCalled('getAccounts');
       await test_util.flushTasks();
@@ -244,7 +244,7 @@ cr.define('settings_people_page_kerberos_accounts', function() {
       await test_util.waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
-          'Kebab menu should be focused for settingId=311.');
+          'Kebab menu should be focused for settingId=1801.');
     });
 
     test('RemoveAccountShowsToast', async () => {

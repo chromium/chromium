@@ -96,7 +96,8 @@
       </template>
       <cr-button id="add-account-button" on-click="onAddAccountClick_"
           disabled="[[!addAccountsAllowed_]]"
-          deep-link-focus-id$="[[Setting.kAddKerberosTicket]]">
+          deep-link-focus-id$="[[Setting.kAddKerberosTicket]]
+              [[Setting.kAddKerberosTicketV2]]">
         <div id="add-account-icon"></div>
         $i18n{kerberosAccountsAddAccountLabel}
       </cr-button>
@@ -148,7 +149,9 @@
               title="$i18n{moreActions}"
               on-click="onAccountActionsMenuButtonClick_"
               deep-link-focus-id$="[[Setting.kRemoveKerberosTicket]]
-                  [[Setting.kSetActiveKerberosTicket]]">
+                  [[Setting.kRemoveKerberosTicketV2]]
+                  [[Setting.kSetActiveKerberosTicket]]
+                  [[Setting.kSetActiveKerberosTicketV2]]">
           </cr-icon-button>
         </div>
       </template>

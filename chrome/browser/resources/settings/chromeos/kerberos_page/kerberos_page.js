@@ -24,7 +24,7 @@ Polymer({
         if (settings.routes.KERBEROS_ACCOUNTS_V2) {
           map.set(
               settings.routes.KERBEROS_ACCOUNTS_V2.path,
-              '#kerberos-accounts-v2-subpage-trigger');
+              '#kerberos-accounts-subpage-trigger');
         }
         return map;
       },
@@ -32,7 +32,7 @@ Polymer({
   },
 
   /** @private */
-  onKerberosAccountsV2Tap_() {
+  onKerberosAccountsTap_() {
     settings.Router.getInstance().navigateTo(
         settings.routes.KERBEROS_ACCOUNTS_V2);
   },

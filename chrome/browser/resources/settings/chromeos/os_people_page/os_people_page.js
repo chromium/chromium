@@ -521,11 +521,8 @@ Polymer({
     }
   },
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onKerberosAccountsTap_(e) {
+  /** @private */
+  onKerberosAccountsTap_() {
     settings.Router.getInstance().navigateTo(settings.routes.KERBEROS_ACCOUNTS);
   },
 

@@ -1463,6 +1463,29 @@ TEST_F('OSSettingsCellularSetupDialogTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
+// eslint-disable-next-line no-var
+var OSSettingsKerberosAccountsTest = class extends OSSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return super.browsePreload +
+        'chromeos/kerberos_page/kerberos_accounts.html';
+  }
+
+  /** @override */
+  get extraLibraries() {
+    return super.extraLibraries.concat([
+      BROWSER_SETTINGS_PATH + '../test_browser_proxy.js',
+      BROWSER_SETTINGS_PATH + '../test_util.js',
+      'kerberos_accounts_test.js',
+      'test_kerberos_accounts_browser_proxy.js',
+    ]);
+  }
+};
+
+TEST_F('OSSettingsKerberosAccountsTest', 'AllJsTests', () => {
+  mocha.run();
+});
+
 // Tests for the Kerberos section.
 // eslint-disable-next-line no-var
 var OSSettingsKerberosPageTest = class extends OSSettingsBrowserTest {
@@ -1971,30 +1994,6 @@ var OSSettingsPeoplePageChangePictureTest =
 };
 
 TEST_F('OSSettingsPeoplePageChangePictureTest', 'MAYBE_AllJsTests', () => {
-  mocha.run();
-});
-
-// eslint-disable-next-line no-var
-var OSSettingsPeoplePageKerberosAccountsTest =
-    class extends OSSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return super.browsePreload +
-        'chromeos/os_people_page/kerberos_accounts.html';
-  }
-
-  /** @override */
-  get extraLibraries() {
-    return super.extraLibraries.concat([
-      BROWSER_SETTINGS_PATH + '../test_browser_proxy.js',
-      BROWSER_SETTINGS_PATH + '../test_util.js',
-      'people_page_kerberos_accounts_test.js',
-      'test_kerberos_accounts_browser_proxy.js',
-    ]);
-  }
-};
-
-TEST_F('OSSettingsPeoplePageKerberosAccountsTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
