@@ -1,0 +1,6 @@
+[document web] name='done' focusable
+++[section]
+++++[image map] name='star1'
+++++++[link] name='Area2' focusable focused
+++++[static] name=' '
+++++[image] name='star2'

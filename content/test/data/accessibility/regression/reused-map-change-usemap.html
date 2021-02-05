@@ -1,0 +1,33 @@
+<!--
+@BLINK-ALLOW:focus*
+@AURALINUX-ALLOW:focus*
+@WAIT-FOR:done
+-->
+<!-- Only the first image that uses a given map gets its area children. -->
+<img id="img1" alt="star1" usemap="#map1"
+     src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E">
+<img id="img2" alt="star2" usemap="#map1"
+     src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E">
+<img id="img3" alt="star3" usemap="#map2"
+     src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E">
+<img id="img4" alt="star4" usemap="#map2"
+     src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E">
+<map name="map1">
+  <area shape="rect" coords="0,0,5,5" href="about:blank" alt="Area">
+</map>
+<map name="map2">
+  <area shape="rect" coords="0,0,5,5" href="about:blank" alt="Area">
+  <area shape="rect" coords="3,3,8,8" href="about:blank" alt="Area2" autofocus>
+</map>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Change usemap attributes to point at different, or nonexistent, maps.
+    // After this, img2 gets map1, and img4 gets map2.
+    setTimeout(() => {
+      document.querySelector('#img1').useMap = '#map_invalid';
+      document.querySelector('#img3').useMap = '#map1';
+      document.title = 'done';
+    }, 250);
+  });
+</script>

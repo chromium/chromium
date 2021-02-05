@@ -3,4 +3,3 @@ rootWebArea name='done'
 ++++genericContainer
 ++++++imageMap name='pipe'
 ++++++++link name='pipe1'
-++++++docBibliography name='bar'
