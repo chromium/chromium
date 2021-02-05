@@ -3287,6 +3287,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ProcessTransferAfterError) {
   // Try again after re-enabling host resolution.
   url_loader_interceptor.reset();
 
+  // Activate the root frame by executing a dummy script.
+  //
+  // TODO(mustaq): Why does the |back_load_observer.Wait()| below time out
+  // without the user activation?
+  EXPECT_TRUE(ExecuteScript(root, "// No-op script"));
   NavigateIframeToURL(shell()->web_contents(), "child-0", url_b);
   EXPECT_TRUE(observer.last_navigation_succeeded());
   EXPECT_EQ(url_b, observer.last_navigation_url());

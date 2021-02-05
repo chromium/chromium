@@ -638,7 +638,7 @@ bool BeginNavigateIframeToURL(WebContents* web_contents,
       "var iframes = document.getElementById('%s');iframes.src='%s';"
       "\",0)",
       iframe_id.c_str(), url.spec().c_str());
-  return ExecuteScript(web_contents, script);
+  return ExecuteScriptWithoutUserGesture(web_contents, script);
 }
 
 void NavigateToURLBlockUntilNavigationsComplete(WebContents* web_contents,

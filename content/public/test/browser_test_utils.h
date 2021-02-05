@@ -170,6 +170,10 @@ WARN_UNUSED_RESULT bool BeginNavigateToURLFromRenderer(
 // Navigate a frame with ID |iframe_id| to |url|, blocking until the navigation
 // finishes.  Uses a renderer-initiated navigation from script code in the
 // main frame.
+//
+// This method does not trigger a user activation before the navigation.  If
+// necessary, a user activation can be triggered right before calling this
+// method, e.g. by calling |ExecuteScript(frame_tree_node, "")|.
 bool NavigateIframeToURL(WebContents* web_contents,
                          const std::string& iframe_id,
                          const GURL& url);
