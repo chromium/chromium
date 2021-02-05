@@ -382,4 +382,32 @@ IN_PROC_BROWSER_TEST_F(WebAppsBaseBrowserTest, ExposeAppServicePublisherId) {
       });
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppsBaseBrowserTest, LaunchAppIconKeyUnchanged) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL app_url(embedded_test_server()->GetURL("/web_apps/basic.html"));
+  const web_app::AppId app_id =
+      web_app::InstallWebAppFromManifest(browser(), app_url);
+  AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+
+  apps::mojom::IconKeyPtr original_key;
+  proxy->AppRegistryCache().ForOneApp(
+      app_id, [&original_key](const apps::AppUpdate& update) {
+        original_key = update.IconKey().Clone();
+      });
+
+  const int32_t event_flags =
+      apps::GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerWindow,
+                          WindowOpenDisposition::NEW_WINDOW,
+                          /*prefer_container=*/true);
+  proxy->Launch(app_id, event_flags, apps::mojom::LaunchSource::kUnknown,
+                display::kDefaultDisplayId);
+  proxy->FlushMojoCallsForTesting();
+
+  proxy->AppRegistryCache().ForOneApp(
+      app_id, [&original_key](const apps::AppUpdate& update) {
+        ASSERT_EQ(original_key, update.IconKey());
+      });
+}
+
 }  // namespace apps

@@ -444,7 +444,11 @@ void WebAppsBase::OnWebAppLastLaunchTimeChanged(
     const base::Time& last_launch_time) {
   const web_app::WebApp* web_app = GetWebApp(app_id);
   if (web_app && Accepts(app_id)) {
-    Publish(Convert(web_app, apps::mojom::Readiness::kReady), subscribers_);
+    apps::mojom::AppPtr app = apps::mojom::App::New();
+    app->app_type = apps::mojom::AppType::kWeb;
+    app->app_id = app_id;
+    app->last_launch_time = web_app->last_launch_time();
+    Publish(std::move(app), subscribers_);
   }
 }
 
