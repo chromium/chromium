@@ -2446,6 +2446,8 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-206.xht [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac11.0 ] external/wpt/css/css-images/object-fit-scale-down-svg-001e.html [ Failure ]
+crbug.com/626703 [ Mac11.0 ] external/wpt/css/css-images/object-fit-scale-down-svg-003o.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-images/object-position-svg-001i.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-images/object-fit-cover-svg-004o.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-images/object-fit-none-svg-005e.html [ Failure ]
