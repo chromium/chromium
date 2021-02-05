@@ -2226,7 +2226,19 @@ bool V4L2Device::SetExtCtrls(uint32_t ctrl_class,
   if (request_ref)
     request_ref->ApplyCtrls(&ext_ctrls);
 
-  return Ioctl(VIDIOC_S_EXT_CTRLS, &ext_ctrls) == 0;
+  const int result = Ioctl(VIDIOC_S_EXT_CTRLS, &ext_ctrls);
+  if (result < 0) {
+    if (ext_ctrls.error_idx == ext_ctrls.count)
+      VPLOGF(1) << "VIDIOC_S_EXT_CTRLS: validation failed while trying to set "
+                   "controls";
+    else
+      VPLOGF(1) << "VIDIOC_S_EXT_CTRLS: unable to set control (0x" << std::hex
+                << ctrls[ext_ctrls.error_idx].ctrl.id << ") at index ("
+                << ext_ctrls.error_idx << ")  to 0x"
+                << ctrls[ext_ctrls.error_idx].ctrl.value;
+  }
+
+  return result == 0;
 }
 
 base::Optional<struct v4l2_ext_control> V4L2Device::GetCtrl(uint32_t ctrl_id) {
