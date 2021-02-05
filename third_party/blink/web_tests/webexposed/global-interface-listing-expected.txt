@@ -8593,14 +8593,17 @@ interface TreeWalker
 interface TrustedHTML
     attribute @@toStringTag
     method constructor
+    method toJSON
     method toString
 interface TrustedScript
     attribute @@toStringTag
     method constructor
+    method toJSON
     method toString
 interface TrustedScriptURL
     attribute @@toStringTag
     method constructor
+    method toJSON
     method toString
 interface TrustedTypePolicy
     attribute @@toStringTag

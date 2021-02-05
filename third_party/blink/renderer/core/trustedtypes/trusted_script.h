@@ -19,6 +19,7 @@ class CORE_EXPORT TrustedScript final : public ScriptWrappable {
 
   // TrustedScript.idl
   const String& toString() const;
+  const String& toJSON() const { return toString(); }
 
  private:
   const String script_;
