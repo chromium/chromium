@@ -35,8 +35,8 @@ void VerifyEventsInListAndMap(const std::map<std::string, Event>& map,
 class PersistentEventStoreTest : public ::testing::Test {
  public:
   PersistentEventStoreTest() : db_(nullptr) {
-    load_callback_ = base::Bind(&PersistentEventStoreTest::LoadCallback,
-                                base::Unretained(this));
+    load_callback_ = base::BindOnce(&PersistentEventStoreTest::LoadCallback,
+                                    base::Unretained(this));
   }
 
   void TearDown() override {

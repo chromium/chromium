@@ -47,8 +47,8 @@ class PersistentAvailabilityStoreTest : public testing::Test {
   PersistentAvailabilityStoreTest()
       : db_(nullptr),
         storage_dir_(FILE_PATH_LITERAL("/persistent/store/lalala")) {
-    load_callback_ = base::Bind(&PersistentAvailabilityStoreTest::LoadCallback,
-                                base::Unretained(this));
+    load_callback_ = base::BindOnce(
+        &PersistentAvailabilityStoreTest::LoadCallback, base::Unretained(this));
   }
 
   ~PersistentAvailabilityStoreTest() override = default;

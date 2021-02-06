@@ -157,8 +157,8 @@ TrackerImpl::TrackerImpl(
       event_model_initialization_finished_(false),
       availability_model_initialization_finished_(false) {
   event_model_->Initialize(
-      base::Bind(&TrackerImpl::OnEventModelInitializationFinished,
-                 weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&TrackerImpl::OnEventModelInitializationFinished,
+                     weak_ptr_factory_.GetWeakPtr()),
       time_provider_->GetCurrentDay());
 
   availability_model_->Initialize(
