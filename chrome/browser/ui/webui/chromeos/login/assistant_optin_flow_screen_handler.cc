@@ -570,6 +570,9 @@ void AssistantOptInFlowScreenHandler::HandleVoiceMatchScreenUserAction(
     assistant::AssistantSettings::Get()->StartSpeakerIdEnrollment(
         flow_type_ == ash::FlowType::kSpeakerIdRetrain,
         weak_factory_.GetWeakPtr());
+  } else if (action == kReloadRequested) {
+    if (voice_match_enrollment_started_)
+      StopSpeakerIdEnrollment();
   }
 }
 

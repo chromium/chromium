@@ -86,6 +86,25 @@ Polymer({
     this.browserProxy_.userActed(VOICE_MATCH_SCREEN_ID, ['record-pressed']);
   },
 
+  /**
+   * Reset the status of page elements.
+   *
+   * @private
+   */
+  resetElements_() {
+    this.currentIndex_ = 0;
+
+    this.$['voice-match-entries'].hidden = false;
+    this.$['later-button'].hidden = false;
+    this.$['loading-animation'].hidden = true;
+
+    for (var i = 0; i < MAX_INDEX; ++i) {
+      var entry = this.$['voice-entry-' + i];
+      entry.removeAttribute('active');
+      entry.removeAttribute('completed');
+    }
+  },
+
   /** @override */
   created() {
     this.browserProxy_ = assistant.BrowserProxyImpl.getInstance();
@@ -97,6 +116,8 @@ Polymer({
   reloadPage() {
     this.setUIStep(VoiceMatchUIState.INTRO);
     this.$['agree-button'].focus();
+    this.resetElements_();
+    this.browserProxy_.userActed(VOICE_MATCH_SCREEN_ID, ['reload-requested']);
     this.fire('loaded');
   },
 
