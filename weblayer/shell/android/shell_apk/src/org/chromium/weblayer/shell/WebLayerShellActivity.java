@@ -52,6 +52,7 @@ import org.chromium.base.compat.ApiHelperForR;
 import org.chromium.weblayer.Browser;
 import org.chromium.weblayer.BrowsingDataType;
 import org.chromium.weblayer.ContextMenuParams;
+import org.chromium.weblayer.DarkModeStrategy;
 import org.chromium.weblayer.ErrorPageCallback;
 import org.chromium.weblayer.FaviconCallback;
 import org.chromium.weblayer.FaviconFetcher;
@@ -257,6 +258,7 @@ public class WebLayerShellActivity extends AppCompatActivity {
     private boolean mSetDarkMode;
     private boolean mInIncognitoMode;
     private boolean mEnableAltTopView;
+    private int mDarkModeStrategy = R.id.dark_mode_web_theme;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -406,6 +408,7 @@ public class WebLayerShellActivity extends AppCompatActivity {
                 .findItem(R.id.toggle_controls_animations_id)
                 .setChecked(mAnimateControlsChanges);
         popup.getMenu().findItem(R.id.toggle_dark_mode).setChecked(mSetDarkMode);
+        popup.getMenu().findItem(mDarkModeStrategy).setChecked(true);
 
         popup.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.toggle_top_view_id) {
@@ -451,6 +454,25 @@ public class WebLayerShellActivity extends AppCompatActivity {
             if (item.getItemId() == R.id.toggle_dark_mode) {
                 mSetDarkMode = !mSetDarkMode;
                 setDarkMode(mSetDarkMode);
+                return true;
+            }
+
+            if (item.getItemId() == R.id.dark_mode_web_theme) {
+                mDarkModeStrategy = R.id.dark_mode_web_theme;
+                mBrowser.setDarkModeStrategy(DarkModeStrategy.WEB_THEME_DARKENING_ONLY);
+                return true;
+            }
+
+            if (item.getItemId() == R.id.dark_mode_user_agent) {
+                mDarkModeStrategy = R.id.dark_mode_user_agent;
+                mBrowser.setDarkModeStrategy(DarkModeStrategy.USER_AGENT_DARKENING_ONLY);
+                return true;
+            }
+
+            if (item.getItemId() == R.id.dark_mode_prefer_web_theme) {
+                mDarkModeStrategy = R.id.dark_mode_prefer_web_theme;
+                mBrowser.setDarkModeStrategy(
+                        DarkModeStrategy.PREFER_WEB_THEME_OVER_USER_AGENT_DARKENING);
                 return true;
             }
 

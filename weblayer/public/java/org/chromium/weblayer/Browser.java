@@ -433,6 +433,31 @@ public class Browser {
     }
 
     /**
+     * Controls how sites are themed when WebLayer is in dark mode. WebLayer considers itself to be
+     * in dark mode if the UI_MODE_NIGHT_YES flag of its Resources' Configuration's uiMode field is
+     * set, which is typically controlled with AppCompatDelegate#setDefaultNightMode. By default
+     * pages will only be rendered in dark mode if WebLayer is in dark mode and they provide a dark
+     * theme in CSS. See DarkModeStrategy for other possible configurations.
+     *
+     * @see DarkModeStrategy
+     * @param strategy See {@link DarkModeStrategy}.
+     *
+     * @since 90
+     */
+    public void setDarkModeStrategy(@DarkModeStrategy int strategy) {
+        ThreadCheck.ensureOnUiThread();
+        if (WebLayer.getSupportedMajorVersionInternal() < 89) {
+            throw new UnsupportedOperationException();
+        }
+        throwIfDestroyed();
+        try {
+            mImpl.setDarkModeStrategy(strategy);
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
+    /**
      * Returns {@link Profile} associated with this Browser Fragment. Multiple fragments can share
      * the same Profile.
      */

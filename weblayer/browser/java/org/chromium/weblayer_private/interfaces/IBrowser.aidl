@@ -48,4 +48,7 @@ interface IBrowser {
 
   // Added in 89.
   void setMinimumSurfaceSize(in int width, in int height) = 15;
+
+  // Added in 90.
+  void setDarkModeStrategy(in int strategy) = 16;
 }

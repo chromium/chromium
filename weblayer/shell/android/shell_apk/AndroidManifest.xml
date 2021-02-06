@@ -29,6 +29,7 @@
             </intent-filter>
         </activity>
         <activity android:name="InstrumentationActivity"
+                  android:theme="@style/Theme.AppCompat.DayNight"
                   android:windowSoftInputMode="adjustResize">
             <!-- Add these intent filters so tests can resolve these intents. -->
             <intent-filter>

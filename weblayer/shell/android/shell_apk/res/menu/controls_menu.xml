@@ -24,7 +24,21 @@
     <item android:id="@+id/toggle_controls_animations_id"
         android:checkable="true"
         android:title="Animate browser controls changes" />
-    <item android:id="@+id/toggle_dark_mode"
-        android:checkable="true"
-        android:title="Dark Mode" />
+    <item android:title="Dark Mode">
+        <menu>
+            <item android:id="@+id/toggle_dark_mode"
+                  android:checkable="true"
+                  android:title="Enable dark mode" />
+            <item android:enabled="false"
+                  android:title="Dark mode strategy" />
+            <group android:checkableBehavior="single">
+                <item android:id="@+id/dark_mode_web_theme"
+                      android:title="Web theme only" />
+                <item android:id="@+id/dark_mode_user_agent"
+                      android:title="User agent only" />
+                <item android:id="@+id/dark_mode_prefer_web_theme"
+                      android:title="Prefer web theme" />
+            </group>
+        </menu>
+    </item>
 </menu>

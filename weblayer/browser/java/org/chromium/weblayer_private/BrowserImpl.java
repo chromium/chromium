@@ -25,6 +25,7 @@ import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.weblayer_private.interfaces.APICallException;
+import org.chromium.weblayer_private.interfaces.DarkModeStrategy;
 import org.chromium.weblayer_private.interfaces.IBrowser;
 import org.chromium.weblayer_private.interfaces.IBrowserClient;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
@@ -83,6 +84,8 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
     // Cache the value instead of querying system every time.
     private Boolean mPasswordEchoEnabled;
     private Boolean mDarkThemeEnabled;
+    @DarkModeStrategy
+    private int mDarkModeStrategy = DarkModeStrategy.WEB_THEME_DARKENING_ONLY;
     private Float mFontScale;
     private boolean mViewAttachedToWindow;
     private boolean mNotifyOnBrowserControlsOffsetsChanged;
@@ -477,6 +480,20 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
     @CalledByNative
     private void destroyTabImpl(TabImpl tab) {
         tab.destroy();
+    }
+
+    @Override
+    public void setDarkModeStrategy(@DarkModeStrategy int strategy) {
+        if (mDarkModeStrategy == strategy) {
+            return;
+        }
+        mDarkModeStrategy = strategy;
+        BrowserImplJni.get().webPreferencesChanged(mNativeBrowser);
+    }
+
+    @CalledByNative
+    int getDarkModeStrategy() {
+        return mDarkModeStrategy;
     }
 
     @Override

@@ -33,15 +33,23 @@
 #include "base/json/json_writer.h"
 #include "weblayer/browser/browser_process.h"
 #include "weblayer/browser/java/jni/BrowserImpl_jni.h"
-#endif
 
-#if defined(OS_ANDROID)
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 #endif
 
 namespace weblayer {
+
+#if defined(OS_ANDROID)
+// This MUST match the values defined in
+// org.chromium.weblayer_private.interfaces.DarkModeStrategy.
+enum class DarkModeStrategy {
+  kWebThemeDarkeningOnly = 0,
+  kUserAgentDarkeningOnly = 1,
+  kPreferWebThemeOverUserAgentDarkening = 2,
+};
+#endif
 
 // static
 constexpr char BrowserImpl::kPersistenceFilePrefix[];
@@ -217,12 +225,41 @@ void BrowserImpl::SetWebPreferences(blink::web_pref::WebPreferences* prefs) {
 #if defined(OS_ANDROID)
   prefs->password_echo_enabled = Java_BrowserImpl_getPasswordEchoEnabled(
       AttachCurrentThread(), java_impl_);
-  prefs->preferred_color_scheme =
-      Java_BrowserImpl_getDarkThemeEnabled(AttachCurrentThread(), java_impl_)
-          ? blink::mojom::PreferredColorScheme::kDark
-          : blink::mojom::PreferredColorScheme::kLight;
   prefs->font_scale_factor =
       Java_BrowserImpl_getFontScale(AttachCurrentThread(), java_impl_);
+  bool is_dark =
+      Java_BrowserImpl_getDarkThemeEnabled(AttachCurrentThread(), java_impl_);
+  if (is_dark) {
+    DarkModeStrategy dark_strategy =
+        static_cast<DarkModeStrategy>(Java_BrowserImpl_getDarkModeStrategy(
+            AttachCurrentThread(), java_impl_));
+    switch (dark_strategy) {
+      case DarkModeStrategy::kPreferWebThemeOverUserAgentDarkening:
+        // Blink's behavior is that if the preferred color scheme matches the
+        // browser's color scheme, then force dark will be disabled, otherwise
+        // the preferred color scheme will be reset to 'light'. Therefore
+        // when enabling force dark, we also set the preferred color scheme to
+        // dark so that dark themed content will be preferred over force
+        // darkening.
+        prefs->preferred_color_scheme =
+            blink::mojom::PreferredColorScheme::kDark;
+        prefs->force_dark_mode_enabled = true;
+        break;
+      case DarkModeStrategy::kWebThemeDarkeningOnly:
+        prefs->preferred_color_scheme =
+            blink::mojom::PreferredColorScheme::kDark;
+        prefs->force_dark_mode_enabled = false;
+        break;
+      case DarkModeStrategy::kUserAgentDarkeningOnly:
+        prefs->preferred_color_scheme =
+            blink::mojom::PreferredColorScheme::kLight;
+        prefs->force_dark_mode_enabled = true;
+        break;
+    }
+  } else {
+    prefs->preferred_color_scheme = blink::mojom::PreferredColorScheme::kLight;
+    prefs->force_dark_mode_enabled = false;
+  }
 #endif
 }
 

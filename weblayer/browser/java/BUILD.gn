@@ -464,6 +464,7 @@ android_library("interfaces_java") {
     "org/chromium/weblayer_private/interfaces/BrowserFragmentArgs.java",
     "org/chromium/weblayer_private/interfaces/BrowsingDataType.java",
     "org/chromium/weblayer_private/interfaces/CookieChangeCause.java",
+    "org/chromium/weblayer_private/interfaces/DarkModeStrategy.java",
     "org/chromium/weblayer_private/interfaces/DownloadError.java",
     "org/chromium/weblayer_private/interfaces/DownloadState.java",
     "org/chromium/weblayer_private/interfaces/GoogleAccountServiceType.java",

@@ -18,8 +18,8 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -46,7 +46,7 @@ import java.util.List;
  */
 // This isn't part of Chrome, so using explicit colors/sizes is ok.
 @SuppressWarnings("checkstyle:SetTextColorAndSetTextSizeCheck")
-public class InstrumentationActivity extends FragmentActivity {
+public class InstrumentationActivity extends AppCompatActivity {
     private static final String TAG = "WLInstrumentation";
     private static final String KEY_MAIN_VIEW_ID = "mainViewId";
 
