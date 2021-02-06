@@ -6,6 +6,7 @@
 #define CHROMEOS_NETWORK_CELLULAR_INHIBITOR_H_
 
 #include "base/component_export.h"
+#include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/network/network_handler_callbacks.h"
 
@@ -34,16 +35,39 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularInhibitor {
   void Init(NetworkStateHandler* network_state_handler,
             NetworkDeviceHandler* network_device_handler);
 
-  // Callback which returns true upon success or false upon failure.
-  using SuccessCallback = base::OnceCallback<void(bool)>;
+  // A lock object which ensures that all other Inhibit requests are blocked
+  // during this it's lifetime. When a lock object is deleted, the Cellular
+  // device is automatically uninhibited and any pending inhibit requests are
+  // processed.
+  class InhibitLock {
+   public:
+    explicit InhibitLock(base::OnceClosure unlock_callback);
+    ~InhibitLock();
 
-  // Sets or unsets the Inhibited property of the Cellular device.
-  void InhibitCellularScanning(SuccessCallback callback);
-  void UninhibitCellularScanning(SuccessCallback callback);
+   private:
+    base::OnceClosure unlock_callback_;
+  };
+
+  // Callback which returns InhibitLock on inhibit success or nullptr on
+  // failure.
+  using InhibitCallback =
+      base::OnceCallback<void(std::unique_ptr<InhibitLock>)>;
+
+  // Puts the Cellular device in Inhibited state and returns an InhibitLock
+  // object which when destroyed automatically uninhibits the Cellular device. A
+  // call to this method will block until the last issues lock is deleted.
+  void InhibitCellularScanning(InhibitCallback callback);
 
  private:
   const DeviceState* GetCellularDevice() const;
 
+  void ProcessRequests();
+  void OnInhibit(bool success);
+  void AttemptUninhibit(size_t attempts_so_far);
+  void OnUninhibit(size_t attempts_so_far, bool success);
+  void PopRequestAndProcessNext();
+
+  using SuccessCallback = base::OnceCallback<void(bool)>;
   void SetInhibitProperty(bool new_inhibit_value, SuccessCallback callback);
   void OnSetPropertySuccess(
       const base::RepeatingCallback<void(bool)>& success_callback);
@@ -55,6 +79,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularInhibitor {
 
   NetworkStateHandler* network_state_handler_ = nullptr;
   NetworkDeviceHandler* network_device_handler_ = nullptr;
+
+  bool is_locked_ = false;
+  base::queue<InhibitCallback> inhibit_requests_;
 
   base::WeakPtrFactory<CellularInhibitor> weak_ptr_factory_{this};
 };

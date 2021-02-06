@@ -11,6 +11,7 @@
 #include "base/containers/queue.h"
 #include "base/values.h"
 #include "chromeos/dbus/hermes/hermes_response_status.h"
+#include "chromeos/network/cellular_inhibitor.h"
 #include "dbus/object_path.h"
 
 namespace chromeos {
@@ -68,7 +69,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler {
     kDisablingProfile,
     kUninstallingProfile,
     kRemovingShillService,
-    kUnInhibitingShill,
     kSuccess,
     kFailure,
   };
@@ -87,17 +87,19 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler {
     dbus::ObjectPath esim_profile_path;
     dbus::ObjectPath euicc_path;
     UninstallRequestCallback callback;
+    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock = nullptr;
   };
 
   void ProcessUninstallRequest();
   void TransitionToUninstallState(UninstallState next_state);
   void AttemptNetworkDisconnectIfRequired();
   void AttemptShillInhibit();
+  void OnShillInhibit(
+      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
   void AttemptRequestInstalledProfiles();
   void AttemptDisableProfileIfRequired();
   void AttemptUninstallProfile();
   void AttemptRemoveShillService();
-  void AttemptShillUnInhibit();
   void TransitionUninstallStateOnHermesSuccess(UninstallState next_state,
                                                HermesResponseStatus status);
   void TransitionUninstallStateOnSuccessBoolean(UninstallState next_state,

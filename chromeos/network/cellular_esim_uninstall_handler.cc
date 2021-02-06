@@ -99,9 +99,6 @@ void CellularESimUninstallHandler::TransitionToUninstallState(
     case UninstallState::kRemovingShillService:
       AttemptRemoveShillService();
       break;
-    case UninstallState::kUnInhibitingShill:
-      AttemptShillUnInhibit();
-      break;
     case UninstallState::kSuccess:
     case UninstallState::kFailure:
       std::move(uninstall_requests_.front()->callback)
@@ -137,10 +134,22 @@ void CellularESimUninstallHandler::AttemptNetworkDisconnectIfRequired() {
 }
 
 void CellularESimUninstallHandler::AttemptShillInhibit() {
-  cellular_inhibitor_->InhibitCellularScanning(base::BindOnce(
-      &CellularESimUninstallHandler::TransitionUninstallStateOnSuccessBoolean,
-      weak_ptr_factory_.GetWeakPtr(),
-      UninstallState::kRequestingInstalledProfiles));
+  cellular_inhibitor_->InhibitCellularScanning(
+      base::BindOnce(&CellularESimUninstallHandler::OnShillInhibit,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CellularESimUninstallHandler::OnShillInhibit(
+    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
+  if (!inhibit_lock) {
+    NET_LOG(ERROR) << "Error inhbiting shill";
+    TransitionToUninstallState(UninstallState::kFailure);
+    return;
+  }
+  // Save lock in the uninstall request so that it will be released when the
+  // request is popped.
+  uninstall_requests_.front()->inhibit_lock = std::move(inhibit_lock);
+  TransitionToUninstallState(UninstallState::kRequestingInstalledProfiles);
 }
 
 void CellularESimUninstallHandler::AttemptRequestInstalledProfiles() {
@@ -195,16 +204,9 @@ void CellularESimUninstallHandler::AttemptRemoveShillService() {
   network_configuration_handler_->RemoveConfiguration(
       curr_request_network_state_->path(), base::nullopt,
       base::BindOnce(&CellularESimUninstallHandler::TransitionToUninstallState,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     UninstallState::kUnInhibitingShill),
+                     weak_ptr_factory_.GetWeakPtr(), UninstallState::kSuccess),
       base::BindOnce(&CellularESimUninstallHandler::OnNetworkHandlerError,
                      weak_ptr_factory_.GetWeakPtr()));
-}
-
-void CellularESimUninstallHandler::AttemptShillUnInhibit() {
-  cellular_inhibitor_->UninhibitCellularScanning(base::BindOnce(
-      &CellularESimUninstallHandler::TransitionUninstallStateOnSuccessBoolean,
-      weak_ptr_factory_.GetWeakPtr(), UninstallState::kSuccess));
 }
 
 void CellularESimUninstallHandler::TransitionUninstallStateOnHermesSuccess(
@@ -273,9 +275,6 @@ std::ostream& operator<<(
       break;
     case CellularESimUninstallHandler::UninstallState::kUninstallingProfile:
       stream << "[Uninstalling Profile]";
-      break;
-    case CellularESimUninstallHandler::UninstallState::kUnInhibitingShill:
-      stream << "[UnInhibiting Shill]";
       break;
     case CellularESimUninstallHandler::UninstallState::kRemovingShillService:
       stream << "[Removing Shill Service]";
