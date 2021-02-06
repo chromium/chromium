@@ -70,10 +70,9 @@ void DumpAccessibilityScriptTest::AddDefaultFilters(
 
 // Parameterize the tests so that each test-pass is run independently.
 struct TestPassToString {
-  std::string operator()(const ::testing::TestParamInfo<size_t>& i) const {
-    auto passes = DumpAccessibilityTestHelper::TestPasses();
-    CHECK_LT(i.param, passes.size());
-    return std::string(passes[i.param]);
+  std::string operator()(
+      const ::testing::TestParamInfo<AXInspectFactory::Type>& i) const {
+    return std::string(i.param);
   }
 };
 
@@ -83,12 +82,10 @@ struct TestPassToString {
 
 #if defined(OS_MAC)
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    DumpAccessibilityScriptTest,
-    ::testing::Values(
-        1),  // mac tree formatter, see DumpAccessibilityTestHelper::TestPasses
-    TestPassToString());
+INSTANTIATE_TEST_SUITE_P(All,
+                         DumpAccessibilityScriptTest,
+                         ::testing::Values(AXInspectFactory::kMac),
+                         TestPassToString());
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXStartTextMarker) {
   RunMacTextMarkerTest(FILE_PATH_LITERAL("ax_start_text_marker.html"));

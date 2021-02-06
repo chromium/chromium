@@ -77,8 +77,7 @@ using ui::AXTreeFormatter;
 
 // DumpAccessibilityTestBase
 DumpAccessibilityTestBase::DumpAccessibilityTestBase()
-    : enable_accessibility_after_navigating_(false),
-      test_helper_(DumpAccessibilityTestHelper::TestPasses()[GetParam()]) {}
+    : enable_accessibility_after_navigating_(false), test_helper_(GetParam()) {}
 
 DumpAccessibilityTestBase::~DumpAccessibilityTestBase() {}
 
@@ -467,8 +466,7 @@ BrowserAccessibilityManager* DumpAccessibilityTestBase::GetManager() {
 
 std::unique_ptr<AXTreeFormatter> DumpAccessibilityTestBase::CreateFormatter()
     const {
-  return AXInspectFactory::CreateFormatter(
-      DumpAccessibilityTestHelper::TestPasses()[GetParam()]);
+  return AXInspectFactory::CreateFormatter(GetParam());
 }
 
 BrowserAccessibility* DumpAccessibilityTestBase::FindNodeInSubtree(

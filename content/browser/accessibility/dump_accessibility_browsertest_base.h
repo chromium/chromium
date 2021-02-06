@@ -30,8 +30,9 @@ class DumpAccessibilityTestHelper;
 // testing accessibility in Chromium.
 //
 // See content/test/data/accessibility/readme.md for an overview.
-class DumpAccessibilityTestBase : public ContentBrowserTest,
-                                  public ::testing::WithParamInterface<size_t> {
+class DumpAccessibilityTestBase
+    : public ContentBrowserTest,
+      public ::testing::WithParamInterface<AXInspectFactory::Type> {
  public:
   DumpAccessibilityTestBase();
   ~DumpAccessibilityTestBase() override;

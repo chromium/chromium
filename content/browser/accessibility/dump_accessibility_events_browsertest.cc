@@ -139,13 +139,10 @@ std::vector<std::string> DumpAccessibilityEventsTest::Dump(
   std::vector<std::string> result;
   do {
     // Create a new Event Recorder for the run.
-    size_t current_pass = GetParam();
-    auto test_passes = DumpAccessibilityTestHelper::TestPasses();
-
     std::unique_ptr<ui::AXEventRecorder> event_recorder =
         AXInspectFactory::CreateRecorder(
-            test_passes[current_pass],
-            web_contents->GetRootBrowserAccessibilityManager(), pid, {});
+            GetParam(), web_contents->GetRootBrowserAccessibilityManager(), pid,
+            {});
     event_recorder->SetOnlyWebEvents(true);
 
     waiter.reset(new AccessibilityNotificationWaiter(
@@ -239,18 +236,16 @@ void DumpAccessibilityEventsTest::RunEventTest(
 
 // Parameterize the tests so that each test-pass is run independently.
 struct DumpAccessibilityEventsTestPassToString {
-  std::string operator()(const ::testing::TestParamInfo<size_t>& i) const {
-    auto passes = DumpAccessibilityTestHelper::TestPasses();
-    CHECK_LT(i.param, passes.size());
-    return std::string(passes[i.param]);
+  std::string operator()(
+      const ::testing::TestParamInfo<AXInspectFactory::Type>& i) const {
+    return std::string(i.param);
   }
 };
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     DumpAccessibilityEventsTest,
-    ::testing::Range(size_t{0},
-                     DumpAccessibilityTestHelper::TestPasses().size()),
+    ::testing::ValuesIn(DumpAccessibilityTestHelper::TestPasses()),
     DumpAccessibilityEventsTestPassToString());
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
