@@ -83,7 +83,7 @@ KeyUtil = class {
         keySequence.equals(util.prevKeySequence)) {
       const prevTime = util.modeKeyPressTime;
       const delta = currTime - prevTime;
-      if (prevTime > 0 && delta > 100 && delta < 300) /* Double tap */ {
+      if (!keyEvent.repeat && prevTime > 0 && delta < 300) /* Double tap */ {
         keySequence = util.prevKeySequence;
         keySequence.doubleTap = true;
         util.prevKeySequence = null;

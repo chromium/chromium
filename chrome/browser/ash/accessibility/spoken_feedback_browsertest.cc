@@ -775,6 +775,27 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ChromeVoxStickyMode) {
   sm_.Replay();
 }
 
+// This tests ChromeVox sticky mode using raw key events as opposed to directly
+// sending js commands above. This variant may be subject to flakes as it
+// depends on more of the UI events stack and sticky mode invocation has a
+// timing element to it.
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ChromeVoxStickyModeRawKeys) {
+  EnableChromeVox();
+  sm_.Call([this]() {
+    SendKeyPress(ui::VKEY_LWIN);
+    SendKeyPress(ui::VKEY_LWIN);
+  });
+  sm_.ExpectSpeech("Sticky mode enabled");
+
+  sm_.Call([this]() {
+    SendKeyPress(ui::VKEY_LWIN);
+    SendKeyPress(ui::VKEY_LWIN);
+  });
+  sm_.ExpectSpeech("Sticky mode disabled");
+
+  sm_.Replay();
+}
+
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, TouchExploreStatusTray) {
   EnableChromeVox();
 
